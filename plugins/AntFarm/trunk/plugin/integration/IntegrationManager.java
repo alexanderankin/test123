@@ -79,9 +79,9 @@ public class IntegrationManager
 			}
 		}
 
-		if ( message instanceof CreateDockableWindow ) {
+		/* if ( message instanceof CreateDockableWindow ) {
 			enableBridges( ( (CreateDockableWindow) message ).getView() );
-		}
+		} */
 	}
 
 

@@ -132,7 +132,6 @@ public class TargetRunner extends Thread
 			finally {
 				fireBuildFinished();
 				resetLogging();
-				resetProjectProperties();
 				cleanup();
 			}
 		}
@@ -160,7 +159,6 @@ public class TargetRunner extends Thread
 	{
 		// re-init the project so that system properties are re-loaded.
 		_project.init();
-
 		_project.setUserProperty( "ant.version", Main.getAntVersion() );
 
 		// set user-define properties
@@ -168,6 +166,7 @@ public class TargetRunner extends Thread
 		while ( e.hasMoreElements() ) {
 			String arg = (String) e.nextElement();
 			String value = (String) _userProperties.get( arg );
+			value = ConsolePlugin.expandSystemShellVariables(_view, value);
 			_project.setUserProperty( arg, value );
 		}
 
@@ -175,28 +174,24 @@ public class TargetRunner extends Thread
 	}
 
 
-	private void resetProjectProperties()
-	{
-		Enumeration props = _userProperties.propertyNames();
-
-		while ( props.hasMoreElements() ) {
-			Object element = props.nextElement();
-			_project.getUserProperties().remove( element );
-			_project.getProperties().remove( element );
-			System.getProperties().remove( element );
-		}
-	}
-
-
 	private void init( Target target, File buildFile, View view, Output output, Properties userProperties )
 	{
 		_target = target;
-		_project = _target.getProject();
+		//_project = _target.getProject();
 		_buildFile = buildFile;
 		_view = view;
 		_output = output;
 		_userProperties = userProperties;
 
+		_view.getDockableWindowManager().addDockableWindow("antfarm");
+		AntFarm antFarm = (AntFarm) _view.getDockableWindowManager().getDockable("antfarm");
+		try {
+			_project = antFarm.parseBuildFile(buildFile.getAbsolutePath());
+		}
+		catch (Exception e) {
+			Log.log(Log.WARNING, this, "Cannot parse build file: " + e);
+		}
+		
 		_consoleErr = new AntPrintStream( System.out, _view );
 		_consoleOut = new AntPrintStream( System.out, _view );
 

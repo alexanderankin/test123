@@ -24,7 +24,7 @@
 
 <project name="AntFarm" default="jar" basedir=".">
 
-	<property name="jedit.install.dir"  value="../.."/>
+	<property name="jedit.install.dir"  value="../../jEdit"/>
 	<property name="jedit.jars" value="${jedit.install.dir}/jars"/>
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target"  value="xsltproc"/>
