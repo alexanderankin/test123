@@ -20,9 +20,12 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.io.File;
+import java.io.IOException;
+
 import java.awt.Color;
 import javax.swing.Icon;
 
+import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;
@@ -43,64 +46,70 @@ public class VPTFile extends VPTNode {
 	private final static Icon fileOpenedIcon 	= GUIUtilities.loadIcon("OpenFile.png");
 
 	//}}}
-	
+
 	//{{{ Attributes
-	
+
 	private File		file;
-	
+
 	//}}}
-	
-	//{{{ Constructors 
-	
+
+	//{{{ Constructors
+
 	public VPTFile(String path) {
 		this(new File(path));
 	}
-	
+
 	public VPTFile(File file) {
 		super(VPTNode.FILE, file.getName());
 		this.file = file;
 	}
-	
+
 	//}}}
-	
+
 	//{{{ Public methods
-	
+
 	//{{{ canWrite() method
 	/** Returns is the underlying file is writable. */
 	public boolean canWrite() {
 		return file.canWrite();
 	} //}}}
 
-	//{{{ delete() method	
+	//{{{ delete() method
 	/**
-	 *	Deletes the file from disk. Before deleting, try to close the file. 
+	 *	Deletes the file from disk. Before deleting, try to close the file.
 	 */
 	public boolean delete() {
 		close();
 		return file.delete();
 	} //}}}
-	
+
 	//{{{ getFile() method
 	/** Return the file associated with this node. */
 	public File getFile() {
 		return file;
 	} //}}}
-	
+
 	//{{{ setFile(File) method
 	/** Sets the file associated with this node. */
 	public void setFile(File f) {
 		this.file = f;
 		setName(f.getName());
 	} //}}}
-	
-	//{{{ isOpened() method 
+
+	//{{{ isOpened() method
 	/**
 	 *	Returns "true" if the node is a file and is currently opened in jEdit.
 	 */
 	public boolean isOpened() {
-		return (org.gjt.sp.jedit.jEdit.getBuffer(file.getAbsolutePath()) != null);
+		try {
+			return (org.gjt.sp.jedit.jEdit.getBuffer(file.getCanonicalPath()) != null);
+		} catch (IOException ioe) {
+			// shouldn't happen
+			Log.log(Log.ERROR, this, ioe);
+			return false;
+		}
 	} //}}}
-	
+
 	//{{{ getIcon(boolean) method
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
@@ -110,7 +119,7 @@ public class VPTFile extends VPTNode {
 	public Icon getIcon(boolean expanded) {
 		return (isOpened() ? fileOpenedIcon : fileClosedIcon);
 	} //}}}
-	
+
 	//{{{ getForegroundColor(boolean) method
 	/**
 	 *	Returns the node's foreground color.
@@ -127,22 +136,22 @@ public class VPTFile extends VPTNode {
 	public String toString() {
 		return "File [" + getFile().getAbsolutePath() + "]";
 	} //}}}
-	
+
 	//{{{ canOpen() method
 	/**	File nodes can be opened, so return true. */
 	public boolean canOpen() {
 		return true;
 	} //}}}
-	
+
 	//{{{ open() method
 	/**
-	 *	Opens a new buffer in jEdit with the file pointed by this node. The 
+	 *	Opens a new buffer in jEdit with the file pointed by this node. The
 	 *	buffer is loaded in the currently active view.
 	 */
 	public void open() {
 		jEdit.openFile(jEdit.getActiveView(), getNodePath());
 	} //}}}
-	
+
 	//{{{ close() method
 	/**
 	 *	"Closes" the jEdit buffer that contains the file.
@@ -153,13 +162,14 @@ public class VPTFile extends VPTNode {
 			jEdit.closeBuffer(jEdit.getActiveView(), b);
 		}
 	} //}}}
-	
+
 	//{{{ getNodePath()
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
 		return getFile().getAbsolutePath();
 	} //}}}
-	 
+
 	//}}}
-	
+
 }
+
