@@ -14,8 +14,7 @@
     </DOCKABLE>
     <DOCKABLE NAME="image-viewer-dock">
         viewer = uk.co.antroy.latextools.ImageViewer.getInstance();
-        viewer.setImageFromBuffer(textArea, buffer);
-			  viewer.showImage();
+        viewer.showImage();
     </DOCKABLE>
 </DOCKABLES>
 

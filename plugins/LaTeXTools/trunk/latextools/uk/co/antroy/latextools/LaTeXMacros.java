@@ -1,4 +1,4 @@
-//          \includegraphics*[width=7cm]{graphics\complexes.png}
+//       \includegraphics*[width=7cm]{graphics\complexes.png}
 //      :latex.root='D:\Projects\Thesis\src\Thesis.tex':
 package uk.co.antroy.latextools;
 
@@ -9,17 +9,31 @@ import gnu.regexp.RE;
 import gnu.regexp.REException;
 import gnu.regexp.REMatch;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.WindowListener;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.io.*;
+import java.io.File;
+import java.io.FilenameFilter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
 
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.Buffer;
@@ -171,10 +185,10 @@ public class LaTeXMacros {
         StringBuffer regex = new StringBuffer(":");
         regex.append(MAIN_TEX_FILE_KEY);
         regex.append("=(?:'|\"){0,1}(.*?)(?:'|\"){0,1}:");
-        REMatch match = findInDocument(buffer, regex.toString(), 0, 5);
+        REMatch[] match = findInDocument(buffer, regex.toString(), 0, 5);
 
-        if (match != null) {
-            path = match.toString(1);
+        if (match.length > 0) {
+            path = match[0].toString(1);
             mainInFile = true;
         }
 
@@ -210,41 +224,31 @@ public class LaTeXMacros {
         return new File(getMainTeXPath(buffer));
     }
 
-    private static REMatch findInDocument(Buffer buf, String regex) {
+    private static REMatch[] findInDocument(Buffer buf, String regex) {
 
         return findInDocument(buf, regex, 0, buf.getLineCount());
     }
 
-    private static REMatch findInDocument(Buffer buf, String regex, 
-                                          int startLine, int endLine) {
+    private static REMatch[] findInDocument(Buffer buf, String regex, int startLine, int endLine) {
+       
+      int start = buf.getLineStartOffset(startLine);
+      int end = buf.getLineStartOffset(endLine);
+      String text = buf.getText(start, end - start);
+      
+      RE exp = null;
 
-        for (int i = startLine;
-             i < (buf.getLineCount() < endLine ? buf.getLineCount() : endLine);
-             i++) {
-            String s = buf.getLineText(i);
-            RE exp = null;
+      try {
+          exp = new RE(regex, RE.REG_ICASE | RE.REG_MULTILINE);
+      } catch (Exception e) {
+          e.printStackTrace();
+      }
 
-            try {
-                exp = new RE(regex, RE.REG_ICASE | RE.REG_MULTILINE);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+      REMatch[] matches = exp.getAllMatches(text);
 
-            REMatch match = exp.getMatch(s);
-
-            if (match != null) {
-
-                return match;
-            }
-        }
-
-        return null;
+      return matches;
     }
 
-    private static REMatch[] findAllInDocument(Buffer buf, String regex) {
-       return null;
-    }
-                                             
+                                           
     public static void compile(View view, Buffer buffer, boolean prompt) {
         String tex = getMainTeXPath(buffer);
 
@@ -524,24 +528,51 @@ public class LaTeXMacros {
         }
        int line = view.getTextArea().getCaretLine();
 
-        REMatch match = findInDocument(buffer , IMPORT_REG_EX, line, line +1);
-        if (match == null) return;
-        
-        String file = match.toString(1);
-        if (file.indexOf(".") < 0) {
-           file += ".tex";
-        }
-        
-        File imported = new File(getMainTeXFile(buffer).getParentFile(), file);
-        
-        jEdit.openFile(view, imported.toString());
+        File[] match = getImportsInRange(buffer , line, line +1);
+        if (match.length <= 0) return;
+        jEdit.openFile(view, match[0].toString());
      }
     
-    public static File[] getProjectFiles(Buffer buffer){
+    public static List getProjectFiles(View view, Buffer buffer){
+       File main = getMainTeXFile(buffer);
+       return getNestedImports(view, main);
+    }
+    
+    private static List getNestedImports(View view, File in){
+       List out = new ArrayList();
+       Buffer b = jEdit.openTemporary(view, in.getParent(), in.getName(),false);
+       File[] children = getImports(b);
+       for (int i=0; i < children.length; i++){
+          File f = children[i];
+          //Macros.message(null,f.toString());
+          if (!f.exists()) continue;
+          //Macros.message(null,"Ex: " + f.toString());
+          //out.add(f);          
+          out.addAll(getNestedImports(view, f));
+       }
+       out.add(in);
        
+       return out;
+    }
+    
+    private static File[] getImportsInRange(Buffer buffer, int start, int end){
+        REMatch[] matches = findInDocument(buffer , IMPORT_REG_EX, start, end);
+        File[] out = new File[matches.length];
+        String root = getMainTeXDir(buffer);
+        
+        for (int i=0; i < out.length; i++){
+           String file = matches[i].toString(1);
+           if (file.indexOf(".") < 0) {
+              file += ".tex";
+           }
+           out[i] = new File(root, file);
+        }
        
+        return out;
+    }
        
-       return null;
+    private static File[] getImports(Buffer buffer){
+       return getImportsInRange(buffer , 0, buffer.getLineCount()-1);
     }
     
     private static Point getCenter(Component parent, Component dialog) {

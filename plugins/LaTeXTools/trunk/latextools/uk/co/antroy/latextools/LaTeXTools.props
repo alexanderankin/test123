@@ -34,6 +34,7 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   bibliography-dock \
   label-dock \
   show-image-under-caret \
+  open-main \
   open-import \
   - \
   compile \
@@ -86,6 +87,8 @@ bibtex.title = BibTeX
 bibtex.label = BibTeX
 erase-working.title = Erase Working Files
 erase-working.label = Erase Working Files...
+open-main.title = Open Main File
+open-main.label = Open Main File
 open-import.title = Open Import
 open-import.label = Open Import
 
