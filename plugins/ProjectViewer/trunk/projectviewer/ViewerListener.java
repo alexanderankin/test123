@@ -32,7 +32,7 @@ import projectviewer.config.ProjectPropertiesDlg;
 import projectviewer.config.ProjectViewerConfig;
 
 /** Listen to all buttons and GUI events and respond to them. */
-public final class ViewerListener implements WindowListener, ActionListener, ItemListener {
+public final class ViewerListener implements ActionListener, ItemListener {
 
 	private ProjectViewer viewer;
 	private Launcher launcher;
@@ -80,9 +80,6 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 		else if(source == this.viewer.removeAllFilesBtn) {
 			this.removeAllFilesFromProject();
 		}
-		else if(source == this.viewer.importFilesBtn) {
-			getImporter().doImport();
-		}
 		else if(source == this.viewer.openAllBtn) {
 			this.openAllFilesInProject();
 		}
@@ -121,29 +118,6 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 			}
 		}
 	}
-
-	/*
-	 * Window Listener interface
-	 */
-	public void windowActivated(WindowEvent e) { }
-
-	public void windowClosed(WindowEvent e) { }
-
-	/** Unregister the viewer from the ProjectViewerConfig listeners.
-	 *
-	 * @param  e  Description of Parameter
-	 */
-	public void windowClosing(WindowEvent e) {
-		ProjectViewerConfig.getInstance().removePropertyChangeListener(viewer);
-	}
-
-	public void windowDeactivated(WindowEvent e) { }
-
-	public void windowDeiconified(WindowEvent e) { }
-
-	public void windowIconified(WindowEvent e) { }
-
-	public void windowOpened(WindowEvent e) { }
 
 	/** Returns an instance of {@link ProjectFilesImporter}.
 	 *
@@ -240,32 +214,7 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 	 *  to the project.
 	 */
 	private void addFileToProject() {
-		JFileChooser chooser = viewer.createFileChooser();
-		if(nonProjectFileFilter == null) {
-			nonProjectFileFilter =
-				new FileFilter() {
-					public String getDescription() {
-						return "Non Project Files";
-					}
-
-					public boolean accept(File f) {
-						return !viewer.getCurrentProject().isProjectFile(f.getAbsolutePath());
-					}
-				};
-		}
-		chooser.setFileFilter(nonProjectFileFilter);
-		//chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
-		if(chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) {
-			return;
-		}
-
-		viewer.getCurrentProject().importFile(
-				new ProjectFile(chooser.getSelectedFile().getAbsolutePath()));
-
-		if(ProjectViewerConfig.getInstance().getSaveOnChange()) {
-			viewer.getCurrentProject().save();
-		}
-
+		getImporter().doImport();
 	}
 
 	/** Prompt the user if he want to remove all file from a projects. */
