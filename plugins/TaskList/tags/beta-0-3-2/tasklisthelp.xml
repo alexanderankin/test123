@@ -1,0 +1,254 @@
+<!-- TaskList 0.2 help documentation		-->
+<!-- Contains text of documentation;		-->
+<!-- DocBook header contained in users-guide.xml       -->
+<!-- Copyright (C) 2001 John Gellene		-->
+<!-- $Id$
+-->
+
+<note>
+	<para>
+		This is an early beta release.  Features and documentation are subject
+		to substantial revision.  Your comments and suggestions are welcome.
+	</para>
+</note>
+<simplesect><title>Summary</title>
+<indexterm><primary>TaskList</primary></indexterm>
+
+<para>
+	This plugin provides a dockable tabular list of comments extracted from the
+	text of a file being edited in jEdit. The display shows an icon representing
+	the	type of comment, the line where the comment appears and the comment text.
+	You can jump to a comment by double-clicking on the corresponding row of the
+	table. The comment text in the buffer can be highlighted as a user option.
+</para>
+<para>
+	A number of default comment tags are supplied, each with a distinctive icon:
+</para>
+<informaltable align="center" frame="none">
+	<tgroup cols="4" align="left">
+		<colspec colnum="1"/> <!-- blank column -->
+		<colspec colnum="2"/>
+		<colspec colnum="3"/> <!-- blank column -->
+		<colspec colnum="4"/>
+		<tbody>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>DEBUG</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Debug.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>DONE</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Done.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>IDEA</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Intranet.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>NOTE</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Document.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>QUESTION</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Question.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>TODO</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/Exclamation.gif" format="gif"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+		</tbody>
+	</tgroup>
+</informaltable>
+<para>
+	You can change the icons associated with a task type by changing the
+	plugin's settings in the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global
+	Options</guimenuitem> dialog. You can also add your own comment types, using
+	the icons supplied with the plugin or your own custom icons.
+</para>
+</simplesect>
+
+<simplesect><title>Operation</title>
+<para>
+	Whenever the plugin is activated, it will parse a buffer and display
+	formatted comments when the buffer is first	loaded,	when it is saved, and
+	when you switch buffers or edit panes within a view window. To jump to the text
+	of a comment in the buffer, double-click on the row containing the comment.
+</para>
+<para>
+	By default, the task comments are sorted in ascending order by the line of
+	buffer text in which each comment appears. You can change the sorting
+	arrangement by double-clicking on the header above the column corresponding
+	to the sort criteria.  Clicking on the icon or <guilabel>Description</guilabel>
+	column will trigger sorting by the comment tag (such as <guilabel>NOTE</guilabel>
+	or <guilabel>QUESTION</guilabel>), and by buffer line number within a group of
+	identically tagged comment.  The text of the comment following the tag will be
+	ignored for sorting purposes.  If the column being clicked already corresponds
+	to the existing sort criteria, the direction of the sort is reversed -
+	from ascending to descending, for example.  A given sorting arrangement changed
+	in this fashion will persist as long as the TaskList plugin is active.
+</para>
+<para>
+	You can change or delete a comment by right-clicking on a row containing a
+	comment.  A popup menu will appear with two selections,
+	<guilabel>Change task tag</guilabel> and <guilabel>Delete task</guilabel>.
+</para>
+<para>
+	You can change the type of comment (for example, from <guilabel>IDEA</guilabel>
+	to <guilabel>TODO</guilabel>, or from <guilabel>TODO</guilabel> to
+	<guilabel>DONE</guilabel>, by selecting the <guilabel>Change task tag</guilabel>
+	option. A child	popup menu will appear with the text of available comment tags.
+	Clicking on	an item will cause the buffer text to be updated to show the new comment
+	tag. The TaskList display will also be updated.
+</para>
+<para>
+	You can delete a task comment by selecting <guilabel>Delete task</guilabel>
+	from the popup menu.  You then have the choice between deleting the comment
+	tag only (so the comment text will remain but will not be parsed as a task
+	comment) and deleting the entire comment.  This operation will also
+	refresh the TaskList display.
+</para>
+<para>
+	Any change or deletion to a task comment in a text buffer can be reversed
+	using the editor's <guilabel>Undo</guilabel> feature.
+</para>
+<para>
+	The TaskList display is not refreshed with every change made to a buffer.
+	It is updated when a buffer is loaded or saved, when you switch
+	edit panes or buffers in the view window and when you make changes to a
+	task comment using the plugin context (right-click) menu. As a result, if
+	you have made unsaved changes to a buffer, TaskList may not be able to find or change
+	your comment text.  You can reparse a buffer at any time using the
+	<guimenuitem>Task List</guimenuitem>&gt;<guimenuitem>Parse buffer</guimenuitem>
+	menu item in the <guimenu>Plugins</guimenu> menu (which you can tie to a
+	keyboard shortcut) or by double-clicking on the header row of the TaskList
+	table.
+</para>
+</simplesect>
+
+<simplesect><title>Settings and Options</title>
+<indexterm>
+	<primary>TaskList</primary><secondary>User options</secondary>
+</indexterm>
+
+<para>
+	There are two option pane windows available for user settings from the
+	<guimenu>Utilities</guimenu>&gt;<guimenuitem>Global	Options</guimenuitem>
+	dialog. The	<guimenuitem>General</guimenuitem> options pane allows you to
+	change the appearance of the TaskList table display, including the default
+	sorting criteria, and to select highlighting of commented buffer text.
+	The <guimenuitem>Task Types</guimenuitem> options
+	pane allows you to add, delete or edit comment tags corresponding to task
+ 	types.
+</para>
+
+<para>
+	The tags for default task types, and any types you may add, are represented
+	by regular expressions for which the TaskList plugin searches once it
+	encounters a comment token on a line of	buffer text.  The content of the
+	comment token will depend on the jEdit edit mode
+	being applied to the buffer. The regular expression is applied to all text on
+	a given line following the matching comment. Two fields are extracted for
+	display when a match occurs: the name of the tag that will be displayed at
+	the beginning of the <guilabel>Description</guilabel> column of the TaskList
+	table, and the text of the comment that will follow the tag name.  These two
+	fields correspond to two defined groups in the tag's regular expression.
+</para>
+
+<para>
+	The ability to change the comment type and tag from the TaskList table
+	(using its context menu) depends upon the target comment type's regular
+	expression being in the basic form of the default types:
+</para>
+<para>
+	<userinput>(?:^|\s+)(<replaceable>tag-name</replaceable>):(?:\s+)(.+)$</userinput>
+</para>
+<para>
+	When using the current beta version, the name of the task type should match
+	the tag name used in regular expression.
+</para>
+
+</simplesect>
+
+<simplesect><title>Known bugs and limitations</title>
+<para>
+	The current version will not adjust highighting of a task comment when a line
+	is inserted in or removed from a buffer.  In addition, the name of a task item
+	must currently be identical to the tag text contained in the regular
+	expression defining the task item.  These items will be corrected in a future
+	version.
+</para>
+<para>
+	The current version also does not parse task comments spanning more than one
+	line of buffer text or more than one buffer at a time.  There is also no
+	facility for serializing the the contents of the TaskList display.  These
+	features will be added in a future version.
+</para>
+
+
+</simplesect>
+
+<simplesect><title>Legal notices</title>
+
+<para>
+	The TaskList plugin is released under the GNU General Public License
+	(either version 2 or any later version, at the user's option). A copy
+	of the GPL is available in the <filename>COPYING.txt</filename> file
+	in the jEdit distribution.
+</para>
+
+<para>
+	The TaskList plugin comes with ABSOLUTELY NO WARRANTY OF ANY KIND;
+	see section 11 and 12 of the GPL for details.
+</para>
+
+<para>
+	Permission is granted to copy, distribute and/or modify this document
+	under the terms of the GNU Free Documentation License, Version 1.1 or
+	any later version published by the Free Software Foundation; with no
+	<quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+	<quote>Back-Cover Texts</quote>, each as defined in the license. A copy
+	of the license is included in the file
+	<filename>COPYING.DOC.txt</filename> included with the jEdit distribution.
+</para>
+
+</simplesect>
+
+
+<simplesect><title>Feedback</title>
+<para>
+	Bug reports, comments and suggestions regarding TaskList may be sent to
+	either of the authors or posted on the jedit-users mailing list (for which
+	membership is required).
+</para>
+
+</simplesect>
+
