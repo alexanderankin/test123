@@ -219,9 +219,9 @@ public final class ProjectManager {
 				Log.log(Log.ERROR, this, ioe);
 			}
 		}
-		VPTRoot.getInstance().remove(p);
 		projects.remove(p.getName());
 		loaded.remove(p.getName());
+		ProjectViewer.removeNodeFromParent(p);
 		ProjectViewer.projectRemoved(p);
 	} //}}}
 	
