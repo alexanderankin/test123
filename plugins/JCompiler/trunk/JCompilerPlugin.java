@@ -21,33 +21,37 @@ import java.util.Vector;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import jcompiler.*;
-import jcompiler.actions.*;
+import jcompiler.options.*;
 
 
-public class JCompilerPlugin extends EditPlugin {
-    
-    public static final String NAME = "JCompiler";
-    
+public class JCompilerPlugin extends EditPlugin
+{
+
     public void start() {
         shell = new JCompilerShell();
         EditBus.addToNamedList(console.Shell.SHELLS_LIST, shell);
-        jEdit.addAction(new jcompile_compile());
-        jEdit.addAction(new jcompile_compilepkg());
-        jEdit.addAction(new jcompile_rebuildpkg());
     }
-    
+
+
     public void createMenuItems(Vector menuItems) {
         menuItems.addElement(GUIUtilities.loadMenu("jcompiler-menu"));
     }
 
-    public void createOptionPanes(OptionsDialog od) {
-        od.addOptionPane(new JCompilerPane());
+
+    public void createOptionPanes(OptionsDialog optionsDialog) {
+        OptionGroup group = new OptionGroup(
+            jEdit.getProperty("options.jcompiler.label"));
+        group.addOptionPane(new JCompilerOptionPaneGeneral());
+        group.addOptionPane(new JCompilerOptionPaneCompiler());
+        optionsDialog.addOptionGroup(group);
     }
-  
+
+
     public static JCompilerShell getShell() {
         return shell;
     }
-    
+
+
     // private members
-    private static JCompilerShell shell;  
+    private static JCompilerShell shell;
 }

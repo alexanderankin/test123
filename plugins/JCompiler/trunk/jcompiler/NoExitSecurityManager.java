@@ -18,51 +18,60 @@
  */
 
 
+//
+// !!! IMPORTANT NOTE:
+// !!! THIS CLASS ONLY COMPILES ON JAVA2!
+// !!! It runs on an JRE 1.x, though.
+//
+
+
 package jcompiler;
 
 
 /**
- * <p><b>
- * !!!!NOTE!!!!  THIS CLASS MUST BE COMPILED WITH JAVA2!!!!
- * </b><p>
- */ 
-public class NoExitSecurityManager extends SecurityManager {
+ * A <code>SecurityManager</code> that disallows VM exits, but allows
+ * everything else.
+ */
+public class NoExitSecurityManager extends SecurityManager
+{
 
     private static NoExitSecurityManager sm = null;
-    
+
+
     public static NoExitSecurityManager getInstance() {
-        if (sm != null) return sm;  
+        if (sm != null) return sm;
         String vmVersion = System.getProperty("java.specification.version");
         if (vmVersion != null && vmVersion.startsWith("1.1")) {
-            sm =  new NoExitSecurityManager(); 
+            sm =  new NoExitSecurityManager();
         } else {
-            sm =  new NoExitSecurityManager2(); 
+            sm =  new NoExitSecurityManager2();
         }
-        return sm;  
+        return sm;
     }
-    
-    
-    ////////////////////////////////////////////////////////////////////////
+
 
     // the default is to allow exits
     private boolean allowExit = true;
-    
-    
+
+
     protected NoExitSecurityManager() {
         super();
     }
 
+
     public void checkExit(int status) {
         if (!allowExit) {
-            throw new SecurityException("No exit is allowed currently.");
+            throw new SecurityException("VM Exit is not allowed currently.");
         }
     }
-    
+
+
     public void setAllowExit(boolean allowExit) {
         this.allowExit = allowExit;
     }
 
-    public void checkCreateClassLoader() { } 
+
+    public void checkCreateClassLoader() { }
     public void checkAccess(Thread g) { }
     public void checkAccess(ThreadGroup g) { }
     public void checkExec(String cmd) { }
@@ -71,7 +80,7 @@ public class NoExitSecurityManager extends SecurityManager {
     public void checkRead(String file) { }
     public void checkRead(String file, Object context) { }
     public void checkWrite(java.io.FileDescriptor fd) { }
-    public void checkWrite(String file) { } 
+    public void checkWrite(String file) { }
     public void checkDelete(String file) { }
     public void checkConnect(String host, int port) { }
     public void checkConnect(String host, int port, Object context) { }
@@ -91,5 +100,5 @@ public class NoExitSecurityManager extends SecurityManager {
     public void checkSetFactory() { }
     public void checkMemberAccess(Class clazz, int which) { }
     public void checkSecurityAccess(String provider) { }
-}   
+}
 

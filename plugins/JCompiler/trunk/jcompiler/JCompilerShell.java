@@ -49,16 +49,18 @@ import JCompilerPlugin;
 /**
  * a JCompiler shell for the Console plugin.
  */
-public class JCompilerShell extends Shell implements EBComponent {
+public class JCompilerShell extends Shell implements EBComponent
+{
 
     public JCompilerShell() {
-        super(JCompilerPlugin.NAME);
-        errorSource = new DefaultErrorSource(JCompilerPlugin.NAME);
+        super("Java Compiler");
+        errorSource = new DefaultErrorSource("JCompiler");
         EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST, errorSource);
         EditBus.addToBus(errorSource);
         EditBus.addToBus(this);
         propertiesChanged();
     }
+
 
     public void handleMessage(EBMessage msg) {
         if (msg instanceof PropertiesChanged) {
@@ -66,11 +68,11 @@ public class JCompilerShell extends Shell implements EBComponent {
         }
     }
 
-    
+
     /**
      * print an information message to the Console.
      *
-     * @param console the Console
+     * @param  console  the Console
      */
     public void printInfoMessage(Console _console) {
         if (_console != null) {
@@ -78,20 +80,20 @@ public class JCompilerShell extends Shell implements EBComponent {
         }
     }
 
-    
+
     /**
      * execute a command.
      *
-     * @param view    the view that was open when the command was invoked.
-     * @param command the command.
-     * @param console the Console where output should go to.
+     * @param  view     the view that was open when the command was invoked.
+     * @param  command  the command.
+     * @param  console  the Console where output should go to.
      */
     public void execute(View view, String command, Console console) {
         this.console = console; // remember console instance
-        
+
         stop(); // stop last command
         errorSource.clear();
-        
+
         String cmd = command.trim();
         if ("compile".equals(cmd)) {
             jthread = new CompilerThread(view, false, false);
@@ -104,7 +106,7 @@ public class JCompilerShell extends Shell implements EBComponent {
         }
         else if ("help".equals(cmd)) {
             printInfoMessage(console);
-        } 
+        }
         else {
             if (console != null) {
                 console.printError("Unknown JCompiler command '" + cmd + "'");
@@ -112,7 +114,7 @@ public class JCompilerShell extends Shell implements EBComponent {
         }
     }
 
-    
+
     public void stop() {
         if (jthread != null) {
             if (jthread.isAlive()) {
@@ -125,7 +127,7 @@ public class JCompilerShell extends Shell implements EBComponent {
         }
     }
 
-    
+
     public boolean waitFor() {
         if (jthread != null) {
             try {
@@ -141,41 +143,66 @@ public class JCompilerShell extends Shell implements EBComponent {
 
 
     private void propertiesChanged() {
-        String rstr = jEdit.getProperty("jcompiler.regexp", "(.+):(\\d+):(.+)");
-        rfilenamepos = jEdit.getProperty("jcompiler.regexp.filename", "$1");
-        rlinenopos = jEdit.getProperty("jcompiler.regexp.lineno", "$2");
-        rmessagepos = jEdit.getProperty("jcompiler.regexp.message", "$3");
+        parseAccentChar = jEdit.getBooleanProperty("jcompiler.parseaccentchar", true);
+        String sErrorRE = jEdit.getProperty("jcompiler.regexp");
+        String sWarningRE = jEdit.getProperty("jcompiler.regexp.warning");
+        rfilenamepos = jEdit.getProperty("jcompiler.regexp.filename");
+        rlinenopos = jEdit.getProperty("jcompiler.regexp.lineno");
+        rmessagepos = jEdit.getProperty("jcompiler.regexp.message");
         try {
-            regexp = new RE(rstr, RE.REG_ICASE, RESyntax.RE_SYNTAX_PERL5);
+            errorRE = new RE(sErrorRE, RE.REG_ICASE, RESyntax.RE_SYNTAX_PERL5);
         }
         catch (REException rex) {
-            Log.log(Log.ERROR, this, "The regular expression "
-                + rstr + " for compiler errors is invalid. Message is: "
-                + rex.getMessage() + " at position " + rex.getPosition());
+            String errorMsg = "The regular expression " + sErrorRE
+                + " for compiler errors is invalid. Message is: " + rex.getMessage()
+                + " at position " + rex.getPosition();
+            Log.log(Log.ERROR, this, errorMsg);
+            printLine(errorMsg + '\n');
+        }
+        try {
+            warningRE = new RE(sWarningRE, RE.REG_ICASE, RESyntax.RE_SYNTAX_PERL5);
+        }
+        catch (REException rex) {
+            String errorMsg = "The regular expression " + sWarningRE
+                + " for compiler warnings is invalid. Message is: " + rex.getMessage()
+                + " at position " + rex.getPosition();
+            Log.log(Log.ERROR, this, errorMsg);
+            printLine(errorMsg + '\n');
         }
     }
-    
 
-    /** 
+
+    /**
      * parse the line for errors and send them to ErrorList and Console.
      */
     private void printLine(String line) {
         int type = -1;
-        if (regexp != null && regexp.isMatch(line)) {
-            String loLine = line.toLowerCase();
-            if (loLine.indexOf("warning:") != -1 
-                || loLine.indexOf("caution:") != -1
-                || loLine.indexOf("note:") != -1) {
+        if (errorRE != null && errorRE.isMatch(line)) {
+            if (warningRE != null && warningRE.isMatch(line)) {
                 type = ErrorSource.WARNING;
             } else {
                 type = ErrorSource.ERROR;
             }
-            String filename = regexp.substitute(line, rfilenamepos);
-            String lineno = regexp.substitute(line, rlinenopos);
-            String message = regexp.substitute(line, rmessagepos);
-            errorSource.addError(type, filename, 
+            String filename = errorRE.substitute(line, rfilenamepos);
+            String lineno = errorRE.substitute(line, rlinenopos);
+            String message = errorRE.substitute(line, rmessagepos);
+            pendingError = new PendingError(type, filename,
                 Integer.parseInt(lineno) - 1, 0, 0, message);
+            if (!parseAccentChar) {
+                // don't wait for a line with '^', add error immediately
+                pendingError.addToErrorSource();
+                pendingError = null;
+            }
         }
+
+        if (parseAccentChar && pendingError != null && line.trim().equals("^")) {
+            // a line with a single '^' in it: this determines the column
+            // position of the last compiler error
+            pendingError.setStartPos(line.indexOf('^'));
+            pendingError.addToErrorSource();
+            pendingError = null;
+        }
+
         if (console != null) {
             switch (type) {
                 case ErrorSource.WARNING:
@@ -191,18 +218,25 @@ public class JCompilerShell extends Shell implements EBComponent {
         }
     }
 
-    
+
     private DefaultErrorSource errorSource = null;
+    private PendingError pendingError = null;
     private CompilerThread jthread = null;
     private Console console = null;
-    private RE regexp = null;
+    private RE errorRE = null;
+    private RE warningRE = null;
     private String rfilenamepos;
     private String rlinenopos;
     private String rmessagepos;
+    private boolean parseAccentChar;
 
 
-    /// wraps the JCompiler run in a thread
-    class CompilerThread extends Thread {
+    /**
+     * Wraps the JCompiler run in a thread.
+     */
+    class CompilerThread extends Thread
+    {
+
         CompilerThread(View view, boolean pkgCompile, boolean rebuild) {
             super();
             this.view = view;
@@ -211,7 +245,8 @@ public class JCompilerShell extends Shell implements EBComponent {
             this.setPriority(Thread.MIN_PRIORITY);
             this.start();
         }
-        
+
+
         public void run() {
             JCompiler jcompiler = new JCompiler();
             Thread outputThread = new OutputThread(jcompiler.getOutputPipe());
@@ -221,38 +256,97 @@ public class JCompilerShell extends Shell implements EBComponent {
             view = null;
             outputThread = null;
         }
-        
+
+
         private View view;
         private boolean pkgCompile;
         private boolean rebuild;
 
-        /// this class monitors output created by JCompiler
-        class OutputThread extends Thread {
-            OutputThread(PipedOutputStream outpipe) {
-                try {
-                    PipedInputStream inpipe = new PipedInputStream(outpipe);
-                    InputStreamReader in = new InputStreamReader(inpipe);
-                    buf = new BufferedReader(in);
-                    this.start();
-                }
-                catch (IOException ioex) {
-                    // if there's an exception, the thread is never started.
-                }
+    } // inner class CompilerThread
+
+
+    /**
+     * This class monitors output created by the CompilerThread.
+     */
+    class OutputThread extends Thread
+    {
+        OutputThread(PipedOutputStream outpipe) {
+            try {
+                PipedInputStream inpipe = new PipedInputStream(outpipe);
+                InputStreamReader in = new InputStreamReader(inpipe);
+                buf = new BufferedReader(in);
+                this.start();
             }
-            public void run() {
+            catch (IOException ioex) {
+                // if there's an exception, the thread will not be started.
+            }
+        }
+
+
+        public void run() {
+            if (buf == null) return;
+            try {
                 String line;
-                if (buf == null) return;
-                try {
-                    while ((line = buf.readLine()) != null) {
-                        printLine(line);
-                    }
-                    Log.log(Log.DEBUG, this, "ends");
+                while ((line = buf.readLine()) != null) {
+                    printLine(line);
                 }
-                catch (IOException ioex) {
-                    // ignore
+                Log.log(Log.DEBUG, this, "ends");
+            }
+            catch (IOException ioex) {
+                // ignore
+            }
+            finally {
+                if (pendingError != null) {
+                    pendingError.addToErrorSource();
+                    pendingError = null;
                 }
             }
-            private BufferedReader buf = null;
-        }                
+        }
+
+
+        private BufferedReader buf = null;
+
+    } // inner class OutputThread
+
+
+
+    /**
+     * Holds data of an error.
+     */
+    class PendingError
+    {
+        public PendingError(int type, String filename, int lineno,
+        int startpos, int endpos, String error) {
+            this.type = type;
+            this.filename = filename;
+            this.lineno = lineno;
+            this.startpos = startpos;
+            this.endpos = endpos;
+            this.error = error;
+        }
+
+
+        public void setStartPos(int startpos) {
+            this.startpos = startpos;
+        }
+
+
+        public void setEndPos(int endpos) {
+            this.endpos = endpos;
+        }
+
+
+        public void addToErrorSource() {
+            errorSource.addError(type, filename, lineno, startpos, endpos, error);
+        }
+
+
+        private int type;
+        private String filename;
+        private int lineno;
+        private int startpos;
+        private int endpos;
+        private String error;
     }
+
 }

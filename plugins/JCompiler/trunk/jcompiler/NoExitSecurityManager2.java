@@ -18,18 +18,21 @@
  */
 
 
+//
+// !!! IMPORTANT NOTE:
+// !!! THIS CLASS ONLY COMPILES ON JAVA2!
+//
+
+
 package jcompiler;
 
 
 /**
- * <p>Security manager for Java2 platform.</p>
- *
- * <p><b>
- * !!!!NOTE!!!!  THIS CLASS MUST BE COMPILED WITH JAVA2!!!!
- * </b><p>
- */ 
+ * A <code>SecurityManager</code> for the Java2 platform, that disallows
+ * VM exists, but allows everything else.
+ */
 class NoExitSecurityManager2 extends NoExitSecurityManager {
     public void checkPermission(java.security.Permission p) { }
-    public void checkPermission(java.security.Permission p, Object o) { } 
+    public void checkPermission(java.security.Permission p, Object o) { }
 }
 
