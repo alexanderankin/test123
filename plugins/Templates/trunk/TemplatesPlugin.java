@@ -33,6 +33,8 @@ import org.gjt.sp.util.Log;
 public class TemplatesPlugin extends EditPlugin
 {
 	// private static TemplatesAction myAction = null;
+	private static String defaultTemplateDir;
+	private static String sepChar;		// System-dependant separator character
 	private static TemplateDir templates = null;
 	
 	/**
@@ -55,7 +57,11 @@ public class TemplatesPlugin extends EditPlugin
 	 * @return A string containing the template directory path.
 	 */
 	public static String getTemplateDir() {
-		return jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0");
+		String templateDir = jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","");
+		if (templateDir.equals("")) {
+			templateDir = defaultTemplateDir;
+		}
+		return templateDir;
 	}
 	
 	/** 
@@ -63,7 +69,16 @@ public class TemplatesPlugin extends EditPlugin
 	 * @param templateDirVal The new templates directory
 	 */
 	public static void setTemplateDir(String templateDirVal) {
-		jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",templateDirVal);
+		if (!templateDirVal.endsWith(sepChar)) {
+			templateDirVal = templateDirVal + sepChar;
+		}
+		if (defaultTemplateDir.equals(templateDirVal)) {
+			jEdit.unsetProperty("plugin.TemplatesPlugin.templateDir.0");
+		} else {
+			jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",templateDirVal);
+		}
+		templates = new TemplateDir(new File(templateDirVal));
+		TemplatesPlugin.refreshTemplates();
 	}
 	
 	/**
@@ -71,17 +86,11 @@ public class TemplatesPlugin extends EditPlugin
 	 */
 	public void start()
 	{
-		if (templates == null) {
-			String templateDir = jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","");
-			String sepChar = System.getProperty("file.separator");
-			if (templateDir.equals("")) {
-				templateDir = jEdit.getSettingsDirectory() + sepChar +
-								"templates" + sepChar;
-				jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",templateDir);
-			}
-			templates = new TemplateDir(new File(templateDir));
-			this.refreshTemplates();
-		}
+		sepChar = System.getProperty("file.separator");
+		defaultTemplateDir = jEdit.getSettingsDirectory() + sepChar +
+				"templates" + sepChar;
+		templates = new TemplateDir(new File(this.getTemplateDir()));
+		this.refreshTemplates();
 	}
 
 	/**
@@ -212,6 +221,10 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.7  2002/02/26 03:36:46  sjakob
+	 * BUGFIX: Templates directory path is no longer stored in a jEdit property if
+	 * it is equal to the default Templates path (requested by Mike Dillon).
+	 *
 	 * Revision 1.6  2002/02/25 21:53:58  sjakob
 	 * BUGFIX: Fixed problem where templates directory was not being
 	 * created (as reported by Will Sargent).
