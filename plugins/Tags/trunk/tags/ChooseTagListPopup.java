@@ -1,6 +1,6 @@
 /*
  * ChooseTagListPopup.java
- * Copyright (c) 2001 Kenrick Drew, Slava Pestov
+ * Copyright (c) 2001, 2002 Kenrick Drew, Slava Pestov
  *
  * This file is part of TagsPlugin
  *
@@ -105,10 +105,12 @@ class ChooseTagListPopup extends JWindow
 		int lineIdx = textArea.getCaretPosition() - // offsets from beg of file
 									textArea.getLineStartOffset(caretLine);
 	
-		Point location = new Point(textArea.offsetToX(caretLine, lineIdx),
-												 textArea.getPainter().getFontMetrics().getHeight() *
-												 (textArea.getBuffer().physicalToVirtual(caretLine) - 
-												 textArea.getFirstLine() + 1));
+    Point location = textArea.offsetToXY(textArea.getCaretPosition());
+    // modify Y to be below cursor
+    location.setLocation(location.getX(), 
+                         location.getY() + 
+                            textArea.getPainter().getFontMetrics().getHeight());
+                            
 		SwingUtilities.convertPointToScreen(location, textArea.getPainter());
 	
 		// make sure it fits on screen
