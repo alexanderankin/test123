@@ -110,7 +110,13 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
     try {
       writer.write("<");
-      writer.write(qName);
+
+      boolean spaceAtEnd = qName.charAt(qName.length() - 1) == ' ';
+      if(spaceAtEnd) {
+        writer.write(qName.substring(0, qName.length() - 1));
+      } else {
+        writer.write(qName);
+      }
 
       for(int i = 0; i < atts.getLength(); i++) {
         String attributeQName = atts.getQName(i);
@@ -134,7 +140,11 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
       }
 
       if(isEmptyElement) {
-        writer.write("/>");
+        if(spaceAtEnd) {
+          writer.write(" />"); // to cater for <br /> elements
+        } else {
+          writer.write("/>");
+        }
       } else {
         writer.write(">");
       }
@@ -297,7 +307,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
       while(Character.isWhitespace(chars[nameEnd - 1])) {
         nameEnd--; // want to check if char at nameEnd is a new line char
       }
-      char[] elementChars = xml.substring(nameEnd, end).toCharArray(); 
+      char[] elementChars = xml.substring(nameEnd, end).toCharArray();
       populateAttributes(elementChars, attributes);
     }
 
