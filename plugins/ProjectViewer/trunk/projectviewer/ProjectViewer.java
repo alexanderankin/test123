@@ -268,7 +268,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	
+
 	//{{{ nodeStructureChangedFlat(VPTNode) method
 	/**
 	 *	Notify all "flat trees" in any project viewer instances of a change in
@@ -311,7 +311,7 @@ public final class ProjectViewer extends JPanel
 			}
 		}
 	} //}}}
-	
+
 	//{{{ projectRemoved(VPTProject) method
 	/**
 	 *	Notify all "flat trees" in any project viewer instances of a change in
@@ -650,20 +650,20 @@ public final class ProjectViewer extends JPanel
     /**
      *  Returns an ArrayList of Strings containing the file paths of the selected file and folder nodes.
      *  This is mostly a utility method so other plugins/macros can peform actions on a selection of files.
-     * 
+     *
      */
     public ArrayList getSelectedFilePaths() {
-        
+
 		TreePath last = null;
         ArrayList obfp = new ArrayList();
 		String sFiles="";
-		
+
 		if (getCurrentTree().getSelectionPaths() != null) {
 			TreePath[] paths= getCurrentTree().getSelectionPaths();
-	
+
 		for (int i =0; i < paths.length; i++) {
 			   VPTNode nd = (VPTNode)paths[i].getLastPathComponent();
-			   
+
 			   if (nd instanceof projectviewer.vpt.VPTFile) {
 			   	   sFiles += nd.getNodePath() + "\n";
 			   		obfp.add(nd.getNodePath());
@@ -674,8 +674,8 @@ public final class ProjectViewer extends JPanel
 			return null;
 		}
     } //}}}
-	
-	
+
+
 	//{{{ getCurrentTree() method
 	/** Returns the currently active tree. */
 	public JTree getCurrentTree() {
@@ -987,7 +987,6 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-   
 	//{{{ ProjectLoader class
 	/** Loads a project in the background. */
 	private class ProjectLoader implements Runnable {
@@ -1008,11 +1007,15 @@ public final class ProjectViewer extends JPanel
 
 		public void run() {
 			setEnabled(false);
-			((DefaultTreeModel)getCurrentTree().getModel()).setRoot(
+			JTree tree = getCurrentTree();
+			TreeModel tModel = tree.getModel();
+			tree.setModel(new DefaultTreeModel(
 				new DefaultMutableTreeNode(
 					jEdit.getProperty("projectviewer.loading_project",
-						new Object[] { pName } )));
-			setProject(ProjectManager.getInstance().getProject(pName));
+						new Object[] { pName } ))));
+			VPTProject p = ProjectManager.getInstance().getProject(pName);
+			tree.setModel(tModel);
+			setProject(p);
 			setEnabled(true);
 		}
 
