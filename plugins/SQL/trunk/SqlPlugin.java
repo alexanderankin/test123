@@ -75,6 +75,8 @@ public class SqlPlugin extends EBPlugin
 
   protected static SessionManager sessionManager = null;
 
+  protected static SqlVFS sqlVFS;
+
 
   /**
    *  Description of the Method
@@ -88,25 +90,15 @@ public class SqlPlugin extends EBPlugin
     if ( !settingsDir.exists() )
       settingsDir.mkdirs();
 
-    SqlServerType.loadAll();
-
     sessionManager = SessionManager.getInstance();
 
+    VFSManager.registerVFS( SqlVFS.PROTOCOL, sqlVFS = new SqlVFS() );
+
     registerJdbcClassPath();
-
-    final Hashtable types = SqlServerType.getAllTypes();
-
-    for ( Enumeration e = types.elements(); e.hasMoreElements();  )
-    {
-      final SqlServerType t = (SqlServerType) e.nextElement();
-      t.register();
-    }
 
     EditBus.addToNamedList( DockableWindow.DOCKABLE_WINDOW_LIST, resultSetWinName );
 
     SqlUtils.init();
-
-    VFSManager.registerVFS( SqlVFS.PROTOCOL, new SqlVFS() );
   }
 
 
@@ -198,8 +190,8 @@ public class SqlPlugin extends EBPlugin
       for ( int i = jdbcClassPath.length; --i >= 0;  )
         setProperty( "sql.jdbcClassPath." + i, jdbcClassPath[i] );
 
-      registerJdbcClassPath();
     }
+    registerJdbcClassPath();
   }
 
 
@@ -533,35 +525,37 @@ public class SqlPlugin extends EBPlugin
   public static void registerJdbcClassPath()
   {
     final String[] jdbcClassPath = getJdbcClassPath();
-    if ( jdbcClassPath == null ||
-        jdbcClassPath.length == 0 )
-      return;
 
-    for ( int i = jdbcClassPath.length; --i >= 0;  )
-    {
-      final String path = jdbcClassPath[i];
-      if ( !( new File( path ).exists() ) )
+    if ( jdbcClassPath != null )
+      for ( int i = jdbcClassPath.length; --i >= 0;  )
       {
-        Log.log( Log.ERROR, SqlPlugin.class,
-            "JDBC classpath component " + path + " does not exist" );
-        continue;
-      }
-      final EditPlugin.JAR jar = jEdit.getPluginJAR( path );
-      if ( jar == null )
-      {// not registered yet
-        try
-        {
-          jEdit.addPluginJAR( new EditPlugin.JAR( path,
-              new JARClassLoader( path ) ) );
-        } catch ( IOException ex )
+        final String path = jdbcClassPath[i];
+        if ( !( new File( path ).exists() ) )
         {
           Log.log( Log.ERROR, SqlPlugin.class,
-              "Error loading the jdbc driver from " + path + ": " );
-          Log.log( Log.ERROR, SqlPlugin.class, ex );
+              "JDBC classpath component " + path + " does not exist" );
           continue;
         }
+        final EditPlugin.JAR jar = jEdit.getPluginJAR( path );
+        if ( jar == null )
+        {// not registered yet
+          try
+          {
+            jEdit.addPluginJAR( new EditPlugin.JAR( path,
+                new JARClassLoader( path ) ) );
+          } catch ( IOException ex )
+          {
+            Log.log( Log.ERROR, SqlPlugin.class,
+                "Error loading the jdbc driver from " + path + ": " );
+            Log.log( Log.ERROR, SqlPlugin.class, ex );
+            continue;
+          }
+        }
       }
-    }
+
+    SqlServerType.loadAll();
+
+    VFSManager.sendVFSUpdate( sqlVFS, SqlVFS.PROTOCOL + ":/", false );
   }
 
 
@@ -572,28 +566,27 @@ public class SqlPlugin extends EBPlugin
    */
   public static void unregisterJdbcClassPath()
   {
-    final String[] jdbcClassPath = getJdbcClassPath();
-    if ( jdbcClassPath == null ||
-        jdbcClassPath.length == 0 )
-      return;
+    SqlServerType.dropAll();
 
-    for ( int i = jdbcClassPath.length; --i >= 0;  )
-    {
-      final String path = jdbcClassPath[i];
-      if ( !( new File( path ).exists() ) )
+    final String[] jdbcClassPath = getJdbcClassPath();
+    if ( jdbcClassPath != null )
+      for ( int i = jdbcClassPath.length; --i >= 0;  )
       {
-        Log.log( Log.ERROR, SqlPlugin.class,
-            "JDBC classpath component " + path + " does not exist" );
-        continue;
+        final String path = jdbcClassPath[i];
+        if ( !( new File( path ).exists() ) )
+        {
+          Log.log( Log.ERROR, SqlPlugin.class,
+              "JDBC classpath component " + path + " does not exist" );
+          continue;
+        }
+        final EditPlugin.JAR jar = jEdit.getPluginJAR( path );
+        if ( jar == null )
+        {
+          Log.log( Log.ERROR, SqlPlugin.class,
+              "Strange, classpath element " + path + " was not registered" );
+        }
+        //!! TODO
       }
-      final EditPlugin.JAR jar = jEdit.getPluginJAR( path );
-      if ( jar == null )
-      {
-        Log.log( Log.ERROR, SqlPlugin.class,
-            "Strange, classpath element " + path + " was not registered" );
-      }
-      //!! TODO
-    }
   }
 
 

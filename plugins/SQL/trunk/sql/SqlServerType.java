@@ -86,7 +86,8 @@ public class SqlServerType extends Properties
       "/sql/serverTypes/mysql.xml",
       "/sql/serverTypes/db2Local.xml",
       "/sql/serverTypes/db2Remote.xml",
-      "/sql/serverTypes/pgsql.xml"
+      "/sql/serverTypes/pgsql.xml",
+      "/sql/serverTypes/ASA.xml"
       };
 
 
@@ -182,9 +183,10 @@ public class SqlServerType extends Properties
   /**
    *  Description of the Method
    *
+   * @return    Description of the Returned Value
    * @since
    */
-  public void register()
+  public boolean register()
   {
     Log.log( Log.DEBUG, SqlServerType.class,
         "registering driver " + getName() );
@@ -192,20 +194,22 @@ public class SqlServerType extends Properties
     Log.log( Log.DEBUG, SqlServerType.class,
         "  driver class: " + drName );
 
+    // no driver required - OK, no problem
     if ( drName == null )
-      return;
+      return true;
 
     try
     {
       Class.forName( drName );
       Log.log( Log.DEBUG, SqlServerType.class,
           " registering done OK" );
+      return true;
     } catch ( Exception ex )
     {
       Log.log( Log.ERROR, SqlServerType.class,
           "Error loading driver " + drName + ": " + ex );
       //Log.log( Log.ERROR, SqlServerType.class, ex );
-      allTypes.remove( getName() );
+      return false;
     }
   }
 
@@ -376,6 +380,10 @@ public class SqlServerType extends Properties
       }
       Log.log( Log.DEBUG, SqlServerType.class,
           "    SQL server type " + rv.getName() + " is loaded OK" );
+
+      if ( !rv.register() )
+        return null;
+
       return rv;
     } catch ( ParserConfigurationException ex )
     {
@@ -431,6 +439,19 @@ public class SqlServerType extends Properties
 
     docBuilder = null;
     // just not to waste the memory
+  }
+
+
+  /**
+   *Description of the Method
+   *
+   * @since
+   */
+  public static void dropAll()
+  {
+    Log.log( Log.NOTICE, SqlServerType.class,
+        "All server types are dropped" );
+    allTypes = new Hashtable();
   }
 
 
