@@ -9,18 +9,21 @@
 
 plugin.junit.JUnitPlugin.name=JUnit
 plugin.junit.JUnitPlugin.author=André Kaplan, Calvin Yu
-plugin.junit.JUnitPlugin.version=0.0.2
+plugin.junit.JUnitPlugin.version=0.0.3
 plugin.junit.JUnitPlugin.docs=index.html
 
 plugin.junit.JUnitPlugin.depend.0=jdk 1.3
-plugin.junit.JUnitPlugin.depend.1=jedit 04.00.99.00
+plugin.junit.JUnitPlugin.depend.1=jedit 04.02.09.00
 plugin.junit.JUnitPlugin.depend.2=plugin CommonControlsPlugin 0.2
 plugin.junit.JUnitPlugin.jars=junit.jar
+plugin.junit.JUnitPlugin.activate=defer
 
 # Menu
 junit-menu=\
     junit.dock
 junit-menu.label=JUnit
+
+plugin.junit.JUnitPlugin.menu=junit.dock
 
 # Dockable window label & title
 junit.dock.label=JUnit
