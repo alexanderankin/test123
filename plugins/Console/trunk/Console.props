@@ -199,6 +199,8 @@ console.shell.version.usage=Usage: %version\n\
 	Prints console plugin version.
 
 console.shell.error=Error while running process: {0}
+console.shell.error.working-dir=Current working directory does not exist: {0}\n\
+	Use "cd" to change directories first.
 console.shell.exited=Process {0} exited with code {1}
 
 ### BeanShell

@@ -91,7 +91,10 @@ public abstract class SystemShellBuiltIn
 
 			//{{{ end of options
 			if(arg.equals("--"))
+			{
+				args.removeElementAt(i);
 				break;
+			}
 			else if(arg.equals("--help"))
 			{
 				error.print(null,help);

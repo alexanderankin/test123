@@ -6,8 +6,8 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:wrap=hard:folding=sidekick: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <book>
 
@@ -1265,6 +1265,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    files did not work.
    </para></listitem>
    <listitem><para>Added commando panel for Hugs98 Haskell interpreter.
+   </para></listitem>
+   <listitem><para>The BeanShell interpreter threw exceptions with jEdit 4.2pre8
+   due to a change in BeanShell 2.0b1.
+   </para></listitem>
+   <listitem><para>Fixed hang when running a process from a non-existent current
+   working directory.
    </para></listitem>
   </itemizedlist></listitem>
 
