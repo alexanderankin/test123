@@ -20,7 +20,7 @@
 package javainsight;
 
 
-import buildtools.java.packagebrowser.PackageBrowser;
+import javainsight.buildtools.packagebrowser.PackageBrowser;
 
 
 /**

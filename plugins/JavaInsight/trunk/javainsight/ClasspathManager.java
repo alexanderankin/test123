@@ -21,13 +21,8 @@ package javainsight;
 
 
 // buildtools support
-import buildtools.JavaUtils;
-import buildtools.java.packagebrowser.ClasspathEntry;
-import buildtools.java.packagebrowser.JavaClass;
-import buildtools.java.packagebrowser.JavaClassComparator;
-import buildtools.java.packagebrowser.JavaPackage;
-import buildtools.java.packagebrowser.JavaPackageComparator;
-import buildtools.java.packagebrowser.PackageBrowser;
+import javainsight.buildtools.JavaUtils;
+import javainsight.buildtools.packagebrowser.*;
 
 // GUI stuff
 import java.awt.event.MouseEvent;

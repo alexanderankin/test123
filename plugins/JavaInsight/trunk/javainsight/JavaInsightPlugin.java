@@ -36,7 +36,7 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.CreateDockableWindow;
 import org.gjt.sp.util.Log;
-import buildtools.msg.DecompileClassMessage;
+import javainsight.buildtools.msg.DecompileClassMessage;
 
 
 /**

@@ -91,7 +91,9 @@ The following options can be set:
 <UL>
   <LI>
     <P>
-      <STRONG>Use "pretty" names for local variables.</STRONG>
+      <STRONG>Use "pretty" names for local variables.</STRONG><BR>
+      Jode tries to prettify the local variable names.<BR>
+      This option is on per default.
     </P>
   </LI>
 
@@ -101,14 +103,25 @@ The following options can be set:
       Such local variables are defined, but apparently never used. Since they
       only clutter up the code, they can be removed without problems.
       Note, that such local variables are only produced by crappy Java
-      compilers; good compilers strip them out anyway.
+      compilers; good compilers strip them out anyway.<BR>
+      This option is off per default.
     </P>
   </LI>
 
   <LI>
     <P>
       <STRONG>Decrypt encrypted strings.</STRONG><BR>
-      Sorry, I don't know what this option does.
+      This option is meant for obfuscators that "encrypt" strings. Jode tries
+      to recognize encrypted strings and to decrypt them automatically.
+      If activated, Jode searches for expressions like
+      <CODE>methodX("abc")</CODE> and assumes that <CODE>methodX</CODE>
+      is an decryption routine and <CODE>"abc"</CODE> is an encrypted
+      string. It is checked whether <CODE>methodX</CODE> is <B>static</B>,
+      <B>final</B> and returns a <CODE>String</CODE>. If this is the case,
+      Jode tries to invoke <CODE>methodX</CODE> with the constant
+      argument <CODE>"abc"</CODE>. If successful, Jode replaces the
+      method call with the resulting string.<BR>
+      This option is on per default, because it shouldn't do anything harmful.
     </P>
   </LI>
 
@@ -116,7 +129,9 @@ The following options can be set:
     <P>
       <STRONG>Generate imports for packages with more than <EM>nnn</EM> classes.</STRONG><BR>
       Set this to 0, if you don't want to generate imports for whole packages,
-      such like "<CODE>import java.awt.*;</CODE>".
+      such like:<BR>
+      <CODE>import&nbsp;java.awt.*;</CODE><BR>
+      The default is 0.
     </P>
   </LI>
 
@@ -124,7 +139,8 @@ The following options can be set:
     <P>
       <STRONG>Generate imports for classes used more than <EM>nnn</EM> times.</STRONG><BR>
       Set this to 0, if you don't want to generate imports for classes, rather
-      use full qualified class names always.
+      use full qualified class names always.<BR>
+      The default is 1.
     </P>
   </LI>
 

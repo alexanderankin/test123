@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package buildtools.msg;
+package javainsight.buildtools.msg;
 
 
 import org.gjt.sp.jedit.EBComponent;
@@ -198,6 +198,11 @@ public class DecompileClassMessage extends EBMessage {
 
 /*
 $Log$
+Revision 1.1  2001/04/19 21:59:12  dmoebius
+moved package buildtools to javainsight.buildtools,
+wrong usage of Jode toggles,
+help page didn't show up
+
 Revision 1.4  2001/04/09 17:30:21  dmoebius
 better control over decompilation process:
 - set destination

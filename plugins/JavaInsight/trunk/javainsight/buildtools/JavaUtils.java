@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package buildtools;
+package javainsight.buildtools;
 
 
 import java.io.File;
@@ -56,6 +56,14 @@ public class JavaUtils {
       *     JDK 1.2/1.3 defines it, too). If this property exists, it's
       *     entries are added first in the resulting array.
       * </UL>
+      *
+      * <B>Note:</B> in contrary to the normal classpaths, non-existent
+      * entries are removed from the resulting array. All entries are checked
+      * using <CODE>java.io.File.exists()</CODE>. This is because
+      * Jode, the decompiler library, has a bug with non-existent entries
+      * in the classpath.
+      *
+      * @return an array of classpath entries
       */
     public static String[] getClasspath() {
         Vector v = new Vector();
@@ -66,7 +74,9 @@ public class JavaUtils {
         if (bootpath != null) {
             StringTokenizer tokenizer = new StringTokenizer(bootpath, pathSep);
             while (tokenizer.hasMoreElements()) {
-                v.addElement(tokenizer.nextElement());
+                String entry = tokenizer.nextElement().toString();
+                if (new File(entry).exists())
+                    v.addElement(entry);
             }
         }
 
@@ -74,7 +84,9 @@ public class JavaUtils {
         String classpath = System.getProperty("java.class.path");
         StringTokenizer tokenizer = new StringTokenizer(classpath, pathSep);
         while (tokenizer.hasMoreElements()) {
-            v.addElement(tokenizer.nextElement());
+            String entry = tokenizer.nextElement().toString();
+            if (new File(entry).exists())
+                v.addElement(entry);
         }
 
         String[] array = new String[v.size()];
