@@ -1,0 +1,178 @@
+<project name="Bufferminer Plugin" default="plugin" basedir=".">
+
+    <!--
+      build.props
+      Needs to contain:
+         jedit.home the directory containing jedit.jar
+         
+      Optionally contain:
+         build.num=1.0
+         build.compiler=jikes
+         build.compiler.emacs=true
+         and any other properties below
+    -->
+    <property file="build.props"/>
+    
+    <!-- version number -->
+    <property name="build.num" value="1.0"/>
+        
+    <!-- where to put the finished plugin -->
+    <property name="install.dir" value="${user.home}/.jedit/jars" />
+    <property name="jedit.jars.dir" value="${install.dir}"/>
+    
+    <!-- source code directory, this is where the .java files live -->
+    <property name="src.dir" value="src" />
+    
+    <!-- configuration directory, this is where the configuration files for the
+      plugin are placed for additional processing prior to getting jarred. -->
+    <property name="config.dir" value="config" />
+
+    <!-- documentation directory, this is where the plugin documentation
+      files live. Files in this directory will be distributed with the plugin -->
+    <property name="doc.dir" value="docs" />
+
+    <!-- the directory for the compiled classes. Files in this directory will be
+      included in the finished jar file. -->
+    <property name="classes.dir" value="classes" />
+    
+    <!-- where to put distribution files -->
+    <property name="dist.dir" value="dist"/>
+
+   <!-- ========================================================================
+      Target: set classpath
+   ========================================================================= -->
+   <target name="setClasspath">         
+      <path id="classpathref">
+         <!-- required locations/jars -->
+         <pathelement location="${classes.dir}" />
+         <pathelement path="${java.class.path}"/>
+         
+         <!-- required for jEdit plugin -->
+         <pathelement location="${jedit.home}/jedit.jar" />
+         
+      </path>
+   </target>
+
+   <!-- ========================================================================
+      Target: compile
+   ========================================================================= -->
+    <target name="compile"
+            description="Compile"
+            depends="setClasspath" 
+            if="jedit.home">
+        <javac deprecation="on" 
+               debug="on" 
+               nowarn="on" 
+               destdir="${classes.dir}"
+               srcdir="${src.dir}" 
+               source="1.4">
+            <classpath refid="classpathref" />
+        </javac>
+    </target>
+    
+   <!-- ========================================================================
+      Target: plugin
+      creates jar file suitable for dropping into jEdit, and puts it in the
+      jedit.jars.dir
+   ========================================================================= -->
+    <target name="plugin"
+            description="Compiles, jars, puts the jar in the jEdit jars directory."
+            depends="compile,-prep_files">
+
+        <delete>
+            <fileset dir="${dist.dir}" includes="**/BufferLocalPlugin*.jar"/>
+        </delete>
+        
+        <!-- deleting an existing plugin on Windows will fail if jEdit is running -->
+        <delete>
+            <fileset dir="${jedit.jars.dir}" includes="**/BufferLocalPlugin*.jar"/>
+        </delete>
+        
+        <!-- make the plugin jar file -->
+        <tstamp/>
+        <jar jarfile="${dist.dir}/BufferLocalPlugin_${build.num}.jar">
+            <manifest>
+                <attribute name="AppName" value="BufferLocalPlugin" />
+                <attribute name="AppVersion" value="BufferLocalPlugin_${build.num}" />
+                <attribute name="Created-By" value="Dale Anson" />
+                <attribute name="Created-On" value="${TODAY}"/>
+            </manifest>
+
+            <!-- include everything in the build directory -->
+            <fileset dir="${classes.dir}">
+                <include name="**/*" />
+            </fileset>
+
+            <!-- include everything in the config directory -->
+            <fileset dir="${config.dir}">
+                <include name="**/*" />
+            </fileset>
+
+            <!-- include everything in the doc directory -->
+            <fileset dir="${doc.dir}">
+                <include name="**/*" />
+            </fileset>
+        </jar>
+        
+        <!-- copy the plugin jar to the jedit plugin directory -->
+        <mkdir dir="${jedit.jars.dir}" />
+        <copy file="${dist.dir}/BufferLocalPlugin_${build.num}.jar" 
+              todir="${jedit.jars.dir}"/>
+    </target>
+
+   <!-- ========================================================================
+      Target: -prep_files
+      prepares certain files for distribution by doing string replacement. 
+      Assumes that the configuration files and documentation files are ready.
+   ========================================================================= -->
+    <target name="-prep_files">
+        <!-- clean out the config deployment directory -->
+        <delete>
+            <fileset dir="${config.dir}" includes="**/*"/>
+            <fileset dir="${doc.dir}" includes="**/*"/>
+        </delete>
+
+        <!-- copy the config  files to deployment directory -->
+        <copy todir="${config.dir}">
+            <fileset dir="${src.dir}/config" />
+        </copy>
+
+        <!-- copy the docs -->
+        <copy todir="${doc.dir}" overwrite="yes">
+            <fileset dir="${src.dir}/docs">
+               <include name="**/*"/>
+            </fileset>
+        </copy>
+
+        <!-- insert the build number into the documentation and configuration
+        files, and the startup scripts -->
+        <replace dir="${config.dir}" token="@@build.num@@"
+            value="${build.num}" />
+        <replace dir="${doc.dir}" token="@@build.num@@"
+            value="${build.num}" />
+        <tstamp/>
+        <replace dir="${doc.dir}" token="@@tstamp@@"
+            value="${TODAY}" />
+    </target>
+   
+   <!-- ========================================================================
+      Target: init
+      this target creates the directories needed for this project and
+      only needs to be done once.
+   ========================================================================= -->
+    <target name="init" 
+            description="Create directory structure.">
+        <!-- all source code, including actions.xml, props, dockables, docs, and
+        .java files are in src.dir -->
+        <mkdir dir="${src.dir}" />
+        
+        <!-- where to put the completed jar files for distribution -->
+        <mkdir dir="${dist.dir}"/>
+
+        <!-- for making the distribution, does not contain source -->
+        <mkdir dir="${classes.dir}" />
+        <mkdir dir="${doc.dir}" />          
+        <mkdir dir="${config.dir}" />
+    </target>
+    
+</project>
