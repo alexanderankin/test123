@@ -145,7 +145,9 @@ public class DualDiff {
         }
 
         diffHighlight0.setEnabled(true);
+        diffHighlight0.updateTextArea();
         diffHighlight1.setEnabled(true);
+        diffHighlight1.updateTextArea();
     }
 
 
@@ -155,6 +157,7 @@ public class DualDiff {
 
         if (diffHighlight0 != null) {
             diffHighlight0.setEnabled(false);
+            diffHighlight0.updateTextArea();
         }
 
         DiffHighlight diffHighlight1 =
@@ -162,6 +165,7 @@ public class DualDiff {
 
         if (diffHighlight1 != null) {
             diffHighlight1.setEnabled(false);
+            diffHighlight1.updateTextArea();
         }
     }
 

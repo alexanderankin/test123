@@ -30,7 +30,6 @@ import jdiff.util.Diff;
 
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -52,14 +51,6 @@ public class DiffHighlight
 
     // (EditPane, DiffHighlight) association
     private static Hashtable highlights = new Hashtable();
-
-    private static Color changedLineColor;
-    private static Color deletedLineColor;
-    private static Color insertedLineColor;
-
-    static {
-        propertiesChanged();
-    }
 
     private JEditTextArea textArea;
     private TextAreaHighlight next;
@@ -103,6 +94,14 @@ public class DiffHighlight
                     }
 
                     if (hunk.deleted == 0) {
+                        if (hunk.line0 != line) { continue; }
+                        color = JDiffPlugin.invalidLineColor;
+                        TextAreaPainter painter = this.textArea.getPainter();
+                        FontMetrics fm = painter.getFontMetrics();
+                        int descent = fm.getDescent();
+                        int y0 = y + descent + 1;
+                        gfx.setColor(color.brighter());
+                        gfx.drawLine(0, y0, painter.getWidth() - 1, y0);
                         continue;
                     }
 
@@ -111,9 +110,9 @@ public class DiffHighlight
                     }
 
                     if (hunk.inserted == 0) {
-                        color = DiffHighlight.deletedLineColor;
+                        color = JDiffPlugin.deletedLineColor;
                     } else {
-                        color = DiffHighlight.changedLineColor;
+                        color = JDiffPlugin.changedLineColor;
                     }
 
                     TextAreaPainter painter = this.textArea.getPainter();
@@ -122,7 +121,6 @@ public class DiffHighlight
                     int y0 = y + descent + 1;
                     gfx.setColor(color.brighter());
                     gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
-
                     break;
                  }
             } else { // DiffHighlight.RIGHT
@@ -132,6 +130,14 @@ public class DiffHighlight
                     }
 
                     if (hunk.inserted == 0) {
+                        if (hunk.line1 != line) { continue; }
+                        color = JDiffPlugin.invalidLineColor;
+                        TextAreaPainter painter = this.textArea.getPainter();
+                        FontMetrics fm = painter.getFontMetrics();
+                        int descent = fm.getDescent();
+                        int y0 = y + descent + 1;
+                        gfx.setColor(color.brighter());
+                        gfx.drawLine(0, y0, painter.getWidth() - 1, y0);
                         continue;
                     }
 
@@ -140,9 +146,9 @@ public class DiffHighlight
                     }
 
                     if (hunk.deleted == 0) {
-                        color = DiffHighlight.insertedLineColor;
+                        color = JDiffPlugin.insertedLineColor;
                     } else {
-                        color = DiffHighlight.changedLineColor;
+                        color = JDiffPlugin.changedLineColor;
                     }
 
                     TextAreaPainter painter = this.textArea.getPainter();
@@ -206,7 +212,7 @@ public class DiffHighlight
     }
 
 
-    private void updateTextArea() {
+    public void updateTextArea() {
         if (this.textArea == null) { return; }
 
         int first = this.textArea.getFirstLine();
@@ -270,18 +276,5 @@ public class DiffHighlight
 
     public static void removeHighlightFrom(EditPane editPane) {
         highlights.remove(editPane);
-    }
-
-
-    public static void propertiesChanged() {
-        changedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.changed-color", "#B2B200")
-        );
-        deletedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.deleted-color", "#B20000")
-        );
-        insertedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.inserted-color", "#00B200")
-        );
     }
 }

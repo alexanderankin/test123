@@ -15,8 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+*/
 
+
+import java.awt.Color;
 
 import java.util.Vector;
 
@@ -36,6 +38,20 @@ import org.gjt.sp.util.Log;
 public class JDiffPlugin
     extends EBPlugin
 {
+
+    public static Color changedLineColor;
+    public static Color deletedLineColor;
+    public static Color insertedLineColor;
+    public static Color invalidLineColor;
+
+    public static Color leftCursorColor  = Color.blue;
+    public static Color rightCursorColor  = Color.blue;
+
+    static {
+        propertiesChanged();
+    }
+
+
     public JDiffPlugin() {
         super();
     }
@@ -61,9 +77,8 @@ public class JDiffPlugin
 
     public void handleMessage(EBMessage message) {
         if (message instanceof PropertiesChanged) {
-            DiffOverview.propertiesChanged();
             DualDiff.propertiesChanged();
-            DiffHighlight.propertiesChanged();
+            JDiffPlugin.propertiesChanged();
         } else if (message instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate) message;
             EditPane editPane = epu.getEditPane();
@@ -77,8 +92,32 @@ public class JDiffPlugin
                 DualDiff.editPaneDestroyed(view, editPane);
             } else if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
                 DualDiff.editPaneBufferChanged(view, editPane);
+                // view.invalidate();
+                // view.validate();
             } else {
             }
         }
+    }
+
+
+    public static void propertiesChanged() {
+        changedLineColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.changed-color", "#B2B200")
+        );
+        deletedLineColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.deleted-color", "#B20000")
+        );
+        insertedLineColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.inserted-color", "#00B200")
+        );
+        invalidLineColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.invalid-color", "#CCCCCC")
+        );
+        leftCursorColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.left-cursor-color", "#0000FF")
+        );
+        rightCursorColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.right-cursor-color", "#0000FF")
+        );
     }
 }

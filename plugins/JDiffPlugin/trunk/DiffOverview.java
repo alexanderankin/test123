@@ -25,11 +25,9 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 
 import javax.swing.JComponent;
-import javax.swing.UIManager;
 
 import jdiff.util.Diff;
 
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
@@ -38,18 +36,6 @@ import org.gjt.sp.util.Log;
 
 public class DiffOverview extends JComponent
 {
-    private static Color currentLineColor  = Color.blue;
-
-    private static Color changedLineColor;
-    private static Color deletedLineColor;
-    private static Color insertedLineColor;
-
-    private static Color invalidLineColor = UIManager.getColor("Panel.background");
-
-    static {
-        propertiesChanged();
-    }
-
     private Diff.change edits;
     private int lineCount0;
     private int lineCount1;
@@ -115,8 +101,8 @@ public class DiffOverview extends JComponent
         Rectangle cursor = new Rectangle(inner.x + inner.width / 2 - 1, inner.y,
             2, 0);
 
-        Color leftColor  = DiffOverview.invalidLineColor;
-        Color rightColor = DiffOverview.invalidLineColor;
+        Color leftColor  = JDiffPlugin.invalidLineColor;
+        Color rightColor = JDiffPlugin.invalidLineColor;
 
         gfx.setColor(Color.black);
         gfx.drawRect(left.x - 1, left.y - 1, left.width + 1, left.height + 1);
@@ -135,14 +121,14 @@ public class DiffOverview extends JComponent
             rightOffset = hunk.line1;
 
             if (hunk.inserted == 0 && hunk.deleted != 0) { // DELETE
-               leftColor  = DiffOverview.deletedLineColor;
-               rightColor = DiffOverview.invalidLineColor;
+               leftColor  = JDiffPlugin.deletedLineColor;
+               rightColor = JDiffPlugin.invalidLineColor;
             } else if (hunk.inserted != 0 && hunk.deleted == 0) { // INSERT
-               leftColor  = DiffOverview.invalidLineColor;
-               rightColor = DiffOverview.insertedLineColor;
+               leftColor  = JDiffPlugin.invalidLineColor;
+               rightColor = JDiffPlugin.insertedLineColor;
             } else { // CHANGE
-               leftColor  = DiffOverview.changedLineColor;
-               rightColor = DiffOverview.changedLineColor;
+               leftColor  = JDiffPlugin.changedLineColor;
+               rightColor = JDiffPlugin.changedLineColor;
             }
 
             left.y  = inner.y + (int) Math.round(leftOffset * pxlPerLine);
@@ -174,18 +160,19 @@ public class DiffOverview extends JComponent
         Rectangle leftCursor = new Rectangle(
             inner.x, inner.y + ((int) Math.round(pxlPerLine * this.textArea.getFirstLine())),
             inner.width / 3,
-            Math.max(1, (int) Math.round(pxlPerLine * this.textArea.getVisibleLines()))
+            Math.max(1, (int) Math.round(pxlPerLine * Math.min(this.lineCount0, this.textArea.getVisibleLines())))
         );
 
         Rectangle rightCursor = new Rectangle(
             inner.x + (inner.width - leftCursor.width),
             inner.y + ((int) Math.round(pxlPerLine * this.textArea1.getFirstLine())),
             leftCursor.width,
-            Math.max(1, (int) Math.round(pxlPerLine * this.textArea1.getVisibleLines()))
+            Math.max(1, (int) Math.round(pxlPerLine * Math.min(this.lineCount1, this.textArea1.getVisibleLines())))
         );
 
-        gfx.setColor(DiffOverview.currentLineColor);
+        gfx.setColor(JDiffPlugin.leftCursorColor);
         gfx.drawRect(leftCursor.x, leftCursor.y, leftCursor.width - 1, leftCursor.height - 1);
+        gfx.setColor(JDiffPlugin.rightCursorColor);
         gfx.drawRect(rightCursor.x, rightCursor.y, rightCursor.width - 1, rightCursor.height - 1);
     }
 
@@ -240,11 +227,11 @@ public class DiffOverview extends JComponent
             }
 
             if (hunk.deleted == 0) {
-                color = DiffOverview.invalidLineColor;
+                color = JDiffPlugin.invalidLineColor;
             } else if (hunk.inserted == 0) {
-                color = DiffOverview.deletedLineColor;
+                color = JDiffPlugin.deletedLineColor;
             } else {
-                color = DiffOverview.changedLineColor;
+                color = JDiffPlugin.changedLineColor;
             }
 
             int leftOffset = Math.max(0, hunk.line0 - line0);
@@ -269,11 +256,11 @@ public class DiffOverview extends JComponent
             }
 
             if (hunk.inserted == 0) {
-                color = DiffOverview.invalidLineColor;
+                color = JDiffPlugin.invalidLineColor;
             } else if (hunk.deleted == 0) {
-                color = DiffOverview.insertedLineColor;
+                color = JDiffPlugin.insertedLineColor;
             } else {
-                color = DiffOverview.changedLineColor;
+                color = JDiffPlugin.changedLineColor;
             }
 
             int rightOffset = Math.max(0, hunk.line1 - line1);
@@ -329,6 +316,11 @@ public class DiffOverview extends JComponent
         int leftFirstLine  = this.textArea.getFirstLine();
         int rightFirstLine = -1;
 
+        if (hunk == null) {
+            this.textArea1.setFirstLine(leftFirstLine);
+            return;
+        }
+
         int prevLeftOffset  = 0;
         int prevRightOffset = 0;
         int leftOffset  = 0;
@@ -367,6 +359,11 @@ public class DiffOverview extends JComponent
         int leftFirstLine  = -1;
         int rightFirstLine = this.textArea1.getFirstLine();
 
+        if (hunk == null) {
+            this.textArea.setFirstLine(rightFirstLine);
+            return;
+        }
+
         int prevLeftOffset  = 0;
         int prevRightOffset = 0;
         int leftOffset  = 0;
@@ -396,18 +393,5 @@ public class DiffOverview extends JComponent
         if (leftFirstLine >= 0) {
             this.textArea.setFirstLine(leftFirstLine);
         }
-    }
-
-
-    public static void propertiesChanged() {
-        changedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.changed-color", "#B2B200")
-        );
-        deletedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.deleted-color", "#B20000")
-        );
-        insertedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.inserted-color", "#00B200")
-        );
     }
 }
