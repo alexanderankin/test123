@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+
+<!-- GfxView user's guide -->
+<!-- (C) 2004 Ludovic ANCIAUX -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
+
+<book>
+<bookinfo><title>GfxView plugin user's guide</title>
+ <author>
+  <firstname>Ludovic</firstname>
+  <surname>Anciaux</surname>
+  <email>Ludovic.Anciaux@advalvas.be</email>
+ </author>
+
+ <copyright>
+  <year>2004</year>
+  <holder>Ludovic ANCIAUX</holder>
+ </copyright>
+ 
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+  
+  <para>
+   <ulink url="http://reader.imagero.com">ImageroReader library</ulink> has its 
+   <ulink url="licence_ImgrRdr.txt">licence</ulink> you also have to have read 
+   before using this software.
+  </para>
+ </legalnotice>
+</bookinfo>
+
+<chapter id="intro"><title>Introduction</title>
+ <para>
+  The <application>GfxView</application> plugin allows users to display a picture 
+  file in a dedicated panel. It has been written because some friends were developing machine tools programs
+  with jEdit but did have to open another application nearby to display tool 
+  layout drawings.
+ </para>
+
+ <para>
+  For those who likes to have a picture of their family while working, this is 
+  another way of doing it :-)
+ </para>
+</chapter>
+
+<chapter id="commands"><title>Commands</title>
+ <para>The application can be used within several entries :</para>
+  <itemizedlist>
+   <listitem><para>Using <guibutton>Display Picture</guibutton> in plugin menu of FileSystemBrowser</para></listitem>
+
+   <listitem><para>Using <guimenu>Plugin</guimenu>&gt;<guisubmenu>GfxView</guisubmenu> :</para>
+    <itemizedlist>
+     <listitem><para><guibutton>Display a remote picture</guibutton> which opens a dialog box where you specify a valid URL</para></listitem>
+     <listitem><para><guibutton>Choose from history</guibutton> which shows a liste from you can choose from your previous entries (default : 10)</para></listitem>
+     <listitem><para><guibutton>Display previous from history</guibutton> which allows to step back in history</para></listitem>
+     <listitem><para><guibutton>Display next from history</guibutton> which allows to step forward in history</para></listitem>
+    </itemizedlist>
+   </listitem>
+
+   <listitem><para>Using <function>loadImage</function> function in a BeanShell macro</para>
+    <funcsynopsis>
+     <funcprototype>
+      <funcdef>void <function>loadImage</function></funcdef>
+      <paramdef>Object <parameter>path</parameter></paramdef>
+     </funcprototype>
+    </funcsynopsis>
+   <para>path is either a filepath or a http url</para></listitem>
+  </itemizedlist>
+</chapter>
+
+<chapter id="display"><title>The gfxview panel</title>
+ <para>
+  There is a dockable panel where pictures are displayed that will appear everytime user will choose a picture. This panel has 3 buttons for zooming, unzooming and restoring original size. User has the possibility to move picture within area with Left-Click pressed. USer can also draw a zoom window while maintening Ctrl key pressed. While Ctrl+Left-Click increases zoom level, Ctrl+Shift+Left-Click decreases it
+ </para>
+</chapter>
+
+
+
+<chapter id="limitations"><title>Limitations</title>
+  <itemizedlist>
+   <listitem><para> It shows only files formats recognized by <ulink url="http://reader.imagero.com/">ImageroReader library</ulink> (JPG/PNG/TIF/BMP). Previously it only supported Java JRE native formats (PNG/JPG).</para></listitem>
+   <listitem><para>Loading files from HTTP queries is rather basic</para></listitem>
+  </itemizedlist>
+</chapter>
+
+<chapter id="todo"><title>To do</title>
+ <itemizedlist>
+  <listitem><para>Implement better HTTP support with more useful dialog box (historyTextField ?)</para></listitem>
+
+  <listitem><para>Fix all bugs lying in sources ...</para></listitem>
+
+  <listitem><para>Eventually add other files formats (when everything else would have been done)</para>
+   <itemizedlist>
+    <listitem><para>Many formats using Sun new Image Library (JARS weight is heavy)</para></listitem>
+    <listitem><para>SVG using Apache/BATIK (JARS weight is heavy)</para></listitem>
+   </itemizedlist>
+  </listitem>
+ </itemizedlist>
+</chapter>
+
+<appendix id="changes"><title>Change log</title>
+ <itemizedlist>
+
+ <listitem><para><emphasis role="bold">Version 1.0</emphasis>
+   requires jEdit 4.2pre9 and <ulink url="http://reader.imagero.com">ImageroReader library V1.30</ulink></para>
+   <itemizedlist>
+    <listitem><para>User guide rewritten in DocBook format</para></listitem>
+    <listitem><para>Removed all 41 API plugin stuff/hacks</para></listitem>
+   </itemizedlist>
+ </listitem>
+ <listitem><para><emphasis role="bold">Version 0.9.9</emphasis>
+   requires jEdit 4.1 and <ulink url="http://reader.imagero.com">ImageroReader library V1.30</ulink></para>
+   <itemizedlist>
+    <listitem><para>50% of code got refactored and simplified</para></listitem>
+    <listitem><para>Added FileSystemBrowser plugin menu</para></listitem>
+    <listitem><para>Not released on Plugin Central</para></listitem>
+   </itemizedlist>
+ </listitem>
+ <listitem><para><emphasis role="bold">Version 0.5</emphasis>
+   requires jEdit 4.1</para>
+   <itemizedlist>
+    <listitem><para>Initial release</para></listitem>
+    <listitem><para>Not released on Plugin Central</para></listitem>
+   </itemizedlist>
+ </listitem>
+ </itemizedlist>
+</appendix>
+
+</book>  
