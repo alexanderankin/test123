@@ -3,7 +3,7 @@ plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
 plugin.ftp.FtpPlugin.version=0.5
 plugin.ftp.FtpPlugin.docs=index.html
-plugin.ftp.FtpPlugin.depend.0=jedit 04.00.03.00
+plugin.ftp.FtpPlugin.depend.0=jedit 04.01.03.00
 
 # Settings
 vfs.ftp.passive=true
@@ -29,20 +29,15 @@ login.title-sftp=Connect to Secure FTP Server
 login.host=Remote host:
 login.user=User name:
 login.password=Password:
-login.connection=Remote server type:
-login.connection.ftp=FTP (data port mode)
-login.connection.ftp=FTP (passive mode)
-login.connection.sftp=SFTP
+login.passive=Passive mode
 
 # FTP VFS
 vfs.ftp.label=Connect to FTP Server...
-vfs.ftp.warning=WARNING: The FTP protocol is insecure.\n\
+vfs.ftp.warning=WARNING: The FTP protocol is insecure. Third parties can\n\
+	easily intercept any information you send (including passwords).\n\
 	\n\
-	Third parties can easily intercept any\n\
-	information you send (including passwords).\n\
-	\n\
-	If you can, consider using Secure FTP instead.\n\
-	See the FTP plugin help for details.
+	If you can, consider using Secure FTP instead. See the FTP plugin\n\
+	documentation for details.
 
 # Error messages
 # XXX - FTP responses seem to end with a newline?

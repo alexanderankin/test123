@@ -24,7 +24,7 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
-import org.gjt.sp.jedit.gui.EnhancedDialog;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 
 public class LoginDialog extends EnhancedDialog implements ActionListener
@@ -37,43 +37,36 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			"login.title-sftp" : "login.title-ftp"),
 			true);
 
-		JPanel content = new JPanel(new BorderLayout());
-		content.setBorder(new EmptyBorder(12,12,12,0));
+		JPanel content = new JPanel(new VariableGridLayout(
+			VariableGridLayout.FIXED_NUM_COLUMNS,1,6,6));
+		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 
-		JPanel panel = createFieldPanel(host,user,password);
-		content.add(panel,BorderLayout.NORTH);
+		content.add(createFieldPanel(host,user,password));
 
 		if(!secure)
 		{
-			panel = new JPanel(new GridLayout(2,1,6,6));
-			panel.setBorder(new EmptyBorder(6,0,0,12));
-
 			passive = new JCheckBox(jEdit.getProperty("login.passive"),
 				jEdit.getBooleanProperty("vfs.ftp.passive"));
-			panel.add(passive);
+			content.add(passive);
 
-			panel.add(GUIUtilities.createMultilineLabel(
+			content.add(GUIUtilities.createMultilineLabel(
 				jEdit.getProperty("vfs.ftp.warning")));
-
-			content.add(panel,BorderLayout.CENTER);
 		}
 
-		panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
-		panel.setBorder(new EmptyBorder(6,0,6,12));
-		panel.add(Box.createGlue());
+		Box buttons = new Box(BoxLayout.X_AXIS);
+		buttons.add(Box.createGlue());
 		ok = new JButton(jEdit.getProperty("common.ok"));
 		ok.addActionListener(this);
 		getRootPane().setDefaultButton(ok);
-		panel.add(ok);
-		panel.add(Box.createHorizontalStrut(6));
+		buttons.add(ok);
+		buttons.add(Box.createHorizontalStrut(6));
 		cancel = new JButton(jEdit.getProperty("common.cancel"));
 		cancel.addActionListener(this);
-		panel.add(cancel);
-		panel.add(Box.createGlue());
+		buttons.add(cancel);
+		buttons.add(Box.createGlue());
 
-		content.add(panel,BorderLayout.SOUTH);
+		content.add(buttons);
 
 		JTextField focus;
 		if(host == null)
@@ -92,7 +85,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	// EnhancedDialog implementation
 	public void ok()
 	{
-		jEdit.setBooleanProperty("vfs.ftp.passive",passive.isSelected());
+		if(passive != null)
+			jEdit.setBooleanProperty("vfs.ftp.passive",passive.isSelected());
 
 		if(hostField.hasFocus() && userField.getText().length() == 0)
 			userField.requestFocus();
@@ -166,7 +160,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		JPanel panel = new JPanel(layout);
 
 		GridBagConstraints cons = new GridBagConstraints();
-		cons.insets = new Insets(0,0,6,12);
+		cons.insets = new Insets(0,0,6,0);
 		cons.gridwidth = cons.gridheight = 1;
 		cons.gridx = cons.gridy = 0;
 		cons.fill = GridBagConstraints.BOTH;
