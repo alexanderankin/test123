@@ -227,7 +227,7 @@ loop:		for (int i = text.lastIndexOf('<', endTag.start - 1);
 			case T_START_TAG:
 				return "<" + tag + ">";
 			case T_STANDALONE_TAG:
-				return "<" + tag + " />";
+				return "<" + tag + "/>";
 			case T_END_TAG:
 				return "</" + tag + ">";
 			default:
