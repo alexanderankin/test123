@@ -22,13 +22,16 @@ import java.awt.Color;
 
 import java.util.Vector;
 
+import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 
@@ -91,9 +94,12 @@ public class JDiffPlugin
             } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
                 DualDiff.editPaneDestroyed(view, editPane);
             } else if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
-                DualDiff.editPaneBufferChanged(view, editPane);
-                // view.invalidate();
-                // view.validate();
+                Log.log(Log.DEBUG, this, "Buffer loaded? " + editPane.getBuffer().isLoaded());
+                if (editPane.getBuffer().isLoaded()) {
+                    DualDiff.editPaneBufferChanged(view, editPane);
+                } else {
+                    new WaitForBuffer(view, editPane);
+                }
             } else {
             }
         }
@@ -119,5 +125,31 @@ public class JDiffPlugin
         rightCursorColor = GUIUtilities.parseColor(
             jEdit.getProperty("jdiff.right-cursor-color", "#0000FF")
         );
+    }
+
+
+    private static class WaitForBuffer implements EBComponent {
+        private View view;
+        private EditPane editPane;
+
+
+        public WaitForBuffer(View view, EditPane editPane) {
+            this.view = view;
+            this.editPane = editPane;
+            EditBus.addToBus(this);
+        }
+
+
+        public void handleMessage(EBMessage message) {
+            if (message instanceof BufferUpdate) {
+                BufferUpdate bu = (BufferUpdate) message;
+                if (bu.getWhat() == BufferUpdate.LOADED) {
+                    if (bu.getBuffer() == editPane.getBuffer()) {
+                        EditBus.removeFromBus(this);
+                        DualDiff.editPaneBufferChanged(view, editPane);
+                    }
+                }
+            }
+        }
     }
 }
