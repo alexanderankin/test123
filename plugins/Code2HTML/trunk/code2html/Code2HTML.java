@@ -33,8 +33,9 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
@@ -119,6 +120,9 @@ public class Code2HTML {
                     }
                 }
 
+                // Sort selections by their start lines
+                MiscUtilities.quicksort(selection, new SelectionStartLineCompare());
+
                 this.gutter.setGutterSize(Integer.toString(last + 1).length());
 
                 int lastLine = -1;
@@ -128,7 +132,7 @@ public class Code2HTML {
 
                     if (physicalLast <= lastLine) { continue; }
 
-                    this.htmlText(out, physicalFirst, physicalLast);
+                    this.htmlText(out, Math.max(physicalFirst, lastLine + 1) , physicalLast);
 
                     lastLine = physicalLast;
                 }
@@ -204,6 +208,25 @@ public class Code2HTML {
             Log.log(Log.ERROR, Code2HTML.class, ble);
         } finally {
             buffer.endCompoundEdit();
+        }
+    }
+
+
+    private class SelectionStartLineCompare implements MiscUtilities.Compare
+    {
+        public int compare(Object obj1, Object obj2) {
+            Selection s1 = (Selection) obj1;
+            Selection s2 = (Selection) obj2;
+
+            int diff = s1.getStartLine() - s2.getStartLine();
+
+            if (diff == 0) {
+                return 0;
+            } else if (diff > 0) {
+                return 1;
+            } else {
+                return -1;
+            }
         }
     }
 
