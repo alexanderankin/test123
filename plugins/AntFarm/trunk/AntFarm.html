@@ -46,7 +46,7 @@ complete.</P>
 
 <ul>
     <li>JDK 1.1</li>
-    <li>jEdit 3.1final</li>
+    <li>jEdit 3.2pre9</li>
 </ul>
 
 <h2><a name="usage">Usage</a></h2>
@@ -91,10 +91,17 @@ from the list and click the build button.</P>
 can be found at <a href="http://jakarta.apache.org/ant/index.html">
 http://jakarta.apache.org/ant/index.html</A></DD>
 
-<DT><b>JAXP</B></DT>
+<!-- <DT><b>JAXP</B></DT>
 <DD>An XML parsing library made available by sun Microsysytems. The full package
 can be download at <a href="http://java.sun.com/xml/xml_jaxp.html">
-http://java.sun.com/xml/xml_jaxp.html</A></DD>
+http://java.sun.com/xml/xml_jaxp.html</A></DD> -->
+
+<DT><b>Xerces</b></DT>
+<DD>An XML parsing library made available by
+<a href="http://xml.apache.org">xml.apache.org</a>. This library is
+included with the XML plugin version 0.3 and later, which must be
+installed in order for AntFarm to function.</DD>
+
 </ul>
 
 <h2><a name="feedback">Feedback</a></h2>
@@ -113,6 +120,13 @@ The preferred way to send bug reports is to use the Bug Tracker at
 
 <h2><a name="history">History</A></h2>
 
+<P>Version 0.4.1</P>
+
+  <ul>
+    <li>This is a minor bug fix release put together by Slava Pestov
+    <li>Now uses XML plugin's Xerces parser instead of JAXP
+    <li>AntFarm will now work if multiple views are open
+  </ul>
 
 <P>Version 0.4 </P>
   <ul>

@@ -15,7 +15,7 @@ javac_opts = "-deprecation";
 #javac_opts = "-g" "-deprecation" "+E";
 
 # set up the class path
-new_class_path = "../../jedit.jar;../EditBus.jar;../ant.jar;jaxp.jar;parser.jar;.";
+new_class_path = "../../jedit.jar;../EditBus.jar;../xerces.jar;../ant.jar;.";
 old_class_path = (getprop "java.class.path");
 
 # concatenate the old and new class paths
