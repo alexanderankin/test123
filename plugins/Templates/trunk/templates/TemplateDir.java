@@ -154,10 +154,35 @@ public class TemplateDir extends TemplateFile
 		return false;
 	}
 	
+	/**
+	 * Generates a string representation of the template hierarchy. This 
+	 * method is intended as a debugging tool.
+	 * @return A String representation of the template hierarchy, with each 
+	 * directory and filename on a separate line.
+	 */
+	public String printDir() {
+		String newLine = System.getProperty("line.separator");
+		StringBuffer retStr = new StringBuffer("Dir: " + this.getLabel() + newLine);
+		Enumeration kids = this.children();
+		while (kids.hasMoreElements()) {
+			TemplateFile f = (TemplateFile) kids.nextElement();
+			if (f.isDirectory()) {
+				retStr.append(((TemplateDir)f).printDir());
+			} else {
+				retStr.append(f.getRelativePath() + newLine);
+			}
+		}
+		return retStr.toString();
+	}
+	
 }
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.5  2002/08/16 15:15:12  sjakob
+	 * Added debugging method printDir() which returns a String representation of the
+	 * template hierarchy.
+	 *
 	 * Revision 1.4  2002/08/13 14:47:31  sjakob
 	 * BUG FIX: If backup filename prefix and suffix were both blank, the regular expression used to
 	 * filter backup files would filter all files.
