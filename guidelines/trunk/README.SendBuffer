@@ -1,0 +1,6 @@
+CVS policy file
+
+plugin: SendBuffer
+author: Slava Pestov <sp@gjt.org>
+
+Anyone may commit changes to this plugin, and announce new versions.
