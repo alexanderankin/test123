@@ -44,10 +44,13 @@ import org.gjt.sp.jedit.Buffer;
 import projectviewer.ProjectViewer;
 
 import projectviewer.action.Action;
+import projectviewer.action.SearchAction;
 import projectviewer.action.FileImportAction;
 import projectviewer.action.EditProjectAction;
 import projectviewer.action.NodeRemoverAction;
 import projectviewer.action.NodeRenamerAction;
+import projectviewer.action.OpenWithAppAction;
+import projectviewer.action.LaunchBrowserAction;
 
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.config.AppLauncher;
@@ -190,6 +193,21 @@ public class VPTContextMenu extends MouseAdapter {
 		popupMenu.add(a.getMenuItem());
 		internalActions.add(a);
 
+		a = new LaunchBrowserAction();
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
+		
+		a = new OpenWithAppAction();
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
+		
+		a = new SearchAction();
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
+		
 		if (actions.size() > 0)
 			popupMenu.addSeparator();
 		
