@@ -47,6 +47,12 @@ class DefaultShell extends Shell
 		stop();
 		ConsolePlugin.clearErrors();
 
+		if(command.equals("pwd"))
+		{
+			console.printPlain(dir);
+			return;
+		}
+
 		// Expand variables
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < command.length(); i++)
@@ -118,15 +124,13 @@ class DefaultShell extends Shell
 				break;
 			default:
 				buf.append(c);
+				break;
 			}
 		}
 
-		if(command.equals("pwd"))
-		{
-			console.printPlain(dir);
-			return;
-		}
-		else if(command.startsWith("cd "))
+		command = buf.toString();
+
+		if(command.startsWith("cd "))
 		{
 			if(!java13)
 				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
@@ -152,8 +156,6 @@ class DefaultShell extends Shell
 		String osName = System.getProperty("os.name");
 		boolean appendEXE = (osName.indexOf("Windows") != -1 ||
 			osName.indexOf("OS/2") != -1);
-
-		command = buf.toString();
 
 		// this will be set to true if adding a Windows extension
 		// to the executable file name works
