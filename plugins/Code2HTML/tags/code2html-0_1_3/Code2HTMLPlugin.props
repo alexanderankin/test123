@@ -1,0 +1,26 @@
+plugin.Code2HTMLPlugin.name=Code2HTML
+plugin.Code2HTMLPlugin.author=Andre Kaplan
+plugin.Code2HTMLPlugin.version=0.1.3
+plugin.Code2HTMLPlugin.docs=index.html
+
+plugin.Code2HTMLPlugin.depend.0=jdk 1.1
+plugin.Code2HTMLPlugin.depend.1=jedit 02.07.01.00
+
+# Option Pane label & menu label
+code2html.label=Code2HTML
+
+#Menu
+code2html=code2html.current-buffer code2html.current-selection
+
+# Menu action labels
+code2html.current-buffer.label=HTMLize current buffer
+code2html.current-selection.label=HTMLize current selection
+
+# Option Pane labels
+options.code2html.use-css=Use CSS
+options.code2html.show-gutter=Show gutter
+
+# Option Pane values
+code2html.use-css=true
+code2html.show-gutter=true
+
