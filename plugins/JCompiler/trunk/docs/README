@@ -1,9 +1,0 @@
-INSTALLATION:
-
-- This version requires JavaBuildTools and can be obtained from
-  http://relativity.yi.org/jEditDocs/plugins
-
-- Copy ./bin/*.jar to your <JEDIT>/jars directory
-
-- DONE
-
