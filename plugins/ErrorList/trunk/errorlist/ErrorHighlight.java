@@ -24,11 +24,8 @@ package errorlist;
 
  //{{{ Imports
 import javax.swing.text.Segment;
-import java.awt.event.*;
 import java.awt.*;
-import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.*;
 //}}}
 
 public class ErrorHighlight extends TextAreaExtension

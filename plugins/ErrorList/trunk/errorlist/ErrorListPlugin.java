@@ -23,7 +23,6 @@
 package errorlist;
 
 //{{{ Imports
-import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;

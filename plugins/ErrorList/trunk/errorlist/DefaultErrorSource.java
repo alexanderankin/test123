@@ -25,11 +25,9 @@ package errorlist;
 //{{{ Imports
 import javax.swing.text.Position;
 import javax.swing.SwingUtilities;
-import java.io.File;
 import java.util.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
 //}}}
 
 /**
