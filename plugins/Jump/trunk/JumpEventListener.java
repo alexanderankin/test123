@@ -26,11 +26,13 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     public CTAGS_Buffer ctags_buff;
     public CTAGS_BG ctags_bg;
     public Jump jump_actions;
-    public ProjectJumpAction pja;
+    
+    private boolean isAddedToBus = false;
+    //public ProjectJumpAction pja;
 //}}}
     
 //{{{ COSTRUCTOR   
-    public JumpEventListener() 
+    public JumpEventListener()  
     {
         super();
     }
@@ -47,6 +49,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
                 BufferUpdate bu=(BufferUpdate)message;
                 if(bu.getWhat()==BufferUpdate.SAVED) 
                 {
+                    if (jEdit.getBooleanProperty("jump.parse_on_save") == false) return;
                     JumpPlugin.pja.addFile(bu.getBuffer().getPath());
                 }
             }
@@ -59,7 +62,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 //}}} 
 
 //{{{ void errorMsg
-        private void errorMsg(String s)
+        public void errorMsg(String s)
         {
             GUIUtilities.message(jEdit.getActiveView(), s, new Object[0]);
         }
@@ -68,7 +71,11 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 //{{{  reloadTags(ProjectViewer viewer, VPTProject p)  
     public boolean reloadTags(ProjectViewer viewer, VPTProject p)
     {
-        EditBus.addToBus(this);
+        if (isAddedToBus == false) 
+        {
+            EditBus.addToBus(this);
+            isAddedToBus = true;
+        }
         
         if (new File(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path")).exists()==false)
         {
@@ -88,7 +95,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             return false;
         }
         
-        pja = new ProjectJumpAction();
+        JumpPlugin.pja = new ProjectJumpAction();
         
         this.PROJECT = p;
         
@@ -96,7 +103,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         this.PROJECT_ROOT = p.getRootPath();
         this.PROJECT_NAME = p.getName();
         
-        Log.log(Log.DEBUG,this,"ProjectFiles initialized! Total files = "+ ProjectFiles.size());
+        //Log.log(Log.DEBUG,this,"ProjectFiles initialized! Total files = "+ ProjectFiles.size());
         
         String s = System.getProperty("file.separator");
         
@@ -141,17 +148,20 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     public void projectLoaded(ProjectViewerEvent evt) 
     {
         saveProjectBuffer();
+        //EditBus.removeFromBus(this);
+        
         if (evt.getProject() != null)
         {
             ProjectFiles.clear();
-            reloadTags(evt.getProjectViewer(), evt.getProject());
+            reloadTags(evt.getProjectViewer(), evt.getProject()); 
             JumpPlugin.pja.clearHistory();
         }
+        //EditBus.addToBus(this);
     }
 //}}}
 
 //{{{ projectAdded method    
-    public void projectAdded(ProjectViewerEvent evt) 
+    public void projectAdded(ProjectViewerEvent evt)      
     {
         saveProjectBuffer();
         try 
@@ -185,6 +195,21 @@ public void saveProjectBuffer()
         {
             ctags_bg.saveBuffer(ctags_buff , PROJECT_TAGS.toString());   
         }   
+}
+
+public boolean CtagsTest()
+{
+    CTAGS_BG test_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path")); 
+    String s = System.getProperty("file.separator");
+    try
+    {    
+    CTAGS_Buffer test_buff = test_bg.getParser().parse(System.getProperty("user.home")+s+".jedit"+s+"properties");
+    return true;
+    }
+    catch (Exception e)
+    {
+        return false;
+    }
 }
 //}}}
 }

@@ -21,12 +21,12 @@ JumpPlugin.reloadtagsonproject.label=Reload tags for project
 JumpPlugin.menu.label=Jump!
 JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.reloadtagsonproject
 
+# options
 options.JumpPlugin.label=Jump!
-
 options.JumpPlugin.enable.label=Enable Jump!
-
+options.JumpPlugin.parse_on_save.label=Parse buffer on save
 options.JumpPlugin.ctags.def.path.label=Path to ctags executable: (C:\\catgs55\\ctags.exe)
-options.JumpPlugin.ctags.def.path=C:/Apps/ctags55/ctags.exe
+options.JumpPlugin.ctags.def.path=C:/Apps/ctags/ctags.exe
 
 
 # messages
@@ -37,6 +37,9 @@ JumpPlugin.ctags.path.incorrect.message=Failed to start ctags application.\nChec
 
 JumpPlugin.ctags.test.complete.title=Jump! - Test ctags
 JumpPlugin.ctags.test.complete.message=Good news! Test complete.
+
+JumpPlugin.ctags.test.fail.title=Jump! - Test ctags
+JumpPlugin.ctags.test.fail.message=Test failed. Exception during starting ctags.
 
 JumpPlugin.enable.title=Jump! is disabled now.
 JumpPlugin.enable.message=Jump! is disabled now. To enable it, see Options-Jump!

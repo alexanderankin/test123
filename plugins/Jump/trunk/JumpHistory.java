@@ -13,11 +13,16 @@ public class JumpHistory
     
     public void add(CTAGS_Entry e)
     {
-        history.push(e);
+        history.push(e); 
     }
     
+    // public void add(int e)
+    // {
+        // history.push(e);       
+    // }   
+    
     public CTAGS_Entry getPrevious()
-    {
+    { 
 
        if (history.empty() == true)
        {
