@@ -125,14 +125,30 @@ public class XmlPlugin extends EBPlugin
 	{
 		if(uri.startsWith("file:/"))
 		{
+			int start;
 			if(uri.startsWith("file:///") && OperatingSystem.isDOSDerived())
-				uri = uri.substring(8);
+				start = 8;
 			else if(uri.startsWith("file://"))
-				uri = uri.substring(7);
+				start = 7;
 			else
-				uri = uri.substring(6);
+				start = 5;
 
-			uri = uri.replace('/',java.io.File.separatorChar);
+			StringBuffer buf = new StringBuffer();
+			for(int i = start; i < uri.length(); i++)
+			{
+				char ch = uri.charAt(i);
+				if(ch == '/')
+					buf.append(java.io.File.separatorChar);
+				else if(ch == '%')
+				{
+					String str = uri.substring(i + 1,i + 3);
+					buf.append((char)Integer.parseInt(str,16));
+					i += 2;
+				}
+				else
+					buf.append(ch);
+			}
+			uri = buf.toString();
 		}
 		return uri;
 	} //}}}
