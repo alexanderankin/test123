@@ -907,8 +907,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	//{{{ +getSelectedNode() : VPTNode
 	/** Returns the currently selected node in the tree. */
 	public VPTNode getSelectedNode() {
-		if (getCurrentTree().getSelectionPath() != null) {
-			return (VPTNode) getCurrentTree().getSelectionPath().getLastPathComponent();
+		JTree tree = getCurrentTree();
+		if (tree != null && tree.getSelectionPath() != null) {
+			return (VPTNode) tree.getSelectionPath().getLastPathComponent();
 		} else {
 			return null;
 		}
@@ -925,9 +926,13 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		TreePath last = null;
         ArrayList obfp = new ArrayList();
 		String sFiles="";
+		
+		JTree tree = getCurrentTree();
+		if (tree == null)
+			return null;
 
-		if (getCurrentTree().getSelectionPaths() != null) {
-			TreePath[] paths= getCurrentTree().getSelectionPaths();
+		if (tree.getSelectionPaths() != null) {
+			TreePath[] paths= tree.getSelectionPaths();
 
 		for (int i =0; i < paths.length; i++) {
 			   VPTNode nd = (VPTNode)paths[i].getLastPathComponent();
@@ -958,7 +963,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				if (workingFileTree != null) return workingFileTree;
 
 			default:
-				Log.log(Log.WARNING, this, "invalid tabnumber :" + treePane.getSelectedIndex());
 				return null;
 		}
 	} //}}}
@@ -1367,7 +1371,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		//{{{ +processKeyEvent(KeyEvent) : void
 		public void processKeyEvent(KeyEvent e) {
 			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
-				TreePath[] paths = getCurrentTree().getSelectionPaths();
+				TreePath[] paths = getSelectionPaths();
 				for (int i = 0; i < paths.length; i++) {
 					VPTNode n = (VPTNode) paths[i].getLastPathComponent();
 					if (n.isFile()) {
