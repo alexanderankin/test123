@@ -252,7 +252,7 @@ public class SideKickTree extends JPanel implements EBComponent
 							return;
 						}
 						else */
-						if(evt.isShiftDown() && asset.end != null)
+						if(evt.isShiftDown())
 						{
 							textArea.setCaretPosition(asset.end.getOffset());
 							textArea.addToSelection(
@@ -323,7 +323,7 @@ public class SideKickTree extends JPanel implements EBComponent
 
 						JEditTextArea textArea = view.getTextArea();
 
-						if(evt.isShiftDown() && asset.end != null)
+						if(evt.isShiftDown())
 						{
 							textArea.setCaretPosition(asset.end.getOffset());
 							textArea.addToSelection(
