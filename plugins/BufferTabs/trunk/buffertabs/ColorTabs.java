@@ -61,7 +61,7 @@ public class ColorTabs
    private boolean colorHighlight = true;
    private boolean colorText = false;
    private boolean colorTitles = false;
-   private boolean colourVariation = true;
+   private boolean colorVariation = true;
    private Vector colours;
    private Hashtable coloursAssigned = new Hashtable();
    private Object lock = new Object();
@@ -98,7 +98,7 @@ public class ColorTabs
       g = (int) (lowestColor - (g * darkRatio));
       b = (int) (lowestColor - (b * darkRatio));
 
-      if (colourVariation)
+      if (colorVariation)
       {
          r -= rnd.nextInt(5) * jnd;
          g -= rnd.nextInt(5) * jnd;
@@ -171,7 +171,7 @@ public class ColorTabs
       g = (int) (lowestColor + (g * muteRatio));
       b = (int) (lowestColor + (b * muteRatio));
 
-      if (colourVariation)
+      if (colorVariation)
       {
          r += rnd.nextInt(5) * jnd;
          g += rnd.nextInt(5) * jnd;
@@ -359,9 +359,9 @@ public class ColorTabs
             colorText = !colorText;
          }
 
-         if (colourVariation != jEdit.getBooleanProperty("buffertabs.colourvariation"))
+         if (colorVariation != jEdit.getBooleanProperty("buffertabs.colourvariation"))
          {
-            colourVariation = !colourVariation;
+            colorVariation = !colorVariation;
          }
 
          if (colorTitles != jEdit.getBooleanProperty("buffertabs.colourizetext"))
