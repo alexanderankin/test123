@@ -59,8 +59,8 @@ class MacroListHandler extends HandlerBase
 			date = value;
 		else if(aname == "size")
 			size = Integer.parseInt(value);
-		else if(aname == "version")
-			version = value;
+		else if(aname == "hits")
+			hits = value;
 	}
 
 	public void doctypeDecl(String name, String publicId,
@@ -143,6 +143,7 @@ class MacroListHandler extends HandlerBase
 			macro.author = author;
 			macro.description = description;
 			macro.size = size;
+			macro.hits = hits;
 			macro.version = version;
 			macro.download = download;
 			macro.date = date;
@@ -212,6 +213,7 @@ class MacroListHandler extends HandlerBase
 	private String version;
 	private String date;
 	private String download;
+	private String hits;
 	private int downloadSize;
 	private int size;
 
