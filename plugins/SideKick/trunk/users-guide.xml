@@ -301,7 +301,8 @@ mode.velocity.sidekick.parser=html</programlisting>
 
   <itemizedlist>
    <listitem><para><classname>SideKickCompletion</classname> implementations can now disable automatic completion popups.</para></listitem>
-   <listitem><para>Fix a problem in buffer listener handling..</para></listitem>
+   <listitem><para>Fix a problem in buffer listener handling.</para></listitem>
+   <listitem><para>Various other minor fixes.</para></listitem>
   </itemizedlist>
  </listitem>
 
