@@ -58,7 +58,7 @@ public class OldStyleAddFileAction extends Action {
 	public void actionPerformed(ActionEvent e) {
 		VPTNode node = viewer.getSelectedNode();
 		if (node == null) {
-			node = (VPTNode) viewer.getCurrentTree().getModel().getRoot();
+			node = (VPTNode) viewer.getRoot();
 		}
 		if (node.isRoot())
 			return;
