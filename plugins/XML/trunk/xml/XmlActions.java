@@ -209,7 +209,8 @@ public class XmlActions
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
 			attributes,empty,completionInfo.entityHash,
-			completionInfo.ids);
+			(ArrayList)editPane.getClientProperty(
+			XmlPlugin.IDS_PROPERTY));
 
 		String newTag = dialog.getNewTag();
 
@@ -252,7 +253,8 @@ public class XmlActions
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
 			new HashMap(),elementDecl.empty,
 			completionInfo.entityHash,
-			completionInfo.ids);
+			(ArrayList)editPane.getClientProperty(
+			XmlPlugin.IDS_PROPERTY));
 
 		String newTag = dialog.getNewTag();
 		String closingTag;

@@ -33,6 +33,7 @@ public class XmlPlugin extends EBPlugin
 
 	public static final String ELEMENT_TREE_PROPERTY = "xml.element-tree";
 	public static final String COMPLETION_INFO_PROPERTY = "xml.completion-info";
+	public static final String IDS_PROPERTY = "xml.ids";
 
 	//{{{ start() method
 	public void start()
@@ -53,7 +54,6 @@ public class XmlPlugin extends EBPlugin
 		OptionGroup grp = new OptionGroup("xml");
 		grp.addOptionPane(new GeneralOptionPane());
 		grp.addOptionPane(new CompletionOptionPane());
-		grp.addOptionPane(new TagHighlightOptionPane());
 		grp.addOptionPane(new CatalogsOptionPane());
 		dialog.addOptionGroup(grp);
 	} //}}}

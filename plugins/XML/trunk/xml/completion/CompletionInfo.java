@@ -35,18 +35,16 @@ public class CompletionInfo
 	public HashMap elementHash;
 	public ArrayList entities;
 	public HashMap entityHash;
-	public ArrayList ids;
 
 	//{{{ CompletionInfo constructor
 	public CompletionInfo(boolean html, ArrayList elements, HashMap elementHash,
-		ArrayList entities, HashMap entityHash, ArrayList ids)
+		ArrayList entities, HashMap entityHash)
 	{
 		this.html = html;
 		this.elements = elements;
 		this.elementHash = elementHash;
 		this.entities = entities;
 		this.entityHash = entityHash;
-		this.ids = ids;
 	} //}}}
 
 	//{{{ getCompletionInfo() method
@@ -137,8 +135,7 @@ public class CompletionInfo
 			(ArrayList)elements.clone(),
 			(HashMap)elementHash.clone(),
 			(ArrayList)entities.clone(),
-			(HashMap)entityHash.clone(),
-			(ArrayList)ids.clone()
+			(HashMap)entityHash.clone()
 		);
 	} //}}}
 
