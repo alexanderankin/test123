@@ -67,6 +67,9 @@
 			buf.append(" \"");
 			buf.append(file);
 			buf.append('"');
+
+			// return value
+			buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

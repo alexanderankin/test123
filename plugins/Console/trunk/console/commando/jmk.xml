@@ -7,7 +7,8 @@
 <COMMANDO>
 	<UI>
 		<ENTRY LABEL="JMK command" VARNAME="command" DEFAULT="jmk" />
-		<ENTRY LABEL="Make file" VARNAME="makefile" DEFAULT="makefile.jmk" />
+		<ENTRY LABEL="Make file" VARNAME="makefile"
+			EVAL='buffer.getName().endsWith("jmk") ? buffer.getName() : "makefile.jmk"' />
 		<ENTRY LABEL="Targets to build" VARNAME="targets" />
 
 		<TOGGLE LABEL="Print debugging information" VARNAME="debug" />
@@ -49,7 +50,7 @@
 				buf.append(" -s");
 
 			// return value
-			buf;
+			buf.toString();
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

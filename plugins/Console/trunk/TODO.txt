@@ -1,14 +1,12 @@
 + version 3.2:
 
 - need <INIT> code block in commando files
-- java, javac, jikes commandos: package aware
 - file name, built-in, alias completion
 - finish documentation
 - improve commando error handling
 - 'compile' and 'run' commands:
-  - need to make java and javac commandos easier to use
-  - need more commandos: at least perl, python, ant, make, sh,
-    latex/pdflatex, xdvi
+  - need more commandos: at least perl, python, make, sh
+  - option pane
 
 + later:
 

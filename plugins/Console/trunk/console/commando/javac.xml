@@ -17,9 +17,9 @@
 
 		<!-- <ENTRY LABEL="Boot class path" VARNAME="bootclasspath"/> -->
 		<ENTRY LABEL="Class path" VARNAME="classpath"
-			EVAL="System.getProperty(&quot;java.class.path&quot;);" />
+			EVAL="getBufferClassPath(buffer)" />
 		<ENTRY LABEL="Source path" VARNAME="sourcepath"
-			EVAL="MiscUtilities.getParentOfPath(buffer.getPath())" />
+			EVAL="console.ConsolePlugin.getPackageRoot(buffer)" />
 		<ENTRY LABEL="Extension directory" VARNAME="extdirs" />
 		<ENTRY LABEL="Output directory" VARNAME="outputpath" />
 
