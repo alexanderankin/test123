@@ -23,14 +23,19 @@ package hex;
 
 import java.util.Vector;
 
-import org.gjt.sp.jedit.EditPlugin;
-
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Mode;
+import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
-
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
 
 
-public class HexPlugin extends EditPlugin
+public class HexPlugin extends EBPlugin
 {
     public void start() {
         VFSManager.registerVFS(HexVFS.PROTOCOL, new HexVFS());
@@ -41,4 +46,24 @@ public class HexPlugin extends EditPlugin
 
 
     public void createMenuItems(Vector menuItems) {}
+
+
+    public void handleMessage(EBMessage message) {
+        if (message instanceof BufferUpdate) {
+            BufferUpdate bu = (BufferUpdate) message;
+
+            if (bu.getWhat() == BufferUpdate.CREATED) {
+                Buffer buffer = bu.getBuffer();
+                VFS    vfs    = buffer.getVFS();
+                Mode   mode   = null;
+                if (vfs instanceof HexVFS) {
+                    mode = jEdit.getMode("text");
+                } else {}
+
+                if (mode != null) {
+                    buffer.setMode(mode);
+                }
+            }
+        }
+    }
 }
