@@ -100,27 +100,15 @@ public class WhiteSpacePlugin
             if (bu.getWhat() == BufferUpdate.SAVING) {
                 this.bufferSaving(bu.getBuffer());
             } else if (bu.getWhat() == BufferUpdate.CREATED) {
-                BlockHighlight.bufferCreated(
-                    bu.getBuffer(),
-                    WhiteSpaceDefaults.getBlockHighlightDefault()
-                );
-                FoldHighlight.bufferCreated(
-                    bu.getBuffer(),
-                    WhiteSpaceDefaults.getFoldHighlightDefault(),
-                    WhiteSpaceDefaults.getFoldTooltipDefault()
-                );
+                BlockHighlight.bufferCreated(bu.getBuffer());
+                FoldHighlight.bufferCreated(bu.getBuffer());
             } else if (bu.getWhat() == BufferUpdate.CLOSED) {
                 BlockHighlight.bufferClosed(bu.getBuffer());
                 FoldHighlight.bufferClosed(bu.getBuffer());
             }
         } else if (message instanceof EditorStarted) {
-            BlockHighlight.editorStarted(
-                WhiteSpaceDefaults.getBlockHighlightDefault()
-            );
-            FoldHighlight.editorStarted(
-                WhiteSpaceDefaults.getFoldHighlightDefault(),
-                WhiteSpaceDefaults.getFoldTooltipDefault()
-            );
+            BlockHighlight.editorStarted();
+            FoldHighlight.editorStarted();
         } else if (message instanceof EditorExiting) {
             BlockHighlight.editorExiting();
             FoldHighlight.editorExiting();

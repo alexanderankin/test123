@@ -261,11 +261,10 @@ public class BlockHighlight
     }
 
 
-    public static void bufferCreated(
-            Buffer buffer, boolean highlightEnabled
-    ) {
+    public static void bufferCreated(Buffer buffer) {
         buffer.putProperty(
-            BLOCK_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+            BLOCK_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getBlockHighlightDefault() ? Boolean.TRUE : Boolean.FALSE
         );
     }
 
@@ -275,11 +274,12 @@ public class BlockHighlight
     }
 
 
-    public static void editorStarted(boolean highlightEnabled) {
+    public static void editorStarted() {
         Buffer[] buffers = jEdit.getBuffers();
         for (int i = 0; i < buffers.length; i++) {
             buffers[i].putProperty(
-                BLOCK_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+                BLOCK_HIGHLIGHT_PROPERTY,
+                WhiteSpaceDefaults.getBlockHighlightDefault() ? Boolean.TRUE : Boolean.FALSE
             );
         }
     }
