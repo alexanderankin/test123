@@ -1,5 +1,4 @@
 . /usr/local/jdk1.2.2/env.sh && 
-/usr/bin/make debug && 
-. /usr/local/jdk118/env.sh && 
-export JAVA_COMPILER=NONE  
+cd build &&
+./build.sh
 
