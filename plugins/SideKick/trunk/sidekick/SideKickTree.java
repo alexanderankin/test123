@@ -141,6 +141,8 @@ public class SideKickTree extends JPanel implements EBComponent
 
 	private View view;
 	private Timer caretTimer;
+
+	private SideKickParsedData data;
 	//}}}
 
 	//{{{ propertiesChanged() method
@@ -152,7 +154,7 @@ public class SideKickTree extends JPanel implements EBComponent
 	//{{{ update() method
 	private void update()
 	{
-		SideKickParsedData data = SideKickParsedData.getParsedData(view.getEditPane());
+		data = SideKickParsedData.getParsedData(view.getEditPane());
 		if(SideKickPlugin.getParserForBuffer(view.getBuffer()) == null
 			|| data == null)
 		{
@@ -198,62 +200,13 @@ public class SideKickTree extends JPanel implements EBComponent
 	//{{{ expandTreeAt() method
 	private void expandTreeAt(int dot)
 	{
-		DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree
-			.getModel().getRoot();
-
-		if(root.getChildCount() == 0)
-			return;
-
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-			root.getChildAt(0);
-		if(node.getUserObject() instanceof Asset)
+		TreePath treePath = data.getTreePathForPosition(dot);
+		if(treePath != null)
 		{
-			Vector _path = new Vector();
-			expandTreeAt(node,dot,_path);
-			_path.addElement(node);
-			_path.addElement(root);
-
-			Object[] path = new Object[_path.size()];
-			for(int i = 0; i < path.length; i++)
-				path[i] = _path.elementAt(path.length - i - 1);
-
-			TreePath treePath = new TreePath(path);
 			tree.expandPath(treePath);
 			tree.setSelectionPath(treePath);
 			tree.scrollPathToVisible(treePath);
 		}
-	} //}}}
-
-	//{{{ expandTreeAt() method
-	private boolean expandTreeAt(TreeNode node, int dot, Vector path)
-	{
-		int childCount = node.getChildCount();
-		Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
-		Asset asset = (Asset)userObject;
-
-		if(childCount != 0)
-		{
-			// check if any of our children contain the caret
-			for(int i = childCount - 1; i >= 0; i--)
-			{
-				TreeNode _node = node.getChildAt(i);
-				if(expandTreeAt(_node,dot,path))
-				{
-					path.addElement(_node);
-					return true;
-				}
-			}
-		}
-
-		// check if the caret in inside this tag
-		if(dot >= asset.start.getOffset() && (asset.end == null
-			|| dot < asset.end.getOffset()))
-		{
-			//path.addElement(node);
-			return true;
-		}
-		else
-			return false;
 	} //}}}
 
 	//}}}

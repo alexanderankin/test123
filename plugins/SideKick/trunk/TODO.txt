@@ -1,8 +1,12 @@
-- next/prev/parent asset actions
-- select asset action
-- assets in non-buffer order
-- custom actions on double-click, etc.
-- option pane
+Version 0.1:
+
+- parent/child asset actions
 - finish docs
 - switching between two edit panes with same buffer: expand tree at
   appropriate location
+- attributes in tree setting, broken
+
+Later:
+
+- custom actions on double-click, etc.
+- code completion framework
