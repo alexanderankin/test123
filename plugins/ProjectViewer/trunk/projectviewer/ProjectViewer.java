@@ -701,6 +701,23 @@ public final class ProjectViewer extends JPanel
 		} else {
 			ve.node = n;
 		}
+
+		if (ve.dockable == null) {
+			// Fires events if the dockable is not available
+			// (setRootNode() fires events when the dockable is available)
+			if (n.isProject()) {
+				fireProjectLoaded(ProjectViewer.class, (VPTProject) n, aView);
+			} else {
+				fireGroupActivated((VPTGroup)n, aView);
+			}
+
+			// Loads projects if not yet loaded
+			if (n.isProject()
+					&& !ProjectManager.getInstance().isLoaded(n.getName())) {
+				ProjectManager.getInstance().getProject(n.getName());
+			}
+		}
+
 	} //}}}
 
 	//{{{ +_getActiveNode(View)_ : VPTNode
@@ -713,9 +730,8 @@ public final class ProjectViewer extends JPanel
 	public static VPTNode getActiveNode(View aView) {
 		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
 		if (ve == null) {
-			ve = new ViewerEntry();
-			ve.node = config.getLastNode();
-			viewers.put(aView, ve);
+			setActiveNode(aView, config.getLastNode());
+			ve = (ViewerEntry) viewers.get(aView);
 		}
 		return ve.node;
 	} //}}}
