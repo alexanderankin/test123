@@ -24,14 +24,14 @@ import java.awt.event.*;
 
 
 public class bookmarks_edit extends InfoViewerAction {
-    
+
     public bookmarks_edit() {
         super("infoviewer.bookmarks_edit");
     }
-    
+
     public void actionPerformed(ActionEvent evt) {
-        new BookmarksDialog(getViewer(evt));
+        new BookmarksDialog(getFrame(evt));
     }
-    
+
 }
 

@@ -1,6 +1,8 @@
 /*
  * open_file.java - display a file selection box and open a file in InfoViewer
- * Copyright (C) 1999 Dirk Moebius
+ * Copyright (C) 1999-2001 Dirk Moebius
+ *
+ * :tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,35 +21,56 @@
 
 package infoviewer.actions;
 
-import infoviewer.*;
-import java.awt.event.*;
+import java.awt.Frame;
+import java.awt.event.ActionEvent;
 import javax.swing.JFileChooser;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.io.FileVFS;
+import org.gjt.sp.jedit.io.VFSManager;
 
 
-public class open_file extends InfoViewerAction {
+public class open_file extends InfoViewerAction
+{
 
-    public open_file() {
+    public open_file()
+    {
         super("infoviewer.open_file");
     }
 
-    public void actionPerformed(ActionEvent evt) {
-        if (lastfile == null) {
-            lastfile = jEdit.getJEditHome();
+
+    public void actionPerformed(ActionEvent evt)
+    {
+        if (lastfile == null)
+        {
+            lastfile = jEdit.getProperty("infoviewer.lastfile");
+            if (lastfile == null)
+                lastfile = jEdit.getJEditHome();
         }
 
-        String files[] = GUIUtilities.showVFSFileDialog(jEdit.getFirstView(),
-            lastfile, JFileChooser.OPEN_DIALOG, false);
+        Frame frame = getFrame(evt);
+        View view = jEdit.getFirstView();
+        if(frame != null && frame instanceof View)
+            view = (View) frame;
 
-        if (files == null)
-            return;
+        String files[] = GUIUtilities.showVFSFileDialog(
+            view, lastfile, JFileChooser.OPEN_DIALOG, false);
 
-        lastfile = files[0];
-        getViewer(evt).toFront();
-        getViewer(evt).gotoURL("file:" + files[0]);
+        if (files == null || files.length == 0)
+            return; // no file chosen
+
+        if (VFSManager.getVFSForPath(files[0]) instanceof FileVFS)
+            lastfile = "file:" + files[0];
+        else
+            lastfile = files[0];
+
+        jEdit.setProperty("infoviewer.lastfile", lastfile);
+        getViewer(evt).gotoURL(lastfile);
     }
 
+
     private static String lastfile = null;
+
 }
 

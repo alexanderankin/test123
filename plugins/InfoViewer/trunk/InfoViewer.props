@@ -1,20 +1,42 @@
 # Plugin properties
-plugin.InfoViewerPlugin.name=InfoViewer
-plugin.InfoViewerPlugin.author=Dirk Moebius
-plugin.InfoViewerPlugin.version=0.5.4
-plugin.InfoViewerPlugin.docs=index.html
-
-plugin.InfoViewerPlugin.depend.0=jdk 1.1
-plugin.InfoViewerPlugin.depend.1=jedit 03.00.99.00
-plugin.InfoViewerPlugin.depend.2=plugin EditBusPlugin 0.9.4
+plugin.infoviewer.InfoViewerPlugin.name=InfoViewer
+plugin.infoviewer.InfoViewerPlugin.author=Dirk Moebius
+plugin.infoviewer.InfoViewerPlugin.version=1.0
+plugin.infoviewer.InfoViewerPlugin.docs=index.html
+plugin.infoviewer.InfoViewerPlugin.depend.0=jdk 1.1
+plugin.infoviewer.InfoViewerPlugin.depend.1=jedit 03.01.99.00
 
 
 # Plugin menu properties
-infoviewer-menu=infoviewer-open - infoviewer-open-buffer infoviewer-open-sel
+infoviewer-menu=infoviewer-open - infoviewer-open-buffer infoviewer-open-sel - infoviewer-dock
 infoviewer-menu.label=InfoViewer
-infoviewer-open.label=Open Browser...
-infoviewer-open-buffer.label=Open current buffer in InfoViewer
-infoviewer-open-sel.label=Open selected URL in InfoViewer
+infoviewer-open.label=Open browser...
+infoviewer-open-buffer.label=Open current buffer with browser
+infoviewer-open-sel.label=Open selected URL with browser
+infoviewer-dock.label=InfoViewer
+
+
+# Default option pane properties
+infoviewer.browsertype=internal
+infoviewer.class=infoviewer.InfoViewer
+infoviewer.method=showInternalInfoViewer
+infoviewer.otherBrowser=netscape -remote openURL($u) -raise
+infoviewer.homepage=jeditresource:/InfoViewer.jar!/index.html
+infoviewer.appearance.floating.showMenu=true
+infoviewer.appearance.floating.showToolbar=true
+infoviewer.appearance.floating.showAddressbar=true
+infoviewer.appearance.floating.showStatusbar=true
+infoviewer.appearance.docked.showMenu=false
+infoviewer.appearance.docked.showToolbar=true
+infoviewer.appearance.docked.showAddressbar=false
+infoviewer.appearance.docked.showStatusbar=true
+infoviewer.autoupdate=false
+infoviewer.autoupdate.onSwitch=false
+infoviewer.autoupdate.onSave=false
+infoviewer.autoupdate.onChange=false
+infoviewer.autoupdate.onChange.delay=3000
+infoviewer.autoupdate.periodically=false
+infoviewer.autoupdate.periodically.delay=20000
 
 
 # InfoViewer menu properties
@@ -30,11 +52,11 @@ infoviewer.menu.help=Help
 infoviewer.menu.help.mnemonic=H
 infoviewer.menu.help.readme=InfoViewer UserGuide
 infoviewer.menu.help.readme.mnemonic=I
+infoviewer.menu.help.readme.url=jeditresource:/InfoViewer.jar!/index.html
 
 
 # Misc properties
 infoviewer.title=InfoViewer
-infoviewer.titlewithurl=InfoViewer: {0}
 infoviewer.notitle=(no title)
 infoviewer.greetstring={0} v{1}
 infoviewer.label.gotoURL=Go to:\ 
@@ -51,7 +73,13 @@ infoviewer.open_file.mnemonic=O
 infoviewer.open_file.description=Open a file...
 infoviewer.open_file.shortcut=C+o
 
-infoviewer.edit_url=Edit current URL
+infoviewer.open_buffer=Open Current Buffer
+infoviewer.open_buffer.icon=Import24.gif
+infoviewer.open_buffer.mnemonic=B
+infoviewer.open_buffer.description=Open the current selected jEdit buffer
+infoviewer.open_buffer.shortcut=C+b
+
+infoviewer.edit_url=Edit Current URL
 infoviewer.edit_url.icon=Edit24.gif
 infoviewer.edit_url.mnemonic=O
 infoviewer.edit_url.description=Edit the current document with jEdit
@@ -113,13 +141,16 @@ infoviewer.about.shortcut=F1
 
 infoviewer.follow_link=Follow Link
 infoviewer.follow_link.icon=FastForward24.gif
-infoviewer.back.mnemonic=F
-infoviewer.back.description=Follow the link under the pointer
+infoviewer.follow_link.mnemonic=L
+infoviewer.follow_link.description=Follow the link under the pointer
 
 
 # Option pane properties
 options.infoviewer.label=InfoViewer
-options.infoviewer.browser.label=Choose Browser:
+options.infoviewer.chooseBrowser.label=Choose Browser
+options.infoviewer.internalBrowser.label=Internal Browser
+
+options.infoviewer.browser.label=Choose Preferred Browser:
 options.infoviewer.browser.internal=Internal (InfoViewer)
 options.infoviewer.browser.class=Class in classpath
 options.infoviewer.browser.netscape=Netscape (with reuse, Unix only)
@@ -127,14 +158,31 @@ options.infoviewer.browser.other=External browser
 
 options.infoviewer.browser.settings.label=Configure Browser:
 options.infoviewer.browser.class.label=Class:
-options.infoviewer.browser.class.default=infoviewer.InfoViewer
 options.infoviewer.browser.method.label=Method:
-options.infoviewer.browser.method.default=showInternalInfoViewer
 options.infoviewer.browser.other.label=External browser command:
-options.infoviewer.browser.other.default=netscape -remote openURL($u) -raise
-options.infoviewer.homepage=Homepage:
-options.infoviewer.max_go_menu=Max. number of entries in Go menu:
 
+options.infoviewer.homepage=Homepage:\ 
+
+options.infoviewer.appearance.label=Appearance
+options.infoviewer.appearance.floating.label=If floating...
+options.infoviewer.appearance.floating.showMenu=Show Menu
+options.infoviewer.appearance.floating.showToolbar=Show Toolbar
+options.infoviewer.appearance.floating.showAddressbar=Show Addressbar
+options.infoviewer.appearance.floating.showStatusbar=Show Statusbar
+options.infoviewer.appearance.docked.label=If docked...
+options.infoviewer.appearance.docked.showMenu=Show Menu
+options.infoviewer.appearance.docked.showToolbar=Show Toolbar
+options.infoviewer.appearance.docked.showAddressbar=Show Addressbar
+options.infoviewer.appearance.docked.showStatusbar=Show Statusbar
+
+options.infoviewer.autoupdate.label=Auto-Update
+options.infoviewer.autoupdate=Update InfoViewer automatically...
+options.infoviewer.autoupdate.onSwitch=...on buffer switch (sync with current buffer)
+options.infoviewer.autoupdate.onSave=...on buffer save
+options.infoviewer.autoupdate.onChange=...on buffer changes
+options.infoviewer.autoupdate.onChange.delay=After buffer change, wait (seconds):
+options.infoviewer.autoupdate.periodically=...periodically
+options.infoviewer.autoupdate.periodically.delay=Update every (seconds):
 
 # Dialog "Edit Bookmarks"
 infoviewer.bdialog.title=Edit Bookmarks
@@ -157,12 +205,6 @@ infoviewer.aboutdialog.message=\
 
 
 # Error messages
-infoviewer.error.noinfoviewer.title=No InfoViewer
-infoviewer.error.noinfoviewer.message=\
-    There is no plugin installed to view URLs.\n\
-    Please install InfoViewer or any other plugin\n\
-    for ViewURL messages.
-
 infoviewer.error.noselection.title=No URL selected
 infoviewer.error.noselection.message=Please select an URL text in a buffer.
 

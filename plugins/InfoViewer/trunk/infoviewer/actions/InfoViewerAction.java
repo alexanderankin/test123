@@ -1,8 +1,10 @@
 /*
  * InfoViewerAction.java - jEdit action listener
- * Copyright (C) 2000 Dirk Moebius
+ * Copyright (C) 2000,2001 Dirk Moebius
  * Contains portions of EditAction.java Copyright (C) 1998, 1999 by
  * Slava Pestov
+ *
+ * :tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,11 +41,8 @@ import org.gjt.sp.jedit.gui.DefaultInputHandler;
  *
  * @author Dirk Moebius
  */
-public abstract class InfoViewerAction extends AbstractAction {
-
-    public static final String MNEMONIC = "MenuMnemonic";
-    public static final String ACCELERATOR = "MenuAccelerator";
-
+public abstract class InfoViewerAction extends AbstractAction
+{
 
     /**
      * Creates a new <code>InfoViewerAction</code>. This constructor
@@ -60,7 +59,8 @@ public abstract class InfoViewerAction extends AbstractAction {
      *                 </ul>
      * @see java.awt.KeyStroke#getKeyStroke
      */
-    public InfoViewerAction(String name_key) {
+    public InfoViewerAction(String name_key)
+    {
         super(jEdit.getProperty(name_key));
 
         String icon = jEdit.getProperty(name_key + ".icon");
@@ -68,42 +68,50 @@ public abstract class InfoViewerAction extends AbstractAction {
         String mnem = jEdit.getProperty(name_key + ".mnemonic");
         String shrt = jEdit.getProperty(name_key + ".shortcut");
 
-        if (icon != null) {
+        if (icon != null)
+        {
             Icon i = GUIUtilities.loadIcon(icon);
-            if (i != null) {
+            if (i != null)
                 putValue(SMALL_ICON, i);
-            }
         }
-        if (desc != null) {
+
+        if (desc != null)
+        {
             putValue(SHORT_DESCRIPTION, desc);
             putValue(LONG_DESCRIPTION, desc);
         }
+
         if (mnem != null)
-            putValue(MNEMONIC, mnem);
+            putValue(MNEMONIC_KEY, new Integer(mnem.charAt(0)));
+
         if (shrt != null)
-            putValue(ACCELERATOR, DefaultInputHandler.parseKeyStroke(shrt));
+            putValue(ACCELERATOR_KEY, DefaultInputHandler.parseKeyStroke(shrt));
     }
 
 
     /**
      * Determines the InfoViewer to use for the action.
      */
-    public static InfoViewer getViewer(EventObject evt) {
-        if (evt != null) {
-            Object o = evt.getSource();
-            if (o instanceof Component)
-                return getViewer((Component)o);
-        }
-        // this shouldn't happen
-        return null;
+    public static InfoViewer getViewer(EventObject evt)
+    {
+        if (evt == null)
+            return null; // this shouldn't happen
+
+        Object o = evt.getSource();
+        if (o instanceof Component)
+            return getViewer((Component)o);
+        else
+            return null;
     }
 
 
     /**
      * Finds the InfoViewer parent of the specified component.
      */
-    public static InfoViewer getViewer(Component comp) {
-        for (;;) {
+    public static InfoViewer getViewer(Component comp)
+    {
+        for (;;)
+        {
             if (comp instanceof InfoViewer)
                 return (InfoViewer)comp;
             else if (comp instanceof JPopupMenu)
@@ -113,6 +121,37 @@ public abstract class InfoViewerAction extends AbstractAction {
             else
                 break;
         }
+        return null;
+    }
+
+
+    /**
+     * Finds the Frame parent of the source component of
+     * the given EventObject.
+     */
+    public static Frame getFrame(EventObject evt)
+    {
+        if (evt == null)
+            return null; // this shouldn't happen
+
+        Object source = evt.getSource();
+
+        if (source instanceof Component)
+        {
+            Component comp = (Component)source;
+            for (;;)
+            {
+                if (comp instanceof Frame)
+                    return (Frame)comp;
+                else if (comp instanceof JPopupMenu)
+                    comp = ((JPopupMenu)comp).getInvoker();
+                else if (comp != null)
+                    comp = comp.getParent();
+                else
+                    break;
+            }
+        }
+
         return null;
     }
 

@@ -1,6 +1,6 @@
 /*
  * BookmarksDialog.java - "Edit Bookmarks" dialog in InfoViewer
- * Copyright (C) 1999 2000 Dirk Moebius
+ * Copyright (C) 1999-2001 Dirk Moebius
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,8 +36,8 @@ public class BookmarksDialog extends EnhancedDialog {
     private JButton bOk, bCancel, bAdd, bDelete, bMoveUp, bMoveDown;
     private Bookmarks model;
 
-    public BookmarksDialog(InfoViewer viewer) {
-        super(viewer, jEdit.getProperty("infoviewer.bdialog.title"), true);
+    public BookmarksDialog(Frame parent) {
+        super(parent, jEdit.getProperty("infoviewer.bdialog.title"), true);
 
         model = new Bookmarks();
         table = new JTable(model);
@@ -87,7 +87,7 @@ public class BookmarksDialog extends EnhancedDialog {
 
         setSize(500,300);
         GUIUtilities.loadGeometry(this, "infoviewer.bdialog");
-        setLocationRelativeTo(viewer);
+        setLocationRelativeTo(parent);
         setVisible(true);
     }
 

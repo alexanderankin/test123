@@ -1,6 +1,8 @@
 /*
  * edit_url.java - edit the current URL in new jEdit buffer
- * Copyright (C) 1999 Dirk Moebius
+ * Copyright (C) 1999-2001 Dirk Moebius
+ *
+ * :tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,26 +21,47 @@
 
 package infoviewer.actions;
 
-import infoviewer.*;
+import infoviewer.InfoViewer;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 
 
-public class edit_url extends InfoViewerAction {
-    
-    public edit_url() {
+public class edit_url extends InfoViewerAction
+{
+
+    public edit_url()
+    {
         super("infoviewer.edit_url");
     }
-    
-    public void actionPerformed(ActionEvent evt) {
-        String url = getViewer(evt).getCurrentURL();
-        if (url == null) {
+
+
+    public void actionPerformed(ActionEvent evt)
+    {
+        View view = jEdit.getFirstView();
+        InfoViewer infoviewer = getViewer(evt);
+        String url = infoviewer.getCurrentURL();
+        Frame frame = getFrame(evt);
+
+        if (frame != null && frame instanceof View)
+            view = (View)frame;
+
+        if (url == null)
+        {
             GUIUtilities.error(null, "infoviewer.error.nourl", null);
-        } else {
-            View view = jEdit.getFirstView();
-            Buffer buf = jEdit.openFile(view, null, url, true, false);
-            view.toFront();
+            return;
         }
+
+        // cut off anchor:
+        int anchorPos = url.indexOf('#');
+        if (anchorPos >= 0)
+            url = url.substring(0, anchorPos);
+
+        // open url:
+        view.toFront();
+        jEdit.openFile(view, url);
     }
 }
 
