@@ -1,0 +1,47 @@
+#
+# Properties file for the JImporter plugin
+#
+
+#Core plugin properties
+plugin.jimporter.JImporterPlugin.name=JImporter
+plugin.jimporter.JImporterPlugin.author=Matthew Flower
+plugin.jimporter.JImporterPlugin.version=0.3.3
+plugin.jimporter.JImporterPlugin.docs=index.html
+
+#Dependencies
+plugin.jimporter.depend.0=jedit 04.00.00.00
+plugin.jimporter.depend.1=jdk 1.4
+
+#Menu Definition
+jimporter-menu=jimporter.import-class \
+               jimporter.import-class-at-point \
+               jimporter.insert-classname-at-point \
+               jimporter.sort-imports \
+               jimporter.options
+jimporter-menu.label=JImporter
+jimporter.import-class.label=Import Class
+jimporter.import-class-at-point.label=Import Class At Point
+jimporter.insert-classname-at-point.label=Insert FQ ClassName at Point
+jimporter.sort-imports.label=Sort Imports
+jimporter.options.label=Options
+
+#OptionPane text
+options.jimporter.label=JImporter
+options.jimporter.classpath.label=Classpath
+options.jimporter.classpath.usethis.label=Use this Classpath
+options.jimporter.classpath.usespeedjava.label=Use SpeedJava's classpath
+options.jimporter.classpath.usejcompiler.label=Use JCompiler's classpath
+options.jimporter.classpath.usesystem.label=Use System classpath
+options.jimporter.classpath.useprojectmountpoints.label=Use Project Mountpoints
+options.jimporter.searchmethod.label=Search Method
+options.jimporter.searchmethod.usebruteforce.label=Use Brute Force Method
+options.jimporter.searchmethod.usebuffered.label=Use Buffered Method
+
+options.jimporter.autoimportonmatch.label=Automatically Import Class If Only One Match Exists
+options.jimporter.dialogboxbehavior.label=Dialog Box Behavior
+options.jimporter.autosearchatpoint.label=Automatically Search When Importing at Point
+options.jimporter.classpath.appendrtjar.label=Automatically Search JDK classes (rt.jar)
+options.jimporter.sorting.label=Sorting
+options.jimporter.sorting.sortonimport.label=Sort Import Statements on Every Import
+options.jimporter.sorting.caseinsensitive.label=Uppercase letters are equal to lowercase for sorting
+
