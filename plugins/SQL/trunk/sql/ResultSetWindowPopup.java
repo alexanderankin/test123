@@ -51,16 +51,17 @@ public class ResultSetWindowPopup extends JPopupMenu
   {
     this.view = view;
     this.table = table;
-    add( createMenuItem( "copy_all_csv" ) );
+    add( createCopyMenuItem( "copy_all_csv", ", " ) );
+    add( createCopyMenuItem( "copy_all_tab", "\t" ) );
   }
 
 
-  private JMenuItem createMenuItem( String name )
+  private JMenuItem createCopyMenuItem( String name, String delimiter )
   {
     final String label = jEdit.getProperty( "sql.resultSet.popup." + name + ".label" );
     final JMenuItem mi = new JMenuItem( label );
     mi.setActionCommand( name );
-    mi.addActionListener( new ActionHandler() );
+    mi.addActionListener( new CopyActionHandler( delimiter ) );
     return mi;
   }
 
@@ -80,52 +81,65 @@ public class ResultSetWindowPopup extends JPopupMenu
   }
 
 
-  class ActionHandler implements ActionListener
+  class CopyActionHandler implements ActionListener
   {
+    protected String delimiter;
+
+
+    /**
+     *Constructor for the CopyActionHandler object
+     *
+     * @param  delimiter  Description of Parameter
+     * @since
+     */
+    public CopyActionHandler( String delimiter )
+    {
+      this.delimiter = delimiter;
+    }
+
+
     public void actionPerformed( ActionEvent evt )
     {
       final String actionCommand = evt.getActionCommand();
 
-      if ( actionCommand.equals( "copy_all_csv" ) )
+      final Registers.Register reg = Registers.getRegister( '$' );// clipboard
+      if ( reg == null )
       {
-        final Registers.Register reg = Registers.getRegister( '$' );// clipboard
-        if ( reg == null )
-        {
-          view.getToolkit().beep();
-          return;
-        }
+        view.getToolkit().beep();
+        return;
+      }
 
-        final TableModel model = table.getModel();
-        final StringBuffer sb = new StringBuffer();
+      final TableModel model = table.getModel();
+      final StringBuffer sb = new StringBuffer();
 
-        final int maxR = model.getRowCount();
-        final int maxC = model.getColumnCount();
+      final int maxR = model.getRowCount();
+      final int maxC = model.getColumnCount();
 
+      for ( int c = maxC; --c >= 0;  )
+      {
+        sb.insert( 0, csvize( model.getColumnName( c ) ) );
+        if ( c != 0 )
+          sb.insert( 0, ", " );
+      }
+
+      for ( int r = 0; r < maxR; r++ )
+      {
+        sb.append( '\n' );
+
+        final StringBuffer rowb = new StringBuffer();
         for ( int c = maxC; --c >= 0;  )
         {
-          sb.insert( 0, csvize( model.getColumnName( c ) ) );
+          String val = model.getValueAt( r, c ).toString();
+          rowb.insert( 0, csvize( val ) );
           if ( c != 0 )
-            sb.insert( 0, ", " );
+            rowb.insert( 0, delimiter );
         }
 
-        for ( int r = 0; r < maxR; r++ )
-        {
-          sb.append( '\n' );
-
-          final StringBuffer rowb = new StringBuffer();
-          for ( int c = maxC; --c >= 0;  )
-          {
-            String val = model.getValueAt( r, c ).toString();
-            rowb.insert( 0, csvize( val ) );
-            if ( c != 0 )
-              rowb.insert( 0, ", " );
-          }
-
-          sb.append( new String( rowb ) );
-        }
-
-        Registers.setRegister( '$', new String( sb ) );
+        sb.append( new String( rowb ) );
       }
+
+      Registers.setRegister( '$', new String( sb ) );
+
     }
   }
 }
