@@ -1,5 +1,7 @@
 /*
- *  $Id$
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -18,13 +20,18 @@ package projectviewer.event;
 
 import java.util.EventListener;
 
-/** A listener for {@link ProjectViewerEvent}s.
+/** 
+ *	A listener for {@link ProjectViewerEvent}s.
+ *
+ *	@author
+ *	@version	$Id$
  */
 public interface ProjectViewerListener extends EventListener {
 
-	/** Receive notification that the current project has changed.
+	/** 
+	 *	Receive notification that the current project has changed.
 	 *
-	 *@param  evt  Description of Parameter
+	 *	@param  evt  Description of Parameter
 	 */
 	public void projectLoaded(ProjectViewerEvent evt);
 

@@ -1,5 +1,7 @@
 /*
- *  $Id$
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -21,7 +23,11 @@ import java.util.EventObject;
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
 
-/** A project viewer event.
+/** 
+ *	A project viewer event.
+ *	
+ *	@author
+ *	@version	$Id$
  */
 public final class ProjectViewerEvent extends EventObject {
 
@@ -38,9 +44,10 @@ public final class ProjectViewerEvent extends EventObject {
 		project = prj;
 	}
 
-	/** Returns the {@link ProjectViewer}.
+	/** 
+	 *	Returns the {@link ProjectViewer}.
 	 *
-	 *@return    The projectViewer value
+	 *	@return    The viewer where the event occurred.
 	 */
 	public ProjectViewer getProjectViewer() {
 		return (ProjectViewer) getSource();
@@ -51,7 +58,7 @@ public final class ProjectViewerEvent extends EventObject {
 	 *	this value can be <code>null</code>, which means that the "All Projects"
 	 *	mode has been activated.
 	 *
-	 *	@return    The project value
+	 *	@return    The activated project, or null if "All Projects" was chosen.
 	 */
 	public VPTProject getProject() {
 		return project;
