@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="code2html.current-buffer">
+        <CODE>
+            Code2HTML code2html = new Code2HTML();
+            code2html.toHTML(view);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="code2html.current-selection">
+        <CODE>
+            Code2HTML code2html = new Code2HTML();
+            code2html.toHTML(view, true);
+        </CODE>
+    </ACTION>
+</ACTIONS>

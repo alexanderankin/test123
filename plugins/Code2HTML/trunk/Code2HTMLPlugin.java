@@ -42,10 +42,7 @@ public class Code2HTMLPlugin
     }
 
 
-    public void start() {
-        jEdit.addAction(new code2html_current_buffer());
-        jEdit.addAction(new code2html_current_selection());
-    }
+    public void start() {}
 
 
     public void stop() {}
