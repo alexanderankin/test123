@@ -70,15 +70,15 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	//}}}
 
 	//{{{ Private / Protected variables
-	JButton removeFileBtn;
-	JButton removeAllFilesBtn;
-	JButton createProjectBtn;
-	JButton addFileBtn;
-	JButton importFilesBtn;
-	JButton openAllBtn;
-	JButton expandBtn;
-	JButton contractBtn;
-	JButton launchBrowserBtn;// this will eventually be on the context menu
+	RolloverButton removeFileBtn;
+	RolloverButton removeAllFilesBtn;
+	RolloverButton createProjectBtn;
+	RolloverButton addFileBtn;
+	RolloverButton importFilesBtn;
+	RolloverButton openAllBtn;
+	RolloverButton expandBtn;
+	RolloverButton contractBtn;
+	RolloverButton launchBrowserBtn;// this will eventually be on the context menu
 
 	private ProjectView projectView;
 	private JToolBar toolbar;
@@ -555,15 +555,24 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		toolbar.setFloatable(false);
 		toolbar.putClientProperty("JToolBar.isRollover", Boolean.TRUE);
 
-		removeFileBtn = createButton("/projectviewer/icons/RemoveFile.gif", "Remove file or directory");
-		removeAllFilesBtn = createButton("/projectviewer/icons/RemoveAllFiles.gif", "Remove all files");
-		createProjectBtn = createButton("/projectviewer/icons/CreateProject.gif", "Create project");
-		addFileBtn = createButton("/projectviewer/icons/AddFile.gif", "Add file to project");
-		importFilesBtn = createButton("/projectviewer/icons/Import.gif", "Import files into this project");
-		openAllBtn = createButton("/projectviewer/icons/OpenAll.gif", "Open all files in this project");
-		expandBtn = createButton("/projectviewer/icons/Expand.gif", "Expand the file list");
-		contractBtn = createButton("/projectviewer/icons/Contract.gif", "Contract the file list");
-		launchBrowserBtn = createButton("/projectviewer/icons/web.gif", "Preview in Browser");
+		removeFileBtn = createButton("Minus.png", "Remove file or directory");
+		//removeFileBtn = createButton("/projectviewer/icons/RemoveFile.gif", "Remove file or directory");
+		removeAllFilesBtn = createButton("BrokenImage.png", "Remove all files");
+		//removeAllFilesBtn = createButton("/projectviewer/icons/RemoveAllFiles.gif", "Remove all files");
+		createProjectBtn = createButton("Drive.png", "Create project");
+		//createProjectBtn = createButton("/projectviewer/icons/CreateProject.gif", "Create project");
+		addFileBtn = createButton("New.png", "Add file to project");
+		//addFileBtn = createButton("/projectviewer/icons/AddFile.gif", "Add file to project");
+		importFilesBtn = createButton("Parse.png", "Import files into this project");
+		//importFilesBtn = createButton("/projectviewer/icons/Import.gif", "Import files into this project");
+		openAllBtn = createButton("Open.gif", "Open all files in this project");
+		//openAllBtn = createButton("/projectviewer/icons/OpenAll.gif", "Open all files in this project");
+		expandBtn = createButton("ZoomIn.png", "Expand the file list");
+		//expandBtn = createButton("/projectviewer/icons/Expand.gif", "Expand the file list");
+		contractBtn = createButton("ZoomOut.png", "Contract the file list");
+		//contractBtn = createButton("/projectviewer/icons/Contract.gif", "Contract the file list");
+		launchBrowserBtn = createButton("Run.png", "Preview in Browser");
+		//launchBrowserBtn = createButton("/projectviewer/icons/web.gif", "Preview in Browser");
 		toolbar.add(createProjectBtn);
 		toolbar.add(expandBtn);
 		toolbar.add(contractBtn);
@@ -615,8 +624,9 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	 * @param  tooltip  Description of Parameter
 	 * @return          Description of the Returned Value
 	 */
-	private JButton createButton(String icon, String tooltip) {
-		return createButton(new ImageIcon(getClass().getResource(icon)), tooltip);
+	private RolloverButton createButton(String icon, String tooltip) {
+		//return createButton(new ImageIcon(getClass().getResource(icon)), tooltip);
+		return createButton(GUIUtilities.loadIcon(icon), tooltip);
 	}
 
 	/** Create a tool bar button.
@@ -625,8 +635,8 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	 * @param  tooltip  Description of Parameter
 	 * @return          Description of the Returned Value
 	 */
-	private JButton createButton(Icon icon, String tooltip) {
-		JButton init = new JButton(icon);
+	private RolloverButton createButton(Icon icon, String tooltip) {
+		RolloverButton init = new RolloverButton(icon);
 		Insets zeroMargin = new Insets(0, 0, 0, 0);
 		init.setMargin(zeroMargin);
 		init.setToolTipText(tooltip);
