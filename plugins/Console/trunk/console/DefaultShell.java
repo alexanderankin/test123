@@ -53,13 +53,22 @@ class DefaultShell extends Shell
 		else if(command.startsWith("cd"))
 		{
 			if(!java13)
-				console.printError(jEdit.getProperty("console.shell.cd-error"));
+				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
 			else
 			{
-				dir = MiscUtilities.constructPath(dir,command
-					.substring(2).trim());
-				String[] args = { dir };
-				console.printPlain(jEdit.getProperty("console.shell.cd",args));
+				String newDir = command.substring(2).trim();
+				if(newDir.equals(".."))
+					newDir = MiscUtilities.getParentOfPath(dir);
+				else
+					newDir = MiscUtilities.constructPath(dir,newDir);
+				String[] args = { newDir };
+				if(new File(newDir).exists())
+				{
+					dir = newDir;
+					console.printPlain(jEdit.getProperty("console.shell.cd",args));
+				}
+				else
+					console.printError(jEdit.getProperty("console.shell.cd-error",args));
 			}
 			return;
 		}
@@ -163,7 +172,7 @@ class DefaultShell extends Shell
 			console.printInfo(jEdit.getProperty("console.shell.ioerror",args));
 			return;
 		}
-		catch(Exception e)
+		catch(Throwable e)
 		{
 			Log.log(Log.ERROR,this,e);
 			return;
@@ -247,14 +256,21 @@ class DefaultShell extends Shell
 		notify();
 	}
 
-	private Process _exec(String command) throws Exception
+	private Process _exec(String command) throws Throwable
 	{
 		if(java13)
 		{
-			Class[] classes = { String.class, String[].class, File.class };
-			Method method = Runtime.class.getMethod("exec",classes);
-			Object[] args = { command, null, new File(dir) };
-			return (Process)method.invoke(Runtime.getRuntime(),args);
+			try
+			{
+				Class[] classes = { String.class, String[].class, File.class };
+				Method method = Runtime.class.getMethod("exec",classes);
+				Object[] args = { command, null, new File(dir) };
+				return (Process)method.invoke(Runtime.getRuntime(),args);
+			}
+			catch(InvocationTargetException e)
+			{
+				throw e.getTargetException();
+			}
 		}
 		else
 			return Runtime.getRuntime().exec(command);
