@@ -11,7 +11,7 @@ public class PHPParserTester extends TestCase {
 
   public void testParserSuccess() {
     //checkHTML("<?php function do() {}?>");
-
+    checkHTML("<?=\"toto\"");
         checkPHP("$ a = <<<ca\n" +
                  "\n" +
                  "toto\n" +
