@@ -124,7 +124,7 @@ public class ProjectBuffer
 //{{{ createJumpFile()
     public boolean createJumpFile(ProjectBuffer pb) 
     {
-        JumpPlugin.showMsg("JumpPlugin.newproject");
+        //JumpPlugin.showMsg("JumpPlugin.newproject");
         try
         {
             pb.PROJECT_CTBUFFER = ctags_bg.getParser().parse(pb.PROJECT_FILES);
@@ -137,7 +137,7 @@ public class ProjectBuffer
         catch(Exception e)
         {
             //JumpPlugin.getListener().errorMsg("Can\'t create tag file. \nMake sure correct ctags path,\nor current project don't contain valid files to ctags.");
-            JumpPlugin.showMsg("JumpPlugin.ctags.path.incorrect");
+            //JumpPlugin.showMsg("JumpPlugin.ctags.path.incorrect");
             System.out.println("createJumpFile(): can\'t create .jump");
             return false;
         }   
@@ -170,12 +170,15 @@ public class ProjectBuffer
             {
                 if (!createJumpFile(pb))
                 {
-                    
-                  if (viewer != null) viewer.setEnabled(true);
-                  return false;
+                    if (viewer != null) viewer.setEnabled(true);
+                    return false;
                 }
-                if (viewer != null) viewer.setEnabled(true);
-                return true; 
+                else
+                {
+                    if (viewer != null) viewer.setEnabled(true);
+                    System.out.println("jump creqted");
+                    return true; 
+                }
             }
             // Read already seriailzed file 
             else
@@ -191,7 +194,7 @@ public class ProjectBuffer
             // TODO: Put errormsg into JumpEventListener class!!!
             System.out.println("ProjectBuffer: ctags_path_incorrect");
             e.printStackTrace();
-            JumpPlugin.showMsg("JumpPlugin.ctags.path.incorrect");
+            //JumpPlugin.showMsg("JumpPlugin.ctags.path.incorrect");
             //errorMsg("JumpPlugin.ctags.path.incorrect");
             if (viewer != null) viewer.setEnabled(true);
             return false;

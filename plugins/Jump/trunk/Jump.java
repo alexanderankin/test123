@@ -86,6 +86,7 @@ public class Jump
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {
             JumpPlugin.getListener().reloadProjectForced();
+            System.out.println("1.");
             if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null)JumpPlugin.tja.showList();    
         }
         else
@@ -93,9 +94,11 @@ public class Jump
             System.out.println("showProjectJump: Setting active ProjectBuffer. ");
             if (PVActions.getCurrentProject(view) != null)
                 {
-                    JumpPlugin.getListener().reloadProjectForced();
+                    System.out.println("2.");
                     ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
                     if (b == null) return;
+                    
+                    JumpPlugin.getListener().reloadProjectForced();
                     JumpPlugin.setActiveProjectBuffer(b);
                     JumpPlugin.tja.showList();
                 }
@@ -125,6 +128,8 @@ public class Jump
             JumpPlugin.init();
         }
         
+        //if ()
+        
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {   
             JumpPlugin.getListener().reloadProjectForced();
@@ -137,8 +142,13 @@ public class Jump
                 {
                     JumpPlugin.getListener().reloadProjectForced();
                     ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
-                    System.out.println("");
-                    if (b == null) return;
+                    
+                    if (b == null) 
+                    {
+                        System.out.println("showProjectJump() - Error during construct ProjectBuffer.");
+                        return;
+                    }
+                    
                     JumpPlugin.setActiveProjectBuffer(b);
                     if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTag();
                 }

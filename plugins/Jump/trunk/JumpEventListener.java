@@ -188,18 +188,21 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             }
             else
             {
-            // If this project loaded at first time, we create new ProjectBuffer, and then set it active.
-            if (isNewProject == false)
+                // If this project loaded at first time, we create new ProjectBuffer, and then set it active.
+                if (isNewProject == false)
+                    {
+                        ProjectBuffer bu = ProjectBuffer.getProjectBuffer(evt.getProject().getName());
+                        if (bu instanceof ProjectBuffer && bu != null)
+                        {
+                            JumpPlugin.addProjectBuffer(bu);
+                            JumpPlugin.setActiveProjectBuffer(bu);
+                            System.out.println("JumpEventListener: projectLoaded!");
+                        }
+                    }
+                else
                 {
-                    ProjectBuffer bu = ProjectBuffer.getProjectBuffer(evt.getProject().getName());
-                    JumpPlugin.addProjectBuffer(bu);
-                    JumpPlugin.setActiveProjectBuffer(bu);
-                    System.out.println("JumpEventListener: projectLoaded!");
+                    isNewProject = false;                
                 }
-            else
-            {
-                isNewProject = false;                
-            }
             }
         }
         // if (needReload == true)
@@ -231,26 +234,13 @@ public void reloadProjectForced()
     {
         isNewProject = true;
         needReload = true;
-        // I'm forced to do it here...
-        
-        // if (evt.getProject() != null)
-        // {
-        //     JumpPlugin.addProjectBuffer(new ProjectBuffer(evt.getProject().getName()));
-        //     JumpPlugin.setActiveProjectBuffer(JumpPlugin.getProjectBuffer(evt.getProject().getName()));
-        //     System.out.println("JumpEventListener: projectAdded.");
-        // }
     }
 //}}}
 
 //{{{ projectRemoved method     
     public void projectRemoved(ProjectViewerEvent evt) 
     {
-        if (evt.getProject() != null)
-        {
-            JumpPlugin.removeProjectBuffer(evt.getProject().getName());
-            System.out.println("JumpEventListener: projectRemoved.");
-        }
-           
+        JumpPlugin.removeProjectBuffer(evt.getProject().getName());
     }
 //}}} 
 
