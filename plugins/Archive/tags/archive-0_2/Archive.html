@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>Archive Plugin</TITLE>
+</HEAD>
+<BODY BGCOLOR="#FFFFFF">
+
+
+<TABLE
+    CELLSPACING="0"
+    CELLPADDING="3"
+    BGCOLOR="#CCCCFF"
+    BORDER="0"
+    WIDTH="100%"
+    SUMMARY="Archive Plugin header"
+>
+<TR WIDTH="100%">
+<TD><BIG><BIG>Archive Plugin</BIG></BIG></TD>
+<TD ALIGN="right"><SMALL>By Andr&eacute; Kaplan<BR>
+<EM>akaplan@jedit.org</EM></SMALL></TD>
+</TR>
+</TABLE>
+
+
+<UL>
+    <LI><A HREF="#general">Presentation</A></LI>
+    <LI><A HREF="#usage">Usage</A></LI>
+    <LI><A HREF="#credits">Credits</A></LI>
+    <LI><A HREF="#feedback">Feedback</A></LI>
+</UL>
+
+
+<H2><A NAME="general">Presentation</A></H2>
+
+<P>Archive allows to browse and read the content of zip and tar archives.</P>
+
+<P>The zip file system allows to browse/read the content of
+<CODE>*.zip</CODE> and <CODE>*.jar</CODE> files.
+</P>
+
+<P>As for the tar file system, it can browse/read:</P>
+
+<UL>
+    <LI>plain archives: <CODE>*.tar</CODE> files</LI>
+    <LI>gzipped archives: <CODE>*.tar.gz</CODE>, or <CODE>*.tgz</CODE> files</LI>
+    <LI>bzipped archives: <CODE>*.tar.bz2</CODE> files.</LI>
+</UL>
+
+<P>Archive supports nested archives.
+For example, you can explore the content of a <CODE>*.jar</CODE> file inside a
+<CODE>*.tgz</CODE> file.
+</P>
+
+<P>For faster browsing, Archive caches directories in a special directory.
+To clear the cache, use
+<EM>Plugins&nbsp;-&gt;&nbsp;Archive&nbsp;-&gt;&nbsp;Clear&nbsp;directory&nbsp;cache</EM>.
+</P>
+
+<P>Archive requires:</P>
+
+<UL>
+    <LI>JDK 1.1</LI>
+    <LI>jEdit 3.0final</LI>
+</UL>
+
+
+<H2><A NAME="usage">Usage</A></H2>
+
+<P>The straightest way to open an archive is to:</P>
+
+<UL>
+    <LI>Open the File System Browser
+    (<EM>Utilities&nbsp;-&gt;&nbsp;File&nbsp;System&nbsp;Browser</EM>)
+    </LI>
+
+    <LI>Right-click on an archive file and
+    select either <EM>Browse zip archive</EM> or <EM>Browse tar archive</EM>.
+    </LI>
+</UL>
+
+<P>Format of Archive URLs:</P>
+
+<UL>
+    <LI>Exploring a zip archive on Windows:
+    <UL>
+        <LI><CODE>zip:C:\path\to\file.zip!</CODE></LI>
+        <LI><CODE>zip:C:\path\to\file.zip!path/inside/archive</CODE></LI>
+    </UL>
+    </LI>
+
+    <LI>Exploring a tar archive on Unix:
+    <UL>
+        <LI><CODE>tar:/path/to/file.tgz!</CODE></LI>
+        <LI><CODE>tar:/path/to/file.tgz!path/inside/archive</CODE></LI>
+    </UL>
+    </LI>
+</UL>
+
+<P><EM>Notes</EM>:</P>
+
+<OL>
+    <LI>the trailing <CODE>!</CODE> (exclamation mark) is mandatory.</LI>
+    <LI>the file separator inside archives is <CODE>/</CODE> (slash).</LI>
+</OL>
+
+
+<H2><A NAME="credits">Credits</A></H2>
+
+<P>A special mention to:</P>
+
+<UL>
+    <LI>Aftex software for the port of the bzip2 library at
+    <A HREF="http://www.aftexsw.com/aftex/products/java/bzip/">http://www.aftexsw.com/aftex/products/java/bzip/</A>
+    </LI>
+
+    <LI>Tim Endres for the port of the tar utility at
+    <A HREF="http://www.trustice.com/java/tar/">http://www.trustice.com/java/tar/</A>
+    </LI>
+</UL>
+
+<H2><A NAME="feedback">Feedback</A></H2>
+
+<P>
+The preferred way to send bug reports is to use the Bug Tracker at
+<A HREF="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</A>.
+</P>
+
+<P>Also you can write to:</P>
+<UL>
+<LI>Andr&eacute; Kaplan <EM>&lt;akaplan@jedit.org&gt;</EM>;
+<LI>or jEdit-users mailing-list <EM>&lt;jedit-users@lists.sourceforge.net&gt;</EM>;
+<LI>or jEdit-devel mailing.list <EM>&lt;jedit-devel@lists.sourceforge.net&gt;</EM>.
+</UL>
+
+
+</BODY>
+</HTML>
+
