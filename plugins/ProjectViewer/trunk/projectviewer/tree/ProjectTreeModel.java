@@ -97,16 +97,17 @@ abstract class ProjectTreeModel implements TreeModel, Branch {
 	 *
 	 * @param  l  The feature to be added to the TreeModelListener attribute
 	 */
-	public void addTreeModelListener(TreeModelListener l) {
-		listeners.add(l);
+	public void addTreeModelListener(TreeModelListener listener) {
+		//Log.log( Log.DEBUG, this, "addTreeModelListener -> "+listener.toString() );
+		listeners.add(listener);
 	}
 
 	/** Removes a listener previously added with {@link #addTreeModelListener(TreeModelListener)}.
 	 *
 	 * @param  l  Description of Parameter
 	 */
-	public void removeTreeModelListener(TreeModelListener l) {
-		listeners.remove(l);
+	public void removeTreeModelListener(TreeModelListener listener) {
+		listeners.remove(listener);
 	}
 
 	/** Messaged when the user has altered the value for the item identified by
@@ -174,9 +175,12 @@ abstract class ProjectTreeModel implements TreeModel, Branch {
 	 * @param  index  Description of Parameter
 	 */
 	protected void fireNodeChanged(TreePath path, int index) {
+		//Log.log( Log.DEBUG, this, "fireNodeChanged("+path.toString()+"), listeners.size()="+listeners.size() );
 		TreeModelEvent evt = new TreeModelEvent(this, path, toArray(index), null);
-		for(int i = 0; i < listeners.size(); i++)
+		for(int i = 0; i < listeners.size(); i++) {
+			//Log.log( Log.DEBUG, this, "  "+i+" "+((TreeModelListener)listeners.get(i)).toString());
 			((TreeModelListener)listeners.get(i)).treeNodesChanged(evt);
+		}
 	}
 
 }
