@@ -117,6 +117,11 @@ class FtpConnection extends ConnectionManager.Connection
 			new FtpVFS.FtpDirectoryEntry[directoryVector.size()]);
 	}
 
+	/**
+	 * An incredibly broken implementation! Originally only good for
+	 * internal use by resolveSymlinks(), in FTP 0.7.1 we grafted on
+	 * support for file type detection, as required by jEdit 4.2.
+	 */
 	FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException
 	{
 		//CWD into the directory - Doing a LIST on a path with spaces in the
@@ -141,10 +146,12 @@ class FtpConnection extends ConnectionManager.Connection
 
 		setupSocket();
 
+		String name = MiscUtilities.getFileName(path);
+
 		//Here we do a LIST for on the specific file
 		//Since we are in the right dir, we list only the filename, not the
 		// whole path...
-		Reader _reader = client.list(path.substring(parentPath.length()));
+		Reader _reader = client.list(name);
 		if(_reader == null)
 		{
 			// eg, file not found
@@ -153,32 +160,23 @@ class FtpConnection extends ConnectionManager.Connection
 
 		BufferedReader reader = new BufferedReader(_reader);
 
+		// to determine if this is a file or a directory, we list it.
+		// if the list contains 1 entry, guess that this is a file
+		LinkedList listing = new LinkedList();
+
 		try
 		{
-			String line = reader.readLine();
-			if(line != null)
+			String line;
+			while((line = reader.readLine()) != null)
 			{
-				while(line.length() == 0)
-				{
-					line = reader.readLine();
-					if(line == null)
-						return null;
-				}
-
 				FtpVFS.FtpDirectoryEntry dirEntry = lineToDirectoryEntry(line);
-				if(dirEntry == null)
-				{
-					// ok, this really sucks.
-					// we were asked to get the directory
-					// entry for a directory. This stupid
-					// implementation will only work for
-					// the resolveSymlink() method. A proper
-					// version will be written some other time.
-					return new FtpVFS.FtpDirectoryEntry(null,null,null,
-						FtpVFS.FtpDirectoryEntry.DIRECTORY,0L,false,0,null);
-				}
+				if(dirEntry != null)
+					listing.add(dirEntry);
 				else
-					return dirEntry;
+				{
+					Log.log(Log.DEBUG,this,"Discarding "
+						+ line);
+				}
 			}
 		}
 		finally
@@ -186,7 +184,36 @@ class FtpConnection extends ConnectionManager.Connection
 			reader.close();
 		}
 
-		return null;
+		int type;
+		if(listing.size() == 0)
+		{
+			// probably a file that does not exist.
+			type = FtpVFS.FtpDirectoryEntry.FILE;
+		}
+		else if(listing.size() > 1)
+		{
+			type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+		}
+		else
+		{
+			FtpVFS.FtpDirectoryEntry dirEntry
+				= (FtpVFS.FtpDirectoryEntry)
+				listing.get(0);
+			//XXX: we even use startsWith to hot have to parse the
+			//-> symlink indicator. Broken, broken, broken...
+			if(dirEntry.name.startsWith(name))
+				return dirEntry;
+			else
+			{
+				// it could be a directory with 1 file in it!
+				// but I don't care, I don't use FTP :-)
+				type = FtpVFS.FtpDirectoryEntry.FILE;
+			}
+		}
+
+		// this directory entry only has half an ass.
+		return new FtpVFS.FtpDirectoryEntry(
+			null,null,null,type,0L,false,0,null);
 	}
 
 	boolean removeFile(String path) throws IOException
@@ -294,8 +321,8 @@ class FtpConnection extends ConnectionManager.Connection
 	private static UncheckedRE[] unixRegexps;
 	private static UncheckedRE dosRegexp;
 	private static UncheckedRE vmsRegexp;
-	private static UncheckedRE vmsPartial1Regexp;
-	private static UncheckedRE vmsPartial2Regexp;
+	private static UncheckedRE vmsPartialRegexp;
+	private static UncheckedRE vmsRejectedRegexp;
 	private static UncheckedRE as400Regexp;
 
 	static
@@ -317,12 +344,12 @@ class FtpConnection extends ConnectionManager.Connection
 			"vfs.ftp.list.vms"),0,
 			RESearchMatcher.RE_SYNTAX_JEDIT);
 
-		vmsPartial1Regexp = new UncheckedRE(jEdit.getProperty(
-			"vfs.ftp.list.vms.partial.1"),0,
+		vmsPartialRegexp = new UncheckedRE(jEdit.getProperty(
+			"vfs.ftp.list.vms.partial"),0,
 			RESearchMatcher.RE_SYNTAX_JEDIT);
 
-		vmsPartial2Regexp = new UncheckedRE(jEdit.getProperty(
-			"vfs.ftp.list.vms.partial.2"),0,
+		vmsRejectedRegexp = new UncheckedRE(jEdit.getProperty(
+			"vfs.ftp.list.vms.rejected"),0,
 			RESearchMatcher.RE_SYNTAX_JEDIT);
 
 		as400Regexp = new UncheckedRE(jEdit.getProperty(
@@ -333,11 +360,6 @@ class FtpConnection extends ConnectionManager.Connection
 	private void setupSocket()
 		throws IOException
 	{
-		if(jEdit.getBooleanProperty("vfs.ftp.passive"))
-			client.passive();
-		else
-			client.dataPort();
-
 		// See if we should use Binary mode to transfer files.
 		if (jEdit.getBooleanProperty("vfs.ftp.binary"))
 		{
@@ -349,6 +371,11 @@ class FtpConnection extends ConnectionManager.Connection
 			//Stick to ASCII - let the line endings get converted
 			client.representationType(FtpClient.ASCII_TYPE);
 		}
+
+		if(jEdit.getBooleanProperty("vfs.ftp.passive"))
+			client.passive();
+		else
+			client.dataPort();
 	}
 
 	private ArrayList _listDirectory(boolean tryHiddenFiles)
@@ -474,24 +501,27 @@ class FtpConnection extends ConnectionManager.Connection
 			{
 				REMatch match;
 
-				if((match = vmsRegexp.getMatch(line)) != null)
+				if(vmsPartialRegexp.isMatch(line))
+				{
+					prevLine = line;
+					return null;
+				}
+				else if(vmsRejectedRegexp.isMatch(line) == true)
+					return null;
+				else if((match = vmsRegexp.getMatch(line)) != null)
 				{
 					name = match.toString(1);
 					length = Long.parseLong(
 						match.toString(2)) * 512;
 					if(name.endsWith(".DIR"))
 					{
+						name = name.substring(0,
+							name.length() - 4);
 						type = FtpVFS.FtpDirectoryEntry
 							.DIRECTORY;
 					}
-					//permissionString = match.toString(3);
+					permissionString = match.toString(3);
 					ok = true;
-				}
-
-				if((match = vmsPartial1Regexp.getMatch(line)) != null)
-				{
-					prevLine = line;
-					return null;
 				}
 			}
 
