@@ -65,5 +65,26 @@
 			BeanShellUtility.JEditTextArea_spacesToTabs(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="rect-moveup">
+		<CODE>
+			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_UP);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rect-movedown">
+		<CODE>
+			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_DOWN);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rect-moveleft">
+		<CODE>
+			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_LEFT);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="rect-moveright">
+		<CODE>
+			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_RIGHT);
+		</CODE>
+	</ACTION>
+	
 	
 </ACTIONS>

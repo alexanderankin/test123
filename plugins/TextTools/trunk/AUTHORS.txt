@@ -20,3 +20,4 @@ Rudolf Widmann <Rudi.Widmann@web.de>
 	Block Insert/Increment
 	Delete Duplicates
 	Sort Advanced
+	Rectangular Selection move

@@ -75,7 +75,7 @@ public class TextToolsBlockHandling {
       if (selCount == 0 )
       {
 				selBegin = bsu.getVisibleRow(textArea.getCaretPosition());
-				Log.log(Log.DEBUG, BeanShell.class,"selBegin = "+selBegin);
+				// Log.log(Log.DEBUG, BeanShell.class,"selBegin = "+selBegin);
 				selEnd = selBegin + insertText.length();
 				textArea.goToBufferEnd(true);
       } else {
@@ -166,7 +166,7 @@ public class TextToolsBlockHandling {
 	  while (blankBuf.length() < missingBlanks) blankBuf.append("          ");
 	  prefixString = blankBuf.substring(0,missingBlanks);
 	  insertPos = insertPos - missingBlanks;
-	    Log.log(Log.DEBUG, BeanShell.class,"*3 insertPos = "+insertPos);
+	    // Log.log(Log.DEBUG, BeanShell.class,"*3 insertPos = "+insertPos);
 	}
 	/*********************************************************
 	 * finally, do modification

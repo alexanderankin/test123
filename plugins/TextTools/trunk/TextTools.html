@@ -32,6 +32,7 @@
       <LI><A HREF="#TransposeWords">Transpose Words</A></LI>
       <LI><A HREF="#ColumnInsert">Column Insert</A></LI>
       <LI><A HREF="#BlockHandling">Block Fill Insert</A></LI>
+      <LI><A HREF="#BlockMove">Move Rectangular Selection</A></LI>
     </UL>
     
     <P><STRONG><A NAME="Sort">Sort</A></STRONG> by mike dillon &lt;mdillon@jedit.org&gt;</P>
@@ -126,15 +127,17 @@
     
     <P><STRONG><A NAME="BlockFill">Block Fill / Insert</A></STRONG> by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
     
-    <P>Inserts text in a rectangular selection. When invoked, a dialog pops up,  with following
+    <P>Inserts text in a rectangular selection. When invoked, a dialog pops up, with following
       options:</P>
     <UL>
-      <LI>checkbox overwrite: (checked): overwrite selection (else):  insert at the left side of
-        the selection</LI>
-      <LI>Textarea : text you want to insert. If you specify a numeric, incrementing is possible</LI>
-      <LI>Increment: increase a  numeric given in &quot;Textarea&quot; in every line with an
+      <LI><B>overwrite</B>: <BR>
+        (if checked): overwrite selection <BR>
+        (not checked): insert at the left side of the selection</LI>
+      <LI><B>Textfield</B> : enter the text you want to insert. If you specify a numeric,
+        incrementing is possible</LI>
+      <LI><B>Increment</B>: increase a numeric given in &quot;Textarea&quot; in every line with an
         increment. Note: increment is only possible in overwrite mode</LI>
-      <LI>checkbox leading zeros: fill increment rightbound with leading zeros</LI>
+      <LI><B>leading Zeros</B>: fill increment rightbound with leading zeros</LI>
     </UL>
     
     <P>If you select &quot;overwrite&quot; , the tool overwrites exactly the rectangular selection.
@@ -147,11 +150,23 @@
     </UL>
     
     <P>If you don't select &quot;overwrite&quot;, the tool inserts the entered text at the left
-      side of the rectangular selection. The length of the entered selection is ignored.</P>
+      side of the rectangular selection. The length of the original selection is ignored.</P>
     
     <P>Note: If the (rectangular !) selection selects only one line, the selected columns are
-      filled till end-of-file.</P>
+      filled till end-of-file, extremly useful for numbering.</P>
     
-    <P></P>
+    <P><STRONG><A NAME="BlockMove">Move Rectangular Selection</A></STRONG> by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
+    
+    <P>Moves the selected text in all directions</P>
+    
+    <P><B><FONT SIZE="+1">Actions</FONT>:</B></P>
+    <UL>
+      <LI><B>rect move up </B>: move rectangular selection one row up</LI>
+      <LI><B>rect move down</B>: move rectangular selection one row down</LI>
+      <LI><B>rect move left</B>: move rectangular or range selection one column left</LI>
+      <LI><B>rect move right</B>: move rectangular or range selection one column right</LI>
+    </UL>
+    
+    <P>Supports multi selection </P>
   </BODY>
 </HTML>
