@@ -63,7 +63,6 @@ public class CatalogManager
 		else
 			parent = null;
 
-		System.err.println("parent of " + current + " is " + parent);
 		if(publicId == null && systemId != null && parent != null)
 		{
 			if(systemId.startsWith(parent))
@@ -102,8 +101,18 @@ public class CatalogManager
 				newSystemId = parent + systemId; */
 		}
 
-		if(cache && !(newSystemId.startsWith("file:")
-			|| newSystemId.startsWith("jeditresource:")))
+		if(newSystemId == null)
+			return null;
+		else if(newSystemId.startsWith("file:")
+			|| newSystemId.startsWith("jeditresource:"))
+		{
+			InputSource source = new InputSource(newSystemId);
+			//source.setByteStream(new URL(newSystemId).openStream());
+			return source;
+		}
+		else if(!network)
+			return null;
+		else
 		{
 			final String _newSystemId = newSystemId;
 			final VFS vfs = VFSManager.getVFSForPath(_newSystemId);
@@ -115,7 +124,7 @@ public class CatalogManager
 				public void run()
 				{
 					View view = jEdit.getActiveView();
-					if(showDownloadResourceDialog(
+					if(!cache || showDownloadResourceDialog(
 						view,_newSystemId))
 					{
 						session[0] = vfs.createVFSSession(
@@ -140,33 +149,29 @@ public class CatalogManager
 
 			if(session[0] != null)
 			{
-				File file;
-				try
-				{
-					file = copyToLocalFile(session[0],vfs,newSystemId);
-				}
-				finally
-				{
-					vfs._endVFSSession(session,null);
-				}
-
-				addUserResource(publicId,systemId,file.toURL().toString());
 				InputSource source = new InputSource(newSystemId);
-				source.setByteStream(new FileInputStream(file));
+				if(cache)
+				{
+					File file;
+					try
+					{
+						file = copyToLocalFile(session[0],vfs,newSystemId);
+					}
+					finally
+					{
+						vfs._endVFSSession(session,null);
+					}
+
+					addUserResource(publicId,systemId,file.toURL().toString());
+					source.setByteStream(new FileInputStream(file));
+				}
+				else
+					source.setByteStream(vfs._createInputStream(session,newSystemId,false,null));
+
 				return source;
 			}
 			else
 				throw new IOException(jEdit.getProperty("xml.network-error"));
-		}
-		else if(newSystemId == null)
-			return null;
-		else
-		{
-			// Xerces has a bug where an InputSource without a byte
-			// stream is loaded incorrectly.
-			InputSource source = new InputSource(newSystemId);
-			source.setByteStream(new URL(newSystemId).openStream());
-			return source;
 		}
 	} //}}}
 
@@ -285,6 +290,7 @@ public class CatalogManager
 	//{{{ Static variables
 	private static boolean loaded;
 	private static boolean cache;
+	private static boolean network;
 	private static Catalog catalog;
 	private static HashMap resourceCache;
 	private static HashMap reverseResourceCache;
@@ -397,6 +403,7 @@ public class CatalogManager
 			return;
 
 		cache = jEdit.getBooleanProperty("xml.cache");
+		network = jEdit.getBooleanProperty("xml.network");
 
 		resourceCache = new HashMap();
 		reverseResourceCache = new HashMap();

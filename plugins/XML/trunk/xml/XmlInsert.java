@@ -175,7 +175,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	//{{{ update() method
 	private void update()
 	{
-		SideKickParsedData _data = SideKickParsedData.getParsedData(view.getEditPane());
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 		if(!(_data instanceof XmlParsedData))
 		{
 			setDeclaredEntities(null);
@@ -287,8 +287,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	{
 		Buffer buffer = view.getBuffer();
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(
-			view.getEditPane());
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(_data instanceof XmlParsedData)
 		{
