@@ -171,7 +171,7 @@ public class AntFarm extends JPanel implements EBComponent
 			_antProjects.remove( path );
 		}
 		_antTree.reload();
-		loadBuildFileInShell( path );
+		loadBuildFileInShell( path, true );
 	}
 
 
@@ -233,10 +233,22 @@ public class AntFarm extends JPanel implements EBComponent
 
 	void loadBuildFileInShell( String filePath )
 	{
+		loadBuildFileInShell( filePath, false);
+	}
+	
+	void loadBuildFileInShell(String filePath, boolean forceLoad)
+	{
 		Vector buildFiles = getAntBuildFiles();
 		for ( int i = 0; i < buildFiles.size(); i++ ) {
 			String fileName = (String) buildFiles.elementAt( i );
-			if ( fileName.equals( filePath ) &&
+			if ( fileName.equals( filePath ) && forceLoad )
+			{
+				Console console = AntFarmPlugin.getConsole( _view, false );
+				console.run( AntFarmPlugin.ANT_SHELL, console, "="
+					 + ( i + 1 ) );
+				break;
+			}
+			else if( fileName.equals( filePath ) &&
 				!filePath.equals(AntFarmPlugin.ANT_SHELL.getCurrentProjectPath())
 			) {
 				Console console = AntFarmPlugin.getConsole( _view, false );
