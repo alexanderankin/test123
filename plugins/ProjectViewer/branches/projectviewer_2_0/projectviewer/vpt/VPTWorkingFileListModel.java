@@ -202,9 +202,11 @@ public class VPTWorkingFileListModel extends DefaultTreeModel
 					lst = new ArrayList();
 					fileLists.put(projs[j], lst);
 				}
-				lst.add(f);
-				Collections.sort(lst, comp);
-				super.nodeStructureChanged(projs[j]);
+				if (!lst.contains(f)) {
+					lst.add(f);
+					Collections.sort(lst, comp);
+					super.nodeStructureChanged(projs[j]);
+				}
 			}
 		}
 	} //}}}
