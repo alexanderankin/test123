@@ -1,7 +1,7 @@
 Initial beta release
 --------------------
-
-- Get SourceForge account, and commit plugin to jEdit project.
+cvs commit -m "Fixed compile error with getDefinitionFileName" CTagsParser.java
+cvs commit -m "Fixed compile error with getDefinitionFileName" ExuberantCTagsParser.java
 
 - Get and install JDK 1.1 for backwards compatibility.
 
