@@ -82,17 +82,17 @@ public class InfoViewerOptionPane
         addComponent(
             jEdit.getProperty("options.infoviewer.browser.class.label"),
             tClass = new JTextField(jEdit.getProperty(
-                "options.infoviewer.browser.class.default"))
+                "options.infoviewer.browser.class.default"), 15)
         );
         addComponent(
             jEdit.getProperty("options.infoviewer.browser.method.label"),
             tMethod = new JTextField(jEdit.getProperty(
-                "options.infoviewer.browser.method.default"))
+                "options.infoviewer.browser.method.default"), 15)
         );
         addComponent(
             jEdit.getProperty("options.infoviewer.browser.other.label"),
             tBrowser = new JTextField(jEdit.getProperty(
-                "options.infoviewer.browser.other.default"))
+                "options.infoviewer.browser.other.default"), 15)
         );
 
         // create the dialog: 3. misc settings
@@ -112,7 +112,7 @@ public class InfoViewerOptionPane
         }
         
         addComponent(jEdit.getProperty("options.infoviewer.misc.homepage"),
-            tHome = new JTextField(homepage));
+            tHome = new JTextField(homepage, 15));
             
         // configure the dialog:
         

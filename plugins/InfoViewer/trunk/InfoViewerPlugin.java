@@ -1,6 +1,6 @@
 /*
  * InfoViewerPlugin.java - an info viewer plugin for jEdit
- * Copyright (C) 1999 Dirk Moebius
+ * Copyright (C) 1999 2000 Dirk Moebius
  * based on the original jEdit HelpViewer by Slava Pestov.
  *
  * This program is free software; you can redistribute it and/or
@@ -110,7 +110,7 @@ public class InfoViewerPlugin extends EBPlugin {
         if (u.startsWith("jeditresource:")) {
             browsertype = "internal";
         }
-        Log.log(Log.DEBUG, this, "showURL (" + browsertype + "): " + u);
+        Log.log(Log.DEBUG, this, "gotoURL (" + browsertype + "): " + u);
         
         if ("external".equals(browsertype)) {
             // use external browser:
@@ -133,8 +133,8 @@ public class InfoViewerPlugin extends EBPlugin {
             String[] args = new String[3];
             args[0] = "sh";
             args[1] = "-c";
-            args[2] = "netscape -remote openURL\\(\'" + convertURL(u) + "\'\\)"
-                      + " || netscape \'" + convertURL(u) + "\'";
+            args[2] = "netscape -remote openURL\\(\'" + convertURL(u) 
+                      + "\'\\) -raise || netscape \'" + convertURL(u) + "\'";
             try {
                 Runtime.getRuntime().exec(args);
             }
@@ -144,12 +144,24 @@ public class InfoViewerPlugin extends EBPlugin {
             }            
         } else {
             // use internal InfoViewer browser:
-            if (infoviewer == null) {
-                infoviewer = new InfoViewer();
-            }
-            infoviewer.setVisible(true);
-            infoviewer.gotoURL(url, true);
+            showInternalInfoViewer(url);
         }
+    }
+
+
+    /** 
+     * this is a convenience method to force InfoViewerPlugin to use the
+     * internal InfoViewer. The static instance will be created, opened,
+     * brought to front and loaded with the url. This method is the
+     * default, if class/method invocation is used.
+     * @param url the URL.
+     */
+    public void showInternalInfoViewer(URL url) {
+        if (infoviewer == null) {
+            infoviewer = new InfoViewer();
+        }
+        infoviewer.setVisible(true);
+        infoviewer.gotoURL(url, true);
     }
     
 
@@ -237,12 +249,13 @@ public class InfoViewerPlugin extends EBPlugin {
             return;
         }
         
-        if (method == null) {
+        if (method == null || (method != null && method.length() == 0)) {
             // no method: try to find URL or String or empty constructor
             Constructor constr = null;
             try {
                 constr = c.getConstructor(new Class[] {URL.class} );
-                obj = constr.newInstance(new Object[] { new URL(url)} );
+                if (constr != null)
+                    obj = constr.newInstance(new Object[] {new URL(url)} );
             }
             catch(Exception ex) { 
                 Log.log(Log.DEBUG, this, ex);
@@ -250,7 +263,8 @@ public class InfoViewerPlugin extends EBPlugin {
             if (obj == null) {
                 try {
                     constr = c.getConstructor(new Class[] {String.class} );
-                    obj = constr.newInstance(new Object[] { url} );
+                    if (constr != null)
+                        obj = constr.newInstance(new Object[] {url} );
                 }
                 catch(Exception ex) { 
                     Log.log(Log.DEBUG, this, ex);
@@ -259,7 +273,8 @@ public class InfoViewerPlugin extends EBPlugin {
             if (obj == null) {
                 try {
                     constr = c.getConstructor(new Class[0]);
-                    obj = constr.newInstance(new Object[0]);
+                    if (constr != null)
+                        obj = constr.newInstance(new Object[0]);
                 }
                 catch(Exception ex) { 
                     Log.log(Log.DEBUG, this, ex);
@@ -267,7 +282,7 @@ public class InfoViewerPlugin extends EBPlugin {
             }            
             if (obj == null) {
                 GUIUtilities.error(null, "infoviewer.error.classnotfound", 
-                    new Object[] {clazz} );
+                                   new Object[] {clazz} );
                 return;
             }
             
@@ -277,8 +292,10 @@ public class InfoViewerPlugin extends EBPlugin {
             boolean ok = false;
             try {
                 meth = c.getDeclaredMethod(method, new Class[] {URL.class} );
-                obj = meth.invoke(null, new Object[] { new URL(url)} );
-                ok = true;
+                if (meth != null) {
+                    obj = meth.invoke(null, new Object[] {new URL(url)} );
+                    ok = true;
+                }
             }
             catch(Exception ex) { 
                 Log.log(Log.DEBUG, this, ex);
@@ -286,8 +303,10 @@ public class InfoViewerPlugin extends EBPlugin {
             if (!ok) {
                 try {
                     meth = c.getDeclaredMethod(method, new Class[] {String.class} );
-                    obj = meth.invoke(null, new Object[] { url} );
-                    ok = true;
+                    if (meth != null) {
+                        obj = meth.invoke(null, new Object[] {url} );
+                        ok = true;
+                    }
                 }
                 catch(Exception ex) { 
                     Log.log(Log.DEBUG, this, ex);
@@ -296,8 +315,10 @@ public class InfoViewerPlugin extends EBPlugin {
             if (!ok) {
                 try {
                     meth = c.getDeclaredMethod(method, new Class[0]);
-                    obj = meth.invoke(null, new Object[0]);
-                    ok = true;
+                    if (meth != null) {
+                        obj = meth.invoke(null, new Object[0]);
+                        ok = true;
+                    }
                 }
                 catch(Exception ex) { 
                     Log.log(Log.DEBUG, this, ex);
@@ -311,7 +332,9 @@ public class InfoViewerPlugin extends EBPlugin {
         }
             
         if (obj != null) {
-            if (obj instanceof JComponent) {
+            if (obj instanceof Window) {
+                ((Window)obj).show();
+            } else if (obj instanceof JComponent) {
                 JFrame f = new JFrame("Infoviewer JWrapper");
                 f.getContentPane().add((JComponent)obj);
                 f.pack();

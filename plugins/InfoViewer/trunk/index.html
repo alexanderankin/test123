@@ -34,7 +34,7 @@ browser like Netscape or IE, but the InfoViewer Plugin also contains a
 lightweight mini web browser named <b>InfoViewer</b>, utilizing builtin
 Swing capabilities.
 <p>For the moment, the only plugin that supports the InfoViewer Plugin,
-is <i>JIndex</i> (starting with version 0.4). This will probably change
+is <i>JIndex</i> (starting with version 0.3). This will probably change
 in the near future, and more plugins will use the InfoViewer as the component
 for displaying help contents.
 <center>
@@ -49,10 +49,10 @@ What is planned for the future?</h3>
 
 <ul>
 <li>
-Better history support (save/browse history)</li>
+Better history support (save/browse history) with caching</li>
 
 <li>
-Standard online web browsing functionality</li>
+More standard online web browsing functionality</li>
 
 <li>
 JavaHelp or MSHelp functionality</li>
@@ -68,7 +68,7 @@ command string.
 <h3>
 What does "Netscape (with reuse, Unix only)" in the options mean?</h3>
 It invokes the following command:
-<p><tt>sh -c netscape -openURL\('%u'\) || netscape '%u'</tt>
+<p><tt>sh -c netscape -openURL\('%u'\) -raise || netscape '%u'</tt>
 <h3>
 How can I add an separator between bookmark entries?</h3>
 In the "Edit Bookmarks" dialog, enter a new entry with "-" as title.
