@@ -51,8 +51,9 @@ public class ErrorHighlight extends TextAreaExtension
 		for(int i = 0; i < errorSources.length; i++)
 		{
 			ErrorSource.Error[] errors = errorSources[i]
-				.getLineErrors(textArea.getBuffer().getPath(),
-				physicalLine,physicalLine);
+				.getLineErrors(textArea.getBuffer()
+				.getSymlinkPath(),physicalLine,
+				physicalLine);
 			if(errors == null)
 				continue;
 
@@ -81,7 +82,7 @@ public class ErrorHighlight extends TextAreaExtension
 		{
 			ErrorSource.Error[] lineErrors =
 				errorSources[i].getLineErrors(
-				textArea.getBuffer().getPath(),
+				textArea.getBuffer().getSymlinkPath(),
 				line,line);
 
 			if(lineErrors == null)
