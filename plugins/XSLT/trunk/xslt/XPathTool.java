@@ -181,7 +181,6 @@ public class XPathTool extends JPanel implements ListSelectionListener, ActionLi
 
 
   private void evaluateExpression() throws Exception, IOException, SAXException, TransformerException {
-	assert inputSelectionPanel.isFileSelected() || inputSelectionPanel.isBufferSelected() ;
 	String path = new String();
 	InputSource inputSource;
 	
