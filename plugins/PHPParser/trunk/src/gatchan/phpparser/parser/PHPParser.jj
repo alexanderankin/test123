@@ -3884,6 +3884,7 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
 
   {
       fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG,
                                                 path,
                                                 "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
                                                 token.sourceStart,
@@ -4068,6 +4069,7 @@ Statement WhileStatementAction(final int start, final int end) :
   token = <COLON> (statement = Statement() {stmts.add(statement);})*
   {
         fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                  PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
                                                   path,
                                                   "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
                                                   start,
@@ -4350,6 +4352,7 @@ final ArrayList list = new ArrayList();
       (action = Statement() {list.add(action);pos = action.sourceEnd+1;})*
       {
         fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                  PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
                                                   path,
                                                   "Ugly syntax detected, you should for () {...} instead of for (): ... endfor;",
                                                   tokenColon.sourceStart,
