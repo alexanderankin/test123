@@ -19,6 +19,7 @@
 package projectviewer.persist;
 
 //{{{ Imports
+import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
 
@@ -82,7 +83,11 @@ public class ProjectNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		project.setRootPath(attrs.getValue(PATH_ATTR));
+		if (File.separatorChar == '\\') {
+			project.setRootPath(attrs.getValue(PATH_ATTR).replace('/', '\\'));
+		} else {
+			project.setRootPath(attrs.getValue(PATH_ATTR));
+		}
 		project.setURL(attrs.getValue(URL_ATTR));
 		return project;
 	} //}}}
