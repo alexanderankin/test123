@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.Vector;
 import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.*;
@@ -133,12 +134,36 @@ public class SessionsPlugin extends EBPlugin
 	}
 
 
-	private void addSessionSwitcher(View view)
+	private void addSessionSwitcher(final View view)
 	{
-		SessionSwitcher switcher = (SessionSwitcher) viewSessionSwitchers.get(view);
-		if (switcher == null)
+		removeSessionSwitcher(view);
+
+		if(jEdit.getBooleanProperty("sessions.switcher.showJEditToolBar", false))
 		{
-			switcher = new SessionSwitcher(view);
+			if(view.getToolBar() != null)
+			{
+				// Add to jEdit's default toolbar:
+				final SessionSwitcher switcher = new SessionSwitcher(view, true);
+				viewSessionSwitchers.put(view, switcher);
+
+				// We need to add it later. Cannot add it right now, because if the View
+				// receives the PropertiesChanged message, it removes and recreates
+				// the toolbar. If it receives the message _after_ we received it, then
+				// our switcher would be gone.
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						view.getToolBar().add(switcher);
+						view.getRootPane().revalidate();
+					}
+				});
+			}
+		}
+		else
+		{
+			// Add a _new_ toolbar to the View:
+			SessionSwitcher switcher = new SessionSwitcher(view, false);
 			view.addToolBar(switcher);
 			viewSessionSwitchers.put(view, switcher);
 		}
@@ -150,7 +175,16 @@ public class SessionsPlugin extends EBPlugin
 		SessionSwitcher switcher = (SessionSwitcher) viewSessionSwitchers.get(view);
 		if (switcher != null)
 		{
+			// try to remove toolbar (does nothing if it is not there)
 			view.removeToolBar(switcher);
+
+			if(view.getToolBar() != null)
+			{
+				// try to remove from jEdit's default toolbar (does nothing if it is not there)
+				view.getToolBar().remove(switcher);
+				view.getRootPane().revalidate();
+			}
+
 			viewSessionSwitchers.remove(view);
 		}
 	}

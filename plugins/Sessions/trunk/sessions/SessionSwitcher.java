@@ -47,7 +47,7 @@ public class SessionSwitcher
 		implements ActionListener, ItemListener, EBComponent
 {
 
-	public SessionSwitcher(View view)
+	public SessionSwitcher(View view, boolean isInDefaultToolBar)
 	{
 		super();
 		this.view = view;
@@ -95,9 +95,11 @@ public class SessionSwitcher
 		add(reload);
 		add(prefs);
 
-		// add some glue at the end of the toolbar,
-		//so that the combo box doesn't get too long:
-		add(Box.createGlue());
+		// if we're not added to jEdit's default toolbar, then add some glue at
+		// the end of the toolbar, so that we're left aligned and the combo box
+		// doesn't get too long:
+		if(!isInDefaultToolBar)
+			add(Box.createGlue());
 
 		updateTitle();
 	}

@@ -36,6 +36,13 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 public class SessionsOptionPane extends AbstractOptionPane implements ActionListener
 {
 
+	private JCheckBox bAutoSave;
+	private JCheckBox bCloseAll;
+	private JCheckBox bShowToolBar;
+	private JCheckBox bShowJEditToolBar;
+	private JCheckBox bShowTitle;
+
+
 	public SessionsOptionPane()
 	{
 		super("sessions");
@@ -60,6 +67,11 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		);
 		bShowToolBar.addActionListener(this);
 
+		bShowJEditToolBar = new JCheckBox(
+			jEdit.getProperty("options.sessions.switcher.showJEditToolBar"),
+			jEdit.getBooleanProperty("sessions.switcher.showJEditToolBar", false)
+		);
+
 		bShowTitle = new JCheckBox(
 			jEdit.getProperty("options.sessions.switcher.showTitle"),
 			jEdit.getBooleanProperty("sessions.switcher.showTitle", true)
@@ -69,7 +81,8 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		addComponent(bAutoSave);
 		addComponent(bCloseAll);
 		addComponent(bShowToolBar);
-		addComponent(bShowTitle);
+		addComponent("    ", bShowJEditToolBar);
+		addComponent("    ", bShowTitle);
 	}
 
 
@@ -78,20 +91,16 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		jEdit.setBooleanProperty("sessions.switcher.autoSave", bAutoSave.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.closeAll", bCloseAll.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showToolBar", bShowToolBar.isSelected());
+		jEdit.setBooleanProperty("sessions.switcher.showJEditToolBar", bShowJEditToolBar.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showTitle", bShowTitle.isSelected());
 	}
 
 
 	public void actionPerformed(ActionEvent e)
 	{
+		bShowJEditToolBar.setEnabled(bShowToolBar.isSelected());
 		bShowTitle.setEnabled(bShowToolBar.isSelected());
 	}
-
-
-	private JCheckBox bAutoSave;
-	private JCheckBox bCloseAll;
-	private JCheckBox bShowToolBar;
-	private JCheckBox bShowTitle;
 
 }
 

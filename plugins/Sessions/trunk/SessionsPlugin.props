@@ -4,10 +4,10 @@
 
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=0.7
+plugin.sessions.SessionsPlugin.version=0.7.1
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
 plugin.sessions.SessionsPlugin.depend.0=jdk 1.1
-plugin.sessions.SessionsPlugin.depend.1=jedit 03.02.02.00
+plugin.sessions.SessionsPlugin.depend.1=jedit 03.02.99.01
 
 
 #
@@ -126,5 +126,6 @@ options.sessions.label=Sessions
 options.sessions.switcher.autoSave=Autosave sessions (on switch, rename, close)
 options.sessions.switcher.closeAll=Close all files before switching to new session
 options.sessions.switcher.showToolBar=Show Session Switcher toolbar
+options.sessions.switcher.showJEditToolBar=Add it to JEdit\'s main toolbar
 options.sessions.switcher.showTitle=Show "Session:" label
 
