@@ -434,6 +434,9 @@ class SideKick implements EBComponent
 				if(views[i].getBuffer() == buffer)
 				{
 					SideKickParsedData.setParsedData(view,data[0]);
+					buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data[0]);
+					if(buffer.getProperty("folding").equals("sidekick"))
+						buffer.invalidateCachedFoldLevels();
 				}
 			}
 

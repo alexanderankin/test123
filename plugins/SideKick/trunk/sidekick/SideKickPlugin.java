@@ -28,6 +28,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Component;
 import java.util.*;
+import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.syntax.*;
@@ -41,7 +42,14 @@ public class SideKickPlugin extends EBPlugin
 	//{{{ Some constants
 	public static final String PARSER_PROPERTY = "sidekick.parser";
 	public static final String PARSED_DATA_PROPERTY = "sidekick.parsed-data";
+	public static final String PARSE_COUNT = "sidekick.parse-count";
 	//}}}
+
+	//{{{ start() method
+	public void start()
+	{
+		FoldHandler.registerFoldHandler(new SideKickFoldHandler());
+	} //}}}
 
 	//{{{ createMenuItems() method
 	public void createMenuItems(Vector menuItems)
