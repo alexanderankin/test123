@@ -34,6 +34,7 @@ import org.gjt.sp.util.*;
 import errorlist.*;
 
 import SqlPlugin;
+import sql.preprocessors.*;
 
 /**
  *  Description of the Class
@@ -50,6 +51,7 @@ public class SqlUtils
 
   protected static SqlThreadGroup sqlThreadGroup;
 
+  protected static Vector preprocessors = null;
 
   /**
    *  Sets the SelectedServerName attribute of the SqlUtils class
@@ -357,14 +359,15 @@ public class SqlUtils
 
       sqlText = buffer.getText( startPos, length );
 
-      Log.log( Log.DEBUG, SqlUtils.class,
-          "Raw text is : [" + sqlText + "]" );
+      //!! Here all preprocessors will go...
+      final Vector v = getPreprocessors();
 
-//!!      sqlText =
-//!!        (String)org.gjt.sp.jedit.BeanShell.eval( view, sqlText, false );
-      
-      Log.log( Log.DEBUG, SqlUtils.class,
-          "Trying to run SQL: [" + sqlText + "]" );
+      for ( Enumeration e = v.elements(); e.hasMoreElements(); )
+      {
+        final Preprocessor pr = (Preprocessor)e.nextElement();
+        pr.setView( view );
+        sqlText = pr.process( sqlText );
+      }
 
       final SqlParser parser = new SqlParser( sqlText, 0 );
 
@@ -378,30 +381,8 @@ public class SqlUtils
         System.err.println( ex );
       }
 
-      try
-      {
-        sqlText = parser.substituteVariable ( sqlText, 
-          new SqlParser.SubstitutionHandler()
-          {
-            public String substituteFragment( String text, int pos, int length )
-            {
-              final String value = JOptionPane.showInputDialog ( view,
-                                                         text.substring ( 0,
-                                                                          pos ) );
-              if ( value == null ) return text;
-               return text.substring( 0, pos ) +
-                      value +
-                      text.substring( pos + length );
-            }
-          } );
-      }
-      catch (SqlParser.SqlEotException ex)
-      {
-        System.err.println (ex);
-      }
-
       Log.log ( Log.DEBUG, SqlUtils.class, "After the variable substitution: [" + sqlText + "]");
-    
+
       final boolean bresult = stmt.execute( sqlText );
 
       if ( bresult )
@@ -723,5 +704,37 @@ public class SqlUtils
 
   }
 
+  public static void resetPreprocessors()
+  {
+    preprocessors = null;
+  }
+
+  protected static void fillPreprocessors()
+  {
+    preprocessors = new Vector();
+
+    int i=0;
+    while( true )
+    {
+      final String className = jEdit.getProperty( "sql.preprocessors."+i++ );
+      if ( className == null || "".equals( className ) )
+        break;
+      try
+      {
+        preprocessors.add( Class.forName( className ).newInstance() );
+      } catch ( Exception ex )
+      {
+        Log.log ( Log.ERROR, SqlUtils.class, "Exception creating preprocessors" );
+        Log.log ( Log.ERROR, SqlUtils.class, ex );
+      }
+    }
+  }
+
+  protected static Vector getPreprocessors()
+  {
+    if ( preprocessors == null )
+      fillPreprocessors();
+    return preprocessors;
+  }
 }
 
