@@ -229,6 +229,8 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		setShell(shell);
 
+		this.output.setCaretPosition(this.output.getDocument().getLength());
+
 		ShellState state = (ShellState)shellHash.get(shell.getName());
 		state.commandRunning = true;
 
@@ -419,6 +421,21 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
 
+		animationLabel = new JLabel();
+		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
+		Toolkit toolkit = getToolkit();
+		animation = new AnimatedIcon(
+			toolkit.getImage(Console.class.getResource("/console/Blank.png")),
+			new Image[] {
+				toolkit.getImage(Console.class.getResource("/console/Active1.png")),
+				toolkit.getImage(Console.class.getResource("/console/Active2.png")),
+				toolkit.getImage(Console.class.getResource("/console/Active3.png")),
+				toolkit.getImage(Console.class.getResource("/console/Active4.png"))
+			},10,animationLabel
+		);
+		animationLabel.setIcon(animation);
+		buttonBox.add(animationLabel);
+
 		buttonBox.add(runAgain = new RolloverButton(RUN_AGAIN));
 		runAgain.setToolTipText(jEdit.getProperty("run-last-console-command.label"));
 		Insets margin = new Insets(0,0,0,0);
@@ -450,21 +467,6 @@ implements EBComponent, Output, DefaultFocusComponent
 		clear.setMargin(margin);
 		clear.addActionListener(actionHandler);
 		clear.setRequestFocusEnabled(false);
-
-		animationLabel = new JLabel();
-		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
-		Toolkit toolkit = getToolkit();
-		animation = new AnimatedIcon(
-			toolkit.getImage(Console.class.getResource("/console/Blank.png")),
-			new Image[] {
-				toolkit.getImage(Console.class.getResource("/console/Active1.png")),
-				toolkit.getImage(Console.class.getResource("/console/Active2.png")),
-				toolkit.getImage(Console.class.getResource("/console/Active3.png")),
-				toolkit.getImage(Console.class.getResource("/console/Active4.png"))
-			},10,animationLabel
-		);
-		animationLabel.setIcon(animation);
-		buttonBox.add(animationLabel);
 
 		panel.add(BorderLayout.EAST,buttonBox);
 

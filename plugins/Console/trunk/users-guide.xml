@@ -699,11 +699,16 @@ specified.</para></listitem>
 
 </sect2>
 
-<sect2><title>The COMMAND element</title>
+<sect2><title>The COMMANDS element</title>
+
+<para>
+ The <literal>COMMANDS</literal> element must be contained in the
+ root <literal>COMMANDO</literal> element.
+</para>
 
 <para>
  One or more <literal>COMMAND</literal> elements can be defined inside the
- <literal>COMMANDO</literal> element. Each <literal>COMMAND</literal> element
+ <literal>COMMANDS</literal> element. Each <literal>COMMAND</literal> element
  defines a command to execute. The following attributes are supported:
 </para>
 
