@@ -205,7 +205,6 @@ public class XmlTree extends JPanel implements EBComponent
 			_path.addElement(node);
 			_path.addElement(root);
 
-			System.err.println(_path);
 			Object[] path = new Object[_path.size()];
 			for(int i = 0; i < path.length; i++)
 				path[i] = _path.elementAt(path.length - i - 1);

@@ -156,13 +156,11 @@ public class CompletionInfo
 	//{{{ getCompletionInfoForNamespace() method
 	public static CompletionInfo getCompletionInfoForNamespace(String namespace)
 	{
-		System.err.println("trying to get for ns " + namespace);
 		synchronized(lock)
 		{
 			Object obj = completionInfoNamespaces.get(namespace);
 			if(obj instanceof String)
 			{
-				System.err.println("loading from " + obj);
 				CompletionInfo info = getCompletionInfoFromResource((String)obj);
 				completionInfoNamespaces.put(namespace,info);
 				return info;
