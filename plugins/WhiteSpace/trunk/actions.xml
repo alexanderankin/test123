@@ -35,88 +35,40 @@
 
     <ACTION NAME="white-space.toggle-space-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getSpaceHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleSpaceHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getSpaceHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isSpaceHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-leading-space-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getLeadingSpaceHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleLeadingSpaceHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getLeadingSpaceHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isLeadingSpaceHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-inner-space-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getInnerSpaceHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleInnerSpaceHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getInnerSpaceHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isInnerSpaceHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-trailing-space-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getTrailingSpaceHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleTrailingSpaceHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getTrailingSpaceHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isTrailingSpaceHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
