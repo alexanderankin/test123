@@ -20,24 +20,36 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-    //{{{ imports
-    import org.gjt.sp.jedit.*;
-    import org.gjt.sp.jedit.gui.OptionsDialog;
-    import org.gjt.sp.jedit.msg.*;
-    import org.gjt.sp.util.Log;
 
-    import java.util.*;
-    import java.io.*;
-    import ctags.bg.*;
+package jump;
 
-    import projectviewer.*;
-    import projectviewer.vpt.*;
-    import projectviewer.event.*; //}}}
+import java.io.File;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Vector;
+
+import jump.ctags.CTAGS_BG;
+import jump.ctags.CTAGS_Buffer;
+
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+
+import projectviewer.PVActions;
+import projectviewer.ProjectViewer;
+import projectviewer.event.ProjectViewerAdapter;
+import projectviewer.event.ProjectViewerEvent;
+import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTProject;
 
 public class JumpEventListener extends ProjectViewerAdapter 
                                 implements EBComponent
 {
-    //{{{ fields
+
     public VPTProject PROJECT;
     public String  PROJECT_ROOT = new String();
     public String PROJECT_NAME = new String();
@@ -53,9 +65,8 @@ public class JumpEventListener extends ProjectViewerAdapter
     // I'm set isNewProject = true at projectAdded method, then check at projectLoaded.
     private boolean isNewProject = false;
     // If isNewProject=false at Project_Loaded() - I set needReload=true, to reload project (just once)
-    private boolean needReload = false; //}}}
+    private boolean needReload = false;
 
-    //{{{ constructor
     public JumpEventListener()
     {
         super();
@@ -64,9 +75,8 @@ public class JumpEventListener extends ProjectViewerAdapter
             EditBus.addToBus(this);
             isAddedToBus = true;
         }
-    } //}}}
-
-    //{{{ handleMessage(EBMessage message)  method
+    }
+    
     public void handleMessage(EBMessage message)
     {
         if (message instanceof BufferUpdate)
@@ -86,15 +96,13 @@ public class JumpEventListener extends ProjectViewerAdapter
                 return;
             }
         }
-    } //}}}
+    }
 
-    //{{{ void errorMsg
     public void errorMsg(String s)
     {
         GUIUtilities.message(jEdit.getActiveView(), s, new Object[0]);
-    } //}}}
+    }
 
-    //{{{ reloadTags(ProjectViewer viewer, VPTProject p)
     public boolean reloadTags(ProjectViewer viewer, VPTProject p)
     {
         if (!isAddedToBus)
@@ -149,7 +157,7 @@ public class JumpEventListener extends ProjectViewerAdapter
             {
                 System.out.println("create tags");
                 ctags_buff = ctags_bg.getParser().parse(this.ProjectFiles);
-                ctags_bg.saveBuffer(ctags_buff , this.PROJECT_TAGS.toString());
+                CTAGS_BG.saveBuffer(ctags_buff , this.PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
                 return true;
             }
@@ -160,7 +168,7 @@ public class JumpEventListener extends ProjectViewerAdapter
                 // If file deleted form project I must save tags before reload it.
                 //System.out.println("read tags");
                 //ctags_bg.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
-                ctags_buff = ctags_bg.loadBuffer(PROJECT_TAGS.toString());
+                ctags_buff = CTAGS_BG.loadBuffer(PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
                 return true;
             }
@@ -171,11 +179,8 @@ public class JumpEventListener extends ProjectViewerAdapter
             viewer.setEnabled(true);
             return false;
         }
-    } //}}}
-
-    //{{{ projectLoaded, reloadProjectForced, projectAdded, projectRemoved
-
-    //{{{ projectLoaded method    
+    }
+    
     public void projectLoaded(ProjectViewerEvent evt)
     {
         System.out.println("JumpEventListener: projectLoaded "+ evt.getProject());
@@ -212,9 +217,8 @@ public class JumpEventListener extends ProjectViewerAdapter
                 }
             }
         }
-    } //}}}
-
-    //{{{ reloadProjectForced
+    }
+    
     public void reloadProjectForced()
     {
         if (needReload == true)
@@ -226,34 +230,27 @@ public class JumpEventListener extends ProjectViewerAdapter
             needReload = false;
         }
     }
-    //}}}
 
-    //{{{ projectAdded method
     // Add project to projectBuffers and set it as active
     public void projectAdded(ProjectViewerEvent evt)
     {
         isNewProject = true;
         needReload = true;
-    } //}}}
+    }
 
-    //{{{ projectRemoved method
     public void projectRemoved(ProjectViewerEvent evt)
     {
         JumpPlugin.removeProjectBuffer(evt.getProject().getName());
-    } //}}}
+    }
 
-    //}}}
-
-    //{{{ saveProjectBuffer()
     public void saveProjectBuffer()
     {
         if (ctags_buff !=null && PROJECT_TAGS != null)
         {
-            ctags_bg.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
+            CTAGS_BG.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
         }
-    } //}}}
+    }
 
-    //{{{ boolean CtagsTest()
     public boolean CtagsTest()
     {
         CTAGS_BG test_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path")); 

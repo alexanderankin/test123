@@ -1,8 +1,6 @@
 <project name="JumpPlugin" default="jar" basedir=".">
-    <description>
-Hi packager! This is a Jump Plugin build file.
-    </description>
-  <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.2pre8/"/>
+  <description>Hi packager! This is a Jump Plugin build file.</description>
+  <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.2pre11/"/>
    <!--<property name="jedit.install.dir"  value="/usr/local/share/jedit/4.2pre8"/>-->
   <property name="jar.name"  value="Jump"/>
 
@@ -17,11 +15,7 @@ Hi packager! This is a Jump Plugin build file.
 
 <!--{{{ compile -->
     <target name="compile">
-    <javac
-      srcdir="."
-      deprecation="on"
-      includeJavaRuntime="yes"
-    >
+    <javac srcdir="." deprecation="on" includeJavaRuntime="yes">
       <classpath refid="project.class.path"/>
     </javac>
   </target> <!--}}}-->
@@ -39,6 +33,7 @@ Hi packager! This is a Jump Plugin build file.
         <include name="**/*.gif"/>
         <include name="actions.xml"/>
         <include name="dockables.xml"/>
+        <include name="*.xml"/>
       </fileset>
     </jar>
     <delete>
@@ -46,17 +41,18 @@ Hi packager! This is a Jump Plugin build file.
     </delete>
   </target>   <!--}}}-->
 
-<!--{{{ test -->
-    <target name="test" depends="compile">
+<!--{{{ Deploy -->
+    <target name="deploy" depends="compile">
     <mkdir dir="${install.dir}"/>
     <jar jarfile="${install.dir}/${jar.name}.jar">
       <fileset dir=".">
         <include name="**/*.class"/>
         <include name="**/*.props"/>
         <include name="**/*.html"/>
-        <include name="img/*.gif"/>
+        <include name="**/*.gif"/>
         <include name="actions.xml"/>
         <include name="dockables.xml"/>
+        <include name="*.xml"/>
       </fileset>
     </jar>
     <delete>

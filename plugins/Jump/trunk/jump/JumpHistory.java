@@ -21,9 +21,11 @@
  */
 
     //{{{ imports
-    import java.util.*;
-    import ctags.bg.*;
-    import org.gjt.sp.util.Log; //}}}
+package jump;
+    import java.util.Stack;
+
+import jump.ctags.CTAGS_Entry;
+
 
 public class JumpHistory
 {

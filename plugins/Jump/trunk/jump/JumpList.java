@@ -21,18 +21,36 @@
  */
 
     //{{{ imports
-    import java.awt.*;
-    import java.awt.event.*;
-    
-    import javax.swing.*;
-    import javax.swing.border.*;
-    import javax.swing.event.*;
-    
-    import org.gjt.sp.jedit.*;
-    import org.gjt.sp.jedit.gui.OptionsDialog;
-    import org.gjt.sp.jedit.textarea.*;
-    import org.gjt.sp.jedit.msg.*;
-    import org.gjt.sp.util.Log; //}}}
+package jump;
+    import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JWindow;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.border.LineBorder;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class JumpList extends JWindow implements CaretListener
 {

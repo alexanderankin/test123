@@ -21,24 +21,40 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-	//{{{ Imports
-	import javax.swing.*;
-	import java.awt.*;
-	import java.awt.event.*;
-	import java.util.Vector;
-	import org.gjt.sp.jedit.syntax.*;
-	import org.gjt.sp.jedit.textarea.*;
-	import org.gjt.sp.jedit.*;
-	import org.gjt.sp.jedit.gui.*;
-	
-	import projectviewer.*;
-	import projectviewer.vpt.*; //}}}
+package jump;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.Point;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.util.Vector;
+
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JWindow;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.TextUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.KeyEventWorkaround;
+import org.gjt.sp.jedit.syntax.KeywordMap;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class CompleteWordList extends JWindow
 {
 	boolean isGlobalSearch;
 
-	//{{{ CompleteWord constructor
+
 	public CompleteWordList(View view, String word, Vector completions, Point location,
 		String noWordSep, boolean isGlobalSearch)
 	{
@@ -98,9 +114,8 @@ public class CompleteWordList extends JWindow
 		addKeyListener(keyHandler);
 		words.addKeyListener(keyHandler);
 		view.setKeyEventInterceptor(keyHandler);
-	} //}}}
+	}
 
-	//{{{ dispose() method
 	public void dispose()
 	{
 		view.setKeyEventInterceptor(null);
@@ -112,11 +127,8 @@ public class CompleteWordList extends JWindow
 				textArea.requestFocus();
 			}
 		});
-	} //}}}
+	}
 
-	//{{{ Private members
-
-	//{{{ getCompletions
 	private Vector getCompletions(String sel)
 	{ 
 		//TagsBinSearcher tbs;
@@ -133,36 +145,32 @@ public class CompleteWordList extends JWindow
 		}
 		MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
 		return completions;
-	} //}}}
+	}
 
-	//{{{ completeWord() method
+
 	private static String completeWord(String line, int offset, String noWordSep)
 	{
 		// '+ 1' so that findWordEnd() doesn't pick up the space at the start
 		int wordEnd = TextUtilities.findWordEnd(line,offset + 1,noWordSep);
 		return line.substring(offset,wordEnd);
-	} //}}}
+	}
 
-	//{{{ Instance variables
 	private View view;
 	private JEditTextArea textArea;
 	private Buffer buffer;
 	private String word;
 	private JList words;
 	private String noWordSep;
-	//}}}
 
-	//{{{ insertSelected() method
+
+
 	private void insertSelected()
 	{
 		textArea.setSelectedText(words.getSelectedValue().toString()
 			.substring(word.length()));
 		dispose();
-	} //}}}
+	}
 
-	//}}}
-
-	//{{{ Completion class
 	static class Completion
 	{
 		String text;
@@ -186,9 +194,8 @@ public class CompleteWordList extends JWindow
 			else
 				return false;
 		}
-	} //}}}
+	}
 
-	//{{{ Renderer class
 	static class Renderer extends DefaultListCellRenderer
 	{
 		public Component getListCellRendererComponent(JList list, Object value,
@@ -213,9 +220,8 @@ public class CompleteWordList extends JWindow
 
 			return this;
 		}
-	} //}}}
+	}
 
-	//{{{ KeyHandler class
 	class KeyHandler extends KeyAdapter
 	{
 		//{{{ keyPressed() method
@@ -303,9 +309,8 @@ public class CompleteWordList extends JWindow
 				}
 				break;
 			}
-		} //}}}
+		}
 
-		//{{{ keyTyped() method
 		public void keyTyped(KeyEvent evt)
 		{
 			char ch = evt.getKeyChar();
@@ -364,15 +369,14 @@ public class CompleteWordList extends JWindow
 				words.setListData(completions);
 				words.setSelectedIndex(0);
 			}
-		} //}}}
-	} //}}}
+		}
+	}
 
-	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
 			insertSelected();
 		}
-	} //}}}
+	}
 }

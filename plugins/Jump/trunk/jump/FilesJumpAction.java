@@ -21,27 +21,20 @@
  */
 
 //{{{ imports
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
+package jump;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Vector;
 
-import java.awt.event.*;
-import java.awt.Component;
-import java.awt.Font;
+import javax.swing.AbstractListModel;
+import javax.swing.JList;
+import javax.swing.ListModel;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-
-import projectviewer.*;
-import projectviewer.vpt.*;
-import projectviewer.event.*;
-
-import ctags.bg.*; //}}}
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 // TODO: tabs_files - can't be a HashMap. If may cause problems when more than one build.xml, for ex., founded in current project.
 class FilesJumpAction

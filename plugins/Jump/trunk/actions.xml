@@ -3,51 +3,46 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-    <ACTION NAME="JumpPlugin.filesjump">
+
+    <ACTION NAME="jump.JumpPlugin.filesjump">
         <CODE>
-            JumpPlugin.jump_actions.showFilesJump();
+            jump.JumpPlugin.jump_actions.showFilesJump();
         </CODE>
     </ACTION>
 
-    <ACTION NAME="JumpPlugin.tagsjump">
+    <ACTION NAME="jump.JumpPlugin.tagsjump">
         <CODE>
-            JumpPlugin.jump_actions.showTagsJump();
+            jump.JumpPlugin.jump_actions.showTagsJump();
         </CODE>
     </ACTION>
 
-    <ACTION NAME="JumpPlugin.workspacejump">
+    <ACTION NAME="jump.JumpPlugin.workspacejump">
         <CODE>
-            JumpPlugin.jump_actions.showProjectJump();
+            jump.JumpPlugin.jump_actions.showProjectJump();
         </CODE>
     </ACTION>
 
-    <ACTION NAME="JumpPlugin.historyjump">
+    <ACTION NAME="jump.JumpPlugin.historyjump">
         <CODE>
-            JumpPlugin.jump_actions.historyJump();
+            jump.JumpPlugin.jump_actions.historyJump();
         </CODE>
     </ACTION>
 
-    <ACTION NAME="JumpPlugin.gettagbyinput">
+    <ACTION NAME="jump.JumpPlugin.gettagbyinput">
         <CODE>
-            JumpPlugin.jump_actions.jumpByInput();
+            jump.JumpPlugin.jump_actions.jumpByInput();
         </CODE>
     </ACTION>
 
-    <ACTION NAME="JumpPlugin.foldjump">
+    <ACTION NAME="jump.JumpPlugin.foldjump">
         <CODE>
-            JumpPlugin.jump_actions.showFoldJump();
+            jump.JumpPlugin.jump_actions.showFoldJump();
         </CODE>
     </ACTION>
 
-    <ACTION NAME="JumpPlugin.completetag">
+    <ACTION NAME="jump.JumpPlugin.completetag">
         <CODE>
-            JumpPlugin.jump_actions.completeTag(false);
-        </CODE>
-    </ACTION>
-
-	<!-- <ACTION NAME="JumpPlugin.completeglobaltag">
-        <CODE>
-            JumpPlugin.jump_actions.completeTag(true);
+            jump.JumpPlugin.jump_actions.completeTag(false);
         </CODE>
     </ACTION>
     

@@ -19,24 +19,23 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package ctags.bg;
+package jump.ctags;
 
-    //{{{ imports
-    import java.util.*;
-    import java.io.*;
-    import org.gjt.sp.jedit.*;
-    import org.gjt.sp.jedit.gui.*; //}}}
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Serializable;
+import java.util.Vector;
 
 public class CTAGS_Parser implements Serializable
 {
-    //{{{ fields
+
     /** SET true to sort ctags output (--sort=yes) */
     public boolean sort = false;
     /** SET "pattern" or "numbers" (--excmd=pattern) */
     public String excmd = "pattern";
-    private String[] ctags_args; //}}}
+    private String[] ctags_args;
 
-    //{{{ CONSTRUCTOR
     public CTAGS_Parser()
     {
         String s = new String();
@@ -67,9 +66,8 @@ public class CTAGS_Parser implements Serializable
         ctags_args[4] = "-f";
         ctags_args[5] = "-";
         ctags_args[6] = "";
-    } //}}}
-
-    //{{{ parse(String filename)
+    }
+    
     /**
     * Parse file and return new CTAGS_Buffer
     */
@@ -78,18 +76,16 @@ public class CTAGS_Parser implements Serializable
         Vector v = new Vector();
         v.add(filename);
         return doParse(v);
-    } //}}}
-
-    //{{{ parse(Vector filenames)
+    }
+    
     /**
     * Parse list file and return new CTAGS_Buffer
     */
     public CTAGS_Buffer parse(Vector filenames) throws IOException
     {
         return doParse(filenames);
-    } //}}}
+    }
 
-    //{{{ parseGlobalTags method
     public CTAGS_Buffer parseGlobalTags(String topFolder) throws IOException
     {
         String[] comm_line = new String[5];
@@ -119,11 +115,8 @@ public class CTAGS_Parser implements Serializable
         }
         in.close();
         return buff;
-    } //}}}
-
-    //{{{ private
-
-    //{{{ checkUnsupportedExtensions
+    }
+    
     private boolean checkUnsupportedExtensions(String fn)
     {
         for (int i = 0; i < CTAGS_BG.UnsupportedExtensions.length; i++)
@@ -135,9 +128,8 @@ public class CTAGS_Parser implements Serializable
         }
 
         return true;
-    } //}}}
-
-    //{{{ doParse
+    }
+    
     private CTAGS_Buffer doParse(final Vector f) throws IOException
     {
         CTAGS_Buffer b = new CTAGS_Buffer(this);
@@ -160,9 +152,8 @@ public class CTAGS_Parser implements Serializable
             return null;
         }
         return b;
-    } //}}}
-
-    //{{{ parseFile
+    }
+    
     private CTAGS_Buffer parseFile(String fn, String[] arguments) throws IOException
     {
         arguments[6] = fn;
@@ -183,7 +174,5 @@ public class CTAGS_Parser implements Serializable
         }
         in.close();
         return buff;
-    } //}}}
-
-    //}}}
+    }
 }
