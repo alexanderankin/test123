@@ -1,9 +1,24 @@
 /*
- * Created on 19-dec-2003
+ * InputSelectionPanel.java
  *
- * To change the template for this generated file go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * Copyright 2004 Pitje
+ *           2004 Robert McKinnon
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 package xslt;
 
 import java.awt.BorderLayout;
@@ -30,9 +45,7 @@ import org.gjt.sp.util.Log;
 
 /**
  * @author Pitje
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
+ * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
 public class InputSelectionPanel extends JPanel {
 
@@ -43,7 +56,7 @@ public class InputSelectionPanel extends JPanel {
 	private JButton browseButton;
 	private JRadioButton bufferRadio;
 	private JRadioButton fileRadio;
-	private JTextField sourceField = new JTextField();
+	private JTextField sourceField;
 	
 	private XsltAction radioSelectAction = new RadioSelectAction();
 	private XsltAction sourceSelectAction = new SourceSelectAction();
@@ -53,28 +66,16 @@ public class InputSelectionPanel extends JPanel {
 		
 		this.view = view;
 		this.processor = processor;
-		
+		this.sourceField = initSourceField(mouseListener);
+				
 		JPanel radioPanel = new JPanel(new BorderLayout());
 		radioPanel.add(new JLabel(jEdit.getProperty("xslt.source.label")), BorderLayout.NORTH);
 
 		createRadioButtons(new ButtonGroup());		
-		radioPanel.add(bufferRadio, BorderLayout.CENTER);
-		radioPanel.add(fileRadio, BorderLayout.SOUTH);	
+		radioPanel.add(bufferRadio, BorderLayout.SOUTH);
 		
-		JLabel sourceLabel = new JLabel(jEdit.getProperty("xslt.source.browse.label"));
-
-		JPanel sourceFieldPanel = new JPanel(new GridLayout(2,1));
-		sourceFieldPanel.add(sourceLabel);
-		
-		sourceField.addMouseListener(mouseListener);
-		
-		if(jEdit.getProperty(LAST_SOURCE) == null) {
-			sourceField.setText(jEdit.getProperty("xquery.selectInput.prompt"));
-		} else {
-			sourceField.setText(jEdit.getProperty(LAST_SOURCE));
-		}
-		
-		sourceField.setEnabled(false); //because buffer is primarily selected
+		JPanel sourceFieldPanel = new JPanel(new GridLayout(2,3));
+		sourceFieldPanel.add(fileRadio);		
 		sourceFieldPanel.add(sourceField);
 		
 		JPanel browseButtonPanel = new JPanel(new BorderLayout());
@@ -90,6 +91,23 @@ public class InputSelectionPanel extends JPanel {
 		add(browsePanel, BorderLayout.SOUTH);
 	}
 	
+
+	private JTextField initSourceField(MouseListener mouseListener) {
+		JTextField sourceField = new JTextField();
+		sourceField.addMouseListener(mouseListener);
+		
+		String lastSource = jEdit.getProperty(LAST_SOURCE);
+		if(lastSource == null) {
+			sourceField.setText(jEdit.getProperty("xslt.source.browse.prompt"));
+		} else {
+			sourceField.setText(lastSource);
+		}
+		
+		sourceField.setEnabled(false); //because buffer is primarily selected
+		
+		return sourceField;
+	}
+
 	private void createRadioButtons(ButtonGroup radioGroup) {
 		bufferRadio = radioSelectAction.getRadioButton("xslt.source.buffer");
 		fileRadio = radioSelectAction.getRadioButton("xslt.source.file");
@@ -101,7 +119,7 @@ public class InputSelectionPanel extends JPanel {
 
 		radioGroup.add(bufferRadio);
 		radioGroup.add(fileRadio);	
-	};
+	}
 	
 	private void chooseFile() {
 		String path = null;

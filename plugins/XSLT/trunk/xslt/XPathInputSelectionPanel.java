@@ -1,7 +1,24 @@
 /*
- * Created on 23-dec-2003
+ * XPathExpressionPanel.java - Holds XPath expression text field
  *
- */
+ * Copyright 2004 Pitje
+ * 		     2004 Robert McKinnon
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
 package xslt;
 
 import java.awt.BorderLayout;
@@ -25,22 +42,18 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 /**
- * @author Pitje
- *
- * To change the template for this generated type comment go to
- * Window - Preferences - Java - Code Generation - Code and Comments
- */
-
-/**
  * Panel housing the soure selection options
+ * @author Pitje
+ * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
 class XPathInputSelectionPanel extends JPanel implements ActionListener {
 
+	private static final String USE_FILE_INPUT = "xpath.use-file-input";
 	private static final String LAST_SOURCE = "xpath.last-source";
-	
+
 	private View view;
-	private JRadioButton bufferRadio = new JRadioButton(jEdit.getProperty("xpath.select.buffer"));
-	private JRadioButton fileRadio = new JRadioButton(jEdit.getProperty("xpath.select.file"));
+	private JRadioButton bufferRadio;
+	private JRadioButton fileRadio;
 	private JButton browseButton;
 	private final JTextField sourceField = new JTextField();
 	
@@ -48,12 +61,15 @@ class XPathInputSelectionPanel extends JPanel implements ActionListener {
 		super(new BorderLayout());
 		
 		this.view = view;
-		createRadioButtons(new ButtonGroup());
+		boolean useFileInput = jEdit.getBooleanProperty(USE_FILE_INPUT);
+		createRadioButtons(useFileInput);
 		
 		JPanel radioPanel = new JPanel(new BorderLayout());
 		radioPanel.add(new JLabel(jEdit.getProperty("xpath.select.label")), BorderLayout.NORTH);
-		radioPanel.add(bufferRadio, BorderLayout.CENTER);
-		radioPanel.add(fileRadio, BorderLayout.SOUTH);
+		JPanel buttonPanel = new JPanel();
+		buttonPanel.add(bufferRadio);
+		buttonPanel.add(fileRadio);
+		radioPanel.add(buttonPanel, BorderLayout.WEST);
 
 		JPanel sourceFieldPanel = new JPanel(new GridLayout(2,1));
 		sourceFieldPanel.add(new JLabel(jEdit.getProperty("xpath.browse.label")));
@@ -63,7 +79,8 @@ class XPathInputSelectionPanel extends JPanel implements ActionListener {
 		} else {
 			sourceField.setText(jEdit.getProperty(LAST_SOURCE));
 		}
-		sourceField.setEnabled(false);
+
+		sourceField.setEnabled(useFileInput);
 		sourceFieldPanel.add(sourceField);
 
 		createBrowseButton();
@@ -78,20 +95,29 @@ class XPathInputSelectionPanel extends JPanel implements ActionListener {
 		add(fileSelectionPanel, BorderLayout.SOUTH);
 	}
 	
-	private void createRadioButtons(ButtonGroup radioGroup) {
-		ActionListener bufferSelected = new ActionListener(){
+	private void createRadioButtons(boolean useFileInput) {
+		ButtonGroup radioGroup = new ButtonGroup();
+
+		bufferRadio = new JRadioButton(jEdit.getProperty("xpath.select.buffer"));
+		bufferRadio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setFileSelectionEnabled(false);
-			}};
-		bufferRadio.addActionListener(bufferSelected);
-		bufferRadio.setSelected(true);
-		
-		ActionListener fileSelected = new ActionListener(){
+			}
+		});
+
+		fileRadio = new JRadioButton(jEdit.getProperty("xpath.select.file"));
+		fileRadio.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				setFileSelectionEnabled(true);
-			}};
-		fileRadio.addActionListener(fileSelected);
-		
+			}
+		});
+
+		if(useFileInput) {
+			fileRadio.setSelected(true);
+		} else {
+			bufferRadio.setSelected(true);
+		}
+
 		radioGroup.add(bufferRadio);
 		radioGroup.add(fileRadio);		
 	}
@@ -122,9 +148,10 @@ class XPathInputSelectionPanel extends JPanel implements ActionListener {
 		return sourceField.getText();
 	};		
 	
-	public void setFileSelectionEnabled(boolean b) {
-		sourceField.setEnabled(b);
-		browseButton.setEnabled(b);
+	public void setFileSelectionEnabled(boolean enableFileSelection) {
+		sourceField.setEnabled(enableFileSelection);
+		browseButton.setEnabled(enableFileSelection);
+		jEdit.setBooleanProperty(USE_FILE_INPUT, enableFileSelection);
 	};
 	
 	public boolean isFileSelected() {

@@ -1,7 +1,8 @@
 /*
  * PropertyUtil.java - Utility methods for accessing properties
  *
- * Copyright (c) 2002 Greg Merrill
+ * Copyright 2002 Greg Merrill
+ * 			 2004 Robert McKinnon
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,63 +21,62 @@
 
 package xslt;
 
+import org.gjt.sp.jedit.jEdit;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 /**
  * Utility methods for accessing properties.
+ * @author Greg Merrill
+ * @author Robert McKinnon
  */
 public class PropertyUtil {
 
-  /**
-   * Returns a List of property values whose keys are identical excepct for
-   * a trailing "." and index.
-   *
-   * @param key key of the enumerated property, excluding the trailing "." and
-   *   index.  I.e., if you have properties "file.0=file0.txt" and 
-   *   "file.1=file1.txt", calling getEnumeratedProperty("file", properties)
-   *   would return a list containing "file0.txt" and "file1.txt".
-   * @param properties Properties object from which the enumerated property
-   *   should be retrieved
-   */
-  public static List getEnumeratedProperty (String key, Properties properties) {
-    List values = new ArrayList();
-    int i = 0;
-    String value;
-    while ((value = properties.getProperty(calculateKey(key, i++))) != null) {
-      values.add(value);
-    }
-    return values;
-  }
+	/**
+	 * Returns a List of property values whose keys are identical excepct for
+	 * a trailing "." and index.
+	 *
+	 * @param key key of the enumerated property, excluding the trailing "." and
+	 *            index.  I.e., if you have properties "file.0=file0.txt" and
+	 *            "file.1=file1.txt", calling getEnumeratedProperty("file", properties)
+	 *            would return a list containing "file0.txt" and "file1.txt".
+	 */
+	public static List getEnumeratedProperty(String key) {
+		List values = new ArrayList();
+		int i = 0;
+		String value;
+		while ((value = jEdit.getProperty(calculateKey(key, i++))) != null) {
+			values.add(value);
+		}
+		return values;
+	}
 
-  /**
-   * Sets a series of property values whose keys are identical excepct for
-   * a trailing "." and index.
-   *
-   * @param key key of the enumerated property (see 
-   *   {@link #getEnumeratedProperty})
-   * @param values values to be assigned to the enumerated property, in order.
-   *   All members of this List must be Strings.
-   * @param properties Properties object from which the enumerated property
-   *   should be retrieved
-   */
-  public static void setEnumeratedProperty (String key, List values, Properties properties) {
-    List currentValues = getEnumeratedProperty(key, properties);
-    for (int i=0; i < currentValues.size(); i++) {
-      properties.remove(calculateKey(key, i));
-    }
-    for (int i=0; i < values.size(); i++) {
-      properties.setProperty(calculateKey(key, i), (String)values.get(i));
-    }
-  }
+	/**
+	 * Sets a series of property values whose keys are identical excepct for
+	 * a trailing "." and index.
+	 *
+	 * @param key    key of the enumerated property (see
+	 *               {@link #getEnumeratedProperty})
+	 * @param values values to be assigned to the enumerated property, in order.
+	 *               All members of this List must be Strings.
+	 */
+	public static void setEnumeratedProperty(String key, List values) {
+		List currentValues = getEnumeratedProperty(key);
+		for (int i = 0; i < currentValues.size(); i++) {
+			jEdit.setProperty(calculateKey(key, i), null);
+		}
+		for (int i = 0; i < values.size(); i++) {
+			jEdit.setProperty(calculateKey(key, i), (String)values.get(i));
+		}
+	}
 
-  /**
-   * @return indexed property key
-   */
-  private static String calculateKey (String key, int index) {
-    return key+"."+index;
-  }
+	/**
+	 * @return indexed property key
+	 */
+	private static String calculateKey(String key, int index) {
+		return key + "." + index;
+	}
 
 }
 
