@@ -153,11 +153,11 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             else if (bu.getWhat() == BufferUpdate.LOADED) {
                 this.bufferLoaded(buffer);
             }
-        else if (bu.getWhat() == BufferUpdate.SAVED) {
-            Buffer buff = bu.getBuffer();
-            int index = buffers.indexOf(buff);
-            setToolTipTextAt(index,buff.getPath());
-        }
+            else if (bu.getWhat() == BufferUpdate.SAVED) {
+                Buffer buff = bu.getBuffer();
+                int index = buffers.indexOf(buff);
+                setToolTipTextAt(index,buff.getPath());
+            }
         } else if (msg instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate) msg;
             if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
