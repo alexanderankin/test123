@@ -25,7 +25,7 @@ public class GfxViewHistoryDialog extends JDialog
 	private int previousIndex;
 	private View view;
 
-	//{{{ +GfxViewHistoryDialog(Frame) : <init>
+	//{{{ +GfxViewHistoryDialog(View) : <init>
 	public GfxViewHistoryDialog(View view) {
 		super(view,"Choose picture from GfxView history",true);
 		this.view = view;
@@ -88,17 +88,25 @@ public class GfxViewHistoryDialog extends JDialog
 		}
 		else {
 			newURL = model.getElementAt(index);
-			newURL_display = newURL.toString();
-			boolean result = newURL instanceof URL;
-			newURL_display = (result ?
-				newURL_display.substring(newURL.toString().lastIndexOf('/')+1) :
-				newURL_display.substring(newURL.toString().lastIndexOf(File.separator)+1));
+			newURL_display = buildURL_name(newURL);
 		}
 		changes.firePropertyChange("UrlGfxView-path",oldURL,newURL);
 		oldURL = newURL;
 		changes.firePropertyChange("UrlGfxView-display",oldURL_display,newURL_display);
 		oldURL_display = newURL_display;
 	}//}}}
+
+	//{{{ -buildURL_name(String) : String
+	private String buildURL_name(Object newURL) {
+			String  newURL_display = newURL.toString();
+			boolean result = newURL instanceof URL;
+			newURL_display = (result ?
+				newURL_display.substring(newURL.toString().lastIndexOf('/')+1) :
+				newURL_display.substring(newURL.toString().lastIndexOf(File.separator)+1));
+
+			return newURL_display;
+	}//}}}
+
 
 	//{{{ +loadNext() : void
 	public void loadNext() {
@@ -121,6 +129,7 @@ public class GfxViewHistoryDialog extends JDialog
 	public void addEntry(Object urlPath) {
 		if (urlPath!=null) {
 			model.addEntry(urlPath);
+			changes.firePropertyChange("UrlGfxView-display",oldURL,buildURL_name(urlPath));
 		}
 	}//}}}
 

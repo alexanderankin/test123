@@ -91,7 +91,7 @@ public class GfxViewImagePanel extends JPanel implements MouseListener,MouseMoti
 			}
 		}
 		else {
-			g.setColor(Color.DARK_GRAY);
+			g.setColor(Color.gray);
 			g.drawLine(0,0,panelW,panelH);
 			g.drawLine(panelW,0,0,panelH);
 		} 
