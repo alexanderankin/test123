@@ -36,11 +36,11 @@ public class JCompilerClasspathSource extends javacore.AbstractClasspathSource
 	
 	public String getClasspath()
 	{
-		return jEdit.getProperty("jcompiler.classpath");
+		return JCompiler.expandVariables(jEdit.getProperty("jcompiler.classpath"));
 	}
 
 	public String getSourcepath()
 	{
-		return jEdit.getProperty("jcompiler.sourcepath");
+		return JCompiler.expandVariables(jEdit.getProperty("jcompiler.sourcepath"));
 	}
 }
