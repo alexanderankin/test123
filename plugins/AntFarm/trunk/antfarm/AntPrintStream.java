@@ -18,6 +18,7 @@
  */
 package antfarm;
 import console.*;
+import errorlist.*;
 
 import java.io.*;
 import java.util.*;
@@ -84,7 +85,7 @@ public class AntPrintStream extends PrintStream
 	private void parseLine( String line )
 	{
 		Console console =
-			(Console) _view.getDockableWindowManager().getDockableWindow( "console" );
+			(Console) _view.getDockableWindowManager().getDockable( "console" );
 
 		// should be project dir
 		String dir = System.getProperty( "user.dir" );

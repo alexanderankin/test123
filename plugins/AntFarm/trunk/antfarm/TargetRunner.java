@@ -116,7 +116,7 @@ public class TargetRunner extends Thread
 
 		// assume we have the console open at this point since it called us.
 		Console console =
-			(Console) _view.getDockableWindowManager().getDockableWindow( "console" );
+			(Console) _view.getDockableWindowManager().getDockable( "console" );
 
 		if ( useSameJvm ) {
 			setOutputStreams();

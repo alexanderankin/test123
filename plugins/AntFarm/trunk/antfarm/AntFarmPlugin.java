@@ -18,7 +18,6 @@
  */
 package antfarm;
 
-import console.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -32,11 +31,13 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
-import plugin.integration.*;
 
+import console.*;
+import plugin.integration.*;
+import errorlist.*;
 import projectviewer.*;
 
-public class AntFarmPlugin extends EBPlugin
+public class AntFarmPlugin extends EditPlugin
 {
 
 	final static String NAME = "antfarm";
@@ -61,15 +62,21 @@ public class AntFarmPlugin extends EBPlugin
 
 	static Console getConsole( View view, boolean bringToFront )
 	{
-		// Open the console if it isn't already open
-		view.getDockableWindowManager().addDockableWindow( "console" );
-		// Obtain the console instance
+		DockableWindowManager mgr = view.getDockableWindowManager();
+		String CONSOLE = "console";
+		// Get the current console instance
 		Console console =
-			(Console) view.getDockableWindowManager().getDockableWindow( "console" );
+			(Console) mgr.getDockable( CONSOLE );
+		if(console == null)
+		{
+			mgr.addDockableWindow( CONSOLE );
+			console = (Console) mgr.getDockable( CONSOLE );
+		}
+
 		console.setShell( AntFarmPlugin.ANT_SHELL );
 
 		if ( !bringToFront )
-			view.getDockableWindowManager().addDockableWindow( NAME );
+			view.getDockableWindowManager().getDockable( NAME );
 
 		return console;
 	}
@@ -88,17 +95,6 @@ public class AntFarmPlugin extends EBPlugin
 		return properties;
 	}
 
-	public void handleMessage( EBMessage msg )
-	{
-		if ( msg instanceof CreateDockableWindow ) {
-			CreateDockableWindow cmsg = (CreateDockableWindow) msg;
-			if ( cmsg.getDockableWindowName().equals( NAME ) ) {
-				cmsg.setDockableWindow( new AntFarm( cmsg.getView() ) );
-			}
-		}
-	}
-
-
 	public void createMenuItems( Vector menuItems )
 	{
 		menuItems.addElement( GUIUtilities.loadMenuItem( "antfarm" ) );
@@ -116,16 +112,12 @@ public class AntFarmPlugin extends EBPlugin
 
 	public void start()
 	{
-		EditBus.addToNamedList( DockableWindow.DOCKABLE_WINDOW_LIST, NAME );
-
-		IntegrationManager integration = new IntegrationManager( this );
-		integration.addBridge( "projectviewer.ProjectPlugin", "antfarm.ProjectBridge" );
+		//IntegrationManager integration = new IntegrationManager( this );
+		//integration.addBridge( "projectviewer.ProjectPlugin", "antfarm.ProjectBridge" );
 
 		// initalize error source
 		_errorSource = new DefaultErrorSource( NAME );
-		EditBus.addToNamedList( ErrorSource.ERROR_SOURCES_LIST, _errorSource );
-		EditBus.addToBus( _errorSource );
-
+		ErrorSource.registerErrorSource(_errorSource);
 		// check whether tools.jar is available on JDK 1.2 or higher:
 		if ( !MiscUtilities.isToolsJarAvailable() ) {
 			Log.log( Log.WARNING, this,
