@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+
+<!--Code2HTML plugin user's guide -->
+<!-- (C) 2002 Andre Kaplan -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+
+<bookinfo>
+    <title>Code2HTML plugin</title>
+
+    <authorgroup>
+        <author>
+            <firstname>Andr&eacute;</firstname>
+            <surname>Kaplan</surname>
+        </author>
+    </authorgroup>
+
+    <legalnotice>
+        <title>Legal Notice</title>
+
+        <para>
+        Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU Free Documentation License,
+        Version 1.1 or any later version published by the
+        Free Software Foundation; with no
+        <quote>Invariant Sections</quote>,
+        <quote>Front-Cover Texts</quote> or
+        <quote>Back-Cover Texts</quote>,
+        each as defined in the license.
+        A copy of the license can be found in the file
+        <filename>COPYING.DOC.txt</filename> included with jEdit.
+        </para>
+    </legalnotice>
+</bookinfo>
+
+
+<chapter id="presentation">
+    <title>Presentation</title>
+
+    <para>The Code2HTML plugin transforms the currently edited jEdit source file or the
+    current selection into a visually equivalent HTML file.
+    The generated HTML files keep the aspect (or very close) of the original jEdit
+    buffer in these areas:
+    </para>
+
+    <itemizedlist>
+        <listitem>Syntax highlighting;</listitem>
+        <listitem>Tabulation;</listitem>
+        <listitem>Gutter.</listitem>
+    </itemizedlist>
+
+    <para>
+    The generated HTML files can then be used for:
+    </para>
+
+    <itemizedlist>
+        <listitem>Printing with a browser;</listitem>
+        <listitem>Documentation: syntax highlighted code always looks better;</listitem>
+        <listitem>Web publication.</listitem>
+    </itemizedlist>
+
+</chapter>
+
+
+<chapter id="options">
+    <title>Options</title>
+
+    <para>
+    You have the possibility to:
+    </para>
+
+    <itemizedlist>
+        <listitem>Use or not CSS (Cascading Style Sheets);</listitem>
+        <listitem>Show or not line numbers;</listitem>
+        <listitem>Wrap code at a given column.</listitem>
+    </itemizedlist>
+
+</chapter>
+
+
+<chapter id="license">
+    <title>License</title>
+
+    <para>
+    The source code is distributed under the GPL.
+    Please see
+    <ulink url="http://www.fsf.org/copyleft/gpl.html">
+        http://www.fsf.org/copyleft/gpl.html
+    </ulink>
+    </para>
+</chapter>
+
+
+<chapter id="feedback">
+    <title>Feedback</title>
+
+    <para>
+    The preferred way to send bug reports is to use the
+    Sourceforge Bug Tracker at
+    <ulink url="http://sourceforge.net/bugs/?group_id=588">
+        http://sourceforge.net/bugs/?group_id=588
+    </ulink>.
+    </para>
+
+    <para>You can also write to:</para>
+    <itemizedlist>
+        <listitem>
+            Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
+        </listitem>
+
+        <listitem>
+            or jEdit-users mailing-list
+            <email>jedit-users@lists.sourceforge.net</email>;
+        </listitem>
+
+        <listitem>
+            or jEdit-devel mailing-list
+            <email>jedit-devel@lists.sourceforge.net</email>.
+        </listitem>
+    </itemizedlist>
+</chapter>
+
+
+</book>
+
