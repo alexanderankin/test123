@@ -18,13 +18,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package sql.serverTypes.oracle;
+package sql.serverTypes.complex;
 
 import java.io.*;
 import java.util.*;
 
 import sql.*;
-import sql.serverTypes.OracleVFS;
+import sql.serverTypes.ComplexVFS;
 
 /**
  *  Description of the Class
@@ -32,7 +32,7 @@ import sql.serverTypes.OracleVFS;
  * @author     svu
  * @created    26 Август 2001 г.
  */
-public class TableObjectType implements OracleVFS.ObjectType
+public class TableObjectType implements ComplexVFS.ObjectType
 {
   protected String stmtName;
 
@@ -89,7 +89,8 @@ public class TableObjectType implements OracleVFS.ObjectType
       String objName )
   {
     return "SELECT * FROM " +
-        userName + "." +
+        userName +
+        ( (ComplexVFS) rec.getServerType().getSubVFS() ).getLevelDelimiter() +
         objName;
   }
 
