@@ -108,7 +108,7 @@ public class BibTeXPanel
 
     removeAll();
 
-    if (!isTeXFile(buffer)) {
+    if (!LaTeXMacros.isTeXFile(buffer)) {
       displayNotTeX(BorderLayout.CENTER);
     } else {
       //loadBibFiles();

@@ -38,7 +38,7 @@ import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultMutableTreeNode;
                    
 import org.gjt.sp.util.*;
-import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.HistoryTextField;
@@ -682,6 +682,31 @@ public class LaTeXMacros {
         return getImportsInRange(buffer, 0, buffer.getLineCount() - 1);
     }
 
+    public static boolean isTeXFile(Buffer b) {
+      if (b == null) return false;
+      
+      Mode mode = b.getMode();
+      if (mode == null) return false;
+      
+      String s = mode.getName();
+      boolean out = s.equals("tex");
+      
+      return out;
+    }
+    
+    public static boolean isBibFile(Buffer b){
+      if (b == null) return false;
+      
+      Mode mode = b.getMode();
+      if (mode == null) return false;
+      
+      String s = mode.getName();
+      boolean out = s.equals("bibtex");
+      
+      return out;
+    }
+
+    
     private static Point getCenter(Component parent, Component dialog) {
         Dimension pd = parent.getSize();
         Dimension cd = dialog.getSize();

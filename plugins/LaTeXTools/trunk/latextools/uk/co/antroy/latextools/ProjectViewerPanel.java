@@ -59,7 +59,7 @@ public class ProjectViewerPanel extends AbstractToolPanel implements MouseListen
         
         public void refresh(){
             
-          if (!isTeXFile(buffer)) {
+          if (!LaTeXMacros.isTeXFile(buffer)) {
               log("!isTexFile");
               displayNotTeX(BorderLayout.CENTER);
             } else {

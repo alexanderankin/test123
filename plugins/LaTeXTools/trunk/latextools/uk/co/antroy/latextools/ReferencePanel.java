@@ -19,7 +19,7 @@
 package uk.co.antroy.latextools;
 
 import gnu.regexp.*;
-
+import uk.co.antroy.latextools.parsers.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
@@ -42,7 +42,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-
+import org.gjt.sp.util.*;
 
 public class ReferencePanel
     extends AbstractToolPanel {
@@ -135,24 +135,13 @@ public class ReferencePanel
             bufferChanged = false;
         }
 
-        if (!isTeXFile(buffer)) {
+        if (!LaTeXMacros.isTeXFile(buffer)) {
             displayNotTeX(BorderLayout.CENTER);
         } else {
-            loadReferences();
-            refList.setListData(refEntries.toArray());
+            LabelParser parser = new LabelParser(view, buffer);
+            Object[] be = parser.getLabelArray();
+            refList.setListData(be);
 
-            // refList = new JList(refEntries.toArray());
-            // refList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            // refList.addMouseListener(new MouseAdapter() {
-            //   public void mouseClicked(MouseEvent e) {
-            //     if (e.getClickCount() == 2) {
-            //       insert();
-            //     } else if (e.getClickCount() == 1) {
-            //       refreshCurrentCursorPosn();
-            //       visitLabel();
-            //     }
-            //   }
-            // });
             JScrollPane scp = new JScrollPane(refList, 
                                               JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
                                               JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
@@ -160,7 +149,6 @@ public class ReferencePanel
             setPreferredSize(new Dimension(400, 100));
             add(scp, BorderLayout.CENTER);
 
-            //      add(createButtonPanel(REFRESH), BorderLayout.SOUTH);
         }
 
         repaint();
@@ -186,49 +174,7 @@ public class ReferencePanel
         }
     }
 
-    private void loadReferences() {
-        refEntries.clear();
-        DefaultMutableTreeNode files = LaTeXMacros.getProjectFiles(view, buffer);
-
-        for (Enumeration it = files.preorderEnumeration(); it.hasMoreElements();) {
-            DefaultMutableTreeNode node = (DefaultMutableTreeNode) it.nextElement();
-            File in = (File) node.getUserObject();
-            Buffer buff = jEdit.openTemporary(view, in.getParent(), 
-                                              in.getName(), false);
-            loadReferences(buff);
-        }
-    }
-
-    private void loadReferences(Buffer buff) {
-        String text = buff.getText(0, buff.getLength());
-        RE labelRe = null;
-
-        try {
-            labelRe = new RE(REFERENCE_EXP);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        REMatch[] matches = labelRe.getAllMatches(text);
-
-        for (int i = 0; i < matches.length; i++) {
-            int posn = matches[i].getStartIndex();
-            int line = buff.getLineOfOffset(posn);
-            String preText = buff.getLineText(line).substring(0,(posn - buff.getLineStartOffset(line))+1);
-            
-            if (preText.indexOf("%") >= 0) continue;
-
-            LaTeXAsset asset = LaTeXAsset.createAsset(matches[i].toString(1), 
-                                                      buff.createPosition(matches[i].getStartIndex()), 
-                                                      buff.createPosition(matches[i].getEndIndex()), 
-                                                      0, 0);
-            asset.setFile(new File(buff.getPath()));
-            refEntries.add(asset);
-        }
-
-        //Collections.sort(refEntries);
-    }
-
+ 
     private void visitLabel() {
         LaTeXAsset asset = (LaTeXAsset)refList.getSelectedValue();
         Buffer goToBuff = jEdit.openFile(view, asset.getFile().toString());

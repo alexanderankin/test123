@@ -149,6 +149,12 @@ public class BibTeXParser {
     bibEntries.clear();
     bibFiles.clear();
     
+    if (LaTeXMacros.isBibFile(buffer)){
+        bibFiles.add(buffer.getFile());
+        loadBibEntries();
+        return;
+    }
+    
     File texFile = new File(buffer.getPath());
     
     DefaultMutableTreeNode files = LaTeXMacros.getProjectFiles(view, buffer);
