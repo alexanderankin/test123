@@ -10,11 +10,18 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
+/**
+ *  Mark which follows the caret's position in the text area. The caret mark
+ *  paints its guide with tick marks indicating the current line.
+ *
+ * @author     Brad Mace
+ * @version    $Revision: 1.7 $ $Date: 2004-02-24 02:55:57 $
+ */
 public class CaretMark extends Mark implements CaretListener, ScrollListener {
 	private ColumnRuler ruler;
 
 	public CaretMark() {
-		super("Caret","options.columnruler.marks.caret");
+		super("Caret", "options.columnruler.marks.caret");
 	}
 
 	public void activate(ColumnRuler ruler) {
@@ -38,27 +45,27 @@ public class CaretMark extends Mark implements CaretListener, ScrollListener {
 	//{{{ drawGuide()
 	public void drawGuide(Graphics2D gfx, ColumnRuler ruler) {
 		int hScroll = ruler.getTextArea().getHorizontalOffset();
-		double x = getColumn()*ruler.charWidth + hScroll;
+		double x = getColumn() * ruler.charWidth + hScroll;
 		int screenLine = ruler.getTextArea().getScreenLineOfOffset(ruler.getTextArea().getCaretPosition());
-		double y = (screenLine)*ruler.lineHeight;
-		double halfChar = ruler.charWidth/2;
+		double y = (screenLine) * ruler.lineHeight;
+		double halfChar = ruler.charWidth / 2;
 
 		if (screenLine < 0)
 			return;
-		
+
 		gfx.setColor(getColor());
 		Line2D guide;
 		// vertical portions
-		guide = new Line2D.Double(x,0,x,y-1);
+		guide = new Line2D.Double(x, 0, x, y - 1);
 		gfx.draw(guide);
-		guide.setLine(x,y+ruler.lineHeight,x,ruler.getTextArea().getHeight());
+		guide.setLine(x, y + ruler.lineHeight, x, ruler.getTextArea().getHeight());
 		gfx.draw(guide);
 		// horizontal ticks
-		guide.setLine(x-halfChar,y-1,x+halfChar,y-1);
+		guide.setLine(x - halfChar, y - 1, x + halfChar, y - 1);
 		gfx.draw(guide);
-		guide.setLine(x-halfChar,y+ruler.lineHeight,x+halfChar,y+ruler.lineHeight);
+		guide.setLine(x - halfChar, y + ruler.lineHeight, x + halfChar, y + ruler.lineHeight);
 		gfx.draw(guide);
-	} //}}}
+	}//}}}
 
 	//{{{ CaretListener implementation
 	public void caretUpdate(CaretEvent e) {
@@ -76,7 +83,7 @@ public class CaretMark extends Mark implements CaretListener, ScrollListener {
 		}
 	}
 
-	public void scrolledHorizontally(JEditTextArea textArea) {}
+	public void scrolledHorizontally(JEditTextArea textArea) { }
 	//}}}
 
 	//{{{ findCaretColumn()
@@ -88,21 +95,25 @@ public class CaretMark extends Mark implements CaretListener, ScrollListener {
 			if (caret != null) {
 				double caretX = (int) caret.getX();
 				return (int) Math.round((caretX - hScroll) / ruler.charWidth);
-			} else {
+			}
+			else {
 				return -1;
 			}
 		} catch (Exception e) {
 			return -1;
 		}
-	} //}}}
+	}//}}}
 
 	/**
-	 * Caret mark only follows the caret, it doesn't change it.
+	 *  Caret mark only follows the caret, it doesn't change it.
+	 *
+	 * @param  col  The new column
 	 */
-	public void setColumn(int col) {}
-	
+	public void setColumn(int col) { }
+
 	public Color getColor() {
 		return ruler.getTextArea().getPainter().getCaretColor();
 	}
 
 }
+

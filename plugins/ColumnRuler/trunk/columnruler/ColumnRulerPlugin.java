@@ -9,12 +9,10 @@ import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
 /**
- * Description of the Class
+ * Core class of ColumnRuler plugin.
  *
  * @author     mace
- * @created    June 5, 2003
- * @modified   $Date: 2004-02-11 08:32:58 $ by $Author: bemace $
- * @version    $Revision: 1.9 $
+ * @version    $Revision: 1.10 $ $Date: 2004-02-24 02:55:58 $ by $Author: bemace $
  */
 public class ColumnRulerPlugin extends EBPlugin {
 	private static Hashtable rulerMap = new Hashtable();

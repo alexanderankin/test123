@@ -6,6 +6,12 @@ import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 
+/**
+ *  Option Pane for general ruler settings and colors.
+ *
+ * @author     Brad Mace
+ * @version    $Revision: 1.3 $ $Date: 2004-02-24 02:55:57 $
+ */
 public class ColumnRulerOptions extends AbstractOptionPane {
 	private JCheckBox activeByDefault;
 	private JCheckBox tabIndicator;
@@ -27,26 +33,26 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 	}
 
 	protected void _init() {
-		activeByDefault = new JCheckBox("Active by Default",jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate","defer").equals("startup"));
-		tabIndicator = new JCheckBox("Draw indicator for next tab stop",jEdit.getBooleanProperty("options.columnruler.nextTab"));
+		activeByDefault = new JCheckBox("Active by Default", jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate", "defer").equals("startup"));
+		tabIndicator = new JCheckBox("Draw indicator for next tab stop", jEdit.getBooleanProperty("options.columnruler.nextTab"));
 
-		JPanel mainPanel = new JPanel(new GridLayout(2,1));
+		JPanel mainPanel = new JPanel(new GridLayout(2, 1));
 		mainPanel.add(activeByDefault);
 		mainPanel.add(tabIndicator);
-		mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"General"));
+		mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "General"));
 		addComponent(mainPanel);
 
-		String bgSrc = jEdit.getProperty("options.columnruler.background.src","custom");
-		useTextAreaBackground = new JRadioButton("Use Text Area's Background",bgSrc.equals("textarea"));
-		useGutterBackground = new JRadioButton("Use Gutter's Background",bgSrc.equals("gutter"));
-		customBackgroundColor = new JRadioButton("Choose Background:",bgSrc.equals("custom"));
-		bgcolor = new ColorWellButton(jEdit.getColorProperty("options.columnruler.background",Color.WHITE));
+		String bgSrc = jEdit.getProperty("options.columnruler.background.src", "custom");
+		useTextAreaBackground = new JRadioButton("Use Text Area's Background", bgSrc.equals("textarea"));
+		useGutterBackground = new JRadioButton("Use Gutter's Background", bgSrc.equals("gutter"));
+		customBackgroundColor = new JRadioButton("Choose Background:", bgSrc.equals("custom"));
+		bgcolor = new ColorWellButton(jEdit.getColorProperty("options.columnruler.background", Color.WHITE));
 		backgroundOptions.add(useTextAreaBackground);
 		backgroundOptions.add(useGutterBackground);
 		backgroundOptions.add(customBackgroundColor);
 
-		JPanel backgroundPanel = new JPanel(new GridLayout(3,2));
-		backgroundPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Background Color"));
+		JPanel backgroundPanel = new JPanel(new GridLayout(3, 2));
+		backgroundPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Background Color"));
 		backgroundPanel.add(useTextAreaBackground);
 		backgroundPanel.add(new JLabel());
 		backgroundPanel.add(useGutterBackground);
@@ -55,18 +61,18 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 		backgroundPanel.add(bgcolor);
 		addComponent(backgroundPanel);
 
-		String borderSrc = jEdit.getProperty("options.columnruler.border.src","none");
-		noBorder = new JRadioButton("No Border",borderSrc.equals("none"));
-		useGutterBorder = new JRadioButton("Same as gutter border",borderSrc.equals("gutter"));
-		customBorder = new JRadioButton("Custom color:",borderSrc.equals("custom"));
+		String borderSrc = jEdit.getProperty("options.columnruler.border.src", "none");
+		noBorder = new JRadioButton("No Border", borderSrc.equals("none"));
+		useGutterBorder = new JRadioButton("Same as gutter border", borderSrc.equals("gutter"));
+		customBorder = new JRadioButton("Custom color:", borderSrc.equals("custom"));
 		borderOptions.add(noBorder);
 		borderOptions.add(useGutterBorder);
 		borderOptions.add(customBorder);
 
-		borderColor = new ColorWellButton(jEdit.getColorProperty("options.columnruler.border",Color.WHITE));
+		borderColor = new ColorWellButton(jEdit.getColorProperty("options.columnruler.border", Color.WHITE));
 
-		JPanel borderPanel = new JPanel(new GridLayout(3,2));
-		borderPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"Border w/ Text Area"));
+		JPanel borderPanel = new JPanel(new GridLayout(3, 2));
+		borderPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Border w/ Text Area"));
 		borderPanel.add(noBorder);
 		borderPanel.add(new JLabel());
 		borderPanel.add(useGutterBorder);
@@ -78,27 +84,33 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 
 	protected void _save() {
 		if (activeByDefault.isSelected()) {
-			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate","startup");
-		} else {
-			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate","defer");
+			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate", "startup");
 		}
-		jEdit.setBooleanProperty("options.columnruler.nextTab",tabIndicator.isSelected());
+		else {
+			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate", "defer");
+		}
+		jEdit.setBooleanProperty("options.columnruler.nextTab", tabIndicator.isSelected());
 
 		if (useTextAreaBackground.isSelected()) {
-			jEdit.setProperty("options.columnruler.background.src","textarea");
-		} else if (useGutterBackground.isSelected()) {
-			jEdit.setProperty("options.columnruler.background.src","gutter");
-		} else {
-			jEdit.setProperty("options.columnruler.background.src","custom");
-			jEdit.setColorProperty("options.columnruler.background.color",bgcolor.getSelectedColor());
+			jEdit.setProperty("options.columnruler.background.src", "textarea");
+		}
+		else if (useGutterBackground.isSelected()) {
+			jEdit.setProperty("options.columnruler.background.src", "gutter");
+		}
+		else {
+			jEdit.setProperty("options.columnruler.background.src", "custom");
+			jEdit.setColorProperty("options.columnruler.background.color", bgcolor.getSelectedColor());
 		}
 		if (noBorder.isSelected()) {
-			jEdit.setProperty("options.columnruler.border.src","none");
-		} else if (useGutterBorder.isSelected()) {
-			jEdit.setProperty("options.columnruler.border.src","gutter");
-		} else {
-			jEdit.setProperty("options.columnruler.border.src","custom");
-			jEdit.setColorProperty("options.columnruler.border.color",borderColor.getSelectedColor());
+			jEdit.setProperty("options.columnruler.border.src", "none");
+		}
+		else if (useGutterBorder.isSelected()) {
+			jEdit.setProperty("options.columnruler.border.src", "gutter");
+		}
+		else {
+			jEdit.setProperty("options.columnruler.border.src", "custom");
+			jEdit.setColorProperty("options.columnruler.border.color", borderColor.getSelectedColor());
 		}
 	}
 }
+

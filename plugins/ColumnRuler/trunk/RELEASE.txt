@@ -1,4 +1,4 @@
-Column Ruler 0.9.0
+Column Ruler 0.9.1
 
 Requirements:
 	* JDK 1.4.1
@@ -9,7 +9,7 @@ Announcement:
 
 Source:
 	plugins/ColumnRuler
-	tag: release-0_9_0
+	tag: release-0_9_1
 
 Short Description:
 	Provides a ruler across the top of the text area which marks off columns.
