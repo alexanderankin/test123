@@ -28,10 +28,9 @@
 
     <ACTION NAME="white-space.toggle-fold-highlight">
         <CODE>
-            highlight = whitespace.FoldHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getFoldHighlight().toggleEnabled();
@@ -51,10 +50,9 @@
 
     <ACTION NAME="white-space.toggle-fold-tooltip">
         <CODE>
-            highlight = whitespace.FoldHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getFoldTooltip().toggleEnabled();
