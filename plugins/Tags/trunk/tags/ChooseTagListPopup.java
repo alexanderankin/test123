@@ -17,12 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 /* This is pretty much ripped from gui/CompleteWord.java */
 
 package tags;
 
+//{{{ imports
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
@@ -33,20 +36,23 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.util.Log;
+//}}}
 
 class ChooseTagListPopup extends JWindow 
 {
   /***************************************************************************/
-	private TagsParser parser_;
+  //{{{ private declarations
+	private ExuberantCTagsParser parser_;
   private View view_;
   private boolean openNewView_;
   private Vector tagIdentifiers_;
 	private ChooseTagList tagIdentifierList_;
   private JLabel helpLabel_;
   private boolean numberKeyProcessed_ = false;
+  //}}}
 
   /***************************************************************************/
-	public ChooseTagListPopup(TagsParser parser, View view, boolean openNewView) 
+	public ChooseTagListPopup(ExuberantCTagsParser parser, View view, boolean openNewView) 
   {
     super(view);
 
@@ -150,6 +156,7 @@ class ChooseTagListPopup extends JWindow
   {
     view_.setKeyEventInterceptor(null);
 		super.dispose();
+    view_.getTextArea().requestFocus();
 	}
 
   /***************************************************************************/
@@ -286,3 +293,5 @@ class ChooseTagListPopup extends JWindow
     }
   }
 }
+
+// :collapseFolds=1:noTabs=true:lineSeparator=\r\n:tabSize=2:indentSize=2:deepIndent=false:folding=explicit:

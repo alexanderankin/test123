@@ -1,0 +1,50 @@
+Tags Todo
+=========
+
+Version 1.1
+===========
+
+* 4.2 plugin api (DONE)
+* refactor options pane
+  - use CTagsPlugin storage method, to handle paths with spaces (DONE)
+* consolidate parser classes into one ExuberantCTagsParser (DONE)
+* return focus to TextArea when ESC is entered on ChooseTagListPopup (DONE)
+* add a TagFiles and move TagFile management into that -- it should
+  live in TagsPlugin and only load tag files when needed (and should
+  take care of emptying them when properties are changed) (DONE)
+* integrate TagStack dockable (DONE)
+* tidy up logging
+  - too much in tag parsing
+  - not enough elsewhere
+* put all strings into properties
+* buffer local props
+* make sure all appropriate references are released when plugin is unloaded
+* BUG: sometimes the default tag index file is not recognized as such,
+  meaning the parent directories are not searched.
+* BUG: sometimes popping tags, the context of the edit pane
+  is out of sync with the buffer displayed.  for example, the
+  buffer switcher shows buffer a but the contents are buffer b. (DONE)
+* BUG: change default for search for tags is current buffer to True
+  otherwise, the default is added, but the option is off -- which
+  get them out of sync.
+* BUG: on linux focus is returned to the text area instead of the
+  tag collisions dialog when it opens (DONE)
+* add icons for positions in TagStack (tag,jump,explicit)?
+
+
+Later
+=====
+
+* pattern based (RE) matching (Me)
+* interface w/PV?
+* generate tag files?
+* case-insenstive search (Slava)
+* incremental search? (Slava)
+* forward and backwards to tag stack (Ken)
+* Keep current position on top of stack?  Maybe if
+  it's not in the same line as the topmost element
+  in the stack (if the stack is not empty) -- it would
+  just be TagStackModel.getTopMost.goTo() (Me)
+* option to close buffers if clean and opened by
+  following a tag (Me)
+

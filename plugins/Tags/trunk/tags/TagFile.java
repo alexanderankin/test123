@@ -18,112 +18,117 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 package tags;
- 
+
+//{{{ imports
 import java.io.*;
 import java.lang.System.*;
 import java.util.*;
+//}}}
 
-public class TagFile 
+public class TagFile
 {
-	/****************************************************************************/
-  public final static String DEFAULT_CATAGORY = "Default";
 
-	/****************************************************************************/
-  protected String path_;
-  protected String catagory_;
-  
-  protected boolean currentDirIndexFile_ = false;
+  //{{{ private declarations
+  /** tag index file path */
+  protected String path;
 
-  protected boolean enabled_; // wether you should use this tag file or not in 
-                              // searches
+  /** does the tag index file represent the tag file in the current buffer's directory */
+  protected boolean currentDirIndexFile = false;
 
-	/****************************************************************************/
-  public TagFile(String path, String catagory) 
+  /** whether to search tag index file */
+  protected boolean enabled;
+  //}}}
+
+  //{{{ TagFile(path,enabled) constructor
+  public TagFile(String path, boolean enabled)
   {
-    this(path, catagory, true);
-  }
-  
-  /***************************************************************************/
-  public TagFile(String path, String catagory, boolean enabled)
-  {
-    init(path, catagory, true);
-  }
+    if(path.equalsIgnoreCase(Tags.getCurrentBufferTagFilename()))
+      this.currentDirIndexFile = true;
+    this.path = path;
+    this.enabled = enabled;
+  } //}}}
 
-  /***************************************************************************/
-  /* Property string format:  path, catagory, true/false 
-   *    or
-   * just the path to tag index file
-   */
+  //{{{ TagFile(propvalue) constructor
+  /**
+  * Property string format:  path, true/false
+  *   or
+  * path
+  */
   public TagFile(String propertyStringOrPath)
   {
     StringTokenizer st = new StringTokenizer(propertyStringOrPath);
-    
+
     String path = null;
-    String catagory = DEFAULT_CATAGORY;
     boolean enabled = true;
-    
+
     if (st.hasMoreElements())
       path = st.nextToken();
-    
-    if (st.hasMoreElements())
-      catagory = st.nextToken();
-      
+
     if (st.hasMoreElements())
       enabled = st.nextToken().equals("true");
-      
-    init(path, catagory, enabled);
-    
+
+    // XXX consolidate to one constructor
+    this.path = path;
+    this.enabled = enabled;
+
     st = null;
-  }
-  
-  /***************************************************************************/
-  protected void init(String path, String catagory, boolean enabled)
-  {
-    path_ = path;
-    if (catagory == null)
-      catagory_ = DEFAULT_CATAGORY;
-    else
-      catagory_ = catagory;
-    enabled_ = enabled;
-  }
+  } //}}}
 
-	/****************************************************************************/
-  public String toString() { return getPath(); }
-
-	/****************************************************************************/
-  public String toDebugString() 
+  //{{{ toDebugString() method
+  public String toDebugString()
   {
     String check = null;
-    
-    if (enabled_) 
+
+    if (enabled)
       check = "x";
     else
       check = " ";
-    
-    return "[" + catagory_ + "] [" + check + "] " + getPath();
-  }
-	
-  /***************************************************************************/
-  public String getPropertyString()
+
+    return "[" + check + "] " + getPath();
+  }//}}}
+
+  //{{{ toString() method
+  public String toString()
   {
-    return path_ + " " + catagory_ + " " + enabled_;
-  }
-  
-  /***************************************************************************/
-  public String getPath() { return path_; }
- 
-  /***************************************************************************/
-  public void setPath(String path) { path_ = new String(path); }
-  
-  /***************************************************************************/
-  public String getCatagory() { return catagory_; }
-  
-  /***************************************************************************/
-  public boolean isEnabled() { return enabled_; }
-  
-  /***************************************************************************/
-  public void setEnabled(boolean enabled) { enabled_ = enabled; }
+    return "TagFile path=" + getPath() + ", enabled=" + isEnabled()
+      + ", currentDirIndexFile=" + currentDirIndexFile;
+  } //}}}
+
+  //{{{ getPath() method
+  public String getPath()
+  {
+    return path;
+  } //}}}
+
+  //{{{ setPath() method
+  public void setPath(String path)
+  {
+    this.path = new String(path);
+  } //}}}
+
+  //{{{ isEnabled() method
+  public boolean isEnabled()
+  {
+    return enabled;
+  } //}}}
+
+  //{{{ setEnabled() method
+  public void setEnabled(boolean enabled)
+  {
+    this.enabled = enabled;
+  } //}}}
+
+  //{{{ isCurrentDirIndexFile()
+  public boolean isCurrentDirIndexFile()
+  {
+    return currentDirIndexFile;
+  } //}}}
+
 }
+
+// :collapseFolds=0:noTabs=true:lineSeparator=\r\n:tabSize=2:indentSize=2:deepIndent=false:folding=explicit:

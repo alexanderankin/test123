@@ -3,7 +3,9 @@
  * Copyright (c) 2001, 2002 Kenrick Drew
  * kdrew@earthlink.net
  *
- * This file is part of TagsPlugin
+ * This file is part of TagsPlugin.  It is NOT part of the
+ * plugin, but an example of how to use the plugin code
+ * for an external command-line utility.
  *
  * TagsPlugin is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,10 +20,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 package tags;
- 
+
 import java.io.*;
 import java.lang.System.*;
 import java.util.*;
@@ -29,22 +33,22 @@ import java.util.*;
 import gnu.regexp.*;
 
 public class TagsCmdLine {
- 
+
  /****************************************************************************/
- static protected int getLineNumber(String fileName, String searchString) 
+ static protected int getLineNumber(String fileName, String searchString)
  {
-   
+
    BufferedReader bufferedReader = null;
-   try { 
+   try {
      bufferedReader = new BufferedReader(new FileReader(fileName));
    }
    catch (FileNotFoundException fnf) {
      bufferedReader = null;
    }
-   
+
    if (bufferedReader == null)
      return -1;
-   
+
    int lineNumber = 1;
 
    RE searchRE = null;
@@ -55,7 +59,7 @@ public class TagsCmdLine {
    } catch (REException ree) {
      System.out.println("Input pattern couldn't be parsed.");
    }
-   
+
    try {
      String line;
      while ((line = bufferedReader.readLine()) != null) {
@@ -64,17 +68,17 @@ public class TagsCmdLine {
        lineNumber++;
      }
      line = null;
-   } 
+   }
    catch (IOException ioe) {
      lineNumber = -1;
-   }           
+   }
 
    searchRE = null;
    bufferedReader = null;
-   
-   return -1;                
+
+   return -1;
  }
- 
+
  /****************************************************************************/
  static public void main(String args[]) {
    if (args.length == 0 || args.length != 2) {
@@ -84,19 +88,19 @@ public class TagsCmdLine {
      System.out.println("      Returns 2 if error");
      System.exit(2);
    }
-   
+
    // Command line arg checking
    File dir = new File(args[0]);
    if (!dir.exists()) {
      System.out.println(args[0] + " does not exist.");
      System.exit(2);
    }
-   
+
    if (!dir.isDirectory()) {
      System.out.println(args[0] + " is not a directory.");
      System.exit(2);
    }
-   
+
    if (!dir.canRead()) {
      System.out.println("You do not have permission to read " + args[0]);
      System.exit(2);
@@ -104,35 +108,36 @@ public class TagsCmdLine {
    dir = null;
 
    Tags.setJEditAvailable(false);
-   
+
    // Setup PTC tags files
    String PTCSRC = args[0];
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.1"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.2"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.3"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.4"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.5"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.1"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.2"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.3"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.4"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.5"));
-   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.prodev"));
+   TagFiles tagFiles = TagsPlugin.getTagFiles();
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.1"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.2"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.3"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.4"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.5"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.o.1"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.o.2"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.o.3"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.o.4"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.o.5"));
+   tagFiles.add(new TagFile(PTCSRC + "/softdb/tags.prodev"));
 
    PTCSRC = null;
-   
+
    int returnVal = 0;
-   
+
    // Get function name
    String funcName = args[1];
-   
+
    Tags.followTag(null, null, null, false, false, funcName);
    String tagFileName = Tags.getTagFileName();
    String searchString = Tags.getSearchString();
    int lineNumber = -1;
    if (searchString == null)
      lineNumber = Tags.getLineNumber();
-     
+
    if (tagFileName != null) {
      //System.out.print("File:  " + tagFileName);
      if (searchString != null) {
@@ -143,7 +148,7 @@ public class TagsCmdLine {
      else {
        //System.out.println("Line number:  " + lineNumber);
      }
-     
+
      System.out.println(tagFileName + " +line:" + lineNumber);
      returnVal = 1;
    }
@@ -151,11 +156,11 @@ public class TagsCmdLine {
      //System.out.println("\"" + funcName + "\" not found");
      returnVal = 0;
    }
-   
+
    funcName = null;
    tagFileName = null;
    searchString = null;
-   
+
    System.exit(returnVal);
  }
 }
