@@ -54,7 +54,6 @@ public class ColorTabs
    private final static int muteRange = highestColor - lowestColor;
    private final static float muteRatio = ((float) muteRange / 254);
 
-   private static int VERSION_THREE_JEDIT = 3;
    private static ColorTabs colorTabs = null;
    private static boolean useColors = false;
 
