@@ -55,7 +55,8 @@ public class ShortcutSaverPlugin extends EditPlugin
 
 		if(actions.size() == 0)
 		{
-			GUIUtilities.error(view, "shortcutSaver.error.noaction", null);
+			String[] args = { String.valueOf(actionNumber), buffer.getMode().getName() };
+			GUIUtilities.error(view, "shortcutSaver.error.noaction", args);
 			return;
 		}
 
