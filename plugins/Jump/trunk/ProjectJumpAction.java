@@ -68,7 +68,7 @@ public class ProjectJumpAction
 */ 
     public void addFile(String f)
     {
-        try 
+        try    
         {
             Log.log(Log.DEBUG,this,"addFile: - "+f); 
             if (f==null) return;
@@ -82,14 +82,14 @@ public class ProjectJumpAction
         } 
         catch (IOException e)
         {
-            return;
+            return;  
         }
     }
 //}}}
 
 //{{{ HISTORY
 
-    public void addToHistory(CTAGS_Entry en)
+    public void addToHistory(CTAGS_Entry en) 
     {
         History.add(en);
     }
@@ -101,6 +101,12 @@ public class ProjectJumpAction
     
     public void JumpToPreviousTag()
     {
+        if (jEdit.getBooleanProperty("jump.enable", false) == false)
+        {
+            GUIUtilities.message(jEdit.getActiveView(), "JumpPlugin.enable", new Object[0]);
+            return;    
+        }
+        
         CTAGS_Entry en = (CTAGS_Entry)History.getPrevious();
 
         if (en == null)
@@ -122,7 +128,7 @@ public class ProjectJumpAction
         
         if (PVActions.getCurrentProject(view) != null && listener.PROJECT==null)
         {
-            JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(jEdit.getActiveView()), PVActions.getCurrentProject(jEdit.getActiveView()));
+            JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
         }
         getTagBySelection();
     }
@@ -151,7 +157,6 @@ public class ProjectJumpAction
             }
             
         }    
-
         //If file not opened yet, open it before jump.
         if (AlreadyOpened == false)
         {
@@ -159,10 +164,10 @@ public class ProjectJumpAction
             Log.log(Log.DEBUG,this,"Open file: - "+en.getFileName());
         }    
 
-			VFSManager.runInAWTThread(new Runnable() {
-					public void run() {
-						// set the caret pos to the beginning for searching...
-						v.getTextArea().setCaretPosition(0);
+        VFSManager.runInAWTThread(new Runnable() {
+                public void run() {
+                    // set the caret pos to the beginning for searching...
+                    v.getTextArea().setCaretPosition(0);
 
         SearchAndReplace search = new SearchAndReplace();
         search.setIgnoreCase(false);
@@ -257,7 +262,7 @@ public class ProjectJumpAction
             Arrays.sort(entries, new AlphabeticComparator());
 
             jm = new ProjectTagsJump(view , entries,
-                    new ProjectTagsListModel(), true, "Files where tag found:",60);
+                    new ProjectTagsListModel(), true, "Files where tag found:",50);
         }
     }
 //}}}
@@ -325,6 +330,7 @@ public class ProjectJumpAction
     }
     // End of AlphabeticComparator
 //}}}
+
 }
 // End of ProjectJumpAction.java
 

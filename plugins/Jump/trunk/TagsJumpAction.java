@@ -66,8 +66,12 @@ class TagsJumpAction
             return false;
             
         Vector e = new Vector();
+        String val = new String();
+        
         for (int i = 0; i < buff.size(); i++) {
             CTAGS_Entry en = (CTAGS_Entry) buff.get(i);
+            val = en.getTagName()+" ("+en.getExCmd().trim()+")";
+            en.setToStringValue(val);
             e.add(en);
         }
 
@@ -87,7 +91,7 @@ class TagsJumpAction
 //{{{ void showList()
     public void showList() {
         jm = new CtagsJumpMenu(view , entries,
-                new TagsListModel(), true, "Tag to jump:",60);
+                new TagsListModel(), true, "Tag to jump:",50);
     }
 //}}}
 
@@ -108,9 +112,11 @@ class TagsJumpAction
             JList l = (JList) o;
             SearchAndReplace search = new SearchAndReplace();
 
-            String tag = (String) l.getModel().getElementAt(l.getSelectedIndex());
-
-            tag = tag.substring(tag.indexOf(" ",0)+2,tag.length()-1);
+            //String tag = (String) l.getModel().getElementAt(l.getSelectedIndex());
+            //tag = tag.substring(tag.indexOf(" ",0)+2,tag.length()-1);
+            
+            CTAGS_Entry en = (CTAGS_Entry)l.getModel().getElementAt(l.getSelectedIndex());
+            String tag = en.getExCmd();
             
             Log.log(Log.DEBUG,this,"try to find-" + tag);
             search.setSearchString(tag);
@@ -136,8 +142,8 @@ class TagsJumpAction
         public void processInsertAction(Object o) 
         {
             JList l = (JList) o;
-            String tag = (String) l.getModel().getElementAt(l.getSelectedIndex());
-            tag = tag.substring(0,tag.indexOf(" ",0));
+            CTAGS_Entry en = (CTAGS_Entry)l.getModel().getElementAt(l.getSelectedIndex());
+            String tag = en.getTagName();
             view.getTextArea().setSelectedText(tag);
         }
     }
@@ -158,9 +164,7 @@ class TagsJumpAction
 //{{{  Object getElementAt      
         public Object getElementAt(int index) 
         {
-            String i = entries[index].getTagName()+" ("+entries[index].getExCmd().trim()+")";
-            //System.out.println(entries[index].getExCmd());
-            return i;
+            return entries[index];
         }
     }
 //}}}
@@ -175,7 +179,6 @@ class TagsJumpAction
             CTAGS_Entry s2 = (CTAGS_Entry) o2;
             return s1.getTagName().toLowerCase().compareTo(s2.getTagName().toLowerCase());
         }
-
     }
 //}}}
 }

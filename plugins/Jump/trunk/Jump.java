@@ -20,18 +20,18 @@ public class Jump
         }
         return true;
     }
-    
+
     public void showFilesJump()
     {
         if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.addListener();
+        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
         new FilesJumpAction().showList();
     }
     
     public void showTagsJump()
     {
         if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.addListener();
+        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
         TagsJumpAction tja = new TagsJumpAction();
         if (tja.parse())
         {
@@ -42,7 +42,7 @@ public class Jump
     public void showProjectJump()
     {
         if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.addListener();
+        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
         JumpPlugin.pja.JumpToTag();
     }
     
@@ -50,6 +50,12 @@ public class Jump
     {
         if (isJumpEnabled() == false) return;
         JumpPlugin.reloadTagsOnProject();  
+    }
+    
+    public void historyJump()
+    {
+        if (isJumpEnabled() == false) return; 
+        JumpPlugin.pja.JumpToPreviousTag();
     }
  
 }
