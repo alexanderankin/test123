@@ -1,3 +1,10 @@
+VERSION 0.5
+
+- Updated to new jEdit 4.0 dockable API (André Kaplan)
+- Updated to new Jode version 1.90-CVS (Dirk Möbius)
+- Requires jEdit 4.0pre3 or higher
+
+
 VERSION 0.4.2
 
 - Bugfix: minor fix in the bytecode virtual file systems that caused problems
@@ -17,19 +24,19 @@ VERSION 0.4
 
 - Disassemble or decompile with BCEL (André Kaplan)
 - New Jasmin, Class and Jode virtual file systems (André Kaplan)
-- Only one tree, change view with right-click popup menu (Dirk Moebius)
-- Ability to add jar/zip archives to classpath tree (Dirk Moebius)
-- View by individual package hierarchy, ie. org,net,com etc. (Dirk Moebius)
+- Only one tree, change view with right-click popup menu (Dirk Möbius)
+- Ability to add jar/zip archives to classpath tree (Dirk Möbius)
+- View by individual package hierarchy, ie. org,net,com etc. (Dirk Möbius)
 - May now choose between decompilation to a file or to a new jEdit buffer
-  (Dirk Moebius)
-- jEdit buffer is named correctly (Dirk Moebius)
-- Better support for DecompileClassMessage (Dirk Moebius)
+  (Dirk Möbius)
+- jEdit buffer is named correctly (Dirk Möbius)
+- Better support for DecompileClassMessage (Dirk Möbius)
 - Moved package buildtools to javainsight.buildtools because of name clashes
-  with the JCompiler plugin (Dirk Moebius)
-- Bugfix: Help file didn't show up (Dirk Moebius)
+  with the JCompiler plugin (Dirk Möbius)
+- Bugfix: Help file didn't show up (Dirk Möbius)
 - Bugfix: dependency error in makefile.jmk (André Kaplan)
 - Bugfix: Jode options (--pretty, --decrypt, --onetime) weren't used correctly;
-  worked only correct every second time (Dirk Moebius)
+  worked only correct every second time (Dirk Möbius)
 - Requires jEdit 3.1pre3 or higher, JDK 1.1 or higher
 
 

@@ -2,11 +2,15 @@
 
 <!--
 
-     This is the standard build.xml file for building the JavaInsight plugin.
+     This is the Ant build file for building the JavaInsight plugin.
 
-     The 'dist' target compiles the plugin, generates documentation, and creates
-     the JAR file.  Before running the 'dist' target, you will need to choose
-     whether to generate the documentation using one of these two targets:
+     The default target is 'dist', which compiles the plugin, generates
+     documentation, and creates the JAR file.
+
+     Before compiling, make sure that jedit.jar is in the system CLASSPATH.
+
+     Before generating the documentation, you will need to choose whether to
+     use one of these two targets:
 
      - 'docs-xsltproc': Creates documentation using the xsltproc tool from
        libxslt, available at http://xmlsoft.org/XSLT
@@ -19,21 +23,11 @@
      documentation, you can remove the 'docs' target from the depends list for
      the 'dist' target.
 
-     To use this template for building your own plugin, make these changes:
-
-     - Change 'name' property for the <project> to the name of your plugin
-     - Change definition of 'jedit.install.dir' to point to the directory
-       containing jedit.jar
-     - If necessary, add any dependencies to the 'project.class.path' definition
-     - If necessary, change the list of files in the 'dist' target
-     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets to
-       reflect the appropriate values for your documentation
-
 -->
+
 
 <project name="JavaInsight" default="dist" basedir=".">
 
-    <property name="jedit.install.dir"  value="../.."/>
     <property name="jar.name"  value="${ant.project.name}.jar"/>
     <property name="docs-proc.target"  value="xsltproc"/>
 
@@ -44,7 +38,6 @@
 
 
     <path id="project.class.path">
-        <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${lib.dir}/BCEL.jar"/>
         <pathelement location="${lib.dir}/jode.jar"/>
         <pathelement location="${src.dir}"/>
@@ -114,8 +107,10 @@
         <delete dir="${build.dir}"/>
         <delete>
             <fileset dir="." includes="users-guide.html"/>
-            <fileset dir="." includes="**/*~"/>
+	    <fileset dir="." includes="**/*~" defaultexcludes="no"/>
         </delete>
     </target>
+
 </project>
+
 

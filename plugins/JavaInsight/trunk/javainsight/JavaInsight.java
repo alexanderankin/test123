@@ -33,7 +33,7 @@ import javainsight.buildtools.JavaUtils;
 import javainsight.buildtools.MiscUtils;
 
 // jode decompiler
-import jode.decompiler.Decompiler;
+import net.sf.jode.decompiler.Decompiler;
 
 // io
 import java.io.IOException;
@@ -171,10 +171,10 @@ public class JavaInsight extends JPanel {
         int lastDot = className.lastIndexOf('.');
         String basename = (lastDot < 0 ? className : className.substring(lastDot + 1) + ".java");
         // Close old buffer with the same name, if one exists:
-        Buffer buf = jEdit.openFile(view, null, basename, false, true);
+        Buffer buf = jEdit.openFile(view, null, basename, true, null);
         jEdit.closeBuffer(view, buf);
         // Create new jEdit buffer:
-        buf = jEdit.openFile(view, null, basename, false, true);
+        buf = jEdit.openFile(view, null, basename, true, null);
 
         // Try to set Java mode (if it exists):
         Mode javaMode = jEdit.getMode("java");
@@ -183,7 +183,7 @@ public class JavaInsight extends JPanel {
 
         // Insert the normal output into the buffer:
         buf.beginCompoundEdit();
-        buf.insertString(0, result.toString(), null);
+        buf.insert(0, result.toString());
         // If the string ends with a newline, the generated
         // buffer adds one extra newline; so we need to remove it:
         if (result.endsWith("\n") && buf.getLength() > 0)
@@ -298,7 +298,6 @@ public class JavaInsight extends JPanel {
      * in fact).
      */
     static String getJodeClassPath() {
-        //String entries[] = JavaUtils.getClasspath();
         ClasspathEntry[] entries = PackageBrowser.getPackagesAsClasspath();
         StringBuffer classpath = new StringBuffer();
 
