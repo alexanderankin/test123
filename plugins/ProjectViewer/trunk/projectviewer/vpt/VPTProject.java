@@ -185,9 +185,9 @@ public class VPTProject extends VPTNode {
 	 *	@return	The old value for the property (can be null).
 	 */
 	public String setProperty(String name, String value) {
-		String old = properties.get(name).toString();
+		Object old = properties.get(name);
 		properties.put(name, value);
-		return old;
+		return (old != null) ? old.toString() : null;
 	} //}}}
 
 	//{{{ +setProperty(String, Object) : Object
