@@ -52,6 +52,11 @@ VERSION 2.0.3
 		- added some work arounds in OldStyleFileImporter to deal with Swing's
 		  Metal L&F bug when navigating symlinks in the file chooser (it
 		  resolves canonical paths when it shouldn't)
+		- fixed many possible NPEs in ProjectViewer for the rare case when all
+		  trees are disables; fixed also some possible NPEs in VPTProject.
+		- renaming the node was causing the tree to stay out of order
+		- trying to rename a file that does not exist was causing an "infinite
+		  loop" when pressing only OK on the rename dialog
 
 		Other changes:
 		- removed the VPTNodeType class; it was just adding bloat, and could be
@@ -66,6 +71,9 @@ VERSION 2.0.3
 		  This was done to prevent IO requests that run in the AWT thread being
 		  locked by requests that don't care about AWT, since the current work
 		  thread pool does that.
+		- added rb (Ruby) to the list of default extensions to import.
+		- when renaming a file, if it does not exist or can't be written, only
+		  allow the "fake" rename (the one that does not affect the file on disk)
 
 VERSION 2.0.2
 	[stefan kost]
