@@ -28,6 +28,7 @@ import javax.swing.tree.*;
 
 import org.gjt.sp.util.Log;
 import projectviewer.config.ProjectPropertiesDlg;
+import projectviewer.config.ProjectViewerConfig;
 
 /** Listen to all buttons and GUI events and respond to them.
  */
@@ -37,6 +38,7 @@ public final class ViewerListener implements ActionListener, ItemListener {
 	private Launcher launcher;
 	private boolean paused;
 	private FileFilter nonProjectFileFilter;
+	
 
 	/** Create a new <code>ViewerListener</code>.
 	 *
@@ -120,7 +122,7 @@ public final class ViewerListener implements ActionListener, ItemListener {
         /* need to get browser setting */
         String sURLRoot = viewer.getCurrentProject().getURLRoot();
         String sURL;
-    
+	String browserExecPath = ProjectViewerConfig.getInstance().getBrowserPath();
         if (sURLRoot == "" )
         {
             JOptionPane.showMessageDialog(viewer, "Web URL Not set for project");
@@ -137,7 +139,7 @@ public final class ViewerListener implements ActionListener, ItemListener {
         JOptionPane.showMessageDialog(viewer, sURL);
         
            Runtime rt = Runtime.getRuntime();
-           String[] callAndArgs = { "mozilla", sURL };
+           String[] callAndArgs = { browserExecPath, sURL };
            try {
                Process child = rt.exec(callAndArgs);
                child.waitFor();
