@@ -91,9 +91,24 @@ public class AntFarm extends JPanel implements EBComponent
 		return v;
 	}
 
+	
+	public void addNotify()
+	{
+		super.addNotify();
+		EditBus.addToBus(this);
+	} 
+
+	
+	public void removeNotify()
+	{
+		super.removeNotify();
+		EditBus.removeFromBus(this);
+	} 
+	
 
 	public void handleMessage( EBMessage msg )
 	{
+		Log.log( Log.DEBUG, "In AntFarm.handleMessage", msg );
 		if ( msg instanceof BufferUpdate ) {
 			BufferUpdate updateMessage = (BufferUpdate) msg;
 			if ( updateMessage.getWhat() == BufferUpdate.LOADED ) {
