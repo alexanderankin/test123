@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!-- $Id: browser.actions.xml,v 1.1.1.1 2003-11-20 17:19:14 olearyni Exp $ -->
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="vfs.browser.FindFile">
+		<CODE>
+         findfile.FindFileDialog fsd = new findfile.FindFileDialog(view,browser.getDirectory());
+         fsd.setVisible(true);
+		</CODE>
+	</ACTION>
+</ACTIONS>
