@@ -215,7 +215,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         //CES: Force correct color for new buffer tab
         if(index>=0) {
            this.setSelectedIndex(index);
-           this.updateHighlight(index);
+           this.updateHighlightAt(index);
         }
     }
 
@@ -243,7 +243,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
 
             if (selectedIndex >= 0) {
                 //CES: Ensure selected tab has correct color
-                this.updateHighlight(selectedIndex);
+                this.updateHighlightAt(selectedIndex);
             }
 
         } finally {
@@ -275,7 +275,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                 Buffer buffer = (Buffer) BufferTabs.this.buffers.elementAt(index);
                 if (buffer != null) {
                     BufferTabs.this.editPane.setBuffer(buffer);
-                    BufferTabs.this.updateHighlight(index); //CES
+                    BufferTabs.this.updateHighlightAt(index); //CES
                 }
             }
         }
@@ -326,7 +326,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                 Log.log(Log.ERROR, BufferTabs.class, "updateColorAt: " + npe.toString());
             }
 
-            this.updateHighlight(index);
+            this.updateHighlightAt(index);
         }
     }
 
@@ -335,7 +335,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
      *  Force the Look and Feel to use the given color as its 'selected' color.
      *  TODO: This may cause side-effects with other tab panes.
      */
-    private void updateHighlight(int index) {
+    private void updateHighlightAt(int index) {
         if (   ColorTabs.instance().isEnabled()
             && ColorTabs.instance().isSelectedColorized()
         ) {
@@ -354,7 +354,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                     );
                     this.getUI().installUI(this);
                 } catch (Exception e) {
-                    Log.log(Log.ERROR, BufferTabs.class, "updateHighlight: " + e.toString());
+                    Log.log(Log.ERROR, BufferTabs.class, "updateHighlightAt: " + e.toString());
                 }
             }
         }
