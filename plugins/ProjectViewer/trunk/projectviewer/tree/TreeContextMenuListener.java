@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.search.*;
 // Import ProjectViewer
 import projectviewer.Project;
 import projectviewer.ProjectFile;
+import projectviewer.ProjectFileSet;
 import projectviewer.ProjectViewer;
 import projectviewer.RemovalManager;
 import projectviewer.ProjectDirectory;
@@ -559,7 +560,8 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		/** @todo develop an own class which implements 'org.gjt.sp.jedit.search.SearchFileSet'
 		 *  and returns the proper files
 		 */
-		SearchAndReplace.setSearchFileSet(new DirectoryListSet(dir.getPath(),"*",true));
+		//SearchAndReplace.setSearchFileSet(new DirectoryListSet(dir.getPath(),"*",true));
+		SearchAndReplace.setSearchFileSet(new ProjectFileSet(dir));
 		SearchDialog.showSearchDialog(jEdit.getLastView(), null, SearchDialog.DIRECTORY);
 	}//}}}
 	//}}}

@@ -94,7 +94,7 @@ public final class ProjectDirectory {
     *  {@link #getChildCount()} in that the other method returns the number of
     *  project files <b>and</b> directories.
     *
-    * @return   The fileCount value
+    * @return   The number of files
     * @since
     */
    public int getFileCount() {
@@ -113,6 +113,27 @@ public final class ProjectDirectory {
    }
 
    /**
+    * Returns the number of subdirectories in the directory.
+    *
+    * @return   The number of subdirectories
+    * @since
+    */
+   public int getSubDirectoryCount() {
+      return subdirectories.size();
+   }
+
+   /**
+    * Returns the {@link ProjectDirectory} at the specified index.
+    *
+    * @param name  Description of Parameter
+    * @return      The subDirectory value
+    * @since
+    */
+   public ProjectDirectory getSubDirectory( int index ) {
+	   return (ProjectDirectory)subdirectories.get( index );
+   }
+   
+   /**
     * Returns the named subdirectory.
     *
     * @param name  Description of Parameter
@@ -126,6 +147,29 @@ public final class ProjectDirectory {
             return each;
       }
       return null;
+   }
+
+   /**
+    * Returns the subdirectory identified by the given file.
+    *
+    * @param aSubDirectory  Description of Parameter
+    * @return               The subDirectory value
+    * @since
+    */
+   public ProjectDirectory getSubDirectory( File aSubDirectory ) {
+      return getSubDirectory( aSubDirectory.getName() );
+   }
+
+   /**
+    * Returns <code>true</code> if the given directory already exists as a
+    *  project subdirectory.
+    *
+    * @param aSubDirectory  Description of Parameter
+    * @return               The subDirectory value
+    * @since
+    */
+   public boolean isSubDirectory( File aSubDirectory ) {
+      return(getSubDirectory( aSubDirectory ) != null);
    }
 
    /**
@@ -329,7 +373,7 @@ public final class ProjectDirectory {
     * @return            The projectPath value
     * @since
     */
-   List getProjectPath( File anArtifact ) {
+   public List getProjectPath( File anArtifact ) {
       List list = getPathToFile( anArtifact );
       list.set( 0, this );
       ProjectDirectory dir = this;
@@ -341,29 +385,6 @@ public final class ProjectDirectory {
    }
 
    /**
-    * Returns the subdirectory identified by the given file.
-    *
-    * @param aSubDirectory  Description of Parameter
-    * @return               The subDirectory value
-    * @since
-    */
-   ProjectDirectory getSubDirectory( File aSubDirectory ) {
-      return getSubDirectory( aSubDirectory.getName() );
-   }
-
-   /**
-    * Returns <code>true</code> if the given directory already exists as a
-    *  project subdirectory.
-    *
-    * @param aSubDirectory  Description of Parameter
-    * @return               The subDirectory value
-    * @since
-    */
-   boolean isSubDirectory( File aSubDirectory ) {
-      return getSubDirectory( aSubDirectory ) != null;
-   }
-
-   /**
     * Returns the path to the specified child, or <code>null</code> if the given
     *  file is not a descendent.
     *
@@ -371,7 +392,7 @@ public final class ProjectDirectory {
     * @return       The treePath value
     * @since
     */
-   TreePath getTreePath( File child ) {
+   public TreePath getTreePath( File child ) {
       List path = getPathToFile( child );
       if ( path == null )
          return null;
@@ -389,7 +410,7 @@ public final class ProjectDirectory {
     * @return       The pathToFile value
     * @since
     */
-   List getPathToFile( File aFile ) {
+   public List getPathToFile( File aFile ) {
       List path = new ArrayList();
 
       if ( equalsFile( aFile ) ) {
@@ -416,7 +437,7 @@ public final class ProjectDirectory {
     * @param file  The feature to be added to the File attribute
     * @since
     */
-   void addFile( ProjectFile file ) {
+   public void addFile( ProjectFile file ) {
       files.add( file );
       Collections.sort( files, ProjectFile.getComparator() );
    }
@@ -427,7 +448,7 @@ public final class ProjectDirectory {
     * @param file  Description of Parameter
     * @since
     */
-   void removeFile( ProjectFile file ) {
+   public void removeFile( ProjectFile file ) {
       files.remove( file );
    }
 
@@ -437,7 +458,7 @@ public final class ProjectDirectory {
     * @param dir  Description of Parameter
     * @since
     */
-   void removeDirectory( ProjectDirectory dir ) {
+   public void removeDirectory( ProjectDirectory dir ) {
       subdirectories.remove( dir );
    }
 
@@ -448,7 +469,7 @@ public final class ProjectDirectory {
     * @return               Description of the Returned Value
     * @since
     */
-   ProjectDirectory addSubDirectory( File aSubDirectory ) {
+   public ProjectDirectory addSubDirectory( File aSubDirectory ) {
       if ( isSubDirectory( aSubDirectory ) )
          return null;
       ProjectDirectory dir = new ProjectDirectory( aSubDirectory );
@@ -462,7 +483,7 @@ public final class ProjectDirectory {
     *
     * @param aSubDirectory  The feature to be added to the SubDirectory attribute
     */
-   void addSubDirectory( ProjectDirectory aSubDirectory ) {
+   public void addSubDirectory( ProjectDirectory aSubDirectory ) {
       subdirectories.add( aSubDirectory );
       Collections.sort( subdirectories, getComparator() );
    }
@@ -475,7 +496,7 @@ public final class ProjectDirectory {
     * @return      Description of the Returned Value
     * @since
     */
-   boolean equalsFile( File aDir ) {
+   public boolean equalsFile( File aDir ) {
       return fullPath.equals( aDir.getAbsolutePath() );
    }
 
@@ -510,7 +531,7 @@ public final class ProjectDirectory {
     * @param count       Description of Parameter
     * @param newRadical  Description of Parameter
     */
-   void changePaths( int count, String newRadical ) {
+   public void changePaths( int count, String newRadical ) {
       for ( Iterator it = files(); it.hasNext();  ) {
          ProjectFile f = (ProjectFile)it.next();
          String path = f.getPath();
