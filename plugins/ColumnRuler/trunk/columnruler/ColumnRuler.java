@@ -21,8 +21,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-13 20:46:07 $ by $Author: bemace $
- * @version    $Revision: 1.17 $
+ * @modified   $Date: 2004-02-13 21:16:42 $ by $Author: bemace $
+ * @version    $Revision: 1.18 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -259,13 +259,13 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	 */
 	private void mark(Graphics2D gfx, int col, Color c, int width) {
 		int hScroll = _textArea.getHorizontalOffset();
-		double x = xOffset + col * charWidth;
+		double x = xOffset + hScroll + col * charWidth;
 		gfx.setColor(c);
 		Rectangle2D mark;
 		if (width % 2 == 0) {
-			mark = new Rectangle2D.Double(x + hScroll - width / 2, 0, width, lineHeight);
+			mark = new Rectangle2D.Double(x - width / 2, 0, width, lineHeight);
 		} else {
-			mark = new Rectangle2D.Double(x + hScroll - (width - 1) / 2, 0, width, lineHeight);
+			mark = new Rectangle2D.Double(x - (width - 1) / 2, 0, width, lineHeight);
 		}
 		gfx.fill(mark);
 	}

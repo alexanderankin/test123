@@ -11,8 +11,8 @@ import org.gjt.sp.jedit.*;
  *
  * @author     mace
  * @created    June 8, 2003
- * @modified   $Date: 2004-02-11 19:53:33 $ by $Author: bemace $
- * @version    $Revision: 1.9 $
+ * @modified   $Date: 2004-02-13 21:16:42 $ by $Author: bemace $
+ * @version    $Revision: 1.10 $
  */
 public class Mark implements Transferable {
 	static final DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class,"ColumnRuler.Mark");
@@ -29,6 +29,9 @@ public class Mark implements Transferable {
 		_name = name;
 	}
 
+	/**
+	 * Creates a mark with the given name, loading the rest of the properties using the given property prefix.
+	 */
 	public Mark(String name, String property) {
 		_name = name;
 		this.property = property;
