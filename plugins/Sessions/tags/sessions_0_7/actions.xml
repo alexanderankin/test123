@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="session-save">
+		<CODE>
+			import sessions.*;
+			SessionManager.getInstance().saveCurrentSession(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-save-as">
+		<CODE>
+			import sessions.*;
+			SessionManager.getInstance().saveCurrentSessionAs(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-reload">
+		<CODE>
+			import sessions.*;
+			SessionManager.getInstance().reloadCurrentSession(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-manager">
+		<CODE>
+			import sessions.*;
+			SessionManager.getInstance().showSessionManagerDialog(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>

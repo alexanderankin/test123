@@ -1,0 +1,11 @@
+VERSION 0.7
+
+- initial release, spinned off from the BufferList Plugin 0.6.3
+- as a result of the spin off, the Session Switcher toolbar can no longer be
+  docked into BufferList. I'm searching for a remedy, but in the meantime
+  your only choice is to dock it into the view at top.
+- bugfix: switching sessions could cause the line numbers in the gutter
+  to vanish (SessionsPlugin no longer sends out PropertiesChanged messages
+  on session change)
+- requires jEdit 3.2pre2 or higher
+
