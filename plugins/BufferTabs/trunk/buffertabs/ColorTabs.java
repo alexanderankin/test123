@@ -62,7 +62,7 @@ public class ColorTabs
    private boolean colorText = false;
    private boolean colorTitles = false;
    private boolean colorVariation = true;
-   private Vector colours;
+   private Vector colors;
    private Hashtable colorsAssigned = new Hashtable();
    private Object lock = new Object();
    private boolean muteColours = true;
@@ -77,7 +77,7 @@ public class ColorTabs
 
 
    /**
-    *  Creates colours suitable for reading text labels. Uniformly moves the
+    *  Creates colors suitable for reading text labels. Uniformly moves the
     *  colour range to a darker range.
     *
     * @param  colour
@@ -118,7 +118,7 @@ public class ColorTabs
 
 
    /**
-    *  Creates colours suitable for highlighting an active tab. Boosts the
+    *  Creates colors suitable for highlighting an active tab. Boosts the
     *  brightness and lowers saturation to achieve this.
     *
     * @param  colour
@@ -150,7 +150,7 @@ public class ColorTabs
 
 
    /**
-    *  Creates colours suitable for backgrounds. Uniformly moves the colour
+    *  Creates colors suitable for backgrounds. Uniformly moves the colour
     *  range to a lighter paler range.
     *
     *@param  colour
@@ -200,7 +200,7 @@ public class ColorTabs
    {
       synchronized (lock)
       {
-         if (colours == null)
+         if (colors == null)
          {
             loadColours();
          }
@@ -210,9 +210,9 @@ public class ColorTabs
             return (Color) colorsAssigned.get(name);
          }
 
-         for (int i = 0; i < colours.size(); i++)
+         for (int i = 0; i < colors.size(); i++)
          {
-            ColorEntry entry = (ColorEntry) colours.elementAt(i);
+            ColorEntry entry = (ColorEntry) colors.elementAt(i);
             if (entry.re.isMatch(name))
             {
                Color newColour = null;
@@ -258,13 +258,13 @@ public class ColorTabs
 
 
    /**
-    *  Load the colours from 'File system browser' colour options
+    *  Load the colors from 'File system browser' colour options
     */
    private void loadColours()
    {
       synchronized (lock)
       {
-         colours = new Vector();
+         colors = new Vector();
 
          if (!jEdit.getBooleanProperty("vfs.browser.colorize"))
          {
@@ -277,7 +277,7 @@ public class ColorTabs
          {
             try
             {
-               colours.addElement(new ColorEntry(
+               colors.addElement(new ColorEntry(
                      new RE(MiscUtilities.globToRE(glob)),
                      jEdit.getColorProperty(
                      "vfs.browser.colors." + i + ".color",
