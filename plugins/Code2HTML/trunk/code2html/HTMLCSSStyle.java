@@ -45,12 +45,12 @@ public class HTMLCSSStyle extends HTMLStyle
     }
 
 
-    public static String toCSS(SyntaxStyle[] styles) {
+    public String toCSS() {
         StringBuffer buf = new StringBuffer();
 
-        for (int i = 0; i < styles.length; i++) {
+        for (int i = 0; i < this.styles.length; i++) {
             buf.append(".syntax" + i + " {\n")
-                .append(toCSS(styles[i]))
+                .append(toCSS(this.styles[i]))
                 .append("}\n");
         }
 
@@ -79,11 +79,11 @@ public class HTMLCSSStyle extends HTMLStyle
                 .append(";\n");
         }
 
-        if (style.isBold()) {
+        if (style.getFont().isBold()) {
             buf.append("font-weight: bold;\n");
         }
 
-        if (style.isItalic()) {
+        if (style.getFont().isItalic()) {
             buf.append("font-style: italic;\n");
         }
 

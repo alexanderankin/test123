@@ -72,12 +72,12 @@ public class HTMLStyle
             bufClose.insert(0, "</FONT>");
         }
 
-        if (style.isBold()) {
+        if (style.getFont().isBold()) {
             bufOpen.append("<STRONG>");
             bufClose.insert(0, "</STRONG>");
         }
 
-        if (style.isItalic()) {
+        if (style.getFont().isItalic()) {
             bufOpen.append("<EM>");
             bufClose.insert(0, "</EM>");
         }
@@ -86,5 +86,10 @@ public class HTMLStyle
         buf.append(bufOpen).append(text).append(bufClose);
 
         return buf.toString();
+    }
+
+
+    public String toCSS() {
+        return "";
     }
 }
