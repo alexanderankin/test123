@@ -99,6 +99,13 @@ public class TemplateFile implements ActionListener
 		return templateLabel;
 	}
 
+	/**
+	* Creates a RE to parse #ctpragma directives. Each directive is composed of 4 parts:<P>
+	* <LI> #ctpragma
+	* <LI> the directive type (eg. LABEL, NAME, etc.)
+	* <LI> an equals ("=") sign
+	* <LI> the value to assign for this directive type
+	*/
 	private static void createREs() {
 		try {
 			String exp = "(\\s*#ctpragma\\s*)(LABEL|NAME)(\\s*=\\s*)(\\S+.*)";
@@ -110,6 +117,10 @@ public class TemplateFile implements ActionListener
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.4  2001/02/23 19:31:39  sjakob
+	 * Added "Edit Template" function to Templates menu.
+	 * Some Javadoc cleanup.
+	 *
 	 * Revision 1.3  2000/05/08 04:45:52  sjakob
 	 * Abstracted template processing to new Template class.
 	 * TemplateFile will now act merely as a proxy for a Template.

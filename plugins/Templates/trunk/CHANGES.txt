@@ -1,5 +1,10 @@
 CHANGES file for Templates plugin.
 
+Version 1.1.0 (FEB-2001)
+=============================
+ENHANCEMENTS:
+- added "Edit Template" function to Templates menu
+
 Version 1.0.2 (04-DEC-2000)
 =============================
 BUG FIX:

@@ -23,6 +23,7 @@
 import java.io.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import java.util.Enumeration;
@@ -30,8 +31,10 @@ import java.util.Hashtable;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
-/** This class is designed for use with jEdit and will insert a code
-	template at the current position within the current document. */
+/**
+ * This class is designed for use with jEdit and will insert a code
+ * template at the current position within the current document.
+ */
 public class TemplatesAction extends EditAction implements ActionListener
 {
 	private static TemplateDir templates;
@@ -49,6 +52,7 @@ public class TemplatesAction extends EditAction implements ActionListener
 	public String getTemplateDir() {
 		return jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0");
 	}
+	
 	/** 
 	 * Change the directory where templates are stored
 	 * @param templateDirVal The new templates directory
@@ -56,8 +60,11 @@ public class TemplatesAction extends EditAction implements ActionListener
 	public void setTemplateDir(String templateDirVal) {
 		jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",templateDirVal);
 	}
+	
 	/**
 	 * Returns a copy of the Templates menu
+	 * @param view The view whose Templates menu we wish to retrieve.
+	 * @return A JMenu object which is the Templates menu for the given view.
 	 */
 	public JMenu getMenu(View view) {
 		JMenu menu;
@@ -75,12 +82,16 @@ public class TemplatesAction extends EditAction implements ActionListener
 	/**
 	 * Determines which menu item was selected from the
 	 * "Templates" menu, and responds appropriately.
+	 * @param evt The ActionEvent for the menu selection.
 	 */
 	public void actionPerformed(ActionEvent evt)
 	{
 		String command = evt.getActionCommand();
 		if (command.equals(jEdit.getProperty("TemplatesPlugin.menu.refresh.label"))) {
 			this.refreshTemplates();
+		}
+		if (command.equals(jEdit.getProperty("TemplatesPlugin.menu.edit.label"))) {
+			this.loadTemplateForEdit(EditAction.getView(evt));
 		}
 	}
 	
@@ -113,6 +124,9 @@ public class TemplatesAction extends EditAction implements ActionListener
 		JMenuItem mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.refresh.label"));
 		mi.addActionListener(this);
 		menu.add(mi);
+		mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.edit.label"));
+		mi.addActionListener(this);
+		menu.add(mi);
 		menu.addSeparator();
 		this.templates.createMenus(menu);		
 	}
@@ -126,11 +140,42 @@ public class TemplatesAction extends EditAction implements ActionListener
 			buildMenu(menu);
 		}
 	}
+	
+	/**
+	 * Prompt the user for a template file and load it into the view from
+	 * which the request was initiated.
+	 * @param view The view from which the "Edit Template" request was made.
+	 */
+	private void loadTemplateForEdit(View view) {
+		JFileChooser chooser = new JFileChooser(
+				jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","."));
+		int retVal = chooser.showOpenDialog(view);
+		if(retVal == JFileChooser.APPROVE_OPTION)
+		{
+			File file = chooser.getSelectedFile();
+			if(file != null)
+			{
+				try
+				{
+					// Load file into jEdit
+					jEdit.openFile(view, file.getCanonicalPath());
+				}
+				catch(IOException e)
+				{
+					// shouldn't happen
+				}
+			}
+		}
+	}
 
 }
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2001/02/23 19:31:39  sjakob
+	 * Added "Edit Template" function to Templates menu.
+	 * Some Javadoc cleanup.
+	 *
 	 * Revision 1.2  2000/12/04 19:56:11  sjakob
 	 * Modified TemplatesAction to implement ActionListener as the signature of its
 	 * superclass, org.gjt.sp.jedit.EditAction, had changed.

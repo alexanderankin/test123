@@ -26,8 +26,10 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import org.gjt.sp.jedit.*;
-/** This class creates an OptionPane for use with jEdit's "Plugins Options"
-	function. */
+/**
+ * This class creates an OptionPane for use with jEdit's "Plugins Options"
+ * function.
+ */
 public class TemplatesOptionPane extends AbstractOptionPane implements ActionListener
 {
 	protected JTextField dirTextField;
@@ -41,11 +43,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 		try {
 			Class superclass = Class.forName("org.gjt.sp.jedit.AbstractOptionPane");
 			java.lang.reflect.Method dummy = superclass.getDeclaredMethod("_init",null);
-			/* System.out.println("TemplatesOptionPane: _init() method found!!! " +
-						"Must be 2.4pre6 or later."); */
 		} catch (NoSuchMethodException nsme) {
-			/* System.out.println("TemplatesOptionPane: No _init() method found!!! " +
-						"Must be 2.4pre5 or earlier."); */
 			pre_2_4_6 = true;	// Running jEdit 2.4pre5 or earlier ...
 			this._init();		// ... so we have to initialize the dialog ourselves.
 		} catch (ClassNotFoundException cnfe) {}	// It better be there!
@@ -64,6 +62,10 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 		myAction.refreshTemplates();
 	}
 	
+	/**
+	 * Initialize the TemplatesOptionPane.
+	 * @param textFieldStr A string containing the current Templates directory.
+	 */
 	public void init(String textFieldStr) {
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(5,5,5,5));
@@ -84,6 +86,10 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 		add(p2, BorderLayout.CENTER);
 	}
 	
+	/**
+	 * Save the new Templates directory to the global properties, and refresh 
+	 * the Templates menu.
+	 */
 	public void save() {
 		if (pre_2_4_6) {
 			this._save();	// save directly
@@ -92,6 +98,10 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 		}
 	}
 
+	/**
+	 * Display the file chooser and respond to the user's selection.
+	 * @param evt The ActionEvent corresponding to the user's button press.
+	 */
 	public void actionPerformed(ActionEvent evt) {
 		JFileChooser chooser = new JFileChooser(dirTextField.getText());
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -119,6 +129,10 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2001/02/23 19:31:39  sjakob
+	 * Added "Edit Template" function to Templates menu.
+	 * Some Javadoc cleanup.
+	 *
 	 * Revision 1.2  2000/04/21 05:32:58  sjakob
 	 * Modified TemplatesOptionPane for compliance with new OptionPane interface
 	 * introducted in jEdit 2.4pre6 (now supports "lazy" instantiation of dialog).

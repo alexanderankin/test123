@@ -24,6 +24,9 @@ import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 
+/**
+ * A jEdit plugin for adding a templating function.
+ */
 public class TemplatesPlugin extends EditPlugin
 {
 	private static TemplatesAction myAction = null;
@@ -79,8 +82,12 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
-	 * Revision 1.1  2000/04/21 05:05:51  sjakob
-	 * Initial revision
+	 * Revision 1.2  2001/02/23 19:31:39  sjakob
+	 * Added "Edit Template" function to Templates menu.
+	 * Some Javadoc cleanup.
+	 *
+	 * Revision 1.1.1.1  2000/04/21 05:05:51  sjakob
+	 * Initial import of rel-1.0.0
 	 *
 	 * Revision 1.6  2000/03/08 06:55:47  sjakob
 	 * Use org.gjt.sp.util.Log instead of System.out.println.
