@@ -172,41 +172,18 @@ loop:			for(;;)
 			else
 				args.insertElementAt("cmd.exe",0);
 
+			executable = (String)args.elementAt(0);
+
 			args.insertElementAt("/C",1);
 		}
 
-		String[] extensionsToTry;
-		if(appendEXE && executable.indexOf('.') == -1)
-			extensionsToTry = new String[] { ".cmd", ".bat", ".com", ".exe" };
-		else
-			extensionsToTry = new String[] { "" };
-
-		String[] _args = new String[args.size()];
-		args.copyInto(_args);
-
-		for(int i = 0; i < extensionsToTry.length; i++)
+		// Hack to look for executable in current directory
+		String cdPath = dir + System.getProperty("file.separator");
+		if( tryExtensions( cdPath, executable, args, console ) == null )
 		{
-			_args[0] = executable + extensionsToTry[i];
-
-			try
+			// Now  try the executable found along the PATH
+			if( tryExtensions( null, executable, args, console ) == null )
 			{
-				process = _exec(_args);
-				process.getOutputStream().close();
-				break;
-			}
-			catch(IOException io)
-			{
-				if(i == extensionsToTry.length - 1)
-				{
-					String[] tt = { io.getMessage() };
-					console.printInfo(jEdit.getProperty("console.shell.ioerror",tt));
-					exitStatus = false;
-					return;
-				}
-			}
-			catch(Throwable t)
-			{
-				Log.log(Log.ERROR,this,t);
 				exitStatus = false;
 				return;
 			}
@@ -268,6 +245,64 @@ loop:			for(;;)
 
 	// used to store built-in commands
 	private Hashtable tableWinBuiltIns;
+
+	/**
+	 Specical processing for some well known Windows file extensions.
+	 */
+	private Process tryExtensions(  String currentDir,
+					String  executable,
+					Vector  args,
+					Console console ) {
+		String[] extensionsToTry;
+		if(appendEXE && executable.indexOf('.') == -1)
+			extensionsToTry = new String[] { ".cmd", ".bat", ".com", ".exe" };
+		else
+			extensionsToTry = new String[] { "" };
+
+		String[] _args = new String[args.size()];
+		args.copyInto(_args);
+
+		for(int i = 0; i < extensionsToTry.length; i++)
+		{
+			if( currentDir == null )
+			{
+				_args[0] = executable + extensionsToTry[i];
+			}
+			else
+			{
+				String exeFullPath = currentDir + executable + extensionsToTry[i];
+				File exeFile = new File( exeFullPath );
+				if( !exeFile.exists() )
+					return null;
+				_args[0] = exeFullPath;
+			}
+
+			try
+			{
+				process = _exec(_args);
+				process.getOutputStream().close();
+				return process;
+			}
+			catch(IOException io)
+			{
+				if(i == extensionsToTry.length - 1)
+				{
+					String[] tt = { io.getMessage() };
+					console.printError(jEdit.getProperty("console.shell.ioerror",tt));
+					exitStatus = false;
+					return null;
+				}
+			}
+			catch(Throwable t)
+			{
+				Log.log(Log.ERROR,this,t);
+				exitStatus = false;
+				return null;
+			}
+		}
+
+		return null;
+	}
 
 	private String expandVariables(View view, String arg, StringBuffer buf)
 	{
