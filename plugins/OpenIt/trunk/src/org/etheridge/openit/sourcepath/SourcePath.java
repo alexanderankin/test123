@@ -21,14 +21,16 @@
 package org.etheridge.openit.sourcepath;
 
 import java.io.File;
-
+import java.lang.String;
 import java.lang.StringBuffer;
-
+import java.lang.System;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
+
+import org.etheridge.openit.sourcepath.filter.SourcePathFilter;
 
 /**
  * Represents a source path, which is made up of SourcePathFiles (ie. java source
@@ -38,17 +40,23 @@ public class SourcePath
 {
   // list of source path elements in this source path
   private List mSourcePathElements;
+  private SourcePathFilter mFilter;
   
-  public SourcePath(String sourcePath)
+  public SourcePath(String sourcePath, SourcePathFilter filter)
   {
+    mFilter = filter;
+    
     // tokenize on the path separator
     String pathSeparator = System.getProperty("path.separator");
     StringTokenizer tokenizer = new StringTokenizer(sourcePath, pathSeparator);
     mSourcePathElements = new ArrayList();
     while (tokenizer.hasMoreTokens()) {
-      SourcePathElement element = new DirectorySourcePathElement(tokenizer.nextToken());
-      if (!element.isLink()) {
-        mSourcePathElements.add(element);
+      String currentToken = tokenizer.nextToken();
+      if (filter.isSourcePathElementAllowed(currentToken)) {
+        SourcePathElement element = new DirectorySourcePathElement(currentToken, filter);
+        if (!element.isLink()) {
+          mSourcePathElements.add(element);
+        }
       }
     }
   }
@@ -64,7 +72,7 @@ public class SourcePath
    if (mSourcePathElements == null) {
       mSourcePathElements = new ArrayList();
     }
-    mSourcePathElements.add(new DirectorySourcePathElement(sourcePathElement));
+    mSourcePathElements.add(new DirectorySourcePathElement(sourcePathElement, mFilter));
   }
   
   public List getSourcePathElements()

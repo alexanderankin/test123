@@ -24,9 +24,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.GridLayout;
-
 import java.io.File;
-
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 
@@ -46,7 +44,6 @@ import javax.swing.JTextField;
 
 import org.etheridge.openit.OpenItProperties;
 import org.etheridge.openit.SourcePathManager;
-
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
@@ -64,6 +61,7 @@ public class SourcePathOptionsPane extends AbstractOptionPane
   
   private JTextField mExcludesRegularExpressionTextField;
   private JTextField mPollingIntervalTextField;
+  private JTextField mExcludesDirectoriesRegularExpressionTextField;
 
   public SourcePathOptionsPane()
   {
@@ -76,12 +74,17 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     
     JPanel placerPanel = new JPanel(new BorderLayout());
     placerPanel.add(createSourcePathPanel(), BorderLayout.CENTER);
-    
+
     // bottom panel
     JPanel bottomPanel = new JPanel(new BorderLayout());
-    bottomPanel.add(createExcludesPanel(), BorderLayout.CENTER);
-    bottomPanel.add(createRefreshSourcePathPanel(), BorderLayout.SOUTH);
     
+    // excludes panel
+    JPanel excludesPanel = new JPanel(new GridLayout(2,1));
+    excludesPanel.add(createExcludesPanel());
+    excludesPanel.add(createExcludesDirectoryPanel());
+     
+    bottomPanel.add(excludesPanel, BorderLayout.CENTER);
+    bottomPanel.add(createRefreshSourcePathPanel(), BorderLayout.SOUTH);
     placerPanel.add(bottomPanel, BorderLayout.SOUTH);
     
     add(placerPanel, BorderLayout.NORTH);
@@ -143,7 +146,6 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     });
     
     return sourcePathPanel;
-    // bottom panel will be a buttom panel with add and remove buttons
   }
 
   private JPanel createExcludesPanel()
@@ -160,6 +162,24 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     mExcludesRegularExpressionTextField.setText
       (jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION, ""));
     excludesPanel.add(mExcludesRegularExpressionTextField);
+    
+    return excludesPanel;
+  }
+  
+  private JPanel createExcludesDirectoryPanel()
+  {
+    JPanel excludesPanel = new JPanel(new GridLayout(2,1));
+    excludesPanel.setBorder(BorderFactory.createCompoundBorder
+      (BorderFactory.createTitledBorder(jEdit.getProperty("options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.title")), 
+       BorderFactory.createEmptyBorder(6,6,6,6)));
+ 
+    JLabel instructionLabel = new JLabel(jEdit.getProperty("options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.label"));
+    excludesPanel.add(instructionLabel);
+    
+    mExcludesDirectoriesRegularExpressionTextField = new JTextField();
+    mExcludesDirectoriesRegularExpressionTextField.setText
+      (jEdit.getProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, ""));
+    excludesPanel.add(mExcludesDirectoriesRegularExpressionTextField);
     
     return excludesPanel;
   }
@@ -186,7 +206,8 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     String currentSourcePath = jEdit.getProperty(OpenItProperties.SOURCE_PATH_STRING, "");
     if (!currentSourcePath.equals(mSourcePathList.getPathElementsString()) ||
         jEdit.getIntegerProperty(OpenItProperties.SOURCE_PATH_POLLING_INTERVAL, SourcePathManager.DEFAULT_POLLING_INTERVAL) != getPollingIntervalValue() ||
-        !jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION, "").equals(mExcludesRegularExpressionTextField.getText())) {
+        !jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION, "").equals(mExcludesRegularExpressionTextField.getText()) ||
+        !jEdit.getProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, "").equals(mExcludesDirectoriesRegularExpressionTextField.getText())) {
       return true;
     }
     return false;
@@ -197,6 +218,7 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     jEdit.setProperty(OpenItProperties.SOURCE_PATH_STRING, mSourcePathList.getPathElementsString());
     jEdit.setIntegerProperty(OpenItProperties.SOURCE_PATH_POLLING_INTERVAL, getPollingIntervalValue());
     jEdit.setProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION, mExcludesRegularExpressionTextField.getText());
+    jEdit.setProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, mExcludesDirectoriesRegularExpressionTextField.getText());
   }
  
   private int getPollingIntervalValue()
