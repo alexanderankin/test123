@@ -400,7 +400,6 @@ public class FtpVFS extends VFS
 	} //}}}
 
 	//{{{ _saveComplete() method
-	// ... for pre9
 	public void _saveComplete(Object _session, Buffer buffer, String path,
 		Component comp) throws IOException
 	{
