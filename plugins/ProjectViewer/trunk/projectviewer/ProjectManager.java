@@ -27,13 +27,14 @@ import org.gjt.sp.util.Log;
  */
 public class ProjectManager {
   
-  private static final String PROJECTS_PROPS_FILE  = ProjectPlugin.NAME + ".projects.properties";
-  private static final String FILE_PROPS_FILE      = ProjectPlugin.NAME + ".files.properties";
+  static final String PROJECTS_PROPS_FILE  = "projects.properties";
+  static final String FILE_PROPS_FILE      = "files.properties";
   
   private static ProjectManager instance;
   
   private List projects;
   
+
   /**
    * Create a new <code>ProjectManager</code>.
    */
@@ -135,7 +136,7 @@ public class ProjectManager {
       }
   
     } catch (IOException e) {
-      // TODO: Log.
+      Log.log(Log.ERROR, this, e);
       
     } finally {
       close( out );
@@ -168,7 +169,7 @@ public class ProjectManager {
         }
       }
     } catch (IOException e) {
-      // TODO: Log.
+      Log.log(Log.ERROR, this, e);
       
     } finally {
       close( out );
@@ -178,12 +179,12 @@ public class ProjectManager {
   /**
    * Close output stream, catching any exceptions.
    */
-  private static void close( OutputStream out ) {
+  private void close( OutputStream out ) {
     if ( out != null ) {
       try {
         out.close();
       } catch ( IOException e) {
-        // TODO: Log.
+        Log.log(Log.WARNING, this, e);
       }
     }
   }
@@ -254,7 +255,6 @@ public class ProjectManager {
       int counter = 1;
       String prjName = projectProps.getProperty("project." + counter);
       while ( prjName != null ) {
-        
         String root = projectProps.getProperty("project." + counter + ".root");
         Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
         Project project = new Project(prjName, new ProjectDirectory(root), counter); 
@@ -269,14 +269,13 @@ public class ProjectManager {
         String fileName = fileProps.getProperty( buildFileKey(fileCounter, each) ); 
         while ( fileName != null ) {
           ProjectFile file = new ProjectFile( fileCounter, fileName );
-          if (file.exists())
-              each.importFile( file );
+          if (file.exists()) each.importFile( file );
           fileName = fileProps.getProperty( buildFileKey(++fileCounter, each) );
         }
       }
           
     } catch  ( Throwable e ) {
-      Log.log( Log.WARNING, this, e );
+      Log.log( Log.ERROR, this, e );
     }
   }
   

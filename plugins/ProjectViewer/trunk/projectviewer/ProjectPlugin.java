@@ -28,8 +28,6 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
-import org.mobix.io.Pipe;
-
 
 /**
  * A Project Viewer plugin for jEdit.
@@ -44,6 +42,7 @@ public class ProjectPlugin extends EBPlugin {
   
   private ProjectViewer viewer;
   
+
   /**
    * Returns an input stream to the specified resource, or <code>null</code> if none is
    * found.
@@ -73,8 +72,15 @@ public class ProjectPlugin extends EBPlugin {
    */
   public static String getResourcePath( String name ) {
     return jEdit.getSettingsDirectory()
-      + System.getProperty("file.separator") + NAME
-      + System.getProperty("file.separator") + name;
+      + File.separator + NAME
+      + File.separator + name;
+  }
+
+  /**
+   * Returns the last project name.
+   */
+  public static String getLastProject() {
+    return jEdit.getProperty( LAST_PROJECT_PROPERTY_KEY );
   }
 
   /**
@@ -83,30 +89,15 @@ public class ProjectPlugin extends EBPlugin {
   public void start() {
     EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
     
-    //parse out the resources as a thread so that when the plugin is 
-    //requested there is nothing to do.
-    new ThreadedParser().start();
-    
     File f = new File( getResourcePath( "null" ) );
     if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
     
-    File importFile = new File( getResourcePath( ProjectFileImporter.PROPS_FILE ) );
-    if ( !importFile.exists() ) {
-      OutputStream out = null;
-      InputStream in = null;
-      try {
-        out = new FileOutputStream( importFile );
-        in = getClass().getResourceAsStream( "import-sample.properties" );
-        Pipe.pipe( in, out );
-        
-      } catch ( IOException e ) {
-        Log.log( Log.WARNING, this, e );
-        
-      } finally {
-        close( in );
-        close( out );
-      }
-    }
+    checkImportProperties();
+    checkOldProperties();
+
+    //parse out the resources as a thread so that when the plugin is 
+    //requested there is nothing to do.
+    new ThreadedParser().start();
   }
   
   /**
@@ -121,13 +112,6 @@ public class ProjectPlugin extends EBPlugin {
   }
   
   /**
-   * Returns the last project name.
-   */
-  public static String getLastProject() {
-    return jEdit.getProperty( LAST_PROJECT_PROPERTY_KEY );
-  }
-
-  /**
    * Handle messages from the <code>EditBus</code>.
    */
   public void handleMessage(EBMessage msg) {
@@ -138,10 +122,89 @@ public class ProjectPlugin extends EBPlugin {
     }
   }
 
+  /**
+   * Create the appropriate menu items for this plugin.
+   */
   public void createMenuItems(Vector menuItems) {
     menuItems.addElement(GUIUtilities.loadMenuItem( "open-viewer-menu-item" ));
   }
-  
+
+  /**
+   * Perform a check for the import properties file.  If it isn't there, create one.
+   */
+  private void checkImportProperties() {
+    File importFile = new File( getResourcePath( ProjectFileImporter.PROPS_FILE ) );
+    if ( importFile.exists() ) return;
+
+    OutputStream out = null;
+    InputStream in = null;
+    try {
+      out = new FileOutputStream( importFile );
+      in = getClass().getResourceAsStream( "import-sample.properties" );
+      Pipe.pipe( in, out );
+        
+    } catch ( IOException e ) {
+      displayError("Unable to setup project imports");
+      Log.log( Log.ERROR, this, e );
+        
+    } finally {
+      close( in );
+      close( out );
+    }
+  }
+
+  /**
+   * Perform a check for old project properties files.  If they exist and new 
+   * properties files doesn't, then convert the old to the new.
+   */
+  private void checkOldProperties() {
+    File oldPrjProps = new File(jEdit.getSettingsDirectory(), "ProjectViewer.projects.properties");
+    if (!oldPrjProps.exists()) return;
+
+    File newPrjProps = new File(getResourcePath(ProjectManager.PROJECTS_PROPS_FILE));
+    if (newPrjProps.exists()) return;
+
+    File oldFilesProps = new File(jEdit.getSettingsDirectory(), "ProjectViewer.files.properties");
+    File newFilesProps = new File(getResourcePath(ProjectManager.FILE_PROPS_FILE));
+
+    try {
+      move(oldPrjProps, newPrjProps);
+      move(oldFilesProps, newFilesProps);
+
+    } catch (Exception e) {
+      Log.log(Log.ERROR, this, e);
+      displayError("Unable to convert old projects files");
+    } 
+  }
+
+  /**
+   * Perform a copy from one file to another.
+   */
+  private void move(File src, File dest) throws IOException {
+    OutputStream out = null;
+    InputStream in = null;
+    try {
+      out = new FileOutputStream(dest);
+      in = new FileInputStream(src);
+      Pipe.pipe(in, out);
+      src.delete();
+
+    } finally {
+      close(in);
+      close(out);
+    }
+  }
+
+  /**
+   * Display an error to the user.
+   */
+  private void displayError(String msg) {
+    JOptionPane.showMessageDialog(null, msg,
+                                  jEdit.getProperty("projectviewer.label"),
+                                  JOptionPane.ERROR_MESSAGE);
+
+  }
+   
   /**
    * Close the specified <code>InputStream</code>.
    */
