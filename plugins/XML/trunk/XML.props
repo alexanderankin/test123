@@ -1,10 +1,10 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov and David Walend
-plugin.xml.XmlPlugin.version=0.3
+plugin.xml.XmlPlugin.version=0.4
 plugin.xml.XmlPlugin.docs=users-guide.html
 plugin.xml.XmlPlugin.jars=xerces.jar
-plugin.xml.XmlPlugin.depend.0=jedit 03.02.09.00
+plugin.xml.XmlPlugin.depend.0=jedit 03.02.99.00
 plugin.xml.XmlPlugin.depend.1=plugin EditBusPlugin 1.0.1
 plugin.xml.XmlPlugin.depend.2=plugin ErrorListPlugin 1.1
 
@@ -30,11 +30,12 @@ xml.show-attributes=false
 buffer.xml.validate=true
 
 # Menu bar stuff
-xml-menu=xml-tree - xml-parse xml-keystroke-parse
+xml-menu=xml-tree - xml-parse xml-keystroke-parse - xml-tag-palette
 xml-menu.label=XML
 xml-tree.label=XML Tree
 xml-parse.label=Parse XML Buffer
 xml-keystroke-parse.label=Parse XML on Keystroke
+xml-insert-tag.label=Insert Tag Palette
 
 # XML tree window
 xml-tree.title=XML Tree
@@ -42,6 +43,9 @@ xml-tree.parse=Parse
 xml-tree.parsing=Parsing
 xml-tree.not-xml-file=Not an XML file
 xml-tree.not-parsed=Not parsed
+
+# Insert tag window
+xml-tag-palette.title=Tag Palette
 
 # Option pane
 #options.xml.label=XML
@@ -53,3 +57,6 @@ options.xml.general.delay=After last keystroke, wait (seconds):
 options.xml.general.show-attributes=Show tag attributes in tree
 options.xml.general.validate=Validate if DTD or schema available
 options.xml.general.modes=Enable XML parsing for the following edit modes:
+
+# Entity management
+xml.xcatalog.0=jeditresource:XML.jar!/xml/catalog.xml

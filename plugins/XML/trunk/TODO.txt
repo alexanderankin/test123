@@ -1,13 +1,15 @@
-- option pane really sucks
-- CVS remove XML.html
-- cvs add users-guide.xml, users-guide.dsl
+- HTML: taglist.xml
+- Tag palette
 
+- tag completion:
+  - option to set delay before showing popup
+  - <: shows popup
+  - </: in XML mode, auto close last tag; in HTML mode, tag list
 - root document property, proper handling of tags in nested files
-- entity option panes
-- public id resolving
+- public id option pane
+
 - investigate typing lag
-- better handling in resolveEntity()
 - handle parsing open buffers better
-- add xcatalog.dtd, xcatalog public id to id maps
 - OASIS catalog support
-- use XCatalog for all EntityManager stuff
+- move some HTML plugin features (tag commands, tag highlight) to XML
+  plugin

@@ -19,7 +19,12 @@ import java.util.Vector;
 
 public class XmlPlugin extends EBPlugin
 {
-	public static final String NAME = "xml-tree";
+	public static final String TREE_NAME = "xml-tree";
+	public static final String TAG_PALETTE_NAME = "xml-palette-name";
+
+	// We store the list of declared elements in this buffer-local
+	// property
+	public static final String DECLARED_ELEMENTS_PROPERTY = "xml.declared-elements";
 
 	public void start()
 	{
@@ -45,11 +50,16 @@ public class XmlPlugin extends EBPlugin
 		if(msg instanceof CreateDockableWindow)
 		{
 			CreateDockableWindow cmsg = (CreateDockableWindow)msg;
-			if(cmsg.getDockableWindowName().equals(NAME))
+			if(cmsg.getDockableWindowName().equals(TREE_NAME))
 			{
 				cmsg.setDockableWindow(new XmlTree(cmsg.getView(),
 					!cmsg.getPosition().equals(
 					DockableWindowManager.FLOATING)));
+			}
+			else if(cmsg.getDockableWindowName().equals(TAG_PALETTE_NAME))
+			{
+				cmsg.setDockableWindow(new InsertTagWindow(
+					cmsg.getView()));
 			}
 		}
 		else if(msg instanceof PropertiesChanged)
