@@ -380,7 +380,8 @@
 					the system provided icon for each individual files. The jEdit
 					icon will still be used when the file is opened. In some systems,
 					the system icons may not be accessible from Java, so this option
-					may not work as expected.
+					may not work as expected. Also, this option is only available is
+					Java 2 version 1.4 or later is being used.
 				</para>
 			</listitem>
 		</itemizedlist>
