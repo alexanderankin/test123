@@ -46,7 +46,6 @@ public class PHPParseErrorEvent {
     this.sourceEnd = sourceEnd;
     this.tokenGot = tokenGot;
     this.expectedToken = expectedToken;
-    Log.log(Log.MESSAGE,PHPParseErrorEvent.class,toString());
   }
 
   public int getLevel() {
