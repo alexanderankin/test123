@@ -162,18 +162,11 @@ public class JCompiler {
 			StringBuffer msg = new StringBuffer("javac");
 			for (int i = 0; i < arguments.length; ++i) {
 				msg.append(' ');
-
-				boolean argNeedsQuote = 	arguments[i].length() > 0
-					&& arguments[i].indexOf(' ') >= 0
-					&& arguments[i].charAt(0) != '"'
-					&& arguments[i].charAt(arguments[i].length()) != '"';
-
-				if (argNeedsQuote)
+				boolean argNeedsQuote = arguments[i].indexOf(' ') >= 0;
+				if (argNeedsQuote && arguments[i].charAt(0) != '"')
 					msg.append('"');
-
 				msg.append(arguments[i]);
-
-				if (argNeedsQuote)
+				if (argNeedsQuote && arguments[i].charAt(arguments[i].length() - 1) != '"')
 					msg.append('"');
 			}
 			sendMessage("jcompiler.msg.showcommandline", new Object[] { msg.toString() });
