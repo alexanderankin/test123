@@ -349,7 +349,7 @@ public class ColorTabs
 
       if (useColors)
       {
-         if (muteColors != jEdit.getBooleanProperty("buffertabs.colourmute"))
+         if (muteColors != jEdit.getBooleanProperty("buffertabs.color-mute"))
          {
             muteColors = !muteColors;
          }
