@@ -1,0 +1,21 @@
+/* Runs a command. */
+runCommandInConsole(View view, String shell, String command)
+{
+	import console.Shell;
+
+	// Open the console if it isn't already open
+	view.getDockableWindowManager().addDockableWindow("console");
+
+	// Obtain the console instance
+	console = view.getDockableWindowManager().getDockable("console");
+
+	// Set the shell to use
+	Shell _shell = Shell.getShell(shell);
+	console.setShell(_shell);
+
+	// Run the command
+	console.run(_shell,console,command);
+}
+
+bsh.help.runCommandInConsole
+	= "usage: runCommandInConsole(View view, String shell, String command)";
