@@ -29,13 +29,4 @@
 			textArea.requestFocus();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="error-overview">
-		<CODE>
-			errorlist.ErrorListPlugin.setErrorOverviewVisible(
-				!errorlist.ErrorListPlugin.isErrorOverviewVisible());
-		</CODE>
-		<IS_SELECTED>
-			return errorlist.ErrorListPlugin.isErrorOverviewVisible();
-		</IS_SELECTED>
-	</ACTION>
 </ACTIONS>

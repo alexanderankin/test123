@@ -9,7 +9,6 @@ plugin.errorlist.ErrorListPlugin.depend.0=jedit 04.02.02.00
 
 # Menu
 plugin.errorlist.ErrorListPlugin.menu=error-list \
-	error-overview \
 	- \
 	error-list-previous-error \
 	error-list-next-error \
@@ -30,6 +29,7 @@ plugin.errorlist.ErrorListPlugin.option-pane=error-list
 options.error-list.label=Error List
 options.error-list.code=new errorlist.ErrorListOptionPane();
 options.error-list.showOnError=Automatically display on error
+options.error-list.showErrorOverview=Show error overview
 options.error-list.errorColor=Error highlight color:
 options.error-list.warningColor=Warning highlight color:
 
@@ -40,5 +40,6 @@ error-list.file={0} ({1} error(s), {2} warning(s))
 
 # Settings
 error-list.showOnError=false
+error-list.showErrorOverview=true
 error-list.warningColor=#ffa800
 error-list.errorColor=#ff0000

@@ -49,9 +49,9 @@ public abstract class ErrorSource implements EBComponent
 		{
 			errorSources.addElement(errorSource);
 			errorSource.registered = true;
+			cachedErrorSources = null;
 			EditBus.send(new ErrorSourceUpdate(errorSource,
 				ErrorSourceUpdate.ERROR_SOURCE_ADDED,null));
-			cachedErrorSources = null;
 		}
 	} //}}}
 
@@ -71,9 +71,9 @@ public abstract class ErrorSource implements EBComponent
 		{
 			errorSources.removeElement(errorSource);
 			errorSource.registered = false;
+			cachedErrorSources = null;
 			EditBus.send(new ErrorSourceUpdate(errorSource,
 				ErrorSourceUpdate.ERROR_SOURCE_REMOVED,null));
-			cachedErrorSources = null;
 		}
 	} //}}}
 

@@ -44,9 +44,15 @@ public class ErrorListOptionPane extends AbstractOptionPane
 		showOnError.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.showOnError"));
 
+		addComponent(showErrorOverview = new JCheckBox(jEdit.getProperty(
+			"options.error-list.showErrorOverview")));
+		showErrorOverview.getModel().setSelected(jEdit.getBooleanProperty(
+			"error-list.showErrorOverview"));
+
 		addComponent(jEdit.getProperty("options.error-list.warningColor"),
 			warningColor = new ColorWellButton(jEdit.getColorProperty(
 			"error-list.warningColor")));
+
 		addComponent(jEdit.getProperty("options.error-list.errorColor"),
 			errorColor = new ColorWellButton(jEdit.getColorProperty(
 			"error-list.errorColor")));
@@ -57,6 +63,8 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	{
 		jEdit.setBooleanProperty("error-list.showOnError",showOnError
 			.getModel().isSelected());
+		jEdit.setBooleanProperty("error-list.showErrorOverview",
+			showErrorOverview.getModel().isSelected());
 		jEdit.setColorProperty("error-list.warningColor",
 			warningColor.getSelectedColor());
 		jEdit.setColorProperty("error-list.errorColor",
@@ -65,6 +73,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 
 	//{{{ Private members
 	private JCheckBox showOnError;
+	private JCheckBox showErrorOverview;
 	private ColorWellButton warningColor;
 	private ColorWellButton errorColor;
 	//}}}
