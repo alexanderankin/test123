@@ -363,7 +363,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             JOptionPane.showInputDialog(
                 viewer,
                 "Enter the new name of the directory:",
-                "Rename file",
+                "Rename directory",
                 JOptionPane.PLAIN_MESSAGE,
                 null,
                 null,
