@@ -1,26 +1,14 @@
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
-
-import java.util.*;
-
-import ctags.bg.*;
-
-import projectviewer.*;
-import projectviewer.vpt.*;
-import projectviewer.event.*;
-import java.awt.BorderLayout;
-
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 
 public class Jump
 {
     
     public boolean isJumpEnabled()
     {
-        if (jEdit.getBooleanProperty("jump.enable", false) == false)
+        if (!jEdit.getBooleanProperty("jump.enable", false))
         {
-            GUIUtilities.message(jEdit.getActiveView(), "JumpPlugin.enable", new Object[0]);
+            GUIUtilities.message(jEdit.getActiveView(), "JumpPlugin.enable", null);
             return false;    
         }
         return true;
@@ -28,15 +16,15 @@ public class Jump
 
     public void showFilesJump()
     {
-        if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
+        if (!isJumpEnabled()) return;
+        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
         new FilesJumpAction().showList();
     }
     
     public void showTagsJump()
     {
-        if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
+        if (!isJumpEnabled()) return;
+        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
         TagsJumpAction tja = new TagsJumpAction();
         if (tja.parse())
         {
@@ -46,30 +34,29 @@ public class Jump
     
     public void showProjectJump()
     {
-        if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
+        if (!isJumpEnabled()) return;
+        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
         JumpPlugin.pja.JumpToTag();
     }
     
     public void reloadTagsOnProject()
     {
-        if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
+        if (!isJumpEnabled()) return;
+        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
         JumpPlugin.reloadTagsOnProject();  
     }
     
     public void historyJump()
     {
-        if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
+        if (!isJumpEnabled()) return;
+        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
         JumpPlugin.pja.JumpToPreviousTag();
     }
     
     public void jumpByInput()
     {
-        if (isJumpEnabled() == false) return;
-        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
-        //ProjectViewer.getViewer(jEdit.getActiveView()).add(new TypeTag(jEdit.getActiveView()), BorderLayout.SOUTH);
+        if (!isJumpEnabled()) return;
+        if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
         JumpPlugin.pja.JumpToTagByInput();
     }
 }

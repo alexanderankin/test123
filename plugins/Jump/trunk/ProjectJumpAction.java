@@ -190,7 +190,7 @@ public class ProjectJumpAction
         if (AlreadyOpened == false)
         {
             jEdit.openFile(v,en.getFileName());
-            Log.log(Log.DEBUG,this,"Open file: - "+en.getFileName());
+            //Log.log(Log.DEBUG,this,"Open file: - "+en.getFileName());
         }    
 
         VFSManager.runInAWTThread(new Runnable() {
@@ -364,7 +364,6 @@ public class ProjectJumpAction
                     e2.getFileName().toLowerCase());
         }
     }
-    // End of AlphabeticComparator
 //}}}
 
 }
