@@ -36,6 +36,10 @@ public class InfoViewerOptionPane extends AbstractOptionPane {
 
     public InfoViewerOptionPane() {
         super("infoviewer");
+    }
+    
+
+    public void _init() {
 		setBorder(new EmptyBorder(5,5,5,5));
 
         Dimension space = new Dimension(0, 30);
@@ -70,7 +74,7 @@ public class InfoViewerOptionPane extends AbstractOptionPane {
      * Called when the options dialog's `OK' button is pressed.
      * This should save any properties saved in this option pane.
      */
-    public void save() {
+    public void _save() {
         jEdit.setProperty("infoviewer.homepage", tHome.getText());
         jEdit.setProperty("infoviewer.max_go_menu", tMaxGoMenu.getText());
     }

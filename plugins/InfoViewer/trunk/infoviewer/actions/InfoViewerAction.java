@@ -29,6 +29,7 @@ import java.net.URL;
 import java.util.EventObject;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.gui.DefaultInputHandler;
 
 /**
  * The class all InfoViewer actions must extend. It is an
@@ -80,9 +81,7 @@ public abstract class InfoViewerAction extends AbstractAction {
         if (mnem != null)
             putValue(MNEMONIC, mnem);
         if (shrt != null)
-            putValue(ACCELERATOR, 
-                 org.gjt.sp.jedit.textarea.DefaultInputHandler.parseKeyStroke(
-                     shrt));
+            putValue(ACCELERATOR, DefaultInputHandler.parseKeyStroke(shrt));
     }
     
 

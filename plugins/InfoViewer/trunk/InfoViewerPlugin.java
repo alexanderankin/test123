@@ -392,18 +392,14 @@ public class InfoViewerPlugin extends EBPlugin {
                 }
             }
             
-            URL u = buffer.getURL();
-            if (u == null) {
-                String bufpath = "file:" + buffer.getPath();
-                try {
-                    u = new URL(bufpath);
-                } catch (java.net.MalformedURLException e) {
-                    GUIUtilities.error(view, "infoviewer.error.badurl", 
-                                       new String[] { bufpath } );
-                    return;
-                }
+            String bufpath = "file:" + buffer.getPath();
+            try {
+                sendURL(new URL(bufpath), getView(evt));
+            } catch (java.net.MalformedURLException e) {
+                GUIUtilities.error(view, "infoviewer.error.badurl", 
+                                   new String[] { bufpath } );
+                return;
             }
-            sendURL(u, getView(evt));
         }
     }
     

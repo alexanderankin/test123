@@ -283,7 +283,14 @@ public class InfoViewer extends JFrame
         mHelp.removeAll();
         mHelp.add(aAbout);        
         // find InfoViewer docs
-        EditPlugin plugin = jEdit.getPlugin("InfoViewerPlugin");
+        EditPlugin[] plugins = jEdit.getPlugins();
+        EditPlugin plugin = null;
+        for (int i=0; i<plugins.length; i++) {
+            if (plugins[i].getClassName().equals("InfoViewerPlugin")) {
+                plugin = plugins[i];
+                break;
+            }
+        }
         if (plugin == null) return;
         String docs = props("plugin.InfoViewerPlugin.docs");
         if (docs == null) return;
