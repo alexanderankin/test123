@@ -188,12 +188,12 @@ tasklist.tasktype.6.sample=\ TODO\: [comment text]
 tasklist.tasktype.7.name=XXX
 tasklist.tasktype.7.iconpath=stock_right-16.png
 tasklist.tasktype.7.ignorecase=false
-tasklist.tasktype.7.pattern=\\s(XXX)\\s+(.+)$
+tasklist.tasktype.7.pattern=\\s(XXX)\\s+(.*)$
 tasklist.tasktype.7.sample=\ XXX [comment text]
 
-tasklist.tasktype.8.iconpath=stock_help-16.png
+tasklist.tasktype.8.iconpath=stock_search-16.png
 tasklist.tasktype.8.ignorecase=false
 tasklist.tasktype.8.name=???
-tasklist.tasktype.8.pattern=\\s([?]{3})\\s+(.+)$
-tasklist.tasktype.8.sample=\ ??? [commented text]
+tasklist.tasktype.8.pattern=\\s([?]{3})\\s+(.*)$
+tasklist.tasktype.8.sample=\ ??? [comment text]
 
