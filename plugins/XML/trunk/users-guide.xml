@@ -470,33 +470,41 @@
 
   <itemizedlist>
    <listitem><para>
-    <guibutton>Remove</guibutton> button in catalog option pane didn't work
+    <guibutton>Remove</guibutton> button in catalog option pane didn't work.
    </para></listitem>
    <listitem><para>
-    <guibutton>Show attributes in tree</guibutton> setting didn't work
+    <guibutton>Show attributes in tree</guibutton> setting didn't work.
     properly
    </para></listitem>
    <listitem><para>
-    Double-click on tag in XML tree window didn't work
+    Double-click on tag in XML tree window didn't work.
    </para></listitem>
    <listitem><para>
-    Edit tag dialog improvements
+    The XML plugin now includes its own copy of the
+    <classname>JCheckBoxList</classname> class, which fixes a bug. The bug
+    fix will only appear in the jEdit core in version 4.0pre1, but I want
+    to keep the XML plugin compatible with jEdit 3.2.
+   <listitem><para>
+    Edit tag dialog improvements.
    </para></listitem>
    <listitem><para>
-    Tag completion improvements
+    Tag completion improvements.
    </para></listitem>
    <listitem><para>
     If the XML insert window is docked at the top or bottom of the view, the
-    two lists are placed side-by-side, instead of vertically
+    two lists are placed side-by-side, instead of vertically.
    </para></listitem>
    <listitem><para>
-    Tag list for Ant <filename>build.xml</filename> files
+    Tag list for XSL files (Felnix Rosencrantz).
    </para></listitem>
    <listitem><para>
-    Documentation is now generated with DocBook-XSL stylesheets
+    Tag list for Ant <filename>build.xml</filename> files.
    </para></listitem>
    <listitem><para>
-    Ant build file provided instead of JMK makefile
+    Documentation is now generated with DocBook-XSL stylesheets.
+   </para></listitem>
+   <listitem><para>
+    Ant build file provided instead of JMK makefile.
    </para></listitem>
   </itemizedlist>
 

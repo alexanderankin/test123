@@ -70,7 +70,7 @@ mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
-mode.xsl.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
+mode.xsl.xml.completion-info=jeditresource:/XML.jar!/xml/xsl-complete.xml
 mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 
 # Menu bar stuff

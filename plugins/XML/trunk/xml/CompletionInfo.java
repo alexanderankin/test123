@@ -23,13 +23,13 @@ public class CompletionInfo
 {
 	// if true, HTML syntax is supported (eg, case-insensitive tag names,
 	// attributes with no values)
-	boolean html;
+	public boolean html;
 
-	Vector elements;
-	Hashtable elementHash;
-	Vector entities;
-	Hashtable entityHash;
-	Vector ids;
+	public Vector elements;
+	public Hashtable elementHash;
+	public Vector entities;
+	public Hashtable entityHash;
+	public Vector ids;
 
 	CompletionInfo(boolean html, Vector elements, Hashtable elementHash,
 		Vector entities, Hashtable entityHash, Vector ids)
@@ -116,6 +116,18 @@ public class CompletionInfo
 			buf.append('\n');
 		}
 		return buf.toString();
+	}
+
+	public Object clone()
+	{
+		return new CompletionInfo(
+			html,
+			(Vector)elements.clone(),
+			(Hashtable)elementHash.clone(),
+			(Vector)entities.clone(),
+			(Hashtable)entityHash.clone(),
+			(Vector)ids.clone()
+		);
 	}
 
 	// private members
