@@ -1,0 +1,283 @@
+<html>
+<head>
+<title>Console Plugin</title>
+</head>
+
+<body>
+
+<table bgcolor=#ccccff border=0 width=100%>
+<tr width=100%><td><font size=+2>Console Plugin</font></td>
+<td align=right><font size=-1>By Slava Pestov<br>
+<i>sp@gjt.org</i></font></td></tr>
+</table>
+
+<hr>
+
+<a href=#general>General Information</a><br>
+<a href=#shell>The Console Shell</a><br>
+<a href=#other>Using Other Shells</a><br>
+<a href=#toolbar>The Console Tool Bar</a><br>
+<a href=#faq>Frequently Asked Questions</a><br>
+<a href=#changes>Change Log</a>
+
+<hr>
+
+<a name=general>
+<h1>General Information</h1>
+</a>
+
+The console plugin allows the user to run commands in various
+available <i>shells</i>. The default shell runs
+system processes (such as programs, compilers, etc). Other plugins,
+for example BeanShell, add shells of their own which perform other
+tasks.<p>
+
+A console can be opened by selecting Plugins&gt;Console.<p>
+
+Each console window has a number of tabs, one tab for each installed
+shell. Each tab has a text field where commands can be entered, and
+an output area that lists output of running commands.<p>
+
+Pressing enter in the command field will execute the
+currently entered command. The command field supports a history;
+basically you can use the Up/Down arrow keys to recall previous commands.
+See the section on history text fields in the jEdit manual for details.<p>
+
+Entering `clear' will remove all text from the console.<p>
+
+<b>Tip</b>: if you find yourself executing the same console command frequently,
+record it in a macro. Simply enter the command in the console while a
+macro recording is in progress.<p>
+
+<hr>
+
+<a name=shell>
+<h1>The Console Shell</h1>
+</a>
+
+The default console shell runs operating system commands.
+To use it, select the <b>Console</b> tab in a console window.<p>
+
+The default shell understands the following variables as part of a command:
+
+<ul>
+<li>~ - expands to the user's home directory
+<li>$d - expands to the current file's parent directory
+<li>$f - expands to the current file's full path
+<li>$u - expands to the current file's URL (file: is prepended if it is
+a local file)
+<li>$j - expands to the directory where jEdit is installed
+<li>$n - expands to the current file's name, without the trailing extension,
+if any
+<li>$$ - expands to the $ character
+</ul>
+
+The default shell also parses command output for compiler errors. A number
+of different formats are supported, and new error patterns can be added
+in <b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Console</b>. Parsed errors
+are added to the error list, which can be viewed by invoking
+<b>Plugins</b>&gt;<b>Error List</b> (if you do not see that menu item, then
+you need to install the ErrorList plugin).
+
+<hr>
+
+<a name=others>
+<h1>Using Other Shells</h1>
+</a>
+
+A few other plugins define shells of their own; BeanShell is an example
+of this. To use an alternative shell, select its tab in the console window.<p>
+
+Note that
+other shells cannot use the console's variable expansion or error parsing
+services.
+
+<hr>
+
+<a name=toolbar>
+<h1>The Console Tool Bar</h1>
+</a>
+
+If enabled in <b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Console</b>,
+the console will add a tool bar to each view allowing quick and easy
+command invocation.
+
+<hr>
+
+<a name=faq>
+<h1>Frequently Asked Questions</h1>
+</a>
+
+<h2>Why can't I change directories in the console?</h2>
+
+At the moment, Java doesn't support changing the current working directory
+(user.dir).
+
+<h2>Why can't I use commands like 'dir' in the default shell on Windows</h2>
+
+On Windows 95 and 98, some commands, such as dir, del, mkdir, type
+and several others are internal to COMMAND.COM, the MS-DOS command
+interpreter. To invoke them you must enter the following in the console:
+
+<pre>command.com /c <i>command</i></pre>
+
+On Windows NT, the same commands are internal to CMD.EXE, the 32-bit
+command interpreter. To invoke them you must enter the following in
+the console:
+
+<pre>cmd /c <i>command</i></pre>
+
+<hr>
+
+<a name=changes>
+<h1>Change Log</h1>
+</a>
+
+<h3>Version 2.1</h3>
+
+Requires EditBus 0.9.2 and jEdit 2.4pre6.
+
+<ul>
+<li>Error patterns can now be changed in the option pane
+<li>Commands invoked through the "console" action (eg, in macros) are now
+added to the history
+<li>Updated for new option pane API
+<li>Updated to use jEdit.get/setBooleanProperty() for boolean properties
+</ul>
+
+<h3>Version 2.0.2</h3>
+
+Requires EditBus 0.9 and jEdit 2.2pre3.
+
+<ul>
+<li>Updated error patterns
+</ul>
+
+<h3>Version 2.0.1</h3>
+
+Requires EditBus 0.9 and jEdit 2.3pre3.
+
+<ul>
+<li>Console geometry was not being saved
+</ul>
+
+<h3>Version 2.0</h3>
+
+Requires EditBus 0.9 and jEdit 2.3pre3. This is a complete rewrite that
+has an enhanced user interface, customizable error parsing, and many other
+improvements.
+
+<h3>Version 1.9.3</h3>
+
+Requires EditBus 0.7 and jEdit 2.2pre8. This version has the following changes:
+
+<ul>
+<li>Fixed an NullPointerException that could occur when a process exits
+<li>Fixes for EditBus 0.7
+</ul>
+
+<h3>Version 1.9.2</h3>
+
+Requires jEdit 2.2pre6 and EditBus 0.6. This version has the following changes:
+
+<ul>
+<li>Processes could not be killed in the console shell
+</ul>
+
+<h3>Version 1.9.1</h3>
+
+Requires jEdit 2.2pre6 and EditBus 0.6. This version has the following changes:
+
+<ul>
+<li>compatibility fixes for 2.2pre6
+<li>executing BeanShell commands from the console would cause problems
+<li>error parsing changed to work with the latest Jikes releases
+<li>macro recording code was broken
+</ul>
+
+<h3>Version 1.9</h3>
+
+Requires EditBus 0.3 and jEdit 2.2pre4. This version has the following
+changes:
+
+<ul>
+<li>The 'Console' command now has a check box that is selected if a
+console is open
+<li>Commands entered in the console can now be recorded to macros
+<li>Fixed handling of GetOutput message
+<li>Console menu commands removed; use macros instead
+</ul>
+
+<h3>Version 1.8</h3>
+
+Requires EditBus 0.3 and jEdit 2.2pre3. This version has the following
+changes:
+
+<ul>
+<li>appletviewer menu entry is now 'appletviewer $u'
+<li>$n bug fixed
+<li>Error list unbundled into ErrorList plugin
+<li>Changes for EditBus 0.3
+</ul>
+
+<h3>Version 1.7.2</h3>
+
+Requires EditBus 0.2 and jEdit 2.1pre3. This version has the following
+changes:
+
+<ul>
+<li>Entering commands in the console didn't work; only the tool bar
+was functional
+<li>$n now expands to the file's name, without the extension
+<li>Entering a command will kill the currently running process
+</ul>
+
+<h3>Version 1.7.1</h3>
+
+Requires EditBus 0.2 and jEdit 2.1pre3. This version is a minor GUI update
+only, to make it look better in jEdit 2.2.
+
+<h3>Version 1.7</h3>
+
+Requires EditBus 0.2 and jEdit 2.1pre3.
+
+<ul>
+<li>Only one console instance is created per view
+<li>Processes are no longer killed, instead they are detached
+and continue executing in the background
+<li>Update for new option pane API
+</ul>
+
+<h3>Version 1.6</h3>
+
+Requires EditBus 0.2 and jEdit 2.1pre1.
+
+<ul>
+<li>Commands should now be added to the history
+<li>Running commands can now be stopped
+<li>Supports EditBus GetOutputs, GetOutput, StopCommand messages
+</ul>
+
+<h3>Version 1.5</h3>
+
+Requires EditBus 0.1.1 and jEdit 2.0final.
+
+<ul>
+<li>Reverts to old option pane code
+<li>Console menu can now contain frequently used commands
+</ul>
+
+<h3>Version 1.4</h3>
+
+Requires EditBus 0.1 and jEdit 2.0final.
+
+<ul>
+<li>First EditBus-enabled release
+</ul>
+
+<h3>Version 1.3</h3>
+
+Change log started
+
+</body>
+</html>
