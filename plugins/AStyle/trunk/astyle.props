@@ -7,7 +7,7 @@
 
 plugin.astyleplugin.AStylePlugin.name=AStyle Beautifier
 plugin.astyleplugin.AStylePlugin.author=Dirk Moebius, Tal Davidson
-plugin.astyleplugin.AStylePlugin.version=0.1
+plugin.astyleplugin.AStylePlugin.version=0.2
 plugin.astyleplugin.AStylePlugin.docs=astyleplugin/help.html
 plugin.astyleplugin.AStylePlugin.depend.0=jdk 1.1
 plugin.astyleplugin.AStylePlugin.depend.1=jedit 03.01.99.00
