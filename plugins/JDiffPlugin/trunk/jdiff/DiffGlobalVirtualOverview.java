@@ -176,24 +176,32 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         int lines = Math.max(virtualLineCount0, virtualLineCount1);
         double pxlPerLine = ((double) inner.height) / lines;
 
-        int virtualFirstLine0 = this.textArea0.physicalToVirtual(
-            this.textArea0.getPhysicalLineOfScreenLine(0)
+        int screenFirstLine0 = this.textArea0.getPhysicalLineOfScreenLine(0);
+        int screenLastLine0  = this.textArea0.getPhysicalLineOfScreenLine(
+            this.textArea0.getVisibleLines() - 1
         );
-        int virtualLastLine0 = this.textArea0.physicalToVirtual(
-            this.textArea0.getPhysicalLineOfScreenLine(this.textArea0.getVisibleLines() - 1)
+
+        if (screenFirstLine0 == -1)  { return; }
+        if (screenLastLine0 == -1)  { return; }
+
+        int screenFirstLine1 = this.textArea1.getPhysicalLineOfScreenLine(0);
+        int screenLastLine1  = this.textArea1.getPhysicalLineOfScreenLine(
+            this.textArea1.getVisibleLines() - 1
         );
-        Rectangle leftCursor = new Rectangle(
+
+        if (screenFirstLine1 == -1)  { return; }
+        if (screenLastLine1 == -1)  { return; }
+
+        int virtualFirstLine0 = this.textArea0.physicalToVirtual(screenFirstLine0);
+        int virtualLastLine0  = this.textArea0.physicalToVirtual(screenLastLine0);
+        Rectangle leftCursor  = new Rectangle(
             inner.x, inner.y + ((int) Math.round(pxlPerLine * virtualFirstLine0)),
             inner.width / 3,
             Math.max(1, (int) Math.round(pxlPerLine * Math.min(virtualLineCount0, virtualLastLine0 - virtualFirstLine0 + 1)))
         );
 
-        int virtualFirstLine1 = this.textArea1.physicalToVirtual(
-            this.textArea1.getPhysicalLineOfScreenLine(0)
-        );
-        int virtualLastLine1 = this.textArea1.physicalToVirtual(
-            this.textArea1.getPhysicalLineOfScreenLine(this.textArea1.getVisibleLines() - 1)
-        );
+        int virtualFirstLine1 = this.textArea1.physicalToVirtual(screenFirstLine1);
+        int virtualLastLine1  = this.textArea1.physicalToVirtual(screenLastLine1);
         Rectangle rightCursor = new Rectangle(
             inner.x + (inner.width - leftCursor.width),
             inner.y + ((int) Math.round(pxlPerLine * virtualFirstLine1)),
