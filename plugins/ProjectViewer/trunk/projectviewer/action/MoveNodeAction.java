@@ -54,7 +54,7 @@ public class MoveNodeAction extends Action {
 	/** Instantiates a GroupMenu and returns it. */
 	public JComponent getMenuItem() {
 		if (cmItem == null) {
-			cmItem = new GroupMenu(getText(), false, this);
+			cmItem = new GroupMenu(getText(), false, false, this);
 		}
 		return cmItem;
 	} //}}}
@@ -74,7 +74,7 @@ public class MoveNodeAction extends Action {
 
 		ProjectViewer.removeNodeFromParent(toMove);
 
-		if (!viewer.getRoot().isNodeDescendant(dest)) {
+		if (viewer.getRoot() != toMove && !viewer.getRoot().isNodeDescendant(dest)) {
 			viewer.setRootNode(dest);
 		}
 
