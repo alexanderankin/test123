@@ -80,7 +80,7 @@ public class TemplatesPlugin extends EditPlugin
 				jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",templateDir);
 			}
 			templates = new TemplateDir(new File(templateDir));
-			templates.refreshTemplates();
+			this.refreshTemplates();
 		}
 	}
 
@@ -120,6 +120,9 @@ public class TemplatesPlugin extends EditPlugin
 		File templateDir = new File(templateDirStr);
 		try {
 			if (!templateDir.exists()) {	// If the template directory doesn't exist
+				Log.log(Log.DEBUG,
+						jEdit.getPlugin(jEdit.getProperty("plugin.TemplatesPlugin.name")),
+						"Attempting to create templates directory: " + templateDirStr);
 				templateDir.mkdir();		// then create it
 				if (!templateDir.exists())	// If insufficent privileges to create it
 					throw new java.lang.SecurityException();
@@ -209,6 +212,10 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.6  2002/02/25 21:53:58  sjakob
+	 * BUGFIX: Fixed problem where templates directory was not being
+	 * created (as reported by Will Sargent).
+	 *
 	 * Revision 1.5  2002/02/22 02:34:36  sjakob
 	 * Updated Templates for jEdit 4.0 actions API changes.
 	 * Selection of template menu items can now be recorded in macros.

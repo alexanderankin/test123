@@ -1,5 +1,10 @@
 CHANGES file for Templates plugin.
 
+Version 2.0.1 (25-FEB-2002)
+=============================
+BUG FIX:
+- fixed problem with templates directory not being created (as reported by Will Sargent) 
+
 Version 2.0.0 (21-FEB-2002)
 =============================
 CHANGES:
