@@ -79,7 +79,27 @@ To force jEdit to forget all passwords while it is running, use the
 
  <itemizedlist>
 
-  <listitem><para><emphasis role="bold">Version 0.3.3</emphasis>
+  <listitem><para><emphasis role="bold">Version 0.3.4</emphasis>
+   requires jEdit 4.0pre3.</para>
+
+   <itemizedlist>
+
+    <listitem><para>
+     Hidden files were not listed, even if <guimenuitem>Show Hidden
+     Files</guimenuitem> was selected in the file system browser.
+    </para></listitem>
+
+    <listitem><para>
+     <guimenuitem>Open from FTP Server</guimenuitem> and <guimenuitem>Save to
+     FTP Server</guimenuitem> commands opened the wrong directory on the remote
+     server.
+    </para></listitem>
+
+   </itemizedlist>
+
+ </listitem>
+
+<listitem><para><emphasis role="bold">Version 0.3.3</emphasis>
    requires jEdit 4.0pre3.</para>
 
    <itemizedlist>

@@ -147,8 +147,9 @@ public class DirectoryCache
 				String path = (String)enum.nextElement();
 				if(path.startsWith(url))
 				{
-					Log.log(Log.DEBUG,DirectoryCache.class,"Deleting " + path);
-					new File((String)urlToCacheFileHash.remove(path)).delete();
+					String cacheFile = (String)urlToCacheFileHash.remove(path);
+					Log.log(Log.DEBUG,DirectoryCache.class,"Deleting " + cacheFile);
+					new File(cacheFile).delete();
 				}
 			}
 		}
