@@ -28,9 +28,7 @@ import java.util.Vector;
 //}}}
 
 /**
- * An error source. Error sources generate errors which other plugins can
- * present in some fashion, for example the ErrorList plugin displays
- * an error list.
+ * An error source.
  * @author Slava Pestov
  */
 public abstract class ErrorSource implements EBComponent
@@ -44,8 +42,6 @@ public abstract class ErrorSource implements EBComponent
 	 */
 	public static void registerErrorSource(ErrorSource errorSource)
 	{
-		EditBus.addToBus(errorSource);
-
 		synchronized(errorSources)
 		{
 			errorSources.addElement(errorSource);

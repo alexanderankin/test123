@@ -51,8 +51,6 @@ public class ErrorListPlugin extends EBPlugin
 				initTextArea(panes[j].getTextArea());
 			}
 		}
-
-		propertiesChanged();
 	} //}}}
 
 	//{{{ stop() method
@@ -236,5 +234,4 @@ public class ErrorListPlugin extends EBPlugin
 	} //}}}
 
 	//}}}
-
 }
