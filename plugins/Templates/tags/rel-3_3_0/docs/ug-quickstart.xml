@@ -1,0 +1,319 @@
+<!-- Templates plugin user's guide: Quick Start chapter -->
+<!-- (C) 2002 Steve Jakob -->
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true:folding=explicit: -->
+
+<!-- {{{ Chapter: Quick Start -->
+<chapter id="quick-start"><title>Quick Start</title>
+ <para>
+  This chapter will introduce the reader to the use of the Templates plugin 
+  by walking the user through the creation of several related Templates 
+  which exploit the dynamic capabilities of the Velocity engine embedded 
+  within the plugin. Since jEdit is an application developed in Java, this 
+  tutorial will describe the creation of a number of templates intended to
+  facilitate the creation of Java classes.
+ </para>
+
+<!-- {{{ Section: Starting Point -->
+ <sect1><title>Our Starting Point</title>
+  <para>
+   Java Joe, our hypothetical programmer, writes Java code for a living. 
+   Like most programmers, he's always on the lookout for ways to increase 
+   his efficiency. He's been using jEdit as his development environment, and 
+   has created some static templates for use with the Templates plugin to 
+   provide a starting point for his Java classes. Although static files 
+   help to kickstart his projects, he finds himself wishing that the templates 
+   were more dynamic. He's heard that this sort of functionality has been 
+   added to the Templates plugin and decides to try to make use of this new 
+   functionality in his custom templates.
+  </para>
+  <para>
+   The templates that Joe has created include:
+  </para>
+  <itemizedlist>
+   <listitem><para>Java class skeleton</para></listitem>
+   <listitem><para>Generic method template</para></listitem>
+   <listitem><para>Accessor/Mutator (Getter/Setter) template</para></listitem>
+   <listitem><para>Copyright/license notice</para></listitem>
+  </itemizedlist>
+  <para>
+   The Java class skeleton contains the following code:
+  </para>
+<programlisting>
+package com.javajoe.mypackage;
+
+import javax.swing.*;
+/**
+ * Class description goes here
+ */
+public class SomeClass extends Parent implements InterfaceList
+{
+	// Insert class variables here
+
+	public static void main(String[] args) {
+		// Main method
+	}
+
+	//Constructors
+	public SomeClass() {
+		super();
+	}
+	
+	// Accessors &amp; Mutators
+	
+	// Implementors
+}
+</programlisting>
+  <para>
+   The method template looks like this:
+  </para>
+<programlisting>
+    /**
+     * Method comment goes here
+     */
+    public void doSomething(paramType paramName) {
+    }
+</programlisting>
+  <para>
+   The accessor/mutator template looks like this:
+  </para>
+<programlisting>
+    /**
+     * Accessor comment
+     */
+    public returnType getVariable() {
+        return variable;
+    }
+
+    /**
+     * Mutator comment
+     */
+    public void setVariable(paramType paramName) {
+        this.variable = paramName;
+    }
+</programlisting>
+  <para>
+   Finally, the license template contains the following:
+  </para>
+<programlisting>
+/*
+ * MyClass.java
+ *
+ * Copyright (c) 2002 Java Joe
+ * Give my code a good home.
+ */
+</programlisting>
+  <para>
+   Typically, Joe would perform the following steps during the creation of 
+   a new Java class:
+  </para>
+  <orderedlist>
+   <listitem>
+    <para>Call the Java class template to create the class skeleton.</para>
+   </listitem>
+   <listitem>
+    <para>Modify the code by changing the package, adding required import 
+    statments, adding the class name, superclass (if required),
+    interfaces (if required), and code for the main() method and
+    constructor.</para>
+   </listitem>
+   <listitem>
+    <para>Move the cursor to the top of the file and call the template for
+    the copyright/license notice.</para>
+   </listitem>
+   <listitem>
+    <para>Add class variables beneath "Insert class variables here".</para>
+   </listitem>
+   <listitem>
+    <para>Run the accessor/mutator template as required to create 
+    getters/setters for the class variables (in the "Accessors &amp; 
+    Mutators" section.</para>
+   </listitem>
+   <listitem>
+    <para>Add methods as required to the "Implementors" section using the 
+    generic method template.</para>
+   </listitem>
+  </orderedlist>
+ </sect1>
+<!-- }}} -->
+
+<!-- {{{ Section: Automated Dates -->
+ <sect1><title>Automated Dates</title>
+  <para>
+   The first thing that Joe notices he can do is to automate the date in the 
+   copyright notice (which he gets tired of updating each year). He changes 
+   the template as follows:
+  </para>
+<programlisting>
+## template=JavaJoe Copyright
+#today ( $year "yyyy" )
+/*
+ * MyClass.java
+ *
+ * Copyright (c) ${year} Java Joe
+ * Give my code a good home.
+ */
+</programlisting>
+  <para>
+   By using the <function>#today</function> directive, Joe assigns the value 
+   of the current date, formatted as a four digit year, to the "year" 
+   variable. Then within the copyright notice, Joe references this variable 
+   to add the current year.
+  </para>
+  <para>
+   Note also that Joe has added a template label to the top of the file, which 
+   will be displayed in the Templates menu, as well as the dockable template 
+   browser.
+  </para>
+ </sect1>
+
+<!-- }}} -->
+ 
+<!-- {{{ Section: Prompting For User Input -->
+ <sect1><title>Prompting For User Input</title>
+  <para>
+   Next, Joe notices that by using the <function>#prompt</function> directive, 
+   he could accept input from the user while the template is being processed. 
+   To test this functionality, he modifies his method template:
+  </para>
+<programlisting>
+#prompt ( "Method Description:" $methodDescription )
+#prompt ( "Return Type:" $returnType "void")
+#prompt ( "Method Name:" $methodName )
+#prompt ( "Parameters:" $parameters )
+    /**
+     * ${methodDescription}
+     */
+    public ${returnType} ${methodName}(${parameters}) {
+        ${returnType} retVal = null;
+        return retVal;
+    }
+</programlisting>
+  <para>
+   Now when this template is processed by the Templates plugin, the user will 
+   be prompted for each of:
+  </para>
+  <itemizedlist>
+   <listitem><para>a method description</para></listitem>
+   <listitem><para>the type for the return value (default = "void")</para></listitem>
+   <listitem><para>the name of the method</para></listitem>
+   <listitem><para>any parameters to be passed to the method</para></listitem>
+  </itemizedlist>
+  <para>
+   Each of these values is then "filled in" at the appropriate point in the 
+   generated code.
+  </para>
+ </sect1>
+
+<!-- }}} -->
+ 
+<!-- {{{ Section: Conditional Statements -->
+ <sect1><title>Conditional Statements</title>
+  <para>
+   Joe runs the new method template and is pleased with the result. There is 
+   only one problem: if the return type is "void", Joe would rather not have 
+   the two lines where the return variable is initialized and returned. To  
+   fix this, Joe changes the template to the following:
+  </para>
+<programlisting>
+#prompt ( "Method Description:" $methodDescription )
+#prompt ( "Return Type:" $returnType "void")
+#prompt ( "Method Name:" $methodName )
+#prompt ( "Parameters:" $parameters )
+    /**
+     * ${methodDescription}
+     */
+    public ${returnType} ${methodName}(${parameters}) {
+#if ( $returnType != "void" )
+        ${returnType} retVal = null;
+        return retVal;
+#end
+    }
+</programlisting>
+  <para>
+   Note the addition of the <function>#if/#end</function> block around the
+   two lines in question. Now when Joe runs the template, the method body 
+   will be empty if the return type is "void".
+  </para>
+ </sect1>
+
+<!-- }}} -->
+ 
+<!-- {{{ Section: Calling Other Templates -->
+ <sect1><title>Calling Other Templates (#include/#parse)</title>
+  <para>
+   Joe is finding that he's spending a lot of time writing Java 
+   software. Since all of his software is released using the license 
+   statement shown earlier, he'd like to 
+   be able to automatically include his license statement in each Java 
+   class. At first glance, it appears that the #include directive should 
+   allow him to do just that. He changes his Java class file as follows:
+  </para>
+<programlisting>
+package com.javajoe.mypackage;
+
+#include ( "gpl.vm" );    ## Joe's license file
+
+import javax.swing.*;
+/**
+ * Class description goes here
+ */
+public class SomeClass extends Parent implements InterfaceList
+{
+	// Insert class variables here
+
+	public static void main(String[] args) {
+		// Main method
+	}
+
+	//Constructors
+	public SomeClass() {
+		super();
+	}
+	
+	// Accessors &amp; Mutators
+	
+	// Implementors
+}
+</programlisting>
+  <para>
+   The <function>#include</function> directive takes as its parameter the 
+   name of the template file to be included. Upon running the new Java class 
+   template, the license statement is indeed included, but ends up looking 
+   like this:
+  </para>
+<programlisting>
+#today ( $year "yyyy" )
+/*
+ * MyClass.java
+ *
+ * Copyright (c) ${year} Java Joe
+ * Give my code a good home.
+ */
+</programlisting>
+  <para>
+   "What gives?", ponders Joe. "It was resolving the date before". Joe consults 
+   the documentation and realizes that the <function>#include</function> 
+   directive is used to import static text, while the <function>#parse</function>
+   directive will process the imported file as a template. Joe changes the first 
+   section of his class template to look like this:
+  </para>
+<programlisting>
+package com.javajoe.mypackage;
+
+#parse ( "gpl.vm" );    ## Joe's license file
+
+import javax.swing.*;
+## ... etc.
+</programlisting>
+  <para>
+   Now the license statement file gets processed as expected.
+  </para>
+
+ </sect1>
+
+<!-- }}} -->
+ 
+</chapter>
+<!-- }}} -->
+
