@@ -75,6 +75,7 @@
 				<include name="*.props"/>
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>
+				<include name="conf/*.xml"/>
 			</fileset>
 		</jar>
 	</target>

@@ -34,11 +34,6 @@ login.passive=Passive mode
 
 # FTP VFS
 vfs.ftp.label=Connect to FTP Server...
-vfs.ftp.warning=WARNING: The FTP protocol is insecure. Third parties can\n\
-	easily intercept any information you send (including passwords).\n\
-	\n\
-	If you can, consider using Secure FTP instead. See the FTP plugin\n\
-	documentation for details.
 
 # Error messages
 # XXX - FTP responses seem to end with a newline?
