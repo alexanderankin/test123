@@ -1,0 +1,74 @@
+version 0.4.3
+=============
+
+* change patterns to \s|\b?
+* (./) change underline to be straight, like error list?
+* (./) fix: unloading plugin doesn't seem to remove Highlights
+* (./) fix:
+
+	[error] ExtensionManager: java.lang.NullPointerException
+	[error] ExtensionManager:  at tasklist.TaskHighlight.underlineTask(TaskHighlight.java:215)
+	[error] ExtensionManager:  at tasklist.TaskHighlight.paintValidLine(TaskHighlight.java:133)
+	[error] ExtensionManager:  at org.gjt.sp.jedit.textarea.TextAreaExtension.paintScreenLineRange(Unknown Source)
+	[error] ExtensionManager:  at org.gjt.sp.jedit.textarea.ExtensionManager.paintScreenLineRange(Unknown Source)
+	[error] ExtensionManager:  at org.gjt.sp.jedit.textarea.ExtensionManager.paintScreenLineRange(Unknown Source)
+	[error] ExtensionManager:  at org.gjt.sp.jedit.textarea.TextAreaPainter.paintComponent(Unknown Source)
+	[error] ExtensionManager:  at javax.swing.JComponent.paint(JComponent.java:808)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintChildren(JComponent.java:647)
+	[error] ExtensionManager:  at javax.swing.JComponent.paint(JComponent.java:817)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintChildren(JComponent.java:647)
+	[error] ExtensionManager:  at javax.swing.JComponent.paint(JComponent.java:817)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintWithOffscreenBuffer(JComponent.java:4795)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintDoubleBuffered(JComponent.java:4748)
+	[error] ExtensionManager:  at javax.swing.JComponent._paintImmediately(JComponent.java:4692)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintImmediately(JComponent.java:4495)
+	[error] ExtensionManager:  at javax.swing.RepaintManager.paintDirtyRegions(RepaintManager.java:410)
+	[error] ExtensionManager:  at javax.swing.SystemEventQueueUtilities$ComponentWorkRequest.run(SystemEventQueueUtilities.java:117)
+	[error] ExtensionManager:  at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:178)
+	[error] ExtensionManager:  at java.awt.EventQueue.dispatchEvent(EventQueue.java:454)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:201)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:151)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:145)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:137)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.run(EventDispatchThread.java:100)
+
+
+
+version 0.4.2
+=============
+
+- docs to reST? (done)
+- put tasklist into it's own package (done)
+- delete task and delete tag into Task class (done)
+- explicit re-parse in TaskList popup (done)
+- fix "Reset task patterns" (done)
+- fix 699048 (done)
+- removing 1 built-in tax, then re-parsing causes error (done)
+- 2-pane split, all tasks are show twice (done)
+- sorting by buffer doesn't work (done)
+- add sorting by buffer to option pane (done)
+- proof/revise docs (done)
+
+future
+======
+
+- use SideKick's work request API
+- insert task action(s)
+- example of inserting a task into a comment
+- empahsize that tasks are taken from comments
+- parse text in text mode?
+- don't parse buffers when they've saved, if they're not displayed?
+- next/prev task actions
+
+- buffer sets: display tasks for current buffer, buffers 
+  visible in view, all buffers, others?
+
+	// interface something like this?
+	interface BufferSet{
+		Buffer[] getBuffersInSet();
+		int getBufferCount();
+	}
+
+- multi-line task comments
+
+:lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard:
