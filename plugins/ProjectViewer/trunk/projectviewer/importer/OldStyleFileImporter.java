@@ -50,10 +50,6 @@ import projectviewer.vpt.VPTDirectory;
  */
 public class OldStyleFileImporter extends FileImporter {
 
-	//{{{ Private members
-	private VPTNode toShow;
-	//}}}
-
 	//{{{ Constructor
 
 	public OldStyleFileImporter(VPTNode node, ProjectViewer viewer) {
@@ -102,6 +98,7 @@ public class OldStyleFileImporter extends FileImporter {
 			fnf = (FilenameFilter) fFilter;
 
 		ArrayList lst = new ArrayList();
+		boolean selNodeModified = false;
 
 		for (int i = 0; i < chosen.length; i++) {
 
@@ -118,14 +115,18 @@ public class OldStyleFileImporter extends FileImporter {
 						JOptionPane.ERROR_MESSAGE);
 					return null;
 				}
-				selected = makePathTo(chosen[i].getParent(), lst);
+				VPTNode where = makePathTo(chosen[i].getParent(), lst);
+				selNodeModified = (lst.size() != 0);
+				if (!selNodeModified) {
+					selected = where;
+				}
 			}
 
 			VPTNode node = null;
 			if (chosen[i].isDirectory()) {
 				node = findDirectory(chosen[i], selected, true);
 				if (node.getParent() == null) {
-					if (selected == project) {
+					if (!selNodeModified || selected == project) {
 						lst.add(node);
 					} else {
 						selected.insert(node, selected.findIndexForChild(node));
@@ -138,7 +139,7 @@ public class OldStyleFileImporter extends FileImporter {
 					node = new VPTFile(chosen[i]);
 					registerFile((VPTFile)node);
 					fileCount++;
-					if (selected == project) {
+					if (!selNodeModified || selected == project) {
 						lst.add(node);
 					} else {
 						selected.insert(node, selected.findIndexForChild(node));
@@ -147,12 +148,11 @@ public class OldStyleFileImporter extends FileImporter {
 			}
 
 			if (i == 0) {
-				toShow = node;
+				postAction = new ShowNode(node);
 			}
 		}
 
 		showFileCount();
-		postAction = new ShowNode(toShow);
 		return lst;
 	} //}}}
 
