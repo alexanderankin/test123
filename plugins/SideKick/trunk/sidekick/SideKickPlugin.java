@@ -45,10 +45,32 @@ public class SideKickPlugin extends EBPlugin
 	public static final String PARSE_COUNT = "sidekick.parse-count";
 	//}}}
 
-	//{{{ createOptionPanes() method
-	public void createOptionPanes(OptionsDialog dialog)
+	//{{{ start() method
+	public void start()
 	{
-		dialog.addOptionPane(new SideKickOptionPane());
+		View[] views = jEdit.getViews();
+		for(int i = 0; i < views.length; i++)
+		{
+			View view = views[i];
+			sidekicks.put(view,new SideKick(view));
+		}
+		updateKeyBindings();
+		SideKickActions.propertiesChanged();
+	} //}}}
+
+	//{{{ stop() method
+	public void stop()
+	{
+		View[] views = jEdit.getViews();
+		for(int i = 0; i < views.length; i++)
+		{
+			View view = views[i];
+			SideKick sidekick = (SideKick)sidekicks.get(view);
+			sidekick.dispose();
+			sidekicks.remove(view);
+		}
+		updateKeyBindings();
+		SideKickActions.propertiesChanged();
 	} //}}}
 
 	//{{{ handleMessage() method
