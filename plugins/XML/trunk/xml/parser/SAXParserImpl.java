@@ -122,7 +122,7 @@ class SAXParserImpl implements XmlParser.Impl
 		MiscUtilities.quicksort(entities,new EntityDecl.Compare());
 
 		return new CompletionInfo(false,elements,elementHash,entities,
-			entityHash);
+			entityHash,new ArrayList());
 	} //}}}
 
 	//{{{ getIDs() method
