@@ -1,0 +1,3915 @@
+
+options {
+  LOOKAHEAD = 1;
+  CHOICE_AMBIGUITY_CHECK = 2;
+  OTHER_AMBIGUITY_CHECK = 1;
+  STATIC = false;
+  DEBUG_PARSER = false;
+  DEBUG_LOOKAHEAD = false;
+  DEBUG_TOKEN_MANAGER = false;
+  OPTIMIZE_TOKEN_MANAGER = false;
+  ERROR_REPORTING = true;
+  JAVA_UNICODE_ESCAPE = false;
+  UNICODE_INPUT = false;
+  IGNORE_CASE = true;
+  USER_TOKEN_MANAGER = false;
+  USER_CHAR_STREAM = false;
+  BUILD_PARSER = true;
+  BUILD_TOKEN_MANAGER = true;
+  SANITY_CHECK = true;
+  FORCE_LA_CHECK = false;
+  COMMON_TOKEN_ACTION = true;
+}
+
+PARSER_BEGIN(PHPParser)
+package gatchan.phpparser.parser;
+
+import java.util.ArrayList;
+import java.io.StringReader;
+import java.io.*;
+import java.util.Vector;
+
+import net.sourceforge.phpdt.internal.compiler.ast.*;
+import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
+import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
+import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
+
+/**
+ * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
+ *
+ * @author Matthieu Casanova <hoyo@free.fr>
+ */
+public final class PHPParser {
+
+//todo : fix the variables names bug
+//todo : handle tilde operator
+
+//todo: put this in an interface
+  public static final int ERROR = 2;
+  public static final int WARNING = 1;
+  public static final int INFO = 0;
+  public static final int TASK = 3;
+
+  /** The current segment. */
+  private static OutlineableWithChildren currentSegment;
+
+  private static final String PARSE_ERROR_STRING = "Parse error"; //$NON-NLS-1$
+  private static final String PARSE_WARNING_STRING = "Warning"; //$NON-NLS-1$
+  static PHPOutlineInfo outlineInfo;
+
+  /** The error level of the current ParseException. */
+  private static int errorLevel = ERROR;
+  /** The message of the current ParseException. If it's null it's because the parse exception wasn't handled */
+  private static String errorMessage;
+
+  private static int errorStart = -1;
+  private static int errorEnd = -1;
+  private static PHPDocument phpDocument;
+
+  private static final String SYNTAX_ERROR_CHAR = "syntax error";
+  /**
+   * The point where html starts.
+   * It will be used by the token manager to create HTMLCode objects
+   */
+  public static int htmlStart;
+
+  //ast stack
+  private final static int AstStackIncrement = 100;
+  /** The stack of node. */
+  private static AstNode[] nodes;
+  /** The cursor in expression stack. */
+  private static int nodePtr;
+
+  public static final boolean PARSER_DEBUG = false;
+
+  private final Vector parserListeners = new Vector();
+
+  private String path;
+
+  public PHPParser() {
+  }
+
+  /**
+   * Set the path of the file that is currently parsed.
+   * This path will be sent in parse errors and messages
+   *
+   * @param path the path of the parsed file
+   */
+  public void setPath(final String path) {
+    this.path = path;
+  }
+
+  public void addParserListener(final PHPParserListener listener) {
+    if (!parserListeners.contains(listener)) {
+      parserListeners.add(listener);
+    }
+  }
+
+  public void removeParserListener(final PHPParserListener listener) {
+    parserListeners.remove(listener);
+  }
+
+  public void fireParseError(final PHPParseErrorEvent e) {
+    for (int i = 0;i<parserListeners.size();i++) {
+        PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+        listener.parseError(e);
+    }
+  }
+
+  public void fireParseMessage(final PHPParseMessageEvent e) {
+    for (int i = 0;i<parserListeners.size();i++) {
+        PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+        listener.parseMessage(e);
+    }
+  }
+
+  public final void phpParserTester(final String strEval) throws ParseException {
+    final StringReader stream = new StringReader(strEval);
+    if (jj_input_stream == null) {
+      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      token_source = new PHPParserTokenManager(jj_input_stream);
+    }
+    ReInit(new StringReader(strEval));
+    init();
+    phpDocument = new PHPDocument(null,"_root");
+    currentSegment = phpDocument;
+    outlineInfo = new PHPOutlineInfo(null, currentSegment);
+    token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
+    phpTest();
+  }
+
+  public final void htmlParserTester(final File fileName) throws FileNotFoundException, ParseException {
+    final Reader stream = new FileReader(fileName);
+    if (jj_input_stream == null) {
+      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      token_source = new PHPParserTokenManager(jj_input_stream);
+    }
+    ReInit(stream);
+    init();
+    phpDocument = new PHPDocument(null,"_root");
+    currentSegment = phpDocument;
+    outlineInfo = new PHPOutlineInfo(null, currentSegment);
+    phpFile();
+  }
+
+  public final void htmlParserTester(final String strEval) throws ParseException {
+    final StringReader stream = new StringReader(strEval);
+    if (jj_input_stream == null) {
+      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      token_source = new PHPParserTokenManager(jj_input_stream);
+    }
+    ReInit(stream);
+    init();
+    phpDocument = new PHPDocument(null,"_root");
+    currentSegment = phpDocument;
+    outlineInfo = new PHPOutlineInfo(null, currentSegment);
+    phpFile();
+  }
+
+  /**
+   * Reinitialize the parser.
+   */
+  private static final void init() {
+    nodes = new AstNode[AstStackIncrement];
+    nodePtr = -1;
+    htmlStart = 0;
+  }
+
+  /**
+   * Add an php node on the stack.
+   * @param node the node that will be added to the stack
+   */
+  private static final void pushOnAstNodes(final AstNode node) {
+    try {
+      nodes[++nodePtr] = node;
+    } catch (IndexOutOfBoundsException e) {
+      final int oldStackLength = nodes.length;
+      final AstNode[] oldStack = nodes;
+      nodes = new AstNode[oldStackLength + AstStackIncrement];
+      System.arraycopy(oldStack, 0, nodes, 0, oldStackLength);
+      nodePtr = oldStackLength;
+      nodes[nodePtr] = node;
+    }
+  }
+
+  public final PHPOutlineInfo parseInfo(final Object parent, final String s) throws ParseException {
+    phpDocument = new PHPDocument(parent,"_root");
+    currentSegment = phpDocument;
+    outlineInfo = new PHPOutlineInfo(parent, currentSegment);
+    final StringReader stream = new StringReader(s);
+    if (jj_input_stream == null) {
+      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      token_source = new PHPParserTokenManager(jj_input_stream);
+    }
+    ReInit(stream);
+    init();
+    parse();
+    phpDocument.nodes = new AstNode[nodes.length];
+    System.arraycopy(nodes,0,phpDocument.nodes,0,nodes.length);
+    return outlineInfo;
+  }
+
+  /**
+   * Put a new html block in the stack.
+   */
+  public final void createNewHTMLCode() {
+    final int currentPosition = token.sourceStart;
+    if (currentPosition == htmlStart ||
+          currentPosition < htmlStart ||
+          currentPosition > jj_input_stream.getCurrentBuffer().length()) {
+      return;
+    }
+    final String html = jj_input_stream.getCurrentBuffer().substring(htmlStart, currentPosition);
+    pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition));
+  }
+
+  /** Create a new task. */
+/*  public final void createNewTask(final int todoStart) {
+    final StringBuffer currentBuffer = jj_input_stream.getCurrentBuffer();
+    final String  todo = currentBuffer.substring(todoStart,currentBuffer.indexOf("\n",todoStart)-1);
+    if (!PARSER_DEBUG) {
+      try {
+        setMarker(fileToParse,
+                  todo,
+                  jj_input_stream.getBeginLine(),
+                  TASK,
+                  "Line "+jj_input_stream.getBeginLine());
+      } catch (CoreException e) {
+        PHPeclipsePlugin.log(e);
+      }
+    }
+  }      */
+
+  Token error_skipto(int kind) {
+  //  ParseException e = generateParseException();  // generate the exception object.
+  //  System.out.println(e.toString());  // print the error message
+    Token t;
+    do {
+      t = getNextToken();
+    } while (t.kind != kind && t.kind != PHPParserConstants.EOF);
+    return t;
+  }
+
+  public final void parse() throws ParseException {
+	  phpFile();
+  }
+}
+
+PARSER_END(PHPParser)
+
+TOKEN_MGR_DECLS:
+{
+  // CommonTokenAction: use the begins/ends fields added to the Jack
+  // CharStream class to set corresponding fields in each Token (which was
+  // also extended with new fields). By default Jack doesn't supply absolute
+  // offsets, just line/column offsets
+  void CommonTokenAction(Token t) {
+    t.sourceStart = input_stream.getBeginOffset();
+    t.sourceEnd = input_stream.getEndOffset();
+  } // CommonTokenAction
+} // TOKEN_MGR_DECLS
+
+<DEFAULT> TOKEN :
+{
+  <PHPSTARTSHORT : "<?">    : PHPPARSING
+| <PHPSTARTLONG  : "<?php"> : PHPPARSING
+| <PHPECHOSTART  : "<?=">   : PHPPARSING
+}
+
+<PHPPARSING, IN_SINGLE_LINE_COMMENT,IN_VARIABLE> TOKEN :
+{
+  <PHPEND :"?>"> : DEFAULT
+}
+
+/* Skip any character if we are not in php mode */
+<DEFAULT> SKIP :
+{
+ < ~[] >
+}
+
+
+/* WHITE SPACE */
+<PHPPARSING> SKIP :
+{
+  " "
+| "\t"
+| "\n"
+| "\r"
+| "\f"
+}
+
+<IN_VARIABLE> SPECIAL_TOKEN :
+{
+  " "  : PHPPARSING
+| "\t" : PHPPARSING
+| "\n" : PHPPARSING
+| "\r" : PHPPARSING
+| "\f" : PHPPARSING
+}
+/* COMMENTS */
+<PHPPARSING> SPECIAL_TOKEN :
+{
+  "//" : IN_SINGLE_LINE_COMMENT
+| "#"  : IN_SINGLE_LINE_COMMENT
+| <"/**" ~["/"]> { input_stream.backup(1); } : IN_FORMAL_COMMENT
+| "/*" : IN_MULTI_LINE_COMMENT
+}
+
+<IN_SINGLE_LINE_COMMENT> SPECIAL_TOKEN :
+{
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n"> : PHPPARSING
+| < ~[] >
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT> SPECIAL_TOKEN :
+{
+ <TODO : "todo">
+}
+/*
+void todo() :
+{Token todoToken;}
+{
+  todoToken = "TODO" {createNewTask(todoToken.sourceStart);}
+}   */
+<IN_FORMAL_COMMENT> SPECIAL_TOKEN :
+{
+  "*/" : PHPPARSING
+}
+
+<IN_MULTI_LINE_COMMENT> SPECIAL_TOKEN :
+{
+  "*/" : PHPPARSING
+}
+
+<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT>
+MORE :
+{
+  < ~[] >
+}
+
+/* KEYWORDS */
+<PHPPARSING> TOKEN :
+{
+  <CLASS    : "class">
+| <FUNCTION : "function">
+| <VAR      : "var">
+| <IF       : "if">
+| <ELSEIF   : "elseif">
+| <ELSE     : "else">
+| <ARRAY    : "array">
+| <BREAK    : "break">
+| <LIST     : "list">
+}
+
+/* LANGUAGE CONSTRUCT */
+<PHPPARSING> TOKEN :
+{
+  <PRINT              : "print">
+| <ECHO               : "echo">
+| <INCLUDE            : "include">
+| <REQUIRE            : "require">
+| <INCLUDE_ONCE       : "include_once">
+| <REQUIRE_ONCE       : "require_once">
+| <GLOBAL             : "global">
+| <DEFINE             : "define">
+| <STATIC             : "static">
+}
+
+<PHPPARSING,IN_VARIABLE> TOKEN :
+{
+  <CLASSACCESS        : "->"> : PHPPARSING
+| <STATICCLASSACCESS  : "::"> : PHPPARSING
+| <ARRAYASSIGN        : "=>"> : PHPPARSING
+}
+
+/* RESERVED WORDS AND LITERALS */
+
+<PHPPARSING> TOKEN :
+{
+  <CASE     : "case">
+| <CONST    : "const">
+| <CONTINUE : "continue">
+| <_DEFAULT : "default">
+| <DO       : "do">
+| <EXTENDS  : "extends">
+| <FOR      : "for">
+| <GOTO     : "goto">
+| <NEW      : "new">
+| <NULL     : "null">
+| <RETURN   : "return">
+| <SUPER    : "super">
+| <SWITCH   : "switch">
+| <THIS     : "this">
+| <TRUE     : "true">
+| <FALSE    : "false">
+| <WHILE    : "while">
+| <ENDWHILE : "endwhile">
+| <ENDSWITCH: "endswitch">
+| <ENDIF    : "endif">
+| <ENDFOR   : "endfor">
+| <FOREACH  : "foreach">
+| <AS       : "as" >
+}
+
+/* TYPES */
+<PHPPARSING> TOKEN :
+{
+  <STRING  : "string">
+| <OBJECT  : "object">
+| <BOOL    : "bool">
+| <BOOLEAN : "boolean">
+| <REAL    : "real">
+| <DOUBLE  : "double">
+| <FLOAT   : "float">
+| <INT     : "int">
+| <INTEGER : "integer">
+}
+
+//Misc token
+<PHPPARSING,IN_VARIABLE> TOKEN :
+{
+  <AT                 : "@"> : PHPPARSING
+| <BANG               : "!"> : PHPPARSING
+| <TILDE              : "~"> : PHPPARSING
+| <HOOK               : "?"> : PHPPARSING
+| <COLON              : ":"> : PHPPARSING
+}
+
+/* OPERATORS */
+<PHPPARSING,IN_VARIABLE> TOKEN :
+{
+  <OR_OR              : "||"> : PHPPARSING
+| <AND_AND            : "&&"> : PHPPARSING
+| <PLUS_PLUS          : "++"> : PHPPARSING
+| <MINUS_MINUS        : "--"> : PHPPARSING
+| <PLUS               : "+"> : PHPPARSING
+| <MINUS              : "-"> : PHPPARSING
+| <STAR               : "*"> : PHPPARSING
+| <SLASH              : "/"> : PHPPARSING
+| <BIT_AND            : "&"> : PHPPARSING
+| <BIT_OR             : "|"> : PHPPARSING
+| <XOR                : "^"> : PHPPARSING
+| <REMAINDER          : "%">  : PHPPARSING
+| <LSHIFT             : "<<"> : PHPPARSING
+| <RSIGNEDSHIFT       : ">>"> : PHPPARSING
+| <RUNSIGNEDSHIFT     : ">>>"> : PHPPARSING
+| <_ORL               : "OR"> : PHPPARSING
+| <_ANDL              : "AND"> : PHPPARSING
+}
+
+/* LITERALS */
+<PHPPARSING> TOKEN :
+{
+  <INTEGER_LITERAL:
+        <DECIMAL_LITERAL> (["l","L"])?
+      | <HEX_LITERAL> (["l","L"])?
+      | <OCTAL_LITERAL> (["l","L"])?
+  >
+|
+  <#DECIMAL_LITERAL: ["1"-"9"] (["0"-"9"])* >
+|
+  <#HEX_LITERAL: "0" ["x","X"] (["0"-"9","a"-"f","A"-"F"])+ >
+|
+  <#OCTAL_LITERAL: "0" (["0"-"7"])* >
+|
+  <FLOATING_POINT_LITERAL:
+        (["0"-"9"])+ "." (["0"-"9"])* (<EXPONENT>)? (["f","F","d","D"])?
+      | "." (["0"-"9"])+ (<EXPONENT>)? (["f","F","d","D"])?
+      | (["0"-"9"])+ <EXPONENT> (["f","F","d","D"])?
+      | (["0"-"9"])+ (<EXPONENT>)? ["f","F","d","D"]
+  >
+|
+  <#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
+|
+  <STRING_LITERAL: (<STRING_1> | <STRING_2> | <STRING_3>)>
+|   <STRING_1: "\"" ( ~["\"","\\"] | "\\" ~[] )* "\"">
+|   <STRING_2: "'"  ( ~["'","\\"]  | "\\" ~[] )* "'">
+|   <STRING_3: "`"  ( ~["`","\\"]  | "\\" ~[] )* "`">
+}
+ /*
+<IN_STRING,DOLLAR_IN_STRING> SKIP :
+{
+  <ESCAPED : ("\\" ~[])> : IN_STRING
+}
+   Deactivate the String parsing
+<PHPPARSING> TOKEN :
+{
+  <DOUBLEQUOTE : "\""> : IN_STRING
+}
+
+
+<IN_STRING> TOKEN :
+{
+  <DOLLARS : "$"> : DOLLAR_IN_STRING
+}
+
+<IN_STRING,DOLLAR_IN_STRING> TOKEN :
+{
+  <DOUBLEQUOTE2 : "\""> : PHPPARSING
+}
+
+<DOLLAR_IN_STRING> TOKEN :
+{
+  <LBRACE1 : "{"> : DOLLAR_IN_STRING_EXPR
+}
+
+<IN_STRING> SPECIAL_TOKEN :
+{
+    <"{"> : SKIPSTRING
+}
+
+<SKIPSTRING> SPECIAL_TOKEN :
+{
+    <"}"> : IN_STRING
+}
+
+<SKIPSTRING> SKIP :
+{
+    <~[]>
+}
+
+<DOLLAR_IN_STRING_EXPR> TOKEN :
+{
+  <RBRACE1 : "}"> : DOLLAR_IN_STRING
+}
+
+<DOLLAR_IN_STRING_EXPR> TOKEN :
+{
+  <ID : (~["}"])*>
+}
+
+<IN_STRING> SKIP :
+{
+  <~[]>
+}
+
+<DOLLAR_IN_STRING_EXPR,IN_STRING> SKIP :
+{
+  <~[]>
+}
+*/
+/* IDENTIFIERS */
+
+
+<PHPPARSING,IN_VARIABLE> TOKEN : {<DOLLAR : "$"> : IN_VARIABLE}
+
+
+//<PHPPARSING, IN_VARIABLE, DOLLAR_IN_STRING> TOKEN :
+<PHPPARSING, IN_VARIABLE> TOKEN :
+{
+  <IDENTIFIER: (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)* >
+|
+  < #LETTER:
+      ["a"-"z"] | ["A"-"Z"]
+  >
+|
+  < #DIGIT:
+      ["0"-"9"]
+  >
+|
+  < #SPECIAL:
+    "_" | ["\u007f"-"\u00ff"]
+  >
+}
+  /*
+<DOLLAR_IN_STRING> SPECIAL_TOKEN :
+{
+ < ~[] > : IN_STRING
+}  */
+/* SEPARATORS */
+
+<PHPPARSING,IN_VARIABLE> TOKEN :
+{
+  <LPAREN    : "("> : PHPPARSING
+| <RPAREN    : ")"> : PHPPARSING
+| <LBRACE    : "{"> : PHPPARSING
+| <RBRACE    : "}"> : PHPPARSING
+| <LBRACKET  : "["> : PHPPARSING
+| <RBRACKET  : "]"> : PHPPARSING
+| <SEMICOLON : ";"> : PHPPARSING
+| <COMMA     : ","> : PHPPARSING
+| <DOT       : "."> : PHPPARSING
+}
+
+
+/* COMPARATOR */
+<PHPPARSING,IN_VARIABLE> TOKEN :
+{
+  <GT                 : ">"  > : PHPPARSING
+| <LT                 : "<"  > : PHPPARSING
+| <EQUAL_EQUAL        : "==" > : PHPPARSING
+| <LE                 : "<=" > : PHPPARSING
+| <GE                 : ">=" > : PHPPARSING
+| <NOT_EQUAL          : "!=" > : PHPPARSING
+| <DIF                : "<>" > : PHPPARSING
+| <BANGDOUBLEEQUAL    : "!=="> : PHPPARSING
+| <TRIPLEEQUAL        : "==="> : PHPPARSING
+}
+
+/* ASSIGNATION */
+<PHPPARSING,IN_VARIABLE> TOKEN :
+{
+  <ASSIGN             : "="  > : PHPPARSING
+| <PLUSASSIGN         : "+=" > : PHPPARSING
+| <MINUSASSIGN        : "-=" > : PHPPARSING
+| <STARASSIGN         : "*=" > : PHPPARSING
+| <SLASHASSIGN        : "/=" > : PHPPARSING
+| <ANDASSIGN          : "&=" > : PHPPARSING
+| <ORASSIGN           : "|=" > : PHPPARSING
+| <XORASSIGN          : "^=" > : PHPPARSING
+| <DOTASSIGN          : ".=" > : PHPPARSING
+| <REMASSIGN          : "%=" > : PHPPARSING
+| <TILDEEQUAL         : "~=" > : PHPPARSING
+| <LSHIFTASSIGN       : "<<="> : PHPPARSING
+| <RSIGNEDSHIFTASSIGN : ">>="> : PHPPARSING
+}
+
+void phpTest() :
+{}
+{
+  Php()
+  <EOF>
+}
+
+void phpFile() :
+{}
+{
+  try {
+    (PhpBlock())*
+    {createNewHTMLCode();}
+  } catch (TokenMgrError e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          e.getMessage(),
+                                          e.getMessage(),
+                                          null,
+                                          jj_input_stream.getBeginOffset(),
+                                          jj_input_stream.getEndOffset(),
+                                          0,
+                                          0,
+                                          0,
+                                          0));
+  }
+}
+
+/**
+ * A php block is a <?= expression [;]?>
+ * or <?php somephpcode ?>
+ * or <? somephpcode ?>
+ */
+void PhpBlock() :
+{
+  final PHPEchoBlock phpEchoBlock;
+  final Token token,phpEnd;
+}
+{
+  phpEchoBlock = phpEchoBlock()
+  {pushOnAstNodes(phpEchoBlock);}
+|
+  [   <PHPSTARTLONG>
+    | token = <PHPSTARTSHORT>
+    {
+      fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                path,
+                                                "You should use '<?php' instead of '<?' it will avoid some problems with XML",
+                                                token.sourceStart,
+                                                token.sourceEnd,
+                                                token.beginLine,
+                                                token.endLine,
+                                                token.beginColumn,
+                                                token.endColumn));
+    }
+  ]
+  {createNewHTMLCode();}
+  Php()
+  try {
+    phpEnd = <PHPEND>
+   {htmlStart = phpEnd.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'?>' expected",
+                                          "?>",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.beginColumn,
+                                          e.currentToken.endColumn));
+
+  }
+}
+
+PHPEchoBlock phpEchoBlock() :
+{
+  final Expression expr;
+  final PHPEchoBlock echoBlock;
+  final Token token, token2;
+}
+{
+  token = <PHPECHOSTART> {createNewHTMLCode();}
+  expr = Expression() [ <SEMICOLON> ] token2 = <PHPEND>
+  {
+  htmlStart = token2.sourceEnd;
+
+  echoBlock = new PHPEchoBlock(expr,token.sourceStart,token2.sourceEnd);
+  pushOnAstNodes(echoBlock);
+  return echoBlock;}
+}
+
+void Php() :
+{}
+{
+  (BlockStatement())*
+}
+
+/**
+ * A Class declaration.
+ * class <IDENTIFIER> [extends <IDENTIFIER>] Class body
+ *
+ * @return a ClassDeclaration
+ */
+ClassDeclaration ClassDeclaration() :
+{
+  final ClassDeclaration classDeclaration;
+  Token className = null;
+  final Token superclassName, token, extendsToken;
+  String classNameImage = SYNTAX_ERROR_CHAR;
+  String superclassNameImage = null;
+  final int classEnd;
+}
+{
+  token = <CLASS>
+  try {
+    className = <IDENTIFIER>
+    {classNameImage = className.image;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "identifier expected",
+                                          "identifier",
+                                          e.currentToken.image,
+                                          token.sourceStart,
+                                          token.sourceEnd,
+                                          token.beginLine,
+                                          token.endLine,
+                                          token.endColumn,
+                                          token.endColumn+1));
+  }
+  [
+    extendsToken = <EXTENDS>
+    try {
+      superclassName = <IDENTIFIER>
+      {superclassNameImage = superclassName.image;}
+    } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "identifier expected",
+                                            "identifier",
+                                            e.currentToken.image,
+                                            extendsToken.sourceStart,
+                                            extendsToken.sourceEnd,
+                                            extendsToken.beginLine,
+                                            extendsToken.endLine,
+                                            extendsToken.endColumn,
+                                            extendsToken.endColumn+1));
+      superclassNameImage = SYNTAX_ERROR_CHAR;
+    }
+  ]
+  {
+    int start, end;
+    if (className == null) {
+      start = token.sourceStart;
+      end = token.sourceEnd;
+    } else {
+      start = className.sourceStart;
+      end = className.sourceEnd;
+    }
+    if (superclassNameImage == null) {
+
+      classDeclaration = new ClassDeclaration(currentSegment,
+                                              classNameImage,
+                                              start,
+                                              end);
+    } else {
+      classDeclaration = new ClassDeclaration(currentSegment,
+                                              classNameImage,
+                                              superclassNameImage,
+                                              start,
+                                              end);
+    }
+      currentSegment.add(classDeclaration);
+      currentSegment = classDeclaration;
+  }
+  classEnd = ClassBody(classDeclaration)
+  {currentSegment = (OutlineableWithChildren) currentSegment.getParent();
+   classDeclaration.sourceEnd = classEnd;
+   pushOnAstNodes(classDeclaration);
+   return classDeclaration;}
+}
+
+int ClassBody(final ClassDeclaration classDeclaration) :
+{
+Token token;
+}
+{
+  try {
+    <LBRACE>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'{' expected",
+                                          "{",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  ( ClassBodyDeclaration(classDeclaration) )*
+  try {
+    token = <RBRACE>
+    {return token.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'}' expected",
+                                          "}",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+    return this.token.sourceEnd;
+  }
+}
+
+/**
+ * A class can contain only methods and fields.
+ */
+void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
+{
+  final MethodDeclaration method;
+  final FieldDeclaration field;
+}
+{
+  method = MethodDeclaration() {method.analyzeCode(); classDeclaration.addMethod(method);}
+| field = FieldDeclaration()   {if (field != null) classDeclaration.addField(field);}
+}
+
+/**
+ * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
+ * it is only used by ClassBodyDeclaration()
+ */
+FieldDeclaration FieldDeclaration() :
+{
+  VariableDeclaration variableDeclaration;
+  final VariableDeclaration[] list;
+  final ArrayList arrayList = new ArrayList();
+  final Token token;
+  Token token2 = null;
+  int pos;
+}
+{
+  token = <VAR>
+  try {
+    variableDeclaration = VariableDeclaratorNoSuffix()
+      {
+        arrayList.add(variableDeclaration);
+        pos = variableDeclaration.sourceEnd;
+      }
+    } catch (ParseException e) {
+      Token semicolon = error_skipto(SEMICOLON);
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "variable expected",
+                                            "variable",
+                                            e.currentToken.next.image,
+                                            token.sourceEnd,
+                                            semicolon.sourceEnd,
+                                            token.beginLine,
+                                            semicolon.endLine,
+                                            token.endColumn,
+                                            semicolon.endColumn));
+      return null;
+  }
+
+  (
+    <COMMA> variableDeclaration = VariableDeclaratorNoSuffix()
+      {
+        arrayList.add(variableDeclaration);
+        outlineInfo.addVariable(variableDeclaration.name());
+        pos = variableDeclaration.sourceEnd;
+      }
+  )*
+  try {
+    token2 = <SEMICOLON>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+
+  {
+   if (arrayList.size() != 0) {
+   list = new VariableDeclaration[arrayList.size()];
+     arrayList.toArray(list);
+
+   } else {
+    //todo : strange
+     return null;
+   }
+   int end;
+   if (token2 == null) {
+     end = list[list.length-1].sourceEnd;
+   } else {
+     end = token2.sourceEnd;
+   }
+   return new FieldDeclaration(list,
+                               token.sourceStart,
+                               end,
+                               currentSegment);}
+}
+
+/**
+ * a strict variable declarator : there cannot be a suffix here.
+ * It will be used by fields and formal parameters
+ */
+VariableDeclaration VariableDeclaratorNoSuffix() :
+{
+  final Token token, lbrace,rbrace;
+  Expression expr, initializer = null;
+  Token assignToken = null;
+  Variable variable;
+}
+{
+  <DOLLAR>
+  (
+     token = <IDENTIFIER>
+     {variable = new Variable(token.image,token.sourceStart,token.sourceEnd);}
+   |
+     lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
+     {variable = new Variable(expr,lbrace.sourceStart,rbrace.sourceEnd);}
+  )
+  [
+    assignToken = <ASSIGN>
+    try {
+      initializer = VariableInitializer()
+    } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "Literal expression expected in variable initializer",
+                                            "literal",
+                                            e.currentToken.image,
+                                            assignToken.sourceEnd,
+                                            assignToken.sourceEnd +1,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
+    }
+  ]
+  {
+  if (assignToken == null) {
+    return new VariableDeclaration(currentSegment,
+                                   variable,
+                                   variable.sourceStart,
+                                   variable.sourceEnd);
+  }
+  if (initializer == null) {
+    return new VariableDeclaration(currentSegment,
+                                   variable,
+                                   null,
+                                   "=",
+                                   variable.sourceStart,
+                                   assignToken.sourceEnd);
+  }
+  return new VariableDeclaration(currentSegment,
+                                 variable,
+                                 initializer,
+                                 "=",
+                                 variable.sourceStart,
+                                 initializer.sourceEnd);
+  }
+}
+
+/**
+ * this will be used by static statement
+ */
+VariableDeclaration VariableDeclarator() :
+{
+  final AbstractVariable variable;
+  Expression initializer = null;
+  Token assignToken = null;
+}
+{
+  variable = VariableDeclaratorId()
+  [
+    assignToken = <ASSIGN>
+    try {
+      initializer = VariableInitializer()
+    } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "Literal expression expected in variable initializer",
+                                            "literal",
+                                            e.currentToken.image,
+                                            token.sourceEnd,
+                                            token.sourceEnd+1,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
+  }
+  ]
+  {
+  if (assignToken == null) {
+    return new VariableDeclaration(currentSegment,
+                                   variable,
+                                   variable.sourceStart,
+                                   variable.sourceEnd);
+  }
+  if (initializer == null) {
+    return new VariableDeclaration(currentSegment,
+                                   variable,
+                                   null,
+                                   "=",
+                                   variable.sourceStart,
+                                   assignToken.sourceEnd);
+  }
+  return new VariableDeclaration(currentSegment,
+                                 variable,
+                                 initializer,
+                                 "=",
+                                 variable.sourceStart,
+                                 initializer.sourceEnd);
+  }
+}
+
+/**
+ * A Variable name.
+ * @return the variable name (with suffix)
+ */
+AbstractVariable VariableDeclaratorId() :
+{
+  AbstractVariable var;
+}
+{
+  try {
+    var = Variable()
+    (
+      LOOKAHEAD(2)
+      var = VariableSuffix(var)
+    )*
+    {
+     return var;
+    }
+  } catch (ParseException e) {
+    errorMessage = "'$' expected for variable identifier";
+    errorLevel   = ERROR;
+    errorStart = e.currentToken.sourceStart;
+    errorEnd   = e.currentToken.sourceEnd;
+    throw e;
+  }
+}
+
+Variable Variable() :
+{
+  Variable variable = null;
+  final Token token;
+}
+{
+  token = <DOLLAR> variable = Var()
+  {
+    return variable;
+  }
+}
+
+Variable Var() :
+{
+  Variable variable = null;
+  final Token token,token2;
+  ConstantIdentifier constant;
+  Expression expression;
+}
+{
+  token = <DOLLAR> variable = Var()
+  {return new Variable(variable,variable.sourceStart,variable.sourceEnd);}
+|
+  token = <LBRACE> expression = Expression() token2 = <RBRACE>
+  {
+   return new Variable(expression,
+                       token.sourceStart,
+                       token2.sourceEnd);
+  }
+|
+  token = <IDENTIFIER>
+  {
+   outlineInfo.addVariable('$' + token.image);
+   return new Variable(token.image,token.sourceStart,token.sourceEnd);
+  }
+}
+
+Expression VariableInitializer() :
+{
+  final Expression expr;
+  final Token token, token2;
+}
+{
+  expr = Literal()
+  {return expr;}
+|
+  token2 = <MINUS> (token = <INTEGER_LITERAL> | token = <FLOATING_POINT_LITERAL>)
+  {return new PrefixedUnaryExpression(new NumberLiteral(token),
+                                      OperatorIds.MINUS,
+                                      token2.sourceStart);}
+|
+  token2 = <PLUS> (token = <INTEGER_LITERAL> | token = <FLOATING_POINT_LITERAL>)
+  {return new PrefixedUnaryExpression(new NumberLiteral(token),
+                                      OperatorIds.PLUS,
+                                      token2.sourceStart);}
+|
+  expr = ArrayDeclarator()
+  {return expr;}
+|
+  token = <IDENTIFIER>
+  {return new ConstantIdentifier(token);}
+}
+
+ArrayVariableDeclaration ArrayVariable() :
+{
+final Expression expr,expr2;
+}
+{
+  expr = Expression()
+  [
+    <ARRAYASSIGN> expr2 = Expression()
+    {return new ArrayVariableDeclaration(expr,expr2);}
+  ]
+  {return new ArrayVariableDeclaration(expr,jj_input_stream.getPosition());}
+}
+
+ArrayVariableDeclaration[] ArrayInitializer() :
+{
+  ArrayVariableDeclaration expr;
+  final ArrayList list = new ArrayList();
+}
+{
+  <LPAREN>
+    [
+      expr = ArrayVariable()
+      {list.add(expr);}
+      ( LOOKAHEAD(2) <COMMA> expr = ArrayVariable()
+      {list.add(expr);}
+      )*
+    ]
+    [
+      <COMMA> {list.add(null);}
+    ]
+  <RPAREN>
+  {
+  final ArrayVariableDeclaration[] vars = new ArrayVariableDeclaration[list.size()];
+  list.toArray(vars);
+  return vars;}
+}
+
+/**
+ * A Method Declaration.
+ * <b>function</b> MetodDeclarator() Block()
+ *
+ * @return a MethodDeclaration
+ */
+MethodDeclaration MethodDeclaration() :
+{
+  final MethodDeclaration functionDeclaration;
+  final Block block;
+  final OutlineableWithChildren seg = currentSegment;
+  final Token token;
+}
+{
+  token = <FUNCTION>
+  functionDeclaration = MethodDeclarator(token.sourceStart)
+  {
+    outlineInfo.addVariable(functionDeclaration.name);
+    currentSegment = functionDeclaration;
+  }
+  block = Block()
+  {functionDeclaration.statements = block.statements;
+   currentSegment = seg;
+   return functionDeclaration;}
+}
+
+/**
+ * A MethodDeclarator.
+ * [&] IDENTIFIER(parameters ...).
+ *
+ * @return a function description for the outline
+ */
+MethodDeclaration MethodDeclarator(final int start) :
+{
+  Token identifier = null;
+  Token reference = null;
+  final ArrayList formalParameters = new ArrayList();
+  String identifierChar = SYNTAX_ERROR_CHAR;
+  int end = start;
+}
+{
+  [reference = <BIT_AND> {end = reference.sourceEnd;}]
+  try {
+    identifier = <IDENTIFIER>
+    {
+      identifierChar = identifier.image;
+      end = identifier.sourceEnd;
+    }
+  } catch (ParseException e) {
+    if (e.currentToken.next.kind == PHPParserConstants.LPAREN) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "identifier expected",
+                                            "identifier",
+                                            e.currentToken.image,
+                                            start,
+                                            e.currentToken.sourceStart,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.beginColumn-1,
+                                            e.currentToken.endColumn));
+    } else {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected token",
+                                            "identifier",
+                                            e.currentToken.next.image,
+                                            e.currentToken.next.sourceStart,
+                                            e.currentToken.next.sourceEnd,
+                                            e.currentToken.next.beginLine,
+                                            e.currentToken.next.endLine,
+                                            e.currentToken.next.beginColumn,
+                                            e.currentToken.next.endColumn));
+      //error_skipto(PHPParserConstants.LPAREN);
+    }
+  }
+  end = FormalParameters(formalParameters)
+  {
+  int nameStart, nameEnd;
+  if (identifier == null) {
+    if (reference == null) {
+      nameStart = start + 9;
+      nameEnd = start + 10;
+    } else {
+      nameStart = reference.sourceEnd + 1;
+      nameEnd = reference.sourceEnd + 2;
+    }
+  } else {
+      nameStart = identifier.sourceStart;
+      nameEnd = identifier.sourceEnd;
+  }
+  return new MethodDeclaration(currentSegment,
+                               identifierChar,
+                               formalParameters,
+                               reference != null,
+                               nameStart,
+                               nameEnd,
+                               start,
+                               end);
+  }
+}
+
+/**
+ * FormalParameters follows method identifier.
+ * (FormalParameter())
+ */
+int FormalParameters(final ArrayList parameters) :
+{
+  VariableDeclaration var;
+  final Token token;
+  Token tok = this.token;
+  int end = tok.sourceEnd;
+}
+{
+  try {
+  tok = <LPAREN>
+  {end = tok.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'(' expected",
+                                          "(",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  [
+    var = FormalParameter()
+    {parameters.add(var);end = var.sourceEnd;}
+      (
+        <COMMA>
+        var = FormalParameter()
+        {parameters.add(var);end = var.sourceEnd;}
+      )*
+  ]
+  try {
+    token = <RPAREN>
+    {end = token.sourceEnd;}
+  } catch (ParseException e) { //recup rparen si avant lbrace
+      Token nextToken = getNextToken();
+      while (nextToken.kind != EOF && nextToken.kind != RPAREN && nextToken.kind != LBRACE) {
+        nextToken = getNextToken();
+      }
+      if (nextToken.kind == EOF) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected end of file",
+                                              ")",
+                                              e.currentToken.next.image,
+                                              e.currentToken.sourceEnd,
+                                              nextToken.sourceStart,
+                                              e.currentToken.beginLine,
+                                              nextToken.endLine,
+                                              e.currentToken.endColumn,
+                                              nextToken.endColumn));
+      } else if (nextToken.kind == RPAREN) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected tokens",
+                                              "",
+                                              e.currentToken.next.image,
+                                              e.currentToken.next.sourceEnd,
+                                              nextToken.sourceStart,
+                                              e.currentToken.next.beginLine,
+                                              nextToken.beginLine,
+                                              e.currentToken.next.endColumn+1,
+                                              nextToken.beginColumn-1));
+      } else {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                        path,
+                                        "')' expected",
+                                        ")",
+                                        e.currentToken.next.image,
+                                        e.currentToken.sourceEnd,
+                                        nextToken.sourceStart,
+                                        e.currentToken.beginLine,
+                                        nextToken.endLine,
+                                        e.currentToken.endColumn+1,
+                                        nextToken.endColumn-1));
+      }
+  }
+ {return end;}
+}
+
+/**
+ * A formal parameter.
+ * $varname[=value] (,$varname[=value])
+ */
+VariableDeclaration FormalParameter() :
+{
+  final VariableDeclaration variableDeclaration;
+  Token token = null;
+}
+{
+  [token = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
+  {
+    outlineInfo.addVariable('$'+variableDeclaration.name());
+    if (token != null) {
+      variableDeclaration.setReference(true);
+    }
+    return variableDeclaration;}
+}
+
+ConstantIdentifier Type() :
+{final Token token;}
+{
+  token = <STRING>    {return new ConstantIdentifier(token);}
+| token = <BOOL>      {return new ConstantIdentifier(token);}
+| token = <BOOLEAN>   {return new ConstantIdentifier(token);}
+| token = <REAL>      {return new ConstantIdentifier(token);}
+| token = <DOUBLE>    {return new ConstantIdentifier(token);}
+| token = <FLOAT>     {return new ConstantIdentifier(token);}
+| token = <INT>       {return new ConstantIdentifier(token);}
+| token = <INTEGER>   {return new ConstantIdentifier(token);}
+| token = <OBJECT>    {return new ConstantIdentifier(token);}
+}
+
+Expression Expression() :
+{
+  final Expression expr;
+  Expression initializer = null;
+  Token assignOperator = null;
+}
+{
+  LOOKAHEAD(1)
+  expr = ConditionalExpression()
+  [
+    assignOperator = AssignmentOperator()
+    initializer = Expression()
+  ]
+  {
+    if (assignOperator != null) {// todo : change this, very very bad :(
+        if (expr instanceof AbstractVariable) {
+          if (initializer == null) {
+            return new VariableDeclaration(currentSegment,
+                                           (AbstractVariable) expr,
+                                           null,
+                                           assignOperator.image,
+                                           expr.sourceStart,
+                                           assignOperator.sourceEnd);
+          }
+          return new VariableDeclaration(currentSegment,
+                                         (AbstractVariable) expr,
+                                         initializer,
+                                         assignOperator.image,
+                                         expr.sourceStart,
+                                         initializer.sourceEnd);
+        }
+        String varName = expr.toStringExpression().substring(1);
+        return new VariableDeclaration(currentSegment,
+                                       new Variable(varName,
+                                                    expr.sourceStart,
+                                                    expr.sourceEnd),
+                                       expr.sourceStart,
+                                       assignOperator.sourceEnd);
+    }
+    return expr;
+  }
+| expr = ExpressionWBang()       {return expr;}
+}
+
+Expression ExpressionWBang() :
+{
+  final Expression expr;
+  final Token token;
+}
+{
+  token = <BANG> expr = ExpressionWBang()
+  {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart);}
+| expr = ExpressionNoBang() {return expr;}
+}
+
+Expression ExpressionNoBang() :
+{
+  Expression expr;
+}
+{
+  expr = ListExpression()    {return expr;}
+|
+  expr = PrintExpression()   {return expr;}
+}
+
+/**
+ * Any assignement operator.
+ * @return the assignement operator id
+ */
+Token AssignmentOperator() :
+{
+  final Token assignOperator;
+}
+{
+  assignOperator = <ASSIGN>             {return assignOperator;}
+| assignOperator = <STARASSIGN>         {return assignOperator;}
+| assignOperator = <SLASHASSIGN>        {return assignOperator;}
+| assignOperator = <REMASSIGN>          {return assignOperator;}
+| assignOperator = <PLUSASSIGN>         {return assignOperator;}
+| assignOperator = <MINUSASSIGN>        {return assignOperator;}
+| assignOperator = <LSHIFTASSIGN>       {return assignOperator;}
+| assignOperator = <RSIGNEDSHIFTASSIGN> {return assignOperator;}
+| assignOperator = <ANDASSIGN>          {return assignOperator;}
+| assignOperator = <XORASSIGN>          {return assignOperator;}
+| assignOperator = <ORASSIGN>           {return assignOperator;}
+| assignOperator = <DOTASSIGN>          {return assignOperator;}
+| assignOperator = <TILDEEQUAL>         {return assignOperator;}
+}
+
+Expression ConditionalExpression() :
+{
+  final Expression expr;
+  Expression expr2 = null;
+  Expression expr3 = null;
+}
+{
+  expr = ConditionalOrExpression() [ <HOOK> expr2 = Expression() <COLON> expr3 = ConditionalExpression() ]
+{
+  if (expr3 == null) {
+    return expr;
+  }
+  return new ConditionalExpression(expr,expr2,expr3);
+}
+}
+
+Expression ConditionalOrExpression() :
+{
+  Expression expr,expr2;
+  int operator;
+}
+{
+  expr = ConditionalAndExpression()
+  (
+    (
+        <OR_OR> {operator = OperatorIds.OR_OR;}
+      | <_ORL>  {operator = OperatorIds.ORL;}
+    )
+    expr2 = ConditionalAndExpression()
+    {
+      expr = new BinaryExpression(expr,expr2,operator);
+    }
+  )*
+  {return expr;}
+}
+
+Expression ConditionalAndExpression() :
+{
+  Expression expr,expr2;
+  int operator;
+}
+{
+  expr = ConcatExpression()
+  (
+  (  <AND_AND> {operator = OperatorIds.AND_AND;}
+   | <_ANDL>   {operator = OperatorIds.ANDL;})
+   expr2 = ConcatExpression() {expr = new BinaryExpression(expr,expr2,operator);}
+  )*
+  {return expr;}
+}
+
+Expression ConcatExpression() :
+{
+  Expression expr,expr2;
+}
+{
+  expr = InclusiveOrExpression()
+  (
+    <DOT> expr2 = InclusiveOrExpression()
+    {expr = new BinaryExpression(expr,expr2,OperatorIds.DOT);}
+  )*
+  {return expr;}
+}
+
+Expression InclusiveOrExpression() :
+{
+  Expression expr,expr2;
+}
+{
+  expr = ExclusiveOrExpression()
+  (<BIT_OR> expr2 = ExclusiveOrExpression()
+   {expr = new BinaryExpression(expr,expr2,OperatorIds.OR);}
+  )*
+  {return expr;}
+}
+
+Expression ExclusiveOrExpression() :
+{
+  Expression expr,expr2;
+}
+{
+  expr = AndExpression()
+  (
+    <XOR> expr2 = AndExpression()
+    {expr = new BinaryExpression(expr,expr2,OperatorIds.XOR);}
+  )*
+  {return expr;}
+}
+
+Expression AndExpression() :
+{
+  Expression expr,expr2;
+}
+{
+  expr = EqualityExpression()
+  (
+    LOOKAHEAD(1)
+    <BIT_AND> expr2 = EqualityExpression()
+    {expr = new BinaryExpression(expr,expr2,OperatorIds.AND);}
+  )*
+  {return expr;}
+}
+
+Expression EqualityExpression() :
+{
+  Expression expr,expr2;
+  int operator;
+  Token token;
+}
+{
+  expr = RelationalExpression()
+  (
+  (   token = <EQUAL_EQUAL>      {operator = OperatorIds.EQUAL_EQUAL;}
+    | token = <DIF>              {operator = OperatorIds.DIF;}
+    | token = <NOT_EQUAL>        {operator = OperatorIds.DIF;}
+    | token = <BANGDOUBLEEQUAL>  {operator = OperatorIds.BANG_EQUAL_EQUAL;}
+    | token = <TRIPLEEQUAL>      {operator = OperatorIds.EQUAL_EQUAL_EQUAL;}
+  )
+  try {
+    expr2 = RelationalExpression()
+  } catch (ParseException e) {
+    if (errorMessage != null) {
+      throw e;
+    }
+    expr2 = new ConstantIdentifier(SYNTAX_ERROR_CHAR,token.sourceEnd +1,token.sourceEnd +1);
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "expression expected",
+                                          "expression",
+                                          e.currentToken.image,
+                                          token.sourceEnd,
+                                          token.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+    expr = new BinaryExpression(expr,expr2,operator);
+  }
+  )*
+  {return expr;}
+}
+
+Expression RelationalExpression() :
+{
+  Expression expr,expr2;
+  int operator;
+}
+{
+  expr = ShiftExpression()
+  (
+  ( <LT> {operator = OperatorIds.LESS;}
+  | <GT> {operator = OperatorIds.GREATER;}
+  | <LE> {operator = OperatorIds.LESS_EQUAL;}
+  | <GE> {operator = OperatorIds.GREATER_EQUAL;})
+   expr2 = ShiftExpression()
+  {expr = new BinaryExpression(expr,expr2,operator);}
+  )*
+  {return expr;}
+}
+
+Expression ShiftExpression() :
+{
+  Expression expr,expr2;
+  int operator;
+}
+{
+  expr = AdditiveExpression()
+  (
+  ( <LSHIFT>         {operator = OperatorIds.LEFT_SHIFT;}
+  | <RSIGNEDSHIFT>   {operator = OperatorIds.RIGHT_SHIFT;}
+  | <RUNSIGNEDSHIFT> {operator = OperatorIds.UNSIGNED_RIGHT_SHIFT;})
+  expr2 = AdditiveExpression()
+  {expr = new BinaryExpression(expr,expr2,operator);}
+  )*
+  {return expr;}
+}
+
+Expression AdditiveExpression() :
+{
+  Expression expr,expr2;
+  int operator;
+}
+{
+  expr = MultiplicativeExpression()
+  (
+    LOOKAHEAD(1)
+     ( <PLUS>  {operator = OperatorIds.PLUS;}
+     | <MINUS> {operator = OperatorIds.MINUS;}
+  )
+   expr2 = MultiplicativeExpression()
+  {expr = new BinaryExpression(expr,expr2,operator);}
+   )*
+  {return expr;}
+}
+
+Expression MultiplicativeExpression() :
+{
+  Expression expr,expr2;
+  int operator;
+}
+{
+  try {
+    expr = UnaryExpression()
+  } catch (ParseException e) {
+    if (errorMessage != null) throw e;
+    errorMessage = "unexpected token '"+e.currentToken.next.image+'\'';
+    errorLevel   = ERROR;
+    errorStart = this.token.sourceStart;
+    errorEnd   = this.token.sourceEnd;
+    throw e;
+  }
+  (
+   (  <STAR>      {operator = OperatorIds.MULTIPLY;}
+    | <SLASH>     {operator = OperatorIds.DIVIDE;}
+    | <REMAINDER> {operator = OperatorIds.REMAINDER;})
+    expr2 = UnaryExpression()
+    {expr = new BinaryExpression(expr,expr2,operator);}
+  )*
+  {return expr;}
+}
+
+/**
+ * An unary expression starting with @, & or nothing
+ */
+Expression UnaryExpression() :
+{
+  Expression expr;
+}
+{
+ /* <BIT_AND> expr = UnaryExpressionNoPrefix()             //why did I had that ?
+  {return new PrefixedUnaryExpression(expr,OperatorIds.AND,pos);}
+|      */
+  try {
+    expr = AtNotTildeUnaryExpression() {return expr;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "unexpected token : '"+e.currentToken.image+"'",
+                                          "",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.beginColumn,
+                                          e.currentToken.endColumn));
+    getNextToken();
+    return UnaryExpression();
+  }
+
+}
+
+Expression AtNotTildeUnaryExpression() :
+{
+  final Expression expr;
+  final Token token;
+}
+{
+  token = <AT>
+  expr = AtNotTildeUnaryExpression()
+  {return new PrefixedUnaryExpression(expr,OperatorIds.AT,token.sourceStart);}
+|
+  token = <TILDE>
+  expr = AtNotTildeUnaryExpression()
+  {return new PrefixedUnaryExpression(expr,OperatorIds.TWIDDLE,token.sourceStart);}
+|
+  token = <BANG>
+  expr = AtNotUnaryExpression()
+  {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart);}
+|
+  expr = UnaryExpressionNoPrefix()
+  {return expr;}
+}
+
+/**
+ * An expression prefixed (or not) by one or more @ and !.
+ * @return the expression
+ */
+Expression AtNotUnaryExpression() :
+{
+  final Expression expr;
+  final Token token;
+}
+{
+  token = <AT>
+  expr = AtNotUnaryExpression()
+  {return new PrefixedUnaryExpression(expr,OperatorIds.AT,token.sourceStart);}
+|
+  token = <BANG>
+  expr = AtNotUnaryExpression()
+  {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart);}
+|
+  expr = UnaryExpressionNoPrefix()
+  {return expr;}
+}
+
+Expression UnaryExpressionNoPrefix() :
+{
+  final Expression expr;
+  final Token token;
+}
+{
+  token = <PLUS> expr = AtNotTildeUnaryExpression()   {return new PrefixedUnaryExpression(expr,
+                                                                                     OperatorIds.PLUS,
+                                                                                     token.sourceStart);}
+|
+  token = <MINUS> expr = AtNotTildeUnaryExpression()  {return new PrefixedUnaryExpression(expr,
+                                                                                     OperatorIds.MINUS,
+                                                                                     token.sourceStart);}
+|
+  expr = PreIncDecExpression()
+  {return expr;}
+|
+  expr = UnaryExpressionNotPlusMinus()
+  {return expr;}
+}
+
+
+Expression PreIncDecExpression() :
+{
+final Expression expr;
+final int operator;
+final Token token;
+}
+{
+  (
+      token = <PLUS_PLUS>   {operator = OperatorIds.PLUS_PLUS;}
+    |
+      token = <MINUS_MINUS> {operator = OperatorIds.MINUS_MINUS;}
+  )
+  expr = PrimaryExpression()
+  {return new PrefixedUnaryExpression(expr,operator,token.sourceStart);}
+}
+
+Expression UnaryExpressionNotPlusMinus() :
+{
+  final Expression expr;
+}
+{
+  LOOKAHEAD( <LPAREN> (Type() | <ARRAY>) <RPAREN> )
+  expr = CastExpression()         {return expr;}
+| expr = PostfixExpression()      {return expr;}
+| expr = Literal()                {return expr;}
+| <LPAREN> expr = Expression()
+  try {
+    <RPAREN>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "')'n expected",
+                                          ")",
+                                          e.currentToken.image,
+                                          expr.sourceEnd,
+                                          expr.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return expr;}
+}
+
+CastExpression CastExpression() :
+{
+final ConstantIdentifier type;
+final Expression expr;
+final Token token,token1;
+}
+{
+  token1 = <LPAREN>
+  (
+      type = Type()
+    |
+      token = <ARRAY> {type = new ConstantIdentifier(token);}
+  )
+  <RPAREN> expr = UnaryExpression()
+  {return new CastExpression(type,expr,token1.sourceStart,expr.sourceEnd);}
+}
+
+Expression PostfixExpression() :
+{
+  final Expression expr;
+  int operator = -1;
+  Token token = null;
+}
+{
+  expr = PrimaryExpression()
+  [
+      token = <PLUS_PLUS>   {operator = OperatorIds.PLUS_PLUS;}
+    |
+      token = <MINUS_MINUS> {operator = OperatorIds.MINUS_MINUS;}
+  ]
+  {
+    if (operator == -1) {
+      return expr;
+    }
+    return new PostfixedUnaryExpression(expr,operator,token.sourceEnd);
+  }
+}
+
+Expression PrimaryExpression() :
+{
+  Expression expr;
+  Token token = null;
+}
+{
+  [token = <BIT_AND>] expr = refPrimaryExpression(token)
+  {return expr;}
+|
+  expr = ArrayDeclarator()
+  {return expr;}
+}
+
+Expression refPrimaryExpression(final Token reference) :
+{
+  Expression expr;
+  Expression expr2 = null;
+  final Token identifier;
+}
+{
+  identifier = <IDENTIFIER>
+  {
+    expr = new ConstantIdentifier(identifier);
+  }
+  (
+    <STATICCLASSACCESS> expr2 = ClassIdentifier()
+    {expr = new ClassAccess(expr,
+                            expr2,
+                            ClassAccess.STATIC);}
+  )*
+  [ expr2 = Arguments(expr) ]
+  {
+    if (expr2 == null) {
+      if (reference != null) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "you cannot use a constant by reference",
+                                              "",
+                                              "&",
+                                              reference.sourceStart,
+                                              reference.sourceEnd,
+                                              reference.beginLine,
+                                              reference.endLine,
+                                              reference.endColumn,
+                                              reference.endColumn+1));
+      }
+      return expr;
+    }
+    return expr2;
+  }
+|
+  expr = VariableDeclaratorId()  //todo use the reference parameter ...
+  [ expr = Arguments(expr) ]
+  {return expr;}
+|
+  token = <NEW>
+  expr = ClassIdentifier()
+  {
+    int start;
+    if (reference == null) {
+      start = token.sourceStart;
+    } else {
+      start = reference.sourceStart;
+    }
+    expr = new ClassInstantiation(expr,
+                                  reference != null,
+                                  start);
+  }
+  [ expr = Arguments(expr) ]
+  {return expr;}
+}
+
+/**
+ * An array declarator.
+ * array(vars)
+ * @return an array
+ */
+ArrayInitializer ArrayDeclarator() :
+{
+  final ArrayVariableDeclaration[] vars;
+  final Token token;
+}
+{
+  token = <ARRAY> vars = ArrayInitializer()
+  {return new ArrayInitializer(vars,
+                               token.sourceStart,
+                               this.token.sourceEnd);}
+}
+
+Expression ClassIdentifier():
+{
+  final Expression expr;
+  final Token token;
+}
+{
+  token = <IDENTIFIER>          {return new ConstantIdentifier(token);}
+| expr = Type()                 {return expr;}
+| expr = VariableDeclaratorId() {return expr;}
+}
+
+/**
+ * Used by Variabledeclaratorid and primarysuffix
+ */
+AbstractVariable VariableSuffix(final AbstractVariable prefix) :
+{
+  Expression expression = null;
+  final Token classAccessToken,lbrace,rbrace;
+  Token token;
+  int pos;
+}
+{
+  classAccessToken = <CLASSACCESS>
+  try {
+    (
+      lbrace = <LBRACE> expression = Expression() rbrace = <RBRACE>
+                {
+                 expression = new Variable(expression,
+                                           lbrace.sourceStart,
+                                           rbrace.sourceEnd);
+                }
+      |
+        token = <IDENTIFIER>
+        {expression = new ConstantIdentifier(token.image,token.sourceStart,token.sourceEnd);}
+      |
+        expression = Variable()
+    )
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "function call or field access expected",
+                                          "",
+                                          e.currentToken.image,
+                                          classAccessToken.sourceEnd,
+                                          classAccessToken.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return new ClassAccess(prefix,
+                          expression,
+                          ClassAccess.NORMAL);}
+|
+  token = <LBRACKET> {pos = token.sourceEnd+1;}
+  [  expression = Expression() {pos = expression.sourceEnd+1;}
+   | expression = Type()       {pos = expression.sourceEnd+1;}]  //Not good
+  try {
+    token = <RBRACKET>
+    {pos = token.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "']' expected",
+                                          "]",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return new ArrayDeclarator(prefix,expression,pos);}
+|
+  token = <LBRACE> {pos = token.sourceEnd+1;}
+  [  expression = Expression() {pos = expression.sourceEnd+1;}
+   | expression = Type()       {pos = expression.sourceEnd+1;}]  //Not good
+  try {
+    token = <RBRACE>
+    {pos = token.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'}' expected",
+                                          "}",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return new ArrayDeclarator(prefix,expression,pos);}//todo : check braces here
+}
+
+Literal Literal() :
+{
+  final Token token;
+  StringLiteral literal;
+}
+{
+  token = <INTEGER_LITERAL>        {return new NumberLiteral(token);}
+| token = <FLOATING_POINT_LITERAL> {return new NumberLiteral(token);}
+| token = <STRING_LITERAL>         {return new StringLiteral(token);}
+| token = <TRUE>                   {return new TrueLiteral(token);}
+| token = <FALSE>                  {return new FalseLiteral(token);}
+| token = <NULL>                   {return new NullLiteral(token);}
+//| literal = evaluableString()        {return literal;}
+}
+       /*
+StringLiteral evaluableString() :
+{
+  ArrayList list = new ArrayList();
+  Token start,end;
+  Token token,lbrace,rbrace;
+  AbstractVariable var;
+  Expression expr;
+}
+{
+  start = <DOUBLEQUOTE>
+  (
+   <DOLLARS>
+       (
+        token = <IDENTIFIER> {list.add(new Variable(token.image,
+                                                    token.sourceStart,
+                                                    token.sourceEnd));}
+        |
+         lbrace = <LBRACE1>
+         token = <ID>
+         {list.add(new Variable(token.image,
+                                token.sourceStart,
+                                token.sourceEnd));}
+         rbrace = <RBRACE1>
+       )
+   )*
+  end = <DOUBLEQUOTE2>
+  {
+  AbstractVariable[] vars = new AbstractVariable[list.size()];
+  list.toArray(vars);
+  return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(start.sourceEnd,end.sourceStart),
+                           start.sourceStart,
+                           end.sourceEnd,
+                           vars);
+  }
+}
+  */
+FunctionCall Arguments(final Expression func) :
+{
+Expression[] args = null;
+final Token token,lparen;
+}
+{
+  lparen = <LPAREN> [ args = ArgumentList() ]
+  try {
+    token = <RPAREN>
+    {return new FunctionCall(func,args,token.sourceEnd);}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "')' expected",
+                                          ")",
+                                          e.currentToken.image,
+                                          errorStart,
+                                          errorEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+  int sourceEnd = (args == null || args.length == 0) ? lparen.sourceEnd+1 : args[args.length-1].sourceEnd;
+  return new FunctionCall(func,args,sourceEnd);}
+}
+
+/**
+ * An argument list is a list of arguments separated by comma :
+ * argumentDeclaration() (, argumentDeclaration)*
+ * @return an array of arguments
+ */
+Expression[] ArgumentList() :
+{
+Expression arg;
+final ArrayList list = new ArrayList();
+int pos;
+Token token;
+}
+{
+  arg = Expression()
+  {list.add(arg);pos = arg.sourceEnd;}
+  ( token = <COMMA> {pos = token.sourceEnd;}
+      try {
+        arg = Expression()
+        {list.add(arg);
+         pos = arg.sourceEnd;}
+      } catch (ParseException e) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "expression expected",
+                                              "expression",
+                                              e.currentToken.image,
+                                              pos,
+                                              pos+1,
+                                              e.currentToken.beginLine,
+                                              e.currentToken.endLine,
+                                              e.currentToken.endColumn,
+                                              e.currentToken.endColumn+1));
+      }
+   )*
+   {
+   final Expression[] arguments = new Expression[list.size()];
+   list.toArray(arguments);
+   return arguments;}
+}
+
+/**
+ * A Statement without break.
+ * @return a statement
+ */
+Statement StatementNoBreak() :
+{
+  final Statement statement;
+  Token token = null;
+}
+{
+  LOOKAHEAD(2)
+  statement = expressionStatement()     {return statement;}
+| LOOKAHEAD(2)
+  statement = LabeledStatement()        {return statement;}
+| statement = Block()                   {return statement;}
+| statement = EmptyStatement()          {return statement;}
+| statement = SwitchStatement()         {return statement;}
+| statement = IfStatement()             {return statement;}
+| statement = WhileStatement()          {return statement;}
+| statement = DoStatement()             {return statement;}
+| statement = ForStatement()            {return statement;}
+| statement = ForeachStatement()        {return statement;}
+| statement = ContinueStatement()       {return statement;}
+| statement = ReturnStatement()         {return statement;}
+| statement = EchoStatement()           {return statement;}
+| [token=<AT>] statement = IncludeStatement()
+  {if (token != null) {
+    ((InclusionStatement)statement).silent = true;
+    statement.sourceStart = token.sourceStart;
+  }
+  return statement;}
+| statement = StaticStatement()         {return statement;}
+| statement = GlobalStatement()         {return statement;}
+| statement = defineStatement()         {currentSegment.add((Outlineable)statement);return statement;}
+}
+
+/**
+ * A statement expression.
+ * expression ;
+ * @return an expression
+ */
+Statement expressionStatement() :
+{
+  final Statement statement;
+  Token token;
+}
+{
+  try {
+    statement = Expression()
+  } catch (ParseException e) {
+    token = error_skipto(SEMICOLON);
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "expression expected",
+                                          "expression",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceEnd,
+                                          token.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          token.endLine,
+                                          e.currentToken.endColumn,
+                                          token.beginColumn));
+    return new EmptyStatement(e.currentToken.sourceStart,token.sourceEnd);
+  }
+  try {
+    token = <SEMICOLON>
+    {statement.sourceEnd = token.sourceEnd;}
+  } catch (ParseException e) {
+    if (e.currentToken.next.kind != PHPParserConstants.PHPEND) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "';' expected",
+                                            ";",
+                                            e.currentToken.image,
+                                            statement.sourceEnd,
+                                            statement.sourceEnd+1,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
+    }
+  }
+  {return statement;}
+}
+
+Define defineStatement() :
+{
+  Expression defineName,defineValue;
+  final Token defineToken;
+  Token token;
+  int pos;
+}
+{
+  defineToken = <DEFINE> {pos = defineToken.sourceEnd+1;}
+  try {
+    token = <LPAREN>
+    {pos = token.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'(' expected",
+                                          "(",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    defineName = Expression()
+    {pos = defineName.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "expression expected",
+                                          "expression",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+    defineName = new StringLiteral(SYNTAX_ERROR_CHAR,pos,pos);
+  }
+  try {
+    token = <COMMA>
+    {pos = defineName.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "',' expected",
+                                          ",",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    defineValue = Expression()
+    {pos = defineValue.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "expression expected",
+                                          "expression",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+    defineValue = new StringLiteral(SYNTAX_ERROR_CHAR,pos,pos);
+  }
+  try {
+    token = <RPAREN>
+    {pos = token.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "')' expected",
+                                          ")",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return new Define(currentSegment,
+                     defineName,
+                     defineValue,
+                     defineToken.sourceStart,
+                     pos);}
+}
+
+/**
+ * A Normal statement.
+ */
+Statement Statement() :
+{
+  final Statement statement;
+}
+{
+  statement = StatementNoBreak() {return statement;}
+| statement = BreakStatement()   {return statement;}
+}
+
+/**
+ * An html block inside a php syntax.
+ */
+HTMLBlock htmlBlock() :
+{
+  final int startIndex = nodePtr;
+  final AstNode[] blockNodes;
+  final int nbNodes;
+  final Token phpEnd;
+}
+{
+  phpEnd = <PHPEND>
+  {htmlStart = phpEnd.sourceEnd;}
+  (phpEchoBlock())*
+  try {
+    (<PHPSTARTLONG> | <PHPSTARTSHORT>)
+    {createNewHTMLCode();}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'<?php' expected",
+                                          "<?php",
+                                          e.currentToken.image,
+                                          e.currentToken.next.sourceStart,
+                                          e.currentToken.next.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+  nbNodes    = nodePtr - startIndex;
+  if (nbNodes == 0) {
+    return null;
+  }
+  blockNodes = new AstNode[nbNodes];
+  System.arraycopy(nodes,startIndex+1,blockNodes,0,nbNodes);
+  nodePtr = startIndex;
+  return new HTMLBlock(blockNodes);}
+}
+
+/**
+ * An include statement. It's "include" an expression;
+ */
+InclusionStatement IncludeStatement() :
+{
+  Expression expr;
+  final int keyword;
+  final InclusionStatement inclusionStatement;
+  final Token token, token2;
+  int pos;
+}
+{
+      (  token = <REQUIRE>      {keyword = InclusionStatement.REQUIRE;pos=token.sourceEnd;}
+       | token = <REQUIRE_ONCE> {keyword = InclusionStatement.REQUIRE_ONCE;pos=token.sourceEnd;}
+       | token = <INCLUDE>      {keyword = InclusionStatement.INCLUDE;pos=token.sourceEnd;}
+       | token = <INCLUDE_ONCE> {keyword = InclusionStatement.INCLUDE_ONCE;pos=token.sourceEnd;})
+  try {
+    expr = Expression()
+    {pos = expr.sourceEnd;}
+  } catch (ParseException e) {
+    if (errorMessage != null) {
+      throw e;
+    }
+    expr = new ConstantIdentifier(SYNTAX_ERROR_CHAR,pos,pos);
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "expression expected",
+                                          "expression",
+                                          e.currentToken.image,
+                                          e.currentToken.next.sourceStart,
+                                          e.currentToken.next.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    token2 = <SEMICOLON>
+    {pos=token2.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          e.currentToken.next.sourceStart,
+                                          e.currentToken.next.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+   inclusionStatement = new InclusionStatement(currentSegment,
+                                               keyword,
+                                               expr,
+                                               token.sourceStart,
+                                               pos);
+   currentSegment.add(inclusionStatement);
+   return inclusionStatement;
+  }
+}
+
+PrintExpression PrintExpression() :
+{
+  final Expression expr;
+  final Token printToken;
+}
+{
+  token = <PRINT> expr = Expression()
+  {return new PrintExpression(expr,token.sourceStart,expr.sourceEnd);}
+}
+
+ListExpression ListExpression() :
+{
+  Expression expr = null;
+  final Expression expression;
+  final ArrayList list = new ArrayList();
+  int pos;
+  final Token listToken, rParen;
+  Token token;
+}
+{
+  listToken = <LIST> {pos = listToken.sourceEnd;}
+  try {
+    token = <LPAREN> {pos = token.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'(' expected",
+                                          "(",
+                                          e.currentToken.image,
+                                          listToken.sourceEnd,
+                                          listToken.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  [
+    expr = VariableDeclaratorId()
+    {list.add(expr);pos = expr.sourceEnd;}
+  ]
+  {if (expr == null) list.add(null);}
+  (
+    try {
+      token = <COMMA>
+      {pos = token.sourceEnd;}
+    } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                            "',' expected",
+                                            ",",
+                                            e.currentToken.image,
+                                            pos,
+                                            pos+1,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
+    }
+    [expr = VariableDeclaratorId() {list.add(expr);pos = expr.sourceEnd;}]
+  )*
+  try {
+    rParen = <RPAREN>
+    {pos = rParen.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "')' expected",
+                                          ")",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  [ <ASSIGN> expression = Expression()
+    {
+    final AbstractVariable[] vars = new AbstractVariable[list.size()];
+    list.toArray(vars);
+    return new ListExpression(vars,
+                              expression,
+                              listToken.sourceStart,
+                              expression.sourceEnd);}
+  ]
+  {
+    final AbstractVariable[] vars = new AbstractVariable[list.size()];
+    list.toArray(vars);
+    return new ListExpression(vars,listToken.sourceStart,pos);}
+}
+
+/**
+ * An echo statement.
+ * echo anyexpression (, otherexpression)*
+ */
+EchoStatement EchoStatement() :
+{
+  final ArrayList expressions = new ArrayList();
+  Expression expr;
+  Token token;
+  Token token2 = null;
+}
+{
+  token = <ECHO> expr = Expression()
+  {expressions.add(expr);}
+  (
+    <COMMA> expr = Expression()
+    {expressions.add(expr);}
+  )*
+  try {
+    token2 = <SEMICOLON>
+  } catch (ParseException e) {
+    if (e.currentToken.next.kind != 4) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                            "';' expected",
+                                            ";",
+                                            e.currentToken.image,
+                                            e.currentToken.sourceEnd,
+                                            e.currentToken.sourceEnd+1,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
+    }
+  }
+  {
+   final Expression[] exprs = new Expression[expressions.size()];
+   expressions.toArray(exprs);
+   if (token2 == null) {
+     return new EchoStatement(exprs,token.sourceStart, exprs[exprs.length-1].sourceEnd);
+   }
+   return new EchoStatement(exprs,token.sourceStart, token2.sourceEnd);
+   }
+}
+
+GlobalStatement GlobalStatement() :
+{
+   Variable expr;
+   final ArrayList vars = new ArrayList();
+   final GlobalStatement global;
+   final Token token, token2;
+   int pos;
+}
+{
+  token = <GLOBAL>
+    expr = Variable()
+    {vars.add(expr);pos = expr.sourceEnd+1;}
+  (<COMMA>
+    expr = Variable()
+    {vars.add(expr);pos = expr.sourceEnd+1;}
+  )*
+  try {
+    token2 = <SEMICOLON>
+    {pos = token2.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+    {
+    final Variable[] variables = new Variable[vars.size()];
+    vars.toArray(variables);
+    global = new GlobalStatement(currentSegment,
+                                 variables,
+                                 token.sourceStart,
+                                 pos);
+    currentSegment.add(global);
+    return global;}
+}
+
+StaticStatement StaticStatement() :
+{
+  final ArrayList vars = new ArrayList();
+  VariableDeclaration expr;
+  final Token token, token2;
+  int pos;
+}
+{
+  token = <STATIC> expr = VariableDeclarator() {vars.add(expr);pos = expr.sourceEnd+1;}
+  (
+    <COMMA> expr = VariableDeclarator() {vars.add(expr);pos = expr.sourceEnd+1;}
+  )*
+  try {
+    token2 = <SEMICOLON>
+    {pos = token2.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+    {
+    final VariableDeclaration[] variables = new VariableDeclaration[vars.size()];
+    vars.toArray(variables);
+    return new StaticStatement(variables,
+                               token.sourceStart,
+                               pos);}
+}
+
+LabeledStatement LabeledStatement() :
+{
+  final Token label;
+  Statement statement = null;
+}
+{
+  label = <IDENTIFIER>
+  try {
+    <COLON>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "':' expected",
+                                          ":",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    statement = Statement()
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "statement expected",
+                                          "statement",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+    return new LabeledStatement(label.image,statement,label.sourceStart,e.currentToken.sourceEnd);
+  }
+  {return new LabeledStatement(label.image,statement,label.sourceStart,statement.sourceEnd);}
+}
+
+/**
+ * A Block is
+ * {
+ * statements
+ * }.
+ * @return a block
+ */
+Block Block() :
+{
+  final ArrayList list = new ArrayList();
+  Statement statement;
+  final Token token, token2;
+  int pos,start;
+}
+{
+  try {
+    token = <LBRACE>
+    {pos = token.sourceEnd+1;start=token.sourceStart;}
+  } catch (ParseException e) {
+    pos = this.token.sourceEnd+1;
+    start = pos;
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'{' expected",
+                                          "{",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  ( statement = BlockStatement()
+    {
+      if (statement != null) {
+        list.add(statement);pos = statement.sourceEnd+1;
+      }
+    }
+  | statement = htmlBlock()      {if (statement != null) {
+                                    list.add(statement);
+                                    pos = statement.sourceEnd+1;
+                                  }
+                                  pos = this.token.sourceEnd+1;
+                                 }
+  )*
+  try {
+    token2 = <RBRACE>
+    {pos = token2.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'}' expected",
+                                          "}",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+  final Statement[] statements = new Statement[list.size()];
+  list.toArray(statements);
+  return new Block(statements,start,pos);}
+}
+
+Statement BlockStatement() :
+{
+  final Statement statement;
+}
+{
+  try {
+    statement = Statement()         {if (phpDocument == currentSegment) pushOnAstNodes(statement);
+                                     return statement;}
+  } catch (ParseException e) {
+    Token semicolumn = error_skipto(SEMICOLON);
+    Token nextToken = e.currentToken.next;
+    if (nextToken == semicolumn) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "statement expected",
+                                            "statement",
+                                            nextToken.image,
+                                            nextToken.sourceEnd,
+                                            semicolumn.sourceStart,
+                                            nextToken.endLine,
+                                            semicolumn.beginLine,
+                                            nextToken.endColumn,
+                                            semicolumn.beginColumn));
+    } else {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "statement expected",
+                                            "statement",
+                                            nextToken.image,
+                                            nextToken.sourceEnd,
+                                            nextToken.sourceStart,
+                                            nextToken.endLine,
+                                            nextToken.beginLine,
+                                            nextToken.endColumn,
+                                            nextToken.beginColumn));
+    }
+    return null;
+  }
+/*  } catch (ParseException e) {
+    errorMessage = "unexpected token : '"+ e.currentToken.image +"', a statement was expected";
+    errorLevel   = ERROR;
+    errorStart = e.currentToken.sourceStart;
+    errorEnd   = e.currentToken.sourceEnd;
+    throw e;
+  }*/
+| statement = ClassDeclaration()  {return statement;}
+| statement = MethodDeclaration() {if (phpDocument == currentSegment) pushOnAstNodes(statement);
+                                   currentSegment.add((MethodDeclaration) statement);
+                                   ((MethodDeclaration) statement).analyzeCode();
+                                   return statement;}
+}
+
+/**
+ * A Block statement that will not contain any 'break'
+ */
+Statement BlockStatementNoBreak() :
+{
+  final Statement statement;
+}
+{
+  statement = StatementNoBreak()  {return statement;}
+| statement = ClassDeclaration()  {return statement;}
+| statement = MethodDeclaration() {currentSegment.add((MethodDeclaration) statement);
+                                   ((MethodDeclaration) statement).analyzeCode();
+                                   return statement;}
+}
+
+/**
+ * used only by ForInit()
+ */
+Expression[] LocalVariableDeclaration() :
+{
+  final ArrayList list = new ArrayList();
+  Expression var;
+}
+{
+  var = Expression()
+  {list.add(var);}
+  ( <COMMA> var = Expression() {list.add(var);})*
+  {
+    final Expression[] vars = new Expression[list.size()];
+    list.toArray(vars);
+    return vars;
+  }
+}
+
+/**
+ * used only by LocalVariableDeclaration().
+ */
+VariableDeclaration LocalVariableDeclarator() :
+{
+  final Variable varName;
+  Expression initializer = null;
+}
+{
+  varName = Variable() [ <ASSIGN> initializer = Expression() ]
+  {
+   if (initializer == null) {
+    return new VariableDeclaration(currentSegment,
+                                   varName,
+                                   varName.sourceStart,
+                                   varName.sourceEnd);
+   }
+    return new VariableDeclaration(currentSegment,
+                                   varName,
+                                   initializer,
+                                   "=",
+                                   varName.sourceStart,
+                                   initializer.sourceEnd);
+  }
+}
+
+/**
+ * An empty statement.
+ * It will generate an INFO marker
+ *
+ * @return an empty statement
+ */
+EmptyStatement EmptyStatement() :
+{
+  final Token token;
+}
+{
+  token = <SEMICOLON>
+  {
+/*    fireParseMessage(new PHPParseMessageEvent(INFO,
+                                              path,
+                                              "unneeded ';'",
+                                              token.sourceStart,
+                                              token.sourceEnd,
+                                              token.beginLine,
+                                              token.endLine,
+                                              token.endColumn,
+                                              token.endColumn+1));   */
+    return new EmptyStatement(token.sourceStart,token.sourceEnd);
+  }
+}
+
+/**
+ * used only by StatementExpressionList() which is used only by ForInit() and ForStatement()
+ */
+Expression StatementExpression() :
+{
+  final Expression expr;
+  final Token operator;
+}
+{
+  expr = PreIncDecExpression() {return expr;}
+|
+  expr = PrimaryExpression()
+  [ operator = <PLUS_PLUS> {return new PostfixedUnaryExpression(expr,
+                                                                OperatorIds.PLUS_PLUS,
+                                                                operator.sourceEnd);}
+  | operator = <MINUS_MINUS> {return new PostfixedUnaryExpression(expr,
+                                                                  OperatorIds.MINUS_MINUS,
+                                                                  operator.sourceEnd);}
+  ]
+  {return expr;}
+}
+
+SwitchStatement SwitchStatement() :
+{
+  Expression variable;
+  final AbstractCase[] cases;
+  final Token switchToken,lparenToken,rparenToken;
+  int pos;
+}
+{
+  switchToken = <SWITCH> {pos = switchToken.sourceEnd+1;}
+  try {
+    lparenToken = <LPAREN>
+    {pos = lparenToken.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'(' expected",
+                                          "(",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    variable = Expression() {pos = variable.sourceEnd+1;}
+  } catch (ParseException e) {
+    if (errorMessage != null) {
+      throw e;
+    }
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "expression expected",
+                                          "expression",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+    variable = new ConstantIdentifier(SYNTAX_ERROR_CHAR,pos,pos);
+  }
+  try {
+    rparenToken = <RPAREN> {pos = rparenToken.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "')' expected",
+                                          ")",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  (  cases = switchStatementBrace()
+   | cases = switchStatementColon(switchToken.sourceStart, switchToken.sourceEnd))
+  {return new SwitchStatement(variable,
+                              cases,
+                              switchToken.sourceStart,
+                              this.token.sourceEnd);}
+}
+
+AbstractCase[] switchStatementBrace() :
+{
+  AbstractCase cas;
+  final ArrayList cases = new ArrayList();
+  Token token;
+  int pos;
+}
+{
+  token = <LBRACE> {pos = token.sourceEnd;}
+ ( cas = switchLabel0() {cases.add(cas);pos = cas.sourceEnd;})*
+  try {
+    token = <RBRACE>
+    {pos = token.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'}' expected",
+                                          "}",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+    final AbstractCase[] abcase = new AbstractCase[cases.size()];
+    cases.toArray(abcase);
+    return abcase;
+  }
+}
+
+/**
+ * A Switch statement with : ... endswitch;
+ * @param start the begin offset of the switch
+ * @param end the end offset of the switch
+ */
+AbstractCase[] switchStatementColon(final int start, final int end) :
+{
+  AbstractCase cas;
+  final ArrayList cases = new ArrayList();
+  Token token;
+  int pos;
+}
+{
+  token = <COLON> {pos = token.sourceEnd;}
+  {
+    fireParseMessage(new PHPParseMessageEvent(INFO,
+                                              path,
+                                              "Ugly syntax detected, you should switch () {...} instead of switch (): ... enswitch;",
+                                              start,
+                                              end,
+                                              token.beginLine,
+                                              token.endLine,
+                                              token.beginColumn,
+                                              token.endColumn));
+  }
+  ( cas = switchLabel0() {cases.add(cas);pos = cas.sourceEnd;})*
+  try {
+    token = <ENDSWITCH> {pos = token.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'endswitch' expected",
+                                          "endswitch",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    token = <SEMICOLON> {pos = token.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+    final AbstractCase[] abcase = new AbstractCase[cases.size()];
+    cases.toArray(abcase);
+    return abcase;
+  }
+}
+
+AbstractCase switchLabel0() :
+{
+  final Expression expr;
+  Statement statement;
+  final ArrayList stmts = new ArrayList();
+  final Token token = this.token;
+  final int start = this.token.next.sourceStart;
+}
+{
+  expr = SwitchLabel()
+  ( statement = BlockStatementNoBreak() {stmts.add(statement);}
+  | statement = htmlBlock()             {if (statement != null) {stmts.add(statement);}}
+  | statement = BreakStatement()        {stmts.add(statement);})*
+  //[ statement = BreakStatement()        {stmts.add(statement);}]
+  {
+    final int listSize = stmts.size();
+    final Statement[] stmtsArray = new Statement[listSize];
+    stmts.toArray(stmtsArray);
+    if (expr == null) {//it's a default
+      final int end = this.token.next.sourceStart;
+      return new DefaultCase(stmtsArray,start,end);
+    }
+    if (listSize != 0) {
+      return new Case(expr,stmtsArray,expr.sourceStart,stmtsArray[listSize-1].sourceEnd);
+    } else {
+      return new Case(expr,stmtsArray,expr.sourceStart,expr.sourceEnd);
+    }
+  }
+}
+
+/**
+ * A SwitchLabel.
+ * case Expression() :
+ * default :
+ * @return the if it was a case and null if not
+ */
+Expression SwitchLabel() :
+{
+  final Expression expr;
+}
+{
+  token = <CASE>
+  try {
+    expr = Expression()
+  } catch (ParseException e) {
+    if (errorMessage != null) throw e;
+    errorMessage = "expression expected after 'case' keyword";
+    errorLevel   = ERROR;
+    errorStart = token.sourceEnd;
+    errorEnd   = token.sourceEnd +1;
+    throw e;
+  }
+  try {
+    token = <COLON>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "':' expected",
+                                          ":",
+                                          e.currentToken.image,
+                                          expr.sourceEnd,
+                                          expr.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return expr;}
+|
+  token = <_DEFAULT>
+  try {
+    <COLON>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "':' expected",
+                                          ":",
+                                          e.currentToken.image,
+                                          token.sourceEnd,
+                                          token.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return null;}
+}
+
+Break BreakStatement() :
+{
+  Expression expression = null;
+  final Token token, token2;
+  int pos;
+}
+{
+  token = <BREAK> {pos = token.sourceEnd+1;}
+  [ expression = Expression() {pos = expression.sourceEnd+1;}]
+  try {
+    token2 = <SEMICOLON>
+    {pos = token2.sourceEnd;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          pos,
+                                          pos+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return new Break(expression, token.sourceStart, pos);}
+}
+
+IfStatement IfStatement() :
+{
+  final Expression condition;
+  final IfStatement ifStatement;
+  Token token;
+}
+{
+  token = <IF> condition = Condition("if")
+  ifStatement = IfStatement0(condition,token.sourceStart,token.sourceEnd)
+  {return ifStatement;}
+}
+
+
+Expression Condition(final String keyword) :
+{
+  final Expression condition;
+}
+{
+  try {
+    <LPAREN>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'(' expected",
+                                          "(",
+                                          e.currentToken.image,
+                                          this.token.sourceEnd,
+                                          this.token.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  condition = Expression()
+  try {
+     <RPAREN>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "')' expected",
+                                          ")",
+                                          e.currentToken.image,
+                                          condition.sourceEnd,
+                                          condition.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {return condition;}
+}
+
+IfStatement IfStatement0(final Expression condition, final int start,final int end) :
+{
+  Statement statement = null;
+  final Statement stmt;
+  final Statement[] statementsArray;
+  ElseIf elseifStatement;
+  Else elseStatement = null;
+  final ArrayList stmts;
+  final ArrayList elseIfList = new ArrayList();
+  final ElseIf[] elseIfs;
+  int pos = jj_input_stream.getPosition();
+  final int endStatements;
+  Token token;
+}
+{
+  token = <COLON>
+  {stmts = new ArrayList();}
+  (  statement = Statement() {stmts.add(statement);}
+   | statement = htmlBlock() {if (statement != null) {stmts.add(statement);}}
+  )*
+   {endStatements = (statement == null) ? token.sourceEnd : statement.sourceEnd;}
+   (elseifStatement = ElseIfStatementColon() {elseIfList.add(elseifStatement);})*
+   [elseStatement = ElseStatementColon()]
+
+  {
+      fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                path,
+                                                "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
+                                                token.sourceStart,
+                                                token.sourceEnd,
+                                                token.beginLine,
+                                                token.endLine,
+                                                token.beginColumn,
+                                                token.endColumn));
+  }
+  try {
+    <ENDIF>
+  } catch (ParseException e) {
+    errorMessage = "'endif' expected";
+    errorLevel   = ERROR;
+    errorStart = e.currentToken.sourceStart;
+    errorEnd   = e.currentToken.sourceEnd;
+    throw e;
+  }
+  try {
+    <SEMICOLON>
+  } catch (ParseException e) {
+    errorMessage = "';' expected after 'endif' keyword";
+    errorLevel   = ERROR;
+    errorStart = e.currentToken.sourceStart;
+    errorEnd   = e.currentToken.sourceEnd;
+    throw e;
+  }
+    {
+    elseIfs = new ElseIf[elseIfList.size()];
+    elseIfList.toArray(elseIfs);
+    if (stmts.size() == 1) {
+      return new IfStatement(condition,
+                             (Statement) stmts.get(0),
+                              elseIfs,
+                              elseStatement,
+                              pos,
+                              jj_input_stream.getPosition());
+    } else {
+      statementsArray = new Statement[stmts.size()];
+      stmts.toArray(statementsArray);
+      return new IfStatement(condition,
+                             new Block(statementsArray,pos,endStatements),
+                             elseIfs,
+                             elseStatement,
+                             pos,
+                             jj_input_stream.getPosition());
+    }
+    }
+
+|
+  (stmt = Statement() | stmt = htmlBlock())
+  ( LOOKAHEAD(1) elseifStatement = ElseIfStatement() {elseIfList.add(elseifStatement);})*
+  [ LOOKAHEAD(1)
+    <ELSE>
+    try {
+      {pos = jj_input_stream.getPosition();}
+      statement = Statement()
+      {elseStatement = new Else(statement,pos,jj_input_stream.getPosition());}
+    } catch (ParseException e) {
+      if (errorMessage != null) {
+        throw e;
+      }
+      errorMessage = "unexpected token '"+e.currentToken.next.image+"', a statement was expected";
+      errorLevel   = ERROR;
+      errorStart = e.currentToken.sourceStart;
+      errorEnd   = e.currentToken.sourceEnd;
+      throw e;
+    }
+  ]
+  {
+    elseIfs = new ElseIf[elseIfList.size()];
+    elseIfList.toArray(elseIfs);
+    return new IfStatement(condition,
+                           stmt,
+                           elseIfs,
+                           elseStatement,
+                           pos,
+                           jj_input_stream.getPosition());}
+}
+
+ElseIf ElseIfStatementColon() :
+{
+  final Expression condition;
+  Statement statement;
+  final ArrayList list = new ArrayList();
+  final Token elseifToken;
+}
+{
+  elseifToken = <ELSEIF> condition = Condition("elseif")
+  <COLON> (  statement = Statement() {list.add(statement);}
+           | statement = htmlBlock() {if (statement != null) {list.add(statement);}})*
+  {
+  final int sizeList = list.size();
+  final Statement[] stmtsArray = new Statement[sizeList];
+  list.toArray(stmtsArray);
+  return new ElseIf(condition,stmtsArray ,
+                    elseifToken.sourceStart,
+                    stmtsArray[sizeList-1].sourceEnd);}
+}
+
+Else ElseStatementColon() :
+{
+  Statement statement;
+  final ArrayList list = new ArrayList();
+  final Token elseToken;
+}
+{
+  elseToken = <ELSE> <COLON> (  statement = Statement() {list.add(statement);}
+                  | statement = htmlBlock() {if (statement != null) {list.add(statement);}})*
+  {
+  final int sizeList = list.size();
+  final Statement[] stmtsArray = new Statement[sizeList];
+  list.toArray(stmtsArray);
+  return new Else(stmtsArray,elseToken.sourceStart,stmtsArray[sizeList-1].sourceEnd);}
+}
+
+ElseIf ElseIfStatement() :
+{
+  final Expression condition;
+  //final Statement statement;
+  final Token elseifToken;
+  final Statement[] statement = new Statement[1];
+}
+{
+  elseifToken = <ELSEIF> condition = Condition("elseif") statement[0] = Statement()
+  {
+  return new ElseIf(condition,statement,elseifToken.sourceStart,statement[0].sourceEnd);}
+}
+
+WhileStatement WhileStatement() :
+{
+  final Expression condition;
+  final Statement action;
+  final Token whileToken;
+}
+{
+  whileToken = <WHILE>
+    condition = Condition("while")
+    action    = WhileStatementAction(whileToken.sourceStart,whileToken.sourceEnd)
+    {return new WhileStatement(condition,action,whileToken.sourceStart,action.sourceEnd);}
+}
+
+Statement WhileStatementAction(final int start, final int end) :
+{
+  Statement statement;
+  final ArrayList stmts = new ArrayList();
+  final int pos = jj_input_stream.getPosition();
+  Token token;
+}
+{
+  token = <COLON> (statement = Statement() {stmts.add(statement);})*
+  {
+        fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                  path,
+                                                  "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
+                                                  start,
+                                                  end,
+                                                  token.beginLine,
+                                                  token.endLine,
+                                                  token.beginColumn,
+                                                  token.endColumn));
+  }
+  try {
+    <ENDWHILE>
+  } catch (ParseException e) {
+    errorMessage = "'endwhile' expected";
+    errorLevel   = ERROR;
+    errorStart = e.currentToken.sourceStart;
+    errorEnd   = e.currentToken.sourceEnd;
+    throw e;
+  }
+  try {
+    <SEMICOLON>
+    {
+    final Statement[] stmtsArray = new Statement[stmts.size()];
+    stmts.toArray(stmtsArray);
+    return new Block(stmtsArray,pos,jj_input_stream.getPosition());}
+  } catch (ParseException e) {
+    errorMessage = "';' expected after 'endwhile' keyword";
+    errorLevel   = ERROR;
+    errorStart = e.currentToken.sourceStart;
+    errorEnd   = e.currentToken.sourceEnd;
+    throw e;
+  }
+|
+  statement = Statement()
+  {return statement;}
+}
+
+DoStatement DoStatement() :
+{
+  final Statement action;
+  final Expression condition;
+  final Token token;
+  Token token2 = null;
+}
+{
+  token = <DO> action = Statement() <WHILE> condition = Condition("while")
+  try {
+    token2 = <SEMICOLON>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          condition.sourceEnd,
+                                          condition.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+    if (token2 == null) {
+      return new DoStatement(condition,action,token.sourceStart,condition.sourceEnd);
+    }
+    return new DoStatement(condition,action,token.sourceStart,token2.sourceEnd);
+  }
+}
+
+ForeachStatement ForeachStatement() :
+{
+  Statement statement = null;
+  Expression expression = null;
+  ArrayVariableDeclaration variable = null;
+  Token foreachToken;
+  Token lparenToken = null;
+  Token asToken = null;
+  Token rparenToken = null;
+  int pos;
+}
+{
+  foreachToken = <FOREACH>
+  try {
+    lparenToken = <LPAREN>
+    {pos = lparenToken.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'(' expected",
+                                          "(",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+    {pos = foreachToken.sourceEnd+1;}
+  }
+  try {
+    expression = Expression()
+    {pos = expression.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "variable expected",
+                                          "variable",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    asToken = <AS>
+    {pos = asToken.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'as' expected",
+                                          "as",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    variable = ArrayVariable()
+    {pos = variable.sourceEnd+1;}
+  } catch (ParseException e) {
+    if (errorMessage != null) throw e;
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "variable expected",
+                                          "variable",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    rparenToken = <RPAREN>
+    {pos = rparenToken.sourceEnd+1;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "')' expected",
+                                          ")",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  try {
+    statement = Statement()
+    {pos = statement.sourceEnd+1;}
+  } catch (ParseException e) {
+    if (errorMessage != null) throw e;
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "statement expected",
+                                          "statement",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+   return new ForeachStatement(expression,
+                               variable,
+                               statement,
+                               foreachToken.sourceStart,
+                               pos);}
+
+}
+
+/**
+ * a for declaration.
+ * @return a node representing the for statement
+ */
+ForStatement ForStatement() :
+{
+final Token token,tokenEndFor,token2,tokenColon;
+int pos;
+Expression[] initializations = null;
+Expression condition = null;
+Expression[] increments = null;
+Statement action;
+final ArrayList list = new ArrayList();
+}
+{
+  token = <FOR>
+  try {
+    <LPAREN>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'(' expected",
+                                          "(",
+                                          e.currentToken.image,
+                                          token.sourceEnd,
+                                          token.sourceEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+     [ initializations = ForInit() ] <SEMICOLON>
+     [ condition = Expression() ] <SEMICOLON>
+     [ increments = StatementExpressionList() ] <RPAREN>
+    (
+      action = Statement()
+      {return new ForStatement(initializations,
+                               condition,
+                               increments,
+                               action,
+                               token.sourceStart,
+                               action.sourceEnd);}
+    |
+      tokenColon = <COLON> {pos = tokenColon.sourceEnd+1;}
+      (action = Statement() {list.add(action);pos = action.sourceEnd+1;})*
+      {
+        fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                  path,
+                                                  "Ugly syntax detected, you should for () {...} instead of for (): ... endfor;",
+                                                  tokenColon.sourceStart,
+                                                  tokenColon.sourceEnd,
+                                                  tokenColon.beginLine,
+                                                  tokenColon.endLine,
+                                                  tokenColon.beginColumn,
+                                                  tokenColon.endColumn));
+      }
+      try {
+        tokenEndFor = <ENDFOR>
+        {pos = tokenEndFor.sourceEnd+1;}
+      } catch (ParseException e) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "'endfor' expected",
+                                              "endfor",
+                                              e.currentToken.image,
+                                              pos,
+                                              pos+1,
+                                              e.currentToken.beginLine,
+                                              e.currentToken.endLine,
+                                              e.currentToken.endColumn,
+                                              e.currentToken.endColumn+1));
+      }
+      try {
+        token2 = <SEMICOLON>
+        {pos = token2.sourceEnd+1;}
+      } catch (ParseException e) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "';' expected",
+                                              ";",
+                                              e.currentToken.image,
+                                              pos,
+                                              pos+1,
+                                              e.currentToken.beginLine,
+                                              e.currentToken.endLine,
+                                              e.currentToken.endColumn,
+                                              e.currentToken.endColumn+1));
+      }
+      {
+      final Statement[] stmtsArray = new Statement[list.size()];
+      list.toArray(stmtsArray);
+      return new ForStatement(initializations,
+                              condition,
+                              increments,
+                              new Block(stmtsArray,
+                                        stmtsArray[0].sourceStart,
+                                        stmtsArray[stmtsArray.length-1].sourceEnd),
+                              token.sourceStart,
+                              pos);}
+    )
+}
+
+Expression[] ForInit() :
+{
+  final Expression[] exprs;
+}
+{
+  LOOKAHEAD(LocalVariableDeclaration())
+  exprs = LocalVariableDeclaration()
+  {return exprs;}
+|
+  exprs = StatementExpressionList()
+  {return exprs;}
+}
+
+Expression[] StatementExpressionList() :
+{
+  final ArrayList list = new ArrayList();
+  final Expression expr;
+}
+{
+  expr = Expression()   {list.add(expr);}
+  (<COMMA> Expression() {list.add(expr);})*
+  {
+    final Expression[] exprsArray = new Expression[list.size()];
+    list.toArray(exprsArray);
+    return exprsArray;
+  }
+}
+
+Continue ContinueStatement() :
+{
+  Expression expr = null;
+  final Token token;
+  Token token2 = null;
+}
+{
+  token = <CONTINUE> [ expr = Expression() ]
+  try {
+    token2 = <SEMICOLON>
+  } catch (ParseException e) {
+    int errorStart, errorEnd;
+    if (expr == null) {
+      errorStart = token.sourceEnd;
+      errorEnd   = token.sourceEnd+1;
+    } else {
+      errorStart = expr.sourceEnd;
+      errorEnd   = expr.sourceEnd+1;
+    }
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          errorStart,
+                                          errorEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+    if (token2 == null) {
+      if (expr == null) {
+        return new Continue(expr,token.sourceStart,token.sourceEnd);
+      }
+      return new Continue(expr,token.sourceStart,expr.sourceEnd);
+    }
+    return new Continue(expr,token.sourceStart,token2.sourceEnd);
+  }
+}
+
+/**
+ * A return statement.
+ * * It's return [expression];
+ * @return a ReturnStatement
+ */
+ReturnStatement ReturnStatement() :
+{
+  Statement expr = null;
+  final Token token;
+  Token token2 = null;
+}
+{
+  token = <RETURN>
+(
+   expr = IncludeStatement()
+  {
+    return new ReturnStatement(expr,token.sourceStart,expr.sourceEnd);
+  }
+|
+
+  [ expr = Expression()]
+  try {
+    token2 = <SEMICOLON>
+  } catch (ParseException e) {
+    int errorStart, errorEnd;
+    if (expr == null) {
+      errorStart = token.sourceEnd;
+      errorEnd   = token.sourceEnd+1;
+    } else {
+      errorStart = expr.sourceEnd;
+      errorEnd   = expr.sourceEnd+1;
+    }
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          errorStart,
+                                          errorEnd+1,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+    {
+      if (token2 == null) {
+        if (expr == null) {
+          return new ReturnStatement(expr,token.sourceStart,token.sourceEnd);
+        }
+        return new ReturnStatement(expr,token.sourceStart,expr.sourceEnd);
+      }
+      return new ReturnStatement(expr,token.sourceStart,token2.sourceEnd);
+    }
+    )
+}
+
