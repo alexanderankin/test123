@@ -462,7 +462,7 @@ public class FtpVFS extends VFS
 			client.dataPort();
 			
 		// See if we should use Binary mode to transfer files. 
-		if (jEdit.getBooleanProperty("ftp.useBinary", true))
+		if (jEdit.getBooleanProperty("vfs.ftp.binary"))
 		{
 			//Go with Binary
             		client.representationType(com.fooware.net.FtpClient.IMAGE_TYPE);
