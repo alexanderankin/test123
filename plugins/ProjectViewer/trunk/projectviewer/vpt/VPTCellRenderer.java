@@ -142,12 +142,12 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			if (fm == null)
 				fm = getFontMetrics(getFont());
 			int x, y;
-			y = fm.getAscent() + 2;
+			y = getHeight() - 3;
 			x = (getIcon() == null)
 					? 0
 					: getIcon().getIconWidth() + getIconTextGap();
 			g.setColor(getForeground());
-			g.drawLine(x,y,x + fm.stringWidth(getText()),y);
+			g.drawLine(x, y, x + fm.stringWidth(getText()), y);
 		}
 
 		super.paintComponent(g);

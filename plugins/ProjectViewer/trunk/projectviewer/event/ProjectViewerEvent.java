@@ -21,6 +21,8 @@ package projectviewer.event;
 import java.util.EventObject;
 
 import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTGroup;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
 /**
@@ -32,6 +34,7 @@ import projectviewer.vpt.VPTProject;
 public final class ProjectViewerEvent extends EventObject {
 
 	//{{{ Private Members
+	private VPTGroup oldParent;
 	private VPTProject project;
 	private ProjectViewer viewer;
 	//}}}
@@ -69,6 +72,38 @@ public final class ProjectViewerEvent extends EventObject {
 	}
 
 	/**
+	 *	Constructs an event to notify listeners that a node was moved to
+	 *	another group.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public ProjectViewerEvent(VPTNode src, VPTGroup oldParent) {
+		super(src);
+		this.oldParent = oldParent;
+	}
+
+	/**
+	 *	Constructs and event to notify the listeners of the addition or
+	 *	removal of a group.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public ProjectViewerEvent(VPTGroup group) {
+		super(group);
+	}
+
+	/**
+	 *	Constructs and event to notify the listeners of the activation of
+	 *	a group in the given view.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public ProjectViewerEvent(VPTGroup group, ProjectViewer viewer) {
+		super(group);
+		this.viewer = viewer;
+	}
+
+	/**
 	 *	Returns the {@link ProjectViewer}.
 	 *
 	 *	@return    The viewer where the event occurred.
@@ -86,6 +121,16 @@ public final class ProjectViewerEvent extends EventObject {
 	 */
 	public VPTProject getProject() {
 		return project;
+	}
+
+	/**
+	 *	When firing a noveMoved() event, returns the old parent of the
+	 *	affected node (which can be retrieved by getSource()).
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public VPTGroup getOldParent() {
+		return oldParent;
 	}
 
 }

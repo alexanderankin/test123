@@ -32,6 +32,8 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 
+import projectviewer.PVActions;
+import projectviewer.config.AppLauncher;
 import projectviewer.config.ProjectViewerConfig;
 //}}}
 
@@ -49,7 +51,7 @@ public class VPTFile extends VPTNode {
 	private final static Icon fileOpenedIcon 	= GUIUtilities.loadIcon("OpenFile.png");
 	private static Icon noFileIcon				= null;
 
-	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+	private static final AppLauncher appList  = AppLauncher.getInstance();
 	private static FileSystemView fsView;
 
 	//}}}
@@ -79,8 +81,6 @@ public class VPTFile extends VPTNode {
 	}
 
 	//}}}
-
-	//{{{ Public methods
 
 	//{{{ +canWrite() : boolean
 	/** Returns is the underlying file is writable. */
@@ -134,7 +134,7 @@ public class VPTFile extends VPTNode {
 		if (isOpened()) {
 			baseIcon = fileOpenedIcon;
 		} else {
-			if (config.getUseSystemIcons()) {
+			if (ProjectViewerConfig.getInstance().getUseSystemIcons()) {
 				if (!loadedIcon) {
 					if (file.exists()) {
 						if (fsView == null) {
@@ -185,7 +185,13 @@ public class VPTFile extends VPTNode {
 	 *	buffer is loaded in the currently active view.
 	 */
 	public void open() {
-		jEdit.openFile(jEdit.getActiveView(), getNodePath());
+		if (ProjectViewerConfig.getInstance().getUseExternalApps()
+				&& appList.getAppName(getFile().getAbsolutePath()) != null) {
+			appList.launchApp(getFile().getAbsolutePath(), jEdit.getActiveView());
+		} else {
+			jEdit.openFile(jEdit.getActiveView(), getNodePath());
+			PVActions.requestFocus(jEdit.getActiveView().getTextArea());
+		}
 	} //}}}
 
 	//{{{ +close() : void
@@ -203,7 +209,14 @@ public class VPTFile extends VPTNode {
 		return getFile().getAbsolutePath();
 	} //}}}
 
-	//}}}
-
+	//{{{ +compareToNode(VPTNode) : int
+	/** Files are at the same level of every leaf node. */
+	public int compareToNode(VPTNode node) {
+		if (!node.getAllowsChildren()) {
+			return getName().compareTo(node.getName());
+		} else {
+			return 1;
+		}
+	} //}}}
 }
 

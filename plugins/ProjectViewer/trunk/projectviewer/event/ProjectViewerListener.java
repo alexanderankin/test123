@@ -37,5 +37,33 @@ public interface ProjectViewerListener extends EventListener {
 	/** Notifies the removal of a project. */
 	public void projectRemoved(ProjectViewerEvent evt);
 
+	/**
+	 *	Notifies the addition of a group.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public void groupAdded(ProjectViewerEvent evt);
+
+	/**
+	 *	Notifies the removal of a group.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public void groupRemoved(ProjectViewerEvent evt);
+
+	/**
+	 *	Notifies that a group has been activated.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public void groupActivated(ProjectViewerEvent evt);
+
+	/**
+	 *	Notifies that a project or group has been moved to another group.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public void nodeMoved(ProjectViewerEvent evt);
+
 }
 

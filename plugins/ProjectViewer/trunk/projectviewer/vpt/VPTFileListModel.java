@@ -19,17 +19,16 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.util.Stack;
 import java.util.ArrayList;
-import java.util.WeakHashMap;
 import java.util.Collections;
+import java.util.Stack;
+import java.util.WeakHashMap;
 
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.MiscUtilities;
 //}}}
 
 /**
@@ -51,13 +50,11 @@ import org.gjt.sp.jedit.MiscUtilities;
 public class VPTFileListModel extends DefaultTreeModel {
 
 	//{{{ Private members
-	private final static VPTNode.VPTNodeComparator COMPARATOR =
-		new VPTNode.VPTNodeComparator();
-
 	private WeakHashMap fileLists;
 
 	private Object lastParent;
 	private ArrayList lastList;
+	private ArrayList pathBuilder;
 	//}}}
 
 	//{{{ +VPTFileListModel(VPTNode) : <init>
@@ -70,6 +67,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 	public VPTFileListModel(VPTNode rootNode) {
 		super(rootNode, true);
 		fileLists = new WeakHashMap();
+		pathBuilder = new ArrayList();
 	}
 
 	//}}}
@@ -82,7 +80,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 	 */
 	public int getChildCount(Object parent) {
 		VPTNode node = (VPTNode) parent;
-		if (node.isRoot()) {
+		if (node.isGroup()) {
 			return node.getChildCount();
 		} else if (node.isProject()) {
 			return ((VPTProject)node).openableNodes.size();
@@ -103,7 +101,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 		}
 
 		VPTNode node = (VPTNode) parent;
-		if (node.isRoot()) {
+		if (node.isGroup()) {
 			return node.getChildAt(index);
 		} else if (node.isProject()) {
 			ArrayList lst = getProjectFileList((VPTProject) node);
@@ -121,10 +119,10 @@ public class VPTFileListModel extends DefaultTreeModel {
 	 */
 	public void nodeStructureChanged(TreeNode node) {
 		VPTNode n = (VPTNode) node;
-		if (!n.isRoot()) {
+		if (!n.isGroup()) {
 			VPTProject p = VPTNode.findProjectFor(n);
 			ArrayList lst = new ArrayList(p.openableNodes.values());
-			MiscUtilities.quicksort(lst, COMPARATOR);
+			Collections.sort(lst);
 			fileLists.put(p, lst);
 
 			if (lastParent == p) {
@@ -138,11 +136,11 @@ public class VPTFileListModel extends DefaultTreeModel {
 	//{{{ +getIndexOfChild(Object, Object) : int
 	public int getIndexOfChild(Object parent, Object child) {
 		if (parent == lastParent) {
-			return Collections.binarySearch(lastList, child, COMPARATOR);
+			return Collections.binarySearch(lastList, child);
 		}
 
 		VPTNode node = (VPTNode) child;
-		if (node.isRoot()) {
+		if (node.isGroup()) {
 			return super.getIndexOfChild(parent, child);
 		} else if (node.isProject()) {
 			return Collections.binarySearch(getProjectFileList((VPTProject) node), child);
@@ -158,7 +156,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 		ArrayList lst = (ArrayList) fileLists.get(p);
 		if (lst == null) {
 			lst = new ArrayList(p.openableNodes.values());
-			MiscUtilities.quicksort(lst, COMPARATOR);
+			Collections.sort(lst);
 			fileLists.put(p, lst);
 		}
 		lastList = lst;
@@ -168,39 +166,32 @@ public class VPTFileListModel extends DefaultTreeModel {
 	//{{{ +getPathToRoot(TreeNode) : TreeNode[]
 	public TreeNode[] getPathToRoot(TreeNode aNode) {
 		VPTNode n = (VPTNode) aNode;
-		if (n.isRoot()) {
-			return new TreeNode[] { n };
-		} else if (n.isProject()) {
-			if (n == getRoot()) {
-				return new TreeNode[] { n };
-			} else {
-				TreeNode[] ns = new TreeNode[2];
-				ns[0] = (TreeNode) getRoot();
-				ns[1] = n;
-				return ns;
-			}
+		if (n.isGroup() || n.isProject()) {
+			return buildPathToRoot(aNode, null);
 		} else {
 			VPTProject p = VPTNode.findProjectFor(n);
-			if (p == getRoot()) {
-				TreeNode[] ns = new TreeNode[2];
-				ns[0] = p;
-				ns[1] = n;
-				return ns;
-			} else {
-				TreeNode[] ns = new TreeNode[3];
-				ns[0] = (TreeNode) getRoot();
-				ns[1] = p;
-				ns[2] = n;
-				return ns;
-			}
+			return buildPathToRoot(p, aNode);
 		}
+	} //}}}
+
+	//{{{ -buildPathToRoot(TreeNode, TreeNode) : TreeNode[]
+	private TreeNode[] buildPathToRoot(TreeNode aNode, TreeNode child) {
+		pathBuilder.clear();
+		if (child != null)
+			pathBuilder.add(child);
+		while (aNode != getRoot()) {
+			pathBuilder.add(0, aNode);
+			aNode = aNode.getParent();
+		}
+		pathBuilder.add(0, aNode);
+		return (TreeNode[]) pathBuilder.toArray(new TreeNode[pathBuilder.size()]);
 	} //}}}
 
 	//{{{ +nodeChanged(TreeNode) : void
 	/** Handles a node changed request. */
 	public void nodeChanged(TreeNode node) {
 		VPTNode n = (VPTNode) node;
-		if (n.isRoot() || n.isProject()) {
+		if (n.isGroup() || n.isProject()) {
 			super.nodeChanged(node);
 		} else {
 			VPTProject p = VPTNode.findProjectFor(n);

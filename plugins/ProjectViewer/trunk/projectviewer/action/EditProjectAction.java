@@ -31,8 +31,12 @@ import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+
+import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTRoot;
+
 import projectviewer.config.ProjectOptions;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.importer.RootImporter;
@@ -83,44 +87,56 @@ public class EditProjectAction extends Action {
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
+		VPTGroup parent = VPTRoot.getInstance();
 		VPTNode selected = null;
 		String lookupPath = null;
+
 		VPTProject proj = null;
-
-		if (viewer != null) {
-			selected = viewer.getSelectedNode();
-			if (selected != null)
-				lookupPath = selected.getNodePath();
-			if (selected == null || !selected.isProject()) {
-				selected = viewer.getRoot();
-				if (lookupPath == null && selected.isProject())
-					lookupPath = selected.getNodePath();
-			}
-		} else if (!forceNew) {
-			proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
-		}
-
-		boolean add = false;
 		String oldName = null;
 		String oldRoot = null;
-		if (!forceNew && selected != null && !selected.isRoot()) {
-			proj = VPTNode.findProjectFor(selected);
-			oldName = proj.getName();
-			oldRoot = proj.getRootPath();
-		} else if (proj != null) {
-			add = true;
+
+		if (viewer == null) {
+			viewer = ProjectViewer.getViewer(jEdit.getActiveView());
+		}
+		if (viewer != null) {
+			VPTNode sel = viewer.getSelectedNode();
+			if (sel != null && sel.isGroup()) {
+				parent = (VPTGroup) sel;
+			}
 		}
 
+		if (!forceNew) {
+			if (viewer != null) {
+				selected = viewer.getSelectedNode();
+				if (selected != null)
+					lookupPath = selected.getNodePath();
+				if (selected == null || !selected.isProject()) {
+					selected = viewer.getRoot();
+					if (lookupPath == null && selected.isProject())
+						lookupPath = selected.getNodePath();
+				}
+				proj = VPTNode.findProjectFor(selected);
+			} else {
+				proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
+			}
+			if (proj != null) {
+				oldName = proj.getName();
+				oldRoot = proj.getRootPath();
+			}
+		}
+
+		boolean add = forceNew | (proj == null);
 		proj = ProjectOptions.run(proj, lookupPath);
+
 		if (proj != null) {
 			if (add) {
-				ProjectManager.getInstance().addProject(proj);
+				ProjectManager.getInstance().addProject(proj, parent);
 				RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
 				ipi.doImport();
 				if (viewer != null)
-					viewer.setProject(proj);
+					viewer.setRootNode(proj);
 				else
-					ProjectViewerConfig.getInstance().setLastProject(proj.getName());
+					ProjectViewerConfig.getInstance().setLastNode(proj);
 			} else {
 				if (!proj.getName().equals(oldName)) {
 					ProjectManager.getInstance().renameProject(oldName, proj.getName());
@@ -138,7 +154,16 @@ public class EditProjectAction extends Action {
 					ipi.doImport();
 				}
 				proj.firePropertiesChanged();
-				viewer.repaint();
+
+				boolean notify = true;
+				if (viewer == null) {
+					viewer = ProjectViewer.getViewer(jEdit.getActiveView());
+					notify = (viewer.getRoot().isRoot()
+								|| viewer.getRoot() == proj);
+				}
+
+				if (notify)
+					ProjectViewer.nodeChanged(proj);
 			}
 		}
 
@@ -147,9 +172,9 @@ public class EditProjectAction extends Action {
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		if (forceNew || (node != null && (node.isRoot() || node.isProject()))) {
+		if (forceNew || (node != null && (node.isGroup() || node.isProject()))) {
 			cmItem.setVisible(true);
-			((JMenuItem)cmItem).setText( (forceNew || node.isRoot()) ?
+			((JMenuItem)cmItem).setText( (forceNew || node.isGroup()) ?
 				jEdit.getProperty("projectviewer.action.add_project") :
 				jEdit.getProperty("projectviewer.action.edit_project"));
 		} else {

@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.jEdit;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTDirectory;
 
 import projectviewer.ProjectPlugin;
@@ -97,7 +98,7 @@ public final class OldConfigLoader {
 				loadProjectFromFile(p, counter);
 			}
 
-			manager.addProject(p);
+			manager.addProject(p, VPTRoot.getInstance());
 			prjName = pList.getProperty( "project." + ( ++counter ) );
 		}
 
@@ -170,7 +171,6 @@ public final class OldConfigLoader {
 		HashMap paths = new HashMap();
 
 		while (fileName != null) {
-			System.err.println("Adding: " + fileName);
 			File f = new File(fileName);
 			VPTNode parent = ensureDirAdded(p, f.getParent(), paths);
 			VPTFile vf = new VPTFile(f);

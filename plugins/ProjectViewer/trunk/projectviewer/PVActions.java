@@ -19,18 +19,26 @@
 package projectviewer;
 
 //{{{ Imports
+import java.awt.Component;
+import java.awt.Window;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Writer;
 
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.StringTokenizer;
 
+import javax.swing.JFrame;
+import javax.swing.SwingUtilities;
+
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.PluginJAR;
 
 import projectviewer.vpt.VPTFile;
@@ -92,14 +100,60 @@ public final class PVActions {
 		}
 	} //}}}
 
+	//{{{ +_focusProjectViewer(View)_ : void
+	/**
+	 *	If a project viewer window is open in the current view, make sure it's
+	 *	visible and them focus the active tree; if it's not open, open it and
+	 *	then focus the active tree. If no active tree exists in the dockable,
+	 *	focus will not be explicitly requested (even though the dockable
+	 *	will be opened if it was closed, potentially requesting the focus).
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public static void focusProjectViewer(View view) {
+		ProjectViewer pv = ProjectViewer.getViewer(view);
+		if (pv == null) {
+			jEdit.getAction("projectviewer").invoke(view);
+			pv = ProjectViewer.getViewer(view);
+		}
+
+		pv.setVisible(true);
+
+		if (pv.getCurrentTree() != null) {
+			requestFocus(pv.getCurrentTree());
+		}
+	} //}}}
+
+	//{{{ +_requestFocus(Component)_ : void
+	/**
+	 *	Requests the focus for the given component. If the component is not
+	 *	in the active window, then activates the window first, then focus
+	 *	the component.
+	 */
+	public static void requestFocus(final Component c) {
+		Window w = (Window) SwingUtilities.getAncestorOfClass(Window.class, c);
+		if (!w.isFocused()) {
+			w.show();
+		}
+
+		SwingUtilities.invokeLater(
+			new Runnable() {
+				//{{{ +run() : void
+				public void run() {
+					c.requestFocusInWindow();
+				} //}}}
+			}
+		);
+	} //}}}
+
 	//{{{ +_getCurrentProject(View)_ : VPTProject
 	/**
 	 *	Returns the active project. If no viewer is opened for the given view,
-	 *	returns the last known active project (config.getLastProject()). Is one
+	 *	returns the last known active project (config.getLastNode()). If one
 	 *	exists but is currently being used in "All Projects" mode, return null.
 	 *
 	 *	@return	The currently active project, or null if no project is active and
-	 *			ProjectViewerConfig.getLastProject() returns null.
+	 *			ProjectViewerConfig.getLastNode() returns null.
 	 */
 	public static VPTProject getCurrentProject(View view) {
 		ProjectViewer viewer = ProjectViewer.getViewer(view);
@@ -110,9 +164,8 @@ public final class PVActions {
 				return null;
 			}
 		} else {
-			String pName = ProjectViewerConfig.getInstance().getLastProject();
-			return (pName != null) ?
-					ProjectManager.getInstance().getProject(pName) : null;
+			VPTNode last = ProjectViewerConfig.getInstance().getLastNode();
+			return (last != null && last.isProject()) ? (VPTProject)last : null;
 		}
 	} //}}}
 
@@ -148,7 +201,7 @@ public final class PVActions {
 
 	} //}}}
 
-	//{{{ +_pvActionWrapper(Action, View)_ : void
+	//{{{ +_pvActionWrapper(Action, View, boolean)_ : void
 	/**
 	 *	<p>Used to execute a PV action from the jEdit action mechanism. This is
 	 *	meant to be called from beanshell code in the action.xml file. It
@@ -223,6 +276,37 @@ public final class PVActions {
 			return objs;
 		}
 		return null;
+	} //}}}
+
+	//{{{ +_writeXML(String, Writer)_ : void
+	/**
+	 *	Writes the given String to the output, taking care to escape any
+	 *	caharcters that need escaping.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public static void writeXML(String str, Writer out) throws IOException {
+		for (int i = 0; i < str.length(); i++) {
+			switch (str.charAt(i)) {
+				case '<':
+					out.write("&lt;");
+					break;
+				case '>':
+					out.write("&gt;");
+					break;
+				case '&':
+					out.write("&amp;");
+					break;
+				case '"':
+					out.write("&quot;");
+					break;
+				case '\'':
+					out.write("&apos;");
+					break;
+				default:
+					out.write(str.charAt(i));
+			}
+		}
 	} //}}}
 
 	//{{{ Base64 CoDec (See RFC 3548)

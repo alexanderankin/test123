@@ -60,8 +60,6 @@ public class VPTDirectory extends VPTNode {
 
 	//}}}
 
-	//{{{ Public methods
-
 	//{{{ canWrite() method
 	/** Returns is the underlying file is writable. */
 	public boolean canWrite() {
@@ -106,7 +104,7 @@ public class VPTDirectory extends VPTNode {
 	//{{{ getNodePath()
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
-		return getFile().getAbsolutePath();
+		return (getFile().exists()) ? getFile().getAbsolutePath() : getName();
 	} //}}}
 
 	//{{{ setFile(File) method
@@ -116,7 +114,17 @@ public class VPTDirectory extends VPTNode {
 		setName(f.getName());
 	} //}}}
 
-	//}}}
+	//{{{ +compareToNode(VPTNode) : int
+	/** Directories have precedende over openable nodes... */
+	public int compareToNode(VPTNode node) {
+		if (node.canOpen()) {
+			return -1;
+		} else if (node.isDirectory()) {
+			return getName().compareTo(node.getName());
+		} else {
+			return -1 * node.compareToNode(this);
+		}
+	} //}}}
 
 }
 

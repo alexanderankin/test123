@@ -50,6 +50,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	//{{{ Instance variables
 	private ProjectViewerConfig config;
 
+	private JCheckBox useExternalApps;
 	private JCheckBox closeFiles;
 	private JCheckBox rememberOpen;
 	private JCheckBox deleteNotFoundFiles;
@@ -89,6 +90,12 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 
 		//{{{ general options
 		addSeparator("options.projectviewer.general-opt.label");
+
+		// Checkbox: "use external apps by default"
+		useExternalApps = new JCheckBox(jEdit.getProperty("projectviewer.options.use_external_apps"));
+		useExternalApps.setToolTipText(jEdit.getProperty("projectviewer.options.use_external_apps.tooltip"));
+		useExternalApps.setSelected(config.getUseExternalApps());
+		addComponent(useExternalApps);
 
 		// Checkbox: "close project files on switch"
 		closeFiles = new JCheckBox(jEdit.getProperty("projectviewer.options.close_on_change"));
@@ -176,7 +183,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		showCompactTree.setSelected(config.getShowCompactTree());
 		addComponent(showCompactTree);
 
-		
+
 		if (OperatingSystem.hasJava14()) {
 			useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
 			useSystemIcons.setSelected(config.getUseSystemIcons());
@@ -229,6 +236,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	//{{{ _save() method
 	/** Saves the options. */
 	protected void _save() {
+		config.setUseExternalApps(useExternalApps.isSelected());
 		config.setCloseFiles(closeFiles.isSelected());
 		config.setRememberOpen(rememberOpen.isSelected());
 		config.setDeleteNotFoundFiles(deleteNotFoundFiles.isSelected());

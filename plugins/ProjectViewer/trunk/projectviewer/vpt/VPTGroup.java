@@ -28,43 +28,57 @@ import org.gjt.sp.jedit.GUIUtilities;
 //}}}
 
 /**
- *	The root of the tree. Aside from being the root of the project tree, it
- *	provides methods for manipulating the projects and persisting data
- *	to the disk.
+ *	A VPTGroup is a container for groups and projects.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
+ *	@since		PV 2.1.0
  */
-public class VPTRoot extends VPTGroup {
+public class VPTGroup extends VPTNode {
 
-	//{{{ Static Members
-	private static VPTRoot instance;
-
-	//{{{ +_getInstance()_ : VPTRoot
-	/**	Returns an instance of the VPTRoot. */
-	public synchronized static VPTRoot getInstance() {
-		if (instance == null)
-			instance = new VPTRoot();
-		return instance;
-	} //}}}
-
+	//{{{ Constants
+	private final static Icon dirClosedIcon = GUIUtilities.loadIcon("Folder.png");
+	private final static Icon dirOpenedIcon = GUIUtilities.loadIcon("OpenFolder.png");
 	//}}}
 
-	//{{{ -VPTRoot() : <init>
-	private VPTRoot() {
-		super(jEdit.getProperty("projectviewer.all_projects"));
+	//{{{ +VPTGroup(String) : <init>
+	public VPTGroup(String name) {
+		super(name);
+	} //}}}
+
+	//{{{ +getIcon(boolean) : Icon
+	/**
+	 *	Returns the icon to be shown on the tree next to the node name.
+	 *
+	 *	@param	expanded	If the node is currently expanded or not.
+	 */
+	public Icon getIcon(boolean expanded) {
+		return (expanded ? dirOpenedIcon : dirClosedIcon);
 	} //}}}
 
 	//{{{ +getNodePath() : String
-	/**	Returns File.separator. */
+	/**	Returns the path to this group in the group tree. */
 	public String getNodePath() {
-		return File.separator;
+		if (getParent() != null) {
+			return ((VPTNode)getParent()).getNodePath() + getName();
+		}
+		return getName() + File.separator;
 	} //}}}
 
 	//{{{ +compareToNode(VPTNode) : int
-	/** The root is always the first node. Period. */
-	public int compareToNode(VPTNode node) {
-		return -1;
+	public int compareToNode(VPTNode n) {
+		if (!n.isGroup()) {
+			return -1;
+		} else if (n.isRoot()) {
+			return 1;
+		} else {
+			return getName().compareTo(n.getName());
+		}
+	} //}}}
+
+	//{{{ +toString() : String
+	public String toString() {
+		return "VPTGroup [" + getName() + "]";
 	} //}}}
 
 }

@@ -75,8 +75,6 @@ public class VFSFile extends VPTNode {
 		this.loadedIcon = false;
 	} //}}}
 
-	//{{{ Public methods
-
 	//{{{ +canWrite() : boolean
 	/**
 	 *	Returns true. Since we can't check (easily) if we can or cannot write
@@ -174,6 +172,7 @@ public class VFSFile extends VPTNode {
 	 */
 	public void open() {
 		jEdit.openFile(jEdit.getActiveView(), getNodePath());
+		jEdit.getActiveView().getTextArea().requestFocus();
 	} //}}}
 
 	//{{{ +close() : void
@@ -200,8 +199,6 @@ public class VFSFile extends VPTNode {
 			return getName().compareTo(node.getName());
 		}
 	} //}}}
-
-	//}}}
 
 }
 

@@ -19,13 +19,14 @@
 package projectviewer;
 
 //{{{ Imports
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.TreeMap;
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Stack;
+import java.util.TreeMap;
 
 import java.io.File;
 import java.io.Writer;
@@ -45,6 +46,8 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
+import projectviewer.vpt.VPTGroup;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
 import projectviewer.config.ProjectViewerConfig;
@@ -72,6 +75,8 @@ public final class ProjectManager {
 	private final static String PROJECT_ELEMENT	= "project";
 	private final static String PRJ_NAME		= "name";
 	private final static String PRJ_FILE		= "file";
+	private final static String GRP_ELEMENT		= "group";
+	private final static String GRP_NAME		= "name";
 
 	private static final ProjectManager manager = new ProjectManager();
 
@@ -141,8 +146,9 @@ public final class ProjectManager {
 			save();
 
 			ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-			if (config.getLastProject()!= null && !projects.containsKey(config.getLastProject())) {
-				config.setLastProject(null);
+			if (config.getLastNode() != null
+					&& !projects.containsKey(config.getLastNode().getName())) {
+				config.setLastNode(VPTRoot.getInstance());
 			}
 
 			// clear the list
@@ -160,12 +166,6 @@ public final class ProjectManager {
 			parser.parse(null, null, new InputStreamReader(cfg));
 		} catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
-		}
-
-		// Projects loaded, add all of them to the root node
-		VPTRoot root = VPTRoot.getInstance();
-		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
-			root.add(((Entry)projects.get(it.next())).project);
 		}
 
 		fireDynamicMenuChange();
@@ -206,11 +206,7 @@ public final class ProjectManager {
 				e.fileName = createFileName(p.getName());
 				// since we're saving the project for the first time, let's be
 				// paranoid and save all configuration along with it
-				try{
-					saveProjectList();
-				} catch (IOException ioe) {
-					Log.log(Log.ERROR, this, ioe);
-				}
+				saveProjectList();
 			}
 			try {
 				ProjectPersistenceManager.save(p, e.fileName);
@@ -235,11 +231,7 @@ public final class ProjectManager {
 			if (e.fileName != null) {
 				new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
 				// project list changed, save "global" data.
-				try {
-					saveProjectList();
-				} catch (IOException ioe) {
-					Log.log(Log.ERROR, this, ioe);
-				}
+				saveProjectList();
 			}
 			projects.remove(p.getName());
 		}
@@ -266,17 +258,16 @@ public final class ProjectManager {
 		ProjectViewer.nodeChanged(e.project);
 	} //}}}
 
-	//{{{ +addProject(VPTProject) : void
+	//{{{ +addProject(VPTProject, VPTGroup) : void
 	/** Adds a project to the list. */
-	public void addProject(VPTProject p) {
+	public void addProject(VPTProject p, VPTGroup parent) {
 		Entry e = new Entry();
 		e.project = p;
 		e.isLoaded = true;
 		projects.put(p.getName(), e);
 
-		VPTRoot root = VPTRoot.getInstance();
-		ProjectViewer.insertNodeInto(p, root);
-		ProjectViewer.nodeStructureChangedFlat(root);
+		ProjectViewer.insertNodeInto(p, parent);
+		ProjectViewer.nodeStructureChangedFlat(parent);
 		ProjectViewer.updateProjectCombos();
 		ProjectViewer.fireProjectAdded(this, p);
 
@@ -412,10 +403,32 @@ public final class ProjectManager {
 		}
 	} //}}}
 
-	//{{{ -fireDynamicMenuChange() : void
+	//{{{ +fireDynamicMenuChange() : void
 	public void fireDynamicMenuChange() {
 		DynamicMenuChanged msg = new DynamicMenuChanged("plugin.projectviewer.ProjectPlugin.menu");
 		EditBus.send(msg);
+	} //}}}
+
+	//{{{ +saveProjectList() : void
+	/**
+	 *	Saves the "global" data for the projects: the list of projects and
+	 *	the file names where each project data is stored.
+	 *
+	 *	@since	PV 2.1.0 (was private before)
+	 */
+	public void saveProjectList() {
+		// save the global configuration
+		OutputStreamWriter out = null;
+		try {
+			OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_FILE);
+			out = new OutputStreamWriter(outs, "UTF-8");
+			writeXMLHeader("UTF-8", out);
+			writeGroup(PROJECT_ROOT, VPTRoot.getInstance(), out);
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, this, ioe);
+		} finally {
+			if (out != null) try  { out.close(); } catch (IOException ioe) { }
+		}
 	} //}}}
 
 	//{{{ Private Stuff
@@ -447,77 +460,44 @@ public final class ProjectManager {
 		return f.getName();
 	} //}}}
 
-	//{{{ -saveProjectList() : void
-	/**
-	 *	Saves the "global" data for the projects: the list of projects and
-	 *	the file names where each project data is stored.
-	 */
-	private void saveProjectList() throws IOException {
-		// save the global configuration
-		OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_FILE);
-		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF-8");
-		writeXMLHeader("UTF-8", out);
-		out.write("<" + PROJECT_ROOT + ">\n");
-		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
-			String pName = (String) it.next();
-			Entry e = (Entry) projects.get(pName);
-			if (e.fileName != null) {
-				out.write("<");
-				out.write(PROJECT_ELEMENT);
-				out.write(" ");
-				out.write(PRJ_NAME);
-				out.write("=\"");
-				for (int i = 0; i < pName.length(); i++) {
-					switch (pName.charAt(i)) {
-						case '<':
-							out.write("&lt;");
-							break;
-						case '>':
-							out.write("&gt;");
-							break;
-						case '&':
-							out.write("&amp;");
-							break;
-						case '"':
-							out.write("&quot;");
-							break;
-						case '\'':
-							out.write("&apos;");
-							break;
-						default:
-							out.write(pName.charAt(i));
-					}
-				}
-				out.write("\" ");
-				out.write(PRJ_FILE);
-				out.write("=\"");
-				for (int i = 0; i < e.fileName.length(); i++) {
-					switch (e.fileName.charAt(i)) {
-						case '<':
-							out.write("&lt;");
-							break;
-						case '>':
-							out.write("&gt;");
-							break;
-						case '&':
-							out.write("&amp;");
-							break;
-						case '"':
-							out.write("&quot;");
-							break;
-						case '\'':
-							out.write("&apos;");
-							break;
-						default:
-							out.write(e.fileName.charAt(i));
-					}
-				}
-				out.write("\"/>\n");
-			}
+	//{{{ -writeGroup(String, VPTGroup, Writer) : void
+	/** Writes a group to the given output, recursively. */
+	private void writeGroup(String tag, VPTGroup g, Writer out) throws IOException {
+		out.write("<");
+		out.write(tag);
+		out.write(" ");
+		out.write(GRP_NAME);
+		out.write("=\"");
+		PVActions.writeXML(g.getName(), out);
+		out.write("\">\n");
+
+		for (int i = 0; i < g.getChildCount(); i++) {
+			VPTNode n = (VPTNode) g.getChildAt(i);
+			if (n.isGroup())
+				writeGroup(GRP_ELEMENT, (VPTGroup)n, out);
+			else if (n.isProject())
+				writeProject((Entry)projects.get(n.getName()), out);
 		}
-		out.write("</" + PROJECT_ROOT + ">\n");
+
+		out.write("</");
+		out.write(tag);
+		out.write(">\n");
 		out.flush();
-		out.close();
+	} //}}}
+
+	//{{{ -writeProject(Entry, Writer) : void
+	private void writeProject(Entry e, Writer out) throws IOException {
+		out.write("<");
+		out.write(PROJECT_ELEMENT);
+		out.write(" ");
+		out.write(PRJ_NAME);
+		out.write("=\"");
+		PVActions.writeXML(e.project.getName(), out);
+		out.write("\" ");
+		out.write(PRJ_FILE);
+		out.write("=\"");
+		PVActions.writeXML(e.fileName, out);
+		out.write("\" />\n");
 	} //}}}
 
 	//{{{ -class PVConfigHandler
@@ -525,6 +505,14 @@ public final class ProjectManager {
 	private class PVConfigHandler extends HandlerBase {
 
 		private HashMap attrs = new HashMap();
+		private Stack grpStack;
+
+		//{{{ +PVConfigHandler() : <init>
+		public PVConfigHandler() {
+			attrs = new HashMap();
+			grpStack = new Stack();
+			grpStack.push(VPTRoot.getInstance());
+		} //}}}
 
 		//{{{ +attribute(String, String, boolean) : void
 		public void attribute(String name, String value, boolean specified) {
@@ -542,8 +530,23 @@ public final class ProjectManager {
 				e.project = new VPTProject(pName);
 				projects.put(pName, e);
 				attrs.clear();
+
+				VPTGroup g = (VPTGroup) grpStack.peek();
+				g.insert(e.project, g.findIndexForChild(e.project));
+			} else if (qName.equals(GRP_ELEMENT)) {
+				VPTGroup g = new VPTGroup((String)attrs.get(GRP_NAME));
+				VPTGroup parent = (VPTGroup) grpStack.peek();
+				parent.insert(g, parent.findIndexForChild(g));
+				grpStack.push(g);
 			} else if (!qName.equals(PROJECT_ROOT)) {
 				Log.log(Log.WARNING, this, "Unknown node in config file: " + qName);
+			}
+		} //}}}
+
+		//{{{ +endElement(String) : void
+		public void endElement(String elname) {
+			if (elname.equals(GRP_ELEMENT)) {
+				grpStack.pop();
 			}
 		} //}}}
 
