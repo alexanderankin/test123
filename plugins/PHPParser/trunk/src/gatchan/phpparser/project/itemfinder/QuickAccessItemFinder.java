@@ -16,7 +16,7 @@ public final class QuickAccessItemFinder {
 
   public void addToIndex(PHPItem phpItem) {
     final String name = phpItem.getName().toLowerCase();
-    for (int i = 0;i<name.length()-1;i++) {
+    for (int i = 0; i < name.length() - 1; i++) {
       final String sub = name.substring(i, i + 1);
       addItem(sub, phpItem);
     }
@@ -32,7 +32,9 @@ public final class QuickAccessItemFinder {
       list = new ArrayList();
       items.put(sub, list);
     }
-    list.add(o);
+    if (!list.contains(o)) {
+      list.add(o);
+    }
   }
 
   public void purgePath(String path) {
