@@ -27,10 +27,8 @@ import org.gjt.sp.util.*;
 
 public class AntPrintStream extends PrintStream
 {
-
-	String cache = "";
 	View _view;
-
+	String _cache = "";
 
 	public AntPrintStream( PrintStream stream, View view )
 	{
@@ -41,33 +39,39 @@ public class AntPrintStream extends PrintStream
 
 	public void println( String msg )
 	{
-// 		Log.log( Log.DEBUG, this, cache + msg );
-		parseLine( cache + msg );
-		resetCache();
+		parseLine( msg );
 	}
 
 
 	public void println( char[] msg )
 	{
-		parseLine( cache + new String( msg ) );
-		resetCache();
+		parseLine( new String( msg ) );
 	}
 
 
 	public void print( String msg )
 	{
-		// Ant 1.4 org.apache.tools.ant.taskdefs.compilers.Javac13 sends output
+		// Ant 1.4 and 1.5 org.apache.tools.ant.taskdefs.compilers.Javac13 sends output
 		// incorrectly. It must be tokenized and sent to println().
+		if ( msg.equals(" ")) {
+			_cache += msg;
+			return;
+		}
 		if ( msg.indexOf( "\n" ) > 0 ) {
-			StringTokenizer tokenizer = new StringTokenizer( msg, "\n" );
+			StringTokenizer tokenizer = new StringTokenizer( msg, "\n", false );
 			while ( tokenizer.hasMoreElements() )
-				println( tokenizer.nextToken() );
+				println( _cache + tokenizer.nextToken() );
+			resetCache();
 		}
 		else {
-			cache += msg;
+			println( _cache + msg );
+			resetCache();
 		}
 	}
-
+	
+	private void resetCache() {
+		_cache = "";
+	}
 	
 	public void write(byte b[], int i, int j)
 	{
@@ -75,22 +79,13 @@ public class AntPrintStream extends PrintStream
 		  print(msg);
 	}
 
-	
-	public void flush()
-	{
-		super.flush();
-		parseLine( cache );
-	}
-
-
-	private void resetCache()
-	{
-		cache = "";
-	}
-
-
 	private void parseLine( String line )
 	{
+		line = chomp(line);
+	
+		Log.log( Log.DEBUG, null, line + ":" + line.length() );
+		if (line == null || line.trim().equals("")) return;
+		
 		Console console =
 			(Console) _view.getDockableWindowManager().getDockable( "console" );
 
@@ -100,7 +95,7 @@ public class AntPrintStream extends PrintStream
 		if ( console == null )
 			return;
 
-		int type = ConsolePlugin.parseLine( line, dir, AntFarmPlugin.getErrorSource() );
+		int type = ConsolePlugin.parseLine( _view, line, dir, AntFarmPlugin.getErrorSource() );
 
 		switch ( type ) {
 			case ErrorSource.ERROR:
@@ -117,6 +112,15 @@ public class AntPrintStream extends PrintStream
 				else
 					console.print( null, line );
 				break;
+		}
+	}
+	
+	private String chomp(String str) {
+		if (str.endsWith("\n")) {
+			return str.substring(0, str.length() - 1);
+		}
+		else {
+			return str;
 		}
 	}
 

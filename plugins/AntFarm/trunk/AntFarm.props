@@ -65,6 +65,17 @@ antfarm.project.build-file=\ build file
 antfarm.project.untitled=Untitled build file
 antfarm.tree.loading=Loading...
 
+# Plugins menu
+antfarm-menu=antfarm prompt-for-ant-build-file run-current-target run-last-build
+antfarm-menu.label=Ant Farm
+antfarm.label=Ant Farm
+prompt-for-ant-build-file.label=Load Ant Build Script
+run-current-target.label=Run Current Target
+run-last-build.label=Run Last Build
+
+target-not-selected.title=Cannot run Ant build
+target-not-selected.message=Please select a target in Ant Farm,\nthen try your build again.
+
 antfarm.action.collapse=Collapse
 antfarm.action.expand=Expand
 antfarm.action.execute.target=Execute target

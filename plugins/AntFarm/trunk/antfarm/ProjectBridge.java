@@ -18,6 +18,7 @@
  */
 package antfarm;
 
+import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
@@ -89,7 +90,7 @@ public class ProjectBridge
 	 * @param  name  The name of the window to be returned
 	 * @return       A dockable window with the given name
 	 */
-	protected DockableWindow getWindow( String name )
+	protected JComponent getWindow( String name )
 	{
 		return view.getDockableWindowManager().getDockableWindow( name );
 	}

@@ -54,6 +54,10 @@ public class AntFarmPlugin extends EditPlugin
 	}
 
 
+	public static AntFarmShell getAntFarmShell() {
+		return ANT_SHELL;
+	}
+	
 	static Console getConsole( View view )
 	{
 		return getConsole( view, true );
@@ -97,7 +101,7 @@ public class AntFarmPlugin extends EditPlugin
 
 	public void createMenuItems( Vector menuItems )
 	{
-		menuItems.addElement( GUIUtilities.loadMenuItem( "antfarm" ) );
+		menuItems.addElement( new EnhancedMenu("antfarm-menu") );
 	}
 
 

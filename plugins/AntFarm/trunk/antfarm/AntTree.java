@@ -160,12 +160,28 @@ public class AntTree extends JTree
 
 	void reload()
 	{
-		_root.populate( _top );
-		( (DefaultTreeModel) getModel() ).reload();
+		Thread runner =
+		new Thread()
+		{
+			public void run()
+			{
+				Runnable runnable =
+				new Runnable()
+				{
+					public void run()
+					{
+						_root.populate( _top );
+						( (DefaultTreeModel) getModel() ).reload();
+					}
+				};
+				SwingUtilities.invokeLater( runnable );
+			}
+		};
+		runner.start();
 	}
 
 
-	void executeCurrentTarget()
+	public void executeCurrentTarget()
 	{
 		ExecutingNode node = getExecutingNode( getCurrentlySelectedNode() );
 		if ( node != null )
@@ -196,7 +212,11 @@ public class AntTree extends JTree
 	{
 		_root = new RootNode();
 		_top = new DefaultMutableTreeNode( new IconData( ICON_ROOT, _root ) );
-
+		
+		String loading =
+		jEdit.getProperty( AntFarmPlugin.NAME + ".tree.loading" );
+		_top.add( new DefaultMutableTreeNode( loading ) );
+		
 		setModel( new DefaultTreeModel( _top ) );
 
 		TreeCellRenderer renderer = new IconCellRenderer();

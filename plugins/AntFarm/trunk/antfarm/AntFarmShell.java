@@ -29,6 +29,7 @@ public class AntFarmShell extends Shell
 
 	private Project _currentProject;
 	private File _currentBuildFile;
+	private String _currentTarget;
 	private TargetRunner _targetRunner;
 	private AntFarm _antBrowser;
 
@@ -68,9 +69,9 @@ public class AntFarmShell extends Shell
 		return command.toString();
 	}
 
-
 	public String getCurrentProjectPath()
 	{
+		if (_currentBuildFile == null) return "";
 		return FileUtils.getAbsolutePath( _currentBuildFile );
 	}
 
@@ -104,18 +105,18 @@ public class AntFarmShell extends Shell
 				output.commandDone();
 				return;
 			}
-			String requestedTarget = command.indexOf( " " ) > 0 ?
+			_currentTarget = command.indexOf( " " ) > 0 ?
 				command.substring( 1, command.indexOf( " " ) ) :
 				command.substring( 1 );
 
-			if ( requestedTarget.equals( "" ) ) {
-				requestedTarget = _currentProject.getDefaultTarget();
+			if ( _currentTarget.equals( "" ) ) {
+				_currentTarget = _currentProject.getDefaultTarget();
 			}
 			Target target = (Target)
-				_currentProject.getTargets().get( requestedTarget );
+				_currentProject.getTargets().get( _currentTarget );
 
 			if ( target == null ) {
-				printUsage( "Not a valid target: " + requestedTarget, console.getErrorColor(), output );
+				printUsage( "Not a valid target: " + _currentTarget, console.getErrorColor(), output );
 				output.commandDone();
 				return;
 			}

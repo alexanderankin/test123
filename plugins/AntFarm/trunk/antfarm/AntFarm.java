@@ -73,13 +73,20 @@ public class AntFarm extends JPanel implements EBComponent
 		return AntFarm.NAME;
 	}
 
+	public Shell getAntFarmShell() {
+		return AntFarmPlugin.ANT_SHELL;
+	}
 
 	public Component getComponent()
 	{
 		return this;
 	}
 
-
+	public AntTree getAntTree()
+	{
+		return _antTree;
+	}
+	
 	public Vector getAntBuildFiles()
 	{
 		String prop = jEdit.getProperty( "antviewer.buildfiles" );
@@ -229,7 +236,9 @@ public class AntFarm extends JPanel implements EBComponent
 		Vector buildFiles = getAntBuildFiles();
 		for ( int i = 0; i < buildFiles.size(); i++ ) {
 			String fileName = (String) buildFiles.elementAt( i );
-			if ( fileName.equals( filePath ) ) {
+			if ( fileName.equals( filePath ) &&
+				!filePath.equals(AntFarmPlugin.ANT_SHELL.getCurrentProjectPath())
+			) {
 				Console console = AntFarmPlugin.getConsole( _view, false );
 				console.run( AntFarmPlugin.ANT_SHELL, console, "="
 					 + ( i + 1 ) );
@@ -250,7 +259,7 @@ public class AntFarm extends JPanel implements EBComponent
 
 	void addAntError( String exceptionString, String baseDir )
 	{
-		ConsolePlugin.parseLine( exceptionString, baseDir, AntFarmPlugin.getErrorSource() );
+		ConsolePlugin.parseLine( _view, exceptionString, baseDir, AntFarmPlugin.getErrorSource() );
 	}
 
 
@@ -265,7 +274,7 @@ public class AntFarm extends JPanel implements EBComponent
 	}
 
 
-	private Project parseBuildFile( String buildFilePath ) throws Exception
+	Project parseBuildFile( String buildFilePath ) throws Exception
 	{
 		File buildFile = new File( buildFilePath );
 		Project project = new Project();

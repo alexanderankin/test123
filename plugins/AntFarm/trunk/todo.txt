@@ -1,19 +1,20 @@
 List of todo items for AntFarm:
 Future additions/fixes:
-- make AntFarm initialize the projects in a background thread
-- Open/Close build files that are related to the current session.
-- Add actions for easy shortcut binding:
-	- run the current target of the current build file;
-	- choose the target in the current build file and run (making it current) - just small dialog with combobox;
-	- choose the build file from the list.
-- Allow properties to be system/environmental variables.
+x make AntFarm initialize the projects in a background thread - DONE
+x Targets don't run after properties prompt. - DONE
+x User properties are cached by the project and can't be updated. - DONE
+x Upgrade to Ant 1.5 - DONE
+x AntfarmShell prints multiple blank lines between real output. - DONE
+x Allow properties to be system/environmental variables. - DONE
+x Add cancel button to build properties dialog. - DONE
+x Add actions for easy shortcut binding: - DONE
 - Provide the option to bring/not bring the console to the front when running a build. 
   Also give a build status indicator in AntFarm.
 - Re-implement ProjectViewer integration.
 - Execute multiple targets at once.
 - Change build file property to an index based property.
 - Re-populate build properties based on last values entered.
-- Add cancel button to build properties dialog.
+- Open/Close build files that are related to the current session.
 
 Bonus in AntFarm 1.1 release
 x Allow logging level to be set on the AntFarm toolbar and option pane. - DONE
