@@ -1,3 +1,8 @@
+- undo changes dirty to false but that causes a reparse. need a
+  buffer-saved event.
+- switching between two edit panes with same buffer: expand tree at
+  appropriate location
+- moving caret reflected in tree
 - TagHighlight passes out of bounds lines to v2p
 - use getContextSensitiveProperty()
 - better docs: moving around xml file, editing xml file, etc.
