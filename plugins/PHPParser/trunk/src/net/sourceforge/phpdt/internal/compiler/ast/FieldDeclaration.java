@@ -88,4 +88,14 @@ public final class FieldDeclaration extends Statement implements Outlineable {
    */
   public void getUsedVariable(final List list) {
   }
+
+  public String getName() {
+    return vars[0].getName();
+    //todo : change this
+//    return null;
+  }
+
+  public String toString() {
+    return getName();
+  }
 }

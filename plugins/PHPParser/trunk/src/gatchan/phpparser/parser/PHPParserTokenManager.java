@@ -18,6 +18,7 @@ public class PHPParserTokenManager implements PHPParserConstants
   void CommonTokenAction(Token t) {
     t.sourceStart = input_stream.getBeginOffset();
     t.sourceEnd = input_stream.getEndOffset();
+
   }
   public  java.io.PrintStream debugStream = System.out;
   public  void setDebugStream(java.io.PrintStream ds) { debugStream = ds; }

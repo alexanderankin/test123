@@ -8,46 +8,29 @@ import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
 
 /**
- * This class is my ClassDeclaration declaration for php.
- * It is similar to org.eclipse.jdt.internal.compiler.ast.TypeDeclaration
+ * This class is my ClassDeclaration declaration for php. It is similar to org.eclipse.jdt.internal.compiler.ast.TypeDeclaration
  * It directly extends AstNode because a class cannot appear anywhere in php
  *
  * @author Matthieu Casanova
  */
 public final class ClassDeclaration extends Statement implements OutlineableWithChildren {
 
-  /**
-   * The name of the class.
-   */
-  private final String name;
-  /**
-   * The superclass.
-   */
-  private String superclass;
+  private ClassHeader classHeader;
 
   public int declarationSourceStart;
   public int declarationSourceEnd;
   public int bodyStart;
   public int bodyEnd;
-  /**
-   * The methods of the class.
-   */
-  private final ArrayList methods = new ArrayList();
-  /**
-   * The constructor of the class.
-   */
+  /** The methods of the class. */
+  private final List methods = new ArrayList();
+  /** The constructor of the class. */
   private MethodDeclaration constructor;
-  /**
-   * The fields of the class.
-   */
-  private final ArrayList fields = new ArrayList();
+  /** The fields of the class. */
+  private final List fields = new ArrayList();
 
   private final Object parent;
-  /**
-   * The outlineable children (those will be in the node array too.
-   */
-  private final ArrayList children = new ArrayList();
-
+  /** The outlineable children (those will be in the node array too. */
+  private final List children = new ArrayList();
 
   /**
    * Create a class giving starting and ending offset.
@@ -56,36 +39,17 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    * @param sourceEnd   ending offset
    */
   public ClassDeclaration(final Object parent,
-                          final String name,
-                          final String superclass,
+                          final ClassHeader classHeader,
                           final int sourceStart,
                           final int sourceEnd,
                           final int beginLine,
                           final int endLine,
                           final int beginColumn,
                           final int endColumn) {
-    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.parent = parent;
-    this.name = name;
-    this.superclass = superclass;
-  }
-  /**
-   * Create a class giving starting and ending offset.
-   *
-   * @param sourceStart starting offset
-   * @param sourceEnd   ending offset
-   */
-  public ClassDeclaration(final Object parent,
-                          final String name,
-                          final int sourceStart,
-                          final int sourceEnd,
-                          final int beginLine,
-                          final int endLine,
-                          final int beginColumn,
-                          final int endColumn) {
-    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
-    this.parent = parent;
-    this.name = name;
+    this.classHeader = classHeader;
+//    this.name = name;
   }
 
   /**
@@ -96,7 +60,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   public void addMethod(final MethodDeclaration method) {
     methods.add(method);
     add(method);
-    if (method.name.equals(name)) {
+    if (method.name.equals(classHeader.getClassName())) {
       constructor = method;
     }
   }
@@ -126,16 +90,18 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    * Return the class as String.
    *
    * @param tab how many tabs before the class
+   *
    * @return the code of this class into String
    */
   public String toString(final int tab) {
-    return tabString(tab) + toStringHeader() + toStringBody(tab);
+    return classHeader.toString(tab) + toStringBody(tab);
   }
 
   /**
    * Return the body of the class as String.
    *
    * @param tab how many tabs before the body of the class
+   *
    * @return the body as String
    */
   private String toStringBody(final int tab) {
@@ -157,20 +123,6 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     return buff.toString();
   }
 
-  /**
-   * Return the header of the class as String.
-   *
-   * @return the header of the class
-   */
-  private String toStringHeader() {
-    final StringBuffer buff = new StringBuffer("class ").append(name);//$NON-NLS-1$
-    if (superclass != null) {
-      buff.append(" extends "); //$NON-NLS-1$
-      buff.append(superclass);
-    }
-    return buff.toString();
-  }
-
   public Object getParent() {
     return parent;
   }
@@ -184,16 +136,19 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   }
 
   public String toString() {
-    final StringBuffer buff = new StringBuffer(name);
-    if (superclass != null) {
-      buff.append(":"); //$NON-NLS-1$
-      buff.append(superclass);
-    }
-    return buff.toString();
+    return classHeader.toString();
   }
 
   public List getList() {
     return children;
+  }
+
+  public List getMethods() {
+    return methods;
+  }
+
+  public List getFields() {
+    return fields;
   }
 
   /**
@@ -218,5 +173,26 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
    * @param list the list where we will put variables
    */
   public void getUsedVariable(final List list) {
+  }
+
+  public String getName() {
+    return classHeader.getClassName();
+  }
+
+  public void setBodyStart(int bodyStart) {
+    this.bodyStart = bodyStart;
+  }
+
+  public void setBodyEnd(int bodyEnd) {
+    this.sourceEnd = bodyEnd;
+    this.bodyEnd = bodyEnd;
+  }
+
+  public int getBodyStart() {
+    return bodyStart;
+  }
+
+  public int getBodyEnd() {
+    return bodyEnd;
   }
 }

@@ -155,4 +155,9 @@ public class VariableDeclaration extends Expression implements Outlineable {
       initialization.getUsedVariable(list);
     }
   }
+
+  public String getName() {
+    //todo : change this
+    return name();
+  }
 }

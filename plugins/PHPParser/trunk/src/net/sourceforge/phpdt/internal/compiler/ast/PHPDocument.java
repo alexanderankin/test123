@@ -31,6 +31,7 @@ public final class PHPDocument implements OutlineableWithChildren {
   /**
    * Create the PHPDocument.
    * @param parent the parent object (it should be null isn't it ?)
+   * @param name the nale f the document
    */
   public PHPDocument(final Object parent,
                      final String name) {
@@ -109,7 +110,22 @@ public final class PHPDocument implements OutlineableWithChildren {
    */
   public void analyzeCode() {
     if (nodes != null) {
-
     }
+  }
+
+  public String getName() {
+    return name;
+  }
+
+  public ClassDeclaration insideWichClassIsThisOffset(int offset) {
+    for (int i = 0; i < children.size(); i++) {
+      Outlineable outlineable = (Outlineable) children.get(i);
+      if (outlineable instanceof ClassDeclaration) {
+        ClassDeclaration classDeclaration = (ClassDeclaration) outlineable;
+        if (offset < classDeclaration.getBodyEnd() && offset> classDeclaration.getBodyStart())
+          return classDeclaration;
+      }
+    }
+    return null;
   }
 }

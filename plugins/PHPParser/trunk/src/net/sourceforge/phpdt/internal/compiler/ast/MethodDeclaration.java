@@ -337,4 +337,9 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
       }
     }
   }
+
+  public String getName() {
+    return name;
+  }
+
 }
