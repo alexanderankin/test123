@@ -59,6 +59,7 @@ public abstract class AbstractToolPanel
     protected String tex;
     protected boolean bufferChanged = false;
     protected int currentCursorPosn;
+    protected Buffer currentBuffer;
     protected View view;
 
     public AbstractToolPanel(View view, Buffer buff, String name) {
@@ -81,10 +82,10 @@ public abstract class AbstractToolPanel
    * @param message ¤
    */
     public void handleMessage(EBMessage message) {
-        boolean bufferLoaded = (message instanceof BufferUpdate);
+        boolean bufferLoaded = false;
 
-        if (bufferLoaded) {
-            BufferUpdate bu = (BufferUpdate)message;
+        if (message instanceof BufferUpdate) {
+            BufferUpdate bu = (BufferUpdate) message;
             Object what = bu.getWhat();
             bufferLoaded = (what == BufferUpdate.CREATED || 
                            what == BufferUpdate.LOADED || 
@@ -231,5 +232,6 @@ public abstract class AbstractToolPanel
 
     public void refreshCurrentCursorPosn() {
         currentCursorPosn = view.getTextArea().getCaretPosition();
+        currentBuffer = view.getTextArea().getBuffer();
     }
 }

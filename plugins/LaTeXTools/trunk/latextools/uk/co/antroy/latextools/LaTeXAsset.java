@@ -7,13 +7,14 @@ import javax.swing.text.Position;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
-
+import java.io.*;
 
 //This must implement features of TagPair.
  public class LaTeXAsset extends Asset implements Comparable{
 
     private int level = 0;
     private int iconType = 0;
+    private File file = new File("");
     public static final int DEFAULT_ICON = 0;
     public static final int SECTION_ICON = 1;
     public static final int GRAPHIC_ICON = 2;
@@ -21,6 +22,7 @@ import org.gjt.sp.jedit.jEdit;
     public static final int TABLE_ICON = 4;
     public static final int LIST_ICON = 5;
     public static final int VERBATIM_ICON = 6;
+    public static final int LINK_ICON = 7;
 
     public LaTeXAsset(String name){
       super(name);
@@ -38,6 +40,7 @@ import org.gjt.sp.jedit.jEdit;
         case TABLE_ICON: filename.append("images/table.png"); break;
         case LIST_ICON: filename.append("images/list.png"); break;
         case VERBATIM_ICON: filename.append("images/verbatim.png"); break;
+        case LINK_ICON: filename.append("images/link.png"); break;
         default: filename = null;
       }
 
@@ -86,6 +89,14 @@ import org.gjt.sp.jedit.jEdit;
     public void setEnd(Position e){
         end = e;
     }
+    
+      public void setFile(File file) {
+         this.file = file;
+      }
+      public File getFile() {
+         return file;
+      }
+
 
     public Position getStart(){
         return start;
@@ -146,6 +157,7 @@ import org.gjt.sp.jedit.jEdit;
     out = out && (name.equals(o.name));
     out = out && (start.getOffset() == o.start.getOffset());
     out = out && (end.getOffset() == o.end.getOffset());
+    out = out && (file.equals(o.file));
     return out;
   }
 
@@ -157,6 +169,8 @@ import org.gjt.sp.jedit.jEdit;
     out += start.getOffset();
     out = out * 37;
     out += end.getOffset();
+    out = out * 37;
+    out += file.hashCode();
     return out;
   }
 

@@ -540,6 +540,7 @@ public class LaTeXMacros {
     
     private static List getNestedImports(View view, File in){
        List out = new ArrayList();
+       out.add(in);
        Buffer b = jEdit.openTemporary(view, in.getParent(), in.getName(),false);
        File[] children = getImports(b);
        for (int i=0; i < children.length; i++){
@@ -550,7 +551,6 @@ public class LaTeXMacros {
           //out.add(f);          
           out.addAll(getNestedImports(view, f));
        }
-       out.add(in);
        
        return out;
     }
