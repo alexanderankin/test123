@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="prompt-for-ant-build-file">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow("antfarm");
+			antfarm = view.getDockableWindowManager().getDockable("antfarm");
+			antfarm.promptForAntBuildFile();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="run-current-target">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow("antfarm");
+			antfarm = view.getDockableWindowManager().getDockable("antfarm");
+			try {
+				antfarm.getAntTree().executeCurrentTarget();
+			}
+			catch (Exception e) {
+				GUIUtilities.message(null, "target-not-selected", null);
+			}
+		</CODE>
+	</ACTION>
+	<ACTION NAME="run-last-build">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow("console");
+			console = view.getDockableWindowManager().getDockable("console");
+			view.getDockableWindowManager().addDockableWindow("antfarm");
+			antfarm = view.getDockableWindowManager().getDockable("antfarm");
+			console.setShell(antfarm.getAntFarmShell());
+			console.runLastCommand();
+		</CODE>
+	</ACTION>
+</ACTIONS>
