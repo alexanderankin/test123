@@ -57,6 +57,7 @@ public final class ProjectViewerConfig {
 
     public static final String CONFIG_FILE = "config.properties";
 	public static final String INFOVIEWER_PLUGIN = "infoviewer.InfoViewerPlugin";
+	public static final String ERRORLIST_PLUGIN = "errorlist.ErrorListPlugin";
 
     public static final String CLOSE_FILES_OPT            = "projectviewer.close_files";
     public static final String REMEBER_OPEN_FILES_OPT     = "projectviewer.remeber_open";
@@ -390,7 +391,7 @@ public final class ProjectViewerConfig {
 	}
 
 	public boolean getUseInfoViewer() {
-		return useInfoViewer;
+		return (useInfoViewer) ? isInfoViewerAvailable() : false;
 	}
 	// }}}
 
@@ -493,6 +494,16 @@ public final class ProjectViewerConfig {
 		return MiscUtilities.compareStrings(jEdit.getBuild(), "04.02.05.00", false) >= 0;
 	} //}}}
 
+	//{{{ isInfoViewerAvailable()
+	public boolean isInfoViewerAvailable() {
+		return (jEdit.getPlugin(INFOVIEWER_PLUGIN) != null);
+	} //}}}
+	
+	//{{{ isErrorListAvailable()
+	public boolean isErrorListAvailable() {
+		return (jEdit.getPlugin(ERRORLIST_PLUGIN) != null);
+	} //}}}
+	
 	//}}}
 
 	//{{{ Private Methods
