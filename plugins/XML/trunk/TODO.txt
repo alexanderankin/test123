@@ -1,5 +1,6 @@
 + version 0.9:
 
+- don't parse DTDs
 - more friendly way to find DTDs (some kind of 'wizard'?)
 - threaddeath -- wtf?
 - see if closing view causes problems
