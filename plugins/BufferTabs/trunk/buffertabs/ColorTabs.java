@@ -102,6 +102,11 @@ public class ColorTabs
    }
 
 
+   public void setForegroundColorized(boolean foregroundColorized) {
+      this.foregroundColorized = foregroundColorized;
+   }
+
+
    /**
     *  Creates colors suitable for reading text labels. Uniformly moves the
     *  color range to a darker range.
