@@ -27,16 +27,21 @@ import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectViewer;
 //}}}
 
 /**
- *	@author payne
+ *	Holds information on what applications to use to open certain types of 
+ *	files, based on extension or complete file name.
+ *
+ *	@author		Matthew Payne
+ *	@version	$Id$
  */
 public class AppLauncher {
 
-	//{{{ Factory method & variable
+	//{{{ Singleton method & variable
 	
 	private static AppLauncher instance;
 	
@@ -141,9 +146,8 @@ public class AppLauncher {
 		String executable = (String) appCol.get(ext);
 		if (executable == null) {
 			if (JOptionPane.showConfirmDialog(viewer, 
-					"No external application has been chosen for extension \"" + ext + "\".\n" +
-					"Would you like to select one?", 
-					"No application set",
+					jEdit.getProperty("projectviewer.launcher.no_app", new Object[] { ext }), 
+					jEdit.getProperty("projectviewer.launcher.no_app_title"),
 					javax.swing.JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				 executable = pickApp(ext, viewer);	
 			 } else {
@@ -157,8 +161,8 @@ public class AppLauncher {
 			   rt.exec(callAndArgs);
 			} catch(java.io.IOException ioe) {
 				JOptionPane.showMessageDialog(viewer, 
-					"Error starting process: " + ioe.getMessage(),
-					"Error",
+					jEdit.getProperty("projectviewer.launcher.io_error", new Object[] { ioe.getMessage() }),
+					jEdit.getProperty("projectviewer.error"),
 					JOptionPane.ERROR_MESSAGE);
 			}
 		}
