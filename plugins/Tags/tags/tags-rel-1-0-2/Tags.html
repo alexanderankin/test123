@@ -1,0 +1,338 @@
+<html>
+<head>
+<title>Tags plugin</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+
+<table
+    bgcolor="#CCCCFF"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+    summary="Tags page header"
+>
+    <tr width="100%">
+    <td><big><big>Tags plugin</big></big></td>
+    <td align="right"><small>By Kenrick Drew<br>
+    <em>kdrew@earthlink.net</em></small></td></tr>
+</table>
+
+
+<ul>
+    <li><a href="#introduction">Introduction</a></li>
+    <li><a href="#creating_tag_files">Creating Tag Index Files</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <ul>
+          <li><a href="#tagging">Tag jumping</a></li>
+          <li><a href="#tag_stack">The tag stack</a></li>
+          <li><a href="#tag_collisions">Tag collisions</a></li>
+    </ul>
+    <li><a href="#config">Configuration</a></li>
+    <li><a href="#shortcuts">Suggested Keyboard shortcuts and UI</a></li>
+    <li><a href="#finding">Where to find the ctags program</a></li>
+    <li><a href="#lincense">Lincense</a></li>
+    <li><a href="#bugs">Known Bugs/Limitations</a></li>
+    <li><a href="#todo">Future Directions</a></li>
+    <li><a href="#feedback">Feedback</a></li>
+    <li><a href="#credits">Credits</a></li>
+    <li><a href="#changelog">Changelog</a></li>
+</ul>
+
+<h2><a name="introduction">Introduction</a></h2>
+<p>
+The Tags plugin allows a user to jump to the definition of a specific language
+object or "tag" using tag index files. For example, in C programs, the user can
+immediatly jump to the definition of a desired function or data structure
+without having to know where or what file it is defined. Tag jumping can be
+accomplished by either selecting the desired tag, placing the cursor on the
+tag, or entering the tag.
+</p>
+<p>
+The tag index files are created by the "<a href="#finding">ctags</a>" program 
+of which there are several versions.  ctags can be found on most UNIX systems.  
+The Exuberant C Tags program has both UNIX and Windows versions.
+</p>
+
+<h2><a name="creating_tag_files">Creating Tag Index Files</a></h2>
+<p>
+Without tag index files the Tags plugin is useless. Well, not necessarily
+useless; it will let you know it can't find or jump to anything which can be of
+some use. Tag files are created with the ctags program.
+</p>
+<p>
+For more extensive help on the ctags program see the documentation that comes
+with your distribution (man pages, readme files).  But, in general you can
+create tag index files with the Exuberant C Tag commands:
+</p>
+<pre>
+     ctags *     create a tag file in the current directory for all recognized 
+                 source files
+     ctags -R    create a tag file in the current directory for all files in 
+                 an entire source directory tree.
+</pre>
+<p>
+Please note that the tag index files list definition file names based on path
+that you pass to the ctags program.  If you don't pass the full path of the 
+files to ctags, the definition file names listed in the tag index file will be
+relative to the current directory.  If this is not desired you can pass $cwd or
+`pwd` to ctags:
+</p>
+<pre>
+     ctags $cwd/*
+     ctags -R $cwd
+</pre>
+<p>
+Tag index files are search using a binary search, so tag index files must be 
+sorted.
+</p>
+
+<h2><a name="usage">Usage</a></h2>
+
+<h3><a name="tagging">Tag jumping</a></h3>
+<p>
+There are 2 ways to jump to a desired tag:
+
+<ol>
+  <li>Place the cursor on or select the desired tag.  From the Plugins > Tags 
+  menu use "Follow Tag".  "Follow Tag (New View)" will jump to a tag
+  in a new view.</li>
+
+	<li>From the Plugins > Tags menu use "Follow Tag..." which will prompt you for
+	the desired tag. The "Open new view" checkbox will jump to the entered tag in
+	an new view.</li>
+</ol>
+    
+</p>
+
+<h3><a name="tag_stack">The tag stack</a></h3>
+<p>
+Once you have jumped to a tag, your previous position is remembered with the
+tag stack.  You can return to your previous position from the Plugins > Tags
+menu using "Pop Tag".  Currently the stack is a global stack.
+</p>
+
+<h3><a name="tag_collisions">Tag collisions</a></h3>
+
+<p> A tag collision can occur when there is more than one defintion for a
+specific tag as defined in the tag index files. This especially occurs on
+object oriented programming languages, and local projects where you are using a
+global system tag index file along with a local tag index file. To easily
+facilitate tag collisions, if more than one tag is found in the tag index
+files, you are presented, located under the cursor, a list of choices.
+Differentation between the tags is currently only done by tag defintion file
+names. You can select the desired tag by either using the mouse, keyboard arrow
+keys or number keys (1 - 9 only). The tag collision list can be dismissed with
+the Escape (Esc) key. </p>
+
+<h2><a name="config">Configuration</a></h2>
+
+<p>The Tags plugin can be configured under the Plugin Options node of the Global 
+Options dialog.</p>
+
+<p>Search tag file in current buffer's directory: Check this option if
+you want the tag search to start with the tag index file (./tags) in the
+buffer's directory. The tag index file doesn't need to be in the tag index
+search file list. If it is it will be skipped.</p>
+
+<p>Tag index file name:  If you have configured Tags to use the tag index file
+in the current buffer's directory you can change the file named that the plugin
+looks for.  The default is "tags".</p>
+
+<p>If tag match is found continue searching subsequent tag index files:  By 
+default, the first matching tag (or groups of tags if
+a tag collision occurs) found will stop the search. Using this option will
+allow all tag files to be searched.</p>
+
+<p>Tag search files (in order of search):  Add tag index files that should be 
+searched to this list.  The order of the list is the search order.</p>
+
+<h2><a name="shortcuts">Suggested Keyboard shortcuts and UI</a></h2>
+
+<p>Here are some suggested key bindings.  These do stomp on some JEdit key
+bindings, but I find that they work well.  They are based on the vi (and it's
+clones) key bindings for tagging.</p>
+
+<pre>
+     Follow Tag:             Ctrl + ]
+     Follow Tag (New View):  Ctrl + SHIFT + ]     
+     Follow Tag...:          Alt + ]     
+     Pop Tag:                Ctrl + T
+</pre>
+
+<p>Keyboard shortcuts can be defined under the Shortcuts node of the Global
+Options dialog.</p>
+
+<p>Also one can place the tagging commands in the Context Menu.  Context menu
+items can be defined under the Context Menu node of the Global Options dialog.
+</p>
+
+<h2><a name="finding">Where to find the ctags program</a></h2>
+<p>You can find the Exuberant C Tags program at:</p>
+
+<pre>
+   <a href="http://ctags.sourceforge.net">http://ctags.sourceforge.net</a>
+</pre>
+
+<p>Exuberant C Tags is also included in the  
+<a href="http://sources.redhat.com/cygwin/">cygwin</a> distribution for 
+Windows.  I highly recommend cygwin.</p>
+
+<p>You can also use the standard UNIX ctags program, or the GNU C Tags program,
+but you'll find that Exuberant C Tags provides a bit more info (or too much
+depending on how much of a minimalist you are).</p>
+
+<h2><a name="lincense">Lincense</a></h2>
+<p>
+The source code is distributed under the GPL. Please see
+<a href="http://www.fsf.org/copyleft/gpl.html">http://www.fsf.org/copyleft/gpl.html</a>
+</p>
+
+<h2><a name="bugs">Known Bugs/Limitations</a></h2>
+<ul>
+
+<li>Has only been tested in C and Java.</li>
+
+<li>Tag files *MUST* be sorted. Else, the tag will probably never be found b/c we
+are using a binary searching mechanism.</li>
+
+<li>Bachward searching patterns (?...?) are not supported.</li>
+
+</ul>
+
+<h2><a name="todo">Future Directions</a></h2>
+<p>
+See <a href="./TODO.TXT">TODO.TXT</a>
+</p>
+
+<h2><a name="feedback">Feedback</a></h2>
+<p>
+The preferred way to send bug reports or feature requests is to use the
+Sourceforge Bug Tracker at
+<a href="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</a>.
+</p>
+<p>You can also write to:</p>
+<ul>
+    <li>jEdit-users mailing-list <em>&lt;jedit-users@lists.sourceforge.net&gt;</em>;</li>
+    <li>jEdit-devel mailing.list <em>&lt;jedit-devel@lists.sourceforge.net&gt;</em>.</li>
+</ul>
+
+<h2><a name="credits">Credits</a></h2>
+<ul>
+  <li>Vim reference manual (Bram Moolenaar)</li>
+  <li>Exuberant C Tags man page (Darren Hiebert)</li>
+</ul>
+
+<h2><a name="changelog">Changelog</a></h2>
+<ul>
+
+	<li>Version 1.0.2, bug fixes (Nov 2001)</li>
+  <ul>
+    <li>Fixed bug where if you removed tag index files from the search the code
+        would remember the later entries.</li>
+    <li>Fixed bug where searching for tag search string in file was using the
+        search file set.</li>
+    <li>Fixed bug in option panel where changes to the list of tag index files
+        were always committed even if you pressed "Cancel".</li>
+    <li>Fixed exuberant tag info display when mixed tag files are used.</li>
+    <li>Removed directions from COPYING.</li>
+    <li>Added some initial user hidden development code.</li>
+  </ul>
+
+	<li>Version 1.0.1, bug fixes (Nov 2001)</li>
+  <ul>
+    <li>Fixed bug where if you added a new tag file, then moved that file in
+    the list, a null exception occured during tagging.</li>
+    <li>If tag collision popup is wider than the screen, place it flush to the
+    left side of the screen</li>
+    <li>Ability to have commas in tag index file path names</li>
+  </ul>
+
+	<li>Version 1.0, Initial public release (Oct 2001)</li>
+  <ul>
+    <li>Made Enter Tag dialog a stand alone dialog (no JOptionPane).</li>
+    <li>Moved enter event into KeyPressed() in enter tag dialog.</li>
+    <li>Added the display of exuberant info from the tag indx file.</li>
+    <li>Reverted back to platform independent Monospaced font for tag collision list.</li>
+  </ul>
+
+	<li>Version 0.9.2 (Oct 2001)</li>
+  <ul>
+    <li>Listen for ENTER in Enter Tag dialog.</li>
+    <li>Use KeyEventWorkaround.processKeyEvent() in key listener.</li>      
+    <li>Removed display of wait cursor when opening tag definition file.</li>
+  </ul>
+
+	<li>Version 0.9.1 (Oct 2001)</li>
+  <ul>
+    <li>Removed Tags.displayMessage in favor of org.gjt.sp.util.Log.log()</li>   
+    <li>Used ^ and $ from tag index file when searching (regexp)</li> 
+    <li>Fixed bug where search string wasn't complete</li> 
+    <li>Fixed off by 1 bug when tag index file uses line numbers</li> 
+  </ul>
+
+	<li>Version 0.9 (Oct 2001)</li>
+  <ul>
+    <li>Scroll pane for collision dialog.</li>
+    <li>Added public Tags.pushPosition()</li>
+    <li>Better display tag information collision list.</li>
+    <li>Fixed bugs introduced in 0.7.3.</li>
+    <li>Display tag line numbers in collision list when search string is a line
+    number.</li>
+    <li>Changed font of collision list from "Monospaced" to "Courier New".</li>
+    <li>Removed public use of tag catagories.</li>
+    <li>Fixed Enter Tag dialog focus issue.</li>
+    <li>Only display 1 - 9 in collision list.</li>
+    <li>Resolve relative tag defintion files before possible use of tag collision 
+    list.</li>
+  </ul>
+
+	<li>Version 0.7.3 (Oct 2001)</li>
+  <ul>
+    <li>Ability to use number keys with the tag collision popup.</li>
+    <li>Fixed relative tag defintion file name path problem.</li>
+    <li>Fixed problem when tagging from command line.</li>
+    <li>Fixed infinite loop problem when backtracking to beginning of first 
+    line in tag index file.</li>
+	  <li>Fixed crash when tag is on last line of tag index file.</li>  
+    <li>Made Java 1.1 compatible</li>
+	</ul>
+
+	<li>Version 0.7.2 (Oct 2001)</li>
+  <ul>
+    <li>Added the ability to specify the tag index file name, when using the
+    tag index file in the current buffer's directory.</li>
+    <li>Added error message when tag defintion file does not exist</li>
+	  <li>Updated HTML Documentaiton.</li>    
+	</ul>
+
+	<li>Version 0.7.1 (Oct 2001)</li>
+  <ul>
+	  <li>Updated HTML Documentaiton.</li>
+	  <li>Updated labels and property strings.</li>
+    <li>Let user know if no tag index files have been specified.</li>
+    <li>Removed tag index file type specification.</li>
+    <li>Removed some unneeded code.</li>
+	</ul>
+
+	<li>Version 0.7 (Oct 2001)</li>
+  <ul>
+	  <li>HTML Documentaiton</li>
+	  <li>Use AbstractOptionPane for Global Options dialog</li>
+	</ul>
+  
+	<li>Version 0.5 (Oct 2001)</li>
+  <ul>
+	  <li>??</li>
+	</ul>
+  
+  <li>Version 0.3 (Sep 2001)</li>
+  <ul>
+	  <li>Initial beta release</li>
+  </ul>
+</ul>
+
+</body>
+</html>
+
