@@ -386,6 +386,17 @@ errorSource.addError(new ErrorSource.DefaultError(
 
  <itemizedlist>
 
+  <listitem><formalpara><title>Version 1.2.3</title><para>requires
+  jEdit 4.0pre4.
+  </para></formalpara>
+
+   <listitem><para>Error tool tips were not shown for some errors.
+   </para></listitem>
+  </listitem>
+  </itemizedlist>
+
+  <itemizedlist>
+
   <listitem><formalpara><title>Version 1.2.2</title><para>requires
   jEdit 4.0pre4.
   </para></formalpara>
@@ -398,9 +409,6 @@ errorSource.addError(new ErrorSource.DefaultError(
 
     <listitem><para>Error highlight didn't work properly when soft wrap was
     enabled.
-    </para></listitem>
-
-    <listitem><para>Error tool tips were not shown for some errors.
     </para></listitem>
 
     <listitem><para>If the <quote>show on error</quote> feature is enabled, the
