@@ -7,4 +7,4 @@ TODO for InfoViewer
   - new "Windows" menu: quick jump to other InfoViewer windows
 * stop button
 * progress bar (use EditorPane.getStream())
-
+* Option "InternalBrowser/Appeareance/Join Tool and Addressbar" ?
