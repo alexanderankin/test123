@@ -5,9 +5,11 @@
 <serverType name="Sybase">
 
 <!--The name of the JDBC driver -->
-  <driver>com.sybase.jdbc.SybDriver</driver>
+  <driverClass>com.sybase.jdbc.SybDriver</driverClass>
 
-  <vfs>sql.serverTypes.SybaseVFS</vfs>
+  <vfs>
+    <driverClass>sql.serverTypes.SybaseVFS</driverClass>
+  </vfs>
 
   <connection>
 

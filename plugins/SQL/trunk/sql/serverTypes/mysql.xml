@@ -4,7 +4,7 @@
 
 <serverType name="MySQL">
 
-  <driver>org.gjt.mm.mysql.Driver</driver>
+  <driverClass>org.gjt.mm.mysql.Driver</driverClass>
 
   <connection>
     <parameter name="host" default="127.0.0.1"/>

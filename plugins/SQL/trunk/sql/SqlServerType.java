@@ -53,6 +53,10 @@ public class SqlServerType extends Properties
 
   /**
    *  Description of the Field
+   */
+  public final static String OBJECT_CREATION_PREFIX_PROPERTY = "objectCreationPrefix";
+  /**
+   *  Description of the Field
    *
    * @since
    */
@@ -62,19 +66,19 @@ public class SqlServerType extends Properties
    *
    * @since
    */
-  public final static String DRIVER_PROPERTY = "driver";
+  public final static String VFS_PROPERTY_PREFIX = "vfs";
   /**
    *  Description of the Field
    *
    * @since
    */
-  public final static String VFS_PROPERTY = "vfs";
+  public final static String DRIVER_CLASS_PROPERTY = "driverClass";
   /**
    *  Description of the Field
    *
    * @since
    */
-  public final static String MODE_NAME_PROPERTY = "editMode";
+  public final static String EDIT_MODE_PROPERTY = "editMode";
 
   protected static Map allTypes = new HashMap();
 
@@ -109,13 +113,25 @@ public class SqlServerType extends Properties
    */
   public String getEditModeName()
   {
-    final String name = getProperty( MODE_NAME_PROPERTY );
+    final String name = getVfsProperty( EDIT_MODE_PROPERTY );
 
     if ( name == null ||
         name.length() == 0 )
       return SqlPlugin.DEFAULT_EDIT_MODE_NAME;
 
     return name;
+  }
+
+
+  /**
+   *  Gets the ObjectCreationPrefix attribute of the SqlServerType object
+   *
+   * @return    The ObjectCreationPrefix value
+   */
+  public String getObjectCreationPrefix()
+  {
+    String s = getProperty( OBJECT_CREATION_PREFIX_PROPERTY );
+    return ( s == null ) ? "" : s;
   }
 
 
@@ -130,7 +146,7 @@ public class SqlServerType extends Properties
     if ( vfs != null )
       return vfs;
 
-    final String className = getProperty( VFS_PROPERTY );
+    final String className = getVfsProperty( DRIVER_CLASS_PROPERTY );
 
     try
     {
@@ -192,7 +208,7 @@ public class SqlServerType extends Properties
   {
     Log.log( Log.DEBUG, SqlServerType.class,
         "registering driver " + getName() );
-    final String drName = getProperty( DRIVER_PROPERTY );
+    final String drName = getProperty( DRIVER_CLASS_PROPERTY );
     Log.log( Log.DEBUG, SqlServerType.class,
         "  driver class: " + drName );
 
@@ -213,6 +229,30 @@ public class SqlServerType extends Properties
       //Log.log( Log.ERROR, SqlServerType.class, ex );
       return false;
     }
+  }
+
+
+  /**
+   *  Sets the VfsProperty attribute of the SqlServerType object
+   *
+   * @param  name   The new VfsProperty value
+   * @param  value  The new VfsProperty value
+   */
+  protected void setVfsProperty( String name, String value )
+  {
+    setProperty( VFS_PROPERTY_PREFIX + "." + name, value );
+  }
+
+
+  /**
+   *  Gets the VfsProperty attribute of the SqlServerType object
+   *
+   * @param  name  Description of Parameter
+   * @return       The VfsProperty value
+   */
+  protected String getVfsProperty( String name )
+  {
+    return getProperty( VFS_PROPERTY_PREFIX + "." + name );
   }
 
 
@@ -375,6 +415,21 @@ public class SqlServerType extends Properties
             }
           }
         }
+        else
+            if ( "vfs".equals( childElement.getTagName() ) )
+        {
+          final NodeList vfsNodes = childElement.getChildNodes();
+          for ( int j = vfsNodes.getLength(); --j >= 0;  )
+          {
+            final Node vfsNode = vfsNodes.item( j );
+            if ( vfsNode.getNodeType() != vfsNode.ELEMENT_NODE )
+              continue;
+
+            final Element vfsElement = (Element) vfsNode;
+            rv.setVfsProperty( vfsElement.getTagName(), vfsElement.getFirstChild().getNodeValue() );
+          }
+        }
+        else
         {
           final String name = childElement.getTagName();
           final String value = childElement.getFirstChild().getNodeValue();
@@ -551,11 +606,11 @@ public class SqlServerType extends Properties
       this.code = code;
       switch ( substMethod )
       {
-        case SUBST_TEXT:
-          fmt = new MessageFormat( code );
-          break;
-        case SUBST_SQL:
-          fmt = null;
+          case SUBST_TEXT:
+            fmt = new MessageFormat( code );
+            break;
+          case SUBST_SQL:
+            fmt = null;
       }
     }
 
@@ -582,16 +637,16 @@ public class SqlServerType extends Properties
 
       switch ( substMethod )
       {
-        case SUBST_TEXT:
-          break;
-        case SUBST_SQL:
-          for ( int i = args.length; --i >= 0;  )
-          {
-            if ( args[i] instanceof String )
-              stmt.setString( i + 1, (String) args[i] );
-            else
-              stmt.setObject( i + 1, args[i] );
-          }
+          case SUBST_TEXT:
+            break;
+          case SUBST_SQL:
+            for ( int i = args.length; --i >= 0;  )
+            {
+              if ( args[i] instanceof String )
+                stmt.setString( i + 1, (String) args[i] );
+              else
+                stmt.setObject( i + 1, args[i] );
+            }
       }
     }
 
@@ -603,10 +658,10 @@ public class SqlServerType extends Properties
 
       switch ( substMethod )
       {
-        case SUBST_TEXT:
-          return fmt.format( args );
-        case SUBST_SQL:
-          return code;
+          case SUBST_TEXT:
+            return fmt.format( args );
+          case SUBST_SQL:
+            return code;
       }
       return null;
     }
@@ -663,7 +718,7 @@ public class SqlServerType extends Properties
     public InputSource resolveEntity( String publicId, String systemId )
     {
       if ( systemId.endsWith( "sqlServerType.dtd" ) ||
-           publicId.endsWith( "sqlServerType.dtd" ) )
+          publicId.endsWith( "sqlServerType.dtd" ) )
       {
         final InputStream ist = SqlServerType.class.getClassLoader().getResourceAsStream(
             "sqlServerType.dtd" );

@@ -5,7 +5,7 @@
 <serverType name="Microsoft SQL Server/FreeTDS">
 
 <!--The name of the JDBC driver -->
-  <driver>com.internetcds.jdbc.tds.Driver</driver>
+  <driverClass>com.internetcds.jdbc.tds.Driver</driverClass>
 
   <connection>
 

@@ -5,7 +5,7 @@
 <serverType name="ASA">
 
 <!--The name of the JDBC driver -->
-  <driver>com.sybase.jdbc2.jdbc.SybDriver</driver>
+  <driverClass>com.sybase.jdbc2.jdbc.SybDriver</driverClass>
 
   <connection>
 
