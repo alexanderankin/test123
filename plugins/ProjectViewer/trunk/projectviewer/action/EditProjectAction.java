@@ -33,7 +33,7 @@ import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.config.ProjectOptions;
-import projectviewer.importer.InitialProjectImporter;
+import projectviewer.importer.RootImporter;
 //}}}
 
 /**
@@ -101,7 +101,7 @@ public class EditProjectAction extends Action {
 		if (proj != null) {
 			if (add) {
 				ProjectManager.getInstance().addProject(proj);
-				InitialProjectImporter ipi = new InitialProjectImporter(proj, viewer, jEdit.getActiveView());
+				RootImporter ipi = new RootImporter(proj, viewer, jEdit.getActiveView());
 				ipi.doImport();
 				viewer.setProject(proj);
 			} else {
@@ -109,7 +109,7 @@ public class EditProjectAction extends Action {
 					ProjectManager.getInstance().renameProject(oldName, proj.getName());
 				}
 				if (!proj.getRootPath().equals(oldRoot)) {
-					InitialProjectImporter ipi = new InitialProjectImporter(proj, viewer, jEdit.getActiveView());
+					RootImporter ipi = new RootImporter(proj, viewer, jEdit.getActiveView());
 					ipi.doImport();
 				}
 			}
