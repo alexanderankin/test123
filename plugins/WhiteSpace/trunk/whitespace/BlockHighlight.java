@@ -202,9 +202,15 @@ public class BlockHighlight
         for (int i = 0; i < views.length; i++) {
             EditPane[] editPanes = views[i].getEditPanes();
             BlockHighlight highlight;
+            WhiteSpaceModel model;
             for (int j = 0; j < editPanes.length; j++) {
                 highlight = (BlockHighlight) highlights.get(editPanes[j]);
-                if (highlight != null) {
+                if (highlight == null) { continue; }
+
+                model = highlight.getModel();
+                if (model == null) { continue; }
+
+                if (model.getBlockHighlight().isEnabled()) {
                     highlight.updateTextArea();
                 }
             }
