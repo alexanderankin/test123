@@ -121,17 +121,18 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	//{{{ getLineErrors() method
 	/**
 	 * Returns all errors in the specified line range.
+	 * @param path The file path
 	 * @param startLineIndex The line number
 	 * @param endLineIndex The line number
 	 * @since ErrorList 1.3
 	 */
-	public ErrorSource.Error[] getLineErrors(Buffer buffer,
+	public ErrorSource.Error[] getLineErrors(String path,
 		int startLineIndex, int endLineIndex)
 	{
 		if(errors.size() == 0)
 			return null;
 
-		List list = (List)errors.get(buffer.getPath());
+		List list = (List)errors.get(path);
 		if(list == null)
 			return null;
 
@@ -334,7 +335,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			{
 			case 0:
 				if(((Error)errorList.get(start)).getLineNumber()
-					== line)
+					>= line)
 					return start;
 				else
 					return start + 1;
@@ -520,9 +521,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		 */
 		public int getStartOffset()
 		{
-			// the if(endPos) is intentional, don't float unless
-			// both end and start are set
-			if(endPos != null)
+			if(startPos != null)
 			{
 				return startPos.getOffset()
 					- buffer.getLineStartOffset(
@@ -612,18 +611,21 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 				return;
 
 			this.buffer = buffer;
-			if(lineIndex < buffer.getLineCount())
-			{
-				int lineStart = buffer.getLineStartOffset(lineIndex);
-				startPos = buffer.createPosition(
-					lineStart + start);
+			int lineIndex = Math.min(this.lineIndex,
+				buffer.getLineCount() - 1);
 
-				if(end != 0)
-				{
-					endPos = buffer.createPosition(
-						lineStart + end);
-				}
+			start = Math.min(start,buffer.getLineLength(lineIndex));
+
+			int lineStart = buffer.getLineStartOffset(lineIndex);
+			startPos = buffer.createPosition(lineStart + start);
+
+			if(end != 0)
+			{
+				endPos = buffer.createPosition(
+					lineStart + end);
 			}
+			else
+				endPos = null;
 		} //}}}
 
 		//{{{ closeNotify() method
