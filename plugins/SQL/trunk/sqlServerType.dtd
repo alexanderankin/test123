@@ -21,7 +21,7 @@
 <!ELEMENT vfs (driverClass, editMode?)>
 
 <!--
-  Optional, if omitted, assumed "^;$"
+  Optional, if omitted, assumed "([\n\r]+;)+[\n\r]+"
 -->
 <!ELEMENT defStatementDelimiterRegex (#PCDATA)>
 

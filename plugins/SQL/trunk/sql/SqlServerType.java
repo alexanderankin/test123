@@ -150,7 +150,7 @@ public class SqlServerType extends Properties
   public String getDefaultStatementDelimiterRegex()
   {
     final String s = getProperty( DEFAULT_STMT_DELIMITER_REGEX );
-    return ( s == null ) ? "^;$" : s;
+    return ( s == null ) ? "([\n\r]+;)+[\n\r]+" : s;
   }
 
 

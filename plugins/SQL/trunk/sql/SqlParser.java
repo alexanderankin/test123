@@ -20,332 +20,194 @@
  */
 package sql;
 
+import java.util.*;
+import java.util.regex.*;
+
 /**
  *  Description of the Class
  *
  * @author     svu
- * @created    6 0@B 2001 3.
+ * @created    14 Апрель 2003 г.
  */
 public class SqlParser
 {
-
-  /**
-   *  Description of the Field
-   *
-   * @since
-   */
-  protected String text;
-  /**
-   *  Description of the Field
-   *
-   * @since
-   */
-  protected char curChar;
-  /**
-   *  Description of the Field
-   *
-   * @since
-   */
-  protected int nextPos;
-  /**
-   *  Description of the Field
-   *
-   * @since
-   */
-  protected int textLength;
+  protected Pattern pattern;
+  protected final static Pattern whiteSpace = Pattern.compile( "[\\s]+" );
 
 
   /**
    *  Constructor for the SqlParser object
    *
+   * @param  delimiterRegex  Description of Parameter
+   * @since
+   */
+  public SqlParser( String delimiterRegex )
+  {
+    pattern = Pattern.compile( delimiterRegex );
+  }
+
+
+  /**
+   *  Gets the Fragments attribute of the SqlParser object
+   *
    * @param  sqlText  Description of Parameter
-   * @param  pos      Description of Parameter
-   * @since
+   * @return          The Fragments value
    */
-  public SqlParser( String sqlText, int pos )
+  public List getFragments( String sqlText )
   {
-    text = sqlText;
-    textLength = text.length();
+    final Matcher stmtDelimMatcher = pattern.matcher( sqlText );
+    final List list = new ArrayList();
 
-    setPos( pos );
-    logState( "initParser" );
-  }
-
-
-  /**
-   *  Sets the Pos attribute of the SqlParser object
-   *
-   * @param  pos  The new Pos value
-   * @since
-   */
-  public void setPos( int pos )
-  {
-    nextPos = pos;
-    doStep();
-    logState( "setPos to " + pos );
-  }
-
-
-  /**
-   *  Gets the NextPos attribute of the SqlParser object
-   *
-   * @return    The NextPos value
-   * @since
-   */
-  public int getNextPos()
-  {
-    return nextPos;
-  }
-
-
-  /**
-   *  Gets the EolComment attribute of the SqlParser object
-   *
-   * @return    The EolComment value
-   * @since
-   */
-  public boolean isEolComment()
-  {
-    logState( "isEolComment" );
-    return
-        nextPos != textLength &&
-        curChar == '-' &&
-        text.charAt( nextPos ) == '-';
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  point  Description of Parameter
-   * @since
-   */
-  public final void logState( String point ) { }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @exception  SqlEotException  Description of Exception
-   * @since
-   */
-  public void skipWhiteSpace()
-       throws SqlEotException
-  {
-    while ( true )
+    int stmtStart = 0;
+    int stmtEnd = -1;
+    while ( stmtDelimMatcher.find() )
     {
-      // skip whitespace
-      if ( skipEolComment() )
+      stmtEnd = stmtDelimMatcher.start();
+      if ( stmtEnd > stmtStart )
       {
-        continue;
+        final SqlStatementText text = new SqlStatementText( stmtStart, stmtEnd );
+        if ( correctWhiteSpace( sqlText, text ) )
+          list.add( text );
       }
-      if ( skipComment() )
-      {
-        continue;
-      }
-
-      if ( !Character.isWhitespace( curChar ) )
-      {
-        break;
-      }
-      if ( nextPos == textLength )
-      {
-        break;
-      }
-
-      doStep();
+      stmtStart = stmtDelimMatcher.end();
     }
-    logState( "skipWhiteSpace" );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @exception  SqlEotException  Description of Exception
-   * @since
-   */
-  public void findRealEndOfStatement()
-       throws SqlEotException
-  {
-    nextPos = text.lastIndexOf( '/' );
-    if ( nextPos != -1 )
+    stmtEnd = sqlText.length();
+    if ( stmtEnd > stmtStart )
     {
-      if ( nextPos == textLength - 1 )
-      {
-        return;
-      }
-
-      final int lastDelim = nextPos;
-      nextPos++;
-      doStep();
-      skipWhiteSpace();
-      // skip the text after last '/'
-      if ( nextPos == textLength )
-      {
-        nextPos = lastDelim;
-        return;
-      }
+      final SqlStatementText text = new SqlStatementText( stmtStart, stmtEnd );
+      if ( correctWhiteSpace( sqlText, text ) )
+        list.add( text );
     }
-    nextPos = textLength;
+    return list;
   }
 
 
   /**
-   *  Gets the CommentStart attribute of the SqlParser object
+   *Constructor for the correctWhiteSpace object
    *
-   * @return    The CommentStart value
-   * @since
+   * @param  sqlText  Description of Parameter
+   * @param  text     Description of Parameter
+   * @return          true if there is non-space string
    */
-  protected boolean isCommentStart()
+  protected boolean correctWhiteSpace( String sqlText, SqlStatementText text )
   {
-    logState( "isCommentStart" );
-    return
-        nextPos != textLength &&
-        curChar == '/' &&
-        text.charAt( nextPos ) == '*';
-  }
-
-
-  /**
-   *  Gets the CommentEnd attribute of the SqlParser object
-   *
-   * @return    The CommentEnd value
-   * @since
-   */
-  protected boolean isCommentEnd()
-  {
-    logState( "isCommentEnd" );
-    return
-        nextPos != textLength &&
-        curChar == '*' &&
-        text.charAt( nextPos ) == '/';
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @since
-   */
-  protected void doStep()
-  {
-    curChar = text.charAt( nextPos++ );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @since
-   */
-  protected void doStepBack()
-  {
-    nextPos -= 2;
-    doStep();
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @return    Description of the Returned Value
-   * @since
-   */
-  protected boolean skipEolComment()
-  {
-    if ( isEolComment() )
+    final int fragmentLength = text.getLength();
+    final Matcher wsMatcherRel = whiteSpace.matcher( text.getSubstring( sqlText ) );
+    if ( wsMatcherRel.find() )
     {
-      logState( "skipEolComment: comment detected" );
-      nextPos++;
-      doStep();
-      while ( true )
+      // if first whitespace is at start - skip it!
+      if ( wsMatcherRel.start() == 0 )
+        text.startOffset += wsMatcherRel.end();
+      int lastStartRel = 0;
+      int lastEndRel = 0;
+      do
       {
-        doStep();
-        if ( curChar == '\n' ||
-            curChar == '\r' )
-        {
-          logState( "skipEolComment: Eol detected" );
-          if ( nextPos != textLength )
-          {
-            doStep();
-            if ( curChar != '\n' &&
-                curChar != '\r' )
-            {
-              logState( "skipEolComment: One more eol detected" );
-              doStepBack();
-            }
-          }
-          break;
-        }
-        if ( nextPos == textLength )
-        {
-          break;
-        }
-      }
-      logState( "skipEolComment" );
-      return true;
+        // skip all till last one!
+        lastStartRel = wsMatcherRel.start();
+        lastEndRel = wsMatcherRel.end();
+      } while ( wsMatcherRel.find() );
+      if ( lastEndRel == fragmentLength && lastEndRel != text.startOffset )
+        text.endOffset -= ( fragmentLength - lastStartRel );
     }
-    return false;
+    return text.endOffset > text.startOffset;
   }
 
 
   /**
    *  Description of the Method
    *
-   * @return                      Description of the Returned Value
-   * @exception  SqlEotException  Description of Exception
-   * @since
+   * @param  args  Description of Parameter
    */
-  protected boolean skipComment()
-       throws SqlEotException
+  public static void main( String args[] )
   {
-    if ( isCommentStart() )
+    String pattern;
+    pattern = "([\n\r]+;)+[\n\r]+";
+    //final String text = "  \n\nqwe\n\n;\n\n";
+    String text;
+
+    text = "aa;bb";
+    test( pattern, text );
+    text = "aa\n;\nbb";
+    test( pattern, text );
+    text = "  aa\n;\nbb  ";
+    test( pattern, text );
+    text = "aa  \r\n;\n\r  bb";
+    test( pattern, text );
+    text = " aa  bb cc \n;\n  dd; ee; ff;\n\n ";
+    test( pattern, text );
+    text = "  aa\n;\nbb\n;\ncc  ";
+    test( pattern, text );
+    text = "\n;\r  aa\n;\nbb\n;\ncc  \r;\n ";
+    test( pattern, text );
+    text = "\n;\r";
+    test( pattern, text );
+    text = "  ";
+    test( pattern, text );
+    text = "\n;\r  aa\n;\nbb\n;\n;\ncc  \r;\n ";
+    test( pattern, text );
+  }
+
+
+  /**
+   *  A unit test for JUnit
+   *
+   * @param  pattern  Description of Parameter
+   * @param  text     Description of Parameter
+   */
+  protected static void test( String pattern, String text )
+  {
+//    System.out.println( "pattern: [" + pattern + "]" );
+    System.out.println( "text: [" + text + "]" );
+
+    /*
+     *  final String split[] = text.split( pattern );
+     *  System.out.println( "split:" );
+     *  for ( int i = 0; i < split.length; i++ )
+     *  System.out.println( "" + i + ":[" + split[i] + "]" );
+     *  System.out.println( "split done" );
+     */
+    final SqlParser p = new SqlParser( pattern );
+    final List frags = p.getFragments( text );
+    System.out.println( "************ Result: **************" );
+    for ( Iterator i = frags.iterator(); i.hasNext();  )
     {
-      logState( "skipComment: comment detected" );
-      nextPos++;
-      doStep();
-      while ( true )
-      {
-        doStep();
-        if ( isCommentEnd() )
-        {
-          logState( "skipComment: comment end detected" );
-          nextPos++;
-          break;
-        }
-        if ( nextPos == textLength )
-        {
-          throw new SqlEotException();
-        }
-      }
-      logState( "skipComment" );
-      return true;
+      final SqlStatementText txt = (SqlStatementText) i.next();
+      System.out.println( "start:" + txt.startOffset + "->end:" + txt.endOffset );
+      System.out.println( "s:[" + text.substring( txt.startOffset, txt.endOffset ) + "]" );
     }
-    return false;
+    System.out.println( "***********************************" );
   }
 
 
-  /**
-   *  Description of the Class
-   *
-   * @author     svu
-   * @created    6 0@B 2001 3.
-   */
-  public static class SqlException extends Exception
+  public static class SqlStatementText
   {
+    public int startOffset;
+    public int endOffset;
+
+
+    /**
+     *Constructor for the SqlStatementText object
+     *
+     * @param  startOffset  Description of Parameter
+     * @param  endOffset    Description of Parameter
+     */
+    public SqlStatementText( int startOffset, int endOffset )
+    {
+      this.startOffset = startOffset;
+      this.endOffset = endOffset;
+    }
+
+
+    public String getSubstring( String text )
+    {
+      return text.substring( startOffset, endOffset );
+    }
+
+
+    public int getLength()
+    {
+      return endOffset - startOffset;
+    }
   }
-
-
-  /**
-   *  Description of the Class
-   *
-   * @author     svu
-   * @created    6 0@B 2001 3.
-   */
-  public static class SqlEotException extends SqlException
-  {
-  }
-
 }
 
