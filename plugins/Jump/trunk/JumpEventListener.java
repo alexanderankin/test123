@@ -72,7 +72,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 //{{{  reloadTags(ProjectViewer viewer, VPTProject p)  
     public boolean reloadTags(ProjectViewer viewer, VPTProject p)
     {
-        if (isAddedToBus == false) 
+        if (!isAddedToBus) 
         {
             EditBus.addToBus(this);
             isAddedToBus = true;
@@ -113,6 +113,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
                 Collection v0 = Collections.synchronizedCollection(p.getFiles());
                 Vector v = new Vector(v0);
                 
+                this.ProjectFiles.clear();
                 for (int i=0; i<v.size(); i++)
                 {
                     VPTFile f = (VPTFile)v.get(i);
