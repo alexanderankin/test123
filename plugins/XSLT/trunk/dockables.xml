@@ -1,13 +1,6 @@
 <?xml version="1.0"?>
-
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
-
 <DOCKABLES>
-  <DOCKABLE NAME="XSLTProcessor">
-    new xslt.XSLTProcessor(view);
-  </DOCKABLE>
-  <DOCKABLE NAME="XPathTool">
-    new xslt.XPathTool(view);
-  </DOCKABLE>
+  <DOCKABLE NAME="xslt-processor">new xslt.XSLTProcessor(view);</DOCKABLE>
+  <DOCKABLE NAME="xpath-tool">new xslt.XPathTool(view);</DOCKABLE>
 </DOCKABLES>
-
