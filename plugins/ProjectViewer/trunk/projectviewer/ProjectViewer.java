@@ -56,6 +56,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	JButton expandBtn;
 	JButton contractBtn;
 	JButton configBtn;
+	JButton launchBrowserBtn;  // this will eventually be on the context menu
 
 	private ProjectView projectView;
 	private JTabbedPane tabs = new JTabbedPane();
@@ -404,7 +405,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		expandBtn = createButton("/projectviewer/icons/Expand.gif", "Expand the file list");
 		contractBtn = createButton("/projectviewer/icons/Contract.gif", "Contract the file list");
 		configBtn = createButton("/projectviewer/icons/Config.gif", "Configure Project Viewer");
-
+		// *************  Need to find a decent icon
+		launchBrowserBtn= createButton("/projectviewer/icons/Config.gif", "Preview in Browser");	
+		// ************** 
 		toolbar.add(createProjectBtn);
 		toolbar.add(deleteProjectBtn);
 		toolbar.add(expandBtn);
@@ -414,7 +417,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		toolbar.add(importFilesBtn);
 		toolbar.add(removeFileBtn);
 		toolbar.add(removeAllFilesBtn);
-
+		toolbar.add(launchBrowserBtn);
 		//  set the default state of the toggle buttons...
 		removeFileBtn.setEnabled(false);
 		removeAllFilesBtn.setEnabled(false);
@@ -424,7 +427,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		openAllBtn.setEnabled(false);
 		expandBtn.setEnabled(true);
 		contractBtn.setEnabled(true);
-
+		launchBrowserBtn.setEnabled(true);   
+		
 		bar.add(toolbar, BorderLayout.NORTH);
 		bar.add(projectCombo, BorderLayout.SOUTH);
 
