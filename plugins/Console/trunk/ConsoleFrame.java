@@ -26,11 +26,17 @@ import org.gjt.sp.jedit.*;
 
 public class ConsoleFrame extends JFrame
 {
+	// can't be bothered writing accessors
+	public Color bgColor, plainColor, infoColor, warningColor, errorColor;
+	public Font defaultFont;
+
 	public ConsoleFrame(View view)
 	{
 		super(jEdit.getProperty("console.title"));
 
 		this.view = view;
+
+		propertiesChanged();
 
 		tabs = new JTabbedPane();
 		Object[] shells = EditBus.getNamedList(Shell.SHELLS_LIST);
@@ -89,6 +95,8 @@ public class ConsoleFrame extends JFrame
 
 	public void close()
 	{
+		GUIUtilities.saveGeometry(this,"console");
+
 		// if we have a view and we're closed, we can be bought
 		// back up again with Plugins->Console. But if we don't
 		// have a view, it is impossible.
@@ -111,6 +119,53 @@ public class ConsoleFrame extends JFrame
 			return jEdit.getFirstView();
 		else
 			return view;
+	}
+
+	public void propertiesChanged()
+	{
+		bgColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.bgColor"));
+		plainColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.plainColor"));
+		infoColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.infoColor"));
+		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.warningColor"));
+		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.errorColor"));
+
+		String family = jEdit.getProperty("console.font");
+		int size;
+		try
+		{
+			size = Integer.parseInt(jEdit.getProperty(
+				"console.fontsize"));
+		}
+		catch(NumberFormatException nf)
+		{
+			size = 14;
+		}
+		int style;
+		try
+		{
+			style = Integer.parseInt(jEdit.getProperty(
+				"console.fontstyle"));
+		}
+		catch(NumberFormatException nf)
+		{
+			style = Font.PLAIN;
+		}
+		defaultFont = new Font(family,style,size);
+
+		if(tabs != null)
+		{
+			Component[] components = tabs.getComponents();
+			for(int i = 0; i < components.length; i++)
+			{
+				((ConsoleOutputPane)components[i])
+					.propertiesChanged();
+			}
+		}
 	}
 
 	// private members

@@ -18,9 +18,11 @@
  */
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.*;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
 
@@ -35,6 +37,11 @@ public class ConsoleFramePluginPart extends EBPlugin
 	public void createMenuItems(View view, Vector menus, Vector menuItems)
 	{
 		menuItems.addElement(GUIUtilities.loadMenuItem(view,"console"));
+	}
+
+	public void createOptionPanes(OptionsDialog dialog)
+	{
+		dialog.addOptionPane(new ConsoleOptionPane());
 	}
 
 	public void handleMessage(EBMessage msg)
@@ -58,6 +65,17 @@ public class ConsoleFramePluginPart extends EBPlugin
 				ConsoleFrame console = (ConsoleFrame)consoles.remove(view);
 				if(console != null)
 					console.viewClosed();
+			}
+		}
+		else if(msg instanceof PropertiesChanged)
+		{
+			if(consoles == null)
+				return;
+
+			Enumeration enum = consoles.elements();
+			while(enum.hasMoreElements())
+			{
+				((ConsoleFrame)enum.nextElement()).propertiesChanged();
 			}
 		}
 	}
