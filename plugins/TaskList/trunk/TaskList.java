@@ -1,6 +1,6 @@
 /*
  * TaskList.java - TaskList plugin
- * Copyright (C) 2001 Oliver Rutherfurd
+ * Copyright (C) 2001,2002 Oliver Rutherfurd
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-
-// TODO: remove unused packages
+//{{{ imports
 import java.awt.*;
 import java.awt.event.*;
 import java.util.Vector;
@@ -26,11 +25,10 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-
 import org.gjt.sp.util.Log;
+//}}}
 
 /**
  * A dockable component contaning a scrollable table; the table contains
@@ -41,6 +39,7 @@ import org.gjt.sp.util.Log;
 public class TaskList extends JPanel implements EBComponent
 {
 
+	//{{{ constructor
 	/**
 	 * Constructor
 	 *
@@ -56,8 +55,9 @@ public class TaskList extends JPanel implements EBComponent
 		table = new TaskListTable();
 
 		add(BorderLayout.CENTER, new JScrollPane(table));
-	}
+	}//}}}
 
+	//{{{ TaskListTable class
 	/**
 	 * The table containing data on task items
 	 */
@@ -65,6 +65,7 @@ public class TaskList extends JPanel implements EBComponent
 	{
 		private boolean init = false;
 
+		//{{{ constructor
 		TaskListTable()
 		{
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -109,13 +110,15 @@ public class TaskList extends JPanel implements EBComponent
 			init = true;
 			resizeTable();
 			sort();
-		}
+		}//}}}
 
+		//{{{ getTaskListModel() method
 		public TaskListModel getTaskListModel()
 		{
 			return (TaskListModel)getModel();
-		}
+		}//}}}
 
+		//{{{ tableChanged() method
 		/**
 		 * Calls resizeTable() when the number of table columns change
 		 *
@@ -136,8 +139,9 @@ public class TaskList extends JPanel implements EBComponent
 					Log.log(Log.ERROR, TaskList.class, ex);
 				}
 			}
-		}
+		}//}}}
 
+		//{{{ resizeTable() method
 		/**
 		 * Re-sizes the columns in the table - called when cols are
 		 * added or removed.
@@ -162,29 +166,32 @@ public class TaskList extends JPanel implements EBComponent
 				columnModel.getColumn(3).setPreferredWidth(500);
 			}
 			getTableHeader().resizeAndRepaint();
-		}
+		}//}}}
 
+		//{{{ sort() method
 		private void sort()
 		{
 			getTaskListModel().sort();
-		}
+		}//}}}
 
+		//{{{ sort(int col, boolean ascending) method
 		private void sort(int col, boolean ascending)
 		{
 			getTaskListModel().sort(col, ascending);
-		}
+		}//}}}
 
-	}
+	}//}}}
 
+	//{{{ MouseHandler class
 	/**
 	 * Responds to mouse clicks in the table or its header row
 	 */
 	class MouseHandler extends MouseAdapter
 	{
+		//{{{ mouseClicked() method
 		/**
 		 * Calls handling routine based on number, type and location
 		 * of mouse clicks
-		 *
 		 * @param e The MouseEvent being handled
 		 */
 		public void mouseClicked(MouseEvent e)
@@ -234,11 +241,22 @@ public class TaskList extends JPanel implements EBComponent
 					showTaskText(rowNum);
 				}
 			}
-		}
+			else if(e.getClickCount() == 1)
+			{
+				if(e.getComponent() == table.getTableHeader())
+					return;
 
+				if(TaskListPlugin.getAllowSingleClickSelection())
+				{
+					table.setRowSelectionInterval(rowNum,rowNum);
+					showTaskText(rowNum);
+				}
+			}
+		}//}}}
+
+		//{{{ showPopup(View view, int row, Point p) method
 		/**
 		 * Causes a popup context menu to be shown
-		 *
 		 * @param view he View in which the TaskList component appears
 		 * @param row The table row clicked by the mouse
 		 * @param p The Point within the TaskList's table object clicked by the mouse
@@ -247,17 +265,18 @@ public class TaskList extends JPanel implements EBComponent
 		{
 			TaskListPopup popup = new TaskListPopup(view, TaskList.this, row);
 			// NOTE: keep within screen limits; use task list panel, not table
-	        SwingUtilities.convertPointToScreen(p, table);
-        	SwingUtilities.convertPointFromScreen(p, TaskList.this);
-        	Dimension dt = TaskList.this.getSize();
+			SwingUtilities.convertPointToScreen(p, table);
+			SwingUtilities.convertPointFromScreen(p, TaskList.this);
+			Dimension dt = TaskList.this.getSize();
 			Dimension dp = popup.getPreferredSize();
-        	if (p.x + dp.width > dt.width)
-            	p.x = dt.width - dp.width;
-        	if (p.y + dp.height > dt.height)
-            	p.y = dt.height - dp.height;
+			if (p.x + dp.width > dt.width)
+				p.x = dt.width - dp.width;
+			if (p.y + dp.height > dt.height)
+				p.y = dt.height - dp.height;
 			popup.show(TaskList.this, p.x+1, p.y+1);
-		}
+		}//}}}
 
+		//{{{ showTaskText(int row) method
 		/**
 		 * Locates and displays buffer text corresponding to the selected row of the TaskList's table component
 		 *
@@ -287,30 +306,31 @@ public class TaskList extends JPanel implements EBComponent
 					}
 				}
 			});
+		}//}}}
 
-		}
-	}
+	}//}}}
 
+	//{{{ getName() method
 	/**
 	 * Property accessor required by jEdit Plugin API
-	 *
 	 * @return The plugin's name property
 	 */
 	public String getName()
 	{
 		return TaskListPlugin.NAME;
-	}
+	}//}}}
 
+	//{{{ getComponent() method
 	/**
 	 * Property accessor required by jEdit Plugin API
-	 *
 	 * @return A reference to the TaskList object
 	 */
 	public Component getComponent()
 	{
 		return this;
-	}
+	}//}}}
 
+	//{{{ handleMessage(EBMessage msg) method
 	/**
 	 * Message handling routine required by the jEdit Plugin API
 	 *
@@ -325,9 +345,9 @@ public class TaskList extends JPanel implements EBComponent
 			table.setShowHorizontalLines(
 				jEdit.getBooleanProperty("tasklist.table.horizontal-lines"));
 		}
-		// QUESTION: what other messages need to be handled here?
-	}
+	}//}}}
 
+	//{{{ addNotify() method
 	/**
 	 * Adds the TaskList and its table's data model to the EditBus
 	 * to listen for messages; registers the data model to be notified when
@@ -339,8 +359,9 @@ public class TaskList extends JPanel implements EBComponent
 		EditBus.addToBus(this);
 		EditBus.addToBus(taskListModel);
 		TaskListPlugin.addTaskListener(taskListModel);
-	}
+	}//}}}
 
+	//{{{ removeNotify() method
 	/**
 	 * Removes the TaskList and its table's data model from the EditBus;
 	 * removes the data model form the list of components that listen for
@@ -354,8 +375,9 @@ public class TaskList extends JPanel implements EBComponent
 
 		// table model doesn't need to be notified when task are added/removed
 		TaskListPlugin.removeTaskListener(taskListModel);
-	}
+	}//}}}
 
+	//{{{ members
 	/**
 	 * The view in which the TaskList component appears
 	 */
@@ -370,5 +392,7 @@ public class TaskList extends JPanel implements EBComponent
 	 * to allow for calls by a TaskListPopup object.
 	 */
 	TaskListModel taskListModel;
+	//}}}
 }
 
+// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

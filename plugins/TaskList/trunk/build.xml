@@ -1,25 +1,23 @@
 <?xml version="1.0"?>
 
 <project name="TaskList" default="dist" basedir=".">
-	<!-- Change the next property to conform to your installation -->
-	<property name="jar.name"  value="TaskList.jar"/>
 
+	<property file="build.properties"/>
+
+	<property name="jar.name"  value="${ant.project.name}.jar"/>
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="./build"/>
-	<!-- Change the next property to conform to your installation -->
-<!-- 	<property name="install.dir"  value="G:/Program Files/jEdit 4.0pre5/settings/jars"/> -->
-	<property name="install.dir"  value=".."/>
-
+	<!-- change this if you want the plugin installed somewhere else... -->
+	<property name="install.dir"  value="${user.home}/.jedit/jars"/>
 
 	<path id="project.class.path">
+		<pathelement location='${jedit.home}/jedit.jar'/>
 		<pathelement location="."/>
 	</path>
-
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
 	</target>
-
 
 	<target name="compile" depends="init">
 		<javac
@@ -32,7 +30,6 @@
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
-
 
 	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>

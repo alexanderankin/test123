@@ -19,8 +19,7 @@
  * $Id$
  */
 
-
-// TODO: remove unused packages
+//{{{ imports
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
@@ -33,19 +32,20 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 import gnu.regexp.*;
-
 import org.gjt.sp.util.Log;
+//}}}
 
 public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 {
+	//{{{ constructor
 	public TaskListTaskTypesOptionPane()
 	{
 		super("tasklist.tasktypes");
-	}
+	}//}}}
 
+	//{{{ _init() method
 	protected void _init()
 	{
-
 		addComponent(new JLabel(jEdit.getProperty(
 			"options.tasklist.tasktypes.patterns")));
 
@@ -97,9 +97,9 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 			iconList.addElement(new IconListEntry(
 				TaskType.loadIcon(icon), icon));
 		}
-	}
+	}//}}}
 
-
+	//{{{ _save() method
 	public void _save()
 	{
 		int i = 0;
@@ -109,8 +109,9 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 			i++;
 		}
 		TaskListPlugin.pruneTaskListProperties(i);
-	}
+	}//}}}
 
+	//{{{ createListModel() method
 	private DefaultListModel createListModel()
 	{
 		DefaultListModel listModel = new DefaultListModel();
@@ -135,8 +136,9 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 			i++;
 		}
 		return listModel;
-	}
+	}//}}}
 
+	//{{{ updateButtons() method
 	private void updateButtons()
 	{
 		int index = typesList.getSelectedIndex();
@@ -145,8 +147,9 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 		removeBtn.setEnabled(index != -1 && typesListModel.getSize() != 0);
 		upBtn.setEnabled(index > 0);
 		downBtn.setEnabled(index != -1 && index != typesListModel.getSize() -1);
-	}
+	}//}}}
 
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -198,18 +201,18 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 				typesList.setSelectedIndex(index + 1);
 			}
 		}
-	}
+	}//}}}
 
-
+	//{{{ ListHandler class
 	class ListHandler implements ListSelectionListener
 	{
 		public void valueChanged(ListSelectionEvent evt)
 		{
 			updateButtons();
 		}
-	}
+	}//}}}
 
-
+	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent evt)
@@ -222,20 +225,9 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 				typesList.repaint();
 			}
 		}
-	}
+	}//}}}
 
-
-	private JList typesList;
-	private DefaultListModel typesListModel;
-
-	private DefaultComboBoxModel iconList;
-
-	private JButton addBtn;
-	private JButton editBtn;
-	private JButton removeBtn;
-	private JButton upBtn;
-	private JButton downBtn;
-
+	//{{{ TaskTypeCellRenderer class
 	class TaskTypeCellRenderer extends DefaultListCellRenderer
 	{
 		public Component getListCellRendererComponent(
@@ -251,13 +243,27 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 
 			return this;
 		}
-	}
+	}//}}}
+
+	//{{{ private members
+	private JList typesList;
+	private DefaultListModel typesListModel;
+
+	private DefaultComboBoxModel iconList;
+
+	private JButton addBtn;
+	private JButton editBtn;
+	private JButton removeBtn;
+	private JButton upBtn;
+	private JButton downBtn;
+	//}}}
 
 }
 
-
+//{{{ TaskTypeDialog class
 class TaskTypeDialog extends EnhancedDialog
 {
+	//{{{ constructor
 	public TaskTypeDialog(Component comp, TaskType taskType,
 		ComboBoxModel iconListModel)
 	{
@@ -287,7 +293,6 @@ class TaskTypeDialog extends EnhancedDialog
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(sample = new JTextField(taskType.getSample()));
-
 
 		// pattern
 		label = new JLabel(jEdit.getProperty(
@@ -377,8 +382,9 @@ class TaskTypeDialog extends EnhancedDialog
 		pack();
 		setLocationRelativeTo(JOptionPane.getFrameForComponent(comp));
 		show();
-	}
+	}//}}}
 
+	//{{{ ok() method
 	public void ok()
 	{
 		String _name, _pattern, _iconName, _sample;
@@ -422,18 +428,21 @@ class TaskTypeDialog extends EnhancedDialog
 
 		isOK = true;
 		dispose();
-	}
+	}//}}}
 
+	//{{{ cancel() method
 	public void cancel()
 	{
 		dispose();
-	}
+	}//}}}
 
+	//{{{ isOK() method
 	public boolean isOK()
 	{
 		return isOK;
-	}
+	}//}}}
 
+	//{{{ private members
 	private String iconPath;	// for custom icon
 	private TaskType taskType;
 	private JTextField name;
@@ -445,13 +454,16 @@ class TaskTypeDialog extends EnhancedDialog
 	private JRadioButton useBuiltin, useCustom;
 	private JComboBox builtinIcons;
 	private boolean isOK;
+	//}}}
 
+	//{{{ updateEnabled() method
 	private void updateEnabled()
 	{
 		builtinIcons.setEnabled(useBuiltin.isSelected());
 		customIcon.setEnabled(useCustom.isSelected());
-	}
+	}//}}}
 
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -493,11 +505,11 @@ class TaskTypeDialog extends EnhancedDialog
 				customIcon.setText(MiscUtilities.getFileName(iconPath));
 			}
 		}
-	}
+	}//}}}
 
-}
+}//}}}
 
-
+//{{{ IconCellRenderer class
 class IconCellRenderer extends DefaultListCellRenderer
 {
 	public Component getListCellRendererComponent(JList list,
@@ -513,9 +525,9 @@ class IconCellRenderer extends DefaultListCellRenderer
 
 		return this;
 	}
-}
+}//}}}
 
-
+//{{{ IconListEntry class
 class IconListEntry
 {
 	IconListEntry(Icon icon, String name)
@@ -526,4 +538,6 @@ class IconListEntry
 
 	Icon icon;
 	String name;
-}
+}//}}}
+
+// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

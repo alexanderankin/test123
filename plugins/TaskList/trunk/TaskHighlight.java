@@ -19,18 +19,17 @@
  * $Id$
  */
 
-import java.awt.event.*;
+//{{{ imports
 import java.awt.*;
-
-import org.gjt.sp.jedit.syntax.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.*;
-
-import org.gjt.sp.util.Log;
-
+import java.awt.event.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import javax.swing.text.Segment;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.syntax.*;
+import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.util.Log;
+//}}}
 
 /**
  * A class extending jEdit's TextAreaExtension class
@@ -39,6 +38,7 @@ import javax.swing.text.Segment;
  */
 public class TaskHighlight extends TextAreaExtension
 {
+	//{{{ constructor
 	/**
 	 * Constructs a TextHighlight object
 	 * @param textArea The text area
@@ -50,8 +50,9 @@ public class TaskHighlight extends TextAreaExtension
 		this.highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
 		this.seg = new Segment();
 		this.point = new Point();
-	}
+	}//}}}
 
+	//{{{ isEnabled() method
 	/**
 	 * Returns whether highlighting of task items is currently enabled.
 	 *
@@ -61,9 +62,9 @@ public class TaskHighlight extends TextAreaExtension
 	public boolean isEnabled()
 	{
 		return highlightEnabled;
-	}
+	}//}}}
 
-
+	//{{{ setEnabled(boolean enabled) method
 	/**
 	 * Set whether highlighting of task items is enabled; does not
 	 * redraw the text area after a change in state.
@@ -73,16 +74,9 @@ public class TaskHighlight extends TextAreaExtension
 	public void setEnabled(boolean enabled)
 	{
 		highlightEnabled = enabled;
-	}
+	}//}}}
 
-/*
-new methods
-paintValidLine(Graphics2D gfx, int physicalLine, int start, int end, int y)
-
-paintInvalidLine(Graphics2D gfx, int screenLine, int y)
-
-getToolTipText(int x, int y)
-*/
+	//{{{ paintValidLine() method
 	/**
 	 * Called by the text area to paint a highlight on a task line
 	 * (when highlighting is enabled)
@@ -94,10 +88,10 @@ getToolTipText(int x, int y)
 	 * @param y The y co-ordinate of the top of the line's bounding box
 	 */
 	public void paintValidLine(Graphics2D gfx, int screenLine,
-    	                       int physicalLine, int start, int end, int y)
+								int physicalLine, int start, int end, int y)
 	{
-//		Log.log(Log.DEBUG,this,"paintValidLine() for line " +
-//			String.valueOf(physicalLine));
+		// Log.log(Log.DEBUG,this,"paintValidLine() for line " +
+		//	String.valueOf(physicalLine));
 		Buffer buffer = textArea.getBuffer();
 		if(!highlightEnabled || !buffer.isLoaded() ||
 			physicalLine >= buffer.getLineCount())
@@ -130,15 +124,16 @@ getToolTipText(int x, int y)
 			}
 			if(task != null)
 			{
-//				Log.log(Log.DEBUG,this,"Found task where physical line = "
-//					+ String.valueOf(physicalLine));
+				// Log.log(Log.DEBUG,this,"Found task where physical line = "
+				//	+ String.valueOf(physicalLine));
 				FontMetrics fm = textArea.getPainter().getFontMetrics();
 				y -= (fm.getDescent() + fm.getLeading());
 				underlineTask(task, gfx, physicalLine, start, end, y);
 			}
 		}
-	}
+	}//}}}
 
+	//{{{ getToolTipText() method
 	/**
 	 * Returns the tool tip to display at the specified location.
 	 * @param x The x-coordinate
@@ -147,8 +142,9 @@ getToolTipText(int x, int y)
 	 public java.lang.String getToolTipText(int x, int y)
 	 {
 		 return super.getToolTipText(x, y);
-	 }
+	}//}}}
 
+	//{{{ private members
 	/**
 	 * The textArea on which the highlight will be drawn.
 	 */
@@ -170,8 +166,9 @@ getToolTipText(int x, int y)
 	 * A point for anchor the highlighting of taks text
 	 */
 	private Point point;
+	//}}}
 
-
+	//{{{ underlineTask() method
 	/**
 	 * Implements underlining of task items through a call to
 	 * paintWavyLine()
@@ -186,14 +183,14 @@ getToolTipText(int x, int y)
 	private void underlineTask(Task task,
 		Graphics2D gfx, int line, int _start, int _end, int y)
 	{
-//		Log.log(Log.DEBUG,this,"Calling underlineTask() for line "
-//			+ String.valueOf(line) + "....");
+		// Log.log(Log.DEBUG,this,"Calling underlineTask() for line "
+		//	+ String.valueOf(line) + "....");
 		int start = task.getStartOffset();
 		int end = task.getEndOffset();
 
 		if(start == 0 && end == 0)
 		{
-//			Log.log(Log.DEBUG,this,"Reseting start and end in underlineTask()....");
+			// Log.log(Log.DEBUG,this,"Reseting start and end in underlineTask()....");
 			textArea.getLineText(line,seg);
 			for(int j = 0; j < seg.count; j++)
 			{
@@ -219,9 +216,9 @@ getToolTipText(int x, int y)
 
 		gfx.setColor(TaskListPlugin.getHighlightColor());
 		paintWavyLine(gfx,y,start,end);
-	}
+	}//}}}
 
-
+	//{{{ paintWavyLine() method
 	/**
 	 * Draws a wavy line at the indicated coordinates
 	 *
@@ -232,7 +229,7 @@ getToolTipText(int x, int y)
 	 */
 	private void paintWavyLine(Graphics2D gfx, int y, int start, int end)
 	{
-//		Log.log(Log.DEBUG,this,"Calling paintWavyLine()....");
+		// Log.log(Log.DEBUG,this,"Calling paintWavyLine()....");
 		y += textArea.getPainter().getFontMetrics().getHeight();
 
 		for(int i = start; i < end; i+= 6)
@@ -240,6 +237,8 @@ getToolTipText(int x, int y)
 			gfx.drawLine(i,y + 3,i + 3,y + 1 );
 			gfx.drawLine(i + 3,y + 1,i + 6,y + 3);
 		}
-	}
+	}//}}}
 
 }
+
+// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

@@ -1,6 +1,6 @@
 /*
  * TaskListGeneralOptionPane.java - TaskList plugin
- * Copyright (C) 2001 Oliver Rutherfurd
+ * Copyright (C) 2001,2002 Oliver Rutherfurd
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,21 +19,14 @@
  * $Id$
  */
 
-
-// TODO: remove unused packages
-import javax.swing.border.*;
+//{{{ imports
+import java.awt.event.*;
+import java.util.Vector;
+import java.awt.Color;
 import javax.swing.event.*;
 import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.net.*;
-import java.util.Vector;
-import java.util.StringTokenizer;
-import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
-
-import org.gjt.sp.util.Log;
+//}}}
 
 public class TaskListGeneralOptionPane extends AbstractOptionPane
 {
@@ -42,26 +35,9 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		super("tasklist.general");
 	}
 
+	//{{{ _init() method
 	protected void _init()
 	{
-		// NOTE: parse delay does not appear to be implemented in application
-		/*
-		String _parseDelay = "";
-
-		try
-		{
-			_parseDelay = "" + Integer.parseInt(jEdit.getProperty("tasklist.parsedelay"));
-		}
-		catch(NumberFormatException nf)
-		{
-			_parseDelay = "1000";	// IDEA: replace with constant
-		}
-
-		addComponent(jEdit.getProperty("options.tasklist.general.parsedelay"),
-			parseDelay = new JTextField(_parseDelay));
-
-		addComponent(Box.createVerticalStrut(3));
-		*/
 		addComponent(jEdit.getProperty("options.tasklist.general.buffer.display"),
 			bufferDisplay = new JComboBox(
 			new String[]
@@ -93,6 +69,11 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 		addComponent(Box.createVerticalStrut(3));
 
+		addComponent(allowSingleClick = new JCheckBox(
+			jEdit.getProperty("options.tasklist.single-click-selection"),
+			jEdit.getBooleanProperty("tasklist.single-click-selection",false)));
+
+		addComponent(Box.createVerticalStrut(3));
 
 		addComponent(bHorizontalLines = new JCheckBox(
 			jEdit.getProperty("options.tasklist.general.table.horizontal-lines"),
@@ -106,8 +87,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 		addComponent(Box.createVerticalStrut(3));
 
-
-		// DONE: change default to false, until we get it working well
+		// default to false, until we get it working well
 		addComponent(highlightTasks = new JCheckBox(
 			jEdit.getProperty("options.tasklist.general.highlight.tasks"),
 			jEdit.getBooleanProperty("tasklist.highlight.tasks", false)));
@@ -129,24 +109,11 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 				"options.tasklist.general.buffer.display.namedir"));
 		else
 			bufferDisplay.setSelectedItem(_bufferDisplay);
+	}//}}}
 
-		// set current value of viewBuffers
-//		String _viewBuffers = jEdit.getProperty("tasklist.view.buffers");
-//		if(_viewBuffers == "" || _viewBuffers == null)
-//			viewBuffers.setSelectedItem(jEdit.getProperty(
-//				"options.tasklist.general.view.buffers.panes"));
-//		else
-//			viewBuffers.setSelectedItem(_viewBuffers);
-	}
-
-
+	//{{{ _save() method
 	public void _save()
 	{
-		// NOTE: tasklist.parsedelay property not used in this version
-		/*
-		jEdit.setProperty("tasklist.parsedelay", parseDelay.getText());
-		*/
-
 		jEdit.setProperty("tasklist.buffer.display",
 			bufferDisplay.getSelectedItem().toString());
 
@@ -159,6 +126,9 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("tasklist.table.vertical-lines",
 			bVerticalLines.isSelected());
 
+		jEdit.setBooleanProperty("tasklist.single-click-selection",
+			allowSingleClick.isSelected());
+
 		jEdit.setBooleanProperty("tasklist.highlight.tasks",
 			highlightTasks.isSelected());
 
@@ -167,10 +137,9 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 		jEdit.setBooleanProperty("tasklist.table.sort-ascending",
 			(sortDirection.getSelectedIndex() == 0));
+	}//}}}
 
-
-	}
-
+	//{{{ createColorButton() method
 	private JButton createColorButton(String property)
 	{
 		JButton b = new JButton(" ");
@@ -178,17 +147,16 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		b.addActionListener(new ColorButtonHandler(b));
 		b.setRequestFocusEnabled(false);
 		return b;
-	}
+	}//}}}
 
+	//{{{ ColorButtonHandler class
 	private class ColorButtonHandler implements ActionListener
 	{
 		private JButton button;
 
-
 		public ColorButtonHandler(JButton button) {
 			this.button = button;
 		}
-
 
 		public void actionPerformed(ActionEvent evt)
 		{
@@ -201,26 +169,27 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 				button.setBackground(c);
 			}
 		}
-	}
+	}//}}}
 
+	//{{{ HighlightColorHandler class
 	private class HighlightColorHandler implements ActionListener{
 		public void actionPerformed(ActionEvent evt)
 		{
 			TaskListGeneralOptionPane.this.highlightColor.setEnabled(
 				TaskListGeneralOptionPane.this.highlightTasks.isSelected());
 		}
-	}
+	}//}}}
 
-	// NOTE: parseDelay component not used in this version
-	// private JTextField parseDelay;
+	//{{{ private members
 	private JComboBox bufferDisplay;
 	private JComboBox sortCriteria;
 	private JComboBox sortDirection;
-	//private JComboBox viewBuffers;
+	private JCheckBox allowSingleClick;
 	private JCheckBox bVerticalLines;
 	private JCheckBox bHorizontalLines;
 	private JCheckBox highlightTasks;
 	private JButton highlightColor;
-
+	//}}}
 }
 
+// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

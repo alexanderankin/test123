@@ -19,20 +19,18 @@
  * $Id$
  */
 
-
+//{{{ imports
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import org.gjt.sp.jedit.GUIUtilities;
-
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.util.Log;
-
 import gnu.regexp.*;
-
+//}}}
 
 public class TaskType
 {
@@ -40,6 +38,7 @@ public class TaskType
 		RESyntax.RE_SYNTAX_PERL5).set(
 			RESyntax.RE_CHAR_CLASSES);
 
+	//{{{ default constructors
 	public TaskType()
 	{
 		setName("");
@@ -48,7 +47,6 @@ public class TaskType
 		setIgnoreCase(false);
 		setIconPath("Exclamation.gif");
 	}
-
 
 	public TaskType(String name, String pattern, String sample,
 		boolean ignoreCase, String iconPath)
@@ -60,8 +58,9 @@ public class TaskType
 		setIconPath(iconPath);	// will attempt to load icon too
 
 		compileRE();
-	}
+	}//}}}
 
+	//{{{ extractTask() method
 	public Task extractTask(Buffer buffer, String tokenText,
 		int line, int tokenOffset)
 	{
@@ -70,23 +69,13 @@ public class TaskType
 		if(match == null)
 			return null;
 
-		/*    NOTE: removed because gnu.regexp.REMatch doesn't have this anymore...
-		if(match.getSubCount() != 3)
-		{
-			Log.log(Log.WARNING, TaskType.class,
-				"Expected 3 sub-matches for '" +
-				this.pattern + "', got " + match.getSubCount());//##
-
-			return null;
-		}
-		*/
-//		Log.log(Log.DEBUG,this,"Match found using " + re.toString());
-//		Log.log(Log.DEBUG,this,"Match on: " + tokenText);
-//		Log.log(Log.DEBUG,this,"Match = " + match.toString());
-//		Log.log(Log.DEBUG,this,"Match 0 = " + match.toString(0));
-//		Log.log(Log.DEBUG,this,"Match 1 = " + match.toString(1));
-//		Log.log(Log.DEBUG,this,"Match 2 = " + match.toString(2));
-//		Log.log(Log.DEBUG,this,"Match 3 = " + match.toString(3));
+		// Log.log(Log.DEBUG,this,"Match found using " + re.toString());
+		// Log.log(Log.DEBUG,this,"Match on: " + tokenText);
+		// Log.log(Log.DEBUG,this,"Match = " + match.toString());
+		// Log.log(Log.DEBUG,this,"Match 0 = " + match.toString(0));
+		// Log.log(Log.DEBUG,this,"Match 1 = " + match.toString(1));
+		// Log.log(Log.DEBUG,this,"Match 2 = " + match.toString(2));
+		// Log.log(Log.DEBUG,this,"Match 3 = " + match.toString(3));
 
 		int start = (displayIdentifier == true ? match.getStartIndex(1) :
 			match.getStartIndex(2));
@@ -98,15 +87,19 @@ public class TaskType
 			tokenText.substring(start, end),
 			tokenOffset + start,
 			tokenOffset + end);
-	}
+	}//}}}
 
+	//{{{ get/setName() methods
 	public String getName() { return this.name; }
+
 	public void setName(String name)
 	{
 		this.name = name;
-	}
+	}//}}}
 
+	//{{{ get/setPattern() methods
 	public String getPattern(){ return this.pattern; }
+
 	public void setPattern(String pattern)
 	{
 		if(this.pattern == null || !this.pattern.equals(pattern))
@@ -114,15 +107,19 @@ public class TaskType
 			this.pattern = pattern;
 			compileRE();
 		}
-	}
+	}//}}}
 
+	//{{{ get/setSample() methods
 	public String getSample(){ return this.sample; }
+
 	public void setSample(String sample)
 	{
 		this.sample = sample;
-	}
+	}//}}}
 
+	//{{{ get/setIgnoreCase() methods
 	public boolean getIgnoreCase(){ return this.ignoreCase; }
+
 	public void setIgnoreCase(boolean ignoreCase)
 	{
 		if(this.ignoreCase != ignoreCase)
@@ -131,11 +128,13 @@ public class TaskType
 			this.reFlags = (ignoreCase ? RE.REG_ICASE : 0);
 			compileRE();
 		}
-	}
+	}//}}}
 
 	public Icon getIcon(){ return this.icon; }
 
+	//{{{ get/setIconPath() method
 	public String getIconPath(){ return this.iconPath; }
+
 	public void setIconPath(String iconPath)
 	{
 		if(this.iconPath != iconPath || this.icon == null)
@@ -146,14 +145,15 @@ public class TaskType
 			if(_icon != null)
 				this.icon = _icon;
 		}
-	}
+	}//}}}
 
+	//{{{ getREFlags() method
 	public int getREFlags()
 	{
 		return reFlags;
-	}
+	}//}}}
 
-
+	//{{{ compileRE() method
 	private void compileRE()
 	{
 		this.re = null;
@@ -169,9 +169,9 @@ public class TaskType
 				"Failed to compile task pattern: " + pattern +
 					e.toString());
 		}
-	}
+	}//}}}
 
-
+	//{{{ save() method
 	public void save(int i)
 	{
 		jEdit.setProperty("tasklist.tasktype." + i + ".name", name);
@@ -179,13 +179,15 @@ public class TaskType
 		jEdit.setProperty("tasklist.tasktype." + i + ".sample", sample);
 		jEdit.setBooleanProperty("tasklist.tasktype." + i + ".ignorecase", ignoreCase);
 		jEdit.setProperty("tasklist.tasktype." + i + ".iconpath", iconPath);
-	}
+	}//}}}
 
+	//{{{ toString() method
 	public String toString()
 	{
 		return this.pattern;
-	}
+	}//}}}
 
+	//{{{ private members
 	private RE re;
 	private int reFlags;
 	private String name;
@@ -198,10 +200,12 @@ public class TaskType
 	private boolean displayIdentifier = true;
 
 	private static Hashtable icons;
+	//}}}
 
-
+	//{{{ loadIcon() method
 	/**
-	*
+	* Loads an icon for later use
+	* @param iconName a file name (start with 'file:' or resource path)
 	*/
 	public static Icon loadIcon(String iconName)
 	{
@@ -233,8 +237,9 @@ public class TaskType
 
 		icons.put(iconName, icon);
 		return icon;
-	}
+	}//}}}
 
+	//{{{ static initializer
 	static
 	{
 		icons = new Hashtable();
@@ -244,8 +249,8 @@ public class TaskType
 			String icon = st.nextToken();
 			loadIcon(icon);
 		}
-	}
+	}//}}}
 
 }
 
-
+// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:
