@@ -397,13 +397,13 @@ public class FoldHighlight
 
 
     public static void bufferCreated(Buffer buffer) {
-        buffer.putProperty(
+        buffer.putBooleanProperty(
             FOLD_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getFoldHighlightDefault() ? Boolean.TRUE : Boolean.FALSE
+            WhiteSpaceDefaults.getFoldHighlightDefault()
         );
-        buffer.putProperty(
+        buffer.putBooleanProperty(
             FOLD_TOOLTIP_PROPERTY,
-            WhiteSpaceDefaults.getFoldTooltipDefault() ? Boolean.TRUE : Boolean.FALSE
+            WhiteSpaceDefaults.getFoldTooltipDefault()
         );
     }
 
@@ -411,14 +411,7 @@ public class FoldHighlight
     public static void editorStarted() {
         Buffer[] buffers = jEdit.getBuffers();
         for (int i = 0; i < buffers.length; i++) {
-            buffers[i].putProperty(
-                FOLD_HIGHLIGHT_PROPERTY,
-                WhiteSpaceDefaults.getFoldHighlightDefault() ? Boolean.TRUE : Boolean.FALSE
-            );
-            buffers[i].putProperty(
-                FOLD_TOOLTIP_PROPERTY,
-                WhiteSpaceDefaults.getFoldTooltipDefault() ? Boolean.TRUE : Boolean.FALSE
-            );
+            bufferCreated(buffers[i]);
         }
     }
 

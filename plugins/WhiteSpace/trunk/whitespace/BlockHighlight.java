@@ -262,9 +262,9 @@ public class BlockHighlight
 
 
     public static void bufferCreated(Buffer buffer) {
-        buffer.putProperty(
+        buffer.putBooleanProperty(
             BLOCK_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getBlockHighlightDefault() ? Boolean.TRUE : Boolean.FALSE
+            WhiteSpaceDefaults.getBlockHighlightDefault()
         );
     }
 
@@ -272,10 +272,7 @@ public class BlockHighlight
     public static void editorStarted() {
         Buffer[] buffers = jEdit.getBuffers();
         for (int i = 0; i < buffers.length; i++) {
-            buffers[i].putProperty(
-                BLOCK_HIGHLIGHT_PROPERTY,
-                WhiteSpaceDefaults.getBlockHighlightDefault() ? Boolean.TRUE : Boolean.FALSE
-            );
+            BlockHighlight.bufferCreated(buffers[i]);
         }
     }
 }
