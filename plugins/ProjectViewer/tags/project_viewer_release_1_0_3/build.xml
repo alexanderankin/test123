@@ -1,0 +1,171 @@
+<!-- ================================================== -->
+<!-- Build file for the Project Viewer plugin           -->
+<!-- ================================================== -->
+<project name="Project Viewer" default="compile" basedir=".">
+
+
+  <!-- ================================================ -->
+  <!-- Property definitions                             -->
+  <!-- ================================================ -->
+  <property file="build.properties"/>
+ 
+  <property name="version"          value="1.0.3"/>
+
+  <property name="build"            value="build"/>
+  <property name="build.classes"    value="${build}/classes"/>
+  <property name="build.docs"       value="${build}/docs"/>
+  <property name="build.javadoc"    value="${build.docs}/javadoc"/>
+  <property name="build.doxydoc"    value="${build.docs}/doxydoc"/>
+
+  <property name="src"              value="."/>
+  <property name="src.main"         value="${src}"/>
+  <property name="src.etc"          value="."/>
+  <property name="src.lib"          value="lib"/>
+  
+  <property name="docs"             value="docs"/>
+
+  
+  <!-- ================================================ -->
+  <!-- Classpath definitions                            -->
+  <!-- ================================================ -->
+  <path id="default.classpath">
+    <fileset dir="${src.lib}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+
+  <!-- ================================================ -->
+  <!-- Targets                                          -->
+  <!-- ================================================ -->
+
+
+  <!-- ================================================ -->
+  <target name="compile" 
+          description="Compile all main classes">
+
+    <mkdir dir="${build.classes}"/>
+
+    <javac srcdir="${src.main}"
+           destdir="${build.classes}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}"
+           classpathref="default.classpath"
+    >
+      <include name="projectviewer/**"/>
+    </javac>
+
+  </target>
+
+
+  <!-- ================================================ -->
+  <target name="build" 
+          depends="compile"
+          description="Build the plugin">
+
+    <copy todir="${build.classes}">
+      <fileset dir="${src.main}">
+        <include name="projectviewer/**/*.props"/>
+        <include name="projectviewer/**/*.properties"/>
+        <include name="projectviewer/**/icons/*.gif"/>
+      </fileset>
+    </copy>
+    
+    <copy todir="${build.classes}">
+      <fileset dir="${src.etc}">
+        <include name="actions.xml"/>
+        <include name="dockables.xml"/>
+      </fileset>
+    </copy>
+    
+    <mkdir dir="${build.docs}"/>
+    <copy todir="${build.docs}">
+      <fileset dir="${docs}">
+	  	<exclude name="**/*.xml"/>
+	  	<exclude name="**/*.xsl"/>
+	  </fileset>
+    </copy>
+    
+    <jar jarfile="${build}/ProjectViewer.jar">
+      <fileset dir="${build.classes}"/>
+	  <fileset dir="${build.docs}"/>
+    </jar>
+  </target>
+  
+  
+  <!-- ================================================ -->
+  <target name="dist"
+          depends="build"
+          description="Build a distribution">
+    <zip zipfile="ProjectViewer-${version}.zip">
+      <fileset dir="${build}">
+        <include name="ProjectViewer/**"/>
+        <include name="ProjectViewer.jar"/>
+      </fileset>
+    </zip>
+  </target>
+
+
+  <!-- ================================================ -->
+  <target name="deploy"
+          depends="dist"
+          description="Deploy the plugin">
+    <unzip src="ProjectViewer-${version}.zip" dest="${jedit.user.home}/jars"/>
+  </target>
+  
+
+  <!-- ================================================ -->
+  <target name="javadoc" description="generates javadoc sourcecode documentation">
+
+    <mkdir dir="${build.javadoc}"/>
+    <javadoc sourcepath="${src}"
+             destdir="${build.javadoc}"
+             packagenames="projectviewer.*"
+             windowtitle="${ant.project.name} API"
+             classpathref="default.classpath"/>
+  </target>
+
+  <target name="doxydoc" description="generates doxygen sourcecode documentation">
+    <mkdir dir="${build.doxydoc}"/>
+    <exec executable="doxygen">
+      <arg value="doxyconf"/>
+    </exec>
+  </target>
+
+  
+  <!-- ================================================ -->
+    <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+    <target name="docs-xsltproc">
+        <exec executable="xsltproc">
+            <arg value="-o"/>
+            <arg value="docs/users-guide.html"/>
+            <arg value="--catalogs"/>
+            <arg value="docs/users-guide.xsl"/>
+            <arg value="docs/users-guide.xml"/>
+        </exec>
+    </target>
+
+
+    <!-- Generate docs with Xalan tool from xml.apache.org -->
+    <target name="docs-xalan">
+        <style
+            style="docs/users-guide.xsl"
+            in="docs/users-guide.xml"
+            out="docs/users-guide.html"
+        />
+    </target>
+
+  <!-- ================================================ -->
+  <target name="clean"
+          description="Cleans project directories">
+    <delete dir="${build}"/>
+    <delete>
+      <fileset dir=".">
+        <include name="ProjectViewer-*.zip"/>
+      </fileset>
+    </delete>
+  </target>
+
+</project>
