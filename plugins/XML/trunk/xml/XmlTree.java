@@ -144,7 +144,7 @@ public class XmlTree extends JPanel implements EBComponent
 	private JButton parseBtn;
 	private JTree tree;
 
-	private boolean showAttributes;
+	private int showAttributes;
 	private boolean parse;
 
 	private View view;
@@ -154,7 +154,7 @@ public class XmlTree extends JPanel implements EBComponent
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
-		showAttributes = jEdit.getBooleanProperty("xml.show-attributes");
+		showAttributes = jEdit.getIntegerProperty("xml.show-attributes",0);
 	} //}}}
 
 	//{{{ expandTagWithDelay() method
@@ -360,7 +360,18 @@ public class XmlTree extends JPanel implements EBComponent
 			{
 				XmlTag tag = (XmlTag)node.getUserObject();
 
-				setText(showAttributes ? tag.attributeString : tag.name);
+				switch(showAttributes)
+				{
+				case 0:
+					setText(tag.name);
+					break;
+				case 1:
+					setText(tag.idAttributeString);
+					break;
+				case 2:
+					setText(tag.attributeString);
+					break;
+				}
 			}
 
 			setIcon(null);
