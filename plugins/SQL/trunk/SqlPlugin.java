@@ -150,39 +150,6 @@ public class SqlPlugin extends EBPlugin
 
 
   /**
-   *Description of the Method
-   *
-   * @param  message  Description of Parameter
-   * @since
-   */
-  protected void handleSessionChange( SessionChanged message )
-  {
-    Log.log( Log.DEBUG, SqlPlugin.class,
-        "Changing the session from " +
-        message.getOldSession() + " to " + message.getNewSession() );
-
-    commitProperties();
-
-    clearProperties();
-
-    props = null;
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  wnd  Description of Parameter
-   * @since
-   */
-  protected void handleCreateDockableMessage( CreateDockableWindow wnd )
-  {
-    if ( wnd.getDockableWindowName().equals( resultSetWinName ) )
-      wnd.setDockableWindow( new ResultSetWindow( wnd.getView() ) );
-  }
-
-
-  /**
    *  Sets the Property attribute of the SqlPlugin class
    *
    * @param  name   The new Property value
@@ -221,11 +188,18 @@ public class SqlPlugin extends EBPlugin
   {
     final String[] oldCp = getJdbcClassPath();
 
+    unregisterJdbcClassPath();
+
     for ( int i = oldCp.length; --i >= 0;  )
       unsetProperty( "sql.jdbcClassPath." + i );
 
-    for ( int i = jdbcClassPath.length; --i >= 0;  )
-      setProperty( "sql.jdbcClassPath." + i, jdbcClassPath[i] );
+    if ( jdbcClassPath != null )
+    {
+      for ( int i = jdbcClassPath.length; --i >= 0;  )
+        setProperty( "sql.jdbcClassPath." + i, jdbcClassPath[i] );
+
+      registerJdbcClassPath();
+    }
   }
 
 
@@ -588,6 +562,75 @@ public class SqlPlugin extends EBPlugin
         }
       }
     }
+  }
+
+
+  /**
+   *Description of the Method
+   *
+   * @since
+   */
+  public static void unregisterJdbcClassPath()
+  {
+    final String[] jdbcClassPath = getJdbcClassPath();
+    if ( jdbcClassPath == null ||
+        jdbcClassPath.length == 0 )
+      return;
+
+    for ( int i = jdbcClassPath.length; --i >= 0;  )
+    {
+      final String path = jdbcClassPath[i];
+      if ( !( new File( path ).exists() ) )
+      {
+        Log.log( Log.ERROR, SqlPlugin.class,
+            "JDBC classpath component " + path + " does not exist" );
+        continue;
+      }
+      final EditPlugin.JAR jar = jEdit.getPluginJAR( path );
+      if ( jar == null )
+      {
+        Log.log( Log.ERROR, SqlPlugin.class,
+            "Strange, classpath element " + path + " was not registered" );
+      }
+      //!! TODO
+    }
+  }
+
+
+  /**
+   *Description of the Method
+   *
+   * @param  message  Description of Parameter
+   * @since
+   */
+  protected static void handleSessionChange( SessionChanged message )
+  {
+    Log.log( Log.DEBUG, SqlPlugin.class,
+        "Changing the session from " +
+        message.getOldSession() + " to " + message.getNewSession() );
+
+    commitProperties();
+
+    setJdbcClassPath( null );
+
+    clearProperties();
+
+    props = null;
+
+    registerJdbcClassPath();
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  wnd  Description of Parameter
+   * @since
+   */
+  protected static void handleCreateDockableMessage( CreateDockableWindow wnd )
+  {
+    if ( wnd.getDockableWindowName().equals( resultSetWinName ) )
+      wnd.setDockableWindow( new ResultSetWindow( wnd.getView() ) );
   }
 
 

@@ -57,7 +57,11 @@ public class SqlUtils
    */
   public final static void setSelectedServerName( String name )
   {
-    SqlPlugin.setProperty( "sql.currentServerName", name );
+    if ( name != null )
+      SqlPlugin.setProperty( "sql.currentServerName", name );
+    else
+      SqlPlugin.unsetProperty( "sql.currentServerName" );
+
     SqlPlugin.commitProperties();
   }
 
@@ -117,21 +121,22 @@ public class SqlUtils
    */
   public static SqlServerRecord getServerRecord( final View view, String serverName )
   {
-    final SqlServerRecord rec = SqlServerRecord.get( serverName );
-    if ( rec == null || !rec.hasValidProperties() )
+    if ( serverName != null )
     {
-      runInAWTThreadNoWait(
-        new Runnable()
-        {
-          public void run()
-          {
-            GUIUtilities.error( view, "sql.noSettings", null );
-          }
-        } );
-      return null;
+      final SqlServerRecord rec = SqlServerRecord.get( serverName );
+      if ( rec != null && rec.hasValidProperties() )
+        return rec;
     }
 
-    return rec;
+    runInAWTThreadNoWait(
+      new Runnable()
+      {
+        public void run()
+        {
+          GUIUtilities.error( view, "sql.noSettings", null );
+        }
+      } );
+    return null;
   }
 
 
