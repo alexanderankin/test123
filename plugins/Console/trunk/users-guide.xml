@@ -6,7 +6,8 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "file:///usr/share/xml/docbook-xml/docbookx.dtd">
 
 <book>
 
@@ -353,6 +354,11 @@
  - clears the value of the specified
  environment variable.</para></listitem>
 </itemizedlist>
+
+<para>
+ To insert a <quote>$</quote> or <quote>%</quote> literally in the command
+ string, you must write <quote>$$</quote> and <quote>%%</quote>.
+</para>
 
 <sidebar><title>Windows 95/98/ME</title>
 <para>
@@ -711,8 +717,6 @@ the command output will be shown in a new buffer.</para></listitem>
  be called from macros:
 </para>
 
-<itemizedlist>
- <listitem>
   <funcsynopsis>
    <funcprototype>
     <funcdef>void <function>runCommandInConsole</function></funcdef>
@@ -725,9 +729,7 @@ the command output will be shown in a new buffer.</para></listitem>
    Runs <varname>command</varname> in the shell named <varname>shell</varname>.
    Will open a console window if one is not already open.
   </para>
- </listitem>
 
- <listitem>
   <funcsynopsis>
    <funcprototype>
     <funcdef>void <function>runCommandToBuffer</function></funcdef>
@@ -741,9 +743,7 @@ the command output will be shown in a new buffer.</para></listitem>
    placing the command's output in a new buffer.
    Will open a console window if one is not already open.
   </para>
- </listitem>
 
- <listitem>
   <funcsynopsis>
    <funcprototype>
     <funcdef>void <function>runInSystemShell</function></funcdef>
@@ -755,8 +755,6 @@ the command output will be shown in a new buffer.</para></listitem>
    Equivalent to calling:
   </para>
   <programlisting>runCommandInConsole(view,"System",command);</programlisting>
- </listitem>
-</itemizedlist>
 
 <para>
  If a command is run from the console while macro recording is in progress,
@@ -785,8 +783,28 @@ the command output will be shown in a new buffer.</para></listitem>
 
  <itemizedlist>
 
-  <listitem><formalpara><title>Version 3.0.2</title><para>requires jEdit 3.2pre9,
-   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para></formalpara>
+  <listitem><para><emphasis role="bold">Version 3.0.3</emphasis>
+   requires jEdit 3.2pre9,
+   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para>
+
+   <itemizedlist>
+    <listitem><para>
+     There was no way to insert a literal <quote>$</quote> in the command line
+    </para></listitem>
+    <listitem><para>
+     Improved error patterns
+    </para></listitem>
+    <listitem><para>
+     Ant build-file included instead of JMK makefile
+    </para></listitem>
+    <listitem><para>
+     Documentation is now generated with the DocBook-XSL stylesheets
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
+
+  <listitem><para><emphasis role="bold">Version 3.0.2</emphasis>requires jEdit 3.2pre9,
+   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para>
 
    <itemizedlist>
     <listitem><para>
@@ -796,8 +814,8 @@ the command output will be shown in a new buffer.</para></listitem>
    </itemizedlist>
   </listitem>
 
-  <listitem><formalpara><title>Version 3.0.1</title><para>requires jEdit 3.2pre9,
-   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para></formalpara>
+  <listitem><para><emphasis role="bold">Version 3.0.1</emphasis>requires jEdit 3.2pre9,
+   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para>
 
    <itemizedlist>
     <listitem><para>
@@ -820,8 +838,8 @@ the command output will be shown in a new buffer.</para></listitem>
    </itemizedlist>
   </listitem>
 
-  <listitem><formalpara><title>Version 3.0</title><para>requires jEdit 3.2pre9,
-   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para></formalpara>
+  <listitem><para><emphasis role="bold">Version 3.0</emphasis>requires jEdit 3.2pre9,
+   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para>
 
    <itemizedlist>
     <listitem><para>

@@ -174,7 +174,7 @@ class ConsoleProcess
 		StreamThread(InputStream inputStream)
 		{
 			setName("" + StreamThread.class + args);
-			setPriority(Thread.MIN_PRIORITY);
+			setPriority(Thread.MIN_PRIORITY + 2);
 			this.inputStream = inputStream;
 		}
 
