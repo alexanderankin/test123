@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003 Slava Pestov
+ * Copyright (C) 2003, 2004 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -150,5 +150,15 @@ public class SideKickParsedData
 		}
 		else
 			return false;
+	} //}}}
+
+	//{{{ getAssetAtPosition() method
+	public Asset getAssetAtPosition(int pos)
+	{
+		TreePath path = getTreePathForPosition(pos);
+		if(path == null)
+			return null;
+		return (Asset)((DefaultMutableTreeNode)path
+			.getLastPathComponent()).getUserObject();
 	} //}}}
 }
