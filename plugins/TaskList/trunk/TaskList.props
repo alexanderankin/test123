@@ -4,7 +4,7 @@
 # Plugin properties
 plugin.TaskListPlugin.name=TaskList
 plugin.TaskListPlugin.author=Ollie Rutherfurd, John Gellene
-plugin.TaskListPlugin.version=0.2
+plugin.TaskListPlugin.version=0.3
 plugin.TaskListPlugin.docs=TaskList.html
 
 plugin.TaskListPlugin.depend.0=jdk 1.1
