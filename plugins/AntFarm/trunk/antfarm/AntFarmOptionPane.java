@@ -212,6 +212,10 @@ public class AntFarmOptionPane
 			AntFarmPlugin.OPTION_PREFIX + "logging-level",
 			((LogLevelEnum)_loggingLevel.getSelectedItem()).getValue()
 			);
+		
+		// make sure all of the jars specified in _classPath are loaded.
+		AntFarmPlugin.loadCustomClasspath();
+		
 	}
 
 

@@ -115,7 +115,7 @@ public class TargetRunner extends Thread
 		if ( useSameJvm ) {
 			setOutputStreams();
 			loadProjectProperties();
-			loadCustomClasspath();
+			AntFarmPlugin.loadCustomClasspath();
 
 			try {
 				_project.addBuildListener( _buildLogger );
@@ -153,38 +153,6 @@ public class TargetRunner extends Thread
 		System.gc();
 		_output.commandDone();
 		_view.getTextArea().requestFocus();
-	}
-
-
-	private void loadCustomClasspath()
-	{
-		String classpath = jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX
-			 + "classpath" );
-		if ( classpath == null )
-			return;
-
-		StringTokenizer st = new StringTokenizer( classpath, File.pathSeparator );
-		while ( st.hasMoreTokens() ) {
-			String path = st.nextToken();
-			EditPlugin.JAR jar = jEdit.getPluginJAR( path );
-			if ( jar == null ) {
-				Log.log( Log.DEBUG, this,
-					"- adding " + path + " to jEdit plugins." );
-				try {
-					jEdit.addPluginJAR( new EditPlugin.JAR( path,
-						new JARClassLoader( path ) ) );
-				}
-				catch ( IOException ioex ) {
-					Log.log( Log.ERROR, this,
-						"- I/O error loading " + path );
-					Log.log( Log.ERROR, this, ioex );
-					return;
-				}
-			}
-			else
-				Log.log( Log.DEBUG, this,
-					"- has been loaded before: " + path );
-		}
 	}
 
 
