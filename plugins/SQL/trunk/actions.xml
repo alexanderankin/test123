@@ -39,7 +39,7 @@
       return jEdit.getBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled" );
     </IS_SELECTED>
   </ACTION>
-  <ACTION NAME="sql.resultSet">
+<!--  <ACTION NAME="sql.resultSet">
     <CODE>
       view.getDockableWindowManager()
           .toggleDockableWindow("sql.resultSet");
@@ -48,7 +48,7 @@
       return view.getDockableWindowManager()
                  .isDockableWindowVisible("sql.resultSet");
     </IS_SELECTED>
-  </ACTION>
+  </ACTION>-->
   <ACTION NAME="sql.publishBuffer">
     <CODE>
       sql.SqlPlugin.publishBuffer(view, sql.SqlUtils.getSelectedServerName() );
