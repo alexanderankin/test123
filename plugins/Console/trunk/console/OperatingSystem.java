@@ -205,15 +205,6 @@ abstract class OperatingSystem
 			{
 				aliases.put(builtins[i],getBuiltInPrefix() + builtins[i]);
 			}
-
-			for(int i = 0; i < 26; i++)
-			{
-				String driveLowerCase = (char)(i + 'a') + ":";
-				aliases.put(driveLowerCase,"%cd " + driveLowerCase);
-
-				String driveUpperCase = (char)(i + 'A') + ":";
-				aliases.put(driveUpperCase,"%cd " + driveUpperCase);
-			}
 		} //}}}
 	} //}}}
 
