@@ -528,6 +528,9 @@
    named <guimenuitem>Clear Resource Cache</guimenuitem>. It deletes downloaded
    files now, instead of just removing references to them from the cache map.
    </para></listitem>
+   <listitem><para>Closing the <guimenuitem>Global Options</guimenuitem> dialog
+   box with an XML file open would cause problems with the resource cache.
+   </para></listitem>
    <listitem><para>XHTML files could be mis-detected as HTML, instead of XML.
    </para></listitem>
    <listitem><para>Xerces 2.3.0 now included.

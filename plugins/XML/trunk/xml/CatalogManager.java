@@ -249,46 +249,61 @@ public class CatalogManager
 	//{{{ propertiesChanged() method
 	public static void propertiesChanged()
 	{
-		loaded = false;
+		if(jEdit.getSettingsDirectory() == null)
+		{
+			cache = false;
+		}
+		else
+		{
+			resourceDir = MiscUtilities.constructPath(
+				jEdit.getSettingsDirectory(),"dtds");
+			cache = jEdit.getBooleanProperty("xml.cache");
+		}
+		network = jEdit.getBooleanProperty("xml.network");
+
+		if(!cache)
+			clearCache();
+
+		loadedCatalogs = false;
 	} //}}}
 
 	//{{{ save() method
 	public static void save()
 	{
-		if(!loaded)
-			return;
-
-		int systemCount = 0;
-		int publicCount = 0;
-
-		Iterator keys = resourceCache.keySet().iterator();
-		while(keys.hasNext())
+		if(loadedCache)
 		{
-			Entry entry = (Entry)keys.next();
-			Object uri = resourceCache.get(entry);
-			if(uri == IGNORE)
-				continue;
+			int systemCount = 0;
+			int publicCount = 0;
 
-			if(entry.type == Entry.PUBLIC)
+			Iterator keys = resourceCache.keySet().iterator();
+			while(keys.hasNext())
 			{
-				jEdit.setProperty("xml.cache.public-id." + publicCount,entry.id);
-				jEdit.setProperty("xml.cache.public-id." + publicCount
-					+ ".uri",uri.toString());
-				publicCount++;
+				Entry entry = (Entry)keys.next();
+				Object uri = resourceCache.get(entry);
+				if(uri == IGNORE)
+					continue;
+
+				if(entry.type == Entry.PUBLIC)
+				{
+					jEdit.setProperty("xml.cache.public-id." + publicCount,entry.id);
+					jEdit.setProperty("xml.cache.public-id." + publicCount
+						+ ".uri",uri.toString());
+					publicCount++;
+				}
+				else
+				{
+					jEdit.setProperty("xml.cache.system-id." + systemCount,entry.id);
+					jEdit.setProperty("xml.cache.system-id." + systemCount
+						+ ".uri",uri.toString());
+					systemCount++;
+				}
 			}
-			else
-			{
-				jEdit.setProperty("xml.cache.system-id." + systemCount,entry.id);
-				jEdit.setProperty("xml.cache.system-id." + systemCount
-					+ ".uri",uri.toString());
-				systemCount++;
-			}
+
+			jEdit.unsetProperty("xml.cache.public-id." + publicCount);
+			jEdit.unsetProperty("xml.cache.public-id." + publicCount + ".uri");
+			jEdit.unsetProperty("xml.cache.system-id." + systemCount);
+			jEdit.unsetProperty("xml.cache.system-id." + systemCount + ".uri");
 		}
-
-		jEdit.unsetProperty("xml.cache.public-id." + publicCount);
-		jEdit.unsetProperty("xml.cache.public-id." + publicCount + ".uri");
-		jEdit.unsetProperty("xml.cache.system-id." + systemCount);
-		jEdit.unsetProperty("xml.cache.system-id." + systemCount + ".uri");
 	} //}}}
 
 	//{{{ clearCache() method
@@ -313,7 +328,8 @@ public class CatalogManager
 	//{{{ Private members
 
 	//{{{ Static variables
-	private static boolean loaded;
+	private static boolean loadedCache;
+	private static boolean loadedCatalogs;
 	private static boolean cache;
 	private static boolean network;
 	private static Catalog catalog;
@@ -425,81 +441,41 @@ public class CatalogManager
 	//{{{ load() method
 	private synchronized static void load()
 	{
-		if(loaded)
-			return;
-
-		if(jEdit.getSettingsDirectory() == null)
+		if(!loadedCache)
 		{
-			cache = false;
-		}
-		else
-		{
-			resourceDir = MiscUtilities.constructPath(
-				jEdit.getSettingsDirectory(),"dtds");
-			cache = jEdit.getBooleanProperty("xml.cache");
-		}
-		network = jEdit.getBooleanProperty("xml.network");
+			loadedCache = true;
 
-		resourceCache = new HashMap();
-		reverseResourceCache = new HashMap();
+			resourceCache = new HashMap();
+			reverseResourceCache = new HashMap();
 
-		int i;
-		String id, prop, uri;
-
-		i = 0;
-		while((id = jEdit.getProperty(prop = "xml.cache"
-			+ ".public-id." + i++)) != null)
-		{
-			try
-			{
-				uri = jEdit.getProperty(prop + ".uri");
-				resourceCache.put(new Entry(Entry.PUBLIC,id,uri),uri);
-			}
-			catch(Exception ex2)
-			{
-				Log.log(Log.ERROR,CatalogManager.class,ex2);
-			}
-		}
-
-		i = 0;
-		while((id = jEdit.getProperty(prop = "xml.cache"
-			+ ".system-id." + i++)) != null)
-		{
-			try
-			{
-				uri = jEdit.getProperty(prop + ".uri");
-				Entry se = new Entry(Entry.SYSTEM,id,uri);
-				resourceCache.put(se,uri);
-				reverseResourceCache.put(uri,se);
-			}
-			catch(Exception ex2)
-			{
-				Log.log(Log.ERROR,CatalogManager.class,ex2);
-			}
-		}
-
-		if(!cache)
-			clearCache();
-
-		catalog = new Catalog();
-		catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
-
-		try
-		{
-			catalog.loadSystemCatalogs();
-
-			catalog.parseCatalog("jeditresource:XML.jar!/xml/dtds/catalog");
+			int i;
+			String id, prop, uri;
 
 			i = 0;
-			while((uri = jEdit.getProperty(
-				prop = "xml.catalog." + i++)) != null)
+			while((id = jEdit.getProperty(prop = "xml.cache"
+				+ ".public-id." + i++)) != null)
 			{
-				Log.log(Log.MESSAGE,CatalogManager.class,
-					"Loading catalog: " + uri);
-
 				try
 				{
-					catalog.parseCatalog(uri);
+					uri = jEdit.getProperty(prop + ".uri");
+					resourceCache.put(new Entry(Entry.PUBLIC,id,uri),uri);
+				}
+				catch(Exception ex2)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
+			}
+
+			i = 0;
+			while((id = jEdit.getProperty(prop = "xml.cache"
+				+ ".system-id." + i++)) != null)
+			{
+				try
+				{
+					uri = jEdit.getProperty(prop + ".uri");
+					Entry se = new Entry(Entry.SYSTEM,id,uri);
+					resourceCache.put(se,uri);
+					reverseResourceCache.put(uri,se);
 				}
 				catch(Exception ex2)
 				{
@@ -507,12 +483,43 @@ public class CatalogManager
 				}
 			}
 		}
-		catch(Exception ex1)
-		{
-			Log.log(Log.ERROR,CatalogManager.class,ex1);
-		}
 
-		loaded = true;
+		if(!loadedCatalogs)
+		{
+			loadedCatalogs = true;
+
+			catalog = new Catalog();
+			catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
+
+			try
+			{
+				catalog.loadSystemCatalogs();
+
+				catalog.parseCatalog("jeditresource:XML.jar!/xml/dtds/catalog");
+
+				int i = 0;
+				String prop, uri;
+				while((uri = jEdit.getProperty(
+					prop = "xml.catalog." + i++)) != null)
+				{
+					Log.log(Log.MESSAGE,CatalogManager.class,
+						"Loading catalog: " + uri);
+
+					try
+					{
+						catalog.parseCatalog(uri);
+					}
+					catch(Exception ex2)
+					{
+						Log.log(Log.ERROR,CatalogManager.class,ex2);
+					}
+				}
+			}
+			catch(Exception ex1)
+			{
+				Log.log(Log.ERROR,CatalogManager.class,ex1);
+			}
+		}
 	} //}}}
 
 	//}}}
