@@ -40,8 +40,6 @@ abstract class OperatingSystem
 
 	abstract void setUpDefaultAliases(Hashtable aliases);
 
-	abstract boolean cdCommandAvailable();
-
 	abstract Process exec(String[] args, String[] env, String dir)
 			throws Exception;
 
@@ -68,20 +66,6 @@ abstract class OperatingSystem
 	//{{{ Generic class
 	static class Generic extends OperatingSystem
 	{
-		//{{{ Generic constructor
-		Generic()
-		{
-			try
-			{
-				Class[] classes = { String[].class, String[].class, File.class };
-				java13exec = Runtime.class.getMethod("exec",classes);
-			}
-			catch(Exception e)
-			{
-				// use Java 1.1/1.2 code instead
-			}
-		} //}}}
-
 		//{{{ shellExpandsGlobs() method
 		boolean shellExpandsGlobs()
 		{
@@ -105,41 +89,12 @@ abstract class OperatingSystem
 		{
 		} //}}}
 
-		//{{{ cdCommandAvailable() method
-		boolean cdCommandAvailable()
-		{
-			return java13exec != null;
-		} //}}}
-
 		//{{{ exec() method
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
 		{
-			try
-			{
-				if(java13exec != null)
-				{
-					Object[] methodArgs = { args,env,
-						new File(dir) };
-					return (Process)java13exec.invoke(
-						Runtime.getRuntime(),methodArgs);
-				}
-				else
-				{
-					return Runtime.getRuntime().exec(args,env);
-				}
-			}
-			catch(InvocationTargetException ite)
-			{
-				throw (Exception)ite.getTargetException();
-			}
-			catch(Exception e)
-			{
-				throw e;
-			}
+			return Runtime.getRuntime().exec(args,env,new File(dir));
 		} //}}}
-
-		private Method java13exec;
 	} //}}}
 
 	//{{{ Unix class

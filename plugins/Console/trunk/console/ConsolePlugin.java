@@ -211,7 +211,7 @@ public class ConsolePlugin extends EBPlugin
 		}
 
 		CommandoCommand command = (CommandoCommand)commando.getAction(
-			compiler);
+			"commando." + compiler);
 		if(command == null)
 		{
 			GUIUtilities.error(view,"commando.no-command",
@@ -222,7 +222,8 @@ public class ConsolePlugin extends EBPlugin
 			if(buffer.isDirty())
 			{
 				Object[] args = { buffer.getName() };
-				int result = GUIUtilities.confirm(view,"notsaved",args,
+				int result = GUIUtilities.confirm(view,
+					"commando.not-saved-compile",args,
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE);
 				if(result == JOptionPane.YES_OPTION)
@@ -249,7 +250,7 @@ public class ConsolePlugin extends EBPlugin
 		}
 
 		CommandoCommand command = (CommandoCommand)commando.getAction(
-			runner);
+			"commando." + runner);
 		if(command == null)
 		{
 			GUIUtilities.error(view,"commando.no-command",
@@ -260,7 +261,8 @@ public class ConsolePlugin extends EBPlugin
 			if(buffer.isDirty())
 			{
 				Object[] args = { buffer.getName() };
-				int result = GUIUtilities.confirm(view,"notsaved",args,
+				int result = GUIUtilities.confirm(view,
+					"commando.not-saved-run",args,
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE);
 				if(result == JOptionPane.YES_OPTION)

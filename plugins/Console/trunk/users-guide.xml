@@ -803,7 +803,7 @@ the command output will be shown in a new buffer.</para></listitem>
      <literal>COMMAND</literal> tag.
     </para></listitem>
     <listitem><para>
-     Commando panels are now made into normal jEdit actions using the new
+     Commandos are now made into normal jEdit actions using the new
      jEdit 4.0 action set API; so they can be given shortcuts, added to the
      context menu, added to the tool bar, etc.
     </para></listitem>
@@ -836,6 +836,9 @@ the command output will be shown in a new buffer.</para></listitem>
     <listitem><para>
      If a compiler error message had a line number of '0', the error prasing
      would throw an exception.
+    </para></listitem>
+    <listitem><para>
+     Removed code specific to JDK 1.1 and 1.2.
     </para></listitem>
    </itemizedlist>
   </listitem>
