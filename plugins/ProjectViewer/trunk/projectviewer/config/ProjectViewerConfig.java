@@ -47,6 +47,8 @@ public final class ProjectViewerConfig {
     private static final String EXCLUDE_DIRS_OPT = "exclude-dirs";
     private static final String INCLUDE_FILES_OPT = "include-files";
     private static final String LAST_PROJECT_OPT = "projectviewer.last-project";
+    private static final String BROWSER_PATH_OPT = "browser-path"; 
+    private static final String BROWSEABLE_EXTS_OPT= "projectviewer.browseable-extensions";
     
     private static ProjectViewerConfig config;
     
@@ -84,7 +86,8 @@ public final class ProjectViewerConfig {
                         p.setProperty(IMPORT_EXTS_OPT, "");
                         p.setProperty(EXCLUDE_DIRS_OPT, ""); 
                         p.setProperty(INCLUDE_FILES_OPT, "");
-                    } finally {
+			p.setProperty(BROWSER_PATH_OPT, "mozilla");
+		    } finally {
                         try { is.close(); } catch (Exception e) { }
                     }
                 }
@@ -107,7 +110,7 @@ public final class ProjectViewerConfig {
     private String excludeDirs          = null;
     private String includeFiles         = null;
     private String lastProject          = null; 
-    
+    private String browserPath		= null;
     
     //-------------- Constructors
     
@@ -123,6 +126,7 @@ public final class ProjectViewerConfig {
         String tmp;
         
         // close_files options
+
         tmp = props.getProperty(CLOSE_FILES_OPT);
         if (tmp != null) {
             setCloseFiles("true".equalsIgnoreCase(tmp));
@@ -145,7 +149,7 @@ public final class ProjectViewerConfig {
         if (tmp != null) {
             setSaveOnChange("true".equalsIgnoreCase(tmp));
         }
-        
+     
         // Importing options
         importExts   = props.getProperty(IMPORT_EXTS_OPT);  
         excludeDirs  = props.getProperty(EXCLUDE_DIRS_OPT);
@@ -153,6 +157,13 @@ public final class ProjectViewerConfig {
         
         // Last opened project
         lastProject  = props.getProperty(LAST_PROJECT_OPT);
+   
+        // BrowserPath
+	tmp = props.getProperty(BROWSER_PATH_OPT);
+	if (tmp==null) 
+		tmp = "mozilla";
+	browserPath = props.getProperty(BROWSER_PATH_OPT);
+    
     }
     
     //-------------- Properties
@@ -189,6 +200,9 @@ public final class ProjectViewerConfig {
         this.lastProject = newLastProject;
     }
 
+    public void setBrowserpath(String newBrowserPath) {
+	  this.browserPath = newBrowserPath;
+    }
     
     public boolean getCloseFiles() {
         return closeFiles;
@@ -222,6 +236,10 @@ public final class ProjectViewerConfig {
         return lastProject;
     }
     
+    public String getBrowserPath(){
+	return browserPath;
+    }
+    
     //-------------- Methods
 
     /**
@@ -238,6 +256,10 @@ public final class ProjectViewerConfig {
         props.setProperty(EXCLUDE_DIRS_OPT, excludeDirs); 
         props.setProperty(INCLUDE_FILES_OPT, includeFiles);
         
+	//if (browserPath != null) {
+		props.setProperty(BROWSER_PATH_OPT, String.valueOf(browserPath));
+	//}
+	
         if (lastProject != null) {
             props.setProperty(LAST_PROJECT_OPT, lastProject);
         }
