@@ -55,6 +55,9 @@ plugin.TemplatesPlugin.error.no-accelerator-found.message=Accelerator ''{0}'' no
 plugin.TemplatesPlugin.error.invalid-template-path.title=Invalid Template
 plugin.TemplatesPlugin.error.invalid-template-path.message=You must select a template
 
+plugin.TemplatesPlugin.error.buffer-read-only.title=Unable to write
+plugin.TemplatesPlugin.error.buffer-read-only.message=Unable to write. Buffer is read-only.
+
 #AcceleratorOptionPane Label Properties
 plugin.TemplatesPlugin.mode.label=Mode
 plugin.TemplatesPlugin.remove-accelerator.label=Remove

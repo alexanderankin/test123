@@ -1,6 +1,7 @@
 /*
  * AcceleratorManager.java
- * Copyright (C) 2002 Calvin Yu
+ * :folding=explicit:collapseFolds=1:
+ * Copyright (C) 2002 Calvin Yu, Steve Jakob
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +27,7 @@ import org.gjt.sp.jedit.Abbrevs;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
@@ -152,42 +154,94 @@ public class AcceleratorManager
     */
    public static void expandAccelerator(JEditTextArea textArea)
    {
-      textArea.selectNone();
-      String c = "A";
-      int idx = textArea.getCaretPosition() - 1;
-      while (!Character.isWhitespace(c.charAt(0)) && idx >= 0) {
-         c = textArea.getText(idx--, 1);
-      }
-      if (idx >= 0) {
-         idx += 2;
-      }
-	  if (idx < 0) {
-		  idx = 0;
+      //{{{ Report error if textArea is read-only
+	  if (!textArea.isEditable()) {
+		   GUIUtilities.error(textArea,
+		   		"plugin.TemplatesPlugin.error.buffer-read-only", null);
+		   return;
 	  }
-      Selection sel = new Selection.Range(idx, textArea.getCaretPosition());
+	  //}}}
+	  
+	  String accelerator = parseAccelerator(textArea);
+	  if ("".equals(accelerator)) return;
+	  
+	  //{{{ Select the accelerator in the text area
+	  textArea.selectNone();
+      Selection sel = new Selection.Range(
+	  		textArea.getCaretPosition() - accelerator.length(),
+			textArea.getCaretPosition());
       textArea.setSelection(sel);
-      String accelerator = textArea.getSelectedText();
-      String path = getInstance()
+	  //}}}
+	  
+      //{{{ Process the accelerator
+	  String path = getInstance()
          .findTemplatePath(textArea.getBuffer().getMode().getName(), accelerator);
       if (path == null) {
+		  System.out.println("AcceleratorManager: accelerator path is null");
          // Not a template accelerator. If Templates plugin is set up to do so,
 		 // try to process the text as an abbreviation
 		 if (TemplatesPlugin.getAcceleratorPassThruFlag()) {
 			 if (!Abbrevs.expandAbbrev(GUIUtilities.getView(textArea), false)) {
 		         GUIUtilities.error(textArea, 
 				 		"plugin.TemplatesPlugin.error.no-accelerator-found",
-            		    new String[] {path});
-			 } else {
-		         GUIUtilities.error(textArea, 
-				 		"plugin.TemplatesPlugin.error.no-accelerator-found",
-            		    new String[] {path});
+            		    new String[] {accelerator});
 			 }
 		 }
-      } else {
+		 else {
+		         GUIUtilities.error(textArea, 
+				 		"plugin.TemplatesPlugin.error.no-accelerator-found",
+            		    new String[] {accelerator});
+		 }
+      }
+	  else {
+		  System.out.println("AcceleratorManager: accelerator path is " + path);
          textArea.getBuffer().remove(sel.getStart(), sel.getEnd() - sel.getStart());
          ((TemplatesPlugin) jEdit.getPlugin("templates.TemplatesPlugin"))
             .processTemplate(path, textArea);
       }
+	  //}}}
+   }
+   
+   /**
+    * Get the accelerator at the current caret position.
+	* Much of this method was borrowed from the org.gjt.sp.jedit.Abbrevs class.
+	* @param textArea The current text area.
+	* @return A string containing the accelerator, if found. Otherwise, an 
+	* empty string.
+	*/
+   private static String parseAccelerator(JEditTextArea textArea) {
+		//{{{ Make sure there's text to be parsed
+		
+		// If the line is blank, there can't be an accelerator present.
+		int line = textArea.getCaretLine();
+		int lineStart = textArea.getLineStartOffset(line);
+		int caret = textArea.getCaretPosition();
+		String lineText = textArea.getLineText(line);
+		if(lineText.length() == 0)
+		{
+			GUIUtilities.error(textArea,
+		   		"plugin.TemplatesPlugin.error.no-accelerator-found",
+				new String[] {""});
+			return "";
+		}
+
+		// If the cursor is at the head of the line, there's no accelerator.
+		int pos = caret - lineStart;
+		if(pos == 0)
+		{
+			GUIUtilities.error(textArea,
+		   		"plugin.TemplatesPlugin.error.no-accelerator-found",
+				new String[] {""});
+			return "";
+		}
+		//}}}
+		
+		// Parse the accelerator
+		int wordStart = TextUtilities.findWordStart(lineText,pos - 1,
+				textArea.getBuffer().getStringProperty("noWordSep"));
+		String accelerator = lineText.substring(wordStart,pos);
+		
+		return accelerator;
    }
 
    /**
