@@ -387,11 +387,25 @@ errorSource.addError(new ErrorSource.DefaultError(
  <itemizedlist>
 
   <listitem><formalpara><title>Version 1.2.3</title><para>requires
-  jEdit 4.0pre4.
+  jEdit 4.1pre2.
   </para></formalpara>
 
+  <itemizedlist>
+   <listitem><para>The error list no longer flashes like a deprived man due to
+   constant tree collapsing and expansion if errors are being added in a
+   background thread.
+   </para></listitem>
    <listitem><para>Error tool tips were not shown for some errors.
    </para></listitem>
+   <listitem><para>Highlighter no longer paints wavy lines, since with some
+   fonts this would result in the line extending below the bottom of the
+   text descent. Now the error highlights are plain vanilla underlines.
+   </para></listitem>
+   <listitem><para>Fixed minor issue with error tree root node.
+   </para></listitem>
+   <listitem><para>Updated code to use a few 4.1 API additions.
+   </para></listitem>
+  </itemizedlist>
   </listitem>
   </itemizedlist>
 

@@ -150,17 +150,7 @@ public class ErrorHighlight extends TextAreaExtension
 				end = textArea.offsetToXY(line,end,point).x;
 
 			gfx.setColor(ErrorListPlugin.getErrorColor(error.getErrorType()));
-			paintWavyLine(gfx,y,start,end);
-		}
-	} //}}}
-
-	//{{{ paintWavyLine() method
-	private void paintWavyLine(Graphics2D gfx, int y, int start, int end)
-	{
-		for(int i = start; i < end; i+= 6)
-		{
-			gfx.drawLine(i,y + 3,i + 3,y + 1);
-			gfx.drawLine(i + 3,y + 1,i + 6,y + 3);
+			gfx.drawLine(start,y + 1,end,y + 1);
 		}
 	} //}}}
 

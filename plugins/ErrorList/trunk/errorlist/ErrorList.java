@@ -58,9 +58,12 @@ public class ErrorList extends JPanel implements EBComponent
 		errorModel = new DefaultTreeModel(errorRoot,true);
 
 		errorTree = new JTree(errorModel);
-		errorTree.putClientProperty("JTree.lineStyle", "Angled");
+		if(!OperatingSystem.isMacOS())
+			errorTree.putClientProperty("JTree.lineStyle", "Angled");
 		errorTree.addMouseListener(new MouseHandler());
 		errorTree.setCellRenderer(new ErrorCellRenderer());
+		errorTree.setRootVisible(false);
+		errorTree.setShowsRootHandles(true);
 
 		ErrorSource[] sources = ErrorSource.getErrorSources();
 
@@ -486,21 +489,10 @@ public class ErrorList extends JPanel implements EBComponent
 			{
 				node.add(newNode);
 
-				errorModel.reload(errorRoot);
+				errorModel.reload(node);
 
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						synchronized(ErrorList.this)
-						{
-							// this is a silly hack, because adding branches
-							// collapses all existing ones.
-							errorTree.expandPath(new TreePath(
-								new TreeNode[] { errorRoot, node, newNode }));
-						}
-					}
-				});
+				errorTree.expandPath(new TreePath(
+					new TreeNode[] { errorRoot, node }));
 
 				return;
 			}
@@ -512,23 +504,12 @@ public class ErrorList extends JPanel implements EBComponent
 		errorRoot.add(node);
 		errorModel.reload(errorRoot);
 
-		SwingUtilities.invokeLater(new Runnable()
+		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
-			public void run()
-			{
-				synchronized(ErrorList.this)
-				{
-					// this is a silly hack, because adding branches
-					// collapses all existing ones.
-					TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
-					for(int i = 0; i < errorRoot.getChildCount(); i++)
-					{
-						expandPath[1] = errorRoot.getChildAt(i);
-						errorTree.expandPath(new TreePath(expandPath));
-					}
-				}
-			}
-		});
+			expandPath[1] = errorRoot.getChildAt(i);
+			errorTree.expandPath(new TreePath(expandPath));
+		}
 	} //}}}
 
 	//{{{ removeError() method

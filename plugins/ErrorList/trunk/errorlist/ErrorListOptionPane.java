@@ -48,9 +48,11 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			"error-list.showOnError"));
 
 		addComponent(jEdit.getProperty("options.error-list.warningColor"),
-			warningColor = createColorButton("error-list.warningColor"));
+			warningColor = new ColorWellButton(jEdit.getColorProperty(
+			"error-list.warningColor")));
 		addComponent(jEdit.getProperty("options.error-list.errorColor"),
-			errorColor = createColorButton("error-list.errorColor"));
+			errorColor = new ColorWellButton(jEdit.getColorProperty(
+			"error-list.errorColor")));
 	} //}}}
 
 	//{{{ _save() method
@@ -58,40 +60,15 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	{
 		jEdit.setBooleanProperty("error-list.showOnError",showOnError
 			.getModel().isSelected());
-		jEdit.setProperty("error-list.warningColor",GUIUtilities
-			.getColorHexString(warningColor.getBackground()));
-		jEdit.setProperty("error-list.errorColor",GUIUtilities
-			.getColorHexString(errorColor.getBackground()));
+		jEdit.setColorProperty("error-list.warningColor",
+			warningColor.getSelectedColor());
+		jEdit.setColorProperty("error-list.errorColor",
+			errorColor.getSelectedColor());
 	} //}}}
 
 	//{{{ Private members
 	private JCheckBox showOnError;
-	private JButton warningColor;
-	private JButton errorColor;
-
-	//{{{ createColorButton() method
-	private JButton createColorButton(String property)
-	{
-		JButton b = new JButton(" ");
-		b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
-		b.addActionListener(new ActionHandler());
-		b.setRequestFocusEnabled(false);
-		return b;
-	} //}}}
-
+	private ColorWellButton warningColor;
+	private ColorWellButton errorColor;
 	//}}}
-
-	//{{{ ActionHandler class
-	class ActionHandler implements ActionListener
-	{
-		public void actionPerformed(ActionEvent evt)
-		{
-			JButton button = (JButton)evt.getSource();
-			Color c = JColorChooser.showDialog(ErrorListOptionPane.this,
-				jEdit.getProperty("colorChooser.title"),
-				button.getBackground());
-			if(c != null)
-				button.setBackground(c);
-		}
-	} //}}}
 }
