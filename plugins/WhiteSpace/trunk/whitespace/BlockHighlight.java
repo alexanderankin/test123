@@ -130,16 +130,6 @@ public class BlockHighlight
     }
 
 
-    private boolean isEnabled() {
-        return isHighlightEnabledFor(this.textArea.getBuffer());
-    }
-
-
-    private void setEnabled(boolean enabled) {
-        setHighlightEnabledFor(this.textArea.getBuffer(), enabled);
-    }
-
-
     private void updateTextArea() {
         if (this.textArea == null) { return; }
 
@@ -155,51 +145,14 @@ public class BlockHighlight
 
 
     /**
-     * Tests if the block highlights are enabled for a buffer
-     */
-    public static boolean isHighlightEnabledFor(Buffer buffer) {
-        Boolean enabled = (Boolean) buffer.getProperty(
-            BLOCK_HIGHLIGHT_PROPERTY
-        );
-        if (enabled == null) {
-            enabled = Boolean.FALSE;
-        }
-
-        return enabled.booleanValue();
-    }
-
-
-    /**
-     * Sets block highlighting enabled or disabled for a buffer
-     */
-    private static void setHighlightEnabledFor(Buffer buffer, boolean enabled) {
-        buffer.putProperty(
-            BLOCK_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
-        );
-    }
-
-
-    /**
      * Toggles block highlights for a buffer
      */
     public static void toggleHighlightEnabledFor(Buffer buffer) {
-        Boolean enabled = (Boolean) buffer.getProperty(
-            BLOCK_HIGHLIGHT_PROPERTY
-        );
-
-        if (enabled == null) {
-            return;
-        }
-
-        buffer.putProperty(
-            BLOCK_HIGHLIGHT_PROPERTY,
-            enabled.booleanValue() ? Boolean.FALSE : Boolean.TRUE
-        );
-
         View[] views = jEdit.getViews();
         for (int i = 0; i < views.length; i++) {
             EditPane[] editPanes = views[i].getEditPanes();
             BlockHighlight highlight;
+
             for (int j = 0; j < editPanes.length; j++) {
                 if (editPanes[j].getBuffer() != buffer) { continue; }
                 highlight = (BlockHighlight) highlights.get(editPanes[j]);
@@ -249,8 +202,7 @@ public class BlockHighlight
             BlockHighlight highlight;
             for (int j = 0; j < editPanes.length; j++) {
                 highlight = (BlockHighlight) highlights.get(editPanes[j]);
-
-                if (highlight.isEnabled()) {
+                if (highlight != null) {
                     highlight.updateTextArea();
                 }
             }

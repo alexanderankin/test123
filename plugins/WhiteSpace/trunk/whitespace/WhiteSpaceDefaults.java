@@ -138,13 +138,6 @@ public class WhiteSpaceDefaults
 
 
     public static void bufferCreated(Buffer buffer) {
-        // Paragraph separators highlighting option
-        putBooleanProperty(
-            buffer,
-            BlockHighlight.BLOCK_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getBlockHighlightDefault()
-        );
-
         // Folds highlighting options
         putBooleanProperty(
             buffer,
@@ -164,6 +157,11 @@ public class WhiteSpaceDefaults
             model = new WhiteSpaceModel();
             buffer.putProperty(WhiteSpaceModel.MODEL_PROPERTY, model);
         }
+
+        // Paragraph separators highlighting option
+        model.getBlockHighlight().setEnabled(
+            WhiteSpaceDefaults.getBlockHighlightDefault()
+        );
 
         // Space highlighting options
         model.getSpaceHighlight().setEnabled(
