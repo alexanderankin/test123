@@ -2,13 +2,12 @@ package gatchan.phpparser.project.itemfinder;
 
 import gatchan.phpparser.project.Project;
 import gatchan.phpparser.project.ProjectManager;
-import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
-import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 
 import javax.swing.*;
@@ -20,7 +19,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
-import java.util.ListIterator;
 
 /**
  * This window will help you to find a php item.
@@ -42,7 +40,6 @@ public final class FrameFindItem extends JFrame {
   private final JList itemList;
 
   private int mode;
-  private int wantedCaretPosition;
   private Buffer buffer;
   private PHPItemCellRenderer cellRenderer;
   private static final Color LIST_SELECTION_BACKGROUND = new Color(0xcc, 0xcc, 0xff);
@@ -90,44 +87,38 @@ public final class FrameFindItem extends JFrame {
       final QuickAccessItemFinder quickAccess = project.getQuickAccess();
       final String searchText = searchField.getText().toLowerCase();
       cellRenderer.setSearchString(searchText);
-      final long quickAccessStart = System.currentTimeMillis();
-      final java.util.List itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
-      Log.log(Log.DEBUG, QuickAccessItemFinder.class, System.currentTimeMillis() - quickAccessStart + " ms");
-      if (itemContaining.isEmpty()) {
-        searchField.setForeground(Color.red);
-        window.setVisible(false);
-        listModel.setList(itemContaining);
-      } else {
-        final ListIterator listIterator = itemContaining.listIterator();
-        while (listIterator.hasNext()) {
-          final PHPItem phpItem = (PHPItem) listIterator.next();
-          if (doNotAcceptItem(phpItem, searchText)) {
-            listIterator.remove();
-          }
-        }
-        Log.log(Log.DEBUG, this, itemContaining.size() + " items found");
-        listModel.setList(itemContaining);
+
+      if (quickAccess.getIndexLength() > searchText.length()) {
+        final long quickAccessStart = System.currentTimeMillis();
+        final java.util.List itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
+
+        Log.log(Log.DEBUG, QuickAccessItemFinder.class, System.currentTimeMillis() - quickAccessStart + " ms");
+
         if (itemContaining.isEmpty()) {
           searchField.setForeground(Color.red);
           window.setVisible(false);
+          listModel.clear();
         } else {
-          searchField.setForeground(null);
-          itemList.setSelectedIndex(0);
-          itemList.setVisibleRowCount(Math.min(itemContaining.size(), 10));
-          window.pack();
-          window.setVisible(true);
+          listModel.setList(itemContaining, searchText);
+          if (listModel.getSize() == 0) {
+            searchField.setForeground(Color.red);
+            window.setVisible(false);
+          } else {
+            searchField.setForeground(null);
+            itemList.setSelectedIndex(0);
+            itemList.setVisibleRowCount(Math.min(itemContaining.size(), 10));
+            window.pack();
+            window.setVisible(true);
+          }
         }
+      } else {
+        listModel.filter(searchText);
       }
-      searchField.setCaretPosition(searchText.length());
       searchField.requestFocus();
     }
 
     final long end = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, (end - start) + "ms");
-  }
-
-  private boolean doNotAcceptItem(PHPItem phpItem, String searchText) {
-    return (mode == CLASS_MODE && !(phpItem instanceof ClassHeader) || mode == METHOD_MODE && !(phpItem instanceof MethodHeader)) || phpItem.getName().toLowerCase().indexOf(searchText) == -1;
   }
 
   /**
@@ -143,10 +134,10 @@ public final class FrameFindItem extends JFrame {
         public void run() {
           JEditTextArea textArea = jEdit.getActiveView().getTextArea();
 
-          final int caretPosition = buffer.getLineStartOffset(selectedValue.getBeginLine()-1) +
-                              selectedValue.getBeginColumn()-1;
+          final int caretPosition = buffer.getLineStartOffset(selectedValue.getBeginLine() - 1) +
+                                    selectedValue.getBeginColumn() - 1;
           textArea.moveCaretPosition(caretPosition);
-          Log.log(Log.MESSAGE, this, "Moving to line " + (selectedValue.getBeginLine()-1) + " "+caretPosition);
+          Log.log(Log.MESSAGE, this, "Moving to line " + (selectedValue.getBeginLine() - 1) + " " + caretPosition);
           /*
           Selection[] s = getSelection();
           if (s == null)
@@ -175,6 +166,7 @@ public final class FrameFindItem extends JFrame {
     this.mode = mode;
     this.view = view;
     listModel.clear();
+    listModel.setMode(mode);
     searchField.setText(null);
     if (mode == CLASS_MODE) {
       label.setText("Enter the class name");
@@ -195,9 +187,9 @@ public final class FrameFindItem extends JFrame {
 
   private static boolean handledByList(KeyEvent e) {
     return e.getKeyCode() == KeyEvent.VK_DOWN ||
-                                                      e.getKeyCode() == KeyEvent.VK_UP ||
-                                                      e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
-                                                      e.getKeyCode() == KeyEvent.VK_PAGE_UP;
+                                              e.getKeyCode() == KeyEvent.VK_UP ||
+                                              e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
+                                              e.getKeyCode() == KeyEvent.VK_PAGE_UP;
   }
 
   private final class SearchFieldKeyAdapter extends KeyAdapter {

@@ -75,4 +75,8 @@ public final class QuickAccessItemFinder {
     }
     return list;
   }
+
+  public int getIndexLength() {
+    return indexLength;
+  }
 }
