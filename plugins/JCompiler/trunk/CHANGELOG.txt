@@ -3,6 +3,7 @@ VERSION 1.3
 - new option in the compiler option dialog to choose between classic and modern
   compiler on JDK >= 1.3 (just like in Ant)
 - updated for Console 3.0 API
+- multi-line compiler errors are now shown in a tree in ErrorList
 - all textfields in the compiler option dialog now have history popups
 - menu command "Options..." renamed to "Java Compiler Options..."
   (existing shortcuts for "Options..." should stay valid)

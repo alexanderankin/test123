@@ -117,7 +117,7 @@ jcompiler.msg.nocompilerclass_jdk12_tools_jar=\
 
 jcompiler.msg.compilermethod_exception=\
 	An error occured invoking the Java compiler {0}!\n\
-	The detailled error message was:\n\
+	The detailed error message was:\n\
 	{1}\n\
 	Please report this message and any further messages from the Activity Log \
 	to the current maintainer of JCompiler. Thank you.

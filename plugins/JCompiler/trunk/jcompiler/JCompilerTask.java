@@ -24,6 +24,8 @@ package jcompiler;
 
 
 import java.awt.Color;
+import java.util.Enumeration;
+import java.util.Vector;
 import gnu.regexp.RE;
 import gnu.regexp.RESyntax;
 import gnu.regexp.REException;
@@ -39,8 +41,9 @@ import console.Shell;
 
 /**
  * Wraps the JCompiler run in a thread.
+ * Note: the thread starts itself on construction.
  */
-public class JCompilerTask extends Thread
+public class JCompilerTask extends Thread implements JCompilerOutput
 {
 
 	public JCompilerTask(
@@ -50,7 +53,7 @@ public class JCompilerTask extends Thread
 			Output output,
 			DefaultErrorSource errorSource)
 	{
-		super();
+		super("JCompilerTask");
 		this.pkgCompile = pkgCompile;
 		this.rebuild = rebuild;
 		this.console = console;
@@ -59,7 +62,7 @@ public class JCompilerTask extends Thread
 
 		init(console);
 
-		this.setPriority(NORM_PRIORITY - 1);
+		this.setPriority(NORM_PRIORITY + 1);
 		this.start();
 	}
 
@@ -70,7 +73,7 @@ public class JCompilerTask extends Thread
 			Output output,
 			DefaultErrorSource errorSource)
 	{
-		super();
+		super("JCompilerTask");
 		this.args = args;
 		this.console = console;
 		this.output = output;
@@ -97,18 +100,26 @@ public class JCompilerTask extends Thread
 
 		cleanUp();
 		output.commandDone();
+		Log.log(Log.DEBUG, this, toString() + " ends.");
 	}
 
+
+	// BEGIN JCompilerOutput implementation
 
 	/**
 	 * Print the line to the Output instance,
 	 * parse the line for errors and send any errors to ErrorList.
 	 */
-	void print(String line) {
-		int type = -1;
+	public void outputText(String line) {
 		Color color = null;
 
 		if (errorRE != null && errorRE.isMatch(line)) {
+			// new error detected
+			String filename = errorRE.substitute(line, rfilenamepos);
+			String lineno = errorRE.substitute(line, rlinenopos);
+			String message = errorRE.substitute(line, rmessagepos);
+			int type = -1;
+
 			if (warningRE != null && warningRE.isMatch(line)) {
 				type = ErrorSource.WARNING;
 				color = console.getWarningColor();
@@ -117,44 +128,52 @@ public class JCompilerTask extends Thread
 				color = console.getErrorColor();
 			}
 
-			String filename = errorRE.substitute(line, rfilenamepos);
-			String lineno = errorRE.substitute(line, rlinenopos);
-			String message = errorRE.substitute(line, rmessagepos);
-
-			if (pendingError != null) {
-				// there is an old error that needs to be added
-				pendingError.addToErrorSource();
-			}
+			if (pendingError != null)
+				pendingError.send();
 
 			pendingError = new PendingError(type, filename,
-				Integer.parseInt(lineno) - 1, 0, 0, message);
+				Integer.parseInt(lineno) - 1, 0, 0, message, line);
 
 			if (!parseAccentChar) {
 				// don't wait for a line with '^', add error immediately
-				pendingError.addToErrorSource();
+				pendingError.send();
 				pendingError = null;
 			}
 		}
 
+		output.print(color, line);
+
 		if (parseAccentChar && pendingError != null && line.trim().equals("^")) {
 			// a line with a single '^' in it: this determines the column
 			// position of the last compiler error.
-			int startPos = getStartPos(line);
-			pendingError.setStartPos(startPos);
-			pendingError.addToErrorSource();
+			pendingError.setStartPos(getStartPos(line));
+			pendingError.send();
 			pendingError = null;
+			prevLine = null;
+			line = null;
 		}
 
-		output.print(color, line);
+		// add any new line to the current pending error, but not the
+		// line containing the error indicator "^" and the line before:
+		if (pendingError != null && prevLine != null && prevLine != pendingError.getLine())
+			pendingError.addExtraMessage(prevLine);
+
 		prevLine = line;
 	}
 
 
 	/** print an informational message on the Console instance. */
-	public void printInfo(String line, boolean asError) {
-		Color color = asError ? console.getErrorColor() : console.getInfoColor();
-		console.print(color, line);
+	public void outputInfo(String line) {
+		console.print(console.getInfoColor(), line);
 	}
+
+
+	/** print an error message on the Console instance. */
+	public void outputError(String line) {
+		console.print(console.getErrorColor(), line);
+	}
+
+	// END JCompilerOutput implementation
 
 
 	private boolean pkgCompile;
@@ -193,7 +212,7 @@ public class JCompilerTask extends Thread
 			String errorMsg = jEdit.getProperty("jcompiler.msg.invalidErrorRE",
 				new Object[] { sErrorRE, rex.getMessage() }
 			);
-			printInfo(errorMsg, true);
+			outputError(errorMsg);
 		}
 
 		try {
@@ -206,14 +225,14 @@ public class JCompilerTask extends Thread
 			String errorMsg = jEdit.getProperty("jcompiler.msg.invalidWarningRE",
 				new Object[] { sWarningRE, rex.getMessage() }
 			);
-			printInfo(errorMsg, true);
+			outputError(errorMsg);
 		}
 	}
 
 
 	private void cleanUp() {
 		if (pendingError != null) {
-			pendingError.addToErrorSource();
+			pendingError.send();
 			pendingError = null;
 		}
 		prevLine = null;
@@ -252,21 +271,27 @@ public class JCompilerTask extends Thread
 
 
 	/**
-	 * Holds data of an error.
+	 * Holds data of an error temporarily.
 	 */
 	class PendingError
 	{
 		public PendingError(
-					int type, String filename, int lineno,
-					int startpos, int endpos,
-					String error)
+				int type, String filename, int lineno,
+				int startpos, int endpos,
+				String errorText, String line)
 		{
 			this.type = type;
 			this.filename = filename;
 			this.lineno = lineno;
 			this.startpos = startpos;
 			this.endpos = endpos;
-			this.error = error;
+			this.errorText = errorText;
+			this.line = line;
+		}
+
+
+		public String getLine() {
+			return this.line;
 		}
 
 
@@ -280,17 +305,34 @@ public class JCompilerTask extends Thread
 		}
 
 
-		public void addToErrorSource() {
-			errorSource.addError(type, filename, lineno, startpos, endpos, error);
+		public void send() {
+			DefaultErrorSource.DefaultError error = new DefaultErrorSource.DefaultError(
+				errorSource, type, filename, lineno, startpos, endpos, errorText);
+
+			if (extras != null) {
+				Enumeration enum = extras.elements();
+				while (enum.hasMoreElements())
+					error.addExtraMessage((String)enum.nextElement());
+			}
+
+			errorSource.addError(error);
 		}
 
+
+		public void addExtraMessage(String line) {
+			if (extras == null)
+				extras = new Vector();
+			extras.addElement(line);
+		}
 
 		private int type;
 		private String filename;
 		private int lineno;
 		private int startpos;
 		private int endpos;
-		private String error;
+		private String errorText;
+		private String line;
+		private Vector extras;
 	}
 
 }
