@@ -346,9 +346,15 @@ class SAXParserImpl implements XmlParser.Impl
 		//{{{ elementDecl() method
 		public void elementDecl(String name, String model)
 		{
-			ElementDecl elementDecl = new ElementDecl(name,model,false);
-			elementHash.put(name,elementDecl);
-			elements.add(elementDecl);
+			ElementDecl element = (ElementDecl)elementHash.get(name);
+			if(element == null)
+			{
+				element = new ElementDecl(name,model,false);
+				elementHash.put(name,element);
+				elements.add(element);
+			}
+			else
+				element.setContent(model);
 		} //}}}
 
 		//{{{ attributeDecl() method
@@ -357,6 +363,14 @@ class SAXParserImpl implements XmlParser.Impl
 		{
 			ElementDecl element = (ElementDecl)elementHash.get(eName);
 			if(element == null)
+			{
+				element = new ElementDecl(eName,null,false);
+				elementHash.put(eName,element);
+				elements.add(element);
+			}
+
+			// as per the XML spec
+			if(element.getAttribute(aName) != null)
 				return;
 
 			ArrayList values;
