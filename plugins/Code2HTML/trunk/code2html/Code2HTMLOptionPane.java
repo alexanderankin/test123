@@ -18,6 +18,9 @@
 */
 
 
+package code2html;
+
+
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
 

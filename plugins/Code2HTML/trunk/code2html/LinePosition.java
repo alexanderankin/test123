@@ -18,6 +18,9 @@
 */
 
 
+package code2html;
+
+
 import java.util.Vector;
 
 import org.gjt.sp.util.Log;

@@ -1,6 +1,6 @@
 /*
  * HTMLEntity.java
- * Copyright (c) 2000 Andre Kaplan, list of entities borrowed from 
+ * Copyright (c) 2000 Andre Kaplan, list of entities borrowed from
  * org.w3c.tidy.EntityTable by Andy Quick <ac.quick@sympatico.ca>
  *
  * This program is free software; you can redistribute it and/or
@@ -16,15 +16,25 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+*/
+
+
+package code2html;
+
 
 import java.util.Hashtable;
 
+
 public class HTMLEntity
 {
+    private static Hashtable codesToEntities;
+    private static Hashtable entitiesToCodes;
+
+
     public static String lookupEntity(short code) {
         return (String) codesToEntities.get(new Short(code));
     }
+
 
     public static short lookupCode(String entityName) {
         Short res = (Short) entitiesToCodes.get(entityName);
@@ -35,13 +45,12 @@ public class HTMLEntity
         }
     }
 
-    private static Hashtable codesToEntities;
-    private static Hashtable entitiesToCodes;
 
     private static void putEntity(Short code, String entityName) {
         codesToEntities.put(code, entityName);
         entitiesToCodes.put(entityName, code);
     }
+
 
     static {
         codesToEntities = new Hashtable();
