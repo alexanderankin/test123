@@ -48,10 +48,12 @@ public class WhiteSpaceModel
 
 
     public WhiteSpaceModel() {
+        // Paragraph separators highlighting option
         this.blockHighlight         = new Option(
             WhiteSpaceDefaults.getBlockHighlightDefault()
         );
 
+        // Folds highlighting options
         this.foldHighlight         = new Option(
             WhiteSpaceDefaults.getFoldHighlightDefault()
         );
@@ -59,6 +61,7 @@ public class WhiteSpaceModel
             WhiteSpaceDefaults.getFoldTooltipDefault()
         );
 
+        // Space highlighting options
         this.spaceHighlight         = new Option(
             WhiteSpaceDefaults.getSpaceHighlightDefault()
         );
@@ -72,6 +75,7 @@ public class WhiteSpaceModel
             WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
         );
 
+        // Tab highlighting options
         this.tabHighlight           = new Option(
             WhiteSpaceDefaults.getTabHighlightDefault()
         );
@@ -85,10 +89,12 @@ public class WhiteSpaceModel
             WhiteSpaceDefaults.getTrailingTabHighlightDefault()
         );
 
+        // Whitespace highlighting option
         this.whitespaceHighlight    = new Option(
             WhiteSpaceDefaults.getWhitespaceHighlightDefault()
         );
 
+        // On save actions options
         this.removeTrailingWhitespace    = new Option(
             WhiteSpaceDefaults.getRemoveTrailingWhitespace()
         );
