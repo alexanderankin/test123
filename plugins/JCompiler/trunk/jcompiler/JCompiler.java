@@ -205,67 +205,32 @@ public class JCompiler {
 			isModern = true;
 		}
 
-		// Load compiler class:
+		// Find compiler class:
 		try {
 			compilerClass = Class.forName(compilerClassname);
-		}
-		catch (ClassNotFoundException cnf) {
-			if (!isOldJDK) {
-				// New JDK (>= 1.2): try to find tools.jar:
-				String home = System.getProperty("java.home");
-				Log.log(Log.DEBUG, this, "java.home=" + home);
-				if (home.toLowerCase().endsWith(File.separator + "jre"))
-					home = home.substring(0, home.length() - 4);
-				File toolsJar = new File(MiscUtilities.constructPath(home, "lib", "tools.jar"));
-				if (toolsJar.exists()) {
-					try {
-						Log.log(Log.DEBUG, this, "loading class " + compilerClassname + " from " + toolsJar.getCanonicalPath());
-						ClassLoader cl = ZipClassLoader.getInstance(toolsJar);
-						compilerClass = cl.loadClass(compilerClassname);
-					}
-					catch (Exception ex) {
-						Log.log(Log.ERROR, this, ex);
-						printError("jcompiler.msg.nocompilerclass_jdk12_tools_jar",
-							new Object[] { compilerClassname, toolsJar, ex.toString() }
-						);
-					}
-				} else {
-					Log.log(Log.ERROR, this, cnf);
-					printError("jcompiler.msg.nocompilerclass_jdk12",
-						new Object[] { compilerClassname, toolsJar }
-					);
-				}
-			} else {
-				Log.log(Log.ERROR, this, cnf);
-				printError("jcompiler.msg.nocompilerclass_jdk11",
-					new Object[] { compilerClassname }
-				);
-			}
-		}
 
-		if (compilerClass == null)
-			return;
-
-		// Get constructor:
-		try {
+			// Get constructor:
 			// The classic compiler constructor has signature Main(OutputStream,String).
 			// The modern compiler constructor has signature Main().
 			Class[] constructorSignature = isModern ? new Class[] {}
 				: new Class[] {OutputStream.class, String.class};
 			compilerConstructor = compilerClass.getConstructor(constructorSignature);
 
-			// Get the method "compile(String[] arguments)". The method has the same
-			// signature on the classic and modern compiler, but they have different
-			// return types (boolean/int). Since the return type is ignored here,
-			// it doesn't matter.
+			// Get the method "compile(String[] arguments)".
+			// The method has the same signature on the classic and modern
+			// compiler, but they have different return types (boolean/int).
+			// Since the return type is ignored here, it doesn't matter.
 			Class[] methodSignature = { String[].class };
 			compilerMethod = compilerClass.getMethod("compile", methodSignature);
 		}
-		catch (NoSuchMethodException e) {
+		catch (ClassNotFoundException cnf) {
+			Log.log(Log.ERROR, this, cnf);
+			printError("jcompiler.msg.class_not_found", new Object[] { compilerClassname });
+			return;
+		}
+		catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
-			printError("jcompiler.msg.compilermethod_exception",
-				new Object[] { compilerClass, e }
-			);
+			printError("jcompiler.msg.class_not_found_other_error", new Object[] { compilerClassname, e });
 		}
 	}
 

@@ -92,28 +92,21 @@ jcompiler.msg.info=\
 	* "compilepkg" -- determines basedir of current file and compiles all outdated files in the basedir tree\n\
 	* "rebuildpkg" -- determines basedir of current file tree and recompiles all files in the basedir tree.\n
 
-jcompiler.msg.nocompilerclass_jdk11=\
+jcompiler.msg.class_not_found=\
 	Java compiler class {0} not found!\n\
-	Since you''re using Java 1.1, this method should be there. Are you really \
-	using a JDK, not a JRE only?!?\n\
-	For more information please look at the activity log and the \
-	documentation under Help->Java Compiler.\n
+	Either you''re using a JRE instead of a full JDK, or, if you're on \
+	JDK 1.2 or higher, the library tools.jar doesn''t reside in a standard \
+	location. In the latter case, please set the environment variable \
+	$CLASSPATH to point the JDK to the right location of tools.jar. \n\
+	If unsure, report the error to the JCompiler maintainer.
 
-jcompiler.msg.nocompilerclass_jdk12=\
-	Can''t invoke compiler {0}, because library {1} not found!\n\
-	Either you''re using a JRE instead of a full JDK, or tools.jar doesn''t \
-	reside in a standard location. In the latter case, please set the \
-	environment variable $CLASSPATH to point the JDK to the right \
-	location of tools.jar. For more information about how to do \
-	this, please have a look at the documentation under \
-	Help->Java Compiler.\n
-
-jcompiler.msg.nocompilerclass_jdk12_tools_jar=\
-	Java compiler class {0} not found!\n\
-	On JDK 1.2 or higher, this class usually resides in library {1}, \
-	but this doesn't seem to be the case here. A {2} exception was \
-	thrown searching for the class. Please report this to the \
-	JCompiler maintainer.
+jcompiler.msg.class_not_found_other_error=\
+	Java compiler class {0} can not be used!\n\
+	An error occured creating the Java compiler.\n\
+	The detailed error message was:\n\
+	{1}\n\
+	Please report this message and any further messages from the Activity Log \
+	to the current maintainer of JCompiler. Thank you.
 
 jcompiler.msg.compilermethod_exception=\
 	An error occured invoking the Java compiler {0}!\n\

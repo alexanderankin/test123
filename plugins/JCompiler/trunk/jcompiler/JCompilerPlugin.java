@@ -23,14 +23,19 @@
 package jcompiler;
 
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.JARClassLoader;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.util.Log;
 import jcompiler.options.*;
 import console.Console;
 import console.Shell;
@@ -44,6 +49,30 @@ public class JCompilerPlugin extends EditPlugin
 
 
 	public void start() {
+		String javaHome = System.getProperty("java.home");
+		if (javaHome.toLowerCase().endsWith(File.separator + "jre"))
+			javaHome = javaHome.substring(0, javaHome.length() - 4);
+		String toolsPath = MiscUtilities.constructPath(javaHome,"lib","tools.jar");
+		String javaVersion = System.getProperty("java.version");
+		boolean isJDK12 = MiscUtilities.compareVersions(javaVersion, "1.2") >= 0;
+
+		// find and add tools.jar to the list of jEdit plugins on JDK 1.2 or higher:
+		// (tools.jar contains the compiler class)
+		if (isJDK12 && new File(toolsPath).exists()) {
+			EditPlugin.JAR jar = jEdit.getPluginJAR(toolsPath);
+			if (jar == null) {
+				Log.log(Log.DEBUG, this, "JDK 1.2 or higher detected, adding " + toolsPath + " to jEdit plugins");
+				try {
+					jEdit.addPluginJAR(new EditPlugin.JAR(toolsPath, new JARClassLoader(toolsPath)));
+				}
+				catch (IOException ioex) {
+					Log.log(Log.ERROR, this, "Could not add tools.jar to jEdit plugins, reason follows...");
+					Log.log(Log.ERROR, this, ioex);
+				}
+			}
+		}
+
+		// register the JCompiler shell:
 		Shell.registerShell(shell);
 	}
 
