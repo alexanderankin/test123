@@ -21,6 +21,10 @@
             <firstname>Calvin</firstname>
             <surname>Yu</surname>
         </author>
+        <author>
+            <firstname>Kevin</firstname>
+            <surname>Burton</surname>
+        </author>
     </authorgroup>
 
     <legalnotice>
@@ -89,13 +93,11 @@
     <itemizedlist>
         <listitem>
             Stefan Kost <email>ensonic@sonicpulse.de</email>;
-        </listitem>
-
+		</listitem>
         <listitem>
             or jEdit-users mailing-list
             <email>jedit-users@lists.sourceforge.net</email>;
         </listitem>
-
         <listitem>
             or jEdit-devel mailing-list
             <email>jedit-devel@lists.sourceforge.net</email>.
@@ -109,9 +111,11 @@
 
     <itemizedlist>
         <listitem>
-            ProjectViewer was originally developed and maintained by Calvin Yu
+            ProjectViewer was previously (up to 1.0.2) maintained by Calvin Yu
         </listitem>
-
+        <listitem>
+            ProjectViewer was originally developed Kevin A. Burton
+        </listitem>
     </itemizedlist>
 </chapter>
 
