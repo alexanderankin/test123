@@ -1,4 +1,4 @@
-commandoENTRY(pane,ns,label,var,options)
+commandoENTRY(view,pane,ns,label,var,options)
 {
 	entry = new JTextField(20);
 	value = ns.getVariable(var);

@@ -7,7 +7,7 @@
 <COMMANDO>
 	<UI>
 		<ENTRY LABEL="JMK command" VARNAME="command" DEFAULT="jmk" />
-		<ENTRY LABEL="Make file" VARNAME="makefile"
+		<FILE_ENTRY LABEL="Make file" VARNAME="makefile"
 			EVAL='buffer.getName().endsWith("jmk") ? buffer.getPath() : "makefile.jmk"' />
 		<ENTRY LABEL="Targets to build" VARNAME="targets" />
 

@@ -7,7 +7,7 @@
 <COMMANDO>
 	<UI>
 		<ENTRY LABEL="Ant command" VARNAME="command" DEFAULT="ant" />
-		<ENTRY LABEL="Build file" VARNAME="makefile"
+		<FILE_ENTRY LABEL="Build file" VARNAME="makefile"
 			EVAL='buffer.getName().equals("build.xml") ? buffer.getPath() : "build.xml"' />
 		<ENTRY LABEL="Targets to build" VARNAME="targets" />
 

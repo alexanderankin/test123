@@ -5,7 +5,7 @@
 <COMMANDO>
 	<UI>
 		<CAPTION LABEL="Source file">
-			<ENTRY LABEL="Source file" VARNAME="source"
+			<FILE_ENTRY LABEL="Source file" VARNAME="source"
 				EVAL='MiscUtilities.getFileNameNoExtension(buffer.getName()) + ".dvi"'/>
 		</CAPTION>
 

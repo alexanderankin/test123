@@ -643,6 +643,22 @@ specified.</para></listitem>
 
 </sect3>
 
+<sect3><title>The DIR_ENTRY element</title>
+
+<para>
+ A <literal>DIR_ENTRY</literal> element adds a text field with a button on the
+ right for displaying a directory chooser dialog. This dialog lets you pick a
+ directory,
+ then inserts the directory's full path in the text field.
+</para>
+
+<para>
+ Here is an example <literal>DIR_ENTRY</literal> element:
+</para>
+
+<programlisting><![CDATA[<DIR_ENTRY LABEL="Output directory" VARNAME="output" />]]></programlisting>
+</sect3>
+
 <sect3><title>The ENTRY element</title>
 
 <para>
@@ -659,10 +675,25 @@ specified.</para></listitem>
    EVAL="buffer.getPath()" />]]></programlisting>
 </sect3>
 
+<sect3><title>The FILE_ENTRY element</title>
+
+<para>
+ A <literal>FILE_ENTRY</literal> element adds a text field with a button on the
+ right for displaying a file chooser dialog. This dialog lets you pick a file,
+ then inserts the file's full path in the text field.
+</para>
+
+<para>
+ Here is an example <literal>FILE_ENTRY</literal> element:
+</para>
+
+<programlisting><![CDATA[<FILE_ENTRY LABEL="Source file" VARNAME="source" />]]></programlisting>
+</sect3>
+
 <sect3><title>The LONG_ENTRY element</title>
 
 <para>
- An <literal>LONG_ENTRY</literal> element adds a multiple line text area
+ A <literal>LONG_ENTRY</literal> element adds a multiple line text area
  to the commando panel.
  It must be placed inside the
  <literal>UI</literal> element.
@@ -672,7 +703,7 @@ specified.</para></listitem>
  Here is an example <literal>LONG_ENTRY</literal> element:
 </para>
 
-<programlisting><![CDATA[<ENTRY LABEL="Comments" VARNAME="comments" />]]></programlisting>
+<programlisting><![CDATA[<LONG_ENTRY LABEL="Comments" VARNAME="comments" />]]></programlisting>
 </sect3>
 
 <sect3><title>The TOGGLE element</title>
@@ -1229,8 +1260,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <listitem><para>The <function>waitForConsole()</function> BeanShell command
    didn't work.
    </para></listitem>
-   <listitem><para>Added <classname>TOGGLE_ENTRY</classname> (check box and
-   text field) and <classname>LONG_ENTRY</classname> (multiple line text area)
+   <listitem><para>Added <classname>TOGGLE_ENTRY</classname>,
+   <classname>LONG_ENTRY</classname>, <classname>DIR_ENTRY</classname>
+   and <classname>FILE_ENTRY</classname>
    controls to commando.
    </para></listitem>
   </itemizedlist>
