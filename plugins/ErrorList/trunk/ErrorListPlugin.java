@@ -20,6 +20,7 @@
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class ErrorListPlugin extends EBPlugin
 {
@@ -93,8 +94,15 @@ public class ErrorListPlugin extends EBPlugin
 			while(view != null)
 			{
 				if(view.getBuffer() == buffer)
-					view.getTextArea().getPainter()
-						.invalidateLine(lineNumber);
+				{
+					JEditTextArea[] textAreas = view.getTextAreas();
+					for(int i = 0; i < textAreas.length; i++)
+					{
+						textAreas[i].getPainter()
+							.invalidateLine(lineNumber);
+					}
+				}
+
 				view = view.getNext();
 			}
 		}
@@ -103,7 +111,11 @@ public class ErrorListPlugin extends EBPlugin
 			View view = jEdit.getFirstView();
 			while(view != null)
 			{
-				view.getTextArea().repaint();
+				JEditTextArea[] textAreas = view.getTextAreas();
+				for(int i = 0; i < textAreas.length; i++)
+				{
+					textAreas[i].getPainter().repaint();
+				}
 				view = view.getNext();
 			}
 		}
@@ -111,12 +123,10 @@ public class ErrorListPlugin extends EBPlugin
 
 	private void handleViewMessage(ViewUpdate message)
 	{
-		View view = message.getView();
-
-		if(message.getWhat() == ViewUpdate.CREATED)
+		if(message.getWhat() == ViewUpdate.TEXTAREA_CREATED)
 		{
 			ErrorHighlight highlight = new ErrorHighlight();
-			view.getTextArea().getPainter().addCustomHighlight(highlight);
+			message.getTextArea().getPainter().addCustomHighlight(highlight);
 		}
 	}
 }
