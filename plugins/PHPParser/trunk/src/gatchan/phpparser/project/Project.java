@@ -6,6 +6,7 @@ import gatchan.phpparser.sidekick.PHPSideKickParser;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
@@ -21,7 +22,6 @@ import java.util.*;
  * @author Matthieu Casanova
  */
 public final class Project {
-
   /** The file where the project will be saved. */
   private final File file;
 
@@ -39,20 +39,24 @@ public final class Project {
   private File fileFile;
   /** The properties */
   protected final Properties properties = new Properties();
-  /** This table will contains class names (lowercase) as key and {@link net.sourceforge.phpdt.internal.compiler.ast.ClassHeader} as values. */
+  /**
+   * This table will contains class names (lowercase) as key and {@link net.sourceforge.phpdt.internal.compiler.ast.ClassHeader}
+   * as values.
+   */
   protected Hashtable classes;
-  /** This table will contains class names (lowercase) as key and {@link net.sourceforge.phpdt.internal.compiler.ast.MethodHeader} as values. */
+  /**
+   * This table will contains class names (lowercase) as key and {@link net.sourceforge.phpdt.internal.compiler.ast.MethodHeader}
+   * as values.
+   */
   protected Hashtable methods;
   /** This table will contains as key the file path, and as value a {@link java.util.List} */
   protected Hashtable files;
-  protected QuickAccessItemFinder quickAccess = new QuickAccessItemFinder();
+  protected QuickAccessItemFinder quickAccess;
 
   public Project(String name, String version) {
     properties.setProperty("name", name);
     properties.setProperty("version", version);
-    classes = new Hashtable();
-    methods = new Hashtable();
-    files = new Hashtable();
+    reset();
     file = getValidFileName(ProjectManager.projectDirectory + File.separator + name);
     init();
     needSave = true;
@@ -60,6 +64,7 @@ public final class Project {
 
   public Project(File file) throws FileNotFoundException, InvalidProjectPropertiesException {
     this.file = file;
+    quickAccess = new QuickAccessItemFinder();
     FileInputStream inStream = null;
     try {
       inStream = new FileInputStream(file);
@@ -81,30 +86,11 @@ public final class Project {
     checkProperties();
   }
 
-  /** Load the project. */
-  public void load() {
-    final long start = System.currentTimeMillis();
-    classes = readObjects(classFile);
-    Collection collection = classes.values();
-    for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-      final ClassHeader classHeader = (ClassHeader) iterator.next();
-      quickAccess.addToIndex(classHeader);
-      final List methods = classHeader.getMethodsHeaders();
-      for (int i = 0; i < methods.size(); i++) {
-        quickAccess.addToIndex((MethodHeader) methods.get(i));
-      }
-    }
-
-    methods = readObjects(methodFile);
-    collection = methods.values();
-    for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-      final MethodHeader methodHeader = (MethodHeader) iterator.next();
-      quickAccess.addToIndex(methodHeader);
-    }
-
-    files = readObjects(fileFile);
-    final long end = System.currentTimeMillis();
-    Log.log(Log.DEBUG, this, "Project loaded in " + (end - start) + "ms");
+  private void reset() {
+    classes = new Hashtable();
+    methods = new Hashtable();
+    files = new Hashtable();
+    quickAccess = new QuickAccessItemFinder();
   }
 
   private void init() {
@@ -114,6 +100,72 @@ public final class Project {
     classFile = new File(dataDirectory, "classes.ser");
     methodFile = new File(dataDirectory, "methods.ser");
     fileFile = new File(dataDirectory, "files.ser");
+  }
+
+  /** Load the project. */
+  public void load() {
+    final long start = System.currentTimeMillis();
+
+    final long end;
+    try {
+      classes = readObjects(classFile);
+      Collection collection = classes.values();
+      for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
+        final ClassHeader classHeader = (ClassHeader) iterator.next();
+        quickAccess.addToIndex(classHeader);
+        final List methods = classHeader.getMethodsHeaders();
+        for (int i = 0; i < methods.size(); i++) {
+          quickAccess.addToIndex((MethodHeader) methods.get(i));
+        }
+      }
+
+      methods = readObjects(methodFile);
+      collection = methods.values();
+      for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
+        final MethodHeader methodHeader = (MethodHeader) iterator.next();
+        quickAccess.addToIndex(methodHeader);
+      }
+
+      files = readObjects(fileFile);
+    } catch (FileNotFoundException e) {
+      Log.log(Log.ERROR, this, e.getMessage());
+      GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.unabletoreadproject", new String[] {e.getMessage()});
+      reset();
+    } catch (InvalidClassException e) {
+      Log.log(Log.WARNING,
+              this,
+                      "A class is invalid probably because the project used an old plugin " + e.getMessage());
+      GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.invalidprojectformat", null);
+      reset();
+    } catch (ClassNotFoundException e) {
+      //should never happen
+      Log.log(Log.ERROR, this, e);
+      GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.unexpectederror", null);
+      reset();
+    } catch (IOException e) {
+      Log.log(Log.ERROR, this, e);
+      GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.unabletoreadproject", new String[] {e.getMessage()});
+      reset();
+    }
+    end = System.currentTimeMillis();
+    Log.log(Log.DEBUG, this, "Project loaded in " + (end - start) + "ms");
+  }
+
+  private Hashtable readObjects(File target) throws FileNotFoundException, InvalidClassException,
+                                                    ClassNotFoundException, IOException {
+    ObjectInputStream objIn = null;
+    try {
+      objIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(target)));
+      final Object object = objIn.readObject();
+      return (Hashtable) object;
+    } finally {
+      if (objIn != null)
+        try {
+          objIn.close();
+        } catch (IOException e) {
+          Log.log(Log.WARNING, this, e);
+        }
+    }
   }
 
   private static File getValidFileName(String name) {
@@ -139,13 +191,13 @@ public final class Project {
   public void save() {
     final long start = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, "Saving the project");
-    BufferedOutputStream outStream = null;
     File directory = classFile.getParentFile();
     if (!directory.exists()) {
       // todo : do better
       directory.mkdirs();
     }
 
+    BufferedOutputStream outStream = null;
     try {
       outStream = new BufferedOutputStream(new FileOutputStream(file));
       properties.store(outStream, "");
@@ -193,34 +245,6 @@ public final class Project {
         }
       }
     }
-  }
-
-  private Hashtable readObjects(File target) {
-    ObjectInputStream objIn = null;
-    try {
-      objIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(target)));
-      final Object object = objIn.readObject();
-      return (Hashtable) object;
-    } catch (FileNotFoundException e) {
-      Log.log(Log.ERROR, this, "The file " + target.getAbsolutePath() + " was not found");
-    } catch (InvalidClassException e) {
-      Log.log(Log.WARNING,
-              this,
-              "A class is invalid probably because the project used an old plugin " + e.getMessage());
-    } catch (ClassNotFoundException e) {
-      //should never happen
-      Log.log(Log.ERROR, this, e);
-    } catch (IOException e) {
-      Log.log(Log.ERROR, this, e);
-    } finally {
-      if (objIn != null)
-        try {
-          objIn.close();
-        } catch (IOException e) {
-          Log.log(Log.WARNING, this, e);
-        }
-    }
-    return new Hashtable();
   }
 
   /**
@@ -288,7 +312,6 @@ public final class Project {
     classes.clear();
     methods.clear();
     files.clear();
-    // todo : maybe clear it ?
     quickAccess = new QuickAccessItemFinder();
     final String root = getRoot();
     if (root == null) {
@@ -360,6 +383,7 @@ public final class Project {
    * Return a classHeader by it's name.
    *
    * @param name the name of the class
+   *
    * @return a {@link net.sourceforge.phpdt.internal.compiler.ast.ClassHeader} or null
    */
   public ClassHeader getClass(String name) {
@@ -412,7 +436,6 @@ public final class Project {
    * @author Matthieu Casanova
    */
   private static final class Rebuilder extends WorkRequest {
-
     private final File path;
 
     private int max;

@@ -6,7 +6,6 @@ import java.util.*;
 
 /** @author Matthieu Casanova */
 public final class QuickAccessItemFinder {
-
   private final Map items;
 
   private final int indexLength = 2;
@@ -51,9 +50,16 @@ public final class QuickAccessItemFinder {
       }
     }
     final long end = System.currentTimeMillis();
-    Log.log(Log.DEBUG,this,(end-start)+"ms");
+    Log.log(Log.DEBUG, this, (end - start) + "ms");
   }
 
+  /**
+   * Get the list of items containing the first characters (limited to the index length.
+   *
+   * @param s the searched string
+   *
+   * @return the list
+   */
   public List getItemContaining(String s) {
     if (s.length() > indexLength) {
       s = s.substring(0, indexLength);

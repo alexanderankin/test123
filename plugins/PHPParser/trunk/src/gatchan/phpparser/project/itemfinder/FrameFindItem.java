@@ -49,11 +49,11 @@ public final class FrameFindItem extends JFrame implements EBComponent {
     setUndecorated(true);
     itemList = new JList(listModel);
     cellRenderer = new PHPItemCellRenderer();
+    searchField = new JTextField();
     itemList.setSelectionBackground(LIST_SELECTION_BACKGROUND);
     itemList.setCellRenderer(cellRenderer);
-    itemList.addKeyListener(new ItemListKeyAdapter());
+    itemList.addKeyListener(new ItemListKeyAdapter(searchField));
     itemList.addMouseListener(new MyMouseAdapter());
-    searchField = new JTextField();
     searchField.addKeyListener(new SearchFieldKeyAdapter());
     searchField.getDocument().addDocumentListener(new DocumentListener() {
       public void insertUpdate(DocumentEvent e) {
@@ -88,36 +88,49 @@ public final class FrameFindItem extends JFrame implements EBComponent {
       final QuickAccessItemFinder quickAccess = project.getQuickAccess();
       final String searchText = searchField.getText().toLowerCase();
       cellRenderer.setSearchString(searchText);
+      final long quickAccessStart = System.currentTimeMillis();
       final java.util.List itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
+      Log.log(Log.DEBUG, QuickAccessItemFinder.class, System.currentTimeMillis() - quickAccessStart + " ms");
       if (itemContaining.isEmpty()) {
+        searchField.setForeground(Color.red);
         window.setVisible(false);
         listModel.setList(itemContaining);
-        searchField.requestFocus();
       } else {
         final ListIterator listIterator = itemContaining.listIterator();
+        int i = 0;
         while (listIterator.hasNext()) {
-          final PHPItem phpItem = (PHPItem) listIterator.next();
-          if (acceptItem(phpItem, searchText)) {
+          if (i > 25) { // to remove items and do not have lists > 25 items
             listIterator.remove();
+          }
+          final PHPItem phpItem = (PHPItem) listIterator.next();
+          if (doNotAcceptItem(phpItem, searchText)) {
+            listIterator.remove();
+          } else {
+            i++;
           }
         }
         Log.log(Log.DEBUG, this, itemContaining.size() + " items found");
         listModel.setList(itemContaining);
-        itemList.setSelectedIndex(0);
-        itemList.setVisibleRowCount(Math.min(itemContaining.size(), 10));
-        window.pack();
-        window.setVisible(true);
+        if (itemContaining.isEmpty()) {
+          searchField.setForeground(Color.red);
+          window.setVisible(false);
+        } else {
+          searchField.setForeground(null);
+          itemList.setSelectedIndex(0);
+          itemList.setVisibleRowCount(Math.min(itemContaining.size(), 10));
+          window.pack();
+          window.setVisible(true);
+        }
       }
+      searchField.requestFocus();
     }
 
     final long end = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, (end - start) + "ms");
   }
 
-  private boolean acceptItem(PHPItem phpItem, String searchText) {
-    return (mode == CLASS_MODE && !(phpItem instanceof ClassHeader) ||
-                                                                                    mode == METHOD_MODE && !(phpItem instanceof MethodHeader)) ||
-                                                                                                                                                       phpItem.getName().toLowerCase().indexOf(searchText) == -1;
+  private boolean doNotAcceptItem(PHPItem phpItem, String searchText) {
+    return (mode == CLASS_MODE && !(phpItem instanceof ClassHeader) || mode == METHOD_MODE && !(phpItem instanceof MethodHeader)) || phpItem.getName().toLowerCase().indexOf(searchText) == -1;
   }
 
   private void selectionMade(PHPItem selectedValue) {
@@ -158,6 +171,12 @@ public final class FrameFindItem extends JFrame implements EBComponent {
     }
   }
 
+  /**
+   * Initialize the frame find item.
+   *
+   * @param view the jEdit's view
+   * @param mode the mode ({@link FrameFindItem#CLASS_MODE} or {@link FrameFindItem#METHOD_MODE})
+   */
   public void init(View view, int mode) {
     this.mode = mode;
     this.view = view;
@@ -170,22 +189,21 @@ public final class FrameFindItem extends JFrame implements EBComponent {
     }
     window.pack();
     pack();
-    final Rectangle bounds = getBounds();
-    window.setLocation(bounds.x, bounds.y + bounds.height);
-    GUIUtilities.requestFocus(this, searchField);
   }
 
   public void setVisible(boolean b) {
+    final Rectangle bounds = getBounds();
+    window.setLocation(bounds.x, bounds.y + bounds.height);
+    GUIUtilities.requestFocus(this, searchField);
     window.setVisible(false);
     super.setVisible(b);
-    //searchField.requestFocus();
   }
 
   private static boolean handledByList(KeyEvent e) {
     return e.getKeyCode() == KeyEvent.VK_DOWN ||
-                                                      e.getKeyCode() == KeyEvent.VK_UP ||
-                                                      e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
-                                                      e.getKeyCode() == KeyEvent.VK_PAGE_UP;
+           e.getKeyCode() == KeyEvent.VK_UP ||
+           e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
+           e.getKeyCode() == KeyEvent.VK_PAGE_UP;
   }
 
   private final class SearchFieldKeyAdapter extends KeyAdapter {
@@ -200,7 +218,13 @@ public final class FrameFindItem extends JFrame implements EBComponent {
     }
   }
 
-  private final class ItemListKeyAdapter extends KeyAdapter {
+  private static final class ItemListKeyAdapter extends KeyAdapter {
+    private final JTextField searchField;
+
+    public ItemListKeyAdapter(JTextField searchField) {
+      this.searchField = searchField;
+    }
+
     public void keyTyped(KeyEvent e) {
       searchField.dispatchEvent(e);
     }
