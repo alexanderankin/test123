@@ -20,12 +20,9 @@ package projectviewer.importer;
 
 //{{{ Imports
 import java.io.File;
-import java.io.FilenameFilter;
 
 import java.util.HashSet;
 import java.util.StringTokenizer;
-
-import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -42,7 +39,7 @@ import projectviewer.config.ProjectViewerConfig;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
+public class ImportSettingsFilter extends ImporterFileFilter {
 
 	//{{{ Private members
 	private HashSet includedExtensions;
@@ -115,6 +112,11 @@ public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 				next = next.toLowerCase();
 			set.add(next);
 		}
+	} //}}}
+
+	//{{{ +getRecurseDescription() : String
+	public String getRecurseDescription() {
+		return	jEdit.getProperty("projectviewer.import.yes-settings");
 	} //}}}
 
 }

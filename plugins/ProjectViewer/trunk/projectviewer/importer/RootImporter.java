@@ -51,10 +51,8 @@ import projectviewer.vpt.VPTDirectory;
 public class RootImporter extends FileImporter {
 
 	//{{{ Private members
-	private Component parent;
 	private boolean clean;
-
-	protected FilenameFilter fnf;
+	protected Component parent;
 	protected String oldRoot;
 	//}}}
 
@@ -97,7 +95,9 @@ public class RootImporter extends FileImporter {
 	protected Collection internalDoImport() {
 		fileCount = 0;
 
-		if (!defineFileFilter(project.getName(), (project.getChildCount() == 0))) {
+		int msgType = (project.getChildCount() == 0)
+			? FILTER_MSG_INITIAL_IMPORT : FILTER_MSG_RE_IMPORT;
+		if (!defineFileFilter(null, project.getName(), msgType, parent)) {
 			return null;
 		}
 		String state = null;
@@ -155,45 +155,6 @@ public class RootImporter extends FileImporter {
 				dir.remove(i--);
 			}
 		}
-	} //}}}
-
-	//{{{ #defineFileFilter(String, boolean) : boolean
-	/**
-	 *	Shows a dialog asking the user for which file filter to use
-	 *	when importing files.
-	 *
-	 *	@param	name	The name of the node to where files will be imported.
-	 *	@param	initial	Whether this is an initial import for a project or
-	 *					not.
-	 *	@return	Whether to continue importing files.
-	 */
-	protected boolean defineFileFilter(String name, boolean initial) {
-		Object[] options = {
-			jEdit.getProperty("projectviewer.import.yes-settings"),
-			jEdit.getProperty("projectviewer.import.yes-all"),
-			jEdit.getProperty("projectviewer.import.yes-cvs"),
-			jEdit.getProperty("projectviewer.import.no")
-		};
-
-		String msg = (initial) ? "projectviewer.import.msg_proj_root"
-								: "projectviewer.import.msg_reimport";
-		String title = (initial) ? "projectviewer.import.msg_proj_root.title"
-									: "projectviewer.import.msg_reimport.title";
-		Object sel = JOptionPane.showInputDialog(parent,
-						jEdit.getProperty(msg, new Object[] { name } ),
-						jEdit.getProperty(title),
-						JOptionPane.QUESTION_MESSAGE,
-						null, options, options[0]);
-
-		fnf = null;
-		if (sel == null || sel == options[3]) {
-			return false;
-		} else if (sel == options[0]) {
-			fnf = new ImportSettingsFilter();
-		} else if (sel == options[2]) {
-			fnf = new CVSEntriesFilter();
-		}
-		return true;
 	} //}}}
 
 }

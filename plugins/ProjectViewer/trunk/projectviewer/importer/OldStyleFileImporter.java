@@ -190,6 +190,5 @@ public class OldStyleFileImporter extends FileImporter {
 		return (new File(path).getParent());
 	} //}}}
 
-
 }
 
