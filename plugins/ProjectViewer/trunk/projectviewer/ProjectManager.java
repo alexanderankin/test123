@@ -236,6 +236,7 @@ public final class ProjectManager {
 			projects.remove(p.getName());
 		}
 		ProjectViewer.projectRemoved(this, p);
+		p.removeAllChildren(); // for the GC
 	} //}}}
 
 	//{{{ renameProject(String, String) method
