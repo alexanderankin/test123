@@ -36,18 +36,15 @@ public class Task
 {
 
 	//{{{ constructor
-	public Task(Buffer buffer, Icon icon, int line, String text,
+	public Task(Buffer buffer, Icon icon, int line, 
+		String identifier, String comment, String text,
 		int startOffset, int endOffset)
 	{
-		// DEBUG: dump of object properties
-		// Log.log(Log.DEBUG, Task.class,
-		// 	"Task.Task(buffer=" + buffer + ",icon=" + icon + ",line=" + line +
-		// 	",startOffset=" + startOffset + ",endOffset=" + endOffset +
-		// 	",text=" + text + ")");//##
-
 		this.buffer = buffer;
 		this.icon = icon;
 		this.lineIndex = line;
+		this.identifier = identifier;
+		this.comment = comment.replace('\t', (char)187);
 		this.text = text.replace('\t', (char)187);
 		int posOffset = buffer.getLineStartOffset(line);
 		this.startPosition = buffer.createPosition(posOffset + startOffset);
@@ -56,6 +53,8 @@ public class Task
 
 	public Buffer getBuffer(){ return this.buffer; }
 	public Icon getIcon(){ return this.icon; }
+	public String getIdentifier(){ return this.identifier; }
+	public String getComment(){ return this.comment; }
 	public String getText(){ return this.text; }
 	public int getLineIndex(){ return this.lineIndex; }
 
@@ -118,7 +117,9 @@ public class Task
 	private Buffer buffer;		// buffer task came from
 	private Icon icon;			// icon associated with TaskType
 
-	private String text;		// comment text
+	private String identifier;	// XXX, NOTE, etc...
+	private String comment;		// comment text
+	private String text;		// identifer, comment, and anything inbetween
 
 	private int startOffset;	// start of task
 	private int endOffset;		// end of task
