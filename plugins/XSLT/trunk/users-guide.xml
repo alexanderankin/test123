@@ -85,7 +85,7 @@
         </listitem>
         <listitem>
           <para>Files can be opened for editing from the XSLT Processor window,
-          using enter key or double click or right click menu select on the
+          using enter key, or double click, or right click menu select on the
           file name.</para>
         </listitem>
         <listitem>
@@ -137,9 +137,8 @@
           <para>Users should be able to edit the XSLT Processor settings (e.g.
           indent amount) via an XSLT plugin section in global options.
           Note: The indent amount for the result XML is set to 2 spaces per indent
-          level. Currently
-          this setting can only be changed in the XSLT.props file, which is
-          contained in the XSLT.jar file.</para>
+          level. Currently this setting can only be changed in the XSLT.props file,
+          which is contained in the XSLT.jar file.</para>
         </listitem>
       </itemizedlist>
     </para>
@@ -298,25 +297,37 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
-      <emphasis role="bold">Version 0.4.2</emphasis> requires >=jEdit 4.1pre5 and >=XML plugin 0.10.
+      <emphasis role="bold">Version 0.5</emphasis> requires >=jEdit 4.1pre5 and >=XML plugin 0.10.
       <itemizedlist>
-        <listitem>
-          <para>Known issue: cannot perform transformations running under JDK 1.4.*
-          on Windows. Temporary workaround is to run under JDK 1.3.*.</para>
-        </listitem>
         <listitem>
           <para>A history of recent executed XPath expressions can be navigated in
           the XPath expression text area using page up and page down keys.</para>
         </listitem>
         <listitem>
           <para>Can open files for editing from the XSLT Processor window,
-          using enter key or double click or right click menu select on file name.</para>
+          using enter key, or double click, or right click menu select on file name.</para>
+        </listitem>
+        <listitem>
+           <para>Transformation result is written directly to file. The file is opened 
+           in a new buffer, or the file is reloaded if already open in a buffer. If
+           the file is already open then the result buffer will not gain focus after transformation is
+           completed, this is helpful for when using split panes while editing. Perhaps
+           whether the result buffer gets the focus should be made configurable in
+           a future release.</para>
         </listitem>
         <listitem>
           <para>Fixed bug that added new lines when indenting files containing CDATA.</para>
         </listitem>
         <listitem>
           <para>Cleaned up XSLT.props file and simplified property names.</para>
+        </listitem>
+        <listitem>
+          <para>Known issue: cannot perform transformations running under JDK 1.4.*
+          on Windows after normal plugin install. Fix is to move Xerces &amp; Xalan
+          files into a separate directory, and set the java.endorsed.dirs property to point to that directory,
+          e.g. start jEdit like this: 
+          java -Djava.endorsed.dirs=/usr/.jedit/jars/endorsed -jar jedit.jar .
+          Else the temporary workaround is to run jEdit with JDK 1.3.*.</para>
         </listitem>
       </itemizedlist>
     </para>
