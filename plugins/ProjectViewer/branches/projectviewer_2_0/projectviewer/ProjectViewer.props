@@ -102,6 +102,11 @@ projectviewer.action.a_e_project=Add/Edit Project
 projectviewer.action.add_project=Add Project
 projectviewer.action.edit_project=Edit Project
 projectviewer.action.import=Import files
+
+projectviewer.action.rename.title=Rename node
+projectviewer.action.rename.message=Enter the new name for the node:
+projectviewer.action.rename.file_error=Invalid name for file or directory
+projectviewer.action.rename.rename_error=Could not rename node.
 #}}}
 
 #{{{ Confirmation messages
