@@ -24,6 +24,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.ProjectViewer;
@@ -40,19 +41,11 @@ import projectviewer.importer.FileImporter;
  *	@version	$Id$
  */
 public class FileImportAction extends Action {
-
-	//{{{ Constructor
-	
-	public FileImportAction(ProjectViewer viewer) {
-		super(viewer);
-	}
-	
-	//}}}
 	
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
-		return "Import Files";
+		return jEdit.getProperty("projectviewer.action.import");
 	} //}}}
 	
 	//{{{ getIcon() method
@@ -74,9 +67,6 @@ public class FileImportAction extends Action {
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		if (tbButton != null) {
-			tbButton.setEnabled( (node != null) && !node.isRoot() && !node.isFile() );
-		}
 		if (cmItem != null) {
 			cmItem.setVisible( (node != null) && !node.isRoot() && !node.isFile() );
 		}
