@@ -30,6 +30,8 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
+import code2html.Code2HTMLUtilities;
+
 import code2html.line.LinePosition;
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
