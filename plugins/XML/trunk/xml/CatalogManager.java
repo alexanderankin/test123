@@ -62,7 +62,11 @@ public class CatalogManager
 				newSystemId = systemId;
 		}
 
-		return new InputSource(newSystemId);
+		// Xerces has a bug where an InputSource without a byte
+		// stream is loaded incorrectly.
+		InputSource source = new InputSource(newSystemId);
+		source.setByteStream(new URL(newSystemId).openStream());
+		return source;
 	}
 
 	public static void propertiesChanged()

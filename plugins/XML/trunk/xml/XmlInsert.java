@@ -262,30 +262,12 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 						+ (element.empty && !element.html
 						? " />" : ">"));
 
-					int caret = textArea.getCaretPosition();
-
-					if(!element.empty)
-					{
-						textArea.setSelectedText("</"
-							+ element.name + ">");
-					}
-
-					textArea.setCaretPosition(caret);
-
 					textArea.requestFocus();
 				}
 				else
 				{
-					Buffer buffer = editPane.getBuffer();
-
-					buffer.beginCompoundEdit();
-
 					// show edit tag dialog box
-					if(XmlActions.showEditTagDialog(view,element)
-						&& !element.empty)
-						XmlActions.insertClosingTag(textArea);
-
-					buffer.endCompoundEdit();
+					XmlActions.showEditTagDialog(view,element);
 				}
 			}
 			else if(evt.getSource() == entityList)

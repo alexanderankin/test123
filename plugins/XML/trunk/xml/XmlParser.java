@@ -301,7 +301,7 @@ class XmlParser
 			if(source == null)
 				return new InputSource(new StringReader("<!-- -->"));
 			else
-				return null;
+				return source;
 		}
 
 		public void startElement(String namespaceURI,

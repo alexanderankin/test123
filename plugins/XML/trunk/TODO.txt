@@ -1,11 +1,4 @@
-+ for version 0.4
-
 - documentation: XML catalog format, OASIS catalog format
-- position caret between start and end tags when inserting tag using
-  XML Insert
-
-+ for version 0.5
-
 - XmlComplete: support backspace (just get text from buffer from < pos
   to caret pos)
 - for html files, entering > should not close empty tags
