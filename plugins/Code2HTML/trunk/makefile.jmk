@@ -24,10 +24,10 @@ new_class_path = "../../jedit.jar;.";
 old_class_path = (getprop "java.class.path");
 
 # concatenate the old and new class paths
-if (equal "", old_class_path) then 
+if (equal "", old_class_path) then
     class_path = new_class_path;
-else 
-    class_path = (cat old_class_path ";" new_class_path); 
+else
+    class_path = (cat old_class_path ";" new_class_path);
 end
 
 cmd_javac = javac_bin "-classpath" class_path javac_opts;
@@ -53,12 +53,13 @@ jar_file = (cat "../" jar_name ".jar");
 jar_file: classes;
 {
     exec cmd_jar @
-	(glob
+    (glob
         "*.props"
-		"*.class"
-		"*.html"
-		"*.txt"
-	);
+        "*.class"
+        "*.html"
+        "*.txt"
+        "*.xml"
+    );
 }
 
 ".PHONY": "all";
