@@ -21,8 +21,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-09 21:59:09 $ by $Author: bemace $
- * @version    $Revision: 1.13 $
+ * @modified   $Date: 2004-02-09 22:21:38 $ by $Author: bemace $
+ * @version    $Revision: 1.14 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -221,7 +221,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		//{{{ Draw border
 		if (getBorderColor() != null) {
 			gfx.setColor(getBorderColor());
-			line.setLine(xOffset-4,lineHeight-1,textAreaWidth,lineHeight-1);
+			line.setLine(xOffset-4,lineHeight,textAreaWidth,lineHeight);
 			gfx.draw(line);
 		}
 		//}}}
@@ -413,7 +413,10 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 			Font font = jEdit.getFontProperty("view.font");
 			return new Dimension(getWidth(), font.getSize());
 		} else {
-			return new Dimension(getWidth(), (int) Math.round(lineHeight));
+			int height = (int) Math.round(lineHeight);
+			if (getBorderColor() != null)
+				height += 1;
+			return new Dimension(getWidth(), height);
 		}
 	}
 

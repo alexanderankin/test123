@@ -1,17 +1,23 @@
 {{{ 0.9
+
 	{{{ 0.9.1
 		- Moved guide drawing to Mark class
-		
+
 		- Caret guide now has ticks to distinguish current line
+
+		- Ruler height will now be increased to accomodate the border when it is on
+
+		- Added "Toggle Caret guide" action
 	}}}
-	
+
 	{{{ 0.9.0
 		- Made ruler marks to separate objects
-	
+
 		- It will now check if a text area has a ruler before adding another
-	
+
 		- Will now work correctly with antialiasing and fractional font metrics
 	}}}
+
 }}}
 
 {{{ 0.8

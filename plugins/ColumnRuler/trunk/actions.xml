@@ -9,5 +9,11 @@
 			return (columnruler.ColumnRulerPlugin.getColumnRulerForTextArea(textArea) != null);
 		</IS_SELECTED>
 	</ACTION>
+	<ACTION NAME="columnruler.toggle-caret-guide">
+		<CODE>
+			jEdit.setBooleanProperty("options.columnruler.guides.caret",!jEdit.getBooleanProperty("options.columnruler.guides.caret",false));
+			textArea.repaint();
+		</CODE>
+	</ACTION>
 </ACTIONS>
 
