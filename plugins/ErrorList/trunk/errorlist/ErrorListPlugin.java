@@ -36,12 +36,6 @@ public class ErrorListPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
-		if(showOnStartup && jEdit.getActiveView() != null)
-		{
-			showOnStartup = false;
-			showErrorList(jEdit.getActiveView());
-		}
-
 		View[] views = jEdit.getViews();
 		for(int i = 0; i < views.length; i++)
 		{
@@ -51,6 +45,8 @@ public class ErrorListPlugin extends EBPlugin
 				initTextArea(panes[j].getTextArea());
 			}
 		}
+
+		propertiesChanged();
 	} //}}}
 
 	//{{{ stop() method
@@ -67,19 +63,11 @@ public class ErrorListPlugin extends EBPlugin
 		}
 	} //}}}
 
-	//{{{ createOptionPanes() method
-	public void createOptionPanes(OptionsDialog dialog)
-	{
-		dialog.addOptionPane(new ErrorListOptionPane());
-	} //}}}
-
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage message)
 	{
 		if(message instanceof ErrorSourceUpdate)
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
-		else if(message instanceof ViewUpdate)
-			handleViewMessage((ViewUpdate)message);
 		else if(message instanceof EditPaneUpdate)
 			handleEditPaneMessage((EditPaneUpdate)message);
 		else if(message instanceof PropertiesChanged)
@@ -115,7 +103,6 @@ public class ErrorListPlugin extends EBPlugin
 
 	//{{{ Private members
 	private static boolean showOnError;
-	private static boolean showOnStartup;
 	private static Color warningColor;
 	private static Color errorColor;
 
@@ -187,9 +174,7 @@ public class ErrorListPlugin extends EBPlugin
 
 			if(showOnError)
 			{
-				if(jEdit.getActiveView() == null)
-					showOnStartup = true;
-				else
+				if(jEdit.getActiveView() != null)
 					showErrorList(jEdit.getActiveView());
 			}
 		}
@@ -205,19 +190,6 @@ public class ErrorListPlugin extends EBPlugin
 						.repaint();
 				}
 				view = view.getNext();
-			}
-		}
-	} //}}}
-
-	//{{{ handleViewMessage() method
-	private void handleViewMessage(ViewUpdate message)
-	{
-		if(message.getWhat() == ViewUpdate.CREATED)
-		{
-			if(showOnStartup)
-			{
-				showOnStartup = false;
-				showErrorList(message.getView());
 			}
 		}
 	} //}}}

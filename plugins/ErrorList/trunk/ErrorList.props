@@ -1,8 +1,13 @@
 # Plugin properties
+plugin.errorlist.ErrorListPlugin.activate=defer
+
 plugin.errorlist.ErrorListPlugin.name=ErrorList
 plugin.errorlist.ErrorListPlugin.author=Slava Pestov
 plugin.errorlist.ErrorListPlugin.version=1.3
 plugin.errorlist.ErrorListPlugin.docs=index.html
+plugin.errorlist.ErrorListPlugin.depend.0=jedit 04.02.01.00
+
+# Menu
 plugin.errorlist.ErrorListPlugin.menu=error-list \
 	- \
 	error-list-previous-error \
@@ -11,8 +16,6 @@ plugin.errorlist.ErrorListPlugin.menu=error-list \
 	error-list-previous-error-file \
 	error-list-next-error-file
 
-plugin.errorlist.ErrorListPlugin.depend.0=jedit 04.02.01.00
-
 error-list.label=Error List
 error-list-toggle.label=Error List Toggle
 error-list-next-error.label=Go to Next Error
@@ -20,19 +23,21 @@ error-list-previous-error.label=Go to Previous Error
 error-list-next-error-file.label=Go to Next File With Errors
 error-list-previous-error-file.label=Go to Previous File With Errors
 
+# Option pane
+plugin.errorlist.ErrorListPlugin.option-pane=error-list
+
+options.error-list.label=Error List
+options.error-list.code=new errorlist.ErrorListOptionPane();
+options.error-list.showOnError=Automatically display on error
+options.error-list.errorColor=Error highlight color:
+options.error-list.warningColor=Warning highlight color:
+
+# Dockable
 error-list.title=Error List
 error-list.status={0} error(s), {1} warning(s)
 error-list.file={0} ({1} error(s), {2} warning(s))
 
-# Show on error?
+# Settings
 error-list.showOnError=false
-
-# Colors
 error-list.warningColor=#ffa800
 error-list.errorColor=#ff0000
-
-# Option pane
-options.error-list.label=Error List
-options.error-list.showOnError=Automatically display on error
-options.error-list.errorColor=Error highlight color:
-options.error-list.warningColor=Warning highlight color:
