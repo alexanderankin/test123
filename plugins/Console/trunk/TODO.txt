@@ -1,3 +1,4 @@
+- cvs remove console/Console.props, add Console.props
 - finish commando: CHOICE tag, TOGGLE_ENTRY tag, test, debug
 - improve commando error handling
 - documentation generated with docbook
