@@ -14,6 +14,8 @@
     <editMode>pl-sql</editMode>
   </vfs>
 
+  <defStatementDelimiterRegex>(?i)([\n\r]+/)+[\n\r]*</defStatementDelimiterRegex>
+
   <connection>
     <parameter name="host" default="127.0.0.1" description="Host name or IP"/>
     <parameter name="port" default="1521" description="TCP port"/>
