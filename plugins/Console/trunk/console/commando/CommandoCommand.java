@@ -35,7 +35,7 @@ public class CommandoCommand extends EditAction
 	{
 		super("commando." + name.replace(' ','_'));
 
-		this.label = name;
+		jEdit.setTemporaryProperty(getName() + ".label",name);
 		this.url = url;
 		this.propertyPrefix = getName() + '.';
 	} //}}}
@@ -45,7 +45,7 @@ public class CommandoCommand extends EditAction
 	{
 		super("commando." + name.replace(' ','_'));
 
-		this.label = name;
+		jEdit.setTemporaryProperty(getName() + ".label",name);
 		this.path = path;
 		this.propertyPrefix = getName() + '.';
 	} //}}}
@@ -54,12 +54,6 @@ public class CommandoCommand extends EditAction
 	public String getPropertyPrefix()
 	{
 		return propertyPrefix;
-	} //}}}
-
-	//{{{ getLabel() method
-	public String getLabel()
-	{
-		return label;
 	} //}}}
 
 	//{{{ invoke() method
@@ -92,7 +86,5 @@ public class CommandoCommand extends EditAction
 	private URL url;
 	private String path;
 	private String propertyPrefix;
-
-	private String label;
 	//}}}
 }

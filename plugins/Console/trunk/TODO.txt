@@ -1,3 +1,9 @@
+- cloned consoles: completion doesn't work
+- %edit -n, -p, -s
+- escaping ~, also ~foo should not expand
+- after change still need to update lastphysicalline even if scroll line
+  doesn't change but physical line changes
+- user error patterns first in list
 - cvs commandos
 - commando: text area
 - periodic execution feature
