@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+
+<!-- Dockable component definition file for GfxView plugin -->
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<!-- GfxView dockable windows -->
+
+<DOCKABLES>
+	<DOCKABLE NAME="gfxview">
+		new GfxView(view, position);
+	</DOCKABLE>
+</DOCKABLES>
