@@ -40,6 +40,8 @@ public class XSLTPlugin extends EditPlugin {
    * Register xerces as the SAX Parser provider
    */
   public void start () {
+    System.setProperty("javax.xml.transform.TransformerFactory", 
+      "org.apache.xalan.processor.TransformerFactoryImpl");
     System.setProperty("javax.xml.parsers.SAXParserFactory", 
       "org.apache.xerces.jaxp.SAXParserFactoryImpl");
     String indentAmount = jEdit.getProperty("XSLTProcessor.transform.indentAmount");
