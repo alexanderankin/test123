@@ -23,6 +23,7 @@ package org.etheridge.openit.sourcepath;
 import java.io.File;
 
 import org.etheridge.openit.sourcepath.filter.SourcePathFilter;
+import org.gjt.sp.util.Log;
 
 /**
  * A directory element in a source path (ie. D:\source)
@@ -50,9 +51,8 @@ public class DirectorySourcePathElement extends SourcePathElement
       // determine whether or not the directory is a link (ie. symbolic link)
       mIsLink = !file.getCanonicalPath().equals(file.getAbsolutePath());
     } catch (Exception e) {
-      // this should really log a message, but there is no logging, so 
-      // a stack trace will do for now.
-      e.printStackTrace();
+      Log.log(Log.MESSAGE, DirectorySourcePathElement.class,
+        "[OpenIt Plugin]: Exception caught loading files in: " + getName());
     }
   }
   

@@ -4,10 +4,10 @@
 # general plugin information
 plugin.org.etheridge.openit.OpenItPlugin.name=OpenIt
 plugin.org.etheridge.openit.OpenItPlugin.author=Matt Etheridge
-plugin.org.etheridge.openit.OpenItPlugin.version=1.04
+plugin.org.etheridge.openit.OpenItPlugin.version=1.05
 plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
 plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.4
-plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.00.00.00
+plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.01.01.00
 
 # action labels
 openit.find-file-in-source-path.label=Open File
@@ -72,6 +72,7 @@ options.OpenIt.SourcePathOptionPane.RefreshRate.title=Search Path Refresh Rate
 options.OpenIt.SourcePathOptionPane.RefreshRate.CheckBox.label=How often should the search path be refreshed? (in seconds): 
 options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.title=Exclude Directories Regular Expression Filter
 options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.label=Any matching DIRECTORIES (and any sub-directories) will be ignored: (eg. *CVS|*org\\etheridge\\openit|C:\\source\\test)
+options.OpenIt.SourcePathOptionPane.IgnoreCase.label=Ignore Case?
 
 # popups option pane
 options.OpenIt.PopupOptionsPane.SubstringMatching.title=Substring Matching

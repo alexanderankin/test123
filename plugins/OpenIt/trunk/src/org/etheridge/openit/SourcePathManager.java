@@ -123,7 +123,8 @@ public class SourcePathManager
   {
     // create both sourcepaths and store as local variables
     SourcePathFilter filter = new RegularExpressionSourcePathFilter
-      (jEdit.getProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, ""));
+      (jEdit.getProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, ""),
+       jEdit.getBooleanProperty(OpenItProperties.IGNORE_CASE_EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, false));
     SourcePath sourcePath = new SourcePath
       (jEdit.getProperty(OpenItProperties.SOURCE_PATH_STRING, ""), filter);
     QuickAccessSourcePath quickAccessSourcePath = new QuickAccessSourcePath(sourcePath);

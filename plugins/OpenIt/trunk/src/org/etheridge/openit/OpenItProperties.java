@@ -31,8 +31,14 @@ public interface OpenItProperties
   // the excludes regular expression string
   public static final String EXCLUDES_REGULAR_EXPRESSION = "OpenIt.ExcludesRegularExpression";
   
+  // ignore case for excludes files regular expression? 
+  public static final String IGNORE_CASE_EXCLUDES_FILE_REGULAR_EXPRESSION = "OpenIt.IgnoreCaseExcludeFilesRegularExpression";
+  
   // the excludes directories regular expression string
   public static final String EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION = "OpenIt.ExcludesDirectoriesRegularExpression";
+  
+  // ignore case for excludes directories regular expression? 
+  public static final String IGNORE_CASE_EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION = "OpenIt.IgnoreCaseExcludeDirectoriesRegularExpression";
   
   // polling property
   public static final String SOURCE_PATH_POLLING_INTERVAL = "OpenIt.SourcePathPollingInterval";

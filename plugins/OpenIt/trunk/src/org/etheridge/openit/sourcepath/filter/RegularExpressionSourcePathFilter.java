@@ -20,15 +20,11 @@
 
 package org.etheridge.openit.sourcepath.filter;
 
-import gnu.regexp.RE;
-import gnu.regexp.REException;
-import gnu.regexp.RESyntax;
-
-import org.gjt.sp.jedit.MiscUtilities;
+import org.etheridge.openit.utility.OpenItRE;
 
 public class RegularExpressionSourcePathFilter implements SourcePathFilter
 {
-  private RE mRegularExpression; 
+  private OpenItRE mRegularExpression; 
   
   /**
    * Constructor.
@@ -36,16 +32,9 @@ public class RegularExpressionSourcePathFilter implements SourcePathFilter
    * @param reString the regular expression string used to determine the 
    * source path elements that should be filtered out.
    */
-  public RegularExpressionSourcePathFilter(String reString)
+  public RegularExpressionSourcePathFilter(String reString, boolean ignoreCase)
   {
-    if (reString != null) {
-      try {
-        mRegularExpression = new RE(org.gjt.sp.jedit.MiscUtilities.globToRE(reString), 
-          RE.REG_MULTILINE, RESyntax.RE_SYNTAX_POSIX_EXTENDED);
-      } catch (REException reException) {
-        reException.printStackTrace();
-      }
-    }
+    mRegularExpression = new OpenItRE(reString, !ignoreCase);
   }
     
   //
@@ -54,11 +43,6 @@ public class RegularExpressionSourcePathFilter implements SourcePathFilter
   
   public boolean isSourcePathElementAllowed(String elementString)
   {
-    // if the regular expression has not been set, then do not filter
-    if (mRegularExpression == null) {
-      return true;
-    }
- 
     // if the element string matches the regular expression, then return false
     return !mRegularExpression.isMatch(elementString);
   }
