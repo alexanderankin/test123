@@ -35,14 +35,24 @@ import javax.swing.event.*;
 class TagListCellRenderer extends JPanel implements ListCellRenderer 
 {
   /***************************************************************************/
-  protected JPanel tagNameAndFilePanel_ = null;
-  protected JLabel indexLabel_ = null;
-  protected JLabel tagLabel_ = null;
-  protected JLabel pathLabel_ = null;
-  protected JLabel fileLabel_ = null;
-  protected JLabel searchString_ = null;
+  private static final int INDENT = 35; // in pixels
+  
+  /***************************************************************************/
+  private JPanel tagAndExuberantPanel_;
+  
+  private JPanel tagNameAndFilePanel_;
+  private JLabel indexLabel_;
+  private JLabel tagLabel_;
+  private JLabel pathLabel_;
+  private JLabel fileLabel_;
+  
+  private JPanel searchPanel_;
+  private JLabel searchString_;
 
-  protected String fileSeperator;
+  private JPanel exuberantPanel_;
+  private JLabel exuberantLabel_;
+  
+  private String fileSeperator;
   
   /***************************************************************************/
   public TagListCellRenderer() 
@@ -57,27 +67,45 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
     pathLabel_ = new JLabel();
     fileLabel_ = new JLabel();
     searchString_ = new JLabel();
+    exuberantLabel_ = new JLabel();
+    tagAndExuberantPanel_ = new JPanel(new BorderLayout());
     tagNameAndFilePanel_ = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+    exuberantPanel_ = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
+    searchPanel_ = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
     
     // setup
-    Font plain = new Font("Courier New", Font.PLAIN, 12);
-    Font bold  = new Font("Courier New", Font.BOLD, 12);
+    Font plain = new Font("Monospaced", Font.PLAIN, 12);
+    Font bold  = new Font("Monospaced", Font.BOLD, 12);
     indexLabel_.setFont(plain); 
     tagLabel_.setFont(bold);
     pathLabel_.setFont(plain);
     fileLabel_.setFont(bold);
+    if (false)
+    {
+      Font labelFont = (Font) UIManager.get("Label.font");
+      exuberantLabel_.setFont(new Font(labelFont.getName(), Font.PLAIN, 
+                                       labelFont.getSize()));
+    }
+    else
+      exuberantLabel_.setFont(plain);
     searchString_.setFont(plain);
     
     //setOpaque(false);
     
     // Layout
     setLayout(new BorderLayout());
-    add(BorderLayout.CENTER, tagNameAndFilePanel_);
-      tagNameAndFilePanel_.add(indexLabel_);
-      tagNameAndFilePanel_.add(tagLabel_);
-      tagNameAndFilePanel_.add(pathLabel_);
-      tagNameAndFilePanel_.add(fileLabel_);
-    add(BorderLayout.SOUTH, searchString_);
+    add(BorderLayout.CENTER, tagAndExuberantPanel_);
+      tagAndExuberantPanel_.add(BorderLayout.NORTH, tagNameAndFilePanel_);
+				tagNameAndFilePanel_.add(indexLabel_);
+				tagNameAndFilePanel_.add(tagLabel_);
+				tagNameAndFilePanel_.add(pathLabel_);
+				tagNameAndFilePanel_.add(fileLabel_);
+	    tagAndExuberantPanel_.add(BorderLayout.SOUTH, exuberantPanel_);
+        exuberantPanel_.add(Box.createHorizontalStrut(INDENT));
+        exuberantPanel_.add(exuberantLabel_);
+    add(BorderLayout.SOUTH, searchPanel_);
+      searchPanel_.add(Box.createHorizontalStrut(INDENT));
+      searchPanel_.add(searchString_);
   }
 
   /***************************************************************************/
@@ -87,20 +115,49 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
     
     TagLine tagLine = (TagLine) value;
     
+    // Index and tag
     if (tagLine.index_ <= 9)
       indexLabel_.setText(" " + tagLine.index_ + ": ");
     else
       indexLabel_.setText("    ");
     tagLabel_.setText(tagLine.tag_);
+
+    // Path
     File file = new File(tagLine.definitionFile_);
     pathLabel_.setText("  " + file.getParent() + fileSeperator);
     // space is added so that edge of popup is immediately next to end of label
     fileLabel_.setText(file.getName() + " ");
+
+    // exuberant info
+    StringBuffer exuberantItems = null;
+    if (tagLine.exuberantInfoItems_ != null)
+    {
+      int size = tagLine.exuberantInfoItems_.size();
+      if (size > 0)
+        exuberantItems = new StringBuffer();
+      ExuberantInfoItem item = null;
+      for (int i = 0; i < size; i++)
+      {
+        item = (ExuberantInfoItem) tagLine.exuberantInfoItems_.elementAt(i);
+        exuberantItems.append(item.toHTMLString());
+        if (i != (size - 1))
+          exuberantItems.append(", ");
+        else
+          exuberantItems.append(" ");
+      }
+      item = null;
+    }
+    if (exuberantItems != null)
+      exuberantLabel_.setText(exuberantItems.toString());
+    exuberantItems = null;
+    
+    // search string
     if (tagLine.origSearchString_ != null)
-      searchString_.setText("     " + tagLine.origSearchString_.trim() + " ");
+      searchString_.setText(tagLine.origSearchString_.trim() + " ");
     else
-      searchString_.setText("     Line:  " + tagLine.definitionLineNumber_);
-      
+      searchString_.setText("Line:  " + tagLine.definitionLineNumber_);
+
+    // get background and foreground colors      
     Color background = (isSelected ? list.getSelectionBackground()
                                                        : list.getBackground());
     Color foreground = (isSelected ? list.getSelectionForeground()
@@ -108,6 +165,9 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
     // set backgrounds on panels
     setBackground(background);
     tagNameAndFilePanel_.setBackground(background);
+    tagAndExuberantPanel_.setBackground(background);
+    exuberantPanel_.setBackground(background);
+    searchPanel_.setBackground(background);
     
     // set foregrounds on text labels
     indexLabel_.setForeground(foreground);
@@ -115,6 +175,7 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
     pathLabel_.setForeground(Color.blue);
     fileLabel_.setForeground(Color.blue);
     searchString_.setForeground(foreground);
+    exuberantLabel_.setForeground(foreground);
     
     return this;
   }

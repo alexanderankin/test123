@@ -131,18 +131,29 @@ class ExuberantCTagsParser extends GenericTagsParser {
     }
 
     /*** Parse exuberant item info ***/
-    if (st.hasMoreTokens())
-      st.nextToken(" \t\n\r\f");  // get rid of ;"
-    while (false && st.hasMoreTokens())
+    Vector exuberantInfoItems = null;
+    if (st.hasMoreTokens()) 
     {
-      Macros.message(null, st.nextToken());
+      st.nextToken(" \t\n\r\f");  // get rid of ;"
+      exuberantInfoItems = new Vector(5);
     }
+    String exuberantItemInfoString = null;
+    while (st.hasMoreTokens())
+    {
+      exuberantItemInfoString = st.nextToken();
+      exuberantInfoItems.addElement(
+                               new ExuberantInfoItem(exuberantItemInfoString));
+      Log.log(Log.DEBUG, null, "Item info:  " + exuberantItemInfoString);
+    }
+    exuberantItemInfoString = null;
     
     TagLine tl = new TagLine(tag_, tagDefinitionFileName,
                              origTagDefinitionSearchString, 
                              tagDefinitionSearchString, lineNumber,
                              tagIndexFile);
-
+    if (exuberantInfoItems != null)
+      tl.exuberantInfoItems_ = exuberantInfoItems;
+      
     return tl;
   }
   
