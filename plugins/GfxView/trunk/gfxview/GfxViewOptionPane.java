@@ -41,3 +41,5 @@ public class GfxViewOptionPane extends AbstractOptionPane {
 			historyLimits.getText());
 	}//}}}
 }
+
+/* :folding=explicit:tabSize=2:indentSize=2: */

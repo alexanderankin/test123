@@ -10,6 +10,7 @@ import java.net.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.browser.*;
+import org.gjt.sp.util.*;
 //}}}
 
 public class GfxViewHistoryDialog extends JDialog
@@ -22,10 +23,12 @@ public class GfxViewHistoryDialog extends JDialog
 	private JList list;
 	private JButton butOk,butCancel;
 	private int previousIndex;
+	private View view;
 
 	//{{{ +GfxViewHistoryDialog(Frame) : <init>
-	public GfxViewHistoryDialog(Frame owner) {
-		super(owner,"Choose picture from GfxView history",true);
+	public GfxViewHistoryDialog(View view) {
+		super(view,"Choose picture from GfxView history",true);
+		this.view = view;
 
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		changes = new PropertyChangeSupport(this);
@@ -47,14 +50,14 @@ public class GfxViewHistoryDialog extends JDialog
 		getContentPane().add(panel, BorderLayout.SOUTH);
 
 		pack();
-		setLocation((owner.getWidth()-this.getWidth())/2,
-			(owner.getHeight()-this.getHeight())/2);
 	} //}}}
 
 	//{{{ +show() : void
 	public void show() {
+		previousIndex=list.getSelectedIndex(); // -1 also
+		setLocation((view.getWidth()-this.getWidth())/2,
+			(view.getHeight()-this.getHeight())/2);
 		super.show();
-		previousIndex=list.getSelectedIndex();
 	}//}}}
 
 	//{{{ +actionPerformed(ActionEvent) : void
@@ -67,7 +70,6 @@ public class GfxViewHistoryDialog extends JDialog
 
 	//{{{ +valueChanged(ListSelectionEvent) : void
 	public void valueChanged(ListSelectionEvent evt) {
-		// TODO: A examiner et parachever !!
 		if (!evt.getValueIsAdjusting()) {
 				selectValue(list.getSelectedIndex());
 		}
@@ -76,21 +78,26 @@ public class GfxViewHistoryDialog extends JDialog
 
 	//{{{ -selectValue(int) : void
 	private void selectValue(int index) {
-			if (index!=-1) {
-				Object newURL = model.getElementAt(index);
-				changes.firePropertyChange("UrlGfxView-path",oldURL,newURL);
-				oldURL = newURL;
+		String newURL_display;
+		Object newURL;
 
-				String newURL_display;
-				if (newURL instanceof URL) {
-					newURL_display = newURL.toString().substring(newURL.toString().lastIndexOf('/')+1);
-				}
-				else {
-					newURL_display = newURL.toString().substring(newURL.toString().lastIndexOf(File.separator)+1);
-				}
-				changes.firePropertyChange("UrlGfxView-display",oldURL_display,newURL_display);
-				oldURL_display = newURL_display;
-			}
+		if (index==-1) {
+			list.getSelectionModel().clearSelection();
+			newURL = null;
+			newURL_display = "";
+		}
+		else {
+			newURL = model.getElementAt(index);
+			newURL_display = newURL.toString();
+			boolean result = newURL instanceof URL;
+			newURL_display = (result ?
+				newURL_display.substring(newURL.toString().lastIndexOf('/')+1) :
+				newURL_display.substring(newURL.toString().lastIndexOf(File.separator)+1));
+		}
+		changes.firePropertyChange("UrlGfxView-path",oldURL,newURL);
+		oldURL = newURL;
+		changes.firePropertyChange("UrlGfxView-display",oldURL_display,newURL_display);
+		oldURL_display = newURL_display;
 	}//}}}
 
 	//{{{ +loadNext() : void
@@ -112,7 +119,9 @@ public class GfxViewHistoryDialog extends JDialog
 
 	//{{{ +addEntry(Object) : void
 	public void addEntry(Object urlPath) {
-		model.addEntry(urlPath);
+		if (urlPath!=null) {
+			model.addEntry(urlPath);
+		}
 	}//}}}
 
 	//{{{ +removeEntry(Object) : void

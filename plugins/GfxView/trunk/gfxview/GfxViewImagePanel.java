@@ -90,6 +90,11 @@ public class GfxViewImagePanel extends JPanel implements MouseListener,MouseMoti
 							Math.abs(rw),Math.abs(rh));
 			}
 		}
+		else {
+			g.setColor(Color.DARK_GRAY);
+			g.drawLine(0,0,panelW,panelH);
+			g.drawLine(panelW,0,0,panelH);
+		} 
 	} //}}}
 
 
@@ -201,8 +206,10 @@ public class GfxViewImagePanel extends JPanel implements MouseListener,MouseMoti
 	//{{{ +loadImage(Image) : void
 	public void loadImage(Image image) {
 		this.image = image;
-		imageW = this.image.getWidth(this);
-		imageH = this.image.getHeight(this);
+		if (image!=null) {
+			imageW = this.image.getWidth(this);
+			imageH = this.image.getHeight(this);
+		}
 		sx1 = 0;
 		sx2 = 0;
 		setZoomValue(UNZOOM_FULL);
