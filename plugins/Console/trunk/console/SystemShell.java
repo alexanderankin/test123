@@ -303,14 +303,15 @@ loop:			for(;;)
 		if(expansion != null)
 		{
 			Vector expansionArgs = parse(expansion);
-			for(int i = 0; i < expansionArgs.size(); i++)
+			newArgs.addElement(expansionArgs.elementAt(0));
+			for(int i = 1; i < expansionArgs.size(); i++)
 			{
 				expandGlobs(view,newArgs,(String)expansionArgs
 					.elementAt(i));
 			}
 		}
 		else
-			expandGlobs(view,newArgs,commandName);
+			newArgs.addElement(commandName);
 
 		// add remaining arguments
 		for(int i = 1; i < args.size(); i++)
@@ -337,6 +338,19 @@ loop:			for(;;)
 			case dosSlash:
 				buf.append('\\');
 				break;
+			// DOS-style variable (%name%)
+			case '%':
+				int index = arg.indexOf('%',i + 1);
+				String varName = arg.substring(i + 1,index);
+				i = index;
+
+				String expansion = getExpansion(varName);
+
+				if(expansion != null)
+					buf.append(expansion);
+
+				break;
+			// Unix-style variables ($name, ${name})
 			case '$':
 				if(i == arg.length() - 1)
 				{
@@ -374,42 +388,7 @@ loop:			for(;;)
 					i = index;
 				}
 
-				String expansion;
-
-				// Expand some special variables
-				Buffer buffer = view.getBuffer();
-
-				if(varName.equals("d"))
-				{
-					expansion = MiscUtilities.getParentOfPath(
-						buffer.getPath());
-					if(expansion.endsWith("/")
-						|| expansion.endsWith(File.separator))
-					{
-						expansion = expansion.substring(0,
-							expansion.length() - 1);
-					}
-				}
-				else if(varName.equals("u"))
-				{
-					expansion = buffer.getPath();
-					if(!MiscUtilities.isURL(expansion))
-					{
-						expansion = "file:/" + expansion
-							.replace(File.separatorChar,'/');
-					}
-				}
-				else if(varName.equals("f"))
-					expansion = buffer.getPath();
-				else if(varName.equals("n"))
-				{
-					expansion = buffer.getName();
-					int index = expansion.lastIndexOf('.');
-					if(index != -1)
-						expansion = expansion.substring(0,index);
-				}
-				else
-					expansion = (String)variables.get(varName);
+				String expansion = getExpansion(varName);
 
 				if(expansion != null)
 					buf.append(expansion);
@@ -450,6 +429,48 @@ loop:			for(;;)
 		}
 
 		return buf.toString();
+	}
+
+	private String getExpansion(String varName)
+	{
+		String expansion;
+
+		// Expand some special variables
+		Buffer buffer = view.getBuffer();
+
+		if(varName.equals("d"))
+		{
+			expansion = MiscUtilities.getParentOfPath(
+				buffer.getPath());
+			if(expansion.endsWith("/")
+				|| expansion.endsWith(File.separator))
+			{
+				expansion = expansion.substring(0,
+					expansion.length() - 1);
+			}
+		}
+		else if(varName.equals("u"))
+		{
+			expansion = buffer.getPath();
+			if(!MiscUtilities.isURL(expansion))
+			{
+				expansion = "file:/" + expansion
+					.replace(File.separatorChar,'/');
+			}
+		}
+		else if(varName.equals("f"))
+			expansion = buffer.getPath();
+		else if(varName.equals("n"))
+		{
+			expansion = buffer.getName();
+			int index = expansion.lastIndexOf('.');
+			if(index != -1)
+				expansion = expansion.substring(0,index);
+		}
+		else
+			expansion = (String)variables.get(varName);
+
+		return expansion;
 	}
 
 	static class ConsoleState
