@@ -76,14 +76,30 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             errorMsg("JumpPlugin.ctags.path.incorrect");
             return false;   
         }
-if (p.getFiles().size()<1)
-        {
-            //No error message here, to avoid multiple messages on import files command
+        
+        
+        // if (p == null || p.getFiles().size()<1 || viewer==null)
+        // {
+            // errorMsg("JumpPlugin.no_project");
+            // return false;
+        // }
+        
+        if (p == null)
+        {   Log.log(Log.DEBUG,this,"reloadTags project=null");
+            errorMsg("JumpPlugin.no_project");
             return false;
         }
         
-        if (viewer==null || p == null)
+        if (p.getFiles().size()<1)
         {
+            Log.log(Log.DEBUG,this,"reloadTags no files in project");
+            //errorMsg("JumpPlugin.no_project");
+            return false;
+        }
+        
+        if (viewer==null)
+        {
+            Log.log(Log.DEBUG,this,"reloadTags viewer=null");
             errorMsg("JumpPlugin.no_project");
             return false;
         }
@@ -161,7 +177,7 @@ if (p.getFiles().size()<1)
 //{{{ projectAdded method    
     public void projectAdded(ProjectViewerEvent evt) 
     {
-
+        //Log.log(Log.DEBUG,this,"JumpEventListener! ADDEDD"+evt.getProjectViewer(), evt.getProject().toString());
         saveProjectBuffer();
         try 
         {
@@ -173,10 +189,7 @@ if (p.getFiles().size()<1)
         }
         if (evt.getProject() != null)
         {
-            if (evt.getProject().getFiles().size()>0)
-            {
-                reloadTags(evt.getProjectViewer(), evt.getProject());
-            }
+            reloadTags(evt.getProjectViewer(), evt.getProject());
         }
     }
 //}}}
