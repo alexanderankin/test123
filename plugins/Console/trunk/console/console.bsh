@@ -101,8 +101,10 @@ bsh.help.print = "usage: print ( arg )";
 /* Returns $CLASSPATH, plus the current buffer's package root. */
 getBufferClassPath(buffer)
 {
+	import console.ConsolePlugin;
+
 	return "$CLASSPATH" + File.pathSeparator
-		+ console.ConsolePlugin.getPackageRoot(buffer);
+		+ ConsolePlugin.getPackageRoot(buffer);
 }
 
 bsh.help.print = "usage: getBufferClassPath ( buffer )";
