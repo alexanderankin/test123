@@ -19,6 +19,7 @@ import org.gjt.sp.jedit.jEdit;
     public static final int GRAPHIC_ICON = 2;
     public static final int THEOREM_ICON = 3;
     public static final int TABLE_ICON = 4;
+    public static final int LIST_ICON = 5;
     
     public LaTeXAsset(String name){
       super(name);
@@ -34,6 +35,7 @@ import org.gjt.sp.jedit.jEdit;
         case GRAPHIC_ICON: filename.append("images/graphics.png"); break;
         case THEOREM_ICON: filename.append("images/theorem.png"); break;
         case TABLE_ICON: filename.append("images/table.png"); break;
+        case LIST_ICON: filename.append("images/list.png"); break;
         default: filename = null;
       }
       
