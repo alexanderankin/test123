@@ -43,10 +43,10 @@ ftperror={0}\
 # File listing regexps
 vfs.ftp.list.count=2
 
-vfs.ftp.list.0=[ld-](.{9})\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)
-vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)
+vfs.ftp.list.0=[ld-](.{9})\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
 
-vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)
+vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)\\s*
 vfs.ftp.list.vms=(.+?);\\d+\\s+.+
 
 # SFTP VFS
