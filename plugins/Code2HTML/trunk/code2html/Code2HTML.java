@@ -24,11 +24,12 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.StringWriter;
 import java.io.Writer;
+import java.util.Arrays;
+import java.util.Comparator;
 
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
@@ -64,7 +65,7 @@ public class Code2HTML
             textArea.getPainter().getStyles(),
             textArea.getBuffer().getTabSize()
         );
-        
+
         this.style   = config.getStyle();
         this.gutter  = config.getGutter();
         this.painter = config.getPainter();
@@ -95,7 +96,7 @@ public class Code2HTML
                 }
 
                 // Sort selections by their start lines
-                MiscUtilities.quicksort(selection, new SelectionStartLineCompare());
+                Arrays.sort(selection, new SelectionStartLineComparator());
 
                 if (this.gutter != null) {
                     this.gutter.setGutterSize(Integer.toString(last + 1).length());
@@ -204,7 +205,7 @@ public class Code2HTML
     }
 
 
-    private class SelectionStartLineCompare implements MiscUtilities.Compare
+    private class SelectionStartLineComparator implements Comparator
     {
         public int compare(Object obj1, Object obj2) {
             Selection s1 = (Selection) obj1;
