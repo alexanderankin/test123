@@ -66,6 +66,19 @@ public final class ProjectManager {
 		out.writeBytes("=");
 		out.writeBytes(prj.getName());
 		out.writeBytes("\n");
+		
+		out.writeBytes("project.");
+		out.writeBytes(Integer.toString(prj.getKey()));
+		out.writeBytes(".root=");
+		out.writeBytes(prj.getRoot().getPath());
+		out.writeBytes("\n");
+		
+		out.writeBytes("project.");
+		out.writeBytes(Integer.toString(prj.getKey()));
+		out.writeBytes(".weburl=");
+		out.writeBytes(prj.getURLRoot());
+		out.writeBytes("\n");
+		
 	}
 
 	/** Returns a key identifying file of <code>index</code> for <code>aProject</code>.
@@ -238,13 +251,18 @@ public final class ProjectManager {
 			int counter = 1;
 			String prjName = projectProps.getProperty("project." + counter);
 			while (prjName != null) {
+				
 				String root = projectProps.getProperty("project." + counter + ".root");
+				String urlRoot = projectProps.getProperty("project." +  counter + ".weburl");
+			
+		
+                    
 				//Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
 				Project project = new Project(prjName, counter);
-
+				project.setURLRoot(urlRoot);
                 if (root != null) {
                     project.setRoot(new ProjectDirectory(root));
-                    project.setLoaded(true);
+		    project.setLoaded(true);
                     toLoad.add(project);
                     if (fileProps == null) {
                         fileProps = load(FILE_PROPS_FILE);
