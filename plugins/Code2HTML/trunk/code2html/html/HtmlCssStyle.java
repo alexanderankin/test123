@@ -37,9 +37,9 @@ public class HtmlCssStyle extends HtmlStyle
 
     public String toHTML(int styleId, SyntaxStyle style, String text) {
         StringBuffer buf = new StringBuffer();
-        buf.append("<SPAN CLASS=\"syntax" + styleId + "\">")
+        buf.append("<span class=\"syntax" + styleId + "\">")
             .append(text)
-            .append("</SPAN>");
+            .append("</span>");
         return buf.toString();
     }
 

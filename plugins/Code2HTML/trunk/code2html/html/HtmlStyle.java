@@ -44,30 +44,30 @@ public class HtmlStyle
         Color c;
         /*
         if ((c = style.getBackgroundColor()) != null) {
-            bufOpen.append("<FONT")
-                .append(" BGCOLOR=\"")
+            bufOpen.append("<font")
+                .append(" bgcolor=\"")
                 .append(GUIUtilities.getColorHexString(c))
                 .append("\">");
-            bufClose.insert(0, "</FONT>");
+            bufClose.insert(0, "</font>");
         }
         */
 
         if ((c = style.getForegroundColor()) != null) {
-            bufOpen.append("<FONT")
-                .append(" COLOR=\"")
+            bufOpen.append("<font")
+                .append(" color=\"")
                 .append(GUIUtilities.getColorHexString(c))
                 .append("\">");
-            bufClose.insert(0, "</FONT>");
+            bufClose.insert(0, "</font>");
         }
 
         if (style.getFont().isBold()) {
-            bufOpen.append("<STRONG>");
-            bufClose.insert(0, "</STRONG>");
+            bufOpen.append("<strong>");
+            bufClose.insert(0, "</strong>");
         }
 
         if (style.getFont().isItalic()) {
-            bufOpen.append("<EM>");
-            bufClose.insert(0, "</EM>");
+            bufOpen.append("<em>");
+            bufClose.insert(0, "</em>");
         }
 
         StringBuffer buf = new StringBuffer();

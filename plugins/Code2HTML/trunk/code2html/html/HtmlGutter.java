@@ -78,25 +78,25 @@ public class HtmlGutter
         if (    (this.highlightInterval > 0)
             &&  (lineNumber % this.highlightInterval == 0)
         ) {
-            bufOpen.append("<FONT")
-                .append(" COLOR=\"")
+            bufOpen.append("<font")
+                .append(" color=\"")
                 .append(this.highlightColor)
                 .append("\">");
 
         } else {
-            bufOpen.append("<FONT")
-                .append(" COLOR=\"")
+            bufOpen.append("<font")
+                .append(" color=\"")
                 .append(this.fgColor)
                 .append("\">");
         }
-        bufClose.insert(0, "</FONT>");
+        bufClose.insert(0, "</font>");
 
         /*
-        bufOpen.append("<FONT")
-            .append(" BGCOLOR=\"")
+        bufOpen.append("<font")
+            .append(" bgcolor=\"")
             .append(this.bgColor)
             .append("\">");
-        bufClose.insert(0, "</FONT>");
+        bufClose.insert(0, "</font>");
         */
 
         StringBuffer buf = new StringBuffer();
@@ -121,25 +121,25 @@ public class HtmlGutter
         StringBuffer bufClose = new StringBuffer();
 
         if (highlighted) {
-            bufOpen.append("<FONT")
-                .append(" COLOR=\"")
+            bufOpen.append("<font")
+                .append(" color=\"")
                 .append(this.highlightColor)
                 .append("\">");
 
         } else {
-            bufOpen.append("<FONT")
-                .append(" COLOR=\"")
+            bufOpen.append("<font")
+                .append(" color=\"")
                 .append(this.fgColor)
                 .append("\">");
         }
-        bufClose.insert(0, "</FONT>");
+        bufClose.insert(0, "</font>");
 
         /*
-        bufOpen.append("<FONT")
-            .append(" BGCOLOR=\"")
+        bufOpen.append("<font")
+            .append(" bgcolor=\"")
             .append(this.bgColor)
             .append("\">");
-        bufClose.insert(0, "</FONT>");
+        bufClose.insert(0, "</font>");
         */
 
         StringBuffer buf = new StringBuffer();
