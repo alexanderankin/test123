@@ -43,8 +43,7 @@ public class PHPSideKickCompletion extends SideKickCompletion {
 
   public void addOutlineableList(List items, String word) {
     for (int i = 0; i < items.size(); i++) {
-      Object o = items.get(i);
-      addItem(o, word);
+      addItem(items.get(i), word);
     }
   }
 

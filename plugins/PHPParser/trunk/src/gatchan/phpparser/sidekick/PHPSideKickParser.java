@@ -52,7 +52,6 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @param buffer      The buffer to parse.
    * @param errorSource An error source to add errors to.
-   *
    * @return A new instance of the <code>SideKickParsedData</code> class.
    */
   public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
@@ -228,7 +227,7 @@ public final class PHPSideKickParser extends SideKickParser {
     // Log.log(Log.DEBUG, PHPSideKickParser.class, "Word found : '"+lastWord2+"'");
     if ("new".equals(lastWord2) || "extends".equals(lastWord2)) {
       Log.log(Log.DEBUG, this, "Completing class name");
-      return completeClassDeclaration(textArea, currentWord, lastWord2);
+      return completeClassDeclaration(textArea, currentWord.trim(), lastWord2);
     }
 
     return null;
@@ -270,7 +269,6 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @param caret  the caret position
    * @param buffer the buffer
-   *
    * @return the previous word or ""
    */
   private static String getPreviousWord(int caret, Buffer buffer) {
@@ -293,7 +291,6 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @param textArea the current textArea
    * @param word
-   *
    * @return a completion list
    */
   private SideKickCompletion completeClassDeclaration(JEditTextArea textArea, String word, String lastWord) {
@@ -341,7 +338,6 @@ public final class PHPSideKickParser extends SideKickParser {
    * @param classHeader classHeader
    * @param currentWord the current word
    * @param lastWord    the previous word
-   *
    * @return a completion list or null if we aren't in a class
    */
   private static PHPSideKickCompletion completeClassMembers(JEditTextArea textArea,
@@ -350,11 +346,26 @@ public final class PHPSideKickParser extends SideKickParser {
                                                             String lastWord) {
     if (classHeader == null) return null;
     final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea, currentWord, lastWord);
+    completeClassMembers(classHeader, phpSideKickCompletion, currentWord);
+    Log.log(Log.DEBUG, PHPSideKickParser.class, "Items in list : " + phpSideKickCompletion.getItemsCount());
+    return phpSideKickCompletion;
+  }
+
+  private static void completeClassMembers(ClassHeader classHeader,
+                                           PHPSideKickCompletion phpSideKickCompletion,
+                                           String currentWord) {
     final List methods = classHeader.getMethodsHeaders();
     final List fields = classHeader.getFields();
     phpSideKickCompletion.addOutlineableList(methods, currentWord);
     phpSideKickCompletion.addOutlineableList(fields, currentWord);
-    Log.log(Log.DEBUG, PHPSideKickParser.class, "Items in list : " + phpSideKickCompletion.getItemsCount());
-    return phpSideKickCompletion;
+    final String superClassName = classHeader.getSuperClassName();
+    if (superClassName != null) {
+      final ClassHeader superClassHeader = ProjectManager.getInstance().getProject().getClass(superClassName);
+      if (superClassHeader == null) {
+        Log.log(Log.DEBUG, PHPSideKickParser.class, "Unknown superclass " + superClassHeader);
+      } else {
+        completeClassMembers(superClassHeader, phpSideKickCompletion, currentWord);
+      }
+    }
   }
 }
