@@ -176,7 +176,6 @@ class SAXParserImpl implements XmlParser.Impl
 			XSElementDeclaration element = (XSElementDeclaration)
 				elements.getItem(i);
 
-			System.err.println("declared " + element.getName());
 			xsElementToElementDecl(info,element);
 		}
 
@@ -206,7 +205,12 @@ class SAXParserImpl implements XmlParser.Impl
 	//{{{ xsElementToElementDecl() method
 	void xsElementToElementDecl(CompletionInfo info, XSElementDeclaration element)
 	{
-		ElementDecl elementDecl = new ElementDecl(info,element.getName(),null);
+		String name = element.getName();
+		if(info.elementHash.get(name) != null)
+			return;
+
+		ElementDecl elementDecl = new ElementDecl(info,name,null);
+		info.addElement(elementDecl);
 
 		XSTypeDefinition typedef = element.getTypeDefinition();
 
@@ -253,8 +257,6 @@ class SAXParserImpl implements XmlParser.Impl
 		// TODO: content
 		// TODO: empty
 		elementDecl.any = true;
-
-		info.addElement(elementDecl);
 	} //}}}
 
 	//}}}
