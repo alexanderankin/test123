@@ -21,12 +21,23 @@ package projectviewer.action;
 //{{{ Imports
 import java.io.File;
 import java.util.Iterator;
-import java.awt.event.ActionEvent;
 
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
@@ -58,22 +69,20 @@ public class NodeRenamerAction extends Action {
 		boolean isValid = false;
 		String newName = null;
 
-		while (!isValid) {
-			newName = (String) JOptionPane.showInputDialog(viewer,
-				jEdit.getProperty("projectviewer.action.rename.message"),
-				jEdit.getProperty("projectviewer.action.rename.title"),
-				JOptionPane.PLAIN_MESSAGE,
-				null,
-				null,
-				node.getName());
+		RenameDialog dlg = new RenameDialog(node);
 
-			if (newName == null || newName.length() == 0) { 
+		while (!isValid) {
+			dlg.setVisible(true);
+			newName = dlg.getInput();
+
+			if (newName == null || newName.length() == 0) {
 				return;
 			}
 
 			// checks the input
 			if (node.isFile() || node.isDirectory()) {
-				if (newName.indexOf('/') != -1 || newName.indexOf('\\') != -1) {
+				if (!dlg.getDontChangeDisk() &&
+					(newName.indexOf('/') != -1 || newName.indexOf('\\') != -1)) {
 					JOptionPane.showMessageDialog(viewer,
 						jEdit.getProperty("projectviewer.action.rename.file_error"),
 						jEdit.getProperty("projectviewer.action.rename.title"),
@@ -94,9 +103,11 @@ public class NodeRenamerAction extends Action {
 		}
 
 		VPTProject project = VPTNode.findProjectFor(node);
-		
-		// renames the node
-		if (node.isFile()) {
+
+		if (dlg.getDontChangeDisk()) {
+			node.setName(newName);
+			return;
+		} else if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
 			// updates all files from the old directory to point to the new one
 			project.unregisterFile(f);
@@ -177,6 +188,117 @@ public class NodeRenamerAction extends Action {
 		}
 		return true;
 	} //}}}
+
+	//{{{ RenameFileDialog class
+	/**
+	 *	A dialog for renaming nodes. Provides an extra checkbox to allow
+	 *	the user to rename the node but not the actual file/dir on disk,
+	 *	in case the node is a file or a directory.
+	 */
+	private class RenameDialog extends EnhancedDialog implements ActionListener {
+
+		//{{{ Private Members
+		private JTextField	fName;
+		private JCheckBox	chFile;
+
+		private JButton		okBtn;
+		private JButton		cancelBtn;
+
+		private boolean		okPressed;
+		//}}}
+
+		public RenameDialog(VPTNode node) {
+			super(JOptionPane.getFrameForComponent(viewer),
+					jEdit.getProperty("projectviewer.action.rename.title"),
+					true);
+
+			getContentPane().setLayout(new BorderLayout());
+			getContentPane().add(BorderLayout.NORTH,
+				new JLabel(jEdit.getProperty("projectviewer.action.rename.message")));
+
+			// user input
+			fName = new JTextField(node.getName(), 20);
+			fName.setSelectionStart(0);
+			fName.setSelectionEnd(node.getName().length());
+
+			if (node.isProject()) {
+				getContentPane().add(BorderLayout.CENTER, fName);
+			} else {
+				JPanel p = new JPanel(new GridLayout(2, 1));
+				p.add(fName);
+				chFile = new JCheckBox(
+					jEdit.getProperty("projectviewer.action.rename.dont_change_disk"),
+					false);
+				p.add(chFile);
+				getContentPane().add(BorderLayout.CENTER, p);
+			}
+
+			// ok/cancel buttons
+			JPanel btns = new JPanel(new FlowLayout());
+
+			okBtn = new JButton(jEdit.getProperty("common.ok"));
+			cancelBtn = new JButton(jEdit.getProperty("common.cancel"));
+			okBtn.setPreferredSize(cancelBtn.getPreferredSize());
+
+			okBtn.addActionListener(this);
+			cancelBtn.addActionListener(this);
+
+			btns.add(okBtn);
+			btns.add(cancelBtn);
+			getContentPane().add(BorderLayout.SOUTH, btns);
+
+			setLocationRelativeTo(viewer);
+			pack();
+		}
+
+		//{{{ setVisible(boolean)
+		public void setVisible(boolean b) {
+			if (b) okPressed = false;
+			super.setVisible(b);
+		} //}}}
+
+		//{{{ ok()
+		/** Renames the file/dir. */
+		public void ok() {
+			okPressed = true;
+			dispose();
+		} //}}}
+
+		//{{{ cancel()
+		/** Cancels renaming. */
+		public void cancel() {
+			dispose();
+		} //}}}
+
+		//{{{ actionPerformed(ActionEvent)
+		public void actionPerformed(ActionEvent ae) {
+			if (ae.getSource() == okBtn) {
+				ok();
+			} else {
+				cancel();
+			}
+		} //}}}
+
+		//{{{ getInput()
+		/**
+		 *	Returns the user's input in case the "ok" button was pressed (or
+		 *	the user hit enter), or null otherwise.
+		 */
+		public String getInput() {
+			return (okPressed) ? fName.getText() : null;
+		} //}}}
+
+		//{{{ getDontChangeDisk()
+		/**
+		 *	Returns whether the "do not change file name on disk" checkbox is
+		 *	selected or not.
+		 */
+		public boolean getDontChangeDisk() {
+			return (chFile != null) ? chFile.isSelected() : false;
+		} //}}}
+
+	} //}}}
+
 
 }
 
