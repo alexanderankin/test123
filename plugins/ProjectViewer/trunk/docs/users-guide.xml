@@ -64,7 +64,7 @@
     You may choose any file below this "root" to be a part of the project.
     
     If a project is intented for website development, setting the URL Root will enable 
-    web type(jsp, asp, php, htm, html, etc) project files to be launched in the web browser.  
+    web type(jsp, asp, php, htm, html, etc) project files to be launched in a web browser.  
     Suppose the project "Root" also correlates to the URL "http://localhost/myproject/" currently running on a 
     web server, launching "hello.jsp" will launch the webbrowser (browser executable can be customized) with
     the URL "http://localhost/myproject/hello.jsp".  
