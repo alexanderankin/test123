@@ -50,6 +50,8 @@ public class ErrorList extends JFrame implements EBComponent
 		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 		addWindowListener(new WindowHandler());
 
+		setIconImage(GUIUtilities.getPluginIcon());
+
 		pack();
 		GUIUtilities.loadGeometry(this,"error-list");
 		show();

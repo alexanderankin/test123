@@ -47,7 +47,7 @@ public class ErrorHighlight implements TextAreaHighlight
 		{
 			ErrorSource source = (ErrorSource)errorSources[i];
 			ErrorSource.Error[] lineErrors = source.getLineErrors(
-				(Buffer)textArea.getDocument(),line);
+				textArea.getBuffer(),line);
 
 			if(lineErrors != null)
 				paintLineErrors(lineErrors,gfx,line,y);
@@ -72,7 +72,7 @@ public class ErrorHighlight implements TextAreaHighlight
 		{
 			ErrorSource.Error[] lineErrors =
 				((ErrorSource)errorSources[i]).getLineErrors(
-				(Buffer)textArea.getDocument(),line);
+				textArea.getBuffer(),line);
 
 			if(lineErrors == null)
 				continue;
