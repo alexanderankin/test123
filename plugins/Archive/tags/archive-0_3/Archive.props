@@ -1,0 +1,16 @@
+plugin.ArchivePlugin.name=Archive
+plugin.ArchivePlugin.author=André Kaplan
+plugin.ArchivePlugin.version=0.3
+plugin.ArchivePlugin.docs=Archive.html
+
+plugins.ArchivePlugin.depend.0=jdk 1.1
+plugins.ArchivePlugin.depend.1=jedit 03.01.99.00
+
+archive-menu.label=Archive
+archive-menu=archive.clear-directory-cache
+
+archive.clear-directory-cache.label=Clear directory cache
+
+# Archive VFS
+vfs.archive.label=Browse archive
+
