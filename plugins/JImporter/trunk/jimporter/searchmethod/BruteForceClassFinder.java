@@ -2,12 +2,15 @@ package jimporter.searchmethod;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+import javax.swing.text.Document;
 
 /**
  * BruteForceClassFinder will search a classpath to find every instance of a
@@ -86,6 +89,12 @@ public class BruteForceClassFinder extends TraverseSearchMethod {
                 }
             }
         }
+        
+        //Remove any duplicate elements
+        matchingClasses = new ArrayList(new HashSet(matchingClasses));
+        
+        //Sort all of the items in the list
+        Collections.sort(matchingClasses);
 
         return matchingClasses;
     }
