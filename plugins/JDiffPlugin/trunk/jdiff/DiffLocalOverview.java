@@ -54,6 +54,8 @@ public class DiffLocalOverview extends DiffOverview
         int virtualLine1  = this.textArea1.getFirstLine();
         int count0 = this.textArea0.getVisibleLines();
         int count1 = this.textArea1.getVisibleLines();
+        int virtualCount0 = this.textArea0.getVirtualLineCount();
+        int virtualCount1 = this.textArea1.getVirtualLineCount();
 
         Rectangle size = getBounds();
 
@@ -88,7 +90,7 @@ public class DiffLocalOverview extends DiffOverview
         Color color;
 
         Diff.change hunk = this.edits;
-        for (int i0 = 0; i0 < count0; i0++) {
+        for (int i0 = 0; (i0 < count0) && ((virtualLine0 + i0) < virtualCount0); i0++) {
             int physicalLine0 = foldVisibilityManager0.virtualToPhysical(virtualLine0 + i0);
 
             for (; hunk != null; hunk = hunk.link) {
@@ -122,7 +124,7 @@ public class DiffLocalOverview extends DiffOverview
         }
 
         hunk = this.edits;
-        for (int i1 = 0; i1 < count1; i1++) {
+        for (int i1 = 0; (i1 < count1) && ((virtualLine1 + i1) < virtualCount1); i1++) {
             int physicalLine1 = foldVisibilityManager1.virtualToPhysical(virtualLine1 + i1);
 
             for (; hunk != null; hunk = hunk.link) {
