@@ -46,10 +46,13 @@
     <ACTION NAME="white-space.toggle-space-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getSpaceHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getSpaceHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(
@@ -63,10 +66,13 @@
     <ACTION NAME="white-space.toggle-leading-space-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getLeadingSpaceHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getLeadingSpaceHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(
@@ -80,10 +86,13 @@
     <ACTION NAME="white-space.toggle-inner-space-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getInnerSpaceHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getInnerSpaceHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(
@@ -97,10 +106,13 @@
     <ACTION NAME="white-space.toggle-trailing-space-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getTrailingSpaceHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getTrailingSpaceHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(
@@ -114,10 +126,13 @@
     <ACTION NAME="white-space.toggle-tab-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getTabHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getTabHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(
@@ -131,10 +146,13 @@
     <ACTION NAME="white-space.toggle-leading-tab-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getLeadingTabHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getLeadingTabHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(
@@ -148,10 +166,13 @@
     <ACTION NAME="white-space.toggle-inner-tab-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getInnerTabHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getInnerTabHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(
@@ -165,10 +186,13 @@
     <ACTION NAME="white-space.toggle-trailing-tab-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getTrailingTabHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getTrailingTabHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(
@@ -182,10 +206,13 @@
     <ACTION NAME="white-space.toggle-whitespace-highlight">
         <CODE>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight != null) {
-                highlight.getWhitespaceHighlight().toggleEnabled();
-                highlight.updateTextArea();
-            }
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getWhitespaceHighlight().toggleEnabled();
+            highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
             return buffer.getBooleanProperty(

@@ -20,7 +20,6 @@
 package whitespace;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
 public class WhiteSpaceModel
@@ -39,7 +38,7 @@ public class WhiteSpaceModel
 
     public static final String WHITESPACE_HIGHLIGHT_PROPERTY     = "white-space.whitespace-highlight";
 
-    private JEditTextArea textArea;
+    private Buffer buffer;
 
     private HighlightOption spaceHighlight;
     private HighlightOption leadingSpaceHighlight;
@@ -54,8 +53,8 @@ public class WhiteSpaceModel
     private HighlightOption whitespaceHighlight;
 
 
-    public WhiteSpaceModel(JEditTextArea textArea) {
-        this.textArea = textArea;
+    public WhiteSpaceModel(Buffer buffer) {
+        this.buffer = buffer;
 
         this.spaceHighlight         = new HighlightOption(
             SPACE_HIGHLIGHT_PROPERTY,
@@ -159,14 +158,16 @@ public class WhiteSpaceModel
 
 
         public boolean isEnabled() {
-            Buffer buffer = WhiteSpaceModel.this.textArea.getBuffer();
-            return buffer.getBooleanProperty(this.propertyName);
+            return WhiteSpaceModel.this.buffer.getBooleanProperty(
+                this.propertyName
+            );
         }
 
 
         public void setEnabled(boolean enabled) {
-            Buffer buffer = WhiteSpaceModel.this.textArea.getBuffer();
-            buffer.putBooleanProperty(this.propertyName, enabled);
+            WhiteSpaceModel.this.buffer.putBooleanProperty(
+                this.propertyName, enabled
+            );
         }
 
 
