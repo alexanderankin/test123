@@ -1410,6 +1410,12 @@ private final int jjMoveStringLiteralDfa11_1(long old0, long active0)
 static final long[] jjbitVec0 = {
    0x0L, 0x0L, 0xffffffffffffffffL, 0xffffffffffffffffL
 };
+static final long[] jjbitVec1 = {
+   0xc000000L, 0x0L, 0x0L, 0x0L
+};
+static final long[] jjbitVec2 = {
+   0xfffffffffffffffeL, 0xffffffffffffffffL, 0xffffffffffffffffL, 0xffffffffffffffffL
+};
 private final int jjMoveNfa_1(int startState, int curPos)
 {
    int[] nextStates;
@@ -1989,6 +1995,9 @@ private final int jjMoveNfa_1(int startState, int curPos)
       }
       else
       {
+         int hiByte = (int)(curChar >> 8);
+         int i1 = hiByte >> 6;
+         long l1 = 1L << (hiByte & 077);
          int i2 = (curChar & 0xff) >> 6;
          long l2 = 1L << (curChar & 077);
          MatchLoop: do
@@ -1997,114 +2006,120 @@ private final int jjMoveNfa_1(int startState, int curPos)
             {
                case 17:
                case 14:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 16:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 15:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 25:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 24:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 3:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 23:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 22:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 21:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 19:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 18:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
                   jjCheckNAdd(14);
                   break;
                case 1:
-                  if ((jjbitVec0[i2] & l2) != 0L && kind > 18)
+                  if (jjCanMove_0(hiByte, i1, i2, l1, l2) && kind > 18)
                      kind = 18;
                   break;
                case 47:
+                  if (jjCanMove_1(hiByte, i1, i2, l1, l2))
+                     jjCheckNAddStates(31, 33);
+                  break;
                case 49:
-                  if ((jjbitVec0[i2] & l2) != 0L)
+                  if (jjCanMove_2(hiByte, i1, i2, l1, l2))
                      jjCheckNAddStates(31, 33);
                   break;
                case 51:
+                  if (jjCanMove_1(hiByte, i1, i2, l1, l2))
+                     jjCheckNAddStates(34, 36);
+                  break;
                case 53:
-                  if ((jjbitVec0[i2] & l2) != 0L)
+                  if (jjCanMove_2(hiByte, i1, i2, l1, l2))
                      jjCheckNAddStates(34, 36);
                   break;
                case 56:
                case 58:
-                  if ((jjbitVec0[i2] & l2) != 0L)
+                  if (jjCanMove_2(hiByte, i1, i2, l1, l2))
                      jjCheckNAddStates(37, 39);
                   break;
                case 60:
                case 62:
-                  if ((jjbitVec0[i2] & l2) != 0L)
+                  if (jjCanMove_2(hiByte, i1, i2, l1, l2))
                      jjCheckNAddStates(40, 42);
                   break;
                case 65:
                case 67:
-                  if ((jjbitVec0[i2] & l2) != 0L)
+                  if (jjCanMove_2(hiByte, i1, i2, l1, l2))
                      jjCheckNAddStates(43, 45);
                   break;
                case 69:
                case 71:
-                  if ((jjbitVec0[i2] & l2) != 0L)
+                  if (jjCanMove_2(hiByte, i1, i2, l1, l2))
                      jjCheckNAddStates(46, 48);
                   break;
                default : break;
@@ -2550,6 +2565,9 @@ private final int jjMoveNfa_3(int startState, int curPos)
       }
       else
       {
+         int hiByte = (int)(curChar >> 8);
+         int i1 = hiByte >> 6;
+         long l1 = 1L << (hiByte & 077);
          int i2 = (curChar & 0xff) >> 6;
          long l2 = 1L << (curChar & 077);
          MatchLoop: do
@@ -2557,7 +2575,7 @@ private final int jjMoveNfa_3(int startState, int curPos)
             switch(jjstateSet[--i])
             {
                case 0:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
@@ -2565,7 +2583,7 @@ private final int jjMoveNfa_3(int startState, int curPos)
                   break;
                case 12:
                case 1:
-                  if ((jjbitVec0[i2] & l2) == 0L)
+                  if (!jjCanMove_0(hiByte, i1, i2, l1, l2))
                      break;
                   if (kind > 124)
                      kind = 124;
@@ -2594,6 +2612,40 @@ static final int[] jjnextStates = {
    48, 50, 51, 52, 54, 56, 57, 59, 60, 61, 63, 65, 66, 68, 69, 70, 
    72, 65, 66, 68, 69, 70, 72, 10, 11, 32, 33, 36, 37, 40, 41, 
 };
+private static final boolean jjCanMove_0(int hiByte, int i1, int i2, long l1, long l2)
+{
+   switch(hiByte)
+   {
+      case 0:
+         return ((jjbitVec0[i2] & l2) != 0L);
+      default : 
+         return false;
+   }
+}
+private static final boolean jjCanMove_1(int hiByte, int i1, int i2, long l1, long l2)
+{
+   switch(hiByte)
+   {
+      case 0:
+         return ((jjbitVec0[i2] & l2) != 0L);
+      case 1:
+         return ((jjbitVec1[i2] & l2) != 0L);
+      default : 
+         return false;
+   }
+}
+private static final boolean jjCanMove_2(int hiByte, int i1, int i2, long l1, long l2)
+{
+   switch(hiByte)
+   {
+      case 0:
+         return ((jjbitVec0[i2] & l2) != 0L);
+      default : 
+         if ((jjbitVec2[i1] & l1) != 0L)
+            return true;
+         return false;
+   }
+}
 public static final String[] jjstrLiteralImages = {
 "", "\74\77", null, "\74\77\75", "\77\76", null, null, null, null, null, null, 
 null, null, null, null, null, null, null, null, null, null, null, null, null, null, 

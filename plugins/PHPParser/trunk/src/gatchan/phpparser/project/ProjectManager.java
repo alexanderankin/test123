@@ -164,10 +164,7 @@ public final class ProjectManager {
       project = new Project(projectFile);
       project.load();
       // todo : add an option for that
-      View activeView = jEdit.getActiveView();
-      if (activeView != null) {
-        VFSBrowser.browseDirectory(activeView, project.getRoot());
-      }
+      browseToProjectRoot(project);
       this.project = project;
     } catch (InvalidProjectPropertiesException e) {
       Log.log(Log.ERROR, this, e.getMessage());
@@ -184,13 +181,23 @@ public final class ProjectManager {
       closeProject();
     }
     project.load();
-    // todo : add an option for that
-    View activeView = jEdit.getActiveView();
-    if (activeView != null) {
-      VFSBrowser.browseDirectory(activeView, project.getRoot());
-    }
+    browseToProjectRoot(project);
     this.project = project;
 
     EditBus.send(new PHPProjectChangedMessage(this, this.project));
+  }
+
+  /**
+   * This will move the File system browser to the project root.
+   *
+   * @param project the project
+   */
+  private void browseToProjectRoot(final Project project) {
+    // todo : add an option for that
+    View activeView = jEdit.getActiveView();
+    final String root = project.getRoot();
+    if (activeView != null && root != null) {
+      VFSBrowser.browseDirectory(activeView, root);
+    }
   }
 }

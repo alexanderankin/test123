@@ -3,6 +3,7 @@ package gatchan.phpparser.project.dockablepanel;
 import gatchan.phpparser.project.Project;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
@@ -120,6 +121,8 @@ public final class ProjectOptionsPanel extends JPanel {
           project.setRoot(absolutePath);
           save.setEnabled(true);
         }
+        /*String[] strings = GUIUtilities.showVFSFileDialog(jEdit.getActiveView(), null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+        System.out.println("strings = " + strings);   */
       } else if (e.getSource() == save) {
         final String root = rootField.getText();
         final File f = new File(root);

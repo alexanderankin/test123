@@ -43,6 +43,9 @@ public final class FrameFindItem extends JFrame {
   private PHPItemCellRenderer cellRenderer;
   private static final Color LIST_SELECTION_BACKGROUND = new Color(0xcc, 0xcc, 0xff);
 
+  /** the length of the last search. */
+  private String lastSearch;
+
   public FrameFindItem() {
     setUndecorated(true);
     itemList = new JList(listModel);
@@ -87,7 +90,10 @@ public final class FrameFindItem extends JFrame {
       final String searchText = searchField.getText().toLowerCase();
       cellRenderer.setSearchString(searchText);
 
-      if (quickAccess.getIndexLength() > searchText.length()) {
+      final int currentSearchLength = searchText.length();
+      if (quickAccess.getIndexLength() > currentSearchLength ||
+                                                             currentSearchLength < lastSearch.length() ||
+                                                             !searchText.startsWith(lastSearch)) {
         final long quickAccessStart = System.currentTimeMillis();
         final java.util.List itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
 
@@ -105,15 +111,23 @@ public final class FrameFindItem extends JFrame {
           } else {
             searchField.setForeground(null);
             itemList.setSelectedIndex(0);
-            itemList.setVisibleRowCount(Math.min(itemContaining.size(), 10));
+            itemList.setVisibleRowCount(Math.min(listModel.getSize(), 10));
             window.pack();
             window.setVisible(true);
           }
         }
       } else {
         listModel.filter(searchText);
+        if (listModel.getSize() == 0) {
+          searchField.setForeground(Color.red);
+          window.setVisible(false);
+        } else {
+          itemList.setVisibleRowCount(Math.min(listModel.getSize(), 10));
+          window.pack();
+        }
       }
       searchField.requestFocus();
+      lastSearch = searchText;
     }
 
     final long end = System.currentTimeMillis();
