@@ -211,6 +211,15 @@ public final class Project {
     properties.setProperty("root", root);
   }
 
+  /**
+   * Returns the project file.
+   *
+   * @return the project file. It's a property file
+   */
+  public File getFile() {
+    return file;
+  }
+
   public String getRoot() {
     return properties.getProperty("root");
   }

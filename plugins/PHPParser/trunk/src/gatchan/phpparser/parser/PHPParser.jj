@@ -509,7 +509,7 @@ MORE :
 
 <PHPPARSING> TOKEN :
 {
- <DEFINE   : "define">
+  <DEFINE   : "define">
 | <GOTO     : "goto">
 | <NULL     : "null">
 | <SUPER    : "super">
@@ -589,17 +589,17 @@ MORE :
 |
   <#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 |
-  <STRING_LITERAL: (<STRING_1> | <STRING_2> | <STRING_3>)>
-|   <STRING_1: "\"" ( ~["\"","\\"] | "\\" ~[] )* "\"">
+  <STRING_LITERAL: (/*<STRING_1> |*/ <STRING_2> | <STRING_3>)>
+/*|   <STRING_1: "\"" ( ~["\"","\\"] | "\\" ~[] )* "\"">*/
 |   <STRING_2: "'"  ( ~["'","\\"]  | "\\" ~[] )* "'">
 |   <STRING_3: "`"  ( ~["`","\\"]  | "\\" ~[] )* "`">
 }
- /*
+ 
 <IN_STRING,DOLLAR_IN_STRING> SKIP :
 {
   <ESCAPED : ("\\" ~[])> : IN_STRING
 }
-   Deactivate the String parsing
+
 <PHPPARSING> TOKEN :
 {
   <DOUBLEQUOTE : "\""> : IN_STRING
@@ -654,7 +654,7 @@ MORE :
 {
   <~[]>
 }
-*/
+
 
 <PHPPARSING> TOKEN :
 {
@@ -664,9 +664,9 @@ MORE :
 
 <PHPPARSING,IN_VARIABLE> TOKEN : {<DOLLAR : "$"> : IN_VARIABLE}
 
-<PHPPARSING, IN_VARIABLE> TOKEN :
+<PHPPARSING, IN_VARIABLE,DOLLAR_IN_STRING> TOKEN :
 {
-  <IDENTIFIER: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*) | <DEFINE> | <OBJECT> >
+  <IDENTIFIER: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)>
 |
   < #LETTER:
       ["a"-"z"] | ["A"-"Z"]
@@ -696,11 +696,11 @@ MORE :
 
 //<PHPPARSING, IN_VARIABLE, DOLLAR_IN_STRING> TOKEN :
 
-  /*
+  
 <DOLLAR_IN_STRING> SPECIAL_TOKEN :
 {
  < ~[] > : IN_STRING
-}  */
+}  
 /* SEPARATORS */
 
 <PHPPARSING,IN_VARIABLE> TOKEN :
@@ -3613,7 +3613,7 @@ Expression arrayKey() :
 Literal Literal() :
 {
   final Token token;
-  final StringLiteral heredoc;
+  final StringLiteral stringLiteral;
 }
 {
   token = <INTEGER_LITERAL>        {return new NumberLiteral(token);}
@@ -3622,8 +3622,8 @@ Literal Literal() :
 | token = <TRUE>                   {return new TrueLiteral(token);}
 | token = <FALSE>                  {return new FalseLiteral(token);}
 | token = <NULL>                   {return new NullLiteral(token);}
-| heredoc = heredoc()              {return heredoc;}
-//| literal = evaluableString()        {return literal;}
+| stringLiteral = heredoc()         {return stringLiteral;}
+| stringLiteral = evaluableString() {return stringLiteral;}
 }
 
 //}}}
@@ -3730,7 +3730,7 @@ StringLiteral heredoc() :
 //}}}
 //{{{ evaluableString()
 
-              /*
+              
 StringLiteral evaluableString() :
 {
   ArrayList list = new ArrayList();
@@ -3743,18 +3743,30 @@ StringLiteral evaluableString() :
   start = <DOUBLEQUOTE>
   (
    <DOLLARS>
-       (
-        token = <IDENTIFIER> {list.add(new Variable(token.image,
-                                                    token.sourceStart,
-                                                    token.sourceEnd));}
+        [token = <IDENTIFIER> 
+        {
+          list.add(new Variable(token.image,
+                                token.sourceStart,
+                                token.sourceEnd,
+                                token.beginLine,
+                                token.endLine,
+                                token.beginColumn,
+                                token.endColumn));
+        }
         |
          lbrace = <LBRACE1>
          token = <ID>
-         {list.add(new Variable(token.image,
+         {
+           list.add(new Variable(token.image,
                                 token.sourceStart,
-                                token.sourceEnd));}
+                                token.sourceEnd,
+                                token.beginLine,
+                                token.endLine,
+                                token.beginColumn,
+                                token.endColumn));
+         }
          rbrace = <RBRACE1>
-       )
+         ]
    )*
   end = <DOUBLEQUOTE2>
   {
@@ -3763,10 +3775,14 @@ StringLiteral evaluableString() :
   return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(start.sourceEnd,end.sourceStart),
                            start.sourceStart,
                            end.sourceEnd,
+                           start.beginLine,
+                           end.endLine,
+                           start.beginColumn,
+                           end.endColumn,
                            vars);
   }
 }
-  */
+  
 
   //}}}
 //{{{ Arguments(final Expression func)
