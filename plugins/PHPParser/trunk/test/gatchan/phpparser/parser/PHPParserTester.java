@@ -22,6 +22,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
   }
 
   public void testParserSuccess() {
+    checkPHP("$a = @require 'b';");
     checkPHP("@list($sFormatted, $sExt) = explode(' ', $sFormatted, 2);");
     checkPHP("$tpl->define(array());");
     checkPHP("if ($a && !empty($c)) {echo 'coucou';}");
@@ -135,6 +136,41 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
     checkHTML("<?php phpinfo(); ?> foo <?php phpinfo(); ?>");
     checkHTML(" <?php //this is a line comment ?>");
     checkHTML("<?php echo $module_name ?>");
+  }
+
+  public void testParserSuccessPHP5() {
+    phpParser.setPhp5Enabled(true);
+    testParserSuccess();
+  }
+
+  public void testParserSinglePHP5() {
+    phpParser.setPhp5Enabled(true);
+    checkPHP("interface Test { protected function tutu(); }");
+  }
+
+  public void testParserSuccessPHP5SpecialSyntax() {
+    phpParser.setPhp5Enabled(true);
+    checkPHP("abstract class Test {}");
+    checkPHP("abstract class Test { var $toto,$tata;}");
+    checkPHP("abstract class Test { $toto;}");
+    checkPHP("abstract class Test { private $toto;}");
+    checkPHP("abstract class Test { const $toto;}");
+    checkPHP("abstract class Test { private const $toto;}");
+    checkPHP("abstract class Test { const private $toto;}");
+    checkPHP("abstract class Test { function tutu() {} }");
+    checkPHP("abstract class Test { private function tutu() {} }");
+    checkPHP("abstract class Test { abstract function tutu(); }");
+    checkPHP("abstract class Test { abstract protected function tutu(); }");
+    checkPHP("abstract class Test { protected abstract function tutu(); }");
+    checkPHP("abstract class Test { final function tutu() {} }");
+    checkPHP("abstract class Test { private final function tutu() {} }");
+    checkPHP("abstract class Test { final private function tutu() {} }");
+    checkPHP("interface Test { protected function tutu(); }");
+    checkPHP("class Test implements Toto {  }");
+    checkPHP("class Test implements Toto, Tata {  }");
+    checkPHP("function tutu(Toto $a) {  }");
+    checkPHP("try { } catch(MyException $a) {}");
+    checkPHP("throw new Toto();");
   }
 
   private void checkPHP(String s) {
