@@ -1,0 +1,20 @@
+#-----------------------------------
+# Properties for BufferLocal Plugin 
+#-----------------------------------
+
+plugin.ise.plugin.bmp.BufferLocalPlugin.name=BufferLocal
+plugin.ise.plugin.bmp.BufferLocalPlugin.author=Dale Anson
+plugin.ise.plugin.bmp.BufferLocalPlugin.version=@@build.num@@
+plugin.ise.plugin.bmp.BufferLocalPlugin.activate=startup
+
+# dependencies
+plugin.ise.plugin.bmp.BufferLocalPlugin.jdk=1.4
+plugin.ise.plugin.bmp.BufferLocalPlugin.jedit=04.02.01.00
+
+# docs
+plugin.ise.plugin.bmp.BufferLocalPlugin.docs=index.html
+
+
+
+
+
