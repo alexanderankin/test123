@@ -56,6 +56,16 @@ public final class ProjectFileImporter {
 	 */
 	public void doImport(File directory) {
 		List files = new ArrayList();
+
+		String projectRoot=viewer.getCurrentProject().getRoot().getPath();
+		if(!directory.toString().startsWith(projectRoot)) {
+			JOptionPane.showMessageDialog(viewer,
+					"The selected directory \""+directory+"\" should be below the project root\""+projectRoot+"\".",
+					"Note",
+					JOptionPane.ERROR_MESSAGE);
+			return;
+		}
+
 		buildFileList(directory, files);
 
 		if (files.isEmpty()) {

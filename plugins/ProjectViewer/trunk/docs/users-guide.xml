@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- ProjectViewer plugin user's guide -->
-<!-- (C) 2001,2002 Stefan Kost, Calvin Yui -->
+<!-- (C) 2001,2002 Stefan Kost, Calvin Yu -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
@@ -13,18 +13,9 @@
     <title>ProjectViewer plugin</title>
 
     <authorgroup>
-        <author>
-            <firstname>Stefan</firstname>
-            <surname>Kost</surname>
-        </author>
-        <author>
-            <firstname>Calvin</firstname>
-            <surname>Yu</surname>
-        </author>
-        <author>
-            <firstname>Kevin</firstname>
-            <surname>Burton</surname>
-        </author>
+        <author><firstname>Stefan</firstname><surname>Kost</surname></author>
+        <author><firstname>Calvin</firstname><surname>Yu</surname></author>
+        <author><firstname>Kevin</firstname><surname>Burton</surname></author>
     </authorgroup>
 
     <legalnotice>
