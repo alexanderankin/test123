@@ -79,11 +79,27 @@ public class Code2HTML
         }
 
         if (this.showGutter) {
-            int gutterSize = Integer.toString(this.textArea.getLineCount()).length();
+            String bgColor = jEdit.getProperty(
+                "view.gutter.bgColor", "#ffffff"
+            );
+            String fgColor = jEdit.getProperty(
+                "view.gutter.fgColor", "#8080c0"
+            );
+            String highlightColor = jEdit.getProperty(
+                "view.gutter.highlightColor", "#000000"
+            );
+            int highlightInterval = jEdit.getIntegerProperty(
+                "view.gutter.highlightInterval", 5
+            );
+
             if (this.useCSS) {
-                this.gutter = new HtmlCssGutter();
+                this.gutter = new HtmlCssGutter(
+                    bgColor, fgColor, highlightColor, highlightInterval
+                );
             } else {
-                this.gutter = new HtmlGutter();
+                this.gutter = new HtmlGutter(
+                    bgColor, fgColor, highlightColor, highlightInterval
+                );
             }
         }
 
