@@ -239,17 +239,17 @@ implements EBComponent, Output, DefaultFocusComponent
 		Macros.Recorder recorder = view.getMacroRecorder();
 		if(recorder != null)
 		{
-			if(output == this)
+			if(output instanceof BufferOutput)
 			{
-				recorder.record("runCommandInConsole(view,\""
+				recorder.record("runCommandToBuffer(view,\""
 					+ shell.getName()
 					+ "\",\""
 					+ MiscUtilities.charsToEscapes(cmd)
 					+ "\");");
 			}
-			else if(output instanceof BufferOutput)
+			else
 			{
-				recorder.record("runCommandToBuffer(view,\""
+				recorder.record("runCommandInConsole(view,\""
 					+ shell.getName()
 					+ "\",\""
 					+ MiscUtilities.charsToEscapes(cmd)

@@ -214,9 +214,9 @@ class ConsoleProcess
 
 			if(consoleState != null)
 				consoleState.process = null;
-		}
 
-		notifyAll();
+			notifyAll();
+		}
 	} //}}}
 
 	//}}}

@@ -1,5 +1,7 @@
 3.6:
 
+- $d tab: fucked
+- jdk 1.3: null shell?
 - on win: foo "bar baz" needs to be passed literally
 - stdin broken
 - use MiscUtilities.getCommonPrefix()

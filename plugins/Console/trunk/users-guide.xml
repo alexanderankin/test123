@@ -1202,6 +1202,22 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 3.6.1</emphasis>
+   requires jEdit 4.2pre2 and the ErrorList plugin 1.3.</para>
+
+   <itemizedlist>
+   <listitem><para>Macro recording didn't work.
+   </para></listitem>
+   <listitem><para>The backslash was not parsed correctly.
+   </para></listitem>
+   <listitem><para>YThe <function>waitForConsole()</function> BeanShell command
+   didn't work.
+   </para></listitem>
+  </itemizedlist>
+ </listitem>
+
+ <itemizedlist>
+
   <listitem><para><emphasis role="bold">Version 3.6</emphasis>
    requires jEdit 4.2pre2 and the ErrorList plugin 1.3.</para>
 

@@ -65,7 +65,7 @@ public class CommandoCommand extends EditAction
 	//{{{ getCode() method
 	public String getCode()
 	{
-		return "new CommandoDialog(view,\"" + getName() + "\");";
+		return "new console.commando.CommandoDialog(view,\"" + getName() + "\");";
 	} //}}}
 
 	//{{{ openStream() method
