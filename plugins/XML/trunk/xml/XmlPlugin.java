@@ -20,8 +20,6 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Component;
-import java.util.HashMap;
-import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.syntax.*;
@@ -34,9 +32,6 @@ import xml.parser.*;
 
 public class XmlPlugin extends EBPlugin
 {
-	public static final XmlParser XML_PARSER_INSTANCE = new SAXParserImpl();
-	public static final XmlParser HTML_PARSER_INSTANCE = new SwingHTMLParserImpl();
-
 	//{{{ start() method
 	public void start()
 	{
@@ -45,32 +40,39 @@ public class XmlPlugin extends EBPlugin
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 
-		SideKickPlugin.registerParser(XML_PARSER_INSTANCE);
-		SideKickPlugin.registerParser(HTML_PARSER_INSTANCE);
+		tagMouseHandler = new TagMouseHandler();
+
+		View view = jEdit.getFirstView();
+		while(view != null)
+		{
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
+			{
+				panes[i].getTextArea().getPainter()
+					.addMouseListener(
+					tagMouseHandler);
+			}
+			view = view.getNext();
+		}
 	} //}}}
 
 	//{{{ stop() method
 	public void stop()
 	{
-		SideKickPlugin.unregisterParser(XML_PARSER_INSTANCE);
-		SideKickPlugin.unregisterParser(HTML_PARSER_INSTANCE);
+		View view = jEdit.getFirstView();
+		while(view != null)
+		{
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
+			{
+				panes[i].getTextArea().getPainter()
+					.removeMouseListener(
+					tagMouseHandler);
+			}
+			view = view.getNext();
+		}
 
 		CatalogManager.save();
-	} //}}}
-
-	//{{{ createMenuItems() method
-	public void createMenuItems(Vector menuItems)
-	{
-		menuItems.addElement(GUIUtilities.loadMenu("xml-menu"));
-	} //}}}
-
-	//{{{ createOptionPanes() method
-	public void createOptionPanes(OptionsDialog dialog)
-	{
-		OptionGroup grp = new OptionGroup("xml");
-		grp.addOptionPane(new GeneralOptionPane());
-		grp.addOptionPane(new CatalogsOptionPane());
-		dialog.addOptionGroup(grp);
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -85,7 +87,12 @@ public class XmlPlugin extends EBPlugin
 			if(epu.getWhat() == EditPaneUpdate.CREATED)
 			{
 				editPane.getTextArea().getPainter().addMouseListener(
-					new TagMouseHandler());
+					tagMouseHandler);
+			}
+			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+			{
+				editPane.getTextArea().getPainter().removeMouseListener(
+					tagMouseHandler);
 			}
 		} //}}}
 		//{{{ PropertiesChanged
@@ -152,6 +159,8 @@ public class XmlPlugin extends EBPlugin
 		}
 		return uri;
 	} //}}}
+
+	private TagMouseHandler tagMouseHandler;
 
 	//{{{ TagMouseHandler class
 	static class TagMouseHandler extends MouseAdapter

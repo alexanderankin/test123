@@ -1,5 +1,6 @@
 - CatalogProperties complaints
 - document xml.root property
+- document xml.validate property
 - xcatalog format
 - newer ant completion
 - ids are kind of hackish -- use something similar to a hypersearch result

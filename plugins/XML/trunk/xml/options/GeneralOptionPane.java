@@ -37,7 +37,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	{
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
-		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
+		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
 
 		String[] networkValues = {
 			jEdit.getProperty("options.xml.general.network-off"),
@@ -102,7 +102,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
+		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
 		jEdit.setBooleanProperty("xml.cache",network.getSelectedIndex() == 1);
 		jEdit.setBooleanProperty("xml.network",network.getSelectedIndex() >= 1);
 		jEdit.setBooleanProperty("xml.tag-highlight",
