@@ -19,11 +19,11 @@ public class ProjectStatsPanel extends JPanel {
     filesCount.setEditable(false);
 
 
-    add(new Label("Classes : "));
+    add(new JLabel("Classes : "));
     add(classesCount);
-    add(new Label("Methods : "));
+    add(new JLabel("Methods : "));
     add(methodsCount);
-    add(new Label("Files : "));
+    add(new JLabel("Files : "));
     add(filesCount);
   }
 
