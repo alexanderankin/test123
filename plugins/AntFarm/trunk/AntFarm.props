@@ -10,7 +10,7 @@ plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 3.7.1
 plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3.2
 plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.13
 plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.8.2
-plugin.antfarm.AntFarmPlugin.depend.5=optional plugin ProjectViewer 2.0.2
+plugin.antfarm.AntFarmPlugin.depend.5=optional plugin projectviewer.ProjectPlugin 2.0.2
 plugin.antfarm.AntFarmPlugin.activate=defer
 
 antfarm-toggle.label=Ant Farm Toggle
