@@ -26,7 +26,7 @@ console.toolbar.enabled=false
 
 console.title=Console
 console.run=Run
-console.to-buffer=To Buffer
+console.to-buffer=Run and show output in new buffer
 console.stop=Stop
 console.clear=Clear
 
