@@ -1,0 +1,36 @@
+- multiple-line env vars don't work
+- see if an extra pattern can eat all javac errors
+- TeX, Tidy error patterns
+- foo"aaaa" broken
+- command to copy a commando file to the user commando dir for easy
+  customization
+- need <INIT> code block in commando files
+- FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
+- beanshell completion
+- aliases option pane
+- globs (non-Windows only, Windows programs do their own glob expansion)
+- hyperlinks in output; %ls output lines open files and directories;
+  exception tracebacks handled, maybe
+- URL hyperlinks.
+- ${beanshell:...} syntax
+- file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?
+  - VFS support
+  - cd to a non-local directory (don't allow running commands from non
+    local dir, only built-ins)
+- shift-click on toolbar button runs without displaying dialog box
+- after jEdit API additions: tips of the day
+- integration with project manager
+- synchronize browser & console pwd (but make this toggle option)
+- console tool bar: dir commands don't open console
+- console tool bar cmd, also percent command inserts %
+- console tool bar: show status msg, regarding completion.
+
+- tabbed pane; tool bar (clone tab, run: [console,new buffer], kill)
+  [ <some caption ............ > Menu \/ ]
+                               - Close tab
+                               - New tab
+			       - Stop command
+			       - Output time logged??
+			       - Help
+  JTextPane: system shell supports input. background proc -- just open
+  in new tab??? tabs change color on output??
