@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 
 <!-- AntFarm user's guide -->
-<!-- (C) 2001 Brian Knowles -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true: -->
@@ -365,6 +364,18 @@
  </chapter>
 
  <chapter id="history"><title>History</title>
+ 
+ <para>Version 1.3.1</para>
+ 
+ <itemizedlist>
+ 
+ <listitem>
+ <para>JW - Fixed bug 711270: Double-clicking of targets and the use of the Run popup
+ menu item did not work unless the build file had been loaded by the use of the Run button
+ due to changes in the use of the Console plugin in version 1.3.1.</para>
+ </listitem>
+ 
+ </itemizedlist>
 
  <para>Version 1.3</para>
 
