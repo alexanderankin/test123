@@ -237,35 +237,37 @@ public class WhiteSpaceHighlight extends TextAreaExtension
     public String getToolTipText(int x, int y) {
         WhiteSpaceModel model = this.getModel();
 
-        if ((model != null) && model.getWhitespaceHighlight().isEnabled()) {
-            JEditTextArea ta = this.textArea;
+        if ((model == null) || !model.getWhitespaceHighlight().isEnabled()) {
+            return null;
+        }
 
-            int offset = ta.xyToOffset(x, y, false);
+        JEditTextArea ta = this.textArea;
 
-            if (offset == -1) { return null; }
+        int offset = ta.xyToOffset(x, y, false);
 
-            String s = ta.getText(offset, 1);
-            if (s == null) { return null; }
+        if (offset == -1) { return null; }
 
-            char c = s.charAt(0);
-            if (    (    Character.isWhitespace(c)
-                      || (displayControlChars && Character.isISOControl(c))
-                    )
-                 && (c != '\t')
-                 && (c != '\n')
-                 && (c != ' ')
-            ) {
-                int i = (int) c;
-                String tooltip = i + " - " + "0x" + Integer.toHexString(i);
-                if ((i >= 0) && (i < ASCII_CONTROLS.length)) {
-                    tooltip += " - " + ASCII_CONTROLS[i];
-                    if ((i >= 7) && (i <= 13)) {
-                        String c_escape = "abtnvfr";
-                        tooltip += " (\\" + c_escape.charAt(i - 7) + ")";
-                    }
+        String s = ta.getText(offset, 1);
+        if (s == null) { return null; }
+
+        char c = s.charAt(0);
+        if (    (    Character.isWhitespace(c)
+                  || (displayControlChars && Character.isISOControl(c))
+                )
+             && (c != '\t')
+             && (c != '\n')
+             && (c != ' ')
+        ) {
+            int i = (int) c;
+            String tooltip = i + " - " + "0x" + Integer.toHexString(i);
+            if ((i >= 0) && (i < ASCII_CONTROLS.length)) {
+                tooltip += " - " + ASCII_CONTROLS[i];
+                if ((i >= 7) && (i <= 13)) {
+                    String c_escape = "abtnvfr";
+                    tooltip += " (\\" + c_escape.charAt(i - 7) + ")";
                 }
-                return tooltip;
             }
+            return tooltip;
         }
 
         return null;
