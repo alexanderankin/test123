@@ -36,6 +36,8 @@ import javax.swing.JFileChooser;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
+
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectViewer;
 import projectviewer.gui.ModalJFileChooser;
@@ -54,6 +56,7 @@ public class AppLauncher {
 
 	private static AppLauncher instance;
 
+	//{{{ +_getInstance()_ : AppLauncher
 	public static synchronized AppLauncher getInstance() {
 		if (instance == null) {
 			instance = new AppLauncher();
@@ -68,7 +71,7 @@ public class AppLauncher {
 
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +AppLauncher() : <init>
 
 	public AppLauncher() {
 		appCol = new TreeMap();
@@ -84,29 +87,29 @@ public class AppLauncher {
 
 	//{{{ Public methods
 
-	//{{{ getAppList() method
+	//{{{ +getAppList() : Set
 	public Set getAppList() {
 	   //return all the values
 		return appCol.entrySet();
 	} //}}}
 
-	//{{{ addAppExt() method
+	//{{{ +addAppExt(String, String) : void
 	public void addAppExt(String fileExt, String execPath) {
 		if (fileExt.trim().length() > 0)
 			appCol.put(fileExt.trim(), execPath);
 	} //}}}
 
-	//{{{ removeAppExt() method
+	//{{{ +removeAppExt(String) : void
 	public void removeAppExt(String fileExt) {
 		appCol.remove(fileExt);
 	} //}}}
 
-	//{{{ getCount() method
+	//{{{ +getCount() : int
 	public int getCount() {
 	   return appCol.size();
 	} //}}}
 
-	//{{{ loadExts() method
+	//{{{ +loadExts() : void
 	/** load extension properties from file **/
 	public void loadExts() throws IOException {
 
@@ -129,7 +132,7 @@ public class AppLauncher {
 		}
 	} //}}}
 
-	//{{{ storeExts() method
+	//{{{ +storeExts() : void
 	public void storeExts() throws IOException {
 
 		Properties props = new Properties();
@@ -148,10 +151,24 @@ public class AppLauncher {
 		out.close();
 	} //}}}
 
-	//{{{ launchApp() method
-	// was private, but gets called from TreeContextMenuListener.java::LaunchExternal()
+	//{{{ +launchApp(File, ProjectViewer) : void
+	/**
+	 *	@deprecated	Use {@link #launchApp(Syring, ProjectViewer)
+	 *	launchApp(Syring, ProjectViewer)} instead.
+	 */
 	public void launchApp(File f, ProjectViewer viewer) {
-		String ext = getFileExtension(f.getName());
+		launchApp(f.getAbsolutePath(), viewer);
+	} //}}}
+
+	//{{{ +launchApp(String, ProjectViewer) : void
+	/**
+	 *	Launches an external app depending on the extension of the path
+	 *	provided, passing the path as an argument to the executable.
+	 *
+	 *	@since	PV 2.1.0
+	 */
+	public void launchApp(String path, ProjectViewer viewer) {
+		String ext = getFileExtension(path);
 		String executable = (String) appCol.get(ext);
 		if (executable == null) {
 			if (JOptionPane.showConfirmDialog(viewer,
@@ -165,7 +182,7 @@ public class AppLauncher {
 		}
 		if (executable != null) {
 			Runtime rt = Runtime.getRuntime();
-			String[] callAndArgs = { executable, f.getAbsolutePath() };
+			String[] callAndArgs = { executable, path };
 			try {
 			   rt.exec(callAndArgs);
 			} catch(java.io.IOException ioe) {
@@ -177,7 +194,7 @@ public class AppLauncher {
 		}
 	} //}}}
 
-	//{{{ copy() method
+	//{{{ +copy(AppLauncher) : void
 	/** Copies the data from another AppLauncher into this one. */
 	public void copy(AppLauncher other) {
 		appCol.clear();
@@ -187,19 +204,33 @@ public class AppLauncher {
 		}
 	} //}}}
 
-	//{{{ getAppName(String) method
+	//{{{ +getAppName(File) : String
 	/**
 	 *	Returns the application name associated to the given file extension.
+	 *
+	 *	@deprecated	Use {@link #getAppName(String) getAppName(String)} insetad.
 	 */
 	public String getAppName(File f) {
 		return (String) appCol.get(getFileExtension(f.getName()));
+	} //}}}
+
+	//{{{ +getAppName(String) : String
+	/**
+	 *	Returns the application name associated to the given file extension.
+	 *	The file path can be any URL recognized by jEdit's VFSManager.
+	 *
+	 *	@since PV 2.1.0
+	 */
+	public String getAppName(String path) {
+		String name = VFSManager.getVFSForPath(path).getFileName(path);
+		return (String) appCol.get(getFileExtension(name));
 	} //}}}
 
 	//}}}
 
 	//{{{ Private methods
 
-	//{{{ getFileExtension() method
+	//{{{ -getFileExtension(String) : String
 	/**
 	 *	Returns the file's extension, or the file name if no extension can be
 	 *	recognized.
@@ -214,7 +245,7 @@ public class AppLauncher {
 		return fileName.substring(dotIndex + 1);
 	} //}}}
 
-	//{{{ replaceString() method
+	//{{{ -_replaceString(String, String, String)_ : String
 	private static String replaceString(String aSearch, String aFind, String aReplace)
 	{ /* MP could not get regex replace to work.
 		so I am including this function for now */
@@ -235,7 +266,7 @@ public class AppLauncher {
 		return result;
 	} //}}}
 
-	//{{{ pickApp() method
+	//{{{ -pickApp(String, ProjectViewer) : String
 	/**
 	 *	Prompts the user for an application to run, and returns the path to the
 	 *	executable file.

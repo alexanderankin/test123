@@ -117,6 +117,13 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_wrapper_openwith">
+		<CODE>
+			projectviewer.PVActions.pvActionWrapper(
+				new projectviewer.action.OpenWithAppAction(), view, false);
+		</CODE>
+	</ACTION>
+
 	<!--}}}-->
 
 </ACTIONS>
