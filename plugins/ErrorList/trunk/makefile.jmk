@@ -57,6 +57,7 @@ end;
 
 jar: srcs;
 {
+    exec "openjade" "-t" "sgml" "-d" "." "/usr/local/share/OpenSP/xml.dcl" "users-guide.xml";
     exec cmd_jar @ (get_files "1");
 }
 
