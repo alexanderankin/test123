@@ -101,7 +101,7 @@
       <filename>$JEDIT_HOME/sql/serverTypes</filename>
 
       (some configuration files - for Oracle, MySQL, PostgreSQL,
-      DB2, Sybase are bundled with the plugin). Each file contains
+      DB2, Sybase, Microsoft SQL Server are bundled with the plugin). Each file contains
       the following info:</para>
 
       <itemizedlist>
@@ -169,7 +169,7 @@
       <table frame="all">
         <title>SQL server types supported by SQL plugin</title>
 
-        <tgroup cols="5">
+        <tgroup cols="4">
           <colspec colname="name" align="left" />
 
           <colspec colname="queries" align="center" />
@@ -189,16 +189,12 @@
               <entry>Stored procedures management</entry>
 
               <entry>SqlVFS</entry>
-
-              <entry>Db-specific SqlVFS</entry>
             </row>
           </thead>
 
           <tbody>
             <row>
               <entry>Oracle</entry>
-
-              <entry>Y</entry>
 
               <entry>Y</entry>
 
@@ -215,8 +211,6 @@
               <entry>N</entry>
 
               <entry>Y</entry>
-
-              <entry>N</entry>
             </row>
 
             <row>
@@ -227,8 +221,6 @@
               <entry>N</entry>
 
               <entry>Y</entry>
-
-              <entry>N</entry>
             </row>
 
             <row>
@@ -239,8 +231,6 @@
               <entry>N</entry>
 
               <entry>Y</entry>
-
-              <entry>N</entry>
             </row>
 
             <row>
@@ -251,6 +241,14 @@
               <entry>Y</entry>
 
               <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>Microsoft SQL Server 2000</entry>
+
+              <entry>Y</entry>
+
+              <entry>N</entry>
 
               <entry>Y</entry>
             </row>
@@ -464,6 +462,23 @@ SELECT * FROM user WHERE user=?</programlisting>
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.95</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>Microsoft SQL Server 2000 properly supported (with VFS). 
+            Moreover, it shares the Java code with Sybase VFS (thanks to Sybase
+            and Microsoft designers).
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
       <listitem>
         <formalpara>
           <title>Version 0.94</title>

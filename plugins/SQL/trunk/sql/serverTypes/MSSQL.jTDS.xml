@@ -8,7 +8,7 @@
   <driverClass>net.sourceforge.jtds.jdbc.Driver</driverClass>
 
   <vfs>
-    <driverClass>sql.serverTypes.MsSqlVFS</driverClass>
+    <driverClass>sql.serverTypes.SybaseVFS</driverClass>
   </vfs>
 
   <connection>
