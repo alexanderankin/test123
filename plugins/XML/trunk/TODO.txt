@@ -1,12 +1,13 @@
 + version 0.9:
 
-- DTD downloader -- some way of clearing history of ignored DTDs
-- catalog import
-- test XMLCatalog support, include an XMLCatalog DTD
-- documentation: XML catalog format, OASIS catalog format
+- DTD downloader -- clear cache command should remove d/l'd files too
+- documentation: OASIS catalog format
+- update docs for 0.9 goodies
 
 + before 1.0:
 
+- documentation: XML catalog format
+- test XMLCatalog support, include an XMLCatalog DTD
 - threaddeath -- wtf?
 - id completion
 - tag highlight scope bracket in gutter

@@ -92,4 +92,9 @@
 			xml.XmlActions.removeTags(buffer);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="xml-clear-cache">
+		<CODE>
+			xml.CatalogManager.clearCache();
+		</CODE>
+	</ACTION>
 </ACTIONS>

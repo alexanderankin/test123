@@ -40,8 +40,6 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 		bufferHandler = new BufferHandler();
 		caretHandler = new CaretHandler();
 
-		bufferChanged(textArea.getBuffer());
-
 		timer = new Timer(0,new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
@@ -49,6 +47,8 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 				updateHighlight();
 			}
 		});
+
+		bufferChanged(textArea.getBuffer());
 
 		returnValue = new Point();
 	} //}}}
@@ -256,8 +256,15 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 
 				if(match != null)
 				{
+					int offset = buffer.getLineOfOffset(match.start);
+					if(offset < 0 || offset >= buffer.getLineCount())
+					{
+						System.err.println(offset);
+						return;
+					}
+
 					int line = textArea.physicalToVirtual(
-						buffer.getLineOfOffset(match.start));
+						offset);
 					if(line < textArea.getFirstLine()
 						|| line >= textArea.getFirstLine()
 						+ textArea.getVisibleLines() - 1)
