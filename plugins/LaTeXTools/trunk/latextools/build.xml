@@ -25,7 +25,9 @@
   <property name="images"       value="images"/>
   <property name="docs"         value="../docs"/>
   <property name="docs.javadoc" value="${docs}/javadocs"/>
+  <property name="can.reload.plugins" value="false"/>
 
+	
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
@@ -49,11 +51,19 @@
     <pathelement path="${classpath}"/>
   </path>
 
+
+
   <!-- ================================================ -->
   <!-- Targets                                          -->
   <!-- ================================================ -->
 
   <target name="init">
+		<condition property="can.reload.plugins">
+			<and>
+				<available classname="org.gjt.sp.jedit.jEdit"/>
+				<available classname="ReloadPluginTask"/>
+			</and>
+		</condition>
     <tstamp/>
     <mkdir dir="${build}"/>
     <mkdir dir="${build.images}"/>
@@ -110,10 +120,12 @@
 
   <target name="install" depends="dist">
     <copy file="${dist}\LaTeXTools.jar" tofile="..\LaTeXTools.jar"/>
+		<antcall target="reload"/>
   </target>
 
   <target name="deploy" depends="dist">
     <copy file="${dist}\LaTeXTools.jar" todir="${jedit.jars.dir}"/>
+		<antcall target="reload"/>
   </target>
 
   <target name="clean-install" depends="clean, install">
@@ -132,6 +144,12 @@
     </javadoc>
   </target>
 
+	<target name="reload" if="can.reload.plugins">
+		<taskdef name="reloadPlugin" classname="ReloadPluginTask"/>
+		<reloadPlugin jarfile="${jedit.jars.dir}/LaTeXTools.jar"/>
+	</target>
+
+	
   <!--target name="document" description="Copy documentation.">
     <copy todir="${docs}">
       <fileset dir="${src}" includes="**/*.htm,**/*.html,**/*.css"/>
