@@ -133,10 +133,11 @@ public class ProjectBuffer
 /**
 * Create .jump file for ProjectBuffer.
 */
-    public boolean createJumpFile(ProjectBuffer pb) 
+    public boolean createJumpFile(final ProjectBuffer pb) 
     {
         try
         {
+
             pb.PROJECT_CTBUFFER = ctags_bg.getParser().parse(pb.PROJECT_FILES);
             // if project don't contain any vaild files to parse (for ex. html, xml, etc.) we returns false.
             if (pb.PROJECT_CTBUFFER == null) throw new Exception();
@@ -146,7 +147,8 @@ public class ProjectBuffer
         }
         catch(Exception e)
         {
-            System.out.println("Jump!.ProjectBuffer.createJumpFile() - can\'t create tags file");
+            Log.log(Log.ERROR, this, "Jump!.ProjectBuffer.createJumpFile() - can\'t create tags file");
+            Log.log(Log.ERROR, this, e);
             return false;
         }   
     }
@@ -162,43 +164,44 @@ public class ProjectBuffer
 //{{{ boolean loadJumpFile()
     public boolean loadJumpFile(ProjectBuffer pb)
     {
-         
-        try
-        {   
-        // If no .jump file found - try to create new one
-        ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
-            if (pb.PROJECT_TAGS.exists() == false)
-            {
-                if (!createJumpFile(pb))
-                {
-                    if (viewer != null) viewer.setEnabled(true);
-                    return false;
-                }
-                else
-                {
-                    if (viewer != null) viewer.setEnabled(true);
-                    System.out.println("Jump!.ProjectBuffer.loadJumpFile - Tags file created");
-                    return true; 
-                }
-            }
-            // Read already seriailzed file 
-            else
-            {   
-                pb.PROJECT_CTBUFFER = pb.ctags_bg.loadBuffer(pb.PROJECT_TAGS.toString());
-                if (viewer != null) viewer.setEnabled(true);
-                return true;
-            }
-        }
-        catch (Exception e)
-        {
-            
-            System.out.println("Jump!.ProjectBuffer.loadJumpFile - Ctags path incorrect!");
-            e.printStackTrace();
-            
-            ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
-            if (viewer != null) viewer.setEnabled(true);
-            return false;
-        }               
+        
+                    try
+                    {   
+                    // If no .jump file found - try to create new one
+                    ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
+                        if (pb.PROJECT_TAGS.exists() == false)
+                        {
+                            if (!createJumpFile(pb))
+                            {
+                                if (viewer != null) viewer.setEnabled(true);
+                                return false;
+                            }
+                            else
+                            {
+                                if (viewer != null) viewer.setEnabled(true);
+                                System.out.println("Jump!.ProjectBuffer.loadJumpFile - Tags file created");
+                                return true; 
+                            }
+                        }
+                        // Read already seriailzed file 
+                        else
+                        {   
+                            pb.PROJECT_CTBUFFER = pb.ctags_bg.loadBuffer(pb.PROJECT_TAGS.toString());
+                            if (viewer != null) viewer.setEnabled(true);
+                            return true;
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        
+                        System.out.println("Jump!.ProjectBuffer.loadJumpFile - Ctags path incorrect!");
+                        e.printStackTrace();
+                        
+                        ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
+                        if (viewer != null) viewer.setEnabled(true);
+                        return false;
+                    } 
+
     }
 //}}}
 

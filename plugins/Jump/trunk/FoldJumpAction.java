@@ -31,7 +31,6 @@ import ctags.bg.*;
  *  Shows the list of all folds founded in current buffer.
  *
  *@author     pavlikus
- *@created    1 Èþíü 2003 ã.
  */
 class FoldJumpAction
 {
@@ -126,7 +125,7 @@ class FoldJumpAction
     private final void JumpToFoldDirectly(FoldEntry e)
     {
         //if (jEdit.getActiveView().getBuffer().getFoldLevel(e.getIndex()) == 0) return;
-        jEdit.getActiveView().getEditPane().getTextArea().selectFold(e.getIndex());    
+        view.getEditPane().getTextArea().selectFold(e.getIndex());    
     }
 //}}}
 
@@ -231,8 +230,9 @@ class FoldJumpAction
 
         public Object getElementAt(int index)
         {
-            FoldEntry i = (FoldEntry) foundedFolds[index];
-            return i;
+            //FoldEntry i = (FoldEntry) foundedFolds[index];
+            //return i;
+            return foundedFolds[index];
         }
     }
 //}}}

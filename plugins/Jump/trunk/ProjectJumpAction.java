@@ -124,7 +124,6 @@ public class ProjectJumpAction
             v = jEdit.getActiveView();    
         }
         
-        
         boolean AlreadyOpened = false;
         Buffer[] buffs = jEdit.getBuffers();
         for (int i = 0; i < buffs.length; i++)
@@ -146,7 +145,6 @@ public class ProjectJumpAction
         if (AlreadyOpened == false)
         {
             jEdit.openFile(v,en.getFileName());
-            //Log.log(Log.DEBUG,this,"Open file: - "+en.getFileName());
         }    
 
         VFSManager.runInAWTThread(new Runnable() {
@@ -162,7 +160,7 @@ public class ProjectJumpAction
         search.setAutoWrapAround(true);
         search.setSearchString(pattern);
 
-        Log.log(Log.DEBUG,this,"Try to find: - "+pattern);
+        //Log.log(Log.DEBUG,this,"Try to find: - "+pattern);
             try
             {
                 if (!search.find(v, v.getBuffer(), 0))
@@ -174,7 +172,6 @@ public class ProjectJumpAction
                     if (add_hist==true)
                     {
                         addToHistory(en_for_history);
-                        //HistoryModel.getModel(HistoryModelName).addItem(en_for_history.getTagName());
                     }
                 }
             }

@@ -4,7 +4,9 @@ package ctags.bg;
 
 //{{{ imports
 import java.util.*;
-import java.io.*; 
+import java.io.*;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 //}}}
 
 public class CTAGS_Parser implements Serializable
@@ -98,11 +100,11 @@ private String[] ctags_args;
     } //}}}
 
 //{{{ doParse
-    private CTAGS_Buffer doParse(Vector f) throws IOException
+    private CTAGS_Buffer doParse(final Vector f) throws IOException
     {
+
         CTAGS_Buffer b = new CTAGS_Buffer(this);
         CTAGS_Buffer b1 = new CTAGS_Buffer(this);
-
         for (int i = 0; i < f.size(); i++)
         {
             if (checkUnsupportedExtensions(f.get(i).toString()) == false)
@@ -115,6 +117,7 @@ private String[] ctags_args;
                 b.append(b1,f.get(i).toString());
             }
         }
+        
         if (b.size() < 1)
         {
             System.out.println("Jump!.CTAGS: No files to parse!");
@@ -127,13 +130,12 @@ private String[] ctags_args;
     private CTAGS_Buffer parseFile(String fn, String[] arguments) throws IOException
     {
         arguments[6] = fn;
-        
         Process ctags = Runtime.getRuntime().exec(arguments);
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(ctags.getInputStream()));
 
         CTAGS_Buffer buff = new CTAGS_Buffer(this);
-        String line = new String();
+        String line;
         while ((line = in.readLine()) != null)
         {
             int index = line.lastIndexOf(";\"\t");
@@ -144,6 +146,7 @@ private String[] ctags_args;
             
             buff.add(new CTAGS_Entry(line));
         }
+        in.close();
         return buff;
     } //}}}
     

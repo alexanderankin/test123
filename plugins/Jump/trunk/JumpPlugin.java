@@ -3,7 +3,7 @@
 
 //{{{ -----------  Imports
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
@@ -53,27 +53,13 @@ public class JumpPlugin extends EditPlugin
 
 //}}}
 
-//{{{ EditPlugin.createMenuItems
-    public void createMenuItems(Vector menuItems)
-    {
-        menuItems.addElement(GUIUtilities.loadMenu(MENU));
-    }
-//}}}
-
-//{{{ EditPlugin.createOptionPanes
-    public void createOptionPanes(OptionsDialog od)
-    {
-        od.addOptionPane(new JumpOptionPane());
-    }
-//}}}
-
 //{{{ EditPlugin.stop
     public void stop()
     {
         projectRenamedWorkaround();
         String s = System.getProperty("file.separator");
         //if (jEdit.getBooleanProperty("jump.enable", false) == false || isListenerAdded == false) return;
-        System.out.println("Buffers to drop = " + buffersForDelete.size());
+        //System.out.println("Buffers to drop = " + buffersForDelete.size());
         try
         {
             // Delete unneeded .jump files
@@ -83,7 +69,7 @@ public class JumpPlugin extends EditPlugin
             {
                 f = new File(System.getProperty("user.home") + s + ".jedit" + s + "projectviewer" + s + "projects" + s + (String) buffersForDelete.get(i));
                 f.delete();
-                System.out.println("File " + f + " deleted");
+                //System.out.println("File " + f + " deleted");
             }
         }
         catch (Exception ex)
@@ -96,7 +82,7 @@ public class JumpPlugin extends EditPlugin
             return;
         }
         // Save all ProjectBuffers
-        System.out.println("Buffers to save = " + projectBuffers.size());
+        //System.out.println("Buffers to save = " + projectBuffers.size());
         try
         {
             if (projectBuffers.size() > 0)
@@ -104,7 +90,7 @@ public class JumpPlugin extends EditPlugin
                 ProjectBuffer pb;
                 //Iterator buffers = projectBuffers.entrySet().iterator();
                 Vector v = new Vector(projectBuffers.values());
-                System.out.println("Before while...");
+                //System.out.println("Before while...");
 
                 for (int i = 0; i < v.size(); i++)
                 {
@@ -113,7 +99,7 @@ public class JumpPlugin extends EditPlugin
                     //System.out.println("Try to save"+ (ProjectBuffer)o.PROJECT_TAGS.toString());
                     pb = (ProjectBuffer) v.get(i);
                     pb.ctags_bg.saveBuffer(pb.PROJECT_CTBUFFER, pb.PROJECT_TAGS.toString());
-                    System.out.println("File " + pb.PROJECT_ROOT + " saved");
+                    //System.out.println("File " + pb.PROJECT_ROOT + " saved");
                 }
             }
         }
@@ -222,6 +208,9 @@ public class JumpPlugin extends EditPlugin
             //buffersForDelete.add(b.PROJECT_TAGS);
             projectBuffers.remove(b);
             setActiveProjectBuffer(null);
+            
+            HistoryModel mo = HistoryModel.getModel("jump.tag_history.project."+name);
+            mo.clear();
             //System.out.println("file droped.");
         }
     }

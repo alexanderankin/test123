@@ -1,10 +1,23 @@
-#Jump plugin for Jedit4.1
+#Jump plugin for Jedit4.2
+plugin.JumpPlugin.activate=defer
 plugin.JumpPlugin.name=Jump!
 plugin.JumpPlugin.author=Pavlikus
-plugin.JumpPlugin.version=0.2.1
+plugin.JumpPlugin.version=0.3.1
 
 #{{{ Dependecies
-plugin.JumpPlugin.depend.0=plugin projectviewer.ProjectPlugin 2.0.1
+plugin.JumpPlugin.depend.0=jedit 04.02.02.00
+plugin.JumpPlugin.depend.1=plugin projectviewer.ProjectPlugin 2.0.1
+#}}}
+
+#{{{ application menu items
+#plugin.JumpPlugin.menu.label=Jump!
+plugin.JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.gettagbyinput - JumpPlugin.foldjump
+#}}}
+
+#{{{ options
+plugin.JumpPlugin.option-pane=jumpplugin
+options.jumpplugin.label=Jump!
+options.jumpplugin.code=new JumpOptionPane();
 #}}}
 
 #{{{ Documentation
@@ -19,11 +32,6 @@ JumpPlugin.workspacejump.label=Search Tag
 JumpPlugin.historyjump.label=Back (History)
 JumpPlugin.gettagbyinput.label=Type a Tag...
 JumpPlugin.foldjump.label=Jump to Fold 
-#}}}
-
-#{{{ application menu items
-JumpPlugin.menu.label=Jump!
-JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.gettagbyinput - JumpPlugin.foldjump
 #}}}
  
 #{{{ options
