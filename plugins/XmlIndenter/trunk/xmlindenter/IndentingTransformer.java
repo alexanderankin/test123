@@ -49,7 +49,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
   private String xml;
   private char[] chars;
-  private boolean isContinue = true;
+  private boolean okToContinue = true;
   private boolean isClosingTag = false;
   private boolean isEmptyElement = false;
   private boolean isDocType = false;
@@ -147,7 +147,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
   protected abstract void indent(int levelAdjustment) throws SAXException;
 
   protected String indentXml(final String xmlString, final Writer outputWriter) throws IOException, SAXException {
-    this.isContinue = true;
+    this.okToContinue = true;
     this.isClosingTag = false;
     this.isEmptyElement = false;
     this.isDocType = false;
@@ -158,11 +158,11 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     int start = 0;
     int end = 0;
 
-    while(isContinue) {
+    while(okToContinue) {
       end = xml.indexOf('<', start);
       writeTextPrecedingLessThan(start, end);
 
-      if(isContinue) {
+      if(okToContinue) {
         start = end;
 
         if(xml.startsWith("<!--", start)) {
@@ -198,7 +198,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
   private int writeCData(int start) throws IOException, SAXException {
     int end = xml.indexOf("]]>", start);
     writeRemaining(start, end);
-    if(isContinue) {
+    if(okToContinue) {
       startCDATA();
       end = end + 3;
       writer.write(xml, start, end - start);
@@ -213,7 +213,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     int end = getStartTagEnd(start);
     writeRemaining(start, end);
 
-    if(isContinue) {
+    if(okToContinue) {
       int offset = 1;
       while(Character.isWhitespace(chars[end - offset])) {
         offset++;
@@ -226,6 +226,10 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
       AttributesImpl attributes = new AttributesImpl();
       String elementName = getElementNameAndPopulateAttributes(start, end, attributes);
+
+      if(isEmptyElement && chars[end - 1] == ' ') {
+        elementName += ' '; // to cater for <br /> elements
+      }
 
       startElement("", "", elementName, attributes);
 
@@ -284,10 +288,17 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     }
 
     if(nameEnd == -1 || nameEnd > end) {
+      nameEnd = xml.indexOf('\r', start);
+    }
+
+    if(nameEnd == -1 || nameEnd > end) {
       nameEnd = end;
     } else if(nameEnd + 1 != end) {
-      char[] chars = xml.substring(nameEnd + 1, end).toCharArray();
-      populateAttributes(chars, attributes);
+      while(Character.isWhitespace(chars[nameEnd - 1])) {
+        nameEnd--; // want to check if char at nameEnd is a new line char
+      }
+      char[] elementChars = xml.substring(nameEnd, end).toCharArray(); 
+      populateAttributes(elementChars, attributes);
     }
 
     StringBuffer elementName = new StringBuffer();
@@ -307,9 +318,10 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     boolean isLastSpace = false;
     char quote = '\"';
     int i = 0;
-    boolean attributeOnNewLine = false;
+    boolean attributeOnNewLine;
 
     while(i < chars.length) {
+      attributeOnNewLine = false;
       qName.setLength(0);
       value.setLength(0);
 
@@ -371,7 +383,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     int end = xml.indexOf('>', start);
     writeRemaining(start, end);
 
-    if(isContinue) {
+    if(okToContinue) {
       isClosingTag = true;
       endElement("", "", xml.substring(start + 2, end).trim());
       end = end + 1;
@@ -391,7 +403,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
     writeRemaining(start, end);
 
-    if(isContinue) {
+    if(okToContinue) {
       end = end + 1;
       writer.write("\n");
       int length = end - start;
@@ -420,7 +432,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     int end = xml.indexOf("?>", start);
     writeRemaining(start, end);
 
-    if(isContinue) {
+    if(okToContinue) {
       int targetEnd = xml.indexOf(" ", start);
       String target = xml.substring(start + "<?".length(), targetEnd);
       String data = xml.substring(targetEnd + 1, end);
@@ -436,7 +448,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     int end = xml.indexOf("?>", start);
     writeRemaining(start, end);
 
-    if(isContinue) {
+    if(okToContinue) {
       end = end + "?>".length();
       int length = end - start;
       writer.write(xml, start, length);
@@ -450,7 +462,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     int end = xml.indexOf("-->", start);
     writeRemaining(start, end);
 
-    if(isContinue) {
+    if(okToContinue) {
       int commentTextStart = start + "<!--".length();
       int commentTextLength = end - commentTextStart;
       comment(chars, commentTextStart, commentTextLength);
@@ -464,7 +476,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
   private void writeTextPrecedingLessThan(int start, int end) throws IOException, SAXException {
     writeRemaining(start, end);
 
-    if(isContinue && end > start) {
+    if(okToContinue && end > start) {
       int length = end - start;
       characters(chars, start, length);
     }
@@ -475,7 +487,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     if(end == -1) {
       int length = xml.length() - start;
       writer.write(xml, start, length);
-      isContinue = false;
+      okToContinue = false;
     }
   }
 
