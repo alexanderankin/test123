@@ -107,6 +107,8 @@ VERSION 2.1.0
 		- when loading extensions or when loading nodes from the project file,
 		  catch any possible errors due to misbehaving plugins so that at least
 		  ProjectViewer won't crash.
+		- fix error icon showing for files that only had warnings, when other
+		  files had errors reported in the error list plugin.
 
 		Other changes:
 		- added methods to ProjectViewer to get/set the folder tree state from
