@@ -1,6 +1,5 @@
 //{{{ imports
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
@@ -31,7 +30,6 @@ public class ProjectJumpAction
 //{{{ fields
     public boolean TagsAlreadyLoaded = false;
     public JumpHistory History = new JumpHistory();
-    
     private CTAGS_Buffer buff;
     private Vector DuplicateTags;
     private ProjectTagsJump jm;
@@ -130,10 +128,35 @@ public class ProjectJumpAction
         {
             JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
         }
-        getTagBySelection();
+        getTagBySelection(this.getSelection());
     }
 //}}}
 
+//{{{ void JumpToTagByInput()
+    public void JumpToTagByInput()
+    {
+        view = jEdit.getActiveView();
+        listener = JumpPlugin.getListener();
+        
+        if (PVActions.getCurrentProject(view) != null)
+        {
+            if (listener.PROJECT==null)
+            {
+                if (JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view),                   PVActions.getCurrentProject(view)) == true)
+                {
+                    getTagBySelection(GUIUtilities.input(jEdit.getActiveView(),"JumpPlugin.input_tag",""));  
+                }
+                else {return; }
+            }
+            else
+            {
+                getTagBySelection(GUIUtilities.input(jEdit.getActiveView(),"JumpPlugin.input_tag",""));   
+            }
+        }
+           
+    }
+//}}}
+       
 //{{{ void JumpToTag(CTAGS_Entry en, boolean AddToHistory)
     private void JumpToTag(CTAGS_Entry en, boolean AddToHistory)
     {
@@ -198,26 +221,33 @@ public class ProjectJumpAction
             });	
     }
 //}}}
-  
-//{{{ void getTagBySelection(
-  private void getTagBySelection()
+
+//{{{ String getSelection()
+    public String getSelection()
     {
-        if (listener.ctags_buff == null)
-        {
-            return;
-        }
-        
         String sel = jEdit.getActiveView().getTextArea().getSelectedText();
         Log.log(Log.DEBUG,this,"Selection-"+sel);
+        
         if (sel == null)
         {
             view.getTextArea().selectWord();
             sel = view.getTextArea().getSelectedText();
         }
         
-        if (sel==null) return;
+        if (sel==null) return null;
 
-        sel = sel.trim();
+        return sel.trim();      
+    }
+//}}}
+  
+//{{{ void getTagBySelection(
+  private void getTagBySelection(String sel)
+    {
+        if (listener.ctags_buff == null || sel == null)
+        {
+            return;
+        }
+        
         Vector tags = listener.ctags_buff.getEntry(sel);
 
         if (tags.size() < 1)
