@@ -40,18 +40,20 @@ public class ConsoleFramePluginPart extends EBPlugin
 	{
 		if(msg instanceof ViewUpdate)
 		{
-			ViewUpdate viewUpdate = (ViewUpdate)msg;
-			View view = viewUpdate.getView();
-			if(viewUpdate.getWhat() == ViewUpdate.CREATED)
+			ViewUpdate vmsg = (ViewUpdate)msg;
+			View view = vmsg.getView();
+			if(vmsg.getWhat() == ViewUpdate.CREATED)
 			{
 				if("on".equals(jEdit.getProperty("console.toolbar.enabled")))
 				{
 					view.addToolBar(new ConsoleToolBar(view));
 				}
 			}
-			else if(viewUpdate.getWhat() == ViewUpdate.CLOSED)
+			else if(vmsg.getWhat() == ViewUpdate.CLOSED)
 			{
-				consoles.remove(view);
+				ConsoleFrame console = (ConsoleFrame)consoles.remove(view);
+				if(console != null)
+					console.viewClosed();
 			}
 		}
 	}
