@@ -19,10 +19,13 @@
  */
 package xslt;
 
-import org.gjt.sp.util.Log;
-import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.OutputStream;
+import java.util.Iterator;
+import java.util.Map;
 
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Result;
@@ -35,11 +38,11 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.Iterator;
-import java.util.Map;
+
+import org.gjt.sp.util.Log;
+import org.xml.sax.InputSource;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.XMLReaderFactory;
 
 /**
  * Utilities for performing XSL Transformations
@@ -88,15 +91,16 @@ public class XSLTUtilities {
    * @param resultFile           name of the file that final result is written to
    * @exception Exception        if a problem occurs during the transformation
    */
-  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, String resultFile) throws Exception {
+  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, File resultFile) throws Exception {
     logXmlSystemProperties();
     TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters);
 
     FileWriter writer = new FileWriter(resultFile);
     Result result = new StreamResult(writer);
+        
     int lastIndex = handlers.length - 1;
     handlers[lastIndex].setResult(result);
-
+    
     XMLReader reader = XMLReaderFactory.createXMLReader();
     reader.setContentHandler(handlers[0]);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
@@ -105,6 +109,7 @@ public class XSLTUtilities {
     //reader.setEntityResolver(entityResolver);
 
     reader.parse(inputFile);
+   
   }
 
 
@@ -123,6 +128,7 @@ public class XSLTUtilities {
     for(int i = 0; i < stylesheets.length; i++) {
       Source stylesheetSource = getSource((String)stylesheets[i]);
       handlers[i] = saxFactory.newTransformerHandler(stylesheetSource);
+      
 
       Transformer transformer = handlers[i].getTransformer();
 
