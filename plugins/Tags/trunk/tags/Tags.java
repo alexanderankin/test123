@@ -44,9 +44,6 @@ public class Tags {
   protected static final Stack tagFileStack_ = new Stack();
   protected static final Stack tagCaretPosStack_ = new Stack();
 
-  protected static boolean useCurrentBufTagFile_ = false;
-  protected static boolean searchAllTagFiles_ = false;
-  
   protected static boolean debug_ = false;
   protected static boolean ui_ = true;
   
@@ -170,21 +167,25 @@ public class Tags {
 
   /***************************************************************************/
   public static void setUseCurrentBufTagFile(boolean val) {
-    useCurrentBufTagFile_ = val;
+    jEdit.setBooleanProperty("options.tags.tag-search-current-buff-tag-file",
+                             val);
   }
   
   /***************************************************************************/
   public static boolean getUseCurrentBufTagFile() {
-    return useCurrentBufTagFile_;
+    return jEdit.getBooleanProperty(
+                       "options.tags.tag-search-current-buff-tag-file", false);
   }
 
   /***************************************************************************/
   public static void setSearchAllTagFiles(boolean val) {
-    searchAllTagFiles_ = val;
+    jEdit.setBooleanProperty("options.tags.tag-search-all-files", val);
   }
   
   /***************************************************************************/
-  public static boolean getSearchAllTagFiles() { return searchAllTagFiles_; }
+  public static boolean getSearchAllTagFiles() { 
+    return jEdit.getBooleanProperty("options.tags.tag-search-all-files", false);
+  }
 
   /***************************************************************************/
   public static void displayTagFiles(View view) {
@@ -207,13 +208,14 @@ public class Tags {
     
 		// The panel is a bit overkill but it was done for a dialog before this
 		// was done using JOptionPane...
-		TagsEnterTagPanel enterTagPanel = new TagsEnterTagPanel(null, false);
+    TagsEnterTagPanel enterTagPanel = new TagsEnterTagPanel(null, false);
 	
-		String[] buttonNames = { TagsPlugin.getOptionString("tag-ok.label"), 
-                             TagsPlugin.getOptionString("tag-cancel.label") };
+		String[] buttonNames = { jEdit.getProperty("options.tags.tag-ok.label"), 
+                             jEdit.getProperty("options.tags.tag-cancel.label") 
+                           };
 	
 		int ret = JOptionPane.showOptionDialog(view, enterTagPanel,
-                          TagsPlugin.getOptionString("tag-enter-dialog.title"),
+                          jEdit.getProperty("tags.enter-tag-dlg.title"),
                           JOptionPane.DEFAULT_OPTION,
                           JOptionPane.QUESTION_MESSAGE, null, 
                           buttonNames, buttonNames[0]);
@@ -259,6 +261,16 @@ public class Tags {
 
     ui_ = currentView != null;
       
+    if (!getUseCurrentBufTagFile() && tagFiles_.size() == 0) {
+      Toolkit.getDefaultToolkit().beep();
+      if (ui_) 
+        Macros.error(currentView, 
+                jEdit.getProperty("tags.message.no-tag-index-files"));
+
+      return;
+    }
+      
+      
     if (ui_) {
       buffer = currentView.getBuffer();
     }
@@ -269,7 +281,7 @@ public class Tags {
     boolean found = false;
     String tagFileName = null;
     File defaultTagFile = null;
-    if (useCurrentBufTagFile_) {
+    if (getUseCurrentBufTagFile()) {
       File currentBufferFile = new File(buffer.getPath());
       defaultTagFile = new File(currentBufferFile.getParent() + "/tags");
       if (defaultTagFile.exists()) {
@@ -279,7 +291,7 @@ public class Tags {
     }
     
     // Search tag files if needed
-    if (!found || searchAllTagFiles_) {
+    if (!found || getSearchAllTagFiles()) {
       int numTagFiles = tagFiles_.size();
       for (int i = 0; i < numTagFiles; i++) {        
         tagFileName = (String) ((TagFile)tagFiles_.elementAt(i)).getPath();
@@ -289,7 +301,7 @@ public class Tags {
         
         found = parser_.findTagLines(tagFileName, funcName, 
                                      currentView) || found;
-        if (!searchAllTagFiles_  && found)
+        if (!getSearchAllTagFiles()  && found)
           break;
       }
     }
