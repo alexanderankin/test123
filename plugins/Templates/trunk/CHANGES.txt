@@ -1,5 +1,13 @@
 CHANGES file for Templates plugin.
 
+Version 1.0.2 (04-DEC-2000)
+=============================
+BUG FIX:
+- the signature of org.gjt.sp.jedit.EditAction (2.7pre2) was changed such that 
+it no longer implements ActionListener. TemplatesAction was modified to 
+implement ActionListener directly, instead of relying on the EditAction 
+superclass. Tested against jEdit 2.7pre2, as well as 2.6final.
+
 Version 1.0.1 (20-APR-2000)
 =============================
 CHANGES:
