@@ -253,6 +253,9 @@ class SFtpConnection extends ConnectionManager.Connection
 		long length = (attrs.getSize() == null ? 0L : attrs.getSize().longValue());
 		int permissions = (attrs.getPermissions() == null
 			? 0 : attrs.getPermissions().intValue());
+
+		// remove file mode bits from the permissions
+		permissions &= 0x1ff; // == binary 111111111
 		String name = file.getFilename();
 
 		int type;
