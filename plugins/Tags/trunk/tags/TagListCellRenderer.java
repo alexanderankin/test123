@@ -147,8 +147,8 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
       }
       item = null;
     }
-    if (exuberantItems != null)
-      exuberantLabel_.setText(exuberantItems.toString());
+    exuberantLabel_.setText(exuberantItems != null ? exuberantItems.toString() :
+                                                     null);
     exuberantItems = null;
     
     // search string

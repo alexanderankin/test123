@@ -192,25 +192,12 @@ The source code is distributed under the GPL. Please see
 <h2><a name="bugs">Known Bugs/Limitations</a></h2>
 <ul>
 
-<li>Making a change to the tag files in the Global Options dialog, and then
-pressing Cancel in the Global Options dialog, the tag file changes will stick.
-</li>
-
 <li>Has only been tested in C and Java.</li>
-
-<li>Currently when using exuberant c tags we are not using any of the extra tag
-info.</li>
 
 <li>Tag files *MUST* be sorted. Else, the tag will probably never be found b/c we
 are using a binary searching mechanism.</li>
 
 <li>Bachward searching patterns (?...?) are not supported.</li>
-
-<li>Currently you can't mix types of tag files. This really only comes into play
-when mixing c tag files with exuberant c tag files with --format=2. If one
-really wants to do this, setting the tag parser to exuberant c will do so...</li>
-
-<li>On Sun Java, Enter tag dialog has shortcut character in input panel.</li>
 
 </ul>
 
@@ -239,6 +226,19 @@ Sourceforge Bug Tracker at
 
 <h2><a name="changelog">Changelog</a></h2>
 <ul>
+
+	<li>Version 1.0.2, bug fixes (Nov 2001)</li>
+  <ul>
+    <li>Fixed bug where if you removed tag index files from the search the code
+        would remember the later entries.</li>
+    <li>Fixed bug where searching for tag search string in file was using the
+        search file set.</li>
+    <li>Fixed bug in option panel where changes to the list of tag index files
+        were always committed even if you pressed "Cancel".</li>
+    <li>Fixed exuberant tag info display when mixed tag files are used.</li>
+    <li>Removed directions from COPYING.</li>
+    <li>Added some initial user hidden development code.</li>
+  </ul>
 
 	<li>Version 1.0.1, bug fixes (Nov 2001)</li>
   <ul>
