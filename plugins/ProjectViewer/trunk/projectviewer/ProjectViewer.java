@@ -151,13 +151,6 @@ public final class ProjectViewer extends JPanel
 		actions.add(new ExpandAllAction());
 		actions.add(new CollapseAllAction());
 		actions.add(new OldStyleAddFileAction());
-		// Listeners and Actions from other plugins
-		EditPlugin[] plugins = jEdit.getPlugins();
-		for (int i = 0; i < plugins.length; i++) {
-			addProjectViewerListeners(plugins[i].getPluginJAR(), null);
-			addToolbarActions(plugins[i].getPluginJAR());
-			VPTContextMenu.registerActions(plugins[i].getPluginJAR());
-		}
 	} //}}}
 
 	//{{{ Action Handling

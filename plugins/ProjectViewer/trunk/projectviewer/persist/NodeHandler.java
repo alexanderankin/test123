@@ -114,7 +114,8 @@ public abstract class NodeHandler {
 	 *	may still need to be written.
 	 */
 	protected void startElement(String name, Writer out) throws IOException {
-		out.write("<" + name);
+		out.write("<");
+		out.write(name);
 	}
 
 	/** Writes an attribute to the writer. */
