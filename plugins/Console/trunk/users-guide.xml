@@ -148,6 +148,12 @@
 </para>
 
 <para>
+ Currently selected text is passed to the program on standard input. In
+ conjunction with the <guibutton>Run to buffer</guibutton> button, this
+ allows quick filtering of buffer text using shell tools.
+</para>
+
+<para>
  Pressing <keycap>Tab</keycap> in the console's command input field will
  attempt to complete the filename or command before the caret. If there is more than
  one possible completion, they will be listed in the output area.
@@ -904,7 +910,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
 </sect1>
 
-<sect1><title>Registering plugin shells</title>
+<sect1><title>Registering the plugin shells</title>
 
 <para>
  To make the Console plugin aware of your plugin's shell, you need to call the
@@ -1201,6 +1207,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    specifying a relative path name would be resolved relative to the
    directory from which jEdit was started, not the console's current
    directory.
+   </para></listitem>
+   <listitem><para>Starting a background process using
+   <quote>&amp;</quote> at the end of the command line would start the
+   spinning animation, and never stop it.
    </para></listitem>
    </itemizedlist>
   </listitem>

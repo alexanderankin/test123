@@ -1,4 +1,3 @@
-- document filter feature
 - cvs commandos
 - commando: text area
 - periodic execution feature
