@@ -1,8 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
 <html>
   <head>
-    <meta name="generator" content="HTML Tidy, see www.w3.org" />
-
     <title>SQL plugin</title>
   </head>
 
@@ -24,6 +22,55 @@
     etc.</li>
   </ul>
 
+  <h2>Configuration</h2>
+
+  <h3>SQL server types</h3>
+
+  The plugin can work with virtually any type of SQL server
+  (assuming presence of appropriate JDBC driver in
+  <b>~/.jedit/jars</b>
+
+  or
+  <b>$JEDIT_HOME/jars</b>
+
+  or set in
+  <b>CLASSPATH</b>
+
+  environment variable ).
+  <br />
+
+  Each type of the server is given in the XML configuration file.
+  These files stored in
+  <b>~/.jedit/sql/serverTypes</b>
+
+  or
+  <b>$JEDIT_HOME/sql/serverTypes</b>
+
+  (some configuration files - for Oracle, MySQL, PostgreSQL, DB2
+  are bundled with the plugin). Each file contains the following
+  info:
+  <ul>
+    <li>The name of the JDBC driver (optional - if driver is
+    already registered by JVM itself, there is no need to
+    register it in the plugin).</li>
+
+    <li>Configuration parameters. They are used to generate UI
+    for managing servers and create connection strings.</li>
+
+    <li>Different service SQL statements.</li>
+  </ul>
+
+  For an example of SQL server type configuration type, see
+  <a href="example.xml.html">here</a>
+
+  .
+  <h3>SQL server records</h3>
+
+  Each concrete database instance, login, password, it is
+  necessary to create and manage SQL server records. These
+  records are set in "Utilities-&gt;Global Options" dialog, "SQL"
+  tree item. The dialog shows the list of the existing server
+  records, allows to create/edit/delete them.
   <h2>Commands</h2>
 
   <ul>
@@ -89,39 +136,6 @@
     buffer.</li>
   </ul>
 
-  <h2>SQL Server types</h2>
-
-  The plugin can work with virtually any type of SQL server
-  (assuming presence of appropriate JDBC driver in
-  <b>~/.jedit/jars</b>
-
-  or
-  <b>$JEDIT_HOME/jars</b>
-
-  ).
-  <br />
-
-  Each type of the server is given in the XML configuration file.
-  These files stored in
-  <b>~/.jedit/sql/serverTypes</b>
-
-  or
-  <b>$JEDIT_HOME/sql/serverTypes</b>
-
-  (some configuration files - for Oracle, MySQL, PostgreSQL, DB2
-  are bundled with the plugin). Each file contains the following
-  info:
-  <ul>
-    <li>The name of the JDBC driver (optional - if driver is
-    registered by JVM itself, there is no need to configure
-    it).</li>
-
-    <li>Configuration parameters. They are used to generate UI
-    for managing servers and create connection strings.</li>
-
-    <li>Different service SQL statements.</li>
-  </ul>
-
   <h2>SqlVFS</h2>
 
   The plugin supports the browsing of SQL servers. To access the
@@ -157,7 +171,7 @@
     Mangani) - with partial support of SqlVFS. Patches are
     welcome.</li>
 
-    <li>Initial support for DB2, local and remote(thanks to
+    <li>Initial support for DB2, local and remote (thanks to
     Carmine Lucarelli) - with support of SqlVFS.</li>
 
     <li>Some small bugfixes (thanks to user feedback)</li>

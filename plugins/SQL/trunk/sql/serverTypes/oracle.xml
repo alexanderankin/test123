@@ -20,6 +20,8 @@
   </connection>
 
   <statements>
+    <!-- Statements for general publishing
+       and stored procedures management -->
     <statement purpose="selectLastChangedObjects">
   SELECT o.object_name AS objectName,
          o.status AS status,
@@ -67,6 +69,7 @@
     <statement purpose="getSysdate">
       BEGIN ? := SYSDATE; END;
     </statement>
+    <!-- Statements for sql.serverTypes.OracleVFS -->
     <statement purpose="selectSchemas">
       SELECT DISTINCT owner AS tableGroup
       FROM all_tables
