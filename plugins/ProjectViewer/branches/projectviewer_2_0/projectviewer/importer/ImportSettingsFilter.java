@@ -99,8 +99,4 @@ public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 			set.add(strtok.nextToken());
 	} //}}}
 	
-	public String toString() {
-		return "Yes, use import settings.";
-	}
-
 }
