@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.jEdit;
 public class JDiffOptionPane extends AbstractOptionPane
 {
     private JCheckBox ignoreCase;
+    private JCheckBox trimWhitespace;
     private JCheckBox ignoreWhitespace;
     private JButton   changedLineColor;
     private JButton   deletedLineColor;
@@ -51,8 +52,9 @@ public class JDiffOptionPane extends AbstractOptionPane
 
 
     public void _init() {
-        this.ignoreCase = this.createCheckBox("jdiff.ignore-case", false);
-        this.ignoreWhitespace = this.createCheckBox("jdiff.ignore-whitespace", false);
+        this.ignoreCase        = this.createCheckBox("jdiff.ignore-case", false);
+        this.trimWhitespace    = this.createCheckBox("jdiff.trim-whitespace", false);
+        this.ignoreWhitespace  = this.createCheckBox("jdiff.ignore-whitespace", false);
 
         this.changedLineColor  = this.createColorButton("jdiff.changed-color");
         this.deletedLineColor  = this.createColorButton("jdiff.deleted-color");
@@ -64,6 +66,7 @@ public class JDiffOptionPane extends AbstractOptionPane
         this.rightCursorColor  = this.createColorButton("jdiff.right-cursor-color");
 
         addComponent(this.ignoreCase);
+        addComponent(this.trimWhitespace);
         addComponent(this.ignoreWhitespace);
 
         addComponent(
@@ -104,6 +107,9 @@ public class JDiffOptionPane extends AbstractOptionPane
     public void _save() {
         jEdit.setBooleanProperty("jdiff.ignore-case",
             this.ignoreCase.isSelected()
+        );
+        jEdit.setBooleanProperty("jdiff.trim-whitespace",
+            this.trimWhitespace.isSelected()
         );
         jEdit.setBooleanProperty("jdiff.ignore-whitespace",
             this.ignoreWhitespace.isSelected()

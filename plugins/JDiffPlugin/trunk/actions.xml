@@ -30,6 +30,16 @@
     </ACTION>
 
 
+    <ACTION NAME="jdiff.toggle-trim-whitespace">
+        <CODE>
+            DualDiff.toggleTrimWhitespaceFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return DualDiff.getTrimWhitespaceFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
     <ACTION NAME="jdiff.toggle-ignore-whitespace">
         <CODE>
             DualDiff.toggleIgnoreWhitespaceFor(view);

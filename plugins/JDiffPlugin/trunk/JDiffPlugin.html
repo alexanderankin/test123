@@ -41,7 +41,10 @@
 <UL>
     <LI>Diff overviews (local and global)</LI>
     <LI>Synchronized scrolling</LI>
-    <LI>Ignore case/Ignore all whitespace options</LI>
+    <LI>Ignore case option</LI>
+    <LI>Ignore leading and trailing whitespace option</LI>
+    <LI>Ignore all whitespace option</LI>
+    <LI>Normal diff output</LI>
 </UL>
 
 <P>It requires:</P>
@@ -63,7 +66,7 @@
     </UL>
     <LI>Activate JDiff:
         <EM>Plugins&nbsp;-&gt;&nbsp;JDiff&nbsp;-&gt;&nbsp;Dual&nbsp;Diff</EM>
-    <LI>Figure&nbsp;1 shows you the result
+    <LI>Figure&nbsp;1 shows the result
 </OL>
 
 <TABLE
@@ -128,6 +131,7 @@ buffers.
     <LI><EM>Refresh</EM>: refreshes the diff display</LI>
     <LI><EM>Go to previous/next difference</EM></LI>
     <LI><EM>Ignore case</EM>: toggles the &quot;Ignore case&quot; option for the current diff</LI>
+    <LI><EM>Ignore leading and trailing whitespace</EM>: toggles the &quot;Ignore leading and trailing whitespace&quot; option for the current diff</LI>
     <LI><EM>Ignore all whitespace</EM>: toggles the &quot;Ignore all whitespace&quot; option for the current diff</LI>
     <LI><EM>Normal Diff Output</EM>: generates a diff file using the normal method</LI>
 </UL>
@@ -138,7 +142,11 @@ buffers.
 <P>You can configure how JDiff compares lines by default. JDiff can:</P>
 
 <UL>
-    <LI>Ignore case: upper-cased lines are compared.</LI>
+    <LI>Ignore case: upper-cased lines are compared.
+    </LI>
+    <LI>Ignore leading and trailing whitespace: lines are compared as if
+        leading and trailing whitespaces were removed.
+    </LI>
     <LI>Ignore all whitespace: lines are compared as if
         <UL>
             <LI>leading and trailing whitespaces were removed</LI>
