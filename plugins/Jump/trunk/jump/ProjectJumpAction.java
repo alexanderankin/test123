@@ -244,7 +244,7 @@ public class ProjectJumpAction
         currentTags = JumpPlugin.getActiveProjectBuffer();
         if (currentTags == null || sel == null) return;
 
-        tags = currentTags.PROJECT_CTBUFFER.getEntry(sel);
+        tags = currentTags.PROJECT_CTBUFFER.getEntries(sel);
         if (tags == null || tags.size() < 1)
         {
             Log.log(Log.DEBUG,this,"getTagBySelection: No tags found! - "+sel);

@@ -47,7 +47,6 @@ public class CtagsBuffer extends ArrayList {
     * When new file is added to Project we need the
     * way to add it to CTAGS_Buffer.
     */
-    //TODO: NOT TESTED
     public void append(CtagsBuffer b) {
         CtagsEntry en;
 
@@ -63,7 +62,6 @@ public class CtagsBuffer extends ArrayList {
     * When new file is added to Workspace we need
     * the way to add it to CTAGS_Buffer.
     */
-    //TODO: NOT TESTED
     public void append(CtagsBuffer b, String filename) {
         this.removeFile(filename);
 
@@ -106,7 +104,7 @@ public class CtagsBuffer extends ArrayList {
     * May be usualy it will return just one entry in vector,
     * but how about repeated tags? For example - all actionPerformed()
     */
-    public Vector getEntry(String tag_name) {
+    public Vector getEntries(String tag_name) {
         Vector result = new Vector();
         CtagsEntry en;
 
@@ -144,7 +142,6 @@ public class CtagsBuffer extends ArrayList {
     * Scan entire CTAGS_Buffer for entries from spec. file
     * which spec. signature.
     */
-    //TODO: NOT TESTED
     public Vector getTagsBySignature(String signature) {
         Vector result = new Vector();
         CtagsEntry en;
@@ -177,13 +174,11 @@ public class CtagsBuffer extends ArrayList {
         return result;
     }
     
-    //TODO: NOT TESTED
     public boolean add(CtagsEntry entry) {
         this.addFileName(entry.getFileName());
         return super.add(entry);
     }
-    
-    //TODO: NOT TESTED
+
     public void clear() {
         filenames.clear();
         super.clear();
