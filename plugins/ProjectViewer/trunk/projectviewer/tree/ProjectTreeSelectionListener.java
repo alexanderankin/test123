@@ -44,6 +44,8 @@ public class ProjectTreeSelectionListener
   private long lastClickTime;
   private Object lastClickTarget;
 
+  private boolean reportsClickCountCorrectly;
+
   
   /**
    * Create a new <code>ProjectTreeSelectionListener    
@@ -52,6 +54,7 @@ public class ProjectTreeSelectionListener
     viewer = aViewer;
     launcher = aLauncher;
     lastClickTime = 0L;
+    reportsClickCountCorrectly = false;
   }
     
   // MouseListener interfaces
@@ -80,10 +83,19 @@ public class ProjectTreeSelectionListener
    * properly, we have to do this.
    */
   private boolean isDoubleClick(MouseEvent evt) {
-    if (evt.getClickCount() == 2) return true;
+    if (reportsClickCountCorrectly) return evt.getClickCount() == 2;
+    if (evt.getClickCount() == 2) {
+      reportsClickCountCorrectly = true;
+      return true;
+    }
 
-    Object target = viewer.getCurrentTree()
-      .getPathForLocation(evt.getX(), evt.getY()).getLastPathComponent();
+    TreePath path = viewer.getCurrentTree().getPathForLocation(evt.getX(), evt.getY());
+    if (path == null) {
+      lastClickTarget = null;
+      return false;
+    }
+
+    Object target = path.getLastPathComponent();
 
     if (target == lastClickTarget &&
         target == viewer.getSelectedNode() &&
