@@ -7,6 +7,6 @@
 		new xml.parser.SAXParserImpl();
 	</SERVICE>
 	<SERVICE CLASS="sidekick.SideKickParser" NAME="html">
-		new xml.parser.SwingHTMLParserImpl();
+		new xml.parser.HTMLParserImpl();
 	</SERVICE>
 </SERVICES>

@@ -21,6 +21,8 @@ Attributes attributes;
 Position start;
 Position end;
 
+- </ recording
+- > without popup recording
 save triggers a close tag or something?
 - schemas: attribute values
 - schemas: element values should be choosable
@@ -37,7 +39,6 @@ save triggers a close tag or something?
 - fix xerces 2.3 deprecation
 - if close complete off, / should not show a popup immediately
   - remove this option altogether
-- swing HTML parser should be replaced with something else
 - html parser: empty tags
 - .dtd files need to be ignored
 - html files before parsing complete -- don't show CDATA in popup
