@@ -128,7 +128,7 @@ public class SideKickPlugin extends EBPlugin
 	} //}}}
 
 	//{{{ addWorkRequest() method
-	static void addWorkRequest(Runnable run, boolean inAWT)
+	public static void addWorkRequest(Runnable run, boolean inAWT)
 	{
 		if(worker == null)
 		{
