@@ -89,6 +89,7 @@ xml-menu=\
 	xml-edit-tag \
 	xml-close-tag \
 	xml-remove-tags \
+	xml-split-tag \
 	- \
 	xml-prev-tag \
 	xml-next-tag \
@@ -109,6 +110,7 @@ xml-entities-to-chars.label=Entities to Characters
 xml-prev-tag.label=Go to Previous Tag
 xml-next-tag.label=Go to Next Tag
 xml-match-tag.label=Go to Matching Tag
+xml-split-tag.label=Split Tag
 
 # Actions not in menu bar
 xml-tree-toggle=XML Tree Toggle

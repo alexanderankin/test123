@@ -319,10 +319,155 @@ public class XmlActions
 			buffer.getText(0,textArea.getCaretPosition()),
 			textArea.getCaretPosition(),
 			completionInfo.elementHash);
+
 		if(tag != null)
 			textArea.setSelectedText("</" + tag.tag + ">");
+			
 	} //}}}
 
+	//{{{ split() method
+	/**
+	 * If the DTD allows this tag to be split, split at the cursor.
+	 * 
+	 * Note that this can be used to do a kind of 'fast-editing', eg when
+	 * editing an HTML &lt;p&gt; this will insert an end tag (if necessary)
+	 * and then place the cursor inside a new &lt;p&gt;.
+	 *
+	 * TODO: Syntax Checking
+	 */
+	public static void split(View view)
+	{
+		Buffer buffer = view.getBuffer();
+
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(view.getEditPane());
+
+		if(!(buffer.isEditable()
+			&& completion
+			&& completionInfo != null))
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		JEditTextArea textArea = view.getTextArea();
+
+		TagParser.Tag tag = TagParser.findLastOpenTag(
+			buffer.getText(0,textArea.getCaretPosition()),
+			textArea.getCaretPosition(),
+			completionInfo.elementHash);
+		
+		if(tag != null)
+		{
+			int pos;
+			
+			Segment wsBefore = new Segment();
+			pos = getPrevNonWhitespaceChar( buffer, tag.start - 1 ) + 1; 
+			buffer.getText( pos, tag.start-pos, wsBefore );
+			System.err.println( "wsBefore: [" + wsBefore + "]" );
+
+			Segment wsAfter = new Segment();
+			pos = getNextNonWhitespaceChar( buffer, tag.end );
+			//Need to do this otherwise the ws in empty tags 
+			//just gets bigger and bigger and bigger... 
+			pos = Math.min( pos, textArea.getCaretPosition() );
+			buffer.getText( tag.end, pos - tag.end, wsAfter );
+			System.err.println( "wsAfter: [" + wsAfter + "]" );
+			
+			int lineStart = buffer.getLineStartOffset( 
+				buffer.getLineOfOffset( tag.start ) );
+			String tagIndent = buffer.getText( lineStart, tag.start-lineStart );
+
+			//Note that the number of blank lines BEFORE the end tag will
+			//be the number AFTER the start tag, for symmetry's sake.
+			int crBeforeEndTag = countNewLines( wsAfter );
+			int crAfterEndTag = countNewLines( wsBefore );
+			
+			StringBuffer insert = new StringBuffer();			
+			if ( crBeforeEndTag>0 ) {
+				for ( int i=0; i<crBeforeEndTag; i++ ) {
+					insert.append( "\n" );
+				}
+				insert.append(tagIndent);
+			}
+			insert.append("</" + tag.tag + ">");
+			insert.append( wsBefore );
+			insert.append("<" + tag.tag + ">");
+			insert.append( wsAfter );
+			
+			//Move the insertion point to here
+			textArea.setSelectedText(insert.toString());
+		}	
+	}
+	//}}}
+
+	//{{{ getPrevNonWhitespaceChar() method
+	/**
+	 * Find the offset of the previous non whitespace character.
+	 */
+	private static int getPrevNonWhitespaceChar( Buffer buf, int start ) 
+	{
+		//It might be more efficient if there were a getCharAt() method on the buffer?
+		
+		//This is trying to conserve memory by not creating strings all the time
+		Segment seg = new Segment( new char[1], 0, 1 );
+		int pos = start;
+		while ( pos>0 ) 
+		{
+			buf.getText( pos, 1, seg );
+			if ( ! Character.isWhitespace( seg.first() ) )
+				break;
+			pos--;
+		}
+		return pos;
+	}
+	//}}}
+	
+	//{{{ getNextNonWhitespaceChar() method
+	/**
+	 * Find the offset of the next non-whitespace character.
+	 */
+	private static int getNextNonWhitespaceChar( Buffer buf, int start ) 
+	{
+		//It might be more efficient if there were a getCharAt() method on the buffer?
+		
+		//This is trying to conserve memory by not creating strings all the time
+		Segment seg = new Segment( new char[1], 0, 1 );
+		int pos = start;
+		while ( pos < buf.getLength() ) 
+		{
+			buf.getText( pos, 1, seg );
+			System.err.println( "NNWS Testing: " + seg.first() + " at " + pos );
+			if ( ! Character.isWhitespace( seg.first() ) )
+				break;
+			pos++;
+		}
+		
+		return pos;
+	}
+	//}}}
+
+	//{{{ countNewLines() method
+	/**
+	 * Count the number of newlines in the given segment.
+	 */
+	private static int countNewLines( Segment seg ) 
+	{
+		//It might help if there were a getCharAt() method on the buffer
+		//or the buffer itself implemented CharaterIterator?
+		
+		//This is trying to conserve memory by not creating strings all the time
+		int count = 0;
+		for ( int pos = seg.getBeginIndex(); pos<seg.getEndIndex(); pos++ ) {
+			if ( seg.array[pos] == '\n' ) {
+				count++;
+			}
+		}
+		return count;
+	}
+	//}}}
+
+	
 	//{{{ removeTags() method
 	public static void removeTags(Buffer buffer)
 	{

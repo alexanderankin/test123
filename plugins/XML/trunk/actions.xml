@@ -48,6 +48,11 @@
 			xml.XmlActions.insertClosingTag(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="xml-split-tag">
+		<CODE>
+			xml.XmlActions.split(view);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="xml-keystroke-parse">
 		<CODE>
 			buffer.putBooleanProperty("xml.keystroke-parse",

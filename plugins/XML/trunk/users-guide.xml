@@ -385,6 +385,13 @@
  </para>
 
  <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Split
+  Tag</guimenuitem> splits the current tag at the cursor, and creates a new tag at the same
+  level. This is useful when editing HTML, Docbook or similar documents for inserting 
+  many &lt;p&gt; or &lt;para&gt; tags. Works hard to match the current indenting style.
+ </para>
+
+ <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Parse
   XML</guimenuitem> has the same effect as clicking the parse button in the
   XML tree window.
@@ -460,6 +467,8 @@
   jEdit 4.0pre7 and the ErrorList plugin 1.2.</para>
 
   <itemizedlist>
+   <listitem><para><guimenuitem>Split Tag</guimenuitem> command
+   (Chris Stevenson).</para></listitem>
    <listitem><para>Updated XSD completion info (Tom Gutwin).</para></listitem>
   </itemizedlist>
 
