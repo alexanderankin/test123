@@ -76,15 +76,11 @@ public final class PVActions {
 		if (viewer == null) return;
 		VPTNode sel = viewer.getRoot();
 		if (!sel.isRoot()) {
-			VPTProject p = (VPTProject) sel;
-			for (Iterator i = p.getFiles().iterator(); i.hasNext(); ) {
-				p.unregisterFile((VPTFile)i.next());
-			}
-			p.removeAllChildren();
+			((VPTProject)sel).removeAllChildren();
 			if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-				ProjectManager.getInstance().saveProject(p);
+				ProjectManager.getInstance().saveProject((VPTProject)sel);
 			}
-			ProjectViewer.nodeStructureChanged(p);
+			ProjectViewer.nodeStructureChanged((VPTProject)sel);
 		}
 	} //}}}
 
