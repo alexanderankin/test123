@@ -13,7 +13,7 @@ import org.gjt.sp.jedit.gui.*;
  *  Option pane for custom marks and guides.
  *
  * @author     Brad Mace
- * @version    $Revision: 1.5 $ $Date: 2004-02-24 02:55:58 $
+ * @version    $Revision: 1.6 $ $Date: 2004-02-24 18:20:29 $
  */
 public class LineGuidesOptions extends AbstractOptionPane implements ActionListener {
 	private JCheckBox caretGuide;
@@ -46,8 +46,8 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 
 		JPanel dynamicGuides = new JPanel(new GridLayout(2, 1));
 		dynamicGuides.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(), "Dynamic Marks/Guides"));
-		caretGuide = new JCheckBox("Show caret guide", jEdit.getBooleanProperty("options.columnruler.marks.caret.guide"));
-		wrapGuide = new JCheckBox("Show wrap guide", jEdit.getBooleanProperty("options.columnruler.marks.wrap.guide"));
+		caretGuide = new JCheckBox("Show caret guide", jEdit.getBooleanProperty("options.columnruler.marks.caret.guide",false));
+		wrapGuide = new JCheckBox("Show wrap guide", jEdit.getBooleanProperty("options.columnruler.marks.wrap.guide",true));
 		dynamicGuides.add(caretGuide);
 		dynamicGuides.add(wrapGuide);
 		addComponent(dynamicGuides, GridBagConstraints.HORIZONTAL);
@@ -121,7 +121,7 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 	 *  Description of the Class
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.5 $ $Date: 2004-02-24 02:55:58 $
+	 * @version    $Revision: 1.6 $ $Date: 2004-02-24 18:20:29 $
 	 */
 	class GuideTableModel extends AbstractTableModel {
 		public GuideTableModel() { }
@@ -167,7 +167,7 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 	 *  Description of the Class
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.5 $ $Date: 2004-02-24 02:55:58 $
+	 * @version    $Revision: 1.6 $ $Date: 2004-02-24 18:20:29 $
 	 */
 	class ColumnComparator implements Comparator {
 		public int compare(Object a, Object b) {
@@ -186,7 +186,7 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 	 *  Description of the Class
 	 *
 	 * @author     Brad Mace
-	 * @version    $Revision: 1.5 $ $Date: 2004-02-24 02:55:58 $
+	 * @version    $Revision: 1.6 $ $Date: 2004-02-24 18:20:29 $
 	 */
 	class MarkDialog extends JDialog implements ActionListener {
 		private JTextField name;
