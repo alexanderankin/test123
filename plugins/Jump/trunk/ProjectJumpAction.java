@@ -79,7 +79,7 @@ public class ProjectJumpAction
         {
             return;
         }
-        this.JumpToTag(en, false);
+        this.JumpToTag(en, false, false);
     }
 //}}}
     
@@ -100,19 +100,31 @@ public class ProjectJumpAction
 // This method proceed in actions.xml
     public void JumpToTagByInput()
     {
-        JumpPlugin.getActiveProjectBuffer().TYPE_TAG_WINDOW._show();
+        JumpPlugin.getActiveProjectBuffer().getTypeTag()._show();
     }
 //}}}
        
-//{{{ void JumpToTag(CTAGS_Entry en, boolean AddToHistory)
-    private void JumpToTag(CTAGS_Entry en, boolean AddToHistory)
+//{{{ void JumpToTag(CTAGS_Entry en, boolean AddToHistory, boolean newView)
+    private void JumpToTag(CTAGS_Entry en, boolean AddToHistory, boolean newView)
     {
         final String HistoryModelName ="jump.tag_history.project."+JumpPlugin.listener.PROJECT_NAME;
         final String pattern = en.getExCmd();
         final CTAGS_Entry en_for_history = en;
         final boolean add_hist = AddToHistory;
         // for VFSManager inner class
-        final View v = jEdit.getActiveView();  
+        final View v;
+        
+        if (newView)
+        {
+            v = jEdit.newView(jEdit.getActiveView());
+               
+        }
+        else
+        {
+            v = jEdit.getActiveView();    
+        }
+        
+        
         boolean AlreadyOpened = false;
         Buffer[] buffs = jEdit.getBuffers();
         for (int i = 0; i < buffs.length; i++)
@@ -124,7 +136,12 @@ public class ProjectJumpAction
                break;
             }
             
-        }    
+        }  
+        if (newView)
+        {
+            jEdit.openFile(v, en.getFileName());
+            GUIUtilities.requestFocus(jEdit.getActiveView(), v.getTextArea()); 
+        }
         //If file not opened yet, open it before jump.
         if (AlreadyOpened == false)
         {
@@ -237,7 +254,7 @@ public class ProjectJumpAction
         if (tags.size() == 1)
         {
             CTAGS_Entry en = (CTAGS_Entry) tags.get(0);
-            this.JumpToTag(en,true);
+            this.JumpToTag(en,true, false);
         }
         else
         {
@@ -271,8 +288,19 @@ public class ProjectJumpAction
         {
             JList l = (JList) o;
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
-            JumpToTag(tag,true);
+            JumpToTag(tag,true, false);
         }
+//}}}
+
+//{{{ processInsertAction 
+        public void processActionInNewView(Object o)
+        {
+            // TODO: Pass focus to newly opened view
+            JList l = (JList) o;
+            CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+            JumpToTag(tag,true, true);
+        } //}}}
+    //}
 //}}}
         
 //{{{ void updateStatusBar

@@ -129,7 +129,7 @@ private Object[] getFileList()
             view.getStatus().setMessageAndClear("file: "+file_name);
         } //}}}
         
-//{{{ processInsertAction
+//{{{ processAction
         public void processAction(Object o) 
         {
             JList l = (JList) o;
@@ -139,14 +139,16 @@ private Object[] getFileList()
             jEdit.openFile(parent,file_name);
         } //}}}
         
-//{{{ processInsertAction 
-        public void processInsertAction(Object o)
+//{{{ processActionInNewView 
+        public void processActionInNewView(Object o)
         {
             // TODO: Pass focus to newly opened view
             JList l = (JList) o;
             String tab_name = (String) l.getModel().getElementAt(l.getSelectedIndex());
             String file_name = (String)tabs_files.get(tab_name);
-            jEdit.openFile(jEdit.newView(jEdit.getActiveView()), file_name);
+            View new_view = jEdit.newView(jEdit.getActiveView());
+            jEdit.openFile(new_view, file_name);
+            GUIUtilities.requestFocus(jEdit.getActiveView(), new_view.getTextArea());
         } //}}}
     }
 //}}}
