@@ -146,62 +146,56 @@ public class JavaInsight extends JPanel {
      * @author Dirk Moebius
      */
     void decompileToBuffer(String className) throws Throwable {
-        try {
-            StringWriter decompilerOutput = new StringWriter();
-            StringWriter errorOutput = new StringWriter();
+        StringWriter decompilerOutput = new StringWriter();
+        StringWriter errorOutput = new StringWriter();
 
-            Decompiler decompiler = getJodeDecompiler();
-            decompiler.setErr(new PrintWriter(errorOutput));
-            decompiler.decompile(className, decompilerOutput, null);
-            decompilerOutput.flush();
-            errorOutput.flush();
+        Decompiler decompiler = getJodeDecompiler();
+        decompiler.setErr(new PrintWriter(errorOutput));
+        decompiler.decompile(className, decompilerOutput, null);
+        decompilerOutput.flush();
+        errorOutput.flush();
 
-            // Insert error output into log text area:
-            log.setText(errorOutput.toString());
+        // Insert error output into log text area:
+        log.setText(errorOutput.toString());
 
-            // Strip all '\r' out of the result:
-            String output = decompilerOutput.toString();
-            int len = output.length();
-            StringBuffer sbuf = new StringBuffer(len);
-            for (int i = 0; i < len; ++i)
-                if (output.charAt(i) != '\r')
-                    sbuf.append(output.charAt(i));
-            String result = sbuf.toString();
+        // Strip all '\r' out of the result:
+        String output = decompilerOutput.toString();
+        int len = output.length();
+        StringBuffer sbuf = new StringBuffer(len);
+        for (int i = 0; i < len; ++i)
+            if (output.charAt(i) != '\r')
+                sbuf.append(output.charAt(i));
+        String result = sbuf.toString();
 
-            // Determine basename:
-            int lastDot = className.lastIndexOf('.');
-            String basename = (lastDot < 0 ? className : className.substring(lastDot + 1) + ".java");
-            // Close old buffer with the same name, if one exists:
-            Buffer buf = jEdit.openFile(view, null, basename, false, true);
-            jEdit.closeBuffer(view, buf);
-            // Create new jEdit buffer:
-            buf = jEdit.openFile(view, null, basename, false, true);
+        // Determine basename:
+        int lastDot = className.lastIndexOf('.');
+        String basename = (lastDot < 0 ? className : className.substring(lastDot + 1) + ".java");
+        // Close old buffer with the same name, if one exists:
+        Buffer buf = jEdit.openFile(view, null, basename, false, true);
+        jEdit.closeBuffer(view, buf);
+        // Create new jEdit buffer:
+        buf = jEdit.openFile(view, null, basename, false, true);
 
-            // Try to set Java mode (if it exists):
-            Mode javaMode = jEdit.getMode("java");
-            if (javaMode != null)
-                buf.setMode(javaMode);
+        // Try to set Java mode (if it exists):
+        Mode javaMode = jEdit.getMode("java");
+        if (javaMode != null)
+            buf.setMode(javaMode);
 
-            // Insert the normal output into the buffer:
-            buf.beginCompoundEdit();
-            buf.insertString(0, result.toString(), null);
-            // If the string ends with a newline, the generated
-            // buffer adds one extra newline; so we need to remove it:
-            if (result.endsWith("\n") && buf.getLength() > 0)
-                buf.remove(buf.getLength() - 1, 1);
-            buf.endCompoundEdit();
+        // Insert the normal output into the buffer:
+        buf.beginCompoundEdit();
+        buf.insertString(0, result.toString(), null);
+        // If the string ends with a newline, the generated
+        // buffer adds one extra newline; so we need to remove it:
+        if (result.endsWith("\n") && buf.getLength() > 0)
+            buf.remove(buf.getLength() - 1, 1);
+        buf.endCompoundEdit();
 
-            // Jump to top:
-            view.getTextArea().setCaretPosition(0);
+        // Jump to top:
+        view.getTextArea().setCaretPosition(0);
 
-            // Clear the dirty flag (if option is on):
-            if (jEdit.getBooleanProperty("javainsight.clearDirty", false))
-                buf.setDirty(false);
-
-        } catch (Throwable t) {
-            // Rethrow the exception
-            throw t.fillInStackTrace();
-        }
+        // Clear the dirty flag (if option is on):
+        if (jEdit.getBooleanProperty("javainsight.clearDirty", false))
+            buf.setDirty(false);
     }
 
 
