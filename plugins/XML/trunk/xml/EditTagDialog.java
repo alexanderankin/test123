@@ -182,7 +182,7 @@ class EditTagDialog extends EnhancedDialog
 				set = true;
 
 			Vector values;
-			if(attr.type == ElementDecl.AttributeDecl.IDREF)
+			if(attr.type.equals("IDREF"))
 			{
 				values = ids;
 				if(value == null && values.size() > 0)
@@ -218,6 +218,13 @@ class EditTagDialog extends EnhancedDialog
 
 			buf.append(' ');
 			buf.append(attr.name);
+
+			if(element.html
+				&& attr.name.equals(attr.value.value))
+			{
+				continue;
+			}
+
 			buf.append("=\"");
 			if(attr.value.value != null)
 			{
@@ -256,12 +263,12 @@ class EditTagDialog extends EnhancedDialog
 
 		String name;
 		Value value;
-		int type;
+		String type;
 		boolean required;
 
 		Attribute(boolean set, String name,
 			String value, Vector values,
-			int type, boolean required)
+			String type, boolean required)
 		{
 			this.set = set;
 			this.name = name;
@@ -402,15 +409,15 @@ class EditTagDialog extends EnhancedDialog
 				return attr.name;
 			case 2:
 				StringBuffer buf = new StringBuffer();
-				if(attr.type == ElementDecl.AttributeDecl.CDATA)
-					buf.append(jEdit.getProperty("xml-edit-tag.cdata"));
-				else if(attr.type == ElementDecl.AttributeDecl.CHOICE)
-					buf.append(jEdit.getProperty("xml-edit-tag.choice"));
-				else if(attr.type == ElementDecl.AttributeDecl.IDREF)
-					buf.append(jEdit.getProperty("xml-edit-tag.idref"));
+				if(attr.value.values == null)
+					buf.append(attr.type);
 
 				if(attr.required)
+				{
+					if(buf.length() != 0)
+						buf.append(", ");
 					buf.append(jEdit.getProperty("xml-edit-tag.required"));
+				}
 
 				return buf.toString();
 			case 3:

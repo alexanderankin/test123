@@ -15,3 +15,5 @@ SYSTEM "plugins.dtd" "jeditresource:/org/gjt/sp/jedit/pluginmgr/plugins.dtd"
 SYSTEM "commando.dtd" "jeditresource:/Console.jar!/console/commando/commando.dtd"
 
 SYSTEM "xml-completion-info.dtd" "jeditresource:/XML.jar!/xml/xml-completion-info.dtd"
+
+SYSTEM "sqlServerType.dtd" "jeditresource:/SQL.jar!/sqlServerType.dtd"

@@ -254,10 +254,7 @@ class XmlParser
 		XmlInsert insert = (XmlInsert)view.getDockableWindowManager()
 			.getDockableWindow(XmlPlugin.INSERT_NAME);
 		if(insert != null)
-		{
-			insert.setDeclaredElements(elements);
-			insert.setDeclaredEntities(entities);
-		}
+			insert.update();
 	}
 
 	private void addEntity(EntityDecl entity)
@@ -314,14 +311,12 @@ class XmlParser
 				return;
 			}
 
-			String id = attrs.getValue("id");
-			if(id == null)
-				id = attrs.getValue("Id");
-			if(id == null)
-				id = attrs.getValue("ID");
-
-			if(id != null && ids.indexOf(id) == -1)
-				ids.addElement(id);
+			// add all attributes with type "ID" to the ids vector
+			for(int i = 0; i < attrs.getLength(); i++)
+			{
+				if(attrs.getType(i).equals("ID"))
+					ids.addElement(attrs.getValue(i));
+			}
 
 			// ignore tags inside nested files for now
 			//if(!buffer.getPath().equals(loc.getSystemId()))
@@ -464,12 +459,9 @@ class XmlParser
 				return;
 
 			Vector values;
-			int _type;
 
-			if(type != null && type.startsWith("("))
+			if(type.startsWith("("))
 			{
-				_type = ElementDecl.AttributeDecl.CHOICE;
-
 				values = new Vector();
 
 				StringTokenizer st = new StringTokenizer(
@@ -480,18 +472,12 @@ class XmlParser
 				}
 			}
 			else
-			{
 				values = null;
-				if(type.equals("IDREF"))
-					_type = ElementDecl.AttributeDecl.IDREF;
-				else
-					_type = ElementDecl.AttributeDecl.CDATA;
-			}
 
 			boolean required = "#REQUIRED".equals(valueDefault);
 
 			element.addAttribute(new ElementDecl.AttributeDecl(
-				aName,value,values,_type,required));
+				aName,value,values,type,required));
 		}
 
 		public void internalEntityDecl(String name, String value)

@@ -18,7 +18,6 @@ import com.arbortext.catalog.XMLCatalogReader;
 import com.arbortext.catalog.NotXMLCatalogException;
 import com.arbortext.catalog.NoXMLParserException;
 import org.xml.sax.SAXException;
-import org.gjt.sp.util.Log;
 
 /**
  * <p>Represents OASIS Open Catalog files.</p>
@@ -473,13 +472,10 @@ public class Catalog {
 		}
 		return;
 	    } catch (SAXException e1) {
-		Log.log(Log.DEBUG,this,e1);
 		// not an XML catalog, continue with text parse
 	    } catch (NoXMLParserException e2) {
-		Log.log(Log.DEBUG,this,e2);
 		// not an XML catalog, continue with text parse
 	    } catch (NotXMLCatalogException e2) {
-		Log.log(Log.DEBUG,this,e2);
 		// not an XML catalog, continue with text parse
 	    } catch (InstantiationException e3) {
 		debug(1, "Cannot instantiate XML Parser class", parserClass);

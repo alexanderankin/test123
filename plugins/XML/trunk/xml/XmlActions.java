@@ -64,16 +64,11 @@ public class XmlActions
 		int end = -1;
 
 		// scan backwards looking for <
-		// if we find a >, then assume we're not inside a tag
-		for(int i = Math.min(seg.count,caret); i >= 0; i--)
+		for(int i = Math.min(seg.count - 1,caret); i >= 0; i--)
 		{
 			char ch = seg.array[seg.offset + i];
 
-			// if caret is before >, then the character at the
-			// caret pos will be >
-			if(i != caret && ch == '>')
-				break;
-			else if(ch == '<')
+			if(ch == '<')
 			{
 				start = i;
 				break;
@@ -81,13 +76,10 @@ public class XmlActions
 		}
 
 		// scan forwards looking for >
-		// if we find a <, then assume we're not inside a tag
 		for(int i = caret; i < seg.count; i++)
 		{
 			char ch = seg.array[seg.offset + i];
-			if(ch == '<')
-				break;
-			else if(ch == '>')
+			if(ch == '>')
 			{
 				end = i;
 				break;
@@ -103,7 +95,8 @@ public class XmlActions
 		String tag = new String(seg.array,seg.offset + start + 1,
 			seg.offset + end - start - 1);
 
-		if(tag.startsWith("!") || tag.startsWith("?"))
+		if(tag.indexOf('<') != -1 || tag.indexOf('>') != -1
+			|| tag.startsWith("!") || tag.startsWith("?"))
 		{
 			view.getToolkit().beep();
 			return;
@@ -364,7 +357,8 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& closeCompletion
-			&& completionInfo != null))
+			&& (completionInfo != null
+			|| buffer.getBooleanProperty("xml.parse"))))
 		{
 			return;
 		}
@@ -387,7 +381,21 @@ public class XmlActions
 
 		String tag = findLastOpenTag(seg);
 		if(tag != null)
+		{
+			if(completionInfo != null)
+			{
+				ElementDecl element = (ElementDecl)completionInfo
+					.elementHash.get(tag);
+				if(element != null && element.empty)
+				{
+					// XXX: instead, need to find next last
+					// open tag
+					return;
+				}
+			}
+
 			textArea.setSelectedText(tag + ">");
+		}
 	}
 
 	public static void insertClosingTagKeyTyped(View view)
@@ -403,32 +411,29 @@ public class XmlActions
 			.getCompletionInfo(editPane);
 
 		if(!(buffer.isEditable()
-			&& closeCompletionOpen
-			&& completionInfo != null
-			// this only makes sense in XML files!
-			&& buffer.getBooleanProperty("xml.parse")))
+			&& closeCompletion
+			&& (completionInfo != null
+			|| buffer.getBooleanProperty("xml.parse"))))
 		{
 			return;
 		}
 
 		int caret = textArea.getCaretPosition();
-		if(caret == 1)
-			return;
 
-		try
+		String tag = findLastOpenTag(seg);
+
+		if(tag != null)
 		{
-			buffer.getText(caret - 1,caret,seg);
-		}
-		catch(BadLocationException bl)
-		{
-			Log.log(Log.ERROR,XmlActions.class,bl);
-		}
+			if(completionInfo != null)
+			{
+				ElementDecl element = (ElementDecl)completionInfo
+					.elementHash.get(tag);
+				if(element != null && element.empty)
+					return;
+			}
 
-		// don't insert closing tag for empty element
-		if(seg.array[seg.offset] == '/')
-			return;
-
-		insertClosingTag(textArea);
+			textArea.setSelectedText("</" + tag + ">");
+		}
 
 		textArea.setCaretPosition(caret);
 	}

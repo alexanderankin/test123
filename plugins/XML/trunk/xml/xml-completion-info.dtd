@@ -23,5 +23,5 @@
 <!ATTLIST attribute
 	name CDATA #REQUIRED
 	value CDATA #IMPLIED
-	values CDATA #IMPLIED
+	type CDATA #REQUIRED
 	required (true|false) "false">

@@ -44,12 +44,25 @@ public class CompletionInfo
 
 	public static CompletionInfo getCompletionInfo(EditPane editPane)
 	{
-		CompletionInfo info = (CompletionInfo)editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY);
+		Buffer buffer = editPane.getBuffer();
+
+		String mode;
+
+		// hack to handle ant files
+		if(buffer.getName().toLowerCase().equals("build.xml"))
+			mode = "ant";
+		else
+			mode = buffer.getMode().getName();
+
+		CompletionInfo info = getCompletionInfo(mode);
+
 		if(info != null)
 			return info;
 		else
-			return getCompletionInfo(editPane.getBuffer().getMode().getName());
+		{
+			return (CompletionInfo)editPane.getClientProperty(
+				XmlPlugin.COMPLETION_INFO_PROPERTY);
+		}
 	}
 
 	public static CompletionInfo getCompletionInfo(String mode)

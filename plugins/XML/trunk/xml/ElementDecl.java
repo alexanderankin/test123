@@ -77,18 +77,14 @@ class ElementDecl
 
 	static class AttributeDecl
 	{
-		static int CDATA = 0;
-		static int CHOICE = 1;
-		static int IDREF = 2;
-
 		String name;
 		String value;
 		Vector values;
-		int type;
+		String type;
 		boolean required;
 
 		AttributeDecl(String name, String value, Vector values,
-			int type, boolean required)
+			String type, boolean required)
 		{
 			this.name = name;
 			this.value = value;
@@ -110,22 +106,14 @@ class ElementDecl
 				buf.append('"');
 			}
 
-			if(values != null)
-			{
-				buf.append(" values=\"");
-				for(int i = 0; i < values.size(); i++)
-				{
-					if(i != 0)
-						buf.append('|');
-					buf.append(values.elementAt(i));
-				}
-				buf.append('"');
-			}
+			buf.append(" type=\"");
+			buf.append(type);
+			buf.append('"');
 
 			if(required)
 				buf.append(" required=\"true\"");
 
-			buf.append('>');
+			buf.append(" />");
 			return buf.toString();
 		}
 	}

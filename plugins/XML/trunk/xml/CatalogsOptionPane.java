@@ -13,6 +13,7 @@
 package xml;
 
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -46,6 +47,7 @@ public class CatalogsOptionPane extends AbstractOptionPane
 
 		add(BorderLayout.CENTER,new JScrollPane(
 			catalogList = new JList(catalogListModel)));
+		catalogList.addListSelectionListener(new ListHandler());
 
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
@@ -111,6 +113,14 @@ public class CatalogsOptionPane extends AbstractOptionPane
 					catalogList.getSelectedIndex());
 				updateEnabled();
 			}
+		}
+	}
+
+	class ListHandler implements ListSelectionListener
+	{
+		public void valueChanged(ListSelectionEvent evt)
+		{
+			updateEnabled();
 		}
 	}
 }
