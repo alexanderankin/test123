@@ -39,20 +39,20 @@ import com.sshtools.common.authentication.PassphraseDialog;
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
 	//{{{ LoginDialog constructor
-	public LoginDialog(Component comp, boolean secure, String host,
-	String user, String password, String keyFile)
+	public LoginDialog(Component comp, boolean _secure, String host,
+	String user, String password)
 	{
 		super(JOptionPane.getFrameForComponent(comp),
-		jEdit.getProperty(secure ?
+		jEdit.getProperty(_secure ?
 		"login.title-sftp" : "login.title-ftp"),
 		true);
-		
+		this.secure = _secure;
 		JPanel content = new JPanel(new VariableGridLayout(
 		VariableGridLayout.FIXED_NUM_COLUMNS,1,6,6));
 		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 		
-		content.add(createFieldPanel(secure,host,user,password,keyFile));
+		content.add(createFieldPanel(secure,host,user,password));
 		
 		if(!secure)
 		{
@@ -221,12 +221,13 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private String privateKeyFilename;
 	private SshPrivateKey privateKey;
 	private boolean isOK;
+	private boolean secure;
 	private JButton ok;
 	private JButton cancel;
 	
 	//{{{ createFieldPanel() method
 	private JPanel createFieldPanel(boolean secure, String host, String user,
-	String password, String keyFile)
+	String password)
 	{
 		JPanel panel = new JPanel(new VariableGridLayout(
 		VariableGridLayout.FIXED_NUM_COLUMNS,2,6,6));
@@ -240,6 +241,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		hostField.setColumns(20);
 		if(host != null)
 			hostField.setEnabled(false);
+		if (secure)
+			hostField.getDocument().addDocumentListener(new FieldCompletionListener());
 		hostField.addActionListener(this);
 		panel.add(hostField);
 		
@@ -250,6 +253,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		userField = new HistoryTextField("ftp.user");
 		userField.setText(user);
 		userField.setColumns(20);
+		if (secure)
+			userField.getDocument().addDocumentListener(new FieldCompletionListener());
 		userField.addActionListener(this);
 		panel.add(userField);
 		
@@ -265,8 +270,6 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		{
 			Box privateKeyBox = Box.createHorizontalBox();
 			privateKeyField = new HistoryTextField("sftp.privateKey");
-			if (keyFile!=null)
-				privateKeyField.setText(keyFile);
 			privateKeyField.addActionListener(this);
 			label = new JLabel(jEdit.getProperty("login.privateKey"),
 			SwingConstants.RIGHT);
@@ -281,6 +284,18 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		
 		return panel;
 	} //}}}
+	
+	//{{{ checkKey() method
+	public void checkKey()
+	{
+		String host = hostField.getText();
+		String user = userField.getText();
+		if(host.indexOf(":") == -1)
+				host = host + ":" + FtpVFS.getDefaultPort(secure);
+		privateKeyField.setText(jEdit.getProperty("ftp.keys."+host+"."+user));
+
+	}
+	//}}}
 	
 	//}}}
 	
@@ -305,5 +320,13 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 				}
 			}
 		}
+	} //}}}
+
+	//{{{ class FieldCompletionListener
+	class FieldCompletionListener implements DocumentListener
+	{
+		public void changedUpdate(DocumentEvent e) { checkKey(); }
+		public void insertUpdate(DocumentEvent e) { checkKey(); }
+		public void removeUpdate(DocumentEvent e) { checkKey(); }
 	} //}}}
 }
