@@ -20,6 +20,8 @@
  */
 package sql;
 
+import java.beans.*;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
 
@@ -27,13 +29,15 @@ import org.gjt.sp.util.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    22 Февраль 2002 г.
+ * @created    22 О©╫О©╫О©╫О©╫О©╫О©╫О©╫ 2002 О©╫.
  */
 public abstract class Preprocessor
 {
   protected boolean enabled;
 
   protected View view;
+
+  protected PropertyChangeSupport enableChangeSupport;
 
 
   /**
@@ -43,9 +47,26 @@ public abstract class Preprocessor
    */
   public Preprocessor()
   {
-    enabled = jEdit.getBooleanProperty( getClass().getName() + ".enabled" );
+    enableChangeSupport = new PropertyChangeSupport( this );
+    enabled = "true".equals( SqlPlugin.getGlobalProperty( getClass().getName() + ".enabled" ) );
     Log.log( Log.DEBUG, Preprocessor.class,
         getClass().getName() + " is enabled: " + enabled );
+  }
+
+
+  /**
+   *  Sets the Enabled attribute of the Preprocessor object
+   *
+   * @param  enabled  The new Enabled value
+   */
+  public void setEnabled( boolean enabled )
+  {
+    final boolean oldval = this.enabled;
+    this.enabled = enabled;
+    SqlPlugin.setGlobalProperty( getClass().getName() + ".enabled", enabled ? "true" : "false" );
+
+    if ( oldval != enabled )
+      enableChangeSupport.firePropertyChange( "enabled", oldval, enabled );
   }
 
 
@@ -62,6 +83,17 @@ public abstract class Preprocessor
 
 
   /**
+   *  Gets the Enabled attribute of the Preprocessor object
+   *
+   * @return    The Enabled value
+   */
+  public boolean isEnabled()
+  {
+    return enabled;
+  }
+
+
+  /**
    *  Gets the OptionPane attribute of the Preprocessor object
    *
    * @return    The OptionPane value
@@ -69,6 +101,26 @@ public abstract class Preprocessor
   public OptionPane getOptionPane()
   {
     return null;
+  }
+
+
+  /**
+   *  Adds a feature to the EnabledStateListener attribute of the Preprocessor object
+   *
+   * @param  listener  The feature to be added to the EnabledStateListener attribute
+   */
+  public void addEnabledStateListener( PropertyChangeListener listener )
+  {
+    enableChangeSupport.addPropertyChangeListener( "enabled", listener );
+  }
+
+
+  /**
+   *  Description of the Method
+   */
+  public void toggleEnabled()
+  {
+    setEnabled( !enabled );
   }
 
 

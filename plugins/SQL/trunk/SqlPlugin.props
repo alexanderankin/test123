@@ -13,7 +13,7 @@ plugin.sql.SqlPlugin.depend.4=plugin projectviewer.ProjectPlugin 2.0.0
 plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.2
 
 # The menu item label
-sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.VariableSubstitutor sql.preprocessors.SpecialCommentRemover - sql.repeatLastQuery
+sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.SpecialCommentRemover sql.preprocessors.VariableSubstitutor - sql.repeatLastQuery
 sqlMenu.label=SQL
 
 sql.publishBuffer.label=Execute buffer

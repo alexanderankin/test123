@@ -140,9 +140,9 @@ public class SqlPlugin extends EBPlugin
     group.addOptionPane( new JdbcOptionPane() );
 
     final OptionGroup pgroup = new OptionGroup( "sql.preprocessors" );
-    final java.util.List l = SqlUtils.getPreprocessors();
+    final java.util.Map l = SqlUtils.getPreprocessors();
 
-    for ( Iterator i = l.iterator(); i.hasNext();  )
+    for ( Iterator i = l.values().iterator(); i.hasNext();  )
     {
       final Preprocessor pr = (Preprocessor) i.next();
       final OptionPane op = pr.getOptionPane();

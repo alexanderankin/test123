@@ -54,7 +54,7 @@ public class SqlUtils
 
   protected static SqlThreadGroup sqlThreadGroup;
 
-  protected static java.util.List preprocessors = null;
+  protected static Map preprocessors = null;
 
   protected static String lastRunQuery = null;
   protected static int lastStartPos = 0;
@@ -157,11 +157,23 @@ public class SqlUtils
    * @return    The Preprocessors value
    * @since
    */
-  public static java.util.List getPreprocessors()
+  public static Map getPreprocessors()
   {
     if ( preprocessors == null )
       fillPreprocessors();
     return preprocessors;
+  }
+
+
+  /**
+   *  Gets the Preprocessor attribute of the SqlUtils class
+   *
+   * @param  name  Description of Parameter
+   * @return       The Preprocessor value
+   */
+  public static Preprocessor getPreprocessor( String name )
+  {
+    return (Preprocessor) getPreprocessors().get( name );
   }
 
 
@@ -370,9 +382,9 @@ public class SqlUtils
       Log.log( Log.DEBUG, SqlUtils.class,
           "stmt created: " + stmt );
 
-      final java.util.List v = getPreprocessors();
+      final Map v = getPreprocessors();
 
-      for ( Iterator e = v.iterator(); e.hasNext();  )
+      for ( Iterator e = v.values().iterator(); e.hasNext();  )
       {
         final Preprocessor pr = (Preprocessor) e.next();
         pr.setView( view );
@@ -476,17 +488,6 @@ public class SqlUtils
       r.run();
     else
       SwingUtilities.invokeLater( r );
-  }
-
-
-  /**
-   *Description of the Method
-   *
-   * @since
-   */
-  public static void resetPreprocessors()
-  {
-    preprocessors = null;
   }
 
 
@@ -733,7 +734,7 @@ public class SqlUtils
    */
   protected static void fillPreprocessors()
   {
-    preprocessors = new ArrayList();
+    preprocessors = new TreeMap();
 
     int i = 0;
     while ( true )
@@ -743,7 +744,7 @@ public class SqlUtils
         break;
       try
       {
-        preprocessors.add( Class.forName( className ).newInstance() );
+        preprocessors.put( className, Class.forName( className ).newInstance() );
       } catch ( Exception ex )
       {
         Log.log( Log.ERROR, SqlUtils.class, "Exception creating preprocessors" );
