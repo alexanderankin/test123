@@ -20,6 +20,8 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Collections;
 import java.util.WeakHashMap;
 
@@ -52,11 +54,10 @@ public class VPTFileListModel extends DefaultTreeModel {
 
 	private Object lastParent;
 	private ArrayList lastList;
-	private ArrayList pathBuilder;
+	private List pathBuilder;
 	//}}}
 
 	//{{{ +VPTFileListModel(VPTNode) : <init>
-
 	/**
 	 *	Create a new <code>VPTFileListModel</code>.
 	 *
@@ -65,10 +66,8 @@ public class VPTFileListModel extends DefaultTreeModel {
 	public VPTFileListModel(VPTNode rootNode) {
 		super(rootNode, true);
 		fileLists = new WeakHashMap();
-		pathBuilder = new ArrayList();
-	}
-
-	//}}}
+		pathBuilder = new LinkedList();
+	} //}}}
 
 	//{{{ +getChildCount(Object) : int
 	/**
@@ -189,12 +188,10 @@ public class VPTFileListModel extends DefaultTreeModel {
 	/** Handles a node changed request. */
 	public void nodeChanged(TreeNode node) {
 		VPTNode n = (VPTNode) node;
-		if (n.isGroup() || n.isProject()) {
-			super.nodeChanged(node);
-		} else {
-			VPTProject p = VPTNode.findProjectFor(n);
-			fireTreeNodesChanged(n, getPathToRoot(n), new int[] { -1 }, null);
+		if (!n.isGroup() && !n.isProject()) {
+			n = VPTNode.findProjectFor(n);
 		}
+		fireTreeNodesChanged(n, getPathToRoot(n), null, null);
 	} //}}}
 
 }
