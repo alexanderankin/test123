@@ -40,7 +40,7 @@
 
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <pathelement location="${lib.dir}/bcel.jar"/>
+        <pathelement location="${install.dir}/bcel.jar"/>
         <pathelement location="${lib.dir}/jode.jar"/>
         <pathelement location="${src.dir}"/>
     </path>
