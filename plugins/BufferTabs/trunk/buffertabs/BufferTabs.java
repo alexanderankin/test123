@@ -323,7 +323,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                     this.setBackgroundAt(index, null);
                 }
             } catch (NullPointerException npe) {
-                Log.log(Log.ERROR, BufferTabs.class, "setColor: " + npe.toString());
+                Log.log(Log.ERROR, BufferTabs.class, "updateColorAt: " + npe.toString());
             }
 
             this.updateHighlight(index);
