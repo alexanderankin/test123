@@ -18,24 +18,23 @@
  */
 package projectviewer.event;
 
-import java.util.EventListener;
-
 /**
- *	A listener for {@link ProjectViewerEvent}s.
+ *	Default implementation of the ProjectViewerListener. The methods do nothing
+ *	when invoked.
  *
- *	@author		Dale Anson, Marcelo Vanzin
+ *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public interface ProjectViewerListener extends EventListener {
+public class ProjectAdapter implements ProjectViewerListener {
 
 	/** Notifies the changing of the active project. */
-	public void projectLoaded(ProjectViewerEvent evt);
+	public void projectLoaded(ProjectViewerEvent evt) { }
 
 	/** Notifies the creation of a project. */
-	public void projectAdded(ProjectViewerEvent evt);
+	public void projectAdded(ProjectViewerEvent evt) { }
 
 	/** Notifies the removal of a project. */
-	public void projectRemoved(ProjectViewerEvent evt);
+	public void projectRemoved(ProjectViewerEvent evt) { }
 
 }
 
