@@ -26,8 +26,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 
+import javax.swing.SwingUtilities;
+
 import org.gjt.sp.jedit.jEdit;
 
+import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
@@ -117,7 +120,13 @@ public abstract class Importer implements Runnable {
 	} //}}}
 
 	//{{{ importNode(VPTNode, VPTNode) method
-	/** Imports a child into the given parent. */
+	/**
+	 *	Imports a child into the given parent.
+	 *
+	 *	<p>Important: when using a separate thread, wrap a call to this method
+	 *	in a call to SwingUtilities.invokeLater() or
+	 *	SwingUtilities.invokeAndWait(), to ensure thread safety.</p>
+	 */
 	protected void importNode(VPTNode child, VPTNode where) {
 		ProjectViewer.insertNodeInto(child, where);
 	} //}}}
@@ -127,6 +136,10 @@ public abstract class Importer implements Runnable {
 	 *	Imports the node into the selected parent. The selected parent is
 	 *	defined in the constructor for the importer (and generally should
 	 *	be a selected node in the tree).
+	 *
+	 *	<p>Important: when using a separate thread, wrap a call to this method
+	 *	in a call to SwingUtilities.invokeLater() or
+	 *	SwingUtilities.invokeAndWait(), to ensure thread safety.</p>
 	 */
 	protected void importNode(VPTNode node) {
 		ProjectViewer.insertNodeInto(node, selected);
@@ -194,27 +207,71 @@ public abstract class Importer implements Runnable {
 		return where;
 	} //}}}
 
+	//{{{ registerFile(VPTFile) method
+	/**
+	 *	Registers the file in the project. Also, checks if the file's absolute
+	 *	path is equal to the canonical path, and registers the canonical path
+	 *	in the project in case they differ.
+	 */
+	protected void registerFile(VPTFile file) {
+		project.registerFile(file);
+		String canPath = file.getCanonicalPath();
+		if (!canPath.equals(file.getNodePath())) {
+			project.registerCanonicalPath(canPath, file);
+		}
+	} //}}}
+
 	//{{{ run() method
 	public void run() {
 		if (!noThread) {
-			viewer.setStatus(jEdit.getProperty("projectviewer.import.wait_msg"));
-			viewer.setEnabled(false);
+			try {
+				SwingUtilities.invokeAndWait(new Runnable() {
+					public void run() {
+						viewer.setStatus(jEdit.getProperty("projectviewer.import.wait_msg"));
+						viewer.setEnabled(false);
+					}
+				});
+			} catch (InterruptedException ie) {
+				// not gonna happen
+			} catch (java.lang.reflect.InvocationTargetException ite) {
+				// not gonna happen
+			}
 		}
 		try {
-			Collection c = internalDoImport();
+			final Collection c = internalDoImport();
 			if (c != null && c.size() > 0) {
-				for (Iterator i = c.iterator(); i.hasNext(); ) {
-					importNode((VPTNode)i.next());
-				}
-				ProjectViewer.nodeStructureChangedFlat(project);
-				if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-					ProjectManager.getInstance().saveProject(project);
+				try {
+					SwingUtilities.invokeAndWait(new Runnable() {
+						public void run() {
+							for (Iterator i = c.iterator(); i.hasNext(); ) {
+								importNode((VPTNode)i.next());
+							}
+							ProjectViewer.nodeStructureChangedFlat(project);
+						}
+					});
+					if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+						ProjectManager.getInstance().saveProject(project);
+					}
+				} catch (InterruptedException ie) {
+					// not gonna happen
+				} catch (java.lang.reflect.InvocationTargetException ite) {
+					// not gonna happen
 				}
 			}
 		} finally {
 			// in case any RuntimeException occurs, let's be cautious...
 			if (!noThread) {
-				viewer.setEnabled(true);
+				try {
+					SwingUtilities.invokeAndWait( new Runnable() {
+						public void run() {
+							viewer.setEnabled(true);
+						}
+					});
+				} catch (InterruptedException ie) {
+					// not gonna happen
+				} catch (java.lang.reflect.InvocationTargetException ite) {
+					// not gonna happen
+				}
 			}
 		}
 	} //}}}
