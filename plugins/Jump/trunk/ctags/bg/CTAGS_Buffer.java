@@ -42,7 +42,7 @@ public class CTAGS_Buffer extends ArrayList
         //Add filename to CTAGS_Buffer.Files
         for (int i = 0; i < Files.size(); i++)
         {
-            if (fn.equals(Files.get(i).toString()) == false)
+            if (!fn.equals(Files.get(i).toString()))
             {
                  this.addFileName(fn);
             }

@@ -3,35 +3,39 @@ plugin.JumpPlugin.name=Jump!
 plugin.JumpPlugin.author=Pavlikus
 plugin.JumpPlugin.version=0.2
 
-# Dependecies
+#{{{ Dependecies
 plugin.JumpPlugin.depend.0=plugin projectviewer.ProjectPlugin 2.0.1
+#}}}
 
-# Documentation
+#{{{ Documentation
 plugin.JumpPlugin.docs=jump.html
+#}}}
 
-# action labels
+#{{{ action labels
 JumpPlugin.label=Jump!
 JumpPlugin.filesjump.label=Jump to File
 JumpPlugin.tagsjump.label=Jump to Tag
 JumpPlugin.workspacejump.label=Search Tag
 JumpPlugin.historyjump.label=Back (History)
 JumpPlugin.gettagbyinput.label=Type a Tag...
-JumpPlugin.foldjump.label=Jump to Fold
+JumpPlugin.foldjump.label=Jump to Fold 
+#}}}
 
-
-# application menu items
+#{{{ application menu items
 JumpPlugin.menu.label=Jump!
 JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.gettagbyinput - JumpPlugin.foldjump
-
-# options
+#}}}
+ 
+#{{{ options
 options.JumpPlugin.label=Jump!
 options.JumpPlugin.enable.label=Enable Jump!
 options.JumpPlugin.parse_on_save.label=Parse buffer on save
 options.JumpPlugin.ctags.def.path.label=Path to ctags executable: (C:\\catgs55\\ctags.exe)
 options.JumpPlugin.ctags.def.path=C:/Apps/ctags/ctags.exe
 options.JumpPlugin.sort_foldlist.label=Sort Fold List
+#}}}
 
-# messages
+#{{{ messages
 JumpPlugin.no_project.title=Jump! - Error
 JumpPlugin.no_project.message=Error during starting Jump!\nMake sure path to ctags correct\nand(or) any project is active.
 
@@ -51,4 +55,5 @@ JumpPlugin.enable.title=Jump! is disabled now.
 JumpPlugin.enable.message=Jump! is disabled now. To enable it, see Options-Jump!
 
 JumpPlugin.newproject.title=Jump! Generate tags on project
-JumpPlugin.newproject.message=Jump! Now you need to create tag file on project.\nBe patient, it may take up some time.\nIt depend on project size.
+JumpPlugin.newproject.message=Jump! Now you need to create tag file on project.\nBe patient, it may take up some time.\nIt depend on project size. 
+#}}}
