@@ -140,7 +140,7 @@ public final class IconComposer {
 		// overlay base icon with deco icon
 		int baseIx,decoIx;
 		int p,bb,bg,br,ba,db,dg,dr,da,r,g,b,a;
-		double w;
+		double bw,dw;
 		for(int y = 0; y < decoHeight; y++) {
 			for(int x = 0; x < decoWidth; x++) {
 				decoIx = y * decoWidth + x;
@@ -158,14 +158,25 @@ public final class IconComposer {
 				dr = (p >> 16) & 0x00ff;
 				da = (p >> 24) & 0x00ff;
 				// combining the pixels
-				w = (da / 255.0);
-				r = ((int)(br + dr * w)) >> 1;
+				/*
+				dw = (da / 255.0);
+				r = ((int)(br + dr * dw)) >> 1;
 				r = (r < 0)?(0):((r>255)?(255):(r));
-				g = ((int)(bg + dg * w)) >> 1;
+				g = ((int)(bg + dg * dw)) >> 1;
 				g = (g < 0)?(0):((g>255)?(255):(g));
-				b = ((int)(bb + db * w)) >> 1;
+				b = ((int)(bb + db * dw)) >> 1;
 				b =  (b < 0)?(0):((b>255)?(255):(b));
-				a = ((int)(ba + da * w)) >> 1;
+				a = ((int)(ba + da * dw)) >> 1;
+				a =  (a < 0)?(0):((a>255)?(255):(a));
+				*/
+				dw = (da / 255.0);bw = 1.0 - dw;
+				r = (int)(br * bw + dr * dw);
+				r = (r < 0)?(0):((r>255)?(255):(r));
+				g = (int)(bg * bw + dg * dw);
+				g = (g < 0)?(0):((g>255)?(255):(g));
+				b = (int)(bb * bw + db * dw);
+				b =  (b < 0)?(0):((b>255)?(255):(b));
+				a = (int)(ba * bw + da * dw);
 				a =  (a < 0)?(0):((a>255)?(255):(a));
 
 				p = (((((a << 8) + (r & 0x0ff)) << 8) + (g & 0x0ff)) << 8) + (b & 0x0ff);
