@@ -67,7 +67,7 @@
 	<property name="build-docs.not-required" value="true"/>
 	-->
 
-	<property name="jedit.install.dir" value="/share/jedit/4.0"/>
+	<property name="jedit.install.dir" value="../.."/>
 	<property name="src.dir" value="."/>
 	<property name="src.lib" value="./lib"/>
 	<!--
@@ -208,6 +208,13 @@
 			description="Generate docs with Xalan tool from xml.apache.org">
 		<style style="${users-guide.xsl}" in="${docs.dir}/users-guide.xml"
 				out="${docs.dir}/index.html"/>
+	</target>
+	<!-- }}} -->
+
+	<!-- {{{ 'install' target -->
+	<target name="install" depends="dist"
+			description="Install plugin to system plugins directory.">
+		<copy file="${install.dir}/${jar.name}" todir="${jedit.install.dir}/jars"/>
 	</target>
 	<!-- }}} -->
 
