@@ -289,7 +289,8 @@ class SideKick implements EBComponent
 		if(bmsg.getBuffer() != buffer)
 			return;
 
-		if(bmsg.getWhat() == BufferUpdate.SAVED)
+		if(bmsg.getWhat() == BufferUpdate.SAVED
+			|| bmsg.getWhat() == BufferUpdate.LOADED)
 		{
 			if(buffer.getBooleanProperty(
 				"sidekick.buffer-change-parse")
