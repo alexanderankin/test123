@@ -68,12 +68,13 @@ public class Main
         System.out.println("Usage: java code2html.Main OPTION... --catalog=FILE FILE...");
         System.out.println();
         System.out.println("Options:");
-        System.out.println("  --help           print this help file");
-        System.out.println("  --scheme=FILE    scheme file");
-        System.out.println("  --css=yes|no     use cascading style sheets. Default: [yes]");
-        System.out.println("  --gutter=yes|no  display line number. Default: [yes]");
-        System.out.println("  --tab-size=INT   tab size > 0. Default: [8]");
-        System.out.println("  --wrap=INT       line wrapping. Default: [0]");
+        System.out.println("  --help             print this help file");
+        System.out.println("  --scheme=FILE      scheme file");
+        System.out.println("  --css=yes|no       use cascading style sheets. Default: [yes]");
+        System.out.println("  --gutter=yes|no    display line number. Default: [yes]");
+        System.out.println("  --gutter-size=INT  gutter size > 0. Default: [3]");
+        System.out.println("  --tab-size=INT     tab size > 0. Default: [8]");
+        System.out.println("  --wrap=INT         line wrapping. Default: [0]");
     }
 
 
@@ -128,6 +129,16 @@ public class Main
                 } else if ("no".equals(gutter)) {
                     arguments.showGutter = false;
                 } else {
+                    return 1;
+                }
+            } else if (arg.startsWith("--gutter-size=")) {
+                String gutterSize = arg.substring("--gutter-size=".length());
+                try {
+                    arguments.gutterSize = Integer.parseInt(gutterSize);
+                    if (arguments.gutterSize <= 0) {
+                        return 1;
+                    }
+                } catch (NumberFormatException nfe) {
                     return 1;
                 }
             } else if (arg.startsWith("--tab-size=")) {
