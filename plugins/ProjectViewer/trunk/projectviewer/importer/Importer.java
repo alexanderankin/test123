@@ -240,22 +240,29 @@ public abstract class Importer implements Runnable {
 		try {
 			final Collection c = internalDoImport();
 			if (c != null && c.size() > 0) {
-				try {
-					SwingUtilities.invokeAndWait(new Runnable() {
-						public void run() {
-							for (Iterator i = c.iterator(); i.hasNext(); ) {
-								importNode((VPTNode)i.next());
+				if (!noThread) {
+					try {
+						SwingUtilities.invokeAndWait(new Runnable() {
+							public void run() {
+								for (Iterator i = c.iterator(); i.hasNext(); ) {
+									importNode((VPTNode)i.next());
+								}
+								ProjectViewer.nodeStructureChangedFlat(project);
 							}
-							ProjectViewer.nodeStructureChangedFlat(project);
-						}
-					});
-					if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-						ProjectManager.getInstance().saveProject(project);
+						});
+					} catch (InterruptedException ie) {
+						// not gonna happen
+					} catch (java.lang.reflect.InvocationTargetException ite) {
+						// not gonna happen
 					}
-				} catch (InterruptedException ie) {
-					// not gonna happen
-				} catch (java.lang.reflect.InvocationTargetException ite) {
-					// not gonna happen
+				} else {
+					for (Iterator i = c.iterator(); i.hasNext(); ) {
+						importNode((VPTNode)i.next());
+					}
+					ProjectViewer.nodeStructureChangedFlat(project);
+				}
+				if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+					ProjectManager.getInstance().saveProject(project);
 				}
 			}
 		} finally {
