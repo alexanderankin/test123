@@ -13,12 +13,22 @@
     </ACTION>
 
 
-    <ACTION NAME="toggle-fold-highlight">
+    <ACTION NAME="white-space.toggle-fold-highlight">
         <CODE>
              FoldHighlight.toggleFoldHighlightFor(view);
         </CODE>
         <IS_SELECTED>
              return FoldHighlight.isFoldHighlightEnabledFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-fold-tooltip">
+        <CODE>
+             FoldHighlight.toggleFoldTooltipFor(view);
+        </CODE>
+        <IS_SELECTED>
+             return FoldHighlight.isFoldTooltipEnabledFor(view);
         </IS_SELECTED>
     </ACTION>
 
