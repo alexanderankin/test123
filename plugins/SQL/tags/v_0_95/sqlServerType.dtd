@@ -1,0 +1,49 @@
+<!--
+ DTD for sqlServerType files
+-->
+
+<!ELEMENT serverType (driverClass?, objectCreationPrefix?, vfs?, connection, statements?) >
+<!ATTLIST serverType name CDATA #REQUIRED>
+
+<!--
+  JDBC driver class name
+-->
+<!ELEMENT driverClass (#PCDATA)>
+
+<!--
+  Optional, if omitted, assumed "CREATE OR REPLACE"
+-->
+<!ELEMENT objectCreationPrefix (#PCDATA)>
+
+<!--
+  Optional, VFS driver class name. Child class of sql.SubVFS
+-->
+<!ELEMENT vfs (driverClass, editMode?)>
+
+<!--
+  Optional, jEdit edit mode used for files "opened" by VFS
+-->
+<!ELEMENT editMode (#PCDATA)>
+
+<!--
+  Connection parameters and URL template
+-->
+<!ELEMENT connection (parameter*,string)>
+
+<!ELEMENT parameter EMPTY>
+<!ATTLIST parameter name CDATA #REQUIRED>
+<!ATTLIST parameter default CDATA #REQUIRED>
+<!ATTLIST parameter description CDATA #IMPLIED>
+
+<!ELEMENT string (#PCDATA)>
+
+<!--
+  Various statements
+-->
+<!ELEMENT statements (statement+)>
+
+<!ELEMENT statement (#PCDATA)>
+<!ATTLIST statement purpose CDATA #REQUIRED>
+<!ATTLIST statement substMethod (text|sql) #IMPLIED>
+
+
