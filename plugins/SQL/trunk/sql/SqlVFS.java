@@ -528,7 +528,7 @@ public class SqlVFS extends VFS
         final String serverName =
             getPathComponent( buffer.getPath(), DB_LEVEL );
 
-        SqlUtils.publishText(
+        SqlTextPublisher.publishText(
             view,
             buffer,
             0,

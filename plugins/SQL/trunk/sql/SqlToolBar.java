@@ -94,7 +94,7 @@ public class SqlToolBar
       {
         public void actionPerformed( ActionEvent evt )
         {
-          SqlPlugin.publishBuffer( SqlToolBar.this.view,
+          SqlTextPublisher.publishBuffer( SqlToolBar.this.view,
               SqlUtils.getSelectedServerName( project ) );
         }
       } );
@@ -109,7 +109,7 @@ public class SqlToolBar
       {
         public void actionPerformed( ActionEvent evt )
         {
-          SqlPlugin.publishSelection( SqlToolBar.this.view,
+          SqlTextPublisher.publishSelection( SqlToolBar.this.view,
               SqlUtils.getSelectedServerName( project ) );
         }
       } );
@@ -139,7 +139,7 @@ public class SqlToolBar
       {
         public void actionPerformed( ActionEvent evt )
         {
-          SqlUtils.repeatLastQuery( SqlToolBar.this.view,
+          SqlTextPublisher.repeatLastQuery( SqlToolBar.this.view,
               SqlUtils.getSelectedServerName( project ) );
         }
       } );
@@ -159,7 +159,7 @@ public class SqlToolBar
     add( requery );
     addSeparator();
 
-    final Map preprocessors = SqlUtils.getPreprocessors();
+    final Map preprocessors = SqlTextPublisher.getPreprocessors();
     for ( Iterator i = preprocessors.keySet().iterator(); i.hasNext();  )
     {
       final String className = (String) i.next();

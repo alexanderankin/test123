@@ -11,36 +11,36 @@
 <ACTIONS>
   <ACTION NAME="sql.preprocessors.BeanShellEvaluator">
     <CODE>
-      sql.SqlUtils.getPreprocessor( "sql.preprocessors.BeanShellEvaluator" ).toggleEnabled();
+      sql.SqlTextPublisher.getPreprocessor( "sql.preprocessors.BeanShellEvaluator" ).toggleEnabled();
     </CODE>
     <IS_SELECTED>
-      return sql.SqlUtils.getPreprocessor( "sql.preprocessors.BeanShellEvaluator" ).isEnabled();
+      return sql.SqlTextPublisher.getPreprocessor( "sql.preprocessors.BeanShellEvaluator" ).isEnabled();
     </IS_SELECTED>
   </ACTION>
   <ACTION NAME="sql.preprocessors.VariableSubstitutor">
     <CODE>
-      sql.SqlUtils.getPreprocessor( "sql.preprocessors.VariableSubstitutor" ).toggleEnabled();
+      sql.SqlTextPublisher.getPreprocessor( "sql.preprocessors.VariableSubstitutor" ).toggleEnabled();
     </CODE>
     <IS_SELECTED>
-      return sql.SqlUtils.getPreprocessor( "sql.preprocessors.VariableSubstitutor" ).isEnabled();
+      return sql.SqlTextPublisher.getPreprocessor( "sql.preprocessors.VariableSubstitutor" ).isEnabled();
     </IS_SELECTED>
   </ACTION>
   <ACTION NAME="sql.preprocessors.SpecialCommentRemover">
     <CODE>
-      sql.SqlUtils.getPreprocessor( "sql.preprocessors.SpecialCommentRemover" ).toggleEnabled();
+      sql.SqlTextPublisher.getPreprocessor( "sql.preprocessors.SpecialCommentRemover" ).toggleEnabled();
     </CODE>
     <IS_SELECTED>
-      return sql.SqlUtils.getPreprocessor( "sql.preprocessors.SpecialCommentRemover" ).isEnabled();
+      return sql.SqlTextPublisher.getPreprocessor( "sql.preprocessors.SpecialCommentRemover" ).isEnabled();
     </IS_SELECTED>
   </ACTION>
   <ACTION NAME="sql.publishBuffer">
     <CODE>
-      sql.SqlPlugin.publishBuffer( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
+      sql.SqlTextPubliher.publishBuffer( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.publishSelection">
     <CODE>
-      sql.SqlPlugin.publishSelection( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
+      sql.SqlTextPublisher.publishSelection( view, sql.SqlUtils.getSelectedServerName( sql.SqlUtils.getProject( view ) ) );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.loadObject">
@@ -50,7 +50,7 @@
   </ACTION>
   <ACTION NAME="sql.repeatLastQuery">
     <CODE>
-      sql.SqlUtils.repeatLastQuery( view, sql.SqlUtils.getSelectedServerName() );
+      sql.SqlTextPublisher.repeatLastQuery( view, sql.SqlUtils.getSelectedServerName() );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.chooseCurrentServer">
