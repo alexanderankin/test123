@@ -47,7 +47,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
     private JRadioButton colorTabRB;
     private JRadioButton colorTextRB;
     private JCheckBox enableColorsCB;
-    private JCheckBox muteColoursCB;
+    private JCheckBox muteColorsCB;
     private JCheckBox variationColoursCB;
     private JCheckBox highlightColoursCB;
 
@@ -101,10 +101,10 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         addComponent( indent3 );
 
         JPanel indent = new JPanel();
-        muteColoursCB = new JCheckBox( jEdit.getProperty( "options.buffertabs.colourmute.label" ) );
-        muteColoursCB.addItemListener( this );
+        muteColorsCB = new JCheckBox( jEdit.getProperty( "options.buffertabs.colourmute.label" ) );
+        muteColorsCB.addItemListener( this );
         indent.add( new Box.Filler( space, space, space ) );
-        indent.add( muteColoursCB );
+        indent.add( muteColorsCB );
         addComponent( indent );
 
         JPanel indent2 = new JPanel();
@@ -148,7 +148,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
             jEdit.getBooleanProperty( "buffertabs.colourtabs", true )
         );
 
-        muteColoursCB.setSelected(
+        muteColorsCB.setSelected(
             jEdit.getBooleanProperty( "buffertabs.colourmute", true )
         );
 
@@ -170,8 +170,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         );
 
 
-        muteColoursCB.setEnabled( enableColorsCB.isSelected() );
-        variationColoursCB.setEnabled( muteColoursCB.isSelected() && enableColorsCB.isSelected());
+        muteColorsCB.setEnabled( enableColorsCB.isSelected() );
+        variationColoursCB.setEnabled( muteColorsCB.isSelected() && enableColorsCB.isSelected());
         highlightColoursCB.setEnabled( enableColorsCB.isSelected() );
         colorTabRB.setEnabled( enableColorsCB.isSelected() );
         colorTextRB.setEnabled( enableColorsCB.isSelected() );
@@ -192,7 +192,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 
          //CES: Colour tabs
         jEdit.setBooleanProperty( "buffertabs.colourtabs", enableColorsCB.isSelected() );
-        jEdit.setBooleanProperty( "buffertabs.colourmute", muteColoursCB.isSelected() );
+        jEdit.setBooleanProperty( "buffertabs.colourmute", muteColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.colourhighlight", highlightColoursCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.colourvariation", variationColoursCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.colourizetext", colorTextRB.isSelected() );
@@ -221,8 +221,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
      * Update options pane to reflect option changes
      */
     public void itemStateChanged( ItemEvent e ) {
-        muteColoursCB.setEnabled( enableColorsCB.isSelected() );
-        variationColoursCB.setEnabled( muteColoursCB.isSelected() && enableColorsCB.isSelected());
+        muteColorsCB.setEnabled( enableColorsCB.isSelected() );
+        variationColoursCB.setEnabled( muteColorsCB.isSelected() && enableColorsCB.isSelected());
         highlightColoursCB.setEnabled( enableColorsCB.isSelected() );
         colorTabRB.setEnabled( enableColorsCB.isSelected() );
         colorTextRB.setEnabled( enableColorsCB.isSelected() );
