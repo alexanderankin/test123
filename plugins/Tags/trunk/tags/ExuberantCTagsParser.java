@@ -32,21 +32,51 @@ import org.gjt.sp.jedit.*;
  Exuberant C Tags are of the form:
  
    --format=2 (default)
-     tag_name<TAB>file_name<TAB>ex_cmd;"<TAB>extension_fields
+     tag_name<TAB>file_path_name<TAB>ex_cmd;"<TAB>extension_fields
    --format=1 
-     tag_name<TAB>file_name<TAB>ex_cmd
+     tag_name<TAB>file_path_name<TAB>ex_cmd
+     
+     ex_cmd can be of the form:
+       /^  search string $/
+     or
+       line_number
      
 */
 
-public class ExuberantCTagsParser extends GNUCTagsParser {
+public class ExuberantCTagsParser extends GenericTagsParser {
+
+  /***************************************************************************/
+  protected int tagLineNumber_ = -1;
   
   /***************************************************************************/
   public ExuberantCTagsParser() { super(); }
   
   /***************************************************************************/
-  public String getDefinitionFileName(int index) {
-    String tagDefinitionFileName = super.getDefinitionFileName(index);
+  public void reinitialize() {
+    super.reinitialize();
     
+    tagLineNumber_ = -1;
+  }
+
+  /***************************************************************************/
+  public String getDefinitionFileName(int index) {
+    if (!checkIndex(index))
+      return null;
+
+    String tagLine = (String) tagLines_.elementAt(index);      
+    if (tagLine == null)
+      return null;
+
+    String tagDefinitionFileName = null;
+
+    StringTokenizer st = new StringTokenizer(tagLine);
+    if (st.hasMoreTokens())  // skip tag from tag line
+      st.nextToken();
+    if (st.hasMoreTokens()) {
+      tagDefinitionFileName = st.nextToken();  // get file name
+    }
+    st = null;
+
     /* Exuberant C Tags comes with Cygwin.  However the path names are in a 
      * form that Cygwin emulates Unix with.  The path /cygdrive/c/* isn't 
      * actually a path but a mapped path to c:/*.  Since this will screw up
@@ -114,6 +144,14 @@ public class ExuberantCTagsParser extends GNUCTagsParser {
     st = null;
   
     return tagDefinitionSearchString; 
+  }
+
+  /***************************************************************************/
+  public int getDefinitionLineNumber(int index) {
+    getDefinitionSearchString(index); // This will parse and get number if there
+                                      // is one.
+      
+    return tagLineNumber_; 
   }
 
   /***************************************************************************/

@@ -53,7 +53,11 @@ public class TagsOptionsPanel extends AbstractOptionPane {
 				// North
 				protected JPanel tagFilesOptionsPanel_;
 					protected JCheckBox useCurrentBufTagFileCheckBox_;
+          protected JPanel curBufFilenamePanel_;
+            protected JLabel curBufFileNameLabel_;
+            protected JTextField curBufFileNamelField_;
 					protected JCheckBox searchAllFilesCheckBox_;
+           
 				
 				// Center
 				protected JScrollPane pane_;
@@ -96,6 +100,9 @@ public class TagsOptionsPanel extends AbstractOptionPane {
   public void _save() {
     Tags.setSearchAllTagFiles(searchAllFilesCheckBox_.isSelected());
     Tags.setUseCurrentBufTagFile(useCurrentBufTagFileCheckBox_.isSelected());
+    
+    jEdit.setProperty("options.tags.current-buffer-file-name", 
+                      curBufFileNamelField_.getText());
     
     TagsPlugin.debug_ = debugCheckBox_.isSelected();
   }
@@ -151,6 +158,11 @@ public class TagsOptionsPanel extends AbstractOptionPane {
 					useCurrentBufTagFileCheckBox_ = new JCheckBox(
 		            jEdit.getProperty(
                        "options.tags.tag-search-current-buff-tag-file.label"));
+          curBufFilenamePanel_ = new JPanel(new BorderLayout(5,0));
+             curBufFileNameLabel_ = new JLabel(jEdit.getProperty(
+                               "options.tags.current-buffer-file-name.label"));
+             curBufFileNamelField_ = new JTextField(jEdit.getProperty(
+                             "options.tags.current-buffer-file-name"));
 					searchAllFilesCheckBox_ = new JCheckBox(
 								 jEdit.getProperty("options.tags.tag-search-all-files.label"));
 																	
@@ -177,6 +189,10 @@ public class TagsOptionsPanel extends AbstractOptionPane {
   /***************************************************************************/
   protected void setupComponents() {
     
+    useCurrentBufTagFileCheckBox_.addActionListener(useCurBufTagFileListener_);
+    
+    curBufFileNameLabel_.setLabelFor(curBufFileNamelField_);
+    
     addButton_.addActionListener(addButtonListener_);
     removeButton_.addActionListener(removeButtonListener_);
     moveUpButton_.addActionListener(moveUpButtonListener_);
@@ -197,12 +213,16 @@ public class TagsOptionsPanel extends AbstractOptionPane {
   /***************************************************************************/
   protected void placeComponents() {
     
+    // See Note 1 in Tags.java
     //addSeparator("options.tags.tag-file-type.title");
     //parserPanel_.add(parserButtonPanel_);
     //addComponent(parserPanel_);
 
     //addSeparator("options.tags.tag-search-files.label");
     tagFilesOptionsPanel_.add(useCurrentBufTagFileCheckBox_);
+      curBufFilenamePanel_.add(curBufFileNameLabel_, BorderLayout.WEST);
+      curBufFilenamePanel_.add(curBufFileNamelField_, BorderLayout.CENTER);
+    tagFilesOptionsPanel_.add(curBufFilenamePanel_);
     tagFilesOptionsPanel_.add(searchAllFilesCheckBox_);
     tagFilesUIPanel_.add(tagFilesOptionsPanel_, BorderLayout.NORTH);
     tagFilesPanel_.add(tagFilesUIPanel_);
@@ -334,6 +354,13 @@ public class TagsOptionsPanel extends AbstractOptionPane {
   };
   
   /***************************************************************************/
+  protected ActionListener useCurBufTagFileListener_ = new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      updateGUI();
+    }
+  };
+
+  /***************************************************************************/
   protected void updateGUI() {
     int selectedIndices[] = list_.getSelectedIndices();
     int selectionCount = (selectedIndices != null) ? selectedIndices.length : 0;
@@ -344,5 +371,9 @@ public class TagsOptionsPanel extends AbstractOptionPane {
     moveDownButton_.setEnabled(selectionCount == 1 && 
                             selectedIndices[0] != (listModel_.getSize() - 1) &&
                             numItems != 0);
+                     
+    boolean selected = useCurrentBufTagFileCheckBox_.isSelected();
+    curBufFileNameLabel_.setEnabled(selected);
+    curBufFileNamelField_.setEnabled(selected);
   }
 }
