@@ -1,7 +1,7 @@
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Kenrick Drew
-plugin.tags.TagsPlugin.version=0.7
+plugin.tags.TagsPlugin.version=0.7.1
 plugin.tags.TagsPlugin.docs=Tags.html
 plugin.tags.TagsPlugin.depend.0=jdk 1.1
 plugin.tags.TagsPlugin.depend.1=jedit 03.02.99.00
@@ -20,21 +20,24 @@ tags-options.label=Tagging Options
 tags.menu.label=Tags
 tags.menu=tags-follow-tag tags-follow-tag-new-view tags-enter-and-follow-tag tags-pop-tag
 
+# Messages
+tags.message.no-tag-index-files=No tag index files to search.  Please add tag index files\nfrom the Global Options dialog.
+
 # Tag To dialog strings
-options.tags.tag-to.label=Tag to:
-options.tags.new-view-checkbox.label=Open new view
-options.tags.tag-enter-dialog.title=Enter And Follow Tag
+tags.enter-tag-dlg.title=Enter And Follow Tag
+tags.enter-tag-dlg.tag-to.label=Tag to:
+tags.enter-tag-dlg.new-view-checkbox.label=Open new view
 
 # Choose tag list
-options.tags.choose.Font=Monospaced
-options.tags.choose.font-size=12
+tags.tag-collide-list.Font=Monospaced
+tags.tag-collide-list.font-size=12
 
-# Option menu strings
+# Option strings
 options.tags.label=Tags
 options.tags.tag-file-type.title=Tag File Type
-options.tags.tag-search-files.label=Tag search files (in order of search)
-options.tags.tag-search-current-buff-tag-file.label=Search tag file in current buffer's directory first
-options.tags.tag-search-all-files.label=Search all tag files
+options.tags.tag-search-files.label=Tag index files (in order of search)
+options.tags.tag-search-current-buff-tag-file.label=Search tag index file in current buffer's directory first
+options.tags.tag-search-all-files.label=Search all tag index files
 options.tags.tag-search-files-add.label=Add...
 options.tags.tag-search-files-remove.label=Remove
 options.tags.tag-search-files-move-up.label=Move Up
@@ -42,4 +45,8 @@ options.tags.tag-search-files-move-down.label=Move Down
 options.tags.tag-options.title=Tagging Options
 options.tags.tag-ok.label=OK
 options.tags.tag-cancel.label=Cancel
+
+# Option values
+options.tags.tag-search-current-buff-tag-file=false
+options.tags.tag-search-all-files=false
 
