@@ -50,7 +50,7 @@ import org.gjt.sp.jedit.jEdit;
 
 
 public class BibTeXPanel
-  extends DefaultToolPanel {
+  extends AbstractToolPanel {
 
   //~ Instance/static variables ...............................................
 
@@ -112,7 +112,7 @@ public class BibTeXPanel
 //     }
  
     if (!isTeXFile(buffer)) {
-      log("isTexFile");
+      log("!isTexFile");
       displayNotTeX(BorderLayout.CENTER);
     } else {
       loadBibFiles();
@@ -130,6 +130,9 @@ public class BibTeXPanel
     repaint();
   }
 
+  public void reload(){
+  }
+  
   private void buildList() {
 
     Object[] be = bibEntries.toArray();
@@ -263,6 +266,9 @@ public class BibTeXPanel
     bibFiles.clear();
     
     File texFile = new File(tex);
+    
+    
+    
 
     for (int i = buffer.getLineCount() - 1; i > 0; i--) {
 

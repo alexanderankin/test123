@@ -38,13 +38,15 @@ import java.awt.Dimension;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-import javax.swing.JPanel;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
 
 public abstract class AbstractToolPanel
@@ -56,6 +58,26 @@ public abstract class AbstractToolPanel
                           RELOAD  = 2,               //           1 0
                           RELOAD_AND_REFRESH = 3;    //           1 1
 
+  protected Buffer buffer;
+  protected String tex;
+  protected boolean bufferChanged = false;
+  protected int currentCursorPosn;
+  protected View view;
+
+               
+    public AbstractToolPanel(View view, Buffer buff, String name) {
+    this.buffer = buff;
+    this.view = view;
+    this.setName(name);
+            tex = buffer.getPath();
+
+    EditBus.addToBus(this);
+  }
+
+  public AbstractToolPanel(View view, Buffer buff) {
+	  this(view,buff,"Tab");
+  }
+
   //~ Methods .................................................................
 
   /**
@@ -63,7 +85,25 @@ public abstract class AbstractToolPanel
    * 
    * @param message ¤
    */
-  public abstract void handleMessage(EBMessage message);
+  public void handleMessage(EBMessage message) {
+
+    boolean bufferLoaded = (message instanceof BufferUpdate);
+    if (bufferLoaded){
+      BufferUpdate bu = (BufferUpdate) message;
+      Object what = bu.getWhat();
+      bufferLoaded = (what == BufferUpdate.CREATED ||
+                      what == BufferUpdate.LOADED  ||
+                      what == BufferUpdate.SAVED  );
+    }
+    
+    if ((message instanceof EditPaneUpdate) || bufferLoaded) {
+      buffer = view.getBuffer();
+      tex = buffer.getPath();
+
+      bufferChanged = true;
+      refresh();
+    }
+  }
 
   /**
    * ¤
@@ -198,5 +238,8 @@ public abstract class AbstractToolPanel
 		return new ImageIcon( DefaultToolPanel.class.getResource( filename ) );
 	}
 
-  
+    public void refreshCurrentCursorPosn(){
+	     currentCursorPosn = view.getTextArea().getCaretPosition(); 
+  }
+
 }

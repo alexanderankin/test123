@@ -34,10 +34,12 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   bibliography-dock \
   label-dock \
   show-image-under-caret \
+  open-import \
   - \
   compile \
   compile-prompt \
   bibtex \
+  erase-working \
   - \
   set-main \
   reset-main \
@@ -82,7 +84,10 @@ compile-prompt.title = Compile...
 compile-prompt.label = Compile...
 bibtex.title = BibTeX
 bibtex.label = BibTeX
-
+erase-working.title = Erase Working Files
+erase-working.label = Erase Working Files...
+open-import.title = Open Import
+open-import.label = Open Import
 
 labels.label=Labels
 labels.title=Find Labels

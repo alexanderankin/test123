@@ -9,25 +9,30 @@ import gnu.regexp.RE;
 import gnu.regexp.REException;
 import gnu.regexp.REMatch;
 
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import java.awt.event.ActionEvent;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import java.io.File;
+import java.io.*;
+
+import java.util.*;
+
+import javax.swing.*;
+import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
 public class LaTeXMacros {
     public static final String MAIN_TEX_FILE_KEY = "latex.root";
+    public static final String IMPORT_REG_EX = "\\\\(?:(?:input)|(?:import))\\{(.*?)\\}";
 
     public static void repeat(String expression, int start, int no, View view) {
         StringBuffer sb = new StringBuffer("");
@@ -236,102 +241,318 @@ public class LaTeXMacros {
         return null;
     }
 
+    private static REMatch[] findAllInDocument(Buffer buf, String regex) {
+       return null;
+    }
+                                             
     public static void compile(View view, Buffer buffer, boolean prompt) {
         String tex = getMainTeXPath(buffer);
+
+        if (!(tex.substring(tex.length() - 3, tex.length()).equals("tex"))) {
+            Macros.error(view, tex + " is not a TeX file.");
+
+            return;
+        }
+
         String command;
 
         if (prompt) {
-           command = showCompileHistoryDialog(view);
-           if (command == null){
-              Macros.message(view, "Compile Aborted...");
-              return;
-           }
-        } else{
-           command = jEdit.getProperty("latex.compile.command");
-        }
-        
-        if (tex.substring(tex.length() - 3, tex.length()).equals("tex")) {
-            jEdit.saveAllBuffers(view, false);
-            String texRoot = new File(tex).getParent().toString();
-            StringBuffer str = new StringBuffer(command);
-            str.append(" '").append(tex).append("'");
-            command = str.toString();
-            runCommand(view, texRoot, command);
-            
-        } else {
-            Macros.error(view, tex + " is not a TeX file.");
-        }
-    }
-    
-    private static void runCommand(View view, String dir, String command){
-      Console console = (Console) view.getDockableWindowManager().getDockable("console");
-      Shell _shell = Shell.getShell("System");
-      console.setShell(_shell);
-      console.run(_shell, console, "%kill");
-      console.run(_shell, console, "cd " + '"' + dir + '"');
-      console.run(_shell, console, command);  
-    }
-    
-    public static void bibtex(View view, Buffer buffer){
-      String tex = getMainTeXPath(buffer);
-	
-      if (!new File(tex).exists()) {
-         Macros.error(view,tex + " is not a TeX file.");
-         return;
-      }
-      
-      if (tex.substring(tex.length()-3,tex.length()).equals("tex")){
-       String texRoot = new File(tex).getParent().toString();
-       tex = tex.substring(0,tex.length()-4);
-         String str = "bibtex '" + tex +"'";
-         
-         runCommand(view, texRoot, str);
-      }
-      else {
-         Macros.error(view,tex + " is not a TeX file.");
-      }
+            CommandHistoryDialog hd = new CommandHistoryDialog(view);
+            hd.setVisible(true);
+            command = hd.getCommand();
 
+            if (command == null) {
+                Macros.message(view, "Compile Aborted...");
+
+                return;
+            }
+        } else {
+            command = jEdit.getProperty("latex.compile.command");
+        }
+
+        jEdit.saveAllBuffers(view, false);
+        String texRoot = new File(tex).getParent().toString();
+        StringBuffer str = new StringBuffer(command);
+        str.append(" '").append(tex).append("'");
+        command = str.toString();
+        runCommand(view, texRoot, command);
     }
-    
-    private static String showCompileHistoryDialog(final View view){
-        final JDialog dialog = new JDialog(view, "Enter Compilation Command", true);
-        dialog.setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-        dialog.addWindowListener(new WindowAdapter(){
-           public void windowClosing(WindowEvent e){
-              setWindowClosed(true);
-              dialog.setVisible(false);
-           }
-        });
-        JPanel panel = new JPanel();
-        HistoryTextField htf = new HistoryTextField("latextools.compile.history", false, true);
-        htf.setColumns(20);
-        htf.addActionListener(new ActionListener(){
-           public void actionPerformed(ActionEvent e){
-              dialog.setVisible(false);
-           }
-        });
-        panel.add(htf);
+
+    private static void runCommand(View view, String dir, String command) {
+        Console console = (Console)view.getDockableWindowManager().getDockable(
+                                  "console");
+        Shell _shell = Shell.getShell("System");
+        console.setShell(_shell);
+        console.run(_shell, console, "%kill");
+        console.run(_shell, console, "cd " + '"' + dir + '"');
+        console.run(_shell, console, command);
+    }
+
+    public static void bibtex(View view, Buffer buffer) {
+        String tex = getMainTeXPath(buffer);
+
+        if (!(tex.substring(tex.length() - 3, tex.length()).equals("tex"))) {
+            Macros.error(view, tex + " is not a TeX file.");
+
+            return;
+        }
+
+        if (!new File(tex).exists()) {
+            Macros.error(view, tex + " is not a TeX file.");
+
+            return;
+        }
+
+        String texRoot = new File(tex).getParent().toString();
+        tex = tex.substring(0, tex.length() - 4);
+        String str = "bibtex '" + tex + "'";
+        runCommand(view, texRoot, str);
+    }
+
+    public static void deleteWorkingFiles(View view, Buffer buffer) {
+        String tex = getMainTeXPath(buffer);
+
+        if (!(tex.substring(tex.length() - 3, tex.length()).equals("tex"))) {
+            Macros.error(view, tex + " is not a TeX file.");
+
+            return;
+        }
+
+        String[] extensions = {
+            ".log", ".bak", ".aux", ".bbl", ".blg", ".toc", ".pdf", ".xyc"
+        };
+        WorkingClassDialog dialog = new WorkingClassDialog(view, extensions);
+        dialog.setVisible(true);
+        Set toRemove = dialog.getToRemove();
+
+        if (toRemove == null) {
+
+            return;
+        }
+
+        File dir = (new File(tex)).getParentFile();
+        File[] toDelete = dir.listFiles(new ExtensionFilter(toRemove));
+        StringBuffer sb = new StringBuffer(
+                                  "<html><h3>About to delete the following files:</h3>");
+
+        for (int i = 0; i < toDelete.length; i++) {
+            sb.append(toDelete[i]);
+            sb.append("<br>");
+        }
+
+        sb.append("<br><b>Erase Now?");
+        int del = Macros.confirm(view, sb.toString(), 
+                                 JOptionPane.YES_NO_OPTION);
+
+        if (del == JOptionPane.YES_OPTION) {
+
+            for (int i = 0; i < toDelete.length; i++) {
+                toDelete[i].delete();
+            }
+        }
+    }
+
+    private static class CommandHistoryDialog
+        extends JDialog
+        implements ActionListener,
+                   WindowListener {
+        private HistoryTextField htf;
+        private String command;
+
+        CommandHistoryDialog(Frame owner) {
+            super(owner, "Enter Compilation Command", true);
+            JPanel panel = new JPanel();
+            htf = new HistoryTextField("latextools.compile.history", false, 
+                                       true);
+            htf.setColumns(20);
+
+            if (htf.getModel().getSize() > 0) {
+                htf.setText(htf.getModel().getItem(0));
+            }
+
+            htf.addActionListener(this);
+            panel.add(htf, BorderLayout.NORTH);
+            JButton ok = new JButton("OK");
+            JButton cancel = new JButton("Cancel");
+            ok.addActionListener(this);
+            cancel.addActionListener(this);
+            JPanel buttonPanel = new JPanel();
+            buttonPanel.add(ok);
+            buttonPanel.add(cancel);
+            panel.add(buttonPanel, BorderLayout.SOUTH);
+            setContentPane(panel);
+            addWindowListener(this);
+            pack();
+            setLocation(getCenter(owner, this));
+        }
+
+        public String getCommand() {
+
+            return command;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+
+            if (e.getActionCommand() == "OK") {
+                command = htf.getText();
+                setVisible(false);
+            } else if (e.getActionCommand() == "Cancel") {
+                command = null;
+                setVisible(false);
+            }
+        }
+
+        public void windowActivated(WindowEvent e) {
+        }
+
+        public void windowClosed(WindowEvent e) {
+        }
+
+        public void windowClosing(WindowEvent e) {
+            command = null;
+            setVisible(false);
+        }
+
+        public void windowDeactivated(WindowEvent e) {
+        }
+
+        public void windowDeiconified(WindowEvent e) {
+        }
+
+        public void windowIconified(WindowEvent e) {
+        }
+
+        public void windowOpened(WindowEvent e) {
+        }
+    }
+
+    private static class WorkingClassDialog
+        extends JDialog
+        implements ActionListener {
+        private String[] extensions;
+        private Set toRemove;
+        private JCheckBox[] boxes;
+
+        WorkingClassDialog(Frame owner, String[] extensions) {
+            super(owner, "Erase Working Files", true);
+            this.extensions = extensions;
+            toRemove = new HashSet();
+            boxes = new JCheckBox[extensions.length];
+            JPanel boxPanel = new JPanel(new GridLayout(0, 2));
+
+            for (int i = 0; i < boxes.length; i++) {
+                boxes[i] = new JCheckBox(extensions[i]);
+                boxes[i].setSelected(true);
+                boxPanel.add(boxes[i]);
+            }
+
+            JButton ok = new JButton("OK");
+            JButton cancel = new JButton("Cancel");
+            ok.addActionListener(this);
+            cancel.addActionListener(this);
+
+            if (boxes.length % 2 == 1) {
+                boxPanel.add(new JLabel(""));
+            }
+
+            boxPanel.add(ok);
+            boxPanel.add(cancel);
+            setContentPane(boxPanel);
+            pack();
+            setLocation(getCenter(owner, this));
+        }
+
+        public Set getToRemove() {
+
+            return toRemove;
+        }
+
+        public void actionPerformed(ActionEvent e) {
+
+            if (e.getActionCommand() == "OK") {
+
+                for (int i = 0; i < extensions.length; i++) {
+
+                    if (boxes[i].isSelected()) {
+                        toRemove.add(boxes[i].getText());
+                    }
+                }
+
+                setVisible(false);
+            } else if (e.getActionCommand() == "Cancel") {
+                toRemove = null;
+                setVisible(false);
+            }
+        }
+    }
+
+    private static class ExtensionFilter
+        implements FilenameFilter {
+        StringBuffer sb;
+        RE regEx;
+
+        ExtensionFilter(Set accept) {
+            Iterator it = accept.iterator();
+            sb = new StringBuffer("(\\w+?\\");
+            sb.append(it.next()).append(")");
+
+            for (; it.hasNext();) {
+                sb.append("|(\\w+?\\");
+                sb.append(it.next()).append(")");
+            }
+
+            sb.append("\\b");
+
+            try {
+                regEx = new RE(sb.toString());
+            } catch (REException e) {
+                e.printStackTrace();
+            }
+        }
+
+        public boolean accept(File dir, String name) {
+
+            return regEx.getMatch(name) != null;
+        }
+    }
+
+    public static void openImport(View view, Buffer buffer){
+        String tex = getMainTeXPath(buffer);
+        if (!(tex.substring(tex.length() - 3, tex.length()).equals("tex"))) {
+            Macros.error(view, tex + " is not a TeX file.");
+            return;
+        }
+       int line = view.getTextArea().getCaretLine();
+
+        REMatch match = findInDocument(buffer , IMPORT_REG_EX, line, line +1);
+        if (match == null) return;
         
-        if (htf.getModel().getSize() > 0){
-           htf.setText(htf.getModel().getItem(0));
+        String file = match.toString(1);
+        if (file.indexOf(".") < 0) {
+           file += ".tex";
         }
         
-        dialog.setContentPane(panel);
-        dialog.pack();
-        dialog.setVisible(true);
-        String out = windowClosed ? null : htf.getText();        
+        File imported = new File(getMainTeXFile(buffer).getParentFile(), file);
         
-        //Macros.message(view, out);
-        setWindowClosed(false);
-        
-        return out;
+        jEdit.openFile(view, imported.toString());
+     }
+    
+    public static File[] getProjectFiles(Buffer buffer){
+       
+       
+       
+       return null;
     }
     
-    
-    private static boolean windowClosed = false;
-    
-    private static void setWindowClosed(boolean value){
-       windowClosed = value;
+    private static Point getCenter(Component parent, Component dialog) {
+        Dimension pd = parent.getSize();
+        Dimension cd = dialog.getSize();
+        Point pp = parent.getLocation();
+        Point cp = new Point(pp);
+        int x = (int)((pd.getWidth() - cd.getWidth()) / 2);
+        int y = (int)((pd.getHeight() - cd.getHeight()) / 2);
+        cp.translate(x, y);
+
+        return cp;
     }
-    
 }
