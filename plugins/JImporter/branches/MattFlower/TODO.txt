@@ -1,0 +1,55 @@
+Todo's Before I Can Release the Next Version
+--------------------------------------------
+* Add knowledge of classpath groupings that would allow a user to group the
+  imports.  (Maybe the user likes to have java.* in a separate block of imports
+* Add option to combine multiple imports into an asterisk after a given number 
+  of imports from the same package (perhaps more than 4).
+* Javadoc is getting a bit messy.  Do a quick run through to make sure that
+  everything is properly documented.
+* Combine the code in JEditClassImporter.importClass and 
+  JEditClassImporter.importClassAtPoint -- they have a lot of redundancy.
+* Check code into CVS repository.
+* Add a README.JImporter into the guidelines directory of the CVS repository.
+
+Short Term Todo's
+-----------------
+* Add "Transform Class at Point to FQ" action.
+* Add importing for JSP pages -- this will require that the ClassImporter file
+  be sensitive to the type of the current file.  (This will probably be done by 
+  looking at the edit mode.)  In reality, this shouldn't really be that hard.
+* Allow users to search multiple classpaths at one time.  (Jigar Patel)
+* It would also be handy if your plug-in warned users about *unused* import 
+  statements; i.e. import statements where none of the classes were still in the 
+  code.   I might be able to find some code for this at 
+  http://importscrubber.sourceforge.net/, though I might need to be careful with
+  licensing issues.  (Todd J, tbone@toddj.net)  (Thanks to Steve Snider for a good
+  pointer on how to do this easily.)
+
+Longer Term Todo's
+------------------
+* Implement a buffered lookup of class names for slower computers that don't do
+  the brute force lookup quickly.
+* Implement a switch for the JImporter Dialog Box that will allow us to match as
+  we type, instead of having to press the search button.
+* Implement a couple more ways of looking up the path of a file other than the
+  current brute force method of looking through the whole filesystem.
+  - Using a ctags-generated tags file would be nice.  I'm not certain how we'd
+    allow the user to specify the root of the package though.  We could just
+    look up the package name inside of the file, but I'd be worried about the
+    speed of the IO.
+  - We could do look-ups of project files if we were to define classpath mount
+    points for a project.  
+  - Store a b-tree on the filesystem and do external look ups at runtime.  
+  - Store a hashmap in memory.  (I'm not fond of this, it could really use up
+    a lot of memory if we aren't careful.  Still, if the classpath were small
+    enough this might be a good option.)
+* Decouple classpath.java and searchmethod.java from jEdit.  (It prevents me 
+  from using these classes elsewhere.)    
+* It would be nice to allow drop down completion of imports as you type import
+  statements into jEdit.
+* Add the ability to hover over an import statement to see what file it is being
+  imported from.  (Similar to JWhich functionality.)
+* Add an option that will automatically import any class that we use that isn't
+  already imported.  (I'm talking about doing it in real time.) 
+
+
