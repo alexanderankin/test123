@@ -50,14 +50,23 @@ public class TagsPlugin extends EditPlugin {
   protected static boolean debug_ = false;
   
   /*+*************************************************************************/
-  public void start() {}
+  public void start() {
+    Tags.loadTagFiles();
+  }
   
   /*+*************************************************************************/
-  public void stop() {}
+  public void stop() {
+    Tags.writeTagFiles();
+  }
   
   /*+*************************************************************************/
   public void createMenuItems(Vector menuItems) {
     menuItems.addElement(GUIUtilities.loadMenu(MENU));
+  }
+  
+  /***************************************************************************/
+  public void createOptionPanes(OptionsDialog od) {
+    od.addOptionPane(new TagsOptionsPanel());
   }
   
   /***************************************************************************/
