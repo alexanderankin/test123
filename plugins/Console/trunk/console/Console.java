@@ -545,24 +545,17 @@ implements EBComponent, Output, DefaultFocusComponent
 		public void print(final Color color,
 			final String msg)
 		{
-			try
+			if(SwingUtilities.isEventDispatchThread())
+				printSafely(color,msg);
+			else
 			{
-				if(SwingUtilities.isEventDispatchThread())
-					printSafely(color,msg);
-				else
+				SwingUtilities.invokeLater(new Runnable()
 				{
-					SwingUtilities.invokeAndWait(new Runnable()
+					public void run()
 					{
-						public void run()
-						{
-							printSafely(color,msg);
-						}
-					});
-				}
-			}
-			catch(Exception e)
-			{
-				Log.log(Log.ERROR,this,e);
+						printSafely(color,msg);
+					}
+				});
 			}
 		} //}}}
 

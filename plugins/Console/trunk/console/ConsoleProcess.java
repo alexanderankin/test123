@@ -189,6 +189,7 @@ class ConsoleProcess
 			catch(InterruptedException e)
 			{
 				Log.log(Log.ERROR,this,e);
+				notifyAll();
 				return;
 			}
 
