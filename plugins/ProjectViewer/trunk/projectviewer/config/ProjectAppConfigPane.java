@@ -296,7 +296,6 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		}
 	}//}}}
 
-
 	//{{{ AppModel class
 	private static class AppModel extends AbstractTableModel {
 

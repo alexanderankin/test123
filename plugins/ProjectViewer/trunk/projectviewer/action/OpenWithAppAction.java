@@ -51,17 +51,17 @@ public class OpenWithAppAction extends Action {
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		VPTFile file = (VPTFile) viewer.getSelectedNode();
-		appList.launchApp(file.getFile(), viewer);
+		VPTNode node = (VPTNode) viewer.getSelectedNode();
+		appList.launchApp(node.getNodePath(), viewer);
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		if (node != null && node.isFile()) {
+		if (node != null && node.canOpen()) {
 			cmItem.setVisible(true);
 			// "Beautify" the "Open with..." entry
-			String app = appList.getAppName(((VPTFile)node).getFile());
+			String app = appList.getAppName(node.getNodePath());
 			if (app != null) {
 				int idx = app.lastIndexOf("/");
 				if (idx != -1) {
