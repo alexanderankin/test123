@@ -284,7 +284,16 @@ console.error.generic.message=$3
 
 ### Commando
 
-commando.default=ant diff java javac jikes jmk latex openjade_HTML openjade_PDF \
+commando.default=ant \
+	diff \
+	hugs \
+	java \
+	javac \
+	jikes \
+	jmk \
+	latex \
+	openjade_HTML \
+	openjade_PDF \
 	yap
 
 commando.toolbar.enabled=false
