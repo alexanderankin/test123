@@ -47,12 +47,18 @@ public class JCompilerPlugin extends EditPlugin
 	/** holds a shared instance of the JCompiler shell. */
 	private static final JCompilerShell shell = new JCompilerShell();
 
+	class ToolsJarNotFoundException extends RuntimeException {
+		public ToolsJarNotFoundException(String message) {
+			super(message);
+		}
+	}
+
 
 	public void start() {
 		if(!MiscUtilities.isToolsJarAvailable())
 		{
 			// I can't live without my tools.jar:
-			throw new UnsupportedOperationException(
+			throw new ToolsJarNotFoundException(
 				"Could not find library tools.jar!\n"
 				+ "This library is essential for the JCompiler plugin.\n"
 				+ "It usually resides in {java.home}/../lib/.\n"

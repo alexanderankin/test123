@@ -3,6 +3,7 @@ VERSION 1.3.3
 - bugfix: "stop" command didn't cleanup properly, resulting in messages
   printed twice
 - bugfix: first compiler run printed messages twice occasionally
+- bugfix: ClassNotFoundException on startup if run on JDK 1.1.x
 - overall compiler run should be faster now
 - requires jEdit 3.2.2, EditBus 1.1, Console 3.0
 
