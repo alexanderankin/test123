@@ -1,0 +1,20 @@
+#!/seaver/kdrew/bin/tcsh
+
+# Experimental tagging from the command line (Unix).  PTCSRC is not needed. See
+# tags.TagsCmdLine
+
+if ("$1" == "") then
+  echo "$0 func_name"
+  exit (0)
+endif
+
+setenv ARG_LINE `java -classpath /disk1/kdrew/system/pkg/jedit/3.2.2src:/home/kdrew/.jedit_test/jars/Tags tags.TagsCmdLine $PTCSRC $1`
+if ($status == 1) then
+  echo $ARG_LINE
+  jedit $ARG_LINE
+else if ($status == 0) then
+  echo "$1 not found"
+else
+  echo Error...
+endif
+
