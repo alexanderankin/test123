@@ -92,51 +92,45 @@ public interface PHPParserConstants {
   int FLOATING_POINT_LITERAL = 105;
   int EXPONENT = 106;
   int STRING_LITERAL = 107;
-  int STRING_2 = 108;
-  int STRING_3 = 109;
-  int ESCAPED = 110;
-  int DOUBLEQUOTE = 111;
-  int DOLLARS = 112;
-  int DOUBLEQUOTE2 = 113;
-  int LBRACE1 = 114;
-  int RBRACE1 = 118;
-  int ID = 119;
-  int DOLLAR = 122;
-  int IDENTIFIER = 123;
-  int LETTER = 124;
-  int DIGIT = 125;
-  int SPECIAL = 126;
-  int LPAREN = 128;
-  int RPAREN = 129;
-  int LBRACE = 130;
-  int RBRACE = 131;
-  int LBRACKET = 132;
-  int RBRACKET = 133;
-  int SEMICOLON = 134;
-  int COMMA = 135;
-  int DOT = 136;
-  int GT = 137;
-  int LT = 138;
-  int EQUAL_EQUAL = 139;
-  int LE = 140;
-  int GE = 141;
-  int NOT_EQUAL = 142;
-  int DIF = 143;
-  int BANGDOUBLEEQUAL = 144;
-  int TRIPLEEQUAL = 145;
-  int ASSIGN = 146;
-  int PLUSASSIGN = 147;
-  int MINUSASSIGN = 148;
-  int STARASSIGN = 149;
-  int SLASHASSIGN = 150;
-  int ANDASSIGN = 151;
-  int ORASSIGN = 152;
-  int XORASSIGN = 153;
-  int DOTASSIGN = 154;
-  int REMASSIGN = 155;
-  int TILDEEQUAL = 156;
-  int LSHIFTASSIGN = 157;
-  int RSIGNEDSHIFTASSIGN = 158;
+  int STRING_1 = 108;
+  int STRING_2 = 109;
+  int STRING_3 = 110;
+  int DOLLAR = 111;
+  int IDENTIFIER = 112;
+  int LETTER = 113;
+  int DIGIT = 114;
+  int SPECIAL = 115;
+  int LPAREN = 116;
+  int RPAREN = 117;
+  int LBRACE = 118;
+  int RBRACE = 119;
+  int LBRACKET = 120;
+  int RBRACKET = 121;
+  int SEMICOLON = 122;
+  int COMMA = 123;
+  int DOT = 124;
+  int GT = 125;
+  int LT = 126;
+  int EQUAL_EQUAL = 127;
+  int LE = 128;
+  int GE = 129;
+  int NOT_EQUAL = 130;
+  int DIF = 131;
+  int BANGDOUBLEEQUAL = 132;
+  int TRIPLEEQUAL = 133;
+  int ASSIGN = 134;
+  int PLUSASSIGN = 135;
+  int MINUSASSIGN = 136;
+  int STARASSIGN = 137;
+  int SLASHASSIGN = 138;
+  int ANDASSIGN = 139;
+  int ORASSIGN = 140;
+  int XORASSIGN = 141;
+  int DOTASSIGN = 142;
+  int REMASSIGN = 143;
+  int TILDEEQUAL = 144;
+  int LSHIFTASSIGN = 145;
+  int RSIGNEDSHIFTASSIGN = 146;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
@@ -144,10 +138,6 @@ public interface PHPParserConstants {
   int IN_VARIABLE = 3;
   int IN_FORMAL_COMMENT = 4;
   int IN_MULTI_LINE_COMMENT = 5;
-  int IN_STRING = 6;
-  int DOLLAR_IN_STRING = 7;
-  int SKIPSTRING = 8;
-  int DOLLAR_IN_STRING_EXPR = 9;
 
   String[] tokenImage = {
     "<EOF>",
@@ -258,26 +248,14 @@ public interface PHPParserConstants {
     "<FLOATING_POINT_LITERAL>",
     "<EXPONENT>",
     "<STRING_LITERAL>",
+    "<STRING_1>",
     "<STRING_2>",
     "<STRING_3>",
-    "<ESCAPED>",
-    "\"\\\"\"",
-    "\"$\"",
-    "\"\\\"\"",
-    "\"{\"",
-    "\"{\"",
-    "\"}\"",
-    "<token of kind 117>",
-    "\"}\"",
-    "<ID>",
-    "<token of kind 120>",
-    "<token of kind 121>",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<token of kind 127>",
     "\"(\"",
     "\")\"",
     "\"{\"",

@@ -317,7 +317,7 @@ TOKEN_MGR_DECLS:
 
 <IN_SINGLE_LINE_COMMENT> SPECIAL_TOKEN :
 {
-  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n" > : PHPPARSING
+  <SINGLE_LINE_COMMENT: "\n" | "\r" | "\r\n"> : PHPPARSING
 | < ~[] >
 }
 
@@ -481,17 +481,17 @@ MORE :
 |
   <#EXPONENT: ["e","E"] (["+","-"])? (["0"-"9"])+ >
 |
-  <STRING_LITERAL: (<STRING_2> | <STRING_3>)>
-//|   <STRING_1: "\"" ( ~["\"","\\"] | "\\" ~[] )* "\"">
+  <STRING_LITERAL: (<STRING_1> | <STRING_2> | <STRING_3>)>
+|   <STRING_1: "\"" ( ~["\"","\\"] | "\\" ~[] )* "\"">
 |   <STRING_2: "'"  ( ~["'","\\"]  | "\\" ~[] )* "'">
 |   <STRING_3: "`"  ( ~["`","\\"]  | "\\" ~[] )* "`">
 }
-
+ /*
 <IN_STRING,DOLLAR_IN_STRING> SKIP :
 {
   <ESCAPED : ("\\" ~[])> : IN_STRING
 }
-
+   Deactivate the String parsing
 <PHPPARSING> TOKEN :
 {
   <DOUBLEQUOTE : "\""> : IN_STRING
@@ -547,13 +547,15 @@ MORE :
 {
   <~[]>
 }
+*/
 /* IDENTIFIERS */
 
 
 <PHPPARSING,IN_VARIABLE> TOKEN : {<DOLLAR : "$"> : IN_VARIABLE}
 
 
-<PHPPARSING, IN_VARIABLE, DOLLAR_IN_STRING> TOKEN :
+//<PHPPARSING, IN_VARIABLE, DOLLAR_IN_STRING> TOKEN :
+<PHPPARSING, IN_VARIABLE> TOKEN :
 {
   <IDENTIFIER: (<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)* >
 |
@@ -569,11 +571,11 @@ MORE :
     "_" | ["\u007f"-"\u00ff"]
   >
 }
-
+  /*
 <DOLLAR_IN_STRING> SPECIAL_TOKEN :
 {
  < ~[] > : IN_STRING
-}
+}  */
 /* SEPARATORS */
 
 <PHPPARSING,IN_VARIABLE> TOKEN :
@@ -593,13 +595,13 @@ MORE :
 /* COMPARATOR */
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
-  <GT                 : ">"> : PHPPARSING
-| <LT                 : "<"> : PHPPARSING
-| <EQUAL_EQUAL        : "=="> : PHPPARSING
-| <LE                 : "<="> : PHPPARSING
-| <GE                 : ">="> : PHPPARSING
-| <NOT_EQUAL          : "!="> : PHPPARSING
-| <DIF                : "<>"> : PHPPARSING
+  <GT                 : ">"  > : PHPPARSING
+| <LT                 : "<"  > : PHPPARSING
+| <EQUAL_EQUAL        : "==" > : PHPPARSING
+| <LE                 : "<=" > : PHPPARSING
+| <GE                 : ">=" > : PHPPARSING
+| <NOT_EQUAL          : "!=" > : PHPPARSING
+| <DIF                : "<>" > : PHPPARSING
 | <BANGDOUBLEEQUAL    : "!=="> : PHPPARSING
 | <TRIPLEEQUAL        : "==="> : PHPPARSING
 }
@@ -607,17 +609,17 @@ MORE :
 /* ASSIGNATION */
 <PHPPARSING,IN_VARIABLE> TOKEN :
 {
-  <ASSIGN             : "="> : PHPPARSING
-| <PLUSASSIGN         : "+="> : PHPPARSING
-| <MINUSASSIGN        : "-="> : PHPPARSING
-| <STARASSIGN         : "*="> : PHPPARSING
-| <SLASHASSIGN        : "/="> : PHPPARSING
-| <ANDASSIGN          : "&="> : PHPPARSING
-| <ORASSIGN           : "|="> : PHPPARSING
-| <XORASSIGN          : "^="> : PHPPARSING
-| <DOTASSIGN          : ".="> : PHPPARSING
-| <REMASSIGN          : "%="> : PHPPARSING
-| <TILDEEQUAL         : "~="> : PHPPARSING
+  <ASSIGN             : "="  > : PHPPARSING
+| <PLUSASSIGN         : "+=" > : PHPPARSING
+| <MINUSASSIGN        : "-=" > : PHPPARSING
+| <STARASSIGN         : "*=" > : PHPPARSING
+| <SLASHASSIGN        : "/=" > : PHPPARSING
+| <ANDASSIGN          : "&=" > : PHPPARSING
+| <ORASSIGN           : "|=" > : PHPPARSING
+| <XORASSIGN          : "^=" > : PHPPARSING
+| <DOTASSIGN          : ".=" > : PHPPARSING
+| <REMASSIGN          : "%=" > : PHPPARSING
+| <TILDEEQUAL         : "~=" > : PHPPARSING
 | <LSHIFTASSIGN       : "<<="> : PHPPARSING
 | <RSIGNEDSHIFTASSIGN : ">>="> : PHPPARSING
 }
@@ -817,8 +819,8 @@ Token token;
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
-                                          "'(' expected",
-                                          "(",
+                                          "'{' expected",
+                                          "{",
                                           e.currentToken.image,
                                           e.currentToken.sourceStart,
                                           e.currentToken.sourceEnd,
@@ -834,8 +836,8 @@ Token token;
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
-                                          "')' expected",
-                                          ")",
+                                          "'}' expected",
+                                          "}",
                                           e.currentToken.image,
                                           e.currentToken.sourceStart,
                                           e.currentToken.sourceEnd,
@@ -856,9 +858,8 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
   final FieldDeclaration field;
 }
 {
-  method = MethodDeclaration() {method.analyzeCode();
-                                classDeclaration.addMethod(method);}
-| field = FieldDeclaration()   {classDeclaration.addField(field);}
+  method = MethodDeclaration() {method.analyzeCode(); classDeclaration.addMethod(method);}
+| field = FieldDeclaration()   {if (field != null) classDeclaration.addField(field);}
 }
 
 /**
@@ -875,11 +876,29 @@ FieldDeclaration FieldDeclaration() :
   int pos;
 }
 {
-  token = <VAR> variableDeclaration = VariableDeclaratorNoSuffix()
-  {
-    arrayList.add(variableDeclaration);
-    pos = variableDeclaration.sourceEnd;
+  token = <VAR>
+  try {
+    variableDeclaration = VariableDeclaratorNoSuffix()
+      {
+        arrayList.add(variableDeclaration);
+        pos = variableDeclaration.sourceEnd;
+      }
+    } catch (ParseException e) {
+      Token semicolon = error_skipto(SEMICOLON);
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "variable expected",
+                                            "variable",
+                                            e.currentToken.next.image,
+                                            token.sourceEnd,
+                                            semicolon.sourceEnd,
+                                            token.beginLine,
+                                            semicolon.endLine,
+                                            token.endColumn,
+                                            semicolon.endColumn));
+      return null;
   }
+
   (
     <COMMA> variableDeclaration = VariableDeclaratorNoSuffix()
       {
@@ -896,16 +915,23 @@ FieldDeclaration FieldDeclaration() :
                                           "';' expected",
                                           ";",
                                           e.currentToken.image,
-                                          pos+1,
-                                          pos+2,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
 
-  {list = new VariableDeclaration[arrayList.size()];
-   arrayList.toArray(list);
+  {
+   if (arrayList.size() != 0) {
+   list = new VariableDeclaration[arrayList.size()];
+     arrayList.toArray(list);
+
+   } else {
+    //todo : strange
+     return null;
+   }
    int end;
    if (token2 == null) {
      end = list[list.length-1].sourceEnd;
@@ -1293,27 +1319,57 @@ int FormalParameters(final ArrayList parameters) :
   [
     var = FormalParameter()
     {parameters.add(var);end = var.sourceEnd;}
-    (
-      <COMMA>
-      var = FormalParameter()
-      {parameters.add(var);end = var.sourceEnd;}
-    )*
+      (
+        <COMMA>
+        var = FormalParameter()
+        {parameters.add(var);end = var.sourceEnd;}
+      )*
   ]
   try {
     token = <RPAREN>
     {end = token.sourceEnd;}
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "')' expected",
-                                          ")",
-                                          e.currentToken.image,
-                                          e.currentToken.sourceStart,
-                                          e.currentToken.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+  } catch (ParseException e) { //recup rparen si avant lbrace
+      Token nextToken = getNextToken();
+      while (nextToken.kind != EOF && nextToken.kind != RPAREN && nextToken.kind != LBRACE) {
+        nextToken = getNextToken();
+      }
+      if (nextToken.kind == EOF) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected end of file",
+                                              ")",
+                                              e.currentToken.next.image,
+                                              e.currentToken.sourceEnd,
+                                              nextToken.sourceStart,
+                                              e.currentToken.beginLine,
+                                              nextToken.endLine,
+                                              e.currentToken.endColumn,
+                                              nextToken.endColumn));
+      } else if (nextToken.kind == RPAREN) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected tokens",
+                                              "",
+                                              e.currentToken.next.image,
+                                              e.currentToken.next.sourceEnd,
+                                              nextToken.sourceStart,
+                                              e.currentToken.next.beginLine,
+                                              nextToken.beginLine,
+                                              e.currentToken.next.endColumn+1,
+                                              nextToken.beginColumn-1));
+      } else {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                        path,
+                                        "')' expected",
+                                        ")",
+                                        e.currentToken.next.image,
+                                        e.currentToken.sourceEnd,
+                                        nextToken.sourceStart,
+                                        e.currentToken.beginLine,
+                                        nextToken.endLine,
+                                        e.currentToken.endColumn+1,
+                                        nextToken.endColumn-1));
+      }
   }
  {return end;}
 }
@@ -2015,8 +2071,8 @@ AbstractVariable VariableSuffix(final AbstractVariable prefix) :
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
-                                          "')' expected",
-                                          ")",
+                                          "'}' expected",
+                                          "}",
                                           e.currentToken.image,
                                           pos,
                                           pos+1,
@@ -2040,9 +2096,9 @@ Literal Literal() :
 | token = <TRUE>                   {return new TrueLiteral(token);}
 | token = <FALSE>                  {return new FalseLiteral(token);}
 | token = <NULL>                   {return new NullLiteral(token);}
-| literal = evaluableString()        {return literal;}
+//| literal = evaluableString()        {return literal;}
 }
-
+       /*
 StringLiteral evaluableString() :
 {
   ArrayList list = new ArrayList();
@@ -2078,7 +2134,7 @@ StringLiteral evaluableString() :
                            vars);
   }
 }
-
+  */
 FunctionCall Arguments(final Expression func) :
 {
 Expression[] args = null;
