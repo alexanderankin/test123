@@ -49,24 +49,9 @@
       sql.SqlPlugin.publishSelection(view, sql.SqlUtils.getSelectedServerName() );
     </CODE>
   </ACTION>
-  <ACTION NAME="sql.publishBufferToServer">
-    <CODE>
-      sql.SqlPlugin.publishBufferToServer(view);
-    </CODE>
-  </ACTION>
-  <ACTION NAME="sql.publishSelectionToServer">
-    <CODE>
-      sql.SqlPlugin.publishSelectionToServer(view);
-    </CODE>
-  </ACTION>
   <ACTION NAME="sql.loadObject">
     <CODE>
       sql.SqlPlugin.loadObject( view, sql.SqlUtils.getSelectedServerName() );
-    </CODE>
-  </ACTION>
-  <ACTION NAME="sql.loadObjectFromServer">
-    <CODE>
-      sql.SqlPlugin.loadObjectFromServer( view );
     </CODE>
   </ACTION>
 </ACTIONS>

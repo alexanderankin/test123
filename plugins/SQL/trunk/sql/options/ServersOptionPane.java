@@ -153,8 +153,9 @@ public class ServersOptionPane extends SqlOptionPane
           final SqlServerDialog dlg = new SqlServerDialog( parentFrame,
               rec,
               SqlServerDialog.EDIT_MODE );
-          rec.save();
+
           dlg.setVisible( true );
+          rec.save();
         }
       }
          );
