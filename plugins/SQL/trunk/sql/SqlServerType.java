@@ -93,7 +93,7 @@ public class SqlServerType extends Properties
       "/sql/serverTypes/oracle.xml",
       "/sql/serverTypes/pgsql.xml",
       "/sql/serverTypes/ASA.xml",
-      "/sql/serverTypes/MSSQL.FreeTDS.xml",
+      "/sql/serverTypes/MSSQL.jTDS.xml",
       "/sql/serverTypes/Sybase.xml"
       };
 
