@@ -288,10 +288,15 @@ class FtpConnection extends ConnectionManager.Connection
 
 	// Private members
 	private FtpClient client;
+	// used to parse VMS file listings, which can span more than one line
+	private String prevLine;
 
 	private static UncheckedRE[] unixRegexps;
 	private static UncheckedRE dosRegexp;
 	private static UncheckedRE vmsRegexp;
+	private static UncheckedRE vmsPartial1Regexp;
+	private static UncheckedRE vmsPartial2Regexp;
+	private static UncheckedRE as400Regexp;
 
 	static
 	{
@@ -310,6 +315,18 @@ class FtpConnection extends ConnectionManager.Connection
 
 		vmsRegexp = new UncheckedRE(jEdit.getProperty(
 			"vfs.ftp.list.vms"),0,
+			RESearchMatcher.RE_SYNTAX_JEDIT);
+
+		vmsPartial1Regexp = new UncheckedRE(jEdit.getProperty(
+			"vfs.ftp.list.vms.partial.1"),0,
+			RESearchMatcher.RE_SYNTAX_JEDIT);
+
+		vmsPartial2Regexp = new UncheckedRE(jEdit.getProperty(
+			"vfs.ftp.list.vms.partial.2"),0,
+			RESearchMatcher.RE_SYNTAX_JEDIT);
+
+		as400Regexp = new UncheckedRE(jEdit.getProperty(
+			"vfs.ftp.list.as400"),0,
 			RESearchMatcher.RE_SYNTAX_JEDIT);
 	}
 
@@ -407,6 +424,13 @@ class FtpConnection extends ConnectionManager.Connection
 
 			boolean ok = false;
 
+			if(prevLine != null)
+			{
+				// handle VMS listings split over several lines
+				line = prevLine + line;
+				prevLine = null;
+			}
+
 			for(int i = 0; i < unixRegexps.length; i++)
 			{
 				UncheckedRE regexp = unixRegexps[i];
@@ -446,13 +470,47 @@ class FtpConnection extends ConnectionManager.Connection
 			if(!ok)
 			{
 				REMatch match;
+				if((match = vmsPartial1Regexp.getMatch(line)) != null)
+				{
+					prevLine = line;
+					return null;
+				}
+
 				if((match = vmsRegexp.getMatch(line)) != null)
 				{
 					name = match.toString(1);
+					length = Long.parseLong(match.toString(1)) * 512;
 					if(name.endsWith(".DIR"))
 						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
 					ok = true;
 				}
+			}
+
+			if(!ok)
+			{
+				REMatch match;
+				if((match = as400Regexp.getMatch(line)) != null)
+				{
+ 					String dirFlag = match.toString(2);
+ 					if (dirFlag.equals("*DIR"))
+ 						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+ 					else
+ 						type = FtpVFS.FtpDirectoryEntry.FILE;
+ 
+ 					try
+ 					{
+ 						length = Long.parseLong(match.toString(1));
+ 					}
+ 					catch(NumberFormatException nf)
+ 					{
+ 						length = 0L;
+ 					}
+ 
+ 					name = match.toString(3);
+					if(name.endsWith("/"))
+						name = name.substring(0,name.length() - 1);
+ 					ok = true;
+ 				}
 			}
 
 			if(!ok)
