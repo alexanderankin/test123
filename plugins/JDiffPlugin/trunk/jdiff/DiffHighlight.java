@@ -24,6 +24,7 @@ package jdiff;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 
 import java.awt.event.MouseEvent;
 
@@ -185,42 +186,43 @@ public class DiffHighlight extends TextAreaExtension
         FontMetrics fm = painter.getFontMetrics();
 
         int lineStart = this.textArea.getLineStartOffset(physicalLine);
-        int x1, x2;
+        Point p1 = new Point();
+        Point p2 = new Point();
 
         if (s instanceof Selection.Rect) {
             int lineLen = this.textArea.getLineLength(physicalLine);
-            x1 = this.textArea.offsetToX(physicalLine,Math.min(lineLen,
+            this.textArea.offsetToXY(physicalLine,Math.min(lineLen,
                 s.getStart() - this.textArea.getLineStartOffset(
-                s.getStartLine())));
-            x2 = this.textArea.offsetToX(physicalLine,Math.min(lineLen,
+                s.getStartLine())), p1);
+            this.textArea.offsetToXY(physicalLine,Math.min(lineLen,
                 s.getEnd() - this.textArea.getLineStartOffset(
-                s.getEndLine())));
+                s.getEndLine())), p2);
 
-            if (x1 > x2) {
-                int tmp = x2;
-                x2 = x1;
-                x1 = tmp;
+            if (p1.x > p2.x) {
+                int tmp = p2.x;
+                p2.x = p1.x;
+                p1.x = tmp;
             }
         } else if (s.getStartLine() == s.getEndLine()) {
-            x1 = this.textArea.offsetToX(physicalLine, s.getStart() - lineStart);
-            x2 = this.textArea.offsetToX(physicalLine, s.getEnd() - lineStart);
+            this.textArea.offsetToXY(physicalLine, s.getStart() - lineStart, p1);
+            this.textArea.offsetToXY(physicalLine, s.getEnd() - lineStart, p2);
         } else if (physicalLine == s.getStartLine()) {
-            x1 = this.textArea.offsetToX(physicalLine, s.getStart() - lineStart);
-            x2 = painter.getWidth();
+            this.textArea.offsetToXY(physicalLine, s.getStart() - lineStart, p1);
+            p2.x = painter.getWidth();
         } else if (physicalLine == s.getEndLine()) {
-            x1 = 0;
-            x2 = this.textArea.offsetToX(physicalLine, s.getEnd() - lineStart);
+            p1.x = 0;
+            this.textArea.offsetToXY(physicalLine, s.getEnd() - lineStart, p2);
         } else {
-            x1 = 0;
-            x2 = painter.getWidth();
+            p1.x = 0;
+            p2.x = painter.getWidth();
         }
 
-        if(x1 == x2) {
-            x2++;
+        if(p1.x == p2.x) {
+            p2.x++;
         }
 
         gfx.setColor(selectionColor);
-        gfx.fillRect(x1, y, x2 - x1, fm.getHeight());
+        gfx.fillRect(p1.x, y, p2.x - p1.x, fm.getHeight());
     }
 
 
