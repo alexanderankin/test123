@@ -1271,6 +1271,13 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <listitem><para>Console tool bar is now gone, since the console input field
    component no longer exists.
    </para></listitem>
+   <listitem><para>Fixed a minor flaw in the generic error pattern, add Python
+   error pattern (Ollie Rutherfurd).
+   </para></listitem>
+   <listitem><para>If an error was raised by the BeanShell, opening the Console
+   in subsequently-created views would fail because of a rogue variable that
+   was set in the global namespace.
+   </para></listitem>
   </itemizedlist></listitem>
  
  <listitem><para><emphasis role="bold">Version 3.7.1</emphasis>

@@ -80,15 +80,17 @@ public class ConsoleBeanShell extends Shell
 					"print(retVal);");
 				ns.setVariable("retVal",null);
 			}
-
-			ns.setVariable("console",null);
-			ns.setVariable("output",null);
 		}
 		catch(Exception e)
 		{
 			StringWriter s = new StringWriter();
 			e.printStackTrace(new PrintWriter(s));
 			error.print(console.getErrorColor(),s.toString());
+		}
+		finally
+		{
+			ns.setVariable("console",null);
+			ns.setVariable("output",null);
 		}
 
 		output.commandDone();
