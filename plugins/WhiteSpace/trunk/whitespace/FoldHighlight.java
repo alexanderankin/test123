@@ -396,14 +396,14 @@ public class FoldHighlight
     }
 
 
-    public static void bufferCreated(
-            Buffer buffer, boolean highlightEnabled, boolean tooltipEnabled
-    ) {
+    public static void bufferCreated(Buffer buffer) {
         buffer.putProperty(
-            FOLD_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+            FOLD_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getFoldHighlightDefault() ? Boolean.TRUE : Boolean.FALSE
         );
         buffer.putProperty(
-            FOLD_TOOLTIP_PROPERTY, tooltipEnabled ? Boolean.TRUE : Boolean.FALSE
+            FOLD_TOOLTIP_PROPERTY,
+            WhiteSpaceDefaults.getFoldTooltipDefault() ? Boolean.TRUE : Boolean.FALSE
         );
     }
 
@@ -414,14 +414,16 @@ public class FoldHighlight
     }
 
 
-    public static void editorStarted(boolean highlightEnabled, boolean tooltipEnabled) {
+    public static void editorStarted() {
         Buffer[] buffers = jEdit.getBuffers();
         for (int i = 0; i < buffers.length; i++) {
             buffers[i].putProperty(
-                FOLD_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+                FOLD_HIGHLIGHT_PROPERTY,
+                WhiteSpaceDefaults.getFoldHighlightDefault() ? Boolean.TRUE : Boolean.FALSE
             );
             buffers[i].putProperty(
-                FOLD_TOOLTIP_PROPERTY, tooltipEnabled ? Boolean.TRUE : Boolean.FALSE
+                FOLD_TOOLTIP_PROPERTY,
+                WhiteSpaceDefaults.getFoldTooltipDefault() ? Boolean.TRUE : Boolean.FALSE
             );
         }
     }
