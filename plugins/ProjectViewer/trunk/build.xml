@@ -101,7 +101,7 @@
           description="Build a distribution">
     <zip zipfile="ProjectViewer-${version}.zip">
       <fileset dir="${build}">
-        <include name="ProjectViewer/**"/>
+        <include name="projectviewer/**"/>
         <include name="ProjectViewer.jar"/>
       </fileset>
     </zip>
