@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="background.toggle-background">
+        <CODE>
+            background.BackgroundPlugin.toggleBackground(textArea);
+        </CODE>
+    </ACTION>
+</ACTIONS>
+
