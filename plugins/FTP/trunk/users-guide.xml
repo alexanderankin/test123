@@ -99,6 +99,15 @@ To force jEdit to forget all passwords while it is running, use the
      After connecting to an FTP server, the home directory is now shown by
      default, which is much more intuitive than starting at the root directory
     </para></listitem>
+
+    <listitem><para>
+     File names with leading spaces should now work correctly.
+    </para></listitem>
+
+    <listitem><para>
+     When running on jEdit 4.0pre3 or later, the <guibutton>Reload</guibutton>
+     button in the file system browser should actually work now.
+    </para></listitem>
    </itemizedlist>
   </listitem>
 
