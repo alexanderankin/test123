@@ -1,0 +1,32 @@
+plugin.columnruler.ColumnRulerPlugin.name=Column Ruler
+plugin.columnruler.ColumnRulerPlugin.author=Brad Mace
+plugin.columnruler.ColumnRulerPlugin.version=0.8.0
+plugin.columnruler.ColumnRulerPlugin.docs=docs/index.html
+plugin.columnruler.ColumnRulerPlugin.depend.0=jdk 1.4.0_01
+plugin.columnruler.ColumnRulerPlugin.depend.1=jedit 04.02.08.00
+plugin.columnruler.ColumnRulerPlugin.activate=defer
+
+# Action labels
+columnruler.toggle-vis.label=Column Ruler
+
+# Menu items
+plugin.columnruler.ColumnRulerPlugin.menu-item=columnruler.toggle-vis
+
+# Options
+options.columnruler.foreground.color=\#000000
+options.columnruler.background.src=gutter
+options.columnruler.background.color=\#FFFFFF
+options.columnruler.border.src=none
+options.columnruler.border.color=\#000000
+options.columnruler.highlight=\#00AAAA
+options.columnruler.guides.caret=false
+options.columnruler.nextTab=false
+
+
+# Option Panes
+options.columnruler.ruler.label=Ruler
+options.columnruler.ruler.code=new columnruler.ColumnRulerOptions();
+options.columnruler.lineguides.label=Line Guides
+options.columnruler.lineguides.code=new columnruler.LineGuidesOptions();
+plugin.columnruler.ColumnRulerPlugin.option-group=columnruler.ruler columnruler.lineguides
+
