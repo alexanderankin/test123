@@ -209,8 +209,6 @@ public class ClassImporter {
         //Strip out anything unusual from the end of the import
         className = className.substring(0, className.lastIndexOf(";"));
         
-        System.out.println("Base className="+className);
-        
         boolean duplicateFound = false;
         String importPrefix = ".*[[:space:]]*import[[:space:]]+";
         
@@ -231,9 +229,6 @@ public class ClassImporter {
         //Now that we have done our replacements, we won't screw up the premade regex
         combinedImport = importPrefix + combinedImport + ".*";
         uncombinedImport = importPrefix + uncombinedImport + ".*";
-        
-        System.out.println("combinedImport = " + combinedImport);
-        System.out.println("uncombinedImport = " + uncombinedImport);
         
         //Set up the regular expressions that we will use to see if we have a match
         try {
