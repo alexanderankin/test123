@@ -2428,8 +2428,11 @@ Expression refPrimaryExpression(final Token reference) :
     expr = new ConstantIdentifier(identifier);
   }
   (
-    <STATICCLASSACCESS> expr2 = ClassIdentifier()
-    {expr = new ClassAccess(expr,expr2,ClassAccess.STATIC);}
+    <STATICCLASSACCESS>
+    expr2 = ClassIdentifier()
+    {
+      expr = new ClassAccess(expr,expr2,ClassAccess.STATIC,expr2.getSourceEnd(),expr2.getEndLine(),expr2.getEndColumn());
+    }
   )*
   [ expr2 = Arguments(expr) ]
   {
@@ -2563,9 +2566,23 @@ AbstractVariable VariableSuffix(final AbstractVariable prefix) :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
-  {return new ClassAccess(prefix,
-                          expression,
-                          ClassAccess.NORMAL);}
+  { //Here "expression" can be null !
+    if (expression == null) {
+      return new ClassAccess(prefix,
+                             expression,
+                             ClassAccess.NORMAL,
+                             classAccessToken.sourceEnd,
+                             classAccessToken.endLine,
+                             classAccessToken.endColumn);
+    } else {
+      return new ClassAccess(prefix,
+                             expression,
+                             ClassAccess.NORMAL,
+                             expression.getSourceEnd(),
+                             expression.getEndLine(),
+                             expression.getEndColumn());
+    }
+  }
 |
   token = <LBRACKET> {pos = token.sourceEnd+1;}
   [  expression = Expression() {pos = expression.sourceEnd+1;}

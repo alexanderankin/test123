@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * Any class access.
+ *
  * @author Matthieu Casanova
  */
 public final class ClassAccess extends AbstractVariable {
@@ -23,15 +24,22 @@ public final class ClassAccess extends AbstractVariable {
   private final int type;
 
   /**
-   * Create a new class access.
-   * @param prefix
-   * @param suffix
-   * @param type the type of access {@link #STATIC} or {@link #NORMAL}
+   * Instantiate a class access.
+   *
+   * @param prefix    usualy the class name
+   * @param suffix    the field or method called
+   * @param type      the type of access
+   * @param sourceEnd the end offset
+   * @param endLine   the end line
+   * @param endColumn the end column
    */
   public ClassAccess(final Expression prefix,
                      final Expression suffix,
-                     final int type) {
-    super(prefix.sourceStart, suffix.sourceEnd,prefix.getBeginLine(),suffix.getEndLine(),prefix.getBeginColumn(),suffix.getEndColumn());
+                     final int type,
+                     final int sourceEnd,
+                     final int endLine,
+                     final int endColumn) {
+    super(prefix.getSourceStart(), sourceEnd, prefix.getBeginLine(), endLine, prefix.getBeginColumn(), endColumn);
     this.prefix = prefix;
     this.suffix = suffix;
     this.type = type;
@@ -39,36 +47,40 @@ public final class ClassAccess extends AbstractVariable {
 
   private String toStringOperator() {
     switch (type) {
-      case STATIC : return "::"; //$NON-NLS-1$
-      case NORMAL : return "->"; //$NON-NLS-1$
+      case STATIC:
+        return "::"; //$NON-NLS-1$
+      case NORMAL:
+        return "->"; //$NON-NLS-1$
     }
     return "unknown operator"; //$NON-NLS-1$
   }
 
   /**
    * Return the expression as String.
+   *
    * @return the expression
    */
   public String toStringExpression() {
     final String prefixString = prefix.toStringExpression();
     final String operatorString = toStringOperator();
-    final String suffixString = suffix.toStringExpression();
-    final StringBuffer buff = new StringBuffer(prefixString.length() +
-                                               operatorString.length() +
-                                               suffixString.length());
+    final StringBuffer buff = new StringBuffer(prefixString.length() + operatorString.length() + 100);
     buff.append(prefixString);
     buff.append(operatorString);
-    buff.append(suffixString);
+    if (suffix != null) {
+      final String suffixString = suffix.toStringExpression();
+      buff.append(suffixString);
+    }
     return buff.toString();
   }
 
   /**
-   * todo: find a better way to handle this
+   * Returns the name of the class. todo: find a better way to handle this
+   *
    * @return the name of the variable
    */
   public String getName() {
     if (prefix instanceof AbstractVariable) {
-      return ((AbstractVariable)prefix).getName();
+      return ((AbstractVariable) prefix).getName();
     }
     return prefix.toStringExpression();
   }
@@ -78,14 +90,16 @@ public final class ClassAccess extends AbstractVariable {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(final List list) {
+  }
 
   /**
    * get the modified variables.
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {}
+  public void getModifiedVariable(final List list) {
+  }
 
   /**
    * Get the variables used.
@@ -94,6 +108,8 @@ public final class ClassAccess extends AbstractVariable {
    */
   public void getUsedVariable(final List list) {
     prefix.getUsedVariable(list);
-    suffix.getUsedVariable(list);
+    if (suffix != null) {
+      suffix.getUsedVariable(list);
+    }
   }
 }

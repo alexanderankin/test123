@@ -1,14 +1,13 @@
 package gatchan.phpparser.parser;
 
 import junit.framework.TestCase;
-import net.sourceforge.phpdt.internal.compiler.ast.ForeachStatement;
-import net.sourceforge.phpdt.internal.compiler.ast.Statement;
+import net.sourceforge.phpdt.internal.compiler.ast.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * The AST Tester
+ * The AST Tester.
  *
  * @author Matthieu Casanova
  */
@@ -20,8 +19,21 @@ public class ASTTester extends TestCase {
     tryStatement(foreachStatement);
   }
 
+  public void testClassAccess() {
+    //Test with null expressions, variables and statement
+    ClassAccess classAccess = new ClassAccess(new Variable(new StringLiteral("toto", 0, 0, 0, 0, 0, 0), 0, 0, 0, 0, 0, 0),
+                                              null,
+                                              0,
+                                              0,
+                                              0,
+                                              0);
+    tryStatement(classAccess);
+  }
+
   private void tryStatement(Statement stmt) {
     List l = new ArrayList();
+    stmt.toString();
+    stmt.toString(1);
     stmt.getOutsideVariable(l);
     stmt.getModifiedVariable(l);
     stmt.getUsedVariable(l);
