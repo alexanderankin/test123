@@ -109,6 +109,34 @@ public class WhiteSpaceDefaults
     }
 
 
+    public static boolean getRemoveTrailingWhitespace() {
+        return jEdit.getBooleanProperty(
+            "white-space.remove-trailing-white-space", false
+        );
+    }
+
+
+    public static boolean getSoftTabifyLeadingWhitespace() {
+        return jEdit.getBooleanProperty(
+            "white-space.soft-tabify-leading-white-space", false
+        );
+    }
+
+
+    public static boolean getTabifyLeadingWhitespace() {
+        return jEdit.getBooleanProperty(
+            "white-space.tabify-leading-white-space", false
+        );
+    }
+
+
+    public static boolean getUntabifyLeadingWhitespace() {
+        return jEdit.getBooleanProperty(
+            "white-space.untabify-leading-white-space", false
+        );
+    }
+
+
     public static void bufferCreated(Buffer buffer) {
         buffer.putBooleanProperty(
             BlockHighlight.BLOCK_HIGHLIGHT_PROPERTY,
