@@ -1,0 +1,43 @@
+Date:     Nov 14 2002
+Name:     LaTeXTools
+Author:   Anthony J. Roy
+Version:  0.1.1
+Requires: JDK 1.3
+          jEdit 4.1rc4 (Note: not checked on other versions)
+Announcement: Bug fix release. Scrollpane now working correctly, docked window also 
+              fixed. Regular expressions now working for navigation files. 
+
+Source Code:  http://members.madasafish.com/LaTeXToolsSrc.zip
+Compiled JAR: http://members.madasafish.com/LaTeXTools.jar
+
+--
+Anthony J. Roy
+e: home@ant-roy.co.uk
+w: http://www.ant-roy.co.uk
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Date:     13 November 2002
+Name:     LaTeXTools
+Author:   Anthony J. Roy
+Version:  0.1.0
+Requires: JDK 1.4 (Note: should work on 1.3, but this has not been tested.)
+          jEdit 4.1rc4 (Note: again not checked on other versions)
+	  
+Announcement: Initial Plugin Central release.
+
+Source Code: http://members.madasafish.com/LaTeXToolsSrc.zip
+
+Compiled JAR: http://members.madasafish.com/LaTeXTools.jar
+
+Short Description: A suite of tools to enable quicker and more convenient editing of LaTeX
+files.
+
+Long Description: This plugin includes a set of features to enable more efficient LaTeX editing.
+The features currently include a BibTeX citation insertion tool, a reference insertion tool, and
+a user configurable LaTeX document navigator.
+
+All comments welcomed - especially regarding getting the ScrollPane in the Navigator behaving properly!
+
+--
+Anthony J. Roy
+e: home@ant-roy.co.uk
+w: http://www.ant-roy.co.uk
