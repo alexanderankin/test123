@@ -36,6 +36,7 @@ public class BackgroundOptionPane extends AbstractOptionPane
     private JTextField tfBackground;
     private JCheckBox  blend;
     private JButton    blendColor;
+    private JSlider    blendAlpha;
 
 
     public BackgroundOptionPane() {
@@ -75,6 +76,16 @@ public class BackgroundOptionPane extends AbstractOptionPane
             jEdit.getProperty("options.background.blend-color"),
             this.blendColor
         );
+
+        int alpha = jEdit.getIntegerProperty("background.blend-alpha", 127);
+        if (alpha < 0) { alpha = 0; }
+        if (alpha > 255) { alpha = 255; }
+        this.blendAlpha = new JSlider(0, 255, alpha);
+        addComponent(
+            jEdit.getProperty("options.background.blend-alpha"),
+            this.blendAlpha
+        );
+
     }
 
 
@@ -89,6 +100,10 @@ public class BackgroundOptionPane extends AbstractOptionPane
 
         jEdit.setColorProperty(
             "background.blend-color", this.blendColor.getBackground()
+        );
+
+        jEdit.setIntegerProperty(
+            "background.blend-alpha", this.blendAlpha.getValue()
         );
     }
 

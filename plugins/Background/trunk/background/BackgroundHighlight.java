@@ -27,7 +27,6 @@ import java.util.Vector;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
@@ -46,6 +45,7 @@ public class BackgroundHighlight extends TextAreaExtension
     private static ImageIcon icon       = null;
     private static boolean   blend      = false;
     private static Color     blendColor = null;
+    private static int       blendAlpha = 127;
 
     private boolean enabled = true;
 
@@ -72,6 +72,11 @@ public class BackgroundHighlight extends TextAreaExtension
             "background.blend-color",
             jEdit.getColorProperty("view.bgColor", Color.white)
         );
+        blendAlpha = jEdit.getIntegerProperty(
+            "background.blend-alpha", 127
+        );
+        if (blendAlpha < 0)   { blendAlpha = 0; }
+        if (blendAlpha > 255) { blendAlpha = 255; }
     }
 
 
@@ -130,12 +135,8 @@ public class BackgroundHighlight extends TextAreaExtension
         }
 
         if (blend) {
-            int alpha = jEdit.getIntegerProperty("background.blend-alpha", 127);
-            if (alpha < 0)   { alpha = 0; }
-            if (alpha > 255) { alpha = 255; }
-
             Color alphaColor = new Color(
-                blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue(), alpha
+                blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue(), blendAlpha
             );
 
             AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
@@ -237,6 +238,11 @@ public class BackgroundHighlight extends TextAreaExtension
             "background.blend-color",
             jEdit.getColorProperty("view.bgColor", Color.white)
         );
+        blendAlpha = jEdit.getIntegerProperty(
+            "background.blend-alpha", 127
+        );
+        if (blendAlpha < 0)   { blendAlpha = 0; }
+        if (blendAlpha > 255) { blendAlpha = 255; }
 
         // Propagate the changes to all textareas
         View[] views = jEdit.getViews();

@@ -20,4 +20,4 @@ options.background.file=File:\
 options.background.choose-file=Choose
 options.background.blend=Use color blending
 options.background.blend-color=Blend color:\ 
-
+options.background.blend-alpha=Color opacity:\ 
