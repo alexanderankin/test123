@@ -18,7 +18,8 @@ classes=TemplatesPlugin.class \
 		TemplateFile.class \
 		TemplateDir.class \
 		TemplatesOptionPane.class \
-		TemplateVar.class
+		TemplateVar.class \
+		Template.class
 others= Templates.props \
 		Templates.html
 indist=	README.txt \
