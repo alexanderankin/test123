@@ -1,6 +1,6 @@
 /*
  * JDiffHighlightOptionPane.java
- * Copyright (c) 2000 Andre Kaplan
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 package jdiff.options;
@@ -42,10 +42,6 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
 
     private JButton highlightInvalidLineColor;
 
-    private JButton selectedHighlightChangedLineColor;
-    private JButton selectedHighlightDeletedLineColor;
-    private JButton selectedHighlightInsertedLineColor;
-
 
     public JDiffHighlightOptionPane() {
         super("jdiff-highlight");
@@ -58,10 +54,6 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
         this.highlightInsertedLineColor = this.createColorButton("jdiff.highlight-inserted-color");
 
         this.highlightInvalidLineColor  = this.createColorButton("jdiff.highlight-invalid-color");
-
-        this.selectedHighlightChangedLineColor  = this.createColorButton("jdiff.selected-highlight-changed-color");
-        this.selectedHighlightDeletedLineColor  = this.createColorButton("jdiff.selected-highlight-deleted-color");
-        this.selectedHighlightInsertedLineColor = this.createColorButton("jdiff.selected-highlight-inserted-color");
 
         // Highlight colors
         addComponent(this.createLabel("options.jdiff.highlight"));
@@ -82,21 +74,6 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
             jEdit.getProperty("options.jdiff.highlight-invalid-color"),
             this.highlightInvalidLineColor
         );
-
-        // Selected highlight colors
-        addComponent(this.createLabel("options.jdiff.selected-highlight"));
-        addComponent(
-            jEdit.getProperty("options.jdiff.selected-highlight-changed-color"),
-            this.selectedHighlightChangedLineColor
-        );
-        addComponent(
-            jEdit.getProperty("options.jdiff.selected-highlight-deleted-color"),
-            this.selectedHighlightDeletedLineColor
-        );
-        addComponent(
-            jEdit.getProperty("options.jdiff.selected-highlight-inserted-color"),
-            this.selectedHighlightInsertedLineColor
-        );
     }
 
 
@@ -113,16 +90,6 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
 
         jEdit.setProperty("jdiff.highlight-invalid-color",
             GUIUtilities.getColorHexString(this.highlightInvalidLineColor.getBackground())
-        );
-
-        jEdit.setProperty("jdiff.selected-highlight-changed-color",
-            GUIUtilities.getColorHexString(this.selectedHighlightChangedLineColor.getBackground())
-        );
-        jEdit.setProperty("jdiff.selected-highlight-deleted-color",
-            GUIUtilities.getColorHexString(this.selectedHighlightDeletedLineColor.getBackground())
-        );
-        jEdit.setProperty("jdiff.selected-highlight-inserted-color",
-            GUIUtilities.getColorHexString(this.selectedHighlightInsertedLineColor.getBackground())
         );
     }
 
@@ -163,3 +130,4 @@ public class JDiffHighlightOptionPane extends AbstractOptionPane
         }
     }
 }
+
