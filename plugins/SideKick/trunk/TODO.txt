@@ -5,3 +5,6 @@
 - should not reparse on edit pane change
 - tree: custom actions on double-click, etc.
 - auxilliary parsers -- eg tasklist
+- popup height
+- position: don't obscure text area
+- doesn't always update on buffer switch
