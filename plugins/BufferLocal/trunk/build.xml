@@ -11,7 +11,7 @@
     <property name="jar.name" value="BufferLocal.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="1.0"/>
+    <property name="build.num" value="1.1"/>
         
     <!-- where to put the finished plugin -->
     <property name="install.dir" value=".." />
