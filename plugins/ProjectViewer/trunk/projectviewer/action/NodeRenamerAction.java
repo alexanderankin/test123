@@ -172,7 +172,13 @@ public class NodeRenamerAction extends Action {
 	//{{{ +prepareForNode(VPTNode) : void
 	/** Disable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		cmItem.setVisible(node != null &&
+		boolean dirty = false;
+		if (node != null && node.isFile()) {
+			Buffer b = jEdit.getBuffer(node.getNodePath());
+			if (b != null)
+				dirty = b.isDirty();
+		}
+		cmItem.setVisible(!dirty && node != null &&
 			(node.isFile() || node.isDirectory() || node.isProject() ||
 			 node.getClass() == VFSFile.class));
 	} //}}}
