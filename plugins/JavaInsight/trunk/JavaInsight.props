@@ -1,14 +1,28 @@
 plugin.javainsight.JavaInsightPlugin.name=Java Insight
 plugin.javainsight.JavaInsightPlugin.author=Kevin A. Burton, Andre Kaplan
-plugin.javainsight.JavaInsightPlugin.version=0.2.1
-plugin.javainsight.JavaInsightPlugin.docs=/JavaInsight.html
+plugin.javainsight.JavaInsightPlugin.version=0.3
+plugin.javainsight.JavaInsightPlugin.docs=JavaInsight.html
 
 plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.1
-plugin.javainsight.JavaInsightPlugin.depend.1=jedit 02.06.09.00
+plugin.javainsight.JavaInsightPlugin.depend.1=jedit 03.00.99.00
+
 
 # Menu bar properties
 javainsight.toggle-dockable.label=Java Insight
 
 # Dockable window title
-javainsight-dockable.title=JavaInsight
+javainsight-dockable.title=Java Insight
 
+# Option pane title
+options.javainsight.title=Java Insight
+options.javainsight.label=Java Insight
+
+# Error messages
+javainsight.error.decompile.title=Decompilation Error
+javainsight.error.decompile.message=\
+	An error occured during decompilation of class {0}:\n\
+	The message was: {1}\n\
+	\n\
+	A full trace of the error is in the activity log.\n\
+	See "Utilities->View Activity Log" for details.\n\
+	Please report this to the JavaInsight maintainers.

@@ -1,4 +1,7 @@
 /*
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -16,84 +19,84 @@
 
 package buildtools.java.packagebrowser;
 
+
 import java.util.Hashtable;
 import java.util.Enumeration;
 
-public class ClasspathEntry {
-    
 
-    private String      name        = null;
-    private Hashtable   packages    = new Hashtable();
-    
+/**
+ * A classpath entry.
+ *
+ * @author Kevin A. Burton
+ * @version $Id$
+ */
+public class ClasspathEntry {
+
+    private String name = null;
+    private Hashtable packages = new Hashtable();
+
+
     /**
      * Creates a ClasspathEntry
-     *
-     * @param name The name of this classpath entry
-     * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     * @version $Id$
      */
     public ClasspathEntry(String name) {
         this.name = name;
     }
 
+
     /**
      * Add an JavaPackage to this ClasspathEntry
      *
      * @param name The name of this classpath entry
-     * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     * @version $Id$
      */
-    public void addJavaPackage( JavaPackage javaPackage ) {
-        this.packages.put(javaPackage.getName(), javaPackage);
+    public void addJavaPackage(JavaPackage javaPackage) {
+        packages.put(javaPackage.getName(), javaPackage);
     }
 
-    public boolean containsJavaPackage(  JavaPackage javaPackage ) {
-        return this.packages.containsKey( javaPackage.getName() );
+
+    public boolean containsJavaPackage(JavaPackage javaPackage) {
+        return packages.containsKey(javaPackage.getName());
     }
-    
+
+
     /**
      * Return the packages within this ClasspathEntry
      *
      * @param name The name of this classpath entry
-     * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     * @version $Id$
      */
     public JavaPackage[] getPackages() {
-
-        //now convert the hashtable into an array 
-        JavaPackage[] packages = new JavaPackage[this.packages.size()];
-        
-        Enumeration enum = this.packages.elements();
+        // convert the hashtable into an array
+        JavaPackage[] array = new JavaPackage[packages.size()];
+        Enumeration enum = packages.elements();
         int element = 0;
-        while(enum.hasMoreElements() ) {
-            packages[element] = (JavaPackage)enum.nextElement();
+
+        while(enum.hasMoreElements()) {
+            array[element] = (JavaPackage) enum.nextElement();
             ++element;
         }
 
-        return packages;
+        return array;
     }
 
+
     /**
-     * Return the name of this
+     * Return the name of this.
      *
      * @param name The name of this classpath entry
-     * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     * @version $Id$
      */
     public String getName() {
-        return this.name;
+        return name;
     }
+
 
     /**
      * Return this ClasspathEntry as a String
      *
      * @param name The name of this classpath entry
-     * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     * @version $Id$
      */
     public String toString() {
-        return this.getName();
+        return getName();
     }
-    
+
 }
 

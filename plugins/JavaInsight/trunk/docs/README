@@ -1,7 +1,0 @@
-Java Insight:
-
-This is a jEdit plugin that allows you to browse the classpath and then decompile a selected file.
-
-Installation:
-
-- move /bin/*.jar to your <jedit>/jars directory

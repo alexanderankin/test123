@@ -1,4 +1,7 @@
 /*
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -16,231 +19,370 @@
 
 package javainsight;
 
-//GUI stuff.
-import javax.swing.*;
+
+// GUI stuff.
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-//classpath browser functionality
+// classpath browser functionality
 import buildtools.java.packagebrowser.JavaClass;
+import buildtools.java.packagebrowser.JavaClassComparator;
 import buildtools.java.packagebrowser.JavaPackage;
+import buildtools.java.packagebrowser.JavaPackageComparator;
 import buildtools.java.packagebrowser.PackageBrowser;
-import buildtools.java.classpathmanager.ClasspathManager;
 import buildtools.JavaUtils;
 import buildtools.MiscUtils;
 
-//qsort functionality
+// quicksort functionality
 import org.gjt.sp.jedit.MiscUtilities;
 
-//events
+// events
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+// io
 import java.io.IOException;
 import java.io.File;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-// decompile support:
-//   jode.decompiler.Main;
-
-//jedit open file support.
+// jedit
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 
+// debugging
 import org.gjt.sp.util.Log;
 
+// misc
+import java.util.Vector;
 
+
+/**
+ * The Java Insight plugin dockable panel.
+ *
+ * @author Kevin A. Burton
+ * @version $Id$
+ */
 public class JavaInsight extends JPanel implements TreeSelectionListener, MouseListener
 {
-    public final static String PRODUCT      = "Java Insight";
-    public final static String VERSION      = "0.3";
 
-    public final static String PACKAGES     = "Packages";
-    public final static String CLASSPATH    = "Classpath";
+    private static final String VERSION = jEdit.getProperty("plugin.javainsight.JavaInsightPlugin.version");
 
 
-    private DefaultMutableTreeNode  root            = new DefaultMutableTreeNode("All Packages");
-    private JTree                   tree            = new JTree( root );
-    private JLabel                  status          = new JLabel(" ");
-    private DefaultMutableTreeNode  currentNode     = null;
-    private View                    view            = null;
-    private JTabbedPane             tabs            = new JTabbedPane();
+    private DefaultMutableTreeNode root = new DefaultMutableTreeNode("All Packages");
+    private DefaultMutableTreeNode currentNode = null;
+    private JTree tree = new JTree(root);
+    private JTextArea log = new JTextArea("");
+    private JLabel status = new JLabel("Java Insight " + VERSION);
+    private JSplitPane split = null;
+    private View view = null;
 
 
     public JavaInsight(View view) {
-        this.init(view);
+        super(new BorderLayout());
+        this.init(view, false);
     }
 
 
-    private void init(View view) {
+    private void init(View view, boolean bottomOrTop) {
         this.view = view;
 
-        this.setSize(new Dimension(300, 600) );
-        //this.tree.setRootVisible(false);
-
-        //populate the root node...
+        // populate the root node...
         JavaPackage[] packages = PackageBrowser.getPackages();
-
-        MiscUtilities.quicksort(packages, new JavaPackageComparator() );
+        MiscUtilities.quicksort(packages, new JavaPackageComparator());
 
         for (int i = 0; i < packages.length; ++i) {
-            DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode( packages[i].getName() );
+            DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packages[i].getName());
 
             JavaClass[] classes = packages[i].getClasses();
-            MiscUtilities.quicksort(classes, new JavaClassComparator() );
+            MiscUtilities.quicksort(classes, new JavaClassComparator());
 
             for (int j = 0; j < classes.length; ++j) {
-                packageNode.add( new DefaultMutableTreeNode( classes[j] ) );
+                packageNode.add(new DefaultMutableTreeNode(classes[j]));
             }
 
-            root.add( packageNode );
+            root.add(packageNode);
         }
 
-        tabs.addTab(PACKAGES, new JScrollPane( tree ));
-        tabs.addTab(CLASSPATH, new JScrollPane( new ClasspathManager() ));
+        JTabbedPane tabs = new JTabbedPane();
+        tabs.addTab("Packages", new JScrollPane(tree));
+        tabs.addTab("Classpath", new ClasspathManager(this));
+        int tabsPos = Integer.parseInt(jEdit.getProperty("view.docking.tabsPos", "0"));
+        tabs.setTabPlacement(tabsPos == 0 ? JTabbedPane.TOP : JTabbedPane.BOTTOM);
 
-        this.add( tabs, BorderLayout.CENTER);
-        this.add(status, BorderLayout.SOUTH);
+        log.setEditable(false);
+        log.setFont(new Font("SansSerif", Font.PLAIN, 11));
 
-        this.tree.addTreeSelectionListener(this);
-        this.tree.addMouseListener(this);
+        JScrollPane logScr = new JScrollPane(log);
+        logScr.setPreferredSize(new Dimension(100, 50));
+        logScr.setColumnHeaderView(new JLabel("Decompiler Output"));
 
-        //expand the root node so that all its children are instantly visible
+        int splitPos = JSplitPane.VERTICAL_SPLIT;
+        String dockPosition = jEdit.getProperty(
+            JavaInsightPlugin.DOCKABLE_NAME + ".dock-position",
+            DockableWindowManager.FLOATING
+        );
+        if (dockPosition.equals(DockableWindowManager.BOTTOM) ||
+            dockPosition.equals(DockableWindowManager.TOP))
+            splitPos = JSplitPane.HORIZONTAL_SPLIT;
 
-        this.tree.expandPath( new TreePath( root.getPath() ) );
+        split = new JSplitPane(splitPos, true, tabs, logScr);
+        split.setOneTouchExpandable(true);
+        String dividerLocation = jEdit.getProperty("javainsight.dividerLocation", (String)null);
+        if (dividerLocation != null)
+            split.setDividerLocation(Integer.parseInt(dividerLocation));
 
-        this.setVisible(true);
+        add(split, BorderLayout.CENTER);
+        add(status, tabsPos == 0 ? BorderLayout.SOUTH : BorderLayout.NORTH);
+
+        tree.addTreeSelectionListener(this);
+        tree.addMouseListener(this);
+        tree.expandPath(new TreePath(root.getPath()));
     }
 
 
     public void setStatus(String status) {
         this.status.setText(status);
+        this.status.setToolTipText(status);
     }
+
 
     public DefaultMutableTreeNode getCurrentNode() {
-        return this.currentNode;
+        return currentNode;
     }
 
-    /**
-     * Method that returns classpath needed by the Jode Decompiler Package.
-     * The Jode package expects a comma delimited classpath.
-    **/
 
-    public static String getJodeClassPath() {
+    /**
+     * Return the classpath needed by the Jode Decompiler.
+     * Jode expects a comma delimited classpath.
+     */
+    private static String getJodeClassPath() {
         String classArray[] = JavaUtils.getClasspath();
         String classpath = "";
-        for(int i=0; i<classArray.length; ++i)
+
+        for (int i = 0; i < classArray.length; ++i)
            classpath += classArray[i]+",";
-        if(!classpath.equals(""))
+
+        if (!classpath.equals(""))
           classpath = classpath.substring(0, classpath.length()-1);
         else
           classpath = ".";
+
         return classpath;
     }
 
 
     /**
-    Given a classname, decompile it and store it on the filesystem.
+     * Return the command line arguments needed by the Jode Decompiler.
+     *
+     * @author Dirk Moebius
+     */
+    private static String[] getJodeArguments(String className) {
+        Vector args = new Vector();
+
+        String style = jEdit.getProperty("javainsight.jode.style", "sun");
+        args.addElement("--style");
+        args.addElement(style);
+
+        boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
+        if (pretty)
+            args.addElement("--pretty");
+
+        boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
+        if (onetime)
+            args.addElement("--onetime");
+
+        boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
+        if (decrypt)
+            args.addElement("--decrypt");
+
+        String importPkgLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
+        String importClassLimit = jEdit.getProperty("javainsight.jode.clslimit", "1");
+        args.addElement("--import");
+        args.addElement(importPkgLimit + "," + importClassLimit);
+
+        args.addElement("--classpath");
+        args.addElement(getJodeClassPath());
+
+        args.addElement(className);
+
+        String[] array = new String[args.size()];
+        args.copyInto(array);
+
+        // debug
+        StringBuffer debug = new StringBuffer();
+        for (int i = 0; i < array.length; ++i) {
+            if (i > 0) debug.append(" ");
+            debug.append(array[i]);
+        }
+        Log.log(Log.DEBUG, JavaInsight.class, "jode " + debug.toString());
+
+        return array;
+    }
 
 
-    @param className the name of the class is to be decompiled.
-    @param force     forces this class to be decompiled even if it was on the
-    filesystem from before
-    @return the name of the filename that was decompiled.
-    */
-    public static String decompileClass(String className, boolean force) {
+    /**
+     * Given a classname, decompile it and put the results in a new
+     * jEdit buffer.
+     *
+     * @param view  the view in which the new buffer should be created.
+     * @param className  the name of the class is to be decompiled.
+     *
+     * @author Dirk Moebius
+     */
+    private void decompileClassToBuffer(String className) throws Throwable {
+        String[] params = getJodeArguments(className);
+        PrintStream originalOut = System.out;
+        PrintStream originalErr = System.err;
+        ByteArrayOutputStream newOut = new ByteArrayOutputStream();
+        ByteArrayOutputStream newErr = new ByteArrayOutputStream();
 
-        String output = getBaseDirectory() +
-                        System.getProperty("file.separator") +
-                        getJavaFile(className);
-
-        System.out.println(getJodeClassPath());
-        //if it already exists... assume that it was decompiled successfully before.
-        if ( new File(output).exists() ) {
-            return output;
+        try {
+            System.setOut(new PrintStream(new BufferedOutputStream(newOut)));
+            System.setErr(new PrintStream(new BufferedOutputStream(newErr)));
+            jode.decompiler.Main.main(params);
+        } catch (Throwable t) {
+            // Rethrow the exception, but execute the finally clause
+            throw t.fillInStackTrace();
+        } finally {
+            System.setOut(originalOut);
+            System.setErr(originalErr);
         }
 
-        String[] params =   {
-                            className,
-                            "--pretty",
-                            "-c",
-                            getJodeClassPath()
-                            };
+        // Insert text from stderr into log text area:
+        log.setText(newErr.toString());
 
-        //make sure all its directories exist.
-        new File( output.substring(0, output.lastIndexOf(System.getProperty("file.separator")) ) ).mkdirs();
+        // Strip all '\r' out of the result:
+        byte[] bytes = newOut.toByteArray();
+        StringBuffer sbuf = new StringBuffer(bytes.length);
+        for (int i = 0; i < bytes.length; ++i)
+            if (((char)bytes[i]) != '\r')
+                sbuf.append((char) bytes[i]);
+        String result = sbuf.toString();
 
+        // Create new jEdit buffer
+        Buffer buf = jEdit.newFile(view);
+
+        // Try to set Java mode (if it exists)
+        Mode javaMode = jEdit.getMode("java");
+        if (javaMode != null)
+            buf.setMode(javaMode);
+
+        // Insert the normal output into the buffer
+        buf.beginCompoundEdit();
+        buf.insertString(0, result.toString(), null);
+        // When the string ends with a newline, the generated
+        // buffer adds one extra newline so we remove it:
+        if (result.endsWith("\n") && buf.getLength() > 0)
+            buf.remove(buf.getLength() - 1, 1);
+        buf.endCompoundEdit();
+        view.getTextArea().setCaretPosition(0);
+
+        if (jEdit.getBooleanProperty("javainsight.clearDirty", false))
+            buf.setDirty(false);
+    }
+
+
+    /**
+     * Given a classname, decompile it and store it in a temporary
+     * directory on the filesystem.
+     *
+     * @deprecated As of version 0.3, JavaInsight generates output to a
+     *             new jEdit buffer without generating to the filesystem.
+     *             The reason is because there is no safe platform
+     *             independent way to determine a valid temporary directory.
+     *             Using this method has other disadvantages, too: Jode debug
+     *             output and decompilation errors appear as error on the
+     *             console where jEdit was invoked from. You cannot see it
+     *             from within jEdit (except in the activity log).
+     *
+     * @param className  The name of the class is to be decompiled.
+     * @param force      Forces this class to be decompiled even if it was
+     *                   on the filesystem from before.
+     * @return           The name of the filename that was decompiled.
+     *                   JavaInsight creates the file in a temporary
+     *                   directory dependend on the operating system.
+     * @see  buildtools.MiscUtils#getTempDir(java.lang.String)
+     */
+    public static String decompileClass(String className, boolean force) throws Throwable {
+        String outputFile = MiscUtilities.constructPath(
+            MiscUtils.getTempDir("JavaInsight"), JavaUtils.getJavaFile(className));
+        Log.log(Log.DEBUG, JavaInsight.class, "output file=" + outputFile);
+
+        if (!force && new File(outputFile).exists()) {
+            return outputFile;
+        }
+
+        // make sure all its directories exist.
+        int lastSep = outputFile.lastIndexOf(File.separatorChar);
+        if (lastSep >= 0)
+            new File(outputFile.substring(0, lastSep)).mkdirs();
+
+        String[] params = getJodeArguments(className);
         PrintStream original = System.out;
+
         try {
-            System.setOut( new PrintStream( new FileOutputStream( output ) ) );
+            System.setOut(new PrintStream(new FileOutputStream(outputFile)));
             jode.decompiler.Main.main(params);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+        } catch (Throwable t) {
+            // rethrow the exception, but execute the finally clause
+            throw t.fillInStackTrace();
         } finally {
             System.setOut(original);
         }
 
-        return output;
+        return outputFile;
     }
 
 
-    /**
-     Given a java class name (ie org.apache.jetspeed.Test) return a filename
-     (ie org/apache/jetspeed/Test.java)
+    void decompileClass(String className) {
+        setStatus("Decompiling " + className + "...");
+        setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
-     @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     @version $Id$
-     */
-    private static String getJavaFile(String classname) {
-        String filename = MiscUtils.globalStringReplace( classname, ".", System.getProperty("file.separator") );
-        return filename + ".java";
-    }
-
-    /**
-    Return the base directory for JavaInsight.  On UNIX this would be
-    /tmp/Java Insight
-    */
-    public static String getBaseDirectory() {
-        return MiscUtils.getTempDir() + System.getProperty("file.separator") + MiscUtils.globalStringReplace( PRODUCT, " ", "" );
-    }
-
-
-
-
-    //MouseListener interface
-    public void mouseClicked(MouseEvent evt) {
-
-        if(evt.getClickCount() == 2) {
-
-            if (this.getCurrentNode() == null) {
-                return;
-            }
-
-            if ( this.getCurrentNode().getUserObject() instanceof JavaClass ) {
-                String object = ((JavaClass)this.getCurrentNode().getUserObject()).getName();
-
-                Log.log(Log.DEBUG, this, "Decompiling: " + object);
-
-                this.setCursor( new Cursor(Cursor.WAIT_CURSOR) );
-
-                String result = decompileClass(object, false);
-
-                this.setCursor( new Cursor(Cursor.DEFAULT_CURSOR) );
-
-                jEdit.openFile( view, null, result, false, false );
-
-            }
-
+        try {
+            // Decompile
+            decompileClassToBuffer(className);
+            setStatus("Decompiled " + className + ".");
         }
-
+        catch(Throwable t) {
+            t.printStackTrace();
+            GUIUtilities.error(view, "javainsight.error.decompile", new Object[] {className, t});
+            setStatus("Decompiling " + className + ": Error!");
+        }
+        finally {
+            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+        }
     }
+
+
+    // MouseListener interface
+    public void mouseClicked(MouseEvent evt) {
+        if(evt.getClickCount() != 2)
+            return;
+
+        if (currentNode == null)
+            return;
+
+        Object userObject = currentNode.getUserObject();
+        if (!(userObject instanceof JavaClass))
+            return;
+
+        decompileClass(((JavaClass)userObject).getName());
+    }
+
 
     public void mousePressed(MouseEvent evt)  { }
     public void mouseReleased(MouseEvent evt) { }
@@ -248,29 +390,32 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
     public void mouseExited(MouseEvent evt)   { }
 
 
-
-    //TreeSelectionListener interface
-    /**
-    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-    */
+    // TreeSelectionListener interface
     public void valueChanged(TreeSelectionEvent e) {
-
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode)this.tree.getLastSelectedPathComponent();
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
         if (node == null)
             return;
 
-
-        this.currentNode = node;
+        currentNode = node;
 
         if (node.getUserObject() instanceof JavaClass) {
-            //also output the source of this class
-            JavaClass classnode = ((JavaClass)node.getUserObject());
-
-            System.out.println("The source CLASSPATH entry of \"" + classnode.getName() + "\" is \"" + classnode.getSource() + "\"");
-
-            this.setStatus( classnode.getName() );
+            // also output the source of this class
+            JavaClass classnode = (JavaClass) node.getUserObject();
+            Log.log(Log.DEBUG, this,
+                "The source CLASSPATH entry of \""
+                + classnode.getName()
+                + "\" is \""
+                + classnode.getSource()
+                + "\""
+            );
+            setStatus(classnode.getName());
         }
     }
 
+
+    public void removeNotify() {
+        super.removeNotify();
+        jEdit.setProperty("javainsight.dividerLocation", Integer.toString(split.getDividerLocation()));
+    }
 
 }

@@ -1,4 +1,7 @@
 /*
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -14,24 +17,28 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package net.sourceforge.jedit.javainsight;
+package buildtools.java.packagebrowser;
 
-import net.sourceforge.jedit.buildtools.java.packagebrowser.*;
+
+import org.gjt.sp.jedit.MiscUtilities;
+
 
 /**
-Parse out the Project Resources if they haven't already been done.
+ * A comparator to compare two <code>JavaPackage</code> objects.
+ *
+ * @see org.gjt.sp.jedit.MiscUtilities.Compare
+ * @see buildtools.java.packagebrowser.JavaPackage
+ * @author Andre Kaplan
+ * @version $Id$
+ */
+public class JavaPackageComparator implements MiscUtilities.Compare {
 
-*/
-public class ThreadedParser extends Thread {
-
-    public ThreadedParser() {
-        this.setPriority(Thread.MIN_PRIORITY);
-   }
-    
-    public void run() {
-
-        PackageBrowser.parse();
-
+    public int compare(Object obj1, Object obj2) {
+        JavaPackage one = (JavaPackage) obj1;
+        JavaPackage two = (JavaPackage) obj2;
+        return one.getName().compareTo(two.getName());
     }
-    
+
 }
+
+

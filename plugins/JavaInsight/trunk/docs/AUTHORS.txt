@@ -1,0 +1,20 @@
+The JavaInsight plugin for jEdit
+================================
+
+(c) Copyright 1999 by:
+
+    Kevin A. Burton (burton@relativity.yi.org)
+
+
+The JavaInsight plugin uses the Jode Decompiler, a program and library
+written by Jochen Hoenicke (jochen@gnu.org). Get Jode from
+
+    http://jode.sourceforge.net.
+
+
+The JavaInsight plugin has been maintained by:
+
+    * Kevin A. Burton (burton@relativity.yi.org)
+    * André Kaplan (akaplan@users.sourceforge.net)
+    * Dirk Möbius (dmoebius@gmx.net)
+

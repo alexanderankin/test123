@@ -1,7 +1,9 @@
 <HTML>
+
 <HEAD>
 <TITLE>JavaInsight plugin</TITLE>
 </HEAD>
+
 <BODY BGCOLOR="#FFFFFF">
 
 <TABLE
@@ -12,30 +14,111 @@
     WIDTH="100%"
     SUMMARY="title"
 >
-    <TR WIDTH="100%">
-    <TD><BIG><BIG>JavaInsight plugin</BIG></BIG></TD>
-    <TD ALIGN="right">
-        <SMALL>
-        By Kevin A. Burton
-        <EM>burton@relativity.yi.org</EM><BR>
-        Andr&eacute; Kaplan
-        <EM>akaplan@users.sourceforge.net</EM>
-        </SMALL>
-    </TD>
-    </TR>
+  <TR WIDTH="100%">
+  <TD><BIG><BIG><B>JavaInsight plugin</B></BIG></BIG></TD>
+  <TD ALIGN="right">
+    <SMALL>
+      Kevin A. Burton
+      (<A HREF="mailto:burton@relativity.yi.org">burton@relativity.yi.org</A>)<BR>
+
+      Andr&eacute; Kaplan
+      (<A HREF="mailto:akaplan@users.sourceforge.net">akaplan@users.sourceforge.net</A>)<BR>
+
+      Dirk M&ouml;bius
+      (<A HREF="mailto:dmoebius@gmx.net">dmoebius@gmx.net</A>)
+    </SMALL>
+  </TD>
+  </TR>
 </TABLE>
 
 
-<H2><A NAME="general">Presentation</A></H2>
+<H2>Introduction</H2>
+
 <P>
 JavaInsight lets you decompile any class found on your class path.
 </P>
+
 <P>
-The decompilation is performed by Jode, a tool written by Jochen Hoenicke.
+The decompilation is performed by <B>Jode</B>, a tool written by
+Jochen Hoenicke (<A HREF="mailto:jochen@gnu.org">jochen@gnu.org</A>).
 </P>
-<P>More information on Jode can be found at
+
+<P>
+More information about Jode can be found at
 <A HREF="http://jode.sourceforge.net">http://jode.sourceforge.net</A>.
 </P>
+
+
+<H2>Configuration</H2>
+
+<UL>
+  <LI>
+    <P>
+      Open the Global Options dialog
+      (menu <EM>Utilities-&gt;Global&nbsp;Options</EM>)
+    </P>
+  </LI>
+  <LI>
+    <P>
+      Select the entry "Plugins-&gt;Java&nbsp;Insight".
+    </P>
+  </LI>
+</UL>
+</P>
+
+<P>
+The following options can be set:
+</P>
+
+<UL>
+  <LI>
+    <P>
+      <B>Use "pretty" names for local variables.</B>
+    </P>
+  </LI>
+
+  <LI>
+    <P>
+      <B>Remove locals, that are used only one time.</B><BR>
+      Such local variables are defined, but apparently never used. Since they
+      only clutter up the code, they can be removed without problems.
+      Note, that such local variables are only produced by crappy Java
+      compilers; good compilers strip them out anyway.
+    </P>
+  </LI>
+
+  <LI>
+    <P>
+      <B>Decrypt encrypted strings.</B><BR>
+      Sorry, I don't know what this option does.
+    </P>
+  </LI>
+
+  <LI>
+    <P>
+      <B>Generate imports for packages with more than <EM>nnn</EM> classes.</B><BR>
+      Set this to 0, if you don't want to generate imports for whole packages,
+      such like "<CODE>import java.awt.*;</CODE>".
+    </P>
+  </LI>
+
+  <LI>
+    <P>
+      <B>Generate imports for classes used more than <EM>nnn</EM> times.</B><BR>
+      Set this to 0, if you don't want to generate imports for classes, rather
+      use full qualified class names always.
+    </P>
+  </LI>
+
+  <LI>
+    <P>
+      <B>Set status of buffer to "saved" after decompile.</B><BR>
+      Use this if you want to get rid of "Save changes?" messages when you
+      close the decompilation buffer.
+    </P>
+  </LI>
+</UL>
+
 
 </BODY>
 </HTML>
