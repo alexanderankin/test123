@@ -60,14 +60,15 @@ public class ColorTabs
 
    private static ColorTabs colorTabs = null;
 
-   private boolean enabled = false;
-   private boolean selectedColorized = true;
+   private boolean enabled             = false;
+   private boolean selectedColorized   = true;
    private boolean foregroundColorized = false;
-   private boolean colorVariation = true;
+   private boolean muteColors          = true;
+   private boolean colorVariation      = true;
+
    private Vector colors;
    private Hashtable colorsAssigned = new Hashtable();
    private Object lock = new Object();
-   private boolean muteColors = true;
    private Random rnd = null;
 
 
@@ -104,6 +105,16 @@ public class ColorTabs
 
    public void setForegroundColorized(boolean foregroundColorized) {
       this.foregroundColorized = foregroundColorized;
+   }
+
+
+   public boolean hasMuteColors() {
+      return this.muteColors;
+   }
+
+
+   public void setMuteColors(boolean muteColors) {
+      this.muteColors = muteColors;
    }
 
 
