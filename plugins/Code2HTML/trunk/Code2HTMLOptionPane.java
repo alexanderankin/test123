@@ -19,6 +19,7 @@
 
 
 import javax.swing.JCheckBox;
+import javax.swing.JTextField;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
@@ -30,6 +31,7 @@ public class Code2HTMLOptionPane
 {
     private JCheckBox ckUseCSS;
     private JCheckBox ckShowGutter;
+    private JTextField tfWrap;
 
 
     public Code2HTMLOptionPane() {
@@ -49,6 +51,12 @@ public class Code2HTMLOptionPane
             jEdit.getBooleanProperty("code2html.show-gutter", false)
         );
         addComponent(this.ckShowGutter);
+
+        this.tfWrap = new JTextField(4);
+        int wrap = Code2HTMLUtilities.getIntegerProperty("code2html.wrap", 0);
+        if (wrap < 0) { wrap = 0; }
+        this.tfWrap.setText("" + wrap);
+        addComponent(jEdit.getProperty("options.code2html.wrap"), this.tfWrap);
     }
 
 
@@ -58,5 +66,9 @@ public class Code2HTMLOptionPane
 
         jEdit.setBooleanProperty("code2html.show-gutter",
             this.ckShowGutter.isSelected());
+
+        int wrap = Code2HTMLUtilities.getInteger(this.tfWrap.getText(), 0);
+        if (wrap < 0) { wrap = 0; }
+        jEdit.setProperty("code2html.wrap", "" + wrap);
     }
 }

@@ -1,5 +1,5 @@
 /*
- * HTMLStyle.java
+ * HTMLCSSStyle.java
  * Copyright (c) 2000 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -26,61 +26,63 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.Log;
 
 
-public class HTMLStyle
+public class HTMLCSSStyle extends HTMLStyle
 {
-    protected SyntaxStyle[] styles = null;
-
-
-    public HTMLStyle(SyntaxStyle[] styles) {
-        this.styles = styles;
+    public HTMLCSSStyle(SyntaxStyle[] styles) {
+        super(styles);
     }
 
 
     public String toHTML(int styleId, String text) {
-        return this.toHTML(this.styles[styleId], text);
+        StringBuffer buf = new StringBuffer();
+        buf.append("<SPAN CLASS=\"syntax" + styleId + "\">")
+            .append(text)
+            .append("</SPAN>");
+        return buf.toString();
     }
 
 
-    public String toHTML(SyntaxStyle style, String text) {
-        if (style == null) {
-            Log.log(Log.DEBUG, HTMLStyle.class,
-                    "toHTML(SyntaxStyle style): null style");
-            return text;
+    public static String toCSS(SyntaxStyle[] styles) {
+        StringBuffer buf = new StringBuffer();
+
+        for (int i = 0; i < styles.length; i++) {
+            buf.append(".syntax" + i + " {\n")
+                .append(toCSS(styles[i]))
+                .append("}\n");
         }
-        StringBuffer bufOpen  = new StringBuffer();
-        StringBuffer bufClose = new StringBuffer();
+
+        return buf.toString();
+    }
+
+
+    public static String toCSS(SyntaxStyle style) {
+        if (style == null) {
+            Log.log(Log.DEBUG, HTMLCSSStyle.class,
+                    "toCSS(SyntaxStyle style): null style");
+            return "";
+        }
+        StringBuffer buf = new StringBuffer();
 
         Color c;
-        /*
         if ((c = style.getBackgroundColor()) != null) {
-            bufOpen.append("<FONT")
-                .append(" BGCOLOR=\"")
+            buf.append("background: ")
                 .append(GUIUtilities.getColorHexString(c))
-                .append("\">");
-            bufClose.insert(0, "</FONT>");
+                .append(";\n");
         }
-        */
 
         if ((c = style.getForegroundColor()) != null) {
-            bufOpen.append("<FONT")
-                .append(" COLOR=\"")
+            buf.append("color: ")
                 .append(GUIUtilities.getColorHexString(c))
-                .append("\">");
-            bufClose.insert(0, "</FONT>");
+                .append(";\n");
         }
 
         if (style.isBold()) {
-            bufOpen.append("<STRONG>");
-            bufClose.insert(0, "</STRONG>");
+            buf.append("font-weight: bold;\n");
         }
 
         if (style.isItalic()) {
-            bufOpen.append("<EM>");
-            bufClose.insert(0, "</EM>");
+            buf.append("font-style: italic;\n");
         }
-
-        StringBuffer buf = new StringBuffer();
-        buf.append(bufOpen).append(text).append(bufClose);
 
         return buf.toString();
     }
