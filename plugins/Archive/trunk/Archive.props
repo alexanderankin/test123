@@ -5,7 +5,6 @@ plugin.archive.ArchivePlugin.docs=users-guide.html
 
 plugin.archive.ArchivePlugin.depend.0=jdk 1.1
 plugin.archive.ArchivePlugin.depend.1=jedit 03.02.99.00
-plugin.archive.ArchivePlugin.jars=BZip2.jar tar.jar
 
 archive-menu.label=Archive
 archive-menu=archive.clear-directory-cache
