@@ -14,7 +14,8 @@
 <hr>
 
 <a href=#general>General Information</a><br>
-<a href=#shell>The Default Shell</a><br>
+<a href=#cshell>The Console Shell</a><br>
+<a href=#bshell>The BeanShell</a><br>
 <a href=#other>Using Other Shells</a><br>
 <a href=#toolbar>The Console Tool Bar</a><br>
 <a href=#changes>Change Log</a>
@@ -26,26 +27,24 @@
 </a>
 
 The console plugin allows the user to run commands in various
-available <i>shells</i>. The default shell runs
-system processes (such as programs, compilers, etc). Other plugins,
-for example BeanShell, add shells of their own which perform other
-tasks.<p>
+available <i>shells</i>. The default console shell runs
+system processes (such as programs, compilers, etc). The BeanShell
+runs commands in jEdit's BeanShell interpreter. Some plugins such as
+JCompiler add their own shells which perform other tasks.<p>
 
-A console can be opened by selecting Plugins&gt;Console. The console
-window can be docked into the view if you specify so in
-Utilities&gt;Global Options&gt;Docking. <p>
+A console can be opened by selecting <b>Plugins</b>&gt;<b>Console</b>.
+The console window can be set to dock into the view in
+<b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Docking</b>.<p>
 
-Each console window has a text field where commands can be entered, and
-an output area that lists output of running commands. The combo box to
-the left of the command field allows you to select the shell to execute
-commands in.<p>
+The console consists of a shell selection combo box, a text field for
+entering commands, and an output area.<p>
 
-Pressing enter in the command field will execute the
-currently entered command. The command field supports a history;
-basically you can use the Up/Down arrow keys to recall previous commands.
-See the section on history text fields in the jEdit manual for details.<p>
+Pressing <b>ENTER</b> in the command field will execute the
+currently entered command. Previously entered strings can be recalled
+with the <b>UP</b> and <b>DOWN</b> keys.<p>
 
-Entering `clear' will remove all text from the console.<p>
+Entering the `clear' command in any shell will remove all text from the
+output area.<p>
 
 <!--
 <b>Tip</b>: if you find yourself executing the same console command frequently,
@@ -55,11 +54,11 @@ macro recording is in progress.<p>
 
 <hr>
 
-<a name=shell>
-<h1>The Default Shell</h1>
+<a name=cshell>
+<h1>The Console Shell</h1>
 </a>
 
-The default console shell runs operating system commands.
+The console shell runs operating system commands.
 To use it, select <b>Console</b> from the popup menu to the right of the
 command text field.<p>
 
@@ -90,16 +89,23 @@ To display the current working directory, use the "pwd" command.
 
 <hr>
 
+<a name=bshell>
+<h1>The BeanShell</h1>
+</a>
+
+The BeanShell runs commands in jEdit's BeanShell interpreter.
+To use it, select <b>BeanShell</b> from the popup menu to the right of the
+command text field.
+
+<hr>
+
 <a name=others>
 <h1>Using Other Shells</h1>
 </a>
 
-A few other plugins define shells of their own; BeanShell is an example
-of this. To use an alternative shell, select it from the shell popup
-in the console window.<p>
-
-Note that other shells cannot use the console's variable expansion or
-error parsing services.
+A few other plugins define shells of their own; JCompiler, for example.
+To use an alternative shell, select it from the shell popup
+in the console window.
 
 <hr>
 
@@ -116,6 +122,14 @@ command invocation.
 <a name=changes>
 <h1>Change Log</h1>
 </a>
+
+<h3>Version 2.4</h3>
+
+Requires EditBus 0.10 and jEdit 3.0pre5.
+
+<ul>
+<li>"BeanShell" shell added
+</ul>
 
 <h3>Version 2.3.1</h3>
 
@@ -208,118 +222,6 @@ Requires EditBus 0.9 and jEdit 2.3pre3.
 Requires EditBus 0.9 and jEdit 2.3pre3. This is a complete rewrite that
 has an enhanced user interface, customizable error parsing, and many other
 improvements.
-
-<h3>Version 1.9.3</h3>
-
-Requires EditBus 0.7 and jEdit 2.2pre8. This version has the following changes:
-
-<ul>
-<li>Fixed an NullPointerException that could occur when a process exits
-<li>Fixes for EditBus 0.7
-</ul>
-
-<h3>Version 1.9.2</h3>
-
-Requires jEdit 2.2pre6 and EditBus 0.6. This version has the following changes:
-
-<ul>
-<li>Processes could not be killed in the console shell
-</ul>
-
-<h3>Version 1.9.1</h3>
-
-Requires jEdit 2.2pre6 and EditBus 0.6. This version has the following changes:
-
-<ul>
-<li>compatibility fixes for 2.2pre6
-<li>executing BeanShell commands from the console would cause problems
-<li>error parsing changed to work with the latest Jikes releases
-<li>macro recording code was broken
-</ul>
-
-<h3>Version 1.9</h3>
-
-Requires EditBus 0.3 and jEdit 2.2pre4. This version has the following
-changes:
-
-<ul>
-<li>The 'Console' command now has a check box that is selected if a
-console is open
-<li>Commands entered in the console can now be recorded to macros
-<li>Fixed handling of GetOutput message
-<li>Console menu commands removed; use macros instead
-</ul>
-
-<h3>Version 1.8</h3>
-
-Requires EditBus 0.3 and jEdit 2.2pre3. This version has the following
-changes:
-
-<ul>
-<li>appletviewer menu entry is now 'appletviewer $u'
-<li>$n bug fixed
-<li>Error list unbundled into ErrorList plugin
-<li>Changes for EditBus 0.3
-</ul>
-
-<h3>Version 1.7.2</h3>
-
-Requires EditBus 0.2 and jEdit 2.1pre3. This version has the following
-changes:
-
-<ul>
-<li>Entering commands in the console didn't work; only the tool bar
-was functional
-<li>$n now expands to the file's name, without the extension
-<li>Entering a command will kill the currently running process
-</ul>
-
-<h3>Version 1.7.1</h3>
-
-Requires EditBus 0.2 and jEdit 2.1pre3. This version is a minor GUI update
-only, to make it look better in jEdit 2.2.
-
-<h3>Version 1.7</h3>
-
-Requires EditBus 0.2 and jEdit 2.1pre3.
-
-<ul>
-<li>Only one console instance is created per view
-<li>Processes are no longer killed, instead they are detached
-and continue executing in the background
-<li>Update for new option pane API
-</ul>
-
-<h3>Version 1.6</h3>
-
-Requires EditBus 0.2 and jEdit 2.1pre1.
-
-<ul>
-<li>Commands should now be added to the history
-<li>Running commands can now be stopped
-<li>Supports EditBus GetOutputs, GetOutput, StopCommand messages
-</ul>
-
-<h3>Version 1.5</h3>
-
-Requires EditBus 0.1.1 and jEdit 2.0final.
-
-<ul>
-<li>Reverts to old option pane code
-<li>Console menu can now contain frequently used commands
-</ul>
-
-<h3>Version 1.4</h3>
-
-Requires EditBus 0.1 and jEdit 2.0final.
-
-<ul>
-<li>First EditBus-enabled release
-</ul>
-
-<h3>Version 1.3</h3>
-
-Change log started
 
 </body>
 </html>

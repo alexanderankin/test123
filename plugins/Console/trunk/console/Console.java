@@ -79,7 +79,7 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		add(BorderLayout.CENTER,new JScrollPane(output));
 
 		propertiesChanged();
-		setShell(ConsolePlugin.SHELL);
+		setShell(ConsolePlugin.CONSOLE_SHELL);
 	}
 
 	public void addNotify()

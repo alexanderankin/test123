@@ -31,7 +31,8 @@ import org.gjt.sp.util.Log;
 
 public class ConsolePlugin extends EBPlugin
 {
-	public static final Shell SHELL = new DefaultShell();
+	public static final Shell CONSOLE_SHELL = new DefaultShell();
+	public static final Shell BEAN_SHELL = new BeanShell();
 
 	public void start()
 	{
@@ -39,13 +40,11 @@ public class ConsolePlugin extends EBPlugin
 		errorSource = new DefaultErrorSource("console");
 		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
 		EditBus.addToBus(errorSource);
-		EditBus.addToNamedList(Shell.SHELLS_LIST,SHELL);
+		EditBus.addToNamedList(Shell.SHELLS_LIST,CONSOLE_SHELL);
+		EditBus.addToNamedList(Shell.SHELLS_LIST,BEAN_SHELL);
 
 		// initialize console GUI
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,"console");
-
-		jEdit.addAction(new OpenAction());
-		jEdit.addAction(new SelectShellAction());
 	}
 
 	public void createMenuItems(View view, Vector menus, Vector menuItems)
@@ -148,70 +147,4 @@ public class ConsolePlugin extends EBPlugin
 	// private members
 	private static DefaultErrorSource errorSource;
 	private static ErrorMatcher[] errorMatchers;
-
-	class OpenAction extends EditAction
-	{
-		OpenAction()
-		{
-			super("console");
-		}
-
-		public void actionPerformed(ActionEvent evt)
-		{
-			// If action command is null, just toggle visibility,
-			// otherwise if an action command is set (eg if run from
-			// a macro) we run that command
-			View view = getView(evt);
-			DockableWindowManager wm = view.getDockableWindowManager();
-
-			String actionCommand = evt.getActionCommand();
-			if(actionCommand != null)
-			{
-				wm.addDockableWindow("console");
-				Console console = (Console)wm.getDockableWindow("console");
-				console.run(actionCommand);
-			}
-			else
-			{
-				wm.toggleDockableWindow("console");
-			}
-		}
-
-		public boolean isToggle()
-		{
-			return true;
-		}
-
-		public boolean isSelected(Component comp)
-		{
-			return getView(comp).getDockableWindowManager()
-				.isDockableWindowVisible("console");
-		}
-	}
-
-	class SelectShellAction extends EditAction
-	{
-		SelectShellAction()
-		{
-			super("console-shell");
-		}
-
-		public void actionPerformed(ActionEvent evt)
-		{
-			View view = getView(evt);
-			DockableWindowManager wm = view.getDockableWindowManager();
-			wm.addDockableWindow("console");
-			Console console = (Console)wm.getDockableWindow("console");
-			Object[] shells = EditBus.getNamedList(Shell.SHELLS_LIST);
-			for(int i = 0; i < shells.length; i++)
-			{
-				Shell shell = (Shell)shells[i];
-				if(shell.getName().equals(evt.getActionCommand()))
-				{
-					console.setShell(shell);
-					break;
-				}
-			}
-		}
-	}
 }
