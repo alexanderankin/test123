@@ -502,7 +502,7 @@ public class SqlTextPublisher
   protected static void handleResultSet( View view,
       Statement stmt,
       SqlServerRecord record,
-      String text )
+      final String text )
        throws SQLException
   {
     final ResultSet rs = stmt.getResultSet();
@@ -522,7 +522,7 @@ public class SqlTextPublisher
           if ( wnd == null )
             return;
 
-          wnd.addDataSet( data );
+          wnd.addDataSet( text, data );
         }
       } );
 

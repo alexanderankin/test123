@@ -147,7 +147,7 @@ public class ResultSetWindow extends JPanel
    * @param  data  The feature to be added to the DataSet attribute
    * @since
    */
-  public void addDataSet( Data data )
+  public void addDataSet( String query, Data data )
   {
     final JPanel p = new JPanel( new BorderLayout() );
 
@@ -176,11 +176,14 @@ public class ResultSetWindow extends JPanel
     if ( recCount > maxRecs )
       args[0] = new String( " > " + maxRecs );
     final JLabel info = new JLabel( jEdit.getProperty( "sql.resultSet.info", args ), SwingConstants.LEFT );
+    final String lq = query;
+    info.setToolTipText( lq.length() > 128 ? lq.substring( 0, 127 ) : lq );
     p.add( BorderLayout.SOUTH, info );
    
     notebook.addTab( "", new ImageIcon( Toolkit.getDefaultToolkit().getImage( getClass().getResource( "/icons/ResultSetWindowTab.png" ) ) ), p );
-    Log.log( Log.DEBUG, ResultSetWindow.class, 
-             "Adding page " + p + " " );
+    final JTable tbl = (JTable)((JScrollPane)dataView).getViewport().getView();
+    
+    p.addMouseListener( new MouseHandler( p, tbl ) );
     notebook.setSelectedComponent( p );
 
     revalidate();
@@ -334,7 +337,7 @@ public class ResultSetWindow extends JPanel
 
     setSortOrder( tbl, data, HelpfulJTable.SORT_OFF );
 
-    tbl.addMouseListener( new MouseHandler( tbl ) );
+    tbl.addMouseListener( new MouseHandler( tbl, tbl ) );
 
     tbl.setTableHeader( new TableHeader( tbl, data.columnTypes ) );
 
@@ -446,6 +449,8 @@ public class ResultSetWindow extends JPanel
   public final static void clearProperties()
   {
     SqlPlugin.unsetGlobalProperty( MAX_RECS_TO_SHOW_PROP );
+    SqlPlugin.unsetGlobalProperty( AUTORESIZE );
+    SqlPlugin.unsetGlobalProperty( CLOSE_WITH_BUFFER );
   }
 
 
@@ -558,6 +563,7 @@ public class ResultSetWindow extends JPanel
   protected class MouseHandler extends MouseAdapter
   {
     protected JTable table;
+    protected Component comp;
 
 
     /**
@@ -566,9 +572,10 @@ public class ResultSetWindow extends JPanel
      * @param  table  Description of Parameter
      * @since
      */
-    public MouseHandler( JTable table )
+    public MouseHandler( Component comp, JTable table )
     {
       this.table = table;
+      this.comp = comp;
     }
 
 
@@ -578,8 +585,8 @@ public class ResultSetWindow extends JPanel
 
       if ( ( evt.getModifiers() & MouseEvent.BUTTON3_MASK ) != 0 )
       {
-        final ResultSetWindowPopup rswp = new ResultSetWindowPopup( view, table, evt.getPoint() );
-        rswp.show( table, p.x + 1, p.y + 1 );
+        final ResultSetWindowPopup rswp = new ResultSetWindowPopup( table, evt.getPoint() );
+        rswp.show( comp, p.x + 1, p.y + 1 );
         evt.consume();
         return;
       }

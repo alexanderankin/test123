@@ -28,6 +28,7 @@ import javax.swing.*;
 import javax.swing.table.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.*;
 
 /**
  * A popup menu for BufferList.
@@ -37,7 +38,6 @@ import org.gjt.sp.jedit.*;
  */
 public class ResultSetWindowPopup extends JPopupMenu
 {
-  protected View view;
   protected JTable table;
   protected Point point;
 
@@ -50,9 +50,8 @@ public class ResultSetWindowPopup extends JPopupMenu
    * @param  point  Description of Parameter
    * @since
    */
-  public ResultSetWindowPopup( View view, JTable table, Point point )
+  public ResultSetWindowPopup( JTable table, Point point )
   {
-    this.view = view;
     this.table = table;
     this.point = point;
     final JMenuItem mi = createMenuItem( "copy_cell" );
@@ -70,7 +69,7 @@ public class ResultSetWindowPopup extends JPopupMenu
           final Registers.Register reg = Registers.getRegister( '$' );// clipboard
           if ( reg == null )
           {
-            ResultSetWindowPopup.this.view.getToolkit().beep();
+            ResultSetWindowPopup.this.table.getToolkit().beep();
             return;
           }
           final TableModel model = ResultSetWindowPopup.this.table.getModel();
@@ -83,9 +82,88 @@ public class ResultSetWindowPopup extends JPopupMenu
     add( createCopyMenuItem( "copy_all_csv", ", ", true ) );
     add( createCopyMenuItem( "copy_all_tab", "\t", false ) );
 
+    final TableModel model = table.getModel();
+    final int maxC = model.getColumnCount();
+
+    final JMenu showHideColumnsMenu = new JMenu( jEdit.getProperty( "sql.resultSet.popup.showHideColumnsMenu.label" ) );
+    JMenuItem shit = new JMenuItem( jEdit.getProperty( "sql.resultSet.popup.showHideColumnsMenu.showAll.label" ) );
+    shit.addActionListener( new ActionListener() {
+      public void actionPerformed( ActionEvent evt )
+      {
+        for ( int i = maxC; --i>=0; )
+          showColumn( i, true );
+      }
+    } );
+    showHideColumnsMenu.add( shit );
+    shit = new JMenuItem( jEdit.getProperty( "sql.resultSet.popup.showHideColumnsMenu.hideAll.label" ) );
+    shit.addActionListener( new ActionListener() {
+      public void actionPerformed( ActionEvent evt )
+      {
+        for ( int i = maxC; --i>=0; )
+          showColumn( i, false );
+      }
+    } );
+    showHideColumnsMenu.add( shit ); 
+    showHideColumnsMenu.add( new JSeparator() );
+
+    final ActionListener cbital = new ActionListener() {
+      public void actionPerformed( ActionEvent evt )
+      {
+        final JCheckBoxMenuItem cbmi = (JCheckBoxMenuItem)evt.getSource();
+        final boolean newState = cbmi.isSelected();
+        final String name = cbmi.getText();
+        for ( int i = maxC; --i>=0; )
+        {
+           if ( model.getColumnName( i ).equals( name ) )
+           {
+             showColumn( i, newState );
+             cbmi.setSelected( newState );
+             break;
+          }
+        }
+      }
+    };
+    for ( int c = maxC; --c >= 0;  )
+    {
+      final String val = model.getColumnName( c );
+      final JCheckBoxMenuItem cbit = new JCheckBoxMenuItem( val );
+      cbit.setName( val );
+      cbit.setActionCommand( val );
+
+      final Boolean shown = (Boolean)table.getClientProperty( "column." + val + ".visible" );
+      cbit.setSelected( shown == null ? true : shown.booleanValue() );
+      
+      cbit.addActionListener( cbital );
+      showHideColumnsMenu.add( cbit ); 
+    }
+    
+    add( showHideColumnsMenu );
   }
 
 
+  protected void showColumn( int idx, boolean show )
+  {
+    final TableColumn tc = table.getColumnModel().getColumn( idx );
+    final String name = table.getModel().getColumnName( idx );
+    if ( show ) // selected 
+    {
+      final Integer mw = (Integer)table.getClientProperty( "column." + name + ".minWidth" );
+      tc.setMinWidth( mw == null ? 50 : mw.intValue() );
+      final Integer pw = (Integer)table.getClientProperty( "column." + name + ".preferredWidth" );
+      tc.setPreferredWidth( pw == null ? 50 : pw.intValue() );
+    } else
+    {
+      table.putClientProperty( "column." + name + ".minWidth",
+                               new Integer( tc.getMinWidth() ) );
+      table.putClientProperty( "column." + name + ".preferredWidth",
+                               new Integer( tc.getPreferredWidth() ) );
+      tc.setMinWidth( 0 );
+      tc.setPreferredWidth( 0 );
+    }
+    table.putClientProperty( "column." + name + ".visible", 
+                             new Boolean( show ) );
+  }
+  
   private JMenuItem createMenuItem( String name )
   {
     final String label = jEdit.getProperty( "sql.resultSet.popup." + name + ".label" );
@@ -145,7 +223,7 @@ public class ResultSetWindowPopup extends JPopupMenu
       final Registers.Register reg = Registers.getRegister( '$' );// clipboard
       if ( reg == null )
       {
-        view.getToolkit().beep();
+        table.getToolkit().beep();
         return;
       }
 
