@@ -56,7 +56,7 @@ public class ColorTabs
    private static final int MUTE_LOWEST_COLOR = 150;
    private static final int MUTE_HIGHEST_COLOR = 230;
    private static final int MUTE_RANGE = MUTE_HIGHEST_COLOR - MUTE_LOWEST_COLOR;
-   private static final float muteRatio = ((float) MUTE_RANGE / 254);
+   private static final float MUTE_RATIO = ((float) MUTE_RANGE / 254);
 
    private static ColorTabs colorTabs = null;
    private static boolean useColors = false;
@@ -169,9 +169,9 @@ public class ColorTabs
       int g = color.getGreen();
       int b = color.getBlue();
 
-      r = (int) (MUTE_LOWEST_COLOR + (r * muteRatio));
-      g = (int) (MUTE_LOWEST_COLOR + (g * muteRatio));
-      b = (int) (MUTE_LOWEST_COLOR + (b * muteRatio));
+      r = (int) (MUTE_LOWEST_COLOR + (r * MUTE_RATIO));
+      g = (int) (MUTE_LOWEST_COLOR + (g * MUTE_RATIO));
+      b = (int) (MUTE_LOWEST_COLOR + (b * MUTE_RATIO));
 
       if (colorVariation)
       {
