@@ -87,11 +87,7 @@ public class ConnectionManager
 		/* since this can be called at startup time,
 		 * we need to hide the splash screen. */
 		GUIUtilities.hideSplashScreen();
-		String privateKeyFile = null;
-		if (secure && host!=null && user!=null)
-			privateKeyFile = jEdit.getProperty("ftp.keys."+host+"."+user);
-
-		LoginDialog dialog = new LoginDialog(comp,secure,host,user,null,privateKeyFile);
+		LoginDialog dialog = new LoginDialog(comp,secure,host,user,null);
 		if(!dialog.isOK())
 			return null;
 		host = dialog.getHost();
