@@ -1,5 +1,12 @@
 CHANGES file for Templates plugin.
 
+Version 3.0.2 (24-AUG-2002)
+=============================
+BUG FIX:
+- Fix bug where the 'Edit Template' doesn't open to the template directory.
+ENHANCEMENTS:
+- Added $_jeditSelection which represents the current buffer selection (Calvin Yu).
+
 Version 3.0.1 (16-AUG-2002)
 =============================
 BUG FIX:
