@@ -56,8 +56,8 @@ public class XmlTree extends JPanel implements EBComponent
 		DefaultTreeModel emptyModel = new DefaultTreeModel(
 			new DefaultMutableTreeNode(null));
 		tree = new CustomTree(emptyModel);
-		tree.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		tree.addTreeSelectionListener(new TreeSelectionHandler());
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.addKeyListener(new KeyHandler());
 		if(docked)
 			tree.addMouseMotionListener(new MouseHandler());
 
@@ -175,7 +175,10 @@ public class XmlTree extends JPanel implements EBComponent
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				expandTagAt(view.getTextArea().getCaretPosition());
+				JEditTextArea textArea = view.getTextArea();
+				int caret = textArea.getCaretPosition();
+				Selection s = textArea.getSelectionAtOffset(caret);
+				expandTagAt(s == null ? caret : s.getStart());
 			}
 		});
 
@@ -199,8 +202,10 @@ public class XmlTree extends JPanel implements EBComponent
 		{
 			Vector _path = new Vector();
 			expandTagAt(node,dot,_path);
+			_path.addElement(node);
 			_path.addElement(root);
 
+			System.err.println(_path);
 			Object[] path = new Object[_path.size()];
 			for(int i = 0; i < path.length; i++)
 				path[i] = _path.elementAt(path.length - i - 1);
@@ -223,15 +228,7 @@ public class XmlTree extends JPanel implements EBComponent
 		Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
 		XmlTag tag = (XmlTag)userObject;
 
-		if(childCount == 0 && userObject instanceof XmlTag)
-		{
-			// check if the caret in inside this tag
-			if(dot >= tag.start.getOffset()
-				&& (tag.end == null
-				|| dot <= tag.end.getOffset()))
-				return true;
-		}
-		else
+		if(childCount != 0 && userObject instanceof XmlTag)
 		{
 			// check if any of our children contain the caret
 			for(int i = childCount - 1; i >= 0; i--)
@@ -239,19 +236,21 @@ public class XmlTree extends JPanel implements EBComponent
 				TreeNode _node = node.getChildAt(i);
 				if(expandTagAt(_node,dot,path))
 				{
-					path.addElement(node);
+					path.addElement(_node);
 					return true;
 				}
 			}
-
-			// check if the caret in inside this tag
-			if(dot >= tag.start.getOffset()
-				&& (tag.end == null
-				|| dot <= tag.end.getOffset()))
-				return true;
 		}
 
-		return false;
+		// check if the caret in inside this tag
+		if(dot >= tag.start.getOffset() && (tag.end == null
+			|| dot < tag.end.getOffset()))
+		{
+			//path.addElement(node);
+			return true;
+		}
+		else
+			return false;
 	} //}}}
 
 	//}}}
@@ -338,6 +337,47 @@ public class XmlTree extends JPanel implements EBComponent
 		}
 	} //}}}
 
+	//{{{ KeyHandler class
+	class KeyHandler extends KeyAdapter
+	{
+		public void keyPressed(KeyEvent evt)
+		{
+			if(caretTimer != null)
+				caretTimer.stop();
+
+			if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+			{
+				evt.consume();
+
+				TreePath path = tree.getSelectionPath();
+
+				if(path != null)
+				{
+					Object value = ((DefaultMutableTreeNode)path
+						.getLastPathComponent()).getUserObject();
+
+					if(value instanceof XmlTag)
+					{
+						XmlTag tag = (XmlTag)value;
+
+						JEditTextArea textArea = view.getTextArea();
+
+						if(evt.isShiftDown() && tag.end != null)
+						{
+							textArea.setCaretPosition(tag.end.getOffset());
+							textArea.addToSelection(
+								new Selection.Range(
+									tag.start.getOffset(),
+									tag.end.getOffset()));
+						}
+						else
+							textArea.setCaretPosition(tag.start.getOffset());
+					}
+				}
+			}
+		}
+	} //}}}
+
 	//{{{ MouseHandler class
 	class MouseHandler extends MouseMotionAdapter
 	{
@@ -356,33 +396,6 @@ public class XmlTree extends JPanel implements EBComponent
 				{
 					view.getStatus().setMessage(((XmlTag)value)
 						.attributeString);
-				}
-			}
-		}
-	} //}}}
-
-	//{{{ TreeSelectionHandler class
-	class TreeSelectionHandler implements TreeSelectionListener
-	{
-		public void valueChanged(TreeSelectionEvent e)
-		{
-			if(inExpandTagAt)
-				return;
-
-			TreePath path = tree.getSelectionPath();
-
-			if(path != null)
-			{
-				Object value = ((DefaultMutableTreeNode)path
-					.getLastPathComponent()).getUserObject();
-
-				if(value instanceof XmlTag)
-				{
-					XmlTag tag = (XmlTag)value;
-
-					JEditTextArea textArea = view.getTextArea();
-
-					textArea.setCaretPosition(tag.start.getOffset());
 				}
 			}
 		}
