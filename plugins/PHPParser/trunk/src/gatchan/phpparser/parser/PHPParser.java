@@ -1553,7 +1553,9 @@ public final class PHPParser implements PHPParserConstants {
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
     }
-    {if (true) return new FieldDeclaration(path,
+    int visibility = (visibilityToken == null) ? PUBLIC : visibilityToken.kind;
+    {if (true) return new FieldDeclaration(visibility,
+                                path,
                                 variableDeclaration,
                                 currentSegment,
                                 start,
