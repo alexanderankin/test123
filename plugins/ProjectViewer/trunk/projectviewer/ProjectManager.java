@@ -144,27 +144,29 @@ public final class ProjectManager {
 		// Projects loaded, add all of them to the root node
 		VPTRoot root = VPTRoot.getInstance();
 		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
-			root.add((/*  */(Entry)projects.get(it.next())).project);
+			root.add(((Entry)projects.get(it.next())).project);
 		}
 	} //}}}
 
 	//{{{ save() method
 	/** Saves all the project data to the disk (config + each project). */
 	public void save() throws IOException {
-		// save each project's data, if loaded
-		// if not loaded, no need to save.
-		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
-			String pName = (String) it.next();
-			Entry e = (Entry) projects.get(pName);
-			if (e.isLoaded) {
-				if (e.fileName == null) {
-					e.fileName = createFileName(pName);
+		synchronized (projects) {
+			// save each project's data, if loaded
+			// if not loaded, no need to save.
+			for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
+				String pName = (String) it.next();
+				Entry e = (Entry) projects.get(pName);
+				if (e.isLoaded) {
+					if (e.fileName == null) {
+						e.fileName = createFileName(pName);
+					}
+					ProjectPersistenceManager.save(e.project, e.fileName);
 				}
-				ProjectPersistenceManager.save(e.project, e.fileName);
 			}
-		}
 
-		saveProjectList();
+			saveProjectList();
+		}
 	} //}}}
 
 	//{{{ saveProject(VPTProject) method
@@ -176,22 +178,24 @@ public final class ProjectManager {
 	 */
 	public void saveProject(VPTProject p) {
 		Entry e = (Entry) projects.get(p.getName());
-		if (e.fileName == null) {
-			e.fileName = createFileName(p.getName());
-			// since we're saving the project for the first time, let's be
-			// paranoid and save all configuration along with it
-			try{
-				saveProjectList();
+		synchronized (e) {
+			if (e.fileName == null) {
+				e.fileName = createFileName(p.getName());
+				// since we're saving the project for the first time, let's be
+				// paranoid and save all configuration along with it
+				try{
+					saveProjectList();
+				} catch (IOException ioe) {
+					Log.log(Log.ERROR, this, ioe);
+				}
+			}
+			try {
+				ProjectPersistenceManager.save(p, e.fileName);
 			} catch (IOException ioe) {
 				Log.log(Log.ERROR, this, ioe);
 			}
+			e.isLoaded = true;
 		}
-		try {
-			ProjectPersistenceManager.save(p, e.fileName);
-		} catch (IOException ioe) {
-			Log.log(Log.ERROR, this, ioe);
-		}
-		e.isLoaded = true;
 	} //}}}
 
 	//{{{ removeProject(VPTProject) method
@@ -202,16 +206,20 @@ public final class ProjectManager {
 	 */
 	public void removeProject(VPTProject p) {
 		Entry e = (Entry) projects.get(p.getName());
-		if (e.fileName != null) {
-			new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
-			// project list changed, save "global" data.
-			try{
-				saveProjectList();
-			} catch (IOException ioe) {
-				Log.log(Log.ERROR, this, ioe);
+		if (e == null) return;
+
+		synchronized (e) {
+			if (e.fileName != null) {
+				new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
+				// project list changed, save "global" data.
+				try{
+					saveProjectList();
+				} catch (IOException ioe) {
+					Log.log(Log.ERROR, this, ioe);
+				}
 			}
+			projects.remove(p.getName());
 		}
-		projects.remove(p.getName());
 		ProjectViewer.removeNodeFromParent(p);
 		ProjectViewer.projectRemoved(p);
 	} //}}}
@@ -222,7 +230,14 @@ public final class ProjectManager {
 		Entry e = (Entry) projects.remove(oldName);
 		projects.put(newName, e);
 		if (e.fileName != null) {
-			new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
+			if (!e.isLoaded) {
+				String oldFname = e.fileName;
+				e.fileName = createFileName(newName);
+				new File(ProjectPlugin.getResourcePath("projects/" + oldFname)).renameTo(
+					new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)));
+			} else {
+				new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
+			}
 		}
 		saveProject(e.project);
 		ProjectViewer.nodeChanged(e.project);
@@ -251,15 +266,19 @@ public final class ProjectManager {
 	public VPTProject getProject(String name) {
 		Entry e = (Entry) projects.get(name);
 		if (!e.isLoaded) {
-			if (e.fileName != null) {
-				try {
-					ProjectPersistenceManager.load(e.project, e.fileName);
-					e.isLoaded = true;
-				} catch (IOException ioe) {
-					Log.log(Log.ERROR, this, ioe);
+			synchronized (e) {
+				if (!e.isLoaded) {
+					if (e.fileName != null) {
+						try {
+							ProjectPersistenceManager.load(e.project, e.fileName);
+							e.isLoaded = true;
+						} catch (IOException ioe) {
+							Log.log(Log.ERROR, this, ioe);
+						}
+					} else {
+						Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
+					}
 				}
-			} else {
-				Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
 			}
 		}
 		return e.project;
