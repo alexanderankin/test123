@@ -52,6 +52,9 @@ public class ConsoleFramePluginPart extends EBPlugin
 			}
 			else if(vmsg.getWhat() == ViewUpdate.CLOSED)
 			{
+				if(consoles == null)
+					return;
+
 				ConsoleFrame console = (ConsoleFrame)consoles.remove(view);
 				if(console != null)
 					console.viewClosed();
