@@ -26,6 +26,7 @@ included with jEdit
   <li> Jump to file</li>
   <li>Jump to tag</li>
   <li>Search tag</li>
+  <li>Type a tag...</li>
   <li>Jump Back (Search tag mode only, yet...)</li>
   <li>Reload tags for project</li>
 </ul>
@@ -52,11 +53,15 @@ included with jEdit
 <h3>Jump to tag</h3>
 <font color="#666666"><b>Show list of all tags founded in current file.</b></font> Navigation rules as in Jump to file action, plus pressing INSERT (as well as S+CLICK) - will insert picked tag into current caret position.<br> 
   
-<h3>Search tag</h3><font color="#666666"><b>Show list of files where desired tag is founded. </b></font> 
-First of all, move the carret to desired tag, for example, public final TextAreaPainter 
-get*Painter() (* - caret). When execute &quot;search tag&quot; action you will 
-see list of all files (within current project) where desired tag is founded. <br>
-  
+<h3>Search tag</h3>
+<p><font color="#666666"><b>Show list of files where desired tag is founded. </b></font> 
+  First of all, move the carret to desired tag, for example, public final TextAreaPainter 
+  get*Painter() (* - caret). When execute &quot;search tag&quot; action you will 
+  see list of all files (within current project) where desired tag is founded.</p>
+<h3>Type a tag...</h3>
+<p><font color="#666666"><b>Displays input dialog to type a tag to search. </b></font> 
+  Press OK to jump to a tag. If multiple occurence of tag founded, it display 
+  list of all of them.</p>
 <h3>Jump Back </h3> 
 <font color="#666666"><b>Stack type history.</b></font> After several "search tag" jumpings, you may go back to 
   tags, which you already vistit.<br>

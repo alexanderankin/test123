@@ -59,4 +59,11 @@ public class Jump
         if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
         JumpPlugin.pja.JumpToPreviousTag();
     }
+    
+    public void jumpByInput()
+    {
+        if (isJumpEnabled() == false) return;
+        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
+        JumpPlugin.pja.JumpToTagByInput();
+    }
 }

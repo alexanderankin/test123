@@ -16,10 +16,11 @@ JumpPlugin.tagsjump.label=Jump to tag
 JumpPlugin.workspacejump.label=Search tag
 JumpPlugin.historyjump.label=Back (history)
 JumpPlugin.reloadtagsonproject.label=Reload tags for project
+JumpPlugin.gettagbyinput.label=Type a tag...
 
 # application menu items
 JumpPlugin.menu.label=Jump!
-JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.reloadtagsonproject
+JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.gettagbyinput JumpPlugin.reloadtagsonproject
 
 # options
 options.JumpPlugin.label=Jump!
@@ -32,6 +33,10 @@ options.JumpPlugin.ctags.def.path=C:/Apps/ctags/ctags.exe
 # messages
 JumpPlugin.no_project.title=Jump! - Error
 JumpPlugin.no_project.message=Error during starting Jump!\nMake sure path to ctags correct\nand(or) any project is active.
+
+JumpPlugin.input_tag.title=Jump! - Jump to tag
+JumpPlugin.input_tag.message=Enter tag to jump to:
+
 JumpPlugin.ctags.path.incorrect.title=Jump! - Starting ctags error
 JumpPlugin.ctags.path.incorrect.message=Failed to start ctags application.\nCheck Jump! options for correct path.
 

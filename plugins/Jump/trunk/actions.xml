@@ -33,5 +33,11 @@
         </CODE>
     </ACTION>
     
+    <ACTION NAME="JumpPlugin.gettagbyinput">
+        <CODE>
+            JumpPlugin.jump_actions.jumpByInput();
+        </CODE>
+    </ACTION>
+    
     
 </ACTIONS>
