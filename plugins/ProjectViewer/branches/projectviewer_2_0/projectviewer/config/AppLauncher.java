@@ -19,9 +19,17 @@
 package projectviewer.config;
 
 //{{{ Imports
-import java.io.*;
-import java.text.*;
-import java.util.*;
+import java.io.File;
+import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+
+import java.util.Set;
+import java.util.TreeMap;
+import java.util.Iterator;
+import java.util.Properties;
+
 
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
@@ -33,7 +41,7 @@ import projectviewer.ProjectViewer;
 //}}}
 
 /**
- *	Holds information on what applications to use to open certain types of 
+ *	Holds information on what applications to use to open certain types of
  *	files, based on extension or complete file name.
  *
  *	@author		Matthew Payne
@@ -42,9 +50,9 @@ import projectviewer.ProjectViewer;
 public class AppLauncher {
 
 	//{{{ Singleton method & variable
-	
+
 	private static AppLauncher instance;
-	
+
 	public static synchronized AppLauncher getInstance() {
 		if (instance == null) {
 			instance = new AppLauncher();
@@ -56,29 +64,29 @@ public class AppLauncher {
 		}
 		return instance;
 	}
-	
+
 	//}}}
-	
+
 	//{{{ Constructors
-	
+
 	public AppLauncher() {
 		appCol = new TreeMap();
 	}
-	
+
 	//}}}
-	
+
 	//{{{ Private members & variables
 
 	private TreeMap appCol;
 
 	//}}}
-	
+
 	//{{{ Public methods
-	
+
 	//{{{ getAppList() method
 	public Set getAppList() {
 	   //return all the values
-		return appCol.entrySet(); 
+		return appCol.entrySet();
 	} //}}}
 
 	//{{{ addAppExt() method
@@ -104,18 +112,18 @@ public class AppLauncher {
  		Properties props = new Properties();
 		InputStream inprops =
 			ProjectPlugin.getResourceAsStream("fileassocs.properties");
-		
+
 		appCol.clear();
-		
+
 		if (inprops != null) {
 			props.load(inprops);
-	
+
 			for (Iterator iter = props.keySet().iterator(); iter.hasNext(); ) {
 				String key = (String) iter.next();
 				String value = props.getProperty(key);
 				this.addAppExt(key, value);
 			}
-	
+
 			inprops.close();
 		}
 	} //}}}
@@ -128,7 +136,7 @@ public class AppLauncher {
 			new OutputStreamWriter(
 				ProjectPlugin.getResourceAsOutputStream("fileassocs.properties")
 			) );
-			
+
 		for (Iterator iter = appCol.keySet().iterator(); iter.hasNext(); ) {
 			Object key = iter.next();
 			Object value = appCol.get(key);
@@ -136,7 +144,7 @@ public class AppLauncher {
 		}
 
 		out.println("");
-		out.close();	
+		out.close();
 	} //}}}
 
 	//{{{ launchApp() method
@@ -145,11 +153,11 @@ public class AppLauncher {
 		String ext = getFileExtension(f.getName());
 		String executable = (String) appCol.get(ext);
 		if (executable == null) {
-			if (JOptionPane.showConfirmDialog(viewer, 
-					jEdit.getProperty("projectviewer.launcher.no_app", new Object[] { ext }), 
+			if (JOptionPane.showConfirmDialog(viewer,
+					jEdit.getProperty("projectviewer.launcher.no_app", new Object[] { ext }),
 					jEdit.getProperty("projectviewer.launcher.no_app_title"),
 					javax.swing.JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-				 executable = pickApp(ext, viewer);	
+				 executable = pickApp(ext, viewer);
 			 } else {
 				 return;
 			 }
@@ -160,14 +168,14 @@ public class AppLauncher {
 			try {
 			   rt.exec(callAndArgs);
 			} catch(java.io.IOException ioe) {
-				JOptionPane.showMessageDialog(viewer, 
+				JOptionPane.showMessageDialog(viewer,
 					jEdit.getProperty("projectviewer.launcher.io_error", new Object[] { ioe.getMessage() }),
 					jEdit.getProperty("projectviewer.error"),
 					JOptionPane.ERROR_MESSAGE);
 			}
 		}
 	} //}}}
-	
+
 	//{{{ copy() method
 	/** Copies the data from another AppLauncher into this one. */
 	public void copy(AppLauncher other) {
@@ -185,17 +193,17 @@ public class AppLauncher {
 	public String getAppName(File f) {
 		return (String) appCol.get(getFileExtension(f.getName()));
 	} //}}}
-	
+
 	//}}}
-		
-	//{{{ Private methods	
-	
+
+	//{{{ Private methods
+
 	//{{{ getFileExtension() method
 	/**
-	 *	Returns the file's extension, or the file name if no extension can be 
+	 *	Returns the file's extension, or the file name if no extension can be
 	 *	recognized.
 	 *
-	 *@param  filename  
+	 *@param  filename
 	 *@return	   The fileExtension value
 	 */
 	private String getFileExtension(String fileName) {
@@ -225,7 +233,7 @@ public class AppLauncher {
 		}
 		return result;
 	} //}}}
-	
+
 	//{{{ pickApp() method
 	/**
 	 *	Prompts the user for an application to run, and returns the path to the
@@ -233,12 +241,12 @@ public class AppLauncher {
 	 */
 	private String pickApp(String ext, ProjectViewer viewer) {
 		// Used for selected and executable file
-		javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
-		chooser.setFileSelectionMode(javax.swing.JFileChooser.FILES_ONLY);
-		if (chooser.showDialog(null, "Choose") != javax.swing.JFileChooser.APPROVE_OPTION) {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		if (chooser.showDialog(null, jEdit.getProperty("projectviewer.launcher.choose_app")) != JFileChooser.APPROVE_OPTION) {
 			return null;
 		}
-		
+
 		String exec = replaceString(chooser.getSelectedFile().getPath(), "\\", "/");
 		this.addAppExt(ext, exec);
 
@@ -247,11 +255,11 @@ public class AppLauncher {
 		} catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
 		}
-		
+
 		return exec;
 	} //}}}
-		
-	//}}}	
+
+	//}}}
 
 }
 
