@@ -337,7 +337,7 @@ public class SqlOptionPane extends AbstractOptionPane
    * @param  comp  The feature to be added to the Component attribute
    * @since
    */
-  protected void addComponent( Component comp )
+  public void addComponent( Component comp )
   {
     GridBagConstraints cons = new GridBagConstraints();
     cons.gridy = y++;

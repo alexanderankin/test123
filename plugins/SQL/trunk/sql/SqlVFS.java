@@ -123,7 +123,7 @@ public class SqlVFS extends VFS
    */
   public String getParentOfPath( String path )
   {
-    return MiscUtilities.getParentOfPath( path );
+    return super.getParentOfPath( path );
   }
 
 
