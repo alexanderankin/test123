@@ -46,20 +46,25 @@ public class Tags {
 
   protected static boolean debug_ = false;
   protected static boolean ui_ = true;
-  
-  protected static final int C_TAGS            = 0;
-  protected static final int GNU_C_TAGS        = 1;
-  protected static final int EXUBERANT_C_TAGS  = 2;
-  protected static final int NUM_PARSERS = 3;
+
+  /* NOTE 1:
+   * Yes there is only one parser.  At one time there used to be different 
+   * versions based on the tag prorgam that created it (C, GNU, Exuberant).
+   * However, Exuberant C Tags is just a super set of C and GNU and can 
+   * handel all.  However there is Emacs' etags, which I plan to implement
+   * at some point, so I'm going to leave this stuff here.  There is no 
+   * performance issue since parser_ always refers to one of the items in the
+   * array.
+   */
+  protected static final int EXUBERANT_C_TAGS  = 0;
+  protected static final int NUM_PARSERS = 1;
   
   // The current parser and parser registration (or lack thereof) should be
   // restructured.  How about static {} blocks in the parser class regestring
-  // it...
+  // it...?
   protected static final TagsParser parsers_[] = new TagsParser[NUM_PARSERS];
   
   static {
-    parsers_[C_TAGS]     = new CTagsParser();
-    parsers_[GNU_C_TAGS] = new GNUCTagsParser();
     parsers_[EXUBERANT_C_TAGS] = new ExuberantCTagsParser();
   }
   
@@ -110,6 +115,7 @@ public class Tags {
   }
   
   /***************************************************************************/
+  // See Note 1
   public static void setParserType(int parser) {
     if (parser >= 0 && parser < NUM_PARSERS) {
       currentParserType_ = parser;
@@ -119,6 +125,7 @@ public class Tags {
   }
   
   /***************************************************************************/
+  // See Note 1
   public static int getParserType() { return currentParserType_; }
   
   /*+*************************************************************************/
@@ -283,7 +290,9 @@ public class Tags {
     File defaultTagFile = null;
     if (getUseCurrentBufTagFile()) {
       File currentBufferFile = new File(buffer.getPath());
-      defaultTagFile = new File(currentBufferFile.getParent() + "/tags");
+      defaultTagFile = new File(currentBufferFile.getParent() + 
+                   System.getProperty("file.separator") + 
+                   jEdit.getProperty("options.tags.current-buffer-file-name"));
       if (defaultTagFile.exists()) {
         found = parser_.findTagLines(defaultTagFile.getPath(),
                                      funcName, currentView) || found;
@@ -309,7 +318,7 @@ public class Tags {
     // Handle what was found (or not found)
     if (parser_.getNumberOfFoundTags() > 1) {
       if (ui_)
-        new ChooseTagList(parser_, currentView, openNewView);
+        new ChooseTagListPopup(parser_, currentView, openNewView);
       else
         processTagLine(0, currentView, openNewView, funcName);
     }
@@ -366,17 +375,26 @@ public class Tags {
       // Open the file
       //displayMessage(currentView, tagFileName);
       if (ui_) {
-        if (false) {
-          /* Slava if you look at this, I'm not sure I understand how this
-           * fixes your problem.  It doesn't work.
-           */
-          File tagFile = new File(tagFileName_);
-          jEdit.openFile(tagToView, tagFile.getParent(), tagFileName_, false,
-                         null);
-        }
-        else
-          jEdit.openFile(tagToView, tagFileName_);
-        tagToTextArea = tagToView.getTextArea();
+				/* Slava if you look at this, I'm not sure I understand how this
+				 * fixes your problem.  It doesn't work.
+				 */
+				File tagFile = new File(tagFileName_);
+				if (!tagFile.exists()) {
+					Macros.error(currentView, 
+											 "The tag file name path \"" + tagFileName_ + "\"\n" +
+											 "that is listed in the tag index file, does not\n" +
+											 "exist.  You may need to update your tag index\n" +
+											 "files, or perhaps you passed a relative path to\n" +
+											 "the ctags program.");
+          currentView.hideWaitCursor();
+          return;
+				}
+				else {
+					//jEdit.openFile(tagToView, tagFile.getParent(), tagFileName_, 
+					//               false, null);
+					jEdit.openFile(tagToView, tagFileName_);
+          tagToTextArea = tagToView.getTextArea();          
+				}
       }
       else {
         if (debug_)
@@ -446,10 +464,6 @@ public class Tags {
     
     if (currentView != null) {
       currentView.hideWaitCursor();
-      
-      // unhighlight from .selectWord() call
-      //currentView.getTextArea().removeFromSelection(
-      //                         currentView.getTextArea().getCaretPosition());
     }
 
   }

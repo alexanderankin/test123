@@ -131,10 +131,14 @@ collision list can be dismissed with the Escape (Esc) key.
 <p>The Tags plugin can be configured under the Plugin Options node of the Global 
 Options dialog.</p>
 
-<p>Search tag file in current buffer's directory first: Check this option if
+<p>Search tag file in current buffer's directory: Check this option if
 you want the tag search to start with the tag index file (./tags) in the
 buffer's directory. The tag index file doesn't need to be in the tag index
 search file list. If it is it will be skipped.</p>
+
+<p>Tag index file name:  If you have configured Tags to use the tag index file
+in the current buffer's directory you can change the file named that the plugin
+looks for.  The default is "tags".</p>
 
 <p>Search all tag files:  By default, the first matching tag (or groups of tags if
 a tag collision occurs) found will stop the search. Using this option will
@@ -234,6 +238,14 @@ Sourceforge Bug Tracker at
 
 <h2><a name="changelog">Changelog</a></h2>
 <ul>
+	<li>Version 0.7.2 (Oct 2001)</li>
+  <ul>
+    <li>Added the ability to specify the tag index file name, when using the
+    tag index file in the current buffer's directory.</li>
+    <li>Added error message when tag defintion file does not exist</li>
+	  <li>Updated HTML Documentaiton.</li>    
+	</ul>
+
 	<li>Version 0.7.1 (Oct 2001)</li>
   <ul>
 	  <li>Updated HTML Documentaiton.</li>
