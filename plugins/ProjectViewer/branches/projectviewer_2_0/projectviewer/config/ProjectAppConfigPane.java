@@ -41,18 +41,10 @@ import org.gjt.sp.util.Log;
 //}}}
 
 /**
- * <p>Title: </p>
- * <p>Description: </p>
- * <p>Copyright: Copyright (c) 2002</p>
- * <p>Company: </p>
- * @author Matthew Payne
- * @version 1.0
+ *	Option pane for the external applications configuration.
  *
- *Todo: 
- *  Add entry
- *  Delete Entry
- *  Launch app
- *  resize columns
+ *	@author		Matthew Payne
+ *	@version	$Id$
  */
 public class ProjectAppConfigPane extends AbstractOptionPane 
 							  implements ActionListener, MouseListener {
