@@ -229,7 +229,8 @@ information:
    </para>
    
    <para>For example, the following are all valid #set statements:</para>
-   <programlisting>
+   <para>
+<programlisting>
 #set ( $country = "Canada" )                              ## string literal
 #set ( $anumber = 1234 )                                  ## number literal
 #set ( $myHome.country = $country )                       ## variable reference
@@ -237,6 +238,7 @@ information:
 #set ( $country.leader = $worldleaders.lookup($country) ) ## method reference
 #set ( $codes = ["us", $country.code, "uk", "de"] )       ## arraylist
 </programlisting>
+   </para>
 
   </sect2>
   <!-- }}} -->
@@ -244,7 +246,36 @@ information:
   <!-- {{{ Sub-Section: Conditionals -->
   <sect2><title>Conditionals (#if/#elseif/#else)</title>
    <para>
-    INSERT TEXT HERE.
+    Velocity allows for the optional inclusion of text through the use of the 
+    conditional <function>#if</function> directive. The statement is considered  
+    <function>true</function> if it is passed:
+   </para>
+    <orderedlist>
+     <listitem><para>a boolean variable whose value is true</para></listitem>
+     <listitem><para>an expression which evaluates to true</para></listitem>
+     <listitem><para>an object which is not null</para></listitem>
+    </orderedlist>
+   <para>
+    The following code illustrates these three cases:
+   </para>
+<programlisting>
+#set ( $test = "true" )                              ## boolean variable
+#if ( $test )
+   This text is processed.
+#end
+#if ( $iq &lt; $shoesize )                              ## boolean expression
+    Dumb as a post.
+#end
+#set ( $testStr = "cat")
+#if ( $testStr )                                     ## non-null object
+    Your pet is a $testStr.
+#end
+</programlisting>
+   <para>
+    In addition, Velocty supports the logical AND (&amp;&amp;), OR (||) and 
+    NOT (!) operators, as well as standard relational operators such as 
+    equivalence (==), greater than (&gt;) and less than (&lt;). Refer to the 
+    Velocity User's Guide for more information.
    </para>
    
   </sect2>
@@ -262,7 +293,24 @@ information:
   <!-- {{{ Sub-Section: #include Directive -->
   <sect2><title>#include Directive</title>
    <para>
-    INSERT TEXT HERE.
+    The <function>#include</function> element can be used to import a local 
+    file at the location where the <function>#include</function> directive is 
+    encountered. The contents of the file are not parsed by the template engine.
+   </para>
+   <para>
+    For example:
+   </para>
+   <para>
+<programlisting>
+## Importing a single static text file
+#include ( "static_text_file.txt" );
+
+## Importing several files
+#include ( "file1.txt","file2.txt","file3.txt" );
+
+## Referencing a file using a variable
+#include ( $my_filename );
+</programlisting>
    </para>
    
   </sect2>
@@ -270,6 +318,11 @@ information:
   
   <!-- {{{ Sub-Section: #parse Directive -->
   <sect2><title>#parse Directive</title>
+   <para>
+    The <function>#parse</function> directive is similar to the 
+    <function>#include</function> directive, but rather than importing a 
+    static text file, the imported file is also parsed by the template engine.
+   </para>
    <para>
     INSERT TEXT HERE.
    </para>
