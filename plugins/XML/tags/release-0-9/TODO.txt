@@ -1,0 +1,33 @@
++ version 0.9:
+
+- DTD downloader -- clear cache command should remove d/l'd files too
+- documentation: OASIS catalog format
+- update docs for 0.9 goodies
+
++ before 1.0:
+
+- documentation: XML catalog format
+- test XMLCatalog support, include an XMLCatalog DTD
+- threaddeath -- wtf?
+- id completion
+- tag highlight scope bracket in gutter
+- element and entity lists for schemas
+- recording <, >, /, &
+- move Xerces to its own plugin
+- switching between two edit panes with same buffer: expand tree at
+  appropriate location
+- TagParser: use segments, not strings
+- 'advanced' option pane for selecting parsers
+- xalan integration:
+  - merge with XSLT plugin?
+  - 'xsl' parser validates stylesheets
+- features for editing dtds:
+  - a different xml insert window lists <!ELEMENT, <!ATTLIST, ...
+  - a different edit tag dialog for editing dtd declarations
+  - list all dtd tags in xml tree
+- proper handling of tags in nested files
+- handle parsing open buffers better
+- let user specify completion info files in advanced option pane.
+- new xml file wizard
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available
