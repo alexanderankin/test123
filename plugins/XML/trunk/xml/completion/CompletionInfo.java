@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001, 2002 Slava Pestov
+ * Copyright (C) 2001, 2003 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -18,7 +18,6 @@ package xml.completion;
 //{{{ Imports
 import gnu.regexp.*;
 import java.util.*;
-import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.xml.sax.XMLReader;
@@ -29,30 +28,31 @@ import xml.*;
 
 public class CompletionInfo
 {
-	// if true, HTML syntax is supported (eg, case-insensitive tag names,
-	// attributes with no values)
-	public boolean html;
-
-	public ArrayList elements;
-	public HashMap elementHash;
-	public ArrayList entities;
-	public HashMap entityHash;
-	public ArrayList elementsAllowedAnywhere;
+	public List elements;
+	public Map elementHash;
+	public List entities;
+	public Map entityHash;
+	public List elementsAllowedAnywhere;
 
 	//{{{ CompletionInfo constructor
 	public CompletionInfo()
 	{
-		this(false,new ArrayList(), new HashMap(),
+		this(new ArrayList(), new HashMap(),
 			new ArrayList(), new HashMap(),
 			new ArrayList());
+
+		addEntity(EntityDecl.INTERNAL,"lt","<");
+		addEntity(EntityDecl.INTERNAL,"gt",">");
+		addEntity(EntityDecl.INTERNAL,"amp","&");
+		addEntity(EntityDecl.INTERNAL,"quot","\"");
+		addEntity(EntityDecl.INTERNAL,"apos","'");
 	} //}}}
 
 	//{{{ CompletionInfo constructor
-	public CompletionInfo(boolean html, ArrayList elements,
-		HashMap elementHash, ArrayList entities, HashMap entityHash,
-		ArrayList elementsAllowedAnywhere)
+	public CompletionInfo(List elements, Map elementHash,
+		List entities, Map entityHash,
+		List elementsAllowedAnywhere)
 	{
-		this.html = html;
 		this.elements = elements;
 		this.elementHash = elementHash;
 		this.entities = entities;
@@ -60,119 +60,36 @@ public class CompletionInfo
 		this.elementsAllowedAnywhere = elementsAllowedAnywhere;
 	} //}}}
 
-	//{{{ getAllowedElements() method
-	public ArrayList getAllowedElements(Buffer buffer, int pos)
+	//{{{ addEntity() method
+	public void addEntity(int type, String name, String value)
 	{
-		TagParser.Tag parentTag = TagParser.findLastOpenTag(
-			buffer.getText(0,pos),pos,elementHash,html);
-
-		ArrayList returnValue;
-
-		if(parentTag == null)
-			returnValue = elements;
-		else
-		{
-			ElementDecl parentDecl = (ElementDecl)elementHash.get(
-				parentTag.tag);
-			if(parentDecl == null)
-				returnValue = new ArrayList();
-			else
-			{
-				returnValue = parentDecl.getChildElements(this);
-			}
-		}
-
-		return returnValue;
+		addEntity(new EntityDecl(type,name,value));
 	} //}}}
 
-	//{{{ isDelegated() method
-	/**
-	 * The idea with this is to not show completion popups, etc
-	 * when we're inside a JavaScript in an HTML file or whatever.
-	 */
-	public static boolean isDelegated(EditPane editPane)
+	//{{{ addEntity() method
+	public void addEntity(int type, String name, String publicId, String systemId)
 	{
-		Buffer buffer = editPane.getBuffer();
-		ParserRuleSet rules = buffer.getRuleSetAtOffset(
-			editPane.getTextArea().getCaretPosition());
-
-		String rulesetName = rules.getName();
-		String modeName = rules.getMode().getName();
-
-		// Am I an idiot?
-		if(rulesetName != null && rulesetName.startsWith("PHP"))
-			return true;
-
-		return jEdit.getProperty("mode." + modeName + "."
-			+ XmlPlugin.PARSER_PROPERTY) == null;
+		addEntity(new EntityDecl(type,name,publicId,systemId));
 	} //}}}
 
-	//{{{ getCompletionInfo() method
-	public static CompletionInfo getCompletionInfo(EditPane editPane)
+	//{{{ addEntity() method
+	public void addEntity(EntityDecl entity)
 	{
-		Buffer buffer = editPane.getBuffer();
-
-		String mode;
-
-		Iterator iter = globs.keySet().iterator();
-		while(iter.hasNext())
+		entities.add(entity);
+		if(entity.type == EntityDecl.INTERNAL
+			&& entity.value.length() == 1)
 		{
-			RE re = (RE)iter.next();
-			if(re.isMatch(buffer.getName()))
-				return getCompletionInfo((String)globs.get(re));
+			Character ch = new Character(entity.value.charAt(0));
+			entityHash.put(entity.name,ch);
+			entityHash.put(ch,entity.name);
 		}
-
-		String resource = jEdit.getProperty("mode."
-			+ buffer.getMode().getName()
-			+ "." + XmlPlugin.COMPLETION_INFO_PROPERTY);
-		if(resource != null)
-		{
-			CompletionInfo info = getCompletionInfo(resource);
-
-			if(info != null)
-				return info;
-		}
-
-		return (CompletionInfo)editPane.getClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY);
 	} //}}}
 
-	//{{{ getCompletionInfo() method
-	public static CompletionInfo getCompletionInfo(String resource)
+	//{{{ addElement() method
+	public void addElement(ElementDecl element)
 	{
-		CompletionInfo info = (CompletionInfo)completionInfo.get(resource);
-		if(info != null)
-			return info;
-
-		Log.log(Log.DEBUG,CompletionInfo.class,"Loading " + resource);
-
-		CompletionInfoHandler handler = new CompletionInfoHandler();
-
-		try
-		{
-			XMLReader parser = new org.apache.xerces.parsers.SAXParser();
-			parser.setFeature("http://apache.org/xml/features/validation/dynamic",true);
-			parser.setErrorHandler(handler);
-			parser.setEntityResolver(handler);
-			parser.setContentHandler(handler);
-			parser.parse(resource);
-		}
-		catch(SAXException se)
-		{
-			Throwable e = se.getException();
-			if(e == null)
-				e = se;
-			Log.log(Log.ERROR,CompletionInfo.class,e);
-		}
-		catch(Exception e)
-		{
-			Log.log(Log.ERROR,CompletionInfo.class,e);
-		}
-
-		info = handler.getCompletionInfo();
-		completionInfo.put(resource,info);
-
-		return info;
+		elementHash.put(element.name,element);
+		elements.add(element);
 	} //}}}
 
 	//{{{ toString() method
@@ -202,32 +119,107 @@ public class CompletionInfo
 		return buf.toString();
 	} //}}}
 
-	//{{{ clone() method
-	public Object clone()
+	//{{{ getCompletionInfoForBuffer() method
+	public static CompletionInfo getCompletionInfoForBuffer(Buffer buffer)
 	{
-		return new CompletionInfo(
-			html,
-			(ArrayList)elements.clone(),
-			(HashMap)elementHash.clone(),
-			(ArrayList)entities.clone(),
-			(HashMap)entityHash.clone(),
-			(ArrayList)elementsAllowedAnywhere.clone()
-		);
+		Iterator iter = globs.keySet().iterator();
+		while(iter.hasNext())
+		{
+			RE re = (RE)iter.next();
+			if(re.isMatch(buffer.getName()))
+				return getCompletionInfoFromResource((String)globs.get(re));
+		}
+
+		String resource = jEdit.getProperty("mode."
+			+ buffer.getMode().getName()
+			+ ".completion-info");
+		if(resource != null)
+		{
+			CompletionInfo info = getCompletionInfoFromResource(resource);
+
+			if(info != null)
+				return info;
+		}
+
+		return null;
+	} //}}}
+
+	//{{{ getCompletionInfoForNamespace() method
+	public static CompletionInfo getCompletionInfoForNamespace(String namespace)
+	{
+		System.err.println("trying to get for ns " + namespace);
+		synchronized(lock)
+		{
+			Object obj = completionInfoNamespaces.get(namespace);
+			if(obj instanceof String)
+			{
+				System.err.println("loading from " + obj);
+				CompletionInfo info = getCompletionInfoFromResource((String)obj);
+				completionInfoNamespaces.put(namespace,info);
+				return info;
+			}
+			else
+				return (CompletionInfo)obj;
+		}
+	} //}}}
+
+	//{{{ getCompletionInfoFromResource() method
+	public static CompletionInfo getCompletionInfoFromResource(String resource)
+	{
+		synchronized(lock)
+		{
+			CompletionInfo info = (CompletionInfo)completionInfoResources.get(resource);
+			if(info != null)
+				return info;
+
+			Log.log(Log.DEBUG,CompletionInfo.class,"Loading " + resource);
+
+			CompletionInfoHandler handler = new CompletionInfoHandler();
+
+			try
+			{
+				XMLReader parser = new org.apache.xerces.parsers.SAXParser();
+				parser.setFeature("http://apache.org/xml/features/validation/dynamic",true);
+				parser.setErrorHandler(handler);
+				parser.setEntityResolver(handler);
+				parser.setContentHandler(handler);
+				parser.parse(resource);
+			}
+			catch(SAXException se)
+			{
+				Throwable e = se.getException();
+				if(e == null)
+					e = se;
+				Log.log(Log.ERROR,CompletionInfo.class,e);
+			}
+			catch(Exception e)
+			{
+				Log.log(Log.ERROR,CompletionInfo.class,e);
+			}
+
+			info = handler.getCompletionInfo();
+			completionInfoResources.put(resource,info);
+
+			return info;
+		}
 	} //}}}
 
 	//{{{ Private members
 	private static HashMap globs;
-	private static HashMap completionInfo;
+	private static HashMap completionInfoResources;
+	private static HashMap completionInfoNamespaces;
+	private static Object lock;
 
 	//{{{ Class initializer
 	static
 	{
+		completionInfoResources = new HashMap();
 		globs = new HashMap();
 		int i = 0;
 		String glob;
-		while((glob = jEdit.getProperty("xml.completion." + i + ".glob")) != null)
+		while((glob = jEdit.getProperty("xml.completion.glob." + i + ".key")) != null)
 		{
-			String info = jEdit.getProperty("xml.completion." + i + ".info");
+			String info = jEdit.getProperty("xml.completion.glob." + i + ".value");
 			try
 			{
 				globs.put(new RE(MiscUtilities.globToRE(glob),
@@ -241,7 +233,18 @@ public class CompletionInfo
 			i++;
 		}
 
-		completionInfo = new HashMap();
+		completionInfoNamespaces = new HashMap();
+		i = 0;
+		String namespace;
+		while((namespace = jEdit.getProperty("xml.completion.namespace." + i + ".key")) != null)
+		{
+			String info = jEdit.getProperty("xml.completion.namespace." + i + ".value");
+			completionInfoNamespaces.put(namespace,info);
+
+			i++;
+		}
+
+		lock = new Object();
 	} //}}}
 
 	//}}}

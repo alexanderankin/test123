@@ -57,11 +57,22 @@ xml.tag-highlight=true
 xml.tag-highlight-color=black
 
 # Completion info
-xml.completion.0.glob=build.xml
-xml.completion.0.info=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
+xml.completion.glob.0.key=build.xml
+xml.completion.glob.0.value=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
 
-xml.completion.1.glob=*.xsd
-xml.completion.1.info=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
+xml.completion.namespace.0.key=http://www.w3.org/1999/XMLSchema-instance
+xml.completion.namespace.0.value=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
+
+xml.completion.namespace.1.key=http://www.w3.org/2001/XMLSchema-instance
+xml.completion.namespace.1.value=jeditresource:/XML.jar!/xml/completion/xsd-complete.xml
+
+xml.completion.namespace.2.key=http://www.w3.org/1999/XSL/Transform
+xml.completion.namespace.2.value=jeditresource:/XML.jar!/xml/completion/xsl-complete.xml
+
+xml.completion.namespace.3.key=http://www.w3.org/TR/xhtml1/transitional
+xml.completion.namespace.3.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+xml.completion.namespace.4.key=http://www.w3.org/1999/xhtml
+xml.completion.namespace.4.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 
 mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
@@ -70,7 +81,6 @@ mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-compl
 mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
-mode.xsl.xml.completion-info=jeditresource:/XML.jar!/xml/completion/xsl-complete.xml
 mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 
 # Menu bar stuff

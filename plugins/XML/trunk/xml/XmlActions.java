@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 2000, 2003 Slava Pestov
  *               1998, 2000 Ollie Rutherfurd
  *               2000, 2001 Andre Kaplan
  *               1999 Romain Guy
@@ -19,17 +19,18 @@
 package xml;
 
 //{{{ Imports
-import javax.swing.text.Segment;
-import javax.swing.*;
 import java.awt.event.*;
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.io.*;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Stack;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.textarea.*;
+import java.util.List;
+import java.util.Map;
+import javax.swing.*;
+import javax.swing.text.Segment;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.syntax.*;
+import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
 import xml.completion.*;
 import xml.parser.*;
@@ -47,23 +48,25 @@ public class XmlActions
 	{
 		EditPane editPane = view.getEditPane();
 
-		if(CompletionInfo.isDelegated(editPane))
+		// XXX
+		// use TagParser here
+
+		if(isDelegated(editPane))
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
+		Buffer buffer = editPane.getBuffer();
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
 
-		if(completionInfo == null)
+		if(XmlPlugin.getParserType(buffer) == null || data == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
 
 		JEditTextArea textArea = editPane.getTextArea();
-		Buffer buffer = editPane.getBuffer();
 		buffer.getText(0,buffer.getLength(),seg);
 
 		int caret = textArea.getCaretPosition();
@@ -140,10 +143,12 @@ public class XmlActions
 		st.ordinaryChar('/');
 		st.ordinaryChar('=');
 
+		Map entityHash = data.getNoNamespaceCompletionInfo().entityHash;
+
 		//{{{ parse tag
 		try
 		{
-			loop: for(;;)
+loop:			for(;;)
 			{
 				switch(st.nextToken())
 				{
@@ -167,7 +172,7 @@ public class XmlActions
 					}
 					else if(attributeName == null)
 					{
-						attributeName = (completionInfo.html
+						attributeName = (data.html
 							? st.sval.toLowerCase()
 							: st.sval);
 						break;
@@ -181,10 +186,10 @@ public class XmlActions
 							attributes.put(attributeName,
 								entitiesToCharacters(
 								st.sval.replace(backslashSub,'\\'),
-								completionInfo.entityHash));
+								entityHash));
 							seenEquals = false;
 						}
-						else if(completionInfo.html)
+						else if(data.html)
 						{
 							attributes.put(attributeName,
 								Boolean.TRUE);
@@ -203,9 +208,7 @@ public class XmlActions
 			// won't happen
 		} //}}}
 
-		ElementDecl elementDecl = (ElementDecl)completionInfo.elementHash
-			.get((completionInfo.html ? elementName.toLowerCase()
-			: elementName));
+		ElementDecl elementDecl = data.getElementDecl(elementName);
 		if(elementDecl == null)
 		{
 			String[] pp = { elementName };
@@ -214,9 +217,8 @@ public class XmlActions
 		}
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
-			attributes,empty,completionInfo.entityHash,
-			(ArrayList)editPane.getClientProperty(
-			XmlPlugin.IDS_PROPERTY));
+			attributes,empty,elementDecl.completionInfo.entityHash,
+			data.ids,data.html);
 
 		String newTag = dialog.getNewTag();
 
@@ -240,17 +242,11 @@ public class XmlActions
 	public static void showEditTagDialog(View view, ElementDecl elementDecl)
 	{
 		EditPane editPane = view.getEditPane();
+		Buffer buffer = editPane.getBuffer();
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
 
-		if(completionInfo == null)
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
-
-		if(completionInfo == null)
+		if(XmlPlugin.getParserType(buffer) == null || data == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
 			return;
@@ -261,7 +257,7 @@ public class XmlActions
 		if(elementDecl.attributes.size() == 0)
 		{
 			newTag = "<" + elementDecl.name
-				+ (!elementDecl.html && elementDecl.empty
+				+ (!data.html && elementDecl.empty
 				? "/>" : ">");
 			closingTag = "";
 		}
@@ -269,9 +265,8 @@ public class XmlActions
 		{
 			EditTagDialog dialog = new EditTagDialog(view,elementDecl,
 				new HashMap(),elementDecl.empty,
-				completionInfo.entityHash,
-				(ArrayList)editPane.getClientProperty(
-				XmlPlugin.IDS_PROPERTY));
+				elementDecl.completionInfo.entityHash,
+				data.ids,data.html);
 
 			newTag = dialog.getNewTag();
 			if(dialog.isEmpty())
@@ -283,7 +278,6 @@ public class XmlActions
 		if(newTag != null)
 		{
 			JEditTextArea textArea = editPane.getTextArea();
-			Buffer buffer = editPane.getBuffer();
 
 			Selection[] selection = textArea.getSelection();
 
@@ -320,20 +314,18 @@ public class XmlActions
 		EditPane editPane = view.getEditPane();
 		Buffer buffer = editPane.getBuffer();
 
-		if(CompletionInfo.isDelegated(editPane))
+		if(isDelegated(editPane))
 		{
 			System.err.println("delegated");
 			view.getToolkit().beep();
 			return;
 		}
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
 
-		if(!(buffer.isEditable()
-			&& completionInfo != null))
+		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
+			|| data == null)
 		{
-			System.err.println("not editable or completion off");
 			view.getToolkit().beep();
 			return;
 		}
@@ -342,8 +334,7 @@ public class XmlActions
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
-			textArea.getCaretPosition(),
-			completionInfo.elementHash,completionInfo.html);
+			textArea.getCaretPosition(),data);
 
 		if(tag != null)
 			textArea.setSelectedText("</" + tag.tag + ">");
@@ -369,18 +360,16 @@ public class XmlActions
 		EditPane editPane = view.getEditPane();
 		Buffer buffer = editPane.getBuffer();
 
-		if(CompletionInfo.isDelegated(editPane))
+		if(isDelegated(editPane))
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
 
-		if(!(buffer.isEditable()
-			&& completion
-			&& completionInfo != null))
+		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
+			|| data == null)
 		{
 			view.getToolkit().beep();
 			return;
@@ -390,28 +379,26 @@ public class XmlActions
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
-			textArea.getCaretPosition(),
-			completionInfo.elementHash,
-			completionInfo.html);
-		
+			textArea.getCaretPosition(),data);
+
 		if(tag != null)
 		{
 			int pos;
-			
+
 			Segment wsBefore = new Segment();
-			pos = getPrevNonWhitespaceChar( buffer, tag.start - 1 ) + 1; 
+			pos = getPrevNonWhitespaceChar( buffer, tag.start - 1 ) + 1;
 			buffer.getText( pos, tag.start-pos, wsBefore );
 			//System.err.println( "wsBefore: [" + wsBefore + "]" );
 
 			Segment wsAfter = new Segment();
 			pos = getNextNonWhitespaceChar( buffer, tag.end );
-			//Need to do this otherwise the ws in empty tags 
-			//just gets bigger and bigger and bigger... 
+			//Need to do this otherwise the ws in empty tags
+			//just gets bigger and bigger and bigger...
 			pos = Math.min( pos, textArea.getCaretPosition() );
 			buffer.getText( tag.end, pos - tag.end, wsAfter );
 			//System.err.println( "wsAfter: [" + wsAfter + "]" );
 
-			int lineStart = buffer.getLineStartOffset( 
+			int lineStart = buffer.getLineStartOffset(
 				buffer.getLineOfOffset( tag.start ) );
 			String tagIndent = buffer.getText( lineStart, tag.start-lineStart );
 
@@ -419,8 +406,8 @@ public class XmlActions
 			//be the number AFTER the start tag, for symmetry's sake.
 			int crBeforeEndTag = countNewLines( wsAfter );
 			int crAfterEndTag = countNewLines( wsBefore );
-			
-			StringBuffer insert = new StringBuffer();			
+
+			StringBuffer insert = new StringBuffer();
 			if ( crBeforeEndTag>0 ) {
 				for ( int i=0; i<crBeforeEndTag; i++ ) {
 					insert.append( "\n" );
@@ -431,10 +418,10 @@ public class XmlActions
 			insert.append( wsBefore );
 			insert.append("<" + tag.tag + ">");
 			insert.append( wsAfter );
-			
+
 			//Move the insertion point to here
 			textArea.setSelectedText(insert.toString());
-		}	
+		}
 	}
 	//}}}
 
@@ -618,16 +605,13 @@ public class XmlActions
 
 		Buffer buffer = textArea.getBuffer();
 
-		if(CompletionInfo.isDelegated(editPane))
+		if(isDelegated(editPane))
 			return;
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
-
-		if(!(buffer.isEditable()
-			&& completion
-			&& completionInfo != null))
+		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
+			|| !completion)
 		{
+			view.getToolkit().beep();
 			return;
 		}
 
@@ -654,12 +638,17 @@ public class XmlActions
 	public static void complete(View view)
 	{
 		EditPane editPane = view.getEditPane();
+		Buffer buffer = editPane.getBuffer();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
-		if(completionInfo == null)
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
+
+		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
+			|| data == null)
+		{
+			view.getToolkit().beep();
 			return;
+		}
 
 		// first, we get the word before the caret
 		int caretLine = textArea.getCaretLine();
@@ -693,24 +682,20 @@ public class XmlActions
 
 		String word = line.substring(wordStart + 1,dot);
 
-		ArrayList completions;
+		List completions;
 		if(mode == ELEMENT_COMPLETE)
 		{
 			// Try to only list elements that are valid at the caret
 			// position
 
-			Buffer buffer = editPane.getBuffer();
 			int end = buffer.getLineStartOffset(caretLine) + wordStart;
 
-			completions = completionInfo.getAllowedElements(buffer,end);
+			completions = data.getAllowedElements(buffer,end);
 		}
 		else if(mode == ENTITY_COMPLETE)
-			completions = completionInfo.entities;
+			completions = data.getNoNamespaceCompletionInfo().entities;
 		else
-		{
-			completions = (ArrayList)editPane.getClientProperty(
-				XmlPlugin.IDS_PROPERTY);
-		}
+			throw new InternalError("Bad mode: " + mode);
 
 		//if(completions.size() == 0)
 		//	return;
@@ -732,7 +717,7 @@ public class XmlActions
 				"xml-id-complete-status"));
 		}
 
-		new XmlComplete(view,word,completions,location);
+		new XmlComplete(view,word,completions,location,data.html);
 	} //}}}
 
 	//{{{ completeClosingTag() method
@@ -745,17 +730,15 @@ public class XmlActions
 
 		Buffer buffer = textArea.getBuffer();
 
-		if(CompletionInfo.isDelegated(editPane))
+		if(isDelegated(editPane))
 			return;
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
 
-		if(!(buffer.isEditable()
-			&& closeCompletion
-			&& completionInfo != null
-			&& XmlPlugin.getParserType(buffer) != null))
+		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
+			|| data == null || !closeCompletion)
 		{
+			view.getToolkit().beep();
 			return;
 		}
 
@@ -772,8 +755,7 @@ public class XmlActions
 		if(TagParser.getTagAtOffset(text,caret) != null)
 			return;
 
-		TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,
-			completionInfo.elementHash,completionInfo.html);
+		TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,data);
 		if(tag != null)
 		{
 			textArea.setSelectedText(tag.tag + ">");
@@ -790,17 +772,15 @@ public class XmlActions
 
 		Buffer buffer = view.getBuffer();
 
-		if(CompletionInfo.isDelegated(editPane))
+		if(isDelegated(editPane))
 			return;
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
+		XmlParsedData data = XmlParsedData.getParsedData(editPane);
 
-		if(!(buffer.isEditable()
-			&& completionInfo != null
-			&& closeCompletionOpen
-			&& XmlPlugin.getParserType(buffer) != null))
+		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
+			|| data == null || !closeCompletionOpen)
 		{
+			view.getToolkit().beep();
 			return;
 		}
 
@@ -812,13 +792,12 @@ public class XmlActions
 		if(tag == null)
 			return;
 
-		ElementDecl decl = (ElementDecl)completionInfo.elementHash.get(tag.tag);
+		ElementDecl decl = data.getElementDecl(tag.tag);
 		if(tag.type == TagParser.T_STANDALONE_TAG
 			|| (decl != null && decl.empty))
 			return;
 
-		tag = TagParser.findLastOpenTag(text,tag.start,
-			completionInfo.elementHash,completionInfo.html);
+		tag = TagParser.findLastOpenTag(text,tag.start,data);
 
 		if(tag != null)
 		{
@@ -828,7 +807,7 @@ public class XmlActions
 	} //}}}
 
 	//{{{ charactersToEntities() method
-	public static String charactersToEntities(String s, HashMap hash)
+	public static String charactersToEntities(String s, Map hash)
 	{
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < s.length(); i++)
@@ -860,7 +839,7 @@ public class XmlActions
 	} //}}}
 
 	//{{{ entitiesToCharacters() method
-	public static String entitiesToCharacters(String s, HashMap hash)
+	public static String entitiesToCharacters(String s, Map hash)
 	{
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < s.length(); i++)
@@ -901,8 +880,8 @@ public class XmlActions
 			return;
 		}
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
+		CompletionInfo completionInfo = null;/* CompletionInfo
+			.getCompletionInfo(editPane); */
 
 		if(completionInfo == null)
 		{
@@ -932,8 +911,9 @@ public class XmlActions
 			return;
 		}
 
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
+		// XXX: entities
+		CompletionInfo completionInfo = null;/* CompletionInfo
+			.getCompletionInfo(editPane); */
 
 		if(completionInfo == null)
 		{
@@ -959,6 +939,28 @@ public class XmlActions
 		closeCompletionOpen = jEdit.getBooleanProperty(
 			"xml.close-complete-open");
 		delay = jEdit.getIntegerProperty("xml.complete-delay",500);
+	} //}}}
+
+	//{{{ isDelegated() method
+	/**
+	 * The idea with this is to not show completion popups, etc
+	 * when we're inside a JavaScript in an HTML file or whatever.
+	 */
+	public static boolean isDelegated(EditPane editPane)
+	{
+		Buffer buffer = editPane.getBuffer();
+		ParserRuleSet rules = buffer.getRuleSetAtOffset(
+			editPane.getTextArea().getCaretPosition());
+
+		String rulesetName = rules.getName();
+		String modeName = rules.getMode().getName();
+
+		// Am I an idiot?
+		if(rulesetName != null && rulesetName.startsWith("PHP"))
+			return true;
+
+		return jEdit.getProperty("mode." + modeName + "."
+			+ XmlPlugin.PARSER_PROPERTY) == null;
 	} //}}}
 
 	//{{{ Private members

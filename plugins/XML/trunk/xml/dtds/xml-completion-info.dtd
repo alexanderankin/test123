@@ -1,9 +1,5 @@
 <!ELEMENT dtd (entity-list|element-list)*>
 
-<!ATTLIST dtd
-	html (true|false) "true"
-	extend CDATA #IMPLIED>
-
 <!ELEMENT entity-list (entity)+>
 
 <!ELEMENT entity EMPTY>
@@ -17,8 +13,7 @@
 <!ATTLIST element
 	name CDATA #REQUIRED
 	content CDATA "EMPTY"
-	anywhere (true|false) "false"
-	html (true|false) "false">
+	anywhere (true|false) "false">
 
 <!ELEMENT attribute EMPTY>
 <!ATTLIST attribute

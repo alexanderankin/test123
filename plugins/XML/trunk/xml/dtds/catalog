@@ -40,7 +40,7 @@ SYSTEM "sqlServerType.dtd" "jeditresource:/SQL.jar!/sqlServerType.dtd"
 
 SYSTEM "commando.dtd" "jeditresource:/Console.jar!/console/commando/commando.dtd"
 
-SYSTEM "xml-completion-info.dtd" "xml-completion-info.dtd"
+SYSTEM "xml-completion-info.dtd" "jeditresource:/XML.jar!/xml/dtds/xml-completion-info.dtd"
 
 -- DocBook DTDs --
 

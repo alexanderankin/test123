@@ -23,9 +23,7 @@ import javax.swing.text.MutableAttributeSet;
 import javax.swing.text.Position;
 import javax.swing.tree.*;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Stack;
+import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.xml.sax.helpers.AttributesImpl;
@@ -37,26 +35,24 @@ import xml.*;
 
 class SwingHTMLParserImpl implements XmlParser.Impl
 {
-	//{{{ SwingHTMLParserImpl constructor
-	SwingHTMLParserImpl()
-	{
-		ids = new ArrayList();
-		String prop = jEdit.getProperty("mode.html.xml.completion-info");
-		if(prop != null)
-			info = CompletionInfo.getCompletionInfo(prop);
-	} //}}}
-
 	//{{{ parse() method
-	public void parse(XmlParser parser, String text)
+	public XmlParsedData parse(XmlParser parser, String text)
 	{
 		this.parser = parser;
 		buffer = parser.getBuffer();
+
+		data = new XmlParsedData(true);
+
+		CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(buffer);
+		if(info != null)
+			data.mappings.put("",info);
+
 		root = new DefaultMutableTreeNode(buffer.getName());
 
 		try
 		{
 			// XXX
-			htmlParser = new DocumentParser(DTD.getDTD("html32"));
+			DocumentParser htmlParser = new DocumentParser(DTD.getDTD("html32"));
 
 			htmlParser.parse(new StringReader(text),new Handler(),true);
 		}
@@ -66,11 +62,7 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 			parser.addError(ErrorSource.ERROR,buffer.getPath(),0,
 				ioe.toString());
 		}
-	} //}}}
 
-	//{{{ getElementTree() method
-	public TreeNode getElementTree()
-	{
 		// need to do some cleanup...
 		for(int i = 0; i < root.getChildCount(); i++)
 		{
@@ -91,44 +83,24 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 				i--;
 			}
 		}
-		return root;
+
+		data.tree = new DefaultTreeModel(root);
+
+		return data;
 	} //}}}
 
-	//{{{ getCompletionInfo() method
-	public CompletionInfo getCompletionInfo()
-	{
-		return null;
-	} //}}}
-
-	//{{{ getIDs() method
-	public ArrayList getIDs()
-	{
-		return ids;
-	} //}}}
-
-	//{{{ Private members
-
-	//{{{ Instance variables
-	private XmlParser parser;
-	private DocumentParser htmlParser;
-	private Buffer buffer;
-	private DefaultMutableTreeNode root;
-	private CompletionInfo info;
-	private ArrayList ids;
-	//}}}
+	//{{{ Package-private members
+	// For speedy access by Handler inner class
+	XmlParser parser;
+	Buffer buffer;
+	XmlParsedData data;
+	DefaultMutableTreeNode root;
 
 	//{{{ attributesToSAX() method
-	private Attributes attributesToSAX(MutableAttributeSet a,
+	Attributes attributesToSAX(MutableAttributeSet a,
 		String element, Position pos)
 	{
-		ElementDecl elementDecl;
-		if(info != null)
-		{
-			elementDecl = (ElementDecl)info.elementHash
-				.get(element.toLowerCase());
-		}
-		else
-			elementDecl = null;
+		ElementDecl elementDecl = data.getElementDecl(element);
 
 		AttributesImpl attrs = new AttributesImpl();
 		Enumeration enum = a.getAttributeNames();
@@ -151,8 +123,8 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 
 					if(type.equals("ID"))
 					{
-						if(!ids.contains(value))
-							ids.add(new IDDecl(value,element,pos));
+						if(!data.ids.contains(value))
+							data.ids.add(new IDDecl(value,element,pos));
 					}
 				}
 			}

@@ -20,7 +20,9 @@ import javax.swing.table.*;
 import javax.swing.border.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
@@ -31,13 +33,15 @@ import xml.parser.*;
 class EditTagDialog extends EnhancedDialog
 {
 	//{{{ EditTagDialog constructor
-	EditTagDialog(View view, ElementDecl element, HashMap attributeValues,
-		boolean elementEmpty, HashMap entityHash, ArrayList ids)
+	EditTagDialog(View view, ElementDecl element, Map attributeValues,
+		boolean elementEmpty, Map entityHash, List ids,
+		boolean html)
 	{
 		super(view,jEdit.getProperty("xml-edit-tag.title"),true);
 
 		this.element = element;
 		this.entityHash = entityHash;
+		this.html = html;
 
 		JPanel content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(12,12,12,12));
@@ -172,10 +176,11 @@ class EditTagDialog extends EnhancedDialog
 	//{{{ Private members
 
 	//{{{ Instance variables
+	private boolean html;
 	private ElementDecl element;
-	private HashMap entityHash;
+	private Map entityHash;
 	private JCheckBox empty;
-	private ArrayList attributeModel;
+	private List attributeModel;
 	private JTable attributes;
 	private JTextArea preview;
 	private JButton ok;
@@ -185,8 +190,8 @@ class EditTagDialog extends EnhancedDialog
 	//}}}
 
 	//{{{ createAttributeModel() method
-	private ArrayList createAttributeModel(ArrayList declaredAttributes,
-		HashMap attributeValues, ArrayList ids)
+	private ArrayList createAttributeModel(List declaredAttributes,
+		Map attributeValues, List ids)
 	{
 		ArrayList stringIDs = new ArrayList(ids.size());
 		for(int i = 0; i < ids.size(); i++)
@@ -254,8 +259,7 @@ class EditTagDialog extends EnhancedDialog
 			buf.append(' ');
 			buf.append(attr.name);
 
-			if(element.html
-				&& attr.name.equals(attr.value.value))
+			if(html && attr.name.equals(attr.value.value))
 			{
 				continue;
 			}
@@ -269,7 +273,7 @@ class EditTagDialog extends EnhancedDialog
 			buf.append("\"");
 		}
 
-		if(empty.isSelected() && !element.html)
+		if(empty.isSelected() && !html)
 			buf.append("/");
 
 		buf.append(">");

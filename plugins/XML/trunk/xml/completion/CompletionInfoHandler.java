@@ -82,26 +82,7 @@ public class CompletionInfoHandler extends DefaultHandler
 		String qName, // qualified name
 		Attributes attrs) throws SAXException
 	{
-		if(sName.equals("dtd"))
-		{
-			String extend = attrs.getValue("extend");
-			if(extend != null)
-			{
-				String infoURI = jEdit.getProperty(
-					"mode." + extend + "."
-					+ XmlPlugin.COMPLETION_INFO_PROPERTY);
-				if(infoURI != null)
-				{
-					CompletionInfo extendInfo = CompletionInfo
-						.getCompletionInfo(infoURI);
-					if(extendInfo != null)
-						completionInfo = (CompletionInfo)extendInfo.clone();
-				}
-			}
-
-			completionInfo.html = "true".equals(attrs.getValue("html"));
-		}
-		else if(sName.equals("entity"))
+		if(sName.equals("entity"))
 		{
 			addEntity(new EntityDecl(
 				EntityDecl.INTERNAL,
@@ -111,9 +92,9 @@ public class CompletionInfoHandler extends DefaultHandler
 		else if(sName.equals("element"))
 		{
 			element = new ElementDecl(
+				completionInfo,
 				attrs.getValue("name"),
-				attrs.getValue("content"),
-				"true".equals(attrs.getValue("html")));
+				attrs.getValue("content"));
 
 			completionInfo.elements.add(element);
 			completionInfo.elementHash.put(element.name,element);

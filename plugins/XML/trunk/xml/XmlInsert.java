@@ -20,8 +20,10 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.*;
-import java.util.ArrayList;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.util.List;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
@@ -155,18 +157,24 @@ public class XmlInsert extends JPanel implements EBComponent
 	//{{{ update() method
 	public void update()
 	{
-		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
-			view.getEditPane());
-		if(completionInfo != null)
-			setDeclaredEntities(completionInfo.entities);
-		else
+		// XXX
+		XmlParsedData data = XmlParsedData.getParsedData(view.getEditPane());
+		if(data == null)
+		{
 			setDeclaredEntities(null);
+			setDeclaredIDs(null);
+		}
+		else
+		{
+			/* if(completionInfo != null)
+				setDeclaredEntities(completionInfo.entities);
+			else
+				setDeclaredEntities(null); */
+			setDeclaredIDs(data.ids);
+			html = data.html;
+		}
 
 		updateTagList();
-
-		ArrayList ids = (ArrayList)view.getEditPane().getClientProperty(
-			XmlPlugin.IDS_PROPERTY);
-		setDeclaredIDs(ids);
 	} //}}}
 
 	//{{{ Private members
@@ -174,10 +182,11 @@ public class XmlInsert extends JPanel implements EBComponent
 	//{{{ Instance variables
 	private View view;
 	private CaretHandler caretHandler;
-	private ArrayList elements;
+	private List elements;
 	private JList elementList;
 	private JList entityList;
 	private JList idList;
+	private boolean html;
 
 	private int delay;
 	private Timer updateTimer;
@@ -192,7 +201,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ setDeclaredElements() method
-	private void setDeclaredElements(ArrayList elements)
+	private void setDeclaredElements(List elements)
 	{
 		this.elements = elements;
 
@@ -220,7 +229,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ setDeclaredEntities() method
-	private void setDeclaredEntities(ArrayList entities)
+	private void setDeclaredEntities(List entities)
 	{
 		if(entities == null)
 		{
@@ -247,7 +256,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ setDeclaredIDs() method
-	private void setDeclaredIDs(ArrayList ids)
+	private void setDeclaredIDs(List ids)
 	{
 		if(ids == null)
 		{
@@ -275,13 +284,12 @@ public class XmlInsert extends JPanel implements EBComponent
 	//{{{ updateTagList() method
 	private void updateTagList()
 	{
-		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
-			view.getEditPane());
-		if(completionInfo != null)
+		Buffer buffer = view.getBuffer();
+		XmlParsedData data = XmlParsedData.getParsedData(view.getEditPane());
+		if(XmlPlugin.getParserType(buffer) != null && data != null)
 		{
-			setDeclaredElements(completionInfo.getAllowedElements(
-				view.getBuffer(),view.getTextArea()
-				.getCaretPosition()));
+			setDeclaredElements(data.getAllowedElements(
+				buffer,view.getTextArea().getCaretPosition()));
 		}
 		else
 		{
@@ -305,9 +313,9 @@ public class XmlInsert extends JPanel implements EBComponent
 	//{{{ ArrayListModel class
 	static class ArrayListModel implements ListModel
 	{
-		ArrayList list;
+		List list;
 
-		ArrayListModel(ArrayList list)
+		ArrayListModel(List list)
 		{
 			this.list = list;
 		}
@@ -364,7 +372,7 @@ public class XmlInsert extends JPanel implements EBComponent
 				{
 					String openingTag = "<" + element.name
 						+ element.getRequiredAttributesString()
-						+ (element.empty && !element.html
+						+ (element.empty && !html
 						? "/>" : ">");
 					String closingTag;
 					if(element.empty)

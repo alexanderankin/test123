@@ -23,10 +23,7 @@ import javax.swing.Timer;
 import java.awt.event.*;
 import java.awt.Component;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Stack;
-import java.util.StringTokenizer;
+import java.util.*;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
@@ -94,9 +91,7 @@ public class XmlParser implements EBComponent
 					return;
 
 				EditPane editPane = view.getEditPane();
-				editPane.putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,null);
-				editPane.putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
-				editPane.putClientProperty(XmlPlugin.IDS_PROPERTY,null);
+				editPane.putClientProperty(XmlPlugin.PARSED_DATA_PROPERTY,null);
 
 				//{{{ check for non-XML file
 				if(XmlPlugin.getParserType(buffer) == null)
@@ -108,13 +103,12 @@ public class XmlParser implements EBComponent
 				else if(showParsingMessage)
 				{
 					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-					model = new DefaultTreeModel(root);
-
 					root.insert(new DefaultMutableTreeNode(
 						jEdit.getProperty("xml-tree.parsing")),0);
-					model.reload(root);
 
-					editPane.putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
+					XmlParsedData data = new XmlParsedData(false);
+					data.tree = new DefaultTreeModel(root);
+					editPane.putClientProperty(XmlPlugin.PARSED_DATA_PROPERTY,data);
 
 					XmlTree tree = (XmlTree)view.getDockableWindowManager()
 						.getDockable(XmlPlugin.TREE_NAME);
@@ -230,10 +224,7 @@ public class XmlParser implements EBComponent
 				else
 				{
 					view.getEditPane().putClientProperty(
-						XmlPlugin.COMPLETION_INFO_PROPERTY,
-						getUnparsedCompletionInfo(buffer));
-					view.getEditPane().putClientProperty(
-						XmlPlugin.ELEMENT_TREE_PROPERTY,null);
+						XmlPlugin.PARSED_DATA_PROPERTY,null);
 				}
 			}
 		} //}}}
@@ -265,8 +256,6 @@ public class XmlParser implements EBComponent
 	//{{{ Instance variables
 	private View view;
 	private Buffer buffer;
-
-	private DefaultTreeModel model;
 
 	private ParseThread thread;
 
@@ -330,16 +319,13 @@ public class XmlParser implements EBComponent
 		buffer = view.getBuffer();
 
 		DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-		model = new DefaultTreeModel(root);
-
 		root.insert(new DefaultMutableTreeNode(
 			jEdit.getProperty("xml-tree.not-parsed")),0);
-		model.reload(root);
 
-		view.getEditPane().putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
-		view.getEditPane().putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,
-			getUnparsedCompletionInfo(buffer));
-		view.getEditPane().putClientProperty(XmlPlugin.IDS_PROPERTY,null);
+		XmlParsedData data = new XmlParsedData(false);
+		data.tree = new DefaultTreeModel(root);
+
+		view.getEditPane().putClientProperty(XmlPlugin.PARSED_DATA_PROPERTY,data);
 
 		finish();
 		return;
@@ -403,19 +389,6 @@ public class XmlParser implements EBComponent
 			insert.update();
 	} //}}}
 
-	//{{{ getUnparsedCompletionInfo() method
-	private CompletionInfo getUnparsedCompletionInfo(Buffer buffer)
-	{
-		// this silly little hack lets us use closing tag completion
-		// and a few other miscellaneous features in the few seconds
-		// before an XML buffer has been parsed. can be convinient
-		// sometimes.
-		if("xml".equals(buffer.getProperty(XmlPlugin.PARSER_PROPERTY)))
-			return new CompletionInfo();
-		else
-			return null;
-	} //}}}
-
 	//}}}
 
 	//{{{ Inner classes
@@ -423,10 +396,7 @@ public class XmlParser implements EBComponent
 	//{{{ Impl interface
 	interface Impl
 	{
-		void parse(XmlParser parser, String text);
-		TreeNode getElementTree();
-		CompletionInfo getCompletionInfo();
-		ArrayList getIDs();
+		XmlParsedData parse(XmlParser parser, String text);
 	} //}}}
 
 	//{{{ ParseThread class
@@ -440,12 +410,15 @@ public class XmlParser implements EBComponent
 
 		public void run()
 		{
+			final XmlParsedData data;
+
 			synchronized(XmlParser.this)
 			{
 				if(parserImpl == null)
 					return;
 
-				parserImpl.parse(XmlParser.this,text);
+				data = parserImpl.parse(XmlParser.this,text);
+				MiscUtilities.quicksort(data.ids,new IDDecl.Compare());
 			}
 
 			SwingUtilities.invokeLater(new Runnable()
@@ -481,23 +454,9 @@ public class XmlParser implements EBComponent
 							}
 						}
 
-						model = new DefaultTreeModel(parserImpl.getElementTree());
-
 						view.getEditPane().putClientProperty(
-							XmlPlugin.ELEMENT_TREE_PROPERTY,
-							model);
-
-						CompletionInfo completionInfo = parserImpl.getCompletionInfo();
-						if(completionInfo != null)
-						{
-							view.getEditPane().putClientProperty(
-								XmlPlugin.COMPLETION_INFO_PROPERTY,
-								completionInfo);
-						}
-
-						view.getEditPane().putClientProperty(
-							XmlPlugin.IDS_PROPERTY,
-							parserImpl.getIDs());
+							XmlPlugin.PARSED_DATA_PROPERTY,
+							data);
 
 						thread = null;
 
