@@ -28,7 +28,7 @@ import org.gjt.sp.jedit.menu.DynamicMenuProvider;
 import org.gjt.sp.jedit.*;
 //}}}
 
-class ConsoleMenuProvider implements DynamicMenuProvider
+public class ConsoleMenuProvider implements DynamicMenuProvider
 {
 	//{{{ updateEveryTime() method
 	public boolean updateEveryTime()
