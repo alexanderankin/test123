@@ -56,15 +56,19 @@
  *  <http://www.apache.org/>.
  */
 
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.Component;
+
+import java.util.ArrayList;
+import java.util.Vector;
+
+import java.io.*;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
-import java.awt.Color;
-import java.awt.event.ActionEvent;
-import java.awt.Component;
-import java.util.Vector;
-import java.io.*;
 
 import plugin.integration.*;
 
@@ -82,6 +86,8 @@ public class AntFarmPlugin extends EBPlugin
 	private AntBridge bridge;
 	private AntFarm antFarm;
 	private View theView;
+  private boolean foundToolsJar = true;
+
 	/**
 	 *  The 'name' of our dockable window.
 	 */
@@ -319,33 +325,44 @@ public class AntFarmPlugin extends EBPlugin
 	 */
 	public void loadToolsJAR()
 	{
+		// Used to store the search paths
+		ArrayList paths = new ArrayList();
+
 		String javaVersion = System.getProperty("java.version");
 		if (MiscUtilities.compareVersions(javaVersion, "1.2") < 0)
 		{
 			return;
 		}
 
-		Log.log(Log.DEBUG, this, "JDK 1.2 or higher detected, searching for tools.jar...");
+		Log.log(Log.DEBUG, this, "JDK 1.2 or higher detected, searching for " +
+			"tools.jar...");
 
 		String toolsPath = System.getProperty("java.home");
+
 		if (toolsPath.toLowerCase().endsWith(File.separator + "jre"))
 		{
 			toolsPath = toolsPath.substring(0, toolsPath.length() - 4);
 		}
 
 		toolsPath = MiscUtilities.constructPath(toolsPath, "lib", "tools.jar");
+		paths.add(toolsPath);
 
 		if (!(new File(toolsPath).exists()))
 		{
 			toolsPath = MiscUtilities.constructPath(toolsPath.substring(0, 3),
 				"jdk" + System.getProperty("java.version"), "lib");
 			toolsPath = MiscUtilities.constructPath(toolsPath, "tools.jar");
+			paths.add(toolsPath);
 		}
 
 		if (!(new File(toolsPath).exists()))
 		{
-			Log.log(Log.WARNING, this, "Could not find tools.jar in standard locations! "
-				+ "You'll run into problems later...");
+			Log.log(Log.WARNING, this, "Could not find tools.jar. Searched in the " +
+				"following locations: \n" + "\t" + paths + "\n" +
+				"This will cause problems when trying to use the modern and classic " +
+				"compilers.\n" +
+				"If you want AntFarm to work properly, please make sure tools.jar is\n"+
+				"in one of the above locations, and restart jEdit.");
 			return;
 		}
 
@@ -355,11 +372,13 @@ public class AntFarmPlugin extends EBPlugin
 			Log.log(Log.DEBUG, this, "Adding " + toolsPath + " to jEdit plugins.");
 			try
 			{
-				jEdit.addPluginJAR(new EditPlugin.JAR(toolsPath, new JARClassLoader(toolsPath)));
+				jEdit.addPluginJAR(new EditPlugin.JAR(toolsPath,
+																							new JARClassLoader(toolsPath)));
 			}
 			catch (IOException ioex)
 			{
-				Log.log(Log.ERROR, this, "Could not add tools.jar to jEdit plugins, reason follows...");
+				Log.log(Log.ERROR, this, "Could not add tools.jar to jEdit plugins, " +
+					"reason follows...");
 				Log.log(Log.ERROR, this, ioex);
 			}
 		}
