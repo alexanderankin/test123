@@ -73,6 +73,7 @@
             <fileset dir="${src.dir}">
                 <include name="actions.xml"/>
                 <include name="**/*.props"/>
+                <include name="schemes/*.jedit-scheme"/>
                 <include name="**/*.html"/>
             </fileset>
         </jar>

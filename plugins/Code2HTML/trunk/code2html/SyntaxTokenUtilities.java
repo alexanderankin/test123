@@ -75,5 +75,56 @@ public class SyntaxTokenUtilities
 
         return syntaxToken;
     }
+
+
+    public static SyntaxToken convertTokens(code2html.syntax.Token token) {
+        if (token == null) { return null; }
+
+        SyntaxToken syntaxToken = convertToken(token);
+        syntaxToken.prev = convertPrevTokens(token.prev);
+        syntaxToken.next = convertNextTokens(token.next);
+
+        return syntaxToken;
+    }
+
+
+    private static SyntaxToken convertToken(code2html.syntax.Token token) {
+        if (token == null) { return null; }
+
+        SyntaxToken syntaxToken = new SyntaxToken();
+
+        syntaxToken.length = token.length;
+        syntaxToken.id     = token.id;
+
+        return syntaxToken;
+    }
+
+
+    private static SyntaxToken convertPrevTokens(code2html.syntax.Token token) {
+        if (token == null) { return null; }
+
+        SyntaxToken syntaxToken = convertToken(token);
+
+        if (token.prev != null) {
+            syntaxToken.prev      = convertPrevTokens(token.prev);
+            syntaxToken.prev.next = syntaxToken;
+        }
+
+        return syntaxToken;
+    }
+
+
+    private static SyntaxToken convertNextTokens(code2html.syntax.Token token) {
+        if (token == null) { return null; }
+
+        SyntaxToken syntaxToken = convertToken(token);
+
+        if (token.next != null) {
+            syntaxToken.next      = convertNextTokens(token.next);
+            syntaxToken.next.prev = syntaxToken;
+        }
+
+        return syntaxToken;
+    }
 }
 
