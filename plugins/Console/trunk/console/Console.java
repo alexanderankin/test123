@@ -129,6 +129,11 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		shell.printInfoMessage(this);
 	}
 
+	public HistoryTextField getTextField()
+	{
+		return command;
+	}
+
 	public boolean runAndWait(String cmd)
 	{
 		run(cmd);

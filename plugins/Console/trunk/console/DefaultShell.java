@@ -34,10 +34,6 @@ class DefaultShell extends Shell
 
 		aliases = new Hashtable();
 
-		String osName = System.getProperty("os.name");
-		dos = (osName.indexOf("Windows") != -1 ||
-			osName.indexOf("OS/2") != -1);
-
 		// some built-ins can be invoked without the % prefix
 		aliases.put("cd","%cd");
 		aliases.put("pwd","%pwd");
@@ -45,7 +41,7 @@ class DefaultShell extends Shell
 
 		// on Windows, we need a special calling convention to run system
 		// shell built-ins
-		if(dos)
+		if(DOS)
 		{
 			String prefix;
 			if(System.getProperty("os.name").indexOf("Windows 9") != -1)
@@ -86,16 +82,21 @@ class DefaultShell extends Shell
 		}
 		else
 		{
+			boolean foreground;
 			// pass it to the process manager
 			if(args.elementAt(args.size() - 1).equals("&"))
 			{
 				// run in background
 				args.removeElementAt(args.size() - 1);
+				foreground = false;
 			}
 			else
 			{
 				// run in foreground
+				foreground = true;
 			}
+
+			ProcessManager.createProcess(view,console,args,foreground);
 		}
 	}
 
@@ -105,9 +106,18 @@ class DefaultShell extends Shell
 		return true;
 	}
 
+	// package-private members
+	static boolean DOS;
+
+	static
+	{
+		String osName = System.getProperty("os.name");
+		DOS = (osName.indexOf("Windows") != -1 ||
+			osName.indexOf("OS/2") != -1);
+	}
+
 	// private members
 	private static final char dosSlash = 127;
-	private boolean dos;
 	private Hashtable aliases;
 
 	/**
