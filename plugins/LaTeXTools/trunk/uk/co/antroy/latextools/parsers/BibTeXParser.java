@@ -237,15 +237,21 @@ bufferLoop:
         REMatch[] references = refRe.getAllMatches(buff.getText(0, 
                                                                 buff.getLength() - 1));
 
-        for (int i = 0; i < references.length - 1; i++) {
+        REMatch second = null;
+        
+        for (int i = 0; i < references.length-1; i++) {
 
             REMatch first = references[i];
-            REMatch second = references[i + 1];
-            String segment = buff.getText(first.getStartIndex(), 
-                                          second.getStartIndex() - 
-                                          first.getStartIndex());
+            second = references[i + 1];
+            int end = second.getStartIndex() - first.getStartIndex();
+            String segment = buff.getText(first.getStartIndex(), end);
             BibEntry be = getEntryIn(segment, first.toString(1));
             bibEntries.add(be);
         }
+        
+        String segment = buff.getText(second.getStartIndex(), buff.getLength() - second.getStartIndex());
+        BibEntry be = getEntryIn(segment, second.toString(1));
+        bibEntries.add(be);
+        
     }
 }
