@@ -1,0 +1,149 @@
+<html>
+
+<head>
+	<title>TextTools</title>
+</head>
+
+<body>
+
+<h1>[ TextTools ]</h1>
+
+<p>by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>The TextTools plugin provides a set of plugin actions for manipulating text
+in a buffer.</p>
+
+<h3>TextTools actions</h3>
+<ul>
+	<li><a href="#Sort">Sort</a></li>
+	<li><a href="#RevSort">Reverse Sort</a></li>
+	<li><a href="#FieldSort">Field Sort</a></li>
+	<li><a href="#Shuffle">Shuffle</a></li>
+	<li><a href="#TransposeChars">Transpose Characters</a></li>
+	<li><a href="#TransposeLines">Transpose Lines</a></li>
+	<li><a href="#TransposeWords">Transpose Words</a></li>
+	<li><a href="#ColumnInsert">Column Insert</a></li>
+	<li><a href="#BlockHandling">Block Fill Insert</a></li>
+</ul>
+
+
+<p><strong><a name="Sort">Sort</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>This action sorts all selected lines in lexicographic order.  If no text is
+selected, it sorts the entire buffer. If the selection begins or ends in the
+middle of a line, the entire line is sorted.</p>
+
+
+<p><strong><a name="RevSort">Reverse Sort</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>Same as <a href="#Sort">Sort</a>, except the sorted lines are inserted in
+reverse order.</p>
+
+
+<p><strong><a name="FieldSort">Field Sort</a></strong>
+by Carmine Lucarelli &lt;carmine@jedit.org&gt;</p>
+
+<p>Brings up a dialog where you can specify which fields to use and how those fields should be sorted.<br>
+<strong>N.B. Make sure to 'step off' the last cell you edit, or else your change will be ignored</strong><br>
+Globally you can specify whether to delete duplicate entries in the data.<br>
+For each of the fields you create, you can specify:
+<ul>
+<li>
+  the start column (indexed starting at 1)
+</li>
+<li>
+  the end column
+</li>
+<li>
+  whether the field should be sorted in an ascending or descending order
+</li>
+<li>
+  whether case should be ignored
+</li>
+<li>
+  whether 'smart' number sorting should be done (selecting this option would place File2 before File10 in the sort)
+</li>
+<li>
+  whether whitespace at the start or end of the field should be ignored
+</li>
+</ul>
+</p>
+
+
+<p><strong><a name="Shuffle">Shuffle Lines</a></strong>
+by Carmine Lucarelli &lt;carmine@jedit.org&gt;</p>
+
+<p>Randomize the data, in effect 'unsorting' it.</p>
+
+
+<p><strong><a name="TransposeChars">Transpose Characters</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>Transposes the characters on either side of the cursor. At the either end of
+a line, it transposes the two characters nearest the cursor.</p>
+
+
+<p><strong><a name="TransposeLines">Transpose Lines</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>Transposes the current line with the preceding line. If there is no
+preceding line, the current line is transposed with the following line.</p>
+
+
+<p><strong><a name="TransposeWords">Transpose Words</a></strong>
+by mike dillon &lt;mdillon@jedit.org&gt;</p>
+
+<p>Transposes the nearest word to the cursor (which i'll call the "pivot" word)
+with one of the adjacent words. If there is a word before the pivot, the pivot
+will be transposed with that word; otherwise, it will be transposed with the
+following word. The intervening non-word sequence is left between the
+transposed words. All letters and digits, in addition to any character in the
+"noWordSep" Buffer property (which is typically defined by the Buffer's current
+mode), are considered word characters. All other characters are not. If a
+transposition takes place, the cursor is placed after the transposed
+sequence.</p>
+
+<p><strong><a name="ColumnInsert">Column Insert</a></strong>
+by Nathan Tenney &lt;eulernt@yahoo.com&gt;</p>
+
+<p>Inserts text in place of a rectangular selection.  When invoked, a small
+dialog pops up for user input.  When enter is pressed, the text is placed on
+each line of the selection, replacing any text selected.</p>
+
+<p><strong><a name="BlockHandling">Block Fill Insert</a></strong>
+by Rudolf Widmann &lt;Rudi.Widmann@web.de&gt;</p>
+
+<p>Inserts or replaces, fills or increments, a given <q>text</q> into a
+<q>target box</q>. When invoked, a dialog pops-up, with the fields:</p>
+
+<ul>
+<li><q>Text to be inserted</q>: text you want to insert
+<li><q>Increment</q>: int value serving as increment
+<li><q>Overwrite checkbox</q>: checked: Overwrite selection, not checked:
+insert
+<li><q>Leading Zeros checkbox</q>: checked: Fill unused digits with nulls , not
+checked: fill with blanks
+</ul>
+
+<p><q>text</q> is either a string or a number to be incremented.</p>
+
+<p>the <q>target box</q> depends on the selection:</p>
+
+<ul>
+<li>no selection: a box starting at the caret position till EOF, width of
+<q>insert text</q>
+<li>selection in one line: a box starting at the caret position till EOF, width
+as selected
+<li>rect selection: box as selected, width
+</ul>
+
+<p>If the insertion does not match the target box, it is filled with blanks, or
+cut.</p>
+
+<p>Multiple selection is supported, but the width is according the the first
+selection</p>
+
+</body>
+</html>

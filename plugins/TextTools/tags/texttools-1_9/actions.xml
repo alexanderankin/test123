@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="sort-lines">
+		<CODE>
+			TextToolsPlugin.sortLines(textArea,false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="revsort-lines">
+		<CODE>
+			TextToolsPlugin.sortLines(textArea,true);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="transpose-chars">
+		<CODE>
+			TextToolsPlugin.transposeChars(textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="transpose-lines">
+		<CODE>
+			TextToolsPlugin.transposeLines(textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="transpose-words">
+		<CODE>
+			TextToolsPlugin.transposeWords(textArea);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="field-sort-lines">
+		<CODE>
+			TextToolsPlugin.fieldSortLines(view, textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="shuffle-lines">
+		<CODE>
+			TextToolsPlugin.shuffleLines(view, textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="column-insert">
+		<CODE>
+			TextToolsPlugin.doColumnInsert(view);
+		</CODE>
+	</ACTION>
+	<!-- added by R. Widmann (Rudi.Widmann@web.de) -->
+	<ACTION NAME="textblock">
+		<CODE>
+			new TextToolsBlockHandlingDialog(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="spacetotabs">
+		<CODE>
+			BeanShellUtility.JEditTextArea_spacesToTabs(view);
+		</CODE>
+	</ACTION>
+	
+</ACTIONS>
