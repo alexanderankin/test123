@@ -65,6 +65,9 @@ public class TemplatesMenu extends JMenu implements EBComponent
 		removeAll();
 		// Create menu items for the "Refresh" option and a separator
 		JMenuItem mi;
+		mi = GUIUtilities.loadMenuItem("templates-tree");
+		this.add(mi);
+		this.addSeparator();
 		mi = GUIUtilities.loadMenuItem("Templates.expand-accelerator");
 		this.add(mi);
 		this.addSeparator();
@@ -100,6 +103,9 @@ public class TemplatesMenu extends JMenu implements EBComponent
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2002/05/07 03:32:21  sjakob
+	 * Integrated Calvin Yu's dockable Templates Tree window into plugin.
+	 *
 	 * Revision 1.1  2002/04/30 19:26:10  sjakob
 	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
 	 *

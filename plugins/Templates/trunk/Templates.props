@@ -16,6 +16,8 @@ Templates.edit-template.label=Edit template
 Templates.save-template.label=Save template
 Templates.expand-accelerator.label=Expand Accelerator
 Templates.browse-templates.label=Browse Templates
+templates-tree.label=Templates Tree
+templates-tree-toggle.label=Toggle Templates Tree
 
 # Plugins menu labels
 Templates.menu.label=Templates
@@ -52,5 +54,7 @@ plugin.TemplatesPlugin.mode.label=Mode
 plugin.TemplatesPlugin.remove-accelerator.label=Remove
 plugin.TemplatesPlugin.add-accelerator.label=Add
 plugin.TemplatesPlugin.save-accelerator.label=Save
-#
+
+# Templates Tree window
+templates-tree.title=Templates Tree
 

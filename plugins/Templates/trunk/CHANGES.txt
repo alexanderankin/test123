@@ -1,5 +1,11 @@
 CHANGES file for Templates plugin.
 
+Version 3.0.0 (???)
+=============================
+ENHANCEMENTS:
+Added support for template labeling via "#template=" statement.
+Added Calvin's dockable window for template selection.
+
 Version 2.9.9 (30-APR-2002)
 =============================
 Pre-release for testing integration of Calvin Yu's Velocity classes.

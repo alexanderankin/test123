@@ -1,6 +1,6 @@
 /*
  * AcceleratorOptionPane.java
- * Copyright (C) 2002 Calvin Yu
+ * Copyright (C) 2002 Calvin Yu, Steve Jakob
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,20 +23,16 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileFilter;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.*;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
-import org.gjt.sp.util.Log;
 
 /**
  * An option pane for configuring template accelerators.
@@ -51,11 +47,9 @@ public class AcceleratorOptionPane extends AbstractOptionPane
 
    private JComboBox modes;
    private JList accelerators;
-   private JTree templates;
+   private TemplateTree templates;
    private JButton removeButton;
    private JButton saveButton;
-   // private DefaultMutableTreeNode root;
-   private TreeNode root;
 
    /**
     * Create a new <code>AcceleratorOptionPane</code>.
@@ -71,7 +65,7 @@ public class AcceleratorOptionPane extends AbstractOptionPane
     */
    public void valueChanged(TreeSelectionEvent evt)
    {
-      saveButton.setEnabled(isLastPathComponentATemplate(templates.getSelectionPath()));
+      saveButton.setEnabled(templates.isTemplateSelected());
    }
    //}}}
 
@@ -85,7 +79,7 @@ public class AcceleratorOptionPane extends AbstractOptionPane
       removeButton.setEnabled(getSelectedAccelerator() != null);
       String path = AcceleratorManager.getInstance()
          .findTemplatePath(getSelectedMode(), getSelectedAccelerator());
-      setSelectedTemplate(path);
+      templates.setSelectedTemplate(path);
       saveButton.setEnabled(false);
    }
    //}}}
@@ -126,12 +120,11 @@ public class AcceleratorOptionPane extends AbstractOptionPane
    public void saveAccelerator()
    {
       String accelerator = getSelectedAccelerator();
-      TreePath selectionPath = templates.getSelectionPath();
-      if (!isLastPathComponentATemplate(selectionPath)) {
+      if (!templates.isTemplateSelected()) {
          GUIUtilities.error(this,
 		 		"plugin.TemplatesPlugin.error.invalid-template-path", null);
       } else {
-         String path = getSelectedTemplate();
+         String path = templates.getSelectedTemplate();
          AcceleratorManager.getInstance().addAccelerator(getSelectedMode(),
                                                          accelerator,
                                                          path);
@@ -159,26 +152,6 @@ public class AcceleratorOptionPane extends AbstractOptionPane
          return null;
       }
       return (String) modes.getSelectedItem();
-   }
-
-   /**
-    * Returns the currently selected insert path.
-    */
-   public String getSelectedTemplate()
-   {
-      TreePath path = templates.getSelectionPath();
-      Object[] objPath = path.getPath();
-      if (objPath.length < 2) {
-         throw new IllegalStateException("Selection is not an insert");
-      }
-      StringBuffer buf = new StringBuffer();
-      for (int i=1; i<objPath.length; i++) {
-         if (i != 1) {
-            buf.append('/');
-         }
-         buf.append(((DefaultMutableTreeNode) objPath[i]).getUserObject());
-      }
-      return buf.toString();
    }
 
    /**
@@ -234,12 +207,8 @@ public class AcceleratorOptionPane extends AbstractOptionPane
       gbc.insets = new Insets(0, 0, 0, 11);
       acceleratorPanel.add(removeButton, gbc);
 
-      // root = new DefaultMutableTreeNode("__root", true);
-      // templates = new JTree(new DefaultTreeModel(root));
-	  root = (TreeNode)TemplatesPlugin.getTemplates();
-      templates = new JTree(root);
+      templates = new TemplateTree();
       templates.setEnabled(false);
-      templates.setRootVisible(false);
       templates.addTreeSelectionListener(this);
       gbc.fill = gbc.BOTH;
       gbc.gridy = 0;
@@ -255,7 +224,6 @@ public class AcceleratorOptionPane extends AbstractOptionPane
       cons.fill = cons.BOTH;
       gridBag.setConstraints(acceleratorPanel, cons);
 
-      // loadTemplates();
       modes.setSelectedIndex(0);
    }
 
@@ -287,82 +255,6 @@ public class AcceleratorOptionPane extends AbstractOptionPane
          names[i] = modes[i].getName();
       }
       return names;
-   }
-
-   /**
-    * Set the selected template.
-    */
-   private void setSelectedTemplate(String templatePath)
-   {
-      if (templatePath == null) {
-         return;
-      }
-      StringTokenizer strtok = new StringTokenizer(templatePath, "/");
-      List path = new ArrayList();
-      while (strtok.hasMoreTokens()) {
-         path.add(strtok.nextToken());
-      }
-      collapseAllTemplates();
-      templates.setSelectionPath(findTreePath(path.toArray()));
-   }
-
-   /**
-    * Returns <code>true</code> if the last path component of the
-    * given tree path is a template.
-    */
-   private static boolean isLastPathComponentATemplate(TreePath path)
-   {
-      if (path == null) {
-         return false;
-      }
-      TreeNode node = (TreeNode) path.getLastPathComponent();
-      return node.isLeaf();
-   }
-
-   /**
-    * Find the tree path given user object path.
-    */
-   private TreePath findTreePath(Object[] objPath)
-   {
-      List path = new LinkedList();
-      path.add(root);
-      for (int i=0; i<objPath.length; i++) {
-         if (!findChildNode(objPath, i, path)) {
-            return null;
-         }
-      }
-      return new TreePath(path.toArray());
-   }
-
-   /**
-    * Find the given node with the indexed use object and add it to <code>path</code>.
-    */
-   private boolean findChildNode(Object[] objPath, int idx, List path)
-   {
-      Object target = objPath[idx];
-      TreeNode parent = (TreeNode) path.get(path.size() - 1);
-      Enumeration children = parent.children();
-      while (children.hasMoreElements()) {
-         // DefaultMutableTreeNode node = (DefaultMutableTreeNode) children.nextElement();
-		 TreeNode node = (TreeNode) children.nextElement();
-         // if (target.equals(node.getUserObject())) {
-         if (target.equals(((TemplateFile)node).getLabel())) {
-            path.add(node);
-            return true;
-         }
-      }
-      return false;
-   }
-
-   /**
-    * Collapse all templates.
-    */
-   private void collapseAllTemplates()
-   {
-      int count = templates.getRowCount();
-      for (int i=0; i<count; i++) {
-         templates.collapseRow(i);
-      }
    }
 
 }
