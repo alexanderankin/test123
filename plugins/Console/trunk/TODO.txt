@@ -1,5 +1,6 @@
 3.6:
 
+- threads stick around?
 - update for 4.2pre2 API.
 - on win: foo "bar baz" needs to be passed literally
 - cloned consoles: completion doesn't work

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,8 +22,8 @@
 
 package console;
 
-import java.util.Vector;
-import org.gjt.sp.jedit.View;
+import java.util.*;
+import org.gjt.sp.jedit.*;
 
 /**
  * A shell executes commands.
@@ -31,10 +31,11 @@ import org.gjt.sp.jedit.View;
  */
 public abstract class Shell
 {
+	public static final String SERVICE = "console.Shell";
+
 	//{{{ registerShell() method
 	/**
-	 * Registers a shell with the console plugin.
-	 * @param shell The shell
+	 * @deprecated Write a <code>services.xml</code> file instead.
 	 */
 	public static void registerShell(Shell shell)
 	{
@@ -43,8 +44,7 @@ public abstract class Shell
 
 	//{{{ unregisterShell() method
 	/**
-	 * Unregisters a shell.
-	 * @param shell The shell
+	 * @deprecated Write a <code>services.xml</code> file instead.
 	 */
 	public static void unregisterShell(Shell shell)
 	{
@@ -55,11 +55,21 @@ public abstract class Shell
 	/**
 	 * Returns an array of all registered shells.
 	 */
-	public static Shell[] getShells()
+	public static String[] getShellNames()
 	{
-		Shell[] retVal = new Shell[shells.size()];
-		shells.copyInto(retVal);
-		return retVal;
+		ArrayList retVal = new ArrayList();
+		for(int i = 0; i < shells.size(); i++)
+		{
+			retVal.add(((Shell)shells.get(i)).getName());
+		}
+
+		String[] newAPI = ServiceManager.getServiceNames(SERVICE);
+		for(int i = 0; i < newAPI.length; i++)
+		{
+			retVal.add(newAPI[i]);
+		}
+
+		return (String[])retVal.toArray(new String[retVal.size()]);
 	} //}}}
 
 	//{{{ getShell() method
@@ -69,16 +79,18 @@ public abstract class Shell
 	 */
 	public static Shell getShell(String name)
 	{
-		Shell[] shells = Shell.getShells();
-		for(int i = 0; i < shells.length; i++)
+		// old API
+		for(int i = 0; i < shells.size(); i++)
 		{
-			if(shells[i].getName().equals(name))
+			Shell shell = (Shell)shells.get(i);
+			if(shell.getName().equals(name))
 			{
-				return shells[i];
+				return shell;
 			}
 		}
 
-		return null;
+		// new API
+		return (Shell)ServiceManager.getService(SERVICE,name);
 	} //}}}
 
 	//{{{ Shell constructor

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ class ConsoleToolBar extends JToolBar
 
 		this.view = view;
 
-		Shell[] shells = Shell.getShells();
+		String[] shells = Shell.getShellNames();
 		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
 		add(BorderLayout.WEST,shellCombo = new JComboBox(shells));
 		shellCombo.setSelectedItem(ConsolePlugin.getSystemShell());
@@ -88,7 +88,7 @@ class ConsoleToolBar extends JToolBar
 					cmd.setText(null);
 
 					Console cons = (Console)wm.getDockable("console");
-					cons.setShell((Shell)shellCombo.getSelectedItem());
+					cons.setShell((String)shellCombo.getSelectedItem());
 					cons.run(cons.getShell(),cons,command);
 				}
 			}
