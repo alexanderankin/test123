@@ -14,8 +14,8 @@
 				return;
 			}
 
-			VFS.DirectoryEntry entry = files[0];
-			if(entry.type != VFS.DirectoryEntry.FILE)
+			entry = files[0];
+			if(entry.type != VFSFile.FILE)
 			{
 				view.getToolkit().beep();
 				return;
