@@ -58,10 +58,4 @@
   <xsl:value-of select="$title"/>
 </xsl:template>
 
-<xsl:template name="header.navigation">
-</xsl:template>
-
-<xsl:template name="footer.navigation">
-</xsl:template>
-
 </xsl:stylesheet>

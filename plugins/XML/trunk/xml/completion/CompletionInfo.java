@@ -141,7 +141,7 @@ public class CompletionInfo
 
 		String resource = jEdit.getProperty("mode."
 			+ buffer.getMode().getName()
-			+ ".completion-info");
+			+ ".xml.completion-info");
 		if(resource != null)
 		{
 			CompletionInfo info = getCompletionInfoFromResource(resource);

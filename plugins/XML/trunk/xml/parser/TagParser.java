@@ -124,8 +124,8 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 					{
 						if(notATag)
 							notATag = false;
-						else
-							return null;
+						//else
+						//	return null;
 					}
 				}
 			}
@@ -262,8 +262,8 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 					{
 						if(notATag)
 							notATag = false;
-						else
-							return null;
+						//else
+						//	return null;
 					}
 				}
 			}
@@ -297,8 +297,8 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 					{
 						if(notATag)
 							notATag = false;
-						else
-							return null;
+						//else
+						//	return null;
 					}
 				}
 			}

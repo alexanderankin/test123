@@ -1,9 +1,11 @@
 + version 0.10:
 
+- sort out XML tree modifiers
+- completion popup width
+- html files before parsing complete -- don't show CDATA in popup
+- fix IBM JDK problem
 - misplaced closing tags break everything
 - finish element lists for schemas
-- CDATA breaks getLastOpenTag() if the CDATA contains a <, also
-  backward tag matching too
 - DTD downloader -- clear cache command should remove d/l'd files too
 - documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD

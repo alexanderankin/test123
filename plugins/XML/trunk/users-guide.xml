@@ -28,6 +28,15 @@
    the license can be found in the file <filename>COPYING.DOC.txt</filename>
    included with jEdit.
   </para>
+  <para>
+   The XML plugin itself is released under the GNU General Public License.
+   A copy of the GPL can be found in the jEdit online help.
+  </para>
+  <para>
+   The XML plugin bundles the Xerces XML parser from the Apache Software
+   Foundation. Xerces is released under the <ulink url="Xerces.LICENSE.txt">Apache
+   License</ulink>.
+  </para>
  </legalnotice>
 </bookinfo>
 
@@ -268,6 +277,8 @@
   dialog box.
  </para>
 
+ <para>
+  If the XML tree window has keyboard focus, you may use the arrow keys 
 </chapter>
 
 <chapter id="insert"><title>The XML insert window</title>
@@ -556,14 +567,14 @@
    </para></listitem>
    <listitem><para>The XHTML 1.1 DTD is now bundled.
    </para></listitem>
+   <listitem><para>Right-clicking on an element in the <guimenuitem>XML
+   Insert</guimenuitem> window will insert any required attributes
+   as well.
+   </para></listitem>
    <listitem><para>Fixed problems handling tags whose names ended with a number.
    </para></listitem>
    <listitem><para>We no longer show the <guimenuitem>Edit Tag</guimenuitem>
    dialog box for elements that do not define any attributes.
-   </para></listitem>
-   <listitem><para>Right-clicking on an element in the <guimenuitem>XML
-   Insert</guimenuitem> window will insert any required attributes
-   as well.
    </para></listitem>
    <listitem><para>Fixed possible <classname>ClassCastException</classname>
    when saving the resource cache.
@@ -571,6 +582,9 @@
    <listitem><para>Fixed <classname>NullPointerException</classname> when
    clicking <guibutton>Cancel</guibutton> in the file dialog box shown when
    adding a catalog in the <guimenuitem>Catalogs</guimenuitem> option pane.
+   </para></listitem>
+   <listitem><para>Fixed problems with tag matching when the buffer contained
+   <markup><![CDATA[<![CDATA[]]></markup> sections.
    </para></listitem>
   </itemizedlist>
   </listitem>
@@ -998,14 +1012,5 @@
  </itemizedlist>
 
 </appendix>
-
- <appendix id="xerces-license">
-  <title>Xerces XML Parser License</title>
-  <para>
-   The XML plugin bundles the Xerces XML parser from the Apache Software
-   Foundation. Xerces is released under the <ulink url="Xerces.LICENSE.txt">Apache
-   License</ulink>.
-  </para>
- </appendix>
 
 </book>
