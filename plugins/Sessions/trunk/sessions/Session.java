@@ -45,8 +45,7 @@ public class Session implements Cloneable
 
 	public Session(String name)
 	{
-		this.name = name;
-		this.filename = SessionManager.createSessionFileName(name);
+		setName(name);
 		this.allFiles = new Vector();
 		this.properties = new Hashtable();
 	}
@@ -62,6 +61,32 @@ public class Session implements Cloneable
 	{
 		this.name = name;
 		this.filename = SessionManager.createSessionFileName(name);
+	}
+	
+	/**
+	 * Rename this session. This changes both the logical name and the filename.
+	 * @param newName The new name for the session.
+	 * @return <code>true</code> if the rename succeeds, <code>false</code> otherwise.
+	 */
+	public boolean rename(String newName)
+	{
+		String oldName = this.name;
+		File oldFile = new File(this.filename);
+		File newFile = new File(SessionManager.createSessionFileName(newName));
+		if (oldFile.renameTo(newFile) == false)
+		{
+			// rename failed, so ...
+			return false;
+		}
+		setName(newName);
+		// Re-save so that the file contains the updated Session name
+		try {
+			saveXML();
+		} catch (IOException ioe) {
+			setName(oldName);
+			return false;
+		}
+		return true;
 	}
 
 
