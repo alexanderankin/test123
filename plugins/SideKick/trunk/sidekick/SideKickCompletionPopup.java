@@ -203,7 +203,7 @@ public class SideKickCompletionPopup extends JWindow
 			case KeyEvent.VK_BACK_SPACE:
 			case KeyEvent.VK_DELETE:
 				dispose();
-				view.processKeyEvent(evt);
+				view.processKeyEvent(evt,true);
 				break;
 			default:
 				// from DefaultInputHandler
@@ -216,7 +216,7 @@ public class SideKickCompletionPopup extends JWindow
 				}
 
 				dispose();
-				view.processKeyEvent(evt);
+				view.processKeyEvent(evt,true);
 				break;
 			}
 		} //}}}
@@ -240,7 +240,6 @@ public class SideKickCompletionPopup extends JWindow
 		//{{{ keyTyped() method
 		private void keyTyped(char ch)
 		{
-			
 			if(complete != null && complete.handleKeystroke(
 				list.getSelectedIndex(),ch))
 			{
