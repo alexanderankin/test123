@@ -4,10 +4,10 @@
 
 <DOCKABLES>
   <DOCKABLE NAME="XSLTProcessor">
-    xslt.XSLTPlugin.getXSLTProcessorInstance(view);
+    new xslt.XSLTProcessor(view);
   </DOCKABLE>
   <DOCKABLE NAME="XPathTool">
-    xslt.XSLTPlugin.getXPathToolInstance(view);
+    new xslt.XPathTool(view);
   </DOCKABLE>
 </DOCKABLES>
 
