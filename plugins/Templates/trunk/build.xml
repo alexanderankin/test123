@@ -3,8 +3,8 @@
 <!-- :tabSize=2:indentSize=2:noTabs=false: -->
 <!-- :folding=explicit:collapseFolds=1: -->
 
+<!-- {{{ Comments -->
 <!--
-
 		 This is a build.xml file for building the Templates plugin.
 
 		 The 'dist' target compiles the plugin, generates documentation, and creates
@@ -47,6 +47,7 @@
 		 ${user.home}/build.properties.
 
 -->
+<!-- }}} -->
 
 <project name="Templates" default="dist" basedir=".">
 
@@ -124,8 +125,8 @@
 		<property name="users-guide.xsl" value="default-users-guide.xsl"/>
 
 		<uptodate property="build-docs.not-required"
-				targetfile="${docs.dir}/index.html">
-			<srcfiles dir="${docs.dir}" includes="users-guide.xml"/>
+				targetfile="${build.dir}/${docs.dir}/index.html">
+			<srcfiles dir="${docs.dir}" includes="*.xml"/>
 		</uptodate>
 	</target>
 	<!-- }}} -->
