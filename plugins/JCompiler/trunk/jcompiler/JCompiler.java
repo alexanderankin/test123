@@ -1390,14 +1390,6 @@ public class JCompiler
 		String cp = 
 			javacore.JavaCorePlugin.getClasspathSource().getClasspath();
 		
-		// Only expandVariables if we're the JavaCore ClasspathSource provider.
-		//  (it's possible someone might use those variables in an actual directory name)
-		if (javacore.JavaCorePlugin.getClasspathSource() instanceof 
-			jcompiler.JCompilerClasspathSource)
-		{
-		    cp = expandVariables(cp);
-		}
-
 
 		String outputDir = getOutputDirectory();
 
@@ -1526,18 +1518,7 @@ public class JCompiler
 	{
 		//return expandVariables(jEdit.getProperty("jcompiler.sourcepath"));
 		
-		String sourcepath = 
-			javacore.JavaCorePlugin.getClasspathSource().getClasspath();
-		
-		// Only expandVariables if we're the JavaCore ClasspathSource provider.
-		//  (it's possible someone might use those variables in an actual directory name)
-		if (javacore.JavaCorePlugin.getClasspathSource() instanceof 
-			jcompiler.JCompilerClasspathSource)
-		{
-		    sourcepath = expandVariables(sourcepath);
-		}
-
-		return sourcepath;
+		return javacore.JavaCorePlugin.getClasspathSource().getClasspath();
 	}
 
 
