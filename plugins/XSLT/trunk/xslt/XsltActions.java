@@ -111,9 +111,16 @@ public class XsltActions {
     try {
       String inputString = buffer.getText(0, buffer.getLength());
       String resultString = XsltActions.indent(inputString, indentAmount, indentWithTabs);
+
+      int caretPosition = view.getTextArea().getCaretPosition();
       buffer.remove(0, buffer.getLength());
       buffer.insert(0, resultString);
-      view.getTextArea().setCaretPosition(0);
+
+      if(caretPosition > buffer.getLength()) {
+        caretPosition = buffer.getLength();
+      }
+
+      view.getTextArea().setCaretPosition(caretPosition);
     } catch(Exception e) {
       Log.log(Log.ERROR, IndentingTransformerImpl.class, e);
       String message = jEdit.getProperty("xslt.indent.message.failure");
