@@ -1,3 +1,5 @@
+# :folding=explicit:collapseFolds=1:
+
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
@@ -12,7 +14,6 @@ projectviewer.title=Project Viewer
 projectviewer.label=Project Viewer
 
 open-viewer-menu-item.label=Project Viewer
-options.projectviewer.label=Project Viewer
 
 #Optional Browser Path - set to complete path of web browser executable
 # examples:
@@ -23,7 +24,7 @@ options.projectviewer.label=Project Viewer
 browser-path=mozilla
 
 #{{{ jEdit option panes messages
-options.ProjectViewer.label=Project Viewer
+options.projectviewer.label=Project Viewer
 options.projectviewer.web-prj-opt.label=Web Project Options
 options.projectviewer.browser-path-opt=Browser Path
 options.projectviewer.gui-opt.label=GUI Options
@@ -47,6 +48,34 @@ projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
 #}}}
 
+#{{{ Options pane messages
+projectviewer.options.close_on_change=Close files on project change
+projectviewer.options.close_on_change.tooltip=Close current project's files when switching to another project?
+
+projectviewer.options.remember_open=Remember open project files
+projectviewer.options.remember_open.tooltip=Reload the set of files previously opened when loading a project?
+
+projectviewer.options.delete_stale=Delete non-existant files from list
+projectviewer.options.delete_stale.tooltip=If checked, files not found on disk will be removed from the project at startup
+
+projectviewer.options.save_on_change=Save project data on change
+projectviewer.options.save_on_change.tooltip=If checked, project data will be saved when you import/remove files
+
+projectviewer.options.show_toolbar=Show toolbar
+projectviewer.options.show_folders=Show folders tree
+projectviewer.options.show_files=Show files tree
+projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
+projectviewer.options.show_working_files=Show working files tree
+
+projectviewer.options.include_ext=Extensions to include:
+projectviewer.options.ignore_dir=Directories to ignore:
+projectviewer.options.include_files=Files to include:
+
+projectviewer.options.browser_path=Browser Path:
+projectviewer.options.browser_path.tooltip=This is used for web projects, to launch files in the browser
+projectviewer.options.browseable_ext=Browse-able Extensions:
+#}}}
+
 #{{{ Import messages
 projectviewer.import.no=No.
 projectviewer.import.yes-all=Yes, import all files.
@@ -60,6 +89,9 @@ projectviewer.import_new.title=Import new file
 
 projectviewer.import.msg_proj_root=Do you want to import files from the project root?
 projectviewer.import.msg_proj_root.title=Initial import
+
+projectviewer.cvs-filter=Entries in CVS/Entries
+projectviewer.importer-filter=ProjectViewer's Import Settings
 #}}}
 
 #{{{ Action messages
