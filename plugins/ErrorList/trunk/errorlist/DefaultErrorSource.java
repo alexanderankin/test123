@@ -168,9 +168,44 @@ public class DefaultErrorSource extends ErrorSource
 		errors.clear();
 		errorCount = 0;
 
-		ErrorSourceUpdate message = new ErrorSourceUpdate(this,
-			ErrorSourceUpdate.ERRORS_CLEARED,this,null);
-		EditBus.send(message);
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
+					ErrorSourceUpdate.ERRORS_CLEARED,null);
+				EditBus.send(message);
+			}
+		});
+	} //}}}
+
+	//{{{ removeFileErrors() method
+	/**
+	 * Removes all errors in the specified file. This method is thread-safe.
+	 * @param path The file path
+	 * @since ErrorList 1.3
+	 */
+	public synchronized void removeFileErrors(String path)
+	{
+		final Vector list = (Vector)errors.remove(path);
+		if(list == null)
+			return;
+
+		errorCount -= list.size();
+
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				for(int i = 0; i < list.size(); i++)
+				{
+					DefaultError error = (DefaultError)list.get(i);
+					ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
+						ErrorSourceUpdate.ERROR_REMOVED,error);
+					EditBus.send(message);
+				}
+			}
+		});
 	} //}}}
 
 	//{{{ addError() method
@@ -178,7 +213,7 @@ public class DefaultErrorSource extends ErrorSource
 	 * Adds an error to this error source. This method is thread-safe.
 	 * @param error The error
 	 */
-	public synchronized void addError(DefaultError error)
+	public synchronized void addError(final DefaultError error)
 	{
 		Vector list = (Vector)errors.get(error.getFilePath());
 		if(list == null)
@@ -190,13 +225,12 @@ public class DefaultErrorSource extends ErrorSource
 		list.addElement(error);
 		errorCount++;
 
-		final ErrorSourceUpdate message = new ErrorSourceUpdate(this,
-			ErrorSourceUpdate.ERROR_ADDED,this,error);
-
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
 			{
+				ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
+					ErrorSourceUpdate.ERROR_ADDED,error);
 				EditBus.send(message);
 			}
 		});
