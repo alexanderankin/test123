@@ -9,11 +9,21 @@ plugin.xmlindenter.XmlIndenterPlugin.depend.2=plugin xml.XmlPlugin 0.12
 
 # Action labels
 xmlindenter.indent.label=Indent XML
-
+xmlindenter.set-preserve-whitespace.label=Preserve whitespace settings
 
 # Plugin menu
 plugin.xmlindenter.XmlIndenterPlugin.menu-item=xmlindenter.indent
 
 # Indent action
 xmlindenter.indent.message.failure=Indenting failed to complete.
+ 
+# Option panes
+plugin.xmlindenter.XmlIndenterPlugin.option-pane=xmlindenter
 
+options.xmlindenter.label=XML Indenter
+options.xmlindenter.code=new xmlindenter.PreserveWhitespaceOptionsPane();
+options.xmlindenter.caption=Preserve whitespace for these elements:
+options.xmlindenter.add=Add
+options.xmlindenter.remove=Remove
+options.xmlindenter.dialog.title=Add element
+options.xmlindenter.dialog.message=Enter qualified element name:
