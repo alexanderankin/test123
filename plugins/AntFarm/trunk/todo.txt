@@ -1,5 +1,6 @@
 List of todo items for AntFarm:
 Future additions/fixes:
+- make AntFarm initialize the projects in a background thread
 - Open/Close build files that are related to the current session.
 - Add actions for easy shortcut binding:
 	- run the current target of the current build file;
