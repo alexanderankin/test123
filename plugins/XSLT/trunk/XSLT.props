@@ -9,18 +9,25 @@ plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 0.8
 
 xslt-menu=\
 	XSLTProcessor-toggle \
-	XPathTool-toggle
+  XSLTProcessor.Transform \
+  - \
+	XPathTool-toggle \
+  XPathTool.Evaluate
 xslt-menu.label=XSLT
 
 XSLTProcessor.title=XSLT Processor
 XSLTProcessor-toggle.label=XSLT Processor
-
+XSLTProcessor.Transform.label=Transform
 XPathTool.title=XPath Tool
 XPathTool-toggle.label=XPath Tool
+XPathTool.Evaluate.label=Evaluate
 
 xslt.error={0}\nReason: "{1}"\n\nA stacktrace has been written to the Activity Log.
 
+XSLTProcessor.error.dockFirst=You must dock the XSLT Processor before you can perform this action.
 XSLTProcessor.source.label=Source:
+XSLTProcessor.source.pleaseSelect=Please select a source document
+XSLTProcessor.select.button=Select ...
 XSLTProcessor.stylesheets.label=Stylesheets:
 XSLTProcessor.transform.button=Transform
 XSLTProcessor.add.button=Add ...
@@ -33,6 +40,9 @@ XSLTProcessor.addStylesheet.title=Add Stylesheet
 XSLTProcessor.error.preProcessProblem=An error occurred before any stylesheets were processed.
 XSLTProcessor.error.stylesheetProblem=An error occurred during the processing of stylesheet "{0}".
 
+XSLTProcessor.Transform.error.notEnabled=You must first specify your source document and/or stylesheets in the XSLT Processor window.
+
+XPathTool.error.dockFirst=You must dock the XPath Tool before you can perform this action.
 XPathTool.xpathExpression.label=XPath Expression:
 XPathTool.evaluate.button=Evaluate
 XPathTool.results.label=Results:
