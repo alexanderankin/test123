@@ -26,6 +26,7 @@ import java.io.*;
 import java.lang.System.*;
 import java.util.*;
 import java.util.Vector;
+import javax.swing.JOptionPane;
 import java.awt.Toolkit;
 
 import org.gjt.sp.jedit.*;
@@ -147,7 +148,7 @@ public class Tags {
   public static boolean getSearchAllTagFiles() { return searchAllTagFiles_; }
 
   /*+*************************************************************************/
-  public static void manageTagFiles(View view) {
+  public static void showTagOptionsDialog(View view) {
     TagsOptionsDialog dialog = new TagsOptionsDialog(view);
     dialog.showDialog();
     //displayTagFiles(view);
@@ -173,11 +174,25 @@ public class Tags {
   public static void enterAndFollowTag(View view, JEditTextArea textArea,
                                        Buffer buffer) {
     
-    TagsEnterTagDialog dialog = new TagsEnterTagDialog(view, null, false);
-    if (dialog.showDialog()) {
-      followTag(view, textArea, buffer, dialog.getOtherWindow(),
-                dialog.getFuncName());
-    }
+		// The panel is a bit overkill but it was done for a dialog before this
+		// was done using JOptionPane...
+		TagsEnterTagPanel enterTagPanel = new TagsEnterTagPanel(null, false);
+	
+		String[] buttonNames = { TagsPlugin.getOptionString("tag-ok.label"), 
+                             TagsPlugin.getOptionString("tag-cancel.label") };
+	
+		int ret = JOptionPane.showOptionDialog(view, enterTagPanel,
+                          TagsPlugin.getOptionString("tag-enter-dialog.title"),
+                          JOptionPane.DEFAULT_OPTION,
+                          JOptionPane.QUESTION_MESSAGE, null, 
+                          buttonNames, buttonNames[0]);
+																
+		if (ret == 0) {
+			followTag(view, textArea, buffer, enterTagPanel.getOtherWindow(),
+								enterTagPanel.getFuncName());
+		}
+		
+		enterTagPanel = null;  // we probably should reuse this...
   }  
   
   /*+*************************************************************************/
@@ -258,7 +273,10 @@ public class Tags {
 
     // Handle what was found (or not found)
     if (parser_.getNumberOfFoundTags() > 1) {
+      if (ui_)
         new ChooseTagList2(parser_, currentView, openNewView);
+      else
+        processTagLine(0, currentView, openNewView, funcName);
     }
     else if (parser_.getNumberOfFoundTags() > 0) {
       processTagLine(0, currentView, openNewView, funcName);
@@ -274,9 +292,9 @@ public class Tags {
                                     boolean openNewView, String funcName) {
     
     View           tagToView = null;
-    JEditTextArea  currentTextArea = currentView.getTextArea();
+    JEditTextArea  currentTextArea = null;
     JEditTextArea  tagToTextArea = null;
-    Buffer         buffer = currentView.getBuffer();
+    Buffer         buffer = null;
     
     tagFileName_ = null;
     searchString_ = null;
@@ -287,6 +305,9 @@ public class Tags {
         tagToView = jEdit.newView(currentView, currentView.getBuffer());
       else
         tagToView = currentView;
+        
+      currentTextArea = currentView.getTextArea();
+      buffer = currentView.getBuffer();
     }
     
     if (ui_)

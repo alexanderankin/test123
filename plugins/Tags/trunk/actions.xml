@@ -33,7 +33,7 @@
     <ACTION NAME="tags-options">
       <CODE>
          import tags.Tags;
-         Tags.manageTagFiles(view);
+         Tags.showTagOptionsDialog(view);
       </CODE>
     </ACTION>
     
