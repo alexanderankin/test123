@@ -28,7 +28,8 @@ public class XmlPlugin extends EBPlugin
 
 	public void start()
 	{
-		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,NAME);
+		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,TREE_NAME);
+		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,TAG_PALETTE_NAME);
 	}
 
 	public void createMenuItems(Vector menuItems)
@@ -58,7 +59,7 @@ public class XmlPlugin extends EBPlugin
 			}
 			else if(cmsg.getDockableWindowName().equals(TAG_PALETTE_NAME))
 			{
-				cmsg.setDockableWindow(new InsertTagWindow(
+				cmsg.setDockableWindow(new TagPalette(
 					cmsg.getView()));
 			}
 		}

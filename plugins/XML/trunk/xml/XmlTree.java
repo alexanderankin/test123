@@ -74,7 +74,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 	public String getName()
 	{
-		return XmlPlugin.NAME;
+		return XmlPlugin.TREE_NAME;
 	}
 
 	public Component getComponent()
@@ -235,7 +235,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 	private View view;
 	private Buffer buffer;
-	private XmlParseThread thread;
+	private XmlParser.ParseThread thread;
 	private Timer timer;
 	private DefaultErrorSource errorSource;
 	private DocumentHandler documentHandler;
