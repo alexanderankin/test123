@@ -293,29 +293,28 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
+		public Option[] getOptions()
+		{
+			return new Option[] {
+				new Option('n',"new-window",false)
+			};
+		}
+
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
 			String currentDirectory = SystemShell.getConsoleState(
 				console).currentDirectory;
 
-			final String directory = (args.size() == 0
+			String directory = (args.size() == 0
 				? currentDirectory
 				: MiscUtilities.constructPath(currentDirectory,
 				(String)args.elementAt(0)));
 
-			final DockableWindowManager dwm = console.getView()
-				.getDockableWindowManager();
-			dwm.addDockableWindow("vfs.browser");
-
-			VFSManager.runInAWTThread(new Runnable()
-			{
-				public void run()
-				{
-					((VFSBrowser)dwm.getDockable("vfs.browser"))
-						.setDirectory(directory);
-				}
-			});
+			if(values.get("new-window") != null)
+				VFSBrowser.browseDirectoryInNewWindow(console.getView(),directory);
+			else
+				VFSBrowser.browseDirectory(console.getView(),directory);
 		}
 	} //}}}
 

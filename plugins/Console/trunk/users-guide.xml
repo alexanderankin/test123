@@ -412,8 +412,12 @@
  </para>
 
  <itemizedlist>
-  <listitem><para><command>%browse <replaceable>directory</replaceable></command>:
-  opens the specified directory in jEdit's file system browser.
+  <listitem><para><command>%browse
+  [-n|--new-window]
+  <replaceable>directory</replaceable></command>:
+  opens the specified directory in jEdit's file system browser. If
+  <command>-n</command> or <command>--new-window</command> is specified,
+  opens a new floating instance of the file system browser.
   </para></listitem>
 
   <listitem><para><command>%edit <replaceable>files ...</replaceable></command>:
@@ -1211,6 +1215,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <listitem><para>Starting a background process using
    <quote>&amp;</quote> at the end of the command line would start the
    spinning animation, and never stop it.
+   </para></listitem>
+   <listitem><para><command>%browse</command> no longer shows an error message.
+   Also it now accepts a <command>--new-window</command> parameter (or
+   <command>-n</command>) which opens a new floating file system browser
+   instance.
    </para></listitem>
    </itemizedlist>
   </listitem>
