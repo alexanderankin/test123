@@ -1,0 +1,1 @@
+<xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' xsl:version='1.0'><xsl:import href='/usr/share/sgml/docbook/xsl-stylesheets-1.62.4/html/chunk.xsl'/></xsl:stylesheet>
