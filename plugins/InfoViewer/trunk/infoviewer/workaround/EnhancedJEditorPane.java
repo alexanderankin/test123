@@ -1,6 +1,6 @@
 /*
  * EnhancedJEditorPane.java
- * Copyright (C) 2000,2001 Dirk Moebius
+ * Copyright (C) 2000-2002 Dirk Moebius
  *
  * :tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
  *
@@ -75,23 +75,16 @@ public class EnhancedJEditorPane extends JEditorPane
 
         if (buffer != null)
         {
-            try
-            {
-                // FIXME: StringBufferInputStream has been deprecated, is there another way?
-                InputStream in = new java.io.StringBufferInputStream(buffer.getText(0, buffer.getLength()));
-                Log.log(Log.DEBUG, this, "getStream(): got stream from jEdit buffer: " + buffer);
+            // FIXME: StringBufferInputStream has been deprecated, is there another way?
+            InputStream in = new java.io.StringBufferInputStream(buffer.getText(0, buffer.getLength()));
+            Log.log(Log.DEBUG, this, "getStream(): got stream from jEdit buffer: " + buffer);
 
-                // determine and set content type of buffer:
-                String type = getContentType(page, in);
-                if (type != null)
-                    setContentType(type);
+            // determine and set content type of buffer:
+            String type = getContentType(page, in);
+            if (type != null)
+                setContentType(type);
 
-                return in;
-            }
-            catch (BadLocationException ble)
-            {
-                Log.log(Log.DEBUG, this, ble);
-            }
+            return in;
         }
 
         return super.getStream(page);

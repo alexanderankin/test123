@@ -1,6 +1,6 @@
 /*
  * InfoViewer.java - Info viewer for HTML, txt
- * Copyright (C) 2000,2001 Dirk Moebius
+ * Copyright (C) 2000-2002 Dirk Moebius
  * Based on HTMLViewer.java Copyright (C) 1999 Slava Pestov
  *
  * :tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
@@ -39,7 +39,6 @@ import javax.swing.text.*;
 import javax.swing.text.html.*;
 
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DockableWindow;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.io.FileVFS;
@@ -60,12 +59,8 @@ import org.gjt.sp.util.Log;
  */
 public class InfoViewer
     extends JPanel
-    implements HyperlinkListener, PropertyChangeListener, EBComponent, DockableWindow
+    implements HyperlinkListener, PropertyChangeListener, EBComponent
 {
-
-    /** The internal name of this DockableWindow. */
-    public static final String DOCKABLE_NAME = "infoviewer";
-
 
     /**
      * Creates a new info viewer instance.
@@ -147,22 +142,6 @@ public class InfoViewer
                 gotoURL(home, true);
         }
     }
-
-
-    // begin DockableWindow implementation
-
-    public String getName()
-    {
-        return DOCKABLE_NAME;
-    }
-
-
-    public Component getComponent()
-    {
-        return this;
-    }
-
-    // end DockableWindow implementation
 
 
     /**
@@ -421,20 +400,6 @@ public class InfoViewer
                     {
                         gotoBufferURL();
                     }
-                    /*
-                    else if (emsg.getWhat() == EditPaneUpdate.CREATED)
-                    {
-                        JEditTextArea textArea = editPane.getTextArea();
-                        textArea.addFocusListener(editPaneHandler);
-                        textArea.addCaretListener(editPaneHandler);
-                    }
-                    else if (emsg.getWhat() == EditPaneUpdate.DESTROYED)
-                    {
-                        JEditTextArea textArea = editPane.getTextArea();
-                        textArea.removeFocusListener(editPaneHandler);
-                        textArea.removeCaretListener(editPaneHandler);
-                    }
-                    */
                 }
             }
         }
@@ -467,16 +432,6 @@ public class InfoViewer
     {
         super.addNotify();
         EditBus.addToBus(this);
-
-        /*
-        EditPane[] editPanes = view.getEditPanes();
-        for (int i = 0; i < editPanes.length; i++)
-        {
-            JEditTextArea textArea = editPanes[i].getTextArea();
-            textArea.addFocusListener(editPaneHandler);
-            textArea.addCaretListener(editPaneHandler);
-        }
-        */
     }
 
 
@@ -487,16 +442,6 @@ public class InfoViewer
 
         if (periodicTimer != null)
             periodicTimer.stop();
-
-        /*
-        EditPane[] editPanes = view.getEditPanes();
-        for (int i = 0; i < editPanes.length; i++)
-        {
-            JEditTextArea textArea = editPanes[i].getTextArea();
-            textArea.removeFocusListener(editPaneHandler);
-            textArea.removeCaretListener(editPaneHandler);
-        }
-        */
     }
 
 
@@ -522,7 +467,7 @@ public class InfoViewer
     private JMenuBar createMenu()
     {
         // File menu
-        EnhancedJMenu mFile = new EnhancedJMenu(props("infoviewer.menu.file"));
+        JMenu mFile = new JMenu(props("infoviewer.menu.file"));
         mFile.setMnemonic(props("infoviewer.menu.file.mnemonic").charAt(0));
         mFile.add(aOpenFile);
         mFile.add(aOpenBuffer);
@@ -532,23 +477,23 @@ public class InfoViewer
         mFile.add(aClose);
 
         // Edit menu
-        EnhancedJMenu mEdit = new EnhancedJMenu(props("infoviewer.menu.edit"));
+        JMenu mEdit = new JMenu(props("infoviewer.menu.edit"));
         mEdit.setMnemonic(props("infoviewer.menu.edit.mnemonic").charAt(0));
         mEdit.add(aCopy);
         mEdit.add(aSelectAll);
 
         // Goto menu
-        mGoto = new EnhancedJMenu(props("infoviewer.menu.goto"));
+        mGoto = new JMenu(props("infoviewer.menu.goto"));
         mGoto.setMnemonic(props("infoviewer.menu.goto.mnemonic").charAt(0));
         updateGoMenu();
 
         // Bookmarks menu
-        mBmarks = new EnhancedJMenu(props("infoviewer.menu.bmarks"));
+        mBmarks = new JMenu(props("infoviewer.menu.bmarks"));
         mBmarks.setMnemonic(props("infoviewer.menu.bmarks.mnemonic").charAt(0));
         updateBookmarksMenu();
 
         // Help menu
-        mHelp = new EnhancedJMenu(props("infoviewer.menu.help"));
+        mHelp = new JMenu(props("infoviewer.menu.help"));
         mHelp.setMnemonic(props("infoviewer.menu.help.mnemonic").charAt(0));
         updateHelpMenu();
 
@@ -928,9 +873,9 @@ public class InfoViewer
     private JScrollPane scrViewer;
     private HistoryTextField urlField;
     private JButton bStartStop;
-    private EnhancedJMenu mGoto;
-    private EnhancedJMenu mBmarks;
-    private EnhancedJMenu mHelp;
+    private JMenu mGoto;
+    private JMenu mBmarks;
+    private JMenu mHelp;
 
     // misc
     private org.gjt.sp.jedit.View view;
