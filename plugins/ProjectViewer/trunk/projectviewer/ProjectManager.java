@@ -44,6 +44,7 @@ import org.gjt.sp.util.Log;
 
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
+import projectviewer.config.ProjectViewerConfig;
 import projectviewer.persist.OldConfigLoader;
 import projectviewer.persist.ProjectPersistenceManager;
 //}}}
@@ -131,7 +132,13 @@ public final class ProjectManager {
 			// save data in new style
 			save();
 
+			ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+			if (config.getLastProject()!= null && !projects.containsKey(config.getLastProject())) {
+				config.setLastProject(null);
+			}
+
 			// clear the list
+			VPTRoot.getInstance().removeAllChildren();
 			projects.clear();
 
 			// re-instantiate the InputStream
