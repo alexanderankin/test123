@@ -171,8 +171,6 @@ public class JCompiler {
 
 		// Start the compiler:
 		invokeCompiler(arguments);
-		System.gc();
-		printInfo("jcompiler.msg.done");
 	}
 
 
@@ -191,8 +189,6 @@ public class JCompiler {
 
 		// Start the compiler:
 		invokeCompiler(arguments);
-		System.gc();
-		printInfo("jcompiler.msg.done");
 	}
 
 
@@ -236,13 +232,13 @@ public class JCompiler {
 
 
 	private void invokeCompiler(String[] arguments) {
+		boolean completed = true;
+		ThreadDeath threadDeath = null;
 		PrintStream origOut = System.out;
 		PrintStream origErr = System.err;
-
 		PipedOutputStream pipeComp = new PipedOutputStream();
 		PipedOutputStream pipeOut = new PipedOutputStream();
 		PipedOutputStream pipeErr = new PipedOutputStream();
-
 		OutputThread threadComp = new OutputThread("compiler output", pipeComp);
 		OutputThread threadOut = new OutputThread("stdout", pipeOut);
 		OutputThread threadErr = new OutputThread("stderr", pipeErr);
@@ -267,33 +263,64 @@ public class JCompiler {
 			// invoke the method 'compile(String[] arguments)' on the compiler instance.
 			// Note: the return value of the compile method is ignored.
 			compilerMethod.invoke(compiler, new Object[] { arguments });
+		}
+		catch (InvocationTargetException invex) {
+			// the invoked method itself has thrown an exception
+			completed = false;
+			Throwable targetException = invex.getTargetException();
+			if (targetException instanceof InterruptedException) {
+				Log.log(Log.DEBUG, this, "JCompiler interrupted.");
+				printError("jcompiler.msg.interrupted");
+			} else {
+				Log.log(Log.ERROR, this, "The compiler method itself just threw a runtime exception:");
+				Log.log(Log.ERROR, this, targetException);
+				Object[] args = new Object[] { compilerClass, targetException };
+				printError("jcompiler.msg.compilermethod_exception", args);
+			}
+		}
+		catch (Exception e) {
+			completed = false;
+			if (e instanceof InterruptedException) {
+				Log.log(Log.DEBUG, this, "JCompiler interrupted.");
+				printError("jcompiler.msg.interrupted");
+			} else {
+				Log.log(Log.ERROR, this, e);
+				Object[] args = new Object[] { compilerClass, e };
+				printError("jcompiler.msg.compilermethod_exception", args);
+			}
+		}
+		catch (ThreadDeath td) {
+			// catch this so that the following cleanup can be performed
+			completed = false;
+			threadDeath = td; // store for rethrow
+		}
 
-			pipeComp.close();
-			pipeOut.close();
-			pipeErr.close();
+		try { pipeComp.close(); } catch (IOException e) { Log.log(Log.WARNING, this, e); }
+		try { pipeOut.close(); } catch (IOException e) { Log.log(Log.WARNING, this, e); }
+		try { pipeErr.close(); } catch (IOException e) { Log.log(Log.WARNING, this, e); }
 
+		try {
 			// wait for the output threads to die:
 			threadComp.join();
 			threadOut.join();
 			threadErr.join();
 		}
-		catch (InvocationTargetException invex) {
-			// the invoked method itself has thrown an exception
-			Throwable targetException = invex.getTargetException();
-			Log.log(Log.ERROR, this, "The compiler method itself just threw a runtime exception:");
-			Log.log(Log.ERROR, this, targetException);
-			Object[] args = new Object[] { compilerClass, targetException };
-			printError("jcompiler.msg.compilermethod_exception", args);
-		}
-		catch (Exception e) {
-			Log.log(Log.ERROR, this, e);
-			Object[] args = new Object[] { compilerClass, e };
-			printError("jcompiler.msg.compilermethod_exception", args);
+		catch (InterruptedException e) {
+			completed = false;
 		}
 		finally {
+			// restore stdout/err:
 			System.setOut(origOut);
 			System.setErr(origErr);
 		}
+
+		System.gc();
+
+		if (completed)
+			printInfo("jcompiler.msg.done");
+
+		if (threadDeath != null)
+			throw threadDeath; // so that the thread actually dies
 	}
 
 
@@ -780,6 +807,7 @@ public class JCompiler {
 					output.outputText(line);
 
 				Log.log(Log.DEBUG, JCompiler.this, this.toString() + " ends.");
+				buf.close();
 			}
 			catch (IOException ioex) {
 				Log.log(Log.ERROR, this, ioex);

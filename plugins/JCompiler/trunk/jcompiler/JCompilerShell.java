@@ -117,12 +117,14 @@ public class JCompilerShell extends Shell
 		else if ("help".equals(cmd))
 		{
 			printInfoMessage(output);
+			output.commandDone();
 		}
 		else
 		{
 			console.print(console.getInfoColor(),
-				"Unknown JCompiler command '" + cmd
-				+ "'. See 'help' for a list of commands.");
+				jEdit.getProperty("jcompiler.msg.errorUnknownCommand",
+					new Object[] { cmd }));
+			console.commandDone();
 		}
 	}
 
@@ -130,8 +132,9 @@ public class JCompilerShell extends Shell
 	public void stop(Console console) {
 		if (compileTask != null) {
 			if (compileTask.isAlive()) {
+				console.print(console.getErrorColor(), jEdit.getProperty("jcompiler.msg.stopping"));
 				compileTask.stop();
-				console.print(console.getErrorColor(), "JCompiler task killed.");
+				console.commandDone();
 			}
 			compileTask = null;
 		}
