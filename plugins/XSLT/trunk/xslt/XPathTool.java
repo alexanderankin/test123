@@ -44,6 +44,7 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.StringReader;
 import java.text.MessageFormat;
+import java.net.URL;
 
 /**
  * GUI for evaluating XPath expressions.
@@ -171,23 +172,16 @@ public class XPathTool extends JPanel {
 
 
   /**
-   * @return "Evaluate" buttons
-   */
-  public JButton getEvaluateButton() {
-    return evaluatePanel.button;
-  }
-
-
-  /**
    * Panel housing the "XPath Expression" label & text area
    */
   class ExpressionPanel extends JPanel {
+    JTextArea textArea = new JTextArea();
+
     ExpressionPanel() {
       super(new BorderLayout());
       JPanel topPanel = new JPanel(new BorderLayout());
       topPanel.add(new JLabel(jEdit.getProperty("XPathTool.xpathExpression.label")), BorderLayout.WEST);
       add(topPanel, BorderLayout.NORTH);
-      textArea = new JTextArea();
       String text = jEdit.getProperty("XPathTool.lastExpression");
       textArea.setText((text == null) ? "" : text);
       textArea.getDocument().addDocumentListener(new DocumentListener() {
@@ -211,11 +205,9 @@ public class XPathTool extends JPanel {
           jEdit.setProperty("XPathTool.lastExpression", (text == null) ? "" : text);
         }
       });
+
       add(new JScrollPane(textArea));
     }
-
-
-    JTextArea textArea;
   }
 
 
@@ -225,52 +217,82 @@ public class XPathTool extends JPanel {
 
 
   /**
+   * @return "Evaluate" buttons
+   */
+  public JButton getEvaluateButton() {
+    return evaluatePanel.button;
+  }
+
+
+  /**
    * Panel housing the "Evaluate" button
    */
   class EvaluatePanel extends JPanel {
+    private JButton button;
+
     EvaluatePanel() {
-      button = new JButton(jEdit.getProperty("XPathTool.evaluate.button"));
-      button.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent event) {
-          try {
-            Buffer buffer = view.getBuffer();
-            String text = buffer.getText(0, buffer.getLength());
-            InputSource inputSource = new InputSource(new StringReader(text));
-            inputSource.setSystemId(buffer.getFile().getPath());
-            Document document = parse(inputSource);
-            XObject xObject = XPathAPI.eval(document, expressionPanel.textArea.getText());
+      String iconName = jEdit.getProperty("XPathTool.evaluate.button.icon");
+      String toolTipText = jEdit.getProperty("XPathTool.evaluate.button.tooltip");
 
-            dataTypePanel.textArea.setText(getDataTypeMessage(xObject));
-            resultValuePanel.textArea.setText(xObject.xstr().toString());
-            resultValuePanel.textArea.setCaretPosition(0);
+      URL url = XSLTProcessor.class.getResource(iconName);
+      button = new JButton(new ImageIcon(url));
+      button.setToolTipText(toolTipText);
+      button.addActionListener(new EvaluateAction());
 
-            if(isNodeSet(xObject)) {
-              resultValuePanel.label.setText(jEdit.getProperty("XPathTool.result.string-value.label"));
-            } else {
-              resultValuePanel.label.setText(jEdit.getProperty("XPathTool.result.value.label"));
-            }
+      Dimension dimension = new Dimension(76, 30);
+      button.setMinimumSize(dimension);
+      button.setPreferredSize(dimension);
 
-            setNodeSetResults(xObject, nodeSetTablePanel.tableModel);
-            XMLFragmentsString xmlString = new XMLFragmentsString(xObject);
-            xmlFragmentsPanel.textArea.setText(xmlString.getString());
-            xmlFragmentsPanel.textArea.setCaretPosition(0);
-
-          } catch(IllegalStateException e) {
-            XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
-          } catch(SAXException e) { // parse problem
-            XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.bufferUnparseable"), XPathTool.this);
-          } catch(IOException e) { // parse problem
-            XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.bufferUnparseable"), XPathTool.this);
-          } catch(TransformerException e) { // evaluation problem
-            XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.expressionUnevaluateable"), XPathTool.this);
-          } catch(Exception e) { // catch-all
-            XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.unkownProblem"), XPathTool.this);
-          }
-        }
-      });
       add(button);
     }
+  }
 
+
+  private class EvaluateAction implements ActionListener {
+    public void actionPerformed(ActionEvent event) {
+      try {
+        getEvaluateButton().setFocusPainted(false);
+
+        Buffer buffer = view.getBuffer();
+        String text = buffer.getText(0, buffer.getLength());
+        InputSource inputSource = new InputSource(new StringReader(text));
+        inputSource.setSystemId(buffer.getFile().getPath());
+        Document document = parse(inputSource);
+        String expression = expressionPanel.textArea.getText();
+        XObject xObject = XPathAPI.eval(document, expression);
+
+        dataTypePanel.textArea.setText(getDataTypeMessage(xObject));
+        resultValuePanel.textArea.setText(xObject.xstr().toString());
+        resultValuePanel.textArea.setCaretPosition(0);
+
+        if(isNodeSet(xObject)) {
+          resultValuePanel.label.setText(jEdit.getProperty("XPathTool.result.string-value.label"));
+        } else {
+          resultValuePanel.label.setText(jEdit.getProperty("XPathTool.result.value.label"));
+        }
+
+        setNodeSetResults(xObject, nodeSetTablePanel.tableModel);
+
+        if(isNodeSet(xObject)) {
+          XMLFragmentsString xmlString = new XMLFragmentsString(xObject.nodelist());
+          xmlFragmentsPanel.textArea.setText(xmlString.getString());
+          xmlFragmentsPanel.textArea.setCaretPosition(0);
+        } else {
+          xmlFragmentsPanel.textArea.setText("");
+        }
+
+      } catch(IllegalStateException e) {
+        XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
+      } catch(SAXException e) { // parse problem
+        XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.bufferUnparseable"), XPathTool.this);
+      } catch(IOException e) { // parse problem
+        XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.bufferUnparseable"), XPathTool.this);
+      } catch(TransformerException e) { // evaluation problem
+        XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.expressionUnevaluateable"), XPathTool.this);
+      } catch(Exception e) { // catch-all
+        XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.unkownProblem"), XPathTool.this);
+      }
+    }
 
     /**
      * Creates parser, parses input source and returns resulting document.
@@ -284,8 +306,6 @@ public class XPathTool extends JPanel {
       return document;
     }
 
-
-    private JButton button;
   }
 
 
