@@ -160,33 +160,42 @@ public final class ProjectPlugin extends EBPlugin {
 	/** Handles plugin load/unload messages in the EditBus. */
 	public void handleMessage(EBMessage msg) {
 		if (config.isJEdit42()) {
-			checkPluginUpdate(msg);
+			Helper.checkPluginUpdate(msg);
 		}
 	} //}}}
 
-	//{{{ +_checkPluginUpdate(EBMessage, ProjectViewer)_ : void
-	public static void checkPluginUpdate(EBMessage msg) {
-		if (msg instanceof PluginUpdate) {
-			PluginUpdate pu = (PluginUpdate) msg;
-			if (pu.getWhat() == PluginUpdate.LOADED) {
-				ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), null);
-				ProjectManager.getInstance().addProjectListeners(pu.getPluginJAR());
-				ProjectViewer.addToolbarActions(pu.getPluginJAR());
-				VPTContextMenu.registerActions(pu.getPluginJAR());
+	//{{{ -class _Helper_
+	/**
+	 *	Class to hold methods that require classes that may not be available,
+	 *	so that PV behaves well when called from a BeanShell script.
+	 */
+	private static class Helper {
 
-				View[] v = jEdit.getViews();
-				for (int i = 0; i < v.length; i++) {
-					if (ProjectViewer.getViewer(v[i]) != null) {
-						ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), v[i]);
+		//{{{ +_checkPluginUpdate(EBMessage)_ : void
+		public static void checkPluginUpdate(EBMessage msg) {
+			if (msg instanceof PluginUpdate) {
+				PluginUpdate pu = (PluginUpdate) msg;
+				if (pu.getWhat() == PluginUpdate.LOADED) {
+					ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), null);
+					ProjectManager.getInstance().addProjectListeners(pu.getPluginJAR());
+					ProjectViewer.addToolbarActions(pu.getPluginJAR());
+					VPTContextMenu.registerActions(pu.getPluginJAR());
+
+					View[] v = jEdit.getViews();
+					for (int i = 0; i < v.length; i++) {
+						if (ProjectViewer.getViewer(v[i]) != null) {
+							ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), v[i]);
+						}
 					}
+				} else if (pu.getWhat() == PluginUpdate.UNLOADED && !pu.isExiting()) {
+					ProjectViewer.removeProjectViewerListeners(pu.getPluginJAR());
+					ProjectManager.getInstance().removeProjectListeners(pu.getPluginJAR());
+					ProjectViewer.removeToolbarActions(pu.getPluginJAR());
+					VPTContextMenu.unregisterActions(pu.getPluginJAR());
 				}
-			} else if (pu.getWhat() == PluginUpdate.UNLOADED && !pu.isExiting()) {
-				ProjectViewer.removeProjectViewerListeners(pu.getPluginJAR());
-				ProjectManager.getInstance().removeProjectListeners(pu.getPluginJAR());
-				ProjectViewer.removeToolbarActions(pu.getPluginJAR());
-				VPTContextMenu.unregisterActions(pu.getPluginJAR());
 			}
-		}
+		} //}}}
+
 	} //}}}
 
 }
