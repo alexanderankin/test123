@@ -57,6 +57,7 @@ VERSION 2.0.3
 		- renaming the node was causing the tree to stay out of order
 		- trying to rename a file that does not exist was causing an "infinite
 		  loop" when pressing only OK on the rename dialog
+		- fixed importing of configuration from older versions of PV (<= 1.0.2)
 
 		Other changes:
 		- removed the VPTNodeType class; it was just adding bloat, and could be
@@ -74,6 +75,10 @@ VERSION 2.0.3
 		- added rb (Ruby) to the list of default extensions to import.
 		- when renaming a file, if it does not exist or can't be written, only
 		  allow the "fake" rename (the one that does not affect the file on disk)
+
+	[stefan kost]
+		- added icon composing capabilities; tree now show "status icons" for the
+		  files.
 
 VERSION 2.0.2
 	[stefan kost]

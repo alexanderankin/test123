@@ -11,6 +11,13 @@ Features:
 - check if project contains build.xml
 	- if yes ant-farm integration (context menu from project-root)
 
+- create nice API for the IconComposer class. Right now it's kinda messy to
+  use it; need to be easily extensible by other plugins.
+
+- similarly, create an API for other plugins to show messages at the node's
+  tooltip; can be useful, for example, for version control plugins to show
+  more details about the file.
+
 - version control integration
 	- VC_Check: VC Plugins register a Hook that gets the project root and checks
 		if that project is under version control
