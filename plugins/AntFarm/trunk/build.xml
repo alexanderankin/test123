@@ -13,7 +13,7 @@
 		<pathelement path="${plugin.lib}/ant.jar" />
 		<pathelement path="lib/junit.jar" />
 		<!-- Other plugin dependencies -->
-<!-- 		<pathelement path="${jedit.jars}/Console.jar" /> -->
+ 		<pathelement path="${jedit.jars}/Console.jar" />
 		<pathelement path="${jedit.jars}/EditBus.jar" />
 		<pathelement path="${jedit.jars}/ProjectViewer.jar" />
 		<!-- The main jEdit library -->

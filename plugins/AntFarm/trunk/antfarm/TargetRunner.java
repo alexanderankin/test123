@@ -80,7 +80,7 @@ public class TargetRunner extends Thread
 
 		if ( useSameJvm ) {
 			setOutputStreams();
-			setProjectProperties();
+			loadProjectProperties();
 
 			try {
 				_project.addBuildListener( _buildLogger );
@@ -112,25 +112,6 @@ public class TargetRunner extends Thread
 	}
 
 
-	private void setProjectProperties()
-	{
-		// re-init the project so that system properties are re-loaded.
-		_project.init();
-
-		_project.setUserProperty( "ant.version", Main.getAntVersion() );
-
-		// set user-define properties
-		Enumeration e = _userProperties.keys();
-		while ( e.hasMoreElements() ) {
-			String arg = (String) e.nextElement();
-			String value = (String) _userProperties.get( arg );
-			_project.setUserProperty( arg, value );
-		}
-
-		_project.setUserProperty( "ant.file", _buildFile.getAbsolutePath() );
-	}
-
-
 	private void setOutputStreams()
 	{
 		System.setOut( _consoleOut );
@@ -155,13 +136,34 @@ public class TargetRunner extends Thread
 	}
 
 
+	private void loadProjectProperties()
+	{
+		// re-init the project so that system properties are re-loaded.
+		_project.init();
+
+		_project.setUserProperty( "ant.version", Main.getAntVersion() );
+
+		// set user-define properties
+		Enumeration e = _userProperties.keys();
+		while ( e.hasMoreElements() ) {
+			String arg = (String) e.nextElement();
+			String value = (String) _userProperties.get( arg );
+			_project.setUserProperty( arg, value );
+		}
+
+		_project.setUserProperty( "ant.file", _buildFile.getAbsolutePath() );
+	}
+
+
 	private void resetProjectProperties()
 	{
 		Enumeration props = _userProperties.propertyNames();
 
 		while ( props.hasMoreElements() ) {
-			_project.getUserProperties().remove( props.nextElement() );
-			_project.getProperties().remove( props.nextElement() );
+			Object element = props.nextElement();
+			_project.getUserProperties().remove( element );
+			_project.getProperties().remove( element );
+			System.getProperties().remove( element );
 		}
 	}
 
