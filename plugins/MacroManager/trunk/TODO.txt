@@ -3,7 +3,4 @@ TODO for Macro Manager 1.0
 
 - GZIP the xml coming from the server (John Gellene)
 - cache the results and add a 'refresh' button to the gui?
-- add a search box
-- add sort-by-date button to gui to list most recent macros
-  first
 
