@@ -4,9 +4,10 @@
 <!-- (C) 2001 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
-<!-- :indentSize=1:noTabs=true: -->
+<!-- :indentSize=1:noTabs=true:folding=indent:collapseFolds=1: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
 <book>
 
@@ -165,22 +166,21 @@
  <sect1 id="api-deps"><title>Specifying dependencies</title>
 
   <para>
-   In order to give the user a helpful error message if the EditBus and ErrorList
-   plugins are not installed, your plugin should specify dependency properties.
+   In order to give the user a helpful error message if the ErrorList
+   plugin is not installed, your plugin should specify dependency properties.
    If your plugin's core class is named <classname>MyPlugin</classname>, the
    corresponding dependencies might look like so:
   </para>
 
-  <programlisting>plugin.MyPlugin.depend.0=jedit 03.02.08.00
-plugin.MyPlugin.depend.1=plugin EditBusPlugin 1.0.2
-plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
+  <programlisting>plugin.MyPlugin.depend.0=jedit 04.00.01.00
+plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.2</programlisting>
 
   <para>
-   Note that the current version of the ErrorList plugin requires jEdit 3.2pre8
+   Note that the current version of the ErrorList plugin requires jEdit 4.0pre1
    or later, so your plugin should also require at least that jEdit version.
-   If newer versions of the EditBus and ErrorList plugins are available, you can
+   If a newer version of the ErrorList plugin is available, you can
    specify higher version numbers than in the example above. However, all the
-   API calls in this chapter are guaranteed to work with the two above versions,
+   API calls in this chapter are guaranteed to work with the above version,
    so in most cases you shouldn't worry about it.
   </para>
 
@@ -190,10 +190,10 @@ plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
 
   <para>
    Errors are managed by implementations of the
-   <classname>org.gjt.sp.jedit.ErrorSource</classname> interface. Implementing this
-   interface directly is a bit involved and requires writing a lot of
+   <classname>errorlist.ErrorSource</classname> abstract class.
+   Extending this class is a bit involved and requires writing a lot of
    low-level code; most
-   plugins can use the <classname>org.gjt.sp.jedit.DefaultErrorSource</classname>
+   plugins can use the <classname>errorlist.DefaultErrorSource</classname>
    class instead, which provides a very easy-to-use front-end.
   </para>
 
@@ -214,12 +214,12 @@ plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
 
   <para>
    To add an error source to the list of registered error sources, you must call
-   the static <function>addToNamedList()</function> method of the
-   <classname>org.gjt.sp.jedit.EditBus</classname> class.
+   the static <function>registerErrorSource()</function> method of the
+   <classname>errorlist.ErrorSource</classname> class.
   </para>
 
   <para>
-   A corresponding <function>removeFromNamedList()</function> method also
+   A corresponding <function>unregisterErrorSource()()</function> method also
    exists, for advanced uses of the API, like the Console plugin mentioned
    above.
   </para>
@@ -233,8 +233,7 @@ plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
   <programlisting>public void start()
 {
     errorSource = new DefaultErrorSource("MyPlugin");
-    EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,
-        errorSource);
+    ErrorSource.registerErrorSource(errorSource);
 
     // any other initialization your plugin
     // needs to perform
@@ -369,8 +368,7 @@ errorSource.addError(new ErrorSource.DefaultError(
    class; errors cannot be removed selectively. The main reason this hasn't
    been implemented is lack of demand. If your plugin needs a means of only
    removing a subset of errors in an error source, feel free to modify the
-   source for this class (it is part of the EditBus plugin), and contribute
-   the changes back to the jEdit project.
+   source for this class and contribute the changes back to the jEdit project.
   </para>
 
  </sect1>
@@ -380,6 +378,18 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+  <listitem><formalpara><title>Version 1.2</title><para>requires jEdit 4.0pre1.
+  </para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>Updated for jEdit 4.0 API changes.</para></listitem>
+    <listitem><para>EditBus plugin merged with this one.</para></listitem>
+    <listitem><para>Changes to error source API; see <xref linkend="api" />
+    for details.</para></listitem>
+   </itemizedlist>
+
+  </listitem>
 
   <listitem><formalpara><title>Version 1.1.2</title><para>requires jEdit 3.2pre8
    and the EditBus plugin 1.1.</para></formalpara>
