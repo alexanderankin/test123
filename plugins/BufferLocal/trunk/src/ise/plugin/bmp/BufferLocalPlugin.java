@@ -32,6 +32,11 @@ import org.gjt.sp.jedit.msg.EditorExitRequested;
  *
  * TODO: need to check how this works with files loaded with the ftp plugin
  * DID: seems to work okay with ftp, need to test some more
+ *
+ * Jan 5, 2004, per request from Slava:
+ * removed persistence of line separator and encoding. Kept the string format as
+ * above, but implementation now does not actually use line separator and
+ * encoding settings.
  * 
  * @author Dale Anson, danson@germane-software.com
  * @since Oct 1, 2003
@@ -115,14 +120,19 @@ public class BufferLocalPlugin extends EBPlugin {
                String tabs = st.nextToken();
 
                // apply the stored properties to the buffer
+               /// see comments above, don't need this right now
+               /*
                if ( "n".equals( ls ) )
                   ls = "\n";
                else if ( "r".equals( ls ) )
                   ls = "\r";
                else
                   ls = "\r\n";
-               buffer.setStringProperty( "lineSeparator", ls );
-               buffer.setStringProperty( Buffer.ENCODING, enc );
+               */
+               
+               /// see comments above, out per request from Slava
+               ///buffer.setStringProperty( "lineSeparator", ls );
+               ///buffer.setStringProperty( Buffer.ENCODING, enc );
                buffer.setBooleanProperty( Buffer.GZIPPED, gz.equals( "t" ) ? true : false );
                buffer.setFoldHandler( FoldHandler.getFoldHandler( fm ) );
                buffer.setStringProperty( "wrap", wm );
@@ -213,8 +223,9 @@ public class BufferLocalPlugin extends EBPlugin {
    // runs once every 10 minutes at a low priority to clean up the map
    Thread janitor = new Thread() {
             public void run() {
-               if ( map.size() == 0 )
+               if ( map.size() == 0 ) {
                   return ;
+               }
                setPriority( Thread.MIN_PRIORITY );
                while ( canClean ) {
                   Iterator it = map.keySet().iterator();
