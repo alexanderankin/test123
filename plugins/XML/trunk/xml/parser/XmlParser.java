@@ -60,11 +60,12 @@ public class XmlParser implements EBComponent
 				focusHandler);
 		}
 
-		BufferChangeHandler changeHandler = new BufferChangeHandler();
+		bufferHandler = new BufferChangeHandler();
 		Buffer[] buffers = jEdit.getBuffers();
 		for(int i = 0; i < buffers.length; i++)
 		{
-			buffers[i].addBufferChangeListener(changeHandler);
+			if(XmlPlugin.getParserType(buffers[i]) == null)
+				buffers[i].addBufferChangeListener(bufferHandler);
 		}
 
 		propertiesChanged();
@@ -150,12 +151,7 @@ public class XmlParser implements EBComponent
 		if(msg instanceof BufferUpdate)
 		{
 			BufferUpdate bmsg = (BufferUpdate)msg;
-			if(bmsg.getWhat() == BufferUpdate.CREATED)
-			{
-				bmsg.getBuffer().addBufferChangeListener(
-					new BufferChangeHandler());
-			}
-			else if(bmsg.getWhat() == BufferUpdate.SAVED
+			if(bmsg.getWhat() == BufferUpdate.SAVED
 				&& bmsg.getBuffer() == buffer)
 			{
 				if(thread != null)
@@ -175,6 +171,11 @@ public class XmlParser implements EBComponent
 				|| bmsg.getWhat() == BufferUpdate.LOADED)
 				&& bmsg.getBuffer() == buffer)
 			{
+				if(XmlPlugin.getParserType(buffer) == null)
+					buffer.removeBufferChangeListener(bufferHandler);
+				else
+					buffer.addBufferChangeListener(bufferHandler);
+
 				if(thread != null)
 					return;
 
@@ -205,6 +206,11 @@ public class XmlParser implements EBComponent
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 			{
 				Buffer buffer = editPane.getBuffer();
+
+				if(XmlPlugin.getParserType(buffer) == null)
+					buffer.removeBufferChangeListener(bufferHandler);
+				else
+					buffer.addBufferChangeListener(bufferHandler);
 
 				// check if this is the currently focused edit pane
 				if(editPane == editPane.getView().getEditPane())
@@ -274,6 +280,8 @@ public class XmlParser implements EBComponent
 	private Timer keystrokeTimer;
 
 	private boolean maxErrors;
+
+	private BufferChangeHandler bufferHandler;
 	//}}}
 
 	//{{{ propertiesChanged() method

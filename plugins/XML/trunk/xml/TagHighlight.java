@@ -23,23 +23,24 @@ import java.awt.event.*;
 import java.awt.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
+import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
 import xml.parser.TagParser;
 //}}}
 
-public class TagHighlight extends TextAreaExtension
+public class TagHighlight extends TextAreaExtension implements EBComponent
 {
 	//{{{ TagHighlight constructor
 	public TagHighlight(View view, JEditTextArea textArea)
 	{
 		this.view = view;
 		this.textArea = textArea;
-		textArea.addCaretListener(new CaretHandler());
 
 		bufferHandler = new BufferHandler();
-		buffer = textArea.getBuffer();
-		buffer.addBufferChangeListener(bufferHandler);
+		caretHandler = new CaretHandler();
+
+		bufferChanged(textArea.getBuffer());
 
 		timer = new Timer(0,new ActionListener()
 		{
@@ -50,6 +51,21 @@ public class TagHighlight extends TextAreaExtension
 		});
 
 		returnValue = new Point();
+	} //}}}
+
+	//{{{ handleMessage() method
+	public void handleMessage(EBMessage msg)
+	{
+		if(msg instanceof BufferUpdate)
+		{
+			BufferUpdate bu = (BufferUpdate)msg;
+			Buffer buffer = bu.getBuffer();
+			if(bu.getWhat() == BufferUpdate.MODE_CHANGED)
+			{
+				if(this.buffer == buffer)
+					bufferChanged(buffer);
+			}
+		}
 	} //}}}
 
 	//{{{ paintValidLine() method
@@ -63,11 +79,25 @@ public class TagHighlight extends TextAreaExtension
 	//{{{ bufferChanged() method
 	public void bufferChanged(Buffer buffer)
 	{
-		this.buffer.removeBufferChangeListener(bufferHandler);
-		this.buffer = buffer;
-		buffer.addBufferChangeListener(bufferHandler);
 		current = match = null;
-		updateHighlightWithDelay();
+
+		if(this.buffer != null)
+		{
+			this.buffer.removeBufferChangeListener(bufferHandler);
+			textArea.removeCaretListener(caretHandler);
+			textArea.getPainter().removeExtension(this);
+		}
+
+		if(XmlPlugin.getParserType(buffer) != null)
+		{
+			this.buffer = buffer;
+			buffer.addBufferChangeListener(bufferHandler);
+			textArea.addCaretListener(caretHandler);
+			textArea.getPainter().addExtension(this);
+			updateHighlightWithDelay();
+		}
+		else
+			this.buffer = null;
 	} //}}}
 
 	//{{{ propertiesChanged() method
@@ -88,6 +118,7 @@ public class TagHighlight extends TextAreaExtension
 	private Timer timer;
 
 	private BufferHandler bufferHandler;
+	private CaretHandler caretHandler;
 	private TagParser.Tag current;
 	private TagParser.Tag match;
 	private boolean bufferChanged;
@@ -174,14 +205,13 @@ public class TagHighlight extends TextAreaExtension
 	//{{{ updateHighlightWithDelay() method
 	private void updateHighlightWithDelay()
 	{
-		if(!tagHighlightEnabled || !buffer.isLoaded()
-			|| XmlPlugin.getParserType(buffer) == null)
+		if(timer.isRunning())
+			timer.stop();
+
+		if(!tagHighlightEnabled || !buffer.isLoaded())
 		{
 			return;
 		}
-
-		if(timer.isRunning())
-			timer.stop();
 
 		timer.setInitialDelay(100);
 		timer.setRepeats(false);
@@ -290,6 +320,7 @@ public class TagHighlight extends TextAreaExtension
 						match.end -= length;
 				}
 			}
+
 			updateHighlightWithDelay();
 		}
 	} //}}}

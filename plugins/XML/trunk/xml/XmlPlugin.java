@@ -91,14 +91,16 @@ public class XmlPlugin extends EBPlugin
 
 				TagHighlight tagHighlight = new TagHighlight(
 					editPane.getView(),textArea);
+				EditBus.addToBus(tagHighlight);
 				tagHighlights.put(editPane,tagHighlight);
-				textAreaPainter.addExtension(tagHighlight);
 
 				textAreaPainter.addMouseListener(new TagMouseHandler());
 			}
 			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 			{
-				tagHighlights.remove(editPane);
+				TagHighlight highlight = (TagHighlight)tagHighlights
+					.remove(editPane);
+				EditBus.removeFromBus(highlight);
 			}
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 			{

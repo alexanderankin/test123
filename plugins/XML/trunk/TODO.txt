@@ -2,13 +2,13 @@
 
 - don't parse DTDs
 - DTD downloader -- if "No" clicked, store a buffer property
-- threaddeath -- wtf?
-- catalog option pane needs a redesign
+- catalog import
 - test XMLCatalog support, include an XMLCatalog DTD
 - documentation: XML catalog format, OASIS catalog format
 
 + before 1.0:
 
+- threaddeath -- wtf?
 - id completion
 - tag highlight scope bracket in gutter
 - element and entity lists for schemas

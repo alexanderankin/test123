@@ -519,6 +519,15 @@
    <listitem><para>
     Made attribute list handling in DTDs compliant with XML specification.
    </para></listitem>
+   <listitem><para>
+    Fixed a problem where the tag highlight could be unnecessarily drawn when
+    switching from an XML to a non-XML buffer.
+   </para></listitem>
+   <listitem><para>
+    Buffer change listeners for the XML parser and tag matcher are only added when
+    necessary. This should remove a tiny bit of unnecessary overhead for non-XML
+    files.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>
