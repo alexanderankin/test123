@@ -117,7 +117,11 @@ public final class Launcher {
         
         Buffer last = null;
         for (Iterator i = project.getOpenFiles(); i.hasNext(); ) {
-            last = jEdit.openFile(view, (String) i.next());
+            String next = (String) i.next();
+            last = jEdit.getBuffer(next);
+            if (last == null) {
+                last = jEdit.openFile(view, next);
+            }
         }
         
         if (last != null) {
