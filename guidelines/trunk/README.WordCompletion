@@ -1,6 +1,6 @@
 CVS policy file
 
-plugin: IRC
+plugin: Word Completion
 author: Maik Schreiber <bZ@iq-computing.de>
 
 Please do not commit any changes without consulting me first.
