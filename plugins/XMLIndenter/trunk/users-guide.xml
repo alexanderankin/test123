@@ -61,7 +61,7 @@
   <chapter id="whitespace">
     <title>Configuring whitespace preservation options</title>
     <para>
-      You can configure elements whose enclosing text nodes should have whitespace 
+      You can configure elements whose enclosing text nodes should have whitespace
       preserved by going to:
            "Plugins->Plugin Options->XML Indenter".
     </para>
@@ -74,7 +74,7 @@
       is one. For example the XML Indenter comes preconfigured with whitespace preservation
       for elements named xsl:text, text and tspan.
     </para>
-    <para>      
+    <para>
       You can remove elements from the list by selecting them
       and clicking the remove button.
     </para>
@@ -111,14 +111,14 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
-      <emphasis role="bold">From 0.3 to 0.3.1</emphasis>
+      <emphasis role="bold">From 0.3 to 0.3.2</emphasis>
       <itemizedlist>
         <listitem>
           <para>A space before the /> in an empty element is kept, e.g. &lt;br /> remains unchanged.</para>
         </listitem>
         <listitem>
           <para>If the first attribute is on a new line it stays on a new line.</para>
-        </listitem>        
+        </listitem>
         <listitem>
           <para>If an attribute is on a new line but the next one isn't then the next one will not be placed on a new line.</para>
         </listitem>
@@ -136,7 +136,7 @@
           <para>Attributes that start on a new line will stay on a new line
           after indenting. They will be indented two levels deeper that the
           element start tag.</para>
-        </listitem>        
+        </listitem>
         <listitem>
           <para>Fixed bug where line breaks and tab characters were being
           removed without being replaced with a single space character.</para>
