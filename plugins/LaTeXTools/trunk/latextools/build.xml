@@ -33,6 +33,7 @@
     <pathelement location="${jedit.install.dir}/jedit.jar" />
     <pathelement location="${sidekick.jar}"/>
     <pathelement location="${errorlist.jar}"/>
+    <pathelement location="${console.jar}"/>
     <pathelement location="${local.jedit.jars}"/>
 	</path>
 

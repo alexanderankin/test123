@@ -27,4 +27,6 @@ jedit.jars.dir=${jedit.install.dir}/jars
 errorlist.jar=${jedit.jars.dir}/ErrorList.jar
 # SideKick plugin, necessary for compilation
 sidekick.jar=${jedit.jars.dir}/SideKick.jar
+# Console plugin, necessary for compilation
+console.jar=${jedit.jars.dir}/Console.jar
 
