@@ -75,6 +75,20 @@ public class AntFarmPlugin extends EBPlugin
 	}
 
 
+	static Properties getGlobalProperties()
+	{
+		Properties properties = new Properties();
+
+		String name;
+		int counter = 1;
+		while ( ( name = jEdit.getProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.NAME ) ) != null ) {
+			properties.put( name, jEdit.getProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.VALUE ) );
+			counter++;
+		}
+		return properties;
+	}
+
+
 	public void handleMessage( EBMessage msg )
 	{
 		if ( msg instanceof CreateDockableWindow ) {

@@ -618,6 +618,33 @@ public class AntTree extends JTree
 
 
 		public abstract String getBuildFilePath();
+
+
+		String promptForProperties()
+		{
+			if ( jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ) )
+				return "";
+
+			PropertyDialog propertyDialog = new PropertyDialog(
+				_view, "Run " + getTarget().getName() + " with these properties."
+				 );
+			propertyDialog.show();
+
+			Properties properties = propertyDialog.getProperties();
+
+			if ( properties == null ) {
+				return "";
+			}
+			StringBuffer command = new StringBuffer();
+			Enumeration ee = properties.keys();
+			String current;
+			while ( ee.hasMoreElements() ) {
+				current = (String) ee.nextElement();
+				command.append( current ).append( "=" );
+				command.append( properties.getProperty( current ) );
+			}
+			return command.toString();
+		}
 	}
 
 
@@ -760,9 +787,13 @@ public class AntTree extends JTree
 
 		public void execute()
 		{
+
+			String properties = promptForProperties();
+
 			Console console = AntFarmPlugin.getConsole( _view );
 			console.run( AntFarmPlugin.ANT_SHELL, console, "!"
-				 + _target.getName() );
+				 + _target.getName()
+				 + " " + properties );
 		}
 
 
@@ -841,8 +872,14 @@ public class AntTree extends JTree
 
 		public void execute()
 		{
+
+			String properties = promptForProperties();
+
 			Console console = AntFarmPlugin.getConsole( _view );
-			console.run( AntFarmPlugin.ANT_SHELL, console, "!" );
+			console.run(
+				AntFarmPlugin.ANT_SHELL, console, "!"
+				 + " " + properties
+				 );
 		}
 
 

@@ -112,27 +112,20 @@ public class TargetRunner extends Thread
 	}
 
 
+	void resetLogging()
+	{
+		_consoleErr.flush();
+		_consoleOut.flush();
+		System.setOut( _out );
+		System.setErr( _err );
+		_project.removeBuildListener( _buildLogger );
+	}
+
+
 	private void setOutputStreams()
 	{
 		System.setOut( _consoleOut );
 		System.setErr( _consoleErr );
-	}
-
-
-	private String getAntCommandFragment( Properties properties )
-	{
-		if ( properties == null ) {
-			return "";
-		}
-		StringBuffer command = new StringBuffer();
-		Enumeration ee = properties.keys();
-		String current;
-		while ( ee.hasMoreElements() ) {
-			current = (String) ee.nextElement();
-			command.append( " -D" ).append( current ).append( "=" );
-			command.append( properties.getProperty( current ) );
-		}
-		return command.toString();
 	}
 
 
@@ -197,7 +190,10 @@ public class TargetRunner extends Thread
 	{
 		String name = null;
 		int counter = 1;
-		while ( ( name = jEdit.getProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.NAME ) ) != null ) {
+		while ( ( name = jEdit.getProperty(
+			PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.NAME
+			 ) ) != null ) {
+
 			String value = jEdit.getProperty(
 				PropertiesOptionPane.PROPERTY
 				 + counter
@@ -219,7 +215,7 @@ public class TargetRunner extends Thread
 		if ( command != null ) {
 			command = "\"" + command + "\"";
 
-			command += getAntCommandFragment( _userProperties );
+			command += AntFarmShell.getAntCommandFragment( _userProperties );
 			if (
 				jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "output-emacs" )
 				 ) {
@@ -241,16 +237,6 @@ public class TargetRunner extends Thread
 		_buildLogger.setOutputPrintStream( _consoleOut );
 		_buildLogger.setErrorPrintStream( _consoleErr );
 		_buildLogger.setMessageOutputLevel( Project.MSG_INFO );
-	}
-
-
-	private void resetLogging()
-	{
-		_consoleErr.flush();
-		_consoleOut.flush();
-		System.setOut( _out );
-		System.setErr( _err );
-		_project.removeBuildListener( _buildLogger );
 	}
 
 

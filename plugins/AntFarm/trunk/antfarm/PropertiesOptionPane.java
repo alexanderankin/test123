@@ -36,11 +36,8 @@ public class PropertiesOptionPane extends AbstractOptionPane
 	final static String NAME = ".name";
 	final static String VALUE = ".value";
 
-	private final static String NAME_HISTORY_MODEL = PROPERTY + NAME;
-	private final static String VALUE_HISTORY_MODEL = PROPERTY + VALUE;
-
-	private JTable table;
-	private DndTableModel model;
+	private PropertiesTable _table;
+	private JCheckBox _noPrompt;
 
 
 	public PropertiesOptionPane()
@@ -51,19 +48,13 @@ public class PropertiesOptionPane extends AbstractOptionPane
 
 	public void _init()
 	{
+		_noPrompt = new JCheckBox( "Do not prompt for properties when running targets." );
+		_noPrompt.setSelected( jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ) );
+		addComponent( _noPrompt );
 		addComponent( new JLabel( "Set global properties to use when running ant builds." ) );
 
-		model = new DndTableModel();
-		table = new JTable( model );
-		TableColumn column = null;
-		for ( int i = 0; i < 2; i++ ) {
-			column = table.getColumnModel().getColumn( i );
-			column.setPreferredWidth( 100 );
-		}
-
-		setUpNameColumn( table.getColumnModel().getColumn( 0 ) );
-		setUpValueColumn( table.getColumnModel().getColumn( 1 ) );
-		JScrollPane scrollPane = new JScrollPane( table );
+		_table = new PropertiesTable( AntFarmPlugin.getGlobalProperties() );
+		JScrollPane scrollPane = new JScrollPane( _table );
 		addComponent( scrollPane );
 	}
 
@@ -77,160 +68,38 @@ public class PropertiesOptionPane extends AbstractOptionPane
 	public void _save()
 	{
 
+		jEdit.setBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties",
+			_noPrompt.isSelected()
+			 );
+
 		// get rid of old settings
+		deleteGlobalProperties();
+
+		// put in the new ones
+		Properties properties = _table.getProperties();
+
+		Enumeration names = properties.keys();
+		for ( int i = 0; names.hasMoreElements(); i++ ) {
+			String name = (String) names.nextElement();
+			String value = properties.getProperty( name );
+			jEdit.setProperty( PropertiesOptionPane.PROPERTY + ( i + 1 ) + PropertiesOptionPane.NAME, name );
+			jEdit.setProperty( PropertiesOptionPane.PROPERTY + ( i + 1 ) + PropertiesOptionPane.VALUE, value );
+		}
+
+	}
+
+
+	private void deleteGlobalProperties()
+	{
 		String name;
 		int counter = 1;
-		while ( ( name = jEdit.getProperty( PROPERTY + counter + NAME ) ) != null ) {
-			jEdit.setProperty( PROPERTY + counter + NAME, null );
-			jEdit.setProperty( PROPERTY + counter + VALUE, null );
+		while ( ( name = jEdit.getProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.NAME ) ) != null ) {
+			jEdit.setProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.NAME, null );
+			jEdit.setProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.VALUE, null );
 			counter++;
 		}
-		// put in the new ones
-		counter = table.getRowHeight();
-		for ( int i = 0; i < counter; i++ ) {
-			name = (String) table.getValueAt( i, 0 );
-			String value = (String) table.getValueAt( i, 1 );
 
-			// Check if there is anything to save.
-			if ( name == null || value == null )
-				return;
-
-			if ( name.trim().length() > 0 && value.trim().length() > 0 ) {
-				jEdit.setProperty( PROPERTY + ( i + 1 ) + NAME, name );
-				jEdit.setProperty( PROPERTY + ( i + 1 ) + VALUE, value );
-			}
-		}
-		table = null;
-		model = null;
 	}
 
-
-	public void tableChanged( TableModelEvent e )
-	{
-		repaint();
-	}
-
-
-	private void setUpNameColumn( TableColumn column )
-	{
-		column.setCellEditor( new DefaultCellEditor(
-			new HistoryTextField( NAME_HISTORY_MODEL, false, true )
-			 ) );
-	}
-
-
-	private void setUpValueColumn( TableColumn column )
-	{
-		column.setCellEditor( new DefaultCellEditor(
-			new HistoryTextField( VALUE_HISTORY_MODEL, false, true )
-			 ) );
-	}
-
-
-	class DndTableModel extends AbstractTableModel
-	{
-		private String[] columnNames;
-		private Vector names;
-		private Vector values;
-
-
-		public DndTableModel()
-		{
-			columnNames = new String[2];
-			columnNames[0] = "Name";
-			columnNames[1] = "Value";
-
-			names = new Vector( 10 );
-			values = new Vector( 10 );
-			String name;
-			int counter = 1;
-			Log.log( Log.DEBUG, this, "Loading properties" );
-			while ( ( name = jEdit.getProperty( PROPERTY + counter + NAME ) ) != null ) {
-				Log.log( Log.DEBUG, this, "Found property: " + name );
-				values.addElement( jEdit.getProperty( PROPERTY + counter + VALUE ) );
-				names.addElement( name );
-				counter++;
-			}
-			values.addElement( "" );
-			names.addElement( "" );
-		}
-
-
-		public void setValueAt( Object value, int row, int col )
-		{
-			if ( ( (String) value ).length() == 0 ) {
-				names.removeElementAt( row );
-				values.removeElementAt( row );
-				fireTableRowsDeleted( row, row );
-			}
-			else {
-				if ( col == 0 ) {
-					names.setElementAt( value, row );
-				}
-				else {
-					values.setElementAt( value, row );
-					if ( row == names.size() - 1 ) {
-						names.addElement( "" );
-						values.addElement( "" );
-						fireTableRowsInserted( row + 1, row + 1 );
-					}
-				}
-			}
-			fireTableCellUpdated( row, col );
-		}
-
-
-		public int getColumnCount()
-		{
-			return columnNames.length;
-		}
-
-
-		public int getRowCount()
-		{
-			return names.size();
-		}
-
-
-		public String getColumnName( int col )
-		{
-			return columnNames[col];
-		}
-
-
-		public Object getValueAt( int row, int col )
-		{
-
-			if ( row >= names.size() || row >= names.size() )
-				return null;
-
-			if ( col == 0 ) {
-				return names.elementAt( row );
-			}
-			return values.elementAt( row );
-		}
-
-
-		/*
-		 *  JTable uses this method to determine the default renderer/
-		 *  editor for each cell.  If we didn't implement this method,
-		 *  then the last column would contain text ("true"/"false"),
-		 *  rather than a check box.
-		 */
-		public Class getColumnClass( int c )
-		{
-			return getValueAt( 0, c ).getClass();
-		}
-
-
-		/*
-		 *  Don't need to implement this method unless your table's
-		 *  editable.
-		 */
-		public boolean isCellEditable( int row, int col )
-		{
-			return true;
-		}
-	}
 }
 

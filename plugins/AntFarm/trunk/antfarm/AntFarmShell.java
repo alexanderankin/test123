@@ -39,6 +39,23 @@ public class AntFarmShell extends Shell
 	}
 
 
+	static String getAntCommandFragment( Properties properties )
+	{
+		if ( properties == null ) {
+			return "";
+		}
+		StringBuffer command = new StringBuffer();
+		Enumeration ee = properties.keys();
+		String current;
+		while ( ee.hasMoreElements() ) {
+			current = (String) ee.nextElement();
+			command.append( " -D" ).append( current ).append( "=" );
+			command.append( properties.getProperty( current ) );
+		}
+		return command.toString();
+	}
+
+
 	// ----- Begin Shell implementation -----
 
 	public void printInfoMessage( Output output )
@@ -206,6 +223,7 @@ public class AntFarmShell extends Shell
 					jEdit.getProperty( AntFarmPlugin.NAME + ".shell.msg.killed" )
 					 );
 			}
+			_targetRunner.resetLogging();
 			_targetRunner = null;
 		}
 	}
