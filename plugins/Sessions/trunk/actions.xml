@@ -38,4 +38,11 @@
 		</CODE>
 	</ACTION>
 
+
+	<ACTION NAME="session-changeFSBDirectory">
+		<CODE>
+			sessions.SessionManager.getInstance().changeFSBToBaseDirectory(view);
+		</CODE>
+	</ACTION>
+
 </ACTIONS>
