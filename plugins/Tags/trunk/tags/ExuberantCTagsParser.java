@@ -384,6 +384,14 @@ public class ExuberantCTagsParser
         i++;
         length++;
       }
+      else if(c == '$'){
+        // don't escape ending $
+        if(i+1 < length){
+          buf.insert(i, '\\');
+          i++;
+          length++;
+        }
+      }
     }
 
     Log.log(Log.DEBUG, this, "Massaged search string:  " + buf.toString());

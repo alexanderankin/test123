@@ -4,7 +4,7 @@ Tags Plugin
 
 :Author: Kenrick Drew
 :Maintainer: Ollie Rutherfurd <oliver@rutherfurd.net>
-:Version: 1.1
+:Version: 1.1.1
 
 .. $Id$
 
@@ -273,6 +273,10 @@ Credits
 Changelog
 =========
 
+* Version 1.1.1, bug fix (Apr 2004)
+
+  - escaping ``$`` when searching for tag definition.
+
 * Version 1.1, update (Dec 2003)
 
   - Added the ability to specify the sort order of the current
@@ -417,3 +421,4 @@ Changelog
 
   - Initial beta release
 
+.. :mode=rest:
