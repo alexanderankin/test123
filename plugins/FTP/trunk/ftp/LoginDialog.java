@@ -85,6 +85,9 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	// EnhancedDialog implementation
 	public void ok()
 	{
+		hostField.addCurrentToHistory();
+		userField.addCurrentToHistory();
+
 		if(passive != null)
 			jEdit.setBooleanProperty("vfs.ftp.passive",passive.isSelected());
 
@@ -143,8 +146,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	}
 
 	// private members
-	private JTextField hostField;
-	private JTextField userField;
+	private HistoryTextField hostField;
+	private HistoryTextField userField;
 	private JPasswordField passwordField;
 	private JCheckBox passive;
 	private String host;
@@ -163,7 +166,9 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			SwingConstants.RIGHT);
 		panel.add(label);
 
-		hostField = new JTextField(host,20);
+		hostField = new HistoryTextField("ftp.host");
+		hostField.setText(host);
+		hostField.setColumns(20);
 		if(host != null)
 			hostField.setEnabled(false);
 		panel.add(hostField);
@@ -172,7 +177,9 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			SwingConstants.RIGHT);
 		panel.add(label);
 
-		userField = new JTextField(user,20);
+		userField = new HistoryTextField("ftp.user");
+		userField.setText(user);
+		userField.setColumns(20);
 		panel.add(userField);
 
 		label = new JLabel(jEdit.getProperty("login.password"),

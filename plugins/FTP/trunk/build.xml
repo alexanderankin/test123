@@ -29,6 +29,14 @@
 	<property name="install.dir"  value=".."/>
 
 
+	<path id="project.class.path">
+		<pathelement location="${install.dir}/sshtools-j2ssh-0.0.5-alpha.jar"/>
+		<pathelement location="${install.dir}/jaxb-rt-1.0-ea.jar"/>
+		<pathelement location="${install.dir}/log4j-1.2.6.jar"/>
+		<pathelement location="."/>
+	</path>
+
+
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
 		<delete file="docbook-wrapper.xsl" />
@@ -51,7 +59,9 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			includeJavaRuntime="yes"
-		/>
+		>
+			<classpath refid="project.class.path"/>
+		</javac>
 	</target>
 
 

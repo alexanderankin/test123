@@ -23,9 +23,7 @@ import com.fooware.net.*;
 import gnu.regexp.*;
 import java.io.*;
 import java.util.*;
-import javax.swing.Timer;
 import org.gjt.sp.jedit.search.RESearchMatcher;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
@@ -38,9 +36,6 @@ class FtpConnection extends ConnectionManager.Connection
 
 		client = new FtpClient();
 
-		Log.log(Log.DEBUG,FtpConnection.class,
-			Thread.currentThread() +
-			": Connecting to " + info);
 		client.connect(info.host,info.port);
 
 		if(!client.getResponse().isPositiveCompletion())

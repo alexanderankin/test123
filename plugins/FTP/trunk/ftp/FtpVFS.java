@@ -57,6 +57,11 @@ public class FtpVFS extends VFS
 		return (secure ? SFTP_PROTOCOL : FTP_PROTOCOL);
 	}
 
+	public static int getDefaultPort(boolean secure)
+	{
+		return (secure ? 22 : 21);
+	}
+
 	public String showBrowseDialog(Object[] session, Component comp)
 	{
 		FtpSession newSession = (FtpSession)createVFSSession(null,comp);
@@ -71,8 +76,7 @@ public class FtpVFS extends VFS
 		// directory
 		return getProtocol(secure) + "://" + newSession.info.user
 			+ "@" + newSession.info.host
-			+ (newSession.info.port == 21
-			? "" : ":" + newSession.info.port) + "/~/";
+			+ ":" + newSession.info.port + "/~/";
 	}
 
 	public String getFileName(String path)
@@ -197,20 +201,24 @@ public class FtpVFS extends VFS
 
 		directory = session.listDirectory(address.path);
 
-		for(int i = 0; i < directory.length; i++)
+		if(directory != null)
 		{
-			FtpDirectoryEntry entry = (FtpDirectoryEntry)directory[i];
-			if(entry.type == FtpDirectoryEntry.LINK)
-				resolveSymlink(_session,url,entry);
-			else
+			for(int i = 0; i < directory.length; i++)
 			{
-				// prepend directory to create full path
-				entry.path = constructPath(url,entry.name);
-				entry.deletePath = entry.path;
+				FtpDirectoryEntry entry = (FtpDirectoryEntry)directory[i];
+				if(entry.type == FtpDirectoryEntry.LINK)
+					resolveSymlink(_session,url,entry);
+				else
+				{
+					// prepend directory to create full path
+					entry.path = constructPath(url,entry.name);
+					entry.deletePath = entry.path;
+				}
 			}
+
+			DirectoryCache.setCachedDirectory(url,directory);
 		}
 
-		DirectoryCache.setCachedDirectory(url,directory);
 		return directory;
 	}
 
@@ -418,8 +426,18 @@ public class FtpVFS extends VFS
 		}
 		String link = name.substring(index + " -> ".length());
 		link = constructPath(url,link);
-		FtpVFS.FtpDirectoryEntry linkDirEntry = (FtpVFS.FtpDirectoryEntry)
-			_getDirectoryEntry(_session,link,null);
+
+		FtpVFS.FtpDirectoryEntry linkDirEntry;
+		try
+		{
+			linkDirEntry = (FtpVFS.FtpDirectoryEntry)
+				_getDirectoryEntry(_session,link,null);
+		}
+		catch(IOException io)
+		{
+			linkDirEntry = null;
+		}
+
 		if(linkDirEntry == null)
 			entry.type = FtpDirectoryEntry.FILE;
 		else

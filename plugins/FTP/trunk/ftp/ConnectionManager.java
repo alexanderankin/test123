@@ -61,6 +61,8 @@ public class ConnectionManager
 		if(address != null)
 		{
 			host = address.host;
+			if(host.indexOf(":") == -1)
+				host = host + ":" + FtpVFS.getDefaultPort(secure);
 			user = address.user;
 
 			ConnectionInfo info = (ConnectionInfo)logins.get(host);
@@ -82,7 +84,7 @@ public class ConnectionManager
 			return null;
 
 		host = dialog.getHost();
-		int port = 21;
+		int port = FtpVFS.getDefaultPort(secure);
 		int index = host.indexOf(':');
 		if(index != -1)
 		{
@@ -100,7 +102,7 @@ public class ConnectionManager
 			dialog.getUser(),dialog.getPassword());
 
 		// hash by host name
-		logins.put(host,info);
+		logins.put(host + ":" + port,info);
 
 		return info;
 	}
@@ -141,6 +143,9 @@ public class ConnectionManager
 
 			if(connect == null)
 			{
+				Log.log(Log.DEBUG,ConnectionManager.class,
+					Thread.currentThread() +
+					": Connecting to " + info);
 				if(info.secure)
 					connect = new SFtpConnection(info);
 				else
@@ -167,13 +172,9 @@ public class ConnectionManager
 	{
 		public boolean secure;
 		public String host;
-		public int port = 21;
+		public int port;
 		public String user;
 		public String password;
-
-		public ConnectionInfo()
-		{
-		}
 
 		public ConnectionInfo(boolean secure, String host, int port,
 			String user, String password)

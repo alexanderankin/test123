@@ -1,6 +1,6 @@
 /*
  * SFtpConnection.java - A connection to an SSH FTP server
- * Copyright (C) 2002 Slava Pestov
+ * Copyright (C) 2002, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,28 +19,92 @@
 
 package ftp;
 
+import com.sshtools.j2ssh.authentication.*;
+import com.sshtools.j2ssh.configuration.*;
+import com.sshtools.j2ssh.connection.*;
+import com.sshtools.j2ssh.session.*;
+import com.sshtools.j2ssh.sftp.*;
+import com.sshtools.j2ssh.transport.*;
+import com.sshtools.j2ssh.*;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
+import org.apache.log4j.*;
 
 class SFtpConnection extends ConnectionManager.Connection
 {
-	SFtpConnection(ConnectionManager.ConnectionInfo info) throws IOException
+	SFtpConnection(final ConnectionManager.ConnectionInfo info) throws IOException
 	{
 		super(info);
+
+		client = new SshClient();
+		client.connect(info.host,info.port,new DialogHostKeyVerification(null));
+		PasswordAuthentication auth = new PasswordAuthentication();
+		auth.setUsername(info.user);
+		auth.setPassword(info.password);
+		client.authenticate(auth);
+
+		session = client.openSessionChannel();
+		if(!session.startSubsystem("sftp"))
+			throw new IOException("Cannot start sftp subsystem");
+
+		sftp = new SftpSubsystemClient();
+		sftp.setInputStream(session.getInputStream());
+		sftp.setOutputStream(session.getOutputStream());
 	}
 
 	FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException
 	{
-		return null;
+		FtpVFS.FtpDirectoryEntry[] returnValue = null;
+		SftpFile dir = null;
+
+		try
+		{
+			dir = sftp.openDirectory(path);
+			ArrayList listing = new ArrayList();
+			int count = 0;
+			do
+			{
+				count = sftp.listChildren(dir,listing);
+			}
+			while(count != -1);
+
+			returnValue = new FtpVFS.FtpDirectoryEntry[listing.size()];
+			for(int i = 0; i < listing.size(); i++)
+			{
+				SftpFile file = (SftpFile)listing.get(i);
+				returnValue[i] = createDirectoryEntry(file);
+			}
+		}
+		finally
+		{
+			if(dir != null)
+				sftp.closeFile(dir);
+		}
+
+		return returnValue;
 	}
 
 	FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException
 	{
-		return null;
+		SftpFile file = null;
+		FtpVFS.FtpDirectoryEntry returnValue = null;
+
+		try
+		{
+			file = sftp.openFile(path,SftpSubsystemClient.OPEN_READ);
+			returnValue = createDirectoryEntry(file);
+		}
+		finally
+		{
+			if(file != null)
+				sftp.closeFile(file);
+		}
+
+		return returnValue;
 	}
 
 	boolean delete(String path) throws IOException
@@ -79,10 +143,57 @@ class SFtpConnection extends ConnectionManager.Connection
 
 	boolean checkIfOpen() throws IOException
 	{
-		return false;
+		return client.isConnected();
 	}
 
 	void logout() throws IOException
 	{
+		session.close();
+		client.disconnect();
+	}
+
+	private SshClient client;
+	private SessionChannelClient session;
+	private SftpSubsystemClient sftp;
+
+	private FtpVFS.FtpDirectoryEntry createDirectoryEntry(SftpFile file)
+	{
+		FileAttributes attrs = file.getAttributes();
+		long length = (attrs.getSize() == null ? 0L : attrs.getSize().longValue());
+		int permissions = (attrs.getPermissions() == null
+			? 0 : attrs.getPermissions().intValue());
+		String path = file.getLongname();
+		String name = file.getFilename();
+
+		int type;
+		if(file.isDirectory())
+			type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+		else
+			type = FtpVFS.FtpDirectoryEntry.FILE;
+
+		// (String name, String path, String deletePath,
+		//	int type, long length, boolean hidden, int permissions)
+		return new FtpVFS.FtpDirectoryEntry(name,
+			path,path,type,length,
+			name.startsWith("."),
+			permissions);
+	}
+
+	static
+	{
+		System.getProperties().put("sshtools.home","/home/slava/plugins/FTP");
+		try
+		{
+			RollingFileAppender log = new RollingFileAppender(
+				new PatternLayout(),
+				"ssh.log",
+				true);
+			log.setMaxFileSize("100KB");
+			BasicConfigurator.configure(log);
+		}
+		catch(IOException io)
+		{
+			Log.log(Log.ERROR,SFtpConnection.class,io);
+		}
 	}
 }
