@@ -8,6 +8,7 @@ BUG FIX:
 - Fix bug where the 'Edit Template' doesn't open to the template directory (Calvin Yu).
 - Applied same fix to 'Save Template' option (Steve Jakob)
 - overhauled accelerator expansion function to fix bug where expansion of template accelerator at the start of a buffer would cause a BeanShell error (array index out of bounds (-1)) (Steve Jakob)
+- fixed problem in velocity.properties where backslash was not recognized as a line continuation indicator in Windows. The "userdirective" entry is now all on one line (reported by Lee Turner/Rob Fletcher)
 ENHANCEMENTS:
 - Added $_jeditSelection which represents the current buffer selection (Calvin Yu).
 - added ability to "pass through" an abbreviation from the "Expand Accelerator" action to jEdit's abbreviation expansion function, if no matching template accelerator is found (Steve Jakob)
