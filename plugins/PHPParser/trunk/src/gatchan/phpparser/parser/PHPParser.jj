@@ -690,10 +690,10 @@ void phpFile() :
                                           null,
                                           jj_input_stream.getBeginOffset(),
                                           jj_input_stream.getEndOffset(),
-                                          0,
-                                          0,
-                                          0,
-                                          0));
+                                          jj_input_stream.getBeginLine(),
+                                          jj_input_stream.getEndLine(),
+                                          jj_input_stream.getBeginColumn(),
+                                          jj_input_stream.getEndColumn()));
   }
 }
 
@@ -753,20 +753,45 @@ void PhpBlock() :
 PHPEchoBlock phpEchoBlock() :
 {
   final Expression expr;
-  final PHPEchoBlock echoBlock;
+  PHPEchoBlock echoBlock;
   final Token token, token2;
 }
 {
   token = <PHPECHOSTART> {createNewHTMLCode();}
-  expr = Expression() [ <SEMICOLON> ] token2 = <PHPEND>
-  {
-  htmlStart = token2.sourceEnd;
-  htmlLineStart = token2.endLine;
-  htmlColumnStart = token2.endColumn;
+  expr = Expression() [ <SEMICOLON> ] 
+  try {
+    token2 = <PHPEND>
+    {
+      htmlStart = token2.sourceEnd;
+      htmlLineStart = token2.endLine;
+      htmlColumnStart = token2.endColumn;
 
-  echoBlock = new PHPEchoBlock(expr,token.sourceStart,token2.sourceEnd, token.beginLine,token2.endLine,token.beginColumn,token2.endColumn);
-  pushOnAstNodes(echoBlock);
-  return echoBlock;}
+      echoBlock = new PHPEchoBlock(expr,token.sourceStart,token2.sourceEnd, token.beginLine,token2.endLine,token.beginColumn,token2.endColumn);
+    }
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'?>' expected",
+                                          "?>",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceEnd+1,
+                                          e.currentToken.sourceEnd+2,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn));
+    echoBlock = new PHPEchoBlock(expr,
+                                 token.sourceStart,
+                                 e.currentToken.sourceEnd,
+                                 token.beginLine,
+                                 e.currentToken.endLine,
+                                 token.beginColumn,
+                                 e.currentToken.endColumn);
+  }
+  {
+    pushOnAstNodes(echoBlock);
+    return echoBlock;
+  }
 }
 
 void Php() :
