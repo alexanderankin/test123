@@ -1,13 +1,16 @@
 CHANGES file for Templates plugin.
 
-Version 3.0.0 (???)
+Version 3.0.0 (29-JUL-2002)
 =============================
+CHANGES:
+Templates plugin now uses Apache Velocity as its templating engine (Calvin Yu).
 ENHANCEMENTS:
 Added support for template labeling via "## template=" statement.
 Added Calvin's dockable window for template selection.
 Switched to Docbook for help documentation.
 Modified Calvin's AcceleratorManager to use a more readable storage format, very similar to property files.
 Added a dirty flag to AcceleratorManager so that accelerators are saved only if there are changes.
+Added a field to the options pane to allow selection of the directory containing Velocity configuration files.
 
 Version 2.9.9 (30-APR-2002)
 =============================
