@@ -158,8 +158,8 @@ public class DiffLocalOverview extends DiffOverview
             int physicalLine0 = this.textArea0.getPhysicalLineOfScreenLine(i0);
             int physicalLine1 = this.textArea1.getPhysicalLineOfScreenLine(i1);
 
-            if (physicalLine0 == -1) { continue; }
-            if (physicalLine1 == -1) { continue; }
+            if (physicalLine0 == -1) { break; }
+            if (physicalLine1 == -1) { break; }
 
             for (; hunk != null; hunk = hunk.link) {
                 if (hunk.line0 < physicalLine0) {
