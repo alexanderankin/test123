@@ -27,7 +27,7 @@ import java.awt.Rectangle;
 
 import jdiff.util.Diff;
 
-import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
@@ -47,8 +47,8 @@ public class DiffLocalOverview extends DiffOverview
 
 
     public void paint(Graphics gfx) {
-        Buffer buffer0 = this.textArea0.getBuffer();
-        Buffer buffer1 = this.textArea1.getBuffer();
+        FoldVisibilityManager foldVisibilityManager0 = this.textArea0.getFoldVisibilityManager();
+        FoldVisibilityManager foldVisibilityManager1 = this.textArea1.getFoldVisibilityManager();
 
         int virtualLine0  = this.textArea0.getFirstLine();
         int virtualLine1  = this.textArea1.getFirstLine();
@@ -89,7 +89,7 @@ public class DiffLocalOverview extends DiffOverview
 
         Diff.change hunk = this.edits;
         for (int i0 = 0; i0 < count0; i0++) {
-            int physicalLine0 = buffer0.virtualToPhysical(virtualLine0 + i0);
+            int physicalLine0 = foldVisibilityManager0.virtualToPhysical(virtualLine0 + i0);
 
             for (; hunk != null; hunk = hunk.link) {
                 if ((hunk.line0 + Math.max(0, hunk.deleted - 1)) < physicalLine0) {
@@ -123,7 +123,7 @@ public class DiffLocalOverview extends DiffOverview
 
         hunk = this.edits;
         for (int i1 = 0; i1 < count1; i1++) {
-            int physicalLine1 = buffer1.virtualToPhysical(virtualLine1 + i1);
+            int physicalLine1 = foldVisibilityManager1.virtualToPhysical(virtualLine1 + i1);
 
             for (; hunk != null; hunk = hunk.link) {
                 if ((hunk.line1 + Math.max(0, hunk.inserted - 1)) < physicalLine1) {
@@ -157,8 +157,8 @@ public class DiffLocalOverview extends DiffOverview
 
         hunk = this.edits;
         for (int i0 = 0, i1 = 0; (hunk != null) && (i0 < count0) && (i1 < count1); ) {
-            int physicalLine0 = buffer0.virtualToPhysical(virtualLine0 + i0);
-            int physicalLine1 = buffer1.virtualToPhysical(virtualLine1 + i1);
+            int physicalLine0 = foldVisibilityManager0.virtualToPhysical(virtualLine0 + i0);
+            int physicalLine1 = foldVisibilityManager1.virtualToPhysical(virtualLine1 + i1);
 
             for (; hunk != null; hunk = hunk.link) {
                 if (hunk.line0 < physicalLine0) {
