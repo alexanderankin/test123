@@ -49,10 +49,11 @@ public final class IconComposer {
 
 	final static int msg_state_none=0;
 	final static int msg_state_messages=1;
+	final static int msg_state_errors=2;
 	//}}}
 
 	//{{{ Attributes
-	private final static Icon[][][][][] cache= new Icon[2][1][1][3][2];
+	private final static Icon[][][][][] cache= new Icon[2][1][1][3][3];
 
 	private final static Icon file_state_changed_img=
 		new ImageIcon(IconComposer.class.getResource("/images/file_state_changed.png"));
@@ -60,6 +61,8 @@ public final class IconComposer {
 		new ImageIcon(IconComposer.class.getResource("/images/file_state_readonly.png"));
 	private final static Icon msg_state_messages_img=
 		new ImageIcon(IconComposer.class.getResource("/images/msg_state_messages.png"));
+	private final static Icon msg_state_errors_img=
+		new ImageIcon(IconComposer.class.getResource("/images/msg_state_errors.png"));
 	//}}}
 
 	//{{{ Public methods
@@ -78,6 +81,7 @@ public final class IconComposer {
 				Icon br=null;
 				switch(msg_state) {
 					case IconComposer.msg_state_messages: br=IconComposer.msg_state_messages_img;break;
+					case IconComposer.msg_state_errors: br=IconComposer.msg_state_errors_img;break;
 				}
 				cache[base_state][vc_state][0][file_state][msg_state]=composeIcons(baseIcon,tl,tr,bl,br);
 			}
