@@ -79,6 +79,29 @@ To force jEdit to forget all passwords while it is running, use the
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.3.2</emphasis>
+   requires jEdit 4.0pre2.</para>
+
+   <itemizedlist>
+    <listitem><para>
+     Plugin is now compiled using Ant.
+    </para></listitem>
+
+    <listitem><para>
+     Fixed another file rename problem with the Microsoft FTP server.
+    </para></listitem>
+
+    <listitem><para>
+     Updated for jEdit 4.0pre2 API changes.
+    </para></listitem>
+
+    <listitem><para>
+     After connecting to an FTP server, the home directory is now shown by
+     default, which is much more intuitive than starting at the root directory
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
+
   <listitem><para><emphasis role="bold">Version 0.3.1</emphasis>
    requires jEdit 2.7pre2.</para>
 

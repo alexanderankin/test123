@@ -83,18 +83,21 @@ public class FtpVFS extends VFS
 		return PROTOCOL + "://" + newSession.user
 			+ "@" + newSession.host
 			+ (newSession.port == null
-			? "" : ":" + newSession.port) + "/";
+			? "" : ":" + newSession.port) + "/~";
 	}
 
 	public String getParentOfPath(String path)
 	{
 		FtpAddress address = new FtpAddress(path);
-		address.path = MiscUtilities.getParentOfPath(address.path);
+		address.path = super.getParentOfPath(address.path);
 		return address.toString();
 	}
 
 	public String constructPath(String parent, String path)
 	{
+		if(path.startsWith("~"))
+			path = "/" + path;
+
 		if(path.startsWith("/"))
 		{
 			FtpAddress address = new FtpAddress(parent);
@@ -132,6 +135,25 @@ public class FtpVFS extends VFS
 			// FtpAddress.<init> can throw this
 			return null;
 		}
+	}
+
+	public String _canonPath(Object _session, String path, Component comp)
+		throws IOException
+	{
+		FtpSession session = (FtpSession)_session;
+		FtpAddress address = new FtpAddress(path);
+
+		_getFtpClient(session,address,false,comp);
+
+		if(session.home != null && address.path.startsWith("/~"))
+		{
+			if(session.home.endsWith("/"))
+				address.path = session.home + address.path.substring(2);
+			else
+				address.path = session.home + '/' + address.path.substring(2);
+		}
+
+		return address.toString();
 	}
 
 	public VFS.DirectoryEntry[] _listDirectory(Object _session, String url,
@@ -192,7 +214,7 @@ public class FtpVFS extends VFS
 					|| entry.name.equals(".")
 					|| entry.name.equals(".."))
 				{
-					//Log.log(Log.DEBUG,this,"Discarding " + line);
+					Log.log(Log.DEBUG,this,"Discarding " + line);
 					continue;
 				}
 				else
@@ -281,7 +303,8 @@ public class FtpVFS extends VFS
 			return false;
 
 		directoryEntry = _getDirectoryEntry(session,to,comp);
-		if(directoryEntry != null && directoryEntry.type == VFS.DirectoryEntry.FILE)
+		if(directoryEntry != null && directoryEntry.type == VFS.DirectoryEntry.FILE
+			&& !address.path.equalsIgnoreCase(toPath))
 			client.delete(toPath);
 
 		client.renameFrom(address.path);
@@ -348,7 +371,7 @@ public class FtpVFS extends VFS
 		//because the path here is not a URL and our own version expects a URL
 		// when it instantiates an FtpAddress object.
 		String parentPath = MiscUtilities.getParentOfPath(address.path);
-		
+
 		client.changeWorkingDirectory(parentPath);
 		//Check for successful response
 		FtpResponse response = client.getResponse();
@@ -360,7 +383,7 @@ public class FtpVFS extends VFS
 			VFSManager.error(comp,"vfs.ftp.list-error",args);
 			return null;
 		}
-			
+
 		_setupSocket(client);
 		//Here we do a LIST for on the specific file
 		//Since we are in the right dir, we list only the filename, not the
@@ -419,8 +442,8 @@ public class FtpVFS extends VFS
 							+ Integer.toString(
 							dirEntry.permissions,8));
 
-						buffer.putProperty(PERMISSIONS_PROPERTY,
-							new Integer(dirEntry.permissions));
+						buffer.setIntegerProperty(PERMISSIONS_PROPERTY,
+							dirEntry.permissions);
 					}
 				}
 
@@ -496,10 +519,10 @@ public class FtpVFS extends VFS
 		if(client == null)
 			return;
 
-		Integer permissions = (Integer)buffer.getProperty(PERMISSIONS_PROPERTY);
-		if(permissions != null && permissions.intValue() != 0)
+		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
+		if(permissions != 0)
 		{
-			String cmd = "CHMOD " + Integer.toString(permissions.intValue(),8)
+			String cmd = "CHMOD " + Integer.toString(permissions,8)
 				+ " " + address.path;
 			client.siteParameters(cmd);
 		}
@@ -537,6 +560,31 @@ public class FtpVFS extends VFS
 
 			session.client = _createFtpClient(address.host,address.port,
 				address.user,session.password,ignoreErrors,comp);
+
+			if(session.client == null)
+				return null;
+
+			try
+			{
+				session.client.printWorkingDirectory();
+				FtpResponse response = session.client.getResponse();
+				if(response != null
+					&& response.getReturnCode() != null
+					&& response.getReturnCode().charAt(0) == '2')
+				{
+					String msg = response.getMessage().substring(4);
+					if(msg.startsWith("\""))
+					{
+						int index = msg.indexOf('"',1);
+						if(index != -1)
+							session.home = msg.substring(1,index);
+					}
+				}
+			}
+			catch(IOException io)
+			{
+				Log.log(Log.ERROR,this,io);
+			}
 		}
 
 		return session.client;
@@ -791,5 +839,6 @@ public class FtpVFS extends VFS
 		String password;
 		String path;
 		FtpClient client;
+		String home;
 	}
 }

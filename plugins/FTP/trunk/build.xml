@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!--
-     This is a build.xml file for building the FTP jEdit plugin.
+     This is a build.xml file for building the ErrorList plugin.
 
      The 'dist' target compiles the plugin and creates the JAR file.
      Before running the 'dist' target, you will need to generate the
@@ -22,20 +22,13 @@
        accordingly.
 -->
 
-<project name="ftp" default="dist" basedir=".">
+<project name="errorlist" default="dist" basedir=".">
 
-	<property name="jedit.install.dir"  value="/home/slava/jEdit"/>
 	<property name="jar.name"  value="FTP.jar"/>
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
 	<property name="install.dir"  value=".."/>
-
-
-	<path id="project.class.path">
-		<pathelement location="${jedit.install.dir}/jedit.jar"/>
-		<pathelement location="."/>
-	</path>
 
 
 	<target name="init">
@@ -49,9 +42,7 @@
 			destdir="${build.dir}"
 			deprecation="on"
 			includeJavaRuntime="yes"
-		>
-			<classpath refid="project.class.path"/>
-		</javac>
+		/>
 	</target>
 
 
@@ -61,15 +52,17 @@
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
-				<include name="**/*.props"/>
+				<include name="dockables.xml"/>
+				<include name="*.props"/>
 				<include name="**/*.html"/>
+				<include name="**/*.gif"/>
 			</fileset>
 		</jar>
 	</target>
 
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs-xsltproc">
-		<exec executable="xsltproc" output="users-guide.html">
+		<exec executable="xsltproc">
 			<arg value="--catalogs"/>
 			<arg value="users-guide.xsl"/>
 			<arg value="users-guide.xml"/>
@@ -80,8 +73,7 @@
 	<target name="docs-xalan">
 		<style
 			style="users-guide.xsl"
-			in="users-guide.xml"
-			out="users-guide.html"/>
+			in="users-guide.xml"/>
 	</target>
 
 	<target name="clean">
