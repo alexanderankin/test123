@@ -73,6 +73,7 @@ public class Code2HTML
         this.document = new HtmlDocument(
             jEdit.getProperty("view.bgColor", "#ffffff"),
             jEdit.getProperty("view.fgColor", "#000000"),
+            syntaxStyle,
             this.style,
             this.gutter,
             buffer.getName(),

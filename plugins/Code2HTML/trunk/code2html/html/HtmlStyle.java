@@ -30,23 +30,12 @@ import org.gjt.sp.util.Log;
 
 public class HtmlStyle
 {
-    protected SyntaxStyle[] styles = null;
+    public HtmlStyle() {}
 
 
-    public HtmlStyle(SyntaxStyle[] styles) {
-        this.styles = styles;
-    }
-
-
-    public String toHTML(int styleId, String text) {
-        return this.toHTML(this.styles[styleId], text);
-    }
-
-
-    public String toHTML(SyntaxStyle style, String text) {
+    public String toHTML(int styleId, SyntaxStyle style, String text) {
         if (style == null) {
-            Log.log(Log.DEBUG, HtmlStyle.class,
-                    "toHTML(SyntaxStyle style): null style");
+            Log.log(Log.DEBUG, this, "toHTML: null style");
             return text;
         }
         StringBuffer bufOpen  = new StringBuffer();
@@ -88,7 +77,7 @@ public class HtmlStyle
     }
 
 
-    public String toCSS() {
+    public String toCSS(int styleId, SyntaxStyle style) {
         return "";
     }
 }

@@ -338,6 +338,7 @@ public class Main
             HtmlDocument document = new HtmlDocument(
                 Main.getProperty("view.bgColor", "#ffffff"),
                 Main.getProperty("view.fgColor", "#000000"),
+                painter.getSyntaxStyles(),
                 style,
                 gutter,
                 "Code2HTML",

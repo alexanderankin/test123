@@ -25,6 +25,7 @@ import java.io.Writer;
 
 import javax.swing.text.Segment;
 
+import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 
 import code2html.SyntaxToken;
@@ -35,6 +36,8 @@ import code2html.line.LineWrapper;
 
 public class HtmlPainter
 {
+    private SyntaxStyle[]   syntaxStyles;
+
     private HtmlStyle       style;
     private HtmlGutter      gutter;
     private LineTabExpander expander;
@@ -47,11 +50,14 @@ public class HtmlPainter
 
 
     public HtmlPainter(
+            SyntaxStyle[]   syntaxStyles,
             HtmlStyle       style,
             HtmlGutter      gutter,
             LineTabExpander expander,
             LineWrapper     wrapper
     ) {
+        this.syntaxStyles = syntaxStyles;
+
         this.style    = style;
         this.gutter   = gutter;
         this.expander = expander;
@@ -61,6 +67,11 @@ public class HtmlPainter
 
         this.showGutter = (gutter != null);
         this.wrap       = (wrapper == null) ? 0 : wrapper.getWrapSize();
+    }
+
+
+    public SyntaxStyle[] getSyntaxStyles() {
+        return this.syntaxStyles;
     }
 
 
@@ -154,7 +165,7 @@ public class HtmlPainter
                     if (id == Token.NULL) {
                         out.write(text);
                     } else {
-                        out.write(this.style.toHTML(id, text));
+                        out.write(this.style.toHTML(id, this.syntaxStyles[id], text));
                     }
                 } else {
                     String text;
@@ -173,7 +184,7 @@ public class HtmlPainter
                         if (id == Token.NULL) {
                             out.write(text);
                         } else {
-                            out.write(this.style.toHTML(id, text));
+                            out.write(this.style.toHTML(id, this.syntaxStyles[id], text));
                         }
                     }
                 }

@@ -49,9 +49,9 @@ public class JEditConfig implements Config
         boolean showGutter = jEdit.getBooleanProperty("code2html.show-gutter", false);
 
         if (useCSS) {
-            this.style = new HtmlCssStyle(styles);
+            this.style = new HtmlCssStyle();
         } else {
-            this.style = new HtmlStyle(styles);
+            this.style = new HtmlStyle();
         }
 
         if (showGutter) {
@@ -86,7 +86,7 @@ public class JEditConfig implements Config
         }
 
         this.painter = new HtmlPainter(
-            this.style, this.gutter, this.tabExpander, this.wrapper
+            styles, this.style, this.gutter, this.tabExpander, this.wrapper
         );
     }
 

@@ -59,9 +59,9 @@ public class CommandLineConfig implements Config
         if (args.wrap < 0) { args.wrap = 0; }
 
         if (args.useCSS) {
-            this.style = new HtmlCssStyle(args.styles);
+            this.style = new HtmlCssStyle();
         } else {
-            this.style = new HtmlStyle(args.styles);
+            this.style = new HtmlStyle();
         }
 
         PropertyAccessor accessor = args.propertyAccessor;
@@ -95,7 +95,7 @@ public class CommandLineConfig implements Config
         }
 
         this.painter = new HtmlPainter(
-            this.style, this.gutter, this.tabExpander, this.wrapper
+            args.styles, this.style, this.gutter, this.tabExpander, this.wrapper
         );
     }
 

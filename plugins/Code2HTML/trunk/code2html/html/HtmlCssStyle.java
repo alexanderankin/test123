@@ -30,12 +30,12 @@ import org.gjt.sp.util.Log;
 
 public class HtmlCssStyle extends HtmlStyle
 {
-    public HtmlCssStyle(SyntaxStyle[] styles) {
-        super(styles);
+    public HtmlCssStyle() {
+        super();
     }
 
 
-    public String toHTML(int styleId, String text) {
+    public String toHTML(int styleId, SyntaxStyle style, String text) {
         StringBuffer buf = new StringBuffer();
         buf.append("<SPAN CLASS=\"syntax" + styleId + "\">")
             .append(text)
@@ -44,26 +44,14 @@ public class HtmlCssStyle extends HtmlStyle
     }
 
 
-    public String toCSS() {
-        StringBuffer buf = new StringBuffer();
-
-        for (int i = 0; i < this.styles.length; i++) {
-            buf.append(".syntax" + i + " {\n")
-                .append(toCSS(this.styles[i]))
-                .append("}\n");
-        }
-
-        return buf.toString();
-    }
-
-
-    public static String toCSS(SyntaxStyle style) {
+    public String toCSS(int styleId, SyntaxStyle style) {
         if (style == null) {
-            Log.log(Log.DEBUG, HtmlCssStyle.class,
-                    "toCSS(SyntaxStyle style): null style");
+            Log.log(Log.DEBUG, this, "toCSS: null style");
             return "";
         }
         StringBuffer buf = new StringBuffer();
+
+        buf.append(".syntax" + styleId + " {\n");
 
         Color c;
         if ((c = style.getBackgroundColor()) != null) {
@@ -85,6 +73,8 @@ public class HtmlCssStyle extends HtmlStyle
         if (style.getFont().isItalic()) {
             buf.append("font-style: italic;\n");
         }
+
+        buf.append("}\n");
 
         return buf.toString();
     }
