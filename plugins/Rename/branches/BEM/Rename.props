@@ -1,0 +1,16 @@
+plugin.rename.RenamePlugin.name=Rename
+plugin.rename.RenamePlugin.author=Brad Mace
+plugin.rename.RenamePlugin.version=0.1.0
+plugin.rename.RenamePlugin.depend.0=jdk 1.4.1
+plugin.rename.RenamePlugin.depend.1=jedit 04.02.08.00
+plugin.rename.RenamePlugin.activate=defer
+
+options.rename.actions.label=Actions
+options.rename.actions.code=new rename.PropertyOptionPane("Action",jEdit.getActionNames(),"label");
+options.rename.dockables.label=Dockables
+options.rename.dockables.code=new rename.PropertyOptionPane("Dockable",DockableWindowManager.getRegisteredDockableWindows(),"title");
+options.rename.optionpanes.label=Option Panes
+options.rename.plugins.label=Plugins
+options.rename.plugins.code=new rename.PluginOptionPane();
+plugin.rename.RenamePlugin.option-group=rename.actions \
+rename.dockables rename.optionpanes rename.plugins
