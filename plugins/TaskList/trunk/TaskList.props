@@ -134,52 +134,52 @@ tasklist.tasktype.0.name=DEBUG
 tasklist.tasktype.0.iconpath=stock_preferences-16.png
 tasklist.tasktype.0.ignorecase=false
 tasklist.tasktype.0.pattern=\\s(DEBUG)\:\\s+(.+)$
-tasklist.tasktype.0.sample=DEBUG\: [comment text]
+tasklist.tasktype.0.sample=\ DEBUG\: [comment text]
 
 tasklist.tasktype.1.name=DONE
 tasklist.tasktype.1.iconpath=stock_spellcheck-16.png
 tasklist.tasktype.1.ignorecase=false
 tasklist.tasktype.1.pattern=\\s(DONE)\:\\s+(.+)$
-tasklist.tasktype.1.sample=DONE\: [comment text]
+tasklist.tasktype.1.sample=\ DONE\: [comment text]
 
 tasklist.tasktype.2.name=FIXME
 tasklist.tasktype.2.iconpath=stock_broken_image-16.png
 tasklist.tasktype.2.ignorecase=false
 tasklist.tasktype.2.pattern=\\s(FIXME)\:\\s+(.+)$
-tasklist.tasktype.2.sample=FIXME\: [comment text]
+tasklist.tasktype.2.sample=\ FIXME\: [comment text]
 
 tasklist.tasktype.3.name=IDEA
 tasklist.tasktype.3.iconpath=stock_about-16.png
 tasklist.tasktype.3.ignorecase=false
 tasklist.tasktype.3.pattern=\\s(IDEA)\:\\s+(.+)$
-tasklist.tasktype.3.sample=IDEA\: [comment text]
+tasklist.tasktype.3.sample=\ IDEA\: [comment text]
 
 tasklist.tasktype.4.name=NOTE
 tasklist.tasktype.4.iconpath=stock_attach-16.png
 tasklist.tasktype.4.ignorecase=false
 tasklist.tasktype.4.pattern=\\s(NOTE)\:\\s+(.+)$
-tasklist.tasktype.4.sample=NOTE\: [comment text]
+tasklist.tasktype.4.sample=\ NOTE\: [comment text]
 
 tasklist.tasktype.5.name=QUESTION
 tasklist.tasktype.5.iconpath=stock_help-16.png
 tasklist.tasktype.5.ignorecase=false
 tasklist.tasktype.5.pattern=\\s(QUESTION)\:\\s+(.+)$
-tasklist.tasktype.5.sample=QUESTION\: [comment text]
+tasklist.tasktype.5.sample=\ QUESTION\: [comment text]
 
 tasklist.tasktype.6.name=TODO
 tasklist.tasktype.6.iconpath=stock_jump-to-16.png
 tasklist.tasktype.6.ignorecase=false
 tasklist.tasktype.6.pattern=\\s(TODO)\:\\s+(.+)$
-tasklist.tasktype.6.sample=TODO\: [comment text]
+tasklist.tasktype.6.sample=\ TODO\: [comment text]
 
 tasklist.tasktype.7.name=XXX
 tasklist.tasktype.7.iconpath=stock_right-16.png
 tasklist.tasktype.7.ignorecase=false
 tasklist.tasktype.7.pattern=\\s(XXX)\\s+(.+)$
-tasklist.tasktype.7.sample=XXX [comment text]
+tasklist.tasktype.7.sample=\ XXX [comment text]
 
 tasklist.tasktype.8.iconpath=stock_help-16.png
 tasklist.tasktype.8.ignorecase=false
 tasklist.tasktype.8.name=???
 tasklist.tasktype.8.pattern=\\s([?]{3})\\s+(.+)$
-tasklist.tasktype.8.sample=??? [commented text]
+tasklist.tasktype.8.sample=\ ??? [commented text]
