@@ -108,9 +108,10 @@ public class LaunchBrowserAction extends Action {
 
 	//{{{ +__launchInfoViewer(View, String)_ : void
 	public static void _launchInfoViewer(View view, String url) {
-		InfoViewerPlugin iv = (InfoViewerPlugin)
-			jEdit.getPlugin("infoviewer.InfoViewerPlugin", true);
-		iv.openURL(view, url);
+		InfoViewerPlugin iv = (InfoViewerPlugin) jEdit.getPlugin("infoviewer.InfoViewerPlugin", true);
+		if( iv != null) {
+			iv.openURL(view, url);
+		}
 	} //}}}
 
 }

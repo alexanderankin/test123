@@ -32,6 +32,8 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 
+import errorlist.ErrorListPlugin;
+import errorlist.ErrorSource;
 import errorlist.ErrorSource;
 
 import projectviewer.config.ProjectViewerConfig;
@@ -178,13 +180,23 @@ public class VPTFile extends VPTNode {
 			else if(!buffer.isEditable()) { file_state=IconComposer.file_state_readonly; }
 			//Log.log(Log.DEBUG, this, "file \""+bufferName+"\" state is :["+file_state+"]");
 		}
-		// get msg state
+		// get msg state (if ErrorList is available)
 		int msg_state=IconComposer.msg_state_none;
-		ErrorSource[] sources = ErrorSource.getErrorSources();
-		for(int i=0;i<sources.length;i++) {
-			if(sources[i].getFileErrorCount(bufferName)>0) {
-				msg_state=IconComposer.msg_state_messages;
-				break;
+		ErrorListPlugin el = (ErrorListPlugin) jEdit.getPlugin("errorlist.ErrorListPlugin", true);
+		if( el != null) {
+			ErrorSource[] sources = ErrorSource.getErrorSources();
+			for(int i=0;i<sources.length;i++) {
+				if(sources[i].getFileErrorCount(bufferName)>0) {
+					msg_state=IconComposer.msg_state_messages;
+					ErrorSource.Error[] errors = sources[i].getAllErrors();
+					for(int j=0;j<errors.length;j++) {
+						if(errors[j].getErrorType() == ErrorSource.ERROR) {
+							msg_state=IconComposer.msg_state_errors;
+							break;
+						}
+					}
+					break;
+				}
 			}
 		}
 		return IconComposer.composeIcon(baseIcon,base_state,IconComposer.vc_state_none,0,file_state,msg_state);
