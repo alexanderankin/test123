@@ -13,7 +13,7 @@
 <TR width="100%">
 <TD VALIGN=TOP><B><FONT SIZE=+2>OpenIt</FONT></B></TD>
 
-<TD ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=-1>Version 1.01 (Nov 08, 2003)</FONT></B>
+<TD ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=-1>Version 1.02 (Nov 22, 2003)</FONT></B>
 <BR><FONT SIZE=-1>By Matt Etheridge &lt;matt@etheridge.org>&nbsp;</FONT></TD>
 </TR>
 </TABLE>
@@ -86,19 +86,10 @@ opens a small window with a textfield to enter a file name.
 in the user-specified source path will be shown in a scrollable list under
 the window.&nbsp; An example of this is shown below:
 <BR>&nbsp;
-<BR>&nbsp;
-<BR>
-<BR>
-<BR>
-<CENTER>
-<P><IMG SRC="images/open-it-window.jpg" NOSAVE HEIGHT=206 WIDTH=414></CENTER>
-
-<BR>&nbsp;
 <P><BR>
-<BR>
-<BR>
-<BR>
-<BR>
+<CENTER>
+<P><IMG SRC="images/openit.png" NOSAVE HEIGHT=280 WIDTH=602></CENTER>
+
 <P>The up, down, page up and page down buttons and the mouse can be used
 to select a file from the list.&nbsp; Once a file is selected the user
 can press enter or double click with the mouse to open the file.&nbsp;
@@ -136,14 +127,36 @@ This is normally one or more Java source paths - the base directories of
 all your Java source files (ie. <TT>D:\work\src</TT>).&nbsp; However, as
 the OpenIt plugin can open <I>any</I> type of file that jEdit can open,
 this could just be a project directory (or directories) where files that
-may be opened in jEdit reside.
+may be opened in jEdit reside.&nbsp; Adding and removing source/search
+paths can be done by using the <I>Add</I> and <I>Remove</I> buttons.&nbsp;
+The <I>Add</I> button will display a JFileChooser to choose any number
+of source paths that contain files you may wish to open in jEdit.
+<P>This option panel contains an Excludes Regular Expression Filter.&nbsp;
+Users can type in a glob/regular expression to match all files they want
+to filter out of the OpenIt popup file list.&nbsp; For example, if a user
+did not want to see compiled java class files (*.class), they would simply
+type the following into the filter textbox:
+<P><TT>&nbsp;&nbsp;&nbsp; *.class</TT>
+<P>If multiple types of files need to be excluded, this can be done in
+the standard way by including the "|" character between file types.&nbsp;
+For example:<TT></TT>
+<P><TT>&nbsp;&nbsp;&nbsp; *.class|*.xml|*.#*</TT>
+<P><I>HINT: these files are filtered out during the sourcepath refresh
+task - which is done periodically in a background thread, so you should
+not see any performance degradation regardless of how big the filter is.</I>
 <P>This option panel also allows the user to specify in seconds, how often
 the sourcepath should be refreshed from the filesystem.&nbsp; This is useful
 if you are creating a lot of files in jEdit that you may want to open again
 in the same jEdit session.&nbsp; This value defaults to 60 seconds.
 <P><I>HINT: the more directories you include in the source path, the longer
 it will take for the sourcepath to be refreshed!&nbsp; (However, this is
-done in a background thread so you can still continue in jEdit!)</I>
+done in a background thread so you can still continue in jEdit!)</I><I></I>
+<P><I>HINT: If any of the settings in this option panel change, when you
+press OK the sourcepath will be refreshed automatically in a background
+thread.&nbsp; Depending on the size of the sourcepath, this can take a
+few seconds.&nbsp; If you attempt to find a file immediately after pressing
+OK, you may not see the files in the modified sourcepath.&nbsp; Just wait
+a few seconds and try again ;)</I>
 <P><A NAME="Popup Window Options"></A><B><FONT SIZE=+1>Popup Window Options</FONT></B>
 <P>This option panel allows the user to specify any configuration items
 that relate to the popup window.&nbsp; These settings include:
@@ -208,6 +221,27 @@ is taking so long ;)</LI>
 
 <LI>
 Modified window positioning to always be in the center of the current view.</LI>
+</UL>
+
+<LI>
+1.02 (Nov 22, 2003)</LI>
+
+<UL>
+<LI>
+Search/Source Path can now be configured with JFileChooser.</LI>
+
+<LI>
+Popup file list will scroll back to start when down/page down is pressed
+on the last list element, and vice versa when the up/page up is pressed
+on the first list element.</LI>
+
+<LI>
+<I>Excludes Regular Expression Filter</I> - any files matching the specified
+regular expression will not be shown.</LI>
+
+<LI>
+More granular configuration options for showing directories/packages with
+Java files. (This configuration is now distinct from other types of files).</LI>
 </UL>
 </UL>
 
