@@ -41,17 +41,21 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 
+	//{{{ Private members 
 	private HashSet includedExtensions;
 	private HashSet includedFiles;
-	private HashSet excludedDirectories;
+	private HashSet excludedDirectories; 
+	//}}}
 
+	//{{{ getDescription() method
 	public String getDescription() {
 		return jEdit.getProperty("projectviewer.importer-filter");
-	}
+	} //}}}
 	
+	//{{{ accept(File) method
 	public boolean accept(File file) {
 		return accept(file.getParentFile(), file.getName());
-	}
+	} //}}}
 		
 	//{{{ accept(File, String) method
 	public boolean accept(File file, String fileName) {
