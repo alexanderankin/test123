@@ -5,16 +5,16 @@
 <ACTIONS>
     <ACTION NAME="code2html.current-buffer">
         <CODE>
-            Code2HTML code2html = new Code2HTML();
-            code2html.toHTML(view);
+            code2html.Code2HTML c2h = new code2html.Code2HTML();
+            c2h.toHTML(view);
         </CODE>
     </ACTION>
 
 
     <ACTION NAME="code2html.current-selection">
         <CODE>
-            Code2HTML code2html = new Code2HTML();
-            code2html.toHTML(view, true);
+            code2html.Code2HTML c2h = new code2html.Code2HTML();
+            c2h.toHTML(view, true);
         </CODE>
     </ACTION>
 </ACTIONS>
