@@ -6,4 +6,7 @@
 	<DOCKABLE NAME="activator">
 		new activator.ActivationPanel();
 	</DOCKABLE>
+	<DOCKABLE NAME="activator.reloader">
+		new javax.swing.JScrollPane(new activator.ReloadPanel());
+	</DOCKABLE>
 </DOCKABLES>

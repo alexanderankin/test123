@@ -70,7 +70,7 @@ public class ActivationPanel extends JPanel {
 			
 			if (col == 1) {
 				if (jars[row].getPlugin() == null) {
-					return "Not a plugin";
+					return "Library";
 				} else if (jars[row].getPlugin() instanceof EditPlugin.Deferred) {
 					return "Loaded";
 				} else {
