@@ -467,7 +467,6 @@ public class XmlActions
 	}
 	//}}}
 
-	
 	//{{{ removeTags() method
 	public static void removeTags(Buffer buffer)
 	{
@@ -704,7 +703,7 @@ public class XmlActions
 		if(caret == 1)
 			return;
 
-		String text = buffer.getText(0,caret);
+		String text = buffer.getText(0,buffer.getLength());
 
 		if(text.charAt(caret - 2) != '<')
 			return;

@@ -470,6 +470,10 @@
    <listitem><para><guimenuitem>Split Tag</guimenuitem> command
    (Chris Stevenson).</para></listitem>
    <listitem><para>Updated XSD completion info (Tom Gutwin).</para></listitem>
+   <listitem><para>
+    Entering a <userinput>/</userinput> inside a tag will no longer cause
+    problems - fixed for real this time!
+   </para></listitem>
   </itemizedlist>
 
   </listitem>
