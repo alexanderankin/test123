@@ -61,7 +61,7 @@ public class LaunchBrowserAction extends Action {
 
 		String sURL;
 		if (p.getURL() != null && file.getNodePath().startsWith(p.getRootPath())) {
-			sURL = p.getURL() + file.getNodePath().substring(p.getRootPath().length());
+			sURL = p.getURL() + file.getNodePath().substring(p.getRootPath().length() + 1);
 		} else {
 			sURL = file.getNodePath();
 		}
