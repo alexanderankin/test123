@@ -87,7 +87,8 @@ public class WhiteSpaceHighlight extends TextAreaExtension
 
 
     public void paintValidLine(
-            Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y
+            Graphics2D gfx, final int screenLine, final int physicalLine,
+            final int start, final int end, final int y
     ) {
         WhiteSpaceModel model = this.getModel();
 
@@ -116,8 +117,7 @@ public class WhiteSpaceHighlight extends TextAreaExtension
             ta.getLineText(physicalLine, s);
 
             int height = fm.getHeight();
-            int descent = fm.getDescent();
-            final int y0 = y + descent + (height / 2);
+            final int y0 = y + (height / 2);
             int x0;
 
             final char[] array = s.array;

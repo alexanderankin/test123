@@ -21,7 +21,6 @@
 package whitespace;
 
 import java.awt.Color;
-import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
@@ -62,7 +61,8 @@ public class BlockHighlight extends TextAreaExtension
 
 
     public void paintValidLine(
-            Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y
+            Graphics2D gfx, final int screenLine, final int physicalLine,
+            final int start, final int end, final int y
     ) {
         WhiteSpaceModel model = this.getModel();
         if ((model != null) && model.getBlockHighlight().isEnabled())
@@ -98,10 +98,8 @@ public class BlockHighlight extends TextAreaExtension
                 }
 
                 TextAreaPainter painter = this.textArea.getPainter();
-                FontMetrics fm = painter.getFontMetrics();
-                int y0 = y + fm.getDescent() + fm.getLeading();
                 gfx.setColor(blockColor);
-                gfx.drawLine(p0.x, y0, painter.getWidth() - 1, y0);
+                gfx.drawLine(p0.x, y, painter.getWidth() - 1, y);
             }
         }
     }
