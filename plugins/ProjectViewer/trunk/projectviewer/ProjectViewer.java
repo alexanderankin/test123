@@ -20,6 +20,7 @@ package projectviewer;
 
 //{{{ Imports
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
 
@@ -46,6 +47,7 @@ import javax.swing.DefaultListCellRenderer;
 
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.util.Log;
 
@@ -351,6 +353,7 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Attributes
 	private View 					view;
+	private HashSet					dontAsk;
 
 	private JTree					folderTree;
 	private JTree					fileTree;
@@ -391,14 +394,7 @@ public final class ProjectViewer extends JPanel
 		EditBus.addToBus(this);
 
 		if (config.getLastProject() != null) {
-			VPTProject p = ProjectManager.getInstance().getProject(config.getLastProject());
-			if (p != null) {
-				DISABLE_EVENTS = true;
-				setProject(p);
-				pList.setSelectedItem(p);
-				DISABLE_EVENTS = false;
-				fireProjectLoaded(p);
-			}
+			new ProjectLoader(config.getLastProject()).loadProject();
 		}
 	} //}}}
 
@@ -414,8 +410,6 @@ public final class ProjectViewer extends JPanel
 		// don't change order!
 		tree.addMouseListener(vsl);
 		tree.addMouseListener(vcm);
-
-		//model.addTreeModelListener(vsl);
 		tree.addTreeSelectionListener(vsl);
 		return tree;
 	} //}}}
@@ -454,7 +448,7 @@ public final class ProjectViewer extends JPanel
 
 		pList.setSelectedItem(treeRoot);
 		pList.addItemListener(new ProjectComboListener());
-		topPane.add(BorderLayout.SOUTH, pList);
+		topPane.add(BorderLayout.WEST, pList);
 
 		add(BorderLayout.NORTH, topPane);
 
@@ -623,7 +617,7 @@ public final class ProjectViewer extends JPanel
 			toolBar = new JToolBar();
 			toolBar.setFloatable(false);
 			populateToolBar();
-			topPane.add(BorderLayout.NORTH, toolBar);
+			topPane.add(BorderLayout.CENTER, toolBar);
 		}
 
 		treePane.setSelectedIndex(0);
@@ -702,9 +696,12 @@ public final class ProjectViewer extends JPanel
 			((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
 
 		if (p != null && pList.getSelectedItem() != p) {
+			DISABLE_EVENTS = true;
 			pList.setSelectedItem(p);
+			DISABLE_EVENTS = false;
 		}
 
+		dontAsk = null;
 		fireProjectLoaded(p);
 	} //}}}
 
@@ -769,14 +766,21 @@ public final class ProjectViewer extends JPanel
 
 			// Try to import newly created files to the project
 			if(bu.getWhat() == BufferUpdate.SAVED && f == null) {
-				int res = JOptionPane.showConfirmDialog(view,
-						jEdit.getProperty("projectviewer.import_new",
-							new Object[] { bu.getBuffer().getName(), p.getName() }),
-						jEdit.getProperty("projectviewer.import_new.title"),
-						JOptionPane.YES_NO_OPTION);
+				if (dontAsk == null || !dontAsk.contains(bu.getBuffer().getPath())) {
+					int res = JOptionPane.showConfirmDialog(view,
+							jEdit.getProperty("projectviewer.import_new",
+								new Object[] { bu.getBuffer().getName(), p.getName() }),
+							jEdit.getProperty("projectviewer.import_new.title"),
+							JOptionPane.YES_NO_OPTION);
 
-				if(res == JOptionPane.YES_OPTION) {
-					new NewFileImporter(p, bu.getBuffer().getPath()).doImport();
+					if(res == JOptionPane.YES_OPTION) {
+						new NewFileImporter(p, bu.getBuffer().getPath()).doImport();
+					} else {
+						if (dontAsk == null) {
+							dontAsk = new HashSet();
+						}
+						dontAsk.add(bu.getBuffer().getPath());
+					}
 				}
 
 			// Notifies trees when a buffer is closed (so it should not be
@@ -818,7 +822,11 @@ public final class ProjectViewer extends JPanel
 		if (folderTree != null) folderTree.setEnabled(flag);
 		if (fileTree != null) fileTree.setEnabled(flag);
 		if (workingFileTree != null) workingFileTree.setEnabled(flag);
-		if (toolBar != null) toolBar.setEnabled(flag);
+		if (toolBar != null) {
+			Component[] buttons = toolBar.getComponents();
+			for (int i = 0; i < buttons.length; i++)
+				buttons[i].setEnabled(flag);
+		}
 		super.setEnabled(flag);
 	} //}}}
 
@@ -848,8 +856,7 @@ public final class ProjectViewer extends JPanel
 
 			if(ie.getItem() instanceof VPTProject) {
 				VPTProject p = (VPTProject) ie.getItem();
-				ProjectManager.getInstance().getProject(p.getName());
-				setProject(p);
+				new ProjectLoader(p.getName()).loadProject();
 			} else {
 				if(ie.getItem().toString().equals(CREATE_NEW_PROJECT)) {
 					SwingUtilities.invokeLater(this);
@@ -944,6 +951,36 @@ public final class ProjectViewer extends JPanel
 				}
 			}
 		}//}}}
+
+	} //}}}
+
+	//{{{ ProjectLoader class
+	/** Loads a project in the background. */
+	private class ProjectLoader implements Runnable {
+
+		private String pName;
+
+		public ProjectLoader(String pName) {
+			this.pName = pName;
+		}
+
+		public void loadProject() {
+			if (ProjectManager.getInstance().isLoaded(pName)) {
+				setProject(ProjectManager.getInstance().getProject(pName));
+			} else {
+				new Thread(this).start();
+			}
+		}
+
+		public void run() {
+			setEnabled(false);
+			((DefaultTreeModel)getCurrentTree().getModel()).setRoot(
+				new DefaultMutableTreeNode(
+					jEdit.getProperty("projectviewer.loading_project",
+						new Object[] { pName } )));
+			setProject(ProjectManager.getInstance().getProject(pName));
+			setEnabled(true);
+		}
 
 	} //}}}
 
