@@ -1,0 +1,99 @@
+plugin.xslt.XSLTPlugin.name=XSLT
+plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill, Carlos Quiroz
+plugin.xslt.XSLTPlugin.version=0.3.1
+plugin.xslt.XSLTPlugin.docs=index.html
+plugin.xslt.XSLTPlugin.jars=xalan.jar xml-apis.jar
+plugin.xslt.XSLTPlugin.depend.0=jdk 1.3
+plugin.xslt.XSLTPlugin.depend.1=jedit 04.00.07.00
+plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 0.8
+
+xslt-menu=\
+  XSLTProcessor-toggle \
+  XSLTProcessor.Transform \
+  - \
+  XPathTool-toggle \
+  XPathTool.Evaluate \
+  - \
+  XSLTProcessor.Indent
+xslt-menu.label=XSLT
+
+javax.xml.transform.TransformerFactory=org.apache.xalan.processor.TransformerFactoryImpl
+javax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl
+org.xml.sax.driver=org.apache.xerces.parsers.SAXParser
+
+XSLTProcessor.title=XSLT Processor
+XSLTProcessor.label=XSLT Processor
+XSLTProcessor.Transform.label=Transform XML
+XSLTProcessor.Indent.label=Indent XML
+XPathTool.title=XPath Tool
+XPathTool.label=XPath Tool
+XPathTool.Evaluate.label=Evaluate XPath
+
+xslt.error={0}\nReason: "{1}"\n\nA stacktrace has been written to the Activity Log.
+
+XSLTProcessor.error.dockFirst=You must dock the XSLT Processor before you can perform this action.
+
+XSLTProcessor.source.label=Source:
+XSLTProcessor.source.pleaseSelect=Please select a source document
+XSLTProcessor.select.button.tooltip=Select XML source
+XSLTProcessor.select.button.icon=/xslt/icons/Open.png
+
+XSLTProcessor.stylesheets.label=Stylesheets:
+XSLTProcessor.add.button.tooltip=Add stylesheet
+XSLTProcessor.add.button.icon=/xslt/icons/Plus.png
+
+XSLTProcessor.remove.button.tooltip=Remove stylesheet
+XSLTProcessor.remove.button.icon=/xslt/icons/Minus.png
+
+XSLTProcessor.up.button.tooltip=Move up
+XSLTProcessor.up.button.icon=/xslt/icons/ArrowUp.png
+
+XSLTProcessor.down.button.tooltip=Move down
+XSLTProcessor.down.button.icon=/xslt/icons/ArrowDown.png
+
+XSLTProcessor.result.label=Result:
+XSLTProcessor.result.pleaseName=Please name for the result document
+
+XSLTProcessor.name.button.tooltip=Name result file
+XSLTProcessor.name.button.icon=/xslt/icons/New.png
+
+XSLTProcessor.transform.button.tooltip=Transform XML
+XSLTProcessor.transform.button.icon=/xslt/icons/Transform.png
+
+XSLTProcessor.transform.status=Transform completed, time taken {0}ms
+
+
+XSLTProcessor.ok.button=OK
+XSLTProcessor.cancel.button=Cancel
+XSLTProcessor.addStylesheet.title=Add Stylesheet
+XSLTProcessor.error.preProcessProblem=An error occurred before any stylesheets were processed.
+XSLTProcessor.error.stylesheetProblem=An error occurred during the processing of stylesheet "{0}".
+
+
+XSLTProcessor.Indent.error=Problem occurred during indenting:
+XSLTProcessor.Transform.error.notEnabled=You must first specify your source document and/or stylesheets in the XSLT Processor window.
+
+XPathTool.error.dockFirst=You must dock the XPath Tool before you can perform this action.
+XPathTool.xpathExpression.label=XPath expression:
+
+XPathTool.evaluate.button.tooltip=Evaluate XPath
+XPathTool.evaluate.button.icon=/xslt/icons/Evaluate.png
+
+XPathTool.result.xpath.evaluted.label=Data type of result:
+XPathTool.result.xpath.node-set=node-set of size {0}
+XPathTool.result.xpath.not-node-set={0}
+
+XPathTool.result.string-value.label=Node-set string value:
+XPathTool.result.value.label=Result value:
+
+XPathTool.result.summary.label=Node-set summary:
+XPathTool.result.xml.string.label=Result as XML fragments:
+
+XPath.node.type=Node Type
+XPath.node.name=Node Name
+XPath.node.dom.value=DOM Value
+
+XPathTool.result.error.unkownProblem=An error occurred during parsing or evaluation.
+XPathTool.result.error.bufferUnparseable=Couldn't parse buffer.
+XPathTool.result.error.expressionUnevaluateable=Couldn't evaluate expression.
+XPathTool.result.error.largeXmlFragment=The XML fragments string is longer than {0} characters, stopped printing the string to avoid OutOfMemoryException.
