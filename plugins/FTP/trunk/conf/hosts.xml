@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<HostAuthorizations>
-<!-- Host Authorizations file, used by the abstract class HostKeyVerification to verify the servers host key -->   
-   <!-- Allow the following hosts access if they provide the correct public key -->
-   <!-- Deny the following hosts access -->
-</HostAuthorizations>

@@ -110,7 +110,6 @@ public class FtpPlugin extends EditPlugin
 		String[] files = new String[] {
 			"authorization.xml",
 			"automation.xml",
-			"hosts.xml",
 			"sshtools.xml"
 		};
 
