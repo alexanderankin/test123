@@ -10,15 +10,16 @@ import org.gjt.sp.jedit.*;
  *
  * @author     mace
  * @created    June 8, 2003
- * @modified   $Date: 2004-01-15 19:47:36 $ by $Author: bemace $
- * @version    $Revision: 1.2 $
+ * @modified   $Date: 2004-02-08 03:06:07 $ by $Author: bemace $
+ * @version    $Revision: 1.3 $
  */
 public class Mark implements Transferable {
 	static final DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class,"ColumnRuler.Mark");
 
 	private String _name;
 	private Color _color;
-	private int _column = 0;
+	protected int _column = 0;
+	private int size = 1;
 	private boolean _visible = true;
 
 	public Mark(String name) {
@@ -29,6 +30,10 @@ public class Mark implements Transferable {
 		this(name);
 		_color = c;
 	}
+
+	public void activate(ColumnRuler ruler) {}
+
+	public void deactivate() {}
 
 	public Object getTransferData(DataFlavor flavor) {
 		return this;
@@ -55,6 +60,10 @@ public class Mark implements Transferable {
 		_visible = b;
 	}
 
+	public void setSize(int s) {
+		size = s;
+	}
+
 	public String getName() {
 		return _name;
 	}
@@ -67,38 +76,13 @@ public class Mark implements Transferable {
 		return _column;
 	}
 
+	public int getSize() {
+		return size;
+	}
+
 	public boolean isVisible() {
 		return _visible;
 	}
 
-	//{{{ Inner Classes
-
-	public static class WrapMark extends Mark {
-		private Buffer _buffer;
-		public WrapMark(Buffer b) {
-			super("Wrap Marker");
-			setBuffer(b);
-			if (b != null) {
-				super.setColumn(b.getIntegerProperty("maxLineLen",0));
-			}
-		}
-
-		public void setColumn(int col) {
-			super.setColumn(col);
-			_buffer.setIntegerProperty("maxLineLen", col);
-			_buffer.propertiesChanged();
-		}
-
-		public void setBuffer(Buffer b) {
-			_buffer = b;
-			super.setColumn(b.getIntegerProperty("maxLineLen", 0));
-		}
-
-		public boolean isVisible() {
-			return !_buffer.getStringProperty("wrap").equals("none");
-		}
-	}
-
-	//}}}
 }
 

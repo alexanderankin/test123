@@ -4,6 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import java.util.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
@@ -15,27 +16,50 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-01-20 05:30:30 $ by $Author: bemace $
- * @version    $Revision: 1.8 $
+ * @modified   $Date: 2004-02-08 03:06:07 $ by $Author: bemace $
+ * @version    $Revision: 1.9 $
  */
-public class ColumnRuler extends JComponent implements EBComponent, CaretListener, ScrollListener, MouseListener, MouseMotionListener {
+public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
 	private DnDManager _dndManager;
-	private int caretColumn = -1;
-	private Mark.WrapMark wrapMarker;
+	private ArrayList markers;
+	private CaretMark caretMark;
+	private WrapMark wrapMarker;
 	private Mark tempMarker = new Mark("",Color.GRAY);
+	private int paint = 0;
 
 	public ColumnRuler(JEditTextArea textArea) {
+		markers = new ArrayList();
 		_textArea = textArea;
-		wrapMarker = new Mark.WrapMark(_textArea.getBuffer());
+		caretMark = new CaretMark();
+		wrapMarker = new WrapMark(_textArea.getBuffer());
+		addMarker(caretMark);
+		addMarker(wrapMarker);
 		tempMarker.setVisible(false);
-		caretColumn = getCaretColumn();
 		_dndManager = new DnDManager(this);
 	}
 
-	//{{{ paint() method
-	public void paint(Graphics gfx) {
+	public void addMarker(Mark m) {
+		m.activate(this);
+		markers.add(m);
+	}
 
+	public void removeMarker(Mark m) {
+		markers.remove(m);
+		m.deactivate();
+	}
+
+	public void removeAllMarkers() {
+		for (int i = 0; i < markers.size(); i++) {
+			Mark m = (Mark) markers.get(i);
+			removeMarker(m);
+		}
+	}
+
+	//{{{ paint() method
+	public synchronized void paint(Graphics g) {
+		//Log.log(Log.DEBUG,this,"paint #"+(paint++));
+		Graphics2D gfx = (Graphics2D) g;
 		//{{{ Get ready
 		_textArea.getBuffer().readLock();
 		int textAreaWidth = _textArea.getWidth();
@@ -92,19 +116,20 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		}
 		//}}}
 
-		//{{{ Draw wrap marker
-		if (wrapMarker.isVisible()) {
-			mark(gfx, wrapMarker.getColumn(), _textArea.getPainter().getWrapGuideColor(),3);
+		//{{{ Draw markers
+		for (int i = 0; i < markers.size(); i++) {
+			Mark m = (Mark) markers.get(i);
+			mark(gfx,m);
+			//Log.log(Log.DEBUG,this,"Painted "+m.getName()+" at column "+m.getColumn());
 		}
 		//}}}
 
-		//{{{ Draw caret indicator
-		if (caretColumn != -1) {
-			mark(gfx,caretColumn,getCaretColor());
+		//{{{ Draw tab indicator
+		if (caretMark.getColumn() != -1) {
 			if (jEdit.getBooleanProperty("options.columnruler.nextTab")) {
-				int x0 = xOffset + caretColumn * charWidth;
+				int x0 = xOffset + caretMark.getColumn() * charWidth;
 				int tabSize = _textArea.getBuffer().getTabSize();
-				int dist = tabSize - (caretColumn % tabSize);
+				int dist = tabSize - (caretMark.getColumn() % tabSize);
 				int x1 = x0 + dist * charWidth;
 				int y = (int) Math.round(lineHeight/2);
 				gfx.setColor(Color.RED);
@@ -152,10 +177,15 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		_textArea.getBuffer().readUnlock();
 	}//}}}
 
-	//{{{ Painting helpers
-	private void mark(Graphics gfx, int col, Color c) {
+	//{{{ mark() methods
+	private void mark(Graphics2D gfx, Mark m) {
+		mark(gfx,m.getColumn(),m.getColor(),m.getSize());
+	}
+
+	private void mark(Graphics2D gfx, int col, Color c) {
 		mark(gfx,col,c,1);
 	}
+
 	/**
 	 * Draws a colored line at the given column
 	 *
@@ -163,7 +193,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	 * @param col  Description of the Parameter
 	 * @param c    Description of the Parameter
 	 */
-	private void mark(Graphics gfx, int col, Color c, int width) {
+	private void mark(Graphics2D gfx, int col, Color c, int width) {
 		int xOffset = PositionCalculator.getXOffset(_textArea);
 		int hScroll = _textArea.getHorizontalOffset();
 		int x = xOffset + col * PositionCalculator.getCharWidth(_textArea);
@@ -175,25 +205,6 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 
 	//{{{ methods for finding data needed to paint ruler
 
-	private int getCaretColumn() {
-		try {
-			Point caret = _textArea.offsetToXY(_textArea.getCaretPosition());
-			int hScroll = _textArea.getHorizontalOffset();
-			if (caret != null) {
-				int caretX = (int) caret.getX();
-				int charWidth = getCharWidth();
-				return (caretX - hScroll) / charWidth;
-			} else {
-				return -1;
-			}
-		} catch (Exception e) {
-			return -1;
-		}
-	}
-
-	private Color getCaretColor() {
-		return _textArea.getPainter().getCaretColor();
-	}
 
 	private FontMetrics getFontMetrics() {
 		return _textArea.getPainter().getFontMetrics();
@@ -203,7 +214,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		return _textArea.getFont().getSize();
 	}
 
-	private int getCharWidth() {
+	int getCharWidth() {
 		return getFontMetrics().charWidth('X');
 	}
 
@@ -234,6 +245,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 
 	//{{{ EBComponent.handleMessage() method
 	public void handleMessage(EBMessage m) {
+		/*
 		//Log.log(Log.DEBUG,this,m);
 		if (m instanceof EditPaneUpdate) {
 			EditPaneUpdate epu = (EditPaneUpdate) m;
@@ -248,39 +260,28 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 				fullUpdate();
 			}
 		}
-
-		if (m instanceof PropertiesChanged) {
-			caretColumn = getCaretColumn();
-			wrapMarker.setColumn(getWrapColumn());
-			repaint();
-		}
+		*/
 	}
 	//}}}
 
 	private void fullUpdate() {
-		caretColumn = getCaretColumn();
-		wrapMarker.setBuffer(_textArea.getBuffer());
-		wrapMarker.setColumn(getWrapColumn());
-		repaint();
+		for (int i = 0; i < markers.size(); i++) {
+			try {
+				DynamicMark m = (DynamicMark) markers.get(i);
+				m.update();
+			} catch (ClassCastException e) {}
+		}
+		Log.log(Log.DEBUG,this,"repaint A");
+		//repaint();
 	}
 
-	//{{{ CaretListener implementation
-	public void caretUpdate(CaretEvent e) {
-		caretColumn = getCaretColumn();
-		repaint();
-	}
-	//}}}
 
 	//{{{ ScrollListener implementation
-	public void scrolledVertically(JEditTextArea textArea) {
-		if (getCaretColumn() >= 0) {
-			caretColumn = getCaretColumn();
-			repaint();
-		}
-	}
+	public void scrolledVertically(JEditTextArea textArea) {}
 
 	public void scrolledHorizontally(JEditTextArea textArea) {
-		repaint();
+		Log.log(Log.DEBUG,this,"repaint C");
+		//repaint();
 	}
 
 	//}}}
@@ -315,12 +316,9 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	public void mouseDragged(MouseEvent e) {}
 
 	public void mouseMoved(MouseEvent e) {
-		int col = getColumnAtPoint(e.getPoint());
-		final int wrapCol = getWrapColumn();
-		if (col == getWrapColumn() && !getWrapMode().equals("none")) {
-			setToolTipText("Wrap marker");
-		} else if (col == caretColumn && col >= 0) {
-			setToolTipText("Caret marker");
+		Mark mark = getMarkAtPoint(e.getPoint());
+		if (mark != null) {
+			setToolTipText(mark.getName());
 		} else {
 			setToolTipText("");
 		}
@@ -347,7 +345,6 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	public void addNotify() {
 		super.addNotify();
 		EditBus.addToBus(this);
-		_textArea.addCaretListener(this);
 		_textArea.addScrollListener(this);
 		addMouseListener(this);
 		addMouseMotionListener(this);
@@ -356,7 +353,6 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	public void removeNotify() {
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-		_textArea.removeCaretListener(this);
 		_textArea.removeScrollListener(this);
 		removeMouseListener(this);
 		removeMouseMotionListener(this);
@@ -409,6 +405,10 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 
 	public Mark getTempMarker() {
 		return tempMarker;
+	}
+
+	public JEditTextArea getTextArea() {
+		return _textArea;
 	}
 
 	public String toString() {
