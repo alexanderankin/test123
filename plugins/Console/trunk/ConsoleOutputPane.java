@@ -26,11 +26,6 @@ import org.gjt.sp.util.Log;
 
 public class ConsoleOutputPane extends JPanel implements Output
 {
-	public static final Color PLAIN_COLOR = Color.black;
-	public static final Color INFO_COLOR = new Color(0x009600);
-	public static final Color WARNING_COLOR = new Color(0xffa800);
-	public static final Color ERROR_COLOR = Color.red;
-
 	public ConsoleOutputPane(ConsoleFrame console)
 	{
 		super(new BorderLayout());
@@ -38,27 +33,29 @@ public class ConsoleOutputPane extends JPanel implements Output
 		this.console = console;
 
 		output = new JTextPane();
+		propertiesChanged();
+
 		add(BorderLayout.CENTER,new JScrollPane(output));
 	}
 
 	public void printPlain(String msg)
 	{
-		addOutput(PLAIN_COLOR,msg);
+		addOutput(console.plainColor,msg);
 	}
 
 	public void printInfo(String msg)
 	{
-		addOutput(INFO_COLOR,msg);
+		addOutput(console.infoColor,msg);
 	}
 
 	public void printWarning(String msg)
 	{
-		addOutput(WARNING_COLOR,msg);
+		addOutput(console.warningColor,msg);
 	}
 
 	public void printError(String msg)
 	{
-		addOutput(ERROR_COLOR,msg);
+		addOutput(console.errorColor,msg);
 	}
 
 	public View getView()
@@ -69,6 +66,13 @@ public class ConsoleOutputPane extends JPanel implements Output
 	public void clear()
 	{
 		output.setText("");
+	}
+
+	// package-private members
+	void propertiesChanged()
+	{
+		output.setBackground(console.bgColor);
+		output.setFont(console.defaultFont);
 	}
 
 	// private members

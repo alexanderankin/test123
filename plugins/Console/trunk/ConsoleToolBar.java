@@ -34,11 +34,12 @@ public class ConsoleToolBar extends JToolBar
 
 		add(BorderLayout.WEST,shells = new JComboBox(EditBus
 			.getNamedList(Shell.SHELLS_LIST)));
-		shells.setSelectedItem(jEdit.getProperty("console.shell"));
+		String defaultShell = jEdit.getProperty("console.shell");
+		shells.setSelectedItem(defaultShell);
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
-		cmd = new HistoryTextField("console");
+		cmd = new HistoryTextField("console." + defaultShell);
 		Dimension dim = cmd.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
 		cmd.setMaximumSize(dim);
@@ -61,6 +62,7 @@ public class ConsoleToolBar extends JToolBar
 			String command = cmd.getText();
 			if(command != null && command.length() != 0)
 			{
+				cmd.setModel("console." + shells.getSelectedItem());
 				cmd.addCurrentToHistory();
 				cmd.setText(null);
 
