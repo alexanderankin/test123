@@ -4,7 +4,7 @@ package gatchan.phpparser.parser;
 import java.util.ArrayList;
 import java.io.StringReader;
 import java.io.*;
-import java.util.Vector;
+import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
@@ -14,64 +14,72 @@ import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
 /**
  * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
  *
- * @author Matthieu Casanova <hoyo@free.fr>
+ * @author Matthieu Casanova <chocolat.mou@gmail.com>
  */
 public final class PHPParser implements PHPParserConstants {
 
-//todo : fix the variables names bug
-//todo : handle tilde operator
+  //{{{ Fields
 
-//todo: put this in an interface
+
+  //todo : fix the variables names bug
+  //todo : handle tilde operator
+
+  //todo: put this in an interface
   public static final int ERROR = 2;
   public static final int WARNING = 1;
   public static final int INFO = 0;
   public static final int TASK = 3;
 
   /** The current segment. */
-  private static OutlineableWithChildren currentSegment;
+  private OutlineableWithChildren currentSegment;
 
-  private static final String PARSE_ERROR_STRING = "Parse error"; //$NON-NLS-1$
-  private static final String PARSE_WARNING_STRING = "Warning"; //$NON-NLS-1$
-  static PHPOutlineInfo outlineInfo;
+  private PHPOutlineInfo outlineInfo;
 
   /** The error level of the current ParseException. */
-  private static int errorLevel = ERROR;
+  private int errorLevel = ERROR;
   /** The message of the current ParseException. If it's null it's because the parse exception wasn't handled */
-  private static String errorMessage;
+  private String errorMessage;
 
-  private static int errorStart = -1;
-  private static int errorEnd = -1;
-  private static PHPDocument phpDocument;
+  private int errorStart = -1;
+  private int errorEnd = -1;
+  private PHPDocument phpDocument;
 
   private static final String SYNTAX_ERROR_CHAR = "syntax error";
   /**
-   * The point where html starts.
-   * It will be used by the token manager to create HTMLCode objects
-   */
-  public static int htmlStart;
-  public static int htmlLineStart;
-  public static int htmlColumnStart;
+  * The point where html starts.
+  * It will be used by the token manager to create HTMLCode objects
+  */
+  private int htmlStart;
+  private int htmlLineStart;
+  private int htmlColumnStart;
 
   //ast stack
-  private final static int AstStackIncrement = 100;
+  private static final int AstStackIncrement = 100;
   /** The stack of node. */
-  private static AstNode[] nodes;
+  private AstNode[] nodes;
   /** The cursor in expression stack. */
-  private static int nodePtr;
+  private int nodePtr;
 
   public static final boolean PARSER_DEBUG = false;
 
-  private final Vector parserListeners = new Vector();
+  private final List parserListeners = new ArrayList();
 
   private String path;
 
   /**
-   * Tell if the parsing should be stopped.
-   */
+  * Tell if the parsing should be stopped.
+  */
   private boolean shouldStop;
+
+  //}}}
+
+  //{{{ PHPParser()
 
   public PHPParser() {
   }
+
+  //}}}
+  //{{{ getPath()
 
   /**
    * Set the path of the file that is currently parsed.
@@ -83,9 +91,15 @@ public final class PHPParser implements PHPParserConstants {
     this.path = path;
   }
 
+  //}}}
+  //{{{ getPath()
+
   public String getPath() {
     return path;
   }
+
+  //}}}
+  //{{{ stop()
 
   /**
    * Ask the parser to stop his work.
@@ -94,9 +108,15 @@ public final class PHPParser implements PHPParserConstants {
     shouldStop = true;
   }
 
+  //}}}
+  //{{{ isStopped()
+
   public boolean isStopped() {
     return shouldStop;
   }
+
+  //}}}
+  //{{{ addParserListener(final PHPParserListener listener)
 
   public void addParserListener(final PHPParserListener listener) {
     if (!parserListeners.contains(listener)) {
@@ -104,23 +124,35 @@ public final class PHPParser implements PHPParserConstants {
     }
   }
 
+  //}}}
+  //{{{ removeParserListener(final PHPParserListener listener)
+
   public void removeParserListener(final PHPParserListener listener) {
     parserListeners.remove(listener);
   }
 
+  //}}}
+  //{{{ fireParseError(final PHPParseErrorEvent e)
+
   public void fireParseError(final PHPParseErrorEvent e) {
     for (int i = 0;i<parserListeners.size();i++) {
-        PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+        final PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
         listener.parseError(e);
     }
   }
 
+  //}}}
+  //{{{ fireParseMessage(final PHPParseMessageEvent e)
+
   public void fireParseMessage(final PHPParseMessageEvent e) {
     for (int i = 0;i<parserListeners.size();i++) {
-        PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+        final PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
         listener.parseMessage(e);
     }
   }
+
+  //}}}
+  //{{{ phpParserTester(final String strEval)
 
   public final void phpParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
@@ -137,6 +169,9 @@ public final class PHPParser implements PHPParserConstants {
     phpTest();
   }
 
+  //}}}
+  //{{{ htmlParserTester(final File fileName)
+
   public final void htmlParserTester(final File fileName) throws FileNotFoundException, ParseException {
     final Reader stream = new FileReader(fileName);
     if (jj_input_stream == null) {
@@ -150,6 +185,9 @@ public final class PHPParser implements PHPParserConstants {
     outlineInfo = new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
+
+  //}}}
+  //{{{ htmlParserTester(final String strEval)
 
   public final void htmlParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
@@ -165,10 +203,13 @@ public final class PHPParser implements PHPParserConstants {
     phpFile();
   }
 
+  //}}}
+  //{{{ init()
+
   /**
    * Reinitialize the parser.
    */
-  private static final void init() {
+  private void init() {
     nodes = new AstNode[AstStackIncrement];
     nodePtr = -1;
     htmlStart = 0;
@@ -176,11 +217,14 @@ public final class PHPParser implements PHPParserConstants {
     htmlLineStart = 0;
   }
 
+  //}}}
+  //{{{ pushOnAstNodes(final AstNode node)
+
   /**
    * Add an php node on the stack.
    * @param node the node that will be added to the stack
    */
-  private static final void pushOnAstNodes(final AstNode node) {
+  private void pushOnAstNodes(final AstNode node) {
     try {
       nodes[++nodePtr] = node;
     } catch (IndexOutOfBoundsException e) {
@@ -192,6 +236,9 @@ public final class PHPParser implements PHPParserConstants {
       nodes[nodePtr] = node;
     }
   }
+
+  //}}}
+  //{{{ parseInfo(final Object parent, final String s)
 
   public final PHPOutlineInfo parseInfo(final Object parent, final String s) throws ParseException {
     phpDocument = new PHPDocument(parent,"_root");
@@ -210,6 +257,9 @@ public final class PHPParser implements PHPParserConstants {
     return outlineInfo;
   }
 
+  //}}}
+  //{{{ createNewHTMLCode()
+
   /**
    * Put a new html block in the stack.
    */
@@ -224,46 +274,47 @@ public final class PHPParser implements PHPParserConstants {
     pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition,htmlLineStart,token.endLine,htmlColumnStart,token.endColumn));
   }
 
-  /** Create a new task. */
-/*  public final void createNewTask(final int todoStart) {
-    final StringBuffer currentBuffer = jj_input_stream.getCurrentBuffer();
-    final String  todo = currentBuffer.substring(todoStart,currentBuffer.indexOf("\n",todoStart)-1);
-    if (!PARSER_DEBUG) {
-      try {
-        setMarker(fileToParse,
-                  todo,
-                  jj_input_stream.getBeginLine(),
-                  TASK,
-                  "Line "+jj_input_stream.getBeginLine());
-      } catch (CoreException e) {
-        PHPeclipsePlugin.log(e);
-      }
-    }
-  }      */
+  //}}}
+  //{{{ error_skipto(final int kind)
 
-  Token error_skipto(int kind) {
-  //  ParseException e = generateParseException();  // generate the exception object.
-  //  System.out.println(e.toString());  // print the error message
+  Token error_skipto(final int kind) {
+    //  ParseException e = generateParseException();  // generate the exception object.
+    //  System.out.println(e.toString());  // print the error message
     Token t;
     do {
       t = getNextToken();
-    } while (t.kind != kind && t.kind != PHPParserConstants.EOF);
+    } while (t.kind != kind && t.kind != PHPParserConstants.EOF && t.kind != PHPParserConstants.RBRACE);
     return t;
   }
+
+  //}}}
+  //{{{ parse()
 
   public final void parse() throws ParseException {
           phpFile();
   }
 
+  //}}}
+  //{{{ getPHPDocument()
+
   public PHPDocument getPHPDocument() {
     return phpDocument;
   }
 
+//}}}
+
+//{{{ PARSER
+
+//{{{ PHP Structures
+
+//{{{ phpTest()
   final public void phpTest() throws ParseException {
     Php();
     jj_consume_token(0);
   }
 
+//}}}
+//{{{ phpFile()
   final public void phpFile() throws ParseException {
     try {
       label_1:
@@ -339,6 +390,9 @@ public final class PHPParser implements PHPParserConstants {
                                           jj_input_stream.getEndColumn()));
     }
   }
+
+//}}}
+//{{{ PhpBlock()
 
 /**
  * A php block is a <?= expression [;]?>
@@ -457,6 +511,8 @@ public final class PHPParser implements PHPParserConstants {
     }
   }
 
+//}}}
+//{{{ phpEchoBlock()
   final public PHPEchoBlock phpEchoBlock() throws ParseException {
   final Expression expr;
   PHPEchoBlock echoBlock;
@@ -504,6 +560,8 @@ public final class PHPParser implements PHPParserConstants {
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ Php()
   final public void Php() throws ParseException {
     label_2:
     while (true) {
@@ -560,6 +618,15 @@ public final class PHPParser implements PHPParserConstants {
       BlockStatement();
     }
   }
+
+//}}}
+
+
+//}}}
+
+//{{{ Class methods
+
+//{{{ ClassDeclaration()
 
 /**
  * A Class declaration.
@@ -618,7 +685,7 @@ public final class PHPParser implements PHPParserConstants {
       jj_la1[6] = jj_gen;
       ;
     }
-    int start, end,beginLine,endLine,beginColumn,endColumn;
+    final int end,endLine,endColumn;
     if (className == null) {
       end         = classToken.sourceEnd;
       endLine     = classToken.endLine;
@@ -682,8 +749,11 @@ public final class PHPParser implements PHPParserConstants {
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ClassBody(final ClassDeclaration classDeclaration)
   final public void ClassBody(final ClassDeclaration classDeclaration) throws ParseException {
-Token lBraceToken, rBraceToken;
+  final Token lBraceToken;
+  Token rBraceToken;
     try {
       lBraceToken = jj_consume_token(LBRACE);
       classDeclaration.setBodyStart(lBraceToken.sourceStart);
@@ -733,6 +803,9 @@ Token lBraceToken, rBraceToken;
     }
   }
 
+//}}}
+//{{{ ClassBodyDeclaration(final ClassDeclaration classDeclaration)
+
 /**
  * A class can contain only methods and fields.
  */
@@ -755,6 +828,9 @@ Token lBraceToken, rBraceToken;
     }
   }
 
+//}}}
+//{{{ FieldDeclaration()
+
 /**
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
@@ -763,26 +839,26 @@ Token lBraceToken, rBraceToken;
   VariableDeclaration variableDeclaration;
   final VariableDeclaration[] list;
   final ArrayList arrayList = new ArrayList();
-  final Token token;
-  Token token2 = null;
+  final Token varToken;
+  Token semicolonToken = null;
   int pos;
-    token = jj_consume_token(VAR);
+    varToken = jj_consume_token(VAR);
     try {
       variableDeclaration = VariableDeclaratorNoSuffix();
         arrayList.add(variableDeclaration);
         pos = variableDeclaration.sourceEnd;
     } catch (ParseException e) {
-      Token semicolon = error_skipto(SEMICOLON);
+      final Token semicolon = error_skipto(SEMICOLON);
       fireParseError(new PHPParseErrorEvent(ERROR,
                                             path,
                                             "variable expected",
                                             "variable",
                                             e.currentToken.next.image,
-                                            token.sourceEnd,
+                                            varToken.sourceEnd,
                                             semicolon.sourceEnd,
-                                            token.beginLine,
+                                            varToken.beginLine,
                                             semicolon.endLine,
-                                            token.endColumn,
+                                            varToken.endColumn,
                                             semicolon.endColumn));
       {if (true) return null;}
     }
@@ -803,7 +879,7 @@ Token lBraceToken, rBraceToken;
         pos = variableDeclaration.sourceEnd;
     }
     try {
-      token2 = jj_consume_token(SEMICOLON);
+      semicolonToken = jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -817,34 +893,41 @@ Token lBraceToken, rBraceToken;
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
     }
-   if (arrayList.size() != 0) {
-   list = new VariableDeclaration[arrayList.size()];
-     arrayList.toArray(list);
-
-   } else {
+   if (arrayList.size() == 0) {
     //todo : strange
      {if (true) return null;}
+   } else {
+     list = new VariableDeclaration[arrayList.size()];
+     arrayList.toArray(list);
    }
-   int end,endLine,endColumn;
-   if (token2 == null) {
-     end = list[list.length-1].sourceEnd;
-     endLine = list[list.length-1].getEndLine();
+   final int end, endLine, endColumn;
+   if (semicolonToken == null) {
+     end       = list[list.length-1].sourceEnd;
+     endLine   = list[list.length-1].getEndLine();
      endColumn = list[list.length-1].getEndColumn();
    } else {
-     end = token2.sourceEnd;
-     endLine = token2.endLine;
-     endColumn = token2.endColumn;
+     end       = semicolonToken.sourceEnd;
+     endLine   = semicolonToken.endLine;
+     endColumn = semicolonToken.endColumn;
    }
    {if (true) return new FieldDeclaration(list,
                                currentSegment,
-                               token.sourceStart,
+                               varToken.sourceStart,
                                end,
-                               token.beginLine,
+                               varToken.beginLine,
                                endLine,
-                               token.beginColumn,
+                               varToken.beginColumn,
                                endColumn);}
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+
+//}}}
+
+//{{{ Variables
+
+//{{{ VariableDeclaratorNoSuffix()
 
 /**
  * a strict variable declarator : there cannot be a suffix here.
@@ -852,20 +935,21 @@ Token lBraceToken, rBraceToken;
  */
   final public VariableDeclaration VariableDeclaratorNoSuffix() throws ParseException {
   final Token identifierToken, lbrace,rbrace;
-  Expression expr, initializer = null;
+  final Expression expr;
+  Expression initializer = null;
   Token assignToken = null;
-  Token dollar;
-  Variable variable;
-    dollar = jj_consume_token(DOLLAR);
+  final Token dollarToken;
+  final Variable variable;
+    dollarToken = jj_consume_token(DOLLAR);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IDENTIFIER:
       identifierToken = jj_consume_token(IDENTIFIER);
       variable = new Variable(identifierToken.image,
-                              dollar.sourceStart,
+                              dollarToken.sourceStart,
                               identifierToken.sourceEnd,
-                              dollar.beginLine,
+                              dollarToken.beginLine,
                               identifierToken.endLine,
-                              dollar.beginColumn,
+                              dollarToken.beginColumn,
                               identifierToken.endColumn);
       break;
     case LBRACE:
@@ -943,6 +1027,9 @@ Token lBraceToken, rBraceToken;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ VariableDeclarator()
+
 /**
  * this will be used by static statement
  */
@@ -1009,6 +1096,9 @@ Token lBraceToken, rBraceToken;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ VariableDeclaratorId()
+
 /**
  * A Variable name.
  * @return the variable name (with suffix)
@@ -1019,12 +1109,18 @@ Token lBraceToken, rBraceToken;
       var = Variable();
       label_5:
       while (true) {
-        if (jj_2_1(2)) {
+        switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+        case CLASSACCESS:
+        case LBRACE:
+        case LBRACKET:
           ;
-        } else {
+          break;
+        default:
+          jj_la1[13] = jj_gen;
           break label_5;
         }
-        var = VariableSuffix(var);
+        // LOOKAHEAD(2)
+              var = VariableSuffix(var);
       }
      {if (true) return var;}
     } catch (ParseException e) {
@@ -1037,6 +1133,8 @@ Token lBraceToken, rBraceToken;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ Variable()
   final public Variable Variable() throws ParseException {
   Variable variable = null;
   final Token dollarToken;
@@ -1047,11 +1145,13 @@ Token lBraceToken, rBraceToken;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ Var()
   final public Variable Var() throws ParseException {
   Variable variable = null;
   final Token token,token2;
   ConstantIdentifier constant;
-  Expression expression;
+  final Expression expression;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DOLLAR:
       token = jj_consume_token(DOLLAR);
@@ -1088,13 +1188,15 @@ Token lBraceToken, rBraceToken;
                               token.endColumn);}
       break;
     default:
-      jj_la1[13] = jj_gen;
+      jj_la1[14] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ VariableInitializer()
   final public Expression VariableInitializer() throws ParseException {
   final Expression expr;
   final Token token, token2;
@@ -1119,7 +1221,7 @@ Token lBraceToken, rBraceToken;
         token = jj_consume_token(FLOATING_POINT_LITERAL);
         break;
       default:
-        jj_la1[14] = jj_gen;
+        jj_la1[15] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1139,7 +1241,7 @@ Token lBraceToken, rBraceToken;
         token = jj_consume_token(FLOATING_POINT_LITERAL);
         break;
       default:
-        jj_la1[15] = jj_gen;
+        jj_la1[16] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1158,13 +1260,21 @@ Token lBraceToken, rBraceToken;
    {if (true) return new ConstantIdentifier(token);}
       break;
     default:
-      jj_la1[16] = jj_gen;
+      jj_la1[17] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+
+
+//}}}
+
+//{{{ Arrays
+
+//{{{ ArrayVariable()
   final public ArrayVariableDeclaration ArrayVariable() throws ParseException {
 final Expression expr,expr2;
     expr = Expression();
@@ -1175,13 +1285,15 @@ final Expression expr,expr2;
      {if (true) return new ArrayVariableDeclaration(expr,expr2);}
       break;
     default:
-      jj_la1[17] = jj_gen;
+      jj_la1[18] = jj_gen;
       ;
     }
    {if (true) return new ArrayVariableDeclaration(expr,expr.sourceEnd,expr.getBeginLine(),expr.getEndLine(),expr.getBeginColumn(),expr.getEndColumn());}
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ArrayInitializer()
   final public ArrayVariableDeclaration[] ArrayInitializer() throws ParseException {
   ArrayVariableDeclaration expr;
   final ArrayList list = new ArrayList();
@@ -1213,7 +1325,7 @@ final Expression expr,expr2;
        list.add(expr);
       label_6:
       while (true) {
-        if (jj_2_2(2)) {
+        if (jj_2_1(2)) {
           ;
         } else {
           break label_6;
@@ -1224,7 +1336,7 @@ final Expression expr,expr2;
       }
       break;
     default:
-      jj_la1[18] = jj_gen;
+      jj_la1[19] = jj_gen;
       ;
     }
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1233,7 +1345,7 @@ final Expression expr,expr2;
                list.add(null);
       break;
     default:
-      jj_la1[19] = jj_gen;
+      jj_la1[20] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -1243,6 +1355,15 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+
+
+//}}}
+
+//{{{ Methods functions
+
+//{{{ MethodDeclaration()
+
 /**
  * A Method Declaration.
  * <b>function</b> MetodDeclarator() Block()
@@ -1251,19 +1372,26 @@ final Expression expr,expr2;
  */
   final public MethodDeclaration MethodDeclaration() throws ParseException {
   final MethodDeclaration functionDeclaration;
+  final MethodHeader methodHeader;
   final Block block;
   final OutlineableWithChildren seg = currentSegment;
-  final Token token;
-    token = jj_consume_token(FUNCTION);
-    functionDeclaration = MethodDeclarator(token.sourceStart);
-    outlineInfo.addVariable(functionDeclaration.name);
+  final Token functionToken;
+    functionToken = jj_consume_token(FUNCTION);
+    methodHeader = methodHeader(functionToken);
+    functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
+    outlineInfo.addVariable(functionDeclaration.getName());
     currentSegment = functionDeclaration;
     block = Block();
    functionDeclaration.statements = block.statements;
+   functionDeclaration.setBodyStart(block.getSourceStart());
+   functionDeclaration.setBodyEnd(token.sourceEnd);
    currentSegment = seg;
    {if (true) return functionDeclaration;}
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ methodHeader(final int functionToken)
 
 /**
  * A MethodDeclarator.
@@ -1271,25 +1399,24 @@ final Expression expr,expr2;
  *
  * @return a function description for the outline
  */
-  final public MethodDeclaration MethodDeclarator(final int start) throws ParseException {
+  final public MethodHeader methodHeader(final Token functionToken) throws ParseException {
   Token identifier = null;
   Token reference = null;
   final ArrayList formalParameters = new ArrayList();
   String identifierChar = SYNTAX_ERROR_CHAR;
-  int end = start;
+  Token endToken;
+  Token lastToken;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case BIT_AND:
       reference = jj_consume_token(BIT_AND);
-                          end = reference.sourceEnd;
       break;
     default:
-      jj_la1[20] = jj_gen;
+      jj_la1[21] = jj_gen;
       ;
     }
     try {
       identifier = jj_consume_token(IDENTIFIER);
       identifierChar = identifier.image;
-      end = identifier.sourceEnd;
     } catch (ParseException e) {
     if (e.currentToken.next.kind == PHPParserConstants.LPAREN) {
       fireParseError(new PHPParseErrorEvent(ERROR,
@@ -1297,7 +1424,7 @@ final Expression expr,expr2;
                                             "identifier expected",
                                             "identifier",
                                             e.currentToken.image,
-                                            start,
+                                            functionToken.sourceStart,
                                             e.currentToken.sourceStart,
                                             e.currentToken.beginLine,
                                             e.currentToken.endLine,
@@ -1318,43 +1445,53 @@ final Expression expr,expr2;
       //error_skipto(PHPParserConstants.LPAREN);
     }
     }
-    end = FormalParameters(formalParameters);
-  int nameStart, nameEnd;
-  if (identifier == null) {
-    if (reference == null) {
-      nameStart = start + 9;
-      nameEnd = start + 10;
+    FormalParameters(formalParameters);
+    final int nameStart, nameEnd;
+    if (identifier == null) {
+      if (reference == null) {
+        nameStart = functionToken.sourceStart + 9;
+        nameEnd   = functionToken.sourceStart + 10;
+      } else {
+        nameStart = reference.sourceEnd + 1;
+        nameEnd   = reference.sourceEnd + 2;
+      }
     } else {
-      nameStart = reference.sourceEnd + 1;
-      nameEnd = reference.sourceEnd + 2;
-    }
-  } else {
       nameStart = identifier.sourceStart;
       nameEnd = identifier.sourceEnd;
-  }
-  {if (true) return new MethodDeclaration(currentSegment,
-                               identifierChar,
-                               formalParameters,
-                               reference != null,
-                               nameStart,
-                               nameEnd,
-                               start,
-                               end);}
+    }
+    {if (true) return new MethodHeader(identifierChar,
+                            reference != null,
+                            formalParameters,
+                            functionToken.sourceStart,
+                            token.sourceEnd,
+                            functionToken.beginLine,
+                            token.endLine,
+                            functionToken.beginColumn,
+                            token.endColumn);}
+/*    return new MethodDeclaration(currentSegment,
+                                 identifierChar,
+                                 formalParameters,
+                                 reference != null,
+                                 nameStart,
+                                 nameEnd,
+                                 functionToken.sourceStart,
+                                 end);*/
+
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ FormalParameters(final ArrayList parameters)
 
 /**
  * FormalParameters follows method identifier.
  * (FormalParameter())
  */
-  final public int FormalParameters(final ArrayList parameters) throws ParseException {
+  final public void FormalParameters(final ArrayList parameters) throws ParseException {
   VariableDeclaration var;
-  final Token token;
-  Token tok = this.token;
-  int end = tok.sourceEnd;
+  final Token rparenToken;
     try {
-      tok = jj_consume_token(LPAREN);
-   end = tok.sourceEnd;
+      jj_consume_token(LPAREN);
     } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -1372,7 +1509,7 @@ final Expression expr,expr2;
     case BIT_AND:
     case DOLLAR:
       var = FormalParameter();
-     parameters.add(var);end = var.sourceEnd;
+     parameters.add(var);
       label_7:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1380,13 +1517,13 @@ final Expression expr,expr2;
           ;
           break;
         default:
-          jj_la1[21] = jj_gen;
+          jj_la1[22] = jj_gen;
           break label_7;
         }
         jj_consume_token(COMMA);
         try {
           var = FormalParameter();
-           parameters.add(var);end = var.sourceEnd;
+           parameters.add(var);
         } catch (ParseException e) {
           fireParseError(new PHPParseErrorEvent(ERROR,
                                                 path,
@@ -1403,12 +1540,11 @@ final Expression expr,expr2;
       }
       break;
     default:
-      jj_la1[22] = jj_gen;
+      jj_la1[23] = jj_gen;
       ;
     }
     try {
-      token = jj_consume_token(RPAREN);
-     end = token.sourceEnd;
+      rparenToken = jj_consume_token(RPAREN);
     } catch (ParseException e) {
                                //recup rparen si avant lbrace
       Token nextToken = getNextToken();
@@ -1453,9 +1589,10 @@ final Expression expr,expr2;
                                         nextToken.endColumn-1));
       }
     }
-  {if (true) return end;}
-    throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ FormalParameter()
 
 /**
  * A formal parameter.
@@ -1469,7 +1606,7 @@ final Expression expr,expr2;
       bitAndToken = jj_consume_token(BIT_AND);
       break;
     default:
-      jj_la1[23] = jj_gen;
+      jj_la1[24] = jj_gen;
       ;
     }
     variableDeclaration = VariableDeclaratorNoSuffix();
@@ -1481,6 +1618,11 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+
+//}}}
+
+//{{{ Type()
   final public ConstantIdentifier Type() throws ParseException {
  final Token token;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1521,13 +1663,18 @@ final Expression expr,expr2;
                        {if (true) return new ConstantIdentifier(token);}
       break;
     default:
-      jj_la1[24] = jj_gen;
+      jj_la1[25] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+
+//{{{ Expressions
+
+//{{{ Expression()
   final public Expression Expression() throws ParseException {
   final Expression expr;
   Expression initializer = null;
@@ -1572,7 +1719,7 @@ final Expression expr,expr2;
         initializer = Expression();
         break;
       default:
-        jj_la1[25] = jj_gen;
+        jj_la1[26] = jj_gen;
         ;
       }
     if (assignOperator != null) {// todo : change this, very very bad :(
@@ -1600,7 +1747,7 @@ final Expression expr,expr2;
                                            expr.getBeginColumn(),
                                            initializer.getEndColumn());}
         }
-        String varName = expr.toStringExpression().substring(1);
+        final String varName = expr.toStringExpression().substring(1);
         {if (true) return new VariableDeclaration(currentSegment,
                                        new Variable(varName,
                                                     expr.sourceStart,
@@ -1611,10 +1758,10 @@ final Expression expr,expr2;
                                                     expr.getEndColumn()),
                                        expr.sourceStart,
                                        assignOperator.sourceEnd,
-                                           expr.getBeginLine(),
-                                           assignOperator.endLine,
-                                           expr.getBeginColumn(),
-                                           assignOperator.endColumn);}
+                                       expr.getBeginLine(),
+                                       assignOperator.endLine,
+                                       expr.getBeginColumn(),
+                                       assignOperator.endColumn);}
     }
     {if (true) return expr;}
       break;
@@ -1624,32 +1771,6 @@ final Expression expr,expr2;
                                   {if (true) return expr;}
       break;
     default:
-      jj_la1[26] = jj_gen;
-      jj_consume_token(-1);
-      throw new ParseException();
-    }
-    throw new Error("Missing return statement in function");
-  }
-
-  final public Expression ExpressionWBang() throws ParseException {
-  final Expression expr;
-  final Token token;
-    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
-    case BANG:
-      token = jj_consume_token(BANG);
-      expr = ExpressionWBang();
-   {if (true) return new PrefixedUnaryExpression(expr,
-                                      OperatorIds.NOT,
-                                      token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
-      break;
-    case LIST:
-    case PRINT:
-      expr = ExpressionNoBang();
-                             {if (true) return expr;}
-      break;
-    default:
       jj_la1[27] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
@@ -1657,8 +1778,38 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ExpressionWBang()
+  final public Expression ExpressionWBang() throws ParseException {
+  final Expression expr;
+  final Token bangToken;
+    switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
+    case BANG:
+      bangToken = jj_consume_token(BANG);
+      expr = ExpressionWBang();
+   {if (true) return new PrefixedUnaryExpression(expr,
+                                      OperatorIds.NOT,
+                                      bangToken.sourceStart,
+                                      bangToken.beginLine,
+                                      bangToken.beginColumn);}
+      break;
+    case LIST:
+    case PRINT:
+      expr = ExpressionNoBang();
+                             {if (true) return expr;}
+      break;
+    default:
+      jj_la1[28] = jj_gen;
+      jj_consume_token(-1);
+      throw new ParseException();
+    }
+    throw new Error("Missing return statement in function");
+  }
+
+//}}}
+//{{{ ExpressionNoBang()
   final public Expression ExpressionNoBang() throws ParseException {
-  Expression expr;
+  final Expression expr;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case LIST:
       expr = ListExpression();
@@ -1669,12 +1820,15 @@ final Expression expr,expr2;
                               {if (true) return expr;}
       break;
     default:
-      jj_la1[28] = jj_gen;
+      jj_la1[29] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ AssignmentOperator()
 
 /**
  * Any assignement operator.
@@ -1736,13 +1890,15 @@ final Expression expr,expr2;
                                          {if (true) return assignOperator;}
       break;
     default:
-      jj_la1[29] = jj_gen;
+      jj_la1[30] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ConditionalExpression()
   final public Expression ConditionalExpression() throws ParseException {
   final Expression expr;
   Expression expr2 = null;
@@ -1756,7 +1912,7 @@ final Expression expr,expr2;
       expr3 = ConditionalExpression();
       break;
     default:
-      jj_la1[30] = jj_gen;
+      jj_la1[31] = jj_gen;
       ;
     }
   if (expr3 == null) {
@@ -1766,6 +1922,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ConditionalOrExpression()
   final public Expression ConditionalOrExpression() throws ParseException {
   Expression expr,expr2;
   int operator;
@@ -1778,7 +1936,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[31] = jj_gen;
+        jj_la1[32] = jj_gen;
         break label_8;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1791,7 +1949,7 @@ final Expression expr,expr2;
                  operator = OperatorIds.ORL;
         break;
       default:
-        jj_la1[32] = jj_gen;
+        jj_la1[33] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1802,6 +1960,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ConditionalAndExpression()
   final public Expression ConditionalAndExpression() throws ParseException {
   Expression expr,expr2;
   int operator;
@@ -1814,7 +1974,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[33] = jj_gen;
+        jj_la1[34] = jj_gen;
         break label_9;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1827,7 +1987,7 @@ final Expression expr,expr2;
                 operator = OperatorIds.ANDL;
         break;
       default:
-        jj_la1[34] = jj_gen;
+        jj_la1[35] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1838,6 +1998,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ConcatExpression()
   final public Expression ConcatExpression() throws ParseException {
   Expression expr,expr2;
     expr = InclusiveOrExpression();
@@ -1848,7 +2010,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[35] = jj_gen;
+        jj_la1[36] = jj_gen;
         break label_10;
       }
       jj_consume_token(DOT);
@@ -1859,6 +2021,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ InclusiveOrExpression()
   final public Expression InclusiveOrExpression() throws ParseException {
   Expression expr,expr2;
     expr = ExclusiveOrExpression();
@@ -1869,7 +2033,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[36] = jj_gen;
+        jj_la1[37] = jj_gen;
         break label_11;
       }
       jj_consume_token(BIT_OR);
@@ -1880,6 +2044,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ExclusiveOrExpression()
   final public Expression ExclusiveOrExpression() throws ParseException {
   Expression expr,expr2;
     expr = AndExpression();
@@ -1890,7 +2056,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[37] = jj_gen;
+        jj_la1[38] = jj_gen;
         break label_12;
       }
       jj_consume_token(XOR);
@@ -1901,6 +2067,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}} 
+//{{{ AndExpression()
   final public Expression AndExpression() throws ParseException {
   Expression expr,expr2;
     expr = EqualityExpression();
@@ -1911,7 +2079,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[38] = jj_gen;
+        jj_la1[39] = jj_gen;
         break label_13;
       }
       jj_consume_token(BIT_AND);
@@ -1922,6 +2090,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ EqualityExpression()
   final public Expression EqualityExpression() throws ParseException {
   Expression expr,expr2;
   int operator;
@@ -1938,7 +2108,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[39] = jj_gen;
+        jj_la1[40] = jj_gen;
         break label_14;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -1963,7 +2133,7 @@ final Expression expr,expr2;
                                   operator = OperatorIds.EQUAL_EQUAL_EQUAL;
         break;
       default:
-        jj_la1[40] = jj_gen;
+        jj_la1[41] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -1998,6 +2168,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ RelationalExpression()
   final public Expression RelationalExpression() throws ParseException {
   Expression expr,expr2;
   int operator;
@@ -2012,7 +2184,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[41] = jj_gen;
+        jj_la1[42] = jj_gen;
         break label_15;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2033,7 +2205,7 @@ final Expression expr,expr2;
           operator = OperatorIds.GREATER_EQUAL;
         break;
       default:
-        jj_la1[42] = jj_gen;
+        jj_la1[43] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2044,6 +2216,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ShiftExpression()
   final public Expression ShiftExpression() throws ParseException {
   Expression expr,expr2;
   int operator;
@@ -2057,7 +2231,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[43] = jj_gen;
+        jj_la1[44] = jj_gen;
         break label_16;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2074,7 +2248,7 @@ final Expression expr,expr2;
                       operator = OperatorIds.UNSIGNED_RIGHT_SHIFT;
         break;
       default:
-        jj_la1[44] = jj_gen;
+        jj_la1[45] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2085,6 +2259,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ AdditiveExpression()
   final public Expression AdditiveExpression() throws ParseException {
   Expression expr,expr2;
   int operator;
@@ -2097,7 +2273,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[45] = jj_gen;
+        jj_la1[46] = jj_gen;
         break label_17;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2110,7 +2286,7 @@ final Expression expr,expr2;
                 operator = OperatorIds.MINUS;
         break;
       default:
-        jj_la1[46] = jj_gen;
+        jj_la1[47] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2121,6 +2297,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ MultiplicativeExpression()
   final public Expression MultiplicativeExpression() throws ParseException {
   Expression expr,expr2;
   int operator;
@@ -2130,8 +2308,8 @@ final Expression expr,expr2;
     if (errorMessage != null) {if (true) throw e;}
     errorMessage = "unexpected token '"+e.currentToken.next.image+'\'';
     errorLevel   = ERROR;
-    errorStart = this.token.sourceStart;
-    errorEnd   = this.token.sourceEnd;
+    errorStart = token.sourceStart;
+    errorEnd   = token.sourceEnd;
     {if (true) throw e;}
     }
     label_18:
@@ -2143,7 +2321,7 @@ final Expression expr,expr2;
         ;
         break;
       default:
-        jj_la1[47] = jj_gen;
+        jj_la1[48] = jj_gen;
         break label_18;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -2160,7 +2338,7 @@ final Expression expr,expr2;
                    operator = OperatorIds.REMAINDER;
         break;
       default:
-        jj_la1[48] = jj_gen;
+        jj_la1[49] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2171,20 +2349,23 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ UnaryExpression()
+
 /**
  * An unary expression starting with @, & or nothing.
  *
  * @return the unary expression
  */
   final public Expression UnaryExpression() throws ParseException {
-  Expression expr;
+  final Expression expr;
     try {
       expr = AtNotTildeUnaryExpression();
                                         {if (true) return expr;}
     } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
-                                          "unexpected token : '"+e.currentToken.image+"'",
+                                          "unexpected token : '"+e.currentToken.image+'\'',
                                           "",
                                           e.currentToken.image,
                                           e.currentToken.sourceStart,
@@ -2235,6 +2416,8 @@ final Expression expr,expr2;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ AtNotTildeUnaryExpression()
   final public Expression AtNotTildeUnaryExpression() throws ParseException {
   if (shouldStop) throw new ParsingAbortedError();
   final Expression expr;
@@ -2276,12 +2459,15 @@ final Expression expr,expr2;
    {if (true) return expr;}
       break;
     default:
-      jj_la1[49] = jj_gen;
+      jj_la1[50] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ AtNotUnaryExpression()
 
 /**
  * An expression prefixed (or not) by one or more @ and !.
@@ -2322,13 +2508,15 @@ final Expression expr,expr2;
    {if (true) return expr;}
       break;
     default:
-      jj_la1[50] = jj_gen;
+      jj_la1[51] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ UnaryExpressionNoPrefix()
   final public Expression UnaryExpressionNoPrefix() throws ParseException {
   final Expression expr;
   final Token token;
@@ -2373,13 +2561,15 @@ final Expression expr,expr2;
    {if (true) return expr;}
       break;
     default:
-      jj_la1[51] = jj_gen;
+      jj_la1[52] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ PreIncDecExpression()
   final public Expression PreIncDecExpression() throws ParseException {
 final Expression expr;
 final int operator;
@@ -2394,7 +2584,7 @@ final Token token;
                              operator = OperatorIds.MINUS_MINUS;
       break;
     default:
-      jj_la1[52] = jj_gen;
+      jj_la1[53] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2405,9 +2595,11 @@ final Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ UnaryExpressionNotPlusMinus()
   final public Expression UnaryExpressionNotPlusMinus() throws ParseException {
   final Expression expr;
-    if (jj_2_3(2147483647)) {
+    if (jj_2_2(2147483647)) {
       expr = CastExpression();
                                    {if (true) return expr;}
     } else {
@@ -2451,7 +2643,7 @@ final Token token;
    {if (true) return expr;}
         break;
       default:
-        jj_la1[53] = jj_gen;
+        jj_la1[54] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -2459,6 +2651,8 @@ final Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ CastExpression()
   final public CastExpression CastExpression() throws ParseException {
 final ConstantIdentifier type;
 final Expression expr;
@@ -2481,7 +2675,7 @@ final Token token,token1;
                        type = new ConstantIdentifier(token);
       break;
     default:
-      jj_la1[54] = jj_gen;
+      jj_la1[55] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -2498,6 +2692,8 @@ final Token token,token1;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ PostfixExpression()
   final public Expression PostfixExpression() throws ParseException {
   final Expression expr;
   int operator = -1;
@@ -2516,13 +2712,13 @@ final Token token,token1;
                              operator = OperatorIds.MINUS_MINUS;
         break;
       default:
-        jj_la1[55] = jj_gen;
+        jj_la1[56] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
       break;
     default:
-      jj_la1[56] = jj_gen;
+      jj_la1[57] = jj_gen;
       ;
     }
     if (operator == -1) {
@@ -2536,8 +2732,10 @@ final Token token,token1;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ PrimaryExpression()
   final public Expression PrimaryExpression() throws ParseException {
-  Expression expr;
+  final Expression expr;
   Token token = null;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case NEW:
@@ -2549,7 +2747,7 @@ final Token token,token1;
         token = jj_consume_token(BIT_AND);
         break;
       default:
-        jj_la1[57] = jj_gen;
+        jj_la1[58] = jj_gen;
         ;
       }
       expr = refPrimaryExpression(token);
@@ -2560,17 +2758,20 @@ final Token token,token1;
    {if (true) return expr;}
       break;
     default:
-      jj_la1[58] = jj_gen;
+      jj_la1[59] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ refPrimaryExpression(final Token reference)
   final public Expression refPrimaryExpression(final Token reference) throws ParseException {
   Expression expr;
   Expression expr2 = null;
   final Token identifier;
+  final Token newToken;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IDENTIFIER:
       identifier = jj_consume_token(IDENTIFIER);
@@ -2582,21 +2783,19 @@ final Token token,token1;
           ;
           break;
         default:
-          jj_la1[59] = jj_gen;
+          jj_la1[60] = jj_gen;
           break label_19;
         }
         jj_consume_token(STATICCLASSACCESS);
         expr2 = ClassIdentifier();
-     expr = new ClassAccess(expr,
-                            expr2,
-                            ClassAccess.STATIC);
+     expr = new ClassAccess(expr,expr2,ClassAccess.STATIC);
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case LPAREN:
         expr2 = Arguments(expr);
         break;
       default:
-        jj_la1[60] = jj_gen;
+        jj_la1[61] = jj_gen;
         ;
       }
     if (expr2 == null) {
@@ -2624,22 +2823,22 @@ final Token token,token1;
         expr = Arguments(expr);
         break;
       default:
-        jj_la1[61] = jj_gen;
+        jj_la1[62] = jj_gen;
         ;
       }
    {if (true) return expr;}
       break;
     case NEW:
-      token = jj_consume_token(NEW);
+      newToken = jj_consume_token(NEW);
       expr = ClassIdentifier();
-    int start,beginLine,beginColumn;
+    final int start, beginLine, beginColumn;
     if (reference == null) {
-      start = token.sourceStart;
-      beginLine = token.beginLine;
-      beginColumn = token.beginColumn;
+      start       = newToken.sourceStart;
+      beginLine   = newToken.beginLine;
+      beginColumn = newToken.beginColumn;
     } else {
-      start = reference.sourceStart;
-      beginLine = reference.beginLine;
+      start       = reference.sourceStart;
+      beginLine   = reference.beginLine;
       beginColumn = reference.beginColumn;
     }
     expr = new ClassInstantiation(expr,
@@ -2652,18 +2851,21 @@ final Token token,token1;
         expr = Arguments(expr);
         break;
       default:
-        jj_la1[62] = jj_gen;
+        jj_la1[63] = jj_gen;
         ;
       }
    {if (true) return expr;}
       break;
     default:
-      jj_la1[63] = jj_gen;
+      jj_la1[64] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ ArrayDeclarator()
 
 /**
  * An array declarator.
@@ -2685,13 +2887,15 @@ final Token token,token1;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ClassIdentifier()
   final public Expression ClassIdentifier() throws ParseException {
   final Expression expr;
-  final Token token;
+  final Token identifierToken;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case IDENTIFIER:
-      token = jj_consume_token(IDENTIFIER);
-                                 {if (true) return new ConstantIdentifier(token);}
+      identifierToken = jj_consume_token(IDENTIFIER);
+                                  {if (true) return new ConstantIdentifier(identifierToken);}
       break;
     case STRING:
     case OBJECT:
@@ -2703,19 +2907,22 @@ final Token token,token1;
     case INT:
     case INTEGER:
       expr = Type();
-                                 {if (true) return expr;}
+                                  {if (true) return expr;}
       break;
     case DOLLAR:
       expr = VariableDeclaratorId();
-                                 {if (true) return expr;}
+                                  {if (true) return expr;}
       break;
     default:
-      jj_la1[64] = jj_gen;
+      jj_la1[65] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ VariableSuffix(final AbstractVariable prefix)
 
 /**
  * Used by Variabledeclaratorid and primarysuffix
@@ -2750,7 +2957,7 @@ final Token token,token1;
           expression = Variable();
           break;
         default:
-          jj_la1[65] = jj_gen;
+          jj_la1[66] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
@@ -2845,13 +3052,13 @@ final Token token,token1;
                                 pos = expression.sourceEnd+1;
           break;
         default:
-          jj_la1[66] = jj_gen;
+          jj_la1[67] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[67] = jj_gen;
+        jj_la1[68] = jj_gen;
         ;
       }
       try {
@@ -2950,13 +3157,13 @@ final Token token,token1;
                                 pos = expression.sourceEnd+1;
           break;
         default:
-          jj_la1[68] = jj_gen;
+          jj_la1[69] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[69] = jj_gen;
+        jj_la1[70] = jj_gen;
         ;
       }
       try {
@@ -2982,16 +3189,18 @@ final Token token,token1;
                               token.endColumn);}
       break;
     default:
-      jj_la1[70] = jj_gen;
+      jj_la1[71] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ Literal()
   final public Literal Literal() throws ParseException {
   final Token token;
-  StringLiteral literal;
+  final StringLiteral heredoc;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case INTEGER_LITERAL:
       token = jj_consume_token(INTEGER_LITERAL);
@@ -3018,19 +3227,21 @@ final Token token,token1;
                                     {if (true) return new NullLiteral(token);}
       break;
     case HEREDOCSTARTTOKEN:
-      literal = heredoc();
-                                    {if (true) return literal;}
+      heredoc = heredoc();
+                                    {if (true) return heredoc;}
       break;
     default:
-      jj_la1[71] = jj_gen;
+      jj_la1[72] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ heredoc()
   final public StringLiteral heredoc() throws ParseException {
-  Token heredocStart;
+  final Token heredocStart;
   Token startToken = null;
   Token endToken;
   String endImage;
@@ -3118,7 +3329,10 @@ final Token token,token1;
     throw new Error("Missing return statement in function");
   }
 
-       /*
+//}}}
+//{{{ evaluableString()
+
+              /*
 StringLiteral evaluableString() :
 {
   ArrayList list = new ArrayList();
@@ -3155,9 +3369,12 @@ StringLiteral evaluableString() :
   }
 }
   */
+
+  //}}}
+//{{{ Arguments(final Expression func)
   final public FunctionCall Arguments(final Expression func) throws ParseException {
 Expression[] args = null;
-final Token token,lparen;
+final Token rparen,lparen;
     lparen = jj_consume_token(LPAREN);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ARRAY:
@@ -3185,16 +3402,16 @@ final Token token,lparen;
       args = ArgumentList();
       break;
     default:
-      jj_la1[72] = jj_gen;
+      jj_la1[73] = jj_gen;
       ;
     }
     try {
-      token = jj_consume_token(RPAREN);
+      rparen = jj_consume_token(RPAREN);
      {if (true) return new FunctionCall(func,
                              args,
-                             token.sourceEnd,
-                             token.endLine,
-                             token.endColumn);}
+                             rparen.sourceEnd,
+                             rparen.endLine,
+                             rparen.endColumn);}
     } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -3208,7 +3425,7 @@ final Token token,lparen;
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
     }
-  int sourceEnd,line,column;
+  final int sourceEnd, line, column;
   if (args == null || args.length == 0) {
     sourceEnd = lparen.sourceEnd+1;
     line = lparen.beginLine;
@@ -3226,6 +3443,9 @@ final Token token,lparen;
                           column);}
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ ArgumentList()
 
 /**
  * An argument list is a list of arguments separated by comma :
@@ -3246,7 +3466,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[73] = jj_gen;
+        jj_la1[74] = jj_gen;
         break label_20;
       }
       token = jj_consume_token(COMMA);
@@ -3275,6 +3495,9 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ StatementNoBreak()
+
 /**
  * A Statement without break.
  * @return a statement
@@ -3282,10 +3505,10 @@ Token token;
   final public Statement StatementNoBreak() throws ParseException {
   final Statement statement;
   Token token = null;
-    if (jj_2_4(2)) {
+    if (jj_2_3(2)) {
       statement = expressionStatement();
                                          {if (true) return statement;}
-    } else if (jj_2_5(2)) {
+    } else if (jj_2_4(2)) {
       statement = LabeledStatement();
                                          {if (true) return statement;}
     } else {
@@ -3344,7 +3567,7 @@ Token token;
           token = jj_consume_token(AT);
           break;
         default:
-          jj_la1[74] = jj_gen;
+          jj_la1[75] = jj_gen;
           ;
         }
         statement = IncludeStatement();
@@ -3367,13 +3590,16 @@ Token token;
                                          currentSegment.add((Outlineable)statement);{if (true) return statement;}
         break;
       default:
-        jj_la1[75] = jj_gen;
+        jj_la1[76] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ expressionStatement()
 
 /**
  * A statement expression.
@@ -3427,6 +3653,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ defineStatement()
   final public Define defineStatement() throws ParseException {
   Expression defineName,defineValue;
   final Token defineToken;
@@ -3590,12 +3818,15 @@ Token token;
                                   {if (true) return statement;}
       break;
     default:
-      jj_la1[76] = jj_gen;
+      jj_la1[77] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ htmlBlock()
 
 /**
  * An html block inside a php syntax.
@@ -3616,7 +3847,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[77] = jj_gen;
+        jj_la1[78] = jj_gen;
         break label_21;
       }
       phpEchoBlock();
@@ -3630,7 +3861,7 @@ Token token;
         jj_consume_token(PHPSTARTSHORT);
         break;
       default:
-        jj_la1[78] = jj_gen;
+        jj_la1[79] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -3659,6 +3890,9 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ IncludeStatement()
+
 /**
  * An include statement. It's "include" an expression;
  */
@@ -3686,7 +3920,7 @@ Token token;
                                  keyword = InclusionStatement.INCLUDE_ONCE;pos=token.sourceEnd;line=token.beginLine;column=token.beginColumn;
       break;
     default:
-      jj_la1[79] = jj_gen;
+      jj_la1[80] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -3744,15 +3978,19 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ PrintExpression()
   final public PrintExpression PrintExpression() throws ParseException {
   final Expression expr;
   final Token printToken;
-    token = jj_consume_token(PRINT);
+    printToken = jj_consume_token(PRINT);
     expr = Expression();
-   {if (true) return new PrintExpression(expr,token.sourceStart,expr.sourceEnd,token.beginLine,expr.getEndLine(),token.beginColumn,expr.getEndColumn());}
+   {if (true) return new PrintExpression(expr,printToken.sourceStart,expr.sourceEnd,printToken.beginLine,expr.getEndLine(),printToken.beginColumn,expr.getEndColumn());}
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ListExpression()
   final public ListExpression ListExpression() throws ParseException {
   Expression expr = null;
   final Expression expression;
@@ -3784,7 +4022,7 @@ Token token;
      list.add(expr);pos = expr.sourceEnd;line=expr.getBeginLine();column=expr.getBeginColumn();
       break;
     default:
-      jj_la1[80] = jj_gen;
+      jj_la1[81] = jj_gen;
       ;
     }
    if (expr == null) list.add(null);
@@ -3795,7 +4033,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[81] = jj_gen;
+        jj_la1[82] = jj_gen;
         break label_22;
       }
       try {
@@ -3820,7 +4058,7 @@ Token token;
                                     list.add(expr);pos = expr.sourceEnd;line=expr.getBeginLine();column=expr.getBeginColumn();
         break;
       default:
-        jj_la1[82] = jj_gen;
+        jj_la1[83] = jj_gen;
         ;
       }
     }
@@ -3856,7 +4094,7 @@ Token token;
                               expression.getEndColumn());}
       break;
     default:
-      jj_la1[83] = jj_gen;
+      jj_la1[84] = jj_gen;
       ;
     }
     final AbstractVariable[] vars = new AbstractVariable[list.size()];
@@ -3871,6 +4109,14 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+
+//}}}
+
+//{{{ Statements
+
+//{{{ EchoStatement()
+
 /**
  * An echo statement.
  * echo anyexpression (, otherexpression)*
@@ -3878,9 +4124,9 @@ Token token;
   final public EchoStatement EchoStatement() throws ParseException {
   final ArrayList expressions = new ArrayList();
   Expression expr;
-  Token token;
-  Token token2 = null;
-    token = jj_consume_token(ECHO);
+  final Token echoToken;
+  Token semicolonToken = null;
+    echoToken = jj_consume_token(ECHO);
     expr = Expression();
    expressions.add(expr);
     label_23:
@@ -3890,7 +4136,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[84] = jj_gen;
+        jj_la1[85] = jj_gen;
         break label_23;
       }
       jj_consume_token(COMMA);
@@ -3898,7 +4144,7 @@ Token token;
      expressions.add(expr);
     }
     try {
-      token2 = jj_consume_token(SEMICOLON);
+      semicolonToken = jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
     if (e.currentToken.next.kind != 4) {
       fireParseError(new PHPParseErrorEvent(ERROR,
@@ -3916,25 +4162,27 @@ Token token;
     }
    final Expression[] exprs = new Expression[expressions.size()];
    expressions.toArray(exprs);
-   if (token2 == null) {
+   if (semicolonToken == null) {
      {if (true) return new EchoStatement(exprs,
-                              token.sourceStart,
+                              echoToken.sourceStart,
                               exprs[exprs.length-1].sourceEnd,
-                              token.beginLine,
+                              echoToken.beginLine,
                               exprs[exprs.length-1].getEndLine(),
-                              token.beginColumn,
+                              echoToken.beginColumn,
                               exprs[exprs.length-1].getEndColumn());}
    }
    {if (true) return new EchoStatement(exprs,
-                            token.sourceStart,
-                            token2.sourceEnd,
-                            token.beginLine,
-                            token2.endLine,
-                            token.beginColumn,
-                            token2.endColumn);}
+                            echoToken.sourceStart,
+                            semicolonToken.sourceEnd,
+                            echoToken.beginLine,
+                            semicolonToken.endLine,
+                            echoToken.beginColumn,
+                            semicolonToken.endColumn);}
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ GlobalStatement()
   final public GlobalStatement GlobalStatement() throws ParseException {
    Variable expr;
    final ArrayList vars = new ArrayList();
@@ -3951,7 +4199,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[85] = jj_gen;
+        jj_la1[86] = jj_gen;
         break label_24;
       }
       jj_consume_token(COMMA);
@@ -3989,6 +4237,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ StaticStatement()
   final public StaticStatement StaticStatement() throws ParseException {
   final ArrayList vars = new ArrayList();
   VariableDeclaration expr;
@@ -4004,7 +4254,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[86] = jj_gen;
+        jj_la1[87] = jj_gen;
         break label_25;
       }
       jj_consume_token(COMMA);
@@ -4039,6 +4289,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ LabeledStatement()
   final public LabeledStatement LabeledStatement() throws ParseException {
   final Token label;
   Statement statement = null;
@@ -4078,6 +4330,9 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ Block()
+
 /**
  * A Block is
  * {
@@ -4088,16 +4343,17 @@ Token token;
   final public Block Block() throws ParseException {
   final ArrayList list = new ArrayList();
   Statement statement;
-  final Token token, token2;
-  int pos,start,beginLine,endLine,beginColumn,endColumn;
+  final Token lbrace, rbrace;
+  int pos,endLine,endColumn;
+  int start, beginLine, beginColumn;
     try {
-      token = jj_consume_token(LBRACE);
-      pos         = token.sourceEnd+1;
-      start       = token.sourceStart;
-      beginLine   = token.beginLine;
-      beginColumn = token.beginColumn;
-      endLine     = token.endLine;
-      endColumn   = token.endColumn;
+      lbrace = jj_consume_token(LBRACE);
+      pos         = lbrace.sourceEnd+1;
+      start       = lbrace.sourceStart;
+      beginLine   = lbrace.beginLine;
+      beginColumn = lbrace.beginColumn;
+      endLine     = lbrace.endLine;
+      endColumn   = lbrace.endColumn;
     } catch (ParseException e) {
     pos         = this.token.sourceEnd+1;
     start       = pos;
@@ -4167,7 +4423,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[87] = jj_gen;
+        jj_la1[88] = jj_gen;
         break label_26;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -4226,26 +4482,26 @@ Token token;
         statement = htmlBlock();
                                   if (statement != null) {
                                     list.add(statement);
-                                    pos = statement.sourceEnd+1;
-                                    endLine     = statement.getEndLine();
-                                    endColumn   = statement.getEndColumn();
+                                    pos       = statement.sourceEnd+1;
+                                    endLine   = statement.getEndLine();
+                                    endColumn = statement.getEndColumn();
                                   } else {
-                                    pos = this.token.sourceEnd+1;
-                                    endLine     = this.token.endLine;
-                                    endColumn   = this.token.endColumn;
+                                    pos       = this.token.sourceEnd+1;
+                                    endLine   = this.token.endLine;
+                                    endColumn = this.token.endColumn;
                                   }
         break;
       default:
-        jj_la1[88] = jj_gen;
+        jj_la1[89] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
     }
     try {
-      token2 = jj_consume_token(RBRACE);
-      pos         = token2.sourceEnd+1;
-      endLine     = token2.endLine;
-      endColumn   = token2.endColumn;
+      rbrace = jj_consume_token(RBRACE);
+      pos       = rbrace.sourceEnd+1;
+      endLine   = rbrace.endLine;
+      endColumn = rbrace.endColumn;
     } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -4271,6 +4527,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ BlockStatement()
   final public Statement BlockStatement() throws ParseException {
   final Statement statement;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -4317,11 +4575,10 @@ Token token;
     case SEMICOLON:
       try {
         statement = Statement();
-                                     if (phpDocument == currentSegment) pushOnAstNodes(statement);
-                                     {if (true) return statement;}
+                             if (phpDocument == currentSegment) pushOnAstNodes(statement); {if (true) return statement;}
       } catch (ParseException e) {
-    Token semicolumn = error_skipto(SEMICOLON);
-    Token nextToken = e.currentToken.next;
+    final Token semicolumn = error_skipto(SEMICOLON);
+    final Token nextToken = e.currentToken.next;
     if (nextToken == semicolumn) {
       fireParseError(new PHPParseErrorEvent(ERROR,
                                             path,
@@ -4362,12 +4619,15 @@ Token token;
                                    {if (true) return statement;}
       break;
     default:
-      jj_la1[89] = jj_gen;
+      jj_la1[90] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ BlockStatementNoBreak()
 
 /**
  * A Block statement that will not contain any 'break'
@@ -4429,12 +4689,15 @@ Token token;
                                    {if (true) return statement;}
       break;
     default:
-      jj_la1[90] = jj_gen;
+      jj_la1[91] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ LocalVariableDeclaration()
 
 /**
  * used only by ForInit()
@@ -4451,7 +4714,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[91] = jj_gen;
+        jj_la1[92] = jj_gen;
         break label_27;
       }
       jj_consume_token(COMMA);
@@ -4463,6 +4726,9 @@ Token token;
     {if (true) return vars;}
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ LocalVariableDeclarator()
 
 /**
  * used only by LocalVariableDeclaration().
@@ -4477,7 +4743,7 @@ Token token;
       initializer = Expression();
       break;
     default:
-      jj_la1[92] = jj_gen;
+      jj_la1[93] = jj_gen;
       ;
     }
    if (initializer == null) {
@@ -4502,6 +4768,9 @@ Token token;
                                    initializer.getEndColumn());}
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ EmptyStatement()
 
 /**
  * An empty statement.
@@ -4529,6 +4798,9 @@ Token token;
                               token.endColumn);}
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ StatementExpression()
 
 /**
  * used only by StatementExpressionList() which is used only by ForInit() and ForStatement()
@@ -4569,25 +4841,27 @@ Token token;
                                                                   operator.endColumn);}
           break;
         default:
-          jj_la1[93] = jj_gen;
+          jj_la1[94] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
         break;
       default:
-        jj_la1[94] = jj_gen;
+        jj_la1[95] = jj_gen;
         ;
       }
    {if (true) return expr;}
       break;
     default:
-      jj_la1[95] = jj_gen;
+      jj_la1[96] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ SwitchStatement()
   final public SwitchStatement SwitchStatement() throws ParseException {
   Expression variable;
   final AbstractCase[] cases;
@@ -4661,21 +4935,23 @@ Token token;
       cases = switchStatementColon(switchToken.sourceStart, switchToken.sourceEnd);
       break;
     default:
-      jj_la1[96] = jj_gen;
+      jj_la1[97] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
    {if (true) return new SwitchStatement(variable,
                               cases,
                               switchToken.sourceStart,
-                              this.token.sourceEnd,
+                              token.sourceEnd,
                               switchToken.beginLine,
-                              this.token.endLine,
+                              token.endLine,
                               switchToken.beginColumn,
-                              this.token.endColumn);}
+                              token.endColumn);}
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ switchStatementBrace()
   final public AbstractCase[] switchStatementBrace() throws ParseException {
   AbstractCase cas;
   final ArrayList cases = new ArrayList();
@@ -4691,7 +4967,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[97] = jj_gen;
+        jj_la1[98] = jj_gen;
         break label_28;
       }
       cas = switchLabel0();
@@ -4718,6 +4994,9 @@ Token token;
     {if (true) return abcase;}
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ switchStatementColon(final int start, final int end)
 
 /**
  * A Switch statement with : ... endswitch;
@@ -4749,7 +5028,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[98] = jj_gen;
+        jj_la1[99] = jj_gen;
         break label_29;
       }
       cas = switchLabel0();
@@ -4793,6 +5072,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ switchLabel0()
   final public AbstractCase switchLabel0() throws ParseException {
   final Expression expr;
   Statement statement;
@@ -4850,7 +5131,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[99] = jj_gen;
+        jj_la1[100] = jj_gen;
         break label_30;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -4908,7 +5189,7 @@ Token token;
                                          stmts.add(statement);
         break;
       default:
-        jj_la1[100] = jj_gen;
+        jj_la1[101] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -4926,16 +5207,7 @@ Token token;
                              this.token.next.beginColumn,
                              this.token.next.endColumn);}
     }
-    if (listSize != 0) {
-      {if (true) return new Case(expr,
-                      stmtsArray,
-                      expr.sourceStart,
-                      stmtsArray[listSize-1].sourceEnd,
-                      expr.getBeginLine(),
-                      stmtsArray[listSize-1].getEndLine(),
-                      expr.getBeginColumn(),
-                      stmtsArray[listSize-1].getEndColumn());}
-    } else {
+    if (listSize == 0) {
       {if (true) return new Case(expr,
                       stmtsArray,
                       expr.sourceStart,
@@ -4944,9 +5216,21 @@ Token token;
                       expr.getEndLine(),
                       expr.getBeginColumn(),
                       expr.getEndColumn());}
+    } else {
+      {if (true) return new Case(expr,
+                      stmtsArray,
+                      expr.sourceStart,
+                      stmtsArray[listSize-1].sourceEnd,
+                      expr.getBeginLine(),
+                      stmtsArray[listSize-1].getEndLine(),
+                      expr.getBeginColumn(),
+                      stmtsArray[listSize-1].getEndColumn());}
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ SwitchLabel()
 
 /**
  * A SwitchLabel.
@@ -4956,6 +5240,7 @@ Token token;
  */
   final public Expression SwitchLabel() throws ParseException {
   final Expression expr;
+  Token token;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case CASE:
       token = jj_consume_token(CASE);
@@ -5007,13 +5292,15 @@ Token token;
    {if (true) return null;}
       break;
     default:
-      jj_la1[101] = jj_gen;
+      jj_la1[102] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ BreakStatement()
   final public Break BreakStatement() throws ParseException {
   Expression expression = null;
   final Token token, token2;
@@ -5047,7 +5334,7 @@ Token token;
                                pos = expression.sourceEnd+1;
       break;
     default:
-      jj_la1[102] = jj_gen;
+      jj_la1[103] = jj_gen;
       ;
     }
     try {
@@ -5070,17 +5357,21 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ IfStatement()
   final public IfStatement IfStatement() throws ParseException {
   final Expression condition;
   final IfStatement ifStatement;
-  Token token;
-    token = jj_consume_token(IF);
+  final Token ifToken;
+    ifToken = jj_consume_token(IF);
     condition = Condition("if");
-    ifStatement = IfStatement0(condition,token.sourceStart,token.sourceEnd);
+    ifStatement = IfStatement0(condition,ifToken.sourceStart,ifToken.sourceEnd);
    {if (true) return ifStatement;}
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ Condition(final String keyword)
   final public Expression Condition(final String keyword) throws ParseException {
   final Expression condition;
     try {
@@ -5091,8 +5382,8 @@ Token token;
                                           "'(' expected",
                                           "(",
                                           e.currentToken.image,
-                                          this.token.sourceEnd,
-                                          this.token.sourceEnd+1,
+                                          token.sourceEnd,
+                                          token.sourceEnd+1,
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
@@ -5118,6 +5409,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ IfStatement0(final Expression condition, final int start,final int end)
   final public IfStatement IfStatement0(final Expression condition, final int start,final int end) throws ParseException {
   Statement statement = null;
   final Statement stmt;
@@ -5127,13 +5420,12 @@ Token token;
   final ArrayList stmts;
   final ArrayList elseIfList = new ArrayList();
   final ElseIf[] elseIfs;
-  int pos = jj_input_stream.getPosition();
+  final int pos = jj_input_stream.getPosition();
   final int endStatements;
-  Token token;
-  Token elseToken;
+  final Token colonToken, elseToken;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COLON:
-      token = jj_consume_token(COLON);
+      colonToken = jj_consume_token(COLON);
    stmts = new ArrayList();
       label_31:
       while (true) {
@@ -5183,7 +5475,7 @@ Token token;
           ;
           break;
         default:
-          jj_la1[103] = jj_gen;
+          jj_la1[104] = jj_gen;
           break label_31;
         }
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5236,12 +5528,12 @@ Token token;
                               if (statement != null) {stmts.add(statement);}
           break;
         default:
-          jj_la1[104] = jj_gen;
+          jj_la1[105] = jj_gen;
           jj_consume_token(-1);
           throw new ParseException();
         }
       }
-    endStatements = (statement == null) ? token.sourceEnd : statement.sourceEnd;
+    endStatements = (statement == null) ? colonToken.sourceEnd : statement.sourceEnd;
       label_32:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5249,7 +5541,7 @@ Token token;
           ;
           break;
         default:
-          jj_la1[105] = jj_gen;
+          jj_la1[106] = jj_gen;
           break label_32;
         }
         elseifStatement = ElseIfStatementColon();
@@ -5260,19 +5552,19 @@ Token token;
         elseStatement = ElseStatementColon();
         break;
       default:
-        jj_la1[106] = jj_gen;
+        jj_la1[107] = jj_gen;
         ;
       }
       fireParseMessage(new PHPParseMessageEvent(INFO,
                                                 PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG,
                                                 path,
                                                 "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
-                                                token.sourceStart,
-                                                token.sourceEnd,
-                                                token.beginLine,
-                                                token.endLine,
-                                                token.beginColumn,
-                                                token.endColumn));
+                                                colonToken.sourceStart,
+                                                colonToken.sourceEnd,
+                                                colonToken.beginLine,
+                                                colonToken.endLine,
+                                                colonToken.beginColumn,
+                                                colonToken.endColumn));
       try {
         jj_consume_token(ENDIF);
       } catch (ParseException e) {
@@ -5403,7 +5695,7 @@ Token token;
         stmt = htmlBlock();
         break;
       default:
-        jj_la1[107] = jj_gen;
+        jj_la1[108] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5414,7 +5706,7 @@ Token token;
           ;
           break;
         default:
-          jj_la1[108] = jj_gen;
+          jj_la1[109] = jj_gen;
           break label_33;
         }
         elseifStatement = ElseIfStatement();
@@ -5444,7 +5736,7 @@ Token token;
         }
         break;
       default:
-        jj_la1[109] = jj_gen;
+        jj_la1[110] = jj_gen;
         ;
       }
     elseIfs = new ElseIf[elseIfList.size()];
@@ -5457,13 +5749,15 @@ Token token;
                            jj_input_stream.getPosition());}
       break;
     default:
-      jj_la1[110] = jj_gen;
+      jj_la1[111] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ElseIfStatementColon()
   final public ElseIf ElseIfStatementColon() throws ParseException {
   final Expression condition;
   Statement statement;
@@ -5520,7 +5814,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[111] = jj_gen;
+        jj_la1[112] = jj_gen;
         break label_34;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5573,7 +5867,7 @@ Token token;
                                       if (statement != null) {list.add(statement);}
         break;
       default:
-        jj_la1[112] = jj_gen;
+        jj_la1[113] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5591,6 +5885,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ElseStatementColon()
   final public Else ElseStatementColon() throws ParseException {
   Statement statement;
   final ArrayList list = new ArrayList();
@@ -5645,7 +5941,7 @@ Token token;
         ;
         break;
       default:
-        jj_la1[113] = jj_gen;
+        jj_la1[114] = jj_gen;
         break label_35;
       }
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5698,7 +5994,7 @@ Token token;
                                              if (statement != null) {list.add(statement);}
         break;
       default:
-        jj_la1[114] = jj_gen;
+        jj_la1[115] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -5716,6 +6012,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ElseIfStatement()
   final public ElseIf ElseIfStatement() throws ParseException {
   final Expression condition;
   //final Statement statement;
@@ -5735,6 +6033,8 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ WhileStatement()
   final public WhileStatement WhileStatement() throws ParseException {
   final Expression condition;
   final Statement action;
@@ -5753,14 +6053,16 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ WhileStatementAction(final int start, final int end)
   final public Statement WhileStatementAction(final int start, final int end) throws ParseException {
   Statement statement;
   final ArrayList stmts = new ArrayList();
   final int pos = jj_input_stream.getPosition();
-  Token token;
+  final Token colonToken;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COLON:
-      token = jj_consume_token(COLON);
+      colonToken = jj_consume_token(COLON);
       label_36:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -5808,11 +6110,11 @@ Token token;
           ;
           break;
         default:
-          jj_la1[115] = jj_gen;
+          jj_la1[116] = jj_gen;
           break label_36;
         }
         statement = Statement();
-                                            stmts.add(statement);
+                                                 stmts.add(statement);
       }
         fireParseMessage(new PHPParseMessageEvent(INFO,
                                                   PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
@@ -5820,10 +6122,10 @@ Token token;
                                                   "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
                                                   start,
                                                   end,
-                                                  token.beginLine,
-                                                  token.endLine,
-                                                  token.beginColumn,
-                                                  token.endColumn));
+                                                  colonToken.beginLine,
+                                                  colonToken.endLine,
+                                                  colonToken.beginColumn,
+                                                  colonToken.endColumn));
       try {
         jj_consume_token(ENDWHILE);
       } catch (ParseException e) {
@@ -5891,13 +6193,15 @@ Token token;
    {if (true) return statement;}
       break;
     default:
-      jj_la1[116] = jj_gen;
+      jj_la1[117] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ DoStatement()
   final public DoStatement DoStatement() throws ParseException {
   final Statement action;
   final Expression condition;
@@ -5943,16 +6247,18 @@ Token token;
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ForeachStatement()
   final public ForeachStatement ForeachStatement() throws ParseException {
   Statement statement = null;
   Expression expression = null;
   ArrayVariableDeclaration variable = null;
-  Token foreachToken;
+  final Token foreachToken;
   Token lparenToken = null;
   Token asToken = null;
   Token rparenToken = null;
   int pos,endLine,endColumn;
-  Token tokenEndForeach, tokenColon, tokenSemicolon;
+  final Token tokenEndForeach, tokenColon, tokenSemicolon;
   Statement action;
   final ArrayList list = new ArrayList();
     foreachToken = jj_consume_token(FOREACH);
@@ -6173,7 +6479,7 @@ Token token;
           ;
           break;
         default:
-          jj_la1[117] = jj_gen;
+          jj_la1[118] = jj_gen;
           break label_37;
         }
         action = Statement();
@@ -6252,12 +6558,15 @@ Token token;
         }
       break;
     default:
-      jj_la1[118] = jj_gen;
+      jj_la1[119] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ ForStatement()
 
 /**
  * a for declaration.
@@ -6313,7 +6622,7 @@ final ArrayList list = new ArrayList();
       initializations = ForInit();
       break;
     default:
-      jj_la1[119] = jj_gen;
+      jj_la1[120] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -6343,7 +6652,7 @@ final ArrayList list = new ArrayList();
       condition = Expression();
       break;
     default:
-      jj_la1[120] = jj_gen;
+      jj_la1[121] = jj_gen;
       ;
     }
     jj_consume_token(SEMICOLON);
@@ -6373,7 +6682,7 @@ final ArrayList list = new ArrayList();
       increments = StatementExpressionList();
       break;
     default:
-      jj_la1[121] = jj_gen;
+      jj_la1[122] = jj_gen;
       ;
     }
     jj_consume_token(RPAREN);
@@ -6477,7 +6786,7 @@ final ArrayList list = new ArrayList();
           ;
           break;
         default:
-          jj_la1[122] = jj_gen;
+          jj_la1[123] = jj_gen;
           break label_38;
         }
         action = Statement();
@@ -6541,16 +6850,18 @@ final ArrayList list = new ArrayList();
                               pos);}
       break;
     default:
-      jj_la1[123] = jj_gen;
+      jj_la1[124] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ForInit()
   final public Expression[] ForInit() throws ParseException {
   final Expression[] exprs;
-    if (jj_2_6(2147483647)) {
+    if (jj_2_5(2147483647)) {
       exprs = LocalVariableDeclaration();
    {if (true) return exprs;}
     } else {
@@ -6581,7 +6892,7 @@ final ArrayList list = new ArrayList();
    {if (true) return exprs;}
         break;
       default:
-        jj_la1[124] = jj_gen;
+        jj_la1[125] = jj_gen;
         jj_consume_token(-1);
         throw new ParseException();
       }
@@ -6589,6 +6900,8 @@ final ArrayList list = new ArrayList();
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ StatementExpressionList()
   final public Expression[] StatementExpressionList() throws ParseException {
   final ArrayList list = new ArrayList();
   final Expression expr;
@@ -6601,7 +6914,7 @@ final ArrayList list = new ArrayList();
         ;
         break;
       default:
-        jj_la1[125] = jj_gen;
+        jj_la1[126] = jj_gen;
         break label_39;
       }
       jj_consume_token(COMMA);
@@ -6614,11 +6927,13 @@ final ArrayList list = new ArrayList();
     throw new Error("Missing return statement in function");
   }
 
+//}}}
+//{{{ ContinueStatement()
   final public Continue ContinueStatement() throws ParseException {
   Expression expr = null;
-  final Token token;
-  Token token2 = null;
-    token = jj_consume_token(CONTINUE);
+  final Token continueToken;
+  Token semicolonToken = null;
+    continueToken = jj_consume_token(CONTINUE);
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case ARRAY:
     case LIST:
@@ -6645,16 +6960,16 @@ final ArrayList list = new ArrayList();
       expr = Expression();
       break;
     default:
-      jj_la1[126] = jj_gen;
+      jj_la1[127] = jj_gen;
       ;
     }
     try {
-      token2 = jj_consume_token(SEMICOLON);
+      semicolonToken = jj_consume_token(SEMICOLON);
     } catch (ParseException e) {
-    int errorStart, errorEnd;
+    final int errorStart, errorEnd;
     if (expr == null) {
-      errorStart = token.sourceEnd;
-      errorEnd   = token.sourceEnd+1;
+      errorStart = continueToken.sourceEnd;
+      errorEnd   = continueToken.sourceEnd+1;
     } else {
       errorStart = expr.sourceEnd;
       errorEnd   = expr.sourceEnd+1;
@@ -6671,15 +6986,18 @@ final ArrayList list = new ArrayList();
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
     }
-    if (token2 == null) {
+    if (semicolonToken == null) {
       if (expr == null) {
-        {if (true) return new Continue(expr,token.sourceStart,token.sourceEnd,token.beginLine,token.endLine,token.beginColumn,token.endColumn);}
+        {if (true) return new Continue(expr,continueToken.sourceStart,continueToken.sourceEnd,continueToken.beginLine,continueToken.endLine,continueToken.beginColumn,continueToken.endColumn);}
       }
-      {if (true) return new Continue(expr,token.sourceStart,expr.sourceEnd,token.beginLine,expr.getEndLine(),token.beginColumn,expr.getEndColumn());}
+      {if (true) return new Continue(expr,continueToken.sourceStart,expr.sourceEnd,continueToken.beginLine,expr.getEndLine(),continueToken.beginColumn,expr.getEndColumn());}
     }
-    {if (true) return new Continue(expr,token.sourceStart,token2.sourceEnd,token.beginLine,token2.endLine,token.beginColumn,token2.endColumn);}
+    {if (true) return new Continue(expr,continueToken.sourceStart,semicolonToken.sourceEnd,continueToken.beginLine,semicolonToken.endLine,continueToken.beginColumn,semicolonToken.endColumn);}
     throw new Error("Missing return statement in function");
   }
+
+//}}}
+//{{{ ReturnStatement()
 
 /**
  * A return statement.
@@ -6748,13 +7066,13 @@ final ArrayList list = new ArrayList();
         expr = Expression();
         break;
       default:
-        jj_la1[127] = jj_gen;
+        jj_la1[128] = jj_gen;
         ;
       }
       try {
         token2 = jj_consume_token(SEMICOLON);
       } catch (ParseException e) {
-    int errorStart, errorEnd;
+    final int errorStart, errorEnd;
     if (expr == null) {
       errorStart = token.sourceEnd;
       errorEnd   = token.sourceEnd+1;
@@ -6783,7 +7101,7 @@ final ArrayList list = new ArrayList();
       {if (true) return new ReturnStatement(expr,token.sourceStart,token2.sourceEnd);}
       break;
     default:
-      jj_la1[128] = jj_gen;
+      jj_la1[129] = jj_gen;
       jj_consume_token(-1);
       throw new ParseException();
     }
@@ -6825,817 +7143,29 @@ final ArrayList list = new ArrayList();
     finally { jj_save(4, xla); }
   }
 
-  final private boolean jj_2_6(int xla) {
-    jj_la = xla; jj_lastpos = jj_scanpos = token;
-    try { return !jj_3_6(); }
-    catch(LookaheadSuccess ls) { return true; }
-    finally { jj_save(5, xla); }
-  }
-
-  final private boolean jj_3R_133() {
-    if (jj_3R_139()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_140()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_208() {
-    if (jj_3R_116()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_207() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_206() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_201() {
+  final private boolean jj_3R_69() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_206()) {
-    jj_scanpos = xsp;
-    if (jj_3R_207()) {
-    jj_scanpos = xsp;
-    if (jj_3R_208()) return true;
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_43() {
-    if (jj_3R_49()) return true;
-    if (jj_scan_token(SEMICOLON)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_143() {
-    if (jj_scan_token(RUNSIGNEDSHIFT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_142() {
-    if (jj_scan_token(RSIGNEDSHIFT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_141() {
-    if (jj_scan_token(LSHIFT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_134() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_141()) {
-    jj_scanpos = xsp;
-    if (jj_3R_142()) {
-    jj_scanpos = xsp;
-    if (jj_3R_143()) return true;
-    }
-    }
-    if (jj_3R_133()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_123() {
-    if (jj_3R_133()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_134()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_187() {
-    if (jj_scan_token(ARRAY)) return true;
-    if (jj_3R_197()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_51() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_138() {
-    if (jj_scan_token(GE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_113() {
-    if (jj_scan_token(ASSIGN)) return true;
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_137() {
-    if (jj_scan_token(LE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_136() {
-    if (jj_scan_token(GT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_45() {
-    if (jj_3R_49()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_51()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_135() {
-    if (jj_scan_token(LT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_124() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_135()) {
-    jj_scanpos = xsp;
-    if (jj_3R_136()) {
-    jj_scanpos = xsp;
-    if (jj_3R_137()) {
-    jj_scanpos = xsp;
-    if (jj_3R_138()) return true;
-    }
-    }
-    }
-    if (jj_3R_123()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_202() {
-    if (jj_3R_205()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_120() {
-    if (jj_3R_123()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_124()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3_5() {
-    if (jj_3R_44()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_4() {
-    if (jj_3R_43()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_117() {
-    if (jj_3R_116()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_194() {
-    if (jj_scan_token(NEW)) return true;
-    if (jj_3R_201()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_202()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_200() {
-    if (jj_3R_205()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_193() {
-    if (jj_3R_116()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_200()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_112() {
-    if (jj_scan_token(COMMA)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_117()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_3R_45()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_111() {
-    if (jj_3R_116()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_129() {
-    if (jj_scan_token(TRIPLEEQUAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_128() {
-    if (jj_scan_token(BANGDOUBLEEQUAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_127() {
-    if (jj_scan_token(NOT_EQUAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_126() {
-    if (jj_scan_token(DIF)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_125() {
-    if (jj_scan_token(EQUAL_EQUAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_212() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_199() {
-    if (jj_3R_205()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_121() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_125()) {
-    jj_scanpos = xsp;
-    if (jj_3R_126()) {
-    jj_scanpos = xsp;
-    if (jj_3R_127()) {
-    jj_scanpos = xsp;
-    if (jj_3R_128()) {
-    jj_scanpos = xsp;
-    if (jj_3R_129()) return true;
-    }
-    }
-    }
-    }
-    if (jj_3R_120()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_211() {
-    if (jj_3R_49()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_212()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_118() {
-    if (jj_3R_120()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_121()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_198() {
-    if (jj_scan_token(STATICCLASSACCESS)) return true;
-    if (jj_3R_201()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_104() {
-    if (jj_scan_token(LIST)) return true;
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_111()) jj_scanpos = xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_112()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(RPAREN)) return true;
-    xsp = jj_scanpos;
-    if (jj_3R_113()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_192() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_198()) { jj_scanpos = xsp; break; }
-    }
-    xsp = jj_scanpos;
-    if (jj_3R_199()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_186() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_192()) {
-    jj_scanpos = xsp;
-    if (jj_3R_193()) {
-    jj_scanpos = xsp;
-    if (jj_3R_194()) return true;
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_119() {
-    if (jj_scan_token(BIT_AND)) return true;
-    if (jj_3R_118()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_114() {
-    if (jj_3R_118()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_119()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_105() {
-    if (jj_scan_token(PRINT)) return true;
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_178() {
-    if (jj_3R_187()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_177() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(93)) jj_scanpos = xsp;
-    if (jj_3R_186()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_173() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_177()) {
-    jj_scanpos = xsp;
-    if (jj_3R_178()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_115() {
-    if (jj_scan_token(XOR)) return true;
-    if (jj_3R_114()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_109() {
-    if (jj_3R_114()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_115()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_209() {
-    if (jj_3R_211()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_110() {
-    if (jj_scan_token(BIT_OR)) return true;
-    if (jj_3R_109()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_196() {
-    if (jj_scan_token(MINUS_MINUS)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_103() {
-    if (jj_3R_109()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_110()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_195() {
-    if (jj_scan_token(PLUS_PLUS)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_190() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_195()) {
-    jj_scanpos = xsp;
-    if (jj_3R_196()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_175() {
-    if (jj_3R_173()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_190()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_106() {
-    if (jj_scan_token(DOT)) return true;
-    if (jj_3R_103()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_205() {
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_209()) jj_scanpos = xsp;
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_97() {
-    if (jj_3R_103()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_106()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_108() {
-    if (jj_scan_token(_ANDL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_107() {
-    if (jj_scan_token(AND_AND)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_189() {
-    if (jj_scan_token(ARRAY)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_188() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_100() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_107()) {
-    jj_scanpos = xsp;
-    if (jj_3R_108()) return true;
-    }
-    if (jj_3R_97()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_81() {
-    if (jj_3R_97()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_100()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_79() {
-    if (jj_scan_token(HOOK)) return true;
-    if (jj_3R_49()) return true;
-    if (jj_scan_token(COLON)) return true;
-    if (jj_3R_73()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_174() {
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_188()) {
-    jj_scanpos = xsp;
-    if (jj_3R_189()) return true;
-    }
-    if (jj_scan_token(RPAREN)) return true;
-    if (jj_3R_144()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_204() {
-    if (jj_scan_token(COMMA)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_102() {
-    if (jj_scan_token(_ORL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_2() {
-    if (jj_scan_token(COMMA)) return true;
-    if (jj_3R_41()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_101() {
-    if (jj_scan_token(OR_OR)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_42() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_203() {
-    if (jj_3R_41()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3_2()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_83() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_101()) {
-    jj_scanpos = xsp;
-    if (jj_3R_102()) return true;
-    }
-    if (jj_3R_81()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_76() {
-    if (jj_3R_81()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_83()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_197() {
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_203()) jj_scanpos = xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_204()) jj_scanpos = xsp;
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_3() {
-    if (jj_scan_token(LPAREN)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_42()) {
-    jj_scanpos = xsp;
-    if (jj_scan_token(32)) return true;
-    }
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_172() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_49()) return true;
-    if (jj_scan_token(RPAREN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_210() {
-    if (jj_scan_token(ARRAYASSIGN)) return true;
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_171() {
-    if (jj_3R_176()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_170() {
-    if (jj_3R_175()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_166() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_169()) {
-    jj_scanpos = xsp;
-    if (jj_3R_170()) {
-    jj_scanpos = xsp;
-    if (jj_3R_171()) {
-    jj_scanpos = xsp;
-    if (jj_3R_172()) return true;
-    }
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_169() {
-    if (jj_3R_174()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_41() {
-    if (jj_3R_49()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_210()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_73() {
-    if (jj_3R_76()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_79()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_168() {
-    if (jj_scan_token(MINUS_MINUS)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_96() {
-    if (jj_scan_token(TILDEEQUAL)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_167() {
-    if (jj_scan_token(PLUS_PLUS)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_95() {
-    if (jj_scan_token(DOTASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_94() {
-    if (jj_scan_token(ORASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_93() {
-    if (jj_scan_token(XORASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_92() {
-    if (jj_scan_token(ANDASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_91() {
-    if (jj_scan_token(RSIGNEDSHIFTASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_165() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_167()) {
-    jj_scanpos = xsp;
-    if (jj_3R_168()) return true;
-    }
-    if (jj_3R_173()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_90() {
-    if (jj_scan_token(LSHIFTASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_89() {
-    if (jj_scan_token(MINUSASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_88() {
-    if (jj_scan_token(PLUSASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_87() {
-    if (jj_scan_token(REMASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_86() {
-    if (jj_scan_token(SLASHASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_85() {
-    if (jj_scan_token(STARASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_84() {
-    if (jj_scan_token(ASSIGN)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_80() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_84()) {
-    jj_scanpos = xsp;
-    if (jj_3R_85()) {
-    jj_scanpos = xsp;
-    if (jj_3R_86()) {
-    jj_scanpos = xsp;
     if (jj_3R_87()) {
     jj_scanpos = xsp;
-    if (jj_3R_88()) {
-    jj_scanpos = xsp;
-    if (jj_3R_89()) {
-    jj_scanpos = xsp;
-    if (jj_3R_90()) {
-    jj_scanpos = xsp;
-    if (jj_3R_91()) {
-    jj_scanpos = xsp;
-    if (jj_3R_92()) {
-    jj_scanpos = xsp;
-    if (jj_3R_93()) {
-    jj_scanpos = xsp;
-    if (jj_3R_94()) {
-    jj_scanpos = xsp;
-    if (jj_3R_95()) {
-    jj_scanpos = xsp;
-    if (jj_3R_96()) return true;
+    if (jj_3R_88()) return true;
     }
+    if (jj_3R_67()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_62() {
+    if (jj_3R_67()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_69()) { jj_scanpos = xsp; break; }
     }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
+    return false;
+  }
+
+  final private boolean jj_3R_162() {
+    if (jj_3R_167()) return true;
     return false;
   }
 
@@ -7645,242 +7175,175 @@ final ArrayList list = new ArrayList();
   }
 
   final private boolean jj_3R_160() {
-    if (jj_3R_165()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_99() {
-    if (jj_3R_105()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_98() {
-    if (jj_3R_104()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_82() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_98()) {
-    jj_scanpos = xsp;
-    if (jj_3R_99()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_159() {
     if (jj_scan_token(MINUS)) return true;
-    if (jj_3R_148()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_156() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_158()) {
-    jj_scanpos = xsp;
-    if (jj_3R_159()) {
-    jj_scanpos = xsp;
-    if (jj_3R_160()) {
-    jj_scanpos = xsp;
-    if (jj_3R_161()) return true;
-    }
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_158() {
-    if (jj_scan_token(PLUS)) return true;
-    if (jj_3R_148()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_78() {
-    if (jj_3R_82()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_132() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_77() {
-    if (jj_scan_token(BANG)) return true;
-    if (jj_3R_74()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_74() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_77()) {
-    jj_scanpos = xsp;
-    if (jj_3R_78()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_164() {
-    if (jj_3R_156()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_44() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    if (jj_scan_token(COLON)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_163() {
-    if (jj_scan_token(BANG)) return true;
-    if (jj_3R_157()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_131() {
-    if (jj_scan_token(LBRACE)) return true;
-    if (jj_3R_49()) return true;
-    if (jj_scan_token(RBRACE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_58() {
-    if (jj_3R_74()) return true;
+    if (jj_3R_149()) return true;
     return false;
   }
 
   final private boolean jj_3R_157() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_162()) {
+    if (jj_3R_159()) {
     jj_scanpos = xsp;
-    if (jj_3R_163()) {
+    if (jj_3R_160()) {
     jj_scanpos = xsp;
-    if (jj_3R_164()) return true;
+    if (jj_3R_161()) {
+    jj_scanpos = xsp;
+    if (jj_3R_162()) return true;
+    }
     }
     }
     return false;
   }
 
-  final private boolean jj_3R_162() {
-    if (jj_scan_token(AT)) return true;
-    if (jj_3R_157()) return true;
+  final private boolean jj_3R_159() {
+    if (jj_scan_token(PLUS)) return true;
+    if (jj_3R_149()) return true;
     return false;
   }
 
-  final private boolean jj_3R_122() {
+  final private boolean jj_3R_59() {
+    if (jj_3R_62()) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_130()) {
-    jj_scanpos = xsp;
-    if (jj_3R_131()) {
-    jj_scanpos = xsp;
-    if (jj_3R_132()) return true;
-    }
-    }
+    if (jj_3R_65()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_130() {
-    if (jj_scan_token(DOLLAR)) return true;
-    if (jj_3R_122()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_155() {
-    if (jj_3R_156()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_191() {
+  final private boolean jj_3R_192() {
     if (jj_scan_token(HEREDOCSTARTTOKEN)) return true;
     if (jj_scan_token(IDENTIFIER)) return true;
     return false;
   }
 
-  final private boolean jj_3R_154() {
-    if (jj_scan_token(BANG)) return true;
+  final private boolean jj_3R_165() {
     if (jj_3R_157()) return true;
     return false;
   }
 
-  final private boolean jj_3R_153() {
-    if (jj_scan_token(TILDE)) return true;
-    if (jj_3R_148()) return true;
+  final private boolean jj_3R_82() {
+    if (jj_scan_token(TILDEEQUAL)) return true;
     return false;
   }
 
-  final private boolean jj_3R_68() {
-    if (jj_scan_token(DOLLAR)) return true;
-    if (jj_3R_122()) return true;
+  final private boolean jj_3R_81() {
+    if (jj_scan_token(DOTASSIGN)) return true;
     return false;
   }
 
-  final private boolean jj_3R_148() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_152()) {
-    jj_scanpos = xsp;
-    if (jj_3R_153()) {
-    jj_scanpos = xsp;
-    if (jj_3R_154()) {
-    jj_scanpos = xsp;
-    if (jj_3R_155()) return true;
-    }
-    }
-    }
+  final private boolean jj_3R_164() {
+    if (jj_scan_token(BANG)) return true;
+    if (jj_3R_158()) return true;
     return false;
   }
 
-  final private boolean jj_3R_152() {
-    if (jj_scan_token(AT)) return true;
-    if (jj_3R_148()) return true;
+  final private boolean jj_3R_80() {
+    if (jj_scan_token(ORASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_79() {
+    if (jj_scan_token(XORASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_186() {
+    if (jj_3R_192()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_78() {
+    if (jj_scan_token(ANDASSIGN)) return true;
     return false;
   }
 
   final private boolean jj_3R_185() {
-    if (jj_3R_191()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_184() {
     if (jj_scan_token(NULL)) return true;
     return false;
   }
 
-  final private boolean jj_3R_183() {
+  final private boolean jj_3R_77() {
+    if (jj_scan_token(RSIGNEDSHIFTASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_158() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_163()) {
+    jj_scanpos = xsp;
+    if (jj_3R_164()) {
+    jj_scanpos = xsp;
+    if (jj_3R_165()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_163() {
+    if (jj_scan_token(AT)) return true;
+    if (jj_3R_158()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_184() {
     if (jj_scan_token(FALSE)) return true;
     return false;
   }
 
-  final private boolean jj_3R_182() {
+  final private boolean jj_3R_76() {
+    if (jj_scan_token(LSHIFTASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_183() {
     if (jj_scan_token(TRUE)) return true;
     return false;
   }
 
-  final private boolean jj_3R_181() {
+  final private boolean jj_3R_75() {
+    if (jj_scan_token(MINUSASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_182() {
     if (jj_scan_token(STRING_LITERAL)) return true;
     return false;
   }
 
-  final private boolean jj_3R_180() {
+  final private boolean jj_3R_74() {
+    if (jj_scan_token(PLUSASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_181() {
     if (jj_scan_token(FLOATING_POINT_LITERAL)) return true;
     return false;
   }
 
-  final private boolean jj_3R_179() {
+  final private boolean jj_3R_73() {
+    if (jj_scan_token(REMASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_205() {
+    if (jj_scan_token(COMMA)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_180() {
     if (jj_scan_token(INTEGER_LITERAL)) return true;
     return false;
   }
 
-  final private boolean jj_3R_176() {
+  final private boolean jj_3R_72() {
+    if (jj_scan_token(SLASHASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_177() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_179()) {
-    jj_scanpos = xsp;
     if (jj_3R_180()) {
     jj_scanpos = xsp;
     if (jj_3R_181()) {
@@ -7891,7 +7354,62 @@ final ArrayList list = new ArrayList();
     jj_scanpos = xsp;
     if (jj_3R_184()) {
     jj_scanpos = xsp;
-    if (jj_3R_185()) return true;
+    if (jj_3R_185()) {
+    jj_scanpos = xsp;
+    if (jj_3R_186()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_71() {
+    if (jj_scan_token(STARASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_70() {
+    if (jj_scan_token(ASSIGN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_66() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_70()) {
+    jj_scanpos = xsp;
+    if (jj_3R_71()) {
+    jj_scanpos = xsp;
+    if (jj_3R_72()) {
+    jj_scanpos = xsp;
+    if (jj_3R_73()) {
+    jj_scanpos = xsp;
+    if (jj_3R_74()) {
+    jj_scanpos = xsp;
+    if (jj_3R_75()) {
+    jj_scanpos = xsp;
+    if (jj_3R_76()) {
+    jj_scanpos = xsp;
+    if (jj_3R_77()) {
+    jj_scanpos = xsp;
+    if (jj_3R_78()) {
+    jj_scanpos = xsp;
+    if (jj_3R_79()) {
+    jj_scanpos = xsp;
+    if (jj_3R_80()) {
+    jj_scanpos = xsp;
+    if (jj_3R_81()) {
+    jj_scanpos = xsp;
+    if (jj_3R_82()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
     }
     }
     }
@@ -7902,18 +7420,13 @@ final ArrayList list = new ArrayList();
   }
 
   final private boolean jj_3_1() {
+    if (jj_scan_token(COMMA)) return true;
     if (jj_3R_40()) return true;
     return false;
   }
 
-  final private boolean jj_3R_75() {
-    if (jj_3R_80()) return true;
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_116() {
-    if (jj_3R_68()) return true;
+  final private boolean jj_3R_204() {
+    if (jj_3R_40()) return true;
     Token xsp;
     while (true) {
       xsp = jj_scanpos;
@@ -7922,264 +7435,1062 @@ final ArrayList list = new ArrayList();
     return false;
   }
 
-  final private boolean jj_3R_49() {
+  final private boolean jj_3R_156() {
+    if (jj_3R_157()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_198() {
+    if (jj_scan_token(LPAREN)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_57()) {
+    if (jj_3R_204()) jj_scanpos = xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_205()) jj_scanpos = xsp;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_155() {
+    if (jj_scan_token(BANG)) return true;
+    if (jj_3R_158()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_85() {
+    if (jj_3R_91()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_84() {
+    if (jj_3R_90()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_68() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_84()) {
     jj_scanpos = xsp;
-    if (jj_3R_58()) return true;
+    if (jj_3R_85()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_154() {
+    if (jj_scan_token(TILDE)) return true;
+    if (jj_3R_149()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_149() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_153()) {
+    jj_scanpos = xsp;
+    if (jj_3R_154()) {
+    jj_scanpos = xsp;
+    if (jj_3R_155()) {
+    jj_scanpos = xsp;
+    if (jj_3R_156()) return true;
+    }
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_153() {
+    if (jj_scan_token(AT)) return true;
+    if (jj_3R_149()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_211() {
+    if (jj_scan_token(ARRAYASSIGN)) return true;
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_40() {
+    if (jj_3R_45()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_211()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_64() {
+    if (jj_3R_68()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_144() {
+    if (jj_3R_46()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_135() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_143()) {
+    jj_scanpos = xsp;
+    if (jj_3R_144()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_143() {
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_124() {
+    if (jj_scan_token(LBRACE)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_135()) jj_scanpos = xsp;
+    if (jj_scan_token(RBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_60() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_63()) {
+    jj_scanpos = xsp;
+    if (jj_3R_64()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_63() {
+    if (jj_scan_token(BANG)) return true;
+    if (jj_3R_60()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_5() {
+    if (jj_3R_44()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_49() {
+    if (jj_3R_60()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_142() {
+    if (jj_3R_46()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_134() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_141()) {
+    jj_scanpos = xsp;
+    if (jj_3R_142()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_141() {
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_123() {
+    if (jj_scan_token(LBRACKET)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_134()) jj_scanpos = xsp;
+    if (jj_scan_token(RBRACKET)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_47() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_44() {
+    if (jj_3R_45()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_47()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_133() {
+    if (jj_3R_106()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_132() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_145() {
+    if (jj_3R_149()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_131() {
+    if (jj_scan_token(LBRACE)) return true;
+    if (jj_3R_45()) return true;
+    if (jj_scan_token(RBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_42() {
+    if (jj_3R_45()) return true;
+    if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_121() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_61() {
+    if (jj_3R_66()) return true;
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_111() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_122()) {
+    jj_scanpos = xsp;
+    if (jj_3R_123()) {
+    jj_scanpos = xsp;
+    if (jj_3R_124()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_122() {
+    if (jj_scan_token(CLASSACCESS)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_131()) {
+    jj_scanpos = xsp;
+    if (jj_3R_132()) {
+    jj_scanpos = xsp;
+    if (jj_3R_133()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_99() {
+    if (jj_scan_token(ASSIGN)) return true;
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_48() {
+    if (jj_3R_59()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_61()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_45() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_48()) {
+    jj_scanpos = xsp;
+    if (jj_3R_49()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_120() {
+    if (jj_scan_token(LBRACE)) return true;
+    if (jj_3R_45()) return true;
+    if (jj_scan_token(RBRACE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_152() {
+    if (jj_scan_token(REMAINDER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_151() {
+    if (jj_scan_token(SLASH)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_110() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_119()) {
+    jj_scanpos = xsp;
+    if (jj_3R_120()) {
+    jj_scanpos = xsp;
+    if (jj_3R_121()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_119() {
+    if (jj_scan_token(DOLLAR)) return true;
+    if (jj_3R_110()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_150() {
+    if (jj_scan_token(STAR)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_209() {
+    if (jj_3R_102()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_146() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_150()) {
+    jj_scanpos = xsp;
+    if (jj_3R_151()) {
+    jj_scanpos = xsp;
+    if (jj_3R_152()) return true;
+    }
+    }
+    if (jj_3R_145()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_103() {
+    if (jj_3R_102()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_208() {
+    if (jj_3R_46()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_58() {
+    if (jj_scan_token(OBJECT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_207() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_202() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_207()) {
+    jj_scanpos = xsp;
+    if (jj_3R_208()) {
+    jj_scanpos = xsp;
+    if (jj_3R_209()) return true;
+    }
     }
     return false;
   }
 
   final private boolean jj_3R_57() {
-    if (jj_3R_73()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_75()) jj_scanpos = xsp;
-    return false;
-  }
-
-  final private boolean jj_3R_67() {
-    if (jj_scan_token(OBJECT)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_66() {
     if (jj_scan_token(INTEGER)) return true;
     return false;
   }
 
-  final private boolean jj_3R_65() {
+  final private boolean jj_3R_56() {
     if (jj_scan_token(INT)) return true;
     return false;
   }
 
-  final private boolean jj_3R_64() {
+  final private boolean jj_3R_55() {
     if (jj_scan_token(FLOAT)) return true;
     return false;
   }
 
-  final private boolean jj_3R_63() {
+  final private boolean jj_3R_54() {
     if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
-  final private boolean jj_3R_72() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_62() {
+  final private boolean jj_3R_53() {
     if (jj_scan_token(REAL)) return true;
     return false;
   }
 
-  final private boolean jj_3R_71() {
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_56() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_71()) {
-    jj_scanpos = xsp;
-    if (jj_3R_72()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_61() {
+  final private boolean jj_3R_52() {
     if (jj_scan_token(BOOLEAN)) return true;
     return false;
   }
 
-  final private boolean jj_3R_60() {
+  final private boolean jj_3R_51() {
     if (jj_scan_token(BOOL)) return true;
     return false;
   }
 
   final private boolean jj_3R_50() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_59()) {
-    jj_scanpos = xsp;
-    if (jj_3R_60()) {
-    jj_scanpos = xsp;
-    if (jj_3R_61()) {
-    jj_scanpos = xsp;
-    if (jj_3R_62()) {
-    jj_scanpos = xsp;
-    if (jj_3R_63()) {
-    jj_scanpos = xsp;
-    if (jj_3R_64()) {
-    jj_scanpos = xsp;
-    if (jj_3R_65()) {
-    jj_scanpos = xsp;
-    if (jj_3R_66()) {
-    jj_scanpos = xsp;
-    if (jj_3R_67()) return true;
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_59() {
     if (jj_scan_token(STRING)) return true;
     return false;
   }
 
-  final private boolean jj_3R_48() {
-    if (jj_scan_token(LBRACE)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_56()) jj_scanpos = xsp;
-    if (jj_scan_token(RBRACE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_144() {
-    if (jj_3R_148()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_70() {
-    if (jj_3R_50()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_69() {
-    if (jj_3R_49()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_55() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_69()) {
-    jj_scanpos = xsp;
-    if (jj_3R_70()) return true;
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_47() {
-    if (jj_scan_token(LBRACKET)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_55()) jj_scanpos = xsp;
-    if (jj_scan_token(RBRACKET)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_151() {
-    if (jj_scan_token(REMAINDER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_150() {
-    if (jj_scan_token(SLASH)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_149() {
-    if (jj_scan_token(STAR)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_54() {
-    if (jj_3R_68()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_145() {
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_149()) {
-    jj_scanpos = xsp;
-    if (jj_3R_150()) {
-    jj_scanpos = xsp;
-    if (jj_3R_151()) return true;
-    }
-    }
-    if (jj_3R_144()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_53() {
-    if (jj_scan_token(IDENTIFIER)) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_139() {
-    if (jj_3R_144()) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_145()) { jj_scanpos = xsp; break; }
-    }
-    return false;
-  }
-
-  final private boolean jj_3R_52() {
-    if (jj_scan_token(LBRACE)) return true;
-    if (jj_3R_49()) return true;
-    if (jj_scan_token(RBRACE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_46() {
-    if (jj_scan_token(CLASSACCESS)) return true;
     Token xsp;
     xsp = jj_scanpos;
+    if (jj_3R_50()) {
+    jj_scanpos = xsp;
+    if (jj_3R_51()) {
+    jj_scanpos = xsp;
     if (jj_3R_52()) {
     jj_scanpos = xsp;
     if (jj_3R_53()) {
     jj_scanpos = xsp;
-    if (jj_3R_54()) return true;
+    if (jj_3R_54()) {
+    jj_scanpos = xsp;
+    if (jj_3R_55()) {
+    jj_scanpos = xsp;
+    if (jj_3R_56()) {
+    jj_scanpos = xsp;
+    if (jj_3R_57()) {
+    jj_scanpos = xsp;
+    if (jj_3R_58()) return true;
+    }
+    }
+    }
+    }
+    }
+    }
     }
     }
     return false;
   }
 
-  final private boolean jj_3R_40() {
+  final private boolean jj_3R_136() {
+    if (jj_3R_145()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_146()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3_4() {
+    if (jj_3R_43()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_106() {
+    if (jj_scan_token(DOLLAR)) return true;
+    if (jj_3R_110()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_3() {
+    if (jj_3R_42()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_98() {
+    if (jj_scan_token(COMMA)) return true;
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_46()) {
-    jj_scanpos = xsp;
-    if (jj_3R_47()) {
-    jj_scanpos = xsp;
-    if (jj_3R_48()) return true;
-    }
-    }
+    if (jj_3R_103()) jj_scanpos = xsp;
     return false;
   }
 
-  final private boolean jj_3R_147() {
+  final private boolean jj_3R_188() {
+    if (jj_scan_token(ARRAY)) return true;
+    if (jj_3R_198()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_97() {
+    if (jj_3R_102()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_148() {
     if (jj_scan_token(MINUS)) return true;
     return false;
   }
 
-  final private boolean jj_3R_146() {
+  final private boolean jj_3R_147() {
     if (jj_scan_token(PLUS)) return true;
     return false;
   }
 
-  final private boolean jj_3R_140() {
+  final private boolean jj_3R_137() {
     Token xsp;
     xsp = jj_scanpos;
-    if (jj_3R_146()) {
+    if (jj_3R_147()) {
     jj_scanpos = xsp;
-    if (jj_3R_147()) return true;
+    if (jj_3R_148()) return true;
     }
-    if (jj_3R_139()) return true;
+    if (jj_3R_136()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_125() {
+    if (jj_3R_136()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_137()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_107() {
+    if (jj_3R_111()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_203() {
+    if (jj_3R_206()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_90() {
+    if (jj_scan_token(LIST)) return true;
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_97()) jj_scanpos = xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_98()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(RPAREN)) return true;
+    xsp = jj_scanpos;
+    if (jj_3R_99()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_102() {
+    if (jj_3R_106()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_107()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_140() {
+    if (jj_scan_token(RUNSIGNEDSHIFT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_139() {
+    if (jj_scan_token(RSIGNEDSHIFT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_138() {
+    if (jj_scan_token(LSHIFT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_126() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_138()) {
+    jj_scanpos = xsp;
+    if (jj_3R_139()) {
+    jj_scanpos = xsp;
+    if (jj_3R_140()) return true;
+    }
+    }
+    if (jj_3R_125()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_213() {
+    if (jj_scan_token(COMMA)) return true;
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_112() {
+    if (jj_3R_125()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_126()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_212() {
+    if (jj_3R_45()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_213()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_195() {
+    if (jj_scan_token(NEW)) return true;
+    if (jj_3R_202()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_203()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_91() {
+    if (jj_scan_token(PRINT)) return true;
+    if (jj_3R_45()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_201() {
+    if (jj_3R_206()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_194() {
+    if (jj_3R_102()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_201()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_130() {
+    if (jj_scan_token(GE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_129() {
+    if (jj_scan_token(LE)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_128() {
+    if (jj_scan_token(GT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_127() {
+    if (jj_scan_token(LT)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_113() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_127()) {
+    jj_scanpos = xsp;
+    if (jj_3R_128()) {
+    jj_scanpos = xsp;
+    if (jj_3R_129()) {
+    jj_scanpos = xsp;
+    if (jj_3R_130()) return true;
+    }
+    }
+    }
+    if (jj_3R_112()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_108() {
+    if (jj_3R_112()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_113()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_200() {
+    if (jj_3R_206()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_199() {
+    if (jj_scan_token(STATICCLASSACCESS)) return true;
+    if (jj_3R_202()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_193() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_199()) { jj_scanpos = xsp; break; }
+    }
+    xsp = jj_scanpos;
+    if (jj_3R_200()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_187() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_193()) {
+    jj_scanpos = xsp;
+    if (jj_3R_194()) {
+    jj_scanpos = xsp;
+    if (jj_3R_195()) return true;
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_210() {
+    if (jj_3R_212()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_179() {
+    if (jj_3R_188()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_178() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(92)) jj_scanpos = xsp;
+    if (jj_3R_187()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_174() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_178()) {
+    jj_scanpos = xsp;
+    if (jj_3R_179()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_206() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_210()) jj_scanpos = xsp;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_118() {
+    if (jj_scan_token(TRIPLEEQUAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_117() {
+    if (jj_scan_token(BANGDOUBLEEQUAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_116() {
+    if (jj_scan_token(NOT_EQUAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_115() {
+    if (jj_scan_token(DIF)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_114() {
+    if (jj_scan_token(EQUAL_EQUAL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_109() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_114()) {
+    jj_scanpos = xsp;
+    if (jj_3R_115()) {
+    jj_scanpos = xsp;
+    if (jj_3R_116()) {
+    jj_scanpos = xsp;
+    if (jj_3R_117()) {
+    jj_scanpos = xsp;
+    if (jj_3R_118()) return true;
+    }
+    }
+    }
+    }
+    if (jj_3R_108()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_104() {
+    if (jj_3R_108()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_109()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_197() {
+    if (jj_scan_token(MINUS_MINUS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_196() {
+    if (jj_scan_token(PLUS_PLUS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_191() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_196()) {
+    jj_scanpos = xsp;
+    if (jj_3R_197()) return true;
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_176() {
+    if (jj_3R_174()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_191()) jj_scanpos = xsp;
+    return false;
+  }
+
+  final private boolean jj_3R_105() {
+    if (jj_scan_token(BIT_AND)) return true;
+    if (jj_3R_104()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_100() {
+    if (jj_3R_104()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_105()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_101() {
+    if (jj_scan_token(XOR)) return true;
+    if (jj_3R_100()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_190() {
+    if (jj_scan_token(ARRAY)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_189() {
+    if (jj_3R_46()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_95() {
+    if (jj_3R_100()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_101()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_175() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_189()) {
+    jj_scanpos = xsp;
+    if (jj_3R_190()) return true;
+    }
+    if (jj_scan_token(RPAREN)) return true;
+    if (jj_3R_145()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_96() {
+    if (jj_scan_token(BIT_OR)) return true;
+    if (jj_3R_95()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_89() {
+    if (jj_3R_95()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_96()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_41() {
+    if (jj_3R_46()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_43() {
+    if (jj_scan_token(IDENTIFIER)) return true;
+    if (jj_scan_token(COLON)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_92() {
+    if (jj_scan_token(DOT)) return true;
+    if (jj_3R_89()) return true;
+    return false;
+  }
+
+  final private boolean jj_3_2() {
+    if (jj_scan_token(LPAREN)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_41()) {
+    jj_scanpos = xsp;
+    if (jj_scan_token(31)) return true;
+    }
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_83() {
+    if (jj_3R_89()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_92()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_173() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_45()) return true;
+    if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_172() {
+    if (jj_3R_177()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_171() {
+    if (jj_3R_176()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_167() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_170()) {
+    jj_scanpos = xsp;
+    if (jj_3R_171()) {
+    jj_scanpos = xsp;
+    if (jj_3R_172()) {
+    jj_scanpos = xsp;
+    if (jj_3R_173()) return true;
+    }
+    }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_170() {
+    if (jj_3R_175()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_94() {
+    if (jj_scan_token(_ANDL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_93() {
+    if (jj_scan_token(AND_AND)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_86() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_93()) {
+    jj_scanpos = xsp;
+    if (jj_3R_94()) return true;
+    }
+    if (jj_3R_83()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_67() {
+    if (jj_3R_83()) return true;
+    Token xsp;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_86()) { jj_scanpos = xsp; break; }
+    }
+    return false;
+  }
+
+  final private boolean jj_3R_169() {
+    if (jj_scan_token(MINUS_MINUS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_168() {
+    if (jj_scan_token(PLUS_PLUS)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_65() {
+    if (jj_scan_token(HOOK)) return true;
+    if (jj_3R_45()) return true;
+    if (jj_scan_token(COLON)) return true;
+    if (jj_3R_59()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_166() {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_168()) {
+    jj_scanpos = xsp;
+    if (jj_3R_169()) return true;
+    }
+    if (jj_3R_174()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_88() {
+    if (jj_scan_token(_ORL)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_87() {
+    if (jj_scan_token(OR_OR)) return true;
     return false;
   }
 
@@ -8192,7 +8503,7 @@ final ArrayList list = new ArrayList();
   public boolean lookingAhead = false;
   private boolean jj_semLA;
   private int jj_gen;
-  final private int[] jj_la1 = new int[129];
+  final private int[] jj_la1 = new int[130];
   static private int[] jj_la1_0;
   static private int[] jj_la1_1;
   static private int[] jj_la1_2;
@@ -8206,21 +8517,21 @@ final ArrayList list = new ArrayList();
       jj_la1_4();
    }
    private static void jj_la1_0() {
-      jj_la1_0 = new int[] {0x2c00001e,0x6,0x6,0x2c00001e,0x0,0x2c000000,0x0,0x18000000,0x18000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x20000000,0x20000000,0x8,0x6,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2c000010,0x2c000010,0x2c000000,0x2c000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x2c000010,0x2c000010,0x0,0x0,0x20000010,0x20000010,0x40000000,0x80000000,0x20000010,0x40000000,0x80000000,0x20000010,0x20000010,0x20000010,0x20000010,0x20000010,0x20000000,0x20000000,0x20000000,0x20000000,0x0,0x0,0x0,0x20000000,0x20000000,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_0 = new int[] {0x9600001e,0x6,0x6,0x9600001e,0x0,0x96000000,0x0,0xc000000,0xc000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000000,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000000,0x80000000,0x80000000,0x0,0x80000000,0x80000000,0x0,0x0,0x0,0x80000000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80000000,0x80000000,0x80000000,0x80000000,0x0,0x0,0x80000000,0x0,0x0,0x10000000,0x90000000,0x8,0x6,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x96000010,0x96000010,0x96000000,0x96000000,0x0,0x0,0x0,0x0,0x80000000,0x0,0x0,0x0,0x96000010,0x96000010,0x0,0x80000000,0x90000010,0x90000010,0x20000000,0x40000000,0x90000010,0x20000000,0x40000000,0x90000010,0x90000010,0x90000010,0x90000010,0x90000010,0x90000000,0x90000000,0x90000000,0x90000000,0x80000000,0x80000000,0x80000000,0x90000000,0x90000000,0x80000000,0x0,0x80000000,0x80000000,0x80000000,};
    }
    private static void jj_la1_1() {
-      jj_la1_1 = new int[] {0xebaa0fff,0x0,0x0,0xebaa0fff,0x0,0xebaa0fff,0x100000,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x61000001,0x4000,0x6180000d,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x6180000d,0xc,0xc,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x61800001,0x61800001,0x61800001,0x0,0x61800001,0x1,0x0,0x0,0x0,0x800001,0x2000,0x0,0x0,0x0,0x800000,0x0,0x0,0x6180000d,0x6180000d,0x6180000d,0x6180000d,0x1000,0x61000000,0x6180000d,0x0,0x0,0x8a2a0ff0,0xebaa0fff,0x0,0x0,0x1e0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xebaa0fff,0xebaa0fff,0xebaa0fff,0xebaa0ffd,0x0,0x0,0x0,0x0,0x800001,0x0,0x48000,0x48000,0xebaa0fff,0xebaa0fff,0x48000,0x6180000d,0xebaa0fff,0xebaa0fff,0x0,0x0,0xebaa0fff,0x0,0x0,0xebaa0fff,0xebaa0fff,0xebaa0fff,0xebaa0fff,0xebaa0fff,0xebaa0fff,0xebaa0fff,0xebaa0fff,0xebaa0fff,0x6180000d,0x6180000d,0x6180000d,0xebaa0fff,0xebaa0fff,0x6180000d,0x0,0x6180000d,0x6180000d,0x618001ed,};
+      jj_la1_1 = new int[] {0x75d507ff,0x0,0x0,0x75d507ff,0x0,0x75d507ff,0x80000,0x0,0x0,0x0,0x0,0x0,0x0,0x800,0x0,0x0,0x0,0x30800000,0x2000,0x30c00006,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x30c00006,0x6,0x6,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x30c00000,0x30c00000,0x30c00000,0x0,0x30c00000,0x0,0x0,0x0,0x0,0x400000,0x1000,0x0,0x0,0x0,0x400000,0x0,0x0,0x30c00006,0x30c00006,0x30c00006,0x30c00006,0x800,0x30800000,0x30c00006,0x0,0x0,0x451507f8,0x75d507ff,0x0,0x0,0xf0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x75d507ff,0x75d507ff,0x75d507ff,0x75d507fe,0x0,0x0,0x0,0x0,0x400000,0x0,0x24000,0x24000,0x75d507ff,0x75d507ff,0x24000,0x30c00006,0x75d507ff,0x75d507ff,0x0,0x0,0x75d507ff,0x0,0x0,0x75d507ff,0x75d507ff,0x75d507ff,0x75d507ff,0x75d507ff,0x75d507ff,0x75d507ff,0x75d507ff,0x75d507ff,0x30c00006,0x30c00006,0x30c00006,0x75d507ff,0x75d507ff,0x30c00006,0x0,0x30c00006,0x30c00006,0x30c000f6,};
    }
    private static void jj_la1_2() {
-      jj_la1_2 = new int[] {0x27870020,0x0,0x0,0x27870020,0x0,0x27870020,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x6000000,0x0,0x27870000,0x0,0x20000000,0x0,0x20000000,0x20000000,0xff80,0x0,0x27870000,0x20000,0x0,0x0,0x80000,0x200000,0x200000,0x400000,0x400000,0x0,0x40000000,0x80000000,0x20000000,0x0,0x0,0x0,0x0,0x0,0x0,0x6000000,0x6000000,0x18000000,0x18000000,0x27870000,0x27830000,0x27800000,0x1800000,0x20000000,0xff80,0x1800000,0x1800000,0x20000000,0x20000000,0x0,0x0,0x0,0x0,0x0,0xff80,0x0,0x2787ff80,0x2787ff80,0x2787ff80,0x2787ff80,0x0,0x0,0x27870000,0x0,0x10000,0x10020,0x27870020,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x27870020,0x27870020,0x27870020,0x27870020,0x0,0x0,0x1800000,0x1800000,0x21800000,0x100000,0x0,0x0,0x27870020,0x27870020,0x0,0x27870000,0x27870020,0x27870020,0x0,0x0,0x27870020,0x0,0x0,0x27970020,0x27870020,0x27870020,0x27870020,0x27870020,0x27870020,0x27970020,0x27870020,0x27970020,0x27870000,0x27870000,0x27870000,0x27870020,0x27970020,0x27870000,0x0,0x27870000,0x27870000,0x27870000,};
+      jj_la1_2 = new int[] {0x13c38010,0x0,0x0,0x13c38010,0x0,0x13c38010,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x3000000,0x0,0x13c38000,0x0,0x10000000,0x0,0x10000000,0x10000000,0x7fc0,0x0,0x13c38000,0x10000,0x0,0x0,0x40000,0x100000,0x100000,0x200000,0x200000,0x0,0x20000000,0x40000000,0x10000000,0x0,0x0,0x0,0x0,0x0,0x0,0x3000000,0x3000000,0x8c000000,0x8c000000,0x13c38000,0x13c18000,0x13c00000,0xc00000,0x10000000,0x7fc0,0xc00000,0xc00000,0x10000000,0x10000000,0x0,0x0,0x0,0x0,0x0,0x7fc0,0x0,0x13c3ffc0,0x13c3ffc0,0x13c3ffc0,0x13c3ffc0,0x0,0x0,0x13c38000,0x0,0x8000,0x8010,0x13c38010,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x13c38010,0x13c38010,0x13c38010,0x13c38010,0x0,0x0,0xc00000,0xc00000,0x10c00000,0x80000,0x0,0x0,0x13c38010,0x13c38010,0x0,0x13c38000,0x13c38010,0x13c38010,0x0,0x0,0x13c38010,0x0,0x0,0x13cb8010,0x13c38010,0x13c38010,0x13c38010,0x13c38010,0x13c38010,0x13cb8010,0x13c38010,0x13cb8010,0x13c38000,0x13c38000,0x13c38000,0x13c38010,0x13cb8010,0x13c38000,0x0,0x13c38000,0x13c38000,0x13c38000,};
    }
    private static void jj_la1_3() {
-      jj_la1_3 = new int[] {0x11471440,0x0,0x0,0x11471440,0x10000000,0x11471440,0x0,0x0,0x0,0x20000000,0x1040000,0x0,0x0,0x1060000,0x440,0x440,0x51440,0x0,0x471440,0x20000000,0x0,0x20000000,0x20000,0x0,0x0,0x0,0x471440,0x0,0x0,0x0,0x0,0x10,0x10,0x20,0x20,0x40000000,0x0,0x0,0x0,0x0,0x0,0x80000000,0x80000000,0xe,0xe,0x0,0x0,0x1,0x1,0x471440,0x471440,0x471440,0x0,0x471440,0x0,0x0,0x0,0x0,0x60000,0x0,0x400000,0x400000,0x400000,0x60000,0x60000,0x1060000,0x471440,0x471440,0x471440,0x471440,0x5000000,0x11440,0x471440,0x20000000,0x0,0x11000000,0x11471440,0x0,0x0,0x0,0x20000,0x20000000,0x20000,0x0,0x20000000,0x20000000,0x20000000,0x11471440,0x11471440,0x11471440,0x11471440,0x20000000,0x0,0x0,0x0,0x60000,0x1000000,0x0,0x0,0x11471440,0x11471440,0x0,0x471440,0x11471440,0x11471440,0x0,0x0,0x11471440,0x0,0x0,0x11471440,0x11471440,0x11471440,0x11471440,0x11471440,0x11471440,0x11471440,0x11471440,0x11471440,0x471440,0x471440,0x471440,0x11471440,0x11471440,0x471440,0x20000000,0x471440,0x471440,0x10471440,};
+      jj_la1_3 = new int[] {0x8a38a20,0x0,0x0,0x8a38a20,0x8000000,0x8a38a20,0x0,0x0,0x0,0x10000000,0x820000,0x0,0x0,0x2800000,0x830000,0x220,0x220,0x28a20,0x0,0x238a20,0x10000000,0x0,0x10000000,0x10000,0x0,0x0,0x0,0x238a20,0x0,0x0,0x0,0x0,0x8,0x8,0x10,0x10,0x20000000,0x0,0x0,0x0,0x0,0x0,0xc0000000,0xc0000000,0x7,0x7,0x0,0x0,0x0,0x0,0x238a20,0x238a20,0x238a20,0x0,0x238a20,0x0,0x0,0x0,0x0,0x30000,0x0,0x200000,0x200000,0x200000,0x30000,0x30000,0x830000,0x238a20,0x238a20,0x238a20,0x238a20,0x2800000,0x8a20,0x238a20,0x10000000,0x0,0x8800000,0x8a38a20,0x0,0x0,0x0,0x10000,0x10000000,0x10000,0x0,0x10000000,0x10000000,0x10000000,0x8a38a20,0x8a38a20,0x8a38a20,0x8a38a20,0x10000000,0x0,0x0,0x0,0x30000,0x800000,0x0,0x0,0x8a38a20,0x8a38a20,0x0,0x238a20,0x8a38a20,0x8a38a20,0x0,0x0,0x8a38a20,0x0,0x0,0x8a38a20,0x8a38a20,0x8a38a20,0x8a38a20,0x8a38a20,0x8a38a20,0x8a38a20,0x8a38a20,0x8a38a20,0x238a20,0x238a20,0x238a20,0x8a38a20,0x8a38a20,0x238a20,0x10000000,0x238a20,0x238a20,0x8238a20,};
    }
    private static void jj_la1_4() {
-      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x1fff00,0x0,0x0,0x0,0x1fff00,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xf2,0xf2,0xd,0xd,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x100,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
+      jj_la1_4 = new int[] {0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0xfff80,0x0,0x0,0x0,0xfff80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x79,0x79,0x6,0x6,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x80,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,0x0,};
    }
-  final private JJCalls[] jj_2_rtns = new JJCalls[6];
+  final private JJCalls[] jj_2_rtns = new JJCalls[5];
   private boolean jj_rescan = false;
   private int jj_gc = 0;
 
@@ -8230,7 +8541,7 @@ final ArrayList list = new ArrayList();
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 129; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 130; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8240,7 +8551,7 @@ final ArrayList list = new ArrayList();
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 129; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 130; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8250,7 +8561,7 @@ final ArrayList list = new ArrayList();
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 129; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 130; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8260,7 +8571,7 @@ final ArrayList list = new ArrayList();
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 129; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 130; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8269,7 +8580,7 @@ final ArrayList list = new ArrayList();
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 129; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 130; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8278,7 +8589,7 @@ final ArrayList list = new ArrayList();
     token = new Token();
     jj_ntk = -1;
     jj_gen = 0;
-    for (int i = 0; i < 129; i++) jj_la1[i] = -1;
+    for (int i = 0; i < 130; i++) jj_la1[i] = -1;
     for (int i = 0; i < jj_2_rtns.length; i++) jj_2_rtns[i] = new JJCalls();
   }
 
@@ -8389,15 +8700,15 @@ final ArrayList list = new ArrayList();
 
   public ParseException generateParseException() {
     jj_expentries.removeAllElements();
-    boolean[] la1tokens = new boolean[149];
-    for (int i = 0; i < 149; i++) {
+    boolean[] la1tokens = new boolean[148];
+    for (int i = 0; i < 148; i++) {
       la1tokens[i] = false;
     }
     if (jj_kind >= 0) {
       la1tokens[jj_kind] = true;
       jj_kind = -1;
     }
-    for (int i = 0; i < 129; i++) {
+    for (int i = 0; i < 130; i++) {
       if (jj_la1[i] == jj_gen) {
         for (int j = 0; j < 32; j++) {
           if ((jj_la1_0[i] & (1<<j)) != 0) {
@@ -8418,7 +8729,7 @@ final ArrayList list = new ArrayList();
         }
       }
     }
-    for (int i = 0; i < 149; i++) {
+    for (int i = 0; i < 148; i++) {
       if (la1tokens[i]) {
         jj_expentry = new int[1];
         jj_expentry[0] = i;
@@ -8443,7 +8754,7 @@ final ArrayList list = new ArrayList();
 
   final private void jj_rescan_token() {
     jj_rescan = true;
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 5; i++) {
       JJCalls p = jj_2_rtns[i];
       do {
         if (p.gen > jj_gen) {
@@ -8454,7 +8765,6 @@ final ArrayList list = new ArrayList();
             case 2: jj_3_3(); break;
             case 3: jj_3_4(); break;
             case 4: jj_3_5(); break;
-            case 5: jj_3_6(); break;
           }
         }
         p = p.next;
@@ -8479,4 +8789,5 @@ final ArrayList list = new ArrayList();
     JJCalls next;
   }
 
+  //}}}
 }

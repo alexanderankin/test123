@@ -128,4 +128,16 @@ public final class PHPDocument implements OutlineableWithChildren {
     }
     return null;
   }
+
+  public MethodDeclaration insideWichMethodIsThisOffset(int offset) {
+    for (int i = 0; i < children.size(); i++) {
+      Outlineable outlineable = (Outlineable) children.get(i);
+      if (outlineable instanceof MethodDeclaration) {
+        MethodDeclaration methodDeclaration = (MethodDeclaration) outlineable;
+        if (offset < methodDeclaration.getBodyEnd() && offset> methodDeclaration.getBodyStart())
+          return methodDeclaration;
+      }
+    }
+    return null;
+  }
 }

@@ -17,6 +17,10 @@ public class PHPSideKickCompletion extends SideKickCompletion {
     this.textArea = textArea;
   }
 
+  public void addItem(String item) {
+    items.add(item);
+  }
+
   public void addItem(Outlineable item) {
     items.add(item);
   }
@@ -26,8 +30,15 @@ public class PHPSideKickCompletion extends SideKickCompletion {
   }
 
   public void insert(int index) {
-    final Outlineable outlineable = (Outlineable) items.get(index);
-    textArea.setSelectedText(outlineable.getName());
+    //todo change that !!!
+    final Object object = items.get(index);
+    String insertText;
+    if (object instanceof Outlineable) {
+      insertText =((Outlineable)object).getName();
+    } else {
+      insertText = (String) object;
+    }
+    textArea.setSelectedText(insertText);
   }
 
   public int getTokenLength() {

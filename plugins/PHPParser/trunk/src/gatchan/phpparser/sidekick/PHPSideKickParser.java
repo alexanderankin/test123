@@ -10,11 +10,13 @@ import gatchan.phpparser.parser.ParsingAbortedError;
 import net.sourceforge.phpdt.internal.compiler.ast.AstNode;
 import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassDeclaration;
+import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 import sidekick.SideKickParsedData;
 import sidekick.SideKickParser;
@@ -64,11 +66,12 @@ public final class PHPSideKickParser extends SideKickParser {
       final SideKickParsedData data = new SideKickParsedData(buffer.getName());
 
       buildChildNodes(data.root, phpDocument, buffer);
-      buffer.setProperty("PHPDocument",phpDocument);
+      buffer.setProperty("PHPDocument", phpDocument);
       return data;
 
 
     } catch (ParseException e) {
+      parser = null;
       Log.log(Log.ERROR, this, e);
       errorSource.addError(ErrorSource.ERROR,
                            path,
@@ -116,40 +119,73 @@ public final class PHPSideKickParser extends SideKickParser {
     return true;
   }
 
-  public SideKickCompletion complete(EditPane editPane, int caret) {
+  public SideKickCompletion complete(final EditPane editPane, final int caret) {
     final Buffer buffer = editPane.getBuffer();
     final PHPDocument phpDocument = (PHPDocument) buffer.getProperty("PHPDocument");
     if (phpDocument == null) {
       return null;
     }
-    int i;
-    for (i = caret-1;i>0;i--) {
-      String text = buffer.getText(i, 1);
-      if (!" ".equals(text) && !"\n".equals(text) && !"\t".equals(text)) break;
+    final String word = getPreviousWord(caret, buffer);
+    final ClassDeclaration currentClass = phpDocument.insideWichClassIsThisOffset(caret);
+    final MethodDeclaration currentMethod;
+    if (currentClass == null) {
+      currentMethod = phpDocument.insideWichMethodIsThisOffset(caret);
+    } else {
+      currentMethod = currentClass.insideWichMethodIsThisOffset(caret);
     }
-    i++;
-    int j;
-    for (j = i-1;j>0;j--) {
-      String text = buffer.getText(j, 1);
-      if (" ".equals(text) || "\n".equals(text) || "\t".equals(text)) break;
+    if (currentClass != null) {
+      if (currentMethod != null) {
+        if ("$this->".equals(word)) {
+          return completeClassMembers(editPane.getTextArea(), phpDocument, caret);
+        }
+      } else {
+        if (word.endsWith(";") || word.endsWith("{") || word.endsWith("}")) {
+          PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(editPane.getTextArea());
+          phpSideKickCompletion.addItem("var");
+          phpSideKickCompletion.addItem("function");
+          return phpSideKickCompletion;
+        }
+      }
+
     }
-    String word = buffer.getText(j+1,i-j-1);
-   // Log.log(Log.DEBUG, PHPSideKickParser.class, "Word found : '"+word+"'");
+    // Log.log(Log.DEBUG, PHPSideKickParser.class, "Word found : '"+word+"'");
     if ("new".equals(word)) {
-       return completeClassDeclaration(editPane.getTextArea(), phpDocument);
-    }
-    if ("$this->".equals(word)) {
-      return completeClassMembers(editPane.getTextArea(), phpDocument,caret);
+      return completeClassDeclaration(editPane.getTextArea(), phpDocument);
     }
 
     return null;
   }
 
-  private SideKickCompletion completeClassDeclaration(JEditTextArea textArea, final PHPDocument phpDocument) {
-    PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea);
+  private static String getPreviousWord(final int caret, final Buffer buffer) {
+    int i;
+    for (i = caret - 1; i > 0; i--) {
+      final String text = buffer.getText(i, 1);
+      if (!" ".equals(text) && !"\n".equals(text) && !"\t".equals(text)) break;
+    }
+    i++;
+    int j;
+    for (j = i - 1; j > 0; j--) {
+      final String text = buffer.getText(j, 1);
+      if (" ".equals(text) || "\n".equals(text) || "\t".equals(text)) break;
+    }
+    final String word = buffer.getText(j + 1, i - j - 1);
+    return word;
+  }
+
+  /**
+   * Build the completion list to follow a 'new'. It will contains classes name
+   *
+   * @param textArea    the current textArea
+   * @param phpDocument the phpDocument
+   *
+   * @return a completion list
+   */
+  private static SideKickCompletion completeClassDeclaration(final JEditTextArea textArea,
+                                                             final PHPDocument phpDocument) {
+    final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea);
     final List children = phpDocument.getList();
     for (int k = 0; k < children.size(); k++) {
-      Object o = children.get(k);
+      final Object o = children.get(k);
       if (o instanceof ClassDeclaration) {
         phpSideKickCompletion.addItem((Outlineable) o);
       }
@@ -157,12 +193,23 @@ public final class PHPSideKickParser extends SideKickParser {
     return phpSideKickCompletion;
   }
 
-  private SideKickCompletion completeClassMembers(JEditTextArea textArea, final PHPDocument phpDocument, int caret) {
-    ClassDeclaration classDeclaration = phpDocument.insideWichClassIsThisOffset(caret);
+  /**
+   * Build the completion list to follow a '$this->'. It will contains fields and methods
+   *
+   * @param textArea    the current textArea
+   * @param phpDocument the phpDocument
+   * @param caret       the caret position
+   *
+   * @return a completion list or null if we aren't in a class
+   */
+  private static SideKickCompletion completeClassMembers(final JEditTextArea textArea,
+                                                         final PHPDocument phpDocument,
+                                                         final int caret) {
+    final ClassDeclaration classDeclaration = phpDocument.insideWichClassIsThisOffset(caret);
     if (classDeclaration == null) return null;
-    PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea);
-    List methods = classDeclaration.getMethods();
-    List fields = classDeclaration.getFields();
+    final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea);
+    final List methods = classDeclaration.getMethods();
+    final List fields = classDeclaration.getFields();
     phpSideKickCompletion.addOutlineableList(methods);
     phpSideKickCompletion.addOutlineableList(fields);
     return phpSideKickCompletion;
