@@ -1,7 +1,7 @@
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Kenrick Drew
-plugin.tags.TagsPlugin.version=1.0.2
+plugin.tags.TagsPlugin.version=1.0.3
 plugin.tags.TagsPlugin.docs=Tags.html
 plugin.tags.TagsPlugin.depend.0=jdk 1.1
 plugin.tags.TagsPlugin.depend.1=jedit 03.02.99.00
@@ -18,7 +18,15 @@ tags.menu.label=Tags
 tags.menu=tags-follow-tag tags-follow-tag-new-view tags-enter-and-follow-tag tags-pop-tag
 
 # Messages
-tags.message.no-tag-index-files=No tag index files to search.  Please add tag index files\nfrom the Global Options dialog.
+no-tag-index-files.title=Error
+no-tag-index-files.message=No tag index files to search.  Please add tag index files\nfrom the Global Options dialog.
+
+func-not-found.title=Error
+func-not-found.message=\"{0}\" not found!
+
+tag-def-file-not-found.title=Error
+tag-def-file-not-found.message=The tag file name path \"{0}\"\nthat is listed in the tag index file, does not\nexist.  You may need to update your tag index\nfiles.
+
 
 # Tag To dialog strings
 tags.enter-tag-dlg.title=Enter And Follow Tag
