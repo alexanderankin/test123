@@ -79,12 +79,12 @@ import org.gjt.sp.jedit.jEdit;
       return iconType;
     }
     
-    public void setStart(Position start){
-        this.start = start;
+    public void setStart(Position s){
+        start = s;
     }
 
-    public void setEnd(Position end){
-        this.end = end;
+    public void setEnd(Position e){
+        end = e;
     }
 
     public Position getStart(){
