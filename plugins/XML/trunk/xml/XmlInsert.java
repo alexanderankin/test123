@@ -462,9 +462,13 @@ public class XmlInsert extends JPanel implements EBComponent
 
 				if(GUIUtilities.isPopupTrigger(evt))
 				{
-					textArea.setCaretPosition(
-						id.declaringLocation
-						.getOffset());
+					Buffer buffer = jEdit.openFile(view,id.uri);
+					if(buffer == null)
+						return;
+					int line = Math.min(buffer.getLineCount() - 1,id.line);
+					int column = Math.min(buffer.getLineLength(line),id.column);
+					int offset = buffer.getLineStartOffset(line) + column;
+					textArea.setCaretPosition(offset);
 				}
 				else
 				{
