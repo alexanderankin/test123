@@ -1,3 +1,4 @@
+- multiple-line env vars don't work
 - fish stops after %kill and doesn't start
 - see if an extra pattern can eat all javac errors
 - TeX, Tidy error patterns

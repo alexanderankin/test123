@@ -107,7 +107,9 @@ implements EBComponent, Output
 		add(BorderLayout.NORTH,panel);
 
 		output = new JTextPane();
-		add(BorderLayout.CENTER,new JScrollPane(output));
+		JScrollPane scroller = new JScrollPane(output);
+		scroller.setPreferredSize(new Dimension(400,100));
+		add(BorderLayout.CENTER,scroller);
 
 		propertiesChanged();
 		setShell(ConsolePlugin.SYSTEM_SHELL);
