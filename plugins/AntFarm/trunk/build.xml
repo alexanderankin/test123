@@ -1,47 +1,45 @@
-<project name="antfarm" default="dist" basedir=".">
-  
+<project name="Antfarm" default="dist" basedir=".">
+
 	<property name="build" value="build"/>
 	<property name="src" value="."/>
-	<property name="dist"  value="dist"/>
-	
+	<property name="dist" value="../"/>
+
 	<path id="project.class.path">
-		<pathelement location="/usr/lib/j2sdk1.3/jre/lib/rt.jar"/>
+		<pathelement location="../../jedit.jar" />
 		<pathelement location="."/>
-		<fileset dir="./jar">
+		<fileset dir="../../jars">
 			<include name="*.jar"/>
 		</fileset>
 	</path>
-	
+
 	<target name="init">
 		<mkdir dir="${build}"/>
-		<mkdir dir="${dist}"/>
 	</target>
-	
+
 	<target name="compile" depends="init">
 		<javac srcdir="." destdir="${build}" optimize="on" deprecation="on">
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
-	
+
 	<target name="clean">
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
 			<fileset dir="." includes="**/*.class"/>
 			<fileset dir="." includes="*.tar.gz"/>
-			<fileset dir="." includes="*.zip"/> 
+			<fileset dir="." includes="*.zip"/>
 		</delete>
 		<delete dir="${build}"/>
 	</target>
-	
+
 	<target name="dist" depends="compile">
 		<jar jarfile="${dist}/${ant.project.name}.jar">
-		    <fileset dir="${build}"/>
-    		    <fileset dir="${src}">
-    			<include name="actions.xml"/>
-			<include name="AntFarm.props"/>
-			<include name="AntFarm.html"/>
-			<include name="*.gif"/>
-		    </fileset>
+      <fileset dir="${build}"/>
+      <fileset dir="${src}">
+        <include name="actions.xml"/>
+        <include name="AntFarm.props"/>
+        <include name="AntFarm.html"/>
+      </fileset>
 		</jar>
 	</target>
 </project>
