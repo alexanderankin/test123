@@ -83,7 +83,7 @@ public class ColorTabs
     * @param  color
     * @return
     */
-   Color alterColourDarken(Color color)
+   Color alterColorDarken(Color color)
    {
       if (color == null)
       {
@@ -124,7 +124,7 @@ public class ColorTabs
     * @param  color
     * @return
     */
-   Color alterColourHighlight(Color color)
+   Color alterColorHighlight(Color color)
    {
       if (color == null)
       {
@@ -156,7 +156,7 @@ public class ColorTabs
     *@param  color
     *@return
     */
-   Color alterColourMute(Color color)
+   Color alterColorMute(Color color)
    {
       if (color == null)
       {
@@ -220,11 +220,11 @@ public class ColorTabs
                {
                   if (colorTitles)
                   {
-                     newColour = alterColourDarken(entry.color);
+                     newColour = alterColorDarken(entry.color);
                   }
                   else
                   {
-                     newColour = alterColourMute(entry.color);
+                     newColour = alterColorMute(entry.color);
                   }
                }
                else
@@ -465,7 +465,7 @@ public class ColorTabs
             try
             {
                parent.getUI().uninstallUI(parent);
-               UIManager.getDefaults().put("TabbedPane.selected", new ColorUIResource(alterColourHighlight(colour)));
+               UIManager.getDefaults().put("TabbedPane.selected", new ColorUIResource(alterColorHighlight(colour)));
                parent.getUI().installUI(parent);
             }
             catch (Exception e)
