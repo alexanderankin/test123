@@ -72,16 +72,28 @@ public class OpenWithEncodingAction extends Action {
 	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		VPTFile file = (VPTFile) viewer.getSelectedNode();
-		Hashtable props = new Hashtable();
-		props.put(Buffer.ENCODING, ((JMenuItem)e.getSource()).getText());
-		jEdit.openFile(viewer.getView(), null, file.getNodePath(), false, props);
+		VPTNode file = viewer.getSelectedNode();
+		Buffer b = jEdit.getBuffer(file.getNodePath());
+		if (b == null) {
+			Hashtable props = new Hashtable();
+			props.put(Buffer.ENCODING, ((JMenuItem)e.getSource()).getText());
+			jEdit.openFile(viewer.getView(), null, file.getNodePath(), false, props);
+		} else {
+			b.setStringProperty(Buffer.ENCODING, ((JMenuItem)e.getSource()).getText());
+			b.propertiesChanged();
+		}
 	} //}}}
 
 	//{{{ +prepareForNode(VPTNode) : void
 	/** Enable action only for openable nodes. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null && node.canOpen());
+		Buffer b = jEdit.getBuffer(node.getNodePath());
+		if (b == null) {
+			((JMenu)cmItem).setText(jEdit.getProperty("projectviewer.action.open_with_encoding"));
+		} else {
+			((JMenu)cmItem).setText(jEdit.getProperty("projectviewer.action.set_encoding"));			
+		}
 	} //}}}
 
 }

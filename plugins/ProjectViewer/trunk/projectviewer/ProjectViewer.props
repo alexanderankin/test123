@@ -158,6 +158,7 @@ projectviewer.action.archive.filter=Project "{0}" files
 projectviewer.action.old_importer=Add files to project root
 projectviewer.action.reimport=Re-import files
 projectviewer.action.open_with_encoding=Open with encoding...
+projectviewer.action.set_encoding=Set encoding...
 
 projectviewer.action.clean_old_root=Remove files from old project root?
 projectviewer.action.clean_old_root.title=Cleanup project
