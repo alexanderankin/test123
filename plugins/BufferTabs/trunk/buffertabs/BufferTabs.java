@@ -252,6 +252,57 @@ public class BufferTabs extends JTabbedPane implements EBComponent
     }
 
 
+    public void propertiesChanged() {
+        if (ColorTabs.instance().isEnabled() != jEdit.getBooleanProperty("buffertabs.color-tabs")) {
+            ColorTabs.instance().setEnabled(!ColorTabs.instance().isEnabled());
+
+            //Turn off all color features
+            if (!ColorTabs.instance().isEnabled()) {
+                try {
+                    for (int i = this.getTabCount() - 1; i >= 0; i--) {
+                        this.setBackgroundAt(i, null);
+                        this.setForegroundAt(i, null);
+                    }
+                } catch (java.lang.NullPointerException npe) {
+                    Log.log(Log.ERROR, BufferTabs.class, "propertiesChanged: 1 " + npe.toString());
+                }
+
+                try {
+                    this.getUI().uninstallUI(this);
+                    UIManager.getDefaults().put("TabbedPane.selected", null);
+                    this.getUI().installUI(this);
+                } catch (java.lang.NullPointerException npe) {
+                    Log.log(Log.ERROR, BufferTabs.class, "propertiesChanged: 2 " + npe.toString());
+                }
+            }
+        }
+
+        if (ColorTabs.instance().isEnabled()) {
+            ColorTabs.instance().setMuteColors(jEdit.getBooleanProperty("buffertabs.color-mute"));
+            ColorTabs.instance().setColorVariation(jEdit.getBooleanProperty("buffertabs.color-variation"));
+            ColorTabs.instance().setForegroundColorized(jEdit.getBooleanProperty("buffertabs.color-foreground"));
+
+            if (ColorTabs.instance().isSelectedColorized() != jEdit.getBooleanProperty("buffertabs.color-selected")) {
+                ColorTabs.instance().setSelectedColorized(!ColorTabs.instance().isSelectedColorized());
+
+                //Turn off all colorhighlight
+                if (!ColorTabs.instance().isSelectedColorized()) {
+                    try {
+                        this.getUI().uninstallUI(this);
+                        UIManager.getDefaults().put("TabbedPane.selected", null);
+                        this.getUI().installUI(this);
+                    } catch (Exception e) {
+                        Log.log(Log.ERROR, BufferTabs.class, "propertiesChanged: 3 " + e.toString());
+                    }
+                }
+            }
+
+            ColorTabs.instance().propertiesChanged();
+        }
+    }
+
+
+
     private class ChangeHandler implements ChangeListener {
         private boolean enabled = true;
 
