@@ -131,12 +131,15 @@ public class WhiteSpacePlugin
 
 
     private void bufferSaving(Buffer buffer) {
-        boolean removeTrailingWhitespace    = buffer.getBooleanProperty(
-            "white-space.remove-trailing-white-space"
+        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
+            WhiteSpaceModel.MODEL_PROPERTY
         );
-        boolean softTabifyLeadingWhitespace = buffer.getBooleanProperty(
-            "white-space.soft-tabify-leading-white-space"
-        );
+        if (model == null) { return; }
+
+        boolean removeTrailingWhitespace    =
+            model.getRemoveTrailingWhitespace().isEnabled();
+        boolean softTabifyLeadingWhitespace =
+            model.getSoftTabifyLeadingWhitespace().isEnabled();
 
         boolean tabifyLeadingWhitespace   = false;
         boolean untabifyLeadingWhitespace = false;
@@ -145,12 +148,10 @@ public class WhiteSpacePlugin
             tabifyLeadingWhitespace   = !noTabs;
             untabifyLeadingWhitespace = noTabs;
         } else {
-            tabifyLeadingWhitespace   = buffer.getBooleanProperty(
-                "white-space.tabify-leading-white-space"
-            );
-            untabifyLeadingWhitespace = buffer.getBooleanProperty(
-                "white-space.untabify-leading-white-space"
-            );
+            tabifyLeadingWhitespace   =
+                model.getTabifyLeadingWhitespace().isEnabled();
+            untabifyLeadingWhitespace =
+                model.getUntabifyLeadingWhitespace().isEnabled();
         }
 
         if (    !removeTrailingWhitespace
