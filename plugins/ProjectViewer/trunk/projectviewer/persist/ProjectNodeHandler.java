@@ -39,9 +39,11 @@ import projectviewer.vpt.VPTProject;
  */
 public class ProjectNodeHandler extends NodeHandler {
 
+	//{{{ Constants
 	protected static final String NODE_NAME	= "project";
 	private static final String PATH_ATTR	= "path";
 	private static final String URL_ATTR	= "url";
+	//}}}
 
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
@@ -74,6 +76,7 @@ public class ProjectNodeHandler extends NodeHandler {
 		return true;
 	}
 
+	//{{{ createNode(Attributes, VPTProject) method
 	/**
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
@@ -82,8 +85,9 @@ public class ProjectNodeHandler extends NodeHandler {
 		project.setRootPath(attrs.getValue(PATH_ATTR));
 		project.setURL(attrs.getValue(URL_ATTR));
 		return project;
-	}
+	} //}}}
 
+	//{{{ saveNode(VPTNode, Writer) method
 	/**
 	 *	Saves a project node. This behaves a little differently than other
 	 *	nodes, since it not only saves the project data, but creates nodes
@@ -92,7 +96,8 @@ public class ProjectNodeHandler extends NodeHandler {
 	public void saveNode(VPTNode node, Writer out) throws IOException {
 		startElement(out);
 		writeAttr(PATH_ATTR, xlatePath(((VPTProject)node).getRootPath()), out);
-		writeAttr(URL_ATTR, ((VPTProject)node).getURL(), out);
+		if (((VPTProject)node).getURL() != null)
+			writeAttr(URL_ATTR, ((VPTProject)node).getURL(), out);
 		out.write(">\n");
 
 		// save the properties
@@ -109,6 +114,6 @@ public class ProjectNodeHandler extends NodeHandler {
 			ofnh.saveNode((String)it.next(), out);
 		}
 
-	}
+	} //}}}
 }
 
