@@ -29,8 +29,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.DefaultErrorSource;
-import org.gjt.sp.jedit.ErrorSource;
+import errorlist.DefaultErrorSource;
 import console.Console;
 import console.Output;
 import console.Shell;
@@ -42,13 +41,9 @@ import console.Shell;
 public class JCompilerShell extends Shell
 {
 
-	public JCompilerShell() {
+	public JCompilerShell() 
+	{
 		super("Java Compiler");
-
-		// JCompiler uses it's own ErrorSource instead of Console's one:
-		errorSource = new DefaultErrorSource("JCompiler");
-		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST, errorSource);
-		EditBus.addToBus(errorSource);
 	}
 
 
@@ -59,7 +54,8 @@ public class JCompilerShell extends Shell
 	 *
 	 * @param  output  where to put the information
 	 */
-	public void printInfoMessage(Output output) {
+	public void printInfoMessage(Output output) 
+	{
 		output.print(null, jEdit.getProperty("jcompiler.msg.info"));
 	}
 
@@ -71,10 +67,12 @@ public class JCompilerShell extends Shell
 	 * @param  output  where the output should go.
 	 * @param  command  the entered command.
 	 */
-	public void execute(Console console, Output output, String command) {
+	public void execute(Console console, Output output, String command) 
+	{
 		stop(console); // stop last command
 
 		String cmd = command.trim();
+		DefaultErrorSource errorSource = console.getErrorSource();
 
 		if ("compile".equals(cmd))
 		{
@@ -101,10 +99,12 @@ public class JCompilerShell extends Shell
 		{
 			// command "javac" with arguments
 			String[] args;
-			try {
+			try 
+			{
 				args = parseCmdLineArguments(cmd.substring(6));
 			}
-			catch (IOException ex) {
+			catch (IOException ex) 
+			{
 				console.print(console.getErrorColor(),
 					jEdit.getProperty("jcompiler.msg.errorCommandLine",
 						new Object[] { ex }));
@@ -129,9 +129,12 @@ public class JCompilerShell extends Shell
 	}
 
 
-	public void stop(Console console) {
-		if (compileTask != null) {
-			if (compileTask.isAlive()) {
+	public void stop(Console console) 
+	{
+		if (compileTask != null) 
+		{
+			if (compileTask.isAlive()) 
+			{
 				console.print(console.getErrorColor(), jEdit.getProperty("jcompiler.msg.stopping"));
 				compileTask.stop();
 				console.commandDone();
@@ -141,14 +144,19 @@ public class JCompilerShell extends Shell
 	}
 
 
-	public boolean waitFor(Console console) {
-		if (compileTask != null) {
-			try {
-				synchronized(compileTask) {
+	public boolean waitFor(Console console) 
+	{
+		if (compileTask != null) 
+		{
+			try 
+			{
+				synchronized(compileTask) 
+				{
 					compileTask.wait();
 				}
 			}
-			catch (InterruptedException ie) {
+			catch (InterruptedException ie) 
+			{
 				return false;
 			}
 			compileTask = null;
@@ -159,7 +167,8 @@ public class JCompilerShell extends Shell
 	// ----- End Shell implementation -----
 
 
-	private String[] parseCmdLineArguments(String cmd) throws IOException {
+	private String[] parseCmdLineArguments(String cmd) throws IOException 
+	{
 		// Expand any variables in the command line arguments:
 		cmd = JCompiler.expandVariables(cmd);
 
@@ -181,15 +190,17 @@ public class JCompilerShell extends Shell
 		Vector args = new Vector();
 
 loop:
-		for(;;) {
-			switch(st.nextToken()) {
+		for(;;) 
+		{
+			switch(st.nextToken()) 
+			{
 				case StreamTokenizer.TT_EOF:
 					break loop;
-			case StreamTokenizer.TT_WORD:
-			case '"':
-			case '\'':
-				args.addElement(st.sval.replace(NON_PRINTABLE, '\\'));
-				break;
+				case StreamTokenizer.TT_WORD:
+				case '"':
+				case '\'':
+					args.addElement(st.sval.replace(NON_PRINTABLE, '\\'));
+					break;
 			}
 		}
 
@@ -202,7 +213,6 @@ loop:
 
 
 	private JCompilerTask compileTask;
-	private DefaultErrorSource errorSource;
 	private static final char NON_PRINTABLE = 127;
 
 }

@@ -41,10 +41,10 @@ public class JCompiler
 {
 
 	/** true, if JDK version is older than 1.2 */
-	private final static boolean isOldJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.2") < 0);
+	private final static boolean isOldJDK = (MiscUtilities.compareStrings(System.getProperty("java.version"), "1.2", true) < 0);
 
 	/** true, if JDK version is 1.3 or higher */
-	private final static boolean isModernJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.3") >= 0);
+	private final static boolean isModernJDK = (MiscUtilities.compareStrings(System.getProperty("java.version"), "1.3", true) >= 0);
 
 	private Class compilerClass;
 	private Constructor compilerConstructor;
@@ -225,7 +225,7 @@ public class JCompiler
 		boolean isModern = false;
 		String compilerClassname = "sun.tools.javac.Main";
 
-		if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false))
+		if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", true))
 		{
 			compilerClassname = "com.sun.tools.javac.Main";
 			isModern = true;
@@ -283,7 +283,7 @@ public class JCompiler
 
 			// instantiate a new compiler class with the constructor arguments:
 			Object compiler;
-			if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false))
+			if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", true))
 			{
 				// modern compiler constructor needs no arguments:
 				compiler = compilerConstructor.newInstance(null);

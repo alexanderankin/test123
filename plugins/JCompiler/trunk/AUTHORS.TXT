@@ -1,6 +1,15 @@
-JCompiler was written by Kevin A. Burton and Aziz Sharif.
+JCompiler was originally written by Kevin A. Burton and Aziz Sharif.
 
-All changes in version 0.4.9 were written by Dominic Stolerman.
-All changes in version 0.7.0 were written by Dirk Moebius.
+Maintainers:
 
-The current maintainer is Dirk Moebius <dmoebius@gmx.net>.
+	0.3.7 - 0.4.8, 0.6: Kevin A. Burton
+	0.4.9: Dominic Stolerman
+	>= 0.7.0: Dirk Moebius
+
+	The current maintainer is Dirk Moebius <dmoebius@gmx.net>.
+
+Contributors:
+
+	Logan Bauer
+	Mike Hansen
+

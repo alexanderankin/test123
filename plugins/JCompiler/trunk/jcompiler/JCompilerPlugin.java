@@ -106,9 +106,9 @@ public class JCompilerPlugin extends EditPlugin
 	public static void executeCommand(View view, String command) {
 		// ensure Console window is visible:
 		DockableWindowManager wm = view.getDockableWindowManager();
-		wm.addDockableWindow("console");
+		wm.showDockableWindow("console");
 		// set current Console shell to JCompilerShell:
-		Console console = (Console) wm.getDockableWindow("console");
+		Console console = (Console) wm.getDockable("console");
 		console.setShell(shell);
 		// run the command:
 		console.run(shell, console, command);

@@ -51,7 +51,7 @@ public class JCompilerOptionPaneCompiler
 	public void _init() {
 		// "Use modern compiler (JDK 1.3 or higher)"
 		modernCompiler = new JCheckBox(jEdit.getProperty("options.jcompiler.modernCompiler"));
-		modernCompiler.setSelected(isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false));
+		modernCompiler.setSelected(isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", true));
 		modernCompiler.setEnabled(isModernJDK);
 		addComponent(modernCompiler);
 
@@ -154,7 +154,7 @@ public class JCompilerOptionPaneCompiler
 
 
 	public void _save() {
-		jEdit.setBooleanProperty("jcompiler.modernCompiler", modernCompiler.isSelected());
+		jEdit.setBooleanProperty("jcompiler.modernCompiler", isModernJDK && modernCompiler.isSelected());
 		jEdit.setBooleanProperty("jcompiler.genDebug", genDebug.isSelected());
 		jEdit.setBooleanProperty("jcompiler.genOptimized", genOptimized.isSelected());
 		jEdit.setBooleanProperty("jcompiler.showdeprecated", showDeprecation.isSelected());
@@ -247,10 +247,10 @@ public class JCompilerOptionPaneCompiler
 
 
 	/** true, if JDK version is less than 1.2. */
-	private final static boolean isOldJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.2") < 0);
+	private final static boolean isOldJDK = (MiscUtilities.compareStrings(System.getProperty("java.version"), "1.2", true) < 0);
 
 	/** true, if JDK version is 1.3 or higher */
-	private final static boolean isModernJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.3") >= 0);
+	private final static boolean isModernJDK = (MiscUtilities.compareStrings(System.getProperty("java.version"), "1.3", true) >= 0);
 
 	private static Icon pickIcon = null;
 	private static Icon pickCPIcon = null;
