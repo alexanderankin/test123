@@ -53,6 +53,13 @@ public class BufferOutput implements Output
 		buf.append('\n');
 	} //}}}
 
+	//{{{ write() method
+	public void write(Color color, String msg)
+	{
+		buf.append(msg);
+		buf.append('\n');
+	} //}}}
+
 	//{{{ commandDone() method
 	public void commandDone()
 	{

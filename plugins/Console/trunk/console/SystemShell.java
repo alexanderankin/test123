@@ -60,9 +60,10 @@ public class SystemShell extends Shell
 				.currentDirectory;
 		}
 
-		output.print(console.getInfoColor(),
+		output.write(console.getInfoColor(),
 			jEdit.getProperty("console.shell.prompt",
 			new String[] { currentDirectory }));
+		output.write(null," ");
 	} //}}}
 
 	//{{{ execute() method

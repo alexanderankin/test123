@@ -31,6 +31,14 @@ public interface Output
 	void print(Color color, String msg);
 
 	/**
+	 * Prints a string of text with the specified color, without the
+	 * terminating newline.
+	 * @param color The color. If null, the default color will be used
+	 * @param msg The message
+	 */
+	void write(Color color, String msg);
+
+	/**
 	 * Call when the command finishes executing.
 	 */
 	void commandDone();
