@@ -1,6 +1,6 @@
 /*
  * ErrorList.java - Error list window
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@
 
 import javax.swing.*;
 import javax.swing.event.*;
-import javax.swing.table.*;
+import javax.swing.tree.*;
 import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.event.*;
@@ -28,13 +28,14 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindow;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.textarea.Selection;
 
 public class ErrorList extends JPanel implements EBComponent, DockableWindow
 {
 	public static final ImageIcon ERROR_ICON = new ImageIcon(
-		ErrorList.class.getResource("TrafficRed.gif"));
+		ErrorList.class.getResource("error.gif"));
 	public static final ImageIcon WARNING_ICON = new ImageIcon(
-		ErrorList.class.getResource("TrafficYellow.gif"));
+		ErrorList.class.getResource("warning.gif"));
 
 	public ErrorList(View view)
 	{
@@ -42,7 +43,35 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 		setLayout(new BorderLayout());
 		add(BorderLayout.NORTH,status = new JLabel());
-		add(BorderLayout.CENTER,createListScroller());
+
+		errorRoot = new DefaultMutableTreeNode(null,true);
+		errorModel = new DefaultTreeModel(errorRoot,true);
+
+		Object[] sources = EditBus.getNamedList(ErrorSource.ERROR_SOURCES_LIST);
+		if(sources != null)
+		{
+			for(int i = 0; i < sources.length; i++)
+			{
+				ErrorSource source = (ErrorSource)sources[i];
+				ErrorSource.Error[] errors = source.getAllErrors();
+				if(errors == null)
+					continue;
+				for(int j = 0; j < errors.length; j++)
+				{
+					addError(errors[j]);
+				}
+			}
+		}
+
+		errorTree = new JTree(errorModel);
+		errorTree.putClientProperty("JTree.lineStyle", "Angled");
+		errorTree.addMouseListener(new MouseHandler());
+		errorTree.setCellRenderer(new ErrorCellRenderer());
+
+		JScrollPane scroller = new JScrollPane(errorTree);
+		scroller.setPreferredSize(new Dimension(640,200));
+		add(BorderLayout.CENTER,scroller);
+
 		updateStatus();
 	}
 
@@ -64,8 +93,9 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
 	}
 
-	public void nextError() {
-		if(errorModel.getSize() > 0)
+	public void nextError()
+	{
+		/* if(errorModel.getSize() > 0)
 		{
 			int index = errorList.getSelectedIndex() + 1;
 			if(index < errorModel.getSize())
@@ -83,11 +113,12 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			{
 				view.getEditPane().focusOnTextArea();
 			}
-		});
+		}); */
 	}
 
-	public void previousError() {
-		if(errorModel.getSize() > 0)
+	public void previousError()
+	{
+		/* if(errorModel.getSize() > 0)
 		{
 			int index = errorList.getSelectedIndex() - 1;
 			if(index >= 0)
@@ -105,7 +136,7 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			{
 				view.getEditPane().focusOnTextArea();
 			}
-		});
+		}); */
 	}
 
 	// DockableWindow implementation
@@ -122,21 +153,30 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 	// private members
 	private View view;
 	private JLabel status;
-	private DefaultListModel errorModel;
-	private JList errorList;
+	private DefaultMutableTreeNode errorRoot;
+	private DefaultTreeModel errorModel;
+	private JTree errorTree;
 
 	private void updateStatus()
 	{
 		int warningCount = 0;
 		int errorCount = 0;
-		for(int i = 0; i < errorModel.getSize(); i++)
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
-			ErrorSource.Error error = (ErrorSource.Error)
-				errorModel.getElementAt(i);
-			if(error.getErrorType() == ErrorSource.ERROR)
-				errorCount++;
-			else
-				warningCount++;
+			DefaultMutableTreeNode fileNode = (DefaultMutableTreeNode)
+				errorRoot.getChildAt(i);
+			for(int j = 0; j < fileNode.getChildCount(); j++)
+			{
+				DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
+					fileNode.getChildAt(j);
+				ErrorSource.Error error = (ErrorSource.Error)
+					errorNode.getUserObject();
+
+				if(error.getErrorType() == ErrorSource.ERROR)
+					errorCount++;
+				else
+					warningCount++;
+			}
 		}
 
 		Integer[] args = { new Integer(errorCount),
@@ -150,70 +190,105 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
-			errorModel.addElement(message.getError());
+			addError(message.getError());
+			errorModel.reload(errorRoot);
 			updateStatus();
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
 		{
-			errorModel.removeElement(message.getError());
+			removeError(message.getError());
+			errorModel.reload(errorRoot);
 			updateStatus();
 		}
 		else if(what == ErrorSourceUpdate.ERRORS_CLEARED)
 		{
 			ErrorSource source = message.getErrorSource();
-			for(int i = errorModel.getSize() - 1; i >= 0; i--)
+
+			for(int i = 0; i < errorRoot.getChildCount(); i++)
 			{
-				if(((ErrorSource.Error)errorModel.getElementAt(i))
-					.getErrorSource() == source)
-					errorModel.removeElementAt(i);
+				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+					errorRoot.getChildAt(i);
+
+				for(int j = 0; j < node.getChildCount(); j++)
+				{
+					DefaultMutableTreeNode errorNode
+						= (DefaultMutableTreeNode)
+						node.getChildAt(j);
+
+					if(((ErrorSource.Error)errorNode.getUserObject())
+						.getErrorSource() == source)
+					{
+						node.remove(errorNode);
+						if(node.getChildCount() == 0)
+						{
+							errorRoot.remove(node);
+							i--;
+						}
+
+						j--;
+					}
+				}
 			}
+
+			errorModel.reload(errorRoot);
 
 			updateStatus();
 		}
 	}
 
-	private JScrollPane createListScroller()
+	private void addError(ErrorSource.Error error)
 	{
-		Vector errorVector = new Vector();
+		String path = error.getFilePath();
 
-		Object[] sources = EditBus.getNamedList(ErrorSource
-			.ERROR_SOURCES_LIST);
-		if(sources != null)
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
-			for(int i = 0; i < sources.length; i++)
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				errorRoot.getChildAt(i);
+
+			String nodePath = (String)node.getUserObject();
+			if(nodePath.equals(path))
 			{
-				ErrorSource source = (ErrorSource)sources[i];
-				ErrorSource.Error[] errors = source.getAllErrors();
-				if(errors == null)
-					continue;
-				for(int j = 0; j < errors.length; j++)
-				{
-					errorVector.addElement(errors[j]);
-				}
+				node.add(new DefaultMutableTreeNode(error,false));
+				return;
 			}
 		}
 
-		MiscUtilities.quicksort(errorVector,new ErrorCompare());
-		errorModel = new DefaultListModel();
-		for(int i = 0; i < errorVector.size(); i++)
-		{
-			errorModel.addElement(errorVector.elementAt(i));
-		}
+		// no node for this file exists yet, so add a new one
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(path,true);
+		errorRoot.add(node);
 
-		errorList = new JList(errorModel);
-		errorList.setCellRenderer(new ErrorCellRenderer());
-		errorList.addMouseListener(new MouseHandler());
-
-		JScrollPane scroller = new JScrollPane(errorList);
-		scroller.setPreferredSize(new Dimension(640,300));
-
-		return scroller;
+		node.add(new DefaultMutableTreeNode(error,false));
 	}
 
-	private void openErrorAt(int index) {
-		final ErrorSource.Error error = (ErrorSource.Error)
-			errorModel.getElementAt(index);
+	private void removeError(ErrorSource.Error error)
+	{
+		String path = error.getFilePath();
 
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				errorRoot.getChildAt(i);
+
+			for(int j = 0; j < node.getChildCount(); j++)
+			{
+				DefaultMutableTreeNode errorNode
+					= (DefaultMutableTreeNode)
+					node.getChildAt(j);
+
+				if(errorNode.getUserObject() == error)
+				{
+					node.remove(errorNode);
+					if(node.getChildCount() == 0)
+						errorRoot.remove(node);
+
+					break;
+				}
+			}
+		}
+	}
+
+	private void openError(final ErrorSource.Error error)
+	{
 		final Buffer buffer;
 		if(error.getBuffer() != null)
 			buffer = error.getBuffer();
@@ -224,9 +299,6 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			if(buffer == null)
 				return;
 		}
-
-		view.toFront();
-		view.requestFocus();
 
 		VFSManager.runInAWTThread(new Runnable()
 		{
@@ -249,44 +321,73 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 						end += line.getStartOffset();
 				}
 
-				view.getTextArea().select(start,end);
+				view.getTextArea().setSelection(
+					new Selection.Range(start,end));
+				view.getTextArea().moveCaretPosition(end);
 			}
 		});
 	}
 
-	class ErrorCompare implements MiscUtilities.Compare
+	static class ErrorCellRenderer extends JLabel implements TreeCellRenderer
 	{
-		public int compare(Object obj1, Object obj2)
+		public Component getTreeCellRendererComponent(JTree tree,
+			Object value, boolean sel, boolean expanded,
+			boolean leaf, int row, boolean focus)
 		{
-			ErrorSource.Error err1 = (ErrorSource.Error)obj1;
-			ErrorSource.Error err2 = (ErrorSource.Error)obj2;
+			if(sel)
+			{
+				setBackground(UIManager.getColor("Tree.selectionBackground"));
+				setForeground(UIManager.getColor("Tree.selectionForeground"));
+			}
+			else
+			{
+				setBackground(UIManager.getColor("Tree.textBackground"));
+				setForeground(UIManager.getColor("Tree.textForeground"));
+			}
 
-			String path1 = err1.getFilePath();
-			String path2 = err2.getFilePath();
-			int comp = path1.compareTo(path2);
-			if(comp != 0)
-				return comp;
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
+			Object nodeValue = node.getUserObject();
 
-			int line1 = err1.getLineNumber();
-			int line2 = err2.getLineNumber();
-			return line1 - line2;
-		}
-	}
+			if(nodeValue == null)
+			{
+				setIcon(null);
+				setText(null);
+			}
+			else if(nodeValue instanceof String)
+			{
+				setFont(UIManager.getFont("Label.font"));
 
-	class ErrorCellRenderer extends DefaultListCellRenderer
-	{
-		public Component getListCellRendererComponent(
-			JList list, Object value, int index,
-			boolean isSelected, boolean cellHasFocus)
-		{
-			ErrorSource.Error error = (ErrorSource.Error)value;
+				int errorCount = 0;
+				int warningCount = 0;
+				for(int i = 0; i < node.getChildCount(); i++)
+				{
+					DefaultMutableTreeNode errorNode = (DefaultMutableTreeNode)
+						node.getChildAt(i);
+					ErrorSource.Error error = (ErrorSource.Error)
+						errorNode.getUserObject();
 
-			// XXX: we depend on DefaultLCR internals here
-			super.getListCellRendererComponent(list,error,
-				index,isSelected,cellHasFocus);
+					if(error.getErrorType() == ErrorSource.ERROR)
+						errorCount++;
+					else
+						warningCount++;
+				}
 
-			setIcon(error.getErrorType() == ErrorSource.WARNING ?
-				WARNING_ICON : ERROR_ICON);
+				setText(jEdit.getProperty("error-list.file",
+					new Object[] { nodeValue,
+						new Integer(errorCount),
+						new Integer(warningCount) }));
+
+				setIcon(null);
+			}
+			else if(nodeValue instanceof ErrorSource.Error)
+			{
+				setFont(UIManager.getFont("Tree.font"));
+				ErrorSource.Error error = (ErrorSource.Error)nodeValue;
+				setText(error.getLineNumber() + ": "
+					+ error.getErrorMessage());
+				setIcon(error.getErrorType() == ErrorSource.WARNING
+					? WARNING_ICON : ERROR_ICON);
+			}
 
 			return this;
 		}
@@ -296,11 +397,23 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
-			int index = errorList.locationToIndex(evt.getPoint());
-			if(index == -1)
+			TreePath path = errorTree.getPathForLocation(evt.getX(),evt.getY());
+			if(path == null)
 				return;
 
-			openErrorAt(index);
+			if(!errorTree.isPathSelected(path))
+				errorTree.setSelectionPath(path);
+
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				path.getLastPathComponent();
+			if(node.getUserObject() instanceof String)
+			{
+				jEdit.openFile(view,(String)node.getUserObject());
+			}
+			else
+			{
+				openError((ErrorSource.Error)node.getUserObject());
+			}
 		}
 	}
 }
