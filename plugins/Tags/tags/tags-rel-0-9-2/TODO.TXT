@@ -1,0 +1,63 @@
+Before 1.0 (public release)
+---------------------------
+
+
+Version > initial public release version
+----------------------------------------
+- ./tag checkbox usage puts ./tags in file list for user to reorder... 
+
+- Acknowledge beta testers in documentation
+
+- Tag collisions.  See vim...
+   - ExuberantCTags collision strings...
+      - use exuberant information
+
+- Feature request: show the list of tags whose names start with the text
+  already entered in the field, inside the dialog box, and update that list on
+  the fly as characters are typed. You could add a key listener to the text 
+  field to pass up and down arrow key presses to the list.
+
+- jet_unix to use tag dialog
+
+- UI help strings
+
+- Don't use Macros for errors and warings as you can't change the title of the
+  dialog.
+  
+- Ability to set num of columns for filename in tag collision dialog.
+  Automatically do it if collision list popup/dialog is larger than screen 
+        
+- Ability to switch to a different set of tag files easily (shouldn't have to
+  remove and add a whole new set).  The catagory stuff is a step in this
+  direction.  Get list of tag files from project plugin like Ant does...
+
+- ETagsParser.java?
+
+- History panel in Enter Tag dialog.
+        
+- Exuberant C Tags FAQ page has info about other source code analyzers (sp?),
+  such as where a function is called from etc.  Look at these tools and see
+  about either integrating them into Tags, or as a closly related plugin. 
+        
+- Possibly recursively search the parent directory for a tags file.  (DIRECT 
+  FEEDBACK).  
+
+- Progress dialog with the ability to stop if tagging is taking more than 1
+  second...? 
+  - Use I/O progress monitor?
+  - Display wait cursor if taking more than a certain length of time.
+
+- Tag stack
+   - Ability to view tag stack and select to goto item...
+      - Netscape style toolbar back and forward buttons/commands?
+   - View local tag stack...
+      - This should probably have a hash table based on the View?
+   - Perhaps if we open up another window when tagging we should add to tag
+     stack.  Perhaps it should behave as Netscape?  Is that bad?
+   - As a dockable window
+   
+- When searching file, check func at end of file to see if we should even be
+  checking this file...
+
+- Ability to goto the next matching tag.  
+
