@@ -37,6 +37,8 @@ import java.awt.Dimension;
 import java.awt.Window;
 
 import java.awt.event.KeyEvent;
+import java.awt.event.HierarchyEvent;
+import java.awt.event.HierarchyListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
@@ -63,9 +65,6 @@ import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.BorderFactory;
 import javax.swing.SwingUtilities;
-
-import javax.swing.event.AncestorEvent;
-import javax.swing.event.AncestorListener;
 
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreeNode;
@@ -129,7 +128,7 @@ import projectviewer.importer.NewFileImporter;
  *	@version    $Id$
  */
 public final class ProjectViewer extends JPanel
-									implements AncestorListener,
+									implements HierarchyListener,
 												EBComponent {
 
 	//{{{ Static members
@@ -803,7 +802,7 @@ public final class ProjectViewer extends JPanel
 		treeRoot = VPTRoot.getInstance();
 		isLoadingProject = false;
 
-		addAncestorListener(this);
+		addHierarchyListener(this);
 
 		// drag support
 		tdl = new TreeDragListener();
@@ -892,7 +891,7 @@ public final class ProjectViewer extends JPanel
 
 	} //}}}
 
-	//{{{ -closeGroup(VPTGroup) : void
+	//{{{ -closeGroup(VPTGroup, VPTNode) : void
 	private void closeGroup(VPTGroup group, VPTNode ignore) {
 		for (int i = 0; i < group.getChildCount(); i++) {
 			VPTNode child = (VPTNode) group.getChildAt(i);
@@ -906,7 +905,7 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-	//{{{ -closeProject(VPTProject, boolean) : void
+	//{{{ -closeProject(VPTProject) : void
 	/**
 	 *	Closes a project: searches the open buffers for files related to the
 	 *	given project and closes them (if desired) and/or saves them to the
@@ -1549,33 +1548,23 @@ public final class ProjectViewer extends JPanel
 
 	//}}}
 
-	//{{{ AncestorListener implementation
-
-	//{{{ +ancestorAdded(AncestorEvent) : void
-	public void ancestorAdded(AncestorEvent event) {
-		// do nothing
-	} //}}}
-
-	//{{{ +ancestorMoved(AncestorEvent) : void
-	public void ancestorMoved(AncestorEvent event) {
-		// do nothing
-	} //}}}
-
-	//{{{ +ancestorRemoved(AncestorEvent) : void
-	public void ancestorRemoved(AncestorEvent event) {
-		// we're being removed from the GUI, so clean up
-		EditBus.removeFromBus(this);
-		if (treeRoot != null && treeRoot.isProject()) {
-			closeProject((VPTProject)treeRoot);
-			config.setLastNode(treeRoot);
-		}
-		ViewerEntry ve = (ViewerEntry) viewers.get(view);
-		if (ve != null) {
-			ve.dockable = null;
+	//{{{ +hierarchyChanged(HierarchyEvent) : void
+	public void hierarchyChanged(HierarchyEvent he) {
+		if (he.getChanged() == this && !isDisplayable() &&
+				((he.getChangeFlags() & HierarchyEvent.DISPLAYABILITY_CHANGED)
+					== HierarchyEvent.DISPLAYABILITY_CHANGED)) {
+			// we're being removed from the GUI, so clean up
+			EditBus.removeFromBus(this);
+			if (treeRoot != null && treeRoot.isProject()) {
+				closeProject((VPTProject)treeRoot);
+				config.setLastNode(treeRoot);
+			}
+			ViewerEntry ve = (ViewerEntry) viewers.get(view);
+			if (ve != null) {
+				ve.dockable = null;
+			}
 		}
 	} //}}}
-
-	//}}}
 
 	//{{{ -class ConfigChangeListener
 	/** Listens for changes in the PV configuration. */
