@@ -23,4 +23,15 @@
             docker.DockerPlugin.getPlugin().showRightDockPopup(view);
         </CODE>
     </ACTION>
+    <ACTION NAME="docker.toggle-docks">
+        <CODE>
+            viewHandler = docker.DockerPlugin.getPlugin().getViewHandler(view);
+            if (viewHandler.isAnyDockVisible()) {
+                viewHandler.saveDockState();
+                viewHandler.collapseAllDocks();
+            } else {
+                viewHandler.restoreDockState();
+            }
+        </CODE>
+    </ACTION>
 </ACTIONS>

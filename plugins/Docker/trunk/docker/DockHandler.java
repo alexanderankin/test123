@@ -23,43 +23,79 @@
 package docker;
 
 import java.awt.Component;
+
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
 
 /**
  * A handler for handling the collapsing of a particular dock.
  */
-public class DockHandler
-{
-
-   private PanelWindowContainer dock;
+public class DockHandler {
    private String dockName;
-   private Component dockComponent;
+   private boolean visible;
+   private DockableWindowManager wm;
+   private PanelWindowContainer dock;
+   private DockerConfig config;
 
    /**
     * Create a new <code>DockHandler</code>.
     */
    public DockHandler(String aDockName,
+                      DockableWindowManager aWm,
                       PanelWindowContainer aDock,
-                      Component aDockComponent)
-   {
-      dock = aDock;
+                      DockerConfig aConfig) {
       dockName = aDockName;
-      dockComponent = aDockComponent;
+      wm = aWm;
+      dock = aDock;
+      visible = false;
+      config = aConfig;
    }
 
    /**
     * Detach this handler from the dock.
     */
-   public void detach()
-   {
+   public void detach() {
+   }
+
+   public void autoHide() {
+      if (config.isAutoHideEnabled(dockName)) {
+         String dockable = getVisibleDockable();
+         if (dockable != null && !config.isAutoHideOverride(dockable)) {
+            collapse();
+         }
+      }
    }
 
    /**
     * Collapse this dock.
     */
-   public void collapse()
-   {
+   public void collapse() {
       dock.show(null);
    }
 
+   public void saveDockState() {
+      visible = dock.getCurrent() != null;
+   }
+
+   public void restoreDockState() {
+      if (visible) {
+         dock.showMostRecent();
+      } else {
+         dock.show(null);
+      }
+   }
+
+   public boolean isDockVisible() {
+      return dock.getCurrent() != null;
+   }
+
+   private String getVisibleDockable() {
+      String[] dockables = dock.getDockables();
+      for (int i=0; i<dockables.length; i++) {
+         if (wm.isDockableWindowVisible(dockables[i])) {
+            return dockables[i];
+         }
+      }
+      return null;
+   }
 }

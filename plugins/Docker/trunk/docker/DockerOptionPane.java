@@ -22,12 +22,18 @@
 
 package docker;
 
+import java.awt.FlowLayout;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 
-import javax.swing.BorderFactory;
-import javax.swing.JPanel;
-import javax.swing.JCheckBox;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.*;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
@@ -35,53 +41,41 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
 /**
  * Option pane for the docker plugin.
  */
-public class DockerOptionPane extends AbstractOptionPane
-{
-
+public class DockerOptionPane extends AbstractOptionPane {
    private JCheckBox topEnabled, leftEnabled, bottomEnabled, rightEnabled;
+   private DockablesComboBox addAutoHideOverrideCombo;
+   private DockablesList autoHideOverrides;
+   private DockerConfig config;
 
    /**
     * Create a new <code>DockerOptionPane</code>
     */
-   public DockerOptionPane()
-   {
+   public DockerOptionPane() {
       super("docker");
+      config = DockerPlugin.getPlugin().getConfig();
    }
 
    /**
     * Initialize this option pane.
     */
-   public void _init()
-   {
-      JPanel panel = new JPanel(new GridBagLayout());
-      panel.setBorder(BorderFactory.createCompoundBorder(
-         BorderFactory.createTitledBorder(DockerPlugin.getProperty("label.auto-hide-enabled")),
-         BorderFactory.createEmptyBorder(12, 12, 11, 11)));
+   public void _init() {
+      JPanel autoHide = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc.fill = GridBagConstraints.HORIZONTAL;
+      topEnabled = createAutoHideCheckBox(DockableWindowManager.TOP);
+      autoHide.add(topEnabled);
 
-      topEnabled = new JCheckBox(DockerPlugin.getProperty("label.top-dock"));
-      topEnabled.setSelected(DockerPlugin.getPlugin().isEnabled(DockableWindowManager.TOP));
-      gbc.gridy = 0;
-      panel.add(topEnabled, gbc);
+      leftEnabled = createAutoHideCheckBox(DockableWindowManager.LEFT);
+      autoHide.add(leftEnabled);
 
-      leftEnabled = new JCheckBox(DockerPlugin.getProperty("label.left-dock"));
-      leftEnabled.setSelected(DockerPlugin.getPlugin().isEnabled(DockableWindowManager.LEFT));
-      gbc.gridy++;
-      panel.add(leftEnabled, gbc);
-      
-      bottomEnabled = new JCheckBox(DockerPlugin.getProperty("label.bottom-dock"));
-      bottomEnabled.setSelected(DockerPlugin.getPlugin().isEnabled(DockableWindowManager.BOTTOM));
-      gbc.gridy++;
-      panel.add(bottomEnabled, gbc);
+      bottomEnabled = createAutoHideCheckBox(DockableWindowManager.BOTTOM);
+      autoHide.add(bottomEnabled);
 
-      rightEnabled = new JCheckBox(DockerPlugin.getProperty("label.right-dock"));
-      rightEnabled.setSelected(DockerPlugin.getPlugin().isEnabled(DockableWindowManager.RIGHT));
-      gbc.gridy++;
-      panel.add(rightEnabled, gbc);
+      rightEnabled = createAutoHideCheckBox(DockableWindowManager.RIGHT);
+      autoHide.add(rightEnabled);
 
-      addComponent(panel);
+      addComponent(config.getProperty("label.auto-hide-enabled"), autoHide);
+
+      addComponent(createAutoHideOverridePanel());
    }
 
    /**
@@ -89,15 +83,85 @@ public class DockerOptionPane extends AbstractOptionPane
     */
    public void _save()
    {
-      DockerPlugin.getPlugin().setEnabled(DockableWindowManager.TOP,
+      config.setAutoHideEnabled(DockableWindowManager.TOP,
                                           topEnabled.isSelected());
-      DockerPlugin.getPlugin().setEnabled(DockableWindowManager.LEFT,
+      config.setAutoHideEnabled(DockableWindowManager.LEFT,
                                           leftEnabled.isSelected());
-      DockerPlugin.getPlugin().setEnabled(DockableWindowManager.BOTTOM,
+      config.setAutoHideEnabled(DockableWindowManager.BOTTOM,
                                           bottomEnabled.isSelected());
-      DockerPlugin.getPlugin().setEnabled(DockableWindowManager.RIGHT,
+      config.setAutoHideEnabled(DockableWindowManager.RIGHT,
                                           rightEnabled.isSelected());
+      List overrides = autoHideOverrides.getDockables();
+      config.setAutoHideOverrides(overrides);
    }
 
+   private JComponent createAutoHideOverridePanel() {
+      JPanel panel = new JPanel(new GridBagLayout());
+      GridBagConstraints gbc = new GridBagConstraints();
+
+      gbc.fill = GridBagConstraints.HORIZONTAL;
+      gbc.gridx = 0; gbc.gridy = 0;
+      gbc.gridwidth = 2;
+      gbc.insets = new Insets(0, 0, 11, 0);
+      gbc.weightx = 1;
+      panel.add(new JLabel(config.getProperty("label.auto-hide-overrides")), gbc);
+
+      addAutoHideOverrideCombo = new DockablesComboBox();
+      gbc.gridy++;
+      gbc.gridwidth = 1;
+      gbc.fill = gbc.HORIZONTAL;
+      gbc.weightx = .999;
+      gbc.insets = new Insets(0, 0, 11, 11);
+      panel.add(addAutoHideOverrideCombo, gbc);
+
+      JButton addAutoHideOverrideButton =
+            new JButton(config.getProperty("label.add-auto-hide-override"));
+      addAutoHideOverrideButton.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent evt) {
+            autoHideOverrides.addDockable(addAutoHideOverrideCombo.getSelectedDockableName());
+         }
+      });
+      gbc.gridx++;
+      gbc.weightx = .001;
+      gbc.ipadx = 11;
+      gbc.insets = new Insets(0, 0, 11, 0);
+      panel.add(addAutoHideOverrideButton, gbc);
+
+      autoHideOverrides = new DockablesList();
+      for (Iterator i = config.getAutoHideOverrides().iterator(); i.hasNext();) {
+         autoHideOverrides.addDockable((String) i.next());
+      }
+      gbc.gridx = 0; gbc.gridy++;
+      gbc.gridheight = 2;
+      gbc.weightx = .999;
+      gbc.ipadx = 0;
+      gbc.insets = new Insets(0, 0, 0, 11);
+      panel.add(new JScrollPane(autoHideOverrides), gbc);
+
+      JButton removeAutoHideButton =
+            new JButton(config.getProperty("label.remove-auto-hide-override"));
+      gbc.anchor = GridBagConstraints.NORTH;
+      gbc.gridx++;
+      gbc.gridheight = 1;
+      gbc.weightx = .001;
+      gbc.ipadx = 11;
+      gbc.insets = new Insets(0, 0, 0, 0);
+      panel.add(removeAutoHideButton, gbc);
+
+      gbc.gridy++;
+      gbc.fill = GridBagConstraints.BOTH;
+      panel.add(Box.createVerticalStrut(10), gbc);
+
+      return panel;
+   }
+
+   /**
+    * Create a auto hide checkbox.
+    */
+   private JCheckBox createAutoHideCheckBox(String name) {
+      JCheckBox checkBox = new JCheckBox(config.getProperty("label." + name + "-dock"));
+      checkBox.setSelected(config.isAutoHideEnabled(name));
+      return checkBox;
+   }
 }
 

@@ -31,6 +31,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
 
+import org.gjt.sp.util.Log;
+
 /**
  * Handles docking for a given view.
  */
@@ -40,23 +42,23 @@ public class ViewHandler implements FocusListener
    private View view;
    private Map docks;
    private Set editPanes;
+   private DockerConfig config;
 
    /**
     * Create a new <code>ViewHandler</code>
     */
-   public ViewHandler(View aView)
-   {
+   public ViewHandler(View aView) {
       view = aView;
       docks = new HashMap(4);
       editPanes = new HashSet(2);
+      config = DockerPlugin.getPlugin().getConfig();
       init();
    }
 
    /**
     * Initialize this handler.
     */
-   public void init()
-   {
+   public void init() {
       docks.clear();
       attachDock(DockableWindowManager.TOP);
       attachDock(DockableWindowManager.LEFT);
@@ -93,6 +95,36 @@ public class ViewHandler implements FocusListener
    }
 
    /**
+    * Returns <code>true</code> if any dock is visible.
+    */
+   public boolean isAnyDockVisible() {
+      for (Iterator i = docks.values().iterator(); i.hasNext();) {
+         if (((DockHandler) i.next()).isDockVisible()) {
+            return true;
+         }
+      }
+      return false;
+   }
+
+   public void collapseAllDocks() {
+      for (Iterator i = docks.values().iterator(); i.hasNext();) {
+         ((DockHandler) i.next()).collapse();
+      }
+   }
+
+   public void saveDockState() {
+      for (Iterator i = docks.values().iterator(); i.hasNext();) {
+         ((DockHandler) i.next()).saveDockState();
+      }
+   }
+
+   public void restoreDockState() {
+      for (Iterator i = docks.values().iterator(); i.hasNext();) {
+         ((DockHandler) i.next()).restoreDockState();
+      }
+   }
+
+   /**
     * Handle an edit pane destruction message.
     */
     public void editPaneDestroyed(EditPane editPane)
@@ -107,15 +139,18 @@ public class ViewHandler implements FocusListener
     */
    public final void focusGained(FocusEvent evt)
    {
+      //Log.log(Log.DEBUG, this, "Focus gained");
       for (Iterator i = docks.values().iterator(); i.hasNext();) {
-         ((DockHandler) i.next()).collapse();
+         ((DockHandler) i.next()).autoHide();
       }
    }
 
    /**
     * Handle a focus lost event.
     */
-   public final void focusLost(FocusEvent evt) {}
+   public final void focusLost(FocusEvent evt) {
+      //Log.log(Log.DEBUG, this, "Focus gained");
+   }
    // }}}
 
    /**
@@ -123,25 +158,23 @@ public class ViewHandler implements FocusListener
     */
    private void attachDock(String dockName)
    {
-      if (DockerPlugin.getPlugin().isEnabled(dockName)) {
-         int compIdx = 0;
-         PanelWindowContainer container = null;
-         if (DockableWindowManager.TOP.equals(dockName)) {
-            container = view.getDockableWindowManager().getTopDockingArea();
-            compIdx = 4;
-         } else if (DockableWindowManager.LEFT.equals(dockName)) {
-            container = view.getDockableWindowManager().getLeftDockingArea();
-            compIdx = 5;
-         } else if (DockableWindowManager.BOTTOM.equals(dockName)) {
-            container = view.getDockableWindowManager().getBottomDockingArea();
-            compIdx = 6;
-         } else if (DockableWindowManager.RIGHT.equals(dockName)) {
-            container = view.getDockableWindowManager().getRightDockingArea();
-            compIdx = 7;
-         }
-         docks.put(dockName, new DockHandler(dockName, container,
-            view.getDockableWindowManager().getComponent(compIdx)));
+      int compIdx = 0;
+      DockableWindowManager wm = view.getDockableWindowManager();
+      PanelWindowContainer container = null;
+      if (DockableWindowManager.TOP.equals(dockName)) {
+         container = wm.getTopDockingArea();
+         compIdx = 4;
+      } else if (DockableWindowManager.LEFT.equals(dockName)) {
+         container = wm.getLeftDockingArea();
+         compIdx = 5;
+      } else if (DockableWindowManager.BOTTOM.equals(dockName)) {
+         container = wm.getBottomDockingArea();
+         compIdx = 6;
+      } else if (DockableWindowManager.RIGHT.equals(dockName)) {
+         container = wm.getRightDockingArea();
+         compIdx = 7;
       }
+      docks.put(dockName, new DockHandler(dockName, wm, container, config));
    }
 
 }
