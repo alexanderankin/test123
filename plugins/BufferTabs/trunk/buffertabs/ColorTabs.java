@@ -191,12 +191,12 @@ public class ColorTabs
 
 
    /**
-    *  Gets the defaultColourFor attribute of the ColorTabs class
+    *  Gets the defaultColorFor attribute of the ColorTabs class
     *
     * @param  name
-    * @return       The defaultColourFor value
+    * @return       The defaultColorFor value
     */
-   public Color getDefaultColourFor(String name)
+   public Color getDefaultColorFor(String name)
    {
       synchronized (lock)
       {
@@ -416,14 +416,14 @@ public class ColorTabs
          {
             if (!colorTitles)
             {
-               Color color = getDefaultColourFor(name);
+               Color color = getDefaultColorFor(name);
                parent.setBackgroundAt(index, color);
                parent.setForegroundAt(index, null);
 
             }
             else
             {
-               Color color = getDefaultColourFor(name);
+               Color color = getDefaultColorFor(name);
                parent.setForegroundAt(index, color);
                parent.setBackgroundAt(index, null);
 
@@ -460,7 +460,7 @@ public class ColorTabs
             Buffer buffer = (Buffer) parent.getBuffers().elementAt(index);
             String name = buffer.getName();
             // System.out.println( "CES: name=" + name );
-            Color colour = getDefaultColourFor(name);
+            Color colour = getDefaultColorFor(name);
 
             try
             {
