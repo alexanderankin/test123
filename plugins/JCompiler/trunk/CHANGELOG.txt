@@ -4,7 +4,7 @@ VERSION 0.7.2
 - bugfix: won't see anything, if JCompilerShell is not started. Now 
           JCompiler is started together with Console (thanks to new
           Console 2.3 API!)
-- even better error messages on missing tools.jar
+- better error messages if tools.jar is missing
 - requires EditBus 0.10, Console 2.3 and jEdit 2.6pre7
 
 
