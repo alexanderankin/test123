@@ -55,17 +55,19 @@ public class TaskList extends JPanel
 		TaskListTable()
 		{
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			addMouseListener(new MouseHandler());
 			taskListModel = new TaskListModel(view);
 			setModel(taskListModel);
 			setRowHeight(18);
 			setShowVerticalLines(jEdit.getBooleanProperty("tasklist.table.vertical-lines"));
 			setShowHorizontalLines(jEdit.getBooleanProperty("tasklist.table.horizontal-lines"));
 			setIntercellSpacing(new Dimension(0,1));
+			MouseHandler handler = new MouseHandler();
+			addMouseListener(handler);
 
 			if(getTableHeader() != null)
 			{
 				getTableHeader().setReorderingAllowed(false);
+				getTableHeader().addMouseListener(handler);
 			}
 			init = true;
 			resizeTable();
@@ -129,9 +131,9 @@ public class TaskList extends JPanel
 			}
 			else if(e.getClickCount() > 1)
 			{
-				if(rowNum == -1)
+				if(e.getComponent() == table.getTableHeader())
 					TaskListPlugin.parseBuffer(view.getBuffer());
-				else
+				else if(rowNum > -1)
 					showTaskText(rowNum);
 			}
 		}
