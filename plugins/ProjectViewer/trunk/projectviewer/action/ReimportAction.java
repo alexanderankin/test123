@@ -31,7 +31,7 @@ import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
-import projectviewer.importer.InitialProjectImporter;
+import projectviewer.importer.RootImporter;
 //}}}
 
 /**
@@ -53,27 +53,7 @@ public class ReimportAction extends Action {
 	/** Reimports files below the project root. */
 	public void actionPerformed(ActionEvent ae) {
 		VPTProject p = (VPTProject) viewer.getSelectedNode();
-		Enumeration e = p.children();
-		ArrayList toRemove = new ArrayList();
-		while (e.hasMoreElements()) {
-			VPTNode n = (VPTNode) e.nextElement();
-			if (n.getNodePath().startsWith(p.getRootPath())) {
-				toRemove.add(n);
-			}
-		}
-		if (toRemove.size() > 0) {
-			for (Iterator i = toRemove.iterator(); i.hasNext(); ) {
-				VPTNode n = (VPTNode) i.next();
-				if (n.isDirectory()) {
-					unregisterFiles((VPTDirectory)n, p);
-				} else if (n.isFile()) {
-					p.unregisterFile((VPTFile)n);
-				}
-				ProjectViewer.removeNodeFromParent(n);
-			}
-			ProjectViewer.nodeStructureChangedFlat(p);
-		}
-		new InitialProjectImporter(p, viewer).doImport();
+		new RootImporter(p, viewer, true).doImport();
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method

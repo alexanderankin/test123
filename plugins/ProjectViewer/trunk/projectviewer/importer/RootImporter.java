@@ -22,6 +22,7 @@ package projectviewer.importer;
 import java.io.File;
 import java.io.FilenameFilter;
 
+import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -35,35 +36,54 @@ import javax.swing.filechooser.FileFilter;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
 //}}}
 
 /**
- *	Imports files and/or directories into a project.
+ *	Imports files and/or directories from the project root. Optionally, can
+ *	remove all existing files under the root before doing a fresh import.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class InitialProjectImporter extends FileImporter {
+public class RootImporter extends FileImporter {
 
 	//{{{ Private members
 	private Component parent;
+	private boolean clean;
 	//}}}
 
 	//{{{ Constructor
 
-	public InitialProjectImporter(VPTNode node, ProjectViewer viewer, Component parent) {
+	/**
+	 *	Creates an Importer that uses a component other than the ProjectViewer
+	 *	as the parent of the dialogs shown to the user.
+	 */
+	public RootImporter(VPTNode node, ProjectViewer viewer, Component parent) {
 		super(node, viewer);
 		if (parent != null) {
 			this.parent = parent;
 		} else {
 			this.parent = viewer;
 		}
+		clean = false;
 	}
 
-	public InitialProjectImporter(VPTNode node, ProjectViewer viewer) {
+	public RootImporter(VPTNode node, ProjectViewer viewer) {
 		this(node, viewer, null);
+	}
+
+	/**
+	 *	Imports files from the root of the project. If "clean" is "true", the
+	 *	existing nodes that are below the root of the project will be removed
+	 *	before the importing.
+	 */
+	public RootImporter(VPTNode node, ProjectViewer viewer, boolean clean) {
+		this(node, viewer, null);
+		this.clean = clean;
 	}
 
 	//}}}
@@ -94,8 +114,33 @@ public class InitialProjectImporter extends FileImporter {
 			fnf = new CVSEntriesFilter();
 		}
 
-		addTree(new File(project.getRootPath()), project, fnf);
+		if (clean) {
+			System.err.println("Cleaning up!");
+			Enumeration e = project.children();
+			ArrayList toRemove = new ArrayList();
+			while (e.hasMoreElements()) {
+				VPTNode n = (VPTNode) e.nextElement();
+				System.err.println("Checking: " + n);
+				if (n.getNodePath().startsWith(project.getRootPath())) {
+					System.err.println("Scheduling removal...");
+					toRemove.add(n);
+				}
+			}
+			if (toRemove.size() > 0) {
+				for (Iterator i = toRemove.iterator(); i.hasNext(); ) {
+					VPTNode n = (VPTNode) i.next();
+					System.err.println("Removing: " + n);
+					if (n.isDirectory()) {
+						unregisterFiles((VPTDirectory)n, project);
+					} else if (n.isFile()) {
+						project.unregisterFile((VPTFile)n);
+					}
+					project.remove(n);
+				}
+			}
+		}
 
+		addTree(new File(project.getRootPath()), project, fnf);
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {
@@ -110,6 +155,19 @@ public class InitialProjectImporter extends FileImporter {
 
 		showFileCount();
 		return null;
+	} //}}}
+
+	//{{{ unregisterFiles(VPTDirectory, VPTProject) method
+	/** Unregisters all files in the directory from the project, recursively. */
+	private void unregisterFiles(VPTDirectory dir, VPTProject p) {
+		for (Enumeration e = dir.children(); e.hasMoreElements(); ) {
+			VPTNode n = (VPTNode) e.nextElement();
+			if (n.isDirectory()) {
+				unregisterFiles((VPTDirectory)n, p);
+			} else if (n.isFile()) {
+				p.unregisterFile((VPTFile)n);
+			}
+		}
 	} //}}}
 
 }
