@@ -22,7 +22,6 @@ package projectviewer.action;
 import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
-import javax.swing.JMenuItem;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
@@ -32,8 +31,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTFile;
-import projectviewer.config.AppLauncher;
 //}}}
 
 /**
@@ -43,19 +40,19 @@ import projectviewer.config.AppLauncher;
  *	@version	$Id$
  */
 public class ExpandAllAction extends Action {
-	
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.expand_all");
 	} //}}}
-	
+
 	//{{{ getIcon() method
 	/** Returns the icon for the action. */
 	public Icon getIcon() {
 		return GUIUtilities.loadIcon("ZoomIn.png");
 	} //}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
