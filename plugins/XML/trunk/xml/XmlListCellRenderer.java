@@ -26,6 +26,10 @@ import xml.parser.*;
 public class XmlListCellRenderer extends DefaultListCellRenderer
 {
 	//{{{ Icons
+	public static final ImageIcon COMMENT_ICON = new ImageIcon(
+		XmlListCellRenderer.class.getResource("/xml/Comment.png"));
+	public static final ImageIcon CDATA_ICON = new ImageIcon(
+		XmlListCellRenderer.class.getResource("/xml/CDATA.png"));
 	public static final ImageIcon ELEMENT_ICON = new ImageIcon(
 		XmlListCellRenderer.class.getResource("/xml/Element.png"));
 	public static final ImageIcon EMPTY_ELEMENT_ICON = new ImageIcon(
@@ -53,6 +57,21 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 		{
 			setIcon(null);
 			setText(jEdit.getProperty("xml-no-completions"));
+		}
+		else if(value instanceof Comment)
+		{
+			setIcon(COMMENT_ICON);
+			setText("!--");
+		}
+		else if(value instanceof CDATA)
+		{
+			setIcon(CDATA_ICON);
+			setText("![CDATA[");
+		}
+		else if(value instanceof ClosingTag)
+		{
+			setIcon(ELEMENT_ICON);
+			setText("/" + ((ClosingTag)value).name);
 		}
 		else if(value instanceof ElementDecl)
 		{
@@ -85,4 +104,18 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 	} //}}}
 
 	public static class EmptyListPlaceholder {}
+
+	public static class ClosingTag
+	{
+		public String name;
+
+		public ClosingTag(String name)
+		{
+			this.name = name;
+		}
+	}
+
+	public static class Comment {}
+
+	public static class CDATA {}
 }

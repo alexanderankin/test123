@@ -49,13 +49,14 @@
 
 </chapter>
 
-<chapter id="dtds"><title>Locating DTDs and completion info</title>
+<chapter id="dtds"><title>Locating DTDs, schemas and completion info</title>
 
  <para>
   A DTD (document type definition) declares all elements and entities that can be
   used within a specific type of XML file. In order to implement many of its
-  features, the XML plugin needs to load DTDs specified in
-  <literal>&lt;!DOCTYPE&gt;</literal> declarations. This is done as follows:
+  features, the XML plugin needs to load a DTD specified in a
+  <literal>&lt;!DOCTYPE&gt;</literal> declaration, or an XML Schema.
+  This is done as follows:
  </para>
  <itemizedlist>
   <listitem><para>Some DTDs that are bundled with the plugin are resolved
@@ -492,6 +493,16 @@
   <itemizedlist>
    <listitem><para>Xerces 2.2.1 is included now.
    </para></listitem>
+   <listitem><para>The completion popup, <guimenuitem>Edit Tag</guimenuitem>
+   dialog box, and <guimenuitem>XML Insert</guimenuitem> window are now
+   namespace-aware.
+   </para></listitem>
+   <listitem><para>Completion popups now contain entries for inserting comments and
+   <command><![CDATA[<![CDATA[]]></command> sections.
+   </para></listitem>
+   <listitem><para>The entity resolver now uses the VFS API; so it should be
+   possible to download DTDs from FTP servers that require authentication, etc.
+   </para></listitem>
    <listitem><para>Fixed problems handling tags whose names ended with a number.
    </para></listitem>
    <listitem><para>We no longer show the <guimenuitem>Edit Tag</guimenuitem>
@@ -500,9 +511,6 @@
    <listitem><para>Right-clicking on an element in the <guimenuitem>XML
    Insert</guimenuitem> window will insert any required attributes
    as well.
-   </para></listitem>
-   <listitem><para>The entity resolver now uses the VFS API; so it should be
-   possible to download DTDs from FTP servers that require authentication, etc.
    </para></listitem>
    <listitem><para>Fixed possible <classname>ClassCastException</classname>
    when saving the resource cache.
