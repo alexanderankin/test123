@@ -793,6 +793,24 @@ the command output will be shown in a new buffer.</para></listitem>
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 3.2</emphasis>
+   requires jEdit 4.0pre1 and the ErrorList plugin 1.2.</para>
+
+   <itemizedlist>
+    <listitem><para>
+     Previously, lines of output would only be checked against warning regexps
+     if they already matched an error regexp. This didn't work for some
+     compilers where the warnings are not of the same form as errors, so this
+     behavior has been changed.
+    </para></listitem>
+    <listitem><para>
+     Moved custom <function>print()</function> BeanShell function from jEdit's
+     <filename>jedit.bsh</filename> script to the Console plugin, since the
+     editor core should not know about implementation specifics of plugins.
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
+
   <listitem><para><emphasis role="bold">Version 3.1</emphasis>
    requires jEdit 4.0pre1 and the ErrorList plugin 1.2.</para>
 
@@ -811,7 +829,7 @@ the command output will be shown in a new buffer.</para></listitem>
     </para></listitem>
     <listitem><para>
      A error message is now shown if you try to add an error pattern without
-					filling in the required fields.
+     filling in the required fields.
     </para></listitem>
    </itemizedlist>
   </listitem>

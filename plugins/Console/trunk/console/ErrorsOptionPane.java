@@ -260,7 +260,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 			"options.console.errors.match"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
-		panel.add(match = new JTextField(matcher.match));
+		panel.add(error = new JTextField(matcher.error));
 		label = new JLabel(jEdit.getProperty(
 			"options.console.errors.warning"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
@@ -316,12 +316,12 @@ class ErrorMatcherDialog extends EnhancedDialog
 	{
 		// Check values
 		String _name = name.getText();
-		String _match = match.getText();
+		String _error = error.getText();
 		String _filename = filename.getText();
 		String _line = line.getText();
 		String _message = message.getText();
 		if(_name.length() == 0
-			|| _match.length() == 0
+			|| _error.length() == 0
 			|| _filename.length() == 0
 			|| _line.length() == 0
 			|| _message.length() == 0)
@@ -333,7 +333,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 		else
 		{
 			matcher.name = _name;
-			matcher.match = _match;
+			matcher.error = _error;
 			matcher.warning = warning.getText();
 			matcher.extra = extra.getText();
 			matcher.filename = _filename;
@@ -373,7 +373,7 @@ class ErrorMatcherDialog extends EnhancedDialog
 	//{{{ Private members
 	private ErrorMatcher matcher;
 	private JTextField name;
-	private JTextField match;
+	private JTextField error;
 	private JTextField warning;
 	private JTextField extra;
 	private JTextField filename;
