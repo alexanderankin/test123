@@ -26,12 +26,10 @@ import org.gjt.sp.util.Log;
     //~ Constructors ..........................................................
 
     NavigationList(String s) {
-      super();
       this.title = s;
     }
 
     NavigationList(String s, int imp) {
-      super();
       this.title = s;
       this.importance = imp;
     }
@@ -84,6 +82,10 @@ import org.gjt.sp.util.Log;
      public Iterator iterator(){
        return list.iterator();
      }
+     
+     public int size(){
+       return list.size();
+     }
    
     String getTitle() {
 
@@ -100,10 +102,10 @@ import org.gjt.sp.util.Log;
         Reader reader = new InputStreamReader(istr);
         loadNavigationFile(reader);
       }else{
-        Log.log(Log.DEBUG,new NavigationList("LOG"),"NavigationList not read");
+        Log.log(Log.DEBUG, NavigationList.class,"NavigationList not read");
       }
     } catch (Exception e) {
-      Log.log(Log.ERROR,new NavigationList("LOG"),"NavigationPanel: " + e.getMessage());
+      Log.log(Log.ERROR, NavigationList.class,"NavigationList: " + e.getMessage());
     }
 
     File navDir = new File(jEdit.getProperty("options.navigation.userdir"));
@@ -121,8 +123,18 @@ import org.gjt.sp.util.Log;
           loadNavigationFile(new FileReader(files[i]));
         }
       } catch (Exception e) {
+          Log.log(Log.ERROR, NavigationList.class, e.toString());
+          e.printStackTrace();
       }
     }
+//    Log.log(Log.DEBUG, NavigationList.class,"NAVDATA");
+//    for (Iterator it = navData.iterator(); it.hasNext();){
+//        NavigationList nl = (NavigationList) it.next();
+//        for (Iterator it2 = nl.iterator(); it2.hasNext();){
+//            Log.log(Log.DEBUG, NavigationList.class, nl.toString() + " ITEM: " + it2.next());
+//        }
+//    }
+//
     
     return new TreeSet(navData);
   }
@@ -161,13 +173,16 @@ import org.gjt.sp.util.Log;
             while (nextLine.length() > 3 && nextLine.indexOf(":")>0) {
 
               StringTokenizer st = new StringTokenizer(nextLine,":");
-              if (st.countTokens()!=5) {
+              if (st.countTokens()!=6) {
                 nextLine = in.readLine().trim();
                 continue;
               }
               int lev = Integer.parseInt(st.nextToken());
               lowestLevel = Math.max(lowestLevel, lev);
-              nl.add(new TagPair(st.nextToken(), st.nextToken(),  st.nextToken(), lev, Integer.parseInt(st.nextToken())));
+              nl.add(new TagPair(st.nextToken(), st.nextToken(), 
+                                 Integer.parseInt(st.nextToken()),  
+                                 st.nextToken(), lev, 
+                                 Integer.parseInt(st.nextToken())));
               nextLine = in.readLine().trim();
             }
 
@@ -179,8 +194,16 @@ import org.gjt.sp.util.Log;
         }
       }
     } catch (Exception e) {
+            Log.log(Log.ERROR, NavigationList.class, "NavigationList error" + e);
+            e.printStackTrace();
     }
-    
+
+//    for (Iterator it = navData.iterator(); it.hasNext();){
+//        NavigationList nl = (NavigationList) it.next();
+//        for (Iterator it2 = nl.iterator(); it2.hasNext();){
+//            Log.log(Log.DEBUG, NavigationList.class, nl.toString() + " ITEM: " + it2.next());
+//        }
+//    }
  }
 
   }

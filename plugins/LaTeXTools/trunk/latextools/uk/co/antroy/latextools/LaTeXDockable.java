@@ -21,9 +21,10 @@ package uk.co.antroy.latextools;
 
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.*;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import java.util.ArrayList;
+import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -38,6 +39,8 @@ public class LaTeXDockable  extends JPanel{
   public static final int LABELS = 0;
   public static final int NAVIGATION = 1;
   public static final int BIBLIOGRAPHY = 2;
+  public static final LaTeXDockable instance = new LaTeXDockable();
+
   private int selected;
   private JRadioButton refs;
 //  private JRadioButton navig;
@@ -45,9 +48,16 @@ public class LaTeXDockable  extends JPanel{
   
   //~ Constructors ............................................................
 
-  public LaTeXDockable() {
+  private LaTeXDockable() {
     
     ArrayList nav = new ArrayList(NavigationList.getNavigationData());
+    Log.log(Log.MESSAGE,this,"NLIST: "+ nav.size());
+    for (Iterator it = nav.iterator(); it.hasNext();){
+        NavigationList nl = (NavigationList) it.next();
+        for (Iterator it2 = nl.iterator(); it2.hasNext();){
+            Log.log(Log.DEBUG, NavigationList.class, nl.toString() + " ITEM: " + it2.next());
+        }
+    }
     nav_list = new JComboBox(nav.toArray());
     
     refs = new JRadioButton(PARSE_LABELS);

@@ -10,14 +10,16 @@ public class TagPair
   int level;
   int line = 0;
   int icon;
+  int type = 1;
   String tag;
   String replace = " ";
   String endTag = "";
 
   //~ Constructors ............................................................
-  TagPair(String tag, String replace, String endTag, int level, int icon) {
+  TagPair(String tag, String replace, int type, String endTag, int level, int icon) {
       this(tag,replace,level,icon);
       this.endTag = endTag;
+      this.type = type;
   }
 
   TagPair(String tag, String replace, int level, int icon) {
@@ -70,6 +72,11 @@ public class TagPair
   public String getTag() {
 
     return tag;
+  }
+  
+  public int getType() {
+
+    return type;
   }
 
   /**
