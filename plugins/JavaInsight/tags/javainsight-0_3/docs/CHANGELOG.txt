@@ -1,0 +1,52 @@
+VERSION 0.3
+
+- new option pane for setting some decompiler options
+- decompiles directly to a new jEdit buffer, not to a temp file
+- can now decompile entries from the classpath browser
+- entries in the classpath browser are now sorted, too
+- now shows boot classpath on JDK 1.2 or higher, too
+- show jode output (it's not much)
+- better error reporting
+- bugfix: duplicate entries in tree, if the same lib appeared twice with
+  different case in classpath (affected Windows platforms only)
+- switched to new jEdit action API
+- improved makefile
+- reformatted code
+- requires jEdit 3.0final or higher, JDK 1.1 or higher
+- maintained by Dirk Moebius
+
+
+VERSION 0.2.1
+
+- changes???
+- requires jEdit 2.6pre3 or higher, JDK 1.1 or higher
+- maintained by Andre Kaplan
+
+
+VERSION 0.2
+
+- moved from package net.sourceforge.jedit to javainsight
+- integrated buildtools library
+- other changes???
+- maintained by Andre Kaplan
+
+
+VERSION 0.1
+
+- ???
+
+
+VERSION 0.0.3
+
+- Event support to the classpath widget so you know when classes are selected
+- (DONE) add the ability to graphically view the classpath with a JTree
+
+
+VERSION 0.0.2
+
+- (DONE) ability to except a message on EditBus and decompile a java class.
+
+- (DONE) (SEVERE) not all classes are displayed within a package.
+  See javax.mail and mail.jar. Only a small subset of the classes are shown.
+  This doesn't work at all for things like java.awt.
+
