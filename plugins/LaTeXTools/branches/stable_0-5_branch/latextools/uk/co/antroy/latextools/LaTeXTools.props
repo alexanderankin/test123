@@ -12,11 +12,11 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.3=plugin console.ConsolePlugin
 plugin.uk.co.antroy.latextools.LaTeXPlugin.activate=defer
 
 #4.2 API - options dialog
-plugin.uk.co.antroy.latextools.LaTeXPlugin.option-group=general navigation
-options.navigation.label = Navigation Options
-options.navigation.code = new uk.co.antroy.latextools.options.NavigationOptionPane();
-options.general.label = General Options
-options.general.code = new uk.co.antroy.latextools.options.LaTeXOptionPane();
+plugin.uk.co.antroy.latextools.LaTeXPlugin.option-group=latextools.general latextools.navigation
+options.latextools.navigation.label = Navigation Options
+options.latextools.navigation.code = new uk.co.antroy.latextools.options.NavigationOptionPane();
+options.latextools.general.label = General Options
+options.latextools.general.code = new uk.co.antroy.latextools.options.LaTeXOptionPane();
 
 # Properties for Option panes
 options.bibtex.inserttags = Insert \\cite{} Tag?
