@@ -110,7 +110,7 @@ public abstract class NodeHandler {
 		out.write("<" + name);
 	}
 
-	/** Writes and attribute to the writer. */
+	/** Writes an attribute to the writer. */
 	protected void writeAttr(String name, String value, Writer out) throws IOException {
 		out.write(" " + name + "=\"" + value + "\"");
 	}
