@@ -1,6 +1,9 @@
 Before 1.0 (public release)
 ---------------------------
 
+For Tags.html
+   Made Enter Tag dialog a stand alone dialog (no JOptionPane)
+   
 
 Version > initial public release version
 ----------------------------------------
