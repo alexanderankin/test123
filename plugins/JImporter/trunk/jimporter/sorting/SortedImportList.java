@@ -20,14 +20,14 @@ package jimporter.sorting;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import jimporter.ImportList;
+import jimporter.importer.JavaImportList;
 import jimporter.sorting.CaseInsensitiveComparator;
 
 /**
- * An <code>ImportList</code> that is sorted according the options that the user
+ * An <code>JavaImportList</code> that is sorted according the options that the user
  * has set in the options dialog for JImporter.
  */
-public class SortedImportList extends ImportList {
+public class SortedImportList extends JavaImportList {
     /**
      * Gets a list of sorted imports.
      */

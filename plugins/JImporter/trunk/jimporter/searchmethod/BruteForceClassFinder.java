@@ -1,6 +1,7 @@
 package jimporter.searchmethod;
 
 import java.io.File;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -40,11 +41,24 @@ public class BruteForceClassFinder extends TraverseSearchMethod {
      */
     public static void main(String[] args) {
         BruteForceClassFinder cu = new BruteForceClassFinder();
-        cu.setClassPath(System.getProperty("java.class.path", "."));
-
+        
         if (args.length > 0) {
-            System.out.println("Finding " + args[0] + "...");
-            List classes = cu.findFullyQualifiedClassName(args[0]);
+            List classes = null;
+            //cu.setClassPath(System.getProperty("java.class.path", "."));
+            cu.setClassPath(args[0]);
+            System.out.println("Finding " + args[1] + "...");
+            
+            int trials = 10;
+            BigInteger trialResults = new BigInteger("0");
+            for (int i = 0; i < trials; i++) {
+                long before = System.currentTimeMillis();
+                classes = cu.findFullyQualifiedClassName(args[1]);
+                long after = System.currentTimeMillis();
+                if (i > 0) 
+                    trialResults = trialResults.add(BigInteger.valueOf(after-before));
+            }
+            
+            System.out.println("Average search time = " + trialResults.divide(BigInteger.valueOf(trials-1)));
 
             Iterator it = classes.iterator();
             while (it.hasNext()) {
@@ -161,3 +175,4 @@ public class BruteForceClassFinder extends TraverseSearchMethod {
         return classList;
     }
 }
+

@@ -5,21 +5,21 @@
     <!-- Import Class at Point -->
     <ACTION NAME="jimporter.import-class-at-point">
         <CODE>
-            jimporter.JEditClassImporter.importClassAtPoint(view);
+            jimporter.importer.JEditClassImporter.importClassAtPoint(view);
         </CODE>
     </ACTION>
     
     <!-- Import Class -->
     <ACTION NAME="jimporter.import-class">
         <CODE>
-            jimporter.JEditClassImporter.importClass(view);
+            jimporter.importer.JEditClassImporter.importClass(view);
         </CODE>
     </ACTION>
     
     <!-- Insert classname at point -->
     <ACTION NAME="jimporter.insert-classname-at-point">
         <CODE>
-            jimporter.JEditClassImporter.insertClassAtPoint(view);
+            jimporter.importer.JEditClassImporter.insertClassAtPoint(view);
         </CODE>
     </ACTION>
     
