@@ -29,7 +29,7 @@ import java.io.IOException;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.OptionsDialog;
@@ -51,7 +51,7 @@ import projectviewer.config.ProjectViewerOptionsPane;
  *	@author		<A HREF="mailto:vanzin@ece.utexas.edu">Marcelo Vanzin</A>
  *  @version	2.0.0
  */
-public final class ProjectPlugin extends EBPlugin {
+public final class ProjectPlugin extends EditPlugin {
 
 	//{{{ Static Members
 	public final static String NAME = "projectviewer";
@@ -104,7 +104,7 @@ public final class ProjectPlugin extends EBPlugin {
 		return jEdit.getSettingsDirectory()
 					+ File.separator + NAME
 					+ File.separator + path;
-					
+
 	} //}}}
 
 	//}}}
