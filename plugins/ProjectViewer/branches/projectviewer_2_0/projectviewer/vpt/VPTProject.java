@@ -207,6 +207,13 @@ public class VPTProject extends VPTNode {
 		files.put(file.getFile().getAbsolutePath(), file);
 	}
 	//}}}
+
+	//{{{ unregisterFile(VPTFile) method
+	/** Unegister a file from the project. */
+	public void unregisterFile(VPTFile file) {
+		files.remove(file.getFile().getAbsolutePath());
+	}
+	//}}}
 	
 	//{{{ getNodePath()
 	/**	Returns the path to the file represented by this node. */
