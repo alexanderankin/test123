@@ -84,7 +84,7 @@ public final class PHPSideKickParser extends SideKickParser {
 
       buildChildNodes(data.root, phpDocument, buffer);
       buffer.setProperty("PHPDocument", phpDocument);
-      EditBus.send(new PHPProjectChangedMessage(this, projectManager.getProject()));
+      EditBus.send(new PHPProjectChangedMessage(this, projectManager.getProject(),PHPProjectChangedMessage.SELECTED));
       return data;
     } catch (ParseException e) {
       parser = null;

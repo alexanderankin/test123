@@ -92,6 +92,7 @@ public final class ProjectManager {
                       "Warning the file " + projectFile.getAbsolutePath() + " is not a valid project");
             } catch (FileNotFoundException e) {
               Log.log(Log.ERROR, this, "This error should never happens !!!!");
+              Log.log(Log.ERROR, this, e);
             }
           }
         }
@@ -118,12 +119,12 @@ public final class ProjectManager {
     final Project project;
     if (projectName == null) {
       Log.log(Log.DEBUG, this, "Project creation cancelled");
-    } else if ("".equals(projectName)) {
+    } else if (projectName.length() == 0) {
       JOptionPane.showMessageDialog(jEdit.getActiveView(), "The project name cannot be empty");
     } else {
       project = new Project(projectName, projectVersion);
       project.save();
-      EditBus.send(new PHPProjectChangedMessage(this, project));
+      EditBus.send(new PHPProjectChangedMessage(this, project,PHPProjectChangedMessage.SELECTED));
       this.project = project;
     }
   }
@@ -137,7 +138,7 @@ public final class ProjectManager {
     project.delete();
     if (project == this.project) {
       this.project = null;
-      EditBus.send(new PHPProjectChangedMessage(this, null));
+      EditBus.send(new PHPProjectChangedMessage(this, project,PHPProjectChangedMessage.DELETED));
     }
   }
 
@@ -147,7 +148,7 @@ public final class ProjectManager {
       project.save();
     }
     project = null;
-    EditBus.send(new PHPProjectChangedMessage(this, null));
+    EditBus.send(new PHPProjectChangedMessage(this, null,PHPProjectChangedMessage.SELECTED));
   }
 
   /**
@@ -173,7 +174,7 @@ public final class ProjectManager {
       Log.log(Log.ERROR, this, e.getMessage());
       this.project = null;
     }
-    EditBus.send(new PHPProjectChangedMessage(this, this.project));
+    EditBus.send(new PHPProjectChangedMessage(this, this.project,PHPProjectChangedMessage.SELECTED));
   }
 
   public void openProject(Project project) {
@@ -184,7 +185,7 @@ public final class ProjectManager {
     browseToProjectRoot(project);
     this.project = project;
 
-    EditBus.send(new PHPProjectChangedMessage(this, this.project));
+    EditBus.send(new PHPProjectChangedMessage(this, this.project,PHPProjectChangedMessage.SELECTED));
   }
 
   /**
@@ -192,9 +193,9 @@ public final class ProjectManager {
    *
    * @param project the project
    */
-  private void browseToProjectRoot(final Project project) {
+  private static void browseToProjectRoot(Project project) {
     // todo : add an option for that
-    View activeView = jEdit.getActiveView();
+    final View activeView = jEdit.getActiveView();
     final String root = project.getRoot();
     if (activeView != null && root != null) {
       VFSBrowser.browseDirectory(activeView, root);

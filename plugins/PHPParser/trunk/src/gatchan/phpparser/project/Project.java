@@ -482,7 +482,7 @@ public final class Project {
       }
       final long end = System.currentTimeMillis();
       Log.log(Log.MESSAGE, this, "Project rebuild in " + (end - start) + "ms, " + parsedFileCount + " files parsed");
-      EditBus.send(new PHPProjectChangedMessage(this, project));
+      EditBus.send(new PHPProjectChangedMessage(this, project,PHPProjectChangedMessage.SELECTED));
     }
 
     /**

@@ -8,12 +8,13 @@ import org.gjt.sp.util.Log;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ItemListener;
 import java.awt.event.ItemEvent;
-import java.awt.*;
+import java.awt.event.ItemListener;
 import java.io.File;
+import java.util.Vector;
 
 /**
  * The dockable php project manager.
@@ -31,6 +32,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
   private final JButton buttonDel = new JButton("Del");
   private final JButton closeProject = new JButton(GUIUtilities.loadIcon("Cancel.png"));
   private final JComboBox listProjects;
+  private final MyComboBoxModel listModel;
 
   public PHPProjectPanel() {
     super(new BorderLayout());
@@ -45,15 +47,16 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
 
     final java.util.List projectList = projectManager.getProjectList();
     if (projectList == null) {
-      listProjects = new JComboBox();
+      listModel = new MyComboBoxModel();
     } else {
-      listProjects = new JComboBox(projectList.toArray());
+      listModel = new MyComboBoxModel(projectList.toArray());
     }
+    listProjects = new JComboBox(listModel);
 
     listProjects.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
-          Project project = (Project) e.getItem();
+          final Project project = (Project) e.getItem();
           if (projectManager.getProject() != project) {
             projectManager.openProject(project);
           }
@@ -72,7 +75,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
 
     closeProject.addActionListener(myActionListener);
 
- //   toolbar.add(openProject);
+    //   toolbar.add(openProject);
     toolbar.add(closeProject);
 
 
@@ -113,10 +116,11 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
       closeProject.setEnabled(false);
       listProjects.setSelectedItem(null);
     } else {
+      listModel.addElement(project);
       buttonDel.setEnabled(true);
       closeProject.setEnabled(true);
       listProjects.getModel().setSelectedItem(project);
-      tabs.setProject((Project) project);
+      tabs.setProject(project);
       validate();
     }
   }
@@ -124,20 +128,26 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
   public void handleMessage(EBMessage message) {
     if (message instanceof PHPProjectChangedMessage) {
       final PHPProjectChangedMessage projectChangedMessage = (PHPProjectChangedMessage) message;
-      setProject(projectChangedMessage.getSelectedProject());
+      final Project selectedProject = projectChangedMessage.getSelectedProject();
+      if (projectChangedMessage.getWhat() == PHPProjectChangedMessage.SELECTED) {
+        setProject(selectedProject);
+      } else if (projectChangedMessage.getWhat() == PHPProjectChangedMessage.DELETED) {
+        setProject(null);
+        listModel.removeElement(selectedProject);
+      }
     }
   }
 
-  private static class MyActionListener implements ActionListener {
+  private static final class MyActionListener implements ActionListener {
     private final JButton newProject;
     private final JButton openProject;
     private final JButton closeProject;
     private final JButton buttonDel;
 
-    public MyActionListener(JButton newProject,
-                            JButton openProject,
-                            JButton closeProject,
-                            JButton buttonDel) {
+    MyActionListener(JButton newProject,
+                     JButton openProject,
+                     JButton closeProject,
+                     JButton buttonDel) {
       this.newProject = newProject;
       this.openProject = openProject;
       this.closeProject = closeProject;
@@ -145,7 +155,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     }
 
     public void actionPerformed(ActionEvent e) {
-      ProjectManager projectManager = ProjectManager.getInstance();
+      final ProjectManager projectManager = ProjectManager.getInstance();
       final Object source = e.getSource();
       if (source == newProject) {
         projectManager.createProject();
@@ -172,13 +182,116 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
       } else if (source == closeProject) {
         projectManager.closeProject();
       } else if (source == buttonDel) {
-        final Project project = (Project) projectManager.getProject();
+        final Project project = projectManager.getProject();
         final int ret = JOptionPane.showConfirmDialog(closeProject,
                                                       "Do you really want to remove the project " + project.getName());
         if (ret == JOptionPane.YES_OPTION) {
           Log.log(Log.DEBUG, this, "Removing project requested by user");
           projectManager.deleteProject(project);
         }
+      }
+    }
+  }
+
+  private static final class MyComboBoxModel extends AbstractListModel implements MutableComboBoxModel {
+    private final Vector objects;
+    private Object selectedObject;
+
+    /** Constructs an empty DefaultComboBoxModel object. */
+    MyComboBoxModel() {
+      objects = new Vector();
+    }
+
+    /**
+     * Constructs a DefaultComboBoxModel object initialized with
+     * an array of objects.
+     *
+     * @param items an array of Object objects
+     */
+    MyComboBoxModel(Object items[]) {
+      objects = new Vector();
+      objects.ensureCapacity(items.length);
+
+      int i;
+      final int c;
+      for (i = 0, c = items.length; i < c; i++)
+        objects.addElement(items[i]);
+
+      if (getSize() > 0) {
+        selectedObject = getElementAt(0);
+      }
+    }
+
+    // implements javax.swing.ComboBoxModel
+    /**
+     * Set the value of the selected item. The selected item may be null.
+     * <p/>
+     *
+     * @param anObject The combo box value or null for no selection.
+     */
+    public void setSelectedItem(Object anObject) {
+      if ((selectedObject != null && !selectedObject.equals(anObject)) ||
+          selectedObject == null && anObject != null) {
+        selectedObject = anObject;
+        fireContentsChanged(this, -1, -1);
+      }
+    }
+
+    // implements javax.swing.ComboBoxModel
+    public Object getSelectedItem() {
+      return selectedObject;
+    }
+
+    // implements javax.swing.ListModel
+    public int getSize() {
+      return objects.size();
+    }
+
+    // implements javax.swing.ListModel
+    public Object getElementAt(int index) {
+      if (index >= 0 && index < objects.size())
+        return objects.elementAt(index);
+      else
+        return null;
+    }
+
+    // implements javax.swing.MutableComboBoxModel
+    public void addElement(Object anObject) {
+      if (!objects.contains(anObject)) {
+        objects.addElement(anObject);
+        fireIntervalAdded(this, objects.size() - 1, objects.size() - 1);
+        if (objects.size() == 1 && selectedObject == null && anObject != null) {
+          setSelectedItem(anObject);
+        }
+      }
+    }
+
+    // implements javax.swing.MutableComboBoxModel
+    public void insertElementAt(Object anObject, int index) {
+      objects.insertElementAt(anObject, index);
+      fireIntervalAdded(this, index, index);
+    }
+
+    // implements javax.swing.MutableComboBoxModel
+    public void removeElementAt(int index) {
+      if (getElementAt(index) == selectedObject) {
+        if (index == 0) {
+          setSelectedItem(getSize() == 1 ? null : getElementAt(index + 1));
+        } else {
+          setSelectedItem(getElementAt(index - 1));
+        }
+      }
+
+      objects.removeElementAt(index);
+
+      fireIntervalRemoved(this, index, index);
+    }
+
+    // implements javax.swing.MutableComboBoxModel
+    public void removeElement(Object anObject) {
+      final int index = objects.indexOf(anObject);
+      if (index != -1) {
+        removeElementAt(index);
       }
     }
   }
