@@ -74,6 +74,45 @@ public class Tags {
   protected static int    lineNumber_;
   
   /***************************************************************************/
+  public static void loadTagFiles() {
+    // NOTE:  We are not remembering tag file catagories at this time...
+    
+    // Clear out all tag files (just to make sure...)
+    Tags.clearTagFiles();
+    
+    // Get property string
+    String tagFiles = jEdit.getProperty("tags-tag-files");
+    
+    // Break into tokens and append tag filename
+    StringTokenizer st = new StringTokenizer(tagFiles, ",");
+    String fileName = null;
+    while (st.hasMoreElements()) {
+      fileName = (String) st.nextElement();
+      if (fileName != null)
+        Tags.appendTagFile(fileName);
+    }
+  }
+  
+  /***************************************************************************/
+  public static void writeTagFiles() {
+    
+    StringBuffer b = new StringBuffer();
+    
+    String tagFileName = null;
+    int numTagFiles = tagFiles_.size();
+    for (int i = 0; i < numTagFiles; i++) {
+      tagFileName = (String) ((TagFile)tagFiles_.elementAt(i)).getPath();
+      if (tagFileName != null) {
+        b.append(tagFileName);
+        if (i < (numTagFiles - 1))
+          b.append(",");
+      }
+    }
+    
+    jEdit.setProperty("tags-tag-files", b.toString());
+  }
+  
+  /***************************************************************************/
   public static void setParserType(int parser) {
     if (parser >= 0 && parser < NUM_PARSERS) {
       currentParserType_ = parser;
@@ -147,14 +186,6 @@ public class Tags {
   /***************************************************************************/
   public static boolean getSearchAllTagFiles() { return searchAllTagFiles_; }
 
-  /*+*************************************************************************/
-  public static void showTagOptionsDialog(View view) {
-    TagsOptionsDialog dialog = new TagsOptionsDialog(view);
-    dialog.showDialog();
-    //displayTagFiles(view);
-    dialog = null;
-  }
-  
   /***************************************************************************/
   public static void displayTagFiles(View view) {
     StringBuffer allFiles = new StringBuffer();
