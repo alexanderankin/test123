@@ -19,3 +19,6 @@ Features:
 - use jEdit's VFS to allow projects on virtual file systems such as ftp
   see: org.gjt.sp.jedit.io.VFS (this would change things quite a lot!)
 
+- "reimport" should traverse directories not under the root looking for
+  new/stale files.
+
