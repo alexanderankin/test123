@@ -93,7 +93,7 @@ public class ProjectOptions extends OptionsDialog {
 
 		lookupPath = startPath;
 		new ProjectOptions(jEdit.getActiveView(), title);
-		if (isNew) {
+		if (isNew && p != null) {
 			p.setParent(null);
 		}
 		return p;
