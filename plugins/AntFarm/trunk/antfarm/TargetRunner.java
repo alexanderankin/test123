@@ -185,8 +185,28 @@ public class TargetRunner extends Thread
 		// set so jikes prints emacs style errors
 		_userProperties.setProperty( "build.compiler.emacs", "true" );
 
+		// add in the global properties
+		addGlobalProperties();
+
 		// fire it up
 		this.start();
+	}
+
+
+	private void addGlobalProperties()
+	{
+		String name = null;
+		int counter = 1;
+		while ( ( name = jEdit.getProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.NAME ) ) != null ) {
+			String value = jEdit.getProperty(
+				PropertiesOptionPane.PROPERTY
+				 + counter
+				 + PropertiesOptionPane.VALUE
+				 );
+			_userProperties.setProperty( name, value );
+			counter++;
+		}
+
 	}
 
 

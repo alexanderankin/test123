@@ -24,12 +24,21 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.*;
 
 import org.gjt.sp.util.Log;
 
 public class PropertiesOptionPane extends AbstractOptionPane
 {
+
+	final static String PROPERTY = "AntFarm.property.";
+	final static String NAME = ".name";
+	final static String VALUE = ".value";
+
+	private final static String NAME_HISTORY_MODEL = PROPERTY + NAME;
+	private final static String VALUE_HISTORY_MODEL = PROPERTY + VALUE;
+
 	private JTable table;
 	private DndTableModel model;
 
@@ -69,21 +78,26 @@ public class PropertiesOptionPane extends AbstractOptionPane
 	{
 
 		// get rid of old settings
-		String work;
+		String name;
 		int counter = 1;
-		while ( ( work = jEdit.getProperty( "AntFarm.properties." + counter + ".name" ) ) != null ) {
-			jEdit.setProperty( "AntFarm.properties." + counter + ".name", null );
-			jEdit.setProperty( "AntFarm.properties." + counter + ".value", null );
+		while ( ( name = jEdit.getProperty( PROPERTY + counter + NAME ) ) != null ) {
+			jEdit.setProperty( PROPERTY + counter + NAME, null );
+			jEdit.setProperty( PROPERTY + counter + VALUE, null );
 			counter++;
 		}
 		// put in the new ones
 		counter = table.getRowHeight();
 		for ( int i = 0; i < counter; i++ ) {
-			work = (String) table.getValueAt( i, 0 );
+			name = (String) table.getValueAt( i, 0 );
 			String value = (String) table.getValueAt( i, 1 );
-			if ( work.trim().length() > 0 && value.trim().length() > 0 ) {
-				jEdit.setProperty( "AntFarm.properties." + ( i + 1 ) + ".name", work );
-				jEdit.setProperty( "AntFarm.properties." + ( i + 1 ) + ".value", value );
+
+			// Check if there is anything to save.
+			if ( name == null || value == null )
+				return;
+
+			if ( name.trim().length() > 0 && value.trim().length() > 0 ) {
+				jEdit.setProperty( PROPERTY + ( i + 1 ) + NAME, name );
+				jEdit.setProperty( PROPERTY + ( i + 1 ) + VALUE, value );
 			}
 		}
 		table = null;
@@ -99,13 +113,17 @@ public class PropertiesOptionPane extends AbstractOptionPane
 
 	private void setUpNameColumn( TableColumn column )
 	{
-		column.setCellEditor( new DefaultCellEditor( new JTextField() ) );
+		column.setCellEditor( new DefaultCellEditor(
+			new HistoryTextField( NAME_HISTORY_MODEL, false, true )
+			 ) );
 	}
 
 
 	private void setUpValueColumn( TableColumn column )
 	{
-		column.setCellEditor( new DefaultCellEditor( new JTextField() ) );
+		column.setCellEditor( new DefaultCellEditor(
+			new HistoryTextField( VALUE_HISTORY_MODEL, false, true )
+			 ) );
 	}
 
 
@@ -126,8 +144,10 @@ public class PropertiesOptionPane extends AbstractOptionPane
 			values = new Vector( 10 );
 			String name;
 			int counter = 1;
-			while ( ( name = jEdit.getProperty( "AntFarm.property." + counter + ".name" ) ) != null ) {
-				values.addElement( jEdit.getProperty( "AntFarm.property." + counter + ".value" ) );
+			Log.log( Log.DEBUG, this, "Loading properties" );
+			while ( ( name = jEdit.getProperty( PROPERTY + counter + NAME ) ) != null ) {
+				Log.log( Log.DEBUG, this, "Found property: " + name );
+				values.addElement( jEdit.getProperty( PROPERTY + counter + VALUE ) );
 				names.addElement( name );
 				counter++;
 			}
@@ -180,6 +200,10 @@ public class PropertiesOptionPane extends AbstractOptionPane
 
 		public Object getValueAt( int row, int col )
 		{
+
+			if ( row >= names.size() || row >= names.size() )
+				return null;
+
 			if ( col == 0 ) {
 				return names.elementAt( row );
 			}
