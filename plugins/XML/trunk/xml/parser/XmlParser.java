@@ -204,13 +204,13 @@ public class XmlParser implements EBComponent
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 			{
 				// check if this is the currently focused edit pane
-				if(editPane == editPane.getView().getEditPane())
+				if(editPane == view.getEditPane())
 				{
 					removeBufferChangeListener(this.buffer);
 
-					if(XmlPlugin.getParserType(editPane.getBuffer()) != null)
-						addBufferChangeListener(editPane.getBuffer());
-
+					Buffer buffer = editPane.getBuffer();
+					if(XmlPlugin.getParserType(buffer) != null)
+						addBufferChangeListener(buffer);
 					if(buffer.getBooleanProperty(
 						"xml.buffer-change-parse")
 						|| buffer.getBooleanProperty(
@@ -223,8 +223,9 @@ public class XmlParser implements EBComponent
 				}
 				else
 				{
-					view.getEditPane().putClientProperty(
-						XmlPlugin.PARSED_DATA_PROPERTY,null);
+					editPane.putClientProperty(
+						XmlPlugin.PARSED_DATA_PROPERTY,
+						null);
 				}
 			}
 		} //}}}

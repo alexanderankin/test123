@@ -93,25 +93,32 @@ public class CatalogManager
 			// use a final array to pass a mutable value from the
 			// invokeAndWait() call
 			final Object[] session = new Object[1];
-			try
+			Runnable run = new Runnable()
 			{
-				SwingUtilities.invokeAndWait(new Runnable()
+				public void run()
 				{
-					public void run()
+					View view = jEdit.getActiveView();
+					if(showDownloadResourceDialog(
+						view,_newSystemId))
 					{
-						View view = jEdit.getActiveView();
-						if(showDownloadResourceDialog(
-							view,_newSystemId))
-						{
-							session[0] = vfs.createVFSSession(
-								_newSystemId,view);
-						}
+						session[0] = vfs.createVFSSession(
+							_newSystemId,view);
 					}
-				});
-			}
-			catch(Exception e)
+				}
+			};
+
+			if(SwingUtilities.isEventDispatchThread())
+				run.run();
+			else
 			{
-				Log.log(Log.ERROR,CatalogManager.class,e);
+				try
+				{
+					SwingUtilities.invokeAndWait(run);
+				}
+				catch(Exception e)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,e);
+				}
 			}
 
 			if(session[0] != null)
