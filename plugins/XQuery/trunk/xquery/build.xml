@@ -21,24 +21,27 @@
   <property name="jar.saxon.name" value="SaxonAdapter.jar" description="name of the SaxonAdapter jar"/>
   <property name="resources.dir" value="resources" description="contains plugin icons"/>
   <property name="saxon.api" value="ext/saxon7.jar" description="saxon api"/>
+	
+  <property name="docs-proc.target"  value="xsltproc"/>
 
   
   <property name="build.dir" value="build"/>
-  <property name="install.dir"  value=".."/>
+  <property name="jedit.install.dir" value="../.."/>
   <property name="classes.xquery.dir" value="${build.dir}/classesXQuery" description="XQuery plugin classes compiled into here"/>
   <property name="classes.saxon.dir" value="${build.dir}/classesSaxon" description="Saxon Adapter classes compiled into here"/>
 
   <path id="xquery.class.path">
-    <pathelement location="${jedit.dir}/jedit.jar"/>
+    <pathelement location="${jedit.install.dir}/jedit.jar"/>
     <pathelement location="${install.dir}/ErrorList.jar"/>
     <pathelement location="${install.dir}/XmlIndenter.jar"/>
     <pathelement location="${install.dir}/InfoViewer.jar"/>
   </path>
 	
   <path id="saxon.class.path">
-  	<pathelement location="${jedit.dir}/jedit.jar"/>
+  	<pathelement location="${jedit.install.dir}/jedit.jar"/>
     <pathelement location="${install.dir}/XQuery.jar"/>
   	<pathelement location="${install.dir}/saxon7.jar"/>
+  	<pathelement location="${saxon.api}"/>
   </path>
 	
 	<target name="init">
@@ -49,7 +52,7 @@
 		<echo file="docbook-wrapper.xsl" append="true"
 			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
 		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xsl:version='1.0'&gt;"/>
+			message=" version='1.0'&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
 			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
@@ -91,7 +94,11 @@
   <target name="compileAll" depends="compileXQuery, compileSaxon" description="compiles java source of XQueryPlugin and SaxonAdapter">
   </target>
 
-  <target name="jarAll" depends="jarXQuery, jarSaxon" description="compiles, creates plugin jar file and SaxonAdapter jar file in install.dir">
+  <target name="jarAll" depends="docs, jarXQuery, jarSaxon" description="compiles, creates plugin jar file and SaxonAdapter jar file in install.dir">
+  </target>
+
+  <target name="docs" depends="init">
+  <antcall target="docs-${docs-proc.target}"/>
   </target>
 
   <target name="deploySaxon" description="copies Saxon Adapter and API jars to deploy.dir">

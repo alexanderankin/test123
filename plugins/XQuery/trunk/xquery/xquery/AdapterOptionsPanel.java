@@ -21,12 +21,12 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
 /**
- * @author Wim Le Page
- * @author Pieter Wellens
- *
  * This class extends AbstractOptionPane so that it allows dynamic switching needed 
  * because we allow dynamic adapter loading.
  * We also added some more convenient functions for the adapterwriter.
+ * @author Wim Le Page
+ * @author Pieter Wellens
+ *
  */
 public class AdapterOptionsPanel extends AbstractOptionPane {
 

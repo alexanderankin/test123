@@ -11,7 +11,7 @@ import java.util.Properties;
 /**
  * @author Wim Le Page
  * @author Pieter Wellens
- * @version 0.9.0
+ * @version 0.6.0
  *
  * This is the interface that adapterwriters have to implement
  */

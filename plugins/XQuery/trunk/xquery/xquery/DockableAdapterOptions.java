@@ -16,11 +16,10 @@ import org.gjt.sp.jedit.View;
 
 import xquery.options.AdapterOptionPane;
 
-/**
+/** This class makes it possible to dock the Adapter Options in jEdit. Making them much more accesible.
  * @author Wim le Page
  * @author Pieter Wellens
  *
- * This class makes it possible to dock the Adapter Options in jEdit. Making them much more accesible.
  */
 public class DockableAdapterOptions extends JPanel {
 	
