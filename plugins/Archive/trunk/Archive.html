@@ -34,19 +34,16 @@
 
 <p>Archive allows to browse and read the content of zip and tar archives.</p>
 
-<p>The zip file system allows to browse/read the content of
-<code>*.zip</code> and <code>*.jar</code> files.
-</p>
-
-<p>As for the tar file system, it can browse/read:</p>
+<p>The archive file system allows to browse/read the content of:</p>
 
 <ul>
-    <li>plain archives: <code>*.tar</code> files</li>
-    <li>gzipped archives: <code>*.tar.gz</code>, or <code>*.tgz</code> files</li>
-    <li>bzipped archives: <code>*.tar.bz2</code> files.</li>
+    <li>zip archives: <code>*.zip</code> and <code>*.jar</code> files</li>
+    <li>tar archives: <code>*.tar</code> files</li>
+    <li>gzipped tar archives: <code>*.tar.gz</code>, or <code>*.tgz</code> files</li>
+    <li>bzipped tar archives: <code>*.tar.bz2</code> files.</li>
 </ul>
 
-<p>Archive supports nested archives.
+<p>Archive also supports nested archives.
 For example, you can explore the content of a <code>*.jar</code> file inside a
 <code>*.tgz</code> file.
 </p>
@@ -60,7 +57,7 @@ To clear the cache, use
 
 <ul>
     <li>JDK 1.1</li>
-    <li>jEdit 3.0final</li>
+    <li>jEdit 3.1final</li>
 </ul>
 
 
@@ -73,8 +70,7 @@ To clear the cache, use
     (<em>Utilities&nbsp;-&gt;&nbsp;File&nbsp;System&nbsp;Browser</em>)
     </li>
 
-    <li>Right-click on an archive file and
-    select either <em>Browse zip archive</em> or <em>Browse tar archive</em>.
+    <li>Right-click on an archive file and select <em>Browse archive</em>.
     </li>
 </ul>
 
@@ -83,6 +79,8 @@ To clear the cache, use
 <ul>
     <li>Exploring a zip archive on Windows:
     <ul>
+        <li><code>archive:C:\path\to\file.zip!</code></li>
+        <li><code>archive:C:\path\to\file.zip!/path/inside/archive</code></li>
         <li><code>zip:C:\path\to\file.zip!</code></li>
         <li><code>zip:C:\path\to\file.zip!/path/inside/archive</code></li>
     </ul>
@@ -90,6 +88,8 @@ To clear the cache, use
 
     <li>Exploring a tar archive on Unix:
     <ul>
+        <li><code>archive:/path/to/file.tgz!</code></li>
+        <li><code>archive:/path/to/file.tgz!/path/inside/archive</code></li>
         <li><code>tar:/path/to/file.tgz!</code></li>
         <li><code>tar:/path/to/file.tgz!/path/inside/archive</code></li>
     </ul>
@@ -100,7 +100,7 @@ To clear the cache, use
 
 <ol>
     <li>the trailing <code>!</code> (exclamation mark) is mandatory.</li>
-    <li>the file separator inside archives is <code>/</code> (slash).</li>
+    <li>the file separator inside archives is <code>/</code> (forward slash).</li>
 </ol>
 
 
