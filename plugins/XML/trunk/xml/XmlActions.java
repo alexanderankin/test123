@@ -229,7 +229,7 @@ public class XmlActions
 		}
 	}
 
-	public static void showEditTagDialog(View view, ElementDecl elementDecl)
+	public static boolean showEditTagDialog(View view, ElementDecl elementDecl)
 	{
 		EditPane editPane = view.getEditPane();
 
@@ -239,13 +239,13 @@ public class XmlActions
 		if(completionInfo == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
-			return;
+			return false;
 		}
 
 		if(completionInfo == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
-			return;
+			return false;
 		}
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
@@ -259,7 +259,10 @@ public class XmlActions
 		{
 			editPane.getTextArea().setSelectedText(newTag);
 			editPane.getTextArea().requestFocus();
+			return true;
 		}
+		else
+			return false;
 	}
 
 	public static void completeKeyTyped(final View view,
@@ -404,7 +407,9 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& closeCompletionOpen
-			&& completionInfo != null))
+			&& completionInfo != null
+			// this only makes sense in XML files!
+			&& buffer.getBooleanProperty("xml.parse")))
 		{
 			return;
 		}

@@ -276,9 +276,16 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 				}
 				else
 				{
+					Buffer buffer = editPane.getBuffer();
+
+					buffer.beginCompoundEdit();
+
 					// show edit tag dialog box
-					XmlActions.showEditTagDialog(view,
-						element);
+					if(XmlActions.showEditTagDialog(view,element)
+						&& !element.empty)
+						XmlActions.insertClosingTag(textArea);
+
+					buffer.endCompoundEdit();
 				}
 			}
 			else if(evt.getSource() == entityList)

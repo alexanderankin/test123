@@ -301,14 +301,6 @@
 
 </chapter>
 
-<chapter id="catalog"><title>Resolving system and public IDs</title>
-
- <para>
-  Not yet written.
- </para>
-
-</chapter>
-
 <chapter id="entity-commands"><title>Entity conversion</title>
 
  <para>
@@ -446,6 +438,18 @@
   That's all there is to it; you can now use the Xerces parser in your plugin.
   Xerces includes its own implementations of the JAXP, SAX2 and DOM APIs, so
   integrating existing code should be relatively easy.
+ </para>
+
+</chapter>
+
+<chapter id="catalog"><title>Resolving system and public IDs</title>
+
+ <para>
+  The XML plugin can use catalogs in XML catalog and OASIS OPEN formats
+  to resolve system and public IDs. Catalogs to search in can be specified
+  in the <guibutton>XML</guibutton>&gt;<guibutton>Catalogs</guibutton> pane
+  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+  dialog box.
  </para>
 
 </chapter>

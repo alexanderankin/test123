@@ -1,7 +1,8 @@
 + for version 0.4
 
-- catalogs option pane
-- documentation: id resolving, XML catalogs, OASIS catalogs
+- documentation: XML catalog format, OASIS catalog format
+- position caret between start and end tags when inserting tag using
+  XML Insert
 
 + for version 0.5
 
