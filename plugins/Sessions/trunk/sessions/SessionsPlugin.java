@@ -18,8 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
-
 package sessions;
 
 
@@ -43,7 +41,6 @@ import org.gjt.sp.util.Log;
  */
 public class SessionsPlugin extends EBPlugin
 {
-
 	public void start()
 	{
 		boolean restore = jEdit.getBooleanProperty("restore");
@@ -69,6 +66,24 @@ public class SessionsPlugin extends EBPlugin
 		//  still need to load the custom properties into memory.
 		SessionManager.getInstance().
 			getCurrentSessionInstance().open(jEdit.getActiveView(), false);
+			
+		// Add SessionSwitcher to existing Views
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++)
+		{
+			addSessionSwitcher(views[i]);
+		}
+	}
+
+
+	public void stop()
+	{
+		// Remove SessionSwitcher from existing Views
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++)
+		{
+			removeSessionSwitcher(views[i]);
+		}
 	}
 
 
@@ -260,6 +275,4 @@ public class SessionsPlugin extends EBPlugin
 
 
 	private Hashtable viewSessionSwitchers = new Hashtable();
-
 }
-
