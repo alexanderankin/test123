@@ -29,6 +29,7 @@ public class XmlPlugin extends EBPlugin
 	public static final String TREE_NAME = "xml-tree";
 	public static final String INSERT_NAME = "xml-insert";
 
+	public static final String ELEMENT_TREE_PROPERTY = "xml.element-tree";
 	public static final String COMPLETION_INFO_PROPERTY = "xml.completion-info";
 
 	//{{{ start() method

@@ -65,12 +65,7 @@ public class XmlTree extends JPanel implements EBComponent
 
 		add(BorderLayout.CENTER,new JScrollPane(tree));
 
-		bufferHandler = new BufferHandler();
-		editPaneHandler = new EditPaneHandler();
-
-		propertiesChanged(true);
-
-		parser = new XmlParser(view);
+		propertiesChanged();
 	} //}}}
 
 	//{{{ requestDefaultFocus() method
@@ -85,16 +80,6 @@ public class XmlTree extends JPanel implements EBComponent
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-
-		EditPane[] editPanes = view.getEditPanes();
-		for(int i = 0; i < editPanes.length; i++)
-		{
-			JEditTextArea textArea = editPanes[i].getTextArea();
-			textArea.addFocusListener(editPaneHandler);
-			textArea.addCaretListener(editPaneHandler);
-		}
-
-		parse(true);
 	} //}}}
 
 	//{{{ removeNotify() method
@@ -102,162 +87,36 @@ public class XmlTree extends JPanel implements EBComponent
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-
-		EditPane[] editPanes = view.getEditPanes();
-		for(int i = 0; i < editPanes.length; i++)
-		{
-			JEditTextArea textArea = editPanes[i].getTextArea();
-			textArea.removeFocusListener(editPaneHandler);
-			textArea.removeCaretListener(editPaneHandler);
-			editPanes[i].putClientProperty(XmlPlugin
-				.COMPLETION_INFO_PROPERTY,null);
-		}
-
-		parser.dispose();
 	} //}}}
 
-	//{{{ parse() method
-	public void parse(final boolean showParsingMessage)
+	//{{{ update() method
+	void update()
 	{
-		this.showParsingMessage = showParsingMessage;
-
-		parser.stopThread();
-
-		// remove listener from old buffer
-		if(buffer != null)
-			buffer.removeBufferChangeListener(bufferHandler);
-
-		buffer = view.getBuffer();
-
-		// add listener to new buffer
-		buffer.addBufferChangeListener(bufferHandler);
-
-		//{{{ Run this when I/O is complete
-		VFSManager.runInAWTThread(new Runnable()
+		DefaultTreeModel model = (DefaultTreeModel)view.getEditPane()
+			.getClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY);
+		if(model == null)
 		{
-			public void run()
-			{
-				parse = buffer.getBooleanProperty("xml.parse");
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+			model = new DefaultTreeModel(root);
 
-				EditPane editPane = view.getEditPane();
-				editPane.putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
+			root.insert(new DefaultMutableTreeNode(
+				jEdit.getProperty("xml-tree.not-parsed")),0);
 
-				//{{{ check for non-XML file
-				if(!parse)
-				{
-					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-					DefaultTreeModel model = new DefaultTreeModel(root);
-		
-					root.insert(new DefaultMutableTreeNode(
-						jEdit.getProperty("xml-tree.not-xml-file")),0);
-					model.reload(root);
-					tree.setModel(model);
-
-					return;
-				} //}}}
-				else if(showParsingMessage)
-				{
-					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-					DefaultTreeModel model = new DefaultTreeModel(root);
-
-					root.insert(new DefaultMutableTreeNode(
-						jEdit.getProperty("xml-tree.parsing")),0);
-					model.reload(root);
-					tree.setModel(model);
-				}
-
-				parser.parse(buffer);
-			}
-		}); //}}}
+			model.reload(root);
+			tree.setModel(model);
+		}
+		else
+		{
+			tree.setModel(model);
+			expandTagAt(view.getTextArea().getCaretPosition());
+		}
 	} //}}}
 
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
-		//{{{ EditPaneUpdate
-		if(msg instanceof EditPaneUpdate)
-		{
-			EditPaneUpdate emsg = (EditPaneUpdate)msg;
-			EditPane editPane = emsg.getEditPane();
-			if(emsg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
-				&& editPane == view.getEditPane())
-			{
-				if(buffer.getBooleanProperty(
-					"xml.buffer-change-parse")
-					|| buffer.getBooleanProperty(
-					"xml.keystroke-parse"))
-				{
-					parse(true);
-				}
-				else
-					showNotParsedMessage();
-			}
-			else if(emsg.getWhat() == EditPaneUpdate.CREATED
-				&& editPane.getView() == view)
-			{
-				JEditTextArea textArea = editPane.getTextArea();
-				textArea.addFocusListener(editPaneHandler);
-				textArea.addCaretListener(editPaneHandler);
-			}
-			else if(emsg.getWhat() == EditPaneUpdate.DESTROYED
-				&& editPane.getView() == view)
-			{
-				JEditTextArea textArea = editPane.getTextArea();
-				textArea.removeFocusListener(editPaneHandler);
-				textArea.removeCaretListener(editPaneHandler);
-			}
-		} //}}}
-		//{{{ BufferUpdate
-		else if(msg instanceof BufferUpdate)
-		{
-			BufferUpdate bmsg = (BufferUpdate)msg;
-			if(bmsg.getWhat() == BufferUpdate.DIRTY_CHANGED
-				&& bmsg.getBuffer() == buffer
-				&& !bmsg.getBuffer().isDirty())
-			{
-				if(buffer.getBooleanProperty(
-					"xml.buffer-change-parse")
-					|| buffer.getBooleanProperty(
-					"xml.keystroke-parse"))
-				{
-					parse(true);
-				}
-				else
-					showNotParsedMessage();
-			}
-			else if((bmsg.getWhat() == BufferUpdate.MODE_CHANGED
-				|| bmsg.getWhat() == BufferUpdate.LOADED)
-				&& bmsg.getBuffer() == buffer)
-			{
-				if(buffer.getBooleanProperty(
-					"xml.buffer-change-parse")
-					|| buffer.getBooleanProperty(
-					"xml.keystroke-parse"))
-				{
-					parse(true);
-				}
-				else
-					showNotParsedMessage();
-			}
-		} //}}}
-		else if(msg instanceof PropertiesChanged)
-			propertiesChanged(false);
-	} //}}}
-
-	//{{{ parsingComplete() method
-	void parsingComplete(TreeModel model)
-	{
-		tree.setModel(model);
-		expandTagAt(view.getTextArea().getCaretPosition());
-
-		int errorCount = parser.getErrorSource().getErrorCount();
-
-		if(showParsingMessage || errorCount != 0)
-		{
-			Object[] pp = { new Integer(errorCount) };
-			view.getStatus().setMessageAndClear(jEdit.getProperty(
-				"xml-tree.parsing-complete",pp));
-		}
+		if(msg instanceof PropertiesChanged)
+			propertiesChanged();
 	} //}}}
 
 	//{{{ Private members
@@ -273,18 +132,13 @@ public class XmlTree extends JPanel implements EBComponent
 	private View view;
 	private Buffer buffer;
 	private Timer keystrokeTimer, caretTimer;
-	private BufferHandler bufferHandler;
-	private EditPaneHandler editPaneHandler;
-
-	private boolean showParsingMessage;
-
-	private XmlParser parser;
 	//}}}
 
 	//{{{ propertiesChanged() method
-	private void propertiesChanged(boolean init)
+	private void propertiesChanged()
 	{
-		boolean newShowAttributes = jEdit.getBooleanProperty("xml.show-attributes");
+		showAttributes = jEdit.getBooleanProperty("xml.show-attributes");
+
 		try
 		{
 			delay = Integer.parseInt(jEdit.getProperty("xml.auto-parse-delay"));
@@ -293,30 +147,6 @@ public class XmlTree extends JPanel implements EBComponent
 		{
 			delay = 1500;
 		}
-
-		if(init)
-			showAttributes = newShowAttributes;
-		else if(newShowAttributes != showAttributes)
-		{
-			showAttributes = newShowAttributes;
-			parse(true);
-		}
-	} //}}}
-
-	//{{{ showNotParsedMessage() method
-	private void showNotParsedMessage()
-	{
-		parser.stopThread();
-
-		// check for non-XML file
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-		DefaultTreeModel model = new DefaultTreeModel(root);
-
-		root.insert(new DefaultMutableTreeNode(
-			jEdit.getProperty("xml-tree.not-parsed")),0);
-
-		model.reload(root);
-		tree.setModel(model);
 	} //}}}
 
 	//{{{ parseWithDelay() method
@@ -329,7 +159,7 @@ public class XmlTree extends JPanel implements EBComponent
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				parse(false);
+				//parse(false);
 			}
 		});
 
@@ -488,7 +318,7 @@ public class XmlTree extends JPanel implements EBComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			parse(true);
+			//parse(true);
 		}
 	} //}}}
 
@@ -512,57 +342,6 @@ public class XmlTree extends JPanel implements EBComponent
 						.attributeString);
 				}
 			}
-		}
-	} //}}}
-
-	//{{{ EditPaneHandler class
-	class EditPaneHandler implements FocusListener, CaretListener
-	{
-		public void focusGained(FocusEvent evt)
-		{
-			if(buffer == null)
-				return;
-
-			if(buffer.getBooleanProperty(
-				"xml.buffer-change-parse")
-				|| buffer.getBooleanProperty(
-				"xml.keystroke-parse"))
-			{
-				if(view.getEditPane().getBuffer() != buffer)
-					parse(true);
-			}
-			else
-				showNotParsedMessage();
-		}
-
-		public void focusLost(FocusEvent evt)
-		{
-		}
-
-		public void caretUpdate(CaretEvent evt)
-		{
-			if(evt.getSource() == view.getTextArea())
-				expandTagWithDelay();
-		}
-	} //}}}
-
-	//{{{ BufferHandler class
-	class BufferHandler extends BufferChangeAdapter
-	{
-		public void contentInserted(Buffer buffer, int startLine, int offset,
-			int numLines, int length)
-		{
-			if(buffer.isLoaded() && parse
-				&& buffer.getBooleanProperty("xml.keystroke-parse"))
-				parseWithDelay();
-		}
-
-		public void contentRemoved(Buffer buffer, int startLine, int offset,
-			int numLines, int length)
-		{
-			if(buffer.isLoaded() && parse
-				&& buffer.getBooleanProperty("xml.keystroke-parse"))
-				parseWithDelay();
 		}
 	} //}}}
 

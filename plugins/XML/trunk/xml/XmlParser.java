@@ -24,6 +24,7 @@ import java.util.*;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import errorlist.*;
@@ -49,7 +50,95 @@ class XmlParser
 	} //}}}
 
 	//{{{ parse() method
-	void parse(Buffer buffer)
+	void parse(final boolean showParsingMessage)
+	{
+		stopThread();
+
+		this.showParsingMessage = showParsingMessage;
+
+		//{{{ Run this when I/O is complete
+		VFSManager.runInAWTThread(new Runnable()
+		{
+			public void run()
+			{
+				EditPane editPane = view.getEditPane();
+				editPane.putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,null);
+				editPane.putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
+
+				//{{{ check for non-XML file
+				if(!buffer.getBooleanProperty("xml.parse"))
+				{
+					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+					model = new DefaultTreeModel(root);
+
+					root.insert(new DefaultMutableTreeNode(
+						jEdit.getProperty("xml-tree.not-xml-file")),0);
+					model.reload(root);
+
+					editPane.putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
+					finish();
+					return;
+				} //}}}
+				//{{{ Show 'parsing in progress' message
+				else if(showParsingMessage)
+				{
+					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+					model = new DefaultTreeModel(root);
+
+					root.insert(new DefaultMutableTreeNode(
+						jEdit.getProperty("xml-tree.parsing")),0);
+					model.reload(root);
+
+					editPane.putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
+
+					XmlTree tree = (XmlTree)view.getDockableWindowManager()
+						.getDockable(XmlPlugin.TREE_NAME);
+					if(tree != null)
+						tree.update();
+				} //}}}
+
+				_parse();
+			}
+		}); //}}}
+	} //}}}
+
+	//{{{ dispose() method
+	void dispose()
+	{
+		stopThread();
+
+		errorSource.clear();
+		ErrorSource.unregisterErrorSource(errorSource);
+	} //}}}
+
+	//{{{ Private members
+
+	//{{{ Instance variables
+	private View view;
+	private Buffer buffer;
+
+	private Vector elements;
+	private Hashtable elementHash;
+	private Vector entities;
+	private Hashtable entityHash;
+	private Vector ids;
+	private DefaultTreeModel model;
+	private DefaultMutableTreeNode root;
+
+	private ParseThread thread;
+
+	private String text;
+
+	private XMLReader parser;
+	private Handler handler;
+
+	private DefaultErrorSource errorSource;
+
+	private boolean showParsingMessage;
+	//}}}
+
+	//{{{ _parse() method
+	private void _parse()
 	{
 		// prepare for parsing
 		elements.removeAllElements();
@@ -99,7 +188,7 @@ class XmlParser
 	} //}}}
 
 	//{{{ stopThread() method
-	void stopThread()
+	private void stopThread()
 	{
 		if(thread != null)
 		{
@@ -108,8 +197,60 @@ class XmlParser
 		}
 	} //}}}
 
+	//{{{ finish() method
+	private void finish()
+	{
+		if(view.isClosed())
+			return;
+
+		thread = null;
+
+		// to avoid keeping pointers to stale objects.
+		// we could reuse a single parser instance to preserve
+		// performance, but it eats too much memory, especially
+		// if the file being parsed has an associated DTD.
+		buffer = null;
+		text = null;
+		parser = null;
+
+		view.getEditPane().putClientProperty(
+			XmlPlugin.ELEMENT_TREE_PROPERTY,
+			model);
+		model.reload(root);
+
+		XmlTree tree = (XmlTree)view.getDockableWindowManager()
+			.getDockable(XmlPlugin.TREE_NAME);
+		if(tree != null)
+			tree.update();
+
+		MiscUtilities.quicksort(elements,new ElementDeclCompare());
+		MiscUtilities.quicksort(entities,new EntityDeclCompare());
+		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
+
+		CompletionInfo completionInfo = new CompletionInfo(false,
+			elements,elementHash,entities,entityHash,ids);
+
+		view.getEditPane().putClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY,
+			completionInfo);
+
+		XmlInsert insert = (XmlInsert)view.getDockableWindowManager()
+			.getDockable(XmlPlugin.INSERT_NAME);
+		if(insert != null)
+			insert.update();
+
+		int errorCount = errorSource.getErrorCount();
+
+		if(showParsingMessage || errorCount != 0)
+		{
+			Object[] pp = { new Integer(errorCount) };
+			view.getStatus().setMessageAndClear(jEdit.getProperty(
+				"xml-tree.parsing-complete",pp));
+		}
+	} //}}}
+
 	//{{{ addError() method
-	void addError(int type, String path, int line, String message)
+	private void addError(int type, String path, int line, String message)
 	{
 		// FIXME?
 		if(path.startsWith("file://"))
@@ -119,20 +260,22 @@ class XmlParser
 		errorSource.addError(type,path,line,0,0,message);
 	} //}}}
 
-	//{{{ dispose() method
-	void dispose()
+	//{{{ addEntity() method
+	private void addEntity(EntityDecl entity)
 	{
-		stopThread();
-
-		errorSource.clear();
-		ErrorSource.unregisterErrorSource(errorSource);
+		entities.addElement(entity);
+		if(entity.type == EntityDecl.INTERNAL
+			&& entity.value.length() == 1)
+		{
+			Character ch = new Character(entity.value.charAt(0));
+			entityHash.put(entity.name,ch);
+			entityHash.put(ch,entity.name);
+		}
 	} //}}}
 
-	//{{{ getErrorSource() method
-	ErrorSource getErrorSource()
-	{
-		return errorSource;
-	} //}}}
+	//}}}
+
+	//{{{ Inner classes
 
 	//{{{ ElementDeclCompare class
 	static class ElementDeclCompare implements MiscUtilities.Compare
@@ -163,118 +306,6 @@ class XmlParser
 			}
 		}
 	} //}}}
-
-	//{{{ Private members
-
-	//{{{ Instance variables
-	private View view;
-	private Buffer buffer;
-
-	private Vector elements;
-	private Hashtable elementHash;
-	private Vector entities;
-	private Hashtable entityHash;
-	private Vector ids;
-	private DefaultTreeModel model;
-	private DefaultMutableTreeNode root;
-
-	private ParseThread thread;
-
-	private String text;
-
-	private XMLReader parser;
-	private Handler handler;
-
-	private DefaultErrorSource errorSource;
-	//}}}
-
-	//{{{ doParse() method
-	private void doParse()
-	{
-		try
-		{
-			InputSource source = new InputSource(new StringReader(text));
-			source.setSystemId(buffer.getPath());
-
-			parser.parse(source);
-		}
-		catch(SAXParseException spe)
-		{
-			// fatal error, already handled
-		}
-		catch(SAXException se)
-		{
-			Log.log(Log.ERROR,this,se.getException());
-			if(se.getMessage() != null)
-			{
-				addError(ErrorSource.ERROR,buffer.getPath(),
-				0,se.getMessage());
-			}
-		}
-		catch(IOException ioe)
-		{
-			Log.log(Log.ERROR,this,ioe);
-			addError(ErrorSource.ERROR,buffer.getPath(),0,
-			ioe.toString());
-		}
-	} //}}}
-
-	//{{{ finish() method
-	private void finish()
-	{
-		if(view.isClosed())
-			return;
-
-		thread = null;
-
-		// to avoid keeping pointers to stale objects.
-		// we could reuse a single parser instance to preserve
-		// performance, but it eats too much memory, especially
-		// if the file being parsed has an associated DTD.
-		buffer = null;
-		text = null;
-		parser = null;
-
-		MiscUtilities.quicksort(elements,new ElementDeclCompare());
-		MiscUtilities.quicksort(entities,new EntityDeclCompare());
-		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
-
-		CompletionInfo completionInfo = new CompletionInfo(false,
-			elements,elementHash,entities,entityHash,ids);
-
-		view.getEditPane().putClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY,
-			completionInfo);
-
-		XmlTree tree = (XmlTree)view.getDockableWindowManager()
-			.getDockable(XmlPlugin.TREE_NAME);
-		if(tree != null)
-		{
-			model.reload(root);
-			tree.parsingComplete(model);
-		}
-
-		XmlInsert insert = (XmlInsert)view.getDockableWindowManager()
-			.getDockable(XmlPlugin.INSERT_NAME);
-		if(insert != null)
-			insert.update();
-	} //}}}
-
-	//{{{ addEntity() method
-	private void addEntity(EntityDecl entity)
-	{
-		entities.addElement(entity);
-		if(entity.type == EntityDecl.INTERNAL
-			&& entity.value.length() == 1)
-		{
-			Character ch = new Character(
-				entity.value.charAt(0));
-			entityHash.put(entity.name,ch);
-			entityHash.put(ch,entity.name);
-		}
-	} //}}}
-
-	//}}}
 
 	//{{{ Handler class
 	class Handler extends DefaultHandler implements DeclHandler
@@ -532,7 +563,32 @@ class XmlParser
 
 		public void run()
 		{
-			doParse();
+			try
+			{
+				InputSource source = new InputSource(new StringReader(text));
+				source.setSystemId(buffer.getPath());
+
+				parser.parse(source);
+			}
+			catch(SAXParseException spe)
+			{
+				// fatal error, already handled
+			}
+			catch(SAXException se)
+			{
+				Log.log(Log.ERROR,this,se.getException());
+				if(se.getMessage() != null)
+				{
+					addError(ErrorSource.ERROR,buffer.getPath(),
+					0,se.getMessage());
+				}
+			}
+			catch(IOException ioe)
+			{
+				Log.log(Log.ERROR,this,ioe);
+				addError(ErrorSource.ERROR,buffer.getPath(),0,
+				ioe.toString());
+			}
 
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -543,4 +599,6 @@ class XmlParser
 			});
 		}
 	} //}}}
+
+	//}}}
 }
