@@ -1,3 +1,4 @@
+## template=Method with Javadoc
 #prompt ( "Method Description:" $methodDescription  )
 #prompt ( "Access Modifier:" $accessModifier  "public" )
 #prompt ( "Additional Modifiers:" $modifiers  "void" )
