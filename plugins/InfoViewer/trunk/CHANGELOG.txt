@@ -7,6 +7,8 @@ VERSION 1.1
 * bugfix: #509058 (Verify Error On InfoViewer)
 * removed old JDK 1.1 workarounds
 * requires at least jEdit 4.0pre6
+* fixed deprecation warnings (Stefan Kost)
+* updated icons (Stefan Kost)
 
 
 VERSION 1.0

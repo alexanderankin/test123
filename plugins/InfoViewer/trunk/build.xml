@@ -14,12 +14,16 @@
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 
 	<property name="src.dir" value="."/>
+	<property name="src.lib" value="lib"/>
 	<property name="build.dir" value="build"/>
 	<property name="install.dir" value=".."/>
 
 
 	<path id="project.class.path">
 		<pathelement location="."/>
+		<fileset dir="${src.lib}">
+			<include name="*.jar"/>
+		</fileset>
 	</path>
 
 
