@@ -1,6 +1,6 @@
 /*
  * Code2HTML.java
- * Copyright (c) 2000, 2001 Andre Kaplan
+ * Copyright (c) 2000-2001 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -51,28 +51,56 @@ public class Code2HTML {
     private boolean useCSS;
     private boolean showGutter;
 
+    private boolean useSelection;
+    private JEditTextArea   textArea = null;
+    private HTMLStyle       style    = null;
+    private HTMLGutter      gutter   = null;
+    private HTMLPainter     painter  = null;
 
-    public Code2HTML() {
+
+    public Code2HTML(JEditTextArea textArea, boolean useSelection) {
         this.wrap = Code2HTMLUtilities.getIntegerProperty("code2html.wrap", 0);
         if (this.wrap < 0) { this.wrap = 0; }
 
         this.useCSS     = jEdit.getBooleanProperty("code2html.use-css", false);
         this.showGutter = jEdit.getBooleanProperty("code2html.show-gutter", false);
+
+        this.textArea = textArea;
+        Buffer buffer = textArea.getBuffer();
+
+        SyntaxStyle[] styles = textArea.getPainter().getStyles();
+        if (this.useCSS) {
+            this.style = new HTMLCSSStyle(styles);
+        } else {
+            this.style = new HTMLStyle(styles);
+        }
+
+        if (this.showGutter) {
+            int gutterSize = Integer.toString(this.textArea.getLineCount()).length();
+            if (this.useCSS) {
+                this.gutter = new HTMLCSSGutter();
+            } else {
+                this.gutter = new HTMLGutter();
+            }
+        }
+
+        LineTabExpander expander = new LineTabExpander(buffer.getTabSize());
+
+        LineWrapper wrapper  = null;
+        if (this.wrap > 0) {
+            wrapper = new LineWrapper(this.wrap);
+        }
+
+        this.painter =
+            new HTMLPainter(this.style, this.gutter, expander, wrapper);
     }
 
 
     public void toHTML(View view) {
-        this.toHTML(view, false);
-    }
-
-
-    public void toHTML(View view, boolean useSelection) {
-        JEditTextArea textArea = view.getTextArea();
-
         int physicalFirst = 0;
-        int physicalLast  = textArea.getLineCount() - 1;
+        int physicalLast  = this.textArea.getLineCount() - 1;
 
-        if (useSelection) {
+        if (this.useSelection) {
             Selection[] selection = textArea.getSelection();
 
             for (int i = 0; i < selection.length; i++) {
@@ -87,7 +115,7 @@ public class Code2HTML {
 
         try {
             BufferedWriter out = new BufferedWriter(sw);
-            this.toHTML(out, textArea, physicalFirst, physicalLast);
+            this.toHTML(out, this.textArea, physicalFirst, physicalLast);
 
             out.flush();
             out.close();
@@ -106,7 +134,7 @@ public class Code2HTML {
     }
 
 
-    private void htmlStart(Writer out, String bufferName, HTMLStyle htmlStyle,
+    private void htmlOpen(Writer out, String bufferName, HTMLStyle htmlStyle,
             HTMLGutter htmlGutter) throws IOException
     {
         out.write(
@@ -131,7 +159,7 @@ public class Code2HTML {
     }
 
 
-    private void htmlEnd(Writer out) throws IOException {
+    private void htmlClose(Writer out) throws IOException {
         out.write("</PRE>");
         out.write(
               "</BODY>\n"
@@ -145,43 +173,18 @@ public class Code2HTML {
     {
         Buffer buffer = textArea.getBuffer();
 
-        SyntaxStyle[] styles = textArea.getPainter().getStyles();
-        HTMLStyle htmlStyle = null;
-        if (this.useCSS) {
-            htmlStyle = new HTMLCSSStyle(styles);
-        } else {
-            htmlStyle = new HTMLStyle(styles);
-        }
-
-        HTMLGutter htmlGutter = null;
-        if (this.showGutter) {
-            int gutterSize = Integer.toString(last).length();
-            if (this.useCSS) {
-                htmlGutter = new HTMLCSSGutter(gutterSize);
-            } else {
-                htmlGutter = new HTMLGutter(gutterSize);
-            }
-        }
-
-        LineTabExpander expander = new LineTabExpander(buffer.getTabSize());
-
-        LineWrapper     wrapper  = null;
-        if (this.wrap > 0) {
-            wrapper = new LineWrapper(this.wrap);
-        }
-
-        HTMLPainter htmlPainter =
-            new HTMLPainter(htmlStyle, htmlGutter, expander, wrapper);
+        int gutterSize = Integer.toString(last + 1).length();
+        this.gutter.setGutterSize(gutterSize);
 
         try {
-            this.htmlStart(out, buffer.getName(), htmlStyle, htmlGutter);
+            this.htmlOpen(out, buffer.getName(), this.style, this.gutter);
 
             long start = System.currentTimeMillis();
-            htmlPainter.paintLines(out, textArea, first, last);
+            this.painter.paintLines(out, this.textArea, first, last);
             long end = System.currentTimeMillis();
             Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
 
-            this.htmlEnd(out);
+            this.htmlClose(out);
         } catch (IOException ioe) {}
     }
 
