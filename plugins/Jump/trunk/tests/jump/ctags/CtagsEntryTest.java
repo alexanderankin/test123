@@ -1,4 +1,4 @@
-package tests.ctags;
+package tests.jump.ctags;
 
 import jump.ctags.CtagsEntry;
 import junit.framework.TestCase;
@@ -16,5 +16,11 @@ public class CtagsEntryTest extends TestCase {
 		assertEquals(".\\includes\\misc\\MailUtilities.inc.php", en.getFileName());
 		assertEquals("c", en.getExtensionFields());
 		assertEquals("class MailUtilities", en.getExCmd());
+	}
+	
+	public void testIsTagNameStartsWith() {
+		CtagsEntry en = new CtagsEntry(VALID_CTAGS_LINE);
+		assertTrue("MailUtilities", en.isTagNameStartsWith("Ma"));
+		assertFalse("MailUtilities", en.isTagNameStartsWith("Foo"));
 	}
 }

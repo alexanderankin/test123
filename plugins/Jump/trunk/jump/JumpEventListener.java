@@ -24,13 +24,12 @@
 package jump;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
 
-import jump.ctags.CtagsMain;
 import jump.ctags.CtagsBuffer;
+import jump.ctags.CtagsMain;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -55,7 +54,7 @@ public class JumpEventListener extends ProjectViewerAdapter
     public String  PROJECT_ROOT = new String();
     public String PROJECT_NAME = new String();
     public File PROJECT_TAGS;
-    public ArrayList ProjectFiles = new ArrayList();
+    public Vector ProjectFiles = new Vector();
 
     public CtagsBuffer ctags_buff;
     public CtagsMain ctags_bg;
@@ -204,7 +203,7 @@ public class JumpEventListener extends ProjectViewerAdapter
                 // If this project loaded at first time, we create new ProjectBuffer, and then set it active.
                 if (isNewProject == false)
                 {
-                    ProjectBuffer bu = ProjectBuffer.getProjectBuffer(evt.getProject().getName());
+                    ProjectBuffer bu = new ProjectBuffer(evt.getProject().getName());
                     if (bu instanceof ProjectBuffer && bu != null)
                     {
                         JumpPlugin.addProjectBuffer(bu);

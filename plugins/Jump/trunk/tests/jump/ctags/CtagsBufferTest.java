@@ -1,4 +1,4 @@
-package tests.ctags;
+package tests.jump.ctags;
 
 import java.util.Vector;
 

@@ -60,7 +60,7 @@ public class TypeTag extends EnhancedDialog
 
         JLabel title = new JLabel("Type a tag to jump to");
 
-        String ModelName ="jump.tag_history.project."+JumpPlugin.getActiveProjectBuffer().PROJECT_NAME;
+        String ModelName ="jump.tag_history.project."+JumpPlugin.getActiveProjectBuffer().name;
         history = new HistoryTextField(ModelName, true, false);
         history.setColumns(35); 
 

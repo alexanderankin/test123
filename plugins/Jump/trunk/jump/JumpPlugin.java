@@ -1,22 +1,24 @@
 package jump;
 
-import java.io.File;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Vector;
-
 import jump.ctags.*;
 
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryModel;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import projectviewer.PVActions;
 import projectviewer.ProjectViewer;
+
 import projectviewer.vpt.VPTProject;
+
+import java.io.File;
+
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Vector;
 
 
 public class JumpPlugin extends EditPlugin {
@@ -68,8 +70,8 @@ public class JumpPlugin extends EditPlugin {
 
                 for (int i = 0; i < v.size(); i++) {
                     pb = (ProjectBuffer) v.get(i);
-                    CtagsMain.saveBuffer(pb.PROJECT_CTBUFFER,
-                        pb.PROJECT_TAGS.toString());
+                    CtagsMain.saveBuffer(pb.ctagsBuffer,
+                        pb.jumpFile.toString());
                 }
             }
         } catch (Exception e) {
@@ -87,22 +89,18 @@ public class JumpPlugin extends EditPlugin {
     // TODO: UGLY setProject/ addProject conditions
     public static boolean setActiveProjectBuffer(ProjectBuffer buff) {
         try {
-            //System.out.println("JumpPlugin: setActiveProjectBuffer...");
-            if (projectBuffers.containsKey(buff.PROJECT_NAME)) {
-                activeProjectBuffer = (ProjectBuffer) projectBuffers.get(buff.PROJECT_NAME);
-                projectBuffers.put(buff.PROJECT_NAME, buff);
-
-                //System.out.println("JumpPlugin: setActiveProjectBuffer!");
+            if (projectBuffers.containsKey(buff.name)) {
+                activeProjectBuffer = (ProjectBuffer) projectBuffers.get(buff.name);
+                projectBuffers.put(buff.name, buff);
                 return true;
-            } else {
+            } 
+            else {
                 addProjectBuffer(buff);
                 setActiveProjectBuffer(buff);
-
                 return true;
             }
         } catch (Exception e) {
             System.out.println("JumpPlugin: setActiveProjectBuffer failed");
-
             return false;
         }
     }
@@ -111,13 +109,8 @@ public class JumpPlugin extends EditPlugin {
      *  Just add this ProjectBuffer into hash
      */
     public static void addProjectBuffer(ProjectBuffer buff) {
-        System.out.println("JumpPlugin: addProjectBuffer - " + buff);
-
-        if (buff == null) {
-            return;
-        }
-
-        projectBuffers.put(buff.PROJECT_NAME, buff);
+        if (buff == null)  return;
+        projectBuffers.put(buff.name, buff);
     }
 
     /**
@@ -133,7 +126,6 @@ public class JumpPlugin extends EditPlugin {
      *  @param name - @see ProjectBuffer.PROJECT_NAME
      */
     public static void removeProjectBuffer(String name) {
-        // if (activeProjectBuffer == buff) {}
         ProjectBuffer b = (ProjectBuffer) projectBuffers.get(name);
 
         if (b != null) {
@@ -211,9 +203,7 @@ public class JumpPlugin extends EditPlugin {
      *  Since PViewer have't PROJECT_RENAMED event, here I try to determine coincidence of project files and .jump files...
      */
     private void projectRenamedWorkaround() {
-        //System.getProperty("user.home")+s+".jedit"+s+"projectviewer"+s+"projects"+s+this.PROJECT_NAME+".jump"
         buffersForDelete = new Vector();
-
         String s = System.getProperty("file.separator");
         File pDir = new File(System.getProperty("user.home") + s + ".jedit" +
                 s + "projectviewer" + s + "projects" + s);
@@ -231,8 +221,6 @@ public class JumpPlugin extends EditPlugin {
                 if (tmp.endsWith(".jump")) {
                     if (!files.contains(tmp.replaceAll(".jump", ".xml"))) {
                         buffersForDelete.add(tmp);
-
-                        //System.out.println("Add to buffersForDelete - " + tmp.replaceAll(".xml", ".jump"));
                     }
                 }
             }

@@ -67,18 +67,18 @@ public class ProjectJumpAction
 
     public void addToHistory(CtagsEntry en)
     {
-        JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.add(en);
-        JumpPlugin.getActiveProjectBuffer().HISTORY.addItem(en.getTagName());
+        JumpPlugin.getActiveProjectBuffer().history.add(en);
+        JumpPlugin.getActiveProjectBuffer().historyModel.addItem(en.getTagName());
     }
     
     public void clearHistory()
     {
-        JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.clear();
+        JumpPlugin.getActiveProjectBuffer().history.clear();
     }
     
     public void JumpToPreviousTag()
     {
-        CtagsEntry en = (CtagsEntry)JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.getPrevious();
+        CtagsEntry en = (CtagsEntry)JumpPlugin.getActiveProjectBuffer().history.getPrevious();
         if (en == null)
         {
             return;
@@ -200,7 +200,7 @@ public class ProjectJumpAction
 
         currentTags = JumpPlugin.getActiveProjectBuffer();
         if (currentTags == null) return;
-        tags = currentTags.PROJECT_CTBUFFER.getEntriesByStartPrefix(sel);
+        tags = currentTags.ctagsBuffer.getEntriesByStartPrefix(sel);
         if (tags == null || tags.size() < 1)
         {
             Log.log(Log.DEBUG,this,"completeTag: No tags found! - "+sel);
@@ -244,7 +244,7 @@ public class ProjectJumpAction
         currentTags = JumpPlugin.getActiveProjectBuffer();
         if (currentTags == null || sel == null) return;
 
-        tags = currentTags.PROJECT_CTBUFFER.getEntries(sel);
+        tags = currentTags.ctagsBuffer.getEntries(sel);
         if (tags == null || tags.size() < 1)
         {
             Log.log(Log.DEBUG,this,"getTagBySelection: No tags found! - "+sel);

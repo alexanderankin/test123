@@ -1,13 +1,13 @@
-package tests.ctags;
+package tests.jump.ctags;
 
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Vector;
 
-import tests.AllTests;
 import jump.ctags.CtagsBuffer;
 import jump.ctags.CtagsMain;
 import jump.ctags.CtagsParser;
 import junit.framework.TestCase;
+import tests.AllTests;
 
 public class CtagsParserTest extends TestCase {
 	
@@ -46,7 +46,7 @@ public class CtagsParserTest extends TestCase {
 	}
 	
 	public void testParseFileList() {
-		ArrayList list = new ArrayList();
+		Vector list = new Vector();
 		list.add(AllTests.TEST_FILE_FOR_CTAGS);
 		list.add(AllTests.TEST_FILE_FOR_CTAGS2);
 		

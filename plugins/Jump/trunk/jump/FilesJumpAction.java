@@ -21,11 +21,6 @@
  */
 package jump;
 
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -34,6 +29,10 @@ import java.util.Vector;
 import javax.swing.AbstractListModel;
 import javax.swing.JList;
 import javax.swing.ListModel;
+
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 
 
 // TODO: tabs_files - can't be a HashMap. 
@@ -73,11 +72,11 @@ class FilesJumpAction {
             return null;
         }
 
-        if (currentTags.PROJECT_FILES.size() < 2) {
+        if (currentTags.files.size() < 2) {
             return null;
         }
 
-        ArrayList files = currentTags.PROJECT_FILES;
+        Vector files = currentTags.files;
 
         // Temporary Vector to store only supperted files (no jpg, png etc.)
         Vector valid_files = new Vector();
