@@ -101,13 +101,18 @@ public class WhiteSpacePlugin
                 this.bufferSaving(bu.getBuffer());
             } else if (bu.getWhat() == BufferUpdate.CREATED) {
                 FoldHighlight.bufferCreated(
-                    bu.getBuffer(), getFoldHighlightDefault()
+                    bu.getBuffer(),
+                    getFoldHighlightDefault(),
+                    getFoldTooltipDefault()
                 );
             } else if (bu.getWhat() == BufferUpdate.CLOSED) {
                 FoldHighlight.bufferClosed(bu.getBuffer());
             }
         } else if (message instanceof EditorStarted) {
-            FoldHighlight.editorStarted(getFoldHighlightDefault());
+            FoldHighlight.editorStarted(
+                getFoldHighlightDefault(),
+                getFoldTooltipDefault()
+            );
         } else if (message instanceof EditorExiting) {
             FoldHighlight.editorExiting();
         }
@@ -150,9 +155,6 @@ public class WhiteSpacePlugin
         boolean showBlockDefault       = jEdit.getBooleanProperty(
             "white-space.show-block-default", false
         );
-        boolean showFoldTooltipDefault = jEdit.getBooleanProperty(
-            "white-space.show-fold-tooltip-default", true
-        );
 
         BlockHighlight blockHighlight =
             (BlockHighlight) BlockHighlight.addHighlightTo(editPane);
@@ -169,7 +171,6 @@ public class WhiteSpacePlugin
         textAreaPainter.addCustomHighlight(foldHighlight);
 
         blockHighlight.setEnabled(showBlockDefault);
-        foldHighlight.setTooltipEnabled(showFoldTooltipDefault);
 
         whiteSpaceHighlight.getSpaceHighlight().setEnabled(showSpaceDefault);
         whiteSpaceHighlight.getLeadingSpaceHighlight().setEnabled(showLeadingSpaceDefault);
@@ -188,6 +189,13 @@ public class WhiteSpacePlugin
     public static boolean getFoldHighlightDefault() {
        return jEdit.getBooleanProperty(
             "white-space.show-fold-default", true
+        );
+    }
+
+
+    public static boolean getFoldTooltipDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-fold-tooltip-default", true
         );
     }
 
