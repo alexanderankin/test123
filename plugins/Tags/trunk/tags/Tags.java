@@ -205,18 +205,10 @@ public class Tags {
     if (funcName == null) {
       String modeName = buffer.getMode().getName();
       
-      if (false && modeName.equals("java")) {
-        // This was the old way to tag around OO files.  Testing new way 
-        // which seems to be much better....
-        TagsOO.followTag(view, textArea, buffer, newView);
-        return;
-      }
-      else {
-        funcName = getFuncNameUnderCursor(textArea);
-        //Macros.message(view, "\"" + test + "\"");
-        //textArea.selectWord();
-        //funcName = textArea.getSelectedText();
-      }
+      funcName = getFuncNameUnderCursor(textArea);
+      //Macros.message(view, "\"" + test + "\"");
+      //textArea.selectWord();
+      //funcName = textArea.getSelectedText();
     }
     
     followTag(view, textArea, buffer, newView, funcName);
@@ -274,7 +266,7 @@ public class Tags {
     // Handle what was found (or not found)
     if (parser_.getNumberOfFoundTags() > 1) {
       if (ui_)
-        new ChooseTagList2(parser_, currentView, openNewView);
+        new ChooseTagList(parser_, currentView, openNewView);
       else
         processTagLine(0, currentView, openNewView, funcName);
     }
