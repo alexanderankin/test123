@@ -2,48 +2,30 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 import java.util.List;
 
-/**
- * @author Matthieu Casanova
- */
+/** @author Matthieu Casanova */
 public final class LabeledStatement extends Statement {
   private final String label;
 
   private final Statement statement;
 
-  /**
-   * @deprecated
-   * @param label
-   * @param statement
-   * @param sourceStart
-   * @param sourceEnd
-   */
-  public LabeledStatement(final String label,
-                          final Statement statement,
-                          final int sourceStart,
-                          final int sourceEnd) {
-    super(sourceStart, sourceEnd);
-    this.label = label;
-    this.statement = statement;
-  }
-
-  public LabeledStatement(final String label,
-                          final Statement statement,
-                          final int sourceStart,
-                          final int sourceEnd,
-                          final int beginLine,
-                          final int endLine,
-                          final int beginColumn,
-                          final int endColumn) {
+  public LabeledStatement(String label,
+                          Statement statement,
+                          int sourceStart,
+                          int sourceEnd,
+                          int beginLine,
+                          int endLine,
+                          int beginColumn,
+                          int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.label = label;
     this.statement = statement;
   }
 
   /**
-     * Return the object into String. It should be overriden
-     *
-     * @return a String
-     */
+   * Return the object into String. It should be overriden
+   *
+   * @return a String
+   */
   public String toString() {
     if (statement != null) {
       return label + statement.toString();
@@ -52,13 +34,13 @@ public final class LabeledStatement extends Statement {
   }
 
   /**
-     * Return the object into String.
-     *
-     * @param tab how many tabs (not used here
-     *
-     * @return a String
-     */
-  public String toString(final int tab) {
+   * Return the object into String.
+   *
+   * @param tab how many tabs (not used here
+   *
+   * @return a String
+   */
+  public String toString(int tab) {
     return tabString(tab) + toString();
   }
 
@@ -67,7 +49,7 @@ public final class LabeledStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     if (statement != null) {
       statement.getOutsideVariable(list);
     }
@@ -78,7 +60,7 @@ public final class LabeledStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     if (statement != null) {
       statement.getModifiedVariable(list);
     }
@@ -89,7 +71,7 @@ public final class LabeledStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     if (statement != null) {
       statement.getUsedVariable(list);
     }
