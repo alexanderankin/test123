@@ -13,6 +13,16 @@
     </ACTION>
 
 
+    <ACTION NAME="toggle-fold-highlight">
+        <CODE>
+             FoldHighlight.toggleFoldHighlightFor(view);
+        </CODE>
+        <IS_SELECTED>
+             return FoldHighlight.isFoldHighlightEnabledFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
     <ACTION NAME="toggle-space-highlight">
         <CODE>
              WhiteSpaceHighlight.toggleSpaceHighlightFor(view);
