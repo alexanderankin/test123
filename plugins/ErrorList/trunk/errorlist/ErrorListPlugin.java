@@ -240,6 +240,15 @@ public class ErrorListPlugin extends EBPlugin
 				}
 				view = view.getNext();
 			}
+
+			if(what == ErrorSourceUpdate.ERROR_SOURCE_ADDED)
+			{
+				if(showOnError)
+				{
+					if(jEdit.getActiveView() != null)
+						showErrorList(jEdit.getActiveView());
+				}
+			}
 		}
 	} //}}}
 
