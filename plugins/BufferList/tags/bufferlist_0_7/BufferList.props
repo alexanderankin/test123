@@ -1,0 +1,96 @@
+#
+# General plugin properites
+#
+
+plugin.bufferlist.BufferListPlugin.name=BufferList
+plugin.bufferlist.BufferListPlugin.author=Dirk Moebius <dmoebius@gmx.net>
+plugin.bufferlist.BufferListPlugin.version=0.7
+plugin.bufferlist.BufferListPlugin.docs=bufferlist/BufferList.html
+plugin.bufferlist.BufferListPlugin.depend.0=jdk 1.1
+plugin.bufferlist.BufferListPlugin.depend.1=jedit 03.02.02.00
+
+
+#
+# dockable name
+#
+
+bufferlist.name.label=Buffer List
+bufferlist.title=Buffer List
+
+
+#
+# menu
+#
+
+bufferlist.menu=bufferlist - bufferlist-next-buffer bufferlist-previous-buffer bufferlist-to-front
+bufferlist.menu.label=Buffer List
+
+
+#
+# actions
+#
+
+bufferlist.label=Buffer List
+bufferlist-next-buffer.label=Go to Next Buffer in Buffer List
+bufferlist-previous-buffer.label=Go to Previous Buffer in Buffer List
+bufferlist-to-front.label=Bring Buffer List to front
+
+
+#
+# popup menu
+#
+
+bufferlist.popup.goto.label=Goto
+bufferlist.popup.open.label=Open
+bufferlist.popup.open-view.label=Open in New View
+bufferlist.popup.close.label=Close
+bufferlist.popup.save.label=Save
+bufferlist.popup.save-as.label=Save as...
+bufferlist.popup.reload.label=Reload
+bufferlist.popup.remove.label=Remove entry
+
+
+#
+# BufferList panel
+#
+
+bufferlist.openfiles.label=Open Files
+bufferlist.recentfiles.label=Recent Files
+
+bufferlist.table.column0=\ 
+bufferlist.table.column1=Name
+bufferlist.table.column2=Directory
+bufferlist.table.column3=Mode
+
+bufferlist.table1.column0.width=20
+bufferlist.table2.column0.width=20
+bufferlist.table1.column1.width=100
+bufferlist.table2.column1.width=100
+bufferlist.table1.column2.width=200
+bufferlist.table2.column2.width=200
+bufferlist.table1.column3.width=60
+bufferlist.table2.column3.width=60
+
+
+#
+# Option pane
+#
+
+options.bufferlist.label=Buffer List
+
+options.bufferlist.separator.behavior=Behaviour
+options.bufferlist.autoshow=Auto-Show on buffer change
+options.bufferlist.checkRecentFiles=Check status of recent files
+
+options.bufferlist.separator.appearance=Appearance
+options.bufferlist.headers=Show column headers
+options.bufferlist.autoresize=Auto-Resize columns
+options.bufferlist.verticalLines=Show vertical lines
+options.bufferlist.horizontalLines=Show horizontal lines
+options.bufferlist.showAbsoluteFilename=Show absolute pathname in column Name
+
+options.bufferlist.separator.showColumns=Columns
+options.bufferlist.showStatus=Status icon
+options.bufferlist.showDir=Directory
+options.bufferlist.showMode=Mode
+
