@@ -111,7 +111,9 @@ public class FileImporter extends Importer {
 		boolean asked = false, recurse = false;
 		for (int i = 0; i < chosen.length; i++) {
 			VPTNode node = null;
-			if (chosen[i].isDirectory()) {
+			if (!chosen[i].exists()) {
+				node = findDirectory(chosen[i], selected, true);
+			} else if (chosen[i].isDirectory()) {
 				node = findDirectory(chosen[i], selected, true);
 				if (!asked) {
 					Object[] options = {
@@ -182,7 +184,7 @@ public class FileImporter extends Importer {
 
 		for (int i = 0; i < children.length; i++) {
 			VPTNode child;
-			if (children[i].isDirectory()) {
+			if (!children[i].exists() || children[i].isDirectory()) {
 				child = findDirectory(children[i], where, true);
 			} else {
 				child = new VPTFile(children[i]);
@@ -191,7 +193,7 @@ public class FileImporter extends Importer {
 				}
 			}
 
-			if (child.isDirectory()) {
+			if (child.isDirectory() && children[i].exists()) {
 				addTree(children[i], child, filter);
 			} else {
 				registerFile((VPTFile) child);
