@@ -22,9 +22,15 @@ options.javainsight.general=Plugin Options
 # Error messages
 javainsight.error.decompile.title=Decompilation Error
 javainsight.error.decompile.message=\
-	An error occured during decompilation of class {0}:\n\
-	The message was: {1}\n\
-	\n\
-	A full trace of the error is in the activity log.\n\
-	See "Utilities->View Activity Log" for details.\n\
-	Please report this to the JavaInsight maintainers.
+    An error occured during decompilation of class {0}:\n\
+    The message was: {1}\n\
+    \n\
+    A full trace of the error is in the activity log.\n\
+    See "Utilities->View Activity Log" for details.\n\
+    Please report this to the JavaInsight maintainers.
+
+# vfs actions
+vfs.class.label=Show bytecode
+vfs.jasmin.label=Show jasmin output
+vfs.jode.label=Decompile with Jode
+
