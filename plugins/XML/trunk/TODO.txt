@@ -1,6 +1,4 @@
 - handle </
-- investigate why < and & are so slow
-
 - initial setup wizard when xml file opened for the first time
 - document: id resolving, xml insert, edit tag
 - entity manager option pane
