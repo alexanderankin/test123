@@ -72,8 +72,10 @@ public abstract class Importer implements Runnable {
 
 	protected VPTNode		selected;
 	protected VPTProject	project;
-	private	 boolean		noThread;
+	private boolean			noThread;
 
+	/** The list of added files, if any, for event firing purposes. */
+	protected ArrayList		added;
 	/** The list of removed files, if any, for event firing purposes. */
 	protected ArrayList		removed;
 
@@ -235,6 +237,8 @@ public abstract class Importer implements Runnable {
 		if (!canPath.equals(file.getNodePath())) {
 			project.registerCanonicalPath(canPath, file);
 		}
+		if (added == null) added = new ArrayList();
+		added.add(file);
 	} //}}}
 
 	//{{{ run() method
@@ -266,10 +270,7 @@ public abstract class Importer implements Runnable {
 								}
 								ProjectViewer.nodeStructureChangedFlat(project);
 								if (project.hasListeners()) {
-									if (c instanceof ArrayList)
-										fireProjectEvent((ArrayList)c);
-									else
-										fireProjectEvent(new ArrayList(c));
+									fireProjectEvent();
 								}
 							}
 						});
@@ -283,9 +284,27 @@ public abstract class Importer implements Runnable {
 						importNode((VPTNode)i.next());
 					}
 					ProjectViewer.nodeStructureChangedFlat(project);
+					if (project.hasListeners()) {
+						fireProjectEvent();
+					}
 				}
 				if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
 					ProjectManager.getInstance().saveProject(project);
+				}
+			} else {
+				if ((added != null && added.size() > 0) ||
+						(removed != null && removed.size() > 0)) {
+					try {
+						SwingUtilities.invokeAndWait(new Runnable() {
+							public void run() {
+								fireProjectEvent();
+							}
+						});
+					} catch (InterruptedException ie) {
+						// not gonna happen
+					} catch (java.lang.reflect.InvocationTargetException ite) {
+						// not gonna happen
+					}
 				}
 			}
 		} finally {
@@ -310,50 +329,22 @@ public abstract class Importer implements Runnable {
 
 	//{{{ fireProjectEvent(Collection) method
 	/** Fires an event based on the imported file(s). */
-	private void fireProjectEvent(ArrayList added) {
-		if (added.size() == 1 && removed == null) {
-			VPTNode node = (VPTNode) added.iterator().next();
-			if (node.isFile()) {
-				project.fireFileAdded((VPTFile) node);
+	private void fireProjectEvent() {
+		cleanUpLists();
+		if (added == null || added.size() == 0) {
+			if (removed != null && removed.size() > 0) {
+				project.fireFilesChanged(null, removed);
 			}
+		} else if (added.size() == 1 && (removed == null || removed.size() == 0)) {
+			project.fireFileAdded((VPTFile)added.get(0));
 		} else {
-			ArrayList files = new ArrayList();
-			for (Iterator i = added.iterator(); i.hasNext(); ) {
-				VPTNode n = (VPTNode) i.next();
-				if (n.isFile()) {
-					files.add(n);
-				} else if (n.getAllowsChildren()) {
-					collectFiles(n.children(), files);
-				}
-			}
-			if (files.size() == 1 && (removed == null || removed.size() == 0)) {
-				project.fireFileAdded((VPTFile) files.get(0));
-			} else {
-				cleanUpLists(files);
-				if (files.size() > 0 || (removed != null && removed.size() > 0)) {
-					if (files.size() == 0) files = null;
-					project.fireFilesChanged(files, removed);
-				}
-			}
-		}
-	} //}}}
-
-	//{{{ collectFiles(Enumeration, ArrayList) method
-	/** Collects all files in the enumeration and puts them in the given collection. */
-	private void collectFiles(Enumeration e, ArrayList lst) {
-		while (e.hasMoreElements()) {
-			VPTNode n = (VPTNode) e.nextElement();
-			if (n.isFile()) {
-				lst.add(n);
-			} else if (n.getAllowsChildren()) {
-				collectFiles(n.children(), lst);
-			}
+			project.fireFilesChanged(added, removed);
 		}
 	} //}}}
 
 	//{{{ cleanUpLists(ArrayList) method
 	/** Cleans up the lists of added and removed files by deleting duplicates. */
-	private void cleanUpLists(ArrayList added) {
+	private void cleanUpLists() {
 		// its not a very nice algorithm, but, since the lists aren't sorted...
 		if (added != null && removed != null) {
 			VPTNode.VPTNodeComparator c = new VPTProject.VPTNodeComparator();
