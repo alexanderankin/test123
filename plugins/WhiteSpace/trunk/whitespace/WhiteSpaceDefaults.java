@@ -19,6 +19,7 @@
 
 package whitespace;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 
 
@@ -106,5 +107,70 @@ public class WhiteSpaceDefaults
             "white-space.show-whitespace-default", false
         );
     }
+
+
+    public static void bufferCreated(Buffer buffer) {
+        buffer.putBooleanProperty(
+            BlockHighlight.BLOCK_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getBlockHighlightDefault()
+        );
+
+        buffer.putBooleanProperty(
+            FoldHighlight.FOLD_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getFoldHighlightDefault()
+        );
+        buffer.putBooleanProperty(
+            FoldHighlight.FOLD_TOOLTIP_PROPERTY,
+            WhiteSpaceDefaults.getFoldTooltipDefault()
+        );
+
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.SPACE_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getSpaceHighlightDefault()
+        );
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.LEADING_SPACE_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
+        );
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.INNER_SPACE_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
+        );
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.TRAILING_SPACE_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
+        );
+
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.TAB_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getTabHighlightDefault()
+        );
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.LEADING_TAB_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getLeadingTabHighlightDefault()
+        );
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.INNER_TAB_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getInnerTabHighlightDefault()
+        );
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.TRAILING_TAB_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getTrailingTabHighlightDefault()
+        );
+
+        buffer.putBooleanProperty(
+              WhiteSpaceHighlight.WHITESPACE_HIGHLIGHT_PROPERTY
+            , WhiteSpaceDefaults.getWhitespaceHighlightDefault()
+        );
+    }
+
+
+    public static void editorStarted() {
+        Buffer[] buffers = jEdit.getBuffers();
+        for (int i = 0; i < buffers.length; i++) {
+            WhiteSpaceDefaults.bufferCreated(buffers[i]);
+        }
+    }
+
 }
 

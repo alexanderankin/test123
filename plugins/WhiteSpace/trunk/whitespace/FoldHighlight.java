@@ -396,26 +396,6 @@ public class FoldHighlight
     }
 
 
-    public static void bufferCreated(Buffer buffer) {
-        buffer.putBooleanProperty(
-            FOLD_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getFoldHighlightDefault()
-        );
-        buffer.putBooleanProperty(
-            FOLD_TOOLTIP_PROPERTY,
-            WhiteSpaceDefaults.getFoldTooltipDefault()
-        );
-    }
-
-
-    public static void editorStarted() {
-        Buffer[] buffers = jEdit.getBuffers();
-        for (int i = 0; i < buffers.length; i++) {
-            bufferCreated(buffers[i]);
-        }
-    }
-
-
     public static boolean hasSignificantChars(String text) {
         for (int i = text.length() - 1; i >= 0; i--) {
             if (Character.isLetterOrDigit(text.charAt(i))) {

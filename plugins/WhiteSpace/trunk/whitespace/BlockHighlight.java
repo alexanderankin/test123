@@ -259,20 +259,4 @@ public class BlockHighlight
             }
         }
     }
-
-
-    public static void bufferCreated(Buffer buffer) {
-        buffer.putBooleanProperty(
-            BLOCK_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getBlockHighlightDefault()
-        );
-    }
-
-
-    public static void editorStarted() {
-        Buffer[] buffers = jEdit.getBuffers();
-        for (int i = 0; i < buffers.length; i++) {
-            BlockHighlight.bufferCreated(buffers[i]);
-        }
-    }
 }
