@@ -184,15 +184,20 @@ public class SystemShell extends Shell
 	//{{{ getCompletions() method
 	/**
 	 * Returns possible completions for the specified command.
-	 * @param view The current view
-	 * @param currentDirectory The current directory
-	 * @param command The comamnd
+	 * @param console The console instance
+	 * @param command The command
+	 * @since Console 3.6
 	 */
-	public CompletionInfo getCompletions(View view, String currentDirectory,
-		String command)
+	public CompletionInfo getCompletions(Console console, String command)
 	{
 		// lazily initialize aliases and variables
 		init();
+
+		View view = console.getView();
+		String currentDirectory = (console == null
+			? System.getProperty("user.dir")
+			: SystemShell.getConsoleState(console)
+			.currentDirectory);
 
 		final String fileDelimiters = "=\'\" \\"+File.pathSeparator;
 
@@ -366,25 +371,29 @@ public class SystemShell extends Shell
 					buf.append(home);
 					break;
 				}
+
+				boolean ok = true;
+
 				if(i != 0)
 				{
 					c = arg.charAt(i - 1);
-					if(c == '/' || c == File.separatorChar)
-					{
-						buf.append(home);
-						break;
-					}
+					if(c != '/' && c != File.separatorChar)
+						ok = false;
 				}
 				if(i != arg.length() - 1)
 				{
 					c = arg.charAt(i + 1);
-					if(c == '/' || c == File.separatorChar)
-					{
-						buf.append(home);
-						break;
-					}
+					if(c != '/' && c != File.separatorChar)
+						ok = false;
 				}
-				buf.append('~');
+
+				if(ok)
+				{
+					buf.append(home);
+					break;
+				}
+				else
+					buf.append('~');
 				break;
 			//}}}
 			default:

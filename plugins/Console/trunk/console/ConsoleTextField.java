@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2002 Slava Pestov
+ * Copyright (C) 2002, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -34,10 +34,13 @@ import org.gjt.sp.jedit.*;
 public class ConsoleTextField extends HistoryTextField
 {
 	//{{{ ConsoleTextField constructor
-	public ConsoleTextField(View view)
+	public ConsoleTextField(View view, Console console,
+		ConsoleToolBar toolBar)
 	{
 		super(null);
 		this.view = view;
+		this.console = console;
+		this.toolBar = toolBar;
 	} //}}}
 
 	//{{{ getFocusTraversalKeysEnabled() method
@@ -63,17 +66,19 @@ public class ConsoleTextField extends HistoryTextField
 
 	//{{{ Private members
 	private View view;
+	private Console console;
+	private ConsoleToolBar toolBar;
 
 	//{{{ complete() method
 	private void complete()
 	{
-		Console console = (Console)view.getDockableWindowManager()
-			.getDockable("console");
+		Shell shell;
+		if(toolBar != null)
+			shell = toolBar.getShell();
+		else
+			shell = console.getShell();
 
-		Shell shell = console.getShell();
-		Shell.CompletionInfo info = shell.getCompletions(
-			view,(console == null ? System.getProperty("user.dir")
-			: SystemShell.getConsoleState(console).currentDirectory),
+		Shell.CompletionInfo info = shell.getCompletions(console,
 			getText().substring(0,getCaretPosition()));
 
 		if(info == null || info.completions.length == 0)
@@ -98,17 +103,21 @@ public class ConsoleTextField extends HistoryTextField
 				}
 			}
 
+			Console consoleInstance;
+
 			if(console == null)
 			{
 				view.getDockableWindowManager().addDockableWindow("console");
-				console = (Console)view.getDockableWindowManager()
+				consoleInstance = (Console)view.getDockableWindowManager()
 					.getDockable("console");
-				console.getTextField().setText(getText());
-				console.getTextField().setCaretPosition(getCaretPosition());
+				consoleInstance.getTextField().setText(getText());
+				consoleInstance.getTextField().setCaretPosition(getCaretPosition());
 				setText(null);
 			}
+			else
+				consoleInstance = console;
 
-			console.print(console.getInfoColor(),
+			consoleInstance.print(console.getInfoColor(),
 				jEdit.getProperty(
 				"console.completions"));
 
@@ -117,10 +126,10 @@ public class ConsoleTextField extends HistoryTextField
 
 			for(int i = 0; i < info.completions.length; i++)
 			{
-				console.print(null,info.completions[i]);
+				consoleInstance.print(null,info.completions[i]);
 			}
 
-			console.print(console.getInfoColor(),
+			consoleInstance.print(console.getInfoColor(),
 				jEdit.getProperty(
 				"console.completions-end"));
 		}

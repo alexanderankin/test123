@@ -1188,6 +1188,21 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 3.6</emphasis>
+   requires jEdit 4.2pre2 and the ErrorList plugin 1.3.</para>
+
+   <itemizedlist>
+   <listitem><para>Updated for jEdit 4.2 plugin API.
+   </para></listitem>
+   <listitem><para>Strings of the form <command>~foo</command> are no longer
+   expanded to the user's home directory.
+   </para></listitem>
+   <listitem><para>Completion didn't work in cloned console windows.
+   </para></listitem>
+   </itemizedlist>
+
+  </listitem>
+
   <listitem><para><emphasis role="bold">Version 3.5</emphasis>
    requires jEdit 4.1 and the ErrorList plugin 1.2.</para>
 

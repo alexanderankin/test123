@@ -63,7 +63,7 @@ implements EBComponent, Output
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
-		command = new ConsoleTextField(view);
+		command = new ConsoleTextField(view,this,null);
 		command.addActionListener(actionHandler);
 		Dimension dim = command.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
@@ -167,6 +167,12 @@ implements EBComponent, Output
 	public Shell getShell()
 	{
 		return Shell.getShell((String)shellCombo.getSelectedItem());
+	} //}}}
+
+	//{{{ setShell() method
+	public void setShell(Shell shell)
+	{
+		setShell(shell.getName());
 	} //}}}
 
 	//{{{ setShell() method

@@ -23,8 +23,7 @@
 package console;
 
 //{{{ Imports
-import bsh.EvalError;
-import bsh.NameSpace;
+import bsh.*;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import org.gjt.sp.jedit.BeanShell;
@@ -59,12 +58,12 @@ public class ConsoleBeanShell extends Shell
 			ns.setVariable("console",console);
 			ns.setVariable("output",output);
 			Object retVal = BeanShell._eval(view,
-				BeanShell.getNameSpace(),command);
+				ns,command);
 
 			if(retVal != null)
 			{
 				ns.setVariable("retVal",retVal);
-				BeanShell._eval(view,BeanShell.getNameSpace(),
+				BeanShell._eval(view,ns,
 					"print(retVal);");
 				ns.setVariable("retVal",null);
 			}
