@@ -397,10 +397,8 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		JPanel panel = new JPanel(new BorderLayout(6,0));
 
-		String[] shells = Shell.getShellNames();
-		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
-
-		shellCombo = new JComboBox(shells);
+		shellCombo = new JComboBox();
+		updateShellList();
 		shellCombo.addActionListener(new ActionHandler());
 		shellCombo.setRequestFocusEnabled(false);
 
@@ -478,6 +476,14 @@ implements EBComponent, Output, DefaultFocusComponent
 		add(BorderLayout.CENTER,scroller);
 	} //}}}
 
+	//{{{ updateShellList() method
+	private void updateShellList()
+	{
+		String[] shells = Shell.getShellNames();
+		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
+		shellCombo.setModel(new DefaultComboBoxModel(shells));
+	} //}}}
+
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
@@ -496,8 +502,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		if(pmsg.getWhat() == PluginUpdate.LOADED
 			|| pmsg.getWhat() == PluginUpdate.UNLOADED)
 		{
-			String[] shells = Shell.getShellNames();
-			shellCombo.setModel(new DefaultComboBoxModel(shells));
+			updateShellList();
 			shellCombo.setSelectedItem(shell.getName());
 
 			Iterator iter = shellHash.keySet().iterator();

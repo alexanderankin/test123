@@ -226,7 +226,7 @@ class ConsoleProcess
 	{
 		boolean aborted;
 		String input;
-		OutputStream outputStream;
+		BufferedWriter out;
 		String lineSep;
 
 		//{{{ InputThread constructor
@@ -234,7 +234,8 @@ class ConsoleProcess
 		{
 			setName("" + InputThread.class + args);
 			this.input = input;
-			this.outputStream = outputStream;
+			out = new BufferedWriter(new OutputStreamWriter(
+				outputStream));
 			lineSep = System.getProperty("line.separator");
 		} //}}}
 
@@ -243,8 +244,6 @@ class ConsoleProcess
 		{
 			try
 			{
-				BufferedWriter out = new BufferedWriter(
-					new OutputStreamWriter(outputStream));
 				if(input != null)
 				{
 					for(int i = 0; i < input.length(); i++)
@@ -278,14 +277,14 @@ class ConsoleProcess
 				threadDone();
 			}
 		} //}}}
-	
+
 		//{{{ abort() method
 		public void abort()
 		{
 			aborted = true;
 			try
 			{
-				outputStream.close();
+				out.close();
 			}
 			catch(IOException io)
 			{
@@ -297,27 +296,15 @@ class ConsoleProcess
 	class StreamThread extends Thread
 	{
 		boolean aborted;
-		InputStream inputStream;
+		BufferedReader in;
 
 		//{{{ StreamThread constructor
 		StreamThread(InputStream inputStream)
 		{
 			setName("" + StreamThread.class + args);
 			//setPriority(Thread.MIN_PRIORITY + 2);
-			this.inputStream = inputStream;
-		} //}}}
-
-		//{{{ abort() method
-		public void abort()
-		{
-			aborted = true;
-			try
-			{
-				inputStream.close();
-			}
-			catch(IOException io)
-			{
-			}
+			in = new BufferedReader(new InputStreamReader(
+				inputStream));
 		} //}}}
 
 		//{{{ run() method
@@ -325,53 +312,53 @@ class ConsoleProcess
 		{
 			try
 			{
-				BufferedReader in = new BufferedReader(
-					new InputStreamReader(inputStream));
-
 				String line;
 				while((line = in.readLine()) != null)
 				{
-					if(console != null && output != null)
-					{
-						Color color = null;
+					if(console == null || output == null)
+						continue;
 
-						REMatch match = makeEntering.getMatch(line);
+					if(aborted)
+						break;
+
+					Color color = null;
+
+					REMatch match = makeEntering.getMatch(line);
+					if(match == null)
+					{
+						match = makeLeaving.getMatch(line);
 						if(match == null)
 						{
-							match = makeLeaving.getMatch(line);
-							if(match == null)
+							String _currentDirectory;
+							if(currentDirectoryStack.isEmpty())
 							{
-								String _currentDirectory;
-								if(currentDirectoryStack.isEmpty())
-								{
-									// should not happen...
-									_currentDirectory = currentDirectory;
-								}
-								else
-									_currentDirectory = (String)currentDirectoryStack.peek();
-
-								int type = ConsolePlugin.parseLine(
-									console.getView(),line,
-									_currentDirectory,
-									console.getErrorSource());
-								switch(type)
-								{
-								case ErrorSource.ERROR:
-									color = console.getErrorColor();
-									break;
-								case ErrorSource.WARNING:
-									color = console.getWarningColor();
-									break;
-								}
+								// should not happen...
+								_currentDirectory = currentDirectory;
 							}
-							else if(!currentDirectoryStack.isEmpty())
-								currentDirectoryStack.pop();
-						}
-						else
-							currentDirectoryStack.push(match.toString(1));
+							else
+								_currentDirectory = (String)currentDirectoryStack.peek();
 
-						output.print(color,line);
+							int type = ConsolePlugin.parseLine(
+								console.getView(),line,
+								_currentDirectory,
+								console.getErrorSource());
+							switch(type)
+							{
+							case ErrorSource.ERROR:
+								color = console.getErrorColor();
+								break;
+							case ErrorSource.WARNING:
+								color = console.getWarningColor();
+								break;
+							}
+						}
+						else if(!currentDirectoryStack.isEmpty())
+							currentDirectoryStack.pop();
 					}
+					else
+						currentDirectoryStack.push(match.toString(1));
+
+					output.print(color,line);
 				}
 				in.close();
 			}
@@ -395,5 +382,19 @@ class ConsoleProcess
 				threadDone();
 			}
 		} //}}}
+
+		//{{{ abort() method
+		public void abort()
+		{
+			aborted = true;
+			try
+			{
+				in.close();
+			}
+			catch(IOException io)
+			{
+			}
+		} //}}}
+
 	} //}}}
 }
