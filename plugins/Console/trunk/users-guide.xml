@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- Console user's guide -->
-<!-- (C) 2001, 2003 Slava Pestov -->
+<!-- (C) 2001, 2005 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:wrap=hard:folding=sidekick: -->
@@ -302,12 +302,13 @@
   not shown in the console window, and starting other processes has no effect on
   already-running background processes.
  </para>
- <para>
-  The <command>%detach</command> built-in detaches the currently running
-  foreground process and makes it a background process. It will no longer
-  show output in the console window, and a new foreground process can be
-  started without affecting it.
- </para>
+
+<para>
+ Pressing <keycombo><keycap>Control</keycap><keycap>Z</keycap></keycombo>
+ detaches the foreground process. The process continues running in the background,
+ and no longer shows
+ output in the console.
+</para>
 
 </sect1>
 
@@ -1264,6 +1265,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <listitem><para>Commando dialog fields are saved, as long as they do not
    result from a computed evaluation (for example, path names are not saved
    because they are computed from the current buffer's name).
+   </para></listitem>
+   <listitem><para>Pressing <keycombo><keycap>Control</keycap><keycap>Z</keycap></keycombo>
+   detaches the foreground process. The process continues running in the background, and no longer shows
+   output in the console.
    </para></listitem>
    </itemizedlist>
 

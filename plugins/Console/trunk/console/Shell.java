@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2003 Slava Pestov
+ * Copyright (C) 1999, 2005 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -192,6 +192,15 @@ public abstract class Shell
 	 * @param console The console
 	 */
 	public void endOfFile(Console console)
+	{
+	} //}}}
+
+	//{{{ detach() method
+	/**
+	 * Detaches the currently running process.
+	 * @param console The console
+	 */
+	public void detach(Console console)
 	{
 	} //}}}
 

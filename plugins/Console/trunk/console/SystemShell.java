@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2004 Slava Pestov
+ * Copyright (C) 1999, 2005 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -307,6 +307,26 @@ public class SystemShell extends Shell
 			{
 			}
 		}
+	} //}}}
+
+	//{{{ detach() method
+	/**
+	 * Detaches the currently running process.
+	 * @param console The console
+	 */
+	public void detach(Console console)
+	{
+		SystemShell.ConsoleState state = getConsoleState(console);
+
+		ConsoleProcess process = state.process;
+		if(process == null)
+		{
+			console.print(console.getErrorColor(),
+				jEdit.getProperty("console.shell.noproc"));
+			return;
+		}
+
+		process.detach();
 	} //}}}
 
 	//{{{ getCompletions() method
@@ -681,7 +701,6 @@ public class SystemShell extends Shell
 		commands.put("%cd", new SystemShellBuiltIn.cd());
 		commands.put("%clear", new SystemShellBuiltIn.clear());
 		commands.put("%dirstack", new SystemShellBuiltIn.dirstack());
-		commands.put("%detach", new SystemShellBuiltIn.detach());
 		commands.put("%echo", new SystemShellBuiltIn.echo());
 		commands.put("%edit", new SystemShellBuiltIn.edit());
 		commands.put("%env", new SystemShellBuiltIn.env());

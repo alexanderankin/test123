@@ -259,8 +259,11 @@ public class CommandoDialog extends EnhancedDialog
 			String[] names = nameSpace.getVariableNames();
 			for(int i = 0; i < names.length; i++)
 			{
+				Object var = nameSpace.getVariable(names[i]);
+				if(var == Primitive.VOID)
+					continue;
 				jEdit.setProperty(command.getPropertyPrefix() + names[i],
-					(String)nameSpace.getVariable(names[i]));
+					String.valueOf(var));
 			}
 		}
 		catch(UtilEvalError e)
