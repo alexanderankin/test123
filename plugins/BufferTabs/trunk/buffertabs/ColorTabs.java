@@ -461,12 +461,12 @@ public class ColorTabs
             Buffer buffer = (Buffer) parent.getBuffers().elementAt(index);
             String name = buffer.getName();
             // System.out.println( "CES: name=" + name );
-            Color colour = getDefaultColorFor(name);
+            Color color = getDefaultColorFor(name);
 
             try
             {
                parent.getUI().uninstallUI(parent);
-               UIManager.getDefaults().put("TabbedPane.selected", new ColorUIResource(alterColorHighlight(colour)));
+               UIManager.getDefaults().put("TabbedPane.selected", new ColorUIResource(alterColorHighlight(color)));
                parent.getUI().installUI(parent);
             }
             catch (Exception e)
