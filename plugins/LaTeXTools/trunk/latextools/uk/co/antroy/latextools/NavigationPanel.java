@@ -263,7 +263,7 @@ public class NavigationPanel
     navItems.clear();
 		
 		NavigationList nlist = (NavigationList) options.getSelectedItem();
-		File main = new File(LaTeXMacros.getMainFile());
+		File main = LaTeXMacros.getMainTeXFile(buffer);
 		
 		if (main.exists()) {
 			searchInput(main, nlist);

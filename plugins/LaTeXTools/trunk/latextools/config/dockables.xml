@@ -12,5 +12,10 @@
     <DOCKABLE NAME="label-dock">
 			  new uk.co.antroy.latextools.ReferencePanel(view, buffer);
     </DOCKABLE>
+    <DOCKABLE NAME="image-viewer-dock">
+        viewer = uk.co.antroy.latextools.ImageViewer.getInstance();
+        viewer.setImageFromBuffer(textArea, buffer);
+			  viewer.showImage();
+    </DOCKABLE>
 </DOCKABLES>
 

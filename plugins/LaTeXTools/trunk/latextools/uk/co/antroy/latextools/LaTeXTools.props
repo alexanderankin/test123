@@ -1,11 +1,12 @@
 plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
 plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy
-plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.3
+plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.5
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
 
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.02.06.00
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.1=jdk 1.3
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.2=plugin sidekick.SideKickPlugin 0.3
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.3=plugin console.ConsolePlugin 3.7
 
 #4.2 API - activate plugin
 plugin.uk.co.antroy.latextools.LaTeXPlugin.activate=defer
@@ -32,6 +33,15 @@ options.navigation.userdir.label = User Navigation File Dir:
 plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   bibliography-dock \
   label-dock \
+  show-image-under-caret \
+  - \
+  compile \
+  compile-prompt \
+  bibtex \
+  - \
+  set-main \
+  reset-main \
+  show-main \
   - \
   increment-phrase \
   increment-phrase-from-x \
@@ -59,9 +69,20 @@ navigation-dock.nottex = Not a*TeX*Document!
 label-dock.title = Label Navigator
 label-dock.label = Insert Cross-reference...
 
+image-viewer-dock.title = LaTeX Image Viewer
+image-viewer-dock.label = Image Viewer
+show-image-under-caret.title = Display Image Under Caret
+show-image-under-caret.label = Display Image
 navigation.title = LaTeX Navigator
 navigation.label = Navigate Document
 navigation.nottex = Not a*TeX*Document!
+compile.title = Compile  
+compile.label = Compile 
+compile-prompt.title = Compile... 
+compile-prompt.label = Compile...
+bibtex.title = BibTeX
+bibtex.label = BibTeX
+
 
 labels.label=Labels
 labels.title=Find Labels
@@ -82,4 +103,6 @@ tagpair.linenumbers=true
 
 mode.tex.sidekick.parser=latex_parser
 sidekick.parser.latex_parser.label=LaTeX
+
+latex.compile.command=pdflatex
 

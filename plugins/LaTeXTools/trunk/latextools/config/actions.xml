@@ -63,5 +63,34 @@
             uk.co.antroy.latextools.LaTeXMacros.newCommand(view);
  		</CODE>
   </ACTION>
+  
+  <ACTION NAME="show-image-under-caret">
+		<CODE>
+            viewer = uk.co.antroy.latextools.ImageViewer.getInstance();
+            viewer.setImageFromBuffer(textArea, buffer);
+            manager = view.getDockableWindowManager();
+            manager.showDockableWindow("image-viewer-dock");
+            setAccessibility(true);
+            manager.propertiesChanged();
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="compile">
+		<CODE>
+        uk.co.antroy.latextools.LaTeXMacros.compile(view, buffer, false);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="compile-prompt">
+		<CODE>
+        uk.co.antroy.latextools.LaTeXMacros.compile(view, buffer, true);
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="bibtex">
+		<CODE>
+        uk.co.antroy.latextools.LaTeXMacros.bibtex(view, buffer);
+ 		</CODE>
+  </ACTION>
 
 </ACTIONS>
