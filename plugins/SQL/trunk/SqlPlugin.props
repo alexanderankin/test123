@@ -4,19 +4,11 @@ plugin.SqlPlugin.name=SQL
 plugin.SqlPlugin.author=Sergey V. Udaltsov
 plugin.SqlPlugin.version=0.6
 plugin.SqlPlugin.docs=SqlPlugin.html
-#No more jars in deps: take your favorite JDBC driver and put in ~/.jedit/jars
-#plugin.SqlPlugin.jars=classes12.zip
 
-### These tell jEdit what JDK and jEdit version we require
-
-## We require jEdit 2.7pre2, because that is the version which
-## introduced the new action API
 plugin.SqlPlugin.depend.0=jedit 02.07.02.00
-
-## If your plugin uses JDK 1.2 specific stuff, uncomment the next line.
-#plugin.SqlPlugin.depend.1=jdk 1.2
 plugin.SqlPlugin.depend.1=plugin EditBusPlugin 0.9.4
 plugin.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.3
+plugin.SqlPlugin.depend.3=plugin bufferList.BufferListPlugin 0.7
 
 # The menu item label
 sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer
