@@ -10,5 +10,7 @@
 
 - Line guides are now provided
 
+- The number of selected characters is displayed in the status bar
+
 }}}
 :folding=explicit:collapseFolds=2:
