@@ -45,6 +45,7 @@ import projectviewer.ProjectDirectory;
  *  A dialog for configuring the properties of a project.
  *
  *  @author     Marcelo Vanzin
+ *  "     "     Matt Payne (made slight changes for urlRoot
  */
 public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 
@@ -124,15 +125,19 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
     
     private void setProject(Project p) {
         this.project = p;
-        if (p != null) {
+        
+	if (p != null) {
             projName.setText(p.getName());
             projRoot.setText(p.getRoot().getPath());
             projRoot.setToolTipText(projRoot.getText());
+	    projURLRoot.setText(p.getURLRoot());
             setTitle("Edit project: " + p.getName());
         } else {
             projName.setText("");
             projRoot.setText("");
             projRoot.setToolTipText(projRoot.getText());
+	    projURLRoot.setText("http://<projecturl>");
+	    
             setTitle("Create new project");
         }
     }
@@ -179,12 +184,16 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
              return ERROR;
         } 
         
+	String urlRoot = projURLRoot.getText().trim();
+	
         if (project == null) { 
             project = new Project();
             project.setName(name);
             project.setRoot(new ProjectDirectory(root));
-        } else {
+	    project.setURLRoot(urlRoot);
+	} else {
             project.setName(name);
+	    project.setURLRoot(urlRoot);
             if (!root.equals(project.getRoot().getPath())) {
                 project.setRoot(new ProjectDirectory(root));
                 project.setLoaded(false);
@@ -252,7 +261,6 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         gc.gridwidth = 1;
         gridbag.setConstraints(projRoot,gc);
         getContentPane().add(projRoot);
-
 	
 	
         chooseRoot = new JButton("Choose");   
@@ -267,6 +275,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         // URL Root for web projects.  Used to launch files in web browser against webserver
 	
 	label = new JLabel("Web URL Root(optional)");
+	label.setToolTipText("sets the URL for a web project e.g. http://<projecturl>");
 	gc.weightx = 0;
         gc.gridx = 0;
         gc.gridy = 2;
@@ -275,6 +284,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 	
 	getContentPane().add(label);
 	projURLRoot = new JTextField();
+	projURLRoot.setToolTipText("http://<projecturl>");
 	
 	gc.weightx = 1;
         gc.gridx = 1;
@@ -292,7 +302,6 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         gc.gridwidth = 3;
         gridbag.setConstraints(panel,gc);
         getContentPane().add(panel);
-        
         
         updateProject = new JButton("OK");
         updateProject.addActionListener(this);
