@@ -60,9 +60,7 @@ import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.gui.DockableWindow;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.CreateDockableWindow;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.syntax.Token;
@@ -91,7 +89,7 @@ public class TaskListPlugin extends EBPlugin
 	public void createOptionPanes(OptionsDialog od)
 	{
 		OptionGroup optionGroup = new OptionGroup(
-			TaskListPlugin.NAME);
+			jEdit.getProperty("tasklist.label"));
 
 		optionGroup.addOptionPane(new TaskListGeneralOptionPane());
 		optionGroup.addOptionPane(new TaskListTaskTypesOptionPane());
@@ -116,8 +114,6 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public void start()
 	{
-		if(jEdit.getBuild().compareTo("04.00.00.00") < 0)
-			EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
 		Log.log(Log.DEBUG, TaskListPlugin.class, "start() called.");
 		propertiesChanged();
 	}
@@ -147,27 +143,10 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public void handleMessage(EBMessage message)
 	{
-		if(message instanceof CreateDockableWindow)
-		{
-			if(jEdit.getBuild().compareTo("04.00.00.00") > 0)
-				return;
-			CreateDockableWindow cmsg = (CreateDockableWindow)message;
-			if(cmsg.getDockableWindowName().equals(NAME))
-			{
-				// QUESTION: would it make sense to keep a hash of
-				//	views and TaskLists so we can re-use them here?
-
-				Log.log(Log.NOTICE, TaskListPlugin.class,
-					"Creating TaskList window");//##
-
-				TaskList taskList = new TaskList(cmsg.getView());
-				cmsg.setDockableWindow(taskList);
-			}
-		}
 
 		//  NOTE: don't need to parse buffer when they are loaded, just when
 		// they are displayed
-		else if(message instanceof BufferUpdate)
+		if(message instanceof BufferUpdate)
 		{
 			BufferUpdate bu = (BufferUpdate)message;
 			if(bu.getWhat() == BufferUpdate.MODE_CHANGED)
@@ -516,11 +495,12 @@ public class TaskListPlugin extends EBPlugin
 			bufferMap.put(buffer, taskMap);
 		}
 
-		Integer _line = new Integer(task.getLine());
+		Integer _line = new Integer(task.getLineIndex());
 		if(taskMap.get(_line) != null)
 		{
 			Log.log(Log.ERROR, TaskListPlugin.class,
-				"ALREADY A TASK ON LINE " + task.getLine());//##
+				"Already a task on line " + task.getLineIndex()
+				+ "of buffer: " + buffer.getPath());//##
 		}
 
 		//@@tasks.addElement(task);

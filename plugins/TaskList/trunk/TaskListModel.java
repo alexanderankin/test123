@@ -378,7 +378,7 @@ public class TaskListModel extends AbstractTableModel
 			case 0:
 				return task.getIcon();
 			case 1:
-				return new Integer(task.getLine() + 1);
+				return new Integer(task.getLineNumber() + 1);
 			case 2:
 				return task.getText();
 			case 3:
@@ -515,7 +515,7 @@ public class TaskListModel extends AbstractTableModel
 
 			if(result == 0)
 			{
-				result = task1.getLine() - task2.getLine();
+				result = task1.getLineIndex() - task2.getLineIndex();
 			}
 
 			if(!ascending)

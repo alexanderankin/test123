@@ -8,6 +8,7 @@
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="./build"/>
 	<!-- Change the next property to conform to your installation -->
+	<property name="install.dir"  value="G:/Program Files/jEdit 4.0pre4/settings/jars"/>
 	<property name="install.dir"  value="G:/Program Files/jEdit/settings/jars"/>
 
 
@@ -26,7 +27,8 @@
 		<javac
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
-			deprecation="off"
+			deprecation="on"
+			debug="on"
 			includeJavaRuntime="yes"
 		>
 			<classpath refid="project.class.path"/>

@@ -33,12 +33,16 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+
+// imports for jEdit 4.0
+import org.gjt.sp.jedit.buffer.LineElement;
 
 import org.gjt.sp.util.Log;
 
@@ -211,8 +215,7 @@ public class TaskListPopup extends JPopupMenu
 			final View v = view;
 			final Task task = (Task)(list.taskListModel).elementAt(taskNum);
 			final Buffer buffer = task.getBuffer();
-			final Element map = buffer.getDefaultRootElement();
-			final Element line = map.getElement(task.getLine());
+			final LineElement line = new LineElement(buffer, task.getLineNumber());
 			String cmd = evt.getActionCommand();
 			if(cmd.equals("%Dtask"))
 			{
@@ -226,30 +229,21 @@ public class TaskListPopup extends JPopupMenu
 							boolean replace = false;
 							int searchStart = line.getStartOffset();
 							int searchEnd  = line.getEndOffset();
-							Token token = buffer.markTokens(task.getLine()).getFirstToken();
+							Token token = buffer.markTokens(task.getLineNumber()).getFirstToken();
 							Segment testSegment = new Segment();
 							while(token.id != Token.END)
 							{
 								if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 								{
 									int startTask = searchStart + token.length;
-									try {
-
-										Log.log(Log.DEBUG, TaskListPopup.class,
-											"Delete task: getting text at offset "
-											+ String.valueOf(searchStart)
-											+ " to "
-											+ String.valueOf(searchEnd));
-										buffer.getText(searchStart, searchEnd - searchStart, testSegment);
-										Log.log(Log.DEBUG, TaskListPopup.class,
-											"segment is: " + testSegment.toString());
-									}
-									catch(Exception e) {
-										Log.log(Log.ERROR, TaskListPopup.class, e);
-										searchStart += token.length;
-										token = token.next;
-										continue;
-									}
+									Log.log(Log.DEBUG, TaskListPopup.class,
+										"Delete task: getting text at offset "
+										+ String.valueOf(searchStart)
+										+ " to "
+										+ String.valueOf(searchEnd));
+									buffer.getText(searchStart, searchEnd - searchStart, testSegment);
+									Log.log(Log.DEBUG, TaskListPopup.class,
+										"segment is: " + testSegment.toString());
 									int taskLength = task.getText().length();
 									String testString = new String(testSegment.array,
 										testSegment.offset + token.length - taskLength, taskLength);
@@ -290,7 +284,7 @@ public class TaskListPopup extends JPopupMenu
 						else if(line != null)
 						{
 							int tokenStart = line.getStartOffset();
-							Token token = buffer.markTokens(task.getLine()).getFirstToken();
+							Token token = buffer.markTokens(task.getLineNumber()).getFirstToken();
 							while(token.id != Token.END)
 							{
 								if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)

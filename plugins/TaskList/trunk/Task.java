@@ -48,27 +48,60 @@ public class Task
 
 		this.buffer = buffer;
 		this.icon = icon;
-		this.line = line;
+		this.lineIndex = line;
 		this.text = text.replace('\t', (char)187);
-		this.startOffset = startOffset;
-		this.endOffset = endOffset;
+		int posOffset = buffer.getLineStartOffset(line);
+		this.startPosition = buffer.getPosition(posOffset + startOffset);
+		this.endPosition = buffer.getPosition(posOffset + endOffset);
 
 	}
 
 	public Buffer getBuffer(){ return this.buffer; }
 	public Icon getIcon(){ return this.icon; }
 	public String getText(){ return this.text; }
-	public int getLine(){ return this.line; }
+	public int getLineIndex(){ return this.lineIndex; }
 
 	public int getStartOffset()
 	{
-		return startOffset;
+		return startPosition.getOffset()
+			- buffer.getLineStartOffset(getLineNumber());
 	}
 
 	public int getEndOffset()
 	{
-		return endOffset;
+		return endPosition.getOffset()
+			- buffer.getLineStartOffset(getLineNumber());
 	}
+
+	public Position getStartPosition()
+	{
+		return startPosition;
+	}
+
+	public Position getEndPosition()
+	{
+		return endPosition;
+	}
+
+	/**
+	 * Returns the line number of the task, which takes into
+	 * account the changes in the associtaed buffer
+	 *
+	 * @return The line number of the task as found in the associated buffer
+	 */
+
+	public int getLineNumber()
+	{
+		if(startPosition != null)
+		{
+			return buffer.getLineOfOffset(startPos.getOffset());
+		}
+		else
+		{
+			return lineIndex;
+		}
+	}
+
 
 	/**
 	 * Provides String representation of the object.
@@ -77,7 +110,7 @@ public class Task
 	 */
 	public String toString()
 	{
-		return "[" + this.line + "]" + this.text;
+		return "[" + this.getLineNumber() + "]" + this.text;
 	}
 
 	private Buffer buffer;
@@ -88,6 +121,8 @@ public class Task
 	private int startOffset;
 	private int endOffset;
 
-	private int line;
+	private int lineIndex;
+
+	private Position position;
 
 }
