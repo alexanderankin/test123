@@ -1,6 +1,6 @@
 plugin.javainsight.JavaInsightPlugin.name=Java Insight
 plugin.javainsight.JavaInsightPlugin.author=André Kaplan, Dirk Möbius, Kevin A. Burton
-plugin.javainsight.JavaInsightPlugin.version=0.5
+plugin.javainsight.JavaInsightPlugin.version=0.5.1
 plugin.javainsight.JavaInsightPlugin.docs=users-guide.html
 
 # Dependencies
