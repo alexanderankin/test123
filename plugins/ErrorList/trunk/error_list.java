@@ -32,7 +32,8 @@ public class error_list extends EditAction
 	public void actionPerformed(ActionEvent evt)
 	{
 		View view = getView(evt);
-		if(ErrorListPlugin.isErrorListShowing(view))
+		if(evt.getActionCommand() == null
+			&& ErrorListPlugin.isErrorListShowing(view))
 			ErrorListPlugin.getErrorList(view).close();
 		else
 			ErrorListPlugin.getErrorList(view);
