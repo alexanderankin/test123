@@ -23,12 +23,15 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.JOptionPane;
 
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
 import projectviewer.config.ProjectViewerConfig;
+
+import infoviewer.InfoViewerPlugin;
 //}}}
 
 /**
@@ -58,17 +61,21 @@ public class LaunchBrowserAction extends Action {
 		if (p.getURL() != null && file.getNodePath().startsWith(p.getRootPath())) {
 			sURL = p.getURL() + file.getNodePath().substring(p.getRootPath().length() + 1);
 		} else {
-			sURL = file.getNodePath();
+			sURL = "file:" + file.getNodePath();
 		}
 
-		try {
-			Runtime rt = Runtime.getRuntime();
-			rt.exec(new String[] { ProjectViewerConfig.getInstance().getBrowserPath(), sURL });
-		} catch(java.io.IOException ioe) {
-			JOptionPane.showMessageDialog(viewer,
-				jEdit.getProperty("projectviewer.launcher.io_error", new Object[] { ioe.getMessage() }),
-				jEdit.getProperty("projectviewer.error"),
-				JOptionPane.ERROR_MESSAGE);
+		if (ProjectViewerConfig.getInstance().getUseInfoViewer()) {
+			LaunchIV.launch(viewer.getView(), sURL);
+		} else {
+			try {
+				Runtime rt = Runtime.getRuntime();
+				rt.exec(new String[] { ProjectViewerConfig.getInstance().getBrowserPath(), sURL });
+			} catch(java.io.IOException ioe) {
+				JOptionPane.showMessageDialog(viewer,
+					jEdit.getProperty("projectviewer.launcher.io_error", new Object[] { ioe.getMessage() }),
+					jEdit.getProperty("projectviewer.error"),
+					JOptionPane.ERROR_MESSAGE);
+			}
 		}
 	} //}}}
 
@@ -76,6 +83,22 @@ public class LaunchBrowserAction extends Action {
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null && node.isFile());
+	} //}}}
+
+	//{{{ LaunchIV class
+	/**
+	 *	This class is needed because if the InfoViewer references are in the
+	 *	"LaunchBrowserAction" class, we're going to get a NoClassDefFoundError
+	 *	when loading it. Delegating it to another class fixes the issue somehow...
+	 */
+	private static class LaunchIV {
+
+		public static void launch(View view, String url) {
+			InfoViewerPlugin iv = (InfoViewerPlugin)
+				jEdit.getPlugin("infoviewer.InfoViewerPlugin");
+			iv.openURL(view, url);
+		}
+
 	} //}}}
 
 }
