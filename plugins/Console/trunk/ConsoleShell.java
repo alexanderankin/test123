@@ -66,7 +66,8 @@ public class ConsoleShell implements Shell
 					switch(command.charAt(++i))
 					{
 					case 'd':
-						buf.append(buffer.getFile().getParent());
+						buf.append(MiscUtilities.getFileParent(
+							buffer.getPath()));
 						break;
 					case 'u':
 						String path = buffer.getPath();

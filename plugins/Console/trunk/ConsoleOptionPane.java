@@ -142,10 +142,14 @@ public class ConsoleOptionPane extends AbstractOptionPane
 		jEdit.setProperty("console.errorColor",GUIUtilities
 			.getColorHexString(errorColor.getBackground()));
 
-		for(int i = 0; i < errorListModel.getSize(); i++)
+		int i = 0;
+		while(i < errorListModel.getSize())
 		{
 			((Matcher)errorListModel.getElementAt(i)).save(i);
+			i++;
 		}
+		jEdit.unsetProperty("error." + i + ".name");
+		
 	}
 
 	// private members
