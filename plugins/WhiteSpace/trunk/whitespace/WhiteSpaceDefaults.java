@@ -143,7 +143,7 @@ public class WhiteSpaceDefaults
         );
         if (model == null) {
             model = new WhiteSpaceModel();
-            buffer.putProperty(WhiteSpaceModel.MODEL_PROPERTY, model);
+            buffer.setProperty(WhiteSpaceModel.MODEL_PROPERTY, model);
         }
     }
 
