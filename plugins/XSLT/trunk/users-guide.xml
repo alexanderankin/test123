@@ -128,10 +128,10 @@
     </para>
     <para>
       Currently the indent amount is set to 2 spaces per level. Also strip-space
-      (remove whitespace text nodes) and normalize-space (strip leading and 
-      trailing space from text nodes) are both turned on. Currently these 
-      settings can only be changed in the XSLT.props file, which is contained in
-      the XSLT.jar file.
+      (remove whitespace text nodes) is turned on, and normalize-space (remove 
+      leading, trailing and consecutive whitespace from text nodes) is turned 
+      off. Currently these settings can only be changed in the XSLT.props file, 
+      which is contained in the XSLT.jar file.
     </para>
     <para>
       The following improvements should eventually be made to Indent Action.
@@ -149,7 +149,7 @@
   <chapter id="XPathTool">
     <title>XPath Tool</title>
     <para>
-      The XPath Tool allows you to evalute XPath expressions on an open
+      The XPath Tool allows you to evaluate XPath expressions on an open
       XML buffer.  <ulink url="http://www.w3.org/TR/xpath">XPath</ulink>
       is a W3C-specified syntax for addressing portions of an XML document.
     </para>
