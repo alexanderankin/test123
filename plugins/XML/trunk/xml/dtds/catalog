@@ -1,0 +1,43 @@
+-- If your plugin includes DTDs, feel free to add them here and send
+     me a patch. I would like the XML plugin to work out of the box with
+     any XML files other plugins might use. --
+
+SYSTEM "actions.dtd" "jeditresource:/org/gjt/sp/jedit/actions.dtd"
+
+SYSTEM "catalog.dtd" "jeditresource:/org/gjt/sp/jedit/catalog.dtd"
+
+SYSTEM "dockables.dtd" "jeditresource:/org/gjt/sp/jedit/dockables.dtd"
+
+SYSTEM "recent.dtd" "jeditresource:/org/gjt/sp/jedit/recent.dtd"
+
+SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/xmode.dtd"
+
+SYSTEM "plugins.dtd" "jeditresource:/org/gjt/sp/jedit/pluginmgr/plugins.dtd"
+
+SYSTEM "commando.dtd" "jeditresource:/Console.jar!/console/commando/commando.dtd"
+
+SYSTEM "xml-completion-info.dtd" "jeditresource:/XML.jar!/xml/dtds/xml-completion-info.dtd"
+
+-- XHTML DTDs --
+
+PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "jeditresource:/XML.jar!/xml/dtds/xhtml1-frameset.dtd"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" "jeditresource:/XML.jar!/xml/dtds/xhtml1-frameset.dtd"
+
+PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "jeditresource:/XML.jar!/xml/dtds/xhtml1-strict.dtd"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" "jeditresource:/XML.jar!/xml/dtds/xhtml1-strict.dtd"
+
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "jeditresource:/XML.jar!/xml/dtds/xhtml1-transitional.dtd"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" "jeditresource:/XML.jar!/xml/dtds/xhtml1-transitional.dtd"
+
+PUBLIC "-//W3C//ENTITIES Latin 1 for XHTML//EN" "jeditresource:/XML.jar!/xml/dtds/xhtml-lat1.ent"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent" "jeditresource:/XML.jar!/xml/dtds/xhtml-lat1.ent"
+
+PUBLIC "-//W3C//ENTITIES Special for XHTML//EN" "jeditresource:/XML.jar!/xml/dtds/xhtml-special.ent"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml-special.ent" "jeditresource:/XML.jar!/xml/dtds/xhtml-special.ent"
+
+PUBLIC "-//W3C//ENTITIES Symbols for XHTML//EN" "jeditresource:/XML.jar!/xml/dtds/xhtml-symbol.ent"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml-symbol.ent" "jeditresource:/XML.jar!/xml/dtds/xhtml-symbol.ent"
+
+-- Plugin DTDs --
+
+SYSTEM "sqlServerType.dtd" "jeditresource:/SQL.jar!/sqlServerType.dtd"
