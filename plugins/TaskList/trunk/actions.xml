@@ -4,15 +4,6 @@ $Id$
 -->
 
 <ACTIONS>
-	<ACTION NAME="tasklist.toggle">
-		<CODE>
-			view.getDockableWindowManager().toggleDockableWindow("tasklist");
-		</CODE>
-		<IS_SELECTED>
-			return view.getDockableWindowManager().isDockableWindowVisible("tasklist");
-		</IS_SELECTED>
-	</ACTION>
-
 	<ACTION NAME="tasklist.parse-buffer">
 		<CODE>
 			tasklist.TaskListPlugin.parseBuffer(buffer);

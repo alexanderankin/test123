@@ -45,9 +45,6 @@ import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-// imports for jEdit 4.0
-import org.gjt.sp.jedit.buffer.LineElement;
-
 import org.gjt.sp.util.Log;
 //}}}
 

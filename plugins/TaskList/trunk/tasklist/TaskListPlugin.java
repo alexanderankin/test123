@@ -1,6 +1,6 @@
 /*
  * TaskListPlugin.java - TaskList plugin
- * Copyright (C) 2001,2002 Oliver Rutherfurd
+ * Copyright (C) 2001-2003 Oliver Rutherfurd
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -76,33 +76,6 @@ public class TaskListPlugin extends EBPlugin
 	private static boolean highlightTasks = false;
 	private static Hashtable highlights = new Hashtable();
 	private static boolean allowSingleClickSelection = false;
-
-	//{{{ createOptionPanes() method
-	/**
-	 * Creates options panes for jEdit's "Global options" window
-	 * @param od The OptionsDialog in which the oprions panes will be included.
-	 */
-	public void createOptionPanes(OptionsDialog od)
-	{
-		OptionGroup optionGroup = new OptionGroup(NAME);
-
-		optionGroup.addOptionPane(new TaskListGeneralOptionPane());
-		optionGroup.addOptionPane(new TaskListTaskTypesOptionPane());
-		optionGroup.addOptionPane(new TaskListModesOptionPane());
-
-		od.addOptionGroup(optionGroup);
-	}//}}}
-
-	//{{{ createMenuItems() method
-	/**
-	 * Adds menu items to jEdit's "Plugins" menu
-	 * @param menuItems the collection of menu items being assembled by
-	 * the application
-	 */
-	public void createMenuItems(Vector menuItems)
-	{
-		menuItems.addElement(GUIUtilities.loadMenu("tasklist.menu"));
-	}//}}}
 
 	//{{{ start() method
 	/**
@@ -501,15 +474,18 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public synchronized static void parseBuffer(Buffer buffer)
 	{
-		// Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"TaskListPlugin.parseBuffer('" + buffer.getName() + "');");//##
-
 		TaskListPlugin.clearTasks(buffer);
+		boolean doParse = true;
 
 		// if this file's mode is not to be parsed, skip it
 		String mode = buffer.getMode().getName();
-		if(!((Boolean)parseModes.get(mode)).booleanValue()){
 
+		// if mode has been added to jEdit but is not listed
+		// in parseModes, then use default (true)
+		if(parseModes.containsKey(mode))
+			doParse = ((Boolean)parseModes.get(mode)).booleanValue();
+
+		if(!doParse){
 			// fill with empty Hashtable of tasks
 			bufferMap.put(buffer, new Hashtable());
 
@@ -522,6 +498,7 @@ public class TaskListPlugin extends EBPlugin
 
 		int firstLine = 0;
 		int lastLine = buffer.getLineCount();
+
 		for(int lineNum = firstLine; lineNum < lastLine; lineNum++)
 		{
 			int lineStart = buffer.getLineStartOffset(lineNum);
@@ -538,25 +515,21 @@ public class TaskListPlugin extends EBPlugin
 
 			while(token.id != Token.END)
 			{
-				// it looks like in 4.1 Tokens are not longer the whole
-				// string for the type of token, as WHITESPACE and TAB are 
-				// now returned between words, so we need to piece together 
-				// the text for the comment
-				if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
+				// For 4.2 there are no longer TAB and WHITESPACE tokens
+				// but tokens are still broken up by word.
+				if(Token.COMMENT1 <= token.id && token.id <= Token.COMMENT4)
 				{
 					type = token.id;
 					chunkStart = tokenStart;
 					chunkLength = token.length;
-					while(token.next.id == type 
-							|| token.next.id == Token.WHITESPACE 
-							|| token.next.id == Token.TAB)
+					while(token.next.id == type)
 					{
 						token = token.next;
 						chunkLength += token.length;
 					}
 					String text = buffer.getText(chunkStart, chunkLength);
 
-					// NOTE: might want to have task types in an array
+					// NOTE might want to have task types in an array
 					for(int i = 0; i < taskTypes.size(); i++)
 					{
 						TaskType taskType = (TaskType)taskTypes.elementAt(i);
@@ -572,6 +545,7 @@ public class TaskListPlugin extends EBPlugin
 				tokenStart += token.length;
 				token = token.next;
 			}
+
 		}
 
 		// after a buffer has been parsed, bufferMap should contain

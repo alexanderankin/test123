@@ -40,7 +40,6 @@
 
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target"  value="xsltproc"/>
-	<property name="docbook.xsl" value="c:/docbook-xsl-1.60.1"/>
 
 	<property name="jedit.install.dir"  value="../.."/>
 	<property name="src.dir" value="."/>
@@ -94,7 +93,7 @@
 		</jar>
 	</target>
 
-	<target name="docs">
+	<target name="docs" depends="init">
 		<antcall target="docs-${docs-proc.target}"/>
 	</target>
 

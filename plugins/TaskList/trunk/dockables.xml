@@ -5,8 +5,8 @@
 <!-- TaskList dockable window -->
 
 <DOCKABLES>
-  <DOCKABLE NAME="tasklist">
-    new tasklist.TaskList(view);
-  </DOCKABLE>
+	<DOCKABLE NAME="tasklist">
+		new tasklist.TaskList(view);
+	</DOCKABLE>
 </DOCKABLES>
 
