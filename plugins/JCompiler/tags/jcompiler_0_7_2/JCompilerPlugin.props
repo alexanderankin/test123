@@ -1,0 +1,93 @@
+# General options
+
+plugin.JCompilerPlugin.name=Java Compiler
+plugin.JCompilerPlugin.author=Kevin A. Burton, Aziz Sharif, Dominic Stolerman and Dirk Moebius
+plugin.JCompilerPlugin.version=0.7.2
+plugin.JCompilerPlugin.docs=index.html
+
+plugin.JCompilerPlugin.depend.0=jdk 1.1
+plugin.JCompilerPlugin.depend.1=jedit 02.06.07.00
+plugin.JCompilerPlugin.depend.2=plugin EditBusPlugin 0.10
+plugin.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 2.3
+
+
+# Menu options
+
+jcompiler-menu=jcompiler-compile jcompiler-compilepkg jcompiler-rebuildpkg 
+jcompiler-menu.label=Java Compiler
+jcompiler-compile.label=Compile File
+jcompiler-compilepkg.label=Build Package(s)
+jcompiler-rebuildpkg.label=Rebuild Package(s)
+
+
+# User properties
+
+jcompiler.usejavacp=true
+jcompiler.classpath=.
+jcompiler.addpkg2cp=true
+
+jcompiler.javacompile.autosave=no
+jcompiler.javapkgcompile.autosave=no
+
+jcompiler.showdeprecated=false
+jcompiler.specifyoutputdirectory=false
+
+jcompiler.regexp=(.+):(\\d+):(.+)
+jcompiler.regexp.filename=$1
+jcompiler.regexp.lineno=$2
+jcompiler.regexp.message=$3
+
+
+# Miscelleanous
+
+# the compiler method should be public, static and accept a String array as 
+# argument, e.g. "public static void sun.tools.javac.Main.main(String[] args)":
+jcompiler.compiler.class=sun.tools.javac.Main
+jcompiler.compiler.method=main
+
+
+# Option pane properties
+
+options.jcompiler.label=JCompiler
+
+options.jcompiler.sep.general=General options
+options.jcompiler.sep.compiler=Compiler options
+options.jcompiler.sep.classpath=Classpath options
+options.jcompiler.sep.errorparsing=Error parsing options
+
+options.jcompiler.autosave.compile=When compiling a file...
+options.jcompiler.autosave.compilepkg=When building a package...
+options.jcompiler.autosave.current=Save current buffer
+options.jcompiler.autosave.all=Save all buffers
+options.jcompiler.autosave.not=Don't save
+
+options.jcompiler.showdeprecated=Warn about use of deprecated API
+options.jcompiler.specifyoutputdirectory=Use different output directory
+options.jcompiler.pickDirectory=Choose
+options.jcompiler.outputDirectory=Output directory:
+
+options.jcompiler.regexp=Regexp for errors:
+options.jcompiler.regexp.filename=Filename at:
+options.jcompiler.regexp.lineno=Line number at:
+options.jcompiler.regexp.message=Message at:
+
+options.jcompiler.addpkg2cp=Add package of compiled srcfile to CLASSPATH
+options.jcompiler.usejavacp=Use CLASSPATH defined when running jEdit
+options.jcompiler.usejavacp.true=Java System CLASSPATH:
+options.jcompiler.usejavacp.false=JCompiler CLASSPATH:
+
+
+# Messages
+# note that message should always end with an '\n'
+
+jcompiler.msg.info=This is the JCompiler shell.\n\
+	This shell offers three commands:\n\
+	"compile"    -- compiles the current file\n\
+	"compilepkg" -- compiles outdated files in the current package\n\
+	"rebuildpkg" -- compiles all files in the current package.\n
+
+jcompiler.msg.nofiles=No files to compile in directory {0}.\n
+jcompiler.msg.compilefile=Compiling file {0}...\n
+jcompiler.msg.compilefiles=Compiling {0,choice,0#one file|0<{0} files} in directory {1}...\n
+jcompiler.msg.done=Done.\n
+
