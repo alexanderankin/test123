@@ -12,7 +12,7 @@ plugin.SqlPlugin.depend.3=plugin sessions.SessionsPlugin 0.7.2
 plugin.SqlPlugin.depend.4=plugin errorlist.ErrorListPlugin 1.2
 
 # The menu item label
-sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer
+sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer - sql.preprocessors.BeanShellEvaluator sql.preprocessors.VariableSubstitutor
 sqlMenu.label=SQL
 
 sql.publishBuffer.label=Execute Buffer
@@ -100,3 +100,8 @@ sql.emptyType=You should choose the type of the database
 
 vfs.sql.label=Databases
 
+sql.preprocessors.0=sql.preprocessors.BeanShellEvaluator
+sql.preprocessors.1=sql.preprocessors.VariableSubstitutor
+
+sql.preprocessors.BeanShellEvaluator.label=BeanShell preprocessor
+sql.preprocessors.VariableSubstitutor.label=Variable substitution preprocessor

@@ -9,6 +9,26 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
+  <ACTION NAME="sql.preprocessors.BeanShellEvaluator">
+    <CODE>
+      jEdit.setBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled",
+        !jEdit.getBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled" ) );
+      sql.SqlUtils.resetPreprocessors();
+    </CODE>
+    <IS_SELECTED>
+      return jEdit.getBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled" );
+    </IS_SELECTED>
+  </ACTION>
+  <ACTION NAME="sql.preprocessors.VariableSubstitutor">
+    <CODE>
+      jEdit.setBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled",
+        !jEdit.getBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled" ) );
+      sql.SqlUtils.resetPreprocessors();
+    </CODE>
+    <IS_SELECTED>
+      return jEdit.getBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled" );
+    </IS_SELECTED>
+  </ACTION>
   <ACTION NAME="sql.resultSet">
     <CODE>
       view.getDockableWindowManager()

@@ -54,9 +54,6 @@ public class SqlParser
    */
   protected int textLength;
 
-  protected final static String VAR_SUBST_PATTERN = "=?";
-
-
   /**
    *  Constructor for the SqlParser object
    *
@@ -71,15 +68,6 @@ public class SqlParser
 
     setPos( pos );
     logState( "initParser" );
-  }
-
-  
-  /**
-   * Finds out whether we need the variable substitution
-   */
-  public boolean isPrepared( String sqlText )
-  {
-    return sqlText.indexOf ( VAR_SUBST_PATTERN ) > 0;
   }
 
 
@@ -363,27 +351,5 @@ public class SqlParser
   }
 
 
-  /**
-   *  Substitutes the variable with user input
-   */
-  public String substituteVariable( String sqlText, SubstitutionHandler handler )
-    throws SqlEotException
-  {
-    int curPos = sqlText.indexOf( VAR_SUBST_PATTERN );
-
-    while ( curPos > -1 )
-    {
-      sqlText = handler.substituteFragment( sqlText, curPos + 1, 1 );
-      curPos = sqlText.indexOf( VAR_SUBST_PATTERN, curPos + VAR_SUBST_PATTERN.length() );
-    }
-
-    return sqlText;
-  }
-
-
-  public static interface SubstitutionHandler
-  {
-    public String substituteFragment( String text, int pos, int length );
-  }
 }
 
