@@ -97,7 +97,7 @@ public class ProjectPlugin extends EBPlugin {
 
     //parse out the resources as a thread so that when the plugin is 
     //requested there is nothing to do.
-    new ThreadedParser().start();
+    //new ThreadedParser().start();
   }
   
   /**
