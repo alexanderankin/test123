@@ -34,7 +34,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
-
+import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.TreePath;
 
 // Import jEdit
@@ -65,11 +65,14 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 
 	//{{{ Instance Variables
 	private final ProjectViewer viewer;
+	private FileFilter nonProjectFileFilter;
+
 	
 	private JPopupMenu projectMenu;
 	private JMenuItem  properties;
 	private JMenuItem  reimport;
 	private JMenuItem  removeProject;
+	private JMenuItem  addFile;
 	
 	private JPopupMenu dirMenu;
 	private JMenuItem  removeDir;
@@ -175,6 +178,8 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			Project p = viewer.getCurrentProject();
 			p.removeAllFiles();
 			new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
+		} else if (src == addFile) {
+			this.addFileToProject();
 		} else if (src == renameDir) {
 			renameDirectory();
 		} else if (src == renameFile) {
@@ -305,6 +310,10 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		removeProject.addActionListener(this);
 		projectMenu.add(removeProject);
 		
+		addFile = new JMenuItem("Add File");
+		addFile.addActionListener(this);
+		projectMenu.add(addFile);
+		
 		// Directory menu
 		dirMenu = new JPopupMenu();
 		tmp = new JMenuItem("Selected directory");
@@ -378,6 +387,38 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		multipleSelMenu.add(deleteMulti);
 		
 	} //}}}
+	
+	/** Prompt the user to a file, get the current project, and then add the file
+	 *  to the project.
+	 */
+	private void addFileToProject() {
+		javax.swing.JFileChooser chooser = viewer.createFileChooser();
+		if(nonProjectFileFilter == null) {
+			nonProjectFileFilter =
+				new FileFilter() {
+					public String getDescription() {
+						return "Non Project Files";
+					}
+
+					public boolean accept(File f) {
+						return !viewer.getCurrentProject().isProjectFile(f.getAbsolutePath());
+					}
+				};
+		}
+		chooser.setFileFilter(nonProjectFileFilter);
+		//chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
+		if(chooser.showOpenDialog(this.viewer) != javax.swing.JFileChooser.APPROVE_OPTION) {
+			return;
+		}
+
+		viewer.getCurrentProject().importFile(
+				new ProjectFile(chooser.getSelectedFile().getAbsolutePath()));
+
+		if(ProjectViewerConfig.getInstance().getSaveOnChange()) {
+			viewer.getCurrentProject().save();
+		}
+
+	}
 	
 	//{{{ renameFile() method
 	/** 
