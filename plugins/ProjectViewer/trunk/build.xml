@@ -1,15 +1,25 @@
 <!-- ================================================== -->
 <!-- Build file for the Project Viewer plugin           -->
+<!-- :tabSize=2:indentSize=2:noTabs=false:              -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
 <project name="Project Viewer" default="compile" basedir=".">
 
+	<!-- ================================================ -->
+	<!-- Property definitions                             -->
+	<!-- ================================================ -->
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
 
-  <!-- ================================================ -->
-  <!-- Property definitions                             -->
-  <!-- ================================================ -->
-  <property file="build.properties"/>
- 
-  <property name="version"          value="1.0.5"/>
+	<property name="jedit.install.dir" value="../../jEdit"/>
+	<property name="jedit.user.home"  value="${user.home}/.jedit" />
+	<property name="version"          value="2.0.1"/>
+
+	<property name="jar.name"         value="${ant.project.name}.jar"/>
+	<property name="docs-proc.target" value="xsltproc"/>
+
 
   <property name="build"            value="build"/>
   <property name="build.classes"    value="${build}/classes"/>
@@ -20,19 +30,16 @@
   <property name="src"              value="."/>
   <property name="src.main"         value="${src}"/>
   <property name="src.etc"          value="."/>
-  <property name="src.lib"          value="lib"/>
-  
   <property name="docs"             value="docs"/>
 
-  
+  <property name="docbookx_dtd"     value="../XML/xml/dtds/docbookx.dtd" />
+
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
   <path id="default.classpath">
-    <fileset dir="${src.lib}">
-      <include name="*.jar"/>
-    </fileset>
-  </path>
+    <pathelement location="${jedit.install.dir}/jedit.jar" />
+	</path>
 
 
   <!-- ================================================ -->
@@ -41,7 +48,7 @@
 
 
   <!-- ================================================ -->
-  <target name="compile" 
+  <target name="compile"
           description="Compile all main classes">
 
     <mkdir dir="${build.classes}"/>
@@ -52,16 +59,22 @@
            optimize="${compiler.optimize}"
            deprecation="${compiler.deprecation}"
            verbose="${compiler.verbose}"
-           classpathref="default.classpath"
-    >
-      <include name="projectviewer/**"/>
+           classpathref="default.classpath" >
+				<include name="projectviewer/*.java" />
+				<include name="projectviewer/**/*.java" />
     </javac>
 
   </target>
 
+	<!-- ================================================ -->
+  <target name="docs"
+					depends="javadoc"
+          description="Build the User's Guide and Javadoc documentation">
+    <antcall target="docs-${docs-proc.target}"/>
+  </target>
 
   <!-- ================================================ -->
-  <target name="build" 
+  <target name="build"
           depends="compile"
           description="Build the plugin">
 
@@ -72,32 +85,32 @@
         <include name="projectviewer/**/icons/*.gif"/>
       </fileset>
     </copy>
-    
+
     <copy todir="${build.classes}">
       <fileset dir="${src.etc}">
         <include name="actions.xml"/>
         <include name="dockables.xml"/>
       </fileset>
     </copy>
-    
+
     <mkdir dir="${build.docs}"/>
     <copy todir="${build.docs}">
       <fileset dir="${docs}">
-	  	<exclude name="**/*.xml"/>
-	  	<exclude name="**/*.xsl"/>
+	  		<exclude name="**/*.xml"/>
+				<exclude name="**/*.xsl"/>
 	  </fileset>
     </copy>
-    
+
     <jar jarfile="${build}/ProjectViewer.jar">
       <fileset dir="${build.classes}"/>
-	  <fileset dir="${build.docs}"/>
+			<fileset dir="${build.docs}"/>
     </jar>
   </target>
-  
-  
+
+
   <!-- ================================================ -->
   <target name="dist"
-          depends="build"
+          depends="docs,build"
           description="Build a distribution">
     <zip zipfile="ProjectViewer-${version}.zip">
       <fileset dir="${build}">
@@ -114,7 +127,7 @@
           description="Deploy the plugin">
     <unzip src="ProjectViewer-${version}.zip" dest="${jedit.user.home}/jars"/>
   </target>
-  
+
 
   <!-- ================================================ -->
   <target name="javadoc" description="Generates javadoc sourcecode documentation">
@@ -133,35 +146,31 @@
     </exec>
   </target>
 
-  
-  <!-- ================================================ -->
-    <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-    <target name="docs-xsltproc" description="Generate user documentation in hmtl format with xsltproc">
-        <exec executable="xsltproc">
-            <arg value="-o"/>
-            <arg value="docs/users-guide.html"/>
-            <arg value="--catalogs"/>
-            <arg value="docs/users-guide.xsl"/>
-            <arg value="docs/users-guide.xml"/>
-        </exec>
-    </target>
+
+	<!-- ================================================ -->
+  <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+	<target name="docs-xsltproc" description="Generate user documentation in hmtl format with xsltproc">
+  	<exec executable="xsltproc">
+    	<arg value="-o"/>
+			<arg value="docs/users-guide.html"/>
+			<arg value="--catalogs"/>
+			<arg value="docs/users-guide.xsl"/>
+			<arg value="docs/users-guide.xml"/>
+		</exec>
+	</target>
 
 
-    <!-- Generate docs with Xalan tool from xml.apache.org -->
-    <target name="docs-xalan" description="Generate user documentation in hmtl format with xalan">
-        <style
-            style="docs/users-guide.xsl"
-            in="docs/users-guide.xml"
-            out="docs/users-guide.html"
-        >
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs-xalan" description="Generate user documentation in hmtl format with xalan">
+		<style style="docs/users-guide.xsl"
+					 in="docs/users-guide.xml"
+					 out="docs/users-guide.html" >
 			<xmlcatalog>
-        		<dtd 
-            		publicId="-//OASIS//DTD DocBook XML V4.1.2//EN"
-            		location="../XML/xml/dtds/docbookx.dtd"
-				/>
-    		</xmlcatalog>
+				<dtd publicId="-//OASIS//DTD DocBook XML V4.1.2//EN"
+						 location="${docbookx_dtd}" />
+			</xmlcatalog>
 		</style>
-    </target>
+	</target>
 
   <!-- ================================================ -->
   <target name="clean" description="Cleans project directories">
@@ -174,3 +183,4 @@
   </target>
 
 </project>
+
