@@ -4,7 +4,7 @@ plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
 plugin.xml.XmlPlugin.version=0.11
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xercesImpl.jar xmlParserAPIs.jar
-plugin.xml.XmlPlugin.depend.0=jedit 04.01.05.00
+plugin.xml.XmlPlugin.depend.0=jedit 04.01.11.00
 plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 plugin.xml.XmlPlugin.depend.1=plugin sidekick.SideKickPlugin 0.1
 

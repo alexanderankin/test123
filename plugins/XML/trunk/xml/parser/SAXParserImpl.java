@@ -177,8 +177,8 @@ public class SAXParserImpl extends XmlParser
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
 				XSAttributeUse attr = (XSAttributeUse)
-					attributes.getItem(i);
-				boolean required = attr.getIsRequired();
+					attributes.item(i);
+				boolean required = attr.getRequired();
 				XSAttributeDeclaration decl = attr.getAttrDeclaration();
 				String attrName = decl.getName();
 				String value = decl.getConstraintValue();
@@ -207,7 +207,7 @@ public class SAXParserImpl extends XmlParser
 			XSObjectList content = ((XSModelGroup)term).getParticles();
 			for(int i = 0; i < content.getLength(); i++)
 			{
-				XSTerm childTerm = ((XSParticleDecl)content.getItem(i)).getTerm();
+				XSTerm childTerm = ((XSParticleDecl)content.item(i)).getTerm();
 				xsTermToElementDecl(info,childTerm,parent);
 			}
 		}
@@ -285,18 +285,18 @@ public class SAXParserImpl extends XmlParser
 			XSModel model = ((XSGrammar)grammar).toXSModel();
 
 			XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
-			for(int i = 0; i < elements.getMapLength(); i++)
+			for(int i = 0; i < elements.getLength(); i++)
 			{
 				XSElementDeclaration element = (XSElementDeclaration)
-					elements.getItem(i);
+					elements.item(i);
 
 				xsElementToElementDecl(info,element,null);
 			}
 
 			XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
-			for(int i = 0; i < attributes.getMapLength(); i++)
+			for(int i = 0; i < attributes.getLength(); i++)
 			{
-				XSObject attribute = attributes.getItem(i);
+				XSObject attribute = attributes.item(i);
 				System.err.println("look! " + attribute);
 				/* String name = element.getName();
 				boolean empty = true;
