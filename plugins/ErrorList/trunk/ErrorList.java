@@ -215,35 +215,59 @@ public class ErrorList extends JFrame implements EBComponent
 			if(evt.getValueIsAdjusting())
 				return;
 
-			ErrorSource.Error error = (ErrorSource.Error)
+			final ErrorSource.Error error = (ErrorSource.Error)
 				errorList.getSelectedValue();
 
-			Buffer buffer = error.getBuffer();
-			if(buffer == null)
+			final Buffer buffer;
+			if(error.getBuffer() != null)
+				buffer = error.getBuffer();
+			else
 			{
 				buffer = jEdit.openFile(view,null,
-					error.getFilePath(),false,false);
+					error.getFilePath(),false,false,false);
 			}
-			view.setBuffer(buffer);
+
 			view.toFront();
 			view.requestFocus();
 
-			int start = error.getStartOffset();
-			int end = error.getEndOffset();
-
-			int lineNo = error.getLineNumber();
-			Element line = buffer.getDefaultRootElement()
-				.getElement(lineNo);
-			if(line != null)
+			// This hack ensures that the plugin works with
+			// both 2.4 and 2.5
+			Runnable r = new Runnable()
 			{
-				start += line.getStartOffset();
-				if(end == 0)
-					end = line.getEndOffset() - 1;
-				else
-					end += line.getStartOffset();
-			}
+				public void run()
+				{
+					view.setBuffer(buffer);
 
-			view.getTextArea().select(start,end);
+					int start = error.getStartOffset();
+					int end = error.getEndOffset();
+
+					int lineNo = error.getLineNumber();
+					Element line = buffer.getDefaultRootElement()
+						.getElement(lineNo);
+					if(line != null)
+					{
+						start += line.getStartOffset();
+						if(end == 0)
+							end = line.getEndOffset() - 1;
+						else
+							end += line.getStartOffset();
+					}
+
+					view.getTextArea().select(start,end);
+				}
+			};
+
+			try
+			{
+				Class.forName("org.gjt.sp.jedit.io.VFSManager")
+					.getMethod("runInAWTThread",
+					new Class[] { Runnable.class })
+					.invoke(null,new Object[] { r });
+			}
+			catch(Exception e)
+			{
+				r.run();
+			}
 		}
 	}
 
