@@ -23,13 +23,10 @@ package jcompiler.options;
 
 import javax.swing.*;
 import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
-import org.gjt.sp.jedit.options.*;
 import org.gjt.sp.util.Log;
 
 
