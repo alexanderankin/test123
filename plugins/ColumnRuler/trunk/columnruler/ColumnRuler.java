@@ -15,8 +15,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-01-15 19:47:36 $ by $Author: bemace $
- * @version    $Revision: 1.6 $
+ * @modified   $Date: 2004-01-19 19:49:52 $ by $Author: bemace $
+ * @version    $Revision: 1.7 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, CaretListener, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -32,6 +32,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		caretColumn = getCaretColumn();
 		_dndManager = new DnDManager(this);
 	}
+
 	//{{{ paint() method
 	public void paint(Graphics gfx) {
 
@@ -99,6 +100,15 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		//{{{ Draw caret indicator
 		if (caretColumn != -1) {
 			mark(gfx,caretColumn,getCaretColor());
+			if (jEdit.getBooleanProperty("options.columnruler.nextTab")) {
+				int x0 = xOffset + caretColumn * charWidth;
+				int tabSize = _textArea.getBuffer().getTabSize();
+				int dist = tabSize - (caretColumn % tabSize);
+				int x1 = x0 + dist * charWidth;
+				int y = (int) Math.round(lineHeight/2);
+				gfx.setColor(Color.RED);
+				gfx.drawLine(x0,y,x1,y);
+			}
 		}
 		// }}}
 
@@ -153,11 +163,11 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	 * @param c    Description of the Parameter
 	 */
 	private void mark(Graphics gfx, int col, Color c, int width) {
-		int xOffset = getXOffset();
+		int xOffset = PositionCalculator.getXOffset(_textArea);
 		int hScroll = _textArea.getHorizontalOffset();
-		int x = xOffset + col * getCharWidth();
+		int x = xOffset + col * PositionCalculator.getCharWidth(_textArea);
 		gfx.setColor(c);
-		gfx.fillRect(x + hScroll - (width - 1) / 2, 0, width, getLineHeight());
+		gfx.fillRect(x + hScroll - (width - 1) / 2, 0, width, PositionCalculator.getLineHeight(_textArea));
 	}
 
 	//}}}
@@ -382,7 +392,11 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		if (borderSrc.equals("none")) {
 			return null;
 		} else if (borderSrc.equals("gutter")) {
-			return jEdit.getColorProperty("view.gutter.focusBorderColor",Color.BLUE);
+			if (_textArea.equals(jEdit.getActiveView().getTextArea())) {
+				return jEdit.getColorProperty("view.gutter.focusBorderColor",Color.YELLOW);
+			} else {
+				return jEdit.getColorProperty("view.gutter.noFocusBorderColor",Color.BLUE);
+			}
 		} else {
 			return jEdit.getColorProperty("options.columnruler.border.color",Color.BLACK);
 		}
