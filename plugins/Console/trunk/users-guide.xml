@@ -7,7 +7,7 @@
 <!-- :tabSize=1:indentSize=1:noTabs=true: -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "file:///usr/share/xml/docbook-xml/docbookx.dtd">
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
 <book>
 
@@ -792,6 +792,9 @@ the command output will be shown in a new buffer.</para></listitem>
      There was no way to insert a literal <quote>$</quote> in the command line
     </para></listitem>
     <listitem><para>
+     Fixed a bug with the console tool bar's handling of history
+    </para></listitem>
+    <listitem><para>
      Improved error patterns
     </para></listitem>
     <listitem><para>
@@ -803,7 +806,7 @@ the command output will be shown in a new buffer.</para></listitem>
    </itemizedlist>
   </listitem>
 
-  <listitem><para><emphasis role="bold">Version 3.0.2</emphasis>requires jEdit 3.2pre9,
+  <listitem><para><emphasis role="bold">Version 3.0.2</emphasis> requires jEdit 3.2pre9,
    the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para>
 
    <itemizedlist>
@@ -814,7 +817,7 @@ the command output will be shown in a new buffer.</para></listitem>
    </itemizedlist>
   </listitem>
 
-  <listitem><para><emphasis role="bold">Version 3.0.1</emphasis>requires jEdit 3.2pre9,
+  <listitem><para><emphasis role="bold">Version 3.0.1</emphasis> requires jEdit 3.2pre9,
    the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para>
 
    <itemizedlist>
@@ -838,7 +841,7 @@ the command output will be shown in a new buffer.</para></listitem>
    </itemizedlist>
   </listitem>
 
-  <listitem><para><emphasis role="bold">Version 3.0</emphasis>requires jEdit 3.2pre9,
+  <listitem><para><emphasis role="bold">Version 3.0</emphasis> requires jEdit 3.2pre9,
    the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para>
 
    <itemizedlist>
