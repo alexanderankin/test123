@@ -911,13 +911,15 @@ public final class ProjectViewer extends JPanel
 
 			VPTNode f = p.getFile(bu.getBuffer().getPath());
 			File file = (f == null) ? new File(bu.getBuffer().getPath()) : null;
+			String fileParentPath = file.getParent() + File.separator;
+			String projectRootPath = p.getRootPath() + File.separator;
 			boolean ask = (f == null &&
 							config.getAskImport() != ProjectViewerConfig.ASK_NEVER &&
 							bu.getWhat() == BufferUpdate.SAVED &&
 							(dontAsk == null ||
 								config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
 								!dontAsk.contains(bu.getBuffer().getPath())) &&
-							file.getParent().startsWith(p.getRootPath()));
+								fileParentPath.startsWith(projectRootPath));
 
 			// Try to import newly created files to the project
 			if (ask) {
