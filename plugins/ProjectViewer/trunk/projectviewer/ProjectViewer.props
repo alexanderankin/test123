@@ -83,6 +83,12 @@ projectviewer.options.delete_stale.tooltip=If checked, files not found on disk w
 projectviewer.options.save_on_change=Save project data on change
 projectviewer.options.save_on_change.tooltip=If checked, project data will be saved when you import/remove files
 
+projectviewer.options.ask_import=\ \ Ask to import new files?
+projectviewer.options.ask_import.tooltip=Ask to import saved files that are below the project root
+projectviewer.options.ask_import.always=Always
+projectviewer.options.ask_import.once=Once per session
+projectviewer.options.ask_import.never=Never
+
 projectviewer.options.show_toolbar=Show toolbar
 projectviewer.options.show_folders=Show folders tree
 projectviewer.options.show_files=Show files tree
