@@ -65,15 +65,17 @@ XSLTProcessor.Indent.error=Problem occurred during indenting:
 XSLTProcessor.Transform.error.notEnabled=You must first specify your source document and/or stylesheets in the XSLT Processor window.
 
 XPathTool.error.dockFirst=You must dock the XPath Tool before you can perform this action.
-XPathTool.xpathExpression.label=XPath Expression:
+XPathTool.xpathExpression.label=XPath expression:
 XPathTool.evaluate.button=Evaluate
 
-XPathTool.result.xpath.evaluted.label=XPath data type:
+XPathTool.result.xpath.evaluted.label=Data type of result:
 XPathTool.result.xpath.node-set=node-set of size {0}
 XPathTool.result.xpath.not-node-set={0}
 
-XPathTool.result.xpath.string.label=XPath string-value:
-XPathTool.result.summary.label=XPath node-set summary:
+XPathTool.result.string-value.label=Node-set string value:
+XPathTool.result.value.label=Result value:
+
+XPathTool.result.summary.label=Node-set summary:
 XPathTool.result.xml.string.label=Result as XML fragments:
 
 XPath.node.type=Node Type
