@@ -21,14 +21,13 @@
 
 package xslt;
 
-import org.apache.xml.dtm.DTM;
 import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.XPathAPI;
 import org.apache.xpath.objects.XObject;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -60,10 +59,10 @@ public class XPathTool extends JPanel {
 
     expressionPanel = new ExpressionPanel();
     evaluatePanel = new EvaluatePanel();
-    selectedResultPanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.xpath.evaluted.label"));
-    nodeSetResultsPanel = new NodeSetResultsPanel(jEdit.getProperty("XPathTool.result.summary.label"));
-    xmlResultsPanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.xml.string.label"));
-    xpathResultsPanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.xpath.string.label"));
+    dataTypePanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.xpath.evaluted.label"));
+    nodeSetTablePanel = new NodeSetResultsPanel(jEdit.getProperty("XPathTool.result.summary.label"));
+    xmlFragmentsPanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.xml.string.label"));
+    resultValuePanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.value.label"));
 
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.fill = GridBagConstraints.BOTH;
@@ -78,96 +77,29 @@ public class XPathTool extends JPanel {
     gbc = new GridBagConstraints();
     gbc.gridy = 2;
     gbc.fill = GridBagConstraints.BOTH;
-    add(selectedResultPanel, gbc);
+    add(dataTypePanel, gbc);
 
     gbc = new GridBagConstraints();
     gbc.gridy = 3;
-    gbc.weightx = gbc.weighty = 1;
-    gbc.fill = GridBagConstraints.BOTH;
-    add(xpathResultsPanel, gbc);
-
-    gbc = new GridBagConstraints();
-    gbc.gridy = 4;
-    gbc.weightx = gbc.weighty = 1;
-    gbc.fill = GridBagConstraints.BOTH;
-    add(nodeSetResultsPanel, gbc);
-
-    gbc = new GridBagConstraints();
-    gbc.gridy = 5;
     gbc.weightx = 1;
-    gbc.weighty = 4;
+    gbc.weighty = 6;
     gbc.fill = GridBagConstraints.BOTH;
-    add(xmlResultsPanel, gbc);
-  }
-
-  /**
-   * There are seven XPath nodes: root, element,
-   * text, attribute, processing instruction,
-   * namespace, and comment.
-   */
-  private String getNodeTypeString(short nodeType) {
-    switch(nodeType) {
-      case DTM.ATTRIBUTE_NODE:
-        return "attribute";
-      case DTM.COMMENT_NODE:
-        return "comment";
-      case DTM.DOCUMENT_NODE:
-        return "root";
-      case DTM.ELEMENT_NODE:
-        return "element";
-      case DTM.NAMESPACE_NODE:
-        return "notation";
-      case DTM.PROCESSING_INSTRUCTION_NODE:
-        return "processing instruction";
-      case DTM.TEXT_NODE:
-        return "text";
-      default:
-        throw new IllegalArgumentException();
-    }
+    add(getSplitPane(), gbc);
   }
 
 
-  /**
-   * There are seven XPath nodes: root, element,
-   * text, attribute, processing instruction,
-   * namespace, and comment.
-   */
-  private boolean hasNodeName(short nodeType) {
-    switch(nodeType) {
-      case DTM.ATTRIBUTE_NODE:
-      case DTM.ELEMENT_NODE:
-      case DTM.NAMESPACE_NODE:
-      case DTM.PROCESSING_INSTRUCTION_NODE:
-        return true;
-      case DTM.COMMENT_NODE:
-      case DTM.DOCUMENT_NODE:
-      case DTM.TEXT_NODE:
-        return false;
-      default:
-        throw new IllegalArgumentException();
-    }
+  private JSplitPane getSplitPane() {
+    JSplitPane bottomSplitPane = getSplitPane(nodeSetTablePanel, xmlFragmentsPanel, 150);
+    JSplitPane topSplitPane = getSplitPane(resultValuePanel, bottomSplitPane, 150);
+    return topSplitPane;
   }
 
 
-  /**
-   * There are seven XPath nodes: root, element,
-   * text, attribute, processing instruction,
-   * namespace, and comment.
-   */
-  private boolean hasNodeValue(short nodeType) {
-    switch(nodeType) {
-      case DTM.ATTRIBUTE_NODE:
-      case DTM.COMMENT_NODE:
-      case DTM.NAMESPACE_NODE:
-      case DTM.PROCESSING_INSTRUCTION_NODE:
-      case DTM.TEXT_NODE:
-        return true;
-      case DTM.DOCUMENT_NODE:
-      case DTM.ELEMENT_NODE:
-        return false;
-      default:
-        throw new IllegalArgumentException();
-    }
+  private JSplitPane getSplitPane(final JComponent top, final JComponent bottom, final int dividerLocation) {
+    JSplitPane splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, top, bottom);
+    splitPane.setOneTouchExpandable(true);
+    splitPane.setDividerLocation(dividerLocation);
+    return splitPane;
   }
 
 
@@ -195,6 +127,7 @@ public class XPathTool extends JPanel {
     return typeMessage;
   }
 
+
   /**
    * Returns a summary of the evaluation of an XPath expression.
    * Note: there are four data types in the XPath 1.0 data model: node-set, string,
@@ -209,21 +142,18 @@ public class XPathTool extends JPanel {
       tableModel.resetRows(nodeSet.size());
       boolean isNodeWithName = false;
       boolean isNodeWithValue = false;
+      XPathNode node;
 
       for(int i = 0; i < nodeSet.size(); i++) {
-        int nodeHandle = nodeSet.item(i);
-        DTM dtm = nodeSet.getDTM(nodeHandle);
-        short nodeType = dtm.getNodeType(nodeHandle);
+        node = XPathNode.getXPathNode(nodeSet, i);
 
-        isNodeWithName = isNodeWithName || hasNodeName(nodeType);
-        isNodeWithValue = isNodeWithValue || hasNodeValue(nodeType);
+        if(node != null) {
+          isNodeWithName = isNodeWithName || node.hasExpandedName();
+          isNodeWithValue = isNodeWithValue || node.hasDomValue();
 
-        try {
-          tableModel.setNodeType(getNodeTypeString(nodeType), i);
-          tableModel.setNodeName(dtm.getNodeNameX(nodeHandle), i);
-          tableModel.setNodeValue(dtm.getNodeValue(nodeHandle), i);
-        } catch(IllegalArgumentException e) {
-          ;// don't add node details to table model
+          tableModel.setNodeType(node.getType(), i);
+          tableModel.setNodeName(node.getName(), i);
+          tableModel.setNodeValue(node.getDomValue(), i);
         }
       }
 
@@ -236,165 +166,6 @@ public class XPathTool extends JPanel {
       }
     } else {
       tableModel.resetRows(0);
-    }
-  }
-
-
-  /**
-   * @param xObject XObject to be converted
-   * @return xml representing nodes in the supplied XObject, if it had nodes
-   */
-  private String getXmlString(XObject xObject) throws TransformerException {
-    StringBuffer buf = new StringBuffer("");
-
-    if(xObject.getType() == XObject.CLASS_NODESET) {
-      NodeList nodelist = xObject.nodelist();
-
-      for(int i = 0; i < nodelist.getLength(); i++) {
-        Node node = nodelist.item(i);
-        appendNode(node, buf, 0, false);
-
-        if(buf.length() > MAX_CHARS_IN_FRAGMENTS_STRING.intValue()) {
-          String errorMessage = jEdit.getProperty("XPathTool.result.error.largeXmlFragment");
-          String msg = MessageFormat.format(errorMessage, new Object[] {MAX_CHARS_IN_FRAGMENTS_STRING});
-          XSLTPlugin.processException(new UnsupportedOperationException(msg), msg, XPathTool.this);
-          this.isResultTooLarge = true;
-          break;
-        }
-      }
-    }
-
-    return buf.toString();
-  }
-
-
-  private void appendNode(Node node, StringBuffer buf, int indentLevel, boolean insideElement) {
-    short type = node.getNodeType();
-
-    if(type == Node.ELEMENT_NODE) {
-      appendElementNode(node, buf, indentLevel);
-    } else if(type == Node.TEXT_NODE) {
-      appendTextNode(node, buf, insideElement);
-    } else if(type == Node.ATTRIBUTE_NODE) {
-      appendAttributeNode(node, buf);
-    } else if(type == Node.DOCUMENT_NODE) {
-      appendChildNodes(node.getChildNodes(), 0, buf, -1);
-    } else if(type == Node.COMMENT_NODE) {
-      appendCommentNode(node, buf, indentLevel);
-    } else if(type == Node.PROCESSING_INSTRUCTION_NODE) {
-      appendProcessingInstructionNode(node, buf);
-    } else {
-      appendNode(node.getNextSibling(), buf, indentLevel, true);
-    }
-  }
-
-
-  private void appendProcessingInstructionNode(Node node, StringBuffer buf) {
-    buf.append("<?");
-    buf.append(node.getNodeName());
-    buf.append(" ");
-    buf.append(node.getNodeValue());
-    buf.append("?>\n");
-  }
-
-  private void appendCommentNode(Node node, StringBuffer buf, int indentLevel) {
-    appendIndent(buf, indentLevel);
-    buf.append("<!--");
-    buf.append(node.getNodeValue());
-    buf.append("-->\n");
-  }
-
-
-  private void appendTextNode(Node node, StringBuffer buf, boolean insideElement) {
-    String value = node.getNodeValue();
-    String trimmedValue = value.trim();
-    if(trimmedValue.length() > 0 || !insideElement) {
-      buf.append(value);
-    }
-    if(!insideElement) {
-      buf.append('\n');
-    }
-  }
-
-
-  private void appendElementNode(Node node, StringBuffer buf, int indentLevel) {
-    if(indentLevel != NO_INDENT) {
-      appendIndent(buf, indentLevel);
-    }
-    buf.append('<');
-    buf.append(node.getNodeName());
-
-    NamedNodeMap attributes = node.getAttributes();
-
-    if(attributes.getLength() > 0) {
-      for(int i = 0; i < attributes.getLength(); i++) {
-        Attr attribute = (Attr)attributes.item(i);
-        buf.append(' ');
-        appendAttribute(attribute, buf);
-      }
-    }
-
-    NodeList nodes = node.getChildNodes();
-
-    if(nodes.getLength() > 0) {
-      buf.append('>');
-
-      Node firstNode = nodes.item(0);
-
-      if(firstNode.getNodeType() == Node.TEXT_NODE && firstNode.getNodeValue().trim().length() > 0) {
-        appendTextNode(nodes.item(0), buf, true);
-        appendChildNodes(nodes, 1, buf, NO_INDENT);
-      } else {
-        buf.append(System.getProperty("line.separator"));
-        appendChildNodes(nodes, 0, buf, indentLevel);
-        appendIndent(buf, indentLevel);
-      }
-
-      buf.append("</");
-      buf.append(node.getNodeName());
-      buf.append('>');
-
-      if(indentLevel != NO_INDENT) {
-        buf.append(System.getProperty("line.separator"));
-      }
-    } else {
-      buf.append("/>");
-      if(indentLevel != NO_INDENT) {
-        buf.append(System.getProperty("line.separator"));
-      }
-    }
-  }
-
-
-  private void appendIndent(StringBuffer buf, int indentLevel) {
-    for(int i = 0; i < indentLevel; i++) {
-      buf.append("  ");
-    }
-  }
-
-
-  private void appendAttribute(Attr attribute, StringBuffer buf) {
-    buf.append(attribute.getName());
-    buf.append("=\"");
-    buf.append(attribute.getValue());
-    buf.append('\"');
-  }
-
-  private void appendAttributeNode(Node node, StringBuffer buf) {
-    buf.append(node.getNodeName());
-    buf.append("=\"");
-    buf.append(node.getNodeValue());
-    buf.append('\"');
-    buf.append(System.getProperty("line.separator"));
-  }
-
-  private void appendChildNodes(NodeList nodes, int startIndex, StringBuffer buf, int indentLevel) {
-    if(indentLevel != NO_INDENT) {
-      indentLevel++;
-    }
-
-    for(int i = startIndex; i < nodes.getLength(); i++) {
-      appendNode(nodes.item(i), buf, indentLevel, true);
     }
   }
 
@@ -424,13 +195,16 @@ public class XPathTool extends JPanel {
           updateProps();
         }
 
+
         public void insertUpdate(DocumentEvent e) {
           updateProps();
         }
 
+
         public void removeUpdate(DocumentEvent e) {
           updateProps();
         }
+
 
         private void updateProps() {
           String text = ExpressionPanel.this.textArea.getText();
@@ -440,7 +214,13 @@ public class XPathTool extends JPanel {
       add(new JScrollPane(textArea));
     }
 
+
     JTextArea textArea;
+  }
+
+
+  private static boolean isNodeSet(XObject xObject) {
+    return xObject.getType() == XObject.CLASS_NODESET;
   }
 
 
@@ -460,20 +240,23 @@ public class XPathTool extends JPanel {
             Document document = parse(inputSource);
             XObject xObject = XPathAPI.eval(document, expressionPanel.textArea.getText());
 
-            selectedResultPanel.textArea.setText(getDataTypeMessage(xObject));
-            xpathResultsPanel.textArea.setText(xObject.xstr().toString());
-            setNodeSetResults(xObject, nodeSetResultsPanel.tableModel);
+            dataTypePanel.textArea.setText(getDataTypeMessage(xObject));
+            resultValuePanel.textArea.setText(xObject.xstr().toString());
+            resultValuePanel.textArea.setCaretPosition(0);
 
-            String xmlFragments = getXmlString(xObject);
-
-            if(!isResultTooLarge) {
-              xmlResultsPanel.textArea.setText(xmlFragments);
+            if(isNodeSet(xObject)) {
+              resultValuePanel.label.setText(jEdit.getProperty("XPathTool.result.string-value.label"));
             } else {
-              isResultTooLarge = false;
+              resultValuePanel.label.setText(jEdit.getProperty("XPathTool.result.value.label"));
             }
 
-            xpathResultsPanel.textArea.setCaretPosition(0);
-            xmlResultsPanel.textArea.setCaretPosition(0);
+            setNodeSetResults(xObject, nodeSetTablePanel.tableModel);
+            XMLFragmentsString xmlString = new XMLFragmentsString(xObject);
+            xmlFragmentsPanel.textArea.setText(xmlString.getString());
+            xmlFragmentsPanel.textArea.setCaretPosition(0);
+
+          } catch(IllegalStateException e) {
+            XSLTPlugin.processException(e, e.getMessage(), XPathTool.this);
           } catch(SAXException e) { // parse problem
             XSLTPlugin.processException(e, jEdit.getProperty("XPathTool.result.error.bufferUnparseable"), XPathTool.this);
           } catch(IOException e) { // parse problem
@@ -488,6 +271,7 @@ public class XPathTool extends JPanel {
       add(button);
     }
 
+
     /**
      * Creates parser, parses input source and returns resulting document.
      */
@@ -500,6 +284,7 @@ public class XPathTool extends JPanel {
       return document;
     }
 
+
     private JButton button;
   }
 
@@ -508,17 +293,19 @@ public class XPathTool extends JPanel {
    * Panel housing the "Results" label & text area
    */
   class ResultsPanel extends JPanel {
-    ResultsPanel(String label) {
+    ResultsPanel(String labelString) {
       super(new BorderLayout());
 
+      label = new JLabel(labelString);
       textArea = new JTextArea();
       textArea.setEditable(false);
 
-      add(new JLabel(label), BorderLayout.NORTH);
+      add(label, BorderLayout.NORTH);
       add(new JScrollPane(textArea));
     }
 
     JTextArea textArea;
+    JLabel label;
   }
 
 
@@ -537,24 +324,16 @@ public class XPathTool extends JPanel {
       add(tablePane);
     }
 
+
     NodeSetTableModel tableModel;
   }
 
-
-  /** Maximum number of characters in the XML fragments result string */
-  private final static Integer MAX_CHARS_IN_FRAGMENTS_STRING = new Integer(1000000);
-
-  private static final int NO_INDENT = Integer.MIN_VALUE;
-
   private final ExpressionPanel expressionPanel;
   private final EvaluatePanel evaluatePanel;
-  private final ResultsPanel selectedResultPanel;
-  private final NodeSetResultsPanel nodeSetResultsPanel;
-  private final ResultsPanel xmlResultsPanel;
-  private final ResultsPanel xpathResultsPanel;
+  private final ResultsPanel dataTypePanel;
+  private final NodeSetResultsPanel nodeSetTablePanel;
+  private final ResultsPanel xmlFragmentsPanel;
+  private final ResultsPanel resultValuePanel;
   private View view;
-
-  /** Is set to true if the XML fragments string is larger than {@link #MAX_CHARS_IN_FRAGMENTS_STRING} characters long */
-  private boolean isResultTooLarge;
 
 }
