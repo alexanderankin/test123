@@ -1,5 +1,5 @@
 /*
- * SessionChanged.java - EditBus message
+ * SessionChanging.java - EditBus message
  * Copyright (c) 2001 Dirk Moebius, Sergey V. Udaltsov
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
@@ -32,7 +32,7 @@ public final class SessionChanging extends SessionMessage
 
 	SessionChanging(EBComponent source, String newSession)
 	{
-		super(source, newSession, ((SessionManager)source).getCurrentSession());
+		super(source, ((SessionManager)source).getCurrentSession(), newSession);
 	}
 
 }
