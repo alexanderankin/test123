@@ -68,7 +68,6 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 					launcher.closeFile(file);
 				else
 					launcher.showFile(file);
-
 			}
 			else {
 				launcher.launchFile(file);
@@ -91,11 +90,17 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  evt  Description of Parameter
 	 */
 	public void stateChanged(ChangeEvent evt) {
+		//Log.log( Log.DEBUG, this, "stateChanged() -> "+this.toString() );
 		checkState();
-		if(currentTree != null)
-			getCurrentModel().removeTreeModelListener(this);
+		if(currentTree != null) getCurrentModel().removeTreeModelListener(this);
 		currentTree = viewer.getCurrentTree();
 		getCurrentModel().addTreeModelListener(this);
+		/** @todo activate current buffer, but how to get it
+		Object node = getChild(evt.getTreePath(), evt.getChildIndices()[0]);
+		if(!(node instanceof ProjectFile)) return;
+		selectionPath = buildPathFrom(evt, node);
+		currentTree.scrollPathToVisible(selectionPath);
+		*/
 	}
 
 	// TreeSelectionListener interfaces
@@ -116,7 +121,6 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  e  Description of Parameter
 	 */
 	public void treeNodesChanged(TreeModelEvent e) {
-		//Log.log( Log.DEBUG, this, "Tree Node Changed" );
 		handleTreeModelEvent(e);
 	}
 
@@ -236,9 +240,9 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 */
 	private void handleTreeModelEvent(TreeModelEvent evt) {
 		Object node = getChild(evt.getTreePath(), evt.getChildIndices()[0]);
-		if(!(node instanceof ProjectFile))
-			return;
+		if(!(node instanceof ProjectFile)) return;
 		selectionPath = buildPathFrom(evt, node);
+		currentTree.scrollPathToVisible(selectionPath);
 		SwingUtilities.invokeLater(this);
 	}
 

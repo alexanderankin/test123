@@ -16,25 +16,28 @@
  
 VERSION 1.0.5
   [matthew payne]
-     -added functionality to load/store properties for associating external applications 
-     with specific file extentions. For instances, (".gif" can optionally be opened up with gimp or paintshop, 
-     or "css" with w/topstyle).
-     -added menu item to JTree for launching the external apps ("Open with (xxx)")
-     -added new configuration layout pane for external applications
-     
+    - added functionality to load/store properties for associating external
+	  applications with specific file extentions. For instances, (".gif" can
+	  optionally be opened up with gimp or paintshop, or "css" with w/topstyle).
+    - added menu item to JTree for launching the ext. apps ("Open with (xxx)")
+    - added new configuration layout pane for external applications
+  [stefan kost]
+    - fixed NPE in TabNumber to Model resolving code
+	- switching buffers in jEdit now activates them in the trees too.
 
 VERSION 1.0.4
   [stefan kost]
     - open files are now visualized underlined like the filesystem-browser does.
-   - updated docs
+    - updated docs
 
 VERSION 1.0.4
   [dale anson]
     - improved persistence of project files
-    - added ability to designate a file as a "build file" for the project. This will
-    notify registered listeners that may be interested when the project changes.
-    - added persistence of the state of the folder tree so that it will automatically
-    expand to where it was when the project was last used.
+    - added ability to designate a file as a "build file" for the project. This
+	  will notify registered listeners that may be interested when the project
+	  changes.
+    - added persistence of the state of the folder tree so that it will automa-
+	  tically expand to where it was when the project was last used.
  
 VERSION 1.0.4
 

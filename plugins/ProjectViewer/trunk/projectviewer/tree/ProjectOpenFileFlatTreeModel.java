@@ -15,6 +15,11 @@
  */
 package projectviewer.tree;
 
+import java.util.*;
+import javax.swing.tree.TreePath;
+
+import org.gjt.sp.util.Log;
+
 import projectviewer.*;
 import projectviewer.event.*;
 
@@ -37,6 +42,7 @@ public final class ProjectOpenFileFlatTreeModel extends ProjectFileFlatTreeModel
 	 */
 	public void fileOpened(ProjectEvent evt) {
 		addProjectFile(evt.getProjectFile());
+		fireNodeChanged(getPathToRoot(), files.indexOf(evt.getProjectFile()));
 	}
 
 	/** Notification that a project file has been closed.
@@ -67,5 +73,14 @@ public final class ProjectOpenFileFlatTreeModel extends ProjectFileFlatTreeModel
 		return aFile.isOpened();
 	}
 
+   /** Returns the path to the root.
+    *
+    * @return    The pathToRoot value
+    */
+   private TreePath getPathToRoot() {
+      List path = new ArrayList(1);
+      path.add(getRoot());
+      return toTreePath(path);
+   }
 }
 
