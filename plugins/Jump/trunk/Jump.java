@@ -7,6 +7,11 @@ import java.util.*;
 
 import ctags.bg.*;
 
+import projectviewer.*;
+import projectviewer.vpt.*;
+import projectviewer.event.*;
+import java.awt.BorderLayout;
+
 
 public class Jump
 {
@@ -64,6 +69,7 @@ public class Jump
     {
         if (isJumpEnabled() == false) return;
         if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
+        //ProjectViewer.getViewer(jEdit.getActiveView()).add(new TypeTag(jEdit.getActiveView()), BorderLayout.SOUTH);
         JumpPlugin.pja.JumpToTagByInput();
     }
 }

@@ -36,8 +36,12 @@ public class ProjectJumpAction
     private CTAGS_Entry[] entries;
     private JumpEventListener listener;
     private View view;
+    private TypeTag typeTagWindow;
 //}}}
-
+    public ProjectJumpAction()
+    {
+     typeTagWindow = new TypeTag(jEdit.getActiveView());   
+    }
 //{{{ void reloadFile
 /**
 * When file modified and saved, we need to update tags
@@ -144,13 +148,15 @@ public class ProjectJumpAction
             {
                 if (JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view),                   PVActions.getCurrentProject(view)) == true)
                 {
-                    getTagBySelection(GUIUtilities.input(jEdit.getActiveView(),"JumpPlugin.input_tag",""));  
+                     //getTagBySelection(GUIUtilities.input(jEdit.getActiveView(),"JumpPlugin.input_tag","")); 
+                     typeTagWindow._show();
                 }
                 else {return; }
             }
             else
             {
-                getTagBySelection(GUIUtilities.input(jEdit.getActiveView(),"JumpPlugin.input_tag",""));   
+                typeTagWindow._show();
+                //getTagBySelection(GUIUtilities.input(jEdit.getActiveView(),"JumpPlugin.input_tag",""));   
             }
         }
            
@@ -241,7 +247,7 @@ public class ProjectJumpAction
 //}}}
   
 //{{{ void getTagBySelection(
-  private void getTagBySelection(String sel)
+  public void getTagBySelection(String sel)
     {
         if (listener.ctags_buff == null || sel == null)
         {
