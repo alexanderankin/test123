@@ -20,25 +20,65 @@
 
 import java.util.Vector;
 
-import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBPlugin;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+
 import org.gjt.sp.util.Log;
 
+
 public class JDiffPlugin
-    extends EditPlugin
+    extends EBPlugin
 {
     public JDiffPlugin() {
         super();
     }
 
+
     public void start() {
-        jEdit.addAction(new jdiff_open());
+        jEdit.addAction(new toggle_dual_diff());
     }
+
 
     public void stop() {}
 
+
     public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenuItem("jdiff-open"));
+        menuItems.addElement(GUIUtilities.loadMenu("jdiff-menu"));
+    }
+
+
+    public void createOptionPanes(OptionsDialog dialog) {
+        dialog.addOptionPane(new JDiffOptionPane());
+    }
+
+
+    public void handleMessage(EBMessage message) {
+        if (message instanceof PropertiesChanged) {
+            DiffOverview.propertiesChanged();
+            DualDiff.propertiesChanged();
+        } else if (message instanceof EditPaneUpdate) {
+            EditPaneUpdate epu = (EditPaneUpdate) message;
+            EditPane editPane = epu.getEditPane();
+            View view = editPane.getView();
+            if (!DualDiff.isEnabledFor(view)) {
+                return;
+            }
+            if (epu.getWhat() == EditPaneUpdate.CREATED) {
+                DualDiff.removeFrom(view);
+            } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
+                DualDiff.removeFrom(view);
+            } else if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
+                DualDiff.removeFrom(view);
+                DualDiff.addTo(view);
+            } else {
+            }
+        }
     }
 }

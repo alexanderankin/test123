@@ -14,30 +14,75 @@
 
 <UL>
 <LI><A HREF="#general">Presentation</A></LI>
+<LI><A HREF="#usage">Usage</A></LI>
+<LI><A HREF="#options">Options</A></LI>
 <LI><A HREF="#credits">Credits</A></LI>
 <LI><A HREF="#feedback">Feedback</A></LI>
 </UL>
 
-<A NAME="general"></A><H2>Presentation</H2>
+<H2><A NAME="general">Presentation</A></H2>
 
-<P>The goal of this plugin is to have access to JDiff from jEdit.
-JDiff can be found at 
-<A HREF="http://sourceforge.net/projects/jdiff">http://sourceforge.net/projects/jdiff</A>.
-</P>
-
-<A NAME="credits"></A><H2>Credits</H2>
-
+<P>JDiffPlugin integrates JDiff into jEdit. It features:</P>
 <UL>
-    <LI>Slava Pestov <EM>&lt;sp@gjt.org&gt;</EM> is the author of jEdit</LI>
-    <LI>Mike Dillon <EM>&lt;mdillon@gjt.org&gt;</EM> is the author of
-JDiff</LI>
+    <LI>Diff overview
+    <LI>Synchronized scrolling
 </UL>
 
-<A NAME="feedback"></A><H2>Feedback</H2>
 
-<P>Please send feedback to Andr&eacute; Kaplan
-<EM>&lt;akaplan@users.sourceforge.net&gt;</EM>.
+<H2><A NAME="usage">Usage</A></H2>
+
+<OL>
+    <LI>Split your view in two
+    <LI>Edit the buffers you want to compare.
+    <LI>Activate JDiff
+    (<EM>Plugins&nbsp;-&gt;&nbsp;JDiff&nbsp;-&gt;&nbsp;Dual&nbsp;Diff</EM>)
+</OL>
+
+<P><U>Note</U>: if your view is not split in two, JDiff will unsplit the
+view and split it in two.
 </P>
+
+
+<H2><A NAME="options">Options</A></H2>
+
+<P>You can configure whether JDiff should ignore case (default) or not.</P>
+
+<P>You can also configure the color of:</P>
+<UL>
+    <LI>Changed lines
+    <LI>Deleted lines
+    <LI>Inserted lines
+</UL>
+
+
+<H2><A NAME="credits">Credits</A></H2>
+
+<UL>
+    <LI>Mike Dillon <EM>&lt;mdillon@gjt.org&gt;</EM> is the author of JDiff.
+    See
+    <A HREF="http://sourceforge.net/projects/jdiff">http://sourceforge.net/projects/jdiff</A>
+    </LI>
+    <LI>Stuart D. Gathman ported the diff algorithm to Java.
+</UL>
+
+<H2><A NAME="feedback">Feedback</A></H2>
+
+<P>
+The preferred way to send bug reports is to use the Bug Tracker at
+<A HREF="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</A>.
+</P>
+
+<P>
+For feature requests, use the Task Manager at
+<A HREF="http://sourceforge.net/tasks/?group_id=588">http://sourceforge.net/tasks/?group_id=588</A>.
+</P>
+
+<P>Also you can write to:</P>
+<UL>
+<LI>Andr&eacute; Kaplan <EM>&lt;akaplan@users.sourceforge.net&gt;</EM>;
+<LI>or jEdit-users mailing-list <EM>&lt;jedit-users@lists.sourceforge.net&gt;</EM>;
+<LI>or jEdit-devel mailing.list <EM>&lt;jedit-devel@lists.sourceforge.net&gt;</EM>.
+</UL>
 
 </BODY>
 </HTML>

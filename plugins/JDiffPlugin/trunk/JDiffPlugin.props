@@ -2,16 +2,28 @@
 # Author: Andre Kaplan
 plugin.JDiffPlugin.name=JDiff Plugin
 plugin.JDiffPlugin.author=Andre Kaplan
-plugin.JDiffPlugin.version=0.1
+plugin.JDiffPlugin.version=0.2
 plugin.JDiffPlugin.docs=JDiffPlugin.html
 
 # Dependencies
 plugin.JDiffPlugin.depend.0=jdk 1.1
-plugin.JDiffPlugin.depend.1=jedit 02.06.09.00
-plugin.JDiffPlugin.depend.1=class jdiff.JDiff
+plugin.JDiffPlugin.depend.1=jedit 02.06.99.00
 
-jdiff-open.label=JDiff
+# Menu
+jdiff-menu=toggle-dual-diff
 
-jdiff.include-sub-dirs.label=Include subdirectories
-jdiff.include-sub-dirs=false
+jdiff-menu.label=JDiff
+
+toggle-dual-diff.label=Dual diff
+
+jdiff.ignore-case=false
+jdiff.changed-color=\#B2B200
+jdiff.deleted-color=\#B20000
+jdiff.inserted-color=\#00B200
+
+options.jdiff.label=JDiff
+options.jdiff.ignore-case=Ignore case
+options.jdiff.changed-color=Changed lines color:\ 
+options.jdiff.deleted-color=Deleted lines color:\ 
+options.jdiff.inserted-color=Inserted lines color:\ 
 
