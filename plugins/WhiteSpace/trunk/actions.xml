@@ -5,13 +5,14 @@
 <ACTIONS>
     <ACTION NAME="white-space.toggle-block-highlight">
         <CODE>
-             whitespace.BlockHighlight.toggleBlockHighlightFor(view);
+             whitespace.BlockHighlight.toggleHighlightEnabledFor(buffer);
         </CODE>
-        <!--
         <IS_SELECTED>
-             return whitespace.BlockHighlight.isBlockHighlightEnabledFor(view);
+            return buffer.getBooleanProperty(
+                /* whitespace.BlockHighlight.BLOCK_HIGHLIGHT_PROPERTY */
+                "white-space.block-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
