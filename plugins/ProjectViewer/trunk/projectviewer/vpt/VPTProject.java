@@ -332,11 +332,12 @@ public class VPTProject extends VPTNode {
 		if (listeners.size() > 0) {
 			ProjectEvent pe = new ProjectEvent(this, added, removed);
 			for (Iterator i = listeners.iterator(); i.hasNext(); ) {
+				ProjectListener lstnr = (ProjectListener) i.next();
 				if (added != null && added.size() > 0) {
-					((ProjectListener)i.next()).filesAdded(pe);
+					lstnr.filesAdded(pe);
 				}
 				if (removed != null && removed.size() > 0) {
-					((ProjectListener)i.next()).filesRemoved(pe);
+					lstnr.filesRemoved(pe);
 				}
 			}
 		}
