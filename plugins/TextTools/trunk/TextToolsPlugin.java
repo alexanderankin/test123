@@ -28,26 +28,18 @@ public class TextToolsPlugin extends EditPlugin
 {
 	public void start()
 	{
-		jEdit.addAction(new remove_trailing_ws());
 		jEdit.addAction(new sort_lines());
 		jEdit.addAction(new revsort_lines());
 		jEdit.addAction(new reverse());
 		jEdit.addAction(new rot13());
-		jEdit.addAction(new format());
 		jEdit.addAction(new insert_date());
 		jEdit.addAction(new transpose_chars());
 		jEdit.addAction(new transpose_words());
 		jEdit.addAction(new transpose_lines());
 	}
 
-	public void stop()
+	public void createMenuItems(Vector menuItems)
 	{
-	}
-
-	public void createMenuItems(View view, Vector menus, Vector menuItems)
-	{
-		JMenu myMenu = GUIUtilities.loadMenu(view, "text-tools");
-
-		menus.addElement(myMenu);
+		menus.addElement(GUIUtilities.loadMenu("text-tools"));
 	}
 }
