@@ -85,7 +85,7 @@ public class JavaUtils {
 
     /**
      * <p>Given a java class name (ie. org.apache.jetspeed.Test) return a
-     * filename (ie. org/apache/jetspeed/Test.java).</p>
+     * full filename (ie. org/apache/jetspeed/Test.java).</p>
      *
      * Substitutes all dots ('.') by the file separator char and appends
      * ".java" to the resulting name.
