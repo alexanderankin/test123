@@ -1,0 +1,17 @@
+ChangeLog for MacroManager plugin
+=================================
+
+VERSION 1.2
+- show number of downloads in dialog
+- save macros based on the name attribute, rather than url
+- allow saves to custom directories
+
+VERSION 1.1
+- searches now look for words individually (logical AND) rather than as a phrase
+- macro list cached, refresh button added to GUI
+
+VERSION 1.0
+
+* Initial release
+
+
