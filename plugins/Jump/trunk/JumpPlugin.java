@@ -165,7 +165,8 @@ public class JumpPlugin extends EditPlugin
 // QUESTION: Did we need this method at all?
     public static void addProjectBuffer(ProjectBuffer buff)
     {
-        System.out.println("JumpPlugin: addProjectBuffer");
+        System.out.println("JumpPlugin: addProjectBuffer - "+buff);
+        if (buff == null) return;
         projectBuffers.put(buff.PROJECT_NAME, buff);         
     }
 //}}}
@@ -264,6 +265,11 @@ public static boolean hasProjectBuffer(ProjectBuffer buff)
         isListenerAdded = true;
     }
 //}}}
+
+public static void showMsg(String mess)
+{
+    GUIUtilities.message(jEdit.getActiveView(), mess, new Object[0]);   
+}
 
 //}}}
 

@@ -48,3 +48,6 @@ JumpPlugin.ctags.test.fail.message=Test failed. Exception during starting ctags.
 
 JumpPlugin.enable.title=Jump! is disabled now.
 JumpPlugin.enable.message=Jump! is disabled now. To enable it, see Options-Jump!
+
+JumpPlugin.newproject.title=Jump! Generate tags on project
+JumpPlugin.newproject.message=Jump! Now you need to create tag file on project.\nBe patient, it may take up some time.\nIt depend on project size.

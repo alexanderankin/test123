@@ -175,8 +175,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         if (isNewProject == true)
         {
             System.out.println("Can\'t setup project. I'll setup it next time");
-            isNewProject = false;
-            //return;        
+            //isNewProject = false;
         }
         
         if (evt.getProject() != null)
@@ -190,10 +189,17 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             else
             {
             // If this project loaded at first time, we create new ProjectBuffer, and then set it active.
-            ProjectBuffer bu = new ProjectBuffer(evt.getProject().getName());
-            JumpPlugin.addProjectBuffer(bu);
-            JumpPlugin.setActiveProjectBuffer(bu);
-            System.out.println("JumpEventListener: projectLoaded!");
+            if (isNewProject == false)
+                {
+                    ProjectBuffer bu = ProjectBuffer.getProjectBuffer(evt.getProject().getName());
+                    JumpPlugin.addProjectBuffer(bu);
+                    JumpPlugin.setActiveProjectBuffer(bu);
+                    System.out.println("JumpEventListener: projectLoaded!");
+                }
+            else
+            {
+                isNewProject = false;                
+            }
             }
         }
         // if (needReload == true)
