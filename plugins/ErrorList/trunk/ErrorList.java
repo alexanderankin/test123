@@ -665,7 +665,9 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			{
 				setFont(UIManager.getFont("Tree.font"));
 				ErrorSource.Error error = (ErrorSource.Error)nodeValue;
-				setText(error.getErrorMessage());
+				setText((errorSource.getLineNumber() + 1)
+					+ ": " + error.getErrorMessage()
+					.replace('\t',' '));
 				setIcon(error.getErrorType() == ErrorSource.WARNING
 					? WARNING_ICON : ERROR_ICON);
 			}
