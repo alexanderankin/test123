@@ -39,10 +39,15 @@ public class ProjectJumpAction
     private View view;
     private TypeTag typeTagWindow;
 //}}}
+
+//{{{ CONSTRUCTOR
     public ProjectJumpAction()
     {
      typeTagWindow = new TypeTag(jEdit.getActiveView());   
+
     }
+//}}}
+
 //{{{ void reloadFile
 /**
 * When file modified and saved, we need to update tags
@@ -316,18 +321,23 @@ public class ProjectJumpAction
     {
         View view = jEdit.getActiveView();
         
+//{{{ CONSTRUCTOR
         public ProjectTagsJump(View parent, Object[] list, ListModel model, boolean incr_search, String title, int list_width)
         {
             super(parent, list, model, incr_search, title, list_width);
         }
+//}}}
 
+//{{{ void processAction
         public void processAction(Object o)
         {
             JList l = (JList) o;
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true);
         }
+//}}}
         
+//{{{ void updateStatusBar
         public void updateStatusBar(Object o)
         {
 // TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
@@ -335,7 +345,9 @@ public class ProjectJumpAction
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
         }
+//}}}
         
+//{{{ String prepareStatusMsg
     private String prepareStatusMsg(CTAGS_Entry en)
     {
         StringBuffer ret = new StringBuffer();
@@ -363,8 +375,9 @@ public class ProjectJumpAction
         ret.append("file: "+en.getFileName());
         return ret.toString();
     }
+//}}}
         
-        
+//{{{ void keyPressed
         public void keyPressed(KeyEvent evt)
         {
             switch (evt.getKeyCode())
@@ -377,7 +390,8 @@ public class ProjectJumpAction
             }
         }
     }
-    // End of WorkspaceTagsJump
+//}}}
+
 //}}}
 
 //{{{ class ProjectTagsListModel
@@ -411,6 +425,4 @@ public class ProjectJumpAction
 //}}}
 
 }
-// End of ProjectJumpAction.java
-
 //}}}
