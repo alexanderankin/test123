@@ -13,7 +13,6 @@ if(settingsJar != null) {
 	// found it there so reload it.
 	jEdit.removePluginJAR(settingsJar, false);
 	jEdit.addPluginJAR(settingsDir + pluginName + ".jar");
-	Macros.message(view, settingsDir + pluginName.getText() + ".jar has been reloaded");
 }
 else {
 	// not found the plugin in the settings directory so look in the jEdit install dir

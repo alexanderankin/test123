@@ -52,7 +52,7 @@ public final class IconComposer {
 	//}}}
 
 	//{{{ Attributes
-	private final static Icon[][][][] cache= new Icon[1][1][3][2];
+	private final static Icon[][][][][] cache= new Icon[2][1][1][3][2];
 
 	private final static Icon file_state_changed_img=
 		new ImageIcon(IconComposer.class.getResource("/images/file_state_changed.png"));
@@ -64,10 +64,10 @@ public final class IconComposer {
 
 	//{{{ Public methods
 	//{{{ composeIcon(Icon, int, int, int, int) method
-	static Icon composeIcon(Icon baseIcon,int vc_state, int unused, int file_state,int msg_state) {
+	static Icon composeIcon(Icon baseIcon,int base_state,int vc_state, int unused, int file_state,int msg_state) {
 		Icon res=baseIcon;
 		try {
-			if(cache[vc_state][0][file_state][msg_state]==null) {
+			if(cache[base_state][vc_state][0][file_state][msg_state]==null) {
 				Icon tl=null;
 				Icon tr=null;
 				Icon bl=null;
@@ -79,9 +79,9 @@ public final class IconComposer {
 				switch(msg_state) {
 					case IconComposer.msg_state_messages: br=IconComposer.msg_state_messages_img;break;
 				}
-				cache[vc_state][0][file_state][msg_state]=composeIcons(baseIcon,tl,tr,bl,br);
+				cache[base_state][vc_state][0][file_state][msg_state]=composeIcons(baseIcon,tl,tr,bl,br);
 			}
-			res=cache[vc_state][0][file_state][msg_state];
+			res=cache[base_state][vc_state][0][file_state][msg_state];
 		}
 		catch(ArrayIndexOutOfBoundsException ex) {
 			Log.log(Log.WARNING, null, ex);
