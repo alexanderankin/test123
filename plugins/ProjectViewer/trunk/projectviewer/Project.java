@@ -31,6 +31,7 @@ import javax.swing.tree.TreePath;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.util.Log;
 
 import projectviewer.event.*;
@@ -169,6 +170,12 @@ public final class Project implements EBComponent {
 		lastFile = filename;
 	}
 
+	/** Return the last active file of the project */
+	public String getLastFile() {
+		return(lastFile);
+	}
+
+	
 	/** Returns the project root.
 	 *
 	 * @return    The root value
@@ -256,6 +263,14 @@ public final class Project implements EBComponent {
 		return buildFile;
 	}
 
+	public void activateLastFile() {
+		String lastFile=getLastFile();
+		Log.log( Log.DEBUG, this, " activateLastFile() : "+lastFile);
+		ProjectFile file = getFile(lastFile);
+		if(file != null) fireFileOpened(file);
+	}			
+
+	
 	/** Changes the project root, adjusting the current loaded configuration
 	 *  to meet the new root.
 	 *
@@ -510,8 +525,17 @@ public final class Project implements EBComponent {
         }
 		else if (message instanceof EditPaneUpdate) {
             EditPaneUpdate update = (EditPaneUpdate)message;
-            if (update.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
+            if ((update.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) || (update.getWhat().equals(EditPaneUpdate.CREATED))) {
 				ProjectFile file = getFile(update.getEditPane().getBuffer().getPath());
+				Log.log(Log.DEBUG, this, "EditPaneUpdate -> "+file );
+				if(file != null) fireFileOpened(file);				
+			}
+		}
+		else if (message instanceof ViewUpdate) {
+			ViewUpdate update = (ViewUpdate)message;
+			if (update.getWhat().equals(ViewUpdate.EDIT_PANE_CHANGED)) {
+				ProjectFile file = getFile(update.getView().getEditPane().getBuffer().getPath());
+				Log.log(Log.DEBUG, this, "ViewUpdate -> "+file );
 				if(file != null) fireFileOpened(file);				
 			}
 		}

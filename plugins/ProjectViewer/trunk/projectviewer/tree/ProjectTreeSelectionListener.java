@@ -20,6 +20,7 @@ import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.*;
 
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import projectviewer.*;
 
@@ -90,17 +91,13 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  evt  Description of Parameter
 	 */
 	public void stateChanged(ChangeEvent evt) {
-		//Log.log( Log.DEBUG, this, "stateChanged() -> "+this.toString() );
+		Log.log( Log.DEBUG, this, "stateChanged()");
+		
 		checkState();
 		if(currentTree != null) getCurrentModel().removeTreeModelListener(this);
 		currentTree = viewer.getCurrentTree();
 		getCurrentModel().addTreeModelListener(this);
-		/** @todo activate current buffer, but how to get it
-		Object node = getChild(evt.getTreePath(), evt.getChildIndices()[0]);
-		if(!(node instanceof ProjectFile)) return;
-		selectionPath = buildPathFrom(evt, node);
-		currentTree.scrollPathToVisible(selectionPath);
-		*/
+		viewer.getCurrentProject().activateLastFile();
 	}
 
 	// TreeSelectionListener interfaces
@@ -239,10 +236,14 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  evt  Description of Parameter
 	 */
 	private void handleTreeModelEvent(TreeModelEvent evt) {
+		Log.log( Log.DEBUG, this, "handleTreeModelEvent()");
+		
 		Object node = getChild(evt.getTreePath(), evt.getChildIndices()[0]);
 		if(!(node instanceof ProjectFile)) return;
+		viewer.getCurrentProject().setLastFile(((ProjectFile)node).getPath());
 		selectionPath = buildPathFrom(evt, node);
 		currentTree.scrollPathToVisible(selectionPath);
+		currentTree.setSelectionPath(selectionPath);
 		SwingUtilities.invokeLater(this);
 	}
 
