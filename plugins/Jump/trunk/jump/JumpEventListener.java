@@ -24,12 +24,13 @@
 package jump;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Vector;
 
 import jump.ctags.CTAGS_BG;
-import jump.ctags.CTAGS_Buffer;
+import jump.ctags.CtagsBuffer;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
@@ -54,9 +55,9 @@ public class JumpEventListener extends ProjectViewerAdapter
     public String  PROJECT_ROOT = new String();
     public String PROJECT_NAME = new String();
     public File PROJECT_TAGS;
-    public Vector ProjectFiles = new Vector();
+    public ArrayList ProjectFiles = new ArrayList();
 
-    public CTAGS_Buffer ctags_buff;
+    public CtagsBuffer ctags_buff;
     public CTAGS_BG ctags_bg;
     public Jump jump_actions;
 
@@ -257,7 +258,7 @@ public class JumpEventListener extends ProjectViewerAdapter
         String s = System.getProperty("file.separator");
         try
         {    
-        CTAGS_Buffer test_buff = test_bg.getParser().parse(System.getProperty("user.home")+s+".jedit"+s+"properties");
+        CtagsBuffer test_buff = test_bg.getParser().parse(System.getProperty("user.home")+s+".jedit"+s+"properties");
         return true;
         }
         catch (Exception e)

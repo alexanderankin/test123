@@ -24,7 +24,7 @@
 package jump;
     import java.util.Stack;
 
-import jump.ctags.CTAGS_Entry;
+import jump.ctags.CtagsEntry;
 
 
 public class JumpHistory
@@ -38,19 +38,19 @@ public class JumpHistory
     } //}}}
 
     //{{{ add(CTAGS_Entry e)
-    public void add(CTAGS_Entry e)
+    public void add(CtagsEntry e)
     {
         history.push(e);
     } //}}}
 
     //{{{ getPrevious()
-    public CTAGS_Entry getPrevious()
+    public CtagsEntry getPrevious()
     {
        if (history.empty())
        {
            return null;
        }
-       return (CTAGS_Entry)history.pop();
+       return (CtagsEntry)history.pop();
     } //}}}
 
     //{{{ clear()
