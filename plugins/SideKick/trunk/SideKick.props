@@ -18,6 +18,12 @@ sidekick.auto-parse-delay=1500
 # Should the tree selection follow the caret position
 sidekick-tree.follows-caret=true
 
+# Enable completion
+sidekick.complete=true
+
+# Delay after complete trigger before showing completion popup
+sidekick.complete-delay=500
+
 # Menu bar stuff
 sidekick-menu=sidekick-tree \
 	sidekick-prev-asset \
@@ -54,3 +60,5 @@ options.sidekick.buffer-change-parse=Parse on buffer switch and save
 options.sidekick.keystroke-parse=Parse on keystroke
 options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
 options.sidekick.tree-follows-caret=Tree selection follows caret position
+options.sidekick.complete=Show completion popups where possible
+options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
