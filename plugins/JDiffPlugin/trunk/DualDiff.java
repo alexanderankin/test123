@@ -27,18 +27,27 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.StringWriter;
+
 import java.util.Hashtable;
 import java.util.Enumeration;
 
 import javax.swing.*;
+import javax.swing.event.CaretEvent;
+import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
+import jdiff.util.DiffOutput;
+import jdiff.util.DiffNormalOutput;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -47,12 +56,14 @@ import org.gjt.sp.util.Log;
 
 
 public class DualDiff {
-    private static boolean ignoreCase  =
+    private static boolean ignoreCaseDefault  =
         jEdit.getBooleanProperty("jdiff.ignore-case", false);
-    private static boolean ignoreWhitespace =
+    private static boolean ignoreWhitespaceDefault =
         jEdit.getBooleanProperty("jdiff.ignore-whitespace", false);
     private static Hashtable dualDiffs = new Hashtable();
 
+    private boolean ignoreCase;
+    private boolean ignoreWhitespace;
     private View view;
     private EditPane      editPane0;
     private EditPane      editPane1;
@@ -72,6 +83,14 @@ public class DualDiff {
 
 
     public DualDiff(View view) {
+        this(view, ignoreCaseDefault, ignoreWhitespaceDefault);
+    }
+
+
+    public DualDiff(View view, boolean ignoreCase, boolean ignoreWhiteSpace) {
+        this.ignoreCase       = ignoreCase;
+        this.ignoreWhitespace = ignoreWhiteSpace;
+
         this.view = view;
 
         EditPane[] editPanes = this.view.getEditPanes();
@@ -79,11 +98,53 @@ public class DualDiff {
         this.editPane0 = editPanes[0];
         this.editPane1 = editPanes[1];
 
-        Buffer buf0 = this.editPane0.getBuffer();
-        Buffer buf1 = this.editPane1.getBuffer();
-
         this.textArea0 = this.editPane0.getTextArea();
         this.textArea1 = this.editPane1.getTextArea();
+
+        this.box0      = new Box(BoxLayout.X_AXIS);
+        this.vertical0 = this.findVerticalScrollBar(this.textArea0);
+
+        this.box1      = new Box(BoxLayout.X_AXIS);
+        this.vertical1 = this.findVerticalScrollBar(this.textArea1);
+
+        this.initOverviews();
+        this.addOverviews();
+    }
+
+
+    public boolean getIgnoreCase() {
+        return this.ignoreCase;
+    }
+
+
+    public void setIgnoreCase(boolean ignoreCase) {
+        this.ignoreCase = ignoreCase;
+    }
+
+
+    public void toggleIgnoreCase() {
+        this.ignoreCase = !this.ignoreCase;
+    }
+
+
+    public boolean getIgnoreWhitespace() {
+        return this.ignoreWhitespace;
+    }
+
+
+    public void setIgnoreWhitespace(boolean ignoreWhitespace) {
+        this.ignoreWhitespace = ignoreWhitespace;
+    }
+
+
+    public void toggleIgnoreWhitespace() {
+        this.ignoreWhitespace = !this.ignoreWhitespace;
+    }
+
+
+    private void initOverviews() {
+        Buffer buf0 = this.editPane0.getBuffer();
+        Buffer buf1 = this.editPane1.getBuffer();
 
         FileLine[] fileLines0 = this.getFileLines(buf0);
         FileLine[] fileLines1 = this.getFileLines(buf1);
@@ -97,14 +158,11 @@ public class DualDiff {
         this.diffOverview0 = new DiffLocalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
         this.diffOverview1 = new DiffGlobalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
 
-        this.box0      = new Box(BoxLayout.X_AXIS);
-        this.vertical0 = this.findVerticalScrollBar(this.textArea0);
-
-        this.box1      = new Box(BoxLayout.X_AXIS);
-        this.vertical1 = this.findVerticalScrollBar(this.textArea1);
-
         this.adjustHandler = new AdjustHandler();
+    }
 
+
+    private void addOverviews() {
         this.textArea0.remove(this.vertical0);
         this.box0.add(this.diffOverview0);
         this.box0.add(this.vertical0);
@@ -118,6 +176,39 @@ public class DualDiff {
         // JEditTextArea.RIGHT is private...
         // "right" == JEditTextArea.RIGHT
         this.textArea1.add("right", this.box1);
+    }
+
+
+    private void removeOverviews() {
+        this.box0.remove(this.vertical0);
+        this.box0.remove(this.diffOverview0);
+        this.textArea0.remove(this.box0);
+        // JEditTextArea.RIGHT is private...
+        // "right" == JEditTextArea.RIGHT
+        this.textArea0.add("right", this.vertical0);
+
+        this.box1.remove(this.vertical1);
+        this.box1.remove(this.diffOverview1);
+        this.textArea1.remove(this.box1);
+        // JEditTextArea.RIGHT is private...
+        // "right" == JEditTextArea.RIGHT
+        this.textArea1.add("right", this.vertical1);
+    }
+
+
+    private void refresh() {
+        this.removeHandlers();
+        this.disableHighlighters();
+
+        this.removeOverviews();
+        this.initOverviews();
+        this.addOverviews();
+
+        this.enableHighlighters();
+        this.addHandlers();
+
+        this.diffOverview0.synchroScrollRight();
+        this.diffOverview1.repaint();
     }
 
 
@@ -176,10 +267,12 @@ public class DualDiff {
         this.vertical0.addAdjustmentListener((AdjustmentListener) this.adjustHandler);
         this.vertical0.addMouseListener((MouseListener) this.adjustHandler);
         this.textArea0.addFocusListener((FocusListener) this.adjustHandler);
+        this.textArea0.addCaretListener((CaretListener) this.adjustHandler);
 
         this.vertical1.addAdjustmentListener((AdjustmentListener) this.adjustHandler);
         this.vertical1.addMouseListener((MouseListener) this.adjustHandler);
         this.textArea1.addFocusListener((FocusListener) this.adjustHandler);
+        this.textArea1.addCaretListener((CaretListener) this.adjustHandler);
     }
 
 
@@ -187,14 +280,16 @@ public class DualDiff {
         this.vertical0.removeAdjustmentListener((AdjustmentListener) this.adjustHandler);
         this.vertical0.removeMouseListener((MouseListener) this.adjustHandler);
         this.textArea0.removeFocusListener((FocusListener) this.adjustHandler);
+        this.textArea0.removeCaretListener((CaretListener) this.adjustHandler);
 
         this.vertical1.removeAdjustmentListener((AdjustmentListener) this.adjustHandler);
         this.vertical1.removeMouseListener((MouseListener) this.adjustHandler);
         this.textArea1.removeFocusListener((FocusListener) this.adjustHandler);
+        this.textArea1.removeCaretListener((CaretListener) this.adjustHandler);
     }
 
 
-    public FileLine[] getFileLines(Buffer buffer) {
+    private FileLine[] getFileLines(Buffer buffer) {
         Element map = buffer.getDefaultRootElement();
 
         FileLine[] lines = new FileLine[map.getElementCount()];
@@ -311,12 +406,11 @@ public class DualDiff {
 
 
     public static void editPaneBufferChanged(View view, EditPane editPane) {
-        DualDiff.removeFrom(view);
-        DualDiff.addTo(view);
+        DualDiff.refreshFor(view);
     }
 
 
-    public static void toggle(View view) {
+    public static void toggleFor(View view) {
         EditPane[] editPanes = view.getEditPanes();
         if (editPanes.length != 2) {
             Log.log(Log.DEBUG, DualDiff.class, "Splitting The view has to be split in two");
@@ -337,10 +431,58 @@ public class DualDiff {
     }
 
 
-    public static void refresh(View view) {
-        if (DualDiff.isEnabledFor(view)) {
-            DualDiff.removeFrom(view);
-            DualDiff.addTo(view);
+    public static void refreshFor(View view) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+        if (dualDiff != null) {
+            dualDiff.refresh();
+
+            view.invalidate();
+            view.validate();
+        } else {
+            view.getToolkit().beep();
+        }
+    }
+
+
+    public static boolean getIgnoreCaseFor(View view) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+        if (dualDiff == null) {
+            return false;
+        }
+
+        return dualDiff.getIgnoreCase();
+    }
+
+
+    public static void toggleIgnoreCaseFor(View view) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+        if (dualDiff != null) {
+            dualDiff.toggleIgnoreCase();
+            dualDiff.refresh();
+
+            view.invalidate();
+            view.validate();
+        } else {
+            view.getToolkit().beep();
+        }
+    }
+
+
+    public static boolean getIgnoreWhitespaceFor(View view) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+        if (dualDiff == null) {
+            return false;
+        }
+
+        return dualDiff.getIgnoreWhitespace();
+    }
+
+
+    public static void toggleIgnoreWhitespaceFor(View view) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+        if (dualDiff != null) {
+            dualDiff.toggleIgnoreWhitespace();
+            dualDiff.refresh();
 
             view.invalidate();
             view.validate();
@@ -380,6 +522,68 @@ public class DualDiff {
             dualDiff.prevDiff1();
         } else {
             editPane.getToolkit().beep();
+        }
+    }
+
+
+    public static void diffNormalOutput(View view) {
+        if (!DualDiff.isEnabledFor(view)) {
+            view.getToolkit().beep();
+            return;
+        }
+
+        DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+
+        // Generate the script
+        Buffer buf0 = dualDiff.editPane0.getBuffer();
+        Buffer buf1 = dualDiff.editPane1.getBuffer();
+
+        FileLine[] fileLines0 = dualDiff.getFileLines(buf0);
+        FileLine[] fileLines1 = dualDiff.getFileLines(buf1);
+
+        Diff d = new Diff(fileLines0, fileLines1);
+        Diff.change script = d.diff_2(false);
+
+        // Files are identical: return
+        if (script == null) {
+            GUIUtilities.message(view, "jdiff.identical-files", null);
+            return;
+        }
+
+        // Generate the normal output
+        StringWriter sw = new StringWriter();
+        DiffOutput diffOutput = new DiffNormalOutput(fileLines0, fileLines1);
+        diffOutput.setOut(new BufferedWriter(sw));
+        diffOutput.setLineSeparator("\n");
+        try {
+            diffOutput.writeScript(script);
+        } catch (IOException ioe) {
+            Log.log(Log.DEBUG, DualDiff.class, ioe);
+        }
+
+        // Get/create the output view and create a new buffer
+        View outputView = jEdit.getFirstView();
+        for (; outputView != null; outputView = outputView.getNext()) {
+            if (!DualDiff.isEnabledFor(outputView)) {
+                break;
+            }
+        }
+        if (outputView == null) {
+            outputView = jEdit.newView(view, view.getBuffer());
+        }
+        Buffer outputBuffer = jEdit.newFile(outputView);
+
+        // Insert the normal output into the buffer
+        try {
+            String s = sw.toString();
+            outputBuffer.insertString(0, s, null);
+            // When the string ends with a newline, the generated buffer
+            // adds one extra newline so we remove it
+            if (s.endsWith("\n") && outputBuffer.getLength() > 0) {
+                outputBuffer.remove(outputBuffer.getLength() - 1, 1);
+            }
+        } catch (BadLocationException ble) {
+            Log.log(Log.DEBUG, DualDiff.class, ble);
         }
     }
 
@@ -495,7 +699,6 @@ public class DualDiff {
         dualDiff.addHandlers();
 
         dualDiff.diffOverview0.synchroScrollRight();
-
         dualDiff.diffOverview1.repaint();
 
         dualDiffs.put(view, dualDiff);
@@ -508,15 +711,7 @@ public class DualDiff {
             dualDiff.removeHandlers();
             dualDiff.disableHighlighters();
 
-            dualDiff.textArea0.remove(dualDiff.box0);
-            // JEditTextArea.RIGHT is private...
-            // "right" == JEditTextArea.RIGHT
-            dualDiff.textArea0.add("right", dualDiff.vertical0);
-
-            dualDiff.textArea1.remove(dualDiff.box1);
-            // JEditTextArea.RIGHT is private...
-            // "right" == JEditTextArea.RIGHT
-            dualDiff.textArea1.add("right", dualDiff.vertical1);
+            dualDiff.removeOverviews();
 
             dualDiffs.remove(view);
         }
@@ -524,7 +719,7 @@ public class DualDiff {
 
 
     private class AdjustHandler
-            implements AdjustmentListener, FocusListener, MouseListener
+            implements AdjustmentListener, CaretListener, FocusListener, MouseListener
     {
         private Object source = null;
 
@@ -560,6 +755,15 @@ public class DualDiff {
                 SwingUtilities.invokeLater(this.syncWithRight);
             } else if (this.source == DualDiff.this.vertical1) {
                 SwingUtilities.invokeLater(this.syncWithLeft);
+            } else {}
+        }
+
+
+        public void caretUpdate(CaretEvent e) {
+            if (e.getSource() == DualDiff.this.textArea0) {
+                this.source = DualDiff.this.vertical0;
+            } else if (e.getSource() == DualDiff.this.textArea1) {
+                this.source = DualDiff.this.vertical1;
             } else {}
         }
 
@@ -603,20 +807,16 @@ public class DualDiff {
 
 
     public static void propertiesChanged() {
-        boolean newIgnoreCase =
+        boolean newIgnoreCaseDefault =
             jEdit.getBooleanProperty("jdiff.ignore-case", false);
-        boolean newIgnoreWhitespace =
+        boolean newIgnoreWhitespaceDefault =
             jEdit.getBooleanProperty("jdiff.ignore-whitespace", false);
 
-        if (newIgnoreCase != ignoreCase || newIgnoreWhitespace != ignoreWhitespace) {
-            ignoreCase       = newIgnoreCase;
-            ignoreWhitespace = newIgnoreWhitespace;
-            // Propagate the changes to all views
-            for (Enumeration e = dualDiffs.keys(); e.hasMoreElements(); ) {
-                View view = (View) e.nextElement();
-                DualDiff.removeFrom(view);
-                DualDiff.addTo(view);
-            }
+        if (   (newIgnoreCaseDefault != ignoreCaseDefault)
+            || (newIgnoreWhitespaceDefault != ignoreWhitespaceDefault)
+        ) {
+            ignoreCaseDefault       = newIgnoreCaseDefault;
+            ignoreWhitespaceDefault = newIgnoreWhitespaceDefault;
         }
     }
 }

@@ -5,10 +5,37 @@
 <ACTIONS>
     <ACTION NAME="toggle-dual-diff">
         <CODE>
-            DualDiff.toggle(view);
+            DualDiff.toggleFor(view);
         </CODE>
         <IS_SELECTED>
             return DualDiff.isEnabledFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.refresh-diff">
+        <CODE>
+            DualDiff.refreshFor(view);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.toggle-ignore-case">
+        <CODE>
+            DualDiff.toggleIgnoreCaseFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return DualDiff.getIgnoreCaseFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.toggle-ignore-whitespace">
+        <CODE>
+            DualDiff.toggleIgnoreWhitespaceFor(view);
+        </CODE>
+        <IS_SELECTED>
+            return DualDiff.getIgnoreWhitespaceFor(view);
         </IS_SELECTED>
     </ACTION>
 
@@ -27,9 +54,9 @@
     </ACTION>
 
 
-    <ACTION NAME="jdiff.refresh-diff">
+    <ACTION NAME="jdiff.diff-normal-output">
         <CODE>
-            DualDiff.refresh(view);
+            DualDiff.diffNormalOutput(view);
         </CODE>
     </ACTION>
 </ACTIONS>
