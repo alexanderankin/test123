@@ -154,7 +154,13 @@ public class XPathNode {
 
 
   public String getDomValue() {
-    return this.dtm.getNodeValue(this.nodeHandle);
+    String domValue = this.dtm.getNodeValue(this.nodeHandle);
+
+    if(this.nodeType == DTM.TEXT_NODE) {
+      domValue = XSLTUtilities.removeIn(domValue, (char)10); //remove '\r' to temporarily fix a bug in the display of results in Windows
+    }
+
+    return domValue;
   }
 
 
