@@ -295,7 +295,14 @@ public class FtpVFS extends VFS
 		//CWD into the directory - Doing a LIST on a path with spaces in the
 		//name fails; however, if you CWD to the dir and then LIST it
 		// succeeds.
-		client.changeWorkingDirectory(address.path);
+		
+		//First we get the parent path of the file passed to us in the path
+		// field. We use the MiscUtilities.getParentOfPath as opposed to our own
+		//because the path here is not a URL and our own version expects a URL
+		// when it instantiates an FtpAddress object.
+		String parentPath = MiscUtilities.getParentOfPath(address.path);
+		
+		client.changeWorkingDirectory(parentPath);
 		//Check for successful response
 		FtpResponse response = client.getResponse();
 		if(response.getReturnCode().charAt(0)!='2')
@@ -306,7 +313,10 @@ public class FtpVFS extends VFS
 		}
 			
 		_setupSocket(client);
-		Reader _reader = client.list();
+		//Here we do a LIST for on the specific file
+		//Since we are in the right dir, we list only the filename, not the
+		// whole path...
+		Reader _reader = client.list(address.path.substring(parentPath.length()));
 		if(_reader == null)
 		{
 			// eg, file not found
