@@ -12,6 +12,7 @@ public class PHPParseMessageEvent {
   public static int MESSAGE_IF_ENDIF_TAG = 3;
   public static int MESSAGE_FOR_ENDFOR_TAG = 4;
   public static int MESSAGE_WHILE_ENDWHILE_TAG = 5;
+  public static int MESSAGE_FOREACH_ENDFOREACH_TAG = 6;
 
   private int messageClass;
   private int level;

@@ -15,17 +15,17 @@ import org.gjt.sp.util.Log;
  */
 public final class PHPParserPlugin extends EBPlugin {
 
-    public void handleMessage(EBMessage message) {
+    public void handleMessage(final EBMessage message) {
         if (message instanceof BufferUpdate) {
             final BufferUpdate bufferUpdate = (BufferUpdate) message;
             final Object what = bufferUpdate.getWhat();
             if (what == BufferUpdate.LOADED) {
-                Buffer buffer = bufferUpdate.getBuffer();
+                final Buffer buffer = bufferUpdate.getBuffer();
                 if ("php".equals(buffer.getMode().getName())) {
                     buffer.setProperty("sidekick.parser", "PHPParser");
                 }
             } else if (what == BufferUpdate.PROPERTIES_CHANGED) {
-                Buffer buffer = bufferUpdate.getBuffer();
+                final Buffer buffer = bufferUpdate.getBuffer();
                 if ("php".equals(buffer.getMode().getName())) {
                     buffer.setProperty("sidekick.parser", "PHPParser");
                 } else if ("PHPParser".equals(buffer.getProperty("sidekick.parser"))) {

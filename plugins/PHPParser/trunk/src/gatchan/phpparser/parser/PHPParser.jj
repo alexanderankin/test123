@@ -435,6 +435,7 @@ MORE :
 | <ENDSWITCH: "endswitch">
 | <ENDIF    : "endif">
 | <ENDFOR   : "endfor">
+| <ENDFOREACH : "endforeach">
 | <FOREACH  : "foreach">
 | <AS       : "as" >
 }
@@ -4162,6 +4163,9 @@ ForeachStatement ForeachStatement() :
   Token asToken = null;
   Token rparenToken = null;
   int pos,endLine,endColumn;
+  Token tokenEndForeach, tokenColon, tokenSemicolon;
+  Statement action;
+  final ArrayList list = new ArrayList();
 }
 {
   foreachToken = <FOREACH>
@@ -4271,6 +4275,7 @@ ForeachStatement ForeachStatement() :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
+  (
   try {
     statement = Statement()
     {
@@ -4301,8 +4306,87 @@ ForeachStatement ForeachStatement() :
                                foreachToken.beginLine,
                                endLine,
                                foreachToken.beginColumn,
-                               endColumn);}
-
+                               endColumn);
+ }
+ |
+  tokenColon = <COLON> {pos = tokenColon.sourceEnd+1;}
+      (action = Statement() {list.add(action);pos = action.sourceEnd+1;})*
+      {
+        fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                  PHPParseMessageEvent.MESSAGE_FOREACH_ENDFOREACH_TAG,
+                                                  path,
+                                                  "Ugly syntax detected, you should foreach () {...} instead of foreach (): ... endforeach;",
+                                                  tokenColon.sourceStart,
+                                                  tokenColon.sourceEnd,
+                                                  tokenColon.beginLine,
+                                                  tokenColon.endLine,
+                                                  tokenColon.beginColumn,
+                                                  tokenColon.endColumn));
+      }
+      try {
+        tokenEndForeach = <ENDFOREACH>
+        {pos = tokenEndForeach.sourceEnd+1;}
+      } catch (ParseException e) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "'endforeach' expected",
+                                              "endforeach",
+                                              e.currentToken.image,
+                                              pos,
+                                              pos+1,
+                                              e.currentToken.beginLine,
+                                              e.currentToken.endLine,
+                                              e.currentToken.endColumn,
+                                              e.currentToken.endColumn+1));
+      }
+      try {
+        tokenSemicolon = <SEMICOLON>
+        {pos = tokenSemicolon.sourceEnd+1;}
+      } catch (ParseException e) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "';' expected",
+                                              ";",
+                                              e.currentToken.image,
+                                              pos,
+                                              pos+1,
+                                              e.currentToken.beginLine,
+                                              e.currentToken.endLine,
+                                              e.currentToken.endColumn,
+                                              e.currentToken.endColumn+1));
+      }
+      {
+        if (list.size() == 0) {
+          return new ForeachStatement(expression,
+                                       variable,
+                                       null,
+                                       foreachToken.sourceStart,
+                                       pos,
+                                       foreachToken.beginLine,
+                                       endLine,
+                                       foreachToken.beginColumn,
+                                       endColumn);
+        } else {
+          final Statement[] stmtsArray = new Statement[list.size()];
+          list.toArray(stmtsArray);
+          return new ForeachStatement(expression,
+                                       variable,
+                                       new Block(stmtsArray,
+                                                stmtsArray[0].sourceStart,
+                                                stmtsArray[stmtsArray.length-1].sourceEnd,
+                                                stmtsArray[0].getBeginLine(),
+                                                stmtsArray[stmtsArray.length-1].getEndLine(),
+                                                stmtsArray[0].getBeginColumn(),
+                                                stmtsArray[stmtsArray.length-1].getEndColumn()),
+                                       foreachToken.sourceStart,
+                                       pos,
+                                       foreachToken.beginLine,
+                                       endLine,
+                                       foreachToken.beginColumn,
+                                       endColumn);
+        }
+      }
+      )
 }
 
 /**
