@@ -175,12 +175,12 @@ public final class Project extends AbstractProject {
     }
   }
 
-  private Map readObjects(File target) {
+  private Hashtable readObjects(File target) {
     ObjectInputStream objIn = null;
     try {
       objIn = new ObjectInputStream(new BufferedInputStream(new FileInputStream(target)));
       final Object object = objIn.readObject();
-      return (Map) object;
+      return (Hashtable) object;
     } catch (FileNotFoundException e) {
       Log.log(Log.ERROR, this, "The file " + target.getAbsolutePath() + " was not found");
     } catch (InvalidClassException e) {
@@ -200,7 +200,7 @@ public final class Project extends AbstractProject {
           Log.log(Log.WARNING, this, e);
         }
     }
-    return new HashMap();
+    return new Hashtable();
   }
 
   /**
