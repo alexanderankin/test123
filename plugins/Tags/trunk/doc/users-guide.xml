@@ -7,7 +7,7 @@
 <author>
 <othername>Kenrick Drew</othername>
 </author>
-<edition>Version 1.1.1</edition>
+<edition>Version 1.1.2</edition>
 </articleinfo>
 <!-- $Id$ -->
 <section id="introduction">
@@ -246,6 +246,13 @@ to use the Sourceforge Bug Tracker at
 <section id="changelog">
 <title>Changelog</title>
 <itemizedlist>
+<listitem>
+<para>Version 1.1.2, bug fix (Jun 2004)</para><itemizedlist>
+<listitem>
+<para>Fixed StringIndexOutOfBoundsException, if tag ended with &quot;\&quot;.
+Bug report &amp; patch from Ian MacLarty.</para></listitem>
+</itemizedlist>
+</listitem>
 <listitem>
 <para>Version 1.1.1, bug fix (Apr 2004)</para><itemizedlist>
 <listitem>
