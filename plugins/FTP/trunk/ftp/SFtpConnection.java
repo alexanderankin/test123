@@ -27,9 +27,11 @@ import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.session.*;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.transport.*;
+import com.sshtools.j2ssh.transport.publickey.*;
 import com.sshtools.common.hosts.*;
 import java.io.*;
 import java.util.*;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.JARClassLoader;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
@@ -44,10 +46,43 @@ class SFtpConnection extends ConnectionManager.Connection
 
 		client = new SshClient();
 		client.connect(info.host,info.port,new DialogHostKeyVerification(null));
-		PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
+      SshAuthenticationClient auth;
+      String authType = "";
+      if (info.privateKey == null) {
+         auth = new PasswordAuthenticationClient();
+         authType = "Password";
+         Log.log(Log.DEBUG,this,"Using password authentication");
+         ((PasswordAuthenticationClient)auth).setPassword(info.password);
+      } else {
+         auth = new PublicKeyAuthenticationClient();
+         authType = "Public Key";
+         Log.log(Log.DEBUG,this,"Using public key authentication");
+         ((PublicKeyAuthenticationClient)auth).setKey(info.privateKey);
+      }
 		auth.setUsername(info.user);
-		auth.setPassword(info.password);
-		client.authenticate(auth);
+		
+      int rc = client.authenticate(auth);
+      String rc_string = "";
+      switch(rc) {
+         case AuthenticationProtocolState.CANCELLED:
+            rc_string = "CANCELLED";
+            break;
+         case AuthenticationProtocolState.COMPLETE:
+            rc_string = "COMPLETE";
+            break;
+         case AuthenticationProtocolState.FAILED:
+            rc_string = "FAILED";
+            break;
+         case AuthenticationProtocolState.PARTIAL:
+            rc_string = "PARTIAL";
+            break;
+         case AuthenticationProtocolState.READY:
+            rc_string = "READY";
+            break;
+         default:
+            rc_string = "UNKNOWN";
+      }
+      Log.log(Log.DEBUG,this,"Client.authenticate return code: "+rc_string+" ("+rc+")");
 
 		sftp = client.openSftpChannel(null);
 
