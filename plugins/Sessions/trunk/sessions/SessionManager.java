@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 
 
 /**
@@ -54,6 +55,13 @@ public class SessionManager implements EBComponent
 	private static SessionManager instance;
 
 
+	/** The string that will contain the new temp jEdit view.title property.*/	
+	private String titleBarSessionName;
+
+
+	/** The default jEdit view.title property. */
+	private String defaultViewTitle;
+	
 	/** Returns the singleton SessionManager instance */
 	public static SessionManager getInstance()
 	{
@@ -82,6 +90,12 @@ public class SessionManager implements EBComponent
 		File defaultSessionFile = new File(createSessionFileName("default"));
 		if(!defaultSessionFile.exists())
 			new Session("default").save(null);
+		
+		
+		// initialize the variables for the jEdit title bar
+		defaultViewTitle = jEdit.getProperty("view.title", 
+								jEdit.getProperty("sessions.titlebar.default"));
+		titleBarSessionName = new String();
 	}
 
 
@@ -151,6 +165,9 @@ public class SessionManager implements EBComponent
 
 		// Change FSB directory if appropriate
 		changeFSBToBaseDirectory(view);
+		
+		// update the jEdit title bar with the session name
+		setSessionNameInTitleBar();
 	}
 
 
@@ -351,6 +368,7 @@ public class SessionManager implements EBComponent
 
 	/** EBComponent implementation; does nothing */
 	public void handleMessage(EBMessage msg) {}
+	
 
 
 	/**
@@ -426,7 +444,8 @@ public class SessionManager implements EBComponent
 		});
 	}
 
-
+	// {{{ jEdit title bar controls
+	// added by Paul Russell 2004-09-26
 	/**
 	 * Save current session property.
 	 */
@@ -436,4 +455,62 @@ public class SessionManager implements EBComponent
 		jEdit.setProperty(SESSION_PROPERTY, currentSession.getName());
 		jEdit.saveSettings();
 	}
+	
+	/**
+	 * Put the session name in the jEdit title bar
+	 */
+	public void setSessionNameInTitleBar()
+	{
+		if ( currentSession != null )
+		{
+			if ( jEdit.getBooleanProperty("sessions.switcher.showSessionNameInTitleBar", true) )
+			{
+				if (jEdit.getBooleanProperty("sessions.switcher.showSessionPrefixInTitleBar", true))
+				{
+					titleBarSessionName = defaultViewTitle + 
+						jEdit.getProperty("sessions.titlebar.startbracket") +
+						jEdit.getProperty("sessions.titlebar.prefix") +
+						currentSession.getName() +
+						jEdit.getProperty("sessions.titlebar.endbracket");	
+				}
+				else
+				{
+					titleBarSessionName = defaultViewTitle + 
+						jEdit.getProperty("sessions.titlebar.startbracket") +
+						currentSession.getName() +
+						jEdit.getProperty("sessions.titlebar.endbracket");
+				}
+				
+				
+						
+				jEdit.setTemporaryProperty("view.title", titleBarSessionName);
+				
+			}
+		}
+		
+	}
+	
+	/**
+	 * Restore the original jEdit title bar text
+	 */
+	public void restoreTitleBarText()
+	{
+		jEdit.setTemporaryProperty("view.title", defaultViewTitle);	
+	}
+
+	/**
+	 * refreshes the jEdit Title Bar. This only needs to be called
+	 * when the plugin stops or restarts.
+	 */
+	public void refreshTitleBar()
+	{
+		View[] views = jEdit.getViews();
+		
+		for( int i = 0; i < views.length; i++ )
+		{
+			EditBus.send(new BufferUpdate(views[i].getBuffer(), views[i], BufferUpdate.LOADED));	
+		}	
+	}
+	
+	// }}}
 }

@@ -1,3 +1,7 @@
+VERSION 1.2.2 (Paul Russell)
+- fixed bug where reloading the Sessions plugin causes the Sessions toolbar to be displayed even if it is disabled in the Sessions Plugin options.
+- added session name to the jEdit toobar. Configurable via the Sessions Plugin Options screen.  
+
 VERSION 1.2.0 (Steve Jakob)
 - updated to use the new plugin loading API introduced in jEdit 4.2pre1
 - updated jEdit dependancy to version 4.2pre2, since there were problems with the new OptionPane API in pre1
