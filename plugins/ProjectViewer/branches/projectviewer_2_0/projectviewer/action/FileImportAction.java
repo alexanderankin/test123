@@ -21,12 +21,9 @@ package projectviewer.action;
 //{{{ Imports
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
-
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.vpt.VPTNode;
-
 import projectviewer.importer.FileImporter;
 //}}}
 
@@ -37,19 +34,13 @@ import projectviewer.importer.FileImporter;
  *	@version	$Id$
  */
 public class FileImportAction extends Action {
-	
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.import");
 	} //}}}
-	
-	//{{{ getIcon() method
-	/** Returns null. This should be only in the context menu. */
-	public Icon getIcon() {
-		return null;
-	} //}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
@@ -64,3 +55,4 @@ public class FileImportAction extends Action {
 	} //}}}
 
 }
+
