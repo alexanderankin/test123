@@ -36,34 +36,34 @@ public class CompletionInfo
 	public HashMap elementHash;
 	public ArrayList entities;
 	public HashMap entityHash;
+	public ArrayList elementsAllowedAnywhere;
 
 	//{{{ CompletionInfo constructor
-	public CompletionInfo(boolean html, ArrayList elements, HashMap elementHash,
-		ArrayList entities, HashMap entityHash)
+	public CompletionInfo()
+	{
+		this(false,new ArrayList(), new HashMap(),
+			new ArrayList(), new HashMap(),
+			new ArrayList());
+	} //}}}
+
+	//{{{ CompletionInfo constructor
+	public CompletionInfo(boolean html, ArrayList elements,
+		HashMap elementHash, ArrayList entities, HashMap entityHash,
+		ArrayList elementsAllowedAnywhere)
 	{
 		this.html = html;
 		this.elements = elements;
 		this.elementHash = elementHash;
 		this.entities = entities;
 		this.entityHash = entityHash;
+		this.elementsAllowedAnywhere = elementsAllowedAnywhere;
 	} //}}}
 
 	//{{{ getAllowedElements() method
 	public ArrayList getAllowedElements(Buffer buffer, int pos)
 	{
-		if(pos == 0)
-			return new ArrayList();
-
-		String text = buffer.getText(0,buffer.getLength());
-		TagParser.Tag currentTag = TagParser.getTagAtOffset(text,pos - 1);
-		if(currentTag != null && pos != currentTag.end)
-		{
-			// can't put something in the middle of an element
-			return new ArrayList();
-		}
-
 		TagParser.Tag parentTag = TagParser.findLastOpenTag(
-			text,pos,elementHash);
+			buffer.getText(0,pos),pos,elementHash);
 
 		ArrayList returnValue;
 
@@ -172,7 +172,8 @@ public class CompletionInfo
 			(ArrayList)elements.clone(),
 			(HashMap)elementHash.clone(),
 			(ArrayList)entities.clone(),
-			(HashMap)entityHash.clone()
+			(HashMap)entityHash.clone(),
+			(ArrayList)elementsAllowedAnywhere.clone()
 		);
 	} //}}}
 

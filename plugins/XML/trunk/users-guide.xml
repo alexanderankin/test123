@@ -374,13 +374,6 @@
  </para>
 
  <para>
-   Note that a few characters (<literal>&lt;</literal>,
-   <literal>&gt;</literal>, <literal>&amp;</literal>,
-   <literal>&quot;</literal>, <literal>&apos;</literal>) are not converted.
-   This allows you to have markup as part of the selection.
- </para>
-
- <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Close
   Last Open Tag</guimenuitem> inserts a closing tag for the last opened tag.
  </para>
@@ -492,6 +485,10 @@
     Much faster tag matching and highlighting.
    </para></listitem>
    <listitem><para>
+    <guimenuitem>Entities to Characters</guimenuitem> and <guimenuitem>Characters
+    to Entities</guimenuitem> commands now convert &lt;, &gt; and &amp; as well.
+   </para></listitem>
+   <listitem><para>
     Only the first 100 parse errors are reported now, this prevents
     gratious slowdowns if for example a file has 500 parse errors.
    </para></listitem>
@@ -513,6 +510,10 @@
     If you entered a tag or entity that was not in the current buffer's
     completion list, trying to enter <quote>&gt;</quote>, <quote>;</quote> or a
     space would not work.
+   </para></listitem>
+   <listitem><para>
+    <guimenuitem>Entities to Characters</guimenuitem> would throw an exception
+    if the text contained an unknown entity.
    </para></listitem>
   </itemizedlist>
 

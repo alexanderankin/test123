@@ -61,7 +61,13 @@ public class ElementDecl
 	//{{{ getChildElements() method
 	public ArrayList getChildElements(CompletionInfo info)
 	{
-		ArrayList children = new ArrayList();
+		ArrayList children = new ArrayList(100);
+
+		for(int i = 0; i < info.elementsAllowedAnywhere.size(); i++)
+		{
+			children.add(info.elementsAllowedAnywhere.get(i));
+		}
+
 		for(int i = 0; i < content.size(); i++)
 		{
 			ElementDecl decl = (ElementDecl)info.elementHash
@@ -101,8 +107,25 @@ public class ElementDecl
 		buf.append(name);
 		buf.append('"');
 
+		buf.append("\ncontent=\"");
+
 		if(empty)
-			buf.append(" empty=\"true\"");
+			buf.append("EMPTY");
+		else
+		{
+			buf.append('(');
+
+			for(int i = 0; i < content.size(); i++)
+			{
+				if(i != 0)
+					buf.append('|');
+				buf.append(content.get(i));
+			}
+
+			buf.append(')');
+		}
+
+		buf.append('"');
 
 		if(true /*html*/)
 			buf.append(" html=\"true\"");

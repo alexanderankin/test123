@@ -43,7 +43,8 @@ public class XmlComplete extends JWindow
 		list = new JList();
 		list.setCellRenderer(new XmlListCellRenderer());
 
-		list.setVisibleRowCount(Math.min(8,completions.size()));
+		list.setVisibleRowCount(Math.min(8,
+			Math.max(1,completions.size())));
 
 		list.addMouseListener(new MouseHandler());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -144,7 +145,12 @@ public class XmlComplete extends JWindow
 		Object obj = list.getSelectedValue();
 		if(obj instanceof XmlListCellRenderer.EmptyListPlaceholder)
 		{
-			textArea.userInput(ch);
+			if(ch == '>')
+				XmlActions.insertClosingTagKeyTyped(view);
+			else if(ch == '/')
+				XmlActions.completeClosingTag(view);
+			else
+				textArea.userInput(ch);
 
 			/* do nothing; dispose() is called below. */
 		}

@@ -175,8 +175,7 @@ public class XmlActions
 							attributes.put(attributeName,
 								entitiesToCharacters(
 								st.sval.replace(backslashSub,'\\'),
-								completionInfo.entityHash,
-								true));
+								completionInfo.entityHash));
 							seenEquals = false;
 						}
 						else if(completionInfo.html)
@@ -618,23 +617,18 @@ public class XmlActions
 	} //}}}
 
 	//{{{ charactersToEntities() method
-	// if markupChars is true, <, > and & will be ignored.
-	public static String charactersToEntities(String s, HashMap hash,
-		boolean markupChars)
+	public static String charactersToEntities(String s, HashMap hash)
 	{
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < s.length(); i++)
 		{
 			char ch = s.charAt(i);
-			if(
-				(markupChars
-				&& (ch >= 0x7f
+			if(ch >= 0x7f
 				|| ch == '<'
 				|| ch == '>'
 				|| ch == '&'
 				|| ch == '"'
-				|| ch == '\''))
-				|| (ch >= 0x7f))
+				|| ch == '\'')
 			{
 				Character c = new Character(ch);
 				String entity = (String)hash.get(c);
@@ -655,9 +649,7 @@ public class XmlActions
 	} //}}}
 
 	//{{{ entitiesToCharacters() method
-	// if markupChars is true, &lt;, &gt; and &amp; will be ignored.
-	public static String entitiesToCharacters(String s, HashMap hash,
-		boolean markupChars)
+	public static String entitiesToCharacters(String s, HashMap hash)
 	{
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < s.length(); i++)
@@ -670,7 +662,7 @@ public class XmlActions
 				{
 					String entityName = s.substring(i + 1,index);
 					Character c = (Character)hash.get(entityName);
-					if(markupChars || c.charValue() >= 0x7f)
+					if(c != null)
 					{
 						buf.append(c.charValue());
 						i = index;
@@ -712,7 +704,7 @@ public class XmlActions
 		{
 			textArea.setSelectedText(selection[i],
 				charactersToEntities(textArea.getSelectedText(
-				selection[i]),completionInfo.entityHash,false));
+				selection[i]),completionInfo.entityHash));
 		}
 	} //}}}
 
@@ -743,7 +735,7 @@ public class XmlActions
 		{
 			textArea.setSelectedText(selection[i],
 				entitiesToCharacters(textArea.getSelectedText(
-				selection[i]),completionInfo.entityHash,false));
+				selection[i]),completionInfo.entityHash));
 		}
 	} //}}}
 

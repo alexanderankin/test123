@@ -105,4 +105,7 @@
 		</exec>
 	</target>
 
+	<target name="foo">
+		<antstructure output="/tmp/ant.foo"/>
+	</target>
 </project>

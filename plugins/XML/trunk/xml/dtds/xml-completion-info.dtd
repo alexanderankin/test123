@@ -16,7 +16,8 @@
 <!ELEMENT element (attribute)*>
 <!ATTLIST element
 	name CDATA #REQUIRED
-	empty (true|false) "false"
+	content CDATA "EMPTY"
+	anywhere (true|false) "false"
 	html (true|false) "false">
 
 <!ELEMENT attribute EMPTY>
