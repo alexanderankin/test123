@@ -55,8 +55,8 @@ public class ColorTabs
 
    private static final int MUTE_LOWEST_COLOR = 150;
    private static final int MUTE_HIGHEST_COLOR = 230;
-   private static final int muteRange = MUTE_HIGHEST_COLOR - MUTE_LOWEST_COLOR;
-   private static final float muteRatio = ((float) muteRange / 254);
+   private static final int MUTE_RANGE = MUTE_HIGHEST_COLOR - MUTE_LOWEST_COLOR;
+   private static final float muteRatio = ((float) MUTE_RANGE / 254);
 
    private static ColorTabs colorTabs = null;
    private static boolean useColors = false;
