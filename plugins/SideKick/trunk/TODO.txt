@@ -3,3 +3,6 @@
 - assets in non-buffer order
 - custom actions on double-click, etc.
 - option pane
+- finish docs
+- switching between two edit panes with same buffer: expand tree at
+  appropriate location
