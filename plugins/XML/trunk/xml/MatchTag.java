@@ -26,14 +26,14 @@ public class MatchTag {
 
 	public static void matchTag(JEditTextArea textArea) {
 		String text = textArea.getText();
-		TagAttribute tagAttr = getSelectedTag(textArea.getCaretPosition(), text);
-		if (tagAttr != null) {
-			TagAttribute matchingTagAttr = getMatchingTag(text, tagAttr);
-			if (matchingTagAttr != null) {
+		Tag tag = getSelectedTag(textArea.getCaretPosition(), text);
+		if (tag != null) {
+			Tag matchingTag = getMatchingTag(text, tag);
+			if (matchingTag != null) {
 				textArea.setSelection(new Selection.Range(
-					matchingTagAttr.start, matchingTagAttr.end
+					matchingTag.start, matchingTag.end
 				));
-				textArea.moveCaretPosition(matchingTagAttr.end);
+				textArea.moveCaretPosition(matchingTag.end);
 			} else
 				textArea.getToolkit().beep();
 		}
@@ -45,7 +45,7 @@ public class MatchTag {
 	 * in their literal form only when used as markup delimiters, or within a comment,
 	 * a processing instruction, or a CDATA section" (XML 1.0).
 	 */
-	public static TagAttribute getSelectedTag(int pos, String text) {
+	public static Tag getSelectedTag(int pos, String text) {
 
 		if (pos < 0 || pos > text.length())
 			return null;
@@ -132,80 +132,92 @@ public class MatchTag {
 		if (endTag == -1)
 			return null;
 
-		TagAttribute tagAttr = new TagAttribute();
-		tagAttr.start = startTag;
-		tagAttr.end   = endTag;
-		tagAttr.tag	  = text.substring(startTagName, endTagName);
-		tagAttr.type  = tagType;
+		Tag tag = new Tag();
+		tag.start = startTag;
+		tag.end   = endTag;
+		tag.tag	  = text.substring(startTagName, endTagName);
+		tag.type  = tagType;
 
 		/*
 			System.out.print("------------- getSelectedTag");
-			System.out.print("tagAttr.tag   = " + tagAttr.tag);
-			System.out.print("tagAttr.type  = " + tagAttr.type);
-			System.out.print("tagAttr.start = " + tagAttr.start);
-			System.out.print("tagAttr.end   = " + tagAttr.end);
+			System.out.print("tag.tag   = " + tag.tag);
+			System.out.print("tag.type  = " + tag.type);
+			System.out.print("tag.start = " + tag.start);
+			System.out.print("tag.end   = " + tag.end);
 		//*/
 
-		return tagAttr;
+		return tag;
 	}
 
 
-	public static TagAttribute getMatchingTag(String text, TagAttribute tagAttr) {
-		if (tagAttr.type == T_START_TAG)
-			return findEndTag(text, tagAttr);
-		else if (tagAttr.type == T_END_TAG)
-			return findStartTag(text, tagAttr);
+	public static Tag getMatchingTag(String text, Tag tag) {
+		if (tag.type == T_START_TAG)
+			return findEndTag(text, tag);
+		else if (tag.type == T_END_TAG)
+			return findStartTag(text, tag);
 		return null;
 	}
 
 
-	private static TagAttribute findEndTag(String text, TagAttribute startTagAttr) {
+	private static Tag findEndTag(String text, Tag startTag) {
 		Stack tagStack = new Stack();
-		for (int i = text.indexOf('<', startTagAttr.end); i != -1; i = text.indexOf('<', ++i)) {
-			TagAttribute tagAttr = getSelectedTag(i + 1, text);
-			if (tagAttr != null && tagAttr.type != T_STANDALONE_TAG) {
-				if (tagAttr.type == T_END_TAG) {
-					if (tagStack.empty()) {
-						if (tagAttr.tag.equals(startTagAttr.tag))
-							return tagAttr;
+		for (int i = text.indexOf('<', startTag.end);
+			i != -1; i = text.indexOf('<', ++i)) {
+			Tag tag = getSelectedTag(i + 1, text);
+			if (tag == null)
+				continue;
+			else if (tag.type == T_END_TAG) {
+				for(;;) {
+					if(tagStack.empty()) {
+						if (tag.tag.equals(startTag.tag))
+							return tag;
 						else
 							return null;
-					} else if (!tagAttr.tag.equals(tagStack.pop()))
-						return null;
-				} else // tag_attr.type == T_START_TAG
-					tagStack.push(tagAttr.tag);
-			}
+					}
+					else if(tag.tag.equals(tagStack.pop()))
+						break;
+				}
+			} else if(tag.type == T_START_TAG)
+				tagStack.push(tag.tag);
 		}
 		return null;
 	}
 
 
-	private static TagAttribute findStartTag(String text, TagAttribute endTagAttr) {
+	private static Tag findStartTag(String text, Tag endTag) {
 		Stack tagStack = new Stack();
-		for (int i = text.lastIndexOf('<', endTagAttr.start - 1); i != -1; i = text.lastIndexOf('<', --i)) {
-			TagAttribute tagAttr = getSelectedTag(i + 1, text);
-			if (tagAttr != null && tagAttr.type != T_STANDALONE_TAG) {
-				if (tagAttr.type == T_START_TAG) {
-					if (tagStack.empty()) {
-						if (tagAttr.tag.equals(endTagAttr.tag))
-							return tagAttr;
-						else
-							return null;
-					} else if (!tagAttr.tag.equals(tagStack.pop()))
-						return null;
-				} else // tag_attr.type == T_END_TAG
-					tagStack.push(tagAttr.tag);
-			}
+loop:		for (int i = text.lastIndexOf('<', endTag.start - 1);
+			i != -1; i = text.lastIndexOf('<', --i)) {
+			System.err.println(i);
+			Tag tag = getSelectedTag(i + 1, text);
+			if (tag == null)
+				continue;
+			else if (tag.type == T_START_TAG) {
+				for(int j = tagStack.size() - 1; j >= 0; j--) {
+					if(tag.tag.equals(tagStack.get(j))) {
+						for(int k = tagStack.size() - 1; k >= j; k--) {
+							tagStack.remove(k);
+						}
+						continue loop;
+					}
+				}
+
+				if (tag.tag.equals(endTag.tag))
+					return tag;
+				else
+					continue;
+			} else if(tag.type == T_END_TAG)
+				tagStack.push(tag.tag);
 		}
 		return null;
 	}
 
 
-	public static class TagAttribute {
-		String tag = null;
-		int type = -1;
-		int start = -1;
-		int end = -1;
+	public static class Tag {
+		public String tag = null;
+		public int type = -1;
+		public int start = -1;
+		public int end = -1;
 	}
 }
 
