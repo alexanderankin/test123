@@ -37,15 +37,9 @@ import java.io.InputStream;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
-import java.io.OutputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 
-import java.util.Vector;
-
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -53,148 +47,12 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
 
-public class JodeVFS extends VFS {
+public class JodeVFS extends ByteCodeVFS {
     public static final String PROTOCOL = "jode";
 
 
     public JodeVFS() {
-        super("jode");
-    }
-
-
-    public int getCapabilities()
-    {
-        return (
-              VFS.BROWSE_CAP
-            | VFS.READ_CAP
-        //  | WRITE_CAP
-        );
-    }
-
-
-    public char getFileSeparator() {
-        return File.separatorChar;
-    }
-
-
-    public String getParentOfPath(String path) {
-        if (path.startsWith(PROTOCOL + ':')) {
-            String clazzPath = path.substring((PROTOCOL + ':').length());
-            VFS vfs = VFSManager.getVFSForPath(clazzPath);
-
-            return PROTOCOL + ':' + vfs.getParentOfPath(clazzPath);
-        } else {
-            VFS vfs = VFSManager.getVFSForPath(path);
-
-            return vfs.getParentOfPath(path);
-        }
-    }
-
-
-    public String showBrowseDialog(Object[] session, Component comp) {
-        VFSBrowser browser = (VFSBrowser) comp;
-
-        VFS.DirectoryEntry[] selected = browser.getSelectedFiles();
-        if (selected == null || selected.length != 1) {
-            // TODO: error message
-            browser.getView().getToolkit().beep();
-            return null;
-        }
-
-        VFS.DirectoryEntry entry = selected[0];
-        if (entry.type == VFS.DirectoryEntry.FILE) {
-            VFS vfs = VFSManager.getVFSForPath(entry.path);
-            jEdit.openFile(browser.getView(), PROTOCOL + ':' + entry.path);
-            return vfs.getParentOfPath(entry.path);
-        }
-
-        return entry.path;
-    }
-
-
-    public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
-        Component comp)
-    {
-        Log.log(Log.DEBUG, this, "_listDirectory Path: " + path);
-        String clazzPath = path;
-        if (path.startsWith(PROTOCOL + ':')) {
-            clazzPath = clazzPath.substring(PROTOCOL.length() + 1);
-        }
-        Log.log(Log.DEBUG, this, "_listDirectory clazz Path: [" + clazzPath + "]");
-
-        VFS vfs = VFSManager.getVFSForPath(clazzPath);
-
-        try {
-            VFS.DirectoryEntry[] directoryEntries =
-                vfs._listDirectory(session, clazzPath, comp);
-
-            if (directoryEntries == null) {
-                return null;
-            }
-
-            Vector v = new Vector();
-
-            for (int i = 0; i < directoryEntries.length; i++) {
-                if (   directoryEntries[i].path.endsWith(".class")
-                    || (directoryEntries[i].type == VFS.DirectoryEntry.DIRECTORY)
-                ) {
-                    v.addElement(
-                        new VFS.DirectoryEntry(
-                            directoryEntries[i].name,
-                            PROTOCOL + ':' + directoryEntries[i].path,
-                            PROTOCOL + ':' + directoryEntries[i].deletePath,
-                            directoryEntries[i].type,
-                            directoryEntries[i].length,
-                            directoryEntries[i].hidden
-                        )
-                    );
-                }
-            }
-            VFS.DirectoryEntry[] retVal = new VFS.DirectoryEntry[v.size()];
-            v.copyInto(retVal);
-
-            return retVal;
-        } catch (IOException ioe) {
-            Log.log(Log.ERROR, this, ioe);
-        }
-
-        return null;
-    }
-
-
-    public DirectoryEntry _getDirectoryEntry(Object session, String path,
-        Component comp)
-    {
-        Log.log(Log.DEBUG, this, "_getDirectoryEntry Path: " + path);
-        String clazzPath = path;
-        if (path.startsWith(PROTOCOL + ':')) {
-            clazzPath = clazzPath.substring(PROTOCOL.length() + 1);
-        }
-        Log.log(Log.DEBUG, this, "_getDirectoryEntry Clazz Path: [" + clazzPath + "]");
-
-        VFS vfs = VFSManager.getVFSForPath(clazzPath);
-
-        try {
-            VFS.DirectoryEntry directoryEntry =
-                vfs._getDirectoryEntry(session, clazzPath, comp);
-
-            if (directoryEntry == null) {
-                return null;
-            }
-
-            return new VFS.DirectoryEntry(
-                directoryEntry.name,
-                PROTOCOL + ':' + directoryEntry.path,
-                PROTOCOL + ':' + directoryEntry.deletePath,
-                directoryEntry.type,
-                directoryEntry.length,
-                directoryEntry.hidden
-            );
-        } catch (IOException ioe) {
-            Log.log(Log.ERROR, this, ioe);
-        }
-
-        return null;
+        super(PROTOCOL);
     }
 
 
