@@ -1,0 +1,7 @@
+ChangeLog for ShortcutSaver plugin
+===========================================================================
+
+VERSION 0.1
+
+* Initial plugin central release
+
