@@ -19,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.*;
 
 /*:folding=indent:
  * AbstractToolPanel.java - Abstract class representing a tool panel.
@@ -105,12 +106,19 @@ public abstract class AbstractToolPanel
         }
     }
 
+    public void sendUpdateEvent(String dockable){
+      DockableWindowUpdate message = new DockableWindowUpdate(
+            view.getDockableWindowManager(), 
+            DockableWindowUpdate.PROPERTIES_CHANGED, dockable);
+      EditBus.send(message);
+    }
+
+    
     /**
    * ¤
    */
    public void refresh(){
-       //repaint();
-       //view.getEditPane().getTextArea().grabFocus();
+       view.repaint();
    }
 
     /**

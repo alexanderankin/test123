@@ -22,6 +22,7 @@ import uk.co.antroy.latextools.macros.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 import javax.swing.JComboBox;
 import javax.swing.*;
@@ -39,7 +40,16 @@ public class LaTeXDockable  extends AbstractToolPanel {
   private JComponent infoPanel = new JLabel("");
   private JLabel infoLabel = new JLabel("");
   private JLabel navig;
-  
+  private static final String DISPLAY_IMAGE = "View Image";
+  private static final String INFO          = "Information";
+  private static final String DUPLICATES    = "Duplicates";
+  private static final String ORPHANS       = "Orphans";
+  private static final Icon DISPLAY_IMAGE_ICON = UtilityMacros.getIcon("image.png");
+  private static final Icon INFO_ICON          = UtilityMacros.getIcon("info.png");
+  private static final Icon DUPLICATES_ICON    = UtilityMacros.getIcon("duplicate.png");
+  private static final Icon ORPHANS_ICON       = UtilityMacros.getIcon("orphan.png");
+      
+
   //~ Constructors ............................................................
 
   private LaTeXDockable() {
@@ -53,9 +63,10 @@ public class LaTeXDockable  extends AbstractToolPanel {
     controls.setAlignmentX(Component.LEFT_ALIGNMENT);
     controls.add(navig);
     controls.add(nav_list);
-    controls.add(new JButton(new ButtonAction(ButtonAction.DISPLAY_IMAGE)));
-    controls.add(new JButton(new ButtonAction(ButtonAction.DUPLICATES)));
-    controls.add(new JButton(new ButtonAction(ButtonAction.ORPHANS))); 
+    controls.add(new JButton(new ButtonAction(INFO, INFO_ICON))); 
+    controls.add(new JButton(new ButtonAction(DISPLAY_IMAGE, DISPLAY_IMAGE_ICON)));
+    controls.add(new JButton(new ButtonAction(DUPLICATES, DUPLICATES_ICON)));
+    controls.add(new JButton(new ButtonAction(ORPHANS, ORPHANS_ICON))); 
     
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     this.setAlignmentX(Component.LEFT_ALIGNMENT);
@@ -65,7 +76,6 @@ public class LaTeXDockable  extends AbstractToolPanel {
 
     LaTeXDockableListener listener = new LaTeXDockableListener();
     nav_list.addActionListener(listener);
-    //refresh();
   }
   
   public void refresh(){
@@ -78,8 +88,9 @@ public class LaTeXDockable  extends AbstractToolPanel {
       }else{
           ProjectMacros.showInformation(view, buffer);
       }
-       
+      super.refresh();
   }
+  
   
   public static LaTeXDockable getInstance(){
       return instance;
@@ -94,7 +105,7 @@ public class LaTeXDockable  extends AbstractToolPanel {
   public JComponent getInfoPanel(){
     return infoPanel;
   }
-
+  
     public synchronized void setInfoPanel(JComponent panel, String label){
         this.remove(infoPanel);
         this.remove(infoLabel);
@@ -105,6 +116,7 @@ public class LaTeXDockable  extends AbstractToolPanel {
         infoLabel = new JLabel("<html><font color='#0000aa'><b>" + label);
         this.add(infoLabel);
         this.add(infoPanel);
+        this.sendUpdateEvent("latextools-navigation-dock");
     }
   
   private class LaTeXDockableListener implements ActionListener {
@@ -119,17 +131,21 @@ public class LaTeXDockable  extends AbstractToolPanel {
   
   private class ButtonAction extends AbstractAction {
     
-    static final String DISPLAY_IMAGE = "View Image";
-    static final String DUPLICATES    = "Duplicates";
-    static final String ORPHANS       = "Orphans";
-      
-    private ButtonAction(String name){
-        super(name);
+     
+    private ButtonAction(String name, Icon icon){
+        super(name, icon);
+        //putValue(Action.LONG_DESCRIPTION, name);
+        //putValue(Action.SMALL_ICON, icon);
     }
     
     public void actionPerformed(ActionEvent e) {
+        if (!ProjectMacros.isTeXFile(buffer)){
+            setInfoPanel(new JLabel(""), "<html><b>Not a TeX File.");
+            return;
+        }
+        
         String command = e.getActionCommand();
-        Log.log(Log.DEBUG, this, "COMMAND: " + command);
+        
         if (command.equals(DISPLAY_IMAGE)){
             ImageViewer.showInInfoPane(view, buffer);
         }
@@ -138,6 +154,9 @@ public class LaTeXDockable  extends AbstractToolPanel {
         }
         else if (command.equals(ORPHANS)){
             ErrorFindingMacros.displayOrphanedRefs(view, buffer);            
+        }
+        else if (command.equals(INFO)){
+            ProjectMacros.showInformation(view, buffer);           
         }
     }
   }

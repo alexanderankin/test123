@@ -311,46 +311,41 @@ public class ProjectMacros {
       return out;
     }
     
-    public static void showInformation( View view,  Buffer buffer){
-        //Thread t = new Thread(new Runnable(){
-        //    public void run(){
+    public static void showInformation(final View view, final Buffer buffer){
+        Thread t = new Thread(new Runnable(){
+           public void run(){
                 _showInformation(view, buffer);
-        //    }
-        //});
-        //t.start();
+           }
+        });
+        t.start();
     }
     
     private static void _showInformation(View view, Buffer buffer){
-       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO A!!");
-       LaTeXDockable.getInstance().setInfoPanel(
-                new JLabel("<html><font color='#dd0000'>Getting information..."), "Project Information:");
-       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 0!!");
+       LaTeXDockable dockable = LaTeXDockable.getInstance();
+       dockable.setInfoPanel(
+                new JLabel("<html><font color='#dd0000'>Getting information..."), 
+                "Project Information:");
        ProjectViewerPanel proj = new ProjectViewerPanel(view, buffer);
-       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 1!!"); 
 
        StringBuffer info = new StringBuffer("");
        String main = getMainTeXPath(buffer);
-       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 2!!"); 
        
        info.append("<html>");
-       info.append("<b>Main File:</b> ");
-       info.append(main);
+       info.append("<b>Main File:</b> <font  size='-1'>");
+       info.append(main).append("</font>");
        JEditorPane editor = new JEditorPane("text/html", info.toString());
        
-       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 3!!"); 
        JSplitPane panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
                                          new JScrollPane(editor), 
                                          new JScrollPane(proj));
        JComponent wind = view.getDockableWindowManager().getDockable("latextools-navigation-dock");
-       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 4!!"); 
        if (wind != null){
            Dimension size = wind.getSize();
            int w = (int) (size.getWidth() / 4) * 3;
            panel.setDividerLocation(w);
        }
-              
-       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 5!!"); 
-       LaTeXDockable.getInstance().setInfoPanel(panel, "Project Information:");
+       
+       dockable.setInfoPanel(panel, "Project Information:");
     }
     
     
