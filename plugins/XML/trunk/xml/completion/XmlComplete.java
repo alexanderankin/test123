@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 2000, 2003 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -31,28 +31,34 @@ import xml.parser.*;
 
 public class XmlComplete extends JWindow
 {
+	public static final int ELEMENT_COMPLETE = 0;
+	public static final int ENTITY_COMPLETE = 1;
+	public static final int ID_COMPLETE = 2;
+
 	//{{{ XmlComplete constructor
-	public XmlComplete(View view, String text, List completions, Point location,
-		boolean html)
+	public XmlComplete(int mode, View view, String text, List completions,
+		Point location, boolean html, String closingTag)
 	{
 		super(view);
 
+		this.mode = mode;
 		this.view = view;
 		this.textArea = view.getTextArea();
 		this.text = text;
 		this.completions = completions;
 		this.html = html;
+		this.closingTag = closingTag;
 
 		list = new JList();
 		list.setCellRenderer(new XmlListCellRenderer());
-
-		list.setVisibleRowCount(Math.min(8,
-			Math.max(1,completions.size())));
 
 		list.addMouseListener(new MouseHandler());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
 		setUpListModel();
+
+		list.setVisibleRowCount(Math.min(8,
+			Math.max(1,list.getModel().getSize())));
 
 		// stupid scrollbar policy is an attempt to work around
 		// bugs people have been seeing with IBM's JDK -- 7 Sep 2000
@@ -92,18 +98,30 @@ public class XmlComplete extends JWindow
 	//{{{ Private members
 
 	//{{{ Instance variables
+	private int mode;
 	private View view;
 	private JEditTextArea textArea;
 	private String text;
 	private List completions;
 	private JList list;
 	private boolean html;
+	private String closingTag;
 	//}}}
 
 	//{{{ setUpListModel() method
 	private void setUpListModel()
 	{
 		DefaultListModel model = new DefaultListModel();
+
+		if(mode == ELEMENT_COMPLETE)
+		{
+			if("!--".startsWith(text))
+				model.addElement(new XmlListCellRenderer.Comment());
+			if(!html && "![CDATA[".startsWith(text))
+				model.addElement(new XmlListCellRenderer.CDATA());
+			if(closingTag != null && ("/" + closingTag).startsWith(text))
+				model.addElement(new XmlListCellRenderer.ClosingTag(closingTag));
+		}
 
 		for(int i = 0; i < completions.size(); i++)
 		{
@@ -150,12 +168,22 @@ public class XmlComplete extends JWindow
 		{
 			if(ch == '>')
 				XmlActions.insertClosingTagKeyTyped(view);
-			else if(ch == '/')
-				XmlActions.completeClosingTag(view);
 			else
 				textArea.userInput(ch);
 
 			/* do nothing; dispose() is called below. */
+		}
+		else if(obj instanceof XmlListCellRenderer.Comment)
+		{
+			int caret = textArea.getCaretPosition();
+			textArea.setSelectedText("!--  -->".substring(text.length()));
+			textArea.setCaretPosition(caret + 4 - text.length());
+		}
+		else if(obj instanceof XmlListCellRenderer.CDATA)
+		{
+			int caret = textArea.getCaretPosition();
+			textArea.setSelectedText("![CDATA[  ]]>".substring(text.length()));
+			textArea.setCaretPosition(caret + 9 - text.length());
 		}
 		else if(obj instanceof ElementDecl)
 		{

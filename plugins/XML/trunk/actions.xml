@@ -20,6 +20,7 @@
 			xml.XmlActions.completeKeyTyped(view,'&lt;');
 		</CODE>
 	</ACTION>
+
 	<ACTION NAME="xml-insert-closing-tag">
 		<CODE>
 			xml.XmlActions.insertClosingTagKeyTyped(view);

@@ -38,11 +38,6 @@ import xml.parser.*;
 
 public class XmlActions
 {
-	// For complete() method
-	public static final int ELEMENT_COMPLETE = 0;
-	public static final int ENTITY_COMPLETE = 1;
-	public static final int ID_COMPLETE = 2;
-
 	//{{{ showEditTagDialog() method
 	public static void showEditTagDialog(View view)
 	{
@@ -67,64 +62,18 @@ public class XmlActions
 		}
 
 		JEditTextArea textArea = editPane.getTextArea();
-		buffer.getText(0,buffer.getLength(),seg);
+		String text = buffer.getText(0,buffer.getLength());
 
 		int caret = textArea.getCaretPosition();
 
-		int start = -1;
-		int end = -1;
-
-		//{{{ scan forwards looking for >
-		for(int i = Math.max(0,caret - 1); i < seg.count; i++)
-		{
-			char ch = seg.array[seg.offset + i];
-			if(i != caret - 1
-				&& i != caret
-				&& ch == '<')
-				break;
-			else if(ch == '>')
-			{
-				end = i;
-				break;
-			}
-		} //}}}
-
-		if(end == -1)
-		{
-			view.getToolkit().beep();
-			return;
-		}
-
-		//{{{ scan backwards looking for <
-		for(int i = end; i >= 0; i--)
-		{
-			char ch = seg.array[seg.offset + i];
-			if(ch == '<')
-			{
-				start = i;
-				break;
-			}
-		} //}}}
-
-		if(start == -1)
-		{
-			view.getToolkit().beep();
-			return;
-		}
-
-		String tag = new String(seg.array,seg.offset + start + 1,
-			seg.offset + end - start - 1);
-
-		if(tag.indexOf('<') != -1 || tag.indexOf('>') != -1
-			|| tag.startsWith("!") || tag.startsWith("?")
-			|| tag.startsWith("/"))
+		TagParser.Tag tag = TagParser.getTagAtOffset(text,caret);
+		if(tag == null || tag.type == TagParser.T_END_TAG)
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
 		// use a StringTokenizer to parse the tag
-		String elementName = null;
 		HashMap attributes = new HashMap();
 		String attributeName = null;
 		boolean seenEquals = false;
@@ -134,7 +83,9 @@ public class XmlActions
 		 * the escape character, so we have to work around it here. */
 		char backslashSub = 127;
 		StreamTokenizer st = new StreamTokenizer(new StringReader(
-			tag.replace('\\',backslashSub)));
+			text.substring(tag.start + tag.tag.length() + 1,
+			tag.end - 1)
+			.replace('\\',backslashSub)));
 		st.resetSyntax();
 		st.wordChars('!',255);
 		st.whitespaceChars(0,' ');
@@ -165,18 +116,15 @@ loop:			for(;;)
 					seenEquals = true;
 					break;
 				case StreamTokenizer.TT_WORD:
-					if(elementName == null)
-					{
-						elementName = st.sval;
-						break;
-					}
-					else if(attributeName == null)
+					if(attributeName == null)
 					{
 						attributeName = (data.html
 							? st.sval.toLowerCase()
 							: st.sval);
 						break;
 					}
+					else
+						/* fall thru */;
 				case '"':
 				case '\'':
 					if(attributeName != null)
@@ -208,10 +156,10 @@ loop:			for(;;)
 			// won't happen
 		} //}}}
 
-		ElementDecl elementDecl = data.getElementDecl(elementName);
+		ElementDecl elementDecl = data.getElementDecl(tag.tag);
 		if(elementDecl == null)
 		{
-			String[] pp = { elementName };
+			String[] pp = { tag.tag };
 			GUIUtilities.error(view,"xml-edit-tag.undefined-element",pp);
 			return;
 		}
@@ -228,8 +176,8 @@ loop:			for(;;)
 			{
 				buffer.beginCompoundEdit();
 
-				buffer.remove(start,end - start + 1);
-				buffer.insert(start,newTag);
+				buffer.remove(tag.start,tag.end - tag.start);
+				buffer.insert(tag.start,newTag);
 			}
 			finally
 			{
@@ -586,9 +534,10 @@ loop:			for(;;)
 
 		// first, we get the word before the caret
 		int caretLine = textArea.getCaretLine();
-		String line = textArea.getLineText(caretLine);
-		int dot = textArea.getCaretPosition()
-			- textArea.getLineStartOffset(caretLine);
+		int caret = textArea.getCaretPosition();
+		String text = buffer.getText(0,caret);
+		int lineStart = textArea.getLineStartOffset(caretLine);
+		int dot = caret - lineStart;
 		if(dot == 0)
 		{
 			view.getToolkit().beep();
@@ -597,13 +546,14 @@ loop:			for(;;)
 
 		int mode = -1;
 		int wordStart = -1;
-		for(int i = dot - 1; i >= 0; i--)
+		for(int i = caret - 1; i >= lineStart; i--)
 		{
-			char ch = line.charAt(i);
+			char ch = text.charAt(i);
 			if(ch == '<' || ch == '&')
 			{
 				wordStart = i;
-				mode = (ch == '<' ? ELEMENT_COMPLETE : ENTITY_COMPLETE);
+				mode = (ch == '<' ? XmlComplete.ELEMENT_COMPLETE
+					: XmlComplete.ENTITY_COMPLETE);
 				break;
 			}
 		}
@@ -614,19 +564,16 @@ loop:			for(;;)
 			return;
 		}
 
-		String word = line.substring(wordStart + 1,dot);
+		String word = text.substring(wordStart + 1,caret);
 
 		List completions;
-		if(mode == ELEMENT_COMPLETE)
+		if(mode == XmlComplete.ELEMENT_COMPLETE)
 		{
 			// Try to only list elements that are valid at the caret
 			// position
-
-			int end = buffer.getLineStartOffset(caretLine) + wordStart;
-
-			completions = data.getAllowedElements(buffer,end);
+			completions = data.getAllowedElements(buffer,wordStart);
 		}
-		else if(mode == ENTITY_COMPLETE)
+		else if(mode == XmlComplete.ENTITY_COMPLETE)
 			completions = data.getNoNamespaceCompletionInfo().entities;
 		else
 			throw new InternalError("Bad mode: " + mode);
@@ -634,24 +581,29 @@ loop:			for(;;)
 		//if(completions.size() == 0)
 		//	return;
 
-		Point location = textArea.offsetToXY(caretLine,wordStart,new Point());
+		Point location = textArea.offsetToXY(wordStart);
 		location.y += textArea.getPainter().getFontMetrics().getHeight();
 
 		SwingUtilities.convertPointToScreen(location,
 			textArea.getPainter());
 
-		if(mode == ELEMENT_COMPLETE)
+		String closingTag = null;
+
+		if(mode == XmlComplete.ELEMENT_COMPLETE)
 		{
+			TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,data);
+			if(tag != null)
+				closingTag = tag.tag;
 			view.getStatus().setMessageAndClear(jEdit.getProperty(
 				"xml-element-complete-status"));
 		}
-		else if(mode == ID_COMPLETE)
+		else if(mode == XmlComplete.ID_COMPLETE)
 		{
 			view.getStatus().setMessageAndClear(jEdit.getProperty(
 				"xml-id-complete-status"));
 		}
 
-		new XmlComplete(view,word,completions,location,data.html);
+		new XmlComplete(mode,view,word,completions,location,data.html,closingTag);
 	} //}}}
 
 	//{{{ completeClosingTag() method
@@ -672,7 +624,6 @@ loop:			for(;;)
 		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
 			|| data == null || !closeCompletion)
 		{
-			view.getToolkit().beep();
 			return;
 		}
 
@@ -714,7 +665,6 @@ loop:			for(;;)
 		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
 			|| data == null || !closeCompletionOpen)
 		{
-			view.getToolkit().beep();
 			return;
 		}
 

@@ -10,6 +10,7 @@
 
 + version 1.0:
 
+- use pre9 mouse button API
 - xmlns attributes, XMLSchema-instance stuff
 - use AssetBrowser
 - recording <, >, /, &
