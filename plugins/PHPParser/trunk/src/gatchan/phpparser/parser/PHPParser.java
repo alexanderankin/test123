@@ -7166,14 +7166,14 @@ Token token;
   final Token ifToken;
     ifToken = jj_consume_token(IF);
     condition = Condition("if");
-    ifStatement = IfStatement0(condition,ifToken.sourceStart,ifToken.sourceEnd);
+    ifStatement = IfStatement0(condition,ifToken);
    {if (true) return ifStatement;}
     throw new Error("Missing return statement in function");
   }
 
 //}}}
-//{{{ IfStatement0(final Expression condition, final int start,final int end)
-  final public IfStatement IfStatement0(final Expression condition, final int start,final int end) throws ParseException {
+//{{{ IfStatement0(Expression condition, Token ifToken)
+  final public IfStatement IfStatement0(Expression condition, Token ifToken) throws ParseException {
   Statement statement = null;
   final Statement stmt;
   final Statement[] statementsArray;
@@ -7182,13 +7182,15 @@ Token token;
   final ArrayList stmts;
   final ArrayList elseIfList = new ArrayList();
   final ElseIf[] elseIfs;
-  final int pos = jj_input_stream.getPosition();
-  final int endStatements;
   final Token colonToken, elseToken;
+  int sourceEnd = 0;
+  int endColumn = 0;
+  int endLine   = 0;
+  Token semiColonToken;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COLON:
       colonToken = jj_consume_token(COLON);
-   stmts = new ArrayList();
+    stmts = new ArrayList();
       label_35:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -7311,11 +7313,11 @@ Token token;
         case LBRACE:
         case SEMICOLON:
           statement = Statement();
-                              stmts.add(statement);
+       stmts.add(statement);
           break;
         case PHPEND:
           statement = htmlBlock();
-                              if (statement != null) {stmts.add(statement);}
+       if (statement != null) stmts.add(statement);
           break;
         default:
           jj_la1[127] = jj_gen;
@@ -7323,7 +7325,6 @@ Token token;
           throw new ParseException();
         }
       }
-    endStatements = (statement == null) ? colonToken.sourceEnd : statement.sourceEnd;
       label_36:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -7365,8 +7366,14 @@ Token token;
     {if (true) throw e;}
       }
       try {
-        jj_consume_token(SEMICOLON);
+        semiColonToken = jj_consume_token(SEMICOLON);
+      sourceEnd = semiColonToken.sourceStart;
+      endLine   = semiColonToken.beginLine;
+      endColumn = semiColonToken.beginColumn;
       } catch (ParseException e) {
+    sourceEnd = e.currentToken.sourceStart;
+    endLine   = e.currentToken.beginLine;
+    endColumn = e.currentToken.beginColumn;
     errorMessage = "';' expected after 'endif' keyword";
     errorLevel   = ERROR;
     errorStart = e.currentToken.sourceStart;
@@ -7378,21 +7385,33 @@ Token token;
     if (stmts.size() == 1) {
       {if (true) return new IfStatement(condition,
                              (Statement) stmts.get(0),
-                              elseIfs,
-                              elseStatement,
-                              pos,
-                              jj_input_stream.getPosition());}
+                             elseIfs,
+                             elseStatement,
+                             ifToken.sourceStart,
+                             sourceEnd,
+                             ifToken.beginLine,
+                             endLine,
+                             ifToken.beginColumn,
+                             endColumn);}
     } else {
       statementsArray = new Statement[stmts.size()];
       stmts.toArray(statementsArray);
       {if (true) return new IfStatement(condition,
                              new Block(statementsArray,
-                                       pos,
-                                       endStatements),
+                                       colonToken.sourceEnd,
+                                       sourceEnd,
+                                       colonToken.endLine,
+                                       endLine,
+                                       colonToken.endColumn,
+                                       endColumn),
                              elseIfs,
                              elseStatement,
-                             pos,
-                             jj_input_stream.getPosition());}
+                             ifToken.sourceStart,
+                             sourceEnd,
+                             ifToken.beginLine,
+                             endLine,
+                             ifToken.beginColumn,
+                             endColumn);}
     }
       break;
     case PHPEND:
@@ -7563,8 +7582,12 @@ Token token;
                            stmt,
                            elseIfs,
                            elseStatement,
-                           pos,
-                           jj_input_stream.getPosition());}
+                             ifToken.sourceStart,
+                             sourceEnd,
+                             ifToken.beginLine,
+                             endLine,
+                             ifToken.beginColumn,
+                             endColumn);}
       break;
     default:
       jj_la1[133] = jj_gen;
@@ -10109,6 +10132,11 @@ final ArrayList list = new ArrayList();
     return false;
   }
 
+  final private boolean jj_3_6() {
+    if (jj_3R_50()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_103() {
     if (jj_3R_119()) return true;
     Token xsp;
@@ -10209,11 +10237,6 @@ final ArrayList list = new ArrayList();
       xsp = jj_scanpos;
       if (jj_3R_122()) { jj_scanpos = xsp; break; }
     }
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_3R_50()) return true;
     return false;
   }
 
