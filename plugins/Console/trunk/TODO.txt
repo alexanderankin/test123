@@ -1,3 +1,5 @@
+- commando: text area
+- cvs commandos
 - periodic execution feature
 - notify of process exit
 - tool bar should be able to output to a buffer
