@@ -170,6 +170,9 @@ class SystemShell extends Shell
 	 */
 	public CompletionInfo getCompletions(Console console, String command)
 	{
+		// lazily initialize aliases and variables
+		init();
+		
 		final String fileDelimiters = "=\'\" \\"+File.pathSeparator;
 		
 		String lastArgEscaped, lastArg;
@@ -252,17 +255,20 @@ class SystemShell extends Shell
 		
 		
 		// We add a double quote at the beginning of any completion with
-		// a special characters because the current argument parsing 
+		// special characters because the current argument parsing 
 		// (done in parse()) uses StreamTokenizer, which only handles 
-		// escaping if it's done within a string. We do this on systems
-		// where we don't support escaping so that whitespace works
-		// properly.
-		boolean isDoubleQuoted = (completionInfo.offset >0) && (command.charAt(completionInfo.offset-1) == '\"');
+		// escaping if it's done within a string. The purpose here is
+		// dual - to get parse() to unescape the characters and to get
+		// it to recognize the string as a single argument.
+		// On systems where we don't support escaping, we do this
+		// only for the 2nd purpose. 
+		boolean isDoubleQuoted = (completionInfo.offset > 0) && (command.charAt(completionInfo.offset - 1) == '\"');
 		if(!isDoubleQuoted)
 		{
+			final String specialCharacters = (File.separatorChar == '\\') ? " " : fileDelimiters;
 			for(int i = 0; i < completionsCount; i++){
 				String result = completionInfo.completions[i];
-				if (containsCharacters(result, fileDelimiters))
+				if (containsCharacters(result, specialCharacters))
 					result = "\"" + result;
 				completionInfo.completions[i] = result;
 			}
@@ -284,18 +290,22 @@ class SystemShell extends Shell
 		int lastSeparatorIndex = typedFilename.lastIndexOf(File.separator);
 		// The directory part of what the user typed, including the file separator.		
 		String typedDirName = lastSeparatorIndex == -1 ? "" : typedFilename.substring(0, lastSeparatorIndex+1);
+		
+		String expandedTypedFilename = expandVariables(console.getView(), console, typedFilename);
 
-		// Is the file typed by the user absolute?		
-		boolean isTypedFilenameAbsolute = new File(typedFilename).isAbsolute();
+		// Is the file typed by the user an absolute path or a relative?		
+		boolean isTypedFilenameAbsolute = new File(expandedTypedFilename).isAbsolute();
 
 		// The file typed by the user.
-		File typedFile = isTypedFilenameAbsolute ? new File(typedFilename) : new File(currentDirName, typedFilename);
+		File typedFile = isTypedFilenameAbsolute ?
+					new File(expandedTypedFilename) : 
+					new File(currentDirName, expandedTypedFilename);
 		
 		// The parent directory of the file typed by the user (or itself if it's already a directory). 
-		File dir = typedFilename.endsWith(File.separator) ? typedFile : typedFile.getParentFile();
+		File dir = expandedTypedFilename.endsWith(File.separator) ? typedFile : typedFile.getParentFile();
 		
 		// The filename part of the file typed by the user, or "" if it's a directory. 
-		String fileName = typedFilename.endsWith(File.separator) ? "" : typedFile.getName();
+		String fileName = expandedTypedFilename.endsWith(File.separator) ? "" : typedFile.getName();
 		
 		// The list of files we're going to try to match
 		String [] filenames = dir.list();
