@@ -4,11 +4,7 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true: -->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-"/usr/share/sgml/docbook/xml-dtd-4.1.2/docbookx.dtd">
-<!--
-  VERY BAD SYSTEM ID - but openjade cannot handle URLs:(
-  Should be "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd"
--->
+  "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
 <book>
   <bookinfo>
     <title>SQL plugin user's guide</title>
