@@ -51,6 +51,9 @@
     <pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${install.dir}/InfoViewer.jar" />
 		<pathelement location="${install.dir}/ErrorList.jar" />
+		<fileset dir="..">
+			<include name="*.jar" />
+		</fileset>
 	</path>
 
 
