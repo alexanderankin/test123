@@ -117,6 +117,7 @@ public final class PHPParserPlugin extends EBPlugin {
    */
   private void parse(final String path, final String text, final View view) {
     try {
+      Log.log(Log.DEBUG,PHPParserPlugin.class,"Parsing "+path);
       final PHPParser parser = new PHPParser();
       parser.setPath(path);
       errorSource.removeFileErrors(path);

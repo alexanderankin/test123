@@ -2159,7 +2159,7 @@ Statement StatementNoBreak() :
 {
   LOOKAHEAD(2)
   statement = expressionStatement()     {return statement;}
-| LOOKAHEAD(1)
+| LOOKAHEAD(2)
   statement = LabeledStatement()        {return statement;}
 | statement = Block()                   {return statement;}
 | statement = EmptyStatement()          {return statement;}
@@ -2735,7 +2735,12 @@ Block Block() :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
-  ( statement = BlockStatement() {list.add(statement);pos = statement.sourceEnd+1;}
+  ( statement = BlockStatement()
+    {
+      if (statement != null) {
+        list.add(statement);pos = statement.sourceEnd+1;
+      }
+    }
   | statement = htmlBlock()      {if (statement != null) {
                                     list.add(statement);
                                     pos = statement.sourceEnd+1;
@@ -2774,12 +2779,42 @@ Statement BlockStatement() :
     statement = Statement()         {if (phpDocument == currentSegment) pushOnAstNodes(statement);
                                      return statement;}
   } catch (ParseException e) {
+    Token semicolumn = error_skipto(SEMICOLON);
+    Token nextToken = e.currentToken.next;
+    if (nextToken == semicolumn) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "statement expected",
+                                            "statement",
+                                            nextToken.image,
+                                            nextToken.sourceEnd,
+                                            semicolumn.sourceStart,
+                                            nextToken.endLine,
+                                            semicolumn.beginLine,
+                                            nextToken.endColumn,
+                                            semicolumn.beginColumn));
+    } else {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "statement expected",
+                                            "statement",
+                                            nextToken.image,
+                                            nextToken.sourceEnd,
+                                            nextToken.sourceStart,
+                                            nextToken.endLine,
+                                            nextToken.beginLine,
+                                            nextToken.endColumn,
+                                            nextToken.beginColumn));
+    }
+    return null;
+  }
+/*  } catch (ParseException e) {
     errorMessage = "unexpected token : '"+ e.currentToken.image +"', a statement was expected";
     errorLevel   = ERROR;
     errorStart = e.currentToken.sourceStart;
     errorEnd   = e.currentToken.sourceEnd;
     throw e;
-  }
+  }*/
 | statement = ClassDeclaration()  {return statement;}
 | statement = MethodDeclaration() {if (phpDocument == currentSegment) pushOnAstNodes(statement);
                                    currentSegment.add((MethodDeclaration) statement);
