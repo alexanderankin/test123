@@ -57,8 +57,11 @@ public class ConsolePane extends JTextPane
 		inputMap.put(KeyStroke.getKeyStroke('\b'),
 			new BackspaceAction());
 
+		/* Press home to move to start of input area */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME,0),
 			new HomeAction());
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_HOME,
+			InputEvent.SHIFT_MASK),new SelectHomeAction());
 
 		/* Press Up/Down to access history */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,0),
@@ -171,6 +174,82 @@ public class ConsolePane extends JTextPane
 		}
 	} //}}}
 
+	//{{{ getInput() method
+	public String getInput()
+	{
+		try
+		{
+			Document doc = getDocument();
+			int cmdStart = getInputStart();
+			String line = doc.getText(cmdStart,doc.getLength() - cmdStart);
+			if(line.endsWith("\n"))
+				return line.substring(0,line.length() - 1);
+			else
+				return line;
+		}
+		catch(BadLocationException e)
+		{
+			throw new RuntimeException(e);
+		}
+	} //}}}
+
+	//{{{ setInput() method
+	public void setInput(String line)
+	{
+		try
+		{
+			Document doc = getDocument();
+			int cmdStart = getInputStart();
+			doc.remove(cmdStart,doc.getLength() - cmdStart);
+			doc.insertString(cmdStart,line,null);
+		}
+		catch(BadLocationException e)
+		{
+			throw new RuntimeException(e);
+		}
+	} //}}}
+
+	//{{{ getInputStart() method
+	public int getInputStart()
+	{
+		return ((Integer)getDocument().getProperty(InputStart))
+			.intValue();
+	} //}}}
+
+	//{{{ setInputStart() method
+	public void setInputStart(int cmdStart)
+	{
+		getDocument().putProperty(InputStart,new Integer(cmdStart));
+	} //}}}
+
+	//{{{ getPartialInput() method
+	public String getPartialInput()
+	{
+		try
+		{
+			return getDocument().getText(getInputStart(),
+				getCaretPosition() - getInputStart());
+		}
+		catch(BadLocationException e)
+		{
+			throw new RuntimeException(e);
+		}
+	} //}}}
+
+	//{{{ Private members
+	private static final Cursor MoveCursor
+		= Cursor.getPredefinedCursor
+		(Cursor.HAND_CURSOR);
+	private static final Cursor DefaultCursor
+		= Cursor.getPredefinedCursor
+		(Cursor.TEXT_CURSOR);
+
+	private EventListenerList listenerList;
+
+	private ConsoleHistoryText history;
+
+	private DocumentHandler documentHandler;
+	
 	//{{{ getAttributes() method
 	private AttributeSet getAttributes(int pos)
 	{
@@ -233,67 +312,6 @@ public class ConsolePane extends JTextPane
 		}
 	} //}}}
 
-	//{{{ getInput() method
-	public String getInput()
-	{
-		try
-		{
-			Document doc = getDocument();
-			int cmdStart = getInputStart();
-			String line = doc.getText(cmdStart,doc.getLength() - cmdStart);
-			if(line.endsWith("\n"))
-				return line.substring(0,line.length() - 1);
-			else
-				return line;
-		}
-		catch(BadLocationException e)
-		{
-			throw new RuntimeException(e);
-		}
-	} //}}}
-
-	//{{{ setInput() method
-	public void setInput(String line)
-	{
-		try
-		{
-			Document doc = getDocument();
-			int cmdStart = getInputStart();
-			doc.remove(cmdStart,doc.getLength() - cmdStart);
-			doc.insertString(cmdStart,line,null);
-		}
-		catch(BadLocationException e)
-		{
-			throw new RuntimeException(e);
-		}
-	} //}}}
-
-	//{{{ getInputStart() method
-	public int getInputStart()
-	{
-		return ((Integer)getDocument().getProperty(InputStart))
-			.intValue();
-	} //}}}
-
-	//{{{ setInputStart() method
-	public void setInputStart(int cmdStart)
-	{
-		getDocument().putProperty(InputStart,new Integer(cmdStart));
-	} //}}}
-
-	//{{{ Private members
-	private static final Cursor MoveCursor
-		= Cursor.getPredefinedCursor
-		(Cursor.HAND_CURSOR);
-	private static final Cursor DefaultCursor
-		= Cursor.getPredefinedCursor
-		(Cursor.TEXT_CURSOR);
-
-	private EventListenerList listenerList;
-
-	private ConsoleHistoryText history;
-
-	private DocumentHandler documentHandler;
 	//}}}
 
 	//{{{ MouseHandler class
@@ -384,6 +402,15 @@ public class ConsolePane extends JTextPane
 		public void actionPerformed(ActionEvent evt)
 		{
 			setCaretPosition(getInputStart());
+		}
+	} //}}}
+
+	//{{{ SelectHomeAction class
+	class SelectHomeAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			select(getInputStart(),getCaretPosition());
 		}
 	} //}}}
 

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2004 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -46,11 +46,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
-		addComponent(consoleToolBar = new JCheckBox(jEdit.getProperty(
-			"options.console.general.toolbar")));
-		consoleToolBar.getModel().setSelected(jEdit.getBooleanProperty(
-			"console.toolbar.enabled"));
-
 		addComponent(commandoToolBar = new JCheckBox(jEdit.getProperty(
 			"options.console.general.commando.toolbar")));
 		commandoToolBar.getModel().setSelected(jEdit.getBooleanProperty(
@@ -74,8 +69,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("console.toolbar.enabled",
-			consoleToolBar.getModel().isSelected());
 		jEdit.setBooleanProperty("commando.toolbar.enabled",
 			commandoToolBar.getModel().isSelected());
 
@@ -98,7 +91,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ Private members
 
 	//{{{ Instance variables
-	private JCheckBox consoleToolBar;
 	private JCheckBox commandoToolBar;
 	private FontSelector font;
 	private JButton bgColor;
