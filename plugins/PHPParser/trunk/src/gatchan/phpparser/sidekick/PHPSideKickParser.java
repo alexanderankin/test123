@@ -59,7 +59,7 @@ public final class PHPSideKickParser extends SideKickParser {
   public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
     phpErrorSource.setErrorSource(errorSource);
     final String path = buffer.getPath();
-    Project project = projectManager.getProject();
+    final Project project = projectManager.getProject();
     if (project != null) project.clearSourceFile(path);
     if (parser != null && !parser.isStopped()) {
       Log.log(Log.ERROR, PHPSideKickParser.class, "The parser had not been stopped before asking a new parse !");
@@ -136,18 +136,19 @@ public final class PHPSideKickParser extends SideKickParser {
                          Outlineable sourceNode,
                          Buffer buffer) {
     final AstNode astNode = (AstNode) sourceNode;
-    final Position position = buffer.createPosition(astNode.sourceStart);
+    final Position startPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getBeginLine()-1)+astNode.getBeginColumn());
+    final Position endPosition = buffer.createPosition(buffer.getLineStartOffset(astNode.getEndLine()) + astNode.getEndColumn());
     final PHPAsset asset;
     if (astNode instanceof ClassDeclaration) {
-      asset = new ClassAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
+      asset = new ClassAsset(astNode.toString(), startPosition, endPosition);
     } else if (astNode instanceof MethodDeclaration) {
-      asset = new MethodAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
+      asset = new MethodAsset(astNode.toString(), startPosition, endPosition);
     } else if (astNode instanceof VariableDeclaration) {
-      asset = new FieldAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
+      asset = new FieldAsset(astNode.toString(), startPosition, endPosition);
     } else if (astNode instanceof InclusionExpression) {
-      asset = new IncludeAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
+      asset = new IncludeAsset(astNode.toString(), startPosition, endPosition);
     } else {
-      asset = new PHPAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
+      asset = new PHPAsset(astNode.toString(), startPosition, endPosition);
     }
     final DefaultMutableTreeNode node = new DefaultMutableTreeNode(asset, true);
     if (sourceNode instanceof OutlineableWithChildren) {
@@ -212,7 +213,7 @@ public final class PHPSideKickParser extends SideKickParser {
       } else {
         String lastWord = null;
         if (wordStart != 0) {
-          int previousWordStart = TextUtilities.findWordStart(line, wordStart - 1, "$_->");
+          final int previousWordStart = TextUtilities.findWordStart(line, wordStart - 1, "$_->");
           lastWord = line.substring(previousWordStart, wordStart);
         }
         //We are inside a method of a class
@@ -240,7 +241,7 @@ public final class PHPSideKickParser extends SideKickParser {
     return null;
   }
 
-  private PHPSideKickCompletion completeStaticClassAccess(String currentWord,
+  private static PHPSideKickCompletion completeStaticClassAccess(String currentWord,
                                                           String line,
                                                           int wordStart,
                                                           Project project,
@@ -372,7 +373,7 @@ public final class PHPSideKickParser extends SideKickParser {
     phpSideKickCompletion.addOutlineableList(fields, currentWord);
     final String superClassName = classHeader.getSuperClassName();
     if (superClassName != null) {
-      Project project = ProjectManager.getInstance().getProject();
+      final Project project = ProjectManager.getInstance().getProject();
       if (project != null) {
         final ClassHeader superClassHeader = project.getClass(superClassName);
         if (superClassHeader == null) {
