@@ -360,10 +360,10 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		if(cmd.startsWith(":"))
 		{
-			text.setInput(null);
 			Shell _shell = Shell.getShell(cmd.substring(1));
 			if(_shell != null)
 			{
+				text.setInput(null);
 				setShell(_shell);
 				return;
 			}
@@ -527,16 +527,26 @@ implements EBComponent, Output, DefaultFocusComponent
 		if(pmsg.getWhat() == PluginUpdate.LOADED
 			|| pmsg.getWhat() == PluginUpdate.UNLOADED)
 		{
+			boolean resetShell = false;
+
 			updateShellList();
-			shellCombo.setSelectedItem(shell.getName());
 
 			Iterator iter = shellHash.keySet().iterator();
 			while(iter.hasNext())
 			{
 				String name = (String)iter.next();
 				if(Shell.getShell(name) == null)
+				{
+					if(this.shell.getName().equals(name))
+						resetShell = true;
 					iter.remove();
+				}
 			}
+
+			if(resetShell)
+				setShell((String)shellHash.keySet().iterator().next());
+			else
+				shellCombo.setSelectedItem(shell.getName());
 		}
 	} //}}}
 
@@ -698,19 +708,18 @@ implements EBComponent, Output, DefaultFocusComponent
 	//{{{ EvalAction class
 	public static class EvalAction extends AbstractAction
 	{
-		private Console console;
 		private String command;
 		
-		public EvalAction(String label, String command,
-			Console console)
+		public EvalAction(String label, String command)
 		{
 			super(label);
 			this.command = command;
-			this.console = console;
 		}
 		
 		public void actionPerformed(ActionEvent evt)
 		{
+			Console console = (Console)GUIUtilities.getComponentParent(
+				(Component)evt.getSource(),Console.class);
 			console.run(console.getShell(),console,command);
 		}
 	} //}}}
