@@ -880,10 +880,9 @@ ClassDeclaration ClassDeclaration() :
   final ClassHeader classHeader;
   final ClassDeclaration classDeclaration;
   Token className = null;
-  final Token superclassName, classToken, extendsToken;
+  final Token superclassName, classToken;
   String classNameImage = SYNTAX_ERROR_CHAR;
   String superclassNameImage = null;
-  final int classEnd;
 }
 {
   classToken = <CLASS>
@@ -904,7 +903,7 @@ ClassDeclaration ClassDeclaration() :
                                           classToken.endColumn+1));
   }
   [
-    extendsToken = <EXTENDS>
+    <EXTENDS>
     try {
       superclassName = <IDENTIFIER>
       {superclassNameImage = superclassName.image;}
@@ -969,7 +968,6 @@ ClassDeclaration ClassDeclaration() :
   //todo change this
   ClassBody(classDeclaration)
   {currentSegment = (OutlineableWithChildren) currentSegment.getParent();
-   //classDeclaration.sourceEnd = classEnd;
    pushOnAstNodes(classDeclaration);
    return classDeclaration;}
 }
@@ -1054,7 +1052,6 @@ FieldDeclaration FieldDeclaration() :
   final ArrayList arrayList = new ArrayList();
   final Token varToken;
   Token semicolonToken = null;
-  int pos;
 }
 {
   varToken = <VAR>
@@ -1062,7 +1059,6 @@ FieldDeclaration FieldDeclaration() :
     variableDeclaration = VariableDeclaratorNoSuffix()
       {
         arrayList.add(variableDeclaration);
-        pos = variableDeclaration.sourceEnd;
       }
     } catch (ParseException e) {
       final Token semicolon = error_skipto(SEMICOLON);
@@ -1084,7 +1080,6 @@ FieldDeclaration FieldDeclaration() :
     <COMMA> variableDeclaration = VariableDeclaratorNoSuffix()
       {
         arrayList.add(variableDeclaration);
-        pos = variableDeclaration.sourceEnd;
       }
   )*
   try {
@@ -1573,19 +1568,6 @@ MethodHeader methodHeader(final Token functionToken) :
   }
   FormalParameters(formalParameters)
   {
-    final int nameStart, nameEnd;
-    if (identifier == null) {
-      if (reference == null) {
-        nameStart = functionToken.sourceStart + 9;
-        nameEnd   = functionToken.sourceStart + 10;
-      } else {
-        nameStart = reference.sourceEnd + 1;
-        nameEnd   = reference.sourceEnd + 2;
-      }
-    } else {
-      nameStart = identifier.sourceStart;
-      nameEnd = identifier.sourceEnd;
-    }
     return new MethodHeader(path,
                             identifierChar,
                             reference != null,
@@ -1609,7 +1591,6 @@ MethodHeader methodHeader(final Token functionToken) :
 void FormalParameters(final ArrayList parameters) :
 {
   FormalParameter var;
-  final Token rparenToken;
 }
 {
   try {
@@ -1651,7 +1632,7 @@ void FormalParameters(final ArrayList parameters) :
       )*
   ]
   try {
-    rparenToken = <RPAREN>
+    <RPAREN>
   } catch (ParseException e) { //recup rparen si avant lbrace
       Token nextToken = getNextToken();
       while (nextToken.kind != EOF && nextToken.kind != RPAREN && nextToken.kind != LBRACE) {
@@ -1911,7 +1892,7 @@ Expression ConditionalExpression() :
 Expression ConditionalOrExpression() :
 {
   Expression expr,expr2;
-  int operator;
+  int operator,sourceEnd,endLine,endColumn;
   Token orToken;
 }
 {
@@ -1924,7 +1905,6 @@ Expression ConditionalOrExpression() :
     )
     expr2 = ConditionalAndExpression()
     {
-      int sourceEnd,endLine,endColumn;
       if (expr2 == null) {
         sourceEnd = orToken.sourceEnd;
         endLine   = orToken.endLine;
@@ -1946,7 +1926,7 @@ Expression ConditionalOrExpression() :
 Expression ConditionalAndExpression() :
 {
   Expression expr,expr2;
-  int operator;
+  int operator,sourceEnd,endLine,endColumn;
   Token andToken;
 }
 {
@@ -1956,7 +1936,6 @@ Expression ConditionalAndExpression() :
    | andToken = <_ANDL>   {operator = OperatorIds.ANDL;})
    expr2 = ConcatExpression() 
    {
-     int sourceEnd,endLine,endColumn;
      if (expr2 == null) {
        sourceEnd = andToken.sourceEnd;
        endLine   = andToken.endLine;
@@ -1978,12 +1957,25 @@ Expression ConditionalAndExpression() :
 Expression ConcatExpression() :
 {
   Expression expr,expr2;
+  Token dotToken;
+  int sourceEnd,endLine,endColumn;
 }
 {
   expr = InclusiveOrExpression()
   (
-    <DOT> expr2 = InclusiveOrExpression()
-    {expr = new BinaryExpression(expr,expr2,OperatorIds.DOT);}
+    dotToken = <DOT> expr2 = InclusiveOrExpression()
+    {
+      if (expr2 == null) {
+        sourceEnd = dotToken.sourceEnd;
+        endLine   = dotToken.endLine;
+        endColumn = dotToken.endColumn;
+      } else {
+        sourceEnd = expr2.sourceEnd;
+        endLine   = expr2.getEndLine();
+        endColumn = expr2.getEndColumn();
+      }
+      expr = new BinaryExpression(expr,expr2,OperatorIds.DOT,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+    }
   )*
   {return expr;}
 }
@@ -1994,11 +1986,25 @@ Expression ConcatExpression() :
 Expression InclusiveOrExpression() :
 {
   Expression expr,expr2;
+  Token bitOrToken;
+  int sourceEnd,endLine,endColumn;
 }
 {
   expr = ExclusiveOrExpression()
-  (<BIT_OR> expr2 = ExclusiveOrExpression()
-   {expr = new BinaryExpression(expr,expr2,OperatorIds.OR);}
+  (
+   bitOrToken = <BIT_OR> expr2 = ExclusiveOrExpression()
+   {
+     if (expr2 == null) {
+       sourceEnd = bitOrToken.sourceEnd;
+       endLine   = bitOrToken.endLine;
+       endColumn = bitOrToken.endColumn;
+     } else {
+       sourceEnd = expr2.sourceEnd;
+       endLine   = expr2.getEndLine();
+       endColumn = expr2.getEndColumn();
+     }
+     expr = new BinaryExpression(expr,expr2,OperatorIds.OR,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+   }
   )*
   {return expr;}
 }
@@ -2009,12 +2015,25 @@ Expression InclusiveOrExpression() :
 Expression ExclusiveOrExpression() :
 {
   Expression expr,expr2;
+  Token bitXorToken;
+  int sourceEnd,endLine,endColumn;
 }
 {
   expr = AndExpression()
   (
-    <BIT_XOR> expr2 = AndExpression()
-    {expr = new BinaryExpression(expr,expr2,OperatorIds.BIT_XOR);}
+    bitXorToken = <BIT_XOR> expr2 = AndExpression()
+    {
+      if (expr2 == null) {
+        sourceEnd = bitXorToken.sourceEnd;
+        endLine   = bitXorToken.endLine;
+        endColumn = bitXorToken.endColumn;
+      } else {
+        sourceEnd = expr2.sourceEnd;
+        endLine   = expr2.getEndLine();
+        endColumn = expr2.getEndColumn();
+      }
+      expr = new BinaryExpression(expr,expr2,OperatorIds.BIT_XOR,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+    }
   )*
   {return expr;}
 }
@@ -2025,13 +2044,26 @@ Expression ExclusiveOrExpression() :
 Expression AndExpression() :
 {
   Expression expr,expr2;
+  Token bitAndToken;
+  int sourceEnd,endLine,endColumn;
 }
 {
   expr = EqualityExpression()
   (
     LOOKAHEAD(1)
-    <BIT_AND> expr2 = EqualityExpression()
-    {expr = new BinaryExpression(expr,expr2,OperatorIds.AND);}
+    bitAndToken = <BIT_AND> expr2 = EqualityExpression()
+    {
+      if (expr2 == null) {
+        sourceEnd = bitAndToken.sourceEnd;
+        endLine   = bitAndToken.endLine;
+        endColumn = bitAndToken.endColumn;
+      } else {
+        sourceEnd = expr2.sourceEnd;
+        endLine   = expr2.getEndLine();
+        endColumn = expr2.getEndColumn();
+      }
+      expr = new BinaryExpression(expr,expr2,OperatorIds.AND,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+    }
   )*
   {return expr;}
 }
@@ -2044,6 +2076,7 @@ Expression EqualityExpression() :
   Expression expr,expr2;
   int operator;
   Token token;
+  int sourceEnd,endLine,endColumn;
 }
 {
   expr = RelationalExpression()
@@ -2080,7 +2113,16 @@ Expression EqualityExpression() :
                                           e.currentToken.endColumn+1));
   }
   {
-    expr = new BinaryExpression(expr,expr2,operator);
+    if (expr2 == null) {
+      sourceEnd = token.sourceEnd;
+      endLine   = token.endLine;
+      endColumn = token.endColumn;
+    } else {
+      sourceEnd = expr2.sourceEnd;
+      endLine   = expr2.getEndLine();
+      endColumn = expr2.getEndColumn();
+    }
+    expr = new BinaryExpression(expr,expr2,operator,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
   }
   )*
   {return expr;}
@@ -2092,17 +2134,29 @@ Expression EqualityExpression() :
 Expression RelationalExpression() :
 {
   Expression expr,expr2;
-  int operator;
+  int operator, sourceEnd,endLine,endColumn;
+  Token token;
 }
 {
   expr = ShiftExpression()
   (
-  ( <LT> {operator = OperatorIds.LESS;}
-  | <GT> {operator = OperatorIds.GREATER;}
-  | <LE> {operator = OperatorIds.LESS_EQUAL;}
-  | <GE> {operator = OperatorIds.GREATER_EQUAL;})
+  ( token = <LT> {operator = OperatorIds.LESS;}
+  | token = <GT> {operator = OperatorIds.GREATER;}
+  | token = <LE> {operator = OperatorIds.LESS_EQUAL;}
+  | token = <GE> {operator = OperatorIds.GREATER_EQUAL;})
    expr2 = ShiftExpression()
-  {expr = new BinaryExpression(expr,expr2,operator);}
+  {
+    if (expr2 == null) {
+      sourceEnd = token.sourceEnd;
+      endLine   = token.endLine;
+      endColumn = token.endColumn;
+    } else {
+      sourceEnd = expr2.sourceEnd;
+      endLine   = expr2.getEndLine();
+      endColumn = expr2.getEndColumn();
+    }
+    expr = new BinaryExpression(expr,expr2,operator,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+  }
   )*
   {return expr;}
 }
@@ -2113,16 +2167,28 @@ Expression RelationalExpression() :
 Expression ShiftExpression() :
 {
   Expression expr,expr2;
-  int operator;
+  int operator, sourceEnd,endLine,endColumn;
+  Token token;
 }
 {
   expr = AdditiveExpression()
   (
-  ( <LSHIFT>         {operator = OperatorIds.LEFT_SHIFT;}
-  | <RSIGNEDSHIFT>   {operator = OperatorIds.RIGHT_SHIFT;}
-  | <RUNSIGNEDSHIFT> {operator = OperatorIds.UNSIGNED_RIGHT_SHIFT;})
+  ( token = <LSHIFT>         {operator = OperatorIds.LEFT_SHIFT;}
+  | token = <RSIGNEDSHIFT>   {operator = OperatorIds.RIGHT_SHIFT;}
+  | token = <RUNSIGNEDSHIFT> {operator = OperatorIds.UNSIGNED_RIGHT_SHIFT;})
   expr2 = AdditiveExpression()
-  {expr = new BinaryExpression(expr,expr2,operator);}
+  {
+    if (expr2 == null) {
+      sourceEnd = token.sourceEnd;
+      endLine   = token.endLine;
+      endColumn = token.endColumn;
+    } else {
+      sourceEnd = expr2.sourceEnd;
+      endLine   = expr2.getEndLine();
+      endColumn = expr2.getEndColumn();
+    }
+    expr = new BinaryExpression(expr,expr2,operator,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+  }
   )*
   {return expr;}
 }  
@@ -2133,17 +2199,29 @@ Expression ShiftExpression() :
 Expression AdditiveExpression() :
 {
   Expression expr,expr2;
-  int operator;
+  int operator,sourceEnd,endLine,endColumn;
+  Token token;
 }
 {
   expr = MultiplicativeExpression()
   (
     LOOKAHEAD(1)
-     ( <PLUS>  {operator = OperatorIds.PLUS;}
-     | <MINUS> {operator = OperatorIds.MINUS;}
+     ( token = <PLUS>  {operator = OperatorIds.PLUS;}
+     | token = <MINUS> {operator = OperatorIds.MINUS;}
   )
    expr2 = MultiplicativeExpression()
-  {expr = new BinaryExpression(expr,expr2,operator);}
+  {
+    if (expr2 == null) {
+      sourceEnd = token.sourceEnd;
+      endLine   = token.endLine;
+      endColumn = token.endColumn;
+    } else {
+      sourceEnd = expr2.sourceEnd;
+      endLine   = expr2.getEndLine();
+      endColumn = expr2.getEndColumn();
+    }
+    expr = new BinaryExpression(expr,expr2,operator,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+  }
    )*
   {return expr;}
 }
@@ -2154,7 +2232,8 @@ Expression AdditiveExpression() :
 Expression MultiplicativeExpression() :
 {
   Expression expr,expr2;
-  int operator;
+  int operator,sourceEnd,endLine,endColumn;
+  Token token;
 }
 {
   try {
@@ -2163,16 +2242,27 @@ Expression MultiplicativeExpression() :
     if (errorMessage != null) throw e;
     errorMessage = "unexpected token '"+e.currentToken.next.image+'\'';
     errorLevel   = ERROR;
-    errorStart = token.sourceStart;
-    errorEnd   = token.sourceEnd;
+    errorStart = this.token.sourceStart;
+    errorEnd   = this.token.sourceEnd;
     throw e;
   }
   (
-   (  <STAR>      {operator = OperatorIds.MULTIPLY;}
-    | <SLASH>     {operator = OperatorIds.DIVIDE;}
-    | <REMAINDER> {operator = OperatorIds.REMAINDER;})
+   (  token = <STAR>      {operator = OperatorIds.MULTIPLY;}
+    | token = <SLASH>     {operator = OperatorIds.DIVIDE;}
+    | token = <REMAINDER> {operator = OperatorIds.REMAINDER;})
     expr2 = UnaryExpression()
-    {expr = new BinaryExpression(expr,expr2,operator);}
+    {
+      if (expr2 == null) {
+        sourceEnd = token.sourceEnd;
+        endLine   = token.endLine;
+        endColumn = token.endColumn;
+      } else {
+        sourceEnd = expr2.sourceEnd;
+        endLine   = expr2.getEndLine();
+        endColumn = expr2.getEndColumn();
+      }
+      expr = new BinaryExpression(expr,expr2,operator,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
+    }
   )*
   {return expr;}
 }
@@ -2360,7 +2450,7 @@ Expression UnaryExpressionNotPlusMinus() :
   expr = CastExpression()         {return expr;}
 | expr = PostfixExpression()      {return expr;}
 | expr = Literal()                {return expr;}
-| expr = ListExpression()   {return expr;}
+| expr = ListExpression()         {return expr;}
 
 | <LPAREN> expr = Expression()
   try {
@@ -3307,7 +3397,6 @@ PrintExpression PrintExpression() :
 ListExpression ListExpression() :
 {
   Expression expr = null;
-  final Expression expression;
   final ArrayList list = new ArrayList();
   int pos,line,column;
   final Token listToken, rParen;
@@ -3341,7 +3430,7 @@ ListExpression ListExpression() :
       {pos = token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
     } catch (ParseException e) {
       fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
+                                            path,
                                             "',' expected",
                                             ",",
                                             e.currentToken.image,
@@ -3370,19 +3459,6 @@ ListExpression ListExpression() :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
- /* [ <ASSIGN> expression = Expression()
-    {
-    final AbstractVariable[] vars = new AbstractVariable[list.size()];
-    list.toArray(vars);
-    return new ListExpression(vars,
-                              expression,
-                              listToken.sourceStart,
-                              expression.sourceEnd,
-                              listToken.beginLine,
-                              expression.getEndLine(),
-                              listToken.beginColumn,
-                              expression.getEndColumn());}
-  ]*/
   {
     final AbstractVariable[] vars = new AbstractVariable[list.size()];
     list.toArray(vars);

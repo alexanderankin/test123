@@ -44,11 +44,15 @@ public final class FrameFindItem extends JFrame implements EBComponent {
   private int mode;
   private int wantedCaretPosition;
   private Buffer buffer;
+  private PHPItemCellRenderer cellRenderer;
+  private static final Color LIST_SELECTION_BACKGROUND = new Color(0xcc,0xcc,0xff);
 
   public FrameFindItem() {
     setUndecorated(true);
     itemList = new JList(listModel);
-    itemList.setCellRenderer(new PHPItemCellRenderer());
+    cellRenderer = new PHPItemCellRenderer();
+    itemList.setSelectionBackground(LIST_SELECTION_BACKGROUND);
+    itemList.setCellRenderer(cellRenderer);
     itemList.addKeyListener(new ItemListKeyAdapter());
     itemList.addMouseListener(new MyMouseAdapter());
     searchField = new JTextField();
@@ -84,10 +88,11 @@ public final class FrameFindItem extends JFrame implements EBComponent {
     final AbstractProject project = projectManager.getProject();
     final QuickAccessItemFinder quickAccess = project.getQuickAccess();
     final String searchText = searchField.getText().toLowerCase();
+    cellRenderer.setSearchString(searchText);
     final java.util.List itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
     if (itemContaining.isEmpty()) {
-      listModel.setList(itemContaining);
       window.setVisible(false);
+      listModel.setList(itemContaining);
       searchField.requestFocus();
     } else {
       final ListIterator listIterator = itemContaining.listIterator();
@@ -171,10 +176,8 @@ public final class FrameFindItem extends JFrame implements EBComponent {
   }
 
   public void setVisible(boolean b) {
+    window.setVisible(false);
     super.setVisible(b);
-    if (!b) {
-      window.setVisible(b);
-    }
 //searchField.requestFocus();
   }
 

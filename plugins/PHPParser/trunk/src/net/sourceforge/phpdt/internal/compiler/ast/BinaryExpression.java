@@ -14,20 +14,6 @@ public final class BinaryExpression extends OperatorExpression {
   /** The right expression. */
   private final Expression right;
 
-  /**
-   * Create a binary expression.
-   * @deprecated use {@link BinaryExpression#BinaryExpression(Expression, Expression, int, int, int, int, int, int, int)}
-   *  
-   * @param left     the left expression
-   * @param right    the right expression
-   * @param operator an operator taken in the {@link OperatorExpression} interface
-   */
-  public BinaryExpression(final Expression left,
-                          final Expression right,
-                          final int operator) {
-    this(left,right, operator, left.sourceStart, right.sourceEnd,left.getBeginLine(),right.getEndLine(),left.getBeginColumn(),right.getEndColumn());
-  }
-
   public BinaryExpression(Expression left,
                           Expression right,
                           final int operator,
