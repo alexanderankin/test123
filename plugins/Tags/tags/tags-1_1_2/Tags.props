@@ -1,0 +1,101 @@
+plugin.tags.TagsPlugin.activate=defer
+
+# general plugin information
+plugin.tags.TagsPlugin.name=Tags
+plugin.tags.TagsPlugin.author=Kenrick Drew
+plugin.tags.TagsPlugin.version=1.1.2
+plugin.tags.TagsPlugin.docs=doc/index.html
+plugin.tags.TagsPlugin.depend.0=jdk 1.3
+plugin.tags.TagsPlugin.depend.1=jedit 04.02.02.00
+
+# option panes
+plugin.tags.TagsPlugin.option-pane=tags
+
+# action labels
+tags-follow-tag.label=Follow Tag
+tags-follow-tag-new-view.label=Follow Tag (New View)
+tags-enter-and-follow-tag.label=Follow Tag...
+tags-push-position.label=Push Postion onto Tag Stack
+tags-pop-tag.label=Pop Position
+tags-clear-tag-stack.label=Clear Tag Stack
+
+# menu items
+plugin.tags.TagsPlugin.menu=tags-follow-tag \
+							tags-follow-tag-new-view \
+							tags-enter-and-follow-tag \
+							tags-push-position \
+							tags-pop-tag \
+							- \
+							tags-tagstack \
+							tags-tagstack-toggle \
+							tags-tagstack-float \
+							- \
+							tags-clear-tag-stack
+
+# dockables
+
+tags-tagstack.title=Tag Stack
+tags-tagstack.label=Tag Stack
+tags.tagstack-goto=Go to
+tags.tagstack-remove=Remove
+tags.tagstack-pop=Pop
+tags.tagstack-clear=Clear
+
+
+# Messages
+no-tag-index-files.title=Error
+no-tag-index-files.message=No tag index files to search.  Please add tag index files\nfrom the Global Options dialog.
+
+func-not-found.title=Error
+func-not-found.message=\"{0}\" not found!
+
+tag-def-file-not-found.title=Error
+tag-def-file-not-found.message=The tag file name path \"{0}\"\nthat is listed in the tag index file, does not\nexist.  You may need to update your tag index\nfiles.
+
+
+# Tag To dialog strings
+tags.enter-tag-dlg.title=Enter And Follow Tag
+tags.enter-tag-dlg.tag-to.label=Tag to:
+tags.enter-tag-dlg.new-view-checkbox.label=Open new view
+tags.enter-tag-dlg.view-found-tags.label=View incrementally found tags
+tags.enter-tag-dlg.keep-dialog.label=Keep dialog
+
+# Tag collision dialog
+tag-collision-dlg.title=Tag Collisions
+tag-collision-dlg.label=Choose tag:
+
+tag-collision-popup-help.label=ESC key to cancel, SPACE key for dialog
+
+# Option strings
+options.tags.label=Tags
+options.tags.code=new tags.TagsOptionsPanel();
+options.tags.tag-file-type.title=Tag File Type
+options.tags.tag-search-files.label=Tag index files (in order of search)
+options.tags.tag-search-current-buff-tag-file.label=Search tag index file in current buffer's directory
+options.tags.tags-search-parent-dirs.label=Search in parent directories, if no tag index file in buffer's directory
+options.tags.tag-search-all-files.label=If tag match is found continue searching subsequent tag index files.
+options.tags.tag-search-files-add.label=Add...
+options.tags.tag-search-files-remove.label=Remove
+options.tags.tag-search-files-move-up.label=Move Up
+options.tags.tag-search-files-move-down.label=Move Down
+options.tags.tag-options.title=Tagging Options
+options.tags.current-buffer-file-name.label=Tag index file name:
+options.tags.open-dialogs-under-cursor.label=Position dialogs under cursor (Experimental)
+options.tags.tag-extends-through-dot.label=Tags extend through member access operator
+options.tags.tag-index-file-path-column.label=Tag Index File Paths
+options.tags.tag-index-file-enabled-column.label=Enabled
+options.tags.tag-ok.label=OK
+options.tags.tag-cancel.label=Cancel
+options.tags.tag-close.label=Close
+
+# Option values
+options.tags.current-buffer-file-name=tags
+options.tags.tag-search-current-buff-tag-file=true
+options.tags.tags-search-parent-dirs=false
+options.tags.tag-search-all-files=false
+options.tags.note-all-tags-in-tag-history=true
+options.tags.open-dialogs-under-cursor=false
+options.tags.tag-extends-through-dot=true
+tags.enter-tag-dlg.view-found-tags=false
+tags.enter-tag-dlg.keep-dialog=false
+
