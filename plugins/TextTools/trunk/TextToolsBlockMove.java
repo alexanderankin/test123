@@ -112,7 +112,7 @@ public class TextToolsBlockMove
 			Selection[] sels = textArea.getSelection();
 			boolean overwrite = false;
 			boolean cont=true;
-			//buffer.beginCompoundEdit();
+			buffer.beginCompoundEdit();
 			for (int i=sels.length-1; i>=0 && cont; i--) {
 				Selection currSel = sels[i];
 				//		moveSelection(currSel,-1,-1);
@@ -479,14 +479,15 @@ public class TextToolsBlockMove
 					}
 				}
 			}
-			//buffer.endCompoundEdit();
+			buffer.endCompoundEdit();
 			buffer.setIntegerProperty("indentSize",oldIndent);
-			//cont = false;
+			/* this code is only relevant if the code runs as bsh macro
 			if (!cont) {
 				buffer.endCompoundEdit();
 				buffer.undo(textArea);
 				buffer.beginCompoundEdit();
 			}
+			*/
 		}
 	}
 }
