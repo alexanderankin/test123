@@ -39,7 +39,7 @@ public class AntFarmOptionPane
 
 	public AntFarmOptionPane()
 	{
-		super( AntFarmPlugin.NAME );
+		super( "Build Options" );
 	}
 
 

@@ -94,7 +94,10 @@ public class AntFarmPlugin extends EBPlugin
 
 	public void createOptionPanes( OptionsDialog od )
 	{
-		od.addOptionPane( new AntFarmOptionPane() );
+		OptionGroup grp = new OptionGroup( NAME );
+		grp.addOptionPane( new AntFarmOptionPane() );
+		grp.addOptionPane( new PropertiesOptionPane() );
+		od.addOptionGroup( grp );
 	}
 
 

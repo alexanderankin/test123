@@ -79,55 +79,7 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 	}
 
 
-	public void handleMessage( EBMessage msg )
-	{
-		if ( msg instanceof BufferUpdate ) {
-			BufferUpdate updateMessage = (BufferUpdate) msg;
-			if ( updateMessage.getWhat() == BufferUpdate.LOADED ) {
-				File file = updateMessage.getBuffer().getFile();
-				if ( file.getName().equals( "build.xml" ) )
-					addAntBuildFile( file.getAbsolutePath() );
-			}
-		}
-
-		if ( msg instanceof VFSUpdate ) {
-			VFSUpdate updateMessage = (VFSUpdate) msg;
-			reloadAntFile( updateMessage.getPath() );
-		}
-	}
-
-
-	public void addAntBuildFile( String buildFile )
-	{
-		if ( isAntFileKnown( buildFile ) )
-			return;
-
-		String currentProp = jEdit.getProperty( "antviewer.buildfiles" );
-		if ( ( currentProp != null ) && ( currentProp.length() > 0 ) )
-			currentProp += "," + buildFile;
-		else
-			currentProp = buildFile;
-
-		jEdit.setProperty( "antviewer.buildfiles", currentProp );
-		jEdit.saveSettings();
-
-		_antTree.reload();
-	}
-
-
-	Project getProject( String buildFilePath ) throws Exception
-	{
-		Project project
-			 = (Project) _antProjects.get( buildFilePath );
-		if ( project != null )
-			return project;
-		project = parseBuildFile( buildFilePath );
-		_antProjects.put( buildFilePath, project );
-		return project;
-	}
-
-
-	Vector getAntBuildFiles()
+	public Vector getAntBuildFiles()
 	{
 		String prop = jEdit.getProperty( "antviewer.buildfiles" );
 		if ( prop == null )
@@ -142,38 +94,43 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 	}
 
 
-	void loadBuildFileInShell( String filePath )
+	public void handleMessage( EBMessage msg )
 	{
-		Vector buildFiles = getAntBuildFiles();
-		for ( int i = 0; i < buildFiles.size(); i++ ) {
-			String fileName = (String) buildFiles.elementAt( i );
-			if ( fileName.equals( filePath ) ) {
-				Console console = AntFarmPlugin.getConsole( _view, false );
-				console.run( AntFarmPlugin.ANT_SHELL, console, "="
-					 + ( i + 1 ) );
-				break;
+		if ( msg instanceof BufferUpdate ) {
+			BufferUpdate updateMessage = (BufferUpdate) msg;
+			if ( updateMessage.getWhat() == BufferUpdate.LOADED ) {
+				File file = updateMessage.getBuffer().getFile();
+				if ( file.getName().equals( "build.xml" ) )
+					addAntBuildFile( file.getAbsolutePath() );
 			}
+		}
+
+		if ( msg instanceof VFSUpdate ) {
+			VFSUpdate updateMessage = (VFSUpdate) msg;
+			reloadAntBuildFile( updateMessage.getPath() );
 		}
 	}
 
 
-	void promptForAntBuildFile()
+	public void addAntBuildFile( String path )
 	{
-		String[] buildFile = GUIUtilities.showVFSFileDialog(
-			_view,
-			null,
-			VFSBrowser.OPEN_DIALOG, false
-			 );
-		if ( null == buildFile )
+		if ( isAntFileKnown( path ) )
 			return;
 
-		// assume we only got one back since we only allowed single
-		// selection.
-		addAntBuildFile( buildFile[0] );
+		String currentProp = jEdit.getProperty( "antviewer.buildfiles" );
+		if ( ( currentProp != null ) && ( currentProp.length() > 0 ) )
+			currentProp += "," + path;
+		else
+			currentProp = path;
+
+		jEdit.setProperty( "antviewer.buildfiles", currentProp );
+		jEdit.saveSettings();
+
+		_antTree.reload();
 	}
 
 
-	void reloadAntFile( String path )
+	public void reloadAntBuildFile( String path )
 	{
 		if ( !isAntFileKnown( path ) )
 			return;
@@ -190,23 +147,73 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 	}
 
 
-	void removeAntBuildFile()
+	public void removeAntBuildFile( String path )
 	{
 		if ( _antTree == null )
 			return;
-		String buildFile = _antTree.getSelectedBuildFile();
 		Vector buildFiles = getAntBuildFiles();
 		Vector remainingBuildFiles = new Vector();
 
 		String file = null;
 		for ( int i = 0; i < buildFiles.size(); i++ ) {
 			file = (String) buildFiles.elementAt( i );
-			if ( !file.equals( buildFile ) )
+			if ( !file.equals( path ) )
 				remainingBuildFiles.addElement( file );
 		}
 
 		saveAntFilesProperty( remainingBuildFiles );
 		_antTree.removeBuildFileNode();
+	}
+
+
+	public void promptForAntBuildFile()
+	{
+		String[] buildFile = GUIUtilities.showVFSFileDialog(
+			_view,
+			null,
+			VFSBrowser.OPEN_DIALOG, false
+			 );
+		if ( null == buildFile )
+			return;
+
+		// assume we only got one back since we only allowed single
+		// selection.
+		addAntBuildFile( buildFile[0] );
+	}
+
+
+	Project getProject( String buildFilePath ) throws Exception
+	{
+		Project project
+			 = (Project) _antProjects.get( buildFilePath );
+		if ( project != null )
+			return project;
+		project = parseBuildFile( buildFilePath );
+		_antProjects.put( buildFilePath, project );
+		return project;
+	}
+
+
+	void removeAntBuildFile()
+	{
+		if ( _antTree == null )
+			return;
+		removeAntBuildFile( _antTree.getSelectedBuildFile() );
+	}
+
+
+	void loadBuildFileInShell( String filePath )
+	{
+		Vector buildFiles = getAntBuildFiles();
+		for ( int i = 0; i < buildFiles.size(); i++ ) {
+			String fileName = (String) buildFiles.elementAt( i );
+			if ( fileName.equals( filePath ) ) {
+				Console console = AntFarmPlugin.getConsole( _view, false );
+				console.run( AntFarmPlugin.ANT_SHELL, console, "="
+					 + ( i + 1 ) );
+				break;
+			}
+		}
 	}
 
 
