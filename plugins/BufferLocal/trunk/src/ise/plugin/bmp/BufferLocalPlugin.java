@@ -31,6 +31,7 @@ import org.gjt.sp.jedit.msg.EditorExitRequested;
  * example:n|ISO-8859-1|f|java|indent|none|76|3|3|t
  *
  * TODO: need to check how this works with files loaded with the ftp plugin
+ * DID: seems to work okay with ftp, need to test some more
  * 
  * @author Dale Anson, danson@germane-software.com
  * @since Oct 1, 2003

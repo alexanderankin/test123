@@ -1,15 +1,9 @@
 <project name="Bufferminer Plugin" default="plugin" basedir=".">
     <!-- $Id$ -->
+    
     <!--
-      build.props
-      Needs to contain:
-         jedit.home the directory containing jedit.jar
-         
-      Optionally contain:
-         build.num=1.0
-         build.compiler=jikes
-         build.compiler.emacs=true
-         and any other properties below
+      read build.props for what is required and some optional settings for 
+      the build.
     -->
     <property file="build.props"/>
     
@@ -65,8 +59,7 @@
                debug="on" 
                nowarn="on" 
                destdir="${classes.dir}"
-               srcdir="${src.dir}" 
-               source="1.4">
+               srcdir="${src.dir}">
             <classpath refid="classpathref" />
         </javac>
     </target>
@@ -128,7 +121,7 @@
    ========================================================================= -->
     <target name="-prep_files">
         <echo>preparing files</echo>
-        <!-- clean out the config deployment directory -->
+        <!-- clean out the config and doc deployment directories -->
         <delete>
             <fileset dir="${config.dir}" includes="**/*"/>
             <fileset dir="${doc.dir}" includes="**/*"/>

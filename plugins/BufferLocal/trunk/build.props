@@ -1,4 +1,9 @@
+# required settings
 jedit.home=/home/danson/apps/jedit/4.2pre5
+install.dir=/home/danson/.jedit/jars
+build.num=1.0.1
+
+# optional settings, remove if you don't use jikes
 build.compiler=jikes
 build.compiler.emacs=true
-build.num=1.0.1
+
