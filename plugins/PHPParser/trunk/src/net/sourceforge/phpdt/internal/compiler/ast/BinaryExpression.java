@@ -53,7 +53,9 @@ public final class BinaryExpression extends OperatorExpression {
    */
   public void getModifiedVariable(final List list) {
     left.getModifiedVariable(list);
-    right.getModifiedVariable(list);
+    if(right != null) {
+      right.getModifiedVariable(list);
+    }
   }
 
   /**
@@ -63,7 +65,9 @@ public final class BinaryExpression extends OperatorExpression {
    */
   public void getUsedVariable(final List list) {
     left.getUsedVariable(list);
+    if (right != null) {
     right.getUsedVariable(list);
+    }
   }
 
 }
