@@ -66,8 +66,12 @@ public class SybaseVFS extends ComplexVFS
 
   static
   {
+    sybaseObjectTypes.put( "Defaults",
+        new CodeObjectType( "D" ) );
     sybaseObjectTypes.put( "Procedures",
         new CodeObjectType( "P" ) );
+    sybaseObjectTypes.put( "Extended Procedures",
+        new CodeObjectType( "XP" ) );
     sybaseObjectTypes.put( "Functions",
         new CodeObjectType( "FN" ) );
     sybaseObjectTypes.put( "Triggers",
