@@ -22,7 +22,12 @@ white-space-menu=\
     -                                           \
     white-space.toggle-leading-tab-highlight    \
     white-space.toggle-inner-tab-highlight      \
-    white-space.toggle-trailing-tab-highlight
+    white-space.toggle-trailing-tab-highlight   \
+    -                                                  \
+    white-space.toggle-remove-trailing-white-space     \
+    white-space.toggle-soft-tabify-leading-white-space \
+    white-space.toggle-tabify-leading-white-space      \
+    white-space.toggle-untabify-leading-white-space
 
 # Action labels
 white-space.toggle-space-highlight.label=Show spaces
@@ -37,6 +42,11 @@ white-space.toggle-whitespace-highlight.label=Show other whitespaces
 white-space.toggle-block-highlight.label=Show paragraph separators
 white-space.toggle-fold-highlight.label=Show fold guides
 white-space.toggle-fold-tooltip.label=Show fold tooltips
+white-space.toggle-remove-trailing-white-space.label=Remove trailing whitespaces
+white-space.toggle-soft-tabify-leading-white-space.label=Tabify/untabify according to soft tabs setting
+white-space.toggle-untabify-leading-white-space.label=Untabify leading whitespaces
+white-space.toggle-tabify-leading-white-space.label=Tabify leading whitespaces
+
 
 # Options default values
 white-space.show-space-default=true
