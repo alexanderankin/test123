@@ -225,7 +225,9 @@ public class FileImporter extends Importer {
 		}
 
 		public boolean accept(File f) {
-			return (project.getFile(f.getAbsolutePath()) == null);
+			return (project.getFile(f.getAbsolutePath()) == null ||
+					f.getAbsolutePath().endsWith("~") ||
+					f.getAbsolutePath().endsWith(".bak"));
 		}
 
 	} //}}}
