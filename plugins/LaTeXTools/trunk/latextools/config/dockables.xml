@@ -9,6 +9,9 @@
     <DOCKABLE NAME="bibliography-dock">
         new uk.co.antroy.latextools.BibTeXPanel(view, buffer);
     </DOCKABLE>
+    <DOCKABLE NAME="bibliography-table-dock">
+        new uk.co.antroy.latextools.BibTeXTablePanel(view, buffer);
+    </DOCKABLE>
     <DOCKABLE NAME="label-dock">
 			  new uk.co.antroy.latextools.ReferencePanel(view, buffer);
     </DOCKABLE>

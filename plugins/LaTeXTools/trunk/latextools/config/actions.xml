@@ -107,4 +107,9 @@
  		</CODE>
   </ACTION>
   
+  <ACTION NAME="rename-label">
+		<CODE>
+        uk.co.antroy.latextools.LaTeXMacros.renameLabel(view, buffer);
+ 		</CODE>
+  </ACTION>
 </ACTIONS>
