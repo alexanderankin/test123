@@ -15,8 +15,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2003-06-23 21:10:58 $ by $Author: bemace $
- * @version    $Revision: 1.5 $
+ * @modified   $Date: 2004-01-15 19:47:36 $ by $Author: bemace $
+ * @version    $Revision: 1.6 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, CaretListener, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -24,18 +24,17 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	private int caretColumn = -1;
 	private Mark.WrapMark wrapMarker;
 	private Mark tempMarker = new Mark("",Color.GRAY);
-	
+
 	public ColumnRuler(JEditTextArea textArea) {
 		_textArea = textArea;
 		wrapMarker = new Mark.WrapMark(_textArea.getBuffer());
-		wrapMarker.setColumn(getWrapColumn());
 		tempMarker.setVisible(false);
 		caretColumn = getCaretColumn();
 		_dndManager = new DnDManager(this);
 	}
 	//{{{ paint() method
 	public void paint(Graphics gfx) {
-		
+
 		//{{{ Get ready
 		_textArea.getBuffer().readLock();
 		int textAreaWidth = _textArea.getWidth();
@@ -108,7 +107,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 			mark(gfx,tempMarker.getColumn(),tempMarker.getColor());
 		}
 		//}}}
-		
+
 		//{{{ Draw tick marks
 		gfx.setColor(getForeground());
 		for (int col = 0; col < (textAreaWidth - hScroll) / charWidth; col++) {
@@ -132,12 +131,19 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		}
 		//}}}
 
+		//{{{ Draw border
+		if (getBorderColor() != null) {
+			gfx.setColor(getBorderColor());
+			gfx.drawLine(xOffset-4,lineHeight-1,textAreaWidth,lineHeight-1);
+		}
+		//}}}
+
 		_textArea.getBuffer().readUnlock();
 	}//}}}
 
 	//{{{ Painting helpers
 	private void mark(Graphics gfx, int col, Color c) {
-		mark(gfx,col,c,1);	
+		mark(gfx,col,c,1);
 	}
 	/**
 	 * Draws a colored line at the given column
@@ -153,19 +159,23 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		gfx.setColor(c);
 		gfx.fillRect(x + hScroll - (width - 1) / 2, 0, width, getLineHeight());
 	}
-	
+
 	//}}}
 
 	//{{{ methods for finding data needed to paint ruler
 
 	private int getCaretColumn() {
-		Point caret = _textArea.offsetToXY(_textArea.getCaretPosition());
-		int hScroll = _textArea.getHorizontalOffset();
-		if (caret != null) {
-			int caretX = (int) caret.getX();
-			int charWidth = getCharWidth();
-			return (caretX - hScroll) / charWidth;		
-		} else {
+		try {
+			Point caret = _textArea.offsetToXY(_textArea.getCaretPosition());
+			int hScroll = _textArea.getHorizontalOffset();
+			if (caret != null) {
+				int caretX = (int) caret.getX();
+				int charWidth = getCharWidth();
+				return (caretX - hScroll) / charWidth;
+			} else {
+				return -1;
+			}
+		} catch (Exception e) {
 			return -1;
 		}
 	}
@@ -173,7 +183,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	private Color getCaretColor() {
 		return _textArea.getPainter().getCaretColor();
 	}
-	
+
 	private FontMetrics getFontMetrics() {
 		return _textArea.getPainter().getFontMetrics();
 	}
@@ -193,13 +203,13 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	private int getLineHeight() {
 		return _textArea.getPainter().getFontMetrics().getHeight();
 	}
-	
+
 	private String getWrapMode() {
 		return _textArea.getBuffer().getStringProperty("wrap");
 	}
-	
+
 	private int getWrapColumn() {
-		return _textArea.getBuffer().getIntegerProperty("maxLineLen", 0);		
+		return _textArea.getBuffer().getIntegerProperty("maxLineLen", 0);
 	}
 
 	private Selection getCurrentSelection() {
@@ -220,14 +230,14 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 				fullUpdate();
 			}
 		}
-		
+
 		if (m instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate) m;
 			if (bu.getWhat().equals(bu.CREATED) || bu.getWhat().equals(bu.LOADED)) {
 				fullUpdate();
 			}
 		}
-		
+
 		if (m instanceof PropertiesChanged) {
 			caretColumn = getCaretColumn();
 			wrapMarker.setColumn(getWrapColumn());
@@ -235,14 +245,14 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		}
 	}
 	//}}}
-	
+
 	private void fullUpdate() {
 		caretColumn = getCaretColumn();
 		wrapMarker.setBuffer(_textArea.getBuffer());
 		wrapMarker.setColumn(getWrapColumn());
 		repaint();
 	}
-	
+
 	//{{{ CaretListener implementation
 	public void caretUpdate(CaretEvent e) {
 		caretColumn = getCaretColumn();
@@ -251,7 +261,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	//}}}
 
 	//{{{ ScrollListener implementation
-	public void scrolledVertically(JEditTextArea textArea) { 
+	public void scrolledVertically(JEditTextArea textArea) {
 		if (getCaretColumn() >= 0) {
 			caretColumn = getCaretColumn();
 			repaint();
@@ -286,11 +296,11 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	}
 
 	public void mouseReleased(MouseEvent e) { }
-	
+
 	//}}}
-	
+
 	//{{{ MouseMotionListener implementation
-	
+
 	public void mouseDragged(MouseEvent e) {}
 
 	public void mouseMoved(MouseEvent e) {
@@ -306,14 +316,14 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	}
 
 	//}}}
-	
+
 	int getColumnAtPoint(Point p) {
 		int hScroll = _textArea.getHorizontalOffset();
 		int x = (int) p.getX();
 		int charWidth = getCharWidth();
-		return (-1 * getXOffset() - hScroll + x + charWidth / 2) / charWidth; 
+		return (-1 * getXOffset() - hScroll + x + charWidth / 2) / charWidth;
 	}
-	
+
 	Mark getMarkAtPoint(Point p) {
 		int col = getColumnAtPoint(p);
 		if (wrapMarker.getColumn() == col) {
@@ -321,7 +331,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		}
 		return null;
 	}
-	
+
 	//{{{ Add/Remove Notify
 	public void addNotify() {
 		super.addNotify();
@@ -331,7 +341,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 		addMouseListener(this);
 		addMouseMotionListener(this);
 	}
-	
+
 	public void removeNotify() {
 		super.removeNotify();
 		EditBus.removeFromBus(this);
@@ -357,7 +367,25 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	}
 
 	public Color getBackground() {
-		return jEdit.getColorProperty(ColumnRulerPlugin.OPTION_PREFIX + "background", _textArea.getPainter().getBackground());
+		String bgSrc = jEdit.getProperty("options.columnruler.background.src","textarea");
+		if (bgSrc.equals("textarea")) {
+			return _textArea.getPainter().getBackground();
+		} else if (bgSrc.equals("gutter")) {
+			return jEdit.getColorProperty("view.gutter.bgColor",Color.WHITE);
+		} else {
+			return jEdit.getColorProperty("options.columnruler.background.color",Color.WHITE);
+		}
+	}
+
+	public Color getBorderColor() {
+		String borderSrc = jEdit.getProperty("options.columnruler.border.src","none");
+		if (borderSrc.equals("none")) {
+			return null;
+		} else if (borderSrc.equals("gutter")) {
+			return jEdit.getColorProperty("view.gutter.focusBorderColor",Color.BLUE);
+		} else {
+			return jEdit.getColorProperty("options.columnruler.border.color",Color.BLACK);
+		}
 	}
 
 	public Color getHighlight() {
@@ -367,14 +395,14 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 	public Mark getTempMarker() {
 		return tempMarker;
 	}
-	
+
 	public String toString() {
 		return "Column Ruler";
 	}
 
 	//}}}
 
-	//{{{ Inner classes	
+	//{{{ Inner classes
 	class SetWrapAction extends AbstractAction {
 		private String _mode;
 		public SetWrapAction(String name, String mode) {
