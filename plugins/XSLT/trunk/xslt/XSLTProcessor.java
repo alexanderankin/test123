@@ -63,7 +63,8 @@ import org.gjt.sp.util.Log;
 /**
  * GUI for performing XSL Transformations.
  *
- *@author   Greg Merrill, Robert McKinnon
+ * @author Greg Merrill
+ * @author Robert McKinnon
  */
 public class XSLTProcessor extends JPanel {
 
@@ -80,7 +81,6 @@ public class XSLTProcessor extends JPanel {
   private JButton downButton;
   private JButton transformButton;
   private double widestButtonWidth = -1;
-
 
 
   /**
@@ -319,6 +319,8 @@ public class XSLTProcessor extends JPanel {
             if(!resultDocumentTextField.getText().equals(jEdit.getProperty("XSLTProcessor.result.pleaseName"))) {
               newBuffer.save(view, resultDocumentTextField.getText());
             }
+
+            view.getTextArea().setCaretPosition(0);
 
             Date end = new Date();
             long timeTaken = end.getTime() - start.getTime();
