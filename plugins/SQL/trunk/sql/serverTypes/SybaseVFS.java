@@ -37,7 +37,6 @@ import sql.serverTypes.complex.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    20 Март 2002 г.
  */
 public class SybaseVFS extends ComplexVFS
 {

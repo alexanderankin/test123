@@ -2,7 +2,7 @@
 
 plugin.sql.SqlPlugin.name=SQL
 plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
-plugin.sql.SqlPlugin.version=1.01
+plugin.sql.SqlPlugin.version=1.02
 plugin.sql.SqlPlugin.docs=users-guide.html
 
 plugin.sql.SqlPlugin.depend.0=jdk 1.4
@@ -16,6 +16,7 @@ plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.3
 plugin.sql.SqlPlugin.menu=sql.resultSet - sql.chooseCurrentServer - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.SpecialCommentRemover sql.preprocessors.VariableSubstitutor - sql.repeatLastQuery
 
 plugin.projectviewer.sql.SqlPlugin.pv-listeners=sql.SqlPluginPVListener
+plugin.projectviewer.sql.SqlPlugin.option-pane=sql.serverconfig
 
 sql.publishBuffer.label=Execute buffer
 sql.publishSelection.label=Execute selection
@@ -43,6 +44,8 @@ options.sql_preprocessors_specialCommentRemover.code=new sql.preprocessors.Speci
 
 ### Properties for use by this plugin
 sql.serverconfig.title=SQL Server Configuration
+options.sql.serverconfig.label=SQL Server Configuration
+options.sql.serverconfig.code=new sql.options.ServersOptionPane(projectviewer.config.ProjectOptions.getProject());
 sql.config.label=Connection configuration
 
 options.sql.servers.label=Servers

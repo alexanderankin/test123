@@ -85,7 +85,7 @@ public class SqlUtils
    */
   public static VPTProject getProject( View view )
   {
-    return PVActions.getCurrentProject( view );
+    return ProjectViewer.getActiveProject( view );
   }
 
 

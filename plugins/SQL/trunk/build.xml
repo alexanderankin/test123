@@ -104,4 +104,14 @@
     </exec>
   </target>
 
+<target name="javadoc" description="Generates javadoc sourcecode documentation">
+    <mkdir dir="${build.javadoc}"/>
+    <javadoc sourcepath="${src.dir}"
+             destdir="${build.javadoc}"
+             packagenames="sql.*"
+             windowtitle="${ant.project.name} API"
+             classpathref="project.class.path"/>
+  </target>
+
+
 </project>
