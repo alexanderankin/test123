@@ -27,18 +27,12 @@ import javax.swing.border.*;
 import org.gjt.sp.jedit.*;
 
 
-public class InfoViewerOptionPane 
-        extends AbstractOptionPane implements ActionListener {
+public class InfoViewerOptionPane extends AbstractOptionPane {
 
     // private members
-    private JRadioButton  rbInternal;
-    private JRadioButton  rbOther;
-    private JRadioButton  rbClass;
-    private JRadioButton  rbNetscape;
-    private JTextField    tBrowser;
-    private JTextField    tClass;
-    private JTextField    tMethod;
-    private JTextField    tHome;
+    private JTextField tHome;
+    private JTextField tMaxGoMenu;
+    
 
     public InfoViewerOptionPane() {
         super("infoviewer");
@@ -48,60 +42,7 @@ public class InfoViewerOptionPane
 
         // create the dialog:
 
-        // create the dialog: 1. select browser
-        
-        addComponent(new JLabel(jEdit.getProperty(
-            "options.infoviewer.browser.label")));
-        addComponent(rbInternal = new JRadioButton(jEdit.getProperty(
-            "options.infoviewer.browser.internal")));            
-        addComponent(rbClass = new JRadioButton(jEdit.getProperty(
-            "options.infoviewer.browser.class")));
-        addComponent(rbNetscape = new JRadioButton(jEdit.getProperty(
-            "options.infoviewer.browser.netscape")));
-        addComponent(rbOther = new JRadioButton(jEdit.getProperty(
-            "options.infoviewer.browser.other")));
-
-        ButtonGroup browserGroup = new ButtonGroup();
-        browserGroup.add(rbInternal);
-        browserGroup.add(rbClass);
-        browserGroup.add(rbNetscape);
-        browserGroup.add(rbOther);
-        
-        rbInternal.addActionListener(this);
-        rbClass.addActionListener(this);
-        rbNetscape.addActionListener(this);
-        rbOther.addActionListener(this);        
-        
-        // create the dialog: 2. configuring browser
-        
-        addComponent(new Box.Filler(space, space, space));
-        
-        addComponent(new JLabel(jEdit.getProperty(
-            "options.infoviewer.browser.settings.label")));
-        
-        addComponent(
-            jEdit.getProperty("options.infoviewer.browser.class.label"),
-            tClass = new JTextField(jEdit.getProperty(
-                "options.infoviewer.browser.class.default"), 15)
-        );
-        addComponent(
-            jEdit.getProperty("options.infoviewer.browser.method.label"),
-            tMethod = new JTextField(jEdit.getProperty(
-                "options.infoviewer.browser.method.default"), 15)
-        );
-        addComponent(
-            jEdit.getProperty("options.infoviewer.browser.other.label"),
-            tBrowser = new JTextField(jEdit.getProperty(
-                "options.infoviewer.browser.other.default"), 15)
-        );
-
-        // create the dialog: 3. misc settings
-        
-        addComponent(new Box.Filler(space, space, space));
-        
-        addComponent(new JLabel(jEdit.getProperty(
-            "options.infoviewer.misc.label")));
-        
+        // 1. homepage property
         String homepage = jEdit.getProperty("infoviewer.homepage");
         if (homepage == null) {
             String jEditHome = MiscUtilities.constructPath(
@@ -110,38 +51,18 @@ public class InfoViewerOptionPane
             homepage = "file:" + jEditHome + "/jeditdocs/index.html";
             jEdit.setProperty("infoviewer.homepage", homepage);
         }
-        
-        addComponent(jEdit.getProperty("options.infoviewer.misc.homepage"),
+        addComponent(jEdit.getProperty("options.infoviewer.homepage"),
             tHome = new JTextField(homepage, 15));
             
-        // configure the dialog:
+        // 2. max. number of menu entries in "Go" menu
+        String max_go_menu = jEdit.getProperty("infoviewer.max_go_menu");
+        if (max_go_menu == null) {
+            max_go_menu = "20";
+            jEdit.setProperty("infoviewer.max_go_menu", max_go_menu);
+        }
+        addComponent(jEdit.getProperty("options.infoviewer.max_go_menu"),
+            tMaxGoMenu = new JTextField(max_go_menu, 15));
         
-        String classname = jEdit.getProperty("infoviewer.class");
-        if (classname != null && classname.length() > 0) {
-            tClass.setText(classname);
-        }
-
-        String methodname = jEdit.getProperty("infoviewer.method");
-        if (methodname != null && methodname.length() > 0) {
-            tMethod.setText(methodname);
-        }
-
-        String otherBrowser = jEdit.getProperty("infoviewer.otherBrowser");
-        if (otherBrowser != null && otherBrowser.length() > 0) {
-            tBrowser.setText(otherBrowser);
-        }
-
-        String intBrowser = jEdit.getProperty("infoviewer.browsertype");
-        if ("netscape".equals(intBrowser))
-            rbNetscape.setSelected(true);
-        else if ("class".equals(intBrowser))
-            rbClass.setSelected(true);
-        else if ("external".equals(intBrowser))
-            rbOther.setSelected(true);
-        else
-            rbInternal.setSelected(true);
-            
-        enableItems();
     }
 
 
@@ -150,32 +71,8 @@ public class InfoViewerOptionPane
      * This should save any properties saved in this option pane.
      */
     public void save() {
-        jEdit.setProperty("infoviewer.browsertype",
-            rbInternal.isSelected() ? "internal" : 
-            rbClass.isSelected() ? "class" : 
-            rbNetscape.isSelected() ? "netscape" : "external");
-            
-        jEdit.setProperty("infoviewer.otherBrowser", tBrowser.getText());            
-        jEdit.setProperty("infoviewer.class", tClass.getText());
-        jEdit.setProperty("infoviewer.method", tMethod.getText());
         jEdit.setProperty("infoviewer.homepage", tHome.getText());
-        
-         // only used in old version 0.1:
-        jEdit.unsetProperty("infoviewer.internalBrowser");
+        jEdit.setProperty("infoviewer.max_go_menu", tMaxGoMenu.getText());
     }
     
-    
-    /**
-     * called when one of the radio buttons is clicked
-     */
-    public void actionPerformed(ActionEvent e) {
-        enableItems();
-    }
-    
-    
-    private void enableItems() {
-        tClass.setEnabled(rbClass.isSelected());
-        tMethod.setEnabled(rbClass.isSelected());
-        tBrowser.setEnabled(rbOther.isSelected());
-    }
 }

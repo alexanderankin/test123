@@ -1,6 +1,6 @@
 /*
- * BookmarksEntry.java - a bookmark, consisting of title and url
- * Copyright (C) 1999 Slava Pestov
+ * EnhancedJToolBar.java
+ * Copyright (C) 2000 Dirk Moebius
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,18 +17,24 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package infoviewer;
+package infoviewer.workaround;
+
+import javax.swing.*;
+import javax.swing.event.*;
 
 
-public class BookmarksEntry implements Cloneable {
-    String title;
-    String url;
-    
-    public BookmarksEntry(String t, String u) { title = t; url = u; }
-    
-    public BookmarksEntry getClone() {
-        return new BookmarksEntry(this.title, this.url);
+/**
+ * this is a workaround class for <code>JToolBar</code>
+ * for JDK versions prior to 1.3. The method <code>add(Action)</code>
+ * doesn't set the right properties.
+ */
+public class EnhancedJToolBar extends JToolBar {
+    public EnhancedJToolBar() { super(); }
+    public EnhancedJToolBar(int orientation) { super(orientation); }
+    public JButton add(Action a) {
+        JButton b = super.add(a);
+        b.setText(null);
+        b.setToolTipText(a.getValue(Action.SHORT_DESCRIPTION).toString());
+        return b;
     }
-    
-    public Object clone() { return getClone(); }
 }

@@ -26,6 +26,7 @@ import java.lang.reflect.*;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Vector;
+import java.util.Enumeration;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
@@ -51,7 +52,11 @@ public class InfoViewerPlugin extends EBPlugin {
     }
 
     public void createOptionPanes(OptionsDialog optionsDialog) {
-        optionsDialog.addOptionPane(new infoviewer.InfoViewerOptionPane());
+        OptionGroup myGroup = new OptionGroup("InfoViewer");
+        myGroup.addOptionPane(new infoviewer.ChooseBrowserOptionPane());
+        myGroup.addOptionPane(new infoviewer.InfoViewerOptionPane());
+        optionsDialog.addOptionGroup(myGroup);
+        //optionsDialog.addOptionPane(new infoviewer.InfoViewerOptionPane());
     }
     // end EditPlugin implementation
 
@@ -133,8 +138,8 @@ public class InfoViewerPlugin extends EBPlugin {
             String[] args = new String[3];
             args[0] = "sh";
             args[1] = "-c";
-            args[2] = "netscape -remote openURL\\(\'" + convertURL(u) 
-                      + "\'\\) -raise || netscape \'" + convertURL(u) + "\'";
+            args[2] = "netscape -remote openURL\\(\'" + u 
+                      + "\'\\) -raise || netscape \'" + u + "\'";
             try {
                 Runtime.getRuntime().exec(args);
             }
@@ -176,9 +181,9 @@ public class InfoViewerPlugin extends EBPlugin {
      *   of Strings.
      */
     private String[] convertCommandString(String command, String url) {
-        String convURL = convertURL(url);
         Vector args = new Vector();
         StringBuffer buf = new StringBuffer();
+        boolean ufound = false;
         
         for (int i = 0; i < command.length(); i++) {
             char c = command.charAt(i);
@@ -190,7 +195,8 @@ public class InfoViewerPlugin extends EBPlugin {
                         char c2 = command.charAt(++i);
                         switch (c2) {
                             case 'u':
-                                buf.append(convURL);
+                                buf.append(url);
+                                ufound = true;
                                 break;
                             default:
                                 buf.append(c2);
@@ -214,27 +220,14 @@ public class InfoViewerPlugin extends EBPlugin {
             }
          }
          
-         args.addElement(buf.toString());         
+         args.addElement(buf.toString());
+         if (!ufound)
+            args.addElement(url);
          String[] result = new String[args.size()];
          args.copyInto(result);
          return result;
     }
 
-    /** 
-     * returns a new copy of the URL string, where the spaces are converted 
-     * to "%20".
-     */
-    private String convertURL(String url) {
-        StringBuffer buf = new StringBuffer();
-        char c;
-        for (int i = 0; i < url.length(); i++)
-            if ((c = url.charAt(i)) == ' ')
-                buf.append("%20");
-            else
-                buf.append(c);
-        return buf.toString();
-    }
-    
 
     private void showURLWithMethod(String url, String clazz, String method) {
         Class c = null;

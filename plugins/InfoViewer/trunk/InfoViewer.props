@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.InfoViewerPlugin.name=InfoViewer
 plugin.InfoViewerPlugin.author=Dirk Moebius
-plugin.InfoViewerPlugin.version=0.4.1
+plugin.InfoViewerPlugin.version=0.5.0
 plugin.InfoViewerPlugin.docs=index.html
 
 plugin.InfoViewerPlugin.depend.0=jdk 1.1
@@ -11,7 +11,7 @@ plugin.InfoViewerPlugin.depend.2=plugin EditBusPlugin 0.9.1
 # Plugin menu properties
 infoviewer-menu=infoviewer-open - infoviewer-open-buffer infoviewer-open-sel
 infoviewer-menu.label=InfoViewer
-infoviewer-open.label=Open...
+infoviewer-open.label=Open Browser...
 infoviewer-open-buffer.label=Open current buffer in InfoViewer
 infoviewer-open-sel.label=Open selected URL in InfoViewer
 
@@ -47,7 +47,7 @@ infoviewer.open_file.mnemonic=O
 infoviewer.open_file.description=Open a file...
 infoviewer.open_file.shortcut=C+o
 
-infoviewer.edit_url=Edit URL
+infoviewer.edit_url=Edit current URL
 infoviewer.edit_url.icon=../images/Edit.gif
 infoviewer.edit_url.mnemonic=O
 infoviewer.edit_url.description=Edit the current document with jEdit
@@ -107,10 +107,16 @@ infoviewer.about=About InfoViewer...
 infoviewer.about.mnemonic=A
 infoviewer.about.shortcut=F1
 
+infoviewer.follow_link=Follow Link
+infoviewer.follow_link.icon=../images/Blank.gif
+infoviewer.back.mnemonic=F
+infoviewer.back.description=Follow the link under the pointer
+
 # Option pane properties
-options.infoviewer.label=InfoViewer
-options.infoviewer.browser.label=Select Browser:
-options.infoviewer.browser.internal=InfoViewer
+options.choosebrowser.label=Choose Browser
+options.infoviewer.label=Internal Viewer Settings
+options.infoviewer.browser.label=Choose Browser:
+options.infoviewer.browser.internal=Internal (InfoViewer)
 options.infoviewer.browser.class=Class in classpath
 options.infoviewer.browser.netscape=Netscape (with reuse, Unix only)
 options.infoviewer.browser.other=External browser
@@ -123,8 +129,8 @@ options.infoviewer.browser.method.default=showInternalInfoViewer
 options.infoviewer.browser.other.label=External browser command:\ 
 options.infoviewer.browser.other.default=netscape -remote openURL($u) -raise
 
-options.infoviewer.misc.label=Miscellaneous:
-options.infoviewer.misc.homepage=Homepage:\ 
+options.infoviewer.homepage=Homepage:\ 
+options.infoviewer.max_go_menu=Max. number of entries in Go menu:\ 
 
 options.infoviewer.help=Help
 

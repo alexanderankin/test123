@@ -1,6 +1,20 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
+Version 0.5.0
+-------------
+* Unlimited history (not stored, current session only)
+* History is now accessible in "Go" menu.
+* InfoViewer no longer reloads the page when navigating to anchors.
+* Right click popup menu.
+* changed option pane: has now two submenus
+* new option: "Max. number of entries on Go menu"
+* plain text urls are now viewed in monospaced font
+* BugFix: external browser invocation now appends url, if $u is missing
+* some other bugfixes I can't remember
+* Requires jEdit 2.3pre6 or higher and EditBus 0.9.1 or higher
+
+
 Version 0.4.1
 -------------
 * Option "Netscape (with reuse, Unix only )" now uses the "-raise" option to
