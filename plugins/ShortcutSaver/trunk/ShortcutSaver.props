@@ -73,7 +73,7 @@ options.shortcutSaver.editmodes.actions=Actions
 #
 
 shortcutSaver.error.noaction.title=ShortcutSaver Error
-shortcutSaver.error.noaction.message=No action defined
+shortcutSaver.error.noaction.message=Shortcut Saver Action#{0} not defined for edit mode {1}
 
 
 #
