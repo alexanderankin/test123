@@ -5,10 +5,9 @@
 <ACTIONS>
     <ACTION NAME="white-space.toggle-block-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getBlockHighlight().toggleEnabled();
@@ -73,13 +72,13 @@
 
     <ACTION NAME="white-space.toggle-space-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getSpaceHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
@@ -95,13 +94,13 @@
 
     <ACTION NAME="white-space.toggle-leading-space-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getLeadingSpaceHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
@@ -117,13 +116,13 @@
 
     <ACTION NAME="white-space.toggle-inner-space-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getInnerSpaceHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
@@ -139,13 +138,13 @@
 
     <ACTION NAME="white-space.toggle-trailing-space-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getTrailingSpaceHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
@@ -161,13 +160,13 @@
 
     <ACTION NAME="white-space.toggle-tab-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getTabHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
@@ -183,13 +182,13 @@
 
     <ACTION NAME="white-space.toggle-leading-tab-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getLeadingTabHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
@@ -205,13 +204,13 @@
 
     <ACTION NAME="white-space.toggle-inner-tab-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getInnerTabHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
@@ -227,13 +226,13 @@
 
     <ACTION NAME="white-space.toggle-trailing-tab-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getTrailingTabHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
@@ -249,13 +248,13 @@
 
     <ACTION NAME="white-space.toggle-whitespace-highlight">
         <CODE>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return ; }
-
-            model = highlight.getModel();
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
+            );
             if (model == null) { return; }
 
             model.getWhitespaceHighlight().toggleEnabled();
+
             whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
         </CODE>
         <IS_SELECTED>
