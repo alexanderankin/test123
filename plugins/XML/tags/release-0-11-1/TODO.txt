@@ -1,0 +1,42 @@
+- document xml.root property
+- xcatalog format
+- newer ant completion
+- [catalog] fatal error... etc.
+- ids are kind of hackish -- use something similar to a hypersearch result
+- fix xerces 2.3 deprecation
+- if close complete off, / should not show a popup immediately
+- swing HTML parser should be replaced with something else
+- complete <foo / to <foo />
+- html parser: empty tags
+- .dtd files need to be ignored
+- html files before parsing complete -- don't show CDATA in popup
+- fix IBM JDK problem
+- misplaced closing tags break everything
+- test XMLCatalog support, include an XMLCatalog DTD
+- &, < or > will show up twice if a DTD defines it
+- xml insert: show CDATA, comment in list?
+- xmlns attributes, XMLSchema-instance stuff
+- TagParser: use segments, not strings
+- instead of built-in completion info for xsd and xsl, pre-parse some
+  schemas to validate these file types.
+- preparsing and grammar cache needs a rework.
+- attribute completion.
+
+[error] java.lang.ThreadDeath
+[error]         at java.lang.Thread.stop(Thread.java:635)
+[error]         at xml.parser.XmlParser.stopThread(Unknown Source)
+[error]         at xml.parser.XmlParser.parse(Unknown Source)
+[error]         at xml.parser.XmlParser.handleMessage(Unknown Source)
+[error]         at org.gjt.sp.jedit.EditBus.send(Unknown Source)
+[error]         at org.gjt.sp.jedit.EditPane.setBuffer(Unknown Source)
+[error]         at org.gjt.sp.jedit.View.setBuffer(Unknown Source)
+[error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
+[error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
+[error]         at projectviewer.ProjectViewer.openProject(Unknown Source)
+- clean up entity code
+- empty data -- see what's up, & clean up
+- tag highlight scope bracket in gutter
+- 'advanced' option pane for selecting completion info files,
+  built-in namespaces, etc.
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available
