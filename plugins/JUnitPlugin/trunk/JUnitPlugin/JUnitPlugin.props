@@ -37,3 +37,8 @@ junit.test.failures.icon=icons/error.gif
 junit.test.failures.label=Failures
 junit.test.failures.tooltip=The list of failed tests
 # }}}
+
+# {{{ Error properties
+junit.error.class-not-found.title=Error Running Test
+junit.error.class-not-found.message=JUnit cannot find the following class:\n\n     {0}\n\nWould you like to add it to your classpath?
+# }}}
