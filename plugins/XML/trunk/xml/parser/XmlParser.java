@@ -42,7 +42,8 @@ public abstract class XmlParser extends SideKickParser
 	{
 		if(jEdit.getBooleanProperty("xml.tag-highlight"))
 		{
-			TagHighlight highlight = new TagHighlight(view);
+			TagHighlight highlight = new TagHighlight();
+			view.getTextArea().addStructureMatcher(highlight);
 			highlights.put(view,highlight);
 		}
 	} //}}}
@@ -52,7 +53,7 @@ public abstract class XmlParser extends SideKickParser
 	{
 		TagHighlight highlight = (TagHighlight)highlights.get(view);
 		if(highlight != null)
-			highlight.dispose();
+			view.getTextArea().removeStructureMatcher(highlight);
 	} //}}}
 
 	//{{{ supportsCompletion() method

@@ -19,6 +19,7 @@ package xml.parser;
 
 //{{{ Imports
 import java.util.*;
+import org.gjt.sp.jedit.textarea.StructureMatcher;
 import xml.completion.ElementDecl;
 import xml.XmlParsedData;
 //}}}
@@ -344,11 +345,15 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 	//}}}
 
 	//{{{ Tag class
-	public static class Tag {
+	public static class Tag extends StructureMatcher.Match
+	{
 		public String tag = null;
 		public int type = -1;
-		public int start = -1;
-		public int end = -1;
+
+		Tag()
+		{
+			start = end = -1;
+		}
 
 		public String toString()
 		{

@@ -1,3 +1,33 @@
+Hi,
+
+XmlParsedData is a subclass of SideKickParsedData, which has:
+
+public DefaultMutableTreeNode root;
+
+DefaultMutableTreeNode has a simple API for accessing nodes:
+
+java.util.Enumeration children();
+TreeNode getChildAt(int);
+
+For each TreeNode, call getUserObject() which gives you an XmlTag
+instance.
+
+XmlTag has a lot of public members, among them:
+
+String name;
+Attributes attributes;
+Position start;
+Position end;
+
+- broken tag highlight with soft wrap:
+<EOL_SPAN_REGEXP AT_WHITESPACE_END="TRUE" HASH_CHAR="R" TYPE="COMMENT1">REM\s</EOL_SPAN_REGEXP>
+save triggers a close tag or something?
+- escape doesn't hide popup
+- ids in xml.root's other children
+- fuckups parsing build.xml
+- editing a tag triggers completer
+- use NekoXML
+- edit tag: preserve case
 - CatalogProperties complaints
 - document xml.root property
 - document xml.validate property
@@ -6,8 +36,8 @@
 - ids are kind of hackish -- use something similar to a hypersearch result
 - fix xerces 2.3 deprecation
 - if close complete off, / should not show a popup immediately
+  - remove this option altogether
 - swing HTML parser should be replaced with something else
-- complete <foo / to <foo />
 - html parser: empty tags
 - .dtd files need to be ignored
 - html files before parsing complete -- don't show CDATA in popup

@@ -147,6 +147,13 @@
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:noNamespaceSchemaLocation='personal.xsd'>]]></programlisting>
  <para>
+  Or if the target schema has an associated namespace:
+ </para>
+ <programlisting><![CDATA[<dictionary           xmlns="http://www.xml-cml.org/schema/stmml"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://www.xml-cml.org/schema/stmml ../schema/stmml.xsd
+          http://www.xml-cml.org/schema/cml2/core ../schema/cmlCore.xsd">]]></programlisting>
+ <para>
   In all cases, the XML parser will first look for the specified system or
   public ID in the plugin's built-in catalog, along with any
   catalog files specified in the
@@ -489,7 +496,7 @@
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.12</emphasis> requires
-  jEdit 4.2pre2, SideKick plugin 0.3, and ErrorList plugin 1.3.</para>
+  jEdit 4.2pre3, SideKick plugin 0.3, and ErrorList plugin 1.3.</para>
 
   <itemizedlist>
   <listitem><para>Updated for jEdit 4.2 plugin API.
