@@ -102,6 +102,15 @@ public class ClassHeader extends AstNode implements PHPItem, Serializable {
     return className;
   }
 
+  /**
+   * Returns the name of the superclass.
+   *
+   * @return the name of the superclass
+   */
+  public String getSuperClassName() {
+    return superClassName;
+  }
+
   public boolean equals(Object obj) {
     if (!(obj instanceof ClassHeader)) return false;
     return ((ClassHeader) obj).getName().equals(className);
