@@ -51,18 +51,6 @@ import org.gjt.sp.util.Log;
 public class WhiteSpaceHighlight
     implements TextAreaHighlight
 {
-    public static final String SPACE_HIGHLIGHT_PROPERTY          = "white-space.space-highlight";
-    public static final String LEADING_SPACE_HIGHLIGHT_PROPERTY  = "white-space.leading-space-highlight";
-    public static final String INNER_SPACE_HIGHLIGHT_PROPERTY    = "white-space.inner-space-highlight";
-    public static final String TRAILING_SPACE_HIGHLIGHT_PROPERTY = "white-space.trailing-space-highlight";
-
-    public static final String TAB_HIGHLIGHT_PROPERTY            = "white-space.tab-highlight";
-    public static final String LEADING_TAB_HIGHLIGHT_PROPERTY    = "white-space.leading-tab-highlight";
-    public static final String INNER_TAB_HIGHLIGHT_PROPERTY      = "white-space.inner-tab-highlight";
-    public static final String TRAILING_TAB_HIGHLIGHT_PROPERTY   = "white-space.trailing-tab-highlight";
-
-    public static final String WHITESPACE_HIGHLIGHT_PROPERTY     = "white-space.whitespace-highlight";
-
     // ASCII control characters strictly below SPACE (0x20)
     private static final String[] ASCII_CONTROLS = new String[] {
         /* 000    001    002    003    004    005 */
@@ -101,17 +89,7 @@ public class WhiteSpaceHighlight
     private JEditTextArea textArea;
     private TextAreaHighlight next;
 
-    private HighlightOption spaceHighlight;
-    private HighlightOption leadingSpaceHighlight;
-    private HighlightOption innerSpaceHighlight;
-    private HighlightOption trailingSpaceHighlight;
-
-    private HighlightOption tabHighlight;
-    private HighlightOption leadingTabHighlight;
-    private HighlightOption innerTabHighlight;
-    private HighlightOption trailingTabHighlight;
-
-    private HighlightOption whitespaceHighlight;
+    private WhiteSpaceModel model;
 
     private Segment lineSegment = new Segment();
 
@@ -123,44 +101,7 @@ public class WhiteSpaceHighlight
         this.textArea = textArea;
         this.next = next;
 
-        this.spaceHighlight         = new HighlightOption(
-            SPACE_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getSpaceHighlightDefault()
-        );
-        this.leadingSpaceHighlight  = new HighlightOption(
-            LEADING_SPACE_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
-        );
-        this.innerSpaceHighlight    = new HighlightOption(
-            INNER_SPACE_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
-        );
-        this.trailingSpaceHighlight = new HighlightOption(
-            TRAILING_SPACE_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
-        );
-
-        this.tabHighlight           = new HighlightOption(
-            TAB_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getTabHighlightDefault()
-        );
-        this.leadingTabHighlight    = new HighlightOption(
-            LEADING_TAB_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getLeadingTabHighlightDefault()
-        );
-        this.innerTabHighlight      = new HighlightOption(
-            INNER_TAB_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getInnerTabHighlightDefault()
-        );
-        this.trailingTabHighlight   = new HighlightOption(
-            TRAILING_TAB_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getTrailingTabHighlightDefault()
-        );
-
-        this.whitespaceHighlight    = new HighlightOption(
-            WHITESPACE_HIGHLIGHT_PROPERTY,
-            WhiteSpaceDefaults.getWhitespaceHighlightDefault()
-        );
+        this.model = new WhiteSpaceModel(textArea);
     }
 
 
@@ -349,48 +290,48 @@ public class WhiteSpaceHighlight
     }
 
 
-    public HighlightOption getSpaceHighlight() {
-        return this.spaceHighlight;
+    public WhiteSpaceModel.HighlightOption getSpaceHighlight() {
+        return this.model.getSpaceHighlight();
     }
 
 
-    public HighlightOption getLeadingSpaceHighlight() {
-        return this.leadingSpaceHighlight;
+    public WhiteSpaceModel.HighlightOption getLeadingSpaceHighlight() {
+        return this.model.getLeadingSpaceHighlight();
     }
 
 
-    public HighlightOption getInnerSpaceHighlight() {
-        return this.innerSpaceHighlight;
+    public WhiteSpaceModel.HighlightOption getInnerSpaceHighlight() {
+        return this.model.getInnerSpaceHighlight();
     }
 
 
-    public HighlightOption getTrailingSpaceHighlight() {
-        return this.trailingSpaceHighlight;
+    public WhiteSpaceModel.HighlightOption getTrailingSpaceHighlight() {
+        return this.model.getTrailingSpaceHighlight();
     }
 
 
-    public HighlightOption getTabHighlight() {
-        return this.tabHighlight;
+    public WhiteSpaceModel.HighlightOption getTabHighlight() {
+        return this.model.getTabHighlight();
     }
 
 
-    public HighlightOption getLeadingTabHighlight() {
-        return this.leadingTabHighlight;
+    public WhiteSpaceModel.HighlightOption getLeadingTabHighlight() {
+        return this.model.getLeadingTabHighlight();
     }
 
 
-    public HighlightOption getInnerTabHighlight() {
-        return this.innerTabHighlight;
+    public WhiteSpaceModel.HighlightOption getInnerTabHighlight() {
+        return this.model.getInnerTabHighlight();
     }
 
 
-    public HighlightOption getTrailingTabHighlight() {
-        return this.trailingTabHighlight;
+    public WhiteSpaceModel.HighlightOption getTrailingTabHighlight() {
+        return this.model.getTrailingTabHighlight();
     }
 
 
-    public HighlightOption getWhitespaceHighlight() {
-        return this.whitespaceHighlight;
+    public WhiteSpaceModel.HighlightOption getWhitespaceHighlight() {
+        return this.model.getWhitespaceHighlight();
     }
 
 
@@ -504,39 +445,6 @@ public class WhiteSpaceHighlight
             int[] xl0 = {x0, x0 + 2, x0 + 4, x0 + 2};
             int[] yl0 = {y0, y0 - 2, y0, y0 + 2};
             gfx.drawPolygon(xl0, yl0, 4);
-        }
-    }
-
-
-    public class HighlightOption {
-        private final String propertyName;
-
-
-        public HighlightOption(String propertyName) {
-            this(propertyName, false);
-        }
-
-
-        public HighlightOption(String propertyName, boolean enabled) {
-            this.propertyName = propertyName;
-            this.setEnabled(enabled);
-        }
-
-
-        public boolean isEnabled() {
-            Buffer buffer = WhiteSpaceHighlight.this.textArea.getBuffer();
-            return buffer.getBooleanProperty(this.propertyName);
-        }
-
-
-        public void setEnabled(boolean enabled) {
-            Buffer buffer = WhiteSpaceHighlight.this.textArea.getBuffer();
-            buffer.putBooleanProperty(this.propertyName, enabled);
-        }
-
-
-        public void toggleEnabled() {
-            this.setEnabled(!this.isEnabled());
         }
     }
 }

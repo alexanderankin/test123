@@ -98,7 +98,10 @@ public class WhiteSpacePlugin
             BufferUpdate bu = (BufferUpdate) message;
             if (bu.getWhat() == BufferUpdate.SAVING) {
                 this.bufferSaving(bu.getBuffer());
-            } else if (bu.getWhat() == BufferUpdate.CREATED) {
+            } else if (
+                       (bu.getWhat() == BufferUpdate.CREATED)
+                    || (bu.getWhat() == BufferUpdate.DIRTY_CHANGED)
+            ) {
                 WhiteSpaceDefaults.bufferCreated(bu.getBuffer());
             }
         } else if (message instanceof EditorStarted) {
