@@ -28,6 +28,9 @@ import org.xml.sax.SAXException;
 
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
+import java.util.List;
+import java.io.Writer;
+import java.io.IOException;
 
 /**
  * Indents elements, by adding whitespace where appropriate.
@@ -39,7 +42,7 @@ import javax.xml.transform.Transformer;
  */
 public class IndentingTransformerImpl extends IndentingTransformer {
 
-  private static final String XSL_TEXT_ELEMENT = "xsl:text";
+  private List preserveWhitespaceList;
 
   /** indent by this many spaces */
   private int indentAmount = 2;
@@ -48,28 +51,33 @@ public class IndentingTransformerImpl extends IndentingTransformer {
   private char indentChar;
 
   /** current indentation level */
-  private int indentLevel = 0;
+  private int indentLevel;
 
 //  /** true if the previous tag was an element start tag */
 //  private boolean isStartTagPrevious = false;
 
   /** true if no newlines in element */
-  private boolean isSameLine = false;
+  private boolean isSameLine;
 
   /** true if last item was non-whitespace text */
-  private boolean isLastText = false;
+  private boolean isLastText;
 
   /** true if there is a non-whitespace text item, followed by an element start */
-  private boolean isMixedContent = false;
+  private boolean isMixedContent;
 
-  /** true if inside a xsl:text element */
-  private boolean isXslTextElement = false;
+  /** true if inside an element configured to have whitespace preserved */
+  private boolean preserveWhitespace;
+
+  /** name of element we are inside that is configured to have whitespace preserved */
+  private String preserveWhitespaceElement;
 
   /** buffer to hold character data */
   private StringBuffer buffer = new StringBuffer();
 
 
-  public IndentingTransformerImpl(int indentAmount, boolean indentWithTabs) {
+  public String indentXml(String xmlString, Writer outputWriter, int indentAmount, boolean indentWithTabs, List preserveWhitespaceList)
+      throws IOException, SAXException {
+    this.preserveWhitespaceList = preserveWhitespaceList;
     this.indentAmount = indentAmount;
 
     if(indentWithTabs) {
@@ -77,6 +85,16 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     } else {
       this.indentChar = ' ';
     }
+
+    indentLevel = 0;
+    isSameLine = false;
+    isLastText = false;
+    isMixedContent = false;
+    preserveWhitespace = false;
+    preserveWhitespaceElement = null;
+    buffer.setLength(0);
+
+    return super.indentXml(xmlString, outputWriter);
   }
 
 
@@ -88,9 +106,11 @@ public class IndentingTransformerImpl extends IndentingTransformer {
   public void startElement(String uri, String localName, String qualifiedName, Attributes attributes) throws SAXException {
     flush();
 
-    if(qualifiedName.equals(XSL_TEXT_ELEMENT)) {
-      isXslTextElement = true;
+    if(preserveWhitespaceList.contains(qualifiedName)) {
+      preserveWhitespace = true;
+      preserveWhitespaceElement = qualifiedName;
     }
+
     if(isLastText && !isMixedContent) {
       isMixedContent = true;
     }
@@ -131,7 +151,11 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     isLastText = false;
     isSameLine = false;
     isMixedContent = false;
-    isXslTextElement = false;
+
+    if(qualifiedName.equals(preserveWhitespaceElement)) {
+      preserveWhitespace = false;
+      preserveWhitespaceElement = null;
+    }
   }
 
 
@@ -149,7 +173,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
       }
     }
 
-    if(isXslTextElement) {
+    if(preserveWhitespace) {
       isLastText = true;
     }
 
