@@ -392,7 +392,8 @@ implements EBComponent, Output, DefaultFocusComponent
 			}
 		}
 
-		text.getHistoryModel().addItem(cmd);
+		if(cmd.length() != 0)
+			text.getHistoryModel().addItem(cmd);
 		text.setHistoryIndex(-1);
 
 		if(printInput)
@@ -723,20 +724,21 @@ implements EBComponent, Output, DefaultFocusComponent
 		public void actionPerformed(ActionEvent evt)
 		{
 			String cmd = text.getInput();
-			if(cmd == null || cmd.length() == 0)
-				return;
 
 			Object source = evt.getSource();
+			String input = null;
 			Output output = shellState;
 			boolean printInput = false;
 
 			if(source == run)
 				printInput = true;
 			else if(source == toBuffer)
+			{
+				input = view.getTextArea().getSelectedText();
 				output = new BufferOutput(Console.this);
+			}
 
-			run(getShell(),view.getTextArea().getSelectedText(),
-				shellState,shellState,cmd,printInput);
+			run(getShell(),input,shellState,shellState,cmd,printInput);
 		}
 	} //}}}
 
