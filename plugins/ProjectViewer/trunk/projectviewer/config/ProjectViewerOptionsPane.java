@@ -198,7 +198,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		useInfoViewer = new JCheckBox(jEdit.getProperty("projectviewer.options.use_info_viewer"));
 		useInfoViewer.setSelected(config.getUseInfoViewer());
 		useInfoViewer.addActionListener(this);
-		useInfoViewer.setEnabled(jEdit.getPlugin(ProjectViewerConfig.INFOVIEWER_PLUGIN) != null);
+		useInfoViewer.setEnabled(config.isInfoViewerAvailable());
 		addComponent(useInfoViewer);
 
 		browserExecPath = new JTextField(5);
