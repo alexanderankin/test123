@@ -132,25 +132,27 @@ public class OldStyleFileImporter extends FileImporter {
 					}
 				}
 				addTree(chosen[i], node, fnf);
-			} else if (findDirectory(chosen[i], selected, false) == null) {
-				node = new VPTFile(chosen[i]);
-				registerFile((VPTFile)node);
-				fileCount++;
-				if (selected == project) {
-					lst.add(node);
-				} else {
-					selected.insert(node, selected.findIndexForChild(node));
+			} else {
+				node = findDirectory(chosen[i], selected, false);
+				if (node == null) {
+					node = new VPTFile(chosen[i]);
+					registerFile((VPTFile)node);
+					fileCount++;
+					if (selected == project) {
+						lst.add(node);
+					} else {
+						selected.insert(node, selected.findIndexForChild(node));
+					}
 				}
 			}
 
 			if (i == 0) {
-				if (node == null)
-					node = findDirectory(chosen[i], selected, false);
 				toShow = node;
 			}
 		}
 
 		showFileCount();
+		postAction = new ShowNode(toShow);
 		return lst;
 	} //}}}
 
