@@ -148,26 +148,24 @@ public class ErrorOverview extends JPanel
 	//{{{ getPreferredSize() method
 	public Dimension getPreferredSize()
 	{
-		return new Dimension(close.getPreferredSize().height,0);
+		return new Dimension(10,0);
 	} //}}}
 
 	//{{{ Private members
+	private static final int WIDTH = 10;
 	private static final int HILITE_HEIGHT = 2;
 	private JEditTextArea textArea;
-	private RolloverButton close;
 
 	//{{{ lineToY() method
 	private int lineToY(int line)
 	{
-		return (line * getHeight()) / textArea.getLineCount()
-			+ close.getHeight();
+		return (line * getHeight()) / textArea.getLineCount();
 	} //}}}
 
 	//{{{ yToLine() method
 	private int yToLine(int y)
 	{
-		return ((y - close.getHeight()) * textArea.getLineCount())
-			/ getHeight();
+		return (y * textArea.getLineCount()) / getHeight();
 	} //}}}
 
 	//}}}
