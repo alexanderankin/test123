@@ -30,12 +30,14 @@
  </legalnotice>
 </bookinfo>
 
-<chapter id="usage"><title>Using the FTP plugin</title>
+<chapter id="ftp"><title>Connecting to FTP servers</title>
 
 <para>
 
 The FTP plugin lets you browse directories and edit files on remote servers
-using FTP, the File Transfer Protocol.
+using FTP, the File Transfer Protocol. Note that FTP is insecure since it
+sends everything (including passwords) as clear-text over the network. If you
+can, consider using SFTP, documented in the next section.
 
 </para>
 
@@ -49,6 +51,33 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 
 </para>
+
+</chapter>
+
+<chapter id="sftp"><title>Connecting to SFTP servers</title>
+
+<para>
+
+The FTP plugin also supports the SSH File Transfer Protocol, or SFTP.
+SFTP is much more secure than FTP because it encrypts all network traffic.
+However not all FTP servers support SFTP. SFTP support requires Java 1.4.
+
+</para>
+
+<para>
+
+To connect to an SFTP server, either select
+<guimenuitem>Connect to Secure FTP Server</guimenuitem> from the file system
+browser's <guimenu>Plugins</guimenu> menu, or use the
+<guimenuitem>Open from Secure FTP Server</guimenuitem> and
+<guimenuitem>Save to Secure FTP Server</guimenuitem> commands in the
+<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
+
+</para>
+
+</chapter>
+
+<chapter id="misc"><title>Miscellaneous features</title>
 
 <para>
 The FTP plugin includes a number of time-saving and performance-improving
@@ -75,9 +104,9 @@ exits. To force jEdit to forget all passwords while it is running, use the
 </para></listitem>
 
 <listitem><para>
-FTP connections are kept open for 2 minutes before being closed. Performing
-another operation while a connection is still open resets the 2 minute timer.
-This improves performance by reducing network traffic.
+FTP and SFTP connections are kept open for 2 minutes before being closed.
+Performing another operation while a connection is still open resets the 2
+minute timer. This improves performance by reducing network traffic.
 </para>
 
 <para>
@@ -95,16 +124,19 @@ You can close unused connections at any other itme using the
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.5</emphasis>
-   requires jEdit 4.1pre9.</para>
+   requires jEdit 4.1pre8.</para>
 
    <itemizedlist>
+    <listitem><para>Connections to servers using the SSH File Transfer Protocol
+    (SFTP) are now supported. This uses the <command>sshtools</command> library,
+    version 0.0.5, and requires Java 2 version 1.4.</para></listitem>
+    <listitem><para>Fixed various problems in the connection pooling code.
+    </para></listitem>
     <listitem><para>Fixed problem with FTP servers localized for non-English
     languages.</para></listitem>
     <listitem><para>Fixed problem with AIX FTP servers.</para></listitem>
     <listitem><para>Permissions were not preserved properly
     (Brian Hardy).</para></listitem>
-    <listitem><para>Fixed various problems in the connection pooling code.
-    </para></listitem>
     <listitem><para>Login dialog box host and user name fields now remember
     previously entered values.
     </para></listitem>

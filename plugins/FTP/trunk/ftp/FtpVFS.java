@@ -400,9 +400,26 @@ public class FtpVFS extends VFS
 	} //}}}
 
 	//{{{ _saveComplete() method
+	// ... for pre9
 	public void _saveComplete(Object _session, Buffer buffer, String path,
 		Component comp) throws IOException
 	{
+		ConnectionManager.Connection session = getConnection(_session);
+
+		FtpAddress address = new FtpAddress(path);
+
+		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
+		if(permissions != 0)
+			session.chmod(address.path,permissions);
+	} //}}}
+
+	//{{{ _saveComplete() method
+	// ... for pre8
+	public void _saveComplete(Object _session, Buffer buffer,
+		Component comp) throws IOException
+	{
+		String path = buffer.getPath();
+
 		ConnectionManager.Connection session = getConnection(_session);
 
 		FtpAddress address = new FtpAddress(path);
@@ -433,46 +450,52 @@ public class FtpVFS extends VFS
 	private void resolveSymlink(Object _session, String url, FtpDirectoryEntry entry)
 		throws IOException
 	{
-		String name = entry.name;
-		int index = name.indexOf(" -> ");
+		ConnectionManager.Connection session = getConnection(_session);
 
-		if(index == -1)
+		String path = constructPath(url,entry.name);
+		String[] nameArray = new String[] { entry.name };
+		String link = session.resolveSymlink(new FtpAddress(path).path,
+			nameArray);
+		entry.name = nameArray[0];
+
+		if(link == null)
 		{
-			//non-standard link representation. Treat as a file
-			//Some Mac and NT based servers do not use the "->" for symlinks
-			entry.path = constructPath(url,name);
+			entry.path = path;
 			entry.type = FtpVFS.FtpDirectoryEntry.FILE;
-			Log.log(Log.NOTICE,this,"File '"
-				+ name
-				+ "' is listed as a link, but will be treated"
-				+ " as a file because no '->' was found.");
-			return;
 		}
-		String link = name.substring(index + " -> ".length());
-		link = constructPath(url,link);
-
-		FtpVFS.FtpDirectoryEntry linkDirEntry;
-		try
-		{
-			linkDirEntry = (FtpVFS.FtpDirectoryEntry)
-				_getDirectoryEntry(_session,link,null);
-		}
-		catch(IOException io)
-		{
-			linkDirEntry = null;
-		}
-
-		if(linkDirEntry == null)
-			entry.type = FtpDirectoryEntry.FILE;
 		else
 		{
-			entry.type = linkDirEntry.type;
-			entry.permissions = linkDirEntry.permissions;
-		}
+			link = constructPath(url,link);
 
-		entry.name = name.substring(0,index);
-		entry.path = link;
-		entry.deletePath = constructPath(url,entry.name);
+			FtpVFS.FtpDirectoryEntry linkDirEntry;
+			try
+			{
+				linkDirEntry = (FtpVFS.FtpDirectoryEntry)
+					_getDirectoryEntry(_session,link,null);
+			}
+			catch(IOException io)
+			{
+				linkDirEntry = null;
+			}
+
+			if(linkDirEntry == null)
+				entry.type = FtpDirectoryEntry.FILE;
+			else if(linkDirEntry.type == FtpDirectoryEntry.LINK)
+			{
+				Log.log(Log.WARNING,this,entry.name
+					+ ": Not following more than one symbolic link");
+				entry.type = FtpDirectoryEntry.FILE;
+				entry.permissions = 600;
+			}
+			else
+			{
+				entry.type = linkDirEntry.type;
+				entry.permissions = linkDirEntry.permissions;
+			}
+
+			entry.path = link;
+			entry.deletePath = path;
+		}
 	} //}}}
 
 	//}}}

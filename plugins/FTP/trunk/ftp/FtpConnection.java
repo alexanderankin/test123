@@ -241,6 +241,30 @@ class FtpConnection extends ConnectionManager.Connection
 		client.siteParameters(cmd);
 	}
 
+	// Passed 'name' in an array as a hack to be able to return multiple values
+	public String resolveSymlink(String path, String[] name)
+		throws IOException
+	{
+		String _name = name[0];
+		int index = _name.indexOf(" -> ");
+
+		if(index == -1)
+		{
+			//non-standard link representation. Treat as a file
+			//Some Mac and NT based servers do not use the "->" for symlinks
+			Log.log(Log.NOTICE,this,"File '"
+				+ name
+				+ "' is listed as a link, but will be treated"
+				+ " as a file because no '->' was found.");
+			return null;
+		}
+
+		String link = _name.substring(index + " -> ".length());
+
+		name[0] = _name.substring(0,index);
+		return link;
+	}
+
 	boolean checkIfOpen() throws IOException
 	{
 		try
