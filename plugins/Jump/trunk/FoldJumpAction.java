@@ -1,33 +1,49 @@
-// * :tabSize=4:indentSize=4:
-// * :folding=explicit:collapseFolds=1:
+/*
+ *  Jump plugin for jEdit
+ *  Copyright (c) 2003 Pavlikus
+ *
+ *  :tabSize=4:indentSize=4:
+ *  :folding=explicit:collapseFolds=1:
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
-//{{{ IMPORTS
-import org.gjt.sp.jedit.*;
-
-import java.awt.*;
-
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.search.SearchAndReplace;
-
-import java.util.*;
-
-
-import java.awt.event.*;
-import java.awt.Component;
-import java.awt.Font;
-
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-
-import java.io.IOException;
-
-import ctags.bg.*;
-
-//}}}
+    //{{{ imports
+    import org.gjt.sp.jedit.*;
+    
+    import java.awt.*;
+    
+    import org.gjt.sp.jedit.gui.OptionsDialog;
+    import org.gjt.sp.jedit.textarea.*;
+    import org.gjt.sp.jedit.msg.*;
+    import org.gjt.sp.util.Log;
+    import org.gjt.sp.jedit.search.SearchAndReplace;
+    
+    import java.util.*;
+    
+    import java.awt.event.*;
+    import java.awt.Component;
+    import java.awt.Font;
+    
+    import javax.swing.*;
+    import javax.swing.border.*;
+    import javax.swing.event.*;
+    
+    import java.io.IOException;
+    
+    import ctags.bg.*; //}}}
 
 /**
  *  Shows the list of all folds founded in current buffer.
@@ -36,14 +52,13 @@ import ctags.bg.*;
  */
 class FoldJumpAction
 {
-//{{{ ---------  fields
+    //{{{ fields
     private View view;
     private Object[] foundedFolds;
     private Buffer buff;
-    private String fold_pattern;
-//}}}
+    private String fold_pattern; //}}}
 
-//{{{ --------- constructor
+    //{{{ constructor
     /**
      *  TODO: Detect the fold pattern for current buffer.
      *
@@ -53,24 +68,22 @@ class FoldJumpAction
     {
         view = jEdit.getActiveView();
         buff = view.getBuffer();
-    }
+    } //}}}
 
-//}}}
-
-//{{{ showFoldsList
+    //{{{ showFoldsList
     /**
      *  Construct new FoldJumpMenu and show it
      */
     public void showFoldsList()
     {
         foundedFolds = prepareFoldList();
-        
+
         // If there no fold patterns
         if (foundedFolds == null || foundedFolds.length < 1)
         {
             return;
         }
-        
+
         // If there just one fold founded - jump to it directly
         if (foundedFolds.length == 1)
         {
@@ -78,14 +91,12 @@ class FoldJumpAction
             JumpToFoldDirectly(e); 
             return;
         }
-        
+
         // If more than one fold founded - show jump list
         FoldJumpMenu jl = new FoldJumpMenu(view, foundedFolds, new FoldListModel(), true, "Fold to jump:", 30, Jump.getListLocation());
-    }
+    } //}}}
 
-//}}}
-
-//{{{ Object[] prepareFoldList()
+    //{{{ Object[] prepareFoldList()
     /**
      *  Scan current buffer on availability <code>fold_pattern(s)</code>
      *
@@ -111,7 +122,7 @@ class FoldJumpAction
         {
             return null;
         }
-        
+
         Object[] r = v.toArray();
 
         if (jEdit.getBooleanProperty("jump.sort_foldlist", true))
@@ -120,8 +131,7 @@ class FoldJumpAction
         }
 
         return r;
-    }
-//}}}
+    } //}}}
 
 //{{{ JumpToFoldDirectly
     private final void JumpToFoldDirectly(FoldEntry e)
@@ -133,10 +143,9 @@ class FoldJumpAction
 
 //}}}
 
-//{{{ class FoldJumpMenu
+    //{{{ class FoldJumpMenu
     public class FoldJumpMenu extends JumpList
     {
-
         /**
          *@param  parent       jEdit View
          *@param  list         Array of list items to show
@@ -161,7 +170,6 @@ class FoldJumpAction
             JumpToFoldDirectly(fold);
         }
 
-
         public void updateStatusBar(Object o)
         {
             JList l = (JList) o;
@@ -169,17 +177,15 @@ class FoldJumpAction
             String mess = "Line: " + (fold.getIndex()+1) + "  " + fold.toString();
             view.getStatus().setMessageAndClear(mess);
         }
-    }
+    } //}}}
 
-//}}}
-
-//{{{ class FoldEntry
+    //{{{ class FoldEntry
     class FoldEntry
     {
         private int index;
         private String text;
 
-//{{{ --------- constructor
+        //{{{ constructor
         /**
          *  Constructor for the FoldEntry object
          *
@@ -191,9 +197,7 @@ class FoldJumpAction
             index = line;
             fold_text = fold_text.substring(fold_text.indexOf("{{{") + 3);
             text = fold_text.trim();
-        }
-
-//}}}
+        } //}}}
         public String toString()
         {
             return text;
@@ -203,11 +207,11 @@ class FoldJumpAction
         {
             return index;
         }
-    }
+    } //}}}
+    
+    //}}}
 
-//}}}
-
-//{{{ class AlphabeticComparator
+    //{{{ class AlphabeticComparator
     //Comparator for sorting array with ignoreCase...
     class AlphabeticComparator implements Comparator
     {
@@ -217,12 +221,9 @@ class FoldJumpAction
             FoldEntry s2 = (FoldEntry) o2;
             return s1.toString().toLowerCase().compareTo(s2.toString().toLowerCase());
         }
+    } //}}}
 
-    }
-
-//}}}
-
-//{{{ class FoldListModel
+    //{{{ class FoldListModel
     class FoldListModel extends AbstractListModel
     {
         public int getSize()
@@ -232,11 +233,7 @@ class FoldJumpAction
 
         public Object getElementAt(int index)
         {
-            //FoldEntry i = (FoldEntry) foundedFolds[index];
-            //return i;
             return foundedFolds[index];
         }
-    }
-//}}}
+    } //}}}
 }
-

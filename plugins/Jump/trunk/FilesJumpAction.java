@@ -1,5 +1,24 @@
-// * :tabSize=4:indentSize=4:
-// * :folding=explicit:collapseFolds=1:
+/*
+ *  Jump plugin for jEdit
+ *  Copyright (c) 2003 Pavlikus
+ *
+ *  :tabSize=4:indentSize=4:
+ *  :folding=explicit:collapseFolds=1:
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
 //{{{ imports
 import org.gjt.sp.jedit.*;
@@ -22,55 +41,53 @@ import projectviewer.*;
 import projectviewer.vpt.*;
 import projectviewer.event.*;
 
-import ctags.bg.*;
-//}}}
+import ctags.bg.*; //}}}
+
 // TODO: tabs_files - can't be a HashMap. If may cause problems when more than one build.xml, for ex., founded in current project.
-class FilesJumpAction 
+class FilesJumpAction
 {
 
-//{{{ fields
+    //{{{ fields
     private Object[] files;
     public HashMap tabs_files = new HashMap();
     private View view;
     private ProjectBuffer currentTags;
-    private String[] unsupported_ext = {
-        "gif", "jpg", "png", "jpeg", "class", "bat"   
-    };
-//}}}
+    private String[] unsupported_ext = 
+    {
+        "gif", "jpg", "png", "jpeg", "class", "bat"
+    }; //}}}
 
-//{{{ constructor
-    public FilesJumpAction() 
+    //{{{ constructor
+    public FilesJumpAction()
     {
         super();
         tabs_files = new HashMap();
-    }
-//}}}
+    } //}}}
 
-//{{{ void showList
-    public void showList() 
+    //{{{ void showList
+    public void showList()
     {
         files = getFileList();
         if (files==null) return;
         FilesJumpMenu jl = new FilesJumpMenu(view , files,
                 new FilesListModel(), true, "File to jump:",30);
-    }
-//}}}
+    } //}}}
 
-//{{{ Object[] getFileList()
-private Object[] getFileList() 
+    //{{{ Object[] getFileList()
+    private Object[] getFileList()
     {
         view = jEdit.getActiveView();
 
         currentTags = JumpPlugin.getActiveProjectBuffer();
         if (currentTags == null) return null;
         if (currentTags.PROJECT_FILES.size() <2) return null;  
-        
+
         Vector files = currentTags.PROJECT_FILES;
-        
+
         // Temporary Vector to store only supperted files (no jpg, png etc.)
         Vector valid_files = new Vector();
         String tmp_file = new String();
-        
+
         for (int i=0; i<files.size(); i++)
         {
             String path = new String();
@@ -82,7 +99,7 @@ private Object[] getFileList()
                 tabs_files.put(tmp_file,path);
             }
         }
-        
+
         if (valid_files.size()>1)
         {
             Object[] arr = valid_files.toArray();
@@ -91,12 +108,11 @@ private Object[] getFileList()
         }
         else
         {
-            return null;   
+            return null;
         }
-    }
-//}}}
+    } //}}}
 
-//{{{ isSupportedExtension
+    //{{{ isSupportedExtension
     private boolean isSupportedExtension(String filename)
     {
         for(int i = 0; i < unsupported_ext.length; i++)
@@ -104,13 +120,12 @@ private Object[] getFileList()
             if(filename.endsWith(unsupported_ext[i]))
             {
                 return false;
-            } 
-        } 
+            }
+        }
         return true;
-    }
-//}}}
-    
-//{{{ class FilesJumpMenu
+    } //}}}
+
+    //{{{ class FilesJumpMenu
     public class FilesJumpMenu extends JumpList {
 
         public FilesJumpMenu(View parent, Object[] list,
@@ -118,19 +133,19 @@ private Object[] getFileList()
                 int list_width) {
             super(parent, list, model, incr_search, title, list_width, Jump.getListLocation());
         }
-        
-//{{{ updateStatusBar
+
+        //{{{ updateStatusBar
         public void updateStatusBar(Object o)
         {
-// TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
+            // TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
             JList l = (JList) o;
             String tab_name = (String) l.getModel().getElementAt(l.getSelectedIndex());
             String file_name = (String)tabs_files.get(tab_name);
             view.getStatus().setMessageAndClear("file: "+file_name);
         } //}}}
-        
-//{{{ processAction
-        public void processAction(Object o) 
+
+        //{{{ processAction
+        public void processAction(Object o)
         {
             JList l = (JList) o;
 
@@ -138,8 +153,8 @@ private Object[] getFileList()
             String file_name = (String)tabs_files.get(tab_name);
             jEdit.openFile(parent,file_name);
         } //}}}
-        
-//{{{ processActionInNewView 
+
+        //{{{ processActionInNewView 
         public void processActionInNewView(Object o)
         {
             JList l = (JList) o;
@@ -152,22 +167,21 @@ private Object[] getFileList()
     }
 //}}}
 
-//{{{ class FilesListModel
+    //{{{ class FilesListModel
     //ListModel for files JumpList
     class FilesListModel extends AbstractListModel {
-        public int getSize() 
+        public int getSize()
         {
             return files.length;
         }
 
-        public Object getElementAt(int index) 
+        public Object getElementAt(int index)
         {
             return files[index];
         }
-    }
-//}}}
+    } //}}}
 
-//{{{ class AlphabeticComparator
+    //{{{ class AlphabeticComparator
     //Comparator for sorting array with ignoreCase...
     class AlphabeticComparator implements Comparator 
     {

@@ -1,86 +1,75 @@
-// * :tabSize=4:indentSize=4:
-// * :folding=explicit:collapseFolds=1:
+/*
+ *  Jump plugin for jEdit
+ *  Copyright (c) 2003 Pavlikus
+ *
+ *  :tabSize=4:indentSize=4:
+ *  :folding=explicit:collapseFolds=1:
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
-//{{{ imports
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.gui.*;
-import java.io.*;
-import java.awt.*;
-import javax.swing.*;
-import projectviewer.*;
-import projectviewer.vpt.*;
-import projectviewer.event.*;
-//}}}
+    //{{{ imports
+    import org.gjt.sp.jedit.GUIUtilities;
+    import org.gjt.sp.jedit.*;
+    import org.gjt.sp.jedit.textarea.*;
+    import org.gjt.sp.jedit.gui.*;
+    import java.io.*;
+    import java.awt.*;
+    import javax.swing.*;
+    import projectviewer.*;
+    import projectviewer.vpt.*;
+    import projectviewer.event.*; //}}}
 
 public class Jump
 {
-
-    /* public GlobalTagsBuffer globalBuffer; */
-
-//{{{ constructor
-public Jump()
-{
-    String s = System.getProperty("file.separator");
-    File jumpDir = new File(System.getProperty("user.home")+s+".jedit"+s+"jump");
-    if (!jumpDir.exists())
+    //{{{ constructor
+    public Jump()
     {
-        jumpDir.mkdirs();   
-    }
-    
-    
-    // TEMPORARY HERE!!!
-//    jEdit.setProperty("jump.globaltags_name.0","java");
-//    jEdit.setProperty("jump.globaltags_dir.0","/mnt/win_d/win_lin/j2se142");
-//    jEdit.setBooleanProperty("jump.globaltags_enabled.0", true);
-//    try
-//    {
-//        globalBuffer = new GlobalTagsBuffer();
-//    }
-//    catch(Exception e)
-//    {
-//        System.out.println("Exception in Jump.java constructor");
-//         e.printStackTrace();   
-//    }
-    
-} //}}}
+        String s = System.getProperty("file.separator");
+        File jumpDir = new File(System.getProperty("user.home")+s+".jedit"+s+"jump");
+        if (!jumpDir.exists())
+        {
+            jumpDir.mkdirs();
+        }
+    } //}}}
 
-//{{{ getGlobalTagsBuffer
-/* public GlobalTagsBuffer getGlobalTagsBuffer()
-{
-    return globalBuffer;   
-} */
-//}}}  
-
-//{{{ boolean isJumpEnabled()
+    //{{{ boolean isJumpEnabled()
     public boolean isJumpEnabled()
     {
         if (!jEdit.getBooleanProperty("jump.enable", false))
         {
             GUIUtilities.message(jEdit.getActiveView(), "JumpPlugin.enable", null);
-            return false;    
+            return false;
         }
         return true;
-    }
-//}}}
+    } //}}}
 
-//{{{ boolean isProjectLoaded()
-// Is any active VTProject loaded?
-// TODO: this method must be called just once!!!
+    //{{{ boolean isProjectLoaded()
+    // Is any active VTProject loaded?
+    // TODO: this method must be called just once!!!
     public boolean isProjectLoaded()
     {
         System.out.println("isProjectLoaded: return"+PVActions.getCurrentProject(jEdit.getActiveView()));
         if (PVActions.getCurrentProject(jEdit.getActiveView()) == null)
         {
             return false;
-            // JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
-        } 
+        }
         return true;
-    }
-//}}}
+    } //}}}
 
-//{{{ void showFilesJump()
+    //{{{ void showFilesJump()
     public void showFilesJump()
     {
         // QUESTION: May be view field must be class-field?
@@ -88,140 +77,125 @@ public Jump()
         if (!isJumpEnabled()) return;
         if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        //new FilesJumpAction().showList();
-        // if (!JumpPlugin.isListenerAdded)
-        // { 
-            // System.out.println("Jump.showFilesJump: Try to init JumpPlugin...");
-            // JumpPlugin.init();
-        // }
-        
+
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {
             JumpPlugin.getListener().reloadProjectForced();
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.fja.showList();    
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.fja.showList();
         }
         else
         {
             System.out.println("showProjectJump: Setting active ProjectBuffer. ");
             if (PVActions.getCurrentProject(view) != null)
-                {
-                    JumpPlugin.getListener().reloadProjectForced();
-                    ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
-                    if (b == null) return;
-                    JumpPlugin.setActiveProjectBuffer(b);
-                    JumpPlugin.fja.showList();
-                }
+            {
+                JumpPlugin.getListener().reloadProjectForced();
+                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
+                if (b == null) return;
+                JumpPlugin.setActiveProjectBuffer(b);
+                JumpPlugin.fja.showList();
+            }
         }
-    }
-//}}}
+    } //}}}
 
-//{{{ void showTagsJump()
+    //{{{ void showTagsJump()
     public void showTagsJump()
     {
         View view = jEdit.getActiveView();
         if (!isJumpEnabled()) return;
         if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        
+
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {
             JumpPlugin.getListener().reloadProjectForced();
             System.out.println("1.");
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null)JumpPlugin.tja.showList();    
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null)JumpPlugin.tja.showList();
         }
         else
         {
             System.out.println("showProjectJump: Setting active ProjectBuffer. ");
             if (PVActions.getCurrentProject(view) != null)
-                {
-                    System.out.println("2.");
-                    ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
-                    if (b == null) return;
-                    
-                    JumpPlugin.getListener().reloadProjectForced();
-                    JumpPlugin.setActiveProjectBuffer(b);
-                    JumpPlugin.tja.showList();
-                }
-        }
-        // TagsJumpAction tja = new TagsJumpAction();
-        // if (tja.parse())
-        // {
-        //     tja.showList();
-        // }
-    }//}}}
+            {
+                System.out.println("2.");
+                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
+                if (b == null) return;
 
-//{{{ void showProjectJump()
+                JumpPlugin.getListener().reloadProjectForced();
+                JumpPlugin.setActiveProjectBuffer(b);
+                JumpPlugin.tja.showList();
+            }
+        }
+    } //}}}
+
+    //{{{ void showProjectJump()
     public void showProjectJump()
     {
         View view = jEdit.getActiveView();
-        
+
         if (!isJumpEnabled()) return;
-        if (!isProjectLoaded()) 
+        if (!isProjectLoaded())
         {
             System.out.println("Jump.showProjectJump: project not loaded!");
             return;
         }
-        
+
         if (!JumpPlugin.isListenerAdded)
         { 
             System.out.println("showProjectJump: init JumpPlugin...");
             JumpPlugin.init();
         }
-        
+
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
-        {   
+        {
             JumpPlugin.getListener().reloadProjectForced();
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTag();    
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTag();
         }
         else
         {
             System.out.println("showProjectJump: Setting active ProjectBuffer. ");
             if (PVActions.getCurrentProject(view) != null)
+            {
+                JumpPlugin.getListener().reloadProjectForced();
+                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
+                if (b == null)
                 {
-                    JumpPlugin.getListener().reloadProjectForced();
-                    ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
-                    
-                    if (b == null) 
-                    {
-                        System.out.println("showProjectJump() - Error during construct ProjectBuffer.");
-                        return;
-                    }
-                    
-                    JumpPlugin.setActiveProjectBuffer(b);
-                    if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTag();
+                    System.out.println("showProjectJump() - Error during construct ProjectBuffer.");
+                    return;
                 }
+                JumpPlugin.setActiveProjectBuffer(b);
+                if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTag();
+            }
         }
     }//}}}
 
-//{{{ showFoldJump()
-    public void showFoldJump() 
+    //{{{ showFoldJump()
+    public void showFoldJump()
     {
         System.out.println("Jump.showFoldJump");
           FoldJumpAction foldja = new FoldJumpAction();
           foldja.showFoldsList();
-    }
-//}}}    
+    } //}}}
 
-//{{{ completeTag
+    //{{{ completeTag
     public void completeTag(boolean isGlobalSearch)
     {
         View view = jEdit.getActiveView();
-        
+
         if (!isJumpEnabled()) return;
-        if (!isProjectLoaded()) 
+        if (!isProjectLoaded())
         {
             System.out.println("Jump.completeTag: project not loaded!");
             return;
         }
-        
+
         if (!JumpPlugin.isListenerAdded)
-        { 
+        {
             System.out.println("completeTag: init JumpPlugin...");
             JumpPlugin.init();
         }
-        
+
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
-        {   
+        {
             JumpPlugin.getListener().reloadProjectForced();
             if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag(isGlobalSearch);    
         }
@@ -229,87 +203,65 @@ public Jump()
         {
             System.out.println("completeTag: Setting active ProjectBuffer. ");
             if (PVActions.getCurrentProject(view) != null)
+            {
+                JumpPlugin.getListener().reloadProjectForced();
+                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
+                if (b == null)
                 {
-                    JumpPlugin.getListener().reloadProjectForced();
-                    ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
-                    
-                    if (b == null) 
-                    {
-                        System.out.println("completeTag() - Error during construct ProjectBuffer.");
-                        return;
-                    }
-                    
-                    JumpPlugin.setActiveProjectBuffer(b);
-                    if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag(isGlobalSearch);
+                    System.out.println("completeTag() - Error during construct ProjectBuffer.");
+                    return;
                 }
+                JumpPlugin.setActiveProjectBuffer(b);
+                if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag(isGlobalSearch);
+            }
         }
     }
-//}}} S
+//}}} 
 
-//{{{ searchGlobalTag
-/* public void searchGlobalTag()
-{
-    View view = jEdit.getActiveView();
-    
-    if (!isJumpEnabled()) return;
-    // String
-    
-    if (!JumpPlugin.isListenerAdded)
-    { 
-        System.out.println("showProjectJump: init JumpPlugin...");
-        JumpPlugin.init();
-    }
-    
-     JumpPlugin.pja.searchGlobalTag();     
-    
-} //}}}*/
-
-//{{{ void reloadTagsOnProject()
+    //{{{ void reloadTagsOnProject()
     public void reloadTagsOnProject()
     {
         if (!isJumpEnabled()) return;
         if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-    }
-//}}}
+    } //}}}
 
-//{{{ void historyJump()
+    //{{{ void historyJump()
     public void historyJump()
     {
         View view = jEdit.getActiveView();
         if (!isJumpEnabled()) return;
         if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) return;
-        
+
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {
             JumpPlugin.getListener().reloadProjectForced();
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToPreviousTag();    
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToPreviousTag();
         }
         else
         {
             System.out.println("showProjectJump: Setting active ProjectBuffer. ");
             if (PVActions.getCurrentProject(view) != null)
-                {
-                    JumpPlugin.getListener().reloadProjectForced();
-                    ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
-                    if (b == null) return;
-                    JumpPlugin.setActiveProjectBuffer(b);
-                    JumpPlugin.pja.JumpToPreviousTag();
-                }
+            {
+                JumpPlugin.getListener().reloadProjectForced();
+                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
+                if (b == null) return;
+                JumpPlugin.setActiveProjectBuffer(b);
+                JumpPlugin.pja.JumpToPreviousTag();
+            }
         }
-        //JumpPlugin.pja.JumpToPreviousTag();
     }
 //}}}
 
-//{{{ void jumpByInput()
+    //{{{ void jumpByInput()
     public void jumpByInput()
     {
         View view = jEdit.getActiveView();
         if (!isJumpEnabled()) return;
         if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
-        
+
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {
             JumpPlugin.getListener().reloadProjectForced();
@@ -317,35 +269,29 @@ public Jump()
         }
         else
         {
-            //System.out.println("showProjectJump: Setting active ProjectBuffer. ");
             if (PVActions.getCurrentProject(view) != null)
-                {
-                    JumpPlugin.getListener().reloadProjectForced();
-                    ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
-                    if (b == null) return;
-                    JumpPlugin.setActiveProjectBuffer(b);
-                    JumpPlugin.pja.JumpToTagByInput();
-                }
+            {
+                JumpPlugin.getListener().reloadProjectForced();
+                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
+                if (b == null) return;
+                JumpPlugin.setActiveProjectBuffer(b);
+                JumpPlugin.pja.JumpToTagByInput();
+            }
         }
-        //JumpPlugin.pja.JumpToTagByInput();
-    }
-//}}}
+    } //}}}
 
+    //{{{ getListLocation
+    public static Point getListLocation()
+    {
+        JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+        textArea.scrollToCaret(false);
 
-//{{{ getListLocation
-public static Point getListLocation()
-{
-    JEditTextArea textArea = jEdit.getActiveView().getTextArea();
-    textArea.scrollToCaret(false);
-    
-    int caret = textArea.getCaretPosition();
-    //String sel = textArea.getSelectedText();
-    
-    Point location = textArea.offsetToXY(caret);
-	location.y += textArea.getPainter().getFontMetrics().getHeight();
-	SwingUtilities.convertPointToScreen(location, textArea.getPainter());
-    return location;
-} //}}}
+        int caret = textArea.getCaretPosition();
+        //String sel = textArea.getSelectedText();
 
+        Point location = textArea.offsetToXY(caret);
+        location.y += textArea.getPainter().getFontMetrics().getHeight();
+        SwingUtilities.convertPointToScreen(location, textArea.getPainter());
+        return location;
+    } //}}}
 }
-
