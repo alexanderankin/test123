@@ -68,11 +68,19 @@ public class BackgroundOptionPane extends AbstractOptionPane
             jEdit.getProperty("options.background.blend"),
             jEdit.getBooleanProperty("background.blend", false)
         );
+        this.blend.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                boolean selected = BackgroundOptionPane.this.blend.isSelected();
+                BackgroundOptionPane.this.blendColor.setEnabled(selected);
+                BackgroundOptionPane.this.blendAlpha.setEnabled(selected);
+            }
+        });
         addComponent(this.blend);
 
         this.blendColor = this.createColorButton(
             "background.blend-color", jEdit.getColorProperty("view.bgColor", Color.white)
         );
+        this.blendColor.setEnabled(this.blend.isSelected());
         addComponent(
             jEdit.getProperty("options.background.blend-color"),
             this.blendColor
@@ -82,6 +90,7 @@ public class BackgroundOptionPane extends AbstractOptionPane
         if (alpha < 0) { alpha = 0; }
         if (alpha > 255) { alpha = 255; }
         this.blendAlpha = new JSlider(0, 255, alpha);
+        this.blendAlpha.setEnabled(this.blend.isSelected());
         this.blendAlpha.setPaintTicks(true);
         this.blendAlpha.setMajorTickSpacing(32);
         Hashtable blendAlphaLabels = new Hashtable();
