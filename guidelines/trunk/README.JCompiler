@@ -1,0 +1,23 @@
+CVS policy file
+
+plugin: JCompiler
+
+current maintainer: Dirk Moebius <dmoebius@gmx.net>
+
+version: 0.7.0 and higher
+author:  Dirk Moebius <dmoebius@gmx.net>
+
+version: 0.6
+author:  Kevin A. Burton <burton@relativity.yi.org> and Aziz Sharif
+
+version: 0.4.9
+author:  Dominic Stolerman
+
+version: 0.1 to 0.4.8
+author:  Kevin A. Burton <burton@relativity.yi.org> and Aziz Sharif
+
+original author: Kevin A. Burton <burton@relativity.yi.org> and Aziz Sharif
+
+
+Please do not commit changes to this plugin without first consulting
+the current maintainer.
