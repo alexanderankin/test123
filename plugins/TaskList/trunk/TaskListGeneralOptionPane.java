@@ -86,7 +86,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		addComponent(Box.createVerticalStrut(3));
 
 
-		// DONE: change default to false, unless we get it working well
+		// DONE: change default to false, until we get it working well
 		addComponent(highlightTasks = new JCheckBox(
 			jEdit.getProperty("options.tasklist.general.highlight.tasks"),
 			jEdit.getBooleanProperty("tasklist.highlight.tasks", false)));
@@ -118,12 +118,10 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 //			viewBuffers.setSelectedItem(_viewBuffers);
 	}
 
-	//TODO:  somethin something
-
 
 	public void _save()
 	{
-		// NOTE: parsedelay not used in this version
+		// NOTE: parsedelay property not used in this version
 		/*
 		jEdit.setProperty("tasklist.parsedelay", parseDelay.getText());
 		*/
@@ -186,7 +184,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		}
 	}
 
-	// NOTE: parseDelay not used in this version
+	// NOTE: parseDelay component not used in this version
 	// private JTextField parseDelay;
 	private JComboBox bufferDisplay;
 	//private JComboBox viewBuffers;
