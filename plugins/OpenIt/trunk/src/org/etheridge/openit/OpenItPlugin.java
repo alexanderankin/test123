@@ -33,6 +33,7 @@ import org.etheridge.openit.gui.FindFileWindow;
 import org.etheridge.openit.OpenItProperties;
 import org.etheridge.openit.options.PopupOptionsPane;
 import org.etheridge.openit.options.SourcePathOptionsPane;
+import org.etheridge.openit.sourcepath.SourcePath;
 import org.etheridge.openit.sourcepath.SourcePathFile;
 import org.etheridge.openit.SourcePathManager;
 
@@ -164,7 +165,46 @@ public class OpenItPlugin extends EBPlugin
     findClassWindow.show();
     findClassWindow.setVisible(true);
   }
+  
+  /**
+   * Adds the current buffer's directory to the source path.
+   */
+  public static void addCurrentDirectoryToSourcePath(View view)
+  {
+    // get the directory of the current buffer
+    String path = view.getBuffer().getPath();
+    String name = view.getBuffer().getName();
    
+    // remove the name from the path
+    path = path.substring(0, path.lastIndexOf(name) - 1);
+   
+    // if the source path has not been loaded yet, put a message on the status
+    // bar and just return
+    if (SourcePathManager.staticGetQuickAccessSourcePath() == null) {
+      view.getStatus().setMessageAndClear(jEdit.getProperty("openit.InitialLoadingNotComplete.StatusBarMessage"));
+      
+      // force the manager to start loading sourcepath
+      SourcePathManager.getInstance();
+      
+      return;
+    }
+    
+    // append the new path to the end of the sourcepath property
+    String stringSourcePath = jEdit.getProperty(OpenItProperties.SOURCE_PATH_STRING, "");
+    stringSourcePath = (stringSourcePath.trim().endsWith(File.pathSeparator) ?
+      stringSourcePath + path : stringSourcePath + File.pathSeparator + path);
+    jEdit.setProperty(OpenItProperties.SOURCE_PATH_STRING, stringSourcePath);
+    
+    // refresh the sourcepath
+    SourcePathManager.getInstance().refreshSourcePath();
+    
+    // set the statusbar with an appropriate message
+    view.getStatus().setMessageAndClear
+      (jEdit.getProperty("openit.AddedDirectoryToSourcePath.StatusBarMessage.1") +
+       " " + path + " " + 
+       jEdit.getProperty("openit.AddedDirectoryToSourcePath.StatusBarMessage.2"));
+  }
+  
   //
   // Private Helper Methods
   //

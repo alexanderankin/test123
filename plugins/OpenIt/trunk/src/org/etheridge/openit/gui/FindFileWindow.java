@@ -527,10 +527,17 @@ public class FindFileWindow extends JFrame
     if (quickAccessSourcePath == null) {
       return;
     }
-       
-    List sourceFilesStartingWithLetter = 
-      new ArrayList(quickAccessSourcePath.getSourceFilesStartingWith(startingChar));
-      
+    
+    // TODO: depending on user configuration - this should do one or the other
+    List sourceFilesStartingWithLetter = null;
+    if (jEdit.getBooleanProperty(OpenItProperties.ALLOW_SUBSTRING_MATCHING, true)) {
+      sourceFilesStartingWithLetter = 
+        new ArrayList(quickAccessSourcePath.getSourceFilesContaining(documentText));
+    } else {
+      sourceFilesStartingWithLetter = 
+        new ArrayList(quickAccessSourcePath.getSourceFilesStartingWith(startingChar));
+    }
+
     // iterate through list and remove those source files that do not 
     // start with the text in the source file name field
     for (Iterator i = sourceFilesStartingWithLetter.iterator(); i.hasNext();) {
@@ -544,9 +551,18 @@ public class FindFileWindow extends JFrame
         documentText = documentText.toLowerCase();
       }
 
-      if (!currentFileName.startsWith(documentText)) {
-        i.remove();
+      // if the user wants substring matching, then search for any substring
+      // in the text, otherwise, just search for the first letter.
+      if (jEdit.getBooleanProperty(OpenItProperties.ALLOW_SUBSTRING_MATCHING, true)) {
+        if (currentFileName.indexOf(documentText) < 0) {
+          i.remove();
+        }
+      } else {
+        if (!currentFileName.startsWith(documentText)) {
+          i.remove();
+        }
       }
+
     }
         
     setSourceFiles(sourceFilesStartingWithLetter);

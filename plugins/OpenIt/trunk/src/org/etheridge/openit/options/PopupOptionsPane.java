@@ -27,9 +27,11 @@ import javax.swing.BorderFactory;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.etheridge.openit.OpenItProperties;
+import org.etheridge.openit.SourcePathManager;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
@@ -39,10 +41,10 @@ import org.gjt.sp.jedit.jEdit;
  */
 public class PopupOptionsPane extends AbstractOptionPane   
 {
+  private JCheckBox mAllowSubstringMatchesCheckBox;
   private JCheckBox mClearWindowCheckBox;
   private JCheckBox mCaseSensitiveCheckBox;
-  
-  // display gui components
+
   private JCheckBox mDisplayDirectoriesCheckBox;
   private JCheckBox mDisplayExtensionsCheckBox;
   private JCheckBox mDisplayIconsCheckBox;
@@ -60,10 +62,15 @@ public class PopupOptionsPane extends AbstractOptionPane
   {
     setLayout(new BorderLayout());
     
-    JPanel topPlacerPanel = new JPanel(new GridLayout(2,1));
-    topPlacerPanel.add(createClearWindowPanel());
-    topPlacerPanel.add(createCaseSensitivePanel());
+    // top panel
+    JPanel topPlacerPanel = new JPanel(new BorderLayout());
+    topPlacerPanel.add(createSubstringMatchesPanel(), BorderLayout.NORTH);
+    JPanel topGridPlacerPanel = new JPanel(new GridLayout(2,1));
+    topGridPlacerPanel.add(createClearWindowPanel());
+    topGridPlacerPanel.add(createCaseSensitivePanel());
+    topPlacerPanel.add(topGridPlacerPanel);
         
+    // bottom panel
     JPanel placerPanel = new JPanel(new BorderLayout());
     placerPanel.add(topPlacerPanel, BorderLayout.NORTH);
     placerPanel.add(createDisplayOptionsPanel(), BorderLayout.CENTER);
@@ -73,12 +80,41 @@ public class PopupOptionsPane extends AbstractOptionPane
     
   public void _save()
   {
-    setProperties();
+    // if the substring matching property has changed, then we want to refresh
+    // the sourcepath
+    if (jEdit.getBooleanProperty(OpenItProperties.ALLOW_SUBSTRING_MATCHING, true) !=
+        mAllowSubstringMatchesCheckBox.isSelected()) {
+      setProperties();
+      SourcePathManager.getInstance().refreshSourcePath();
+    } else {
+      setProperties();
+    }
   }
   
   //
   // GUI Initialization
   //
+  
+  private JPanel createSubstringMatchesPanel()
+  {
+    JPanel substringMatchesPanel = new JPanel(new BorderLayout(6,6));
+    substringMatchesPanel.setBorder(BorderFactory.createCompoundBorder
+      (BorderFactory.createTitledBorder(jEdit.getProperty("options.OpenIt.PopupOptionsPane.SubstringMatching.title")), 
+       BorderFactory.createEmptyBorder(6,6,6,6)));
+   
+    JPanel labelPanel = new JPanel(new GridLayout(2,1));
+    JLabel label1 = new JLabel(jEdit.getProperty("options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.1")); 
+    JLabel label2 = new JLabel(jEdit.getProperty("options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.2")); 
+    labelPanel.add(label1);
+    labelPanel.add(label2);
+    substringMatchesPanel.add(labelPanel, BorderLayout.NORTH);
+   
+    mAllowSubstringMatchesCheckBox = new JCheckBox(jEdit.getProperty("options.OpenIt.PopupOptionsPane.SubstringMatching.label"));
+    mAllowSubstringMatchesCheckBox.setSelected(jEdit.getBooleanProperty(OpenItProperties.ALLOW_SUBSTRING_MATCHING, true)); // default to true
+    substringMatchesPanel.add(mAllowSubstringMatchesCheckBox);
+    
+    return substringMatchesPanel;
+  }
   
   private JPanel createClearWindowPanel()
   {
@@ -162,6 +198,7 @@ public class PopupOptionsPane extends AbstractOptionPane
     jEdit.setBooleanProperty(OpenItProperties.DISPLAY_SIZE, mDisplaySizeCheckBox.isSelected());
     jEdit.setBooleanProperty(OpenItProperties.JAVA_FILE_DISPLAY_PACKAGES, mJavaFileDisplayPackagesCheckBox.isSelected());
     jEdit.setBooleanProperty(OpenItProperties.JAVA_FILE_DISPLAY_DIRECTORIES, mJavaFileDisplayDirectoriesCheckBox.isSelected());
+    jEdit.setBooleanProperty(OpenItProperties.ALLOW_SUBSTRING_MATCHING, mAllowSubstringMatchesCheckBox.isSelected());
   }
 
 }

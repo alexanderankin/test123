@@ -74,6 +74,31 @@ public class QuickAccessSourcePath
   private Map mQuickAccessMap;
   
   /**
+   * Substring index size - this integer determines how many characters should
+   * be used as a substring index into the quick access map.  
+   * 
+   * For example, if the index size is 2, and the file to be indexed is 
+   * "this.java", the following indexes will be added to the quick access map
+   * if they do not already exist (and "this.java" will be mapped):
+   *
+   * th - this.java
+   * hi - this.java
+   * is - this.java
+   * s. - this.java
+   * .j - this.java
+   * ja - this.java
+   * av - this.java
+   * va - this.java
+   *
+   * The higher the substring index size the more potential indexes there will
+   * be, meaning it will take longer to index, but will be quicker doing lookups.
+   *
+   * This value *could* be user-configurable, to allow the user to control this
+   * ratio.
+   */
+  private static final int msIndexSize = 2;
+  
+  /**
    * Constructs a QuickAccessSourcePath
    *
    * NOTE: this is a *BUSY* constructor - it will potentially take a while!
@@ -85,9 +110,30 @@ public class QuickAccessSourcePath
     initialize();
   }
   
+  /**
+   * Gets a list of all SourceFiles starting with the specified character.
+   */
   public List getSourceFilesStartingWith(char ch)
   {
     List sourceFileList = (List) mQuickAccessMap.get(String.valueOf(ch).toLowerCase());
+    
+    if(sourceFileList == null) {
+      return new ArrayList();
+    }
+    
+    return Collections.unmodifiableList(sourceFileList);
+  }
+  
+  /**
+   * Gets a list of all SourceFiles containing the specified substring.
+   */
+  public List getSourceFilesContaining(String string)
+  {
+    if (string.length() > msIndexSize) {
+      string = string.substring(0,msIndexSize);
+    }
+ 
+    List sourceFileList = (List) mQuickAccessMap.get(string.toLowerCase());
     
     if(sourceFileList == null) {
       return new ArrayList();
@@ -139,6 +185,23 @@ public class QuickAccessSourcePath
             mQuickAccessMap.put(firstLetter, currentLetterList);
           }
           currentLetterList.add(sourcePathFile);
+          
+          // index substrings if user wants them indexed
+          if (jEdit.getBooleanProperty(OpenItProperties.ALLOW_SUBSTRING_MATCHING, true)) {
+            String fileName = sourcePathFile.getFullName().toLowerCase();
+            for (int x = 0; x < fileName.length(); x++) {
+              if (x <= fileName.length() - msIndexSize) {
+                String currentSubstring = fileName.substring(x, x+msIndexSize);
+                
+                List substringList = (List) mQuickAccessMap.get(currentSubstring);
+                if (substringList == null) {
+                  substringList = new ArrayList();
+                  mQuickAccessMap.put(currentSubstring, substringList);
+                }
+                substringList.add(sourcePathFile);
+              }
+            }
+          }
         }
       }
       

@@ -27,6 +27,8 @@ import java.io.File;
  */
 public class DirectorySourcePathElement extends SourcePathElement
 {
+  private boolean mIsLink = false;
+  
   public DirectorySourcePathElement(String elementName)
   {
     super(elementName);
@@ -42,11 +44,18 @@ public class DirectorySourcePathElement extends SourcePathElement
         findSourceFilesInDirectory(file, file);
       }
       
+      // determine whether or not the directory is a link (ie. symbolic link)
+      mIsLink = !file.getCanonicalPath().equals(file.getAbsolutePath());
     } catch (Exception e) {
       // this should really log a message, but there is no logging, so 
       // a stack trace will do for now.
       e.printStackTrace();
     }
+  }
+  
+  public boolean isLink()
+  {
+    return mIsLink;
   }
   
   //

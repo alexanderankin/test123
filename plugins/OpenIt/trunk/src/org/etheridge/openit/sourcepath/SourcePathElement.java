@@ -58,4 +58,13 @@ public abstract class SourcePathElement
    * Loads the files in this source path element.
    */
   protected abstract void loadFiles();
+  
+  /**
+   * @return whether this source path element is a link (ie. symlink), defaults
+   * to false.
+   */
+  public boolean isLink()
+  {
+    return false;
+  }
 }
