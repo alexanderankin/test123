@@ -364,12 +364,12 @@ public class ColorTabs
          this.colorVariation = jEdit.getBooleanProperty("buffertabs.color-variation");
          this.foregroundColorized = jEdit.getBooleanProperty("buffertabs.color-foreground");
 
-         if (this.selectedColorized != jEdit.getBooleanProperty("buffertabs.color-selected"))
+         if (this.isSelectedColorized() != jEdit.getBooleanProperty("buffertabs.color-selected"))
          {
-            this.selectedColorized = !this.selectedColorized;
+            this.setSelectedColorized(!this.isSelectedColorized());
 
             //Turn off all colorhighlight
-            if (!this.selectedColorized)
+            if (!this.isSelectedColorized())
             {
                try
                {
