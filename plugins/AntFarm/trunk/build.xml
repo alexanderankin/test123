@@ -3,28 +3,30 @@
 <!--
 		 Use this ant script to build the AntFarm plugin.
 
-     This is based on the standard build.xml file for building a jEdit plugin.
+	 This is based on the standard build.xml file for building a jEdit plugin.
 
-     The 'dist' target compiles the plugin, generates documentation, and creates
-     the JAR file.  Before running the 'dist' target, you will need to choose
-     whether to generate the documentation using one of these two targets:
+	 The 'dist' target compiles the plugin, generates documentation, and creates
+	 the JAR file.  Before running the 'dist' target, you will need to choose
+	 whether to generate the documentation using one of these two targets:
 
-     - 'docs-xsltproc': Creates documentation using the xsltproc tool from
-       libxslt, available at http://xmlsoft.org/XSLT
-     - 'docs-xalan': Creates documentation using the Xalan XSLT processor,
-       available at http://xml.apache.org/
+	 - 'docs-xsltproc': Creates documentation using the xsltproc tool from
+	   libxslt, available at http://xmlsoft.org/XSLT
+	 - 'docs-xalan': Creates documentation using the Xalan XSLT processor,
+	   available at http://xml.apache.org/
 
-     The default processor is xsltproc. You can change the processor to Xalan by
-     setting the docs-proc.target property to xalan. This can be done on the
-     command line by adding '-Ddocs-proc.target=xalan'. If you do not have any
-     documentation, you can remove the 'docs' target from the depends list for
-     the 'dist' target.
+	 The default processor is xsltproc. You can change the processor to Xalan by
+	 setting the docs-proc.target property to xalan. This can be done on the
+	 command line by adding '-Ddocs-proc.target=xalan'. If you do not have any
+	 documentation, you can remove the 'docs' target from the depends list for
+	 the 'dist' target.
 
 -->
 
 <project name="AntFarm" default="jar" basedir=".">
 
-	<property name="jedit.install.dir"  value="../../jEdit"/>
+	<property name="jedit.install.dir"  value="../.."/>
+	<property name="jedit.user.dir" value="${user.home}/.jedit" />
+	<property name="jedit.user.jars" value="${jedit.user.dir}/jars" />
 	<property name="jedit.jars" value="${jedit.install.dir}/jars"/>
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target"  value="xsltproc"/>
@@ -41,10 +43,14 @@
 		<pathelement path="${jedit.jars}/ant.jar" />
 		<pathelement path="lib/junit.jar" />
 		<!-- Other plugin dependencies -->
- 		<pathelement path="${jedit.jars}/Console.jar" />
+		<pathelement path="${jedit.jars}/Console.jar" />
 		<pathelement path="${jedit.jars}/ErrorList.jar" />
 		<pathelement path="${jedit.jars}/ProjectViewer.jar" />
 		<pathelement path="${jedit.jars}/CommonControls.jar" />
+		<pathelement path="${jedit.user.jars}/Console.jar" />
+		<pathelement path="${jedit.user.jars}/ErrorList.jar" />
+		<pathelement path="${jedit.user.jars}/ProjectViewer.jar" />
+		<pathelement path="${jedit.user.jars}/CommonControls.jar" />
 	</path>
 
 
@@ -81,9 +87,9 @@
 		</jar>
 	</target>
 
-    <target name="jar-dist" depends="compile, docs" description="Jars the plugin and documentation">
-        <antcall target="jar"/>
-    </target>
+	<target name="jar-dist" depends="compile, docs" description="Jars the plugin and documentation">
+		<antcall target="jar"/>
+	</target>
 
 	<target name="dist" depends="jar-dist, docs" />
 
