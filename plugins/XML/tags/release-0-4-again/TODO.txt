@@ -1,0 +1,19 @@
+- documentation: XML catalog format, OASIS catalog format
+- XmlComplete: support backspace (just get text from buffer from < pos
+  to caret pos)
+- for html files, entering > should not close empty tags
+- different icons for internal/external entities
+- different icons for empty elements
+- different icons for tags available in different HTML versions
+- 'extend' attribute of completion info file
+- tag lists for JSP, XSL, ASP, JHTML, ...
+- initial setup wizard when xml file opened for the first time
+- DTD cache
+- root document property, proper handling of tags in nested files
+- All/1/2/3/4 buttons in XML tree?
+- 'new xml file' command
+- handle parsing open buffers better
+- test XMLCatalog support, include an XMLCatalog DTD
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available
+- integration with a project management plugin
