@@ -571,8 +571,7 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			buffer = error.getBuffer();
 		else
 		{
-			buffer = jEdit.openFile(view,null,
-				error.getFilePath(),false,false);
+			buffer = jEdit.openFile(view,error.getFilePath());
 			if(buffer == null)
 				return;
 		}
@@ -665,7 +664,7 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			{
 				setFont(UIManager.getFont("Tree.font"));
 				ErrorSource.Error error = (ErrorSource.Error)nodeValue;
-				setText((errorSource.getLineNumber() + 1)
+				setText((error.getLineNumber() + 1)
 					+ ": " + error.getErrorMessage()
 					.replace('\t',' '));
 				setIcon(error.getErrorType() == ErrorSource.WARNING
