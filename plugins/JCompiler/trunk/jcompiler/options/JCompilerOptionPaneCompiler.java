@@ -26,6 +26,7 @@ import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.util.Log;
 
 
 /**
@@ -33,175 +34,189 @@ import org.gjt.sp.jedit.gui.*;
  * compiler plugin options.
  */
 public class JCompilerOptionPaneCompiler
-         extends AbstractOptionPane
-         implements ActionListener, ChangeListener
+		 extends AbstractOptionPane
+		 implements ActionListener, ChangeListener
 {
-    private JCheckBox genDebug;
-    private JCheckBox genOptimized;
-    private JCheckBox showDeprecation;
-    private JCheckBox specifyOutputDirectory;
-    private JCheckBox useJavaCP;
-    private JCheckBox addPkg2CP;
-    private JLabel cpLabel;
-    private JTextField newCP;
-    private JTextField outputDirectory;
-    private JTextField otherOptions;
-    private JButton pickDirectory;
+
+	private JCheckBox genDebug;
+	private JCheckBox genOptimized;
+	private JCheckBox showDeprecation;
+	private JCheckBox specifyOutputDirectory;
+	private JCheckBox addPkg2CP;
+	private JLabel cpLabel;
+	private JTextField outputDirectory;
+	private JTextField otherOptions;
+	private JButton pickDirectory;
+	private JButton pickBasePathButton;
+	private JTextField basePath;
+	private JTextField srcPath;
+	private JTextField libPath;
+	private JTextField classPath;
 
 
-    public JCompilerOptionPaneCompiler() {
-        super("jcompiler.compiler");
-    }
+	public JCompilerOptionPaneCompiler() {
+		super("jcompiler.compiler");
+	}
 
 
-    public void _init() {
-        // "Generate debug info (-g)"
-        genDebug = new JCheckBox(jEdit.getProperty(
-            "options.jcompiler.gendebug"));
-        genDebug.setSelected(jEdit.getBooleanProperty(
-            "jcompiler.gendebug", true));
-        addComponent(genDebug);
+	public void _init() {
+		// "Generate debug info (-g)"
+		genDebug = new JCheckBox(jEdit.getProperty("options.jcompiler.gendebug"));
+		genDebug.setSelected(jEdit.getBooleanProperty("jcompiler.gendebug", true));
+		addComponent(genDebug);
 
-        // "Generate optimized code (-O)"
-        genOptimized = new JCheckBox(jEdit.getProperty(
-            "options.jcompiler.genoptimized"));
-        genOptimized.setSelected(jEdit.getBooleanProperty(
-            "jcompiler.genoptimized", false));
-        addComponent(genOptimized);
+		// "Generate optimized code (-O)"
+		genOptimized = new JCheckBox(jEdit.getProperty("options.jcompiler.genoptimized"));
+		genOptimized.setSelected(jEdit.getBooleanProperty("jcompiler.genoptimized", false));
+		addComponent(genOptimized);
 
-        // "Warn about use of deprecated API (-deprecation)"
-        showDeprecation = new JCheckBox(jEdit.getProperty(
-            "options.jcompiler.showdeprecated"));
-        showDeprecation.setSelected(jEdit.getBooleanProperty(
-            "jcompiler.showdeprecated", true));
-        addComponent(showDeprecation);
+		// "Warn about use of deprecated API (-deprecation)"
+		showDeprecation = new JCheckBox(jEdit.getProperty("options.jcompiler.showdeprecated"));
+		showDeprecation.setSelected(jEdit.getBooleanProperty("jcompiler.showdeprecated", true));
+		addComponent(showDeprecation);
+		addComponent(Box.createVerticalStrut(20));
 
-        // "Use CLASSPATH defined when running jEdit"
-        useJavaCP = new JCheckBox(jEdit.getProperty(
-            "options.jcompiler.usejavacp"));
-        useJavaCP.setSelected(jEdit.getBooleanProperty(
-            "jcompiler.usejavacp", true));
-        useJavaCP.addActionListener(this);
-        addComponent(useJavaCP);
+		// "$basepath"
+		basePath = new JTextField();
+		String basePathValue = jEdit.getProperty("jcompiler.basepath");
+		basePath.setText(basePathValue == null ? "" : basePathValue);
+		pickBasePathButton = new JButton(GUIUtilities.loadIcon("Open24.gif"));
+		pickBasePathButton.setMargin(new Insets(0,0,0,0));
+		pickBasePathButton.addActionListener(this);
+		JPanel basePathPanel = new JPanel(new BorderLayout());
+		basePathPanel.add(basePath, BorderLayout.CENTER);
+		basePathPanel.add(pickBasePathButton, BorderLayout.EAST);
+		addComponent(jEdit.getProperty("options.jcompiler.basepath"), basePathPanel);
 
-        // "Java System CLASSPATH"/"User defined CLASSPATH"
-        cpLabel = new JLabel();
-        addComponent(cpLabel);
+		// "You may use the $basepath variable in the following paths:"
+		addComponent(new JLabel(jEdit.getProperty("options.jcompiler.basepath.description")));
 
-        // CLASSPATH text field
-        newCP = new JTextField();
-        newCP.setPreferredSize(new Dimension(270, newCP.getPreferredSize().height));
-        addComponent("", newCP);
+		// "Source path"
+		srcPath = new JTextField();
+		String srcPathValue = jEdit.getProperty("jcompiler.sourcepath");
+		srcPath.setText(srcPathValue == null ? "" : srcPathValue);
+		srcPath.setPreferredSize(new Dimension(270, srcPath.getPreferredSize().height));
+		addComponent(jEdit.getProperty("options.jcompiler.sourcepath"), srcPath);
 
-        // "Add package of compiled sourcefile to CLASSPATH"
-        addPkg2CP = new JCheckBox(jEdit.getProperty(
-            "options.jcompiler.addpkg2cp"));
-        addPkg2CP.setSelected(jEdit.getBooleanProperty(
-            "jcompiler.addpkg2cp", true));
-        addComponent(addPkg2CP);
+		// "Required library path"
+		libPath = new JTextField();
+		String libPathValue = jEdit.getProperty("jcompiler.libpath");
+		libPath.setText(libPathValue == null ? "" : libPathValue);
+		libPath.setPreferredSize(new Dimension(270, libPath.getPreferredSize().height));
+		addComponent(jEdit.getProperty("options.jcompiler.libpath"), libPath);
 
-        // "Use different output directory (-d)"
-        specifyOutputDirectory = new JCheckBox(jEdit.getProperty(
-            "options.jcompiler.specifyoutputdirectory"));
-        specifyOutputDirectory.setSelected(jEdit.getBooleanProperty(
-            "jcompiler.specifyoutputdirectory", false));
-        specifyOutputDirectory.addChangeListener(this);
-        addComponent(specifyOutputDirectory);
+		// "Class path"
+		classPath = new JTextField();
+		String classPathValue = jEdit.getProperty("jcompiler.classpath");
+		classPath.setText(classPathValue == null ? "" : classPathValue);
+		classPath.setPreferredSize(new Dimension(270, classPath.getPreferredSize().height));
+		addComponent(jEdit.getProperty("options.jcompiler.classpath"), classPath);
 
-        // Output directory text field (+ select button)
-        outputDirectory = new JTextField();
-        String output = jEdit.getProperty("jcompiler.outputdirectory");
-        outputDirectory.setText(output == null ? "" : output);
-        pickDirectory = new JButton(GUIUtilities.loadIcon("Open24.gif"));
-        pickDirectory.setMargin(new Insets(0,0,0,0));
-        pickDirectory.addActionListener(this);
-        JPanel outputPanel = new JPanel(new BorderLayout());
-        outputPanel.add(outputDirectory, BorderLayout.CENTER);
-        outputPanel.add(pickDirectory, BorderLayout.EAST);
-        addComponent(jEdit.getProperty("options.jcompiler.outputDirectory"),
-            outputPanel);
+		// "Add package of compiled sourcefile to CLASSPATH"
+		addPkg2CP = new JCheckBox(jEdit.getProperty("options.jcompiler.addpkg2cp"));
+		addPkg2CP.setSelected(jEdit.getBooleanProperty("jcompiler.addpkg2cp", true));
+		addComponent(addPkg2CP);
+		addComponent(Box.createVerticalStrut(15));
 
-        // "Other options:"
-        otherOptions = new JTextField();
-        String options = jEdit.getProperty("jcompiler.otheroptions");
-        otherOptions.setText(options == null ? "" : options);
-        addComponent(jEdit.getProperty("options.jcompiler.otheroptions"), otherOptions);
+		// "Use different output directory (-d)"
+		specifyOutputDirectory = new JCheckBox(jEdit.getProperty("options.jcompiler.specifyoutputdirectory"));
+		specifyOutputDirectory.setSelected(jEdit.getBooleanProperty("jcompiler.specifyoutputdirectory", false));
+		specifyOutputDirectory.addChangeListener(this);
+		addComponent(specifyOutputDirectory);
 
-        // ========== misc setup ==========
-        enableOutputDirectory(jEdit.getBooleanProperty(
-            "jcompiler.specifyoutputdirectory", false));
-        adjustCPSettings();
-    }
+		// Output directory text field (+ select button)
+		outputDirectory = new JTextField();
+		String output = jEdit.getProperty("jcompiler.outputdirectory");
+		outputDirectory.setText(output == null ? "" : output);
+		pickDirectory = new JButton(GUIUtilities.loadIcon("Open24.gif"));
+		pickDirectory.setMargin(new Insets(0,0,0,0));
+		pickDirectory.addActionListener(this);
+		JPanel outputPanel = new JPanel(new BorderLayout());
+		outputPanel.add(outputDirectory, BorderLayout.CENTER);
+		outputPanel.add(pickDirectory, BorderLayout.EAST);
+		addComponent(jEdit.getProperty("options.jcompiler.outputDirectory"), outputPanel);
+		addComponent(Box.createVerticalStrut(20));
 
+		// "Other options:"
+		otherOptions = new JTextField();
+		String options = jEdit.getProperty("jcompiler.otheroptions");
+		otherOptions.setText(options == null ? "" : options);
+		addComponent(jEdit.getProperty("options.jcompiler.otheroptions"), otherOptions);
 
-    public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == pickDirectory) {
-            // the "choose dir" button was pressed:
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-            //chooser.setTitle("Select output directory");
-            int retVal = chooser.showOpenDialog(this);
-            if (retVal == JFileChooser.APPROVE_OPTION) {
-                File file = chooser.getSelectedFile();
-                if (file != null) {
-                    try {
-                        String dirName = file.getCanonicalPath();
-                        outputDirectory.setText(dirName);
-                    }
-                    catch(IOException donothing) {
-                        // shouldn't happen
-                    }
-                }
-            }
-        } else {
-            adjustCPSettings();
-        }
-    }
+		// ========== misc setup ==========
+		enableOutputDirectory(jEdit.getBooleanProperty("jcompiler.specifyoutputdirectory", false));
+	}
 
 
-    public void stateChanged(ChangeEvent e) {
-        if (specifyOutputDirectory.isSelected()) {
-            enableOutputDirectory(true);
-        } else {
-            enableOutputDirectory(false);
-        }
-    }
+	/**
+	 * Display a file chooser dialog for directories only.
+	 *
+	 * @return the File if one was selected, or null if user clicked cancel.
+	 */
+	private File chooseDirectory() {
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		int retVal = chooser.showOpenDialog(this);
+
+		if (retVal == JFileChooser.APPROVE_OPTION)
+			return chooser.getSelectedFile();
+		else
+			return null;
+	}
 
 
-    private void enableOutputDirectory(boolean enable) {
-        outputDirectory.setEnabled(enable);
-        pickDirectory.setEnabled(enable);
-    }
+	private void setDirectoryText(File file, JTextField textField) {
+		if (file != null) {
+			try {
+				String dirName = file.getCanonicalPath();
+				textField.setText(dirName);
+			}
+			catch(IOException e) {
+				Log.log(Log.ERROR, this, "Something went wrong getting the canonical path for directory " + file);
+                Log.log(Log.ERROR, this, e);
+			}
+		}
+	}
+
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == pickDirectory) {
+			File file = chooseDirectory();
+			setDirectoryText(file, outputDirectory);
+		}
+		else if (e.getSource() == pickBasePathButton) {
+			File file = chooseDirectory();
+			setDirectoryText(file, basePath);
+		}
+	}
 
 
-    private void adjustCPSettings() {
-        if (useJavaCP.isSelected()) {
-            newCP.setEnabled(false);
-            newCP.setText(System.getProperty("java.class.path"));
-            cpLabel.setText(jEdit.getProperty(
-                "options.jcompiler.usejavacp.true"));
-        } else {
-            newCP.setEnabled(true);
-            newCP.setText(jEdit.getProperty("jcompiler.classpath"));
-            cpLabel.setText(jEdit.getProperty(
-                "options.jcompiler.usejavacp.false"));
-        }
-    }
+	public void stateChanged(ChangeEvent e) {
+		if (specifyOutputDirectory.isSelected())
+			enableOutputDirectory(true);
+		else
+			enableOutputDirectory(false);
+	}
 
 
-    public void _save() {
-        jEdit.setBooleanProperty("jcompiler.genDebug", genDebug.isSelected());
-        jEdit.setBooleanProperty("jcompiler.genOptimized", genOptimized.isSelected());
-        jEdit.setBooleanProperty("jcompiler.showdeprecated", showDeprecation.isSelected());
-        jEdit.setBooleanProperty("jcompiler.specifyoutputdirectory", specifyOutputDirectory.isSelected());
-        jEdit.setBooleanProperty("jcompiler.usejavacp", useJavaCP.isSelected());
-        jEdit.setBooleanProperty("jcompiler.addpkg2cp", addPkg2CP.isSelected());
-        jEdit.setProperty("jcompiler.outputdirectory", outputDirectory.getText().trim());
-        jEdit.setProperty("jcompiler.otheroptions", otherOptions.getText().trim());
-        if (!useJavaCP.isSelected()) {
-            jEdit.setProperty("jcompiler.classpath", newCP.getText().trim());
-        }
-    }
+	private void enableOutputDirectory(boolean enable) {
+		outputDirectory.setEnabled(enable);
+		pickDirectory.setEnabled(enable);
+	}
+
+
+	public void _save() {
+		jEdit.setBooleanProperty("jcompiler.genDebug", genDebug.isSelected());
+		jEdit.setBooleanProperty("jcompiler.genOptimized", genOptimized.isSelected());
+		jEdit.setBooleanProperty("jcompiler.showdeprecated", showDeprecation.isSelected());
+		jEdit.setBooleanProperty("jcompiler.specifyoutputdirectory", specifyOutputDirectory.isSelected());
+		jEdit.setProperty("jcompiler.basepath", basePath.getText().trim());
+		jEdit.setProperty("jcompiler.libpath", libPath.getText().trim());
+		jEdit.setProperty("jcompiler.sourcepath", srcPath.getText().trim());
+		jEdit.setProperty("jcompiler.classpath", classPath.getText().trim());
+		jEdit.setBooleanProperty("jcompiler.addpkg2cp", addPkg2CP.isSelected());
+		jEdit.setProperty("jcompiler.outputdirectory", outputDirectory.getText().trim());
+		jEdit.setProperty("jcompiler.otheroptions", otherOptions.getText().trim());
+	}
 
 }
 

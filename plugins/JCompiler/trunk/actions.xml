@@ -34,5 +34,11 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="jcompiler-options">
+		<CODE>
+			new jcompiler.options.JCompilerOptionDialog(view);
+		</CODE>
+	</ACTION>
+
 </ACTIONS>
 

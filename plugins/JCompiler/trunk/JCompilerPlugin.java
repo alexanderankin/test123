@@ -27,31 +27,32 @@ import jcompiler.options.*;
 public class JCompilerPlugin extends EditPlugin
 {
 
-    public void start() {
-        shell = new JCompilerShell();
-        EditBus.addToNamedList(console.Shell.SHELLS_LIST, shell);
-    }
+	public void start() {
+		jEdit.unsetProperty("jcompiler.usejavacp"); // obsolete
+		shell = new JCompilerShell();
+		EditBus.addToNamedList(console.Shell.SHELLS_LIST, shell);
+	}
 
 
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenu("jcompiler-menu"));
-    }
+	public void createMenuItems(Vector menuItems) {
+		menuItems.addElement(GUIUtilities.loadMenu("jcompiler-menu"));
+	}
 
 
-    public void createOptionPanes(OptionsDialog optionsDialog) {
-        OptionGroup group = new OptionGroup(
-            jEdit.getProperty("options.jcompiler.label"));
-        group.addOptionPane(new JCompilerOptionPaneGeneral());
-        group.addOptionPane(new JCompilerOptionPaneCompiler());
-        optionsDialog.addOptionGroup(group);
-    }
+	public void createOptionPanes(OptionsDialog optionsDialog) {
+		OptionGroup group = new OptionGroup(
+			jEdit.getProperty("options.jcompiler.label"));
+		group.addOptionPane(new JCompilerOptionPaneGeneral());
+		group.addOptionPane(new JCompilerOptionPaneCompiler());
+		optionsDialog.addOptionGroup(group);
+	}
 
 
-    public static JCompilerShell getShell() {
-        return shell;
-    }
+	public static JCompilerShell getShell() {
+		return shell;
+	}
 
 
-    // private members
-    private static JCompilerShell shell;
+	// private members
+	private static JCompilerShell shell;
 }
