@@ -53,9 +53,9 @@ public class ColorTabs
    private static final int DARKEN_RANGE = DARKEN_HIGHEST_COLOR - DARKEN_LOWEST_COLOR;
    private static final float DARKEN_RATIO = ((float) DARKEN_RANGE / 254);
 
-   private static final int lowestColor = 150;
+   private static final int MUTE_LOWEST_COLOR = 150;
    private static final int highestColor = 230;
-   private static final int muteRange = highestColor - lowestColor;
+   private static final int muteRange = highestColor - MUTE_LOWEST_COLOR;
    private static final float muteRatio = ((float) muteRange / 254);
 
    private static ColorTabs colorTabs = null;
@@ -169,9 +169,9 @@ public class ColorTabs
       int g = color.getGreen();
       int b = color.getBlue();
 
-      r = (int) (lowestColor + (r * muteRatio));
-      g = (int) (lowestColor + (g * muteRatio));
-      b = (int) (lowestColor + (b * muteRatio));
+      r = (int) (MUTE_LOWEST_COLOR + (r * muteRatio));
+      g = (int) (MUTE_LOWEST_COLOR + (g * muteRatio));
+      b = (int) (MUTE_LOWEST_COLOR + (b * muteRatio));
 
       if (colorVariation)
       {
@@ -184,9 +184,9 @@ public class ColorTabs
 
       }
 
-      r = Math.max(lowestColor, Math.min(r, highestColor));
-      g = Math.max(lowestColor, Math.min(g, highestColor));
-      b = Math.max(lowestColor, Math.min(b, highestColor));
+      r = Math.max(MUTE_LOWEST_COLOR, Math.min(r, highestColor));
+      g = Math.max(MUTE_LOWEST_COLOR, Math.min(g, highestColor));
+      b = Math.max(MUTE_LOWEST_COLOR, Math.min(b, highestColor));
 
       return new Color(r, g, b);
    }
