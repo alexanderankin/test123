@@ -130,7 +130,8 @@ public class SystemShell extends Shell
 					// run in background
 					args.removeElementAt(args.size() - 1);
 					foreground = false;
-					console.commandDone();
+					output.commandDone();
+					error.commandDone();
 				}
 				else
 				{
@@ -300,17 +301,10 @@ public class SystemShell extends Shell
 		StringBuffer buf = new StringBuffer();
 
 		String varName;
-		boolean backslash = false;
 
 		for(int i = 0; i < arg.length(); i++)
 		{
 			char c = arg.charAt(i);
-			if(backslash)
-			{
-				buf.append(c);
-				backslash = false;
-				break;
-			}
 
 			switch(c)
 			{
@@ -426,9 +420,6 @@ public class SystemShell extends Shell
 					buf.append('~');
 				break;
 			//}}}
-			case '\\':
-				backslash = true;
-				break;
 			default:
 				buf.append(c);
 				break;
@@ -503,6 +494,13 @@ public class SystemShell extends Shell
 		return expansion;
 	} //}}}
 
+	//{{{ getAliases() method
+	public Hashtable getAliases()
+	{
+		init();
+		return aliases;
+	} //}}}
+
 	//{{{ Package-private members
 
 	//{{{ consoleOpened() method
@@ -525,13 +523,6 @@ public class SystemShell extends Shell
 	static ConsoleState getConsoleState(Console console)
 	{
 		return (ConsoleState)consoleStateMap.get(console);
-	} //}}}
-
-	//{{{ getAliases() method
-	Hashtable getAliases()
-	{
-		init();
-		return aliases;
 	} //}}}
 
 	//{{{ getVariables() method
@@ -755,7 +746,7 @@ loop:			for(;;)
 		if(builtIn == null)
 		{
 			String[] pp = { command };
-			console.print(console.getErrorColor(),jEdit.getProperty(
+			error.print(console.getErrorColor(),jEdit.getProperty(
 				"console.shell.unknown-builtin",pp));
 		}
 		else
