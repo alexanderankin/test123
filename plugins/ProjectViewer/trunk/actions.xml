@@ -91,7 +91,7 @@
 	<ACTION NAME="projectviewer_wrapper_create">
 		<CODE>
 			projectviewer.PVActions.pvActionWrapper(
-				new projectviewer.action.EditProjectAction(true), view, true);
+				new projectviewer.action.EditProjectAction(true, null), view, true);
 		</CODE>
 	</ACTION>
 

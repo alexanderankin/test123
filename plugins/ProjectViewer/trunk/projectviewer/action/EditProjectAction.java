@@ -52,18 +52,24 @@ public class EditProjectAction extends Action {
 
 	//{{{ Private members
 	private boolean forceNew;
+	private VPTGroup parent;
 	//}}}
 
 	//{{{ Constructors
 
 	/** Default constructor. */
 	public EditProjectAction() {
-		this(false);
+		this(false, null);
 	}
 
-	/** If forceNew is true, creation of new project will be forced. */
-	public EditProjectAction(boolean forceNew) {
+	/**
+	 *	If forceNew is true, creation of new project will be forced. The
+	 *	default parent is only allowed to be set if forceNew is true.
+	 */
+	public EditProjectAction(boolean forceNew, VPTGroup parent) {
 		this.forceNew = forceNew;
+		if (forceNew)
+			this.parent = parent;
 	}
 
 	//}}}
@@ -87,7 +93,6 @@ public class EditProjectAction extends Action {
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		VPTGroup parent = VPTRoot.getInstance();
 		VPTNode selected = null;
 		String lookupPath = null;
 
@@ -98,7 +103,7 @@ public class EditProjectAction extends Action {
 		if (viewer == null) {
 			viewer = ProjectViewer.getViewer(jEdit.getActiveView());
 		}
-		if (viewer != null) {
+		if (viewer != null && parent == null) {
 			VPTNode sel = viewer.getSelectedNode();
 			if (sel != null && sel.isGroup()) {
 				parent = (VPTGroup) sel;
@@ -126,7 +131,7 @@ public class EditProjectAction extends Action {
 		}
 
 		boolean add = forceNew | (proj == null);
-		proj = ProjectOptions.run(proj, lookupPath);
+		proj = ProjectOptions.run(proj, parent, lookupPath);
 
 		if (proj != null) {
 			boolean newParent = false;
