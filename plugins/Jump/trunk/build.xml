@@ -1,4 +1,4 @@
-<project name="JumpPlugin" default="test" basedir=".">
+<project name="JumpPlugin" default="jar" basedir=".">
 
   <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.1/"/>
   <property name="jar.name"  value="Jump"/>
@@ -24,9 +24,7 @@
   </target>
 
   <target name="jar" depends="compile">
-    <tstamp/>
-    <!-- <mkdir dir="${install.dir}"/> -->
-    <jar jarfile="${jar.name}.jar">
+    <jar jarfile="../${jar.name}.jar">
       <fileset dir=".">
         <include name="**/*.class"/>
         <include name="**/*.props"/>
@@ -41,9 +39,8 @@
   </target>  
 
   <target name="test" depends="compile">
-    <tstamp/>
     <mkdir dir="${install.dir}"/>
-    <jar jarfile="${install.dir}/${jar.name}${TSTAMP}.jar">
+    <jar jarfile="${install.dir}/${jar.name}.jar">
       <fileset dir=".">
         <include name="**/*.class"/>
         <include name="**/*.props"/>
@@ -76,7 +73,7 @@
     'help' - You see now.
     'compile' - Compile sources and put .class files in current directory. I not use this target alone.
     'test*' - Compile plugin, make jar file and put it into "user.home"/.jedit/jar - to testing.
-    'jar' - Compile plugin, make jar file and put it into current directory
+    'jar' - Compile plugin, make jar file and put it into parent directory
     'dist' - Make archive which contain both sources and jar.
     </echo>
     
