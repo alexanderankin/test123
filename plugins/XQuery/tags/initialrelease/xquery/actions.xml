@@ -1,0 +1,7 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+  <ACTION NAME="xquery.evaluate">
+    <CODE>hier moet een oproep tot evaluate() komen als die er is</CODE>
+  </ACTION>
+</ACTIONS>
