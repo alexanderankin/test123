@@ -2,7 +2,7 @@
 # Author: Andre Kaplan
 plugin.JDiffPlugin.name=JDiff Plugin
 plugin.JDiffPlugin.author=Andre Kaplan
-plugin.JDiffPlugin.version=1.1
+plugin.JDiffPlugin.version=1.1.1
 plugin.JDiffPlugin.docs=JDiffPlugin.html
 
 # Dependencies

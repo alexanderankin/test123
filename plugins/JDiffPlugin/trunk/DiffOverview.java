@@ -65,7 +65,7 @@ public abstract class DiffOverview extends JComponent
         int rightFirstLine = -1;
 
         if (hunk == null) {
-            this.textArea1.setFirstLine(leftFirstLine);
+            this.textArea1._setFirstLine(leftFirstLine);
             return;
         }
 
@@ -101,7 +101,7 @@ public abstract class DiffOverview extends JComponent
         }
 
         if (rightFirstLine >= 0) {
-            this.textArea1.setFirstLine(rightFirstLine);
+            this.textArea1._setFirstLine(rightFirstLine);
         }
     }
 
@@ -113,7 +113,7 @@ public abstract class DiffOverview extends JComponent
         int rightFirstLine = this.textArea1.getFirstLine();
 
         if (hunk == null) {
-            this.textArea0.setFirstLine(rightFirstLine);
+            this.textArea0._setFirstLine(rightFirstLine);
             return;
         }
 
@@ -149,7 +149,7 @@ public abstract class DiffOverview extends JComponent
         }
 
         if (leftFirstLine >= 0) {
-            this.textArea0.setFirstLine(leftFirstLine);
+            this.textArea0._setFirstLine(leftFirstLine);
         }
     }
 }
