@@ -1,6 +1,7 @@
 BEFORE CONSOLE 3.0 RELEASE:
 
 - write documentation
+- clear built-in
 - finish commando, include a few more sample commando files
 - improve commando error handling
 - test multi-line error pattern stuff

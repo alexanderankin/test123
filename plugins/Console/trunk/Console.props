@@ -106,6 +106,9 @@ console.shell.cd.unsup=The working directory can only be changed when \
 console.shell.cd.error=The directory {0} does not exist
 console.shell.cd.ok=Working directory is now {0}
 
+console.shell.clear.usage=Usage: %clear\n\
+	Clears output area.
+
 console.shell.detach.usage=Usage: %detach\n\
 	Detaches the currently running process and runs it in the background.
 

@@ -226,40 +226,40 @@ class ErrorMatcherDialog extends EnhancedDialog
 			jEdit.getProperty("options.console.errors.title"),true);
 		this.matcher = matcher;
 
-		JPanel panel = new JPanel(new GridLayout(5,2,0,6));
+		JPanel panel = new JPanel(new GridLayout(7,2,0,6));
 		panel.setBorder(new EmptyBorder(12,12,6,12));
 		JLabel label = new JLabel(jEdit.getProperty(
-			"options.console.general.errors.name"),JLabel.RIGHT);
+			"options.console.errors.name"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(name = new JTextField(matcher.name));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.general.errors.match"),JLabel.RIGHT);
+			"options.console.errors.match"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(match = new JTextField(matcher.match));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.general.errors.warning"),JLabel.RIGHT);
+			"options.console.errors.warning"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(warning = new JTextField(matcher.warning));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.general.errors.extra"),JLabel.RIGHT);
+			"options.console.errors.extra"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(extra = new JTextField(matcher.extra));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.general.errors.filename"),JLabel.RIGHT);
+			"options.console.errors.filename"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(filename = new JTextField(matcher.filename));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.general.errors.line"),JLabel.RIGHT);
+			"options.console.errors.line"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(line = new JTextField(matcher.line));
 		label = new JLabel(jEdit.getProperty(
-			"options.console.general.errors.message"),JLabel.RIGHT);
+			"options.console.errors.message"),JLabel.RIGHT);
 		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(message = new JTextField(matcher.message));

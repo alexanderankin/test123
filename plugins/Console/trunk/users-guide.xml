@@ -39,6 +39,7 @@
 - system shell 'cd' command
 - system shell backgrounding, process management
 - system shell other built-ins
+- error parsing
 - bean shell
 - commando
 - commando directory
@@ -109,7 +110,7 @@
      Error patterns are now stored in a more reliable manner
     </para></listitem>
 
-    <listpara><para>
+    <listitem><para>
      <userinput>$varname</userinput>, <userinput>${varname}</userinput> and
      <userinput>%varname%</userinput> can be used to insert contents of
      environment variable <userinput>varname</userinput> in command string
