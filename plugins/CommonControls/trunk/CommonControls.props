@@ -2,11 +2,11 @@
 
 plugin.CommonControlsPlugin.name=Common Controls
 plugin.CommonControlsPlugin.author=Sergey V. Udaltsov
-plugin.CommonControlsPlugin.version=0.3
+plugin.CommonControlsPlugin.version=0.4
 plugin.CommonControlsPlugin.docs=users-guide.html
 plugin.CommonControlsPlugin.jars=kappalayout.jar
 
-plugin.CommonControlsPlugin.depend.0=jedit 02.07.02.00
+plugin.CommonControlsPlugin.depend.0=jedit 04.00.08.00
 
 common.gui.pathbuilder.addButtonText=Add Element...
 common.gui.pathbuilder.removeButtonText=Remove Element...

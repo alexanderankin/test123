@@ -74,13 +74,19 @@
 
       <listitem>
         <para>
+          <ulink url="#Kappalayout">Kappa and Lambda layout managers</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
           <ulink url="#PathBuilder">PathBuilder</ulink>
         </para>
       </listitem>
 
       <listitem>
         <para>
-          <ulink url="#Kappalayout">Kappa and Lambda layout managers</ulink>
+          <ulink url="#PopupList">PopupList</ulink>
         </para>
       </listitem>
     </itemizedlist>
@@ -205,23 +211,6 @@
       bug #4144505.</para>
     </sect1>
 
-    <sect1 id="PathBuilder">
-      <title>PathBuilder</title>
-
-      <formalpara>
-        <title>Author:</title>
-
-        <para>
-          <author>
-            <firstname>David</firstname>
-
-            <surname>Taylor</surname>
-          </author>
-        </para>
-      </formalpara>
-
-      <para>Nice panel for composing some path ($PATH or $CLASSPATH).</para>
-    </sect1>
     <sect1 id="Kappalayout">
       <title>Kappa and Lambda layout managers</title>
 
@@ -248,12 +237,78 @@
 
       <para>Advanced layout managers.</para>
     </sect1>
+
+    <sect1 id="PathBuilder">
+      <title>PathBuilder</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>David</firstname>
+
+            <surname>Taylor</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>Nice panel for composing some path ($PATH or $CLASSPATH).</para>
+    </sect1>
+
+    <sect1 id="PopupList">
+      <title>PopupList</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Calvin</firstname>
+
+            <surname>Yu</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>The control is a generic popup component that displays a list of items.</para>
+
+      <para>Here's a list of potential uses for it:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Pop up a list of Templates to apply;</para>
+        </listitem>
+
+        <listitem>
+          <para>Pop up a list of dockables to switch between, much like the fast views concept in Eclipse;</para>
+        </listitem>
+
+        <listitem>
+          <para>Pop up a list of open buffers (yet another buffer switching mechanism);</para>
+        </listitem>
+
+        <listitem>
+          <para>Pop up list of auto-completions.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
   </chapter>
 
   <appendix id="changelog">
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.4</title>
+
+          <para />
+        </formalpara>
+
+        <para><ulink url="#PopupList">PopupList</ulink> added</para>
+      </listitem>
+
       <listitem>
         <formalpara>
           <title>Version 0.3</title>
