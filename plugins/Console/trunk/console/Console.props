@@ -98,7 +98,7 @@ console.error.2.line=$2
 console.error.2.message=$3
 
 console.error.3.name=Ant javac error
-console.error.3.match=\\[javac\\]\\s+(.+?):(\\d+):(.+)
+console.error.3.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
 console.error.3.filename=$1
 console.error.3.line=$2
 console.error.3.message=$3
