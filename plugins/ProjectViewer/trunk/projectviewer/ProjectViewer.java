@@ -668,14 +668,17 @@ public final class ProjectViewer extends JPanel
          folderTree.setModel( projectView.getFolderViewModel() );
          if (getCurrentProject() != null)
             getCurrentProject().restoreFolderTreeState( folderTree );
+		 folderTree.repaint();
       }
       if ( fileTree != null ) {
          fileTree.setModel( projectView.getFileViewModel() );
          expandAll( fileTree );
+		 fileTree.repaint();
       }
       if ( workingFileTree != null ) {
          workingFileTree.setModel( projectView.getWorkingFileViewModel() );
          expandAll( workingFileTree );
+		 workingFileTree.repaint();
       }
 
       removeFileBtn.setEnabled( false );

@@ -46,6 +46,8 @@ public final class TreeRenderer extends DefaultTreeCellRenderer {
 
 	private JLabel listCellRenderer = null;
 	private JLabel treeCellRenderer = null;
+	
+	private boolean underlined;
 
 	public TreeRenderer() {
 		//Log.log(Log.DEBUG,this,"TreeRenderer()");
@@ -100,14 +102,17 @@ public final class TreeRenderer extends DefaultTreeCellRenderer {
 		}
 
 		//-- set font && foreground color
+		treeCellRenderer.setFont(normalFont);
 		if(value instanceof ProjectFile) {
-			treeCellRenderer.setFont(getFontForFile((ProjectFile)value));
+			//-/treeCellRenderer.setFont(getFontForFile((ProjectFile)value));
+			underlined=((ProjectFile)value).isOpened();
 			if(!sel) {
 				treeCellRenderer.setForeground(VFS.getDefaultColorFor(value.toString()));
 			}
 		}
 		else {
-			treeCellRenderer.setFont(normalFont);
+			underlined=false;
+		//-/	treeCellRenderer.setFont(normalFont);
 		}
 
 		//-- set the icons for these entries
@@ -141,7 +146,29 @@ public final class TreeRenderer extends DefaultTreeCellRenderer {
 		//Log.log(Log.DEBUG,this,"  getTreeCellRendererComponent() : tree.isEnabled()="+tree.isEnabled());
 		//-- as the tree is never disabled, we can save this call
 		//treeCellRenderer.setEnabled(tree.isEnabled());
-		return treeCellRenderer;
+		return this;
+	}
+
+	public void paintComponent(Graphics g) {
+		//Log.log(Log.DEBUG,this,"paintComponent() : "+underlined);
+		if(underlined) {
+			Font font = getFont();
+
+			FontMetrics fm = getFontMetrics(getFont());
+			int x, y;
+			if(getIcon() == null) {
+				x = 0;
+				y = fm.getAscent() + 2;
+			}
+			else {
+				x = getIcon().getIconWidth() + getIconTextGap();
+				y = Math.max(fm.getAscent() + 2,16);
+			}
+			g.setColor(getForeground());
+			g.drawLine(x,y,x + fm.stringWidth(getText()),y);
+		}
+
+		super.paintComponent(g);
 	}
 
 	/** Returns the font to use for the specified file.
@@ -154,9 +181,8 @@ public final class TreeRenderer extends DefaultTreeCellRenderer {
 	}
 
 	static {
-		Font f = UIManager.getFont("Tree.font");
-		normalFont = new Font(f.getName(), Font.PLAIN, f.getSize());
-		openedFont = new Font(f.getName(), Font.BOLD, f.getSize());
+		normalFont = UIManager.getFont("Tree.font");
+		openedFont = normalFont.deriveFont(Font.BOLD);
 
 		treeSelectionForeground = UIManager.getColor("Tree.selectionForeground");
 		treeNoSelectionForeground = UIManager.getColor("Tree.textForeground");

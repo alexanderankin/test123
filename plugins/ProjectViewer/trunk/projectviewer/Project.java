@@ -972,10 +972,12 @@ public final class Project implements EBComponent {
    
    // a unit test for Fin
    private void testEscape() {
-      assert escape(null) != null;
-      assert escape(null).equals("");
-      assert escape("c:\\temp\\file.txt").equals("c:\\\\temp\\\\file.txt");
-      assert escape("/tmp/file.txt").equals("/tmp/file.txt");
+	   // under jdk1.4/linux I (ensonic) get : 
+	   // warning: as of release 1.4, assert is a keyword, and may not be used as an identifier
+      //assert escape(null) != null;
+      //assert escape(null).equals("");
+      //assert escape("c:\\temp\\file.txt").equals("c:\\\\temp\\\\file.txt");
+      //assert escape("/tmp/file.txt").equals("/tmp/file.txt");
    }
 
    /**

@@ -9,7 +9,7 @@
   <!-- ================================================ -->
   <property file="build.properties"/>
  
-  <property name="version"          value="1.0.3"/>
+  <property name="version"          value="1.0.5"/>
 
   <property name="build"            value="build"/>
   <property name="build.classes"    value="${build}/classes"/>
@@ -117,8 +117,7 @@
   
 
   <!-- ================================================ -->
-  <target name="javadoc" description="generates javadoc sourcecode documentation">
-
+  <target name="javadoc" description="Generates javadoc sourcecode documentation">
     <mkdir dir="${build.javadoc}"/>
     <javadoc sourcepath="${src}"
              destdir="${build.javadoc}"
@@ -127,7 +126,7 @@
              classpathref="default.classpath"/>
   </target>
 
-  <target name="doxydoc" description="generates doxygen sourcecode documentation">
+  <target name="doxydoc" description="Generates doxygen sourcecode documentation">
     <mkdir dir="${build.doxydoc}"/>
     <exec executable="doxygen">
       <arg value="doxyconf"/>
@@ -137,7 +136,7 @@
   
   <!-- ================================================ -->
     <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-    <target name="docs-xsltproc">
+    <target name="docs-xsltproc" description="Generate user documentation in hmtl format with xsltproc">
         <exec executable="xsltproc">
             <arg value="-o"/>
             <arg value="docs/users-guide.html"/>
@@ -149,7 +148,7 @@
 
 
     <!-- Generate docs with Xalan tool from xml.apache.org -->
-    <target name="docs-xalan">
+    <target name="docs-xalan" description="Generate user documentation in hmtl format with xalan">
         <style
             style="docs/users-guide.xsl"
             in="docs/users-guide.xml"
@@ -158,8 +157,7 @@
     </target>
 
   <!-- ================================================ -->
-  <target name="clean"
-          description="Cleans project directories">
+  <target name="clean" description="Cleans project directories">
     <delete dir="${build}"/>
     <delete>
       <fileset dir=".">
