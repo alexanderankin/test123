@@ -1,13 +1,13 @@
 # JDiffPlugin properties
 # Author: Andre Kaplan
-plugin.JDiffPlugin.name=JDiff Plugin
-plugin.JDiffPlugin.author=Andre Kaplan
-plugin.JDiffPlugin.version=1.3
-plugin.JDiffPlugin.docs=JDiffPlugin.html
+plugin.jdiff.JDiffPlugin.name=JDiff Plugin
+plugin.jdiff.JDiffPlugin.author=Andre Kaplan
+plugin.jdiff.JDiffPlugin.version=1.3
+plugin.jdiff.JDiffPlugin.docs=JDiffPlugin.html
 
 # Dependencies
-plugin.JDiffPlugin.depend.0=jdk 1.1
-plugin.JDiffPlugin.depend.1=jedit 03.02.01.00
+plugin.jdiff.JDiffPlugin.depend.0=jdk 1.1
+plugin.jdiff.JDiffPlugin.depend.1=jedit 03.02.01.00
 
 # Menu
 jdiff-menu=\
