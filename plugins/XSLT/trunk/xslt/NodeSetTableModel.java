@@ -49,11 +49,17 @@ public class NodeSetTableModel extends AbstractTableModel {
   private Object[][] data;
 
 
+  /**
+   * Implements method from interface {@link javax.swing.table.TableModel}.
+   */
   public int getColumnCount() {
     return columnNames.length;
   }
 
 
+  /**
+   * Implements method from interface {@link javax.swing.table.TableModel}.
+   */
   public int getRowCount() {
     if(data == null) {
       return 0;
@@ -63,6 +69,9 @@ public class NodeSetTableModel extends AbstractTableModel {
   }
 
 
+  /**
+   * Implements method from interface {@link javax.swing.table.TableModel}.
+   */
   public Object getValueAt(int row, int col) {
     Object cell = data[row][col];
 
@@ -74,16 +83,25 @@ public class NodeSetTableModel extends AbstractTableModel {
   }
 
 
+  /**
+   * Overrides method from class {@link javax.swing.table.AbstractTableModel}.
+   */
   public String getColumnName(int col) {
     return columnNames[col];
   }
 
 
+  /**
+   * Overrides method from class {@link javax.swing.table.AbstractTableModel}.
+   */
   public Class getColumnClass(int c) {
     return String.class;
   }
 
 
+  /**
+   * Overrides method from class {@link javax.swing.table.AbstractTableModel}.
+   */
   public void setValueAt(Object value, int row, int col) {
     data[row][col] = value;
     fireTableCellUpdated(row, col);
@@ -152,7 +170,7 @@ public class NodeSetTableModel extends AbstractTableModel {
   public void removeNameColumn() {
     // Need to put values from the last column into the middle column
     for(int i = 0; i < getRowCount(); i++) {
-      data[i][NAME_COL] = (String)data[i][VALUE_COL];
+      data[i][NAME_COL] = data[i][VALUE_COL];
     }
 
     this.columnNames = NO_NAME_COLUMN;
