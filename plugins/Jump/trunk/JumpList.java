@@ -94,7 +94,6 @@ public JumpList(View parent, Object[] list, ListModel model,
             Dimension popupSize = getSize();
             
             // *************************************
-            System.out.println("popup="+popupSize+". textarea="+parentSize);
             if (popupSize.width >= parentSize.width)
             {
                 setSize(parentSize.width, popupSize.height);
@@ -109,7 +108,6 @@ public JumpList(View parent, Object[] list, ListModel model,
                 x -= popupSize.width;
             }
             // TODO: Need to adjust this.size if x<0
-            //if (x<)
             
             if ((parentSize.height-y)<popupSize.height)
             {
@@ -131,16 +129,6 @@ public JumpList(View parent, Object[] list, ListModel model,
         itemsList.addKeyListener(handler);
         parent.setKeyEventInterceptor(handler);
         textArea.addCaretListener(this);
-// TODO: Check property SHOW_STATUSBAR_MESSAGES before updateStatusBar()
-        // try
-        // {
-        //itemsList.setSelectedIndex(0);     
-        // updateStatusBar(itemsList);
-        // }
-        // catch(Exception e)
-        // {
-        //     System.out.println("Can\'t setup init status bar.");   
-        // }
     }
 //}}}
 
@@ -195,7 +183,6 @@ public void dispose()
     {
         public void valueChanged(ListSelectionEvent e) 
         {
-            //System.out.println("valueChanged");
             updateStatusBar((JList)e.getSource());     
         }
     }
@@ -209,13 +196,6 @@ public void dispose()
         int CHAR_DELTA = 1000;
         long m_time = 0;
         String m_key = "";
-        
-//{{{ void keyReleased
-//        public void keyReleased(KeyEvent evt)
-//        {
-//
-//        }
-//}}}
         
 //{{{ void keyPressed
         public void keyPressed(KeyEvent evt)
@@ -366,7 +346,6 @@ public void dispose()
 
             }
             itemsList.ensureIndexIsVisible(itemsList.getSelectedIndex());  
-
         }
 //}}}
     }
@@ -392,10 +371,6 @@ public void dispose()
                 }
                 dispose();
                 return;
-            //}
-
-            
-            //dispose();
         }
 //}}}
     }
