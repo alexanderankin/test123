@@ -18,7 +18,9 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * @author Wim le Page
  * @author Pieter Wellens
- * @version 0.4.0
+ * @version 0.6.0
+ * 
+ * This is an extension of the Abstract class selectionPanel
  *
  */
 

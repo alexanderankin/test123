@@ -105,7 +105,7 @@ public class AdapterOptionsPanel extends AbstractOptionPane {
 		GridBagConstraints cons = new GridBagConstraints();
 		cons.gridy = y++;
 		cons.gridheight = 1;
-		cons.gridwidth = cons.REMAINDER;
+		cons.gridwidth = GridBagConstraints.REMAINDER;
 		cons.fill = GridBagConstraints.BOTH;
 		cons.anchor = GridBagConstraints.WEST;
 		cons.weightx = 1.0f;
@@ -145,7 +145,7 @@ public class AdapterOptionsPanel extends AbstractOptionPane {
 		GridBagConstraints cons = new GridBagConstraints();
 		cons.gridy = y++;
 		cons.gridheight = 1;
-		cons.gridwidth = cons.REMAINDER;
+		cons.gridwidth = GridBagConstraints.REMAINDER;
 		cons.fill = GridBagConstraints.BOTH;
 		cons.anchor = GridBagConstraints.WEST;
 		cons.weightx = 1.0f;

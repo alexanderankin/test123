@@ -367,7 +367,7 @@ public class SaxonAdapter implements Adapter {
 	 * @see xquery.Adapter#setPerformanceEnabled(boolean)
 	 */
 	public void setPerformanceEnabled(boolean enabled) throws AdapterException {
-		// TODO Saxon performance
+		//this is not neede by the Saxon adapter
 	}
 
 	/* (non-Javadoc)
