@@ -1,0 +1,183 @@
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
+
+<HTML>
+
+<HEAD>
+   <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <META name="Author" content="Dirk Moebius">
+   <TITLE>AStyle Beautifier Plugin</TITLE>
+</HEAD>
+
+
+<BODY>
+
+<TABLE border="0" cellspacing="0" cellpadding="5" width="100%">
+<tr>
+  <td valign="CENTER" bgcolor="#CCCCFF">
+    <b><font size="+3">AStyle Beautifier Plugin</font></b>
+  </td>
+  <td valign="TOP" bgcolor="#CCCCFF">
+    <div align="RIGHT">
+      <font size=-1>
+        By Dirk M&ouml;bius
+        (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)
+      </font>
+    </div>
+  </td>
+</tr>
+</TABLE>
+
+
+<br>
+
+
+<H2>Introduction</H2>
+
+<p>
+The AStyle Beautifier Plugin reformats and beautifies Java and C/C++ code.
+</p>
+
+<p>
+This is done by using <b>Artistic Style</b> (also known as <b>astyle</b>)
+by Tal Davidson (<a href="mailto:davidsont@bigfoot.com">davidsont@bigfoot.com</a>).<br>
+See <a href="http://astyle.sf.net">http://astyle.sf.net</a> for more
+information.<br>
+The version currently used is <b>Artistic Style 1.14.1</b>.
+</p>
+
+
+<br>
+
+
+<H2>Requirements</H2>
+
+<p>
+You need at least <b>JDK 1.1.6</b> and <b>jEdit 3.1final</b>.
+</p>
+
+<p>
+<i>Artistic Style is already contained in the AStyle Beautifier Plugin.
+There is no need to download it separately!</i>
+</p>
+
+
+<br>
+
+
+<H2>Usage</H2>
+
+<p>
+After installation, there is a new menu entry
+<b>Plugins&gt;Beautify&nbsp;Buffer</b>. If you invoke this action, the
+current buffer will by reformatted. The internal action name of this action
+is <code>beautify</code>. (This gets used in macros.)
+</p>
+
+<p>
+If the current buffer is in <b>Java</b> mode, it is assumed that the buffer
+contains Java source code, and uses Java formatting routines.<br>
+If the current buffer is in <b>C++</b> or <b>C</b> mode, it is assumed that
+the buffer contains C/C++ source code, and uses C/C++ formatting routines.
+</p>
+
+<p>
+The code will be indented according to the indentation settings of the
+current mode, ie. the options <b>Indent width</b> and <b>Soft tabs (emulated
+with spaces)</b>. You can configure these options under
+<b>Utilities&gt;Global&nbsp;Options&gt;Mode-Specific</b>. Note that local
+Buffer Options override Mode-Specific default options.
+</p>
+
+<p>
+You can change the style of the reformatted code with a myriad of options in
+the AStyle Plugin options dialog, available at
+<b>Utilities&gt;Global&nbsp;Options&gt;Plugin&nbsp;Options&gt;AStyle&nbsp;Beautifier</b>.
+The dialogs have rich and self-explaining online help. Have a look!
+</p>
+
+
+<br>
+
+
+<H2>Bugs</H2>
+
+<p>
+<b>Attention! These software contains bugs! Use it at your own risk.
+I have no responsibility for whatever happens to your code, if you use
+this plugin on it. You may even loose all of your code! You have been
+warned.</b>
+</p>
+
+<p>
+--- That said, the AStyle Beautfier Plugin runs pretty well. This is because
+of the good quality of the underlying code beautifier <b>Artistic Style</b>,
+developed by Tal Davidson. Artistic Style is out for three years now and
+has undergone lots of release cycles, so it is pretty stabilized right now.
+</p>
+
+<p>
+It is, however, written in C++, so I had to port it to Java to make it run
+inside jEdit. (<i>Back</i>port actually, because Artistic Style was
+originally written in Java three years ago.) This porting process may have
+introduced some new errors.
+</p>
+
+<p>
+If you think you have found a bug in AStyle Plugin, please try to find out
+whether this is a bug in the Artistic Style code beautifier, or in the
+AStyle Plugin itself. You can check this by comparing the formatted results
+of your file with the output of the native version of Artistic Style
+(available at <a href="http://astyle.sf.net">http://astyle.sf.net</a>).
+</p>
+
+<ul>
+  <li>
+    <p>
+      If you are sure the bug lies in the Artistic Style code beautifier,
+      please inform
+      <b>Tal&nbsp;Davidson</b>&nbsp;(<a href="mailto:davidsont@bigfoot.com">davidsont@bigfoot.com</a>).
+    </p>
+  </li>
+  <li>
+    <p>
+      If you are sure the bug lies in the AStyle Plugin itself, please
+      inform <b>me</b>, that is,
+      <b>Dirk&nbsp;M&ouml;bius</b>&nbsp;(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>).
+    </p>
+  </li>
+  <li>
+    <p>
+      If you are too unskilled, or too lazy, or otherwise unable to tell the
+      difference ;-), please inform <b>me</b>, that is,
+      <b>Dirk&nbsp;M&ouml;bius</b>&nbsp;(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>).
+    </p>
+  </li>
+</ul>
+
+
+<br>
+
+
+<H2>License</H2>
+
+<p>
+This plugin is licensed under the <b>GNU General Public License (GPL)</b>,
+either version 2 or any later version. A copy of the license may be retrieved
+from <a href="http://www.fsf.org/copyleft/gpl.html">
+http://www.fsf.org/copyleft/gpl.html</a>.
+<p>
+
+
+<br>
+
+
+<HR width="100%" size="1">
+<font size="-2">
+All contents copyright (c) 2001 Dirk M&ouml;bius
+(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>);
+</font>
+
+
+</BODY>
+</HTML>
+
