@@ -1,0 +1,20 @@
+# Plugin properties
+plugin.XmlPlugin.name=XML
+plugin.XmlPlugin.author=Slava Pestov
+plugin.XmlPlugin.version=0.2
+plugin.XmlPlugin.docs=XML.html
+plugin.XmlPlugin.depend.0=jedit 03.00.99.00
+plugin.XmlPlugin.depend.1=plugin EditBusPlugin 1.0
+plugin.XmlPlugin.depend.2=plugin ErrorListPlugin 1.0
+
+# The somewhat hardcoded list of edit modes where XML parsing is to be
+# performed
+mode.xml.useXmlPlugin=true
+mode.xsl.useXmlPlugin=true
+
+# Menu bar stuff
+xml-tree.label=XML Tree
+
+# XML tree window
+xml-tree.title=XML Tree
+xml-tree.not-xml-file=Not an XML file
