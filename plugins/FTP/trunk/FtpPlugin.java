@@ -21,6 +21,7 @@ import java.awt.Component;
 import java.util.Hashtable;
 import java.util.Vector;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
@@ -159,6 +160,15 @@ public class FtpPlugin extends EBPlugin
 		loginHash.clear();
 	}
 
+	/**
+    	* This allows plugins to add their own option pane to the
+     	* <code>OptionsDialog</code>.
+   	**/
+    	public void createOptionPanes(OptionsDialog od)
+	{
+        	od.addOptionPane(new FtpOptionPane());
+    	}
+	
 	static class LoginInfo
 	{
 		String user, password;

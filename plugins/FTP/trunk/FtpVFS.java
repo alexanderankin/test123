@@ -134,7 +134,7 @@ public class FtpVFS extends VFS
 		try
 		{
 			//Use ASCII mode for dir listing
-			//client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
+			client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
 			
 			//CWD into the directory - Doing a LIST on a path with spaces in the
 			//name fails; however, if you CWD to the dir and then LIST it
@@ -363,7 +363,7 @@ public class FtpVFS extends VFS
 		FtpClient client = _getFtpClient(session,address,ignoreErrors,comp);
 		if(client == null)
 			return null;
-
+	
 		_setupSocket(client);
 		InputStream in = client.retrieveStream(address.path);
 
@@ -389,7 +389,7 @@ public class FtpVFS extends VFS
 		FtpClient client = _getFtpClient(session,address,false,comp);
 		if(client == null)
 			return null;
-
+		
 		_setupSocket(client);
 		OutputStream out = client.storeStream(address.path);
 
@@ -455,12 +455,23 @@ public class FtpVFS extends VFS
 	private static void _setupSocket(FtpClient client)
 		throws IOException
 	{
-		//Use binary mode
-		client.representationType(FtpClient.BINARY_TYPE);
+		
 		if(jEdit.getBooleanProperty("vfs.ftp.passive"))
 			client.passive();
 		else
 			client.dataPort();
+			
+		// See if we should use Binary mode to transfer files. 
+		if (jEdit.getBooleanProperty("ftp.useBinary", true))
+		{
+			//Go with Binary
+            		client.representationType(com.fooware.net.FtpClient.IMAGE_TYPE);
+        	}
+		else 
+		{
+			//Stick to ASCII - let the line endings get converted
+			client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
+		}
 	}
 
 	private static FtpClient _createFtpClient(String host, String port,
@@ -508,8 +519,6 @@ public class FtpVFS extends VFS
 				client.logout();
 				return null;
 			}
-
-			client.representationType(FtpClient.IMAGE_TYPE);
 
 			return client;
 		}
