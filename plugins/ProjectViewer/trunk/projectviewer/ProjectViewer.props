@@ -104,7 +104,9 @@ projectviewer.import.not_under_root.title=Invalid selection
 #}}}
 
 #{{{ Action messages
-projectviewer.action.remove=Remove node
+projectviewer.action.remove=Remove from project
+projectviewer.action.remove_project=Remove project
+projectviewer.action.remove_multiple=Remove nodes
 projectviewer.action.delete=Delete from disk
 projectviewer.action.rename=Rename
 projectviewer.action.a_e_project=Add/Edit Project
@@ -119,7 +121,7 @@ projectviewer.action.archive=Archive project
 projectviewer.action.old_import=Add files to project root
 projectviewer.action.reimport=Re-import files
 
-projectviewer.action.rename.title=Rename node
+projectviewer.action.rename.title=Rename
 projectviewer.action.rename.message=Enter the new name for the node:
 projectviewer.action.rename.file_error=Invalid name for file or directory
 projectviewer.action.rename.rename_error=Could not rename node.
