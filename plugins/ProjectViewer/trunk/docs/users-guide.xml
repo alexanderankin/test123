@@ -374,6 +374,15 @@
 					shown.
 				</para>
 			</listitem>
+			<listitem>
+				<para>
+					Use system icons for files: instead of using jEdit's icons, uses
+					the system provided icon for each individual files. The jEdit
+					icon will still be used when the file is opened. In some systems,
+					the system icons may not be accessible from Java, so this option
+					may not work as expected.
+				</para>
+			</listitem>
 		</itemizedlist>
 
 		<bridgehead renderas='sect3'>Import Options</bridgehead>
@@ -458,25 +467,6 @@
 	<chapter id="troubleshooting">
 		<title>Troubleshooting</title>
 
-		<bridgehead renderas='sect3'>ProjectViewer, jEdit and XML Parsers</bridgehead>
-
-		<para>
-			The configuration for the ProjectViewer plugin is now stored in XML format;
-			this makes it mandatory to have an XML parser available in the system. For
-			those using Java 1.3, you can dowload Crimson or Xerces from
-			<ulink url="http://xml.apache.org">http://xml.apache.org</ulink>, or install
-			jEdit's XML plugin.
-		</para>
-
-		<para>
-			For those using JDK 1.4, Crimson is already available in the default
-			installations. However, there may be a conflict between the JAXP runtime
-			available in the JRE 1.4 and the Xerces parser that comes with the XML
-			plugin for jEdit, due to some class loader issues. If you have such a
-			configuration, please install Xerces in the JDK/JRE extensions directory
-			(usually [path_to_jdk]/jre/lib/ext).
-		</para>
-
 		<bridgehead renderas='sect3'>Canonical File Paths</bridgehead>
 
 		<para>
@@ -531,8 +521,8 @@
 		<para>
 			The preferred way to send bug reports is to use the
 			Sourceforge Bug Tracker at
-			<ulink url="http://sourceforge.net/bugs/?group_id=588">
-				http://sourceforge.net/bugs/?group_id=588
+			<ulink url="http://sourceforge.net/tracker/?atid=565475&amp;group_id=588">
+				http://sourceforge.net/tracker/?atid=565475&amp;group_id=588
 			</ulink>
 			Please start the report subject with the text "ProjectViewer:".
 		</para>
