@@ -118,6 +118,16 @@ public class ColorTabs
    }
 
 
+   public boolean hasColorVariation() {
+      return this.colorVariation;
+   }
+
+
+   public void setColorVariation(boolean colorVariation) {
+      this.colorVariation = colorVariation;
+   }
+
+
    /**
     *  Creates colors suitable for reading text labels. Uniformly moves the
     *  color range to a darker range.
@@ -140,7 +150,7 @@ public class ColorTabs
       g = (int) (DARKEN_HIGHEST_COLOR - (g * DARKEN_RATIO));
       b = (int) (DARKEN_HIGHEST_COLOR - (b * DARKEN_RATIO));
 
-      if (colorVariation)
+      if (this.hasColorVariation())
       {
          r -= rnd.nextInt(5) * JND;
          g -= rnd.nextInt(5) * JND;
@@ -212,7 +222,7 @@ public class ColorTabs
       g = (int) (MUTE_LOWEST_COLOR + (g * MUTE_RATIO));
       b = (int) (MUTE_LOWEST_COLOR + (b * MUTE_RATIO));
 
-      if (colorVariation)
+      if (this.hasColorVariation())
       {
          r += rnd.nextInt(5) * JND;
          g += rnd.nextInt(5) * JND;
@@ -377,7 +387,7 @@ public class ColorTabs
       if (this.isEnabled())
       {
          this.setMuteColors(jEdit.getBooleanProperty("buffertabs.color-mute"));
-         this.colorVariation = jEdit.getBooleanProperty("buffertabs.color-variation");
+         this.setColorVariation(jEdit.getBooleanProperty("buffertabs.color-variation"));
          this.setForegroundColorized(jEdit.getBooleanProperty("buffertabs.color-foreground"));
 
          if (this.isSelectedColorized() != jEdit.getBooleanProperty("buffertabs.color-selected"))
