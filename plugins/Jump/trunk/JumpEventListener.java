@@ -42,16 +42,18 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     {
         if (message instanceof BufferUpdate)
         {
-            BufferUpdate bu=(BufferUpdate)message;
-			if(bu.getWhat()==BufferUpdate.SAVED) 
-			{
-                JumpPlugin.pja.addFile(bu.getBuffer().getPath());
+            try
+            {
+                BufferUpdate bu=(BufferUpdate)message;
+                if(bu.getWhat()==BufferUpdate.SAVED) 
+                {
+                    JumpPlugin.pja.addFile(bu.getBuffer().getPath());
+                }
             }
-        }
-        
-        if (message instanceof PropertiesChanged)
-        {
-            //JumpPlugin.reloadTagsOnProject();
+            catch (Exception e)
+            {
+                return;   
+            }
         }
         
     }
@@ -74,9 +76,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             errorMsg("JumpPlugin.ctags.path.incorrect");
             return false;   
         }
-
-        
-        if (p.getFiles().size()<1)
+if (p.getFiles().size()<1)
         {
             //No error message here, to avoid multiple messages on import files command
             return false;
@@ -161,7 +161,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 //{{{ projectAdded method    
     public void projectAdded(ProjectViewerEvent evt) 
     {
-        //Log.log(Log.DEBUG,this,"JumpEventListener! ADDEDD"+evt.getProjectViewer(), evt.getProject().toString());
+
         saveProjectBuffer();
         try 
         {
@@ -178,7 +178,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
                 reloadTags(evt.getProjectViewer(), evt.getProject());
             }
         }
-        
     }
 //}}}
 
