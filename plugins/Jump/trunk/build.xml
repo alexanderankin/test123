@@ -29,6 +29,7 @@
         <include name="**/*.class"/>
         <include name="**/*.props"/>
         <include name="**/*.html"/>
+       
         <include name="actions.xml"/>
         <include name="dockables.xml"/>
       </fileset>
@@ -45,6 +46,7 @@
         <include name="**/*.class"/>
         <include name="**/*.props"/>
         <include name="**/*.html"/>
+         <include name="img/*.gif"/>
         <include name="actions.xml"/>
         <include name="dockables.xml"/>
       </fileset>
