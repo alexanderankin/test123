@@ -1,3 +1,11 @@
+VERSION 1.3.1
+
+- updated auto-detection of tools.jar on JDK 1.2 or higher, now uses
+  MiscUtilities.isToolsJarLoaded().
+- Ant instead of JMK build file
+- requires jEdit 3.2.2, EditBus 1.1, Console 3.0
+
+
 VERSION 1.3
 
 - new option in the compiler option dialog to choose between classic and modern

@@ -11,7 +11,7 @@
 <h1>Java Compiler</h1><p>
 
 Copyright (c) 1999, 2000 by Kevin A. Burton and Aziz Sharif.<br>
-Modified by Dominic Stolerman and Dirk M&ouml;bius.<p>
+Modified by Dominic Stolerman, Logan Bauer, Mike Hansen, and Dirk M&ouml;bius.<p>
 
 Current maintainer: Dirk M&ouml;bius
 (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)<p>
@@ -30,16 +30,17 @@ Current maintainer: Dirk M&ouml;bius
 <h2>1. Requirements</h2>
 
 <ul>
-  <li>jEdit &gt;= 3.2pre10</li>
+  <li>jEdit &gt;= 3.2.2</li>
   <li>plugin EditBus &gt;= 1.1</li>
   <li>plugin Console &gt;= 3.0</li>
   <li>a Java Development Kit (JDK) &gt;= 1.1, <b>not</b> a Java Runtime
       Environment (JRE) !</li>
 </ul>
 
-<b>Note:</b> If you want one-click access to error positions, and highlightening
-of compilation errors in the edit pane with wavy red lines, I suggest you
-install the <b>ErrorList plugin</b>, too. Version should be 1.0 or higher.<p>
+<b>Note:</b> The installation of Console also forces you to install the
+ErrorList plugin, which is a good thing. It provides one-click access to
+error positions, and highlightening of compilation errors in the edit pane with
+wavy red lines.<p>
 
 
 <a name="installation"></a>
@@ -54,7 +55,7 @@ You should use jEdit's PluginManager to install the Java Compiler plugin.
 
 <h3>3.1 Menu actions</h3>
 
-Java Compiler has 3 menu actions in the menu Plugins&gt;Java Compiler:
+Java Compiler has 4 menu actions in menu <b>Plugins&gt;Java Compiler</b>:
 
 <ul>
   <li>
@@ -74,7 +75,12 @@ Java Compiler has 3 menu actions in the menu Plugins&gt;Java Compiler:
 
   <li>
     <b>Rebuild Package(s)</b><p>
-    Does basically what "Build Package(s)" does but always compiles every file.<p>
+    Same as "Build Package(s)", but always compiles every file.<p>
+  </li>
+
+  <li>
+    <b>Java Compiler options...</b><p>
+    A shortcut to <b>Utilities&gt;Global Options&gt;Plugins&gt;Java Compiler.</b>
   </li>
 </ul>
 
@@ -221,7 +227,8 @@ Most of them are self explaining, but some need special explanation:
 <a name="troubleshooting"></a>
 <h2>5. Troubleshooting</h2>
 
-<h3>I get an error saying that <tt>tools.jar</tt> cannot be found!</h3>
+<h3>Upon startup, I get an error saying that <tt>tools.jar</tt> cannot be
+found!</h3>
 
 This error should occur only on JDK 1.2 or higher.<p>
 
@@ -252,7 +259,7 @@ alternatives:
   <li>
     <b>Copy <code>tools.jar</code> to <i>home</i>/.jedit/jars/,</b><br>
     where <i>home</i> denotes your user home. The following table shows
-    the location of your user home:<br>
+    the location of your user home:<p>
 
     <table border="1">
       <tr bgcolor="#E0E0E0">
@@ -283,14 +290,12 @@ alternatives:
   </li>
 
   <li>
-    <b>Edit the jEdit startup script</b> (or: "batch file" on Windows).<br>
-    The script contains a single line where java is invoked with a "-classpath"
-    parameter. Change this parameter to point to <code>tools.jar</code>:<br>
+    <b>Change the CLASSPATH that is used when jEdit is started.</b><p>
 
     <table border="1">
       <tr bgcolor="#E0E0E0">
         <td>Operating system</td>
-        <td>Command</td>
+        <td>Example</td>
       </tr>
       <tr>
         <td>Windows</td>
@@ -299,50 +304,6 @@ alternatives:
       <tr>
         <td>Unix</td>
         <td><code>-classpath "$CLASSPATH:<br><u><i>jdkhome</i>/lib/tools.jar:</u>/usr/local/jEdit/3.0/jedit.jar"</code></td>
-      </tr>
-    </table><br>
-
-  </li>
-
-  <li>
-    <b>Set the system environment variable CLASSPATH to contain <code>tools.jar</code>:</b><br>
-
-    <table border="1">
-      <tr bgcolor="#E0E0E0">
-        <td>Operating system</td>
-        <td>Command</td>
-        <td>Where to set</td>
-      </tr>
-
-      <tr>
-        <td>Windows 95,98,ME</td>
-        <td>
-          <code>
-            set CLASSPATH=%CLASSPATH%;<br>
-            <i>jdkhome</i>\lib\tools.jar
-          </code>
-        </td>
-        <td>C:\AUTOEXEC.BAT</td>
-      </tr>
-
-      <tr>
-        <td>Windows NT</td>
-        <td>CLASSPATH=<i>jdkhome</i>\lib\tools.jar</td>
-        <td>
-          <b>Start&gt;Settings&gt;System&gt;Environment</b>
-          <em>(I guess!)</em>
-        </td>
-      </tr>
-
-      <tr>
-        <td>Unix</td>
-        <td>
-          <code>
-            export $CLASSPATH=<br>
-            $CLASSPATH:<i>jdkhome</i>/lib/tools.jar
-          </code>
-        </td>
-        <td><code>.profile</code> or <code>/etc/profile</code></td>
       </tr>
     </table><br>
   </li>
@@ -453,7 +414,7 @@ compiler:
 <br><hr>
 
 <font size="-1">
-The current maintainer of JCompiler is Dirk M&ouml;bius
+The current maintainer of the Java Compiler plugin is Dirk M&ouml;bius
 (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>).
 </font>
 

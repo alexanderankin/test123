@@ -3,11 +3,11 @@
 plugin.jcompiler.JCompilerPlugin.name=Java Compiler
 plugin.jcompiler.JCompilerPlugin.author=Dirk Moebius
 plugin.jcompiler.JCompilerPlugin.contributors=Kevin A. Burton, Aziz Sharif, Logan Bauer, Mike Hansen
-plugin.jcompiler.JCompilerPlugin.version=1.3
+plugin.jcompiler.JCompilerPlugin.version=1.3.1
 plugin.jcompiler.JCompilerPlugin.docs=index.html
 
 plugin.jcompiler.JCompilerPlugin.depend.0=jdk 1.1.1
-plugin.jcompiler.JCompilerPlugin.depend.1=jedit 03.02.10.00
+plugin.jcompiler.JCompilerPlugin.depend.1=jedit 03.02.99.02
 plugin.jcompiler.JCompilerPlugin.depend.2=plugin EditBusPlugin 1.1
 plugin.jcompiler.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 3.0
 
