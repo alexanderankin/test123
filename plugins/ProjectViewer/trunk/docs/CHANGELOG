@@ -39,6 +39,7 @@ VERSION 1.0.5
 	- added "Create new project ..." to combo box
 	- refactorised the filter to be an external class, so that one day it can be
 	  extensible
+	- added CVSFilter
 
 VERSION 1.0.4
   [stefan kost]
