@@ -48,8 +48,31 @@ class ElementDecl
 
 	public String toString()
 	{
-		return getClass().getName() + "[" + name + (empty ? ",empty" : "")
-			+ "," + attributes + "]";
+		StringBuffer buf = new StringBuffer();
+		buf.append("<element name=\"");
+		buf.append(name);
+		buf.append('"');
+
+		if(empty)
+			buf.append(" empty=\"true\"");
+
+		if(true /*html*/)
+			buf.append(" html=\"true\"");
+
+		if(attributes.size() == 0)
+			buf.append(" />");
+		else
+		{
+			buf.append(">\n");
+			for(int i = 0; i < attributes.size(); i++)
+			{
+				buf.append(attributes.elementAt(i).toString());
+				buf.append('\n');
+			}
+			buf.append("</element>");
+		}
+
+		return buf.toString();
 	}
 
 	static class AttributeDecl
@@ -76,9 +99,34 @@ class ElementDecl
 
 		public String toString()
 		{
-			return "[" + name + "=" + value
-				+ "," + values + (required ? ",required" : "" )
-				+ "]";
+			StringBuffer buf = new StringBuffer("<attribute name=\"");
+			buf.append(name);
+			buf.append('"');
+
+			if(value != null)
+			{
+				buf.append(" value=\"");
+				buf.append(value);
+				buf.append('"');
+			}
+
+			if(values != null)
+			{
+				buf.append(" values=\"");
+				for(int i = 0; i < values.size(); i++)
+				{
+					if(i != 0)
+						buf.append('|');
+					buf.append(values.elementAt(i));
+				}
+				buf.append('"');
+			}
+
+			if(required)
+				buf.append(" required=\"true\"");
+
+			buf.append('>');
+			return buf.toString();
 		}
 	}
 }

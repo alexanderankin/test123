@@ -19,7 +19,7 @@ import org.gjt.sp.util.Log;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
 
-class CompletionInfo
+public class CompletionInfo
 {
 	// if true, HTML syntax is supported (eg, case-insensitive tag names,
 	// attributes with no values)
@@ -42,7 +42,7 @@ class CompletionInfo
 		this.ids = ids;
 	}
 
-	static CompletionInfo getCompletionInfo(EditPane editPane)
+	public static CompletionInfo getCompletionInfo(EditPane editPane)
 	{
 		CompletionInfo info = (CompletionInfo)editPane.getClientProperty(
 			XmlPlugin.COMPLETION_INFO_PROPERTY);
@@ -52,7 +52,7 @@ class CompletionInfo
 			return getCompletionInfo(editPane.getBuffer().getMode().getName());
 	}
 
-	static CompletionInfo getCompletionInfo(String mode)
+	public static CompletionInfo getCompletionInfo(String mode)
 	{
 		String resource = jEdit.getProperty("mode." + mode
 			+ "." + XmlPlugin.COMPLETION_INFO_PROPERTY);
@@ -92,6 +92,17 @@ class CompletionInfo
 		completionInfo.put(resource,info);
 
 		return info;
+	}
+
+	public String toString()
+	{
+		StringBuffer buf = new StringBuffer();
+		for(int i = 0; i < elements.size(); i++)
+		{
+			buf.append(elements.elementAt(i));
+			buf.append('\n');
+		}
+		return buf.toString();
 	}
 
 	// private members

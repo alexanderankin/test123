@@ -200,6 +200,8 @@ class EditTagDialog extends EnhancedDialog
 				value,values,attr.type,attr.required));
 		}
 
+		MiscUtilities.quicksort(attributeModel,new AttributeCompare());
+
 		return attributeModel;
 	}
 
@@ -225,7 +227,7 @@ class EditTagDialog extends EnhancedDialog
 			buf.append("\"");
 		}
 
-		if(empty.isSelected())
+		if(empty.isSelected() && !element.html)
 			buf.append(" /");
 
 		buf.append(">");
@@ -292,8 +294,17 @@ class EditTagDialog extends EnhancedDialog
 		{
 			Attribute attr1 = (Attribute)obj1;
 			Attribute attr2 = (Attribute)obj2;
-			return attr1.name.toLowerCase()
-				.compareTo(attr2.name.toLowerCase());
+
+			// put required attributes at the top
+			if(attr1.required && !attr2.required)
+				return -1;
+			else if(!attr1.required && attr2.required)
+				return 1;
+			else
+			{
+				return attr1.name.toLowerCase()
+					.compareTo(attr2.name.toLowerCase());
+			}
 		}
 	}
 

@@ -1,17 +1,1795 @@
 <?xml version="1.0"?>
 
+<!-- The element list was automatically generated from
+     xhtml1-transitional.dtd -->
+
 <!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
 
 <dtd>
 
 <element-list>
 
-<element name="a" empty="false" html="true">
+<element name="a" html="true">
+<attribute name="accesskey" />
+<attribute name="charset" />
+<attribute name="class" />
+<attribute name="coords" />
+<attribute name="dir" values="ltr|rtl" />
 <attribute name="href" />
+<attribute name="hreflang" />
+<attribute name="id" />
+<attribute name="lang" />
 <attribute name="name" />
+<attribute name="onblur" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onfocus" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="rel" />
+<attribute name="rev" />
+<attribute name="shape" value="rect" values="rect|circle|poly|default" />
+<attribute name="style" />
+<attribute name="tabindex" />
+<attribute name="target" />
+<attribute name="title" />
+<attribute name="type" />
+<attribute name="xml:lang" />
 </element>
-
-<element name="b" empty="false" html="true" />
+<element name="abbr" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="acronym" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="address" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="applet" html="true">
+<attribute name="align" values="top|middle|bottom|left|right" />
+<attribute name="alt" />
+<attribute name="archive" />
+<attribute name="class" />
+<attribute name="code" />
+<attribute name="codebase" />
+<attribute name="height" required="true" />
+<attribute name="hspace" />
+<attribute name="id" />
+<attribute name="name" />
+<attribute name="object" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="vspace" />
+<attribute name="width" required="true" />
+</element>
+<element name="area" empty="true" html="true">
+<attribute name="accesskey" />
+<attribute name="alt" required="true" />
+<attribute name="class" />
+<attribute name="coords" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="href" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="nohref" values="nohref" />
+<attribute name="onblur" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onfocus" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="shape" value="rect" values="rect|circle|poly|default" />
+<attribute name="style" />
+<attribute name="tabindex" />
+<attribute name="target" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="b" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="base" empty="true" html="true">
+<attribute name="href" />
+<attribute name="target" />
+</element>
+<element name="basefont" empty="true" html="true">
+<attribute name="color" />
+<attribute name="face" />
+<attribute name="id" />
+<attribute name="size" required="true" />
+</element>
+<element name="bdo" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" required="true" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="big" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="blockquote" html="true">
+<attribute name="cite" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="body" html="true">
+<attribute name="alink" />
+<attribute name="background" />
+<attribute name="bgcolor" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="link" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onload" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="onunload" />
+<attribute name="style" />
+<attribute name="text" />
+<attribute name="title" />
+<attribute name="vlink" />
+<attribute name="xml:lang" />
+</element>
+<element name="br" empty="true" html="true">
+<attribute name="class" />
+<attribute name="clear" value="none" values="left|all|right|none" />
+<attribute name="id" />
+<attribute name="style" />
+<attribute name="title" />
+</element>
+<element name="button" html="true">
+<attribute name="accesskey" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="disabled" values="disabled" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="name" />
+<attribute name="onblur" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onfocus" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="tabindex" />
+<attribute name="title" />
+<attribute name="type" value="submit" values="button|submit|reset" />
+<attribute name="value" />
+<attribute name="xml:lang" />
+</element>
+<element name="caption" html="true">
+<attribute name="align" values="top|bottom|left|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="center" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="cite" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="code" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="col" empty="true" html="true">
+<attribute name="align" values="left|center|right|justify|char" />
+<attribute name="char" />
+<attribute name="charoff" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="span" value="1" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="valign" values="top|middle|bottom|baseline" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+</element>
+<element name="colgroup" html="true">
+<attribute name="align" values="left|center|right|justify|char" />
+<attribute name="char" />
+<attribute name="charoff" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="span" value="1" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="valign" values="top|middle|bottom|baseline" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+</element>
+<element name="dd" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="del" html="true">
+<attribute name="cite" />
+<attribute name="class" />
+<attribute name="datetime" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="dfn" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="dir" html="true">
+<attribute name="class" />
+<attribute name="compact" values="compact" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="div" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="dl" html="true">
+<attribute name="class" />
+<attribute name="compact" values="compact" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="dt" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="em" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="fieldset" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="font" html="true">
+<attribute name="class" />
+<attribute name="color" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="face" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="size" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="form" html="true">
+<attribute name="accept" />
+<attribute name="accept-charset" />
+<attribute name="action" required="true" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="enctype" value="application/x-www-form-urlencoded" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="method" value="get" values="get|post" />
+<attribute name="name" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="onreset" />
+<attribute name="onsubmit" />
+<attribute name="style" />
+<attribute name="target" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="h1" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="h2" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="h3" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="h4" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="h5" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="h6" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="head" html="true">
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="lang" />
+<attribute name="profile" />
+<attribute name="xml:lang" />
+</element>
+<element name="hr" empty="true" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="noshade" values="noshade" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="size" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+</element>
+<element name="html" html="true">
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="lang" />
+<attribute name="xml:lang" />
+<attribute name="xmlns" value="http://www.w3.org/1999/xhtml" />
+</element>
+<element name="i" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="iframe" html="true">
+<attribute name="align" values="top|middle|bottom|left|right" />
+<attribute name="class" />
+<attribute name="frameborder" value="1" values="1|0" />
+<attribute name="height" />
+<attribute name="id" />
+<attribute name="longdesc" />
+<attribute name="marginheight" />
+<attribute name="marginwidth" />
+<attribute name="name" />
+<attribute name="scrolling" value="auto" values="yes|no|auto" />
+<attribute name="src" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="width" />
+</element>
+<element name="img" empty="true" html="true">
+<attribute name="align" values="top|middle|bottom|left|right" />
+<attribute name="alt" required="true" />
+<attribute name="border" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="height" />
+<attribute name="hspace" />
+<attribute name="id" />
+<attribute name="ismap" values="ismap" />
+<attribute name="lang" />
+<attribute name="longdesc" />
+<attribute name="name" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="src" required="true" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="usemap" />
+<attribute name="vspace" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+</element>
+<element name="input" empty="true" html="true">
+<attribute name="accept" />
+<attribute name="accesskey" />
+<attribute name="align" values="top|middle|bottom|left|right" />
+<attribute name="alt" />
+<attribute name="checked" values="checked" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="disabled" values="disabled" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="maxlength" />
+<attribute name="name" />
+<attribute name="onblur" />
+<attribute name="onchange" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onfocus" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="onselect" />
+<attribute name="readonly" values="readonly" />
+<attribute name="size" />
+<attribute name="src" />
+<attribute name="style" />
+<attribute name="tabindex" />
+<attribute name="title" />
+<attribute name="type" value="text" values="text|password|checkbox|radio|submit|reset|file|hidden|image|button" />
+<attribute name="usemap" />
+<attribute name="value" />
+<attribute name="xml:lang" />
+</element>
+<element name="ins" html="true">
+<attribute name="cite" />
+<attribute name="class" />
+<attribute name="datetime" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="isindex" empty="true" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="prompt" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="kbd" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="label" html="true">
+<attribute name="accesskey" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="for" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onblur" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onfocus" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="legend" html="true">
+<attribute name="accesskey" />
+<attribute name="align" values="top|bottom|left|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="li" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="type" />
+<attribute name="value" />
+<attribute name="xml:lang" />
+</element>
+<element name="link" empty="true" html="true">
+<attribute name="charset" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="href" />
+<attribute name="hreflang" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="media" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="rel" />
+<attribute name="rev" />
+<attribute name="style" />
+<attribute name="target" />
+<attribute name="title" />
+<attribute name="type" />
+<attribute name="xml:lang" />
+</element>
+<element name="map" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" required="true" />
+<attribute name="lang" />
+<attribute name="name" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="menu" html="true">
+<attribute name="class" />
+<attribute name="compact" values="compact" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="meta" empty="true" html="true">
+<attribute name="content" required="true" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="http-equiv" />
+<attribute name="lang" />
+<attribute name="name" />
+<attribute name="scheme" />
+<attribute name="xml:lang" />
+</element>
+<element name="noframes" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="noscript" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="object" html="true">
+<attribute name="align" values="top|middle|bottom|left|right" />
+<attribute name="archive" />
+<attribute name="border" />
+<attribute name="class" />
+<attribute name="classid" />
+<attribute name="codebase" />
+<attribute name="codetype" />
+<attribute name="data" />
+<attribute name="declare" values="declare" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="height" />
+<attribute name="hspace" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="name" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="standby" />
+<attribute name="style" />
+<attribute name="tabindex" />
+<attribute name="title" />
+<attribute name="type" />
+<attribute name="usemap" />
+<attribute name="vspace" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+</element>
+<element name="ol" html="true">
+<attribute name="class" />
+<attribute name="compact" values="compact" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="start" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="type" />
+<attribute name="xml:lang" />
+</element>
+<element name="optgroup" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="disabled" values="disabled" />
+<attribute name="id" />
+<attribute name="label" required="true" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="option" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="disabled" values="disabled" />
+<attribute name="id" />
+<attribute name="label" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="selected" values="selected" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="value" />
+<attribute name="xml:lang" />
+</element>
+<element name="p" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="param" empty="true" html="true">
+<attribute name="id" />
+<attribute name="name" required="true" />
+<attribute name="type" />
+<attribute name="value" />
+<attribute name="valuetype" value="data" values="data|ref|object" />
+</element>
+<element name="pre" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+<attribute name="xml:space" value="preserve" values="preserve" />
+</element>
+<element name="q" html="true">
+<attribute name="cite" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="s" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="samp" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="script" html="true">
+<attribute name="charset" />
+<attribute name="defer" values="defer" />
+<attribute name="language" />
+<attribute name="src" />
+<attribute name="type" required="true" />
+<attribute name="xml:space" value="preserve" values="preserve" />
+</element>
+<element name="select" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="disabled" values="disabled" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="multiple" values="multiple" />
+<attribute name="name" />
+<attribute name="onblur" />
+<attribute name="onchange" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onfocus" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="size" />
+<attribute name="style" />
+<attribute name="tabindex" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="small" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="span" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="strike" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="strong" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="style" html="true">
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="lang" />
+<attribute name="media" />
+<attribute name="title" />
+<attribute name="type" required="true" />
+<attribute name="xml:lang" />
+<attribute name="xml:space" value="preserve" values="preserve" />
+</element>
+<element name="sub" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="sup" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="table" html="true">
+<attribute name="align" values="left|center|right" />
+<attribute name="bgcolor" />
+<attribute name="border" />
+<attribute name="cellpadding" />
+<attribute name="cellspacing" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="frame" values="void|above|below|hsides|lhs|rhs|vsides|box|border" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="rules" values="none|groups|rows|cols|all" />
+<attribute name="style" />
+<attribute name="summary" />
+<attribute name="title" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+</element>
+<element name="tbody" html="true">
+<attribute name="align" values="left|center|right|justify|char" />
+<attribute name="char" />
+<attribute name="charoff" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="valign" values="top|middle|bottom|baseline" />
+<attribute name="xml:lang" />
+</element>
+<element name="td" html="true">
+<attribute name="abbr" />
+<attribute name="align" values="left|center|right|justify|char" />
+<attribute name="axis" />
+<attribute name="bgcolor" />
+<attribute name="char" />
+<attribute name="charoff" />
+<attribute name="class" />
+<attribute name="colspan" value="1" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="headers" />
+<attribute name="height" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="nowrap" values="nowrap" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="rowspan" value="1" />
+<attribute name="scope" values="row|col|rowgroup|colgroup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="valign" values="top|middle|bottom|baseline" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+</element>
+<element name="textarea" html="true">
+<attribute name="accesskey" />
+<attribute name="class" />
+<attribute name="cols" required="true" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="disabled" values="disabled" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="name" />
+<attribute name="onblur" />
+<attribute name="onchange" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onfocus" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="onselect" />
+<attribute name="readonly" values="readonly" />
+<attribute name="rows" required="true" />
+<attribute name="style" />
+<attribute name="tabindex" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="tfoot" html="true">
+<attribute name="align" values="left|center|right|justify|char" />
+<attribute name="char" />
+<attribute name="charoff" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="valign" values="top|middle|bottom|baseline" />
+<attribute name="xml:lang" />
+</element>
+<element name="th" html="true">
+<attribute name="abbr" />
+<attribute name="align" values="left|center|right|justify|char" />
+<attribute name="axis" />
+<attribute name="bgcolor" />
+<attribute name="char" />
+<attribute name="charoff" />
+<attribute name="class" />
+<attribute name="colspan" value="1" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="headers" />
+<attribute name="height" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="nowrap" values="nowrap" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="rowspan" value="1" />
+<attribute name="scope" values="row|col|rowgroup|colgroup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="valign" values="top|middle|bottom|baseline" />
+<attribute name="width" />
+<attribute name="xml:lang" />
+</element>
+<element name="thead" html="true">
+<attribute name="align" values="left|center|right|justify|char" />
+<attribute name="char" />
+<attribute name="charoff" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="valign" values="top|middle|bottom|baseline" />
+<attribute name="xml:lang" />
+</element>
+<element name="title" html="true">
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="lang" />
+<attribute name="xml:lang" />
+</element>
+<element name="tr" html="true">
+<attribute name="align" values="left|center|right|justify|char" />
+<attribute name="bgcolor" />
+<attribute name="char" />
+<attribute name="charoff" />
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="valign" values="top|middle|bottom|baseline" />
+<attribute name="xml:lang" />
+</element>
+<element name="tt" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="u" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
+<element name="ul" html="true">
+<attribute name="class" />
+<attribute name="compact" values="compact" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="type" values="disc|square|circle" />
+<attribute name="xml:lang" />
+</element>
+<element name="var" html="true">
+<attribute name="class" />
+<attribute name="dir" values="ltr|rtl" />
+<attribute name="id" />
+<attribute name="lang" />
+<attribute name="onclick" />
+<attribute name="ondblclick" />
+<attribute name="onkeydown" />
+<attribute name="onkeypress" />
+<attribute name="onkeyup" />
+<attribute name="onmousedown" />
+<attribute name="onmousemove" />
+<attribute name="onmouseout" />
+<attribute name="onmouseover" />
+<attribute name="onmouseup" />
+<attribute name="style" />
+<attribute name="title" />
+<attribute name="xml:lang" />
+</element>
 
 </element-list>
 
