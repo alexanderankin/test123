@@ -290,11 +290,11 @@
       created the initial release of the plugin, version 0.1.</para>
 
     <para>Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
-      has produced versions 0.2 - 0.5.1.</para>
-    
+      has produced versions 0.2 - 0.6.</para>
+
     <para>Wim Le Page <email>wimlepage@users.sourceforge.net</email>
       has worked on version 0.6.0 </para>
-      
+
     <para>Pieter Wellens <email>pitje@users.sourceforge.net</email>
       has worked on version 0.6.0 </para>
 
@@ -321,19 +321,19 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
-    	<emphasis role="bold">Changes from 0.5.1 to 0.6.0</emphasis>
-	<itemizedlist>
-	  <listitem><para>0.5.2 requires >=jEdit 4.1 and >=XML plugin 0.11</para></listitem>
-	  <listitem>
-	    <para>
-	      Unified the XSLT and XPath input options.
-	    </para>
-	  </listitem>
-	   <listitem>
-           <para>When the result file input contains an invalid file (e.g. blank), the result will be
-           written to a nameless buffer that can be saved under a name of choice.</para>
+      <emphasis role="bold">Changes from 0.5.1 to 0.6.0</emphasis>
+      <itemizedlist>
+        <listitem><para>0.6 requires >=jEdit 4.2 and >=XML plugin 0.13</para></listitem>
+        <listitem><para>Ported plugin to jEdit 4.2 API.</para></listitem>
+        <listitem>
+          <para>Unified the XSLT and XPath input options.</para>
         </listitem>
-	</itemizedlist>
+        <listitem>
+          <para>When the result file input contains an invalid file (e.g. blank), the result will be
+          written to a nameless buffer that can be saved under a name of choice.</para>
+        </listitem>
+        <listitem><para>Changed XSLT panel horizontal layout for top and bottom docking.</para></listitem>
+      </itemizedlist>
     </para>
     <para>
       <emphasis role="bold">Changes from 0.4.1 to 0.5.1</emphasis>

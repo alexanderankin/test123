@@ -21,7 +21,6 @@
 package xslt;
 
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
@@ -31,7 +30,6 @@ import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.Vector;
 
 /**
  * EditPlugin implementation for the XSLT plugin.
@@ -41,71 +39,63 @@ import java.util.Vector;
  */
 public class XSLTPlugin extends EditPlugin {
 
-  private static XSLTProcessor processor;
+	private static XSLTProcessor processor;
 
-  /**
-   * Register xerces as the SAX Parser provider
-   */
-  public void start () {
-    String transformerFactory = jEdit.getProperty(XSLTUtilities.TRANSFORMER_FACTORY);
-    String saxParserFactory = jEdit.getProperty(XSLTUtilities.SAX_PARSER_FACTORY);
-    String saxDriver = jEdit.getProperty(XSLTUtilities.SAX_DRIVER);
-    String indentAmount = jEdit.getProperty("xslt.transform.indent-amount");
+	/**
+	 * Register xerces as the SAX Parser provider
+	 */
+	public void start() {
+		String transformerFactory = jEdit.getProperty(XSLTUtilities.TRANSFORMER_FACTORY);
+		String saxParserFactory = jEdit.getProperty(XSLTUtilities.SAX_PARSER_FACTORY);
+		String saxDriver = jEdit.getProperty(XSLTUtilities.SAX_DRIVER);
+		String indentAmount = jEdit.getProperty("xslt.transform.indent-amount");
 
-    XSLTUtilities.setXmlSystemProperties(transformerFactory, saxParserFactory, saxDriver);
-    XSLTUtilities.setIndentAmount(indentAmount);
-  }
-
-
-  /**
-   * Adds appropriate actions to the plugins menu
-   */
-  public void createMenuItems (Vector menuItems) {
-		menuItems.addElement(GUIUtilities.loadMenu("xslt-menu"));
-  }
+		XSLTUtilities.setXmlSystemProperties(transformerFactory, saxParserFactory, saxDriver);
+		XSLTUtilities.setIndentAmount(indentAmount);
+	}
 
 
-  /**
-   * Displays a user-friendly error message to go with the supplied exception.
-   */
-  static void processException(Exception e, String message, Component component) {
-    StringWriter writer = new StringWriter();
-    e.printStackTrace(new PrintWriter(writer));
-    Log.log(Log.DEBUG, Thread.currentThread(), writer.toString());
-    String msg = MessageFormat.format(jEdit.getProperty("xslt.message.error"),
-      new Object[]{message, e.getMessage()});
-    JOptionPane.showMessageDialog(component, msg.toString());
-  }
+	/**
+	 * Displays a user-friendly error message to go with the supplied exception.
+	 */
+	static void processException(Exception e, String message, Component component) {
+		StringWriter writer = new StringWriter();
+		e.printStackTrace(new PrintWriter(writer));
+		Log.log(Log.DEBUG, Thread.currentThread(), writer.toString());
+		String msg = MessageFormat.format(jEdit.getProperty("xslt.message.error"),
+				new Object[]{message, e.getMessage()});
+		JOptionPane.showMessageDialog(component, msg.toString());
+	}
 
 
-  static void showMessageDialog(String property, Component component) {
-    String message = jEdit.getProperty(property);
-    JOptionPane.showMessageDialog(component, message);
-  }
+	static void showMessageDialog(String property, Component component) {
+		String message = jEdit.getProperty(property);
+		JOptionPane.showMessageDialog(component, message);
+	}
 
 
-  static void setProcessor(XSLTProcessor processor) {
-    XSLTPlugin.processor = processor;
-  }
+	static void setProcessor(XSLTProcessor processor) {
+		XSLTPlugin.processor = processor;
+	}
 
 
-  static void displayOldXalanJarMessage() {
-    String message = getOldXalanJarMessage();
-    JOptionPane.showMessageDialog(XSLTPlugin.processor, message);
-  }
+	static void displayOldXalanJarMessage() {
+		String message = getOldXalanJarMessage();
+		JOptionPane.showMessageDialog(XSLTPlugin.processor, message);
+	}
 
 
-  static String getOldXalanJarMessage() {
-    String userPluginsDir = MiscUtilities.constructPath(jEdit.getSettingsDirectory(),"jars");
-    String userEndorsedDir = MiscUtilities.constructPath(userPluginsDir, "endorsed");
+	static String getOldXalanJarMessage() {
+		String userPluginsDir = MiscUtilities.constructPath(jEdit.getSettingsDirectory(), "jars");
+		String userEndorsedDir = MiscUtilities.constructPath(userPluginsDir, "endorsed");
 
-    String systemPluginsDir = MiscUtilities.constructPath(jEdit.getJEditHome(),"jars");
-    String systemEndorsedDir = MiscUtilities.constructPath(systemPluginsDir, "endorsed");
+		String systemPluginsDir = MiscUtilities.constructPath(jEdit.getJEditHome(), "jars");
+		String systemEndorsedDir = MiscUtilities.constructPath(systemPluginsDir, "endorsed");
 
-    String[] args = {userPluginsDir, systemPluginsDir, userEndorsedDir, systemEndorsedDir};
-    String message = jEdit.getProperty("xslt.old-jar.message", args);
-    return message;
-  }
+		String[] args = {userPluginsDir, systemPluginsDir, userEndorsedDir, systemEndorsedDir};
+		String message = jEdit.getProperty("xslt.old-jar.message", args);
+		return message;
+	}
 
 
 }
