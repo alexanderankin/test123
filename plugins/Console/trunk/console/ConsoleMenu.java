@@ -24,13 +24,14 @@ package console;
 
 //{{{ Imports
 import console.commando.CommandoCommandsChanged;
+import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import org.gjt.sp.jedit.gui.EnhancedMenu;
 import org.gjt.sp.jedit.*;
 //}}}
 
-class ConsoleMenu extends EnhancedMenu
+class ConsoleMenu extends EnhancedMenu implements MenuListener
 {
 	//{{{ ConsoleMenu
 	ConsoleMenu()
@@ -38,14 +39,15 @@ class ConsoleMenu extends EnhancedMenu
 		super("console-menu");
 	} //}}}
 
-	//{{{ setPopupMenuVisible() method
-	public void setPopupMenuVisible(boolean b)
+	//{{{ menuSelected() method
+	public void menuSelected(MenuEvent evt)
 	{
-		if(b)
-			updateMenu();
-
-		super.setPopupMenuVisible(b);
+		updateMenu();
 	} //}}}
+
+	public void menuDeselected(MenuEvent e) {}
+
+	public void menuCanceled(MenuEvent e) {}
 
 	//{{{ updateMenu() method
 	private void updateMenu()

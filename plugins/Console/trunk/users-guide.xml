@@ -1155,6 +1155,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     tool bar.</para></listitem>
     <listitem><para><command>cd -</command> now goes to the last visited
     directory.</para></listitem>
+    <listitem><para>Pressing the tab key in the command input field when there
+    was nothing to complete would have strange results.</para></listitem>
    </itemizedlist>
   </listitem>
 

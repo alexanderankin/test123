@@ -663,24 +663,25 @@ loop:			for(;;)
 		String typedFilename)
 	{
 		int lastSeparatorIndex = typedFilename.lastIndexOf(File.separator);
+
 		// The directory part of what the user typed, including the file separator.
 		String typedDirName = lastSeparatorIndex == -1 ? "" : typedFilename.substring(0, lastSeparatorIndex+1);
 
 		String expandedTypedFilename = expandVariables(view, typedFilename);
 
-		// Is the file typed by the user an absolute path or a relative?
-		boolean isTypedFilenameAbsolute = new File(expandedTypedFilename).isAbsolute();
-
 		// The file typed by the user.
-		File typedFile = isTypedFilenameAbsolute ?
-					new File(expandedTypedFilename) :
-					new File(currentDirName, expandedTypedFilename);
+		File typedFile = new File(expandedTypedFilename).isAbsolute() ?
+				new File(expandedTypedFilename) :
+				new File(currentDirName, expandedTypedFilename);
+
+		boolean directory = expandedTypedFilename.endsWith(File.separator)
+			|| expandedTypedFilename.length() == 0;
 
 		// The parent directory of the file typed by the user (or itself if it's already a directory).
-		File dir = expandedTypedFilename.endsWith(File.separator) ? typedFile : typedFile.getParentFile();
+		File dir = directory ? typedFile : typedFile.getParentFile();
 
 		// The filename part of the file typed by the user, or "" if it's a directory.
-		String fileName = expandedTypedFilename.endsWith(File.separator) ? "" : typedFile.getName();
+		String fileName = directory ? "" : typedFile.getName();
 
 		// The list of files we're going to try to match
 		String [] filenames = dir.list();
@@ -822,9 +823,7 @@ loop:			for(;;)
 			{
 				String newLastDir = currentDirectory;
 				currentDirectory = lastDirectory;
-				System.err.println("last dir right now is " + lastDirectory);
 				lastDirectory = newLastDir;
-				System.err.println("setting last dir to " + lastDirectory);
 				console.print(console.getInfoColor(),
 					jEdit.getProperty(
 					"console.shell.cd.ok",pp));
@@ -842,7 +841,6 @@ loop:			for(;;)
 			String[] pp = { newDir };
 			if(new File(newDir).exists())
 			{
-				System.err.println("setting last dir to " + currentDirectory);
 				lastDirectory = currentDirectory;
 				currentDirectory = newDir;
 				console.print(console.getInfoColor(),
