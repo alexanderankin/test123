@@ -49,6 +49,7 @@ public class VPTFile extends VPTNode {
 
 	private final static Icon fileClosedIcon 	= GUIUtilities.loadIcon("File.png");
 	private final static Icon fileOpenedIcon 	= GUIUtilities.loadIcon("OpenFile.png");
+	private static Icon noFileIcon				= null;
 
 	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 	private static FileSystemView fsView;
@@ -143,9 +144,15 @@ public class VPTFile extends VPTNode {
 		} else {
 			if (config.getUseSystemIcons()) {
 				if (!loadedIcon) {
-					if (fsView == null) fsView = FileSystemView.getFileSystemView();
-					fileIcon = fsView.getSystemIcon(file);
-					loadedIcon = true;
+					if (file.exists()) {
+						if (fsView == null) fsView = FileSystemView.getFileSystemView();
+						fileIcon = fsView.getSystemIcon(file);
+						loadedIcon = true;
+					} else {
+						if (noFileIcon == null)
+							noFileIcon = GUIUtilities.loadIcon("dirty.gif");
+						return noFileIcon;
+					}
 				}
 				baseIcon = (fileIcon != null) ? fileIcon : fileClosedIcon;
 			} else {
