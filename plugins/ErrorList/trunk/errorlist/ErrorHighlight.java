@@ -1,9 +1,9 @@
 /*
- * ErrorHighlight.java - "Wavy red underlines"
+ * ErrorHighlight.java - Highlights error locations in text area
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,25 +38,67 @@ public class ErrorHighlight extends TextAreaExtension
 		point = new Point();
 	} //}}}
 
-	//{{{ paintValidLine() method
-	public void paintValidLine(Graphics2D gfx, int screenLine, int physicalLine,
-		int start, int end, int y)
+	//{{{ paintScreenLineRange() method
+	public void paintScreenLineRange(Graphics2D gfx, int firstLine,
+		int lastLine, int[] physicalLines, int[] start, int[] end,
+		int y, int lineHeight)
 	{
-		ErrorSource[] errorSources = ErrorSource.getErrorSources();
-
 		FontMetrics fm = textArea.getPainter().getFontMetrics();
-		y += (fm.getHeight() - fm.getDescent() - fm.getLeading());
+
+		ErrorSource[] errorSources = ErrorSource.getErrorSources();
+		if(errorSources == null)
+			return;
 
 		for(int i = 0; i < errorSources.length; i++)
 		{
-			ErrorSource source = errorSources[i];
-			ErrorSource.Error[] lineErrors = source.getLineErrors(
-				textArea.getBuffer(),physicalLine);
+			ErrorSource.Error[] errors = errorSources[i]
+				.getLineErrors(textArea.getBuffer(),
+				textArea.getPhysicalLineOfScreenLine(firstLine),
+				textArea.getPhysicalLineOfScreenLine(lastLine));
+			if(errors == null)
+				continue;
 
-			if(lineErrors != null)
+			int errorListIndex = 0;
+
+			for(int j = 0; j < physicalLines.length; j++)
 			{
-				paintLineErrors(lineErrors,gfx,physicalLine,
-					start,end,y);
+				//System.err.println("screen line: " + (j
+				//	+ firstLine));
+				// for each screen line, find range of errors
+				// in errors array
+				for(int k = errorListIndex;
+					k < errors.length; k++)
+				{
+					int physicalLine = physicalLines[j];
+					if(
+						(textArea.getDisplayManager()
+						.isLineVisible(physicalLine))
+						&&
+						(errors[k].getLineNumber()
+						== physicalLine)
+					)
+					{
+						System.err.println("up: " + j + "," + k);
+						paintError(errors[k],gfx,
+							physicalLine,
+							start[j],
+							end[j],
+							y + j * lineHeight
+							+ fm.getAscent()
+						);
+					}
+					else
+					{
+						//System.err.println("down: " + j + "," + k);
+						if(j + 1 != physicalLines.length
+							&& physicalLines[j + 1]
+							!= physicalLine)
+						{
+							errorListIndex = k;
+						}
+						break;
+					}
+				}
 			}
 		}
 	} //}}}
@@ -78,7 +120,7 @@ public class ErrorHighlight extends TextAreaExtension
 		{
 			ErrorSource.Error[] lineErrors =
 				errorSources[i].getLineErrors(
-				textArea.getBuffer(),line);
+				textArea.getBuffer(),line,line);
 
 			if(lineErrors == null)
 				continue;
@@ -106,53 +148,49 @@ public class ErrorHighlight extends TextAreaExtension
 	private Segment seg;
 	private Point point;
 
-	//{{{ paintLineErrors() method
-	private void paintLineErrors(ErrorSource.Error[] lineErrors,
-		Graphics2D gfx, int line, int _start, int _end, int y)
+	//{{{ paintError() method
+	private void paintError(ErrorSource.Error error,
+		Graphics2D gfx, int line, int _start,
+		int _end, int y)
 	{
 		int lineStart = textArea.getLineStartOffset(line);
 
-		for(int i = 0; i < lineErrors.length; i++)
+		int start = error.getStartOffset();
+		int end = error.getEndOffset();
+
+		if(start == 0 && end == 0)
 		{
-			ErrorSource.Error error = lineErrors[i];
-
-			int start = error.getStartOffset();
-			int end = error.getEndOffset();
-
-			if(start == 0 && end == 0)
+			textArea.getLineText(line,seg);
+			for(int j = 0; j < seg.count; j++)
 			{
-				textArea.getLineText(line,seg);
-				for(int j = 0; j < seg.count; j++)
-				{
-					if(Character.isWhitespace(seg.array[seg.offset + j]))
-						start++;
-					else
-						break;
-				}
-
-				end = seg.count;
+				if(Character.isWhitespace(seg.array[seg.offset + j]))
+					start++;
+				else
+					break;
 			}
 
-			if(start + lineStart >= _end || end + lineStart <= _start)
-				continue;
-
-			int startX;
-
-			if(start + lineStart >= _start)
-				startX = textArea.offsetToXY(line,start,point).x;
-			else
-				startX = 0;
-
-			int endX;
-
-			if(end + lineStart >= _end)
-				endX = textArea.offsetToXY(line,_end - lineStart - 1,point).x;
-			else
-				endX = textArea.offsetToXY(line,end,point).x;
-
-			gfx.setColor(ErrorListPlugin.getErrorColor(error.getErrorType()));
-			gfx.drawLine(startX,y + 1,endX,y + 1);
+			end = seg.count;
 		}
+
+		if(start + lineStart >= _end || end + lineStart <= _start)
+			return;
+
+		int startX;
+
+		if(start + lineStart >= _start)
+			startX = textArea.offsetToXY(line,start,point).x;
+		else
+			startX = 0;
+
+		int endX;
+
+		if(end + lineStart >= _end)
+			endX = textArea.offsetToXY(line,_end - lineStart - 1,point).x;
+		else
+			endX = textArea.offsetToXY(line,end,point).x;
+
+		gfx.setColor(ErrorListPlugin.getErrorColor(error.getErrorType()));
+		gfx.drawLine(startX,y + 1,endX,y + 1);
 	} //}}}
 
 	//}}}

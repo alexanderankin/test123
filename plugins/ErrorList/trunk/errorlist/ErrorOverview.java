@@ -84,17 +84,16 @@ public class ErrorOverview extends JPanel
 			ErrorSource[] errorSources = ErrorSource.getErrorSources();
 			for(int i = 0; i < errorSources.length; i++)
 			{
-				ErrorSource.Error[] errors
-					= errorSources[i]
-					.getLineErrors(buffer,line);
+				ErrorSource.Error[] errors = errorSources[i]
+					.getLineErrors(buffer,line,line);
 				// if there is no exact match, try next and
 				// prev lines
 				if(errors == null && line != 0)
 					errors = errorSources[i]
-					.getLineErrors(buffer,line - 1);
+					.getLineErrors(buffer,line - 1,line - 1);
 				if(errors == null && line != lineCount - 1)
 					errors = errorSources[i]
-					.getLineErrors(buffer,line + 1);
+					.getLineErrors(buffer,line + 1,line + 1);
 				if(errors != null)
 					return errors[0].getErrorMessage();
 			}
@@ -125,22 +124,24 @@ public class ErrorOverview extends JPanel
 		if(line2 >= lineCount)
 			line2 = lineCount - 1;
 
-		for(int i = line1; i <= line2; i++)
+		for(int i = 0; i < errorSources.length; i++)
 		{
-			int y = lineToY(i);
+			ErrorSource.Error[] errors = errorSources[i].getLineErrors(
+				buffer,line1,line2);
+			if(errors == null)
+				continue;
 
-			for(int j = 0; j < errorSources.length; j++)
+			for(int j = 0; j < errors.length; j++)
 			{
-				ErrorSource.Error[] errors
-					= errorSources[j]
-					.getLineErrors(buffer,i);
-				if(errors != null)
-				{
-					gfx.setColor(ErrorListPlugin.getErrorColor(
-						errors[0].getErrorType()));
-					gfx.fillRect(0,y,getWidth(),HILITE_HEIGHT);
-					break;
-				}
+				ErrorSource.Error error = errors[j];
+				int line = error.getLineNumber();
+				if(line < line1 || line > line2)
+					System.err.println("WTF: " + line);
+				int y = lineToY(line);
+
+				gfx.setColor(ErrorListPlugin.getErrorColor(
+					errors[0].getErrorType()));
+				gfx.fillRect(0,y,getWidth(),HILITE_HEIGHT);
 			}
 		}
 	} //}}}

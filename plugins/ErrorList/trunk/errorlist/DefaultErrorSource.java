@@ -120,10 +120,13 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 
 	//{{{ getLineErrors() method
 	/**
-	 * Returns all errors on the specified line.
-	 * @param lineIndex The line number
+	 * Returns all errors in the specified line range.
+	 * @param startLineIndex The line number
+	 * @param endLineIndex The line number
+	 * @since ErrorList 1.3
 	 */
-	public ErrorSource.Error[] getLineErrors(Buffer buffer, int lineIndex)
+	public ErrorSource.Error[] getLineErrors(Buffer buffer,
+		int startLineIndex, int endLineIndex)
 	{
 		if(errors.size() == 0)
 			return null;
@@ -132,46 +135,50 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		if(list == null)
 			return null;
 
-		int index = findError(list,lineIndex);
-		if(index == -1)
-			return null;
-
 		List errorList = new LinkedList();
 
-		for(int i = index; i >= 0; i--)
+		int startIndex = findError(list,startLineIndex);
+
+		if(startIndex != list.size())
 		{
-			if(((ErrorSource.Error)list.get(i)).getLineNumber()
-				== lineIndex)
+			for(int i = startIndex; i >= 0; i--)
 			{
-				index = i;
+				if(((ErrorSource.Error)list.get(i)).getLineNumber()
+					>= startLineIndex)
+				{
+					startIndex = i;
+				}
+				else
+					break;
 			}
-			else
+
+			for(int i = startIndex; i < list.size(); i++)
 			{
-				break;
+				DefaultError error = (DefaultError)list.get(i);
+				if(error.getLineNumber() <= endLineIndex)
+				{
+					errorList.add(error);
+				}
+				else
+					break;
 			}
 		}
 
-		for(int i = index; i < list.size(); i++)
+		if(errorList.size() == 0)
+			return null;
+		else
 		{
-			DefaultError error = (DefaultError)list.get(i);
-			if(error.getLineNumber() == lineIndex)
-			{
-				errorList.add(error);
-			}
-			else
-				break;
+			return (ErrorSource.Error[])errorList.toArray(
+				new ErrorSource.Error[errorList.size()]);
 		}
-
-		return (ErrorSource.Error[])errorList.toArray(
-			new ErrorSource.Error[errorList.size()]);
 	} //}}}
 
 	//{{{ clear() method
 	/**
-	 * Removes all errors from this error source. This method is not thread
+	 * Removes all errors from this error source. This method is thread
 	 * safe.
 	 */
-	public void clear()
+	public synchronized void clear()
 	{
 		if(errorCount == 0)
 			return;
@@ -330,7 +337,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 					== line)
 					return start;
 				else
-					return -1;
+					return start + 1;
 			case 1:
 				if(((Error)errorList.get(start)).getLineNumber()
 					== line)

@@ -28,7 +28,7 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.DefaultFocusComponent;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.Selection;
 //}}}
@@ -52,12 +52,51 @@ public class ErrorList extends JPanel implements EBComponent,
 		status = new JLabel();
 		toolBar.add(status);
 		toolBar.add(Box.createGlue());
+
+		JButton btn = new RolloverButton(GUIUtilities.loadIcon(
+			"PreviousFile.png"));
+		btn.setToolTipText(jEdit.getProperty(
+			"error-list-previous-error-file.label"));
+		btn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-previous-error-file"));
+		toolBar.add(btn);
+
+		btn = new RolloverButton(GUIUtilities.loadIcon("NextFile.png"));
+		btn.setToolTipText(jEdit.getProperty(
+			"error-list-next-error-file.label"));
+		btn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-next-error-file"));
+		toolBar.add(btn);
+
+		btn = new RolloverButton(GUIUtilities.loadIcon("ArrowL.png"));
+		btn.setToolTipText(jEdit.getProperty(
+			"error-list-previous-error.label"));
+		btn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-previous-error"));
+		toolBar.add(btn);
+
+		btn = new RolloverButton(GUIUtilities.loadIcon("ArrowR.png"));
+		btn.setToolTipText(jEdit.getProperty(
+			"error-list-next-error.label"));
+		btn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-next-error"));
+		toolBar.add(btn);
+
 		toolBar.add(Box.createHorizontalStrut(6));
-		toolBar.add(GUIUtilities.loadToolButton("error-list-previous-error"));
-		toolBar.add(GUIUtilities.loadToolButton("error-list-next-error"));
-		toolBar.add(Box.createHorizontalStrut(6));
-		toolBar.add(GUIUtilities.loadToolButton("error-list-previous-error-file"));
-		toolBar.add(GUIUtilities.loadToolButton("error-list-next-error-file"));
+
+		btn = new RolloverButton(GUIUtilities.loadIcon(
+			"Clear.png"));
+		btn.setToolTipText(jEdit.getProperty(
+			"error-list-clear.label"));
+		btn.addActionListener(new EditAction.Wrapper(
+			jEdit.getActionContext(),
+			"error-list-clear"));
+		toolBar.add(btn);
+
 		add(BorderLayout.NORTH,toolBar);
 
 		// Can't just use "" since the renderer expects string nodes

@@ -29,4 +29,14 @@
 			textArea.requestFocus();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="error-list-clear">
+		<CODE>
+			sources = errorlist.ErrorSource.getErrorSources();
+			for(i = 0; i &lt; sources.length; i++)
+			{
+				if(sources[i] instanceof errorlist.DefaultErrorSource)
+					sources[i].clear();
+			}
+		</CODE>
+	</ACTION>
 </ACTIONS>
