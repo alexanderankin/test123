@@ -1,346 +1,309 @@
 /*
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+* This program is free software; you can redistribute it and/or
+* modify it under the terms of the GNU General Public License
+* as published by the Free Software Foundation; either version 2
+* of the License, or any later version.
+*
+* This program is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with this program; if not, write to the Free Software
+* Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
 package projectviewer;
 
 import java.io.File;
 import java.util.*;
-import javax.swing.tree.TreePath;
-
-import org.gjt.sp.util.Log;
+import javax.swing.tree.TreeNode;
 
 
 /**
  * A project directory.
  */
-public class ProjectDirectory {
+public class ProjectDirectory
+   implements ProjectArtifact, Comparable {
 
-  private String fullPath;
-  private List subdirectories;
-  private List files;
-  private String name;
-  private String pathWithSep;
+   protected String name;
+   protected TreeNode parent;
+   protected List files;
+   protected List dirs;
+   protected String path;
 
-  private static Comparator comparator;
-  
-  /**
-   * Create a new <code>ProjectDirectory</code>.
-   */
-  public ProjectDirectory( File aDirectory ) {
-    this( aDirectory.getAbsolutePath() );
-  }
-  
-  /**
-   * Create a new <code>ProjectDirectory</code>.
-   */
-  public ProjectDirectory( String fullDirectoryPath ) {
-    fullPath = fullDirectoryPath;
-    subdirectories = new ArrayList();
-    files = new ArrayList();
-  }
-  
-  /**
-   * Returns the path of this directory.
-   */
-  public String getPath() {
-    return fullPath;
-  }
-  
-  /**
-   * Returns the number of files in the directory.  This method
-   * differs from {@link #getChildCount()} in that the other method
-   * returns the number of project files <b>and</b> directories.
-   */
-  public int getFileCount() {
-    return files.size();
-  }
-  
-  /**
-   * Returns the {@link ProjectFile} at the specified index.
-   */
-  public ProjectFile getFile( int index ) {
-    return (ProjectFile) files.get( index );
-  }
-  
-  /**
-   * Returns the named file.
-   */
-  public ProjectFile getFile( String name ) {
-    for ( Iterator i = files(); i.hasNext(); ) {
-      ProjectFile each = (ProjectFile) i.next();
-      if ( each.getName().equals( name ) )
-        return each;
-    }
-    return null;
-  }
-  
-  /**
-   * Returns this project directory's subdirectories.
-   */
-  public Iterator subdirectories() {
-    return subdirectories.iterator();
-  }
-  
-  /**
-   * Returns the named subdirectory.
-   */
-  public ProjectDirectory getSubDirectory( String name ) {
-    for ( Iterator i = subdirectories(); i.hasNext(); ) {
-      ProjectDirectory each = (ProjectDirectory) i.next();
-      if ( each.getName().equals( name ) )
-        return each;
-    }
-    return null;    
-  }
-  
-  /**
-   * Returns a <code>java.io.File</code> representation of this directory.
-   */
-  public File toFile() {
-    return new File( getPath() );
-  }
-  
-  /**
-   * Returns this project directory's files.
-   */
-  public Iterator files() {
-    return files.iterator();
-  }
-  
-  /**
-   * Returns the name of the directory.
-   */
-  public String getName() {
-    if ( name == null )
-      name = getPath().substring( getPath().lastIndexOf( File.separatorChar ) + 1 );
-    return name;
-  }
-  
-  /**
-   * Returns list of directories need to reach the given project file. 
-   */
-  public List getPathToFile( ProjectFile aFile ) {
-    return getProjectPath( aFile.toFile() );
-  }
-  
-  /**
-   * Returns list of directories need to reach the given project file. 
-   */
-  public List getPathToDirectory( ProjectDirectory aDirectory ) {
-    return getProjectPath( aDirectory.toFile() );
-  }
-  
-  /**
-   * Returns <code>true</code> if the given file is under this directory
-   * or its subdirectories.
-   */
-  public boolean isDescendant( ProjectFile aFile ) {
-    if ( pathWithSep == null )
-      pathWithSep = getPath() + File.separator;
-    return aFile.getPath().startsWith( pathWithSep );
-  }
-  
-  /**
-   * Returns list of directories needed to reach the given project artifact. 
-   */
-  List getProjectPath( File anArtifact ) {
-    List list = getPathToFile( anArtifact );
-    list.set( 0, this );
-    ProjectDirectory dir = this;
-    for ( int i=1; i<list.size(); i++ ) {
-      dir = dir.getSubDirectory( (File) list.get(i) );
-      list.set( i, dir ); 
-    }
-    return list;
-  }
-  
-  /**
-   * Returns the indexed child, whether it be a sub directory of file. 
-   */
-  public Object getChild( int index ) {
-    if ( index < subdirectories.size() )
-      return subdirectories.get( index );
-    else {
-      return files.get( index - subdirectories.size() );
-    }
-  }
-  
-  /**
-   * Returns the number of children under this directory.
-   */
-  public int getChildCount() {
-    int count = files.size() + subdirectories.size();
-    return count;
-  }
-  
-  /**
-   * Returns the index of the specified child.
-   */
-  public int getIndexOfChild( Object child ) {
-    if ( child instanceof ProjectFile )
-      return subdirectories.size() + files.indexOf( child );
-    
-    if ( child instanceof ProjectDirectory )
-      return subdirectories.indexOf( child );
-      
-    return -1;
-  }
 
-  /**
-   * Returns a comparator for project directories.
-   */
-  public static Comparator getComparator() {
-    if ( comparator == null ) {
-      comparator = new DirectoryComparator();
-    }
-    return comparator;
-  }
+   /**
+    * Create a new <code>ProjectDirectory</code>.
+    */
+   public ProjectDirectory(String aName, TreeNode aParent, String aPath) {
+      name = aName;
+      parent = aParent;
+      path = aPath;
+      files = new ArrayList();
+      dirs = new ArrayList();
+   }
 
-  /**
-   * Add a file to this directory.
-   */
-  void addFile( ProjectFile file ) {
-    files.add( file );
-    Collections.sort( files, ProjectFile.getComparator() );
-  }
-  
-  /**
-   * Remove the specified file.
-   */
-  void removeFile( ProjectFile file ) {
-    files.remove( file );
-  }
-  
-  /**
-   * Remove a project directory.
-   */
-  void removeDirectory( ProjectDirectory dir ) {
-    subdirectories.remove( dir );
-  }
-  
-  /**
-   * Add the specified subdirectory.
-   */
-  ProjectDirectory addSubDirectory( File aSubDirectory ) {
-    if ( isSubDirectory( aSubDirectory ) ) return null;
-    ProjectDirectory dir = new ProjectDirectory( aSubDirectory );
-    subdirectories.add( dir );
-    Collections.sort( subdirectories, getComparator() );
-    return dir;
-  }
-  
-  /**
-   * Returns the subdirectory identified by the given file.
-   */
-  ProjectDirectory getSubDirectory( File aSubDirectory ) {
-    return getSubDirectory( aSubDirectory.getName() );
-  }
-  
-  /**
-   * Returns <code>true</code> if the given directory already exists as
-   * a project subdirectory.
-   */
-  boolean isSubDirectory( File aSubDirectory ) {
-    return getSubDirectory( aSubDirectory ) != null;
-  }
-  
-  /**
-   * Returns the path to the specified child, or <code>null</code> if the
-   * given file is not a descendent.
-   */
-  TreePath getTreePath( File child ) {
-    List path = getPathToFile( child );
-    if ( path == null ) return null;
-    return new TreePath( path.toArray() );
-  }
-  
-  /**
-   * Returns list of directories need to reach the given file.
-   *
-   * <p>Note: The path returns is a list <code>java.io.File</code> objects.
-   * use {@link getPathToFile(ProjectFile)} instead if you want a list of
-   * <code>ProjectDirectory</code>s.
-   * </p>
-   */
-  List getPathToFile( File aFile ) {
-    List path = new ArrayList();
-    
-    if ( equalsFile( aFile ) ) {
-      path.add( aFile );
+   /**
+    * Returns the name of the directory.
+    */
+   public String getName() {
+      return name;
+   }
+
+   /**
+    * Returns an iteration of project files.
+    */
+   public Iterator files() {
+      return files.iterator();
+   }
+
+   /**
+    * Returns an iteration of project directories.
+    */
+   public Iterator directories() {
+      return dirs.iterator();
+   }
+
+   /**
+    * Returns the path of this directory.  This path is the phyiscal location of
+    * the directory in local filesystem, and is not necessarily the same as this
+    * directory's location within its {@link ProjectDirectory} structure.
+    */
+   public String getPath() {
       return path;
-    }
-    
-    File dir = aFile.getParentFile();
-    while ( dir != null && !equalsFile( dir ) ) {
-      path.add( 0, dir );
-      dir = dir.getParentFile();
-    }
-    
-    if ( dir == null ) return null;
-    path.add( 0, dir );
-    return path;
-  }
-  
-  /**
-   * Returns <code>true</code> if the given <code>java.io.File</code> is
-   * equivalent to this project directory.
-   */
-  boolean equalsFile( File aDir ) {
-    return fullPath.equals( aDir.getAbsolutePath() );
-  }
-  
-  /**
-   * Returns the directory name.
-   */
-  public String toString() {
-    return getName();
-  }
-   
-  /**
-   * Returns <code>true</code> if the specified this object
-   * equals <code>obj</code>.
-   */
-  public boolean equals( Object obj ) {
-    if ( super.equals( obj ) ) return true;
-    if ( ! (obj instanceof ProjectDirectory) ) return false;
-    return getPath().equals( ((ProjectDirectory) obj).getPath() );
-  }
-  
-  /**
-   * Returns the hash code.
-   */
-  public int hashCode() {
-    return getPath().hashCode();
-  }
+   }
 
-  /**
-   * A class for comparing directories.
-   */
-  private static class DirectoryComparator implements Comparator {
+   /**
+    * Add a file.
+    */
+   public ProjectFile addFile(String file, String path) {
+      ProjectFile prjFile = new ProjectFile(file, this, path);
+      files.add(prjFile);
+      Collections.sort(files);
+      return prjFile;
+   }
 
-    /**
-     * Compare two directory objects.
-     */
-    public int compare( Object obj1, Object obj2 ) {
-      ProjectDirectory dir1 = (ProjectDirectory) obj1;
-      ProjectDirectory dir2 = (ProjectDirectory) obj2;
-      return dir1.getName().compareTo(dir2.getName());
-    }
+   /**
+    * Add a file.  This will add a {@link ProjectFile} to this directory, 
+    * regardless of where <code>file</code>'s parent directory is.
+    */
+   public ProjectFile addFile(File file) {
+      return addFile(file.getName(), file.getAbsolutePath());
+   }
 
-  }
+   /**
+    * Add a directory.  This will add a {@link ProjectDirectory} to this
+    * directory, regardless of where <code>dir</code>'s parent directory
+    * is.
+    */
+   public ProjectDirectory addDirectory(File dir) {
+      return addDirectory(dir.getName(), dir.getAbsolutePath());
+   }
 
-  
+   /**
+    * Add a directory.
+    */
+   public ProjectDirectory addDirectory(String directory, String path) {
+      ProjectDirectory dir = new ProjectDirectory(directory, this, path);
+      dirs.add(dir);
+      Collections.sort(dirs);
+      return dir;
+   }
+
+   /**
+    * Remove a project file.
+    */
+   public void removeFile(ProjectFile file) {
+      files.remove(file);
+   }
+
+   /**
+    * Remove a project directory.
+    */
+   public void removeDirectory(ProjectDirectory dir) {
+      dirs.remove(dir);
+   }
+
+   /**
+    * Returns the indexed project file.
+    */
+   public ProjectFile getFile(int index) {
+      return (ProjectFile) files.get(index);
+   }
+
+   /**
+    * Returns a file of the specified name.
+    */
+   public ProjectFile getFile(String fileName) {
+      for (Iterator i = files.iterator(); i.hasNext();) {
+         ProjectFile each = (ProjectFile) i.next();
+         if (each.getName().equals(fileName)) return each;
+      }
+      return null;
+   }
+
+   /**
+    * Returns the indexed project directory.
+    */
+   public ProjectDirectory getDirectory(int index) {
+      return (ProjectDirectory) dirs.get(index);
+   }
+
+   /**
+    * Returns a directory of the given name.
+    */
+   public ProjectDirectory getDirectory(String name) {
+      for (Iterator i = dirs.iterator(); i.hasNext();) {
+         ProjectDirectory each = (ProjectDirectory) i.next();
+         if (each.getName().equals(name))
+            return each;
+      }
+      return null;
+   }
+
+   /**
+    * Returns the number project files.
+    */
+   public int getFileCount() {
+      return files.size();
+   }
+
+   /**
+    * Returns the number project directory.
+    */
+   public int getDirectoryCount() {
+      return dirs.size();
+   }
+
+   /**
+    * Returns <code>true</code> if the given file already exists in this
+    * directory.
+    */
+   public boolean containsFile(ProjectFile file) {
+      return files.contains(file);
+   }
+
+   /**
+    * Returns <code>true</code> if the given file of name already exists in
+    * thid directory.
+    */
+   public boolean containsFile(String fileName) {
+      for (Iterator i = files.iterator(); i.hasNext();) {
+         ProjectFile each = (ProjectFile) i.next();
+         if (each.getName().equals(fileName))
+            return true;
+      }
+      return false;
+   }
+
+   /**
+    * Returns <code>true</code> if a directory of the given name exists under
+    * this directory.
+    */
+   public boolean containsDirectory(String dirName) {
+      for (Iterator i = files.iterator(); i.hasNext();) {
+         ProjectDirectory each = (ProjectDirectory) i.next();
+         if (each.getName().equals(dirName))
+            return true;
+      }
+      return false;
+   }
+
+   /**
+    * Returns the {@FileView} this directory belongs to.
+    */
+   public FileView getView() {
+      return ProjectArtifacts.getView(this);
+   }
+
+   /**
+    * Returns <code>true</code> if the given directory equals.
+    */
+   public boolean equals(Object obj) {
+      if (super.equals(obj))
+         return true;
+      if (!(obj instanceof ProjectDirectory))
+         return false;
+      ProjectDirectory otherFile = (ProjectDirectory) obj;
+      if (!name.equals(otherFile.name))
+         return false;
+      if (parent == null && otherFile.parent == null)
+         return true;
+      return parent.equals(otherFile.parent);
+   }
+
+   /**
+    * Returns the name of the directory.
+    *
+    * <p>SPECIFIED IN: java.lang.Object</p>
+    */
+   public String toString() {
+      return getName();
+   }
+
+   /**
+    * Compares the names of the directories.
+    *
+    * <p>SPECIFIED IN: java.lang.Comparable</p>
+    */
+   public int compareTo(Object obj) {
+      return getName().compareTo(((ProjectDirectory) obj).getName());
+   }
+
+   /**
+    * Returns the index file or directory.
+    */
+   public TreeNode getChildAt(int childIndex) {
+      if (childIndex < dirs.size())
+         return getDirectory(childIndex);
+      else
+         return getFile(childIndex - dirs.size());
+   }
+
+   /**
+    * Returns the number of files and directories.
+    */
+   public int getChildCount() {
+      return getDirectoryCount() + getFileCount();
+   }
+
+   /**
+    * Returns the parent <code>TreeNode</code> of the receiver.
+    */
+   public TreeNode getParent() {
+      return parent;
+   }
+
+   /**
+    * Returns <code>-1</code>.
+    */
+   public int getIndex(TreeNode node) {
+      return (node instanceof ProjectFile) ? files.indexOf(node) : dirs.indexOf(node);
+   }
+
+   /**
+    * Returns <code>true</code>.
+    */
+   public boolean getAllowsChildren() {
+      return true;
+   }
+
+   /**
+    * Returns <code>true</code>.
+    */
+   public boolean isLeaf() {
+      return false;
+   }
+
+   /**
+    * Returns all directories and files.
+    */
+   public Enumeration children() {
+      ArrayList children = new ArrayList();
+      children.addAll(dirs);
+      children.addAll(files);
+      return Collections.enumeration(children);
+   }
+
 }
-
