@@ -141,7 +141,6 @@ implements EBComponent, Output
 		SystemShell.consoleOpened(this);
 
 		errorSource = new DefaultErrorSource("error parsing");
-		ErrorSource.registerErrorSource(errorSource);
 	} //}}}
 
 	//{{{ removeNotify() method
@@ -249,6 +248,8 @@ implements EBComponent, Output
 		print(infoColor,"> " + cmd);
 
 		String input = view.getTextArea().getSelectedText();
+
+		ErrorSource.unregisterErrorSource(errorSource);
 
 		try
 		{
@@ -369,6 +370,7 @@ implements EBComponent, Output
 		{
 			public void run()
 			{
+				ErrorSource.registerErrorSource(errorSource);
 				animation.stop();
 			}
 		});

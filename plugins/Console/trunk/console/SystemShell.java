@@ -279,10 +279,18 @@ public class SystemShell extends Shell
 		StringBuffer buf = new StringBuffer();
 
 		String varName;
+		boolean backslash = false;
 
 		for(int i = 0; i < arg.length(); i++)
 		{
 			char c = arg.charAt(i);
+			if(backslash)
+			{
+				buf.append(c);
+				backslash = false;
+				break;
+			}
+
 			switch(c)
 			{
 			case dosSlash:
@@ -315,6 +323,7 @@ public class SystemShell extends Shell
 			//}}}
 			//{{{ Unix-style variables ($name, ${name})
 			case '$':
+				
 				if(i == arg.length() - 1)
 				{
 					buf.append(c);
@@ -377,7 +386,7 @@ public class SystemShell extends Shell
 				if(i != 0)
 				{
 					c = arg.charAt(i - 1);
-					if(c != '/' && c != File.separatorChar)
+					if(c != '=')
 						ok = false;
 				}
 				if(i != arg.length() - 1)
@@ -396,6 +405,9 @@ public class SystemShell extends Shell
 					buf.append('~');
 				break;
 			//}}}
+			case '\\':
+				backslash = true;
+				break;
 			default:
 				buf.append(c);
 				break;
