@@ -51,13 +51,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getSpaceHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.SPACE_HIGHLIGHT_PROPERTY */
+                "white-space.space-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
@@ -69,13 +68,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getLeadingSpaceHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.LEADING_SPACE_HIGHLIGHT_PROPERTY */
+                "white-space.leading-space-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
@@ -87,13 +85,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getInnerSpaceHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.INNER_SPACE_HIGHLIGHT_PROPERTY */
+                "white-space.inner-space-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
@@ -105,13 +102,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getTrailingSpaceHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.TRAILING_SPACE_HIGHLIGHT_PROPERTY */
+                "white-space.trailing-space-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
