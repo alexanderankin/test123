@@ -26,18 +26,6 @@ public class WhiteSpaceModel
 {
     public static final String MODEL_PROPERTY = "white-space.model";
 
-    public static final String SPACE_HIGHLIGHT_PROPERTY          = "white-space.space-highlight";
-    public static final String LEADING_SPACE_HIGHLIGHT_PROPERTY  = "white-space.leading-space-highlight";
-    public static final String INNER_SPACE_HIGHLIGHT_PROPERTY    = "white-space.inner-space-highlight";
-    public static final String TRAILING_SPACE_HIGHLIGHT_PROPERTY = "white-space.trailing-space-highlight";
-
-    public static final String TAB_HIGHLIGHT_PROPERTY            = "white-space.tab-highlight";
-    public static final String LEADING_TAB_HIGHLIGHT_PROPERTY    = "white-space.leading-tab-highlight";
-    public static final String INNER_TAB_HIGHLIGHT_PROPERTY      = "white-space.inner-tab-highlight";
-    public static final String TRAILING_TAB_HIGHLIGHT_PROPERTY   = "white-space.trailing-tab-highlight";
-
-    public static final String WHITESPACE_HIGHLIGHT_PROPERTY     = "white-space.whitespace-highlight";
-
     private Buffer buffer;
 
     private HighlightOption spaceHighlight;
@@ -57,41 +45,32 @@ public class WhiteSpaceModel
         this.buffer = buffer;
 
         this.spaceHighlight         = new HighlightOption(
-            SPACE_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getSpaceHighlightDefault()
         );
         this.leadingSpaceHighlight  = new HighlightOption(
-            LEADING_SPACE_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
         );
         this.innerSpaceHighlight    = new HighlightOption(
-            INNER_SPACE_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
         );
         this.trailingSpaceHighlight = new HighlightOption(
-            TRAILING_SPACE_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
         );
 
         this.tabHighlight           = new HighlightOption(
-            TAB_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getTabHighlightDefault()
         );
         this.leadingTabHighlight    = new HighlightOption(
-            LEADING_TAB_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getLeadingTabHighlightDefault()
         );
         this.innerTabHighlight      = new HighlightOption(
-            INNER_TAB_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getInnerTabHighlightDefault()
         );
         this.trailingTabHighlight   = new HighlightOption(
-            TRAILING_TAB_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getTrailingTabHighlightDefault()
         );
 
         this.whitespaceHighlight    = new HighlightOption(
-            WHITESPACE_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getWhitespaceHighlightDefault()
         );
     }
@@ -143,31 +122,26 @@ public class WhiteSpaceModel
 
 
     public class HighlightOption {
-        private final String propertyName;
+        private boolean enabled;
 
 
-        public HighlightOption(String propertyName) {
-            this(propertyName, false);
+        public HighlightOption() {
+            this(false);
         }
 
 
-        public HighlightOption(String propertyName, boolean enabled) {
-            this.propertyName = propertyName;
-            this.setEnabled(enabled);
+        public HighlightOption(boolean enabled) {
+            this.enabled = enabled;
         }
 
 
         public boolean isEnabled() {
-            return WhiteSpaceModel.this.buffer.getBooleanProperty(
-                this.propertyName
-            );
+            return this.enabled;
         }
 
 
         public void setEnabled(boolean enabled) {
-            WhiteSpaceModel.this.buffer.putBooleanProperty(
-                this.propertyName, enabled
-            );
+            this.enabled = enabled;
         }
 
 
