@@ -96,7 +96,7 @@
   <itemizedlist>
    <listitem><para>Dock auto-hiding is disabled by default.</para></listitem>
 
-   <listitem><para>Auto-hide overrides can now be removed.</para></listitem>
+   <listitem><para>Auto-hide overrides can now be removed. (Thanks to Girotto Mirko)</para></listitem>
   </itemizedlist>
 
  </listitem>
