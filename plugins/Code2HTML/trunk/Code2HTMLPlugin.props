@@ -1,10 +1,10 @@
 plugin.Code2HTMLPlugin.name=Code2HTML
 plugin.Code2HTMLPlugin.author=Andre Kaplan
-plugin.Code2HTMLPlugin.version=0.3
+plugin.Code2HTMLPlugin.version=0.3.1
 plugin.Code2HTMLPlugin.docs=index.html
 
 plugin.Code2HTMLPlugin.depend.0=jdk 1.1
-plugin.Code2HTMLPlugin.depend.1=jedit 03.00.99.00
+plugin.Code2HTMLPlugin.depend.1=jedit 03.01.01.00
 
 # Option Pane label & menu label
 code2html.label=Code2HTML
