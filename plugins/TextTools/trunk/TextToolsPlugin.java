@@ -36,6 +36,7 @@ public class TextToolsPlugin extends EditPlugin
 		jEdit.addAction(new format());
 		jEdit.addAction(new insert_date());
 		jEdit.addAction(new transpose_chars());
+		jEdit.addAction(new transpose_words());
 	}
 
 	public void stop()
