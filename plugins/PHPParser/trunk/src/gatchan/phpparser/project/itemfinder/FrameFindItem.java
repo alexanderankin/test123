@@ -3,6 +3,9 @@ package gatchan.phpparser.project.itemfinder;
 import gatchan.phpparser.project.Project;
 import gatchan.phpparser.project.ProjectManager;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
+import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
+import net.sourceforge.phpdt.internal.compiler.ast.ClassDeclaration;
+import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
@@ -19,9 +22,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 /**
  * This window will help you to find a php item.
@@ -101,25 +102,31 @@ public final class FrameFindItem extends JFrame {
       final java.util.List itemContaining;
 
       final int currentSearchLength = searchText.length();
-      if ((scope == PROJECT_SCOPE && quickAccess.getIndexLength() > currentSearchLength) ||
-          (lastSearch == null || currentSearchLength < lastSearch.length() ||!searchText.startsWith(lastSearch)))
-      {
+      if (currentSearchLength != 0 && ((scope == PROJECT_SCOPE && quickAccess.getIndexLength() > currentSearchLength) ||
+         (lastSearch == null || lastSearch.length() == 0 || currentSearchLength < lastSearch.length() || !searchText.startsWith(lastSearch)))) {
         if (scope == PROJECT_SCOPE) {
           final long quickAccessStart = System.currentTimeMillis();
           itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
           Log.log(Log.DEBUG, QuickAccessItemFinder.class, System.currentTimeMillis() - quickAccessStart + " ms");
         } else {
-          final Map classes = project.getClasses();
-          Map methods = project.getMethods();
-          itemContaining = new ArrayList(20);
-          Iterator iterator = classes.values().iterator();
-          while (iterator.hasNext()) {
-            ClassHeader classHeader = (ClassHeader) iterator.next();
-            itemContaining.addAll(classHeader.getMethodsHeaders());
-            itemContaining.addAll(classHeader.getFields());
-            itemContaining.add(classHeader);
+          Buffer buffer = jEdit.getActiveView().getBuffer();
+          PHPDocument document = (PHPDocument) buffer.getProperty("PHPDocument");
+          itemContaining = new ArrayList();
+          if (document != null) {
+            final java.util.List list = document.getList();
+            for (int i = 0; i < list.size(); i++) {
+              Object o = list.get(i);
+              if (o instanceof ClassDeclaration) {
+                final ClassDeclaration classDeclaration = (ClassDeclaration) o;
+                final ClassHeader classHeader = classDeclaration.getClassHeader();
+                itemContaining.addAll(classHeader.getMethodsHeaders());
+                itemContaining.add(classHeader);
+              } else if (o instanceof MethodDeclaration) {
+                final MethodDeclaration methodDeclaration = (MethodDeclaration) o;
+                itemContaining.add(methodDeclaration.getMethodHeader());
+              }
+            }
           }
-          itemContaining.addAll(methods.values());
         }
 
         if (itemContaining.isEmpty()) {
@@ -203,6 +210,7 @@ public final class FrameFindItem extends JFrame {
   public void init(View view, int mode, int scope) {
     this.view = view;
     this.scope = scope;
+    lastSearch = null;
     listModel.clear();
     listModel.setMode(mode);
     searchField.setText(null);

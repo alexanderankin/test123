@@ -49,21 +49,23 @@ public final class SimpleListModel extends AbstractListModel {
   }
 
   public void filter(String searchString) {
-    boolean modified = false;
-    Iterator iterator = list.iterator();
-    while (iterator.hasNext()) {
-      PHPItem phpItem = (PHPItem) iterator.next();
-      if (!accept(phpItem, searchString)) {
-        modified = true;
-        iterator.remove();
+    if (getSize() != 0) {
+      boolean modified = false;
+      Iterator iterator = list.iterator();
+      while (iterator.hasNext()) {
+        PHPItem phpItem = (PHPItem) iterator.next();
+        if (!accept(phpItem, searchString)) {
+          modified = true;
+          iterator.remove();
+        }
       }
+      if (modified) {
+        int oldSize = items.length;
+        items = list.toArray();
+        fireIntervalRemoved(this, items.length, oldSize);
+      }
+      fireContentsChanged(this, 0, items.length);
     }
-    if (modified) {
-      int oldSize = items.length;
-      items = list.toArray();
-      fireIntervalRemoved(this, items.length, oldSize);
-    }
-    fireContentsChanged(this, 0, items.length);
   }
 
   public void setMode(int mode) {
@@ -72,8 +74,8 @@ public final class SimpleListModel extends AbstractListModel {
 
   private boolean accept(PHPItem phpItem, String searchText) {
     return phpItem.getName().toLowerCase().indexOf(searchText) != -1 && (mode == FrameFindItem.ALL_MODE ||
-          (mode == FrameFindItem.CLASS_MODE && phpItem instanceof ClassHeader) ||
-          (mode == FrameFindItem.METHOD_MODE && phpItem instanceof MethodHeader));
+                                                                                                        (mode == FrameFindItem.CLASS_MODE && phpItem instanceof ClassHeader) ||
+                                                                                                                                                                             (mode == FrameFindItem.METHOD_MODE && phpItem instanceof MethodHeader));
   }
 
 
