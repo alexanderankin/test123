@@ -157,22 +157,20 @@ public class Code2HTML
 
     private void htmlText(Writer out, int first, int last) throws IOException {
         long start = System.currentTimeMillis();
-        this.paintLines(out, this.textArea, first, last);
+        this.paintLines(out, this.textArea.getBuffer(), first, last);
         long end = System.currentTimeMillis();
         Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
     }
 
 
     private void paintLines(
-            Writer out, JEditTextArea textArea, int first, int last
+            Writer out, Buffer buffer, int first, int last
     ) throws IOException
     {
-        Buffer buffer = textArea.getBuffer();
-
         Segment line = new Segment();
         Token tokens = null;
         for (int i = first; i <= last; i++) {
-            textArea.getLineText(i, line);
+            buffer.getLineText(i, line);
             tokens = buffer.markTokens(i).getFirstToken();
             this.painter.setPos(0);
             if (tokens == null) {
