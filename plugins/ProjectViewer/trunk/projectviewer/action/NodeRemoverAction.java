@@ -106,7 +106,7 @@ public class NodeRemoverAction extends Action {
                     // Any other thing == multiple selection
                     ArrayList sel = getSelectedArtifacts(tree.getSelectionPaths());
                     for (Iterator i = sel.iterator(); i.hasNext(); ) {
-                        remove((VPTNode)i.next(), false);
+                        remove((VPTNode) i.next(), false);
                     }
                 }
             }
@@ -274,6 +274,7 @@ public class NodeRemoverAction extends Action {
 				if (!delete || (!ask || confirmAction(FILE))) {
 					ProjectViewer.removeNodeFromParent(o);
 					project.unregisterFile((VPTFile)o);
+					project.fireFileRemoved((VPTFile)o);
 					if (delete) o.delete();
 					removed = true;
 				}
