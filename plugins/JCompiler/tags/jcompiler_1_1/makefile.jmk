@@ -1,0 +1,58 @@
+# jmk makefile for the JCompiler plugin
+# To recompile this plugin, start jmk in the plugin's source directory.
+#
+# :noTabs=true:
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!   ATTENTION!   The file jcompiler/NoExitSecurityManager2.java   !!!
+# !!!   can only be compiled on JDK 1.2.                              !!!
+# !!!   The code will run on JDK 1.1, too, because this class is      !!!
+# !!!   only invoked on Java2 VM's.                                   !!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+NAME = "JCompiler";
+
+JEDIT_BASE = "../..";
+JEDIT_JARS = "..";
+
+javac = "javac";
+javaflags =  "-g" "-deprecation" "-classpath" (cat (getprop "java.class.path") ";" JEDIT_BASE "/jedit.jar" ";" JEDIT_JARS "/EditBus.jar" ";" JEDIT_JARS "/Console.jar" ";" ".");
+pkgs = "." "jcompiler" "jcompiler/options" "buildtools";
+
+##########################################################################
+
+jarfile = (cat "../" NAME ".jar");
+cmd_javac = javac javaflags;
+cmd_jar = "jar";
+srcs = (subst ".java", ".class", (glob (join pkgs, "/*.java")));
+
+"all": jarfile;
+
+"%.class" : "%.java";
+{
+    exec cmd_javac <;
+}
+
+jarfile: srcs;
+{
+    exec cmd_jar "cfM0" @
+        (glob
+            (join pkgs, "/*.class")
+            (join pkgs, "/*.gif")
+            (join pkgs, "/*.html")
+            (join pkgs, "/*.xml")
+            (join pkgs, "/*.props"));
+}
+
+"clean":;
+{
+    -delete
+        (glob
+            (join pkgs, "/*.class")
+            (join pkgs, "/*~")
+            (join pkgs, "/*.bak"));
+}
+
+
+".PHONY": "all" "clean";
+
