@@ -176,6 +176,8 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 			projectView.deactivate();
 		}
 
+		Log.log( Log.DEBUG, this, "setCurrentProject() chk1");
+		
 		// set up the new project
 		projectView = getProjectViewFor(project);
 

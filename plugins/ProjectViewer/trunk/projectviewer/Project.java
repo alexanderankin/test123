@@ -530,9 +530,15 @@ public final class Project implements EBComponent {
         }
 		else if (message instanceof EditPaneUpdate) {
             EditPaneUpdate update = (EditPaneUpdate)message;
-            if ((update.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) || (update.getWhat().equals(EditPaneUpdate.CREATED))) {
+            //if ((update.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) || (update.getWhat().equals(EditPaneUpdate.CREATED))) {
+            if (update.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) {
 				ProjectFile file = getFile(update.getEditPane().getBuffer().getPath());
-				Log.log(Log.DEBUG, this, "EditPaneUpdate -> "+file );
+				Log.log(Log.DEBUG, this, "EditPaneUpdate(BUFFER_CHANGED) -> "+file );
+				if(file != null) fireFileOpened(file);				
+			}
+            if (update.getWhat().equals(EditPaneUpdate.CREATED)) {
+				ProjectFile file = getFile(update.getEditPane().getBuffer().getPath());
+				Log.log(Log.DEBUG, this, "EditPaneUpdate(CREATED) -> "+file );
 				if(file != null) fireFileOpened(file);				
 			}
 		}
