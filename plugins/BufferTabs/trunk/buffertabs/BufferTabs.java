@@ -176,6 +176,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         this.buffers.insertElementAt(buffer, index);
 
         try {
+            // workaround: calls to SwingUtilities.updateComponentTreeUI
+            this.getUI().uninstallUI(this);
             this.changeHandler.setEnabled(false);
 
             Component component = null;
@@ -193,6 +195,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             }
         } finally {
             this.changeHandler.setEnabled(true);
+            // workaround: calls to SwingUtilities.updateComponentTreeUI
+            this.getUI().installUI(this);
         }
     }
 

@@ -1,10 +1,10 @@
 plugin.buffertabs.BufferTabsPlugin.name=BufferTabs
 plugin.buffertabs.BufferTabsPlugin.author=Jason Ginchereau, Andre Kaplan
-plugin.buffertabs.BufferTabsPlugin.version=0.7.3
+plugin.buffertabs.BufferTabsPlugin.version=0.7.4
 plugin.buffertabs.BufferTabsPlugin.docs=BufferTabs.html
 
 plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.1
-plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 03.00.99.00
+plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 03.02.99.00
 
 buffertabs.toggle-vis.label=BufferTabs
 
