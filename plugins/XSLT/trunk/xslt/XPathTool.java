@@ -139,7 +139,10 @@ public class XPathTool extends JPanel {
         Node node = nodelist.item(i);
         String nodeType = getNodeTypeString(node.getNodeType());
         String value = node.getNodeValue();
-        value = (value == null) ? value : value.trim();
+
+        if(value != null && node.getNodeType() == Node.TEXT_NODE) {
+          value = value.trim();
+        }
 
         messageArgs = new Object[]{"" + i, nodeType, node.getNodeName(), value};
         buf.append(MessageFormat.format(jEdit.getProperty("XPathTool.result.node"), messageArgs));
@@ -169,7 +172,7 @@ public class XPathTool extends JPanel {
 
       for(int i = 0; i < nodelist.getLength(); i++) {
         Node node = nodelist.item(i);
-        appendNodeString(node, buf, 0, false);
+        appendNode(node, buf, 0, false);
       }
     }
 
@@ -177,7 +180,7 @@ public class XPathTool extends JPanel {
   }
 
 
-  private void appendNodeString(Node node, StringBuffer buf, int indentLevel, boolean insideElement) {
+  private void appendNode(Node node, StringBuffer buf, int indentLevel, boolean insideElement) {
     if(node.getNodeType() == Node.ELEMENT_NODE) {
       appendElementNode(node, buf, indentLevel);
     } else if(node.getNodeType() == Node.TEXT_NODE) {
@@ -185,10 +188,20 @@ public class XPathTool extends JPanel {
     } else if(node.getNodeType() == Node.ATTRIBUTE_NODE) {
       appendAttributeNode(node, buf);
     } else if(node.getNodeType() == Node.DOCUMENT_NODE) {
-      appendNodeString(node.getFirstChild(), buf, indentLevel, true);
+      appendChildNodes(node.getChildNodes(), 0, buf, -1);
+    } else if(node.getNodeType() == Node.COMMENT_NODE) {
+      appendCommentNode(node, buf, indentLevel);
     } else {
-      appendNodeString(node.getNextSibling(), buf, indentLevel, true);
+      appendNode(node.getNextSibling(), buf, indentLevel, true);
     }
+  }
+
+
+  private void appendCommentNode(Node node, StringBuffer buf, int indentLevel) {
+    appendIndent(buf, indentLevel);
+    buf.append("<!--");
+    buf.append(node.getNodeValue());
+    buf.append("-->\n");
   }
 
 
@@ -203,13 +216,11 @@ public class XPathTool extends JPanel {
   }
 
 
-  private static final int NO_INDENT = -1;
+  private static final int NO_INDENT = Integer.MIN_VALUE;
 
   private void appendElementNode(Node node, StringBuffer buf, int indentLevel) {
     if(indentLevel != NO_INDENT) {
-      for(int i = 0; i < indentLevel; i++) {
-        buf.append("  ");
-      }
+      appendIndent(buf, indentLevel);
     }
     buf.append('<');
     buf.append(node.getNodeName());
@@ -237,9 +248,7 @@ public class XPathTool extends JPanel {
       } else {
         buf.append(System.getProperty("line.separator"));
         appendChildNodes(nodes, 0, buf, indentLevel);
-        for(int i = 0; i < indentLevel; i++) {
-          buf.append("  ");
-        }
+        appendIndent(buf, indentLevel);
       }
 
       buf.append("</");
@@ -254,6 +263,13 @@ public class XPathTool extends JPanel {
       if(indentLevel != NO_INDENT) {
         buf.append(System.getProperty("line.separator"));
       }
+    }
+  }
+
+
+  private void appendIndent(StringBuffer buf, int indentLevel) {
+    for(int i = 0; i < indentLevel; i++) {
+      buf.append("  ");
     }
   }
 
@@ -273,13 +289,13 @@ public class XPathTool extends JPanel {
     buf.append(System.getProperty("line.separator"));
   }
 
-  private void appendChildNodes(NodeList nodes, int index, StringBuffer buf, int indentLevel) {
+  private void appendChildNodes(NodeList nodes, int startIndex, StringBuffer buf, int indentLevel) {
     if(indentLevel != NO_INDENT) {
       indentLevel++;
     }
 
-    for(int i = index; i < nodes.getLength(); i++) {
-      appendNodeString(nodes.item(i), buf, indentLevel, true);
+    for(int i = startIndex; i < nodes.getLength(); i++) {
+      appendNode(nodes.item(i), buf, indentLevel, true);
     }
   }
 
