@@ -132,7 +132,7 @@ public final class ProjectViewerConfig {
     private boolean rememberOpen            = true;
     private boolean deleteNotFoundFiles     = true;
     private boolean saveOnChange            = true;
-	private int		askImport               = ASK_ALWAYS;
+	private int		askImport               = ASK_ONCE;
 
     private boolean showToolBar             = true;
     private boolean showFoldersTree         = true;
