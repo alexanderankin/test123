@@ -102,6 +102,8 @@ public class CommandoDialog extends EnhancedDialog
 
 		content.add(BorderLayout.SOUTH,buttons);
 
+		scripts = new Vector();
+
 		pack();
 		setLocationRelativeTo(view);
 		show();
@@ -110,6 +112,31 @@ public class CommandoDialog extends EnhancedDialog
 	public void ok()
 	{
 		jEdit.setProperty("commando.last-command",command.name);
+
+		Vector commands = new Vector();
+		for(int i = 0; i < scripts.size(); i++)
+		{
+			Script script = (Script)scripts.elementAt(i);
+			Command command = script.getCommand();
+			if(command == null)
+			{
+				// user has already seen the BeanShell error,
+				// so just exit
+				return;
+			}
+
+			commands.addElement(command);
+		}
+
+		// open a console
+		DockableWindowManager wm = view.getDockableWindowManager();
+		wm.addDockableWindow("console");
+
+		CommandoThread thread = new CommandoThread(
+			(Console)wm.getDockableWindow("console"),
+			commands);
+		thread.start();
+
 		dispose();
 	}
 
@@ -131,7 +158,7 @@ public class CommandoDialog extends EnhancedDialog
 
 	private CommandoCommand command;
 	private NameSpace nameSpace;
-	private String script;
+	private Vector scripts;
 
 	private void loadCommand(CommandoCommand command)
 	{
@@ -172,6 +199,43 @@ public class CommandoDialog extends EnhancedDialog
 
 		getRootPane().revalidate();
 		pack();
+	}
+
+	static class Script
+	{
+		boolean confirm;
+		String shell;
+		String code;
+
+		Script(boolean confirm, String shell, String code)
+		{
+			this.confirm = confirm;
+			this.shell = shell;
+			this.code = code;
+		}
+
+		Command getCommand()
+		{
+			Object command = BeanShell.eval(view,nameSpace,
+				code,false);
+			if(command == null)
+				return null;
+			return new Command(confirm,shell,String.valueOf(command));
+		}
+	}
+
+	static class Command
+	{
+		boolean confirm;
+		String shell;
+		String command;
+
+		Command(boolean confirm, String shell, String code)
+		{
+			this.confirm = confirm;
+			this.shell = shell;
+			this.command = command;
+		}
 	}
 
 	class ActionHandler implements ActionListener
@@ -235,6 +299,10 @@ public class CommandoDialog extends EnhancedDialog
 				eval = value;
 			else if(aname == "VALUE")
 				optionValue = value;
+			else if(aname == "CONFIRM")
+				confirm = "TRUE".equals(value);
+			else if(aname == "SHELL")
+				shell = value;
 		}
 
 		public void doctypeDecl(String name, String publicId,
@@ -251,8 +319,10 @@ public class CommandoDialog extends EnhancedDialog
 			String tag = peekElement();
 			String text = new String(c, off, len);
 
-			if (tag == "CAPTION")
+			if(tag == "CAPTION")
 				caption = text;
+			else if(tag == "SCRIPT")
+				code = text;
 		}
 
 		public void startElement(String tag)
@@ -306,6 +376,11 @@ public class CommandoDialog extends EnhancedDialog
 					settings.addCaption(caption);
 					caption = null;
 				}
+				else if(tag == "SCRIPT")
+				{
+					scripts.addElement(new Script(
+						confirm,shell,code));
+				}
 
 				popElement();
 			}
@@ -336,6 +411,9 @@ public class CommandoDialog extends EnhancedDialog
 		private String eval;
 		private String optionValue;
 		private String caption;
+		private boolean confirm;
+		private String shell;
+		private String code;
 
 		private Vector options;
 

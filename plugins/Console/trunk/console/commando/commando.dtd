@@ -43,4 +43,5 @@
 
 <!ENTITY % att-bool '( TRUE | FALSE )' >
 <!ATTLIST COMMAND
-	CONFIRM %att-bool; "FALSE" >
+	CONFIRM %att-bool; "FALSE"
+	SHELL CDATA #REQUIRED >

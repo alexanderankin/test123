@@ -56,6 +56,24 @@ public abstract class Shell
 		return retVal;
 	}
 
+	/**
+	 * Returns the shell with the specified name.
+	 * @param name The shell name
+	 */
+	public static Shell getShell(String name)
+	{
+		Shell[] shells = Shell.getShells();
+		for(int i = 0; i < shells.length; i++)
+		{
+			if(shells[i].getName().equals(shell))
+			{
+				return shells[i];
+			}
+		}
+
+		return null;
+	}
+
 	public Shell(String name)
 	{
 		this.name = name;

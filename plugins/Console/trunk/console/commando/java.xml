@@ -14,5 +14,10 @@
 	</UI>
 
 	<COMMANDS>
+		<COMMAND CONFIRM="FALSE">
+			"java -ms" + settings.ms + "m -mx"
+				+ settings.mx + "m " + settings.other
+				+ " " + settings.class;
+		</COMMAND>
 	</COMMANDS>
 </COMMANDO>
