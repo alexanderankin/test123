@@ -31,8 +31,8 @@ public class JumpPlugin extends EditPlugin
     
     public static Jump jump_actions;
     
-    public static ProjectJumpAction pja = new ProjectJumpAction();
-    public static JumpEventListener listener = new JumpEventListener();
+    public static ProjectJumpAction pja;
+    public static JumpEventListener listener;
     public static boolean isListenerAdded = false;
 //}}}
 
@@ -53,7 +53,8 @@ public class JumpPlugin extends EditPlugin
 
 //{{{ boolean reloadTagsOnProject()
     public static boolean reloadTagsOnProject()
-    {  if (jump_actions.isJumpEnabled() == false) return false;
+    {  
+       if (jump_actions.isJumpEnabled() == false) return false;
        ProjectViewer pv = ProjectViewer.getViewer(jEdit.getActiveView());
        VPTProject pr = PVActions.getCurrentProject(jEdit.getActiveView());
            return (listener.reloadTags(pv,pr));
@@ -61,11 +62,14 @@ public class JumpPlugin extends EditPlugin
 //}}}
 
 
-//{{{ void addListener()
-    public static void addListener()
+//{{{ void init()
+//  Init all classes here, instead of in start() to avoid long starup time
+    public static void init()
     {
-         //VPTProject Pr;
-         //Pr = PVActions.getCurrentProject(jEdit.getActiveView());
+         //if (isListenerAdded == false) return;
+         pja = new ProjectJumpAction();
+         listener = new JumpEventListener();
+         
          View v = jEdit.getActiveView();
          if (PVActions.getCurrentProject(v) != null)
          {
@@ -92,7 +96,16 @@ public class JumpPlugin extends EditPlugin
 //{{{ void stop()
     public void stop()
     {
-        this.getListener().ctags_bg.saveBuffer(getListener().ctags_buff, getListener().PROJECT_TAGS.toString() );   
+        if (jump_actions.isJumpEnabled() == false) return;
+        if (isListenerAdded == false) return;
+        try
+        {
+        this.getListener().ctags_bg.saveBuffer(getListener().ctags_buff, getListener().PROJECT_TAGS.toString() );
+        }
+        catch (Exception e)
+        {
+            Log.log(Log.DEBUG,this,"JumpPlugin: failed to save ctags_buff on stop()");   
+        }
     }
 //}}}
 }
