@@ -20,8 +20,6 @@
 package xslt;
 
 import org.apache.xalan.templates.OutputProperties;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.MiscUtilities;
 
 /**
  * Holds logic to retrieve output properties for transformers
@@ -31,25 +29,14 @@ import org.gjt.sp.jedit.MiscUtilities;
 public class XsltOutputProperties {
 
   private static XsltOutputProperties singletonInstance;
-  private XSLTProcessor processor;
   private boolean messageDisplayed = false;
 
 
-  private XsltOutputProperties(XSLTProcessor processor) {
-    this.processor = processor;
-  }
-
-
-  static void initialize(XSLTProcessor processor) {
-    if(singletonInstance == null) {
-      singletonInstance = new XsltOutputProperties(processor);
-    } else {
-      throw new IllegalStateException("XsltOutputProperties can only be initialized once");
-    }
-  }
-
-
   static XsltOutputProperties getInstance() {
+    if(singletonInstance == null) {
+      singletonInstance = new XsltOutputProperties();
+    }
+
     return singletonInstance;
   }
 
@@ -61,15 +48,7 @@ public class XsltOutputProperties {
       indentProperty = OutputProperties.S_KEY_INDENT_AMOUNT;
     } catch(NoSuchFieldError e) {
       if(!messageDisplayed) {
-        String userPluginsDir = MiscUtilities.constructPath(jEdit.getSettingsDirectory(),"jars");
-        String userEndorsedDir = MiscUtilities.constructPath(userPluginsDir, "endorsed");
-
-        String systemPluginsDir = MiscUtilities.constructPath(jEdit.getJEditHome(),"jars");
-        String systemEndorsedDir = MiscUtilities.constructPath(systemPluginsDir, "endorsed");
-
-
-        String[] args = {userPluginsDir, systemPluginsDir, userEndorsedDir, systemEndorsedDir};
-        XSLTPlugin.showMessageDialog("xslt.old-jar.message", args, processor);
+        XSLTPlugin.displayOldXalanJarMessage();
         messageDisplayed = true;
       }
 
@@ -78,4 +57,6 @@ public class XsltOutputProperties {
 
     return indentProperty;
   }
+
+
 }

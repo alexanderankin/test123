@@ -30,6 +30,7 @@ import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.sax.SAXResult;
 import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
@@ -109,7 +110,14 @@ public class XSLTUtilities {
 
 
   private static TransformerHandler[] getTransformerHandlers(Object[] stylesheets, Map stylesheetParameters) throws FileNotFoundException, TransformerConfigurationException {
-    SAXTransformerFactory saxFactory = (SAXTransformerFactory)TransformerFactory.newInstance();
+    SAXTransformerFactory saxFactory = null;
+
+    try {
+      saxFactory = (SAXTransformerFactory)TransformerFactory.newInstance();
+    } catch(ClassCastException exception) {
+      throw new TransformerConfigurationException(XSLTPlugin.getOldXalanJarMessage());
+    }
+
     TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
     for(int i = 0; i < stylesheets.length; i++) {

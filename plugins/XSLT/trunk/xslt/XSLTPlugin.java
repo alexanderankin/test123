@@ -23,6 +23,7 @@ package xslt;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
 
 import javax.swing.JOptionPane;
@@ -39,6 +40,8 @@ import java.util.Vector;
  * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
 public class XSLTPlugin extends EditPlugin {
+
+  private static XSLTProcessor processor;
 
   /**
    * Register xerces as the SAX Parser provider
@@ -81,9 +84,28 @@ public class XSLTPlugin extends EditPlugin {
   }
 
 
-  static void showMessageDialog(String property, String args[], Component component) {
-    String message = jEdit.getProperty(property, args);
-    JOptionPane.showMessageDialog(component, message);
+  static void setProcessor(XSLTProcessor processor) {
+    XSLTPlugin.processor = processor;
   }
-}
 
+
+  static void displayOldXalanJarMessage() {
+    String message = getOldXalanJarMessage();
+    JOptionPane.showMessageDialog(XSLTPlugin.processor, message);
+  }
+
+
+  static String getOldXalanJarMessage() {
+    String userPluginsDir = MiscUtilities.constructPath(jEdit.getSettingsDirectory(),"jars");
+    String userEndorsedDir = MiscUtilities.constructPath(userPluginsDir, "endorsed");
+
+    String systemPluginsDir = MiscUtilities.constructPath(jEdit.getJEditHome(),"jars");
+    String systemEndorsedDir = MiscUtilities.constructPath(systemPluginsDir, "endorsed");
+
+    String[] args = {userPluginsDir, systemPluginsDir, userEndorsedDir, systemEndorsedDir};
+    String message = jEdit.getProperty("xslt.old-jar.message", args);
+    return message;
+  }
+
+
+}
