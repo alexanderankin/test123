@@ -165,12 +165,12 @@
 
   <appendix id="changelog">
     <title>Change log</title>
-    <formalpara>
-      <title>Version 0.1</title>
+    <para>
+      <emphasis role="bold">Version 0.1</emphasis>
       <itemizedlist>
         <listitem>Initial release</listitem>
       </itemizedlist>
-    </formalpara>
+    </para>
   </appendix>
 
 </book>
