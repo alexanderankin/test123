@@ -211,10 +211,10 @@ class ConsoleProcess
 			}
 
 			process = null;
-		}
 
-		if(consoleState != null)
-			consoleState.process = null;
+			if(consoleState != null)
+				consoleState.process = null;
+		}
 
 		notifyAll();
 	} //}}}
@@ -229,7 +229,7 @@ class ConsoleProcess
 		OutputStream outputStream;
 		String lineSep;
 
-		//{{{ StreamThread constructor
+		//{{{ InputThread constructor
 		InputThread(String input, OutputStream outputStream)
 		{
 			setName("" + InputThread.class + args);
@@ -241,13 +241,12 @@ class ConsoleProcess
 		//{{{ run() method
 		public void run()
 		{
-
 			try
 			{
+				BufferedWriter out = new BufferedWriter(
+					new OutputStreamWriter(outputStream));
 				if(input != null)
 				{
-					BufferedWriter out = new BufferedWriter(
-						new OutputStreamWriter(outputStream));
 					for(int i = 0; i < input.length(); i++)
 					{
 						char ch = input.charAt(i);
