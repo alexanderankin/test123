@@ -73,34 +73,42 @@ implements EBComponent, Output
 		panel.add(BorderLayout.CENTER,box);
 
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
-		buttonBox.add(run = new JButton(RUN));
+		buttonBox.add(run = new RolloverButton(RUN));
 		run.setToolTipText(jEdit.getProperty("console.run"));
 		Insets margin = new Insets(0,0,0,0);
 		run.setMargin(margin);
 		run.addActionListener(actionHandler);
 		run.setRequestFocusEnabled(false);
 
-		buttonBox.add(toBuffer = new JButton(TO_BUFFER));
+		buttonBox.add(toBuffer = new RolloverButton(TO_BUFFER));
 		toBuffer.setToolTipText(jEdit.getProperty("console.to-buffer"));
 		toBuffer.setMargin(margin);
 		toBuffer.addActionListener(actionHandler);
 		toBuffer.setRequestFocusEnabled(false);
 
-		buttonBox.add(stop = new JButton(STOP));
+		buttonBox.add(stop = new RolloverButton(STOP));
 		stop.setToolTipText(jEdit.getProperty("console.stop"));
 		stop.setMargin(margin);
 		stop.addActionListener(actionHandler);
 		stop.setRequestFocusEnabled(false);
 
-		buttonBox.add(clear = new JButton(CLEAR));
+		buttonBox.add(clear = new RolloverButton(CLEAR));
 		clear.setToolTipText(jEdit.getProperty("console.clear"));
 		clear.setMargin(margin);
 		clear.addActionListener(actionHandler);
 		clear.setRequestFocusEnabled(false);
 
-		animation = new JLabel(NO_ANIMATION);
-		animation.setBorder(new EmptyBorder(1,3,1,1));
-		buttonBox.add(animation);
+		animationLabel = new JLabel();
+		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
+		Toolkit toolkit = getToolkit();
+		animation = new AnimatedIcon(new Image[] {
+			toolkit.getImage(Console.class.getResource("/console/Active1.png")),
+			toolkit.getImage(Console.class.getResource("/console/Active2.png")),
+			toolkit.getImage(Console.class.getResource("/console/Active3.png")),
+			toolkit.getImage(Console.class.getResource("/console/Active4.png"))
+		},10,animationLabel);
+		animationLabel.setIcon(animation);
+		buttonBox.add(animationLabel);
 
 		panel.add(BorderLayout.EAST,buttonBox);
 
@@ -142,6 +150,8 @@ implements EBComponent, Output
 
 		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
+
+		animation.stop();
 	} //}}}
 
 	//{{{ getView() method
@@ -204,7 +214,7 @@ implements EBComponent, Output
 	 */
 	public void run(Shell shell, Output output, String cmd)
 	{
-		animation.setIcon(ANIMATION);
+		animation.start();
 
 		Macros.Recorder recorder = view.getMacroRecorder();
 		if(recorder != null)
@@ -339,7 +349,7 @@ implements EBComponent, Output
 		{
 			public void run()
 			{
-				animation.setIcon(NO_ANIMATION);
+				animation.stop();
 			}
 		});
 	} //}}}
@@ -347,18 +357,10 @@ implements EBComponent, Output
 	//{{{ Private members
 
 	//{{{ Icons
-	private static final ImageIcon RUN = new ImageIcon(
-		Console.class.getResource("/console/Play16.gif"));
-	private static final ImageIcon TO_BUFFER = new ImageIcon(
-		Console.class.getResource("/console/Edit16.gif"));
-	private static final ImageIcon STOP = new ImageIcon(
-		Console.class.getResource("/console/Stop16.gif"));
-	private static final ImageIcon CLEAR = new ImageIcon(
-		Console.class.getResource("/console/New16.gif"));
-	private static final ImageIcon ANIMATION = new ImageIcon(
-		Console.class.getResource("/console/fish_anim.gif"));
-	private static final ImageIcon NO_ANIMATION = new ImageIcon(
-		Console.class.getResource("/console/fish.gif"));
+	private static final Icon RUN = GUIUtilities.loadIcon("Run.png");
+	private static final Icon TO_BUFFER = GUIUtilities.loadIcon("RunToBuffer.png");
+	private static final Icon STOP = GUIUtilities.loadIcon("Cancel.png");
+	private static final Icon CLEAR = GUIUtilities.loadIcon("Clear.png");
 	//}}}
 
 	//{{{ Instance variables
@@ -366,8 +368,9 @@ implements EBComponent, Output
 	private JComboBox shellCombo;
 	private Shell shell;
 	private ConsoleTextField command;
-	private JButton run, toBuffer, stop, clear;
-	private JLabel animation;
+	private RolloverButton run, toBuffer, stop, clear;
+	private JLabel animationLabel;
+	private AnimatedIcon animation;
 
 	private JTextPane output;
 	private SimpleAttributeSet style;

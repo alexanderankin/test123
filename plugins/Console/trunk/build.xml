@@ -74,7 +74,7 @@
 				<include name="dockables.xml"/>
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
-				<include name="**/*.gif"/>
+				<include name="**/*.png"/>
 				<include name="console/commando/*.xml"/>
 				<include name="console/commando/*.dtd"/>
 				<include name="console/console.bsh"/>
