@@ -126,6 +126,12 @@ public final class Project extends AbstractProject {
     final long start = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, "Saving the project");
     BufferedOutputStream outStream = null;
+    File directory = classFile.getParentFile();
+    if (!directory.exists()) {
+      // todo : do better
+      directory.mkdirs();
+    }
+
     try {
       outStream = new BufferedOutputStream(new FileOutputStream(file));
       properties.store(outStream, "");
