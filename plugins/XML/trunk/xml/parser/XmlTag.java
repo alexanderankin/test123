@@ -80,8 +80,14 @@ public class XmlTag extends Asset
 			: XmlListCellRenderer.ELEMENT_ICON);
 	} //}}}
 
-	//{{{ getAttributeString() method
-	public String getAttributeString()
+	//{{{ getLongString() method
+	public String getLongString()
+	{
+		return attributeString;
+	} //}}}
+
+	//{{{ getShortString() method
+	public String getShortString()
 	{
 		int showAttributes = 1; // XXX
 		switch(showAttributes)
