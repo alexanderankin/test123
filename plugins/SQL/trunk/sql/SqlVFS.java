@@ -288,28 +288,6 @@ public class SqlVFS extends VFS
   /**
    *  Description of the Method
    *
-   * @param  view    Description of Parameter
-   * @param  buffer  Description of Parameter
-   * @param  path    Description of Parameter
-   * @return         Description of the Returned Value
-   * @since
-   */
-  public boolean load( final View view, final Buffer buffer, final String path )
-  {
-    if ( !super.load( view, buffer, path ) )
-      return false;
-
-    final SqlServerRecord rec = getServerRecord( SqlUtils.getProject( view ), path );
-    if ( rec != null )
-      return rec.getServerType().getSubVFS().afterLoad( this, view, buffer, path, getPathLevel( path ) );
-
-    return true;
-  }
-
-
-  /**
-   *  Description of the Method
-   *
    * @param  session          Description of Parameter
    * @param  path             Description of Parameter
    * @param  ignoreErrors     Description of Parameter
@@ -513,14 +491,23 @@ public class SqlVFS extends VFS
       if ( !( vfs instanceof SqlVFS ) )
         return;
 
-      final SqlServerRecord rec = getServerRecord( SqlUtils.getProject( umsg.getView() ), buffer.getPath() );
-      if ( rec != null )
-        SqlPlugin.setBufferMode( buffer,
-            rec.getServerType().getEditModeName() );
+      final String path = buffer.getPath();
+      final SqlServerRecord rec = getServerRecord( SqlUtils.getProject( umsg.getView() ), path );
+      if ( rec == null )
+      {
+        System.err.println( "No server record for: " + path + "?" );
+        return;
+      }
+
+      final SqlServerType serverType = rec.getServerType();
+      SqlPlugin.setBufferMode( buffer,
+          serverType.getEditModeName() );
 
       View view = umsg.getView();
       if ( view == null )
         view = jEdit.getLastView();
+
+      serverType.getSubVFS().afterLoad( view, buffer, path, getPathLevel( path ) );
 
       if ( buffer.getBooleanProperty( RUN_ON_LOAD_PROPERTY ) &&
           view != null )
