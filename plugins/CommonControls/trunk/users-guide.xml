@@ -69,6 +69,12 @@
           <ulink url="#JMouseComboBox">JMouseComboBox</ulink>
         </para>
       </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#PathBuilder">PathBuilder</ulink>
+        </para>
+      </listitem>
     </itemizedlist>
   </chapter>
 
@@ -190,12 +196,40 @@
       <para>This class was created as a fix/workaround for Swing
       bug #4144505.</para>
     </sect1>
+
+    <sect1 id="PathBuilder">
+      <title>PathBuilder</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>David</firstname>
+
+            <surname>Taylor</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>Nice panel for composing some path ($PATH or $CLASSPATH).</para>
+    </sect1>
   </chapter>
 
   <appendix id="changelog">
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.2</title>
+
+          <para />
+        </formalpara>
+
+        <para><ulink url="#PathBuilder">PathBuilder</ulink> package added</para>
+      </listitem>
+
       <listitem>
         <formalpara>
           <title>Version 0.1</title>
