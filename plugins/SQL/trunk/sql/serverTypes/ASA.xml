@@ -7,7 +7,7 @@
 <!--The name of the JDBC driver -->
   <driverClass>com.sybase.jdbc2.jdbc.SybDriver</driverClass>
 
-  <defStatementDelimiterRegex>^go$</defStatementDelimiterRegex>
+  <defStatementDelimiterRegex>^(?i)go$</defStatementDelimiterRegex>
 
   <connection>
 
