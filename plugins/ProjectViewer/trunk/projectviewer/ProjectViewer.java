@@ -19,6 +19,7 @@
 package projectviewer;
 
 //{{{ Imports
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -824,32 +825,39 @@ public final class ProjectViewer extends JPanel
 			if (bu.getView() != null && bu.getView() != view) return;
 
 			VPTProject p = (VPTProject) treeRoot;
+
 			VPTNode f = p.getFile(bu.getBuffer().getPath());
+			File file = (f == null) ? new File(bu.getBuffer().getPath()) : null;
+			boolean ask = (f == null &&
+							config.getAskImport() != ProjectViewerConfig.ASK_NEVER &&
+							bu.getWhat() == BufferUpdate.SAVED &&
+							(dontAsk == null ||
+								config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
+								!dontAsk.contains(bu.getBuffer().getPath())) &&
+							file.getParent().length() != p.getRootPath().length() &&
+							file.getParent().startsWith(p.getRootPath()));
 
 			// Try to import newly created files to the project
-			if(bu.getWhat() == BufferUpdate.SAVED && f == null &&
-				config.getAskImport() != ProjectViewerConfig.ASK_NEVER) {
-				if (dontAsk == null || config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
-						!dontAsk.contains(bu.getBuffer().getPath())) {
-					int res = JOptionPane.showConfirmDialog(view,
-							jEdit.getProperty("projectviewer.import_new",
-								new Object[] { bu.getBuffer().getName(), p.getName() }),
-							jEdit.getProperty("projectviewer.import_new.title"),
-							JOptionPane.YES_NO_OPTION);
+			if (ask) {
+				int res = JOptionPane.showConfirmDialog(view,
+						jEdit.getProperty("projectviewer.import_new",
+							new Object[] { bu.getBuffer().getName(), p.getName() }),
+						jEdit.getProperty("projectviewer.import_new.title"),
+						JOptionPane.YES_NO_OPTION);
 
-					if(res == JOptionPane.YES_OPTION) {
-						new NewFileImporter(p, this, bu.getBuffer().getPath()).doImport();
-					} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE){
-						if (dontAsk == null) {
-							dontAsk = new HashSet();
-						}
-						dontAsk.add(bu.getBuffer().getPath());
+				if(res == JOptionPane.YES_OPTION) {
+					new NewFileImporter(p, this, bu.getBuffer().getPath()).doImport();
+				} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE){
+					if (dontAsk == null) {
+						dontAsk = new HashSet();
 					}
+					dontAsk.add(bu.getBuffer().getPath());
 				}
+			}
 
 			// Notifies trees when a buffer is closed (so it should not be
 			// underlined anymore) or opened (should underline it).
-			} else if (f != null) {
+			if (f != null) {
 				if (bu.getWhat() == BufferUpdate.CLOSED) {
 					if (folderTree != null) {
 						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
