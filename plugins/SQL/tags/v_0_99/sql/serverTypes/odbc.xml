@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="ODBC">
+	<driverClass>sun.jdbc.odbc.JdbcOdbcDriver</driverClass>
+
+	<connection>
+		<parameter name="dsn" default="dsn" description="DSN to connect to"/>
+		<parameter name="user" default="user" description="User to connect as"/>
+		<parameter name="password" default="password" description="Password"/>
+		<string>jdbc:odbc:{dsn}</string>
+	</connection>
+
+	<statements>
+	</statements>
+
+</serverType>
