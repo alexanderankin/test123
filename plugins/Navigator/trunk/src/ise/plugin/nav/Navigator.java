@@ -34,7 +34,7 @@ public class Navigator extends JPanel implements Navable {
       // create a Nav and make sure the plugin knows about it
       nav = new Nav( this );
       NavigatorPlugin.addNavigator( view, this );
-      add(nav);
+      add( nav );
 
       // add a mouse listener to the view. Each mouse click on a text area in
       // the view is stored for the Nav.
@@ -46,7 +46,7 @@ public class Navigator extends JPanel implements Navable {
                nav.update( new NavPosition( b, cp ) );
             }
          }
-             );
+      );
       nav.update( new NavPosition( view.getTextArea().getBuffer(), view.getTextArea().getCaretPosition() ) );
 
    }
@@ -57,7 +57,7 @@ public class Navigator extends JPanel implements Navable {
     * @param o  The new NavPosition value
     */
    public void setPosition( Object o ) {
-      NavPosition np = ( NavPosition )o;
+      NavPosition np = ( NavPosition ) o;
       Buffer buffer = np.buffer;
       int caret = np.caret;
       if ( !buffer.equals( view.getTextArea().getBuffer() ) ) {
@@ -98,5 +98,6 @@ public class Navigator extends JPanel implements Navable {
    public void goForward() {
       nav.goForward();
    }
+   
 }
 

@@ -84,9 +84,11 @@
             depends="init,compile,prep_files">
         <echo>creating plugin</echo>
         
+        <!--
         <delete>
             <fileset dir="${install.dir}" includes="**/${jar.name}"/>
-        </delete>
+        </delete> 
+        -->
         
         <!-- make the plugin jar file -->
         <tstamp/>
