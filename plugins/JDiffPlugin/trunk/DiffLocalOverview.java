@@ -24,6 +24,7 @@ import java.awt.Rectangle;
 
 import jdiff.util.Diff;
 
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
@@ -43,9 +44,12 @@ public class DiffLocalOverview extends DiffOverview
 
 
     public void paint(Graphics gfx) {
-        int line0  = this.textArea0.getFirstLine();
+        Buffer buffer0 = this.textArea0.getBuffer();
+        Buffer buffer1 = this.textArea1.getBuffer();
+
+        int virtualLine0  = this.textArea0.getFirstLine();
+        int virtualLine1  = this.textArea1.getFirstLine();
         int count0 = this.textArea0.getVisibleLines();
-        int line1  = this.textArea1.getFirstLine();
         int count1 = this.textArea1.getVisibleLines();
 
         Rectangle size = getBounds();
@@ -58,121 +62,137 @@ public class DiffLocalOverview extends DiffOverview
         int lines = Math.max(count0, count1);
         int pxlPerLine = this.textArea0.getPainter().getFontMetrics().getHeight();
 
-        Rectangle left = new Rectangle(
+        Rectangle rect0 = new Rectangle(
             inner.x,
             inner.y,
             inner.width / 3,
             Math.max(1, pxlPerLine * count0)
         );
-        Rectangle leftBorder = new Rectangle(left);
-        Rectangle right = new Rectangle(
-            inner.x + (inner.width - left.width),
+        Rectangle border0 = new Rectangle(rect0);
+
+        Rectangle rect1 = new Rectangle(
+            inner.x + (inner.width - (inner.width / 3)),
             inner.y,
-            left.width,
+            inner.width / 3,
             Math.max(1, pxlPerLine * count1)
         );
-        Rectangle rightBorder = new Rectangle(right);
+        Rectangle border1 = new Rectangle(rect1);
 
         gfx.setColor(Color.white);
-        gfx.fillRect(left.x, left.y, left.width, left.height);
-        gfx.fillRect(right.x, right.y, right.width, right.height);
+        gfx.fillRect(rect0.x, rect0.y, rect0.width, rect0.height);
+        gfx.fillRect(rect1.x, rect1.y, rect1.width, rect1.height);
 
         Color color;
 
         Diff.change hunk = this.edits;
-        for (; hunk != null; hunk = hunk.link) {
-            if ((hunk.line0 + hunk.deleted - 1) < line0) {
-                continue;
-            }
+        for (int i0 = 0; i0 < count0; i0++) {
+            int physicalLine0 = buffer0.virtualToPhysical(virtualLine0 + i0);
 
-            if (hunk.line0 >= (line0 + count0)) {
+            for (; hunk != null; hunk = hunk.link) {
+                if ((hunk.line0 + Math.max(0, hunk.deleted - 1)) < physicalLine0) {
+                    continue;
+                }
+
+                if (hunk.line0 > physicalLine0) {
+                    break;
+                }
+
+                if (hunk.deleted == 0) {
+                    color = JDiffPlugin.invalidHunkColor;
+                    rect0.height = 1;
+                } else {
+                    if (hunk.inserted == 0) {
+                        color = JDiffPlugin.deletedHunkColor;
+                    } else {
+                        color = JDiffPlugin.changedHunkColor;
+                    }
+
+                    rect0.height = Math.max(1, pxlPerLine);
+                }
+
+                rect0.y = inner.y + (i0 * pxlPerLine);
+                gfx.setColor(color);
+                gfx.fillRect(rect0.x, rect0.y, rect0.width, rect0.height);
+
                 break;
             }
-
-            if (hunk.deleted == 0) {
-                color = JDiffPlugin.invalidHunkColor;
-            } else if (hunk.inserted == 0) {
-                color = JDiffPlugin.deletedHunkColor;
-            } else {
-                color = JDiffPlugin.changedHunkColor;
-            }
-
-            int leftOffset = Math.max(0, hunk.line0 - line0);
-            int leftCount  = Math.min(
-                hunk.deleted - Math.max(0, line0 - hunk.line0),
-                count0       - Math.max(0, hunk.line0 - line0) // leftOffset
-            );
-            left.y  = inner.y + (leftOffset * pxlPerLine);
-            left.height  = Math.max(1, leftCount * pxlPerLine);
-            gfx.setColor(color);
-            gfx.fillRect(left.x, left.y, left.width, left.height);
         }
 
         hunk = this.edits;
-        for (; hunk != null; hunk = hunk.link) {
-            if ((hunk.line1 + hunk.inserted - 1) < line1) {
-                continue;
-            }
+        for (int i1 = 0; i1 < count1; i1++) {
+            int physicalLine1 = buffer1.virtualToPhysical(virtualLine1 + i1);
 
-            if (hunk.line1 >= (line1 + count1)) {
+            for (; hunk != null; hunk = hunk.link) {
+                if ((hunk.line1 + Math.max(0, hunk.inserted - 1)) < physicalLine1) {
+                    continue;
+                }
+
+                if (hunk.line1 > physicalLine1) {
+                    break;
+                }
+
+                if (hunk.inserted == 0) {
+                    color = JDiffPlugin.invalidHunkColor;
+                    rect1.height = 1;
+                } else {
+                    if (hunk.deleted == 0) {
+                        color = JDiffPlugin.insertedHunkColor;
+                    } else {
+                        color = JDiffPlugin.changedHunkColor;
+                    }
+
+                    rect1.height = Math.max(1, pxlPerLine);
+                }
+
+                rect1.y = inner.y + (i1 * pxlPerLine);
+                gfx.setColor(color);
+                gfx.fillRect(rect1.x, rect1.y, rect1.width, rect1.height);
+
                 break;
             }
-
-            if (hunk.inserted == 0) {
-                color = JDiffPlugin.invalidHunkColor;
-            } else if (hunk.deleted == 0) {
-                color = JDiffPlugin.insertedHunkColor;
-            } else {
-                color = JDiffPlugin.changedHunkColor;
-            }
-
-            int rightOffset = Math.max(0, hunk.line1 - line1);
-            int rightCount  = Math.min(
-                hunk.inserted - Math.max(0, line1 - hunk.line1),
-                count1        - Math.max(0, hunk.line1 - line1) // rightOffset
-            );
-            right.y  = inner.y + (rightOffset * pxlPerLine);
-            right.height  = Math.max(1, rightCount * pxlPerLine);
-            gfx.setColor(color);
-            gfx.fillRect(right.x, right.y, right.width, right.height);
         }
 
         hunk = this.edits;
-        for (; hunk != null; hunk = hunk.link) {
-            if (hunk.line0 < line0) {
-                continue;
-            }
+        for (int i0 = 0, i1 = 0; (hunk != null) && (i0 < count0) && (i1 < count1); ) {
+            int physicalLine0 = buffer0.virtualToPhysical(virtualLine0 + i0);
+            int physicalLine1 = buffer1.virtualToPhysical(virtualLine1 + i1);
 
-            if (hunk.line1 < line1) {
-                continue;
-            }
+            for (; hunk != null; hunk = hunk.link) {
+                if (hunk.line0 < physicalLine0) {
+                    continue;
+                }
 
-            if ((hunk.line0 + hunk.deleted - 1) < line0) {
-                continue;
-            }
+                if (hunk.line1 < physicalLine1) {
+                    continue;
+                }
 
-            if ((hunk.line1 + hunk.inserted - 1) < line1) {
-                continue;
-            }
+                if ((hunk.line0 + hunk.deleted) < physicalLine0) {
+                    continue;
+                }
 
-            if (hunk.line0 >= (line0 + count0)) {
-                break;
-            }
+                if ((hunk.line1 + hunk.inserted) < physicalLine1) {
+                    continue;
+                }
 
-            if (hunk.line1 >= (line1 + count1)) {
-                break;
-            }
+                if (hunk.line0 > physicalLine0) {
+                    i0++;
+                    break;
+                }
 
-            int leftOffset = hunk.line0 - line0;
-            int rightOffset = hunk.line1 - line1;
-            int y0 = inner.y + (leftOffset * pxlPerLine);
-            int y1 = inner.y + (rightOffset * pxlPerLine);
-            gfx.setColor(Color.black);
-            gfx.drawLine(left.x + left.width + 1, y0, right.x - 1, y1);
+                if (hunk.line1 > physicalLine1) {
+                    i1++;
+                    break;
+                }
+
+                int y0 = inner.y + (i0 * pxlPerLine);
+                int y1 = inner.y + (i1 * pxlPerLine);
+                gfx.setColor(Color.black);
+                gfx.drawLine(rect0.x + rect0.width + 1, y0, rect1.x - 1, y1);
+            }
         }
 
         gfx.setColor(Color.black);
-        gfx.drawRect(leftBorder.x - 1, leftBorder.y, leftBorder.width + 1, leftBorder.height - 1);
-        gfx.drawRect(rightBorder.x - 1, rightBorder.y, rightBorder.width + 1, rightBorder.height - 1);
+        gfx.drawRect(border0.x - 1, border0.y, border0.width + 1, border0.height - 1);
+        gfx.drawRect(border1.x - 1, border1.y, border1.width + 1, border1.height - 1);
     }
 }
