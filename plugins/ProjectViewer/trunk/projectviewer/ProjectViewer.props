@@ -10,8 +10,8 @@ plugin.projectviewer.ProjectPlugin.activate=defer
 plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.02.04.00
 plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.3
 
-plugin.projectviewer.ProjectPlugin.supports.0=ErrorList 1.3.1
-plugin.projectviewer.ProjectPlugin.supports.1=InfoViewer 1.2
+plugin.projectviewer.ProjectPlugin.support.0=ErrorList 1.3.1
+plugin.projectviewer.ProjectPlugin.support.1=InfoViewer 1.2
 # looks like we have just copied the file from original JarMaker (see persist/ProjectZipper.java)
 #plugin.projectviewer.ProjectPlugin.supports.2=JarMaker 0.4
 #}}}
