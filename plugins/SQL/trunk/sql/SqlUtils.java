@@ -358,6 +358,12 @@ public class SqlUtils
       sqlText = buffer.getText( startPos, length );
 
       Log.log( Log.DEBUG, SqlUtils.class,
+          "Raw text is : [" + sqlText + "]" );
+
+//!!      sqlText =
+//!!        (String)org.gjt.sp.jedit.BeanShell.eval( view, sqlText, false );
+      
+      Log.log( Log.DEBUG, SqlUtils.class,
           "Trying to run SQL: [" + sqlText + "]" );
 
       final SqlParser parser = new SqlParser( sqlText, 0 );
@@ -372,6 +378,30 @@ public class SqlUtils
         System.err.println( ex );
       }
 
+      try
+      {
+        sqlText = parser.substituteVariable ( sqlText, 
+          new SqlParser.SubstitutionHandler()
+          {
+            public String substituteFragment( String text, int pos, int length )
+            {
+              final String value = JOptionPane.showInputDialog ( view,
+                                                         text.substring ( 0,
+                                                                          pos ) );
+              if ( value == null ) return text;
+               return text.substring( 0, pos ) +
+                      value +
+                      text.substring( pos + length );
+            }
+          } );
+      }
+      catch (SqlParser.SqlEotException ex)
+      {
+        System.err.println (ex);
+      }
+
+      Log.log ( Log.DEBUG, SqlUtils.class, "After the variable substitution: [" + sqlText + "]");
+    
       final boolean bresult = stmt.execute( sqlText );
 
       if ( bresult )
