@@ -31,7 +31,6 @@ import java.util.Collections;
 
 import javax.swing.Icon;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
 //}}}
 
@@ -52,22 +51,22 @@ public class VPTProject extends VPTNode {
 	private final static Icon projectIcon 	= GUIUtilities.loadIcon("DriveSmall.png");
 
 	//}}}
-	
+
 	//{{{ Attributes
-	
+
 	private ArrayList	listeners;
 	private ArrayList	openFiles;
 	private String		rootPath;
 	private String		url;
 	private File		buildFile;
 	private Properties	properties;
-	
+
 	protected HashMap		files;
-	
+
 	//}}}
-	
-	//{{{ Constructors 
-	
+
+	//{{{ Constructors
+
 	public VPTProject(String name) {
 		super(VPTNode.PROJECT, name);
 		files 		= new HashMap();
@@ -75,12 +74,12 @@ public class VPTProject extends VPTNode {
 		openFiles	= new ArrayList();
 		properties	= new Properties();
 	}
-	
+
 	//}}}
-	
+
 	//{{{ Public methods
-	
-	//{{{ getFile() method 
+
+	//{{{ getFile() method
 	/**
 	 *	Returns a VPTFile included in this project that references the given
 	 *	path.
@@ -98,32 +97,32 @@ public class VPTProject extends VPTNode {
 		return Collections.unmodifiableCollection(files.values());
 	}
 	//}}}
-	
+
 	//{{{ getBuildFile() method
 	/** Returns the project's build file for Ant. */
 	public File getBuildFile() {
 		return buildFile;
 	} //}}}
-	
+
 	//{{{ getURL() method
 	/** Returns the project's URL. */
 	public String getURL() {
 		return url;
 	} //}}}
-	
+
 	//{{{ setURL(String) method
 	/** Sets the project's URL. */
 	public void setURL(String url) {
 		if (url != null && !url.endsWith("/")) url += "/";
 		this.url = url;
 	} //}}}
-	
+
 	//{{{ getProperty(String) method
 	/** Returns the property set for the project. */
 	public String getProperty(String property) {
 		return properties.getProperty(property);
 	} //}}}
-	
+
 	//{{{ setProperty(String, String) method
 	/**
 	 *	Sets a property.
@@ -135,19 +134,25 @@ public class VPTProject extends VPTNode {
 		properties.setProperty(name, value);
 		return old;
 	} //}}}
-	
+
 	//{{{ getPropertyNames() method
 	/**	Returns a set containing all property names for this project. */
 	public Set getPropertyNames() {
 		return properties.keySet();
 	} //}}}
-	
+
+	//{{{ removeProperty(String) method
+	/** Removes the given property from the project. */
+	public Object removeProperty(String property) {
+		return properties.remove(property);
+	} //}}}
+
 	//{{{ getProperties() method.
 	/** Return the project's property set. */
 	public Properties getProperties() {
 		return properties;
 	} //}}}
-	
+
 	//{{{ getOpenFiles() method
 	/**
 	 *	Returns an iterator to the list of open files that this project
@@ -156,7 +161,7 @@ public class VPTProject extends VPTNode {
 	public Iterator getOpenFiles() {
 		return openFiles.iterator();
 	} //}}}
-	
+
 	//{{{ addOpenFile(String) method
 	/**
 	 *	Adds a file to the list of the project's opened files.
@@ -164,13 +169,13 @@ public class VPTProject extends VPTNode {
 	public void addOpenFile(String path) {
 		openFiles.add(path);
 	} //}}}
-	
+
 	//{{{ clearOpenFiles() method
 	/** Clears the list of open files. */
 	public void clearOpenFiles() {
 		openFiles.clear();
 	} //}}}
-	
+
 	//{{{ isProjectFile(String) method
 	/**
 	 *	Returns whether the file denoted by the given path is part of this
@@ -179,7 +184,7 @@ public class VPTProject extends VPTNode {
 	public boolean isProjectFile(String path) {
 		return files.containsKey(path);
 	} //}}}
-	
+
 	//{{{ getIcon(boolean) method
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
@@ -195,19 +200,19 @@ public class VPTProject extends VPTNode {
 	public String toString() {
 		return "Project [" + getName() + "]";
 	} //}}}
-	
+
 	//{{{ getRootPath() method
 	/** Returns the path to the root of the project. */
 	public String getRootPath() {
 		return rootPath;
 	} //}}}
-	
+
 	//{{{ setRootPath(String) method
 	/** Sets the path to the root of the project. */
 	public void setRootPath(String path) {
 		rootPath = path;
 	} //}}}
-	
+
 	//{{{ registerFile(VPTFile) method
 	/**
 	 *	Register a file in the project, adding it to the list of files that
@@ -225,7 +230,7 @@ public class VPTProject extends VPTNode {
 		files.remove(file.getFile().getAbsolutePath());
 	}
 	//}}}
-	
+
 	//{{{ getNodePath()
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
