@@ -54,7 +54,6 @@ public class SideKickPlugin extends EBPlugin
 			View view = views[i];
 			sidekicks.put(view,new SideKick(view));
 		}
-		updateKeyBindings();
 		SideKickActions.propertiesChanged();
 	} //}}}
 
@@ -69,8 +68,6 @@ public class SideKickPlugin extends EBPlugin
 			sidekick.dispose();
 			sidekicks.remove(view);
 		}
-		updateKeyBindings();
-		SideKickActions.propertiesChanged();
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -91,19 +88,24 @@ public class SideKickPlugin extends EBPlugin
 			}
 		}
 		else if(msg instanceof PropertiesChanged)
-		{
-			updateKeyBindings();
 			SideKickActions.propertiesChanged();
-		}
 	} //}}}
 
 	//{{{ registerParser() method
+	/**
+	 * @deprecated Write a <code>services.xml</code> file instead.
+	 * @see SideKickParser
+	 */
 	public static void registerParser(SideKickParser parser)
 	{
 		parsers.put(parser.getName(),parser);
 	} //}}}
 
 	//{{{ unregisterParser() method
+	/**
+	 * @deprecated Write a <code>services.xml</code> file instead.
+	 * @see SideKickParser
+	 */
 	public static void unregisterParser(SideKickParser parser)
 	{
 		parsers.remove(parser.getName());
@@ -112,7 +114,12 @@ public class SideKickPlugin extends EBPlugin
 	//{{{ getParser() method
 	public static SideKickParser getParser(String name)
 	{
-		return (SideKickParser)parsers.get(name);
+		SideKickParser parser = (SideKickParser)ServiceManager
+			.getService(SideKickParser.SERVICE,name);
+		if(parser != null)
+			return parser;
+		else
+			return (SideKickParser)parsers.get(name);
 	} //}}}
 
 	//{{{ getParserForBuffer() method
@@ -122,7 +129,7 @@ public class SideKickPlugin extends EBPlugin
 		if(parserName == null)
 			return null;
 		else
-			return (SideKickParser)parsers.get(parserName);
+			return getParser(parserName);
 	} //}}}
 
 	//{{{ parse() method
@@ -171,39 +178,5 @@ public class SideKickPlugin extends EBPlugin
 	private static HashMap parsers = new HashMap();
 	private static WorkThreadPool worker;
 	private static HashSet parsedBufferSet = new HashSet();
-
-	private void updateKeyBindings()
-	{
-		InputHandler ih = jEdit.getInputHandler();
-
-		Iterator iter = parsers.values().iterator();
-		while(iter.hasNext())
-		{
-			SideKickParser parser = (SideKickParser)iter.next();
-			if(!parser.supportsCompletion())
-				continue;
-
-			String delayPopupTriggerKeys = parser.getDelayCompletionTriggers();
-			if(delayPopupTriggerKeys != null)
-			{
-				for(int i = 0; i < delayPopupTriggerKeys.length(); i++)
-				{
-					char ch = delayPopupTriggerKeys.charAt(i);
-					ih.addKeyBinding(String.valueOf(ch),
-						new SideKickActions.CompleteAction(ch));
-				}
-			}
-
-			String instantPopupTriggerKeys = parser.getInstantCompletionTriggers();
-			if(instantPopupTriggerKeys != null)
-			{
-				for(int i = 0; i < instantPopupTriggerKeys.length(); i++)
-				{
-					char ch = instantPopupTriggerKeys.charAt(i);
-					ih.addKeyBinding(String.valueOf(ch),
-						new SideKickActions.CompleteAction(ch));
-				}
-			}
-		}
-	} //}}}
+	//}}}
 }

@@ -69,8 +69,6 @@ sidekick-tree.not-parsed=Not parsed
 
 # Status bar
 sidekick.parsing-complete={0} parsing complete, {1} error(s)
-sidekick.parsing-complete-errors={0} parsing complete, more than {1} errors; \
-	only first {1} shown
 
 # Popup
 sidekick-complete.none=No completions
