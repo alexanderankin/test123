@@ -22,6 +22,11 @@ package jimporter.sorting;
 import java.util.Comparator;
 import jimporter.ImportItem;
 
+/**
+ * Defines an object ordering class that doesn't care if a string value is upper
+ * or lower case when sorting.  This method is only designed to compare
+ * <code>ImportItem</code> classes.
+ */
 public class CaseInsensitiveComparator implements Comparator {
     public int compare(Object o1, Object o2) {
         if (!((o1 instanceof ImportItem) && (o2 instanceof ImportItem))) {

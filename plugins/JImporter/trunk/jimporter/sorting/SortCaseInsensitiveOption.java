@@ -21,11 +21,20 @@ package jimporter.sorting;
 import jimporter.options.JImporterBooleanOption;
 import javax.swing.JCheckBox;
 
+/**
+ * This JImporter option indicates whether sorting is case insensitive for 
+ * import statements.
+ *
+ * @author Matthew Flower
+ */
 public class SortCaseInsensitiveOption extends JImporterBooleanOption {
     private static String LABEL_PROPERTY = "options.jimporter.sorting.caseinsensitive.label";
     private static String VALUE_PROPERTY = "jimporter.sorting.caseinsensitive";
     private static boolean DEFAULT_VALUE = false;
     
+    /**
+     * Standard constructor.
+     */
     public SortCaseInsensitiveOption() {
         super(LABEL_PROPERTY, VALUE_PROPERTY, DEFAULT_VALUE);
     }
