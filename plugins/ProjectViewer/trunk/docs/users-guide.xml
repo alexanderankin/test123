@@ -110,7 +110,10 @@
 			or middle-clicking on an open file will close it. Using the right mouse
 			button, you'll be given options related to the current selection on the tree,
 			allowing you to remove files or directories from a project, deleting them from the
-			disk, or rename them, among many other options.
+			disk, or rename them, among many other options. You can also drag a file
+			from the trees and drop it somewhere else; for example, if the DragAndDrop
+			plugin is installed, you can open a file by dragging it into jEdit's
+			text area.
 		</para>
 
 		<para>
@@ -220,10 +223,22 @@
 			</listitem>
 			<listitem>
 				<para>
+					Add files from VFS: lets you select files from a jEdit VFS
+					(Virtual File System), such as FTP. If you choose local files,
+					ProjectViewer will add standard files instead of VFS files.
+					The functionality of VFS files in ProjectViewer is rather
+					limited when compared to standard files.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
 					Re-import files: shown for project nodes. This command will remove
 					all files and directories below the project root, and re-read the
 					file structure from disk according to the selected filter (which can
-					be chosen from the dialog that pops up).
+					be chosen from the dialog that pops up). It will also analyze
+					directories not under the project root: it will re-import
+					existing directories and remove stale files from "virtual"
+					directories.
 				</para>
 			</listitem>
 			<listitem>
@@ -325,13 +340,6 @@
 					Delete non-existant files from list: if selected, each file in the
 					project is verified to exist when the project loads. If the file does
 					not exist, it is removed from the project.
-				</para>
-			</listitem>
-			<listitem>
-				<para>
-					Save project data on change: if selected, any change to a project
-					(including or removing a project, for example) will cause the data
-					to be saved on disk.
 				</para>
 			</listitem>
 			<listitem>
