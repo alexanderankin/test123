@@ -1,6 +1,7 @@
 /*
  * InfoViewer.java - Info viewer for HTML, txt
- * Copyright (C) 1999 Slava Pestov
+ * Copyright (C) 2000 Dirk Moebius
+ * Based on HTMLViewer.java Copyright (C) 1999 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,8 +45,10 @@ public class InfoViewer extends JFrame
         implements HyperlinkListener, PropertyChangeListener {
 
     // greet string
-    private final static String GREET = props("infoviewer.title") + " v" +
-                                  props("plugin.InfoViewerPlugin.version");
+    private final static String GREET 
+        = props("infoviewer.greetstring",
+                new Object[] { props("infoviewer.title"),
+                               props("plugin.InfoViewerPlugin.version") });
                    
     // status numbers for showStatus()
     private final static int OPENING = 1; 
@@ -237,7 +240,11 @@ public class InfoViewer extends JFrame
         mi.setAccelerator((KeyStroke) a.getValue(InfoViewerAction.ACCELERATOR));
     } 
 
-    
+
+    /**
+     * update the bookmarks menu according to the bookmarks stored
+     * in the properties.
+     */
     public void updateBookmarksMenu() {
         mBmarks.removeAll();
         addMenuItem(mBmarks, aBookmarksAdd);
@@ -277,15 +284,15 @@ public class InfoViewer extends JFrame
     
     private JToolBar createToolbar() {
         Dimension space = new Dimension(10,10);
-        JToolBar tb = new JToolBar(JToolBar.HORIZONTAL);
-        tb.add(aOpenFile).setText(null);
-        tb.add(aEditURL).setText(null);
+        EnhancedJToolBar tb = new EnhancedJToolBar(JToolBar.HORIZONTAL);
+        tb.add(aOpenFile);
+        tb.add(aEditURL);
         tb.add(Box.createRigidArea(space));
-        tb.add(aBack).setText(null);
-        tb.add(aForward).setText(null);
+        tb.add(aBack);
+        tb.add(aForward);
         tb.add(Box.createRigidArea(space));
-        tb.add(aReload).setText(null);
-        tb.add(aHome).setText(null);
+        tb.add(aReload);
+        tb.add(aHome);
         tb.add(Box.createGlue());
         bStartStop = new JButton(anim_icon);
         bStartStop.setDisabledIcon(no_anim_icon);
@@ -294,6 +301,7 @@ public class InfoViewer extends JFrame
         tb.add(bStartStop);
         return tb;
     }
+    
     
     
     /**
@@ -309,9 +317,9 @@ public class InfoViewer extends JFrame
                 
     /**
      * Displays the specified URL in the HTML component.
-     * @param url The URL as String
+     * @param url          The URL as String
      * @param addToHistory Should the URL be added to the back/forward
-     * history?
+     *                     history?
      */
     public void gotoURL(String url, boolean addToHistory) {
         if (url == null) return;
@@ -330,34 +338,39 @@ public class InfoViewer extends JFrame
                 
     /**
      * Displays the specified URL in the HTML component.
-     * @param url The URL
+     * @param url          The URL
      * @param addToHistory Should the URL be added to the back/forward
-     * history?
+     *                     history?
      */
     public void gotoURL(URL url, boolean addToHistory) {
         if (url == null) return;
-        
         String urlText = url.toString().trim();
         if (urlText.length() == 0) return;
         
-        // reset default cursor so that the hand cursor doesn't
-        // stick around
+        // reset default cursor so that the hand cursor doesn't stick around
         viewer.setCursor(Cursor.getDefaultCursor());
         currentStatus = OPENING;
         showStatus();
         bStartStop.setEnabled(true);
+        
+        if (currentURL != null && currentURL.sameFile(url)) {
+            // the new URL is the same as the old one. We need a reload.
+            // Clear the viewer and flush viewers' memorized URL:
+            try {
+                viewer.getDocument()
+                    .putProperty(Document.StreamDescriptionProperty,
+                        new URL("file:/"));
+            }
+            catch (MalformedURLException e) { }
+            viewer.setText("");
+            viewer.setEditorKit(null);
+        }
+        
+        currentURL = url;
                 
         try {
             urlField.setText(urlText);
             viewer.setPage(url);
-            currentURL = url;
-            if (addToHistory) {
-                history[historyPos++] = url;
-                if(history.length == historyPos)
-                    System.arraycopy(history, 1, history,
-                                              0, history.length);
-                history[historyPos] = null;
-            }
             currentStatus = LOADING;
             showStatus();          
         }
@@ -370,7 +383,14 @@ public class InfoViewer extends JFrame
             Log.log(Log.ERROR, this, io);
             String[] args = { urlText, io.getMessage() };
             showError(props("infoviewer.error.ioerror.message", args));
-        }        
+        }
+        
+        if (addToHistory) {
+            history[historyPos++] = url;
+            if (history.length == historyPos)
+                System.arraycopy(history, 1, history, 0, history.length);
+            history[historyPos] = null;
+        }
     }
 
 
@@ -409,14 +429,22 @@ public class InfoViewer extends JFrame
      */
     public void propertyChange(PropertyChangeEvent e) {
         if ("page".equals(e.getPropertyName())) {
-            Object newtitle = viewer.getDocument().getProperty(
-                Document.TitleProperty);
-            if (newtitle == null) {
-                currentTitle = currentURL.toString();
-            } else {
-                currentTitle = newtitle.toString();
+            Document doc = viewer.getDocument();
+            if (doc != null) {
+                // try to get the title of the document
+                Object newtitle = doc.getProperty(Document.TitleProperty);
+                if (newtitle == null) {
+                    if (currentURL != null) {
+                        currentTitle = currentURL.toString();
+                    } else {
+                        currentTitle = props("infoviewer.notitle");
+                    }
+                } else {
+                    currentTitle = newtitle.toString();
+                }
+                setTitle(props("infoviewer.titlewithurl",
+                               new Object[] { currentTitle } ));
             }
-            setTitle("InfoViewer: " + currentTitle);
             bStartStop.setEnabled(false);
             currentStatus = READY;
             showStatus();
@@ -432,7 +460,7 @@ public class InfoViewer extends JFrame
     }
     
     
-    public void setStatusText(final String text) {
+    private void setStatusText(final String text) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 status.setText(text);
@@ -501,11 +529,18 @@ public class InfoViewer extends JFrame
     }
 
 
+    /**
+     * return the JEditorPane instance that is used to view HTML and text
+     * URLs
+     */
     public JEditorPane getViewer() {
         return viewer;
     }
 
-        
+
+    /**
+     * go forward in history. Beep if that's not possible.
+     */        
     public void forward() {
         if (history.length - historyPos <= 1)
             getToolkit().beep();
@@ -520,7 +555,10 @@ public class InfoViewer extends JFrame
         }
     }
 
-    
+
+    /**
+     * go back in history. Beep, if that's not possible.
+     */
     public void back() {
         if (historyPos <= 1) {
             getToolkit().beep();
@@ -532,28 +570,17 @@ public class InfoViewer extends JFrame
     
 
     /**
-     * reload the current URL
+     * reload the current URL.
      */
     public void reload() {
         if (currentURL == null) return;
-        viewer.setText("");
-        viewer.setEditorKit(null);
         gotoURL(currentURL, false);
-        /*
-        Document doc = viewer.getDocument();
-	try {
-            doc.remove(0, doc.getLength());
-        } catch (BadLocationException e) { }
-        try {
-            viewer.read(viewer.getPage().openConnection().getInputStream(), doc);
-        }
-        catch (IOException e) {
-            showError(e);
-        }
-        */
     }
+
     
-    
+    /**
+     * add the current page to the bookmark list.
+     */
     public void addToBookmarks() {
         if (currentURL == null) {
             GUIUtilities.error(null, "infoviewer.error.nourl", null);
@@ -613,5 +640,24 @@ public class InfoViewer extends JFrame
         }
     }
 
+
+    /**********************************************************************/
+
+
+    /**
+     * this is a workaround class for <code>JToolBar</code>
+     * for JDK versions prior to 1.3. The method <code>add(Action)</code>
+     * doesn't set the right properties.
+     */
+    protected class EnhancedJToolBar extends JToolBar {
+        public EnhancedJToolBar() { super(); }
+        public EnhancedJToolBar(int orientation) { super(orientation); }
+        public JButton add(Action a) {
+            JButton b = super.add(a);
+            b.setText(null);
+            b.setToolTipText(a.getValue(Action.SHORT_DESCRIPTION).toString());
+            return b;
+        }
+    }
  
 }

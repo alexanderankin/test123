@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.InfoViewerPlugin.name=InfoViewer
 plugin.InfoViewerPlugin.author=Dirk Moebius
-plugin.InfoViewerPlugin.version=0.4.0
+plugin.InfoViewerPlugin.version=0.4.1
 plugin.InfoViewerPlugin.docs=index.html
 
 plugin.InfoViewerPlugin.depend.0=jdk 1.1
@@ -31,6 +31,9 @@ infoviewer.menu.help.readme.mnemonic=I
 
 # Misc properties
 infoviewer.title=InfoViewer
+infoviewer.titlewithurl=InfoViewer: {0}
+infoviewer.notitle=(no title)
+infoviewer.greetstring={0} v{1}
 infoviewer.label.gotoURL=Go to:\ 
 infoviewer.status.opening=Opening {0} ...
 infoviewer.status.loading=Loading {0} ...
@@ -114,11 +117,11 @@ options.infoviewer.browser.other=External browser
 
 options.infoviewer.browser.settings.label=Configure Browser:
 options.infoviewer.browser.class.label=Class name:\ 
-options.infoviewer.browser.class.default=org.gjt.sp.jedit.gui.HelpViewer
-options.infoviewer.browser.method.label=Static method (may be empty):\ 
-options.infoviewer.browser.method.default=gotoURL
+options.infoviewer.browser.class.default=infoviewer.InfoViewer
+options.infoviewer.browser.method.label=Static method (empty=none):\ 
+options.infoviewer.browser.method.default=showInternalInfoViewer
 options.infoviewer.browser.other.label=External browser command:\ 
-options.infoviewer.browser.other.default=netscape -remote openURL($u)
+options.infoviewer.browser.other.default=netscape -remote openURL($u) -raise
 
 options.infoviewer.misc.label=Miscellaneous:
 options.infoviewer.misc.homepage=Homepage:\ 
@@ -143,12 +146,9 @@ infoviewer.aboutdialog.message=\
     (c) 1999, 2000 by Dirk Moebius <dmoebius@gmx.net>\n\
     \n\
     Get InfoViewer and my other plugins from:\n\
-    http://titan.informatik.uni-bonn.de/~moebius/jeditplugins.html\n\
+    http://titan.informatik.uni-bonn.de/~moebius/jedit/index.html\n\
     or from jEdit Plugin Central:\n\
-    http://jedit.standmed.com\n\
-    \n\
-    Icons Copyright(C) 1998 by Dean S. Jones\n\
-    dean@gallant.com http://www.gallant.com/icons.htm
+    http://jedit.standmed.com
 
 # Error messages
 infoviewer.error.noinfoviewer.title=No InfoViewer
@@ -160,6 +160,11 @@ infoviewer.error.noinfoviewer.message=\
 infoviewer.error.noselection.title=No URL selected
 infoviewer.error.noselection.message=Please select an URL text in a buffer.
 
+infoviewer.error.nohome.title=No homepage
+infoviewer.error.nohome.message=\
+    Please set the URL of the homepage\n\
+    in Utilities->General Options->InfoViewer.
+    
 infoviewer.error.classnotfound.title=Error invoking class
 infoviewer.error.classnotfound.message=\
     Could not find a suitable constructor for class:\n\

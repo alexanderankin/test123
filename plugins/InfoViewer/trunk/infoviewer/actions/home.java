@@ -1,6 +1,6 @@
 /*
  * home.java - open homepage action for InfoViewer
- * Copyright (C) 1999 Dirk Moebius
+ * Copyright (C) 1999 2000 Dirk Moebius
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,10 +19,10 @@
 
 package infoviewer.actions;
 
-import java.awt.*;
-import java.awt.event.*;
-import infoviewer.*;
+import java.awt.event.ActionEvent;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
+import infoviewer.InfoViewer;
 
 
 public class home extends InfoViewerAction {
@@ -32,7 +32,13 @@ public class home extends InfoViewerAction {
     }
     
     public void actionPerformed(ActionEvent evt) {
-        getViewer(evt).gotoURL(jEdit.getProperty("infoviewer.homepage"), true);
+        String home = jEdit.getProperty("infoviewer.homepage");
+        InfoViewer viewer = getViewer(evt);
+        if (home == null) {
+            GUIUtilities.error(viewer, "infoviewer.error.nohome", null);
+        } else {
+            viewer.gotoURL(home, true);
+        }
     }
 }
 

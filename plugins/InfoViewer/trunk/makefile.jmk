@@ -3,15 +3,18 @@
 # To recompile this plugin, start jmk in the plugin's source directory.
 #
 
-VERSION    = "0.4.0";
+VERSION    = "0.4.1";
+NAME       = "InfoViewer";
+
 javac      = "jikes" "+E";
 javaflags  = "-g" "-deprecation"
-             "-classpath"
-             (cat (getprop "java.class.path")
-                  ":../EditBus.jar");
-jarfile    = "../InfoViewer.jar";
-srcjarfile = (cat "InfoViewer-" VERSION "-src.jar");
+             "-classpath" (cat (getprop "java.class.path") ":../EditBus.jar");
+
+# directories to compile and include
 pkgs       = "." "infoviewer" "infoviewer/actions" "infoviewer/images";
+
+# target jar filename
+jarfile    = (cat "../" NAME ".jar");
 
 
 ##########################################################################
@@ -50,37 +53,4 @@ jarfile: srcs;
             (join pkgs, "/*.bak"));
 }
 
-"srcjar": srcjarfile;
-
-if (equal "45.3", (getprop "java.class.version")) then
-    srcjarfile:;
-    {
-        note ": need JDK 1.2 or higher for this operation";
-        note ": because of the -C option in jar.";
-    }
-else 
-    srcjarfile: jarfile "clean";
-    {
-	create srcjarfile;
-	delete srcjarfile;
-        exec cmd_jar "cMf" @
-            (addtolist "-C" ".." , 
-                (subst "../", "", jarfile) 
-                (join "InfoViewer/", (glob "*"))
-            );
-    }
-end
-
-
-
-# function addtolist: adds the elements of list1 before every element of list2
-
-addtolist = function(list1, list2)
-    if list2 then
-        list1 (first list2) (addtolist list1, (rest list2))
-    else
-    end
-end;
-	
-
-".PHONY": "all" "jar" "clean" "srcjar";
+".PHONY": "all" "jar" "clean";
