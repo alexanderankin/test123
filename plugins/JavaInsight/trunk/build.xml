@@ -38,7 +38,7 @@
 
 
     <path id="project.class.path">
-        <pathelement location="${lib.dir}/BCEL.jar"/>
+        <pathelement location="${lib.dir}/bcel.jar"/>
         <pathelement location="${lib.dir}/jode.jar"/>
         <pathelement location="${src.dir}"/>
     </path>

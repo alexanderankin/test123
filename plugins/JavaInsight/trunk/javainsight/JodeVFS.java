@@ -1,6 +1,6 @@
 /*
  * JodeVFS.java
- * Copyright (c) 2001 Andre Kaplan
+ * Copyright (c) 2001, 2002 Andre Kaplan
  *
  * jEdit edit mode settings:
  * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
@@ -18,21 +18,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 package javainsight;
-
-
-import de.fub.bytecode.classfile.ClassParser;
-import de.fub.bytecode.classfile.JavaClass;
-
-import net.sf.jode.bytecode.ClassInfo;
-import net.sf.jode.bytecode.ClassPath;
-import net.sf.jode.decompiler.ClassAnalyzer;
-import net.sf.jode.decompiler.Decompiler;
-import net.sf.jode.decompiler.ImportHandler;
-import net.sf.jode.decompiler.TabbedPrintWriter;
 
 import java.awt.Component;
 import java.io.FileNotFoundException;
@@ -47,6 +36,16 @@ import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 
 import javainsight.buildtools.JavaUtils;
+
+import net.sf.jode.bytecode.ClassInfo;
+import net.sf.jode.bytecode.ClassPath;
+import net.sf.jode.decompiler.ClassAnalyzer;
+import net.sf.jode.decompiler.Decompiler;
+import net.sf.jode.decompiler.ImportHandler;
+import net.sf.jode.decompiler.TabbedPrintWriter;
+
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.JavaClass;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
