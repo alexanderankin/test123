@@ -25,11 +25,13 @@ public interface Output
 {
 	/**
 	 * Prints a string of text with the specified color.
+	 * @param color The color. If null, the default color will be used
+	 * @param msg The message
 	 */
 	void print(Color color, String msg);
 
 	/**
-	 * Called when the command finishes executing.
+	 * Call when the command finishes executing.
 	 */
 	void commandDone();
 }

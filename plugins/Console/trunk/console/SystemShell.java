@@ -116,7 +116,7 @@ class SystemShell extends Shell
 		}
 	}
 
-	public void boolean waitFor(Console console)
+	public boolean waitFor(Console console)
 	{
 		ConsoleState consoleState = getConsoleState(console);
 		ConsoleProcess process = consoleState.process;
@@ -134,7 +134,6 @@ class SystemShell extends Shell
 			}
 		}
 
-		// TODO
 		return process.getExitStatus();
 	}
 

@@ -1,9 +1,5 @@
-- cvs add CommandoThread.java, openjade_HTML
-
-- better javadocs for print() color param, and output -vs- console params
 - separate user and default error pattern namespace
 - icons for run, to buffer, stop, clear buttons
-- animation shown while command is running
 - finish commando
 - documentation generated with docbook
 - error list 1.1:

@@ -19,11 +19,12 @@
 
 package console;
 
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -81,6 +82,10 @@ implements DockableWindow, EBComponent, Output
 		clear.setMargin(margin);
 		clear.addActionListener(actionHandler);
 		clear.setRequestFocusEnabled(false);
+
+		animation = new JLabel(NO_ANIMATION);
+		animation.setBorder(new EmptyBorder(1,3,1,1));
+		buttonBox.add(animation);
 
 		panel.add(BorderLayout.EAST,buttonBox);
 
@@ -161,6 +166,8 @@ implements DockableWindow, EBComponent, Output
 
 	public void run(Shell shell, Output output, String cmd)
 	{
+		animation.setIcon(ANIMATION);
+
 		HistoryModel.getModel("console." + shell.getName()).addItem(cmd);
 		print(infoColor,"> " + cmd);
 		shell.execute(this,output,cmd);
@@ -223,6 +230,8 @@ implements DockableWindow, EBComponent, Output
 
 	/**
 	 * Prints a string of text with the specified color.
+	 * @param color The color. If null, the default color will be used
+	 * @param msg The message
 	 */
 	public synchronized void print(Color color, String msg)
 	{
@@ -265,14 +274,27 @@ implements DockableWindow, EBComponent, Output
 	 */
 	public void commandDone()
 	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				animation.setIcon(NO_ANIMATION);
+			}
+		});
 	}
 
 	// private members
+	private static final ImageIcon ANIMATION = new ImageIcon(
+		Console.class.getResource("/console/fish_anim.gif"));
+	private static final ImageIcon NO_ANIMATION = new ImageIcon(
+		Console.class.getResource("/console/fish.gif"));
+
 	private View view;
 	private JComboBox shellCombo;
 	private Shell shell;
 	private HistoryTextField command;
 	private JButton run, toBuffer, stop, clear;
+	private JLabel animation;
 
 	private JTextPane output;
 
@@ -318,7 +340,7 @@ implements DockableWindow, EBComponent, Output
 					return;
 
 				command.setText(null);
-				run(getShell(),new BufferOutput(view),cmd);
+				run(getShell(),new BufferOutput(Console.this),cmd);
 			}
 			else if(source == stop)
 				shell.stop(Console.this);

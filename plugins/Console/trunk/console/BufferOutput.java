@@ -27,9 +27,10 @@ import org.gjt.sp.util.Log;
 
 public class BufferOutput implements Output
 {
-	public BufferOutput(View view)
+	public BufferOutput(Console console)
 	{
-		this.view = view;
+		this.console = console;
+		this.view = console.getView();
 		buf = new StringBuffer();
 	}
 
@@ -45,6 +46,7 @@ public class BufferOutput implements Output
 		{
 			public void run()
 			{
+				console.commandDone();
 				Buffer buffer = jEdit.newFile(view);
 				try
 				{
@@ -59,6 +61,7 @@ public class BufferOutput implements Output
 	}
 
 	// private members
+	private Console console;
 	private View view;
 	private StringBuffer buf;
 }

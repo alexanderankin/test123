@@ -32,8 +32,8 @@ class CommandoThread extends Thread
 
 	public void run()
 	{
-		final CommandoDialog.Command lastCommand = null;
-		boolean returnValue = true;
+		final CommandoDialog.Command[] lastCommand = new CommandoDialog.Command[0];
+		final boolean[] returnValue = new boolean[] { true };
 
 		for(int i = 0; i < commands.size(); i++)
 		{
@@ -51,7 +51,7 @@ class CommandoThread extends Thread
 				{
 					public void run()
 					{
-						if(!returnValue)
+						if(!returnValue[0])
 						{
 							// complain that the last command failed
 						}
@@ -67,12 +67,12 @@ class CommandoThread extends Thread
 					}
 				});
 			}
-			catch(InterruptedException e)
+			catch(Exception e)
 			{
 			}
 
-			returnValue = shell.waitFor();
-			lastCommand = command;
+			returnValue[0] = shell.waitFor(console);
+			lastCommand[0] = command;
 		}
 	}
 
