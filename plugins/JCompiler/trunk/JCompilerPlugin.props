@@ -1,14 +1,14 @@
 # General options
 
-plugin.JCompilerPlugin.name=Java Compiler
-plugin.JCompilerPlugin.author=Kevin A. Burton, Aziz Sharif, Dominic Stolerman and Dirk Moebius
-plugin.JCompilerPlugin.version=1.1.4
-plugin.JCompilerPlugin.docs=index.html
+plugin.jcompiler.JCompilerPlugin.name=Java Compiler
+plugin.jcompiler.JCompilerPlugin.author=Kevin A. Burton, Aziz Sharif, Dominic Stolerman and Dirk Moebius
+plugin.jcompiler.JCompilerPlugin.version=1.2
+plugin.jcompiler.JCompilerPlugin.docs=index.html
 
-plugin.JCompilerPlugin.depend.0=jdk 1.1.1
-plugin.JCompilerPlugin.depend.1=jedit 03.01.99.00
-plugin.JCompilerPlugin.depend.2=plugin EditBusPlugin 0.10
-plugin.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 2.3
+plugin.jcompiler.JCompilerPlugin.depend.0=jdk 1.1.1
+plugin.jcompiler.JCompilerPlugin.depend.1=jedit 03.01.99.00
+plugin.jcompiler.JCompilerPlugin.depend.2=plugin EditBusPlugin 0.10
+plugin.jcompiler.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 2.3
 
 
 # Menu options
@@ -29,8 +29,8 @@ jcompiler.addpkg2cp=true
 jcompiler.showcommandline=true
 jcompiler.javacompile.autosave=no
 jcompiler.javapkgcompile.autosave=no
-jcompiler.gendebug=true
-jcompiler.genoptimized=false
+jcompiler.genDebug=true
+jcompiler.genOptimized=false
 jcompiler.showdeprecated=false
 jcompiler.specifyoutputdirectory=false
 jcompiler.regexp=(.+):(\\d+):(.+)
@@ -62,8 +62,8 @@ options.jcompiler.regexp.message=Message at:
 options.jcompiler.regexp.warning=Regexp for warnings:
 options.jcompiler.parseaccentchar=Parse errors for ^ column indicator
 
-options.jcompiler.gendebug=Generate debug info (-g)
-options.jcompiler.genoptimized=Generate optimized code (-O)
+options.jcompiler.genDebug=Generate debug info (-g)
+options.jcompiler.genOptimized=Generate optimized code (-O)
 options.jcompiler.showdeprecated=Warn about use of deprecated API (-deprecation)
 options.jcompiler.basepath.description1=Set the base directory of your current project here (or leave it empty):
 options.jcompiler.basepath.description2=You may use the $basepath variable in the following options:
@@ -85,10 +85,11 @@ options.jcompiler.otheroptions=Other Options:
 
 jcompiler.msg.info=\
 	This is the Java Compiler shell.\n\
-	This shell offers three commands:\n\
-	"compile"    -- compiles the current file\n\
-	"compilepkg" -- determines basedir of current file and compiles all outdated files in the basedir tree\n\
-	"rebuildpkg" -- determines basedir of current file tree and recompiles all files in the basedir tree.\n
+	This shell offers four commands:\n\
+	* "javac [options] files..." -- invokes the javac compiler (in the same VM as jEdit)\n\
+	* "compile" -- compiles the current file\n\
+	* "compilepkg" -- determines basedir of current file and compiles all outdated files in the basedir tree\n\
+	* "rebuildpkg" -- determines basedir of current file tree and recompiles all files in the basedir tree.\n
 
 jcompiler.msg.nocompilerclass_jdk11=\
 	Java compiler class {0} not found!\n\
@@ -122,11 +123,11 @@ jcompiler.msg.compilermethod_exception=\
 
 jcompiler.msg.errorOutputDir=Error resolving output directory {0}: {1}\n
 jcompiler.msg.noOutputDir=Error: Output directory {0} is not a directory.\n
-jcompiler.msg.nofiles=No new or outdated files to compile in directory {0}.\n
-jcompiler.msg.compilefile=Compiling file {0}{1,choice,0#|1# to directory {2}}...\n
-jcompiler.msg.compilefiles=Compiling {0,choice,1#one file|1<{0} files} from directory {1}{2,choice,0#|1# to directory {3}}...\n
-jcompiler.msg.showcommandline=Invoking {0}.{1}{2}\n
+jcompiler.msg.nofiles=No new or outdated files in directory {0}.\n
+jcompiler.msg.compilefiles=Compiling {0,choice,1#{1}|1<{0} files from directory {2}}{3,choice,0#|1# to directory {4}}...\n
+jcompiler.msg.showcommandline=Command line:\n{0}\n
 jcompiler.msg.done=Java Compiler done.\n
+jcompiler.msg.errorCommandLine=Error: The command line is invalid. ({0})
 
 
 # Message dialogs

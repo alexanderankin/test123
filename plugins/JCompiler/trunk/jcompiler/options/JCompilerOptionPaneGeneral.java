@@ -1,6 +1,8 @@
 /*
  * JCompilerOptionPaneGeneral.java - plugin options pane for JCompiler - general options
- * (c) 1999, 2000 Kevin A. Burton and Aziz Sharif
+ * Copyright (c) 2001 Dirk Moebius
+ *
+ * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
 package jcompiler.options;
+
 
 import javax.swing.*;
 import javax.swing.event.*;

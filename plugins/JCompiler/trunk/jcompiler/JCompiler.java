@@ -2,6 +2,8 @@
  * JCompiler.java - a wrapper around sun.tools.javac.Main
  * (c) 1999, 2000 - Kevin A. Burton and Aziz Sharif
  *
+ * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,7 +19,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
 package jcompiler;
+
 
 import java.lang.reflect.*;
 import java.util.StringTokenizer;
@@ -35,11 +39,26 @@ import buildtools.*;
  */
 public class JCompiler {
 
+	/** The name of the class that contains the compiler. */
+	public static final String COMPILER_CLASSNAME = "sun.tools.javac.Main";
+
+	/** The name of the compiler method. */
+	public static final String COMPILER_METHODNAME = "compile";
+
 	/** True, if JDK version is less than 1.2. */
 	private final static boolean isOldJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.2") < 0);
 
 	/** Holds the javac compiler class. */
 	private static Class compilerClass = null;
+
+	/**
+	 * Holds the constructor of the compiler class with arguments
+	 * <code>OutputStream, String</code>.
+	 */
+	private static Constructor compilerConstructor = null;
+
+	/** Holds the javac compiler method. */
+	private static Method compilerMethod = null;
 
 	/** Compiler output is sent to this pipe. */
 	private PipedOutputStream pipe = null;
@@ -51,7 +70,7 @@ public class JCompiler {
 
 
 	/**
-	 * compile a file with sun.tools.javac.Main.
+	 * Compile a file with sun.tools.javac.Main.compile().
 	 *
 	 * @param view        the view, where error dialogs should go
 	 * @param buf         the buffer containing the file to be compiled
@@ -62,40 +81,43 @@ public class JCompiler {
 	 *                    package hierarchy.
 	 */
 	public void compile(View view, Buffer buf, boolean pkgCompile, boolean rebuild) {
-		// Search for the compiler method
-		compilerClass = getCompilerClass();
-		if (compilerClass == null)
-			return;
+		// Search for the compiler method:
+		initCompiler();
+
+		if (compilerMethod == null)
+			return; // compiler method not found
 
 		// Check output directory:
-		String outDirPath = null;
-		if (jEdit.getBooleanProperty( "jcompiler.specifyoutputdirectory")) {
-			outDirPath = jEdit.getProperty("jcompiler.outputdirectory");
-			outDirPath = expandPath(outDirPath);
-			File outDir = new File(outDirPath);
+		String outDir = getOutputDirectory();
+
+		if (outDir != null) {
+			File fOutDir = new File(outDir);
 			try {
-				// canonize outDirPath:
-				outDirPath = outDir.getCanonicalPath();
+				// Canonize outDir:
+				outDir = fOutDir.getCanonicalPath();
 			}
 			catch (IOException ioex) {
-				sendMessage("jcompiler.msg.errorOutputDir", new Object[] { outDirPath, ioex });
+				sendMessage("jcompiler.msg.errorOutputDir", new Object[] { outDir, ioex });
 				return;
 			}
-			if (outDir.exists()) {
-				if (!outDir.isDirectory()) {
-					sendMessage("jcompiler.msg.noOutputDir", new Object[] {outDirPath });
+
+			if (fOutDir.exists()) {
+				if (!fOutDir.isDirectory()) {
+					sendMessage("jcompiler.msg.noOutputDir", new Object[] {outDir });
 					return;
 				}
 			} else {
+				// Ask whether output dir should be created:
 				int reply = JOptionPane.showConfirmDialog(view,
-					jEdit.getProperty("jcompiler.msg.createOutputDir.message", new Object[] {outDirPath }),
+					jEdit.getProperty("jcompiler.msg.createOutputDir.message", new Object[] { outDir }),
 					jEdit.getProperty("jcompiler.msg.createOutputDir.title"),
 					JOptionPane.YES_NO_OPTION,
 					JOptionPane.WARNING_MESSAGE);
-				if (reply != JOptionPane.YES_OPTION) {
+
+				if (reply != JOptionPane.YES_OPTION)
 					return;
-				}
-				if (!outDir.mkdirs()) {
+
+				if (!fOutDir.mkdirs()) {
 					GUIUtilities.message(view, "jcompiler.msg.errorCreateOutputDir", null);
 					return;
 				}
@@ -107,106 +129,88 @@ public class JCompiler {
 
 		// Get files to compile:
 		String filename = buf.getPath();
-		File ff = new File(filename);
-		String parent = ff.getParent();
-		String[] files = null;
-		if (parent != null && pkgCompile == true) {
-			// compile/rebuild package: try to get base directory of file
-			String sourcedir;
-			try {
-				sourcedir = JavaUtils.getBaseDirectory(ff.getAbsolutePath());
-			}
-			catch (IOException ioex) {
-				Log.log(Log.ERROR, "JCompiler",
-					"couldn't get base directory of file " + filename + ": " + ioex.toString());
-				sourcedir = parent;
-			}
-			FileChangeMonitor monitor = new FileChangeMonitor(
-				sourcedir, "java", outDirPath, "class");
-			if (rebuild) {
-				files = monitor.getAllFiles();
-			} else {
-				files = monitor.getChangedFiles();
-			}
-			if (files.length == 0) {
-				sendMessage("jcompiler.msg.nofiles", new Object[] { sourcedir });
-				return;
-			}
-			sendMessage("jcompiler.msg.compilefiles", new Object[] {
-				new Integer(files.length),
-				sourcedir,
-				new Integer(outDirPath == null ? 0 : 1),
-				outDirPath
-			});
+		String sourceBaseDir;
+		String[] files;
+
+		if (pkgCompile) {
+			sourceBaseDir = getSourceBaseDir(filename);
+			files = getFiles(sourceBaseDir, outDir, rebuild);
 		} else {
-			sendMessage("jcompiler.msg.compilefile", new Object[] {
-				filename,
-				new Integer(outDirPath == null ? 0 : 1),
-				outDirPath
-			});
+			sourceBaseDir = new File(filename).getParent();
 			files = new String[] { filename };
 		}
 
-		// Source path setting:
-		String srcPath = expandPath(jEdit.getProperty("jcompiler.sourcepath"));
-
-		// Class path setting:
-		String cp = expandPath(jEdit.getProperty("jcompiler.classpath"));
-
-		// Check if package dir should be added to classpath:
-		if (jEdit.getBooleanProperty("jcompiler.addpkg2cp")) {
-			try {
-				String pkgName = JavaUtils.getPackageName(filename);
-				Log.log(Log.DEBUG, this, "parent=" + parent + " pkgName=" + pkgName);
-				// If no package stmt found then pkgName would be null
-				if (parent != null) {
-					if (pkgName == null) {
-						cp = cp + (cp.length() > 0 ? File.pathSeparator : "") + parent;
-					} else {
-						String pkgPath = pkgName.replace('.', File.separatorChar);
-						Log.log(Log.DEBUG, this, "pkgPath=" + pkgPath);
-						if (parent.endsWith(pkgPath)) {
-							parent = parent.substring(0, parent.length() - pkgPath.length() - 1);
-							cp = cp + (cp.length() > 0 ? File.pathSeparator : "") + parent;
-						}
-					}
-				}
-			}
-			catch (Exception exp) {
-				exp.printStackTrace();
-			}
+		if (files.length == 0) {
+			sendMessage("jcompiler.msg.nofiles", new Object[] { sourceBaseDir });
+			return;
 		}
 
-		// Required library path setting:
-		String libPath = expandPath(jEdit.getProperty("jcompiler.libpath"));
-		cp = cp + (cp.length() > 0 ? File.pathSeparator : "") + expandLibPath(libPath);
+		// Show files to compile:
+		sendMessage("jcompiler.msg.compilefiles", new Object[] {
+			new Integer(files.length),
+			filename,
+			sourceBaseDir,
+			new Integer(outDir == null ? 0 : 1),
+			outDir
+		});
 
 		// Construct arguments for javac:
-		String[] arguments = constructArguments(cp, srcPath, outDirPath, files);
+		String[] arguments = constructArguments(getClassPath(filename), getSourcePath(), outDir, files);
 
 		// Show command line:
 		if (jEdit.getBooleanProperty("jcompiler.showcommandline", false)) {
-			StringBuffer msg = new StringBuffer();
+			StringBuffer msg = new StringBuffer("javac");
 			for (int i = 0; i < arguments.length; ++i) {
 				msg.append(' ');
+
+				boolean argNeedsQuote = 	arguments[i].length() > 0
+					&& arguments[i].indexOf(' ') >= 0
+					&& arguments[i].charAt(0) != '"'
+					&& arguments[i].charAt(arguments[i].length()) != '"';
+
+				if (argNeedsQuote)
+					msg.append('"');
+
 				msg.append(arguments[i]);
+
+				if (argNeedsQuote)
+					msg.append('"');
 			}
-			sendMessage("jcompiler.msg.showcommandline", new Object[] {
-				jEdit.getProperty("jcompiler.compiler.class"),
-				jEdit.getProperty("jcompiler.compiler.method"),
-				msg.toString()
-			});
+			sendMessage("jcompiler.msg.showcommandline", new Object[] { msg.toString() });
 		}
 
-		// Start the javac compiler...
+		// Start the compiler:
 		boolean ok = invokeCompiler(pipe, arguments);
 		System.gc();
 		sendMessage("jcompiler.msg.done");
 
+		// Empty the compile output pipe:
 		try { pipe.flush(); }
 		catch (IOException ioex) { /* ignore */ }
+	}
 
-		return;
+
+	/**
+	 * Compile with sun.tools.javac.Main.compile(), using the specified
+	 * command line arguments.
+	 *
+	 * @param arguments  the command line arguments
+	 */
+	public void compile(String[] arguments) {
+		// Search for the compiler method:
+		initCompiler();
+
+		if (compilerMethod == null)
+			return; // compiler method not found
+
+		// Start the compiler:
+		boolean ok = invokeCompiler(pipe, arguments);
+		System.gc();
+		sendMessage("jcompiler.msg.done");
+
+		// Empty the compile output pipe:
+		try { pipe.flush(); }
+		catch (IOException ioex) { /* ignore */ }
 	}
 
 
@@ -249,14 +253,12 @@ public class JCompiler {
 	}
 
 
-	private Class getCompilerClass() {
-		if (compilerClass != null)
-			return compilerClass;
+	private void initCompiler() {
+		if (compilerMethod != null)
+			return; // already initialized
 
-		// search for compiler class:
-		String className = "sun.tools.javac.Main";
 		try {
-			compilerClass = Class.forName(className);
+			compilerClass = Class.forName(COMPILER_CLASSNAME);
 		}
 		catch (ClassNotFoundException cnf) {
 			if (!isOldJDK) {
@@ -268,46 +270,55 @@ public class JCompiler {
 				File toolsJar = new File(MiscUtilities.constructPath(home, "lib", "tools.jar"));
 				if (toolsJar.exists()) {
 					try {
-						Log.log(Log.DEBUG, JCompiler.class, "loading class " + className + " from " + toolsJar.getCanonicalPath());
+						Log.log(Log.DEBUG, JCompiler.class, "loading class " + COMPILER_CLASSNAME + " from " + toolsJar.getCanonicalPath());
 						ClassLoader cl = ZipClassLoader.getInstance(toolsJar);
-						compilerClass = cl.loadClass(className);
+						compilerClass = cl.loadClass(COMPILER_CLASSNAME);
 					}
 					catch (Exception ex) {
 						Log.log(Log.ERROR, JCompiler.class, ex);
-						sendMessage("jcompiler.msg.nocompilerclass_jdk12_tools_jar", new Object[] { className, toolsJar, ex.toString() });
-						return null;
+						sendMessage("jcompiler.msg.nocompilerclass_jdk12_tools_jar", new Object[] { COMPILER_CLASSNAME, toolsJar, ex.toString() });
+						return;
 					}
 				} else {
 					Log.log(Log.ERROR, JCompiler.class, cnf);
-					sendMessage("jcompiler.msg.nocompilerclass_jdk12", new Object[] { className, toolsJar });
-					return null;
+					sendMessage("jcompiler.msg.nocompilerclass_jdk12", new Object[] { COMPILER_CLASSNAME, toolsJar });
+					return;
 				}
 			} else {
 				Log.log(Log.ERROR, JCompiler.class, cnf);
-				sendMessage("jcompiler.msg.nocompilerclass_jdk11", new Object[] { className });
-				return null;
+				sendMessage("jcompiler.msg.nocompilerclass_jdk11", new Object[] { COMPILER_CLASSNAME });
+				return;
 			}
 		}
 
-		return compilerClass;
+		// if we get here, we have found the compiler class
+
+		try {
+			// get the constructor "Main(OutputStream ostream,String program)":
+			final Class[] constructorSignature = { OutputStream.class, String.class };
+			compilerConstructor = compilerClass.getConstructor(constructorSignature);
+
+			// get the method "compile(String[] arguments)":
+			final Class[] methodSignature = { String[].class };
+			compilerMethod = compilerClass.getMethod(COMPILER_METHODNAME, methodSignature);
+		}
+		catch (NoSuchMethodException e) {
+			Log.log(Log.ERROR, this, e);
+			e.printStackTrace();
+			Object[] args = new Object[] { compilerClass, e };
+			sendMessage("jcompiler.msg.compilermethod_exception", args);
+		}
 	}
 
 
 	private boolean invokeCompiler(OutputStream output, String[] arguments) {
 		try {
 			// instantiate a new compiler class with the constructor arguments:
-			// Main(OutputStream output, String programname = "javac")
-			Class clazz = getCompilerClass();
-			Constructor constructor = clazz.getConstructor(new Class[] { OutputStream.class, String.class });
-			Object compiler = constructor.newInstance(new Object[] { output, "javac" });
+			// (OutputStream output, String programname = "javac")
+			Object compiler = compilerConstructor.newInstance(new Object[] { output, "javac" });
 
-			// get the method "compile(String[] args)":
-			String[] stringArray = new String[] {};
-			Class stringArrayType = stringArray.getClass();
-			Method compile = clazz.getMethod("compile", new Class[] { stringArrayType });
-
-			// invoke the method compile(String[] args) on the instance:
-			Object returnValue = compile.invoke(compiler, new Object[] { arguments });
+			// invoke the method 'compile(String[] arguments)' on the instance:
+			Object returnValue = compilerMethod.invoke(compiler, new Object[] { arguments });
 
 			// The returnValue should be a Boolean:
 			return ((Boolean)returnValue).booleanValue();
@@ -330,7 +341,7 @@ public class JCompiler {
 	}
 
 
-	private String[] constructArguments(String cp, String srcPath, String outDirPath, String[] files) {
+	private String[] constructArguments(String cp, String srcPath, String outDir, String[] files) {
 		Vector vectorArgs = new Vector();
 
 		if (cp != null && !cp.equals("")) {
@@ -353,9 +364,9 @@ public class JCompiler {
 			vectorArgs.addElement("-deprecation");
 
 		if (jEdit.getBooleanProperty("jcompiler.specifyoutputdirectory")
-			&& outDirPath != null && !outDirPath.equals("")) {
+			&& outDir != null && !outDir.equals("")) {
 			vectorArgs.addElement("-d");
-			vectorArgs.addElement(outDirPath);
+			vectorArgs.addElement(outDir);
 		}
 
 		String otherOptions = jEdit.getProperty("jcompiler.otheroptions");
@@ -381,7 +392,7 @@ public class JCompiler {
 	 * @param  path  the path to be expanded.
 	 * @return the path with directories expanded.
 	 */
-	private String expandLibPath(String path) {
+	private static String expandLibPath(String path) {
 		StringTokenizer st;
 		File f;
 		StringBuffer result;
@@ -416,7 +427,7 @@ public class JCompiler {
 	 * @param  f  a directory
 	 * @return a classpath containg all the jar and zip files from the given directory.
 	 */
-	private String buildPathForDirectory(File f) {
+	private static String buildPathForDirectory(File f) {
 		String[] archiveFiles = f.list(new FilenameFilter() {
 			public boolean accept(File dir, String filename) {
 				return filename.toLowerCase().endsWith(".jar") || filename.toLowerCase().endsWith(".zip");
@@ -440,22 +451,25 @@ public class JCompiler {
 
 
 	/**
-	 * Expand any variables in path.
+	 * Expand any variables in the specified string.
 	 *
-	 * NOTE: only looks for $basePath right now.
+	 * NOTE: The current implementation only looks for variables named
+	 * <code>$basePath</code> and replaces them with the contents of the
+	 * property "jcompiler.basepath".
 	 *
-	 * @param  path  the path, possibly containing variables
-	 * @return the path with all variables expanded.
+	 * @param  s  the string, possibly containing variables
+	 * @return the string with all variables expanded.
 	 */
-	private String expandPath(String path) {
-		if (path == null || path.length() == 0)
+	public static String expandVariables(String s) {
+		if (s == null || s.length() == 0)
 			return "";
 
 		String basePath = jEdit.getProperty("jcompiler.basepath", "").trim();
-		if (basePath.length() == 0)
-			return path;
 
-		return replaceAll(path, "$basepath", basePath);
+		if (basePath.length() == 0)
+			return s;
+
+		return replaceAll(s, "$basepath", basePath);
 	}
 
 
@@ -463,7 +477,7 @@ public class JCompiler {
 	 * Returns the string with all occurences of the specified variable replaced
 	 * by the specified value.
 	 * @param  s  the string
-	 * @param  variable  the variable to look for; should begin with "$"
+	 * @param  variable  the variable to look for; must begin with "$"
 	 * @param  value  to value to be set in for the variable
 	 * @return the modified string.
 	 */
@@ -574,6 +588,197 @@ public class JCompiler {
 
 		if (savedSomething)
 			VFSManager.waitForRequests();
+	}
+
+
+	/**
+	 * Returns the classpath, made up of the expanded classpath
+	 * property (jcompiler.classpath), the expanded output directory,
+	 * and the expanded libpath property (jcompiler.libpath).
+	 *
+	 * NOTE: this version of the getClassPath() method does not
+	 * consider the jcompiler.addpkg2cp option.  If you need this option
+	 * use the getClassPath(String) method.
+	 *
+	 * @see #getClassPath(String)
+	 */
+	public static String getClassPath() {
+		String cp = expandVariables(jEdit.getProperty("jcompiler.classpath"));
+
+		String outputDir = getOutputDirectory();
+
+		if (outputDir != null)
+		{
+			cp = appendClassPath(cp, outputDir);
+		}
+
+		cp = appendClassPath(cp, getRequiredLibraryPath());
+
+		return cp;
+	}
+
+
+	/**
+	 * Returns the classpath made up of getClassPath() + the package
+	 * directory of the class to be compiled if the
+	 * jcompiler.addpkg2cp option is turned on.
+	 *
+	 * @param filename the filename of the class for determining the package.
+	 */
+	public static String getClassPath(String filename) {
+		String cp = getClassPath();
+
+		// Check if package dir should be added to classpath:
+		if (jEdit.getBooleanProperty("jcompiler.addpkg2cp")) {
+			try {
+				String pkgName = JavaUtils.getPackageName(filename);
+				String parent = new File(filename).getParent();
+
+				// If no package stmt found then pkgName would be null
+				if (parent != null) {
+					if (pkgName == null) {
+						cp = appendClassPath(cp, parent);
+					} else {
+						String pkgPath = pkgName.replace('.', File.separatorChar);
+
+						if (parent.endsWith(pkgPath)) {
+							parent = parent.substring(0, parent.length() - pkgPath.length() - 1);
+							cp = appendClassPath(cp, parent);
+						}
+					}
+				}
+			}
+			catch (Exception exp) {
+				exp.printStackTrace();
+			}
+		}
+
+		return cp;
+	}
+
+
+	/**
+	 * @return the sourcepath defined by jcompiler.sourcepath, with
+	 * variable expansion.
+	 */
+	public static String getSourcePath() {
+		return expandVariables(jEdit.getProperty("jcompiler.sourcepath"));
+	}
+
+
+	/**
+	 * Returns the expanded value of the jcompiler.libpath property,
+	 * which is the required library path.
+	 */
+	public static String getRequiredLibraryPath()
+	{
+		// expand variables first
+		String libPath = expandVariables(jEdit.getProperty("jcompiler.libpath"));
+
+		// expand directories to get all jars
+		return expandLibPath(libPath);
+	}
+
+
+	/**
+	 * Returns the output directory defined by jcompiler.outputdirectory, with
+	 * variable expansion.
+	 * If the jcompiler.specifyoutputdirectory option is not turned on,
+	 * null is returned.
+	 *
+	 * @return the expanded output directory or null if the option is turned off.
+	 */
+	public static String getOutputDirectory() {
+		String outDir = null;
+
+		if (jEdit.getBooleanProperty( "jcompiler.specifyoutputdirectory")) {
+			outDir = expandVariables(jEdit.getProperty("jcompiler.outputdirectory"));
+		}
+
+		return outDir;
+	}
+
+
+	/**
+	 * Scans the named file for the <code>package</code> statement and tries
+	 * to determine the base directory of the source tree where the file
+	 * resides.
+	 *
+	 * @param filename  the filename of the class for determining the package.
+	 * @return a path name denoting the base directory of the java source
+	 *    file, or simply the parent directory containing the file, if the
+	 *    base directory could not be determined.
+	 */
+	public static String getSourceBaseDir(String filename) {
+		File file = new File(filename);
+		String parent = file.getParent();
+		String sourceDir;
+
+		try {
+			sourceDir = JavaUtils.getBaseDirectory(file.getAbsolutePath());
+		}
+		catch (IOException ioex) {
+			Log.log(Log.ERROR, "JCompiler",
+				"couldn't get base directory of file " + filename
+				+ ": " + ioex.toString());
+			sourceDir = parent;
+			Log.log(Log.DEBUG, "JCompiler", "using " + parent);
+		}
+
+		return sourceDir;
+	}
+
+
+	/**
+	 * Get the files that should be compiled.
+	 * Recursively scans the base directory and all of its subdirectories
+	 * for Java source files.
+	 *
+	 * @param baseDir  the base directory, usually determined by
+	 *    <code>getSourceBaseDir(String)</code>.
+	 * @param destDir  the destination directory, only used if the parameter
+	 *    <code>all</code> is true.
+	 * @param all  if true, returns <i>all</i> files of the source tree;
+	 *    if false, returns only outdated files by comparing the source tree
+	 *    with the tree rooted at the destination directory.
+	 * @return an array of (all or outdated) file names, denoted by absolute
+	 *    paths.
+	 * @see #getSourceBaseDir(String)
+	 */
+	public static String[] getFiles(String baseDir, String destDir, boolean all) {
+		FileChangeMonitor monitor = new FileChangeMonitor(
+			baseDir, "java", destDir, "class");
+
+		return all ? monitor.getAllFiles() : monitor.getChangedFiles();
+	}
+
+
+	/**
+	 * Append <code>additionalPath</code> to <code>classPath</code>, safely
+	 * handling classPath or additionalPath being empty.
+	 *
+	 * @param classPath the classPath to append to.
+	 * @param additionalPath the path to be appended to <code>classPath</code>
+	 * @return the new classpath, consisting of classPath + pathSseparator
+	 *    + additionalPath
+	 */
+	public static String appendClassPath(String classPath, String additionalPath)	{
+		String result;
+
+		if (additionalPath.length() == 0) {
+			// nothing to append
+			result = classPath;
+		}
+		else if (classPath.length() > 0) {
+			// append separator and additional path
+			result = classPath + File.pathSeparator + additionalPath;
+		}
+		else {
+			// nothing to append to
+			result = additionalPath;
+		}
+
+		return result;
 	}
 
 }

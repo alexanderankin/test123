@@ -1,7 +1,8 @@
 /*
  * JCompilerOptionDialog.java - options dialog for JCompiler option panes
- * Copyright (C) 1998, 1999, 2000 Slava Pestov
- * Portions copyright (C) 1999 mike dillon
+ * Copyright (C) 2000,2001 Dirk Moebius
+ *
+ * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+
 
 package jcompiler.options;
 

@@ -25,10 +25,10 @@ dmoebius@gmx.net</a>)<p>
 <h2>1. Requirements</h2>
 
 <ul>
-  <li>jEdit &gt;= 3.0final</li>
+  <li>jEdit &gt;= 3.1final</li>
   <li>plugin EditBus &gt;= 0.10</li>
   <li>plugin Console &gt;= 2.3</li>
-  <li>a Java Development Kit (JDK) &gt;= 1.1, <i>not</i> a Java Runtime Environment (JRE) !</li>
+  <li>a Java Development Kit (JDK) &gt;= 1.1, <b>not</b> a Java Runtime Environment (JRE) !</li>
 </ul>
 
 <b>Note:</b> If you want one-click access to error positions, and highlightening
@@ -46,7 +46,9 @@ You should use jEdit's PluginManager to install the Java Compiler plugin.
 <a name="usage"></a>
 <h2>3. Usage</h2>
 
-Java Compiler has 3 menu actions in the menu Plugins-&gt;Java Compiler:
+<h3>3.1 Menu actions</h3>
+
+Java Compiler has 3 menu actions in the menu Plugins&gt;Java Compiler:
 
 <ul>
   <li>
@@ -70,22 +72,51 @@ Java Compiler has 3 menu actions in the menu Plugins-&gt;Java Compiler:
   </li>
 </ul>
 
-These menu entries correspond to the following <b>commands</b>, that can
-be invoked from the Java Compiler shell in the Console plugin:
+<h3>3.2 Commands</h3>
+
+The Java Compiler shell in the Console plugin understands the following
+commands:
 
 <ul>
-<li><b>compile</b> = Compile File</li>
-<li><b>compilepkg</b> = Build Package(s)</li>
-<li><b>rebuildpkg</b> = Rebuilds Package(s)</li>
+  <li>
+    <b>compile</b><p>
+    Same as the <b>Compile File</b> menu action. See above.<p>
+  </li>
+
+  <li>
+    <b>compilepkg</b><p>
+    Same as the <b>Build Package(s)</b> menu action. See above.<p>
+  </li>
+
+  <li>
+    <b>rebuildpkg</b><p>
+    Same as the <b>Rebuilds Package(s)</b> menu action. See above.<p>
+  </li>
+
+  <li>
+    <b>javac [options] files...</b><p>
+    Invokes the javac compiler with the specified options and files. As
+    with all other commands, the javac compiler is invoked in the same
+    Virtual Machine as jEdit runs in.<br>
+    Accepts the same options as the native <code>javac</code> binary
+    executable. Enter "<code>javac -h</code>" for a list of options.<br>
+    Note that no native process gets spawned if this javac command is
+    used.<p>
+  </li>
+
+  <li>
+    <b>help</b><p>
+    Displays a short explanation of the commands.<p>
+  </li>
 </ul>
 
 
 <a name="options"></a>
 <h2>4. Options</h2>
 
-You may configure some options under "Utilities -&gt; Global&nbsp;Options -&gt;
-Plugin&nbsp;Options -&gt; Java&nbsp;Compiler". Most of them are self explaining,
-but some need special explanation:
+You may configure some options in
+<b>Utilities&gt;Global&nbsp;Options&gt;Plugin&nbsp;Options&gt;Java&nbsp;Compiler</b>.
+Most of them are self explaining, but some need special explanation:
 
 
 <h3>4.1 General options</h3>
@@ -137,16 +168,14 @@ but some need special explanation:
 <ul>
   <li>
     <b>Required library path</b><p>
-    Set the "Required library path" to any directory where you put JAR/ZIP
-    files, e.g. <tt>/usr/local/java/lib</tt> or
-    <tt>c:\Program Files\Java\libraries</tt>. JCompiler will add any JAR/ZIP
-    files in that directory to the classpath.<p>
+    One or more directories that will be scanned for JAR/ZIP libraries.
+    All found libraries will be added automatically to the classpath.<p>
 
-    You can even specify more than one path, separated by the Java path
-    separator, like in $CLASSPATH:<p>
+    If you specify more than one directory, separated them by the Java path
+    separator, like in $CLASSPATH. Examples:<p>
 
-    $basepath = "<tt>/usr/local/java/lib:/usr/share/java/lib</tt>" or <br>
-    $basepath = "<tt>C:\Software\Java\libs;C:\Java\Programming\libraries</tt>"<p>
+    Unix: "<tt>/usr/local/java/lib:/usr/share/java/lib</tt>" or <br>
+    Windows: "<tt>C:\Software\Java\libs;C:\Java\Programming\libraries</tt>"<p>
   </li>
 
   <li>
@@ -171,7 +200,7 @@ but some need special explanation:
 
     <em>PS: I know, this feature screams for proper project managing,
     e.g. </em>project files<em>. Someday the ProjectManager plugin will be ready to do
-    this. Have patience and faith, please. {:-}</em><p>
+    this. Have patience and faith, please.</em> {:-} <p>
   </li>
 </ul>
 
@@ -236,7 +265,7 @@ write access to the JDK installation directory), you have a lot of alternatives:
 
     Using this alternative has the same effect as copying to
     <i>jdkhome</i>/jre/lib/ext/, but you run into difficulties, if you
-    switch back to JDK 1.1.<p>
+    switch back to JDK 1.1 later on.<p>
   </li>
 
   <li>
@@ -278,7 +307,7 @@ write access to the JDK installation directory), you have a lot of alternatives:
       <tr>
         <td>Windows NT</td>
         <td>CLASSPATH=<i>jdkhome</i>\lib\tools.jar</td>
-        <td>Start menu -&gt; Settings -&gt; System -&gt; Environment <i>(I guess!)</i></td>
+        <td><b>Start&gt;Settings&gt;System&gt;Environment</b> <em>(I guess!)</em></td>
       </tr>
       <tr>
         <td>Unix</td>
