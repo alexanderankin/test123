@@ -22,6 +22,7 @@
 
 //{{{ imports
 import java.util.*;
+import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.util.Log;
 //}}}
 
@@ -39,9 +40,10 @@ public class JSort implements Comparator
 	private Vector options;
 
 	/**
-	  * Flag to control whether we will delete duplicate entries while we sort
+	  * Flags to control whether we will delete duplicate entries while we sort / skip sort
 	  */
 	private boolean deleteDuplicates;
+	private boolean dontSort;
 
 	/**
 	  *  The sorted data
@@ -52,12 +54,12 @@ public class JSort implements Comparator
 	//{{{ JSort constructors
 	/**
 	  * Constructor initializes Vector of SortBy instances and
-	  * sets deleteDuplicates property to false;
+	  * sets properties to false;
 	  *
 	  */
 	public JSort()
 	{
-		this(false);
+		this(false, false);
 	}
 	
 	/**
@@ -69,8 +71,21 @@ public class JSort implements Comparator
 	  */
 	public JSort(boolean deleteDuplicates)
 	{
+		this(deleteDuplicates, false);
+	}  //}}}
+	/**
+	  * Constructor initializes Vector of SortBy instances and
+	  * sets properties to values passed in;
+	  *
+	  * @param deleteDuplicates  Should we delete duplicate lines while we sort?
+	  * @param dontSort          Should we skip sorting when deleting duplicates?
+	  *
+	  */
+	public JSort(boolean deleteDuplicates, boolean dontSort)
+	{
 		options = new Vector();
 		this.deleteDuplicates = deleteDuplicates;
+		this.dontSort = dontSort;
 	}  //}}}
 
 	//{{{ methods to modify sort
@@ -98,6 +113,7 @@ public class JSort implements Comparator
 	{
 		options = new Vector();
 		deleteDuplicates = false;
+		dontSort = false;
 	}  //}}}
 
 	//{{{ JSort addSortConstraint
@@ -112,7 +128,7 @@ public class JSort implements Comparator
 	  */
 	public void addSortConstraint(int startColumn, int endColumn)
 	{
-		addSortConstraint(startColumn, endColumn, true, false, false, false);
+		addSortConstraint(startColumn, endColumn, true, false, false, false, false);
 	}
 	
 	
@@ -128,7 +144,7 @@ public class JSort implements Comparator
 	  */
 	public void addSortConstraint(int startColumn, int endColumn, boolean ascending)
 	{
-		addSortConstraint(startColumn, endColumn, ascending, false, false, false);
+		addSortConstraint(startColumn, endColumn, ascending, false, false, false, false);
 	}
 	
 	
@@ -145,7 +161,7 @@ public class JSort implements Comparator
 	  */
 	public void addSortConstraint(int startColumn, int endColumn, boolean ascending, boolean ignoreCase)
 	{
-		addSortConstraint(startColumn, endColumn, ascending, ignoreCase, false);
+		addSortConstraint(startColumn, endColumn, ascending, ignoreCase, false, false, false);
 	}
 	
 	
@@ -163,7 +179,7 @@ public class JSort implements Comparator
 	  */
 	public void addSortConstraint(int startColumn, int endColumn, boolean ascending, boolean ignoreCase, boolean numeric)
 	{
-		addSortConstraint(startColumn, endColumn, ascending, ignoreCase, numeric, false);
+		addSortConstraint(startColumn, endColumn, ascending, ignoreCase, numeric, false, false);
 	}   //}}}
 
 	/**
@@ -181,24 +197,32 @@ public class JSort implements Comparator
 	  * @param trimWhitespace  True will do a String.trim() previous to sorting (this will not trim the original
 	  *                        value in the List to be sorted
 	  */
-	public void addSortConstraint(int startColumn, int endColumn, boolean ascending, boolean ignoreCase, boolean numeric, boolean trimWhitespace)
+	public void addSortConstraint(int startColumn, int endColumn, boolean ascending, boolean ignoreCase, boolean numeric, boolean trimWhitespace, boolean delDupRange)
 	{
 		// column choices are 1 indexed...
-		addSortBy((new JSort.SortBy(--startColumn, endColumn, ascending, ignoreCase, numeric, trimWhitespace)));
+		addSortBy((new JSort.SortBy(--startColumn, endColumn, ascending, ignoreCase, numeric, trimWhitespace, delDupRange)));
 	}   //}}}
 
-	//{{{ setDeleteDuplicates(boolean)
+	//{{{ set/get DeleteDuplicates(boolean)
 	public void setDeleteDuplicates(boolean deleteDuplicates)
 	{
 		this.deleteDuplicates = deleteDuplicates;
-	}  //}}}
-
-	//{{{ getDeleteDuplicates()
+	} 
 	public boolean getDeleteDuplicates()
 	{
 		return deleteDuplicates;
-	}  //}}}
+	}  
+	//}}}
 
+	//{{{ set/get dontSort(boolean)
+	public void setDontSort(boolean dontSort)
+	{
+		this.dontSort = dontSort;
+	} 
+	public boolean getDontSort()
+	{
+		return dontSort;
+	}  
 	//}}}
 
 	//{{{ public sort methods
@@ -252,16 +276,14 @@ public class JSort implements Comparator
 	  *
 	  * @return int  if o1 > o2, positive, 0 if same and delete duplicates option set, else negative
 	  */
+//	public static int dontSort = 1;
 	public int compare(Object o1, Object o2)
 	{
 		// if they don't pass in strings, sort 'em anyway
 		String s1 = o1.toString(), s2 = o2.toString();
 
 		if(deleteDuplicates && s1.equals(s2))
-		{
 			return 0;
-		}
-
 		int retVal = 0;
 
 		for(int i = 0; i < options.size(); i++)
@@ -272,23 +294,14 @@ public class JSort implements Comparator
 			{
 				sb.startColumn = 0;
 			}
-			String sub1 = null;
-			String sub2 = null;
-			if(sb.endColumn > s1.length())
-			{
-				sub1 = s1.substring(sb.startColumn, s1.length());
-			}
-			else
-			{
-				sub1 = s1.substring(sb.startColumn, sb.endColumn);
-			}
-			if(sb.endColumn > s2.length())
-			{
-				sub2 = s2.substring(sb.startColumn, s2.length());
-			}
-			else
-			{
-				sub2 = s2.substring(sb.startColumn, sb.endColumn);
+			String sub1;
+			String sub2;
+			if (sb.endColumn == 0) {
+				sub1 = s1;
+				sub2 = s2;
+			} else {
+				sub1 = getCompareStringForSortby(sb, s1);
+				sub2 = getCompareStringForSortby(sb, s2);
 			}
 			if(sb.trimWhitespace)
 			{
@@ -297,11 +310,20 @@ public class JSort implements Comparator
 			}
 			
 			retVal = compare(sub1, sub2, sb);
+			if (TextToolsPlugin.debugTT) Log.log(Log.DEBUG, BeanShell.class,"JSort.298: retVal = "+retVal+", sub1 = "+sub1
+			+", sub2 = "+sub2+", sb = "+sb);
 
 			if(retVal == 0)
 			{
-				continue;
+				// rwadd: delete, if section equal and deldup selected
+				if (sb.delDupRange)
+					return 0;
+				else {
+					if (dontSort) return 1;  // if no sorting required, make 'bigger'
+					continue;
+				}
 			}
+			if (dontSort) return 1;  // if no sorting required, make 'bigger'
 
 			break;
 		}
@@ -458,9 +480,10 @@ public class JSort implements Comparator
 		public boolean ignoreCase;
 		public boolean numeric;
 		public boolean trimWhitespace;
+		public boolean delDupRange;
 
 		public SortBy(int startColumn, int endColumn, boolean ascending, boolean
-		              ignoreCase, boolean numeric, boolean trimWhitespace)
+		              ignoreCase, boolean numeric, boolean trimWhitespace, boolean delDupRange)
 		{
 			this.startColumn = startColumn;
 			this.endColumn = endColumn;
@@ -468,17 +491,37 @@ public class JSort implements Comparator
 			this.ignoreCase = ignoreCase;
 			this.numeric = numeric;
 			this.trimWhitespace = trimWhitespace;
+			this.delDupRange = delDupRange;
 		}
 		
 		public String toString()
 		{
 			StringBuffer sb = new StringBuffer();
-			sb.append("startColumn = ").append(startColumn).append(" endColumn = ").append(endColumn)
-				.append(" ascending = ").append(ascending).append(" ignoreCase = ")
-				.append(ignoreCase).append(" numeric = ").append(numeric).append(" trimWhitespace = ")
-				.append(trimWhitespace);
+			sb.append("startColumn = ").append(startColumn)
+				.append(" endColumn = ").append(endColumn)
+				.append(" ascending = ").append(ascending)
+				.append(" ignoreCase = ").append(ignoreCase)
+				.append(" numeric = ").append(numeric)
+				.append(" trimWhitespace = ").append(trimWhitespace)
+				.append(" delDupRange = ").append(delDupRange);
 			return sb.toString();
 		}
 	}  //}}}
+	private static String getCompareStringForSortby(SortBy sb, String compStr)
+	{
+		if(sb.startColumn > compStr.length()) 
+			return new String();
+		else {
+			if(sb.endColumn > compStr.length())
+			{
+				return compStr.substring(sb.startColumn, compStr.length());
+			}
+			else
+			{
+				return compStr.substring(sb.startColumn, sb.endColumn);
+			}
+		}
+	}
+
 }
 

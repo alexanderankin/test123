@@ -5,13 +5,13 @@
 <ACTIONS>
 	<ACTION NAME="sort-lines">
 		<CODE>
-			TextToolsPlugin.sortLines(textArea,false);
+			TextToolsSorting.sortLines(textArea,false);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="revsort-lines">
 		<CODE>
-			TextToolsPlugin.sortLines(textArea,true);
+			TextToolsSorting.sortLines(textArea,true);
 		</CODE>
 	</ACTION>
 
@@ -33,15 +33,21 @@
 		</CODE>
 	</ACTION>
 	
-	<ACTION NAME="field-sort-lines">
+	<ACTION NAME="delete-duplicated">
 		<CODE>
-			TextToolsPlugin.fieldSortLines(view, textArea);
+			TextToolsSorting.deleteDuplicates(view, textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="sort-advanced">
+		<CODE>
+			TextToolsSorting.sortAdvanced(view, textArea);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="shuffle-lines">
 		<CODE>
-			TextToolsPlugin.shuffleLines(view, textArea);
+			TextToolsSorting.shuffleLines(view, textArea);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="column-insert">
@@ -49,10 +55,9 @@
 			TextToolsPlugin.doColumnInsert(view);
 		</CODE>
 	</ACTION>
-	<!-- added by R. Widmann (Rudi.Widmann@web.de) -->
 	<ACTION NAME="textblock">
 		<CODE>
-			new TextToolsBlockHandlingDialog(view);
+		  TextToolsPlugin.textToolsBlockHandling(view, textArea);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="spacetotabs">

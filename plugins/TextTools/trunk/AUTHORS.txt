@@ -18,3 +18,5 @@ Nathan Tenney <eulernt@yahoo.com>
 
 Rudolf Widmann <Rudi.Widmann@web.de>
 	Block Insert/Increment
+	Delete Duplicates
+	Sort Advanced

@@ -74,33 +74,33 @@ public class TextToolsBlockHandling {
       // check anything is selected
       if (selCount == 0 )
       {
-	selBegin = bsu.getVisibleRow(textArea.getCaretPosition());
-	Log.log(Log.DEBUG, BeanShell.class,"selBegin = "+selBegin);
-	selEnd = selBegin + insertText.length();
-	textArea.goToBufferEnd(true);
+				selBegin = bsu.getVisibleRow(textArea.getCaretPosition());
+				Log.log(Log.DEBUG, BeanShell.class,"selBegin = "+selBegin);
+				selEnd = selBegin + insertText.length();
+				textArea.goToBufferEnd(true);
       } else {
-	// get range, maybe different per line ico multiple/ rect selections
-	// for several reasons, we take the width of the first selected line, and apply it to all selections
-	selBegin = bsu.getVisibleRow(sel[0].getStart());
-	selEnd = bsu.getVisibleRow(sel[0].getEnd(buffer, sel[0].getStartLine()));
+				// get range, maybe different per line ico multiple/ rect selections
+				// for several reasons, we take the width of the first selected line, and apply it to all selections
+				selBegin = bsu.getVisibleRow(sel[0].getStart());
+				selEnd = bsu.getVisibleRow(sel[0].getEnd(buffer, sel[0].getStartLine()));
       }
       /*********************************************************
        * check if only one line selected ==> select form cursor to eof
        *********************************************************/
       if (selCount == 1 && (sel[0].getStartLine() == sel[0].getEndLine())) {
-	if (trace) Log.log(Log.DEBUG, BeanShell.class,"only one selection line");
-	textArea.setCaretPosition(sel[0].getStart());
-	textArea.goToBufferEnd(true);
+				if (trace) Log.log(Log.DEBUG, BeanShell.class,"only one selection line");
+				textArea.setCaretPosition(sel[0].getStart());
+				textArea.goToBufferEnd(true);
       }
       /*********************************************************
        * check insert text matches selection
        *********************************************************/
       int targetLen = selEnd - selBegin;
-      if (!increment) {
-	if (insertText.length() < targetLen)
-	  insertText = insertText + MiscUtilities.createWhiteSpace(targetLen - insertText.length(), 0);
-	else if (insertText.length() > targetLen)
-	  insertText = insertText.substring(0,targetLen);
+      if (!increment && overwriteBlock) {  // insert shall match selection exactly
+				if (insertText.length() < targetLen)
+					insertText = insertText + MiscUtilities.createWhiteSpace(targetLen - insertText.length(), 0);
+				else if (insertText.length() > targetLen)
+					insertText = insertText.substring(0,targetLen);
       }
       /*********************************************************
        * prepare increment filling string
@@ -108,13 +108,13 @@ public class TextToolsBlockHandling {
       String nullsBlanksString=null;
       int currentIncValue=insertValue;
       if (increment) {
-	if (leadingZeros) {
-	  StringBuffer nulBuf = new StringBuffer("0000000000");
-	  for (int s=10; s<targetLen;s+=10) nulBuf.append("0000000000");
-	  nullsBlanksString = nulBuf.toString();
-	} else {
-	  nullsBlanksString = MiscUtilities.createWhiteSpace(targetLen, 0);
-	}
+				if (leadingZeros) {
+					StringBuffer nulBuf = new StringBuffer("0000000000");
+					for (int s=10; s<targetLen;s+=10) nulBuf.append("0000000000");
+					nullsBlanksString = nulBuf.toString();
+				} else {
+					nullsBlanksString = MiscUtilities.createWhiteSpace(targetLen, 0);
+				}
       }
        /*********************************************************
        * begin text manipulations
