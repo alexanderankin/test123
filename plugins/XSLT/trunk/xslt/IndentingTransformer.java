@@ -1,7 +1,7 @@
 /*
  *  AbstractIndentingTransformer.java - Indents XML elements, by adding whitespace where appropriate.
  *
- *  Copyright (c) 2002 Robert McKinnon
+ *  Copyright (c) 2002, 2003 Robert McKinnon
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -67,18 +67,6 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
   public void comment(char ch[], int start, int length) throws SAXException {
     try {
-      int priorSpaceIndex = start - 5;
-
-      while(priorSpaceIndex >= 0 && (Character.isSpaceChar(ch[priorSpaceIndex]) || ch[priorSpaceIndex] == '\t')) {
-        if(ch[priorSpaceIndex] == '\t') {
-          writer.write('\t');
-        } else {
-          writer.write(' ');
-        }
-
-        priorSpaceIndex--;
-      }
-
       writer.write("<!--");
       writer.write(ch, start, length);
       writer.write("-->");
@@ -203,14 +191,17 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
   private int writeElement(int start) throws IOException, SAXException {
     int end = getStartTagEnd(start);
-
     writeRemaining(start, end);
 
     if(isContinue) {
-      isEmptyElement = (chars[end - 1] == '/');
+      int offset = 1;
+      while(Character.isWhitespace(chars[end - offset])) {
+        offset++;
+      }
+      isEmptyElement = (chars[end - offset] == '/');
 
       if(isEmptyElement) {
-        end--;
+        end = end - offset;
       }
 
       AttributesImpl attributes = new AttributesImpl();
@@ -220,7 +211,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
       if(isEmptyElement) {
         endElement("", "", elementName);
-        end = end + 2;
+        end = end + offset + 1;
         isEmptyElement = false;
       } else {
         end = end + 1;
@@ -252,8 +243,13 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
           index++;
         }
         index++;
+//      } else if(aChar == '/') {
+//        while(chars[index] != '>') {
+//          index++;
+//        }
       } else if(aChar == '>') {
         end = index -1;
+//        end = index;
       }
     }
     return end;
@@ -273,7 +269,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     StringBuffer elementName = new StringBuffer();
     int index = start + 1;
 
-    while(!Character.isWhitespace(chars[index]) && chars[index] != '>') {
+    while(!Character.isWhitespace(chars[index]) && chars[index] != '>' && chars[index] != '/') {
       elementName.append(chars[index++]);
     }
 
