@@ -145,9 +145,10 @@ public class BlockHighlight
 
 
     /**
-     * Toggles block highlights for a buffer
+     * Updates the block highlighting for the <code>JEditTextArea</code>
+     * which display the given <code>buffer</code>
      */
-    public static void toggleHighlightEnabledFor(Buffer buffer) {
+    public static void updateTextAreas(Buffer buffer) {
         View[] views = jEdit.getViews();
         for (int i = 0; i < views.length; i++) {
             EditPane[] editPanes = views[i].getEditPanes();
@@ -155,6 +156,7 @@ public class BlockHighlight
 
             for (int j = 0; j < editPanes.length; j++) {
                 if (editPanes[j].getBuffer() != buffer) { continue; }
+
                 highlight = (BlockHighlight) highlights.get(editPanes[j]);
                 if (highlight != null) {
                     highlight.updateTextArea();
