@@ -23,7 +23,10 @@ package xslt;
 
 import org.apache.xerces.parsers.DOMParser;
 import org.apache.xpath.XPathAPI;
+import org.apache.xpath.NodeSetDTM;
 import org.apache.xpath.objects.XObject;
+import org.apache.xml.dtm.DTMIterator;
+import org.apache.xml.dtm.DTM;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -56,6 +59,7 @@ public class XPathTool extends JPanel {
 
     expressionPanel = new ExpressionPanel();
     evaluatePanel = new EvaluatePanel();
+    selectedResultPanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.xpath.evaluted.label"));
     summaryResultsPanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.summary.label"));
     xmlResultsPanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.xml.string.label"));
     xpathResultsPanel = new ResultsPanel(jEdit.getProperty("XPathTool.result.xpath.string.label"));
@@ -72,57 +76,98 @@ public class XPathTool extends JPanel {
 
     gbc = new GridBagConstraints();
     gbc.gridy = 2;
-    gbc.weightx = gbc.weighty = 1;
+//    gbc.weightx = gbc.weighty = 1;
     gbc.fill = GridBagConstraints.BOTH;
-    add(summaryResultsPanel, gbc);
+    add(selectedResultPanel, gbc);
 
     gbc = new GridBagConstraints();
     gbc.gridy = 3;
     gbc.weightx = gbc.weighty = 1;
     gbc.fill = GridBagConstraints.BOTH;
-    add(xpathResultsPanel, gbc);
+    add(summaryResultsPanel, gbc);
 
     gbc = new GridBagConstraints();
     gbc.gridy = 4;
+    gbc.weightx = gbc.weighty = 1;
+    gbc.fill = GridBagConstraints.BOTH;
+    add(xpathResultsPanel, gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.gridy = 5;
     gbc.weightx = 1;
     gbc.weighty = 4;
     gbc.fill = GridBagConstraints.BOTH;
     add(xmlResultsPanel, gbc);
   }
 
-
+  /**
+   * There are seven XPath nodes: root node, element,
+   * text node, attribute node, processing instruction node,
+   * namespace node, and comment node.
+   */
   private String getNodeTypeString(short nodeType) {
     switch(nodeType) {
-      case Node.ATTRIBUTE_NODE:
+      case DTM.ATTRIBUTE_NODE:
         return "attribute";
-      case Node.CDATA_SECTION_NODE:
-        return "CDATA section";
-      case Node.COMMENT_NODE:
+//      case DTM.CDATA_SECTION_NODE:
+//        return "CDATA section";
+      case DTM.COMMENT_NODE:
         return "comment";
-      case Node.DOCUMENT_FRAGMENT_NODE:
-        return "document fragment";
-      case Node.DOCUMENT_NODE:
-        return "document";
-      case Node.DOCUMENT_TYPE_NODE:
-        return "document type";
-      case Node.ELEMENT_NODE:
+//      case DTM.DOCUMENT_FRAGMENT_NODE:
+//        return "document fragment";
+      case DTM.DOCUMENT_NODE:
+        return "root";
+//      case DTM.DOCUMENT_TYPE_NODE:
+//        return "document type";
+      case DTM.ELEMENT_NODE:
         return "element";
-      case Node.ENTITY_NODE:
-        return "entity";
-      case Node.ENTITY_REFERENCE_NODE:
-        return "entity reference";
-      case Node.NOTATION_NODE:
+//      case DTM.ENTITY_NODE:
+//        return "entity";
+//      case DTM.ENTITY_REFERENCE_NODE:
+//        return "entity reference";
+      case DTM.NAMESPACE_NODE:
         return "notation";
-      case Node.PROCESSING_INSTRUCTION_NODE:
+//      case DTM.NOTATION_NODE:
+//        return "notation";
+      case DTM.PROCESSING_INSTRUCTION_NODE:
         return "processing instruction";
-      case Node.TEXT_NODE:
+      case DTM.TEXT_NODE:
         return "text";
       default:
         throw new IllegalArgumentException();
     }
   }
 
+
   /**
+   * Returns a message containing the data type selected by the XPath expression.
+   * Note: there are four data types in the XPath 1.0 data model: node-set, string,
+   * number, and boolean.
+   *
+   * @param xObject XObject to be converted
+   * @return string describing the selected data type
+   */
+  private String getDataTypeMessage(XObject xObject) throws TransformerException {
+    String typeMessage = null;
+
+    if(xObject.getType() == XObject.CLASS_NODESET) {
+      NodeSetDTM nodeSet = xObject.mutableNodeset();
+
+      Object[] messageArgs = new Object[]{new Integer(nodeSet.size())};
+      typeMessage = MessageFormat.format(jEdit.getProperty("XPathTool.result.xpath.node-set"), messageArgs);
+    } else {
+      Object[] messageArgs = new Object[]{xObject.getTypeString().substring(1).toLowerCase()};
+      typeMessage = MessageFormat.format(jEdit.getProperty("XPathTool.result.xpath.not-node-set"), messageArgs);
+    }
+
+    return typeMessage;
+  }
+
+  /**
+   * Returns a summary of the evaluation of an XPath expression.
+   * Note: there are four data types in the XPath 1.0 data model: node-set, string,
+   * number, and boolean.
+   *
    * @param xObject XObject to be converted
    * @return user-friendly string describing the supplied XObject
    */
@@ -130,29 +175,39 @@ public class XPathTool extends JPanel {
     StringBuffer buf = new StringBuffer();
 
     if(xObject.getType() == XObject.CLASS_NODESET) {
-      NodeList nodelist = xObject.nodelist();
-      Object[] messageArgs = new Object[]{new Integer(nodelist.getLength())};
-      buf.append(MessageFormat.format(jEdit.getProperty("XPathTool.result.nodes.summary"), messageArgs));
-      buf.append("\n");
+      NodeSetDTM nodeSet = xObject.mutableNodeset();
 
-      for(int i = 0; i < nodelist.getLength(); i++) {
-        Node node = nodelist.item(i);
-        String nodeType = getNodeTypeString(node.getNodeType());
-        String value = node.getNodeValue();
+      for(int i = 0; i < nodeSet.size(); i++) {
+        int nodeHandle = nodeSet.item(i);
+        DTM dtm = nodeSet.getDTM(nodeHandle);
+        short nodeType = dtm.getNodeType(nodeHandle);
 
-        if(value != null && node.getNodeType() == Node.TEXT_NODE) {
-          value = value.trim();
+        try {
+          String nodeTypeString = getNodeTypeString(nodeType);
+          String value = dtm.getNodeValue(nodeHandle);
+          String nodeName = dtm.getNodeNameX(nodeHandle);
+
+          String messageProperty = "XPathTool.result.node";
+          Object[] messageArgs = new Object[]{"" + i, nodeTypeString, nodeName, value};
+
+          if(nodeType == DTM.ELEMENT_NODE) {
+            messageProperty = "XPathTool.result.element";
+            messageArgs = new Object[]{"" + i, nodeTypeString, nodeName};
+          } else if(nodeType == DTM.TEXT_NODE || nodeType == DTM.COMMENT_NODE) {
+            messageProperty = "XPathTool.result.no-name-node";
+            messageArgs = new Object[]{"" + i, nodeTypeString, value};
+          } else if(nodeType == DTM.DOCUMENT_NODE) {
+            messageProperty = "XPathTool.result.root";
+            messageArgs = new Object[]{"" + i, nodeTypeString};
+          }
+
+          buf.append(MessageFormat.format(jEdit.getProperty(messageProperty), messageArgs));
+          buf.append("\n");
+        } catch(IllegalArgumentException e) {
+          ;// do nothing
         }
-
-        messageArgs = new Object[]{"" + i, nodeType, node.getNodeName(), value};
-        buf.append(MessageFormat.format(jEdit.getProperty("XPathTool.result.node"), messageArgs));
-        buf.append("\n");
       }
-
     } else {
-      Object[] messageArgs = new Object[]{xObject.getTypeString().substring(1).toLowerCase()};
-      buf.append(MessageFormat.format(jEdit.getProperty("XPathTool.result.non-nodes.summary"), messageArgs));
-      buf.append("\n");
       buf.append(xObject.toString());
     }
 
@@ -181,21 +236,33 @@ public class XPathTool extends JPanel {
 
 
   private void appendNode(Node node, StringBuffer buf, int indentLevel, boolean insideElement) {
-    if(node.getNodeType() == Node.ELEMENT_NODE) {
+    short type = node.getNodeType();
+
+    if(type == Node.ELEMENT_NODE) {
       appendElementNode(node, buf, indentLevel);
-    } else if(node.getNodeType() == Node.TEXT_NODE) {
+    } else if(type == Node.TEXT_NODE) {
       appendTextNode(node, buf, insideElement);
-    } else if(node.getNodeType() == Node.ATTRIBUTE_NODE) {
+    } else if(type == Node.ATTRIBUTE_NODE) {
       appendAttributeNode(node, buf);
-    } else if(node.getNodeType() == Node.DOCUMENT_NODE) {
+    } else if(type == Node.DOCUMENT_NODE) {
       appendChildNodes(node.getChildNodes(), 0, buf, -1);
-    } else if(node.getNodeType() == Node.COMMENT_NODE) {
+    } else if(type == Node.COMMENT_NODE) {
       appendCommentNode(node, buf, indentLevel);
+    } else if(type == Node.PROCESSING_INSTRUCTION_NODE) {
+      appendProcessingInstructionNode(node, buf);
     } else {
       appendNode(node.getNextSibling(), buf, indentLevel, true);
     }
   }
 
+
+  private void appendProcessingInstructionNode(Node node, StringBuffer buf) {
+    buf.append("<?");
+    buf.append(node.getNodeName());
+    buf.append(" ");
+    buf.append(node.getNodeValue());
+    buf.append("?>\n");
+  }
 
   private void appendCommentNode(Node node, StringBuffer buf, int indentLevel) {
     appendIndent(buf, indentLevel);
@@ -206,8 +273,9 @@ public class XPathTool extends JPanel {
 
 
   private void appendTextNode(Node node, StringBuffer buf, boolean insideElement) {
-    String value = node.getNodeValue().trim();
-    if(value.length() > 0 || !insideElement) {
+    String value = node.getNodeValue();
+    String trimmedValue = value.trim();
+    if(trimmedValue.length() > 0 || !insideElement) {
       buf.append(value);
     }
     if(!insideElement) {
@@ -363,8 +431,9 @@ public class XPathTool extends JPanel {
             parser.parse(inputSource);
             XObject xObject = XPathAPI.eval(parser.getDocument(), expressionPanel.textArea.getText());
 
+            selectedResultPanel.textArea.setText(getDataTypeMessage(xObject));
             summaryResultsPanel.textArea.setText(getSummaryString(xObject));
-            xpathResultsPanel.textArea.setText(xObject.str());
+            xpathResultsPanel.textArea.setText(xObject.xstr().toString());
             xmlResultsPanel.textArea.setText(getXmlString(xObject));
 
             summaryResultsPanel.textArea.setCaretPosition(0);
@@ -406,6 +475,7 @@ public class XPathTool extends JPanel {
   private View view;
   private ExpressionPanel expressionPanel;
   private EvaluatePanel evaluatePanel;
+  private ResultsPanel selectedResultPanel;
   private ResultsPanel summaryResultsPanel;
   private ResultsPanel xmlResultsPanel;
   private ResultsPanel xpathResultsPanel;
