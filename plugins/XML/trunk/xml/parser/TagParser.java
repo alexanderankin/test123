@@ -245,7 +245,7 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 					}
 				}
 
-				i = tag.end;
+				i = tag.end - 1;
 			}
 			else if(ch == '>')
 			{
@@ -326,13 +326,13 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 						if(tagCounter == 0)
 							return tag;
 						else
-							tagCounter++;
+							tagCounter--;
 					}
 					else if(tag.type == T_END_TAG)
 						tagCounter++;
 				}
 
-				i = tag.end;
+				i = tag.start;
 			}
 		}
 

@@ -376,7 +376,8 @@ public class XmlTree extends JPanel implements EBComponent
 					setText(tag.attributeString);
 					break;
 				}
-				setIcon(null);
+				setIcon(tag.empty ? XmlListCellRenderer.EMPTY_ELEMENT_ICON
+					: XmlListCellRenderer.ELEMENT_ICON);
 			}
 			// is root?
 			else if(node.getParent() == null)
