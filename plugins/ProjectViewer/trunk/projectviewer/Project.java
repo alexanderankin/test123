@@ -702,7 +702,7 @@ public final class Project implements EBComponent {
             out.println("# Project " + getName() + " configuration");
 
             // Project Root
-            out.println("root=" + root.getPath());
+            out.println("root=" + escape(root.getPath()));
             
             // URL Root
             out.println("webroot=" + getURLRoot());
@@ -712,7 +712,7 @@ public final class Project implements EBComponent {
             for ( Iterator i = projectFiles(); i.hasNext(); ) {
                 out.println(
                     "file." + counter + "=" +
-                    ((ProjectFile)i.next()).getPath()
+                    escape(((ProjectFile)i.next()).getPath())
                 );
                 counter++;
             }
@@ -722,7 +722,7 @@ public final class Project implements EBComponent {
                 for (int i = 0; i < openFiles.size(); i++) {
                     out.println(
                         "open_files." + (i+1) + "=" + 
-                        openFiles.get(i).toString()
+                        escape(openFiles.get(i).toString())
                     );
                 }
             }
@@ -734,6 +734,16 @@ public final class Project implements EBComponent {
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
         }
+    }
+    
+    /** Escape the backslashes in Win32 paths. */
+    private String escape(String str) {
+        StringBuffer buf = new StringBuffer(str);
+        for (int i = 0; i < buf.length(); i++) {
+            if (buf.charAt(i) == '\\')
+                buf.replace(i, ++i, "\\\\");
+        }
+        return buf.toString();
     }
     
     /** Clears the open files list. */
