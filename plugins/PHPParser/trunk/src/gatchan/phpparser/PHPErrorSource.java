@@ -22,20 +22,29 @@ public final class PHPErrorSource extends DefaultErrorSource implements PHPParse
   }
 
   public void parseError(final PHPParseErrorEvent e) {
-    addError(ErrorSource.ERROR,
-             e.getPath(),
-             e.getBeginLine() - 1,
-             e.getBeginColumn()-1,
-             e.getEndColumn(),
-             e.getMessage());
+    if (e.getBeginLine() != e.getEndLine()) {
+      addError(ErrorSource.ERROR,
+              e.getPath(),
+              e.getBeginLine() - 1,
+              e.getBeginColumn() - 1,
+              e.getBeginColumn(),
+              e.getMessage());
+    } else {
+      addError(ErrorSource.ERROR,
+              e.getPath(),
+              e.getBeginLine() - 1,
+              e.getBeginColumn() - 1,
+              e.getEndColumn(),
+              e.getMessage());
+    }
   }
 
   public void parseMessage(final PHPParseMessageEvent e) {
     addError(ErrorSource.WARNING,
-             e.getPath(),
-             e.getBeginLine() - 1,
-             e.getBeginColumn()-1,
-             e.getEndColumn(),
-             e.getMessage());
+            e.getPath(),
+            e.getBeginLine() - 1,
+            e.getBeginColumn() - 1,
+            e.getEndColumn(),
+            e.getMessage());
   }
 }

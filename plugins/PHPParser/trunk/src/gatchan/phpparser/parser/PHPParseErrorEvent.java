@@ -1,5 +1,8 @@
 package gatchan.phpparser.parser;
 
+import org.gjt.sp.util.Log;
+import gatchan.phpparser.PHPParserPlugin;
+
 /**
  * The PHPParseErrorEvent.
  *
@@ -44,6 +47,7 @@ public class PHPParseErrorEvent {
     this.sourceEnd = sourceEnd;
     this.tokenGot = tokenGot;
     this.expectedToken = expectedToken;
+    Log.log(Log.MESSAGE,PHPParseErrorEvent.class,toString());
   }
 
   public int getLevel() {
@@ -88,5 +92,17 @@ public class PHPParseErrorEvent {
 
   public String getPath() {
     return path;
+  }
+
+  public String toString() {
+    return "PHPParseErrorEvent{" +
+            "level=" + level +
+            ", path='" + path + "', beginLine=" + beginLine +
+            ", beginColumn=" + beginColumn +
+            ", endLine=" + endLine +
+            ", endColumn=" + endColumn +
+            ", sourceStart=" + sourceStart +
+            ", sourceEnd=" + sourceEnd +
+            ", message='" + message + "', tokenGot='" + tokenGot + "', expectedToken='" + expectedToken + "'}";
   }
 }
