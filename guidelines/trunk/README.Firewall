@@ -1,6 +1,6 @@
 CVS policy file
 
-plugin: InfoViewer
+plugin: Firewall
 author: Dirk Moebius <dmoebius@gmx.net>
 
 You may commit changes to this plugin without first consulting the author.
