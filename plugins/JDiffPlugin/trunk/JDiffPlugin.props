@@ -103,6 +103,9 @@ jdiff.two-files-needed.message=Two files must be selected
 jdiff.file-not-found.title=File not found
 jdiff.file-not-found.message=\{0,choice,0\#|1\#Base file does not exist.|2\#New file does not exist.|3\#Base file and new file do not exist.\}
 
+jdiff.file-not-opened.title=File could not be opened
+jdiff.file-not-opened.message=The \{0,choice,0\#base|1\#new\} file could not be opened.
+
 # Labels
 jdiff.dual-diff-dialog.label=Show dual diff display
 jdiff.ok.label=OK
