@@ -57,9 +57,10 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 
 	private HashMap entries = new HashMap();
 
+	//{{{ getDescription() method
 	public String getDescription() {
 		return jEdit.getProperty("projectviewer.cvs-filter");
-	}
+	} //}}}
 	
 	//{{{ accept(File) method
 	/**

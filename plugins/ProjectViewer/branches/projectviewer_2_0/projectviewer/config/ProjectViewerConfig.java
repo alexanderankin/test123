@@ -16,7 +16,7 @@
  
 package projectviewer.config;
 
-// Import Java
+//{{{ Imports
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Properties;
@@ -28,10 +28,10 @@ import java.io.IOException;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-// Import jEdit
 import org.gjt.sp.util.Log;
-import projectviewer.ProjectPlugin;
-//import projectviewer.ProjectManager;
+import org.gjt.sp.jedit.jEdit;
+import projectviewer.ProjectPlugin; 
+//}}}
 
 /**
  *  <p>Class to hold configuration information for the plugin.</p>
@@ -47,8 +47,8 @@ import projectviewer.ProjectPlugin;
  */
 public final class ProjectViewerConfig {
     
-    //-------------- Static attributes
-    
+    //{{{ Static attributes
+
     public static final String CONFIG_FILE = "config.properties";
     
     public static final String CLOSE_FILES_OPT            = "projectviewer.close_files";
@@ -67,9 +67,11 @@ public final class ProjectViewerConfig {
     public static final String SHOW_FILES_OPT             = "projectviewer.show_files_tree";
     public static final String SHOW_WFILES_OPT            = "projectviewer.show_working_files_tree";
 
-    private static ProjectViewerConfig config;
+    private static ProjectViewerConfig config; 
+	
+	//}}}
     
-    //-------------- Static methods
+    //{{{ Static methods
     
     /** Returns the config. */
     public static synchronized ProjectViewerConfig getInstance() {
@@ -118,8 +120,9 @@ public final class ProjectViewerConfig {
         }
         return config;
     }
+     //}}}
     
-    //-------------- Instance variables
+	//{{{ Instance variables
     
     private boolean closeFiles              = true;
     private boolean rememberOpen            = true;
@@ -135,12 +138,14 @@ public final class ProjectViewerConfig {
     private String excludeDirs              = null;
     private String includeFiles             = null;
     private String lastProject              = null; 
-    private String browserPath		        = null;
+    private String browserPath		        = jEdit.getProperty("projectviewer.browser__path");
     
     
     private ArrayList listeners;
-    
-    //-------------- Constructors
+
+    //}}}
+
+    //{{{ Constructors
     
     /**
      *  <p>Initializes the configuration using the properties available
@@ -219,7 +224,9 @@ public final class ProjectViewerConfig {
         
     }
     
-    //-------------- Properties
+	//}}}
+    
+	//{{{ Properties (Getters and Setters)
 
     public void setCloseFiles(boolean closeFiles) {
         this.closeFiles = closeFiles;
@@ -281,7 +288,6 @@ public final class ProjectViewerConfig {
         firePropertyChanged(SHOW_WFILES_OPT, old, newShowWorkingFilesTree);
     }
 
-    
     public boolean getCloseFiles() {
         return closeFiles;
     }
@@ -335,8 +341,9 @@ public final class ProjectViewerConfig {
         return showWorkingFilesTree;
     }
 
-    
-    //-------------- Public Methods
+    //}}}
+	
+    //{{{ Public Methods
 
     /**
      *  Adds a new property change listener to the list.
@@ -399,7 +406,9 @@ public final class ProjectViewerConfig {
         
     }
     
-    //--------------- Private Methods
+	//}}}
+    
+	//{{{ Private Methods
     
     /** Fires and event when a boolean property is changed. */
     private void firePropertyChanged(String property, boolean oldValue, boolean newValue) {
@@ -418,5 +427,7 @@ public final class ProjectViewerConfig {
                 ((PropertyChangeListener)i.next()).propertyChange(evt);
             }
         }
-    }
+    } 
+	
+	//}}}
 }
