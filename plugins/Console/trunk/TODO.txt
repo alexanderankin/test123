@@ -1,15 +1,22 @@
 + version 3.2:
 
 - need <INIT> code block in commando files
-- file name, built-in, alias completion
 - finish documentation
 - improve commando error handling
 - 'compile' and 'run' commands:
   - need more commandos: at least perl, python, make, sh
   - option pane
+  - documentation
 
 + later:
 
+- FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
+- cdpath feature:
+  %cdpath_add <dir>
+  %cdpath_remove <dir>
+  %cdpath_list <dir>
+  and maybe an option pane
+- file name, built-in, alias completion
 - keep browser dir and console dir in sync
 - ${beanshell:...} syntax
 - aliases option pane
@@ -18,7 +25,6 @@
   - cd to a non-local directory (don't allow running commands from non
     local dir, only built-ins)
 - globs (non-Windows only, Windows programs do their own glob expansion)
-- FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
 - commando: lower case tag names?
 - shift-click on toolbar button runs without displaying dialog box
 - after jEdit API additions: tips of the day

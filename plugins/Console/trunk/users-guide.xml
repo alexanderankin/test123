@@ -672,6 +672,9 @@ confirmation dialog will be shown before running this command.</para></listitem>
 run this command in.</para></listitem>
 <listitem><para><literal>TO_BUFFER</literal> - If <quote>TRUE</quote>,
 the command output will be shown in a new buffer.</para></listitem>
+<listitem><para><literal>BUFFER_MODE</literal> - If <literal>TO_BUFFER</literal>
+is <quote>TRUE</quote>, this parameter can be used to specify the edit mode
+of the new buffer. The default value is <quote>text</quote>.</para></listitem>
 </itemizedlist>
 
 <para>
@@ -806,7 +809,7 @@ the command output will be shown in a new buffer.</para></listitem>
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 3.2</emphasis>
-   requires jEdit 4.0pre5 and the ErrorList plugin 1.2.</para>
+   requires jEdit 4.0pre8 and the ErrorList plugin 1.2.</para>
 
    <itemizedlist>
     <listitem><para>
@@ -826,8 +829,9 @@ the command output will be shown in a new buffer.</para></listitem>
      <literal>COMMAND</literal> tag.
     </para></listitem>
     <listitem><para>
-     A few new commando files added: <filename>jikes</filename>,
-     <filename>latex</filename>
+     A few new commando files added: <filename>ant</filename>,
+     <filename>jikes</filename>, <filename>latex</filename>,
+     <filename>yap</filename>
     </para></listitem>
     <listitem><para>
      Commandos are now made into normal jEdit actions using the new
@@ -861,7 +865,7 @@ the command output will be shown in a new buffer.</para></listitem>
      Changing the console font didn't take effect until jEdit was restarted.
     </para></listitem>
     <listitem><para>
-     If a compiler error message had a line number of '0', the error prasing
+     If a compiler error message had a line number of '0', the error parsing
      would throw an exception.
     </para></listitem>
     <listitem><para>
