@@ -22,7 +22,7 @@
 package ctags.bg;
 
 //{{{ imports
-import ctags.bg.*;
+//import ctags.bg.*;
 
 import java.util.*;
 import java.io.*;
@@ -128,6 +128,23 @@ public class CTAGS_BG implements Serializable
             return false;
         }
     }
+    
+    public static boolean saveGlobalTagsBuffer(CTAGS_Buffer buff, String filename)
+    {
+        System.out.println("Try to save "+filename);
+        try
+        {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(filename));
+            out.writeObject(buff);
+            out.close();
+            return true;
+        }
+        catch (Exception e)
+        {
+            System.out.println("CTAGS: Exception during serialization. \n" + e);
+            return false;
+        }
+    }
 
     /**
      *  Restore already serialized CTAGS_Buffer
@@ -139,6 +156,7 @@ public class CTAGS_BG implements Serializable
     {
         try
         {
+            System.out.println("Loading CTAGS_Buffer from "+filename);
             ObjectInputStream in = new ObjectInputStream(new FileInputStream(filename));
             CTAGS_Buffer b = (CTAGS_Buffer) in.readObject();
             return b;
@@ -146,9 +164,11 @@ public class CTAGS_BG implements Serializable
         catch (Exception e)
         {
             System.out.println("CTAGS: Exception during loading from serialized object");
+            e.printStackTrace();
             return null;
         }
     }
+    
 //}}}
 }
 // end of CTAGS_BG

@@ -1,7 +1,7 @@
 // * :tabSize=4:indentSize=4:
 // * :folding=explicit:collapseFolds=1:
 
-//{{{ -----------  Imports
+//{{{ Imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
@@ -16,16 +16,10 @@ import projectviewer.vpt.*;
 import projectviewer.event.*;
 //}}}
 
-/**
- *  Main plugin class
- *
- *@author     pavlikus
- */
 public class JumpPlugin extends EditPlugin
 {
 
 //{{{ Fields
-
     public final static String NAME = "JumpPlugin";
     public final static String MENU = "JumpPlugin.menu";
     public final static String PROPERTY_PREFIX = "plugin.JumpPlugin.";
@@ -39,9 +33,7 @@ public class JumpPlugin extends EditPlugin
     public static boolean isListenerAdded = false;
     private static HashMap projectBuffers;
     private static ProjectBuffer activeProjectBuffer;
-    private static Vector buffersForDelete;
-
-//}}}
+    private static Vector buffersForDelete;//}}}
 
 //{{{ EditPlugin methods
 
@@ -49,27 +41,22 @@ public class JumpPlugin extends EditPlugin
     public void start()
     {
         jump_actions = new Jump();
-    }
-
-//}}}
+    }//}}}
 
 //{{{ EditPlugin.stop
     public void stop()
     {
         projectRenamedWorkaround();
         String s = System.getProperty("file.separator");
-        //if (jEdit.getBooleanProperty("jump.enable", false) == false || isListenerAdded == false) return;
-        //System.out.println("Buffers to drop = " + buffersForDelete.size());
+
         try
         {
             // Delete unneeded .jump files
-
             File f;
             for (int i = 0; i < buffersForDelete.size(); i++)
             {
-                f = new File(System.getProperty("user.home") + s + ".jedit" + s + "projectviewer" + s + "projects" + s + (String) buffersForDelete.get(i));
+                f = new File(System.getProperty("user.home") + s + ".jedit" + s + "jump" + s + (String) buffersForDelete.get(i));
                 f.delete();
-                //System.out.println("File " + f + " deleted");
             }
         }
         catch (Exception ex)
@@ -81,25 +68,19 @@ public class JumpPlugin extends EditPlugin
         {
             return;
         }
+        
         // Save all ProjectBuffers
-        //System.out.println("Buffers to save = " + projectBuffers.size());
         try
         {
             if (projectBuffers.size() > 0)
             {
                 ProjectBuffer pb;
-                //Iterator buffers = projectBuffers.entrySet().iterator();
                 Vector v = new Vector(projectBuffers.values());
-                //System.out.println("Before while...");
 
                 for (int i = 0; i < v.size(); i++)
                 {
-
-                    //Object o = buffers.next();
-                    //System.out.println("Try to save"+ (ProjectBuffer)o.PROJECT_TAGS.toString());
                     pb = (ProjectBuffer) v.get(i);
                     pb.ctags_bg.saveBuffer(pb.PROJECT_CTBUFFER, pb.PROJECT_TAGS.toString());
-                    //System.out.println("File " + pb.PROJECT_ROOT + " saved");
                 }
             }
         }
@@ -109,9 +90,7 @@ public class JumpPlugin extends EditPlugin
             e.printStackTrace();
         }
         dispose();
-    }
-
-//}}}
+    }//}}}
 
 //}}}
 
@@ -358,4 +337,3 @@ public void dispose()
 //}}}
 
 }
-

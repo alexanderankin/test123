@@ -1,6 +1,6 @@
 /*
  * CompleteWordList.java - Modified Slava's CompleteWord, since I can't successfully extend it :(
- * :tabSize=8:indentSize=8:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2000, 2001 Slava Pestov
@@ -37,12 +37,14 @@ import projectviewer.vpt.*;
 
 public class CompleteWordList extends JWindow
 {
+	boolean isGlobalSearch; 
+	
 	//{{{ CompleteWord constructor
 	public CompleteWordList(View view, String word, Vector completions, Point location,
-		String noWordSep)
+		String noWordSep, boolean isGlobalSearch)
 	{
 		super(view);
-
+		this.isGlobalSearch = isGlobalSearch; 
 		this.noWordSep = noWordSep;
 
 		setContentPane(new JPanel(new BorderLayout())
@@ -115,22 +117,29 @@ public class CompleteWordList extends JWindow
 
 	//{{{ Private members
 
-	//{{{ getCompletions
-	private Vector getCompletions(String prefix)
-	{ 
+//{{{ getCompletions
+private Vector getCompletions(String sel)
+{ 
+	//TagsBinSearcher tbs;
+	Vector tags = new Vector();
+	
 		ProjectBuffer currentTags = JumpPlugin.getActiveProjectBuffer();
-		Vector tags = currentTags.PROJECT_CTBUFFER.getEntresByStartPrefix(prefix);
-		Vector completions = new Vector();
+		if (currentTags == null) return null;
+		tags = currentTags.PROJECT_CTBUFFER.getEntresByStartPrefix(sel);
+	
 		
-		String entry;
-		for(int i=0; i<tags.size(); i++)
-		{
-		    entry = (String) tags.get(i);
-		    completions.add(new Completion(entry, false));
-		}
-		MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
-		return completions;
-	} //}}}
+
+	
+	Vector completions = new Vector();
+	String entry;
+	for(int i=0; i<tags.size(); i++)
+	{
+	    entry = (String) tags.get(i);
+	    completions.add(new Completion(entry, false));
+	}
+	MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
+	return completions;
+} //}}} 
 
 	//{{{ completeWord() method
 	private static String completeWord(String line, int offset, String noWordSep)

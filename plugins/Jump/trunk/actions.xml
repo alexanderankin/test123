@@ -20,30 +20,35 @@
             JumpPlugin.jump_actions.showProjectJump();
         </CODE>
     </ACTION>
-    
+
     <ACTION NAME="JumpPlugin.historyjump">
         <CODE>
             JumpPlugin.jump_actions.historyJump();
         </CODE>
     </ACTION>
-    
+
     <ACTION NAME="JumpPlugin.gettagbyinput">
         <CODE>
             JumpPlugin.jump_actions.jumpByInput();
         </CODE>
     </ACTION>
-    
+
     <ACTION NAME="JumpPlugin.foldjump">
         <CODE>
             JumpPlugin.jump_actions.showFoldJump();
         </CODE>
     </ACTION>
-    
+
     <ACTION NAME="JumpPlugin.completetag">
         <CODE>
-            JumpPlugin.jump_actions.completeTag();
+            JumpPlugin.jump_actions.completeTag(false);
         </CODE>
     </ACTION>
-    
+
+	<!-- <ACTION NAME="JumpPlugin.completeglobaltag">
+        <CODE>
+            JumpPlugin.jump_actions.completeTag(true);
+        </CODE>
+    </ACTION>
     
 </ACTIONS>

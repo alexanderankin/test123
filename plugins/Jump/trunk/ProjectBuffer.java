@@ -52,22 +52,19 @@ public class ProjectBuffer
     public Vector DELETE_HELPER = new Vector();
     public CTAGS_Buffer PROJECT_CTBUFFER;
     public TypeTag TYPE_TAG_WINDOW;
-    public CTAGS_BG ctags_bg;
-//}}}
+    public CTAGS_BG ctags_bg; //}}}
     
-//{{{ Constructor
-    protected ProjectBuffer()
-    {}
-//}}}
+    //{{{ Constructor
+    protected ProjectBuffer() {} //}}}
 
-//{{{ boolean init 
+    //{{{ boolean init 
 /**
  * Init given ProjectBuffer. (load tags, init history etc.) 
  */   
     protected boolean init(ProjectBuffer pb , String name)
     { 
         long t1;
-        t1 = System.currentTimeMillis();
+        t1 = System.currentTimeMillis(); 
         ProjectManager pm = ProjectManager.getInstance();
         pb.PROJECT = pm.getProject(name);
         if (pb.PROJECT != null)
@@ -77,7 +74,7 @@ public class ProjectBuffer
             
             pb.PROJECT_ROOT = pb.PROJECT.getRootPath();
             pb.PROJECT_NAME = name;
-            pb.PROJECT_TAGS = new File (System.getProperty("user.home")+s+".jedit"+s+"projectviewer"+s+"projects"+s+this.PROJECT_NAME+".jump");
+            pb.PROJECT_TAGS = new File (System.getProperty("user.home")+s+".jedit"+s+"jump"+s+this.PROJECT_NAME+".jump");
             Collection v0 = Collections.synchronizedCollection(PROJECT.getFiles());
 
             Vector v = new Vector(v0);
@@ -94,7 +91,6 @@ public class ProjectBuffer
             pb.JUMP_HISTORY = new JumpHistory();
             pb.HISTORY = HistoryModel.getModel("jump.tag_history.project."+pb.PROJECT_NAME);
             // Init TypeTag window class
-            //pb.TYPE_TAG_WINDOW = new TypeTag();
             
             System.out.println("Buffer creating took - "+(System.currentTimeMillis()-t1)+" ms");
             return true;
@@ -105,17 +101,15 @@ public class ProjectBuffer
             return false;
         }
         
-    }
-//}}}
+    } //}}}
 
-//{{{ getTypeTag
+    //{{{ getTypeTag
     public TypeTag getTypeTag()
     {
         return new TypeTag();    
-    }
-//}}}
+    } //}}}
     
-//{{{ getProjectBuffer(String name)
+    //{{{ getProjectBuffer(String name)
 /**
  * Query point to create new ProjectBuffer object
  */ 
@@ -124,8 +118,7 @@ public class ProjectBuffer
         ProjectBuffer pb = new ProjectBuffer();
         if (pb.init(pb, name)) return pb;
         return null;
-    }
-//}}}
+    } //}}}
     
 //{{{ .jump file stuff
 
@@ -137,7 +130,6 @@ public class ProjectBuffer
     {
         try
         {
-
             pb.PROJECT_CTBUFFER = ctags_bg.getParser().parse(pb.PROJECT_FILES);
             // if project don't contain any vaild files to parse (for ex. html, xml, etc.) we returns false.
             if (pb.PROJECT_CTBUFFER == null) throw new Exception();

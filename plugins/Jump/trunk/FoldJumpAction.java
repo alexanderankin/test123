@@ -4,6 +4,8 @@
 //{{{ IMPORTS
 import org.gjt.sp.jedit.*;
 
+import java.awt.*;
+
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.msg.*;
@@ -78,7 +80,7 @@ class FoldJumpAction
         }
         
         // If more than one fold founded - show jump list
-        FoldJumpMenu jl = new FoldJumpMenu(view, foundedFolds, new FoldListModel(), true, "Fold to jump:", 30);
+        FoldJumpMenu jl = new FoldJumpMenu(view, foundedFolds, new FoldListModel(), true, "Fold to jump:", 30, Jump.getListLocation());
     }
 
 //}}}
@@ -147,9 +149,9 @@ class FoldJumpAction
          */
         public FoldJumpMenu(View parent, Object[] list,
                 ListModel model, boolean incr_search, String title,
-                int list_width)
+                int list_width, Point location)
         {
-            super(parent, list, model, incr_search, title, list_width);
+            super(parent, list, model, incr_search, title, list_width, location);
         }
 
         public void processAction(Object o)

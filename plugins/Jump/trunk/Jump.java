@@ -4,7 +4,11 @@
 //{{{ imports
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.*;
-
+import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.jedit.gui.*;
+import java.io.*;
+import java.awt.*;
+import javax.swing.*;
 import projectviewer.*;
 import projectviewer.vpt.*;
 import projectviewer.event.*;
@@ -12,7 +16,43 @@ import projectviewer.event.*;
 
 public class Jump
 {
+
+    /* public GlobalTagsBuffer globalBuffer; */
+
+//{{{ constructor
+public Jump()
+{
+    String s = System.getProperty("file.separator");
+    File jumpDir = new File(System.getProperty("user.home")+s+".jedit"+s+"jump");
+    if (!jumpDir.exists())
+    {
+        jumpDir.mkdirs();   
+    }
     
+    
+    // TEMPORARY HERE!!!
+//    jEdit.setProperty("jump.globaltags_name.0","java");
+//    jEdit.setProperty("jump.globaltags_dir.0","/mnt/win_d/win_lin/j2se142");
+//    jEdit.setBooleanProperty("jump.globaltags_enabled.0", true);
+//    try
+//    {
+//        globalBuffer = new GlobalTagsBuffer();
+//    }
+//    catch(Exception e)
+//    {
+//        System.out.println("Exception in Jump.java constructor");
+//         e.printStackTrace();   
+//    }
+    
+} //}}}
+
+//{{{ getGlobalTagsBuffer
+/* public GlobalTagsBuffer getGlobalTagsBuffer()
+{
+    return globalBuffer;   
+} */
+//}}}  
+
 //{{{ boolean isJumpEnabled()
     public boolean isJumpEnabled()
     {
@@ -74,7 +114,7 @@ public class Jump
         }
     }
 //}}}
-    
+
 //{{{ void showTagsJump()
     public void showTagsJump()
     {
@@ -109,7 +149,7 @@ public class Jump
         //     tja.showList();
         // }
     }//}}}
-    
+
 //{{{ void showProjectJump()
     public void showProjectJump()
     {
@@ -162,8 +202,8 @@ public class Jump
     }
 //}}}    
 
-//{{{ 
-    public void completeTag()
+//{{{ completeTag
+    public void completeTag(boolean isGlobalSearch)
     {
         View view = jEdit.getActiveView();
         
@@ -183,7 +223,7 @@ public class Jump
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {   
             JumpPlugin.getListener().reloadProjectForced();
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag();    
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag(isGlobalSearch);    
         }
         else
         {
@@ -200,11 +240,29 @@ public class Jump
                     }
                     
                     JumpPlugin.setActiveProjectBuffer(b);
-                    if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag();
+                    if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag(isGlobalSearch);
                 }
         }
     }
-//}}}
+//}}} S
+
+//{{{ searchGlobalTag
+/* public void searchGlobalTag()
+{
+    View view = jEdit.getActiveView();
+    
+    if (!isJumpEnabled()) return;
+    // String
+    
+    if (!JumpPlugin.isListenerAdded)
+    { 
+        System.out.println("showProjectJump: init JumpPlugin...");
+        JumpPlugin.init();
+    }
+    
+     JumpPlugin.pja.searchGlobalTag();     
+    
+} //}}}*/
 
 //{{{ void reloadTagsOnProject()
     public void reloadTagsOnProject()
@@ -214,7 +272,7 @@ public class Jump
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
     }
 //}}}
-    
+
 //{{{ void historyJump()
     public void historyJump()
     {
@@ -243,7 +301,7 @@ public class Jump
         //JumpPlugin.pja.JumpToPreviousTag();
     }
 //}}}
-    
+
 //{{{ void jumpByInput()
     public void jumpByInput()
     {
@@ -255,7 +313,7 @@ public class Jump
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {
             JumpPlugin.getListener().reloadProjectForced();
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTagByInput();    
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.JumpToTagByInput();
         }
         else
         {
@@ -273,6 +331,21 @@ public class Jump
     }
 //}}}
 
+
+//{{{ getListLocation
+public static Point getListLocation()
+{
+    JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+    textArea.scrollToCaret(false);
+    
+    int caret = textArea.getCaretPosition();
+    //String sel = textArea.getSelectedText();
+    
+    Point location = textArea.offsetToXY(caret);
+	location.y += textArea.getPainter().getFontMetrics().getHeight();
+	SwingUtilities.convertPointToScreen(location, textArea.getPainter());
+    return location;
+} //}}}
 
 }
 
