@@ -15,6 +15,7 @@
 
 + version 0.7:
 
+- tag hilite: respect syntax info
 - id completion
 - html: use jtidy instead of retarded Swing parser.
 - switching between two edit panes with same buffer: expand tree at

@@ -416,7 +416,7 @@ public class XmlActions
 		if(!(buffer.isEditable()
 			&& closeCompletion
 			&& (completionInfo != null
-			|| buffer.getProperty("xml.parser") != null)))
+			|| !"xml".equals(buffer.getProperty("xml.parser"))))
 		{
 			return;
 		}
