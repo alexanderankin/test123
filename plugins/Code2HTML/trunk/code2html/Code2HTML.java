@@ -83,7 +83,7 @@ public class Code2HTML
 
         Buffer newBuffer = jEdit.newFile(null);
 
-        Code2HTML.setBufferText(newBuffer, htmlString);
+        newBuffer.insert(0, htmlString);
 
         return newBuffer;
     }
@@ -171,14 +171,6 @@ public class Code2HTML
             }
             out.write("\n");
         }
-    }
-
-
-    private static void setBufferText(Buffer buffer, String text) {
-        buffer.beginCompoundEdit();
-        buffer.remove(0, buffer.getLength());
-        buffer.insert(0, text);
-        buffer.endCompoundEdit();
     }
 
 
