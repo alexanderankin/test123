@@ -1,0 +1,217 @@
+# Plugin properties
+plugin.InfoViewerPlugin.name=InfoViewer
+plugin.InfoViewerPlugin.author=Dirk Moebius
+plugin.InfoViewerPlugin.version=0.5.4
+plugin.InfoViewerPlugin.docs=index.html
+
+plugin.InfoViewerPlugin.depend.0=jdk 1.1
+plugin.InfoViewerPlugin.depend.1=jedit 03.00.99.00
+plugin.InfoViewerPlugin.depend.2=plugin EditBusPlugin 0.9.4
+
+
+# Plugin menu properties
+infoviewer-menu=infoviewer-open - infoviewer-open-buffer infoviewer-open-sel
+infoviewer-menu.label=InfoViewer
+infoviewer-open.label=Open Browser...
+infoviewer-open-buffer.label=Open current buffer in InfoViewer
+infoviewer-open-sel.label=Open selected URL in InfoViewer
+
+
+# InfoViewer menu properties
+infoviewer.menu.file=File
+infoviewer.menu.file.mnemonic=F
+infoviewer.menu.edit=Edit
+infoviewer.menu.edit.mnemonic=E
+infoviewer.menu.goto=Go
+infoviewer.menu.goto.mnemonic=G
+infoviewer.menu.bmarks=Bookmarks
+infoviewer.menu.bmarks.mnemonic=B
+infoviewer.menu.help=Help
+infoviewer.menu.help.mnemonic=H
+infoviewer.menu.help.readme=InfoViewer UserGuide
+infoviewer.menu.help.readme.mnemonic=I
+
+
+# Misc properties
+infoviewer.title=InfoViewer
+infoviewer.titlewithurl=InfoViewer: {0}
+infoviewer.notitle=(no title)
+infoviewer.greetstring={0} v{1}
+infoviewer.label.gotoURL=Go to:\ 
+infoviewer.status.opening=Opening {0} ...
+infoviewer.status.loading=Loading {0} ...
+infoviewer.status.ready=Ready. {0} bytes.
+infoviewer.status.error=Error.
+
+
+# Actions
+infoviewer.open_file=Open File...
+infoviewer.open_file.icon=Open24.gif
+infoviewer.open_file.mnemonic=O
+infoviewer.open_file.description=Open a file...
+infoviewer.open_file.shortcut=C+o
+
+infoviewer.edit_url=Edit current URL
+infoviewer.edit_url.icon=Edit24.gif
+infoviewer.edit_url.mnemonic=O
+infoviewer.edit_url.description=Edit the current document with jEdit
+infoviewer.edit_url.shortcut=C+e
+
+infoviewer.reload=Reload
+infoviewer.reload.icon=Refresh24.gif
+infoviewer.reload.mnemonic=R
+infoviewer.reload.description=Reload the current page
+infoviewer.reload.shortcut=C+r
+
+infoviewer.close=Close
+infoviewer.close.icon=Blank24.gif
+infoviewer.close.mnemonic=C
+infoviewer.close.description=Close InfoViewer
+infoviewer.close.shortcut=C+q
+
+infoviewer.copy=Copy
+infoviewer.copy.icon=Copy24.gif
+infoviewer.copy.mnemonic=C
+infoviewer.copy.description=Copy selected text to clipboard
+infoviewer.copy.shortcut=C+c
+
+infoviewer.select_all=Select All
+infoviewer.select_all.icon=Blank24.gif
+infoviewer.select_all.mnemonic=S
+infoviewer.select_all.description=Select all
+infoviewer.select_all.shortcut=C+a
+
+infoviewer.back=Back
+infoviewer.back.icon=Back24.gif
+infoviewer.back.mnemonic=B
+infoviewer.back.description=Back in history
+infoviewer.back.shortcut=A+LEFT
+
+infoviewer.forward=Forward
+infoviewer.forward.icon=Forward24.gif
+infoviewer.forward.mnemonic=F
+infoviewer.forward.description=Forward in history
+infoviewer.forward.shortcut=A+RIGHT
+
+infoviewer.home=Home
+infoviewer.home.icon=Home24.gif
+infoviewer.home.mnemonic=H
+infoviewer.home.description=Go to Homepage
+
+infoviewer.bookmarks_add=Add Bookmark
+infoviewer.bookmarks_add.mnemonic=A
+infoviewer.bookmarks_add.description=Add the current page to bookmarks
+infoviewer.bookmarks_add.shortcut=C+k
+
+infoviewer.bookmarks_edit=Edit Bookmarks...
+infoviewer.bookmarks_edit.mnemonic=E
+infoviewer.bookmarks_edit.description=Open Bookmarks Editor
+
+infoviewer.about=About InfoViewer...
+infoviewer.about.mnemonic=A
+infoviewer.about.shortcut=F1
+
+infoviewer.follow_link=Follow Link
+infoviewer.follow_link.icon=FastForward24.gif
+infoviewer.back.mnemonic=F
+infoviewer.back.description=Follow the link under the pointer
+
+
+# Option pane properties
+options.infoviewer.label=InfoViewer
+options.infoviewer.browser.label=Choose Browser:
+options.infoviewer.browser.internal=Internal (InfoViewer)
+options.infoviewer.browser.class=Class in classpath
+options.infoviewer.browser.netscape=Netscape (with reuse, Unix only)
+options.infoviewer.browser.other=External browser
+
+options.infoviewer.browser.settings.label=Configure Browser:
+options.infoviewer.browser.class.label=Class:
+options.infoviewer.browser.class.default=infoviewer.InfoViewer
+options.infoviewer.browser.method.label=Method:
+options.infoviewer.browser.method.default=showInternalInfoViewer
+options.infoviewer.browser.other.label=External browser command:
+options.infoviewer.browser.other.default=netscape -remote openURL($u) -raise
+options.infoviewer.homepage=Homepage:
+options.infoviewer.max_go_menu=Max. number of entries in Go menu:
+
+
+# Dialog "Edit Bookmarks"
+infoviewer.bdialog.title=Edit Bookmarks
+infoviewer.bdialog.ok=Ok
+infoviewer.bdialog.cancel=Cancel
+infoviewer.bdialog.add=Add
+infoviewer.bdialog.delete=Delete
+infoviewer.bdialog.moveup=Move Up
+infoviewer.bdialog.movedown=Move down
+infoviewer.bdialog.col0=Title
+infoviewer.bdialog.col1=URL
+
+
+# Dialog "About..."
+infoviewer.aboutdialog.title=About InfoViewer
+infoviewer.aboutdialog.message=\
+    InfoViewer v{0}\n\
+    \n\
+    (c) 1999-2001 by Dirk Moebius <dmoebius@gmx.net>
+
+
+# Error messages
+infoviewer.error.noinfoviewer.title=No InfoViewer
+infoviewer.error.noinfoviewer.message=\
+    There is no plugin installed to view URLs.\n\
+    Please install InfoViewer or any other plugin\n\
+    for ViewURL messages.
+
+infoviewer.error.noselection.title=No URL selected
+infoviewer.error.noselection.message=Please select an URL text in a buffer.
+
+infoviewer.error.nohome.title=No homepage
+infoviewer.error.nohome.message=\
+    Please set the URL of the homepage\n\
+    in Utilities->General Options->InfoViewer.
+
+infoviewer.error.classnotfound.title=Error invoking class
+infoviewer.error.classnotfound.message=\
+    Could not find a suitable constructor for class:\n\
+    {0}\n\n\
+    Note: the class you specified in the options\n\
+    must contain a String, URL or empty constructor.
+
+infoviewer.error.methodnotfound.title=Error invoking method
+infoviewer.error.methodnotfound.message=\
+    Could not find a suitable method named\n\
+    {1} in class {0}\n\n\
+    Note: the method must be static, and accept\n\
+    zero or one String or URL parameter.
+
+infoviewer.error.filenotfound.title=URL not found
+infoviewer.error.filenotfound.message=The URL\n{0}\ncould not be found.
+
+infoviewer.error.ioerror.title=I/O Error
+infoviewer.error.ioerror.message=\
+    An I/O Error occurred opening the URL\n\
+    {0} :\n\n\
+    {1}
+
+infoviewer.error.badurl.title=Bad URL
+infoviewer.error.badurl.message=This URL is invalid:\n{0}
+
+infoviewer.error.invokeBrowser.title=Error starting external browser
+infoviewer.error.invokeBrowser.message=\
+    An exception occured while starting the browser:\n\n\
+    {0}\n\n\
+    The command was:\n\n\
+    {1}
+
+infoviewer.error.nourl.title=No URL
+infoviewer.error.nourl.message=You are currently not viewing an URL.
+
+infoviewer.error.bdialog.noselection.title=No selection
+infoviewer.error.bdialog.noselection.message=\
+    Please select the entries to delete.
+
+infoviewer.error.bdialog.selecttoomuch.title=Not possible
+infoviewer.error.bdialog.selecttoomuch.message=\
+    Please select only one row for move up/down operation.
+
