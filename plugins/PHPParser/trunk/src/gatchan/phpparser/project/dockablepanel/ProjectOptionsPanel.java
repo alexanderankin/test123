@@ -6,10 +6,7 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
+import java.awt.event.*;
 
 /**
  * The option panel that will be shown for each project.
@@ -27,6 +24,7 @@ public final class ProjectOptionsPanel extends JPanel {
   private final JButton reparse;
   private final ProjectStatsPanel projectStatsPanel = new ProjectStatsPanel();
   private final DefaultListModel excludedListModel;
+  private JPopupMenu menu;
 
   public ProjectOptionsPanel() {
     super(new GridBagLayout());
@@ -41,7 +39,33 @@ public final class ProjectOptionsPanel extends JPanel {
     browse.setToolTipText("Browse to find the root of your project");
 
     excludedListModel = new DefaultListModel();
-    JList excludedList = new JList(excludedListModel);
+
+    final JList excludedList = new JList(excludedListModel);
+
+    excludedList.addMouseListener(new MouseAdapter() {
+      public void mouseClicked(MouseEvent e) {
+        if (GUIUtilities.isRightButton(e.getModifiers())) {
+          if (menu == null) {
+            menu = new JPopupMenu();
+            final JMenuItem menuItem = new JMenuItem("remove");
+            menuItem.addActionListener(new ActionListener() {
+              public void actionPerformed(ActionEvent e) {
+                final Object[] selectedValues = excludedList.getSelectedValues();
+                if (selectedValues != null) {
+                  for (int i = 0; i < selectedValues.length; i++) {
+                    project.removeExcludedFolder((String) selectedValues[i]);
+                    excludedListModel.removeElement(selectedValues[i]);
+                  }
+                }
+              }
+            });
+            menu.add(menuItem);
+          }
+          GUIUtilities.showPopupMenu(menu, excludedList, e.getX(), e.getY());
+        }
+      }
+    });
+
     excludedBrowse.addActionListener(actionListener);
     excludedBrowse.setToolTipText("Browse to find the root of your project");
     save.setEnabled(false);
@@ -105,6 +129,11 @@ public final class ProjectOptionsPanel extends JPanel {
       setEnabled(false);
     } else {
       rootField.setText(project.getRoot());
+      excludedListModel.removeAllElements();
+      final Object[] excludedFolders = project.getExcludedFolders();
+      for (int i = 0; i < excludedFolders.length; i++) {
+        excludedListModel.addElement(excludedFolders[i]);
+      }
       setEnabled(true);
     }
     projectStatsPanel.updateProject(project);
@@ -123,16 +152,21 @@ public final class ProjectOptionsPanel extends JPanel {
       if (e.getSource() == reparse) {
         project.rebuildProject();
       } else if (e.getSource() == browse) {
-        String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+        final String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
         if (choosenFolder != null) {
           rootField.setText(choosenFolder[0]);
           project.setRoot(choosenFolder[0]);
           save.setEnabled(true);
         }
-      } else if (e.getSource() == browse) {
-        String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+      } else if (e.getSource() == excludedBrowse) {
+        final String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
         if (choosenFolder != null) {
-          excludedListModel.addElement(choosenFolder[0]);
+          for (int i = 0; i < choosenFolder.length; i++) {
+            final String path = choosenFolder[i];
+            if (project.addExcludedFolder(path)) {
+              excludedListModel.addElement(path);
+            }
+          }
           save.setEnabled(true);
         }
       } else if (e.getSource() == save) {
