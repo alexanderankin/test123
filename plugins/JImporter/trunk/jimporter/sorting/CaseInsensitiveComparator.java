@@ -19,8 +19,8 @@
  */
 package jimporter.sorting;
 
+import java.util.Comparator;
 import jimporter.ImportItem;
-import jimporter.sorting.CaseInsensitiveComparator;
 
 public class CaseInsensitiveComparator implements Comparator {
     public int compare(Object o1, Object o2) {
