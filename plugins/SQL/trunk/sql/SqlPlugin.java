@@ -49,9 +49,9 @@ import sql.options.*;
  * @created    26 ������ 2001 �.
  */
 public class SqlPlugin extends EBPlugin
-     implements ProjectOptionsPlugin, ProjectViewerListener
+     implements ProjectOptionsPlugin
 {
-  protected Hashtable sqlToolBars = new Hashtable();
+  protected static Hashtable sqlToolBars = new Hashtable();
   /**
    *  Description of the Field
    *
@@ -133,13 +133,10 @@ public class SqlPlugin extends EBPlugin
         Log.log( Log.DEBUG, SqlPlugin.class, "new View " + view + " got project " + project );
 
         refreshToolBar( view, project );
-
-        ProjectViewer.addProjectViewerListener( this, view );
       }
       else if ( vu.getWhat() == ViewUpdate.CLOSED )
       {
         sqlToolBars.remove( view );
-        ProjectViewer.removeProjectViewerListener( this, view );
       }
     }
     else if ( message instanceof PropertiesChanged )
@@ -153,48 +150,10 @@ public class SqlPlugin extends EBPlugin
   /**
    *  Description of the Method
    *
-   * @param  evt  Description of Parameter
-   */
-  public void projectLoaded( ProjectViewerEvent evt )
-  {
-    Log.log( Log.DEBUG, SqlPlugin.class,
-        "Loading the project [" + evt.getProject() + "]" );
-
-    refreshToolBar( evt.getProjectViewer().getView(), evt.getProject() );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  evt  Description of Parameter
-   */
-  public void projectAdded( ProjectViewerEvent evt )
-  {
-    Log.log( Log.DEBUG, SqlPlugin.class,
-        "Removing the project [" + evt.getProject() + "]" );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  evt  Description of Parameter
-   */
-  public void projectRemoved( ProjectViewerEvent evt )
-  {
-    Log.log( Log.DEBUG, SqlPlugin.class,
-        "Removing the project [" + evt.getProject() + "]" );
-  }
-
-
-  /**
-   *  Dsescription of the Method
-   *
    * @param  view     Description of Parameter
    * @param  project  Description of Parameter
    */
-  protected void refreshToolBar( View view, VPTProject project )
+  public static void refreshToolBar( View view, VPTProject project )
   {
     removeToolBar( view );
     if ( SqlToolBar.showToolBar() )
@@ -216,7 +175,7 @@ public class SqlPlugin extends EBPlugin
   }
 
 
-  private void addToolBar( View view, VPTProject project )
+  public static void addToolBar( View view, VPTProject project )
   {
     // create new
     final SqlToolBar toolbar = new SqlToolBar( view, project );
@@ -225,7 +184,7 @@ public class SqlPlugin extends EBPlugin
   }
 
 
-  private void removeToolBar( View view )
+  public static void removeToolBar( View view )
   {
     final SqlToolBar toolbar = (SqlToolBar) sqlToolBars.get( view );
     if ( toolbar != null )
