@@ -1,29 +1,11 @@
-- try to determine the error column by searching for '^' in errors like this:
-
-      home\dirk\jcompiler\JCompilerShell.java:33: Public class \
-          jcompiler.JComilerShell must be defined in a file called \
-          "JComilerShell.java".
-      public class JComilerShell implements Shell, EBComponent {
-                   ^
-
-- NullPointerException when compiling under JDK 1.2.2
-  (can someone please confirm this?)
-
-- add reload() functionality to FileChangeMonitor()
-  currently the set of files is cached. If a file was subsequently added
-  to the monitored directory, the FileChangeMonitor won't notice.
-  
 - add a progress bar (but where?!?)
-  Use the -verbose option with javac to determine the build progress.  Put 
-  output through a filter and any "[wrote" messages should signal that a file 
+  Use the -verbose option with javac to determine the build progress.  Put
+  output through a filter and any "[wrote" messages should signal that a file
   has been compiled so you can increase the progress bar by this much.
 
-- JCompiler should check all the files exist before trying to compile.
-  
-- If the user is using a target directory, make sure to add it to the 
-  classpath so that files put there can be used in other applications
-  (NOTE:  This requires JDK 1.2).
-
-- Use java.home/lib/tools.jar if it could not be found within the current
-  classpath (NOTE:  This requires JDK 1.2).
+- Use <java.home>/lib/tools.jar if it could not be found within the current
+  classpath.
+  NOTE:  This requires JDK 1.2 or higher, because in JDK 1.1 you cannot
+  change the classpath of the currently running VM. But this fix is only
+  needed in JDK 1.2 anyway.
 
