@@ -67,7 +67,7 @@ public class AppLauncher {
 			}
 		}
 		return instance;
-	}
+	} //}}}
 
 	//}}}
 
@@ -153,8 +153,8 @@ public class AppLauncher {
 
 	//{{{ +launchApp(File, ProjectViewer) : void
 	/**
-	 *	@deprecated	Use {@link #launchApp(Syring, ProjectViewer)
-	 *	launchApp(Syring, ProjectViewer)} instead.
+	 *	@deprecated	Use {@link #launchApp(String, ProjectViewer)
+	 *	launchApp(String, ProjectViewer)} instead.
 	 */
 	public void launchApp(File f, ProjectViewer viewer) {
 		launchApp(f.getAbsolutePath(), viewer);
