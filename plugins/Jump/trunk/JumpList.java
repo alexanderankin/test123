@@ -73,30 +73,40 @@ public JumpList(View parent, Object[] list, ListModel model,
 
         GUIUtilities.requestFocus(this, itemsList);
         pack();
-
-        int offset = textArea.getCaretPosition();
-        int line = textArea.getCaretLine();
-        int x,y;
-        Point p = new Point();
-        p = textArea.offsetToXY(line, offset - textArea.getLineStartOffset(line),p);
-        x = p.x;
-        y = p.y;
-        
-        Dimension parentSize = textArea.getSize();
-        Point parentLocation = textArea.getLocationOnScreen();
-        Insets parentInsets = textArea.getInsets();
-        Point tapLocation = textArea.getLocationOnScreen();
-        int gutt_x = textArea.getGutter().getWidth(); 
-        Dimension popupSize = getSize();
-        x += tapLocation.x;
-        if ((x + popupSize.width+gutt_x) > (parentLocation.x + parentSize.width -
-                parentInsets.right))
+        try
         {
-            x -= popupSize.width;
+            int offset = textArea.getCaretPosition();
+            int line = textArea.getCaretLine();
+            int x,y;
+            Point p = new Point();
+            p = textArea.offsetToXY(line, offset - textArea.getLineStartOffset(line),p);
+            x = p.x;
+            y = p.y;
+            
+            Dimension parentSize = textArea.getSize();
+            Point parentLocation = textArea.getLocationOnScreen();
+            Insets parentInsets = textArea.getInsets();
+            Point tapLocation = textArea.getLocationOnScreen();
+            int gutt_x = textArea.getGutter().getWidth(); 
+            Dimension popupSize = getSize();
+            x += tapLocation.x;
+            if ((x + popupSize.width+gutt_x) > (parentLocation.x + parentSize.width -
+                    parentInsets.right))
+            {
+                x -= popupSize.width;
+            }
+            
+            
+                setLocation(x+gutt_x+parentLocation.x+parentInsets.right,y+parentLocation.y+parentInsets.top);
+        }
+        catch (Exception e)
+        {
+            Point parentLocation = textArea.getLocationOnScreen();
+            int gutt_x = textArea.getGutter().getWidth();
+            Insets parentInsets = textArea.getInsets();
+            setLocation(gutt_x+parentLocation.x+parentInsets.right,parentLocation.y+parentInsets.top);     
         }
         
-
-        setLocation(x+gutt_x+parentLocation.x+parentInsets.right,y+parentLocation.y+parentInsets.top);
         setVisible(true);
 
         KeyHandler handler = new KeyHandler();
