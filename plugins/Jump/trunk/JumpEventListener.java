@@ -76,38 +76,21 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             errorMsg("JumpPlugin.ctags.path.incorrect");
             return false;   
         }
-        
-        
-        // if (p == null || p.getFiles().size()<1 || viewer==null)
-        // {
-            // errorMsg("JumpPlugin.no_project");
-            // return false;
-        // }
-        
-        if (p == null)
-        {   Log.log(Log.DEBUG,this,"reloadTags project=null");
-            errorMsg("JumpPlugin.no_project");
-            return false;
-        }
-        
+
         if (p.getFiles().size()<1)
         {
-            Log.log(Log.DEBUG,this,"reloadTags no files in project");
-            //errorMsg("JumpPlugin.no_project");
+            //No error message here to avoid it on project-import files    
             return false;
         }
         
-        if (viewer==null)
+        if (viewer==null || p == null)
         {
-            Log.log(Log.DEBUG,this,"reloadTags viewer=null");
             errorMsg("JumpPlugin.no_project");
             return false;
         }
         
         
         pja = new ProjectJumpAction();
-        
-        //if (this.PROJECT_NAME.equals(p.getName())) return;
         
         this.PROJECT = p;
         
@@ -135,8 +118,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         {
             if (PROJECT_TAGS.exists() == false)
             {
-                //this.ProjectFiles = v2;
-                //ProjectFiles = v2;
                 ctags_buff = ctags_bg.getParser().parse(this.ProjectFiles);
                 ctags_bg.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
@@ -177,7 +158,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 //{{{ projectAdded method    
     public void projectAdded(ProjectViewerEvent evt) 
     {
-        //Log.log(Log.DEBUG,this,"JumpEventListener! ADDEDD"+evt.getProjectViewer(), evt.getProject().toString());
         saveProjectBuffer();
         try 
         {
