@@ -64,6 +64,7 @@ public class ErrorList extends JFrame implements EBComponent
 	{
 		EditBus.removeFromBus(this);
 		ErrorListPlugin.closeErrorList(view);
+		GUIUtilities.saveGeometry(this,"error-list");
 		dispose();
 	}
 

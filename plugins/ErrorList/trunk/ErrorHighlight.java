@@ -23,12 +23,11 @@ import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 
-public class ErrorHighlight implements TextAreaPainter.Highlight
+public class ErrorHighlight implements TextAreaHighlight
 {
 	public static final Color WARNING_COLOR = new Color(0xffa800);
 
-	public void init(JEditTextArea textArea,
-		TextAreaPainter.Highlight next)
+	public void init(JEditTextArea textArea, TextAreaHighlight next)
 	{
 		this.textArea = textArea;
 		this.next = next;
@@ -101,7 +100,7 @@ public class ErrorHighlight implements TextAreaPainter.Highlight
 
 	// private members
 	private JEditTextArea textArea;
-	private TextAreaPainter.Highlight next;
+	private TextAreaHighlight next;
 
 	private void paintLineErrors(ErrorSource.Error[] lineErrors,
 		Graphics gfx, int line, int y)
