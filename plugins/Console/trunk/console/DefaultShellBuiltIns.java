@@ -19,16 +19,70 @@
 
 package console;
 
+import java.io.File;
+import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.HelpViewer;
-import java.util.*;
 
 class DefaultShellBuiltIns
 {
 	static void executeBuiltIn(View view, String name,
 		Vector args, Console console)
 	{
-		if(name.equals("clear"))
+		if(name.equals("bg"))
+		{
+			if(checkArgs("bg",args,1,console))
+			{
+				ProcessManager.ViewState state = ProcessManager.getViewState(view);
+				if(state.foreground == null)
+				{
+					console.printError(jEdit.getProperty("console.shell.bg.noproc"));
+					return;
+				}
+
+				Object[] pp = { new Integer(state.foreground.pid) };
+				state.setForegroundProcess(null);
+				console.printPlain(jEdit.getProperty("console.shell.bg.ok",pp));
+			}
+		}
+		else if(name.equals("cd"))
+		{
+			if(!ProcessManager.cdCommandAvailable())
+			{
+				console.printError(jEdit.getProperty("console.shell.cd.unsup"));
+				return;
+			}
+			else if(checkArgs("cd",args,2,console))
+			{
+				ProcessManager.ViewState state = ProcessManager.getViewState(view);
+
+				String newDir = (String)args.elementAt(1);
+				if(newDir.equals(".."))
+				{
+					newDir = MiscUtilities.getParentOfPath(
+						state.currentDirectory);
+				}
+				else
+				{
+					newDir = MiscUtilities.constructPath(
+						state.currentDirectory,newDir);
+				}
+
+				String[] pp = { newDir };
+				if(new File(newDir).exists())
+				{
+					state.currentDirectory = newDir;
+					console.printPlain(jEdit.getProperty(
+						"console.shell.cd.ok",pp));
+				}
+				else
+				{
+					console.printError(jEdit.getProperty(
+						"console.shell.cd.error",pp));
+				}
+			}
+		}
+		else if(name.equals("clear"))
 		{
 			if(checkArgs("clear",args,1,console))
 				console.clear();
@@ -43,6 +97,34 @@ class DefaultShellBuiltIns
 				}
 			}
 		}
+		else if(name.equals("fg"))
+		{
+			if(checkArgs("fg",args,2,console))
+			{
+				ProcessManager.ViewState state = ProcessManager.getViewState(view);
+				try
+				{
+					int pid = Integer.parseInt((String)args.elementAt(1));
+					ConsoleProcess process = ProcessManager.getProcess(pid);
+					if(process == null)
+					{
+						Object[] pp = { new Integer(pid) };
+						console.printError(jEdit.getProperty("console.shell.bad-pid",pp));
+						return;
+					}
+
+					state.setForegroundProcess(process);
+
+					Object[] pp = { new Integer(process.pid) };
+					console.printPlain(jEdit.getProperty("console.shell.fg.ok",pp));
+				}
+				catch(NumberFormatException nf)
+				{
+					console.printError(jEdit.getProperty("console.shell.fg.usage"));
+					return;
+				}
+			}
+		}
 		else if(name.equals("help"))
 		{
 			if(checkArgs("help",args,1,console))
@@ -50,6 +132,64 @@ class DefaultShellBuiltIns
 				new HelpViewer(DefaultShellBuiltIns.class
 					.getResource("/console/Console.html")
 					.toString());
+			}
+		}
+		else if(name.equals("kill"))
+		{
+			if(checkArgs("kill",args,2,console))
+			{
+				ProcessManager.ViewState state = ProcessManager.getViewState(view);
+				try
+				{
+					int pid = Integer.parseInt((String)args.elementAt(1));
+					ConsoleProcess process = ProcessManager.getProcess(pid);
+					if(process == null)
+					{
+						Object[] pp = { new Integer(pid) };
+						console.printError(jEdit.getProperty("console.shell.bad-pid",pp));
+						return;
+					}
+
+					process.kill();
+				}
+				catch(NumberFormatException nf)
+				{
+					console.printError(jEdit.getProperty("console.shell.kill.usage"));
+					return;
+				}
+			}
+		}
+		else if(name.equals("ps"))
+		{
+			if(checkArgs("ps",args,1,console))
+			{
+				ProcessManager.ViewState state = ProcessManager.getViewState(view);
+				Vector processes = ProcessManager.getRunningProcesses();
+
+				console.printPlain(jEdit.getProperty("console.shell.ps.header"));
+
+				for(int i = 0; i < processes.size(); i++)
+				{
+					ConsoleProcess process = (ConsoleProcess)processes
+						.elementAt(i);
+
+					Object[] pp = {
+						new Integer(process.pid),
+						process.command,
+						new Integer(state.foreground == process ? 1 : 0)
+					};
+
+					console.printPlain(jEdit.getProperty(
+						"console.shell.ps.output",pp));
+				}
+			}
+		}
+		else if(name.equals("pwd"))
+		{
+			if(checkArgs("pwd",args,1,console))
+			{
+				console.printPlain(ProcessManager.getViewState(view)
+					.currentDirectory);
 			}
 		}
 		else if(name.equals("version"))
@@ -86,7 +226,7 @@ class DefaultShellBuiltIns
 				return true;
 		}
 
-		console.printError(jEdit.getProperty("console.shell.usage." + command));
+		console.printError(jEdit.getProperty("console.shell." + command + ".usage"));
 		return false;
 	}
 }

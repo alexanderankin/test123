@@ -81,12 +81,14 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
+		ProcessManager.consoleOpened(view,this);
 	}
 
 	public void removeNotify()
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
+		ProcessManager.consoleClosed(view);
 	}
 
 	// dockable window implementation

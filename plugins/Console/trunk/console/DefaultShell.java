@@ -87,7 +87,15 @@ class DefaultShell extends Shell
 		else
 		{
 			// pass it to the process manager
-			// TODO
+			if(args.elementAt(args.size() - 1).equals("&"))
+			{
+				// run in background
+				args.removeElementAt(args.size() - 1);
+			}
+			else
+			{
+				// run in foreground
+			}
 		}
 	}
 

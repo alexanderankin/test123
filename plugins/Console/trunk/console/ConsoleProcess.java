@@ -1,5 +1,5 @@
 /*
- * ConsoleProcess.java - A running process with support threads
+ * ConsoleProcess.java - A running process
  * Copyright (C) 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -21,5 +21,23 @@ package console;
 
 class ConsoleProcess
 {
-	
+	int pid;
+	ProcessManager.ViewState viewState;
+	String command;
+
+	ConsoleProcess(String command)
+	{
+		pid = PID_COUNTER++;
+		this.command = command;
+	}
+
+	void kill()
+	{
+		// TODO
+		if(viewState != null)
+			viewState.setForegroundProcess(null);
+	}
+
+	// private members
+	private static int PID_COUNTER = 1;
 }
