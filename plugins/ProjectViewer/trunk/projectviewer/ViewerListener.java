@@ -96,14 +96,6 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
       }
       else if (source == this.viewer.contractBtn) {
          viewer.collapseAll();
-      }
-        else if (source == this.viewer.saveBtn) {
-            Project p = viewer.getCurrentProject();
-            if (viewer.isAllProjects()) {
-                ProjectManager.getInstance().save();
-            } else {
-                viewer.getCurrentProject().save();
-            }
       }  else if (source == this.viewer.launchBrowserBtn) {
        // this.showConfig(); // will need to be commented out
       this.launchBrowser(); }
@@ -239,6 +231,11 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 
       viewer.getCurrentProject().importFile(
             new ProjectFile(chooser.getSelectedFile().getAbsolutePath()));
+
+		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+			viewer.getCurrentProject().save();
+		}
+
    }
 
    /** Prompt the user if he want to remove all file from a projects. */

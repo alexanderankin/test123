@@ -92,6 +92,10 @@ public final class ProjectFileImporter {
 				"Imported " + files.size() + " file(s) into your project",
 				"Import Successful",
 				JOptionPane.INFORMATION_MESSAGE);
+				
+		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+			viewer.getCurrentProject().save();
+		}
 	}
 
 	/** Returns a filter.

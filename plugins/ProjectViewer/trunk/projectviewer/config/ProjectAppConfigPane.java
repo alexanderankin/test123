@@ -1,5 +1,24 @@
+/*
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more detaProjectTreeSelectionListenerils.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 package projectviewer.config;
- 
+
+//{{{ Imports
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -7,14 +26,19 @@ import java.util.*;
 
 import javax.swing.table.TableColumnModel.*;
 
+import javax.swing.JSeparator;
+import javax.swing.JPopupMenu;
+import javax.swing.JMenuItem; 
+import javax.swing.JScrollPane;
+
 import javax.swing.JTable;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableColumn;
 
 import projectviewer.ProjectPlugin;
 import org.gjt.sp.jedit.AbstractOptionPane;
-import org.gjt.sp.jedit.*;
-
+import org.gjt.sp.util.Log;
+//}}}
 
 /**
  * <p>Title: </p>
@@ -30,284 +54,291 @@ import org.gjt.sp.jedit.*;
  *  Launch app
  *  resize columns
  */
- 
-public class ProjectAppConfigPane extends AbstractOptionPane  {
- 
- public ProjectAppConfigPane(String name) {
-    super(name);
-    
-    try {
-      
-      jbInit();
-       
-      
-    }
-    catch(Exception e) {
-      e.printStackTrace();
-    }
-  }
-  
-  
+public class ProjectAppConfigPane extends AbstractOptionPane 
+							  implements ActionListener, MouseListener {
 
-  protected void _init()
-	{
+	//{{{ Static constants
+	
+	private final static String EXTENSIONS_TEXT  = "Extension:";
+	private final static String APPLICATION_TEXT = "Application:";
+	
+	//}}}
+	
+ 	//{{{ Private members
+	private JPopupMenu popmenu;
+	private JMenuItem menuActions;
+	private JMenuItem delApp;
+	
+	private JButton cmdAdd;
+	private JButton cmdChooseFile;
+
+	private JTextField appField;
+	private JTextField extField;
+	
+	private JTable appTable;
+	private AppLauncher apps;
+	private AppModel model;
+	//}}}
+ 
+	//{{{ Constructors
+	
+	public ProjectAppConfigPane(String name) {
+		super(name);
+	}
+  
+	//}}}
+
+	//{{{ _init() method
+	protected void _init() {
 		
+		GridBagLayout gb = new GridBagLayout();
+		GridBagConstraints gbc = new GridBagConstraints();
+		setLayout(gb);
+		
+		JLabel extLabel = new JLabel(EXTENSIONS_TEXT);
+		JLabel appLabel = new JLabel(APPLICATION_TEXT);
+		
+		appField = new JTextField();
+		extField = new JTextField();
+		
+		cmdAdd = new JButton("Add");
+		cmdAdd.addActionListener(this);
+		
+		cmdChooseFile = new JButton("...");
+		cmdChooseFile.addActionListener(this);
+		
+		// first line: labels
+		
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 0;
+		gbc.gridy = 0;
+		gbc.weightx = 1.0;
+		gb.setConstraints(extLabel, gbc);
+		add(extLabel);
+		
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.gridx = 1;
+		gbc.weightx = 2.0;
+		gb.setConstraints(appLabel, gbc);
+		add(appLabel);
+
+		// second line: text fields and buttons
+		
+		gbc.gridy = 1;
+		gbc.gridx = 0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 1.0;
+		gb.setConstraints(extField, gbc);
+		add(extField);
+		
+		
+		gbc.gridx = 1;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+		gbc.weightx = 2.0;
+		gb.setConstraints(appField, gbc);
+		add(appField);
+
+		gbc.gridx = 2;
+		gbc.fill = GridBagConstraints.NONE;
+		gbc.weightx = 0;
+		gb.setConstraints(cmdChooseFile, gbc);
+		add(cmdChooseFile);
+		
+		gbc.gridx = 3;
+		gb.setConstraints(cmdAdd, gbc);
+		add(cmdAdd);
+
+		// third line: table
+
+		gbc.gridy = 2;
+		gbc.gridx = 0;
+		gbc.gridwidth = GridBagConstraints.REMAINDER;
+		gbc.weightx = 1.0;
+		gbc.fill = GridBagConstraints.HORIZONTAL;
+
+		apps = new AppLauncher();
+		apps.copy(AppLauncher.getInstance());
+		model = new AppModel(apps);
+		appTable = new JTable(model);
+		appTable.addMouseListener(this);
+  
+		JScrollPane jsp = new JScrollPane(appTable);
+		gb.setConstraints(jsp, gbc);
+		add(jsp);
+		
+		// popup menu
+		popmenu = new JPopupMenu();
+		
+		/*
+		menuAction = new JMenuItem();
+		menuActions.setText("Actions");
+		menuActions.setEnabled(false);
+		popmenu.add(menuActions);
+		popmenu.addSeparator();
+		*/
+
+		delApp = new JMenuItem("Delete");
+		delApp.addActionListener(this);
+		popmenu.add(delApp); 
+		
+	} //}}}
+
+	//{{{ Event Handling
+	
+	//{{{ actionPerformed() method
+	public void actionPerformed(ActionEvent ae) {
+		
+		if (ae.getSource() == cmdAdd) {
+			if (extField.getText().length() >= 1 && appField.getText().length() >=1) {
+				apps.addAppExt(extField.getText(), replaceString(appField.getText(), "\\", "/"));
+				extField.setText("");
+				appField.setText("");
+				model.requestRefresh();
+			 }
+		} else if (ae.getSource() == cmdChooseFile) {
+			doChoose();
+		} else if (ae.getSource() == delApp) {
+			deleteRow();
+		}
+		
+	} //}}}
+	
+	//{{{ Mouse Listener Interface Implementation
+	
+	private void handleMouseEvent(MouseEvent evt) {
+		if (evt.isPopupTrigger()) {
+			if (popmenu.isVisible()) {
+				popmenu.setVisible(false);
+			} else {
+				popmenu.show((Component)evt.getSource(), evt.getX(), evt.getY());
+			}
+		}
 	}
 	
+	public void mousePressed(MouseEvent evt) {
+		handleMouseEvent(evt);
+	}
 	
-/* public static void main(String[] args) {
-    ProjectAppConfig ProjectAppConfig = new ProjectAppConfig();
-    ProjectAppConfig.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    ProjectAppConfig.show();
- 
-  } */
-  private void jbInit() throws Exception {
- 
- //   setTitle("JEdit ProjectViewer Associations");
- //   setSize(WIDTH, HEIGHT);
-    jPanel1.setLayout(gridBagLayout1);
-    extLabel.setText("Extension:");
-    appLabel.setText("Application:");
-    cmdAdd.setText("Add");
-    cmdChooseFile = new JButton();
-    cmdChooseFile.setText("...");
-    //apps = ProjectViewerConfig.getAppLauncherInstance();
-    //this.getContentPane().add(jPanel1, BorderLayout.CENTER);
-    addComponent(jPanel1);
-    jPanel1.add(extLabel,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 10, 0, 0), 16, 3));
-    jPanel1.add(extField,  new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 10, 0, 0), 68, 2));
-    jPanel1.add(appLabel,  new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 20, 0, 83), 36, 2));
-    jPanel1.add(appField,  new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 20, 0, 0), 181, 6));
-   
-   jPanel1.add(cmdChooseFile,  new GridBagConstraints(2, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(36, 8, 0, 0), 1, 0));
-   
-    jPanel1.add(cmdAdd,  new GridBagConstraints(3, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(36, 8, 0, 28), 5, 0));
-    jPanel1.add(jScrollPane1,  new GridBagConstraints(0, 3, 4, 1, 1.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(11, 4, 0, 0), -40, -194));
-    jScrollPane1.getViewport().add(appTable, null);
-    col =appTable.getColumnModel().getColumn(1);
-    col.setPreferredWidth(appTable.getColumnModel().getColumn(0).getWidth() * 5);
-    cmdAdd.addActionListener(new
-         ActionListener()
-         {
-            public void actionPerformed(ActionEvent event)
-            {
-                if (extField.getText().length() >= 1 && appField.getText().length() >=1) 
-                {
-                    apps.addAppExt(extField.getText(), replaceString(appField.getText(), "\\", "/"));
-                    extField.setText("");
-                    appField.setText("");
-                    try {
-                        apps.storeExts();
-                    }
-                    catch (java.io.IOException e)
-                    { System.err.println("error storing values");}
-                    try {
-                        apps.loadExts();
-                    
-                    }
-                    catch (java.io.IOException e)
-                    { System.err.println("error loading values");}
-                     model.requestRefresh();
-                  
-                }
-            }
-         }); 
-   
-    	cmdChooseFile.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-                doChoose();
-            
-        }
-        });
+	public void mouseReleased(MouseEvent evt) {
+		handleMouseEvent(evt);
+	}
 
-	popmenu = new JPopupMenu();
-        menuActions = new javax.swing.JMenuItem();
-        jSep = new javax.swing.JSeparator();
-        delApp= new javax.swing.JMenuItem();
-        
-        popmenu.setName("popmenu");
-        menuActions.setText("Actions");
-        menuActions.setEnabled(false);
-        popmenu.add(menuActions);
-        popmenu.add(jSep);
-
-        delApp.setText("Delete");
-        
-        delApp.addActionListener(new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-                deleteRow();
-        }
-        });
-        
-                
-        popmenu.add(delApp); 
-        
-         appTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                if (javax.swing.SwingUtilities.isRightMouseButton(evt))
-                popmenu.show((Component)evt.getSource(), evt.getX(), evt.getY());
-            }
-        });
-  
-   
-    }
-  
-   public void doChoose() {
-	// Used for selected and executable file
+	public void mouseClicked(MouseEvent e) { }
+	public void mouseEntered(MouseEvent e) { }
+	public void mouseExited(MouseEvent e) { } 
+	
+	//}}}
+	
+	//}}}
+	
+	//{{{ doChoose() method
+	public void doChoose() {
+		// Used for selected and executable file
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
 			return;
-		try { appField.setText(chooser.getSelectedFile().getPath());}
-		catch  (   Exception Excp) {;;}
-     }
+		try {
+			appField.setText(chooser.getSelectedFile().getPath());
+		} catch (Exception Excp) { }
+	} //}}}
   
-   private static String replaceString(String aSearch, String aFind, String aReplace)
-    {
-    String result = aSearch;
-    if (result != null && result.length() > 0)
-        {
-        int a = 0;
-        int b = 0;
-        while (true)
-           {
-            a = result.indexOf(aFind, b);
-            if (a != -1)
-                {
-                result = result.substring(0, a) + aReplace + result.substring(a + aFind.length());
-                b = a + aReplace.length();
-            }
-            else
-            break;
-        }
-    }
-    return result;
-    }		   
-    
-   private void deleteRow() {
-        // Deletes a row from the Table:
-        int targetRow;
-        String keyCol;
-        javax.swing.JDialog bal = new javax.swing.JDialog();
-       
-        if (appTable.getSelectedRowCount() > 0) {
-            targetRow = appTable.getSelectedRow();
-            keyCol = (String)appTable.getValueAt(targetRow, 0);
-            apps.removeAppExt(keyCol);
-            model.requestRefresh();
-        }
-        
-    }
- 
- 	public void _save()
+	//{{{ replaceString() method
+	private static String replaceString(String aSearch, String aFind, String aReplace)
 	{
-	           try {
-                        apps.storeExts();
-                    }
-                    catch (java.io.IOException e)
-                    { System.err.println("error storing values");}
-         
+		String result = aSearch;
+		if (result != null && result.length() > 0) {
+			int a = 0;
+			int b = 0;
+			while (true) {
+				a = result.indexOf(aFind, b);
+				if (a != -1) {
+					result = result.substring(0, a) + aReplace + result.substring(a + aFind.length());
+					b = a + aReplace.length();
+				}
+				else
+				break;
+			}
+		}
+		return result;
+	} //}}}
+	
+	//{{{ deleteRow() method
+	private void deleteRow() {
+		// Deletes a row from the Table:
+		int targetRow;
+		String keyCol;
 		
+		if (appTable.getSelectedRowCount() > 0) {
+			targetRow = appTable.getSelectedRow();
+			keyCol = (String)appTable.getValueAt(targetRow, 0);
+			apps.removeAppExt(keyCol);
+			model.requestRefresh();
+		}
+	} //}}}
+
+	//{{{ _save() method
+	public void _save()
+	{
+		try {
+			AppLauncher launcher = AppLauncher.getInstance();
+			launcher.copy(apps);
+			launcher.storeExts();
+		} catch (java.io.IOException e) { 
+			Log.log(Log.ERROR, this, e);
+		}
 	}//}}}
 
-   private javax.swing.JSeparator jSep;
-   private javax.swing.JPopupMenu popmenu;
-   private javax.swing.JMenuItem menuActions;
-   private javax.swing.JMenuItem delApp;
-   //private appLauncher apps;
-   //private ProjectViewerConfig config;
+}
  
-   //private static appLauncher;
-  
-  String[] columnNames={"Extension:", "Application:" };
-  JPanel jPanel1 = new JPanel();
-  JLabel extLabel = new JLabel();
-  JLabel appLabel = new JLabel();
-  JTextField appField = new JTextField();
-  JTextField extField = new JTextField();
-  JScrollPane jScrollPane1 = new JScrollPane();
-  appLauncher apps = apps = ProjectViewerConfig.getAppLauncherInstance();//new appLauncher(jEdit.getSettingsDirectory() + java.io.File.separator + "projectviewer/fileassocs.properties");  
-	  	 
-  appModel model = new appModel(apps);
-  JTable appTable = new JTable(model);
-  TableColumn col = null;
-  JButton cmdAdd = new JButton();
-  JButton cmdChooseFile;
-  JButton cmdSave = new JButton();
-  private static final int WIDTH = 450;
-  private static final int  HEIGHT = 300;
-  GridBagLayout gridBagLayout1 = new GridBagLayout();
-  private boolean DEBUG = true;
-  }
+class AppModel extends AbstractTableModel {
+	
+	/**
+	 * Constructs an AppList table model.
+	 * @param appAssoc  the collection of extentions and associations
+	 */
+	public AppModel(AppLauncher appList) {
+		appSet = appList.getAppList();
+	}
  
-class appModel extends AbstractTableModel
-{
-   /**
-      Constructs an AppList table model.
-      @param appAssoc  the collection of extentions and associations
-   */
-   public appModel(appLauncher appList)
-   {
-     appSet = appList.getAppList();
-   }
+	public int getRowCount() {
+		return appSet.size();
+	}
+	
+	public void requestRefresh() {
+		/* Used to refresh the table */
+		super.fireTableDataChanged();
+	}
+	
+	public int getColumnCount() {
+		return 2;
+	}
+	
+	public Object getValueAt(int r, int c) {
+		String sValue;
+	
+		Iterator iter = appSet.iterator();
+		int iCurrentRow = 0;
+		
+		while (iter.hasNext()) {
+		Map.Entry entry = (Map.Entry)iter.next();
+			if (iCurrentRow == r)
+			switch(c) {
+				case 0: return entry.getKey();
+				case 1: return entry.getValue();
+			}
+			Object key = entry.getKey();
+			Object value = entry.getValue();
+			iCurrentRow++;
+		}
+		return "no value found";
+	} 
  
-   public int getRowCount()
-   {
-      
-       return appSet.size();
-      
-   }
- 
-   public void requestRefresh() 
-   {
-     /* Used to refresh the table */
-       super.fireTableDataChanged();
-   }
-   
-   public int getColumnCount()
-   {
-       return 2;
-   }
- 
-   public Object getValueAt(int r, int c)
-   {
-      String sValue;
- 
-      Iterator iter = appSet.iterator();
-       int iCurrentRow = 0;
- 
-        while (iter.hasNext()) {
-        Map.Entry entry = (Map.Entry)iter.next();
-             if (iCurrentRow == r)
-                switch(c)
-                {
-                  case 0: return entry.getKey();
-                  case 1: return entry.getValue();
-                }
-            Object key = entry.getKey();
-            Object value = entry.getValue();
-          iCurrentRow++;
-        }
-      return "no value found";
-   } 
- 
-   public String getColumnName(int c)
-   {
- 
-      if (c == 0)
-        return "Extension";
-      else
-        return "Application";
-   }
+	public String getColumnName(int c) {
+		return (c == 0) ? "Extension" : "Application";
+	}
 
-   private Set appSet;
+	private Set appSet;
  
 }
 

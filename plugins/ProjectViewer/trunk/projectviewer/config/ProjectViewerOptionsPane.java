@@ -1,4 +1,7 @@
 /*
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -16,6 +19,7 @@
  
 package projectviewer.config;
 
+//{{{ Imports
 // Import Java
 import java.util.Properties;
 
@@ -39,114 +43,115 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.*;
 import projectviewer.ProjectPlugin;
+//}}}
 
 /**
  *  <p>Option pane to configure the ProjectViewer plugin.</p> 
  *
- *  @author     Marcelo Vanzin
+ *  @author	 Marcelo Vanzin
  */
 public class ProjectViewerOptionsPane extends AbstractOptionPane {
 
-    //-------------- Instance variables
-    
-    private ProjectViewerConfig config;
+	//{{{ Instance variables
+	private ProjectViewerConfig config;
 
-    private JCheckBox closeFiles;
-    private JCheckBox rememberOpen;
-    private JCheckBox deleteNotFoundFiles;
-    private JCheckBox saveOnChange;
-    
-    private JCheckBox showToolBar;
-    private JCheckBox showFoldersTree;
-    private JCheckBox showFilesTree;
-    private JCheckBox showWorkingFilesTree;
-    
-    private JTextField importExts;
-    private JTextField excludeDirs;
-    private JTextField includeFiles;
-    private JTextField browserExecPath;
-    private JTextField browseExts; 
-    
-    
-    //-------------- Constructors
-    
-    public ProjectViewerOptionsPane(String name) {
-        super(name);
-        config = ProjectViewerConfig.getInstance();        
-    }
+	private JCheckBox closeFiles;
+	private JCheckBox rememberOpen;
+	private JCheckBox deleteNotFoundFiles;
+	private JCheckBox saveOnChange;
+	
+	private JCheckBox showToolBar;
+	private JCheckBox showFoldersTree;
+	private JCheckBox showFilesTree;
+	private JCheckBox showWorkingFilesTree;
+	
+	private JTextField importExts;
+	private JTextField excludeDirs;
+	private JTextField includeFiles;
+	private JTextField browserExecPath;
+	private JTextField browseExts; 
+	//}}}
+	
+	//{{{ Constructors
+	
+	public ProjectViewerOptionsPane(String name) {
+		super(name);
+		config = ProjectViewerConfig.getInstance();		
+	}
 
-    //-------------- Methods
-    
-    /** Initializes the option pane. */
-    protected void _init() {
+	//}}}
+	
+	//{{{ _init() method	
+	/** Initializes the option pane. */
+	protected void _init() {
 
-	//-- general options
-	addSeparator("options.projectviewer.general-opt.label");
-        
-        // Checkbox: "close project files on switch"
-        closeFiles = new JCheckBox("Close files on project change");
-        closeFiles.setToolTipText("Close current project's files when switching to another project?");
-        closeFiles.setSelected(config.getCloseFiles());
-        addComponent(closeFiles);
-        
-        // Checkbox: "remember open project files"
-        rememberOpen = new JCheckBox("Remember open project files");
-        rememberOpen.setToolTipText("Reload the set of files previously opened when loading a project?");
-        rememberOpen.setSelected(config.getCloseFiles());
-        addComponent(rememberOpen);
+		//-- general options
+		addSeparator("options.projectviewer.general-opt.label");
+		
+		// Checkbox: "close project files on switch"
+		closeFiles = new JCheckBox("Close files on project change");
+		closeFiles.setToolTipText("Close current project's files when switching to another project?");
+		closeFiles.setSelected(config.getCloseFiles());
+		addComponent(closeFiles);
+		
+		// Checkbox: "remember open project files"
+		rememberOpen = new JCheckBox("Remember open project files");
+		rememberOpen.setToolTipText("Reload the set of files previously opened when loading a project?");
+		rememberOpen.setSelected(config.getCloseFiles());
+		addComponent(rememberOpen);
 
-        // Checkbox: "delete non-existant files"
-        deleteNotFoundFiles = new JCheckBox("Delete non-existant files from list");
-        deleteNotFoundFiles.setToolTipText("If checked, files not found on disk will be removed from the project at startup");
-        deleteNotFoundFiles.setSelected(config.getDeleteNotFoundFiles());
-        addComponent(deleteNotFoundFiles);
-        
-        // Checkbox: "save on change"
-        saveOnChange = new JCheckBox("Save project data on change");
-        saveOnChange.setToolTipText("If checked, project data will be saved when you import/remove files");
-        saveOnChange.setSelected(config.getSaveOnChange());
-        addComponent(saveOnChange);
-        
-        //-- gui options
-        addSeparator("options.projectviewer.gui-opt.label");
-        
-        showToolBar = new JCheckBox("Show toolbar");
-        showToolBar.setSelected(config.getShowToolBar());
-        addComponent(showToolBar);
-        
-        showFoldersTree = new JCheckBox("Show folders tree");
-        showFoldersTree.setSelected(config.getShowFoldersTree());
-        addComponent(showFoldersTree);
-        
-        showFilesTree = new JCheckBox("Show files tree");
-        showFilesTree.setSelected(config.getShowFilesTree());
-        showFilesTree.setToolTipText(
-            "Disabling this tree will improve performance in projects with many files");
-        addComponent(showFilesTree);
-        
-        showWorkingFilesTree = new JCheckBox("Show working files tree");
-        showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
-        addComponent(showWorkingFilesTree);
-        
+		// Checkbox: "delete non-existant files"
+		deleteNotFoundFiles = new JCheckBox("Delete non-existant files from list");
+		deleteNotFoundFiles.setToolTipText("If checked, files not found on disk will be removed from the project at startup");
+		deleteNotFoundFiles.setSelected(config.getDeleteNotFoundFiles());
+		addComponent(deleteNotFoundFiles);
+		
+		// Checkbox: "save on change"
+		saveOnChange = new JCheckBox("Save project data on change");
+		saveOnChange.setToolTipText("If checked, project data will be saved when you import/remove files");
+		saveOnChange.setSelected(config.getSaveOnChange());
+		addComponent(saveOnChange);
+		
+		//-- gui options
+		addSeparator("options.projectviewer.gui-opt.label");
+		
+		showToolBar = new JCheckBox("Show toolbar");
+		showToolBar.setSelected(config.getShowToolBar());
+		addComponent(showToolBar);
+		
+		showFoldersTree = new JCheckBox("Show folders tree");
+		showFoldersTree.setSelected(config.getShowFoldersTree());
+		addComponent(showFoldersTree);
+		
+		showFilesTree = new JCheckBox("Show files tree");
+		showFilesTree.setSelected(config.getShowFilesTree());
+		showFilesTree.setToolTipText(
+			"Disabling this tree will improve performance in projects with many files");
+		addComponent(showFilesTree);
+		
+		showWorkingFilesTree = new JCheckBox("Show working files tree");
+		showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
+		addComponent(showWorkingFilesTree);
+		
 		//-- importer options
 		addSeparator("options.projectviewer.importer-opt.label");
 
-        importExts = new JTextField(5);
-        if (config.getImportExts() != null) {
-            importExts.setText(config.getImportExts());
-        }
+		importExts = new JTextField(5);
+		if (config.getImportExts() != null) {
+			importExts.setText(config.getImportExts());
+		}
 		addComponent("Extensions to include:",importExts);
 
-        excludeDirs = new JTextField(5);
-        if (config.getExcludeDirs() != null) {
-            excludeDirs.setText(config.getExcludeDirs());
-        }
+		excludeDirs = new JTextField(5);
+		if (config.getExcludeDirs() != null) {
+			excludeDirs.setText(config.getExcludeDirs());
+		}
 		addComponent("Directories to ignore:",excludeDirs);
 
-        includeFiles = new JTextField(5);
-        if (config.getIncludeFiles() != null) {
-            includeFiles.setText(config.getIncludeFiles());
-        }
+		includeFiles = new JTextField(5);
+		if (config.getIncludeFiles() != null) {
+			includeFiles.setText(config.getIncludeFiles());
+		}
 		addComponent("Files to include:",includeFiles);
 		
 		//-- web project options
@@ -163,24 +168,25 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		browseExts = new JTextField(5);
 		addComponent("Browse-able Extensions:", browseExts);
 	
-    }
-    
-    /** Saves the options. */
-    protected void _save() {
-        config.setCloseFiles(closeFiles.isSelected());
-        config.setRememberOpen(rememberOpen.isSelected());
-        config.setDeleteNotFoundFiles(deleteNotFoundFiles.isSelected());
-        config.setSaveOnChange(saveOnChange.isSelected());
-        
-        config.setShowToolBar(showToolBar.isSelected());
-        config.setShowFoldersTree(showFoldersTree.isSelected());
-        config.setShowFilesTree(showFilesTree.isSelected());
-        config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
-        
-        config.setImportExts(importExts.getText());
-        config.setExcludeDirs(excludeDirs.getText());
-        config.setIncludeFiles(includeFiles.getText());
-        config.setBrowserpath(browserExecPath.getText());
-        config.save();
-    }
+	} //}}}
+	
+	//{{{ _save() method
+	/** Saves the options. */
+	protected void _save() {
+		config.setCloseFiles(closeFiles.isSelected());
+		config.setRememberOpen(rememberOpen.isSelected());
+		config.setDeleteNotFoundFiles(deleteNotFoundFiles.isSelected());
+		config.setSaveOnChange(saveOnChange.isSelected());
+		
+		config.setShowToolBar(showToolBar.isSelected());
+		config.setShowFoldersTree(showFoldersTree.isSelected());
+		config.setShowFilesTree(showFilesTree.isSelected());
+		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
+		
+		config.setImportExts(importExts.getText());
+		config.setExcludeDirs(excludeDirs.getText());
+		config.setIncludeFiles(includeFiles.getText());
+		config.setBrowserpath(browserExecPath.getText());
+		config.save();
+	} //}}}
 }

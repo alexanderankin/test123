@@ -32,7 +32,6 @@ import java.beans.PropertyChangeListener;
 import org.gjt.sp.util.Log;
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectManager;
-import projectviewer.config.appLauncher;
 
 /**
  *  <p>Class to hold configuration information for the plugin.</p>
@@ -68,8 +67,6 @@ public final class ProjectViewerConfig {
     public static final String SHOW_FILES_OPT             = "projectviewer.show_files_tree";
     public static final String SHOW_WFILES_OPT            = "projectviewer.show_working_files_tree";
 
-    private static appLauncher apps;
-    
     private static ProjectViewerConfig config;
     
     //-------------- Static methods
@@ -119,15 +116,6 @@ public final class ProjectViewerConfig {
         }
         return config;
     }
-    
-     
- public static synchronized appLauncher getAppLauncherInstance() {
-	if (apps == null) {	 
-		 apps = new appLauncher(ProjectPlugin.getResourcePath("fileassocs.properties"));  
-	}
-	 return apps;
- }
-
     
     //-------------- Instance variables
     
