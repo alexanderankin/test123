@@ -82,7 +82,7 @@ public class EditProjectAction extends Action {
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode selected = viewer.getSelectedNode();
-		if (selected == null)
+		if (selected == null || !selected.isProject())
 			selected  = viewer.getRoot();
 
 		VPTProject proj = null;
