@@ -1,0 +1,42 @@
+<HTML>
+<HEAD>
+<TITLE>Column Ruler plugin</TITLE>
+</HEAD>
+<BODY>
+<H2>Column Ruler plugin</H2>
+The main purpose of this plugin is to provide a ruler above the text area which marks off columns, but it also provides the following features:
+<UL>
+<LI>Indicates caret column</LI>
+<LI>Highlights the columns of the current selection (if there is one)</LI>
+<LI>Displays the dimensions of the current selection (if there is one)</LI>
+<LI>Marks the column where text is wrapped (if wrap is on)</LI>
+<LI>Right-clicking lets you set the wrap mode</LI>
+<LI>You can drag the wrap marker to set the buffer's wrap column</LI>
+<LI>Can indicate the next tab stop</LI>
+<LI>Can provide a line guide for the caret</LI>
+</UL>
+
+<P>
+If you're not using a fixed width font such as Courier the column ruler isn't going to do you much good.
+<HR>
+
+<table border="1">
+<tr><th colspan=2>Colors</th></tr>
+<tr><th>Component</th><th>Color</th></tr>
+<tr><td>Foreground</td><td>TextArea: text color</td></tr>
+<tr><td>Background</td><td>configurable</td></tr>
+<tr><td>Border</td><td>configurable</td></tr>
+<tr><td>Ticks</td><td>Text Area: text color</td></tr>
+<tr><td>Caret marker</td><td>Text Area: Caret</td></tr>
+<tr><td>Wrap marker</td><td>Text Area: Wrap guide</td></tr>
+<tr><td>Selection highlight</td><td>Text Area: Single selection</td></tr>
+</table>
+
+<P>I know that when selecting multiple lines it only highlights the difference between the start and end columns.  I don't think it would be very useful to highlight the entire ruler.  Same thing applies to 'Select All'.</P>
+
+<p>Bugs and feature requests can be submitted at <a href="http://community.jedit.org/?q=project/ColumnRuler">http://community.jedit.org/?q=project/ColumnRuler</a>.
+</p>
+
+</BODY>
+</HTML>
+
