@@ -32,12 +32,17 @@ import xml.completion.*;
 class EditTagDialog extends EnhancedDialog
 {
 	//{{{ EditTagDialog constructor
-	EditTagDialog(View view, ElementDecl element, Map attributeValues,
-		boolean elementEmpty, Map entityHash, List ids,
-		boolean html)
+	/**
+	 * elementName might not equal element.name due to case insensitivity
+	 * in HTML files.
+	 */
+	EditTagDialog(View view, String elementName, ElementDecl element,
+		Map attributeValues, boolean elementEmpty, Map entityHash,
+		List ids, boolean html)
 	{
 		super(view,jEdit.getProperty("xml-edit-tag.title"),true);
 
+		this.elementName = elementName;
 		this.element = element;
 		this.entityHash = entityHash;
 		this.html = html;
@@ -176,6 +181,7 @@ class EditTagDialog extends EnhancedDialog
 
 	//{{{ Instance variables
 	private boolean html;
+	private String elementName;
 	private ElementDecl element;
 	private Map entityHash;
 	private JCheckBox empty;
@@ -246,8 +252,10 @@ class EditTagDialog extends EnhancedDialog
 	//{{{ updateTag() method
 	private void updateTag()
 	{
+		int tagNameCase = TextUtilities.getStringCase(elementName);
+
 		StringBuffer buf = new StringBuffer("<");
-		buf.append(element.name);
+		buf.append(elementName);
 
 		for(int i = 0; i < attributeModel.size(); i++)
 		{
@@ -256,6 +264,24 @@ class EditTagDialog extends EnhancedDialog
 				continue;
 
 			buf.append(' ');
+			String attrName = attr.name;
+			if(html)
+			{
+				switch(tagNameCase)
+				{
+				case TextUtilities.UPPER_CASE:
+					attrName = attr.name.toUpperCase();
+					break;
+				case TextUtilities.LOWER_CASE:
+					attrName = attr.name.toLowerCase();
+					break;
+				case TextUtilities.TITLE_CASE:
+					attrName = TextUtilities.toTitleCase(
+						attr.name);
+					break;
+				}
+			}
+
 			buf.append(attr.name);
 
 			if(html && attr.name.equals(attr.value.value))

@@ -89,9 +89,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
 		jEdit.setBooleanProperty("xml.cache",network.getSelectedIndex() == 1);
 		jEdit.setBooleanProperty("xml.network",network.getSelectedIndex() >= 1);
-		jEdit.setProperty("xml.tag-highlight-color",
-			GUIUtilities.getColorHexString(
-			tagHighlightColor.getSelectedColor()));
 		jEdit.setIntegerProperty("xml.show-attributes",
 			showAttributes.getSelectedIndex());
 		jEdit.setBooleanProperty("xml.close-complete",
@@ -105,7 +102,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ Private members
 	private JCheckBox validate;
 	private JComboBox network;
-	private ColorWellButton tagHighlightColor;
 	private JComboBox showAttributes;
 	private JCheckBox closeCompleteOpen;
 	private JCheckBox closeComplete;
