@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="buffertabs.toggle-vis">
+        <CODE>
+            BufferTabsPlugin.toggleBufferTabsForEditPane(editPane);
+        </CODE>
+        <IS_SELECTED>
+            return (
+                BufferTabsPlugin.getBufferTabsForEditPane(editPane) != null
+            );
+        </IS_SELECTED>
+    </ACTION>
+</ACTIONS>
