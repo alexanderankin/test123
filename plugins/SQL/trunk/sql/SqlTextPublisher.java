@@ -48,6 +48,9 @@ import sql.preprocessors.*;
  */
 public class SqlTextPublisher
 {
+  protected final static String POPUP_SUCCESSFUL_EMPTY_UPDATE_MESSAGES =
+    "sql.publisher.popupSuccessfulEmptyUpdateMessages";
+  
   protected final static DateFormat dFormat =
       new SimpleDateFormat( "yyyy-MM-dd:HH:mm:ss", Locale.US );
 
@@ -56,6 +59,30 @@ public class SqlTextPublisher
   protected static String lastRunQuery = null;
   protected static int lastStartPos = 0;
 
+  /**
+   *Gets the hideSuccessfulUpdateMessages attribute of the SqlUtils class
+   *
+   * @return    The hideSuccessfulUpdateMessages value
+   * @since
+   */
+  public static boolean getPopupSuccessfulEmptyUpdateMessages()
+  { 
+    return Boolean.valueOf( SqlPlugin.getGlobalProperty( POPUP_SUCCESSFUL_EMPTY_UPDATE_MESSAGES ) ).booleanValue();
+  }
+
+  public static void setPopupSuccessfulEmptyUpdateMessages( boolean popupSuccessfulEmptyUpdateMessages )
+  { 
+    SqlPlugin.setGlobalProperty( POPUP_SUCCESSFUL_EMPTY_UPDATE_MESSAGES, 
+                                 new Boolean( popupSuccessfulEmptyUpdateMessages ).toString() );
+  }
+
+  /**
+   *  Description of the Method
+   */
+  public static void clearProperties()
+  {
+    SqlPlugin.unsetGlobalProperty( POPUP_SUCCESSFUL_EMPTY_UPDATE_MESSAGES );
+  }
 
   /**
    *Gets the Preprocessors attribute of the SqlUtils class
@@ -448,12 +475,11 @@ public class SqlTextPublisher
       record.releaseStatement( pstmt );
     }
 
-    if ( !anyObj )
+    if ( !anyObj && ( updateCount > 0 || getPopupSuccessfulEmptyUpdateMessages() ) )
       SqlUtils.runInAWTThreadNoWait(
         new Runnable()
         {
           final Object args[] = {new Integer( updateCount )};
-
 
           public void run()
           {

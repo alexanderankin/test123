@@ -48,7 +48,7 @@
     </javac>
   </target>
 
-  <target name="dist" depends="compile,docs-xsltproc">
+  <target name="dist" depends="compile,docs-xalan">
     <mkdir dir="${install.dir}"/>
     <jar jarfile="${install.dir}/${jar.name}">
       <fileset dir="${build.dir}"/>

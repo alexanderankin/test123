@@ -54,6 +54,9 @@ sql.options.recordSetView.label=Record Set dockable
 sql.options.maxRecs2Show.label=Max no. of records to show
 sql.options.autoresizeResult.label=Autoresize
 
+sql.options.common.label=Common
+sql.options.popupSuccessfulEmptyUpdateMessages.label=Popup messages on successful 'empty' updates
+
 sql.options.jdbc.classpath.label=Drivers' classpath
 
 sql.options.specialCommentRemover.title.label=Special comments
@@ -109,6 +112,7 @@ sql.progress.ProcedureTextNotInDB.message=There is no procedure text for procedu
 sql.resultSet.label=SQL Result Set
 sql.resultSet.info=Records: {0}
 sql.resultSet.status={0} request(s) running
+sql.resultSet.closeAll=Close All
 
 sql.resultSet.title=SQL Result Set
 sql.resultSet-toggle=Show/hide SQL Result Set
@@ -145,6 +149,9 @@ sql.toolbar.loadObject.tooltip=Load object
 sql.options.toolbar.label=Toolbar
 sql.options.showToolBar.label=Show Toolbar
 sql.options.showTitle.label=Show "Database:" label
+
+sql.options.infoPanel.label=Information
+sql.options.infoPanel.text=The global SQL Plugin Options do not allow to specify the servers. In order to do this, the project properties should be used (in the Project Viewer dockable)
 
 sql.repeatLastQuery.label=Repeat last query
 

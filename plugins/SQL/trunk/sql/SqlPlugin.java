@@ -313,6 +313,8 @@ public class SqlPlugin extends EBPlugin
   {
     try
     {
+      if ( project == null )
+        return null;
       Log.log( Log.DEBUG, SqlPlugin.class,
           "Looking for the property [" + name + "] of " + project );
       final String val = project.getProperty( name );
