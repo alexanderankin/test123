@@ -37,6 +37,6 @@ import errorlist.*;
 
 public interface SideKickParser
 {
-	String getName();
 	SideKickParsedData parse(SideKick sidekick, String text);
+	String getName();
 }

@@ -81,15 +81,15 @@ public class SideKickPlugin extends EBPlugin
 	} //}}}
 
 	//{{{ registerParser() method
-	public static void registerParser(String name, SideKickParser parser)
+	public static void registerParser(SideKickParser parser)
 	{
-		parsers.put(name,parser);
+		parsers.put(parser.getName(),parser);
 	} //}}}
 
 	//{{{ unregisterParser() method
-	public static void unregisterParser(String name)
+	public static void unregisterParser(SideKickParser parser)
 	{
-		parsers.remove(name);
+		parsers.remove(parser.getName());
 	} //}}}
 
 	//{{{ getParser() method

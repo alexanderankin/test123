@@ -106,6 +106,8 @@ public class SideKick implements EBComponent
 					editPane.putClientProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data);
 
 					sendUpdate();
+
+					_parse();
 				} //}}}
 			}
 		}); //}}}
