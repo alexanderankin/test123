@@ -29,7 +29,9 @@ options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.Pr
 
 #{{{ jEdit Plugins menu
 plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
-plugin.projectviewer.ProjectPlugin.menu=projectviewer_edit_project \
+plugin.projectviewer.ProjectPlugin.menu=projectviewer \
+	- \
+	projectviewer_edit_project \
 	projectviewer_open_all_files \
 	projectviewer_close_all_files \
 	projectviewer_remove_all_files \
