@@ -21,7 +21,7 @@ import org.gjt.sp.util.Log;
 import org.apache.xerces.readers.XCatalog;
 import org.xml.sax.*;
 
-class EntityManager
+public class EntityManager
 {
 	public static InputSource resolveEntity(String current,
 		String publicId, String systemId)

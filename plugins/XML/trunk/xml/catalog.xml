@@ -3,8 +3,9 @@
 <!DOCTYPE XCatalog PUBLIC "-//DTD//XCatalog//EN"
 	"jeditresource:xerces.jar!org/apache/xerces/readers/xcatalog.dtd">
 
-<!-- If your plugin includes DTDs, feel free to add it here and send
-     me a patch -->
+<!-- If your plugin includes DTDs, feel free to add them here and send
+     me a patch. I would like the XML plugin to work out of the box with
+     any XML files other plugins might use. -->
 
 <XCatalog Version="0.2">
 
@@ -28,14 +29,14 @@
 
 	<Remap
 		SystemID="commando.dtd"
-		HRef="jeditresource:Console.jar!commando/commando.dtd" />
+		HRef="jeditresource:Console.jar!/commando/commando.dtd" />
 
 	<Remap
 		SystemID="xcatalog.dtd"
-		HRef="jeditresource:xerces.jar!org/apache/xerces/readers/xcatalog.dtd" />
+		HRef="jeditresource:xerces.jar!/org/apache/xerces/readers/xcatalog.dtd" />
 
 	<Map
 		PublicID="-//DTD//XCatalog//EN"
-		HRef="jeditresource:xerces.jar!org/apache/xerces/readers/xcatalog.dtd" />
+		HRef="jeditresource:xerces.jar!/org/apache/xerces/readers/xcatalog.dtd" />
 
 </XCatalog>
