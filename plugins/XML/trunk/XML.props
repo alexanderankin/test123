@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
-plugin.xml.XmlPlugin.version=0.11.2
+plugin.xml.XmlPlugin.version=0.12
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xercesImpl.jar xmlParserAPIs.jar xml-commons-resolver.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.01.11.00
@@ -72,7 +72,7 @@ mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complet
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.jhtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
-mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
+mode.jsp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/ant-complete.xml
 mode.php.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.shtml.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001 Slava Pestov
+ * Copyright (C) 2001, 2003 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -17,6 +17,7 @@ package xml.completion;
 
 //{{{ Imports
 import java.util.*;
+import org.gjt.sp.jedit.jEdit;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
 import xml.parser.*;
@@ -70,7 +71,24 @@ public class CompletionInfoHandler extends DefaultHandler
 		String qName, // qualified name
 		Attributes attrs) throws SAXException
 	{
-		if(sName.equals("entity"))
+		if(sName.equals("dtd"))
+		{
+			String extend = attrs.getValue("extend");
+			if(extend != null)
+			{
+				String infoURI = jEdit.getProperty(
+					"mode." + extend
+					+ ".xml.completion-info");
+				if(infoURI != null)
+				{
+					CompletionInfo extendInfo = CompletionInfo
+						.getCompletionInfoFromResource(infoURI);
+					if(extendInfo != null)
+						completionInfo = (CompletionInfo)extendInfo.clone();
+				}
+			}
+		}
+		else if(sName.equals("entity"))
 		{
 			addEntity(new EntityDecl(
 				EntityDecl.INTERNAL,

@@ -422,6 +422,10 @@ public class SAXParserImpl extends XmlParser
 			if(!buffer.getPath().equals(currentURI))
 				return;
 
+			// what do we do in this case?
+			if(loc.getLineNumber() == -1)
+				return;
+
 			// add all attributes with type "ID" to the ids vector
 			for(int i = 0; i < attrs.getLength(); i++)
 			{
@@ -477,6 +481,10 @@ public class SAXParserImpl extends XmlParser
 			) throws SAXException
 		{
 			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
+				return;
+
+			// what do we do in this case?
+			if(loc.getLineNumber() == -1)
 				return;
 
 			buffer.readLock();
