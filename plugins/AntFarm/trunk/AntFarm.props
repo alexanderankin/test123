@@ -94,4 +94,4 @@ options.antfarm.suppress-poperties-label=Do not prompt for properties when runni
 options.antfarm.set-global-properties-label=Set global properties to use when running ant builds.
 options.antfarm.table.name-label=Name
 options.antfarm.table.value-label=Value
-options.antfarm.classpath-label=Enter the classpath to use when running Ant.
+options.antfarm.classpath-label=Enter the classpath to use when invoking Ant.
