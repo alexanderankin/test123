@@ -35,32 +35,41 @@ XSLTProcessor.error.dockFirst=You must dock the XSLT Processor before you can pe
 
 XSLTProcessor.source.label=Source:
 XSLTProcessor.source.pleaseSelect=Please select a source document
-XSLTProcessor.select.button.tooltip=Select XML source
-XSLTProcessor.select.button.icon=/xslt/icons/Open.png
+XSLTProcessor.source.select.button.tooltip=Select XML source
+XSLTProcessor.source.select.button.icon=/xslt/icons/Open.png
 
 XSLTProcessor.stylesheets.label=Stylesheets:
-XSLTProcessor.add.button.tooltip=Add stylesheet
-XSLTProcessor.add.button.icon=/xslt/icons/Plus.png
 
-XSLTProcessor.remove.button.tooltip=Remove stylesheet
-XSLTProcessor.remove.button.icon=/xslt/icons/Minus.png
+XSLTProcessor.stylesheets.add.button.tooltip=Add stylesheet
+XSLTProcessor.stylesheets.add.button.icon=/xslt/icons/Plus.png
 
-XSLTProcessor.up.button.tooltip=Move up
-XSLTProcessor.up.button.icon=/xslt/icons/ArrowUp.png
+XSLTProcessor.stylesheets.remove.button.tooltip=Remove stylesheet
+XSLTProcessor.stylesheets.remove.button.icon=/xslt/icons/Minus.png
 
-XSLTProcessor.down.button.tooltip=Move down
-XSLTProcessor.down.button.icon=/xslt/icons/ArrowDown.png
+XSLTProcessor.stylesheets.up.button.tooltip=Move up
+XSLTProcessor.stylesheets.up.button.icon=/xslt/icons/ArrowUp.png
+
+XSLTProcessor.stylesheets.down.button.tooltip=Move down
+XSLTProcessor.stylesheets.down.button.icon=/xslt/icons/ArrowDown.png
+
+XSLTProcessor.parameters.label=Stylesheet parameters:
+
+XSLTProcessor.parameters.add.button.tooltip=Add stylesheet parameter
+XSLTProcessor.parameters.add.button.icon=/xslt/icons/Plus.png
+
+XSLTProcessor.parameters.remove.button.tooltip=Remove stylesheet parameter
+XSLTProcessor.parameters.remove.button.icon=/xslt/icons/Minus.png
 
 XSLTProcessor.result.label=Result:
-XSLTProcessor.result.pleaseName=Please name for the result document
+XSLTProcessor.result.pleaseName=Please name the result document
 
-XSLTProcessor.name.button.tooltip=Name result file
-XSLTProcessor.name.button.icon=/xslt/icons/New.png
+XSLTProcessor.result.name.button.tooltip=Name result file
+XSLTProcessor.result.name.button.icon=/xslt/icons/New.png
 
 XSLTProcessor.transform.button.tooltip=Transform XML
 XSLTProcessor.transform.button.icon=/xslt/icons/Transform.png
 
-XSLTProcessor.transform.status=Transform completed, time taken {0}ms
+XSLTProcessor.transform.status=Transform completed, time taken {0}sec
 XSLTProcessor.transform.indentAmount=2
 
 
