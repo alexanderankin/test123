@@ -1,13 +1,28 @@
 # Environment specific build parameters.  The build.xml file will load properties from
 # a 'build.properties' file at runtime.  This is a sample of what this file should
-# look like.
+# look like. The values are defaults used by build.xml.
 
-compiler.debug=on
+# Compiler options
+compiler.debug=off
 compiler.optimize=off
-compiler.deprecation=on
+compiler.deprecation=off
 compiler.verbose=off
 
+# jEdit installation information
 jedit.user.home=${user.home}/.jedit
 jedit.install.dir=../../jEdit
+
+# Version number, for the zip file for the distribution
 version=2.0.1
+
+# InfoViewer plugin, necessary for compilation
+infoviewer.jar=${jedit.user.home}/jars/InfoViewer.jar
+
+# Target directory for the documentation
+build.docs=build/docs
+build.javadoc=build/docs/javadoc
+build.doxydoc=build/docs/doxydoc
+
+# Location of the docbook DTD
+docbookx_dtd=../XML/xml/dtds/docbookx.dtd
 
