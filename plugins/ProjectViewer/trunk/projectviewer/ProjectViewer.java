@@ -1,4 +1,4 @@
-/* $Id$
+/*
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -36,7 +36,10 @@ import projectviewer.event.*;
 import projectviewer.tree.*;
 import projectviewer.config.ProjectViewerConfig;
 
-/** A Project Viewer plugin for jEdit.
+/** 
+ *  A Project Viewer plugin for jEdit.
+ *
+ *  @version    $Id$
  */
 public final class ProjectViewer extends JPanel 
                                  implements EBComponent, 
@@ -168,7 +171,8 @@ public final class ProjectViewer extends JPanel
         }
         
 		projectView.activate();
-		loadProject();
+        
+       loadProject();
 	}
 
 	/** Set the status message.
@@ -188,10 +192,11 @@ public final class ProjectViewer extends JPanel
 		return getCurrentTree().getLastSelectedPathComponent() instanceof ProjectFile;
 	}
 
-	/** Returns the currently displayed tree, or <code>null</code> if none are
-	 * displayed.
+	/** 
+     *  Returns the currently displayed tree, or <code>null</code> if none are
+	 *  displayed.
 	 *
-	 *@return    The currentTree value
+     *  @return    The currentTree value
 	 */
 	public JTree getCurrentTree() {
 		
@@ -220,7 +225,8 @@ public final class ProjectViewer extends JPanel
 	 *@return    The selectedNode value
 	 */
 	public Object getSelectedNode() {
-		return getCurrentTree().getLastSelectedPathComponent();
+        JTree curTree = getCurrentTree();
+		return (curTree != null) ? curTree.getLastSelectedPathComponent() : null;
 	}
 
 	/** Returns the currently selected file in the current tree, or <code>null</code>
@@ -679,6 +685,7 @@ public final class ProjectViewer extends JPanel
             workingFileTree = null;
         }
         
+        toolbar.setVisible((count > 0) && config.getShowToolBar());
         tabs.addChangeListener(tsl);
     }
 
