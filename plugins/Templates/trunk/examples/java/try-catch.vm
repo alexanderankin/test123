@@ -1,0 +1,12 @@
+## template=Try/Catch
+#prompt ( "Exception to Catch:" $exceptionName )
+#if ( $exceptionName && $exceptionName != "" )
+   #set ( $catch = " catch ($exceptionName e) {" )
+#end
+try {
+${_jeditIndentation}${_jeditTab}$_jeditSelection
+${_jeditIndentation}#caret ()
+${_jeditIndentation}}$!catch
+#if ( $catch )
+${_jeditIndentation}}
+#end
