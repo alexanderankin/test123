@@ -8,9 +8,11 @@ import org.gjt.sp.util.Log;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemListener;
+import java.awt.event.ItemEvent;
+import java.awt.*;
 import java.io.File;
 
 /**
@@ -39,6 +41,24 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     final JButton newProject = new JButton(GUIUtilities.loadIcon("New.png"));
     final JButton openProject = new JButton(GUIUtilities.loadIcon("Open.png"));
     newProject.setToolTipText("Create a new project");
+
+
+    final java.util.List projectList = projectManager.getProjectList();
+    JComboBox listProjects;
+    if (projectList == null) {
+      listProjects = new JComboBox();
+    } else {
+      listProjects = new JComboBox(projectList.toArray());
+
+    }
+    listProjects.addItemListener(new ItemListener() {
+      public void itemStateChanged(ItemEvent e) {
+        if (e.getStateChange() == ItemEvent.SELECTED) {
+          Project project = (Project) e.getItem();
+          projectManager.openProject(project);
+        }
+      }
+    });
     final MyActionListener myActionListener = new MyActionListener(newProject,
                                                                    openProject,
                                                                    closeProject,
@@ -48,9 +68,10 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
 
     openProject.setToolTipText("Open a project");
     openProject.addActionListener(myActionListener);
-    toolbar.add(openProject);
 
     closeProject.addActionListener(myActionListener);
+
+    toolbar.add(openProject);
     toolbar.add(closeProject);
 
 
@@ -68,6 +89,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     setProject(projectManager.getProject());
     panelTop.add(projectName);
     panelTop.add(projectNameField);
+    panelTop.add(new JScrollPane(listProjects));
     panel.add(panelTop, BorderLayout.NORTH);
     panel.add(tabs, BorderLayout.CENTER);
     add(panel, BorderLayout.CENTER);
@@ -153,7 +175,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
       } else if (source == buttonDel) {
         final Project project = (Project) projectManager.getProject();
         final int ret = JOptionPane.showConfirmDialog(closeProject,
-                                                              "Do you really want to remove the project " + project.getName());
+                                                      "Do you really want to remove the project " + project.getName());
         if (ret == JOptionPane.YES_OPTION) {
           Log.log(Log.DEBUG, this, "Removing project requested by user");
           projectManager.deleteProject(project);

@@ -9,6 +9,7 @@ import org.gjt.sp.util.Log;
 import javax.swing.*;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +19,6 @@ import java.util.List;
  * @author Matthieu Casanova
  */
 public final class ProjectManager {
-
   /** The current project. */
   private Project project;
 
@@ -75,11 +75,15 @@ public final class ProjectManager {
     if (settingsDirectory != null) {
       final File projectDirFile = new File(projectDirectory);
       if (projectDirFile.exists()) {
-        final File[] projectFiles = projectDirFile.listFiles();
-        final List list = new ArrayList(projectFiles.length >> 1);// there should be a project and a directory each time ... so /2
-        for (int i = 0; i < projectFiles.length; i++) {
-          final File projectFile = projectFiles[i];
-          if (projectFile.isFile() && projectFile.getName().endsWith(".project.props")) {
+        final String[] projectsNames = projectDirFile.list(new FilenameFilter() {
+          public boolean accept(File dir, String name) {
+            return name.endsWith(".project.props");
+          }
+        });
+        final List list = new ArrayList(projectsNames.length);
+        for (int i = 0; i < projectsNames.length; i++) {
+          final File projectFile = new File(projectDirectory, projectsNames[i]);
+          if (projectFile.isFile()) {
             try {
               list.add(new Project(projectFile));
             } catch (InvalidProjectPropertiesException e) {
@@ -99,10 +103,7 @@ public final class ProjectManager {
     return null;
   }
 
-  /**
-   * Dispose the project manager.
-   * it will set the project name in the jEdit properties and close the current project.
-   */
+  /** Dispose the project manager. it will set the project name in the jEdit properties and close the current project. */
   public void dispose() {
     instance = null;
     if (project != null) {
@@ -175,6 +176,21 @@ public final class ProjectManager {
       Log.log(Log.ERROR, this, e.getMessage());
       this.project = null;
     }
+    EditBus.send(new PHPProjectChangedMessage(this, this.project));
+  }
+
+  public void openProject(Project project) {
+    if (this.project != null) {
+      closeProject();
+    }
+    project.load();
+    // todo : add an option for that
+    View activeView = jEdit.getActiveView();
+    if (activeView != null) {
+      VFSBrowser.browseDirectory(activeView, project.getRoot());
+    }
+    this.project = project;
+
     EditBus.send(new PHPProjectChangedMessage(this, this.project));
   }
 }

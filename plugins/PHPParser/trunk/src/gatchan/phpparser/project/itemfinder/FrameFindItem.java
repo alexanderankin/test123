@@ -39,7 +39,6 @@ public final class FrameFindItem extends JFrame {
   private final JTextField searchField;
   private final JList itemList;
 
-  private int mode;
   private Buffer buffer;
   private PHPItemCellRenderer cellRenderer;
   private static final Color LIST_SELECTION_BACKGROUND = new Color(0xcc, 0xcc, 0xff);
@@ -163,7 +162,6 @@ public final class FrameFindItem extends JFrame {
    * @param mode the mode ({@link FrameFindItem#CLASS_MODE} or {@link FrameFindItem#METHOD_MODE})
    */
   public void init(View view, int mode) {
-    this.mode = mode;
     this.view = view;
     listModel.clear();
     listModel.setMode(mode);
