@@ -322,7 +322,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 		errorSource.clear();
 
-		thread = new XmlParseThread(this,buffer);
+		thread = new XmlParser.ParseThread(view,buffer);
 		thread.start();
 	}
 
