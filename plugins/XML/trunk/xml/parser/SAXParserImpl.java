@@ -50,8 +50,20 @@ public class SAXParserImpl extends XmlParser
 	} //}}}
 
 	//{{{ parse() method
-	public SideKickParsedData parse(Buffer buffer, String text, DefaultErrorSource errorSource)
+	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
+		String text;
+
+		try
+		{
+			buffer.readLock();
+			text = buffer.getText(0,buffer.getLength());
+		}
+		finally
+		{
+			buffer.readUnlock();
+		}
+
 		if(text.length() == 0)
 			return new XmlParsedData(buffer.getName(),false);
 
