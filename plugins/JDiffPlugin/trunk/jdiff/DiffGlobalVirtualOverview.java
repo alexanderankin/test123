@@ -102,27 +102,13 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         int virtualRightOffset = 0;
         for (; hunk != null; hunk = hunk.link) {
 
-            Log.log(Log.DEBUG, this, "hunk.line0: "   + hunk.line0);
-            Log.log(Log.DEBUG, this, "hunk.deleted: " + hunk.deleted);
-            Log.log(Log.DEBUG, this, "lineCount0: "   + lineCount0);
+            // Log.log(Log.DEBUG, this, "hunk.line0: "   + hunk.line0);
+            // Log.log(Log.DEBUG, this, "hunk.deleted: " + hunk.deleted);
+            // Log.log(Log.DEBUG, this, "lineCount0: "   + lineCount0);
 
-            Log.log(Log.DEBUG, this, "hunk.line1: "    + hunk.line1);
-            Log.log(Log.DEBUG, this, "hunk.inserted: " + hunk.inserted);
-            Log.log(Log.DEBUG, this, "lineCount1: "    + lineCount1);
-
-            if ((hunk.line0 + Math.min(hunk.deleted, 1) - 1) >= lineCount0) { break; }
-            if ((hunk.line1 + Math.min(hunk.inserted, 1) - 1) >= lineCount1) { break; }
-
-            virtualLeftOffset  = (
-                  (hunk.line0 >= lineCount0)
-                ? foldVisibilityManager0.getVirtualLineCount()
-                : foldVisibilityManager0.physicalToVirtual(hunk.line0)
-            );
-            virtualRightOffset = (
-                  (hunk.line1 >= lineCount1)
-                ? foldVisibilityManager1.getVirtualLineCount()
-                : foldVisibilityManager1.physicalToVirtual(hunk.line1)
-            );
+            // Log.log(Log.DEBUG, this, "hunk.line1: "    + hunk.line1);
+            // Log.log(Log.DEBUG, this, "hunk.inserted: " + hunk.inserted);
+            // Log.log(Log.DEBUG, this, "lineCount1: "    + lineCount1);
 
             if (hunk.inserted == 0 && hunk.deleted != 0) { // DELETE
                leftColor  = JDiffPlugin.overviewDeletedColor;
@@ -136,19 +122,29 @@ public class DiffGlobalVirtualOverview extends DiffOverview
             }
 
             virtualLeftHeight = 0;
-            if (hunk.deleted != 0) {
-                virtualLeftHeight = 1 + (
-                      foldVisibilityManager0.physicalToVirtual(hunk.line0 + hunk.deleted - 1)
-                    - virtualLeftOffset
-                );
+            if (hunk.line0 >= lineCount0) {
+                virtualLeftOffset = foldVisibilityManager0.getVirtualLineCount();
+            } else {
+                virtualLeftOffset  = foldVisibilityManager0.physicalToVirtual(hunk.line0);
+                if (hunk.deleted != 0) {
+                    virtualLeftHeight = 1 + (
+                          foldVisibilityManager0.physicalToVirtual(hunk.line0 + hunk.deleted - 1)
+                        - virtualLeftOffset
+                    );
+                }
             }
 
             virtualRightHeight = 0;
-            if (hunk.inserted != 0) {
-                virtualRightHeight = 1 + (
-                      foldVisibilityManager1.physicalToVirtual(hunk.line1 + hunk.inserted - 1)
-                    - virtualRightOffset
-                );
+            if (hunk.line1 >= lineCount1) {
+                virtualRightOffset = foldVisibilityManager1.getVirtualLineCount();
+            } else {
+                virtualRightOffset = foldVisibilityManager1.physicalToVirtual(hunk.line1);
+                if (hunk.inserted != 0) {
+                    virtualRightHeight = 1 + (
+                          foldVisibilityManager1.physicalToVirtual(hunk.line1 + hunk.inserted - 1)
+                        - virtualRightOffset
+                    );
+                }
             }
 
             left.y  = inner.y + (int) Math.round(virtualLeftOffset * pxlPerLine);
