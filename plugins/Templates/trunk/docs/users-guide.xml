@@ -1,0 +1,412 @@
+<?xml version="1.0"?>
+
+<!-- Templates plugin user's guide -->
+<!-- (C) 2002 Steve Jakob -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true:folding=explicit: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+<!-- {{{ bookinfo section -->
+<bookinfo><title>Templates plugin user's guide</title>
+
+ <authorgroup>
+  <author><firstname>Steve</firstname><surname>Jakob</surname></author>
+  <author><firstname>Calvin</firstname><surname>Yu</surname></author>
+ </authorgroup>
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+ </legalnotice>
+</bookinfo>
+<!-- }}} -->
+
+<!-- {{{ Chapter: Introduction -->
+<chapter id="intro"><title>Introduction</title>
+
+ <para>
+  The Templates plugin can be used to insert code (or text, markup, etc.) 
+  templates into the current buffer. As of version 3.0.0, the Templates plugin 
+  uses <ulink url="http://jakarta.apache.org/velocity/">Apache Velocity</ulink> 
+  as it's underlying templating engine. The inclusion of the Apache engine 
+  provides many advantages over the previous approach, including:
+ </para>
+
+ <itemizedlist>
+  <listitem><para>Templates can prompt for values for variables</para></listitem>
+  <listitem><para>Beanshell snippets can be embedded in templates</para></listitem>
+  <listitem><para>Templates may <quote>include</quote> nested templates</para></listitem>
+  <listitem><para>jEdit-specific directives allow changes to the current buffer 
+  (eg. set caret position, change buffer mode, etc.)</para></listitem>
+  <listitem><para>Easily extensible</para></listitem>
+ </itemizedlist>
+
+</chapter>
+<!-- }}} -->
+
+<!-- {{{ Chapter: Quick Start -->
+<chapter id="quick-start"><title>Quick Start</title>
+
+<!-- {{{ Section: Running the Samples -->
+ <sect1><title>Running the Samples</title>
+  <para>
+  </para>
+ </sect1>
+<!-- }}} -->
+ 
+</chapter>
+<!-- }}} -->
+
+<!-- {{{ Chapter: Velocity Template Language -->
+<chapter id="vtl"><title>Velocity Template Language</title>
+
+ <para>
+  The Velocity Template Language (VTL) is used to embed dynamic elements 
+  within what would otherwise be static templates. By using VTL it is possible  
+  to interact with the user, calculate values, incorporate conditional logic, 
+  and much more.
+ </para>
+
+ <!-- {{{ Section: References -->
+ <sect1><title>References</title>
+  <para>
+   Dynamic content is embedded in a template file using <emphasis>references
+   </emphasis>. VTL supports three types of references:
+    <itemizedlist>
+     <listitem><para>variables</para></listitem>
+     <listitem><para>properties</para></listitem>
+     <listitem><para>methods</para></listitem>
+    </itemizedlist>
+  </para>
+  <para>
+   References in Velocity are always treated as String objects.
+  </para>
+ </sect1>
+ <!-- }}} -->
+ 
+ <!-- {{{ Section: Directives -->
+ <sect1><title>Directives</title>
+  <para>
+  </para>
+ </sect1>
+ <!-- }}} -->
+ 
+ <!-- {{{ Section: Comments -->
+ <sect1><title>Comments</title>
+  <para>
+   Like most programming languages, VTL includes constructs for inserting 
+   descriptive text comments into a template. Both single-line and multi-line 
+   (block) comments are supported.
+  </para>
+
+  <para>
+   A single-line comments starts with ## and only lasts until the end of the 
+   line. The following are examples of single-line comments:
+  </para>
+  <programlisting>
+This is not a comment.     ## This is a comment.
+## This whole line is a comment.
+</programlisting>
+  <para>
+   Multi-line comments are indicated by a start comment indicator (#*) and end 
+   comment indicator (*#). For example:
+  </para>
+  <programlisting>
+This text is outside of the comment block. It will be processed by the
+template engine.
+#*
+  This text is inside the comment block.
+  Therefore it will be ignored by the template engine.
+*#
+Back outside the comment block. This text will be processed.
+</programlisting>
+  <para>
+   There is a third form of comment referred to in the Velocity documentation 
+   as a VTL comment. This is another form of block comment. The following 
+   example is taken from the Velocity User's Guide: 
+  </para>
+  <programlisting>
+#**
+This is a VTL comment block and
+may be used to store such information
+as the document author and versioning
+information:
+@author
+@version 5
+*#
+</programlisting>
+  <para>
+    It is unclear to this author the difference between multi-line comments 
+    and a VTL comment block.
+  </para>
+   
+  <sect2><title>Special Comment: Template Label</title>
+   <para>
+    The Templates plugin also supports a special instance of the single-line 
+    comment to allow templates to be labelled. To label a template, add a 
+    single-line comment as <emphasis>the first line</emphasis> of the template 
+    file, using the following format:
+   </para>
+   <programlisting>## template = template_name</programlisting>
+   <para>
+    where <emphasis>template_name</emphasis> is the desired label.
+   </para>
+   <para>
+    For example, adding this comment as the first line of a template file:
+   </para>
+   <programlisting>## template = Java class</programlisting>
+   <para>
+    would indicate that the template file is to be labelled "Java class".
+   </para>
+   <para>
+    This label is used in place of the file name in the following locations:
+   </para>
+   <itemizedlist>
+    <listitem>
+     <para>dynamic menus under 
+     <guimenu>Plugins</guimenu>&gt;<guimenuitem>Templates</guimenuitem>
+     </para>
+    </listitem>
+    <listitem><para>dockable templates dialog</para></listitem>
+    <listitem>
+     <para>Templates accelerator option pane under
+     <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+     </para>
+    </listitem>
+   </itemizedlist>
+   <para>
+    PLEASE NOTE: the <quote><function>#template =</function></quote> statement 
+    replaces the <quote><function>#ctpragma label</function></quote> and 
+    <quote><function>#ctpragma name</function></quote> 
+    statements used by the Templates plugin until version 2.0.2.
+   </para>
+  </sect2>
+ </sect1>
+ <!-- }}} -->
+ 
+</chapter>
+<!-- }}} -->
+
+<!-- {{{ Chapter: Directives -->
+<chapter id="directives"><title>Directives</title>
+
+ <para>
+  Directives are script elements in the Velocity Template Language that can be 
+  used to manipulate the output generated by the Velocity engine. Brief 
+  summaries of the standard VTL directives are included below; for a more 
+  detailed description, refer to the Velocity User Guide on the Apache 
+  website.
+ </para>
+ 
+ <para>
+  In addition to the directives provided by the Velocity engine itself, the 
+  Templates plugin includes several new directives specifically designed for 
+  use within the jEdit environment. These are also described in the sections 
+  below.
+ </para>
+
+ <!-- {{{ Section: Standard Velocity Directives -->
+ <sect1><title>Standard Velocity Directives</title>
+ 
+  <!-- {{{ Sub-Section: #set Directive -->
+  <sect2><title>#set Directive</title>
+   <para>
+    One of the most basic VTL directives is the <function>#set</function> 
+    directive. It is used to assign a value to either a variable 
+    reference or a property reference.
+   </para>
+   
+   <para>For example, the following are all valid #set statements:</para>
+   <programlisting>
+#set ( $country = "Canada" )                              ## string literal
+#set ( $anumber = 1234 )                                  ## number literal
+#set ( $myHome.country = $country )                       ## variable reference
+#set ( $myHome.province = $country.ontario )              ## property reference
+#set ( $country.leader = $worldleaders.lookup($country) ) ## method reference
+#set ( $codes = ["us", $country.code, "uk", "de"] )       ## arraylist
+</programlisting>
+
+  </sect2>
+  <!-- }}} -->
+  
+  <!-- {{{ Sub-Section: Conditionals -->
+  <sect2><title>Conditionals (#if/#elseif/#else)</title>
+   <para>
+    INSERT TEXT HERE.
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+  <!-- {{{ Sub-Section: Loops -->
+  <sect2><title>Loops (#foreach)</title>
+   <para>
+    INSERT TEXT HERE.
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+  <!-- {{{ Sub-Section: #include Directive -->
+  <sect2><title>#include Directive</title>
+   <para>
+    INSERT TEXT HERE.
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+  <!-- {{{ Sub-Section: #parse Directive -->
+  <sect2><title>#parse Directive</title>
+   <para>
+    INSERT TEXT HERE.
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+  <!-- {{{ Sub-Section: #stop Directive -->
+  <sect2><title>#stop Directive</title>
+   <para>
+    INSERT TEXT HERE.
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+  <!-- {{{ Sub-Section: #macro Directive -->
+  <sect2><title>Velocimacros (#macro Directive)</title>
+   <para>
+    INSERT TEXT HERE.
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+ </sect1>
+ <!-- }}} -->
+
+ <!-- {{{ Section: jEdit-Specific Directives -->
+ <sect1><title>jEdit-Specific Directives</title>
+ 
+  <!-- {{{ Sub-Section: #prompt Directive -->
+  <sect2><title>#prompt Directive</title>
+   <para>
+    The <function>#prompt</function> directive allows the template author to 
+    specify a variable, and have the application prompt the user for a value. 
+    This directive takes up to 4 parameters:
+   </para>
+   
+    <orderedlist>
+     <listitem><para>prompt string (required)</para></listitem>
+     <listitem><para>variable name (required)</para></listitem>
+     <listitem><para>default value (optional)</para></listitem>
+     <listitem><para>override context flag (optional)</para></listitem>
+    </orderedlist>
+    
+    <para>
+     The following code:
+     </para>
+     <programlisting>#prompt ( "Class Name:" $className )</programlisting>
+     <para>would result in the user being prompted for the class name:</para>
+     <para>
+      <screenshot>
+       <screeninfo>Colored Rectangles</screeninfo>
+       <mediaobject>
+        <imageobject>
+         <imagedata align="center" fileref="images/prompt_dlg.png" format="PNG"/>
+        </imageobject>
+        <textobject> <phrase>Velocity prompt dialog</phrase> </textobject>
+       </mediaobject>
+      </screenshot>
+     </para>
+   
+  </sect2>
+<!-- }}} -->
+  
+  <!-- {{{ Sub-Section: #today Directive -->
+  <sect2><title>#today Directive</title>
+   <para>
+    The <function>#today</function> directive can be used to assign the current 
+    date to a variable. Any of the date formatting options supported by 
+    <function>java.text.SimpleDateFormat</function> may be used to format the 
+    resulting date string.
+    This directive takes up to 2 parameters:
+   </para>
+   
+   <orderedlist>
+    <listitem><para>variable name (required)</para></listitem>
+    <listitem><para>formatting string (optional)</para></listitem>
+   </orderedlist>
+   
+   <para>For example, the following code:</para>
+   <programlisting>
+#today ( $defaultdate )
+#today ( $yearonly "yyyy" )
+#today ( $otherdate "dd-MMM-yyyy" )
+The default format: $defaultdate
+Year only: $yearonly
+Another format: $otherdate
+</programlisting>
+   <para>might yield the following output when processed:</para>
+   <programlisting>
+The default format: Wed May 08 01:00:05 EDT 2002
+Year only: 2002
+Another format: 08-MAY-2002
+</programlisting>
+   
+  </sect2>
+<!-- }}} -->
+  
+  <!-- {{{ Sub-Section: #caret Directive -->
+  <sect2><title>#caret Directive</title>
+   <para>
+    
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+  <!-- {{{ Sub-Section: #buffermode Directive -->
+  <sect2><title>#buffermode Directive</title>
+   <para>
+    
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+  <!-- {{{ Sub-Section: #beanshell Directive -->
+  <sect2><title>#beanshell Directive</title>
+   <para>
+    
+   </para>
+   
+  </sect2>
+  <!-- }}} -->
+  
+ </sect1>
+ <!-- }}} -->
+ 
+</chapter>
+<!-- }}} -->
+
+<!-- {{{ Chapter: Accelerators -->
+<chapter id="accelerators"><title>Template Accelerators</title>
+ <para></para>
+</chapter>
+<!-- }}} -->
+
+</book>

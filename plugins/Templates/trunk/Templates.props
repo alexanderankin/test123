@@ -3,7 +3,7 @@
 plugin.templates.TemplatesPlugin.name=Templates
 plugin.templates.TemplatesPlugin.author=Steve Jakob, Calvin Yu
 plugin.templates.TemplatesPlugin.version=2.9.9
-plugin.templates.TemplatesPlugin.docs=Templates.html
+plugin.templates.TemplatesPlugin.docs=index.html
 
 # Dependencies
 plugin.templates.TemplatesPlugin.depend.0=jedit 04.00.04.00

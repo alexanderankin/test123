@@ -5,6 +5,7 @@ Version 3.0.0 (???)
 ENHANCEMENTS:
 Added support for template labeling via "#template=" statement.
 Added Calvin's dockable window for template selection.
+Switched to Docbook for help documentation.
 
 Version 2.9.9 (30-APR-2002)
 =============================
