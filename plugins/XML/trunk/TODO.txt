@@ -1,8 +1,7 @@
-- catalogs seem broken, CatalogProperties complaints
+- CatalogProperties complaints
 - document xml.root property
 - xcatalog format
 - newer ant completion
-- [catalog] fatal error... etc.
 - ids are kind of hackish -- use something similar to a hypersearch result
 - fix xerces 2.3 deprecation
 - if close complete off, / should not show a popup immediately
@@ -22,18 +21,6 @@
   schemas to validate these file types.
 - preparsing and grammar cache needs a rework.
 - attribute completion.
-
-[error] java.lang.ThreadDeath
-[error]         at java.lang.Thread.stop(Thread.java:635)
-[error]         at xml.parser.XmlParser.stopThread(Unknown Source)
-[error]         at xml.parser.XmlParser.parse(Unknown Source)
-[error]         at xml.parser.XmlParser.handleMessage(Unknown Source)
-[error]         at org.gjt.sp.jedit.EditBus.send(Unknown Source)
-[error]         at org.gjt.sp.jedit.EditPane.setBuffer(Unknown Source)
-[error]         at org.gjt.sp.jedit.View.setBuffer(Unknown Source)
-[error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
-[error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
-[error]         at projectviewer.ProjectViewer.openProject(Unknown Source)
 - clean up entity code
 - empty data -- see what's up, & clean up
 - tag highlight scope bracket in gutter

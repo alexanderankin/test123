@@ -233,17 +233,15 @@ public class TagHighlight extends TextAreaExtension
 
 				if(match != null)
 				{
-					int offset = buffer.getLineOfOffset(match.start);
-
-					int line = textArea.physicalToVirtual(
-						offset);
-					if(line < textArea.getFirstLine()
-						|| line >= textArea.getFirstLine()
-						+ textArea.getVisibleLines() - 1)
+					if(textArea.getScreenLineOfOffset(match.start) == -1)
 					{
+						int line = buffer.getLineOfOffset(match.start);
+
 						view.getStatus().setMessageAndClear(
 							jEdit.getProperty("view.status.bracket",
-							new String[] { text.substring(
+							new Object[] {
+							new Integer(line),
+							text.substring(
 							match.start,match.end) }));
 					}
 

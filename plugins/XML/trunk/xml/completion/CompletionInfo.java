@@ -27,11 +27,11 @@ import xml.parser.*;
 
 public class CompletionInfo
 {
-	public List elements;
-	public Map elementHash;
-	public List entities;
-	public Map entityHash;
-	public List elementsAllowedAnywhere;
+	public ArrayList elements;
+	public HashMap elementHash;
+	public ArrayList entities;
+	public HashMap entityHash;
+	public ArrayList elementsAllowedAnywhere;
 
 	//{{{ CompletionInfo constructor
 	public CompletionInfo()
@@ -48,9 +48,9 @@ public class CompletionInfo
 	} //}}}
 
 	//{{{ CompletionInfo constructor
-	public CompletionInfo(List elements, Map elementHash,
-		List entities, Map entityHash,
-		List elementsAllowedAnywhere)
+	public CompletionInfo(ArrayList elements, HashMap elementHash,
+		ArrayList entities, HashMap entityHash,
+		ArrayList elementsAllowedAnywhere)
 	{
 		this.elements = elements;
 		this.elementHash = elementHash;
@@ -208,6 +208,18 @@ public class CompletionInfo
 
 			return info;
 		}
+	} //}}}
+
+	//{{{ clone() method
+	public Object clone()
+	{
+		return new CompletionInfo(
+			(ArrayList)elements.clone(),
+			(HashMap)elementHash.clone(),
+			(ArrayList)entities.clone(),
+			(HashMap)entityHash.clone(),
+			(ArrayList)elementsAllowedAnywhere.clone()
+		);
 	} //}}}
 
 	//{{{ Private members
