@@ -69,8 +69,13 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     try {
       int priorSpaceIndex = start - 5;
 
-      while(Character.isSpaceChar(ch[priorSpaceIndex])) {
-        writer.write(' ');
+      while(Character.isSpaceChar(ch[priorSpaceIndex]) || ch[priorSpaceIndex] == '\t') {
+        if(ch[priorSpaceIndex] == '\t') {
+          writer.write('\t');
+        } else {
+          writer.write(' ');
+        }
+
         priorSpaceIndex--;
       }
 
