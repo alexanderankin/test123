@@ -2,6 +2,7 @@ package gatchan.phpparser.project.itemfinder;
 
 import gatchan.phpparser.project.Project;
 import gatchan.phpparser.project.ProjectManager;
+import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
@@ -19,6 +20,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This window will help you to find a php item.
@@ -26,8 +29,12 @@ import java.util.ArrayList;
  * @author Matthieu Casanova
  */
 public final class FrameFindItem extends JFrame {
-  public static final int CLASS_MODE = 0;
-  public static final int METHOD_MODE = 1;
+  public static final int ALL_MODE = 0;
+  public static final int CLASS_MODE = 1;
+  public static final int METHOD_MODE = 2;
+
+  public static final int PROJECT_SCOPE = 0;
+  public static final int FILE_SCOPE = 1;
 
   private final SimpleListModel listModel = new SimpleListModel();
   private View view;
@@ -45,6 +52,8 @@ public final class FrameFindItem extends JFrame {
 
   /** the length of the last search. */
   private String lastSearch;
+
+  private int scope;
 
   public FrameFindItem() {
     setUndecorated(true);
@@ -89,15 +98,29 @@ public final class FrameFindItem extends JFrame {
       final QuickAccessItemFinder quickAccess = project.getQuickAccess();
       final String searchText = searchField.getText().toLowerCase();
       cellRenderer.setSearchString(searchText);
+      final java.util.List itemContaining;
 
       final int currentSearchLength = searchText.length();
-      if (quickAccess.getIndexLength() > currentSearchLength ||
-                                                             currentSearchLength < lastSearch.length() ||
-                                                             !searchText.startsWith(lastSearch)) {
-        final long quickAccessStart = System.currentTimeMillis();
-        final java.util.List itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
-
-        Log.log(Log.DEBUG, QuickAccessItemFinder.class, System.currentTimeMillis() - quickAccessStart + " ms");
+      if ((scope == PROJECT_SCOPE && quickAccess.getIndexLength() > currentSearchLength) ||
+          (lastSearch == null || currentSearchLength < lastSearch.length() ||!searchText.startsWith(lastSearch)))
+      {
+        if (scope == PROJECT_SCOPE) {
+          final long quickAccessStart = System.currentTimeMillis();
+          itemContaining = new ArrayList(quickAccess.getItemContaining(searchText));
+          Log.log(Log.DEBUG, QuickAccessItemFinder.class, System.currentTimeMillis() - quickAccessStart + " ms");
+        } else {
+          final Map classes = project.getClasses();
+          Map methods = project.getMethods();
+          itemContaining = new ArrayList(20);
+          Iterator iterator = classes.values().iterator();
+          while (iterator.hasNext()) {
+            ClassHeader classHeader = (ClassHeader) iterator.next();
+            itemContaining.addAll(classHeader.getMethodsHeaders());
+            itemContaining.addAll(classHeader.getFields());
+            itemContaining.add(classHeader);
+          }
+          itemContaining.addAll(methods.values());
+        }
 
         if (itemContaining.isEmpty()) {
           searchField.setForeground(Color.red);
@@ -172,18 +195,23 @@ public final class FrameFindItem extends JFrame {
   /**
    * Initialize the frame find item.
    *
-   * @param view the jEdit's view
-   * @param mode the mode ({@link FrameFindItem#CLASS_MODE} or {@link FrameFindItem#METHOD_MODE})
+   * @param view  the view
+   * @param mode  one of the following  {@link FrameFindItem#ALL_MODE}, {@link FrameFindItem#CLASS_MODE} or {@link
+   *              FrameFindItem#METHOD_MODE}
+   * @param scope the scope : {@link FrameFindItem#FILE_SCOPE} or {@link FrameFindItem#PROJECT_SCOPE}
    */
-  public void init(View view, int mode) {
+  public void init(View view, int mode, int scope) {
     this.view = view;
+    this.scope = scope;
     listModel.clear();
     listModel.setMode(mode);
     searchField.setText(null);
     if (mode == CLASS_MODE) {
       label.setText("Enter the class name");
-    } else {
+    } else if (mode == METHOD_MODE) {
       label.setText("Enter the method name");
+    } else {
+      label.setText("Enter your search");
     }
     window.pack();
     pack();
@@ -200,8 +228,8 @@ public final class FrameFindItem extends JFrame {
   private static boolean handledByList(KeyEvent e) {
     return e.getKeyCode() == KeyEvent.VK_DOWN ||
                                               e.getKeyCode() == KeyEvent.VK_UP ||
-                                              e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
-                                              e.getKeyCode() == KeyEvent.VK_PAGE_UP;
+                                                                               e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
+                                                                                                                       e.getKeyCode() == KeyEvent.VK_PAGE_UP;
   }
 
   private final class SearchFieldKeyAdapter extends KeyAdapter {

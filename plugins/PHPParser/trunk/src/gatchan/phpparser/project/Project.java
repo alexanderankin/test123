@@ -379,7 +379,13 @@ public final class Project {
     }
   }
 
-  public Map getClasses() { return classes; }
+  public Map getClasses() {
+    return classes;
+  }
+
+  public Map getMethods() {
+    return methods;
+  }
 
   /**
    * Return a classHeader by it's name.
