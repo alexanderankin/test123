@@ -601,8 +601,12 @@ public class ArchiveVFS extends VFS {
                     }
                 }
 
-                if(!saved)
-                    throw new IOException("FIXME");
+                if(!saved) {
+                    // new entry
+                    archiveOut.putNextEntry(new ZipEntry(archive.entryName));
+                    copy(outputFile,archiveOut);
+                    saved = true;
+                }
             } finally {
                 if(out != null)
                     out.close();
