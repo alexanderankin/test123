@@ -121,7 +121,7 @@ public class SqlParser
   public static void main( String args[] )
   {
     String pattern;
-    pattern = "([\n\r]+;)+[\n\r]+";
+    pattern = "([\\n\\r]+;)+[\\n\\r]+";
     //final String text = "  \n\nqwe\n\n;\n\n";
     String text;
 
