@@ -86,10 +86,15 @@ public class SideKickOptionPane extends AbstractOptionPane
 
 		autoParseDelay.setEnabled(keystrokeParse.isSelected());
 
-		addComponent(complete = new JCheckBox(jEdit.getProperty(
-			"options.sidekick.complete")));
-		complete.setSelected(jEdit.getBooleanProperty("sidekick.complete"));
-		complete.addActionListener(new ActionHandler());
+		addComponent(completeInstantToggle = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.complete-instant.toggle")));
+		completeInstantToggle.setSelected(jEdit.getBooleanProperty("sidekick.complete-instant.toggle"));
+		completeInstantToggle.addActionListener(new ActionHandler());
+
+		addComponent(completeDelayToggle = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.complete-delay.toggle")));
+		completeDelayToggle.setSelected(jEdit.getBooleanProperty("sidekick.complete-delay.toggle"));
+		completeDelayToggle.addActionListener(new ActionHandler());
 
 		int completeDelayValue = jEdit.getIntegerProperty("sidekick.complete-delay",500);
 
@@ -108,7 +113,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		completeDelay.setMajorTickSpacing(250);
 		completeDelay.setPaintTicks(true);
 
-		completeDelay.setEnabled(complete.isSelected());
+		completeDelay.setEnabled(completeDelayToggle.isSelected());
 	} //}}}
 
 	//{{{ _save() method
@@ -122,33 +127,12 @@ public class SideKickOptionPane extends AbstractOptionPane
 			autoParseDelay.getValue()));
 		jEdit.setBooleanProperty("sidekick-tree.follows-caret",
 			treeFollowsCaret.isSelected());
-		jEdit.setBooleanProperty("sidekick.complete",complete.isSelected());
+		jEdit.setBooleanProperty("sidekick.complete-instant.toggle",
+			completeInstantToggle.isSelected());
+		jEdit.setBooleanProperty("sidekick.complete-delay.toggle",
+			completeDelayToggle.isSelected());
 		jEdit.setIntegerProperty("sidekick.complete-delay",
 			completeDelay.getValue());
-	} //}}}
-
-	// XXX in 4.2 move this to AbstractOptionPane
-
-	//{{{ addComponent() method
-	/**
-	 * Adds a component to the option pane. Components are
-	 * added in a vertical fashion, one per row.
-	 * @param comp The component
-	 * @param fill Fill parameter to GridBagConstraints
-	 */
-	public void addComponent(Component comp, int fill)
-	{
-		GridBagConstraints cons = new GridBagConstraints();
-		cons.gridy = y++;
-		cons.gridheight = 1;
-		cons.gridwidth = cons.REMAINDER;
-		cons.fill = fill;
-		cons.anchor = GridBagConstraints.WEST;
-		cons.weightx = 1.0f;
-		cons.insets = new Insets(1,0,1,0);
-
-		gridBag.setConstraints(comp,cons);
-		add(comp);
 	} //}}}
 
 	//{{{ Private members
@@ -156,7 +140,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
 	private JCheckBox treeFollowsCaret;
-	private JCheckBox complete;
+	private JCheckBox completeInstantToggle;
+	private JCheckBox completeDelayToggle;
 	private JSlider completeDelay;
 	//}}}
 
@@ -172,9 +157,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 				if(keystrokeParse.isSelected())
 					bufferChangeParse.setSelected(true);
 			}
-			else if(source == complete)
+			else if(source == completeDelayToggle)
 			{
-				completeDelay.setEnabled(complete.isSelected());
+				completeDelay.setEnabled(completeDelayToggle.isSelected());
 			}
 		}
 	} //}}}

@@ -39,13 +39,16 @@ public class SideKickActions
 		if(timer != null)
 			timer.stop();
 
+		if(!completeInstant)
+			return;
+
 		complete(view,COMPLETE_INSTANT_KEY);
 	} //}}}
 
 	//{{{ keyCompleteWithDelay() method
 	public static void keyCompleteWithDelay(final View view)
 	{
-		if(!completion)
+		if(!completeDelay)
 			return;
 
 		if(timer != null)
@@ -320,14 +323,16 @@ public class SideKickActions
 	//{{{ propertiesChanged() method
 	public static void propertiesChanged()
 	{
-		completion = jEdit.getBooleanProperty("sidekick.complete");
+		completeDelay = jEdit.getBooleanProperty("sidekick.complete-delay.toggle");
+		completeInstant = jEdit.getBooleanProperty("sidekick.complete-instant.toggle");
 		delay = jEdit.getIntegerProperty("sidekick.complete-delay",500);
 		if(timer != null)
 			timer.setInitialDelay(delay);
 	} //}}}
 
 	//{{{ Private members
-	private static boolean completion;
+	private static boolean completeDelay;
+	private static boolean completeInstant;
 	private static int delay;
 	private static int caretWhenCompleteKeyPressed;
 	private static Timer timer;
