@@ -1268,6 +1268,7 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
   Token visibilityToken = null;
   Token visibilityToken2 = null;
   Token finalToken = null;
+  List fieldList;
 }
 {
   
@@ -1353,9 +1354,13 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
                                           e.currentToken.endColumn)); //}}}
   }
 |
-  field  = FieldDeclaration()
+  fieldList  = FieldDeclaration()
   {
-    if (field != null) classDeclaration.addField(field);
+    if (fieldList != null) {
+      for (int i = 0;i<fieldList.size();i++) {
+        classDeclaration.addField((FieldDeclaration) fieldList.get(i));
+      }
+    }
   }
 }
 
@@ -1372,6 +1377,7 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
   Token visibilityToken = null;
   Token visibilityToken2;
   Token finalToken = null;
+  List fieldList;
 }
 {
   
@@ -1462,9 +1468,13 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
                                           e.currentToken.endColumn)); //}}}
   }
 |
-  field  = FieldDeclaration()
+  fieldList  = FieldDeclaration()
   {
-    if (field != null) classDeclaration.addField(field);
+    if (fieldList != null) {
+      for (int i = 0;i<fieldList.size();i++) {
+        classDeclaration.addField((FieldDeclaration) fieldList.get(i));
+      }
+    }
   }
 }
 
@@ -1476,10 +1486,9 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
  * it is only used by ClassBodyDeclaration()
  */
-FieldDeclaration FieldDeclaration() :
+List FieldDeclaration() :
 {
   VariableDeclaration variableDeclaration;
-  final VariableDeclaration[] list;
   final ArrayList arrayList = new ArrayList();
   final Token varToken;
   Token semicolonToken = null;
@@ -1489,7 +1498,15 @@ FieldDeclaration FieldDeclaration() :
   try {
     variableDeclaration = VariableDeclaratorNoSuffix()
       {
-        arrayList.add(variableDeclaration);
+        arrayList.add(new FieldDeclaration(path,
+                                           variableDeclaration,
+                                           currentSegment,
+                                           variableDeclaration.getSourceStart(),
+                                           variableDeclaration.getSourceEnd(),
+                                           variableDeclaration.getBeginLine(),
+                                           variableDeclaration.getEndLine(),
+                                           variableDeclaration.getBeginColumn(),
+                                           variableDeclaration.getEndColumn()));
       }
     } catch (ParseException e) {
       final Token semicolon = error_skipto(SEMICOLON);
@@ -1510,7 +1527,15 @@ FieldDeclaration FieldDeclaration() :
   (
     <COMMA> variableDeclaration = VariableDeclaratorNoSuffix()
       {
-        arrayList.add(variableDeclaration);
+        arrayList.add(new FieldDeclaration(path,
+                                           variableDeclaration,
+                                           currentSegment,
+                                           variableDeclaration.getSourceStart(),
+                                           variableDeclaration.getSourceEnd(),
+                                           variableDeclaration.getBeginLine(),
+                                           variableDeclaration.getEndLine(),
+                                           variableDeclaration.getBeginColumn(),
+                                           variableDeclaration.getEndColumn()));
       }
   )*
   try {
@@ -1530,32 +1555,7 @@ FieldDeclaration FieldDeclaration() :
   }
 
   {
-   if (arrayList.size() == 0) {
-    //todo : strange
-     return null;
-   } else {
-     list = new VariableDeclaration[arrayList.size()];
-     arrayList.toArray(list);
-   }
-   final int end, endLine, endColumn;
-   if (semicolonToken == null) {
-     end       = list[list.length-1].sourceEnd;
-     endLine   = list[list.length-1].getEndLine();
-     endColumn = list[list.length-1].getEndColumn();
-   } else {
-     end       = semicolonToken.sourceEnd;
-     endLine   = semicolonToken.endLine;
-     endColumn = semicolonToken.endColumn;
-   }
-   return new FieldDeclaration(path,
-                               list,
-                               currentSegment,
-                               varToken.sourceStart,
-                               end,
-                               varToken.beginLine,
-                               endLine,
-                               varToken.beginColumn,
-                               endColumn);
+    return arrayList;
   }
 }
 
@@ -1568,8 +1568,6 @@ FieldDeclaration FieldDeclaration() :
 FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
 {
   VariableDeclaration variableDeclaration;
-  final VariableDeclaration[] list;
-  final ArrayList arrayList = new ArrayList();
   Token semicolonToken = null;
   Token varToken = null;
   Token modifierToken = null;
@@ -1577,6 +1575,7 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
   int start = -1;
   int beginLine = -1;
   int beginColumn = -1;
+  int end,endLine,endColumn;
 }
 {
   {
@@ -1637,7 +1636,6 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
           beginLine   = variableDeclaration.getBeginLine();
           beginColumn = variableDeclaration.getBeginColumn();
         }
-        arrayList.add(variableDeclaration);
         if (!php5Enabled && varToken == null) {
           fireParseError(new PHPParseErrorEvent(ERROR,
                                                 path,
@@ -1672,7 +1670,15 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
   }
   try {
     semicolonToken = <SEMICOLON>
+    {
+      end       = semicolonToken.sourceEnd;
+      endLine   = semicolonToken.endLine;
+      endColumn = semicolonToken.endColumn;
+    }
   } catch (ParseException e) {
+    end       = e.currentToken.sourceEnd;
+    endLine   = e.currentToken.endLine;
+    endColumn = e.currentToken.endColumn;
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "';' expected",
@@ -1686,26 +1692,8 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
                                           e.currentToken.endColumn+1));
   }
   {
-    if (arrayList.size() == 0) {
-      //todo : strange
-      return null;
-    } else {
-      list = new VariableDeclaration[arrayList.size()];
-      arrayList.toArray(list);
-    }
-    final int end, endLine, endColumn;
-    if (semicolonToken == null) {
-      end       = list[list.length-1].sourceEnd;
-      endLine   = list[list.length-1].getEndLine();
-      endColumn = list[list.length-1].getEndColumn();
-    } else {
-      end       = semicolonToken.sourceEnd;
-      endLine   = semicolonToken.endLine;
-      endColumn = semicolonToken.endColumn;
-    }
-
     return new FieldDeclaration(path,
-                                list,
+                                variableDeclaration,
                                 currentSegment,
                                 start,
                                 end,
@@ -1836,29 +1824,54 @@ VariableDeclaration VariableDeclaratorNoSuffix() :
   Expression initializer = null;
   Token assignToken = null;
   final Token dollarToken;
-  final Variable variable;
+  Variable variable = null;
 }
 {
   dollarToken = <DOLLAR>
-  (
-     identifierToken = <IDENTIFIER>
-     {variable = new Variable(identifierToken.image,
-                              dollarToken.sourceStart,
-                              identifierToken.sourceEnd,
-                              dollarToken.beginLine,
-                              identifierToken.endLine,
-                              dollarToken.beginColumn,
-                              identifierToken.endColumn);}
-   |
-     lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
-     {variable = new Variable(expr,
-                              lbrace.sourceStart,
-                              rbrace.sourceEnd,
-                              lbrace.beginLine,
-                              rbrace.endLine,
-                              lbrace.beginColumn,
-                              rbrace.endColumn);}
-  )
+  try {
+    (
+       identifierToken = <IDENTIFIER>
+       {
+         variable = new Variable(identifierToken.image,
+                                 dollarToken.sourceStart,
+                                 identifierToken.sourceEnd,
+                                 dollarToken.beginLine,
+                                 identifierToken.endLine,
+                                 dollarToken.beginColumn,
+                                 identifierToken.endColumn);
+       }
+       |
+       lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
+       {
+         variable = new Variable(expr,
+                                 lbrace.sourceStart,
+                                 rbrace.sourceEnd,
+                                 lbrace.beginLine,
+                                 rbrace.endLine,
+                                 lbrace.beginColumn,
+                                 rbrace.endColumn);
+       }
+    )
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "identifier expected",
+                                          "",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.beginColumn,
+                                          e.currentToken.endColumn));
+    variable = new Variable("",
+                            e.currentToken.sourceStart,
+                            e.currentToken.sourceEnd,
+                            e.currentToken.beginLine,
+                            e.currentToken.endLine,
+                            e.currentToken.beginColumn,
+                            e.currentToken.endColumn);
+  }
   [
     assignToken = <ASSIGN>
     try {
