@@ -38,6 +38,8 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 		elementList = new JList();
 		elementList.setCellRenderer(new Renderer());
+		elementList.addMouseListener(new MouseHandler());
+		elementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		elementPanel.add(BorderLayout.CENTER,
 			new JScrollPane(elementList));
 
@@ -49,10 +51,30 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 		entityList = new JList();
 		entityList.setCellRenderer(new Renderer());
+		entityList.addMouseListener(new MouseHandler());
+		entityList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		entityPanel.add(BorderLayout.CENTER,
 			new JScrollPane(entityList));
 
 		add(entityPanel);
+
+		// these are only guaranteed to be up-to-date if the
+		// XML tree is visible
+		if(view.getDockableWindowManager().getDockableWindow(
+			XmlPlugin.TREE_NAME) != null)
+		{
+			Vector elements = (Vector)view.getEditPane()
+				.getClientProperty(XmlPlugin.ELEMENTS_PROPERTY);
+			if(elements != null)
+				setDeclaredElements(elements);
+
+			Vector entities = (Vector)view.getEditPane()
+				.getClientProperty(XmlPlugin.ENTITIES_PROPERTY);
+			if(entities != null)
+				setDeclaredElements(entities);
+		}
+		else
+			showNotParsedMessage();
 	}
 
 	public String getName()
@@ -120,24 +142,49 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 	{
 		this.elements = elements;
 
-		// inefficent
-		DefaultListModel model = new DefaultListModel();
-		for(int i = 0; i < elements.size(); i++)
+		if(elements == null)
 		{
-			model.addElement(elements.elementAt(i));
+			DefaultListModel model = new DefaultListModel();
+			model.addElement(jEdit.getProperty("xml-insert.not-parsed"));
+			elementList.setModel(model);
 		}
-		elementList.setModel(model);
+		else
+		{
+			// inefficent
+			DefaultListModel model = new DefaultListModel();
+			for(int i = 0; i < elements.size(); i++)
+			{
+				model.addElement(elements.elementAt(i));
+			}
+			elementList.setModel(model);
+
+			elementList.setFixedCellHeight(elementList.getCellBounds(0,0)
+				.height);
+		}
 	}
 
 	void setDeclaredEntities(Vector entities)
 	{
-		// inefficent
-		DefaultListModel model = new DefaultListModel();
-		for(int i = 0; i < entities.size(); i++)
+		if(entities == null)
 		{
-			model.addElement(entities.elementAt(i));
+			DefaultListModel model = new DefaultListModel();
+			model.addElement(jEdit.getProperty("xml-insert.not-parsed"));
+			entityList.setModel(model);
 		}
-		entityList.setModel(model);
+		else
+		{
+			// inefficent
+			DefaultListModel model = new DefaultListModel();
+			for(int i = 0; i < entities.size(); i++)
+			{
+				model.addElement(entities.elementAt(i));
+			}
+			entityList.setModel(model);
+
+			elementList.setFixedCellHeight(elementList.getCellBounds(0,0)
+				.height);
+		}
+
 	}
 
 	// private members
@@ -149,13 +196,8 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 	private void showNotParsedMessage()
 	{
-		DefaultListModel model = new DefaultListModel();
-		model.addElement(jEdit.getProperty("xml-insert.not-parsed"));
-		elementList.setModel(model);
-
-		model = new DefaultListModel();
-		model.addElement(jEdit.getProperty("xml-insert.not-parsed"));
-		entityList.setModel(model);
+		setDeclaredElements(null);
+		setDeclaredEntities(null);
 	}
 
 	private void updateTagList()
@@ -210,6 +252,77 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			}
 
 			return this;
+		}
+	}
+
+	class MouseHandler extends MouseAdapter
+	{
+		public void mouseClicked(MouseEvent evt)
+		{
+			if(evt.getSource() == elementList)
+			{
+				int index = elementList.locationToIndex(
+					evt.getPoint());
+				if(index == -1)
+					return;
+
+				Object obj = elementList.getModel().getElementAt(index);
+				if(!(obj instanceof ElementDecl))
+					return;
+
+				ElementDecl element = (ElementDecl)obj;
+
+				EditPane editPane = view.getEditPane();
+				JEditTextArea textArea = editPane.getTextArea();
+				int start = textArea.getCaretPosition();
+				int caret;
+
+				textArea.setSelectedText("<" + element.name
+					+ (element.empty && !element.html
+					? " />" : ">"));
+				if(!element.empty)
+				{
+					textArea.userInput('\n');
+					caret = textArea.getCaretPosition();
+					textArea.userInput('\n');
+					textArea.setSelectedText("</" + element.name + ">");
+				}
+				else
+					caret = start;
+
+				if(GUIUtilities.isPopupTrigger(evt))
+				{
+					// RMB click doesn't show edit tag dialog
+					textArea.setCaretPosition(caret);
+					textArea.requestFocus();
+				}
+				else
+				{
+					// put caret inside tag
+					textArea.setCaretPosition(start + 1);
+
+					// show edit tag dialog box
+					XmlPlugin.showEditTagDialog(view,editPane,true);
+				}
+			}
+			else if(evt.getSource() == entityList)
+			{
+				int index = entityList.locationToIndex(
+					evt.getPoint());
+				if(index == -1)
+					return;
+
+				Object obj = entityList.getModel().getElementAt(index);
+				if(!(obj instanceof EntityDecl))
+					return;
+
+				EntityDecl entity = (EntityDecl)obj;
+
+				JEditTextArea textArea = view.getTextArea();
+
+				textArea.setSelectedText("&" + entity.name + ";");
+				textArea.requestFocus();
+			}
 		}
 	}
 }

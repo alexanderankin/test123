@@ -200,6 +200,13 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 		tree.setModel(model);
 		expandTagAt(view.getTextArea().getCaretPosition());
+
+		if(showParsingMessage)
+		{
+			Object[] pp = { new Integer(errorSource.getErrorCount()) };
+			view.getStatus().setMessageAndClear(jEdit.getProperty(
+				"xml-tree.parsing-complete",pp));
+		}
 	}
 
 	void addError(int type, String path, int line, String message)
@@ -241,6 +248,8 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	private DocumentHandler documentHandler;
 	private EditPaneHandler editPaneHandler;
 
+	private boolean showParsingMessage;
+
 	private void propertiesChanged(boolean init)
 	{
 		boolean newShowAttributes = jEdit.getBooleanProperty("xml.show-attributes");
@@ -263,6 +272,8 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 	private void parse(final boolean force, final boolean showParsingMessage)
 	{
+		this.showParsingMessage = showParsingMessage;
+
 		VFSManager.runInAWTThread(new Runnable()
 		{
 			public void run()
@@ -295,6 +306,12 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	{
 		if(thread != null)
 			stopThread();
+
+		EditPane editPane = view.getEditPane();
+		editPane.putClientProperty(XmlPlugin.ELEMENTS_PROPERTY,null);
+		editPane.putClientProperty(XmlPlugin.ELEMENT_HASH_PROPERTY,null);
+		editPane.putClientProperty(XmlPlugin.ENTITIES_PROPERTY,null);
+		editPane.putClientProperty(XmlPlugin.IDS_PROPERTY,null);
 
 		// check for non-XML file
 		if(!parse)

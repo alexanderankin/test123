@@ -18,13 +18,15 @@ class ElementDecl
 {
 	String name;
 	boolean empty;
+	boolean html;
 
 	Vector attributes;
 
-	ElementDecl(String name, String model)
+	ElementDecl(String name, String model, boolean html)
 	{
 		this.name = name;
 		this.empty = (model.equals("EMPTY"));
+		this.html = html;
 
 		attributes = new Vector();
 	}
@@ -43,6 +45,7 @@ class ElementDecl
 	static class AttributeDecl
 	{
 		String name;
+		String type;
 		String valueDefault;
 		String value;
 
@@ -52,6 +55,7 @@ class ElementDecl
 			String valueDefault, String value)
 		{
 			this.name = name;
+			this.type = type;
 			this.valueDefault = valueDefault;
 			this.value = value;
 
@@ -60,7 +64,7 @@ class ElementDecl
 				values = new Vector();
 
 				StringTokenizer st = new StringTokenizer(
-					type.substring(0,type.length() - 1),"|");
+					type.substring(1,type.length() - 1),"|");
 				while(st.hasMoreTokens())
 				{
 					values.addElement(st.nextToken());
