@@ -1,0 +1,11 @@
+CVS policy file
+
+plugin: Debugger
+authors: Dirk Moebius <dmoebius@gmx.net>
+current maintainer: Dirk Moebius <dmoebius@gmx.net>
+
+Please fix obvious minor bugs immediately yourself
+and commit them.
+For larger changes on an architectural or design level,
+please contact the current maintainer first.
+
