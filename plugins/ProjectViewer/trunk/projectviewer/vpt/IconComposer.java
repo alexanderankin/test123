@@ -79,13 +79,13 @@ public final class IconComposer {
 
 	//{{{ Public methods
 
-	//{{{ +_composeIcon(String, Icon, int)_ : Icon
+	//{{{ +_composeIcon(File, String, Icon)_ : Icon
 	public static Icon composeIcon(File f, String path, Icon baseIcon) {
 		Icon[][][][] cache = getIconCache(baseIcon);
 
 		int msg_state = MSG_STATE_NONE;
 		if (ProjectViewerConfig.getInstance().isErrorListAvailable()) {
-			msg_state = getMessageState(path);
+			msg_state = Helper.getMessageState(path);
 		}
 
 		int file_state = getFileState(f, path);
@@ -240,7 +240,7 @@ public final class IconComposer {
 		return cache;
 	} //}}}
 
-	//{{{ -_getFileState(String)_ : int
+	//{{{ -_getFileState(File, String)_ : int
 	private static int getFileState(File f, String path) {
 		if (f != null && !f.exists())
 			return FILE_STATE_NOT_FOUND;
@@ -256,30 +256,39 @@ public final class IconComposer {
 		return FILE_STATE_NORMAL;
 	} //}}}
 
-	//{{{ -_getMessageState(String)_ : int
-	private static int getMessageState(String path) {
-		int msg_state = IconComposer.MSG_STATE_NONE;
-		ErrorListPlugin el = (ErrorListPlugin) jEdit.getPlugin("errorlist.ErrorListPlugin", true);
-		if (el != null) {
-			ErrorSource[] sources = ErrorSource.getErrorSources();
-			for(int i = 0; i < sources.length; i++) {
-				if (sources[i].getFileErrorCount(path) > 0) {
-					msg_state = IconComposer.MSG_STATE_MESSAGES;
-					ErrorSource.Error[] errors = sources[i].getAllErrors();
-					for(int j=0; j < errors.length; j++) {
-						if(errors[j].getErrorType() == ErrorSource.ERROR) {
-							msg_state = IconComposer.MSG_STATE_ERRORS;
-							break;
+	//}}}
+	
+	//{{{ -class _Helper_
+	/**
+	 *	Class to hold references to classes that may not be available, so this
+	 *	class can behave well when called from a BeanShell script.
+	 */
+	private static class Helper {
+	
+		//{{{ +_getMessageState(String)_ : int
+		public static int getMessageState(String path) {
+			int msg_state = IconComposer.MSG_STATE_NONE;
+			ErrorListPlugin el = (ErrorListPlugin) jEdit.getPlugin("errorlist.ErrorListPlugin", true);
+			if (el != null) {
+				ErrorSource[] sources = ErrorSource.getErrorSources();
+				for(int i = 0; i < sources.length; i++) {
+					if (sources[i].getFileErrorCount(path) > 0) {
+						msg_state = IconComposer.MSG_STATE_MESSAGES;
+						ErrorSource.Error[] errors = sources[i].getAllErrors();
+						for(int j=0; j < errors.length; j++) {
+							if(errors[j].getErrorType() == ErrorSource.ERROR) {
+								msg_state = IconComposer.MSG_STATE_ERRORS;
+								break;
+							}
 						}
+						break;
 					}
-					break;
 				}
 			}
-		}
-		return msg_state;
+			return msg_state;
+		} //}}}
+		
 	} //}}}
-
-	//}}}
 
 }
 
