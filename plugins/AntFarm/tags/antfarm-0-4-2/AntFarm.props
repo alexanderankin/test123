@@ -1,0 +1,18 @@
+# Properties used by jEdit
+plugin.AntFarmPlugin.name=Ant Farm
+plugin.AntFarmPlugin.author=Chris Scott, Rick Gibbs
+plugin.AntFarmPlugin.contributor=Todd Papaioannou, Richard F. Wan, Christoph Steinbeck, Slava Pestov
+plugin.AntFarmPlugin.version=0.4.2
+plugin.AntFarmPlugin.docs=AntFarm.html
+plugin.AntFarmPlugin.jars=ant.jar
+plugin.AntFarmPlugin.depend.0=jdk 1.1
+plugin.AntFarmPlugin.depend.1=jedit 03.02.10.00
+plugin.AntFarmPlugin.depend.2=plugin EditBusPlugin 1.0.1
+plugin.AntFarmPlugin.depend.3=plugin ErrorListPlugin 1.1
+plugin.AntFarmPlugin.depend.4=plugin xml.XmlPlugin 0.3
+
+# Menu item label
+antfarm.label=Ant Farm
+
+# Tab label
+antfarm.title=Ant Farm
