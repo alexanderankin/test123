@@ -51,8 +51,8 @@ import projectviewer.vpt.VPTProject;
 public abstract class NodeHandler {
 
 	/**
-	 *	Returns the name of the nodes that should be delegated to this handler
-	 *	when loading configuration data.
+	 *	Returns the name of the tag representing nodes handled by this handler
+	 *	when loading the project's XML file.
 	 */
 	public abstract String getNodeName();
 
@@ -63,9 +63,12 @@ public abstract class NodeHandler {
 	public abstract Class getNodeClass();
 
 	/**
-	 *	Returns whether the node is a child of nome other node or not. For
+	 *	Returns whether the node is a child of some other node or not. For
 	 *	example, property nodes are not children of any other nodes, they
 	 *	simply add a property to a project.
+	 *
+	 *	<p>This controls whether the node will be added to the parent node
+	 *	read from the XML file after instantiation.</p>
 	 */
 	public abstract boolean isChild();
 
@@ -105,7 +108,9 @@ public abstract class NodeHandler {
 
 	/**
  	 *	Writes the start of an element to the given writer, using the given
-	 *	string as the node name.
+	 *	string as the node name. This writer the opening &lt; symbol and the
+	 *	node name, but does not writed the closing &gt;, since attributed
+	 *	may still need to be written.
 	 */
 	protected void startElement(String name, Writer out) throws IOException {
 		out.write("<" + name);
@@ -140,8 +145,12 @@ public abstract class NodeHandler {
 		out.write("\"");
 	}
 
-	/** Translates any "\" found in the string to "/". */
-	protected final String xlatePath(String src) {
+	/**
+	 *	Translates any "\" found in the string to "/". Paths saved to the XML
+	 *	file are generally expected to be in Unix format, so this method is
+	 *	useful when saving the project in a Windows system.
+	 */
+	protected final String translatePath(String src) {
 		if (src == null) return "";
 		return src.replace('\\', '/');
 	}
