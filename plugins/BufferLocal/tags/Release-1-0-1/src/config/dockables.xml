@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+<!-- $Id$ -->
+<!-- 
+   BufferLocalPlugin has no GUI, so isn't dockable.
+-->
+<DOCKABLES>
+</DOCKABLES>
