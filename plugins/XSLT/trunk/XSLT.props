@@ -1,6 +1,6 @@
 plugin.xslt.XSLTPlugin.name=XSLT
 plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill
-plugin.xslt.XSLTPlugin.version=0.5
+plugin.xslt.XSLTPlugin.version=0.5.1
 plugin.xslt.XSLTPlugin.docs=index.html
 plugin.xslt.XSLTPlugin.jars=xalan.jar
 plugin.xslt.XSLTPlugin.depend.0=jdk 1.3
@@ -24,7 +24,6 @@ xslt.transform.label=Transform XML
 xslt.settings.load.label=Load XSLT settings
 xslt.settings.save.label=Save XSLT settings
 xpath.evaluate.label=Evaluate XPath
-xslt.indent.label=Indent XML
 
 
 # Plugin menu
@@ -36,9 +35,7 @@ xslt-menu=\
   xslt-processor-toggle \
   - \
   xpath.evaluate \
-  xpath-tool-toggle \
-  - \
-  xslt.indent
+  xpath-tool-toggle
 
 
 # XSLT processor window
@@ -126,8 +123,4 @@ xpath.result.message.unkown-problem=An error occurred during parsing or evaluati
 xpath.result.message.buffer-unparseable=Couldn't parse buffer.
 xpath.result.message.expression-unevaluateable=Couldn't evaluate expression.
 xpath.result.message.large-xml-fragment=The XML fragments string is longer than {0} characters, stopped printing the string to avoid OutOfMemoryException.
-
-
-# Indent action
-xslt.indent.message.failure=Indenting failed to complete.
 
