@@ -609,14 +609,11 @@ public final class Project implements EBComponent {
 
 		Enumeration pname = fileProps.propertyNames();
 		while(pname.hasMoreElements()) {
-
 			String p = (String)pname.nextElement();
 
 			if(p.startsWith("file")) {
 				ProjectFile file = new ProjectFile(fileProps.getProperty(p));
-				if(!ProjectViewerConfig.getInstance().getDeleteNotFoundFiles() ||
-						file.exists()) {
-
+				if(!ProjectViewerConfig.getInstance().getDeleteNotFoundFiles() || file.exists()) {
 					importFile(file);
 				}
 			}
