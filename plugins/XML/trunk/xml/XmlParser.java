@@ -23,13 +23,14 @@ import javax.swing.Timer;
 import java.awt.event.*;
 import java.awt.Component;
 import java.io.*;
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.StringTokenizer;
-import java.util.Vector;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
+import org.gjt.sp.jedit.buffer.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
@@ -44,23 +45,27 @@ public class XmlParser implements EBComponent
 	{
 		this.view = view;
 
-		elements = new Vector();
-		elementHash = new Hashtable();
-		entities = new Vector();
-		entityHash = new Hashtable();
-		ids = new Vector();
-
 		errorSource = new DefaultErrorSource("XML");
 		ErrorSource.registerErrorSource(errorSource);
 
 		handler = new Handler();
 
+		FocusHandler focusHandler = new FocusHandler();
 		EditPane[] editPanes = view.getEditPanes();
 		for(int i = 0; i < editPanes.length; i++)
 		{
 			editPanes[i].getTextArea().addFocusListener(
-				new FocusHandler());
+				focusHandler);
 		}
+
+		BufferChangeHandler changeHandler = new BufferChangeHandler();
+		Buffer[] buffers = jEdit.getBuffers();
+		for(int i = 0; i < buffers.length; i++)
+		{
+			buffers[i].addBufferChangeListener(changeHandler);
+		}
+
+		propertiesChanged();
 
 		EditBus.addToBus(this);
 	} //}}}
@@ -70,8 +75,8 @@ public class XmlParser implements EBComponent
 	{
 		stopThread();
 
-		this.showParsingMessage = showParsingMessage;
 		buffer = view.getBuffer();
+		this.showParsingMessage = showParsingMessage;
 
 		//{{{ Run this when I/O is complete
 		VFSManager.runInAWTThread(new Runnable()
@@ -85,15 +90,7 @@ public class XmlParser implements EBComponent
 				//{{{ check for non-XML file
 				if(!buffer.getBooleanProperty("xml.parse"))
 				{
-					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-					model = new DefaultTreeModel(root);
-
-					root.insert(new DefaultMutableTreeNode(
-						jEdit.getProperty("xml-tree.not-xml-file")),0);
-					model.reload(root);
-
-					editPane.putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
-					finish();
+					showNotParsedMessage();
 					return;
 				} //}}}
 				//{{{ Show 'parsing in progress' message
@@ -149,10 +146,12 @@ public class XmlParser implements EBComponent
 		model = new DefaultTreeModel(root);
 
 		root.insert(new DefaultMutableTreeNode(
-			jEdit.getProperty("xml-tree.not-xml-file")),0);
+			jEdit.getProperty("xml-tree.not-parsed")),0);
 		model.reload(root);
 
+		view.getEditPane().putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
 		view.getEditPane().putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
+
 		finish();
 		return;
 	} //}}}
@@ -175,9 +174,13 @@ public class XmlParser implements EBComponent
 		if(msg instanceof BufferUpdate)
 		{
 			BufferUpdate bmsg = (BufferUpdate)msg;
-			if(bmsg.getWhat() == BufferUpdate.DIRTY_CHANGED
-				&& bmsg.getBuffer() == buffer
-				&& !bmsg.getBuffer().isDirty())
+			if(bmsg.getWhat() == BufferUpdate.CREATED)
+			{
+				bmsg.getBuffer().addBufferChangeListener(
+					new BufferChangeHandler());
+			}
+			else if(bmsg.getWhat() == BufferUpdate.SAVED
+				&& bmsg.getBuffer() == buffer)
 			{
 				if(buffer.getBooleanProperty(
 					"xml.buffer-change-parse")
@@ -193,6 +196,9 @@ public class XmlParser implements EBComponent
 				|| bmsg.getWhat() == BufferUpdate.LOADED)
 				&& bmsg.getBuffer() == buffer)
 			{
+				if(thread != null)
+					return;
+
 				if(buffer.getBooleanProperty(
 					"xml.buffer-change-parse")
 					|| buffer.getBooleanProperty(
@@ -229,6 +235,13 @@ public class XmlParser implements EBComponent
 					else
 						showNotParsedMessage();
 				}
+				else
+				{
+					view.getEditPane().putClientProperty(
+						XmlPlugin.COMPLETION_INFO_PROPERTY,null);
+					view.getEditPane().putClientProperty(
+						XmlPlugin.ELEMENT_TREE_PROPERTY,null);
+				}
 			}
 		} //}}}
 	} //}}}
@@ -239,11 +252,11 @@ public class XmlParser implements EBComponent
 	private View view;
 	private Buffer buffer;
 
-	private Vector elements;
-	private Hashtable elementHash;
-	private Vector entities;
-	private Hashtable entityHash;
-	private Vector ids;
+	private ArrayList elements;
+	private HashMap elementHash;
+	private ArrayList entities;
+	private HashMap entityHash;
+	private ArrayList ids;
 	private DefaultTreeModel model;
 	private DefaultMutableTreeNode root;
 
@@ -279,10 +292,11 @@ public class XmlParser implements EBComponent
 	private void _parse()
 	{
 		// prepare for parsing
-		elements.removeAllElements();
-		elementHash.clear();
-		entities.removeAllElements();
-		entityHash.clear();
+		elements = new ArrayList();
+		elementHash = new HashMap();
+		entities = new ArrayList();
+		entityHash = new HashMap();
+		ids = new ArrayList();
 
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
@@ -290,8 +304,8 @@ public class XmlParser implements EBComponent
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"quot","\""));
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"apos","'"));
 
-		ids.removeAllElements();
-		handler.currentNodeStack.removeAllElements();
+		ids.clear();
+		handler.currentNodeStack.clear();
 
 		root = new DefaultMutableTreeNode(buffer.getName());
 		model = new DefaultTreeModel(root);
@@ -349,10 +363,9 @@ public class XmlParser implements EBComponent
 		// if the file being parsed has an associated DTD.
 		text = null;
 		parser = null;
+		elements = entities = ids = null;
+		elementHash = entityHash = null;
 
-		view.getEditPane().putClientProperty(
-			XmlPlugin.ELEMENT_TREE_PROPERTY,
-			model);
 		model.reload(root);
 
 		XmlTree tree = (XmlTree)view.getDockableWindowManager()
@@ -360,30 +373,10 @@ public class XmlParser implements EBComponent
 		if(tree != null)
 			tree.update();
 
-		MiscUtilities.quicksort(elements,new ElementDeclCompare());
-		MiscUtilities.quicksort(entities,new EntityDeclCompare());
-		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
-
-		CompletionInfo completionInfo = new CompletionInfo(false,
-			elements,elementHash,entities,entityHash,ids);
-
-		view.getEditPane().putClientProperty(
-			XmlPlugin.COMPLETION_INFO_PROPERTY,
-			completionInfo);
-
 		XmlInsert insert = (XmlInsert)view.getDockableWindowManager()
 			.getDockable(XmlPlugin.INSERT_NAME);
 		if(insert != null)
 			insert.update();
-
-		int errorCount = errorSource.getErrorCount();
-
-		if(showParsingMessage || errorCount != 0)
-		{
-			Object[] pp = { new Integer(errorCount) };
-			view.getStatus().setMessageAndClear(jEdit.getProperty(
-				"xml-tree.parsing-complete",pp));
-		}
 	} //}}}
 
 	//{{{ addError() method
@@ -400,7 +393,7 @@ public class XmlParser implements EBComponent
 	//{{{ addEntity() method
 	private void addEntity(EntityDecl entity)
 	{
-		entities.addElement(entity);
+		entities.add(entity);
 		if(entity.type == EntityDecl.INTERNAL
 			&& entity.value.length() == 1)
 		{
@@ -493,7 +486,7 @@ public class XmlParser implements EBComponent
 			for(int i = 0; i < attrs.getLength(); i++)
 			{
 				if(attrs.getType(i).equals("ID"))
-					ids.addElement(attrs.getValue(i));
+					ids.add(attrs.getValue(i));
 			}
 
 			// ignore tags inside nested files for now
@@ -620,7 +613,7 @@ public class XmlParser implements EBComponent
 			boolean empty = "EMPTY".equals(model);
 			ElementDecl elementDecl = new ElementDecl(name,empty,false);
 			elementHash.put(name,elementDecl);
-			elements.addElement(elementDecl);
+			elements.add(elementDecl);
 		} //}}}
 
 		//{{{ attributeDecl() method
@@ -631,17 +624,17 @@ public class XmlParser implements EBComponent
 			if(element == null)
 				return;
 
-			Vector values;
+			ArrayList values;
 
 			if(type.startsWith("("))
 			{
-				values = new Vector();
+				values = new ArrayList();
 
 				StringTokenizer st = new StringTokenizer(
 					type.substring(1,type.length() - 1),"|");
 				while(st.hasMoreTokens())
 				{
-					values.addElement(st.nextToken());
+					values.add(st.nextToken());
 				}
 			}
 			else
@@ -731,10 +724,64 @@ public class XmlParser implements EBComponent
 			{
 				public void run()
 				{
+					int errorCount = errorSource.getErrorCount();
+
+					if(showParsingMessage || errorCount != 0)
+					{
+						Object[] pp = { new Integer(errorCount) };
+						view.getStatus().setMessageAndClear(jEdit.getProperty(
+							"xml-tree.parsing-complete",pp));
+					}
+
+					view.getEditPane().putClientProperty(
+						XmlPlugin.ELEMENT_TREE_PROPERTY,
+						model);
+
+					MiscUtilities.quicksort(elements,
+						new ElementDeclCompare());
+					MiscUtilities.quicksort(entities,
+						new EntityDeclCompare());
+					MiscUtilities.quicksort(ids,
+						new MiscUtilities.StringICaseCompare());
+
+					CompletionInfo completionInfo = new CompletionInfo(
+						false,elements,elementHash,entities,
+						entityHash,ids);
+
+					view.getEditPane().putClientProperty(
+						XmlPlugin.COMPLETION_INFO_PROPERTY,
+						completionInfo);
+
 					finish();
 				}
 			});
 		}
+	} //}}}
+
+	//{{{ BufferChangeHandler class
+	class BufferChangeHandler extends BufferChangeAdapter
+	{
+		//{{{ contentInserted() method
+		public void contentInserted(Buffer buffer, int startLine, int offset,
+			int numLines, int length)
+		{
+			if(buffer == XmlParser.this.buffer
+				&& buffer.isLoaded()
+				&& buffer.getBooleanProperty("xml.parse")
+				&& buffer.getBooleanProperty("xml.keystroke-parse"))
+				parseWithDelay();
+		} //}}}
+
+		//{{{ contentRemoved() method
+		public void contentRemoved(Buffer buffer, int startLine, int offset,
+			int numLines, int length)
+		{
+			if(buffer == XmlParser.this.buffer
+				&& buffer.isLoaded()
+				&& buffer.getBooleanProperty("xml.parse")
+				&& buffer.getBooleanProperty("xml.keystroke-parse"))
+				parseWithDelay();
+		} //}}}
 	} //}}}
 
 	//{{{ FocusHandler class
@@ -751,10 +798,7 @@ public class XmlParser implements EBComponent
 				"xml.keystroke-parse"))
 			{
 				if(buffer != XmlParser.this.buffer)
-				{
-					System.err.println(buffer + ":" + XmlParser.this.buffer);
 					parse(true);
-				}
 				else
 				{
 					// XXX: expand tree to caret pos

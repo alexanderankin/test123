@@ -29,8 +29,8 @@ import org.gjt.sp.jedit.*;
 class EditTagDialog extends EnhancedDialog
 {
 	//{{{ EditTagDialog constructor
-	EditTagDialog(View view, ElementDecl element, Hashtable attributeValues,
-		boolean elementEmpty, Hashtable entityHash, Vector ids)
+	EditTagDialog(View view, ElementDecl element, HashMap attributeValues,
+		boolean elementEmpty, HashMap entityHash, ArrayList ids)
 	{
 		super(view,jEdit.getProperty("xml-edit-tag.title"),true);
 
@@ -170,9 +170,9 @@ class EditTagDialog extends EnhancedDialog
 
 	//{{{ Instance variables
 	private ElementDecl element;
-	private Hashtable entityHash;
+	private HashMap entityHash;
 	private JCheckBox empty;
-	private Vector attributeModel;
+	private ArrayList attributeModel;
 	private JTable attributes;
 	private JTextArea preview;
 	private JButton ok;
@@ -182,15 +182,15 @@ class EditTagDialog extends EnhancedDialog
 	//}}}
 
 	//{{{ createAttributeModel() method
-	private Vector createAttributeModel(Vector declaredAttributes,
-		Hashtable attributeValues, Vector ids)
+	private ArrayList createAttributeModel(ArrayList declaredAttributes,
+		HashMap attributeValues, ArrayList ids)
 	{
-		Vector attributeModel = new Vector();
+		ArrayList attributeModel = new ArrayList();
 		for(int i = 0; i < declaredAttributes.size(); i++)
 		{
 			ElementDecl.AttributeDecl attr =
 				(ElementDecl.AttributeDecl)
-				declaredAttributes.elementAt(i);
+				declaredAttributes.get(i);
 
 			boolean set;
 			String value = (String)attributeValues.get(attr.name);
@@ -205,23 +205,23 @@ class EditTagDialog extends EnhancedDialog
 			if(attr.required)
 				set = true;
 
-			Vector values;
+			ArrayList values;
 			if(attr.type.equals("IDREF")
 				&& ids.size() > 0)
 			{
 				values = ids;
 				if(value == null)
-					value = (String)ids.elementAt(0);
+					value = (String)ids.get(0);
 			}
 			else
 			{
 				values = attr.values;
 				if(value == null && values != null
 					&& values.size() > 0)
-					value = (String)values.elementAt(0);
+					value = (String)values.get(0);
 			}
 
-			attributeModel.addElement(new Attribute(set,attr.name,
+			attributeModel.add(new Attribute(set,attr.name,
 				value,values,attr.type,attr.required));
 		}
 
@@ -238,7 +238,7 @@ class EditTagDialog extends EnhancedDialog
 
 		for(int i = 0; i < attributeModel.size(); i++)
 		{
-			Attribute attr = (Attribute)attributeModel.elementAt(i);
+			Attribute attr = (Attribute)attributeModel.get(i);
 			if(!attr.set)
 				continue;
 
@@ -302,7 +302,7 @@ class EditTagDialog extends EnhancedDialog
 
 		//{{{ Attribute constructor
 		Attribute(boolean set, String name,
-			String value, Vector values,
+			String value, ArrayList values,
 			String type, boolean required)
 		{
 			this.set = set;
@@ -316,9 +316,9 @@ class EditTagDialog extends EnhancedDialog
 		static class Value
 		{
 			String value;
-			Vector values;
+			ArrayList values;
 
-			Value(String value, Vector values)
+			Value(String value, ArrayList values)
 			{
 				this.value = value;
 				this.values = values;
@@ -438,7 +438,7 @@ class EditTagDialog extends EnhancedDialog
 		//{{{ getValueAt() method
 		public Object getValueAt(int row, int col)
 		{
-			Attribute attr = (Attribute)attributeModel.elementAt(row);
+			Attribute attr = (Attribute)attributeModel.get(row);
 			switch(col)
 			{
 			case 0:
@@ -471,7 +471,7 @@ class EditTagDialog extends EnhancedDialog
 		//{{{ setValueAt() method
 		public void setValueAt(Object value, int row, int col)
 		{
-			Attribute attr = (Attribute)attributeModel.elementAt(row);
+			Attribute attr = (Attribute)attributeModel.get(row);
 			switch(col)
 			{
 			case 0:
@@ -544,7 +544,7 @@ class EditTagDialog extends EnhancedDialog
 		{
 			Attribute.Value _value = (Attribute.Value)value;
 			editorCombo.setModel(new DefaultComboBoxModel(
-				_value.values));
+				_value.values.toArray()));
 			//editorCombo.setSelectedItem(_value.value);
 			return super.getTableCellEditorComponent(table,
 				_value.value,isSelected,row,column);
@@ -557,7 +557,7 @@ class EditTagDialog extends EnhancedDialog
 		{
 			Attribute.Value _value = (Attribute.Value)value;
 			renderCombo.setModel(new DefaultComboBoxModel(
-				_value.values));
+				_value.values.toArray()));
 			renderCombo.setSelectedItem(_value.value);
 			return renderCombo;
 		} //}}}

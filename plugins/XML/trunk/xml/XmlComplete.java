@@ -1,5 +1,8 @@
 /*
  * XmlComplete.java - Complete tag popup
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,22 +15,26 @@
 
 package xml;
 
+//{{{ Imports
 import javax.swing.*;
 import javax.swing.event.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.Vector;
+import java.util.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.*;
+//}}}
 
 class XmlComplete extends JWindow
 {
-	XmlComplete(View view, String text, Vector completions, Point location)
+	//{{{ XmlComplete constructor
+	XmlComplete(View view, String text, ArrayList completions, Point location)
 	{
 		super(view);
 
 		this.view = view;
+		this.textArea = view.getTextArea();
 		this.text = text;
 		this.completions = completions;
 
@@ -60,20 +67,26 @@ class XmlComplete extends JWindow
 		getRootPane().addKeyListener(keyHandler);
 		list.addKeyListener(keyHandler);
 		view.setKeyEventInterceptor(keyHandler);
-	}
+	} //}}}
 
+	//{{{ dispose() method
 	public void dispose()
 	{
 		view.setKeyEventInterceptor(null);
 		super.dispose();
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private View view;
+	private JEditTextArea textArea;
 	private String text;
-	private Vector completions;
+	private ArrayList completions;
 	private JList list;
+	//}}}
 
+	//{{{ setUpListModel() method
 	private void setUpListModel()
 	{
 		DefaultListModel model = new DefaultListModel();
@@ -83,7 +96,7 @@ class XmlComplete extends JWindow
 
 		for(int i = 0; i < completions.size(); i++)
 		{
-			Object obj = completions.elementAt(i);
+			Object obj = completions.get(i);
 			if(obj instanceof ElementDecl)
 			{
 				ElementDecl element = (ElementDecl)obj;
@@ -105,21 +118,24 @@ class XmlComplete extends JWindow
 
 		if(model.getSize() == 0)
 		{
-			dispose();
-			return;
+			model.addElement(new XmlListCellRenderer.EmptyListPlaceholder());
 		}
 
 		list.setModel(model);
 		list.setSelectedIndex(0);
-	}
+	} //}}}
 
+	//{{{ insertSelected() method
 	private void insertSelected(char ch)
 	{
 		Object obj = list.getSelectedValue();
-		if(obj instanceof ElementDecl)
+		if(obj instanceof XmlListCellRenderer.EmptyListPlaceholder)
+		{
+			/* do nothing; dispose() is called below. */
+		}
+		else if(obj instanceof ElementDecl)
 		{
 			ElementDecl element = (ElementDecl)obj;
-			JEditTextArea textArea = view.getTextArea();
 
 			StringBuffer buf = new StringBuffer();
 			buf.append(element.name.substring(text.length()));
@@ -128,7 +144,7 @@ class XmlComplete extends JWindow
 			{
 				ElementDecl.AttributeDecl attr
 					= (ElementDecl.AttributeDecl)
-					element.attributes.elementAt(i);
+					element.attributes.get(i);
 
 				if(attr.required)
 				{
@@ -161,7 +177,7 @@ class XmlComplete extends JWindow
 					caret += buf.length();
 
 					if(jEdit.getBooleanProperty(
-					"xml.close-complete-open"))
+						"xml.close-complete-open"))
 					{
 						buf.append("</");
 						buf.append(element.name);
@@ -173,7 +189,13 @@ class XmlComplete extends JWindow
 				textArea.setCaretPosition(caret);
 
 				if(ch == '\n')
+				{
+					// hide the popup first, since the edit tag
+					// dialog is modal
+					dispose();
 					XmlActions.showEditTagDialog(view);
+					return;
+				}
 			}
 			else
 			{
@@ -184,17 +206,20 @@ class XmlComplete extends JWindow
 		else if(obj instanceof EntityDecl)
 		{
 			EntityDecl entity = (EntityDecl)obj;
-			JEditTextArea textArea = view.getTextArea();
 
 			textArea.setSelectedText(entity.name.substring(
 				text.length()) + ";");
 		}
 
 		dispose();
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ KeyHandler class
 	class KeyHandler extends KeyAdapter
 	{
+		//{{{ keyPressed() method
 		public void keyPressed(KeyEvent evt)
 		{
 			evt = KeyEventWorkaround.processKeyEvent(evt);
@@ -216,29 +241,29 @@ class XmlComplete extends JWindow
 				evt.consume();
 				break;
 			case KeyEvent.VK_UP:
-				if(getFocusOwner() == list)
-					return;
-
 				int selected = list.getSelectedIndex();
-				if(selected == 0)
-					return;
 
-				selected = selected - 1;
-	
+				if(selected == 0)
+					selected = list.getModel().getSize() - 1;
+				else if(getFocusOwner() == list)
+					return;
+				else
+					selected = selected - 1;
+
 				list.setSelectedIndex(selected);
 				list.ensureIndexIsVisible(selected);
 
 				evt.consume();
 				break;
 			case KeyEvent.VK_DOWN:
-				if(getFocusOwner() == list)
-					return;
+				/* int */ selected = list.getSelectedIndex();
 
-				selected = list.getSelectedIndex();
 				if(selected == list.getModel().getSize() - 1)
+					selected = 0;
+				else if(getFocusOwner() == list)
 					return;
-
-				selected = selected + 1;
+				else
+					selected = selected + 1;
 
 				list.setSelectedIndex(selected);
 				list.ensureIndexIsVisible(selected);
@@ -248,7 +273,17 @@ class XmlComplete extends JWindow
 			case KeyEvent.VK_SPACE:
 				break;
 			case KeyEvent.VK_BACK_SPACE:
-				dispose();
+				if(text.length() == 0)
+				{
+					textArea.backspace();
+					dispose();
+				}
+				else
+				{
+					text = text.substring(0,text.length() - 1);
+					textArea.backspace();
+					setUpListModel();
+				}
 				break;
 			default:
 				//dispose();
@@ -257,8 +292,9 @@ class XmlComplete extends JWindow
 				view.setKeyEventInterceptor(this);
 				break;
 			}
-		}
+		} //}}}
 
+		//{{{ keyTyped() method
 		public void keyTyped(KeyEvent evt)
 		{
 			evt = KeyEventWorkaround.processKeyEvent(evt);
@@ -277,8 +313,6 @@ class XmlComplete extends JWindow
 				}
 				else
 				{
-					JEditTextArea textArea = view.getTextArea();
-
 					if(ch == '/' && view.getBuffer()
 						.getBooleanProperty(
 						"xml.parse"))
@@ -299,14 +333,15 @@ class XmlComplete extends JWindow
 
 				evt.consume();
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
 			insertSelected('\n');
 		}
-	}
+	} //}}}
 }

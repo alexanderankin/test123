@@ -1,5 +1,8 @@
 /*
  * CompletionInfo.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,12 +15,14 @@
 
 package xml;
 
-import java.util.Hashtable;
-import java.util.Vector;
+//{{{ Imports
+import gnu.regexp.*;
+import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
+//}}}
 
 public class CompletionInfo
 {
@@ -25,14 +30,15 @@ public class CompletionInfo
 	// attributes with no values)
 	public boolean html;
 
-	public Vector elements;
-	public Hashtable elementHash;
-	public Vector entities;
-	public Hashtable entityHash;
-	public Vector ids;
+	public ArrayList elements;
+	public HashMap elementHash;
+	public ArrayList entities;
+	public HashMap entityHash;
+	public ArrayList ids;
 
-	CompletionInfo(boolean html, Vector elements, Hashtable elementHash,
-		Vector entities, Hashtable entityHash, Vector ids)
+	//{{{ CompletionInfo constructor
+	CompletionInfo(boolean html, ArrayList elements, HashMap elementHash,
+		ArrayList entities, HashMap entityHash, ArrayList ids)
 	{
 		this.html = html;
 		this.elements = elements;
@@ -40,21 +46,30 @@ public class CompletionInfo
 		this.entities = entities;
 		this.entityHash = entityHash;
 		this.ids = ids;
-	}
+	} //}}}
 
+	//{{{ getCompletionInfo() method
 	public static CompletionInfo getCompletionInfo(EditPane editPane)
 	{
 		Buffer buffer = editPane.getBuffer();
 
 		String mode;
 
-		// hack to handle ant files
-		if(buffer.getName().toLowerCase().equals("build.xml"))
-			mode = "ant";
-		else
-			mode = buffer.getMode().getName();
+		Iterator iter = globs.keySet().iterator();
+		while(iter.hasNext())
+		{
+			RE re = (RE)iter.next();
+			if(re.isMatch(buffer.getName()))
+				return getCompletionInfo((String)globs.get(re));
+		}
 
-		CompletionInfo info = getCompletionInfo(mode);
+		String resource = jEdit.getProperty("mode."
+			+ buffer.getMode().getName()
+			+ "." + XmlPlugin.COMPLETION_INFO_PROPERTY);
+		if(resource == null)
+			return null;
+
+		CompletionInfo info = getCompletionInfo(resource);
 
 		if(info != null)
 			return info;
@@ -63,15 +78,11 @@ public class CompletionInfo
 			return (CompletionInfo)editPane.getClientProperty(
 				XmlPlugin.COMPLETION_INFO_PROPERTY);
 		}
-	}
+	} //}}}
 
-	public static CompletionInfo getCompletionInfo(String mode)
+	//{{{ getCompletionInfo() method
+	public static CompletionInfo getCompletionInfo(String resource)
 	{
-		String resource = jEdit.getProperty("mode." + mode
-			+ "." + XmlPlugin.COMPLETION_INFO_PROPERTY);
-		if(resource == null)
-			return null;
-
 		CompletionInfo info = (CompletionInfo)completionInfo.get(resource);
 		if(info != null)
 			return info;
@@ -105,31 +116,59 @@ public class CompletionInfo
 		completionInfo.put(resource,info);
 
 		return info;
-	}
+	} //}}}
 
+	//{{{ toString() method
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < elements.size(); i++)
 		{
-			buf.append(elements.elementAt(i));
+			buf.append(elements.get(i));
 			buf.append('\n');
 		}
 		return buf.toString();
-	}
+	} //}}}
 
+	//{{{ clone() method
 	public Object clone()
 	{
 		return new CompletionInfo(
 			html,
-			(Vector)elements.clone(),
-			(Hashtable)elementHash.clone(),
-			(Vector)entities.clone(),
-			(Hashtable)entityHash.clone(),
-			(Vector)ids.clone()
+			(ArrayList)elements.clone(),
+			(HashMap)elementHash.clone(),
+			(ArrayList)entities.clone(),
+			(HashMap)entityHash.clone(),
+			(ArrayList)ids.clone()
 		);
-	}
+	} //}}}
 
-	// private members
-	private static Hashtable completionInfo = new Hashtable();
+	//{{{ Private members
+	private static HashMap globs;
+	private static HashMap completionInfo;
+
+	//{{{ Class initializer
+	static
+	{
+		globs = new HashMap();
+		int i = 0;
+		String glob;
+		while((glob = jEdit.getProperty("xml.completion." + i + ".glob")) != null)
+		{
+			String info = jEdit.getProperty("xml.completion." + i + ".info");
+			try
+			{
+				globs.put(new RE(MiscUtilities.globToRE(glob),
+					RE.REG_ICASE),info);
+			}
+			catch(REException re)
+			{
+				Log.log(Log.ERROR,CompletionInfo.class,re);
+			}
+
+			i++;
+		}
+
+		completionInfo = new HashMap();
+	} //}}}
 }

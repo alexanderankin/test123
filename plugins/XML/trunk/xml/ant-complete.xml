@@ -2424,14 +2424,4 @@
 
 </element-list>
 
-<entity-list>
-
-<entity name="lt" value="&lt;" />
-<entity name="gt" value="&gt;" />
-<entity name="amp" value="&amp;" />
-<entity name="quot" value="&quot;" />
-<entity name="apos" value="&apos;" />
-
-</entity-list>
-
 </dtd>

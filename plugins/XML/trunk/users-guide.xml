@@ -102,8 +102,17 @@
 <chapter id="validation"><title>XML validation</title>
 
  <para>
-  As long as the XML tree window is open,
-  any errors found while parsing XML are handled by the
+  By default, switching to a different buffer will parse it if it is an XML file;
+  saving an XML file will also parse it. The XML plugin can also
+  optionally re-parse files on the fly; this should only be used on fast
+  systems with a lot of memory.
+  The current buffer can be parsed at any other time by clicking the parse
+  button
+  in the XML tree window.
+ </para>
+
+ <para>
+  Any errors found while parsing XML are handled by the
   <application>ErrorList</application> plugin; this means they are highlighted
   in the text area, and shown in the
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
@@ -117,16 +126,6 @@
   If the XML file specifies the DTD using a public ID, you will need to
   ensure the XML plugin loads the catalog where the public ID is defined;
   see <xref linkend="catalog" />.
- </para>
-
- <para>
-  By default, switching to a different buffer will parse it if it is an XML file;
-  saving an XML file will also parse it. The XML plugin can also
-  optionally re-parse files on the fly; this should only be used on fast
-  systems with a lot of memory.
-  The current buffer can be parsed at any other time by clicking the parse
-  button
-  in the XML tree window.
  </para>
 
  <para>
@@ -184,29 +183,24 @@
  </para>
 
  <para>
-  With XML files, the <guimenuitem>XML Tree</guimenuitem> window must be open,
-  and the list of elements and entities is loaded from the file's DTD.
+  With XML files, the list of elements and entities is loaded from the file's DTD.
   If the XML file specifies the DTD using a public ID, you will need to
   ensure the XML plugin loads the catalog where the public ID is defined;
   see <xref linkend="catalog" />.
  </para>
 
  <para>
-  With HTML files, the <guimenuitem>XML Tree</guimenuitem> window need not
-  be open, and the list of elements and entities is stored in the XML plugin
+  With HTML files, the list of elements and entities is stored in the XML plugin
   itself. It is based on the XHTML 1.0 DTD, and is compatible with HTML
   4.0 and HTML 3.2 as well.
  </para>
 
  <para>
-  The XML plugin also includes a built-in element list for Ant build files.
-  This built-in list will be used for buffers named
-  <filename>build.xml</filename>.
+  The XML plugin includes a few other built-in element
+  and entity lists, for Ant <filename>build.xml</filename> files, XSL stylesheets,
+  as well as XML schemas (files with the <filename>.xsd</filename> extension).
  </para>
 
- <para>
-  Clicking an entity in the list will insert it into the buffer.
- </para>
 </chapter>
 
 <chapter id="completion"><title>Tag and entity completion</title>
@@ -474,11 +468,23 @@
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.6</emphasis> requires
-  jEdit 4.0pre2 and the ErrorList plugin 1.2.</para>
+  jEdit 4.0pre4 and the ErrorList plugin 1.2.</para>
 
   <itemizedlist>
    <listitem><para>
     Updated for jEdit 4.0 and ErrorList 1.2 API changes.
+   </para></listitem>
+   <listitem><para>
+    The <guimenuitem>XML Tree</guimenuitem> window no longer needs to
+    be opened for XML parsing to take place.
+   </para></listitem>
+   <listitem><para>
+    When navigating tag and entity completion popups using the arrow keys,
+    the selection will now wrap around when it reaches the top or bottom.
+   </para></listitem>
+   <listitem><para>
+    Pressing the <keycap>Backspace</keycap> key now works when completing
+    tags and entities.
    </para></listitem>
    <listitem><para>
     Tag completion for XML schema (<filename>.xsd</filename>) files

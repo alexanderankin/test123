@@ -13,7 +13,6 @@
 package xml;
 
 import javax.swing.text.Position;
-import java.util.Vector;
 import org.xml.sax.Attributes;
 
 class XmlTag

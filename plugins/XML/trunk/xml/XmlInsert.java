@@ -145,7 +145,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	//{{{ Instance variables
 	private View view;
 	private EditPaneHandler editPaneHandler;
-	private Vector elements;
+	private ArrayList elements;
 	private JList elementList;
 	private JList entityList;
 	//}}}
@@ -158,7 +158,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ setDeclaredElements() method
-	private void setDeclaredElements(Vector elements)
+	private void setDeclaredElements(ArrayList elements)
 	{
 		this.elements = elements;
 
@@ -174,7 +174,7 @@ public class XmlInsert extends JPanel implements EBComponent
 			DefaultListModel model = new DefaultListModel();
 			for(int i = 0; i < elements.size(); i++)
 			{
-				model.addElement(elements.elementAt(i));
+				model.addElement(elements.get(i));
 			}
 			elementList.setModel(model);
 
@@ -191,7 +191,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ setDeclaredEntities() method
-	private void setDeclaredEntities(Vector entities)
+	private void setDeclaredEntities(ArrayList entities)
 	{
 		if(entities == null)
 		{
@@ -205,7 +205,7 @@ public class XmlInsert extends JPanel implements EBComponent
 			DefaultListModel model = new DefaultListModel();
 			for(int i = 0; i < entities.size(); i++)
 			{
-				model.addElement(entities.elementAt(i));
+				model.addElement(entities.get(i));
 			}
 			entityList.setModel(model);
 

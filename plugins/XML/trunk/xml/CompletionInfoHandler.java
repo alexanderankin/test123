@@ -1,5 +1,8 @@
 /*
  * CompletionInfoHandler.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,43 +15,55 @@
 
 package xml;
 
+//{{{ Imports
 import java.io.*;
 import java.util.*;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+//}}}
 
-// This class loads tag and entity lists for non-XML files.
 class CompletionInfoHandler extends DefaultHandler
 {
+	//{{{ CompletionInfoHandler constructor
 	CompletionInfoHandler()
 	{
 		completionInfo = new CompletionInfo(
 			false,
-			new Vector(), new Hashtable(),
-			new Vector(), new Hashtable(),
-			new Vector());
-	}
+			new ArrayList(), new HashMap(),
+			new ArrayList(), new HashMap(),
+			new ArrayList());
 
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"quot","\""));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"apos","'"));
+	} //}}}
+
+	//{{{ getCompletionInfo() method
 	CompletionInfo getCompletionInfo()
 	{
 		return completionInfo;
-	}
+	} //}}}
 
+	//{{{ setDocumentLocator() method
 	public void setDocumentLocator(Locator loc)
 	{
 		this.loc = loc;
-	}
+	} //}}}
 
+	//{{{ endDocument() method
 	public void endDocument()
 	{
 		MiscUtilities.quicksort(completionInfo.elements,
 			new XmlParser.ElementDeclCompare());
 		MiscUtilities.quicksort(completionInfo.entities,
 			new XmlParser.EntityDeclCompare());
-	}
+	} //}}}
 
+	//{{{ resolveEntity() method
 	public InputSource resolveEntity(String publicId, String systemId)
 		throws SAXException
 	{
@@ -61,8 +76,9 @@ class CompletionInfoHandler extends DefaultHandler
 		{
 			throw new SAXException(io);
 		}
-	}
+	} //}}}
 
+	//{{{ startElement() method
 	public void startElement(String namespaceURI,
 		String sName, // simple name
 		String qName, // qualified name
@@ -80,7 +96,6 @@ class CompletionInfoHandler extends DefaultHandler
 			}
 
 			completionInfo.html = "true".equals(attrs.getValue("html"));
-			
 		}
 		else if(sName.equals("entity"))
 		{
@@ -96,7 +111,7 @@ class CompletionInfoHandler extends DefaultHandler
 				"true".equals(attrs.getValue("empty")),
 				"true".equals(attrs.getValue("html")));
 
-			completionInfo.elements.addElement(element);
+			completionInfo.elements.add(element);
 			completionInfo.elementHash.put(element.name,element);
 		}
 		else if(sName.equals("attribute"))
@@ -105,17 +120,17 @@ class CompletionInfoHandler extends DefaultHandler
 			String value = attrs.getValue("value");
 			String type = attrs.getValue("type");
 
-			Vector values;
+			ArrayList values;
 
 			if(type.startsWith("("))
 			{
-				values = new Vector();
+				values = new ArrayList();
 
 				StringTokenizer st = new StringTokenizer(
 					type.substring(1,type.length() - 1),"|");
 				while(st.hasMoreTokens())
 				{
-					values.addElement(st.nextToken());
+					values.add(st.nextToken());
 				}
 			}
 			else
@@ -126,16 +141,17 @@ class CompletionInfoHandler extends DefaultHandler
 			element.addAttribute(new ElementDecl.AttributeDecl(
 				name,value,values,type,required));
 		}
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private CompletionInfo completionInfo;
 	private Locator loc;
 	private ElementDecl element;
 
+	//{{{ addEntity() method
 	private void addEntity(EntityDecl entity)
 	{
-		completionInfo.entities.addElement(entity);
+		completionInfo.entities.add(entity);
 		if(entity.type == EntityDecl.INTERNAL
 			&& entity.value.length() == 1)
 		{
@@ -144,5 +160,7 @@ class CompletionInfoHandler extends DefaultHandler
 			completionInfo.entityHash.put(entity.name,ch);
 			completionInfo.entityHash.put(ch,entity.name);
 		}
-	}
+	} //}}}
+
+	//}}}
 }

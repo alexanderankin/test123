@@ -152,7 +152,7 @@ public class TagHighlight implements TextAreaHighlight
 
 	private void updateCaretPosition()
 	{
-		if(textArea.getVisibleLines() == 0)
+		/* if(textArea.getVisibleLines() == 0)
 			return;
 
 		Buffer buffer  = this.textArea.getBuffer();
@@ -180,7 +180,7 @@ public class TagHighlight implements TextAreaHighlight
 			MatchTag.getSelectedTag(
 				this.caretPos - firstLineStartOffset,
 				visibleText
-			);
+			); */
 
 
 		/*
@@ -190,7 +190,7 @@ public class TagHighlight implements TextAreaHighlight
 		*/
 
 
-		if (tagAttr != null && tagAttr.type != MatchTag.T_STANDALONE_TAG) {
+		/* if (tagAttr != null && tagAttr.type != MatchTag.T_STANDALONE_TAG) {
 			MatchTag.TagAttribute matchingTagAttr = MatchTag.getMatchingTagAttr(visibleText, tagAttr);
 			if (matchingTagAttr != null) {
 				//Log.log(Log.DEBUG, this, "**** MatchingTag:start:end = " + matchingTagAttr.tag + ":" + matchingTagAttr.start + ":" + matchingTagAttr.end);
@@ -201,7 +201,7 @@ public class TagHighlight implements TextAreaHighlight
 			}
 		}
 
-		this.updateTextArea();
+		this.updateTextArea(); */
 	}
 
 	/**

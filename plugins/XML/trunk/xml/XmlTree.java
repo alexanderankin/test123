@@ -65,6 +65,15 @@ public class XmlTree extends JPanel implements EBComponent
 
 		propertiesChanged();
 
+		CaretHandler caretListener = new CaretHandler();
+
+		EditPane[] editPanes = view.getEditPanes();
+		for(int i = 0; i < editPanes.length; i++)
+		{
+			editPanes[i].getTextArea().addCaretListener(
+				caretListener);
+		}
+
 		update();
 	} //}}}
 
@@ -115,6 +124,15 @@ public class XmlTree extends JPanel implements EBComponent
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
+		//{{{ EditPaneUpdate
+		if(msg instanceof EditPaneUpdate)
+		{
+			EditPaneUpdate epu = (EditPaneUpdate)msg;
+			EditPane editPane = epu.getEditPane();
+
+			if(epu.getWhat() == EditPaneUpdate.CREATED)
+				editPane.getTextArea().addCaretListener(new CaretHandler());
+		} //}}}
 		if(msg instanceof PropertiesChanged)
 			propertiesChanged();
 	} //}}}
@@ -289,6 +307,16 @@ public class XmlTree extends JPanel implements EBComponent
 		public void actionPerformed(ActionEvent evt)
 		{
 			XmlPlugin.getParser(view).parse(true);
+		}
+	} //}}}
+
+	//{{{ CaretHandler class
+	class CaretHandler implements CaretListener
+	{
+		public void caretUpdate(CaretEvent evt)
+		{
+			if(evt.getSource() == view.getTextArea())
+				expandTagWithDelay();
 		}
 	} //}}}
 

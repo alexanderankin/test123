@@ -1,15 +1,12 @@
-- undo changes dirty to false but that causes a reparse. need a
-  buffer-saved event.
+- if no closing tag, should not insert </>
+- fix up tag highlighting
 - switching between two edit panes with same buffer: expand tree at
   appropriate location
-- moving caret reflected in tree
-- TagHighlight passes out of bounds lines to v2p
 - use getContextSensitiveProperty()
 - better docs: moving around xml file, editing xml file, etc.
 - xsd completion file is broken
 - better handling of ant and xsd
 - add name of tag highlight guy
-- popup not hidden when enter pressed
 - entering </foo>
 - option to not fetch stuff from 'net
 - empty/opening tag only/opening and closing in edit tag dialog
@@ -18,10 +15,6 @@
 - documentation: XML catalog format, OASIS catalog format
 - proper handling of tags in nested files
 - test XMLCatalog support, include an XMLCatalog DTD
-- tag lists for more file types, eg JSP, ASP, JHTML, ...
-- XmlComplete: support backspace (just get text from buffer from < pos
-  to caret pos)
-- initial setup wizard when xml file opened for the first time
 - All/1/2/3/4 buttons in XML tree?
 - 'new xml file' command
 - handle parsing open buffers better

@@ -58,8 +58,11 @@ mode.velocity.xml.tag-highlight=true
 
 # Completion info
 
-mode.ant.xml.completion-info=jeditresource:/XML.jar!/xml/ant-complete.xml
-mode.xsd.xml.completion-info=jeditresource:/XML.jar!/xml/xsd-complete.xml
+xml.completion.0.glob=build.xml
+xml.completion.0.info=jeditresource:/XML.jar!/xml/ant-complete.xml
+
+xml.completion.1.glob=*.xsd
+xml.completion.1.info=jeditresource:/XML.jar!/xml/xsd-complete.xml
 
 mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
@@ -117,7 +120,6 @@ xml-insert-toggle=XML Insert Toggle
 xml-tree.title=XML Tree
 xml-tree.parse=Parse
 xml-tree.parsing=Parsing
-xml-tree.not-xml-file=Not an XML file
 xml-tree.not-parsed=Not parsed
 xml-tree.parsing-complete=XML parsing complete, {0} error(s)
 
@@ -130,10 +132,7 @@ xml-insert.not-parsed=Not parsed
 # Edit tag dialog box
 xml-no-data.title=Element and entity data not available
 xml-no-data.message=This command can only be used if you are editing an\n\
-	HTML or XML file.\n\
-	\n\
-	For XML files, the "XML Tree" window should also be opened, and the\n\
-	XML file must specify a DTD or schema.
+	HTML file, or XML file with an associated DTD or schema.
 
 xml-edit-tag.undefined-element.title=Element Not Defined
 xml-edit-tag.undefined-element.message=The element "<{0}>" is not defined.
@@ -151,6 +150,9 @@ xml-edit-tag.required=#REQUIRED
 
 # Status message shown when doing element completion
 xml-complete-status=Space: insert; Enter: edit tag
+
+# "No completions" message
+xml-no-completions=<no completions>
 
 # Option pane
 options.xml.label=XML
