@@ -43,5 +43,68 @@ public class WhiteSpaceDefaults
             "white-space.show-block-default", false
         );
     }
+
+
+    public static boolean getSpaceHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-space-default", true
+        );
+    }
+
+
+    public static boolean getLeadingSpaceHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-leading-space-default", true
+        );
+    }
+
+
+    public static boolean getInnerSpaceHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-inner-space-default", true
+        );
+    }
+
+
+    public static boolean getTrailingSpaceHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-trailing-space-default", true
+        );
+    }
+
+
+    public static boolean getTabHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-tab-default", true
+        );
+    }
+
+
+    public static boolean getLeadingTabHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-leading-tab-default", true
+        );
+    }
+
+
+    public static boolean getInnerTabHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-inner-tab-default", true
+        );
+    }
+
+
+    public static boolean getTrailingTabHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-trailing-tab-default", true
+        );
+    }
+
+
+    public static boolean getWhitespaceHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-whitespace-default", false
+        );
+    }
 }
 
