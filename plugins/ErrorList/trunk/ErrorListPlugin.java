@@ -30,9 +30,6 @@ public class ErrorListPlugin extends EBPlugin
 
 	public void start()
 	{
-		jEdit.addAction(new OpenAction());
-		jEdit.addAction(new NextErrorAction());
-		jEdit.addAction(new PreviousErrorAction());
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,NAME);
 		propertiesChanged();
 	}
@@ -168,61 +165,5 @@ public class ErrorListPlugin extends EBPlugin
 	{
 		if(message.getDockableWindowName().equals(NAME))
 			message.setDockableWindow(new ErrorList(message.getView()));
-	}
-
-	public class OpenAction extends EditAction
-	{
-		public OpenAction()
-		{
-			super("error-list");
-		}
-
-		public void actionPerformed(ActionEvent evt)
-		{
-			getView(evt).getDockableWindowManager().toggleDockableWindow(NAME);
-		}
-	
-		public boolean isToggle()
-		{
-			return true;
-		}
-	
-		public boolean isSelected(Component comp)
-		{
-			return getView(comp).getDockableWindowManager()
-				.isDockableWindowVisible(NAME);
-		}
-	}
-
-	public class NextErrorAction extends EditAction
-	{
-		public NextErrorAction()
-		{
-			super("error-list-next-error");
-		}
-		
-		public void actionPerformed(ActionEvent evt)
-		{
-			DockableWindowManager wm = getView(evt).getDockableWindowManager();
-			wm.addDockableWindow(NAME);
-			DockableWindow win = wm.getDockableWindow(NAME);
-			((ErrorList)win).nextError();
-		}
-	}
-
-	public class PreviousErrorAction extends EditAction
-	{
-		public PreviousErrorAction()
-		{
-			super("error-list-previous-error");
-		}
-		
-		public void actionPerformed(ActionEvent evt)
-		{
-			DockableWindowManager wm = getView(evt).getDockableWindowManager();
-			wm.addDockableWindow(NAME);
-			DockableWindow win = wm.getDockableWindow(NAME);
-			((ErrorList)win).previousError();
-		}
 	}
 }

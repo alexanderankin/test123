@@ -76,6 +76,14 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			else
 				getToolkit().beep();
 		}
+
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				view.getEditPane().focusOnTextArea();
+			}
+		});
 	}
 
 	public void previousError() {
@@ -90,6 +98,14 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			else
 				getToolkit().beep();
 		}
+
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				view.getEditPane().focusOnTextArea();
+			}
+		});
 	}
 
 	// DockableWindow implementation

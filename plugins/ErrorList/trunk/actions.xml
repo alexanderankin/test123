@@ -1,0 +1,28 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="error-list">
+		<CODE>
+			view.getDockableWindowManager()
+				.toggleDockableWindow("error-list");
+		</CODE>
+		<IS_SELECTED>
+			return view.getDockableWindowManager()
+				.isDockableWindowVisible("error-list");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="error-list-next-error">
+		<CODE>
+			wm = view.getDockableWindowManager();
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").nextError();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-previous-error">
+		<CODE>
+			wm = view.getDockableWindowManager();
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").prevError();
+		</CODE>
+	</ACTION>
+</ACTIONS>
