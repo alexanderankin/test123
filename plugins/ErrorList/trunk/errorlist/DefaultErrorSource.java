@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.*;
 /**
  * @author Slava Pestov
  */
-public class DefaultErrorSource extends ErrorSource
+public class DefaultErrorSource extends ErrorSource implements EBComponent
 {
 	//{{{ DefaultErrorSource constructor
 	/**
@@ -167,6 +167,7 @@ public class DefaultErrorSource extends ErrorSource
 
 		errors.clear();
 		errorCount = 0;
+		removeOrAddToBus();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -192,6 +193,7 @@ public class DefaultErrorSource extends ErrorSource
 			return;
 
 		errorCount -= list.size();
+		removeOrAddToBus();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -224,6 +226,7 @@ public class DefaultErrorSource extends ErrorSource
 
 		list.addElement(error);
 		errorCount++;
+		removeOrAddToBus();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -276,6 +279,20 @@ public class DefaultErrorSource extends ErrorSource
 	//}}}
 
 	//{{{ Private members
+
+	boolean addedToBus;
+
+	//{{{ removeOrAddToBus() method
+	private void removeOrAddToBus()
+	{
+		if(addedToBus && errorCount == 0)
+			EditBus.removeFromBus(this);
+		else if(!addedToBus && errorCount != 0)
+		{
+			addedToBus = true;
+			EditBus.addToBus(this);
+		}
+	} //}}}
 
 	//{{{ handleBufferMessage() method
 	private void handleBufferMessage(BufferUpdate message)
