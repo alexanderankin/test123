@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- JavaInsight plugin user's guide -->
-<!-- (C) 2002 Andre Kaplan -->
+<!-- (c) 2002 Andre Kaplan, Dirk Moebius -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
@@ -67,7 +67,7 @@
         <emphasis>BCEL</emphasis> (Byte Code Engineering Library) by
         Markus Dahm <email>markus.dahm@berlin.de</email>.
         More information about BCEL can be found at
-        <ulink url="http://bcel.sourceforge.net">http://bcel.sourceforge.net</ulink>.
+        <ulink url="http://jakarta.apache.org/bcel">http://jakarta.apache.org/bcel</ulink>.
         </para></listitem>
 
         <listitem><para>
