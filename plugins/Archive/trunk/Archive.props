@@ -3,8 +3,9 @@ plugin.ArchivePlugin.author=André Kaplan
 plugin.ArchivePlugin.version=0.3.1
 plugin.ArchivePlugin.docs=Archive.html
 
-plugins.ArchivePlugin.depend.0=jdk 1.1
-plugins.ArchivePlugin.depend.1=jedit 03.01.99.00
+plugin.ArchivePlugin.depend.0=jdk 1.1
+plugin.ArchivePlugin.depend.1=jedit 03.01.99.00
+plugin.ArchivePlugin.jars=BZip2.jar tar.jar
 
 archive-menu.label=Archive
 archive-menu=archive.clear-directory-cache
