@@ -17,7 +17,8 @@ options.Templates.label=Templates
 options.Templates.choose-dir-msg=Templates directory:\ 
 options.Templates.choose-btn-msg=Choose
 
-plugin.TemplatesPlugin.depend.0=jedit 02.02.01.00
+# Dependencies
+plugin.TemplatesPlugin.depend.0=jedit 03.02.05.00
 plugin.TemplatesPlugin.depend.1=jdk 1.1
 
 # Error messages
