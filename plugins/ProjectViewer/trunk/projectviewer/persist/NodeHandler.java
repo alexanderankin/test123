@@ -114,19 +114,29 @@ public abstract class NodeHandler {
 
 	/** Writes an attribute to the writer. */
 	protected void writeAttr(String name, String value, Writer out) throws IOException {
-		out.write(" " + name + "=\"" + value + "\"");
+		out.write(" " + name + "=\"" + escapeAttr(value) + "\"");
 	}
 
 	/** Translates any "\" found in the string to "/". */
 	protected final String xlatePath(String src) {
 		if (src == null) return "";
-		StringBuffer buf = new StringBuffer(src);
-		for (int i = 0; i < buf.length(); i++) {
-			if (buf.charAt(i) == '\\') {
-				buf.setCharAt(i, '/');
+		return src.replace('\\', '/');
+	}
+
+	/** Escape "&lt;" and "&gt;" characters in attribute values. */
+	protected final String escapeAttr(String value) {
+		if (value == null) return "";
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0; i < value.length(); i++) {
+			if (value.charAt(i) == '<') {
+				sb.append("&lt;");
+			} else if (value.charAt(i) == '>') {
+				sb.append("&gt;");
+			} else {
+				sb.append(value.charAt(i));
 			}
 		}
-		return buf.toString();
+		return sb.toString();
 	}
 
 }
