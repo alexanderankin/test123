@@ -121,11 +121,11 @@ public class WhiteSpacePlugin
             (WhiteSpaceHighlight) WhiteSpaceHighlight.addHighlightTo(editPane);
 
         // Drawn third
-        textAreaPainter.addExtension(blockHighlight);
+        textAreaPainter.addExtension(TextAreaPainter.DEFAULT_LAYER, blockHighlight);
         // Drawn second: whitespace highlights must be drawn after fold guides
-        textAreaPainter.addExtension(whiteSpaceHighlight);
+        textAreaPainter.addExtension(TextAreaPainter.DEFAULT_LAYER, whiteSpaceHighlight);
         // Drawn first
-        textAreaPainter.addExtension(foldHighlight);
+        textAreaPainter.addExtension(TextAreaPainter.DEFAULT_LAYER, foldHighlight);
     }
 
 
