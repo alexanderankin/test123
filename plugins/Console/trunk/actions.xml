@@ -12,7 +12,7 @@
 	</ACTION>
 	<ACTION NAME="commando">
 		<CODE>
-			new console.CommandoDialog(view,null);
+			new console.commando.CommandoDialog(view,null);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="commando-compile">

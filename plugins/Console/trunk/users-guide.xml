@@ -1129,6 +1129,18 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 3.2.1</emphasis>
+   requires jEdit 4.0pre8 and the ErrorList plugin 1.2.</para>
+
+   <itemizedlist>
+    <listitem><para>The
+    <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Commando</guimenuitem>
+    command didn't work</para></listitem>
+    <listitem><para>The buttons on the commando tool bar didn't work properly</para>
+    </listitem>
+   </itemizedlist>
+  </listitem>
+
   <listitem><para><emphasis role="bold">Version 3.2</emphasis>
    requires jEdit 4.0pre8 and the ErrorList plugin 1.2.</para>
 
