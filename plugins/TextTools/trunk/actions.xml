@@ -44,4 +44,9 @@
 			TextToolsPlugin.shuffleLines(view, textArea);
 		</CODE>
 	</ACTION>
+    <ACTION NAME="column-insert">
+        <CODE>
+            TextToolsPlugin.doColumnInsert(view);
+        </CODE>
+    </ACTION>
 </ACTIONS>
