@@ -51,6 +51,12 @@ public abstract class SystemShellBuiltIn
 		return new Option[0];
 	} //}}}
 
+	//{{{ getConsoleState() method
+	private static SystemShell.ConsoleState getConsoleState(Console console)
+	{
+		return ConsolePlugin.getSystemShell().getConsoleState(console);
+	} //}}}
+
 	//{{{ Option class
 	public class Option
 	{
@@ -307,7 +313,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			String currentDirectory = SystemShell.getConsoleState(
+			String currentDirectory = getConsoleState(
 				console).currentDirectory;
 
 			String directory = (args.size() == 0
@@ -333,7 +339,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
+			SystemShell.ConsoleState state = getConsoleState(console);
 
 			String newDir;
 			if(args.size() == 0)
@@ -388,7 +394,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
+			SystemShell.ConsoleState state = getConsoleState(console);
 
 			ConsoleProcess process = state.process;
 			if(process == null)
@@ -413,7 +419,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Stack directoryStack = SystemShell.getConsoleState(console)
+			Stack directoryStack = getConsoleState(console)
 				.directoryStack;
 
 			for(int i = 0; i < directoryStack.size(); i++)
@@ -457,7 +463,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			String currentDirectory = SystemShell.getConsoleState(
+			String currentDirectory = getConsoleState(
 				console).currentDirectory;
 
 			for(int i = 0; i < args.size(); i++)
@@ -549,7 +555,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
+			SystemShell.ConsoleState state = getConsoleState(console);
 
 			ConsoleProcess process = state.process;
 			if(process == null)
@@ -574,7 +580,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
+			SystemShell.ConsoleState state = getConsoleState(console);
 			Stack directoryStack = state.directoryStack;
 
 			if(directoryStack.isEmpty())
@@ -600,7 +606,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
+			SystemShell.ConsoleState state = getConsoleState(console);
 			Stack directoryStack = state.directoryStack;
 
 			directoryStack.push(state.currentDirectory);
@@ -641,7 +647,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			String currentDirectory = SystemShell.getConsoleState(
+			String currentDirectory = getConsoleState(
 				console).currentDirectory;
 
 			for(int i = 0; i < args.size(); i++)

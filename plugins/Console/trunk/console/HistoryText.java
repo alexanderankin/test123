@@ -134,7 +134,7 @@ public class HistoryText
 		}
 
 		int start = getInputStart();
-		String t = getText().substring(start,
+		String t = getText().substring(0,
 			text.getSelectionStart() - start);
 		if(t == null)
 		{
@@ -170,7 +170,7 @@ public class HistoryText
 		}
 
 		int start = getInputStart();
-		String t = getText().substring(start,
+		String t = getText().substring(0,
 			text.getSelectionStart() - start);
 		if(t == null)
 		{

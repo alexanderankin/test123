@@ -70,6 +70,13 @@ public class ConsolePane extends JTextPane
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,0),
 			new HistoryDownAction());
 
+		/* Press S+Up/Down to search history */
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,InputEvent.SHIFT_MASK),
+			new SearchUpAction());
+
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,InputEvent.SHIFT_MASK),
+			new SearchDownAction());
+
 		/* Workaround */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,0),
 			new DummyAction());
@@ -410,6 +417,24 @@ public class ConsolePane extends JTextPane
 		public void actionPerformed(ActionEvent evt)
 		{
 			history.historyNext();
+		}
+	} //}}}
+
+	//{{{ SearchUpAction class
+	class SearchUpAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			history.doBackwardSearch();
+		}
+	} //}}}
+
+	//{{{ SearchDownAction class
+	class SearchDownAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			history.doForwardSearch();
 		}
 	} //}}}
 

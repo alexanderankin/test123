@@ -39,6 +39,30 @@ public class SystemShell extends Shell
 		lineSep = toASCII(System.getProperty("line.separator"));
 	} //}}}
 
+	//{{{ openConsole() method
+	/**
+	 * Called when a Console dockable first selects this shell.
+	 * @since Console 4.0.2
+	 */
+	public void openConsole(Console console)
+	{
+		consoleStateMap.put(console,new ConsoleState());
+	} //}}}
+
+	//{{{ closeConsole() method
+	/**
+	 * Called when a Console dockable is closed.
+	 * @since Console 4.0.2
+	 */
+	public void closeConsole(Console console)
+	{
+		ConsoleProcess process = getConsoleState(console).process;
+		if(process != null)
+			process.stop();
+
+		consoleStateMap.remove(console);
+	} //}}}
+
 	//{{{ printInfoMessage() method
 	public void printInfoMessage(Output output)
 	{
@@ -300,7 +324,7 @@ public class SystemShell extends Shell
 		View view = console.getView();
 		String currentDirectory = (console == null
 			? System.getProperty("user.dir")
-			: SystemShell.getConsoleState(console)
+			: getConsoleState(console)
 			.currentDirectory);
 
 		final String fileDelimiters = "=\'\" \\"+File.pathSeparator;
@@ -585,24 +609,8 @@ public class SystemShell extends Shell
 
 	//{{{ Package-private members
 
-	//{{{ consoleOpened() method
-	static void consoleOpened(Console console)
-	{
-		consoleStateMap.put(console,new ConsoleState());
-	} //}}}
-
-	//{{{ consoleClosed() method
-	static void consoleClosed(Console console)
-	{
-		ConsoleProcess process = getConsoleState(console).process;
-		if(process != null)
-			process.stop();
-
-		consoleStateMap.remove(console);
-	} //}}}
-
 	//{{{ getConsoleState() method
-	static ConsoleState getConsoleState(Console console)
+	ConsoleState getConsoleState(Console console)
 	{
 		return (ConsoleState)consoleStateMap.get(console);
 	} //}}}
@@ -628,7 +636,7 @@ public class SystemShell extends Shell
 	//{{{ Private members
 
 	//{{{ Instance variables
-	private static Hashtable consoleStateMap = new Hashtable();
+	private Hashtable consoleStateMap = new Hashtable();
 	private final char dosSlash = 127;
 	private Hashtable aliases;
 	private Hashtable variables;
@@ -1031,37 +1039,29 @@ loop:			for(;;)
 
 		void gotoLastDirectory(Console console)
 		{
-			String[] pp = { lastDirectory };
-			if(new File(lastDirectory).exists())
-			{
-				String newLastDir = currentDirectory;
-				currentDirectory = lastDirectory;
-				lastDirectory = newLastDir;
-				console.print(console.getInfoColor(),
-					jEdit.getProperty(
-					"console.shell.cd.ok",pp));
-			}
-			else
-			{
-				console.print(console.getErrorColor(),
-					jEdit.getProperty(
-					"console.shell.cd.error",pp));
-			}
+			setCurrentDirectory(console,lastDirectory);
 		}
 
 		void setCurrentDirectory(Console console, String newDir)
 		{
 			String[] pp = { newDir };
-			if(new File(newDir).exists())
-			{
-				lastDirectory = currentDirectory;
-				currentDirectory = newDir;
-			}
-			else
+			File file = new File(newDir);
+			if(!file.exists())
 			{
 				console.print(console.getErrorColor(),
 					jEdit.getProperty(
 					"console.shell.cd.error",pp));
+			}
+			else if(!file.isDirectory())
+			{
+				console.print(console.getErrorColor(),
+					jEdit.getProperty(
+					"console.shell.cd.file",pp));
+			}
+			else
+			{
+				lastDirectory = currentDirectory;
+				currentDirectory = newDir;
 			}
 		}
 	} //}}}

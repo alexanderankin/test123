@@ -1,11 +1,8 @@
 - C+z does detach
-- need history search
 - two newlines after tab completion
 - $d/.. not canonicalized
 - jikes warning pattern
 - %edit -n, -p, -s
-- cd to a file!
-- with factor, running file which cuases console to open is weird
 
 - default dir option
 - on win: foo "bar baz" needs to be passed literally
