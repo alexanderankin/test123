@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.FtpPlugin.name=FTP
 plugin.FtpPlugin.author=Slava Pestov
-plugin.FtpPlugin.version=0.2.5
+plugin.FtpPlugin.version=0.2.6
 plugin.FtpPlugin.docs=FTP.html
 plugin.FtpPlugin.depend.0=jedit 02.07.02.00
 
@@ -56,3 +56,8 @@ vfs.ftp.list-error.title=Cannot List Directory
 vfs.ftp.list-error.message=An error occurred while listing {0}.\n\
 	{1}\n\
 	See Utilities->Activity Log for a full connection trace.
+
+# File listing regexps
+vfs.ftp.list.count=2
+vfs.ftp.list.0=.*\\s+(\\d+)\\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\S+\\s+\\S+\\s+(\\S+)
+vfs.ftp.list.1=.*\\s+(\\d+)\\s+(\\S+)
