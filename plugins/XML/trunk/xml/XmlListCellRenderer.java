@@ -23,7 +23,7 @@ import xml.completion.*;
 import xml.parser.*;
 //}}}
 
-class XmlListCellRenderer extends DefaultListCellRenderer
+public class XmlListCellRenderer extends DefaultListCellRenderer
 {
 	//{{{ Icons
 	public static final ImageIcon ELEMENT_ICON = new ImageIcon(
@@ -85,5 +85,5 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 		return this;
 	} //}}}
 
-	static class EmptyListPlaceholder {}
+	public static class EmptyListPlaceholder {}
 }

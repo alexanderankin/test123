@@ -42,8 +42,7 @@ public class TagParser
 			return null;
 
 		int endTag = text.indexOf('>', startTag + 1) + 1;
-		// this catches the -1 case as well
-		if(endTag < pos)
+		if(endTag == -1 || endTag < pos)
 			return null;
 
 		int tagType = T_START_TAG;
@@ -59,22 +58,21 @@ public class TagParser
 			return null;
 		}
 
-		int endTagName = -1;
-		for(int i = startTagName; i < text.length(); i++)
+		int endTagName = endTag - 1;
+		for(int i = startTagName; i < endTag - 1; i++)
 		{
 			char ch = text.charAt(i);
 			if(Character.isWhitespace(ch))
 			{
-				if(endTagName == -1)
+				if(endTagName == endTag - 1)
 					endTagName = i;
 			}
 			else if(ch == '<')
 				return null;
-			else if(ch == '>')
+			else if(ch == '/' && i == endTag - 2)
 			{
-				if(endTagName == -1)
-					endTagName = i;
-				break;
+				endTagName = i;
+				tagType = T_STANDALONE_TAG;
 			}
 		}
 

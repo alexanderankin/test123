@@ -28,10 +28,10 @@ import xml.*;
 import xml.parser.*;
 //}}}
 
-class XmlComplete extends JWindow
+public class XmlComplete extends JWindow
 {
 	//{{{ XmlComplete constructor
-	XmlComplete(View view, String text, ArrayList completions, Point location)
+	public XmlComplete(View view, String text, ArrayList completions, Point location)
 	{
 		super(view);
 

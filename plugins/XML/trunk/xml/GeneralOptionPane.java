@@ -77,6 +77,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
 
+		addComponent(networkOK = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.network-ok")));
+		networkOK.setSelected(jEdit.getBooleanProperty("xml.network-ok"));
+
 		addComponent(tagHighlight = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.tag-highlight-enabled")));
 		tagHighlight.setSelected(jEdit.getBooleanProperty(
@@ -114,6 +118,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setIntegerProperty("xml.show-attributes",
 			showAttributes.getSelectedIndex());
 		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
+		jEdit.setBooleanProperty("xml.network-ok",networkOK.isSelected());
 		jEdit.setBooleanProperty("xml.tag-highlight",
 			tagHighlight.isSelected());
 		jEdit.setProperty("xml.tag-highlight-color",
@@ -128,6 +133,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
 	private JCheckBox validate;
+	private JCheckBox networkOK;
 	private JCheckBox tagHighlight;
 	private JButton tagHighlightColor;
 	private JComboBox showAttributes;

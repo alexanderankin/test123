@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (C) 2000, 2001, 2002 Slava Pestov
  * Portions copyright (C) 2001 David Walend
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -201,7 +201,11 @@ class SAXParserImpl implements XmlParser.Impl
 			if(source == null)
 				return new InputSource(new StringReader("<!-- -->"));
 			else
+			{
+				Log.log(Log.DEBUG,this,publicId + "::" + systemId
+					+ " resolved to " + source.getSystemId());
 				return source;
+			}
 		} //}}}
 
 		//{{{ startElement() method

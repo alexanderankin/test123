@@ -335,20 +335,25 @@ public class XmlActions
 
 		int off = 0;
 		int len = buffer.getLength();
-		Segment txt = new Segment();
 		long startTime = System.currentTimeMillis();
+		int total = 0;
 		try
 		{
 			buffer.beginCompoundEdit();
 
-			buffer.getText(off, len, txt);
-			Position tagPos = null;
-			while ((tagPos = findNextTag(txt.array, txt.offset, txt.count)) != null)
+			String text = buffer.getText(off,len);
+			for (int i = text.indexOf('<');
+				i != -1; i = text.indexOf('<', ++i))
 			{
-				buffer.remove(off + (tagPos.off - txt.offset), tagPos.len);
-				off += (tagPos.off - txt.offset);
-				len = buffer.getLength() - off;
-				buffer.getText(off, len, txt);
+				TagParser.Tag tag = TagParser.getTagAtOffset(text,i + 1);
+				if (tag == null)
+					continue;
+				else
+				{
+					int length = tag.end - tag.start;
+					buffer.remove(tag.start - total,length);
+					total += length;
+				}
 			}
 		}
 		finally
@@ -585,6 +590,9 @@ public class XmlActions
 		String text = buffer.getText(0,caret);
 
 		TagParser.Tag tag = TagParser.getTagAtOffset(text,caret - 1);
+		if(tag == null)
+			return;
+
 		ElementDecl decl = (ElementDecl)completionInfo.elementHash.get(tag.tag);
 		if(tag.type == TagParser.T_STANDALONE_TAG
 			|| (decl != null && decl.empty))
@@ -597,20 +605,6 @@ public class XmlActions
 		{
 			textArea.setSelectedText("</" + tag.tag + ">");
 			textArea.setCaretPosition(caret);
-		}
-	} //}}}
-
-	//{{{ Position class
-	static class Position
-	{
-		int off = -1;
-		int len = -1;
-
-
-		public Position(int off, int len)
-		{
-			this.off = off;
-			this.len = len;
 		}
 	} //}}}
 
@@ -756,150 +750,11 @@ public class XmlActions
 	} //}}}
 
 	//{{{ Private members
-
-	//{{{ Static variables
 	private static Segment seg = new Segment();
 	private static boolean completion;
 	private static boolean closeCompletion;
 	private static boolean closeCompletionOpen;
 	private static int delay;
 	private static Timer timer;
-	//}}}
-
-	//{{{ getTagName() method
-	/*
-	*   returns the name of a tag (stops at first space)
-	*/
-	private static String getTagName(char[] buf, int offset, int len)
-	{
-		int startIdx = offset;
-		int endIdx   = offset + len;
-
-		for (int i = startIdx; i < endIdx; i++)
-		{
-			if (!Character.isWhitespace(buf[i]))
-			{
-				startIdx = i;
-				break;
-			}
-		}
-
-		for (int i = startIdx + 1; i < endIdx; i++)
-		{
-			if (Character.isWhitespace(buf[i]))
-			{
-				endIdx = i;
-				break;
-			}
-		}
-
-		return new String(buf, startIdx, endIdx - startIdx);
-	} //}}}
-
-	//{{{ findNextTag() method
-	private static Position findNextTag(char[] array, int off, int len)
-	{
-		char c;
-		int startIdx = -1;
-		boolean commentStart = false;
-		boolean commentEnd   = false;
-		char inQuote = 0x0;
-
-loop:		for (int i = len - 1; i >= 0; i--, off++)
-		{
-			c = array[off];
-
-			// Ignore <<, <>, < followed by a whitespace or ignorable identifier
-			if (startIdx != -1)
-			{
-				if (off == (startIdx + 1))
-				{
-					if ((c == '<')
-						||  (c == '>')
-						||  Character.isISOControl(c)
-						||  Character.isWhitespace(c)
-					)
-					{
-						startIdx = -1;
-						commentStart = commentEnd = false;
-					}
-				}
-			}
-
-			switch (c)
-			{
-			case '<':
-				if (startIdx != -1)
-					continue loop;
-
-				if (inQuote != 0x0)
-					continue loop;
-
-				if (commentStart)
-					continue loop;
-
-				startIdx = off;
-
-				break;
-
-			case '"':
-			case '\'':
-				if (startIdx == -1)
-					continue loop;
-
-				if (commentStart)
-					continue loop;
-
-				if (inQuote == c)
-					inQuote = 0x0;
-				else if (inQuote == 0x0)
-					inQuote = c;
-				else ; // inQuote != c : do nothing
-
-				break;
-
-			case '>':
-				if (startIdx == -1)
-					continue loop;
-
-				if (inQuote != 0x0)
-					continue loop;
-
-				if (commentStart)
-				{
-					if ((off - startIdx) < 6)
-						continue loop;
-					commentEnd = (
-						   (array[off - 1] == '-')
-						&& (array[off - 2] == '-')
-					);
-					if (commentEnd)
-						return new Position(startIdx, (off + 1) - startIdx);
-					else
-						continue loop;
-				}
-
-				return new Position(startIdx, (off + 1) - startIdx);
-				// break;
-
-			default:
-				if (!commentStart && (off == (startIdx + 3)))
-				{
-					commentStart = (
-						   (array[startIdx + 1] == '!')
-						&& (array[startIdx + 2] == '-')
-						&& (array[startIdx + 3] == '-')
-					);
-				}
-				break;
-			}
-		}
-
-		if (commentStart)
-			return new Position(startIdx, off - startIdx);
-		else
-			return null;
-	} //}}}
-
 	//}}}
 }
