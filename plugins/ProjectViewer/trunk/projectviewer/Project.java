@@ -77,6 +77,9 @@ public final class Project implements EBComponent {
    // last open tab
    private int tabState = ProjectViewer.FOLDERS_TAB;
 
+   // last viewed file
+   private String lastFile = null;
+
    /**
     *Constructor for the Project object
     */
@@ -245,16 +248,16 @@ public final class Project implements EBComponent {
    public void importFiles( List files ) {
       for ( Iterator i = files.iterator(); i.hasNext();  )
          importFile( (ProjectFile)i.next(), false );
-      save();
    }
-   
+
    /**
     * Import this given file.
     *
     * @param aFile  Description of Parameter
+    * @param save   Description of Parameter
     * @since
     */
-   public synchronized void importFile(ProjectFile aFile, boolean save) {
+   public synchronized void importFile( ProjectFile aFile, boolean save ) {
       if ( isProjectFile( aFile ) )
          return;
 
@@ -267,8 +270,8 @@ public final class Project implements EBComponent {
          fireFileAdded( aFile );
          files.put( aFile.getPath(), aFile );
       }
-      if (save);
-         save();
+      if ( save )
+         ;
    }
 
    /**
@@ -278,7 +281,7 @@ public final class Project implements EBComponent {
     * @since
     */
    public synchronized void importFile( ProjectFile aFile ) {
-      importFile(aFile, true);
+      importFile( aFile, true );
    }
 
    /**
@@ -332,7 +335,6 @@ public final class Project implements EBComponent {
       }
 
       pruneDirectories( path, false );
-      save();
    }
 
    /**
@@ -388,7 +390,6 @@ public final class Project implements EBComponent {
          aDir.toFile().delete();
       }
       //pruneDirectories(path,delete);
-      save();
    }
 
    /**
@@ -418,7 +419,6 @@ public final class Project implements EBComponent {
          }
       }
       files.clear();
-      save();
    }
 
    /**
@@ -448,7 +448,8 @@ public final class Project implements EBComponent {
     * @since
     */
    public void addProjectListener( ProjectListener listener ) {
-      listeners.add( listener );
+      if ( !listeners.contains( listener ) )
+         listeners.add( listener );
    }
 
    /**
@@ -546,6 +547,7 @@ public final class Project implements EBComponent {
     * @since
     */
    void deactivate() {
+      save();
       EditBus.removeFromBus( this );
    }
 
@@ -634,6 +636,17 @@ public final class Project implements EBComponent {
       //Log.log( Log.DEBUG, this, "Firing file added: file(" + aFile + ")" );
       for ( int i = 0; i < listeners.size(); i++ )
          ( (ProjectListener)listeners.get( i ) ).fileAdded( evt );
+   }
+
+   /**
+    * Description of the Method
+    *
+    * @param aFile  Description of Parameter
+    */
+   private void fireBuildFileSelected( File aFile ) {
+      ProjectEvent evt = new ProjectEvent( this, aFile );
+      for ( int i = 0; i < listeners.size(); i++ )
+         ( (ProjectListener)listeners.get( i ) ).buildFileSelected( evt );
    }
 
    /**
@@ -749,6 +762,9 @@ public final class Project implements EBComponent {
          else if ( p.startsWith( "open_file" ) ) {
             openFiles.add( fileProps.getProperty( p ) );
          }
+         else if ( p.startsWith( "lastFile" ) ) {
+            lastFile = fileProps.getProperty( p );
+         }
          else if ( p.startsWith( "webroot" ) ) {
             setURLRoot( fileProps.getProperty( p ) );
          }
@@ -758,10 +774,12 @@ public final class Project implements EBComponent {
          else if ( p.startsWith( "tabState" ) ) {
             setTabState( Integer.parseInt( fileProps.getProperty( p ) ) );
          }
-         else if (p.startsWith("buildFile")) {
-            buildFile = new File(fileProps.getProperty(p));  
+         else if ( p.startsWith( "buildFile" ) ) {
+            buildFile = new File( fileProps.getProperty( p ) );
          }
       }
+      if ( lastFile != null )
+         openFiles.add( lastFile );
 
       setLoaded( true );
    }
@@ -829,6 +847,10 @@ public final class Project implements EBComponent {
                }
             }
 
+            if ( lastFile != null ) {
+               out.println( "lastFile=" + lastFile );
+            }
+
             // Folder tree state
             if ( folderTree != null ) {
                try {
@@ -854,10 +876,10 @@ public final class Project implements EBComponent {
 
             // Tab state
             out.println( "tabState=" + String.valueOf( getTabState() ) );
-            
+
             // Build file
-            if (buildFile != null)
-               out.println("buildFile=" + buildFile.getAbsolutePath());
+            if ( buildFile != null )
+               out.println( "buildFile=" + buildFile.getAbsolutePath() );
 
             // Finishing
             out.flush();
@@ -972,9 +994,33 @@ public final class Project implements EBComponent {
    public Iterator getOpenFiles() {
       return openFiles.iterator();
    }
-   
+
+   /**
+    * Gets the buildFile attribute of the Project object
+    *
+    * @return   The buildFile for the Project
+    */
    public File getBuildFile() {
-      return buildFile;   
+      return buildFile;
+   }
+
+   /**
+    * Sets the buildFile attribute of the Project object
+    *
+    * @param file  The new buildFile for the Project
+    */
+   public void setBuildFile( File file ) {
+      buildFile = file;
+      fireBuildFileSelected( buildFile );
+   }
+
+   /**
+    * Sets the lastFile attribute of the Project object
+    *
+    * @param filename  The new lastFile value
+    */
+   public void setLastFile( String filename ) {
+      lastFile = filename;
    }
 }
 

@@ -55,8 +55,17 @@ public final class ProjectViewer extends JPanel
    private final static String FILES_TAB_TITLE = "Files";
    private final static String WORKING_FILES_TAB_TITLE = "Working Files";
 
+   /**
+    * Description of the Field
+    */
    protected final static int FOLDERS_TAB = 0;
+   /**
+    * Description of the Field
+    */
    protected final static int FILES_TAB = 1;
+   /**
+    * Description of the Field
+    */
    protected final static int WORKING_FILES_TAB = 2;
 
    private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
@@ -83,11 +92,12 @@ public final class ProjectViewer extends JPanel
    private JTree fileTree;
    private JTree workingFileTree;
    private List listeners;
+   private List projectListeners;
 
    private JComboBox projectCombo;
    private JLabel status = new JLabel( " " );
 
-   private View view;
+   private static View view;
 
    private ViewerListener vsl;
    private ProjectTreeSelectionListener tsl;
@@ -124,6 +134,7 @@ public final class ProjectViewer extends JPanel
       tsl = new ProjectTreeSelectionListener( this, launcher );
       cml = new TreeContextMenuListener( this );
       listeners = new ArrayList();
+      projectListeners = new ArrayList();
       loadGUI();
       enableEvents( AWTEvent.COMPONENT_EVENT_MASK );
 
@@ -152,14 +163,13 @@ public final class ProjectViewer extends JPanel
             return;
          if ( !isAllProjects() && project.equals( cp ) )
             return;
-         projectView.deactivate();
          if ( cp != null ) {
             // save the state of the previous project
             launcher.closeProject( cp );
             cp.setFolderTree( folderTree );
-            cp.setTabState(tabs.getSelectedIndex());
-            cp.save();
+            cp.setTabState( tabs.getSelectedIndex() );
          }
+         projectView.deactivate();
       }
 
       // set up the new project
@@ -177,10 +187,12 @@ public final class ProjectViewer extends JPanel
          }
       }
       else {
-         //if ( !project.isLoaded() ) {
-            project.load();
-            launcher.openProject( project );
-         //}
+         project.load();
+         Iterator it = projectListeners.iterator();
+         while(it.hasNext())
+            project.addProjectListener((ProjectListener)it.next());
+         launcher.openProject( project );
+         ProjectManager.getInstance().setCurrentProject( project );
       }
 
       // set the trees
@@ -293,8 +305,8 @@ public final class ProjectViewer extends JPanel
     *
     * @return   The view value
     */
-   public View getView() {
-      return this.view;
+   public static View getView() {
+      return view;
    }
 
    /**
@@ -435,6 +447,24 @@ public final class ProjectViewer extends JPanel
     */
    public void removeProjectViewerListener( ProjectViewerListener listener ) {
       listeners.remove( listener );
+   }
+
+   /**
+    * Adds a feature to the ProjectListener attribute of the ProjectViewer object
+    *
+    * @param listener  The feature to be added to the ProjectListener attribute
+    */
+   public void addProjectListener( ProjectListener listener ) {
+      projectListeners.add( listener );
+   }
+
+   /**
+    * Description of the Method
+    *
+    * @param listener  Description of Parameter
+    */
+   public void removeProjectListener( ProjectListener listener ) {
+      projectListeners.remove( listener );
    }
 
    /**
@@ -636,7 +666,7 @@ public final class ProjectViewer extends JPanel
 
       if ( folderTree != null ) {
          folderTree.setModel( projectView.getFolderViewModel() );
-         getCurrentProject().restoreFolderTreeState(folderTree);
+         getCurrentProject().restoreFolderTreeState( folderTree );
       }
       if ( fileTree != null ) {
          fileTree.setModel( projectView.getFileViewModel() );
@@ -653,8 +683,8 @@ public final class ProjectViewer extends JPanel
       importFilesBtn.setEnabled( true );
       openAllBtn.setEnabled( true );
 
-      tabs.setSelectedIndex(getCurrentProject().getTabState());
-      
+      tabs.setSelectedIndex( getCurrentProject().getTabState() );
+
       vsl.pause();
       projectCombo.setSelectedItem( isAllProjects() ? (Object)ALL_PROJECTS : getCurrentProject() );
       vsl.resume();

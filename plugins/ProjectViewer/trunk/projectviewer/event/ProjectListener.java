@@ -18,45 +18,59 @@ package projectviewer.event;
 
 import java.util.EventListener;
 
-/** A listener of project events.
+/**
+ * A listener of project events.
  */
 public interface ProjectListener extends EventListener {
 
-	/** Notification that a project file has been opened.
-	 *
-	 *@param  evt  Description of Parameter
-	 */
-	public void fileOpened(ProjectEvent evt);
+   /**
+    * Notification that a project file has been opened.
+    *
+    * @param evt  Description of Parameter
+    */
+   public void fileOpened( ProjectEvent evt );
 
-	/** Notification that a project file has been closed.
-	 *
-	 *@param  evt  Description of Parameter
-	 */
-	public void fileClosed(ProjectEvent evt);
+   /**
+    * Notification that a project file has been closed.
+    *
+    * @param evt  Description of Parameter
+    */
+   public void fileClosed( ProjectEvent evt );
 
-	/** Notification that a project file has been removed.
-	 *
-	 *@param  evt  Description of Parameter
-	 */
-	public void fileRemoved(ProjectEvent evt);
+   /**
+    * Notification that a project file has been removed.
+    *
+    * @param evt  Description of Parameter
+    */
+   public void fileRemoved( ProjectEvent evt );
 
-	/** Notification that a project directory has been removed.
-	 *
-	 *@param  evt  Description of Parameter
-	 */
-	public void directoryRemoved(ProjectEvent evt);
+   /**
+    * Notification that a project directory has been removed.
+    *
+    * @param evt  Description of Parameter
+    */
+   public void directoryRemoved( ProjectEvent evt );
 
-	/** Notification that a project directory has been added.
-	 *
-	 *@param  evt  Description of Parameter
-	 */
-	public void directoryAdded(ProjectEvent evt);
+   /**
+    * Notification that a project directory has been added.
+    *
+    * @param evt  Description of Parameter
+    */
+   public void directoryAdded( ProjectEvent evt );
 
-	/** Notification that a project file has been added.
-	 *
-	 *@param  evt  Description of Parameter
-	 */
-	public void fileAdded(ProjectEvent evt);
+   /**
+    * Notification that a project file has been added.
+    *
+    * @param evt  Description of Parameter
+    */
+   public void fileAdded( ProjectEvent evt );
+
+   /**
+    * Notification that a build/make file has been selected for the Project.
+    *
+    * @param evt  Description of Parameter
+    */
+   public void buildFileSelected( ProjectEvent evt );
 
 }
 

@@ -193,14 +193,14 @@ public final class RemovalManager implements ProjectListener {
         
         if (message == null) return true;
         
-		int choice = 
+      int choice = 
             JOptionPane.showConfirmDialog(
                 viewer,
-				message,
+            message,
                 "Confirmation of action:",
-				JOptionPane.YES_NO_OPTION
+            JOptionPane.YES_NO_OPTION
             );
-		return (choice == JOptionPane.YES_OPTION);
+      return (choice == JOptionPane.YES_OPTION);
     }
     
     /**
@@ -235,11 +235,11 @@ public final class RemovalManager implements ProjectListener {
     
     //--------------- Project Listener interface
     
-	public void fileOpened(ProjectEvent evt) { }
+   public void fileOpened(ProjectEvent evt) { }
 
-	public void fileClosed(ProjectEvent evt) { }
+   public void fileClosed(ProjectEvent evt) { }
 
-	public void fileRemoved(ProjectEvent evt) { 
+   public void fileRemoved(ProjectEvent evt) { 
         if (willDelete) {
             ProjectFile aFile = (ProjectFile) evt.getArtifact();
             Buffer buf = aFile.getBuffer();
@@ -249,9 +249,14 @@ public final class RemovalManager implements ProjectListener {
         }
     }
 
-	public void directoryRemoved(ProjectEvent evt)  { }
+   public void directoryRemoved(ProjectEvent evt)  { }
 
-	public void directoryAdded(ProjectEvent evt) { }
+   public void directoryAdded(ProjectEvent evt) { }
 
-	public void fileAdded(ProjectEvent evt) { }    
+   public void fileAdded(ProjectEvent evt) { }  
+   
+   public void buildFileSelected(ProjectEvent evt) {
+      // no-op  
+   }
+   
 }

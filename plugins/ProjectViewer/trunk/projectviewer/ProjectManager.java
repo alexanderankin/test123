@@ -36,6 +36,8 @@ public final class ProjectManager {
    private final static ProjectManager instance = new ProjectManager();
 
    private List projects;
+   
+   private Project currentProject = null;
 
 
    /**
@@ -187,6 +189,10 @@ public final class ProjectManager {
    public synchronized void removeProject( Project aProject ) {
       projects.remove( aProject );
    }
+   
+   public synchronized void setCurrentProject(Project aProject) {
+      currentProject = aProject;  
+   }
 
    /**
     * Save projects.
@@ -198,9 +204,16 @@ public final class ProjectManager {
       // the user changes from one project to another and on the current project
       // when jEdit exits. All that should happen here is update the list of projects
       // (which just requires the project name) and the user configuration settings.
-      // All other saves should already be done.
+      // All other saves should already be done. Further, this implementation doesn't
+      // work as expected -- any changes in the current project are lost, open files,
+      // tree state, etc and are reset to the same as when the project was opened.
+      // Assuming this is is all true, it doesn't hurt to load all projects except
+      // the current one. Added a method for ProjectViewer to set the current project and
+      // adjusted the code below.
       for ( int i = 0; i < projects.size(); i++ ) {
-         ( (Project)projects.get( i ) ).load();
+         Project p = (Project)projects.get(i);
+         if (!p.equals(currentProject))
+            p.load();
       }
 
       // Cleanup the "projects" directory
@@ -217,6 +230,9 @@ public final class ProjectManager {
       for ( Iterator i = projects(); i.hasNext();  ) {
          ( (Project)i.next() ).save();
       }
+      // double check -- make sure the current project is saved
+      if (currentProject != null)
+         currentProject.save();
    }
 
    /**

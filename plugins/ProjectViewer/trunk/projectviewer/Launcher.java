@@ -21,113 +21,126 @@ import javax.swing.tree.*;
 import org.gjt.sp.jedit.*;
 import projectviewer.config.ProjectViewerConfig;
 
-/** Provides a neutral way to launch projects and files.
+/**
+ * Provides a neutral way to launch projects and files.
  *
- *@author     <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
- *@version    $Revision$
+ * @author    <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+ * @version   $Revision$
  */
 public final class Launcher {
 
-    private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-    
-	private View view = null;
-	private ProjectViewer viewer = null;
+   private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 
-	/** Create a new <code>Launcher</code>.
-	 *
-	 *@param  view    Description of Parameter
-	 *@param  viewer  Description of Parameter
-	 *@parameter      view         The view that Launcher should open files with.
-	 *@parameter      viewer       An instance of ProjectViewer
-	 *@author         <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-	 *@version        $Id$
-	 */
-	public Launcher(View view, ProjectViewer viewer) {
-		this.view = view;
-		this.viewer = viewer;
-	}
+   private View view = null;
+   private ProjectViewer viewer = null;
 
-	/** Takes a file and opens it up in jEdit.
-	 *
-	 *@param  file  Description of Parameter
-	 *@author       <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-	 */
-	public void launchFile(ProjectFile file) {
-		if (this.view != null) {
-			Buffer buffer = jEdit.openFile(this.view, null, file.getPath(), false, null);
-			showFile(file);
-		}
-	}
+   /**
+    * Create a new <code>Launcher</code>.
+    *
+    * @param view    Description of Parameter
+    * @param viewer  Description of Parameter
+    * @parameter     view         The view that Launcher should open files with.
+    * @parameter     viewer       An instance of ProjectViewer
+    * @author        <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    * @version       $Id$
+    */
+   public Launcher( View view, ProjectViewer viewer ) {
+      this.view = view;
+      this.viewer = viewer;
+   }
 
-	/** Takes a given file and highlights it in the current view.
-	 *
-	 *@param  file  Description of Parameter
-	 *@author       <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-	 *@version      $Id$
-	 */
-	public void showFile(ProjectFile file) {
-		Buffer buffer = file.getBuffer();
-		if (buffer != null) {
-			view.setBuffer(buffer);
-		}
-	}
+   /**
+    * Takes a file and opens it up in jEdit.
+    *
+    * @param file  Description of Parameter
+    * @author      <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    */
+   public void launchFile( ProjectFile file ) {
+      if ( this.view != null ) {
+         Buffer buffer = jEdit.openFile( this.view, null, file.getPath(), false, null );
+         showFile( file );
+      }
+   }
 
-	/** Close the specified project file.
-	 *
-	 *@param  file  Description of Parameter
-	 */
-	public void closeFile(ProjectFile file) {
-		if (this.view == null)
-			return;
-		jEdit.closeBuffer(view, file.getBuffer());
-	}
+   /**
+    * Takes a given file and highlights it in the current view.
+    *
+    * @param file  Description of Parameter
+    * @author      <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    * @version     $Id$
+    */
+   public void showFile( ProjectFile file ) {
+      Buffer buffer = file.getBuffer();
+      if ( buffer != null ) {
+         view.setBuffer( buffer );
+      }
+   }
 
-	/** Close all project resources.
-	 *
-	 *@param  project  Description of Parameter
-	 */
-	public void closeProject(Project project) {
-		if (project == null)
-			return;
-		if (viewer.getCurrentProject() == null)
-			return;
-                   
-        project.clearOpenFiles();
-        if (config.getCloseFiles() || config.getRememberOpen()) {
-            Buffer[] bufs = jEdit.getBuffers();
-            
-            if (bufs != null) 
-            for (int i = 0; i < bufs.length; i++) {
-                if (project.isProjectFile(bufs[i].getPath())) {
-                    if (config.getCloseFiles()) {
-			            jEdit.closeBuffer(view, bufs[i]);
-                    }
-                    if (config.getRememberOpen()) {
-                        project.addOpenFile(bufs[i].getPath());
-                    }
-                }
+   /**
+    * Close the specified project file.
+    *
+    * @param file  Description of Parameter
+    */
+   public void closeFile( ProjectFile file ) {
+      if ( this.view == null )
+         return;
+      jEdit.closeBuffer( view, file.getBuffer() );
+   }
+
+   /**
+    * Close all project resources.
+    *
+    * @param project  Description of Parameter
+    */
+   public void closeProject( Project project ) {
+      if ( project == null )
+         return;
+      if ( viewer.getCurrentProject() == null )
+         return;
+
+      project.clearOpenFiles();
+      if ( config.getCloseFiles() || config.getRememberOpen() ) {
+         Buffer[] bufs = jEdit.getBuffers();
+
+         if ( bufs != null ) {
+            Buffer lastBuffer = view.getBuffer();
+            for ( int i = 0; i < bufs.length; i++ ) {
+               if ( project.isProjectFile( bufs[i].getPath() ) ) {
+                  if ( config.getCloseFiles() ) {
+                     jEdit.closeBuffer( view, bufs[i] );
+                  }
+                  if ( config.getRememberOpen() ) {
+                     if (bufs[i] == lastBuffer) {
+                        project.setLastFile(bufs[i].getPath());
+                     }
+                     else {
+                        project.addOpenFile( bufs[i].getPath() );
+                     }
+                  }
+               }
             }
-        }
-        
-	}
-    
-    /** Opens the files remembered by the provided project. */
-    public void openProject(Project project) {
-        if (view == null || project == null) return;
-        
-        Buffer last = null;
-        for (Iterator i = project.getOpenFiles(); i.hasNext(); ) {
-            String next = (String) i.next();
-            last = jEdit.getBuffer(next);
-            if (last == null) {
-                last = jEdit.openFile(view, next);
-            }
-        }
-        
-        if (last != null) {
-            view.setBuffer(last);
-        }
-    }
+         }
+      }
+
+   }
+
+   /**
+    * Opens the files remembered by the provided project.
+    *
+    * @param project  Description of Parameter
+    */
+   public void openProject( Project project ) {
+      if ( view == null || project == null )
+         return;
+
+      // open files previously open in the provided project. The
+      // files listed in the iterator are in order, the last file
+      // in the iterator is the last file open in the view.
+      Iterator it = project.getOpenFiles();
+      while ( it.hasNext() ) {
+         jEdit.openFile( view, (String)it.next() );
+      }
+   }
 
 }
 

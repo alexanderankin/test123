@@ -75,6 +75,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     private JMenuItem  deleteFile;
     private JMenuItem  renameFile;
     private JMenuItem  miLaunchBrowser;
+    private JMenuItem  miBuildFile;
     
     private JPopupMenu multipleSelMenu;
     private JMenuItem  removeMulti;
@@ -134,8 +135,10 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             renameDirectory();
         } else if (src == renameFile) {
             renameFile();
-	    } else if (src == miLaunchBrowser) {
+        } else if (src == miLaunchBrowser) {
            launchBrowser();
+        } else if (src == miBuildFile) {
+           setBuildFile();  
         } else if (src == removeProject ||
                    src == removeDir ||
                    src == removeFile ||
@@ -153,6 +156,13 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     }
     
     //--------------- Private Methods
+    
+    private void setBuildFile() {
+      if (viewer.isFileSelected()) {
+         ProjectFile buildFile = viewer.getSelectedFile();
+         viewer.getCurrentProject().setBuildFile(buildFile.toFile());
+      }
+    }
 
     private void launchBrowser() {
         /* need to get browser setting */
@@ -281,12 +291,17 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
         renameFile = new JMenuItem("Rename");
         renameFile.addActionListener(this);
         fileMenu.add(renameFile);
-	
-	    // sutter2k: need to tap in here for preview in browser
+   
+       // sutter2k: need to tap in here for preview in browser
         miLaunchBrowser= new JMenuItem("Preview in Browser");
         miLaunchBrowser.addActionListener(this);
         fileMenu.add(miLaunchBrowser);
-	
+        
+        // danson, added for build file selection
+        miBuildFile = new JMenuItem("Set as Build File");
+        miBuildFile.addActionListener(this);
+        fileMenu.add(miBuildFile);
+   
         // Menu to show when multiple nodes are selected
         multipleSelMenu = new JPopupMenu();
         tmp = new JMenuItem("Multiple selection");
