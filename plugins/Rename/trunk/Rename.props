@@ -10,6 +10,7 @@ options.rename.actions.code=new rename.PropertyOptionPane("Action",jEdit.getActi
 options.rename.dockables.label=Dockables
 options.rename.dockables.code=new rename.PropertyOptionPane("Dockable",DockableWindowManager.getRegisteredDockableWindows(),"title");
 options.rename.optionpanes.label=Option Panes
+options.rename.optionpanes.code=new rename.OptionPaneOptionPane();
 options.rename.plugins.label=Plugins
 options.rename.plugins.code=new rename.PluginOptionPane();
 plugin.rename.RenamePlugin.option-group=rename.actions \
