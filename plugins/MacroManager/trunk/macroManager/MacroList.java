@@ -213,13 +213,14 @@ class MacroList implements Comparator
 		String description;
 		String author;
 		int size;
+		String hits;
 		String version;
 		String download;
 		String date;
 
 		void install(Roster roster, String installDirectory)
 		{
-			roster.addOperation(new Roster.Install(download, installDirectory));
+			roster.addOperation(new Roster.Install(name, download, installDirectory));
 		}
 
 		public String toString()

@@ -4,7 +4,7 @@
 
 plugin.macroManager.MacroManagerPlugin.name=MacroManager
 plugin.macroManager.MacroManagerPlugin.author=Carmine Lucarelli
-plugin.macroManager.MacroManagerPlugin.version=1.1
+plugin.macroManager.MacroManagerPlugin.version=1.2
 plugin.macroManager.MacroManagerPlugin.docs=index.html
 
 plugin.macroManager.MacroManagerPlugin.depend.1=jedit 04.00.00.00
@@ -41,12 +41,14 @@ install-macros.info.name=Name:
 install-macros.info.author=Author:
 install-macros.info.size=Size:
 install-macros.info.latest-version=Latest Version:
+install-macros.info.number-of-downloads=Number of Downloads:
 install-macros.info.updated=Last Updated:
 install-macros.info.description=Description:
 install-macros.totalSize=Total Download Size:
 install-macros.none=none
 install-macros.user=Install in user macro directory ({0})
 install-macros.system=Install in system macro directory ({0})
+install-macros.custom=Install in custom directory
 install-macros.install=Install
 install-macros.refreshList=Update List of Macros from Server
 install-macros.refresh=Macro list last downloaded on

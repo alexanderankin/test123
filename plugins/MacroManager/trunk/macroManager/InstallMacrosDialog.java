@@ -60,6 +60,7 @@ public class InstallMacrosDialog extends EnhancedDialog
 		{
 			list = new MacroListDownloadProgress(InstallMacrosDialog.this, false)
 				.getMacroList();
+			list.sortMacroList(MacroList.SORT_BY_NAME);
 		}
 		catch(Exception e)
 		{
@@ -105,7 +106,9 @@ public class InstallMacrosDialog extends EnhancedDialog
 		labelBox.add(new JLabel(jEdit.getProperty("install-macros"
 			+ ".info.latest-version"),SwingConstants.RIGHT));
 		labelBox.add(new JLabel(jEdit.getProperty("install-macros"
-			+ ".info.description"),SwingConstants.RIGHT));
+			+ ".info.number-of-downloads"),SwingConstants.RIGHT));
+//		labelBox.add(new JLabel(jEdit.getProperty("install-macros"
+//			+ ".info.description"),SwingConstants.RIGHT));
 		labelAndValueBox.add(BorderLayout.WEST,labelBox);
 
 		JPanel valueBox = new JPanel(new GridLayout(6,1,0,3));
@@ -114,6 +117,7 @@ public class InstallMacrosDialog extends EnhancedDialog
 		valueBox.add(author = new JLabel());
 		valueBox.add(size = new JLabel());
 		valueBox.add(latestVersion = new JLabel());
+		valueBox.add(numberOfDownloads = new JLabel());
 		valueBox.add(Box.createGlue());
 		labelAndValueBox.add(BorderLayout.CENTER,valueBox);
 
@@ -130,7 +134,7 @@ public class InstallMacrosDialog extends EnhancedDialog
 
 		panel = new JPanel(new BorderLayout(12,0));
 
-		JPanel panel2 = new JPanel(new GridLayout(4,1));
+		JPanel panel2 = new JPanel(new GridLayout(7,1));
 
 		Box totalSizeBox = new Box(BoxLayout.X_AXIS);
 		totalSizeBox.add(new JLabel(jEdit.getProperty("install-macros.totalSize")));
@@ -140,6 +144,7 @@ public class InstallMacrosDialog extends EnhancedDialog
 
 		ButtonGroup grp = new ButtonGroup();
 		installUser = new JRadioButton();
+		installUser.addActionListener(new ActionHandler());
 		String settings = jEdit.getSettingsDirectory();
 		if(settings == null)
 		{
@@ -157,6 +162,7 @@ public class InstallMacrosDialog extends EnhancedDialog
 		panel2.add(installUser);
 
 		installSystem = new JRadioButton();
+		installSystem.addActionListener(new ActionHandler());
 		String jEditHome = jEdit.getJEditHome();
 		if(jEditHome == null)
 		{
@@ -173,7 +179,24 @@ public class InstallMacrosDialog extends EnhancedDialog
 		grp.add(installSystem);
 		panel2.add(installSystem);
 
-		if(installUser.isEnabled())
+		installCustom = new JRadioButton();
+		installCustom.addActionListener(new ActionHandler());
+		installCustom.setText(jEdit.getProperty("install-macros.custom"));
+		grp.add(installCustom);
+		panel2.add(installCustom);
+
+		customDir = new JTextField();
+		customDir.setEnabled(false);
+		panel2.add(customDir);
+
+		String work = jEdit.getProperty("intall-macors.custom.directory");
+		if(work != null)
+		{
+			installCustom.setSelected(true);
+			customDir.setEnabled(true);
+			customDir.setText(work);
+		}
+		else if(installUser.isEnabled())
 			installUser.setSelected(true);
 		else
 			installSystem.setSelected(true);
@@ -245,6 +268,11 @@ public class InstallMacrosDialog extends EnhancedDialog
 	//{{{ ok() method
 	public void ok()
 	{
+		if(installCustom.isSelected())
+			jEdit.setProperty("intall-macors.custom.directory", customDir.getText());
+		else
+			jEdit.unsetProperty("intall-macors.custom.directory");
+
 		macroManager.Roster roster = new macroManager.Roster();
 		installMacros(roster);
 		if(roster.isEmpty())
@@ -276,10 +304,14 @@ public class InstallMacrosDialog extends EnhancedDialog
 			installDirectory = MiscUtilities.constructPath(
 				jEdit.getSettingsDirectory(),"macros");
 		}
-		else
+		else if(installSystem.isSelected())
 		{
 			installDirectory = MiscUtilities.constructPath(
 				jEdit.getJEditHome(),"macros");
+		}
+		else
+		{
+			installDirectory = customDir.getText();
 		}
 
 		Object[] selected = macros.getCheckedValues();
@@ -297,11 +329,14 @@ public class InstallMacrosDialog extends EnhancedDialog
 	private JLabel author;
 	private JLabel size;
 	private JLabel latestVersion;
+	private JLabel numberOfDownloads;
 	private JTextArea description;
 	private JLabel totalSize;
 	private JLabel dateLabel;
 	private JRadioButton installUser;
 	private JRadioButton installSystem;
+	private JRadioButton installCustom;
+	private JTextField customDir;
 
 	private JButton install;
 	private JButton cancel;
@@ -328,6 +363,7 @@ public class InstallMacrosDialog extends EnhancedDialog
 			author.setText(macro.author);
 			size.setText(String.valueOf((macro.size / 1024)) + " Kb");
 			latestVersion.setText(macro.version);
+			numberOfDownloads.setText(macro.hits);
 			description.setText(macro.description);
 			description.setCaretPosition(0);
 		}
@@ -433,6 +469,15 @@ public class InstallMacrosDialog extends EnhancedDialog
 		dateLabel.setText(jEdit.getProperty("install-macros.refresh") + " " + MacroList.timestamp);
 	}  //}}}
 
+	//{{{ updateButtons method
+	private void updateButtons()
+	{
+		if(installUser.isSelected() || installSystem.isSelected())
+			customDir.setEnabled(false);
+		else
+			customDir.setEnabled(true);
+	}
+
 	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
@@ -447,6 +492,8 @@ public class InstallMacrosDialog extends EnhancedDialog
 				sort();
 			else if(source == refreshList)
 				refreshList();
+			else if(source == installUser || source == installSystem || source == installCustom)
+				updateButtons();
 //			else if(search == sort)
 //				search();
 		}

@@ -1,4 +1,4 @@
-TODO for Macro Manager 1.0
+TODO for Macro Manager 1.3
 --------------------------
 
 - categorize macro listing

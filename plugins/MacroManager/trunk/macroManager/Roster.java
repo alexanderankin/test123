@@ -100,12 +100,13 @@ class Roster
 	//{{{ Install class
 	static class Install implements Operation
 	{
-		Install(String url, String installDirectory)
+		Install(String fileName, String url, String installDirectory)
 		{
 			// catch those hooligans passing null urls
 			if(url == null)
 				throw new NullPointerException();
 
+			this.fileName = fileName;
 			this.url = url;
 			this.installDirectory = installDirectory;
 		}
@@ -114,7 +115,7 @@ class Roster
 		{
 			try
 			{
-				String fileName = MiscUtilities.getFileName(url);
+				fileName = fileName.replace(' ', '_') + ".bsh";
 				progress.downloading(fileName);
 				String path = download(progress,fileName,url);
 				if(path == null)
@@ -166,6 +167,7 @@ class Roster
 		}
 
 		// private members
+		private String fileName;
 		private String url;
 		private String installDirectory;
 
