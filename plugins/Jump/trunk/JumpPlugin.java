@@ -178,6 +178,7 @@ public class JumpPlugin extends EditPlugin
         //buff.dropJumpFile();
         buffersForDelete.add(buff.PROJECT_TAGS);
         projectBuffers.remove(buff);
+        setActiveProjectBuffer(null);
         System.out.println("file droped.");
     }
 //}}}
@@ -192,6 +193,7 @@ public class JumpPlugin extends EditPlugin
             b.dropJumpFile();
             buffersForDelete.add(b.PROJECT_TAGS);
             projectBuffers.remove(b);
+            setActiveProjectBuffer(null);
             System.out.println("file droped.");
         }
     }

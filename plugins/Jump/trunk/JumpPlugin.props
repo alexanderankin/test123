@@ -38,10 +38,10 @@ JumpPlugin.input_tag.title=Jump! - Jump to tag
 JumpPlugin.input_tag.message=Enter tag to jump to:
 
 JumpPlugin.ctags.path.incorrect.title=Jump! - Starting ctags error
-JumpPlugin.ctags.path.incorrect.message=Failed to start ctags application.\nCheck Jump! options for correct path.
+JumpPlugin.ctags.path.incorrect.message=Failed to start ctags application.\nMake sure your project contain valid files for ctags\nor(and) path to ctags is correct
 
 JumpPlugin.ctags.test.complete.title=Jump! - Test ctags
-JumpPlugin.ctags.test.complete.message=Good news! Test complete.
+JumpPlugin.ctags.test.complete.message=Good news! Test complete.  
 
 JumpPlugin.ctags.test.fail.title=Jump! - Test ctags
 JumpPlugin.ctags.test.fail.message=Test failed. Exception during starting ctags.
