@@ -1,0 +1,10 @@
+plugin.net.sourceforge.jedit.javainsight.JavaInsightPlugin.name=Java Insight
+plugin.net.sourceforge.jedit.javainsight.JavaInsightPlugin.author=Kevin A. Burton
+plugin.net.sourceforge.jedit.javainsight.JavaInsightPlugin.version=0.1.0
+
+plugin.net.sourceforge.jedit.javainsight.JavaInsightPlugin.depend.0=jdk 1.1
+
+# Menu bar properties
+javainsight.open.label=Java Insight
+
+
