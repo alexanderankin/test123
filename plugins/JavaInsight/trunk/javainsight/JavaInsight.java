@@ -235,7 +235,7 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
 
 
     /**
-     * Given a classname, decompile it and put the results in a new
+     * Given a classname, decompile it and put the results into a new
      * jEdit buffer.
      *
      * @param view  the view in which the new buffer should be created.
@@ -243,7 +243,7 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
      *
      * @author Dirk Moebius
      */
-    private void decompileClassToBuffer(String className) throws Throwable {
+    void decompileToBuffer(String className) throws Throwable {
         String[] params = getJodeArguments(className);
         PrintStream originalOut = System.out;
         PrintStream originalErr = System.err;
@@ -274,7 +274,11 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
         String result = sbuf.toString();
 
         // Create new jEdit buffer
-        Buffer buf = jEdit.newFile(view);
+        int lastDot = className.lastIndexOf('.');
+        String basename = (lastDot < 0 ? className : className.substring(lastDot + 1) + ".java");
+        Buffer buf = jEdit.openFile(view, null, basename, false, true);
+        jEdit.closeBuffer(view, buf);
+        buf = jEdit.openFile(view, null, basename, false, true);
 
         // Try to set Java mode (if it exists)
         Mode javaMode = jEdit.getMode("java");
@@ -297,39 +301,48 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
 
 
     /**
-     * Given a classname, decompile it and store it in a temporary
-     * directory on the filesystem.
-     *
-     * @deprecated As of version 0.3, JavaInsight generates output to a
-     *             new jEdit buffer without generating to the filesystem.
-     *             The reason is because there is no safe platform
-     *             independent way to determine a valid temporary directory.
-     *             Using this method has other disadvantages, too: Jode debug
-     *             output and decompilation errors appear as error on the
-     *             console where jEdit was invoked from. You cannot see it
-     *             from within jEdit (except in the activity log).
+     * Given a classname, decompile it and store it to a file.
      *
      * @param className  The name of the class is to be decompiled.
-     * @param force      Forces this class to be decompiled even if it was
-     *                   on the filesystem from before.
-     * @return           The name of the filename that was decompiled.
-     *                   JavaInsight creates the file in a temporary
-     *                   directory dependend on the operating system.
+     * @param fileName  The directory or the file where the results should
+     *        be put. If it is null, JavaInsight chooses a location, as
+     *        specified by the results of
+     *        <code>buildtools.MiscUtils.getTempDir("JavaInsight")</code>.
+     * @return  The name of the filename that was decompiled.
      * @see  buildtools.MiscUtils#getTempDir(java.lang.String)
      */
-    public static String decompileClass(String className, boolean force) throws Throwable {
-        String outputFile = MiscUtilities.constructPath(
-            MiscUtils.getTempDir("JavaInsight"), JavaUtils.getJavaFile(className));
-        Log.log(Log.DEBUG, JavaInsight.class, "output file=" + outputFile);
+    String decompileToFile(String className, String fileName) throws Throwable {
+        String outputFile;
 
-        if (!force && new File(outputFile).exists()) {
+        if (fileName == null) {
+            // create new file in temp dir:
+            outputFile = MiscUtilities.constructPath(
+                MiscUtils.getTempDir("JavaInsight"),
+                JavaUtils.getJavaFile(className)
+            );
+        } else {
+            File f = new File(fileName);
+            f.mkdirs();
+            if (f.isDirectory()) {
+                int lastDot = className.lastIndexOf('.');
+                String baseName = lastDot < 0 ? className : className.substring(lastDot + 1);
+                outputFile = MiscUtilities.constructPath(fileName, baseName + ".java");
+            } else {
+                outputFile = fileName;
+            }
+        }
+
+        Log.log(Log.DEBUG, this, "output file=" + outputFile);
+
+        File outFile = new File(outputFile);
+        boolean overwrite = jEdit.getBooleanProperty("javainsight.overwrite", true);
+        if (!overwrite && outFile.exists()) {
+            Log.log(Log.DEBUG, this, "already exists, and overwrite flag is false.");
             return outputFile;
         }
 
         // make sure all its directories exist.
-        int lastSep = outputFile.lastIndexOf(File.separatorChar);
-        if (lastSep >= 0)
-            new File(outputFile.substring(0, lastSep)).mkdirs();
+        new File(outFile.getParent()).mkdirs();
 
         String[] params = getJodeArguments(className);
         PrintStream original = System.out;
@@ -348,13 +361,22 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
     }
 
 
-    void decompileClass(String className) {
+    /**
+     * Decompile a class to a new jEdit buffer.
+     * Called by <code>this.mouseClicked(MouseEvent)</code> and
+     * <code>ClasspathManager</code>.
+     */
+    void decompile(String className) {
         setStatus("Decompiling " + className + "...");
         setCursor(new Cursor(Cursor.WAIT_CURSOR));
 
         try {
-            // Decompile
-            decompileClassToBuffer(className);
+            if (jEdit.getBooleanProperty("javainsight.decompileToBuffer", true)) {
+                decompileToBuffer(className);
+            } else {
+                String filename = decompileToFile(className, null);
+                jEdit.openFile(view, filename);
+            }
             setStatus("Decompiled " + className + ".");
         }
         catch(Throwable t) {
@@ -380,7 +402,7 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
         if (!(userObject instanceof JavaClass))
             return;
 
-        decompileClass(((JavaClass)userObject).getName());
+        decompile(((JavaClass)userObject).getName());
     }
 
 
