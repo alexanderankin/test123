@@ -410,7 +410,7 @@ public class Session implements Cloneable
 		Enumeration enum = allFiles.elements();
 		while(enum.hasMoreElements())
 		{
-			String filename = enum.nextElement().toString();
+			String filename = enum.nextElement().toString().replace('\\','/');
 			out.write("      <FILE filename=\"");
 			out.write(ParseUtilities.encodeXML(filename));
 			out.write('"');

@@ -169,8 +169,6 @@ public class SessionManager implements EBComponent
 		
 		// update the jEdit title bar with the session name
 		setSessionNameInTitleBar();
-		// Force the view to update the title bar
-		view.handleMessage(new PropertiesChanged(this));
 	}
 
 
@@ -257,8 +255,6 @@ public class SessionManager implements EBComponent
 		EditBus.send(new SessionChanged(this, oldSessionName, newName, currentSession));
 		// update the jEdit title bar with the session name
 		setSessionNameInTitleBar();
-		// Force the view to update the title bar
-		view.handleMessage(new PropertiesChanged(this));
 	}
 
 
@@ -489,9 +485,11 @@ public class SessionManager implements EBComponent
 				}
 						
 				jEdit.setTemporaryProperty("view.title", titleBarSessionName);
+				// TODO: once jEdit 4.3 is final, this can be changed to use
+				//       the View.updateTitle() method made public in 4.3pre2
+				refreshTitleBar();
 			}
 		}
-		
 	}
 	
 	/**
