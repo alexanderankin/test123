@@ -26,11 +26,13 @@ public class TypeTag extends EnhancedDialog
 {
 
 private HistoryTextField history;
+private TypeTagActionListener listener;
     
 //{{{ public TypeTag
     public TypeTag()
     {
         super (jEdit.getActiveView(), "Jump to tag", true);
+        listener = new TypeTagActionListener();
     }
 //}}}
     
@@ -49,7 +51,7 @@ private HistoryTextField history;
         
         JPanel buttons = new JPanel(new BorderLayout(7,7));
         JButton FindButt = new JButton("Find");
-        FindButt.addActionListener(new TypeTagActionListener());
+        FindButt.addActionListener(listener);
         FindButt.setActionCommand("find");
         
         buttons.add(FindButt, BorderLayout.EAST);

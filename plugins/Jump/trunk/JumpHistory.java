@@ -15,7 +15,8 @@ public class JumpHistory
     public JumpHistory()
     {
         history = new Stack();   
-    }//}}}
+    }
+//}}}
     
 //{{{ add(CTAGS_Entry e)
     public void add(CTAGS_Entry e)

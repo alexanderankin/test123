@@ -63,8 +63,6 @@ public JumpList(View parent, Object[] list, ListModel model,
                 new Dimension(this.width * fm.charWidth('m'),
                 (int) itemsList.getPreferredSize().height));
         
-        //
-                
 
         JScrollPane scroll = new JScrollPane();
         scroll.getViewport().setView(itemsList);
@@ -134,16 +132,15 @@ public JumpList(View parent, Object[] list, ListModel model,
         parent.setKeyEventInterceptor(handler);
         textArea.addCaretListener(this);
 // TODO: Check property SHOW_STATUSBAR_MESSAGES before updateStatusBar()
-        //if (jEdit.getProperty("SHOW_STATUSBAR_MESSAGES"))
-        try
-        {
+        // try
+        // {
         //itemsList.setSelectedIndex(0);     
-        updateStatusBar(itemsList);
-        }
-        catch(Exception e)
-        {
-            System.out.println("Can\'t setup init status bar.");   
-        }
+        // updateStatusBar(itemsList);
+        // }
+        // catch(Exception e)
+        // {
+        //     System.out.println("Can\'t setup init status bar.");   
+        // }
     }
 //}}}
 
@@ -203,16 +200,19 @@ public void dispose()
 //{{{ class KeyHandler
     class KeyHandler extends KeyAdapter
     {
+        
         int selected;
         int CHAR_DELTA = 1000;
         long m_time = 0;
         String m_key = "";
-
+        
+//{{{ void keyReleased
         public void keyReleased(KeyEvent evt)
         {
 
         }
-
+//}}}
+        
 //{{{ void keyPressed
         public void keyPressed(KeyEvent evt)
         {
@@ -368,4 +368,5 @@ public void dispose()
         }
     }
 //}}}
+
 }

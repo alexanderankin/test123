@@ -154,7 +154,7 @@ public class Jump
     }//}}}
 
 //{{{ showFoldJump()
-    public void showFoldJump()
+    public void showFoldJump() 
     {
         System.out.println("Jump.showFoldJump");
           FoldJumpAction foldja = new FoldJumpAction();
