@@ -4,5 +4,4 @@
 - completion popup width
 - should not reparse on edit pane change
 - tree: custom actions on double-click, etc.
-- normal shortcuts with popup open
 - auxilliary parsers -- eg tasklist

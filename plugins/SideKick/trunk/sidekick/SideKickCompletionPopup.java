@@ -210,11 +210,19 @@ public class SideKickCompletionPopup extends JWindow
 				view.processKeyEvent(evt);
 				break;
 			default:
-				if(evt.isActionKey())
+				// from DefaultInputHandler
+				if(!(evt.isControlDown() || evt.isAltDown() || evt.isMetaDown()))
 				{
-					dispose();
-					view.processKeyEvent(evt);
+					int keyCode = evt.getKeyCode();
+					if((keyCode >= KeyEvent.VK_A && keyCode <= KeyEvent.VK_Z)
+						|| (keyCode >= KeyEvent.VK_0 && keyCode <= KeyEvent.VK_9))
+					{
+						break;
+					}
 				}
+
+				dispose();
+				view.processKeyEvent(evt);
 				break;
 			}
 		} //}}}
