@@ -60,17 +60,18 @@
     <bridgehead renderas='sect3'>What is a project?</bridgehead>
     
     <para>
-    A project is a group of files. A project has a name and a directory root.
+    A project is a group of files. It has a name and a root directory.
     You may choose any file below this "root" to be a part of the project.
     </para>
     
     <para>
     To create a project, click the "Create Project" button in the toolbar. This
     will show a dialog where you can enter the properties of the project you
-    want to create. After you choose these properties, you'll be asked if you
-    want to import all files from the root directory. If you choose to do so,
+    want to create. After you have chosen these properties, you'll be asked if you
+    would like to import all files from the root directory. If you choose to do so,
     all files that respect the options defined in the Import Properties (see
     <emphasis>Customization</emphasis> below) will be automatically imported.
+	Later on you can always add new files or refresh the fileset.
     </para>
     
     <bridgehead renderas='sect3'>The User Interface</bridgehead>
@@ -84,7 +85,7 @@
     
     <para>
     Optionally, by choosing "All Projects" from the project selection box, a
-    alternative view, showing data from all projects in the trees, is shown.
+    alternative view is shown, which displays data from all projects.
     </para>
     
     <para>
