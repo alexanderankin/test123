@@ -473,10 +473,16 @@
 
 	</chapter>
 
-	<chapter id="developer documemntation">
+	<chapter id="developer">
 		<title>Developer Documentation</title>
 
-		<para>
+		<para>External plugins can interact with the Project Viewer plugin in various ways:
+			<itemizedlist>
+				<listitem><para>By providing project specific properties: properties</para></listitem>
+				<listitem><para>By creating new node types: nodes</para></listitem>
+				<listitem><para>By creating node-specific actions: actions</para></listitem>
+				<listitem><para>By listening to Project Viewer events</para></listitem>
+			</itemizedlist>
 		</para>
 	</chapter>
 
