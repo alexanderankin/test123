@@ -122,11 +122,11 @@
 
 
     <target name="clean">
+        <delete file="docbook-wrapper.xsl"/>
         <delete dir="${build.dir}"/>
         <delete>
             <fileset dir="." includes="**/*~"/>
             <fileset dir="." includes="**/*.html"/>
-            <include name="docbook-wrapper.xsl"/>
         </delete>
     </target>
 </project>
