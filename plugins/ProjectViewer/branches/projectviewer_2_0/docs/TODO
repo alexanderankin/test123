@@ -1,0 +1,79 @@
+- use JEdits VFS code to allow projects on virtual file systems such as ftp
+  see:  org.gjt.sp.jedit.io.VFS
+  
+- use newer icons
+  see: jEdit/org/gjt/sp/jedit/icons/
+  Create project : how does a project look like ;-) ?
+  Expand list : ZoomIn.png
+  Contract list : ZoomOut.png
+  Open all : like Open.png, but having two sheets 
+  Add file : New.png / Plus.png
+  Import files :
+  	1.) like New.png, but there pages behin each other
+	2.) like Plus.png, but two of them 
+  Remove file or dir : Minus.png
+  Remove all : like Minus.png, but two of them 
+  Preview in Browser/Viewer : an Eye or a Monitor
+
+- The file filter (on importing) should be obtained from jEdit
+
+- Ability to "refresh" a project and look for new files.
+
+- Add a "close all" option.  This is different than jEdit's "close all 
+  buffers"  as this one would just close all buffers within the current 
+  project.
+
+- RFE: provide an alternate icon when the the file you are editing is dirty
+
+---------------------------------------------------------------------------
+
+* Toolbar
+  ** use new RolloverButton class in jEdit 4.1? (for ProjectViewer 1.0.4)
+  ** remove "new project" -> add entry to combo-box "new project ..."
+  ** remove button "remove all files", but add button "refresh project"
+  
+---------------------------------------------------------------------------
+
+* ContextMenu
+  ** Project
+    "properties" (IE name and root)
+	"re-import files" (IE check for any new additions and re-add them)
+  ** Dir
+    remove all files from project
+    delete dir (and remove all subfiles from project)
+    rename dir
+    search in dir
+    hypersearch in dir
+    search and replace (global search and replace for all files in a project)
+ 
+ ** Files
+    remove from project
+    delete file (and remove from project)
+    rename file
+    Preview in Browser - (requires browser executable property(set for JEdit) and urlRoot property(set for the project) 
+
+  - Need to implement file/directory renaming
+  - Need to implement re-import files (refresh project?).
+  - Need to implement search/hypersearch in dir.
+    
+---------------------------------------------------------------------------
+
+* Options
+  ** for Tabs Files/Working files
+    boolean : ignoreCase
+
+* Tooltips
+  ** when over a file
+    display full path and size
+  ** when over project 
+    display their path).
+
+* Add files
+  ** via CVS/Entries
+    if there is a CVS dir in the top-level dir then ask the user, if he
+    wants to import files on the account of these information (and not
+    via filtering)
+
+* Behaviour
+  * '=' icon should remove files below a selection, if there is any
+    (isn't this icon going to be removed?)
