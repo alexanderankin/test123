@@ -50,8 +50,8 @@ public class ColorTabs
 
    private static final int DARKEN_LOWEST_COLOR = 0;
    private static final int DARKEN_HIGHEST_COLOR = 150;
-   private static final int darkRange = DARKEN_HIGHEST_COLOR - DARKEN_LOWEST_COLOR;
-   private static final float darkRatio = ((float) darkRange / 254);
+   private static final int DARKEN_RANGE = DARKEN_HIGHEST_COLOR - DARKEN_LOWEST_COLOR;
+   private static final float darkRatio = ((float) DARKEN_RANGE / 254);
 
    private static final int lowestColor = 150;
    private static final int highestColor = 230;
