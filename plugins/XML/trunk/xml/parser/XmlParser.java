@@ -104,7 +104,7 @@ public class XmlParser implements EBComponent
 				editPane.putClientProperty(XmlPlugin.IDS_PROPERTY,null);
 
 				//{{{ check for non-XML file
-				if(buffer.getProperty("xml.parser") == null)
+				if(XmlPlugin.getParserType(buffer) == null)
 				{
 					showNotParsedMessage();
 					return;
@@ -336,9 +336,9 @@ public class XmlParser implements EBComponent
 		// start parser thread
 		stopThread();
 
-		if(buffer.getProperty("xml.parser").equals("xml"))
+		if(XmlPlugin.getParserType(buffer).equals("xml"))
 			parserImpl = new SAXParserImpl();
-		else if(buffer.getProperty("xml.parser").equals("html"))
+		else if(XmlPlugin.getParserType(buffer).equals("html"))
 			parserImpl = new SwingHTMLParserImpl();
 
 		thread = new ParseThread();
@@ -468,7 +468,7 @@ public class XmlParser implements EBComponent
 		{
 			if(buffer == XmlParser.this.buffer
 				&& buffer.isLoaded()
-				&& buffer.getProperty("xml.parser") != null
+				&& XmlPlugin.getParserType(buffer) != null
 				&& buffer.getBooleanProperty("xml.keystroke-parse"))
 				parseWithDelay();
 		} //}}}
@@ -479,7 +479,7 @@ public class XmlParser implements EBComponent
 		{
 			if(buffer == XmlParser.this.buffer
 				&& buffer.isLoaded()
-				&& buffer.getProperty("xml.parser") != null
+				&& XmlPlugin.getParserType(buffer) != null
 				&& buffer.getBooleanProperty("xml.keystroke-parse"))
 				parseWithDelay();
 		} //}}}

@@ -1,6 +1,6 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
-plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan, David Walend, Ollie Rutherfurd, Scott Wyatt
+plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
 plugin.xml.XmlPlugin.version=0.8
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xerces.jar
@@ -85,12 +85,12 @@ xml-menu=\
 	xml-close-tag \
 	xml-remove-tags \
 	- \
-	xml-chars-to-entities \
-	xml-entities-to-chars \
-	- \
 	xml-prev-tag \
 	xml-next-tag \
-	xml-match-tag
+	xml-match-tag \
+	- \
+	xml-chars-to-entities \
+	xml-entities-to-chars
 xml-menu.label=XML
 xml-tree.label=XML Tree
 xml-parse.label=Parse XML Buffer

@@ -25,6 +25,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
+import xml.parser.TagParser;
 //}}}
 
 public class TagHighlight extends TextAreaExtension
@@ -87,8 +88,8 @@ public class TagHighlight extends TextAreaExtension
 	private Timer timer;
 
 	private BufferHandler bufferHandler;
-	private MatchTag.Tag current;
-	private MatchTag.Tag match;
+	private TagParser.Tag current;
+	private TagParser.Tag match;
 	private boolean bufferChanged;
 
 	private View view;
@@ -100,7 +101,7 @@ public class TagHighlight extends TextAreaExtension
 
 	//{{{ paintHighlight() method
 	private void paintHighlight(Graphics gfx, int screenLine, int physicalLine,
-		int start, int end, int y, MatchTag.Tag tag)
+		int start, int end, int y, TagParser.Tag tag)
 	{
 		if(tag.start >= end || tag.end < start)
 			return;
@@ -174,7 +175,7 @@ public class TagHighlight extends TextAreaExtension
 	private void updateHighlightWithDelay()
 	{
 		if(!tagHighlightEnabled || !buffer.isLoaded()
-			|| buffer.getProperty("xml.parser") == null)
+			|| XmlPlugin.getParserType(buffer) == null)
 		{
 			return;
 		}
@@ -193,8 +194,8 @@ public class TagHighlight extends TextAreaExtension
 		int caret = textArea.getCaretPosition();
 
 		if(bufferChanged || current == null
-			|| caret < current.start
-			|| caret > current.end)
+			|| caret <= current.start
+			|| caret >= current.end)
 		{
 
 			if(match != null)
@@ -213,7 +214,7 @@ public class TagHighlight extends TextAreaExtension
 
 			String text = textArea.getText();
 
-			current = MatchTag.getSelectedTag(caret,text);
+			current = TagParser.getTagAtOffset(text,caret);
 
 			if(current == null)
 			{
@@ -221,7 +222,7 @@ public class TagHighlight extends TextAreaExtension
 			}
 			else
 			{
-				match = MatchTag.getMatchingTag(text,current);
+				match = TagParser.getMatchingTag(text,current);
 
 				if(match != null)
 				{

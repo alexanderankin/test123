@@ -2,9 +2,7 @@
 
 - catalog problem -- with catalogs added, cannot locate stuff in built-in
 - more friendly way to find DTDs (some kind of 'wizard'?)
-- modify tag highlight parser to be useful for limiting list of elements to
-  those valid at current location
-- add XHTML, and maybe DocBook DTDs
+- add maybe DocBook DTDs
 - recording <, >, /, &
 - threaddeath -- wtf?
 - 'advanced' option pane for selecting parsers
