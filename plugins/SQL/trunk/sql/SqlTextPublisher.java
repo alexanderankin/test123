@@ -162,97 +162,22 @@ public class SqlTextPublisher
    * @param  serverName  Description of Parameter
    * @since
    */
-  public static void repeatLastQuery( View view,
-      String serverName )
+  public static void repeatLastQuery( final View view,
+      final String serverName )
   {
     if ( lastRunQuery != null )
     {
-      doPublishText( view,
-          lastStartPos,
-          lastRunQuery,
-          serverName );
-    }
-  }
-
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  view        Description of Parameter
-   * @param  startPos    Description of Parameter
-   * @param  sqlText     Description of Parameter
-   * @param  serverName  Description of Parameter
-   * @since
-   */
-  public static void doPublishText( final View view,
-      int startPos,
-      String sqlText,
-      String serverName )
-  {
-    SqlUtils.getErrorSource().clear();
-
-    final SqlServerRecord rec = SqlUtils.getServerRecord( SqlUtils.getProject( view ), serverName );
-    if ( rec == null )
-      return;
-
-    Connection conn = null;
-    // update vars for re-querying
-    lastRunQuery = sqlText;
-    lastStartPos = startPos;
-
-    try
-    {
-      conn = rec.allocConnection();
-
-      final Timestamp startTimeRemote = getSysdate( conn, rec );
-
-      final Statement stmt = conn.createStatement();
-      Log.log( Log.DEBUG, SqlTextPublisher.class,
-          "stmt created: " + stmt );
-
-      final Map v = getPreprocessors();
-
-      for ( Iterator e = v.values().iterator(); e.hasNext();  )
-      {
-        final Preprocessor pr = (Preprocessor) e.next();
-        pr.setView( view );
-        sqlText = pr.process( sqlText );
-      }
-
-      final SqlParser parser = new SqlParser( rec.getStatementDelimiterRegex() );
-
-      /*
-       *  TODO: Find real limits of the statement (using regex)
-       *  try
-       *  {
-       *  parser.findRealEndOfStatement();
-       *  sqlText = sqlText.substring( 0, parser.getNextPos() );
-       *  } catch ( SqlParser.SqlEotException ex )
-       *  {
-       *  System.err.println( ex );
-       *  }
-       */
-      Log.log( Log.DEBUG, SqlTextPublisher.class, "After the variable substitution: [" + sqlText + "]" );
-
-      final long startTimeLocal = System.currentTimeMillis();
-      final boolean bresult = stmt.execute( sqlText );
-      final long endTimeLocal = System.currentTimeMillis();
-      final long deltaTimeLocal = endTimeLocal - startTimeLocal;
-      Log.log( Log.DEBUG, SqlTextPublisher.class,
-          "Query time: " + deltaTimeLocal + "ms" );
-
-      if ( bresult )
-        handleResultSet( view, stmt, rec, sqlText );
-      else
-        handleUpdateCount( view, stmt, rec, sqlText, startTimeRemote, startPos );
-
-    } catch ( SQLException ex )
-    {
-      SqlUtils.processSqlException( view, ex, sqlText, rec );
-    } finally
-    {
-      rec.releaseConnection( conn );
+      SqlUtils.getThreadGroup().runInGroup(
+        new Runnable()
+        {
+          public void run()
+          {
+            doPublishText( view,
+                lastStartPos,
+                lastRunQuery,
+                serverName );
+          }
+        } );
     }
   }
 
@@ -283,6 +208,82 @@ public class SqlTextPublisher
     } finally
     {
       rec.releaseStatement( cstmt );
+    }
+  }
+
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  view        Description of Parameter
+   * @param  startPos    Description of Parameter
+   * @param  sqlText     Description of Parameter
+   * @param  serverName  Description of Parameter
+   * @since
+   */
+  protected static void doPublishText( final View view,
+      final int startPos,
+      final String sqlText,
+      final String serverName )
+  {
+    SqlUtils.getErrorSource().clear();
+
+    final SqlServerRecord rec = SqlUtils.getServerRecord( SqlUtils.getProject( view ), serverName );
+    if ( rec == null )
+      return;
+
+    Connection conn = null;
+    // update vars for re-querying
+    lastRunQuery = sqlText;
+    lastStartPos = startPos;
+
+    try
+    {
+      conn = rec.allocConnection();
+
+      final SqlParser parser = new SqlParser( rec.getStatementDelimiterRegex() );
+      final java.util.List fragments = parser.getFragments( sqlText );
+      final Collection preprocessors = getPreprocessors().values();
+
+      for ( Iterator e = fragments.iterator(); e.hasNext();  )
+      {
+        final Timestamp startTimeRemote = getSysdate( conn, rec );
+
+        final Statement stmt = conn.createStatement();
+        Log.log( Log.DEBUG, SqlTextPublisher.class,
+            "stmt created: " + stmt );
+
+        final SqlParser.SqlTextFragment fragment = (SqlParser.SqlTextFragment) e.next();
+        String sqlSubtext = fragment.getFragment( sqlText );
+
+        for ( Iterator e1 = preprocessors.iterator(); e1.hasNext();  )
+        {
+          final Preprocessor pr = (Preprocessor) e1.next();
+          pr.setView( view );
+          sqlSubtext = pr.process( sqlSubtext );
+        }
+
+        Log.log( Log.DEBUG, SqlTextPublisher.class, "After the variable substitution: [" + sqlSubtext + "]" );
+
+        final long startTimeLocal = System.currentTimeMillis();
+        final boolean bresult = stmt.execute( sqlSubtext );
+        final long endTimeLocal = System.currentTimeMillis();
+        final long deltaTimeLocal = endTimeLocal - startTimeLocal;
+        Log.log( Log.DEBUG, SqlTextPublisher.class,
+            "Query time: " + deltaTimeLocal + "ms" );
+
+        if ( bresult )
+          handleResultSet( view, stmt, rec, sqlSubtext );
+        else
+          handleUpdateCount( view, stmt, rec, sqlSubtext, startTimeRemote, startPos + fragment.startOffset );
+      }
+    } catch ( SQLException ex )
+    {
+      SqlUtils.processSqlException( view, ex, sqlText, rec );
+    } finally
+    {
+      rec.releaseConnection( conn );
     }
   }
 
@@ -359,19 +360,6 @@ public class SqlTextPublisher
           {
             final SqlParser parser = new SqlParser( record.getStatementDelimiterRegex() );
 
-            /*
-             *  TODO: skip the white space here
-             *  int firstNWCodeCharOfs = parser.getNextPos();
-             *  try
-             *  {
-             *  parser.skipWhiteSpace();
-             *  firstNWCodeCharOfs = parser.getNextPos();
-             *  } catch ( SqlParser.SqlEotException ex )
-             *  {
-             *  System.err.println( ex );
-             *  }
-             *  final int firstCodeLineNo = buffer.getLineOfOffset( firstNWCodeCharOfs + startPos );
-             */
             final int firstCodeLineNo = buffer.getLineOfOffset( startPos );
 
             PreparedStatement dstmt = null;

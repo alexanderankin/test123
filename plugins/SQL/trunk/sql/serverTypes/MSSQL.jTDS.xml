@@ -7,7 +7,7 @@
 <!--The name of the JDBC driver -->
   <driverClass>net.sourceforge.jtds.jdbc.Driver</driverClass>
 
-  <defStatementDelimiterRegex>^(?i)go$</defStatementDelimiterRegex>
+  <defStatementDelimiterRegex>(?i)([\n\r]+go)+[\n\r]+</defStatementDelimiterRegex>
 
   <vfs>
     <driverClass>sql.serverTypes.SybaseVFS</driverClass>
