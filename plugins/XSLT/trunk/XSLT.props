@@ -1,7 +1,7 @@
 plugin.xslt.XSLTPlugin.name=XSLT
-plugin.xslt.XSLTPlugin.author=Greg Merrill, Robert McKinnon, Carlos Quiroz
+plugin.xslt.XSLTPlugin.author=Robert McKinnon, Greg Merrill, Carlos Quiroz
 plugin.xslt.XSLTPlugin.version=0.3
-plugin.xslt.XSLTPlugin.docs=users-guide.html
+plugin.xslt.XSLTPlugin.docs=index.html
 plugin.xslt.XSLTPlugin.jars=xalan.jar xml-apis.jar
 plugin.xslt.XSLTPlugin.depend.0=jdk 1.3
 plugin.xslt.XSLTPlugin.depend.1=jedit 04.00.07.00
@@ -63,8 +63,6 @@ XSLTProcessor.transform.button.icon=/xslt/icons/Transform.png
 XSLTProcessor.transform.status=Transform completed, time taken {0}ms
 XSLTProcessor.transform.indentAmount=2
 
-XSLTProcessor.indent.stripSpace=yes
-XSLTProcessor.indent.normalizeSpace=no
 
 XSLTProcessor.ok.button=OK
 XSLTProcessor.cancel.button=Cancel
