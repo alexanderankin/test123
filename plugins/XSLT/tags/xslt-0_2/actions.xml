@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+  <ACTION NAME="XSLTProcessor.Indent">
+    <CODE>
+      String stripSpace = "";
+
+      if(jEdit.getProperty("XSLTProcessor.indent.stripSpace").equals("yes")) {
+        stripSpace = "&lt;xsl:strip-space elements='*'/&gt;";
+      }
+
+      String valueOfText = "&lt;xsl:value-of select='.'/&gt;";
+
+      if(jEdit.getProperty("XSLTProcessor.indent.normalizeSpace").equals("yes")) {
+        valueOfText = "&lt;xsl:value-of select='normalize-space(.)'/&gt;";
+      }
+
+      String indentyTransformStylesheet = "" +
+        "&lt;?xml version='1.0' encoding='UTF-8'?&gt;" +
+        "&lt;xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'&gt;" +
+        "	&lt;xsl:output method='xml' version='1.0' encoding='UTF-8' indent='yes'/&gt;" +
+        "  " + stripSpace +
+
+        "  &lt;xsl:template match='/'&gt;" +
+        "    &lt;xsl:apply-templates/&gt;" +
+        "  &lt;/xsl:template&gt;" +
+
+        "  &lt;xsl:template match='*|@*|comment()|processing-instruction()'&gt;" +
+        "    &lt;xsl:copy&gt;" +
+        "      &lt;xsl:apply-templates select='*|@*|text()|comment()|processing-instruction()'/&gt;" +
+        "    &lt;/xsl:copy&gt;" +
+        "  &lt;/xsl:template&gt;" +
+
+        "  &lt;xsl:template match='text()'&gt;" +
+        "    " + valueOfText +
+        "  &lt;/xsl:template&gt;" +
+        "&lt;/xsl:stylesheet&gt;";
+
+      Buffer buffer = view.getBuffer();
+      buffer.writeLock();
+
+      String inputString = buffer.getText(0, buffer.getLength());
+
+      try {
+        String resultString = xslt.XSLTUtilities.transform(inputString, indentyTransformStylesheet);
+        buffer.remove(0, buffer.getLength());
+        buffer.insert(0, resultString);
+      }
+      catch(Exception e) {
+        JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.Indent.error") + " " + e.getMessage());
+      }
+      finally {
+        buffer.writeUnlock();
+      }
+    </CODE>
+  </ACTION>
+  <ACTION NAME="XSLTProcessor.Transform">
+    <CODE>
+      xsltProcessor = view.getDockableWindowManager().getDockable("XSLTProcessor");
+      if (xsltProcessor == null) {
+        JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.error.dockFirst"));
+      }
+      else {
+        if (xsltProcessor.getTransformButton().isEnabled()) {
+          xsltProcessor.getTransformButton().doClick();
+        }
+        else {
+          JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.Transform.error.notEnabled"));
+        }
+      }
+    </CODE>
+  </ACTION>
+  <ACTION NAME="XPathTool.Evaluate">
+    <CODE>
+      xpathTool = view.getDockableWindowManager().getDockable("XPathTool");
+      if (xpathTool == null) {
+        JOptionPane.showMessageDialog(view, jEdit.getProperty("XPathTool.error.dockFirst"));
+      }
+      else {
+        xpathTool.getEvaluateButton().doClick();
+      }
+    </CODE>
+  </ACTION>
+</ACTIONS>
