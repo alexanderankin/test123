@@ -15,7 +15,7 @@ plugin.projectviewer.ProjectPlugin.depend.3=optional plugin infoviewer.InfoViewe
 #}}}
 
 projectviewer.title=Project Viewer
-projectviewer.label=Open Project Viewer
+projectviewer.label=Open Project Viewer Dockable
 
 #{{{ jEdit 4.2 option panes
 plugin.projectviewer.ProjectPlugin.option-group=projectviewer.optiongroup.main_options \
@@ -46,7 +46,7 @@ projectviewer_close_all_files.label=Close All Project Files
 projectviewer_remove_all_files.label=Remove All Project Files
 projectviewer_launch_current_buffer.label=Lauch current buffer in browser
 projectviewer_jarmaker_dialog.label=JarMaker Dialog
-projectviewer_focuswindow.label=Open Project Viewer
+projectviewer_focuswindow.label=Show Project Viewer
 projectviewer_paste_selected_files.label=Paste File Names
 #}}}
 
