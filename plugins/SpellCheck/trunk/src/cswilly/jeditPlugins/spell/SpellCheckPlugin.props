@@ -2,7 +2,7 @@
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004pre2
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004pre3
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=cswilly/jeditPlugins/spell/help.html
 
 ### These tell jEdit what JDK and jEdit version we require
@@ -15,7 +15,14 @@ plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.depend.1=jdk 1.2
 options.SpellCheck.label=Spell Check
 options.SpellCheck.fileChooser=Choose
 options.SpellCheck.aspellExe=Aspell executable filename:
-options.SpellCheck.aspellLang=lang dictionary (e.g. fr_FR or empty for default)
+options.SpellCheck.aspellLang=Lang dictionary to use (leave it empty for default dictionary):
+options.SpellCheck.aspellMarkupMode=Markup mode:
+options.SpellCheck.aspellNoMarkupMode=Disable markup mode
+options.SpellCheck.aspellManualMarkupMode=Enable markup mode (for any edit modes)
+options.SpellCheck.aspellAutoMarkupMode=Automatic markup mode (for following edit modes):
+options.SpellCheck.aspellAutoMarkupMode.name=Edit modes
+options.SpellCheck.aspellAutoMarkupMode.isSelected=selection
+options.SpellCheck.aspellOtherParams=Additional parameters:
 
 ### Menu item labels
 spell-check-menu=\
@@ -30,5 +37,9 @@ spell-check-selection-with-lang.label=Spell check selection with lang...
 ### Messages
 spell-check-selection-with-lang.title=Spell check selection with lang...
 spell-check-selection-with-lang.message=Enter an alternative lang dictionary:
+
+spell-check-noAspellExe.title=Unable to locate the aspell executable...
+spell-check-noAspellExe.message=The spell check engine is unable to locate your aspell executable.\nPlease tell it which one to use.
+
 spell-check-error.title=Error spell checking (Aspell).
 spell-check-error.message=Cannot check selection.\nError (Aspell) is: {0}

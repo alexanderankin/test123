@@ -1,6 +1,6 @@
 /*
- * $Revision: 1.2 $
- * $Date: 2002-06-07 14:53:28 $
+ * $Revision: 1.3 $
+ * $Date: 2002-07-19 15:31:43 $
  * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
@@ -34,7 +34,7 @@ public
 class FileSpellChecker
 {
   private String       _aspellExeFilename;
-  private String       _aspellMainLanguage;
+  private String       _aspellCommandLine;
   private AspellEngine _spellEngine          = null;
   private Validator    _spellValidator       = null;
 
@@ -67,10 +67,10 @@ class FileSpellChecker
     System.exit( exitStatus );
   }
 
-  public FileSpellChecker( String aspellExeFilename, String aspellMainLanguage )
+  public FileSpellChecker( String aspellExeFilename, String aspellCommandLine )
   {
     _aspellExeFilename = aspellExeFilename;
-    _aspellMainLanguage = aspellMainLanguage;
+    _aspellCommandLine = aspellCommandLine;
   }
 
   public FileSpellChecker()
@@ -134,9 +134,9 @@ class FileSpellChecker
   }
 
   public
-  String getAspellMainLanguage()
+  String getAspellCommandLine()
   {
-    return _aspellMainLanguage;
+    return _aspellCommandLine;
   }
 
   public
@@ -154,16 +154,7 @@ class FileSpellChecker
     throws SpellException
   {
     if( _spellEngine == null )
-    {
-      String aSpellCommandLine = _aspellExeFilename;
-      if ( !_aspellMainLanguage.equals("") )
-      {
-        aSpellCommandLine += " --lang=" + _aspellMainLanguage;
-        aSpellCommandLine += " --language-tag=" + _aspellMainLanguage;
-      }
-      aSpellCommandLine += " pipe";
-      _spellEngine = new AspellEngine( aSpellCommandLine );
-    }
+      _spellEngine = new AspellEngine( _aspellExeFilename + _aspellCommandLine );
 
     return _spellEngine;
   }
