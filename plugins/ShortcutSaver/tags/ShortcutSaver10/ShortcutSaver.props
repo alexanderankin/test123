@@ -1,0 +1,94 @@
+#
+# Plugin properties
+#
+
+#
+# use the 4.2 api and load only when first called
+#
+plugin.shortcutSaver.ShortcutSaverPlugin.activate=defer
+
+plugin.shortcutSaver.ShortcutSaverPlugin.name=Shortcut Saver
+plugin.shortcutSaver.ShortcutSaverPlugin.title=ShortcutSaver
+plugin.shortcutSaver.ShortcutSaverPlugin.author=Carmine Lucarelli
+plugin.shortcutSaver.ShortcutSaverPlugin.version=0.1
+plugin.shortcutSaver.ShortcutSaverPlugin.docs=index.html
+
+plugin.shortcutSaver.ShortcutSaverPlugin.depend.0=jdk 1.3
+plugin.shortcutSaver.ShortcutSaverPlugin.depend.1=jedit 04.02.06.00
+plugin.shortcutSaver.ShortcutSaverPlugin.depend.2=plugin CommonControlsPlugin 0.8
+
+#
+# Menu properties
+#
+
+plugin.shortcutSaver.ShortcutSaverPlugin.menu=shortcutSaver-action1 shortcutSaver-action2 shortcutSaver-action3 shortcutSaver-action4 \
+	shortcutSaver-action5 shortcutSaver-action6
+shortcutSaver-action1.label=Action 1
+shortcutSaver-action2.label=Action 2
+shortcutSaver-action3.label=Action 3
+shortcutSaver-action4.label=Action 4
+shortcutSaver-action5.label=Action 5
+shortcutSaver-action6.label=Action 6
+
+
+#
+# Option pane properties and code
+#
+plugin.shortcutSaver.ShortcutSaverPlugin.option-group=shortcutSaver1 shortcutSaver2 shortcutSaver3 shortcutSaver4 shortcutSaver5 shortcutSaver6
+
+options.shortcutSaver1.label=Action 1
+options.shortcutSaver1.code=new shortcutSaver.EditModesOptionPane(1);
+
+options.shortcutSaver2.label=Action 2
+options.shortcutSaver2.code=new shortcutSaver.EditModesOptionPane(2);
+
+options.shortcutSaver3.label=Action 3
+options.shortcutSaver3.code=new shortcutSaver.EditModesOptionPane(3);
+
+options.shortcutSaver4.label=Action 4
+options.shortcutSaver4.code=new shortcutSaver.EditModesOptionPane(4);
+
+options.shortcutSaver5.label=Action 5
+options.shortcutSaver5.code=new shortcutSaver.EditModesOptionPane(5);
+
+options.shortcutSaver6.label=Action 6
+options.shortcutSaver6.code=new shortcutSaver.EditModesOptionPane(6);
+
+#plugin.shortcutSaver.ShortcutSaverPlugin.option-group=shortcutSaver.editmodes \
+#	shortcutSaver.filenames
+
+#options.shortcutSaver.editmodes.label=Edit Modes
+#options.shortcutSaver.editmodes.code=new shortcutSaver.EditModesOptionPane();
+
+options.shortcutSaver.editmodes.caption=Actions by edit mode
+options.shortcutSaver.editmodes.mode=Mode
+options.shortcutSaver.editmodes.actions=Actions
+
+#options.shortcutSaver.filenames.label=File globs
+#options.shortcutSaver.filenames.code=new shortcutSaver.EditModesOptionPane();
+
+
+#
+# Errors
+#
+
+shortcutSaver.error.noaction.title=ShortcutSaver Error
+shortcutSaver.error.noaction.message=No action defined
+
+
+#
+# The ShortcutSaver frame
+#
+
+shortcutSaver.frame.title=ShortcutSaver
+shortcutSaver.current.label=Current mapping for edit mode {0}
+shortcutSaver.actionset.label=Action sets
+shortcutSaver.actioncolumn.label=Command (double click to add)
+shortcutSaver.ok.label=Ok
+shortcutSaver.cancel.label=Cancel
+
+#
+# misc
+#
+
+
