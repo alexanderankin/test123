@@ -57,14 +57,16 @@ class ErrorsOptionPane extends AbstractOptionPane
 		buttons.setBorder(new EmptyBorder(6,0,0,0));
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
 
-		buttons.add(edit = new JButton(jEdit.getProperty(
-			"options.console.errors.edit")));
-		edit.addActionListener(new ActionHandler());
-		buttons.add(Box.createHorizontalStrut(6));
+		buttons.add(Box.createGlue());
 
 		buttons.add(add = new JButton(jEdit.getProperty(
 			"options.console.errors.add")));
 		add.addActionListener(new ActionHandler());
+		buttons.add(Box.createHorizontalStrut(6));
+
+		buttons.add(edit = new JButton(jEdit.getProperty(
+			"options.console.errors.edit")));
+		edit.addActionListener(new ActionHandler());
 		buttons.add(Box.createHorizontalStrut(6));
 
 		buttons.add(remove = new JButton(jEdit.getProperty(
@@ -163,11 +165,7 @@ class ErrorsOptionPane extends AbstractOptionPane
 				matcher.user = true;
 				if(new ErrorMatcherDialog(ErrorsOptionPane.this,matcher).isOK())
 				{
-					int index = errorList.getSelectedIndex();
-					if(index == -1)
-						index = errorListModel.getSize();
-					else
-						index++;
+					int index = errorList.getSelectedIndex() + 1;
 
 					errorListModel.insertElementAt(matcher,index);
 					errorList.setSelectedIndex(index);
