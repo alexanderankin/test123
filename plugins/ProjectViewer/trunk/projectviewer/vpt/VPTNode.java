@@ -23,7 +23,11 @@ import java.util.Comparator;
 import java.util.Collections;
 
 import java.awt.Color;
+import java.awt.Component;
+
+import javax.swing.BoxLayout;
 import javax.swing.Icon;
+import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -72,7 +76,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 	//{{{ Attributes
 
-	protected String		name;
+	protected String	name;
 
 	//}}}
 
@@ -277,21 +281,37 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 *	itself from the project in case the parent is being set to null.
 	 */
 	public void setParent(MutableTreeNode newParent) {
-		VPTProject p = findProjectFor(this);
-		super.setParent(newParent);
-		if (newParent == null) {
-			if (canOpen()) {
+		if (canOpen()) {
+			if (newParent == null) {
+				VPTProject p = findProjectFor(this);
 				if (p != null) {
 					p.unregisterNodePath(this);
 				}
-			}
-		} else {
-			if (canOpen()) {
+			} else {
+				VPTProject p = findProjectFor((VPTNode)newParent);
 				if (p != null) {
 					p.registerNodePath(this);
 				}
 			}
 		}
+		super.setParent(newParent);
+	} //}}}
+
+	//{{{ +persistChildren() : boolean
+	/**
+	 *	This method should return whether the children of this node should
+	 *	be persisted when the node is saved to the project config file. The
+	 *	default is "true".
+	 *
+	 *	<p>Nodes that provide run time children (for example, allowing for the
+	 *	exploration of the contents of a JAR file) should override this method
+	 *	and return "false".</p>
+	 *
+	 *	<p>This only makes sense for nodes that allow children in the first
+	 *	place.</p>
+	 */
+	public boolean persistChildren() {
+		return true;
 	} //}}}
 
 	//}}}
@@ -382,6 +402,12 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 			}
 		} //}}}
 
+	} //}}}
+
+	//{{{ -class _TTEntry_
+	private static class TTEntry {
+		public String str;
+		public Component component;
 	} //}}}
 
 }

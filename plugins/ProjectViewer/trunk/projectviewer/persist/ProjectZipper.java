@@ -61,6 +61,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.util.Log;
+
+import projectviewer.gui.ModalJFileChooser;
 //}}}
 
 /**
@@ -370,13 +372,13 @@ public class ProjectZipper extends JDialog implements ActionListener {
 		} else if (source == cancel) {
 			close();
 		} else if (source == browseName) {
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = new ModalJFileChooser();
 			chooser.setDialogType(JFileChooser.SAVE_DIALOG);
 			chooser.setDialogTitle(jEdit.getProperty("projectviewer.action.jarmaker.choose_dir"));
 			if(chooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION)
 				jarName.setText(chooser.getSelectedFile().getPath());
 		} else if (source == browseLocation) {
-			JFileChooser chooser = new JFileChooser();
+			JFileChooser chooser = new ModalJFileChooser();
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			chooser.setDialogTitle(jEdit.getProperty("projectviewer.action.jarmaker.choose_dir"));
 			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -387,9 +389,9 @@ public class ProjectZipper extends JDialog implements ActionListener {
 			try {
 				JFileChooser chooser;
 				if (jarLoc.getText().length() != 0) {
-					chooser = new JFileChooser(jarLoc.getText());
+					chooser = new ModalJFileChooser(jarLoc.getText());
 				} else {
-					chooser = new JFileChooser();
+					chooser = new ModalJFileChooser();
 				}
 				if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 					String chosen = chooser.getSelectedFile().getAbsolutePath();

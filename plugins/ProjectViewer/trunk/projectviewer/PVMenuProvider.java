@@ -25,14 +25,20 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.menu.DynamicMenuProvider;
+import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
+import projectviewer.config.ProjectViewerConfig;
 import projectviewer.vpt.VPTProject;
 //}}}
 
@@ -50,9 +56,10 @@ public final class PVMenuProvider implements DynamicMenuProvider,
 
 	//{{{ Private members
 	private View view;
+	private ButtonGroup projects;
 	//}}}
 
-	//{{{ +ProjectsMenuProvider(View) : <init>
+	//{{{ +PVMenuProvider() : <init>
 	/** Makes sure ProjectManager is initialized. */
 	public PVMenuProvider() {
 		ProjectManager.getInstance();
@@ -75,10 +82,30 @@ public final class PVMenuProvider implements DynamicMenuProvider,
 			pMenu = (JMenu) menu.getMenuComponent(0);
 			pMenu.removeAll();
 		}
+
+		projects = new ButtonGroup();
+		JRadioButtonMenuItem mi = new JRadioButtonMenuItem(jEdit.getProperty("projectviewer.general.no_active_project"));
+		mi.addActionListener(this);
+		projects.add(mi);
+		
+		VPTProject active = ProjectViewer.getActiveProject(jEdit.getActiveView());
+		if (active == null) {
+			// load last loaded project
+			String lastLoaded = ProjectViewerConfig.getInstance().getLastProject();
+			if (lastLoaded != null) {
+				active = ProjectManager.getInstance().getProject(lastLoaded);
+				ProjectViewer.setActiveProject(jEdit.getActiveView(), active);
+			}
+		}
+		
 		for (Iterator i = ProjectManager.getInstance().getProjects(); i.hasNext(); ) {
 			VPTProject p = (VPTProject) i.next();
-			JMenuItem mi = new JMenuItem(p.getName());
+			mi = new JRadioButtonMenuItem(p.getName());
 			mi.addActionListener(this);
+			if (p == active) {
+				mi.setSelected(true);
+			}
+			projects.add(mi);
 			pMenu.add(mi);
 		}
 	} //}}}
@@ -91,13 +118,20 @@ public final class PVMenuProvider implements DynamicMenuProvider,
 
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
-		JMenuItem mi = (JMenuItem) ae.getSource();
-		VPTProject p = ProjectManager.getInstance().getProject(mi.getText());
+		JRadioButtonMenuItem mi = (JRadioButtonMenuItem) ae.getSource();
+		VPTProject p = null;
+		if (!mi.getText().equals(jEdit.getProperty("projectviewer.general.no_active_project"))) {
+			p = ProjectManager.getInstance().getProject(mi.getText());
+		}
 		ProjectViewer viewer = ProjectViewer.getViewer(view);
 		if (viewer != null && p != null) {
 			viewer.setProject(p);
+		} else {
+			System.err.println("no dockable; project has children: " + p.getChildCount());
+			ProjectViewerConfig.getInstance().setLastProject(p.getName());
+			ProjectViewer.setActiveProject(view, p);
 		}
 	} //}}}
-
+	
 }
 

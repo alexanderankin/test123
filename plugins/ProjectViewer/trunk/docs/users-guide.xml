@@ -291,6 +291,24 @@
 			</listitem>
 		</itemizedlist>
 
+		<bridgehead renderas='sect3'>Using PV commands from jEdit</bridgehead>
+
+		<para>
+			Some commands are also available as jEdit actions so that shortcuts
+			can be assigned to them. You can check all the possible commands
+			available as actions by going to the "Shortcuts" panel in the
+			jEdit options dialog, and selecting the ProjectViewer plugin.
+		</para>
+
+		<para>
+			When executing a command using a shortcut, you may notice that no
+			action is performed and an error message appears in the status bar.
+			This means that the action is not available for the current selection
+			in the tree. To check which actions are available for the selected
+			node(s), check the context menu by clicking the node with the right
+			mouse button.
+		</para>
+
 		<bridgehead renderas='sect3'>Third party plugins commands</bridgehead>
 
 		<para>

@@ -3,19 +3,19 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.0.3
+plugin.projectviewer.ProjectPlugin.version=2.0.99
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 
-plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.01.08.00
+plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.02.12.00
 plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.3
 
-plugin.projectviewer.ProjectPlugin.support.0=ErrorList 1.3.1
-plugin.projectviewer.ProjectPlugin.support.1=InfoViewer 1.2
+plugin.projectviewer.ProjectPlugin.depend.2=optional plugin ErrorList 1.3.1
+plugin.projectviewer.ProjectPlugin.depend.3=optional plugin InfoViewer 1.2
 #}}}
 
 projectviewer.title=Project Viewer
-projectviewer.label=Project Viewer
+projectviewer.label=Open Project Viewer
 
 #{{{ jEdit 4.2 option panes
 plugin.projectviewer.ProjectPlugin.option-group=projectviewer.optiongroup.main_options \
@@ -30,28 +30,40 @@ options.projectviewer.optiongroup.external_apps.label=External Applications
 options.projectviewer.optiongroup.external_apps.code=new projectviewer.config.ProjectAppConfigPane("projectviewer.optiongroup.external_apps");
 #}}}
 
-#{{{ jEdit Plugins menu
-plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
-plugin.projectviewer.ProjectPlugin.menu.code=new projectviewer.PVMenuProvider();
-projectviewer.menu=\
-	projectviewer_create_project \
-	- \
-	projectviewer_edit_project \
-	projectviewer_open_all_files \
-	projectviewer_close_all_files \
-	projectviewer_remove_all_files \
-	projectviewer_launch_current_buffer \
-	projectviewer_jarmaker_dialog
-projectviewer.menu.label=Project Viewer
-projectviewer_projects_menu.label=Projects
-projectviewer_create_project.label=Create Project
-projectviewer_edit_project.label=Project Options
+#{{{ jEdit actions
+projectviewer_wrapper_search.label=Search in Project/Directory
+projectviewer_wrapper_launch.label=Preview Node in Browser
+projectviewer_wrapper_edit.label=Edit Project Options
+projectviewer_wrapper_create.label=Create Project
+projectviewer_wrapper_rename.label=Rename Node
+projectviewer_wrapper_archive.label=Archive Project
+projectviewer_wrapper_expand_all.label=Expand All Nodes
+projectviewer_wrapper_collapse_all.label=Collapse All Nodes
+
 projectviewer_open_all_files.label=Open All Project Files
 projectviewer_close_all_files.label=Close All Project Files
 projectviewer_remove_all_files.label=Remove All Project Files
 projectviewer_launch_current_buffer.label=Lauch current buffer in browser
 projectviewer_jarmaker_dialog.label=JarMaker Dialog
-selectedfiles-viewer-menu-item.label=Paste File Names
+projectviewer_paste_selected_files.label=Paste File Names
+#}}}
+
+#{{{ jEdit Plugins menu
+plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
+plugin.projectviewer.ProjectPlugin.menu.code=new projectviewer.PVMenuProvider();
+projectviewer.menu=\
+	projectviewer \
+	projectviewer_wrapper_create \
+	- \
+	projectviewer_wrapper_edit \
+	projectviewer_open_all_files \
+	projectviewer_close_all_files \
+	projectviewer_remove_all_files \
+	projectviewer_launch_current_buffer \
+	projectviewer_wrapper_search \
+	projectviewer_jarmaker_dialog
+projectviewer.menu.label=Project Viewer
+projectviewer_projects_menu.label=Projects
 #}}}
 
 #{{{ jEdit option panes messages
@@ -84,17 +96,19 @@ projectviewer.options.remember_open.tooltip=Reload the set of files previously o
 projectviewer.options.delete_stale=Delete non-existant files from list
 projectviewer.options.delete_stale.tooltip=If checked, files not found on disk will be removed from the project at startup
 
-projectviewer.options.ask_import=\ \ Ask to import new files?
-projectviewer.options.ask_import.tooltip=Ask to import saved files that are below the project root
-projectviewer.options.ask_import.always=Always
-projectviewer.options.ask_import.once=Once per session
-projectviewer.options.ask_import.never=Never
+projectviewer.options.ask_import=\ \ Importing new files:
+projectviewer.options.ask_import.tooltip=Whether to ask to import saved files that are below the project root
+projectviewer.options.ask_import.auto_import=Auto import
+projectviewer.options.ask_import.always=Always ask
+projectviewer.options.ask_import.once=Ask once per session
+projectviewer.options.ask_import.never=Never ask
 
 projectviewer.options.show_toolbar=Show toolbar
 projectviewer.options.show_folders=Show folders tree
 projectviewer.options.show_files=Show files tree
 projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
 projectviewer.options.show_working_files=Show working files tree
+projectviewer.options.show_compact_tree=Show compact tree
 projectviewer.options.use_system_icons=Use system icons for files
 
 projectviewer.options.context.caption=Items in the tree's context menu:
@@ -110,9 +124,14 @@ projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
 projectviewer.error=Error
 projectviewer.error.multiple_views=ProjectViewer does not support multiple instances per view.
+projectviewer.error.cannot_exec_action=ProjectViewer: cannot execute chosen action, invalid node selection.
 projectviewer.loading_project=Loading project "{0}"...
 projectviewer.no_active_project=There's no active project.
 projectviewer.path_not_in_project=Open buffer is not part of the active project.
+
+projectviewer.general.choose=Choose
+projectviewer.general.no_active_project=(No Active Project)
+projectviewer.general.hidden_file_filter=All Files (including hidden)
 #}}}
 
 #{{{ Import messages
@@ -125,9 +144,13 @@ projectviewer.import.msg_recurse.title=Traverse directories?
 projectviewer.import.msg_result=Imported {0} file(s).
 projectviewer.import_new=Import {0} into {1}?
 projectviewer.import_new.title=Import new file
+projectviewer.import.add=Add
 
 projectviewer.import.msg_proj_root=Do you want to import files from the project root?
 projectviewer.import.msg_proj_root.title=Initial import
+
+projectviewer.import.msg_reimport=Do you want to re-import files from "{0}"?
+projectviewer.import.msg_reimport.title=Re-Import Files
 
 projectviewer.cvs-filter=Entries in CVS/Entries
 projectviewer.importer-filter=ProjectViewer's Import Settings
@@ -195,6 +218,8 @@ projectviewer.action.jarmaker.filter=File filter:
 projectviewer.action.jarmaker.manifest=Manifest
 projectviewer.action.jarmaker.load_manifest=Load Manifest from file...
 projectviewer.action.jarmaker.add_manifest=Add Manifest
+
+projectviewer.acrion.search.error=Cannot search in selected node or no node selected.
 #}}}
 
 #{{{ Confirmation messages
@@ -217,6 +242,7 @@ projectviewer.project.options.no_name=Please specify a name for the project.
 projectviewer.project.options.name_exists=A project with the given name already exists.
 projectviewer.project.options.no_root=Please specify a root for the project.
 projectviewer.project.options.root_error=Root directory does not exist, please specify a valid one.
+projectviewer.project.options.root_dialog=Enter the root directory for the project:
 
 projectviewer.project.options.name=Project name:
 projectviewer.project.options.root=Root directory:

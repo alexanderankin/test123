@@ -44,11 +44,13 @@ import javax.swing.WindowConstants;
 // Import jEdit
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+import projectviewer.gui.ModalJFileChooser;
 import projectviewer.vpt.VPTProject;
 //}}}
 
@@ -65,6 +67,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	//{{{ Instance Variables
 
 	private int result;
+	private String lookupPath;
 	private VPTProject project;
 
 	private JTextField projName;
@@ -82,10 +85,15 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 
 	/** Builds the dialog. */
 	public ProjectPropertiesPane(VPTProject p, boolean isNew) {
+		this(p, isNew, null);
+	}
+
+	public ProjectPropertiesPane(VPTProject p, boolean isNew, String lookupPath) {
 		super("projectviewer.project_props");
 		this.project = p;
 		this.ok = true;
 		this.isNew = isNew;
+		this.lookupPath = lookupPath;
 	}
 
 	//}}}
@@ -97,19 +105,35 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	 *  JTextField is updated to show the selection.
 	 */
 	public void actionPerformed(ActionEvent ae) {
-		JFileChooser chooser = new JFileChooser();
-		chooser.setDialogTitle("Enter the root directory for the project:");
+		JFileChooser chooser = new ModalJFileChooser();
+		chooser.setDialogTitle(jEdit.getProperty("projectviewer.project.options.root_dialog"));
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
 		String root = projRoot.getText().trim();
 		if (root.length() > 0) {
-		   chooser.setSelectedFile(new File(root));
+			chooser.setSelectedFile(new File(root));
+			chooser.setCurrentDirectory(new File(root).getParentFile());
+		} else if (lookupPath != null) {
+			File f = new File(lookupPath);
+			if (!f.isDirectory()) {
+				f = f.getParentFile();
+			}
+			chooser.setCurrentDirectory(f.getParentFile());
+		} else {
+			Buffer b = jEdit.getActiveView().getBuffer();
+			chooser.setCurrentDirectory(new File(b.getPath()).getParentFile());
 		}
 
-		if (chooser.showOpenDialog(GUIUtilities.getParentDialog(this)) == JFileChooser.APPROVE_OPTION) {
+		if (chooser.showDialog(this, jEdit.getProperty("projectviewer.general.choose"))
+				== JFileChooser.APPROVE_OPTION) {
 			root = chooser.getSelectedFile().getAbsolutePath();
 			projRoot.setText(root);
 			projRoot.setToolTipText(projRoot.getText());
+
+			if (projName.getText() != null && projName.getText().length() == 0) {
+				String name = root.substring(root.lastIndexOf(File.separator) + 1, root.length());
+				projName.setText(name);
+			}
 		}
 
 	} //}}}

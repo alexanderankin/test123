@@ -121,13 +121,6 @@ public final class ProjectPersistenceManager {
 		for (Iterator i = p.getOpenableNodes().iterator(); i.hasNext(); ) {
 			VPTNode n = (VPTNode) i.next();
 			String path = n.getNodePath();
-			if (!config.isJEdit42() && n.isFile()) {
-				VPTFile f = (VPTFile) n;
-				String canPath = f.getCanonicalPath();
-				if (!path.equals(canPath)) {
-					p.registerCanonicalPath(canPath, f);
-				}
-			}
 		}
 		return p;
 	} //}}}
@@ -159,7 +152,7 @@ public final class ProjectPersistenceManager {
 		} else {
 			NodeHandler handler = (NodeHandler) handlerClasses.get(node.getClass());
 			handler.saveNode(node, out);
-			if (node.getAllowsChildren()) {
+			if (node.getAllowsChildren() && node.persistChildren()) {
 				out.write(">\n");
 				for (Enumeration e = node.children(); e.hasMoreElements(); ) {
 					saveNode((VPTNode)e.nextElement(), out);

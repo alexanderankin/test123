@@ -57,7 +57,6 @@ public class VPTFile extends VPTNode {
 	//{{{ Attributes
 
 	private File	file;
-	private String	canPath;
 	private Color	fileTypeColor;
 
 	private Icon	fileIcon;
@@ -74,7 +73,6 @@ public class VPTFile extends VPTNode {
 	public VPTFile(File file) {
 		super(file.getName());
 		this.file = file;
-		this.canPath = null;
 		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
 		this.fileIcon = null;
 		this.loadedIcon = false;
@@ -113,7 +111,6 @@ public class VPTFile extends VPTNode {
 	/** Sets the file associated with this node. */
 	public void setFile(File f) {
 		this.file = f;
-		this.canPath = null;
 		fileTypeColor = VFS.getDefaultColorFor(file.getName());
 		setName(f.getName());
 	} //}}}
@@ -123,11 +120,7 @@ public class VPTFile extends VPTNode {
 	 *	Returns "true" if the node is a file and is currently opened in jEdit.
 	 */
 	public boolean isOpened() {
-		if (config.isJEdit42()) {
-			return (org.gjt.sp.jedit.jEdit.getBuffer(getFile().getAbsolutePath()) != null);
-		} else {
-			return (org.gjt.sp.jedit.jEdit.getBuffer(getCanonicalPath()) != null);
-		}
+		return (org.gjt.sp.jedit.jEdit.getBuffer(getFile().getAbsolutePath()) != null);
 	} //}}}
 
 	//{{{ +getIcon(boolean) : Icon
@@ -135,7 +128,6 @@ public class VPTFile extends VPTNode {
 	 *	Returns the icon to be shown on the tree next to the node name.
 	 *
 	 *	@param	expanded	If the node is currently expanded or not.
-	 *  @todo add decorations to the icon
 	 */
 	public Icon getIcon(boolean expanded) {
 		Icon baseIcon = fileClosedIcon;
@@ -199,12 +191,7 @@ public class VPTFile extends VPTNode {
 	//{{{ +close() : void
 	/** "Closes" the jEdit buffer that contains the file. */
 	public void close() {
-		Buffer b;
-		if (config.isJEdit42()) {
-			b = jEdit.getBuffer(getFile().getAbsolutePath());
-		} else {
-			b = jEdit.getBuffer(getCanonicalPath());
-		}
+		Buffer b = jEdit.getBuffer(getFile().getAbsolutePath());
 		if (b != null) {
 			jEdit.closeBuffer(jEdit.getActiveView(), b);
 		}
@@ -214,19 +201,6 @@ public class VPTFile extends VPTNode {
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
 		return getFile().getAbsolutePath();
-	} //}}}
-
-	//{{{ +getCanonicalPath() : String
-	/** Returns the file's canonical path. */
-	public String getCanonicalPath() {
-		if (this.canPath == null) {
-			try {
-				this.canPath = file.getCanonicalPath();
-			} catch (IOException ioe) {
-				Log.log(Log.WARNING, this, ioe);
-			}
-		}
-		return canPath;
 	} //}}}
 
 	//}}}

@@ -23,7 +23,6 @@ import java.io.File;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.View;

@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more detaProjectTreeSelectionListenerils.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -131,71 +132,48 @@ public final class ProjectPlugin extends EBPlugin {
 		config.save();
 		try {
 			ProjectManager.getInstance().save();
+
+			// clean up edit bus
+			View[] views = jEdit.getViews();
+			for (int i = 0; i < views.length; i++) {
+				ProjectViewer pv = ProjectViewer.getViewer(views[i]);
+				if (pv != null) {
+					EditBus.removeFromBus(pv);
+				}
+			}
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, ioe);
 		}
 	} //}}}
 
-	//{{{ +createMenuItems(Vector) : void
-	/**
-	 *	Create the appropriate menu items for this plugin.
-	 *
-	 *	@param  menuItems  The list of menuItems from jEdit.
-	 */
-	public void createMenuItems(Vector menuItems) {
-		menuItems.addElement(GUIUtilities.loadMenu("projectviewer.menu"));
-	} //}}}
-
-	//{{{ +createOptionPanes(OptionsDialog) : void
-	/** Add the configuration option panes to jEdit's option dialog. */
-	public void createOptionPanes(OptionsDialog optionsDialog) {
-		OptionGroup optionGroup = new OptionGroup(NAME);
-		optionGroup.addOptionPane(new ProjectViewerOptionsPane("projectviewer.optiongroup.main_options"));
-		optionGroup.addOptionPane(new ContextOptionPane("projectviewer.optiongroup.context_menu"));
-		optionGroup.addOptionPane(new ProjectAppConfigPane("projectviewer.optiongroup.external_apps"));
-		optionsDialog.addOptionGroup(optionGroup);
-	} //}}}
-
 	//{{{ +handleMessage(EBMessage) : void
 	/** Handles plugin load/unload messages in the EditBus. */
 	public void handleMessage(EBMessage msg) {
-		if (config.isJEdit42()) {
-			Helper.checkPluginUpdate(msg);
+		if (msg instanceof PluginUpdate) {
+			checkPluginUpdate((PluginUpdate)msg);
 		}
 	} //}}}
 
-	//{{{ -class _Helper_
-	/**
-	 *	Class to hold methods that require classes that may not be available,
-	 *	so that PV behaves well when called from a BeanShell script.
-	 */
-	private static class Helper {
+	//{{{ -checkPluginUpdate(PluginUpdate) : void
+	private void checkPluginUpdate(PluginUpdate msg) {
+		if (msg.getWhat() == PluginUpdate.LOADED) {
+			ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), null);
+			ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
+			ProjectViewer.addToolbarActions(msg.getPluginJAR());
+			VPTContextMenu.registerActions(msg.getPluginJAR());
 
-		//{{{ +_checkPluginUpdate(EBMessage)_ : void
-		public static void checkPluginUpdate(EBMessage msg) {
-			if (msg instanceof PluginUpdate) {
-				PluginUpdate pu = (PluginUpdate) msg;
-				if (pu.getWhat() == PluginUpdate.LOADED) {
-					ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), null);
-					ProjectManager.getInstance().addProjectListeners(pu.getPluginJAR());
-					ProjectViewer.addToolbarActions(pu.getPluginJAR());
-					VPTContextMenu.registerActions(pu.getPluginJAR());
-
-					View[] v = jEdit.getViews();
-					for (int i = 0; i < v.length; i++) {
-						if (ProjectViewer.getViewer(v[i]) != null) {
-							ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), v[i]);
-						}
-					}
-				} else if (pu.getWhat() == PluginUpdate.UNLOADED && !pu.isExiting()) {
-					ProjectViewer.removeProjectViewerListeners(pu.getPluginJAR());
-					ProjectManager.getInstance().removeProjectListeners(pu.getPluginJAR());
-					ProjectViewer.removeToolbarActions(pu.getPluginJAR());
-					VPTContextMenu.unregisterActions(pu.getPluginJAR());
+			View[] v = jEdit.getViews();
+			for (int i = 0; i < v.length; i++) {
+				if (ProjectViewer.getViewer(v[i]) != null) {
+					ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), v[i]);
 				}
 			}
-		} //}}}
-
+		} else if (msg.getWhat() == PluginUpdate.UNLOADED && !msg.isExiting()) {
+			ProjectViewer.removeProjectViewerListeners(msg.getPluginJAR());
+			ProjectManager.getInstance().removeProjectListeners(msg.getPluginJAR());
+			ProjectViewer.removeToolbarActions(msg.getPluginJAR());
+			VPTContextMenu.unregisterActions(msg.getPluginJAR());
+		}
 	} //}}}
 
 }

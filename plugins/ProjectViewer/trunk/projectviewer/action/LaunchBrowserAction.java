@@ -115,12 +115,8 @@ public class LaunchBrowserAction extends Action {
 
 		//{{{ +_launchInfoViewer(View, String)_ : void
 		public static void launchInfoViewer(View view, String url) {
-			InfoViewerPlugin iv;
-			if (ProjectViewerConfig.getInstance().isJEdit42()) {
-				iv = (InfoViewerPlugin) jEdit.getPlugin("infoviewer.InfoViewerPlugin", true);
-			} else {
-				iv = (InfoViewerPlugin) jEdit.getPlugin("infoviewer.InfoViewerPlugin");
-			}
+			InfoViewerPlugin iv =
+				(InfoViewerPlugin) jEdit.getPlugin("infoviewer.InfoViewerPlugin", true);
 			if( iv != null) {
 				iv.openURL(view, url);
 			}

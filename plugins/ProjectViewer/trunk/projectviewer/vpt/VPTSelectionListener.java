@@ -106,13 +106,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		}
 
 		if (SwingUtilities.isLeftMouseButton(evt) && node.isOpened()) {
-			String nodePath;
-			if (node.isFile() && !ProjectViewerConfig.getInstance().isJEdit42()) {
-				nodePath = ((VPTFile)node).getCanonicalPath();
-			} else {
-				nodePath = node.getNodePath();
-			}
-			Buffer b = jEdit.getBuffer(nodePath);
+			Buffer b = jEdit.getBuffer(node.getNodePath());
 			if (b != null) {
 				viewer.getView().setBuffer(b);
 			}

@@ -32,6 +32,7 @@ import javax.swing.filechooser.FileFilter;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
+import projectviewer.gui.ModalJFileChooser;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
@@ -81,9 +82,9 @@ public class FileImporter extends Importer {
 
 		JFileChooser chooser = null;
 		if (selected.isDirectory() && ((VPTDirectory)selected).getFile().exists()) {
-			chooser = new JFileChooser(selected.getNodePath());
+			chooser = new ModalJFileChooser(selected.getNodePath());
 		} else {
-			chooser = new JFileChooser(project.getRootPath());
+			chooser = new ModalJFileChooser(project.getRootPath());
 		}
 
 		chooser.setMultiSelectionEnabled(true);
@@ -94,7 +95,8 @@ public class FileImporter extends Importer {
 		chooser.addChoosableFileFilter(cvsFilter);
 		chooser.setFileFilter(filter);
 
-		if(chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) {
+		if(chooser.showDialog(this.viewer, jEdit.getProperty("projectviewer.import.add"))
+				!= JFileChooser.APPROVE_OPTION) {
 			return null;
 		}
 
@@ -174,13 +176,13 @@ public class FileImporter extends Importer {
 	protected void addTree(File root, VPTNode where, FilenameFilter filter) {
 		File[] children;
 
-		if(filter != null){
+		if (filter != null){
 			children = root.listFiles(filter);
 		} else {
 			children = root.listFiles();
 		}
 
-		if (children == null) return;
+		if (children == null || children.length == 0) return;
 
 		for (int i = 0; i < children.length; i++) {
 			if (!children[i].exists()) {

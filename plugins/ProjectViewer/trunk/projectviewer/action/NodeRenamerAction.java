@@ -57,13 +57,13 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public class NodeRenamerAction extends Action {
 
-	//{{{ getText() method
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.rename");
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Renames a node. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode node = viewer.getSelectedNode();
@@ -121,7 +121,6 @@ public class NodeRenamerAction extends Action {
 			VPTFile f = (VPTFile) node;
 			// updates all files from the old directory to point to the new one
 			project.unregisterNodePath(f);
-
 			if (!renameFile(f, new File(f.getFile().getParent(), newName))) {
 				JOptionPane.showMessageDialog(viewer,
 						jEdit.getProperty("projectviewer.action.rename.rename_error"),
@@ -129,7 +128,6 @@ public class NodeRenamerAction extends Action {
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			project.registerFile(f);
 			reinsert(f);
 		} else if (node.isDirectory() ) {
 			VPTDirectory dir = (VPTDirectory) node;
@@ -171,7 +169,7 @@ public class NodeRenamerAction extends Action {
 		ProjectManager.getInstance().saveProject(project);
 	} //}}}
 
-	//{{{ prepareForNode(VPTNode) method
+	//{{{ +prepareForNode(VPTNode) : void
 	/** Disable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null &&
@@ -179,7 +177,7 @@ public class NodeRenamerAction extends Action {
 			 node.getClass() == VFSFile.class));
 	} //}}}
 
-	//{{{ renameFile(VPTFile, String) method
+	//{{{ -renameFile(VPTFile, File) : boolean
 	/** Renames a file and tries not to mess up jEdit's current buffer. */
 	private boolean renameFile(VPTFile f, File newFile) {
 		Buffer b = jEdit.getActiveView().getBuffer();
@@ -197,19 +195,21 @@ public class NodeRenamerAction extends Action {
 			// disk" warnings that shouldn't happen, but do.
 			try { Thread.sleep(1); } catch (Exception e) { }
 			f.open();
-			if (b != null)
+			if (b != null) {
 				jEdit.getActiveView().setBuffer(b);
+			}
 		}
 		return true;
 	} //}}}
 
+	//{{{ -reinsert(VPTNode) : void
 	private void reinsert(VPTNode node) {
 		VPTNode parent = (VPTNode) node.getParent();
 		ProjectViewer.removeNodeFromParent(node);
 		ProjectViewer.insertNodeInto(node, parent);
-	}
+	} //}}}
 
-	//{{{ RenameFileDialog class
+	//{{{ -class RenameDialog
 	/**
 	 *	A dialog for renaming nodes. Provides an extra checkbox to allow
 	 *	the user to rename the node but not the actual file/dir on disk,
@@ -227,6 +227,7 @@ public class NodeRenamerAction extends Action {
 		private boolean		okPressed;
 		//}}}
 
+		//{{{ +RenameDialog(VPTNode) : <init>
 		public RenameDialog(VPTNode node) {
 			super(JOptionPane.getFrameForComponent(viewer),
 					jEdit.getProperty("projectviewer.action.rename.title"),
@@ -276,28 +277,28 @@ public class NodeRenamerAction extends Action {
 
 			setLocationRelativeTo(viewer);
 			pack();
-		}
+		} //}}}
 
-		//{{{ setVisible(boolean)
+		//{{{ +setVisible(boolean) : void
 		public void setVisible(boolean b) {
 			if (b) okPressed = false;
 			super.setVisible(b);
 		} //}}}
 
-		//{{{ ok()
+		//{{{ +ok() : void
 		/** Renames the file/dir. */
 		public void ok() {
 			okPressed = true;
 			dispose();
 		} //}}}
 
-		//{{{ cancel()
+		//{{{ +cancel() : void
 		/** Cancels renaming. */
 		public void cancel() {
 			dispose();
 		} //}}}
 
-		//{{{ actionPerformed(ActionEvent)
+		//{{{ +actionPerformed(ActionEvent) : void
 		public void actionPerformed(ActionEvent ae) {
 			if (ae.getSource() == okBtn) {
 				ok();
@@ -306,7 +307,7 @@ public class NodeRenamerAction extends Action {
 			}
 		} //}}}
 
-		//{{{ getInput()
+		//{{{ +getInput() : String
 		/**
 		 *	Returns the user's input in case the "ok" button was pressed (or
 		 *	the user hit enter), or null otherwise.
@@ -315,7 +316,7 @@ public class NodeRenamerAction extends Action {
 			return (okPressed) ? fName.getText() : null;
 		} //}}}
 
-		//{{{ getDontChangeDisk()
+		//{{{ +getDontChangeDisk() : boolean
 		/**
 		 *	Returns whether the "do not change file name on disk" checkbox is
 		 *	selected or not.

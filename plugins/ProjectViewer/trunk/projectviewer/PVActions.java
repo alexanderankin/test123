@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more detaProjectTreeSelectionListenerils.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -36,8 +36,11 @@ import org.gjt.sp.jedit.PluginJAR;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+
+import projectviewer.action.Action;
 import projectviewer.action.EditProjectAction;
 import projectviewer.action.LaunchBrowserAction;
+
 import projectviewer.config.ProjectViewerConfig;
 //}}}
 
@@ -51,41 +54,13 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public final class PVActions {
 
-	//{{{ +_editProject(View)_ : void
-	/** If a project is currently opened, open its properties dialog. */
-	public static void editProject(View view) {
-		ProjectViewer viewer = ProjectViewer.getViewer(view);
-		if (viewer == null) return;
-		VPTNode sel = viewer.getSelectedNode();
-		if (sel == null) {
-			sel = viewer.getRoot();
-		}
-		if (sel != null && !sel.isRoot()) {
-			EditProjectAction action = new EditProjectAction();
-			action.setViewer(viewer);
-			action.actionPerformed(null);
-		}
-	} //}}}
-
-	//{{{ +_createProject(View)_ : void
-	/** Shows the create project dialog. */
-	public static void createProject(View view) {
-		EditProjectAction action = new EditProjectAction(true);
-		ProjectViewer viewer = ProjectViewer.getViewer(view);
-		if (viewer != null)
-			action.setViewer(viewer);
-		action.actionPerformed(null);
-	} //}}}
-
 	//{{{ +_openAllProjectFiles(View)_ : void
 	/** If a project is currently active, open all its files. */
 	public static void openAllProjectFiles(View view) {
-		ProjectViewer viewer = ProjectViewer.getViewer(view);
-		if (viewer == null) return;
-		VPTNode sel = viewer.getRoot();
-		if (!sel.isRoot()) {
-			for (Iterator i = ((VPTProject)sel).getOpenableNodes().iterator(); i.hasNext(); ) {
-				((VPTFile)i.next()).open();
+		VPTProject active = ProjectViewer.getActiveProject(view);
+		if (active != null) {
+			for (Iterator i = active.getOpenableNodes().iterator(); i.hasNext(); ) {
+				((VPTNode)i.next()).open();
 			}
 		}
 	} //}}}
@@ -93,14 +68,11 @@ public final class PVActions {
 	//{{{ +_closeAllProjectFiles(View)_ : void
 	/** If a project is currently active, close all its files. */
 	public static void closeAllProjectFiles(View view) {
-		ProjectViewer viewer = ProjectViewer.getViewer(view);
-		if (viewer == null) return;
-		VPTNode sel = viewer.getRoot();
-		if (!sel.isRoot()) {
+		VPTProject active = ProjectViewer.getActiveProject(view);
+		if (active != null) {
 			Buffer[] bufs = jEdit.getBuffers();
-			VPTProject p = (VPTProject) sel;
 			for (int i = 0; i < bufs.length; i++) {
-				if (p.getChildNode(bufs[i].getPath()) != null) {
+				if (active.getChildNode(bufs[i].getPath()) != null) {
 					jEdit.closeBuffer(view, bufs[i]);
 				}
 			}
@@ -174,6 +146,49 @@ public final class PVActions {
 			viewer.setStatus(jEdit.getProperty("projectviewer.path_not_in_project"));
 		}
 
+	} //}}}
+
+	//{{{ +_pvActionWrapper(Action, View)_ : void
+	/**
+	 *	<p>Used to execute a PV action from the jEdit action mechanism. This is
+	 *	meant to be called from beanshell code in the action.xml file. It
+	 *	will check if the action accepts the current selected tree nodes
+	 *	before executing it by using the
+	 *	{@link Action#prepareForNode(VPTNode) prepareForNode()} method and then
+	 *	checking the visibility of the component returned by
+	 *	{@link Action#getMenuItem() getMenuItem()}, unless the "force" parameter
+	 *	is set to true. When forcing the execution, no checks are made, so it
+	 *	may be the case that the viewer doesn't exist yet and there's no
+	 *	active project for the current view.</p>
+	 *
+	 *	<p>When executing the action, a null is passed as the event in the
+	 *	actionPerformed method, so this won't work for actions that expect
+	 *	a proper event notification.<p>
+	 */
+	public static void pvActionWrapper(Action a, View v, boolean force) {
+		ProjectViewer viewer = ProjectViewer.getViewer(v);
+		if (!force && viewer != null && viewer.getCurrentTree() != null) {
+			a.setViewer(viewer);
+			a.getMenuItem();
+			switch (viewer.getCurrentTree().getSelectionCount()) {
+				case 1: // single selection
+					a.prepareForNode(viewer.getSelectedNode());
+					break;
+
+				default: // multiple selection or no selection
+					a.prepareForNode(null);
+					break;
+			}
+			if (a.getMenuItem().isVisible()) {
+				a.actionPerformed(null);
+				return;
+			}
+		} else {
+			a.actionPerformed(null);
+			return;
+		}
+		v.getStatus().setMessageAndClear(
+			jEdit.getProperty("projectviewer.error.cannot_exec_action"));
 	} //}}}
 
 	//{{{ +_listToObjectCollection(String, PluginJAR, Class)_ : Collection

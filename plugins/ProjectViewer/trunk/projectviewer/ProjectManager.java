@@ -107,11 +107,9 @@ public final class ProjectManager {
 		}
 
 		// Loads listeners from other plugins
-		if (ProjectViewerConfig.getInstance().isJEdit42()) {
-			EditPlugin[] plugins = jEdit.getPlugins();
-			for (int i = 0; i < plugins.length; i++) {
-				addProjectListeners(plugins[i].getPluginJAR());
-			}
+		EditPlugin[] plugins = jEdit.getPlugins();
+		for (int i = 0; i < plugins.length; i++) {
+			addProjectListeners(plugins[i].getPluginJAR());
 		}
 	} //}}}
 
@@ -170,9 +168,7 @@ public final class ProjectManager {
 			root.add(((Entry)projects.get(it.next())).project);
 		}
 
-		if (ProjectViewerConfig.getInstance().isJEdit42()) {
-			Helper.fireDynamicMenuChange();
-		}
+		fireDynamicMenuChange();
 	} //}}}
 
 	//{{{ +save() : void
@@ -284,9 +280,7 @@ public final class ProjectManager {
 		ProjectViewer.updateProjectCombos();
 		ProjectViewer.fireProjectAdded(this, p);
 
-		if (ProjectViewerConfig.getInstance().isJEdit42()) {
-			Helper.fireDynamicMenuChange();
-		}
+		fireDynamicMenuChange();
 	} //}}}
 
 	//{{{ +getProject(String) : VPTProject
@@ -418,6 +412,12 @@ public final class ProjectManager {
 		}
 	} //}}}
 
+	//{{{ -fireDynamicMenuChange() : void
+	public void fireDynamicMenuChange() {
+		DynamicMenuChanged msg = new DynamicMenuChanged("plugin.projectviewer.ProjectPlugin.menu");
+		EditBus.send(msg);
+	} //}}}
+
 	//{{{ Private Stuff
 
 	//{{{ -createFileName(String) : String
@@ -518,17 +518,6 @@ public final class ProjectManager {
 		out.write("</" + PROJECT_ROOT + ">\n");
 		out.flush();
 		out.close();
-	} //}}}
-
-	//{{{ -class _Helper_
-	private static class Helper {
-
-		//{{{ -_fireDynamicMenuChange()_ : void
-		private static void fireDynamicMenuChange() {
-			DynamicMenuChanged msg = new DynamicMenuChanged("plugin.projectviewer.ProjectPlugin.menu");
-			EditBus.send(msg);
-		} //}}}
-
 	} //}}}
 
 	//{{{ -class PVConfigHandler

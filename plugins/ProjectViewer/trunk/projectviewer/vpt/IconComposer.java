@@ -56,6 +56,11 @@ public final class IconComposer {
 	public final static int FILE_STATE_NOT_FOUND	= 3;
 
 	public final static int VC_STATE_NONE			= 0;
+	public final static int VC_STATE_LOCAL_MOD		= 1;
+	public final static int VC_STATE_LOCAL_ADD		= 2;
+	public final static int VC_STATE_LOCAL_RM		= 3;
+	public final static int VC_STATE_NEED_UPDATE	= 4;
+	public final static int VC_STATE_CONFLICT		= 5;
 
 	public final static int MSG_STATE_NONE			= 0;
 	public final static int MSG_STATE_MESSAGES		= 1;
@@ -75,9 +80,17 @@ public final class IconComposer {
 		new ImageIcon(IconComposer.class.getResource("/images/msg_state_messages.png"));
 	private final static Icon MSG_STATE_ERRORS_IMG =
 		new ImageIcon(IconComposer.class.getResource("/images/msg_state_errors.png"));
+
+	private static VCProvider vcProvider = null;
 	//}}}
 
 	//{{{ Public methods
+
+	//{{{ +_setVersionControlProvider(VCProvider)_ : void
+	public static void setVersionControlProvider(VCProvider vc) {
+		iconCache.clear();
+		vcProvider = vc;
+	} //}}}
 
 	//{{{ +_composeIcon(File, String, Icon)_ : Icon
 	public static Icon composeIcon(File f, String path, Icon baseIcon) {
@@ -90,6 +103,9 @@ public final class IconComposer {
 
 		int file_state = getFileState(f, path);
 		int vc_state = VC_STATE_NONE;
+		if (vcProvider != null) {
+			vc_state = vcProvider.getFileState(f, path);
+		}
 
 		try {
 			if(cache[vc_state][0][file_state][msg_state] == null) {
@@ -118,6 +134,8 @@ public final class IconComposer {
 						br = MSG_STATE_ERRORS_IMG;
 						break;
 				}
+				if (vcProvider != null)
+					tl = vcProvider.getIcon(vc_state);
 				cache[vc_state][0][file_state][msg_state] =
 					composeIcons(baseIcon, tl, tr, bl, br);
 			}
@@ -234,7 +252,10 @@ public final class IconComposer {
 	private static Icon[][][][] getIconCache(Icon icon) {
 		Icon[][][][] cache = (Icon[][][][]) iconCache.get(icon);
 		if (cache == null) {
-			cache = new Icon[1][1][4][3];
+			if (vcProvider == null)
+				cache = new Icon[1][1][4][3];
+			else
+				cache = new Icon[6][1][4][3];
 			iconCache.put(icon, cache);
 		}
 		return cache;
@@ -257,37 +278,64 @@ public final class IconComposer {
 	} //}}}
 
 	//}}}
-	
+
 	//{{{ -class _Helper_
 	/**
 	 *	Class to hold references to classes that may not be available, so this
 	 *	class can behave well when called from a BeanShell script.
 	 */
 	private static class Helper {
-	
+
 		//{{{ +_getMessageState(String)_ : int
 		public static int getMessageState(String path) {
 			int msg_state = IconComposer.MSG_STATE_NONE;
-			ErrorListPlugin el = (ErrorListPlugin) jEdit.getPlugin("errorlist.ErrorListPlugin", true);
-			if (el != null) {
-				ErrorSource[] sources = ErrorSource.getErrorSources();
-				for(int i = 0; i < sources.length; i++) {
-					if (sources[i].getFileErrorCount(path) > 0) {
-						msg_state = IconComposer.MSG_STATE_MESSAGES;
-						ErrorSource.Error[] errors = sources[i].getAllErrors();
-						for(int j=0; j < errors.length; j++) {
-							if(errors[j].getErrorType() == ErrorSource.ERROR) {
-								msg_state = IconComposer.MSG_STATE_ERRORS;
-								break;
-							}
+			ErrorSource[] sources = ErrorSource.getErrorSources();
+			for(int i = 0; i < sources.length; i++) {
+				if (sources[i].getFileErrorCount(path) > 0) {
+					msg_state = IconComposer.MSG_STATE_MESSAGES;
+					ErrorSource.Error[] errors = sources[i].getAllErrors();
+					for(int j=0; j < errors.length; j++) {
+						if(errors[j].getErrorType() == ErrorSource.ERROR) {
+							msg_state = IconComposer.MSG_STATE_ERRORS;
+							break;
 						}
-						break;
 					}
+					break;
 				}
 			}
 			return msg_state;
 		} //}}}
-		
+
+	} //}}}
+
+	//{{{ +class _VCProvider_
+	public static abstract class VCProvider {
+
+		//{{{ +*getFileState(File, String)* : int
+		/**
+		 *	This method should return one of the VC_STATE possible values
+		 *	for the given file. The file argument may be null, in which
+		 *	case the path should be used to identify the file (this will
+		 *	be the case, for example, with files from a VFS).
+		 *
+		 *	<p>No range checking is performed on the returned values, so
+		 *	make sure that the value is one of the defined constants.</p>
+		 *
+		 *	@param	f		The file, if it's a local file.
+		 *	@param	path	The path to the file (absolute path if local, VFS
+		 *					URL otherwise).
+		 */
+		public abstract int getFileState(File f, String path); //}}}
+
+		//{{{ +*getIcon(int)* : Icon
+		/**
+		 *	This should return the icon to be used to represent the requested
+		 *	state.
+		 *
+		 *	@param	state	One of the defined VC_STATE_* constants.
+		 */
+		public abstract Icon getIcon(int state); //}}}
+
 	} //}}}
 
 }
