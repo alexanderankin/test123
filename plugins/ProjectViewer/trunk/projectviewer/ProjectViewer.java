@@ -65,9 +65,6 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Static members
 
-	/** The "main" viewer. Actually, the first instance to be created. */
-	private static ProjectViewer mainViewer;
-	
 	/** Maps jEdit views to ProjectViewer instances. */
 	private static final Hashtable viewers = new Hashtable();
 
@@ -132,25 +129,11 @@ public final class ProjectViewer extends JPanel
 		enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
 		config.addPropertyChangeListener(this);
 
-		if(mainViewer == null) {
-			mainViewer = this;
-			setCurrentProject(getLastProject());
-		} else {
-			setCurrentProject(mainViewer.getCurrentProject());
-		}
+		setCurrentProject(ProjectManager.getInstance().getCurrentProject());
 		
 		tsl.stateChanged(null);
 		EditBus.addToBus(this);
 		viewers.put(view,this);
-	}//}}}
-
-	//{{{ getMainViewer() method
-	/** Gets the mainViewer attribute of the ProjectViewer class
-	 *
-	 * @return    The mainViewer value
-	 */
-	public static ProjectViewer getMainViewer() {
-		return mainViewer;
 	}//}}}
 
 	//{{{ getView() method
