@@ -15,6 +15,16 @@
 			new console.CommandoDialog(view,null);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="commando-compile">
+		<CODE>
+			console.ConsolePlugin.compile(view,buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="commando-run">
+		<CODE>
+			console.ConsolePlugin.run(view,buffer);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="rescan-commando-directory">
 		<CODE>
 			console.ConsolePlugin.rescanCommandoDirectory();

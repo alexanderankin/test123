@@ -3,6 +3,8 @@
 - file name, built-in, alias completion
 - finish documentation
 - improve commando error handling
+- 'compile' and 'run' commands -- associated with each mode, are two
+  commando files
 
 + later:
 
