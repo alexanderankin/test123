@@ -1,9 +1,7 @@
-+ version 0.9.2:
++ version 0.10:
 
-- enter text in tag; switch to non-xml buffer; npe
 - DTD downloader -- clear cache command should remove d/l'd files too
-- virtual to physical problems stil
-- too many buffer change listeners
+- &, < or > will show up twice if a DTD defines it
 
 + before 1.0:
 

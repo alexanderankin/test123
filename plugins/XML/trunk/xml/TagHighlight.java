@@ -59,7 +59,9 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 	public void dispose()
 	{
 		EditBus.removeFromBus(this);
-		buffer.removeBufferChangeListener(bufferHandler);
+
+		if(buffer != null)
+			buffer.removeBufferChangeListener(bufferHandler);
 	} //}}}
 
 	//{{{ handleMessage() method
