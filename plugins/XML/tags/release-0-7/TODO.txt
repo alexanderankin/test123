@@ -1,0 +1,32 @@
++ version 0.7:
+
+- add XHTML, and maybe DocBook DTDs
+- recording <, >, /, &
+- threaddeath -- wtf?
+- 'advanced' option pane for selecting a parser, with a 'don't change this
+  if you don't know what you're doing' warning. tag highlight in modes that
+  set 'xml.parser' property
+- use getContextSensitiveProperty()
+- option to not fetch stuff from 'net
+- tag hilite: respect syntax info
+- id completion
+- switching between two edit panes with same buffer: expand tree at
+  appropriate location
+- proper handling of tags in nested files
+- documentation: XML catalog format, OASIS catalog format
+- test XMLCatalog support, include an XMLCatalog DTD
+- All/1/2/3/4 buttons in XML tree that expand/collapse tree that certain
+  level
+- handle parsing open buffers better
+- let user specify completion info files in advanced option pane.
+- option to show id attr only in tree
+
++ before 1.0:
+
+- new xml file wizard
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available
+- maybe some features for editing dtds:
+  - a different xml insert window lists <!ELEMENT, <!ATTLIST, ...
+  - a different edit tag dialog for editing dtd declarations
+  - list all dtd tags in xml tree
