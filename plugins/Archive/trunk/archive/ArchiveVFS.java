@@ -608,13 +608,14 @@ public class ArchiveVFS extends VFS {
                         break;
 
                     Log.log(Log.DEBUG,this,"Copy entry " + next);
-                    archiveOut.putNextEntry(next);
 
                     if(next.getName().equals(archive.entryName)) {
                         next.setSize(length);
+                        archiveOut.putNextEntry(next);
                         copy(outputFile,archiveOut);
                         saved = true;
                     } else {
+                        archiveOut.putNextEntry(next);
                         copy(archiveIn,archiveOut);
                     }
                     archiveOut.closeEntry();
