@@ -19,12 +19,13 @@
  */
 package xslt;
 
+import java.io.IOException;
+
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import xml.CatalogManager;
 
-import java.io.IOException;
+import xml.CatalogManager;
 
 
 /**
