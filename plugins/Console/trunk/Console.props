@@ -1,7 +1,7 @@
 ### Plugin properties
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=3.0
+plugin.console.ConsolePlugin.version=3.0.1
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=users-guide.html
 

@@ -13,6 +13,7 @@
 	</ACTION>
 	<ACTION NAME="console-to-front">
 		<CODE>
+			import console.Console;
 			view.getDockableWindowManager().addDockableWindow("console");
 			console = view.getDockableWindowManager().getDockableWindow("console");
 			console.setShell(Shell.getShell("System"));
