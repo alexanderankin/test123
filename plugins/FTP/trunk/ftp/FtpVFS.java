@@ -609,7 +609,6 @@ public class FtpVFS extends VFS
 					}
 
 					name = match.toString(2);
-					System.err.println(i + ": " + name);
 					break;
 				}
 			}

@@ -2,7 +2,7 @@
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
 plugin.ftp.FtpPlugin.version=0.2.8
-plugin.ftp.FtpPlugin.docs=FTP.html
+plugin.ftp.FtpPlugin.docs=users-guide.html
 plugin.ftp.FtpPlugin.depend.0=jedit 02.07.02.00
 
 # Menu
