@@ -40,19 +40,6 @@ public class ConsoleTextField extends HistoryTextField
 		this.view = view;
 	} //}}}
 
-	//{{{ getShell() method
-	public Shell getShell()
-	{
-		return shell;
-	} //}}}
-
-	//{{{ setShell() method
-	public void setShell(Shell shell)
-	{
-		this.shell = shell;
-		setModel("console." + shell.getName());
-	} //}}}
-
 	//{{{ getFocusTraversalKeysEnabled() method
 	public boolean getFocusTraversalKeysEnabled()
 	{
@@ -76,7 +63,6 @@ public class ConsoleTextField extends HistoryTextField
 
 	//{{{ Private members
 	private View view;
-	private Shell shell;
 
 	//{{{ complete() method
 	private void complete()
@@ -84,6 +70,7 @@ public class ConsoleTextField extends HistoryTextField
 		Console console = (Console)view.getDockableWindowManager()
 			.getDockable("console");
 
+		Shell shell = console.getShell();
 		Shell.CompletionInfo info = shell.getCompletions(
 			view,(console == null ? System.getProperty("user.dir")
 			: SystemShell.getConsoleState(console).currentDirectory),

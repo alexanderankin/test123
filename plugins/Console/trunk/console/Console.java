@@ -50,7 +50,7 @@ implements EBComponent, Output
 
 		this.view = view;
 
-		Shell[] shells = Shell.getShells();
+		String[] shells = Shell.getShellNames();
 		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
 		shellCombo = new JComboBox(shells);
 		shellCombo.addActionListener(new ActionHandler());
@@ -123,7 +123,7 @@ implements EBComponent, Output
 		add(BorderLayout.CENTER,scroller);
 
 		propertiesChanged();
-		setShell(ConsolePlugin.getSystemShell());
+		setShell("System");
 	} //}}}
 
 	//{{{ requestDefaultFocus() method
@@ -166,19 +166,18 @@ implements EBComponent, Output
 	//{{{ getShell() method
 	public Shell getShell()
 	{
-		return (Shell)shellCombo.getSelectedItem();
+		return Shell.getShell((String)shellCombo.getSelectedItem());
 	} //}}}
 
 	//{{{ setShell() method
-	public void setShell(Shell shell)
+	public void setShell(String shell)
 	{
-		if(this.shell == shell)
-			return;
-
-		this.shell = shell;
+		Shell _shell = Shell.getShell(shell);
+		if(_shell == null)
+			throw new NullPointerException();
 
 		shellCombo.setSelectedItem(shell);
-		command.setShell(shell);
+		command.setModel("console." + shell);
 
 		clear();
 	} //}}}
@@ -199,7 +198,7 @@ implements EBComponent, Output
 	public void clear()
 	{
 		output.setText("");
-		shell.printInfoMessage(this);
+		getShell().printInfoMessage(this);
 	} //}}}
 
 	//{{{ run() method
@@ -381,7 +380,6 @@ implements EBComponent, Output
 	//{{{ Instance variables
 	private View view;
 	private JComboBox shellCombo;
-	private Shell shell;
 	private ConsoleTextField command;
 	private RolloverButton run, toBuffer, stop, clear;
 	private JLabel animationLabel;
@@ -419,7 +417,7 @@ implements EBComponent, Output
 			Object source = evt.getSource();
 
 			if(source == shellCombo)
-				setShell((Shell)shellCombo.getSelectedItem());
+				setShell((String)shellCombo.getSelectedItem());
 			else if(source == command || source == run)
 			{
 				String cmd = command.getText();
@@ -439,7 +437,7 @@ implements EBComponent, Output
 				run(getShell(),new BufferOutput(Console.this),cmd);
 			}
 			else if(source == stop)
-				shell.stop(Console.this);
+				getShell().stop(Console.this);
 			else if(source == clear)
 				clear();
 		}
