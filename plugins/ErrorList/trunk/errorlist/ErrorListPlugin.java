@@ -36,14 +36,17 @@ public class ErrorListPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
-		View[] views = jEdit.getViews();
-		for(int i = 0; i < views.length; i++)
+		View view = jEdit.getFirstView();
+		while(view != null)
 		{
-			EditPane[] panes = views[i].getEditPanes();
-			for(int j = 0; j < panes.length; j++)
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
 			{
-				initTextArea(panes[j].getTextArea());
+				JEditTextArea textArea = panes[i].getTextArea();
+				initTextArea(textArea);
+				addErrorOverviewIfErrors(textArea);
 			}
+			view = view.getNext();
 		}
 
 		propertiesChanged();
@@ -52,15 +55,17 @@ public class ErrorListPlugin extends EBPlugin
 	//{{{ stop() method
 	public void stop()
 	{
-		View[] views = jEdit.getViews();
-		for(int i = 0; i < views.length; i++)
+		View view = jEdit.getFirstView();
+		while(view != null)
 		{
-			EditPane[] panes = views[i].getEditPanes();
-			for(int j = 0; j < panes.length; j++)
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
 			{
-				uninitTextArea(panes[j].getTextArea());
-				removeErrorOverview(panes[j].getTextArea());
+				JEditTextArea textArea = panes[i].getTextArea();
+				uninitTextArea(textArea);
+				removeErrorOverview(textArea);
 			}
+			view = view.getNext();
 		}
 	} //}}}
 
@@ -75,39 +80,34 @@ public class ErrorListPlugin extends EBPlugin
 			propertiesChanged();
 	} //}}}
 
-	//{{{ setErrorOverviewVisible() method
-	public static void setErrorOverviewVisible(boolean errorOverviewVisible)
+	//{{{ showErrorOverviewIfNecessary() method
+	public void showErrorOverviewIfNecessary()
 	{
 		View view = jEdit.getFirstView();
 		while(view != null)
 		{
-			EditPane[] editPanes = view.getEditPanes();
-			for(int i = 0; i < editPanes.length; i++)
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
 			{
-				JEditTextArea textArea = editPanes[i].getTextArea();
-				if(errorOverviewVisible)
-					addErrorOverview(textArea);
-				else
-					removeErrorOverview(textArea);
+				addErrorOverviewIfErrors(panes[i].getTextArea());
 			}
-
 			view = view.getNext();
 		}
-	} //}}}
-
-	//{{{ usErrorOverviewVisible() method
-	public static boolean isErrorOverviewVisible()
-	{
-		return errorOverviewVisible;
 	} //}}}
 
 	//{{{ addErrorOverview() method
 	public static void addErrorOverview(JEditTextArea textArea)
 	{
-		ErrorOverview overview = new ErrorOverview(textArea);
-		textArea.addLeftOfScrollBar(overview);
-		textArea.putClientProperty(ErrorOverview.class,overview);
-		textArea.revalidate();
+		ErrorOverview overview = getErrorOverview(textArea);
+		if(overview != null)
+			overview.repaint();
+		else
+		{
+			overview = new ErrorOverview(textArea);
+			textArea.addLeftOfScrollBar(overview);
+			textArea.putClientProperty(ErrorOverview.class,overview);
+			textArea.revalidate();
+		}
 	} //}}}
 
 	//{{{ removeErrorOverview() method
@@ -118,8 +118,7 @@ public class ErrorListPlugin extends EBPlugin
 		{
 			textArea.removeLeftOfScrollBar(overview);
 			textArea.revalidate();
-			textArea.getPainter().putClientProperty(ErrorOverview.class,
-				null);
+			textArea.putClientProperty(ErrorOverview.class,null);
 		}
 	} //}}}
 
@@ -138,19 +137,31 @@ public class ErrorListPlugin extends EBPlugin
 
 	//{{{ Private members
 	private static boolean showOnError;
+	private static boolean showErrorOverview;
 	private static Color warningColor;
 	private static Color errorColor;
-
-	private static boolean errorOverviewVisible;
 
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
 		showOnError = jEdit.getBooleanProperty("error-list.showOnError");
+		showErrorOverview = jEdit.getBooleanProperty("error-list.showErrorOverview");
 		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
 			"error-list.warningColor"));
 		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
 			"error-list.errorColor"));
+
+		View view = jEdit.getFirstView();
+		while(view != null)
+		{
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
+			{
+				JEditTextArea textArea = panes[i].getTextArea();
+				addErrorOverviewIfErrors(textArea);
+			}
+			view = view.getNext();
+		}
 	} //}}}
 
 	//{{{ initTextArea() method
@@ -158,8 +169,7 @@ public class ErrorListPlugin extends EBPlugin
 	{
 		ErrorHighlight highlight = new ErrorHighlight(textArea);
 		textArea.getPainter().addExtension(highlight);
-		textArea.getPainter().putClientProperty(ErrorHighlight.class,
-			highlight);
+		textArea.putClientProperty(ErrorHighlight.class,highlight);
 	} //}}}
 
 	//{{{ uninitTextArea() method
@@ -170,8 +180,7 @@ public class ErrorListPlugin extends EBPlugin
 		if(highlight != null)
 		{
 			textArea.getPainter().removeExtension(highlight);
-			textArea.getPainter().putClientProperty(ErrorHighlight.class,
-				null);
+			textArea.putClientProperty(ErrorHighlight.class,null);
 		}
 	} //}}}
 
@@ -186,8 +195,7 @@ public class ErrorListPlugin extends EBPlugin
 	private void handleErrorSourceMessage(ErrorSourceUpdate message)
 	{
 		Object what = message.getWhat();
-		if(what == ErrorSourceUpdate.ERROR_ADDED
-			|| what == ErrorSourceUpdate.ERROR_REMOVED)
+		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
 			ErrorSource.Error error = message.getError();
 			Buffer buffer = error.getBuffer();
@@ -200,7 +208,24 @@ public class ErrorListPlugin extends EBPlugin
 					showErrorList(jEdit.getActiveView());
 			}
 		}
-		else if(what == ErrorSourceUpdate.ERRORS_CLEARED)
+		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
+		{
+			ErrorSource.Error error = message.getError();
+			Buffer buffer = error.getBuffer();
+			if(buffer != null)
+			{
+				invalidateLineInAllViews(buffer,error.getLineNumber());
+			}
+
+			if(showOnError)
+			{
+				if(jEdit.getActiveView() != null)
+					showErrorList(jEdit.getActiveView());
+			}
+		}
+		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
+			|| what == ErrorSourceUpdate.ERROR_SOURCE_ADDED
+			|| what == ErrorSourceUpdate.ERROR_SOURCE_REMOVED)
 		{
 			View view = jEdit.getFirstView();
 			while(view != null)
@@ -211,11 +236,7 @@ public class ErrorListPlugin extends EBPlugin
 					EditPane pane = editPanes[i];
 					pane.getTextArea().getPainter()
 						.repaint();
-					ErrorOverview overview
-						= getErrorOverview(
-						pane.getTextArea());
-					if(overview != null)
-						overview.repaint();
+					addErrorOverviewIfErrors(pane.getTextArea());
 				}
 				view = view.getNext();
 			}
@@ -235,10 +256,7 @@ public class ErrorListPlugin extends EBPlugin
 				if(pane.getBuffer() == buffer)
 				{
 					pane.getTextArea().invalidateLine(line);
-					ErrorOverview overview = getErrorOverview(
-						pane.getTextArea());
-					if(overview != null)
-						overview.invalidateLine(line);
+					addErrorOverviewIfErrors(pane.getTextArea());
 				}
 			}
 
@@ -250,14 +268,46 @@ public class ErrorListPlugin extends EBPlugin
 	private void handleEditPaneMessage(EditPaneUpdate message)
 	{
 		JEditTextArea textArea = message.getEditPane().getTextArea();
+		Object what = message.getWhat();
 
-		if(message.getWhat() == EditPaneUpdate.CREATED)
+		if(what == EditPaneUpdate.CREATED)
+		{
 			initTextArea(textArea);
-		else if(message.getWhat() == EditPaneUpdate.DESTROYED)
+			addErrorOverviewIfErrors(textArea);
+		}
+		else if(what == EditPaneUpdate.DESTROYED)
 		{
 			uninitTextArea(textArea);
 			removeErrorOverview(textArea);
 		}
+		else if(what == EditPaneUpdate.BUFFER_CHANGED)
+		{
+			addErrorOverviewIfErrors(textArea);
+		}
+	} //}}}
+
+	//{{{ addErrorOverviewIfErrors() method
+	private void addErrorOverviewIfErrors(JEditTextArea textArea)
+	{
+		Buffer buffer = textArea.getBuffer();
+
+		if(showErrorOverview)
+		{
+			ErrorSource[] errorSources = ErrorSource.getErrorSources();
+			for(int i = 0; i < errorSources.length; i++)
+			{
+				ErrorSource source = errorSources[i];
+				if(source.getFileErrors(buffer.getPath()) != null)
+				{
+					addErrorOverview(textArea);
+					return;
+				}
+			}
+		}
+
+		// if we got here, no sources have errors or user disabled
+		// error overview
+		removeErrorOverview(textArea);
 	} //}}}
 
 	//}}}
