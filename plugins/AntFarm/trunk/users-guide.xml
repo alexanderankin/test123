@@ -79,15 +79,15 @@
 
 <para>
  <application>Ant</application> is a Java based make tool developed by the
- <ulink url="http://jakarta.apache.org/ant">Apache Jakarta project</ulink>.
+ <ulink url="http://ant.apache.org">Apache Jakarta project</ulink>.
 </para>
 <para>
  For help writing <application>Ant</application> build files, please refer to the
  <application>Ant</application> project's
- <ulink url="http://jakarta.apache.org/ant/manual/index.html">online help</ulink>.
+ <ulink url="http://ant.apache.org/manual/index.html">online help</ulink>.
 </para>
 <para>
- AntFarm includes version 1.4.1 of <application>Ant</application>.
+ AntFarm includes version 1.5.1 of <application>Ant</application>.
 </para>
 
 <sect1 id="configuration"><title>Configuring Ant Farm</title>
@@ -124,15 +124,15 @@
  To run Ant builds outside of the current JVM, specify the build file you wish
  to use. Default build files for multiple operating systems are included with
  the binary distribution of the
- <ulink url="http://jakarta.apache.org/ant">Jakarta-Ant project</ulink>.
+ <ulink url="http://ant.apache.org">Jakarta-Ant project</ulink>.
  </para>
  <para>
  Additionally, you can specify global properties that will be passed to Ant.
  Access <guimenu>Global Options</guimenu> -&gt;
  <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel> -&gt;
- <guilabel>Properties</guilabel>, and enter the name/value pairs for the 
+ <guilabel>Properties</guilabel>, and enter the name/value pairs for the
  properties you need. Ant Farm will prompt you for runtime properties each time
- you run a target. To turn this feature off, click <guilabel>Do not prompt for 
+ you run a target. To turn this feature off, click <guilabel>Do not prompt for
  properties when running targets</guilabel>. Properties specified at target
  runtime are not added to the global properties list.
  </para>
@@ -156,7 +156,7 @@
  </para>
  <para>
  Ant Farm can save all currently changed buffers whenever you execute a target.
- To turn this feature on, check <guilabel>Save all buffers before running a 
+ To turn this feature on, check <guilabel>Save all buffers before running a
  target</guilabel>.
  </para>
 </sect1>
@@ -267,7 +267,7 @@
   after you run a target. This can be turned off from the property dialog, or
   turned back on by unchecking, <guimenu>Global Options</guimenu> -&gt;
  <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel> -&gt;
- <guilabel>Properties</guilabel>, <guilabel>Do not prompt for 
+ <guilabel>Properties</guilabel>, <guilabel>Do not prompt for
  properties when running targets</guilabel>
   </para>
   <para>The next section explains how to run targets from the
@@ -307,7 +307,7 @@
  </para>
  <itemizedlist>
  <listitem><para>
- <command>! <literal>[prop=value]*</literal></command>	-- runs the default 
+ <command>! <literal>[prop=value]*</literal></command>	-- runs the default
  target for the current build file with specified properties.
  </para></listitem>
  <listitem><para>
@@ -352,6 +352,59 @@
  <application>Ant</application> project has a base directory. This command opens
  that directory in the <application>File System Browser</application>.
  </para></listitem>
+ </itemizedlist>
+
+ </chapter>
+
+ <chapter id="history"><title>History</title>
+
+ <para>Version 1.3</para>
+
+ <itemizedlist>
+
+ <listitem>
+ <para>JW/TP - Updated look and feel of AntFarm for new Look and Feel of jEdit 4.1.</para>
+ </listitem>
+
+ <listitem>
+ <para>TP - Updated AntFarm integration for Project Viewer 2.0.</para>
+ </listitem>
+
+ <listitem>
+ <para>JW - Updated to Ant 1.5.1</para>
+ </listitem>
+
+ <listitem>
+ <para>JW - The Options menu now uses the correct GUIUtilities API for correct
+ placement.</para>
+ </listitem>
+
+ <listitem>
+ <para>JW - The Toolbar's buttons have been changed to RolloverButton instances.</para>
+ </listitem>
+
+ <listitem>
+ <para>JW - The popup menu is now shown on MousePressed not MouseReleased.</para>
+ </listitem>
+
+ <listitem>
+ <para>JW - 2x2 pixel sized Tooltips were being shown for all targets (even those
+ without a description).  This has been fixed.</para>
+ </listitem>
+
+ <listitem>
+ <para>JW - The Console plugin is not utilized (brought to the front) until a target
+ is "run".</para>
+ </listitem>
+
+ <listitem>
+ <para>TP - Updated documentation in several places. (Ant hrefs, Ant versions, etc)</para>
+ </listitem>
+
+ <listitem>
+ <para>TP - Added history section to documentation.</para>
+ </listitem>
+
  </itemizedlist>
 
  </chapter>

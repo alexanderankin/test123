@@ -18,18 +18,18 @@ antfarm.label=Ant Farm
 
 # Ant shell properties
 antfarm.shell.msg.info=\nUse this shell to run Ant builds. \n\
-			Watch out for the red ones, they bite.\n\n
+      Watch out for the red ones, they bite.\n\n
 antfarm.shell.msg.non-selected=No build file selected.
 antfarm.shell.msg.invalid-usage=Invalid command, please check your usage.
 antfarm.shell.msg.usage=The Ant shell supports the following commands:\n\
-			   * "! [prop=value]*"\t\t\t-- runs the default target for the current build file\n\
-			   * "![target_name] [prop=value]*"\t-- runs the specified target for the current build file\n\
-			   * "?"\t\t\t\t-- lists the available build files and usage\n\
-			   * "=build_file_number"\t\t-- changes the current build file to the number identified by "?"\n\
-			   * "+[full_path_to_file]"\t\t-- load this build file into Ant Farm. Searches up the current\n\
-			   		       \t\t\t\t   buffer's directory tree for a "build.xml" file to load if a \n\
-					       \t\t\t\t   file is not specified. Re-loads the build file if it is already\n\
-					       \t\t\t\t   loaded.\n\n
+         * "! [prop=value]*"\t\t\t-- runs the default target for the current build file\n\
+         * "![target_name] [prop=value]*"\t-- runs the specified target for the current build file\n\
+         * "?"\t\t\t\t-- lists the available build files and usage\n\
+         * "=build_file_number"\t\t-- changes the current build file to the number identified by "?"\n\
+         * "+[full_path_to_file]"\t\t-- load this build file into Ant Farm. Searches up the current\n\
+                   \t\t\t\t   buffer's directory tree for a "build.xml" file to load if a \n\
+                 \t\t\t\t   file is not specified. Re-loads the build file if it is already\n\
+                 \t\t\t\t   loaded.\n\n
 antfarm.shell.msg.killed=Ant target killed.
 antfarm.shell.msg.broken-file=Build file cannot be parsed:\ 
 antfarm.shell.msg.no-build-file=Not a valid build file number, use "?" to display known build files./n
@@ -53,6 +53,8 @@ antfarm.run.label=Run Current Target
 #antfarm.options.icon=Preferences.png
 antfarm.options.label=AntFarm Options
 antfarm.options.text=Options
+antfarm.options.icon.name=/icons/ToolbarMenu.gif
+antfarm.options.icon.type=custom
 
 antfarm.root.label=Ant Projects
 antfarm.root.noBuildFiles=No build files...
@@ -63,9 +65,9 @@ antfarm.project.icon.name=File.png
 antfarm.project.icon.type=stock
 antfarm.brokenProject.icon.name=/icons/Cancel.png
 antfarm.brokenProject.icon.type=custom
-antfarm.target.icon.name=/icons/Target.png
+antfarm.target.icon.name=/icons/normal.gif
 antfarm.target.icon.type=custom
-antfarm.defaultTarget.icon.name=/icons/DefaultTarget.png
+antfarm.defaultTarget.icon.name=/icons/new.gif
 antfarm.defaultTarget.icon.type=custom
 
 antfarm.project.broken=Invalid build file:\ 
@@ -101,15 +103,15 @@ options.antfarm.choose-antpath=Browse
 options.antfarm.build-classpath=Build
 options.antfarm.file-dialog-approve=Select
 options.antfarm.prompt=You have not selected the method to use when invoking Ant.\n\n\
-			  You can choose to use the same JVM as jEdit or you \
-			  can select a batch/shell script to use. \n\
-			  When using the same JVM, you may need to allocate \
-			  more memory to the jEdit JVM at startup. \n\n\
-			  To select a batch/shell script, you must install the \
-			  Jakarta-Ant distribution from \
-			  http://jakarta.apache.org/ant\n\
-			  Note: the Ant distribution provides these scripts in "<ant directory>/bin"\n\n\
-			  Do you want to select an external batch/shell script?\n
+        You can choose to use the same JVM as jEdit or you \
+        can select a batch/shell script to use. \n\
+        When using the same JVM, you may need to allocate \
+        more memory to the jEdit JVM at startup. \n\n\
+        To select a batch/shell script, you must install the \
+        Jakarta-Ant distribution from \
+        http://jakarta.apache.org/ant\n\
+        Note: the Ant distribution provides these scripts in "<ant directory>/bin"\n\n\
+        Do you want to select an external batch/shell script?\n
 options.antfarm.prompt-dialog-title=Undefined Ant script
 options.antfarm.use-same-jvm-button=Run Ant targets in the same JVM
 options.antfarm.use-external-script-button=Run Ant targets using an external script/build file
@@ -131,11 +133,11 @@ options.antfarm.logging-level-label=Select Ant logging level.
 # Message dialogs
 tools-jar-missing.title=AntFarm cannot locate tools.jar
 tools-jar-missing.message=The tools.jar archive cannot be located by AntFarm. This will\n\
-			  cause problems when trying to use the modern and classic compilers\n\
-			  in build scripts. If you want AntFarm to work properly, please \n\
-			  configure jEdit to run with a Java Development Kit (JDK), not the\n\
-			  Java Runtime Environment (JRE). \n\n\
-			  View the Activity Log for more details.
+        cause problems when trying to use the modern and classic compilers\n\
+        in build scripts. If you want AntFarm to work properly, please \n\
+        configure jEdit to run with a Java Development Kit (JDK), not the\n\
+        Java Runtime Environment (JRE). \n\n\
+        View the Activity Log for more details.
 
 # Option menu commands
 antfarm.commands.properties.label=Prompt for properties
