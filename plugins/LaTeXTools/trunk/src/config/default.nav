@@ -1,0 +1,21 @@
+@Sections2
+1:(\\chapter\{.+?\})
+2:(\\section\{.+?\})
+3:(\\subsection\{.+?\})
+4:(\\subsubsection\{.+?\})
+5:(\\paragraph\{.+?\})
+
+@Theorems4
+1:\\begin\{theorem\}
+1:\\begin\{lemma\}
+1:\\begin\{proposition\}
+1:\\begin\{definition\}
+1:\\begin\{corollary\}
+2:\\begin\{proof\}
+
+@Figure List6
+1:\\fig
+1:\\begin\{figure\}
+2:\\caption
+
+
