@@ -93,7 +93,7 @@ public final class PHPParser {
    * Set the path of the file that is currently parsed.
    * This path will be sent in parse errors and messages
    *
-   * @params path the path of the parsed file
+   * @param path the path of the parsed file
    */
   public void setPath(final String path) {
     this.path = path;
@@ -240,24 +240,18 @@ public final class PHPParser {
     }
   }      */
 
-  public final void parse() throws ParseException {
-	  phpFile();
-  }
-
-
   Token error_skipto(int kind) {
-    ParseException e = generateParseException();  // generate the exception object.
-    System.out.println(e.toString());  // print the error message
+  //  ParseException e = generateParseException();  // generate the exception object.
+  //  System.out.println(e.toString());  // print the error message
     Token t;
     do {
       t = getNextToken();
     } while (t.kind != kind && t.kind != PHPParserConstants.EOF);
     return t;
-      // The above loop consumes tokens all the way up to a token of
-      // "kind".  We use a do-while loop rather than a while because the
-      // current token is the one immediately before the erroneous token
-      // (in our case the token immediately before what should have been
-      // "if"/"while".
+  }
+
+  public final void parse() throws ParseException {
+	  phpFile();
   }
 }
 
@@ -728,6 +722,12 @@ void Php() :
   (BlockStatement())*
 }
 
+/**
+ * A Class declaration.
+ * class <IDENTIFIER> [extends <IDENTIFIER>] Class body
+ *
+ * @return a ClassDeclaration
+ */
 ClassDeclaration ClassDeclaration() :
 {
   final ClassDeclaration classDeclaration;
@@ -1163,6 +1163,8 @@ ArrayVariableDeclaration[] ArrayInitializer() :
 /**
  * A Method Declaration.
  * <b>function</b> MetodDeclarator() Block()
+ *
+ * @return a MethodDeclaration
  */
 MethodDeclaration MethodDeclaration() :
 {
@@ -1187,6 +1189,7 @@ MethodDeclaration MethodDeclaration() :
 /**
  * A MethodDeclarator.
  * [&] IDENTIFIER(parameters ...).
+ *
  * @return a function description for the outline
  */
 MethodDeclaration MethodDeclarator(final int start) :
@@ -1206,17 +1209,32 @@ MethodDeclaration MethodDeclarator(final int start) :
       end = identifier.sourceEnd;
     }
   } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "identifier expected",
-                                          "identifier",
-                                          e.currentToken.image,
-                                          end,
-                                          end + 1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+    if (e.currentToken.next.kind == PHPParserConstants.LPAREN) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "identifier expected",
+                                            "identifier",
+                                            e.currentToken.image,
+                                            start,
+                                            e.currentToken.sourceStart,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.beginColumn-1,
+                                            e.currentToken.endColumn));
+    } else {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected token",
+                                            "identifier",
+                                            e.currentToken.next.image,
+                                            e.currentToken.next.sourceStart,
+                                            e.currentToken.next.sourceEnd,
+                                            e.currentToken.next.beginLine,
+                                            e.currentToken.next.endLine,
+                                            e.currentToken.next.beginColumn,
+                                            e.currentToken.next.endColumn));
+      //error_skipto(PHPParserConstants.LPAREN);
+    }
   }
   end = FormalParameters(formalParameters)
   {
