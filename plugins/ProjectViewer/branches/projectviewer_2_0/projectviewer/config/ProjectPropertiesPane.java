@@ -59,6 +59,8 @@ import projectviewer.vpt.VPTProject;
  */
 public class ProjectPropertiesPane extends AbstractOptionPane implements ActionListener {
 
+	public final static String DEFAULT_URL = "http://";
+
 	//{{{ Instance Variables
 	
 	private int result;
@@ -71,16 +73,18 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	private JButton	chooseRoot;
 	
 	private boolean ok;
+	private boolean isNew;
 
 	//}}}
 	
 	//{{{ Constructors
 	
 	/** Builds the dialog. */
-	public ProjectPropertiesPane(VPTProject p) {
+	public ProjectPropertiesPane(VPTProject p, boolean isNew) {
 		super("projectviewer.project_props");
 		this.project = p;
 		this.ok = true;
+		this.isNew = isNew;
 	}
 	
 	//}}}
@@ -125,7 +129,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 			 ok = false;
 		}
 		
-		if (ProjectManager.getInstance().hasProject(name)) {
+		if (isNew && ProjectManager.getInstance().hasProject(name)) {
 			JOptionPane.showMessageDialog(
 				this, 
 				jEdit.getProperty("projectviewer.project.options.name_exists"),
@@ -159,7 +163,11 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		if (ok) {
 			project.setName(name);
 			project.setRootPath(root);
-			project.setURL(urlRoot);
+			if (!urlRoot.equals(DEFAULT_URL)) { 
+				project.setURL(urlRoot);
+			} else {
+				project.setURL(null);
+			}
 		}
 	} //}}}
 	
@@ -177,7 +185,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		
 		// Project name
 		
-		JLabel label = new JLabel("Project name:");
+		JLabel label = new JLabel(jEdit.getProperty("projectviewer.project.options.name"));
 		gc.weightx = 0;
 		gc.gridx = 0;
 		gc.gridy = 0;
@@ -195,7 +203,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		add(projName);
 		
 		// Project root
-		label = new JLabel("Root directory:");
+		label = new JLabel(jEdit.getProperty("projectviewer.project.options.root"));
 		gc.weightx = 0;
 		gc.gridx = 0;
 		gc.gridy = 1;
@@ -218,7 +226,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		add(projRoot);
 	
 	
-		chooseRoot = new JButton("Choose");   
+		chooseRoot = new JButton(jEdit.getProperty("projectviewer.project.options.root_choose"));   
 		chooseRoot.addActionListener(this);
 		gc.weightx = 0;
 		gc.gridx = 2;
@@ -229,8 +237,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 
 		// URL Root for web projects.  Used to launch files in web browser against webserver
 	
-		label = new JLabel("Web URL Root(optional)");
-		label.setToolTipText("sets the URL for a web project e.g. http://<projecturl>");
+		label = new JLabel(jEdit.getProperty("projectviewer.project.options.url_root"));
 		gc.weightx = 0;
 		gc.gridx = 0;
 		gc.gridy = 2;
@@ -239,8 +246,14 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	
 		add(label);
 		projURLRoot = new JTextField();
-		projURLRoot.setText(project.getURL());
-		projURLRoot.setToolTipText(project.getURL());
+		projURLRoot.setToolTipText(jEdit.getProperty("projectviewer.project.options.url_root.tooltip"));
+		if (project.getURL() != null) {
+			projURLRoot.setText(project.getURL());
+			projURLRoot.setToolTipText(project.getURL());
+		} else {
+			projURLRoot.setText(DEFAULT_URL);
+			projURLRoot.setToolTipText(DEFAULT_URL);
+		}
 	
 		gc.weightx = 1;
 		gc.gridx = 1;
