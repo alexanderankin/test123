@@ -13,24 +13,24 @@
             );
         </IS_SELECTED>
     </ACTION>
-	<ACTION NAME="copy-name">
-		<CODE>
-			 Registers.setRegister('$', editPane.getBuffer().getName());
-		</CODE>
-	</ACTION>
-	<ACTION NAME="copy-path">
-		<CODE>
-			 Registers.setRegister('$', editPane.getBuffer().getPath());
-		</CODE>
-	</ACTION>
-	<ACTION NAME="insert-name">
-		<CODE>
-			textArea.setSelectedText(editPane.getBuffer().getName());
-		</CODE>
-	</ACTION>
-	<ACTION NAME="insert-path">
-		<CODE>
-			textArea.setSelectedText(editPane.getBuffer().getPath());
-		</CODE>
-	</ACTION>
+    <ACTION NAME="buffertabs.copy-name">
+        <CODE>
+             Registers.setRegister('$', editPane.getBuffer().getName());
+        </CODE>
+    </ACTION>
+    <ACTION NAME="buffertabs.copy-path">
+        <CODE>
+             Registers.setRegister('$', editPane.getBuffer().getPath());
+        </CODE>
+    </ACTION>
+    <ACTION NAME="buffertabs.insert-name">
+        <CODE>
+            textArea.setSelectedText(editPane.getBuffer().getName());
+        </CODE>
+    </ACTION>
+    <ACTION NAME="buffertabs.insert-path">
+        <CODE>
+            textArea.setSelectedText(editPane.getBuffer().getPath());
+        </CODE>
+    </ACTION>
 </ACTIONS>
