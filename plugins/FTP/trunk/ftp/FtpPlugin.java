@@ -70,7 +70,7 @@ public class FtpPlugin extends EBPlugin
 			{
 				Buffer _buffer = jEdit.openFile(null,files[i]);
 				if(_buffer != null)
-					buffer = buffer;
+					buffer = _buffer;
 			}
 			if(buffer != null)
 				view.setBuffer(buffer);

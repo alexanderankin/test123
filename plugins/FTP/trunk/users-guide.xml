@@ -96,6 +96,15 @@ To force jEdit to forget all passwords while it is running, use the
     </para></listitem>
 
     <listitem><para>
+     <guimenuitem>Open from FTP Server</guimenuitem> command didn't select
+     the newly opened buffer.
+    </para></listitem>
+
+    <listitem><para>
+     File permissions are now preserved when a file is being saved.
+    </para></listitem>
+
+    <listitem><para>
      Code cleanups
     </para></listitem>
 
