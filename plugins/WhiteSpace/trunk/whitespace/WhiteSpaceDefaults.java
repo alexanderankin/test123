@@ -145,66 +145,6 @@ public class WhiteSpaceDefaults
             model = new WhiteSpaceModel();
             buffer.putProperty(WhiteSpaceModel.MODEL_PROPERTY, model);
         }
-
-        // Paragraph separators highlighting option
-        model.getBlockHighlight().setEnabled(
-            WhiteSpaceDefaults.getBlockHighlightDefault()
-        );
-
-        // Folds highlighting options
-        model.getFoldHighlight().setEnabled(
-            WhiteSpaceDefaults.getFoldHighlightDefault()
-        );
-        model.getFoldTooltip().setEnabled(
-            WhiteSpaceDefaults.getFoldTooltipDefault()
-        );
-
-        // Space highlighting options
-        model.getSpaceHighlight().setEnabled(
-            WhiteSpaceDefaults.getSpaceHighlightDefault()
-        );
-        model.getLeadingSpaceHighlight().setEnabled(
-            WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
-        );
-        model.getInnerSpaceHighlight().setEnabled(
-            WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
-        );
-        model.getTrailingSpaceHighlight().setEnabled(
-            WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
-        );
-
-        // Tab highlighting options
-        model.getTabHighlight().setEnabled(
-            WhiteSpaceDefaults.getTabHighlightDefault()
-        );
-        model.getLeadingTabHighlight().setEnabled(
-            WhiteSpaceDefaults.getLeadingTabHighlightDefault()
-        );
-        model.getInnerTabHighlight().setEnabled(
-            WhiteSpaceDefaults.getInnerTabHighlightDefault()
-        );
-        model.getTrailingTabHighlight().setEnabled(
-            WhiteSpaceDefaults.getTrailingTabHighlightDefault()
-        );
-
-        // Whitespace highlighting option
-        model.getWhitespaceHighlight().setEnabled(
-            WhiteSpaceDefaults.getWhitespaceHighlightDefault()
-        );
-
-        // On save actions options
-        model.getRemoveTrailingWhitespace().setEnabled(
-            WhiteSpaceDefaults.getRemoveTrailingWhitespace()
-        );
-        model.getSoftTabifyLeadingWhitespace().setEnabled(
-            WhiteSpaceDefaults.getSoftTabifyLeadingWhitespace()
-        );
-        model.getTabifyLeadingWhitespace().setEnabled(
-            WhiteSpaceDefaults.getTabifyLeadingWhitespace()
-        );
-        model.getUntabifyLeadingWhitespace().setEnabled(
-            WhiteSpaceDefaults.getUntabifyLeadingWhitespace()
-        );
     }
 
 
@@ -212,15 +152,6 @@ public class WhiteSpaceDefaults
         Buffer[] buffers = jEdit.getBuffers();
         for (int i = 0; i < buffers.length; i++) {
             WhiteSpaceDefaults.bufferCreated(buffers[i]);
-        }
-    }
-
-
-    private static void putBooleanProperty(
-            Buffer buffer, String propertyName, boolean propertyValue
-    ) {
-        if (buffer.getProperty(propertyName) == null) {
-            buffer.putBooleanProperty(propertyName, propertyValue);
         }
     }
 }
