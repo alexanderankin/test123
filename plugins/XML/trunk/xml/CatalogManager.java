@@ -116,7 +116,16 @@ public class CatalogManager
 
 			if(session[0] != null)
 			{
-				File file = copyToLocalFile(session[0],vfs,newSystemId);
+				File file;
+				try
+				{
+					file = copyToLocalFile(session[0],vfs,newSystemId);
+				}
+				finally
+				{
+					vfs._endVFSSession(session,null);
+				}
+
 				addUserResource(publicId,systemId,file.toURL().toString());
 				InputSource source = new InputSource(newSystemId);
 				source.setByteStream(new FileInputStream(file));
