@@ -101,7 +101,7 @@ public class ProjectTreeSelectionListener
    * Invoked after a node (or a set of siblings) has changed in some way.
    */
   public void treeNodesChanged(TreeModelEvent e) {
-    Log.log( Log.DEBUG, this, "Tree Node Changed" );
+    //Log.log( Log.DEBUG, this, "Tree Node Changed" );
     handleTreeModelEvent( e );
   }
  

@@ -64,8 +64,9 @@
 
     <copy todir="${build.classes}">
       <fileset dir="${src.main}">
-        <include name="projectviewer/*.props"/>
-        <include name="projectviewer/icons/*.gif"/>
+        <include name="**/*.props"/>
+        <include name="**/*.properties"/>
+        <include name="**/icons/*.gif"/>
       </fileset>
     </copy>
     
@@ -106,7 +107,19 @@
     <unzip src="ProjectViewer.zip" dest="${jedit.user.home}/jars"/>
   </target>
   
-
+  
+  <!-- ================================================ -->
+  <target name="refresh-ext"
+          description="Grab the latest toolkit source"
+          if="mobix-toolkit.home">
+    <copy todir="${src.main}">
+      <fileset dir="${mobix-toolkit.home}/src/main">
+        <include name="org/mobix/io/Pipe.java"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  
   <!-- ================================================ -->
   <target name="javadoc" 
           description="Compile JavaDoc">

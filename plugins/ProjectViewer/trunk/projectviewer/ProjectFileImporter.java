@@ -25,6 +25,8 @@ import javax.swing.*;
  */
 class ProjectFileImporter {
   
+  final static String PROPS_FILE = "import.properties";
+  
   private ProjectViewer viewer;
   private Filter filter;
   
@@ -168,7 +170,7 @@ class ProjectFileImporter {
       Properties props = new Properties();
       InputStream in = null;
       try {
-        in = ProjectPlugin.getResourceAsStream( "import.properties" );
+        in = ProjectPlugin.getResourceAsStream( PROPS_FILE );
         props.load( in );
         return props;
       } finally {

@@ -26,15 +26,16 @@ import javax.swing.tree.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.util.Log;
+
+import org.mobix.io.Pipe;
 
 
 /**
-
-A Project Viewer plugin for jEdit.
-
-@author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-*/
-
+ * A Project Viewer plugin for jEdit.
+ *
+ * @version $Id$
+ */
 public class ProjectPlugin extends EBPlugin {
     
   public static final String NAME = "projectviewer";
@@ -77,11 +78,40 @@ public class ProjectPlugin extends EBPlugin {
   }
 
   /**
-  Stop the plugin and save the project resources.
+   * Start the plugin.
+   */
+  public void start() {
+    EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
+    
+    //parse out the resources as a thread so that when the plugin is 
+    //requested there is nothing to do.
+    new ThreadedParser().start();
+    
+    File f = new File( getResourcePath( "null" ) );
+    if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
+    
+    File importFile = new File( getResourcePath( ProjectFileImporter.PROPS_FILE ) );
+    if ( !importFile.exists() ) {
+      OutputStream out = null;
+      InputStream in = null;
+      try {
+        out = new FileOutputStream( importFile );
+        in = getClass().getResourceAsStream( "import-sample.properties" );
+        Pipe.pipe( in, out );
+        
+      } catch ( IOException e ) {
+        Log.log( Log.WARNING, this, e );
+        
+      } finally {
+        close( in );
+        close( out );
+      }
+    }
+  }
   
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-  @version $Id$
-  */    
+  /**
+   * Stop the plugin and save the project resources.
+   */    
   public void stop() {
     ProjectManager.getInstance().save();
     if ( viewer != null ) {
@@ -108,25 +138,30 @@ public class ProjectPlugin extends EBPlugin {
     }
   }
 
-  /**
-  Start the plugin
-
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-  @version $Id$
-  */
-  public void start() {
-    EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
-    
-    //parse out the resources as a thread so that when the plugin is 
-    //requested there is nothing to do.
-    new ThreadedParser().start();
-    
-    File f = new File( getResourcePath( "null" ) );
-    if ( !f.getParentFile().exists() ) f.getParentFile().mkdirs();
-  }
-  
   public void createMenuItems(Vector menuItems) {
     menuItems.addElement(GUIUtilities.loadMenuItem( "open-viewer-menu-item" ));
+  }
+  
+  /**
+   * Close the specified <code>InputStream</code>.
+   */
+  private void close( InputStream in ) {
+    try {
+      if ( in != null ) in.close();
+    } catch ( IOException e ) {
+      Log.log( Log.WARNING, this, e );
+    }
+  }
+  
+  /**
+   * Close the specified <code>OutputStream</code>.
+   */
+  private void close( OutputStream out ) {
+    try {
+      if ( out != null ) out.close();
+    } catch ( IOException e ) {
+      Log.log( Log.WARNING, this, e );
+    }
   }
   
 }
