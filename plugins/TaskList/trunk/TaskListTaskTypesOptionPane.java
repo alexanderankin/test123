@@ -15,6 +15,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 
@@ -314,7 +316,7 @@ class TaskTypeDialog extends EnhancedDialog
 			jEdit.getProperty("options.tasklist.tasktype.noicon")));
 		customIcon.addActionListener(actionHandler);
 
-		//Log.log(Log.DEBUG, TaskListTaskTypesOptionPane.class, 
+		//Log.log(Log.DEBUG, TaskListTaskTypesOptionPane.class,
 		//	"iconPath=" + taskType.getIconPath());
 
 		if(taskType.getIconPath().startsWith("file:"))
@@ -393,7 +395,7 @@ class TaskTypeDialog extends EnhancedDialog
 
 		try
 		{
-			RE re = new RE(_pattern, 
+			RE re = new RE(_pattern,
 				ignoreCase.isSelected() ? RE.REG_ICASE : 0,
 				TaskType.RE_SYNTAX);
 

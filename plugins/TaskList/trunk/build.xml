@@ -7,7 +7,8 @@
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="."/>
-	<property name="install.dir"  value=".."/>
+	<!-- Change the next property to conform to your installation -->
+	<property name="install.dir"  value="G:/Program Files/jEdit/settings/jars"/>
 
 
 	<path id="project.class.path">
