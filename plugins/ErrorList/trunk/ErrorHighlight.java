@@ -49,7 +49,7 @@ public class ErrorHighlight implements TextAreaHighlight
 		{
 			ErrorSource source = (ErrorSource)errorSources[i];
 			ErrorSource.Error[] lineErrors = source.getLineErrors(
-				textArea.getBuffer(),line);
+				textArea.getBuffer(),physicalLine);
 
 			if(lineErrors != null)
 				paintLineErrors(lineErrors,gfx,physicalLine,y);
@@ -67,7 +67,8 @@ public class ErrorHighlight implements TextAreaHighlight
 			return (next != null ? next.getToolTipText(evt) : null);
 
 		int y = evt.getY();
-		int line = textArea.yToLine(y);
+		int line = textArea.getBuffer().virtualToPhysical(
+			textArea.yToLine(y));
 		int offset = -1;
 
 		for(int i = 0; i < errorSources.length; i++)
