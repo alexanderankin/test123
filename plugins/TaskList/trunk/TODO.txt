@@ -12,10 +12,11 @@ version 0.4.2
 - sorting by buffer doesn't work (done)
 - add sorting by buffer to option pane (done)
 - proof/revise docs (done)
-- integrate with SideKick's work request API
 
 future
 ======
+
+- use SideKick's work request API
 
 - buffer sets: display tasks for current buffer, buffers 
   visible in view, all buffers, others?
