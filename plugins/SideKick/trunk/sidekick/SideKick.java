@@ -154,6 +154,33 @@ class SideKick implements EBComponent
 		return parser;
 	} //}}}
 
+	//{{{ setParser() method
+	void setParser()
+	{
+		if(parser != null)
+			parser.deactivate(view);
+		parser = SideKickPlugin.getParserForBuffer(buffer);
+		if(parser != null)
+		{
+			addBufferChangeListener(buffer);
+			parser.activate(view);
+		}
+		else
+			removeBufferChangeListener(buffer);
+
+		if(buffer.getBooleanProperty(
+			"sidekick.buffer-change-parse")
+			|| buffer.getBooleanProperty(
+			"sidekick.keystroke-parse"))
+		{
+			parse(true);
+		}
+		else
+		{
+			showNotParsedMessage();
+		}
+	} //}}}
+
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
@@ -178,28 +205,7 @@ class SideKick implements EBComponent
 			}
 			else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
 			{
-				if(parser != null)
-					parser.deactivate(view);
-				parser = SideKickPlugin.getParserForBuffer(buffer);
-				if(parser != null)
-				{
-					addBufferChangeListener(buffer);
-					parser.activate(view);
-				}
-				else
-					removeBufferChangeListener(buffer);
-
-				if(buffer.getBooleanProperty(
-					"sidekick.buffer-change-parse")
-					|| buffer.getBooleanProperty(
-					"sidekick.keystroke-parse"))
-				{
-					parse(true);
-				}
-				else
-				{
-					showNotParsedMessage();
-				}
+				setParser();
 			}
 			else if(bmsg.getWhat() == BufferUpdate.CLOSED)
 			{
@@ -281,6 +287,17 @@ class SideKick implements EBComponent
 				}
 				else
 					showNotParsedMessage();
+			}
+		} //}}}
+		//{{{ PluginUpdate
+		else if(msg instanceof PluginUpdate)
+		{
+			PluginUpdate pmsg = (PluginUpdate)msg;
+			if(pmsg.getWhat() == PluginUpdate.UNLOADED)
+			{
+				/* Pick a parser again in case our parser
+				plugin was unloaded. */
+				setParser();
 			}
 		} //}}}
 	} //}}}

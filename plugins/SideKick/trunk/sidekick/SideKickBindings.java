@@ -57,7 +57,7 @@ class SideKickBindings extends KeyAdapter
 			String instantKeys = parser.getInstantCompletionTriggers();
 			if(instantKeys != null && instantKeys.indexOf(ch) != -1)
 				SideKickActions.keyComplete(view);
-			else
+			else if(parser.canCompleteAnywhere())
 				SideKickActions.keyCompleteWithDelay(view);
 		}
 	} //}}}
