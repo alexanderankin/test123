@@ -64,7 +64,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		documentHandler = new DocumentHandler();
 		editPaneHandler = new EditPaneHandler();
 
-		propertiesChanged();
+		propertiesChanged(true);
 	}
 
 	public void parse()
@@ -190,7 +190,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			}
 		}
 		else if(msg instanceof PropertiesChanged)
-			propertiesChanged();
+			propertiesChanged(false);
 	}
 
 	// package-private members
@@ -241,7 +241,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	private DocumentHandler documentHandler;
 	private EditPaneHandler editPaneHandler;
 
-	private void propertiesChanged()
+	private void propertiesChanged(boolean init)
 	{
 		boolean newShowAttributes = jEdit.getBooleanProperty("xml.show-attributes");
 		try
@@ -254,7 +254,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		}
 
 		// due to possible change in show attributes setting
-		if(newShowAttributes != showAttributes)
+		if(!init && newShowAttributes != showAttributes)
 		{
 			showAttributes = newShowAttributes;
 			parse(true,true);

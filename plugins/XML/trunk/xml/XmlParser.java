@@ -30,8 +30,8 @@ class XmlParser
 	{
 		this.tree = (XmlTree)view.getDockableWindowManager()
 			.getDockableWindow(XmlPlugin.TREE_NAME);
-		this.palette = (TagPalette)view.getDockableWindowManager()
-			.getDockableWindow(XmlPlugin.TAG_PALETTE_NAME);
+		this.insert = (XmlInsert)view.getDockableWindowManager()
+			.getDockableWindow(XmlPlugin.INSERT_NAME);
 
 		this.buffer = buffer;
 
@@ -51,7 +51,12 @@ class XmlParser
 
 	public void parse()
 	{
-		elements = new Hashtable();
+		elements = new Vector();
+		elementHash = new Hashtable();
+		entities = new Vector();
+		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
+		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
+		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
 
 		parser = new org.apache.xerces.parsers.SAXParser();
 
@@ -102,17 +107,50 @@ class XmlParser
 			tree.parsingComplete(model);
 		}
 
+		MiscUtilities.quicksort(elements,new ElementDeclCompare());
+		MiscUtilities.quicksort(entities,new EntityDeclCompare());
+
 		buffer.putProperty(XmlPlugin.DECLARED_ELEMENTS_PROPERTY,
 			elements);
+		buffer.putProperty(XmlPlugin.DECLARED_ENTITIES_PROPERTY,
+			entities);
 
-		if(palette != null)
-			palette.setDeclaredElements(elements);
+		if(insert != null)
+		{
+			insert.setDeclaredElements(elements);
+			insert.setDeclaredEntities(entities);
+		}
+	}
+
+	static class ElementDeclCompare implements MiscUtilities.Compare
+	{
+		public int compare(Object obj1, Object obj2)
+		{
+			return ((ElementDecl)obj1).name
+				.compareTo(((ElementDecl)obj2).name);
+		}
+	}
+
+	static class EntityDeclCompare implements MiscUtilities.Compare
+	{
+		public int compare(Object obj1, Object obj2)
+		{
+			EntityDecl entity1 = (EntityDecl)obj1;
+			EntityDecl entity2 = (EntityDecl)obj2;
+
+			if(entity1.type != entity2.type)
+				return entity2.type - entity1.type;
+			else
+				return entity1.name.compareTo(entity2.name);
+		}
 	}
 
 	// private members
 	private XmlTree tree;
-	private TagPalette palette;
-	private Hashtable elements;
+	private XmlInsert insert;
+	private Vector elements;
+	private Hashtable elementHash;
+	private Vector entities;
 	private View view;
 	private Buffer buffer;
 	private String text;
@@ -124,7 +162,6 @@ class XmlParser
 	{
 		Stack currentNodeStack = new Stack();
 		Locator loc = null;
-		Hashtable elements = new Hashtable();
 
 		public void setDocumentLocator(Locator locator)
 		{
@@ -275,13 +312,15 @@ class XmlParser
 		// DeclHandler implementation
 		public void elementDecl(String name, String model)
 		{
-			elements.put(name,new ElementDecl(name,model));
+			ElementDecl elementDecl = new ElementDecl(name,model);
+			elementHash.put(name,elementDecl);
+			elements.addElement(elementDecl);
 		}
 
 		public void attributeDecl(String eName, String aName,
 			String type, String valueDefault, String value)
 		{
-			ElementDecl element = (ElementDecl)elements.get(eName);
+			ElementDecl element = (ElementDecl)elementHash.get(eName);
 			if(element == null)
 				return;
 
@@ -289,10 +328,26 @@ class XmlParser
 				aName,type,valueDefault,value));
 		}
 
-		public void internalEntityDecl(String name, String value) {}
+		public void internalEntityDecl(String name, String value)
+		{
+			// this is a bit of a hack
+			if(name.startsWith("%"))
+				return;
+
+			entities.addElement(new EntityDecl(
+				EntityDecl.INTERNAL,name,value));
+		}
 
 		public void externalEntityDecl(String name, String publicId,
-			String systemId) {}
+			String systemId)
+		{
+			// this is a bit of a hack
+			if(name.startsWith("%"))
+				return;
+
+			entities.addElement(new EntityDecl(
+				EntityDecl.EXTERNAL,name,publicId,systemId));
+		}
 
 		private int findTagStart(int offset)
 		{
