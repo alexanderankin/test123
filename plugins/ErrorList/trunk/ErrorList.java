@@ -173,6 +173,8 @@ public class ErrorList extends JFrame implements EBComponent
 					error.getFilePath(),false,false);
 			}
 			view.setBuffer(buffer);
+			view.toFront();
+			view.requestFocus();
 
 			int start = error.getStartOffset();
 			int end = error.getEndOffset();
