@@ -625,13 +625,16 @@ public class AntTree extends JTree
 			if ( jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ) )
 				return "";
 
-			PropertyDialog propertyDialog = new PropertyDialog(
-				_view, "Run " + getTarget().getName() + " with these properties."
-				 );
-			propertyDialog.show();
+			// TODO: This class went missing.
+			//PropertyDialog propertyDialog = new PropertyDialog(
+			//	_view, "Run " + getTarget().getName() + " with these properties."
+			//	 );
+			//propertyDialog.show();
 
-			Properties properties = propertyDialog.getProperties();
-
+			//Properties properties = propertyDialog.getProperties();
+			
+			Properties properties = null;
+			
 			if ( properties == null ) {
 				return "";
 			}
