@@ -71,6 +71,8 @@ public class FtpResponse {
     * code indicates a positive prelimary reply, as outlined in RFC959.
     **/
     public boolean isPositivePreliminary() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(0) == REPLY_POSITIVE_PRELIMINARY;
     }
 
@@ -79,6 +81,8 @@ public class FtpResponse {
     * code indicates a positive completion reply, as outlined in RFC959.
     **/
     public boolean isPositiveCompletion() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(0) == REPLY_POSITIVE_COMPLETION;
     }
 
@@ -87,6 +91,8 @@ public class FtpResponse {
     * code indicates a positive intermediary reply, as outlined in RFC959.
     **/
     public boolean isPositiveIntermediary() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(0) == REPLY_POSITIVE_INTERMEDIARY;
     }
 
@@ -95,6 +101,8 @@ public class FtpResponse {
     * code indicates a transient negative reply, as outlined in RFC959.
     **/
     public boolean isTransientNegativeCompletion() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(0) == REPLY_TRANSIENT_NEGATIVE_COMPLETION;
     }
 
@@ -103,6 +111,8 @@ public class FtpResponse {
     * code indicates a permanent negative reply, as outlined in RFC959.
     **/
     public boolean isPermanentNegativeCompletion() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(0) == REPLY_PERMANENT_NEGATIVE_COMPLETION;
     }
 
@@ -112,6 +122,8 @@ public class FtpResponse {
     * as outlined in RFC959.
     **/
     public boolean isRegardingSyntax() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(1) == REGARDING_SYNTAX;
     }
 
@@ -120,6 +132,8 @@ public class FtpResponse {
     * code indicates a reply pertaining to information, as outlined in RFC959.
     **/
     public boolean isRegardingInformation() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(1) == REGARDING_INFORMATION;
     }
 
@@ -128,6 +142,8 @@ public class FtpResponse {
     * code indicates a reply pertaining to connection, as outlined in RFC959.
     **/
     public boolean isRegardingConnection() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(1) == REGARDING_CONNECTION;
     }
 
@@ -137,6 +153,8 @@ public class FtpResponse {
     * RFC959.
     **/
     public boolean isRegardingAuthentication() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(1) == REGARDING_AUTHENTICATION;
     }
 
@@ -146,6 +164,8 @@ public class FtpResponse {
     * RFC959.
     **/
     public boolean isRegardingFileSystem() {
+        if(returnCode == null)
+            return false;
         return returnCode.charAt(1) == REGARDING_FILE_SYSTEM;
     }
 

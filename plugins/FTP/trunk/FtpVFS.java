@@ -549,6 +549,9 @@ public class FtpVFS extends VFS
 				}
 			}
 
+			if(name == null)
+				return null;
+
 			// path is null; it will be created later, by _listDirectory()
 			return new VFS.DirectoryEntry(name,null,null,type,
 				length,name.charAt(0) == '.' /* isHidden */);
