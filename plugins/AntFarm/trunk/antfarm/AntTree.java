@@ -290,12 +290,22 @@ public class AntTree extends JTree
 
 		public void mouseClicked( MouseEvent e )
 		{
-
 			if ( e.getClickCount() == 2 ) {
 				TreePath selPath = getPathForLocation( e.getX(), e.getY() );
+
 				if ( selPath == null )
 					return;
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode) ( selPath.getLastPathComponent() );
+
+                DefaultMutableTreeNode node = getTreeNode( selPath );
+
+                // Add console change.
+                AntNode antNode = getAntNode( node );
+
+                if ( antNode != null ) {
+                    _antFarm.loadBuildFileInShell( antNode.getBuildFilePath() );
+                }
+                // End console change.
+
 				ExecutingNode executingNode = getExecutingNode( node );
 
 				if ( executingNode != null ) {
@@ -345,9 +355,11 @@ public class AntTree extends JTree
 
 		private AbstractAction getExecuteAction( TreePath path )
 		{
+			DefaultMutableTreeNode node = getTreeNode( path );
 
-			DefaultMutableTreeNode node =
-				(DefaultMutableTreeNode) path.getLastPathComponent();
+            // Begin console change.
+			final AntNode antNode = getAntNode( node );
+            // End console change.
 
 			final ExecutingNode en = getExecutingNode( node );
 
@@ -359,6 +371,12 @@ public class AntTree extends JTree
 				{
 					public void actionPerformed( ActionEvent e )
 					{
+                        // Begin console change.
+                        if ( antNode != null ) {
+                            _antFarm.loadBuildFileInShell( antNode.getBuildFilePath() );
+                        }
+                        // End console change.
+
 						en.execute();
 					}
 				};
