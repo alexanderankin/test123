@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.ErrorListPlugin.name=ErrorList
 plugin.ErrorListPlugin.author=Slava Pestov
-plugin.ErrorListPlugin.version=0.9
+plugin.ErrorListPlugin.version=0.9.1
 plugin.ErrorListPlugin.docs=ErrorList.html
 
 plugin.ErrorListPlugin.depend.0=jedit 02.03.99.00
@@ -15,7 +15,7 @@ error-list.title=Error List
 error-list.status=Errors: {0} Warnings: {1}
 
 # Show on error?
-error-list.showOnError=yes
+error-list.showOnError=on
 
 # Colors
 error-list.warningColor=#ffa800
