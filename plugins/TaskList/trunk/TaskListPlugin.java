@@ -26,7 +26,7 @@
 	TODO: validation in TaskTypeDialog (option pane 2)
 	TODO: need a text area change listener for re-parsing
 	TODO: toggle TextAreaHighlight depending on whether it is selected
-	TODO: write documentation
+	DONE: write documentation
 	DONE: check into cvs
 	TODO: ensure task highlights are repainted when buffer reloaded, etc...
 
