@@ -29,7 +29,13 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+
+import java.awt.event.KeyListener;
+import java.awt.event.KeyEvent;
+import javax.swing.JDialog;
+import javax.swing.JTextField;
 
 public class TextToolsPlugin extends EditPlugin
 {
@@ -483,5 +489,82 @@ public class TextToolsPlugin extends EditPlugin
 		return Character.isLetterOrDigit(ch) ||
 			(noWordSep != null && noWordSep.indexOf(ch) != -1);
 	}
-
+    
+    public static void doColumnInsert(View view)
+    {
+        JEditTextArea ta = view.getTextArea();
+		final Selection [] sel = ta.getSelection();
+		
+		if(sel.length != 0 && sel[0] instanceof Selection.Rect)
+		{
+            final View theView = view; //final because it is used in inner class.
+			
+			//pop up a dialog that the user can enter text.
+            //get the width and height of the text area.
+            int width = ta.getWidth();
+            int height = ta.getHeight();
+            int taX = ta.getX();
+            int taY = ta.getY();
+            
+            int xCoord = taX + width/2;
+            int yCoord = taY + height/2;
+            
+			final ColumnInsertDialog dialog = new ColumnInsertDialog(new KeyListener() {
+                public void keyTyped(KeyEvent e){
+                    //check for an enter key
+                    if(e.getKeyChar() == '\n')
+                    {
+                        int startPos = -1;
+                        int endPos   = -1;
+                        int [] colNum; 
+                        int cols = -1;
+                        Selection.Rect rSel = (Selection.Rect)sel[0];
+                        startPos = rSel.getStartLine(); 
+                        endPos = rSel.getEndLine();
+                        int rows = endPos - startPos;
+                        
+                        int startCol = rSel.getStart(theView.getBuffer(),startPos);
+                        int endCol = rSel.getEnd(theView.getBuffer(),startPos);
+                        
+                        cols = endCol - startCol;
+                        colNum = new int[rows+1];
+                        int j = 0;
+                        for(int i = startPos; i <= endPos; i++)
+                            colNum[j++] = rSel.getStart(theView.getBuffer(),i);
+                            
+                        Log.log(Log.DEBUG,this,"Matches a \\n");
+                        
+                        ColumnInsertDialog d = 
+                            (ColumnInsertDialog)((JTextField)e.getSource()).getTopLevelAncestor();
+                        
+                        String text = d.getText();
+                        
+                        d.dispose();
+                        //Need to do the text insert thing here.
+                        theView.getTextArea().setSelectedText(""); //clear out current selection
+                        //get an offset with Buffer.getLineStartOffset();
+                        Buffer buff = theView.getTextArea().getBuffer();
+                        
+                        int strLen = text.length();
+                        
+                        for(int i = 0; i < colNum.length; i++)
+                        {
+                            buff.insert(colNum[i] + i*strLen - i*cols,text);
+                        }
+                    }
+                }
+                
+                public void keyPressed(KeyEvent e){
+                    //No op
+                }
+                
+                public void keyReleased(KeyEvent e){
+                    //No op
+                }
+            });
+            
+            //Set the location that the popup window appears at.
+            dialog.setBounds(xCoord,yCoord,dialog.getWidth(),dialog.getHeight());
+        }
+    }
 }
