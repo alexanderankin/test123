@@ -82,6 +82,9 @@ class SideKick implements EBComponent
 	 */
 	void parse(final boolean showParsingMessage)
 	{
+		if(keystrokeTimer.isRunning())
+			keystrokeTimer.stop();
+
 		if(!buffer.isLoaded())
 			return;
 
