@@ -455,6 +455,18 @@ SELECT * FROM user WHERE user=?</programlisting>
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 0.98</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Ported to jEdit 4.2 API
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <formalpara>
           <title>Version 0.97</title>
           <para/>
         </formalpara>
