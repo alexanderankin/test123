@@ -89,7 +89,9 @@ public class NodeRenamerAction extends Action {
 							jEdit.getProperty("projectviewer.action.rename.file_error"),
 							jEdit.getProperty("projectviewer.action.rename.title"),
 							JOptionPane.ERROR_MESSAGE);
-					} 
+					} else {
+						isValid = true;
+					}
 				} else {
 					isValid = true;
 				}
@@ -104,6 +106,8 @@ public class NodeRenamerAction extends Action {
 				}
 			} else if (node.isDirectory() && !((VPTDirectory)node).getFile().exists()) {
 				isValid = true;
+			} else {
+				isValid = dlg.getDontChangeDisk();
 			}
 		}
 
@@ -204,7 +208,7 @@ public class NodeRenamerAction extends Action {
 		ProjectViewer.removeNodeFromParent(node);
 		ProjectViewer.insertNodeInto(node, parent);
 	}
-	
+
 	//{{{ RenameFileDialog class
 	/**
 	 *	A dialog for renaming nodes. Provides an extra checkbox to allow
