@@ -399,6 +399,25 @@
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 0.9</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>The CommonControls plugin now provides the PathBuilder
+            component - let's use it!</para>
+          </listitem>
+
+          <listitem>
+            <para>Some minor bugfixes.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
           <title>Version 0.8</title>
 
           <para />
