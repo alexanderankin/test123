@@ -167,7 +167,7 @@ class ErrorsOptionPane extends AbstractOptionPane
 						index = errorListModel.getSize();
 					else
 						index++;
-		
+
 					errorListModel.insertElementAt(matcher,index);
 					errorList.setSelectedIndex(index);
 				}
@@ -315,9 +315,9 @@ class ErrorMatcherDialog extends EnhancedDialog
 			matcher.message = _message;
 
 			StringBuffer buf = new StringBuffer();
-			for(int i = 0; i < name.length(); i++)
+			for(int i = 0; i < _name.length(); i++)
 			{
-				char ch = name.charAt(i);
+				char ch = _name.charAt(i);
 				if(Character.isLetterOrDigit(ch))
 					buf.append(ch);
 			}
