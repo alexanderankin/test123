@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.AbstractOptionPane;
+import org.gjt.sp.util.Log;
 
 class TagsOptionsPanel extends AbstractOptionPane {
 
@@ -247,24 +248,19 @@ class TagsOptionsPanel extends AbstractOptionPane {
       if (selectedIndex == -1)
         selectedIndex = 0;
 
-      String newTagFile = null;
       String newTagFiles[] = null;
 
       newTagFiles = GUIUtilities.showVFSFileDialog(null, null, 
-                                                 VFSBrowser.OPEN_DIALOG,false);
+                                                   VFSBrowser.OPEN_DIALOG,
+                                                   false);
         
-      if (newTagFile != null) {
-        listModel_.add(selectedIndex, newTagFile);
-        Tags.addTagFile(newTagFile, selectedIndex);
-      }
-      else if (newTagFiles != null) {
+      if (newTagFiles != null) {
         for (int i = 0; i < newTagFiles.length; i++) {
-          listModel_.add(selectedIndex, newTagFiles[i]);
+          listModel_.add(selectedIndex, new TagFile(newTagFiles[i], 
+                                                    TagFile.DEFAULT_CATAGORY));
           Tags.addTagFile(newTagFiles[i], selectedIndex);
         }
-      }
-      
-      if (newTagFile != null || newTagFiles != null) {
+        
         list_.setSelectedIndex(selectedIndex);
         list_.ensureIndexIsVisible(selectedIndex);
       }
@@ -320,7 +316,7 @@ class TagsOptionsPanel extends AbstractOptionPane {
         Tags.setParserType(parserType);
       }
       catch (NumberFormatException nfe) {
-        System.out.println("How did this happen!"); 
+        Log.log(Log.DEBUG, this, nfe);
       }
     }
   };
