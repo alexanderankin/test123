@@ -330,7 +330,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 
             Buffer b = jEdit.getBuffer(oldFile.getAbsolutePath());
             if (b != null) {
-                jEdit.closeBuffer(jEdit.getLastView(),b);
+                jEdit.closeBuffer(viewer.getView(),b);
             }
             
             File newFile = new File(oldFile.getParent() + File.separator + newName);
@@ -344,7 +344,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             }
             
             if (b != null) {
-                jEdit.openFile(jEdit.getLastView(),newFile.getAbsolutePath());
+                jEdit.openFile(viewer.getView(),newFile.getAbsolutePath());
             }
             
             p.removeFile(file);
