@@ -1,12 +1,12 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
-plugin.xml.XmlPlugin.version=0.11
+plugin.xml.XmlPlugin.version=0.12
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xercesImpl.jar xmlParserAPIs.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.01.11.00
 plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
-plugin.xml.XmlPlugin.depend.1=plugin sidekick.SideKickPlugin 0.1
+plugin.xml.XmlPlugin.depend.1=plugin sidekick.SideKickPlugin 0.2
 
 sidekick.parser.xml.label=XML
 sidekick.parser.html.label=HTML

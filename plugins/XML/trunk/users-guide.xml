@@ -486,6 +486,15 @@
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.12</emphasis> requires
+  jEdit 4.1pre11, SideKick plugin 0.2, and ErrorList plugin 1.2.</para>
+
+  <itemizedlist>
+  <listitem><para>Fatal errors now stop parsing. This fixes an infinite loop
+  with a malformed DTD.</para></listitem>
+  </itemizedlist>
+  </listitem>
+
   <listitem><para><emphasis role="bold">Version 0.11</emphasis> requires
   jEdit 4.1pre11, SideKick plugin 0.1, and ErrorList plugin 1.2.</para>
 

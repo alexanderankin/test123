@@ -29,13 +29,14 @@ import sidekick.SideKickPlugin;
 import xml.parser.*;
 //}}}
 
-public class TagHighlight extends TextAreaExtension implements EBComponent
+public class TagHighlight extends TextAreaExtension
 {
 	//{{{ TagHighlight constructor
-	public TagHighlight(View view, JEditTextArea textArea)
+	public TagHighlight(View view)
 	{
 		this.view = view;
-		this.textArea = textArea;
+		this.textArea = view.getTextArea();
+		this.buffer = view.getBuffer();
 
 		bufferHandler = new BufferHandler();
 		caretHandler = new CaretHandler();
@@ -48,46 +49,21 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 			}
 		});
 
-		bufferChanged(textArea.getBuffer());
+		textArea.getPainter().addExtension(this);
+
+		buffer.addBufferChangeListener(bufferHandler);
+		textArea.addCaretListener(caretHandler);
+		updateHighlightWithDelay();
 
 		returnValue = new Point();
-
-		EditBus.addToBus(this);
 	} //}}}
 
 	//{{{ dispose() method
 	public void dispose()
 	{
-		EditBus.removeFromBus(this);
-
-		if(buffer != null)
-			buffer.removeBufferChangeListener(bufferHandler);
-	} //}}}
-
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
-	{
-		if(msg instanceof BufferUpdate)
-		{
-			BufferUpdate bu = (BufferUpdate)msg;
-			Buffer buffer = bu.getBuffer();
-			if(bu.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
-			{
-				if(textArea.getBuffer() == buffer)
-					bufferChanged(buffer);
-			}
-		}
-		else if(msg instanceof EditPaneUpdate)
-		{
-			EditPaneUpdate epu = (EditPaneUpdate)msg;
-			EditPane editPane = epu.getEditPane();
-
-			if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-			{
-				if(editPane.getTextArea() == textArea)
-					bufferChanged(editPane.getBuffer());
-			}
-		}
+		timer.stop();
+		buffer.removeBufferChangeListener(bufferHandler);
+		textArea.getPainter().removeExtension(this);
 	} //}}}
 
 	//{{{ paintValidLine() method
@@ -98,47 +74,17 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 			paintHighlight(gfx,screenLine,physicalLine,start,end,y,match);
 	} //}}}
 
-	//{{{ bufferChanged() method
-	public void bufferChanged(Buffer buffer)
-	{
-		current = match = null;
-
-		if(this.buffer != null)
-		{
-			//System.err.println("removing from " + this.buffer);
-			this.buffer.removeBufferChangeListener(bufferHandler);
-			textArea.removeCaretListener(caretHandler);
-			textArea.getPainter().removeExtension(this);
-		}
-
-		if(SideKickPlugin.getParserForBuffer(buffer) instanceof XmlParser)
-		{
-			//System.err.println("adding to " + buffer);
-			this.buffer = buffer;
-			buffer.addBufferChangeListener(bufferHandler);
-			textArea.addCaretListener(caretHandler);
-			textArea.getPainter().addExtension(this);
-			updateHighlightWithDelay();
-		}
-		else
-			this.buffer = null;
-	} //}}}
-
 	//{{{ propertiesChanged() method
 	public static void propertiesChanged()
 	{
 		tagHighlightColor = jEdit.getColorProperty(
 			"xml.tag-highlight-color");
-		tagHighlightEnabled = jEdit.getBooleanProperty(
-			"xml.tag-highlight");
 	} //}}}
 
 	//{{{ Private members
+	private static Color tagHighlightColor;
 
 	//{{{ Instance variables
-	private static Color tagHighlightColor;
-	private static boolean tagHighlightEnabled;
-
 	private Timer timer;
 
 	private BufferHandler bufferHandler;
@@ -232,10 +178,8 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 		if(timer.isRunning())
 			timer.stop();
 
-		if(!tagHighlightEnabled || buffer == null || !buffer.isLoaded())
-		{
+		if(!buffer.isLoaded())
 			return;
-		}
 
 		timer.setInitialDelay(300);
 		timer.setRepeats(false);

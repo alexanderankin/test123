@@ -1,10 +1,6 @@
-XML 0.11:
-
 - document xml.root property
 - xcatalog format
-
-before XML 1.0:
-
+- newer ant completion
 - [catalog] fatal error... etc.
 - ids are kind of hackish -- use something similar to a hypersearch result
 - fix xerces 2.3 deprecation
