@@ -30,6 +30,7 @@ public final class PHPParserPlugin extends EBPlugin {
 
   private boolean parseOnLoad;
   private boolean parseOnSave;
+  private boolean activateParser;
 
   /**
    * The regexp defining files that need to be parsed.
@@ -75,7 +76,7 @@ public final class PHPParserPlugin extends EBPlugin {
       handleBufferUpdateMessage((BufferUpdate) message);
     } else if (message instanceof PropertiesChanged) {
       propertiesChanged();
-      
+
     }
   }
 
@@ -83,13 +84,15 @@ public final class PHPParserPlugin extends EBPlugin {
     final Object what = message.getWhat();
     final Buffer buffer = message.getBuffer();
     final String path = buffer.getPath();
-    if (parseOnLoad && what == BufferUpdate.LOADED) {
-      parseIfPaternMatch(path, buffer, message.getView());
-    } else if (parseOnSave && what == BufferUpdate.SAVING) {
-      parseIfPaternMatch(path, buffer, message.getView());
-    } else if (what == BufferUpdate.CLOSED) {
-      Log.log(Log.DEBUG,PHPParserPlugin.class,"Buffer closed : " + path);
-      errorSource.removeFileErrors(path);
+    if (activateParser) {
+      if (parseOnLoad && what == BufferUpdate.LOADED) {
+        parseIfPaternMatch(path, buffer, message.getView());
+      } else if (parseOnSave && what == BufferUpdate.SAVING) {
+        parseIfPaternMatch(path, buffer, message.getView());
+      } else if (what == BufferUpdate.CLOSED) {
+        Log.log(Log.DEBUG, PHPParserPlugin.class, "Buffer closed : " + path);
+        errorSource.removeFileErrors(path);
+      }
     }
   }
 
@@ -102,7 +105,7 @@ public final class PHPParserPlugin extends EBPlugin {
    */
   private void parseIfPaternMatch(final String path, final Buffer buffer, final View view) {
     if (filesToParseRE.isMatch(path)) {
-      Log.log(Log.DEBUG,PHPParserPlugin.class,"Parsing launched by load or save on : " + path);
+      Log.log(Log.DEBUG, PHPParserPlugin.class, "Parsing launched by load or save on : " + path);
       final String text = buffer.getText(0, buffer.getLength());
       parse(path, text, view);
     }
@@ -117,7 +120,7 @@ public final class PHPParserPlugin extends EBPlugin {
    */
   private void parse(final String path, final String text, final View view) {
     try {
-      Log.log(Log.DEBUG,PHPParserPlugin.class,"Parsing "+path);
+      Log.log(Log.DEBUG, PHPParserPlugin.class, "Parsing " + path);
       final PHPParser parser = new PHPParser();
       parser.setPath(path);
       errorSource.removeFileErrors(path);
@@ -129,11 +132,11 @@ public final class PHPParserPlugin extends EBPlugin {
     } catch (ParseException e) {
       Log.log(Log.ERROR, this, e);
       errorSource.addError(ErrorSource.ERROR,
-                           path,
-                           e.currentToken.beginLine - 1,
-                           e.currentToken.beginColumn,
-                           e.currentToken.endColumn,
-                           "Unhandled error please report the bug (with the trace in the activity log");
+              path,
+              e.currentToken.beginLine - 1,
+              e.currentToken.beginColumn,
+              e.currentToken.endColumn,
+              "Unhandled error please report the bug (with the trace in the activity log");
     }
   }
 
@@ -145,7 +148,7 @@ public final class PHPParserPlugin extends EBPlugin {
    */
   public void parseBuffer(final View view, final Buffer buffer) {
     final String path = buffer.getPath();
-    Log.log(Log.DEBUG,PHPParserPlugin.class,"Parsing launched by user request : " + path);
+    Log.log(Log.DEBUG, PHPParserPlugin.class, "Parsing launched by user request : " + path);
     final String text = buffer.getText(0, buffer.getLength());
     parse(path, text, view);
   }
@@ -155,6 +158,7 @@ public final class PHPParserPlugin extends EBPlugin {
    * it will reinitialize the options.
    */
   private void propertiesChanged() {
+    activateParser = jEdit.getBooleanProperty("gatchan.phpparser.activateParser");
     parseOnLoad = jEdit.getBooleanProperty("gatchan.phpparser.parseOnLoad");
     parseOnSave = jEdit.getBooleanProperty("gatchan.phpparser.parseOnSave");
     final String filesToParseGlob = jEdit.getProperty("gatchan.phpparser.files.glob");
