@@ -100,7 +100,7 @@ public class VFSFileNodeHandler extends NodeHandler {
 		if (!file.getName().equals(name)) {
 			writeAttr(NAME_ATTR, file.getName(), out);
 		}
-		writeAttr(PATH_ATTR, xlatePath(file.getNodePath()), out);
+		writeAttr(PATH_ATTR, translatePath(file.getNodePath()), out);
 	} //}}}
 
 }

@@ -94,7 +94,7 @@ public class DirectoryNodeHandler extends NodeHandler {
 		if (!dir.getName().equals(dir.getFile().getName())) {
 			writeAttr(NAME_ATTR, dir.getName(), out);
 		}
-		writeAttr(PATH_ATTR, xlatePath(dir.getFile().getAbsolutePath()), out);
+		writeAttr(PATH_ATTR, translatePath(dir.getFile().getAbsolutePath()), out);
 	}
 
 }

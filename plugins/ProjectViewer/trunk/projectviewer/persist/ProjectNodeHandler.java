@@ -99,7 +99,7 @@ public class ProjectNodeHandler extends NodeHandler {
 	 */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
 		startElement(out);
-		writeAttr(PATH_ATTR, xlatePath(((VPTProject)node).getRootPath()), out);
+		writeAttr(PATH_ATTR, translatePath(((VPTProject)node).getRootPath()), out);
 		if (((VPTProject)node).getURL() != null)
 			writeAttr(URL_ATTR, ((VPTProject)node).getURL(), out);
 		out.write(">\n");

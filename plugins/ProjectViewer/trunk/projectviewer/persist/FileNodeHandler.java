@@ -101,7 +101,7 @@ public class FileNodeHandler extends NodeHandler {
 		if (!file.getName().equals(file.getFile().getName())) {
 			writeAttr(NAME_ATTR, file.getName(), out);
 		}
-		writeAttr(PATH_ATTR, xlatePath(file.getFile().getAbsolutePath()), out);
+		writeAttr(PATH_ATTR, translatePath(file.getFile().getAbsolutePath()), out);
 	}
 }
 

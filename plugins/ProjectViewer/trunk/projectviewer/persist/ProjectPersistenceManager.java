@@ -27,19 +27,23 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 
-import java.util.Stack;
+import java.util.Collection;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Enumeration;
+import java.util.Stack;
 
 import com.microstar.xml.XmlParser;
 import com.microstar.xml.HandlerBase;
 
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectManager;
 
+import projectviewer.PVActions;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
@@ -61,10 +65,10 @@ public final class ProjectPersistenceManager {
 
 	//}}}
 
-	//{{{Private Stuff
+	//{{{ -ProjectPersistenceManager() : <init>
 
 	/** Private constructor. No instances! */
-	private ProjectPersistenceManager() { }
+	private ProjectPersistenceManager() { } //}}}
 
 	/** The map of handlers based on nome names. */
 	private static final HashMap handlerNames = new HashMap();
@@ -85,6 +89,24 @@ public final class ProjectPersistenceManager {
 	}
 
 	//}}}
+
+	//{{{ +_loadNodeHandlers(PluginJAR)_ : void
+	/**
+	 *	Checks the plugin's properties to see if it declares any node
+	 *	handlers, and register those node handlers within this class.
+	 */
+	public static void loadNodeHandlers(PluginJAR jar) {
+		if (jar.getPlugin() == null) return;
+		String list = jEdit.getProperty("plugin.projectviewer." +
+						jar.getPlugin().getClassName() + ".node-handlers");
+		Collection aList = PVActions.listToObjectCollection(list, jar, NodeHandler.class);
+		if (aList != null && aList.size() > 0) {
+			for (Iterator i = aList.iterator(); i.hasNext(); ) {
+				NodeHandler nh = (NodeHandler) i.next();
+				registerHandler(nh);
+			}
+		}
+	} //}}}
 
 	//{{{ +_registerHandler(NodeHandler)_ : void
 	/**
