@@ -1,12 +1,13 @@
 # $Id$
 
+plugin.templates.TemplatesPlugin.activate=startup
 plugin.templates.TemplatesPlugin.name=Templates
 plugin.templates.TemplatesPlugin.author=Steve Jakob, Calvin Yu
-plugin.templates.TemplatesPlugin.version=3.2.0
+plugin.templates.TemplatesPlugin.version=3.3.0
 plugin.templates.TemplatesPlugin.docs=docs/index.html
 
 # Dependencies
-plugin.templates.TemplatesPlugin.depend.0=jedit 04.02.01.00
+plugin.templates.TemplatesPlugin.depend.0=jedit 04.02.03.00
 plugin.templates.TemplatesPlugin.depend.1=jdk 1.3
 plugin.templates.TemplatesPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.2
 plugin.templates.TemplatesPlugin.jars=velocity-1.3.1-rc2.jar
@@ -21,12 +22,14 @@ templates-tree.label=Templates Tree
 templates-tree-toggle.label=Toggle Templates Tree
 
 # Plugins menu labels
-Templates.menu.label=Templates
-#Templates.menu=Templates.refresh-templates Templates.edit-template \
-#	Templates.save-template
+plugin.templates.TemplatesPlugin.menu.code=new templates.TemplatesMenuProvider();
 
 # OptionPane labels
-options.Templates.label=Templates
+plugin.templates.TemplatesPlugin.option-group=templates accelerators
+options.templates.label=General
+options.templates.code=new templates.TemplatesOptionPane();
+options.accelerators.label=Accelerators
+options.accelerators.code=new templates.AcceleratorOptionPane();
 
 options.Templates.general.label=General
 options.Templates.general.choose-dir-msg=Templates directory:\ 
