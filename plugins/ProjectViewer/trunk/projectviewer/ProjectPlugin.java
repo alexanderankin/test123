@@ -36,7 +36,8 @@ import projectviewer.config.ProjectViewerOptionsPane;
  *@author     <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
  *@author     <A HREF="mailto:cyu77@yahoo.com">Calvin Yu</A>
  *@author     <A HREF="mailto:ensonic@sonicpulse.de">Stefan Kost</A>
- *@version    1.0.3
+ *@author     <A HREF="mailto:webmaster@sutternow.com">Matthew Payne</A>
+ *@version    1.0.5
  */
 public final class ProjectPlugin extends EBPlugin {
 
