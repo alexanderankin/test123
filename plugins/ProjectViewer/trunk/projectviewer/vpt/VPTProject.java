@@ -244,7 +244,7 @@ public class VPTProject extends VPTNode {
 		}
 	}
 	//}}}
-	
+
 	//{{{ registerFilePath(VPTFile) method
 	/**
 	 *	Register a file in the project, adding it to the list of files that
@@ -255,8 +255,8 @@ public class VPTProject extends VPTNode {
 		files.put(file.getFile().getAbsolutePath(), file);
 	}
 	//}}}
-	
-	//{{{ registerCanonicalPath(String VPTFile) method
+
+	//{{{ registerCanonicalPath(String, VPTFile) method
 	/**
 	 *	Register a file whose canonical path differs from the path returned
 	 *	by File.getAbsolutePath().
@@ -271,11 +271,7 @@ public class VPTProject extends VPTNode {
 	/** Unegister a file from the project. */
 	public void unregisterFile(VPTFile file) {
 		files.remove(file.getFile().getAbsolutePath());
-		try {
-			canonicalFiles.remove(file.getFile().getCanonicalPath());
-		} catch (IOException ioe) {
-			Log.log(Log.WARNING, this, ioe);
-		}
+		canonicalFiles.remove(file.getCanonicalPath());
 	}
 	//}}}
 
