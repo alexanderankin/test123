@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2003 Slava Pestov
+ * Copyright (C) 2000, 2004 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,7 +62,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	//{{{ focusOnDefaultComponent() method
 	public void focusOnDefaultComponent()
 	{
-		command.requestFocus();
+		output.requestFocus();
 	} //}}}
 
 	//{{{ addNotify() method
@@ -119,16 +119,15 @@ implements EBComponent, Output, DefaultFocusComponent
 		shellState = (ShellState)shellHash.get(shell.getName());
 
 		shellCombo.setSelectedItem(shell.getName());
-		command.setModel("console." + shell.getName());
+		output.setHistoryModel("console." + shell.getName());
 
-		if(shellState != null)
-			output.setDocument(shellState.scrollback);
-		else
+		if(shellState == null)
 		{
 			shellState = new ShellState(shell);
-			output.setDocument(shellState.scrollback);
 			shellHash.put(shell.getName(),shellState);
 		}
+
+		output.setDocument(shellState.scrollback);
 
 		updateAnimation();
 
@@ -143,13 +142,16 @@ implements EBComponent, Output, DefaultFocusComponent
 		});
 	} //}}}
 
-	//{{{ getTextField() method
-	public HistoryTextField getTextField()
+	//{{{ getConsolePane() method
+	public ConsolePane getConsolePane()
 	{
-		return command;
+		return output;
 	} //}}}
 
 	//{{{ getOutputPane() method
+	/**
+	 * @deprecated Use getConsolePane() instead.
+	 */
 	public JTextPane getOutputPane()
 	{
 		return output;
@@ -282,7 +284,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	 */
 	public void runLastCommand()
 	{
-		HistoryModel history = command.getModel();
+		HistoryModel history = output.getHistoryModel();
 		if(history.getSize() == 0)
 		{
 			getToolkit().beep();
@@ -380,12 +382,11 @@ implements EBComponent, Output, DefaultFocusComponent
 
 	private JComboBox shellCombo;
 
-	private ConsoleTextField command;
 	private RolloverButton runAgain, run, toBuffer, stop, clear;
 	private JLabel animationLabel;
 	private AnimatedIcon animation;
 
-	private JTextPane output;
+	private ConsolePane output;
 
 	private Color infoColor, warningColor, errorColor;
 
@@ -395,29 +396,17 @@ implements EBComponent, Output, DefaultFocusComponent
 	//{{{ initGUI() method
 	private void initGUI()
 	{
-		JPanel panel = new JPanel(new BorderLayout(6,0));
+		Box box = new Box(BoxLayout.X_AXIS);
 
 		shellCombo = new JComboBox();
 		updateShellList();
 		shellCombo.addActionListener(new ActionHandler());
 		shellCombo.setRequestFocusEnabled(false);
 
-		panel.add(BorderLayout.WEST,shellCombo);
+		box.add(shellCombo);
+		box.add(Box.createGlue());
 
 		ActionHandler actionHandler = new ActionHandler();
-
-		Box box = new Box(BoxLayout.Y_AXIS);
-		box.add(Box.createGlue());
-		command = new ConsoleTextField(view,this,null);
-		command.addActionListener(actionHandler);
-		Dimension dim = command.getPreferredSize();
-		dim.width = Integer.MAX_VALUE;
-		command.setMaximumSize(dim);
-		box.add(command);
-		box.add(Box.createGlue());
-		panel.add(BorderLayout.CENTER,box);
-
-		Box buttonBox = new Box(BoxLayout.X_AXIS);
 
 		animationLabel = new JLabel();
 		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
@@ -432,45 +421,44 @@ implements EBComponent, Output, DefaultFocusComponent
 			},10,animationLabel
 		);
 		animationLabel.setIcon(animation);
-		buttonBox.add(animationLabel);
+		box.add(animationLabel);
 
-		buttonBox.add(runAgain = new RolloverButton(RUN_AGAIN));
+		box.add(runAgain = new RolloverButton(RUN_AGAIN));
 		runAgain.setToolTipText(jEdit.getProperty("run-last-console-command.label"));
 		Insets margin = new Insets(0,0,0,0);
 		runAgain.setMargin(margin);
 		runAgain.addActionListener(actionHandler);
 		runAgain.setRequestFocusEnabled(false);
 
-		buttonBox.add(run = new RolloverButton(RUN));
+		box.add(run = new RolloverButton(RUN));
 		run.setToolTipText(jEdit.getProperty("console.run"));
 		margin = new Insets(0,0,0,0);
 		run.setMargin(margin);
 		run.addActionListener(actionHandler);
 		run.setRequestFocusEnabled(false);
 
-		buttonBox.add(toBuffer = new RolloverButton(TO_BUFFER));
+		box.add(toBuffer = new RolloverButton(TO_BUFFER));
 		toBuffer.setToolTipText(jEdit.getProperty("console.to-buffer"));
 		toBuffer.setMargin(margin);
 		toBuffer.addActionListener(actionHandler);
 		toBuffer.setRequestFocusEnabled(false);
 
-		buttonBox.add(stop = new RolloverButton(STOP));
+		box.add(stop = new RolloverButton(STOP));
 		stop.setToolTipText(jEdit.getProperty("console.stop"));
 		stop.setMargin(margin);
 		stop.addActionListener(actionHandler);
 		stop.setRequestFocusEnabled(false);
 
-		buttonBox.add(clear = new RolloverButton(CLEAR));
+		box.add(clear = new RolloverButton(CLEAR));
 		clear.setToolTipText(jEdit.getProperty("console.clear"));
 		clear.setMargin(margin);
 		clear.addActionListener(actionHandler);
 		clear.setRequestFocusEnabled(false);
 
-		panel.add(BorderLayout.EAST,buttonBox);
+		add(BorderLayout.NORTH,box);
 
-		add(BorderLayout.NORTH,panel);
-
-		output = new JTextPane();
+		output = new ConsolePane();
+		output.addActionListener(actionHandler);
 		JScrollPane scroller = new JScrollPane(output);
 		scroller.setPreferredSize(new Dimension(400,100));
 		add(BorderLayout.CENTER,scroller);
@@ -482,6 +470,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		String[] shells = Shell.getShellNames();
 		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
 		shellCombo.setModel(new DefaultComboBoxModel(shells));
+		shellCombo.setMaximumSize(shellCombo.getPreferredSize());
 	} //}}}
 
 	//{{{ propertiesChanged() method
@@ -540,6 +529,20 @@ implements EBComponent, Output, DefaultFocusComponent
 			shell.printInfoMessage(this);
 			shell.printPrompt(Console.this,this);
 		}
+
+		//{{{ getInputStart() method
+		public int getInputStart()
+		{
+			return ((Integer)scrollback.getProperty(
+				ConsolePane.InputStart)).intValue();
+		} //}}}
+	
+		//{{{ setInputStart() method
+		public void setInputStart(int cmdStart)
+		{
+			scrollback.putProperty(ConsolePane.InputStart,
+				new Integer(cmdStart));
+		} //}}}
 
 		//{{{ print() method
 		public void print(final Color color,
@@ -600,6 +603,8 @@ implements EBComponent, Output, DefaultFocusComponent
 			{
 				Log.log(Log.ERROR,this,bl);
 			}
+			
+			setInputStart(scrollback.getLength());
 		} //}}}
 	} //}}}
 
@@ -612,13 +617,13 @@ implements EBComponent, Output, DefaultFocusComponent
 
 			if(source == shellCombo)
 				setShell((String)shellCombo.getSelectedItem());
-			else if(source == command || source == run)
+			else if(source == output || source == run)
 			{
-				String cmd = command.getText();
+				String cmd = output.getInput();
 				if(cmd == null || cmd.length() == 0)
 					return;
 
-				command.setText(null);
+				output.setInput(null);
 				run(getShell(),Console.this,cmd);
 			}
 			else if(source == runAgain)
@@ -627,11 +632,11 @@ implements EBComponent, Output, DefaultFocusComponent
 			}
 			else if(source == toBuffer)
 			{
-				String cmd = command.getText();
+				String cmd = output.getInput();
 				if(cmd == null || cmd.length() == 0)
 					return;
 
-				command.setText(null);
+				output.setInput(null);
 				run(getShell(),new BufferOutput(Console.this),cmd);
 			}
 			else if(source == stop)

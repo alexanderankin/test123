@@ -114,9 +114,9 @@ public class ConsoleTextField extends HistoryTextField
 				view.getDockableWindowManager().addDockableWindow("console");
 				consoleInstance = (Console)view.getDockableWindowManager()
 					.getDockable("console");
-				consoleInstance.getTextField().setText(getText());
+				/* consoleInstance.getTextField().setText(getText());
 				consoleInstance.getTextField().setCaretPosition(getCaretPosition());
-				setText(null);
+				setText(null); */
 			}
 			else
 				consoleInstance = console;
