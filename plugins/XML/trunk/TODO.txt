@@ -1,9 +1,5 @@
 + for version 0.4
 
-- cvs remove EntityManager.java, add CatalogManager.java
-- cvs add CompletionInfoHandler, CompletionInfo
-- cvs add com.arbortext.* hierarchy
-
 - jEdit bug: not all key typed events passed to key event interceptor
 - 'extend' attribute of completion info file
 - catalog manager option pane
