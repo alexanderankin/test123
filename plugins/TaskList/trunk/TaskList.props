@@ -9,7 +9,6 @@ plugin.TaskListPlugin.docs=TaskList.html
 
 plugin.TaskListPlugin.depend.0=jdk 1.1
 plugin.TaskListPlugin.depend.1=jedit 02.07.03.00
-plugin.TaskListPlugin.depend.2=plugin EditBusPlugin 1.0
 
 # dockable window name
 tasklist.title=Task List

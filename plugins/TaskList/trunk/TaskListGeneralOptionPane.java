@@ -54,7 +54,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		}
 		catch(NumberFormatException nf)
 		{
-			_parseDelay = "1000";	// TODO: replace with constant
+			_parseDelay = "1000";	// IDEA: replace with constant
 		}
 
 		addComponent(jEdit.getProperty("options.tasklist.general.parsedelay"),
@@ -86,10 +86,10 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		addComponent(Box.createVerticalStrut(3));
 
 
-		// TODO: change default to false, unless we get it working well
+		// DONE: change default to false, unless we get it working well
 		addComponent(highlightTasks = new JCheckBox(
 			jEdit.getProperty("options.tasklist.general.highlight.tasks"),
-			jEdit.getBooleanProperty("tasklist.highlight.tasks", true)));
+			jEdit.getBooleanProperty("tasklist.highlight.tasks", false)));
 
 		addComponent(Box.createVerticalStrut(3));
 
