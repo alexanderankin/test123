@@ -513,12 +513,17 @@ loop:			for(;;)
 		else if(varName.equals("f"))
 			expansion = buffer.getPath();
 		else if(varName.equals("n"))
-		{
 			expansion = buffer.getName();
-			int index = expansion.lastIndexOf('.');
-			if(index != -1)
-				expansion = expansion.substring(0,index);
+		else if(varName.equals("c"))
+			expansion = ConsolePlugin.getClassName(buffer);
+		else if(varName.equals("pkg"))
+		{
+			expansion = ConsolePlugin.getPackageName(buffer);
+			if(expansion == null)
+				expansion = "";
 		}
+		else if(varName.equals("root"))
+			expansion = ConsolePlugin.getPackageRoot(buffer);
 		else
 			expansion = (String)variables.get(varName);
 

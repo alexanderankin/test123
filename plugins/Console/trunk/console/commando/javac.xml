@@ -9,16 +9,17 @@
 		<CAPTION LABEL="Source file(s)">
 
 		<ENTRY LABEL="Source file(s)" VARNAME="source"
-			EVAL="buffer.getPath();" />
+			EVAL="buffer.getPath()" />
 
 		</CAPTION>
 
 		<CAPTION LABEL="Paths">
 
-		<ENTRY LABEL="Boot class path" VARNAME="bootclasspath"/>
+		<!-- <ENTRY LABEL="Boot class path" VARNAME="bootclasspath"/> -->
 		<ENTRY LABEL="Class path" VARNAME="classpath"
 			EVAL="System.getProperty(&quot;java.class.path&quot;);" />
-		<ENTRY LABEL="Source path" VARNAME="sourcepath" />
+		<ENTRY LABEL="Source path" VARNAME="sourcepath"
+			EVAL="MiscUtilities.getParentOfPath(buffer.getPath())" />
 		<ENTRY LABEL="Extension directory" VARNAME="extdirs" />
 		<ENTRY LABEL="Output directory" VARNAME="outputpath" />
 
@@ -30,9 +31,9 @@
 		<TOGGLE LABEL="Optimize" VARNAME="optimize" />
 		<TOGGLE LABEL="Show warnings" VARNAME="warn" DEFAULT="TRUE" />
 		<TOGGLE LABEL="Show deprecation" VARNAME="deprecation" DEFAULT="TRUE" />
-		<TOGGLE LABEL="Verbose compile messages" VARNAME="verbose" />
+		<!-- <TOGGLE LABEL="Verbose compile messages" VARNAME="verbose" /> -->
 		<ENTRY LABEL="Source file encoding" VARNAME="encoding"
-			EVAL="buffer.getProperty(Buffer.ENCODING);" />
+			EVAL="buffer.getProperty(Buffer.ENCODING)" />
 
 		<CHOICE LABEL="Target JDK" VARNAME="target">
 			<OPTION LABEL="1.1" VALUE="1.1" />
@@ -49,12 +50,12 @@
 			buf = new StringBuffer();
 			buf.append("javac");
 
-			if(!bootclasspath.equals(""))
+			/* if(!bootclasspath.equals(""))
 			{
 				buf.append(" -bootclasspath \"");
 				buf.append(bootclasspath);
 				buf.append('"');
-			}
+			} */
 
 			if(!classpath.equals(""))
 			{
@@ -96,8 +97,8 @@
 			if(deprecation)
 				buf.append(" -deprecation");
 
-			if(verbose)
-				buf.append(" -verbose");
+			/* if(verbose)
+				buf.append(" -verbose"); */
 
 			if(!encoding.equals(""))
 			{
