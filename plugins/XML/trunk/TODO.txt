@@ -1,5 +1,3 @@
-- auto parse + caret update timer conflict
-- still phys2vert at wrong time, eg splitting
 - option to not fetch stuff from 'net
 - empty/opening tag only/opening and closing in edit tag dialog
 - try resolving public ID first

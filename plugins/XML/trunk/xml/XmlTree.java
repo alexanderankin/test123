@@ -261,7 +261,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 	private View view;
 	private Buffer buffer;
-	private Timer timer;
+	private Timer keystrokeTimer, caretTimer;
 	private DocumentHandler documentHandler;
 	private EditPaneHandler editPaneHandler;
 
@@ -307,10 +307,10 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 	private void parseWithDelay()
 	{
-		if(timer != null)
-			timer.stop();
+		if(keystrokeTimer != null)
+			keystrokeTimer.stop();
 
-		timer = new Timer(0,new ActionListener()
+		keystrokeTimer = new Timer(0,new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
@@ -318,18 +318,21 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			}
 		});
 
-		timer.setInitialDelay(delay);
-		timer.setRepeats(false);
-		timer.start();
+		keystrokeTimer.setInitialDelay(delay);
+		keystrokeTimer.setRepeats(false);
+		keystrokeTimer.start();
 	}
 
 	private void expandTagWithDelay()
 	{
 		// if keystroke parse timer is running, do nothing
-		if(timer.isRunning())
+		if(keystrokeTimer != null && keystrokeTimer.isRunning())
 			return;
 
-		timer = new Timer(0,new ActionListener()
+		if(caretTimer != null)
+			caretTimer.stop();
+
+		caretTimer = new Timer(0,new ActionListener()
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
@@ -337,9 +340,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			}
 		});
 
-		timer.setInitialDelay(500);
-		timer.setRepeats(false);
-		timer.start();
+		caretTimer.setInitialDelay(500);
+		caretTimer.setRepeats(false);
+		caretTimer.start();
 	}
 
 	private void expandTagAt(int dot)
