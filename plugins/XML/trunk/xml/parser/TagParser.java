@@ -118,7 +118,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 					char ch2 = text.charAt(i + 1);
 					if(ch2 != '/' && ch2 != '\'' && ch2 != '"'
 						&& !Character.isWhitespace(ch2)
-						&& !Character.isLetter(ch2))
+						&& !Character.isLetterOrDigit(ch2))
 					{
 						if(notATag)
 							notATag = false;
@@ -137,7 +137,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 					char ch2 = text.charAt(i - 1);
 					if(ch2 != '/' && ch2 != '\'' && ch2 != '"'
 						&& !Character.isWhitespace(ch2)
-						&& !Character.isLetter(ch2))
+						&& !Character.isLetterOrDigit(ch2))
 					{
 						notATag = true;
 						continue;
@@ -220,7 +220,7 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 					char ch2 = text.charAt(i + 1);
 					if(ch2 != '/'
 						&& !Character.isWhitespace(ch2)
-						&& !Character.isLetter(ch2))
+						&& !Character.isLetterOrDigit(ch2))
 					{
 						notATag = true;
 						continue;
@@ -254,7 +254,7 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 					char ch2 = text.charAt(i - 1);
 					if(ch2 != '"' && ch2 != '\''
 						&& !Character.isWhitespace(ch2)
-						&& !Character.isLetter(ch2))
+						&& !Character.isLetterOrDigit(ch2))
 					{
 						if(notATag)
 							notATag = false;
@@ -289,7 +289,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 					char ch2 = text.charAt(i + 1);
 					if(ch2 != '/' && ch2 != '\'' && ch2 != '"'
 						&& !Character.isWhitespace(ch2)
-						&& !Character.isLetter(ch2))
+						&& !Character.isLetterOrDigit(ch2))
 					{
 						if(notATag)
 							notATag = false;
@@ -308,7 +308,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 					char ch2 = text.charAt(i - 1);
 					if(ch2 != '/' && ch2 != '\'' && ch2 != '"'
 						&& !Character.isWhitespace(ch2)
-						&& !Character.isLetter(ch2))
+						&& !Character.isLetterOrDigit(ch2))
 					{
 						notATag = true;
 						continue;
