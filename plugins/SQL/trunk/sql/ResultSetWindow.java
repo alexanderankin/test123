@@ -35,6 +35,8 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 
+import bufferlist.*;
+
 import SqlPlugin;
 
 /**
@@ -174,9 +176,8 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
     final Data data = (Data) model;
 
-    final JTable tbl = new JTable(
-        new TableModel( data.rowData, data.columnNames )
-         );
+    final JTable tbl = new HelpfulJTable();
+    tbl.setModel( new TableModel( data.rowData, data.columnNames ) );
 
     tbl.addMouseListener( new MouseHandler( tbl ) );
 
@@ -277,6 +278,8 @@ public class ResultSetWindow extends JPanel implements DockableWindow
       rowData.addElement( aRow );
     }
 
+    Log.log( Log.DEBUG, ResultSetWindow.class,
+        "Got " + rowData.size() + " records in " + columnNames.size() + " columns" );
     return new Data
         ( rowData, columnNames, columnTypes, recCount );
   }
@@ -347,7 +350,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
   protected class TableModel extends AbstractTableModel
   {
-    private Vector rowData[];
+    private Vector rowData;
     private String columnHeaders[];
 
 
@@ -360,14 +363,14 @@ public class ResultSetWindow extends JPanel implements DockableWindow
      */
     public TableModel( Vector rowData, Vector columnHeaders )
     {
-      this.rowData = (Vector[]) rowData.toArray( new Vector[]{new Vector()} );
+      this.rowData = rowData;// can be 0 records ...
       this.columnHeaders = (String[]) columnHeaders.toArray( new String[]{""} );
     }
 
 
     public int getRowCount()
     {
-      return rowData.length;
+      return rowData.size();
     }
 
 
@@ -379,7 +382,12 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
     public Object getValueAt( int r, int c )
     {
-      return rowData[r].elementAt( c );
+      if ( r >= rowData.size() || r < 0 )
+        return null;
+      if ( c >= columnHeaders.length || c < 0 )
+        return null;
+
+      return ( (Vector) rowData.elementAt( r ) ).elementAt( c );
     }
 
 

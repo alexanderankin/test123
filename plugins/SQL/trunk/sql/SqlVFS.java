@@ -46,7 +46,7 @@ public class SqlVFS extends VFS
    *
    * @since
    */
-  public final static String separator = "/";
+  public final static String separatorString = "/";
   /**
    *  Description of the Field
    *
@@ -176,7 +176,7 @@ public class SqlVFS extends VFS
         {
           final SqlServerRecord r = (SqlServerRecord) e.nextElement();
           retval[i++] =
-              _getDirectoryEntry( session, path + separatorChar + r.getName(), comp );
+              _getDirectoryEntry( session, path + separatorString + r.getName(), comp );
         }
         break;
       default:
@@ -235,10 +235,10 @@ public class SqlVFS extends VFS
    */
   public String constructPath( String parent, String path )
   {
-    if ( parent.endsWith( separator ) )
+    if ( parent.endsWith( separatorString ) )
       return parent + path;
     else
-      return parent + separatorChar + path;
+      return parent + separatorString + path;
   }
 
 
@@ -426,7 +426,7 @@ public class SqlVFS extends VFS
    */
   public static String normalize( String path )
   {
-    if ( path.endsWith( separator ) )
+    if ( path.endsWith( separatorString ) )
       return path.substring( 0, path.length() - 1 );
 
     return path;
