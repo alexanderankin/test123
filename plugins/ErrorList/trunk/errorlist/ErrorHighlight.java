@@ -42,27 +42,24 @@ public class ErrorHighlight extends TextAreaExtension
 	} //}}}
 
 	//{{{ paintValidLine() method
-	public void paintValidLine(Graphics2D gfx, int physicalLine,
+	public void paintValidLine(Graphics2D gfx, int screenLine, int physicalLine,
 		int start, int end, int y)
 	{
 		ErrorSource[] errorSources = ErrorSource.getErrorSources();
 
-		if(textArea.getBuffer().isLoaded())
+		FontMetrics fm = textArea.getPainter().getFontMetrics();
+		y += (fm.getHeight() - fm.getDescent() - fm.getLeading());
+
+		for(int i = 0; i < errorSources.length; i++)
 		{
-			FontMetrics fm = textArea.getPainter().getFontMetrics();
-			y += (fm.getHeight() - fm.getDescent() - fm.getLeading());
+			ErrorSource source = errorSources[i];
+			ErrorSource.Error[] lineErrors = source.getLineErrors(
+				textArea.getBuffer(),physicalLine);
 
-			for(int i = 0; i < errorSources.length; i++)
+			if(lineErrors != null)
 			{
-				ErrorSource source = errorSources[i];
-				ErrorSource.Error[] lineErrors = source.getLineErrors(
-					textArea.getBuffer(),physicalLine);
-
-				if(lineErrors != null)
-				{
-					paintLineErrors(lineErrors,gfx,physicalLine,
-						start,end,y);
-				}
+				paintLineErrors(lineErrors,gfx,physicalLine,
+					start,end,y);
 			}
 		}
 	} //}}}
@@ -75,6 +72,9 @@ public class ErrorHighlight extends TextAreaExtension
 			return null;
 
 		int offset = textArea.xyToOffset(x,y);
+		if(offset == -1)
+			return null;
+
 		int line = textArea.getLineOfOffset(offset);
 
 		for(int i = 0; i < errorSources.length; i++)
