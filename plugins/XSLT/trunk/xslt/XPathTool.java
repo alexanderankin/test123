@@ -273,7 +273,7 @@ public class XPathTool extends JPanel implements ListSelectionListener {
         Buffer buffer = view.getBuffer();
         String text = buffer.getText(0, buffer.getLength());
         InputSource inputSource = new InputSource(new StringReader(text));
-        inputSource.setSystemId(buffer.getFile().getPath());
+        inputSource.setSystemId(buffer.getPath());
         Document document = parse(inputSource);
         String expression = expressionPanel.textArea.getText();
         XObject xObject = XPathAPI.eval(document, expression);
