@@ -277,17 +277,16 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 *	itself from the project in case the parent is being set to null.
 	 */
 	public void setParent(MutableTreeNode newParent) {
+		VPTProject p = findProjectFor(this);
 		super.setParent(newParent);
 		if (newParent == null) {
 			if (canOpen()) {
-				VPTProject p = findProjectFor(this);
 				if (p != null) {
 					p.unregisterNodePath(this);
 				}
 			}
 		} else {
 			if (canOpen()) {
-				VPTProject p = findProjectFor(this);
 				if (p != null) {
 					p.registerNodePath(this);
 				}
@@ -348,27 +347,36 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 			if (node1.isFile()) {
 				if(node2.isFile()) {
 					return node1.getName().compareTo(node2.getName());
-				} else {
+				} else if (node2.getAllowsChildren()) {
 					return 1;
+				} else {
+					return (-1 * node2.compareToNode(node1));
 				}
 			} else if (node1.isDirectory()) {
-				if (node2.isFile()) {
+				if (node2.isFile() || !node2.getAllowsChildren()) {
 					return -1;
 				} else if (node2.isDirectory()) {
 					return node1.getName().compareTo(node2.getName());
-				} else {
+				} else if (node2.isProject() || node2.isRoot()) {
 					return 1;
+				} else {
+					return (-1 * node2.compareToNode(node1));
 				}
 			} else if (node1.isProject()) {
 				if (node2.isProject()) {
 					return node1.getName().compareTo(node2.getName());
-				} else if (node2.isFile() || node2.isDirectory()) {
+				} else if (node2.isFile() || node2.isDirectory() ||
+							!node2.getAllowsChildren()) {
 					return -1;
-				} else {
+				} else if (node2.isRoot()) {
 					return 1;
+				} else {
+					return (-1 * node2.compareToNode(node1));
 				}
 			} else if (node1.isRoot()){
 				return -1;
+			} else if (node2.isRoot()) {
+				return 1;
 			} else {
 				return node1.compareToNode(node2);
 			}
