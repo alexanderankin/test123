@@ -80,7 +80,11 @@ class FtpConnection extends ConnectionManager.Connection
 			{
 				int index = msg.indexOf('"',1);
 				if(index != -1)
+				{
 					home = msg.substring(1,index);
+					if(!home.startsWith("/"))
+						home = "/".concat(home);
+				}
 			}
 		}
 	}
