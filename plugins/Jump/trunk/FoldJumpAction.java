@@ -57,13 +57,6 @@ class FoldJumpAction
     {
         view = jEdit.getActiveView();
         buff = view.getBuffer();
-        // String folding = buff.getStringProperty("folding");
-        // FoldHandler handler = FoldHandler.getFoldHandler(folding);
-        // if (handler !=)
-        // {
-        //     fold_pattern =
-        // }
-
     }
 
 //}}}
@@ -75,10 +68,22 @@ class FoldJumpAction
     public void showFoldsList()
     {
         foundedFolds = prepareFoldList();
-        if (foundedFolds == null || foundedFolds.length < 2)
+        
+        // If there no fold patterns
+        if (foundedFolds == null || foundedFolds.length < 1)
         {
             return;
         }
+        
+        // If there just one fold founded - jump to it directly
+        if (foundedFolds.length == 1)
+        {
+            FoldEntry e = (FoldEntry)foundedFolds[0];
+            JumpToFoldDirectly(e); 
+            return;
+        }
+        
+        // If more than one fold founded - show jump list
         FoldJumpMenu jl = new FoldJumpMenu(view, foundedFolds, new FoldListModel(), true, "Fold to jump:", 30);
     }
 
@@ -105,11 +110,12 @@ class FoldJumpAction
                 v.add(en);
             }
         }
+        // If there no fold patterns
         if (v.size() < 1)
         {
             return null;
         }
-
+        
         Object[] r = v.toArray();
 
         if (jEdit.getBooleanProperty("jump.sort_foldlist", true))
@@ -119,7 +125,14 @@ class FoldJumpAction
 
         return r;
     }
+//}}}
 
+//{{{ JumpToFoldDirectly
+    private final void JumpToFoldDirectly(FoldEntry e)
+    {
+        //if (jEdit.getActiveView().getBuffer().getFoldLevel(e.getIndex()) == 0) return;
+        jEdit.getActiveView().getEditPane().getTextArea().selectFold(e.getIndex());    
+    }
 //}}}
 
 //}}}
@@ -149,7 +162,7 @@ class FoldJumpAction
         {
             JList l = (JList) o;
             FoldEntry fold = (FoldEntry) l.getModel().getElementAt(l.getSelectedIndex());
-            jEdit.getActiveView().getEditPane().getTextArea().selectFold(fold.getIndex());
+            JumpToFoldDirectly(fold);
         }
 
 
@@ -180,7 +193,7 @@ class FoldJumpAction
         FoldEntry(String fold_text, int line)
         {
             index = line;
-            fold_text = fold_text.substring(fold_text.indexOf("{{{") + 4);
+            fold_text = fold_text.substring(fold_text.indexOf("{{{") + 3);
             text = fold_text.trim();
         }
 
