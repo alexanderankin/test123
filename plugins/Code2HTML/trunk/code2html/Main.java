@@ -67,8 +67,12 @@ public class Main
         System.out.println("Usage: java code2html.Main OPTION... --catalog=FILE FILE...");
         System.out.println();
         System.out.println("Options:");
-        System.out.println("  --help          print this help file");
-        System.out.println("  --scheme=FILE   scheme file");
+        System.out.println("  --help           print this help file");
+        System.out.println("  --scheme=FILE    scheme file");
+        System.out.println("  --css=yes|no     use cascading style sheets. Default: [yes]");
+        System.out.println("  --gutter=yes|no  display line number. Default: [yes]");
+        System.out.println("  --tab-size=INT   tab size > 0. Default: [8]");
+        System.out.println("  --wrap=INT       line wrapping. Default: [0]");
     }
 
 
@@ -92,6 +96,11 @@ public class Main
         String catalog = null;
         Vector files = new Vector();
 
+        CommandLineConfig.Arguments arguments = new CommandLineConfig.Arguments();
+
+        arguments.tabSize = 8;
+        arguments.wrap    = 76;
+
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if ((arg == null) || (arg.length() == 0)) {
@@ -105,6 +114,44 @@ public class Main
                 catalog = arg.substring("--catalog=".length());
             } else if (arg.startsWith("--scheme=")) {
                 scheme = arg.substring("--scheme=".length());
+            } else if (arg.startsWith("--css=")) {
+                String css = arg.substring("--css=".length()).toLowerCase();
+                if ("yes".equals(css)) {
+                    arguments.useCSS = true;
+                } else if ("no".equals(css)) {
+                    arguments.useCSS = false;
+                } else {
+                    return 1;
+                }
+            } else if (arg.startsWith("--gutter=")) {
+                String gutter = arg.substring("--gutter=".length()).toLowerCase();
+                if ("yes".equals(gutter)) {
+                    arguments.showGutter = true;
+                } else if ("no".equals(gutter)) {
+                    arguments.showGutter = false;
+                } else {
+                    return 1;
+                }
+            } else if (arg.startsWith("--tab-size=")) {
+                String tabSize = arg.substring("--tab-size=".length());
+                try {
+                    arguments.tabSize = Integer.parseInt(tabSize);
+                    if (arguments.tabSize <= 0) {
+                        return 1;
+                    }
+                } catch (NumberFormatException nfe) {
+                    return 1;
+                }
+            } else if (arg.startsWith("--wrap=")) {
+                String wrap = arg.substring("--wrap=".length());
+                try {
+                    arguments.wrap = Integer.parseInt(wrap);
+                    if (arguments.wrap < 0) {
+                        return 1;
+                    }
+                } catch (NumberFormatException nfe) {
+                    return 1;
+                }
             } else {
                 files.addElement(arg);
             }
@@ -131,8 +178,15 @@ public class Main
 
         Mode[] modes = ModeUtilities.getModes();
 
+        SyntaxStyle[] styles = StyleUtilities.loadStyles(propertyAccessor, "monospaced", 12, true);
+        arguments.styles = styles;
+        arguments.propertyAccessor = propertyAccessor;
+
         try {
             for (int i = 0; i < files.size(); i++) {
+
+                Config config = new CommandLineConfig(arguments);
+
                 String file = (String) files.elementAt(i);
                 Mode mode = ModeUtilities.getMode("text");
                 File f = new File(file);
@@ -153,7 +207,7 @@ public class Main
                 Reader reader = new FileReader(file);
                 Writer writer = new FileWriter(file + ".html");
 
-                markTokens(mode.getTokenMarker(), reader, writer);
+                markTokens(config, mode.getTokenMarker(), reader, writer);
             }
         } catch (IOException ioe) {
             Log.log(Log.ERROR, Main.class, ioe);
@@ -261,23 +315,9 @@ public class Main
     /**
      * Mark tokens for the specified <code>Reader</code>
      */
-    public static void markTokens(TokenMarker tokenMarker, Reader r, Writer w)
-    {
-        SyntaxStyle[] styles = StyleUtilities.loadStyles(propertyAccessor, "monospaced", 12, true);
-
-        CommandLineConfig.Arguments args = new CommandLineConfig.Arguments();
-
-        args.tabSize = 8;
-        args.wrap    = 76;
-
-        args.useCSS     = true;
-        args.showGutter = true;
-
-        args.styles = styles;
-        args.propertyAccessor = propertyAccessor;;
-
-        Config config = new CommandLineConfig(args);
-
+    public static void markTokens(
+            Config config, TokenMarker tokenMarker, Reader r, Writer w
+    ) {
         HtmlStyle   style   = config.getStyle();
         HtmlGutter  gutter  = config.getGutter();
         HtmlPainter painter = config.getPainter();
