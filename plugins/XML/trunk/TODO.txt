@@ -1,11 +1,11 @@
 XML 0.11:
 
+- show attributes setting
 - complete <foo / to <foo />
 - why is the top level tag end off by 1?
 - html parser: empty tags
-- SideKick transition:
-  - .dtd files need to be ignored
-  - update docs
+- .dtd files need to be ignored
+- update docs
 [error] java.lang.ThreadDeath
 [error]         at java.lang.Thread.stop(Thread.java:635)
 [error]         at xml.parser.XmlParser.stopThread(Unknown Source)

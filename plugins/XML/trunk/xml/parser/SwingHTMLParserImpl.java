@@ -43,12 +43,10 @@ public class SwingHTMLParserImpl extends XmlParser
 	} //}}}
 
 	//{{{ parse() method
-	public SideKickParsedData parse(SideKick sidekick, String text)
+	public SideKickParsedData parse(Buffer buffer, String text, DefaultErrorSource errorSource)
 	{
 		if(text.startsWith("<?xml"))
-			return XmlPlugin.XML_PARSER_INSTANCE.parse(sidekick,text);
-
-		Buffer buffer = sidekick.getBuffer();
+			return XmlPlugin.XML_PARSER_INSTANCE.parse(buffer,text,errorSource);
 
 		XmlParsedData data = new XmlParsedData(buffer.getName(),true);
 
@@ -61,13 +59,13 @@ public class SwingHTMLParserImpl extends XmlParser
 			DocumentParser htmlParser = new DocumentParser(DTD.getDTD("html32"));
 
 			htmlParser.parse(new StringReader(text),
-				new Handler(sidekick,data),
+				new Handler(buffer,data),
 				true);
 		}
 		catch(IOException ioe)
 		{
 			Log.log(Log.ERROR,this,ioe);
-			sidekick.addError(ErrorSource.ERROR,buffer.getPath(),0,
+			errorSource.addError(ErrorSource.ERROR,buffer.getPath(),0,0,0,
 				ioe.toString());
 		}
 
@@ -102,17 +100,15 @@ public class SwingHTMLParserImpl extends XmlParser
 	{
 		Buffer buffer;
 
-		SideKick sidekick;
 		XmlParsedData data;
 		Stack currentNodeStack;
 
 		//{{{ Handler constructor
-		Handler(SideKick sidekick, XmlParsedData data)
+		Handler(Buffer buffer, XmlParsedData data)
 		{
-			this.sidekick = sidekick;
+			this.buffer = buffer;
 			this.data = data;
 			this.currentNodeStack = new Stack();
-			buffer = sidekick.getBuffer();
 		} //}}}
 
 		//{{{ handleStartTag() method
@@ -223,8 +219,8 @@ public class SwingHTMLParserImpl extends XmlParser
 					pos = buffer.getLength();
 				int line = buffer.getLineOfOffset(pos);
 
-				sidekick.addError(ErrorSource.ERROR,buffer.getPath(),
-					line,errorMsg);
+				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
+					line,0,0,errorMsg);
 			}
 			finally
 			{

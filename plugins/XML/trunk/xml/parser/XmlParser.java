@@ -29,7 +29,8 @@ import xml.XmlParsedData;
 
 public abstract class XmlParser extends SideKickParser
 {
-	public static final String COMPLETION_TRIGGERS = "<&";
+	public static final String DELAY_COMPLETION_TRIGGERS = "<&";
+	public static final String INSTANT_COMPLETION_TRIGGERS = "";
 	public static final int ELEMENT_COMPLETE = '<';
 	public static final int ENTITY_COMPLETE = '&';
 
@@ -45,10 +46,16 @@ public abstract class XmlParser extends SideKickParser
 		return true;
 	} //}}}
 
-	//{{{ getCompletionTriggers() method
-	public String getCompletionTriggers()
+	//{{{ getDelayCompletionTriggers() method
+	public String getDelayCompletionTriggers()
 	{
-		return COMPLETION_TRIGGERS;
+		return DELAY_COMPLETION_TRIGGERS;
+	} //}}}
+
+	//{{{ getInstantCompletionTriggers() method
+	public String getInstantCompletionTriggers()
+	{
+		return INSTANT_COMPLETION_TRIGGERS;
 	} //}}}
 
 	//{{{ complete() method
@@ -63,13 +70,11 @@ public abstract class XmlParser extends SideKickParser
 		Buffer buffer = editPane.getBuffer();
 
 		// first, we get the word before the caret
-		JEditTextArea textArea = editPane.getTextArea();
-
 		List allowedCompletions = new ArrayList(20);
 
 		int caretLine = buffer.getLineOfOffset(caret);
 		String text = buffer.getText(0,caret);
-		int lineStart = textArea.getLineStartOffset(caretLine);
+		int lineStart = buffer.getLineStartOffset(caretLine);
 
 		int mode = -1;
 		int wordStart = -1;
