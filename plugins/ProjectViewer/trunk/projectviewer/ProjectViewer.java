@@ -1163,8 +1163,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
 				}
 				if (workingFileTree != null) {
-					((VPTWorkingFileListModel)workingFileTree.getModel())
-						.addOpenFile(f.getNodePath());
+					((VPTWorkingFileListModel)workingFileTree.getModel()).nodeChanged(f);
 				}
 			}
 		}
@@ -1189,8 +1188,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
 				}
 				if (workingFileTree != null) {
-					/** @todo: update node, if file is open */
-					workingFileTree.repaint();
+					((VPTWorkingFileListModel)workingFileTree.getModel()).nodeChanged(f);
 				}
 			}
 		}
@@ -1198,17 +1196,13 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED ||
 			esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
 			VPTProject p = (VPTProject) treeRoot;
-			/** @todo .reload() unfortunately closes all tree nodes, but it should only repaint all nodes */
 			if (folderTree != null) {
-				//((DefaultTreeModel)folderTree.getModel()).reload();
 				folderTree.repaint();
 			}
 			if (fileTree != null) {
-				//((DefaultTreeModel)fileTree.getModel()).reload();
 				fileTree.repaint();
 			}
 			if (workingFileTree != null) {
-				//((VPTWorkingFileListModel)workingFileTree.getModel()).reload();
 				workingFileTree.repaint();
 			}
 		}
