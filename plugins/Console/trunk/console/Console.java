@@ -322,6 +322,15 @@ implements EBComponent, Output, DefaultFocusComponent
 		getOutput().commandDone();
 	} //}}}
 
+	//{{{ getShellState() method
+	/**
+	 * @since Console 4.0.2.
+	 */
+	public ShellState getShellState(Shell shell)
+	{
+		return (ShellState)shellHash.get(shell.getName());
+	} //}}}
+
 	//{{{ Private members
 
 	//{{{ Icons
@@ -380,7 +389,7 @@ implements EBComponent, Output, DefaultFocusComponent
 
 		this.text.setCaretPosition(this.text.getDocument().getLength());
 
-		ShellState state = (ShellState)shellHash.get(shell.getName());
+		ShellState state = getShellState(shell);
 		state.commandRunning = true;
 
 		updateAnimation();
@@ -701,7 +710,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		{
 			try
 			{
-				if(attrs.getAttribute(StyleConstants.IconAttribute) != null)
+				if(attrs != null && StyleConstants.getIcon(attrs) != null)
 					msg = " ";
 				scrollback.insertString(scrollback.getLength(),
 					msg,attrs);
