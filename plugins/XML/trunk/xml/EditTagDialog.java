@@ -182,11 +182,12 @@ class EditTagDialog extends EnhancedDialog
 				set = true;
 
 			Vector values;
-			if(attr.type.equals("IDREF"))
+			if(attr.type.equals("IDREF")
+				&& ids.size() > 0)
 			{
 				values = ids;
-				if(value == null && values.size() > 0)
-					value = (String)values.elementAt(0);
+				if(value == null)
+					value = (String)ids.elementAt(0);
 			}
 			else
 			{
@@ -235,7 +236,7 @@ class EditTagDialog extends EnhancedDialog
 		}
 
 		if(empty.isSelected() && !element.html)
-			buf.append(" /");
+			buf.append("/");
 
 		buf.append(">");
 

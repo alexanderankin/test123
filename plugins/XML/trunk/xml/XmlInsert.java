@@ -261,7 +261,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 					// RMB click doesn't show edit tag dialog
 					textArea.setSelectedText("<" + element.name
 						+ (element.empty && !element.html
-						? " />" : ">"));
+						? "/>" : ">"));
 
 					textArea.requestFocus();
 				}

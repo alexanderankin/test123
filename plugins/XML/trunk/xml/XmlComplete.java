@@ -113,15 +113,13 @@ class XmlComplete extends JWindow
 		list.setSelectedIndex(0);
 	}
 
-	private void insertSelected(boolean showEditTagDialog)
+	private void insertSelected(char ch)
 	{
 		Object obj = list.getSelectedValue();
 		if(obj instanceof ElementDecl)
 		{
 			ElementDecl element = (ElementDecl)obj;
 			JEditTextArea textArea = view.getTextArea();
-
-			int caret = textArea.getCaretPosition();
 
 			StringBuffer buf = new StringBuffer();
 			buf.append(element.name.substring(text.length()));
@@ -143,41 +141,45 @@ class XmlComplete extends JWindow
 				}
 			}
 
-			if(element.empty)
+			if(ch == '\n' || ch == '>')
 			{
-				if(!element.html)
-					buf.append(" />");
-				else
-					buf.append(">");
+				int caret = textArea.getCaretPosition();
 
-				caret += buf.length();
-			}
-			else
-			{
-				buf.append(">");
-
-				caret += buf.length();
-
-				if(jEdit.getBooleanProperty(
-					"xml.close-complete-open"))
+				if(element.empty)
 				{
-					buf.append("</");
-					buf.append(element.name);
-					buf.append(">");
-				}
-			}
-			textArea.setSelectedText(buf.toString());
+					if(!element.html)
+						buf.append("/>");
+					else
+						buf.append(">");
 
-			if(showEditTagDialog)
-			{
-				// put caret inside the tag
-				caret--;
+					caret += buf.length();
+				}
+				else
+				{
+					buf.append(">");
+
+					caret += buf.length();
+
+					if(jEdit.getBooleanProperty(
+					"xml.close-complete-open"))
+					{
+						buf.append("</");
+						buf.append(element.name);
+						buf.append(">");
+					}
+				}
+
+				textArea.setSelectedText(buf.toString());
 				textArea.setCaretPosition(caret);
 
-				XmlActions.showEditTagDialog(view);
+				if(ch == '\n')
+					XmlActions.showEditTagDialog(view);
 			}
 			else
-				textArea.setCaretPosition(caret);
+			{
+				buf.append(ch);
+				textArea.setSelectedText(buf.toString());
+			}
 		}
 		else if(obj instanceof EntityDecl)
 		{
@@ -202,7 +204,11 @@ class XmlComplete extends JWindow
 			switch(evt.getKeyCode())
 			{
 			case KeyEvent.VK_ENTER:
-				insertSelected(true);
+				insertSelected('\n');
+				evt.consume();
+				break;
+			case KeyEvent.VK_TAB:
+				insertSelected('\t');
 				evt.consume();
 				break;
 			case KeyEvent.VK_ESCAPE:
@@ -267,8 +273,7 @@ class XmlComplete extends JWindow
 				if(ch == ';' || ch == '>'
 					|| ch == ' ' || ch == '\t')
 				{
-					// same effect as SPACE
-					insertSelected(false);
+					insertSelected(ch);
 				}
 				else
 				{
@@ -301,7 +306,7 @@ class XmlComplete extends JWindow
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
-			insertSelected(true);
+			insertSelected('\n');
 		}
 	}
 }

@@ -48,8 +48,8 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 		{
 			EntityDecl entity = (EntityDecl)value;
 			setIcon(entity.type == EntityDecl.INTERNAL
-				? INTERNAL_ENTITY
-				: EXTERNAL_ENTITY);
+				? INTERNAL_ENTITY_ICON
+				: EXTERNAL_ENTITY_ICON);
 			setText("&" + entity.name + "; ("
 				+ (entity.type == EntityDecl.INTERNAL
 				? entity.value : "external") + ")");
