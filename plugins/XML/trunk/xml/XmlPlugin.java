@@ -154,6 +154,11 @@ public class XmlPlugin extends EBPlugin
 				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,"xml");
 				return "xml";
 			}
+			else if(buffer.getName().toLowerCase().endsWith(".dtd"))
+			{
+				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,null);
+				return null;
+			}
 			else
 			{
 				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,"html-really");
@@ -162,7 +167,6 @@ public class XmlPlugin extends EBPlugin
 		}
 		else
 		{
-			// can't happen?
 			return null;
 		}
 	} //}}}
