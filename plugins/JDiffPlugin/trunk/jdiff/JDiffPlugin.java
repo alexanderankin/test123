@@ -1,6 +1,6 @@
 /*
  * JDiffPlugin.java
- * Copyright (c) 2000 Andre Kaplan
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 package jdiff;
@@ -51,10 +51,6 @@ public class JDiffPlugin extends EBPlugin
     public static Color highlightDeletedColor;
     public static Color highlightInsertedColor;
     public static Color highlightInvalidColor;
-
-    public static Color selectedHighlightChangedColor;
-    public static Color selectedHighlightDeletedColor;
-    public static Color selectedHighlightInsertedColor;
 
     static {
         propertiesChanged();
@@ -132,44 +128,6 @@ public class JDiffPlugin extends EBPlugin
         highlightInvalidColor = GUIUtilities.parseColor(
             jEdit.getProperty("jdiff.highlight-invalid-color", "#909090")
         );
-
-        // Selected highlight colors
-        selectedHighlightChangedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.selected-highlight-changed-color", "#FFCC66")
-        );
-        selectedHighlightDeletedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.selected-highlight-deleted-color", "#FF6666")
-        );
-        selectedHighlightInsertedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.selected-highlight-inserted-color", "#99CC66")
-        );
     }
-
-
-    /*
-    private static class WaitForBuffer implements EBComponent {
-        private View view;
-        private EditPane editPane;
-
-
-        public WaitForBuffer(View view, EditPane editPane) {
-            this.view = view;
-            this.editPane = editPane;
-            EditBus.addToBus(this);
-        }
-
-
-        public void handleMessage(EBMessage message) {
-            if (message instanceof BufferUpdate) {
-                BufferUpdate bu = (BufferUpdate) message;
-                if (bu.getWhat() == BufferUpdate.LOADED) {
-                    if (bu.getBuffer() == editPane.getBuffer()) {
-                        EditBus.removeFromBus(this);
-                        DualDiff.editPaneBufferChanged(view, editPane);
-                    }
-                }
-            }
-        }
-    }
-    */
 }
+
