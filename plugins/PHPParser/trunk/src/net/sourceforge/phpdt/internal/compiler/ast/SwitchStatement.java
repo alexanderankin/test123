@@ -13,8 +13,12 @@ public final class SwitchStatement extends Statement {
   public SwitchStatement(final Expression variable,
                          final AbstractCase[] cases,
                          final int sourceStart,
-                         final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                         final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.variable = variable;
     this.cases = cases;
   }

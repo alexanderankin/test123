@@ -184,7 +184,13 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     if (arguments != null) {
       for (int i = 0; i < arguments.size(); i++) {
         final VariableDeclaration variable = (VariableDeclaration) arguments.get(i);
-        final VariableUsage variableUsage = new VariableUsage(variable.name(), variable.sourceStart,variable.getBeginLine(),variable.getBeginColumn());
+        final VariableUsage variableUsage = new VariableUsage(variable.name(),
+                                                              variable.getSourceStart(),
+                                                              variable.getSourceEnd(),
+                                                              variable.getBeginLine(),
+                                                              variable.getEndLine(),
+                                                              variable.getBeginColumn(),
+                                                              variable.getEndColumn());
         list.add(variableUsage);
       }
     }
@@ -214,10 +220,10 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   private static boolean isVariableDeclaredBefore(final List list, final VariableUsage var) {
     final String name = var.getName();
-    final int pos = var.getStartOffset();
+    final int pos = var.getSourceStart();
     for (int i = 0; i < list.size(); i++) {
       final VariableUsage variableUsage = (VariableUsage) list.get(i);
-      if (variableUsage.getName().equals(name) && variableUsage.getStartOffset() < pos) {
+      if (variableUsage.getName().equals(name) && variableUsage.getSourceStart() < pos) {
         return true;
       }
     }
@@ -271,17 +277,17 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
         parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
                                                          parser.getPath(),
                                                          "warning, the parameter " + param.getName() + " seems to be never used in your method",
-                                                         param.getStartOffset(),
-                                                         param.getStartOffset() + param.getName().length(),
-                                                         param.getLine(),
-                                                         param.getLine(),
-                                                         param.getColumn(),
-                                                         param.getColumn()+ param.getName().length()));
+                                                         param.getSourceStart(),
+                                                         param.getSourceEnd(),
+                                                         param.getBeginLine(),
+                                                         param.getEndLine(),
+                                                         param.getBeginColumn(),
+                                                         param.getEndColumn()));
         /* fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
                                                parser.getPath(),
                                                "You should use '<?php' instead of '<?' it will avoid some problems with XML",
-                                               param.getStartOffset(),
-                                               param.getStartOffset() + param.getName().length(),
+                                               param.getSourceStart(),
+                                               param.getSourceStart() + param.getName().length(),
                                                token.beginLine,
                                                token.endLine,
                                                token.beginColumn,
@@ -322,12 +328,12 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
         parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
                                                          parser.getPath(),
                                                          "warning, usage of a variable that seems to be unassigned yet : " + variableUsage.getName(),
-                                                         variableUsage.getStartOffset(),
-                                                         variableUsage.getStartOffset() + variableUsage.getName().length(),
-                                                         variableUsage.getLine(),
-                                                         variableUsage.getLine(),
-                                                         variableUsage.getColumn(),
-                                                         variableUsage.getColumn() + variableUsage.getName().length()));
+                                                         variableUsage.getSourceStart(),
+                                                         variableUsage.getSourceEnd(),
+                                                         variableUsage.getBeginLine(),
+                                                         variableUsage.getEndLine(),
+                                                         variableUsage.getBeginColumn(),
+                                                         variableUsage.getEndColumn()));
       }
     }
   }

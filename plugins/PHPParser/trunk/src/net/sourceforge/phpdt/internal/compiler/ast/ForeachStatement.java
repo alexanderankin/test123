@@ -26,8 +26,12 @@ public final class ForeachStatement extends Statement {
                           final Expression variable,
                           final Statement statement,
                           final int sourceStart,
-                          final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                          final int sourceEnd,
+                          final int beginLine,
+                          final int endLine,
+                          final int beginColumn,
+                          final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expression = expression;
     this.variable = variable;
     this.statement = statement;
@@ -35,7 +39,7 @@ public final class ForeachStatement extends Statement {
 
   /**
    * Return the object into String.
-   * 
+   *
    * @param tab how many tabs (not used here
    * @return a String
    */
@@ -54,12 +58,12 @@ public final class ForeachStatement extends Statement {
     }
 
     final String statementString;
-    if (statement== null) {
+    if (statement == null) {
       statementString = "__STATEMENT__";
     } else {
       statementString = statement.toString(tab + 1);
     }
-    
+
     final StringBuffer buff = new StringBuffer(tab +
                                                expressionString.length() +
                                                variableString.length() +
@@ -77,33 +81,33 @@ public final class ForeachStatement extends Statement {
 
   /**
    * Get the variables from outside (parameters, globals ...).
-   * 
+   *
    * @param list the list where we will put variables
    */
   public void getOutsideVariable(final List list) {
     if (expression != null) expression.getOutsideVariable(list);
     if (variable != null) variable.getOutsideVariable(list);
-    if (statement!= null) statement.getOutsideVariable(list);
+    if (statement != null) statement.getOutsideVariable(list);
   }
 
   /**
    * get the modified variables.
-   * 
+   *
    * @param list the list where we will put variables
    */
   public void getModifiedVariable(final List list) {
     if (expression != null) expression.getModifiedVariable(list);
     if (variable != null) variable.getUsedVariable(list);
-    if (statement!= null) statement.getModifiedVariable(list);
+    if (statement != null) statement.getModifiedVariable(list);
   }
 
   /**
    * Get the variables used.
-   * 
+   *
    * @param list the list where we will put variables
    */
   public void getUsedVariable(final List list) {
     if (expression != null) expression.getUsedVariable(list);
-    if (statement!= null) statement.getUsedVariable(list);
+    if (statement != null) statement.getUsedVariable(list);
   }
 }

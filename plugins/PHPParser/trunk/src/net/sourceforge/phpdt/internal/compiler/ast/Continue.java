@@ -6,8 +6,12 @@ package net.sourceforge.phpdt.internal.compiler.ast;
  */
 public final class Continue extends BranchStatement {
 
-  public Continue(final Expression expression, final int sourceStart, final int sourceEnd) {
-    super(expression, sourceStart, sourceEnd);
+  public Continue(final Expression expression, final int sourceStart, final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(expression, sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
   }
 
   public String toString(final int tab) {

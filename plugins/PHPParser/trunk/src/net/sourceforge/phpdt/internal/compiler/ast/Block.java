@@ -15,6 +15,7 @@ public final class Block extends Statement {
   public final Statement[] statements;
 
   /**
+   * @deprecated todo virer ca
    * Create a block.
    * @param statements the statements
    * @param sourceStart starting offset
@@ -27,6 +28,22 @@ public final class Block extends Statement {
     this.statements = statements;
   }
 
+    /**
+   * Create a block.
+   * @param statements the statements
+   * @param sourceStart starting offset
+   * @param sourceEnd ending offset
+   */
+  public Block(final Statement[] statements,
+               final int sourceStart,
+               final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
+    this.statements = statements;
+  }
   /**
    * tell if the block is empty.
    * @return the block is empty if there are no statements in it

@@ -21,12 +21,16 @@ public final class GlobalStatement extends Statement implements Outlineable {
   public GlobalStatement(final Object parent,
                          final AbstractVariable[] variables,
                          final int sourceStart,
-                         final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                         final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.variables = variables;
     this.parent = parent;
   }
-
+  
   public String toString() {
     final StringBuffer buff = new StringBuffer("global ");//$NON-NLS-1$
     for (int i = 0; i < variables.length; i++) {

@@ -10,32 +10,41 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
  * In fact it's an array of VariableUsage, since a field could contains
  * several var :
  * var $toto,$tata;
+ *
  * @author Matthieu Casanova
  */
 public final class FieldDeclaration extends Statement implements Outlineable {
 
-  /** The variables. */
+  /**
+   * The variables.
+   */
   public final VariableDeclaration[] vars;
 
   private final Object parent;
 
   /**
    * Create a new field.
-   * @param vars the array of variables.
+   *
+   * @param vars        the array of variables.
    * @param sourceStart the starting offset
    * @param sourceEnd   the ending offset
    */
   public FieldDeclaration(final VariableDeclaration[] vars,
+                          final Object parent,
                           final int sourceStart,
                           final int sourceEnd,
-                          final Object parent) {
-    super(sourceStart, sourceEnd);
+                          final int beginLine,
+                          final int endLine,
+                          final int beginColumn,
+                          final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.vars = vars;
     this.parent = parent;
   }
 
   /**
    * Return the object into String.
+   *
    * @param tab how many tabs (not used here
    * @return a String
    */
@@ -61,19 +70,22 @@ public final class FieldDeclaration extends Statement implements Outlineable {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(final List list) {
+  }
 
   /**
    * get the modified variables.
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {}
+  public void getModifiedVariable(final List list) {
+  }
 
   /**
    * Get the variables used.
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {}
+  public void getUsedVariable(final List list) {
+  }
 }

@@ -72,6 +72,8 @@ public final class PHPParser {
    * It will be used by the token manager to create HTMLCode objects
    */
   public static int htmlStart;
+  public static int htmlLineStart;
+  public static int htmlColumnStart;
 
   //ast stack
   private final static int AstStackIncrement = 100;
@@ -193,6 +195,8 @@ public final class PHPParser {
     nodes = new AstNode[AstStackIncrement];
     nodePtr = -1;
     htmlStart = 0;
+    htmlColumnStart = 0;
+    htmlLineStart = 0;
   }
 
   /**
@@ -240,7 +244,7 @@ public final class PHPParser {
       return;
     }
     final String html = jj_input_stream.getCurrentBuffer().substring(htmlStart, currentPosition);
-    pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition));
+    pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition,htmlLineStart,token.endLine,htmlColumnStart,token.endColumn));
   }
 
   /** Create a new task. */
@@ -725,7 +729,11 @@ void PhpBlock() :
   Php()
   try {
     phpEnd = <PHPEND>
-   {htmlStart = phpEnd.sourceEnd;}
+   {
+    htmlStart = phpEnd.sourceEnd;
+    htmlLineStart = phpEnd.endLine;
+    htmlColumnStart = phpEnd.endColumn;
+   }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -753,6 +761,8 @@ PHPEchoBlock phpEchoBlock() :
   expr = Expression() [ <SEMICOLON> ] token2 = <PHPEND>
   {
   htmlStart = token2.sourceEnd;
+  htmlLineStart = token2.endLine;
+  htmlColumnStart = token2.endColumn;
 
   echoBlock = new PHPEchoBlock(expr,token.sourceStart,token2.sourceEnd, token.beginLine,token2.endLine,token.beginColumn,token2.endColumn);
   pushOnAstNodes(echoBlock);
@@ -820,30 +830,47 @@ ClassDeclaration ClassDeclaration() :
     }
   ]
   {
-    int start, end;
+    int start, end,beginLine,endLine,beginColumn,endColumn;
     if (className == null) {
-      start = token.sourceStart;
-      end = token.sourceEnd;
+      start       = token.sourceStart;
+      end         = token.sourceEnd;
+      beginLine   = token.beginLine;
+      endLine     = token.endLine;
+      beginColumn = token.beginColumn;
+      endColumn   = token.endColumn;
     } else {
-      start = className.sourceStart;
-      end = className.sourceEnd;
+      start       = className.sourceStart;
+      end         = className.sourceEnd;
+      beginLine   = className.beginLine;
+      endLine     = className.endLine;
+      beginColumn = className.beginColumn;
+      endColumn   = className.endColumn;
     }
     if (superclassNameImage == null) {
 
       classDeclaration = new ClassDeclaration(currentSegment,
                                               classNameImage,
                                               start,
-                                              end);
+                                              end,
+                                              beginLine,
+                                              endLine,
+                                              beginColumn,
+                                              endColumn);
     } else {
       classDeclaration = new ClassDeclaration(currentSegment,
                                               classNameImage,
                                               superclassNameImage,
                                               start,
-                                              end);
+                                              end,
+                                              beginLine,
+                                              endLine,
+                                              beginColumn,
+                                              endColumn);
     }
       currentSegment.add(classDeclaration);
       currentSegment = classDeclaration;
   }
+  //todo change this
   classEnd = ClassBody(classDeclaration)
   {currentSegment = (OutlineableWithChildren) currentSegment.getParent();
    classDeclaration.sourceEnd = classEnd;
@@ -974,16 +1001,24 @@ FieldDeclaration FieldDeclaration() :
     //todo : strange
      return null;
    }
-   int end;
+   int end,endLine,endColumn;
    if (token2 == null) {
      end = list[list.length-1].sourceEnd;
+     endLine = list[list.length-1].getEndLine();
+     endColumn = list[list.length-1].getEndColumn();
    } else {
      end = token2.sourceEnd;
+     endLine = token2.endLine;
+     endColumn = token2.endColumn;
    }
    return new FieldDeclaration(list,
+                               currentSegment,
                                token.sourceStart,
                                end,
-                               currentSegment);}
+                               token.beginLine,
+                               endLine,
+                               token.beginColumn,
+                               endColumn);}
 }
 
 /**
@@ -992,22 +1027,23 @@ FieldDeclaration FieldDeclaration() :
  */
 VariableDeclaration VariableDeclaratorNoSuffix() :
 {
-  final Token token, lbrace,rbrace;
+  final Token identifierToken, lbrace,rbrace;
   Expression expr, initializer = null;
   Token assignToken = null;
+  Token dollar;
   Variable variable;
 }
 {
-  <DOLLAR>
+  dollar = <DOLLAR>
   (
-     token = <IDENTIFIER>
-     {variable = new Variable(token.image,
-                              token.sourceStart,
-                              token.sourceEnd,
-                              token.beginLine,
-                              token.endLine,
-                              token.beginColumn,
-                              token.endColumn);}
+     identifierToken = <IDENTIFIER>
+     {variable = new Variable(identifierToken.image,
+                              dollar.sourceStart,
+                              identifierToken.sourceEnd,
+                              dollar.beginLine,
+                              identifierToken.endLine,
+                              dollar.beginColumn,
+                              identifierToken.endColumn);}
    |
      lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
      {variable = new Variable(expr,
@@ -1167,11 +1203,12 @@ AbstractVariable VariableDeclaratorId() :
 Variable Variable() :
 {
   Variable variable = null;
-  final Token token;
+  final Token dollarToken;
 }
 {
-  token = <DOLLAR> variable = Var()
+  dollarToken = <DOLLAR> variable = Var()
   {
+    variable.setStart(dollarToken.sourceStart,dollarToken.beginLine,dollarToken.beginColumn);
     return variable;
   }
 }
@@ -1493,14 +1530,14 @@ int FormalParameters(final ArrayList parameters) :
 VariableDeclaration FormalParameter() :
 {
   final VariableDeclaration variableDeclaration;
-  Token token = null;
+  Token bitAndToken = null;
 }
 {
-  [token = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
+  [bitAndToken = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
   {
     outlineInfo.addVariable('$'+variableDeclaration.name());
-    if (token != null) {
-      variableDeclaration.setReference(true);
+    if (bitAndToken != null) {
+      variableDeclaration.setReference(true,bitAndToken.sourceStart,bitAndToken.beginLine,bitAndToken.beginColumn);
     }
     return variableDeclaration;}
 }
@@ -2603,7 +2640,12 @@ Statement expressionStatement() :
                                           token.endLine,
                                           e.currentToken.endColumn,
                                           token.beginColumn));
-    return new EmptyStatement(e.currentToken.sourceStart,token.sourceEnd);
+    return new EmptyStatement(e.currentToken.sourceStart,
+                              token.sourceEnd,
+                              e.currentToken.beginLine,
+                              token.endLine,
+                              e.currentToken.beginColumn,
+                              token.endColumn);
   }
   try {
     token = <SEMICOLON>
@@ -2760,7 +2802,11 @@ HTMLBlock htmlBlock() :
 }
 {
   phpEnd = <PHPEND>
-  {htmlStart = phpEnd.sourceEnd;}
+  {
+    htmlStart = phpEnd.sourceEnd;
+    htmlLineStart = phpEnd.endLine;
+    htmlColumnStart = phpEnd.endColumn;
+  }
   (phpEchoBlock())*
   try {
     (<PHPSTARTLONG> | <PHPSTARTSHORT>)
@@ -3002,9 +3048,21 @@ EchoStatement EchoStatement() :
    final Expression[] exprs = new Expression[expressions.size()];
    expressions.toArray(exprs);
    if (token2 == null) {
-     return new EchoStatement(exprs,token.sourceStart, exprs[exprs.length-1].sourceEnd);
+     return new EchoStatement(exprs,
+                              token.sourceStart, 
+                              exprs[exprs.length-1].sourceEnd,
+                              token.beginLine,
+                              exprs[exprs.length-1].getEndLine(),
+                              token.beginColumn,
+                              exprs[exprs.length-1].getEndColumn());
    }
-   return new EchoStatement(exprs,token.sourceStart, token2.sourceEnd);
+   return new EchoStatement(exprs,
+                            token.sourceStart,
+                            token2.sourceEnd,
+                            token.beginLine,
+                            token2.endLine,
+                            token.beginColumn,
+                            token2.endColumn);
    }
 }
 
@@ -3014,19 +3072,19 @@ GlobalStatement GlobalStatement() :
    final ArrayList vars = new ArrayList();
    final GlobalStatement global;
    final Token token, token2;
-   int pos;
+   int pos,line,column;
 }
 {
   token = <GLOBAL>
     expr = Variable()
-    {vars.add(expr);pos = expr.sourceEnd+1;}
+    {vars.add(expr);pos = expr.sourceEnd+1;line=expr.getEndLine();column=expr.getEndColumn();}
   (<COMMA>
     expr = Variable()
-    {vars.add(expr);pos = expr.sourceEnd+1;}
+    {vars.add(expr);pos = expr.sourceEnd+1;line=expr.getEndLine();column=expr.getEndColumn();}
   )*
   try {
     token2 = <SEMICOLON>
-    {pos = token2.sourceEnd+1;}
+    {pos = token2.sourceEnd+1;line=token2.endLine;column=token2.endColumn;}
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -3046,7 +3104,11 @@ GlobalStatement GlobalStatement() :
     global = new GlobalStatement(currentSegment,
                                  variables,
                                  token.sourceStart,
-                                 pos);
+                                 pos,
+                                 token.beginLine,
+                                 line,
+                                 token.beginColumn,
+                                 column);
     currentSegment.add(global);
     return global;}
 }
@@ -3056,16 +3118,16 @@ StaticStatement StaticStatement() :
   final ArrayList vars = new ArrayList();
   VariableDeclaration expr;
   final Token token, token2;
-  int pos;
+  int pos,line,column;
 }
 {
-  token = <STATIC> expr = VariableDeclarator() {vars.add(expr);pos = expr.sourceEnd+1;}
+  token = <STATIC> expr = VariableDeclarator() {vars.add(expr);pos = expr.sourceEnd+1;line=expr.getEndLine();column=expr.getEndColumn();}
   (
-    <COMMA> expr = VariableDeclarator() {vars.add(expr);pos = expr.sourceEnd+1;}
+    <COMMA> expr = VariableDeclarator() {vars.add(expr);pos = expr.sourceEnd+1;line=expr.getEndLine();column=expr.getEndColumn();}
   )*
   try {
     token2 = <SEMICOLON>
-    {pos = token2.sourceEnd+1;}
+    {pos = token2.sourceEnd+1;line=token2.endLine;column=token2.endColumn;}
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -3084,7 +3146,11 @@ StaticStatement StaticStatement() :
     vars.toArray(variables);
     return new StaticStatement(variables,
                                token.sourceStart,
-                               pos);}
+                               pos,
+                               token.beginLine,
+                               line,
+                               token.beginColumn,
+                               column);}
 }
 
 LabeledStatement LabeledStatement() :
@@ -3140,15 +3206,26 @@ Block Block() :
   final ArrayList list = new ArrayList();
   Statement statement;
   final Token token, token2;
-  int pos,start;
+  int pos,start,beginLine,endLine,beginColumn,endColumn;
 }
 {
   try {
     token = <LBRACE>
-    {pos = token.sourceEnd+1;start=token.sourceStart;}
+    {
+      pos         = token.sourceEnd+1;
+      start       = token.sourceStart;
+      beginLine   = token.beginLine;
+      beginColumn = token.beginColumn;
+      endLine     = token.endLine;
+      endColumn   = token.endColumn;
+    }
   } catch (ParseException e) {
-    pos = this.token.sourceEnd+1;
-    start = pos;
+    pos         = this.token.sourceEnd+1;
+    start       = pos;
+    beginLine   = this.token.endLine;
+    beginColumn = this.token.endColumn;
+    endLine     = this.token.endLine;
+    endColumn   = this.token.endColumn;
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "'{' expected",
@@ -3164,19 +3241,31 @@ Block Block() :
   ( statement = BlockStatement()
     {
       if (statement != null) {
-        list.add(statement);pos = statement.sourceEnd+1;
+        list.add(statement);
+        pos         = statement.sourceEnd+1;
+        endLine     = statement.getEndLine();
+        endColumn   = statement.getEndColumn();
       }
     }
   | statement = htmlBlock()      {if (statement != null) {
                                     list.add(statement);
                                     pos = statement.sourceEnd+1;
+                                    endLine     = statement.getEndLine();
+                                    endColumn   = statement.getEndColumn();
+                                  } else {
+                                    pos = this.token.sourceEnd+1;
+                                    endLine     = this.token.endLine;
+                                    endColumn   = this.token.endColumn;
                                   }
-                                  pos = this.token.sourceEnd+1;
                                  }
   )*
   try {
     token2 = <RBRACE>
-    {pos = token2.sourceEnd+1;}
+    {
+      pos         = token2.sourceEnd+1;
+      endLine     = token2.endLine;
+      endColumn   = token2.endColumn;
+    }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -3193,7 +3282,13 @@ Block Block() :
   {
   final Statement[] statements = new Statement[list.size()];
   list.toArray(statements);
-  return new Block(statements,start,pos);}
+  return new Block(statements,
+                   start,
+                   pos,
+                   beginLine,
+                   endLine,
+                   beginColumn,
+                   endColumn);}
 }
 
 Statement BlockStatement() :
@@ -3338,7 +3433,12 @@ EmptyStatement EmptyStatement() :
                                               token.endLine,
                                               token.endColumn,
                                               token.endColumn+1));   */
-    return new EmptyStatement(token.sourceStart,token.sourceEnd);
+    return new EmptyStatement(token.sourceStart,
+                              token.sourceEnd,
+                              token.beginLine,
+                              token.endLine,
+                              token.beginColumn,
+                              token.endColumn);
   }
 }
 
@@ -3438,7 +3538,11 @@ SwitchStatement SwitchStatement() :
   {return new SwitchStatement(variable,
                               cases,
                               switchToken.sourceStart,
-                              this.token.sourceEnd);}
+                              this.token.sourceEnd,
+                              switchToken.beginLine,
+                              this.token.endLine,
+                              switchToken.beginColumn,
+                              this.token.endColumn);}
 }
 
 AbstractCase[] switchStatementBrace() :
@@ -3602,6 +3706,7 @@ Expression SwitchLabel() :
   try {
     expr = Expression()
   } catch (ParseException e) {
+  //todo ameliorer ca
     if (errorMessage != null) throw e;
     errorMessage = "expression expected after 'case' keyword";
     errorLevel   = ERROR;
@@ -3670,7 +3775,7 @@ Break BreakStatement() :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
-  {return new Break(expression, token.sourceStart, pos);}
+  {return new Break(expression, token.sourceStart, pos,token.beginLine,token.endLine,token.beginColumn,token.endColumn);}
 }
 
 IfStatement IfStatement() :
@@ -3738,6 +3843,7 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
   int pos = jj_input_stream.getPosition();
   final int endStatements;
   Token token;
+  Token elseToken;
 }
 {
   token = <COLON>
@@ -3792,7 +3898,9 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
       statementsArray = new Statement[stmts.size()];
       stmts.toArray(statementsArray);
       return new IfStatement(condition,
-                             new Block(statementsArray,pos,endStatements),
+                             new Block(statementsArray,
+                                       pos,
+                                       endStatements),
                              elseIfs,
                              elseStatement,
                              pos,
@@ -3804,11 +3912,16 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
   (stmt = Statement() | stmt = htmlBlock())
   ( LOOKAHEAD(1) elseifStatement = ElseIfStatement() {elseIfList.add(elseifStatement);})*
   [ LOOKAHEAD(1)
-    <ELSE>
+    elseToken = <ELSE>
     try {
-      {pos = jj_input_stream.getPosition();}
       statement = Statement()
-      {elseStatement = new Else(statement,pos,jj_input_stream.getPosition());}
+      {elseStatement = new Else(statement,
+                                elseToken.sourceStart,
+                                statement.sourceEnd,
+                                elseToken.beginLine,
+                                statement.getEndLine(),
+                                elseToken.beginColumn,
+                                statement.getEndColumn());}
     } catch (ParseException e) {
       if (errorMessage != null) {
         throw e;
@@ -3848,7 +3961,11 @@ ElseIf ElseIfStatementColon() :
   list.toArray(stmtsArray);
   return new ElseIf(condition,stmtsArray ,
                     elseifToken.sourceStart,
-                    stmtsArray[sizeList-1].sourceEnd);}
+                    stmtsArray[sizeList-1].sourceEnd,
+                    elseifToken.beginLine,
+                    stmtsArray[sizeList-1].getEndLine(),
+                    elseifToken.beginColumn,
+                    stmtsArray[sizeList-1].getEndColumn());}
 }
 
 Else ElseStatementColon() :
@@ -3864,7 +3981,13 @@ Else ElseStatementColon() :
   final int sizeList = list.size();
   final Statement[] stmtsArray = new Statement[sizeList];
   list.toArray(stmtsArray);
-  return new Else(stmtsArray,elseToken.sourceStart,stmtsArray[sizeList-1].sourceEnd);}
+  return new Else(stmtsArray,
+                  elseToken.sourceStart,
+                  stmtsArray[sizeList-1].sourceEnd,
+                  elseToken.beginLine,
+                  stmtsArray[sizeList-1].getEndLine(),
+                  elseToken.beginColumn,
+                  stmtsArray[sizeList-1].getEndColumn());}
 }
 
 ElseIf ElseIfStatement() :
@@ -3877,7 +4000,14 @@ ElseIf ElseIfStatement() :
 {
   elseifToken = <ELSEIF> condition = Condition("elseif") statement[0] = Statement()
   {
-  return new ElseIf(condition,statement,elseifToken.sourceStart,statement[0].sourceEnd);}
+  return new ElseIf(condition,
+                    statement,
+                    elseifToken.sourceStart,
+                    statement[0].sourceEnd,
+                    elseifToken.beginLine,
+                    statement[0].getEndLine(),
+                    elseifToken.beginColumn,
+                    statement[0].getEndColumn());}
 }
 
 WhileStatement WhileStatement() :
@@ -3890,7 +4020,14 @@ WhileStatement WhileStatement() :
   whileToken = <WHILE>
     condition = Condition("while")
     action    = WhileStatementAction(whileToken.sourceStart,whileToken.sourceEnd)
-    {return new WhileStatement(condition,action,whileToken.sourceStart,action.sourceEnd);}
+    {return new WhileStatement(condition,
+                               action,
+                               whileToken.sourceStart,
+                               action.sourceEnd,
+                               whileToken.beginLine,
+                               action.getEndLine(),
+                               whileToken.beginColumn,
+                               action.getEndColumn());}
 }
 
 Statement WhileStatementAction(final int start, final int end) :
@@ -3966,9 +4103,23 @@ DoStatement DoStatement() :
   }
   {
     if (token2 == null) {
-      return new DoStatement(condition,action,token.sourceStart,condition.sourceEnd);
+      return new DoStatement(condition,
+                             action,
+                             token.sourceStart,
+                             condition.sourceEnd,
+                             token.beginLine,
+                             condition.getEndLine(),
+                             token.beginColumn,
+                             condition.getEndColumn());
     }
-    return new DoStatement(condition,action,token.sourceStart,token2.sourceEnd);
+    return new DoStatement(condition,
+                           action,
+                           token.sourceStart,
+                           token2.sourceEnd,
+                             token.beginLine,
+                             token2.endLine,
+                             token.beginColumn,
+                             token2.endColumn);
   }
 }
 
@@ -3981,13 +4132,17 @@ ForeachStatement ForeachStatement() :
   Token lparenToken = null;
   Token asToken = null;
   Token rparenToken = null;
-  int pos;
+  int pos,endLine,endColumn;
 }
 {
   foreachToken = <FOREACH>
   try {
     lparenToken = <LPAREN>
-    {pos = lparenToken.sourceEnd+1;}
+    {
+      pos       = lparenToken.sourceEnd+1;
+      endLine   = lparenToken.endLine;
+      endColumn = lparenToken.endColumn;
+    }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -4000,11 +4155,19 @@ ForeachStatement ForeachStatement() :
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
-    {pos = foreachToken.sourceEnd+1;}
+    {
+      pos       = foreachToken.sourceEnd+1;
+      endLine   = foreachToken.endLine;
+      endColumn = foreachToken.endColumn;
+    }
   }
   try {
     expression = Expression()
-    {pos = expression.sourceEnd+1;}
+    {
+      pos       = expression.sourceEnd+1;
+      endLine   = expression.getEndLine();
+      endColumn = expression.getEndColumn();
+    }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -4020,7 +4183,11 @@ ForeachStatement ForeachStatement() :
   }
   try {
     asToken = <AS>
-    {pos = asToken.sourceEnd+1;}
+    {
+      pos       = asToken.sourceEnd+1;
+      endLine   = asToken.endLine;
+      endColumn = asToken.endColumn;
+    }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -4036,7 +4203,11 @@ ForeachStatement ForeachStatement() :
   }
   try {
     variable = ArrayVariable()
-    {pos = variable.sourceEnd+1;}
+    {
+      pos       = variable.sourceEnd+1;
+      endLine   = variable.getEndLine();
+      endColumn = variable.getEndColumn();
+    }
   } catch (ParseException e) {
     if (errorMessage != null) throw e;
     fireParseError(new PHPParseErrorEvent(ERROR,
@@ -4053,7 +4224,11 @@ ForeachStatement ForeachStatement() :
   }
   try {
     rparenToken = <RPAREN>
-    {pos = rparenToken.sourceEnd+1;}
+    {
+      pos       = rparenToken.sourceEnd+1;
+      endLine   = rparenToken.endLine;
+      endColumn = rparenToken.endColumn;
+    }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -4069,7 +4244,11 @@ ForeachStatement ForeachStatement() :
   }
   try {
     statement = Statement()
-    {pos = statement.sourceEnd+1;}
+    {
+      pos       = statement.sourceEnd+1;
+      endLine   = statement.getEndLine();
+      endColumn = statement.getEndColumn();
+    }
   } catch (ParseException e) {
     if (errorMessage != null) throw e;
     fireParseError(new PHPParseErrorEvent(ERROR,
@@ -4089,7 +4268,11 @@ ForeachStatement ForeachStatement() :
                                variable,
                                statement,
                                foreachToken.sourceStart,
-                               pos);}
+                               pos,
+                               foreachToken.beginLine,
+                               endLine,
+                               foreachToken.beginColumn,
+                               endColumn);}
 
 }
 
@@ -4189,7 +4372,11 @@ final ArrayList list = new ArrayList();
                               increments,
                               new Block(stmtsArray,
                                         stmtsArray[0].sourceStart,
-                                        stmtsArray[stmtsArray.length-1].sourceEnd),
+                                        stmtsArray[stmtsArray.length-1].sourceEnd,
+                                        stmtsArray[0].getBeginLine(),
+                                        stmtsArray[stmtsArray.length-1].getEndLine(),
+                                        stmtsArray[0].getBeginColumn(),
+                                        stmtsArray[stmtsArray.length-1].getEndColumn()),
                               token.sourceStart,
                               pos);}
     )
@@ -4257,11 +4444,11 @@ Continue ContinueStatement() :
   {
     if (token2 == null) {
       if (expr == null) {
-        return new Continue(expr,token.sourceStart,token.sourceEnd);
+        return new Continue(expr,token.sourceStart,token.sourceEnd,token.beginLine,token.endLine,token.beginColumn,token.endColumn);
       }
-      return new Continue(expr,token.sourceStart,expr.sourceEnd);
+      return new Continue(expr,token.sourceStart,expr.sourceEnd,token.beginLine,expr.getEndLine(),token.beginColumn,expr.getEndColumn());
     }
-    return new Continue(expr,token.sourceStart,token2.sourceEnd);
+    return new Continue(expr,token.sourceStart,token2.sourceEnd,token.beginLine,token2.endLine,token.beginColumn,token2.endColumn);
   }
 }
 

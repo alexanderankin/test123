@@ -14,20 +14,6 @@ public final class HTMLCode extends AstNode {
   private final String htmlCode;
 
   /**
-   * Create an html Block.
-   * @deprecated
-   * todo : virer ca
-   * @param htmlCode the html inside the block
-   * @param sourceStart the starting offset
-   * @param sourceEnd the ending offset
-   */
-  public HTMLCode(final String htmlCode,
-                  final int sourceStart,
-                  final int sourceEnd) {
-    this(htmlCode,sourceStart, sourceEnd,0,0,0,0);
-  }
-
-  /**
    * @param sourceStart starting offset
    * @param sourceEnd ending offset
    * @param beginLine begin line
@@ -35,7 +21,7 @@ public final class HTMLCode extends AstNode {
    * @param beginColumn begin column
    * @param endColumn ending column
    */
-  protected HTMLCode(final String htmlCode,
+  public HTMLCode(final String htmlCode,
                     final int sourceStart,
                     final int sourceEnd,
                     final int beginLine,

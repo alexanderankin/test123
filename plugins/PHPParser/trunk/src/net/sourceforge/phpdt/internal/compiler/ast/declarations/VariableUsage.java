@@ -11,26 +11,38 @@ public final class VariableUsage {
   private final String name;
 
   /** where the variable is declared. */
-  private final int startOffset;
+  private final int sourceStart;
+  private final int sourceEnd;
 
-  private final int line;
+  private final int beginLine;
+  private final int endLine;
+  private final int beginColumn;
+  private final int endColumn;
 
-  private final int column;
 
   /**
    * create a VariableUsage.
    * @param name the name of the variable
    * @param startOffset the offset
    */
-  public VariableUsage(final String name, final int startOffset,final int line, final int column) {
+  public VariableUsage(final String name, 
+                       final int startOffset,
+                       final int sourceEnd,
+                       final int beginLine,
+                       final int endLine,
+                       final int beginColumn,
+                       final int endColumn) {
     this.name = name;
-    this.startOffset = startOffset;
-    this.line = line;
-    this.column = column;
+    this.sourceStart = startOffset;
+    this.sourceEnd = sourceEnd;
+    this.beginLine = beginLine;
+    this.endLine = endLine;
+    this.beginColumn = beginColumn;
+    this.endColumn = endColumn;
   }
 
   public String toString() {
-    return name + ' ' + startOffset;
+    return name + ' ' + sourceStart;
   }
 
   /**
@@ -45,16 +57,28 @@ public final class VariableUsage {
    * Get the starting offset.
    * @return the starting offset
    */
-  public int getStartOffset() {
-    return startOffset;
+  public int getSourceStart() {
+    return sourceStart;
   }
 
-  public int getLine() {
-    return line;
+  public int getBeginLine() {
+    return beginLine;
   }
 
-  public int getColumn() {
-    return column;
+  public int getBeginColumn() {
+    return beginColumn;
+  }
+
+  public int getSourceEnd() {
+    return sourceEnd;
+  }
+
+  public int getEndLine() {
+    return endLine;
+  }
+
+  public int getEndColumn() {
+    return endColumn;
   }
 
   public boolean equals(final Object object) {
