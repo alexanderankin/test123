@@ -10,24 +10,21 @@ import java.util.List;
  */
 public final class ArrayVariableDeclaration extends Expression {
 
-  /**
-   * the array key.
-   */
+  /** the array key. */
   private final Expression key;
 
-  /**
-   * the array value.
-   */
+  /** the array value. */
   private Expression value;
 
-  /**
-   * Create a new array variable declaration.
-   *
-   * @param key   the key
-   * @param value the value
-   */
-  public ArrayVariableDeclaration(final Expression key, final Expression value) {
-    super(key.sourceStart, value.sourceEnd,key.getBeginLine(),value.getEndLine(),key.getBeginColumn(),value.getEndColumn());
+  public ArrayVariableDeclaration(Expression key,
+                                  Expression value,
+                                  int sourceStart,
+                                  int sourceEnd,
+                                  int beginLine,
+                                  int endLine,
+                                  int beginColumn,
+                                  int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.key = key;
     this.value = value;
   }
