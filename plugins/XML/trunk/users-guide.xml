@@ -516,6 +516,9 @@
     Fixed a problem with resolving DTDs for buffers stored on
     virtual file systems.
    </para></listitem>
+   <listitem><para>
+    Made attribute list handling in DTDs compliant with XML specification.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>

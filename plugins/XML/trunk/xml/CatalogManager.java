@@ -17,7 +17,7 @@
 package xml;
 
 //{{{ Imports
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import java.awt.Component;
 import java.io.*;
 import java.net.*;

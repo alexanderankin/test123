@@ -37,6 +37,16 @@ public class ElementDecl
 		this.name = name;
 		this.html = html;
 
+		if(content != null)
+			setContent(content);
+
+		attributes = new ArrayList();
+		attributeHash = new HashMap();
+	} //}}}
+
+	//{{{ setContent() method
+	public void setContent(String content)
+	{
 		if(content.equals("EMPTY"))
 			empty = true;
 		else if(content.equals("ANY"))
@@ -56,9 +66,6 @@ public class ElementDecl
 				this.content.add(element);
 			}
 		}
-
-		attributes = new ArrayList();
-		attributeHash = new HashMap();
 	} //}}}
 
 	//{{{ getChildElements() method
@@ -92,6 +99,12 @@ public class ElementDecl
 		}
 
 		return children;
+	} //}}}
+
+	//{{{ getAttribute() method
+	public AttributeDecl getAttribute(String name)
+	{
+		return (AttributeDecl)attributeHash.get(name);
 	} //}}}
 
 	//{{{ addAttribute() method
