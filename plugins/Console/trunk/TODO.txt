@@ -1,2 +1,0 @@
-Before releasing 2.0:
-- option pane
