@@ -17,25 +17,36 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package templates;
 
 import java.io.*;
 import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import java.util.*;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.context.Context;
+import org.apache.velocity.runtime.RuntimeConstants;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+import velocity.BufferWriter;
+import velocity.jEditContext;
+import velocity.VelocityConstants;
 
 /**
  * A jEdit plugin for adding a templating function.
  */
 public class TemplatesPlugin extends EditPlugin
+    implements RuntimeConstants, VelocityConstants
 {
 	// private static TemplatesAction myAction = null;
 	private static String defaultTemplateDir;
 	private static String sepChar;		// System-dependant separator character
 	private static TemplateDir templates = null;
+    private static VelocityEngine engine;
 	
 	/**
 	 * Returns the root TemplateDir object, which represents templates as a  
@@ -77,27 +88,121 @@ public class TemplatesPlugin extends EditPlugin
 		} else {
 			jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",templateDirVal);
 		}
-		templates = new TemplateDir(new File(templateDirVal));
+		templates = new TemplateDir(null, new File(templateDirVal));
 		TemplatesPlugin.refreshTemplates();
 	}
 	
-	/**
-	 * Initializes the TemplatesAction and registers it with jEdit.
-	 */
-	public void start()
-	{
-		sepChar = System.getProperty("file.separator");
-		defaultTemplateDir = jEdit.getSettingsDirectory() + sepChar +
+   /**
+    * Returns the velocity engine.
+    */
+   public static VelocityEngine getEngine()
+      throws Exception
+   {
+      if (engine == null) {
+         engine = new VelocityEngine();
+         Properties props = loadVelocityProperties();
+         props.setProperty(RUNTIME_LOG, getVelocityLog());
+         props.setProperty(FILE_RESOURCE_LOADER_PATH, getVelocityResourcePath());
+         engine.init(props);
+      }
+      return engine;
+   }
+
+   /**
+    * Returns the path to the velocity directory.
+    */
+   public static String getVelocityDirectory()
+   {
+      return MiscUtilities.constructPath(jEdit.getSettingsDirectory(),
+         "velocity");
+   }
+
+   /**
+    * Returns the path used to load velocity resources.
+    */
+   public static String getVelocityResourcePath()
+   {
+      // return MiscUtilities.constructPath(getVelocityDirectory(),
+      //    "templates");
+      return TemplatesPlugin.getTemplateDir();
+   }
+
+   /**
+    * Returns the file for velocity logging messages.
+    */
+   private static String getVelocityLog()
+   {
+      return MiscUtilities.constructPath(getVelocityDirectory(),
+         "velocity.log");
+   }
+
+   /**
+    * Return the path to the velocity properties file.
+    */
+   private static String getVelocityPropertiesPath()
+   {
+      return MiscUtilities.constructPath(getVelocityDirectory(),
+         "velocity.properties");
+   }
+
+   /**
+    * Load velocity properties.
+    */
+   private static Properties loadVelocityProperties()
+   {
+      Properties props = new Properties();
+      InputStream in = null;
+	  TemplatesPlugin thePlugin = (TemplatesPlugin) jEdit.getPlugin(
+		 			"templates.TemplatesPlugin");
+      try {
+         File f = new File(getVelocityPropertiesPath());
+         if (f.exists()) {
+            in = new FileInputStream(f);
+         } else {
+            in = thePlugin.getClass().getClassLoader().
+					getResourceAsStream("velocity/velocity.properties");
+         }
+         props.load(in);
+      } catch (IOException e) {
+         Log.log(Log.ERROR, thePlugin, "Error loading velocity properties");
+      } finally {
+         IO.close(in);
+      }
+      return props;
+   }
+
+   //{{{ EditPlugin Methods
+   /**
+    * Start this plugin.
+    */
+   public void start()
+   {
+      sepChar = System.getProperty("file.separator");
+      defaultTemplateDir = jEdit.getSettingsDirectory() + sepChar +
 				"templates" + sepChar;
-		templates = new TemplateDir(new File(this.getTemplateDir()));
-		this.refreshTemplates();
-	}
+      File velocityDir = new File(getVelocityDirectory());
+      if (velocityDir.isFile()) {
+         Log.log(Log.DEBUG, this, "'" + getVelocityDirectory() + "' is a file");
+      }
+      if (!velocityDir.exists() && !velocityDir.mkdirs()) {
+         Log.log(Log.DEBUG, this, "Cannot make directory '" + getVelocityDirectory() + "'");
+      }
+
+      File resourcesDir = new File(getVelocityResourcePath());
+      if (!resourcesDir.exists() && !resourcesDir.mkdirs()) {
+         Log.log(Log.DEBUG, this, "Cannot make directory '" + getVelocityResourcePath() + "'");
+      }
+      // templates = new TemplateDir(new File(this.getTemplateDir()));
+      templates = new TemplateDir(null, resourcesDir);
+      templates.refreshTemplates();
+   }
 
 	/**
 	 * Not used.
 	 */
 	public void stop()
 	{
+      AcceleratorManager.getInstance().save();
 	}
 
 	/**
@@ -115,7 +220,11 @@ public class TemplatesPlugin extends EditPlugin
 	 * @param optionsDialog The dialog in which the OptionPane is to be displayed.
 	 */
 	public void createOptionPanes(OptionsDialog optionsDialog) {
-		optionsDialog.addOptionPane(new TemplatesOptionPane());
+		// optionsDialog.addOptionPane(new TemplatesOptionPane());
+		OptionGroup grp = new OptionGroup("Templates");
+		grp.addOptionPane(new TemplatesOptionPane());
+		grp.addOptionPane(new AcceleratorOptionPane());
+		optionsDialog.addOptionGroup(grp);
 	}
 	
 	/**
@@ -136,7 +245,7 @@ public class TemplatesPlugin extends EditPlugin
 				if (!templateDir.exists())	// If insufficent privileges to create it
 					throw new java.lang.SecurityException();
 			}
-			setTemplates(new TemplateDir(templateDir));
+			setTemplates(new TemplateDir(null, templateDir));
 			getTemplates().refreshTemplates();
 			buildAllMenus();
 		} catch (java.lang.SecurityException se) {
@@ -211,16 +320,62 @@ public class TemplatesPlugin extends EditPlugin
 	 * @param path The absolute path to the desired template file.
 	 * @param view The view into which the template text is to be inserted.
 	 */
-	public static void processTemplate(String path, View view) {
+/*	public static void processTemplate(String path, View view) {
 		File templateFile = new File(path);
 		Template template = new Template(templateFile);
 		template.processTemplate(view);
-	}
+	} */
+
+   /**
+    * Process a specified template.
+    */
+   public static void processTemplate(String template, JEditTextArea textArea)
+   {
+      processTemplate(template, GUIUtilities.getView(textArea), textArea);
+   }
+
+   /**
+    * Process a specified template.
+    */
+   public static void processTemplate(String template, View view, JEditTextArea textArea)
+   {
+      processTemplate(template, new VelocityContext(), view, textArea);
+   }
+
+   /**
+    * Process a specified template.
+    */
+   public static void processTemplate(String template, Context ctx,
+                               View view, JEditTextArea textArea)
+   {
+      try {
+         if (!getEngine().templateExists(template)) {
+            GUIUtilities.error(view, "plugin.velocity.error.no-template-found",
+               new String[]{template});
+         }
+         ctx = new jEditContext(view, textArea, ctx);
+         Writer out = new BufferWriter(textArea.getBuffer(),
+            textArea.getCaretPosition());
+         getEngine().mergeTemplate(template, ctx, out);
+         if (ctx.get(CARET) != null) {
+            Integer pos = (Integer) ctx.get(CARET);
+            textArea.setCaretPosition(pos.intValue());
+         }
+      } catch (Exception e) {
+         TemplatesPlugin thePlugin = (TemplatesPlugin) jEdit.getPlugin(
+		 			"templates.TemplatesPlugin");
+         Log.log(Log.ERROR, thePlugin, "Error processing template '" + template + "'");
+         Log.log(Log.ERROR, thePlugin, e);
+      }
+   }
 
 }
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.1  2002/04/30 19:26:10  sjakob
+	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
+	 *
 	 * Revision 1.7  2002/02/26 03:36:46  sjakob
 	 * BUGFIX: Templates directory path is no longer stored in a jEdit property if
 	 * it is equal to the default Templates path (requested by Mike Dillon).

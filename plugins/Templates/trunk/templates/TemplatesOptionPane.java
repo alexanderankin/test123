@@ -19,6 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package templates;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -37,7 +38,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 
 	//Constructors
 	public TemplatesOptionPane() {
-		super("Templates");
+		super("Templates.general");
 		try {
 			Class superclass = Class.forName("org.gjt.sp.jedit.AbstractOptionPane");
 			java.lang.reflect.Method dummy = superclass.getDeclaredMethod("_init",null);
@@ -65,7 +66,8 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	public void init(String textFieldStr) {
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(5,5,5,5));
-		JLabel chooseDirLabel = new JLabel(jEdit.getProperty("options.Templates.choose-dir-msg"));
+		JLabel chooseDirLabel = new JLabel(jEdit.getProperty(
+				"options.Templates.general.choose-dir-msg"));
 		add(chooseDirLabel, BorderLayout.NORTH);
 		JPanel p = new JPanel();
 		BorderLayout bl = new BorderLayout();
@@ -73,7 +75,8 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 		p.setLayout(bl);
 		dirTextField = new JTextField(textFieldStr);
 		p.add(dirTextField, BorderLayout.CENTER);
-		JButton chooseBtn = new JButton(jEdit.getProperty("options.Templates.choose-btn-msg"));
+		JButton chooseBtn = new JButton(jEdit.getProperty(
+				"options.Templates.general.choose-btn-msg"));
 		chooseBtn.addActionListener(this);
 		p.add(chooseBtn, BorderLayout.EAST);
 		JPanel p2 = new JPanel();
@@ -102,7 +105,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 		JFileChooser chooser = new JFileChooser(dirTextField.getText());
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int retVal = chooser.showDialog(this,jEdit.getProperty(
-					"options.Templates.choose-btn-msg"));
+					"options.Templates.general.choose-btn-msg"));
 		if(retVal == JFileChooser.APPROVE_OPTION)
 		{
 			File file = chooser.getSelectedFile();
@@ -125,6 +128,9 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.1  2002/04/30 19:26:10  sjakob
+	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
+	 *
 	 * Revision 1.5  2002/02/26 03:36:46  sjakob
 	 * BUGFIX: Templates directory path is no longer stored in a jEdit property if
 	 * it is equal to the default Templates path (requested by Mike Dillon).

@@ -1,5 +1,11 @@
 CHANGES file for Templates plugin.
 
+Version 2.9.9 (30-APR-2002)
+=============================
+Pre-release for testing integration of Calvin Yu's Velocity classes.
+Directory hierarchy changed to separate Velocity classes from Templates plugin classes.
+Changed to ant for build management.
+
 Version 2.0.2 (08-MAR-2002)
 =============================
 BUG FIX:
