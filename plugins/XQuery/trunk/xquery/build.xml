@@ -55,11 +55,6 @@
 		<echo file="docbook-wrapper.xsl" append="true"
 			message="&lt;/xsl:stylesheet&gt;"/>
 	</target>
-
-  
-  <target name="saxonAPI" description="copies the Saxon API in the install.dir">
-   <copy file="${saxon.api}" todit="${install.dir}"/>
-  </target>
   
   <target name="compileXQuery" depends="init" description="compiles java source of XQueryPlugin">
     <delete dir="${classes.xquery.dir}"/>
@@ -98,7 +93,19 @@
 
   <target name="jarAll" depends="jarXQuery, jarSaxon" description="compiles, creates plugin jar file and SaxonAdapter jar file in install.dir">
   </target>
+
+  <target name="deploySaxon" description="copies Saxon Adapter and API jars to deploy.dir">
+    <copy file="${install.dir}/${jar.saxon.name}" todir="${deploy.dir}"/>
+  	<copy file="${saxon.api}" todir="${deploy.dir}"/>
+  </target>
 	
+  <target name="deployXQuery" description="copies XQuery jar to deploy.dir">
+    <copy file="${install.dir}/${jar.xquery.name}" todir="${deploy.dir}"/>
+  </target>	
+	
+  <target name="deployAll" depends="deployXQuery, deploySaxon" description="copies jars to deploy.dir">
+  </target>
+
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
 	<target name="docs-xsltproc" depends="init">
 		<exec executable="xsltproc">

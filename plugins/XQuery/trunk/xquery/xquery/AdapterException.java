@@ -9,7 +9,7 @@ package xquery;
 /**
  * @author Wim Le Page
  * @author Pieter Wellens
- * @version 0.3.0
+ * @version 0.6.0
  *
  */
 public class AdapterException extends XQueryException

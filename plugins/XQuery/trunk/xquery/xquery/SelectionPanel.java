@@ -30,8 +30,11 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * @author Wim le Page
  * @author Pieter Wellens
- * @version 0.3.0
+ * @version 0.6.0
  *
+ * * This is a widget Panel providing a label, a browseButton and a textfield
+ * Everything will be automatically remembered by jEdit if you use this widget.
+ * FileSelectionPanel and FolderSelectionPanel are derived from this class
  */
 
 public abstract class SelectionPanel extends JPanel implements ActionListener  {
@@ -42,6 +45,10 @@ public abstract class SelectionPanel extends JPanel implements ActionListener  {
 	
 	protected String propLabel;
 	
+	/**
+	 * @param view from jEdit
+	 * @param propLabel represents the label that you want this widget to be created with
+	 */
 	public SelectionPanel(View view, String propLabel) {
 		super(new BorderLayout(3,0));
 		
@@ -70,6 +77,9 @@ public abstract class SelectionPanel extends JPanel implements ActionListener  {
 		add(rightPanel, BorderLayout.EAST);
 	}
 	
+	/**
+	 * Helper function to create the browseButton. Loading the image etc
+	 */
 	private void createBrowseButton() {
 		String iconName = jEdit.getProperty(propLabel + ".button.icon");
 		String toolTipText = jEdit.getProperty(propLabel + ".button.tooltip");
@@ -92,10 +102,17 @@ public abstract class SelectionPanel extends JPanel implements ActionListener  {
 		browseButton.setEnabled(false);	
 	};
 
+	/**
+	 * @return a String respresenting the Text in the textfield.
+	 * This usually is the path to a file or directory
+	 */
 	public String getSourceFieldText() {
 		return sourceField.getText();
 	};		
 	
+	/**
+	 * @param b enables/disables the button and the textfield
+	 */
 	public void setSelectionEnabled(boolean b) {
 		sourceField.setEnabled(b);
 		browseButton.setEnabled(b);
