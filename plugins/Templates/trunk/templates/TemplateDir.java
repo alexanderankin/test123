@@ -119,7 +119,7 @@ public class TemplateDir extends TemplateFile
 			}
 			else {
 				tf = (TemplateFile) o;
-				myAction = new TemplateAction(tf.getLabel(), parent + tf.getRelativePath());
+				myAction = new TemplateAction(tf.getLabel(), tf.getRelativePath());
 				mi = new EnhancedMenuItem(tf.getLabel(), myAction);
 				menu.add(mi);
 			}
@@ -154,6 +154,10 @@ public class TemplateDir extends TemplateFile
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2002/05/07 04:08:33  sjakob
+	 * BUG FIX: Fixed problem where template menu items stopped working
+	 * when we started using relative, rather than absolute, file paths.
+	 *
 	 * Revision 1.2  2002/05/07 03:28:10  sjakob
 	 * Added support for template labelling via "#template=" command.
 	 *
