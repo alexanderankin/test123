@@ -388,6 +388,7 @@ public class NavigationPanel
 				lowlev = nlist.getLowestLevel();
 				searchLine(nextLine, index, nlist);
 				index++;
+        nextLine = in.readLine().trim();
 			}
 		}
 		catch(Exception e){

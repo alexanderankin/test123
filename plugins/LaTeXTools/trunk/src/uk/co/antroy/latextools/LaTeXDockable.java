@@ -51,7 +51,7 @@ public class LaTeXDockable
     this.buffer = b;
     this.view = v;
     this.setTabPlacement(JTabbedPane.BOTTOM);
-//    add(new NavigationPanel(view, buffer));
+    add(new NavigationPanel(view, buffer));
     add(new BibTeXPanel(view, buffer));
     add(new ReferencePanel(view, buffer));
   }

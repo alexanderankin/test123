@@ -3,6 +3,8 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy
 plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.1.1
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
 
+plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.1=plugin sidekick.SideKickPlugin 0.1
+
 options.bibtex.label = BibTeX Options
 options.bibtex.inserttags = Include Tag
 options.bibtex.wordlength = Maximum Letters in Title
@@ -28,6 +30,10 @@ reference.label=Reference
 reference.title=Label List
 reference.inserttags=true
 
+navigation-dock.title = LaTeX Navigator
+navigation-dock.label = Navigate Document
+navigation-dock.nottex = Document*is not a*TeX*Document!
+
 navigation.title = LaTeX Navigator
 navigation.label = Navigate Document
 navigation.nottex = Document*is not a*TeX*Document!
@@ -35,8 +41,14 @@ navigation.nottex = Document*is not a*TeX*Document!
 labels.label=Labels
 labels.title=Find Labels
 
+set-main.label = Set Main File
+reset-main.label = Reset Main File
+show-main.label = Show Main File
+
 panel.text.refresh=Refresh
 panel.text.reload=Reload
 
 tagpair.linenumbers=true
 
+mode.tex.sidekick.parser=latex_parser
+sidekick.parser.latex_parser.label=LaTeX

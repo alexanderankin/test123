@@ -18,6 +18,10 @@ public class LaTeXMacros {
 		return jEdit.getProperty("mainTexFile");
 	}
 	
+  public static void showMainFile(View v){
+    Macros.message(v,getMainFile());
+  }
+  
 	public static void repeat(String expression, int start, int no, View view){
 		StringBuffer sb = new StringBuffer("");
 		
