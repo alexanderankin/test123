@@ -43,92 +43,38 @@ import org.gjt.sp.util.Log;
 
 
 /**
- * an info viewer for jEdit. It uses a Swing JEditorPane to display the 
- * HTML, and implements a URL history, bookmarks and some other 
+ * an info viewer for jEdit. It uses a Swing JEditorPane to display the
+ * HTML, and implements a URL history, bookmarks and some other
  * web browsing functions.
  *
  * @author Dirk Moebius
  * @author Slava Pestov
  */
-public class InfoViewer extends JFrame 
-        implements HyperlinkListener, PropertyChangeListener, EBComponent {
+public class InfoViewer
+    extends JFrame
+    implements HyperlinkListener, PropertyChangeListener, EBComponent
+{
 
-    // greet string
-    private final static String GREET 
-        = props("infoviewer.greetstring",
-                new Object[] { props("infoviewer.title"),
-                               props("plugin.InfoViewerPlugin.version") });
-                   
-    // status numbers for showStatus()
-    private final static int LOADING = 1;
-    private final static int READY = 2;
-    private final static int ERROR = 3;
-    
-    // icons    
-    private static ImageIcon ICON_ANIM = new ImageIcon(
-        InfoViewer.class.getResource("images/fish_anim.gif"));
-    private static ImageIcon ICON_NOANIM = new ImageIcon(
-        InfoViewer.class.getResource("images/fish.gif"));
-    private static ImageIcon ICON_CHECK = new ImageIcon(
-        InfoViewer.class.getResource("images/checkmenu_check.gif"));
-    private static ImageIcon ICON_NOCHECK = new ImageIcon(
-        InfoViewer.class.getResource("images/checkmenu_nocheck.gif"));
-
-    // private members
-    
-    // infoviewer actions
-    private InfoViewerAction aOpenFile;
-    private InfoViewerAction aEditURL;
-    private InfoViewerAction aReload;
-    private InfoViewerAction aClose;
-    private InfoViewerAction aCopy;
-    private InfoViewerAction aSelectAll;
-    private InfoViewerAction aBack;
-    private InfoViewerAction aForward;
-    private InfoViewerAction aHome;
-    private InfoViewerAction aBookmarksAdd;
-    private InfoViewerAction aBookmarksEdit;
-    private InfoViewerAction aAbout;
-    private infoviewer.actions.follow_link aFollowLink;
-    
-    // gui elements
-    private JLabel status;
-    private EnhancedJEditorPane viewer;
-    private HistoryTextField urlField;
-    private JButton bStartStop;
-    private EnhancedJMenu mGoto;
-    private EnhancedJMenu mBmarks;
-    private EnhancedJMenu mHelp;
-    
-    // misc
-    private TitledURLEntry currentURL;
-    private int currentStatus;
-    private Bookmarks bookmarks;
-    private History history;    
-    private URLButtonHandler bookmarkhandler;
-    private URLButtonHandler historyhandler;
-        
-    
     /**
      * Creates a new info viewer for the specified URL.
      * @param url The URL
      */
     public InfoViewer(URL url) {
         this();
-        gotoURL(url, true);        
+        gotoURL(url, true);
     }
-    
-    
+
+
     /**
      * Creates a new info viewer for the specified URL.
      * @param url The URL as String
      */
     public InfoViewer(String url) {
         this();
-        gotoURL(url, true);        
+        gotoURL(url, true);
     }
-    
-    
+
+
     /**
      * Creates a new info viewer with an empty page
      */
@@ -140,18 +86,22 @@ public class InfoViewer extends JFrame
         history = new History();
         historyhandler = new URLButtonHandler(false);
         bookmarkhandler = new URLButtonHandler(true);
-        
+
         // initialize actions
         createActions();
-        
+
         // the menu
         createMenu();
-        
+
         // the url textfield
         urlField = new HistoryTextField("infoviewer");
-        urlField.addKeyListener(new KeyHandler());
+        urlField.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent evt) {
+                gotoURL(urlField.getText(), true);
+            }
+        });
 
-        // url textfield and label        
+        // url textfield and label
         JPanel urlPanel = new JPanel(new BorderLayout());
         urlPanel.add(new JLabel(props("infoviewer.label.gotoURL")),
                      BorderLayout.WEST);
@@ -172,194 +122,29 @@ public class InfoViewer extends JFrame
         status.setFont(new Font("Dialog", Font.PLAIN, 10));
         status.setMinimumSize(
             new Dimension(100, status.getPreferredSize().height));
-        
+
         // the inner content: url textfield, viewer, status bar
         JPanel innerPanel = new JPanel(new BorderLayout());
         innerPanel.add(urlPanel, BorderLayout.NORTH);
         innerPanel.add(scrViewer, BorderLayout.CENTER);
         innerPanel.add(status, BorderLayout.SOUTH);
-        
+
         // the toolbar
         JToolBar tb = createToolbar();
-        
-        // the outer content: toolbar, inner content        
+
+        // the outer content: toolbar, inner content
         getContentPane().add(tb, BorderLayout.NORTH);
         getContentPane().add(innerPanel, BorderLayout.CENTER);
-        
+
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         showStatus();
         setSize(600,400);
         GUIUtilities.loadGeometry(this, "infoviewer");
-        setVisible(true);        
+        setVisible(true);
         EditBus.addToBus(this);
     }
 
 
-    private void createActions() {
-        aOpenFile      = new infoviewer.actions.open_file();
-        aEditURL       = new infoviewer.actions.edit_url();
-        aReload        = new infoviewer.actions.reload();
-        aClose         = new infoviewer.actions.close();
-        aCopy          = new infoviewer.actions.copy();
-        aSelectAll     = new infoviewer.actions.select_all();
-        aBack          = new infoviewer.actions.back();
-        aForward       = new infoviewer.actions.forward();
-        aHome          = new infoviewer.actions.home();
-        aBookmarksAdd  = new infoviewer.actions.bookmarks_add();
-        aBookmarksEdit = new infoviewer.actions.bookmarks_edit();
-        aAbout         = new infoviewer.actions.about();
-        aFollowLink    = new infoviewer.actions.follow_link();
-    }
-
-        
-    private void createMenu() {
-        // File menu        
-        EnhancedJMenu mFile = new EnhancedJMenu(props("infoviewer.menu.file"));
-        mFile.setMnemonic(props("infoviewer.menu.file.mnemonic").charAt(0));
-        mFile.add(aOpenFile);
-        mFile.add(aEditURL);
-        mFile.add(aReload);
-        mFile.add(new JSeparator());
-        mFile.add(aClose);
-
-        // Edit menu        
-        EnhancedJMenu mEdit = new EnhancedJMenu(props("infoviewer.menu.edit"));
-        mEdit.setMnemonic(props("infoviewer.menu.edit.mnemonic").charAt(0));
-        mEdit.add(aCopy);
-        mEdit.add(aSelectAll);
-        
-        // Goto menu
-        mGoto = new EnhancedJMenu(props("infoviewer.menu.goto"));
-        mGoto.setMnemonic(props("infoviewer.menu.goto.mnemonic").charAt(0));
-        updateGoMenu();
-        
-        // Bookmarks menu
-        mBmarks = new EnhancedJMenu(props("infoviewer.menu.bmarks"));
-        mBmarks.setMnemonic(props("infoviewer.menu.bmarks.mnemonic").charAt(0));
-        updateBookmarksMenu();
-        
-        // Help menu
-        mHelp = new EnhancedJMenu(props("infoviewer.menu.help"));
-        mHelp.setMnemonic(props("infoviewer.menu.help.mnemonic").charAt(0));
-        updateHelpMenu();
-                
-        // Menubar        
-        JMenuBar mb = new JMenuBar();
-        mb.add(mFile);
-        mb.add(mEdit);
-        mb.add(mGoto);
-        mb.add(mBmarks);
-        mb.add(mHelp);
-        setJMenuBar(mb);
-    }
-    
-
-    /**
-     * update the bookmarks menu according to the bookmarks stored
-     * in the properties.
-     */
-    private synchronized void updateBookmarksMenu() {
-        mBmarks.removeAll();
-        mBmarks.add(aBookmarksAdd);
-        mBmarks.add(aBookmarksEdit);
-        mBmarks.add(new JSeparator());
-        // add bookmarks
-        bookmarks = new Bookmarks();
-        for (int i=0; i<bookmarks.getSize(); i++) {
-            String title = bookmarks.getTitle(i);
-            if (title.length() > 0 && title.charAt(0) == '-') {
-                mBmarks.add(new JSeparator());
-            } else {
-                JMenuItem mi = new JMenuItem(title);
-                mBmarks.add(mi);
-                mi.setActionCommand(bookmarks.getURL(i));
-                mi.addActionListener(bookmarkhandler);
-            }
-        }        
-    }        
-
-
-    private void updateHelpMenu() {
-        mHelp.removeAll();
-        mHelp.add(aAbout);        
-        // find InfoViewer docs
-        EditPlugin[] plugins = jEdit.getPlugins();
-        EditPlugin plugin = null;
-        for (int i=0; i<plugins.length; i++) {
-            if (plugins[i].getClassName().equals("InfoViewerPlugin")) {
-                plugin = plugins[i];
-                break;
-            }
-        }
-        if (plugin == null) return;
-        String docs = props("plugin.InfoViewerPlugin.docs");
-        if (docs == null) return;
-        URL docsURL = plugin.getClass().getResource(docs);
-        if (docsURL == null) return;
-        // add a menu item for the docs
-        JMenuItem mi = new JMenuItem(props("infoviewer.menu.help.readme"));
-        mi.setActionCommand(docsURL.toString());
-        mi.addActionListener(bookmarkhandler);
-        mi.setMnemonic(props("infoviewer.menu.help.readme.mnemonic").charAt(0));
-        mHelp.add(mi);
-    }
-    
-
-    private synchronized void updateGoMenu() {
-        mGoto.removeAll();
-        mGoto.add(aBack);
-        mGoto.add(aForward);
-        mGoto.add(aHome);
-        mGoto.add(new JSeparator());
-        // add history
-        TitledURLEntry[] entr = history.getGoMenuEntries();
-        int pos = history.getHistoryPos();
-        for (int i = 0; i < entr.length; i++) {
-            JMenuItem mi = new JMenuItem(entr[i].getTitle(),
-                pos == entr[i].getHistoryPos() ? ICON_CHECK : ICON_NOCHECK);
-            mi.setActionCommand("history:" + entr[i].getHistoryPos());
-            mi.addActionListener(historyhandler);
-            mGoto.add(mi);
-        }        
-    }
-    
-    private synchronized void updateGoMenuTitles() {
-        TitledURLEntry[] entr = history.getGoMenuEntries();
-        for (int i = 0; i < entr.length; i++) {
-            JMenuItem mi = mGoto.getItem(i + 4);
-            mi.setText(entr[i].getTitle());
-        }        
-    }
-
-
-    private void updateActions() {
-        aForward.setEnabled(history.hasNext());
-        aBack.setEnabled(history.hasPrevious());
-        aEditURL.setEnabled(currentURL != null);
-    }
-    
-    
-    private JToolBar createToolbar() {
-        Dimension space = new Dimension(10,10);
-        EnhancedJToolBar tb = new EnhancedJToolBar(JToolBar.HORIZONTAL);
-        tb.add(aBack);
-        tb.add(aForward);
-        tb.add(aReload);
-        tb.add(Box.createRigidArea(space));
-        tb.add(aHome);
-        tb.add(Box.createRigidArea(space));
-        tb.add(aOpenFile);
-        tb.add(aEditURL);
-        tb.add(Box.createGlue());
-        bStartStop = new JButton(ICON_ANIM);
-        bStartStop.setDisabledIcon(ICON_NOANIM);
-        bStartStop.setBorderPainted(false);
-        bStartStop.setEnabled(false);
-        tb.add(bStartStop);
-        return tb;
-    }
-    
-    
     /**
      * Displays the specified URL in the HTML component. The URL will be
      * added to the back/forward history. This is the same as invoking
@@ -369,8 +154,8 @@ public class InfoViewer extends JFrame
     public void gotoURL(String url) {
         gotoURL(url, true);
     }
-    
-                
+
+
     /**
      * Displays the specified URL in the HTML component.
      * @param url          The URL as String
@@ -387,12 +172,12 @@ public class InfoViewer extends JFrame
         }
         catch (MalformedURLException mu) {
             Log.log(Log.ERROR, this, mu);
-            showError(props("infoviewer.error.badurl.message", 
+            showError(props("infoviewer.error.badurl.message",
                             new Object[] { mu } ));
         }
     }
-    
-                
+
+
     /**
      * Displays the specified URL in the HTML component.
      * @param url          The URL
@@ -403,7 +188,7 @@ public class InfoViewer extends JFrame
         if (url == null) return;
         String urlText = url.toString().trim();
         if (urlText.length() == 0) return;
-        
+
         // reset default cursor so that the hand cursor doesn't stick around
         viewer.setCursor(Cursor.getDefaultCursor());
         bStartStop.setEnabled(true);
@@ -412,10 +197,10 @@ public class InfoViewer extends JFrame
         currentStatus = LOADING;
         if (addToHistory) {
             history.add(currentURL);
-        }        
-        showStatus();        
+        }
+        showStatus();
         updateGoMenu();
-                
+
         try {
             URL oldURL = viewer.getPage();
             viewer.setPage(url);
@@ -428,7 +213,6 @@ public class InfoViewer extends JFrame
             }
         }
         catch(FileNotFoundException fnf) {
-            //Log.log(Log.ERROR, this, fnf);
             String[] args = { urlText };
             showError(props("infoviewer.error.filenotfound.message", args));
         }
@@ -441,6 +225,71 @@ public class InfoViewer extends JFrame
 
 
     /**
+     * go forward in history. Beep if that's not possible.
+     */
+    public void forward() {
+        String nextURL = history.getNext();
+        if (nextURL == null) {
+            getToolkit().beep();
+        } else {
+            gotoURL(nextURL, false);
+        }
+    }
+
+
+    /**
+     * go back in history. Beep, if that's not possible.
+     */
+    public void back() {
+        String prevURL = history.getPrevious();
+        if (prevURL == null) {
+            getToolkit().beep();
+        } else {
+            gotoURL(prevURL, false);
+        }
+    }
+
+
+    /**
+     * reload the current URL.
+     */
+    public void reload() {
+        if (currentURL == null) return;
+        // Clear the viewer and flush viewers' memorized URL:
+        viewer.getDocument().putProperty(Document.StreamDescriptionProperty,
+                                         DUMMY_URL);
+        gotoURL(currentURL.getURL(), false);
+    }
+
+
+    /**
+     * add the current page to the bookmark list.
+     */
+    public void addToBookmarks() {
+        if (currentURL == null) {
+            GUIUtilities.error(null, "infoviewer.error.nourl", null);
+            return;
+        }
+        jEdit.setProperty("infoviewer.bookmarks.title."
+                          + bookmarks.getSize(), currentURL.getTitle());
+        jEdit.setProperty("infoviewer.bookmarks.url."
+                          + bookmarks.getSize(), currentURL.getURL());
+        bookmarks.add(currentURL);
+
+        jEdit.unsetProperty("infoviewer.bookmarks.title."
+                            + bookmarks.getSize());
+        jEdit.unsetProperty("infoviewer.bookmarks.url."
+                            + bookmarks.getSize());
+
+        // add menu item
+        JMenuItem mi = new JMenuItem(currentURL.getTitle());
+        mBmarks.add(mi);
+        mi.setActionCommand(currentURL.getURL());
+        mi.addActionListener(bookmarkhandler);
+    }
+
+
+    /**
      * return the URL, that currently is being viewed, as String.
      * @return the current URL as String, or null, if no URL is currently
      *         being viewed.
@@ -448,8 +297,17 @@ public class InfoViewer extends JFrame
     public String getCurrentURL() {
         return currentURL == null ? null : currentURL.getURL();
     }
-    
-    
+
+
+    /**
+     * return the JEditorPane instance that is used to view HTML and text
+     * URLs
+     */
+    public JEditorPane getViewer() {
+        return viewer;
+    }
+
+
     /**
      * from interface HyperlinkListener: called when a hyperlink is
      * clicked, entered or leaved.
@@ -488,8 +346,196 @@ public class InfoViewer extends JFrame
             pageComplete();
         }
     }
-    
-    
+
+
+    /**
+     * listen for messages on the EditBus. Currently it listens for
+     * PropertiesChanged messages.
+     */
+    public void handleMessage(EBMessage msg) {
+        if (msg instanceof PropertiesChanged) {
+            updateBookmarksMenu();
+            updateGoMenu();
+        }
+    }
+
+
+    /**
+     * overridden to save geometry when the frame is made invisible.
+     */
+    public void setVisible(boolean visible) {
+        if (!visible)
+            GUIUtilities.saveGeometry(this, "infoviewer");
+        super.setVisible(visible);
+    }
+
+
+    private void createActions() {
+        aOpenFile      = new infoviewer.actions.open_file();
+        aEditURL       = new infoviewer.actions.edit_url();
+        aReload        = new infoviewer.actions.reload();
+        aClose         = new infoviewer.actions.close();
+        aCopy          = new infoviewer.actions.copy();
+        aSelectAll     = new infoviewer.actions.select_all();
+        aBack          = new infoviewer.actions.back();
+        aForward       = new infoviewer.actions.forward();
+        aHome          = new infoviewer.actions.home();
+        aBookmarksAdd  = new infoviewer.actions.bookmarks_add();
+        aBookmarksEdit = new infoviewer.actions.bookmarks_edit();
+        aAbout         = new infoviewer.actions.about();
+        aFollowLink    = new infoviewer.actions.follow_link();
+    }
+
+
+    private void createMenu() {
+        // File menu
+        EnhancedJMenu mFile = new EnhancedJMenu(props("infoviewer.menu.file"));
+        mFile.setMnemonic(props("infoviewer.menu.file.mnemonic").charAt(0));
+        mFile.add(aOpenFile);
+        mFile.add(aEditURL);
+        mFile.add(aReload);
+        mFile.add(new JSeparator());
+        mFile.add(aClose);
+
+        // Edit menu
+        EnhancedJMenu mEdit = new EnhancedJMenu(props("infoviewer.menu.edit"));
+        mEdit.setMnemonic(props("infoviewer.menu.edit.mnemonic").charAt(0));
+        mEdit.add(aCopy);
+        mEdit.add(aSelectAll);
+
+        // Goto menu
+        mGoto = new EnhancedJMenu(props("infoviewer.menu.goto"));
+        mGoto.setMnemonic(props("infoviewer.menu.goto.mnemonic").charAt(0));
+        updateGoMenu();
+
+        // Bookmarks menu
+        mBmarks = new EnhancedJMenu(props("infoviewer.menu.bmarks"));
+        mBmarks.setMnemonic(props("infoviewer.menu.bmarks.mnemonic").charAt(0));
+        updateBookmarksMenu();
+
+        // Help menu
+        mHelp = new EnhancedJMenu(props("infoviewer.menu.help"));
+        mHelp.setMnemonic(props("infoviewer.menu.help.mnemonic").charAt(0));
+        updateHelpMenu();
+
+        // Menubar
+        JMenuBar mb = new JMenuBar();
+        mb.add(mFile);
+        mb.add(mEdit);
+        mb.add(mGoto);
+        mb.add(mBmarks);
+        mb.add(mHelp);
+        setJMenuBar(mb);
+    }
+
+
+    private JToolBar createToolbar() {
+        EnhancedJToolBar tb = new EnhancedJToolBar(JToolBar.HORIZONTAL);
+
+        tb.add(aBack);
+        tb.add(aForward);
+        tb.add(aReload);
+        tb.add(aHome);
+        tb.add(aOpenFile);
+        tb.add(aEditURL);
+
+        tb.add(Box.createGlue());
+
+        bStartStop = new JButton(ICON_ANIM);
+        bStartStop.setDisabledIcon(ICON_NOANIM);
+        bStartStop.setBorderPainted(false);
+        bStartStop.setEnabled(false);
+        tb.add(bStartStop);
+
+        return tb;
+    }
+
+
+    /**
+     * update the bookmarks menu according to the bookmarks stored
+     * in the properties.
+     */
+    private synchronized void updateBookmarksMenu() {
+        mBmarks.removeAll();
+        mBmarks.add(aBookmarksAdd);
+        mBmarks.add(aBookmarksEdit);
+        mBmarks.add(new JSeparator());
+        // add bookmarks
+        bookmarks = new Bookmarks();
+        for (int i=0; i<bookmarks.getSize(); i++) {
+            String title = bookmarks.getTitle(i);
+            if (title.length() > 0 && title.charAt(0) == '-') {
+                mBmarks.add(new JSeparator());
+            } else {
+                JMenuItem mi = new JMenuItem(title);
+                mBmarks.add(mi);
+                mi.setActionCommand(bookmarks.getURL(i));
+                mi.addActionListener(bookmarkhandler);
+            }
+        }
+    }
+
+
+    private void updateHelpMenu() {
+        mHelp.removeAll();
+        mHelp.add(aAbout);
+        // find InfoViewer docs
+        EditPlugin[] plugins = jEdit.getPlugins();
+        EditPlugin plugin = null;
+        for (int i=0; i<plugins.length; i++) {
+            if (plugins[i].getClassName().equals("InfoViewerPlugin")) {
+                plugin = plugins[i];
+                break;
+            }
+        }
+        if (plugin == null) return;
+        String docs = props("plugin.InfoViewerPlugin.docs");
+        if (docs == null) return;
+        URL docsURL = plugin.getClass().getResource(docs);
+        if (docsURL == null) return;
+        // add a menu item for the docs
+        JMenuItem mi = new JMenuItem(props("infoviewer.menu.help.readme"));
+        mi.setActionCommand(docsURL.toString());
+        mi.addActionListener(bookmarkhandler);
+        mi.setMnemonic(props("infoviewer.menu.help.readme.mnemonic").charAt(0));
+        mHelp.add(mi);
+    }
+
+
+    private synchronized void updateGoMenu() {
+        mGoto.removeAll();
+        mGoto.add(aBack);
+        mGoto.add(aForward);
+        mGoto.add(aHome);
+        mGoto.add(new JSeparator());
+        // add history
+        TitledURLEntry[] entr = history.getGoMenuEntries();
+        int pos = history.getHistoryPos();
+        for (int i = 0; i < entr.length; i++) {
+            JMenuItem mi = new JMenuItem(entr[i].getTitle(),
+                pos == entr[i].getHistoryPos() ? ICON_CHECK : ICON_NOCHECK);
+            mi.setActionCommand("history:" + entr[i].getHistoryPos());
+            mi.addActionListener(historyhandler);
+            mGoto.add(mi);
+        }
+    }
+
+    private synchronized void updateGoMenuTitles() {
+        TitledURLEntry[] entr = history.getGoMenuEntries();
+        for (int i = 0; i < entr.length; i++) {
+            JMenuItem mi = mGoto.getItem(i + 4);
+            mi.setText(entr[i].getTitle());
+        }
+    }
+
+
+    private void updateActions() {
+        aForward.setEnabled(history.hasNext());
+        aBack.setEnabled(history.hasPrevious());
+        aEditURL.setEnabled(currentURL != null);
+    }
+
+
     private void pageComplete() {
         Document doc = viewer.getDocument();
         if (doc != null) {
@@ -509,7 +555,7 @@ public class InfoViewer extends JFrame
     }
 
 
-    /** try to get the title of the document */    
+    /** try to get the title of the document */
     private String getTitleFromDocument(Document doc) {
         Object obj = doc.getProperty(Document.TitleProperty);
         if (obj == null) {
@@ -520,24 +566,7 @@ public class InfoViewer extends JFrame
         }
     }
 
-    
-    /** 
-     * listen for messages on the EditBus. Currently it listens for
-     * PropertiesChanged messages.
-     */
-    public void handleMessage(EBMessage msg) {
-        if (msg instanceof PropertiesChanged) {
-            propertiesChanged();
-        }
-    }
 
-
-    private void propertiesChanged() {
-        updateBookmarksMenu();
-        updateGoMenu();
-    }
-    
-    
     private void setStatusText(final String text) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
@@ -546,10 +575,10 @@ public class InfoViewer extends JFrame
         });
     }
 
-    
+
     private void showStatus() {
         switch (currentStatus) {
-            case LOADING:                
+            case LOADING:
                 setStatusText(props("infoviewer.status.loading",
                                     new Object[] { currentURL.getURL() } ));
                 break;
@@ -567,16 +596,16 @@ public class InfoViewer extends JFrame
         }
         updateActions();
     }
-                
+
 
     private void showError(String errortext) {
         // Clear the viewer and flush viewers' memorized URL:
         viewer.getDocument().putProperty(Document.StreamDescriptionProperty,
                                          DUMMY_URL);
         viewer.setContentType("text/html");
-        viewer.setText("<html><head></head><body>\n" + 
-                       "<h1>Error</h1>\n" + 
-                       errortext + 
+        viewer.setText("<html><head></head><body>\n" +
+                       "<h1>Error</h1><p>\n" +
+                       errortext +
                        "\n</body></html>");
         setTitle(props("infoviewer.titlewithurl", new Object[] { "Error" } ));
         bStartStop.setEnabled(false);
@@ -584,132 +613,105 @@ public class InfoViewer extends JFrame
         currentStatus = ERROR;
         showStatus();
     }
-   
-   
+
+
     private void showError(Exception e) {
         Log.log(Log.ERROR, this, e);
         showError(e.getLocalizedMessage());
     }
-    
-    
-    public void setVisible(boolean visible) {
-        if (!visible) {
-            GUIUtilities.saveGeometry(this, "infoviewer");
-        }
-        super.setVisible(visible);
-    }
 
-    
+
+    /** convenience method for jEdit.getProperty(String). */
     private static String props(String key) {
         return jEdit.getProperty(key);
     }
 
-    
+
+    /** convenience method for jEdit.getProperty(String,Object[]). */
     private static String props(String key, Object[] args) {
         return jEdit.getProperty(key, args);
     }
 
 
     /**
-     * return the JEditorPane instance that is used to view HTML and text
-     * URLs
-     */
-    public JEditorPane getViewer() {
-        return viewer;
-    }
-
-
-    /**
-     * go forward in history. Beep if that's not possible.
-     */        
-    public void forward() {
-        String nextURL = history.getNext();
-        if (nextURL == null) {
-            getToolkit().beep();
-        } else {
-            gotoURL(nextURL, false);
-        }
-    }
-
-
-    /**
-     * go back in history. Beep, if that's not possible.
-     */
-    public void back() {
-        String prevURL = history.getPrevious();
-        if (prevURL == null) {
-            getToolkit().beep();
-        } else {
-            gotoURL(prevURL, false);
-        }
-    }
-    
-
-    /** 
      * this is a dummy URL that is needed to flush the URL cache of
      * the JEditorKit. This URL will not be navigated to, so it is totally
      * meaningless, where it points to, as long as it is valid.
      */
     private static URL DUMMY_URL;
-    static { 
+
+    static {
         try {
             DUMMY_URL = new URL("file:/");
         }
         catch (MalformedURLException e) {
-            Log.log(Log.ERROR, InfoViewer.class, 
+            Log.log(Log.ERROR, InfoViewer.class,
                     "error creating DUMMY_URL: " + e);
         }
     }
 
-    
-    /**
-     * reload the current URL.
-     */
-    public void reload() {
-        if (currentURL == null) return;
-        // Clear the viewer and flush viewers' memorized URL:
-        viewer.getDocument().putProperty(Document.StreamDescriptionProperty,
-                                         DUMMY_URL);
-        gotoURL(currentURL.getURL(), false);
-    }
 
-    
-    /**
-     * add the current page to the bookmark list.
-     */
-    public void addToBookmarks() {
-        if (currentURL == null) {
-            GUIUtilities.error(null, "infoviewer.error.nourl", null);
-            return;
-        }
-        jEdit.setProperty("infoviewer.bookmarks.title." 
-                          + bookmarks.getSize(), currentURL.getTitle());
-        jEdit.setProperty("infoviewer.bookmarks.url." 
-                          + bookmarks.getSize(), currentURL.getURL());
-        bookmarks.add(currentURL);
-        
-        jEdit.unsetProperty("infoviewer.bookmarks.title." 
-                            + bookmarks.getSize());
-        jEdit.unsetProperty("infoviewer.bookmarks.url."
-                            + bookmarks.getSize());
-                            
-        // add menu item                            
-        JMenuItem mi = new JMenuItem(currentURL.getTitle());
-        mBmarks.add(mi);
-        mi.setActionCommand(currentURL.getURL());
-        mi.addActionListener(bookmarkhandler);
-    }
+    // greet string
+    private final static String GREET
+        = props("infoviewer.greetstring",
+                new Object[] { props("infoviewer.title"),
+                               props("plugin.InfoViewerPlugin.version") });
+
+    // status numbers for showStatus()
+    private final static int LOADING = 1;
+    private final static int READY = 2;
+    private final static int ERROR = 3;
+
+    // icons
+    private final static ImageIcon ICON_ANIM = new ImageIcon(
+        InfoViewer.class.getResource("images/fish_anim.gif"));
+    private final static ImageIcon ICON_NOANIM = new ImageIcon(
+        InfoViewer.class.getResource("images/fish.gif"));
+    private final static ImageIcon ICON_CHECK = new ImageIcon(
+        InfoViewer.class.getResource("images/checkmenu_check.gif"));
+    private final static ImageIcon ICON_NOCHECK = new ImageIcon(
+        InfoViewer.class.getResource("images/checkmenu_nocheck.gif"));
+
+    // infoviewer actions
+    private InfoViewerAction aOpenFile;
+    private InfoViewerAction aEditURL;
+    private InfoViewerAction aReload;
+    private InfoViewerAction aClose;
+    private InfoViewerAction aCopy;
+    private InfoViewerAction aSelectAll;
+    private InfoViewerAction aBack;
+    private InfoViewerAction aForward;
+    private InfoViewerAction aHome;
+    private InfoViewerAction aBookmarksAdd;
+    private InfoViewerAction aBookmarksEdit;
+    private InfoViewerAction aAbout;
+    private infoviewer.actions.follow_link aFollowLink;
+
+    // gui elements
+    private JLabel status;
+    private EnhancedJEditorPane viewer;
+    private HistoryTextField urlField;
+    private JButton bStartStop;
+    private EnhancedJMenu mGoto;
+    private EnhancedJMenu mBmarks;
+    private EnhancedJMenu mHelp;
+
+    // misc
+    private TitledURLEntry currentURL;
+    private int currentStatus;
+    private Bookmarks bookmarks;
+    private History history;
+    private URLButtonHandler bookmarkhandler;
+    private URLButtonHandler historyhandler;
 
 
-    /**********************************************************************/
-    
     private class URLButtonHandler implements ActionListener {
         private boolean addToHistory = true;
-        
+
         public URLButtonHandler(boolean addToHistory) {
             this.addToHistory = addToHistory;
         }
-        
+
         /**
          * a bookmark was selected in the Bookmarks menu.
          * Open the corresponding URL in the InfoViewer.
@@ -727,29 +729,16 @@ public class InfoViewer extends JFrame
                 catch (NumberFormatException ex) {
                     Log.log(Log.DEBUG, this, ex);
                 }
-            }                
+            }
             gotoURL(cmd, addToHistory);
         }
     }
-    
-    
-    /**********************************************************************/
-    
-    private class KeyHandler extends KeyAdapter {
-        public void keyPressed(KeyEvent evt) {
-            if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
-                gotoURL(urlField.getText(), true);
-            }
-        }
-    }
 
-
-    /**********************************************************************/
 
     private class MouseHandler extends MouseAdapter {
 
         JPopupMenu popup = null;
-        
+
         public void mousePressed(MouseEvent evt) {
             if ((evt.getModifiers() & InputEvent.BUTTON3_MASK) != 0) {
                 evt.consume();
@@ -768,12 +757,12 @@ public class InfoViewer extends JFrame
                         aFollowLink.setEnabled(false);
                     }
                 }
-                
+
                 JPopupMenu popup = getPopup();
-                popup.show(viewer, evt.getX(), evt.getY());
+                popup.show(viewer, evt.getX() - 1, evt.getY() - 1);
             }
         }
-        
+
         private JPopupMenu getPopup() {
             if (popup == null) {
                 popup = new JPopupMenu();
@@ -787,5 +776,5 @@ public class InfoViewer extends JFrame
             return popup;
         }
     }
-    
+
 }

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+    <ACTION NAME="infoviewer-open">
+        <CODE>
+            InfoViewerPlugin infoviewer = (InfoViewerPlugin) jEdit.getPlugin("InfoViewerPlugin");
+            infoviewer.sendURL(null, view);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="infoviewer-open-buffer">
+        <CODE>
+            Buffer buffer = view.getBuffer();
+
+            if (buffer.isDirty()) {
+                int result = javax.swing.JOptionPane.showConfirmDialog(view,
+                    jEdit.getProperty("notsaved.message", new String[] {buffer.getName()}),
+                    jEdit.getProperty("notsaved.title"),
+                    javax.swing.JOptionPane.YES_NO_CANCEL_OPTION,
+                    javax.swing.JOptionPane.WARNING_MESSAGE);
+
+                if (result == javax.swing.JOptionPane.YES_OPTION)
+                    buffer.save(view, null);
+                else if (result != javax.swing.JOptionPane.NO_OPTION)
+                    return;
+            }
+
+            String bufpath = "file:" + buffer.getPath();
+
+            try {
+                InfoViewerPlugin infoviewer = (InfoViewerPlugin) jEdit.getPlugin("InfoViewerPlugin");
+                infoviewer.sendURL(new URL(bufpath), view);
+            }
+            catch (MalformedURLException e) {
+                GUIUtilities.error(view, "infoviewer.error.badurl", new String[] {bufpath});
+            }
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="infoviewer-open-sel">
+        <CODE>
+            String selection = textArea.getSelectedText();
+
+            if (selection == null) {
+                GUIUtilities.error(view, "infoviewer.error.noselection", null);
+                return;
+            }
+
+            try {
+                InfoViewerPlugin infoviewer = (InfoViewerPlugin) jEdit.getPlugin("InfoViewerPlugin");
+                URL url = new URL(selection);
+                infoviewer.sendURL(url, view);
+            }
+            catch (MalformedURLException e) {
+                GUIUtilities.error(view, "infoviewer.error.badurl", new String[] { selection } );
+            }
+        </CODE>
+    </ACTION>
+
+</ACTIONS>

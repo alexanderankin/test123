@@ -1,12 +1,13 @@
 # Plugin properties
 plugin.InfoViewerPlugin.name=InfoViewer
 plugin.InfoViewerPlugin.author=Dirk Moebius
-plugin.InfoViewerPlugin.version=0.5.3
+plugin.InfoViewerPlugin.version=0.5.4
 plugin.InfoViewerPlugin.docs=index.html
 
 plugin.InfoViewerPlugin.depend.0=jdk 1.1
-plugin.InfoViewerPlugin.depend.1=jedit 02.05.99.01
+plugin.InfoViewerPlugin.depend.1=jedit 03.00.99.00
 plugin.InfoViewerPlugin.depend.2=plugin EditBusPlugin 0.9.4
+
 
 # Plugin menu properties
 infoviewer-menu=infoviewer-open - infoviewer-open-buffer infoviewer-open-sel
@@ -14,6 +15,7 @@ infoviewer-menu.label=InfoViewer
 infoviewer-open.label=Open Browser...
 infoviewer-open-buffer.label=Open current buffer in InfoViewer
 infoviewer-open-sel.label=Open selected URL in InfoViewer
+
 
 # InfoViewer menu properties
 infoviewer.menu.file=File
@@ -29,6 +31,7 @@ infoviewer.menu.help.mnemonic=H
 infoviewer.menu.help.readme=InfoViewer UserGuide
 infoviewer.menu.help.readme.mnemonic=I
 
+
 # Misc properties
 infoviewer.title=InfoViewer
 infoviewer.titlewithurl=InfoViewer: {0}
@@ -40,57 +43,58 @@ infoviewer.status.loading=Loading {0} ...
 infoviewer.status.ready=Ready. {0} bytes.
 infoviewer.status.error=Error.
 
+
 # Actions
 infoviewer.open_file=Open File...
-infoviewer.open_file.icon=/infoviewer/images/Open.gif
+infoviewer.open_file.icon=Open24.gif
 infoviewer.open_file.mnemonic=O
 infoviewer.open_file.description=Open a file...
 infoviewer.open_file.shortcut=C+o
 
 infoviewer.edit_url=Edit current URL
-infoviewer.edit_url.icon=/infoviewer/images/Edit.gif
+infoviewer.edit_url.icon=Edit24.gif
 infoviewer.edit_url.mnemonic=O
 infoviewer.edit_url.description=Edit the current document with jEdit
 infoviewer.edit_url.shortcut=C+e
 
 infoviewer.reload=Reload
-infoviewer.reload.icon=/infoviewer/images/Reload.gif
+infoviewer.reload.icon=Refresh24.gif
 infoviewer.reload.mnemonic=R
 infoviewer.reload.description=Reload the current page
 infoviewer.reload.shortcut=C+r
 
 infoviewer.close=Close
-infoviewer.close.icon=/infoviewer/images/Blank.gif
+infoviewer.close.icon=Blank24.gif
 infoviewer.close.mnemonic=C
 infoviewer.close.description=Close InfoViewer
 infoviewer.close.shortcut=C+q
 
 infoviewer.copy=Copy
-infoviewer.copy.icon=/infoviewer/images/Copy.gif
+infoviewer.copy.icon=Copy24.gif
 infoviewer.copy.mnemonic=C
 infoviewer.copy.description=Copy selected text to clipboard
 infoviewer.copy.shortcut=C+c
 
 infoviewer.select_all=Select All
-infoviewer.select_all.icon=/infoviewer/images/Blank.gif
+infoviewer.select_all.icon=Blank24.gif
 infoviewer.select_all.mnemonic=S
 infoviewer.select_all.description=Select all
 infoviewer.select_all.shortcut=C+a
 
 infoviewer.back=Back
-infoviewer.back.icon=/infoviewer/images/Left.gif
+infoviewer.back.icon=Back24.gif
 infoviewer.back.mnemonic=B
 infoviewer.back.description=Back in history
 infoviewer.back.shortcut=A+LEFT
 
 infoviewer.forward=Forward
-infoviewer.forward.icon=/infoviewer/images/Right.gif
+infoviewer.forward.icon=Forward24.gif
 infoviewer.forward.mnemonic=F
 infoviewer.forward.description=Forward in history
 infoviewer.forward.shortcut=A+RIGHT
 
 infoviewer.home=Home
-infoviewer.home.icon=/infoviewer/images/Home.gif
+infoviewer.home.icon=Home24.gif
 infoviewer.home.mnemonic=H
 infoviewer.home.description=Go to Homepage
 
@@ -108,13 +112,13 @@ infoviewer.about.mnemonic=A
 infoviewer.about.shortcut=F1
 
 infoviewer.follow_link=Follow Link
-infoviewer.follow_link.icon=/infoviewer/images/Blank.gif
+infoviewer.follow_link.icon=FastForward24.gif
 infoviewer.back.mnemonic=F
 infoviewer.back.description=Follow the link under the pointer
 
+
 # Option pane properties
-options.choosebrowser.label=Choose Browser
-options.infoviewer.label=Internal Viewer Settings
+options.infoviewer.label=InfoViewer
 options.infoviewer.browser.label=Choose Browser:
 options.infoviewer.browser.internal=Internal (InfoViewer)
 options.infoviewer.browser.class=Class in classpath
@@ -122,17 +126,15 @@ options.infoviewer.browser.netscape=Netscape (with reuse, Unix only)
 options.infoviewer.browser.other=External browser
 
 options.infoviewer.browser.settings.label=Configure Browser:
-options.infoviewer.browser.class.label=Class name:\ 
+options.infoviewer.browser.class.label=Class:
 options.infoviewer.browser.class.default=infoviewer.InfoViewer
-options.infoviewer.browser.method.label=Static method (empty=none):\ 
+options.infoviewer.browser.method.label=Method:
 options.infoviewer.browser.method.default=showInternalInfoViewer
-options.infoviewer.browser.other.label=External browser command:\ 
+options.infoviewer.browser.other.label=External browser command:
 options.infoviewer.browser.other.default=netscape -remote openURL($u) -raise
+options.infoviewer.homepage=Homepage:
+options.infoviewer.max_go_menu=Max. number of entries in Go menu:
 
-options.infoviewer.homepage=Homepage:\ 
-options.infoviewer.max_go_menu=Max. number of entries in Go menu:\ 
-
-options.infoviewer.help=Help
 
 # Dialog "Edit Bookmarks"
 infoviewer.bdialog.title=Edit Bookmarks
@@ -145,16 +147,14 @@ infoviewer.bdialog.movedown=Move down
 infoviewer.bdialog.col0=Title
 infoviewer.bdialog.col1=URL
 
+
+# Dialog "About..."
 infoviewer.aboutdialog.title=About InfoViewer
 infoviewer.aboutdialog.message=\
     InfoViewer v{0}\n\
     \n\
-    (c) 1999, 2000 by Dirk Moebius <dmoebius@gmx.net>\n\
-    \n\
-    Get InfoViewer and my other plugins from:\n\
-    http://titan.informatik.uni-bonn.de/~moebius/jedit/index.html\n\
-    or from jEdit Plugin Central:\n\
-    http://jedit.standmed.com
+    (c) 1999-2001 by Dirk Moebius <dmoebius@gmx.net>
+
 
 # Error messages
 infoviewer.error.noinfoviewer.title=No InfoViewer
@@ -170,7 +170,7 @@ infoviewer.error.nohome.title=No homepage
 infoviewer.error.nohome.message=\
     Please set the URL of the homepage\n\
     in Utilities->General Options->InfoViewer.
-    
+
 infoviewer.error.classnotfound.title=Error invoking class
 infoviewer.error.classnotfound.message=\
     Could not find a suitable constructor for class:\n\
