@@ -1,6 +1,6 @@
 /*
  * BackgroundHighlight.java
- * Copyright (c) 2002 Andre Kaplan
+ * Copyright (c) 2002, 2003 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,6 @@
 
 package background;
 
-
 import java.awt.*;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -29,7 +28,6 @@ import javax.swing.*;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -181,12 +179,7 @@ public class BackgroundHighlight extends TextAreaExtension
     private void updateTextArea() {
         if (this.textArea == null) { return; }
 
-        FoldVisibilityManager foldVisibilityManager = this.textArea.getFoldVisibilityManager();
-
-        int physicalFirst = foldVisibilityManager.getFirstVisibleLine();
-        int physicalLast  = foldVisibilityManager.getLastVisibleLine();
-
-        this.textArea.invalidateLineRange(physicalFirst, physicalLast);
+        this.textArea.repaint();
     }
 
 
