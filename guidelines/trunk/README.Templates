@@ -1,0 +1,6 @@
+CVS policy file
+
+plugin: Templates
+author: Steve Jakob <sjakob@lrcc.on.ca>
+
+please do not commit changes to this plugin without first consulting the author.
