@@ -8,7 +8,7 @@
 	<UI>
 		<CAPTION LABEL="Source file(s)">
 
-		<ENTRY LABEL="Source file(s)" VARNAME="source"
+		<FILE_ENTRY LABEL="Source file(s)" VARNAME="source"
 			EVAL="buffer.getPath()" />
 
 		</CAPTION>
@@ -20,8 +20,8 @@
 			EVAL="getBufferClassPath(buffer)" />
 		<ENTRY LABEL="Source path" VARNAME="sourcepath"
 			EVAL="console.ConsolePlugin.getPackageRoot(buffer)" />
-		<ENTRY LABEL="Extension directory" VARNAME="extdirs" />
-		<ENTRY LABEL="Output directory" VARNAME="outputpath" />
+		<DIR_ENTRY LABEL="Extension directory" VARNAME="extdirs" />
+		<DIR_ENTRY LABEL="Output directory" VARNAME="outputpath" />
 
 		</CAPTION>
 

@@ -8,9 +8,9 @@
 	<UI>
 		<CAPTION LABEL="Openjade parameters">
 
-		<ENTRY LABEL="Stylesheet" VARNAME="stylesheet" />
+		<FILE_ENTRY LABEL="Stylesheet" VARNAME="stylesheet" />
 		<ENTRY LABEL="Declaration" VARNAME="dcl" />
-		<ENTRY LABEL="File name" VARNAME="file"
+		<FILE_ENTRY LABEL="File name" VARNAME="file"
 			EVAL="buffer.getPath()" />
 		<ENTRY LABEL="Additional parameters" VARNAME="extra_jade" />
 

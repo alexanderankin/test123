@@ -10,9 +10,9 @@
 	<UI>
 		<CAPTION LABEL="File specification">
 
-		<ENTRY LABEL="Original file" VARNAME="from"
+		<FILE_ENTRY LABEL="Original file" VARNAME="from"
 			EVAL="buffer.getPath() + '~'" />
-		<ENTRY LABEL="Changed file" VARNAME="to"
+		<FILE_ENTRY LABEL="Changed file" VARNAME="to"
 			EVAL="buffer.getPath()" />
 
 		<TOGGLE LABEL="Recursively compare directories"

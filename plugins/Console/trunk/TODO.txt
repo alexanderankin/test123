@@ -19,7 +19,6 @@
   --> use JLib for this
 - cvs commandos
 - need <INIT> code block in commando files
-- FILE_ENTRY in commando
 - notify of process exit
 - multiple-line env vars don't work
 - see if an extra pattern can eat all javac errors

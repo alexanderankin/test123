@@ -5,13 +5,13 @@
 <COMMANDO>
 	<UI>
 		<CAPTION LABEL="Source file">
-			<ENTRY LABEL="Source file" VARNAME="source" EVAL="buffer.getPath()"/>
+			<FILE_ENTRY LABEL="Source file" VARNAME="source" EVAL="buffer.getPath()"/>
 		</CAPTION>
 
 		<CAPTION LABEL="Paths">
-			<ENTRY LABEL="Include directory" VARNAME="include_directory"
+			<DIR_ENTRY LABEL="Include directory" VARNAME="include_directory"
 				EVAL="MiscUtilities.getParentOfPath(buffer.getPath())"/>
-			<ENTRY LABEL="Output directory" VARNAME="output_directory"
+			<DIR_ENTRY LABEL="Output directory" VARNAME="output_directory"
 				EVAL="MiscUtilities.getParentOfPath(buffer.getPath())"/>
 		</CAPTION>
 

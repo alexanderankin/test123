@@ -1,4 +1,4 @@
-commandoTOGGLE(pane,ns,label,var,options)
+commandoTOGGLE(view,pane,ns,label,var,options)
 {
 	toggle = new JCheckBox(label);
 	value = ns.getVariable(var);

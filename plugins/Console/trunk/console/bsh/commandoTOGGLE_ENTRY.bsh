@@ -1,4 +1,4 @@
-commandoTOGGLE_ENTRY(pane,ns,label,var,options)
+commandoTOGGLE_ENTRY(view,pane,ns,label,var,options)
 {
 	toggle = new JCheckBox(label);
 	entry = new JTextField(20);

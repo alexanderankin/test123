@@ -1,4 +1,4 @@
-commandoLONG_ENTRY(pane,ns,label,var,options)
+commandoLONG_ENTRY(view,pane,ns,label,var,options)
 {
 	entry = new JTextArea(4,20);
 	value = ns.getVariable(var);

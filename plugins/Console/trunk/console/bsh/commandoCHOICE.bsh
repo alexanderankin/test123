@@ -1,4 +1,4 @@
-commandoCHOICE(pane,ns,label,var,options)
+commandoCHOICE(view,pane,ns,label,var,options)
 {
 	choice = new JComboBox(options);
 	value = ns.getVariable(var);
