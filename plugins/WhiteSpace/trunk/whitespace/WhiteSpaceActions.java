@@ -34,6 +34,24 @@ public class WhiteSpaceActions
 	}
 
 
+	public static void toggleBlockHighlight(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return; }
+
+		model.getBlockHighlight().toggleEnabled();
+
+		BlockHighlight.updateTextAreas(buffer);
+	}
+
+
+	public static boolean isBlockHighlightSelected(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return false; }
+
+		return model.getBlockHighlight().isEnabled();
+	}
+
+
 	public static void toggleRemoveTrailing(Buffer buffer) {
 		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
 		if (model == null) { return; }
