@@ -15,7 +15,12 @@ jdiff-menu=\
     jdiff.refresh-diff \
     - \
     jdiff.prev-diff \
-    jdiff.next-diff
+    jdiff.next-diff \
+    - \
+    jdiff.toggle-ignore-case \
+    jdiff.toggle-ignore-whitespace \
+    - \
+    jdiff.diff-normal-output
 
 jdiff-menu.label=JDiff
 
@@ -23,6 +28,9 @@ toggle-dual-diff.label=Dual diff
 jdiff.refresh-diff.label=Refresh diff
 jdiff.prev-diff.label=Go to Previous Difference
 jdiff.next-diff.label=Go to Next Difference
+jdiff.toggle-ignore-case.label=Ignore case
+jdiff.toggle-ignore-whitespace.label=Ignore all whitespace
+jdiff.diff-normal-output.label=Normal Diff Output
 
 jdiff.ignore-case=false
 jdiff.ignore-whitespace=false
@@ -46,4 +54,8 @@ options.jdiff.brighter-highlight=Highlights use brighter colors
 options.jdiff.darker-overview=Overviews use darker colors
 options.jdiff.left-cursor-color=Left cursor color:\ 
 options.jdiff.right-cursor-color=Right cursor color:\ 
+
+# Messages
+jdiff.identical-files.title=Identical files
+jdiff.identical-files.message=The two files are identical
 

@@ -53,27 +53,25 @@ public class DiffLocalOverview extends DiffOverview
         gfx.setColor(getBackground());
         gfx.fillRect(0, 0, size.width, size.height);
 
-        Rectangle inner = new Rectangle(4, 4, size.width - 8, size.height - 8);
+        Rectangle inner = new Rectangle(4, 0, size.width - 8, size.height);
 
         int lines = Math.max(count0, count1);
-        double pxlPerLine = ((double) inner.height) / lines;
+        int pxlPerLine = this.textArea0.getPainter().getFontMetrics().getHeight();
 
         Rectangle left = new Rectangle(
             inner.x,
             inner.y,
             inner.width / 3,
-            Math.max(1, (int) Math.round(pxlPerLine * count0))
+            Math.max(1, pxlPerLine * count0)
         );
+        Rectangle leftBorder = new Rectangle(left);
         Rectangle right = new Rectangle(
             inner.x + (inner.width - left.width),
             inner.y,
             left.width,
-            Math.max(1, (int) Math.round(pxlPerLine * count1))
+            Math.max(1, pxlPerLine * count1)
         );
-
-        gfx.setColor(Color.black);
-        gfx.drawRect(left.x - 1, left.y - 1, left.width + 1, left.height + 1);
-        gfx.drawRect(right.x - 1, right.y - 1, right.width + 1, right.height + 1);
+        Rectangle rightBorder = new Rectangle(right);
 
         gfx.setColor(Color.white);
         gfx.fillRect(left.x, left.y, left.width, left.height);
@@ -104,8 +102,8 @@ public class DiffLocalOverview extends DiffOverview
                 hunk.deleted - Math.max(0, line0 - hunk.line0),
                 count0       - Math.max(0, hunk.line0 - line0) // leftOffset
             );
-            left.y  = inner.y + (int) Math.round(leftOffset * pxlPerLine);
-            left.height  = Math.max(1, (int) Math.round(leftCount * pxlPerLine));
+            left.y  = inner.y + (leftOffset * pxlPerLine);
+            left.height  = Math.max(1, leftCount * pxlPerLine);
             gfx.setColor(color);
             gfx.fillRect(left.x, left.y, left.width, left.height);
         }
@@ -133,8 +131,8 @@ public class DiffLocalOverview extends DiffOverview
                 hunk.inserted - Math.max(0, line1 - hunk.line1),
                 count1        - Math.max(0, hunk.line1 - line1) // rightOffset
             );
-            right.y  = inner.y + (int) Math.round(rightOffset * pxlPerLine);
-            right.height  = Math.max(1, (int) Math.round(rightCount * pxlPerLine));
+            right.y  = inner.y + (rightOffset * pxlPerLine);
+            right.height  = Math.max(1, rightCount * pxlPerLine);
             gfx.setColor(color);
             gfx.fillRect(right.x, right.y, right.width, right.height);
         }
@@ -167,10 +165,14 @@ public class DiffLocalOverview extends DiffOverview
 
             int leftOffset = hunk.line0 - line0;
             int rightOffset = hunk.line1 - line1;
-            int y0 = inner.y + (int) Math.round(leftOffset * pxlPerLine);
-            int y1 = inner.y + (int) Math.round(rightOffset * pxlPerLine);
+            int y0 = inner.y + (leftOffset * pxlPerLine);
+            int y1 = inner.y + (rightOffset * pxlPerLine);
             gfx.setColor(Color.black);
             gfx.drawLine(left.x + left.width + 1, y0, right.x - 1, y1);
         }
+
+        gfx.setColor(Color.black);
+        gfx.drawRect(leftBorder.x - 1, leftBorder.y, leftBorder.width + 1, leftBorder.height - 1);
+        gfx.drawRect(rightBorder.x - 1, rightBorder.y, rightBorder.width + 1, rightBorder.height - 1);
     }
 }
