@@ -304,7 +304,7 @@ public class DualDiff implements EBComponent
         if (diffHighlight0 == null) {
             diffHighlight0 = (DiffHighlight)
                 DiffHighlight.addHighlightTo(this.editPane0, this.edits, DiffHighlight.LEFT);
-            this.textArea0.getPainter().addCustomHighlight(diffHighlight0);
+            this.textArea0.getPainter().addExtension(diffHighlight0);
         } else {
             diffHighlight0.setEdits(this.edits);
             diffHighlight0.setPosition(DiffHighlight.LEFT);
@@ -316,7 +316,7 @@ public class DualDiff implements EBComponent
         if (diffHighlight1 == null) {
             diffHighlight1 = (DiffHighlight)
                 DiffHighlight.addHighlightTo(this.editPane1, this.edits, DiffHighlight.RIGHT);
-            this.textArea1.getPainter().addCustomHighlight(diffHighlight1);
+            this.textArea1.getPainter().addExtension(diffHighlight1);
         } else {
             diffHighlight1.setEdits(this.edits);
             diffHighlight1.setPosition(DiffHighlight.RIGHT);

@@ -23,7 +23,7 @@ package jdiff;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 
 import java.awt.event.MouseEvent;
 
@@ -37,14 +37,13 @@ import org.gjt.sp.jedit.View;
 
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.jedit.textarea.TextAreaHighlight;
+import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 import org.gjt.sp.util.Log;
 
 
-public class DiffHighlight
-    implements TextAreaHighlight
+public class DiffHighlight extends TextAreaExtension
 {
     public static final Position LEFT  = new Position();
     public static final Position RIGHT = new Position();
@@ -57,28 +56,23 @@ public class DiffHighlight
     private static Hashtable highlights = new Hashtable();
 
     private JEditTextArea textArea;
-    private TextAreaHighlight next;
     private boolean enabled = false;
     private Diff.change edits;
     private Position position;
 
 
-    private DiffHighlight(Diff.change edits, Position position) {
+    private DiffHighlight(JEditTextArea textArea, Diff.change edits, Position position) {
+        this.textArea = textArea;
         this.edits    = edits;
         this.position = position;
     }
 
 
-    public void init(JEditTextArea textArea, TextAreaHighlight next) {
-        this.textArea = textArea;
-        this.next = next;
-    }
-
-
-    public void paintHighlight(Graphics gfx, int virtualLine, int y) {
+    public void paintValidLine(
+            Graphics2D gfx, int physicalLine, int start, int end, int y
+    ) {
         if (this.isEnabled())
         {
-            int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
             try {
                 if (    (this.textArea.getLineStartOffset(physicalLine) == -1)
                     ||  (this.textArea.getLineEndOffset(physicalLine) == -1)
@@ -185,14 +179,10 @@ public class DiffHighlight
                  }
             }
         }
-
-        if (this.next != null) {
-            this.next.paintHighlight(gfx, virtualLine, y);
-        }
     }
 
 
-    private void paintSelectionHighlight(Graphics gfx, int physicalLine, int y,
+    private void paintSelectionHighlight(Graphics2D gfx, int physicalLine, int y,
         Color selectionColor, Selection s)
     {
         if ((physicalLine < s.getStartLine()) || (physicalLine > s.getEndLine())) {
@@ -240,14 +230,6 @@ public class DiffHighlight
 
         gfx.setColor(selectionColor);
         gfx.fillRect(x1, y, x2 - x1, fm.getHeight());
-    }
-
-
-    public String getToolTipText(MouseEvent evt)
-    {
-        if (this.next == null) { return null; }
-
-        return this.next.getToolTipText(evt);
     }
 
 
@@ -336,13 +318,15 @@ public class DiffHighlight
     }
 
 
-    public static TextAreaHighlight getHighlightFor(EditPane editPane) {
-        return (TextAreaHighlight) highlights.get(editPane);
+    public static TextAreaExtension getHighlightFor(EditPane editPane) {
+        return (TextAreaExtension ) highlights.get(editPane);
     }
 
 
-    public static TextAreaHighlight addHighlightTo(EditPane editPane, Diff.change edits, Position position) {
-        TextAreaHighlight textAreaHighlight = new DiffHighlight(edits, position);
+    public static TextAreaExtension  addHighlightTo(EditPane editPane, Diff.change edits, Position position) {
+        TextAreaExtension textAreaHighlight = new DiffHighlight(
+            editPane.getTextArea(), edits, position
+        );
         highlights.put(editPane, textAreaHighlight);
         return textAreaHighlight;
     }
@@ -352,3 +336,4 @@ public class DiffHighlight
         highlights.remove(editPane);
     }
 }
+
