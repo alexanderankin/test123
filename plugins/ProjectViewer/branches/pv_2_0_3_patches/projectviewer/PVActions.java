@@ -72,8 +72,7 @@ public final class PVActions {
 	public static void createProject(View view) {
 		EditProjectAction action = new EditProjectAction(true);
 		ProjectViewer viewer = ProjectViewer.getViewer(view);
-		if (viewer != null)
-			action.setViewer(viewer);
+		action.setViewer(viewer);
 		action.actionPerformed(null);
 	} //}}}
 
@@ -371,7 +370,7 @@ public final class PVActions {
 
 	//{{{ -class _Helper_
 	public static class Helper {
-		
+
 		//{{{ +_listToObjectCollection(String, PluginJAR, Class)_ : Collection
 		/**
 		 *	Creates a collection of instances from a comma-separated list of class
@@ -405,7 +404,7 @@ public final class PVActions {
 			}
 			return null;
 		} //}}}
-		
+
 	} //}}}
 
 }
