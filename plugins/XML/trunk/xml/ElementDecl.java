@@ -31,39 +31,6 @@ class ElementDecl
 		attributes = new Vector();
 	}
 
-	void addXMLAttribute(String name, String type, String valueDefault,
-		String value)
-	{
-		Vector values;
-		int _type;
-
-		if(type != null && type.startsWith("("))
-		{
-			_type = AttributeDecl.CHOICE;
-
-			values = new Vector();
-
-			StringTokenizer st = new StringTokenizer(
-				type.substring(1,type.length() - 1),"|");
-			while(st.hasMoreTokens())
-			{
-				values.addElement(st.nextToken());
-			}
-		}
-		else
-		{
-			values = null;
-			if(type.equals("IDREF"))
-				_type = AttributeDecl.IDREF;
-			else
-				_type = AttributeDecl.CDATA;
-		}
-
-		boolean required = "#REQUIRED".equals(valueDefault);
-
-		addAttribute(new AttributeDecl(name,value,values,_type,required));
-	}
-
 	void addAttribute(AttributeDecl attribute)
 	{
 		for(int i = 0; i < attributes.size(); i++)

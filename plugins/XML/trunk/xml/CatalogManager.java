@@ -1,5 +1,5 @@
 /*
- * EntityManager.java
+ * CatalogManager.java
  * Copyright (C) 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -16,20 +16,20 @@ import javax.swing.text.BadLocationException;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import com.arbortext.catalog.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
-import org.apache.xerces.readers.XCatalog;
 import org.xml.sax.*;
 
-public class EntityManager
+public class CatalogManager
 {
-	public static InputSource resolveEntity(String current,
+	public static InputSource resolve(String current,
 		String publicId, String systemId)
 		throws SAXException, IOException
 	{
 		load();
 
-		InputSource source = null;
+		String newSystemId = null;
 
 		if(publicId == null && systemId != null && current != null)
 		{
@@ -38,29 +38,31 @@ public class EntityManager
 			{
 				// first, try resolving a relative name,
 				// to handle jEdit built-in DTDs
-				source = catalog.resolveEntity(null,
+				newSystemId = catalog.resolveSystem(
 					systemId.substring(current.length()));
 			}
 		}
 
 		// next, try resolving full path name
-		if(source == null)
-			source = catalog.resolveEntity(publicId,systemId);
+		if(newSystemId == null)
+		{
+			if(publicId == null)
+				newSystemId = catalog.resolveSystem(systemId);
+			else
+				newSystemId = catalog.resolvePublic(publicId,systemId);
+		}
 
 		// well, the catalog can't help us, so just assume the
 		// system id points to a file
-		if(source == null)
+		if(newSystemId == null)
 		{
 			if(systemId == null)
 				return null;
 			else
-			{
-				source = new InputSource();
-				source.setSystemId(systemId);
-			}
+				newSystemId = systemId;
 		}
 
-		return source;
+		return new InputSource(newSystemId);
 	}
 
 	public static void propertiesChanged()
@@ -69,7 +71,7 @@ public class EntityManager
 	}
 
 	// private members
-	private static XCatalog catalog;
+	private static Catalog catalog;
 	private static boolean loaded;
 
 	private synchronized static void load()
@@ -79,39 +81,48 @@ public class EntityManager
 
 		loaded = true;
 
-		catalog = new XCatalog();
+		catalog = new Catalog();
+		catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
 
 		int i = 0;
 		String uri;
 
 		try
 		{
-			while((uri = jEdit.getProperty("xml.xcatalog." + i)) != null)
+			catalog.loadSystemCatalogs();
+
+			catalog.parseCatalog("jeditresource:XML.jar!/xml/catalog");
+
+			while((uri = jEdit.getProperty("xml.catalog." + i)) != null)
 			{
-				catalog.loadCatalog(resolveEntity(null,null,uri));
+				catalog.parseCatalog(uri);
+				i++;
+			}
+
+			i = 0;
+			String id;
+			while((id = jEdit.getProperty("xml.public-id." + i)) != null)
+			{
+				catalog.addEntry(new CatalogEntry(
+					CatalogEntry.PUBLIC,
+					id,jEdit.getProperty(
+					"xml.public-id." + i + ".uri")));
+				i++;
+			}
+
+			i = 0;
+			while((id = jEdit.getProperty("xml.system-id." + i)) != null)
+			{
+				catalog.addEntry(new CatalogEntry(
+					CatalogEntry.SYSTEM,
+					id,jEdit.getProperty(
+					"xml.system-id." + i + ".uri")));
 				i++;
 			}
 		}
 		catch(Exception e)
 		{
-			Log.log(Log.ERROR,EntityManager.class,e);
-		}
-
-		i = 0;
-		String id;
-		while((id = jEdit.getProperty("xml.public-id." + i)) != null)
-		{
-			catalog.addPublicMapping(id,jEdit.getProperty(
-				"xml.public-id." + i + ".uri"));
-			i++;
-		}
-
-		i = 0;
-		while((id = jEdit.getProperty("xml.system-id." + i)) != null)
-		{
-			catalog.addSystemMapping(id,jEdit.getProperty(
-				"xml.system-id." + i + ".uri"));
-			i++;
+			Log.log(Log.ERROR,CatalogManager.class,e);
 		}
 	}
 }

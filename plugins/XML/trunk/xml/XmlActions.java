@@ -23,7 +23,7 @@ import java.awt.*;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -37,22 +37,15 @@ public class XmlActions
 	{
 		EditPane editPane = view.getEditPane();
 
-		Hashtable elements = (Hashtable)editPane.getClientProperty(
-			XmlPlugin.ELEMENT_HASH_PROPERTY);
-		Hashtable entities = (Hashtable)editPane.getClientProperty(
-			XmlPlugin.ENTITY_HASH_PROPERTY);
+		CompletionInfo completionInfo = (CompletionInfo)
+			editPane.getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY);
 
-		if(elements == null || entities == null)
+		if(completionInfo == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
-
-		Vector ids = (Vector)editPane.getClientProperty(
-			XmlPlugin.IDS_PROPERTY);
-
-		// XXX: to do
-		boolean html = false;
 
 		JEditTextArea textArea = editPane.getTextArea();
 		Buffer buffer = editPane.getBuffer();
@@ -76,7 +69,10 @@ public class XmlActions
 		for(int i = Math.min(seg.count,caret); i >= 0; i--)
 		{
 			char ch = seg.array[seg.offset + i];
-			if(ch == '>')
+
+			// if caret is before >, then the character at the
+			// caret pos will be >
+			if(i != caret && ch == '>')
 				break;
 			else if(ch == '<')
 			{
@@ -87,7 +83,7 @@ public class XmlActions
 
 		// scan forwards looking for >
 		// if we find a <, then assume we're not inside a tag
-		for(int i = caret + 1; i < seg.count; i++)
+		for(int i = caret; i < seg.count; i++)
 		{
 			char ch = seg.array[seg.offset + i];
 			if(ch == '<')
@@ -155,7 +151,7 @@ public class XmlActions
 					}
 					else if(attributeName == null)
 					{
-						attributeName = (html
+						attributeName = (completionInfo.html
 							? st.sval.toLowerCase()
 							: st.sval);
 						break;
@@ -169,10 +165,11 @@ public class XmlActions
 							attributes.put(attributeName,
 								entitiesToCharacters(
 								st.sval.replace(backslashSub,'\\'),
-								entities,true));
+								completionInfo.entityHash,
+								true));
 							seenEquals = false;
 						}
-						else
+						else if(completionInfo.html)
 						{
 							attributes.put(attributeName,
 								Boolean.TRUE);
@@ -191,8 +188,9 @@ public class XmlActions
 			// won't happen
 		}
 
-		ElementDecl elementDecl = (ElementDecl)elements.get(
-			(html ? elementName.toLowerCase() : elementName));
+		ElementDecl elementDecl = (ElementDecl)completionInfo.elementHash
+			.get((completionInfo.html ? elementName.toLowerCase()
+			: elementName));
 		if(elementDecl == null)
 		{
 			String[] pp = { elementName };
@@ -201,7 +199,8 @@ public class XmlActions
 		}
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
-			attributes,empty,entities,ids);
+			attributes,empty,completionInfo.entityHash,
+			completionInfo.ids);
 
 		String newTag = dialog.getNewTag();
 
@@ -229,22 +228,26 @@ public class XmlActions
 	{
 		EditPane editPane = view.getEditPane();
 
-		Hashtable elements = (Hashtable)editPane.getClientProperty(
-			XmlPlugin.ELEMENT_HASH_PROPERTY);
-		Hashtable entities = (Hashtable)editPane.getClientProperty(
-			XmlPlugin.ENTITY_HASH_PROPERTY);
+		CompletionInfo completionInfo = (CompletionInfo)
+			editPane.getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY);
 
-		if(elements == null || entities == null)
+		if(completionInfo == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
 
-		Vector ids = (Vector)editPane.getClientProperty(
-			XmlPlugin.IDS_PROPERTY);
+		if(completionInfo == null)
+		{
+			GUIUtilities.error(view,"xml-no-data",null);
+			return;
+		}
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
-			new Hashtable(),elementDecl.empty,entities,ids);
+			new Hashtable(),elementDecl.empty,
+			completionInfo.entityHash,
+			completionInfo.ids);
 
 		String newTag = dialog.getNewTag();
 
@@ -268,8 +271,8 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& completion
-			&& editPane.getClientProperty(XmlPlugin.ELEMENTS_PROPERTY) != null
-			&& editPane.getClientProperty(XmlPlugin.ENTITIES_PROPERTY) != null))
+			&& editPane.getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY) != null))
 		{
 			return;
 		}
@@ -311,19 +314,17 @@ public class XmlActions
 		int wordStart = TextUtilities.findWordStart(line,dot-1,"<&");
 		String word = line.substring(wordStart + 1,dot);
 
-		Vector completions;
-		if(mode == ELEMENT_COMPLETE)
-		{
-			completions = (Vector)view.getEditPane().getClientProperty(
-				XmlPlugin.ELEMENTS_PROPERTY);
-		}
-		else
-		{
-			completions = (Vector)view.getEditPane().getClientProperty(
-				XmlPlugin.ENTITIES_PROPERTY);
-		}
+		CompletionInfo completionInfo = (CompletionInfo)
+			view.getEditPane().getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY);
+		if(completionInfo == null)
+			return;
 
-		if(completions == null || completions.size() == 0)
+		Vector completions = (mode == ELEMENT_COMPLETE
+			? completionInfo.elements
+			: completionInfo.entities);
+
+		if(completions.size() == 0)
 			return;
 
 		Point location = new Point(textArea.offsetToX(caretLine,wordStart),
@@ -354,8 +355,8 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& closeCompletion
-			&& editPane.getClientProperty(XmlPlugin.ELEMENTS_PROPERTY) != null
-			&& editPane.getClientProperty(XmlPlugin.ENTITIES_PROPERTY) != null))
+			&& editPane.getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY) != null))
 		{
 			return;
 		}
@@ -392,13 +393,28 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& closeCompletionOpen
-			&& editPane.getClientProperty(XmlPlugin.ELEMENTS_PROPERTY) != null
-			&& editPane.getClientProperty(XmlPlugin.ENTITIES_PROPERTY) != null))
+			&& editPane.getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY) != null))
 		{
 			return;
 		}
 
 		int caret = textArea.getCaretPosition();
+		if(caret == 1)
+			return;
+
+		try
+		{
+			buffer.getText(caret - 1,caret,seg);
+		}
+		catch(BadLocationException bl)
+		{
+			Log.log(Log.ERROR,this,bl);
+		}
+
+		// don't insert closing tag for empty element
+		if(seg.array[seg.offset] == '/')
+			return;
 
 		insertClosingTag(textArea);
 
@@ -524,12 +540,9 @@ public class XmlActions
 			else if (curChar == '<')
 			{
 
-				if (lastChar == '?')
-				{
-					inTag = false;
-				}
-
-				if (lastChar == '!')
+				if (lastChar == '?'
+					|| lastChar == '!'
+					|| lastChar == '-')
 				{
 					inTag = false;
 				}
@@ -547,7 +560,7 @@ public class XmlActions
 						curTag = getTagName(s.array, curPos + 1, tagEnd - (curPos + 1));
 
 						if (tagStack.empty())
-							return curTag;
+							return (curTag.length() == 0 ? null : curTag);
 
 						String lastTag = (String) tagStack.peek();
 						if (lastTag.equalsIgnoreCase(curTag))
@@ -687,23 +700,30 @@ public class XmlActions
 		EditPane editPane = view.getEditPane();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		if(!textArea.isEditable())
+		if(!textArea.isEditable()
+			|| textArea.getSelectionCount() == 0)
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		Hashtable entities = (Hashtable)editPane.getClientProperty(
-			XmlPlugin.ENTITY_HASH_PROPERTY);
+		CompletionInfo completionInfo = (CompletionInfo)
+			editPane.getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY);
 
-		if(entities == null)
+		if(completionInfo == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
 
-		textArea.setText(charactersToEntities(
-			textArea.getText(),entities,false));
+		Selection[] selection = textArea.getSelection();
+		for(int i = 0; i < selection.length; i++)
+		{
+			textArea.setSelectedText(selection[i],
+				charactersToEntities(textArea.getSelectedText(
+				selection[i]),completionInfo.entityHash,false));
+		}
 	}
 
 	public static void entitiesToCharacters(View view)
@@ -711,23 +731,30 @@ public class XmlActions
 		EditPane editPane = view.getEditPane();
 		JEditTextArea textArea = editPane.getTextArea();
 
-		if(!textArea.isEditable())
+		if(!textArea.isEditable()
+			|| textArea.getSelectionCount() == 0)
 		{
 			view.getToolkit().beep();
 			return;
 		}
 
-		Hashtable entities = (Hashtable)editPane.getClientProperty(
-			XmlPlugin.ENTITY_HASH_PROPERTY);
+		CompletionInfo completionInfo = (CompletionInfo)
+			editPane.getClientProperty(
+			XmlPlugin.COMPLETION_INFO_PROPERTY);
 
-		if(entities == null)
+		if(completionInfo == null)
 		{
 			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
 
-		textArea.setText(entitiesToCharacters(
-			textArea.getText(),entities,false));
+		Selection[] selection = textArea.getSelection();
+		for(int i = 0; i < selection.length; i++)
+		{
+			textArea.setSelectedText(selection[i],
+				entitiesToCharacters(textArea.getSelectedText(
+				selection[i]),completionInfo.entityHash,false));
+		}
 	}
 
 	// package-private members

@@ -63,15 +63,14 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 		if(view.getDockableWindowManager().getDockableWindow(
 			XmlPlugin.TREE_NAME) != null)
 		{
-			Vector elements = (Vector)view.getEditPane()
-				.getClientProperty(XmlPlugin.ELEMENTS_PROPERTY);
-			if(elements != null)
-				setDeclaredElements(elements);
-
-			Vector entities = (Vector)view.getEditPane()
-				.getClientProperty(XmlPlugin.ENTITIES_PROPERTY);
-			if(entities != null)
-				setDeclaredEntities(entities);
+			CompletionInfo completionInfo = (CompletionInfo)
+				view.getEditPane().getClientProperty(
+				XmlPlugin.COMPLETION_INFO_PROPERTY);
+			if(completionInfo != null)
+			{
+				setDeclaredElements(completionInfo.elements);
+				setDeclaredEntities(completionInfo.entities);
+			}
 		}
 		else
 			showNotParsedMessage();
