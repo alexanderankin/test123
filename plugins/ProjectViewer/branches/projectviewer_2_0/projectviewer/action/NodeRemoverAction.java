@@ -234,7 +234,7 @@ public class NodeRemoverAction extends Action {
 		boolean removed = false;
 		
 		if(o == null || o.isRoot()) {
-			Log.log(Log.DEBUG, this, "Removing: unexpected object o: " + o);
+			Log.log(Log.WARNING, this, "Removing: unexpected object o: " + o);
 			return;
 		}
 
