@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="junit.about">
+        <CODE>
+            junit.jeditui.AboutDialog about = new junit.jeditui.AboutDialog(view);
+            about.show();
+        </CODE>
+    </ACTION>
+</ACTIONS>

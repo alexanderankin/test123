@@ -1,0 +1,41 @@
+plugin.junit.JUnitPlugin.name=jUnit
+plugin.junit.JUnitPlugin.author=André Kaplan, Calvin Yu
+plugin.junit.JUnitPlugin.version=0.0.1
+plugin.junit.JUnitPlugin.docs=index.html
+
+plugin.junit.JUnitPlugin.depend.0=jdk 1.3
+plugin.junit.JUnitPlugin.depend.1=jedit 04.00.99.00
+plugin.junit.JUnitPlugin.jars=junit.jar
+
+# Menu
+junit-menu=\
+    junit.dock \
+    junit.about
+junit-menu.label=jUnit
+
+# Menu items
+junit.about.label=About
+
+# Dockable window label & title
+junit.dock.label=jUnit
+junit.dock.title=jUnit
+
+# {{{ UI labels
+junit.set-class-path.tooltip=Set jUnit classpath
+junit.class-path-dialog.title=jUnit Classpath
+junit.browse-tests.tooltip=Select a Test class
+junit.runs.tooltip=Runs
+junit.errors.tooltip=Errors
+junit.failures.tooltip=Failures
+junit.test-run-view.popup.run.label=Run
+# }}}
+
+# {{{ Tab properties
+junit.test.hierarchy.icon=icons/hierarchy.gif
+junit.test.hierarchy.label=Test Hierarchy
+junit.test.hierarchy.tooltip=The test hierarchy
+
+junit.test.failures.icon=icons/error.gif
+junit.test.failures.label=Failures
+junit.test.failures.tooltip=The list of failed tests
+# }}}
