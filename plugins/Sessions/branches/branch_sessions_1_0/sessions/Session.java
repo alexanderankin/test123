@@ -36,6 +36,11 @@ import org.gjt.sp.util.Log;
 public class Session implements Cloneable
 {
 
+	/** Session Property name for Session base directory */
+	public static final String BASE_DIRECTORY = "basedir";
+	/** Session Property name for Session default edit mode */
+	public static final String DEFAULT_MODE = "mode";
+
 	private String name;
 	private String filename;
 	private Vector allFiles;
@@ -181,11 +186,29 @@ public class Session implements Cloneable
 	 * The session is loaded from the XML file in the sessions repository,
 	 * then the files of the session are opened.
 	 *
+	 * @see #open(org.gjt.sp.jedit.View, boolean)
 	 * @param view  where to display error message boxes.
 	 * @return  true  if the session was loaded successfully and all buffers
 	 *   have been opened.
 	 */
 	public boolean open(View view)
+	{
+		return open(view, true);
+	}
+
+
+	/**
+	 * Loads and optionally opens the session.
+	 * The session is loaded from the XML file in the sessions repository,
+	 * then the files of the session are opened.
+	 *
+	 * @param view  where to display error message boxes.
+	 * @param openFiles whether or not to open all the session files in addition
+	 *   to loading and parsing the XML file (with its custom properties).
+	 * @return  true  if the session was loaded successfully and all buffers
+	 *   have been opened.
+	 */
+	public boolean open(View view, boolean openFiles)
 	{
 		Log.log(Log.DEBUG, this, "open: name=" + name);
 
@@ -207,17 +230,20 @@ public class Session implements Cloneable
 			return false;
 		}
 
-		// open session files:
-		Enumeration enum = allFiles.elements();
-		while(enum.hasMoreElements())
-			jEdit.openFile(null, enum.nextElement().toString());
-
-		// open session's recent buffer:
-		if(currentFile != null)
+		if (openFiles)
 		{
-			Buffer buffer = jEdit.openFile(null, currentFile);
-			if(buffer != null)
-				view.setBuffer(buffer);
+			// open session files:
+			Enumeration enum = allFiles.elements();
+			while(enum.hasMoreElements())
+				jEdit.openFile(null, enum.nextElement().toString());
+
+			// open session's recent buffer:
+			if(currentFile != null)
+			{
+				Buffer buffer = jEdit.openFile(null, currentFile);
+				if(buffer != null)
+					view.setBuffer(buffer);
+			}
 		}
 
 		return true;
