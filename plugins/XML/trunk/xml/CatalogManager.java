@@ -17,12 +17,12 @@
 package xml;
 
 //{{{ Imports
-import com.arbortext.catalog.*;
 import java.awt.Component;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import javax.swing.*;
+import org.apache.xml.resolver.Catalog;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -489,7 +489,7 @@ public class CatalogManager
 			loadedCatalogs = true;
 
 			catalog = new Catalog();
-			catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
+			//catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
 
 			try
 			{
