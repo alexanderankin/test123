@@ -26,6 +26,7 @@ import de.fub.bytecode.classfile.JavaClass;
 
 import jode.bytecode.ClassInfo;
 import jode.decompiler.ClassAnalyzer;
+import jode.decompiler.Decompiler;
 import jode.decompiler.ImportHandler;
 import jode.decompiler.TabbedPrintWriter;
 
@@ -40,6 +41,7 @@ import java.io.DataInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.FileVFS;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -92,7 +94,16 @@ public class JodeVFS extends ByteCodeVFS {
 
             // Adjust the classpath
             String cp = System.getProperty("java.class.path");
-            String vfsPath = java_class.getClassName();
+
+            String className = java_class.getClassName();
+
+            int dotIdx = className.lastIndexOf(".");
+            String vfsPath = vfs.getParentOfPath(clazzPath);
+            while (dotIdx != -1) {
+                vfsPath = vfs.getParentOfPath(vfsPath);
+                dotIdx = className.lastIndexOf(".", dotIdx - 1);
+            }
+            /*
             vfsPath = vfsPath.replace('.', vfs.getFileSeparator()) + ".class";
             if (vfs instanceof FileVFS && clazzPath.endsWith(vfsPath)) {
                 String parent = (
@@ -103,11 +114,14 @@ public class JodeVFS extends ByteCodeVFS {
                 }
                 cp = parent + cp;
             }
+            */
 
             Log.log(Log.DEBUG, this, "Classpath: " + cp);
-            ClassInfo.setClassPath(cp);
+            Log.log(Log.DEBUG, this, "vfsPath: " + vfsPath);
+            // ClassInfo.setClassPath(new jode.bytecode.SearchPath(cp));
+            ClassInfo.setClassPath(new VFSSearchPath(cp, vfsPath));
 
-            String className = java_class.getClassName();
+            // String className = java_class.getClassName();
             Log.log(Log.DEBUG, this, "Classname: " + className);
 
             in = new DataInputStream(new BufferedInputStream(
@@ -117,15 +131,37 @@ public class JodeVFS extends ByteCodeVFS {
             ClassInfo clazz = ClassInfo.forName(className);
 
             clazz.read(in, ClassInfo.FULLINFO);
-            int importPackageLimit = ImportHandler.DEFAULT_PACKAGE_LIMIT;
-            int importClassLimit = ImportHandler.DEFAULT_CLASS_LIMIT;;
-            ImportHandler imports = new ImportHandler(importPackageLimit,
-                importClassLimit
-            );
+
+            boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
+            boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
+            boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
+            String style = jEdit.getProperty("javainsight.jode.style", "sun");
+
+            // Setting decompiler options
+            Decompiler decompiler = new Decompiler();
+            decompiler.setOption("style", style);
+            decompiler.setOption("pretty", pretty ? "yes" : "no");
+            decompiler.setOption("onetime", onetime ? "yes" : "no");
+            decompiler.setOption("decrypt", decrypt ? "yes" : "no");
+
+            int packageLimit = ImportHandler.DEFAULT_PACKAGE_LIMIT;
+            int classLimit   = ImportHandler.DEFAULT_CLASS_LIMIT;;
+
+            try {
+                String importPackageLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
+                packageLimit = Integer.parseInt(importPackageLimit);
+            } catch (NumberFormatException nfe) {}
+
+            try {
+                String importClassLimit   = jEdit.getProperty("javainsight.jode.clslimit", "1");
+                classLimit = Integer.parseInt(importClassLimit);
+            } catch (NumberFormatException nfe) {}
+
+            ImportHandler imports = new ImportHandler(packageLimit, classLimit);
 
             ByteArrayOutputStream baOut = new ByteArrayOutputStream();
             TabbedPrintWriter writer = new TabbedPrintWriter(
-                new BufferedOutputStream(baOut), imports, false
+                new NewlineOutputFilter(new BufferedOutputStream(baOut)), imports, false
             );
 
             ClassAnalyzer clazzAna = new ClassAnalyzer(clazz, imports);
