@@ -130,12 +130,13 @@ public class XPathTool extends JPanel {
 
 
   /**
-   * Returns a summary of the evaluation of an XPath expression.
+   * Populates a node set table model with the results of an XPath evaluation, if
+   * the results are of type node-set.
    * Note: there are four data types in the XPath 1.0 data model: node-set, string,
    * number, and boolean.
    *
-   * @param xObject XObject to be converted
-   * @return user-friendly string describing the supplied XObject
+   * @param xObject XObject containing results
+   * @param tableModel the table model to populate
    */
   private void setNodeSetResults(XObject xObject, NodeSetTableModel tableModel) throws TransformerException {
     if(xObject.getType() == XObject.CLASS_NODESET) {
