@@ -40,7 +40,7 @@ import projectviewer.ProjectDirectory;
 import projectviewer.RemovalManager;
 
 import projectviewer.config.ProjectPropertiesDlg;
-
+import projectviewer.config.ProjectViewerConfig;
 /**
  *  <p>Listener for mouse events in nodes of the tree. This listener is
  *  responsible for building the context-menus for right button clicks
@@ -68,6 +68,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     private JMenuItem  removeFile;
     private JMenuItem  deleteFile;
     private JMenuItem  renameFile;
+    private JMenuItem  miLaunchBrowser;
     
     private JPopupMenu multipleSelMenu;
     private JMenuItem  removeMulti;
@@ -137,6 +138,8 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             
         } else if (src == renameFile) {
             renameFile();
+	} else if (src == miLaunchBrowser) {
+           launchBrowser();
         } else if (src == removeProject ||
                    src == removeDir ||
                    src == removeFile ||
@@ -157,6 +160,45 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     
     //--------------- Private Methods
 
+        private void launchBrowser() {
+        /* need to get browser setting */
+        String sURLRoot = viewer.getCurrentProject().getURLRoot();
+        String sURL;
+	String browserExecPath = ProjectViewerConfig.getInstance().getBrowserPath();
+        if (sURLRoot == "" )
+        {
+            JOptionPane.showMessageDialog(viewer, "Web URL Not set for project");
+            return;	
+        }
+    
+        if (viewer.isFileSelected())
+        {
+        ProjectFile fileToView = viewer.getSelectedFile();
+        
+        /* Produce the url of the file based upon the projects urlRoot */
+        sURL = sURLRoot + fileToView.getPath().toString().substring(viewer.getCurrentProject().getRoot().getPath().length());
+        
+	//JOptionPane.showMessageDialog(viewer, sURL);
+        
+           Runtime rt = Runtime.getRuntime();
+           String[] callAndArgs = { browserExecPath, sURL };
+           try {
+               Process child = rt.exec(callAndArgs);
+               child.wait(4);
+               System.out.println("Process exit code is: " + child.exitValue());
+               }
+           catch(java.io.IOException e) {
+            System.err.println(
+            "IOException starting process!");
+           }
+           catch(InterruptedException e) {
+               System.err.println(
+               "Interrupted waiting for process!");
+           }
+        } else { JOptionPane.showMessageDialog(viewer, "No File selected");}	
+        
+    }
+    
     /** Handles the mouse event internally. */
     private void handleMouseEvent(MouseEvent me) {
         JTree tree = viewer.getCurrentTree();
@@ -245,7 +287,12 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
         renameFile = new JMenuItem("Rename");
         renameFile.addActionListener(this);
         fileMenu.add(renameFile);
-        
+	
+	// sutter2k: need to tap in here for preview in browser
+        miLaunchBrowser= new JMenuItem("Preview in Browser");
+        miLaunchBrowser.addActionListener(this);
+	fileMenu.add(miLaunchBrowser);
+	
         // Menu to show when multiple nodes are selected
         multipleSelMenu = new JPopupMenu();
         tmp = new JMenuItem("Multiple selection");
