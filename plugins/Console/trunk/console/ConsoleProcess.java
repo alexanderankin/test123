@@ -60,7 +60,7 @@ class ConsoleProcess
 
 		try
 		{
-			process = OperatingSystem.getOperatingSystem()
+			process = ProcessRunner.getProcessRunner()
 				.exec(args,env,currentDirectory);
 			stdout = new StreamThread(process.getInputStream());
 			stderr = new StreamThread(process.getErrorStream());

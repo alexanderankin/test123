@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  * Portions copyright (C) 1999, 2000 Kevin A. Burton
  *
  * This program is free software; you can redistribute it and/or
@@ -409,7 +409,7 @@ public class ConsolePlugin extends EBPlugin
 	 * @param var The variable name
 	 * @param value The value
 	 */
-	public static void getSystemShellVariableValue(String var, String value)
+	public static void setSystemShellVariableValue(String var, String value)
 	{
 		((SystemShell)SYSTEM_SHELL).getVariables().put(var,value);
 	} //}}}

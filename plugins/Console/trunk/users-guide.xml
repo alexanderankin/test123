@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- Console user's guide -->
-<!-- (C) 2001 Slava Pestov -->
+<!-- (C) 2001, 2003 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true: -->
@@ -1161,6 +1161,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     <listitem><para>Fixed incompatibility with 4.1pre5.</para></listitem>
     <listitem><para>Fixed problems caused by having commandos with spaces in
     their names.</para></listitem>
+    <listitem><para>On Windows, all commands are now run through
+    <filename>cmd.exe</filename> or <filename>command.com</filename>
+    (depending on the Windows version).</para></listitem>
+    <listitem><para>When running on Windows ME, child processes should now
+    inherit jEdit's environment variables (there is still no way to change
+    them from within jEdit though).</para></listitem>
    </itemizedlist>
   </listitem>
 
