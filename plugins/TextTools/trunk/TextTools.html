@@ -17,6 +17,8 @@ in a buffer.</p>
 <ul>
 	<li><a href="#Sort">Sort</a></li>
 	<li><a href="#RevSort">Reverse Sort</a></li>
+	<li><a href="#FieldSort">Field Sort</a></li>
+	<li><a href="#Shuffle">Shuffle</a></li>
 	<li><a href="#TransposeChars">Transpose Characters</a></li>
 	<li><a href="#TransposeLines">Transpose Lines</a></li>
 	<li><a href="#TransposeWords">Transpose Words</a></li>
@@ -36,6 +38,42 @@ by mike dillon &lt;mdillon@jedit.org&gt;</p>
 
 <p>Same as <a href="#Sort">Sort</a>, except the sorted lines are inserted in
 reverse order.</p>
+
+
+<p><strong><a name="FieldSort">Field Sort</a></strong>
+by Carmine Lucarelli &lt;carmine@jedit.org&gt;</p>
+
+<p>Brings up a dialog where you can specify which fields to use and how those fields should be sorted.<br>
+<strong>N.B. Make sure to 'step off' the last cell you edit, or else your change will be ignored</strong><br>
+Globally you can specify whether to delete duplicate entries in the data.<br>
+For each of the fields you create, you can specify:
+<ul>
+<li>
+  the start column (indexed starting at 1)
+</li>
+<li>
+  the end column
+</li>
+<li>
+  whether the field should be sorted in an ascending or descending order
+</li>
+<li>
+  whether case should be ignored
+</li>
+<li>
+  whether 'smart' number sorting should be done (selecting this option would place File2 before File10 in the sort)
+</li>
+<li>
+  whether whitespace at the start or end of the field should be ignored
+</li>
+</ul>
+</p>
+
+
+<p><strong><a name="Shuffle">Shuffle Lines</a></strong>
+by Carmine Lucarelli &lt;carmine@jedit.org&gt;</p>
+
+<p>Randomize the data, in effect 'unsorting' it.</p>
 
 
 <p><strong><a name="TransposeChars">Transpose Characters</a></strong>

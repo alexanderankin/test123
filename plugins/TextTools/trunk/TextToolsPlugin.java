@@ -19,14 +19,17 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.util.Vector;
+import java.util.*;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.TextUtilities;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.util.Log;
 
 public class TextToolsPlugin extends EditPlugin
 {
@@ -115,6 +118,89 @@ public class TextToolsPlugin extends EditPlugin
 		{
 			return comp.compare(obj2,obj1);
 		}
+	}
+
+	public static void fieldSortLines(View view, JEditTextArea textArea)
+	{
+		ArrayList recs = getData(textArea);
+		if(recs == null)
+		{
+			// an error occurred, so ditch
+			return;
+		}
+		else if(recs.size() == 1)
+		{
+			// lets not sort a single record
+			return;
+		}
+		boolean selection = false;
+		if(textArea.getSelectedLines().length > 1)
+		{
+			selection = true;
+		}
+		
+		new TextToolsSortControl(view, textArea, recs, selection);
+	}
+	
+	public static void shuffleLines(View view, JEditTextArea textArea)
+	{
+		ArrayList recs = getData(textArea);
+		if(recs == null)
+		{
+			// an error occurred, so ditch
+			return;
+		}
+
+		JSort.shuffle(recs);
+		Iterator iter = recs.iterator();
+		StringBuffer sb = new StringBuffer();
+		while(iter.hasNext())
+		{
+			sb.append(iter.next() + "\n");
+		}
+		sb.deleteCharAt(sb.length() - 1);
+		if(textArea.getSelectedLines().length > 1)
+		{
+			textArea.setSelectedText(sb.toString());
+		}
+		else
+		{
+			textArea.setText(sb.toString());
+		}
+	}
+
+	private static ArrayList getData(JEditTextArea textArea)
+	{
+		Buffer buffer = textArea.getBuffer();
+		if (buffer.isReadOnly())
+		{
+			Log.log(Log.NOTICE, TextToolsPlugin.class, jEdit.getProperty(
+				"texttoolsplugin.error.isReadOnly.message"));
+			textArea.getToolkit().beep();
+			return null;
+		}
+		
+		String data = textArea.getSelectedText();
+		if(data == null || data.length() == 0)
+		{
+			data = textArea.getText();
+			if(data.length() == 0)
+			{
+				Log.log(Log.NOTICE, TextToolsPlugin.class, jEdit.getProperty(
+					"texttoolsplugin.error.empty.message"));
+				textArea.getToolkit().beep();
+				return null;
+			}
+		}
+
+		String line_sep = (String)textArea.getBuffer().getProperty(Buffer.LINESEP);
+		StringTokenizer st = new StringTokenizer(data, line_sep);
+		ArrayList recs = new ArrayList(st.countTokens());
+		while(st.hasMoreTokens())
+		{
+			recs.add(st.nextToken());
+		}
+		return recs;
 	}
 
 	public static void transposeChars(JEditTextArea textArea)

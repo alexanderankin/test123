@@ -6,10 +6,16 @@ plugin.TextToolsPlugin.depend.0=jedit 04.00.01.00
 
 # Menu
 text-tools.label=TextTools
-text-tools=sort-lines revsort-lines - \
+text-tools=sort-lines revsort-lines field-sort-lines shuffle-lines - \
 	transpose-chars transpose-words transpose-lines
 sort-lines.label=Sort Lines
 revsort-lines.label=Reverse Sort Lines
+field-sort-lines.label=Sort Lines by Fields
+shuffle-lines.label=Shuffle Lines
 transpose-chars.label=Transpose Characters
 transpose-words.label=Transpose Words
 transpose-lines.label=Transpose Lines
+
+# sort options window title
+text-tools.sortcontrol.label=TextTools - Sort Lines by Field
+
