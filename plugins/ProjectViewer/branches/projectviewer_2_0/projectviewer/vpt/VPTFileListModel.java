@@ -20,10 +20,11 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.util.HashMap;
-import java.util.ArrayList;
+import java.util.Vector;
 import java.util.Collections;
 
 import javax.swing.tree.TreeNode;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.util.Log;
@@ -32,6 +33,15 @@ import org.gjt.sp.util.Log;
 /**
  *	A tree model that represents all files in a project without any relationship
  *	to the nodes they are a child of.
+ *
+ *	<p>This model, similarly to the other "flat model": VPTWorkingFileList, is
+ *	a little dumb, for the sake of code simplicity. Using "insertNodeInto" or
+ *	similar methods will not work for these models. The only structure change
+ *	supported is the {@link #nodeStructureChanged(TreeNode) nodeStructureChanged()}
+ *	method. So, classes that change the tree structure in some way should wait
+ *	until all changes are made and then call this method for the project node or
+ *	the root node of the tree, preferably using the "broadcast" method available
+ *	in the ProjectViewer class.</p>
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
@@ -77,12 +87,13 @@ public class VPTFileListModel extends DefaultTreeModel {
 			return node.getChildAt(index);
 		} else if (node.isProject()) {
 			VPTProject p = (VPTProject) node;
-			ArrayList lst = (ArrayList) fileLists.get(p);
+			Vector lst = (Vector) fileLists.get(p);
 			if (lst == null) {
-				lst = new ArrayList(p.files.values());
+				lst = new Vector(p.files.values());
 				Collections.sort(lst, new VPTNode.VPTNodeComparator());
 				fileLists.put(node, lst);
 			}
+			if (index >= lst.size()) return null;
 			return lst.get(index);
 		}
 		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent = " + parent);
@@ -99,11 +110,23 @@ public class VPTFileListModel extends DefaultTreeModel {
 			while (!n.isProject()) {
 				n = (VPTNode) n.getParent();
 			}
-			ArrayList lst = new ArrayList(((VPTProject)n).files.values());
+			Vector lst = new Vector(((VPTProject)n).files.values());
 			Collections.sort(lst, new VPTNode.VPTNodeComparator());
 			fileLists.put(n, lst);
 		}
 		super.nodeStructureChanged(node);
 	}
+	
+	//{{{ removeRef(VPTProject) method
+	/**
+	 *	Removes any reference to the given project stored internally. This does
+	 *	not update the tree! To update the tree one of the usual methods (setRoot,
+	 *	nodeStructureChanged, etc) should be called.
+	 */
+	public void removeRef(VPTProject p) {
+		fileLists.remove(p);
+	} //}}}
+	
+	
 }
 
