@@ -108,12 +108,17 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 			return;
 		}
 		if(evt.getItem() instanceof Project) {
-			Log.log(Log.DEBUG, this, "vsl.itemStateChanged, got a project");
+			Log.log(Log.DEBUG, this, "vsl.itemStateChanged, got a project : "+((Project)evt.getItem()).toString());
 			viewer.setCurrentProject((Project)evt.getItem());
 		}
 		else {
-			Log.log(Log.DEBUG, this, "vsl.itemStateChanged, no project");
-			viewer.setCurrentProject(null);
+			Log.log(Log.DEBUG, this, "vsl.itemStateChanged, no project : "+evt.getItem().toString());
+			if(evt.getItem().toString().equals(ProjectViewer.CREATE_NEW_PROJECT)) {
+				this.createProject();
+			}
+			else {
+				viewer.setCurrentProject(null);
+			}
 		}
 	}
 
