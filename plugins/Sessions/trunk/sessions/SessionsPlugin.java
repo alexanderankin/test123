@@ -198,6 +198,7 @@ public class SessionsPlugin extends EBPlugin
 			String msg = jEdit.getProperty(key + ".message");
 			String msg2 = jEdit.getProperty("sessions.manager.info.dontShowAgain");
 			JCheckBox notAgain = new JCheckBox(msg2, false);
+                        GUIUtilities.hideSplashScreen();
 			JOptionPane.showMessageDialog(null, new Object[] { msg, notAgain },
 				title, JOptionPane.INFORMATION_MESSAGE);
 			jEdit.setBooleanProperty(key + ".notAgain", notAgain.isSelected());
