@@ -267,6 +267,12 @@ public class CatalogManager
 	//{{{ clearCache() method
 	public static void clearCache()
 	{
+		Iterator files = resourceCache.values().iterator();
+		while(files.hasNext())
+		{
+			String file = (String)files.next();
+			System.err.println(file);
+		}
 		resourceCache.clear();
 	} //}}}
 

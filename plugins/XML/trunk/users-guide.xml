@@ -566,6 +566,8 @@
    <keycap>Backspace</keycap> in the completion popup would delete two
    characters.
    </para></listitem>
+   <listitem><para>Fixed stack overflow with some XML schemas (like DocBook).
+   </para></listitem>
   </itemizedlist>
 
   </listitem>
