@@ -32,7 +32,6 @@ import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.util.Log;
-import org.apache.log4j.*;
 
 class SFtpConnection extends ConnectionManager.Connection
 {
@@ -173,9 +172,20 @@ class SFtpConnection extends ConnectionManager.Connection
 
 	OutputStream store(String path) throws IOException
 	{
-		System.err.println(path);
-		return new SftpFileOutputStream(sftp.openFile(path,
-			SftpSubsystemClient.OPEN_WRITE));
+		// ugh...
+		SftpFile file;
+		// try
+		// {
+			// file = sftp.openFile(path,SftpSubsystemClient.OPEN_WRITE);
+		// }
+		// catch(Exception e)
+		{
+			file = sftp.openFile(path,SftpSubsystemClient.OPEN_WRITE
+				| SftpSubsystemClient.OPEN_CREATE
+				| SftpSubsystemClient.OPEN_TRUNCATE);
+		}
+
+		return new SftpFileOutputStream(file);
 	}
 
 	void chmod(String path, int permissions) throws IOException
@@ -218,22 +228,5 @@ class SFtpConnection extends ConnectionManager.Connection
 			path,path,type,length,
 			name.startsWith("."),
 			permissions);
-	}
-
-	static
-	{
-		try
-		{
-			RollingFileAppender log = new RollingFileAppender(
-				new PatternLayout(),
-				"ssh.log",
-				true);
-			log.setMaxFileSize("100KB");
-			BasicConfigurator.configure(log);
-		}
-		catch(IOException io)
-		{
-			Log.log(Log.ERROR,SFtpConnection.class,io);
-		}
 	}
 }
