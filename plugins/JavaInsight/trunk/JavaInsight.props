@@ -9,10 +9,10 @@ plugin.javainsight.JavaInsightPlugin.depend.1=jedit 04.00.03.00
 plugin.javainsight.JavaInsightPlugin.jars=BCEL.jar jode.jar
 
 # Menu bar properties
-javainsight.toggle-dockable.label=Java Insight
+javainsight.dock.label=Java Insight
 
 # Dockable window title
-javainsight-dockable.title=Java Insight
+javainsight.dock.title=Java Insight
 
 # Classpath tree
 javainsight.tree.view=view-packages

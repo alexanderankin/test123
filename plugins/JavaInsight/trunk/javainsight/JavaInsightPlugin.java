@@ -30,11 +30,9 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.gui.DockableWindow;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.CreateDockableWindow;
 import org.gjt.sp.util.Log;
 import javainsight.buildtools.msg.DecompileClassMessage;
 
@@ -47,10 +45,11 @@ import javainsight.buildtools.msg.DecompileClassMessage;
  */
 public class JavaInsightPlugin extends EBPlugin {
 
+
     /**
      * The 'name' of the dockable window.
      */
-    public static final String DOCKABLE_NAME = "javainsight-dockable";
+    public static final String DOCKABLE_NAME = "javainsight.dock";
 
 
     /**
@@ -60,8 +59,6 @@ public class JavaInsightPlugin extends EBPlugin {
         VFSManager.registerVFS(ClassVFS.PROTOCOL,  new ClassVFS());
         VFSManager.registerVFS(JasminVFS.PROTOCOL, new JasminVFS());
         VFSManager.registerVFS(JodeVFS.PROTOCOL,   new JodeVFS());
-
-        EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, DOCKABLE_NAME);
 
         // parse out the resources as a thread so that when the plugin is
         // requested there is nothing to do.
@@ -73,7 +70,7 @@ public class JavaInsightPlugin extends EBPlugin {
      * Create the menus.
      */
     public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenuItem("javainsight.toggle-dockable"));
+        menuItems.addElement(GUIUtilities.loadMenuItem("javainsight.dock"));
     }
 
 
@@ -110,13 +107,6 @@ public class JavaInsightPlugin extends EBPlugin {
                     buffer.setMode(mode);
                 }
             }
-        } else if (message instanceof CreateDockableWindow) {
-            CreateDockableWindow cmsg = (CreateDockableWindow) message;
-            if (cmsg.getDockableWindowName().equals(DOCKABLE_NAME)) {
-                JavaInsightDockable jid = new JavaInsightDockable(cmsg.getView());
-                javaInsight = (JavaInsight) jid.getComponent();
-                cmsg.setDockableWindow(jid);
-            }
         } else if (message instanceof DecompileClassMessage) {
             DecompileClassMessage dmsg = (DecompileClassMessage) message;
             String classname = dmsg.getClassName();
@@ -137,8 +127,7 @@ public class JavaInsightPlugin extends EBPlugin {
             // create JavaInsight instance if it doesn't exist
             if (javaInsight == null) {
                 View view = jEdit.getFirstView();
-                JavaInsightDockable jid = new JavaInsightDockable(view);
-                javaInsight = (JavaInsight) jid.getComponent();
+                javaInsight = new JavaInsight(view);
             }
 
             try {
