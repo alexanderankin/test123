@@ -1,3 +1,5 @@
+- add Archive Project to package contents in jar/zip
+
 - use JEdits VFS code to allow projects on virtual file systems such as ftp
   see:  org.gjt.sp.jedit.io.VFS
   
@@ -17,9 +19,9 @@
   Preview in Browser/Viewer : 'Run.png' or an Eye or a Monitor
 
 - The file filter (on importing) should be obtained from jEdit
-
+(maybe not!!!! jedit might not be able to handle .gifs, but I still want them in my project 
 - RFE: provide an alternate icon when the the file you are editing is dirty
-  (contra : jEdit is not doing it in e.g. FileSystemBrowser)
+  (contra : jEdit is not doing it in e.g. FileSystemBrowser) -- done
 
 ---------------------------------------------------------------------------
 
@@ -38,31 +40,31 @@
 	"re-import files" (IE check for any new additions and re-add them)
   ** Dir
     remove all files from project
-    delete dir (and remove all subfiles from project)
-    rename dir
-    search in dir
-    hypersearch in dir
+    delete dir (and remove all subfiles from project)-- done
+    rename dir -- done
+    search in dir -- done
+    hypersearch in dir -- done
     search and replace (global search and replace for all files in a project)
  
  ** Files
-    remove from project
-    delete file (and remove from project)
-    rename file
-    Preview in Browser - (requires browser executable property(set for JEdit) and urlRoot property(set for the project) 
+    remove from project -- done
+    delete file (and remove from project) -- done
+    rename file -- done
+    Preview in Browser - (requires browser executable property(set for JEdit) and urlRoot property(set for the project) -- done
 
-  - Need to implement file/directory renaming
-  - Need to implement re-import files (refresh project?).
-  - Need to implement search/hypersearch in dir.
-    to get active buffer, use jEdit.getActiveView().getBuffer()
+  - Need to implement file/directory renaming -- done
+  - Need to implement re-import files (refresh project?) -- done.
+  - Need to implement search/hypersearch in dir. -- done
+    to get active buffer, use jEdit.getActiveView().getBuffer() -- done
     
 ---------------------------------------------------------------------------
 
 * Options
-  ** for Tabs Files/Working files
+  ** for Tabs Files/Working files -- done
     boolean : ignoreCase
 
 * Tooltips
-  ** when over a file
+  ** when over a file -- done
     display full path, size and attributes
   ** when over project 
     display full path and summary (number of files).
