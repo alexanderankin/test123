@@ -26,6 +26,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Properties;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.swing.Icon;
 
@@ -89,6 +91,16 @@ public class VPTProject extends VPTNode {
 		return (VPTFile) files.get(path);
 	} //}}}
 
+	//{{{ getFiles() method
+	/**
+	 *	Returns a read-only collection of the files contained in this
+	 *	project.
+	 */
+	public Collection getFiles() {
+		return Collections.unmodifiableCollection(files.values());
+	}
+	//}}}
+	
 	//{{{ getBuildFile() method
 	/** Returns the project's build file for Ant. */
 	public File getBuildFile() {
@@ -224,3 +236,4 @@ public class VPTProject extends VPTNode {
 	//}}}
 
 }
+
