@@ -191,8 +191,22 @@ public class DualDiffDialog extends JDialog {
             Buffer baseBuffer = jEdit.openFile(DualDiffDialog.this.view, basePath);
             Buffer newBuffer = jEdit.openFile(DualDiffDialog.this.view, newPath);
 
-            if (baseBuffer == null) { return; }
-            if (newBuffer == null) { return; }
+            if (baseBuffer == null) {
+                GUIUtilities.error(
+                    view,
+                    "jdiff.file-not-opened",
+                    new Object[] { new Integer(0) }
+                );
+                return;
+            }
+            if (newBuffer == null) {
+                GUIUtilities.error(
+                    view,
+                    "jdiff.file-not-opened",
+                    new Object[] { new Integer(1) }
+                );
+                return;
+            }
 
             EditPane[] editPanes = DualDiffDialog.this.view.getEditPanes();
             if (editPanes.length != 2) {
