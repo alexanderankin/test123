@@ -19,6 +19,7 @@
 VERSION 2.0.3
 	[marcelo vanzin]
 		Enhancements:
+		- added context menu action to open nodes with a specific encoding
 		- added jEdit action to launch current buffer in browser
 		- updated to used the jEdit 4.2 deferred plugin loading API
 		- use a jEdit 4.2-style API for PV plugins (option panes, listeners
@@ -61,6 +62,10 @@ VERSION 2.0.3
 		  methods have been deprecated in the process.
 		- hacked ActionSeparator a little more to deal with nodes that are not
 		  Root/Project/Directory/File.
+		- ProjectLoader uses its own thread instead of using a jEdit IO request.
+		  This was done to prevent IO requests that run in the AWT thread being
+		  locked by requests that don't care about AWT, since the current work
+		  thread pool does that.
 
 VERSION 2.0.2
 	[stefan kost]
