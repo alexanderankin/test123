@@ -42,7 +42,7 @@ public class XmlTree extends JPanel implements EBComponent
 		JToolBar buttonBox = new JToolBar();
 		buttonBox.setFloatable(false);
 
-		parseBtn = new JButton(GUIUtilities.loadIcon("Refresh24.gif"));
+		parseBtn = new RolloverButton(GUIUtilities.loadIcon("Parse.png"));
 		parseBtn.setToolTipText(jEdit.getProperty("xml-tree.parse"));
 		parseBtn.setMargin(new Insets(0,0,0,0));
 		parseBtn.setRequestFocusEnabled(false);
@@ -60,7 +60,7 @@ public class XmlTree extends JPanel implements EBComponent
 			tree.addMouseMotionListener(new MouseHandler());
 
 		// looks bad with the OS X L&F, apparently...
-		if(!OperatingSystem.isMacOS())
+		if(!OperatingSystem.isMacOSLF())
 			tree.putClientProperty("JTree.lineStyle", "Angled");
 
 		tree.setVisibleRowCount(10);
@@ -145,7 +145,7 @@ public class XmlTree extends JPanel implements EBComponent
 	//{{{ Private members
 
 	//{{{ Instance variables
-	private JButton parseBtn;
+	private RolloverButton parseBtn;
 	private JTree tree;
 
 	private int showAttributes;
@@ -376,9 +376,16 @@ public class XmlTree extends JPanel implements EBComponent
 					setText(tag.attributeString);
 					break;
 				}
+				setIcon(null);
 			}
-
-			setIcon(null);
+			// is root?
+			else if(node.getParent() == null)
+			{
+				setIcon(org.gjt.sp.jedit.browser.FileCellRenderer
+					.fileIcon);
+			}
+			else
+				setIcon(null);
 
 			return this;
 		}

@@ -121,6 +121,9 @@ public class CatalogManager
 	//{{{ save() method
 	public static void save()
 	{
+		if(!loaded)
+			return;
+
 		int systemCount = 0;
 		int publicCount = 0;
 
