@@ -5,9 +5,11 @@
 
 NAME       = "InfoViewer";
 
-javac      = "jikes" "+E";
+#javac      = "jikes" "+E";
+javac      = "javac";
 javaflags  = "-g" "-deprecation"
-             "-classpath" (cat (getprop "java.class.path") ";../EditBus.jar");
+             "-classpath" (cat (getprop "java.class.path") ";../EditBus.jar"
+                               ";../../jedit.jar;.");
 
 # directories to compile and include
 pkgs       = "." "infoviewer" "infoviewer/actions" "infoviewer/images"
@@ -34,10 +36,11 @@ srcs = (subst ".java", ".class", (glob (join pkgs, "/*.java")));
 jarfile: srcs;
 {
     exec cmd_jar "cfM0" @
-        (glob 
+        (glob
             (join pkgs, "/*.class")
             (join pkgs, "/*.gif")
             (join pkgs, "/*.html")
+            (join pkgs, "/*.xml")
             (join pkgs, "/*.props")
             (join pkgs, "/*.txt"));
 }
@@ -47,7 +50,7 @@ jarfile: srcs;
 "clean":;
 {
     -delete
-        (glob 
+        (glob
             (join pkgs, "/*.class")
             (join pkgs, "/*~")
             (join pkgs, "/*.bak"));

@@ -35,15 +35,15 @@ public class BookmarksDialog extends EnhancedDialog {
     private JTable table;
     private JButton bOk, bCancel, bAdd, bDelete, bMoveUp, bMoveDown;
     private Bookmarks model;
-    
+
     public BookmarksDialog(InfoViewer viewer) {
         super(viewer, jEdit.getProperty("infoviewer.bdialog.title"), true);
 
-        model = new Bookmarks();        
+        model = new Bookmarks();
         table = new JTable(model);
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         JScrollPane scroller = new JScrollPane(table);
-        
+
         bOk       = new JButton(jEdit.getProperty("infoviewer.bdialog.ok"));
         bCancel   = new JButton(jEdit.getProperty("infoviewer.bdialog.cancel"));
         bAdd      = new JButton(jEdit.getProperty("infoviewer.bdialog.add"));
@@ -58,53 +58,54 @@ public class BookmarksDialog extends EnhancedDialog {
         bDelete.addActionListener(ah);
         bMoveUp.addActionListener(ah);
         bMoveDown.addActionListener(ah);
-        
-        Box buttons1 = Box.createHorizontalBox();
-        buttons1.add(Box.createHorizontalGlue());
-        buttons1.add(bOk);
-        buttons1.add(Box.createRigidArea(new Dimension(20,20)));
-        buttons1.add(bCancel);
-        buttons1.add(Box.createHorizontalGlue());
-        
-        Box buttons2 = Box.createVerticalBox();
-        buttons2.add(bAdd);
-        buttons2.add(bDelete);        
-        buttons2.add(Box.createRigidArea(new Dimension(20,20)));
-        buttons2.add(bMoveUp);
-        buttons2.add(bMoveDown); 
-        buttons2.add(Box.createVerticalGlue());
 
-        getContentPane().setLayout(new BorderLayout(5,5));
+        Box south = Box.createHorizontalBox();
+        south.add(Box.createHorizontalGlue());
+        south.add(bOk);
+        south.add(Box.createHorizontalStrut(20));
+        south.add(bCancel);
+        south.add(Box.createHorizontalGlue());
+
+        JPanel buttons = new JPanel(new GridLayout(0,1,5,5));
+        buttons.add(bAdd);
+        buttons.add(bDelete);
+        buttons.add(Box.createVerticalStrut(10));
+        buttons.add(bMoveUp);
+        buttons.add(bMoveDown);
+
+        JPanel east = new JPanel();
+        east.add(buttons, BorderLayout.NORTH);
+        east.add(new JPanel(), BorderLayout.CENTER); // don't ask
+
+        getContentPane().setLayout(new BorderLayout(10,10));
         getContentPane().add(scroller, BorderLayout.CENTER);
-        getContentPane().add(buttons1, BorderLayout.SOUTH);
-        getContentPane().add(buttons2, BorderLayout.EAST);
+        getContentPane().add(south, BorderLayout.SOUTH);
+        getContentPane().add(east, BorderLayout.EAST);
+
         getRootPane().setDefaultButton(bOk);
-        getRootPane().setBorder(BorderFactory.createMatteBorder(
-            10,10,10,10,new Color(205,205,205)));
+        getRootPane().setBorder(BorderFactory.createMatteBorder(10,10,10,10, UIManager.getColor("Panel.background")));
+
         setSize(500,300);
         GUIUtilities.loadGeometry(this, "infoviewer.bdialog");
         setLocationRelativeTo(viewer);
         setVisible(true);
     }
-    
-    
+
+
     public void ok() {
         model.save();
         GUIUtilities.saveGeometry(this, "infoviewer.bdialog");
         EditBus.send(new PropertiesChanged(null));
         setVisible(false);
     }
-    
-    
-    public void cancel() { 
+
+
+    public void cancel() {
         GUIUtilities.saveGeometry(this, "infoviewer.bdialog");
         setVisible(false);
     }
 
-    
-    /************************************************************************/
-    
-    
+
     private class ActionHandler implements ActionListener {
         public void actionPerformed(ActionEvent evt) {
             JButton button = (JButton) evt.getSource();
@@ -114,8 +115,7 @@ public class BookmarksDialog extends EnhancedDialog {
             else if (button == bDelete) {
                 int rows[] = table.getSelectedRows();
                 if (rows.length == 0) {
-                    GUIUtilities.error(null, 
-                        "infoviewer.error.bdialog.noselection", null);
+                    GUIUtilities.error(null, "infoviewer.error.bdialog.noselection", null);
                 } else {
                     for (int i = rows.length - 1; i >= 0; i--) {
                         model.delete(rows[i]);
@@ -125,11 +125,9 @@ public class BookmarksDialog extends EnhancedDialog {
             else if (button == bMoveUp) {
                 int rows[] = table.getSelectedRows();
                 if (rows.length == 0) {
-                    GUIUtilities.error(null, 
-                        "infoviewer.error.bdialog.noselection", null);
+                    GUIUtilities.error(null, "infoviewer.error.bdialog.noselection", null);
                 } else if (rows.length > 1) {
-                    GUIUtilities.error(null, 
-                        "infoviewer.error.bdialog.selecttoomuch", null);
+                    GUIUtilities.error(null, "infoviewer.error.bdialog.selecttoomuch", null);
                 } else if (rows[0] > 0) {
                     model.moveup(rows[0]);
                     table.setRowSelectionInterval(rows[0]-1, rows[0]-1);
@@ -138,11 +136,9 @@ public class BookmarksDialog extends EnhancedDialog {
             else if (button == bMoveDown) {
                 int rows[] = table.getSelectedRows();
                 if (rows.length == 0) {
-                    GUIUtilities.error(null, 
-                        "infoviewer.error.bdialog.noselection", null);
+                    GUIUtilities.error(null, "infoviewer.error.bdialog.noselection", null);
                 } else if (rows.length > 1) {
-                    GUIUtilities.error(null, 
-                        "infoviewer.error.bdialog.selecttoomuch", null);
+                    GUIUtilities.error(null, "infoviewer.error.bdialog.selecttoomuch", null);
                 } else if (rows[0] < model.getRowCount()-1) {
                     model.movedown(rows[0]);
                     table.setRowSelectionInterval(rows[0]+1, rows[0]+1);
@@ -156,5 +152,6 @@ public class BookmarksDialog extends EnhancedDialog {
             }
         }
     } // inner class ActionHandler
+
 }
 

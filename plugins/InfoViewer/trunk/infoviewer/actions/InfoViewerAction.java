@@ -1,7 +1,7 @@
 /*
  * InfoViewerAction.java - jEdit action listener
  * Copyright (C) 2000 Dirk Moebius
- * Contains portions of EditAction.java Copyright (C) 1998, 1999 by 
+ * Contains portions of EditAction.java Copyright (C) 1998, 1999 by
  * Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@ import java.awt.event.*;
 import java.net.URL;
 import java.util.EventObject;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.gui.DefaultInputHandler;
 
@@ -37,20 +38,19 @@ import org.gjt.sp.jedit.gui.DefaultInputHandler;
  * the InfoViewer that invoked the action.<p>
  *
  * @author Dirk Moebius
- * @author Slava Pestov
  */
 public abstract class InfoViewerAction extends AbstractAction {
 
     public static final String MNEMONIC = "MenuMnemonic";
     public static final String ACCELERATOR = "MenuAccelerator";
 
-    
+
     /**
      * Creates a new <code>InfoViewerAction</code>. This constructor
      * should be used by InfoViewer's own actions only.
      *
      * @param name_key a jEdit property with the name for the action.
-     *                 Other resources are determined by looking up the 
+     *                 Other resources are determined by looking up the
      *                 following keys in the jEdit properties:
      *                 <ul>
      *                 <li><code>name.icon</code> the icon filename</li>
@@ -60,18 +60,18 @@ public abstract class InfoViewerAction extends AbstractAction {
      *                 </ul>
      * @see java.awt.KeyStroke#getKeyStroke
      */
-    public InfoViewerAction(String name_key) {         
+    public InfoViewerAction(String name_key) {
         super(jEdit.getProperty(name_key));
-        
+
         String icon = jEdit.getProperty(name_key + ".icon");
         String desc = jEdit.getProperty(name_key + ".description");
         String mnem = jEdit.getProperty(name_key + ".mnemonic");
         String shrt = jEdit.getProperty(name_key + ".shortcut");
 
         if (icon != null) {
-            URL u = getClass().getResource(icon);
-            if (u != null) {
-                putValue(SMALL_ICON, new ImageIcon(u));
+            Icon i = GUIUtilities.loadIcon(icon);
+            if (i != null) {
+                putValue(SMALL_ICON, i);
             }
         }
         if (desc != null) {
@@ -83,7 +83,7 @@ public abstract class InfoViewerAction extends AbstractAction {
         if (shrt != null)
             putValue(ACCELERATOR, DefaultInputHandler.parseKeyStroke(shrt));
     }
-    
+
 
     /**
      * Determines the InfoViewer to use for the action.
@@ -98,7 +98,7 @@ public abstract class InfoViewerAction extends AbstractAction {
         return null;
     }
 
-    
+
     /**
      * Finds the InfoViewer parent of the specified component.
      */

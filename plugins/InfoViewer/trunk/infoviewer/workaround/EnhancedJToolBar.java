@@ -19,8 +19,10 @@
 
 package infoviewer.workaround;
 
-import javax.swing.*;
-import javax.swing.event.*;
+import java.awt.Insets;
+import javax.swing.Action;
+import javax.swing.JButton;
+import javax.swing.JToolBar;
 
 
 /**
@@ -29,12 +31,26 @@ import javax.swing.event.*;
  * doesn't set the right properties.
  */
 public class EnhancedJToolBar extends JToolBar {
-    public EnhancedJToolBar() { super(); }
-    public EnhancedJToolBar(int orientation) { super(orientation); }
+
+    public EnhancedJToolBar() {
+        super();
+        putClientProperty("JToolBar.isRollover", Boolean.TRUE);
+    }
+
+
+    public EnhancedJToolBar(int orientation) {
+        super(orientation);
+        putClientProperty("JToolBar.isRollover", Boolean.TRUE);
+    }
+
+
     public JButton add(Action a) {
         JButton b = super.add(a);
         b.setText(null);
         b.setToolTipText(a.getValue(Action.SHORT_DESCRIPTION).toString());
+        b.setMargin(new Insets(0,0,0,0));
+        b.setRequestFocusEnabled(false);
         return b;
     }
+
 }

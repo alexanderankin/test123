@@ -27,24 +27,27 @@ import org.gjt.sp.jedit.GUIUtilities;
 
 
 public class open_file extends InfoViewerAction {
-    
+
     public open_file() {
         super("infoviewer.open_file");
     }
-    
+
     public void actionPerformed(ActionEvent evt) {
         if (lastfile == null) {
             lastfile = jEdit.getJEditHome();
         }
-        
-        String filename = GUIUtilities.showFileDialog(null, lastfile, 
-                                                  JFileChooser.OPEN_DIALOG);
-        
-        if (filename == null) return;
-        lastfile = filename;
-        getViewer(evt).gotoURL("file:" + filename);
+
+        String files[] = GUIUtilities.showVFSFileDialog(jEdit.getFirstView(),
+            lastfile, JFileChooser.OPEN_DIALOG, false);
+
+        if (files == null)
+            return;
+
+        lastfile = files[0];
+        getViewer(evt).toFront();
+        getViewer(evt).gotoURL("file:" + files[0]);
     }
-    
+
     private static String lastfile = null;
 }
 

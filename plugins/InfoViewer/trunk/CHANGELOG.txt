@@ -1,6 +1,20 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
+Version 0.5.4
+-------------
+* use jEdit icons
+* use new jEdit action API
+* use jEdit open file dialog
+* cleaned up option panes (only one pane again)
+* bugfix: pressing enter on "Go to:" field didn't work
+* bugfix: now can use quotes in external browser command, ie. you can enter:
+  "C:\Program Files\Internet Explorer\IEXPLORE.EXE"
+  instead of:
+  C:\\Program\ Files\\Internet\ Explorer\\IEXPLORE.EXE
+* Requires at least JDK 1.1, jEdit 3.0final, EditBus 0.9.4
+
+
 Version 0.5.3
 -------------
 * fixed compatibility with jEdit 2.5.1
@@ -53,10 +67,10 @@ Version 0.4.0
 * New option in Plugin Options: "Select browser: Class in classpath"
   You may enter any class name and a method name.
   The method must be static and accept either a String or an URL or null
-  parameters (in that order). You may omit the method, meaning that the 
+  parameters (in that order). You may omit the method, meaning that the
   constructor of the class is invoked, with either a String, an URL or null
   parameters (in that order).
-  So now you can invoke Java browsers in the same virtual machine, like 
+  So now you can invoke Java browsers in the same virtual machine, like
   ICEBrowser or Jazilla.
 * New option in Plugin Options: "Select browser: Netscape (with reuse, Unix only)"
   Uses Netscape with the raiseURL() option, and starts a new process, if
@@ -75,10 +89,10 @@ Version 0.4.0
 Version 0.3
 -----------
 * Has two new commands: "View current buffer in InfoViewer" and
-  "View selected URL in InfoViewer" (Copied from the HTML Plugin). 
+  "View selected URL in InfoViewer" (Copied from the HTML Plugin).
   Thus, InfoViewer has now a submenu on the plugins menu.
 * The Go to: field is now a history field.
-* Now listens to ViewURL messages (from the EditBus plugin) instead of 
+* Now listens to ViewURL messages (from the EditBus plugin) instead of
   ViewInfo messages. This means, that InfoViewer is dependant on the
   EditBus plugin, but other plugins can utilize the InfoViewer without
   knowing it at compile time. The ViewInfo message from version 0.2 is no
@@ -91,7 +105,7 @@ Version 0.2
 -----------
 
 * may now invoke an external browser like Netscape etc.
-* changed EditBus message name from "infoviewer.msg.Help" to 
+* changed EditBus message name from "infoviewer.msg.Help" to
   "org.gjt.sp.jedit.msg.ViewInfo" to prepare EditBus integration.
 
 
