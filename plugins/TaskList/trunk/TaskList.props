@@ -2,13 +2,13 @@
 # $Id$
 
 # Plugin properties
-plugin.TaskListPlugin.name=TaskList
-plugin.TaskListPlugin.author=Ollie Rutherfurd, John Gellene
-plugin.TaskListPlugin.version=0.4.2
-plugin.TaskListPlugin.docs=index.html
+plugin.tasklist.TaskListPlugin.name=TaskList
+plugin.tasklist.TaskListPlugin.author=Ollie Rutherfurd, John Gellene
+plugin.tasklist.TaskListPlugin.version=0.4.2
+plugin.tasklist.TaskListPlugin.docs=index.html
 
-plugin.TaskListPlugin.depend.0=jdk 1.3
-plugin.TaskListPlugin.depend.1=jedit 04.01.10.00
+plugin.tasklist.TaskListPlugin.depend.0=jdk 1.3
+plugin.tasklist.TaskListPlugin.depend.1=jedit 04.01.10.00
 
 # dockable window name
 tasklist.title=Task List
@@ -31,6 +31,10 @@ tasklist.popup.change-menu=Change task tag
 # error message string
 tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
 
+# message when a task text can't be removed or changed
+tasklist.buffer-changed.title=Buffer Changed
+tasklist.buffer-changed.message=Task text and buffer text do not match.  Reparse buffer and try again.
+
 # messages for dialogs concerning resetting of task patterns
 tasklist.reset-query.title=Reset default TaskList patterns
 tasklist.reset-query.message=Do you wish to reset the TaskList parsing patterns to the default settings?
@@ -45,6 +49,7 @@ options.tasklist.general.buffer.display=Buffer display format:
 options.tasklist.general.sort.choice=Sort tasks by:
 options.tasklist.general.sort.choice.0=Buffer line number
 options.tasklist.general.sort.choice.1=Task tag
+options.tasklist.general.sort.choice.2=Buffer name
 options.tasklist.general.sort.direction=Sort direction:
 options.tasklist.general.sort.direction.0=Ascending
 options.tasklist.general.sort.direction.1=Descending

@@ -19,10 +19,14 @@
  * $Id$
  */
 
+package tasklist;
+
 //{{{ imports
 import javax.swing.Icon;
-import javax.swing.text.*;
+import javax.swing.text.Position;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 //}}}
 
@@ -57,6 +61,69 @@ public class Task
 	public String getComment(){ return this.comment; }
 	public String getText(){ return this.text; }
 	public int getLineIndex(){ return this.lineIndex; }
+
+	//{{{ removeTask method
+	public void removeTask(View view)
+	{
+		if(buffer.isReadOnly())
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		// TODO: if whole comment is task, remove comment too
+		String text = buffer.getText(startPosition.getOffset(), getText().length());
+		if(!getText().equals(text))
+		{
+			GUIUtilities.error(view, "tasklist.buffer-changed", null);
+			return;
+		}
+		buffer.remove(startPosition.getOffset(), getText().length());
+		TaskListPlugin.parseBuffer(buffer);
+	}//}}}
+
+	//{{{ removeTaskTag method
+	public void removeTag(View view)
+	{
+		if(buffer.isReadOnly())
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		String text = buffer.getText(startPosition.getOffset(), 
+			getIdentifier().length());
+		if(!getIdentifier().equals(text))
+		{
+			GUIUtilities.error(view, "tasklist.buffer-changed", null);
+			return;
+		}
+		buffer.remove(startPosition.getOffset(), getIdentifier().length());
+		TaskListPlugin.parseBuffer(buffer);
+	}//}}}
+
+	//{{{ replaceTaskTag() method
+	public void replaceTag(View view, String newTag)
+	{
+		if(buffer.isReadOnly())
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		String text = buffer.getText(startPosition.getOffset(), 
+			getIdentifier().length());
+		if(!getIdentifier().equals(text))
+		{
+			GUIUtilities.error(view, "tasklist.buffer-changed", null);
+			return;
+		}
+		buffer.beginCompoundEdit();
+		buffer.remove(startPosition.getOffset(), getIdentifier().length());
+		buffer.insert(startPosition.getOffset(), newTag);
+		buffer.endCompoundEdit();
+		TaskListPlugin.parseBuffer(buffer);
+	}//}}}
 
 	//{{{ getStartOffset() method
 	public int getStartOffset()

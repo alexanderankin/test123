@@ -2,19 +2,10 @@
 TaskList Plugin Users' Guide
 ============================
 
-:Authors: Oliver Rutherfurd : oliver@jedit.org, 
-		  John Gellene : jgellene@nyc.rr.com
+:Authors: Ollie Rutherfurd,
+		  John Gellene
 :Version: 0.4.2
-:Legal Notice: Permission is granted to copy, distribute and/or modify 
-			   this document under the terms of the GNU Free 
-			   Documentation License, Version 1.1 or any later version 
-			   published by the Free Software Foundation; with no 
-			   "Invariant Sections", "Front-Cover Texts" or "Back-Cover 
-			   Texts", each as defined in the license. A copy of the 
-			   license is included in the file COPYING.DOC.txt included 
-			   with the jEdit distribution.
-
-Copyright © 2002 John Gellene
+:Copyright: Copyright © 2002 John Gellene, 2003 Ollie Rutherfurd
 
 Summary
 =======
@@ -29,27 +20,27 @@ highlighted as a user option.
 A number of default comment tags are supplied, each with a 
 distinctive icon:
 
-+------------+-----------------+
-| Name       | Icon            |
-+============+=================+
-| DEBUG      | |DEBUG_ICON|    |
-+------------+-----------------+
-| DONE       | |DONE_ICON|     |
-+------------+-----------------+
-| FIXME      | |FIXME_ICON|    |
-+------------+-----------------+
-| IDEA       | |IDEA_ICON|     |
-+------------+-----------------+
-| NOTE       | |NOTE_ICON|     |
-+------------+-----------------+
-| QUESTION   | |QUESTION_ICON| |
-+------------+-----------------+
-| TODO       | |TODO_ICON|     |
-+------------+-----------------+
-| XXX        | |XXX_ICON|      |
-+------------+-----------------+
-| \?\?\?     | |QQQ_ICON|      |
-+------------+-----------------+
+=========== ==================
+Name        Icon
+=========== ==================
+DEBUG       |DEBUG_ICON|
+----------- ------------------
+DONE        |DONE_ICON|
+----------- ------------------
+FIXME       |FIXME_ICON|
+----------- ------------------
+IDEA        |IDEA_ICON|
+----------- ------------------
+NOTE        |NOTE_ICON|
+----------- ------------------
+QUESTION    |QUESTION_ICON|
+----------- ------------------
+TODO        |TODO_ICON|
+----------- ------------------
+XXX         |XXX_ICON|
+----------- ------------------
+\?\?\?      |QQQ_ICON|
+=========== ==================
 
 .. |DEBUG_ICON|     image:: icons/stock_preferences-16.png
 .. |DONE_ICON|      image:: icons/stock_spellcheck-16.png
@@ -89,8 +80,8 @@ sorting arrangement changed in this fashion will persist as long as the
 TaskList plugin is active.
 
 You can change or delete a comment by right-clicking on a row containing
-a comment. A popup menu will appear with two selections, `Change task
-tag` and `Delete task`.
+a comment. A popup menu will appear with three selections, `Change task
+tag`, `Delete task`, and `Parse buffer`.
 
 You can change the type of comment (for example, from ``IDEA`` to
 ``TODO``, or from ``TODO`` to ``DONE``, by selecting the `Change task
@@ -121,17 +112,21 @@ the header row of the TaskList table.
 Settings and Options
 ====================
 
-There are two option pane windows available for user settings from the
-`Utilities` -> `Global Options` dialog. The `General` options pane
-allows you to change the appearance of the TaskList table display,
-including the default sorting criteria, and to select highlighting of
-commented buffer text. The `Task Types` options pane allows you to add,
-delete or edit comment tags corresponding to task types. The `Modes`
-option pane allow you to specify which modes TaskList should extract
-tasks from comments.
+There are three option pane windows available for user settings from the
+`Utilities` -> `Global Options` dialog.
 
-.. Note:: As ``text`` and ``hex`` don't have comments, these two are not
-		  enabled by default.
+General
+-------
+
+The `General` options pane allows you to change the appearance of the
+TaskList table display, including default sorting criteria, and
+highlighting of commented buffer text.
+
+Task Types
+----------
+
+The `Task Types` options pane allows you to add, delete, or edit comment
+tags corresponding to task types.
 
 The tags for default task types, and any types you may add, are
 represented by regular expressions for which the TaskList plugin
@@ -157,6 +152,17 @@ the tag name used in regular expression.
 You can reset the task patterns to those installed with the plugin by
 using the `Task List` -> `Reset task patterns` command.
 
+
+Modes
+-----
+
+The `Modes` option pane allow you to specify which modes TaskList should
+extract tasks from comments.
+
+As ``text`` and ``hex`` don't have comments, they are not enabled by
+default.
+
+
 Known bugs and limitations
 ==========================
 
@@ -169,12 +175,14 @@ one line of buffer text. There is also no facility for serializing the
 contents of the TaskList display. These features may be added in a
 future version.
 
+
 Legal notices
 =============
 
-The TaskList plugin is released under the GNU General Public License
-(either version 2 or any later version, at the user's option). A copy of
-the GPL is available in the COPYING.txt file in the jEdit distribution.
+The TaskList plugin and it's documentation are released under the GNU
+General Public License (either version 2 or any later version, at the
+user's option). A copy of the GPL is available in the COPYING.txt file
+in the jEdit distribution.
 
 The TaskList plugin comes with ABSOLUTELY NO WARRANTY OF ANY KIND; see
 section 11 and 12 of the GPL for details.
@@ -186,20 +194,28 @@ any later version published by the Free Software Foundation; with no
 defined in the license. A copy of the license is included in the file
 COPYING.DOC.txt included with the jEdit distribution.
 
+
 Feedback
 ========
 
 Bug reports, comments and suggestions regarding TaskList may be sent to
-either of the authors or posted on the jedit-users mailing list (for
-which membership is required).
+Ollie Rutherfurd at oliver@rutherfurd.net or posted on the jedit-users
+mailing list (for which membership is required).
+
 
 Revision History
 ================
 
-* Revision 0.4.2, ??? ??, ????
+* Revision 0.4.2, March ??, 2003
 
   - Fixed sf bug 535882, "TaskList, removing and jumping"
   - Fixed a sorting bug (NPE if no ":" in Task.text)
+  - Fixed "Reset task patterns"
+  - Added "Parse Buffer" to TaskList Popup menu
+  - Fixed sf bug 699048, "Unable to delete tasks"
+  - Code re-organization
+  - Added option to sort tasks by buffer name
+  - Fixed bug removing task patterns
 
 * Revision 0.4.1, February 18, 2003
 

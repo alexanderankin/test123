@@ -19,6 +19,8 @@
  * $Id$
  */
 
+package tasklist;
+
 //{{{ imports
 import javax.swing.*;
 import javax.swing.table.*;
@@ -98,7 +100,9 @@ public class TaskListModel extends AbstractTableModel
 			EditPane[] editPanes = view.getEditPanes();
 			for(int i = 0; i < editPanes.length; i++)
 			{
-				_addBuffer(editPanes[i].getBuffer());
+				Buffer buffer = editPanes[i].getBuffer();
+				if(buffers.indexOf(buffer) == -1)
+					_addBuffer(buffer);
 			}
 
 			if(editPanes.length > 1)
@@ -109,9 +113,6 @@ public class TaskListModel extends AbstractTableModel
 		{
 			e.printStackTrace();
 		}
-
-		// TODO: need to display task for currect set of edit 
-		// panes when first created
 
 	}//}}}
 
@@ -135,45 +136,16 @@ public class TaskListModel extends AbstractTableModel
 	*/
 	private void _addBuffer(Buffer buffer)
 	{
-		//Log.log(Log.DEBUG, TaskListModel.class,
-		//	"TaskListModel.addBuffer(" + buffer.getPath() + ")"); //##
-
 		// add the buffer to the buffers vector
 		if(buffers.indexOf(buffer) == -1)
 		{
-			//Log.log(Log.DEBUG, TaskListModel.class,
-			//	"buffer not in buffers, adding...");//##
-
 			buffers.addElement(buffer);
+			// requests an asynchronous parsing of tasks
+			TaskListPlugin.extractTasks(buffer);
 		}
 		else
-		{
-			Log.log(Log.ERROR, TaskListModel.class,
-				"buffer already in buffers");//##
-		}
-
-		// ask for tasks - if they have not been parsed,
-		// they will be asynchronously parsed - otherwise
-		// they will be returned
-		Hashtable taskMap = TaskListPlugin.requestTasksForBuffer(buffer);
-
-		//Log.log(Log.DEBUG, TaskListModel.class,
-		//		"fetching tasks for buffer...");//##
-
-		if(taskMap != null)
-		{
-			//Log.log(Log.DEBUG, TaskListModel.class,
-			//	"...taskMap not null, adding " +
-			//	taskMap.size() + " tasks");//##
-
-			Enumeration _keys = taskMap.keys();
-			while(_keys.hasMoreElements())
-			{
-				Object key = _keys.nextElement();
-				Task task = (Task)taskMap.get(key);
-				addTask(task);
-			}
-		}
+			Log.log(Log.ERROR, TaskListModel.class, "_addBuffer(" 
+				+ buffer.getPath() + "), buffer already in collection.");
 	}//}}}
 
 	//{{{ addTask(Task task) method
@@ -289,64 +261,61 @@ public class TaskListModel extends AbstractTableModel
 		{
 			EditPaneUpdate epu = (EditPaneUpdate)message;
 			View view = epu.getEditPane().getView();
-			if(view == this.view)
+			if(view != this.view)
+				return;
+
+			// used to determine whether to fireTableStructureChanged
+			int prevBuffCount = buffers.size();
+
+			if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 			{
-				// used to determine whether to fireTableStructureChanged
-				int prevBuffCount = buffers.size();
+				Buffer buffer = epu.getEditPane().getBuffer();
 
-				if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+				for(int i = 0; i < buffers.size(); i++)
 				{
-					Buffer buffer = epu.getEditPane().getBuffer();
-
-					for(int i = 0; i < buffers.size(); i++)
-					{
-						if(((Buffer)buffers.elementAt(i)) != buffer)
-							_removeBuffer(buffer);
-					}
+					if(((Buffer)buffers.elementAt(i)) != buffer)
+						_removeBuffer(buffer);
 				}
-				else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+			}
+			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+			{
+				EditPane[] editPanes = view.getEditPanes();
+
+				// if the buffer is alreay in the current set,
+				// no need to add it, just remove the one no longer
+				// displayed
+				Buffer buffer = epu.getEditPane().getBuffer();
+				if(buffers.indexOf(buffer) == -1)
+					_addBuffer(buffer);
+
+				// if there is a buffer displayed which is no longer
+				// in one of the currect set of EditPanes, remove it
+				for(int i = 0; i < buffers.size(); i++)
 				{
-					EditPane[] editPanes = view.getEditPanes();
+					buffer = (Buffer)buffers.elementAt(i);
+					boolean foundBuffer = false;
 
-					// if the buffer is alreay in the current set,
-					// no need to add it, just remove the one no longer
-					// displayed
-					Buffer buffer = epu.getEditPane().getBuffer();
-					if(buffers.indexOf(buffer) == -1)
-						_addBuffer(buffer);
-
-					// if there is a buffer displayed which is no longer
-					// in one of the currect set of EditPanes, remove it
-					for(int i = 0; i < buffers.size(); i++)
+					// look through the current set of editPanes for
+					// the current buffer
+					for(int j = 0; j < editPanes.length && foundBuffer == false; j++)
 					{
-						buffer = (Buffer)buffers.elementAt(i);
-						boolean foundBuffer = false;
-
-						// look through the current set of editPanes for
-						// the current buffer
-						for(int j = 0; j < editPanes.length && foundBuffer == false; j++)
-						{
-							if(buffer == editPanes[j].getBuffer())
-							{
-								foundBuffer = true;
-							}
-						}
-
-						if(foundBuffer == false)
-							_removeBuffer(buffer);
+						if(buffer == editPanes[j].getBuffer())
+							foundBuffer = true;
 					}
-				}// end if what == BUFFER_CHANGED
 
-				// if going from multiple buffers to one buffer, don't
-				// display the buffer path
-				if((prevBuffCount != 0 && buffers.size() != 0) &&
-					(prevBuffCount == 1 || buffers.size() == 1) &&
-					(prevBuffCount != buffers.size()))
-				{
-					fireTableStructureChanged();
+					if(foundBuffer == false)
+						_removeBuffer(buffer);
 				}
+			}// end if what == BUFFER_CHANGED
 
-			}// end if view == this.view
+			// if going from one buffer to multiple buffers
+			// or vice-versa, display the buffer path
+			if((prevBuffCount <= 1 && buffers.size() > 1) ||
+				prevBuffCount > 1 && buffers.size() <= 1)
+			{
+				fireTableStructureChanged();
+			}
+
 		}
 		else if(message instanceof BufferUpdate)
 		{
@@ -507,6 +476,7 @@ public class TaskListModel extends AbstractTableModel
 	{
 		private final int LINENUMBER = 0;
 		private final int TASKTAG = 1;
+		private final int BUFFER = 2;
 
 		private int sortType;
 		private boolean ascending;
@@ -514,7 +484,12 @@ public class TaskListModel extends AbstractTableModel
 		//{{{ constructor
 		public ColumnSorter(int col, boolean ascending)
 		{
-			this.sortType = (col == 1) ? LINENUMBER : TASKTAG;
+			if(col == 1)
+				this.sortType = LINENUMBER;
+			else if(col == 0 || col == 2)
+				this.sortType = TASKTAG;
+			else
+				this.sortType = BUFFER;
 			this.ascending = ascending;
 		}//}}}
 
@@ -531,6 +506,12 @@ public class TaskListModel extends AbstractTableModel
 				String id1 = task1.getIdentifier();
 				String id2 = task2.getIdentifier();
 				result = id1.compareTo(id2);
+			}
+			else if(sortType == BUFFER)
+			{
+				String b1 = task1.getBuffer().toString();
+				String b2 = task2.getBuffer().toString();
+				result = b1.compareTo(b2);
 			}
 
 			if(result == 0)

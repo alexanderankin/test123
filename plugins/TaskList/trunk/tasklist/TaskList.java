@@ -15,7 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
+
+package tasklist;
 
 //{{{ imports
 import java.awt.*;
@@ -214,24 +218,13 @@ public class TaskList extends JPanel implements EBComponent
 				{
 					TaskListModel model = table.getTaskListModel();
 					int sortCol = table.columnAtPoint(p);
-					switch(sortCol)
-					{
-						case 0:
-							sortCol = 2;
-						case 1:
-						case 2:
-						{
-							if(model.getSortCol() == sortCol)
-								model.setSortAscending(!model.getSortAscending());
-							else
-								model.setSortCol(sortCol);
-							break;
-						}
-						default:
-						{
-							return;
-						}
-					}
+					// if icon clicked, sort by task type & description
+					if(sortCol == 0)
+						sortCol = 2;
+					if(model.getSortCol() == sortCol)
+						model.setSortAscending(!model.getSortAscending());
+					else
+						model.setSortCol(sortCol);
 					model.sort();
 				}
 				else if(rowNum > -1)

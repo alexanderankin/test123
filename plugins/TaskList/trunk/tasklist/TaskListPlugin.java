@@ -19,6 +19,8 @@
  * $Id$
  */
 
+package tasklist;
+
 /*{{{ TODOS...
 	TODO: need a text area change listener for re-parsing
 	TODO: ensure task highlights are repainted when buffer reloaded, etc...
@@ -56,6 +58,10 @@ import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
+
+import tasklist.options.TaskListGeneralOptionPane;
+import tasklist.options.TaskListModesOptionPane;
+import tasklist.options.TaskListTaskTypesOptionPane;
 //}}}
 
 /**
@@ -190,15 +196,14 @@ public class TaskListPlugin extends EBPlugin
 		else if(message instanceof PropertiesChanged)
 		{
 
+			propertiesChanged();
+
 			Buffer[] buffers = jEdit.getBuffers();
 			for(int i = 0; i < buffers.length; i++)
 			{
 				if(bufferMap.get(buffers[i]) != null)
 					extractTasks(buffers[i]);
 			}
-
-			// TODO: reparse all buffers
-			propertiesChanged();
 		}
 	}//}}}
 
@@ -222,7 +227,7 @@ public class TaskListPlugin extends EBPlugin
 		int i = 0;
 		String pattern;
 		while((pattern = jEdit.getProperty("tasklist.tasktype." +
-			i + ".pattern")) != null)
+			i + ".pattern")) != null && !pattern.equals(""))
 		{
 			String name = jEdit.getProperty(
 				"tasklist.tasktype." + i + ".name");
@@ -327,7 +332,7 @@ public class TaskListPlugin extends EBPlugin
 	* @param start the first task pattern to remove, all after will
 	* also be removed.
 	*/
-	static void pruneTaskListProperties(int start)
+	public static void pruneTaskListProperties(int start)
 	{
 		for(int i = start;
 			jEdit.getProperty("tasklist.tasktype." + i + ".pattern") != null;

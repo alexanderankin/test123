@@ -19,6 +19,8 @@
  * $Id$
  */
 
+package tasklist.options;
+
 //{{{ imports
 import java.awt.event.*;
 import java.util.Vector;
@@ -26,6 +28,7 @@ import java.awt.Color;
 import javax.swing.event.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
+import tasklist.*;
 //}}}
 
 public class TaskListGeneralOptionPane extends AbstractOptionPane
@@ -54,7 +57,8 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 			new String[]
 			{
 				jEdit.getProperty("options.tasklist.general.sort.choice.0"),
-				jEdit.getProperty("options.tasklist.general.sort.choice.1")
+				jEdit.getProperty("options.tasklist.general.sort.choice.1"),
+				jEdit.getProperty("options.tasklist.general.sort.choice.2"),
 			}));
 
 		addComponent(Box.createVerticalStrut(3));
@@ -64,7 +68,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 			new String[]
 			{
 				jEdit.getProperty("options.tasklist.general.sort.direction.0"),
-				jEdit.getProperty("options.tasklist.general.sort.direction.1")
+				jEdit.getProperty("options.tasklist.general.sort.direction.1"),
 			}));
 
 		addComponent(Box.createVerticalStrut(3));

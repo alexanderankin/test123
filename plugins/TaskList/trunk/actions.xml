@@ -15,14 +15,13 @@ $Id$
 
 	<ACTION NAME="tasklist.parse-buffer">
 		<CODE>
-			TaskListPlugin.parseBuffer(buffer);
+			tasklist.TaskListPlugin.parseBuffer(buffer);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="tasklist.reset-patterns">
 		<CODE>
-			TaskListPlugin.resetPatterns(view);
+			tasklist.TaskListPlugin.resetPatterns(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>
-
 

@@ -19,6 +19,8 @@
  * $Id$
  */
 
+package tasklist.options;
+
 //{{{ imports
 import javax.swing.border.*;
 import javax.swing.event.*;
@@ -33,6 +35,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 import gnu.regexp.*;
 import org.gjt.sp.util.Log;
+import tasklist.*;
 //}}}
 
 public class TaskListTaskTypesOptionPane extends AbstractOptionPane

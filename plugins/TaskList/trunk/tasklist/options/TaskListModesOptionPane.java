@@ -19,11 +19,14 @@
  * $Id$
  */
 
+package tasklist.options;
+
 //{{{ imports
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.JCheckBoxList;
 import org.gjt.sp.util.Log;
+import tasklist.*;
 //}}}
 
 public class TaskListModesOptionPane extends AbstractOptionPane
