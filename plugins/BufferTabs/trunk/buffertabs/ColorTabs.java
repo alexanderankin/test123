@@ -54,8 +54,8 @@ public class ColorTabs
    private static final float DARKEN_RATIO = ((float) DARKEN_RANGE / 254);
 
    private static final int MUTE_LOWEST_COLOR = 150;
-   private static final int highestColor = 230;
-   private static final int muteRange = highestColor - MUTE_LOWEST_COLOR;
+   private static final int MUTE_HIGHEST_COLOR = 230;
+   private static final int muteRange = MUTE_HIGHEST_COLOR - MUTE_LOWEST_COLOR;
    private static final float muteRatio = ((float) muteRange / 254);
 
    private static ColorTabs colorTabs = null;
@@ -184,9 +184,9 @@ public class ColorTabs
 
       }
 
-      r = Math.max(MUTE_LOWEST_COLOR, Math.min(r, highestColor));
-      g = Math.max(MUTE_LOWEST_COLOR, Math.min(g, highestColor));
-      b = Math.max(MUTE_LOWEST_COLOR, Math.min(b, highestColor));
+      r = Math.max(MUTE_LOWEST_COLOR, Math.min(r, MUTE_HIGHEST_COLOR));
+      g = Math.max(MUTE_LOWEST_COLOR, Math.min(g, MUTE_HIGHEST_COLOR));
+      b = Math.max(MUTE_LOWEST_COLOR, Math.min(b, MUTE_HIGHEST_COLOR));
 
       return new Color(r, g, b);
    }
