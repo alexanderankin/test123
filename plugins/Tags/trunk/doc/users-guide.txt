@@ -4,7 +4,7 @@ Tags Plugin
 
 :Authors: Kenrick Drew,
 			Ollie Rutherfurd
-:Version: 1.1.2
+:Version: 2.0.1
 
 .. $Id$
 
@@ -270,6 +270,10 @@ Credits
 Changelog
 =========
 
+* Version 2.0.1 (Mar 2005)
+
+  - Fixed recursive directory search on local FS.
+
 * Version 2.0 (Nov 2004)
 
   - Tags plugin now uses jEdit's Virtual File Systems 
@@ -419,7 +423,7 @@ Changelog
 
 * Version 0.7 (Oct 2001)
 
-  - HTML Documentaiton
+  - HTML Documentation
   - Use AbstractOptionPane for Global Options dialog
 
 * Version 0.5 (Oct 2001)

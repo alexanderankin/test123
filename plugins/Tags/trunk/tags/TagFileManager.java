@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -93,6 +94,67 @@ public class TagFileManager
 		return findTagIndexFiles(view,path,-1);
 	} //}}}
 
+	//{{{ findLocalTagIndexFiles() method
+	private Vector findLocalTagIndexFiles(View view, String path, int max)
+		throws java.io.IOException
+	{
+		Log.log(Log.DEBUG, this, "searching local FS for tag file");
+		String tagFilename = TagsPlugin.getCurrentBufferTagFilename();
+		Vector tagFiles = new Vector();
+		File pathFile = new File(path);
+		String directory = null;
+
+		if(pathFile.isDirectory())
+			directory = pathFile.getPath();
+		else
+			directory = pathFile.getParent();
+
+		while(directory != null)
+		{
+			String tagFile = MiscUtilities.constructPath(directory,tagFilename);
+			File f = new File(tagFile);
+
+			if(!f.exists())
+				Log.log(Log.DEBUG, this, "'" + tagFile + "' doesn't exist.");
+			else
+			{
+				// If we've found a file, add it.
+				// If we've hit the limit of files to find, stop.
+				if(f.isFile())
+				{
+					if(max <= 0 || tagFiles.size() < max)
+					{
+						tagFiles.addElement(tagFile);
+						Log.log(Log.DEBUG, this, "added tag file '" + tagFile + "'");
+					}
+	
+					if((max > 0) && (tagFiles.size() >= max))
+					{
+						Log.log(Log.DEBUG, this, "reached max of " + max);
+						break;
+					}
+				}
+				else
+					Log.log(Log.DEBUG,this,"'" + tagFile + "' is a directory");
+			}
+
+			// see if we can go up a level
+			File p = (new File(directory)).getParentFile();
+			if(p != null)
+			{
+				directory = p.getPath();
+			}
+			else
+			{
+				Log.log(Log.DEBUG,this,"'" + tagFile + "' has no parent");
+				break;
+			}
+		}
+
+		return tagFiles;
+
+	} //}}}
+
 	//{{{ findTagIndexFiles() method
 	/**
 	 * Finds tag index files for a given given filename or directory.
@@ -117,8 +179,14 @@ public class TagFileManager
 		String directory = null;
 		Object session = null;
 		VFS vfs = VFSManager.getVFSForPath(path);
+
+		// HACK: FileVFS doesn't support _getDirectoryEntry()
+		if("file".equals(vfs.getName()))
+			return findLocalTagIndexFiles(view,path,max);
+
 		try
 		{
+			Log.log(Log.DEBUG, this, "using VFS: " + vfs.getName());  // ##
 			session = vfs.createVFSSession(path, view);
 			boolean stop = false;
 	
@@ -132,7 +200,11 @@ public class TagFileManager
 			{
 				String tagFilePath = MiscUtilities.constructPath(directory,tagFilename);
 				entry = vfs._getDirectoryEntry(session, tagFilePath, view);
-				if(entry != null && entry.type == VFS.DirectoryEntry.FILE)
+				Log.log(Log.DEBUG, this, "entry for ("+tagFilePath+"): " + entry);	// ##
+
+				if(entry == null)
+					Log.log(Log.DEBUG, this, "'" + tagFilePath + "' doesn't exist.");
+				else if(entry.type == VFS.DirectoryEntry.FILE)
 				{
 					if(max <= 0 || tagFiles.size() < max)
 					{
@@ -149,27 +221,24 @@ public class TagFileManager
 				}
 				else
 					Log.log(Log.DEBUG, this, "'" + tagFilePath 
-								+ "' doesn't exist or isn't a file");
+								+ "' isn't a file");
 	
-				if(!stop)
+				// go to the parent directory
+				String parent = vfs.getParentOfPath(directory);
+				// make sure we are able to go up a level
+				if(parent.equals(directory))
 				{
-					// go to the parent directory
-					String parent = vfs.getParentOfPath(directory);
-					// make sure we were able to go up a level
-					if(parent.equals(directory))
-					{
-						break;
-					}
-					// make sure we're not at the FS root
-					entry = vfs._getDirectoryEntry(session, parent, view);
-					if(entry == null || entry.type == VFS.DirectoryEntry.FILESYSTEM)
-					{
-						Log.log(Log.DEBUG, this, "stopping recurse at: " + parent);
-						stop = true;
-						break;
-					}
-					directory = parent;
+					break;
 				}
+				// make sure we're not at the FS root
+				entry = vfs._getDirectoryEntry(session, parent, view);
+				if(entry == null || entry.type == VFS.DirectoryEntry.FILESYSTEM)
+				{
+					Log.log(Log.DEBUG, this, "stopping recurse at: " + parent);
+					stop = true;
+					break;
+				}
+				directory = parent;
 			}
 		}
 		finally
