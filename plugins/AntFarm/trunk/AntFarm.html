@@ -18,7 +18,7 @@
   <td><big><big>AntFarm Plugin</big></big></td>
   <td align="right"><B>Version 0.3</B><BR>
   <small>By Chris Scott and Rick Gibbs<BR>
-         Contributions by Todd Papaioannou, Richard F. Wan and Christoph 	 Steinbeck</SMALL></TD>
+         Contributions by Todd Papaioannou, Richard F. Wan and Christoph Steinbeck</SMALL></TD>
 </tr>
 </table>
 
@@ -36,11 +36,11 @@
 
 <p>AntFarm allows you to execute builds using Apache's Ant utility from within
 jEdit. Currently, AntFarm supports compilation with javac and jikes, and will
-parse the output of both, displaying any errors in ErrorList.</P>
+parse the output of both, displaying any errors in ErrorList.</p>
 
-<P>Keep in mind this is an early release and will probably have bugs in it.
-Also, it is *not* multi threaded and thus blocks jEdit until the build it is
-complete.</P>
+<p>Keep in mind this is an early release and will probably have bugs in it.
+Also, it is <b>not</b> multi threaded and thus blocks jEdit until the build it is
+complete.</p>
 
 <p>AntFarm requires:</p>
 
@@ -52,12 +52,13 @@ complete.</P>
 <h2><a name="usage">Usage</a></h2>
 
 <p>Launch AntFarm using the Plugins menu item. Once open, you can specify your
-build.xml file by clicking on the browse button. Alternatively, you can 
+build.xml file by clicking on the browse button. Alternatively, you can
 type in the path directly. The string representation specifying the path will
 be colored red as long as your typing does not point to a valid file.
 After you have specified a valid build file, this file will be automatically parsed and
-the target combo box on the right side of the AntFarm pluging will be filled with the existing targets. In order to initiate a build, choose a target
-from the list and click the build button.</P>
+the target combo box on the right side of the AntFarm pluging will be filled with the
+existing targets. In order to initiate a build, choose a target
+from the list and click the build button.</p>
 
 <p><em>Notes</em>:</p>
 
@@ -66,43 +67,51 @@ from the list and click the build button.</P>
     all the build files that you type in will be remembered across editing sessions.</li>
     <li>It is possible that AntFarm will fail to parse some messages from javac
     and jikes. If this is the case, please submit the string in a bug report so
-    that AntFarm can be extended to sucessfully parse it.</LI>
+    that AntFarm can be extended to sucessfully parse it.</li>
 </ol>
 
 <p><em>Agenda</em>:</p>
 
 <ol>
-    <li>A link to the Project Viewer plugin would be nice, which allows for     automatically selecting a build.xml from the currently selected project directory</li>
+    <li>A link to the Project Viewer plugin would be nice, which allows for
+     automatically selecting a build.xml from the currently selected project directory.</li>
 </ol>
 
 
 <h2><a name="credits">Credits</a></h2>
 
-<P>AntFarm was orginally created by</P>
-  <UL>
-    <LI>Chris Scott</LI>
-    <LI>Rick Gibbs</LI>
-  </UL>
+<p>AntFarm was orginally created by:</p>
+
+<UL>
+  <LI>Chris Scott</LI>
+  <LI>Rick Gibbs</LI>
+</UL>
 
 <p>AntFarm uses the following libraries:</p>
 
-<DT><B>Ant</B></DT>
-<DD>A utility created by the Apache Software Foundation. It's home page
-can be found at <a href="http://jakarta.apache.org/ant/index.html">
-http://jakarta.apache.org/ant/index.html</A></DD>
+<ul>
+  <li><b>Ant</b><br>
+    A utility created by the Apache Software Foundation.
+    It's home page can be found at
+    <a href="http://jakarta.apache.org/ant/index.html">http://jakarta.apache.org/ant/index.html</a>.
+  </li>
 
-<!-- <DT><b>JAXP</B></DT>
-<DD>An XML parsing library made available by sun Microsysytems. The full package
-can be download at <a href="http://java.sun.com/xml/xml_jaxp.html">
-http://java.sun.com/xml/xml_jaxp.html</A></DD> -->
+  <!--
+  <li><b>JAXP</b><br>
+    An XML parsing library made available by sun Microsysytems. The full package
+    can be download at <a href="http://java.sun.com/xml/xml_jaxp.html">
+    http://java.sun.com/xml/xml_jaxp.html</a>
+  </li>
+  -->
 
-<DT><b>Xerces</b></DT>
-<DD>An XML parsing library made available by
-<a href="http://xml.apache.org">xml.apache.org</a>. This library is
-included with the XML plugin version 0.3 and later, which must be
-installed in order for AntFarm to function.</DD>
-
+  <li><b>Xerces</b><br>
+    An XML parsing library made available by
+    <a href="http://xml.apache.org">xml.apache.org</a>. This library is
+    included with the XML plugin version 0.3 and later, which must be
+    installed in order for AntFarm to function.
+  </li>
 </ul>
+
 
 <h2><a name="feedback">Feedback</a></h2>
 
@@ -118,9 +127,20 @@ The preferred way to send bug reports is to use the Bug Tracker at
     <li>or Todd Papaioannou <em>&lt;toddp@jedit.org&gt;</em>.</li>
 </ul>
 
-<h2><a name="history">History</A></h2>
 
-<P>Version 0.4.1</P>
+<h2><a name="history">History</a></h2>
+
+<p>Version 0.4.2</p>
+
+  <ul>
+    <li>This is a minor bug fix release put together by Dirk Moebius
+    <li>Now auto-detects and loads <code>tools.jar</code> if started on JDK 1.2.
+       No need to put <code>tools.jar</code> in the CLASSPATH any longer
+       before jEdit is started. This should fix problems using the "classic"
+       or "modern" compiler.
+  </ul>
+
+<p>Version 0.4.1</p>
 
   <ul>
     <li>This is a minor bug fix release put together by Slava Pestov
@@ -128,34 +148,34 @@ The preferred way to send bug reports is to use the Bug Tracker at
     <li>AntFarm will now work if multiple views are open
   </ul>
 
-<P>Version 0.4 </P>
+<p>Version 0.4 </p>
   <ul>
-    <li>Added automatic parsing of targets from currently selected build file into a 
+    <li>Added automatic parsing of targets from currently selected build file into a
         combo box. (Christoph Steinbeck)</li>
-    <li>During typing text in HistoryTextfield "Build File" is colored "red" when not 
+    <li>During typing text in HistoryTextfield "Build File" is colored "red" when not
         pointing to a valid file (Christoph Steinbeck)</li>
-    <li>A bug preventing compilation when no "compiler" property was defined 
-	was fixed. (Christoph Steinbeck)</li>
+    <li>A bug preventing compilation when no "compiler" property was defined
+        was fixed. (Christoph Steinbeck)</li>
   </ul>
 
-<P>Version 0.3 </P>
+<p>Version 0.3 </p>
   <ul>
-    <li>Added support for Jikes error parsing (Todd Papaioannou)</LI>
-    <li>Readied for appearance on Plugin Central (Todd Papaioannou)</LI>
- </UL>
+    <li>Added support for Jikes error parsing (Todd Papaioannou)</li>
+    <li>Readied for appearance on Plugin Central (Todd Papaioannou)</li>
+ </ul>
 
 <p>Version 0.2 (working development version)</p>
+  <ul>
+    <li>Added build times (Richard F. Wan)</li>
+    <li>Added default target support (Richard F. Wan)</li>
+    <li>Added public void setBuildFile(String path) (Richard F. Wan)</li>
+  </ul>
 
-      <ul>
-        <li>Added build times (Richard F. Wan)</li>
-        <li>Added default target support (Richard F. Wan)</li>
-        <li>Added public void setBuildFile(String path) (Richard F. Wan)</li>
-      </ul>
+<p>Version 0.1</p>
+  <ul>
+    <li>Initial Release</li>
+  </ul>
 
-      <p>Version 0.1</p>
-      <ul>
-        <li>Initial Release</li>
-      </ul>
 
 </body>
 </html>
