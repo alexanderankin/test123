@@ -31,6 +31,8 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.*;
 
+import errorlist.*;
+
 import SqlPlugin;
 
 /**
@@ -162,8 +164,7 @@ public class SqlUtils
     if ( errorSource == null )
     {
       errorSource = new DefaultErrorSource( SqlPlugin.NAME );
-      EditBus.addToNamedList( ErrorSource.ERROR_SOURCES_LIST, errorSource );
-      EditBus.addToBus( errorSource );
+      ErrorSource.registerErrorSource( errorSource );
     }
 
     sqlThreadGroup = new SqlThreadGroup( "SQL Queries" );
@@ -381,9 +382,6 @@ public class SqlUtils
     } catch ( SQLException ex )
     {
       processSqlException( view, ex, sqlText, rec );
-    } catch ( javax.swing.text.BadLocationException ex )
-    {
-      System.err.println( ex );
     } finally
     {
       rec.releaseConnection( conn );
@@ -572,8 +570,7 @@ public class SqlUtils
               System.err.println( ex );
             }
 
-            final javax.swing.text.Element rootDocEl = buffer.getDefaultRootElement();
-            final int firstCodeLineNo = rootDocEl.getElementIndex( firstCodeCharOfs + startPos );
+            final int firstCodeLineNo = buffer.getLineOfOffset( firstCodeCharOfs + startPos );
 
             PreparedStatement dstmt = null;
             int cnt = 0;
@@ -595,7 +592,7 @@ public class SqlUtils
 
                 if ( errLine == 1 )
                 {
-                  final int firstCodeLineDocOfs = rootDocEl.getElement( firstCodeLineNo ).getStartOffset();
+                  final int firstCodeLineDocOfs = buffer.getLineStartOffset( firstCodeLineNo );
                   errPosition += firstCodeCharOfs + startPos - firstCodeLineDocOfs;
                 }
                 errLine += firstCodeLineNo;

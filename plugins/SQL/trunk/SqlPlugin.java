@@ -94,8 +94,6 @@ public class SqlPlugin extends EBPlugin
 
     registerJdbcClassPath();
 
-    EditBus.addToNamedList( DockableWindow.DOCKABLE_WINDOW_LIST, resultSetWinName );
-
     SqlUtils.init();
   }
 
@@ -132,9 +130,7 @@ public class SqlPlugin extends EBPlugin
    */
   public void handleMessage( EBMessage message )
   {
-    if ( message instanceof CreateDockableWindow )
-      handleCreateDockableMessage( (CreateDockableWindow) message );
-    else if ( message instanceof SessionChanging )
+    if ( message instanceof SessionChanging )
       handleSessionChange( (SessionChanging) message );
   }
 
@@ -356,7 +352,7 @@ public class SqlPlugin extends EBPlugin
 
     dockableWindowManager.showDockableWindow( resultSetWinName );
 
-    return (ResultSetWindow) dockableWindowManager.getDockableWindow( resultSetWinName );
+    return (ResultSetWindow) dockableWindowManager.getDockable( resultSetWinName );
   }
 
 
@@ -407,14 +403,7 @@ public class SqlPlugin extends EBPlugin
                 public void run()
                 {
                   final Buffer buf = jEdit.newFile( view );
-
-                  try
-                  {
-                    buf.insertString( 0, text, null );
-                  } catch ( javax.swing.text.BadLocationException ex )
-                  {
-                    System.err.println( ex );
-                  }
+                  buf.insert( 0, text );
                   setBufferMode( buf, rec.getServerType().getEditModeName() );
                 }
               } );
@@ -625,19 +614,6 @@ public class SqlPlugin extends EBPlugin
     currentSession = message.getNewSession();
 
     registerJdbcClassPath();
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  wnd  Description of Parameter
-   * @since
-   */
-  protected static void handleCreateDockableMessage( CreateDockableWindow wnd )
-  {
-    if ( wnd.getDockableWindowName().equals( resultSetWinName ) )
-      wnd.setDockableWindow( new ResultSetWindow( wnd.getView() ) );
   }
 
 
