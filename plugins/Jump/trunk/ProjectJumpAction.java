@@ -59,6 +59,7 @@ public class ProjectJumpAction
     {
         listener.ctags_buff.removeFile(f);
     }
+    
 //}}}
 
 //{{{ void addFile
@@ -67,8 +68,10 @@ public class ProjectJumpAction
 */ 
     public void addFile(String f)
     {
-        try
+        try 
         {
+            Log.log(Log.DEBUG,this,"addFile: - "+f); 
+            if (f==null) return;
             CTAGS_Buffer new_buff = listener.ctags_bg.getParser().parse(f);
             if (new_buff == null)
             {
