@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.InfoViewerPlugin.name=InfoViewer
 plugin.InfoViewerPlugin.author=Dirk Moebius
-plugin.InfoViewerPlugin.version=0.5.0
+plugin.InfoViewerPlugin.version=0.5.1
 plugin.InfoViewerPlugin.docs=index.html
 
 plugin.InfoViewerPlugin.depend.0=jdk 1.1
@@ -42,55 +42,55 @@ infoviewer.status.error=Error.
 
 # Actions
 infoviewer.open_file=Open File...
-infoviewer.open_file.icon=../images/Open.gif
+infoviewer.open_file.icon=/infoviewer/images/Open.gif
 infoviewer.open_file.mnemonic=O
 infoviewer.open_file.description=Open a file...
 infoviewer.open_file.shortcut=C+o
 
 infoviewer.edit_url=Edit current URL
-infoviewer.edit_url.icon=../images/Edit.gif
+infoviewer.edit_url.icon=/infoviewer/images/Edit.gif
 infoviewer.edit_url.mnemonic=O
 infoviewer.edit_url.description=Edit the current document with jEdit
 infoviewer.edit_url.shortcut=C+e
 
 infoviewer.reload=Reload
-infoviewer.reload.icon=../images/Reload.gif
+infoviewer.reload.icon=/infoviewer/images/Reload.gif
 infoviewer.reload.mnemonic=R
 infoviewer.reload.description=Reload the current page
 infoviewer.reload.shortcut=C+r
 
 infoviewer.close=Close
-infoviewer.close.icon=../images/Blank.gif
+infoviewer.close.icon=/infoviewer/images/Blank.gif
 infoviewer.close.mnemonic=C
 infoviewer.close.description=Close InfoViewer
 infoviewer.close.shortcut=C+q
 
 infoviewer.copy=Copy
-infoviewer.copy.icon=../images/Copy.gif
+infoviewer.copy.icon=/infoviewer/images/Copy.gif
 infoviewer.copy.mnemonic=C
 infoviewer.copy.description=Copy selected text to clipboard
 infoviewer.copy.shortcut=C+c
 
 infoviewer.select_all=Select All
-infoviewer.select_all.icon=../images/Blank.gif
+infoviewer.select_all.icon=/infoviewer/images/Blank.gif
 infoviewer.select_all.mnemonic=S
 infoviewer.select_all.description=Select all
 infoviewer.select_all.shortcut=C+a
 
 infoviewer.back=Back
-infoviewer.back.icon=../images/Left.gif
+infoviewer.back.icon=/infoviewer/images/Left.gif
 infoviewer.back.mnemonic=B
 infoviewer.back.description=Back in history
 infoviewer.back.shortcut=A+LEFT
 
 infoviewer.forward=Forward
-infoviewer.forward.icon=../images/Right.gif
+infoviewer.forward.icon=/infoviewer/images/Right.gif
 infoviewer.forward.mnemonic=F
 infoviewer.forward.description=Forward in history
 infoviewer.forward.shortcut=A+RIGHT
 
 infoviewer.home=Home
-infoviewer.home.icon=../images/Home.gif
+infoviewer.home.icon=/infoviewer/images/Home.gif
 infoviewer.home.mnemonic=H
 infoviewer.home.description=Go to Homepage
 
@@ -108,7 +108,7 @@ infoviewer.about.mnemonic=A
 infoviewer.about.shortcut=F1
 
 infoviewer.follow_link=Follow Link
-infoviewer.follow_link.icon=../images/Blank.gif
+infoviewer.follow_link.icon=/infoviewer/images/Blank.gif
 infoviewer.back.mnemonic=F
 infoviewer.back.description=Follow the link under the pointer
 

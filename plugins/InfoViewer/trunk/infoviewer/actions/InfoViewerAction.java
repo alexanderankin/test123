@@ -25,6 +25,7 @@ import infoviewer.InfoViewer;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.net.URL;
 import java.util.EventObject;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
@@ -43,9 +44,9 @@ public abstract class InfoViewerAction extends AbstractAction {
     public static final String ACCELERATOR = "MenuAccelerator";
 
     
-	/**
-	 * Creates a new <code>InfoViewerAction</code>. This constructor
-	 * should be used by InfoViewer's own actions only.
+    /**
+     * Creates a new <code>InfoViewerAction</code>. This constructor
+     * should be used by InfoViewer's own actions only.
      *
      * @param name_key a jEdit property with the name for the action.
      *                 Other resources are determined by looking up the 
@@ -57,17 +58,21 @@ public abstract class InfoViewerAction extends AbstractAction {
      *                 <li><code>name.shortcut</code> an keybord shortcut</li>
      *                 </ul>
      * @see java.awt.KeyStroke#getKeyStroke
-	 */
-	public InfoViewerAction(String name_key) {         
+     */
+    public InfoViewerAction(String name_key) {         
         super(jEdit.getProperty(name_key));
         
         String icon = jEdit.getProperty(name_key + ".icon");
         String desc = jEdit.getProperty(name_key + ".description");
         String mnem = jEdit.getProperty(name_key + ".mnemonic");
         String shrt = jEdit.getProperty(name_key + ".shortcut");
-        
-        if (icon != null)
-            putValue(SMALL_ICON, new ImageIcon(getClass().getResource(icon)));
+
+        if (icon != null) {
+            URL u = getClass().getResource(icon);
+            if (u != null) {
+                putValue(SMALL_ICON, new ImageIcon(u));
+            }
+        }
         if (desc != null) {
             putValue(SHORT_DESCRIPTION, desc);
             putValue(LONG_DESCRIPTION, desc);
@@ -81,36 +86,36 @@ public abstract class InfoViewerAction extends AbstractAction {
     }
     
 
-	/**
-	 * Determines the InfoViewer to use for the action.
-	 */
-	public static InfoViewer getViewer(EventObject evt) {
-		if (evt != null) {
-			Object o = evt.getSource();
-			if (o instanceof Component)
-				return getViewer((Component)o);
-		}
-		// this shouldn't happen
-		return null;
-	}
+    /**
+     * Determines the InfoViewer to use for the action.
+     */
+    public static InfoViewer getViewer(EventObject evt) {
+        if (evt != null) {
+            Object o = evt.getSource();
+            if (o instanceof Component)
+                return getViewer((Component)o);
+        }
+        // this shouldn't happen
+        return null;
+    }
 
     
-	/**
-	 * Finds the InfoViewer parent of the specified component.
-	 */
-	public static InfoViewer getViewer(Component comp) {
-		for (;;) {
-			if (comp instanceof InfoViewer)
-				return (InfoViewer)comp;
-			else if (comp instanceof JPopupMenu)
-				comp = ((JPopupMenu)comp).getInvoker();
-			else if (comp != null)
-				comp = comp.getParent();
-			else
-				break;
-		}
-		return null;
-	}
+    /**
+     * Finds the InfoViewer parent of the specified component.
+     */
+    public static InfoViewer getViewer(Component comp) {
+        for (;;) {
+            if (comp instanceof InfoViewer)
+                return (InfoViewer)comp;
+            else if (comp instanceof JPopupMenu)
+                comp = ((JPopupMenu)comp).getInvoker();
+            else if (comp != null)
+                comp = comp.getParent();
+            else
+                break;
+        }
+        return null;
+    }
 
 }
 
