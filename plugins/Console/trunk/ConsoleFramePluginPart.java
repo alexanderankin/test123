@@ -52,7 +52,7 @@ public class ConsoleFramePluginPart extends EBPlugin
 			View view = vmsg.getView();
 			if(vmsg.getWhat() == ViewUpdate.CREATED)
 			{
-				if("on".equals(jEdit.getProperty("console.toolbar.enabled")))
+				if(jEdit.getBooleanProperty("console.toolbar.enabled"))
 				{
 					view.addToolBar(new ConsoleToolBar(view));
 				}

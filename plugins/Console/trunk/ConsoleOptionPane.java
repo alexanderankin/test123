@@ -1,6 +1,6 @@
 /*
  * ConsoleOptionPane.java - Console options panel
- * Copyright (C) 1999 Slava Pestov
+ * Copyright (C) 1999, 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -29,11 +29,16 @@ public class ConsoleOptionPane extends AbstractOptionPane
 	public ConsoleOptionPane()
 	{
 		super("console");
+	}
 
+	// protected members
+
+	protected void _init()
+	{
 		addComponent(toolBarEnabled = new JCheckBox(jEdit.getProperty(
 			"options.console.toolbar")));
-		toolBarEnabled.getModel().setSelected("on".equals(jEdit.getProperty(
-			"console.toolbar.enabled")));
+		toolBarEnabled.getModel().setSelected(jEdit.getBooleanProperty(
+			"console.toolbar.enabled"));
 
 		add(shells = new JComboBox(EditBus.getNamedList(
 			Shell.SHELLS_LIST)));
@@ -119,10 +124,10 @@ public class ConsoleOptionPane extends AbstractOptionPane
 		add(errors);
 	}
 
-	public void save()
+	protected void _save()
 	{
-		jEdit.setProperty("console.toolbar.enabled",toolBarEnabled
-			.getModel().isSelected() ? "on" : "off");
+		jEdit.setBooleanProperty("console.toolbar.enabled",toolBarEnabled
+			.getModel().isSelected());
 		jEdit.setProperty("console.shell",(String)shells.getSelectedItem());
 		jEdit.setProperty("console.font",(String)font.getSelectedItem());
 		jEdit.setProperty("console.fontsize",(String)size.getSelectedItem());

@@ -52,9 +52,9 @@ public class ErrorMatcher
 			{
 				Log.log(Log.ERROR,this,"Invalid regexp: " + match);
 				Log.log(Log.ERROR,this,re);
-			}
 
-			return -1;
+				return -1;
+			}
 		}
 
 		if(regexp.isMatch(text))
