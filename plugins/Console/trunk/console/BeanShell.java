@@ -45,10 +45,6 @@ class BeanShell extends Shell
 			console.printPlain(retVal.toString());
 	}
 
-	public void stop()
-	{
-	}
-
 	public boolean waitFor()
 	{
 		return true;

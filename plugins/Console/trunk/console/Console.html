@@ -136,6 +136,10 @@ shell should provide its own means of clearing the output area. The default
 shell has a 'clear' command that worked as before.
 <li>Cleaned up DefaultShell class, moved portions to DefaultShellBuiltIns,
 ProcessManager and ConsoleProcess classes
+<li>The current directory is now set on a per-view, rather than global, basis
+<li>Multiple processes can be run from one console, and starting a new
+process does not automatically kill the currently running one. Use the %bg, %fg,
+%kill and %ps commands to deal with multiple processes
 </ul>
 
 </body>
