@@ -129,7 +129,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     if (message instanceof PHPProjectChangedMessage) {
       final PHPProjectChangedMessage projectChangedMessage = (PHPProjectChangedMessage) message;
       final Project selectedProject = projectChangedMessage.getSelectedProject();
-      if (projectChangedMessage.getWhat() == PHPProjectChangedMessage.SELECTED) {
+      if (projectChangedMessage.getWhat() == PHPProjectChangedMessage.SELECTED || projectChangedMessage.getWhat() == PHPProjectChangedMessage.UPDATED) {
         setProject(selectedProject);
       } else if (projectChangedMessage.getWhat() == PHPProjectChangedMessage.DELETED) {
         setProject(null);
@@ -208,7 +208,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
      *
      * @param items an array of Object objects
      */
-    MyComboBoxModel(Object items[]) {
+    MyComboBoxModel(Object[] items) {
       objects = new Vector();
       objects.ensureCapacity(items.length);
 
