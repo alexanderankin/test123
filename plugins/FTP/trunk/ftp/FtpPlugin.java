@@ -29,6 +29,9 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
+// SSHTools uses log4j
+import org.apache.log4j.*;
+
 public class FtpPlugin extends EditPlugin
 {
 	public void start()
@@ -130,6 +133,13 @@ public class FtpPlugin extends EditPlugin
 						file));
 				}
 			}
+
+			RollingFileAppender log = new RollingFileAppender(
+				new PatternLayout(),
+				MiscUtilities.constructPath(path,"ssh.log"),
+				true);
+			log.setMaxFileSize("100KB");
+			BasicConfigurator.configure(log);
 		}
 		catch(IOException io)
 		{
