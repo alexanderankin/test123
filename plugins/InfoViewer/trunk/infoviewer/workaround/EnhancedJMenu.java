@@ -37,9 +37,15 @@ public class EnhancedJMenu extends JMenu
 
 	public JMenuItem add(Action a) {
 		JMenuItem mi = super.add(a);
-		Object obj = a.getValue(AbstractAction.ACCELERATOR_KEY);
-		if(obj instanceof KeyStroke)
+
+		Object obj = a.getValue(InfoViewerAction.ACCELERATOR_KEY);
+		if(obj != null && obj instanceof KeyStroke)
 			mi.setAccelerator((KeyStroke)obj);
+
+		obj = a.getValue(InfoViewerAction.MNEMONIC_KEY);
+		if(obj != null && obj.toString().length() > 0)
+			mi.setMnemonic(obj.toString().charAt(0));
+
 		return mi;
 	}
 
