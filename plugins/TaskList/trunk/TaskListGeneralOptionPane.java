@@ -68,10 +68,31 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 			{
 				jEdit.getProperty("options.tasklist.general.buffer.display.fullpath"),
 				jEdit.getProperty("options.tasklist.general.buffer.display.namedir"),
-				jEdit.getProperty("options.tasklist.general.buffer.display.nameonly"),
+				jEdit.getProperty("options.tasklist.general.buffer.display.nameonly")
 			}));
 
 		addComponent(Box.createVerticalStrut(3));
+
+		addComponent(jEdit.getProperty("options.tasklist.general.sort.choice"),
+			sortCriteria = new JComboBox(
+			new String[]
+			{
+				jEdit.getProperty("options.tasklist.general.sort.choice.0"),
+				jEdit.getProperty("options.tasklist.general.sort.choice.1")
+			}));
+
+		addComponent(Box.createVerticalStrut(3));
+
+		addComponent(jEdit.getProperty("options.tasklist.general.sort.direction"),
+			sortDirection = new JComboBox(
+			new String[]
+			{
+				jEdit.getProperty("options.tasklist.general.sort.direction.0"),
+				jEdit.getProperty("options.tasklist.general.sort.direction.1")
+			}));
+
+		addComponent(Box.createVerticalStrut(3));
+
 
 		addComponent(bHorizontalLines = new JCheckBox(
 			jEdit.getProperty("options.tasklist.general.table.horizontal-lines"),
@@ -121,7 +142,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 	public void _save()
 	{
-		// NOTE: parsedelay property not used in this version
+		// NOTE: tasklist.parsedelay property not used in this version
 		/*
 		jEdit.setProperty("tasklist.parsedelay", parseDelay.getText());
 		*/
@@ -140,6 +161,12 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 
 		jEdit.setBooleanProperty("tasklist.highlight.tasks",
 			highlightTasks.isSelected());
+
+		jEdit.setProperty("tasklist.table.sort-column",
+			String.valueOf(sortCriteria.getSelectedIndex() + 1));
+
+		jEdit.setBooleanProperty("tasklist.table.sort-ascending",
+			(sortDirection.getSelectedIndex() == 0));
 
 
 	}
@@ -187,6 +214,8 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 	// NOTE: parseDelay component not used in this version
 	// private JTextField parseDelay;
 	private JComboBox bufferDisplay;
+	private JComboBox sortCriteria;
+	private JComboBox sortDirection;
 	//private JComboBox viewBuffers;
 	private JCheckBox bVerticalLines;
 	private JCheckBox bHorizontalLines;
