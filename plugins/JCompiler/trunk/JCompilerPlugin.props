@@ -2,7 +2,7 @@
 
 plugin.JCompilerPlugin.name=Java Compiler
 plugin.JCompilerPlugin.author=Kevin A. Burton, Aziz Sharif, Dominic Stolerman and Dirk Moebius
-plugin.JCompilerPlugin.version=1.0
+plugin.JCompilerPlugin.version=1.1
 plugin.JCompilerPlugin.docs=index.html
 
 plugin.JCompilerPlugin.depend.0=jdk 1.1
@@ -13,11 +13,12 @@ plugin.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 2.3
 
 # Menu options
 
-jcompiler-menu=jcompiler-compile jcompiler-compilepkg jcompiler-rebuildpkg
+jcompiler-menu=jcompiler-compile jcompiler-compilepkg jcompiler-rebuildpkg - jcompiler-options
 jcompiler-menu.label=Java Compiler
 jcompiler-compile.label=Compile File
 jcompiler-compilepkg.label=Build Package(s)
 jcompiler-rebuildpkg.label=Rebuild Package(s)
+jcompiler-options.label=Options...
 
 
 # Default user properties
@@ -67,18 +68,20 @@ options.jcompiler.regexp.filename=Filename at:
 options.jcompiler.regexp.lineno=Line number at:
 options.jcompiler.regexp.message=Message at:
 options.jcompiler.regexp.warning=Regexp for warnings:
-options.jcompiler.parseaccentchar=Parse errors for '^' column indicator
+options.jcompiler.parseaccentchar=Parse errors for ^ column indicator
 
 options.jcompiler.gendebug=Generate debug info (-g)
 options.jcompiler.genoptimized=Generate optimized code (-O)
 options.jcompiler.showdeprecated=Warn about use of deprecated API (-deprecation)
-options.jcompiler.specifyoutputdirectory=Use different output directory (-d)
 options.jcompiler.pickDirectory=Choose
-options.jcompiler.outputDirectory=Output directory:
+options.jcompiler.basepath=$basepath:
+options.jcompiler.basepath.description=You may use the $basepath variable in the following paths:
+options.jcompiler.sourcepath=Source Path:
+options.jcompiler.libpath=Required Library Path:
+options.jcompiler.classpath=Class path:
 options.jcompiler.addpkg2cp=Add package of current sourcefile to CLASSPATH
-options.jcompiler.usejavacp=Use CLASSPATH defined when running jEdit
-options.jcompiler.usejavacp.true=Java System CLASSPATH:
-options.jcompiler.usejavacp.false=User defined CLASSPATH:
+options.jcompiler.specifyoutputdirectory=Use different output directory (-d)
+options.jcompiler.outputDirectory=Output directory:
 options.jcompiler.otheroptions=Other options:
 
 
@@ -109,9 +112,9 @@ jcompiler.msg.nocompilermethod2=\
 
 jcompiler.msg.errorOutputDir=Error resolving output directory {0}: {1}\n
 jcompiler.msg.noOutputDir=Error: Output directory {0} is not a directory.\n
-jcompiler.msg.nofiles=No files to compile in directory {0}.\n
+jcompiler.msg.nofiles=No new or outdated files to compile in directory {0}.\n
 jcompiler.msg.compilefile=Compiling file {0}{1,choice,0#|1# to directory {2}}...\n
-jcompiler.msg.compilefiles=Compiling {0,choice,0#one file|0<{0} files} from directory {1}{2,choice,0#|1# to directory {3}}...\n
+jcompiler.msg.compilefiles=Compiling {0,choice,1#one file|1<{0} files} from directory {1}{2,choice,0#|1# to directory {3}}...\n
 jcompiler.msg.showcommandline=Invoking {0}.{1}{2}\n
 jcompiler.msg.done=Java Compiler done.\n
 

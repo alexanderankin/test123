@@ -32,7 +32,7 @@ package jcompiler;
  * VM exists, but allows everything else.
  */
 class NoExitSecurityManager2 extends NoExitSecurityManager {
-    public void checkPermission(java.security.Permission p) { }
-    public void checkPermission(java.security.Permission p, Object o) { }
+	public void checkPermission(java.security.Permission p) { }
+	public void checkPermission(java.security.Permission p, Object o) { }
 }
 

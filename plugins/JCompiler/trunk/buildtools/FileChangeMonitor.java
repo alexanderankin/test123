@@ -22,7 +22,6 @@ package buildtools;
 
 import java.util.*;
 import java.io.File;
-import org.gjt.sp.util.Log;
 
 
 /**
@@ -35,88 +34,85 @@ import org.gjt.sp.util.Log;
 public class FileChangeMonitor
 {
 
-    private String sourcedir = null;
-    private String sourceext = null;
-    private String destdir = null;
-    private String destext = null;
+	private String sourcedir = null;
+	private String sourceext = null;
+	private String destdir = null;
+	private String destext = null;
 
 
-    /**
-     * Looks at the given source directory and checks all files
-     * with a certain extension to be newer than files with the
-     * same name (but different extension) in the given destination
-     * directory.
-     *
-     * @param  sourcedir  the source directory
-     * @param  sourceext  the extension for files to be checked in the
-     *            source directory
-     * @param  destdir  the destination directory. If destdir is null,
-     *            then destdir = sourcedir.
-     * @param  destext  the extension for files to be checked in the
-     *            destination directory
-     */
-    public FileChangeMonitor(String sourcedir, String sourceext, String destdir, String destext) {
-        if (sourcedir == null) {
-            throw new IllegalArgumentException("sourcedir may not be null");
-        } else {
-            this.sourcedir = sourcedir;
-        }
-        if (sourceext == null) {
-            throw new IllegalArgumentException("sourceext may not be null");
-        } else {
-            this.sourceext = sourceext;
-        }
-        if (destdir == null) {
-            this.destdir = sourcedir;
-        } else {
-            this.destdir = destdir;
-        }
-        if (destext == null) {
-            throw new IllegalArgumentException("destext may not be null");
-        } else {
-            this.destext = destext;
-        }
-    }
+	/**
+	 * Looks at the given source directory and checks all files
+	 * with a certain extension to be newer than files with the
+	 * same name (but different extension) in the given destination
+	 * directory.
+	 *
+	 * @param  sourcedir  the source directory
+	 * @param  sourceext  the extension for files to be checked in the
+	 *			source directory
+	 * @param  destdir  the destination directory. If destdir is null,
+	 *			then destdir = sourcedir.
+	 * @param  destext  the extension for files to be checked in the
+	 *			destination directory
+	 */
+	public FileChangeMonitor(String sourcedir, String sourceext, String destdir, String destext) {
+		if (sourcedir == null) {
+			throw new IllegalArgumentException("sourcedir may not be null");
+		} else {
+			this.sourcedir = sourcedir;
+		}
+		if (sourceext == null) {
+			throw new IllegalArgumentException("sourceext may not be null");
+		} else {
+			this.sourceext = sourceext;
+		}
+		if (destdir == null) {
+			this.destdir = sourcedir;
+		} else {
+			this.destdir = destdir;
+		}
+		if (destext == null) {
+			throw new IllegalArgumentException("destext may not be null");
+		} else {
+			this.destext = destext;
+		}
+	}
 
 
-    /**
-     * Returns the files that have been changed for this monitor.
-     */
-    public String[] getChangedFiles() {
-        String[] files = FileUtils.getFilesFromExtension(this.sourcedir, new String[] { this.sourceext });
-        Vector v = new Vector();
+	/**
+	 * Returns the files that have been changed for this monitor.
+	 */
+	public String[] getChangedFiles() {
+		String[] files = FileUtils.getFilesFromExtension(this.sourcedir, new String[] { this.sourceext });
+		Vector v = new Vector();
 
-        for (int i = 0; i < files.length; ++i) {
-            String sourcefilename = files[i];
-            String basefilename = sourcefilename.substring(
-                this.sourcedir.length(),
-                sourcefilename.length() - this.sourceext.length());
-            String destfilename = this.destdir + basefilename + this.destext;
+		for (int i = 0; i < files.length; ++i) {
+			String sourcefilename = files[i];
+			String basefilename = sourcefilename.substring(
+				this.sourcedir.length(),
+				sourcefilename.length() - this.sourceext.length());
+			String destfilename = this.destdir + basefilename + this.destext;
 
-            Log.log(Log.DEBUG, this, "source=" + sourcefilename + " dest=" + destfilename);
+			File sourcefile = new File(sourcefilename);
+			File destfile = new File(destfilename);
 
-            File sourcefile = new File(sourcefilename);
-            File destfile = new File(destfilename);
+			if (!destfile.exists() || sourcefile.lastModified() > destfile.lastModified()) {
+				v.addElement(sourcefilename);
+			}
+		}
 
-            if (!destfile.exists() || sourcefile.lastModified() > destfile.lastModified()) {
-                v.addElement(sourcefilename);
-                Log.log(Log.DEBUG, this, "is newer");
-            }
-        }
-
-        String[] changed = new String[v.size()];
-        v.copyInto(changed);
-        return changed;
-    }
+		String[] changed = new String[v.size()];
+		v.copyInto(changed);
+		return changed;
+	}
 
 
-    /**
-     * Returns all files that are being monitored in the source directory
-     * (with the given source extension).
-     */
-    public String[] getAllFiles() {
-        return FileUtils.getFilesFromExtension(this.sourcedir, new String[] { this.sourceext });
-    }
+	/**
+	 * Returns all files that are being monitored in the source directory
+	 * (with the given source extension).
+	 */
+	public String[] getAllFiles() {
+		return FileUtils.getFilesFromExtension(this.sourcedir, new String[] { this.sourceext });
+	}
 
 }
 

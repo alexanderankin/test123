@@ -12,8 +12,11 @@
 
 NAME = "JCompiler";
 
+JEDIT_BASE = "../..";
+JEDIT_JARS = "..";
+
 javac = "javac";
-javaflags =  "-g" "-deprecation" "-classpath" (cat (getprop "java.class.path") ";" "../EditBus.jar" ";" "../Console.jar");
+javaflags =  "-g" "-deprecation" "-classpath" (cat (getprop "java.class.path") ";" JEDIT_BASE "/jedit.jar" ";" JEDIT_JARS "/EditBus.jar" ";" JEDIT_JARS "/Console.jar" ";" ".");
 pkgs = "." "jcompiler" "jcompiler/options" "buildtools";
 
 ##########################################################################
