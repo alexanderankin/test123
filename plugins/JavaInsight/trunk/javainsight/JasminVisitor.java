@@ -1,21 +1,22 @@
 package javainsight;
 
-import de.fub.bytecode.classfile.Attribute;
-import de.fub.bytecode.classfile.ClassParser;
-import de.fub.bytecode.classfile.Code;
-import de.fub.bytecode.classfile.ConstantValue;
-import de.fub.bytecode.classfile.Deprecated;
-import de.fub.bytecode.classfile.ExceptionTable;
-import de.fub.bytecode.classfile.Field;
-import de.fub.bytecode.classfile.JavaClass;
-import de.fub.bytecode.classfile.Method;
-import de.fub.bytecode.classfile.Synthetic;
-import de.fub.bytecode.classfile.Utility;
-import de.fub.bytecode.generic.*;
 import java.io.*;
 import java.util.*;
-import de.fub.bytecode.Constants;
-import de.fub.bytecode.Repository;
+
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.ClassParser;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantValue;
+import org.apache.bcel.classfile.Deprecated;
+import org.apache.bcel.classfile.ExceptionTable;
+import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Synthetic;
+import org.apache.bcel.classfile.Utility;
+import org.apache.bcel.generic.*;
+import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
 
 /**
  * Disassemble Java class object into the <A HREF="http://www.cat.nyu.edu/meyer/jasmin">
@@ -24,7 +25,7 @@ import de.fub.bytecode.Repository;
  * @version $Id$
  * @author  <A HREF="http://www.berlin.de/~markus.dahm/">M. Dahm</A>
  */
-public class JasminVisitor extends de.fub.bytecode.classfile.EmptyVisitor {
+public class JasminVisitor extends org.apache.bcel.classfile.EmptyVisitor {
   private JavaClass       clazz;
   private PrintWriter     out;
   private String          class_name;
@@ -41,13 +42,13 @@ public class JasminVisitor extends de.fub.bytecode.classfile.EmptyVisitor {
    * Start traversal using DefaultVisitor pattern.
    */
   public void disassemble() {
-    new de.fub.bytecode.classfile.DescendingVisitor(clazz, this).visit();
+    new org.apache.bcel.classfile.DescendingVisitor(clazz, this).visit();
     out.close();
   }
 
   public void visitJavaClass(JavaClass clazz) {
-    out.println(";; Produced by JasminVisitor (BCEL)");
-    out.println(";; http://bcel.sourceforge.net/");
+    out.println(";; Produced by JasminVisitor");
+    out.println(";; http://jakarta.apache.org/bcel");
     out.println(";; " + new Date() + "\n");
 
     out.println(".source " + clazz.getSourceFileName());
