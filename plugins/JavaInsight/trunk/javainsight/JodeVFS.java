@@ -25,6 +25,7 @@ import de.fub.bytecode.classfile.ClassParser;
 import de.fub.bytecode.classfile.JavaClass;
 
 import jode.bytecode.ClassInfo;
+import jode.bytecode.SearchPath;
 import jode.decompiler.ClassAnalyzer;
 import jode.decompiler.Decompiler;
 import jode.decompiler.ImportHandler;
@@ -32,6 +33,7 @@ import jode.decompiler.TabbedPrintWriter;
 
 import java.awt.Component;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.File;
 import java.io.InputStream;
@@ -40,6 +42,8 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+
+import javainsight.buildtools.JavaUtils;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
@@ -89,34 +93,34 @@ public class JodeVFS extends ByteCodeVFS {
                 vfs._createInputStream(session, clazzPath, ignoreErrors, comp)
             ));
             JavaClass java_class = new ClassParser(in, clazzPath).parse();
-
-            // Adjust the classpath
-            String cp = System.getProperty("java.class.path");
-
             String className = java_class.getClassName();
 
-            int dotIdx = className.lastIndexOf(".");
-            String vfsPath = vfs.getParentOfPath(clazzPath);
-            while (dotIdx != -1) {
-                vfsPath = vfs.getParentOfPath(vfsPath);
-                dotIdx = className.lastIndexOf(".", dotIdx - 1);
+            // Adjust the classpath
+            String[] entries = JavaUtils.getClasspath();
+            StringBuffer sb = new StringBuffer();
+            for (int i = 0; i < entries.length; i++) {
+                if (sb.length() > 0) { sb.append(SearchPath.altPathSeparatorChar); }
+                sb.append(entries[i]);
             }
-            /*
-            vfsPath = vfsPath.replace('.', vfs.getFileSeparator()) + ".class";
-            if (vfs instanceof FileVFS && clazzPath.endsWith(vfsPath)) {
-                String parent = (
-                    clazzPath.substring(0, clazzPath.length() - vfsPath.length())
-                );
-                if (!cp.equals("")) {
-                    cp = File.pathSeparator + cp;
-                }
-                cp = parent + cp;
-            }
-            */
+            String cp = sb.toString(); // JavaInsight.getJodeClassPath();
 
-            Log.log(Log.DEBUG, this, "Classpath: " + cp);
-            Log.log(Log.DEBUG, this, "vfsPath:   " + vfsPath);
-            Log.log(Log.DEBUG, this, "Classname: " + className);
+            String vfsPath = null;
+            int dotIdx = className.lastIndexOf('.');
+            vfsPath = vfs.getParentOfPath(clazzPath);
+            if (vfs != VFSManager.getVFSForPath(vfsPath)) {
+                vfsPath = null;
+            } else {
+                while (dotIdx != -1) {
+                    vfsPath = vfs.getParentOfPath(vfsPath);
+                    if (vfs != VFSManager.getVFSForPath(vfsPath)) {
+                        vfsPath = null;
+                        break;
+                    }
+                    dotIdx = className.lastIndexOf('.', dotIdx - 1);
+                }
+            }
+
+            Log.log(Log.DEBUG, this, "clazzPath, vfsPath, className: [" + vfsPath + "][" + clazzPath + "][" + className + "]");
 
             in = new DataInputStream(new BufferedInputStream(
                 vfs._createInputStream(session, clazzPath, ignoreErrors, comp)
@@ -124,21 +128,24 @@ public class JodeVFS extends ByteCodeVFS {
 
             // JODE is not thread-safe
             synchronized (this) {
-                ClassInfo.setClassPath(new VFSSearchPath(cp, vfsPath));
+                if (vfsPath == null) {
+                    ClassInfo.setClassPath(cp);
+                } else {
+                    ClassInfo.setClassPath(new VFSSearchPath(cp, vfsPath));
+                }
 
                 ClassInfo clazz = ClassInfo.forName(className);
-
                 clazz.read(in, ClassInfo.FULLINFO);
 
-                boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
+                boolean pretty  = jEdit.getBooleanProperty("javainsight.jode.pretty",  true);
                 boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
                 boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
-                String style = jEdit.getProperty("javainsight.jode.style", "sun");
+                String  style   = jEdit.getProperty("javainsight.jode.style", "sun");
 
                 // Setting decompiler options
                 Decompiler decompiler = new Decompiler();
-                decompiler.setOption("style", style);
-                decompiler.setOption("pretty", pretty ? "yes" : "no");
+                decompiler.setOption("style",   style);
+                decompiler.setOption("pretty",  pretty  ? "yes" : "no");
                 decompiler.setOption("onetime", onetime ? "yes" : "no");
                 decompiler.setOption("decrypt", decrypt ? "yes" : "no");
 
