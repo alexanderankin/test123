@@ -67,7 +67,7 @@ public class BackgroundPlugin extends EBPlugin
                 BackgroundHighlight backgroundHighlight =
                     (BackgroundHighlight) BackgroundHighlight.addHighlightTo(editPane);
 
-                textAreaPainter.addExtension(TextAreaPainter.LOWEST_LAYER, backgroundHighlight);
+                textAreaPainter.addExtension(TextAreaPainter.BACKGROUND_LAYER, backgroundHighlight);
             } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
                 BackgroundHighlight.removeHighlightFrom(editPane);
             }

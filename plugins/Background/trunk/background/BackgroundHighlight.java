@@ -167,24 +167,7 @@ public class BackgroundHighlight extends TextAreaExtension
             final Graphics2D gfx, final int screenLine, final int physicalLine,
             final int start, final int end, final int y
     ) {
-        TextAreaPainter painter = this.textArea.getPainter();
-
-        int caret = this.textArea.getCaretPosition();
-        boolean paintLineHighlight = (
-               painter.isLineHighlightEnabled()
-            && ((caret >= start) && (caret < end))
-            && (this.textArea.getSelectionCount() == 0)
-        );
-
         this.paintLine(gfx, y);
-
-        if (paintLineHighlight) {
-            FontMetrics fm = painter.getFontMetrics();
-            Color bgColor = painter.getLineHighlightColor();
-
-            gfx.setColor(bgColor);
-            gfx.fillRect(0, y, painter.getWidth(), fm.getHeight());
-        }
     }
 
 
