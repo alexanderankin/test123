@@ -112,6 +112,7 @@ public class TemplateDir extends TemplateFile
 			}
 		}
 		if (templateFiles == null) this.refreshTemplates();
+		ActionSet myActions = new ActionSet();
 		e = this.templateFiles.elements();
 		while (e.hasMoreElements()) {
 			o = e.nextElement();
@@ -123,11 +124,16 @@ public class TemplateDir extends TemplateFile
 			}
 			else {
 				tf = (TemplateFile) o;
-				myAction = new TemplateAction(tf.getLabel(), tf.getRelativePath());
-				mi = new EnhancedMenuItem(tf.getLabel(), myAction);
+				String actionName = TemplateAction.getUniqueActionName();
+				myAction = new TemplateAction(actionName, 
+						tf.getLabel(), tf.getRelativePath());
+				myActions.addAction(myAction);
+				mi = new EnhancedMenuItem(tf.getLabel(), actionName, 
+						jEdit.getActionContext());
 				menu.add(mi);
 			}
 		}
+		jEdit.addActionSet(myActions);
 	}
 
 	public Enumeration children() {
@@ -179,6 +185,9 @@ public class TemplateDir extends TemplateFile
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.6  2003/05/23 17:07:23  sjakob
+	 * Update Templates plugin for API changes in jEdit 4.2pre1.
+	 *
 	 * Revision 1.5  2002/08/16 15:15:12  sjakob
 	 * Added debugging method printDir() which returns a String representation of the
 	 * template hierarchy.

@@ -1,5 +1,13 @@
 CHANGES file for Templates plugin.
 
+Version 4.0.0 (22-MAY-2003)
+=============================
+CHANGES:
+- removed dependancy on commons-collections.jar
+- added dependancy on JakartaCommons plugin
+- changed jEdit dependancy from version 4.0pre4 to version 4.2pre1
+- updated Templates to be compliant with jEdit 4.2 API changes
+
 Version 3.1.0 (03-FEB-2003)
 =============================
 BUG FIX:
