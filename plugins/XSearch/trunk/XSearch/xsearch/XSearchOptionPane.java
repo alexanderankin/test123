@@ -65,33 +65,43 @@ public class XSearchOptionPane extends AbstractOptionPane
 
 		wordPartSearch = new JCheckBox(jEdit.getProperty("xsearch.options.wordPartSearch"),
 			jEdit.getBooleanProperty("xsearch.wordPartSearch", true));
+		wordPartSearch.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.wordPartSearch"));
 
 		columnSearch = new JCheckBox(jEdit.getProperty("xsearch.options.columnSearch"),
 			jEdit.getBooleanProperty("xsearch.columnSearch", true));
+		columnSearch.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.columnSearch"));
 
 		rowSearch = new JCheckBox(jEdit.getProperty("xsearch.options.rowSearch"),
 			jEdit.getBooleanProperty("xsearch.rowSearch", true));
+		rowSearch.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.rowSearch"));
 
 		foldSearch = new JCheckBox(jEdit.getProperty("xsearch.options.foldSearch"),
 			jEdit.getBooleanProperty("xsearch.foldSearch", true));
+		foldSearch.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.foldSearch"));
 
 		commentSearch = new JCheckBox(jEdit.getProperty("xsearch.options.commentSearch"),
 			jEdit.getBooleanProperty("xsearch.commentSearch", true));
+		commentSearch.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.commentSearch"));
 
 		tentativSearch = new JCheckBox(jEdit.getProperty("xsearch.options.tentativSearch"),
 			jEdit.getBooleanProperty("xsearch.tentativSearch", false));
+		tentativSearch.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.tentativSearch"));
 
 		hyperRange = new JCheckBox(jEdit.getProperty("xsearch.options.hyperRange"),
 			jEdit.getBooleanProperty("xsearch.hyperRange", true));
+		hyperRange.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.hyperRange"));
 
 		settingsHistory = new JCheckBox(jEdit.getProperty("xsearch.options.settingsHistory"),
 			jEdit.getBooleanProperty("xsearch.settingsHistory", true));
+		settingsHistory.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.settingsHistory"));
 
 		findAllButton = new JCheckBox(jEdit.getProperty("xsearch.options.findAllButton"),
 			jEdit.getBooleanProperty("xsearch.findAllButton", true));
+		findAllButton.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.findAllButton"));
 
 		resetButton = new JCheckBox(jEdit.getProperty("xsearch.options.resetButton"),
 			jEdit.getBooleanProperty("xsearch.resetButton", true));
+		resetButton.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.resetButton"));
 
 		hyperReplace = new JCheckBox(jEdit.getProperty("xsearch.options.hyperReplace"),
 			jEdit.getBooleanProperty("xsearch.hyperReplace", true));
@@ -99,9 +109,11 @@ public class XSearchOptionPane extends AbstractOptionPane
 
 		replaceCaseSensitiv = new JCheckBox(jEdit.getProperty("xsearch.options.replaceCaseSensitiv"),
 			jEdit.getBooleanProperty("xsearch.replaceCaseSensitiv", true));
+		replaceCaseSensitiv.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.replaceCaseSensitiv"));
 
 		textAreaFont = new JCheckBox(jEdit.getProperty("xsearch.options.textAreaFont"),
 			jEdit.getBooleanProperty("xsearch.textAreaFont", true));
+		textAreaFont.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.textAreaFont"));
 
 
 		//addSeparator("xsearch.options.separator.searchoptions");

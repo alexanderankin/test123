@@ -42,6 +42,7 @@ import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.search.*;
 import org.gjt.sp.util.Log;
+import gnu.regexp.RE;
 //}}}
 
 /**
@@ -110,10 +111,11 @@ public class XSearchAndReplace
 		} else {
 			// manipulate search string to a regexp 
 			String regExpString=search;
-			if (tentativSearch) {
+			if (tentativSearch)
 				regExpString = constructTentativSearchString(search);
-			}
-			regExpString = MiscUtilities.charsToEscapes(regExpString);
+			else
+				regExpString = MiscUtilities.charsToEscapes(regExpString);
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.escaped.115: regExpString = "+regExpString);
 			switch (wordPart) {
 				case XSearchDialog.SEARCH_PART_WHOLE_WORD:
 					regExpString = "\\<"+regExpString+"\\>";
@@ -125,6 +127,7 @@ public class XSearchAndReplace
 					regExpString = regExpString+"\\>";
 					break;
 			}
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.wordpart.129: regExpString = "+regExpString);
 			if(!regExpString.equals(XSearchAndReplace.search)) {
 				XSearchAndReplace.search = regExpString;
 				searchSettingsChanged = true;
@@ -220,8 +223,8 @@ public class XSearchAndReplace
 			return;
 
 		XSearchAndReplace.regexp = regexp;
-		if(regexp && reverse)
-			reverse = false;
+		//if(regexp && reverse)
+		//	reverse = false;
 
 		matcher = null;
 
@@ -414,14 +417,31 @@ public class XSearchAndReplace
 		else
 			replaceMethod = null;
 
-		if(regexp || wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch)
+/* 		if(regexp || wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch)
+			matcher = new RESearchMatcher(search,replace,ignoreCase,
+				beanshell,replaceMethod);
+ */
+		// often, users have regexp activ, but the search expression is an ordinary expression
+		// to improve performance, a BoyerMooreSearchMatcher is returned in this case
+		// (I tested 100 searches in a big buffer: RE = 32240ms, BoyerMoore = 1760ms)
+		// this optimization is applied for search, NOT for search-replace
+		boolean createREMatcher = false;
+		if((regexp && replace.length() != 0) 
+			|| wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch
+			|| // RE compiler passes ".", "^" and "$" transparent
+			search.indexOf('.') != -1 || search.indexOf('^') != -1 || search.indexOf('$') != -1)
+			createREMatcher = true;
+		else if (regexp) {
+			RE re = new RE(search);
+			if (!re.toString().equals("(?:"+search+")"))
+				createREMatcher = true;
+		}
+		if (createREMatcher)
 			matcher = new RESearchMatcher(search,replace,ignoreCase,
 				beanshell,replaceMethod);
 		else
-		{
 			matcher = new BoyerMooreSearchMatcher(search,replace,
 				ignoreCase,beanshell,replaceMethod);
-		}
 
 		return matcher;
 	} //}}}
@@ -438,6 +458,15 @@ public class XSearchAndReplace
 		}
 		else
 			return null;
+	}
+
+	public static String getMatchedSubexpression(String match, int matchNumber) {
+		if (matcher instanceof RESearchMatcher) {
+			String[] subExp = ((RESearchMatcher)matcher).getSubexpressions(match);
+			if (subExp != null && subExp.length > matchNumber)
+				return subExp[matchNumber];
+		}
+		return null;
 	}//}}}
 
 	//{{{ getLastMatchedSelection() method
@@ -693,7 +722,7 @@ public class XSearchAndReplace
 		if (comp == null)
 			comp = view; */
 		
-		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.692"+staticToString());
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.hyperSearch.705: "+staticToString());
 		Component comp = xsearch.XSearchDialog.getSearchDialog(view);
 		if(comp == null)
 			comp = view;
@@ -825,7 +854,7 @@ public class XSearchAndReplace
 	public static boolean find(View view)
 	{
 		
-		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.822: "+staticToString());
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.822: "+staticToString());
 		// component that will parent any dialog boxes
 		Component comp = XSearchDialog.getSearchDialog(view);
 		if(comp == null)
@@ -839,7 +868,6 @@ public class XSearchAndReplace
 		}
 		// check search settings
 		if (!areSearchSettingsOk()) {
-			Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.668");
 			view.getToolkit().beep();
 			view.getStatus().setMessageAndClear(jEdit.getProperty(
 			"view.status.illegal-search-settings"));
@@ -993,9 +1021,8 @@ public class XSearchAndReplace
 
 				if(BeanShell.isScriptRunning())
 				{
-					Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.985");
 					restart = true;  // this leads to endless loops in bs-scripts when scanning a file
-								// i keep this function for compatibility
+								// I keep this function for compatibility
 				}
 				else if(wrap)
 				{
@@ -1126,42 +1153,56 @@ public class XSearchAndReplace
 			// support reverse search yet.
 			//
 			// REMIND: fix flags when adding reverse regexp search.
-			int[] match = matcher.nextMatch(new CharIndexedSegment(text,reverse),
-				start == 0,true,firstTime,reverse);
+			//int[] match = matcher.nextMatch(new CharIndexedSegment(text,reverse),
+				//start == 0,true,firstTime,reverse);
+				// even if regexp reverse, we do implicitly a forward search
+				// ==> create CharIndexedSegment as forward
+			int[] match = matcher.nextMatch(new CharIndexedSegment(text, 
+				(matcher instanceof RESearchMatcher) ? false : reverse),
+				start == 0, end == buffer.getLength(), firstTime, reverse);
 	
 			if(match != null)
 			{
 				int matchOffsetBegin, matchOffsetEnd;  // offset inside buffer
 				if(reverse) {
-					matchOffsetBegin = start - match[1];
-					matchOffsetEnd = start - match[0];
+					if (matcher instanceof RESearchMatcher) {
+						// regexp backward search always starts from 0
+						// ==> no match calculation neccessary
+						matchOffsetBegin = match[0];
+						matchOffsetEnd = match[1];
+					} else {
+						matchOffsetBegin = start - match[1];
+						matchOffsetEnd = start - match[0];
+					}
 				} else {
 					matchOffsetBegin = start + match[0];
 					matchOffsetEnd = start + match[1];
 				}
+				if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1150: start = "+start+", end = "+end+", search = "+search+", reverse = "+reverse+", match = "+match[0]+", "+match[1]+", matchOffsetBegin = "+matchOffsetBegin+", matchOffsetEnd = "+matchOffsetEnd);
 
-				if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.867: matched at matchOffsetBegin = "+matchOffsetBegin);
+				if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.1181: matched at matchOffsetBegin = "+matchOffsetBegin);
 	
 				if (checkXSearchParameters(view.getTextArea(), buffer, matchOffsetBegin, matchOffsetEnd, false)) {
 					jEdit.commitTemporary(buffer);
 					view.setBuffer(buffer);
 					JEditTextArea textArea = view.getTextArea();
 					
+					lastMatchedSelection = new Selection.Range(matchOffsetBegin, matchOffsetEnd);
 					if(reverse)
 					{
-						lastMatchedSelection = new Selection.Range(
-								start - match[1],
-								start - match[0]);
+						//lastMatchedSelection = new Selection.Range(matchOffsetBegin, matchOffsetEnd);
+								//start - match[1],
+								//start - match[0]);
 						if (!silent) {
 							textArea.setSelection(lastMatchedSelection);
-							textArea.moveCaretPosition(start - match[1]);
+							textArea.moveCaretPosition(matchOffsetBegin);
 						}
 					}
 					else
 					{
-						lastMatchedSelection = new Selection.Range(
-							start + match[0],
-							start + match[1]);
+						//lastMatchedSelection = new Selection.Range(matchOffsetBegin, matchOffsetEnd);
+							//start + match[0],
+							//start + match[1]);
 						if (!silent) {
 							if (findAll) {
 								findAllSelections.add(lastMatchedSelection);
@@ -1169,17 +1210,20 @@ public class XSearchAndReplace
 							}
 							else {
 								textArea.setSelection(lastMatchedSelection);
-								textArea.moveCaretPosition(start + match[1]);
+								textArea.moveCaretPosition(matchOffsetEnd);
 							}
 						}
 					}
-					if (!findAll) xFound = true;
+					if (!findAll)
+						xFound = true;
 				} else {
 					// target matched, but nok because of xParameters
 					// find next
-					if (reverse) start -= match[1];
-					else start += match[1];
-					Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.901: start = "+start);
+					if (reverse)
+						start -= match[1];
+					else
+						start += match[1];
+					//Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.901: start = "+start);
 				}
 			}	else {
 				if (findAll && !findAllSelections.isEmpty()) {
@@ -1191,6 +1235,32 @@ public class XSearchAndReplace
 		return xFound;  // always true
 	} //}}}
 
+	//{{{ findSilent() method
+	/**
+	 * Finds the next instance of the search string in the specified
+	 * buffer, without highlighting the match
+	 * The match can be obtained via   "getLastMatchedSelection"
+	 * @param view The view
+	 * @param buffer The buffer
+	 * @param start Location where to start the search
+	 */
+	public static boolean findSilent(View view, Buffer buffer, int start) {
+		try {
+			return find(view, buffer, start, buffer.getLength(), 
+				false, false, FIND_OPTION_SILENT);
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR,XSearchAndReplace.class,e);
+			Object[] args = { e.getMessage() };
+			if(args[0] == null)
+				args[0] = e.toString();
+			GUIUtilities.error(view,"searcherror",args);
+		}
+		return false;
+	}
+
+	
 	//{{{ replace() method
 	/**
 	 * Replaces the current selection with the replacement string.
@@ -1676,13 +1746,52 @@ loop:			while(path != null)
 	 * - searchback and regexp (wordpart and tentativ are regexp, too)
 	 */
 	private static boolean areSearchSettingsOk() {
-		if (reverse && (regexp || wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch))
-			return false;
+		//if (reverse && (regexp || wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch))
+		//	return false;
 		
 		return true;
 	} //}}}
 
 	//{{{ constructTentativSearchString method
+	/**
+	 * Translates a String into a regexp which shall find following mistypings:
+	 * - typed 'dash' instead of 'underscore'
+	 * - double typed char (toown ico town)
+	 * @param searchString
+	 */
+	private static String constructTentativSearchString(String searchString) {
+		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1724: searchString = "+searchString);
+		StringBuffer dest = new StringBuffer();
+		// iterate over searchString. As the loop works one char ahead, we add a blank
+		StringCharacterIterator it = new StringCharacterIterator(new String(searchString+" "));
+		char prevChar = ' ';
+		// char pre2Char = ' ';
+		boolean skipFirst = true; // we need the following character, so process one char later
+		// read characters which will be included always in search characters
+		// String tendCharacters = jEdit.getProperty("search.ext.tentativ.addition");
+		boolean doubledChar = false; 
+		for(char currChar = it.first(); currChar != CharacterIterator.DONE; currChar = it.next()) {
+			if (skipFirst) skipFirst = false;
+			else {
+				if (currChar != prevChar) {
+					if (prevChar == '-')
+						dest.append("[-_]");
+					else
+						dest.append(charsToEscapes(String.valueOf(prevChar)));
+					if (doubledChar)
+						dest.append("+");
+					doubledChar = false;
+				}
+				else
+					doubledChar = true;
+			}
+			prevChar = currChar;
+    }
+		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1752: dest = "+dest);
+		return dest.toString();
+	} //}}}
+	
+	//{{{ constructTentativSearchStringOld method
 	/**
 	 * Translates a String into a regexp which shall find following mistypings:
 	 * - double typed char (toown ico town)
@@ -1691,7 +1800,7 @@ loop:			while(path != null)
 	 * - wrong sequence (Rdui ico Rudi)
 	 * @param searchString
 	 */
-	private static String constructTentativSearchString(String searchString) {
+	private static String constructTentativSearchStringOld(String searchString) {
 		StringBuffer dest = new StringBuffer();
 		// iterate over searchString. As the loop works one char ahead, we add a blank
 		StringCharacterIterator it = new StringCharacterIterator(new String(searchString+" "));
@@ -1756,7 +1865,7 @@ loop:			while(path != null)
 		for(int i = 0; i < str.length(); i++)
 		{
 			char c = str.charAt(i);
-			if ("+*()[]./{}^$?|\"".indexOf(c) != -1) { // char "\\" is handled in MiscUtilities
+			if ("+*()[]./{}^$?|\"\\".indexOf(c) != -1) { 
 				buf.append("\\");
 			}
 			buf.append(c);
@@ -1856,14 +1965,17 @@ loop:			while(path != null)
 		// Note: as getToken doesn't work for blanks, we have to find the first nonblank
 		// int caretPos = textArea.getCaretPosition();
 		boolean outsideCmt;
-		if (debug) Log.log(Log.DEBUG, BeanShell.class,"tp1280: currPos = "+currPos);
-		if (hyperSearchFlag) {
-		// {{{ hypersearch
+		if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.isOutsideCmt.1868: currPos = "+currPos+", buffer.getMode() = "+buffer.getMode()+", buffer.getName() = "+buffer.getName()+", hyperSearchFlag = "+hyperSearchFlag+", SwingUtilities.isEventDispatchThread() = "+javax.swing.SwingUtilities.isEventDispatchThread());
+		//if (hyperSearchFlag) {
+		//if (textArea.getBuffer() != buffer) {
+		if (!javax.swing.SwingUtilities.isEventDispatchThread() 
+		|| buffer.getMode().toString().equals("text")) {
+		// {{{ for hypersearch, token method doesn't work ==> explicit comment checking
 			int matchLine = buffer.getLineOfOffset(currPos);
 			outsideCmt = true;
 			// check line comment
 			String currLine = buffer.getLineText(matchLine);
-//			if (currLine.lastIndexOf("//",currPos-buffer.getLineStartOffset(matchLine)) != -1)
+			// if (currLine.lastIndexOf("//",currPos-buffer.getLineStartOffset(matchLine)) != -1)
 			if (currLine.lastIndexOf(jEdit.getProperty("search.comment.line"),
 				currPos-buffer.getLineStartOffset(matchLine)) != -1)
 				outsideCmt = false;
@@ -1887,7 +1999,7 @@ loop:			while(path != null)
 				);
 	
 				if(openCmtMatch != null) {
-					// we found an open comment before match ==> check if alreday closed 
+					// we found an open comment before match ==> check if already closed 
 					if (debug) Log.log(Log.DEBUG, BeanShell.class,"found open cmt at = "
 					+openCmtMatch[0]+"-"+openCmtMatch[1]);
 					cmtMatcher = new BoyerMooreSearchMatcher(
@@ -1916,7 +2028,7 @@ loop:			while(path != null)
 		// }}}
 			
 			
-		} else { //{{{ not hypersearch
+		} else { //{{{ normal search, edit mode depending
 			boolean blankChar = true;
 			for (int i=currPos; blankChar && i<buffer.getLength();i++) {
 				if (!Character.isWhitespace(buffer.getText(i,1).charAt(0))) {
@@ -1928,20 +2040,22 @@ loop:			while(path != null)
 					currPos = i;
 				}
 			}
-			int line = textArea.getLineOfOffset(currPos);
+			int line = buffer.getLineOfOffset(currPos);
 			if (debug) Log.log(Log.DEBUG, BeanShell.class,"tp1293: lineNr = "+line);
-			int position = currPos - textArea.getLineStartOffset(line);
+			int position = currPos - buffer.getLineStartOffset(line);
 			if (debug) Log.log(Log.DEBUG, BeanShell.class,"tp1296: position = "+position);
 			
 			DefaultTokenHandler tokens = new DefaultTokenHandler();
 			buffer.markTokens(line, tokens);
 			org.gjt.sp.jedit.syntax.Token token =
 			TextUtilities.getTokenAtOffset(tokens.getTokens(), position);
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1952: token.id = "+token.id);
 			if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 				outsideCmt = false;
 			else
 				outsideCmt = true;
 		}  //}}}
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.1954: outsideCmt = "+outsideCmt);
 		return outsideCmt;
 	}
 	//}}}
@@ -2079,7 +2193,7 @@ loop:		for(int counter = 0; ; counter++)
 					
 					int newLine = buffer.getLineOfOffset(offset);
 					if (node != null && line < newLine) {
-						Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.2065: add node");
+						//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.2065: add node");
 						node.add(new DefaultMutableTreeNode(
 							new HyperSearchResult(buffer,newLine,
 							offset, offset+subst.length()),false));

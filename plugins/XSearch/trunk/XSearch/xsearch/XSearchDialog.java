@@ -1106,7 +1106,6 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		
 		// setup search fileset
 		SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
-		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchDialog.1104: fileset = "+fileset);
 
 		if(fileset instanceof DirectoryListSet)
 		{
@@ -1158,8 +1157,9 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		boolean reverseEnabled = !hyperSearch.isSelected() && !rowRadioBtn.isSelected()
 			&& searchCurrentBuffer.isSelected();
 		boolean regexpSelected = regexp.isSelected();
-		searchBack.setEnabled(reverseEnabled && !regexpSelected 
-		&& wordPartDefaultRadioBtn.isSelected());
+		// XSearch 1.0: backward regexp allowed
+		searchBack.setEnabled(reverseEnabled);
+		//&& !regexpSelected && wordPartDefaultRadioBtn.isSelected());
 		// word part search (and tentativ) not allowed in combination with regexp
 		wordPartPrefixRadioBtn.setEnabled(!regexpSelected);
 		wordPartSuffixRadioBtn.setEnabled(!regexpSelected);
@@ -1221,9 +1221,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	{
 		if (searchSettingsHistoryRadioBtn.isSelected() && find.getText().length() > 0) {
 			SearchSettings searchHist = settingsHistory.getItem(find.getText());
-			Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchDialog.1210: find.getText() = "+find.getText());
 			if (searchHist != null) {
-				Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchDialog.1212: searchHist = "+searchHist);
 				searchHist.update();
 				setupSearchSettings();
 				showHideOptions(searchCurrentBuffer);
@@ -1611,10 +1609,8 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			|| source == searchSelection || source == searchDirectory)
 			if (searchDirectory.isSelected() || searchAllBuffers.isSelected()) {
 				southPanel.add(BorderLayout.SOUTH,multiFilePanel);
-				Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchDialog.1604: add multiFilePanel");
 			} else {
 				southPanel.remove(multiFilePanel);
-				Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchDialog.1607: remove multiFilePanel");
 			}
 	} //}}}
 
@@ -1773,8 +1769,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 				|| source == wordPartWholeRadioBtn || source == tentativRadioBtn) {
 					if (((JRadioButton)source).isSelected()) {
 						regexp.setSelected(false);
-//						regexp.setEnabled(false);
-						searchBack.setEnabled(false);
+						//searchBack.setEnabled(false);
 						regexp.setEnabled(true);
 					}
 					updateEnabled();
@@ -1886,7 +1881,6 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			else if (source == find && find.getReceivedEvent() == XSearchHistoryTextField.RECEIVED_EVENT_SELECT) {
 				// another item in historytextfield selected
 				// set history settings if available
-				Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchDialog.1838");
 				loadSettingsFromHistory();
 			}
 			else if (evalExtendedOptions()) {
