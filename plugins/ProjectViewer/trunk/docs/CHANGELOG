@@ -16,6 +16,8 @@
 
 VERSION 1.0.3
 
+  - Added 'py' (Python) extension to supported import extensions
+
   - Project directory are now sorted
 
   - Double click interval have been shortened from 2 seconds to .5 seconds
