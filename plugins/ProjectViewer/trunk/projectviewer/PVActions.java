@@ -259,7 +259,7 @@ public final class PVActions {
 	 *	<p>Note by Marcelo Vanzin: I know about Jakarta Commons Codec. In fact,
 	 *	I used it when my first implementation was not working well. But I don't
 	 *	want to add another jar to the plugin, and I don't want to add a
-	 *	dependency on the Jakarta Commons plugin (add add Codec there) either.</p>
+	 *	dependency on the Jakarta Commons plugin (and add Codec there) either.</p>
 	 */
 	public static byte[] encodeBase64(byte[] data) {
 		if (data == null || data.length == 0) {
