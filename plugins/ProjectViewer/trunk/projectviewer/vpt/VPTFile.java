@@ -132,6 +132,7 @@ public class VPTFile extends VPTNode {
 	 *	Returns the icon to be shown on the tree next to the node name.
 	 *
 	 *	@param	expanded	If the node is currently expanded or not.
+	 *  @todo add decorations to the icon
 	 */
 	public Icon getIcon(boolean expanded) {
 		if (isOpened()) {

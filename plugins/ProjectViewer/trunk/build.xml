@@ -25,10 +25,10 @@
 	<property file="${user.home}/.build.properties"/>
 	<property file="${user.home}/build.properties"/>
 
-	<property name="jedit.install.dir" value="../../jEdit"/>
-	<property name="install.dir"			value=".." />
-	<property name="jedit.user.home"  value="${user.home}/.jedit" />
-	<property name="pvversion"          value="2.0.3"/>
+	<property name="jedit.install.dir" value="/usr/share/jedit/recent"/>
+	<property name="install.dir"			 value="${jedit.install.dir}/jars" />
+	<property name="jedit.user.home"   value="${user.home}/.jedit" />
+	<property name="pvversion"         value="2.0.3"/>
 
 	<property name="jar.name"         value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target" value="xsltproc"/>
@@ -41,7 +41,7 @@
   <property name="build.doxydoc"    value="${build.docs}/doxydoc"/>
 
   <property name="docbookx.dtd"     value="../XML/xml/dtds/docbookx.dtd" />
-	<property name="docbook.xsl"			value="/usr/share/xsl/docbook-xsl/html/docbook.xsl" />
+  <property name="docbook.xsl"		value="/usr/share/xsl/docbook-xsl" />
 
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
@@ -153,17 +153,17 @@
     </jar>
 
 	</target>
-	
+
 	<target name="clean.debug" description="cleans up the debug plugin">
-	
+
 		<delete>
 			<fileset dir="${src}/pvdebug">
 				<include name="**/*.class" />
 			</fileset>
 		</delete>
-		
+
 		<delete file="${debug.target.dir}/ProjectViewerDebug.jar" />
-	
+
 	</target>
 
   <!-- ================================================ -->
