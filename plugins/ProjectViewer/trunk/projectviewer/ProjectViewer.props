@@ -46,7 +46,7 @@ projectviewer_close_all_files.label=Close All Project Files
 projectviewer_remove_all_files.label=Remove All Project Files
 projectviewer_launch_current_buffer.label=Lauch current buffer in browser
 projectviewer_jarmaker_dialog.label=JarMaker Dialog
-projectviewer_focuswindow.label=Focus Project Viewer Window
+projectviewer_focuswindow.label=Open Project Viewer
 projectviewer_paste_selected_files.label=Paste File Names
 #}}}
 
@@ -54,7 +54,6 @@ projectviewer_paste_selected_files.label=Paste File Names
 plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
 plugin.projectviewer.ProjectPlugin.menu.code=new projectviewer.PVMenuProvider();
 projectviewer.menu=\
-	projectviewer \
 	projectviewer_focuswindow \
 	projectviewer_wrapper_create \
 	- \
