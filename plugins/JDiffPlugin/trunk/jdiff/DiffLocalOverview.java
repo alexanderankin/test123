@@ -1,6 +1,6 @@
 /*
  * DiffLocalOverview.java
- * Copyright (C) 2000 Andre Kaplan, original code by mike dillon
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,7 +27,6 @@ import java.awt.Rectangle;
 
 import jdiff.util.Diff;
 
-import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
@@ -47,15 +46,8 @@ public class DiffLocalOverview extends DiffOverview
 
 
     public void paint(Graphics gfx) {
-        FoldVisibilityManager foldVisibilityManager0 = this.textArea0.getFoldVisibilityManager();
-        FoldVisibilityManager foldVisibilityManager1 = this.textArea1.getFoldVisibilityManager();
-
-        int virtualLine0  = this.textArea0.getFirstLine();
-        int virtualLine1  = this.textArea1.getFirstLine();
         int count0 = this.textArea0.getVisibleLines();
         int count1 = this.textArea1.getVisibleLines();
-        int virtualCount0 = this.textArea0.getVirtualLineCount();
-        int virtualCount1 = this.textArea1.getVirtualLineCount();
 
         Rectangle size = getBounds();
 
@@ -90,8 +82,10 @@ public class DiffLocalOverview extends DiffOverview
         Color color;
 
         Diff.change hunk = this.edits;
-        for (int i0 = 0; (i0 < count0) && ((virtualLine0 + i0) < virtualCount0); i0++) {
-            int physicalLine0 = foldVisibilityManager0.virtualToPhysical(virtualLine0 + i0);
+        for (int i0 = 0; (i0 < count0); i0++) {
+            int physicalLine0 = this.textArea0.getPhysicalLineOfScreenLine(i0);
+
+            if (physicalLine0 == -1) { continue; }
 
             for (; hunk != null; hunk = hunk.link) {
                 if ((hunk.line0 + Math.max(0, hunk.deleted - 1)) < physicalLine0) {
@@ -124,8 +118,10 @@ public class DiffLocalOverview extends DiffOverview
         }
 
         hunk = this.edits;
-        for (int i1 = 0; (i1 < count1) && ((virtualLine1 + i1) < virtualCount1); i1++) {
-            int physicalLine1 = foldVisibilityManager1.virtualToPhysical(virtualLine1 + i1);
+        for (int i1 = 0; (i1 < count1); i1++) {
+            int physicalLine1 = this.textArea1.getPhysicalLineOfScreenLine(i1);
+
+            if (physicalLine1 == -1) { continue; }
 
             for (; hunk != null; hunk = hunk.link) {
                 if ((hunk.line1 + Math.max(0, hunk.inserted - 1)) < physicalLine1) {
@@ -159,8 +155,11 @@ public class DiffLocalOverview extends DiffOverview
 
         hunk = this.edits;
         for (int i0 = 0, i1 = 0; (hunk != null) && (i0 < count0) && (i1 < count1); ) {
-            int physicalLine0 = foldVisibilityManager0.virtualToPhysical(virtualLine0 + i0);
-            int physicalLine1 = foldVisibilityManager1.virtualToPhysical(virtualLine1 + i1);
+            int physicalLine0 = this.textArea0.getPhysicalLineOfScreenLine(i0);
+            int physicalLine1 = this.textArea1.getPhysicalLineOfScreenLine(i1);
+
+            if (physicalLine0 == -1) { continue; }
+            if (physicalLine1 == -1) { continue; }
 
             for (; hunk != null; hunk = hunk.link) {
                 if (hunk.line0 < physicalLine0) {
@@ -201,3 +200,4 @@ public class DiffLocalOverview extends DiffOverview
         gfx.drawRect(border1.x - 1, border1.y, border1.width + 1, border1.height - 1);
     }
 }
+
