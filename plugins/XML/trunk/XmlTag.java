@@ -18,20 +18,50 @@
  */
 
 import javax.swing.text.Position;
+import java.util.Vector;
 
 class XmlTag
 {
 	String name;
 	Position start, end;
+	Vector attributes;
 
-	XmlTag(String name, Position start)
+	XmlTag(String name, Position start, Vector attributes)
 	{
 		this.name = name;
 		this.start = start;
+		this.attributes = attributes;
 	}
 
 	public String toString()
 	{
-		return name;
+		StringBuffer buf = new StringBuffer();
+		buf.append('<');
+		buf.append(name);
+
+		for(int i = 0; i < attributes.size(); i++)
+		{
+			buf.append(' ');
+			Attribute attr = (Attribute)attributes.elementAt(i);
+			buf.append(attr.name);
+			buf.append("=\"");
+			buf.append(attr.value);
+			buf.append('"');
+		}
+
+		buf.append('>');
+
+		return buf.toString();
+	}
+
+	static class Attribute
+	{
+		String name, value;
+
+		Attribute(String name, String value)
+		{
+			this.name = name;
+			this.value = value;
+		}
 	}
 }
