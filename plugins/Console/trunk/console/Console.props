@@ -172,3 +172,7 @@ commando.settings=Settings
 commando.commands=Commands
 commando.properties=Properties
 commando.copy=Copy
+
+commando.xml-error.title=Parse Error
+commando.xml-error.message=An error occurred while parsing {0} at line {1}\n\
+	({2}).

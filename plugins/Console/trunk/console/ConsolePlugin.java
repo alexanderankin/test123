@@ -61,6 +61,9 @@ public class ConsolePlugin extends EBPlugin
 			if(!file.exists())
 				file.mkdirs();
 		}
+
+		consoleToolBarMap = new Hashtable();
+		commandoToolBarMap = new Hashtable();
 	}
 
 	public void createMenuItems(Vector menuItems)
@@ -229,8 +232,9 @@ public class ConsolePlugin extends EBPlugin
 	private static ErrorMatcher[] errorMatchers;
 	private static String commandoDirectory;
 	private static CommandoCommand[] commands;
-	private static Hashtable consoleToolBarMap;
-	private static Hashtable commandoToolBarMap;
+
+	private Hashtable consoleToolBarMap;
+	private Hashtable commandoToolBarMap;
 
 	private void propertiesChanged()
 	{
