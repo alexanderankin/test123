@@ -15,9 +15,7 @@
 
  <copyright>
   <year>1999</year>
-  <year>2000</year>
-  <year>2001</year>
-  <year>2002</year>
+  <year>2003</year>
   <holder>Slava Pestov</holder>
  </copyright>
 
@@ -1195,6 +1193,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    jEdit 4.1pre11 and jEdit 4.1final.
    </para></listitem>
    <listitem><para>Tool bars are no longer added to plain views.
+   </para></listitem>
+   <listitem><para>Added a workaround for the Java bug where commands
+   specifying a relative path name would be resolved relative to the
+   directory from which jEdit was started, not the console's current
+   directory.
    </para></listitem>
    </itemizedlist>
   </listitem>

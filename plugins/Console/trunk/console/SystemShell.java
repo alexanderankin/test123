@@ -75,50 +75,62 @@ public class SystemShell extends Shell
 			executeBuiltIn(console,output,commandName,args);
 			output.commandDone();
 		}
-		else if(new File(MiscUtilities.constructPath(
-			getConsoleState(console).currentDirectory,
-			commandName)).isDirectory() && args.size() == 1)
-		{
-			executeBuiltIn(console,output,"%cd",args);
-			output.commandDone();
-		}
 		else
 		{
-			boolean foreground;
-
-			if(args.elementAt(args.size() - 1).equals("&"))
+			// Java resolves this relative to user.dir, not
+			// the directory we pass to exec()...
+			if(commandName.startsWith("./")
+				|| commandName.startsWith("." + File.separator))
 			{
-				// run in background
-				args.removeElementAt(args.size() - 1);
-				foreground = false;
+				commandName = MiscUtilities.constructPath(
+					getConsoleState(console).currentDirectory,
+					commandName);
+				args.setElementAt(commandName,0);
+			}
+
+			if(new File(commandName).isDirectory() && args.size() == 1)
+			{
+				executeBuiltIn(console,output,"%cd",args);
+				output.commandDone();
 			}
 			else
 			{
-				// run in foreground
-				foreground = true;
-			}
+				boolean foreground;
 
-			String[] _args = new String[args.size()];
-			args.copyInto(_args);
-
-			String[] env;
-
-			if(ProcessRunner.getProcessRunner()
-				.supportsEnvironmentVariables())
-			{
-				env = new String[variables.size()];
-				int counter = 0;
-				Enumeration keys = variables.keys();
-				while(keys.hasMoreElements())
+				if(args.elementAt(args.size() - 1).equals("&"))
 				{
-					Object key = keys.nextElement();
-					env[counter++]= (key + "=" + variables.get(key));
+					// run in background
+					args.removeElementAt(args.size() - 1);
+					foreground = false;
 				}
-			}
-			else
-				env = null;
+				else
+				{
+					// run in foreground
+					foreground = true;
+				}
 
-			new ConsoleProcess(console,output,_args,env,foreground);
+				String[] _args = new String[args.size()];
+				args.copyInto(_args);
+
+				String[] env;
+
+				if(ProcessRunner.getProcessRunner()
+					.supportsEnvironmentVariables())
+				{
+					env = new String[variables.size()];
+					int counter = 0;
+					Enumeration keys = variables.keys();
+					while(keys.hasMoreElements())
+					{
+						Object key = keys.nextElement();
+						env[counter++]= (key + "=" + variables.get(key));
+					}
+				}
+				else
+					env = null;
+
+				new ConsoleProcess(console,output,_args,env,foreground);
+			}
 		}
 	} //}}}
 
