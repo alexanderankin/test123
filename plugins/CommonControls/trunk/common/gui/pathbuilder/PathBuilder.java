@@ -92,9 +92,14 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
     private Vector elements;
 
     /**
-     * the initial directory to show in the file dialog.<p>
+     * The initial directory to show in the file dialog.<p>
      */
     private String startDirectory;
+
+    /**
+     * The file selection mode. By default it is FILES_AND_DIRECTORIES.<p>
+     */
+    private int fileSelectionMode;
 
     /**
      * A file filter to set on the file chooser.<p>
@@ -161,6 +166,8 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
         pathElementTable.getSelectionModel().addListSelectionListener(this);
         if(elements.size() > 0)
             pathElementTable.setRowSelectionInterval(0, 0);
+
+        fileSelectionMode = JFileChooser.FILES_AND_DIRECTORIES;
     }
 
     /**
@@ -201,6 +208,15 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
     public void setMoveDownButtonText(String text) {
         //moveDownButtonText = text;
         moveDown.setText(text);
+    }
+
+    /**
+     * Set a file selection mode to customise type of files can be selected.<p>
+     *
+     * @param filter the filter to use.
+     */
+    public void setFileSelectionMode(int fsm) {
+        this.fileSelectionMode = fsm;
     }
 
     /**
@@ -361,7 +377,7 @@ public class PathBuilder extends JPanel implements ActionListener, ListSelection
             else
                 chooser = new JFileChooser();
 
-            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            chooser.setFileSelectionMode(fileSelectionMode);
             if(multiSelectionEnabled == true)
                 chooser.setMultiSelectionEnabled(true);
 
