@@ -274,7 +274,7 @@ public class XPathTool extends JPanel implements ListSelectionListener {
         String text = buffer.getText(0, buffer.getLength());
         InputSource inputSource = new InputSource(new StringReader(text));
         inputSource.setSystemId(buffer.getPath());
-        Document document = parse(inputSource);
+        Document document = parse(inputSource, buffer.getPath());
         String expression = expressionPanel.textArea.getText();
         XObject xObject = XPathAPI.eval(document, expression);
 
@@ -319,11 +319,12 @@ public class XPathTool extends JPanel implements ListSelectionListener {
     /**
      * Creates parser, parses input source and returns resulting document.
      */
-    private Document parse(InputSource source) throws ParserConfigurationException, IOException, SAXException {
+    private Document parse(InputSource source, String inputPath) throws ParserConfigurationException, IOException, SAXException {
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
       factory.setValidating(false);
 
       DocumentBuilder builder = factory.newDocumentBuilder();
+      builder.setEntityResolver(new EntityResolverImpl(inputPath));
       Document document = builder.parse(source);
       return document;
     }

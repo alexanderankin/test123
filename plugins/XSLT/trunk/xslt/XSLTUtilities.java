@@ -21,8 +21,8 @@ package xslt;
 
 import org.apache.xalan.templates.OutputProperties;
 import org.gjt.sp.util.Log;
-import org.xml.sax.XMLReader;
 import org.xml.sax.EntityResolver;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
 import javax.xml.transform.*;
@@ -32,12 +32,9 @@ import javax.xml.transform.sax.SAXTransformerFactory;
 import javax.xml.transform.sax.TransformerHandler;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Map;
+import java.io.*;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * XSLTUtilities.java - Utilities for performing XSL Transformations
@@ -66,13 +63,13 @@ public class XSLTUtilities {
    *@return               string containing result of the transformation
    *@exception Exception  if a problem occurs during the transformation
    */
-  public static String transform(String inputFile, Object[] stylesheets, Map parameterMap, EntityResolver entityResolver) throws Exception {
+  public static String transform(String inputFile, Object[] stylesheets, Map parameterMap) throws Exception {
     TransformerFactory transformerFactory = TransformerFactory.newInstance();
     String resultString = null;
 
     if(transformerFactory.getFeature(SAXSource.FEATURE) && transformerFactory.getFeature(SAXResult.FEATURE)) {
       SAXTransformerFactory saxFactory = (SAXTransformerFactory)transformerFactory;
-      resultString = saxTransform(saxFactory, inputFile, stylesheets, parameterMap, entityResolver);
+      resultString = saxTransform(saxFactory, inputFile, stylesheets, parameterMap);
     } else {
       for(int i = 0; i < stylesheets.length; i++) {
         Source inputSource;
@@ -141,7 +138,7 @@ public class XSLTUtilities {
   }
 
 
-  private static String saxTransform(SAXTransformerFactory saxFactory, String inputFile, Object[] stylesheets, Map parameterMap, EntityResolver entityResolver) throws Exception {
+  private static String saxTransform(SAXTransformerFactory saxFactory, String inputFile, Object[] stylesheets, Map parameterMap) throws Exception {
     TransformerHandler[] handlers = new TransformerHandler[stylesheets.length];
 
     for(int i = 0; i < stylesheets.length; i++) {
@@ -161,9 +158,10 @@ public class XSLTUtilities {
     Log.log(Log.DEBUG, XSLTUtilities.class, "XMLReader=" + reader.getClass().getName());
     reader.setContentHandler(handlers[0]);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
-    if(entityResolver != null) {
-//      reader.setEntityResolver(entityResolver);
-    }
+
+//    String inputPath = inputFile.substring(0, inputFile.lastIndexOf(File.separatorChar));
+    EntityResolver entityResolver = new EntityResolverImpl(inputFile);
+    reader.setEntityResolver(entityResolver);
 
     int lastIndex = stylesheets.length - 1;
     Transformer lastTransformer = handlers[lastIndex].getTransformer();
