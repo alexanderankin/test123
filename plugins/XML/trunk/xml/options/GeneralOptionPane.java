@@ -77,15 +77,18 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
 
-		addComponent(tagHighlight = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.tag-highlight-enabled")));
+		tagHighlight = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.tag-highlight-enabled"));
 		tagHighlight.setSelected(jEdit.getBooleanProperty(
 			"xml.tag-highlight"));
 		tagHighlight.addActionListener(new ActionHandler());
 
-		addComponent(jEdit.getProperty("options.xml.general.tag-highlight-color"),
-			tagHighlightColor = new ColorWellButton(
-			jEdit.getColorProperty("xml.tag-highlight-color")));
+		tagHighlightColor = new ColorWellButton(
+			jEdit.getColorProperty("xml.tag-highlight-color"));
+
+		addComponent(tagHighlight,tagHighlightColor,
+			GridBagConstraints.VERTICAL);
+
 		tagHighlightColor.setEnabled(tagHighlight.isSelected());
 
 		String[] values = {
