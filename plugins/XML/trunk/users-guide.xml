@@ -492,7 +492,7 @@
    </para></listitem>
    <listitem><para>
     Tag highlighting now shows a status bar message if the matching tag is
-    not visible on the screen
+    not visible on the screen.
    </para></listitem>
    <listitem><para>
     Tag completion for XML schema (<filename>.xsd</filename>) files

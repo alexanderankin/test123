@@ -52,38 +52,16 @@ public class TagHighlight implements TextAreaHighlight
 	//{{{ paintHighlight() method
 	public void paintHighlight(Graphics gfx, int virtualLine, int y)
 	{
-		if(match != null && virtualLine < textArea.getVirtualLineCount())
-		{
-			int physicalLine = textArea.virtualToPhysical(virtualLine);
+		if(virtualLine >= textArea.getVirtualLineCount())
+			return;
 
-			FontMetrics fm = textArea.getPainter().getFontMetrics();
-			int height = fm.getHeight();
+		int physicalLine = textArea.virtualToPhysical(virtualLine);
 
-			int matchStartLine = buffer.getLineOfOffset(match.start);
-			int matchEndLine = buffer.getLineOfOffset(match.end);
+		/*if(current != null)
+			paintHighlight(gfx,physicalLine,y,current);*/
 
-			if(physicalLine < matchStartLine || physicalLine > matchEndLine)
-				return;
-
-			int x1, x2;
-
-			if(matchStartLine == physicalLine)
-				x1 = match.start - buffer.getLineStartOffset(matchStartLine);
-			else
-				x1 = 0;
-
-			if(matchEndLine == physicalLine)
-				x2 = match.end - buffer.getLineStartOffset(matchEndLine);
-			else
-				x2 = buffer.getLineLength(physicalLine);
-
-			x1 = textArea.offsetToX(physicalLine,x1);
-			x2 = textArea.offsetToX(physicalLine,x2);
-
-			gfx.setColor(tagHighlightColor);
-			gfx.drawRect(x1,y + fm.getDescent() + fm.getLeading(),
-				x2 - x1,height - 1);
-		}
+		if(match != null)
+			paintHighlight(gfx,physicalLine,y,match);
 	} //}}}
 
 	//{{{ getToolTipText() method
@@ -120,15 +98,74 @@ public class TagHighlight implements TextAreaHighlight
 	private Timer timer;
 
 	private BufferHandler bufferHandler;
-	private MatchTag.TagAttribute current;
-	private MatchTag.TagAttribute match;
+	private MatchTag.Tag current;
+	private MatchTag.Tag match;
+	private boolean bufferChanged;
 
 	private View view;
 	private JEditTextArea textArea;
 	private Buffer buffer;
-
-	private boolean bufferChanged;
 	//}}}
+
+	//{{{ paintHighlight() method
+	private void paintHighlight(Graphics gfx, int physicalLine, int y,
+		MatchTag.Tag tag)
+	{
+		int tagStartLine = buffer.getLineOfOffset(tag.start);
+		int tagEndLine = buffer.getLineOfOffset(tag.end);
+
+		if(physicalLine < tagStartLine || physicalLine > tagEndLine)
+			return;
+
+		FontMetrics fm = textArea.getPainter().getFontMetrics();
+		int height = fm.getHeight();
+		int top = y + fm.getDescent() + fm.getLeading();
+
+		int x1, x2;
+
+		if(tagStartLine == physicalLine)
+			x1 = tag.start - buffer.getLineStartOffset(tagStartLine);
+		else
+			x1 = 0;
+
+		if(tagEndLine == physicalLine)
+			x2 = tag.end - buffer.getLineStartOffset(tagEndLine);
+		else
+			x2 = buffer.getLineLength(physicalLine);
+
+		x1 = textArea.offsetToX(physicalLine,x1);
+		x2 = textArea.offsetToX(physicalLine,x2);
+
+		gfx.setColor(tagHighlightColor);
+
+		gfx.drawLine(x1,top,x1,top + height - 1);
+		gfx.drawLine(x2,top,x2,top + height - 1);
+
+		if(tagStartLine == physicalLine)
+			gfx.drawLine(x1,top,x2,top);
+		else
+		{
+			int prevX1, prevX2;
+
+			if(tagStartLine == physicalLine - 1)
+				prevX1 = tag.start - buffer.getLineStartOffset(tagStartLine);
+			else
+				prevX1 = 0;
+
+			prevX2 = buffer.getLineLength(physicalLine - 1);
+
+			prevX1 = textArea.offsetToX(physicalLine - 1,prevX1);
+			prevX2 = textArea.offsetToX(physicalLine - 1,prevX2);
+
+			gfx.drawLine(Math.min(x1,prevX1),top,
+				Math.max(x1,prevX1),top);
+			gfx.drawLine(Math.min(x2,prevX2),top,
+				Math.max(x2,prevX2),top);
+		}
+
+		if(tagEndLine == physicalLine)
+			gfx.drawLine(x1,top + height - 1,x2,top + height - 1);
+	}
 
 	//{{{ updateHighlightWithDelay() method
 	private void updateHighlightWithDelay()
@@ -139,24 +176,10 @@ public class TagHighlight implements TextAreaHighlight
 			return;
 		}
 
-		if(match != null)
-		{
-			if(match.start < buffer.getLength()
-				&& match.end <= buffer.getLength())
-			{
-				textArea.invalidateLineRange(
-					textArea.getLineOfOffset(match.start),
-					textArea.getLineOfOffset(match.end)
-				);
-			}
-
-			match = null;
-		}
-
 		if(timer.isRunning())
 			timer.stop();
 
-		timer.setInitialDelay(250);
+		timer.setInitialDelay(100);
 		timer.setRepeats(false);
 		timer.start();
 	} //}}}
@@ -170,7 +193,21 @@ public class TagHighlight implements TextAreaHighlight
 			|| caret < current.start
 			|| caret > current.end)
 		{
-			System.err.println("updating match");
+
+			if(match != null)
+			{
+				if(match.start < buffer.getLength()
+					&& match.end <= buffer.getLength())
+				{
+					textArea.invalidateLineRange(
+						textArea.getLineOfOffset(match.start),
+						textArea.getLineOfOffset(match.end)
+					);
+				}
+
+				match = null;
+			}
+
 			String text = textArea.getText();
 			current = MatchTag.getSelectedTag(caret,text);
 			if(current == null)
@@ -215,6 +252,14 @@ public class TagHighlight implements TextAreaHighlight
 			int offset, int numLines, int length)
 		{
 			bufferChanged = true;
+			if(match != null)
+			{
+				if(match.start >= offset)
+					match.start += length;
+				if(match.end >= offset)
+					match.end += length;
+			}
+
 			updateHighlightWithDelay();
 		}
 
@@ -222,6 +267,23 @@ public class TagHighlight implements TextAreaHighlight
 			int offset, int numLines, int length)
 		{
 			bufferChanged = true;
+			if(match != null)
+			{
+				if(match.start >= offset)
+				{
+					if(match.start < offset + length)
+						match.start = offset;
+					else
+						match.start -= length;
+				}
+				if(match.end >= offset)
+				{
+					if(match.end < offset + length)
+						match.end = offset;
+					else
+						match.end -= length;
+				}
+			}
 			updateHighlightWithDelay();
 		}
 	} //}}}
