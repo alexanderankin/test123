@@ -407,6 +407,9 @@ errorSource.addError(new ErrorSource.DefaultError(
    </para></formalpara>
    <itemizedlist>
     <listitem><para><guilabel>Show on error</guilabel> option didn't always work.</para></listitem>
+    <listitem><para>Fixed exception when using GTK+ look and feel.</para></listitem>
+    <listitem><para>Fixed assorted problems when file paths contained
+    symbolic links.</para></listitem>
    </itemizedlist>
   </listitem>
 
