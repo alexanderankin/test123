@@ -1,0 +1,69 @@
+plugin.XSearchPlugin.name=XSearch
+plugin.XSearchPlugin.author=rudi widmann
+plugin.XSearchPlugin.version=0.0.3
+plugin.XSearchPlugin.docs=XSearch.html
+plugin.XSearchPlugin.depend.0=jedit 04.00.01.00
+
+# Menu
+xsearch.label=XSearch
+xsearch=xfind xfind-next xfind-prev xfind-refind xfind-first
+xfind.label=find
+xfind-next.label=find-next
+xfind-prev.label=find-prev
+xfind-refind.label=find-refind
+xfind-first.label=find-first
+
+# XSearch_gui properties (alined to jedit_gui.props
+search.fromTop=From top
+search.fromTop.mnemonic=m
+
+# XSearch status bar properties
+view.status.no-further-search-string-found=no further search string found
+
+# selectiv show options
+search.show-options=show options: 
+search.show-settings=search
+search.show-replace=replace
+search.show-extended=extended
+
+# display current options
+search.currOpt.label=Options:
+search.currOpt.ignoreCase=ignoreCase
+search.currOpt.regexp=regexp
+search.currOpt.fromTop=fromTop
+search.currOpt.backward=back
+search.currOpt.wrap=wrap
+search.currOpt.word=word
+search.currOpt.prefix=prefix
+search.currOpt.suffix=suffix
+search.currOpt.column=column
+search.currOpt.insideFold=inFold
+search.currOpt.outsideFold=outFold
+search.currOpt.insideComment=inComment
+search.currOpt.outsideComment=outComment
+
+# extended options
+search.ext.word-whole=whole word
+search.ext.word-prefix=prefix
+search.ext.word-suffix=suffix
+search.ext.column=column search
+search.ext.column.expand-tabs=expand tabs
+search.ext.column.left=left col
+search.ext.column.right=right col
+search.ext.fold=fold search:  
+search.ext.fold-inside=inside folds
+search.ext.fold-outside=outside folds
+search.ext.comment=comment search:  
+search.ext.comment-inside=inside comment
+search.ext.comment-outside=outside comment
+
+# values
+search.show-settings.value=true
+search.show-replace.value=true
+search.show-extended.value=true
+
+# default comment values for hypersearch
+search.comment.blockbegin=/*
+search.comment.blockend=*/
+search.comment.line=//
+
