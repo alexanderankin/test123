@@ -36,6 +36,7 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.util.Log;
 
+import code2html.html.HtmlDocument;
 import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlCssStyle;
@@ -323,35 +324,16 @@ public class Main
             BufferedReader reader = new BufferedReader(r);
             BufferedWriter writer = new BufferedWriter(w);
 
-            writer.write("<html>");
-            writer.newLine();
-            writer.write("<head>");
-            writer.write("<title>Code2HTML</title>");
-            if (style instanceof HtmlCssStyle) {
-                writer.write("<style type=\"text/css\"><!--");
-                writer.newLine();
-                writer.write(style.toCSS());
-                writer.write(((gutter != null) ? gutter.toCSS() : ""));
-                writer.write("-->");
-                writer.newLine();
-                writer.write("</style>");
-                writer.newLine();
-            }
-            writer.write("</head>");
-            writer.newLine();
-            writer.write("<body bgcolor=\"");
-            writer.write(Main.getProperty("view.bgColor", "#ffffff"));
-            writer.write("\">");
-            writer.newLine();
-            writer.write("<pre>");
-            if (style instanceof HtmlCssStyle) {
-                writer.write("<span class=\"syntax0\">");
-            } else {
-                writer.write("<font color=\"");
-                writer.write(Main.getProperty("view.fgColor", "#000000"));
-                writer.write("\">");
-            }
-            // writer.newLine();
+            HtmlDocument document = new HtmlDocument(
+                Main.getProperty("view.bgColor", "#ffffff"),
+                Main.getProperty("view.fgColor", "#000000"),
+                style,
+                gutter,
+                "Code2HTML",
+                System.getProperty("line.separator")
+            );
+
+            document.htmlOpen(writer);
 
             Segment seg = new Segment();
             String line = null;
@@ -386,17 +368,7 @@ public class Main
                 writer.newLine();
             }
 
-            if (style instanceof HtmlCssStyle) {
-                writer.write("</span>");
-            } else {
-                writer.write("</font>");
-            }
-            writer.write("</pre>");
-            writer.newLine();
-            writer.write("</body>");
-            writer.newLine();
-            writer.write("</html>");
-            writer.newLine();
+            document.htmlClose(writer);
 
             writer.flush();
             writer.close();
