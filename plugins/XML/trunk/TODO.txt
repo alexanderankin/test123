@@ -1,5 +1,3 @@
-- cvs remove XmlParser.java, XmlTree.java
-- cvs add XmlSideKickParser.java
 - html parser: empty tags
 - SideKick transition:
   - .dtd files need to be ignored
