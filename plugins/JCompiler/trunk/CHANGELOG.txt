@@ -1,7 +1,22 @@
+VERSION 1.3
+
+- new option in the compiler option dialog to choose between classic and modern
+  compiler on JDK >= 1.3 (just like in Ant)
+- updated for Console 3.0 API
+- all textfields in the compiler option dialog now have history popups
+- menu command "Options..." renamed to "Java Compiler Options..."
+  (existing shortcuts for "Options..." should stay valid)
+- command 'help' and unknown commands no longer cause the existing error list
+  to be cleared
+- better parsing for '^' error line indicators
+- requires jEdit 3.2pre6 or higher, EditBus 1.0 or higher, Console 3.0 or higher
+
+
 VERSION 1.2.1
 
 - bugfix: StringIndexOutOfBoundsException if "Show Command Line" is on and
   a filename contains spaces (Logan Bauer)
+- requires jEdit 3.1final or higher, EditBus 0.10 or higher, Console 2.3 or higher
 
 
 VERSION 1.2

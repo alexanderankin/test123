@@ -1,4 +1,8 @@
 <html>
+
+<!-- jEdit options: -->
+<!-- :tabSize=8:indentSize=2:noTabs=true:maxLineLen=80: -->
+
 <title>Java Compiler</title>
 
 <body>
@@ -9,8 +13,8 @@
 Copyright (c) 1999, 2000 by Kevin A. Burton and Aziz Sharif.<br>
 Modified by Dominic Stolerman and Dirk M&ouml;bius.<p>
 
-Current maintainer: Dirk M&ouml;bius (<a href="mailto:dmoebius@gmx.net">
-dmoebius@gmx.net</a>)<p>
+Current maintainer: Dirk M&ouml;bius
+(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)<p>
 
 <ol>
   <li><a href="#requirements">Requirements</a></li>
@@ -18,6 +22,7 @@ dmoebius@gmx.net</a>)<p>
   <li><a href="#usage">Usage</a></li>
   <li><a href="#options">Options</a></li>
   <li><a href="#troubleshooting">Troubleshooting</a></li>
+  <li><a href="#compiler">Compiler Versions</a></li>
 </ol>
 
 
@@ -25,15 +30,16 @@ dmoebius@gmx.net</a>)<p>
 <h2>1. Requirements</h2>
 
 <ul>
-  <li>jEdit &gt;= 3.1final</li>
-  <li>plugin EditBus &gt;= 0.10</li>
-  <li>plugin Console &gt;= 2.3</li>
-  <li>a Java Development Kit (JDK) &gt;= 1.1, <b>not</b> a Java Runtime Environment (JRE) !</li>
+  <li>jEdit &gt;= 3.2pre6</li>
+  <li>plugin EditBus &gt;= 1.0</li>
+  <li>plugin Console &gt;= 3.0</li>
+  <li>a Java Development Kit (JDK) &gt;= 1.1, <b>not</b> a Java Runtime
+      Environment (JRE) !</li>
 </ul>
 
 <b>Note:</b> If you want one-click access to error positions, and highlightening
 of compilation errors in the edit pane with wavy red lines, I suggest you
-install the <b>ErrorList plugin</b>, too. Version should be 0.11 or higher.<p>
+install the <b>ErrorList plugin</b>, too. Version should be 1.0 or higher.<p>
 
 
 <a name="installation"></a>
@@ -167,6 +173,13 @@ Most of them are self explaining, but some need special explanation:
 
 <ul>
   <li>
+    <b>Use modern compiler (JDK 1.3 or higher)</b><p>
+    If checked, the new compiler shipped with JDK 1.3 is used. Otherwise, the
+    old compiler is used. See <a href="#compiler">below</a> for an
+    explanation.<p>
+  </li>
+
+  <li>
     <b>Required library path</b><p>
     One or more directories that will be scanned for JAR/ZIP libraries.
     All found libraries will be added automatically to the classpath.<p>
@@ -199,8 +212,8 @@ Most of them are self explaining, but some need special explanation:
     </blockquote><p>
 
     <em>PS: I know, this feature screams for proper project managing,
-    e.g. </em>project files<em>. Someday the ProjectManager plugin will be ready to do
-    this. Have patience and faith, please.</em> {:-} <p>
+    e.g. </em>project files<em>. Someday the ProjectManager plugin will be
+    ready to do this. Have patience and faith, please.</em> {:-} <p>
   </li>
 </ul>
 
@@ -232,7 +245,8 @@ That way, the JDK will find the library automatically, and you don't have to
 configure anything else.
 
 If, for any reason, you cannot copy the library (maybe because you don't have
-write access to the JDK installation directory), you have a lot of alternatives:
+write access to the JDK installation directory), you have a lot of
+alternatives:
 
 <ul>
   <li>
@@ -299,19 +313,35 @@ write access to the JDK installation directory), you have a lot of alternatives:
         <td>Command</td>
         <td>Where to set</td>
       </tr>
+
       <tr>
         <td>Windows 95,98,ME</td>
-        <td><code>set CLASSPATH=%CLASSPATH%;<br><i>jdkhome</i>\lib\tools.jar</code></td>
+        <td>
+          <code>
+            set CLASSPATH=%CLASSPATH%;<br>
+            <i>jdkhome</i>\lib\tools.jar
+          </code>
+        </td>
         <td>C:\AUTOEXEC.BAT</td>
       </tr>
+
       <tr>
         <td>Windows NT</td>
         <td>CLASSPATH=<i>jdkhome</i>\lib\tools.jar</td>
-        <td><b>Start&gt;Settings&gt;System&gt;Environment</b> <em>(I guess!)</em></td>
+        <td>
+          <b>Start&gt;Settings&gt;System&gt;Environment</b>
+          <em>(I guess!)</em>
+        </td>
       </tr>
+
       <tr>
         <td>Unix</td>
-        <td><code>export $CLASSPATH=<br>$CLASSPATH:<i>jdkhome</i>/lib/tools.jar</code></td>
+        <td>
+          <code>
+            export $CLASSPATH=<br>
+            $CLASSPATH:<i>jdkhome</i>/lib/tools.jar
+          </code>
+        </td>
         <td><code>.profile</code> or <code>/etc/profile</code></td>
       </tr>
     </table><br>
@@ -319,9 +349,108 @@ write access to the JDK installation directory), you have a lot of alternatives:
 </ul>
 
 
+<a name="compiler"></a>
+<h2>6. Compiler Versions</h2>
 
+<h3>6.1 The modern compiler</h3>
+
+Starting with version 1.3, Sun shipped a new compiler with the JDK. From the
+Sun documentation:
+
+<blockquote><em>
+The <b>javac</b> compiler has been completely re-implemented in version 1.3
+of the Java 2 SDK. The compiler implementation from previous releases of the
+SDK is still available as <b>oldjavac</b>. The new javac is faster than the
+old javac.<p>
+
+The nonstandard options, those prefixed with '-X', are no longer supported.
+In particular, the <code>-Xdepend</code> option is no longer available.<p>
+
+When searching the classpath or sourcepath, the new compiler does not follow
+symbolic links. In version 1.3, it is therefore necessary to avoid the use of
+symbolic links within the directories appearing on the classpath and
+sourcepath, and within their subdirectories.<p>
+
+When the new 1.3 compiler detects an error in a source file during a
+compilation, it continues to parse the remaining source files and attempts to
+identify any further errors that they may contain. Code generation is
+completely suppressed for the remainder of the compilation, however, and no
+class files will be generated, even for compilation units that contain no
+errors. The old compiler in 1.2 would generate class files for any compilation
+units that did not contain errors. This resulted in less redundant work during
+the repeated compilations required to identify and correct all errors in a
+large program containing many files with errors. We hope to improve this
+behavior in the future. The new compiler is substantially faster overall,
+however, which should tend to offset this somewhat.
+</em></blockquote><p>
+
+If you have JDK 1.3 or higher, you can enable the modern compiler with the
+option <b>Use modern compiler</b> on the <b>Compiler options</b> dialog.
+
+<h3>6.2 Internals</h3>
+
+In case you're interested: the following classes get used when invoking the
+compiler:
+
+<h4>6.2.1 Classic compiler</h4>
+
+<font size="-1">
+&nbsp;&nbsp;&nbsp;&nbsp;<b>package</b> sun.tools.javac;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>class</b> <u>Main</u><br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Create a new compiler instance.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>output</code> where compiler and error messages should go.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>program</code> should always be "javac".<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <u>Main</u>(OutputStream output, String program);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compile files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>arguments</code> the command line options and files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@return</b> <code>true</code> if no error occured.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>boolean</b> <u>compile</u>(String[] arguments);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Return the exit status of the last compile run.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@return</b> 0 for EXIT_OK, 1 for EXIT_ERROR, 2 for EXIT_CMDERR,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;3 for EXIT_SYSERR, 4 for EXIT_ABNORMAL.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>int</b> <u>getExitStatus</u>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+</font>
+
+<h4>6.2.2 Modern compiler</h4>
+
+<font size="-1">
+&nbsp;&nbsp;&nbsp;&nbsp;<b>package</b> com.sun.tools.javac;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>class</b> <u>Main</u><br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Create a new compiler instance.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compiler output and errors go to <code>System.out</code> and <code>System.err</code>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <u>Main</u>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compile files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>arguments</code> the command line options and files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@return</b> the exit status of the compile run: 0 for EXIT_OK,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;1 for EXIT_ERROR, 2 for EXIT_CMDERR, 3 for EXIT_SYSERR,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;4 for EXIT_ABNORMAL.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>int</b> <u>compile</u>(String[] arguments);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+</font>
 <br>
-<hr>
+
+
+<br><hr>
 
 <font size="-1">
 The current maintainer of JCompiler is Dirk M&ouml;bius

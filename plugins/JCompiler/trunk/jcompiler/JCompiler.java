@@ -39,53 +39,47 @@ import buildtools.*;
  */
 public class JCompiler {
 
-	/** The name of the class that contains the compiler. */
-	public static final String COMPILER_CLASSNAME = "sun.tools.javac.Main";
-
-	/** The name of the compiler method. */
-	public static final String COMPILER_METHODNAME = "compile";
-
-	/** True, if JDK version is less than 1.2. */
+	/** true, if JDK version is older than 1.2 */
 	private final static boolean isOldJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.2") < 0);
 
-	/** Holds the javac compiler class. */
-	private static Class compilerClass = null;
+	/** true, if JDK version is 1.3 or higher */
+	private final static boolean isModernJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.3") >= 0);
 
-	/**
-	 * Holds the constructor of the compiler class with arguments
-	 * <code>OutputStream, String</code>.
-	 */
-	private static Constructor compilerConstructor = null;
-
-	/** Holds the javac compiler method. */
-	private static Method compilerMethod = null;
-
-	/** Compiler output is sent to this pipe. */
-	private PipedOutputStream pipe = null;
+	private Class compilerClass;
+	private Constructor compilerConstructor;
+	private Method compilerMethod;
+	private JCompilerTask task;
+	private View view;
+	private Buffer buffer;
 
 
-	public JCompiler() {
-		pipe = new PipedOutputStream();
+	public JCompiler(JCompilerTask task, View view, Buffer buffer) {
+		this.task = task;
+		this.view = view;
+		this.buffer = buffer;
+
+		initCompiler();
 	}
 
 
 	/**
-	 * Compile a file with sun.tools.javac.Main.compile().
+	 * Compile a file with VM builtin compiler, using either
+	 * <code>public boolean sun.tools.javac.Main.compile(String[])</code> or
+	 * <code>public int com.sun.tools.javac.Main.compile(String[])</code>.
 	 *
-	 * @param view        the view, where error dialogs should go
-	 * @param buf         the buffer containing the file to be compiled
 	 * @param pkgCompile  if true, JCompiler tries to locate the base directory
 	 *                    of the package of the current file and compiles
 	 *                    every outdated file.
 	 * @param rebuild     if true, JCompiler compiles <i>every</i> file in the
 	 *                    package hierarchy.
 	 */
-	public void compile(View view, Buffer buf, boolean pkgCompile, boolean rebuild) {
-		// Search for the compiler method:
-		initCompiler();
-
-		if (compilerMethod == null)
-			return; // compiler method not found
+	public void compile(boolean pkgCompile, boolean rebuild) {
+		if (compilerMethod == null) {
+			// compiler method not found.
+			// initCompiler() should have already printed an error,
+			// so we can silently return here.
+			return;
+		}
 
 		// Check output directory:
 		String outDir = getOutputDirectory();
@@ -97,13 +91,13 @@ public class JCompiler {
 				outDir = fOutDir.getCanonicalPath();
 			}
 			catch (IOException ioex) {
-				sendMessage("jcompiler.msg.errorOutputDir", new Object[] { outDir, ioex });
+				printInfo("jcompiler.msg.errorOutputDir", new Object[] { outDir, ioex }, true);
 				return;
 			}
 
 			if (fOutDir.exists()) {
 				if (!fOutDir.isDirectory()) {
-					sendMessage("jcompiler.msg.noOutputDir", new Object[] {outDir });
+					printInfo("jcompiler.msg.noOutputDir", new Object[] {outDir }, true);
 					return;
 				}
 			} else {
@@ -125,10 +119,10 @@ public class JCompiler {
 		}
 
 		// Check for auto save / auto save all
-		saveBuffers(view, buf, pkgCompile);
+		saveBuffers(pkgCompile);
 
 		// Get files to compile:
-		String filename = buf.getPath();
+		String filename = buffer.getPath();
 		String sourceBaseDir;
 		String[] files;
 
@@ -141,18 +135,22 @@ public class JCompiler {
 		}
 
 		if (files.length == 0) {
-			sendMessage("jcompiler.msg.nofiles", new Object[] { sourceBaseDir });
+			// No files to compile:
+			printInfo("jcompiler.msg.nofiles", new Object[] { sourceBaseDir }, false);
 			return;
 		}
 
 		// Show files to compile:
-		sendMessage("jcompiler.msg.compilefiles", new Object[] {
-			new Integer(files.length),
-			filename,
-			sourceBaseDir,
-			new Integer(outDir == null ? 0 : 1),
-			outDir
-		});
+		printInfo("jcompiler.msg.compilefiles",
+			new Object[] {
+				new Integer(files.length),
+				filename,
+				sourceBaseDir,
+				new Integer(outDir == null ? 0 : 1),
+				outDir
+			},
+			false
+		);
 
 		// Construct arguments for javac:
 		String[] arguments = constructArguments(getClassPath(filename), getSourcePath(), outDir, files);
@@ -169,17 +167,13 @@ public class JCompiler {
 				if (argNeedsQuote && arguments[i].charAt(arguments[i].length() - 1) != '"')
 					msg.append('"');
 			}
-			sendMessage("jcompiler.msg.showcommandline", new Object[] { msg.toString() });
+			printInfo("jcompiler.msg.commandline", new Object[] { msg.toString() }, false);
 		}
 
 		// Start the compiler:
-		boolean ok = invokeCompiler(pipe, arguments);
+		invokeCompiler(arguments);
 		System.gc();
-		sendMessage("jcompiler.msg.done");
-
-		// Empty the compile output pipe:
-		try { pipe.flush(); }
-		catch (IOException ioex) { /* ignore */ }
+		printInfo("jcompiler.msg.done", false);
 	}
 
 
@@ -197,124 +191,112 @@ public class JCompiler {
 			return; // compiler method not found
 
 		// Start the compiler:
-		boolean ok = invokeCompiler(pipe, arguments);
+		invokeCompiler(arguments);
 		System.gc();
-		sendMessage("jcompiler.msg.done");
-
-		// Empty the compile output pipe:
-		try { pipe.flush(); }
-		catch (IOException ioex) { /* ignore */ }
-	}
-
-
-	public PipedOutputStream getOutputPipe() {
-		return pipe;
-	}
-
-
-	private void sendMessage(String property) {
-		sendString(jEdit.getProperty(property));
-	}
-
-
-	private void sendMessage(String property, Object[] args) {
-		sendString(jEdit.getProperty(property, args));
-	}
-
-
-	private void sendString(String msg) {
-		Log.log(Log.DEBUG, this, msg);
-		byte[] bytes = msg.getBytes();
-
-		if (pipe != null && bytes != null) {
-			try {
-				pipe.write(bytes, 0, bytes.length);
-				pipe.flush();
-			}
-			catch (IOException ioex) {
-				// ignored
-			}
-			catch (NullPointerException ioex) {
-				// this exception occurs sometimes on crappy VM implementations
-				// like IBM JDK 1.1.8: pipe.write() throws it, if there's
-				// no sink, maybe because the connection to the sink has not
-				// yet been established or the the thread that creates the
-				// sink has stopped.
-				Log.log(Log.ERROR, this, "lost the output sink!");
-			}
-		}
+		printInfo("jcompiler.msg.done", false);
 	}
 
 
 	private void initCompiler() {
-		if (compilerMethod != null)
-			return; // already initialized
+		boolean isModern = false;
+		String compilerClassname = "sun.tools.javac.Main";
 
+		if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false)) {
+			compilerClassname = "com.sun.tools.javac.Main";
+			isModern = true;
+		}
+
+		// Load compiler class:
 		try {
-			compilerClass = Class.forName(COMPILER_CLASSNAME);
+			compilerClass = Class.forName(compilerClassname);
 		}
 		catch (ClassNotFoundException cnf) {
 			if (!isOldJDK) {
-				// new JDK (>= 1.2): try to find tools.jar:
+				// New JDK (>= 1.2): try to find tools.jar:
 				String home = System.getProperty("java.home");
-				Log.log(Log.DEBUG, JCompiler.class, "java.home=" + home);
+				Log.log(Log.DEBUG, this, "java.home=" + home);
 				if (home.toLowerCase().endsWith(File.separator + "jre"))
 					home = home.substring(0, home.length() - 4);
 				File toolsJar = new File(MiscUtilities.constructPath(home, "lib", "tools.jar"));
 				if (toolsJar.exists()) {
 					try {
-						Log.log(Log.DEBUG, JCompiler.class, "loading class " + COMPILER_CLASSNAME + " from " + toolsJar.getCanonicalPath());
+						Log.log(Log.DEBUG, this, "loading class " + compilerClassname + " from " + toolsJar.getCanonicalPath());
 						ClassLoader cl = ZipClassLoader.getInstance(toolsJar);
-						compilerClass = cl.loadClass(COMPILER_CLASSNAME);
+						compilerClass = cl.loadClass(compilerClassname);
 					}
 					catch (Exception ex) {
-						Log.log(Log.ERROR, JCompiler.class, ex);
-						sendMessage("jcompiler.msg.nocompilerclass_jdk12_tools_jar", new Object[] { COMPILER_CLASSNAME, toolsJar, ex.toString() });
-						return;
+						Log.log(Log.ERROR, this, ex);
+						printInfo("jcompiler.msg.nocompilerclass_jdk12_tools_jar",
+							new Object[] { compilerClassname, toolsJar, ex.toString() },
+							true);
 					}
 				} else {
-					Log.log(Log.ERROR, JCompiler.class, cnf);
-					sendMessage("jcompiler.msg.nocompilerclass_jdk12", new Object[] { COMPILER_CLASSNAME, toolsJar });
-					return;
+					Log.log(Log.ERROR, this, cnf);
+					printInfo("jcompiler.msg.nocompilerclass_jdk12",
+						new Object[] { compilerClassname, toolsJar },
+						true);
 				}
 			} else {
-				Log.log(Log.ERROR, JCompiler.class, cnf);
-				sendMessage("jcompiler.msg.nocompilerclass_jdk11", new Object[] { COMPILER_CLASSNAME });
-				return;
+				Log.log(Log.ERROR, this, cnf);
+				printInfo("jcompiler.msg.nocompilerclass_jdk11",
+					new Object[] { compilerClassname },
+					true);
 			}
 		}
 
-		// if we get here, we have found the compiler class
+		if (compilerClass == null)
+			return;
 
+		// Get constructor:
 		try {
-			// get the constructor "Main(OutputStream ostream,String program)":
-			final Class[] constructorSignature = { OutputStream.class, String.class };
+			// The classic compiler constructor has signature Main(OutputStream,String).
+			// The modern compiler constructor has signature Main().
+			Class[] constructorSignature = isModern ? new Class[] {}
+				: new Class[] {OutputStream.class, String.class};
 			compilerConstructor = compilerClass.getConstructor(constructorSignature);
 
-			// get the method "compile(String[] arguments)":
-			final Class[] methodSignature = { String[].class };
-			compilerMethod = compilerClass.getMethod(COMPILER_METHODNAME, methodSignature);
+			// Get the method "compile(String[] arguments)". The method has the same
+			// signature on the classic and modern compiler, but they have different
+			// return types (boolean/int). Since the return type is ignored here,
+			// it doesn't matter.
+			Class[] methodSignature = { String[].class };
+			compilerMethod = compilerClass.getMethod("compile", methodSignature);
 		}
 		catch (NoSuchMethodException e) {
 			Log.log(Log.ERROR, this, e);
-			e.printStackTrace();
-			Object[] args = new Object[] { compilerClass, e };
-			sendMessage("jcompiler.msg.compilermethod_exception", args);
+			printInfo("jcompiler.msg.compilermethod_exception",
+				new Object[] { compilerClass, e },
+				true);
 		}
 	}
 
 
-	private boolean invokeCompiler(OutputStream output, String[] arguments) {
+	private void invokeCompiler(String[] arguments) {
+		PrintStream origOut = System.out;
+		PrintStream origErr = System.err;
+
 		try {
+			// redirect stdout/stderr:
+			System.setOut(new PrintStream(new BufferedOutputStream(new TaskOutput()), true));
+			System.setErr(new PrintStream(new BufferedOutputStream(new TaskOutput()), true));
+
 			// instantiate a new compiler class with the constructor arguments:
-			// (OutputStream output, String programname = "javac")
-			Object compiler = compilerConstructor.newInstance(new Object[] { output, "javac" });
+			Object compiler;
+			if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false)) {
+				// modern compiler constructor needs no arguments:
+				compiler = compilerConstructor.newInstance(null);
+			} else {
+				// classic compiler constructor needs two arguments:
+				// an OutputStream for compiler error output, and a String
+				// with the program name, which is always "javac":
+				compiler = compilerConstructor.newInstance(
+					new Object[] { new BufferedOutputStream(new TaskOutput()), "javac" }
+				);
+			}
 
-			// invoke the method 'compile(String[] arguments)' on the instance:
-			Object returnValue = compilerMethod.invoke(compiler, new Object[] { arguments });
-
-			// The returnValue should be a Boolean:
-			return ((Boolean)returnValue).booleanValue();
+			// invoke the method 'compile(String[] arguments)' on the compiler instance.
+			// Note: the return value of the compile method is ignored.
+			compilerMethod.invoke(compiler, new Object[] { arguments });
 		}
 		catch (InvocationTargetException invex) {
 			// the invoked method itself has thrown an exception
@@ -322,15 +304,38 @@ public class JCompiler {
 			Log.log(Log.ERROR, this, "The compiler method itself just threw a runtime exception: " + targetException.toString());
 			targetException.printStackTrace();
 			Object[] args = new Object[] { compilerClass, targetException };
-			sendMessage("jcompiler.msg.compilermethod_exception", args);
+			printInfo("jcompiler.msg.compilermethod_exception", args, true);
 		}
 		catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
 			e.printStackTrace();
 			Object[] args = new Object[] { compilerClass, e };
-			sendMessage("jcompiler.msg.compilermethod_exception", args);
+			printInfo("jcompiler.msg.compilermethod_exception", args, true);
 		}
-		return false;
+		finally {
+			System.setOut(origOut);
+			System.setErr(origErr);
+		}
+	}
+
+
+	private void print(String property) {
+		task.print(jEdit.getProperty(property));
+	}
+
+
+	private void print(String property, Object[] args) {
+		task.print(jEdit.getProperty(property, args));
+	}
+
+
+	private void printInfo(String property, boolean asError) {
+		task.printInfo(jEdit.getProperty(property), asError);
+	}
+
+
+	private void printInfo(String property, Object[] args, boolean asError) {
+		task.printInfo(jEdit.getProperty(property, args), asError);
 	}
 
 
@@ -415,7 +420,8 @@ public class JCompiler {
 
 
 	/**
-	 * build a path containing the jar and zip files in the directory represented by <code>f</code>.
+	 * build a path containing the jar and zip files in the directory
+	 * represented by <code>f</code>.
 	 *
 	 * @param  f  a directory
 	 * @return a classpath containg all the jar and zip files from the given directory.
@@ -497,31 +503,31 @@ public class JCompiler {
 	}
 
 
-	private void saveBuffers(View view, Buffer current, boolean pkgCompile) {
+	private void saveBuffers(boolean pkgCompile) {
 		String prop = pkgCompile ? "jcompiler.javapkgcompile.autosave" : "jcompiler.javacompile.autosave";
 		String which = jEdit.getProperty(prop, "ask");
 
 		if (which.equals("current"))
-			saveCurrentBuffer(view, current);
+			saveCurrentBuffer();
 		else if (which.equals("all"))
-			saveAllBuffers(view);
+			saveAllBuffers();
 		else if (which.equals("ask"))
-			saveBuffersAsk(view, current, pkgCompile);
+			saveBuffersAsk(pkgCompile);
 		// do nothing on which == "no"
 	}
 
 
 	/** Save current buffer, if dirty. */
-	private void saveCurrentBuffer(View view, Buffer buf) {
-		if (buf.isDirty()) {
-			buf.save(view, null);
+	private void saveCurrentBuffer() {
+		if (buffer.isDirty()) {
+			buffer.save(view, null);
 			VFSManager.waitForRequests();
 		}
 	}
 
 
 	/** Save all buffers without asking. */
-	private void saveAllBuffers(View view) {
+	private void saveAllBuffers() {
 		boolean savedSomething = false;
 		Buffer[] buffers = jEdit.getBuffers();
 
@@ -537,7 +543,7 @@ public class JCompiler {
 
 
 	/** Ask for unsaved changes and save. */
-	private void saveBuffersAsk(View view, Buffer buf, boolean pkgCompile) {
+	private void saveBuffersAsk(boolean pkgCompile) {
 		boolean savedSomething = false;
 		if (pkgCompile) {
 			// Check if there are any unsaved buffers:
@@ -564,16 +570,16 @@ public class JCompiler {
 			}
 		} else { // !pkgCompile
 			// Check if current buffer is unsaved:
-			if (buf.isDirty()) {
+			if (buffer.isDirty()) {
 				int result = JOptionPane.showConfirmDialog(view,
-					jEdit.getProperty("jcompiler.msg.saveChanges.message", new Object[] { buf.getName() }),
+					jEdit.getProperty("jcompiler.msg.saveChanges.message", new Object[] { buffer.getName() }),
 					jEdit.getProperty("jcompiler.msg.saveChanges.title"),
 					JOptionPane.YES_NO_CANCEL_OPTION,
 					JOptionPane.WARNING_MESSAGE);
 				if (result == JOptionPane.CANCEL_OPTION)
 					return;
 				if (result == JOptionPane.YES_OPTION) {
-					buf.save(view, null);
+					buffer.save(view, null);
 					savedSomething = true;
 				}
 			}
@@ -755,7 +761,7 @@ public class JCompiler {
 	 * @return the new classpath, consisting of classPath + pathSseparator
 	 *    + additionalPath
 	 */
-	public static String appendClassPath(String classPath, String additionalPath)	{
+	public static String appendClassPath(String classPath, String additionalPath) {
 		String result;
 
 		if (additionalPath.length() == 0) {
@@ -772,6 +778,32 @@ public class JCompiler {
 		}
 
 		return result;
+	}
+
+
+	/**
+	 * Delegator that prints compiler output to the Output instance
+	 * of the current JCompilerTask.
+	 */
+	class TaskOutput extends OutputStream {
+
+		public void write(int b) {
+			write(new byte[] { (byte) b }, 0, 1);
+		}
+
+		public void write(byte[] bytes, int offset, int length) {
+			String s = new String(bytes, offset, length);
+
+			// skip trailing newlines (the Output print method adds them)
+			if (s.endsWith("\r\n") || s.endsWith("\n\r"))
+				s = s.substring(0, s.length() - 2);
+			else if (s.endsWith("\n"))
+				s = s.substring(0, s.length() - 1);
+
+			if (s.length() > 0)
+				task.print(s);
+		}
+
 	}
 
 }
