@@ -1,0 +1,41 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<!-- Define all of the actions that that the JImporter plugin provides. -->
+<ACTIONS>
+    <!-- Import Class at Point -->
+    <ACTION NAME="jimporter.import-class-at-point">
+        <CODE>
+            jimporter.JEditClassImporter.importClassAtPoint(view);
+        </CODE>
+    </ACTION>
+    
+    <!-- Import Class -->
+    <ACTION NAME="jimporter.import-class">
+        <CODE>
+            jimporter.JEditClassImporter.importClass(view);
+        </CODE>
+    </ACTION>
+    
+    <!-- Insert classname at point -->
+    <ACTION NAME="jimporter.insert-classname-at-point">
+        <CODE>
+            jimporter.JEditClassImporter.insertClassAtPoint(view);
+        </CODE>
+    </ACTION>
+    
+    <!-- Sort Imports -->
+    <ACTION NAME="jimporter.sort-imports">
+        <CODE>
+            import jimporter.sorting.ImportSorter;
+            ImportSorter is = new ImportSorter(view);
+            is.sort();
+        </CODE>
+    </ACTION>
+    
+    <!-- Show the JImporter option pane -->
+    <ACTION NAME="jimporter.options">
+        <CODE>
+            new jimporter.JImporterOptionDialog(view); 
+        </CODE>
+    </ACTION>
+</ACTIONS>
