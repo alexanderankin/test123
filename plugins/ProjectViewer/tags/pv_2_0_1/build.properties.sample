@@ -1,0 +1,13 @@
+# Environment specific build parameters.  The build.xml file will load properties from
+# a 'build.properties' file at runtime.  This is a sample of what this file should
+# look like.
+
+compiler.debug=on
+compiler.optimize=off
+compiler.deprecation=on
+compiler.verbose=off
+
+jedit.user.home=${user.home}/.jedit
+jedit.install.dir=../../jEdit
+version=2.0.1
+
