@@ -170,7 +170,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
         boolean stripNewLineFromStart = true;
 
         while(start < end && Character.isWhitespace(array[start])) {
-          if(Character.isSpaceChar(array[start])) {
+          if(Character.isSpaceChar(array[start]) || array[start] == '\t') {
             start++;
           } else if(stripNewLineFromStart) {
             start++;
@@ -183,7 +183,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
         if(start < end && Character.isWhitespace(array[end - 1])) {
 
           while(start < end && Character.isWhitespace(array[end - 1])) {
-            if(Character.isSpaceChar(array[end - 1])) {
+            if(Character.isSpaceChar(array[end - 1]) || array[start] == '\t') {
               end--;
             } else {
               break;
