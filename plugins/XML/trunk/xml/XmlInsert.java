@@ -303,8 +303,19 @@ public class XmlInsert extends JPanel implements EBComponent
 		if(_data instanceof XmlParsedData)
 		{
 			XmlParsedData data = (XmlParsedData)_data;
-			setDeclaredElements(data.getAllowedElements(
-				buffer,view.getTextArea().getCaretPosition()));
+
+			Selection[] selection = view.getTextArea().getSelection();
+
+			if(selection.length > 0) {
+				setDeclaredElements(data.getAllowedElements(
+					buffer,
+					selection[0].getStart(),
+					selection[0].getEnd()));
+			}
+			else {
+				setDeclaredElements(data.getAllowedElements(
+					buffer,view.getTextArea().getCaretPosition()));
+			}
 		}
 		else
 		{

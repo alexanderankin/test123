@@ -195,6 +195,26 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 		return null;
 	} //}}}
 
+	//{{{ isInsideTag() method
+	public static boolean isInsideTag(String text, int pos)
+	{
+		int start = text.lastIndexOf('<',pos);
+		int end = text.lastIndexOf('>',pos);
+
+		if(start > -1) {
+			if(end == -1)
+				return true;
+			else if(end < start)
+				return true;
+			else
+				return false;
+		}
+		else if(end > -1)
+			return true;
+		else
+			return false;
+	}
+
 	//{{{ Private members
 
 	//{{{ findEndTag() method

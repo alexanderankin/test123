@@ -88,6 +88,11 @@ public class XmlParsedData extends SideKickParsedData
 	//{{{ getAllowedElements() method
 	public List getAllowedElements(Buffer buffer, int pos)
 	{
+		// make sure we are not inside a tag
+		if(TagParser.isInsideTag(buffer.getText(0,pos),pos)) {
+			return new ArrayList();
+		}
+
 		TagParser.Tag parentTag = TagParser.findLastOpenTag(
 			buffer.getText(0,pos),pos,this);
 
@@ -122,6 +127,84 @@ public class XmlParsedData extends SideKickParsedData
 					CompletionInfo info = (CompletionInfo)
 						mappings.get(prefix);
 					info.getAllElements(prefix,returnValue);
+				}
+			}
+		}
+
+		Collections.sort(returnValue,new ElementDecl.Compare());
+		return returnValue;
+	} //}}}
+
+	//{{{ getAllowedElements() method
+	public List getAllowedElements(Buffer buffer, int startPos, int endPos)
+	{
+		ArrayList returnValue = new ArrayList();
+
+		// make sure we are not inside a tag
+		if(TagParser.isInsideTag(buffer.getText(0,startPos),startPos)) {
+			return returnValue;
+		}
+
+		// make sure we are not inside a tag
+		if(TagParser.isInsideTag(buffer.getText(0,endPos),endPos)) {
+			return returnValue;
+		}
+
+		TagParser.Tag startParentTag = TagParser.findLastOpenTag(
+			buffer.getText(0,startPos),startPos,this);
+
+		TagParser.Tag endParentTag = TagParser.findLastOpenTag(
+			buffer.getText(0,endPos),endPos,this);
+
+		if(startParentTag == null) { 
+			if(endParentTag == null) {
+				// add everything
+				Iterator iter = mappings.keySet().iterator();
+				while(iter.hasNext())
+				{
+					String prefix = (String)iter.next();
+					CompletionInfo info = (CompletionInfo)
+					mappings.get(prefix);
+					info.getAllElements(prefix,returnValue);
+				}
+			}
+			else
+				return returnValue;
+		}
+		else if(endParentTag == null) {
+			return returnValue;
+		}
+		else
+		{
+			String startParentPrefix = getElementNamePrefix(startParentTag.tag);
+			ElementDecl startParentDecl = getElementDecl(startParentTag.tag);
+
+			String endParentPrefix = getElementNamePrefix(endParentTag.tag);
+			ElementDecl endParentDecl = getElementDecl(endParentTag.tag);
+
+			if(startParentDecl == null)
+				return returnValue;
+			else if(endParentDecl == null)
+				return returnValue;
+			else if(!startParentPrefix.equals(endParentPrefix))
+				return returnValue;
+			else
+			{
+
+				if(startParentDecl != null)
+					returnValue.addAll(startParentDecl.getChildElements(startParentPrefix));
+
+				// add everything but the parent's prefix now
+				Iterator iter = mappings.keySet().iterator();
+				while(iter.hasNext())
+				{
+					String prefix = (String)iter.next();
+					if(!prefix.equals(startParentPrefix))
+					{
+						CompletionInfo info = (CompletionInfo)
+							mappings.get(prefix);
+						info.getAllElements(prefix,returnValue);
+					}
 				}
 			}
 		}
