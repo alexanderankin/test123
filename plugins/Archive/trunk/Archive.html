@@ -1,138 +1,138 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<HTML>
-<HEAD>
-<TITLE>Archive Plugin</TITLE>
-</HEAD>
-<BODY BGCOLOR="#FFFFFF">
+<html>
+<head>
+<title>Archive Plugin</title>
+</head>
+<body bgcolor="#FFFFFF">
 
 
-<TABLE
-    CELLSPACING="0"
-    CELLPADDING="3"
-    BGCOLOR="#CCCCFF"
-    BORDER="0"
-    WIDTH="100%"
-    SUMMARY="Archive Plugin header"
+<table
+    cellspacing="0"
+    cellpadding="3"
+    bgcolor="#CCCCFF"
+    border="0"
+    width="100%"
+    summary="Archive Plugin header"
 >
-<TR WIDTH="100%">
-<TD><BIG><BIG>Archive Plugin</BIG></BIG></TD>
-<TD ALIGN="right"><SMALL>By Andr&eacute; Kaplan<BR>
-<EM>akaplan@jedit.org</EM></SMALL></TD>
-</TR>
-</TABLE>
+<tr width="100%">
+<td><big><big>Archive Plugin</big></big></td>
+<td align="right"><small>By Andr&eacute; Kaplan<br>
+<em>akaplan@jedit.org</em></small></td>
+</tr>
+</table>
 
 
-<UL>
-    <LI><A HREF="#general">Presentation</A></LI>
-    <LI><A HREF="#usage">Usage</A></LI>
-    <LI><A HREF="#credits">Credits</A></LI>
-    <LI><A HREF="#feedback">Feedback</A></LI>
-</UL>
+<ul>
+    <li><a href="#general">Presentation</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#credits">Credits</a></li>
+    <li><a href="#feedback">Feedback</a></li>
+</ul>
 
 
-<H2><A NAME="general">Presentation</A></H2>
+<h2><a name="general">Presentation</a></h2>
 
-<P>Archive allows to browse and read the content of zip and tar archives.</P>
+<p>Archive allows to browse and read the content of zip and tar archives.</p>
 
-<P>The zip file system allows to browse/read the content of
-<CODE>*.zip</CODE> and <CODE>*.jar</CODE> files.
-</P>
+<p>The zip file system allows to browse/read the content of
+<code>*.zip</code> and <code>*.jar</code> files.
+</p>
 
-<P>As for the tar file system, it can browse/read:</P>
+<p>As for the tar file system, it can browse/read:</p>
 
-<UL>
-    <LI>plain archives: <CODE>*.tar</CODE> files</LI>
-    <LI>gzipped archives: <CODE>*.tar.gz</CODE>, or <CODE>*.tgz</CODE> files</LI>
-    <LI>bzipped archives: <CODE>*.tar.bz2</CODE> files.</LI>
-</UL>
+<ul>
+    <li>plain archives: <code>*.tar</code> files</li>
+    <li>gzipped archives: <code>*.tar.gz</code>, or <code>*.tgz</code> files</li>
+    <li>bzipped archives: <code>*.tar.bz2</code> files.</li>
+</ul>
 
-<P>Archive supports nested archives.
-For example, you can explore the content of a <CODE>*.jar</CODE> file inside a
-<CODE>*.tgz</CODE> file.
-</P>
+<p>Archive supports nested archives.
+For example, you can explore the content of a <code>*.jar</code> file inside a
+<code>*.tgz</code> file.
+</p>
 
-<P>For faster browsing, Archive caches directories in a special directory.
+<p>For faster browsing, Archive caches directories in a special directory.
 To clear the cache, use
-<EM>Plugins&nbsp;-&gt;&nbsp;Archive&nbsp;-&gt;&nbsp;Clear&nbsp;directory&nbsp;cache</EM>.
-</P>
+<em>Plugins&nbsp;-&gt;&nbsp;Archive&nbsp;-&gt;&nbsp;Clear&nbsp;directory&nbsp;cache</em>.
+</p>
 
-<P>Archive requires:</P>
+<p>Archive requires:</p>
 
-<UL>
-    <LI>JDK 1.1</LI>
-    <LI>jEdit 3.0final</LI>
-</UL>
-
-
-<H2><A NAME="usage">Usage</A></H2>
-
-<P>The straightest way to open an archive is to:</P>
-
-<UL>
-    <LI>Open the File System Browser
-    (<EM>Utilities&nbsp;-&gt;&nbsp;File&nbsp;System&nbsp;Browser</EM>)
-    </LI>
-
-    <LI>Right-click on an archive file and
-    select either <EM>Browse zip archive</EM> or <EM>Browse tar archive</EM>.
-    </LI>
-</UL>
-
-<P>Format of Archive URLs:</P>
-
-<UL>
-    <LI>Exploring a zip archive on Windows:
-    <UL>
-        <LI><CODE>zip:C:\path\to\file.zip!</CODE></LI>
-        <LI><CODE>zip:C:\path\to\file.zip!/path/inside/archive</CODE></LI>
-    </UL>
-    </LI>
-
-    <LI>Exploring a tar archive on Unix:
-    <UL>
-        <LI><CODE>tar:/path/to/file.tgz!</CODE></LI>
-        <LI><CODE>tar:/path/to/file.tgz!/path/inside/archive</CODE></LI>
-    </UL>
-    </LI>
-</UL>
-
-<P><EM>Notes</EM>:</P>
-
-<OL>
-    <LI>the trailing <CODE>!</CODE> (exclamation mark) is mandatory.</LI>
-    <LI>the file separator inside archives is <CODE>/</CODE> (slash).</LI>
-</OL>
+<ul>
+    <li>JDK 1.1</li>
+    <li>jEdit 3.0final</li>
+</ul>
 
 
-<H2><A NAME="credits">Credits</A></H2>
+<h2><a name="usage">Usage</a></h2>
 
-<P>A special mention to:</P>
+<p>The straightest way to open an archive is to:</p>
 
-<UL>
-    <LI>Aftex software for the port of the bzip2 library at
-    <A HREF="http://www.aftexsw.com/aftex/products/java/bzip/">http://www.aftexsw.com/aftex/products/java/bzip/</A>
-    </LI>
+<ul>
+    <li>Open the File System Browser
+    (<em>Utilities&nbsp;-&gt;&nbsp;File&nbsp;System&nbsp;Browser</em>)
+    </li>
 
-    <LI>Tim Endres for the port of the tar utility at
-    <A HREF="http://www.trustice.com/java/tar/">http://www.trustice.com/java/tar/</A>
-    </LI>
-</UL>
+    <li>Right-click on an archive file and
+    select either <em>Browse zip archive</em> or <em>Browse tar archive</em>.
+    </li>
+</ul>
 
-<H2><A NAME="feedback">Feedback</A></H2>
+<p>Format of Archive URLs:</p>
 
-<P>
+<ul>
+    <li>Exploring a zip archive on Windows:
+    <ul>
+        <li><code>zip:C:\path\to\file.zip!</code></li>
+        <li><code>zip:C:\path\to\file.zip!/path/inside/archive</code></li>
+    </ul>
+    </li>
+
+    <li>Exploring a tar archive on Unix:
+    <ul>
+        <li><code>tar:/path/to/file.tgz!</code></li>
+        <li><code>tar:/path/to/file.tgz!/path/inside/archive</code></li>
+    </ul>
+    </li>
+</ul>
+
+<p><em>Notes</em>:</p>
+
+<ol>
+    <li>the trailing <code>!</code> (exclamation mark) is mandatory.</li>
+    <li>the file separator inside archives is <code>/</code> (slash).</li>
+</ol>
+
+
+<h2><a name="credits">Credits</a></h2>
+
+<p>A special mention to:</p>
+
+<ul>
+    <li>Aftex software for the port of the bzip2 library at
+    <a href="http://www.aftexsw.com/aftex/products/java/bzip/">http://www.aftexsw.com/aftex/products/java/bzip/</a>
+    </li>
+
+    <li>Tim Endres for the port of the tar utility at
+    <a href="http://www.trustice.com/java/tar/">http://www.trustice.com/java/tar/</a>
+    </li>
+</ul>
+
+<h2><a name="feedback">Feedback</a></h2>
+
+<p>
 The preferred way to send bug reports is to use the Bug Tracker at
-<A HREF="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</A>.
-</P>
+<a href="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</a>.
+</p>
 
-<P>Also you can write to:</P>
-<UL>
-<LI>Andr&eacute; Kaplan <EM>&lt;akaplan@jedit.org&gt;</EM>;
-<LI>or jEdit-users mailing-list <EM>&lt;jedit-users@lists.sourceforge.net&gt;</EM>;
-<LI>or jEdit-devel mailing.list <EM>&lt;jedit-devel@lists.sourceforge.net&gt;</EM>.
-</UL>
+<p>Also you can write to:</p>
+<ul>
+    <li>Andr&eacute; Kaplan <em>&lt;akaplan@jedit.org&gt;</em>;</li>
+    <li>or jEdit-users mailing-list <em>&lt;jedit-users@lists.sourceforge.net&gt;</em>;</li>
+    <li>or jEdit-devel mailing.list <em>&lt;jedit-devel@lists.sourceforge.net&gt;</em>.</li>
+</ul>
 
 
-</BODY>
-</HTML>
+</body>
+</html>
 
