@@ -2,6 +2,7 @@
  *  XSLTProcessor.java - GUI for performing XSL Transformations
  *
  *  Copyright (c) 2002 Greg Merrill
+ *  Portions copyright (c) 2002 Robert McKinnon
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -29,17 +30,17 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.FileReader;
-import java.io.StringReader;
-import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.text.MessageFormat;
+import java.util.Properties;
+
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -47,27 +48,22 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JCheckBox;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.xml.transform.Templates;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
-import javax.xml.transform.OutputKeys;
-import org.apache.xalan.processor.TransformerFactoryImpl;
-import org.apache.xalan.templates.OutputProperties;
+
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 /**
  * GUI for performing XSL Transformations.
+ *
+ *@author   Greg Merrill, Robert McKinnon
  */
 public class XSLTProcessor extends JPanel {
 
@@ -83,7 +79,6 @@ public class XSLTProcessor extends JPanel {
   private JButton upButton;
   private JButton downButton;
   private JButton transformButton;
-  private JCheckBox indentCheckBox;
   private double widestButtonWidth = -1;
 
 
@@ -100,7 +95,6 @@ public class XSLTProcessor extends JPanel {
     this.resultDocumentTextField = initFileTextField("XSLTProcessor.lastResult", "XSLTProcessor.result.pleaseName");
     this.selectButton = initFileChooserButton("XSLTProcessor.select.button");
     this.nameResultButton = initFileChooserButton("XSLTProcessor.name.button");
-    this.indentCheckBox = new JCheckBox(jEdit.getProperty("XSLTProcessor.indent.checkbox"), true);
 
     this.stylesheetsListModel = initStylesheetListModel();
     this.stylesheetsList = initStylesheetList();
@@ -152,15 +146,14 @@ public class XSLTProcessor extends JPanel {
 
   /**
    * Returns transform button
+   *
+   *@return   The transformButton value
    */
   public JButton getTransformButton() {
     return transformButton;
   }
 
 
-  /**
-   * Description of the Method
-   */
   private JTextField initFileTextField(String lastProperty, String descriptionProperty) {
     JTextField textField = new JTextField();
     textField.setEditable(false);
@@ -309,44 +302,29 @@ public class XSLTProcessor extends JPanel {
     transformButton.addActionListener(
       new ActionListener() {
         public void actionPerformed(ActionEvent evt) {
+          Date start = new Date();
           setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-          String docFileName = null;
+          String inputFile = null;
           String stylesheetFileName = null;
+          Object[] stylesheets = stylesheetsListModel.toArray();
 
           try {
-            TransformerFactory transformerFactory = new TransformerFactoryImpl();
-            docFileName = sourceDocumentTextField.getText();
-            String docBeingTransformed = null;
-            for(int i = 0; i < stylesheetsListModel.getSize(); i++) {
-              stylesheetFileName = (String)stylesheetsListModel.getElementAt(i);
-              StreamSource stylesheetSource = new StreamSource(new FileReader(stylesheetFileName));
-              stylesheetSource.setSystemId(stylesheetFileName);
-              Templates templates = transformerFactory.newTemplates(stylesheetSource);
+            inputFile = sourceDocumentTextField.getText();
+            String docBeingTransformed = XSLTUtilities.transform(inputFile, stylesheets);
 
-              Transformer transformer = templates.newTransformer();
-
-              if(i == stylesheetsListModel.getSize() - 1 && indentCheckBox.isSelected()) {
-                transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-                transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-                transformer.setOutputProperty(OutputProperties.S_KEY_INDENT_AMOUNT, "2");
-              }
-
-              StreamSource docSource = (docBeingTransformed == null)
-                  ? new StreamSource(new FileReader(docFileName))
-                  : new StreamSource(new StringReader(docBeingTransformed));
-              docSource.setSystemId(docFileName);
-              StringWriter stringWriter = new StringWriter();
-              StreamResult result = new StreamResult(stringWriter);
-              transformer.transform(docSource, result);
-              docBeingTransformed = stringWriter.toString();
-            }
             Buffer newBuffer = jEdit.newFile(view);
             newBuffer.insert(0, docBeingTransformed);
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-            if(resultDocumentTextField.getText() != jEdit.getProperty("XSLTProcessor.result.pleaseName")) {
+            if(!resultDocumentTextField.getText().equals(jEdit.getProperty("XSLTProcessor.result.pleaseName"))) {
               newBuffer.save(view, resultDocumentTextField.getText());
             }
+
+            Date end = new Date();
+            long timeTaken = end.getTime() - start.getTime();
+            Object[] param = {new Integer((int)timeTaken)};
+            String status = jEdit.getProperty("XSLTProcessor.transform.status", param);
+            Log.log(Log.MESSAGE, this, status);
           } catch(Exception e) {
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
             if(stylesheetFileName == null) {
@@ -442,16 +420,12 @@ public class XSLTProcessor extends JPanel {
     constraints = getConstraints(9, new Insets(2, 2, 4, 2));
     constraints.anchor = GridBagConstraints.EAST;
     add(nameResultButton, constraints);
-
-    constraints = getConstraints(10, new Insets(4, 4, 4, 4));
-    constraints.weightx = 5;
-    constraints.fill = GridBagConstraints.HORIZONTAL;
-    add(this.indentCheckBox, constraints);
   }
 
 
   private void addTransformComponents() {
-    GridBagConstraints constraints = getConstraints(11, new Insets(4, 4, 4, 4));
+    GridBagConstraints constraints = getConstraints(10, new Insets(4, 4, 4, 4));
+    constraints.gridwidth = 2;
     constraints.anchor = GridBagConstraints.CENTER;
     add(transformButton, constraints);
   }

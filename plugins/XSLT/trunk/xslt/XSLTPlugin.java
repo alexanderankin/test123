@@ -42,6 +42,8 @@ public class XSLTPlugin extends EditPlugin {
   public void start () {
     System.setProperty("javax.xml.parsers.SAXParserFactory", 
       "org.apache.xerces.jaxp.SAXParserFactoryImpl");
+    String indentAmount = jEdit.getProperty("XSLTProcessor.transform.indentAmount");
+    XSLTUtilities.setIndentAmount(indentAmount);
   }
 
   /**

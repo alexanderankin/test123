@@ -3,6 +3,47 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
+  <ACTION NAME="XSLTProcessor.Indent">
+    <CODE>
+      String indentyTransformStylesheet = "" +
+        "&lt;?xml version='1.0' encoding='UTF-8'?&gt;" +
+        "&lt;xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'&gt;" +
+        "	&lt;xsl:output method='xml' version='1.0' encoding='UTF-8' indent='yes'/&gt;" +
+        "  &lt;xsl:strip-space elements=''/&gt;" +
+
+        "  &lt;xsl:template match='/'&gt;" +
+        "    &lt;xsl:apply-templates/&gt;" +
+        "  &lt;/xsl:template&gt;" +
+
+        "  &lt;xsl:template match='*|@*|comment()|processing-instruction()'&gt;" +
+        "    &lt;xsl:copy&gt;" +
+        "      &lt;xsl:apply-templates select='*|@*|text()|comment()|processing-instruction()'/&gt;" +
+        "    &lt;/xsl:copy&gt;" +
+        "  &lt;/xsl:template&gt;" +
+
+        "  &lt;xsl:template match='text()'&gt;" +
+        "    &lt;xsl:value-of select='normalize-space(.)'/&gt;" +
+        "  &lt;/xsl:template&gt;" +
+        "&lt;/xsl:stylesheet&gt;";
+
+      Buffer buffer = view.getBuffer();
+      buffer.writeLock();
+
+      String inputString = buffer.getText(0, buffer.getLength());
+
+      try {
+        String resultString = xslt.XSLTUtilities.transform(inputString, indentyTransformStylesheet);
+        buffer.remove(0, buffer.getLength());
+        buffer.insert(0, resultString);
+      }
+      catch(Exception e) {
+        JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.Indent.error") + " " + e.getMessage());
+      }
+      finally {
+        buffer.writeUnlock();
+      }
+    </CODE>
+  </ACTION>
   <ACTION NAME="XSLTProcessor.Transform">
     <CODE>
       xsltProcessor = view.getDockableWindowManager().getDockable("XSLTProcessor");
