@@ -8,7 +8,7 @@ plugin.jcompiler.JCompilerPlugin.author=Dirk Möbius
 
 plugin.jcompiler.JCompilerPlugin.contributors=Logan Bauer, Kevin A. Burton, Mike Hansen, Aziz Sharif, Dominic Stolerman, Andreas Schörk, Doug Breaux
 
-plugin.jcompiler.JCompilerPlugin.version=1.6.2
+plugin.jcompiler.JCompilerPlugin.version=1.6.3
 
 plugin.jcompiler.JCompilerPlugin.docs=index.html
 
