@@ -12,3 +12,9 @@ projectviewer.label=Project Viewer
 
 open-viewer-menu-item.label=Project Viewer
 options.projectviewer.label=Project Viewer
+
+#
+# Text for the import project function.
+#
+projectviewer.import-project.overwrite.title=Overwrite Project
+projectviewer.import-project.overwrite.message=Project {0} exists.  Overwrite?
