@@ -57,6 +57,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
@@ -145,6 +146,21 @@ public class DualDiff implements EBComponent
             }
             if (bu.getWhat() == BufferUpdate.LOADED) {
                 this.refresh();
+            }
+        } else if (message instanceof EditPaneUpdate) {
+            EditPaneUpdate epu = (EditPaneUpdate) message;
+            EditPane editPane = epu.getEditPane();
+            View view = editPane.getView();
+            if (!DualDiff.isEnabledFor(view)) {
+                return;
+            }
+            if (epu.getWhat() == EditPaneUpdate.CREATED) {
+                DualDiff.editPaneCreated(view, editPane);
+            } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
+                DualDiff.editPaneDestroyed(view, editPane);
+            } else if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
+                DualDiff.editPaneBufferChanged(view, editPane);
+            } else {
             }
         }
     }
@@ -507,18 +523,18 @@ public class DualDiff implements EBComponent
     }
 
 
-    public static void editPaneCreated(View view, EditPane editPane) {
+    private static void editPaneCreated(View view, EditPane editPane) {
         DualDiff.removeFrom(view);
     }
 
 
-    public static void editPaneDestroyed(View view, EditPane editPane) {
+    private static void editPaneDestroyed(View view, EditPane editPane) {
         DualDiff.removeFrom(view);
         DiffHighlight.removeHighlightFrom(editPane);
     }
 
 
-    public static void editPaneBufferChanged(View view, EditPane editPane) {
+    private static void editPaneBufferChanged(View view, EditPane editPane) {
         DualDiff.refreshFor(view);
     }
 
