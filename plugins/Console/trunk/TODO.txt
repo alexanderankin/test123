@@ -1,16 +1,14 @@
 BEFORE CONSOLE 3.0 RELEASE:
 
-- cvs remove ConsoleOptionPane, add GeneralOptionPane, ErrorsOptionPane
 - documentation generated with DocBook
-- Windows: expand env variables ourselves or not?
 - finish commando, include a few more sample commando files
 - improve commando error handling
 - test multi-line error pattern stuff
 - include John's jcmd for running stuff on Windows
-- aliases and variables option panes
 
 LATER:
 
+- aliases and variables option panes
 - commando: lower case tag names?
 - sort property list in commando dialog box
 - aliases option pane
