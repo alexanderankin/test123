@@ -16,6 +16,7 @@
 package projectviewer;
 
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeSelectionModel;
 
 import projectviewer.tree.*;
 
@@ -83,5 +84,11 @@ public final class SimpleProjectView implements ProjectView {
 		project = aProject;
 	}
 
+    /**
+     *  Returns a selection model that allows many nodes to be selected.
+     */
+    public int getSelectionModel() {
+        return TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION;
+    }
 }
 

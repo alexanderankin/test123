@@ -131,7 +131,6 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             p.removeAllFiles();
             new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
         } else if (src == renameDir) {
-            /* @todo: renaming of directories */
             renameDirectory();
         } else if (src == renameFile) {
             renameFile();

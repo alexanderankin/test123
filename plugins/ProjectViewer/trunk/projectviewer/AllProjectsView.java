@@ -17,6 +17,7 @@ package projectviewer;
 
 import java.util.Iterator;
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeSelectionModel;
 
 import org.gjt.sp.util.Log;
 
@@ -97,6 +98,13 @@ public final class AllProjectsView implements ProjectView {
 	private Iterator projects() {
 		return ProjectManager.getInstance().projects();
 	}
+    
+    /**
+     *  Returns a selection model that allows only one node to be selected.
+     */
+    public int getSelectionModel() {
+        return TreeSelectionModel.SINGLE_TREE_SELECTION;
+    }
 
 }
 

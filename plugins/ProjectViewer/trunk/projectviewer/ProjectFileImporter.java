@@ -55,6 +55,15 @@ public final class ProjectFileImporter {
 	 *@param  directory  Description of Parameter
 	 */
 	public void doImport(File directory) {
+        if (!directory.isDirectory()) {
+			JOptionPane.showMessageDialog(
+                viewer,
+				"The selected directory \"" + directory + "\" does not exist!\"",
+                "Error",
+                JOptionPane.ERROR_MESSAGE
+            );
+        }
+
 		List files = new ArrayList();
 
 		String projectRoot=viewer.getCurrentProject().getRoot().getPath();

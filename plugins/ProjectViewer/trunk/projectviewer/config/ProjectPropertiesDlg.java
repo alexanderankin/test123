@@ -36,6 +36,7 @@ import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
+import javax.swing.WindowConstants;
 
 // Import jEdit
 import projectviewer.Project;
@@ -170,7 +171,24 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         }
         
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            projRoot.setText(chooser.getSelectedFile().getAbsolutePath());
+            root = chooser.getSelectedFile().getAbsolutePath();
+            if (project != null) {
+                if (root.startsWith(project.getRoot().getPath()) &&
+                        root.length() > project.getRoot().getPath().length()) { 
+                    project.changeRoot(new ProjectDirectory(root));
+                } else {
+                    JOptionPane.showMessageDialog(
+                        this, 
+                        "Changing to a root that isn't parent of the previous root " +
+                        "is not supported.",
+                        "Error: unsupported change",
+                        JOptionPane.ERROR_MESSAGE
+                    );
+                    return;
+                }
+            }
+                
+            projRoot.setText(root);
             projRoot.setToolTipText(projRoot.getText());
         }
 
@@ -211,9 +229,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 	    } else {
             project.setName(name);
 	        project.setURLRoot(urlRoot);
-            if (!root.equals(project.getRoot().getPath())) {
-                project.changeRoot(new ProjectDirectory(root));
-            }
+            project.changeRoot(new ProjectDirectory(root));
         }
         
         return OK;
@@ -223,11 +239,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
     private void loadGUI() {
         
         // Ignores the close window button
-        addWindowListener( 
-            new WindowAdapter() {
-                public void windowClosing() { }
-            } 
-        );
+        this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
         
         // Builds the dialog
         
@@ -289,26 +301,26 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 
         // URL Root for web projects.  Used to launch files in web browser against webserver
 	
-	label = new JLabel("Web URL Root(optional)");
-	label.setToolTipText("sets the URL for a web project e.g. http://<projecturl>");
-	gc.weightx = 0;
+        label = new JLabel("Web URL Root(optional)");
+        label.setToolTipText("sets the URL for a web project e.g. http://<projecturl>");
+        gc.weightx = 0;
         gc.gridx = 0;
         gc.gridy = 2;
         gc.gridwidth = 1;
-	gridbag.setConstraints(label, gc);
+        gridbag.setConstraints(label, gc);
 	
-	getContentPane().add(label);
-	projURLRoot = new JTextField();
-	projURLRoot.setToolTipText("http://<projecturl>");
+        getContentPane().add(label);
+        projURLRoot = new JTextField();
+        projURLRoot.setToolTipText("http://<projecturl>");
 	
-	gc.weightx = 1;
+        gc.weightx = 1;
         gc.gridx = 1;
         gc.gridy = 2;
         gc.gridwidth = 2;
-	gridbag.setConstraints(projURLRoot, gc);
-	getContentPane().add(projURLRoot);
+        gridbag.setConstraints(projURLRoot, gc);
+        getContentPane().add(projURLRoot);
 
-	// Lower buttons
+        // Lower buttons
         
         JPanel panel = new JPanel();
         gc.weightx = 1;

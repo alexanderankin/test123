@@ -56,6 +56,11 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
     private JCheckBox deleteNotFoundFiles;
     private JCheckBox saveOnChange;
     
+    private JCheckBox showToolBar;
+    private JCheckBox showFoldersTree;
+    private JCheckBox showFilesTree;
+    private JCheckBox showWorkingFilesTree;
+    
     private JTextField importExts;
     private JTextField excludeDirs;
     private JTextField includeFiles;
@@ -102,7 +107,28 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
         saveOnChange.setSelected(config.getSaveOnChange());
         addComponent(saveOnChange);
         
-		//-- general options
+        //-- gui options
+        addSeparator("options.projectviewer.gui-opt.label");
+        
+        showToolBar = new JCheckBox("Show toolbar");
+        showToolBar.setSelected(config.getShowToolBar());
+        addComponent(showToolBar);
+        
+        showFoldersTree = new JCheckBox("Show folders tree");
+        showFoldersTree.setSelected(config.getShowFoldersTree());
+        addComponent(showFoldersTree);
+        
+        showFilesTree = new JCheckBox("Show files tree");
+        showFilesTree.setSelected(config.getShowFilesTree());
+        showFilesTree.setToolTipText(
+            "Disabling this tree will improve performance in projects with many files");
+        addComponent(showFilesTree);
+        
+        showWorkingFilesTree = new JCheckBox("Show working files tree");
+        showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
+        addComponent(showWorkingFilesTree);
+        
+		//-- importer options
 		addSeparator("options.projectviewer.importer-opt.label");
 
         importExts = new JTextField();
@@ -145,6 +171,11 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
         config.setRememberOpen(rememberOpen.isSelected());
         config.setDeleteNotFoundFiles(deleteNotFoundFiles.isSelected());
         config.setSaveOnChange(saveOnChange.isSelected());
+        
+        config.setShowToolBar(showToolBar.isSelected());
+        config.setShowFoldersTree(showFoldersTree.isSelected());
+        config.setShowFilesTree(showFilesTree.isSelected());
+        config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
         
         config.setImportExts(importExts.getText());
         config.setExcludeDirs(excludeDirs.getText());

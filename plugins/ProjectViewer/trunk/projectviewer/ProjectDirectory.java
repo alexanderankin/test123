@@ -98,22 +98,6 @@ public final class ProjectDirectory {
 		return (ProjectFile) files.get(index);
 	}
 
-	/** Returns the named file.
-	 *
-	 *@param  name  Description of Parameter
-	 *@return       The file value
-	 *@since
-	 *@todo         this is slow for many files
-	 */
-	public ProjectFile getFile(String name) {
-		for (Iterator i = files(); i.hasNext(); ) {
-			ProjectFile each = (ProjectFile) i.next();
-			if (each.getName().equals(name))
-				return each;
-		}
-		return null;
-	}
-
 	/** Returns the named subdirectory.
 	 *
 	 *@param  name  Description of Parameter
