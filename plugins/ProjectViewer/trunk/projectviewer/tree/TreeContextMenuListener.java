@@ -41,7 +41,7 @@ import javax.swing.tree.TreePath;
 // Import jEdit
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-
+//import org.gjt.sp.jedit.search.*;
 // Import ProjectViewer
 import projectviewer.Project;
 import projectviewer.ProjectFile;
@@ -80,12 +80,13 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	private JMenuItem  removeDir;
 	private JMenuItem  deleteDir;
 	private JMenuItem  renameDir;
-	
+	private JMenuItem  searchDir;
 	
 	private JPopupMenu fileMenu;
 	private JMenu fileMenuSubRemove;
 	private JMenuItem  removeFile;
 	private JMenuItem  deleteFile;
+	
 
 	private JMenuItem  renameFile;
 	private JMenuItem  miLaunchBrowser;
@@ -165,6 +166,8 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			this.addFileToProject();
 		} else if (src == renameDir) {
 			renameDirectory();
+		} else if (src == searchDir) {
+			searchDir();
 		} else if (src == renameFile) {
 			renameFile();
 		} else if (src == miLaunchBrowser) {
@@ -357,6 +360,9 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		deleteDir.addActionListener(this);
 		dirSubRemove.add(deleteDir);
 		dirMenu.add(dirSubRemove);
+		searchDir = new JMenuItem("Search Directory");
+		searchDir.addActionListener(this);
+		dirMenu.add(searchDir);
 		
 		// File menu
 		fileMenu = new JPopupMenu();
@@ -536,6 +542,29 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			}
 		}
 	
+	} //}}}
+	
+	//}}}
+	//{{{ searchDirectory() method
+	/**
+	 *  Popups up a Search and Replace dialog for the currently selected directory.
+	 */
+	private void searchDirectory() {
+			//org.gjt.sp.jedit.search.SearchDialog(View view, "blah"searchString, int searchIn);
+			ProjectDirectory dir = (ProjectDirectory) viewer.getSelectedNode();
+			org.gjt.sp.jedit.browser.VFSBrowser browser =(org.gjt.sp.jedit.browser.VFSBrowser) jEdit.getLastView().getDockableWindowManager().getDockable("vfs.browser");
+			browser.setDirectory(dir.getPath(););
+			browser.searchInDirectory();
+			/*  
+			Matthew Payne -->
+			Tried to do the following, but unable to get the directory to search this way.
+			
+			//SearchDialog sb = new SearchDialog(jEdit.getLastView(), "/home/sergei", 2);
+			//sb.show();
+			//sb.showSearchDialog()
+	
+	       */
+			
 	} //}}}
 	
 	//}}}
