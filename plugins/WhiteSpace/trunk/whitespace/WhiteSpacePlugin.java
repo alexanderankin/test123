@@ -102,6 +102,7 @@ public class WhiteSpacePlugin
             } else if (bu.getWhat() == BufferUpdate.CREATED) {
                 BlockHighlight.bufferCreated(bu.getBuffer());
                 FoldHighlight.bufferCreated(bu.getBuffer());
+                WhiteSpaceHighlight.bufferCreated(bu.getBuffer());
             } else if (bu.getWhat() == BufferUpdate.CLOSED) {
                 BlockHighlight.bufferClosed(bu.getBuffer());
                 FoldHighlight.bufferClosed(bu.getBuffer());
@@ -109,6 +110,7 @@ public class WhiteSpacePlugin
         } else if (message instanceof EditorStarted) {
             BlockHighlight.editorStarted();
             FoldHighlight.editorStarted();
+            WhiteSpaceHighlight.editorStarted();
         } else if (message instanceof EditorExiting) {
             BlockHighlight.editorExiting();
             FoldHighlight.editorExiting();
