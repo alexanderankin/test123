@@ -456,6 +456,20 @@ SELECT * FROM user WHERE user=?</programlisting>
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 1.01</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Compatibility with the latest PV.</para>
+          </listitem>
+          <listitem>
+            <para>Small fixes in the Oracle statement delimiter.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+      <listitem>
+        <formalpara>
           <title>Version 1.00</title>
           <para/>
         </formalpara>
