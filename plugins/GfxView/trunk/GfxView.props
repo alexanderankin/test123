@@ -19,7 +19,6 @@ plugin.GfxViewPlugin.menu=gfxview.show-remote-picture \
 			gfxview.show-history-picture-prev \
 			gfxview.show-history-picture-next
 			
-#plugin.GfxViewPlugin.browser-menu=vfs.browser.showpicture
 plugin.GfxViewPlugin.browser-menu-item=vfs.browser.showpicture
 
 # action labels for actions.xml
@@ -46,9 +45,6 @@ gfxview.unzoom-all.label=Full Size
 gfxview.zoom.icon=ZoomIn.png
 gfxview.unzoom.icon=ZoomOut.png
 gfxview.unzoom-all.icon=UnSplit.png
-
-# plugin pictures history
-gfxview.choose-file.icon=ToolbarMenu.gif
 
 # default history file
 gfxview.options.historyfile = gfxviewlist.txt
