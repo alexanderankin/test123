@@ -17,6 +17,7 @@ package projectviewer;
 
 import java.awt.event.ActionEvent;
 import javax.swing.*;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 import projectviewer.*;
 import projectviewer.ui.ProjectViewer;
@@ -74,6 +75,14 @@ public abstract class ActionBase extends AbstractAction
     * Perform the action.  Any {@link ProjectException}s thrown will be handled appropriately.
     */
    protected void performAction() throws ProjectException {}
+
+   /**
+    * Returns the jEdit view.
+    */
+   protected View getView()
+   {
+      return projectViewer.getView();
+   }
 
    /**
     * Returns the plugin object.

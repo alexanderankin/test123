@@ -7,4 +7,7 @@ compiler.optimize=off
 compiler.deprecation=on
 compiler.verbose=off
 
+jedit.jar=/usr/local/share/jedit/3.2.2/jedit.jar
+jaxp.jar=${user.home}/java/xerces-1_4_3/xerces.jar
+
 jedit.user.home=C:/Documents and Settings/cyu/.jedit

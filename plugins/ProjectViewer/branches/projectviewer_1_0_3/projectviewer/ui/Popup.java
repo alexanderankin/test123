@@ -15,7 +15,10 @@
 */
 package projectviewer.ui;
 
-import javax.swing.JPopupMenu;
+import java.util.Iterator;
+import javax.swing.*;
+import projectviewer.*;
+import projectviewer.views.ViewAction;
 
 
 /**
@@ -30,6 +33,23 @@ public class Popup extends JPopupMenu {
     */
    public Popup(ProjectViewer aProjectViewer) {
       projectViewer = aProjectViewer;
+   }
+
+   /**
+    * A view specific actions.
+    */
+   protected void addViewActions(ProjectArtifact targetArtifact) {
+      Iterator i = targetArtifact.getView().getActions()
+         .findActions(targetArtifact.getView()).iterator();
+      if (i.hasNext()) addSeparator();
+      while (i.hasNext()) {
+         Action action = (Action) i.next();
+         if (action instanceof ViewAction)
+            ((ViewAction) action).setArtifact(targetArtifact);
+         if (action instanceof ProjectAction)
+            ((ProjectAction) action).setProjectViewer(projectViewer);
+         add(action);
+      }
    }
 
 }

@@ -22,16 +22,41 @@ import java.util.Enumeration;
  */
 public class ArtifactTreeWalker {
 
+   public final static int ABORT         = -1;
    public final static int EVAL_CHILDREN = 0;
    public final static int SKIP_CHILDREN = 1;
+   
+   public final static int ALL_ARTIFACTS     = 0;
+   public final static int FILES_ONLY        = 1;
+   public final static int DIRECTORIES_ONLY  = 2;
 
    private ProjectArtifact artifact;
    private Evaluator eval;
+   private int evaluationMode;
+
 
    /**
     * Create a new <code>ArtifactTreeWalker</code>.
     */
    public ArtifactTreeWalker(Evaluator anEval) {
+      this(null, anEval, ALL_ARTIFACTS);
+   }
+
+   /**
+    * Create a new <code>ArtifactTreeWalker</code>.
+    */
+   public ArtifactTreeWalker(ProjectArtifact rootArtifact, Evaluator anEval) {
+      this(rootArtifact, anEval, ALL_ARTIFACTS);
+   }
+
+   /**
+    * Create a new <code>ArtifactTreeWalker</code>.
+    */
+   public ArtifactTreeWalker(ProjectArtifact rootArtifact, Evaluator anEval,
+                             int anEvaluationMode)
+   {
+      artifact = rootArtifact;
+      evaluationMode = anEvaluationMode;
       eval = anEval;
    }
 
@@ -40,6 +65,16 @@ public class ArtifactTreeWalker {
     */
    public void setRootArtifact(ProjectArtifact anArtifact) {
       artifact = anArtifact;
+   }
+
+   /**
+    * Set the evaluation mode.  If the value is {@link #FILES_ONLY}, only artifacts
+    * that are instances of {@link ProjectFile} will be passed to the evaluator.
+    * If the value is {@link #ALL_ARTIFACTS}, all artifacts will be passed to the
+    * evaluator.  The default is {@link #ALL_ARTIFACTS}.
+    */
+   public void setEvaluationMode(int evalMode) {
+      evaluationMode = evalMode;
    }
 
    /**
@@ -65,10 +100,24 @@ public class ArtifactTreeWalker {
    }
 
    /**
+    * Returns <code>true</code> if the given artifact should be evaluated.
+    */
+   protected boolean shouldEvaluate(ProjectArtifact artifact) {
+      if (evaluationMode == ALL_ARTIFACTS)
+         return true;
+      if (evaluationMode == FILES_ONLY)
+         return (artifact instanceof ProjectFile);
+      if (evaluationMode == DIRECTORIES_ONLY)
+         return (artifact instanceof ProjectDirectory);
+      return true;
+   }
+
+   /**
     * Start walking from this artifact node.
     */
    private void walk(ProjectArtifact artifact) {
-      int result = eval.evaluate(artifact);
+      int result = shouldEvaluate(artifact) ? eval.evaluate(artifact) : EVAL_CHILDREN;
+      if (result == ABORT) return;
       if (!artifact.isLeaf() && result == EVAL_CHILDREN) {
          Enumeration enum = artifact.children();
          while (enum.hasMoreElements())

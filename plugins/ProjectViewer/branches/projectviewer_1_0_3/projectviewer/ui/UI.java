@@ -47,12 +47,34 @@ public class UI {
    }
 
    /**
+    * Use a file dialog to retrieve a list of files.
+    */
+   public static String[] getFiles(View view, String curDir) {
+      return GUIUtilities
+         .showVFSFileDialog(view, curDir, VFSBrowser.OPEN_DIALOG, true);
+   }
+
+   /**
     * Show a yes/no confirm dialog.
     */
    public static int confirmYesNo(Component c, String name, Object[] args) {
-      return GUIUtilities.confirm(c, ProjectPlugin.NAME + "." + name, args,
+      return GUIUtilities.confirm(c, toFullPropertyName(name, "confirm"), args,
                                   JOptionPane.YES_NO_OPTION,
                                   JOptionPane.QUESTION_MESSAGE);
+   }
+
+   /**
+    * Show an input dialog to the user.
+    */
+   public static String input(Component c, String name, Object value) {
+      return GUIUtilities.input(c, toFullPropertyName(name, "input"), value);
+   }
+
+   /**
+    * Convert the given project name to its fully qualified property name.
+    */
+   private static String toFullPropertyName(String propName, String cat) {
+      return ProjectPlugin.NAME + "." + propName + "." + cat;
    }
 
 }

@@ -39,6 +39,21 @@ public interface Project extends TreeNode, Comparable
    public void setName(String aName);
 
    /**
+    * Set a project property.
+    */
+   public void setProperty(String name, String value);
+
+   /**
+    * Returns a project property.
+    */
+   public String getProperty(String name);
+
+   /**
+    * Remove a project property.
+    */
+   public void removeProperty(String name);
+
+   /**
     * Add a view to this project.
     */
    public void addView(FileView aView);
@@ -49,6 +64,21 @@ public interface Project extends TreeNode, Comparable
    public int getViewCount();
 
    /**
+    * Returns the view at the specified index.
+    */
+   public FileView getView(int index);
+
+   /**
+    * Returns an iteration of views.
+    */
+   public Iterator views();
+
+   /**
+    * Remove the given view.
+    */
+   public void remove(FileView view);
+
+   /**
     * Save project data.
     */
    public void save(XmlWriteContext xmlWrite) throws SAXException;
@@ -57,21 +87,6 @@ public interface Project extends TreeNode, Comparable
     * Initialize this digester to load data into this project.
     */
    public void initDigester(Digester digester);
-
-   /**
-    * Returns the view at the specified index.
-    */
-   public FileView getView(int index);
-
-   /**
-    * Remove the given view.
-    */
-   public void remove(FileView view);
-
-   /**
-    * Returns an iteration of views.
-    */
-   public Iterator views();
 
    /**
     * Set the parent node.

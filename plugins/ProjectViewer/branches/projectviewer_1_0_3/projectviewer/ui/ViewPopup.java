@@ -15,10 +15,7 @@
  */
 package projectviewer.ui;
 
-import java.util.Iterator;
-import javax.swing.*;
 import projectviewer.*;
-import projectviewer.ui.ActionMap;
 import projectviewer.ui.actions.*;
 
 
@@ -45,15 +42,7 @@ public class ViewPopup extends Popup {
       add(new AddProjectFileAction(projectViewer, view));
       add(new RemoveArtifactAction(projectViewer, view));
 
-      Iterator i = view.getActions().findActions(view).iterator();
-      if (i.hasNext()) addSeparator();
-      while (i.hasNext()) {
-         Action action = (Action) i.next();
-         if (action instanceof ProjectAction) {
-            ((ProjectAction) action).setProjectViewer(projectViewer);
-         }
-         add(action);
-      }
+      addViewActions(view);
    }
 
 }

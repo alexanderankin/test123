@@ -39,7 +39,9 @@ public class AddProjectFileAction extends ActionBase {
     * Create a new <code>View</code>.
     */
    public void performAction() {
-      ProjectFile file = fileView.addProjectFile(projectViewer.getView(), (ProjectArtifact) projectViewer.getSelectedNode());
+      ProjectFile file = fileView
+         .addProjectFile(projectViewer.getView(),
+         (ProjectArtifact) projectViewer.getSelectedNode());
       if (file == null) return;
       projectViewer.getTreeModel().nodeStructureChanged(file.getParent());
       projectViewer.setTreeSelection(file);

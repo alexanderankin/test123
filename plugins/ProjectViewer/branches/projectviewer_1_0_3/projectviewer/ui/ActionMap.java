@@ -26,6 +26,7 @@ import projectviewer.*;
 public class ActionMap {
 
    private static ArtifactFilter fileViewFilter;
+   private static ArtifactFilter directoryFilter;
 
    private List filters;
    private List actions;
@@ -55,6 +56,15 @@ public class ActionMap {
    }
 
    /**
+    * Add an action that works only for {@link ProjectDirectory}s.  Note that
+    * this filter will also hold true if the artifact is a {@link FileView} that
+    * subclasses {@link projectviewer.views.BaseView}.
+    */
+   public void addProjectDirectoryAction(ProjectAction action) {
+      add(getProjectDirectoryFilter(), action);
+   }
+
+   /**
     * Find the actions for the given artifact.
     */
    public List findActions(ProjectArtifact artifact) {
@@ -76,6 +86,14 @@ public class ActionMap {
    }
 
    /**
+    * Returns a filter that accepts on {@link ProjectDirectory}s.
+    */
+   private static ArtifactFilter getProjectDirectoryFilter() {
+      if (directoryFilter == null) directoryFilter = new ProjectDirectoryFilter();
+      return directoryFilter;
+   }
+
+   /**
     * An filter to accept only instances of {@link FileView}.
     */
    private static class FileViewFilter implements ArtifactFilter {
@@ -85,6 +103,20 @@ public class ActionMap {
        */
       public boolean accept(ProjectArtifact artifact) {
          return (artifact instanceof FileView);
+      }
+
+   }
+
+   /**
+    * An filter to accept only instances of {@link ProjectDirectory}.
+    */
+   private static class ProjectDirectoryFilter implements ArtifactFilter {
+
+      /**
+       * Accepts this file if <code>true</code> is returned.
+       */
+      public boolean accept(ProjectArtifact artifact) {
+         return (artifact instanceof ProjectDirectory);
       }
 
    }

@@ -28,9 +28,9 @@
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
   <path id="default.classpath">
-    <fileset dir="${src.lib}">
-      <include name="*.jar"/>
-    </fileset>
+    <pathelement path="${jedit.jar}"/>
+    <pathelement path="${jaxp.jar}"/>
+    <pathelement path="${parser.jar}"/>
   </path>
 
 

@@ -32,6 +32,8 @@ public class SimpleProject implements Project
    private String name;
    private List views;
    private TreeNode parent;
+   private Properties props;
+
 
    /**
     * Create a new <code>SimpleProject</code>.
@@ -47,6 +49,7 @@ public class SimpleProject implements Project
    public SimpleProject( String aName )
    {
       views = new ArrayList();
+      props = new Properties();
       setName(aName);
    }
 
@@ -71,6 +74,36 @@ public class SimpleProject implements Project
    }
 
    /**
+    * Set a project property.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public void setProperty(String name, String value)
+   {
+      props.setProperty(name, value);
+   }
+
+   /**
+    * Returns a project property.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public String getProperty(String name)
+   {
+      return props.getProperty(name);
+   }
+
+   /**
+    * Remove a project property.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public void removeProperty(String name)
+   {
+      props.remove(name);
+   }
+
+   /**
     * Add a view to this project.
     *
     * <p>SPECIFIED IN: projectviewer.Project</p>
@@ -89,34 +122,6 @@ public class SimpleProject implements Project
    public int getViewCount()
    {
       return views.size();
-   }
-
-   /**
-    * Save project data.
-    *
-    * <p>SPECIFIED IN: projectviewer.Project</p>
-    */
-   public void save(XmlWriteContext xmlWrite) throws SAXException
-   {
-      SimpleAttributes atts = new SimpleAttributes("name", name);
-      atts.addAttribute("version", ProjectPlugin.VERSION);
-      xmlWrite.startElement("project", atts);
-      for (Iterator i = views.iterator(); i.hasNext();) {
-         ((FileView) i.next()).save(xmlWrite);
-      }
-      xmlWrite.endElement("project");
-   }
-
-   /**
-    * Initialize this digester to load data into this project.
-    *
-    * <p>SPECIFIED IN: projectviewer.Project</p>
-    */
-   public void initDigester(Digester digester)
-   {
-      digester.addSetProperties("project");
-      digester.addRule("project/view", new CreateFileViewRule(digester));
-      digester.addSetNext("project/view", "addView", FileView.class.getName());
    }
 
    /**
@@ -148,6 +153,44 @@ public class SimpleProject implements Project
    public Iterator views()
    {
       return views.iterator();
+   }
+
+   /**
+    * Save project data.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public void save(XmlWriteContext xmlWrite) throws SAXException
+   {
+      SimpleAttributes atts = new SimpleAttributes("name", name);
+      atts.addAttribute("version", ProjectPlugin.VERSION);
+      xmlWrite.startElement("project", atts);
+      for (Enumeration names = props.propertyNames(); names.hasMoreElements();) {
+         String propName = names.nextElement().toString();
+         atts = new SimpleAttributes("name", propName);
+         atts.addAttribute("value", props.getProperty(propName));
+         xmlWrite.writeElement("property", atts);
+      }
+      for (Iterator i = views.iterator(); i.hasNext();) {
+         ((FileView) i.next()).save(xmlWrite);
+      }
+      xmlWrite.endElement("project");
+   }
+
+   /**
+    * Initialize this digester to load data into this project.
+    *
+    * <p>SPECIFIED IN: projectviewer.Project</p>
+    */
+   public void initDigester(Digester digester)
+   {
+      digester.addSetProperties("project");
+      digester.addCallMethod("project/property", "setProperty", 2,
+                             new Class[] {String.class, String.class});
+      digester.addCallParam("project/property", 0, "name");
+      digester.addCallParam("project/property", 1, "value");
+      digester.addRule("project/view", new CreateFileViewRule(digester));
+      digester.addSetNext("project/view", "addView", FileView.class.getName());
    }
 
    /**
