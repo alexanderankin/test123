@@ -114,7 +114,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         indent2.add( variationColorsCB );
         addComponent( indent2 );
 
-        colorTabRB = new JRadioButton( jEdit.getProperty( "options.buffertabs.colourtab.label" ) );
+        colorTabRB = new JRadioButton( jEdit.getProperty( "options.buffertabs.color-background.label" ) );
         addComponent( colorTabRB );
 
         colorTextRB = new JRadioButton( jEdit.getProperty( "options.buffertabs.colourtext.label" ) );

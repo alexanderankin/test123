@@ -48,7 +48,7 @@ options.buffertabs.color-tabs.label=Enable colored tabs
 options.buffertabs.color-selected.label=Colorize selected tab
 options.buffertabs.color-mute.label=Mute colors
 options.buffertabs.color-variation.label=Show small variation in tab colors
-options.buffertabs.colourtab.label=Colorize tab backgrounds
+options.buffertabs.color-background.label=Colorize tab backgrounds
 options.buffertabs.colourtext.label=Colorize tab titles
 options.buffertabs.color-tabs.separator=Options for colored BufferTabs
 
