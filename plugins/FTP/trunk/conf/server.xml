@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- 
+Server configuration file - If filenames are not absolute they are assummed to be in the same directory as this configuration file.
+-->
+
+<ServerConfiguration>
+
+   <!-- The available host keys for server authentication -->
+   <!--  <ServerHostKey>
+            <AlgorithmName>ssh-dss</AlgorithmName>
+            <PublicKeyFile>dsa_host_key.pub</PublicKeyFile>
+            <PrivateKeyFile>dsa_host_key</PrivateKeyFile>
+        </ServerHostKey> 
+   -->
+  
+  <!-- Add any number of subsystem elements here --> 
+  <!-- 
+       <Subsystem Type="exe">
+            <Name>sftp</Name>
+	    <Provider>sftp.exe</Provider>
+       </Subsystem>
+  -->
+
+  <!-- Display the following authentication banner before authentication -->
+  <AuthenticationBanner></AuthenticationBanner>
+
+  <!-- The maximum number of connected sessions available -->
+  <MaxConnections>10</MaxConnections>
+
+  <!-- Bind to the following address to listen for connections -->
+  <ListenAddress>0.0.0.0</ListenAddress>
+
+  <!-- The port to listen to -->
+  <Port>22</Port>
+
+  <!-- Listen on the following port (on localhost) for server commands such as stop -->
+  <CommandPort>9001</CommandPort>
+
+  <!-- Specify the executable that provides the default shell -->
+  <TerminalProvider>c:\winnt\system32\cmd.exe</TerminalProvider>
+
+  <!-- Specify an number of allowed authentications -->
+  <AllowedAuthentication>password</AllowedAuthentication>
+  <AllowedAuthentication>publickey</AllowedAuthentication>
+
+  <!-- Specify which of the allowed authentications are required -->
+  <!--
+  <RequiredAuthentication>publickey</RequiredAuthentication>
+  -->
+
+  <!-- The users authorizations file -->
+  <AuthorizationFile>authorization.xml</AuthorizationFile>
+
+  <!-- The users configuration directory where files such as AuthorizationFile are found. 
+	For users home directory specify %D
+	For users name specify %U                                                                               -->
+  <UserConfigDirectory>%D\.ssh2</UserConfigDirectory>
+
+</ServerConfiguration>

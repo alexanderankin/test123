@@ -101,6 +101,9 @@ class SFtpConnection extends ConnectionManager.Connection
 			file = sftp.openFile(path,SftpSubsystemClient.OPEN_READ);
 			returnValue = createDirectoryEntry(file);
 		}
+		catch(IOException io)
+		{
+		}
 		finally
 		{
 			if(file != null)
@@ -112,30 +115,54 @@ class SFtpConnection extends ConnectionManager.Connection
 
 	boolean removeFile(String path) throws IOException
 	{
-		// XXX: return value
-		sftp.removeFile(path);
-		return true;
+		try
+		{
+			sftp.removeFile(path);
+			return true;
+		}
+		catch(SshException e)
+		{
+			return false;
+		}
 	}
 
 	boolean removeDirectory(String path) throws IOException
 	{
-		// XXX: return value
-		sftp.removeDirectory(path);
-		return true;
+		try
+		{
+			sftp.removeDirectory(path);
+			return true;
+		}
+		catch(SshException e)
+		{
+			return false;
+		}
 	}
 
 	boolean rename(String from, String to) throws IOException
 	{
-		// XXX: return value
-		sftp.renameFile(from,to);
-		return true;
+		try
+		{
+			sftp.renameFile(from,to);
+			return true;
+		}
+		catch(SshException e)
+		{
+			return false;
+		}
 	}
 
 	boolean makeDirectory(String path) throws IOException
 	{
-		// XXX: return value
-		sftp.makeDirectory(path);
-		return true;
+		try
+		{
+			sftp.makeDirectory(path);
+			return true;
+		}
+		catch(SshException e)
+		{
+			return false;
+		}
 	}
 
 	InputStream retrieve(String path) throws IOException
@@ -146,9 +173,9 @@ class SFtpConnection extends ConnectionManager.Connection
 
 	OutputStream store(String path) throws IOException
 	{
+		System.err.println(path);
 		return new SftpFileOutputStream(sftp.openFile(path,
-			SftpSubsystemClient.OPEN_WRITE
-			| SftpSubsystemClient.OPEN_CREATE));
+			SftpSubsystemClient.OPEN_WRITE));
 	}
 
 	void chmod(String path, int permissions) throws IOException
