@@ -446,7 +446,7 @@ public class XmlActions
 
 		String tag = findLastOpenTag(seg);
 
-		if(tag != null)
+		if(tag != null && tag.length() != 0)
 		{
 			if(completionInfo != null)
 			{

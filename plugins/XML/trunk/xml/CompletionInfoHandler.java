@@ -70,8 +70,17 @@ class CompletionInfoHandler extends DefaultHandler
 	{
 		if(sName.equals("dtd"))
 		{
+			String extend = attrs.getValue("extend");
+			if(extend != null)
+			{
+				CompletionInfo extendInfo = CompletionInfo
+					.getCompletionInfo(extend);
+				if(extendInfo != null)
+					completionInfo = (CompletionInfo)extendInfo.clone();
+			}
+
 			completionInfo.html = "true".equals(attrs.getValue("html"));
-			//completionInfo.extend = attrs.getValue("extend");
+			
 		}
 		else if(sName.equals("entity"))
 		{

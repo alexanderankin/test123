@@ -40,9 +40,7 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 		{
 			ElementDecl element = (ElementDecl)value;
 			setIcon(element.empty ? EMPTY_ELEMENT_ICON : ELEMENT_ICON);
-			setText("<" + element.name
-				+ (element.empty ? " /" : "")
-				+ ">");
+			setText(element.name);
 		}
 		else if(value instanceof EntityDecl)
 		{
@@ -50,10 +48,10 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 			setIcon(entity.type == EntityDecl.INTERNAL
 				? INTERNAL_ENTITY_ICON
 				: EXTERNAL_ENTITY_ICON);
-			setText("&" + entity.name + "; ("
-				+ (entity.type == EntityDecl.INTERNAL
-				? entity.value : "external") + ")");
+			setText(entity.name);
 		}
+		else
+			setIcon(null);
 
 		return this;
 	}

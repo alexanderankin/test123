@@ -5,7 +5,7 @@
 
 <!DOCTYPE dtd SYSTEM "xml-completion-info.dtd">
 
-<dtd extends="html">
+<dtd extend="html">
 
 <element-list>
 
@@ -26,9 +26,9 @@
 <element name='xsl:call-template' html='false'>
   <attribute name='name' type='QNAME' required='true'/>
 </element>
-<element name='xsl:choose>' html='false'>
+<element name='xsl:choose' html='false'>
 </element>
-<element name='xsl:comment>' html='false'>
+<element name='xsl:comment' html='false'>
 </element>
 <element name='xsl:copy' html='false'>
   <attribute name='use-attribute-sets' type='QNAMES'/>
@@ -91,7 +91,7 @@
   <attribute name='grouping-separator' type='CHAR'/>
   <attribute name='grouping-size' type='NUMBER'/>
 </element>
-<element name='xsl:otherwise>' html='false'>
+<element name='xsl:otherwise' html='false'>
 </element>
 <element name='xsl:output' empty='true' html='false'>
   <attribute name='method' type='(xml|html|text|qname-but-not-ncname)'/>

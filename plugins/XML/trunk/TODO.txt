@@ -1,6 +1,6 @@
 + version 0.5:
 
-- JCheckBoxList not working?
+- closeCompletionOpen is broken still
 - option to not fetch stuff from 'net
 - icons
 - empty/opening tag only/opening and closing in edit tag dialog
@@ -8,13 +8,12 @@
 - include newer version of Xerces
 - required attrs in ant tag list
 - documentation: XML catalog format, OASIS catalog format
-- 'extend' attribute of completion info file
 - proper handling of tags in nested files
-- tag list for XSL
 - test XMLCatalog support, include an XMLCatalog DTD
 
 + later:
 
+- after 4.0pre1, remove own JCheckBoxList copy
 - tag lists for more file types, eg JSP, ASP, JHTML, ...
 - XmlComplete: support backspace (just get text from buffer from < pos
   to caret pos)
