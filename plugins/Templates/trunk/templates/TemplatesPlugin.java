@@ -277,8 +277,7 @@ public class TemplatesPlugin extends EditPlugin
 	 * @param view The view from which the "Edit Template" request was made.
 	 */
 	public static void editTemplate(View view) {
-		JFileChooser chooser = new JFileChooser(
-				jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","."));
+		JFileChooser chooser = new JFileChooser(getTemplateDir());
 		int retVal = chooser.showOpenDialog(view);
 		if(retVal == JFileChooser.APPROVE_OPTION)
 		{
@@ -365,6 +364,7 @@ public class TemplatesPlugin extends EditPlugin
                new String[]{template});
          }
          ctx = new jEditContext(view, textArea, ctx);
+         ((jEditContext) ctx).captureSelection();
          Writer out = new BufferWriter(textArea.getBuffer(),
             textArea.getCaretPosition());
          getEngine().mergeTemplate(template, ctx, out);
@@ -384,6 +384,9 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2002/08/24 16:14:12  cyu
+	 * Added $_jeditSelection which holds the current buffer selection
+	 *
 	 * Revision 1.2  2002/07/24 15:33:33  sjakob
 	 * Changed hard-coded Velocity resource directory to a jEdit property.
 	 *
