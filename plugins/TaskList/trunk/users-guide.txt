@@ -5,7 +5,7 @@ TaskList Plugin Users' Guide
 :Authors: Ollie Rutherfurd,
 		  John Gellene
 :Version: 0.4.3
-:Copyright: Copyright (C) 2002 John Gellene, 2003 Ollie Rutherfurd
+:Copyright: Copyright (C) 2002 John Gellene, 2003-2004 Ollie Rutherfurd
 
 Summary
 =======
@@ -215,21 +215,22 @@ Feedback
 ========
 
 Bug reports, comments and suggestions regarding TaskList may be sent to
-Ollie Rutherfurd at oliver@rutherfurd.net or posted on the jedit-users
+Ollie Rutherfurd at oliver@jedit.org or posted on the jedit-users
 mailing list (for which membership is required).
 
 
 Revision History
 ================
 
-Revision 0.4.3, September 30, 2003
-----------------------------------
+Revision 0.4.3, April, 2004
+---------------------------
 
 - Fixed NullPointerException when trying to extract tasks 
   from a mode that was added since jEdit was started.
 - Updated for 4.2pre1 Token changes.
 - Fixed deprecation warnings.
 - Updated for 4.2 plugin API
+- Changing default sort column or order is applied immediately.
 
 Revision 0.4.2, March 13, 2003
 ------------------------------

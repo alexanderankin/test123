@@ -60,6 +60,7 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 				jEdit.getProperty("options.tasklist.general.sort.choice.1"),
 				jEdit.getProperty("options.tasklist.general.sort.choice.2"),
 			}));
+		sortCriteria.setSelectedIndex(jEdit.getIntegerProperty("tasklist.table.sort-column",1)-1);
 
 		addComponent(Box.createVerticalStrut(3));
 
@@ -70,6 +71,8 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 				jEdit.getProperty("options.tasklist.general.sort.direction.0"),
 				jEdit.getProperty("options.tasklist.general.sort.direction.1"),
 			}));
+		sortDirection.setSelectedIndex(
+			jEdit.getBooleanProperty("tasklist.table.sort-ascending",true) ? 0 : 1);
 
 		addComponent(Box.createVerticalStrut(3));
 
@@ -136,8 +139,8 @@ public class TaskListGeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("tasklist.highlight.tasks",
 			highlightTasks.isSelected());
 
-		jEdit.setProperty("tasklist.table.sort-column",
-			String.valueOf(sortCriteria.getSelectedIndex() + 1));
+		jEdit.setIntegerProperty("tasklist.table.sort-column",
+			sortCriteria.getSelectedIndex() + 1);
 
 		jEdit.setBooleanProperty("tasklist.table.sort-ascending",
 			(sortDirection.getSelectedIndex() == 0));

@@ -10,7 +10,7 @@
 </authorgroup>
 <edition>Version 0.4.3</edition>
 <legalnotice>
-<para>Copyright (C) 2002 John Gellene, 2003 Ollie Rutherfurd</para>
+<para>Copyright (C) 2002 John Gellene, 2003-2004 Ollie Rutherfurd</para>
 </legalnotice>
 </articleinfo>
 <section id="summary">
@@ -200,12 +200,12 @@ COPYING.DOC.txt included with the jEdit distribution.</para></section>
 <section id="feedback">
 <title>Feedback</title>
 <para>Bug reports, comments and suggestions regarding TaskList may be sent to
-Ollie Rutherfurd at <ulink url="mailto:oliver@rutherfurd.net">oliver@rutherfurd.net</ulink> or posted on the jedit-users
+Ollie Rutherfurd at <ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink> or posted on the jedit-users
 mailing list (for which membership is required).</para></section>
 <section id="revision-history">
 <title>Revision History</title>
-<section id="revision-0-4-3-september-30-2003">
-<title>Revision 0.4.3, September 30, 2003</title>
+<section id="revision-0-4-3-april-2004">
+<title>Revision 0.4.3, April, 2004</title>
 <itemizedlist>
 <listitem>
 <para>Fixed NullPointerException when trying to extract tasks 
@@ -216,6 +216,8 @@ from a mode that was added since jEdit was started.</para></listitem>
 <para>Fixed deprecation warnings.</para></listitem>
 <listitem>
 <para>Updated for 4.2 plugin API</para></listitem>
+<listitem>
+<para>Changing default sort column or order is applied immediately.</para></listitem>
 </itemizedlist>
 </section>
 <section id="revision-0-4-2-march-13-2003">

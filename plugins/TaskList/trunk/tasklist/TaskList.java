@@ -310,7 +310,7 @@ public class TaskList extends JPanel implements EBComponent
 	 */
 	public String getName()
 	{
-		return TaskListPlugin.NAME;
+		return "tasklist";
 	}//}}}
 
 	//{{{ getComponent() method
@@ -337,6 +337,9 @@ public class TaskList extends JPanel implements EBComponent
 				jEdit.getBooleanProperty("tasklist.table.vertical-lines"));
 			table.setShowHorizontalLines(
 				jEdit.getBooleanProperty("tasklist.table.horizontal-lines"));
+			int col = jEdit.getIntegerProperty("tasklist.table.sort-column",1);
+			boolean ascending = jEdit.getBooleanProperty("tasklist.table.sort-ascending",true);
+			table.sort(col,ascending);
 		}
 	}//}}}
 
