@@ -144,7 +144,9 @@
         <title>... in File System Browser</title>
 
         <para>
-        Right-click a file. The popup menu shows the following additional actions:
+        Select a <filename>class</filename> file.
+        In the <guimenu>Plugins</guimenu> menu at the top of the File System Browser,
+        select one of the following entries:
         </para>
 
         <variablelist>
