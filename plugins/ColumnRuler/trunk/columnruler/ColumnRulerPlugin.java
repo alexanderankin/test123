@@ -13,8 +13,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-01-19 19:49:52 $ by $Author: bemace $
- * @version    $Revision: 1.5 $
+ * @modified   $Date: 2004-02-08 03:06:07 $ by $Author: bemace $
+ * @version    $Revision: 1.6 $
  */
 public class ColumnRulerPlugin extends EBPlugin {
 	private static LineGuidesExtension guides;
@@ -23,6 +23,9 @@ public class ColumnRulerPlugin extends EBPlugin {
 	public final static String OPTION_PREFIX = "options.columnruler.";
 	public final static String PROPERTY_PREFIX = "plugin.columnruler.";
 
+	/**
+	 * Returns the ColumnRuler for the given text area, or null.
+	 */
 	public static ColumnRuler getColumnRulerForTextArea(JEditTextArea textArea) {
 		return (textArea != null) ? (ColumnRuler) rulerMap.get(textArea) : null;
 	}
@@ -37,6 +40,8 @@ public class ColumnRulerPlugin extends EBPlugin {
 	}
 
 	private static void addColumnRulerToTextArea(JEditTextArea textArea) {
+		if (getColumnRulerForTextArea(textArea) != null)
+			return;
 		ColumnRuler columnRuler = new ColumnRuler(textArea);
 		textArea.addTopComponent(columnRuler);
 		rulerMap.put(textArea, columnRuler);
@@ -70,6 +75,10 @@ public class ColumnRulerPlugin extends EBPlugin {
 		Enumeration keys = rulerMap.keys();
 		while (keys.hasMoreElements()) {
 			JEditTextArea textArea = (JEditTextArea) keys.nextElement();
+			ColumnRuler ruler = getColumnRulerForTextArea(textArea);
+			if (ruler != null) {
+				ruler.removeAllMarkers();
+			}
 			removeColumnRulerFromTextArea(textArea);
 		}
 	}
@@ -84,14 +93,12 @@ public class ColumnRulerPlugin extends EBPlugin {
 				ViewUpdate vu = (ViewUpdate) message;
 				if (vu.getWhat().equals(ViewUpdate.CREATED)) {
 					addColumnRulerToTextArea(vu.getView().getTextArea());
-					Log.log(Log.DEBUG,this,"Added ruler");
 				}
 			}
 			if (message instanceof EditPaneUpdate) {
 				EditPaneUpdate epu = (EditPaneUpdate) message;
 				if (epu.getWhat().equals(EditPaneUpdate.CREATED)) {
 					addColumnRulerToTextArea(epu.getEditPane().getTextArea());
-					Log.log(Log.DEBUG,this,"Added ruler");
 				}
 			}
 		}

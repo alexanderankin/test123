@@ -1,16 +1,22 @@
+{{{ 0.9
+	- Made ruler marks to separate objects
+
+	- It will now check if a text area has a ruler before adding another
+}}}
+
 {{{ 0.8
 
-- Background color is now configurable
+	- Background color is now configurable
 
-- There is now a configurable border along the bottom
+	- There is now a configurable border along the bottom
 
-- You can now have ColumnRuler active by default
+	- You can now have ColumnRuler active by default
 
-- There is now an option to show where the next tab stop is
+	- There is now an option to show where the next tab stop is
 
-- Line guides are now provided
+	- Line guides are now provided
 
-- The number of selected characters is displayed in the status bar
+	- The number of selected characters is displayed in the status bar
 
 }}}
 :folding=explicit:collapseFolds=2:
