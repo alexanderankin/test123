@@ -28,6 +28,7 @@ projectviewer.menu=projectviewer \
 	projectviewer_edit_project
 projectviewer.menu.label=Project Viewer
 projectviewer_edit_project.label=Edit Project
+selectedfiles-viewer-menu-item.label=Paste File Names
 #}}}
 
 #{{{ jEdit option panes messages
