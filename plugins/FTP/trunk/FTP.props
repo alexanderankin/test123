@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
-plugin.ftp.FtpPlugin.version=0.4.1
+plugin.ftp.FtpPlugin.version=0.5
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.00.03.00
 
@@ -10,25 +10,39 @@ vfs.ftp.passive=true
 vfs.ftp.binary=true
 
 # Menu
-ftp=open-ftp save-ftp - clear-directory-cache forget-passwords close-connections
+ftp=open-ftp save-ftp - open-sftp save-sftp - \
+	clear-directory-cache forget-passwords close-connections
 ftp.label=FTP
 
 # Actions
 open-ftp.label=Open from FTP Server...
 save-ftp.label=Save to FTP Server...
+open-sftp.label=Open from Secure FTP Server...
+save-sftp.label=Save to Secure FTP Server...
 clear-directory-cache.label=Clear Remote Directory Cache
 forget-passwords.label=Forget Remote Passwords
 close-connections.label=Close Unused Connections
 
-# FTP VFS label
-vfs.ftp.label=Connect to FTP Server...
-
 # Login dialog box
-login.title=Log in
+login.title-ftp=Connect to FTP Server
+login.title-sftp=Connect to Secure FTP Server
 login.host=Remote host:
 login.user=User name:
 login.password=Password:
-login.passive=Connect using passive mode
+login.connection=Remote server type:
+login.connection.ftp=FTP (data port mode)
+login.connection.ftp=FTP (passive mode)
+login.connection.sftp=SFTP
+
+# FTP VFS
+vfs.ftp.label=Connect to FTP Server...
+vfs.ftp.warning=WARNING: The FTP protocol is insecure.\n\
+	\n\
+	Third parties can easily intercept any\n\
+	information you send (including passwords).\n\
+	\n\
+	If you can, consider using Secure FTP instead.\n\
+	See the FTP plugin help for details.
 
 # Error messages
 # XXX - FTP responses seem to end with a newline?
@@ -42,3 +56,6 @@ vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)
 
 vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)
 vfs.ftp.list.vms=(.+?);\\d+\\s+.+
+
+# SFTP VFS
+vfs.sftp.label=Connect to Secure FTP Server...

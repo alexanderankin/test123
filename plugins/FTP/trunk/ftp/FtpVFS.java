@@ -44,7 +44,8 @@ public class FtpVFS extends VFS
 
 	public FtpVFS()
 	{
-		super("ftp");
+		super("ftp",READ_CAP | WRITE_CAP | BROWSE_CAP | DELETE_CAP
+			| RENAME_CAP | MKDIR_CAP);
 
 		unixRegexps = new UncheckedRE[jEdit.getIntegerProperty(
 			"vfs.ftp.list.count",-1)];
@@ -62,12 +63,6 @@ public class FtpVFS extends VFS
 		vmsRegexp = new UncheckedRE(jEdit.getProperty(
 			"vfs.ftp.list.vms"),0,
 			RESearchMatcher.RE_SYNTAX_JEDIT);
-	}
-
-	public int getCapabilities()
-	{
-		return READ_CAP | WRITE_CAP | BROWSE_CAP | DELETE_CAP
-			| RENAME_CAP | MKDIR_CAP;
 	}
 
 	public String showBrowseDialog(Object[] session, Component comp)
@@ -136,7 +131,7 @@ public class FtpVFS extends VFS
 		try
 		{
 			return ConnectionManager.getConnectionInfo(comp,
-				path == null ? null : new FtpAddress(path));
+				path == null ? null : new FtpAddress(path),false);
 		}
 		catch(IllegalArgumentException ia)
 		{

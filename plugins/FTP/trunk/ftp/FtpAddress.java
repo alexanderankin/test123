@@ -1,6 +1,6 @@
 /*
- * FtpAddress.java - Ftp addressing encapsulator
- * Copyright (C) 2000 Slava Pestov
+ * FtpAddress.java - FTP addressing encapsulator
+ * Copyright (C) 2000, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,18 +23,23 @@ import org.gjt.sp.jedit.jEdit;
 
 public class FtpAddress
 {
+	public boolean secure;
 	public String host;
 	public String user;
 	public String path;
 
 	public FtpAddress(String url)
 	{
-		if(!url.startsWith(FtpVFS.PROTOCOL + ":"))
+		if(url.startsWith(FtpVFS.PROTOCOL + ":"))
+			secure = false;
+		else if(url.startsWith(SFtpVFS.PROTOCOL + ":"))
+			secure = true;
+		else
 			throw new IllegalArgumentException();
 
 		// remove any leading slashes, and ftp: from URL
-		int trimAt = 4;
-		for(int i = 4; i < url.length(); i++)
+		int trimAt = url.indexOf(':') + 1;
+		for(int i = trimAt; i < url.length(); i++)
 		{
 			if(url.charAt(i) != '/')
 			{
@@ -63,8 +68,9 @@ public class FtpAddress
 			path = "/";
 	}
 
-	public FtpAddress(String host, String user, String path)
+	public FtpAddress(boolean secure, String host, String user, String path)
 	{
+		this.secure = secure;
 		this.host = host;
 		this.user = user;
 		this.path = path;
@@ -73,7 +79,7 @@ public class FtpAddress
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
-		buf.append(FtpVFS.PROTOCOL);
+		buf.append(secure ? SFtpVFS.PROTOCOL : FtpVFS.PROTOCOL);
 		buf.append("://");
 		if(user != null)
 		{

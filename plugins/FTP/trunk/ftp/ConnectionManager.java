@@ -52,7 +52,7 @@ public class ConnectionManager
 	}
 
 	public static ConnectionInfo getConnectionInfo(Component comp,
-		FtpAddress address)
+		FtpAddress address, boolean secure)
 	{
 		String host, user;
 
@@ -75,7 +75,7 @@ public class ConnectionManager
 		 * we need to hide the splash screen. */
 		GUIUtilities.hideSplashScreen();
 
-		LoginDialog dialog = new LoginDialog(comp,host,user,null);
+		LoginDialog dialog = new LoginDialog(comp,secure,host,user,null);
 		if(!dialog.isOK())
 			return null;
 
@@ -94,12 +94,12 @@ public class ConnectionManager
 			}
 		}
 
-		ConnectionInfo info = new ConnectionInfo(host,port,
+		ConnectionInfo info = new ConnectionInfo(secure,host,port,
 			dialog.getUser(),dialog.getPassword());
 
 		// hash by original host name (including port number, if
 		// there is one)
-		logins.put(dialog.getHost(),info);
+		logins.put(info.toString(),info);
 
 		return info;
 	}
@@ -121,8 +121,7 @@ public class ConnectionManager
 					{
 						Log.log(Log.DEBUG,ConnectionManager.class,
 							"Connection to "
-							+ connect.info.host + ":"
-							+ connect.info.port + " expired");
+							+ connect.info + " expired");
 						try
 						{
 							connect.client.logout();
@@ -147,8 +146,7 @@ public class ConnectionManager
 
 				Log.log(Log.DEBUG,ConnectionManager.class,
 					Thread.currentThread() +
-					": Connecting to " + info.host + ":"
-					+ info.port);
+					": Connecting to " + info);
 				client.connect(info.host,info.port);
 
 				if(!client.getResponse().isPositiveCompletion())
@@ -218,6 +216,7 @@ public class ConnectionManager
 
 	public static class ConnectionInfo
 	{
+		public boolean secure;
 		public String host;
 		public int port = 21;
 		public String user;
@@ -227,9 +226,10 @@ public class ConnectionManager
 		{
 		}
 
-		public ConnectionInfo(String host, int port, String user,
-			String password)
+		public ConnectionInfo(boolean secure, String host, int port,
+			String user, String password)
 		{
+			this.secure = secure;
 			this.host = host;
 			this.port = port;
 			this.user = user;
@@ -242,10 +242,17 @@ public class ConnectionManager
 				return false;
 
 			ConnectionInfo c = (ConnectionInfo)o;
-			return c.host.equals(host)
+			return c.secure == secure
+				&& c.host.equals(host)
 				&& c.port == port
 				&& c.user.equals(user)
 				&& c.password.equals(password);
+		}
+
+		public String toString()
+		{
+			return (secure ? SFtpVFS.PROTOCOL : FtpVFS.PROTOCOL)
+				+ "://" + host + ":" + port;
 		}
 
 		public int hashCode()
@@ -281,8 +288,7 @@ public class ConnectionManager
 		void lock()
 		{
 			Log.log(Log.DEBUG,this,Thread.currentThread() +
-					": Connection to " + info.host
-				+ ":" + info.port + " locked");
+					": Connection to " + info + " locked");
 			inUse = true;
 			closeTimer.stop();
 		}
@@ -298,8 +304,7 @@ public class ConnectionManager
 			else
 			{
 				Log.log(Log.DEBUG,this,Thread.currentThread() +
-					": Connection to " + info.host
-					+ ":" + info.port + " released");
+					": Connection to " + info + " released");
 			}
 
 			inUse = false;
@@ -339,8 +344,7 @@ public class ConnectionManager
 
 			Log.log(Log.DEBUG,ConnectionManager.class,
 				"Closing connection to "
-				+ connect.info.host + ":"
-				+ connect.info.port);
+				+ connect.info);
 			try
 			{
 				connect.client.logout();
