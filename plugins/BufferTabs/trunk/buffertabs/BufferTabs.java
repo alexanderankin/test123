@@ -335,7 +335,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
      *  Force the Look and Feel to use the given color as its 'selected' color.
      *  TODO: This may cause side-effects with other tab panes.
      */
-    public void updateHighlight(int index) {
+    private void updateHighlight(int index) {
         if (   ColorTabs.instance().isEnabled()
             && ColorTabs.instance().isSelectedColorized()
         ) {
