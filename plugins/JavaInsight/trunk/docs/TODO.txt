@@ -16,3 +16,5 @@ TODO
 
 - Ability to view by classname
 
+- Include Jad (http://kpdus.tripod.com/jad.html)
+
