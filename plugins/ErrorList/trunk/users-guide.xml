@@ -394,6 +394,8 @@ errorSource.addError(new ErrorSource.DefaultError(
     <listitem><para>Fixed problem with errors appearing twice when
     the <guilabel>Show on error</guilabel> option was on.
     </para></listitem>
+    <listitem><para>Fixed problems with soft wrap.
+    </para></listitem>
     <listitem><para>Updated for jEdit 4.2 API changes.
     </para></listitem>
    </itemizedlist>

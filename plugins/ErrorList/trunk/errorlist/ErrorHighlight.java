@@ -136,18 +136,22 @@ public class ErrorHighlight extends TextAreaExtension
 			if(start + lineStart >= _end || end + lineStart <= _start)
 				continue;
 
+			int startX;
+
 			if(start + lineStart >= _start)
-				start = textArea.offsetToXY(line,start,point).x;
+				startX = textArea.offsetToXY(line,start,point).x;
 			else
-				start = 0;
+				startX = 0;
+
+			int endX;
 
 			if(end + lineStart >= _end)
-				end = textArea.offsetToXY(line,_end - 1,point).x;
+				endX = textArea.offsetToXY(line,_end - lineStart - 1,point).x;
 			else
-				end = textArea.offsetToXY(line,end,point).x;
+				endX = textArea.offsetToXY(line,end,point).x;
 
 			gfx.setColor(ErrorListPlugin.getErrorColor(error.getErrorType()));
-			gfx.drawLine(start,y + 1,end,y + 1);
+			gfx.drawLine(startX,y + 1,endX,y + 1);
 		}
 	} //}}}
 
