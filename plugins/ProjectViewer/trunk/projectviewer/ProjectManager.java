@@ -1,4 +1,4 @@
-/* $Id$
+/*
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -21,9 +21,13 @@ import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
+import projectviewer.config.ProjectViewerConfig;
+
 /** Manages all projects.
  */
 public final class ProjectManager {
+
+    private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 
 	final static String PROJECTS_PROPS_FILE = "projects.properties";
 	final static String FILE_PROPS_FILE = "files.properties";
@@ -62,50 +66,6 @@ public final class ProjectManager {
 		out.writeBytes("=");
 		out.writeBytes(prj.getName());
 		out.writeBytes("\n");
-
-		out.writeBytes("project.");
-		out.writeBytes(Integer.toString(prj.getKey()));
-		out.writeBytes(".root=");
-		out.writeBytes(escape(prj.getRoot().getPath()));
-		out.writeBytes("\n");
-		
-		out.writeBytes( "project."                        );
-		out.writeBytes( Integer.toString( prj.getKey() )  );
-		out.writeBytes( ".urlroot="                          );
-		out.writeBytes( escape( prj.getURLRoot() ) );
-		out.writeBytes( "\n"                              );   
-	}
-
-	/** Write project file data to file.
-	 *
-	 *@param  out              Description of Parameter
-	 *@param  prj              Description of Parameter
-	 *@param  file             Description of Parameter
-	 *@exception  IOException  Description of Exception
-	 */
-	private static void writeProjectFileData(DataOutputStream out, Project prj, ProjectFile file)
-			 throws IOException {
-		out.writeBytes("file.");
-		out.writeBytes(Integer.toString(file.getKey()));
-		out.writeBytes(".project.");
-		out.writeBytes(Integer.toString(prj.getKey()));
-		out.writeBytes("=");
-		out.writeBytes(escape(file.getPath()));
-		out.writeBytes("\n");
-	}
-
-	/** Escape property characters.
-	 *
-	 *@param  s  Description of Parameter
-	 *@return    Description of the Returned Value
-	 */
-	private static String escape(String s) {
-		StringBuffer buf = new StringBuffer(s);
-		for (int i = 0; i < buf.length(); i++) {
-			if (buf.charAt(i) == '\\')
-				buf.replace(i, ++i, "\\\\");
-		}
-		return buf.toString();
 	}
 
 	/** Returns a key identifying file of <code>index</code> for <code>aProject</code>.
@@ -124,7 +84,7 @@ public final class ProjectManager {
 	 *@return                  Description of the Returned Value
 	 *@exception  IOException  Description of Exception
 	 */
-	private static Properties load(String fileName)
+	public static Properties load(String fileName)
 			 throws IOException {
 		Properties props = new Properties();
 		InputStream in = null;
@@ -219,7 +179,9 @@ public final class ProjectManager {
 	/** Save projects. */
 	public synchronized void save() {
 		saveAllProjectData();
-		saveAllProjectFileData();
+        for (Iterator i = projects(); i.hasNext(); ) {
+            ((Project)i.next()).save();
+        }
 	}
 
 	/** Save data on all projects. */
@@ -238,41 +200,9 @@ public final class ProjectManager {
 				Project each = (Project) projects.get(i);
 				each.setKey(i + 1);
 				writeProjectData(out, each);
+                each.save();
 			}
 
-		}
-		catch (IOException e) {
-			Log.log(Log.ERROR, this, e);
-
-		}
-		finally {
-			close(out);
-		}
-	}
-
-	/** Save data on all the projects' files. */
-	private synchronized void saveAllProjectFileData() {
-		DataOutputStream out = null;
-		try {
-			out = new DataOutputStream(
-					ProjectPlugin.getResourceAsOutputStream(FILE_PROPS_FILE));
-
-			out.writeBytes("#DO NOT MODIFY THIS FILE:\n\n");
-			out.writeBytes("#IF YOU DO WANT TO MODIFY IT... HERE IS THE SYNTAX\n");
-			out.writeBytes("#file.1.project.1=filename\n");
-			out.writeBytes("#file.2.project.1=filename\n");
-			out.writeBytes("#file.1.project.2=filename\n");
-			out.writeBytes("#file.2.project.2=filename\n");
-
-			for (Iterator i = projects(); i.hasNext(); ) {
-				Project eachProject = (Project) i.next();
-				int count = 1;
-				for (Iterator j = eachProject.projectFiles(); j.hasNext(); ) {
-					ProjectFile each = (ProjectFile) j.next();
-					each.setKey(count++);
-					writeProjectFileData(out, eachProject, each);
-				}
-			}
 		}
 		catch (IOException e) {
 			Log.log(Log.ERROR, this, e);
@@ -302,33 +232,49 @@ public final class ProjectManager {
 	private void loadProjects() {
 		try {
 			Properties projectProps = load(PROJECTS_PROPS_FILE);
-			Properties fileProps = load(FILE_PROPS_FILE);
-
+			Properties fileProps = null;
+            ArrayList toLoad = new ArrayList();
+            
 			int counter = 1;
 			String prjName = projectProps.getProperty("project." + counter);
 			while (prjName != null) {
 				String root = projectProps.getProperty("project." + counter + ".root");
-	     		        String sURLRoot = projectProps.getProperty("project." + counter + ".urlroot");
-	
 				//Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
-				Project project = new Project(prjName, new ProjectDirectory(root), counter);
-				project.setURLRoot(sURLRoot);
+				Project project = new Project(prjName, counter);
+
+                if (root != null) {
+                    project.setRoot(new ProjectDirectory(root));
+                    project.setLoaded(true);
+                    toLoad.add(project);
+                    if (fileProps == null) {
+                        fileProps = load(FILE_PROPS_FILE);
+                    }
+                }
+                
 				addProject(project);
-				prjName = projectProps.getProperty("project." + ++counter);
+				prjName = projectProps.getProperty("project." + (++counter));
 			}
 
-			for (Iterator i = projects.iterator(); i.hasNext(); ) {
+            // Loads projects that use the old configuration scheme
+			for (Iterator i = toLoad.iterator(); i.hasNext(); ) {
 				Project each = (Project) i.next();
 
 				int fileCounter = 1;
 				String fileName = fileProps.getProperty(buildFileKey(fileCounter, each));
 				while (fileName != null) {
-					ProjectFile file = new ProjectFile(fileCounter, fileName);
-					if (file.exists())
+					ProjectFile file = new ProjectFile(fileName);
+					if (!config.getDeleteNotFoundFiles() || file.exists())
 						each.importFile(file);
 					fileName = fileProps.getProperty(buildFileKey(++fileCounter, each));
 				}
 			}
+            
+            // If we have any old configuration, let's save it as new config as
+            // soon as possible
+            if (toLoad.size() > 0) {
+                Log.log(Log.NOTICE, this, "Migration to new configuration style...");
+                save();
+            }
 
 		}
 		catch (Throwable e) {

@@ -19,6 +19,7 @@ import java.util.*;
 import javax.swing.tree.*;
 
 import org.gjt.sp.jedit.*;
+import projectviewer.config.ProjectViewerConfig;
 
 /** Provides a neutral way to launch projects and files.
  *
@@ -27,6 +28,8 @@ import org.gjt.sp.jedit.*;
  */
 public final class Launcher {
 
+    private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+    
 	private View view = null;
 	private ProjectViewer viewer = null;
 
@@ -76,8 +79,7 @@ public final class Launcher {
 	public void closeFile(ProjectFile file) {
 		if (this.view == null)
 			return;
-		if (file.isOpened())
-			jEdit.closeBuffer(view, file.getBuffer());
+		jEdit.closeBuffer(view, file.getBuffer());
 	}
 
 	/** Close all project resources.
@@ -89,9 +91,39 @@ public final class Launcher {
 			return;
 		if (viewer.getCurrentProject() == null)
 			return;
-		for (Iterator i = viewer.getCurrentProject().projectFiles(); i.hasNext(); )
-			closeFile((ProjectFile) i.next());
+                   
+        project.clearOpenFiles();
+        if (config.getCloseFiles() || config.getRememberOpen()) {
+            Buffer[] bufs = jEdit.getBuffers();
+            
+            if (bufs != null) 
+            for (int i = 0; i < bufs.length; i++) {
+                if (project.isProjectFile(bufs[i].getPath())) {
+                    if (config.getCloseFiles()) {
+			            jEdit.closeBuffer(view, bufs[i]);
+                    }
+                    if (config.getRememberOpen()) {
+                        project.addOpenFile(bufs[i].getPath());
+                    }
+                }
+            }
+        }
+        
 	}
+    
+    /** Opens the files remembered by the provided project. */
+    public void openProject(Project project) {
+        if (view == null || project == null) return;
+        
+        Buffer last = null;
+        for (Iterator i = project.getOpenFiles(); i.hasNext(); ) {
+            last = jEdit.openFile(view, (String) i.next());
+        }
+        
+        if (last != null) {
+            view.setBuffer(last);
+        }
+    }
 
 }
 

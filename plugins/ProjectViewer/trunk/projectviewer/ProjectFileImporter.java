@@ -20,11 +20,11 @@ import java.util.*;
 import javax.swing.*;
 import org.gjt.sp.util.Log;
 
+import projectviewer.config.ProjectViewerConfig;
+
 /** Imports project files.
  */
 public final class ProjectFileImporter {
-
-	public final static String IMPORT_PROPS_FILE = "import.properties";
 
 	private ProjectViewer viewer;
 	private Filter filter;
@@ -118,16 +118,11 @@ public final class ProjectFileImporter {
 			includedFiles = new HashSet();
 			excludedDirectories = new HashSet();
 
-			try {
-				Properties props = loadProperties();
-				copyPropertyIntoSet(props, "include-extensions", includedExtensions);
-				copyPropertyIntoSet(props, "include-files", includedFiles);
-				copyPropertyIntoSet(props, "exclude-dirs", excludedDirectories);
-
-			}
-			catch (IOException e) {
-				Log.log(Log.ERROR, this, e);
-			}
+            ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+            
+            copyPropertyIntoSet(config.getImportExts(),includedExtensions);
+            copyPropertyIntoSet(config.getIncludeFiles(),includedFiles);
+            copyPropertyIntoSet(config.getExcludeDirs(),excludedDirectories);
 		}
 
 		/**
@@ -171,34 +166,13 @@ public final class ProjectFileImporter {
 		 *@param  propertyName  Description of Parameter
 		 *@param  set           Description of Parameter
 		 */
-		private void copyPropertyIntoSet(Properties props, String propertyName, Set set) {
-			String list = props.getProperty(propertyName);
-			if (list == null)
+		private void copyPropertyIntoSet(String property, Set set) {
+			if (property == null)
 				return;
 
-			StringTokenizer strtok = new StringTokenizer(list);
+			StringTokenizer strtok = new StringTokenizer(property);
 			while (strtok.hasMoreTokens())
 				set.add(strtok.nextToken());
-		}
-
-		/**
-		 * Load filter properties.
-		 *
-		 *@return                  Description of the Returned Value
-		 *@exception  IOException  Description of Exception
-		 */
-		private Properties loadProperties() throws IOException {
-			Properties props = new Properties();
-			InputStream in = null;
-			try {
-				in = ProjectPlugin.getResourceAsStream(IMPORT_PROPS_FILE);
-				props.load(in);
-				return props;
-			}
-			finally {
-				if (in != null)
-					in.close();
-			}
 		}
 
 	}

@@ -16,6 +16,9 @@
 package projectviewer;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import java.util.*;
 import javax.swing.tree.TreePath;
 
@@ -24,8 +27,12 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
 
 import projectviewer.event.*;
+import projectviewer.config.ProjectViewerConfig;
 
-/** A project.
+/** 
+ *  A project. Provides many methods to manipulate files/directories within
+ *  the project, and also to save/load the project's configuration from the
+ *  user's jEdit preferences directory.
  */
 public final class Project implements EBComponent {
 
@@ -37,15 +44,23 @@ public final class Project implements EBComponent {
 	private Map files;
 	private String urlRoot;
 	private List listeners;
+    
+    private boolean isLoaded;
+    
+    private List openFiles;
 
+    public Project() {
+        this(null, PROJECT_KEY_UNSET);
+    }
+    
 	/** Create a new <code>Project</code>.
 	 *
 	 *@param  name  Description of Parameter
 	 *@param  root  Description of Parameter
 	 *@since
 	 */
-	public Project(String name, ProjectDirectory root) {
-		this(name, root, PROJECT_KEY_UNSET);
+	public Project(String name) {
+		this(name, PROJECT_KEY_UNSET);
 	}
 
 	/** Create a new <code>Project</code>. <p>
@@ -57,12 +72,16 @@ public final class Project implements EBComponent {
 	 *@param  aKey   Description of Parameter
 	 *@since
 	 */
-	Project(String aName, ProjectDirectory aRoot, int aKey) {
+	Project(String aName, int aKey) {
 		name = aName;
-		root = aRoot;
 		key = aKey;
+
+		root = null;
+        isLoaded = false;
+
 		files = new HashMap();
 		listeners = new ArrayList();
+        openFiles = new ArrayList();
 	}
 
 	/** Returns the project root.
@@ -74,6 +93,10 @@ public final class Project implements EBComponent {
 		return root;
 	}
 
+    public void setRoot(ProjectDirectory root) {
+        this.root = root;
+    }
+    
 	/**  Returns the name of the project.
 	 *
 	 *@return    The name value
@@ -82,6 +105,15 @@ public final class Project implements EBComponent {
 	public String getName() {
 		return name;
 	}
+    
+    /** 
+     *  Changes the project name.
+     *
+     *  @param  aName   The new name.
+     */
+    public void setName(String aName) {
+        this.name = aName;
+    }
 
 	/**
 	 * Returns the WebRoot for the project
@@ -150,21 +182,47 @@ public final class Project implements EBComponent {
 		if (isProjectFile(aFile))
 			return;
 
-		if (aFile.isKeyUnset()) {
-			aFile.setKey(files.size() + 1);
-		}
 		ProjectDirectory dir = findDirectory(aFile);
 		dir.addFile(aFile);
 		fireFileAdded(aFile);
 		files.put(aFile.getPath(), aFile);
 	}
 
+    /**
+     *  Analyze the list of objects passed and removes any ProjectFile and
+     *  ProjectDirectory instances found.
+     *
+     *  @param  objects     The list of artifacts to remove.
+     *  @param  delete      If ProjectFiles are to be deleted from the disk.
+     */
+    public void removeArtifacts(Collection objects, boolean delete) {
+        for (Iterator i = objects.iterator(); i.hasNext(); ) {
+            Object o = i.next();
+            if (o instanceof ProjectFile) {
+                removeFile((ProjectFile)o, delete);
+            } else if (o instanceof ProjectDirectory) {
+                removeDirectory((ProjectDirectory)o,delete);
+            }
+        }
+    }
+    
 	/** Remove the specified project file.
 	 *
 	 *@param  aFile  Description of Parameter
 	 *@since
 	 */
 	public void removeFile(ProjectFile aFile) {
+        removeFile(aFile, false);
+    }
+        
+    /**
+     *  Removes a file from the project. Optionally, deletes the file
+     *  from disk also.
+     *
+     *  @param  aFile   The project file to be removed.
+     *  @param  delete  If the file should be deleted from disk.
+     */
+    public void removeFile(ProjectFile aFile, boolean delete) {
 		Log.log(Log.DEBUG, this, "removeFile :" + aFile.toString());
 		files.remove(aFile.getPath());
 
@@ -173,7 +231,12 @@ public final class Project implements EBComponent {
 		int fileIndex = dir.getIndexOfChild(aFile);
 		dir.removeFile(aFile);
 		fireFileRemoved(aFile, fileIndex);
-		pruneDirectories(path);
+        
+        if (delete) {
+            aFile.toFile().delete();
+        }
+        
+		pruneDirectories(path,false);
 	}
 
 	/** Remove the specified directory.
@@ -181,10 +244,19 @@ public final class Project implements EBComponent {
 	 *@since
 	 */
 	public void removeDirectory(ProjectDirectory aDir) {
+        removeDirectory(aDir, false);
+    }
+    
+    
+    /**
+     *  Removes the specified directory, and optionally delete all of its
+     *  contents from disk.
+     */
+    public void removeDirectory(ProjectDirectory aDir, boolean delete) {
 		Log.log(Log.DEBUG, this, "removeDirectory :" + aDir.toString());
 		Iterator it;
 		// remove all files from this dir
-		it=aDir.files();
+		it = aDir.safeFileIterator();
 		while(it.hasNext()) {
 			//removeFile((ProjectFile)it.next());
 			ProjectFile aFile=(ProjectFile)it.next();
@@ -193,14 +265,16 @@ public final class Project implements EBComponent {
 			int fileIndex = aDir.getIndexOfChild(aFile);
 			aDir.removeFile(aFile);
 			fireFileRemoved(aFile, fileIndex);
-			it=aDir.files();
+            
+            if (delete) {
+                aFile.toFile().delete();
+            }
 		}
 		// repeat it for all subdirs
-		it=aDir.subdirectories();
+		it = aDir.safeSubdirIterator();
 		while(it.hasNext()) {
-			removeDirectory((ProjectDirectory)it.next());
-			it=aDir.subdirectories();
-		}
+			removeDirectory((ProjectDirectory)it.next(),delete);
+	    }
 		
 		List path = getRoot().getPathToDirectory(aDir);
 		ProjectDirectory parent = (ProjectDirectory) path.get(path.size() - 1);
@@ -208,7 +282,11 @@ public final class Project implements EBComponent {
 		Log.log( Log.DEBUG, this, "Removing Directory " + aDir.getPath() + " childIndex is " + childIndex);
 		parent.removeDirectory(aDir);
 		fireDirectoryRemoved(aDir, childIndex);
-		//pruneDirectories(path);
+        
+        if (delete) {
+            aDir.toFile().delete();
+        }
+		//pruneDirectories(path,delete);
 	}
 
 	/** Remove all project files.
@@ -377,12 +455,14 @@ public final class Project implements EBComponent {
 		return (ProjectFile) files.get(aFilePath);
 	}
 
-	/** Prune the directories in the path.
+	/**
+     *  Prune the directories in the path. Optionally, deletes the empty 
+     *  directories from disk.
 	 *
-	 *@param  path  Description of Parameter
-	 *@since
+	 *  @param  path    Path to the desired directory.
+     *  @param  delete  If empty directories should be removed from disk also.
 	 */
-	private void pruneDirectories(List path) {
+	private void pruneDirectories(List path, boolean delete) {
 		for (int i = path.size() - 1; i > 0; i--) {
 			ProjectDirectory each = (ProjectDirectory) path.get(i);
 			if (each.getChildCount() != 0)
@@ -391,6 +471,9 @@ public final class Project implements EBComponent {
 			ProjectDirectory parent = (ProjectDirectory) path.get(i - 1);
 			int dirIndex = parent.getIndexOfChild(each);
 			parent.removeDirectory(each);
+            
+            if (delete) each.toFile().delete();
+            
 			fireDirectoryRemoved(each, dirIndex);
 		}
 	}
@@ -402,9 +485,11 @@ public final class Project implements EBComponent {
 	 *@since
 	 */
 	private void fireFileOpened(ProjectFile aFile) {
-		ProjectEvent evt = new ProjectEvent(this, aFile);
-		for (int i = 0; i < listeners.size(); i++)
-			((ProjectListener) listeners.get(i)).fileOpened(evt);
+        if (listeners.size() > 0) {
+            ProjectEvent evt = new ProjectEvent(this, aFile);
+            for (int i = 0; i < listeners.size(); i++)
+                ((ProjectListener) listeners.get(i)).fileOpened(evt);
+        }
 	}
 
 	/**
@@ -414,9 +499,9 @@ public final class Project implements EBComponent {
 	 *@since
 	 */
 	private void fireFileClosed(ProjectFile aFile) {
-		ProjectEvent evt = new ProjectEvent(this, aFile);
-		for (int i = 0; i < listeners.size(); i++)
-			((ProjectListener) listeners.get(i)).fileClosed(evt);
+        ProjectEvent evt = new ProjectEvent(this, aFile);
+        for (int i = 0; i < listeners.size(); i++)
+            ((ProjectListener) listeners.get(i)).fileClosed(evt);
 	}
 
 	/**
@@ -427,9 +512,9 @@ public final class Project implements EBComponent {
 	 *@since
 	 */
 	private void fireFileRemoved(ProjectFile aFile, int index) {
-		ProjectEvent evt = new ProjectEvent(this, aFile, index);
-		for (int i = 0; i < listeners.size(); i++)
-			((ProjectListener) listeners.get(i)).fileRemoved(evt);
+        ProjectEvent evt = new ProjectEvent(this, aFile, index);
+        for (int i = 0; i < listeners.size(); i++)
+            ((ProjectListener) listeners.get(i)).fileRemoved(evt);
 	}
 
 	/**
@@ -439,10 +524,10 @@ public final class Project implements EBComponent {
 	 *@since
 	 */
 	private void fireFileAdded(ProjectFile aFile) {
-		ProjectEvent evt = new ProjectEvent(this, aFile);
-		//Log.log( Log.DEBUG, this, "Firing file added: file(" + aFile + ")" );
-		for (int i = 0; i < listeners.size(); i++)
-			((ProjectListener) listeners.get(i)).fileAdded(evt);
+        ProjectEvent evt = new ProjectEvent(this, aFile);
+        //Log.log( Log.DEBUG, this, "Firing file added: file(" + aFile + ")" );
+        for (int i = 0; i < listeners.size(); i++)
+            ((ProjectListener) listeners.get(i)).fileAdded(evt);
 	}
 
 	/**
@@ -452,9 +537,9 @@ public final class Project implements EBComponent {
 	 *@since
 	 */
 	private void fireDirectoryAdded(ProjectDirectory aDirectory) {
-		ProjectEvent evt = new ProjectEvent(this, aDirectory);
-		for (int i = 0; i < listeners.size(); i++)
-			((ProjectListener) listeners.get(i)).directoryAdded(evt);
+        ProjectEvent evt = new ProjectEvent(this, aDirectory);
+        for (int i = 0; i < listeners.size(); i++)
+            ((ProjectListener) listeners.get(i)).directoryAdded(evt);
 	}
 
 	/**
@@ -465,9 +550,9 @@ public final class Project implements EBComponent {
 	 *@since
 	 */
 	private void fireDirectoryRemoved(ProjectDirectory aDirectory, int index) {
-		ProjectEvent evt = new ProjectEvent(this, aDirectory, index);
-		for (int i = 0; i < listeners.size(); i++)
-			((ProjectListener) listeners.get(i)).directoryRemoved(evt);
+        ProjectEvent evt = new ProjectEvent(this, aDirectory, index);
+        for (int i = 0; i < listeners.size(); i++)
+            ((ProjectListener) listeners.get(i)).directoryRemoved(evt);
 	}
 
 	/**
@@ -499,6 +584,135 @@ public final class Project implements EBComponent {
 		}
 		return dir;
 	}
+    
+    /** Returns true if the project config has already been loaded. */
+    public boolean isLoaded() {
+        return isLoaded;
+    }
+    
+    /** Sets the "isLoaded" flag for this project. */
+    public void setLoaded(boolean flag) {
+        isLoaded = flag;
+    }
+    
+    /** Loads the project from the config file. */
+    public void load() {
+        if (isLoaded || isKeyUnset()) return;
+        
+        Properties fileProps = null;
+        
+        openFiles.clear();
+        files.clear();
+        
+        try {
+            fileProps = ProjectManager.load("projects/project" + key + ".properties");
+        } catch (IOException ioe) {
+            Log.log(Log.ERROR, this, ioe);
+            return;
+        }
+        
+        setRoot(new ProjectDirectory(fileProps.getProperty("root")));
 
+        Enumeration pname = fileProps.propertyNames();
+        while (pname.hasMoreElements()) {
+         
+            String p = (String) pname.nextElement();
+            
+            if (p.startsWith("file")) {
+                ProjectFile file = new ProjectFile(fileProps.getProperty(p));
+                if (!ProjectViewerConfig.getInstance().getDeleteNotFoundFiles() || 
+                      file.exists()) {
+                    importFile(file);
+                }
+            } else if (p.startsWith("open_file")) {
+                openFiles.add(fileProps.getProperty(p));
+            }
+        }
+        
+        setLoaded(true);
+    }
+    
+    /** Save the project to a file on the disk. */
+    public void save() {
+        if (!isLoaded) return;
+        
+        // Do we have the index of the project in ProjetManager?
+        // There should be a better way to do this, but...
+        if (isKeyUnset()) {
+            ProjectManager.getInstance().save();
+            return;
+        }
+        
+        Properties p = new Properties();
+        
+        // Project Root
+        p.setProperty("root", escape(root.getPath()));
+        
+        // List of open files
+        if (openFiles.size() > 0) {
+            for (int i = 0; i < openFiles.size(); i++) {
+                p.setProperty("open_files." + (i+1), escape(openFiles.get(i).toString()) );
+            }
+        }
+        
+        // List of project files
+        int counter = 1;
+        for ( Iterator i = projectFiles(); i.hasNext(); ) {
+            p.setProperty(
+                "file." + counter,
+                escape(((ProjectFile)i.next()).getPath())
+            );
+            counter++;
+        }
+        
+        // Saves the output to disk
+        try {
+            File f = 
+                new File(
+                    ProjectPlugin.getResourcePath(
+                        "projects/project" + key + ".properties"
+                    )
+                );
+            f.createNewFile();
+            
+            FileOutputStream out = new FileOutputStream(f);
+            p.store(out, "Project " + getName() + " configuration");
+        } catch (IOException ioe) {
+            Log.log(Log.ERROR, this, ioe);
+        }
+    }
+    
+	/** Escape property characters.
+	 *
+	 *@param  s  Description of Parameter
+	 *@return    Description of the Returned Value
+	 */
+	private String escape(String s) {
+        if (s == null) return "";
+        
+		StringBuffer buf = new StringBuffer(s);
+		for (int i = 0; i < buf.length(); i++) {
+			if (buf.charAt(i) == '\\')
+				buf.replace(i, ++i, "\\\\");
+		}
+		return buf.toString();
+	}
+
+    /** Clears the open files list. */
+    public void clearOpenFiles() {
+        openFiles.clear();
+    }
+
+    /** Adds a file to the open files list. */
+    public void addOpenFile(String aPath) {
+        if (isProjectFile(aPath)) {
+            openFiles.add(aPath);
+        }
+    }
+    
+    /** Returns an iterator for the list of open files. */
+    public Iterator getOpenFiles() {
+        return openFiles.iterator();
+    }
 }
 

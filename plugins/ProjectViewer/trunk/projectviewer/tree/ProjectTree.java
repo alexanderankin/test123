@@ -15,15 +15,24 @@
  */
 package projectviewer.tree;
 
+import java.util.List;
+import java.util.ArrayList;
+
 import java.awt.Cursor;
 import java.awt.datatransfer.Transferable;
 import java.awt.dnd.*;
 import java.awt.event.InputEvent;
+
 import javax.swing.JTree;
+import javax.swing.tree.TreePath;
 
 import org.gjt.sp.util.Log;
 
+import projectviewer.Project;
 import projectviewer.ProjectFile;
+import projectviewer.ProjectViewer;
+import projectviewer.ProjectManager;
+import projectviewer.ProjectDirectory;
 
 /** A tree that can handle drag and drop. */
 public class ProjectTree extends JTree implements DragGestureListener, DragSourceListener {

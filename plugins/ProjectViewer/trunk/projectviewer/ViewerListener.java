@@ -27,6 +27,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.tree.*;
 
 import org.gjt.sp.util.Log;
+import projectviewer.config.ProjectPropertiesDlg;
 
 /** Listen to all buttons and GUI events and respond to them.
  */
@@ -73,15 +74,13 @@ public final class ViewerListener implements ActionListener, ItemListener {
 		if (source == this.viewer.createProjectBtn) {
 			this.createProject();
 		}
-		else if (source == this.viewer.deleteProjectBtn) {
-			this.deleteSelectedProject();
-		}
 		else if (source == this.viewer.addFileBtn) {
 			this.addFileToProject();
 		}
 		else if (source == this.viewer.removeFileBtn) {
-			this.removeFilesFromProject();
-			//viewer.getCurrentProject().removeFile( viewer.getSelectedFile() );
+            RemovalManager.handleSelectionRemoval(
+                viewer.getCurrentTree(), false
+            );
 		}
 		else if (source == this.viewer.removeAllFilesBtn) {
 			this.removeAllFilesFromProject();
@@ -98,8 +97,13 @@ public final class ViewerListener implements ActionListener, ItemListener {
 		else if (source == this.viewer.contractBtn) {
 			viewer.collapseAll();
 		}
-		else if (source == this.viewer.configBtn) {
-			this.showConfig();
+        else if (source == this.viewer.saveBtn) {
+            Project p = viewer.getCurrentProject();
+            if (viewer.isAllProjects()) {
+                ProjectManager.getInstance().save();
+            } else {
+                viewer.getCurrentProject().save();
+            }
 		}  else if (source == this.viewer.launchBrowserBtn) {
 		 // this.showConfig(); // will need to be commented out
 		this.launchBrowser(); }
@@ -107,51 +111,50 @@ public final class ViewerListener implements ActionListener, ItemListener {
 	}
 	
   
-  /** Launched the selected project file in the web-browser, against the webserver.
-	 *
-	 *browser property must be set for jedit & urlRoot must be set for the given project
-	 *
-  */
+    /**
+     * Launched the selected project file in the web-browser, against the webserver.
+     * browser property must be set for jedit & urlRoot must be set for the given project
+     *
+     */
+    private void launchBrowser() {
+        /* need to get browser setting */
+        String sURLRoot = viewer.getCurrentProject().getURLRoot();
+        String sURL;
+    
+        if (sURLRoot == "" )
+        {
+            JOptionPane.showMessageDialog(viewer, "Web URL Not set for project");
+            return;	
+        }
+    
+        if (viewer.isFileSelected())
+        {
+        ProjectFile fileToView = viewer.getSelectedFile();
+        
+        /* Produce the url of the file based upon the projects urlRoot */
+        sURL = sURLRoot + fileToView.getPath().toString().substring(viewer.getCurrentProject().getRoot().getPath().length());
+        //sURL = sURLRoot + fileToView.getPath();
+        JOptionPane.showMessageDialog(viewer, sURL);
+        
+           Runtime rt = Runtime.getRuntime();
+           String[] callAndArgs = { "mozilla", sURL };
+           try {
+               Process child = rt.exec(callAndArgs);
+               child.waitFor();
+               System.out.println("Process exit code is: " + child.exitValue());
+               }
+           catch(IOException e) {
+            System.err.println(
+            "IOException starting process!");
+           }
+           catch(InterruptedException e) {
+               System.err.println(
+               "Interrupted waiting for process!");
+           }
+        } else { JOptionPane.showMessageDialog(viewer, "No File selected");}	
+        
+    }
 	
-  
-  private void launchBrowser() {
-	/* need to get browser setting */
-	String sURLRoot = viewer.getCurrentProject().getURLRoot();
-	String sURL;
-
-	if (sURLRoot == "" )
-	{
-		JOptionPane.showMessageDialog(viewer, "Web URL Not set for project");
-		return;	
-	}
-
-	if (viewer.isFileSelected())
-	{
-	ProjectFile fileToView = viewer.getSelectedFile();
-	
-	/* Produce the url of the file based upon the projects urlRoot */
-	sURL = sURLRoot + fileToView.getPath().toString().substring(viewer.getCurrentProject().getRoot().getPath().length());
-	//sURL = sURLRoot + fileToView.getPath();
-	JOptionPane.showMessageDialog(viewer, sURL);
-	
-       Runtime rt = Runtime.getRuntime();
-       String[] callAndArgs = { "mozilla", sURL };
-       try {
-	       Process child = rt.exec(callAndArgs);
-	       child.waitFor();
-	       System.out.println("Process exit code is: " + child.exitValue());
-       	   }
-	   catch(IOException e) {
-		System.err.println(
-		"IOException starting process!");
-	   }
-	   catch(InterruptedException e) {
-		   System.err.println(
-		   "Interrupted waiting for process!");
-	   }
-	} else { JOptionPane.showMessageDialog(viewer, "No File selected");}	
-	
-}	
 	/** Handle project combo changes.
 	 *
 	 *@param  evt  Description of Parameter
@@ -168,18 +171,6 @@ public final class ViewerListener implements ActionListener, ItemListener {
 		}
 	}
 
-	/** Show the config dialog to the user. */
-	public void showConfig() {
-		JDialog dialog = new JDialog();
-		dialog.setTitle("Config");
-		dialog.getContentPane().add(new ProjectViewerPane(viewer));
-		dialog.setSize(350, 600);
-		dialog.setVisible(true);
-		dialog.setEnabled(true);
-		dialog.toFront();
-		dialog.setVisible(true);
-	}
-
 	/** Returns an instance of {@link ProjectFilesImporter}.
 	 *
 	 *@return    The importer value
@@ -190,32 +181,25 @@ public final class ViewerListener implements ActionListener, ItemListener {
 
 	/** Create a new Project */
 	private void createProject() {
-		String projectName = JOptionPane.showInputDialog(viewer,
-				"Please enter a project name.  You will also be prompted for a home directory.");
 
-		if (projectName == null) {
+        Project project = ProjectPropertiesDlg.run(viewer,null);
+        
+		if (project == null) {
 			return;
 		}
 
-		if (ProjectManager.getInstance().hasProject(projectName)) {
+		if (ProjectManager.getInstance().hasProject(project.getName())) {
 			JOptionPane.showMessageDialog(viewer,
 					"There is currently a project with this name.");
 			return;
 		}
 
-		JFileChooser chooser = new JFileChooser();
-		chooser.setDialogTitle("Enter your home directory for \"" + projectName + "\"");
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-
-		if (chooser.showOpenDialog(viewer) == JFileChooser.CANCEL_OPTION) {
-			return;
-		}
-
-		File prjHome = chooser.getSelectedFile();
-		Project project = new Project(projectName, new ProjectDirectory(prjHome.getAbsolutePath()));
+        project.setLoaded(true);
 		ProjectManager.getInstance().addProject(project);
 		viewer.setCurrentProject(project);
+        
 
+        File prjHome = project.getRoot().toFile();
 		int confirmed = JOptionPane.showConfirmDialog(this.viewer,
 				"Do you want to import files from " + prjHome + "?",
 				"Import files?",
@@ -256,32 +240,6 @@ public final class ViewerListener implements ActionListener, ItemListener {
 				new ProjectFile(chooser.getSelectedFile().getAbsolutePath()));
 	}
 
-	/** Prompt the user if he want to remove all files below the selected entry. */
-	private void removeFilesFromProject() {
-		Object node = viewer.getSelectedNode();
-		Log.log(Log.DEBUG, this, "node :" + node.toString());
-
-		if (node instanceof ProjectFile) {
-			Log.log(Log.DEBUG, this, " is file");
-			viewer.getCurrentProject().removeFile((ProjectFile) node);
-		}
-		else if (node instanceof ProjectDirectory) {
-			Log.log(Log.DEBUG, this, " is dir");
-			int answer = JOptionPane.showConfirmDialog(viewer,
-					"Are you sure you want to remove all files below the selected folder from the current project?",
-					"Remove all files below the selected folder?",
-					JOptionPane.YES_NO_OPTION);
-
-			if (answer == JOptionPane.YES_OPTION) {
-				viewer.getCurrentProject().removeDirectory((ProjectDirectory) node);
-			}
-		}
-		else {
-			Log.log(Log.DEBUG, this, " is ???");
-			removeAllFilesFromProject();
-		}
-	}
-
 	/** Prompt the user if he want to remove all file from a projects. */
 	private void removeAllFilesFromProject() {
 		int answer = JOptionPane.showConfirmDialog(viewer,
@@ -292,25 +250,6 @@ public final class ViewerListener implements ActionListener, ItemListener {
 		if (answer == JOptionPane.YES_OPTION) {
 			viewer.getCurrentProject().removeAllFiles();
 		}
-	}
-
-	/** Delete all this project and select all projects. */
-	private void deleteSelectedProject() {
-		Project project = this.viewer.getCurrentProject();
-
-		int confirmed =
-				JOptionPane.showConfirmDialog(viewer,
-				"Are you sure you want to delete the project: " + project + " ?",
-				"Delete project?",
-				JOptionPane.YES_NO_OPTION);
-
-		if (confirmed != JOptionPane.YES_OPTION) {
-			return;
-		}
-
-		ProjectManager.getInstance().removeProject(project);
-		viewer.setCurrentProject(null);
-		viewer.refresh();
 	}
 
 	/** Progmatically open all files under the current project... */

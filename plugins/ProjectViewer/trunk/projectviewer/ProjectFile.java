@@ -31,25 +31,12 @@ public final class ProjectFile implements Transferable {
 	private String fullPath;
 	private String name;
 	private boolean opened;
-	private int key;
 
 	/** Create a new <code>ProjectFile</code>.
 	 *
 	 *@param  fullFilePath  Description of Parameter
 	 */
 	public ProjectFile(String fullFilePath) {
-		this(KEY_UNSET, fullFilePath);
-	}
-
-	/** Create a new <code>ProjectFile</code>.
-	 *
-	 * <p>Note: This is a constructor intended to be used internally.</p>
-	 *
-	 *@param  aKey          Description of Parameter
-	 *@param  fullFilePath  Description of Parameter
-	 */
-	ProjectFile(int aKey, String fullFilePath) {
-		key = aKey;
 		fullPath = fullFilePath;
 	}
 
@@ -204,30 +191,6 @@ public final class ProjectFile implements Transferable {
 	 */
 	public int hashCode() {
 		return getPath().hashCode();
-	}
-
-	/** Set the project's key.
-	 *
-	 *@param  aKey  The new key value
-	 */
-	public void setKey(int aKey) {
-		key = aKey;
-	}
-
-	/** Returns <code>true</code> if the project's key is unset.
-	 *
-	 *@return    The keyUnset value
-	 */
-	public boolean isKeyUnset() {
-		return key == KEY_UNSET;
-	}
-
-	/** Returns the key.
-	 *
-	 *@return    The key value
-	 */
-	public int getKey() {
-		return key;
 	}
 
 	/** A compare class.

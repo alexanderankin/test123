@@ -28,6 +28,9 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
+import projectviewer.config.ProjectViewerConfig;
+import projectviewer.config.ProjectViewerOptionsPane;
+
 /** A Project Viewer plugin for jEdit.
  *
  *@author     <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
@@ -38,19 +41,8 @@ import org.gjt.sp.util.Log;
 public final class ProjectPlugin extends EBPlugin {
 
 	public final static String NAME = "projectviewer";
-
-	private final static String LAST_PROJECT_PROPERTY_KEY = "plugin." + NAME + ".last-project";
-	
-	/** @todo add property for each project
-	 *   plugin.ProjectViewer.<project>.open-files
-	 * to track open files
-	 * and use
-	 *  launcher.launchFile((ProjectFile)i.next());
-	 * to reopen file
-	 */
-
-	private ProjectViewer viewer;
-
+    
+    private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 
 	/** Returns an input stream to the specified resource, or <code>null</code> if none is
 	 * found.
@@ -98,7 +90,7 @@ public final class ProjectPlugin extends EBPlugin {
 	 *@return    The lastProject value
 	 */
 	public static String getLastProject() {
-		return jEdit.getProperty(LAST_PROJECT_PROPERTY_KEY);
+		return config.getLastProject();
 	}
 
 	/** Start the plugin. */
@@ -106,11 +98,10 @@ public final class ProjectPlugin extends EBPlugin {
 		// not needed anymore (replaced by dockables.xml)
 		//EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
 
-		File f = new File(getResourcePath("null"));
+		File f = new File(getResourcePath("projects/null"));
 		if (!f.getParentFile().exists())
 			f.getParentFile().mkdirs();
-
-		checkImportProperties();
+            
 		checkOldProperties();
 
 		//parse out the resources as a thread so that when the plugin is
@@ -121,10 +112,12 @@ public final class ProjectPlugin extends EBPlugin {
 	/** Stop the plugin and save the project resources. */
 	public void stop() {
 		ProjectManager.getInstance().save();
-		if (viewer != null) {
-			jEdit.setProperty(LAST_PROJECT_PROPERTY_KEY,
-					!viewer.isAllProjects() ? viewer.getCurrentProject().getName() : "");
+		if (ProjectViewer.getCurrentInstance() != null) {
+            ProjectViewer viewer = ProjectViewer.getCurrentInstance();
+			config.setLastProject(
+                !viewer.isAllProjects() ? viewer.getCurrentProject().getName() : null);
 		}
+        config.save();
 	}
 
 	/** Handle messages from the <code>EditBus</code>.
@@ -147,30 +140,12 @@ public final class ProjectPlugin extends EBPlugin {
 		menuItems.addElement(GUIUtilities.loadMenuItem("open-viewer-menu-item"));
 	}
 
-	/**Perform a check for the import properties file.  If it isn't there, create one.
-	 */
-	private void checkImportProperties() {
-		File importFile = new File(getResourcePath(ProjectFileImporter.IMPORT_PROPS_FILE));
-		if (importFile.exists())
-			return;
-
-		OutputStream out = null;
-		InputStream in = null;
-		try {
-			out = new FileOutputStream(importFile);
-			in = getClass().getResourceAsStream("import-sample.properties");
-			Pipe.pipe(in, out);
-
-		}
-		catch (IOException e) {
-			displayError("Unable to setup project imports");
-			Log.log(Log.ERROR, this, e);
-		}
-		finally {
-			close(in);
-			close(out);
-		}
-	}
+    /**
+     *  Add out option pane to jEdit's option dialog.
+     */
+    public void createOptionPanes(OptionsDialog optionsDialog) {
+        optionsDialog.addOptionPane(new ProjectViewerOptionsPane("ProjectViewer"));
+    }
 
 	/** Perform a check for old project properties files.
 	 * If they exist and new properties files doesn't, then convert the old to the new.
