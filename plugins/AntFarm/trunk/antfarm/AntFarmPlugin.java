@@ -115,9 +115,6 @@ public class AntFarmPlugin extends EBPlugin
 	}
 
 
-	public void stop() { }
-
-
 	String getAntFarmPath()
 	{
 		EditPlugin.JAR jar = getJAR();
@@ -133,5 +130,6 @@ public class AntFarmPlugin extends EBPlugin
 			AntFarmPlugin.OPTION_PREFIX + "use-project-bridge"
 			 );
 	}
+
 }
 

@@ -45,12 +45,7 @@ public class AntFarmOptionPane
 
 	static String promptForAntScript( Component component )
 	{
-		String antHomeBin = MiscUtilities.constructPath(
-			jEdit.getProperty( AntFarmPlugin.ANT_HOME ),
-			"bin"
-			 );
-		Log.log( Log.DEBUG, component, "ant.home: " + antHomeBin );
-		JFileChooser chooser = new JFileChooser( new File( antHomeBin ) );
+		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "location" ) );
 		int result = chooser.showDialog(
 			component,
