@@ -130,3 +130,4 @@ xpath.result.message.large-xml-fragment=The XML fragments string is longer than 
 
 # Indent action
 xslt.indent.message.failure=Indenting failed to complete.
+
