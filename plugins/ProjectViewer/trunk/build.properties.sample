@@ -8,6 +8,3 @@ compiler.deprecation=on
 compiler.verbose=off
 
 jedit.user.home=C:/Documents and Settings/cyu/.jedit
-
-# Uncomment this property only if you have a mobix build distribution.
-#mobix-toolkit.home=../../../toolkit

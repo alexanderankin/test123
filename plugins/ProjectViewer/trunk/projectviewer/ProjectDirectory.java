@@ -32,6 +32,8 @@ public class ProjectDirectory {
   private List files;
   private String name;
   private String pathWithSep;
+
+  private static Comparator comparator;
   
   /**
    * Create a new <code>ProjectDirectory</code>.
@@ -197,6 +199,16 @@ public class ProjectDirectory {
   }
 
   /**
+   * Returns a comparator for project directories.
+   */
+  public static Comparator getComparator() {
+    if ( comparator == null ) {
+      comparator = new DirectoryComparator();
+    }
+    return comparator;
+  }
+
+  /**
    * Add a file to this directory.
    */
   void addFile( ProjectFile file ) {
@@ -225,6 +237,7 @@ public class ProjectDirectory {
     if ( isSubDirectory( aSubDirectory ) ) return null;
     ProjectDirectory dir = new ProjectDirectory( aSubDirectory );
     subdirectories.add( dir );
+    Collections.sort( subdirectories, getComparator() );
     return dir;
   }
   
@@ -311,6 +324,23 @@ public class ProjectDirectory {
   public int hashCode() {
     return getPath().hashCode();
   }
+
+  /**
+   * A class for comparing directories.
+   */
+  private static class DirectoryComparator implements Comparator {
+
+    /**
+     * Compare two directory objects.
+     */
+    public int compare( Object obj1, Object obj2 ) {
+      ProjectDirectory dir1 = (ProjectDirectory) obj1;
+      ProjectDirectory dir2 = (ProjectDirectory) obj2;
+      return dir1.getName().compareTo(dir2.getName());
+    }
+
+  }
+
   
 }
 
