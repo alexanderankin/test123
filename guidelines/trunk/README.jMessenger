@@ -1,0 +1,7 @@
+CVS policy file
+
+plugin: jMessenger
+author: Brad Mace <mace0031@mrs.umn.edu>
+
+please do not commit changes to this plugin without first consulting the author.
+If you'd like to help develop or test, send me an email.
