@@ -74,19 +74,8 @@ public class LaTeXParser
         bufferEndPosition = buffer.createPosition(text.length());
         root = data.root;
 
-        switch (getControls().getSelectedButton()) {
-
-            case LaTeXDockable.LABELS:
-                parseReferences();
-
-                break;
-
-            default:
-
                 Object o = getControls().getComboBox().getSelectedItem();
                 parseNavigationData((NavigationList)o);
-        }
-
         return data;
     } //}}}
 
@@ -98,7 +87,6 @@ public class LaTeXParser
         while (it.hasNext()) {
 
             LaTeXAsset asset = (LaTeXAsset)it.next();
-            //Log.log(Log.DEBUG, this, asset.getShortString() + ":" +asset.getLevel() + ": S:" + asset.getStart().getOffset() + ": E:" + asset.getEnd().getOffset());
             DefaultMutableTreeNode n = new DefaultMutableTreeNode(asset);
             DefaultMutableTreeNode correctNode = findCorrectNode(n, lastNode);
             lastNode = n;
@@ -137,24 +125,6 @@ public class LaTeXParser
         buildTree();
     } //}}}
 
-    private void parseReferences() {//{{{ 
-    
-
-        int refStart = text.indexOf("\\label{");
-
-        while (refStart >= 0) {
-
-            int refEnd = text.indexOf("}", refStart);
-            String ref = text.substring(refStart + 7, refEnd);
-            root.add(new DefaultMutableTreeNode(LaTeXAsset.createAsset(ref.trim(), 
-                                                                       buffer.createPosition(
-                                                                                   refStart + 7), 
-                                                                       buffer.createPosition(
-                                                                                   refEnd), 
-                                                                       LaTeXAsset.DEFAULT_ICON)));
-            refStart = text.indexOf("\\label{", refEnd);
-        }
-    } //}}}
 
     private void searchBuffer(NavigationList navList) {//{{{
         String text = buffer.getText(0, buffer.getLength());
@@ -170,11 +140,7 @@ public class LaTeXParser
             if (!(replace.equals(" "))) { // NOTE: This code probably belongs in TagPair.java
 
                 try {
-
-                    //          Log.log(Log.MESSAGE,this,"replace: "+replace);
                     RE colon = new RE("\\\\u003[aA]");
-
-                    //          Log.log(Log.MESSAGE,this,"found: "+colon.getMatch(replace).toString());
                     replace = colon.substituteAll(replace, ":");
                     default_replace = false;
                 } catch (REException e) {
@@ -246,8 +212,6 @@ public class LaTeXParser
     } //}}}
     
     private Position findEndPosition(String startRegExp, String endRegExp, int startIndex){//{{{ 
-        //if (true) return bufferEndPosition;
-        //Log.log(Log.DEBUG, this, "Start: " + startIndex + " buf:" + buffer.getLength());
         String bufferText = buffer.getText(startIndex, buffer.getLength()-startIndex);
         StringBuffer sb = new StringBuffer("(");
         sb.append(startRegExp).append(")|(").append(endRegExp).append(")");
@@ -273,7 +237,6 @@ public class LaTeXParser
             if (match.toString(1)==""){
                 if(stack == 0){
                     Position out = buffer.createPosition(startIndex + offset);
-                    //Log.log(Log.DEBUG, this, "MATCH!" + out.getOffset());
                    return out;
                 } else {
                     stack--;

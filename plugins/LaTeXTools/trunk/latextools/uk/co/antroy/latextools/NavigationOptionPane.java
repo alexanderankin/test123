@@ -1,4 +1,5 @@
-package uk.co.antroy.latextools; 
+package uk.co.antroy.latextools;
+
 import java.awt.*;
 import java.awt.event.*;
 
@@ -41,10 +42,16 @@ import org.gjt.sp.jedit.gui.*;
 //}}}
 public class NavigationOptionPane
     extends AbstractOptionPane {
-
+        
     //~ Instance/static variables .............................................
 
+    private JCheckBox inserttags;
     private JTextField userDir;
+    private JCheckBox insertcitetags;
+    private JPanel wordlengthPan;
+    private JPanel wordcountPan;
+    private WholeNumberField wordlength;
+    private WholeNumberField wordcount;
 
     //~ Constructors ..........................................................
 
@@ -58,18 +65,154 @@ public class NavigationOptionPane
     //~ Methods ...............................................................
 
     protected void _init() {
+        initStructureNav();
+        initLabelNav();
+        initBibNav();
+    }
+
+    protected void _save() {
+        saveStructureNav();
+        saveLabelNav();
+        saveBibNav();
+    }
+
+    private void initBibNav() {
+        addComponent(new JLabel("<html><h3>Bibliography Navigation"));
+        wordlength = new WholeNumberField(jEdit.getIntegerProperty(
+                                                      "bibtex.bibtitle.wordlength", 
+                                                      0), 4);
+        wordcount = new WholeNumberField(jEdit.getIntegerProperty(
+                                                     "bibtex.bibtitle.wordcount", 
+                                                     0), 4);
+        wordlengthPan = new JPanel();
+        wordlengthPan.add(new JLabel(jEdit.getProperty(
+                                                 "options.bibtex.wordlength")));
+        wordlengthPan.add(wordlength);
+        wordcountPan = new JPanel();
+        wordcountPan.add(new JLabel(jEdit.getProperty(
+                                                "options.bibtex.wordcount")));
+        wordcountPan.add(wordcount);
+        addComponent(insertcitetags = new JCheckBox(jEdit.getProperty(
+                                                                "options.bibtex.inserttags")));
+        insertcitetags.getModel().setSelected(jEdit.getBooleanProperty(
+                                                          "bibtex.inserttags"));
+        addComponent(wordlengthPan);
+        addComponent(wordcountPan);
+    }
+
+    private void initLabelNav() {
+        addComponent(new JLabel("<html><h3>Label Navigation"));
+        addComponent(inserttags = new JCheckBox(jEdit.getProperty(
+                                                            "options.reference.inserttags")));
+        inserttags.getModel().setSelected(jEdit.getBooleanProperty(
+                                                      "reference.inserttags"));
+    }
+
+    private void initStructureNav() {
+        addComponent(new JLabel("<html><h3>Structure Navigation"));
         userDir = new JTextField(30);
-        userDir.setText(jEdit.getProperty(
-                                         "options.navigation.userdir"));
+        userDir.setText(jEdit.getProperty("options.navigation.userdir"));
+
         JLabel userDirLab = new JLabel(jEdit.getProperty(
-                                               "options.navigation.userdir.label"));
+                                                   "options.navigation.userdir.label"));
         JPanel p = new JPanel();
         p.add(userDirLab);
         p.add(userDir);
         addComponent(p);
     }
 
-    protected void _save() {
+    private void saveBibNav() {
+        jEdit.setBooleanProperty("bibtex.inserttags", 
+                                 insertcitetags.getModel().isSelected());
+        jEdit.setIntegerProperty("bibtex.bibtitle.wordlength", 
+                                 wordlength.getValue());
+        jEdit.setIntegerProperty("bibtex.bibtitle.wordcount", 
+                                 wordcount.getValue());
+    }
+
+    private void saveLabelNav() {
+        jEdit.setBooleanProperty("reference.inserttags", 
+                                 inserttags.getModel().isSelected());
+    }
+
+    private void saveStructureNav() {
         jEdit.setProperty("options.navigation.userdir", userDir.getText());
+    }
+
+    //~ Inner classes .........................................................
+
+    //   }}}
+    protected class WholeNumberField
+        extends JTextField {
+
+        //~ Instance/static variables .........................................
+
+        private Toolkit toolkit;
+        private NumberFormat integerFormatter;
+
+        //~ Constructors ......................................................
+
+        public WholeNumberField(int value, int columns) {
+            super(columns);
+            toolkit = Toolkit.getDefaultToolkit();
+            integerFormatter = NumberFormat.getNumberInstance(Locale.US);
+            integerFormatter.setParseIntegerOnly(true);
+            setValue(value);
+        }
+
+        //~ Methods ...........................................................
+
+        public void setValue(int value) {
+            setText(integerFormatter.format(value));
+        }
+
+        public int getValue() {
+
+            int retVal = 0;
+
+            try {
+                retVal = integerFormatter.parse(getText()).intValue();
+            } catch (ParseException e) {
+
+                // This should never happen because insertString allows
+                // only properly formatted data to get in the field.
+                toolkit.beep();
+            }
+
+            return retVal;
+        }
+
+        protected Document createDefaultModel() {
+
+            return new WholeNumberDocument();
+        }
+
+        //~ Inner classes .....................................................
+
+        protected class WholeNumberDocument
+            extends PlainDocument {
+
+            //~ Methods .......................................................
+
+            public void insertString(int offs, String str, AttributeSet a)
+                              throws BadLocationException {
+
+                char[] source = str.toCharArray();
+                char[] result = new char[source.length];
+                int j = 0;
+
+                for (int i = 0; i < result.length; i++) {
+
+                    if (Character.isDigit(source[i])) {
+                        result[j++] = source[i];
+                    } else {
+                        toolkit.beep();
+                        System.err.println("insertString: " + source[i]);
+                    }
+                }
+
+                super.insertString(offs, new String(result, 0, j), a);
+            }
+        }
     }
 }

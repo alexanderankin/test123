@@ -3,22 +3,6 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-<!-- <ACTION NAME="bibtex">
-		<CODE>
-			uk.co.antroy.latextools.BibTeXPanel.createBibTeXDialog(view, buffer);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="labels">
-		<CODE>
-			uk.co.antroy.latextools.ReferencePanel.createReferenceDialog(view, buffer);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="navigation">
-		<CODE>
-           new sidekick.SideKickTree(view,!position.equals(DockableWindowManager.FLOATING));
- 		</CODE>
-	</ACTION>
--->
   <ACTION NAME="set-main">
 		<CODE>
 		       uk.co.antroy.latextools.LaTeXMacros.setMainFile(buffer);

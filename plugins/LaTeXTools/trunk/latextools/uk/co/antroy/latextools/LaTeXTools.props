@@ -12,20 +12,23 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.3=plugin console.ConsolePlugin
 plugin.uk.co.antroy.latextools.LaTeXPlugin.activate=defer
 
 #4.2 API - options dialog
-plugin.uk.co.antroy.latextools.LaTeXPlugin.option-group=navigation bibtex reference
+plugin.uk.co.antroy.latextools.LaTeXPlugin.option-group=general navigation
+#navigation bibtex reference
 options.bibtex.label = BibTeX Options
 options.bibtex.code = new uk.co.antroy.latextools.BibTeXOptionPane();
 options.navigation.label = Navigation Options
 options.navigation.code = new uk.co.antroy.latextools.NavigationOptionPane();
 options.reference.label = Reference Options
 options.reference.code = new uk.co.antroy.latextools.ReferenceOptionPane();
+options.general.label = General Options
+options.general.code = new uk.co.antroy.latextools.LaTeXOptionPane();
 
 # Properties for Option panes
-options.bibtex.inserttags = Include Tag
+options.bibtex.inserttags = Insert \\cite{} Tag?
 options.bibtex.wordlength = Maximum Letters in Title
 options.bibtex.wordcount = Maximum Words in Title
 options.bibtex.reflength = 10
-options.reference.inserttags = Include Tag
+options.reference.inserttags = Insert \\ref{} Tag?
 options.navigation.userdir = C:/Documents and Settings/Admin/.jedit/navigation
 options.navigation.userdir.label = User Navigation File Dir:
 
@@ -123,4 +126,11 @@ sidekick.parser.latex_parser.label=LaTeX
 
 latex.compile.command=pdflatex
 latex.viewoutput.command=acrord32.exe
-
+latex.bibtex.command=bibtex
+latex.compile.ext=.tex
+latex.bibtex.ext=
+latex.viewoutput.ext=.pdf
+latex.compile.detach=false
+latex.viewoutput.detach=true
+latex.bibtex.detach=false
+latex.classpath.dirs=

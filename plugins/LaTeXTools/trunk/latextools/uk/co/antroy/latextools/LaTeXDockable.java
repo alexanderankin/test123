@@ -30,20 +30,11 @@ import java.awt.event.ActionListener;
 
 public class LaTeXDockable  extends JPanel{
 
-//  extends JTabbedPane {
-
   //~ Instance/static variables ...............................................
 
   private JComboBox nav_list = new JComboBox();
-  public static final String PARSE_LABELS = "Labels";
-  public static final int LABELS = 0;
-  public static final int NAVIGATION = 1;
-  public static final int BIBLIOGRAPHY = 2;
   public static final LaTeXDockable instance = new LaTeXDockable();
 
-  private int selected;
-  private JRadioButton refs;
-//  private JRadioButton navig;
   private JLabel navig;
   
   //~ Constructors ............................................................
@@ -51,37 +42,19 @@ public class LaTeXDockable  extends JPanel{
   private LaTeXDockable() {
     
     ArrayList nav = new ArrayList(NavigationList.getNavigationData());
-    Log.log(Log.MESSAGE,this,"NLIST: "+ nav.size());
     for (Iterator it = nav.iterator(); it.hasNext();){
         NavigationList nl = (NavigationList) it.next();
         for (Iterator it2 = nl.iterator(); it2.hasNext();){
-            Log.log(Log.DEBUG, NavigationList.class, nl.toString() + " ITEM: " + it2.next());
         }
     }
     nav_list = new JComboBox(nav.toArray());
     
-    refs = new JRadioButton(PARSE_LABELS);
-//    navig = new JRadioButton("Select LaTeX Navigation List:");
     navig = new JLabel("Select LaTeX Navigation List:");
-//    add(refs);
     add(navig);
     add(nav_list);
     
-//    ButtonGroup group = new ButtonGroup();
-//    group.add(refs);
-//    group.add(navig);
-    
-//    navig.setSelected(true);
-    selected = NAVIGATION;
-    
     LaTeXDockableListener listener = new LaTeXDockableListener();
-//    refs.addActionListener(listener);
-//    navig.addActionListener(listener);
     nav_list.addActionListener(listener);
-  }
-  
-  public int getSelectedButton(){
-    return selected;
   }
   
   public JComboBox getComboBox(){
@@ -94,13 +67,6 @@ public class LaTeXDockable  extends JPanel{
     }
     
     public void actionPerformed(ActionEvent e) {
-      
-//      if (e.getSource().equals(refs)){
-//        selected = LABELS;
-//      }else{
-//        selected = NAVIGATION;
-//      }
-      
       LaTeXPlugin.parse(jEdit.getActiveView(),true);
     }
   }

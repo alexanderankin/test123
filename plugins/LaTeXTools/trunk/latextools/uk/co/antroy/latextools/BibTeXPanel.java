@@ -108,13 +108,9 @@ public class BibTeXPanel
    */
   public void refresh() {
 
-//     if (bufferChanged) {
-      removeAll();
-//      bufferChanged = false;
-//     }
- 
+    removeAll();
+
     if (!isTeXFile(buffer)) {
-      log("!isTexFile");
       displayNotTeX(BorderLayout.CENTER);
     } else {
       loadBibFiles();
@@ -207,20 +203,11 @@ public class BibTeXPanel
     while (it.hasNext()) {
       bib = (File) it.next();
 
-      //log(0);
       try {
 
-        // log(1);
-        // log("Bib: " + bib.toString());
         FileReader reader = new FileReader(bib);
-
-        // log(2);
         BufferedReader in = new BufferedReader(reader);
-
-        // log(3);
         String nextLine = in.readLine();
-
-        // log("nextLine=" + nextLine);
         boolean newEntry = false;
         int count = 0;
         String bibref = "";
@@ -234,7 +221,6 @@ public class BibTeXPanel
             if (rm != null) {
               newEntry = false;
 
-              // log("entry: " + rm.toString(1));
               BibEntry bibEntry = new BibEntry(bibref.trim(), 
                                                rm.toString(1).trim());
               bibEntries.add(bibEntry);
@@ -259,7 +245,6 @@ public class BibTeXPanel
       }
     }
 
-    //log("size"+bibEntries.size());
     Collections.sort(bibEntries);
   }
 
@@ -275,7 +260,6 @@ public class BibTeXPanel
     for (Enumeration it = files.getLastLeaf().pathFromAncestorEnumeration(files); it.hasMoreElements();) {
        DefaultMutableTreeNode node = (DefaultMutableTreeNode) it.nextElement();
        File in = (File) node.getUserObject();
-       log(in.toString());
        Buffer buff = jEdit.openTemporary(view, in.getParent(), in.getName(),false);
        bufferLoop:
        for (int i = buff.getLineCount() - 1; i > 0; i--) {
@@ -314,7 +298,6 @@ public class BibTeXPanel
    
              File f = new File(LaTeXMacros.getMainTeXDir(buffer), s);
    
-             log(f.toString());
              if (!f.exists())
                f = new File(s);
    
