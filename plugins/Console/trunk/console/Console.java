@@ -105,6 +105,20 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		return this;
 	}
 
+	public void setShell(String shell)
+	{
+		Object[] shells = EditBus.getNamedList(Shell.SHELLS_LIST);
+		for(int i = 0; i < shells.length; i++)
+		{
+			Shell sh = (Shell)shells[i];
+			if(sh.getName().equals(shell))
+			{
+				setShell(sh);
+				return;
+			}
+		}
+	}
+
 	public void setShell(Shell shell)
 	{
 		if(this.shell == shell)
@@ -124,13 +138,16 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		command.getModel().addItem(cmd);
 
 		// Record the command
-		//InputHandler.MacroRecorder recorder = view.getInputHandler()
-		//	.getMacroRecorder();
-		//if(recorder != null)
-		//{
-		//	recorder.actionPerformed(jEdit.getAction("console-shell"),shell.getName());
-		//	recorder.actionPerformed(jEdit.getAction("console"),cmd);
-		//}
+		Macros.Recorder recorder = view.getMacroRecorder();
+		if(recorder != null)
+		{
+			recorder.record("view.getDockableWindowManager().addDockableWindow(\""
+				+ getName() + "\");");
+			recorder.record("console = view.getDockableWindowManager().getDockableWindow(\""
+				+ getName() + "\");");
+			recorder.record("console.setShell(\"" + shell.getName() + "\");");
+			recorder.record("console.run(\"" + MiscUtilities.charsToEscapes(cmd) + "\");");
+		}
 
 		if(cmd.trim().equalsIgnoreCase("clear"))
 		{

@@ -46,11 +46,9 @@ with the <b>UP</b> and <b>DOWN</b> keys.<p>
 Entering the `clear' command in any shell will remove all text from the
 output area.<p>
 
-<!--
 <b>Tip</b>: if you find yourself executing the same console command frequently,
 record it in a macro. Simply enter the command in the console while a
 macro recording is in progress.<p>
--->
 
 <hr>
 
@@ -129,6 +127,9 @@ Requires EditBus 0.10 and jEdit 3.0pre5.
 
 <ul>
 <li>"BeanShell" shell added
+<li>Recording console commands in macros supported again
+<li>Error parsing didn't take changing directories into account, and as a result
+errors would point to the incorrect path after a "cd" command
 </ul>
 
 <h3>Version 2.3.1</h3>
