@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Kevin A. Burton
-plugin.projectviewer.ProjectPlugin.version=1.0.1
+plugin.projectviewer.ProjectPlugin.version=1.0.2
 plugin.projectviewer.ProjectPlugin.docs=/docs/index.html
 
 plugin.projectviewer.ProjectViewer.depend.0=jedit 03.01.00.01
@@ -10,5 +10,4 @@ projectviewer.title=Project
 projectviewer.label=Project Viewer
 
 open-viewer-menu-item.label=Project Viewer
-
 options.projectviewer.label=Project Viewer
