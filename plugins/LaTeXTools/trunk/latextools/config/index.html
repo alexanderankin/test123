@@ -23,6 +23,10 @@ the current buffer is a LaTeX file. The tools available at
 present include the following:</p>
 
 <ul>
+<li><a href="#project">Project Management</a></li>
+
+<li><a href="#commands">Useful Commands</a></li>
+
 <li><a href="#bibtex">BibTeX completion</a></li>
 
 <li><a href="#label">Reference Completion</a></li>
@@ -33,13 +37,52 @@ present include the following:</p>
 <!-- <li><a href="bugs.html">Bugs List</a></li>
 <li><a href="featurereq.html">Feature Requests</a></li>
  --></ul>
+ 
+<a name="project"></a>
+
+<h2>Project Management</h2>
+
+<P>A main file can be specified either globally or locally. The global setting is done through the plugin menu, where <em>Set Main File</em> sets the global main file to the current file, and <em>Reset Main File</em> removes the global property. The local setting is achieved by adding somewhere in the first 5 lines of the file the string <CODE>:latex.root=<em>Absolute or relative path to Main file</em>:</CODE>. The menu command <em>Show Main File</em> displays the path to the main file in a pop up box. Note that if present, the locally defined Main file has priority, followed by the globally defined property. If no global property has been set, then the current buffer is deemed to be the Main file.
+</P>
+
+<P>The main file is used by several other commands, such as the two <em>Compile</em> commands, the <em>BiBTex</em>  command and the <em>Erase Working Files...</em> command. It is also used by the Label Navigator and the BibTeX Navigator in order to correctly parse information. <em>The project files</em> is a term used in these instructions to refer to the set of files that include the Main file and all files imported by files in the set.
+</P>
+
+ 
+<a name="commands"></a>
+
+<h2>Useful Commands</h2>
+
+Various utility commands are included, accessible through the Plugins menu. These are catagorized as follows:
+
+<h3>Navigation</h3>
+
+<p>The commands <em>BibTeX Navigator</em>, <em>Label Navigator</em> and <em>Structure Browser</em>   simply open the relevant navigation windows. <em>Display Image</em> looks under the caret to see if a graphics object is present. If it is, then it tries to display the image in a (dockable) window.
+</p>
+
+<p>
+<em>Open Main File</em> simply opens the Main file as the current buffer. 
+<em>Open Import</em> looks to see if there is an import statement under the caret, and if so tries to open the import file.
+</p>
+
+<h3>Compilation</h3>
+
+There are four commands here. <em>Compile</em> runs the default compilation command on the current buffer using the Console plugin. The <em>Compile...</em> command allows the user to specify the compilation command in a text box (which maintains a history of commands). <em>BibTeX</em> runs BibTeX on the current buffer, again through the Console. <em>Erase Working Files...</em> displays a checkbox list of file extensions, and deletes all files in the same directory as the Main file with those extensions (giving plenty of opportunity to pull out at the last minute!).
+
+<h3>Project Management</h3>
+
+These are the commands <em>Set Main File</em>, <em>Reset Main File</em> and  <em>Show Main File Path</em>. These are described in <a href="#project">Project Management</a> above. 
+
+<h3>Text Insertion</h3>
+
+These are various shortcuts to manipulate text. They are pretty self explanatory so play around...
 
 <a name="bibtex"></a>
 
 <h2>BibTeX Completion</h2>
 
-<p>This tool searches for a <code>\begin{thebibliography}</code>
-environment, or failing that looks for a
+<p>This tool searches the project files for a <code>\begin{thebibliography}</code>
+environment, or  a
 <code>\bibliography{}</code> command. If the former is found, the
 current file is searched for <code>\bibitem</code> commands, and
 compiles a list of such entries. If the latter is found, then all
@@ -82,12 +125,23 @@ number of words in the title. For example, if the value is set to
 
 <h2>Reference Completion</h2>
 
-<p>When activated, this tool simply searches the current buffer
+<p>When activated, this tool simply searches the project files
 for <code>\label{}</code> commands, and displays the results in a
-dialog. Only single references can be selected (multiple
+dialog. Only single label can be selected (multiple
 references in a single <code>\ref</code> are not supported in
-LaTeX as they are in <code>\cite</code> commands), and are
-inserted in the document when enter is pressed.</p>
+LaTeX as they are in <code>\cite</code> commands).</p>
+
+<p>
+Clicking a label has the following effects:
+
+<ul>
+<li><strong>Single Click</strong>: scrolls to the label in the appropriate buffer. Note that this may change the current buffer.</li>
+<li><strong>Double Click</strong>: inserts a reference to the label at the cursor position in the current buffer.</li>
+<li><strong>ALT-Click</strong>: "locks" the insertion point for the reference to the cursor position of the current buffer, and then acts like the Single Click above. The lock is released when a click is performed without the ALT key and when the mouse leaves the navigator window.</li>
+</ul>
+
+The ALT-Click locking mechanism allows the entire list of labels to be explored by keeping ALT held down and clicking the labels to view their positions. Double clicking a reference (with or without the ALT key) will insert the reference at the saved cursor location.
+</p>
 
 <h3>Options</h3>
 
@@ -200,7 +254,7 @@ Any other integer value will display no image at all.
 <hr>
 <i>LaTeX Tools</i>
 <p>Plugin maintained by <b>Anthony Roy</b> (<a href=
-"home@ant-roy.co.uk">home@ant-roy.co.uk</a>).<span align="right">Last Modified: Friday April 25, 2003</span></p>
+"home@antroy.co.uk">home@antroy.co.uk</a>).<span align="right">Last Modified: Sunday 28 December, 2003</span></p>
 </body>
 </html>
 

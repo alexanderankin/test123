@@ -33,6 +33,7 @@ options.navigation.userdir.label = User Navigation File Dir:
 plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   bibliography-dock \
   label-dock \
+  sidekick-tree \
   show-image-under-caret \
   open-main \
   open-import \
@@ -46,11 +47,11 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   reset-main \
   show-main \
   - \
+  insert-environment \
+  insert-command \
   increment-phrase \
   increment-phrase-from-x \
-  surround-selection \
-  insert-environment \
-  insert-command
+  surround-selection 
   
 bibtex.label=BibTeX
 bibtex.title=BibTeX Entries
@@ -63,14 +64,12 @@ reference.title=Label List
 reference.inserttags=true
 
 bibliography-dock.title = BibTeX Navigator
-bibliography-dock.label = Insert Citation...
-
+bibliography-dock.label = BibTeX Navigator
 navigation-dock.title = LaTeX Navigator
 navigation-dock.label = Navigation Toolbar
 navigation-dock.nottex = Not a*TeX*Document!
-
 label-dock.title = Label Navigator
-label-dock.label = Insert Cross-reference...
+label-dock.label = Label Navigator
 
 image-viewer-dock.title = LaTeX Image Viewer
 image-viewer-dock.label = Image Viewer
@@ -97,7 +96,7 @@ labels.title=Find Labels
 
 set-main.label = Set Main File
 reset-main.label = Reset Main File
-show-main.label = Show Main File
+show-main.label = Show Main File Path
 increment-phrase.label = Increment Phrase
 increment-phrase-from-x.label = Increment Phrase from...
 surround-selection.label = Surround Selection

@@ -91,7 +91,9 @@ public class ReferencePanel
                suppress = false;
             }
         });
+        log("1");
         refresh();
+        log("2");
     }
 
     //~ Methods .................................................................
