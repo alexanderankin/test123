@@ -111,4 +111,11 @@
  		</CODE>
   </ACTION>
   
+  <ACTION NAME="display-project">
+		<CODE>
+        uk.co.antroy.latextools.LaTeXMacros.showProjectTree(view, buffer);
+ 		</CODE>
+  </ACTION>
+
+  
 </ACTIONS>

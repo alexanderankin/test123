@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
-
+import javax.swing.tree.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
@@ -190,10 +190,11 @@ public class ReferencePanel
 
     private void loadReferences() {
         refEntries.clear();
-        List files = LaTeXMacros.getProjectFiles(view, buffer);
+        DefaultMutableTreeNode files = LaTeXMacros.getProjectFiles(view, buffer);
 
-        for (ListIterator it = files.listIterator(); it.hasNext();) {
-            File in = (File)it.next();
+        for (Enumeration it = files.preorderEnumeration(); it.hasMoreElements();) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) it.nextElement();
+            File in = (File) node.getUserObject();
             log(in.toString());
             Buffer buff = jEdit.openTemporary(view, in.getParent(), 
                                               in.getName(), false);
@@ -223,7 +224,7 @@ public class ReferencePanel
             refEntries.add(asset);
         }
 
-        Collections.sort(refEntries);
+        //Collections.sort(refEntries);
     }
 
     private void visitLabel() {

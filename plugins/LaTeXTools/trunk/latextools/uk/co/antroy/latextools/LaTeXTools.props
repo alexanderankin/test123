@@ -43,6 +43,7 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   bibtex \
   erase-working \
   - \
+  display-project \
   set-main \
   reset-main \
   show-main \
@@ -90,6 +91,8 @@ open-main.title = Open Main File
 open-main.label = Open Main File
 open-import.title = Open Import
 open-import.label = Open Import
+display-project.title = Show Project Tree
+display-project.label = Show Project Tree
 
 labels.label=Labels
 labels.title=Find Labels
