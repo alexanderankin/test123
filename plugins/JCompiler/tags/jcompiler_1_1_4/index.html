@@ -1,0 +1,304 @@
+<html>
+<title>Java Compiler</title>
+
+<body>
+
+
+<h1>Java Compiler</h1><p>
+
+Copyright (c) 1999, 2000 by Kevin A. Burton and Aziz Sharif.<br>
+Modified by Dominic Stolerman and Dirk M&ouml;bius.<p>
+
+Current maintainer: Dirk M&ouml;bius (<a href="mailto:dmoebius@gmx.net">
+dmoebius@gmx.net</a>)<p>
+
+<ol>
+  <li><a href="#requirements">Requirements</a></li>
+  <li><a href="#installation">Installation</a></li>
+  <li><a href="#usage">Usage</a></li>
+  <li><a href="#options">Options</a></li>
+  <li><a href="#troubleshooting">Troubleshooting</a></li>
+</ol>
+
+
+<a name="requirements"></a>
+<h2>1. Requirements</h2>
+
+<ul>
+  <li>jEdit &gt;= 3.0final</li>
+  <li>plugin EditBus &gt;= 0.10</li>
+  <li>plugin Console &gt;= 2.3</li>
+  <li>a Java Development Kit (JDK) &gt;= 1.1, <i>not</i> a Java Runtime Environment (JRE) !</li>
+</ul>
+
+<b>Note:</b> If you want one-click access to error positions, and highlightening
+of compilation errors in the edit pane with wavy red lines, I suggest you
+install the <b>ErrorList plugin</b>, too. Version should be 0.11 or higher.<p>
+
+
+<a name="installation"></a>
+<h2>2. Installation</h2>
+
+You should use jEdit's PluginManager to install the Java Compiler plugin.
+(Since you're reading this, I assume you have already done this).<p>
+
+
+<a name="usage"></a>
+<h2>3. Usage</h2>
+
+Java Compiler has 3 menu actions in the menu Plugins-&gt;Java Compiler:
+
+<ul>
+  <li>
+    <b>Compile File</b><p>
+    Compiles the file currently being edited.<p>
+  </li>
+
+  <li>
+    <b>Build Package(s)</b><p>
+    Builds the whole source tree where the current file is in.<br>
+    Java Compiler tries to find out the package the current file is in by
+    parsing for the keyword <code>package</code>. Then it goes to
+    it's root directory and compiles all java files in the root directory and
+    all subdirectories below. It does a smart compile in that if the source
+    file is not newer than the class file, then it doesn't recompile it.<p>
+  </li>
+
+  <li>
+    <b>Rebuild Package(s)</b><p>
+    Does basically what "Build Package(s)" does but always compiles every file.<p>
+  </li>
+</ul>
+
+These menu entries correspond to the following <b>commands</b>, that can
+be invoked from the Java Compiler shell in the Console plugin:
+
+<ul>
+<li><b>compile</b> = Compile File</li>
+<li><b>compilepkg</b> = Build Package(s)</li>
+<li><b>rebuildpkg</b> = Rebuilds Package(s)</li>
+</ul>
+
+
+<a name="options"></a>
+<h2>4. Options</h2>
+
+You may configure some options under "Utilities -&gt; Global&nbsp;Options -&gt;
+Plugin&nbsp;Options -&gt; Java&nbsp;Compiler". Most of them are self explaining,
+but some need special explanation:
+
+
+<h3>4.1 General options</h3>
+
+<ul>
+  <li>
+    <b>Regexp for errors</b><p>
+    Java Compiler uses this regular expression to identify error messages,
+    which are then sent to the <i>ErrorList</i> plugin, if installed.
+    The regular expression should contain three groups which can be
+    referenced by $1, $2 and $3 in the three fields below.
+    See the <i>jEdit Users Guide</i> for help on regular expressions.<p>
+    The default is: <code>(.+):(\d+):(.+)</code><p>
+  </li>
+
+  <li>
+    <b>Regexp for warnings</b><p>
+    If a line of compiler output has been identified as error message by the
+    regular expression above, Java Compiler uses this regular expression to
+    decide whether it is a warning message or not. In the <i>ErrorList</i>
+    plugin, warning messages are marked with a yellow traffic light instead of
+    a red one.<p>
+    The default is: <code>.+(note|warning|caution):.+</code><p>
+  </li>
+
+  <li>
+    <b>Parse errors for ^ column indicator</b><p>
+    Sun's Java compilers indicate error column positions by a single line
+    containing '^'. Example:<p>
+
+    <pre>
+    home\dirk\jcompiler\Compiler.java:33:
+    Public class jcompiler.JCompiler must be defined in
+    a file called "JCompiler.java".
+    public class JCompiler implements EBComponent {
+                 ^
+    </pre>
+
+    If you check this option, Java Compiler parses the compiler
+    output for these lines. The column position information is used in the
+    <i>ErrorList</i> plugin to highlight errors in the source code with
+    wavy lines.<p>
+    This option is on per default.<p>
+</ul>
+
+
+<h3>4.2 Compiler options</h3>
+
+<ul>
+  <li>
+    <b>Required library path</b><p>
+    Set the "Required library path" to any directory where you put JAR/ZIP
+    files, e.g. <tt>/usr/local/java/lib</tt> or
+    <tt>c:\Program Files\Java\libraries</tt>. JCompiler will add any JAR/ZIP
+    files in that directory to the classpath.<p>
+
+    You can even specify more than one path, separated by the Java path
+    separator, like in $CLASSPATH:<p>
+
+    $basepath = "<tt>/usr/local/java/lib:/usr/share/java/lib</tt>" or <br>
+    $basepath = "<tt>C:\Software\Java\libs;C:\Java\Programming\libraries</tt>"<p>
+  </li>
+
+  <li>
+    <b>Source path</b><p>
+    This sets the "-sourcepath" option for the compiler. Available only on JDK
+    versions 1.2 or higher.<p>
+  </li>
+
+  <li>
+    <b>$basepath</b><p>
+    Set the <tt>$basepath</tt> variable to the base directory of your project.
+    Use this variable in the classpath, sourcepath, required library path and
+    output directory option, e.g.:<p>
+
+    <blockquote>
+    $basepath = "<tt>c:\My Files\My Projects\TinyFishProject</tt>"<br>
+    Class path = "<tt>$<em>basepath</em>\classes</tt>"<br>
+    Source path = "<tt>$<em>basepath</em>\src</tt>"<br>
+    Required library path = "<tt>$<em>basepath</em>\lib</tt>"<br>
+    Output directory = "<tt>$<em>basepath</em>\classes</tt>"<br>
+    </blockquote><p>
+
+    <em>PS: I know, this feature screams for proper project managing,
+    e.g. </em>project files<em>. Someday the ProjectManager plugin will be ready to do
+    this. Have patience and faith, please. {:-}</em><p>
+  </li>
+</ul>
+
+
+<a name="troubleshooting"></a>
+<h2>5. Troubleshooting</h2>
+
+<h3>I get an error saying that <tt>tools.jar</tt> cannot be found!</h3>
+
+This error should occur only on JDK 1.2 or higher.<p>
+
+<tt>tools.jar</tt> is a Java system library, provided by Sun,
+that contains the Java compiler, among other things. It is usually installed in
+<tt><i>jdkhome</i>/lib/</tt>, where <tt><i>jdkhome</i></tt> denotes the
+JDK installation directory.<p>
+
+JCompiler searched for this library, but couldn't find it. Please search for
+this library manually, and configure your JDK to find the library. You must
+do this, <i>before</i> jEdit is started.
+
+The easiest way to do this is to copy <tt>tools.jar</tt> to the right place.
+That is, copy <tt>tools.jar</tt> to:
+
+<blockquote>
+    <tt><i>jdkhome</i>/jre/lib/ext/</tt>
+</blockquote><p>
+
+That way, the JDK will find the library automatically, and you don't have to
+configure anything else.
+
+If, for any reason, you cannot copy the library (maybe because you don't have
+write access to the JDK installation directory), you have a lot of alternatives:
+
+<ul>
+  <li>
+    <b>Copy <code>tools.jar</code> to <i>home</i>/.jedit/jars/,</b><br>
+    where <i>home</i> denotes your user home. The following table shows
+    the location of your user home:<br>
+
+    <table border="1">
+      <tr bgcolor="#E0E0E0">
+        <td>Operating system</td>
+        <td>Directory <i>home</i></td>
+      </tr>
+      <tr>
+        <td>Windows 95,98,ME</td>
+        <td>C:\WINDOWS\</td>
+      </tr>
+      <tr>
+        <td>Windows NT</td>
+        <td>C:\WINNT\profiles\<i>&lt;username&gt;</i>\</td>
+      </tr>
+      <tr>
+        <td>Unix</td>
+        <td>$HOME</td>
+      </tr>
+      <tr>
+        <td>Macintosh</td>
+        <td>??? (please tell me)</td>
+      </tr>
+    </table><br>
+
+    Using this alternative has the same effect as copying to
+    <i>jdkhome</i>/jre/lib/ext/, but you run into difficulties, if you
+    switch back to JDK 1.1.<p>
+  </li>
+
+  <li>
+    <b>Edit the jEdit startup script</b> (or: "batch file" on Windows).<br>
+    The script contains a single line where java is invoked with a "-classpath"
+    parameter. Change this parameter to point to <code>tools.jar</code>:<br>
+
+    <table border="1">
+      <tr bgcolor="#E0E0E0">
+        <td>Operating system</td>
+        <td>Command</td>
+      </tr>
+      <tr>
+        <td>Windows</td>
+        <td><code>-classpath "%CLASSPATH%;<br><u><i>jdkhome</i>\lib\tools.jar;</u>C:\Programm&nbsp;Files\jEdit\jedit.jar"</code></td>
+      </tr>
+      <tr>
+        <td>Unix</td>
+        <td><code>-classpath "$CLASSPATH:<br><u><i>jdkhome</i>/lib/tools.jar:</u>/usr/local/jEdit/3.0/jedit.jar"</code></td>
+      </tr>
+    </table><br>
+
+  </li>
+
+  <li>
+    <b>Set the system environment variable CLASSPATH to contain <code>tools.jar</code>:</b><br>
+
+    <table border="1">
+      <tr bgcolor="#E0E0E0">
+        <td>Operating system</td>
+        <td>Command</td>
+        <td>Where to set</td>
+      </tr>
+      <tr>
+        <td>Windows 95,98,ME</td>
+        <td><code>set CLASSPATH=%CLASSPATH%;<br><i>jdkhome</i>\lib\tools.jar</code></td>
+        <td>C:\AUTOEXEC.BAT</td>
+      </tr>
+      <tr>
+        <td>Windows NT</td>
+        <td>CLASSPATH=<i>jdkhome</i>\lib\tools.jar</td>
+        <td>Start menu -&gt; Settings -&gt; System -&gt; Environment <i>(I guess!)</i></td>
+      </tr>
+      <tr>
+        <td>Unix</td>
+        <td><code>export $CLASSPATH=<br>$CLASSPATH:<i>jdkhome</i>/lib/tools.jar</code></td>
+        <td><code>.profile</code> or <code>/etc/profile</code></td>
+      </tr>
+    </table><br>
+  </li>
+</ul>
+
+
+
+<br>
+<hr>
+
+<font size="-1">
+The current maintainer of JCompiler is Dirk M&ouml;bius
+(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>).
+</font>
+
+
+</body>
+</html>
