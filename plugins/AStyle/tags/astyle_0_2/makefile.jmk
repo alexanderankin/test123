@@ -1,0 +1,74 @@
+#######################################################################
+# jmk makefile for the AStyle plugin
+#
+# To recompile this plugin, start jmk in the plugin's source directory.
+#
+# :tabSize=8:indentSize=4:noTabs=false:maxLineLen=0:
+#######################################################################
+
+NAME = "AStylePlugin";
+
+javac_bin = "javac";
+javac_flags = "-g" "-deprecation";
+javac_cmd = javac_bin javac_flags;
+
+jar_file = (cat "../" NAME ".jar");
+jar_flags = "cfM0";
+jar_cmd = "jar" jar_flags;
+
+javadoc_dir = "./doc/api";
+javadoc_flags = "-version" "-author" "-classpath" "." "-sourcepath" "." "-d" javadoc_dir;
+javadoc_cmd = "javadoc" javadoc_flags;
+
+packages = "astyleplugin" "astyle" "astyle/util" "org/gjt/sp/jedit/gui" "org/gjt/sp/jedit/options" ".";
+sources = (glob (join packages, "/*.java"));
+classes = (subst ".java", ".class", sources);
+
+#######################################################################
+
+"all": jar_file;
+
+
+jar_file: classes;
+{
+    exec jar_cmd @
+        (glob
+            (join packages, "/*.class")
+            (join packages, "/*.gif")
+            (join packages, "/*.html")
+            (join packages, "/*.xml")
+            (join packages, "/*.txt")
+            (join packages, "/*.props"));
+}
+
+
+"%.class" : "%.java";
+{
+    exec javac_cmd <;
+}
+
+
+"doc": javadoc_dir;
+{
+    exec javadoc_cmd sources;
+}
+
+
+javadoc_dir:;
+{
+    mkdir javadoc_dir;
+}
+
+
+"clean":;
+{
+    -delete
+        (glob
+            (join packages, "/*.class")
+            (join packages, "/*~")
+            (join packages, "/*.bak"));
+}
+
+
+".PHONY": "all" "doc" "clean";
+

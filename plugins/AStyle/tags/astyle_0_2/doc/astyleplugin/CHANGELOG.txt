@@ -1,0 +1,16 @@
+ChangeLog for AStyle Beautifier plugin
+===========================================================================
+
+Version 0.2
+-----------
+* Bugfix: NPE if "Beautify Buffer" was invoked before saving the plugin
+  options once.
+* requires jEdit 3.1final or higher
+
+
+
+Version 0.1
+------------
+* initial release
+* requires jEdit 3.1final or higher
+
