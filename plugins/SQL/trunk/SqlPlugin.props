@@ -2,15 +2,15 @@
 
 plugin.sql.SqlPlugin.name=SQL
 plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
-plugin.sql.SqlPlugin.version=0.97
+plugin.sql.SqlPlugin.version=0.98
 plugin.sql.SqlPlugin.docs=users-guide.html
 
 plugin.sql.SqlPlugin.depend.0=jdk 1.4
 plugin.sql.SqlPlugin.depend.1=jedit 04.02.04.00
-plugin.sql.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.8.1
+plugin.sql.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.12
 plugin.sql.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.8
-plugin.sql.SqlPlugin.depend.4=plugin projectviewer.ProjectPlugin 2.0.0
-plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.2
+plugin.sql.SqlPlugin.depend.4=plugin projectviewer.ProjectPlugin 2.0.2
+plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.3
 
 # The menu item label
 plugin.sql.SqlPlugin.menu=sql.resultSet - sql.chooseCurrentServer - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.SpecialCommentRemover sql.preprocessors.VariableSubstitutor - sql.repeatLastQuery
