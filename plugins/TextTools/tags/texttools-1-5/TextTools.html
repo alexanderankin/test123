@@ -1,0 +1,84 @@
+<html>
+
+<head>
+	<title>TextTools</title>
+</head>
+
+<body>
+
+<h1>[ TextTools ]</h1>
+
+<p>by mike dillon &lt;mdillon@gjt.org&gt; and Valery Kondakoff
+&lt;strauss@orc.ru&gt;.</p>
+
+<p>The TextTools plugin provides a set of plugin actions for manipulating text
+in a buffer. Some of them are more useful than others.</p>
+
+<h3>TextTools actions</h3>
+<ul>
+	<li><a href="#Sort">Sort</a></li>
+	<li><a href="#RevSort">Reverse Sort</a></li>
+	<li><a href="#TransposeChars">Transpose Characters</a></li>
+	<li><a href="#TransposeLines">Transpose Lines</a></li>
+	<li><a href="#TransposeWords">Transpose Words</a></li>
+	<li><a href="#LineComment">Line Comment/Uncomment</a></li>
+</ul>
+
+
+<p><strong><a name="Sort">Sort</a></strong>
+by mike dillon &lt;mdillon@gjt.org&gt;</p>
+
+<p>This action sorts all selected lines in lexicographic order.  If no text is
+selected, it sorts the entire buffer. If the selection begins or ends in the
+middle of a line, the entire line is sorted.</p>
+
+
+<p><strong><a name="RevSort">Reverse Sort</a></strong>
+by mike dillon &lt;mdillon@gjt.org&gt;</p>
+
+<p>Same as <a href="#Sort">Sort</a>, except the sorted lines are inserted in
+reverse order.</p>
+
+
+<p><strong><a name="TransposeChars">Transpose Characters</a></strong>
+by mike dillon &lt;mdillon@gjt.org&gt;</p>
+
+<p>Transposes the characters on either side of the cursor. At the either end of
+a line, it transposes the two characters nearest the cursor.</p>
+
+
+<p><strong><a name="TransposeLines">Transpose Lines</a></strong>
+by mike dillon &lt;mdillon@gjt.org&gt;</p>
+
+<p>Transposes the current line with the preceding line. If there is no
+preceding line, the current line is transposed with the following line.</p>
+
+
+<p><strong><a name="TransposeWords">Transpose Words</a></strong>
+by mike dillon &lt;mdillon@gjt.org&gt;</p>
+
+<p>Transposes the nearest word to the cursor (which i'll call the "pivot" word)
+with one of the adjacent words. If there is a word before the pivot, the pivot
+will be transposed with that word; otherwise, it will be transposed with the
+following word. The intervening non-word sequence is left between the
+transposed words. All letters and digits, in addition to any character in the
+"noWordSep" Buffer property (which is typically defined by the Buffer's current
+mode), are considered word characters. All other characters are not. If a
+transposition takes place, the cursor is placed after the transposed
+sequence.</p>
+
+
+<p><strong><a name="LineComment">Line Comment/Uncomment</a></strong>
+by Valery Kondakoff &lt;strauss@orc.ru&gt;</p>
+
+<p>This function acts like jEdit's built-in "Block Comment" function. It places
+the block comment sequence at the start of each full or partially selected
+line, if the current mode or buffer-local properties define a block comment.
+Beyond the ability of the built-in "Block Comment" function, with this action,
+if the entire line was previously commented, applying this function again will
+uncomment it.  Please note that comments in the middle of the line are not
+added/removed.  The string used for block commenting can be changed using
+buffer-local properties (:blockComment=xxx:).</p>
+
+</body>
+</html>
