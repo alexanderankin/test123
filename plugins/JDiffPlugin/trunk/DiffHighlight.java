@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.jedit.textarea.TextAreaHighlight;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
@@ -127,10 +128,9 @@ public class DiffHighlight
                     gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
 
                     // We paint the selected part of the hunk
-                    if (   (this.textArea.getSelectionStartLine() <= physicalLine)
-                        && (physicalLine <= this.textArea.getSelectionEndLine())
-                    ) {
-                        this.paintSelectionHighlight(gfx, virtualLine, y, selectionColor);
+                    Selection[] selections = this.textArea.getSelection();
+                    for (int i = 0; i < selections.length; i++) {
+                        this.paintSelectionHighlight(gfx, physicalLine, y, selectionColor, selections[i]);
                     }
 
                     break;
@@ -173,10 +173,9 @@ public class DiffHighlight
                     gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
 
                     // We paint the selected part of the hunk
-                    if (   (this.textArea.getSelectionStartLine() <= physicalLine)
-                        && (physicalLine <= this.textArea.getSelectionEndLine())
-                    ) {
-                        this.paintSelectionHighlight(gfx, physicalLine, y, selectionColor);
+                    Selection[] selections = this.textArea.getSelection();
+                    for (int i = 0; i < selections.length; i++) {
+                        this.paintSelectionHighlight(gfx, physicalLine, y, selectionColor, selections[i]);
                     }
 
                     break;
@@ -190,76 +189,54 @@ public class DiffHighlight
     }
 
 
-    private void paintSelectionHighlight(Graphics gfx, int physicalLine, int y, Color selectionColor)
+    private void paintSelectionHighlight(Graphics gfx, int physicalLine, int y,
+        Color selectionColor, Selection s)
     {
+        if ((physicalLine < s.getStartLine()) || (physicalLine > s.getEndLine())) {
+            return;
+        }
+
         TextAreaPainter painter = this.textArea.getPainter();
         FontMetrics fm = painter.getFontMetrics();
-        int height = fm.getHeight();
         y += fm.getLeading() + fm.getDescent();
 
-        int selectionStart = this.textArea.getSelectionStart();
-        int selectionEnd = this.textArea.getSelectionEnd();
+        int lineStart = this.textArea.getLineStartOffset(physicalLine);
+        int x1, x2;
 
-        if(selectionStart == selectionEnd)
-        {
-            /*
-            if (lineHighlight)
-            {
-                gfx.setColor(lineHighlightColor);
-                gfx.fillRect(0,y,getWidth(),height);
+        if (s instanceof Selection.Rect) {
+            int lineLen = this.textArea.getLineLength(physicalLine);
+            x1 = this.textArea.offsetToX(physicalLine,Math.min(lineLen,
+                s.getStart() - this.textArea.getLineStartOffset(
+                s.getStartLine())));
+            x2 = this.textArea.offsetToX(physicalLine,Math.min(lineLen,
+                s.getEnd() - this.textArea.getLineStartOffset(
+                s.getEndLine())));
+
+            if (x1 > x2) {
+                int tmp = x2;
+                x2 = x1;
+                x1 = tmp;
             }
-            */
+        } else if (s.getStartLine() == s.getEndLine()) {
+            x1 = this.textArea.offsetToX(physicalLine, s.getStart() - lineStart);
+            x2 = this.textArea.offsetToX(physicalLine, s.getEnd() - lineStart);
+        } else if (physicalLine == s.getStartLine()) {
+            x1 = this.textArea.offsetToX(physicalLine, s.getStart() - lineStart);
+            x2 = painter.getWidth();
+        } else if (physicalLine == s.getEndLine()) {
+            x1 = 0;
+            x2 = this.textArea.offsetToX(physicalLine, s.getEnd() - lineStart);
+        } else {
+            x1 = 0;
+            x2 = painter.getWidth();
         }
-        else
-        {
-            gfx.setColor(selectionColor);
 
-            int selectionStartLine = this.textArea.getSelectionStartLine();
-            int selectionEndLine = this.textArea.getSelectionEndLine();
-            int lineStart = this.textArea.getLineStartOffset(physicalLine);
-
-            int x1, x2;
-            if(this.textArea.isSelectionRectangular())
-            {
-                int lineLen = this.textArea.getLineLength(physicalLine);
-                x1 = this.textArea.offsetToX(physicalLine,Math.min(lineLen,
-                    selectionStart - this.textArea.getLineStartOffset(
-                    selectionStartLine)));
-                x2 = this.textArea.offsetToX(physicalLine,Math.min(lineLen,
-                    selectionEnd - this.textArea.getLineStartOffset(
-                    selectionEndLine)));
-                if(x1 == x2)
-                    x2++;
-            }
-            else if(selectionStartLine == selectionEndLine)
-            {
-                x1 = this.textArea.offsetToX(physicalLine,
-                    selectionStart - lineStart);
-                x2 = this.textArea.offsetToX(physicalLine,
-                    selectionEnd - lineStart);
-            }
-            else if(physicalLine == selectionStartLine)
-            {
-                x1 = this.textArea.offsetToX(physicalLine,
-                    selectionStart - lineStart);
-                x2 = painter.getWidth();
-            }
-            else if(physicalLine == selectionEndLine)
-            {
-                x1 = 0;
-                x2 = this.textArea.offsetToX(physicalLine,
-                    selectionEnd - lineStart);
-            }
-            else
-            {
-                x1 = 0;
-                x2 = painter.getWidth();
-            }
-
-            // "inlined" min/max()
-            gfx.fillRect(x1 > x2 ? x2 : x1, y, x1 > x2 ?
-                (x1 - x2) : (x2 - x1), height);
+        if(x1 == x2) {
+            x2++;
         }
+
+        gfx.setColor(selectionColor);
+        gfx.fillRect(x1, y, x2 - x1, fm.getHeight());
     }
 
 
