@@ -413,48 +413,6 @@ loop:			for(;;)
 			"removeTags time: " + (endTime - startTime) + " ms");
 	} //}}}
 
-	//{{{ goToPreviousTag() method
-	public static void goToPreviousTag(JEditTextArea textArea)
-	{
-		Buffer buffer = textArea.getBuffer();
-
-		buffer.getText(0,textArea.getCaretPosition(),seg);
-
-		int caret = textArea.getCaretPosition();
-
-		for(int i = caret - 1; i >= 0; i--)
-		{
-			if(seg.array[seg.offset + i] == '<')
-			{
-				textArea.setCaretPosition(i);
-				return;
-			}
-		}
-
-		textArea.getToolkit().beep();
-	} //}}}
-
-	//{{{ goToNextTag() method
-	public static void goToNextTag(JEditTextArea textArea)
-	{
-		Buffer buffer = textArea.getBuffer();
-
-		int caret = textArea.getCaretPosition();
-
-		buffer.getText(caret,buffer.getLength() - caret,seg);
-
-		for(int i = caret; i < seg.count; i--)
-		{
-			if(seg.array[seg.offset + i] == '<')
-			{
-				textArea.setCaretPosition(i);
-				return;
-			}
-		}
-
-		textArea.getToolkit().beep();
-	} //}}}
-
 	//{{{ matchTag() method
 	public static void matchTag(JEditTextArea textArea)
 	{

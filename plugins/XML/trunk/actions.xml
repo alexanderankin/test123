@@ -20,7 +20,6 @@
 			xml.XmlActions.completeKeyTyped(view,'&lt;');
 		</CODE>
 	</ACTION>
-
 	<ACTION NAME="xml-insert-closing-tag">
 		<CODE>
 			xml.XmlActions.insertClosingTagKeyTyped(view);
@@ -61,16 +60,6 @@
 	<ACTION NAME="xml-match-tag">
 		<CODE>
 			xml.XmlActions.matchTag(textArea);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-next-tag">
-		<CODE>
-			xml.XmlActions.goToNextTag(textArea);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-prev-tag">
-		<CODE>
-			xml.XmlActions.goToPreviousTag(textArea);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-remove-tags">
