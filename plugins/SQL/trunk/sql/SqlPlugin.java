@@ -93,23 +93,9 @@ public class SqlPlugin extends EBPlugin
     if ( !settingsDir.exists() )
       settingsDir.mkdirs();
 
-    VFSManager.registerVFS( SqlVFS.PROTOCOL, sqlVFS = new SqlVFS() );
-
     registerJdbcClassPath();
 
     SqlUtils.init();
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  menuItems  Description of Parameter
-   * @since
-   */
-  public void createMenuItems( Vector menuItems )
-  {
-    menuItems.addElement( GUIUtilities.loadMenu( "sqlMenu" ) );
   }
 
 
@@ -524,20 +510,10 @@ public class SqlPlugin extends EBPlugin
               "JDBC classpath component " + path + " does not exist" );
           continue;
         }
-        final EditPlugin.JAR jar = jEdit.getPluginJAR( path );
+        final PluginJAR jar = jEdit.getPluginJAR( path );
         if ( jar == null )
         {// not registered yet
-          try
-          {
-            jEdit.addPluginJAR( new EditPlugin.JAR( path,
-                new JARClassLoader( path ) ) );
-          } catch ( IOException ex )
-          {
-            Log.log( Log.ERROR, SqlPlugin.class,
-                "Error loading the jdbc driver from " + path + ": " );
-            Log.log( Log.ERROR, SqlPlugin.class, ex );
-            continue;
-          }
+          jEdit.addPluginJAR( path );
         }
       }
 
@@ -565,14 +541,16 @@ public class SqlPlugin extends EBPlugin
               "JDBC classpath component " + path + " does not exist" );
           continue;
         }
-        final EditPlugin.JAR jar = jEdit.getPluginJAR( path );
+        final PluginJAR jar = jEdit.getPluginJAR( path );
         if ( jar == null )
         {
           Log.log( Log.ERROR, SqlPlugin.class,
               "Strange, classpath element " + path + " was not registered" );
-        }
-        //!! TODO
+        } else
+          jEdit.removePluginJAR( jar, false );
       }
+
+    VFSManager.sendVFSUpdate( sqlVFS, SqlVFS.PROTOCOL + ":/", false );
   }
 
 

@@ -234,7 +234,7 @@ public abstract class ComplexVFS extends SqlSubVFS
     if ( text == null )
       return null;
 
-    return new StringBufferInputStream( text );
+    return new ByteArrayInputStream( text.getBytes() );
   }
 
 

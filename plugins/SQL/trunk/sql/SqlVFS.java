@@ -97,23 +97,8 @@ public class SqlVFS extends VFS
    */
   public SqlVFS()
   {
-    super( "sql" );
+    super( "sql", READ_CAP );
     EditBus.addToBus( new LoadListener() );
-  }
-
-
-  /**
-   *  Gets the Capabilities attribute of the SqlVFS object
-   *
-   * @return    The Capabilities value
-   * @since
-   */
-  public int getCapabilities()
-  {
-    return BROWSE_CAP
-         | READ_CAP
-    //  | DELETE_CAP
-        ;
   }
 
 

@@ -169,9 +169,9 @@ public class SqlSubVFS
   public InputStream _createInputStream( VFS vfs, Object session, String path,
       boolean ignoreErrors, Component comp, int level ) throws IOException
   {
-    return new StringBufferInputStream( "SELECT * FROM " +
+    return new ByteArrayInputStream( ( "SELECT * FROM " +
         vfs.getFileName( SqlVFS.normalize( vfs.getParentOfPath( path ) ) ) + "." +
-        vfs.getFileName( path ) );
+        vfs.getFileName( path ) ).getBytes() );
   }
 
 
