@@ -1,0 +1,29 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="clear-directory-cache">
+		<CODE>
+			ftp.DirectoryCache.clearAllCachedDirectories();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="forget-passwords">
+		<CODE>
+			ftp.FtpPlugin.forgetPasswords();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="open-ftp">
+		<CODE>
+			ftp.FtpPlugin.showOpenFTPDialog(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="save-ftp">
+		<CODE>
+			ftp.FtpPlugin.showSaveFTPDialog(view);
+		</CODE>
+	</ACTION>
+</ACTIONS>
