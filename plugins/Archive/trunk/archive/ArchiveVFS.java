@@ -591,6 +591,9 @@ public class ArchiveVFS extends VFS {
 
             VFS vfs = VFSManager.getVFSForPath(savePath);
 
+            // we need to know the length of ZIP entries in advance.
+            long length = new File(outputFile).length();
+
             try {
                 out = vfs._createOutputStream(null,savePath,comp);
                 out = new ZipOutputStream(out);
@@ -608,6 +611,7 @@ public class ArchiveVFS extends VFS {
                     archiveOut.putNextEntry(next);
 
                     if(next.getName().equals(archive.entryName)) {
+                        next.setSize(length);
                         copy(outputFile,archiveOut);
                         saved = true;
                     } else {
@@ -618,7 +622,9 @@ public class ArchiveVFS extends VFS {
 
                 if(!saved) {
                     // new entry
-                    archiveOut.putNextEntry(new ZipEntry(archive.entryName));
+                    ZipEntry newEntry = new ZipEntry(archive.entryName);
+                    newEntry.setSize(length);
+                    archiveOut.putNextEntry(newEntry);
                     copy(outputFile,archiveOut);
                     saved = true;
                     archiveOut.closeEntry();
