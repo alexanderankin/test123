@@ -156,6 +156,17 @@ public class HTMLGutter {
     }
 
 
+    public void setGutterSize(int gutterSize) {
+        this.gutterSize = gutterSize;
+
+        StringBuffer buf = new StringBuffer();
+        for (int i = 0; i < this.gutterSize; i++) {
+            buf.append(' ');
+        }
+        this.spacer = buf.toString();
+    }
+
+
     public int getGutterBorderSize() {
         return this.gutterBorderSize;
     }

@@ -5,7 +5,7 @@
 <ACTIONS>
     <ACTION NAME="code2html.current-buffer">
         <CODE>
-            code2html.Code2HTML c2h = new code2html.Code2HTML();
+            code2html.Code2HTML c2h = new code2html.Code2HTML(textArea, false);
             c2h.toHTML(view);
         </CODE>
     </ACTION>
@@ -13,8 +13,8 @@
 
     <ACTION NAME="code2html.current-selection">
         <CODE>
-            code2html.Code2HTML c2h = new code2html.Code2HTML();
-            c2h.toHTML(view, true);
+            code2html.Code2HTML c2h = new code2html.Code2HTML(textArea, true);
+            c2h.toHTML(view);
         </CODE>
     </ACTION>
 </ACTIONS>
