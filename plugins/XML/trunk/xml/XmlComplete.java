@@ -93,8 +93,11 @@ class XmlComplete extends JWindow
 	{
 		DefaultListModel model = new DefaultListModel();
 
-		if(text.startsWith("/"))
-			text = text.substring(1);
+		if(completions.get(0) instanceof ElementDecl)
+		{
+			if(text.startsWith("/"))
+				text = text.substring(1);
+		}
 
 		for(int i = 0; i < completions.size(); i++)
 		{
@@ -115,6 +118,12 @@ class XmlComplete extends JWindow
 				EntityDecl entity = (EntityDecl)obj;
 				if(entity.name.startsWith(text))
 					model.addElement(entity);
+			}
+			else if(obj instanceof IDDecl)
+			{
+				IDDecl id = (IDDecl)obj;
+				if(id.id.startsWith(text))
+					model.addElement(id);
 			}
 		}
 
@@ -211,6 +220,18 @@ class XmlComplete extends JWindow
 
 			textArea.setSelectedText(entity.name.substring(
 				text.length()) + ";");
+		}
+		else if(obj instanceof IDDecl)
+		{
+			IDDecl id = (IDDecl)obj;
+
+			if(ch == '\t')
+			{
+				textArea.setCaretPosition(id.declaringLocation
+					.getOffset());
+			}
+			else
+				textArea.setSelectedText(id.id);
 		}
 
 		dispose();

@@ -40,6 +40,7 @@ public class XmlActions
 	// For complete() method
 	public static final int ELEMENT_COMPLETE = 0;
 	public static final int ENTITY_COMPLETE = 1;
+	public static final int ID_COMPLETE = 2;
 
 	//{{{ showEditTagDialog() method
 	public static void showEditTagDialog(View view)
@@ -363,9 +364,16 @@ public class XmlActions
 		if(completionInfo == null)
 			return;
 
-		ArrayList completions = (mode == ELEMENT_COMPLETE
-			? completionInfo.elements
-			: completionInfo.entities);
+		ArrayList completions;
+		if(mode == ELEMENT_COMPLETE)
+			completions = completionInfo.elements;
+		else if(mode == ENTITY_COMPLETE)
+			completions = completionInfo.entities;
+		else
+		{
+			completions = (ArrayList)editPane.getClientProperty(
+				XmlPlugin.IDS_PROPERTY);
+		}
 
 		if(completions.size() == 0)
 			return;
@@ -381,7 +389,12 @@ public class XmlActions
 		if(mode == ELEMENT_COMPLETE)
 		{
 			view.getStatus().setMessageAndClear(jEdit.getProperty(
-				"xml-complete-status"));
+				"xml-element-complete-status"));
+		}
+		else if(mode == ID_COMPLETE)
+		{
+			view.getStatus().setMessageAndClear(jEdit.getProperty(
+				"xml-id-complete-status"));
 		}
 
 		new XmlComplete(view,word,completions,location);
@@ -418,7 +431,7 @@ public class XmlActions
 			return;
 
 		String tag = findLastOpenTag(seg);
-		if(tag != null)
+		if(tag != null && tag.length() != 0)
 		{
 			if(completionInfo != null)
 			{

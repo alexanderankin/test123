@@ -188,6 +188,12 @@ class EditTagDialog extends EnhancedDialog
 	private ArrayList createAttributeModel(ArrayList declaredAttributes,
 		HashMap attributeValues, ArrayList ids)
 	{
+		ArrayList stringIDs = new ArrayList(ids.size());
+		for(int i = 0; i < ids.size(); i++)
+		{
+			stringIDs.add(((IDDecl)ids.get(i)).id);
+		}
+
 		ArrayList attributeModel = new ArrayList();
 		for(int i = 0; i < declaredAttributes.size(); i++)
 		{
@@ -210,11 +216,11 @@ class EditTagDialog extends EnhancedDialog
 
 			ArrayList values;
 			if(attr.type.equals("IDREF")
-				&& ids.size() > 0)
+				&& stringIDs.size() > 0)
 			{
-				values = ids;
+				values = stringIDs;
 				if(value == null)
-					value = ((IDDecl)ids.get(0)).id;
+					value = (String)stringIDs.get(0);
 			}
 			else
 			{
@@ -478,7 +484,11 @@ class EditTagDialog extends EnhancedDialog
 				attr.set = ((Boolean)value).booleanValue();
 				break;
 			case 3:
-				String sValue = value.toString();
+				String sValue;
+				if(value instanceof IDDecl)
+					sValue = ((IDDecl)value).id;
+				else
+					sValue = value.toString();
 				if(equal(attr.value.value,sValue))
 					return;
 
@@ -542,7 +552,6 @@ class EditTagDialog extends EnhancedDialog
 			Attribute.Value _value = (Attribute.Value)value;
 			editorCombo.setModel(new DefaultComboBoxModel(
 				_value.values.toArray()));
-			//editorCombo.setSelectedItem(_value.value);
 			return super.getTableCellEditorComponent(table,
 				_value.value,isSelected,row,column);
 		} //}}}
