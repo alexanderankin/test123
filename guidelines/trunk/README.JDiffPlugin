@@ -1,0 +1,6 @@
+CVS policy file
+
+plugin: JDiffPlugin
+author: Andre Kaplan <akaplan@users.sourceforge.net>
+
+please do not commit changes to this plugin without first consulting the author.
