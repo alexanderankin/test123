@@ -26,6 +26,9 @@ import java.io.Writer;
 
 public class HtmlDocument
 {
+    private String     viewBgColor;
+    private String     viewFgColor;
+
     private HtmlStyle  style;
     private HtmlGutter gutter;
 
@@ -34,11 +37,15 @@ public class HtmlDocument
 
 
     public HtmlDocument(
+            String     viewBgColor,
+            String     viewFgColor,
             HtmlStyle  style,
             HtmlGutter gutter,
             String     title,
             String     lineSeparator
     ) {
+        this.viewBgColor   = viewBgColor;
+        this.viewFgColor   = viewFgColor;
         this.style         = style;
         this.gutter        = gutter;
         this.title         = title;
@@ -55,7 +62,6 @@ public class HtmlDocument
         out.write(this.lineSeparator);
         out.write("<title>" + this.title + "</title>");
         out.write(this.lineSeparator);
-
         if (this.style instanceof HtmlCssStyle) {
             out.write("<style type=\"text/css\"><!--");
             out.write(this.lineSeparator);
@@ -68,16 +74,31 @@ public class HtmlDocument
         }
         out.write("</head>");
         out.write(this.lineSeparator);
-        out.write("<body bgcolor=\"#ffffff\">");
+        out.write("<body bgcolor=\"");
+        out.write(this.viewBgColor);
+        out.write("\">");
         out.write(this.lineSeparator);
         out.write("<pre>");
+        if (style instanceof HtmlCssStyle) {
+            out.write("<span class=\"syntax0\">");
+        } else {
+            out.write("<font color=\"");
+            out.write(this.viewFgColor);
+            out.write("\">");
+        }
     }
 
 
     public void htmlClose(Writer out)
         throws IOException
     {
+        if (style instanceof HtmlCssStyle) {
+            out.write("</span>");
+        } else {
+            out.write("</font>");
+        }
         out.write("</pre>");
+        out.write(this.lineSeparator);
         out.write("</body>");
         out.write(this.lineSeparator);
         out.write("</html>");
