@@ -297,7 +297,7 @@ public class SqlToolBar
    */
   public static void showToolBar( boolean show )
   {
-    SqlPlugin.setGlobalProperty( SHOW_TOOLBAR_PROP, Boolean.toString( show ) );
+    SqlPlugin.setGlobalProperty( SHOW_TOOLBAR_PROP, new Boolean( show ).toString() );
   }
 
 
@@ -308,7 +308,7 @@ public class SqlToolBar
    */
   public static void showTitle( boolean show )
   {
-    SqlPlugin.setGlobalProperty( SHOW_TITLE_PROP, Boolean.toString( show ) );
+    SqlPlugin.setGlobalProperty( SHOW_TITLE_PROP, new Boolean( show ).toString() );
   }
 
 
