@@ -69,6 +69,20 @@ public class CatalogManager
 		return source;
 	}
 
+	public static void addCatalog(String uri)
+	{
+		load();
+
+		try
+		{
+			catalog.parseCatalog(uri);
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR,CatalogManager.class,e);
+		}
+	}
+
 	public static void propertiesChanged()
 	{
 		loaded = false;
