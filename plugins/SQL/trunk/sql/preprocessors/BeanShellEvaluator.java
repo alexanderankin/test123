@@ -20,6 +20,8 @@
  */
 package sql.preprocessors;
 
+import org.gjt.sp.jedit.*;
+
 import sql.*;
 
 /**
@@ -39,7 +41,7 @@ public class BeanShellEvaluator extends Preprocessor
    */
   public String doProcess( String text )
   {
-    return (String) org.gjt.sp.jedit.BeanShell.eval( view, text, false );
+    return (String) BeanShell.eval( view, BeanShell.getNameSpace(), text );
   }
 }
 

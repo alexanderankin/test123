@@ -2,11 +2,11 @@
 
 plugin.sql.SqlPlugin.name=SQL
 plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
-plugin.sql.SqlPlugin.version=0.92
+plugin.sql.SqlPlugin.version=0.93
 plugin.sql.SqlPlugin.docs=users-guide.html
 
-plugin.sql.SqlPlugin.depend.0=jedit 04.00.04.00
-plugin.sql.SqlPlugin.depend.1=plugin xml.XmlPlugin 0.7
+plugin.sql.SqlPlugin.depend.0=jedit 04.00.08.00
+plugin.sql.SqlPlugin.depend.1=plugin xml.XmlPlugin 0.8
 plugin.sql.SqlPlugin.depend.2=plugin CommonControlsPlugin 0.2
 plugin.sql.SqlPlugin.depend.3=plugin sessions.SessionsPlugin 0.7.2
 plugin.sql.SqlPlugin.depend.4=plugin errorlist.ErrorListPlugin 1.2
@@ -23,11 +23,13 @@ sql.loadObject.label=Load Object
 sql.loadObjectFromServer.label=Load Object From Server
 
 options.sql.label=SQL
+options.sql.general.label=General
 
 ### Properties for use by this plugin
 sql.serverconfig.title=SQL Server Configuration
 sql.config.label=Connection configuration
 
+options.sql.servers.label=Servers
 sql.options.servers.label=Servers
 sql.options.servers.name=Servers
 sql.options.addServerBtn.label=Add
@@ -37,16 +39,15 @@ sql.options.editServerBtn.label=Edit
 sql.options.recordSetView.label=Record Set dockable
 sql.options.maxRecs2Show.label=Max no. of records to show
 
-sql.options.jdbcClassPath.label=JDBC drivers' classpath
-sql.options.addClassPathBtn.label=Add
-sql.options.delClassPathBtn.label=Delete
-sql.options.editClassPathBtn.label=Edit
-sql.options.jdbcClassPath.filterDescr=JAR-compatible archives
+options.sql.jdbc.label=JDBC
+sql.options.jdbc.classpath.label=Drivers' classpath
 
-sql.options.specialCommentTitle.label=Special comment remover configuration
-sql.options.addSpecialCommentBtn.label=Add
-sql.options.delSpecialCommentBtn.label=Delete
-sql.options.specialComment.label=Comment string to remove
+options.sql.preprocessors.label=Preprocessors
+options.sql.preprocessors.specialCommentRemover.label=Special comment remover
+sql.options.specialCommentRemover.title.label=Special comments
+sql.options.specialCommentRemover.addBtn.label=Add
+sql.options.specialCommentRemover.delBtn.label=Delete
+sql.options.specialCommentRemover.label=Comment string to remove
 
 sql.serverType.label=SQL Server type
 

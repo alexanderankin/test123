@@ -37,6 +37,7 @@ import org.gjt.sp.util.*;
 import sessions.*;
 
 import sql.*;
+import sql.options.*;
 
 /**
  *  Description of the Class
@@ -120,7 +121,23 @@ public class SqlPlugin extends EBPlugin
    */
   public void createOptionPanes( OptionsDialog optionsDialog )
   {
-    optionsDialog.addOptionPane( new SqlOptionPane() );
+    final OptionGroup group = new OptionGroup( "SQL" );
+    group.addOptionPane( new GeneralOptionPane() );
+    group.addOptionPane( new ServersOptionPane() );
+    group.addOptionPane( new JdbcOptionPane() );
+
+    final OptionGroup pgroup = new OptionGroup( "sql.preprocessors" );
+    final java.util.List l = SqlUtils.getPreprocessors();
+
+    for ( Iterator i = l.iterator(); i.hasNext();  )
+    {
+      final Preprocessor pr = (Preprocessor) i.next();
+      final OptionPane op = pr.getOptionPane();
+      if ( op != null )
+        pgroup.addOptionPane( op );
+    }
+    group.addOptionGroup( pgroup );
+    optionsDialog.addOptionGroup( group );
   }
 
 
