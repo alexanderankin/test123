@@ -33,6 +33,9 @@ class FilesJumpAction
     public HashMap tabs_files = new HashMap();
     private View view;
     private ProjectBuffer currentTags;
+    private String[] unsupported_ext = {
+        "gif", "jpg", "png", "jpeg", "class", "bat"   
+    };
 //}}}
 
 //{{{ constructor
@@ -46,10 +49,6 @@ class FilesJumpAction
 //{{{ void showList
     public void showList() 
     {
-        // if (PVActions.getCurrentProject(view) != null && JumpPlugin.listener.PROJECT==null)
-        // {
-        //     JumpPlugin.listener.reloadTags(ProjectViewer.getViewer(view), PVActions.getCurrentProject(view));
-        // }
         files = getFileList();
         if (files==null) return;
         FilesJumpMenu jl = new FilesJumpMenu(view , files,
@@ -61,31 +60,54 @@ class FilesJumpAction
 private Object[] getFileList() 
     {
         view = jEdit.getActiveView();
-        // if (JumpPlugin.getListener().ProjectFiles == null)
-        // {
-        //     GUIUtilities.message(view, "JumpPlugin.no_project", new Object[0]);
-        //     return null;  
-        // }
+
         currentTags = JumpPlugin.getActiveProjectBuffer();
         if (currentTags == null) return null;
         if (currentTags.PROJECT_FILES.size() <2) return null;  
         
         Vector files = currentTags.PROJECT_FILES;
         
-        String[] res = new String[files.size()];
+        // Temporary Vector to store only supperted files (no jpg, png etc.)
+        Vector valid_files = new Vector();
+        String tmp_file = new String();
+        
         for (int i=0; i<files.size(); i++)
         {
             String path = new String();
             path = (String)files.get(i);
-            res[i] = path.substring(path.lastIndexOf(System.getProperty("file.separator"))+1);
-
-            tabs_files.put(res[i],path);
+            if(isSupportedExtension(path))
+            {
+                tmp_file = path.substring(path.lastIndexOf(System.getProperty("file.separator"))+1);
+                valid_files.add(tmp_file);
+                tabs_files.put(tmp_file,path);
+            }
         }
-      
-        Arrays.sort(res, new AlphabeticComparator());
-        return res;
+        
+        if (valid_files.size()>1)
+        {
+            Object[] arr = valid_files.toArray();
+            Arrays.sort(arr, new AlphabeticComparator());
+            return arr;
+        }
+        else
+        {
+            return null;   
+        }
     }
-    // end of getTabsList
+//}}}
+
+//{{{ isSupportedExtension
+    private boolean isSupportedExtension(String filename)
+    {
+        for(int i = 0; i < unsupported_ext.length; i++)
+        {
+            if(filename.endsWith(unsupported_ext[i]))
+            {
+                return false;
+            } 
+        } 
+        return true;
+    }
 //}}}
     
 //{{{ class FilesJumpMenu
@@ -97,6 +119,7 @@ private Object[] getFileList()
             super(parent, list, model, incr_search, title, list_width);
         }
         
+//{{{ updateStatusBar
         public void updateStatusBar(Object o)
         {
 // TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
@@ -104,14 +127,9 @@ private Object[] getFileList()
             String tab_name = (String) l.getModel().getElementAt(l.getSelectedIndex());
             String file_name = (String)tabs_files.get(tab_name);
             view.getStatus().setMessageAndClear("file: "+file_name);
-        }
+        } //}}}
         
-    // private String prepareStatusMsg(CTAGS_Entry en)
-    // {
-        
-    //     return ("file: "+en.getFileName());
-    // }
-        
+//{{{ processInsertAction
         public void processAction(Object o) 
         {
             JList l = (JList) o;
@@ -119,8 +137,17 @@ private Object[] getFileList()
             String tab_name = (String) l.getModel().getElementAt(l.getSelectedIndex());
             String file_name = (String)tabs_files.get(tab_name);
             jEdit.openFile(parent,file_name);
-
-        }
+        } //}}}
+        
+//{{{ processInsertAction 
+        public void processInsertAction(Object o)
+        {
+            // TODO: Pass focus to newly opened view
+            JList l = (JList) o;
+            String tab_name = (String) l.getModel().getElementAt(l.getSelectedIndex());
+            String file_name = (String)tabs_files.get(tab_name);
+            jEdit.openFile(jEdit.newView(jEdit.getActiveView()), file_name);
+        } //}}}
     }
 //}}}
 
@@ -141,12 +168,13 @@ private Object[] getFileList()
 //{{{ class AlphabeticComparator
     //Comparator for sorting array with ignoreCase...
     class AlphabeticComparator implements Comparator {
-        public int compare (Object o1, Object o2) {
+        public int compare (Object o1, Object o2) 
+        {
             String s1 = (String) o1;
             String s2 = (String) o2;
             return s1.toLowerCase().compareTo(s2.toLowerCase());
         }
-
     }
 //}}}
+
 }
