@@ -1,0 +1,80 @@
+
+<HTML>
+<HEAD>
+<TITLE>Templates plugin</TITLE>
+</HEAD>
+
+<BODY>
+<H1>Templates plugin</H1>
+
+<H2>About</H2>
+
+The Templates plugin can be used to insert code (or text, markup, etc.) templates
+into the current buffer. As of this writing, Templates supports the import
+of static text files only. <P>
+
+<H2>Usage</H2>
+
+At startup, the Templates plugin scans the user's template directory. By
+default, this is a directory called "templates" under the user's
+jEdit settings directory (refer to jEdit documentation). 
+This directory is user-configurable via the "Templates" tab accessed using
+the "Plugin Options" facility. <P>
+
+A new "Templates" submenu is inserted on the "Plugins" menu, and each file
+in the templates directory results in a menu item being added to that submenu.
+As of version 1.0.0, the text for these menu items can be specified using the 
+<B>#ctpragma LABEL</B> (or <B>#ctpragma NAME</B>) directive (see 
+<A HREF="#ctpragma">#ctpragma Directives</A> below). 
+The plugin will scan subdirectories recursively, and each subdirectory will
+result in a new submenu. <P>
+
+To make use of the template files, position the cursor at the point at which
+you wish the text inserted, and select the appropriate file from the "Templates"
+menu. The full text of the file will be inserted into the current buffer at the
+cursor position. <P>
+
+If new templates are added to the templates directory, the "Refresh templates"
+menu item may be used to update the templates menu. The templates menu is
+automatically refreshed if a new directory is selected under "Plugin Options". <P>
+
+<B>NOTES:</B> <P>
+- the Templates plugin will disregard any file which conforms to the jEdit
+backup file format (ie. contains the backup prefix and/or suffix defined in
+the "Global Options" settings. <P>
+- all files in the templates directory which do not match the backup format
+described above, are assumed to be template files (this may change in future). <P>
+- if the selected templates directory does not exist, it will be created. <P>
+
+<A NAME="ctpragma"><H2>#ctpragma Directives</H2></A>
+
+The Templates plugin pre-processes template files on import. The behaviour of 
+the Templates preprocessor can be influenced through the use of #ctpragma 
+directives. These directives use the following format:<P>
+<CODE><B>#ctpragma TYPE = Value</B></CODE><P>
+where "TYPE" indicates the directive type, and "Value" is a string value.<P>
+
+Any single directive must be contained on a single line, and any given line 
+must contain only one directive. A directive type which is not recognized is 
+ignored. All lines containing #ctpragma directives are stripped from the 
+template when imported.
+
+At this time, Templates supports the following directive types:<P>
+<UL>
+<LI>#ctpragma NAME:
+<LI>#ctpragma LABEL: These two directives are functionally equivalent. These 
+directives indicate to the Templates plugin a label to be used to denote 
+the template file in the Plugins->Templates menu. This directive <B>must be in 
+the first line of the template file</B>. This avoids the need to process the 
+whole file whenever the Templates menu is refreshed. Code samples:<P>
+<CODE>#ctpgrama LABEL = Java class<BR>
+#ctpragma NAME = JavaBean Template</CODE>
+</UL><P>
+
+<H2>Contact</H2>
+
+Send comments or questions to Steve Jakob at 
+<ADDRESS>Steve.Jakob@wideskies.ca</ADDRESS>
+<P>
+
+</Body>
