@@ -95,7 +95,6 @@ class SideKick implements EBComponent
 			public void run()
 			{
 				//SideKickParsedData.setParsedData(view,null);
-
 				ErrorSource.unregisterErrorSource(errorSource);
 				errorSource.clear();
 
@@ -194,7 +193,7 @@ class SideKick implements EBComponent
 				plugin was loaded or unloaded. */
 				setParser();
 			}
-		} //}}}
+		}
 	} //}}}
 
 	//{{{ Private members
@@ -461,33 +460,39 @@ class SideKick implements EBComponent
 
 		public void run()
 		{
-			int errorCount = errorSource.getErrorCount();
-			if(errorCount != 0)
-				ErrorSource.registerErrorSource(errorSource);
-
-			if(showParsingMessage || errorCount != 0)
+			try
 			{
-				String label = jEdit.getProperty("sidekick.parser."
-					+ parser.getName() + ".label");
-				Object[] pp = { label, new Integer(errorCount) };
-				view.getStatus().setMessageAndClear(jEdit.getProperty(
-					"sidekick.parsing-complete",pp));
+				int errorCount = errorSource.getErrorCount();
+				if(errorCount != 0)
+					ErrorSource.registerErrorSource(errorSource);
+	
+				if(showParsingMessage || errorCount != 0)
+				{
+					String label = jEdit.getProperty("sidekick.parser."
+						+ parser.getName() + ".label");
+					Object[] pp = { label, new Integer(errorCount) };
+					view.getStatus().setMessageAndClear(jEdit.getProperty(
+						"sidekick.parsing-complete",pp));
+				}
+	
+				buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data[0]);
+				if(buffer.getProperty("folding").equals("sidekick"))
+					buffer.invalidateCachedFoldLevels();
+	
+				View _view = jEdit.getFirstView();
+				while(_view != null)
+				{
+					if(_view.getBuffer() == buffer)
+						SideKickParsedData.setParsedData(_view,data[0]);
+					_view = _view.getNext();
+				}
+	
+				sendUpdate();
 			}
-
-			buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data[0]);
-			if(buffer.getProperty("folding").equals("sidekick"))
-				buffer.invalidateCachedFoldLevels();
-
-			View _view = jEdit.getFirstView();
-			while(_view != null)
+			finally
 			{
-				if(_view.getBuffer() == buffer)
-					SideKickParsedData.setParsedData(_view,data[0]);
-				_view = _view.getNext();
+				SideKickPlugin.finishParsingBuffer(buffer);
 			}
-
-			sendUpdate();
-			SideKickPlugin.finishParsingBuffer(buffer);
 		}
 	} //}}}
 
