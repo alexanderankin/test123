@@ -46,4 +46,5 @@
 <!ENTITY % att-bool '( TRUE | FALSE )' >
 <!ATTLIST COMMAND
 	CONFIRM %att-bool; "FALSE"
+	TO_BUFFER %att-bool; "FALSE"
 	SHELL CDATA #REQUIRED >

@@ -137,9 +137,11 @@ class SystemShell extends Shell
 			catch(InterruptedException e)
 			{
 			}
-		}
 
-		return process.getExitStatus();
+			return process.getExitStatus();
+		}
+		else
+			return true;
 	}
 
 	// package-private members
@@ -389,7 +391,7 @@ loop:			for(;;)
 					i = index;
 				}
 
-				expansion = getExpansion(view,varName);
+				String expansion = getExpansion(view,varName);
 
 				if(expansion != null)
 					buf.append(expansion);

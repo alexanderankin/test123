@@ -56,7 +56,7 @@
  <itemizedlist>
 
   <listitem><formalpara><title>Version 3.0</title><para>requires jEdit 3.2pre9,
-   the EditBus plugin 1.0.1, and the ErrorList plugin 1.1.</para></formalpara>
+   the EditBus plugin 1.1, and the ErrorList plugin 1.1.1.</para></formalpara>
 
    <itemizedlist>
     <listitem><para>

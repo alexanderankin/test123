@@ -22,6 +22,7 @@ package console;
 import bsh.*;
 import com.microstar.xml.*;
 import javax.swing.border.*;
+import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -59,13 +60,12 @@ public class CommandoDialog extends EnhancedDialog
 		commandCombo.addActionListener(actionListener);
 		top.add(BorderLayout.CENTER,commandCombo);
 
-		JTabbedPane tabs = new JTabbedPane();
+		tabs = new JTabbedPane();
 		tabs.addTab(jEdit.getProperty("commando.settings"),
 			settings = pane = new SettingsPane());
 		tabs.addTab(jEdit.getProperty("commando.commands"),
 			commandLine = new TextAreaPane());
-		tabs.addTab(jEdit.getProperty("commando.properties"),
-			properties = new TextAreaPane());
+		tabs.addChangeListener(new ChangeHandler());
 
 		if(command == null)
 			command = jEdit.getProperty("commando.last-command");
@@ -108,15 +108,6 @@ public class CommandoDialog extends EnhancedDialog
 	{
 		jEdit.setProperty("commando.last-command",command.name);
 
-		Buffer buffer = view.getBuffer();
-
-		Enumeration keys = propertyValues.keys();
-		while(keys.hasMoreElements())
-		{
-			Object key = keys.nextElement();
-			buffer.putProperty(key,propertyValues.get(key));
-		}
-
 		Vector commands = new Vector();
 
 		for(int i = 0; i < scripts.size(); i++)
@@ -155,16 +146,15 @@ public class CommandoDialog extends EnhancedDialog
 	private View view;
 
 	private JComboBox commandCombo;
+	private JTabbedPane tabs;
 	private SettingsPane settings;
 	private SettingsPane pane;
 	private TextAreaPane commandLine;
-	private TextAreaPane properties;
 	private JButton ok;
 	private JButton cancel;
 
 	private CommandoCommand command;
 	private NameSpace nameSpace;
-	private Hashtable propertyValues;
 	private Vector scripts;
 
 	private boolean init;
@@ -176,11 +166,9 @@ public class CommandoDialog extends EnhancedDialog
 		this.command = command;
 		settings.removeAll();
 		commandLine.setText(null);
-		properties.setText(null);
 
 		nameSpace = new NameSpace(BeanShell.getNameSpace(),
 			"commando");
-		propertyValues = new Hashtable();
 		scripts = new Vector();
 
 		XmlParser parser = new XmlParser();
@@ -218,7 +206,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		init = false;
 
-		updateTextAreas();
+		tabs.setSelectedIndex(0);
 	}
 
 	private void updateTextAreas()
@@ -246,32 +234,19 @@ public class CommandoDialog extends EnhancedDialog
 		}
 
 		commandLine.setText(buf.toString());
-
-		buf = new StringBuffer();
-
-		Enumeration enum = propertyValues.keys();
-		while(enum.hasMoreElements())
-		{
-			buf.append(':');
-			Object key = enum.nextElement();
-			buf.append(key);
-			buf.append('=');
-			buf.append(propertyValues.get(key));
-			buf.append(":\n");
-		}
-
-		properties.setText(buf.toString());
 	}
 
 	class Script
 	{
 		boolean confirm;
+		boolean toBuffer;
 		String shell;
 		String code;
 
-		Script(boolean confirm, String shell, String code)
+		Script(boolean confirm, boolean toBuffer, String shell, String code)
 		{
 			this.confirm = confirm;
+			this.toBuffer = toBuffer;
 			this.shell = shell;
 			this.code = code;
 		}
@@ -282,7 +257,8 @@ public class CommandoDialog extends EnhancedDialog
 				code,false);
 			if(command == null)
 				return null;
-			return new Command(confirm,shell,String.valueOf(command));
+			return new Command(confirm,toBuffer,
+				shell,String.valueOf(command));
 		}
 	}
 
@@ -290,12 +266,14 @@ public class CommandoDialog extends EnhancedDialog
 	static class Command
 	{
 		boolean confirm;
+		boolean toBuffer;
 		String shell;
 		String command;
 
-		Command(boolean confirm, String shell, String command)
+		Command(boolean confirm, boolean toBuffer, String shell, String command)
 		{
 			this.confirm = confirm;
+			this.toBuffer = toBuffer;
 			this.shell = shell;
 			this.command = command;
 		}
@@ -315,6 +293,15 @@ public class CommandoDialog extends EnhancedDialog
 				ok();
 			else if(evt.getSource() == cancel)
 				cancel();
+		}
+	}
+
+	class ChangeHandler implements ChangeListener
+	{
+		public void stateChanged(ChangeEvent evt)
+		{
+			if(tabs.getSelectedIndex() == 1)
+				updateTextAreas();
 		}
 	}
 
@@ -364,6 +351,8 @@ public class CommandoDialog extends EnhancedDialog
 				optionValue = value;
 			else if(aname == "CONFIRM")
 				confirm = "TRUE".equals(value);
+			else if(aname == "TO_BUFFER")
+				toBuffer = "TRUE".equals(value);
 			else if(aname == "SHELL")
 				shell = value;
 		}
@@ -456,7 +445,10 @@ public class CommandoDialog extends EnhancedDialog
 				else if(tag == "COMMAND")
 				{
 					scripts.addElement(new Script(
-						confirm,shell,code));
+						confirm,toBuffer,shell,code));
+					confirm = false;
+					toBuffer = false;
+					shell = code = null;
 				}
 
 				popElement();
@@ -489,6 +481,7 @@ public class CommandoDialog extends EnhancedDialog
 		private String choiceLabel;
 		private String label;
 		private boolean confirm;
+		private boolean toBuffer;
 		private String shell;
 		private String code;
 
@@ -536,10 +529,9 @@ public class CommandoDialog extends EnhancedDialog
 			}
 			else
 			{
-				Buffer buffer = view.getBuffer();
-				if(buffer.getProperty(property) != null)
+				if(jEdit.getProperty(property) != null)
 				{
-					if(buffer.getBooleanProperty(property))
+					if(jEdit.getBooleanProperty(property))
 						setSelected(true);
 					else
 						setSelected(false);
@@ -558,7 +550,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		private void valueChanged()
 		{
-			propertyValues.put(property,new Boolean(isSelected()));
+			jEdit.setTemporaryProperty(property,isSelected() ? "true" : "false");
 
 			try
 			{
@@ -569,8 +561,6 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				// can't do much...
 			}
-
-			updateTextAreas();
 		}
 
 		class ActionHandler implements ActionListener
@@ -601,11 +591,9 @@ public class CommandoDialog extends EnhancedDialog
 			}
 			else
 			{
-				Buffer buffer = view.getBuffer();
-				Object value = buffer.getProperty("commando."
-					+ command.name + "." + varName);
+				String value = jEdit.getProperty(property);
 				if(value != null)
-					setText(value.toString());
+					setText(value);
 			}
 
 			Dimension size = CommandoTextField.this.getPreferredSize();
@@ -627,7 +615,7 @@ public class CommandoDialog extends EnhancedDialog
 			if(text == null)
 				text = "";
 
-			propertyValues.put(property,text);
+			jEdit.setTemporaryProperty(property,text);
 
 			try
 			{
@@ -637,8 +625,6 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				// can't do much...
 			}
-
-			updateTextAreas();
 		}
 
 		class ActionHandler implements ActionListener
@@ -677,11 +663,9 @@ public class CommandoDialog extends EnhancedDialog
 			}
 			else
 			{
-				Buffer buffer = view.getBuffer();
-				Object value = buffer.getProperty("commando."
-					+ command.name + "." + varName);
+				String value = jEdit.getProperty(property);
 				if(value != null)
-					defaultValue = String.valueOf(value);
+					defaultValue = value;
 			}
 
 			if(defaultValue != null)
@@ -710,7 +694,7 @@ public class CommandoDialog extends EnhancedDialog
 		{
 			Option value = (Option)getSelectedItem();
 
-			propertyValues.put(property,value.value);
+			jEdit.setTemporaryProperty(property,value.value);
 
 			try
 			{
@@ -720,8 +704,6 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				// can't do much...
 			}
-
-			updateTextAreas();
 		}
 
 		class ActionHandler implements ActionListener

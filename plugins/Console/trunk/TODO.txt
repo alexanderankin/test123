@@ -1,17 +1,15 @@
 BEFORE CONSOLE 3.0 RELEASE:
 
 - write documentation
-- clear built-in
-- finish commando, include a few more sample commando files
-- improve commando error handling
-- error source not cleared?
+- two more commando samples: patch and jikes
+- make font customizable again
 
 LATER:
 
+- improve commando error handling
+- FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
 - aliases and variables option panes
 - commando: lower case tag names?
-- sort property list in commando dialog box
-- aliases option pane
 - finish built-ins:
   %ls, with colored output
   %ls option pane
@@ -39,8 +37,6 @@ LATER:
   and %ls output
 - use ls colorizing code to color file completion output
 - globs
-- option pane to add directories to search path; %addpath, %removepath,
-  %path built-ins to modify path from command line
 - after console 3.0:
   - with jEdit 4.0 api changes: tips of the day
   - with jEdit 4.0 api changes: multiple consoles per view
