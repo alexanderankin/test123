@@ -34,16 +34,19 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   bibliography-dock \
   label-dock \
   sidekick-tree \
+  project-viewer-dock \
   show-image-under-caret \
-  open-main \
-  open-import \
   - \
   compile \
   compile-prompt \
+  viewoutput \
+  viewoutput-prompt \
   bibtex \
   erase-working \
   - \
-  display-project \
+  open-main \
+  open-import \
+  - \
   set-main \
   reset-main \
   show-main \
@@ -83,6 +86,10 @@ compile.title = Compile
 compile.label = Compile 
 compile-prompt.title = Compile... 
 compile-prompt.label = Compile...
+viewoutput.title = View Output  
+viewoutput.label = View Output 
+viewoutput-prompt.title = View Output With... 
+viewoutput-prompt.label = View Output With...
 bibtex.title = BibTeX
 bibtex.label = BibTeX
 erase-working.title = Erase Working Files
@@ -91,8 +98,8 @@ open-main.title = Open Main File
 open-main.label = Open Main File
 open-import.title = Open Import
 open-import.label = Open Import
-display-project.title = Show Project Tree
-display-project.label = Show Project Tree
+project-viewer-dock.title = Show Project Tree
+project-viewer-dock.label = Show Project Tree
 
 labels.label=Labels
 labels.title=Find Labels
@@ -115,4 +122,5 @@ mode.tex.sidekick.parser=latex_parser
 sidekick.parser.latex_parser.label=LaTeX
 
 latex.compile.command=pdflatex
+latex.viewoutput.command=acrord32.exe
 
