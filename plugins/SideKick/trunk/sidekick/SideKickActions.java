@@ -27,7 +27,6 @@ import javax.swing.tree.*;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.event.*;
-import java.awt.Point;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 //}}}
@@ -41,6 +40,9 @@ public class SideKickActions
 		final JEditTextArea textArea = view.getTextArea();
 
 		textArea.userInput(ch);
+
+		if(!completion)
+			return;
 
 		Buffer buffer = textArea.getBuffer();
 
@@ -90,7 +92,8 @@ public class SideKickActions
 
 		// XXX
 		if(/* XmlPlugin.isDelegated(textArea) || */ !buffer.isEditable()
-			|| data == null)
+			|| data == null || parser == null
+			|| !parser.supportsCompletion())
 		{
 			view.getToolkit().beep();
 			return;
@@ -98,14 +101,7 @@ public class SideKickActions
 
 		int caret = textArea.getCaretPosition();
 
-		// XXX
-		Point location = textArea.offsetToXY(/* wordStart */caret);
-		location.y += textArea.getPainter().getFontMetrics().getHeight();
-
-		SwingUtilities.convertPointToScreen(location,
-			textArea.getPainter());
-
-		new SideKickCompletionPopup(view,parser,location);
+		new SideKickCompletionPopup(view,parser,caret);
 	} //}}}
 
 	//{{{ selectAsset() method
@@ -241,9 +237,48 @@ public class SideKickActions
 		}
 	} //}}}
 
+	//{{{ propertiesChanged() method
+	public static void propertiesChanged()
+	{
+		completion = jEdit.getBooleanProperty("sidekick.complete");
+		delay = jEdit.getIntegerProperty("sidekick.complete-delay",500);
+	} //}}}
+
 	//{{{ Private members
 	private static boolean completion;
 	private static int delay;
 	private static Timer timer;
+	//}}}
+
+	//{{{ Inner classes
+	static class CompleteAction extends EditAction
+	{
+		private char ch;
+
+		CompleteAction(char ch)
+		{
+			super("-xml-complete-key-" + ch);
+			this.ch = ch;
+		}
+
+		public boolean noRecord()
+		{
+			return true;
+		}
+
+		public void invoke(View view)
+		{
+			Macros.Recorder recorder = view.getMacroRecorder();
+			if(recorder != null)
+				recorder.record(1,ch);
+			completeKeyTyped(view,ch);
+		}
+
+		public String getCode()
+		{
+			return null;
+		}
+	} //}}}
+
 	//}}}
 }

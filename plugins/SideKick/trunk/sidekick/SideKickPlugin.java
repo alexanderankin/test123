@@ -27,8 +27,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.Component;
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.syntax.*;
@@ -71,6 +70,11 @@ public class SideKickPlugin extends EBPlugin
 				sidekick.dispose();
 				sidekicks.remove(view);
 			}
+		}
+		else if(msg instanceof PropertiesChanged)
+		{
+			updateKeyBindings();
+			SideKickActions.propertiesChanged();
 		}
 	} //}}}
 
@@ -116,5 +120,27 @@ public class SideKickPlugin extends EBPlugin
 	//{{{ Private members
 	private static HashMap sidekicks = new HashMap();
 	private static HashMap parsers = new HashMap();
+
+	private void updateKeyBindings()
+	{
+		InputHandler ih = jEdit.getInputHandler();
+
+		Iterator iter = parsers.values().iterator();
+		while(iter.hasNext())
+		{
+			SideKickParser parser = (SideKickParser)iter.next();
+			if(!parser.supportsCompletion())
+				continue;
+
+			String popupTriggerKeys = parser.getCompletionTriggers();
+			for(int i = 0; i < popupTriggerKeys.length(); i++)
+			{
+				char ch = popupTriggerKeys.charAt(i);
+				ih.addKeyBinding(String.valueOf(ch),
+					new SideKickActions.CompleteAction(ch));
+			}
+		}
+	} //}}}
+
 	//}}}
 }

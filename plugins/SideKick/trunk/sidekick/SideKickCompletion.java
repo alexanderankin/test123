@@ -31,9 +31,22 @@ import org.gjt.sp.jedit.EditPane;
 public interface SideKickCompletion
 {
 	int size();
+	public Object get(int index);
+
 	public ListCellRenderer getRenderer();
-	public Object getCompletion(int index);
-	void insert(int index, char keyPressed);
+
+	/**
+	 * The length of the text being completed (popup will be positioned there).
+	 */
+	public int getTokenLength();
+
+	/**
+	 * @param selectedIndex -1 if the popup is empty, otherwise the index of
+	 * the selection completion.
+	 * @param keyChar the character typed by the user.
+	 */
+	boolean handleKeystroke(int selectedIndex, char keyChar);
+
 	String getCompletionDescription(int index);
 	boolean isCompletionSelectable(int index);
 }
