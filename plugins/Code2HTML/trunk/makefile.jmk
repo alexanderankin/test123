@@ -3,8 +3,6 @@
 # To recompile this plugin, start jmk in the plugin's source directory.
 #
 
-# To recompile this plugin, start jmk in the plugin's source directory.
-
 jar_name = "Code2HTML";
 
 ##
@@ -36,27 +34,36 @@ jar_bin = "jar";
 jar_opts = "cf0";
 cmd_jar = jar_bin jar_opts;
 
-srcs     = (glob "*.java");
-classes  = (subst ".java", ".class", srcs);
-jar_file = (cat "../" jar_name ".jar");
+srcs = (subst ".java", ".class",
+    (glob (join (join (dirs "."), "/"), "*Plugin.java" "*.java"))
+);
+jar = (cat "../" jar_name ".jar");
 
-"all": jar_file;
+get_files = function (dummy)
+{
+    extensions = "class" "gif" "html" "jpg" "props" "txt" "xml";
+    file_globs = (join "/*.", extensions);
 
-"%.class": "%.java";
+    (glob (join (dirs "."), file_globs))
+}
+end;
+
+"all": jar;
+
+"%.class" : "%.java";
 {
     exec cmd_javac <;
 }
 
-jar_file: classes;
+jar: srcs;
 {
-    exec cmd_jar @
-    (glob
-        "*.props"
-        "*.class"
-        "*.html"
-        "*.txt"
-        "*.xml"
-    );
+    exec cmd_jar @ (get_files "1");
+}
+
+"clean":;
+{
+    delete (glob (join (dirs "."), "/*.class"));
 }
 
 ".PHONY": "all";
+
