@@ -205,7 +205,7 @@ class FtpConnection extends ConnectionManager.Connection
 				listing.get(0);
 			//XXX: we even use startsWith to hot have to parse the
 			//-> symlink indicator. Broken, broken, broken...
-			if(dirEntry.name.startsWith(name))
+			if(dirEntry.getName().startsWith(name))
 				return dirEntry;
 			else
 			{
@@ -411,8 +411,8 @@ class FtpConnection extends ConnectionManager.Connection
 
 				FtpVFS.FtpDirectoryEntry entry = lineToDirectoryEntry(line);
 				if(entry == null
-					|| entry.name.equals(".")
-					|| entry.name.equals(".."))
+					|| entry.getName().equals(".")
+					|| entry.getName().equals(".."))
 				{
 					Log.log(Log.DEBUG,this,"Discarding " + line);
 					continue;

@@ -141,8 +141,9 @@ class SFtpConnection extends ConnectionManager.Connection
 		{
 			file = sftp.openFile(path,SftpSubsystemClient.OPEN_READ);
 			returnValue = createDirectoryEntry(file);
-			returnValue.path = returnValue.deletePath = path;
-		}
+			returnValue.setPath(path);
+         returnValue.setDeletePath(path);
+      }
 		catch(IOException io)
 		{
 		}
