@@ -1,8 +1,8 @@
 package net.sourceforge.phpdt.internal.compiler.ast.declarations;
 
 /**
- * A variable usage.
- * This describe a variable declaration in a php document and his starting offset
+ * A variable usage. This describe a variable declaration in a php document and his starting offset
+ *
  * @author Matthieu Casanova
  */
 public final class VariableUsage {
@@ -19,21 +19,26 @@ public final class VariableUsage {
   private final int beginColumn;
   private final int endColumn;
 
-
   /**
    * create a VariableUsage.
-   * @param name the name of the variable
-   * @param startOffset the offset
+   *
+   * @param name        the name of the variable
+   * @param sourceStart the starting offset
+   * @param sourceEnd   the ending offset
+   * @param beginLine   begin line
+   * @param endLine     end line
+   * @param beginColumn begin column
+   * @param endColumn   end column
    */
-  public VariableUsage(final String name, 
-                       final int startOffset,
+  public VariableUsage(final String name,
+                       final int sourceStart,
                        final int sourceEnd,
                        final int beginLine,
                        final int endLine,
                        final int beginColumn,
                        final int endColumn) {
     this.name = name;
-    this.sourceStart = startOffset;
+    this.sourceStart = sourceStart;
     this.sourceEnd = sourceEnd;
     this.beginLine = beginLine;
     this.endLine = endLine;
@@ -47,6 +52,7 @@ public final class VariableUsage {
 
   /**
    * Get the name of the variable.
+   *
    * @return the name if the variable
    */
   public String getName() {
@@ -55,6 +61,7 @@ public final class VariableUsage {
 
   /**
    * Get the starting offset.
+   *
    * @return the starting offset
    */
   public int getSourceStart() {
