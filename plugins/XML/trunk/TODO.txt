@@ -1,11 +1,13 @@
-+ version 0.8:
++ version 0.8.1:
 
-- handle ANY content of element
-- element and entity lists for schemas
 - string index out of bounds in findTagStart()
-- see if closing view causes problems
 - update xsd tag list
 - more friendly way to find DTDs (some kind of 'wizard'?)
+
++ version 0.9:
+
+- element and entity lists for schemas
+- see if closing view causes problems
 - recording <, >, /, &
 - threaddeath -- wtf?
 - move Xerces to its own plugin
@@ -22,17 +24,13 @@
 
 - 'advanced' option pane for selecting parsers
 - xalan integration:
-  - XPath interpreter and XPath console shell
-  - command to run through stylesheet and show output in info viewer
-  - command to select all elements matching an XPath expression
+  - merge with XSLT plugin?
   - 'xsl' parser validates stylesheets
 - features for editing dtds:
   - a different xml insert window lists <!ELEMENT, <!ATTLIST, ...
   - a different edit tag dialog for editing dtd declarations
   - list all dtd tags in xml tree
 - proper handling of tags in nested files
-- All/1/2/3/4 buttons in XML tree that expand/collapse tree that certain
-  level
 - handle parsing open buffers better
 - let user specify completion info files in advanced option pane.
 - new xml file wizard

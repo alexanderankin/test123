@@ -23,6 +23,7 @@ public class ElementDecl
 {
 	public String name;
 	public boolean empty;
+	public boolean any;
 	public boolean html;
 
 	public ArrayList attributes;
@@ -38,6 +39,8 @@ public class ElementDecl
 
 		if(content.equals("EMPTY"))
 			empty = true;
+		else if(content.equals("ANY"))
+			any = true;
 		else
 		{
 			this.content = new ArrayList();
@@ -63,20 +66,30 @@ public class ElementDecl
 	{
 		ArrayList children = new ArrayList(100);
 
-		for(int i = 0; i < info.elementsAllowedAnywhere.size(); i++)
+		if(any)
 		{
-			children.add(info.elementsAllowedAnywhere.get(i));
+			for(int i = 0; i < info.elements.size(); i++)
+			{
+				children.add(info.elements.get(i));
+			}
 		}
-
-		for(int i = 0; i < content.size(); i++)
+		else
 		{
-			ElementDecl decl = (ElementDecl)info.elementHash
-				.get(content.get(i));
-			if(decl != null)
-				children.add(decl);
-		}
+			for(int i = 0; i < info.elementsAllowedAnywhere.size(); i++)
+			{
+				children.add(info.elementsAllowedAnywhere.get(i));
+			}
 
-		MiscUtilities.quicksort(children,new ElementDecl.Compare());
+			for(int i = 0; i < content.size(); i++)
+			{
+				ElementDecl decl = (ElementDecl)info.elementHash
+					.get(content.get(i));
+				if(decl != null)
+					children.add(decl);
+			}
+
+			MiscUtilities.quicksort(children,new ElementDecl.Compare());
+		}
 
 		return children;
 	} //}}}

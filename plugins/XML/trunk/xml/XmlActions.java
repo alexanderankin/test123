@@ -564,6 +564,10 @@ public class XmlActions
 		if(text.charAt(caret - 2) != '<')
 			return;
 
+		// check if caret is inside a tag
+		if(TagParser.getTagAtOffset(text,caret) != null)
+			return;
+
 		TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,
 			completionInfo.elementHash);
 		if(tag != null)

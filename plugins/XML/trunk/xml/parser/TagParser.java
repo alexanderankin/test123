@@ -53,7 +53,8 @@ public class TagParser
 			++startTagName;
 		}
 		else if(text.charAt(startTagName) == '?'
-			|| text.charAt(startTagName) == '!')
+			|| text.charAt(startTagName) == '!'
+			|| text.charAt(startTagName) == '%')
 		{
 			return null;
 		}
