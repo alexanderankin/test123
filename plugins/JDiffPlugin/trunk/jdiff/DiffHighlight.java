@@ -121,12 +121,6 @@ public class DiffHighlight extends TextAreaExtension
                     gfx.setColor(color);
                     gfx.fillRect(0, y, painter.getWidth(), fm.getHeight());
 
-                    // We paint the selected part of the hunk
-                    Selection[] selections = this.textArea.getSelection();
-                    for (int i = 0; i < selections.length; i++) {
-                        this.paintSelectionHighlight(gfx, physicalLine, y, selectionColor, selections[i]);
-                    }
-
                     break;
                  }
             } else { // DiffHighlight.RIGHT
@@ -161,68 +155,10 @@ public class DiffHighlight extends TextAreaExtension
                     gfx.setColor(color);
                     gfx.fillRect(0, y, painter.getWidth(), fm.getHeight());
 
-                    // We paint the selected part of the hunk
-                    Selection[] selections = this.textArea.getSelection();
-                    for (int i = 0; i < selections.length; i++) {
-                        this.paintSelectionHighlight(gfx, physicalLine, y, selectionColor, selections[i]);
-                    }
-
                     break;
                  }
             }
         }
-    }
-
-
-    private void paintSelectionHighlight(
-            Graphics2D gfx, final int physicalLine, final int y,
-            Color selectionColor, Selection s
-    ) {
-        if ((physicalLine < s.getStartLine()) || (physicalLine > s.getEndLine())) {
-            return;
-        }
-
-        TextAreaPainter painter = this.textArea.getPainter();
-        FontMetrics fm = painter.getFontMetrics();
-
-        int lineStart = this.textArea.getLineStartOffset(physicalLine);
-        Point p1 = new Point();
-        Point p2 = new Point();
-
-        if (s instanceof Selection.Rect) {
-            int lineLen = this.textArea.getLineLength(physicalLine);
-            this.textArea.offsetToXY(physicalLine,Math.min(lineLen,
-                s.getStart() - this.textArea.getLineStartOffset(
-                s.getStartLine())), p1);
-            this.textArea.offsetToXY(physicalLine,Math.min(lineLen,
-                s.getEnd() - this.textArea.getLineStartOffset(
-                s.getEndLine())), p2);
-
-            if (p1.x > p2.x) {
-                int tmp = p2.x;
-                p2.x = p1.x;
-                p1.x = tmp;
-            }
-        } else if (s.getStartLine() == s.getEndLine()) {
-            this.textArea.offsetToXY(physicalLine, s.getStart() - lineStart, p1);
-            this.textArea.offsetToXY(physicalLine, s.getEnd() - lineStart, p2);
-        } else if (physicalLine == s.getStartLine()) {
-            this.textArea.offsetToXY(physicalLine, s.getStart() - lineStart, p1);
-            p2.x = painter.getWidth();
-        } else if (physicalLine == s.getEndLine()) {
-            p1.x = 0;
-            this.textArea.offsetToXY(physicalLine, s.getEnd() - lineStart, p2);
-        } else {
-            p1.x = 0;
-            p2.x = painter.getWidth();
-        }
-
-        if(p1.x == p2.x) {
-            p2.x++;
-        }
-
-        gfx.setColor(selectionColor);
-        gfx.fillRect(p1.x, y, p2.x - p1.x, fm.getHeight());
     }
 
 
