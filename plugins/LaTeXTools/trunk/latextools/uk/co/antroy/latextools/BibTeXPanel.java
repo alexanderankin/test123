@@ -50,14 +50,12 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.*;
 
+import uk.co.antroy.latextools.parsers.*;
 
 public class BibTeXPanel
   extends AbstractToolPanel {
 
   //~ Instance/static variables ...............................................
-
-  private ArrayList bibEntries = new ArrayList();
-  private ArrayList bibFiles = new ArrayList();
 
   //  private JTable bibTable;
   private JList bibList = new JList();
@@ -113,7 +111,7 @@ public class BibTeXPanel
     if (!isTeXFile(buffer)) {
       displayNotTeX(BorderLayout.CENTER);
     } else {
-      loadBibFiles();
+      //loadBibFiles();
       buildList();
 
       JScrollPane scp = new JScrollPane(bibList, 
@@ -132,8 +130,8 @@ public class BibTeXPanel
   }
   
   private void buildList() {
-
-    Object[] be = bibEntries.toArray();
+    BibTeXParser parser = new BibTeXParser(view, buffer);
+    Object[] be = parser.getBibEntryArray();
     bibList = null;
     bibList = new JList(be);
     bibList.addMouseListener(new MouseAdapter() {
@@ -184,255 +182,4 @@ public class BibTeXPanel
     buffer.insert(posn, sb.toString());
   }
 
-  private void loadBibEntries() {
-
-    RE refRe;
-    RE titleRe;
-		
-    try {
-      refRe = new RE("@\\w+?\\{([a-zA-Z0-9]+?),");
-      titleRe = new RE("title\\s*=\\s*\\{(.+?)\\}");
-    } catch (REException e) {
-
-      return;
-    }
-
-    Iterator it = bibFiles.iterator();
-    File bib;
-
-    while (it.hasNext()) {
-      bib = (File) it.next();
-
-      try {
-
-        FileReader reader = new FileReader(bib);
-        BufferedReader in = new BufferedReader(reader);
-        String nextLine = in.readLine();
-        boolean newEntry = false;
-        int count = 0;
-        String bibref = "";
-
-        while (nextLine != null) {
-
-          if (newEntry) {
-
-            REMatch rm = titleRe.getMatch(nextLine);
-
-            if (rm != null) {
-              newEntry = false;
-
-              BibEntry bibEntry = new BibEntry(bibref.trim(), 
-                                               rm.toString(1).trim());
-              bibEntries.add(bibEntry);
-            }
-          } else {
-
-            REMatch rm = refRe.getMatch(nextLine);
-
-            if (rm != null) {
-              count++;
-              newEntry = true;
-              bibref = rm.toString(1);
-
-              int l = bibref.length();
-            }
-          }
-
-          nextLine = in.readLine();
-        }
-        in.close();
-      } catch (Exception e) {
-      }
-    }
-
-    Collections.sort(bibEntries);
-  }
-
-  private void loadBibFiles() {
-    bibEntries.clear();
-    bibFiles.clear();
-    
-    File texFile = new File(tex);
-    
-    DefaultMutableTreeNode files = LaTeXMacros.getProjectFiles(view, buffer);
-    
-    filesLoop:
-    for (Enumeration it = files.getLastLeaf().pathFromAncestorEnumeration(files); it.hasMoreElements();) {
-       DefaultMutableTreeNode node = (DefaultMutableTreeNode) it.nextElement();
-       File in = (File) node.getUserObject();
-       Buffer buff = jEdit.openTemporary(view, in.getParent(), in.getName(),false);
-       bufferLoop:
-       for (int i = buff.getLineCount() - 1; i > 0; i--) {
-   
-         String nextLine = buff.getLineText(i);
-   
-         if (nextLine.indexOf("%Bibliography") != -1 || 
-             nextLine.indexOf("\\begin{document}") != -1) {
-   
-           break bufferLoop;
-         }
-   
-         RE bibRe = null;    
-         RE theBibRe = null;
-         
-         try{
-            bibRe    = new RE("[^%]*?\\\\bibliography\\{(.+?)\\}.*");
-            theBibRe = new RE("[^%]*?\\\\begin\\{thebibliography\\}.*");
-         } catch (Exception e){
-            e.printStackTrace();
-         }
-         
-         boolean index = bibRe.isMatch(nextLine);
-         boolean tbindex = theBibRe.isMatch(nextLine);
-         
-         if (index) {
-           StringTokenizer st = new StringTokenizer(bibRe.getMatch(nextLine).toString(1), ",");
-   
-           //Add referenced bibtex files to bibFiles list.
-           while (st.hasMoreTokens()) {
-   
-             String s = st.nextToken().trim();
-   
-             if (!s.endsWith(".bib"))
-               s = s + ".bib";
-   
-             File f = new File(LaTeXMacros.getMainTeXDir(buffer), s);
-   
-             if (!f.exists())
-               f = new File(s);
-   
-             bibFiles.add(f);
-           }
-   
-           loadBibEntries();
-   
-           return;
-         } else if (tbindex) {
-           loadTheBibliography(i);
-           return;
-         }
-       }
-    }
-  }
-
-  private void loadTheBibliography(int startIndex) {
-
-    int index = startIndex;
-    int refStart;
-    int end = buffer.getLineText(index).indexOf("\\end{thebibliography}");
-
-    while (end == -1) {
-
-      String line = buffer.getLineText(index);
-      refStart = line.indexOf("\\bibitem{");
-
-      if (refStart != -1) {
-
-        int refEnd = line.indexOf("}");
-        String bibRef = line.substring(refStart + 9, refEnd);
-        BibEntry be = new BibEntry(bibRef.trim(), "");
-        bibEntries.add(be);
-      }
-
-      end = buffer.getLineText(++index).indexOf("\\end{thebibliography}");
-    }
-
-    Collections.sort(bibEntries);
-  }
-
-  private void popup(String s) {
-    JOptionPane.showMessageDialog(view, s);
-  }
-
-  private void popup(int s) {
-    JOptionPane.showMessageDialog(view, "" + s);
-  }
-
-  private void popup() {
-    popup("Green Eggs and Ham");
-  }
-
-  //~ Inner classes ...........................................................
-
-  private class BibEntry
-    implements Comparable {
-
-    //~ Instance/static variables .............................................
-
-    private String ref;
-    private String title;
-
-    //~ Constructors ..........................................................
-
-    public BibEntry() {
-      this("", "");
-    }
-
-    public BibEntry(String r, String t) {
-      ref = r;
-      setTitle(t);
-    }
-
-    //~ Methods ...............................................................
-
-    public void setRef(String s) {
-      this.ref = s;
-    }
-
-    public String getRef() {
-
-      return ref;
-    }
-
-    public void setTitle(String s) {
-
-      int bibLength = jEdit.getIntegerProperty("bibtex.bibtitle.wordlength", 0);
-      int bibCount = jEdit.getIntegerProperty("bibtex.bibtitle.wordcount", 0);
-      StringTokenizer st = new StringTokenizer(s, " ");
-      StringBuffer sb = new StringBuffer("");
-      int count = bibCount;
-      int length = st.countTokens();
-
-      if (count == 0) {
-        count = length;
-      }
-
-      while (st.hasMoreTokens() && count > 0) {
-        count--;
-
-        String ss = st.nextToken();
-
-        if (bibLength != 0 && ss.length() > bibLength)
-          ss = ss.substring(0, bibLength) + ".";
-
-        sb.append(" " + ss);
-      }
-
-      if (bibCount != 0 && length > bibCount) {
-        sb.append("...");
-      }
-
-      this.title = sb.toString();
-    }
-
-    public String getTitle() {
-
-      return title;
-    }
-
-    public int compareTo(BibEntry be) {
-
-      return ref.compareTo(be.getRef());
-    }
-
-    public int compareTo(Object o) {
-
-      return compareTo((BibEntry) o);
-    }
-
-    public String toString() {
-
-      return ref + "  : " + title;
-    }
-  }
 }
