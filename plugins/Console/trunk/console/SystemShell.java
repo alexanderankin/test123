@@ -164,17 +164,19 @@ class SystemShell extends Shell
 
 	//{{{ getCompletions() method
 	/**
-	 * Returns possible completions for the specified command in the
-	 * specified Console.
-	 * @param command The command
+	 * Returns possible completions for the specified command.
+	 * @param view The current view
+	 * @param currentDirectory The current directory
+	 * @param command The comamnd
 	 */
-	public CompletionInfo getCompletions(Console console, String command)
+	public CompletionInfo getCompletions(View view, String currentDirectory,
+		String command)
 	{
 		// lazily initialize aliases and variables
 		init();
-		
+
 		final String fileDelimiters = "=\'\" \\"+File.pathSeparator;
-		
+
 		String lastArgEscaped, lastArg;
 		if (File.separatorChar == '\\')
 		{
@@ -185,44 +187,45 @@ class SystemShell extends Shell
 		else
 		{
 			// Escaping possible
-			
+
 			// I use findLastArgument and then unescape instead of
 			// (String)parse(command).lastElement() because there's no way
 			// to get parse(String) to also return the original length
 			// of the unescaped argument, which we need to calculate the
 			// completion offset.
-			
+
 			lastArgEscaped = findLastArgument(command, fileDelimiters);
-			lastArg = unescape(lastArgEscaped, fileDelimiters); 
+			lastArg = unescape(lastArgEscaped, fileDelimiters);
 		}
-		
-		String [] commandCompletion = getCommandCompletions(console, lastArg);
-		String [] fileCompletion = getFileCompletions(console, lastArg);
+
+		String [] commandCompletion = getCommandCompletions(lastArg);
+		String [] fileCompletion = getFileCompletions(view,
+			currentDirectory,lastArg);
 
 		CompletionInfo completionInfo = new CompletionInfo();
-		
+
 		completionInfo.offset = command.length() - lastArg.length();
-		
+
 		// Count the amount of completions
 		int completionsCount = 0;
 		completionsCount += commandCompletion == null ? 0 : commandCompletion.length;
 		completionsCount += fileCompletion == null ? 0 : fileCompletion.length;
 		if(completionsCount == 0)
 			return null;
-		
-		completionInfo.completions = new String[completionsCount]; 
-		
-		
+
+		completionInfo.completions = new String[completionsCount];
+
+
 		int offset = 0;
-		
+
 		// Add command completions
 		if((commandCompletion != null) && (commandCompletion.length > 0))
 		{
-			int amount = commandCompletion.length; 
+			int amount = commandCompletion.length;
 			System.arraycopy(commandCompletion, 0, completionInfo.completions, offset, amount);
 			offset += amount;
 		}
-		
+
 		// Add file completions
 		if((fileCompletion != null) && (fileCompletion.length > 0))
 		{
@@ -230,17 +233,7 @@ class SystemShell extends Shell
 			System.arraycopy(fileCompletion, 0, completionInfo.completions, offset, amount);
 			offset += amount;
 		}
-		
-		// Find a partial completion
-		String longestCommonStart = findLongestCommonStart(completionInfo.completions);
-		if((longestCommonStart.length() != 0) && !lastArg.equals(longestCommonStart))
-		{
-			completionInfo.completions = new String[1];
-			completionInfo.completions[0] = longestCommonStart;
-			completionsCount = 1;
-		}
-		
-		
+
 		// On systems where the file separator is the same as the escape
 		// character (Windows), it's impossible to do escaping properly,
 		// so we just assume that escaping is not needed (which is true
@@ -249,19 +242,19 @@ class SystemShell extends Shell
 		{
 			for(int i = 0; i < completionsCount; i++)
 			{
-				completionInfo.completions[i] = escape(completionInfo.completions[i], fileDelimiters); 
+				completionInfo.completions[i] = escape(completionInfo.completions[i], fileDelimiters);
 			}
 		}
-		
-		
+
+
 		// We add a double quote at the beginning of any completion with
-		// special characters because the current argument parsing 
-		// (done in parse()) uses StreamTokenizer, which only handles 
+		// special characters because the current argument parsing
+		// (done in parse()) uses StreamTokenizer, which only handles
 		// escaping if it's done within a string. The purpose here is
 		// dual - to get parse() to unescape the characters and to get
 		// it to recognize the string as a single argument.
 		// On systems where we don't support escaping, we do this
-		// only for the 2nd purpose. 
+		// only for the 2nd purpose.
 		boolean isDoubleQuoted = (completionInfo.offset > 0) && (command.charAt(completionInfo.offset - 1) == '\"');
 		if(!isDoubleQuoted)
 		{
@@ -273,89 +266,12 @@ class SystemShell extends Shell
 				completionInfo.completions[i] = result;
 			}
 		}
-		
+
 		return completionInfo;
 	} //}}}
-	
-	//{{{ getFileCompletions() method
-	/**
-	 * Returns possible completions for the specified filename in the
-	 * context of the given Console.
-	 */
-	public String [] getFileCompletions(Console console, String typedFilename)
-	{
-		// The currend directory of the console.
-		String currentDirName = getConsoleState(console).currentDirectory;
-		
-		int lastSeparatorIndex = typedFilename.lastIndexOf(File.separator);
-		// The directory part of what the user typed, including the file separator.		
-		String typedDirName = lastSeparatorIndex == -1 ? "" : typedFilename.substring(0, lastSeparatorIndex+1);
-		
-		String expandedTypedFilename = expandVariables(console.getView(), console, typedFilename);
 
-		// Is the file typed by the user an absolute path or a relative?		
-		boolean isTypedFilenameAbsolute = new File(expandedTypedFilename).isAbsolute();
-
-		// The file typed by the user.
-		File typedFile = isTypedFilenameAbsolute ?
-					new File(expandedTypedFilename) : 
-					new File(currentDirName, expandedTypedFilename);
-		
-		// The parent directory of the file typed by the user (or itself if it's already a directory). 
-		File dir = expandedTypedFilename.endsWith(File.separator) ? typedFile : typedFile.getParentFile();
-		
-		// The filename part of the file typed by the user, or "" if it's a directory. 
-		String fileName = expandedTypedFilename.endsWith(File.separator) ? "" : typedFile.getName();
-		
-		// The list of files we're going to try to match
-		String [] filenames = dir.list();
-		
-		if ((filenames == null) || (filenames.length == 0))
-			return null;
-			
-		boolean isOSCaseSensitive = OperatingSystem.getOperatingSystem().isCaseSensitive();			
-		String [] matchingFilenames = new String[filenames.length];		
-		int matchingFilenamesCount = 0;
-		String matchedString = isOSCaseSensitive ? fileName : fileName.toLowerCase();		
-		for(int i = 0; i < filenames.length; i++)
-		{
-			String matchedAgainst = isOSCaseSensitive ? filenames[i] : filenames[i].toLowerCase();
-		
-			if(matchedAgainst.startsWith(matchedString)){
-				String match;
-				
-				File matchFile = new File(dir, filenames[i]);
-				
-				match = typedDirName + filenames[i];
-					
-				// Add a separator at the end if it's a directory
-				if(matchFile.isDirectory() && !match.endsWith(File.separator))
-					match = match + File.separator;
-				
-				matchingFilenames[matchingFilenamesCount++] = match;					
-			}
-		}
-		
-		String [] result = new String[matchingFilenamesCount];
-		System.arraycopy(matchingFilenames, 0, result, 0, matchingFilenamesCount);
-		
-		return result.length == 0 ? null : result;
-	} //}}}
-	
-	//{{{ getCommandCompletions() method
-	/**
-	 * Returns possible command completions for the specified command in the
-	 * context of the given Console. Note that the given string is not the
-	 * full typed in string, just the last argument, which is supposed to
-	 * be the command.
-	 */
-	public String [] getCommandCompletions(Console console, String command)
-	{
-		 return null;
-	} //}}}
-	
 	//{{{ expandVariables() method
-	public String expandVariables(View view, Console console, String arg)
+	public String expandVariables(View view, String arg)
 	{
 		StringBuffer buf = new StringBuffer();
 
@@ -384,7 +300,7 @@ class SystemShell extends Shell
 
 					i = index;
 
-					String expansion = getVariableValue(view,console,varName);
+					String expansion = getVariableValue(view,varName);
 
 					if(expansion != null)
 						buf.append(expansion);
@@ -436,7 +352,7 @@ class SystemShell extends Shell
 						break;
 				}
 
-				String expansion = getVariableValue(view,console,varName);
+				String expansion = getVariableValue(view,varName);
 
 				if(expansion != null)
 					buf.append(expansion);
@@ -483,7 +399,7 @@ class SystemShell extends Shell
 	} //}}}
 
 	//{{{ getVariableValue() method
-	public String getVariableValue(View view, Console console, String varName)
+	public String getVariableValue(View view, String varName)
 	{
 		String expansion;
 
@@ -526,8 +442,6 @@ class SystemShell extends Shell
 		}
 		else if(varName.equals("ROOT"))
 			expansion = ConsolePlugin.getPackageRoot(buffer);
-		else if(console != null && varName.equals("PWD"))
-			expansion = getConsoleState(console).currentDirectory;
 		else if(varName.equals("BROWSER_DIR"))
 		{
 			VFSBrowser browser = (VFSBrowser)view
@@ -611,6 +525,7 @@ class SystemShell extends Shell
 		// some built-ins can be invoked without the % prefix
 		aliases.put("cd","%cd");
 		aliases.put("pwd","%pwd");
+		aliases.put("-","%cd -");
 
 		// load aliases from properties
 		String alias;
@@ -722,25 +637,91 @@ loop:			for(;;)
 			Vector expansionArgs = parse(expansion);
 			for(int i = 0; i < expansionArgs.size(); i++)
 			{
-				expandGlobs(view,console,newArgs,(String)expansionArgs
+				expandGlobs(view,newArgs,(String)expansionArgs
 					.elementAt(i));
 			}
 		}
 		else
-			expandGlobs(view,console,newArgs,commandName);
+			expandGlobs(view,newArgs,commandName);
 
 		// add remaining arguments
 		for(int i = 1; i < args.size(); i++)
-			expandGlobs(view,console,newArgs,(String)args.elementAt(i));
+			expandGlobs(view,newArgs,(String)args.elementAt(i));
 
 		return newArgs;
 	} //}}}
 
 	//{{{ expandGlobs() method
-	private void expandGlobs(View view, Console console, Vector args, String arg)
+	private void expandGlobs(View view, Vector args, String arg)
 	{
 		// XXX: to do
-		args.addElement(expandVariables(view,console,arg));
+		args.addElement(expandVariables(view,arg));
+	} //}}}
+
+	//{{{ getFileCompletions() method
+	private String [] getFileCompletions(View view, String currentDirName,
+		String typedFilename)
+	{
+		int lastSeparatorIndex = typedFilename.lastIndexOf(File.separator);
+		// The directory part of what the user typed, including the file separator.
+		String typedDirName = lastSeparatorIndex == -1 ? "" : typedFilename.substring(0, lastSeparatorIndex+1);
+
+		String expandedTypedFilename = expandVariables(view, typedFilename);
+
+		// Is the file typed by the user an absolute path or a relative?
+		boolean isTypedFilenameAbsolute = new File(expandedTypedFilename).isAbsolute();
+
+		// The file typed by the user.
+		File typedFile = isTypedFilenameAbsolute ?
+					new File(expandedTypedFilename) :
+					new File(currentDirName, expandedTypedFilename);
+
+		// The parent directory of the file typed by the user (or itself if it's already a directory).
+		File dir = expandedTypedFilename.endsWith(File.separator) ? typedFile : typedFile.getParentFile();
+
+		// The filename part of the file typed by the user, or "" if it's a directory.
+		String fileName = expandedTypedFilename.endsWith(File.separator) ? "" : typedFile.getName();
+
+		// The list of files we're going to try to match
+		String [] filenames = dir.list();
+
+		if ((filenames == null) || (filenames.length == 0))
+			return null;
+
+		boolean isOSCaseSensitive = OperatingSystem.getOperatingSystem().isCaseSensitive();
+		String [] matchingFilenames = new String[filenames.length];
+		int matchingFilenamesCount = 0;
+		String matchedString = isOSCaseSensitive ? fileName : fileName.toLowerCase();
+		for(int i = 0; i < filenames.length; i++)
+		{
+			String matchedAgainst = isOSCaseSensitive ? filenames[i] : filenames[i].toLowerCase();
+
+			if(matchedAgainst.startsWith(matchedString))
+			{
+				String match;
+
+				File matchFile = new File(dir, filenames[i]);
+
+				match = typedDirName + filenames[i];
+
+				// Add a separator at the end if it's a directory
+				if(matchFile.isDirectory() && !match.endsWith(File.separator))
+					match = match + File.separator;
+
+				matchingFilenames[matchingFilenamesCount++] = match;
+			}
+		}
+
+		String [] result = new String[matchingFilenamesCount];
+		System.arraycopy(matchingFilenames, 0, result, 0, matchingFilenamesCount);
+
+		return result.length == 0 ? null : result;
+	} //}}}
+
+	//{{{ getCommandCompletions() method
+	private String[] getCommandCompletions(String command)
+	{
+		 return null;
 	} //}}}
 
 	//{{{ findLastArgument() method
@@ -761,20 +742,20 @@ loop:			for(;;)
 				else
 					i--;
 			}
-			i--;			
+			i--;
 		}
-		
+
 		return command.substring(i+1);
 	} //}}}
-	
-	//{{{
+
+	//{{{ unescape() method
 	/**
 	 * Unescapes the given delimiters in the given string.
 	 */
 	private static String unescape(String s, String delimiters)
 	{
 		StringBuffer buf = new StringBuffer(s.length());
-		int i = s.length() - 1;	
+		int i = s.length() - 1;
 		while(i >= 0)
 		{
 			char c = s.charAt(i);
@@ -782,15 +763,15 @@ loop:			for(;;)
 			if(delimiters.indexOf(c) != -1)
 			{
 				if(s.charAt(i - 1) == '\\')
-					i--;					
+					i--;
 			}
 			i--;
 		}
-		
+
 		return buf.reverse().toString();
-	}
-	
-	//{{{
+	} //}}}
+
+	//{{{ escape() method
 	/**
 	 * Escapes the given delimiters in the given string.
 	 */
@@ -805,10 +786,10 @@ loop:			for(;;)
 				buf.append('\\');
 			buf.append(c);
 		}
-		
+
 		return buf.toString();
-	}
-	
+	} //}}}
+
 	//{{{ containsWhitespace() method
 	/**
 	 * Returns <code>true</code> if the first string contains any of the
@@ -823,62 +804,46 @@ loop:			for(;;)
 
 		return false;
 	} //}}}
-	
-	//{{{ findLongestCommonStart() method
-	/**
-	 * Returns the longest substring starting at the beginning of the string
-	 * of the strings in the given array. The comparison of strings is done
-	 * in a way that respects the OS case sensitivity.
-	 */
-	private static String findLongestCommonStart(String [] strings)
-	{
-		if (strings.length == 0)
-			return "";
-		if (strings.length == 1)
-			return strings[0];
 
-		boolean isOSCaseSensitive = OperatingSystem.getOperatingSystem().isCaseSensitive(); 			
-		String longestCommonStart = strings[0];
-		int longestCommonStartLength = longestCommonStart.length();
-		for(int i = 0; i < strings.length; i++){
-			int commonStartLength = 0;
-			int strLength = strings[i].length();
-			while((commonStartLength < strLength) && (commonStartLength < longestCommonStartLength))
-			{
-				char c1 = strings[i].charAt(commonStartLength);
-				char c2 = longestCommonStart.charAt(commonStartLength);
-				
-				if(!isOSCaseSensitive)
-				{
-					c1 = Character.toLowerCase(c1);
-					c2 = Character.toLowerCase(c2);
-				}
-				
-				if(c1 != c2)
-					break;
-				commonStartLength++;
-			}
-			longestCommonStart = longestCommonStart.substring(0, commonStartLength);
-			longestCommonStartLength = commonStartLength; 
-		}
-		
-		return longestCommonStart;		 
-	} //}}}
-	
 	//}}}
 
 	//{{{ ConsoleState class
 	static class ConsoleState
 	{
 		String currentDirectory = System.getProperty("user.dir");
+		String lastDirectory = System.getProperty("user.dir");
 		Stack directoryStack = new Stack();
 		ConsoleProcess process;
+
+		void gotoLastDirectory(Console console)
+		{
+			String[] pp = { lastDirectory };
+			if(new File(lastDirectory).exists())
+			{
+				String newLastDir = currentDirectory;
+				currentDirectory = lastDirectory;
+				System.err.println("last dir right now is " + lastDirectory);
+				lastDirectory = newLastDir;
+				System.err.println("setting last dir to " + lastDirectory);
+				console.print(console.getInfoColor(),
+					jEdit.getProperty(
+					"console.shell.cd.ok",pp));
+			}
+			else
+			{
+				console.print(console.getErrorColor(),
+					jEdit.getProperty(
+					"console.shell.cd.error",pp));
+			}
+		}
 
 		void setCurrentDirectory(Console console, String newDir)
 		{
 			String[] pp = { newDir };
 			if(new File(newDir).exists())
 			{
+				System.err.println("setting last dir to " + currentDirectory);
+				lastDirectory = currentDirectory;
 				currentDirectory = newDir;
 				console.print(console.getInfoColor(),
 					jEdit.getProperty(

@@ -125,11 +125,13 @@ public abstract class Shell
 
 	//{{{ getCompletions() method
 	/**
-	 * Returns possible completions for the specified command in the
-	 * specified Console.
-	 * @param command The command
+	 * Returns possible completions for the specified command.
+	 * @param view The current view
+	 * @param currentDirectory The current directory
+	 * @param command The comamnd
 	 */
-	public CompletionInfo getCompletions(Console console, String command)
+	public CompletionInfo getCompletions(View view, String currentDirectory,
+		String command)
 	{
 		return null;
 	} //}}}

@@ -256,16 +256,20 @@
  directory. Note that unlike other built-ins, this one is not prefixed
  with <quote>%</quote> for convenience and consistency with other command
  lines.</para></listitem>
- <listitem><para><command>cd <replaceable>directory</replaceable></command>
- - does the same thing as just entering
+ <listitem><para><command>cd <replaceable>directory</replaceable></command>:
+ does the same thing as just entering
  <command><replaceable>directory</replaceable></command>.
  </para></listitem>
- <listitem><para><command>%pushd</command> - pushes the current directory
+ <listitem><para><command>-</command> or <command>cd -</command>:
+ goes to the directory that was
+ current before this one.
+ </para></listitem>
+ <listitem><para><command>%pushd</command>: pushes the current directory
  onto the directory stack.</para></listitem>
- <listitem><para><command>%popd</command> - sets the current working
+ <listitem><para><command>%popd</command>: sets the current working
  directory to the one stored at the top of the directory stack, then
  removes that entry from the stack.</para></listitem>
- <listitem><para><command>%dirstack</command> - lists all directories
+ <listitem><para><command>%dirstack</command>: lists all directories
  in the directory stack.</para></listitem>
 </itemizedlist>
 
@@ -372,15 +376,15 @@
 </para>
 
 <itemizedlist>
- <listitem><para><command>%env</command> - prints a list of all environment
+ <listitem><para><command>%env</command>: prints a list of all environment
  variables, excluding the dynamic ones documented above.</para></listitem>
  <listitem><para><command>%set <replaceable>name</replaceable>
- <replaceable>value</replaceable></command> - sets the value of the specified
+ <replaceable>value</replaceable></command>: sets the value of the specified
  environment variable. Note that if the desired value contains whitespace,
  you will need to quote it, otherwise it will be treated as several
  arguments.</para></listitem>
- <listitem><para><command>%unset <replaceable>name</replaceable></command>
- - clears the value of the specified
+ <listitem><para><command>%unset <replaceable>name</replaceable></command>:
+ clears the value of the specified
  environment variable.</para></listitem>
 </itemizedlist>
 
@@ -404,15 +408,15 @@
  </para>
 
  <itemizedlist>
-  <listitem><para><command>%browse <replaceable>directory</replaceable></command>
-  - opens the specified directory in jEdit's file system browser.
+  <listitem><para><command>%browse <replaceable>directory</replaceable></command>:
+  opens the specified directory in jEdit's file system browser.
   </para></listitem>
 
-  <listitem><para><command>%edit <replaceable>files ...</replaceable></command>
-  - opens the specified files in jEdit.</para></listitem>
+  <listitem><para><command>%edit <replaceable>files ...</replaceable></command>:
+  opens the specified files in jEdit.</para></listitem>
 
-  <listitem><para><command>%run <replaceable>scripts ...</replaceable></command>
-  - runs the specified script files in jEdit's BeanShell interpreter.
+  <listitem><para><command>%run <replaceable>scripts ...</replaceable></command>:
+  runs the specified script files in jEdit's BeanShell interpreter.
   </para></listitem>
 
  </itemizedlist>
@@ -1142,6 +1146,17 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+  <listitem><para><emphasis role="bold">Version 3.3.1</emphasis>
+   requires jEdit 4.0final and the ErrorList plugin 1.2.</para>
+
+   <itemizedlist>
+    <listitem><para>File name completion can now be used in the console
+    tool bar.</para></listitem>
+    <listitem><para><command>cd -</command> now goes to the last visited
+    directory.</para></listitem>
+   </itemizedlist>
+  </listitem>
 
   <listitem><para><emphasis role="bold">Version 3.3</emphasis>
    requires jEdit 4.0final and the ErrorList plugin 1.2.</para>
