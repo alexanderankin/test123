@@ -1,0 +1,12 @@
+### Plugin properties
+
+plugin.ConsolePlugin.name=Console
+plugin.ConsolePlugin.version=2.0
+plugin.ConsolePlugin.author=Slava Pestov
+plugin.ConsolePlugin.docs=Console.html
+
+### Console component
+
+console.title=Console
+console.shell=Console
+console.toolbar.enabled=on
