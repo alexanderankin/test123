@@ -4,7 +4,7 @@
 <!-- (C) 2001 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
-<!-- :tabSize=1:indentSize=1:noTabs=true:folding=indent:collapseFolds=1: -->
+<!-- :tabSize=1:indentSize=1:noTabs=true: -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
@@ -378,6 +378,29 @@ errorSource.addError(new ErrorSource.DefaultError(
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+  <listitem><formalpara><title>Version 1.2.1</title><para>requires
+  jEdit 4.0pre4.
+  </para></formalpara>
+
+  <itemizedlist>
+
+    <listitem><para>Fixed possible <classname>NullPointerException</classname>
+    under Java 2 version 1.4.
+    </para></listitem>
+
+    <listitem><para>Error highlight didn't work properly when soft wrap was
+    enabled.
+    </para></listitem>
+
+    <listitem><para>If the <quote>show on error</quote> feature is enabled, the
+    error list will now open in the currently focused view, not the most
+    recently opened view as before.
+    </para></listitem>
+
+   </itemizedlist>
+
+  </listitem>
 
   <listitem><formalpara><title>Version 1.2.1</title><para>requires
   jEdit 4.0pre4.
