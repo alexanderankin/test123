@@ -16,15 +16,22 @@ Required for release as AntFarm 1.0
 - Add antRun script files to distribution <exec> task works. - DONE
 - Remove HashMap/Map dependence from the project bridge. - DONE
 
-Future additions/fixes:
+Required for AntFarm 1.1 release.
 - Add support for properties when executing targets: !my_target
-property=value - DONE
+  property=value - DONE
+- Allow custom Ant classpath to be defined. - DONE
+- Add a 'save modified buffers' option that calls
+  jEdit.saveAllBuffers() before running Ant. - DONE
+- Port to JEdit 4.0 and new plugin architecture.
+- Make Java 1.4 compatible.
+- Update help.
+
+Future additions/fixes:
 - Test on more complicated ANT scripts
 - Allow all ant project properties to be changed per project
 - Execute outside of current JVM by forking, not by script
 - Load custom taskdefs from an ant lib directory
 - Refactor AntTree to use command pattern
-- Allow custom Ant classpath to be defined.
 - Open/Close build files that are related to the current session.
 - Add actions for easy shortcut binding:
 	- run the current target of the current build file;
@@ -32,6 +39,6 @@ property=value - DONE
 	- choose the build file from the list.
 - If tools.jar is not found and loaded, present a message and
   exit AntFarm.
-
+- Allow properties to be system/environmental variables.
 
 

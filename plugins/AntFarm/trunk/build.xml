@@ -27,7 +27,7 @@
 	<property name="jedit.install.dir"  value="../.."/>
 	<property name="jedit.jars" value="${jedit.install.dir}/jars"/>
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
-	<property name="docs-proc.target"  value="xalan"/>
+	<property name="docs-proc.target"  value="xsltproc"/>
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
@@ -98,11 +98,11 @@
 
 	<!-- Generate docs with Xalan tool from xml.apache.org -->
 	<target name="docs-xalan">
-		<style
+		<!-- <style
 			style="users-guide.xsl"
 			in="users-guide.xml"
 			out="users-guide.html"
-			destdir="."/>
+			destdir="."/> -->
 	</target>
 
 

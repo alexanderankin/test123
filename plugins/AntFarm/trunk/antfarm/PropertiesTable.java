@@ -31,8 +31,8 @@ import org.gjt.sp.util.Log;
 public class PropertiesTable extends JTable
 {
 
-	private final static String NAME_HISTORY_MODEL = PropertiesOptionPane.PROPERTY + PropertiesOptionPane.NAME;
-	private final static String VALUE_HISTORY_MODEL = PropertiesOptionPane.PROPERTY + PropertiesOptionPane.VALUE;
+	final static String NAME_HISTORY_MODEL = PropertiesOptionPane.PROPERTY + PropertiesOptionPane.NAME;
+	final static String VALUE_HISTORY_MODEL = PropertiesOptionPane.PROPERTY + PropertiesOptionPane.VALUE;
 
 
 	public PropertiesTable( Properties properties )
@@ -41,6 +41,14 @@ public class PropertiesTable extends JTable
 
 		setUpNameColumn( getColumnModel().getColumn( 0 ) );
 		setUpValueColumn( getColumnModel().getColumn( 1 ) );
+		setSelectionMode( ListSelectionModel.SINGLE_SELECTION );
+
+	}
+
+
+	public PropertiesTable()
+	{
+		this( new Properties() );
 	}
 
 
@@ -63,17 +71,25 @@ public class PropertiesTable extends JTable
 
 	private void setUpNameColumn( TableColumn column )
 	{
-		column.setCellEditor( new DefaultCellEditor(
-			new HistoryTextField( NAME_HISTORY_MODEL, false, true )
-			 ) );
+		DefaultCellEditor cellEditor = new DefaultCellEditor(
+			new HistoryTextField( NAME_HISTORY_MODEL, true, false )
+			 );
+		cellEditor.setClickCountToStart(1);
+		column.setCellEditor( cellEditor );
+		column.setPreferredWidth( 75 );
+
 	}
 
 
 	private void setUpValueColumn( TableColumn column )
 	{
-		column.setCellEditor( new DefaultCellEditor(
-			new HistoryTextField( VALUE_HISTORY_MODEL, false, true )
-			 ) );
+		DefaultCellEditor cellEditor = new DefaultCellEditor(
+			new HistoryTextField( VALUE_HISTORY_MODEL, true, false )
+			 );
+		cellEditor.setClickCountToStart(1);
+		column.setCellEditor( cellEditor );
+		column.setPreferredWidth( 75 );
+
 	}
 
 }
@@ -121,14 +137,20 @@ class PropertiesTableModel extends AbstractTableModel
 		else {
 			if ( col == 0 ) {
 				names.setElementAt( value, row );
+
+				// add the value to our history model
+				HistoryModel.getModel( PropertiesTable.NAME_HISTORY_MODEL ).addItem( (String) value );
 			}
 			else {
 				values.setElementAt( value, row );
-				if ( row == names.size() - 1 ) {
-					insertBlankRow( row );
-				}
-			}
 
+				// add the value to our history model
+				HistoryModel.getModel( PropertiesTable.VALUE_HISTORY_MODEL ).addItem( (String) value );
+
+			}
+			if ( row == names.size() - 1 ) {
+				insertBlankRow( row );
+			}
 		}
 
 		fireTableCellUpdated( row, col );

@@ -25,6 +25,7 @@ import javax.swing.*;
 import org.apache.tools.ant.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.*;
 
 public class TargetRunner extends Thread
@@ -64,6 +65,45 @@ public class TargetRunner extends Thread
 	public void run()
 	{
 		AntFarmPlugin.getErrorSource().clear();
+
+		if ( jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "save-on-execute" ) ) {
+			jEdit.saveAllBuffers( _view, false );
+
+			// Have our Ant run wait for any IO to finish up.
+			VFSManager.runInAWTThread(
+				new Runnable()
+				{
+					public void run()
+					{
+						runAntTarget();
+					}
+				} );
+		}
+		else {
+			runAntTarget();
+		}
+	}
+
+
+	void resetLogging()
+	{
+		_consoleErr.flush();
+		_consoleOut.flush();
+		System.setOut( _out );
+		System.setErr( _err );
+		_project.removeBuildListener( _buildLogger );
+	}
+
+
+	private void setOutputStreams()
+	{
+		System.setOut( _consoleOut );
+		System.setErr( _consoleErr );
+	}
+
+
+	private void runAntTarget()
+	{
 
 		boolean useSameJvm
 			 = jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm" );
@@ -111,23 +151,6 @@ public class TargetRunner extends Thread
 			runAntCommand( command );
 		}
 		cleanup();
-	}
-
-
-	void resetLogging()
-	{
-		_consoleErr.flush();
-		_consoleOut.flush();
-		System.setOut( _out );
-		System.setErr( _err );
-		_project.removeBuildListener( _buildLogger );
-	}
-
-
-	private void setOutputStreams()
-	{
-		System.setOut( _consoleOut );
-		System.setErr( _consoleErr );
 	}
 
 

@@ -37,6 +37,7 @@ public class AntFarmOptionPane
 	private JRadioButton _useExternalScript;
 	private JCheckBox _useProjectViewerIntegration;
 	private JCheckBox _useEmacsOutput;
+	private JCheckBox _saveOnExecute;
 	private JButton _pickPath;
 	private JButton _buildClasspath;
 	private JTextField _classPath;
@@ -80,6 +81,7 @@ public class AntFarmOptionPane
 					_classPath.setEnabled( true );
 				}
 			} );
+
 		_useExternalScript.addActionListener(
 			new ActionListener()
 			{
@@ -89,6 +91,7 @@ public class AntFarmOptionPane
 					_classPath.setEnabled( false );
 				}
 			} );
+
 		_useProjectViewerIntegration = new JCheckBox(
 			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "use-project-bridge-label" )
 			 );
@@ -100,6 +103,12 @@ public class AntFarmOptionPane
 			 );
 		_useEmacsOutput.setSelected(
 			jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "output-emacs" )
+			 );
+		_saveOnExecute = new JCheckBox(
+			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "save-on-execute-label" )
+			 );
+		_saveOnExecute.setSelected(
+			jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "save-on-execute" )
 			 );
 
 		boolean useSameJvmSelected = jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm" );
@@ -156,7 +165,9 @@ public class AntFarmOptionPane
 		addSeparator( AntFarmPlugin.OPTION_PREFIX + "general-options" );
 		addComponent( _useProjectViewerIntegration );
 		addComponent( _useEmacsOutput );
+		addComponent( _saveOnExecute );
 	}
+
 
 
 	public void _save()
@@ -169,6 +180,9 @@ public class AntFarmOptionPane
 			 );
 		jEdit.setBooleanProperty(
 			AntFarmPlugin.OPTION_PREFIX + "output-emacs", _useEmacsOutput.isSelected()
+			 );
+		jEdit.setBooleanProperty(
+			AntFarmPlugin.OPTION_PREFIX + "save-on-execute", _saveOnExecute.isSelected()
 			 );
 
 	}
