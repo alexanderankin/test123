@@ -74,6 +74,10 @@ public final class ProjectFile implements Transferable {
 	public String getPath() {
 		return fullPath;
 	}
+    
+    public void setPath(String aPath) {
+       this.fullPath = aPath;
+    }
 
 	/** Returns the name of the file, with the path structure.
 	 *

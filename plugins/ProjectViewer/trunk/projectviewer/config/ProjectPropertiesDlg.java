@@ -212,7 +212,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
             project.setName(name);
 	        project.setURLRoot(urlRoot);
             if (!root.equals(project.getRoot().getPath())) {
-                project.setRoot(new ProjectDirectory(root));
+                project.changeRoot(new ProjectDirectory(root));
             }
         }
         

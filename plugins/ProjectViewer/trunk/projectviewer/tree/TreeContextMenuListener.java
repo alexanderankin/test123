@@ -132,6 +132,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
         } else if (src == renameDir) {
             /* @todo: renaming of directories */
+            renameDirectory();
         } else if (src == renameFile) {
             renameFile();
 	    } else if (src == miLaunchBrowser) {
@@ -350,5 +351,38 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
             p.removeFile(file);
             p.importFile(new ProjectFile(newFile.getAbsolutePath()));
         }
+    }
+    
+    /**
+     *  Renames a directory in a project. All files below the modified directory
+     *  are also modified to point to the new directory name.
+     */
+    private void renameDirectory() {
+        ProjectDirectory dir = (ProjectDirectory) viewer.getSelectedNode();
+        String oldName = dir.toFile().getName();
+        String newName = (String)
+            JOptionPane.showInputDialog(
+                viewer,
+                "Enter the new name of the directory:",
+                "Rename file",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                oldName
+            );
+            
+        if (newName != null && !oldName.equals(newName)) {
+            if (!dir.changeName(newName)) {
+                JOptionPane.showMessageDialog(
+                    viewer,
+                    "Could not rename selected file!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            } else {
+                viewer.refresh();
+            }
+        }
+    
     }
 }
