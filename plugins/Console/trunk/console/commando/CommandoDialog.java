@@ -480,17 +480,7 @@ public class CommandoDialog extends EnhancedDialog
 
 			if(name.equals(tag))
 			{
-				if(tag == "CHOICE")
-				{
-					JLabel left = new JLabel(choiceLabel);
-					left.setBorder(new EmptyBorder(0,0,0,12));
-					pane.addComponent(left,
-						new CommandoComboBox(
-						varName,defaultValue,eval,options));
-					options = new Vector();
-					choiceLabel = varName = eval = null;
-				}
-				else if(tag == "OPTION")
+				if(tag == "OPTION")
 				{
 					options.addElement(new Option(label,optionValue));
 					label = optionValue = null;
@@ -519,14 +509,19 @@ public class CommandoDialog extends EnhancedDialog
 						tmp.setVariable("ns",nameSpace);
 						tmp.setVariable("label",label);
 						tmp.setVariable("var",varName);
+						tmp.setVariable("options",options);
 						//XXX: eval
-						tmp.setVariable(varName,defaultValue);
+						if(defaultValue == null)
+							nameSpace.setVariable(varName,bsh.Primitive.NULL);
+						else
+							nameSpace.setVariable(varName,defaultValue);
 
 						BeanShell.eval(view,tmp,
 							"commando" + tag
-							+ "(pane,ns,label,var)"
+							+ "(pane,ns,label,var,"
+							+ "options)"
 						);
-						label = varName = eval = null;
+						label = varName = defaultValue = eval = null;
 					}
 					catch(Exception e)
 					{
@@ -599,78 +594,6 @@ public class CommandoDialog extends EnhancedDialog
 		//}}}
 	} //}}}
 
-	//{{{ CommandoComboBox class
-	class CommandoComboBox extends JComboBox
-	{
-		//{{{ CommandoComboBox constructor
-		CommandoComboBox(String varName, String defaultValue, String eval,
-			Vector options)
-		{
-			super(options);
-
-			this.varName = varName;
-			this.property = command.getPropertyPrefix() + varName;
-
-			if(eval != null)
-			{
-				defaultValue = String.valueOf(BeanShell.eval(
-					view,nameSpace,eval));
-			}
-			else
-			{
-				String value = jEdit.getProperty(property);
-				if(value != null)
-					defaultValue = value;
-			}
-
-			if(defaultValue != null)
-			{
-				for(int i = 0; i < options.size(); i++)
-				{
-					Option opt = (Option)options.elementAt(i);
-					if(defaultValue.equals(opt.value))
-					{
-						setSelectedIndex(i);
-						break;
-					}
-				}
-			}
-
-			addActionListener(new ActionHandler());
-			valueChanged();
-		} //}}}
-
-		private String varName;
-		private String property;
-		private String eval;
-
-		//{{{ valueChanged() method
-		public void valueChanged()
-		{
-			Option value = (Option)getSelectedItem();
-
-			jEdit.setTemporaryProperty(property,value.value);
-
-			try
-			{
-				nameSpace.setVariable(varName,value.value);
-			}
-			catch(UtilEvalError e)
-			{
-				// can't do much...
-			}
-		} //}}}
-
-		//{{{ ActionHandler class
-		class ActionHandler implements ActionListener
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				valueChanged();
-			}
-		} //}}}
-	} //}}}
-
 	//{{{ Option class
 	static class Option
 	{
@@ -696,6 +619,14 @@ public class CommandoDialog extends EnhancedDialog
 		SettingsPane()
 		{
 			setLayout(gridBag = new GridBagLayout());
+		} //}}}
+
+		//{{{ addComponent() method
+		public void addComponent(String left, Component right)
+		{
+			JLabel label = new JLabel(left + ":");
+			label.setBorder(new EmptyBorder(0,0,0,12));
+			addComponent(label,right);
 		} //}}}
 
 		//{{{ addComponent() method
