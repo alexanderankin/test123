@@ -8,6 +8,12 @@
 		- Ruler height will now be increased to accomodate the border when it is on
 
 		- Added "Toggle Caret guide" action
+		
+		- Fixed tab indicator when scrolling horizontally
+		
+		- Double-clicking on a mark will toggle its associated guide
+		
+		- No longer using jEdit's built-in wrap guide
 	}}}
 
 	{{{ 0.9.0
