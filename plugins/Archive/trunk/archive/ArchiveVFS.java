@@ -42,7 +42,7 @@ import org.gjt.sp.jedit.io.VFSManager;
 
 import org.gjt.sp.util.Log;
 
-import com.aftexsw.util.bzip.CBZip2InputStream;
+import com.aftexsw.util.bzip.*;
 
 import com.ice.tar.*;
 
@@ -440,6 +440,9 @@ public class ArchiveVFS extends VFS {
 		String path, Component comp)
 		throws IOException
 	{
+        // make this more discriminating in the future.
+        ArchiveDirectoryCache.clearAllCachedDirectories();
+
         ArchivePath archive = new ArchivePath(path);
         String archivePath  = archive.pathName;
         String archiveEntry = archive.entryName;
@@ -546,13 +549,23 @@ public class ArchiveVFS extends VFS {
                 if(archiveIn == null)
                     throw new IOException("FIXME");
 
+                archiveIn = ArchiveUtilities.openCompressedStream(archiveIn);
+                boolean gzip = false, bzip2 = false;
+                if(archiveIn instanceof GZIPInputStream)
+                    gzip = true;
+                if(archiveIn instanceof CBZip2InputStream)
+                    bzip2 = true;
+
                 archiveIn = ArchiveUtilities.openArchiveStream(archiveIn);
 
                 if(archiveIn instanceof ZipInputStream) {
                     saveZipArchive((ZipInputStream)archiveIn,archive,
                         savePath,outputFile,comp);
-                    vfs._rename(null,savePath,archivePath,comp);
+                } else if(archiveIn instanceof TarInputStream) {
+                    saveTarArchive((TarInputStream)archiveIn,archive,
+                        savePath,outputFile,comp,gzip,bzip2);
                 }
+                vfs._rename(null,savePath,archivePath,comp);
 
             } catch(IOException e) {
                 VFSManager.error(comp,archive.pathName,"ioerror",
@@ -604,6 +617,68 @@ public class ArchiveVFS extends VFS {
                 if(!saved) {
                     // new entry
                     archiveOut.putNextEntry(new ZipEntry(archive.entryName));
+                    copy(outputFile,archiveOut);
+                    saved = true;
+                }
+            } finally {
+                if(out != null)
+                    out.close();
+            }
+        }
+
+        /**
+         * Copy entries from archive.pathName to savePath; replace the
+         * entry at archive.entryName with contents of outputFile.
+         */
+        private void saveTarArchive(TarInputStream archiveIn,
+            ArchivePath archive, String savePath,
+            String outputFile, Component comp,
+            boolean gzip, boolean bzip2) throws IOException
+        {
+            OutputStream out = null;
+
+            VFS vfs = VFSManager.getVFSForPath(savePath);
+
+            // we need to know the length of TAR entries in advance.
+            long length = new File(outputFile).length();
+
+            try {
+                out = vfs._createOutputStream(null,savePath,comp);
+
+                if(gzip)
+                    out = new GZIPOutputStream(out);
+                if(bzip2)
+                    out = new CBZip2OutputStream(out);
+
+                out = new TarOutputStream(out);
+
+                TarOutputStream archiveOut = (TarOutputStream)out;
+
+                boolean saved = false;
+
+                for(;;) {
+                    TarEntry next = archiveIn.getNextEntry();
+                    if(next == null)
+                        break;
+
+                    Log.log(Log.DEBUG,this,"Copy entry " + next);
+
+                    if(next.getName().equals(archive.entryName)) {
+                        next.setSize(length);
+                        archiveOut.putNextEntry(next);
+                        copy(outputFile,archiveOut);
+                        saved = true;
+                    } else {
+                        archiveOut.putNextEntry(next);
+                        copy(archiveIn,archiveOut);
+                    }
+                }
+
+                if(!saved) {
+                    // new entry
+                    TarEntry newEntry = new TarEntry(archive.entryName);
+                    newEntry.setSize(length);
+                    archiveOut.putNextEntry(newEntry);
                     copy(outputFile,archiveOut);
                     saved = true;
                 }
