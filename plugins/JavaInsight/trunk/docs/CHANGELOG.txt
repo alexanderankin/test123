@@ -1,8 +1,19 @@
 VERSION 0.4
 
-- May now choose between decompilation to a file or to a new jEdit buffer.
-- If compiling to a new jEdit buffer, the buffer is named accordingly.
-- Better support for DecompileClassMessage.
+- Disassemble or decompile with BCEL (André Kaplan)
+- New Jasmin, Class and Jode virtual file systems (André Kaplan)
+- May now choose between decompilation to a file or to a new jEdit buffer
+  (Dirk Moebius)
+- If compiling to a new jEdit buffer, the buffer is named accordingly (Dirk
+  Moebius)
+- Better support for DecompileClassMessage (Dirk Moebius)
+- Moved package buildtools to javainsight.buildtools because of name clashes
+  with the JCompiler plugin (Dirk Moebius)
+- Bugfix: Help file didn't show up (Dirk Moebius)
+- Bugfix: dependency error in makefile.jmk (André Kaplan)
+- Bugfix: Jode options (--pretty, --decrypt, --onetime) weren't used correctly;
+  worked only correct every second time (Dirk Moebius)
+- Requires jEdit 3.0final or higher, JDK 1.1 or higher
 
 
 VERSION 0.3

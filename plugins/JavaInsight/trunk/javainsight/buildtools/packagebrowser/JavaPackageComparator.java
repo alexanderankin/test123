@@ -17,7 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package buildtools.java.packagebrowser;
+package javainsight.buildtools.packagebrowser;
 
 
 import org.gjt.sp.jedit.MiscUtilities;

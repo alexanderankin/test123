@@ -17,11 +17,11 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package buildtools.java.packagebrowser;
+package javainsight.buildtools.packagebrowser;
 
 
-import buildtools.JavaUtils;
-import buildtools.MiscUtils;
+import javainsight.buildtools.JavaUtils;
+import javainsight.buildtools.MiscUtils;
 
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;

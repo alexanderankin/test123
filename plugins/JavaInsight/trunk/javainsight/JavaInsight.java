@@ -30,13 +30,9 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 // classpath browser functionality
-import buildtools.java.packagebrowser.JavaClass;
-import buildtools.java.packagebrowser.JavaClassComparator;
-import buildtools.java.packagebrowser.JavaPackage;
-import buildtools.java.packagebrowser.JavaPackageComparator;
-import buildtools.java.packagebrowser.PackageBrowser;
-import buildtools.JavaUtils;
-import buildtools.MiscUtils;
+import javainsight.buildtools.packagebrowser.*;
+import javainsight.buildtools.JavaUtils;
+import javainsight.buildtools.MiscUtils;
 
 // quicksort functionality
 import org.gjt.sp.jedit.MiscUtilities;
@@ -171,17 +167,18 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
      */
     private static String getJodeClassPath() {
         String classArray[] = JavaUtils.getClasspath();
-        String classpath = "";
+        StringBuffer classpath = new StringBuffer();
 
-        for (int i = 0; i < classArray.length; ++i)
-           classpath += classArray[i]+",";
+        for (int i = 0; i < classArray.length; ++i) {
+            if (i != 0)
+                classpath.append(',');
+           classpath.append(classArray[i]);
+        }
 
-        if (!classpath.equals(""))
-          classpath = classpath.substring(0, classpath.length()-1);
-        else
-          classpath = ".";
+        if (classpath.length() == 0)
+            classpath.append('.');
 
-        return classpath;
+        return classpath.toString();
     }
 
 
@@ -199,15 +196,21 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
 
         boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
         if (pretty)
-            args.addElement("--pretty");
+            args.addElement("--pretty=yes");
+        else
+            args.addElement("--pretty=no");
 
         boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
         if (onetime)
-            args.addElement("--onetime");
+            args.addElement("--onetime=yes");
+        else
+            args.addElement("--onetime=no");
 
         boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
         if (decrypt)
-            args.addElement("--decrypt");
+            args.addElement("--decrypt=yes");
+        else
+            args.addElement("--decrypt=no");
 
         String importPkgLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
         String importClassLimit = jEdit.getProperty("javainsight.jode.clslimit", "1");
