@@ -37,7 +37,7 @@ import sql.*;
  *  SQL VFS "sql:/server/tablespace/table"
  *
  * @author     svu
- * @created    26 Август 2001 г.
+ * @created    26 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public class SqlVFS extends VFS
 {
@@ -168,24 +168,24 @@ public class SqlVFS extends VFS
 
     switch ( level )
     {
-      case ROOT_LEVEL:
-        final Map recs = SqlServerRecord.getAllRecords();
-        retval = new VFS.DirectoryEntry[recs.size()];
-        i = 0;
-        for ( Iterator e = recs.values().iterator(); e.hasNext();  )
-        {
-          final SqlServerRecord r = (SqlServerRecord) e.next();
-          retval[i++] =
-              _getDirectoryEntry( session, path + separatorString + r.getName(), comp );
-        }
-        break;
-      default:
-        rec = getServerRecord( path );
+        case ROOT_LEVEL:
+          final Map recs = SqlServerRecord.getAllRecords();
+          retval = new VFS.DirectoryEntry[recs.size()];
+          i = 0;
+          for ( Iterator e = recs.values().iterator(); e.hasNext();  )
+          {
+            final SqlServerRecord r = (SqlServerRecord) e.next();
+            retval[i++] =
+                _getDirectoryEntry( session, path + separatorString + r.getName(), comp );
+          }
+          break;
+        default:
+          rec = getServerRecord( path );
 
-        if ( rec != null )
-          retval = rec.getServerType().getSubVFS()._listDirectory( session, path, comp, rec, level );
-        else
-          retval = null;
+          if ( rec != null )
+            retval = rec.getServerType().getSubVFS()._listDirectory( session, path, comp, rec, level );
+          else
+            retval = null;
     }
     Log.log( Log.DEBUG, SqlVFS.class,
         "Listed total " + ( retval == null ? -1 : retval.length ) + " items" );

@@ -51,9 +51,9 @@ public class SqlToolBar
 
     final Insets nullInsets = new Insets( 0, 0, 0, 0 );
 
-    serverList = new JComboBox( SqlServerRecord.getAllNames() );
+    serverList = new JComboBox( SqlServerRecord.getAllNames( view ) );
 
-    serverList.setSelectedItem( SqlUtils.getSelectedServerName() );
+    serverList.setSelectedItem( SqlUtils.getSelectedServerName( view ) );
     serverList.setEditable( false );
     serverList.addItemListener(
       new ItemListener()
@@ -64,12 +64,12 @@ public class SqlToolBar
           {
             final Object sel = evt.getItem();
             if ( !( sel == null ||
-                sel == SqlUtils.getSelectedServerName() ) )
-              SqlUtils.setSelectedServerName( sel.toString() );
+                sel == SqlUtils.getSelectedServerName( SqlToolBar.this.view ) ) )
+              SqlUtils.setSelectedServerName( SqlToolBar.this.view, sel.toString() );
           }
         }
       } );
-     
+
     final Toolkit toolkit = Toolkit.getDefaultToolkit();
 
     final Image execBufferImage = toolkit.getImage( getClass().getResource( "/icons/execBuffer.png" ) );
@@ -78,9 +78,9 @@ public class SqlToolBar
     final Image repeatLastQueryImage = toolkit.getImage( getClass().getResource( "/icons/repeatLastQuery.png" ) );
 
     execBuffer = new JButton( new ImageIcon( execBufferImage ) );
-    execBuffer.setMargin(nullInsets);
-    execBuffer.setToolTipText(jEdit.getProperty( "sql.toolbar.execBuffer.tooltip" ));
-    execBuffer.setFocusPainted(false);
+    execBuffer.setMargin( nullInsets );
+    execBuffer.setToolTipText( jEdit.getProperty( "sql.toolbar.execBuffer.tooltip" ) );
+    execBuffer.setFocusPainted( false );
 
     execBuffer.addActionListener(
       new ActionListener()
@@ -88,14 +88,14 @@ public class SqlToolBar
         public void actionPerformed( ActionEvent evt )
         {
           SqlPlugin.publishBuffer( SqlToolBar.this.view,
-                                   SqlUtils.getSelectedServerName() );
+              SqlUtils.getSelectedServerName( SqlToolBar.this.view ) );
         }
       } );
 
     execSelection = new JButton( new ImageIcon( execSelectionImage ) );
-    execSelection.setMargin(nullInsets);
-    execSelection.setToolTipText(jEdit.getProperty( "sql.toolbar.execSelection.tooltip" ));
-    execSelection.setFocusPainted(false);
+    execSelection.setMargin( nullInsets );
+    execSelection.setToolTipText( jEdit.getProperty( "sql.toolbar.execSelection.tooltip" ) );
+    execSelection.setFocusPainted( false );
 
     execSelection.addActionListener(
       new ActionListener()
@@ -103,14 +103,14 @@ public class SqlToolBar
         public void actionPerformed( ActionEvent evt )
         {
           SqlPlugin.publishSelection( SqlToolBar.this.view,
-                                      SqlUtils.getSelectedServerName() );
+              SqlUtils.getSelectedServerName( SqlToolBar.this.view ) );
         }
       } );
 
     loadObject = new JButton( new ImageIcon( loadObjectImage ) );
-    loadObject.setMargin(nullInsets);
-    loadObject.setToolTipText(jEdit.getProperty( "sql.toolbar.loadObject.tooltip" ));
-    loadObject.setFocusPainted(false);
+    loadObject.setMargin( nullInsets );
+    loadObject.setToolTipText( jEdit.getProperty( "sql.toolbar.loadObject.tooltip" ) );
+    loadObject.setFocusPainted( false );
 
     loadObject.addActionListener(
       new ActionListener()
@@ -118,14 +118,14 @@ public class SqlToolBar
         public void actionPerformed( ActionEvent evt )
         {
           SqlPlugin.loadObject( SqlToolBar.this.view,
-                                SqlUtils.getSelectedServerName() );
+              SqlUtils.getSelectedServerName( SqlToolBar.this.view ) );
         }
       } );
 
     requery = new JButton( new ImageIcon( repeatLastQueryImage ) );
-    requery.setMargin(nullInsets);
-    requery.setToolTipText(jEdit.getProperty( "sql.toolbar.repeatLastQuery.tooltip" ));
-    requery.setFocusPainted(false);
+    requery.setMargin( nullInsets );
+    requery.setToolTipText( jEdit.getProperty( "sql.toolbar.repeatLastQuery.tooltip" ) );
+    requery.setFocusPainted( false );
 
     requery.addActionListener(
       new ActionListener()
@@ -133,7 +133,7 @@ public class SqlToolBar
         public void actionPerformed( ActionEvent evt )
         {
           SqlUtils.repeatLastQuery( SqlToolBar.this.view,
-                                    SqlUtils.getSelectedServerName() );
+              SqlUtils.getSelectedServerName( SqlToolBar.this.view ) );
         }
       } );
 
@@ -238,8 +238,8 @@ public class SqlToolBar
       {
         public void run()
         {
-          serverList.setModel( new DefaultComboBoxModel( SqlServerRecord.getAllNames() ) );
-          serverList.setSelectedItem( SqlUtils.getSelectedServerName() );
+          serverList.setModel( new DefaultComboBoxModel( SqlServerRecord.getAllNames( view ) ) );
+          serverList.setSelectedItem( SqlUtils.getSelectedServerName( view ) );
         }
       } );
   }

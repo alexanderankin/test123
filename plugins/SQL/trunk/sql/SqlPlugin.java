@@ -36,6 +36,8 @@ import org.gjt.sp.util.*;
 
 import sessions.*;
 
+import projectviewer.vpt.*;
+
 import sql.*;
 import sql.options.*;
 
@@ -75,7 +77,7 @@ public class SqlPlugin extends EBPlugin
   public static ImageIcon Icon;
 
   /**
-   * Global props 
+   * Global props
    */
   protected static Properties globalProps = null;
 
@@ -228,6 +230,12 @@ public class SqlPlugin extends EBPlugin
 
 
 
+  /**
+   *  Sets the GlobalProperty attribute of the SqlPlugin class
+   *
+   * @param  name   The new GlobalProperty value
+   * @param  value  The new GlobalProperty value
+   */
   public static void setGlobalProperty( String name, String value )
   {
     globalProps.setProperty( name, value );
@@ -235,7 +243,14 @@ public class SqlPlugin extends EBPlugin
   }
 
 
-  public static void setLocalProperty( String name, String value )
+  /**
+   *  Sets the LocalProperty attribute of the SqlPlugin class
+   *
+   * @param  name   The new LocalProperty value
+   * @param  value  The new LocalProperty value
+   * @param  view   The new LocalProperty value
+   */
+  public static void setLocalProperty( View view, String name, String value )
   {
     localProps.setProperty( name, value );
     localConfigModified = true;
@@ -282,7 +297,14 @@ public class SqlPlugin extends EBPlugin
   }
 
 
-  public static String getLocalProperty( String name )
+  /**
+   *  Gets the LocalProperty attribute of the SqlPlugin class
+   *
+   * @param  name  Description of Parameter
+   * @param  view  Description of Parameter
+   * @return       The LocalProperty value
+   */
+  public static String getLocalProperty( View view, String name )
   {
     if ( localProps == null )
       loadLocalProperties();
@@ -291,6 +313,12 @@ public class SqlPlugin extends EBPlugin
   }
 
 
+  /**
+   *  Gets the GlobalProperty attribute of the SqlPlugin class
+   *
+   * @param  name  Description of Parameter
+   * @return       The GlobalProperty value
+   */
   public static String getGlobalProperty( String name )
   {
     if ( globalProps == null )
@@ -298,6 +326,7 @@ public class SqlPlugin extends EBPlugin
 
     return globalProps.getProperty( name );
   }
+
 
   /**
    *Gets the JdbcClassPath attribute of the SqlPlugin class
@@ -340,19 +369,24 @@ public class SqlPlugin extends EBPlugin
   /**
    *Description of the Method
    *
+   * @param  view  Description of Parameter
    * @since
    */
-  public static void clearLocalProperties()
+  public static void clearLocalProperties( View view )
   {
-    SqlServerRecord.clearProperties();
+    SqlServerRecord.clearProperties( view );
   }
 
 
+  /**
+   *  Description of the Method
+   */
   public static void clearGlobalProperties()
   {
     ResultSetWindow.clearProperties();
     SqlToolBar.clearProperties();
   }
+
 
   /**
    *  Description of the Method
@@ -360,13 +394,16 @@ public class SqlPlugin extends EBPlugin
    * @since
    */
   public static void loadGlobalProperties()
-  {                              
+  {
     //TODO!
     globalProps = new Properties();
     globalConfigModified = false;
   }
 
 
+  /**
+   *  Description of the Method
+   */
   public static void loadLocalProperties()
   {
     String path = getConfigFileName( getCurrentSession() );
@@ -388,11 +425,16 @@ public class SqlPlugin extends EBPlugin
   }
 
 
+  /**
+   *  Description of the Method
+   */
   public static void commitGlobalProperties()
   {
     if ( !globalConfigModified )
       return;
   }
+
+
   /**
    *  Description of the Method
    *
@@ -421,6 +463,11 @@ public class SqlPlugin extends EBPlugin
   }
 
 
+  /**
+   *  Description of the Method
+   *
+   * @param  name  Description of Parameter
+   */
   public static void unsetGlobalProperty( String name )
   {
     globalProps.remove( name );
@@ -428,11 +475,18 @@ public class SqlPlugin extends EBPlugin
   }
 
 
-  public static void unsetLocalProperty( String name )
+  /**
+   *  Description of the Method
+   *
+   * @param  name  Description of Parameter
+   * @param  view  Description of Parameter
+   */
+  public static void unsetLocalProperty( View view, String name )
   {
     localProps.remove( name );
     localConfigModified = true;
   }
+
 
   /**
    *  Description of the Method

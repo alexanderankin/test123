@@ -12,9 +12,9 @@ public class SqlServerListChanged extends EBMessage
 {
 
   /**
-   *Constructor for the SqlServerChanged object
+   *Constructor for the SqlServerListChanged object
    *
-   * @param  source     Description of Parameter
+   * @param  source  Description of Parameter
    */
   public SqlServerListChanged( EBComponent source )
   {
