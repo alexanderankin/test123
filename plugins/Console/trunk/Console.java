@@ -41,19 +41,35 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 		shellCombo = new JComboBox(EditBus.getNamedList(Shell.SHELLS_LIST));
 		shellCombo.addActionListener(new ActionHandler());
 
-		JPanel panel = new JPanel(new BorderLayout());
+		JPanel panel = new JPanel(new BorderLayout(6,0));
 		panel.add(BorderLayout.WEST,shellCombo);
+
+		ActionHandler actionHandler = new ActionHandler();
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
 		command = new HistoryTextField("console");
-		command.addActionListener(new ActionHandler());
+		command.addActionListener(actionHandler);
 		Dimension dim = command.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
 		command.setMaximumSize(dim);
 		box.add(command);
 		box.add(Box.createGlue());
-		panel.add(box);
+		panel.add(BorderLayout.CENTER,box);
+
+		Box buttonBox = new Box(BoxLayout.X_AXIS);
+		buttonBox.add(run = new JButton(jEdit.getProperty("console.run")));
+		Insets margin = new Insets(1,1,1,1);
+		run.setMargin(margin);
+		run.addActionListener(actionHandler);
+		run.setRequestFocusEnabled(false);
+
+		buttonBox.add(Box.createHorizontalStrut(6));
+		buttonBox.add(stop = new JButton(jEdit.getProperty("console.stop")));
+		stop.setMargin(margin);
+		stop.addActionListener(actionHandler);
+		stop.setRequestFocusEnabled(false);
+		panel.add(BorderLayout.EAST,buttonBox);
 
 		add(BorderLayout.NORTH,panel);
 
@@ -165,6 +181,7 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 	private View view;
 	private JComboBox shellCombo;
 	private HistoryTextField command;
+	private JButton run, stop;
 	private JTextPane output;
 	private String shellName;
 	private Shell shell;
@@ -240,7 +257,7 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 
 			if(source == shellCombo)
 				setShell((String)shellCombo.getSelectedItem());
-			else if(source == command)
+			else if(source == command || source == run)
 			{
 				String cmd = command.getText();
 				if(cmd == null || cmd.length() == 0)
@@ -249,6 +266,8 @@ public class Console extends JPanel implements DockableWindow, Output, EBCompone
 				command.setText(null);
 				run(cmd);
 			}
+			else if(source == stop)
+				shell.stop();
 		}
 	}
 }

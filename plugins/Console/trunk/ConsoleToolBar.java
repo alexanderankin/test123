@@ -27,7 +27,7 @@ public class ConsoleToolBar extends JToolBar
 {
 	public ConsoleToolBar(View view)
 	{
-		setLayout(new BorderLayout());
+		setLayout(new BorderLayout(6,0));
 		setFloatable(false);
 
 		this.view = view;
