@@ -38,7 +38,8 @@ import sql.serverTypes.ComplexVFS;
 public class CodeObjectType implements ComplexVFS.ObjectType
 {
   protected String typeString;
-  protected String statementPurpose;
+  protected String statementPurpose4List;
+  protected String statementPurpose4Text;
 
 
   /**
@@ -49,20 +50,52 @@ public class CodeObjectType implements ComplexVFS.ObjectType
    */
   public CodeObjectType( String typeString )
   {
-    this( typeString, "selectCodeObjectsInSchema" );
+    this( typeString, null );
   }
 
 
   /**
    *Constructor for the CodeObjectType object
    *
-   * @param  typeString        Description of Parameter
-   * @param  statementPurpose  Description of Parameter
+   * @param  typeString             Description of Parameter
+   * @param  statementPurpose4List  Description of Parameter
    */
-  public CodeObjectType( String typeString, String statementPurpose )
+  public CodeObjectType( String typeString, String statementPurpose4List )
+  {
+    this( typeString, statementPurpose4List, null );
+  }
+
+
+  /**
+   *Constructor for the CodeObjectType object
+   *
+   * @param  typeString             Description of Parameter
+   * @param  statementPurpose4Text  Description of Parameter
+   * @param  statementPurpose4List  Description of Parameter
+   */
+  public CodeObjectType( String typeString, String statementPurpose4List, String statementPurpose4Text )
   {
     this.typeString = typeString;
-    this.statementPurpose = statementPurpose;
+    this.statementPurpose4List = statementPurpose4List != null ? statementPurpose4List : "selectCodeObjectsInSchema";
+    this.statementPurpose4Text = statementPurpose4Text != null ? statementPurpose4Text : "selectCodeObjectLines";
+  }
+
+
+  /**
+   *  Gets the Text attribute of the CodeObjectType object
+   *
+   * @param  path      Description of Parameter
+   * @param  rec       Description of Parameter
+   * @param  userName  Description of Parameter
+   * @param  objName   Description of Parameter
+   * @return           The Text value
+   */
+  public String getText( String path,
+      SqlServerRecord rec,
+      String userName,
+      String objName )
+  {
+    return rec.getServerType().getObjectCreationPrefix() + getSource( path, rec, userName, objName );
   }
 
 
@@ -76,7 +109,7 @@ public class CodeObjectType implements ComplexVFS.ObjectType
    * @return           The Text value
    * @since
    */
-  public String getText( String path,
+  public String getSource( String path,
       SqlServerRecord rec,
       String userName,
       String objName )
@@ -87,6 +120,7 @@ public class CodeObjectType implements ComplexVFS.ObjectType
       conn = rec.allocConnection();
       final String text = SqlUtils.loadObjectText( conn,
           rec,
+          statementPurpose4Text,
           userName,
           objName,
           typeString );
@@ -113,7 +147,7 @@ public class CodeObjectType implements ComplexVFS.ObjectType
    */
   public String getStatementPurpose()
   {
-    return statementPurpose;
+    return statementPurpose4List;
   }
 
 

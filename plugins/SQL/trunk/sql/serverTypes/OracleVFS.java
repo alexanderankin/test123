@@ -39,14 +39,20 @@ import sql.serverTypes.oracle.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 Август 2001 г.
+ * @created    26 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public class OracleVFS extends ComplexVFS
 {
   protected final static Map oracleObjectTypes = new HashMap();
 
+
+  /**
+   *Constructor for the OracleVFS object
+   */
   public OracleVFS()
-  { super( oracleObjectTypes ); }
+  {
+    super( oracleObjectTypes );
+  }
 
   static
   {
@@ -64,7 +70,16 @@ public class OracleVFS extends ComplexVFS
     oracleObjectTypes.put( "Tables",
         new TableObjectType( "selectTablesInSchema" ) );
     oracleObjectTypes.put( "Views",
-        new TableObjectType( "selectViewsInSchema" ) );
+      new CodeObjectType( "VIEW", null, "selectViewCode" )
+      {
+        public String getSource( String path,
+            SqlServerRecord rec,
+            String userName,
+            String objName )
+        {
+          return "VIEW " + userName + "." + objName + " AS " + super.getSource( path, rec, userName, objName );
+        }
+      } );
 
     oracleObjectTypes.put( "Triggers",
         new TriggerObjectType() );
