@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001 Slava Pestov
+ * Copyright (C) 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -50,15 +50,11 @@ abstract class OperatingSystem
 	{
 		if(os == null)
 		{
-			String osName = System.getProperty("os.name");
-			if(osName.startsWith("Windows 9")
-				|| osName.equals("Windows ME"))
+			if(org.gjt.sp.jedit.OperatingSystem.isWindows9x())
 				os = new Windows9x();
-			else if(osName.startsWith("Windows"))
+			else if(org.gjt.sp.jedit.OperatingSystem.isWindowsNT())
 				os = new WindowsNT();
-			else if(File.separatorChar == '/'
-				&& (osName.indexOf("MacOS") == -1
-				|| osName.indexOf("MacOS X") != -1))
+			else if(org.gjt.sp.jedit.OperatingSystem.isUnix())
 				os = new Unix();
 			else
 				os = new Generic();
@@ -253,6 +249,15 @@ abstract class OperatingSystem
 			for(int i = 0; i < builtins.length; i++)
 			{
 				aliases.put(builtins[i],getBuiltInPrefix() + builtins[i]);
+			}
+
+			for(int i = 0; i < 26; i++)
+			{
+				String driveLowerCase = (char)(i + 'a') + ":";
+				aliases.put(driveLowerCase,"%cd " + driveLowerCase);
+
+				String driveUpperCase = (char)(i + 'A') + ":";
+				aliases.put(driveUpperCase,"%cd " + driveUpperCase);
 			}
 		} //}}}
 	} //}}}
