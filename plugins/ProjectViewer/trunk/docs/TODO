@@ -12,16 +12,10 @@ Features:
 
 - Implement functionality from old version:
   * drag files from the tree to the EditPane
-  * close files from current project (is it useful?)
   * what else?
 
 - project templates (using the Templates plugin, if available)
 
-- add macros to the context menu
-
-- Merge FastOpen into ProjectViewer (and think about a nice way to
-  integrate the UI into the PV pane - or keep it separated?) (?)
-
-- use JEdits VFS code to allow projects on virtual file systems such as ftp
-  see:  org.gjt.sp.jedit.io.VFS (this would change things quite a lot!)
+- use jEdit's VFS to allow projects on virtual file systems such as ftp
+  see: org.gjt.sp.jedit.io.VFS (this would change things quite a lot!)
 
