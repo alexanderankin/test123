@@ -161,13 +161,13 @@ import org.gjt.sp.util.Log;
             while (nextLine.length() > 3 && nextLine.indexOf(":")>0) {
 
               StringTokenizer st = new StringTokenizer(nextLine,":");
-              if (st.countTokens()!=4) {
+              if (st.countTokens()!=5) {
                 nextLine = in.readLine().trim();
                 continue;
               }
               int lev = Integer.parseInt(st.nextToken());
               lowestLevel = Math.max(lowestLevel, lev);
-              nl.add(new TagPair(st.nextToken(), st.nextToken(), lev, Integer.parseInt(st.nextToken())));
+              nl.add(new TagPair(st.nextToken(), st.nextToken(),  st.nextToken(), lev, Integer.parseInt(st.nextToken())));
               nextLine = in.readLine().trim();
             }
 
