@@ -448,6 +448,7 @@ MORE :
 {
   <TRY   : "try">
 | <CATCH : "catch">
+| <THROW : "throw">
 }
 //}}}
 
@@ -3903,10 +3904,248 @@ Statement StatementNoBreak() :
   return statement;}
 | statement = StaticStatement()         {return statement;}
 | statement = GlobalStatement()         {return statement;}
+| statement = tryStatement()            {return statement;}
+| statement = throwStatement()          {return statement;}
 | statement = defineStatement()         {currentSegment.add((Outlineable)statement);return statement;}
 }
 
 //}}}
+
+//{{{ TRY
+
+//{{{ throwStatement()
+ThrowStatement throwStatement() :
+{
+  Token throwToken;
+  Expression expr;
+  Token semicolonToken = null;
+  int sourceEnd,endLine,endColumn;
+}
+{
+  throwToken = <THROW>
+  expr = Expression()
+  try {
+    semicolonToken = <SEMICOLON>
+    {
+      sourceEnd = semicolonToken.sourceEnd;
+      endLine   = semicolonToken.endLine;
+      endColumn = semicolonToken.endColumn;
+    }
+  } catch (ParseException e) {
+      sourceEnd = e.currentToken.sourceEnd;
+      endLine   = e.currentToken.endLine;
+      endColumn = e.currentToken.endColumn;
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "catch expected",
+                                          "catch",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.beginColumn));
+  }
+  {
+    return new ThrowStatement(expr,
+                              throwToken.sourceStart,
+                              sourceEnd,
+                              throwToken.beginLine,
+                              endLine,
+                              throwToken.beginColumn,
+                              endColumn);
+  }
+} //}}}
+
+//{{{ tryStatement()
+TryStatement tryStatement() :
+{
+  Token tryToken;
+  Block block;
+  Catch catchClause;
+  List catches = new ArrayList(5);
+}
+{
+  tryToken = <TRY>
+  block = Block()
+  catchClause = catchClause()
+  {
+    catches.add(catchClause);
+  }
+  (
+     catchClause = catchClause()
+     {
+       catches.add(catchClause);
+     }
+   )*
+  {
+    return new TryStatement(block,
+                            catches,
+                            tryToken.sourceStart,
+                            catchClause.getSourceEnd(),
+                            tryToken.beginLine,
+                            catchClause.getEndLine(),
+                            tryToken.beginColumn,
+                            catchClause.getEndColumn());
+  }
+}//}}}
+//{{{ catchClause()
+Catch catchClause() :
+{
+  Token catchToken = null;
+  Token catchedException;
+  Token dollarToken;
+  Token identifierToken;
+  Block block;
+  int start,beginLine,beginColumn;
+  int startVar,beginLineVar,beginColumnVar;
+  int endVar,endLineVar,endColumnVar;
+  String identifierString = null;
+  String catchedString = null;
+}
+{
+  try {
+    catchToken = <CATCH>
+    {
+      start       = catchToken.sourceStart;
+      beginLine   = catchToken.beginLine;
+      beginColumn = catchToken.beginColumn;
+    }
+  } catch (ParseException e) {
+      start       = e.currentToken.sourceStart;
+      beginLine   = e.currentToken.beginLine;
+      beginColumn = e.currentToken.beginColumn;
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "catch expected",
+                                          "catch",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.beginColumn));
+  }
+  try {
+    <LPAREN>
+  } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'(' expected",
+                                          "(",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.beginColumn));
+  }
+  try {
+    catchedException = <IDENTIFIER>
+    {
+      catchedString = catchedException.image;
+    }
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "identifier expected",
+                                          "identifier",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.beginColumn));
+  }
+  try {
+    dollarToken = <DOLLAR>
+    {
+      startVar       = dollarToken.sourceStart;
+      beginLineVar   = dollarToken.beginLine;
+      beginColumnVar = dollarToken.beginColumn;
+    }
+  } catch (ParseException e) {
+    startVar       = e.currentToken.sourceStart;
+    beginLineVar   = e.currentToken.beginLine;
+    beginColumnVar = e.currentToken.beginColumn;
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "$ expected",
+                                          "$",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.beginColumn));
+  }
+  try {
+    identifierToken = <IDENTIFIER>
+    {
+      identifierString = identifierToken.image;
+      endVar       = identifierToken.sourceStart;
+      endLineVar   = identifierToken.beginLine;
+      endColumnVar = identifierToken.beginColumn;
+    }
+  } catch (ParseException e) {
+    endVar       = e.currentToken.sourceEnd;
+    endLineVar   = e.currentToken.endLine;
+    endColumnVar = e.currentToken.endColumn;
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "identifier expected",
+                                          "identifier",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.beginColumn));
+  }
+  try {
+    <RPAREN>
+  } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "')' expected",
+                                          ")",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.beginColumn));
+  }
+  block = Block()
+  {
+    return new Catch(catchedString,
+                     new Variable(identifierString,
+                                  startVar,
+                                  endVar,
+                                  beginLineVar,
+                                  endLineVar,
+                                  beginColumnVar,
+                                  endColumnVar),
+                     block,
+                     start,
+                     block.sourceEnd,
+                     beginLine,
+                     block.getEndLine(),
+                     beginColumn,
+                     block.getEndColumn());
+  }
+} //}}}
+
+//}}}
+
+
 //{{{ expressionStatement()
 
 /**
