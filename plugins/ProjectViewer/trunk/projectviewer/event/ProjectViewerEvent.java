@@ -31,7 +31,10 @@ import projectviewer.vpt.VPTProject;
  */
 public final class ProjectViewerEvent extends EventObject {
 
+	//{{{ Private Members
 	private VPTProject project;
+	private ProjectViewer viewer;
+	//}}}
 
 	/**
 	 *	Create a new <code>ProjectViewerEvent</code>.
@@ -40,7 +43,28 @@ public final class ProjectViewerEvent extends EventObject {
 	 *	@param  prj  the project loaded (null if "All Projects").
 	 */
 	public ProjectViewerEvent(ProjectViewer src, VPTProject prj) {
+		this(src, src, prj);
+	}
+
+	/**
+	 *	Create a new <code>ProjectViewerEvent</code>.
+	 *
+	 *	@param  src  the project viewer instance that fired the event.
+	 *	@param  prj  the project loaded (null if "All Projects").
+	 */
+	public ProjectViewerEvent(Object src, VPTProject prj) {
+		this(src, (src instanceof ProjectViewer) ? (ProjectViewer) src : null, prj);
+	}
+
+	/**
+	 *	Create a new <code>ProjectViewerEvent</code>.
+	 *
+	 *	@param  src  the project viewer instance that fired the event.
+	 *	@param  prj  the project loaded (null if "All Projects").
+	 */
+	public ProjectViewerEvent(Object src, ProjectViewer viewer, VPTProject prj) {
 		super(src);
+		this.viewer = viewer;
 		project = prj;
 	}
 
@@ -50,7 +74,7 @@ public final class ProjectViewerEvent extends EventObject {
 	 *	@return    The viewer where the event occurred.
 	 */
 	public ProjectViewer getProjectViewer() {
-		return (ProjectViewer) getSource();
+		return viewer;
 	}
 
 	/**
