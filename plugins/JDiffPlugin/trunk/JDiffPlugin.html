@@ -17,7 +17,7 @@
 <TR WIDTH="100%">
 <TD><BIG><BIG>JDiff Plugin</BIG></BIG></TD>
 <TD ALIGN="right"><SMALL>By Andr&eacute; Kaplan<BR>
-<EM>akaplan@users.sourceforge.net</EM></SMALL></TD>
+<EM>akaplan@jedit.org</EM></SMALL></TD>
 </TR>
 </TABLE>
 
@@ -50,7 +50,7 @@
 <P>It requires:</P>
 <UL>
     <LI>JDK 1.1
-    <LI>jEdit 3.0
+    <LI>jEdit 3.1
 </UL>
 
 
@@ -87,7 +87,7 @@
 
 <H2><A NAME="display">Display</A></H2>
 
-<P>Once JDiff is activated as in Figure&nbsp;1, you should see :</P>
+<P>Once JDiff is activated as in Figure&nbsp;1, you should see:</P>
 <UL>
     <LI>Text Highlights
     <LI>A local overview (right of the original)
@@ -98,7 +98,7 @@
 
 <P>By default:</P>
 <UL>
-    <LI>Changed lines apppear in yellow
+    <LI>Changed lines appear in yellow
     <LI>Deleted (from the original) lines appear in red
     <LI>Inserted (to the revision) lines appear in green
     <LI>Invalid lines appear as thin dark grey lines.
@@ -139,23 +139,54 @@ buffers.
 
 <H2><A NAME="options">Options</A></H2>
 
+<H3>Line comparison options</H3>
+
 <P>You can configure how JDiff compares lines by default. JDiff can:</P>
 
 <UL>
     <LI>Ignore case: upper-cased lines are compared.
     </LI>
+
     <LI>Ignore leading and trailing whitespace: lines are compared as if
         leading and trailing whitespaces were removed.
     </LI>
-    <LI>Ignore all whitespace: lines are compared as if
+
+    <LI>Ignore all whitespace: lines are compared as if any
         <UL>
             <LI>leading and trailing whitespaces were removed</LI>
-            <LI>repeated whitespaces were replaced by a single space.</LI>
+            <LI>sequence of whitespaces were replaced by one single space.</LI>
         </UL>
     </LI>
 </UL>
 
-<P>You can also configure the color of:</P>
+<H3>Global overview display</H3>
+
+<UL>
+    <LI>Virtual overview: uses the virtual representation of
+    buffers for its display
+    </LI>
+
+    <LI>Physical overview: uses the physical representation of
+    buffers for its display
+    </LI>
+</UL>
+
+<H3>Overview colors</H3>
+
+<P>You can configure the colors of:</P>
+
+<UL>
+    <LI>Changed lines</LI>
+    <LI>Deleted lines</LI>
+    <LI>Inserted lines</LI>
+    <LI>Invalid lines</LI>
+    <LI>Left cursor in the global overview</LI>
+    <LI>Right cursor in the global overview</LI>
+</UL>
+
+<H3>Highlight colors</H3>
+
+<P>You can configure the colors of:</P>
 
 <UL>
     <LI>Changed lines</LI>
@@ -164,16 +195,15 @@ buffers.
     <LI>Invalid lines</LI>
 </UL>
 
-<P>You can also choose whether:</P>
+<P>The selected highlight colors allow to distinguish the selected parts
+within text highlights. You can configure the colors of:
+</P>
 
 <UL>
-    <LI>the highlighted lines should appear brighter than these colors</LI>
-    <LI>the lines in the overviews should appear darker than these colors</LI>
+    <LI>Selected changed lines</LI>
+    <LI>Selected deleted lines</LI>
+    <LI>Selected inserted lines</LI>
 </UL>
-
-<P>At last, you can choose the color of the left and right cursor in the global
-overview.
-</P>
 
 
 <H2><A NAME="credits">Credits</A></H2>
@@ -184,9 +214,8 @@ overview.
     <A HREF="http://www.bmsi.com/java/">http://www.bmsi.com/java/</A>
     </LI>
 
-    <LI>Mike Dillon <EM>&lt;mdillon@gjt.org&gt;</EM> is the author of JDiff.
-    See
-    <A HREF="http://sourceforge.net/projects/jdiff">http://sourceforge.net/projects/jdiff</A>
+    <LI>Some code and ideas borrowed from JDiff by Mike Dillon <EM>&lt;mdillon@jedit.org&gt;</EM>.
+    See <A HREF="http://sourceforge.net/projects/jdiff">http://sourceforge.net/projects/jdiff</A>
     </LI>
 </UL>
 
@@ -200,7 +229,7 @@ The preferred way to send bug reports is to use the Bug Tracker at
 
 <P>Also you can write to:</P>
 <UL>
-<LI>Andr&eacute; Kaplan <EM>&lt;akaplan@users.sourceforge.net&gt;</EM>;
+<LI>Andr&eacute; Kaplan <EM>&lt;akaplan@jedit.org&gt;</EM>;
 <LI>or jEdit-users mailing-list <EM>&lt;jedit-users@lists.sourceforge.net&gt;</EM>;
 <LI>or jEdit-devel mailing.list <EM>&lt;jedit-devel@lists.sourceforge.net&gt;</EM>.
 </UL>
