@@ -165,6 +165,9 @@ public class SqlToolBar
       final String className = (String) i.next();
       final Preprocessor prep = (Preprocessor) preprocessors.get( className );
       final JCheckBox cb = new JCheckBox( jEdit.getProperty( className + ".label" ), prep.isEnabled() );
+      cb.setFocusPainted( false );
+      cb.setToolTipText( jEdit.getProperty( className + ".tooltip" ) );
+
       preprocessorButtons.put( className, cb );
       add( cb );
       prep.addEnabledStateListener(
