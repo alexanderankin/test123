@@ -118,13 +118,14 @@ public class FoldHighlight extends TextAreaExtension
             JEditTextArea ta = this.textArea;
             Buffer buffer = ta.getBuffer();
 
-            int virtualLine = ta.yToLine(y);
-            int physicalLine = buffer.virtualToPhysical(virtualLine);
+            int offset = ta.xyToOffset(x, y, false);
+
+            int physicalLine = ta.getLineOfOffset(offset);
 
             int foldLevel = buffer.getFoldLevel(physicalLine);
 
             // tabs not expanded
-            int virtualLineOffset  = ta.xToOffset(physicalLine, x);
+            int virtualLineOffset  = offset - ta.getLineStartOffset(physicalLine);
             // tabs expanded
             int physicalLineOffset = 0;
 
@@ -156,7 +157,7 @@ public class FoldHighlight extends TextAreaExtension
                         // We found a tooltip candidate
                         // But no need to have a tooltip if the line is visible
                         int referenceLevel = level;
-                        int firstVisibleLine = buffer.virtualToPhysical(ta.getFirstLine());
+                        int firstVisibleLine = ta.getFirstPhysicalLine();
                         String text;
                         if (i < firstVisibleLine) {
                             // We now get some significant text at referenceLevel
