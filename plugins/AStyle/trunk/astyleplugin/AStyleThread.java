@@ -24,12 +24,15 @@
 package astyleplugin;
 
 
+import java.util.Enumeration;
+import java.util.Vector;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 import astyle.ASSourceIterator;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.Marker;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.options.BeanHelper;
@@ -71,17 +74,30 @@ public class AStyleThread implements Runnable {
 
 			// store the string back:
 			String contents = result.toString();
-			if (contents != null && contents.length() > 0) {
-				buffer.beginCompoundEdit();
-				buffer.remove(0, buffer.getLength());
-				buffer.insertString(0, contents, null);
-				buffer.endCompoundEdit();
-			} else {
+
+			if (contents == null || contents.length() == 0) {
 				// result string is empty!
 				Log.log(Log.ERROR, this, jEdit.getProperty("astyleplugin.error.empty.message"));
 				if (showErrorDialogs)
 					GUIUtilities.error(view, "astyleplugin.error.empty", null);
 				return;
+			}
+
+			// remember and remove all markers:
+			Vector markers = (Vector) buffer.getMarkers().clone();
+			buffer.removeAllMarkers();
+
+			// set new buffer contents:
+			buffer.beginCompoundEdit();
+			buffer.remove(0, buffer.getLength());
+			buffer.insertString(0, contents, null);
+			buffer.endCompoundEdit();
+
+			// restore markers:
+			Enumeration enum = markers.elements();
+			while (enum.hasMoreElements()) {
+				Marker marker = (Marker) enum.nextElement();
+				buffer.addMarker(marker.getShortcut(), marker.getPosition());
 			}
 
 			// restore remembered caret position:
@@ -128,11 +144,12 @@ public class AStyleThread implements Runnable {
 		boolean noTabs = buffer.getBooleanProperty("noTabs");
 		boolean assumeCStyle = mode.equals("c") || mode.equals("c++") || mode.equals("cplusplus");
 
-		formatter.setCStyle(assumeCStyle);
 		if (assumeCStyle) {
 			Log.log(Log.DEBUG, this, "assuming C/C++ style, because mode name is 'c', 'c++' or 'cplusplus'");
+			formatter.setCStyle(true);
 		} else {
 			Log.log(Log.DEBUG, this, "assuming Java style, because mode name is not 'c', 'c++' or 'cplusplus'");
+			formatter.setCStyle(false);
 		}
 
 		formatter.setTabIndentation(tabSize);

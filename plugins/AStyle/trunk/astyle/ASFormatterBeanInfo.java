@@ -29,6 +29,8 @@ package astyle;
 
 import java.beans.*;
 import java.lang.reflect.*;
+import java.util.Locale;
+import java.util.ResourceBundle;
 import java.util.Vector;
 
 
@@ -37,182 +39,37 @@ public class ASFormatterBeanInfo extends SimpleBeanInfo {
     public ASFormatterBeanInfo() {
         super();
         propertyDescriptors = new Vector();
+        resources = ResourceBundle.getBundle("astyle.ASFormatterBeanInfoTexts");
 
         // 1) add property descriptions from superclass ASBeautifier:
-
-        addPropertyDescription(
-            "useTabs",
-            "Use Tabs",
-            "Whether code should be indented using tabs or spaces."
-        );
-
-        addPropertyDescription(
-            "tabIndentation",
-            "Tab width",
-            "Assume each tab is this number of spaces long."
-        );
-
-        addPropertyDescription(
-            "spaceIndentation",
-            "Space indent",
-            "Number of spaces to indent with."
-        );
-
-        addPropertyDescription(
-            "forceTabs",
-            "Enforce Tabs",
-            "Use tabs in areas, where the Beautifier would prefer to use spaces."
-        );
-
-        addPropertyDescription(
-            "maxInStatementIndentLength",
-            "Max. multi-line statement indent",
-            "Maximum indentation between two lines in a multi-line statement."
-        );
-
-        addPropertyDescription(
-            "minConditionalIndentLength",
-            "Min. multi-line statement indent",
-            "Minumum indentation between two lines in a multi-line condition."
-        );
-
-        addPropertyDescription(
-            "classIndent",
-            "Indent classes",
-            "Whether class definitions should be indented."
-        );
-
-        addPropertyDescription(
-            "switchIndent",
-            "Indent switch blocks",
-            "Whether switch blocks should be indented."
-        );
-
-        addPropertyDescription(
-            "caseIndent",
-            "Indent case statements",
-            "Whether case statements should be indented."
-        );
-
-        addPropertyDescription(
-            "bracketIndent",
-            "Indent brackets",
-            "Whether brackets should be indented."
-        );
-
-        addPropertyDescription(
-            "blockIndent",
-            "Indent blocks",
-            "If checked, entire blocks will be indented one additional indent."
-        );
-
-        addPropertyDescription(
-            "namespaceIndent",
-            "Indent namespaces",
-            "Whether namespace blocks should be indented (C++ only)."
-        );
-
-        addPropertyDescription(
-            "labelIndent",
-            "Indent labels",
-            "If checked, labels will be indented one indent LESS than " +
-            "the current indentation level."
-        );
-
-        addPropertyDescription(
-            "emptyLineFill",
-            "Fill empty lines",
-            "Whether empty lines should be filled with whitespace."
-        );
-
-        addPropertyDescription(
-            "preprocessorIndent",
-            "Indent preprocessor lines",
-            "Whether multiline #define statements should be indented."
-        );
-
-        addPropertyDescription(
-            "cStyle",
-            "C/C++ file",
-            "Set this to true, if you want to beautify a C/C++ file; " +
-            "false, if you want to beautify a Java file. " +
-            "If true, the beautifier performs additional indenting on " +
-            "on templates and precompiler instructions, among other " +
-            "things."
-        );
+        addPropertyDescription("blockIndent");
+        addPropertyDescription("bracketIndent");
+        addPropertyDescription("caseIndent");
+        addPropertyDescription("classIndent");
+        addPropertyDescription("cStyle");
+        addPropertyDescription("emptyLineFill");
+        addPropertyDescription("forceTabs");
+        addPropertyDescription("labelIndent");
+        addPropertyDescription("maxInStatementIndentLength");
+        addPropertyDescription("minConditionalIndentLength");
+        addPropertyDescription("namespaceIndent");
+        addPropertyDescription("preprocessorIndent");
+        addPropertyDescription("spaceIndentation");
+        addPropertyDescription("switchIndent");
+        addPropertyDescription("tabIndentation");
+        addPropertyDescription("useTabs");
 
         // 2) add property descriptions from class ASFormatter:
-
-        addPropertyDescription(
-            "bracketFormatMode",
-            "Bracket format mode",
-            "Choose between ANSI C/C++ style, Java/K&R style or Linux " +
-            "style bracket placement or no formatting of brackets.",
-            BracketFormatModePropertyEditor.class
-        );
-
-        addPropertyDescription(
-            "breakClosingHeaderBracketsMode",
-            "Break before closing headers",
-            "If true, brackets just before closing headers (e.g. 'else', " +
-            "'catch') will be broken, even if standard brackets are " +
-            "attached. Otherwise, closing header brackets will be treated " +
-            "as standard brackets."
-        );
-
-        addPropertyDescription(
-            "breakElseIfsMode",
-            "Break 'else if'",
-            "Whether 'else' should be broken from their succeeding 'if'."
-        );
-
-        addPropertyDescription(
-            "operatorPaddingMode",
-            "Pad operators",
-            "Whether operators should be padded with whitespace."
-        );
-
-        addPropertyDescription(
-            "parenthesisPaddingMode",
-            "Pad parenthesis",
-            "Whether parenthesis should be padded with whitespace."
-        );
-
-        addPropertyDescription(
-            "breakOneLineBlocksMode",
-            "Break one-line blocks",
-            "Whether there should be a break before one-line blocks."
-        );
-
-        addPropertyDescription(
-            "singleStatementsMode",
-            "Break multiple statement lines",
-            "Whether lines consisting of multiple statements should be " +
-            "broken into single statement lines."
-        );
-
-        addPropertyDescription(
-            "tabSpaceConversionMode",
-            "Convert tabs to spaces",
-            "Whether tabs should be converted to spaces."
-        );
-
-        addPropertyDescription(
-            "breakBlocksMode",
-            "Separate unrelated blocks",
-            "Whether unrelated blocks of code should be separated with " +
-            "empty lines."
-        );
-
-        addPropertyDescription(
-            "breakClosingHeaderBlocksMode",
-            "Separate 'else'/'catch' blocks",
-            "Whether closing header blocks such as 'else', 'catch', etc. " +
-            "should be separated with empty lines."
-        );
-
-        // Note: the property "CStyle" is not settable via this BeanInfo,
-        // because it is set automatically by AStyle.
+        addPropertyDescription("bracketFormatMode", BracketFormatModePropertyEditor.class);
+        addPropertyDescription("breakBlocksMode");
+        addPropertyDescription("breakClosingHeaderBlocksMode");
+        addPropertyDescription("breakClosingHeaderBracketsMode");
+        addPropertyDescription("breakElseIfsMode");
+        addPropertyDescription("breakOneLineBlocksMode");
+        addPropertyDescription("operatorPaddingMode");
+        addPropertyDescription("parenthesisPaddingMode");
+        addPropertyDescription("singleStatementsMode");
+        addPropertyDescription("tabSpaceConversionMode");
     }
 
 
@@ -225,16 +82,6 @@ public class ASFormatterBeanInfo extends SimpleBeanInfo {
         PropertyDescriptor[] pds = new PropertyDescriptor[propertyDescriptors.size()];
         propertyDescriptors.copyInto(pds);
         return pds;
-    }
-
-
-    private void addPropertyDescription(String name, String displayName, String description) {
-        addPropertyDescription(name, displayName, description, null, ASFormatter.class);
-    }
-
-
-    private void addPropertyDescription(String name, String displayName, String description, Class propertyEditorClass) {
-        addPropertyDescription(name, displayName, description, propertyEditorClass, ASFormatter.class);
     }
 
 
@@ -269,7 +116,35 @@ public class ASFormatterBeanInfo extends SimpleBeanInfo {
     }
 
 
+    private void addPropertyDescription(String key, Class propertyEditorClass) {
+        addPropertyDescription(
+            key,
+            resources.getString(key + ".label"),
+            resources.getString(key + ".description"),
+            propertyEditorClass,
+            ASFormatter.class
+        );
+    }
+
+
+    private void addPropertyDescription(String key) {
+        addPropertyDescription(key, null);
+    }
+
+
     protected Vector propertyDescriptors;
+    protected ResourceBundle resources;
+
+
+    private static final String[] bracketTypeTags = new String[4];
+
+
+    static {
+        bracketTypeTags[ASResource.BREAK_MODE] = "ANSI C/C++";
+        bracketTypeTags[ASResource.ATTACH_MODE] = "Java / K&R";
+        bracketTypeTags[ASResource.BDAC_MODE] = "Linux";
+        bracketTypeTags[ASResource.NONE_MODE] = "None";
+    }
 
 
     public static class BracketFormatModePropertyEditor extends PropertyEditorSupport {
@@ -299,17 +174,6 @@ public class ASFormatterBeanInfo extends SimpleBeanInfo {
             throw new IllegalArgumentException("illegal text value: " + text);
         }
 
-    }
-
-
-    private static final String[] bracketTypeTags = new String[4];
-
-
-    static {
-        bracketTypeTags[ASResource.BREAK_MODE] = "ANSI C/C++";
-        bracketTypeTags[ASResource.ATTACH_MODE] = "Java / K&R";
-        bracketTypeTags[ASResource.BDAC_MODE] = "Linux";
-        bracketTypeTags[ASResource.NONE_MODE] = "None";
     }
 
 }
