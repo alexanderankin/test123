@@ -232,6 +232,24 @@ public class WhiteSpaceActions
     }
 
 
+    public static void toggleWhitespaceHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getWhitespaceHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isWhitespaceHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getWhitespaceHighlight().isEnabled();
+    }
+
+
     public static void toggleRemoveTrailing(Buffer buffer) {
         WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return; }
