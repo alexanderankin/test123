@@ -19,14 +19,10 @@
 
 package whitespace;
 
-import org.gjt.sp.jedit.Buffer;
-
 
 public class WhiteSpaceModel
 {
     public static final String MODEL_PROPERTY = "white-space.model";
-
-    private Buffer buffer;
 
     private HighlightOption spaceHighlight;
     private HighlightOption leadingSpaceHighlight;
@@ -41,9 +37,7 @@ public class WhiteSpaceModel
     private HighlightOption whitespaceHighlight;
 
 
-    public WhiteSpaceModel(Buffer buffer) {
-        this.buffer = buffer;
-
+    public WhiteSpaceModel() {
         this.spaceHighlight         = new HighlightOption(
             WhiteSpaceDefaults.getSpaceHighlightDefault()
         );

@@ -161,7 +161,7 @@ public class WhiteSpaceDefaults
             WhiteSpaceModel.MODEL_PROPERTY
         );
         if (model == null) {
-            model = new WhiteSpaceModel(buffer);
+            model = new WhiteSpaceModel();
             buffer.putProperty(WhiteSpaceModel.MODEL_PROPERTY, model);
         }
 
