@@ -3,7 +3,7 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 <!-- $Id$ -->
 <!-- 
-   BufferMinder has no GUI, so isn't docked.
+   BufferLocalPlugin has no GUI, so isn't dockable.
 -->
 <DOCKABLES>
 </DOCKABLES>
