@@ -1,5 +1,4 @@
 - separate user and default error pattern namespace
-- icons for run, to buffer, stop, clear buttons
 - finish commando
 - documentation generated with docbook
 - error list 1.1:

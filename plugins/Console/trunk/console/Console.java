@@ -62,23 +62,27 @@ implements DockableWindow, EBComponent, Output
 		panel.add(BorderLayout.CENTER,box);
 
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
-		buttonBox.add(run = new JButton(jEdit.getProperty("console.run")));
+		buttonBox.add(run = new JButton(RUN));
+		run.setToolTipText(jEdit.getProperty("console.run"));
 		Insets margin = new Insets(1,1,1,3);
 		run.setMargin(margin);
 		run.addActionListener(actionHandler);
 		run.setRequestFocusEnabled(false);
 
-		buttonBox.add(toBuffer = new JButton(jEdit.getProperty("console.to-buffer")));
+		buttonBox.add(toBuffer = new JButton(TO_BUFFER));
+		toBuffer.setToolTipText(jEdit.getProperty("console.to-buffer"));
 		toBuffer.setMargin(margin);
 		toBuffer.addActionListener(actionHandler);
 		toBuffer.setRequestFocusEnabled(false);
 
-		buttonBox.add(stop = new JButton(jEdit.getProperty("console.stop")));
+		buttonBox.add(stop = new JButton(STOP));
+		stop.setToolTipText(jEdit.getProperty("console.stop"));
 		stop.setMargin(margin);
 		stop.addActionListener(actionHandler);
 		stop.setRequestFocusEnabled(false);
 
-		buttonBox.add(clear = new JButton(jEdit.getProperty("console.clear")));
+		buttonBox.add(clear = new JButton(CLEAR));
+		clear.setToolTipText(jEdit.getProperty("console.clear"));
 		clear.setMargin(margin);
 		clear.addActionListener(actionHandler);
 		clear.setRequestFocusEnabled(false);
@@ -284,6 +288,14 @@ implements DockableWindow, EBComponent, Output
 	}
 
 	// private members
+	private static final ImageIcon RUN = new ImageIcon(
+		Console.class.getResource("/console/Play16.gif"));
+	private static final ImageIcon TO_BUFFER = new ImageIcon(
+		Console.class.getResource("/console/Edit16.gif"));
+	private static final ImageIcon STOP = new ImageIcon(
+		Console.class.getResource("/console/Stop16.gif"));
+	private static final ImageIcon CLEAR = new ImageIcon(
+		Console.class.getResource("/console/New16.gif"));
 	private static final ImageIcon ANIMATION = new ImageIcon(
 		Console.class.getResource("/console/fish_anim.gif"));
 	private static final ImageIcon NO_ANIMATION = new ImageIcon(
