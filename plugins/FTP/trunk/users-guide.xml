@@ -105,6 +105,9 @@ You can close unused connections at any other itme using the
     (Brian Hardy).</para></listitem>
     <listitem><para>Fixed various problems in the connection pooling code.
     </para></listitem>
+    <listitem><para>Login dialog box host and user name fields now remember
+    previously entered values.
+    </para></listitem>
    </itemizedlist>
   </listitem>
 
