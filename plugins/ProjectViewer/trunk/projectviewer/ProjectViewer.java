@@ -897,7 +897,6 @@ public final class ProjectViewer extends JPanel
 		for (int i = 0; i < group.getChildCount(); i++) {
 			VPTNode child = (VPTNode) group.getChildAt(i);
 			if (child != ignore) {
-				System.err.println("closing: " + child);
 				if (child.isGroup()) {
 					closeGroup((VPTGroup)child, ignore);
 				} else if (ProjectManager.getInstance().isLoaded(child.getName())){
