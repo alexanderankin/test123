@@ -1,41 +1,24 @@
-BEFORE CONSOLE 3.0 RELEASE:
+- finish documentation
 
-- write documentation
++ general to do's
 
-LATER:
+- aliases option pane
+- file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?
+  - VFS support
+  - cd to a non-local directory (don't allow running commands from non
+    local dir, only built-ins)
+- file name, built-in, alias completion
+- globs (non-Windows only, Windows programs do their own glob expansion)
+
++ commando to do's
 
 - improve commando error handling
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
-- aliases and variables option panes
 - commando: lower case tag names?
-- finish built-ins:
-  %ls, with colored output
-  %ls option pane
-  %cat
-  %touch
-  %mv
-  %cp
-  cd -
-- cd to non-local directory
-- error when running process from non-local or non-existent directory
-- option to create Unix aliases:
-  ls -> %ls
-  ...
-- option to create DOS aliases:
-  dir -> %ls
-  type -> %cat
-  move -> %mv
-  ren -> %mv
-  ...
-- both on by default
 - shift-click on toolbar button runs without displaying dialog box
-- file name completion
-- alias and built-in completion
-- set tab size to 10 or something for better-looking columnar completion
-  and %ls output
-- use ls colorizing code to color file completion output
-- globs
-- after console 3.0:
-  - with jEdit 4.0 api changes: tips of the day
-  - with jEdit 4.0 api changes: multiple consoles per view
-  - with jEdit 4.0 api changes: keyboard shortcuts for commando panels
+
++ after jEdit 4.0 API additions:
+
+- tips of the day
+- multiple consoles per view
+- keyboard shortcuts for commando panels

@@ -32,24 +32,529 @@
  </legalnotice>
 </bookinfo>
 
-<!-- - console window
-- console tool bar
-- system shell
-- system shell variables
-- system shell 'cd' command
-- system shell backgrounding, process management
-- system shell other built-ins
-- error parsing
-- bean shell
-- commando
-- commando directory
-- commando files
-- commando tool bar
+<chapter id="intro"><title>Introduction</title>
+
+<para>
+ The <application>Console</application> plugin has four main functions:
+</para>
+
+<itemizedlist>
+ <listitem><para>Running external programs and commands.</para></listitem>
+ <listitem><para>Parsing the output of external programs for errors in a
+ variety of formats, and reporting those errors using the
+ <application>ErrorList</application> plugin.</para></listitem>
+ <listitem><para>The <firstterm>Commando</firstterm> feature provides
+ graphical front-ends, specified using an XML file, to command-line
+ tools.</para></listitem>
+ <listitem><para>Providing an extensible framework for other plugins that
+ need to display streamed output.</para></listitem>
+</itemizedlist>
+
+</chapter>
+
+<chapter id="window"><title>The console window</title>
+
+<para>
+ <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Console</guimenuitem>
+ displays the console window. This window is floating by default, but can be
+ made to dock into the view in the <guilabel>Docking</guilabel> pane of the
+ <guimenuitem>Global Options</guimenuitem> dialog box.
+</para>
+
+<para>
+ The console window consists of a popup for choosing the current
+ <firstterm>shell</firstterm> (more on that later),
+ an input text field, a series of icon buttons, and a command output area
+ which occupies the remaining space of the window.
+</para>
+
+<para>
+ Each button shows a tooltip if the mouse pointer is held over it long enough.
+ Here is a description of each button:
+</para>
+
+<itemizedlist>
+ <listitem><para><guibutton>Run</guibutton> - runs the currently-entered command.
+ This has the same effect as pressing <keycap>Enter</keycap> in the text field.
+ Since the latter is a much quicker way to run commands, this button is only
+ provided for completeness.</para></listitem>
+
+ <listitem><para><guibutton>Run to buffer</guibutton> - runs the
+ currently-entered command, but shows the output in a new buffer, instead of
+ in the console window.</para></listitem>
+
+ <listitem><para><guibutton>Stop</guibutton> - stops the currently running
+ process, if any.</para></listitem>
+
+ <listitem><para><guibutton>Clear</guibutton> - clears the console window's
+ output area.</para></listitem>
+</itemizedlist>
+
+<para>
+ Back to the shell popup. The Console plugin allows arbitriary
+ <quote>shells</quote> to be plugged in; one shell included with the plugin
+ is called the <quote>system</quote> shell and it runs external programs and
+ commands; another built-in shell is the <quote>BeanShell</quote> shell,
+ which runs commands in jEdit's BeanShell interpreter. Some plugins add
+ their own shells; for example, the <application>JCompiler</application>
+ plugin adds a shell for running the <command>javac</command> Java compiler
+ within the jEdit process.
+</para>
+
+<para>
+ The <quote>BeanShell</quote> shell and plugin shells will not be discussed
+ further here; general BeanShell documentation can be found in the jEdit
+ user's guide, and documentation on plugin shells can be found in the
+ documentation for the appropriate plugin. The remainder of this guide
+ concerns itself with the system shell only.
+</para>
+
+<sect1 id="toolbar"><title>The console tool bar</title>
+
+<para>
+ The console tool bar, which can be enabled in the
+ <guilabel>Console</guilabel>&gt;<guilabel>General</guilabel> pane of the
+ <guimenuitem>Global Options</guimenuitem>
+ dialog box, consists of a shell popup and an input text field; entering a
+ command in the field and pressing <keycap>Enter</keycap> opens a console
+ window if not already open, and runs the command in that console window.
+</para>
+
+</sect1>
+
+</chapter>
+
+<chapter id="system-shell"><title>The system shell</title>
+
+<para>
+ This section assumes at least basic familiarity with the command-line
+ interpreter of a Unix, Windows or similar operating system.
+</para>
+
+<para>
+ Just as with most other command lines, spaces are used to separate
+ command-line parameters to programs. If a string containing
+ spaces needs to be passed as a single parameter, it should be enclosed with
+ double quotes (<userinput>"</userinput>), for example:
+</para>
+
+<screen>javac "C:\Source Code\TestServlet.java"</screen>
+
+<para>
+ Not all commands result in an external process being spawned; the system
+ shell supports <quote>built-ins</quote>, which are handled by the
+ Console plugin itself. Built-ins are prefixed with <quote>%</quote> to
+ distingulish them from external commands.
+</para>
+
+<sect1 id="error-parsing"><title>Error Parsing</title>
+ <para>
+  Each line of output produced by an external program is fed through several
+  successive <firstterm>error patterns</firstterm>. Each error pattern
+  attempts to match the line against a regular expression. If the line
+  matches the regular expression, the file name, line number and error
+  message is extracted from it; the line is then optionally
+  matched against another regular expression to determine if it is a
+  warning or error message.
+ </para>
+
+ <para>
+  It is also possible to specify an <quote>extra</quote> regular expression,
+  against which lines subsequent to an error are checked and added to the
+  error message if they match. This can be used to handle compilers which
+  produce compiler errors and warnings that span several lines.
+ </para>
+
+ <para>
+  Parsed error and warning messages are shown in the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> window; this
+  window is used to display errors from several other plugins as well.
+ </para>
+
+ <para>
+  The Console plugin includes error patterns that match errors produced
+  by the following tools:
+ </para>
+
+ <itemizedlist>
+  <listitem><para>Generic errors matching the following format, produced by many
+  tools, especially on Unix:</para>
+  <screen><replaceable>file</replaceable>:<replaceable>line</replaceable>:<replaceable>message</replaceable></screen>
+  </listitem>
+
+  <listitem><para>Generic errors matching the so called
+  <quote>Emacs</quote> format:</para>
+  <screen><replaceable>file</replaceable>:<replaceable>start <!--
+  -->line</replaceable>:<replaceable>end line</replaceable>:<replaceable>start <!--
+  -->column</replaceable>:<replaceable>end column</replaceable>:<replaceable>message</replaceable></screen>
+  <para>
+   The <command>jikes</command> Java compiler will produce errors in this
+   form if given if the <command>+E</command> command-line option. Otherwise,
+   it will output errors in a non-standard format which cannot be parsed by
+   the Console plugin.
+  </para>
+  </listitem>
+
+  <listitem><para>Errors output by the <command>javac</command> compiler
+  found in
+  Java 2 version 1.3 and later. Earlier versions are also supported, because
+  they output errors in the generic format documented above.</para></listitem>
+
+  <listitem><para>Errors output by the <command>javac</command> compiler
+  when it is being run from the <application>Ant</application> project build
+  tool.</para></listitem>
+
+  <listitem><para>Microsoft Visual C++ and Microsoft .Net compiler errors.
+  </para></listitem>
+
+  <listitem><para>Perl errors.</para></listitem>
+
+  <listitem><para>Errors output by the Jade and OpenJade document
+  generation tools.</para></listitem>
+
+ </itemizedlist>
+
+ <para>
+  Error patterns can be customized in the
+  <guilabel>Console</guilabel>&gt;<guilabel>Error Patterns</guilabel> pane
+  of the <guimenuitem>Global Options</guimenuitem> dialog box; you should
+  familiarize yourself with regular expressions first, the syntax of which
+  is documented in the jEdit user's guide.
+ </para>
+
+</sect1>
+
+<sect1 id="changing-dirs"><title>Changing Directories</title>
+
+<para>
+ When running on Java 2 version 1.3 and later, you can change the current
+ working directory used when running commands. On earlier Java versions,
+ the current working directory cannot be changed from its initial value
+ of the directory from where jEdit was started.
+</para>
+
+<para>
+ The following system shell built-ins change the current working directory:
+</para>
+
+<itemizedlist>
+ <listitem><para><command>pwd</command> - prints the current working
+ directory. Note that unlike other built-ins, this one is not prefixed
+ with <quote>%</quote> for convinience and consistency with other command
+ lines.</para></listitem>
+ <listitem><para><command>cd <replaceable>directory</replaceable></command>
+ - changes the current working directory. Relative paths are resolved
+ automatically. Just as with the <command>pwd</command> built-in, this
+ one is not prefixed with a <quote>%</quote> for convinience.
+ </para></listitem>
+ <listitem><para><command>%pushd</command> - pushes the current directory
+ onto the directory stack.</para></listitem>
+ <listitem><para><command>%popd</command> - sets the current working
+ directory to the one stored at the top of the directory stack, then
+ removes that entry from the stack.</para></listitem>
+ <listitem><para><command>%dirstack</command> - lists all directories
+ in the directory stack.</para></listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1 id="process-manage"><title>Process Management</title>
+
+ <para>
+  Each console window has an associated <quote>foreground process</quote>;
+  output produced by the foreground process is shown in that console
+  window. Starting a new process while one is already running in the
+  foreground will terminate the existing process.
+ </para>
+ <para>
+  The <command>%kill</command> built-in can also be used to
+  terminate the currently running foreground process. Clicking the
+  <guibutton>Stop</guibutton> button in the console window has the same
+  effect too.
+ </para>
+ <para>
+  A process can be started in the <quote>background</quote> by adding
+  <quote>&amp;</quote> to the end of its command line. After a process is
+  started in the background, it continues running until it exits. Output is
+  not shown in the console window, and starting other processes has no effect on
+  already-running background processes.
+ </para>
+ <para>
+  The <command>%detach</command> built-in detaches the currently running
+  foreground process and makes it a background process. It will no longer
+  show output in the console window, and a new foreground process can be
+  started without affecting it.
+ </para>
+
+</sect1>
+
+<sect1 id="env-vars"><title>Environment Variables</title>
+
+<para>
+ When running on Windows and Unix, the system shell lets you access and change
+ operating system-specific environment variables. On other systems, you can
+ define and use variables, but they are console-specific.
+</para>
+
+<para>
+ To accomodate both Windows and Unix users, three forms of variable syntax are
+ supported by the system shell:
+</para>
+
+<itemizedlist>
+ <listitem><para><varname>%<replaceable>name</replaceable>%</varname>
+ </para></listitem>
+ <listitem><para><varname>$<replaceable>name</replaceable></varname>
+ </para></listitem>
+ <listitem><para><varname>${<replaceable>name</replaceable>}</varname>
+ </para></listitem>
+</itemizedlist>
+
+<para>
+ The following variables are defined under all circumstances, independent
+ of operating system-specific environment variables being available or not:
+</para>
+
+<itemizedlist>
+ <listitem><para><varname>${f}</varname> - the current buffer's path name.
+ </para></listitem>
+ <listitem><para><varname>${d}</varname> - the current buffer's directory.
+ </para></listitem>
+ <listitem><para><varname>${n}</varname> - the current buffer's name, without
+ the extension. For example, if the current buffer's path is
+ <filename>/home/slava/src/HelloWorld.java</filename>,
+ <varname>${n}</varname> will expand to <filename>HelloWorld</filename>.
+ </para></listitem>
+ <listitem><para><varname>${JEDIT_HOME}</varname> - the full path of the
+ directory where jEdit is installed.</para></listitem>
+ <listitem><para><varname>${JEDIT_SETTINGS}</varname> - the full path of the
+ jEdit settings directory.</para></listitem>
+ <listitem><para><varname>~</varname> - this is not a <quote>variable</quote>
+ per se, and it is specified using a different syntax, but it makes sense to
+ mention it here.
+ It expands to the full path of the user's home directory.</para></listitem>
+</itemizedlist>
+
+<para>
+ The following system shell built-ins deal with environment variables:
+</para>
+
+<itemizedlist>
+ <listitem><para><command>%env</command> - prints a list of all environment
+ variables.</para></listitem>
+ <listitem><para><command>%set <replaceable>name</replaceable>
+ <replaceable>value</replaceable></command> - sets the value of the specified
+ environment variable. Note that if the desired value contains whitespace,
+ you will need to quote it, otherwise it will be treated as several
+ arguments.</para></listitem>
+ <listitem><para><command>%unset <replaceable>name</replaceable></command>
+ - clears the value of the specified
+ environment variable.</para></listitem>
+</itemizedlist>
+
+</sect1>
+
+<sect1 id="misc-builtins"><title>Miscellaneous Built-ins</title>
+ <para>
+  A few system shell built-ins are useful, but do not fit into any specific
+  category.
+ </para>
+
+ <itemizedlist>
+  <listitem><para><command>%browse <replaceable>directory</replaceable></command>
+  - opens the specified directory in jEdit's file system browser.
+  </para></listitem>
+
+  <listitem><para><command>%edit <replaceable>files ...</replaceable></command>
+  - opens the specified files in jEdit.</para></listitem>
+
+  <listitem><para><command>%run <replaceable>scripts ...</replaceable></command>
+  - runs the specified script files in jEdit's BeanShell interpreter.
+  </para></listitem>
+
+ </itemizedlist>
+</sect1>
+
+</chapter>
+
+<chapter id="commando"><title>Commando</title>
+
+<para>
+ As mentioned previously, the <firstterm>Commando</firstterm> feature creates
+ graphical front-ends to command-line tools from XML files.
+</para>
+
+<para>
+ Commando XML files are stored in two locations:
+</para>
+
+<itemizedlist>
+ <listitem><para>A few are stored in the <filename>Console.jar</filename>
+ itself.</para></listitem>
+ <listitem><para>User-specific commando files are loaded from the
+ <filename>console/command</filename> subdirectory of the jEdit
+ settings directory.</para>
+
+ <para>
+  You can find out the location of the settings directory by entering
+  the following command in the system shell of the console window:
+ </para>
+ <programlisting>%echo ${JEDIT_SETTINGS}</programlisting>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Rescan
+  Commando Directory</guimenuitem> should be called after files are added or
+  removed in the user-specific commando directory.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Browse
+  Commando Directory</guimenuitem> opens the user-specific commando directory in
+  jEdit's file system browser.
+ </para>
+ </listitem>
+</itemizedlist>
+
+<para>
+ <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Commando</guimenuitem>
+ displays the commando window. A menu item is also added for each known commando
+ file in the <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu> menu;
+ invoking one of these menu items opens the commando window with that
+ commando file pre-selected.
+</para>
+
+<sect1 id="commando-toolbar"><title>The Commando tool bar</title>
+
+<para>
+ The commando tool bar, which can be enabled in the
+ <guilabel>Console</guilabel>&gt;<guilabel>General</guilabel> pane of the
+ <guimenuitem>Global Options</guimenuitem>
+ dialog box, has one button for each commando file. Clicking a button opens
+ the commando window for that file.
+</para>
+
+</sect1>
+ 
+<sect1 id="commando-window"><title>The Commando window</title>
+
+<para>
+ The commando window consists of a combo box for selecting a commando file,
+ and two tabs; the first contains GUI controls for specifying command-line
+ settings, the second shows the resulting command line (or command lines,
+ if the commando file defines more than one command to be run).
+</para>
+
+<para>
+ Currently, settings specified in the commando window are remembered for
+ the duration of the current jEdit session. In the future, integration
+ with a project management plugin will be provided, for specifying command
+ line tool settings on a per-project basis.
+</para>
+
+<para>
+ One you have configured the necessary settings, click <guibutton>OK</guibutton>
+ to run each command specified in the commando file in turn. Most commando
+ files will only specify one command to run.
+</para>
+
+<para>
+ Some commands will
+ be executed automatically, others will ask for confirmation; if a command
+ fails, you will always be asked for confirmation before running the next one,
+ no matter what. Some commando files, such as the <filename>diff</filename>
+ file included with the Console plugin, show their output in a new buffer,
+ rather than the console window.
+</para>
+
+</sect1>
+
+<sect1 id="writing-commando"><title>Writing Commando files</title>
+
+<para>
+ Not yet written.
+</para>
+
+</sect1>
+
+</chapter>
+
+<chapter id="macros"><title>Macros and the Console plugin</title>
+
+<para>
+ The Console plugin defines three BeanShell convinience methods that can
+ be called from macros:
+</para>
+
+<itemizedlist>
+ <listitem>
+  <funcsynopsis>
+   <funcprototype>
+    <funcdef>void <function>runCommandInConsole</function></funcdef>
+    <paramdef>View <parameter>view</parameter></paramdef>
+    <paramdef>String <parameter>shell</parameter></paramdef>
+    <paramdef>String <parameter>command</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
+  <para>
+   Runs <varname>command</varname> in the shell named <varname>shell</varname>.
+   Will open a console window if one is not already open.
+  </para>
+ </listitem>
+
+ <listitem>
+  <funcsynopsis>
+   <funcprototype>
+    <funcdef>void <function>runCommandToBuffer</function></funcdef>
+    <paramdef>View <parameter>view</parameter></paramdef>
+    <paramdef>String <parameter>shell</parameter></paramdef>
+    <paramdef>String <parameter>command</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
+  <para>
+   Runs <varname>command</varname> in the shell named <varname>shell</varname>,
+   placing the command's output in a new buffer.
+   Will open a console window if one is not already open.
+  </para>
+ </listitem>
+
+ <listitem>
+  <funcsynopsis>
+   <funcprototype>
+    <funcdef>void <function>runInSystemShell</function></funcdef>
+    <paramdef>View <parameter>view</parameter></paramdef>
+    <paramdef>String <parameter>command</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
+  <para>
+   Equivalent to calling:
+  </para>
+  <programlisting>runCommandInConsole(view,"System",command);</programlisting>
+ </listitem>
+</itemizedlist>
+
+<para>
+ If a command is run from the console while macro recording is in progress,
+ a call to one of these methods is recorded automatically.
+</para>
+
+</chapter>
+
+<chapter id="extending"><title>Extending the Console plugin</title>
+
+<!--
 - writing shells
 - dependencies
 - shell interface
 - registering shells
-- methods in Console class, Output interface -->
+- methods in Console class, Output interface
+-->
+
+<para>
+ This chapter has not yet been written.
+</para>
+
+</chapter>
 
 <appendix id="changes"><title>Change log</title>
 
@@ -111,9 +616,9 @@
     </para></listitem>
 
     <listitem><para>
-     <userinput>$varname</userinput>, <userinput>${varname}</userinput> and
-     <userinput>%varname%</userinput> can be used to insert contents of
-     environment variable <userinput>varname</userinput> in command string
+     <varname>$varname</varname>, <varname>${varname}</varname> and
+     <varname>%varname%</varname> can be used to insert contents of
+     environment variable <varname>varname</varname> in command string
     </para></listitem>
 
     <listitem><para>
@@ -132,6 +637,12 @@
      determine of an error is a warning was hard-coded to check if the error
      contained the string "warning" or "caution"
     </para></listitem>
+
+    <listitem><para>
+     <quote>Commando</quote> feature creates graphical front-ends to
+     command-line tools from an XML file.
+    </para></listitem>
+
    </itemizedlist>
   </listitem>
 

@@ -261,8 +261,6 @@ class SystemShell extends Shell
 		st.quoteChar('"');
 		st.quoteChar('\'');
 
-		StringBuffer buf = new StringBuffer();
-
 		try
 		{
 loop:			for(;;)
