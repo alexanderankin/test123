@@ -1,0 +1,263 @@
+<!-- ================================================== -->
+<!-- Build file for the Project Viewer plugin           -->
+<!-- :tabSize=2:indentSize=2:noTabs=false:              -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
+<project name="Project Viewer" default="build" basedir=".">
+
+<!-- Instructions for the ProjectViewer build file:
+
+	- the "docbookx.dtd" property points to the location of the DocBook DTD
+		on your system, used when building the documentation.
+	- the "docboox.xsl" property should point to the location of the DocBook
+		style sheet on your system, or the documentation will not be built.
+	- "JarMaker.jar" and "InfoViewer.jar" should be in the directory pointed
+		by the "install.dir" property for compilation.
+	- set the "docs-proc.target" to "xalan" to use Xalan instead of xsltproc
+	  to generate the documentation.
+-->
+
+	<!-- ================================================ -->
+	<!-- Property definitions                             -->
+	<!-- ================================================ -->
+	<property file="build.properties"/>
+	<property file="../build.properties"/>
+	<property file="${user.home}/.build.properties"/>
+	<property file="${user.home}/build.properties"/>
+
+	<property name="jedit.install.dir" value="/usr/share/jedit/recent"/>
+	<property name="install.dir"			 value="${jedit.install.dir}/jars" />
+	<property name="jedit.user.home"   value="${user.home}/.jedit" />
+	<property name="pvversion"         value="2.0.4"/>
+
+	<property name="jar.name"         value="${ant.project.name}.jar"/>
+	<property name="docs-proc.target" value="xsltproc"/>
+
+  <property name="src"              value="."/>
+  <property name="build"            value="build"/>
+  <property name="build.classes"    value="${build}/classes"/>
+  <property name="build.docs"       value="${build}/docs"/>
+  <property name="build.javadoc"    value="${build.docs}/javadoc"/>
+  <property name="build.doxydoc"    value="${build.docs}/doxydoc"/>
+  <property name="build.images"     value="${build}/images"/>
+
+  <property name="docbookx.dtd"     value="../XML/xml/dtds/docbookx.dtd" />
+  <property name="docbook.xsl"		value="/usr/share/xsl/docbook-xsl" />
+
+  <!-- ================================================ -->
+  <!-- Classpath definitions                            -->
+  <!-- ================================================ -->
+  <path id="default.classpath">
+    <pathelement location="${jedit.install.dir}/jedit.jar" />
+		<pathelement location="${install.dir}/InfoViewer.jar" />
+		<pathelement location="${install.dir}/ErrorList.jar" />
+		<fileset dir="..">
+			<include name="*.jar" />
+		</fileset>
+	</path>
+
+
+  <!-- ================================================ -->
+  <!-- Targets                                          -->
+  <!-- ================================================ -->
+
+
+  <!-- ================================================ -->
+  <target name="compile"
+          description="Compile all main classes">
+
+    <mkdir dir="${build.classes}"/>
+
+    <javac srcdir="${src}"
+           destdir="${build.classes}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}"
+           classpathref="default.classpath" >
+				<include name="projectviewer/*.java" />
+				<include name="projectviewer/**/*.java" />
+    </javac>
+
+  </target>
+
+	<!-- ================================================ -->
+  <target name="docs"
+					depends="javadoc"
+          description="Build the User's Guide and Javadoc documentation">
+
+		<delete file="docbook-wrapper.xsl" />
+		<echo file="docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/>
+
+    <antcall target="docs-${docs-proc.target}"/>
+  </target>
+
+  <!-- ================================================ -->
+  <target name="build"
+          depends="compile"
+          description="Build the plugin">
+
+    <copy todir="${build.classes}">
+      <fileset dir="${src}">
+        <include name="projectviewer/**/*.props"/>
+        <include name="projectviewer/**/*.properties"/>
+        <include name="projectviewer/**/icons/*.gif"/>
+      </fileset>
+    </copy>
+
+    <copy todir="${build.classes}">
+      <fileset dir="${src}">
+        <include name="actions.xml"/>
+        <include name="dockables.xml"/>
+      </fileset>
+    </copy>
+
+    <mkdir dir="${build.docs}"/>
+    <copy todir="${build.docs}">
+      <fileset dir="docs">
+	  		<exclude name="**/*.xml"/>
+				<exclude name="**/*.xsl"/>
+			</fileset>
+    </copy>
+
+    <mkdir dir="${build.images}"/>
+    <copy todir="${build.images}">
+      <fileset dir="projectviewer/images"/>
+    </copy>
+
+    <jar jarfile="${build}/ProjectViewer.jar">
+      <fileset dir="${build.classes}"/>
+			<fileset dir="${build.docs}">
+				<exclude name="**/javadoc/**" />
+			</fileset>
+      <fileset dir="${build}">
+				<include name="images/**"/>
+			</fileset>
+    </jar>
+
+		<copy todir=".." file="${build}/ProjectViewer.jar" />
+  </target>
+
+	<!-- build.debug: builds the pvdebug plugin -->
+	<target name="build.debug" description="builds the debug plugin">
+
+    <javac srcdir="${src}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}"
+           classpathref="default.classpath" >
+				<include name="pvdebug/*.java" />
+    </javac>
+
+    <jar jarfile="${debug.target.dir}/ProjectViewerDebug.jar">
+      <fileset dir="${src}">
+				<include name="pvdebug/**.*" />
+			</fileset>
+    </jar>
+
+	</target>
+
+	<target name="clean.debug" description="cleans up the debug plugin">
+
+		<delete>
+			<fileset dir="${src}/pvdebug">
+				<include name="**/*.class" />
+			</fileset>
+		</delete>
+
+		<delete file="${debug.target.dir}/ProjectViewerDebug.jar" />
+
+	</target>
+
+  <!-- ================================================ -->
+  <target name="dist"
+          depends="docs,build"
+          description="Build a distribution">
+    <zip zipfile="ProjectViewer-${pvversion}.zip">
+      <fileset dir="${build}">
+        <include name="projectviewer/**"/>
+        <include name="ProjectViewer.jar"/>
+      </fileset>
+    </zip>
+  </target>
+
+
+  <!-- ================================================ -->
+  <target name="deploy"
+          depends="dist"
+          description="Deploy the plugin">
+    <unzip src="ProjectViewer-${pvversion}.zip" dest="${jedit.user.home}/jars"/>
+		<!--
+			invoke 'jedit -run=reload_plugin.bsh' to reload the plugin
+		-->
+  </target>
+
+
+  <!-- ================================================ -->
+  <target name="javadoc" description="Generates javadoc sourcecode documentation">
+    <mkdir dir="${build.javadoc}"/>
+    <javadoc sourcepath="${src}"
+             destdir="${build.javadoc}"
+             packagenames="projectviewer.*"
+             windowtitle="${ant.project.name} API"
+             classpathref="default.classpath"/>
+  </target>
+
+  <target name="doxydoc" description="Generates doxygen sourcecode documentation">
+    <mkdir dir="${build.doxydoc}"/>
+    <exec executable="doxygen">
+      <arg value="doxyconf"/>
+    </exec>
+  </target>
+
+
+	<!-- ================================================ -->
+  <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+	<target name="docs-xsltproc" description="Generate user documentation in hmtl format with xsltproc">
+		<echo file="docbook.catalog"
+			message="PUBLIC '-//OASIS//DTD DocBook XML V4.1.2//EN' '${docbookx.dtd}'"/>
+
+  	<exec executable="xsltproc">
+			<env key="SGML_CATALOG_FILES" value="docbook.catalog" />
+    	<arg value="-o"/>
+			<arg value="${build.docs}/users-guide.html"/>
+			<arg value="--catalogs"/>
+			<arg value="docs/users-guide.xsl"/>
+			<arg value="docs/users-guide.xml"/>
+		</exec>
+
+  	<delete file="docbook-wrapper.catalog" quiet="true" />
+	</target>
+
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs-xalan" description="Generate user documentation in hmtl format with xalan">
+		<style style="docs/users-guide.xsl"
+					 in="docs/users-guide.xml"
+					 out="${build.docs}/users-guide.html" >
+			<xmlcatalog>
+				<dtd publicId="-//OASIS//DTD DocBook XML V4.1.2//EN"
+						 location="${docbookx.dtd}" />
+			</xmlcatalog>
+		</style>
+	</target>
+
+  <!-- ================================================ -->
+  <target name="clean" description="Cleans project directories">
+    <delete dir="${build}"/>
+		<delete file="docbook-wrapper.xsl" />
+    <delete file="ProjectViewer-${pvversion}.zip" />
+		<delete file="../ProjectViewer.jar" />
+	</target>
+
+</project>
