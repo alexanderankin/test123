@@ -60,6 +60,13 @@ public class XmlPlugin extends EBPlugin
 			if(bu.getWhat() == BufferUpdate.MODE_CHANGED
 				|| bu.getWhat() == BufferUpdate.LOADED)
 			{
+				/* MEGA HACK */
+				if(buffer.getName().toLowerCase().endsWith(".dtd"))
+				{
+					buffer.putProperty("useXmlPlugin",
+						Boolean.FALSE);
+				}
+
 				if(buffer.getBooleanProperty("useXmlPlugin"))
 					buffer.addDocumentListener(documentHandler);
 				else

@@ -152,6 +152,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree
 			.getModel().getRoot();
 
+		if(root.getChildCount() == 0)
+			return;
+
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 			root.getChildAt(0);
 		if(node.getUserObject() instanceof XmlTag)
@@ -175,10 +178,15 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	{
 		int childCount = node.getChildCount();
 		Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
+		XmlTag tag = (XmlTag)userObject;
+
 		if(childCount == 0 && userObject instanceof XmlTag)
 		{
+			// invalid tags and parse errors have this
+			if(tag.end == null)
+				return false;
+
 			// check if the caret in inside this tag
-			XmlTag tag = (XmlTag)userObject;
 			if(dot >= tag.start.getOffset() && dot <= tag.end.getOffset())
 				return true;
 		}
@@ -195,8 +203,11 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				}
 			}
 
+			// invalid tags and parse errors have this
+			if(tag.end == null)
+				return false;
+
 			// check if the caret in inside this tag
-			XmlTag tag = (XmlTag)userObject;
 			if(dot >= tag.start.getOffset() && dot <= tag.end.getOffset())
 				return true;
 		}
@@ -254,8 +265,17 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			{
 				XmlTag tag = (XmlTag)value;
 
-				view.getTextArea().select(tag.start.getOffset(),
-					tag.end.getOffset());
+				// Invalid tags and parse errors have this
+				if(tag.end == null)
+				{
+					view.getTextArea().setCaretPosition(
+						tag.start.getOffset());
+				}
+				else
+				{
+					view.getTextArea().select(tag.start
+						.getOffset(),tag.end.getOffset());
+				}
 			}
 		}
 	}
