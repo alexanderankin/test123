@@ -8,24 +8,130 @@
 			TextToolsPlugin.sortLines(textArea,false);
 		</CODE>
 	</ACTION>
+
 	<ACTION NAME="revsort-lines">
 		<CODE>
 			TextToolsPlugin.sortLines(textArea,true);
 		</CODE>
 	</ACTION>
+
 	<ACTION NAME="transpose-chars">
 		<CODE>
 			TextToolsPlugin.transposeChars(textArea);
 		</CODE>
 	</ACTION>
+
 	<ACTION NAME="transpose-lines">
 		<CODE>
 			TextToolsPlugin.transposeLines(textArea);
 		</CODE>
 	</ACTION>
+
 	<ACTION NAME="transpose-words">
 		<CODE>
 			TextToolsPlugin.transposeWords(textArea);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="line-comment">
+		<CODE>
+			comment = (String)buffer.getProperty("blockComment");
+
+			if (comment == null)
+			{
+				view.getToolkit().beep();
+				return;
+			}
+
+			if (comment.equals("//") || comment.equals("#") ||
+				comment.equals("--") || comment.equals("%") ||
+				comment.equalsIgnoreCase("rem"))
+			{
+				regExpString = "^\\s*(" + comment + ")";
+			}
+			else
+			{
+				commentArray = comment.toCharArray();
+				sbComment = new StringBuffer();
+
+				for (i = 0; i &lt; commentArray.length; ++i)
+				{
+					ch = commentArray[i];
+
+					switch (ch)
+					{
+						case '.':  //through
+						case '?':  //through
+						case '*':  //through
+						case '(':  //through
+						case ')':  //through
+						case '|':  //through
+						case '[':  //through
+						case ']':  //through
+						case '\\':
+							sbComment.append('\\');
+							// through
+						default:
+							sbComment.append(ch);
+					}
+				}
+				regExpString = "^\\s*("
+					+ sbComment.toString() + ")";
+			}
+
+			try
+			{
+				regExp = new gnu.regexp.RE(regExpString);
+			}
+			catch (gnu.regexp.REException e)
+			{
+				Log.log(Log.ERROR, TextToolsPlugin.class, e);
+				return;
+			}
+
+			startLine = textArea.getSelectionStartLine();
+			endLine = textArea.getSelectionEndLine();
+			commentLength = comment.length();
+
+			map = buffer.getDefaultRootElement();
+			buffer.beginCompoundEdit();
+			try
+			{
+				for (i = startLine; i &lt;= endLine; ++i)
+				{
+					offset = map.getElement(i)
+						.getStartOffset();
+
+					match = regExp.getMatch(textArea
+						.getLineText(i));
+					if (match != null)
+					{
+						matchEnd = match.getEndIndex();
+						replace = match.toString()
+							.substring(0, matchEnd
+							- commentLength);
+
+						buffer.remove(offset, matchEnd);
+						buffer.insertString(offset,
+							replace, null);
+						continue;
+					}
+
+					buffer.insertString(offset, comment,
+						null);
+				}
+			}
+			catch(BadLocationException bl)
+			{
+				Log.log(Log.ERROR, TextToolsPlugin.class, bl);
+			}
+			finally
+			{
+				buffer.endCompoundEdit();
+			}
+
+			textArea.select(textArea.getCaretPosition(),
+				textArea.getCaretPosition());
 		</CODE>
 	</ACTION>
 </ACTIONS>

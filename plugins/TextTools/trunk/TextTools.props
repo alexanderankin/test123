@@ -1,15 +1,17 @@
 plugin.TextToolsPlugin.name=TextTools
-plugin.TextToolsPlugin.author=mike dillon, Slava Pestov
-plugin.TextToolsPlugin.version=1.4.6
+plugin.TextToolsPlugin.author=mike dillon, Valery Kondakoff
+plugin.TextToolsPlugin.version=1.5
 plugin.TextToolsPlugin.docs=TextTools.html
 plugin.TextToolsPlugin.depend.0=jedit 02.07.02.00
 
 # Menu
 text-tools.label=TextTools
 text-tools=sort-lines revsort-lines - \
-	transpose-chars transpose-words transpose-lines
+	transpose-chars transpose-words transpose-lines - \
+	line-comment
 sort-lines.label=Sort Lines
 revsort-lines.label=Reverse Sort Lines
 transpose-chars.label=Transpose Characters
 transpose-words.label=Transpose Words
 transpose-lines.label=Transpose Lines
+line-comment.label=Line Comment/Uncomment
