@@ -10,6 +10,7 @@ plugin.AntFarmPlugin.depend.1=plugin Console 3.0
 plugin.AntFarmPlugin.depend.2=plugin EditBusPlugin 1.1
 plugin.AntFarmPlugin.depend.3=plugin XMLPlugin 0.3
 plugin.AntFarmPlugin.depend.4=plugin CommonControls 0.2
+plugin.AntFarmPlugin.depend.5=plugin ProjectViewer
 
 antfarm.title=Ant Farm
 antfarm.label=Ant Farm
