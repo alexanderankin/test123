@@ -129,6 +129,10 @@ public final class OldConfigLoader {
 		p.setRootPath(new File(props.getProperty("root")).getAbsolutePath());
 
 		p.setURL(props.getProperty("webroot"));
+		
+		if (props.get("folderTreeState") != null) {
+			p.setProperty("projectviewer.folder_tree_state", (String) props.get("folderTreeState"));
+		}
 
 		for (Iterator it = props.keySet().iterator(); it.hasNext(); ) {
 			String key = (String) it.next();
