@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov
-plugin.sidekick.SideKickPlugin.version=0.1
+plugin.sidekick.SideKickPlugin.version=0.2
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.01.11.00
 plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2

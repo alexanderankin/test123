@@ -296,6 +296,22 @@ mode.velocity.sidekick.parser=html</programlisting>
 
  <itemizedlist>
 
+ <listitem><para><emphasis role="bold">Version 0.2</emphasis> requires
+  jEdit 4.1pre11.</para>
+
+  <itemizedlist>
+   <listitem><para>Fixed a thread safety problem that could result in the
+   structure tree not being displayed.
+   </para></listitem>
+   <listitem><para>Added <function>activate()</function> and
+   <function>deactivate()</function> methods to
+   <classname>SideKickParser</classname> class. These methods are called when
+   a buffer using this parser is selected and deselected in a given view.
+   </para></listitem>
+  </itemizedlist>
+
+  </listitem>
+
   <listitem><para><emphasis role="bold">Version 0.1</emphasis> requires
   jEdit 4.1pre11.</para>
 
