@@ -1,5 +1,8 @@
 /*
  * XmlTree.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,20 +15,24 @@
 
 package xml;
 
+//{{{ Imports
 import javax.swing.event.*;
 import javax.swing.tree.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Vector;
+import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
-public class XmlTree extends JPanel implements DockableWindow, EBComponent
+public class XmlTree extends JPanel implements EBComponent
 {
+	//{{{ XmlTree constructor
 	public XmlTree(View view, boolean docked)
 	{
 		super(new BorderLayout());
@@ -58,24 +65,22 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 		add(BorderLayout.CENTER,new JScrollPane(tree));
 
-		documentHandler = new DocumentHandler();
+		bufferHandler = new BufferHandler();
 		editPaneHandler = new EditPaneHandler();
 
 		propertiesChanged(true);
 
 		parser = new XmlParser(view);
-	}
+	} //}}}
 
-	public String getName()
+	//{{{ requestDefaultFocus() method
+	public boolean requestDefaultFocus()
 	{
-		return XmlPlugin.TREE_NAME;
-	}
+		tree.requestFocus();
+		return true;
+	} //}}}
 
-	public Component getComponent()
-	{
-		return this;
-	}
-
+	//{{{ addNotify() method
 	public void addNotify()
 	{
 		super.addNotify();
@@ -89,11 +94,10 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			textArea.addCaretListener(editPaneHandler);
 		}
 
-		parser.addNotify();
-
 		parse(true);
-	}
+	} //}}}
 
+	//{{{ removeNotify() method
 	public void removeNotify()
 	{
 		super.removeNotify();
@@ -109,9 +113,10 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				.COMPLETION_INFO_PROPERTY,null);
 		}
 
-		parser.removeNotify();
-	}
+		parser.dispose();
+	} //}}}
 
+	//{{{ parse() method
 	public void parse(final boolean showParsingMessage)
 	{
 		this.showParsingMessage = showParsingMessage;
@@ -120,13 +125,14 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 		// remove listener from old buffer
 		if(buffer != null)
-			buffer.removeDocumentListener(documentHandler);
+			buffer.removeBufferChangeListener(bufferHandler);
 
 		buffer = view.getBuffer();
 
 		// add listener to new buffer
-		buffer.addDocumentListener(documentHandler);
+		buffer.addBufferChangeListener(bufferHandler);
 
+		//{{{ Run this when I/O is complete
 		VFSManager.runInAWTThread(new Runnable()
 		{
 			public void run()
@@ -136,7 +142,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				EditPane editPane = view.getEditPane();
 				editPane.putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
 
-				// check for non-XML file
+				//{{{ check for non-XML file
 				if(!parse)
 				{
 					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
@@ -148,7 +154,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 					tree.setModel(model);
 
 					return;
-				}
+				} //}}}
 				else if(showParsingMessage)
 				{
 					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
@@ -162,11 +168,13 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 				parser.parse(buffer);
 			}
-		});
-	}
+		}); //}}}
+	} //}}}
 
+	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
+		//{{{ EditPaneUpdate
 		if(msg instanceof EditPaneUpdate)
 		{
 			EditPaneUpdate emsg = (EditPaneUpdate)msg;
@@ -198,7 +206,8 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				textArea.removeFocusListener(editPaneHandler);
 				textArea.removeCaretListener(editPaneHandler);
 			}
-		}
+		} //}}}
+		//{{{ BufferUpdate
 		else if(msg instanceof BufferUpdate)
 		{
 			BufferUpdate bmsg = (BufferUpdate)msg;
@@ -230,12 +239,12 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				else
 					showNotParsedMessage();
 			}
-		}
+		} //}}}
 		else if(msg instanceof PropertiesChanged)
 			propertiesChanged(false);
-	}
+	} //}}}
 
-	// package-private members
+	//{{{ parsingComplete() method
 	void parsingComplete(TreeModel model)
 	{
 		tree.setModel(model);
@@ -249,9 +258,11 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			view.getStatus().setMessageAndClear(jEdit.getProperty(
 				"xml-tree.parsing-complete",pp));
 		}
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private JButton parseBtn;
 	private JTree tree;
 
@@ -262,13 +273,15 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	private View view;
 	private Buffer buffer;
 	private Timer keystrokeTimer, caretTimer;
-	private DocumentHandler documentHandler;
+	private BufferHandler bufferHandler;
 	private EditPaneHandler editPaneHandler;
 
 	private boolean showParsingMessage;
 
 	private XmlParser parser;
+	//}}}
 
+	//{{{ propertiesChanged() method
 	private void propertiesChanged(boolean init)
 	{
 		boolean newShowAttributes = jEdit.getBooleanProperty("xml.show-attributes");
@@ -288,8 +301,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			showAttributes = newShowAttributes;
 			parse(true);
 		}
-	}
+	} //}}}
 
+	//{{{ showNotParsedMessage() method
 	private void showNotParsedMessage()
 	{
 		parser.stopThread();
@@ -303,8 +317,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 		model.reload(root);
 		tree.setModel(model);
-	}
+	} //}}}
 
+	//{{{ parseWithDelay() method
 	private void parseWithDelay()
 	{
 		if(keystrokeTimer != null)
@@ -321,8 +336,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		keystrokeTimer.setInitialDelay(delay);
 		keystrokeTimer.setRepeats(false);
 		keystrokeTimer.start();
-	}
+	} //}}}
 
+	//{{{ expandTagWithDelay() method
 	private void expandTagWithDelay()
 	{
 		// if keystroke parse timer is running, do nothing
@@ -343,8 +359,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		caretTimer.setInitialDelay(500);
 		caretTimer.setRepeats(false);
 		caretTimer.start();
-	}
+	} //}}}
 
+	//{{{ expandTagAt() method
 	private void expandTagAt(int dot)
 	{
 		DefaultMutableTreeNode root = (DefaultMutableTreeNode)tree
@@ -371,8 +388,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			tree.setSelectionPath(treePath);
 			tree.scrollPathToVisible(treePath);
 		}
-	}
+	} //}}}
 
+	//{{{ expandTagAt() method
 	private boolean expandTagAt(TreeNode node, int dot, Vector path)
 	{
 		int childCount = node.getChildCount();
@@ -408,8 +426,13 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		}
 
 		return false;
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ Inner classes
+
+	//{{{ CustomTree class
 	class CustomTree extends JTree
 	{
 		CustomTree(TreeModel model)
@@ -421,6 +444,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		{
 			switch(evt.getID())
 			{
+			//{{{ MOUSE_PRESSED...
 			case MouseEvent.MOUSE_PRESSED:
 				TreePath path = getPathForLocation(
 					evt.getX(),evt.getY());
@@ -446,26 +470,29 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				}
 
 				super.processMouseEvent(evt);
-				break;
+				break; //}}}
+			//{{{ MOUSE_EXITED...
 			case MouseEvent.MOUSE_EXITED:
 				view.getStatus().setMessage(null);
 				super.processMouseEvent(evt);
-				break;
+				break; //}}}
 			default:
 				super.processMouseEvent(evt);
 				break;
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
 			parse(true);
 		}
-	}
+	} //}}}
 
+	//{{{ MouseHandler class
 	class MouseHandler extends MouseMotionAdapter
 	{
 		public void mouseMoved(MouseEvent evt)
@@ -486,8 +513,9 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				}
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ EditPaneHandler class
 	class EditPaneHandler implements FocusListener, CaretListener
 	{
 		public void focusGained(FocusEvent evt)
@@ -516,29 +544,29 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			if(evt.getSource() == view.getTextArea())
 				expandTagWithDelay();
 		}
-	}
+	} //}}}
 
-	class DocumentHandler implements DocumentListener
+	//{{{ BufferHandler class
+	class BufferHandler extends BufferChangeAdapter
 	{
-		public void insertUpdate(DocumentEvent evt)
+		public void contentInserted(Buffer buffer, int startLine, int offset,
+			int numLines, int length)
 		{
 			if(buffer.isLoaded() && parse
 				&& buffer.getBooleanProperty("xml.keystroke-parse"))
 				parseWithDelay();
 		}
 
-		public void removeUpdate(DocumentEvent evt)
+		public void contentRemoved(Buffer buffer, int startLine, int offset,
+			int numLines, int length)
 		{
 			if(buffer.isLoaded() && parse
 				&& buffer.getBooleanProperty("xml.keystroke-parse"))
 				parseWithDelay();
 		}
+	} //}}}
 
-		public void changedUpdate(DocumentEvent evt)
-		{
-		}
-	}
-
+	//{{{ Renderer class
 	class Renderer extends DefaultTreeCellRenderer
 	{
 		public Component getTreeCellRendererComponent(JTree tree,
@@ -561,5 +589,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 			return this;
 		}
-	}
+	} //}}}
+
+	//}}}
 }

@@ -1,12 +1,11 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan, David Walend, Ollie Rutherfurd, Scott Wyatt
-plugin.xml.XmlPlugin.version=0.5
+plugin.xml.XmlPlugin.version=0.6
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xerces.jar
-plugin.xml.XmlPlugin.depend.0=jedit 03.02.99.01
-plugin.xml.XmlPlugin.depend.1=plugin EditBusPlugin 1.0.1
-plugin.xml.XmlPlugin.depend.2=plugin ErrorListPlugin 1.1
+plugin.xml.XmlPlugin.depend.0=jedit 04.00.02.00
+plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 # Modes where xml parsing can theoretically to be performed
 # If a file doesn't have one of these modes, attempting to parse will
@@ -59,9 +58,8 @@ mode.velocity.xml.tag-highlight=true
 
 # Completion info
 
-# 'ant' is not a real mode name. There is a hard-coded hack in
-# CompletionInfo.java to handle it
 mode.ant.xml.completion-info=jeditresource:/XML.jar!/xml/ant-complete.xml
+mode.xsd.xml.completion-info=jeditresource:/XML.jar!/xml/xsd-complete.xml
 
 mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/html-complete.xml
@@ -82,14 +80,15 @@ xml-menu=\
 	- \
 	xml-insert \
 	xml-edit-tag \
-	- \
 	xml-close-tag \
-	xml-prev-tag \
-	xml-next-tag \
 	xml-remove-tags \
 	- \
 	xml-chars-to-entities \
-	xml-entities-to-chars
+	xml-entities-to-chars \
+	- \
+	xml-prev-tag \
+	xml-next-tag \
+	xml-match-tag
 xml-menu.label=XML
 xml-tree.label=XML Tree
 xml-parse.label=Parse XML Buffer
@@ -97,11 +96,16 @@ xml-keystroke-parse.label=Parse XML on Keystroke
 xml-insert.label=XML Insert
 xml-edit-tag.label=Edit Tag at Caret...
 xml-close-tag.label=Close Last Open Tag
-xml-prev-tag.label=Go to Previous Tag
-xml-next-tag.label=Go to Next Tag
 xml-remove-tags.label=Remove All Tags
 xml-chars-to-entities.label=Characters to Entities
 xml-entities-to-chars.label=Entities to Characters
+xml-prev-tag.label=Go to Previous Tag
+xml-next-tag.label=Go to Next Tag
+xml-match-tag.label=Go to Matching Tag
+
+# Actions not in menu bar
+xml-tree-toggle=XML Tree Toggle
+xml-insert-toggle=XML Insert Toggle
 
 # Tag completion
 -xml-complete-closing-tag.shortcut=/
@@ -162,8 +166,8 @@ options.xml.general.modes=Enable XML parsing for the following edit modes:
 options.xml.complete.label=Completion
 options.xml.complete.complete=Tag and entity completion
 options.xml.complete.complete-delay=After < or &, wait (seconds):
-options.xml.complete.close-complete=Insert closing tag when "</" typed
-options.xml.complete.close-complete-open=Insert closing tag when opening tag typed
+options.xml.complete.close-complete=Insert closing tag when "</" is typed
+options.xml.complete.close-complete-open=Insert closing tag when opening tag is typed
 
 options.xml.tag-highlight.label=Tag Highlighting
 options.xml.tag-highlight.enabled=Highlight matching tags

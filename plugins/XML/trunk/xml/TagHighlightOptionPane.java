@@ -16,6 +16,7 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import org.gjt.sp.jedit.gui.JCheckBoxList;
 import org.gjt.sp.jedit.*;
 
 public class TagHighlightOptionPane extends AbstractOptionPane

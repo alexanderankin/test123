@@ -53,16 +53,6 @@
 			xml.XmlActions.showEditTagDialog(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xml-insert">
-		<CODE>
-			view.getDockableWindowManager()
-				.toggleDockableWindow("xml-insert");
-		</CODE>
-		<IS_SELECTED>
-			return view.getDockableWindowManager()
-				.isDockableWindowVisible("xml-insert");
-		</IS_SELECTED>
-	</ACTION>
 	<ACTION NAME="xml-keystroke-parse">
 		<CODE>
 			buffer.putBooleanProperty("xml.keystroke-parse",
@@ -103,15 +93,5 @@
 		<CODE>
 			xml.XmlActions.removeTags(buffer);
 		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-tree">
-		<CODE>
-			view.getDockableWindowManager()
-				.toggleDockableWindow("xml-tree");
-		</CODE>
-		<IS_SELECTED>
-			return view.getDockableWindowManager()
-				.isDockableWindowVisible("xml-tree");
-		</IS_SELECTED>
 	</ACTION>
 </ACTIONS>

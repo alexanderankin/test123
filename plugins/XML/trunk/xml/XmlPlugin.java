@@ -1,5 +1,8 @@
 /*
  * XmlPlugin.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,12 +15,14 @@
 
 package xml;
 
+//{{{ Imports
 import javax.swing.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
 public class XmlPlugin extends EBPlugin
 {
@@ -26,20 +31,20 @@ public class XmlPlugin extends EBPlugin
 
 	public static final String COMPLETION_INFO_PROPERTY = "xml.completion-info";
 
+	//{{{ start() method
 	public void start()
 	{
-		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,TREE_NAME);
-		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,INSERT_NAME);
-
 		CatalogManager.propertiesChanged();
 		XmlActions.propertiesChanged();
-	}
+	} //}}}
 
+	//{{{ createMenuItems() method
 	public void createMenuItems(Vector menuItems)
 	{
 		menuItems.addElement(GUIUtilities.loadMenu("xml-menu"));
-	}
+	} //}}}
 
+	//{{{ createOptionPanes() method
 	public void createOptionPanes(OptionsDialog dialog)
 	{
 		OptionGroup grp = new OptionGroup("xml");
@@ -48,36 +53,13 @@ public class XmlPlugin extends EBPlugin
 		grp.addOptionPane(new TagHighlightOptionPane());
 		grp.addOptionPane(new CatalogsOptionPane());
 		dialog.addOptionGroup(grp);
-	}
+	} //}}}
 
+	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
-		if(msg instanceof CreateDockableWindow)
-		{
-			CreateDockableWindow cmsg = (CreateDockableWindow)msg;
-			if(cmsg.getDockableWindowName().equals(TREE_NAME))
-			{
-				cmsg.setDockableWindow(new XmlTree(cmsg.getView(),
-					!cmsg.getPosition().equals(
-					DockableWindowManager.FLOATING)));
-			}
-			else if(cmsg.getDockableWindowName().equals(INSERT_NAME))
-			{
-				Object position = cmsg.getPosition();
-
-				boolean sideBySide;
-
-				if(position.equals(DockableWindowManager.TOP)
-					|| position.equals(DockableWindowManager.BOTTOM))
-					sideBySide = true;
-				else
-					sideBySide = false;
-
-				cmsg.setDockableWindow(new XmlInsert(
-					cmsg.getView(),sideBySide));
-			}
-		}
-		else if(msg instanceof EditPaneUpdate)
+		//{{{ EditPaneUpdate
+		if(msg instanceof EditPaneUpdate)
 		{
 			EditPaneUpdate epu = (EditPaneUpdate)msg;
 			EditPane editPane = epu.getEditPane();
@@ -96,7 +78,8 @@ public class XmlPlugin extends EBPlugin
 				TagHighlight.removeHighlightFrom(editPane);
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 				TagHighlight.bufferChanged(editPane);
-		}
+		} //}}}
+		//{{{ BufferUpdate
 		else if(msg instanceof BufferUpdate)
 		{
 			BufferUpdate bu = (BufferUpdate)msg;
@@ -108,12 +91,13 @@ public class XmlPlugin extends EBPlugin
 				TagHighlight.bufferLoaded(buffer);
 			else if(bu.getWhat() == BufferUpdate.CLOSED)
 				TagHighlight.bufferClosed(buffer);
-		}
+		} //}}}
+		//{{{ PropertiesChanged
 		else if(msg instanceof PropertiesChanged)
 		{
 			XmlActions.propertiesChanged();
 			CatalogManager.propertiesChanged();
 			TagHighlight.propertiesChanged();
-		}
-	}
+		} //}}}
+	} //}}}
 }

@@ -1,5 +1,8 @@
 /*
  * XmlParser.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  * Portions copyright (C) 2001 David Walend
  *
@@ -13,8 +16,7 @@
 
 package xml;
 
-import javax.swing.text.BadLocationException;
-import javax.swing.text.Element;
+//{{{ Imports
 import javax.swing.tree.*;
 import javax.swing.SwingUtilities;
 import java.io.*;
@@ -24,9 +26,12 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import errorlist.*;
+//}}}
 
 class XmlParser
 {
+	//{{{ XmlParser constructor
 	XmlParser(View view)
 	{
 		this.view = view;
@@ -38,10 +43,12 @@ class XmlParser
 		ids = new Vector();
 
 		errorSource = new DefaultErrorSource("XML");
+		ErrorSource.registerErrorSource(errorSource);
 
 		handler = new Handler();
-	}
+	} //}}}
 
+	//{{{ parse() method
 	void parse(Buffer buffer)
 	{
 		// prepare for parsing
@@ -82,24 +89,16 @@ class XmlParser
 
 		// get buffer text
 		this.buffer = buffer;
-
-		try
-		{
-			text = buffer.getText(0,buffer.getLength());
-		}
-		catch(BadLocationException ble)
-		{
-			Log.log(Log.ERROR,this,ble);
-			return;
-		}
+		text = buffer.getText(0,buffer.getLength());
 
 		// start parser thread
 		stopThread();
 
 		thread = new ParseThread();
 		thread.start();
-	}
+	} //}}}
 
+	//{{{ stopThread() method
 	void stopThread()
 	{
 		if(thread != null)
@@ -107,8 +106,9 @@ class XmlParser
 			thread.stop();
 			thread = null;
 		}
-	}
+	} //}}}
 
+	//{{{ addError() method
 	void addError(int type, String path, int line, String message)
 	{
 		// FIXME?
@@ -117,37 +117,35 @@ class XmlParser
 		path.replace('/',File.separatorChar);
 
 		errorSource.addError(type,path,line,0,0,message);
-	}
+	} //}}}
 
-	void addNotify()
-	{
-		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
-		EditBus.addToBus(errorSource);
-	}
-
-	void removeNotify()
+	//{{{ dispose() method
+	void dispose()
 	{
 		stopThread();
 
 		errorSource.clear();
-		EditBus.removeFromNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
-		EditBus.removeFromBus(errorSource);
-	}
+		ErrorSource.unregisterErrorSource(errorSource);
+	} //}}}
 
+	//{{{ getErrorSource() method
 	ErrorSource getErrorSource()
 	{
 		return errorSource;
-	}
+	} //}}}
 
+	//{{{ ElementDeclCompare class
 	static class ElementDeclCompare implements MiscUtilities.Compare
 	{
 		public int compare(Object obj1, Object obj2)
 		{
-			return ((ElementDecl)obj1).name.toLowerCase()
-				.compareTo(((ElementDecl)obj2).name.toLowerCase());
+			return MiscUtilities.compareStrings(
+				((ElementDecl)obj1).name,
+				((ElementDecl)obj2).name,true);
 		}
-	}
+	} //}}}
 
+	//{{{ EntityDeclCompare class
 	static class EntityDeclCompare implements MiscUtilities.Compare
 	{
 		public int compare(Object obj1, Object obj2)
@@ -159,14 +157,16 @@ class XmlParser
 				return entity2.type - entity1.type;
 			else
 			{
-				return entity1.name.toLowerCase()
-					.compareTo(entity2.name
-					.toLowerCase());
+				return MiscUtilities.compareStrings(
+					entity1.name,
+					entity2.name,true);
 			}
 		}
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private View view;
 	private Buffer buffer;
 
@@ -186,7 +186,9 @@ class XmlParser
 	private Handler handler;
 
 	private DefaultErrorSource errorSource;
+	//}}}
 
+	//{{{ doParse() method
 	private void doParse()
 	{
 		try
@@ -215,8 +217,9 @@ class XmlParser
 			addError(ErrorSource.ERROR,buffer.getPath(),0,
 			ioe.toString());
 		}
-	}
+	} //}}}
 
+	//{{{ finish() method
 	private void finish()
 	{
 		if(view.isClosed())
@@ -244,7 +247,7 @@ class XmlParser
 			completionInfo);
 
 		XmlTree tree = (XmlTree)view.getDockableWindowManager()
-			.getDockableWindow(XmlPlugin.TREE_NAME);
+			.getDockable(XmlPlugin.TREE_NAME);
 		if(tree != null)
 		{
 			model.reload(root);
@@ -252,11 +255,12 @@ class XmlParser
 		}
 
 		XmlInsert insert = (XmlInsert)view.getDockableWindowManager()
-			.getDockableWindow(XmlPlugin.INSERT_NAME);
+			.getDockable(XmlPlugin.INSERT_NAME);
 		if(insert != null)
 			insert.update();
-	}
+	} //}}}
 
+	//{{{ addEntity() method
 	private void addEntity(EntityDecl entity)
 	{
 		entities.addElement(entity);
@@ -268,18 +272,23 @@ class XmlParser
 			entityHash.put(entity.name,ch);
 			entityHash.put(ch,entity.name);
 		}
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ Handler class
 	class Handler extends DefaultHandler implements DeclHandler
 	{
 		Stack currentNodeStack = new Stack();
 		Locator loc = null;
 
+		//{{{ setDocumentLocator() method
 		public void setDocumentLocator(Locator locator)
 		{
 			loc = locator;
-		}
+		} //}}}
 
+		//{{{ resolveEntity() method
 		public InputSource resolveEntity(String publicId, String systemId)
 			throws SAXException
 		{
@@ -299,8 +308,9 @@ class XmlParser
 				return new InputSource(new StringReader("<!-- -->"));
 			else
 				return source;
-		}
+		} //}}}
 
+		//{{{ startElement() method
 		public void startElement(String namespaceURI,
 			String lName, // local name
 			String qName, // qualified name
@@ -326,12 +336,11 @@ class XmlParser
 			{
 				buffer.readLock();
 
-				Element map = buffer.getDefaultRootElement();
-				int line = Math.min(map.getElementCount() - 1,
+				int line = Math.min(buffer.getLineCount() - 1,
 					loc.getLineNumber() - 1);
 				int column = loc.getColumnNumber() - 1;
 				int offset = Math.min(buffer.getLength() - 1,
-					map.getElement(line).getStartOffset()
+					buffer.getLineStartOffset(line)
 					+ column - 1);
 
 				offset = findTagStart(offset);
@@ -351,16 +360,13 @@ class XmlParser
 
 				currentNodeStack.push(newNode);
 			}
-			catch(BadLocationException ble)
-			{
-				throw new SAXException(ble);
-			}
 			finally
 			{
 				buffer.readUnlock();
 			}
-		}
+		} //}}}
 
+		//{{{ endElement() method
 		public void endElement(String namespaceURI,
 			String sName, // simple name
 			String qName  // qualified name
@@ -383,28 +389,24 @@ class XmlParser
 
 				buffer.readLock();
 
-				Element map = buffer.getDefaultRootElement();
-				int line = Math.min(map.getElementCount() - 1,
+				int line = Math.min(buffer.getLineCount() - 1,
 					loc.getLineNumber() - 1);
 				int column = loc.getColumnNumber() - 1;
 				int offset = Math.min(buffer.getLength() - 1,
-					map.getElement(line).getStartOffset()
+					buffer.getLineStartOffset(line)
 					+ column);
 
 				tag.end = buffer.createPosition(offset);
 
 				currentNodeStack.pop();
 			}
-			catch(BadLocationException ble)
-			{
-				throw new SAXException(ble);
-			}
 			finally
 			{
 				buffer.readUnlock();
 			}
-		}
+		} //}}}
 
+		//{{{ error() method
 		public void error(SAXParseException spe)
 		{
 			if(Thread.currentThread().isInterrupted())
@@ -415,8 +417,9 @@ class XmlParser
 			addError(ErrorSource.ERROR,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
-		}
+		} //}}}
 
+		//{{{ warning() method
 		public void warning(SAXParseException spe)
 		{
 			if(Thread.currentThread().isInterrupted())
@@ -427,8 +430,9 @@ class XmlParser
 			addError(ErrorSource.WARNING,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
-		}
+		} //}}}
 
+		//{{{ fatalError() method
 		public void fatalError(SAXParseException spe)
 			throws SAXParseException
 		{
@@ -440,17 +444,18 @@ class XmlParser
 			addError(ErrorSource.ERROR,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
-		}
+		} //}}}
 
-		// DeclHandler implementation
+		//{{{ elementDecl() method
 		public void elementDecl(String name, String model)
 		{
 			boolean empty = "EMPTY".equals(model);
 			ElementDecl elementDecl = new ElementDecl(name,empty,false);
 			elementHash.put(name,elementDecl);
 			elements.addElement(elementDecl);
-		}
+		} //}}}
 
+		//{{{ attributeDecl() method
 		public void attributeDecl(String eName, String aName,
 			String type, String valueDefault, String value)
 		{
@@ -478,8 +483,9 @@ class XmlParser
 
 			element.addAttribute(new ElementDecl.AttributeDecl(
 				aName,value,values,type,required));
-		}
+		} //}}}
 
+		//{{{ internalEntityDecl() method
 		public void internalEntityDecl(String name, String value)
 		{
 			// this is a bit of a hack
@@ -488,8 +494,9 @@ class XmlParser
 
 			addEntity(new EntityDecl(
 				EntityDecl.INTERNAL,name,value));
-		}
+		} //}}}
 
+		//{{{ externalEntityDecl() method
 		public void externalEntityDecl(String name, String publicId,
 			String systemId)
 		{
@@ -499,8 +506,9 @@ class XmlParser
 
 			addEntity(new EntityDecl(
 				EntityDecl.EXTERNAL,name,publicId,systemId));
-		}
+		} //}}}
 
+		//{{{ findTagStart() method
 		private int findTagStart(int offset)
 		{
 			for(int i = offset; i >= 0; i--)
@@ -510,9 +518,10 @@ class XmlParser
 			}
 
 			return 0;
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ ParseThread class
 	class ParseThread extends Thread
 	{
 		ParseThread()
@@ -533,5 +542,5 @@ class XmlParser
 				}
 			});
 		}
-	}
+	} //}}}
 }
