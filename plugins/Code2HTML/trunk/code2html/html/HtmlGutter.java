@@ -20,8 +20,6 @@
 
 package code2html.html;
 
-import org.gjt.sp.jedit.jEdit;
-
 
 public class HtmlGutter
 {
@@ -29,39 +27,47 @@ public class HtmlGutter
     protected int  gutterBorderSize = 1;
 
     protected int gutterSize;
-    protected String spacer;
+
     protected String bgColor;
     protected String fgColor;
+
     protected String highlightColor;
     protected int highlightInterval;
 
+    protected String spacer;
 
-    public HtmlGutter() {
-        this(4);
+
+    protected HtmlGutter() {
+        this("#ffffff", "#8080c0", "#000000", 5);
     }
 
 
-    public HtmlGutter(int gutterSize) {
+    public HtmlGutter(
+            String bgColor, String fgColor,
+            String highlightColor, int highlightInterval
+    ) {
+        this(4, bgColor, fgColor, highlightColor, highlightInterval);
+    }
+
+
+    public HtmlGutter(
+            int gutterSize,
+            String bgColor, String fgColor,
+            String highlightColor, int highlightInterval
+    ) {
         this.gutterSize = gutterSize;
+
+        this.bgColor = bgColor;
+        this.fgColor = fgColor;
+
+        this.highlightColor    = highlightColor;
+        this.highlightInterval = highlightInterval;
 
         StringBuffer buf = new StringBuffer();
         for (int i = 0; i < this.gutterSize; i++) {
             buf.append(' ');
         }
         this.spacer = buf.toString();
-
-        this.bgColor = jEdit.getProperty("view.gutter.bgColor", "#ffffff");
-        this.fgColor = jEdit.getProperty("view.gutter.fgColor", "#8080c0");
-        this.highlightColor = jEdit.getProperty("view.gutter.highlightColor",
-                "#000000"
-        );
-        try
-        {
-            this.highlightInterval = Integer.parseInt(
-                jEdit.getProperty("view.gutter.highlightInterval", "5")
-            );
-        }
-        catch(NumberFormatException nfe) {}
     }
 
 

@@ -23,13 +23,25 @@ package code2html.html;
 
 public class HtmlCssGutter extends HtmlGutter
 {
-    public HtmlCssGutter() {
+    protected HtmlCssGutter() {
         super();
     }
 
 
-    public HtmlCssGutter(int gutterSize) {
-        super(gutterSize);
+    public HtmlCssGutter(
+            String bgColor, String fgColor,
+            String highlightColor, int highlightInterval
+    ) {
+        super(bgColor, fgColor, highlightColor, highlightInterval);
+    }
+
+
+    public HtmlCssGutter(
+            int gutterSize,
+            String bgColor, String fgColor,
+            String highlightColor, int highlightInterval
+    ) {
+        super(gutterSize, bgColor, fgColor, highlightColor, highlightInterval);
     }
 
 
