@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 
 <!-- FTP plugin user's guide -->
-<!-- (C) 2001, 2002 Slava Pestov -->
+<!-- (C) 2001, 2003 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
-<!-- :indentSize=1:noTabs=true: -->
+<!-- :indentSize=1:noTabs=true:folding=sidekick: -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">

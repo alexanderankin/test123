@@ -1,19 +1,21 @@
 # Plugin properties
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
-plugin.ftp.FtpPlugin.version=0.5
+plugin.ftp.FtpPlugin.version=0.6
 plugin.ftp.FtpPlugin.docs=index.html
-plugin.ftp.FtpPlugin.depend.0=jedit 04.01.08.00
-plugin.ftp.FtpPlugin.jars=sshtools-j2ssh-0.0.5-alpha.jar log4j-1.2.6.jar
-
-# Settings
-vfs.ftp.passive=true
-vfs.ftp.binary=true
-
-# Menu
-ftp=open-ftp save-ftp - open-sftp save-sftp - \
-	clear-directory-cache forget-passwords close-connections
-ftp.label=FTP
+plugin.ftp.FtpPlugin.depend.0=jedit 04.02.01.00
+plugin.ftp.FtpPlugin.jars=sshtools-j2ssh-0.1.2-beta.jar \
+	bouncycastle-ciphers-0.0.1-alpha.jar \
+	log4j-1.2.6.jar
+plugin.ftp.FtpPlugin.menu-items=open-ftp \
+	save-ftp \
+	- \
+	open-sftp \
+	save-sftp \
+	- \
+	clear-directory-cache \
+	forget-passwords \
+	close-connections
 
 # Actions
 open-ftp.label=Open from FTP Server...
@@ -34,6 +36,10 @@ login.passive=Passive mode
 
 # FTP VFS
 vfs.ftp.label=Connect to FTP Server...
+
+# Settings
+vfs.ftp.passive=true
+vfs.ftp.binary=true
 
 # Error messages
 # XXX - FTP responses seem to end with a newline?
