@@ -196,8 +196,12 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 			root = chooser.getSelectedFile().getAbsolutePath();
 			if (project != null) {
 				String oldRoot = project.getRoot().getPath();
+				/* 
+				* Matthew Payne = if old Root is "" then allow change is well
+				* re: "&& (oldRoot.trim().length() > 0)"
+				*/
 				if ( !(oldRoot.startsWith(root) &&
-					   root.length() < oldRoot.length()) ) { 
+					   root.length() < oldRoot.length()) && (oldRoot.trim().length() > 0) ) { 
 					project.changeRoot(new ProjectDirectory(root));
 					JOptionPane.showMessageDialog(
 						this, 
