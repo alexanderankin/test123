@@ -39,8 +39,7 @@ public class XmlActions
 	//{{{ showEditTagDialog() method
 	public static void showEditTagDialog(View view)
 	{
-		EditPane editPane = view.getEditPane();
-		JEditTextArea textArea = editPane.getTextArea();
+		JEditTextArea textArea = view.getTextArea();
 
 		if(XmlPlugin.isDelegated(textArea))
 		{
@@ -48,8 +47,8 @@ public class XmlActions
 			return;
 		}
 
-		Buffer buffer = editPane.getBuffer();
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+		Buffer buffer = view.getBuffer();
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(!(_data instanceof XmlParsedData))
 		{
@@ -186,10 +185,9 @@ loop:			for(;;)
 	//{{{ showEditTagDialog() method
 	public static void showEditTagDialog(View view, ElementDecl elementDecl)
 	{
-		EditPane editPane = view.getEditPane();
-		Buffer buffer = editPane.getBuffer();
+		Buffer buffer = view.getBuffer();
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(!(_data instanceof XmlParsedData))
 		{
@@ -224,7 +222,7 @@ loop:			for(;;)
 
 		if(newTag != null)
 		{
-			JEditTextArea textArea = editPane.getTextArea();
+			JEditTextArea textArea = view.getTextArea();
 
 			Selection[] selection = textArea.getSelection();
 
@@ -258,9 +256,8 @@ loop:			for(;;)
 	//{{{ insertClosingTag() method
 	public static void insertClosingTag(View view)
 	{
-		EditPane editPane = view.getEditPane();
-		JEditTextArea textArea = editPane.getTextArea();
-		Buffer buffer = editPane.getBuffer();
+		JEditTextArea textArea = view.getTextArea();
+		Buffer buffer = view.getBuffer();
 
 		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
@@ -268,7 +265,7 @@ loop:			for(;;)
 			return;
 		}
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(!(_data instanceof XmlParsedData))
 		{
@@ -302,9 +299,8 @@ loop:			for(;;)
 	 */
 	public static void split(View view)
 	{
-		EditPane editPane = view.getEditPane();
-		JEditTextArea textArea = editPane.getTextArea();
-		Buffer buffer = editPane.getBuffer();
+		JEditTextArea textArea = view.getTextArea();
+		Buffer buffer = view.getBuffer();
 
 		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
@@ -312,7 +308,7 @@ loop:			for(;;)
 			return;
 		}
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(!(_data instanceof XmlParsedData))
 		{
@@ -434,8 +430,7 @@ loop:			for(;;)
 	//{{{ insertClosingTagKeyTyped() method
 	public static void insertClosingTagKeyTyped(View view)
 	{
-		EditPane editPane = view.getEditPane();
-		JEditTextArea textArea = editPane.getTextArea();
+		JEditTextArea textArea = view.getTextArea();
 
 		textArea.userInput('>');
 
@@ -445,7 +440,7 @@ loop:			for(;;)
 			|| !closeCompletionOpen)
 			return;
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(!(_data instanceof XmlParsedData))
 			return;
@@ -477,8 +472,7 @@ loop:			for(;;)
 	//{{{ completeClosingTag() method
 	public static void completeClosingTag(View view)
 	{
-		EditPane editPane = view.getEditPane();
-		JEditTextArea textArea = editPane.getTextArea();
+		JEditTextArea textArea = view.getTextArea();
 
 		textArea.userInput('/');
 
@@ -487,7 +481,7 @@ loop:			for(;;)
 		if(XmlPlugin.isDelegated(textArea))
 			return;
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(!(_data instanceof XmlParsedData))
 			return;
@@ -583,9 +577,8 @@ loop:			for(;;)
 	//{{{ charactersToEntities() method
 	public static void charactersToEntities(View view)
 	{
-		EditPane editPane = view.getEditPane();
-		Buffer buffer = editPane.getBuffer();
-		JEditTextArea textArea = editPane.getTextArea();
+		Buffer buffer = view.getBuffer();
+		JEditTextArea textArea = view.getTextArea();
 
 		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
@@ -593,7 +586,7 @@ loop:			for(;;)
 			return;
 		}
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(!(_data instanceof XmlParsedData))
 		{
@@ -617,9 +610,8 @@ loop:			for(;;)
 	//{{{ entitiesToCharacters() method
 	public static void entitiesToCharacters(View view)
 	{
-		EditPane editPane = view.getEditPane();
-		Buffer buffer = editPane.getBuffer();
-		JEditTextArea textArea = editPane.getTextArea();
+		Buffer buffer = view.getBuffer();
+		JEditTextArea textArea = view.getTextArea();
 
 		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
 		{
@@ -627,7 +619,7 @@ loop:			for(;;)
 			return;
 		}
 
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view);
 
 		if(!(_data instanceof XmlParsedData))
 		{

@@ -1,9 +1,8 @@
 XML 0.11:
 
-- tag highlight: longer delay
 - xsl:import
 - update docs
-- use vfs api if cache is disabled
+- work thread pool priority
 
 before XML 1.0:
 

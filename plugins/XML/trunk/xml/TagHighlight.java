@@ -237,7 +237,7 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 			return;
 		}
 
-		timer.setInitialDelay(100);
+		timer.setInitialDelay(300);
 		timer.setRepeats(false);
 		timer.start();
 	} //}}}
@@ -284,11 +284,6 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 				if(match != null)
 				{
 					int offset = buffer.getLineOfOffset(match.start);
-					if(offset < 0 || offset >= buffer.getLineCount())
-					{
-						System.err.println(offset);
-						return;
-					}
 
 					int line = textArea.physicalToVirtual(
 						offset);
