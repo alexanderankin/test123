@@ -25,7 +25,7 @@ package tags;
 import java.io.*;
 import java.lang.System.*;
 
-public class TagFile {
+class TagFile {
   
   public final static String DEFAULT_CATAGORY = "Default";
   

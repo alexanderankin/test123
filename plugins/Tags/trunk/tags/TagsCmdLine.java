@@ -123,7 +123,7 @@ public class TagsCmdLine {
    // Get function name
    String funcName = args[1];
    
-   Tags.followTag(null, null, null, false, funcName);
+   Tags.followTag(null, null, null, false, false, funcName);
    String tagFileName = Tags.getTagFileName();
    String searchString = Tags.getSearchString();
    int lineNumber = -1;

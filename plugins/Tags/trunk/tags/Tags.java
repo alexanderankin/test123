@@ -228,7 +228,7 @@ public class Tags {
                           buttonNames, buttonNames[0]);
 																
 		if (ret == 0) {
-			followTag(view, textArea, buffer, enterTagPanel.getOtherWindow(),
+			followTag(view, textArea, buffer, enterTagPanel.getOtherWindow(), false,
 								enterTagPanel.getFuncName());
 		}
 		
@@ -251,13 +251,13 @@ public class Tags {
       //funcName = textArea.getSelectedText();
     }
     
-    followTag(view, textArea, buffer, newView, funcName);
+    followTag(view, textArea, buffer, newView, true, funcName);
   }
 
   /*+*************************************************************************/
   public static void followTag(View currentView, JEditTextArea currentTextArea, 
                                Buffer buf, boolean openNewView, 
-                               String funcName ) {
+                               boolean collisionPopup, String funcName ) {
     
     Buffer buffer = null;
     
@@ -267,8 +267,11 @@ public class Tags {
     }
 
     ui_ = currentView != null;
+
+    boolean useCurrentBufTagFile = ui_ ? getUseCurrentBufTagFile() : false;
+    boolean serachAllTagFiles = ui_ ? getSearchAllTagFiles() : false;
       
-    if (!getUseCurrentBufTagFile() && tagFiles_.size() == 0) {
+    if (!useCurrentBufTagFile && tagFiles_.size() == 0) {
       Toolkit.getDefaultToolkit().beep();
       if (ui_) 
         Macros.error(currentView, 
@@ -288,7 +291,7 @@ public class Tags {
     boolean found = false;
     String tagFileName = null;
     File defaultTagFile = null;
-    if (getUseCurrentBufTagFile()) {
+    if (useCurrentBufTagFile) {
       File currentBufferFile = new File(buffer.getPath());
       defaultTagFile = new File(currentBufferFile.getParent() + 
                    System.getProperty("file.separator") + 
@@ -300,7 +303,7 @@ public class Tags {
     }
     
     // Search tag files if needed
-    if (!found || getSearchAllTagFiles()) {
+    if (!found || serachAllTagFiles) {
       int numTagFiles = tagFiles_.size();
       for (int i = 0; i < numTagFiles; i++) {        
         tagFileName = (String) ((TagFile)tagFiles_.elementAt(i)).getPath();
@@ -310,15 +313,20 @@ public class Tags {
         
         found = parser_.findTagLines(tagFileName, funcName, 
                                      currentView) || found;
-        if (!getSearchAllTagFiles()  && found)
+        if (!serachAllTagFiles && found)
           break;
       }
     }
 
     // Handle what was found (or not found)
     if (parser_.getNumberOfFoundTags() > 1) {
-      if (ui_)
-        new ChooseTagListPopup(parser_, currentView, openNewView);
+      if (ui_) 
+      {
+        if (collisionPopup)
+          new ChooseTagListPopup(parser_, currentView, openNewView);
+        else
+          new ChooseTagListDialog(parser_, currentView, openNewView);
+      }
       else
         processTagLine(0, currentView, openNewView, funcName);
     }
@@ -357,12 +365,12 @@ public class Tags {
     if (ui_)
       currentView.showWaitCursor();      
 
-    String tagLine = parser_.getTagLine(tagLineIndex);
+    TagLine tagLine = parser_.getTagLine(tagLineIndex);
     
     if (debug_)
-      displayMessage(currentView, tagLine);
+      displayMessage(currentView, tagLine.toString());
    
-    tagFileName_ = parser_.getDefinitionFileName(tagLineIndex);
+    tagFileName_ = tagLine.getDefinitionFileName();
     if (tagFileName_ != null) {
   
       // Remember current position on tag stack
@@ -374,35 +382,21 @@ public class Tags {
                            
       // Open the file
       //displayMessage(currentView, tagFileName);
-      if (ui_) {
-				/* Slava if you look at this, I'm not sure I understand how this
-				 * fixes your problem.  It doesn't work.
-				 */
-				File tagFile = new File(tagFileName_);
-				if (!tagFile.exists()) {
-					Macros.error(currentView, 
-											 "The tag file name path \"" + tagFileName_ + "\"\n" +
-											 "that is listed in the tag index file, does not\n" +
-											 "exist.  You may need to update your tag index\n" +
-											 "files, or perhaps you passed a relative path to\n" +
-											 "the ctags program.");
+      if (ui_) 
+      {
+        if (!openDefinitionFile(tagToView, tagLine))
+        {
           currentView.hideWaitCursor();
           return;
-				}
-				else {
-					//jEdit.openFile(tagToView, tagFile.getParent(), tagFileName_, 
-					//               false, null);
-					jEdit.openFile(tagToView, tagFileName_);
-          tagToTextArea = tagToView.getTextArea();          
-				}
+        }
       }
-      else {
+      else 
+      {
         if (debug_)
           displayMessage(currentView, "Open file:  " + tagFileName_);
       }
-    
        
-      searchString_ = parser_.getDefinitionSearchString(tagLineIndex);
+      searchString_ = tagLine.getDefinitionSearchString();
       final View v = tagToView;  // for VFSManager inner class
       if (searchString_ != null) {
   
@@ -437,7 +431,7 @@ public class Tags {
         }
       }
       else {
-        lineNumber_ = parser_.getDefinitionLineNumber(tagLineIndex);
+        lineNumber_ = tagLine.getDefinitionLineNumber();
         if (ui_) {
           VFSManager.runInAWTThread(new Runnable() {            
             public void run() {
@@ -554,6 +548,32 @@ public class Tags {
     }
     
     return tagName;
+  }
+  
+  /***************************************************************************/
+  static protected boolean openDefinitionFile(View view, TagLine tagLine) 
+  {
+    File tagFile = new File(tagLine.getDefinitionFileName());
+    if (!tagFile.isAbsolute())
+    {
+      tagFile = new File(tagLine.getTagIndexFile().getParent() + 
+                         System.getProperty("file.separator") +
+                         tagLine.getDefinitionFileName());
+      Macros.message(view, tagFile.getAbsolutePath());
+      if (!tagFile.exists()) 
+      {
+        Macros.error(view, 
+                     "The tag file name path \"" + tagFileName_ + "\"\n" +
+                     "that is listed in the tag index file, does not\n" +
+                     "exist.  You may need to update your tag index\n" +
+                     "files, or perhaps you passed a relative path to\n" +
+                     "the ctags program.");
+        return false;
+      }
+    }
+    
+    jEdit.openFile(view, tagFile.getAbsolutePath());
+    return true;
   }
   
   /***************************************************************************/

@@ -92,7 +92,7 @@ public class TagsPlugin extends EditPlugin {
    else
      funcName = "get_cur_draw";
    
-   Tags.followTag(null, null, null, false, funcName);   
+   Tags.followTag(null, null, null, false, false, funcName);   
    
    Tags.clearTagFiles("CATAGORY_1");
    Tags.displayTagFiles(null);      

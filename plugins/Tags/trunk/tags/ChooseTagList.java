@@ -1,6 +1,6 @@
 /*
- * GenericChooseTagList.java
- * Copyright (c) 2001 Kenrick Drew, Slava Pestov
+ * ChooseTagList.java
+ * Copyright (c) 2001 Kenrick Drew
  *
  * This file is part of TagsPlugin
  *
@@ -19,8 +19,6 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-/* This is pretty much ripped from gui/CompleteWord.java */
-
 package tags;
 
 import javax.swing.*;
@@ -31,55 +29,35 @@ import java.util.Vector;
 
 import org.gjt.sp.jedit.*;
 
-public class GenericChooseTagList extends JList {
+class ChooseTagList extends JList {
   
   /***************************************************************************/
 	private TagsParser parser_;
   private Vector tagIdentifiers_;
   private View view_;
   
-  protected int choosenIndex_ = -1;
-  
   /***************************************************************************/
-	public GenericChooseTagList(View view, TagsParser parser) {
+	public ChooseTagList(View view, TagsParser parser) {
     super();
 
     view_ = view;
     parser_ = parser;
     
     // Setup items for JList
-    int size = parser_.getNumberOfFoundTags();
-    tagIdentifiers_ = new Vector(size);
-    for (int i = 0; i < size; i++)
-      tagIdentifiers_.addElement(parser_.getCollisionChooseString(i));
+    tagIdentifiers_ = parser_.getTagLines();
 
     setListData(tagIdentifiers_);
     
     // Setup JList
-    setVisibleRowCount(Math.min(tagIdentifiers_.size(),8));  
+    /* Generally 8 is the magic number for the number of visible items/rows in 
+     * a list or menu, but we do 6 b/c each item is actually 2 rows
+     */
+    setVisibleRowCount(Math.min(tagIdentifiers_.size(),6));  
     setSelectedIndex(0);
 		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-    // Setup font
-    String fontName = null;
-    String sizeString = null;
-    if (view_ != null) {
-      fontName = jEdit.getProperty("tags.tag-collide-list.Font");
-      sizeString = jEdit.getProperty("tags.tag-collide-list.font-size");
-    }
-    else {
-      fontName = "Monospaced";
-    }
-    
-    size = 12;
-    try { size = Integer.parseInt(sizeString); }
-    catch (NumberFormatException nfe) {
-      size = 12;
-    }
-    
-    Font font = new Font(fontName, Font.PLAIN, size);
-    setFont(font);
-
+    // Setup renderer
+    setCellRenderer(new TagListCellRenderer());
 	}
 
 }

@@ -28,7 +28,7 @@ import java.util.*;
 
 import org.gjt.sp.jedit.*;
 
-public abstract class GenericTagsParser implements TagsParser {
+abstract class GenericTagsParser implements TagsParser {
   
   /***************************************************************************/
   protected String tag_;
@@ -107,7 +107,8 @@ public abstract class GenericTagsParser implements TagsParser {
         if (found) {
           if (tagLines_ == null)
             tagLines_ = new Vector(5);
-          tagLines_.addElement(line);
+
+          tagLines_.addElement(createTagLine(line, tagFileName));
         }
         if (!found) {
           compare = tagToLookFor.compareTo(line);
@@ -134,12 +135,17 @@ public abstract class GenericTagsParser implements TagsParser {
           
           lastPos = skipBackwardToBeginningOfLine(raf, view);
           line = raf.readLine(); 
-          differentTag = !foundTagMatch(line, tagToLookFor); 
-          if (!differentTag) {
-            backupPos = lastPos - 2;
-            tagLines_.insertElementAt(line, 0);
+          if (line != null)
+          {
+            differentTag = !foundTagMatch(line, tagToLookFor); 
+            if (!differentTag) {
+              backupPos = lastPos - 2;
+              tagLines_.insertElementAt(createTagLine(line, tagFileName), 0);
+            }
+            currentPos = raf.getFilePointer();
           }
-          currentPos = raf.getFilePointer();
+          else
+            break;
         }
         catch (IOException ioe) { 
           Tags.displayMessage(view, "Problem backing up"); 
@@ -159,15 +165,19 @@ public abstract class GenericTagsParser implements TagsParser {
       } catch (IOException ioe) {
         Tags.displayMessage(view, "IOException caught");
       }
-      foundForward = foundTagMatch(line, tagToLookFor);
-      if (foundForward)
-        tagLines_.addElement(line);
+      if (line != null)
+      {
+        foundForward = foundTagMatch(line, tagToLookFor);
+        if (foundForward)
+          tagLines_.addElement(createTagLine(line, tagFileName));
+      }
+      else 
+        break;
     }
     
-    try {
-     raf.close();
-    } catch (IOException ioe) {
-     Tags.displayMessage(view, "Can't close tag file!");
+    try { raf.close(); } 
+    catch (IOException ioe) { 
+      Tags.displayMessage(view, "Can't close tag file!");
     }
     raf = null;
     
@@ -180,14 +190,38 @@ public abstract class GenericTagsParser implements TagsParser {
     line = null;
     file = null;
 
+    updateTagLines();
+    
     return (tagLines_ != null && tagLines_.size() > 0);
   }
 
   /***************************************************************************/
-  public Vector getTagLines() {
-    return tagLines_;
+  public TagLine createTagLine(String tagLine, String tagIndexFile)
+  {
+    // Inefficient at best...
+    String searchString = getDefinitionSearchString(tagLine);
+    int definitionLineNumber = -1;
+    if (searchString == null)
+      definitionLineNumber = getDefinitionLineNumber(tagLine);
+    TagLine tl = new TagLine(tag_, getDefinitionFileName(tagLine),
+                             searchString, definitionLineNumber,
+                             tagIndexFile);
+                             
+    return tl;
   }
-
+  
+  /***************************************************************************/
+  protected void updateTagLines() 
+  {
+    int size = tagLines_.size();
+    TagLine tagLine = null;
+    for (int i = 0; i < size; i++)
+    {
+      tagLine = (TagLine) tagLines_.elementAt(i);
+      tagLine.index_ = i + 1;
+    }
+  }
+  
   /***************************************************************************/
   public int getNumberOfFoundTags() {
     if (tagLines_ == null)
@@ -197,33 +231,26 @@ public abstract class GenericTagsParser implements TagsParser {
   }
   
   /***************************************************************************/
-  public String getDefinitionFileName(int index) { return null; }
-  public String getDefinitionSearchString(int index){ return null; }
-  public int getDefinitionLineNumber(int index) { return -1; }
-  
-  /***************************************************************************/
-  public String getCollisionChooseString(int index) {
-    if (!checkIndex(index))
-      return null;
+  public String getDefinitionFileName(String tagLine) { return null; }
+  public String getDefinitionSearchString(String tagLine){ return null; }
+  public int getDefinitionLineNumber(String tagLine) { return -1; }
 
-    StringBuffer b = new StringBuffer();
-    if ((index + 1) < 10)
-      b.append(" " + (index + 1));
-    else
-      b.append((index + 1));
-      
-    b.append(": " + tag_ + " (" + getDefinitionFileName(index) + 
-             ")");
-    
-    return b.toString();
+  /***************************************************************************/
+  public Vector getTagLines() { return tagLines_; }
+
+  /***************************************************************************/
+  public ChooseTagList getCollisionListComponent(View view)
+  {
+    ChooseTagList ctl = new ChooseTagList(view, this);
+    return ctl;
   }
   
   /***************************************************************************/
-  public String getTagLine(int index) {
+  public TagLine getTagLine(int index) {
     if (!checkIndex(index))
       return null;
       
-    return (String) tagLines_.elementAt(index);
+    return (TagLine) tagLines_.elementAt(index);
   }
 
   /***************************************************************************/
@@ -246,6 +273,7 @@ public abstract class GenericTagsParser implements TagsParser {
         else if (offset == 1) {
           offset = 0;
           raf.seek(0);
+          break;
         }
 
       } catch (IOException ioe) {

@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.View;
  *
  * @author Kenrick Drew
  */
-public interface TagsParser {
+interface TagsParser {
   
   public void reinitialize();
   
@@ -48,7 +48,7 @@ public interface TagsParser {
   public boolean findTagLines(String tagFileName, String tagToLookFor, 
                              View view);
   
-  public Vector getTagLines();
+  public TagLine createTagLine(String tagLine, String tagIndexFile);
   
   /**
    * Returs the number of found tags
@@ -63,7 +63,7 @@ public interface TagsParser {
    * @return Path to the file with the tag definition found with 
    * <code>findTagLines()</code>.  If tag wasn't found, returns null.
    */
-  public String getDefinitionFileName(int index);
+  public String getDefinitionFileName(String tagLine);
 
   /**
    * Returns the tag defintion search string. 
@@ -72,7 +72,7 @@ public interface TagsParser {
    * the tag defintion file.  If tag defintion search string is a number,
    * returns null.  If tag wasn't found, returns null.
    */
-  public String getDefinitionSearchString(int index);
+  public String getDefinitionSearchString(String tagLine);
 
   /**
    * Returns the tag defintion line number.
@@ -81,11 +81,13 @@ public interface TagsParser {
    * If one should use the search string, <code>-1</code> will be returned.
    * If tag wasn't found, returns null.
    */
-  public int getDefinitionLineNumber(int index);
+  public int getDefinitionLineNumber(String tagLine);
 
-  public String getCollisionChooseString(int index);
+  public Vector getTagLines();
   
-  public String getTagLine(int index);
+  public ChooseTagList getCollisionListComponent(View view);
+  
+  public TagLine getTagLine(int index);
   
   public String getTag();
   

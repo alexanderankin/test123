@@ -37,7 +37,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
-public class TagsOptionsPanel extends AbstractOptionPane {
+class TagsOptionsPanel extends AbstractOptionPane {
 
   /***************************************************************************/
   // This panel

@@ -43,7 +43,7 @@ import org.gjt.sp.jedit.*;
      
 */
 
-public class ExuberantCTagsParser extends GenericTagsParser {
+class ExuberantCTagsParser extends GenericTagsParser {
 
   /***************************************************************************/
   protected int tagLineNumber_ = -1;
@@ -58,12 +58,8 @@ public class ExuberantCTagsParser extends GenericTagsParser {
     tagLineNumber_ = -1;
   }
 
-  /***************************************************************************/
-  public String getDefinitionFileName(int index) {
-    if (!checkIndex(index))
-      return null;
-
-    String tagLine = (String) tagLines_.elementAt(index);      
+  /*****************************************************************************/
+  public String getDefinitionFileName(String tagLine) {
     if (tagLine == null)
       return null;
 
@@ -93,18 +89,10 @@ public class ExuberantCTagsParser extends GenericTagsParser {
   }
 
   /***************************************************************************/
-  public String getDefinitionSearchString(int index) {
-    /* This func should probably be broken up into two parts in GNUCTagsParser
-     * so that we can call the first, string token with "" or ";\"", then
-     * call the second.  But, I'm currently being lazy...
-     */    
-     tagLineNumber_ = -1;
-     
-     if (!checkIndex(index))
-       return null;
-     
-     String tagLine = (String) tagLines_.elementAt(index);
-     if (tagLine == null)
+  public String getDefinitionSearchString(String tagLine) {
+    tagLineNumber_ = -1;
+
+    if (tagLine == null)
       return null;
     
     String tagDefinitionSearchString = null;
@@ -147,9 +135,9 @@ public class ExuberantCTagsParser extends GenericTagsParser {
   }
 
   /***************************************************************************/
-  public int getDefinitionLineNumber(int index) {
-    getDefinitionSearchString(index); // This will parse and get number if there
-                                      // is one.
+  public int getDefinitionLineNumber(String tagLine) {
+    getDefinitionSearchString(tagLine); // This will parse and get number if 
+                                        // there is one.
       
     return tagLineNumber_; 
   }
