@@ -60,6 +60,7 @@ import javax.swing.JTextField;
 import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.ToolTipManager;
 
@@ -89,6 +90,9 @@ public class FindFileWindow extends JFrame
   private String mHideFilterString;
   private SourceFileFilter mSourceFileFilter;
   private FilterDialog mFilterDialog;
+  
+  // Loading label
+  private JLabel mLoadingLabel;
   
   // create a file window that contains a default filter
   public FindFileWindow()
@@ -151,7 +155,11 @@ public class FindFileWindow extends JFrame
    */
   public void clearSourceFiles()
   {
-    mSourceFileNameField.setText("");
+    // if we are loading, ignore this request (as we do not want to remove
+    // the loading label!)
+    if (SourcePathManager.staticGetQuickAccessSourcePath() != null) {
+      mSourceFileNameField.setText("");
+    }
   }
   
   public void selectFile(String fileName)
@@ -273,6 +281,11 @@ public class FindFileWindow extends JFrame
     mSourceFileListWindow.getContentPane().setLayout(new BorderLayout());
     mSourceFileListWindow.getContentPane().add(mScrollPane);
     mSourceFileListWindow.pack();
+
+    // create the loading thread if required
+    if (SourcePathManager.staticGetQuickAccessSourcePath() == null) {
+      createLoaderThread();
+    }
     
     //
     // key listeners - this is done here once all components are initialized
@@ -424,13 +437,13 @@ public class FindFileWindow extends JFrame
         mFilterButton.setText(buttonName);
       }
     });
-    
+        
+    //filterPanel.add(mLoadingLabel, BorderLayout.WEST);
     filterPanel.add(mFilterButton, BorderLayout.EAST);
     
     return filterPanel;
   }
-  
-  
+
   private void updateList(String documentText)
   {
     // if there is nothing in the document, then clear the source files
@@ -443,8 +456,9 @@ public class FindFileWindow extends JFrame
     // determine starting letter
     char startingChar = documentText.charAt(0);
 
+    // attempt to get teh quick access source path from the SourcePathManager
     QuickAccessSourcePath quickAccessSourcePath =
-      SourcePathManager.getInstance().getQuickAccessSourcePath();
+      SourcePathManager.staticGetQuickAccessSourcePath();
       
     // if the QuickAccessSourcePath instance is null (it can be null
     // if the initial creation thread has not finished yet), then just 
@@ -524,5 +538,48 @@ public class FindFileWindow extends JFrame
     // hide the list window
     mSourceFileListWindow.hide();
   }
+  
+  private void createLoaderThread()
+  {
+    // set the loading text on the file name field
+    mSourceFileNameField.setText(jEdit.getProperty("openit.FindFileWindow.InitialLoadingMessage.label"));
+    
+    // create and start the thread
+    InitialLoadingThread loaderThread = new InitialLoadingThread();
+    loaderThread.start();
+  }
+  
+  //
+  // Inner Classes
+  //
 
+  /**
+   * Keeps checking to see whether the QuickAccessSourcePath is available, and
+   * when it is, it updates clears the text on the file name field.
+   * NOTE: could use a SwingWorker here
+   */
+  public class InitialLoadingThread extends Thread
+  {
+    public void run()
+    {
+      // periodicially check to see whether the QuickAccessSourcePath is 
+      // available yet.
+      while (SourcePathManager.staticGetQuickAccessSourcePath() == null) {
+        try {
+          Thread.sleep(300);
+        } catch (Exception e) {
+        }
+      }
+     
+      // clear the text in the text field to notify user that the file list
+      // has loaded.
+      SwingUtilities.invokeLater(new Runnable()
+      {
+        public void run()
+        {
+          mSourceFileNameField.setText("");
+        }
+      });
+    }
+  }
 }
