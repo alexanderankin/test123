@@ -1,9 +1,9 @@
 # Plugin properties
-plugin.FtpPlugin.name=FTP
-plugin.FtpPlugin.author=Slava Pestov
-plugin.FtpPlugin.version=0.2.7
-plugin.FtpPlugin.docs=FTP.html
-plugin.FtpPlugin.depend.0=jedit 02.07.02.00
+plugin.ftp.FtpPlugin.name=FTP
+plugin.ftp.FtpPlugin.author=Slava Pestov
+plugin.ftp.FtpPlugin.version=0.2.8
+plugin.ftp.FtpPlugin.docs=FTP.html
+plugin.ftp.FtpPlugin.depend.0=jedit 02.07.02.00
 
 # Menu
 ftp=open-ftp save-ftp - clear-directory-cache forget-passwords
@@ -59,5 +59,5 @@ vfs.ftp.list-error.message=An error occurred while listing {0}.\n\
 
 # File listing regexps
 vfs.ftp.list.count=2
-vfs.ftp.list.0=.*\\s+(\\d+)\\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\S+\\s+\\S+\\s+(\\S+)
-vfs.ftp.list.1=.*\\s+(\\d+)\\s+(\\S+)
+vfs.ftp.list.0=.*\\s+(\\d+)\\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\\s+\\S+\\s+\\S+\\s+(.+)
+vfs.ftp.list.1=.*\\s+(\\d+)\\s+(.+)
