@@ -161,22 +161,25 @@ public class MatchTag {
 
 	private static Tag findEndTag(String text, Tag startTag) {
 		Stack tagStack = new Stack();
-		for (int i = text.indexOf('<', startTag.end);
+loop:		for (int i = text.indexOf('<', startTag.end);
 			i != -1; i = text.indexOf('<', ++i)) {
 			Tag tag = getSelectedTag(i + 1, text);
 			if (tag == null)
 				continue;
 			else if (tag.type == T_END_TAG) {
-				for(;;) {
-					if(tagStack.empty()) {
-						if (tag.tag.equals(startTag.tag))
-							return tag;
-						else
-							return null;
+				for(int j = tagStack.size() - 1; j >= 0; j--) {
+					if(tag.tag.equals(tagStack.get(j))) {
+						for(int k = tagStack.size() - 1; k >= j; k--) {
+							tagStack.remove(k);
+						}
+						continue loop;
 					}
-					else if(tag.tag.equals(tagStack.pop()))
-						break;
 				}
+
+				if (tag.tag.equals(startTag.tag))
+					return tag;
+				else
+					continue;
 			} else if(tag.type == T_START_TAG)
 				tagStack.push(tag.tag);
 		}
@@ -188,7 +191,7 @@ public class MatchTag {
 		Stack tagStack = new Stack();
 loop:		for (int i = text.lastIndexOf('<', endTag.start - 1);
 			i != -1; i = text.lastIndexOf('<', --i)) {
-			System.err.println(i);
+			//System.err.println(i);
 			Tag tag = getSelectedTag(i + 1, text);
 			if (tag == null)
 				continue;

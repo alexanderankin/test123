@@ -19,15 +19,15 @@ package xml;
 //{{{ Imports
 import javax.swing.event.*;
 import javax.swing.Timer;
-import java.awt.*;
 import java.awt.event.*;
+import java.awt.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
 //}}}
 
-public class TagHighlight implements TextAreaHighlight
+public class TagHighlight extends TextAreaExtension
 {
 	//{{{ TagHighlight constructor
 	public TagHighlight(View view, JEditTextArea textArea)
@@ -47,27 +47,16 @@ public class TagHighlight implements TextAreaHighlight
 				updateHighlight();
 			}
 		});
+
+		returnValue = new Point();
 	} //}}}
 
-	//{{{ paintHighlight() method
-	public void paintHighlight(Graphics gfx, int virtualLine, int y)
+	//{{{ paintValidLine() method
+	public void paintValidLine(Graphics2D gfx, int physicalLine,
+		int start, int end, int y)
 	{
-		if(virtualLine >= textArea.getVirtualLineCount())
-			return;
-
-		int physicalLine = textArea.virtualToPhysical(virtualLine);
-
-		/*if(current != null)
-			paintHighlight(gfx,physicalLine,y,current);*/
-
 		if(match != null)
-			paintHighlight(gfx,physicalLine,y,match);
-	} //}}}
-
-	//{{{ getToolTipText() method
-	public String getToolTipText(MouseEvent evt)
-	{
-		return null;
+			paintHighlight(gfx,physicalLine,start,end,y,match);
 	} //}}}
 
 	//{{{ bufferChanged() method
@@ -105,66 +94,82 @@ public class TagHighlight implements TextAreaHighlight
 	private View view;
 	private JEditTextArea textArea;
 	private Buffer buffer;
+
+	private Point returnValue;
 	//}}}
 
 	//{{{ paintHighlight() method
-	private void paintHighlight(Graphics gfx, int physicalLine, int y,
-		MatchTag.Tag tag)
+	private void paintHighlight(Graphics gfx, int physicalLine,
+		int start, int end, int y, MatchTag.Tag tag)
 	{
-		int tagStartLine = buffer.getLineOfOffset(tag.start);
-		int tagEndLine = buffer.getLineOfOffset(tag.end);
-
-		if(physicalLine < tagStartLine || physicalLine > tagEndLine)
+		if(tag.start >= end || tag.end < start)
 			return;
+
+		int tagStartLine = textArea.getScreenLineOfOffset(tag.start);
+		int tagEndLine = textArea.getScreenLineOfOffset(tag.end);
+
+		int screenLine = textArea.getScreenLineOfOffset(start);
 
 		FontMetrics fm = textArea.getPainter().getFontMetrics();
 		int height = fm.getHeight();
-		int top = y + fm.getDescent() + fm.getLeading();
 
 		int x1, x2;
 
-		if(tagStartLine == physicalLine)
-			x1 = tag.start - buffer.getLineStartOffset(tagStartLine);
+		if(tagStartLine == screenLine)
+		{
+			x1 = tag.start - buffer.getLineStartOffset(
+				buffer.getLineOfOffset(tag.start));
+		}
 		else
 			x1 = 0;
 
-		if(tagEndLine == physicalLine)
-			x2 = tag.end - buffer.getLineStartOffset(tagEndLine);
+		if(tagEndLine == screenLine)
+		{
+			x2 = tag.end - buffer.getLineStartOffset(
+				buffer.getLineOfOffset(tag.end));
+		}
 		else
-			x2 = buffer.getLineLength(physicalLine);
+		{
+			x2 = textArea.getScreenLineEndOffset(screenLine)
+				- textArea.getScreenLineStartOffset(screenLine);
+		}
 
-		x1 = textArea.offsetToX(physicalLine,x1);
-		x2 = textArea.offsetToX(physicalLine,x2);
+		x1 = textArea.offsetToXY(physicalLine,x1,returnValue).x;
+		x2 = textArea.offsetToXY(physicalLine,x2,returnValue).x;
 
 		gfx.setColor(tagHighlightColor);
 
-		gfx.drawLine(x1,top,x1,top + height - 1);
-		gfx.drawLine(x2,top,x2,top + height - 1);
+		gfx.drawLine(x1,y,x1,y + height - 1);
+		gfx.drawLine(x2,y,x2,y + height - 1);
 
-		if(tagStartLine == physicalLine)
-			gfx.drawLine(x1,top,x2,top);
+		if(tagStartLine == screenLine || screenLine == 0)
+			gfx.drawLine(x1,y,x2,y);
 		else
 		{
 			int prevX1, prevX2;
 
-			if(tagStartLine == physicalLine - 1)
-				prevX1 = tag.start - buffer.getLineStartOffset(tagStartLine);
+			if(tagStartLine == screenLine - 1)
+			{
+				prevX1 = tag.start - buffer.getLineStartOffset(
+					buffer.getLineOfOffset(tag.start));
+			}
 			else
 				prevX1 = 0;
 
-			prevX2 = buffer.getLineLength(physicalLine - 1);
+			prevX2 = textArea.getScreenLineEndOffset(screenLine - 1)
+				- textArea.getScreenLineStartOffset(screenLine - 1);
 
-			prevX1 = textArea.offsetToX(physicalLine - 1,prevX1);
-			prevX2 = textArea.offsetToX(physicalLine - 1,prevX2);
+			prevX1 = textArea.offsetToXY(physicalLine - 1,prevX1,returnValue).x;
+			prevX2 = textArea.offsetToXY(physicalLine - 1,prevX2,returnValue).x;
 
-			gfx.drawLine(Math.min(x1,prevX1),top,
-				Math.max(x1,prevX1),top);
-			gfx.drawLine(Math.min(x2,prevX2),top,
-				Math.max(x2,prevX2),top);
+			gfx.drawLine(Math.min(x1,prevX1),y,
+				Math.max(x1,prevX1),y);
+			gfx.drawLine(Math.min(x2,prevX2),y,
+				Math.max(x2,prevX2),y);
 		}
 
-		if(tagEndLine == physicalLine)
-			gfx.drawLine(x1,top + height - 1,x2,top + height - 1);
+		if(tagEndLine == screenLine)
+			gfx.drawLine(x1,y + height - 1,x2,y + height - 1);
 	}
 
 	//{{{ updateHighlightWithDelay() method
@@ -242,6 +247,8 @@ public class TagHighlight implements TextAreaHighlight
 
 		bufferChanged = false;
 	} //}}}
+
+	//}}}
 
 	//}}}
 

@@ -1,26 +1,20 @@
 + version 0.6:
 
-- recording <, >, /, &
-- threaddeath -- wtf?
-- finish tag highlighting
-- 'advanced' option pane for selecting a parser, with a 'don't change this
-  if you don't know what you're doing' warning. tag highlight in modes that
-  set 'xml.parser' property
-- html: get rid of _implied_ crap
-- use getContextSensitiveProperty()
-- better docs: moving around xml file, editing xml file, etc.
-- xsd completion file is broken
 - add name of tag highlight guy
-- option to not fetch stuff from 'net
 
 + version 0.7:
 
+- recording <, >, /, &
+- threaddeath -- wtf?
+- 'advanced' option pane for selecting a parser, with a 'don't change this
+  if you don't know what you're doing' warning. tag highlight in modes that
+  set 'xml.parser' property
+- use getContextSensitiveProperty()
+- option to not fetch stuff from 'net
 - tag hilite: respect syntax info
 - id completion
-- html: use jtidy instead of retarded Swing parser.
 - switching between two edit panes with same buffer: expand tree at
   appropriate location
-- empty/opening tag only/opening and closing in edit tag dialog
 - proper handling of tags in nested files
 - documentation: XML catalog format, OASIS catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
@@ -28,11 +22,7 @@
   level
 - handle parsing open buffers better
 - let user specify completion info files in advanced option pane.
-  XML->Advanced menu:
-   - Open xml-completion-info.dtd
-   - Open ant-complete.xml
-   - ...
-   - Write tidy config file
+- option to show first attr only in tree
 
 + before 1.0:
 

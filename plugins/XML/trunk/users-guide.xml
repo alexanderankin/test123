@@ -42,36 +42,63 @@
  </para>
 
  <itemizedlist>
+  <listitem><para>On-the-fly validation of XML files</para></listitem>
   <listitem><para>Display of the element tree in a dockable window</para></listitem>
   <listitem><para>Matching tag highlighting</para></listitem>
   <listitem><para>One click insertion of tags and entities</para></listitem>
-  <listitem><para>Completion popups for tags and entities</para></listitem>
   <listitem><para>Graphical editing of tags and attributes</para></listitem>
-  <listitem><para>A number of miscellaneous commands, for moving the
-  caret to the next and previous tag, and converting special
-  characters to entities and vice versa</para></listitem>
+  <listitem><para>A number of miscellaneous commands</para></listitem>
  </itemizedlist>
 
+</chapter>
+
+<chapter id="parsing"><title>Parsing XML and HTML</title>
+
  <para>
-  In addition, XML files are validated against a DTD. This feature is
-  currently not available for HTML files; consider using the
-  <application>JTidy</application> plugin to validate HTML.
+  The XML plugin automatically parses XML and HTML files when they are loaded or saved.
+  Optionally, they can also be parsed on the fly, but this uses a fair bit of
+  memory and processor power so it is disabled by default.
+  The current buffer can be parsed at any other time by clicking the parse
+  button in the XML tree window, or using the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Parse
+  XML Buffer</guimenuitem>.
  </para>
 
  <para>
-  XML files are parsed with the Xerces XML parser, version 1.4.4. HTML files
-  are parsed using the HTML parser bundled with Swing.
+  XML files are validated, while HTML files are not.
+  Any errors found while parsing XML are handled by the
+  <application>ErrorList</application> plugin; in other words, they are highlighted
+  in the text area, and shown in the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> window. See the
+  documentation for the <application>ErrorList</application> plugin for details.
  </para>
+
+ <para>
+  If a DTD or XML schema is available, it will be used to validate the XML
+  file; otherwise, only minimal error checking will be performed.
+ </para>
+
+ <para>
+  If the XML file specifies the DTD using a public ID, you will need to
+  ensure the XML plugin loads a catalog file that defines the public ID.
+  The XML plugin can use catalogs in XML catalog and OASIS SOCAT formats.
+  Catalogs to search in can be specified
+  in the <guibutton>XML</guibutton>&gt;<guibutton>Catalogs</guibutton> pane
+  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+  dialog box.
+ </para>
+
 </chapter>
 
 <chapter id="tree"><title>The XML tree window</title>
 
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>XML
-  Tree</guimenuitem> displays the XML tree window. This window is floating by
-  default, but it can be made to
-  dock into the view in the <guibutton>Docking</guibutton> pane of the
-  <guimenuitem>Global Options</guimenuitem> dialog box.
+  Tree</guimenuitem> displays all elements defined in the current buffer in a
+  dockable window. This window is floating by
+  default, but it can be docked into the view in the <guibutton>Docking</guibutton>
+  pane of the <guimenuitem>Global Options</guimenuitem> dialog box.
  </para>
 
  <para>
@@ -95,71 +122,50 @@
 
 </chapter>
 
-<chapter id="validation"><title>XML validation</title>
+<chapter id="moving-around"><title>Moving around XML and HTML files</title>
 
  <para>
-  By default, switching to a different buffer will parse it if it is an XML file;
-  saving an XML file will also parse it. The XML plugin can also
-  optionally re-parse files on the fly; this should only be used on fast
-  systems with a lot of memory.
-  The current buffer can be parsed at any other time by clicking the parse
-  button
-  in the XML tree window.
- </para>
-
- <para>
-  Any errors found while parsing XML are handled by the
-  <application>ErrorList</application> plugin; this means they are highlighted
-  in the text area, and shown in the
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
-  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> window. See the
-  documentation for the <application>ErrorList</application> plugin for details.
- </para>
-
- <para>
-  If a DTD or XML schema is available, it will be used to validate the XML
-  file; otherwise, only minimal error checking will be performed.
-  If the XML file specifies the DTD using a public ID, you will need to
-  ensure the XML plugin loads the catalog where the public ID is defined;
-  see <xref linkend="catalog" />.
- </para>
-
- <para>
-  You can specify when to parse, and which edit modes to parse in, in the
+  If the caret is positioned on a tag, the corresponding opening or closing
+  tag will be highlighted in the text area. You can disable this feature,
+  or change the tag highlight color in the
   <guibutton>XML</guibutton>&gt;<guibutton>General</guibutton> pane
   of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
   dialog box.
  </para>
 
-</chapter>
-
-<chapter id="tag-highlight"><title>Matching tag highlighting</title>
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
+  to Matching Tag</guimenuitem> moves the caret to the corresponding opening or
+  closing tag.
+ </para>
 
  <para>
-  If the caret is positioned on a tag, the corresponding opening or closing
-  tag will be highlighted in the text area. You can disable this feature
-  completely, or specify in which edit modes it should be used
-  in the
-  <guibutton>XML</guibutton>&gt;<guibutton>Tag Highlighting</guibutton> pane
-  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
-  dialog box.
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
+  to Previous Tag</guimenuitem> moves the caret to start of the previous
+  tag.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
+  to Next Tag</guimenuitem> moves the caret to start of the next
+  tag.
  </para>
 
 </chapter>
 
-<chapter id="insert"><title>Inserting tags or entities</title>
+<chapter id="insert"><title>The XML insert window</title>
 
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>XML
-  Tree</guimenuitem> displays the XML insert window. This window is floating by
-  default, but it can be made to
-  dock into the view in the <guibutton>Docking</guibutton> pane of the
+  Insert</guimenuitem> displays the XML insert window. This window is floating by
+  default, but it can be docked
+  into the view in the <guibutton>Docking</guibutton> pane of the
   <guimenuitem>Global Options</guimenuitem> dialog box.
  </para>
 
  <para>
-  If editing an XML or an HTML file, this window will list
-  all declared elements and entities.
+  This window lists all declared elements, entities and IDs (element attributes
+  with a value type of <property>ID</property>).
  </para>
 
  <para>
@@ -169,6 +175,12 @@
   <guimenuitem>Edit Tag</guimenuitem> dialog box. Clicking an element
   with the right mouse button will insert it in the text area, but the
   <guimenuitem>Edit Tag</guimenuitem> dialog box will not be shown.
+ </para>
+
+ <para>
+  Clicking an ID with the left mouse button will inest it into the buffer;
+  clicking with the right mouse button will move the caret to the element
+  that declares it.
  </para>
 
  <para>
@@ -182,7 +194,7 @@
   With XML files, the list of elements and entities is loaded from the file's DTD.
   If the XML file specifies the DTD using a public ID, you will need to
   ensure the XML plugin loads the catalog where the public ID is defined;
-  see <xref linkend="catalog" />.
+  see <xref linkend="parsing" />.
  </para>
 
  <para>
@@ -202,7 +214,8 @@
 <chapter id="completion"><title>Tag and entity completion</title>
 
  <para>
-  If <keycap>&lt;</keycap> is typed and no other key is pressed within a
+  If the less-than symbol (<quote>&lt;</quote>) is typed and no other key
+  is pressed within a
   specified delay (half a second by default), a tag list popup will be
   shown. The arrow keys can be used to select a tag; if you start
   typing a tag name, only tags whose names begin with the already-entered
@@ -306,7 +319,12 @@
 
 </chapter>
 
-<chapter id="entity-commands"><title>Entity conversion</title>
+<chapter id="edit-commands"><title>Miscellaneous commands</title>
+
+ <para>
+  The following commands can be helpful when editing XML and HTML
+  files.
+ </para>
 
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Characters
@@ -328,23 +346,6 @@
  </para>
 
  <para>
-  The <guimenuitem>XML Tree</guimenuitem> window must be open
-  for entity conversion to work with XML files, but for HTML
-  files, the <guimenuitem>XML Tree</guimenuitem> window need not be
-  open and the list of entities is stored in the XML plugin
-  itself.
- </para>
-
-</chapter>
-
-<chapter id="edit-commands"><title>Editing commands</title>
-
- <para>
-  The following commands can be helpful when editing XML and HTML
-  files.
- </para>
-
- <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Close
   Last Open Tag</guimenuitem> inserts a closing tag for the last opened tag.
   With HTML files, this might incorrectly close such tags as
@@ -352,31 +353,9 @@
  </para>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
-  to Previous Tag</guimenuitem> moves the caret to start of the previous
-  tag.
- </para>
-
- <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
-  to Next Tag</guimenuitem> moves the caret to start of the next
-  tag.
- </para>
-
- <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Remove
   All Tags</guimenuitem> removes all tags from the current buffer, leaving
   only text.
- </para>
-
-</chapter>
-
-<chapter id="misc-commands"><title>Miscellaneous commands</title>
-
- <para>
-  The XML plugin provides a few additional commands that can be bound to
-  keyboard shortcuts in the <guibutton>Shortcuts</guibutton> pane of the
-  <guimenuitem>Global Options</guimenuitem> dialog box.
  </para>
 
  <para>
@@ -436,25 +415,13 @@
 
  <para>
   Note that you must replace <replaceable>n</replaceable> with the
-  appropriate number, as dependency properties must have consecutive numbers..
+  appropriate number, as dependency properties must have consecutive numbers.
  </para>
 
  <para>
   That's all there is to it; you can now use the Xerces parser in your plugin.
   Xerces includes its own implementations of the JAXP, SAX2 and DOM APIs, so
   integrating existing code should be relatively easy.
- </para>
-
-</chapter>
-
-<chapter id="catalog"><title>Resolving system and public IDs</title>
-
- <para>
-  The XML plugin can use catalogs in XML catalog and OASIS SOCAT formats
-  to resolve system and public IDs. Catalogs to search in can be specified
-  in the <guibutton>XML</guibutton>&gt;<guibutton>Catalogs</guibutton> pane
-  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
-  dialog box.
  </para>
 
 </chapter>

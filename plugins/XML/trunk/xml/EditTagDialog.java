@@ -542,7 +542,9 @@ class EditTagDialog extends EnhancedDialog
 		{
 			super(comboBox);
 			this.editorCombo = comboBox;
+			editorCombo.setEditable(true);
 			this.renderCombo = new JComboBox();
+			renderCombo.setEditable(true);
 		} //}}}
 
 		//{{{ getTableCellEditorComponent() method

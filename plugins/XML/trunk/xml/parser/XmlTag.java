@@ -44,4 +44,9 @@ public class XmlTag
 
 		attributeString = buf.toString();
 	}
+
+	public String toString()
+	{
+		return attributeString;
+	}
 }
