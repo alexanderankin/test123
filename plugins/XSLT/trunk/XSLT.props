@@ -24,7 +24,7 @@ org.xml.sax.driver=org.apache.xerces.parsers.SAXParser
 XSLTProcessor.title=XSLT Processor
 XSLTProcessor.label=XSLT Processor
 XSLTProcessor.Transform.label=Transform XML
-XSLTProcessor.Indent.label=Indent XML Buffer
+XSLTProcessor.Indent.label=Indent XML
 XPathTool.title=XPath Tool
 XPathTool.label=XPath Tool
 XPathTool.Evaluate.label=Evaluate XPath
@@ -35,19 +35,31 @@ XSLTProcessor.error.dockFirst=You must dock the XSLT Processor before you can pe
 
 XSLTProcessor.source.label=Source:
 XSLTProcessor.source.pleaseSelect=Please select a source document
-XSLTProcessor.select.button=Select
+XSLTProcessor.select.button.tooltip=Select XML source
+XSLTProcessor.select.button.icon=/xslt/icons/Open.png
 
 XSLTProcessor.stylesheets.label=Stylesheets:
-XSLTProcessor.add.button=Add
-XSLTProcessor.delete.button=Delete
-XSLTProcessor.up.button=Up
-XSLTProcessor.down.button=Down
+XSLTProcessor.add.button.tooltip=Add stylesheet
+XSLTProcessor.add.button.icon=/xslt/icons/Plus.png
+
+XSLTProcessor.remove.button.tooltip=Remove stylesheet
+XSLTProcessor.remove.button.icon=/xslt/icons/Minus.png
+
+XSLTProcessor.up.button.tooltip=Move up
+XSLTProcessor.up.button.icon=/xslt/icons/ArrowUp.png
+
+XSLTProcessor.down.button.tooltip=Move down
+XSLTProcessor.down.button.icon=/xslt/icons/ArrowDown.png
 
 XSLTProcessor.result.label=Result:
 XSLTProcessor.result.pleaseName=Please name for the result document
-XSLTProcessor.name.button=Name
 
-XSLTProcessor.transform.button=Transform
+XSLTProcessor.name.button.tooltip=Name result file
+XSLTProcessor.name.button.icon=/xslt/icons/New.png
+
+XSLTProcessor.transform.button.tooltip=Transform XML
+XSLTProcessor.transform.button.icon=/xslt/icons/Transform.png
+
 XSLTProcessor.transform.status=Transform completed, time taken {0}ms
 XSLTProcessor.transform.indentAmount=2
 
@@ -66,7 +78,9 @@ XSLTProcessor.Transform.error.notEnabled=You must first specify your source docu
 
 XPathTool.error.dockFirst=You must dock the XPath Tool before you can perform this action.
 XPathTool.xpathExpression.label=XPath expression:
-XPathTool.evaluate.button=Evaluate
+
+XPathTool.evaluate.button.tooltip=Evaluate XPath
+XPathTool.evaluate.button.icon=/xslt/icons/Evaluate.png
 
 XPathTool.result.xpath.evaluted.label=Data type of result:
 XPathTool.result.xpath.node-set=node-set of size {0}
