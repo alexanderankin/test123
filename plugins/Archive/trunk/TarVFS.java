@@ -18,12 +18,23 @@
 */
 
 
+import java.io.IOException;
+import java.io.InputStream;
+
+
 public class TarVFS extends ArchiveVFS {
     public static final String PROTOCOL = "tar";
 
 
     public TarVFS() {
         super(PROTOCOL);
+    }
+
+
+    protected InputStream openArchiveStream(InputStream in) throws IOException {
+        return ArchiveUtilities.openTarStream(
+            ArchiveUtilities.openCompressedStream(in)
+        );
     }
 }
 

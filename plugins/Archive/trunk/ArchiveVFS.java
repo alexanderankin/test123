@@ -203,6 +203,13 @@ public class ArchiveVFS extends VFS {
     }
 
 
+    protected InputStream openArchiveStream(InputStream in) throws IOException {
+        return ArchiveUtilities.openArchiveStream(
+            ArchiveUtilities.openCompressedStream(in)
+        );
+    }
+
+
     public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
         Component comp)
     {
@@ -225,9 +232,7 @@ public class ArchiveVFS extends VFS {
             boolean ignoreErrors = true;
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
 
-            InputStream archiveIn = ArchiveUtilities.openArchiveStream(
-                ArchiveUtilities.openCompressedStream(in)
-            );
+            InputStream archiveIn = this.openArchiveStream(in);
 
             Hashtable directories = null;
             ArchiveCommand archiveCmd = ArchiveCommand.getCommand(archiveIn);
@@ -280,10 +285,8 @@ public class ArchiveVFS extends VFS {
 
             boolean ignoreErrors = true;
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
+            InputStream archiveIn = this.openArchiveStream(in);
 
-            InputStream archiveIn = ArchiveUtilities.openArchiveStream(
-                ArchiveUtilities.openCompressedStream(in)
-            );
             ArchiveCommand archiveCmd = ArchiveCommand.getCommand(archiveIn);
             ArchiveEntry entry = null;
             if (archiveCmd != null) {
@@ -361,9 +364,8 @@ public class ArchiveVFS extends VFS {
 
         try {
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
-            InputStream archiveIn = ArchiveUtilities.openArchiveStream(
-                ArchiveUtilities.openCompressedStream(in)
-            );
+            InputStream archiveIn = this.openArchiveStream(in);
+
             ArchiveCommand archiveCmd = ArchiveCommand.getCommand(archiveIn);
             if (archiveCmd != null) {
                 return archiveCmd.createInputStream(archiveEntry);

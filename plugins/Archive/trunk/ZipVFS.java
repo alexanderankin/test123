@@ -18,12 +18,21 @@
 */
 
 
+import java.io.IOException;
+import java.io.InputStream;
+
+
 public class ZipVFS extends ArchiveVFS {
     public static final String PROTOCOL = "zip";
 
 
     public ZipVFS() {
         super(PROTOCOL);
+    }
+
+
+    protected InputStream openArchiveStream(InputStream in) throws IOException {
+        return ArchiveUtilities.openZipStream(in);
     }
 }
 
