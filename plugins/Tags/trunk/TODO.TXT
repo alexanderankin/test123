@@ -1,5 +1,6 @@
 TODO
 ----
+- Do something with ./COPYING
 
 - ./tag checkbox usage puts ./tags in file list for user to reorder... 
 
@@ -20,9 +21,13 @@ TODO
 
 - Don't use Macros for errors and warings as you can't change the title of the
   dialog.
+
+- Clear tag stack command
+
+- Save tag stack between sessions
   
 - Ability to set num of columns for filename in tag collision dialog.
-  Automatically do it if collision list popup/dialog is larger than screen 
+  Automatically do it if collision list popup/dialog is larger than screen.
         
 - Ability to switch to a different set of tag files easily (shouldn't have to
   remove and add a whole new set).  The catagory stuff is a step in this
