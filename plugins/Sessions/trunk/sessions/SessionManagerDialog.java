@@ -203,18 +203,30 @@ class SessionManagerDialog
 		if (newName == null)
 			return;
 
-		File oldFile = new File(SessionManager.createSessionFileName(oldName));
-		File newFile = new File(SessionManager.createSessionFileName(newName));
-
-		if (oldFile.renameTo(newFile))
+		// Load the session to be re-named
+		Session renameSession;
+		if (oldName.equals(currentSession))
+		{
+			renameSession = SessionManager.getInstance().getCurrentSessionInstance();
+		} else {
+			renameSession = new Session(oldName);
+			try {
+				renameSession.loadXML();
+			} catch (Exception e) {
+				GUIUtilities.error(this, "sessions.manager.error.rename", new Object[] { oldName, newName });
+				return;
+			}
+		}
+		
+		if (renameSession.rename(newName))	// rename succeeded
 		{
 			setNewListModel();
 			lSessions.setSelectedValue(newName, true);
 			if (oldName.equals(currentSession))
 				currentSession = newName;
 		}
-		else
-			GUIUtilities.error(this, "sessions.manager.error.rename", new Object[] { oldFile, newFile });
+		else	// rename failed
+			GUIUtilities.error(this, "sessions.manager.error.rename", new Object[] { oldName, newName });
 	}
 
 
