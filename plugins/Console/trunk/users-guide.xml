@@ -1172,11 +1172,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    requires jEdit 4.1pre8 and the ErrorList plugin 1.2.</para>
 
    <itemizedlist>
+    <listitem><para>Built-in command name completion now supported.</para></listitem>
     <listitem><para>File name and command completion can now be used in the console
     tool bar.</para></listitem>
     <listitem><para><command>cd -</command> now goes to the last visited
     directory.</para></listitem>
-    <listitem><para>Command completion now supported.</para></listitem>
     <listitem><para>Pressing the tab key in the command input field when there
     was nothing to complete would have strange results.</para></listitem>
     <listitem><para>Updated for jEdit 4.1 icon theme.</para></listitem>
@@ -1193,6 +1193,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     <function>setenv()</function> BeanShell commands for obtaining and changing
     environment variables. You can use them in
     startup scripts, for example.</para></listitem>
+    <listitem><para>Pressing <keycap>Enter</keycap> after changing a value in
+    a commando dialog box text field without first moving focus out of the
+    text field did not make the change take effect.
+    </para></listitem>
    </itemizedlist>
   </listitem>
 

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001 Slava Pestov
+ * Copyright (C) 2001, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -117,6 +117,11 @@ public class CommandoDialog extends EnhancedDialog
 	//{{{ ok() method
 	public void ok()
 	{
+		// crusty workaround
+		Component comp = getFocusOwner();
+		if(comp instanceof CommandoComponent)
+			((CommandoComponent)comp).valueChanged();
+
 		jEdit.setProperty("commando.last-command",command.getName());
 
 		Vector commands = new Vector();
@@ -573,8 +578,14 @@ public class CommandoDialog extends EnhancedDialog
 		//}}}
 	} //}}}
 
+	//{{{ CommandoComponent interface
+	interface CommandoComponent
+	{
+		void valueChanged();
+	} //}}}
+
 	//{{{ CommandoCheckBox class
-	class CommandoCheckBox extends JCheckBox
+	class CommandoCheckBox extends JCheckBox implements CommandoComponent
 	{
 		//{{{ CommandoCheckBox constructor
 		CommandoCheckBox(String label, String varName, String defaultValue,
@@ -616,7 +627,7 @@ public class CommandoDialog extends EnhancedDialog
 		private String property;
 
 		//{{{ valueChanged() method
-		private void valueChanged()
+		public void valueChanged()
 		{
 			jEdit.setTemporaryProperty(property,isSelected() ? "true" : "false");
 
@@ -642,7 +653,7 @@ public class CommandoDialog extends EnhancedDialog
 	} //}}}
 
 	//{{{ CommandoTextField class
-	class CommandoTextField extends JTextField
+	class CommandoTextField extends JTextField implements CommandoComponent
 	{
 		//{{{{ CommandoTextField constructor
 		CommandoTextField(String varName, String defaultValue, String eval)
@@ -680,7 +691,7 @@ public class CommandoDialog extends EnhancedDialog
 		private String property;
 
 		//{{{ valueChanged() method
-		private void valueChanged()
+		public void valueChanged()
 		{
 			String text = getText();
 			if(text == null)
@@ -720,7 +731,7 @@ public class CommandoDialog extends EnhancedDialog
 	} //}}}
 
 	//{{{ CommandoCheckBox class
-	class CommandoComboBox extends JComboBox
+	class CommandoComboBox extends JComboBox implements CommandoComponent
 	{
 		//{{{ CommandoComboBox constructor
 		CommandoComboBox(String varName, String defaultValue, String eval,
@@ -765,7 +776,7 @@ public class CommandoDialog extends EnhancedDialog
 		private String eval;
 
 		//{{{ valueChanged() method
-		private void valueChanged()
+		public void valueChanged()
 		{
 			Option value = (Option)getSelectedItem();
 
