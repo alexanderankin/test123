@@ -33,10 +33,15 @@ import org.gjt.sp.jedit.*;
 /**
  * Macro list downloaded from server.
  */
-class MacroList
+class MacroList implements Comparator
 {
 	Vector macros;
 	Vector macroSets;
+
+	public static final int SORT_BY_NAME = 0;
+	public static final int SORT_BY_DATE = 1;
+
+	private boolean sortByName;
 
 	MacroList() throws Exception
 	{
@@ -48,10 +53,10 @@ class MacroList
 		XmlParser parser = new XmlParser();
 		parser.setHandler(handler);
 
-//		parser.parse(null,null,new BufferedReader(new InputStreamReader(
-//			new GZIPInputStream(new URL(path).openStream()),"UTF8")));
 		parser.parse(null,null,new BufferedReader(new InputStreamReader(
 			(new URL(path).openStream()),"ISO-8859-1")));
+//		parser.parse(null,null,new BufferedReader(new InputStreamReader(
+//			new GZIPInputStream(new URL(path).openStream()),"ISO-8859-1")));
 	}
 
 	void addMacro(MacroList.Macro macro)
@@ -62,6 +67,35 @@ class MacroList
 	void addMacroSet(MacroSet set)
 	{
 		macroSets.addElement(set);
+	}
+
+	public void sortMacroList(int constraint)
+	{
+		sortByName = (constraint == SORT_BY_NAME);
+		Collections.sort(macros, this);
+	}
+
+	public Vector searchMacroList(String text)
+	{
+		text = text.toLowerCase();
+		Vector results = new Vector();
+		for(int i = 0; i < macros.size(); i++)
+		{
+			MacroList.Macro mac = (MacroList.Macro)macros.elementAt(i);
+			if(mac.name.toLowerCase().indexOf(text) != -1 || mac.description.toLowerCase().indexOf(text) != -1)
+			{
+				results.add(mac);
+			}
+		}
+		return results;
+	}
+
+	public int compare(Object o1, Object o2)
+	{
+		if(sortByName)
+			return ((MacroList.Macro)o1).name.compareTo(((MacroList.Macro)o2).name);
+		else
+			return -((MacroList.Macro)o1).date.compareTo(((MacroList.Macro)o2).date);
 	}
 
 	void finished()
