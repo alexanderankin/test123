@@ -96,7 +96,11 @@ public class VPTDirectory extends VPTNode {
 	//{{{ toString() method
 	/** Returns a string representation of the current node. */
 	public String toString() {
-		return"Directory [" + getFile().getAbsolutePath() + "]";
+		if (getFile().exists()) {
+			return "Directory [" + getFile().getAbsolutePath() + "]";
+		} else {
+			return "VirtualDirectory [" + getName() + "]";
+		}
 	} //}}}
 
 	//{{{ getNodePath()
