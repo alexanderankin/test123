@@ -20,6 +20,7 @@ package antfarm;
 import console.*;
 
 import java.io.*;
+import java.util.*;
 import javax.swing.*;
 import org.apache.tools.ant.*;
 import org.gjt.sp.jedit.*;
@@ -41,21 +42,22 @@ public class TargetRunner extends Thread
 	File _buildFile;
 	View _view;
 	Output _output;
+	Properties _userProperties;
 
 	PrintStream _consoleOut;
 	PrintStream _consoleErr;
 
 
-	public TargetRunner( Target target, File buildFile, View view, Output output )
+	public TargetRunner( Target target, File buildFile, View view, Output output, Properties userProperties )
 	{
-		init( target, buildFile, view, output );
+		init( target, buildFile, view, output, userProperties );
 	}
 
 
-	public TargetRunner( Project project, File buildFile, View view, Output output )
+	public TargetRunner( Project project, File buildFile, View view, Output output, Properties userProperties )
 	{
 		Target target = (Target) project.getTargets().get( project.getDefaultTarget() );
-		init( target, buildFile, view, output );
+		init( target, buildFile, view, output, userProperties );
 	}
 
 
@@ -78,9 +80,6 @@ public class TargetRunner extends Thread
 
 		if ( useSameJvm ) {
 			setOutputStreams();
-
-			// set ant.file property
-			_project.setUserProperty( "ant.file", _buildFile.getAbsolutePath() );
 
 			try {
 				_project.addBuildListener( _buildLogger );
@@ -118,19 +117,52 @@ public class TargetRunner extends Thread
 	}
 
 
-	private void init( Target target, File buildFile, View view, Output output )
+	private String getAntCommandFragment( Properties properties )
+	{
+		if ( properties == null ) {
+			return "";
+		}
+		StringBuffer command = new StringBuffer();
+		Enumeration ee = properties.keys();
+		String current;
+		while ( ee.hasMoreElements() ) {
+			current = (String) ee.nextElement();
+			command.append( " -D" ).append( current ).append( "=" );
+			command.append( properties.getProperty( current ) );
+		}
+		return command.toString();
+	}
+
+
+	private void init( Target target, File buildFile, View view, Output output, Properties userProperties )
 	{
 		_target = target;
 		_project = _target.getProject();
 		_buildFile = buildFile;
 		_view = view;
 		_output = output;
+		_userProperties = userProperties;
 
 		_consoleErr = new AntPrintStream( System.out, _view );
 		_consoleOut = new AntPrintStream( System.out, _view );
 
+		// re-init the project so we start from a fresh state
+		_project.init();
+
 		// set so jikes prints emacs style errors
 		_project.setProperty( "build.compiler.emacs", "true" );
+
+		_project.setUserProperty( "ant.version", Main.getAntVersion() );
+
+		// set user-define properties
+		Enumeration e = _userProperties.keys();
+		while ( e.hasMoreElements() ) {
+			String arg = (String) e.nextElement();
+			String value = (String) _userProperties.get( arg );
+			_project.setUserProperty( arg, value );
+		}
+
+		_project.setUserProperty( "ant.file", _buildFile.getAbsolutePath() );
 
 		configureBuildLogger();
 
@@ -147,6 +179,8 @@ public class TargetRunner extends Thread
 
 		if ( command != null ) {
 			command = "\"" + command + "\"";
+
+			command += getAntCommandFragment( _userProperties );
 			if (
 				jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "output-emacs" )
 				 ) {
