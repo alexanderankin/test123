@@ -42,12 +42,6 @@ public class BackgroundOptionPane extends AbstractOptionPane
 
 
     protected void _init() {
-        setLayout(new BorderLayout());
-        setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
-
-        JLabel label = new JLabel(jEdit.getProperty("options.background.file"));
-
-        JPanel filePanel = new JPanel(new BorderLayout(5, 0));
         this.tfBackground = new JTextField();
         this.tfBackground.setText(jEdit.getProperty(
               "background.file"
@@ -56,22 +50,15 @@ public class BackgroundOptionPane extends AbstractOptionPane
             "options.background.choose-file"
         ));
         this.btnBackground.addActionListener(new ActionHandler());
+
+        JPanel filePanel = new JPanel(new BorderLayout(5, 0));
         filePanel.add(this.tfBackground,  BorderLayout.CENTER);
         filePanel.add(this.btnBackground, BorderLayout.EAST);
 
-        JPanel labelPanel = new JPanel(new GridLayout(0, 1));
-        labelPanel.setOpaque(false);
-        labelPanel.add(label);
-
-        JPanel fieldPanel = new JPanel(new GridLayout(0, 1));
-        fieldPanel.setOpaque(false);
-        fieldPanel.add(filePanel);
-
-        JPanel northPanel = new JPanel(new BorderLayout(5, 0));
-        northPanel.setOpaque(false);
-        northPanel.add(labelPanel, BorderLayout.WEST);
-        northPanel.add(fieldPanel, BorderLayout.CENTER);
-        add(northPanel, BorderLayout.NORTH);
+        addComponent(
+            jEdit.getProperty("options.background.file"),
+            filePanel
+        );
     }
 
 
