@@ -1,6 +1,6 @@
 /*
  * Console.java - The console window
- * Copyright (C) 2000 Slava Pestov
+ * Copyright (C) 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -245,10 +245,22 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 
 		try
 		{
-			outputDocument.insertString(outputDocument.getLength(),
-				msg,style);
-			outputDocument.insertString(outputDocument.getLength(),
-				"\n",null);
+			// split long output text in small chunks of size 800:
+			StringChunkTokenizer sct =
+				new StringChunkTokenizer(msg,800," ,;\t\n",80);
+			while (sct.hasMoreTokens())
+			{
+				String chunk = sct.nextToken();
+				if (chunk.length() > 0)
+					outputDocument.insertString(
+						outputDocument.getLength(),
+						chunk,style);
+				if (chunk.length() == 0 ||
+				    chunk.charAt(chunk.length()-1) != '\n')
+					outputDocument.insertString(
+						outputDocument.getLength(),
+						"\n",null);
+			}
 		}
 		catch(BadLocationException bl)
 		{

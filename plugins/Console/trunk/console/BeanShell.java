@@ -1,6 +1,6 @@
 /*
  * BeanShell.java - Executes commands in jEdit's BeanShell interpreter
- * Copyright (C) 2000 Slava Pestov
+ * Copyright (C) 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,9 +19,11 @@
 
 package console;
 
-import bsh.Interpreter;
+import bsh.EvalError;
+import bsh.NameSpace;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 class BeanShell extends Shell
 {
@@ -37,12 +39,22 @@ class BeanShell extends Shell
 
 	public void execute(View view, String command, Console console)
 	{
-		Interpreter interp = org.gjt.sp.jedit.BeanShell.getInterpreter();
-		interp.setVariable("console",console);
-		Object retVal = org.gjt.sp.jedit.BeanShell.eval(view,command,false);
-		interp.setVariable("console",null);
-		if(retVal != null)
-			console.printPlain(retVal.toString());
+		NameSpace ns = org.gjt.sp.jedit.BeanShell.getNameSpace();
+		try
+		{
+			ns.setVariable("console",console);
+			Object retVal = org.gjt.sp.jedit.BeanShell.eval(view,command,false);
+			ns.setVariable("console",null);
+
+			if(retVal != null)
+				console.printPlain(retVal.toString());
+		}
+		catch(EvalError e)
+		{
+			// thrown if set/unset fails...
+			// can't do anything about it.
+			Log.log(Log.ERROR,this,e);
+		}
 	}
 
 	public boolean waitFor()

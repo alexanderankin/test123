@@ -3,7 +3,7 @@
  * console. Stuff like this doesn't really belong in the core at all...
  * In the future, plugins should be allowed to run BeanShell scripts on
  * startup. */
-runCommandInConsole(view,shell,command)
+runCommandInConsole(View view, String shell, String command)
 {
 	// Open the console if it isn't already open
 	view.getDockableWindowManager().addDockableWindow("console");
@@ -17,3 +17,6 @@ runCommandInConsole(view,shell,command)
 	// Call its run() method
 	console.run(command);
 }
+
+bsh.help.runCommandInConsole
+	= "usage: runCommandInConsole(View view, String shell, String command)";
