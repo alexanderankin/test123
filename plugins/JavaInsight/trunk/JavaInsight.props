@@ -5,7 +5,7 @@ plugin.javainsight.JavaInsightPlugin.docs=JavaInsight.html
 
 # Dependencies
 plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.1
-plugin.javainsight.JavaInsightPlugin.depend.1=jedit 03.01.03.00
+plugin.javainsight.JavaInsightPlugin.depend.1=jedit 03.01.99.00
 plugin.javainsight.JavaInsightPlugin.jars=BCEL.jar jode.jar
 
 # Menu bar properties
