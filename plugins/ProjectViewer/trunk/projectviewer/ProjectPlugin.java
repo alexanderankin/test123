@@ -113,13 +113,8 @@ public final class ProjectPlugin extends EBPlugin {
     */
    public void stop() {
       ProjectManager.getInstance().save();
-      if ( ProjectViewer.getMainViewer() != null ) {
-         ProjectViewer viewer = ProjectViewer.getMainViewer();
-         if ( viewer.getCurrentProject() != null )
-            viewer.getCurrentProject().save();
-         config.setLastProject(
-               !viewer.isAllProjects() ? viewer.getCurrentProject().getName() : null );
-      }
+	  Project current = ProjectManager.getInstance().getCurrentProject();
+      config.setLastProject( (current != null) ? current.getName() : null );
       config.save();
    }
 

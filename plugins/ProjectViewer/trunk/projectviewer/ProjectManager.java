@@ -43,6 +43,7 @@ public final class ProjectManager {
 	private final static ProjectManager instance = new ProjectManager();
 
 	private List projects;
+	private Project currentProject;
 	
 	/**
 	 * Create a new <code>ProjectManager</code>.
@@ -333,6 +334,14 @@ public final class ProjectManager {
 		}
 	}
 
+	public void setCurrentProject(Project p) {
+		this.currentProject = p;
+	}
+	
+	public Project getCurrentProject() {
+		return currentProject;
+	}
+	
 	/**
 	 * Object for comparing projects.
 	 */
