@@ -20,7 +20,10 @@
 
 package xslt;
 
-import org.gjt.sp.jedit.jEdit;
+import java.awt.BorderLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.util.List;
 
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -28,10 +31,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import java.awt.BorderLayout;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.util.List;
+
+import org.gjt.sp.jedit.jEdit;
 
 /**
  * Panel housing the "XPath Expression" label & text area.
@@ -42,7 +43,7 @@ public class XPathExpressionPanel extends JPanel implements KeyListener, Documen
 
   private static final String LAST_EXPRESSION = "xpath.last-expression";
   private static final String EXPRESSIONS = "xpath.expression";
-
+  
   private JTextArea textArea = new JTextAreaWithoutTab();
   private int historyLength = Integer.parseInt(jEdit.getProperty("xpath.expression.history-length"));
   private int historyIndex;
@@ -50,16 +51,15 @@ public class XPathExpressionPanel extends JPanel implements KeyListener, Documen
 
   public XPathExpressionPanel() {
     super(new BorderLayout());
+   
     String label = jEdit.getProperty("xpath.expression.label");
-    String text = jEdit.getProperty(LAST_EXPRESSION);
+	String text = jEdit.getProperty(LAST_EXPRESSION);
 
     textArea.getDocument().addDocumentListener(this);
     textArea.addKeyListener(this);
     textArea.setText((text == null) ? "" : text);
 
-    JPanel topPanel = new JPanel(new BorderLayout());
-    topPanel.add(new JLabel(label), BorderLayout.WEST);
-    add(topPanel, BorderLayout.NORTH);
+    add(new JLabel(label), BorderLayout.NORTH);
     add(new JScrollPane(textArea));
 
     historyIndex = getExpressionList().size() - 1;
@@ -138,7 +138,6 @@ public class XPathExpressionPanel extends JPanel implements KeyListener, Documen
 
   public void keyReleased(KeyEvent e) {
   }
-
 
   private void displayPreviousExpression() {
     List expressionList = getExpressionList();

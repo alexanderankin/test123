@@ -21,15 +21,19 @@
 
 package xslt;
 
-import org.apache.xpath.NodeSetDTM;
-import org.apache.xpath.XPathAPI;
-import org.apache.xpath.objects.XObject;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.net.URL;
+import java.text.MessageFormat;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -50,18 +54,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.IOException;
-import java.io.StringReader;
-import java.net.URL;
-import java.text.MessageFormat;
 
+import org.apache.xpath.NodeSetDTM;
+import org.apache.xpath.XPathAPI;
+import org.apache.xpath.objects.XObject;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+;
 /**
  * GUI for evaluating XPath expressions.
  *
@@ -69,41 +72,50 @@ import java.text.MessageFormat;
  * @author Robert McKinnon
  */
 public class XPathTool extends JPanel implements ListSelectionListener, ActionListener {
-
+	
+  private View view;
+  private final XPathInputSelectionPanel inputSelectionPanel;
   private final XPathExpressionPanel expressionPanel = new XPathExpressionPanel();
   private final EvaluatePanel evaluatePanel = new EvaluatePanel();
   private final JTextField dateTypeField = new JTextField();
   private final ResultsPanel resultValuePanel = new ResultsPanel(jEdit.getProperty("xpath.result.value.label"));
   private final NodeSetResultsPanel nodeSetTablePanel = new NodeSetResultsPanel(jEdit.getProperty("xpath.result.node-set-summary.label"));
   private final XmlFragmentsPanel xmlFragmentsPanel = new XmlFragmentsPanel(jEdit.getProperty("xpath.result.xml-fragments.label"));
-  private View view;
+  
 
 
   public XPathTool(View view) {
     super(new GridBagLayout());
     this.view = view;
-
+    
+    inputSelectionPanel = new XPathInputSelectionPanel(view);
     JPanel dataTypePanel = new JPanel(new BorderLayout());
     dataTypePanel.add(new JLabel(jEdit.getProperty("xpath.result.data-type.label")), BorderLayout.NORTH);
     dataTypePanel.add(this.dateTypeField);
-
-    GridBagConstraints gbc = new GridBagConstraints();
+   
+	GridBagConstraints  gbc = new GridBagConstraints();
+	gbc.fill = GridBagConstraints.HORIZONTAL;
+	gbc.gridy = 1;
+	add(inputSelectionPanel, gbc);
+    
+    gbc = new GridBagConstraints();
     gbc.fill = GridBagConstraints.BOTH;
     gbc.weightx = gbc.weighty = 1;
+	gbc.gridy = 2;
     add(expressionPanel, gbc);
 
     gbc = new GridBagConstraints();
-    gbc.gridy = 1;
+    gbc.gridy = 3;
     gbc.fill = GridBagConstraints.NONE;
     add(evaluatePanel, gbc);
 
     gbc = new GridBagConstraints();
-    gbc.gridy = 2;
+    gbc.gridy = 4;
     gbc.fill = GridBagConstraints.BOTH;
     add(dataTypePanel, gbc);
 
     gbc = new GridBagConstraints();
-    gbc.gridy = 3;
+    gbc.gridy = 5;
     gbc.weightx = 1;
     gbc.weighty = 6;
     gbc.fill = GridBagConstraints.BOTH;
@@ -142,7 +154,6 @@ public class XPathTool extends JPanel implements ListSelectionListener, ActionLi
     return Integer.parseInt(xObject.xstr().toString());
   }
 
-
   /**
    * Clicks the evaluate XPath button.
    */
@@ -170,13 +181,28 @@ public class XPathTool extends JPanel implements ListSelectionListener, ActionLi
 
 
   private void evaluateExpression() throws Exception, IOException, SAXException, TransformerException {
-    Buffer buffer = view.getBuffer();
-    String text = buffer.getText(0, buffer.getLength());
-    InputSource inputSource = new InputSource(new StringReader(text));
-    inputSource.setSystemId(buffer.getPath());
-    Document document = parse(inputSource, buffer.getPath());
+	assert inputSelectionPanel.isFileSelected() || inputSelectionPanel.isBufferSelected() ;
+	String path = new String();
+	InputSource inputSource;
+	
+    if (inputSelectionPanel.isFileSelected()) { //take input from file
+    	path = inputSelectionPanel.getSourceFieldText();
+		FileReader textReader = new FileReader(new File(path));
+		inputSource = new InputSource(textReader);
+    } else { // take input from active buffer
+  		Buffer buffer = view.getBuffer();
+		path = buffer.getPath();
+    	String text = buffer.getText(0, buffer.getLength());
+		inputSource = new InputSource(new StringReader(text));
+  	}
+  	
+  	inputSource.setSystemId(path);
+  	Document document = parse(inputSource,path);
+  	
+  	String expression = new String();
 
-    String expression = expressionPanel.getExpression();
+  	expression = expressionPanel.getExpression();
+  	
     XObject xObject = XPathAPI.eval(document, expression);
     expressionPanel.addToHistory(expression);
 
@@ -301,7 +327,7 @@ public class XPathTool extends JPanel implements ListSelectionListener, ActionLi
     return xObject.getType() == XObject.CLASS_NODESET;
   }
 
-
+  
   /**
    * Panel housing the "Evaluate" button
    */
@@ -330,7 +356,6 @@ public class XPathTool extends JPanel implements ListSelectionListener, ActionLi
       add(button);
     }
   }
-
 
   /**
    * JTextArea that let's tab key change focus to the next component.

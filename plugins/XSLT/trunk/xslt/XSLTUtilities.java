@@ -20,7 +20,7 @@
 package xslt;
 
 import org.gjt.sp.util.Log;
-import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
@@ -88,7 +88,7 @@ public class XSLTUtilities {
    * @param resultFile           name of the file that final result is written to
    * @exception Exception        if a problem occurs during the transformation
    */
-  public static void transform(String inputFile, Object[] stylesheets, Map stylesheetParameters, String resultFile) throws Exception {
+  public static void transform(InputSource inputFile, Object[] stylesheets, Map stylesheetParameters, String resultFile) throws Exception {
     logXmlSystemProperties();
     TransformerHandler[] handlers = getTransformerHandlers(stylesheets, stylesheetParameters);
 
@@ -101,8 +101,8 @@ public class XSLTUtilities {
     reader.setContentHandler(handlers[0]);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
 
-    EntityResolver entityResolver = new EntityResolverImpl(inputFile);
-    reader.setEntityResolver(entityResolver);
+    //EntityResolver entityResolver = new EntityResolverImpl(inputFile);
+    //reader.setEntityResolver(entityResolver);
 
     reader.parse(inputFile);
   }
