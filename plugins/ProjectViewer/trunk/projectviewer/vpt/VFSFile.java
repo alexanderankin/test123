@@ -52,7 +52,7 @@ public class VFSFile extends VPTNode {
 	//{{{ Constants
 
 	private final static Icon fileClosedIcon =
-		new ImageIcon(IconComposer.class.getResource("/images/remote_file.png"));;
+		new ImageIcon(VFSFile.class.getResource("/images/remote_file.png"));;
 	private final static Icon fileOpenedIcon 	=  (ImageIcon) GUIUtilities.loadIcon("OpenFile.png");
 
 	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
@@ -137,7 +137,7 @@ public class VFSFile extends VPTNode {
 				baseIcon = fileClosedIcon;
 			}
 		}
-		return IconComposer.composeIcon(path, baseIcon, IconComposer.FS_STATE_NONE);
+		return IconComposer.composeIcon(null, path, baseIcon);
 	} //}}}
 
 	//{{{ +getForegroundColor(boolean) : Color

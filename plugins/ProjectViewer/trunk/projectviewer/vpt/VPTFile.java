@@ -157,9 +157,7 @@ public class VPTFile extends VPTNode {
 				}
 			}
 		}
-		int fs_state = (file.exists()) ?
-			IconComposer.FS_STATE_NONE : IconComposer.FS_STATE_NOTFOUND;
-		return IconComposer.composeIcon(file.getAbsolutePath(), baseIcon, fs_state);
+		return IconComposer.composeIcon(file, file.getAbsolutePath(), baseIcon);
 	} //}}}
 
 	//{{{ +getForegroundColor(boolean) : Color
