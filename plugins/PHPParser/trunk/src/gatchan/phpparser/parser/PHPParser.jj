@@ -373,7 +373,7 @@ TOKEN_MGR_DECLS:
 | "\f"
 }
 
-<IN_VARIABLE> SPECIAL_TOKEN :
+<IN_VARIABLE,MODE_IDENTIFIER> SPECIAL_TOKEN :
 {
   " "  : PHPPARSING
 | "\t" : PHPPARSING
@@ -640,7 +640,12 @@ MORE :
   >
 }
 
-  /*
+<MODE_IDENTIFIER> TOKEN :
+{
+  <KIDENTIFIER: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)> : PHPPARSING
+}
+
+/*
 <HEREDOC> SKIP :
 {
   <NEWLINE2 : "\n"> : HEREDOCLINESTART
@@ -888,7 +893,9 @@ ClassDeclaration ClassDeclaration() :
   classToken = <CLASS>
   try {
     className = <IDENTIFIER>
-    {classNameImage = className.image;}
+    {
+      classNameImage = className.image;
+    }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -1747,7 +1754,95 @@ ConstantIdentifier Type() :
 //{{{ Expressions
 
 //{{{ Expression()
+Expression Expression() :
+{
+  Token bangToken = null;
+  Expression expr;
+}
+{
+  [bangToken = <BANG>] expr = ExpressionNoBang()
+  {
+    if (bangToken == null) {
+      return expr;
+    }
+    return new PrefixedUnaryExpression(expr,OperatorIds.NOT,bangToken.sourceStart,bangToken.beginLine,bangToken.beginColumn);
+  }
+}
 
+Expression ExpressionNoBang() :
+{
+  final Expression expr;
+  Expression initializer = null;
+  Token assignOperator = null;
+}
+{
+  expr = PrintExpression()   { return expr; }
+| LOOKAHEAD(PrimaryExpression() AssignmentOperator())
+  expr = assignment()
+  {
+    return expr;
+  }
+| expr = ConditionalExpression() { return expr; }
+//| expr = ExpressionWBang() {return expr;}
+}
+
+//{{{ assignment()
+Expression assignment() :
+{
+  final Expression expr;
+  Expression initializer = null;
+  Token assignOperator = null;
+}
+{
+  expr = PrimaryExpression()
+  assignOperator = AssignmentOperator()
+  initializer = Expression()
+  {
+    if (assignOperator != null) {// todo : change this, very very bad :(
+        if (expr instanceof AbstractVariable) {
+          if (initializer == null) {
+            return new VariableDeclaration(currentSegment,
+                                           (AbstractVariable) expr,
+                                           null,
+                                           assignOperator.image,
+                                           expr.sourceStart,
+                                           assignOperator.sourceEnd,
+                                           expr.getBeginLine(),
+                                           assignOperator.endLine,
+                                           expr.getBeginColumn(),
+                                           assignOperator.endColumn);
+          }
+          return new VariableDeclaration(currentSegment,
+                                         (AbstractVariable) expr,
+                                         initializer,
+                                         assignOperator.image,
+                                         expr.sourceStart,
+                                         initializer.sourceEnd,
+                                         expr.getBeginLine(),
+                                         initializer.getEndLine(),
+                                         expr.getBeginColumn(),
+                                         initializer.getEndColumn());
+        }
+        final String varName = expr.toStringExpression().substring(1);
+        return new VariableDeclaration(currentSegment,
+                                       new Variable(varName,
+                                                    expr.sourceStart,
+                                                    expr.sourceEnd,
+                                                    expr.getBeginLine(),
+                                                    expr.getEndLine(),
+                                                    expr.getBeginColumn(),
+                                                    expr.getEndColumn()),
+                                       expr.sourceStart,
+                                       assignOperator.sourceEnd,
+                                       expr.getBeginLine(),
+                                       assignOperator.endLine,
+                                       expr.getBeginColumn(),
+                                       assignOperator.endColumn);
+    }
+  }
+} //}}}
+
+/*
 Expression Expression() :
 {
   final Expression expr;
@@ -1755,7 +1850,6 @@ Expression Expression() :
   Token assignOperator = null;
 }
 {
-  LOOKAHEAD(1)
   expr = ConditionalExpression()
   [
     assignOperator = AssignmentOperator()
@@ -1807,10 +1901,10 @@ Expression Expression() :
   }
 | expr = ExpressionWBang() {return expr;}
 }
-
+*/
 //}}}
 //{{{ ExpressionWBang()
-
+/*
 Expression ExpressionWBang() :
 {
   final Expression expr;
@@ -1824,11 +1918,11 @@ Expression ExpressionWBang() :
                                       bangToken.beginLine,
                                       bangToken.beginColumn);}
 | expr = ExpressionNoBang() {return expr;}
-}
+}*/
 
 //}}}
 //{{{ ExpressionNoBang()
-
+/*
 Expression ExpressionNoBang() :
 {
   final Expression expr;
@@ -1836,8 +1930,8 @@ Expression ExpressionNoBang() :
 {
 /*  expr = ListExpression()    {return expr;}
 |*/
-  expr = PrintExpression()   {return expr;}
-}
+/*  expr = PrintExpression()   {return expr;}
+}*/
 
 //}}}
 //{{{ AssignmentOperator()
@@ -1877,7 +1971,7 @@ Expression ConditionalExpression() :
   Expression expr3 = null;
 }
 {
-  expr = ConditionalOrExpression() [ <HOOK> expr2 = Expression() <COLON> expr3 = ConditionalExpression() ]
+  expr = ConditionalOrExpression() [ <HOOK> expr2 = Expression() <COLON> expr3 = Expression() ]
 {
   if (expr3 == null) {
     return expr;
@@ -2355,10 +2449,11 @@ Expression AtNotTildeUnaryExpression() :
   token = <TILDE>
   expr = AtNotTildeUnaryExpression()
   {return new PrefixedUnaryExpression(expr,OperatorIds.TWIDDLE,token.sourceStart,token.beginLine,token.beginColumn);}
-|
+/*|
   token = <BANG>
   expr = AtNotUnaryExpression()
   {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart,token.beginLine,token.beginColumn);}
+*/
 |
   expr = UnaryExpressionNoPrefix()
   {return expr;}
@@ -2380,10 +2475,11 @@ Expression AtNotUnaryExpression() :
   token = <AT>
   expr = AtNotUnaryExpression()
   {return new PrefixedUnaryExpression(expr,OperatorIds.AT,token.sourceStart,token.beginLine,token.beginColumn);}
-|
+/*|
   token = <BANG>
   expr = AtNotUnaryExpression()
   {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart,token.beginLine,token.beginColumn);}
+  */
 |
   expr = UnaryExpressionNoPrefix()
   {return expr;}
@@ -2450,8 +2546,6 @@ Expression UnaryExpressionNotPlusMinus() :
   expr = CastExpression()         {return expr;}
 | expr = PostfixExpression()      {return expr;}
 | expr = Literal()                {return expr;}
-| expr = ListExpression()         {return expr;}
-
 | <LPAREN> expr = Expression()
   try {
     <RPAREN>
@@ -2540,6 +2634,7 @@ Expression PrimaryExpression() :
 |
   expr = ArrayDeclarator()
   {return expr;}
+| expr = ListExpression()         {return expr;}
 }
 
 //}}}
@@ -5161,6 +5256,19 @@ ReturnStatement ReturnStatement() :
 
 //}}}
 
+
+Token identifier() :
+{
+  token_source.SwitchTo(PHPParserTokenManager.MODE_IDENTIFIER);
+  Token identifier;
+}
+{
+  identifier = <IDENTIFIER>
+  {
+    token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
+    return identifier;
+  }
+}
 //}}}
 
 //}}}
