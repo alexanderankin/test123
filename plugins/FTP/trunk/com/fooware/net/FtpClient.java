@@ -293,23 +293,31 @@ public class FtpClient {
         sendCommand("PASV");
         FtpResponse resp = getResponse();
         if (!resp.isPositiveCompletion()) {
-            Log.log(Log.ERROR, this, "couldn't set passive");
+            Log.log(Log.ERROR, this, "Couldn't set passive, trying data port");
+	    dataPort();
             return;
         }
 
-        String message = resp.getMessage();
-        int bound_r = message.lastIndexOf(')');
-        int bound_l = message.lastIndexOf('(', bound_r  - 1) + 1;
+	try {
+            String message = resp.getMessage();
+	    int bound_r = message.lastIndexOf(')');
+	    int bound_l = message.lastIndexOf('(', bound_r  - 1) + 1;
 
-        String remoteAddr = message.substring(bound_l, bound_r);
-        int comma1 = remoteAddr.lastIndexOf(',');
-        int port = Integer.parseInt(remoteAddr.substring(comma1 + 1));
-        int comma2 = remoteAddr.lastIndexOf(',', comma1 - 1);
-        port |= Integer.parseInt(remoteAddr.substring(comma2 + 1,
-            comma1)) << 8;
-        remoteAddr = remoteAddr.substring(0, comma2).replace(',', '.');
+	    String remoteAddr = message.substring(bound_l, bound_r);
+	    int comma1 = remoteAddr.lastIndexOf(',');
+	    int port = Integer.parseInt(remoteAddr.substring(comma1 + 1));
+	    int comma2 = remoteAddr.lastIndexOf(',', comma1 - 1);
+	    port |= Integer.parseInt(remoteAddr.substring(comma2 + 1,
+	    comma1)) << 8;
+	    remoteAddr = remoteAddr.substring(0, comma2).replace(',', '.');
 
-        passiveSocket = new Socket(remoteAddr, port);
+	    passiveSocket = new Socket(remoteAddr, port);
+	}
+	catch(StringIndexOutOfBoundsException e) {
+	    Log.log(Log.ERROR, this, "Couldn't set passive, trying data port");
+	    dataPort();
+            return;
+	}
     }
 
     /**
