@@ -33,6 +33,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -126,7 +127,7 @@ public abstract class Importer implements Runnable {
 		if (noThread) {
 			run();
 		} else {
-			new Thread(this).start();
+			VFSManager.getIOThreadPool().addWorkRequest(this, false);
 		}
 	} //}}}
 
