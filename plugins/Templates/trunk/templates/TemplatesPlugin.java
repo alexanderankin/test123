@@ -176,17 +176,25 @@ public class TemplatesPlugin extends EditPlugin
       InputStream in = null;
 	  TemplatesPlugin thePlugin = (TemplatesPlugin) jEdit.getPlugin(
 		 			"templates.TemplatesPlugin");
+	 // Load the normal Velocity properties
+      try {
+		 in = thePlugin.getClass().getClassLoader().
+				getResourceAsStream("velocity/velocity.properties");
+         props.load(in);
+      } catch (IOException e) {
+         Log.log(Log.ERROR, thePlugin, "Error loading normal velocity properties");
+      } finally {
+         IO.close(in);
+      }
+	 // Load user's custom Velocity properties, if present
       try {
          File f = new File(getVelocityPropertiesPath());
          if (f.exists()) {
             in = new FileInputStream(f);
-         } else {
-            in = thePlugin.getClass().getClassLoader().
-					getResourceAsStream("velocity/velocity.properties");
+			props.load(in);
          }
-         props.load(in);
       } catch (IOException e) {
-         Log.log(Log.ERROR, thePlugin, "Error loading velocity properties");
+         Log.log(Log.ERROR, thePlugin, "Error loading custom velocity properties");
       } finally {
          IO.close(in);
       }
@@ -396,6 +404,10 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.5  2003/01/17 05:35:09  sjakob
+	 * BUG FIX: use of a custom velocity properties file would result in the normal properties
+	 * not being loaded. Now custom properties just override the normal ones.
+	 *
 	 * Revision 1.4  2002/09/11 18:57:35  sjakob
 	 * Added ability (configurable in Global Options) to "pass through" abbreviations from
 	 * the "Expand Accelerator" action to jEdit's abbreviation expansion function, in cases
