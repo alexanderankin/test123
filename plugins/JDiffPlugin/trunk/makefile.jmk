@@ -18,7 +18,7 @@ javac_opts = "-deprecation";
 #javac_opts = "-g" "-deprecation" "+E";
 
 # set up the class path
-new_class_path = "../jdiff.jar;../../jedit.jar;.";
+new_class_path = "../../jedit.jar;.";
 old_class_path = (getprop "java.class.path");
 
 # concatenate the old and new class paths
@@ -34,7 +34,7 @@ jar_bin = "jar";
 jar_opts = "cf0";
 cmd_jar = jar_bin jar_opts;
 
-srcs = (subst ".java", ".class", 
+srcs = (subst ".java", ".class",
     (glob (join (join (dirs "."), "/"), "*Plugin.java" "*.java"))
 );
 jar = (cat "../" jar_name ".jar");
