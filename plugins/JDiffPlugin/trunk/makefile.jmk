@@ -41,7 +41,7 @@ jar = (cat "../" jar_name ".jar");
 
 get_files = function (dummy)
 {
-    extensions = "class" "gif" "html" "props" "txt";
+    extensions = "class" "gif" "html" "jpg" "props" "txt" "xml";
     file_globs = (join "/*.", extensions);
 
     (glob (join (dirs "."), file_globs))
