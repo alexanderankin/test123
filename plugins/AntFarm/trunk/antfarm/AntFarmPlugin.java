@@ -35,7 +35,7 @@ import org.gjt.sp.util.*;
 import console.*;
 import plugin.integration.*;
 import errorlist.*;
-import projectviewer.*;
+//import projectviewer.*;
 
 public class AntFarmPlugin extends EditPlugin
 {
@@ -57,7 +57,7 @@ public class AntFarmPlugin extends EditPlugin
 	public static AntFarmShell getAntFarmShell() {
 		return ANT_SHELL;
 	}
-	
+
 	static Console getConsole( View view )
 	{
 		return getConsole( view, true );
@@ -121,11 +121,11 @@ public class AntFarmPlugin extends EditPlugin
 
 		boolean useSameJvm
 			 = jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", true );
-		
+
 		// initalize error source
 		_errorSource = new DefaultErrorSource( NAME );
 		ErrorSource.registerErrorSource(_errorSource);
-		
+
 		// check whether tools.jar is available on JDK 1.2 or higher:
 		if ( !MiscUtilities.isToolsJarAvailable() && useSameJvm) {
 			String warning = "This will cause problems when trying to use the modern and classic compilers.\n" +
@@ -134,7 +134,7 @@ public class AntFarmPlugin extends EditPlugin
 			Log.log( Log.WARNING, this, warning );
 			GUIUtilities.message(null, "tools-jar-missing", null);
 		}
-		
+
 		// Register the ant shell with the console plugin.
 		Shell.registerShell( ANT_SHELL );
 
@@ -174,7 +174,7 @@ public class AntFarmPlugin extends EditPlugin
 					"- has been loaded before: " + path );
 		}
 	}
-	
+
 	String getAntFarmPath()
 	{
 		EditPlugin.JAR jar = getJAR();
@@ -190,7 +190,7 @@ public class AntFarmPlugin extends EditPlugin
 			AntFarmPlugin.OPTION_PREFIX + "use-project-bridge"
 			 );
 	}
-	
+
 	static boolean supressSubTargets()
 	{
 		return jEdit.getBooleanProperty(

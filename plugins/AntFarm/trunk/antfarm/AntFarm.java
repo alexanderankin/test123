@@ -44,7 +44,7 @@ public class AntFarm extends JPanel implements EBComponent
 	JButton removeAntFile;
 	JButton runTarget;
 	JButton options;
-	
+
 	private Hashtable _antProjects = new Hashtable();
 
 	private Panel _toolBar;
@@ -61,12 +61,34 @@ public class AntFarm extends JPanel implements EBComponent
 		initComponents();
 	}
 
-	static ImageIcon loadIcon( String propertyName )
+	static Icon loadIcon( String propertyName )
 	{
-		String iconName = jEdit.getProperty( propertyName );
-		return new ImageIcon( AntFarm.class.getResource( iconName ) );
-	}
+        String iconProperty = propertyName + "icon.";
+        String iconNameProperty = iconProperty + "name";
+        String iconName = jEdit.getProperty(iconNameProperty);
 
+        if (iconName == null)
+            return null;
+
+        String iconTypeProperty = iconProperty + "type";
+        String iconType = jEdit.getProperty(iconTypeProperty);
+
+        if (iconType == null)
+            iconType = "custom";
+
+        Icon returnValue = null;
+
+        if (iconType.equalsIgnoreCase("stock"))
+        {
+            returnValue = GUIUtilities.loadIcon(iconName);
+        }
+        else
+        {
+            returnValue = new ImageIcon( AntFarm.class.getResource( iconName ) );
+        }
+
+		return returnValue;
+	}
 
 	public String getName()
 	{
@@ -86,7 +108,7 @@ public class AntFarm extends JPanel implements EBComponent
 	{
 		return _antTree;
 	}
-	
+
 	public Vector getAntBuildFiles()
 	{
 		String prop = jEdit.getProperty( "antviewer.buildfiles" );
@@ -101,24 +123,24 @@ public class AntFarm extends JPanel implements EBComponent
 		return v;
 	}
 
-	
+
 	public void addNotify()
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-	} 
+	}
 
-	
+
 	public void removeNotify()
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-	} 
-	
+	}
+
 
 	public void handleMessage( EBMessage msg )
 	{
-	
+
 		if ( msg instanceof BufferUpdate ) {
 			BufferUpdate updateMessage = (BufferUpdate) msg;
 			if ( updateMessage.getWhat() == BufferUpdate.LOADED ) {
@@ -132,7 +154,7 @@ public class AntFarm extends JPanel implements EBComponent
 			VFSUpdate updateMessage = (VFSUpdate) msg;
 			reloadAntBuildFile( updateMessage.getPath() );
 		}
-		
+
 		if ( msg instanceof PropertiesChanged ) {
 			_optionsPopup = new OptionsPopup();
 			_antTree.reload();
@@ -235,7 +257,7 @@ public class AntFarm extends JPanel implements EBComponent
 	{
 		loadBuildFileInShell( filePath, false);
 	}
-	
+
 	void loadBuildFileInShell(String filePath, boolean forceLoad)
 	{
 		Vector buildFiles = getAntBuildFiles();
@@ -294,10 +316,10 @@ public class AntFarm extends JPanel implements EBComponent
 			if ( buildFile.exists() ) {
 				project.init();
 
-				
+
 				//black magic for xerces 1.4.4 loading
 				Thread.currentThread().setContextClassLoader( AntFarm.class.getClassLoader() );
-				
+
 				// first use the ProjectHelper to create the project object
 				// from the given build file.
 
@@ -349,16 +371,16 @@ public class AntFarm extends JPanel implements EBComponent
 
 		JScrollPane _projects = new JScrollPane();
 		_projects.getViewport().add( _antTree = new AntTree( this, _view ) );
-		
+
 		add( BorderLayout.CENTER, _projects );
-		
+
 		_optionsPopup = new OptionsPopup();
-		
+
 		setVisible( true );
 
 	}
 
-	
+
 	private JToolBar createToolBar()
 	{
 		JToolBar _toolBar = new JToolBar();
@@ -370,10 +392,13 @@ public class AntFarm extends JPanel implements EBComponent
 
 		_toolBar.addSeparator();
 		_toolBar.add( runTarget = createToolButton( "run" ) );
-		
+
 		_toolBar.addSeparator();
 		_toolBar.add( options = createToolButton( "options") );
-		options.setText("Options");
+
+        // jiwils 2003/02/23
+		// options.setText("Options");
+
 		options.addMouseListener(new MouseHandler());
 
 		// default to enabled to false
@@ -391,12 +416,21 @@ public class AntFarm extends JPanel implements EBComponent
 	private JButton createToolButton( String name )
 	{
 		String buttonPrefix = AntFarmPlugin.NAME + "." + name + ".";
-		String iconProp = buttonPrefix + "icon";
 		String iconLabel = jEdit.getProperty( buttonPrefix + "text" );
+        Icon icon = loadIcon(buttonPrefix);
+        String toolTip = jEdit.getProperty( buttonPrefix + "label" );
 
-		JButton button = new JButton( iconLabel );
-		button.setIcon( AntFarm.loadIcon( iconProp ) );
-		button.setToolTipText( jEdit.getProperty( buttonPrefix + "label" ) );
+		JButton button = new RolloverButton();
+
+        if (icon != null)
+            button.setIcon(icon);
+
+        if (iconLabel != null)
+            button.setText(iconLabel);
+
+        if (toolTip != null)
+            button.setToolTipText(toolTip);
+
 		button.setHorizontalTextPosition(SwingConstants.LEADING);
 
 		button.setRequestFocusEnabled( false );
@@ -429,21 +463,21 @@ public class AntFarm extends JPanel implements EBComponent
 		{
 			if(!_optionsPopup.isVisible())
 			{
-		
+
 				GUIUtilities.showPopupMenu(
 					_optionsPopup,options,0,
-					options.getHeight());
+					options.getHeight(), false);
 			}
 			else
 			{
 				_optionsPopup.setVisible(false);
 			}
 		}
-	} 
-	
+	}
+
 	class OptionsPopup extends JPopupMenu
 	{
-		
+
 		public OptionsPopup()
 		{
 			JCheckBoxMenuItem propertiesPrompt = new JCheckBoxMenuItem(
@@ -453,8 +487,8 @@ public class AntFarm extends JPanel implements EBComponent
 			propertiesPrompt.setSelected(!jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ));
 			propertiesPrompt.addActionListener(new ActionHandler());
 			this.add(propertiesPrompt);
-			
-			
+
+
 			JCheckBoxMenuItem supressSubTargets = new JCheckBoxMenuItem(
 				jEdit.getProperty(AntFarmPlugin.NAME + ".commands.supress-sub-targets.label")
 				);
@@ -462,7 +496,7 @@ public class AntFarm extends JPanel implements EBComponent
 			supressSubTargets.setSelected(jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets" ));
 			supressSubTargets.addActionListener(new ActionHandler());
 			this.add(supressSubTargets);
-			
+
 			JCheckBoxMenuItem saveAll = new JCheckBoxMenuItem(
 				jEdit.getProperty(AntFarmPlugin.NAME + ".commands.save-on-execute.label")
 				);
@@ -472,9 +506,9 @@ public class AntFarm extends JPanel implements EBComponent
 				);
 			saveAll.addActionListener(new ActionHandler());
 			this.add(saveAll);
-			
+
 			JMenu logLevelMenu = new JMenu("Logging level");
-			
+
 			for(int i = 0; i < LogLevelEnum.getAll().length; i++){
 				LogLevelEnum level = LogLevelEnum.getAll()[i];
 				JRadioButtonMenuItem item = new JRadioButtonMenuItem(level.toString());
@@ -485,13 +519,13 @@ public class AntFarm extends JPanel implements EBComponent
 						AntFarmPlugin.OPTION_PREFIX + "logging-level", LogLevelEnum.INFO.getValue()
 					)
 				);
-			
+
 				logLevelMenu.add(item);
 			}
-			
+
 			this.add(logLevelMenu);
 		}
-		
+
 		class LogLevelActionHandler implements ActionListener
 		{
 			public void actionPerformed( ActionEvent evt )
@@ -501,7 +535,7 @@ public class AntFarm extends JPanel implements EBComponent
 
 			}
 		}
-		
+
 		class ActionHandler implements ActionListener
 		{
 			public void actionPerformed( ActionEvent evt )
@@ -509,7 +543,7 @@ public class AntFarm extends JPanel implements EBComponent
 				String actionCommand = evt.getActionCommand();
 				if (actionCommand.equals("properties-prompt")) {
 					JCheckBoxMenuItem item = (JCheckBoxMenuItem) evt.getSource();
-					jEdit.setBooleanProperty( 
+					jEdit.setBooleanProperty(
 						AntFarmPlugin.OPTION_PREFIX + "suppress-properties", !item.isSelected()
 						);
 				}
@@ -525,7 +559,7 @@ public class AntFarm extends JPanel implements EBComponent
 						AntFarmPlugin.OPTION_PREFIX + "save-on-execute", item.isSelected()
 					);
 				}
-				
+
 				EditBus.send(new PropertiesChanged(null));
 			}
 		}
