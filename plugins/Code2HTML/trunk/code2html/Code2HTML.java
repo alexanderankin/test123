@@ -59,14 +59,14 @@ public class Code2HTML {
 
 
     public Code2HTML(JEditTextArea textArea, boolean useSelection) {
+        this.textArea     = textArea;
+        this.useSelection = useSelection;
+
         this.wrap = Code2HTMLUtilities.getIntegerProperty("code2html.wrap", 0);
         if (this.wrap < 0) { this.wrap = 0; }
 
         this.useCSS     = jEdit.getBooleanProperty("code2html.use-css", false);
         this.showGutter = jEdit.getBooleanProperty("code2html.show-gutter", false);
-
-        this.textArea = textArea;
-        Buffer buffer = textArea.getBuffer();
 
         SyntaxStyle[] styles = textArea.getPainter().getStyles();
         if (this.useCSS) {
@@ -84,6 +84,7 @@ public class Code2HTML {
             }
         }
 
+        Buffer buffer = textArea.getBuffer();
         LineTabExpander expander = new LineTabExpander(buffer.getTabSize());
 
         LineWrapper wrapper  = null;
@@ -99,22 +100,41 @@ public class Code2HTML {
         int physicalFirst = 0;
         int physicalLast  = this.textArea.getLineCount() - 1;
 
-        if (this.useSelection) {
-            Selection[] selection = textArea.getSelection();
-
-            for (int i = 0; i < selection.length; i++) {
-                physicalFirst = selection[i].getStartLine();
-                physicalLast  = selection[i].getEndLine();
-
-                // TODO: missing part
-            }
-        }
-
         StringWriter sw  = new StringWriter();
 
         try {
             BufferedWriter out = new BufferedWriter(sw);
-            this.toHTML(out, physicalFirst, physicalLast);
+
+            this.htmlOpen(out);
+
+            if (!this.useSelection) {
+                this.htmlText(out, physicalFirst, physicalLast);
+            } else {
+                Selection[] selection = textArea.getSelection();
+
+                int last = 0;
+                for (int i = 0; i < selection.length; i++) {
+                    if (selection[i].getEndLine() > last) {
+                        last = selection[i].getEndLine();
+                    }
+                }
+
+                this.gutter.setGutterSize(Integer.toString(last + 1).length());
+
+                int lastLine = -1;
+                for (int i = 0; i < selection.length; i++) {
+                    physicalFirst = selection[i].getStartLine();
+                    physicalLast  = selection[i].getEndLine();
+
+                    if (physicalLast <= lastLine) { continue; }
+
+                    this.htmlText(out, physicalFirst, physicalLast);
+
+                    lastLine = physicalLast;
+                }
+            }
+
+            this.htmlClose(out);
 
             out.flush();
             out.close();
@@ -172,18 +192,6 @@ public class Code2HTML {
               "</BODY>\n"
             + "</HTML>\n"
         );
-    }
-
-
-    private void toHTML(Writer out, int first, int last) {
-        int gutterSize = Integer.toString(last + 1).length();
-        this.gutter.setGutterSize(gutterSize);
-
-        try {
-            this.htmlOpen(out);
-            this.htmlText(out, first, last);
-            this.htmlClose(out);
-        } catch (IOException ioe) {}
     }
 
 
