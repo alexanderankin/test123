@@ -1310,21 +1310,12 @@ AbstractVariable VariableDeclaratorId() :
   AbstractVariable var;
 }
 {
-  try {
-    var = Variable()
-    (
-     // LOOKAHEAD(2)
-      var = VariableSuffix(var)
-    )*
-    {
-     return var;
-    }
-  } catch (ParseException e) {
-    errorMessage = "'$' expected for variable identifier";
-    errorLevel   = ERROR;
-    errorStart = e.currentToken.sourceStart;
-    errorEnd   = e.currentToken.sourceEnd;
-    throw e;
+  var = Variable()
+  (
+   var = VariableSuffix(var)
+   )*
+  {
+    return var;
   }
 }
 
@@ -1333,13 +1324,34 @@ AbstractVariable VariableDeclaratorId() :
 
 Variable Variable() :
 {
-  Variable variable = null;
+  Variable variable;
   final Token dollarToken;
 }
 {
-  dollarToken = <DOLLAR> variable = Var()
+  dollarToken = <DOLLAR> 
+  try {
+    variable = Var()
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "identifier expected",
+                                          "identifier",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.next.sourceStart,
+                                          e.currentToken.endLine,
+                                          e.currentToken.next.beginLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.next.beginColumn));
+    variable = new  Variable("",
+                             dollarToken.sourceStart,
+                             e.currentToken.next.sourceStart,
+                             dollarToken.beginLine,
+                             e.currentToken.next.beginLine,
+                             dollarToken.beginColumn,
+                             e.currentToken.next.beginColumn);
+  }
   {
-    variable.setStart(dollarToken.sourceStart,dollarToken.beginLine,dollarToken.beginColumn);
     return variable;
   }
 }
@@ -1350,8 +1362,7 @@ Variable Variable() :
 Variable Var() :
 {
   Variable variable = null;
-  final Token token,token2;
-  ConstantIdentifier constant;
+  final Token token, token2;
   final Expression expression;
 }
 {
@@ -1754,26 +1765,10 @@ ConstantIdentifier Type() :
 //{{{ Expressions
 
 //{{{ Expression()
-/*Expression Expression() :
-{
-  Token bangToken = null;
-  Expression expr;
-}
-{
-  [bangToken = <BANG>] expr = ExpressionNoBang()
-  {
-    if (bangToken == null) {
-      return expr;
-    }
-    return new PrefixedUnaryExpression(expr,OperatorIds.NOT,bangToken.sourceStart,bangToken.beginLine,bangToken.beginColumn);
-  }
-}*/
 
 Expression Expression() :
 {
   final Expression expr;
-  Expression initializer = null;
-  Token assignOperator = null;
 }
 {
   expr = PrintExpression()   { return expr; }
@@ -1783,10 +1778,34 @@ Expression Expression() :
     return expr;
   }
 | expr = ConditionalExpression() { return expr; }
-//| expr = ExpressionWBang() {return expr;}
 }
 
 //{{{ assignment()
+
+Expression assignment() :
+{
+  final Expression expr,initializer;
+  final Token assignOperator;
+}
+{
+  expr           = prefixedPrimaryExpression()
+  assignOperator = AssignmentOperator()
+  initializer    = Expression()
+  {
+    return new Assignment(expr,
+                          initializer,
+                          assignOperator.kind,
+                          expr.sourceStart,
+                          initializer.sourceEnd,
+                          expr.getBeginLine(),
+                          initializer.getEndLine(),
+                          expr.getBeginColumn(),
+                          initializer.getEndColumn());
+  }
+}
+//{{{ 
+
+/*
 Expression assignment() :
 {
   final Expression expr;
@@ -1798,49 +1817,50 @@ Expression assignment() :
   assignOperator = AssignmentOperator()
   initializer = Expression()
   {
-    if (assignOperator != null) {// todo : change this, very very bad :(
-        if (expr instanceof AbstractVariable) {
-          if (initializer == null) {
-            return new VariableDeclaration(currentSegment,
-                                           (AbstractVariable) expr,
-                                           null,
-                                           assignOperator.image,
-                                           expr.sourceStart,
-                                           assignOperator.sourceEnd,
-                                           expr.getBeginLine(),
-                                           assignOperator.endLine,
-                                           expr.getBeginColumn(),
-                                           assignOperator.endColumn);
-          }
-          return new VariableDeclaration(currentSegment,
-                                         (AbstractVariable) expr,
-                                         initializer,
-                                         assignOperator.image,
-                                         expr.sourceStart,
-                                         initializer.sourceEnd,
-                                         expr.getBeginLine(),
-                                         initializer.getEndLine(),
-                                         expr.getBeginColumn(),
-                                         initializer.getEndColumn());
-        }
-        final String varName = expr.toStringExpression().substring(1);
+    if (expr instanceof AbstractVariable) {
+      if (initializer == null) {
         return new VariableDeclaration(currentSegment,
-                                       new Variable(varName,
-                                                    expr.sourceStart,
-                                                    expr.sourceEnd,
-                                                    expr.getBeginLine(),
-                                                    expr.getEndLine(),
-                                                    expr.getBeginColumn(),
-                                                    expr.getEndColumn()),
+                                       (AbstractVariable) expr,
+                                       null,
+                                       assignOperator.image,
                                        expr.sourceStart,
                                        assignOperator.sourceEnd,
                                        expr.getBeginLine(),
                                        assignOperator.endLine,
                                        expr.getBeginColumn(),
                                        assignOperator.endColumn);
+      }
+      return new VariableDeclaration(currentSegment,
+                                     (AbstractVariable) expr,
+                                     initializer,
+                                     assignOperator.image,
+                                     expr.sourceStart,
+                                     initializer.sourceEnd,
+                                     expr.getBeginLine(),
+                                     initializer.getEndLine(),
+                                     expr.getBeginColumn(),
+                                     initializer.getEndColumn());
     }
-  }
-} //}}}
+    final String varName = expr.toStringExpression().substring(1);
+    return new VariableDeclaration(currentSegment,
+                                   new Variable(varName,
+                                                expr.sourceStart,
+                                                expr.sourceEnd,
+                                                expr.getBeginLine(),
+                                                expr.getEndLine(),
+                                                expr.getBeginColumn(),
+                                                expr.getEndColumn()),
+                                   expr.sourceStart,
+                                   assignOperator.sourceEnd,
+                                   expr.getBeginLine(),
+                                   assignOperator.endLine,
+                                   expr.getBeginColumn(),
+                                   assignOperator.endColumn);
+    }
+  
+}*/  //}}}
+
+//{{{ prefixedPrimaryExpression()
 
 Expression prefixedPrimaryExpression() :
 {
@@ -1865,98 +1885,7 @@ Expression prefixedPrimaryExpression() :
 |
   expr = PrimaryExpression()
   {return expr;}
-}
-
-/*
-Expression Expression() :
-{
-  final Expression expr;
-  Expression initializer = null;
-  Token assignOperator = null;
-}
-{
-  expr = ConditionalExpression()
-  [
-    assignOperator = AssignmentOperator()
-    initializer = Expression()
-  ]
-  {
-    if (assignOperator != null) {// todo : change this, very very bad :(
-        if (expr instanceof AbstractVariable) {
-          if (initializer == null) {
-            return new VariableDeclaration(currentSegment,
-                                           (AbstractVariable) expr,
-                                           null,
-                                           assignOperator.image,
-                                           expr.sourceStart,
-                                           assignOperator.sourceEnd,
-                                           expr.getBeginLine(),
-                                           assignOperator.endLine,
-                                           expr.getBeginColumn(),
-                                           assignOperator.endColumn);
-          }
-          return new VariableDeclaration(currentSegment,
-                                         (AbstractVariable) expr,
-                                         initializer,
-                                         assignOperator.image,
-                                         expr.sourceStart,
-                                         initializer.sourceEnd,
-                                         expr.getBeginLine(),
-                                         initializer.getEndLine(),
-                                         expr.getBeginColumn(),
-                                         initializer.getEndColumn());
-        }
-        final String varName = expr.toStringExpression().substring(1);
-        return new VariableDeclaration(currentSegment,
-                                       new Variable(varName,
-                                                    expr.sourceStart,
-                                                    expr.sourceEnd,
-                                                    expr.getBeginLine(),
-                                                    expr.getEndLine(),
-                                                    expr.getBeginColumn(),
-                                                    expr.getEndColumn()),
-                                       expr.sourceStart,
-                                       assignOperator.sourceEnd,
-                                       expr.getBeginLine(),
-                                       assignOperator.endLine,
-                                       expr.getBeginColumn(),
-                                       assignOperator.endColumn);
-    }
-    return expr;
-  }
-| expr = ExpressionWBang() {return expr;}
-}
-*/
-//}}}
-//{{{ ExpressionWBang()
-/*
-Expression ExpressionWBang() :
-{
-  final Expression expr;
-  final Token bangToken;
-}
-{
-  bangToken = <BANG> expr = ExpressionWBang()
-  {return new PrefixedUnaryExpression(expr,
-                                      OperatorIds.NOT,
-                                      bangToken.sourceStart,
-                                      bangToken.beginLine,
-                                      bangToken.beginColumn);}
-| expr = ExpressionNoBang() {return expr;}
-}*/
-
-//}}}
-//{{{ ExpressionNoBang()
-/*
-Expression ExpressionNoBang() :
-{
-  final Expression expr;
-}
-{
-/*  expr = ListExpression()    {return expr;}
-|*/
-/*  expr = PrintExpression()   {return expr;}
-}*/
+} //}}}
 
 //}}}
 //{{{ AssignmentOperator()
@@ -1964,7 +1893,7 @@ Expression ExpressionNoBang() :
 /**
  * Any assignement operator.
  *
- * @return the assignement operator id
+ * @return the assignement operator token
  */
 Token AssignmentOperator() :
 {
