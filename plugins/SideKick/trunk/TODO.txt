@@ -6,3 +6,4 @@
 - auxilliary parsers -- eg tasklist
 - position: don't obscure text area
 - doesn't always update on buffer switch
+- parse keys toggle

@@ -23,12 +23,9 @@
 package sidekick;
 
 //{{{ Imports
+import errorlist.DefaultErrorSource;
 import javax.swing.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.Component;
 import java.util.*;
-import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.syntax.*;
@@ -48,11 +45,14 @@ public class SideKickPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
-		View[] views = jEdit.getViews();
-		for(int i = 0; i < views.length; i++)
+		View view = jEdit.getFirstView();
+		while(view != null)
 		{
-			View view = views[i];
-			sidekicks.put(view,new SideKick(view));
+			initView(view);
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
+				initTextArea(panes[i].getTextArea());
+			view = view.getNext();
 		}
 		SideKickActions.propertiesChanged();
 	} //}}}
@@ -60,15 +60,17 @@ public class SideKickPlugin extends EBPlugin
 	//{{{ stop() method
 	public void stop()
 	{
-		View[] views = jEdit.getViews();
-		for(int i = 0; i < views.length; i++)
+		View view = jEdit.getFirstView();
+		while(view != null)
 		{
-			View view = views[i];
-			SideKick sidekick = (SideKick)sidekicks.get(view);
-			sidekick.dispose();
-			sidekicks.remove(view);
+			uninitView(view);
+			SideKickParsedData.setParsedData(view,null);
+
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
+				uninitTextArea(panes[i].getTextArea());
+			view = view.getNext();
 		}
-		SideKickBindings.removeBindings();
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -80,13 +82,19 @@ public class SideKickPlugin extends EBPlugin
 			View view = vu.getView();
 
 			if(vu.getWhat() == ViewUpdate.CREATED)
-				sidekicks.put(view,new SideKick(view));
+				initView(view);
 			else if(vu.getWhat() == ViewUpdate.CLOSED)
-			{
-				SideKick sidekick = (SideKick)sidekicks.get(view);
-				sidekick.dispose();
-				sidekicks.remove(view);
-			}
+				uninitView(view);
+		}
+		else if(msg instanceof EditPaneUpdate)
+		{
+			EditPaneUpdate epu = (EditPaneUpdate)msg;
+			EditPane editPane = epu.getEditPane();
+
+			if(epu.getWhat() == EditPaneUpdate.CREATED)
+				initTextArea(editPane.getTextArea());
+			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+				uninitTextArea(editPane.getTextArea());
 		}
 		else if(msg instanceof PropertiesChanged)
 			SideKickActions.propertiesChanged();
@@ -123,6 +131,16 @@ public class SideKickPlugin extends EBPlugin
 			return (SideKickParser)parsers.get(name);
 	} //}}}
 
+	//{{{ getParserForView() method
+	public static SideKickParser getParserForView(View view)
+	{
+		SideKick sidekick = (SideKick)sidekicks.get(view);
+		if(sidekick == null)
+			return null;
+		else
+			return sidekick.getParser();
+	} //}}}
+
 	//{{{ getParserForBuffer() method
 	public static SideKickParser getParserForBuffer(Buffer buffer)
 	{
@@ -145,6 +163,17 @@ public class SideKickPlugin extends EBPlugin
 		((SideKick)sidekicks.get(view)).parse(showParsingMessage);
 	} //}}}
 
+	//{{{ getErrorSource() method
+	/**
+	 * Returns the error source used by the given view.
+	 * @param view The view
+	 * @since SideKick 0.3
+	 */
+	public static DefaultErrorSource getErrorSource(View view)
+	{
+		return ((SideKick)sidekicks.get(view)).getErrorSource();
+	} //}}}
+
 	//{{{ addWorkRequest() method
 	public static void addWorkRequest(Runnable run, boolean inAWT)
 	{
@@ -155,6 +184,8 @@ public class SideKickPlugin extends EBPlugin
 		}
 		worker.addWorkRequest(run,inAWT);
 	} //}}}
+
+	//{{{ Package-private members
 
 	//{{{ isParsingBuffer()
 	static boolean isParsingBuffer(Buffer buffer)
@@ -179,5 +210,38 @@ public class SideKickPlugin extends EBPlugin
 	private static HashMap parsers = new HashMap();
 	private static WorkThreadPool worker;
 	private static HashSet parsedBufferSet = new HashSet();
+
+	//{{{ initView() method
+	private void initView(View view)
+	{
+		sidekicks.put(view,new SideKick(view));
+	} //}}}
+
+	//{{{ uninitView() method
+	private void uninitView(View view)
+	{
+		SideKick sidekick = (SideKick)sidekicks.get(view);
+		sidekick.dispose();
+		sidekicks.remove(view);
+	} //}}}
+
+	//{{{ initTextArea() method
+	private void initTextArea(JEditTextArea textArea)
+	{
+		SideKickBindings b = new SideKickBindings();
+		textArea.putClientProperty(SideKickBindings.class,b);
+		textArea.addKeyListener(b);
+	} //}}}
+
+	//{{{ uninitTextArea() method
+	private void uninitTextArea(JEditTextArea textArea)
+	{
+		SideKickBindings b = (SideKickBindings)
+			textArea.getClientProperty(
+			SideKickBindings.class);
+		textArea.putClientProperty(SideKickBindings.class,null);
+		textArea.removeKeyListener(b);
+	} //}}}
+
 	//}}}
 }

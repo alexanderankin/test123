@@ -240,6 +240,7 @@ public class SideKickCompletionPopup extends JWindow
 		//{{{ keyTyped() method
 		private void keyTyped(char ch)
 		{
+			
 			if(complete != null && complete.handleKeystroke(
 				list.getSelectedIndex(),ch))
 			{

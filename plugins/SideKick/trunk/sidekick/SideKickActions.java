@@ -39,7 +39,7 @@ public class SideKickActions
 		if(timer != null)
 			timer.stop();
 
-		complete(view,true);
+		complete(view,COMPLETE_INSTANT_KEY);
 	} //}}}
 
 	//{{{ keyCompleteWithDelay() method
@@ -62,7 +62,7 @@ public class SideKickActions
 				public void actionPerformed(ActionEvent evt)
 				{
 					if(caretWhenCompleteKeyPressed == textArea.getCaretPosition())
-						complete(view,false);
+						complete(view,COMPLETE_DELAY_KEY);
 				}
 			});
 
@@ -74,42 +74,68 @@ public class SideKickActions
 	} //}}}
 
 	//{{{ complete() method
-	public static void complete(View view, boolean insertLongestPrefix)
+	public static final int COMPLETE_COMMAND = 0;
+	public static final int COMPLETE_DELAY_KEY = 1;
+	public static final int COMPLETE_INSTANT_KEY = 2;
+
+	public static void complete(View view, int mode)
 	{
 		EditPane editPane = view.getEditPane();
 		Buffer buffer = editPane.getBuffer();
+		JEditTextArea textArea = editPane.getTextArea();
+
 		SideKickParser parser = SideKickPlugin
 			.getParserForBuffer(buffer);
-
 		SideKickParsedData data = SideKickParsedData
 			.getParsedData(view);
 
-		if(!buffer.isEditable()
-			|| data == null || parser == null
-			|| !parser.supportsCompletion())
+		SideKickCompletion complete = null;
+
+		if(buffer.isEditable()
+			&& data != null && parser != null
+			&& parser.supportsCompletion())
 		{
-			System.err.println("data is " + data);
-			return;
+			complete = parser.complete(editPane,
+				textArea.getCaretPosition());
 		}
 
-		JEditTextArea textArea = editPane.getTextArea();
-		int caret = textArea.getCaretPosition();
-
-		SideKickCompletion complete = parser.complete(editPane,caret);
-		if(insertLongestPrefix)
+		if(complete == null || complete.size() == 0)
 		{
-			if(complete == null || complete.size() == 0)
+			if(mode == COMPLETE_INSTANT_KEY
+				|| mode == COMPLETE_DELAY_KEY)
 			{
-				// nothing to do
-				return;
-			}
-			else if(complete.size() == 1)
-			{
-				complete.insert(0);
+				// don't bother user with beep if eg
+				// they press < in XML mode
 				return;
 			}
 			else
 			{
+				view.getToolkit().beep();
+				return;
+			}
+		}
+		else if(complete.size() == 1)
+		{
+			// if user invokes complete explicitly, insert the
+			// completion immediately.
+			//
+			// if the user eg enters </ in XML mode, there will
+			// only be one completion and / is an instant complete
+			// key, so we insert it
+			if(mode == COMPLETE_COMMAND
+				|| mode == COMPLETE_INSTANT_KEY)
+			{
+				complete.insert(0);
+				return;
+			}
+		}
+		else
+		{
+			if(mode == COMPLETE_COMMAND)
+			{
+				// if user invokes complete explicitly and
+				// there is more than one completion, we
+				// insert the longest common prefix
 				String longestPrefix = complete.getLongestPrefix();
 				if(longestPrefix != null
 					&& longestPrefix.length() != 0)
@@ -119,7 +145,12 @@ public class SideKickActions
 			}
 		}
 
-		new SideKickCompletionPopup(view,parser,caret,complete);
+		// show the popup if
+		// - complete has one element and user invoked with delay key
+		// - or complete has multiple elements
+		new SideKickCompletionPopup(view,parser,
+			textArea.getCaretPosition(),
+			complete);
 	} //}}}
 
 	//{{{ selectAsset() method
