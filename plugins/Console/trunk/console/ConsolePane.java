@@ -47,6 +47,7 @@ public class ConsolePane extends JTextPane
 
 		listenerList = new EventListenerList();
 
+		ActionMap actionMap = getActionMap();
 		InputMap inputMap = getInputMap();
 		
 		/* Press enter to evaluate the input */
@@ -65,17 +66,17 @@ public class ConsolePane extends JTextPane
 
 		/* Press Up/Down to access history */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,0),
-			new HistoryUpAction());
+			new HistoryUpAction(actionMap.get("caret-up")));
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,0),
-			new HistoryDownAction());
+			new HistoryDownAction(actionMap.get("caret-down")));
 
 		/* Press S+Up/Down to search history */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,InputEvent.SHIFT_MASK),
-			new SearchUpAction());
+			new SearchUpAction(actionMap.get("selection-up")));
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,InputEvent.SHIFT_MASK),
-			new SearchDownAction());
+			new SearchDownAction(actionMap.get("selection-down")));
 
 		/* Workaround */
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,0),
@@ -405,36 +406,76 @@ public class ConsolePane extends JTextPane
 	//{{{ HistoryUpAction class
 	class HistoryUpAction extends AbstractAction
 	{
+		private Action delegate;
+		
+		HistoryUpAction(Action delegate)
+		{
+			this.delegate = delegate;
+		}
+
 		public void actionPerformed(ActionEvent evt)
 		{
-			history.historyPrevious();
+			if(getCaretPosition() >= getInputStart())
+				history.historyPrevious();
+			else
+				delegate.actionPerformed(evt);
 		}
 	} //}}}
 
 	//{{{ HistoryDownAction class
 	class HistoryDownAction extends AbstractAction
 	{
+		private Action delegate;
+		
+		HistoryDownAction(Action delegate)
+		{
+			this.delegate = delegate;
+		}
+
 		public void actionPerformed(ActionEvent evt)
 		{
-			history.historyNext();
+			if(getCaretPosition() >= getInputStart())
+				history.historyNext();
+			else
+				delegate.actionPerformed(evt);
 		}
 	} //}}}
 
 	//{{{ SearchUpAction class
 	class SearchUpAction extends AbstractAction
 	{
+		private Action delegate;
+		
+		SearchUpAction(Action delegate)
+		{
+			this.delegate = delegate;
+		}
+
 		public void actionPerformed(ActionEvent evt)
 		{
-			history.doBackwardSearch();
+			if(getCaretPosition() >= getInputStart())
+				history.doBackwardSearch();
+			else
+				delegate.actionPerformed(evt);
 		}
 	} //}}}
 
 	//{{{ SearchDownAction class
 	class SearchDownAction extends AbstractAction
 	{
+		private Action delegate;
+		
+		SearchDownAction(Action delegate)
+		{
+			this.delegate = delegate;
+		}
+
 		public void actionPerformed(ActionEvent evt)
 		{
-			history.doForwardSearch();
+			if(getCaretPosition() >= getInputStart())
+				history.doForwardSearch();
+			else
+				delegate.actionPerformed(evt);
 		}
 	} //}}}
 

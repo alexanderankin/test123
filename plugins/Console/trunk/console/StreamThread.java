@@ -135,16 +135,26 @@ class StreamThread extends Thread
 
 		Color color = defaultColor;
 
+		/* We consider \r\n to be one line, not two, for error parsing
+		purposes. */
+		boolean lastCR = false;
+
 		for(int i = 0; i < len; i++)
 		{
 			char ch = (char)buf[offset + i];
-			if(ch == '\r' || ch == '\n')
+			if(ch == '\n')
 			{
-				handleLine(lineBuffer.toString());
-				lineBuffer.setLength(0);
+				if(!lastCR)
+					handleLine(lineBuffer);
+			}
+			else if(ch == '\r')
+			{
+				handleLine(lineBuffer);
+				lastCR = true;
 			}
 			else
 				lineBuffer.append(ch);
+			lastCR = false;
 		}
 
 		output.writeAttrs(ConsolePane.colorAttributes(color),
@@ -152,8 +162,11 @@ class StreamThread extends Thread
 	} //}}}
 
 	//{{{ handleLine() method
-	private void handleLine(String line)
+	private void handleLine(StringBuffer buf)
 	{
+		String line = buf.toString();
+		buf.setLength(0);
+
 		REMatch match = makeEntering.getMatch(line);
 		if(match != null)
 		{
