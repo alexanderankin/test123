@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+  <ACTION NAME="openit.find-file-in-source-path">
+	  <CODE>
+			org.etheridge.openit.OpenItPlugin.findFileInSourcePath(view);
+    </CODE>
+	</ACTION>
+  <!--ACTION NAME="openit.add-current-buffer-directory-to-source-path">
+	  <CODE>
+			org.etheridge.openit.OpenItPlugin.addCurrentDirectoryToSourcePath(view);
+    </CODE>
+	</ACTION-->
+</ACTIONS>
