@@ -185,7 +185,7 @@ public class DualDiff {
         int lineCount1 = fileLines1.length;
 
         this.diffOverview0 = new DiffLocalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
-        this.diffOverview1 = new DiffGlobalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
+        this.diffOverview1 = new DiffGlobalVirtualOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
 
         this.horizontalAdjust = new HorizontalAdjustHandler();
         this.verticalAdjust   = new VerticalAdjustHandler();
