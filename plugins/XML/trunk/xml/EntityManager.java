@@ -81,11 +81,11 @@ public class EntityManager
 
 		catalog = new XCatalog();
 
-		
+		int i = 0;
+		String uri;
+
 		try
 		{
-			int i = 0;
-			String uri;
 			while((uri = jEdit.getProperty("xml.xcatalog." + i)) != null)
 			{
 				catalog.loadCatalog(resolveEntity(null,null,uri));
@@ -95,6 +95,23 @@ public class EntityManager
 		catch(Exception e)
 		{
 			Log.log(Log.ERROR,EntityManager.class,e);
+		}
+
+		i = 0;
+		String id;
+		while((id = jEdit.getProperty("xml.public-id." + i)) != null)
+		{
+			catalog.addPublicMapping(id,jEdit.getProperty(
+				"xml.public-id." + i + ".uri"));
+			i++;
+		}
+
+		i = 0;
+		while((id = jEdit.getProperty("xml.system-id." + i)) != null)
+		{
+			catalog.addSystemMapping(id,jEdit.getProperty(
+				"xml.system-id." + i + ".uri"));
+			i++;
 		}
 	}
 }

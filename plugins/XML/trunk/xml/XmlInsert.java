@@ -280,7 +280,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 				else
 				{
 					// show edit tag dialog box
-					XmlActions.showEditTagDialog(view,editPane,
+					XmlActions.showEditTagDialog(view,
 						element);
 				}
 			}
