@@ -1,0 +1,104 @@
+# JavaInsight plugin makefile
+#
+# To recompile this plugin, start jmk in the plugin's source directory.
+#
+# jEdit buffer-local properties:
+# :mode=jmk:tabSize=4:noTabs=yes:
+# :indentOpenBrackets={:indentCloseBrackets=}:
+
+jar_name = "JavaInsight";
+
+
+##
+# javac executable and args
+##
+
+javac_bin = "javac";
+javac_opts = "-g" "-deprecation";
+
+#javac_bin = "jikes";
+#javac_opts = "-g" "-deprecation" "+E";
+
+##
+# jar executable and args
+##
+
+jar_bin = "jar";
+jar_opts = "cf0";
+cmd_jar = jar_bin jar_opts;
+jar_file = (cat "../" jar_name ".jar");
+
+
+##
+# sources
+##
+
+srcs = (subst ".java", ".class",
+    (glob (join (join (dirs "."), "/"), "*.java"))
+);
+
+jode_source = "lib/jode.jar";
+
+
+##
+# release files
+##
+
+extensions = "class" "html" "props" "xml";
+files = (glob (join (dirs "."), (join "/*.", extensions)));
+jode_dest = "../jode.jar";
+
+
+##
+# set up the class path
+##
+
+new_class_path = (cat jode_source ";" ".");
+old_class_path = (getprop "java.class.path");
+
+if (equal "", old_class_path) then
+    class_path = new_class_path;
+else
+    class_path = (cat old_class_path ";" new_class_path);
+end
+
+cmd_javac = javac_bin javac_opts "-classpath" class_path;
+
+
+##
+# targets
+##
+
+"all": jar_file jode_dest;
+
+
+"%.class" : "%.java";
+{
+    exec cmd_javac <;
+}
+
+
+jar_file: srcs;
+{
+    exec cmd_jar @ files;
+}
+
+
+jode_dest: jode_source;
+{
+    copy jode_source jode_dest;
+}
+
+
+"clean":;
+{
+    -delete
+        (glob
+            (join (dirs "."), "/*.class")
+            (join (dirs "."), "/*~")
+        );
+}
+
+
+".PHONY": "all" "clean";
+
