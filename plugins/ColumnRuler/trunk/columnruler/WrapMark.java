@@ -12,7 +12,7 @@ import org.gjt.sp.jedit.msg.*;
  *  a dashed line.
  *
  * @author     mace
- * @version    $Revision: 1.8 $ modified $Date: 2004-02-24 02:55:58 $ by
+ * @version    $Revision: 1.9 $ modified $Date: 2004-02-27 20:00:20 $ by
  *      $Author: bemace $
  */
 public class WrapMark extends Mark implements EBComponent {
@@ -52,13 +52,22 @@ public class WrapMark extends Mark implements EBComponent {
 		setBuffer(ruler.getTextArea().getBuffer());
 	}
 
+	/**
+	 * Draws the wrap guide as a dashed line.
+	 */
 	public void drawGuide(Graphics2D gfx, ColumnRuler ruler) {
 		gfx.setColor(getColor());
 		int hScroll = ruler.getTextArea().getHorizontalOffset();
 		double x = getColumn() * ruler.charWidth + hScroll;
 		Line2D guide = new Line2D.Double();
 		double dashLength = 2 * ruler.lineHeight / 3;
-		for (double y = 0; y < ruler.getTextArea().getHeight(); y += dashLength * 2) {
+		double dashSpacing = 2 * ruler.lineHeight / 3;
+		double yOffset = ruler.getTextArea().getPhysicalLineOfScreenLine(0)*ruler.lineHeight % (dashLength+dashSpacing);
+		if (yOffset > dashSpacing) {
+			guide.setLine(x,0,x,yOffset-dashSpacing);
+			gfx.draw(guide);
+		}
+		for (double y = yOffset; y < ruler.getTextArea().getHeight(); y += dashLength +dashSpacing) {
 			guide.setLine(x, y, x, y + dashLength);
 			gfx.draw(guide);
 		}
