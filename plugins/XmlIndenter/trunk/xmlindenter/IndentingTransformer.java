@@ -42,6 +42,8 @@ import java.io.Writer;
  */
 public abstract class IndentingTransformer implements TransformerHandler, DeclHandler {
 
+  private static final String ON_NEW_LINE = "onNewLine";
+
   /** buffer to hold character data */
   private Writer writer;
 
@@ -111,16 +113,23 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
       writer.write(qName);
 
       for(int i = 0; i < atts.getLength(); i++) {
-        writer.write(' ');
-        writer.write(atts.getQName(i));
+        String attributeQName = atts.getQName(i);
+        String attributeValue = atts.getValue(i);
+        boolean onNewLine = (atts.getType(i) == ON_NEW_LINE);
 
-        String value = atts.getValue(i);
-        boolean containsDoubleQuote = (value.indexOf('"') != -1);
+        boolean containsDoubleQuote = (attributeValue.indexOf('"') != -1);
         char quote = containsDoubleQuote ? '\'' : '\"';
 
+        if(onNewLine) {
+          indent(2);
+        } else {
+          writer.write(' ');
+        }
+
+        writer.write(attributeQName);
         writer.write('=');
         writer.write(quote);
-        writer.write(value);
+        writer.write(attributeValue);
         writer.write(quote);
       }
 
@@ -135,6 +144,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
   }
 
+  protected abstract void indent(int levelAdjustment) throws SAXException;
 
   protected String indentXml(final String xmlString, final Writer outputWriter) throws IOException, SAXException {
     this.writer = outputWriter;
@@ -293,12 +303,16 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     boolean isLastSpace = false;
     char quote = '\"';
     int i = 0;
+    boolean attributeOnNewLine = false;
 
     while(i < chars.length) {
       qName.setLength(0);
       value.setLength(0);
 
       while(i < chars.length && Character.isWhitespace(chars[i])) {
+        if(chars[i] == '\r' || chars[i] == '\n') {
+          attributeOnNewLine = true;
+        }
         i++;
       }
 
@@ -342,7 +356,8 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
         i++; // get past quote
 
-        attributes.addAttribute("", "", qName.toString().trim(), "", value.toString().trim());
+        String type = attributeOnNewLine ? ON_NEW_LINE : "";
+        attributes.addAttribute("", "", qName.toString().trim(), type, value.toString());
       }
     }
   }
