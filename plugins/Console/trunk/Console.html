@@ -73,9 +73,11 @@ if any
 </ul>
 
 The default shell also parses command output for compiler errors. A number
-of different formats are supported.
-<!-- , and new error patterns can be added
-in <b>Utilities</b>&gt;<b>Console</b>&gt;<b>Global Options</b>. -->
+of different formats are supported, and new error patterns can be added
+in <b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Console</b>. Parsed errors
+are added to the error list, which can be viewed by invoking
+<b>Plugins</b>&gt;<b>Error List</b> (if you do not see that menu item, then
+you need to install the ErrorList plugin).
 
 <hr>
 
@@ -136,6 +138,9 @@ the console:
 Requires EditBus 0.9.2 and jEdit 2.4pre6.
 
 <ul>
+<li>Error patterns can now be changed in the option pane
+<li>Commands invoked through the "console" action (eg, in macros) are now
+added to the history
 <li>Updated for new option pane API
 <li>Updated to use jEdit.get/setBooleanProperty() for boolean properties
 </ul>

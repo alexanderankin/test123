@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -89,29 +90,26 @@ public class ConsoleOptionPane extends AbstractOptionPane
 		addComponent(new JLabel(jEdit.getProperty("options.console.errors")));
 
 		JPanel errors = new JPanel(new BorderLayout());
-		errorListModel = new DefaultListModel();
-		errors.add(BorderLayout.CENTER,new JScrollPane(errorList = new JList()));
+		errorListModel = createListModel();
+		errors.add(BorderLayout.CENTER,new JScrollPane(errorList = new JList(errorListModel)));
 		errorList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		errorList.addListSelectionListener(new ListHandler());
 		errorList.addMouseListener(new MouseHandler());
-		ErrorMatcher[] matchers = ConsoleShellPluginPart.loadMatchers();
-		for(int i = 0; i < matchers.length; i++)
-		{
-			errorListModel.addElement(matchers[i]);
-		}
-		errorList.setModel(errorListModel);
 
 		JPanel buttons = new JPanel();
 		buttons.add(edit = new JButton(jEdit.getProperty("options.console.errors.edit")));
 		edit.addActionListener(new ActionHandler());
 		buttons.add(add = new JButton(jEdit.getProperty("options.console.errors.add")));
 		add.addActionListener(new ActionHandler());
-		buttons.add(del = new JButton(jEdit.getProperty("options.console.errors.del")));
-		del.addActionListener(new ActionHandler());
+		buttons.add(remove = new JButton(jEdit.getProperty("options.console.errors.remove")));
+		remove.addActionListener(new ActionHandler());
 		buttons.add(up = new JButton(jEdit.getProperty("options.console.errors.up")));
 		up.addActionListener(new ActionHandler());
 		buttons.add(down = new JButton(jEdit.getProperty("options.console.errors.down")));
 		down.addActionListener(new ActionHandler());
 		errors.add(BorderLayout.SOUTH,buttons);
+
+		updateButtons();
 
 		GridBagConstraints cons = new GridBagConstraints();
 		cons.gridy = y++;
@@ -143,6 +141,11 @@ public class ConsoleOptionPane extends AbstractOptionPane
 			.getColorHexString(warningColor.getBackground()));
 		jEdit.setProperty("console.errorColor",GUIUtilities
 			.getColorHexString(errorColor.getBackground()));
+
+		for(int i = 0; i < errorListModel.getSize(); i++)
+		{
+			((Matcher)errorListModel.getElementAt(i)).save(i);
+		}
 	}
 
 	// private members
@@ -160,7 +163,7 @@ public class ConsoleOptionPane extends AbstractOptionPane
 	private DefaultListModel errorListModel;
 	private JButton edit;
 	private JButton add;
-	private JButton del;
+	private JButton remove;
 	private JButton up;
 	private JButton down;
 
@@ -173,15 +176,35 @@ public class ConsoleOptionPane extends AbstractOptionPane
 		return b;
 	}
 
-	private void edit()
+	private DefaultListModel createListModel()
 	{
-		ErrorMatcher error = (ErrorMatcher)errorList.getSelectedValue();
-		if(error == null)
+		DefaultListModel listModel = new DefaultListModel();
+
+		int i = 0;
+		String match;
+		while((match = jEdit.getProperty("console.error." + i + ".match")) != null)
 		{
-			getToolkit().beep();
-			return;
+			String name = jEdit.getProperty("console.error." + i + ".name");
+			String filename = jEdit.getProperty("console.error." + i + ".filename");
+			String line = jEdit.getProperty("console.error." + i + ".line");
+			String message = jEdit.getProperty("console.error." + i + ".message");
+
+			listModel.addElement(new Matcher(name,match,filename,line,message));
+
+			i++;
 		}
-		new ErrorMatcherDialog(this,error);
+
+		return listModel;
+	}
+
+	private void updateButtons()
+	{
+		int index = errorList.getSelectedIndex();
+
+		edit.setEnabled(index != -1);
+		remove.setEnabled(index != -1 && errorListModel.getSize() != 0);
+		up.setEnabled(index > 0);
+		down.setEnabled(index != -1 && index != errorListModel.getSize() - 1);
 	}
 
 	class ActionHandler implements ActionListener
@@ -191,7 +214,45 @@ public class ConsoleOptionPane extends AbstractOptionPane
 			Object source = evt.getSource();
 			if(source == edit)
 			{
-				edit();
+				Matcher error = (Matcher)errorList.getSelectedValue();
+				new ErrorMatcherDialog(ConsoleOptionPane.this,error);
+				errorList.repaint();
+			}
+			else if(source == add)
+			{
+				Matcher matcher = new Matcher();
+				if(new ErrorMatcherDialog(ConsoleOptionPane.this,matcher).isOK())
+				{
+					int index = errorList.getSelectedIndex();
+					if(index == -1)
+						index = errorListModel.getSize();
+					else
+						index++;
+		
+					errorListModel.insertElementAt(matcher,index);
+					errorList.setSelectedIndex(index);
+				}
+			}
+			else if(source == remove)
+			{
+				errorListModel.removeElementAt(errorList.getSelectedIndex());
+				updateButtons();
+			}
+			else if(source == up)
+			{
+				int index = errorList.getSelectedIndex();
+				Object selected = errorList.getSelectedValue();
+				errorListModel.removeElementAt(index);
+				errorListModel.insertElementAt(selected,index-1);
+				errorList.setSelectedIndex(index-1);
+			}
+			else if(source == down)
+			{
+				int index = errorList.getSelectedIndex();
+				Object selected = errorList.getSelectedValue();
+				errorListModel.removeElementAt(index);
+				errorListModel.insertElementAt(selected,index+1);
+				errorList.setSelectedIndex(index+1);
 			}
 			else
 			{
@@ -205,27 +266,89 @@ public class ConsoleOptionPane extends AbstractOptionPane
 		}
 	}
 
+	class ListHandler implements ListSelectionListener
+	{
+		public void valueChanged(ListSelectionEvent evt)
+		{
+			updateButtons();
+		}
+	}
+
 	class MouseHandler extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
 			if(evt.getClickCount() == 2)
 			{
-				edit();
+				Matcher error = (Matcher)errorList.getSelectedValue();
+				new ErrorMatcherDialog(ConsoleOptionPane.this,error);
+				errorList.repaint();
 			}
+		}
+	}
+
+	class Matcher
+	{
+		String name, match, filename, line, message;
+
+		Matcher() {}
+
+		Matcher(String name, String match, String filename, String line,
+			String message)
+		{
+			this.name = name;
+			this.match = match;
+			this.filename = filename;
+			this.line = line;
+			this.message = message;
+		}
+
+		void save(int i)
+		{
+			jEdit.setProperty("console.error." + i + ".name",name);
+			jEdit.setProperty("console.error." + i + ".match",match);
+			jEdit.setProperty("console.error." + i + ".filename",filename);
+			jEdit.setProperty("console.error." + i + ".line",line);
+			jEdit.setProperty("console.error." + i + ".message",message);
+		}
+
+		public String toString()
+		{
+			return name;
 		}
 	}
 }
 
 class ErrorMatcherDialog extends EnhancedDialog
 {
-	public ErrorMatcherDialog(Component comp, ErrorMatcher matcher)
+	public ErrorMatcherDialog(Component comp, ConsoleOptionPane.Matcher matcher)
 	{
 		super(JOptionPane.getFrameForComponent(comp),
 			jEdit.getProperty("options.console.errors.title"),true);
 		this.matcher = matcher;
 
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new GridLayout(5,2));
+		panel.add(new JLabel(jEdit.getProperty(
+			"options.console.errors.name"),
+			JLabel.RIGHT));
+		panel.add(name = new JTextField(matcher.name));
+		panel.add(new JLabel(jEdit.getProperty(
+			"options.console.errors.match"),
+			JLabel.RIGHT));
+		panel.add(match = new JTextField(matcher.match));
+		panel.add(new JLabel(jEdit.getProperty(
+			"options.console.errors.filename"),
+			JLabel.RIGHT));
+		panel.add(filename = new JTextField(matcher.filename));
+		panel.add(new JLabel(jEdit.getProperty(
+			"options.console.errors.line"),
+			JLabel.RIGHT));
+		panel.add(line = new JTextField(matcher.line));
+		panel.add(new JLabel(jEdit.getProperty(
+			"options.console.errors.message"),
+			JLabel.RIGHT));
+		panel.add(message = new JTextField(matcher.message));
+
 		getContentPane().add(BorderLayout.CENTER,panel);
 
 		panel = new JPanel();
@@ -247,6 +370,28 @@ class ErrorMatcherDialog extends EnhancedDialog
 
 	public void ok()
 	{
+		// Check values
+		String _name = name.getText();
+		String _match = match.getText();
+		String _filename = filename.getText();
+		String _line = line.getText();
+		String _message = message.getText();
+		if(_name == null || _match == null || _filename == null
+			|| _line == null || _message == null)
+		{
+			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
+				"console.not-filled-out",null);
+			return;
+		}
+		else
+		{
+			matcher.name = _name;
+			matcher.match = _match;
+			matcher.filename = _filename;
+			matcher.line = _line;
+			matcher.message = _message;
+		}
+
 		isOK = true;
 		dispose();
 	}
@@ -256,13 +401,18 @@ class ErrorMatcherDialog extends EnhancedDialog
 		dispose();
 	}
 
-	public ErrorMatcher getMatcher()
+	public boolean isOK()
 	{
-		return (isOK ? matcher : null);
+		return isOK;
 	}
 
 	// private members
-	private ErrorMatcher matcher;
+	private ConsoleOptionPane.Matcher matcher;
+	private JTextField name;
+	private JTextField match;
+	private JTextField filename;
+	private JTextField line;
+	private JTextField message;
 	private JButton ok;
 	private JButton cancel;
 	private boolean isOK;

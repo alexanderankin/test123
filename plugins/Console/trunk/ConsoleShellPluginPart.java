@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import gnu.regexp.REException;
 import java.util.Hashtable;
 import java.util.Vector;
 import org.gjt.sp.jedit.*;
@@ -33,8 +34,6 @@ public class ConsoleShellPluginPart extends EBPlugin
 		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
 		EditBus.addToBus(errorSource);
 		EditBus.addToNamedList(Shell.SHELLS_LIST,NAME);
-
-		errorMatchers = loadMatchers();
 	}
 
 	public void handleMessage(EBMessage msg)
@@ -49,31 +48,10 @@ public class ConsoleShellPluginPart extends EBPlugin
 		}
 		else if(msg instanceof PropertiesChanged)
 		{
-			errorMatchers = loadMatchers();
+			// lazily load the matchers the next time they are
+			// needed
+			errorMatchers = null;
 		}
-	}
-
-	public static ErrorMatcher[] loadMatchers()
-	{
-		Vector errorMatchers = new Vector();
-		int i = 0;
-		String match;
-		while((match = jEdit.getProperty("console.error." + i + ".match")) != null)
-		{
-			String name = jEdit.getProperty("console.error." + i + ".name");
-			String filename = jEdit.getProperty("console.error." + i + ".filename");
-			String line = jEdit.getProperty("console.error." + i + ".line");
-			String message = jEdit.getProperty("console.error." + i + ".message");
-
-			errorMatchers.addElement(new ErrorMatcher(name,match,
-				filename,line,message));
-
-			i++;
-		}
-
-		ErrorMatcher[] retVal = new ErrorMatcher[errorMatchers.size()];
-		errorMatchers.copyInto(retVal);
-		return retVal;
 	}
 
 	// package-private members
@@ -89,6 +67,9 @@ public class ConsoleShellPluginPart extends EBPlugin
 
 	static int parseLine(String text)
 	{
+		if(errorMatchers == null)
+			loadMatchers();
+
 		for(int i = 0; i < errorMatchers.length; i++)
 		{
 			ErrorMatcher m = errorMatchers[i];
@@ -98,6 +79,38 @@ public class ConsoleShellPluginPart extends EBPlugin
 		}
 
 		return -1;
+	}
+
+	static void loadMatchers()
+	{
+		Vector vector = new Vector();
+		int i = 0;
+		String match;
+		while((match = jEdit.getProperty("console.error." + i + ".match")) != null)
+		{
+			String name = jEdit.getProperty("console.error." + i + ".name");
+			String filename = jEdit.getProperty("console.error." + i + ".filename");
+			String line = jEdit.getProperty("console.error." + i + ".line");
+			String message = jEdit.getProperty("console.error." + i + ".message");
+
+			try
+			{
+				ErrorMatcher matcher = new ErrorMatcher(name,match,
+					filename,line,message);
+				vector.addElement(matcher);
+			}
+			catch(REException re)
+			{
+				Log.log(Log.ERROR,ConsoleShellPluginPart.class,
+					"Invalid regexp: " + match);
+				Log.log(Log.ERROR,ConsoleShellPluginPart.class,re);
+			}
+
+			i++;
+		}
+
+		errorMatchers = new ErrorMatcher[vector.size()];
+		vector.copyInto(errorMatchers);
 	}
 
 	// private members

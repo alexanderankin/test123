@@ -31,32 +31,19 @@ public class ErrorMatcher
 	public String message;
 
 	public ErrorMatcher(String name, String match, String filename,
-		String line, String message)
+		String line, String message) throws REException
 	{
 		this.name = name;
 		this.match = match;
 		this.filename = filename;
 		this.line = line;
 		this.message = message;
+
+		regexp = new RE(match,RE.REG_ICASE,RESyntax.RE_SYNTAX_PERL5);
 	}
 
 	public int match(String text)
 	{
-		if(regexp == null)
-		{
-			try
-			{
-				regexp = new RE(match,RE.REG_ICASE,RESyntax.RE_SYNTAX_PERL5);
-			}
-			catch(REException re)
-			{
-				Log.log(Log.ERROR,this,"Invalid regexp: " + match);
-				Log.log(Log.ERROR,this,re);
-
-				return -1;
-			}
-		}
-
 		if(regexp.isMatch(text))
 		{
 			int type;
@@ -78,10 +65,5 @@ public class ErrorMatcher
 		}
 		else
 			return -1;
-	}
-
-	public String toString()
-	{
-		return name;
 	}
 }
