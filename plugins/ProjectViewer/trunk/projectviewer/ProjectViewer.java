@@ -516,8 +516,6 @@ public final class ProjectViewer extends JPanel
 			viewers.put(aView, this);
 		}
 		viewerList.add(this);
-
-		System.err.println("5");
 	} //}}}
 
 	//{{{ Private methods

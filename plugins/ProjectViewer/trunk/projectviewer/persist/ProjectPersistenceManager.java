@@ -106,12 +106,9 @@ public final class ProjectPersistenceManager {
 
 		// OK, let's parse the config file
 		try {
-			System.err.println("Parsing...");
 			XmlParser parser = new XmlParser();
 			parser.setHandler(new ProjectHandler(p));
-			System.err.println("Parsing 2...");
 			parser.parse(null, null, new InputStreamReader(in));
-			System.err.println("Parsing 3...");
 		} catch (Exception e) {
 			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), e);
 			return null;
