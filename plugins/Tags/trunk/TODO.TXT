@@ -44,9 +44,6 @@ TODO (later releases)
 
 - jet_unix to use tag dialog
 
-- Don't use Macros for errors and warings as you can't change the
-  title of the dialog. 
-
 - Ability to set num of columns for filename in tag collision dialog.
   Automatically do it if collision list popup/dialog is larger than
   screen. 
