@@ -33,10 +33,21 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
 
+/**
+ * A dockable component contaning a scrollable table; the table contains
+ * data on task items found by parsing one or more buffers.
+ *
+ * @author Oliver Rutherfurd
+ */
 public class TaskList extends JPanel
 	implements DockableWindow, EBComponent
 {
 
+	/**
+	 * Constructor
+	 *
+	 * @param view The view in which the TaskList component will appear
+	 */
 	public TaskList(View view)
 	{
 		super(new BorderLayout());
@@ -48,6 +59,9 @@ public class TaskList extends JPanel
 		add(BorderLayout.CENTER, new JScrollPane(table));
 	}
 
+	/**
+	 * The table containing data on task items
+	 */
 	class TaskListTable extends JTable
 	{
 		private boolean init = false;
@@ -73,6 +87,11 @@ public class TaskList extends JPanel
 			resizeTable();
 		}
 
+		/**
+		 * Calls resizeTable() when the number of table columns change
+		 *
+		 * @param e The TableModelEvent represeting the change in the table's state
+		 */
 		public void tableChanged(TableModelEvent e)
 		{
 			super.tableChanged(e);
@@ -116,8 +135,17 @@ public class TaskList extends JPanel
 		}
 	}
 
+	/**
+	 * Responds to mouse clicks in the table or its header row
+	 */
 	class MouseHandler extends MouseAdapter
 	{
+		/**
+		 * Calls handling routine based on number, type and location
+		 * of mouse clicks
+		 *
+		 * @param e The MouseEvent being handled
+		 */
 		public void mouseClicked(MouseEvent e)
 		{
 			Point p = e.getPoint();
@@ -138,6 +166,13 @@ public class TaskList extends JPanel
 			}
 		}
 
+		/**
+		 * Causes a popup context menu to be shown
+		 *
+		 * @param view he View in which the TaskList component appears
+		 * @param row The table row clicked by the mouse
+		 * @param p The Point within the TaskList's table object clicked by the mouse
+		 */
 		private void showPopup(final View view, final int row, Point p)
 		{
 			TaskListPopup popup = new TaskListPopup(view, TaskList.this, row);
@@ -153,9 +188,14 @@ public class TaskList extends JPanel
 			popup.show(TaskList.this, p.x+1, p.y+1);
 		}
 
+		/**
+		 * Locates and displays buffer text corresponding to the selected row of the TaskList's table component
+		 *
+		 * @param row The selected row of the TaskList table
+		 */
 		private void showTaskText(final int row)
 		{
-			//get EditPane of buffer clicked, goto selection
+			// NOTE: get EditPane of buffer clicked, goto selection
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
@@ -181,16 +221,31 @@ public class TaskList extends JPanel
 		}
 	}
 
+	/**
+	 * Property accessor required by jEdit Plugin API
+	 *
+	 * @return The plugin's name property
+	 */
 	public String getName()
 	{
 		return TaskListPlugin.NAME;
 	}
 
+	/**
+	 * Property accessor required by jEdit Plugin API
+	 *
+	 * @return A reference to the TaskList object
+	 */
 	public Component getComponent()
 	{
 		return this;
 	}
 
+	/**
+	 * Message handling routine required by the jEdit Plugin API
+	 *
+	 * @param message The EBMessage received from the EditBus
+	 */
 	public void handleMessage(EBMessage message)
 	{
 		if(message instanceof PropertiesChanged)
@@ -203,16 +258,24 @@ public class TaskList extends JPanel
 		// QUESTION: what other messages need to be handled here?
 	}
 
+	/**
+	 * Adds the TaskList and its table's data model to the EditBus
+	 * to listen for messages; registers the data model to be notified when
+	 * tasks are added or removed.
+	 */
 	public void addNotify()
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
 		EditBus.addToBus(taskListModel);
-
-		// register table model to be notified when task are added/removed
 		TaskListPlugin.addTaskListener(taskListModel);
 	}
 
+	/**
+	 * Removes the TaskList and its table's data model from the EditBus;
+	 * removes the data model form the list of components that listen for
+	 * the addition or removal of tasks items
+	 */
 	public void removeNotify()
 	{
 		super.removeNotify();
@@ -223,8 +286,19 @@ public class TaskList extends JPanel
 		TaskListPlugin.removeTaskListener(taskListModel);
 	}
 
+	/**
+	 * The view in which the TaskList component appears
+	 */
 	private View view;
-	TaskListModel taskListModel;
+	/**
+	 * The table display task items; given package access
+	 * to allow for calls by a TaskListPopup object.
+	 */
 	JTable table;
+	/**
+	 * The data model for the TaskList's table; given package access
+	 * to allow for calls by a TaskListPopup object.
+	 */
+	TaskListModel taskListModel;
 }
 
