@@ -45,7 +45,7 @@ public class AntFarmOptionPane
 
 	public AntFarmOptionPane()
 	{
-		super( "Build Options" );
+		super( "BuildOptions" );
 	}
 
 
