@@ -27,10 +27,15 @@ public class WhiteSpaceActions
     private WhiteSpaceActions() {}
 
 
-    public static void toggleRemoveTrailing(Buffer buffer) {
-        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
+    private static WhiteSpaceModel getWhiteSpaceModel(Buffer buffer) {
+        return (WhiteSpaceModel) buffer.getProperty(
             WhiteSpaceModel.MODEL_PROPERTY
         );
+    }
+
+
+    public static void toggleRemoveTrailing(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return; }
 
         model.getRemoveTrailingWhitespace().toggleEnabled();
@@ -38,9 +43,7 @@ public class WhiteSpaceActions
 
 
     public static boolean isRemoveTrailingSelected(Buffer buffer) {
-        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
-            WhiteSpaceModel.MODEL_PROPERTY
-        );
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return false; }
 
         return model.getRemoveTrailingWhitespace().isEnabled();
@@ -48,9 +51,7 @@ public class WhiteSpaceActions
 
 
     public static void toggleSoftTabifyLeading(Buffer buffer) {
-        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
-            WhiteSpaceModel.MODEL_PROPERTY
-        );
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return; }
 
         model.getSoftTabifyLeadingWhitespace().toggleEnabled();
@@ -58,9 +59,7 @@ public class WhiteSpaceActions
 
 
     public static boolean isSoftTabifyLeadingSelected(Buffer buffer) {
-        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
-            WhiteSpaceModel.MODEL_PROPERTY
-        );
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return false; }
 
         return model.getSoftTabifyLeadingWhitespace().isEnabled();
@@ -68,9 +67,7 @@ public class WhiteSpaceActions
 
 
     public static void toggleTabifyLeading(Buffer buffer) {
-        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
-            WhiteSpaceModel.MODEL_PROPERTY
-        );
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return; }
 
         model.getTabifyLeadingWhitespace().toggleEnabled();
@@ -88,9 +85,7 @@ public class WhiteSpaceActions
 
 
     public static void toggleUntabifyLeading(Buffer buffer) {
-        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
-            WhiteSpaceModel.MODEL_PROPERTY
-        );
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return; }
 
         model.getUntabifyLeadingWhitespace().toggleEnabled();
@@ -98,9 +93,7 @@ public class WhiteSpaceActions
 
 
     public static boolean isUntabifyLeadingSelected(Buffer buffer) {
-        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
-            WhiteSpaceModel.MODEL_PROPERTY
-        );
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return false; }
 
         return model.getUntabifyLeadingWhitespace().isEnabled();
