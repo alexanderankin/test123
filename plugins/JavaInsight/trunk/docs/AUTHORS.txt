@@ -6,11 +6,13 @@ The JavaInsight plugin for jEdit
     Kevin A. Burton (burton@relativity.yi.org)
 
 
-The JavaInsight plugin uses the Jode Decompiler, a program and library
-written by Jochen Hoenicke (jochen@gnu.org). Get Jode from
-
-    http://jode.sourceforge.net.
-
+The JavaInsight plugin uses the following external libraries:
+- The Jode Decompiler, a program and library written by
+  Jochen Hoenicke (jochen@gnu.org). Jode is available at:
+  http://jode.sourceforge.net.
+- BCEL (ByteCode Engineering Library) written by
+  Markus Dahm (markus.dahm@berlin.de). BCEL is available at:
+  http://bcel.sourceforge.net
 
 The JavaInsight plugin has been maintained by:
 
