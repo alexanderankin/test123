@@ -18,6 +18,9 @@
 */
 
 
+package buffertabs;
+
+
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
