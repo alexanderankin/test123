@@ -24,6 +24,7 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
   }
 
   public void testParserSuccess() {
+    checkPHP("if ($a && !empty($c)) {echo 'coucou';}");
     checkPHP("class test { function &fetchRow($result, $fetchmode = DB_FETCHMODE_DEFAULT, $rownum=null) \n{ \n } \n }");
     checkPHP("($plant_loc == \"KV\") ? PRINT \"<TH>OEE %</TH>\" : PRINT \"<TH>UEE %</TH>\";");
     checkPHP("$a == 0 ? print \"true\" : print \"false\";");
