@@ -1,17 +1,29 @@
+# Plugin properties
+plugin.xsearch.XSearchPlugin.activate=defer
+
 plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann
-plugin.xsearch.XSearchPlugin.version=1.0.1
+plugin.xsearch.XSearchPlugin.version=1.0.6
 plugin.xsearch.XSearchPlugin.docs=XSearch.html
-plugin.xsearch.XSearchPlugin.depend.0=jedit 04.01.00.00
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.02.13.00
+# new in version 1.1:
+# adapted to plugin API 4.2
+# new RMB options in HyperSearch menu
+# changed sync from button to box
 
 # Menu
-xsearch.title=Extended Search And Replace Plugin
-xsearch.label=XSearch
-xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
+plugin.xsearch.XSearchPlugin.menu=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
 	xreplace-in-selection xreplace-and-find-next xreplace-all - \
 	xsearch-directory-dialog quick-xfind-standard-options quick-hypersearch-standard-options \
 	quick-allbuffersearch-standard-options - \
 	quick-xfind-current-options quick-hypersearch-current-options 
+# xsearch.label=XSearch
+# xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
+#	xreplace-in-selection xreplace-and-find-next xreplace-all - \
+#	xsearch-directory-dialog quick-xfind-standard-options quick-hypersearch-standard-options \
+#	quick-allbuffersearch-standard-options - \
+#	quick-xfind-current-options quick-hypersearch-current-options
+
 xfind-replace-dialog.label=xfind replace...
 xfind-refind.label=xfind-refind
 xfind-first.label=xfind-first
@@ -21,6 +33,8 @@ xreplace-in-selection.label=xreplace-in-selection
 xreplace-and-find-next.label=xreplace-and-find-next
 xreplace-all.label=xreplace-all
 
+xsearch.title=Extended Search And Replace Plugin
+
 xsearch-directory-dialog.label=xsearch-directory...
 quick-xfind-standard-options.label=quick-xfind-standard-options 
 quick-hypersearch-standard-options.label=quick-hypersearch-standard-options
@@ -28,6 +42,12 @@ quick-allbuffersearch-standard-options.label=quick-allbuffersearch-standard-opti
 quick-xfind-current-options.label=quick-xfind-current-options
 quick-hypersearch-current-options.label=quick-hypersearch-current-options
 	
+# Search properties
+search.synchronize=sync
+search.synchronize.mnemonic=synchronize
+search.subdirs=subdir
+search.subdirs.mnemonic=ubdir
+
 # XSearch_gui properties (alined to jedit_gui.props)
 search.fromTop=From top
 search.fromTop.mnemonic=m
@@ -35,9 +55,23 @@ search.show-button.findAll=true
 
 # XSearch status bar properties
 view.status.no-further-search-string-found=no further search string found
+view.status.search-ends-with-blank-warning= warning: search string ends with space
 view.status.findAll.number-of-occurance-found=Found {0} occurrence(s)
 view.status.illegal-search-settings=illegal search settings
 view.status.replace.buffer-is-not-editable=buffer is not editable
+
+# XSearch dockable
+xsearch-hypersearch-results.title=XHypersearch
+
+# hypersearch result actions
+xsearch-hypersearch-results.expand-node-0-level=Collapse Node
+xsearch-hypersearch-results.expand-node-1-level=Expand level 1
+xsearch-hypersearch-results.expand-node-2-level=Expand level 2
+xsearch-hypersearch-results.expand-node=Expand Node
+xsearch-hypersearch-results.expand-all-nodes=Expand all Nodes
+xsearch-hypersearch-results.collapse-all-nodes=Collapse all Nodes
+xsearch-hypersearch-results.write-node-to-buffer=Write Node to Buffer
+xsearch-hypersearch-results.write-all-nodes-to-buffer=Write all Nodes to Buffer
 
 # buttons
 search.findAllBtn=Find All
@@ -94,6 +128,7 @@ search.ext.hyperRangeLabelUp=up
 search.ext.hyperRangeLabelDown=down 
 search.ext.tentativ=tentativ search
 search.ext.settings-history=search settings history
+search.ext.synchronize=sync
 # values
 search.show-settings.value=true
 search.show-replace.value=true
@@ -107,7 +142,11 @@ search.comment.blockbegin=/*
 search.comment.blockend=*/
 search.comment.line=//
 
-# xsearch option pane
+# Option pane
+plugin.xsearch.XSearchPlugin.option-pane=xsearch
+options.xsearch.code=new xsearch.XSearchOptionPane();
+
+#
 options.xsearch.label=XSearch
 xsearch.options.checkBoxLabel=Please select the additional check boxes you want to see when invoking xsearch and replace dialog
 xsearch.options.buttonLabel=Please select the additional buttons you want to see when invoking xsearch and replace dialog

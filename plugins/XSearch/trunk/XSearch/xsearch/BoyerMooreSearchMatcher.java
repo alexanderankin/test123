@@ -36,34 +36,28 @@ import org.gjt.sp.jedit.BeanShell;
 /**
  * Implements literal search using the Boyer-Moore algorithm.
  */
-public class BoyerMooreSearchMatcher implements SearchMatcher
+public class BoyerMooreSearchMatcher extends SearchMatcher
 {
 	//{{{ BoyerMooreSearchMatcher constructor
 	/**
 	 * Creates a new string literal matcher.
 	 */
-	public BoyerMooreSearchMatcher(String pattern, String replace,
-		boolean ignoreCase, boolean beanshell, BshMethod replaceMethod)
+	public BoyerMooreSearchMatcher(String pattern, boolean ignoreCase)
 	{
-		if (ignoreCase)
-			this.pattern = pattern.toUpperCase().toCharArray();
-		else
-			this.pattern = pattern.toCharArray();
+		this.pattern = pattern.toCharArray();
+		if(ignoreCase)
+		{
+			for(int i = 0; i < this.pattern.length; i++)
+			{
+				this.pattern[i] = Character.toUpperCase(
+					this.pattern[i]);
+			}
+		}
 
 		this.replace = replace;
 		this.ignoreCase = ignoreCase;
 
-		if(beanshell && replaceMethod != null && replace.length() != 0)
-		{
-			this.beanshell = true;
-			this.replaceMethod = replaceMethod;
-			replaceNS = new NameSpace(BeanShell.getNameSpace(),
-				"search and replace");
-		}
-
 		pattern_end = this.pattern.length - 1;
-
-		returnValue = new int[2];
 	} //}}}
 
 	//{{{ nextMatch() method
@@ -81,10 +75,11 @@ public class BoyerMooreSearchMatcher implements SearchMatcher
 	 * @return an array where the first element is the start offset
 	 * of the match, and the second element is the end offset of
 	 * the match
-	 * @since jEdit 4.1pre7
+	 * @since jEdit 4.2pre4
 	 */
-	public int[] nextMatch(CharIndexed text, boolean start, boolean end,
-		boolean firstTime, boolean reverse)
+	public SearchMatcher.Match nextMatch(CharIndexed text,
+		boolean start, boolean end, boolean firstTime,
+		boolean reverse)
 	{
 		int pos = match(text,reverse);
 
@@ -94,32 +89,10 @@ public class BoyerMooreSearchMatcher implements SearchMatcher
 		}
 		else
 		{
-			returnValue[0] = pos;
-			returnValue[1] = pos + pattern.length;
+			returnValue.start = pos;
+			returnValue.end = pos + pattern.length;
 			return returnValue;
 		}
-	} //}}}
-
-	//{{{ substitute() method
-	/**
-	 * Returns the specified text, with any substitution specified
-	 * within this matcher performed.
-	 * @param text The text
-	 */
-	public String substitute(String text) throws Exception
-	{
-		if(beanshell)
-		{
-			replaceNS.setVariable("_0",text);
-			Object obj = BeanShell.runCachedBlock(replaceMethod,
-				null,replaceNS);
-			if(obj == null)
-				return "";
-			else
-				return obj.toString();
-		}
-		else
-			return replace;
 	} //}}}
 
 	//{{{ match() method
@@ -230,17 +203,12 @@ SEARCH:
 	private int pattern_end;
 	private String replace;
 	private boolean ignoreCase;
-	private boolean beanshell;
-	private BshMethod replaceMethod;
-	private NameSpace replaceNS;
 
 	// Boyer-Moore member fields
 	private int[] fwd_skip;
 	private int[] fwd_suffix;
 	private int[] back_skip;
 	private int[] back_suffix;
-
-	private int[] returnValue;
 	//}}}
 
 	// Boyer-Moore helper methods

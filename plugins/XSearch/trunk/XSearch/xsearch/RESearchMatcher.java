@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -39,7 +39,7 @@ import org.gjt.sp.util.Log;
  * @author Slava Pestov
  * @version $Id$
  */
-public class RESearchMatcher implements SearchMatcher
+public class RESearchMatcher extends SearchMatcher
 {
 	/**
 	 * Perl5 syntax with character classes enabled.
@@ -53,30 +53,14 @@ public class RESearchMatcher implements SearchMatcher
 	//{{{ RESearchMatcher constructor
 	/**
 	 * Creates a new regular expression string matcher.
+	 * @since jEdit 4.2pre4
 	 */
-	public RESearchMatcher(String search, String replace,
-		boolean ignoreCase, boolean beanshell,
-		BshMethod replaceMethod) throws Exception
+	public RESearchMatcher(String search, boolean ignoreCase)
+		throws REException
 	{
-		if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,"+++ RESearchMatcher.59: search = "+search+", replace = "+replace+", ignoreCase = "+ignoreCase+", beanshell = "+beanshell+", replaceMethod = "+replaceMethod);
-		if(beanshell && replaceMethod != null && replace.length() != 0)
-		{
-			this.beanshell = true;
-			this.replaceMethod = replaceMethod;
-			replaceNS = new NameSpace(BeanShell.getNameSpace(),
-				"search and replace");
-		}
-		else
-		{
-			// gnu.regexp doesn't seem to support \n and \t in the replace
-			// string, so implement it here
-			this.replace = MiscUtilities.escapesToChars(replace);
-		}
-
 		re = new RE(search,(ignoreCase ? RE.REG_ICASE : 0)
 			| RE.REG_MULTILINE,RE_SYNTAX_JEDIT);
-
-		returnValue = new int[2];
+		returnValue = new Match();
 	} //}}}
 
 	//{{{ nextMatch() method
@@ -94,10 +78,10 @@ public class RESearchMatcher implements SearchMatcher
 	 * @return an array where the first element is the start offset
 	 * of the match, and the second element is the end offset of
 	 * the match
-	 * @since jEdit 4.1pre7
+	 * @since jEdit 4.2pre4
 	 */
-	public int[] nextMatch(CharIndexed text, boolean start, boolean end,
-		boolean firstTime, boolean reverse)
+	public SearchMatcher.Match nextMatch(CharIndexed text, boolean start,
+		boolean end, boolean firstTime, boolean reverse)
 	{
 		int flags = 0;
 
@@ -125,6 +109,13 @@ public class RESearchMatcher implements SearchMatcher
 		if(match == null)
 			return null;
 
+		returnValue.substitutions = new String[
+			re.getNumSubs() + 1];
+		for(int i = 0; i < returnValue.substitutions.length; i++)
+		{
+			returnValue.substitutions[i] = match.toString(i);
+		}
+
 		int _start = match.getStartIndex();
 		int _end = match.getEndIndex();
 
@@ -151,40 +142,11 @@ public class RESearchMatcher implements SearchMatcher
 			}
 		}
 
-		returnValue[0] = _start;
-		returnValue[1] = _end;
+		returnValue.start = _start;
+		returnValue.end = _end;
 		return returnValue;
 	} //}}}
 
-	//{{{ substitute() method
-	/**
-	 * Returns the specified text, with any substitution specified
-	 * within this matcher performed.
-	 * @param text The text
-	 */
-	public String substitute(String text) throws Exception
-	{
-		REMatch match = re.getMatch(text);
-		if(match == null)
-			return null;
-
-		int count = re.getNumSubs();
-		if(beanshell)
-		{
-			for(int i = 0; i <= count; i++)
-				replaceNS.setVariable("_" + i,match.toString(i));
-
-			Object obj = BeanShell.runCachedBlock(replaceMethod,
-				null,replaceNS);
-			if(obj == null)
-				return "";
-			else
-				return obj.toString();
-		}
-		else
-			return match.substituteInto(replace);
-	} //}}}
-	
 	//{{{ getSubexpressions() method
 	/**
 	 * Returns the found subexpressions
@@ -207,11 +169,6 @@ public class RESearchMatcher implements SearchMatcher
 	} //}}}
 
 	//{{{ Private members
-	private String replace;
 	private RE re;
-	private boolean beanshell;
-	private BshMethod replaceMethod;
-	private NameSpace replaceNS;
-	private int[] returnValue;
 	//}}}
 }

@@ -18,24 +18,7 @@
  */
 package xsearch;
 
-import java.util.*;
-
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-
-public class XSearchPlugin extends EditPlugin
+public class XSearchPlugin extends org.gjt.sp.jedit.EditPlugin
 {
-  public void createMenuItems(Vector menuItems)
-  {
-    menuItems.addElement(GUIUtilities.loadMenu("xsearch"));
-		XSearchAndReplace.load();
-  }
-	public void createOptionPanes(OptionsDialog od)
-	{
-		od.addOptionPane(new XSearchOptionPane());
-	}
-
-
-
+  // xsearch.XSearchPlugin.stop()
 }
