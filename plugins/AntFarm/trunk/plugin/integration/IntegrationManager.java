@@ -35,8 +35,8 @@ public class IntegrationManager
 {
 
 	private EditPlugin srcPlugin;
-	private Map bridges;
-	private List loadedBridges;
+	private Hashtable bridges;
+	private Vector loadedBridges;
 	private boolean listening;
 	private boolean editorStarted;
 
@@ -49,8 +49,8 @@ public class IntegrationManager
 	public IntegrationManager( EditPlugin aSrcPlugin )
 	{
 		srcPlugin = aSrcPlugin;
-		bridges = new HashMap( 2 );
-		loadedBridges = new ArrayList( 2 );
+		bridges = new Hashtable( 2 );
+		loadedBridges = new Vector( 2 );
 		listening = false;
 		editorStarted = false;
 	}
@@ -196,7 +196,7 @@ public class IntegrationManager
 	{
 		PluginBridge bridge = loadBridge( pluginKey );
 		if ( bridge.enable( srcPlugin, tgtPlugin, view ) ) {
-			loadedBridges.add( pluginKey );
+			loadedBridges.addElement( pluginKey );
 			//Log.log( Log.DEBUG, this, srcPlugin.getClass() + " to " + tgtPlugin.getClass() + " enabled" );
 			if ( loadedBridges.size() == bridges.size() ) {
 				ignore();
