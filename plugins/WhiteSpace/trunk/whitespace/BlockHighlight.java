@@ -66,8 +66,6 @@ public class BlockHighlight extends TextAreaExtension
         WhiteSpaceModel model = this.getModel();
         if ((model != null) && model.getBlockHighlight().isEnabled())
         {
-            // int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
-
             try {
                 if (    (this.textArea.getLineStartOffset(physicalLine) == -1)
                     ||  (this.textArea.getLineEndOffset(physicalLine) == -1)
