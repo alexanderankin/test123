@@ -40,7 +40,7 @@ import org.gjt.sp.util.Log;
 
 import code2html.html.HTMLCSSGutter;
 import code2html.html.HTMLCSSStyle;
-import code2html.html.HTMLGutter;
+import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HTMLStyle;
 
@@ -57,7 +57,7 @@ public class Code2HTML
     private boolean useSelection;
     private JEditTextArea   textArea = null;
     private HTMLStyle       style    = null;
-    private HTMLGutter      gutter   = null;
+    private HtmlGutter      gutter   = null;
     private HtmlPainter     painter  = null;
 
 
@@ -83,7 +83,7 @@ public class Code2HTML
             if (this.useCSS) {
                 this.gutter = new HTMLCSSGutter();
             } else {
-                this.gutter = new HTMLGutter();
+                this.gutter = new HtmlGutter();
             }
         }
 

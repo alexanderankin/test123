@@ -23,7 +23,7 @@ package code2html.html;
 import org.gjt.sp.jedit.jEdit;
 
 
-public class HTMLCSSGutter extends HTMLGutter
+public class HTMLCSSGutter extends HtmlGutter
 {
     public HTMLCSSGutter() {
         super();
