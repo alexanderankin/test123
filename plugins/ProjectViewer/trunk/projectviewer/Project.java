@@ -292,9 +292,15 @@ public final class Project implements EBComponent {
 
 			newRoot.addSubDirectory(root);
 			root = newRoot;
+		}  else if(root.getPath().trim().length() == 0) {
+			/* work around if current root is empty.
+			   This seems to happen currently in windows
+			*/
+			root = newRoot; 
+		
 		}
-	}
 
+	}
 	/** Import the specified files.
 	 *
 	 * @param  files  Description of Parameter
