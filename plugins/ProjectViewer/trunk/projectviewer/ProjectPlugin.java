@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -47,6 +48,7 @@ import projectviewer.config.ContextOptionPane;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.config.ProjectAppConfigPane;
 import projectviewer.config.ProjectViewerOptionsPane;
+import projectviewer.persist.ProjectPersistenceManager;
 //}}}
 
 /**
@@ -56,7 +58,7 @@ import projectviewer.config.ProjectViewerOptionsPane;
  *  @author		<A HREF="mailto:cyu77@yahoo.com">Calvin Yu</A>
  *  @author		<A HREF="mailto:ensonic@sonicpulse.de">Stefan Kost</A>
  *  @author		<A HREF="mailto:webmaster@sutternow.com">Matthew Payne</A>
- *	@author		<A HREF="mailto:vanzin@ece.utexas.edu">Marcelo Vanzin</A>
+ *	@author		<A HREF="mailto:vanza@users.sourceforge.net">Marcelo Vanzin</A>
  *  @version	2.0.3
  */
 public final class ProjectPlugin extends EBPlugin {
@@ -124,6 +126,18 @@ public final class ProjectPlugin extends EBPlugin {
 		if (!f.getParentFile().exists()) {
 			f.getParentFile().mkdirs();
 		}
+		// check plugins that are already loaded
+		EditPlugin[] plugins = jEdit.getPlugins();
+		for (int i = 0; i < plugins.length; i++) {
+			if (!(plugins[i] instanceof EditPlugin.Deferred)) {
+				// create a "fake" PluginUpdate message
+				PluginUpdate msg =
+					new PluginUpdate(plugins[i].getPluginJAR(),
+										PluginUpdate.LOADED,
+										false);
+				checkPluginUpdate(msg);
+			}
+		}
  	} //}}}
 
 	//{{{ +stop() : void
@@ -132,17 +146,16 @@ public final class ProjectPlugin extends EBPlugin {
 		config.save();
 		try {
 			ProjectManager.getInstance().save();
-
-			// clean up edit bus
-			View[] views = jEdit.getViews();
-			for (int i = 0; i < views.length; i++) {
-				ProjectViewer pv = ProjectViewer.getViewer(views[i]);
-				if (pv != null) {
-					EditBus.removeFromBus(pv);
-				}
-			}
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, ioe);
+		}
+		// clean up edit bus
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++) {
+			ProjectViewer pv = ProjectViewer.getViewer(views[i]);
+			if (pv != null) {
+				EditBus.removeFromBus(pv);
+			}
 		}
 	} //}}}
 
@@ -161,6 +174,7 @@ public final class ProjectPlugin extends EBPlugin {
 			ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
 			ProjectViewer.addToolbarActions(msg.getPluginJAR());
 			VPTContextMenu.registerActions(msg.getPluginJAR());
+			ProjectPersistenceManager.loadNodeHandlers(msg.getPluginJAR());
 
 			View[] v = jEdit.getViews();
 			for (int i = 0; i < v.length; i++) {
@@ -177,5 +191,4 @@ public final class ProjectPlugin extends EBPlugin {
 	} //}}}
 
 }
-
 
