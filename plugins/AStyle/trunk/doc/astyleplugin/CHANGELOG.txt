@@ -1,4 +1,4 @@
-ChangeLog for Beautifier plugin
+ChangeLog for AStyle Beautifier plugin
 ===========================================================================
 
 Version 0.1

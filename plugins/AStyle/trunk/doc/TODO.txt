@@ -1,5 +1,0 @@
-TODO for Beautifier
--------------------
-
-* add more options to the option pane
-
