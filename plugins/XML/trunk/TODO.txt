@@ -1,4 +1,14 @@
+- fuckups parsing build.xml and schemas
+- xcatalog format
+- newer ant completion
+- html parser: empty tags
+- test XMLCatalog support, include an XMLCatalog DTD
+- document xml.root property
+- document xml.validate property
 - docs:
+- if close complete off, / should not show a popup immediately
+  - remove this option altogether
+- .dtd files need to be ignored
 
 Hi,
 
@@ -21,30 +31,15 @@ Attributes attributes;
 Position start;
 Position end;
 
-- </ recording
-- > without popup recording
-save triggers a close tag or something?
 - schemas: attribute values
 - schemas: element values should be choosable
 - ids in xml.root's other children
-- fuckups parsing build.xml and schemas
-- use NekoXML
-- edit tag: preserve case
 - CatalogProperties complaints
-- document xml.root property
-- document xml.validate property
-- xcatalog format
-- newer ant completion
 - ids are kind of hackish -- use something similar to a hypersearch result
 - fix xerces 2.3 deprecation
-- if close complete off, / should not show a popup immediately
-  - remove this option altogether
-- html parser: empty tags
-- .dtd files need to be ignored
 - html files before parsing complete -- don't show CDATA in popup
 - fix IBM JDK problem
 - misplaced closing tags break everything
-- test XMLCatalog support, include an XMLCatalog DTD
 - &, < or > will show up twice if a DTD defines it
 - xml insert: show CDATA, comment in list?
 - xmlns attributes, XMLSchema-instance stuff
@@ -55,7 +50,6 @@ save triggers a close tag or something?
 - attribute completion.
 - clean up entity code
 - empty data -- see what's up, & clean up
-- tag highlight scope bracket in gutter
 - 'advanced' option pane for selecting completion info files,
   built-in namespaces, etc.
 - pluggable parsers, don't rely on Xerces-specific features, fail

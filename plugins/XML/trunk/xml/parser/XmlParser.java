@@ -146,8 +146,9 @@ public abstract class XmlParser extends SideKickParser
 					else
 					{
 						// just insert immediately
-						JEditTextArea textArea = editPane.getTextArea();
-						textArea.setSelectedText(closingTag + ">");
+						XmlActions.completeClosingTag(
+							editPane.getView(),
+							false);
 						return null;
 					}
 				}
