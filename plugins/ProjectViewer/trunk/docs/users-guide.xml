@@ -39,7 +39,7 @@
 		<title>Presentation</title>
 
 		<para>
-			The ProjectViewer plugin allows to define group of files as
+			The ProjectViewer plugin allows to define groups of files as
 			projects.
 		</para>
 
@@ -74,10 +74,9 @@
 
 		<para>
 			To create a project, click the "Add/Edit Project" button in
-			the toolbar when using the "All Projects" view, or choose
-			the correspondent entry in the project combo box. This will
-			show a dialog where you can enter the properties of the
-			project you want to create.
+			the toolbar, or choose "Add new project"  from under the
+			desired group in the projects menu (accessible from jEdit's
+			plugin menu of from the ProjectViewer toolbar).
 		</para>
 
 	</chapter>
@@ -87,8 +86,9 @@
 
 		<para>
 			The plugin interface consists of a tool bar, containing some
-			command buttons, a combo box containing the currently
-			available projects, and the project's views.
+			command buttons, a menu containing the currently
+			available projects (accessible through the button labeled
+			with the current active node), and the project's views.
 		</para>
 
 		<para>
@@ -107,77 +107,89 @@
 			Project Viewer allows you to organize your projects into
 			groups. You can create as many groups as you with in an
 			hierarchical manner, by using the "Add group here" command
-			in the tree's context menu.
+			in the tree's context menu, or choosing the "New group here"
+			entry from under the desired group in the projects menu.
 		</para>
 
 		<para>
 			As with projects, it is possible to have groups as the root
-			of the tree shown in the dockable window. For this, you can
-			use the "Projects" menu available in the Project Viewer
-			plugin menu. The groups are not shown in the project
-			selection combo box, so this is the only way to have them be
-			the active root of the trees.
+			of the tree shown in the dockable window. For this, just
+			choose a group from the projects menu to make it active.
+			Some plugin functionality is not available when in this
+			mode.
 		</para>
 
 		<para>
 			You can also move projects and groups to other locations in
 			your group hierarchy by using the "Move to..." command in
 			the tree's context menu and choosing the desired destination
-			group from the displayed menu.
+			from the displayed menu.
 		</para>
 
 		<bridgehead renderas='sect3'>The Project Views</bridgehead>
 
 		<para>
-			There are three possible views of the files on a project:
-			the "Folders" view, which shows the files as if in a file
+			There are four possible views of the files on a project: the
+			"Folders" view, which shows the files as if in a file
 			manager, organised in directories. The "Files" view, which
-			shows all the project's files in a flat list. And the
-			"Working Files", which shows the files currently opened in
-			jEdit. The files in the different views are colored
-			according to the patterns and colors you have choosen for
-			the filesystem-browser. Furthermore currently open files are
+			shows all the project's files in a flat list. The "Working
+			Files", which shows the files currently opened in jEdit. And
+			the "Compact View", which compresses subdirectories into
+			top-level nodes, showing a structure similar to the java
+			package naming.
+		</para>
+
+		<para>
+			The files in the different views are colored according to
+			the patterns and colors you have choosen for the
+			filesystem-browser. Furthermore currently open files are
 			highlighted by underlining their names.
 		</para>
 
 		<para>
-			Optionally, by choosing "All Projects" from the project
-			selection box, an alternative view is shown, which displays
-			data from all projects. Some plugin functionality is not
-			available when in this mode.
+			You can interact with the project tree in several ways:
 		</para>
 
-		<para>
-			You can interact with the project tree in several ways.
-			Double (or middle) clicking on a file will cause it to be
-			opened in a jEdit buffer. Selecting an open file will cause
-			it to be focused (if not the current buffer).
-			Double-clicking or middle-clicking on an open file will
-			close it ("double click to close" actually follows the
-			FileSystemBrowser configuration - see jEdit's option
-			dialog). Using the right mouse button, you'll be given
-			options related to the current selection on the tree,
-			allowing you to remove files or directories from a project,
-			deleting them from the disk, or rename them, among many
-			other options. You can also drag a file from the trees and
-			drop it somewhere else; for example, if the DragAndDrop
-			plugin is installed, you can open a file by dragging it into
-			jEdit's text area.
-		</para>
+		<itemizedlist>
+			<listitem>
+				<para>
+				Double clicking on a file will cause it to be opened in
+				a jEdit buffer. If the file is already open, then
+				ProjectViewer follows the FileSystemBrowser
+				configuration option to decide whether to close it or
+				not.
+				</para>
+			</listitem>
 
-		<para>
-			Right-clicking on a project will let you change the
-			project's properties (the name and the root, for instance)
-			and re-import files from the project's root directory.
-			Changing the project root will cause the plugin to ask to
-			import files from the new root, just like creating a new
-			project does.
-		</para>
+			<listitem>
+				<para>
+				Middle-clicking on a file does the same as
+				double-clicking, except it will always close open files.
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+				The right mouse button shows a context menu with options
+				related to the current selection on the tree, allowing
+				you to remove files or directories from a project,
+				deleting them from the disk, or rename them, among many
+				other options.
+				</para>
+			</listitem>
+
+			<listitem>
+				<para>
+				Dragging a file from the trees and dropping it on
+				jEdit's text area will cause the file to be opened.
+				</para>
+			</listitem>
+		</itemizedlist>
 
 		<bridgehead renderas='sect3'>Importing Files</bridgehead>
 
 		<para>
-			Differently from previous releases, the plugin does not
+			Differently from earlier releases, the plugin does not
 			follow the filesystem layout to organize files anymore,
 			except for certain cases; notably, when doing the initial
 			import from the project root or when adding a file that has
@@ -283,7 +295,7 @@
 				<para>
 					Add files: pops a file chooser from where you can
 					choose any files or directories to import. These
-					will be imported <emphasis>to the selected
+					will be imported <emphasis>into the selected
 					node</emphasis>, disregarding the file system
 					layout. If importing directories, you'll be prompted
 					if you want to do it recursively using one of the
@@ -302,20 +314,21 @@
 			</listitem>
 			<listitem>
 				<para>
-					Re-import files: shown for project nodes. This
-					command will remove all files and directories below
-					the project root, and re-read the file structure
-					from disk according to the selected filter (which
-					can be chosen from the dialog that pops up). It will
-					also analyze directories not under the project root:
-					it will re-import existing directories and remove
-					stale files from "virtual" directories.
+					Re-import files: this command will remove all files
+					and directories below the project root, and re-read
+					the file structure from disk according to the
+					selected filter (which can be chosen from the dialog
+					that pops up). It will also analyze directories not
+					under the project root: it will re-import existing
+					directories and remove stale files from "virtual"
+					directories.
 				</para>
 			</listitem>
 			<listitem>
 				<para>
-					Remove &lt;node&gt;: this will remove the selected
-					node(s) from its (their) parent(s).
+					Remove from project: this will remove the selected
+					node from the project to which it belongs. It is
+					also possible to remove multiple nodes at once.
 				</para>
 			</listitem>
 			<listitem>
@@ -329,7 +342,10 @@
 			<listitem>
 				<para>
 					Rename: this will prompt you for a new name for the
-					selected node.
+					selected node. If you check the "Don't change name
+					on disk" option, only the node name on the tree will
+					be changed; the file on disk will keep its current
+					name.
 				</para>
 			</listitem>
 			<listitem>
@@ -344,8 +360,8 @@
 					Preview in browser: this will open the file in the
 					configured web browser. If a project URL is set,
 					files below the project root will be redirected to
-					the given URL; in other cases, the "file:" protocol
-					will be used. The part of the file path
+					the given URL; in other cases, the "file://"
+					protocol will be used. The part of the file path
 					corresponding to the project root will be removed
 					when opening the file relatively to the project URL.
 				</para>
@@ -354,10 +370,10 @@
 				<para>
 					Open with: this will open the selected file in a
 					configured application associated with its extension
-					(configured in jEdit's options panel, under the
-					Project Viewer's plugin options). If no application
-					is configured for the selected file, selecting this
-					option will propmt you to choose an application.
+					(configured in the Project Viewer's plugin options).
+					If no application is configured for the selected
+					file, selecting this option will prompt you to
+					choose an application.
 				</para>
 			</listitem>
 		</itemizedlist>
@@ -374,11 +390,11 @@
 
 		<para>
 			When executing a command using a shortcut, you may notice
-			that no action is performed and an error message appears in
-			the status bar. This means that the action is not available
-			for the current selection in the tree. To check which
-			actions are available for the selected node(s), check the
-			context menu by clicking the node with the right mouse
+			that sometimes no action is performed and an error message
+			appears in the status bar. This means that the action is not
+			available for the current selection in the tree. To check
+			which actions are available for the selected node(s), check
+			the context menu by clicking the node with the right mouse
 			button.
 		</para>
 
@@ -511,7 +527,7 @@
 					when the file is opened. In some systems, the system
 					icons may not be accessible from Java, so this
 					option may not work as expected. Also, this option
-					is only available is Java 2 version 1.4 or later is
+					is only available if Java 2 version 1.4 or later is
 					being used.
 				</para>
 			</listitem>
@@ -588,11 +604,8 @@
 			The "External Applications" option pane can be used to
 			register applications you want to use for specific file
 			type, accessible through the "Open with..." context menu
-			command for files. Just add an extension (or a complete file
-			name) and the application you wish to use for that entry.
-			It's not possible to specify multiple extensions or file
-			names in the same entry, so, use separate entries for each
-			association you want to create.
+			command for files. Just add a file name glob and choose the
+			application you wish to use for that entry.
 		</para>
 
 	</chapter>
