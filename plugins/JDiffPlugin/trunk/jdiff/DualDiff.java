@@ -49,16 +49,21 @@ import jdiff.util.DiffOutput;
 import jdiff.util.DiffNormalOutput;
 
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
 
 
-public class DualDiff {
+public class DualDiff implements EBComponent
+{
     private static boolean ignoreCaseDefault  =
         jEdit.getBooleanProperty("jdiff.ignore-case", false);
     private static boolean trimWhitespaceDefault =
@@ -89,16 +94,16 @@ public class DualDiff {
     private Box           box0;
     private Box           box1;
 
-    private HorizontalAdjustHandler horizontalAdjust;
-    private VerticalAdjustHandler   verticalAdjust;
+    private final HorizontalAdjustHandler horizontalAdjust = new HorizontalAdjustHandler();
+    private final VerticalAdjustHandler   verticalAdjust   = new VerticalAdjustHandler();
 
 
-    public DualDiff(View view) {
+    private DualDiff(View view) {
         this(view, ignoreCaseDefault, trimWhitespaceDefault, ignoreWhitespaceDefault);
     }
 
 
-    public DualDiff(View view, boolean ignoreCase,
+    private DualDiff(View view, boolean ignoreCase,
             boolean trimWhitespace, boolean ignoreWhiteSpace
     ) {
         this.ignoreCase       = ignoreCase;
@@ -126,6 +131,22 @@ public class DualDiff {
 
         this.initOverviews();
         this.addOverviews();
+    }
+
+
+    public void handleMessage(EBMessage message) {
+        if (message instanceof BufferUpdate) {
+            BufferUpdate bu = (BufferUpdate) message;
+            Buffer b0 = this.textArea0.getBuffer();
+            Buffer b1 = this.textArea1.getBuffer();
+            if (bu.getBuffer() != b0 && bu.getBuffer() != b1) {
+                // Not concerned by this message
+                return;
+            }
+            if (bu.getWhat() == BufferUpdate.LOADED) {
+                this.refresh();
+            }
+        }
     }
 
 
@@ -193,9 +214,6 @@ public class DualDiff {
             ? (DiffOverview) new DiffGlobalVirtualOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1)
             : (DiffOverview) new DiffGlobalPhysicalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1)
         );
-
-        this.horizontalAdjust = new HorizontalAdjustHandler();
-        this.verticalAdjust   = new VerticalAdjustHandler();
     }
 
 
@@ -508,7 +526,7 @@ public class DualDiff {
     public static void toggleFor(View view) {
         EditPane[] editPanes = view.getEditPanes();
         if (editPanes.length != 2) {
-            Log.log(Log.DEBUG, DualDiff.class, "Splitting The view has to be split in two");
+            Log.log(Log.DEBUG, DualDiff.class, "Splitting: the view has to be split in two");
             if (editPanes.length > 2) {
                 view.unsplit();
             }
@@ -818,6 +836,8 @@ public class DualDiff {
     private static void addTo(View view) {
         DualDiff dualDiff = new DualDiff(view);
 
+        EditBus.addToBus(dualDiff);
+
         dualDiff.enableHighlighters();
         dualDiff.addHandlers();
 
@@ -830,6 +850,9 @@ public class DualDiff {
 
     private static void removeFrom(View view) {
         DualDiff dualDiff = (DualDiff) dualDiffs.get(view);
+
+        EditBus.removeFromBus(dualDiff);
+
         if (dualDiff != null) {
             dualDiff.removeHandlers();
             dualDiff.disableHighlighters();
