@@ -150,11 +150,6 @@ public class WhiteSpacePlugin
         boolean showBlockDefault       = jEdit.getBooleanProperty(
             "white-space.show-block-default", false
         );
-        /*
-        boolean showFoldDefault        = jEdit.getBooleanProperty(
-            "white-space.show-fold-default", true
-        );
-        */
         boolean showFoldTooltipDefault = jEdit.getBooleanProperty(
             "white-space.show-fold-tooltip-default", true
         );
@@ -174,7 +169,6 @@ public class WhiteSpacePlugin
         textAreaPainter.addCustomHighlight(foldHighlight);
 
         blockHighlight.setEnabled(showBlockDefault);
-        // foldHighlight.setHighlightEnabled(showFoldDefault);
         foldHighlight.setTooltipEnabled(showFoldTooltipDefault);
 
         whiteSpaceHighlight.getSpaceHighlight().setEnabled(showSpaceDefault);

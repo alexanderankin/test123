@@ -64,9 +64,8 @@ public class FoldHighlight
 
     private JEditTextArea textArea;
     private TextAreaHighlight next;
-    // private boolean highlightEnabled = false;
-    private boolean tooltipEnabled   = false;
-    private Segment segment = new Segment();
+    private boolean tooltipEnabled = false;
+    private Segment segment        = new Segment();
 
 
     private FoldHighlight() {}
@@ -222,7 +221,6 @@ public class FoldHighlight
 
 
     private boolean isHighlightEnabled() {
-        // return this.highlightEnabled;
         Boolean enabled = (Boolean) this.textArea.getBuffer().getProperty(
             FOLD_HIGHLIGHT_PROPERTY
         );
@@ -287,69 +285,9 @@ public class FoldHighlight
 
 
     /**
-     * Tests if the fold highlights are enabled for a view
-    **/
-    public static boolean isFoldHighlightEnabledFor(View view) {
-        EditPane[] editPanes = view.getEditPanes();
-        FoldHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            if (editPanes[i] == null) { continue; }
-            highlight = (FoldHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isHighlightEnabled()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Sets fold highlighting to enabled or disabled for a view
-    **/
-    public static void setFoldHighlightFor(View view, boolean highlightEnabled) {
-        EditPane[] editPanes = view.getEditPanes();
-        FoldHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            highlight = (FoldHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isHighlightEnabled() != highlightEnabled) {
-                highlight.setHighlightEnabled(highlightEnabled);
-                highlight.updateTextArea();
-            }
-        }
-    }
-
-
-    /**
-     * Enables fold highlights for a view
-    **/
-    public static void enableFoldHighlightFor(View view) {
-        FoldHighlight.setFoldHighlightFor(view, true);
-    }
-
-
-    /**
-     * Disables fold highlights for a view
-    **/
-    public static void disableFoldHighlightFor(View view) {
-        FoldHighlight.setFoldHighlightFor(view, false);
-    }
-
-
-    /**
-     * Toggles fold highlights for a view
-    **/
-    public static void toggleFoldHighlightFor(View view) {
-        if (FoldHighlight.isFoldHighlightEnabledFor(view)) {
-            FoldHighlight.disableFoldHighlightFor(view);
-        } else {
-            FoldHighlight.enableFoldHighlightFor(view);
-        }
-    }
-
-
+     * Tests if the fold highlights are enabled for a buffer
+     */
     public static boolean isHighlightEnabledFor(Buffer buffer) {
-        // return this.highlightEnabled;
         Boolean enabled = (Boolean) buffer.getProperty(
             FOLD_HIGHLIGHT_PROPERTY
         );
@@ -361,6 +299,9 @@ public class FoldHighlight
     }
 
 
+    /**
+     * Sets fold highlighting to enabled or disabled for a buffer
+     */
     public static void setHighlightEnabledFor(Buffer buffer, boolean enabled) {
         buffer.putProperty(
             FOLD_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
@@ -368,6 +309,9 @@ public class FoldHighlight
     }
 
 
+    /**
+     * Toggles fold highlights for a buffer
+     */
     public static void toggleHighlightEnabledFor(Buffer buffer) {
         Boolean enabled = (Boolean) buffer.getProperty(
             FOLD_HIGHLIGHT_PROPERTY
