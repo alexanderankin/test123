@@ -455,7 +455,7 @@ public abstract class SystemShellBuiltIn
 			for(int i = 0; i < args.size(); i++)
 			{
 				jEdit.openFile(console.getView(),currentDirectory,
-					(String)args.elementAt(i),false,false);
+					(String)args.elementAt(i),false,null);
 			}
 		}
 	}

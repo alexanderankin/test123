@@ -581,7 +581,7 @@ public class CommandoDialog extends EnhancedDialog
 			setText(defaultValue);
 
 			this.varName = varName;
-			this.property = command.propertyPrefix + varName;
+			this.property = CommandoDialog.this.command.propertyPrefix + varName;
 
 			if(eval != null)
 			{

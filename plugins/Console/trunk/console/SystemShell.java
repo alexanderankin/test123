@@ -342,7 +342,11 @@ loop:			for(;;)
 				int index = arg.indexOf('%',i + 1);
 				if(index != -1)
 				{
+					if(index == i)
+						break;
+
 					varName = arg.substring(i + 1,index);
+
 					i = index;
 
 					String expansion = getExpansion(view,varName);
@@ -383,6 +387,9 @@ loop:			for(;;)
 							break;
 						}
 					}
+
+					if(index == i)
+						break;
 
 					varName = arg.substring(i + 1,index);
 
@@ -439,7 +446,9 @@ loop:			for(;;)
 		// Expand some special variables
 		Buffer buffer = view.getBuffer();
 
-		if(varName.equals("d"))
+		if(varName.equals("$") || varName.equals("%"))
+			expansion = varName;
+		else if(varName.equals("d"))
 		{
 			expansion = MiscUtilities.getParentOfPath(
 				buffer.getPath());
