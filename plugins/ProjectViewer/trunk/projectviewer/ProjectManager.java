@@ -33,7 +33,7 @@ public final class ProjectManager {
    final static String PROJECTS_PROPS_FILE = "projects.properties";
    final static String FILE_PROPS_FILE = "files.properties";
 
-   private static ProjectManager instance;
+   private final static ProjectManager instance = new ProjectManager();
 
    private List projects;
 
@@ -52,8 +52,6 @@ public final class ProjectManager {
     * @return   The instance value
     */
    public static ProjectManager getInstance() {
-      if ( instance == null )
-         instance = new ProjectManager();
       return instance;
    }
 
