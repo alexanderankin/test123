@@ -1,3 +1,6 @@
+- periodic execution feature
+- notify of process exit
+- tool bar should be able to output to a buffer
 - multiple-line env vars don't work
 - see if an extra pattern can eat all javac errors
 - TeX, Tidy error patterns
@@ -32,5 +35,3 @@
 			       - Stop command
 			       - Output time logged??
 			       - Help
-  JTextPane: system shell supports input. background proc -- just open
-  in new tab??? tabs change color on output??

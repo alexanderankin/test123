@@ -47,6 +47,21 @@
 <xsl:variable name="shade.verbatim">1</xsl:variable>
 
 <xsl:variable name="funcsynopsis.style">ansi</xsl:variable>
-<xsl:template match="void"><xsl:text>();</xsl:text></xsl:template>
+<xsl:template match="void"><xsl:apply-templates/></xsl:template>
+
+<xsl:param name="chunk.first.sections">1</xsl:param>
+
+<xsl:template match="*" mode="object.title.markup.textonly">
+  <xsl:variable name="title">
+    <xsl:apply-templates select="." mode="title.markup"/>
+  </xsl:variable>
+  <xsl:value-of select="$title"/>
+</xsl:template>
+
+<xsl:template name="header.navigation">
+</xsl:template>
+
+<xsl:template name="footer.navigation">
+</xsl:template>
 
 </xsl:stylesheet>

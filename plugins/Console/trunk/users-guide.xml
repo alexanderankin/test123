@@ -830,6 +830,16 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
 
 		<funcsynopsis>
    <funcprototype>
+    <funcdef>void <function>clearConsole</function></funcdef>
+    <paramdef>View <parameter>view</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
+  <para>
+   Clear's the console's output area.
+		</para>
+
+		<funcsynopsis>
+   <funcprototype>
     <funcdef>void <function>getenv</function></funcdef>
     <paramdef>String <parameter>name</parameter></paramdef>
    </funcprototype>
