@@ -69,9 +69,23 @@ public class Code2HTMLOptionPane
         jEdit.setBooleanProperty("code2html.show-gutter",
             this.ckShowGutter.isSelected());
 
-        int wrap = Code2HTMLUtilities.getInteger(this.tfWrap.getText(), 0);
+        int wrap = Code2HTMLOptionPane.getInteger(this.tfWrap.getText(), 0);
         if (wrap < 0) { wrap = 0; }
         jEdit.setProperty("code2html.wrap", "" + wrap);
+    }
+
+
+    public static int getInteger(String value, int defaultVal) {
+        int res = defaultVal;
+        if (value != null) {
+            try {
+                res = Integer.parseInt(value);
+            } catch (NumberFormatException nfe) {
+                Log.log(Log.WARNING, Code2HTMLOptionPane.class,
+                    "NumberFormatException caught: [" + value + "]");
+            }
+        }
+        return res;
     }
 }
 
