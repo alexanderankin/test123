@@ -45,6 +45,7 @@ public abstract class DefaultToolPanel
    * @param buff ¤
    */
   public DefaultToolPanel(View view, Buffer buff, String name) {
+     super( view,  buff,  name);
     this.buffer = buff;
     this.view = view;
     this.setName(name);

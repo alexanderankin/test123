@@ -43,7 +43,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 
 
 public class ReferencePanel
-  extends DefaultToolPanel {
+  extends AbstractToolPanel {
 
   //~ Instance/static variables ...............................................
 
@@ -133,6 +133,10 @@ public class ReferencePanel
     
   }
 
+    public void reload(){
+   }
+
+  
   private void insert() {
 
     LaTeXAsset refTagPair = (LaTeXAsset) refList.getSelectedValue();

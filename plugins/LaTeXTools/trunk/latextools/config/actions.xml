@@ -92,5 +92,18 @@
         uk.co.antroy.latextools.LaTeXMacros.bibtex(view, buffer);
  		</CODE>
   </ACTION>
+  
+  <ACTION NAME="erase-working">
+		<CODE>
+        uk.co.antroy.latextools.LaTeXMacros.deleteWorkingFiles(view, buffer);
+ 		</CODE>
+  </ACTION>
 
+  <ACTION NAME="open-import">
+		<CODE>
+        uk.co.antroy.latextools.LaTeXMacros.openImport(view, buffer);
+ 		</CODE>
+  </ACTION>
+
+  
 </ACTIONS>

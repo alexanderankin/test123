@@ -55,7 +55,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 public class NavigationPanel
-  extends DefaultToolPanel {
+  extends AbstractToolPanel {
 
   //~ Instance/static variables ...............................................
 
