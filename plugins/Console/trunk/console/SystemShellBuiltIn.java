@@ -623,8 +623,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			output.print(null,SystemShell.getConsoleState(console)
-				.currentDirectory);
+			// shell will print prompt with current working dir
 		}
 	} //}}}
 

@@ -547,7 +547,8 @@ implements EBComponent, Output, DefaultFocusComponent
 						shell.printPrompt(Console.this,ShellState.this);
 					commandRunning = false;
 					updateAnimation();
-					ErrorSource.registerErrorSource(errorSource);
+					if(errorSource.getErrorCount() != 0)
+						ErrorSource.registerErrorSource(errorSource);
 				}
 			});
 		} //}}}

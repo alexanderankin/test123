@@ -4,7 +4,7 @@
 <!-- (C) 2001, 2003 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
-<!-- :tabSize=1:indentSize=1:noTabs=true: -->
+<!-- :tabSize=1:indentSize=1:noTabs=true:wrap=hard:folding=sidekick: -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
@@ -63,9 +63,20 @@
 
 <para>
  The console window consists of a popup for choosing the current
- <firstterm>shell</firstterm> (more on that later),
+ <firstterm>shell</firstterm>,
  an input text field, a series of icon buttons, and a command output area
  which occupies the remaining space of the window.
+</para>
+
+<para>
+ The Console plugin allows arbitrary
+ shells to be plugged in; one shell included with the plugin
+ is called the <quote>system</quote> shell and it runs external programs and
+ commands; another built-in shell is the <quote>BeanShell</quote> shell,
+ which runs commands in jEdit's BeanShell interpreter. Some plugins add
+ their own shells; for example, the <application>JCompiler</application>
+ plugin adds a shell for running the <command>javac</command> Java compiler
+ within the jEdit process.
 </para>
 
 <para>
@@ -74,10 +85,11 @@
 </para>
 
 <itemizedlist>
+ <listitem><para><guibutton>Run last command</guibutton> - runs the
+ most recently entered command.</para></listitem>
  <listitem><para><guibutton>Run</guibutton> - runs the currently-entered command.
  This has the same effect as pressing <keycap>Enter</keycap> in the text field.
- Since the latter is a much quicker way to run commands, this button is only
- provided for completeness.</para></listitem>
+ </para></listitem>
 
  <listitem><para><guibutton>Run to buffer</guibutton> - runs the
  currently-entered command, but shows the output in a new buffer, instead of
@@ -91,23 +103,20 @@
 </itemizedlist>
 
 <para>
- Back to the shell popup. The Console plugin allows arbitrary
- <quote>shells</quote> to be plugged in; one shell included with the plugin
- is called the <quote>system</quote> shell and it runs external programs and
- commands; another built-in shell is the <quote>BeanShell</quote> shell,
- which runs commands in jEdit's BeanShell interpreter. Some plugins add
- their own shells; for example, the <application>JCompiler</application>
- plugin adds a shell for running the <command>javac</command> Java compiler
- within the jEdit process.
-</para>
-
-<para>
  The <quote>BeanShell</quote> shell and plugin shells will not be discussed
  further here; general BeanShell documentation can be found in the jEdit
  user's guide, and documentation on plugin shells can be found in the
  documentation for the appropriate plugin. The remainder of this guide
  concerns itself with the system shell only.
 </para>
+
+<tip>
+ <para>
+  A quick way to switch between shells from the keyboard is by entering the
+  shell name prefixed with <quote>:</quote>. For example,
+  <quote>:BeanShell</quote> or <quote>:System</quote>.
+ </para>
+</tip>
 
 <sect1 id="toolbar"><title>The console tool bar</title>
 
@@ -1198,6 +1207,22 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    expanded to the user's home directory.
    </para></listitem>
    <listitem><para>Completion didn't work in cloned console windows.
+   </para></listitem>
+   <listitem><para>Console now prints a <quote>prompt</quote> provided by the
+   shell's <function>printPrompt()</function> method after each command. The
+   system shell, for example, uses this to display the current working
+   directory.
+   </para></listitem>
+   <listitem><para>Each shell's scrollback is now maintained separately, and is
+   restored when switching shells. Previously, previous output would be lost
+   when switching shells.
+   </para></listitem>
+   <listitem><para>Added a <quote>run last command</quote> button to the console
+   window.
+   </para></listitem>
+   <listitem><para>You can now switch shells from the keyboard by entering a
+   the shell's name prefixed with <quote>:</quote>, for example
+   <quote>:BeanShell</quote>.
    </para></listitem>
    </itemizedlist>
 
