@@ -1,0 +1,5 @@
+TODO
+====
+
+- allow multiple selections and operations on them (close all, save all etc.)
+
