@@ -60,7 +60,7 @@ public class ColorTabs
 
    private boolean colorHighlight = true;
    private boolean colorText = false;
-   private boolean colourTitles = false;
+   private boolean colorTitles = false;
    private boolean colourVariation = true;
    private Vector colours;
    private Hashtable coloursAssigned = new Hashtable();
@@ -218,7 +218,7 @@ public class ColorTabs
                Color newColour = null;
                if (muteColours)
                {
-                  if (colourTitles)
+                  if (colorTitles)
                   {
                      newColour = alterColourDarken(entry.colour);
                   }
@@ -364,9 +364,9 @@ public class ColorTabs
             colourVariation = !colourVariation;
          }
 
-         if (colourTitles != jEdit.getBooleanProperty("buffertabs.colourizetext"))
+         if (colorTitles != jEdit.getBooleanProperty("buffertabs.colourizetext"))
          {
-            colourTitles = !colourTitles;
+            colorTitles = !colorTitles;
          }
 
          if (colorHighlight != jEdit.getBooleanProperty("buffertabs.colourhighlight"))
@@ -414,7 +414,7 @@ public class ColorTabs
 
          try
          {
-            if (!colourTitles)
+            if (!colorTitles)
             {
                Color color = getDefaultColourFor(name);
                parent.setBackgroundAt(index, color);
