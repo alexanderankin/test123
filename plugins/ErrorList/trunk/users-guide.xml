@@ -268,6 +268,18 @@ plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
   <funcsynopsis>
    <funcprototype>
     <funcdef>public void <function>addError</function></funcdef>
+    <paramdef>DefaultErrorSource.DefaultError <parameter>error</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
+
+  <para>
+   The constructor of the <classname>DefaultErrorSource.DefaultError</classname>
+   class is as follows:
+  </para>
+
+  <funcsynopsis>
+   <funcprototype>
+    <funcdef>public <function>DefaultError</function></funcdef>
     <paramdef>int <parameter>type</parameter></paramdef>
     <paramdef>String <parameter>path</parameter></paramdef>
     <paramdef>int <parameter>line</parameter></paramdef>
@@ -276,10 +288,6 @@ plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
     <paramdef>String <parameter>message</parameter></paramdef>
    </funcprototype>
   </funcsynopsis>
-
-  <para>
-   Considering each parameter in turn:
-  </para>
 
   <itemizedlist>
    <listitem><para><varname>type</varname> - this should be either
@@ -319,11 +327,27 @@ plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.1.1</programlisting>
    only applies to a subset of the specified line:
   </para>
 
-  <programlisting>errorSource.addError(ErrorSource.WARNING,path,line,0,0,
-    "Are you sure this is what you intended?");
-errorSource.addError(ErrorSource.WARNING,
+  <programlisting>errorSource.addError(new ErrorSource.DefaultError(
+    ErrorSource.WARNING,path,line,0,0,
+    "Are you sure this is what you intended?"));
+errorSource.addError(new ErrorSource.DefaultError(
+    ErrorSource.WARNING,
     MiscUtilities.constructPath(directory,"input.src"),
-    line,0,5,"First five characters of line are bad");</programlisting>
+    line,0,5,"First five characters of line are bad"));</programlisting>
+
+  <para>
+   Multiple-line messages can be created by calling the following method
+   on the <classname>DefaultError</classname> instance before it is added
+   to the error source (the last part is important, otherwise the extra
+   messages will not be shown):
+  </para>
+
+  <funcsynopsis>
+   <funcprototype>
+    <funcdef>public void <function>addExtraMessage</function></funcdef>
+    <paramdef>String <parameter>extra</parameter></paramdef>
+   </funcprototype>
+  </funcsynopsis>
 
   <para>
    That's basically all there is to it. There is one more method in the
@@ -363,7 +387,7 @@ errorSource.addError(ErrorSource.WARNING,
  <itemizedlist>
 
   <listitem><formalpara><title>Version 1.1.1</title><para>requires jEdit 3.2pre8
-   and the EditBus plugin 1.0.2.</para></formalpara>
+   and the EditBus plugin 1.1.</para></formalpara>
 
    <itemizedlist>
     <listitem><para>Tree will no longer be collapsed when an error source
@@ -373,7 +397,8 @@ errorSource.addError(ErrorSource.WARNING,
     <listitem><para>The commands "Next/Previous Error" and "Next/Previous File
     With Errors" now ensure that the newly selected error is visible
     (Dirk Moebius)</para></listitem>
-    <listitem><para>Fixed minor tree display bug (Dirk Moebius)</para></listitem>
+    <listitem><para>Supports multiple-line error messages, introduced
+    by EditBus 1.1</para></listitem>
    </itemizedlist>
 
   </listitem>

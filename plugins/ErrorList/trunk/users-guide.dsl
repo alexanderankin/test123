@@ -26,7 +26,8 @@ CDATA DSSSL> ]>
 (element application ($mono-seq$))
 (element glossterm ($bold-seq$))
 ;;(element (funcdef function) ($bold-seq$))
-;;(element funcsynopsis (process-children))
+
+(element void (process-children))
 
 ;;(define %funcsynopsis-style% #f)
 
