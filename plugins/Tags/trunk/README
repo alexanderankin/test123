@@ -9,10 +9,13 @@ C Tags man page:
        appearing in a source file and jump to the file  and  line
        which  defines  the name.
 
-You can find the Exuberant C Tags program at:
+You can find the Exuberant C Tags program for UNIX at:
 
    http://ctags.sourceforge.net
 
+For windows you can download cygwin which includes Exuberant C Tags in its 
+distribution.   
+   
 You can also use the standard UNIX ctags program, or the GNU C Tags program,
 but you'll find that Exuberant C Tags provides a bit more info (or too much
 depending on how much of a minimalist you are).
