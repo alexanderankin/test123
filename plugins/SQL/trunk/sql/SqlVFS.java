@@ -113,7 +113,6 @@ public class SqlVFS extends VFS
         ;
   }
 
-
   /**
    *  Gets the ParentOfPath attribute of the SqlVFS object
    *

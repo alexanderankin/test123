@@ -45,6 +45,7 @@ public class SqlSubVFS
   protected final static int TABLEGROUP_LEVEL = 2;
   protected final static int TABLE_LEVEL = 3;
 
+  public VFS sqlVFS;
 
   /**
    *  Description of the Method
@@ -119,7 +120,7 @@ public class SqlSubVFS
       Component comp, int level )
        throws IOException
   {
-    return new VFS.DirectoryEntry( path, path, path,
+    return new VFS.DirectoryEntry( getSqlVFS().getFileName( path ), path, path,
         level == TABLE_LEVEL ?
         VFS.DirectoryEntry.FILE :
         VFS.DirectoryEntry.DIRECTORY,
@@ -166,6 +167,16 @@ public class SqlSubVFS
     return new StringBufferInputStream( "SELECT * FROM " +
         vfs.getFileName( SqlVFS.normalize( vfs.getParentOfPath( path ) ) ) + "." +
         vfs.getFileName( path ) );
+  }
+
+
+  protected VFS getSqlVFS()
+  {
+    if ( sqlVFS == null )
+    {
+      sqlVFS = VFSManager.getVFSForProtocol( SqlVFS.PROTOCOL );
+    }
+    return sqlVFS;
   }
 
 
