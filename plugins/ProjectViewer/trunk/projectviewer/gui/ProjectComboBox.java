@@ -59,7 +59,6 @@ public class ProjectComboBox extends JButton
 								implements ActionListener,
 											MouseListener {
 
-
 	private GroupMenu menu;
 	private JPopupMenu popup;
 	private View view;
@@ -123,6 +122,11 @@ public class ProjectComboBox extends JButton
 
     //{{{ +mousePressed(MouseEvent) : void
     public void mousePressed(MouseEvent e) {
+		if (!isEnabled()) {
+			if (popup.isVisible())
+				hidePopup();
+			return;
+		}
 		if (popup.isVisible())
 			hidePopup();
 		else
@@ -137,7 +141,7 @@ public class ProjectComboBox extends JButton
 	//{{{ -showPopup() : void
 	private void showPopup() {
 		Point p = getLocation();
-		popup.show(this, (int) p.getX(), (int) p.getY() + getHeight() - 2);
+		popup.show(this, (int) p.getX(), (int) p.getY() + getHeight() - 4);
 	} //}}}
 
 	//{{{ -hidePopup() : void
