@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="infoviewer-open">
+		<CODE>
+			infoviewer.InfoViewerPlugin.openURL(view, null);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="infoviewer-open-buffer">
+		<CODE>
+			infoviewer.InfoViewerPlugin.openCurrentBuffer(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="infoviewer-open-sel">
+		<CODE>
+			infoviewer.InfoViewerPlugin.openSelectedText(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="infoviewer-dock">
+		<CODE>
+			view.getDockableWindowManager().toggleDockableWindow(infoviewer.InfoViewer.DOCKABLE_NAME);
+		</CODE>
+		<IS_SELECTED>
+			return view.getDockableWindowManager().isDockableWindowVisible(infoviewer.InfoViewer.DOCKABLE_NAME);
+		</IS_SELECTED>
+	</ACTION>
+
+</ACTIONS>
