@@ -362,7 +362,21 @@ errorSource.addError(ErrorSource.WARNING,
 
  <itemizedlist>
 
-  <listitem><formalpara><title>Version 1.0.1</title><para>requires jEdit 3.2pre8
+  <listitem><formalpara><title>Version 1.1.1</title><para>requires jEdit 3.2pre8
+   and the EditBus plugin 1.0.1.</para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>Line numbers in the tree are now increased by one, so that
+    they match the textarea line numbers (Dirk Moebius)</para></listitem>
+    <listitem><para>The commands "Next/Previous Error" and "Next/Previous File
+    With Errors" now ensure that the newly selected error is visible
+    (Dirk Moebius)</para></listitem>
+    <listitem><para>Fixed minor tree display bug (Dirk Moebius)</para></listitem>
+   </itemizedlist>
+
+  </listitem>
+
+  <listitem><formalpara><title>Version 1.1</title><para>requires jEdit 3.2pre8
    and the EditBus plugin 1.0.1.</para></formalpara>
 
    <itemizedlist>

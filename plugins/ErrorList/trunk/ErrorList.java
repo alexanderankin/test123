@@ -137,6 +137,7 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 		TreePath path = new TreePath(new TreeNode[] { errorRoot, next });
 		errorTree.setSelectionPath(path);
+		errorTree.scrollPathToVisible(path);
 
 		jEdit.openFile(view,(String)next.getUserObject());
 	}
@@ -188,6 +189,7 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 		TreePath path = new TreePath(new TreeNode[] { errorRoot, prev });
 		errorTree.setSelectionPath(path);
+		errorTree.scrollPathToVisible(path);
 
 		jEdit.openFile(view,(String)prev.getUserObject());
 	}
@@ -254,6 +256,7 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 		TreePath path = new TreePath(new TreeNode[]
 			{ errorRoot, parent, next });
 		errorTree.setSelectionPath(path);
+		errorTree.scrollPathToVisible(path);
 
 		openError((ErrorSource.Error)next.getUserObject());
 	}
@@ -334,6 +337,7 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 		TreePath path = new TreePath(new TreeNode[]
 			{ errorRoot, parent, prev });
 		errorTree.setSelectionPath(path);
+		errorTree.scrollPathToVisible(path);
 
 		openError((ErrorSource.Error)prev.getUserObject());
 	}
@@ -617,13 +621,39 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			{
 				setFont(UIManager.getFont("Tree.font"));
 				ErrorSource.Error error = (ErrorSource.Error)nodeValue;
-				setText(error.getLineNumber() + ": "
-					+ error.getErrorMessage());
+				setText(getErrorText(error));
 				setIcon(error.getErrorType() == ErrorSource.WARNING
 					? WARNING_ICON : ERROR_ICON);
 			}
 
 			return this;
+		}
+
+		private String getErrorText(ErrorSource.Error error)
+		{
+			String errMsg = error.getErrorMessage();
+			StringBuffer newErrMsg = new StringBuffer(errMsg.length());
+
+			newErrMsg.append((error.getLineNumber() + 1));
+			newErrMsg.append(": ");
+
+			for(int i=0; i < errMsg.length(); ++i)
+			{
+				switch(errMsg.charAt(i))
+				{
+				case '\t':
+					newErrMsg.append("    ");
+					break;
+				case '\n':
+					newErrMsg.append(" / ");
+					break;
+				default:
+					newErrMsg.append(errMsg.charAt(i));
+					break;
+				}
+			}
+
+			return newErrMsg.toString();
 		}
 	}
 
