@@ -1,6 +1,9 @@
 /*
  * ArchiveDirectoryCache.java - Caches remote directories to improve performance
- * Copyright (c) 2000 Slava Pestov
+ *
+ * :tabSize=4:indentSize=4:noTabs=true:
+ *
+ * Copyright (c) 2000, 2004 Slava Pestov
  * Copyright (c) 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -88,18 +91,13 @@ public class ArchiveDirectoryCache
      */
     public static void setCachedDirectory(String url, VFS.DirectoryEntry[] directory)
     {
-        if(cacheDirectory == null)
-            return;
-
         url = canon(url);
 
         synchronized(lock)
         {
-            // filename generation algorithm is really simple...
-            tmpFileCount++;
-            long time = System.currentTimeMillis();
-            String path = MiscUtilities.constructPath(cacheDirectory,
-                "cache-" + tmpFileCount + "-" + time + ".tmp");
+            String path = ArchivePlugin.tempFileName();
+            if(path == null)
+                return;
 
             ObjectOutputStream out = null;
             try
@@ -177,9 +175,7 @@ public class ArchiveDirectoryCache
 
     // private members
     private static Object lock = new Object();
-    private static int tmpFileCount;
     private static Hashtable urlToCacheFileHash;
-    private static String cacheDirectory;
 
     private ArchiveDirectoryCache() {}
 
@@ -198,19 +194,5 @@ public class ArchiveDirectoryCache
     static
     {
         urlToCacheFileHash = new Hashtable();
-
-        String settingsDirectory = jEdit.getSettingsDirectory();
-        if(settingsDirectory == null)
-        {
-            Log.log(Log.WARNING,ArchiveDirectoryCache.class,"-nosettings "
-                + "command line switch specified; remote directories");
-            Log.log(Log.WARNING,ArchiveDirectoryCache.class,"will not be cached.");
-        }
-        else
-        {
-            cacheDirectory = MiscUtilities.constructPath(settingsDirectory,
-                "archive");
-            new File(cacheDirectory).mkdirs();
-        }
     }
 }
