@@ -3,7 +3,7 @@
 # To recompile this plugin, start jmk in the plugin's source directory.
 #
 # jEdit buffer-local properties:
-# :tabSize=4:noTabs=yes:
+# :tabSize=4:noTabs=true:
 
 jar_name = "FTP";
 
@@ -17,7 +17,7 @@ javac_bin = "jikes";
 javac_opts = "-deprecation" "+E";
 
 # set up the class path
-new_class_path = "../../jedit.jar;../EditBus.jar;.";
+new_class_path = "../../jedit.jar;.";
 old_class_path = (getprop "java.class.path");
 
 # concatenate the old and new class paths
@@ -30,7 +30,7 @@ cmd_javac = javac_bin "-classpath" class_path javac_opts;
 # jar executable and args
 ##
 jar_bin = "jar";
-jar_opts = "cfM0";
+jar_opts = "cfM";
 cmd_jar = jar_bin jar_opts;
 
 srcs = (subst ".java", ".class", 
@@ -60,9 +60,10 @@ jar: srcs;
     exec cmd_jar @ (get_files "1");
 }
 
-"clean":;
+"docs":;
 {
-	delete (glob (join (dirs "."), "/*.class"));
+    exec "openjade" "-t" "sgml"
+        "-V" "nochunks" "-V" "rootchunk"
+        "/usr/share/sgml/xml.dcl"
+        "users-guide.xml";
 }
-
-".PHONY": "all";
