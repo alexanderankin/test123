@@ -1,34 +1,68 @@
 Initial beta release
 --------------------
-cvs commit -m "Fixed compile error with getDefinitionFileName" CTagsParser.java
-cvs commit -m "Fixed compile error with getDefinitionFileName" ExuberantCTagsParser.java
+cvs commit -m "" TODO.TXT
+cvs commit -m "Updated where to get ctags for windows." README
+cvs commit -m "get func for text input field" TagsEnterTagPanel.java
+cvs commit -m "Escape now works in tag enter dialog (added key listener to text field) " TagsEnterTagDialog.java
+cvs commit -m "manageTagFiles() --> showTagOptionsDialog()" actions.xml
+cvs commit -m "manageTagFiles() --> showTagOptionsDialog()" Tags.java
+cvs commit -m "Dumbly handle no ui case when tagging with collisions.  Use JOptionPanel for Enter Tag dialog for UI consistancy" Tags.java
+cvs commit -m "Handle not having a View" ChooseTagList2.java
+cvs add ChooseTagListDialog.java
+cvs commit -m "New but broken" ChooseTagListDialog.java
+cvs commit -m "better string handeling in  getFuncName()" TagsEnterTagPanel.java
+move *2.java
+
+TagsEnterTagDialog.java
+
+
+move file
+cvs remove file
+cvs commit -m "why" file
+
 
 - Get and install JDK 1.1 for backwards compatibility.
 
-- Matching tag stuff.  See vim...
+Before 1.0
+----------
+- scheme to keep tag files between sessions other than with macro calls  
+  
+- Tag properties/manager dialog needs to go into Global Options...  Also remove
+  as stand alone dialog? 
+   - tag file dialog
+      - Probably should use AbstractOptionPane as in
+        options/ToolBarOptionPane.java
+
+- Documentation
+   - good examples:
+      CodeAid
+      Console (multi level)
+      ...others
+      
+   - FAQ in docs?
+      
+- Cleanup TODO.TXT
+
+Version > initial public release version
+----------------------------------------
+- When tagging from enter tag dialog, put up a collision dialog instead of
+  the collision list?
+
+- Tag collisions.  See vim...
    - ExuberantCTags collision strings...
       - Make choose tag list a part of the parser, so that each parser can have
         its own list item renderer.
 
-
-Before 1.0
-----------
-- Use JOptionPane.showMessage() as in Misc/Show_Free_Memory.bsh
-
-- When tagging from enter tag dialog, put up a collision dialog instead of
-  the collision list.
-
-
 - Ability to set num of columns for filename
+        
+- Ability to switch to a different set of tag files easily (shouldn't have to
+  remove and add a whole new set).  The catagory stuff is a step in this
+  direction.
 
-- From JEditTextArea.java tagging on getLineStartOffset() doesn't give me
-  ScrollLayout.  RE tester seems to pick it up though...
+- handle this.something specially (i.e. turn it into ClassName.something)
 
-- Tagging on buffer.shiftIndentLeft() in JEditTextArea.java takes a long
-  time to get possible tag search names.  Can this be shortened?  What about
-  an escape?  Perhaps we should only have in our search pattern the stuff for
-  variables?
-   
+- ETagsParser.java?
+
 - Use properties to store values
    - better naming scheme
       - tags.options.something.label
@@ -42,28 +76,6 @@ Before 1.0
    
    - TagsPlugin.getOptionString() to TagsPlugin.getString()
    
-- Tag properties/manager dialog needs to go into Global Options...  Also remove
-  as stand alone dialog? 
-   - tag file dialog
-      - Probably should use AbstractOptionPane as in
-        options/ToolBarOptionPane.java
-
-- Rename Tags.manageTagFiles() to Tags.tagOptions() (or something like that).
-
-- Escape doesn't work in "Enter Tag" dialog...
-       
-- Documentation
-
-Version > initial public release version
-----------------------------------------
-- Ability to switch to a different set of tag files easily (shouldn't have to
-  remove and add a whole new set).  The catagory stuff is a step in this
-  direction.
-
-- handle this.something specially (i.e. turn it into ClassName.something)
-
-- ETagsParser.java?
-
 - History panel in Enter Tag dialog.
         
 - Use properties to store values
@@ -79,7 +91,7 @@ Version > initial public release version
 
 - Tag stack
    - Ability to view tag stack and select to goto item...
-      - Netscape style toolbar back and forward buttons?
+      - Netscape style toolbar back and forward buttons/commands?
    - View local tag stack...
       - This should probably have a hash table based on the View?
    - Perhaps if we open up another window when tagging we should add to tag
@@ -90,16 +102,6 @@ Version > initial public release version
 
 - Ability to goto the next matching tag  
   
-- TagsOO
-   - Extend past Java
-   
-- Ability for macros to register tagging routine.  This would be helpful in
-  implementing notes...
-  
-- Perhaps drop down shouldn't display possible tags, but all found items in tag 
-  files?  This would require looking through all lines in the tag file.  My
-  company's flaship product that I work on has 6 tag files totalling over 108
-  MB worth of data to search.  I may keep it the way it currently works. 
   
 Limitations/Known Bugs
 ----------------------  
@@ -110,12 +112,6 @@ Limitations/Known Bugs
   check).
 - Tag files *MUST* be sorted.  Else, the tag will probably never be found
   b/c we are using a binary searching mechanism. 
-- Doesn't handle function overloading.  I'm not sure that this can be
-  overcome, since the tags file (that ctags produces) skips multiple
-  tags, and the whole function signature isn't in the tag file.  Perhaps this
-  can be controlled with a flag.  We could always include duplicates, and let
-  the unimplemented feature of going to the next matching tag do the work...
-- OO is only for Java for now
 - Bachward searching patterns (?...?) are not supported.
 - Currently you can't mix types of tag files.  This really only comes into play
   when mixing c tag files with exuberant c tag files with --format=2.  If one
