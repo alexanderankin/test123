@@ -21,7 +21,6 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.textarea.InputHandler;
 import org.gjt.sp.jedit.*;
 
 public class ConsoleShellPane extends ConsoleOutputPane
@@ -46,7 +45,7 @@ public class ConsoleShellPane extends ConsoleOutputPane
 		command.getModel().addItem(cmd);
 
 		// Record the command
-		InputHandler.MacroRecorder recorder = getView().getTextArea()
+		InputHandler.MacroRecorder recorder = getView()
 			.getInputHandler().getMacroRecorder();
 		if(recorder != null)
 		{
