@@ -2,6 +2,7 @@
  * XSLTPlugin.java - XSLT Plugin
  *
  * Copyright (c) 2002 Greg Merrill
+ *               2003 Robert McKinnon
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,7 +18,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-
 package xslt;
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -34,6 +34,9 @@ import java.util.Vector;
 
 /**
  * EditPlugin implementation for the XSLT plugin.
+ *
+ * @author Greg Merrill
+ * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
 public class XSLTPlugin extends EditPlugin {
 
@@ -58,6 +61,7 @@ public class XSLTPlugin extends EditPlugin {
 		menuItems.addElement(GUIUtilities.loadMenu("xslt-menu"));
   }
 
+
   /**
    * Displays a user-friendly error message to go with the supplied exception.
    */
@@ -77,7 +81,9 @@ public class XSLTPlugin extends EditPlugin {
   }
 
 
-
-
+  static void showMessageDialog(String property, String args[], Component component) {
+    String message = jEdit.getProperty(property, args);
+    JOptionPane.showMessageDialog(component, message);
+  }
 }
 
