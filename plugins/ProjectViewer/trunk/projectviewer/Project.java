@@ -243,7 +243,31 @@ public final class Project implements EBComponent {
     */
    public void importFiles( List files ) {
       for ( Iterator i = files.iterator(); i.hasNext();  )
-         importFile( (ProjectFile)i.next() );
+         importFile( (ProjectFile)i.next(), false );
+      save();
+   }
+   
+   /**
+    * Import this given file.
+    *
+    * @param aFile  Description of Parameter
+    * @since
+    */
+   public synchronized void importFile(ProjectFile aFile, boolean save) {
+      if ( isProjectFile( aFile ) )
+         return;
+
+      ProjectDirectory dir = findDirectory( aFile );
+      //-- one might have tried to import files from not below our directory
+      // danson -- this should be allowed, a user may very well want to add files from
+      // outside the project directory.
+      if ( dir != null ) {
+         dir.addFile( aFile );
+         fireFileAdded( aFile );
+         files.put( aFile.getPath(), aFile );
+      }
+      if (save);
+         save();
    }
 
    /**
@@ -253,16 +277,7 @@ public final class Project implements EBComponent {
     * @since
     */
    public synchronized void importFile( ProjectFile aFile ) {
-      if ( isProjectFile( aFile ) )
-         return;
-
-      ProjectDirectory dir = findDirectory( aFile );
-      //-- one might have tried to import files from not below our directory
-      if ( dir != null ) {
-         dir.addFile( aFile );
-         fireFileAdded( aFile );
-         files.put( aFile.getPath(), aFile );
-      }
+      importFile(aFile, true);
    }
 
    /**

@@ -34,69 +34,69 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public final class ViewerListener implements WindowListener, ActionListener, ItemListener {
 
-	private ProjectViewer viewer;
-	private Launcher launcher;
-	private boolean paused;
-	private FileFilter nonProjectFileFilter;
-	
+   private ProjectViewer viewer;
+   private Launcher launcher;
+   private boolean paused;
+   private FileFilter nonProjectFileFilter;
+   
 
-	/** Create a new <code>ViewerListener</code>.
-	 *
-	 *@param  instance  Description of Parameter
-	 *@param  launcher  Description of Parameter
-	 */
-	public ViewerListener(ProjectViewer instance, Launcher launcher) {
-		this.viewer = instance;
-		this.launcher = launcher;
-		paused = false;
-	}
+   /** Create a new <code>ViewerListener</code>.
+    *
+    *@param  instance  Description of Parameter
+    *@param  launcher  Description of Parameter
+    */
+   public ViewerListener(ProjectViewer instance, Launcher launcher) {
+      this.viewer = instance;
+      this.launcher = launcher;
+      paused = false;
+   }
 
-	/** Pause this listener. Any events received will be ignored. */
-	public void pause() {
-		paused = true;
-	}
+   /** Pause this listener. Any events received will be ignored. */
+   public void pause() {
+      paused = true;
+   }
 
-	/** Resume this listener. Any events received will not be handled. */
-	public void resume() {
-		paused = false;
-	}
+   /** Resume this listener. Any events received will not be handled. */
+   public void resume() {
+      paused = false;
+   }
 
-	/** Listen to specific GUI events.
-	 *
-	 *@param  evt  Description of Parameter
-	 */
-	public void actionPerformed(ActionEvent evt) {
-		if (paused) {
-			return;
-		}
+   /** Listen to specific GUI events.
+    *
+    *@param  evt  Description of Parameter
+    */
+   public void actionPerformed(ActionEvent evt) {
+      if (paused) {
+         return;
+      }
 
-		viewer.setStatus(" ");
-		Object source = evt.getSource();
+      viewer.setStatus(" ");
+      Object source = evt.getSource();
 
-		if (source == this.viewer.createProjectBtn) {
-			this.createProject();
-		}
-		else if (source == this.viewer.addFileBtn) {
-			this.addFileToProject();
-		}
-		else if (source == this.viewer.removeFileBtn) {
+      if (source == this.viewer.createProjectBtn) {
+         this.createProject();
+      }
+      else if (source == this.viewer.addFileBtn) {
+         this.addFileToProject();
+      }
+      else if (source == this.viewer.removeFileBtn) {
             new RemovalManager(viewer).handleSelectionRemoval(false);
-		}
-		else if (source == this.viewer.removeAllFilesBtn) {
-			this.removeAllFilesFromProject();
-		}
-		else if (source == this.viewer.importFilesBtn) {
-			getImporter().doImport();
-		}
-		else if (source == this.viewer.openAllBtn) {
-			this.openAllFilesInProject();
-		}
-		else if (source == this.viewer.expandBtn) {
-			viewer.expandAll();
-		}
-		else if (source == this.viewer.contractBtn) {
-			viewer.collapseAll();
-		}
+      }
+      else if (source == this.viewer.removeAllFilesBtn) {
+         this.removeAllFilesFromProject();
+      }
+      else if (source == this.viewer.importFilesBtn) {
+         getImporter().doImport();
+      }
+      else if (source == this.viewer.openAllBtn) {
+         this.openAllFilesInProject();
+      }
+      else if (source == this.viewer.expandBtn) {
+         viewer.expandAll();
+      }
+      else if (source == this.viewer.contractBtn) {
+         viewer.collapseAll();
+      }
         else if (source == this.viewer.saveBtn) {
             Project p = viewer.getCurrentProject();
             if (viewer.isAllProjects()) {
@@ -104,12 +104,12 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
             } else {
                 viewer.getCurrentProject().save();
             }
-		}  else if (source == this.viewer.launchBrowserBtn) {
-		 // this.showConfig(); // will need to be commented out
-		this.launchBrowser(); }
-	
-	}
-	
+      }  else if (source == this.viewer.launchBrowserBtn) {
+       // this.showConfig(); // will need to be commented out
+      this.launchBrowser(); }
+   
+   }
+   
   
     /**
      * Launched the selected project file in the web-browser, against the webserver.
@@ -120,7 +120,7 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
         /* need to get browser setting */
         String sURLRoot = viewer.getCurrentProject().getURLRoot();
         String sURL;
-	String browserExecPath = ProjectViewerConfig.getInstance().getBrowserPath();
+   String browserExecPath = ProjectViewerConfig.getInstance().getBrowserPath();
         if (sURLRoot == "" )
         {
             JOptionPane.showMessageDialog(viewer, "Web URL Not set for project");
@@ -154,113 +154,111 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
         } else { JOptionPane.showMessageDialog(viewer, "No File selected");}	
         
     }
-	
-	/** Handle project combo changes.
-	 *
-	 *@param  evt  Description of Parameter
-	 */
-	public void itemStateChanged(ItemEvent evt) {
-		if (paused) {
-			return;
-		}
-		if (evt.getItem() instanceof Project) {
-			viewer.setCurrentProject((Project) evt.getItem());
-		}
-		else {
-			viewer.setCurrentProject(null);
-		}
-	}
+   
+   /** Handle project combo changes.
+    *
+    *@param  evt  Description of Parameter
+    */
+   public void itemStateChanged(ItemEvent evt) {
+      if (paused) {
+         return;
+      }
+      if (evt.getItem() instanceof Project) {
+         viewer.setCurrentProject((Project) evt.getItem());
+      }
+      else {
+         viewer.setCurrentProject(null);
+      }
+   }
 
-	/** Returns an instance of {@link ProjectFilesImporter}.
-	 *
-	 *@return    The importer value
-	 */
-	private ProjectFileImporter getImporter() {
-		return new ProjectFileImporter(viewer);
-	}
+   /** Returns an instance of {@link ProjectFilesImporter}.
+    *
+    *@return    The importer value
+    */
+   private ProjectFileImporter getImporter() {
+      return new ProjectFileImporter(viewer);
+   }
 
-	/** Create a new Project */
-	private void createProject() {
+   /** Create a new Project */
+   private void createProject() {
 
         Project project = ProjectPropertiesDlg.run(viewer,null);
         
-		if (project == null) {
-			return;
-		}
+      if (project == null) {
+         return;
+      }
 
-		if (ProjectManager.getInstance().hasProject(project.getName())) {
-			JOptionPane.showMessageDialog(viewer,
-					"There is currently a project with this name.");
-			return;
-		}
+      if (ProjectManager.getInstance().hasProject(project.getName())) {
+         JOptionPane.showMessageDialog(viewer,
+               "There is currently a project with this name.");
+         return;
+      }
 
         project.setLoaded(true);
-		ProjectManager.getInstance().addProject(project);
-		viewer.setCurrentProject(project);
+      ProjectManager.getInstance().addProject(project);
+      viewer.setCurrentProject(project);
         
 
         File prjHome = project.getRoot().toFile();
-		int confirmed = JOptionPane.showConfirmDialog(this.viewer,
-				"Do you want to import files from " + prjHome + "?",
-				"Import files?",
-				JOptionPane.YES_NO_OPTION);
-		viewer.showWaitCursor();
-		if (confirmed == JOptionPane.YES_OPTION) {
-			getImporter().doImport(prjHome);
-		}
+      int confirmed = JOptionPane.showConfirmDialog(this.viewer,
+            "Do you want to import files from " + prjHome + "?",
+            "Import files?",
+            JOptionPane.YES_NO_OPTION);
+      viewer.showWaitCursor();
+      if (confirmed == JOptionPane.YES_OPTION) {
+         getImporter().doImport(prjHome);
+      }
         
-		viewer.refresh();
-		viewer.showDefaultCursor();
-	}
+      viewer.refresh();
+      viewer.showDefaultCursor();
+   }
 
-	/** Prompt the user to a file, get the current project, and then add the file
-	 *  to the project.
-	 */
-	private void addFileToProject() {
-		JFileChooser chooser = viewer.createFileChooser();
-		if (nonProjectFileFilter == null) {
-			nonProjectFileFilter =
-				new FileFilter() {
-					public String getDescription() {
-						return "Non Project Files";
-					}
+   /** Prompt the user to a file, get the current project, and then add the file
+    *  to the project.
+    */
+   private void addFileToProject() {
+      JFileChooser chooser = viewer.createFileChooser();
+      if (nonProjectFileFilter == null) {
+         nonProjectFileFilter =
+            new FileFilter() {
+               public String getDescription() {
+                  return "Non Project Files";
+               }
+               public boolean accept(File f) {
+                  return !viewer.getCurrentProject().isProjectFile(f.getAbsolutePath());
+               }
+            };
+      }
+      chooser.setFileFilter(nonProjectFileFilter);
+      //chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
+      if (chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) {
+         return;
+      }
 
+      viewer.getCurrentProject().importFile(
+            new ProjectFile(chooser.getSelectedFile().getAbsolutePath()));
+   }
 
-					public boolean accept(File f) {
-						return !viewer.getCurrentProject().isProjectFile(f.getAbsolutePath());
-					}
-				};
-		}
-		chooser.setFileFilter(nonProjectFileFilter);
-		//chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
-		if (chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) {
-			return;
-		}
+   /** Prompt the user if he want to remove all file from a projects. */
+   private void removeAllFilesFromProject() {
+      int answer = JOptionPane.showConfirmDialog(viewer,
+            "Are you sure you want to remove all files from the current project?",
+            "Remove all files?",
+            JOptionPane.YES_NO_OPTION);
 
-		viewer.getCurrentProject().importFile(
-				new ProjectFile(chooser.getSelectedFile().getAbsolutePath()));
-	}
+      if (answer == JOptionPane.YES_OPTION) {
+         viewer.getCurrentProject().removeAllFiles();
+      }
+   }
 
-	/** Prompt the user if he want to remove all file from a projects. */
-	private void removeAllFilesFromProject() {
-		int answer = JOptionPane.showConfirmDialog(viewer,
-				"Are you sure you want to remove all files from the current project?",
-				"Remove all files?",
-				JOptionPane.YES_NO_OPTION);
-
-		if (answer == JOptionPane.YES_OPTION) {
-			viewer.getCurrentProject().removeAllFiles();
-		}
-	}
-
-	/** Progmatically open all files under the current project... */
-	private void openAllFilesInProject() {
-		viewer.showDefaultCursor();
-		for (Iterator i = viewer.getCurrentProject().projectFiles(); i.hasNext(); ) {
-			launcher.launchFile((ProjectFile) i.next());
-		}
-		viewer.showDefaultCursor();
-	}
+   /** Progmatically open all files under the current project... */
+   private void openAllFilesInProject() {
+      viewer.showDefaultCursor();
+      for (Iterator i = viewer.getCurrentProject().projectFiles(); i.hasNext(); ) {
+         launcher.launchFile((ProjectFile) i.next());
+      }
+      viewer.showDefaultCursor();
+   }
 
     /* Window Listener interface */
     
