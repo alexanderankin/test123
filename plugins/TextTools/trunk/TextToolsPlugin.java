@@ -34,11 +34,8 @@ public class TextToolsPlugin extends EditPlugin
 		jEdit.addAction(new reverse());
 		jEdit.addAction(new rot13());
 		jEdit.addAction(new format());
-		jEdit.addAction(new to_lower());
-		jEdit.addAction(new to_upper());
 		jEdit.addAction(new insert_date());
 		jEdit.addAction(new transpose_chars());
-		jEdit.addAction(new select_word());
 	}
 
 	public void stop()

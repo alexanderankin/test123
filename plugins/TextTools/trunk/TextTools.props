@@ -1,6 +1,6 @@
 plugin.TextToolsPlugin.name=TextTools
 plugin.TextToolsPlugin.author=mike dillon, Slava Pestov
-plugin.TextToolsPlugin.version=1.4.1
+plugin.TextToolsPlugin.version=1.4.2
 plugin.TextToolsPlugin.docs=index.html
 plugin.TextToolsPlugin.depend.0=jdk 1.1
 plugin.TextToolsPlugin.depend.1=jedit 02.01.01.00
@@ -8,15 +8,12 @@ plugin.TextToolsPlugin.depend.1=jedit 02.01.01.00
 # Menu
 text-tools.label=TextTools
 text-tools=reverse rot13 - remove-trailing-ws - sort-lines revsort-lines - \
-	to-lower to-upper format insert-date - transpose-chars select-word
+	format insert-date - transpose-chars
 reverse.label=Reverse
 rot13.label=Rot13
 remove-trailing-ws.label=Remove Trailing Whitespace
 sort-lines.label=Sort Lines
 revsort-lines.label=Reverse Sort Lines
-to-lower.label=To Lowercase
-to-upper.label=To Uppercase
 format.label=Format Text
 insert-date.label=Insert Date
 transpose-chars.label=Transpose Characters
-select-word.label=Select Word
