@@ -24,6 +24,9 @@ import javax.swing.*;
 import javax.swing.tree.*;
 import javax.swing.event.*;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
@@ -31,10 +34,14 @@ import org.gjt.sp.util.Log;
 
 import projectviewer.event.*;
 import projectviewer.tree.*;
+import projectviewer.config.ProjectViewerConfig;
 
 /** A Project Viewer plugin for jEdit.
  */
-public final class ProjectViewer extends JPanel implements EBComponent {
+public final class ProjectViewer extends JPanel 
+                                 implements EBComponent, 
+                                            Runnable,
+                                            PropertyChangeListener {
 
 	public final static String ALL_PROJECTS = "All Projects";
 
@@ -42,10 +49,12 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private final static String FILES_TAB_TITLE = "Files";
 	private final static String WORKING_FILES_TAB_TITLE = "Working Files";
 
-	private final static int FOLDERS_TAB = 0;
-	private final static int FILES_TAB = 1;
-	private final static int WORKING_FILES_TAB = 2;
+	private int FOLDERS_TAB = 0;
+	private int FILES_TAB = 1;
+	private int WORKING_FILES_TAB = 2;
 
+    private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+    
     private boolean allProjectsLoaded;
     
 	JButton removeFileBtn;
@@ -60,7 +69,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	JButton launchBrowserBtn;  // this will eventually be on the context menu
 
 	private ProjectView projectView;
+    private JToolBar toolbar;
 	private JTabbedPane tabs = new JTabbedPane();
+    private JPanel allComponents;
 
 	private JTree folderTree;
 	private JTree fileTree;
@@ -76,6 +87,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private ProjectTreeSelectionListener tsl;
     private TreeContextMenuListener cml;
 	private Launcher launcher;
+    
+    private boolean willRun = false;
 
     /** The "main" viewer. Actually, the first instance to be created. */
     private static ProjectViewer mainViewer;
@@ -98,6 +111,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		listeners = new ArrayList();
 		loadGUI();
 		enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
+        
+        view.addWindowListener(vsl);
+        
+        config.addPropertyChangeListener(this);
         
         if (mainViewer == null) {
             mainViewer = this;
@@ -134,24 +151,22 @@ public final class ProjectViewer extends JPanel implements EBComponent {
                 allProjectsLoaded = true;
             }
 
-            // Only single selections in "All Projects View"            
-            folderTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-            fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-            workingFileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);            
-            
-            
         } else {
-            
-            // Allow multiple selections
-            folderTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-            fileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-            workingFileTree.getSelectionModel().setSelectionMode(TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);            
-            
             if (!project.isLoaded()) {
                 project.load();
             }
         }
 
+        if (folderTree != null) {
+            folderTree.getSelectionModel().setSelectionMode(projectView.getSelectionModel());
+        }
+        if (fileTree != null) {
+            fileTree.getSelectionModel().setSelectionMode(projectView.getSelectionModel());
+        }
+        if (workingFileTree != null) {
+            workingFileTree.getSelectionModel().setSelectionMode(projectView.getSelectionModel());
+        }
+        
 		projectView.activate();
 		loadProject();
 	}
@@ -179,17 +194,18 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *@return    The currentTree value
 	 */
 	public JTree getCurrentTree() {
-		switch (tabs.getSelectedIndex()) {
-                case FOLDERS_TAB:
-                    return folderTree;
-                case FILES_TAB:
-                	return this.fileTree;
-                case WORKING_FILES_TAB:
-                    return this.workingFileTree;
-                default:
-                    return null;
-		}
-	}
+		
+        if (tabs.getSelectedIndex() == FOLDERS_TAB) {
+            return folderTree;
+        } else if (tabs.getSelectedIndex() == FILES_TAB) {
+            return fileTree;
+        } else if (tabs.getSelectedIndex() == WORKING_FILES_TAB) {
+            return workingFileTree;
+        } else {
+            return null;
+        }
+        
+    }
 
 	/** Returns the current project.
 	 *
@@ -263,7 +279,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *@param  tree  Description of Parameter
 	 */
 	public void expandAll(JTree tree) {
-		expand(new TreePath(tree.getModel().getRoot()), tree);
+       expand(new TreePath(tree.getModel().getRoot()), tree);
 	}
 
 	/** Expand the given sub tree.
@@ -429,14 +445,11 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 		projectCombo = new JComboBox();
 
-		folderTree = createTree();
-	 	fileTree = createTree();
-		workingFileTree = createTree();
-
 		JPanel bar = new JPanel(new BorderLayout());
 
 		/** @todo  support new toolbar from jedit 4.1 */
-		JToolBar toolbar = new JToolBar();
+		toolbar = new JToolBar();
+        toolbar.setVisible(config.getShowToolBar());
 		toolbar.setFloatable(false);
 		toolbar.putClientProperty("JToolBar.isRollover", Boolean.TRUE);
 
@@ -474,15 +487,12 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 		// ok... now create a JPanel for placing the bar and the tree into and then
 		// stick that into tabs...
-		JPanel allComponents = new JPanel(new BorderLayout());
+		allComponents = new JPanel(new BorderLayout());
 
 		allComponents.add(bar, BorderLayout.NORTH);
 
-		tabs.addChangeListener(tsl);
-
-		tabs.addTab(FOLDERS_TAB_TITLE, new JScrollPane(folderTree));
-		tabs.addTab(FILES_TAB_TITLE, new JScrollPane(fileTree));
-		tabs.addTab(WORKING_FILES_TAB_TITLE, new JScrollPane(workingFileTree));
+        // Shows the configured trees in the JTabbedPane.
+		showTrees();
 
 		allComponents.add(tabs, BorderLayout.CENTER);
 
@@ -553,12 +563,17 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private void loadProject() {
 		showWaitCursor();
 
-		folderTree.setModel(projectView.getFolderViewModel());
-		fileTree.setModel(projectView.getFileViewModel());
-		workingFileTree.setModel(projectView.getWorkingFileViewModel());
-
-		expandAll(fileTree);
-		expandAll(workingFileTree);
+        if (folderTree != null) { 
+		    folderTree.setModel(projectView.getFolderViewModel());
+        }
+        if (fileTree != null) {
+		    fileTree.setModel(projectView.getFileViewModel());
+		    expandAll(fileTree);
+        }
+        if (workingFileTree != null) {
+		    workingFileTree.setModel(projectView.getWorkingFileViewModel());
+		    expandAll(workingFileTree);
+        }
 
 		removeFileBtn.setEnabled(false);
 		removeAllFilesBtn.setEnabled(true);
@@ -575,6 +590,97 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (getCurrentProject() != null)
 			fireProjectLoaded(getCurrentProject());
 	}
+    
+    /**
+     *  Listens for property change events in the plugin's configuration.
+     *  Shows/Hides the toolbar and the trees, according to the user's wish.
+     */
+    public void propertyChange(PropertyChangeEvent evt) {
+        // Toolbar show/hide.
+        if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
+            Log.log(Log.DEBUG,this,"Show/Hide toolbar");
+            toolbar.setVisible(config.getShowToolBar());
+            return;
+        }
+        
+        // Showing/Hiding Trees?
+        if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT) ||
+            evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
+            evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT) ) {
+            if (!willRun) {
+                Log.log(Log.DEBUG,this,"Scheduling tree rebuild");
+                SwingUtilities.invokeLater(this);
+                willRun = true;
+            }
+            return;
+        }
+    }
+    
+    /**
+     *  "Run" method, called by the Swing runtime after a config option for one
+     *  or more of the trees has changed.
+     */
+    public void run() {
+        showTrees();
+        willRun = false;
+    }
+    
+    /**
+     *  Loads the trees (folders, files, working files) into the view, deciding
+     *  what to show according to the configuration of the plugin 
+     */
+    private void showTrees() {
+        tabs.removeChangeListener(tsl);
+        tabs.removeAll();
+        int count = 0;
+        
+        // Folders tree
+        if (config.getShowFoldersTree()) {
+            if (folderTree == null) {
+                folderTree = createTree();
+                if (projectView != null) {
+                    folderTree.setModel(projectView.getFolderViewModel());
+                }
+            }
+            FOLDERS_TAB = count++;
+    		tabs.addTab(FOLDERS_TAB_TITLE, new JScrollPane(folderTree));
+        } else {
+            FOLDERS_TAB = -1;
+            folderTree = null;
+        }
+        
+        // Files tree
+        if (config.getShowFilesTree()) {
+            if (fileTree == null) {
+                fileTree = createTree();
+                if (projectView != null) {
+                    fileTree.setModel(projectView.getFileViewModel());
+                }
+            }
+            FILES_TAB = count++;
+    		tabs.addTab(FILES_TAB_TITLE, new JScrollPane(fileTree));
+        } else {
+            FILES_TAB = -1;
+            fileTree = null;
+        }
+        
+        // Working files tree
+        if (config.getShowWorkingFilesTree()) {
+            if (workingFileTree == null) {
+                workingFileTree = createTree();
+                if (projectView != null) {
+                    workingFileTree.setModel(projectView.getWorkingFileViewModel());
+                }
+            }
+            WORKING_FILES_TAB = count;
+    		tabs.addTab(WORKING_FILES_TAB_TITLE, new JScrollPane(workingFileTree));
+        } else {
+            WORKING_FILES_TAB = -1;
+            workingFileTree = null;
+        }
+        
+        tabs.addChangeListener(tsl);
+    }
 
 }
 

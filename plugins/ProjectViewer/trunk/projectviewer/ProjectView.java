@@ -16,6 +16,7 @@
 package projectviewer;
 
 import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreeSelectionModel;
 
 /** Tree root.
  */
@@ -51,5 +52,8 @@ interface ProjectView {
 	 */
 	public TreeModel getWorkingFileViewModel();
 
+    /** Returns the selection model to use. */
+    public int getSelectionModel();
+    
 }
 

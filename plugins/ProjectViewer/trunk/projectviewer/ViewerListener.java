@@ -32,7 +32,7 @@ import projectviewer.config.ProjectViewerConfig;
 
 /** Listen to all buttons and GUI events and respond to them.
  */
-public final class ViewerListener implements ActionListener, ItemListener {
+public final class ViewerListener implements WindowListener, ActionListener, ItemListener {
 
 	private ProjectViewer viewer;
 	private Launcher launcher;
@@ -262,5 +262,19 @@ public final class ViewerListener implements ActionListener, ItemListener {
 		viewer.showDefaultCursor();
 	}
 
+    /* Window Listener interface */
+    
+    public void windowActivated(WindowEvent e) { }
+    public void windowClosed(WindowEvent e) { }
+
+    /** Unregister the viewer from the ProjectViewerConfig listeners. */
+    public void windowClosing(WindowEvent e) { 
+        ProjectViewerConfig.getInstance().removePropertyChangeListener(viewer);
+    }
+    
+    public void windowDeactivated(WindowEvent e) { }
+    public void windowDeiconified(WindowEvent e) { }
+    public void windowIconified(WindowEvent e) { }
+    public void windowOpened(WindowEvent e) { }     
 }
 

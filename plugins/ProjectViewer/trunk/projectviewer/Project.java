@@ -122,10 +122,6 @@ public final class Project implements EBComponent {
             newRoot.addSubDirectory(root);
             root = newRoot;
         }
-        // Else: newRoot is child of oldRoot; may lose data!
-        else {
-            /* @todo: implement this kind of root change; or don't allow it at all */
-        }
     }
     
 	/**  Returns the name of the project.

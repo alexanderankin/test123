@@ -25,6 +25,8 @@ options.projectviewer.importer-opt.label=Importing Files
 #browser-path=kfmclient openProfile webbrowsing
 browser-path=mozilla
 
+options.ProjectViewer.label=Project Viewer
 options.projectviewer.web-prj-opt.label=Web Project Options
 options.projectviewer.browser-path-opt=Browser Path
+options.projectviewer.gui-opt.label=GUI Options
 
