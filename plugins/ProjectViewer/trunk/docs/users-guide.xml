@@ -479,14 +479,22 @@
 		<bridgehead renderas='sect3'>Canonical File Paths</bridgehead>
 
 		<para>
-			jEdit uses canonical file paths internally to read files, so that the same
-			file is never opened twice from different locations (e.g., via symbolic
-			links). The Project Viewer plugin does not store files with their canonical
-			paths, but tries to detect some situations (e.g., to see if a file is opened
-			in jEdit). However, in some situations parts of the plugin may not work as
-			expected when the directory structure (or some file) has symbolic links.
-			As an example, the "import new files when saved" feature may not work as
-			expected.
+			jEdit (up to version 4.1) uses canonical file paths internally to read
+			files, so that the same file is never opened twice from different locations
+			(e.g., via symbolic links). The Project Viewer plugin does not store
+			files with their canonical paths, but tries to detect some situations
+			(e.g., to see if a file is opened in jEdit). However, in some situations
+			parts of the plugin may not work as expected when the directory structure
+			(or some file) has symbolic links. As an example, the "import new files
+			when saved" feature may not work as expected.
+		</para>
+
+		<para>
+			The JRE, up to version 1.4, has a bug in JFileChooser when using the
+			Metal Look &amp; Feel. It will resolve canonical paths when changing
+			directories. While ProjectViewer tries to work around this issue,
+			it may lead to some strange behaviors, specially when importing
+			files.
 		</para>
 
 		<bridgehead renderas='sect3'>Large projects</bridgehead>
