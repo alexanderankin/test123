@@ -30,19 +30,40 @@ import org.gjt.sp.jedit.*;
 	function. */
 public class TemplatesOptionPane extends AbstractOptionPane implements ActionListener
 {
-	JTextField dirTextField;
-	TemplatesAction myAction;
+	protected JTextField dirTextField;
+	protected TemplatesAction myAction;
+	protected boolean pre_2_4_6 = false;
 
 	//Constructors
 	public TemplatesOptionPane(TemplatesAction ta) {
 		super("Templates");
 		myAction = ta;
-		init(jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0",""));
+		try {
+			Class superclass = Class.forName("org.gjt.sp.jedit.AbstractOptionPane");
+			java.lang.reflect.Method dummy = superclass.getDeclaredMethod("_init",null);
+			/* System.out.println("TemplatesOptionPane: _init() method found!!! " +
+						"Must be 2.4pre6 or later."); */
+		} catch (NoSuchMethodException nsme) {
+			/* System.out.println("TemplatesOptionPane: No _init() method found!!! " +
+						"Must be 2.4pre5 or earlier."); */
+			pre_2_4_6 = true;	// Running jEdit 2.4pre5 or earlier ...
+			this._init();		// ... so we have to initialize the dialog ourselves.
+		} catch (ClassNotFoundException cnfe) {}	// It better be there!
 	}
 
 	//Accessors & Mutators
 
 	//Implementors
+	public void _init() {
+		this.init(jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0",""));
+	}
+	
+	public void _save() {
+		jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",
+					dirTextField.getText());
+		myAction.refreshTemplates();
+	}
+	
 	public void init(String textFieldStr) {
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(5,5,5,5));
@@ -64,9 +85,11 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	}
 	
 	public void save() {
-		jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",
-						dirTextField.getText());
-		myAction.refreshTemplates();
+		if (pre_2_4_6) {
+			this._save();	// save directly
+		} else {
+			super.save();	// super class ensures TemplatesOptionPane was initialised
+		}
 	}
 
 	public void actionPerformed(ActionEvent evt) {
@@ -96,8 +119,10 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	/*
 	 * Change Log:
 	 * $Log$
-	 * Revision 1.1  2000/04/21 05:05:51  sjakob
-	 * Initial revision
+	 * Revision 1.2  2000/04/21 05:32:58  sjakob
+	 * Modified TemplatesOptionPane for compliance with new OptionPane interface
+	 * introducted in jEdit 2.4pre6 (now supports "lazy" instantiation of dialog).
+	 * The class is still compatible with earlier versions, though.
 	 *
 	 * Revision 1.1  1999/12/21 05:00:52  sjakob
 	 * Added options pane for "Plugin options" to allow user to select template directory.
