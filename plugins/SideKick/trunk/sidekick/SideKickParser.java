@@ -49,13 +49,17 @@ public abstract class SideKickParser
 
 	public abstract SideKickParsedData parse(SideKick sidekick, String text);
 
+	public boolean supportsCompletion()
+	{
+		return false;
+	}
+
 	public String getCompletionTriggers()
 	{
 		return null;
 	}
 
-	public SideKickCompletion complete(EditPane editPane,
-		SideKickParsedData data, int caret)
+	public SideKickCompletion complete(EditPane editPane, int caret)
 	{
 		return null;
 	}

@@ -42,6 +42,12 @@ public class SideKickOptionPane extends AbstractOptionPane
 	//{{{ _init() method
 	protected void _init()
 	{
+		addComponent(treeFollowsCaret = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.tree-follows-caret")));
+		treeFollowsCaret.setSelected(jEdit.getBooleanProperty(
+			"sidekick-tree.follows-caret"));
+		treeFollowsCaret.addActionListener(new ActionHandler());
+
 		addComponent(bufferChangeParse = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.buffer-change-parse")));
 		bufferChangeParse.setSelected(jEdit.getBooleanProperty(
@@ -64,8 +70,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 			autoParseDelayValue = 1500;
 		}
 
-		addComponent(jEdit.getProperty("options.sidekick.auto-parse-delay"),
-			autoParseDelay = new JSlider(500,3000,autoParseDelayValue));
+		addComponent(new JLabel(jEdit.getProperty("options.sidekick.auto-parse-delay")));
+		addComponent(autoParseDelay = new JSlider(500,3000,autoParseDelayValue),
+			GridBagConstraints.BOTH);
 		Hashtable labelTable = new Hashtable();
 		for(int i = 500; i <= 3000; i += 500)
 		{
@@ -79,12 +86,6 @@ public class SideKickOptionPane extends AbstractOptionPane
 
 		autoParseDelay.setEnabled(keystrokeParse.isSelected());
 
-		addComponent(treeFollowsCaret = new JCheckBox(jEdit.getProperty(
-			"options.sidekick.tree-follows-caret")));
-		treeFollowsCaret.setSelected(jEdit.getBooleanProperty(
-			"sidekick-tree.follows-caret"));
-		treeFollowsCaret.addActionListener(new ActionHandler());
-
 		addComponent(complete = new JCheckBox(jEdit.getProperty(
 			"options.sidekick.complete")));
 		complete.setSelected(jEdit.getBooleanProperty("sidekick.complete"));
@@ -92,8 +93,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 
 		int completeDelayValue = jEdit.getIntegerProperty("sidekick.complete-delay",500);
 
-		addComponent(jEdit.getProperty("options.sidekick.complete-delay"),
-			completeDelay = new JSlider(0,1500,completeDelayValue));
+		addComponent(new JLabel(jEdit.getProperty("options.sidekick.complete-delay")));
+		addComponent(completeDelay = new JSlider(0,1500,completeDelayValue),
+		GridBagConstraints.BOTH);
 
 		labelTable = new Hashtable();
 		for(int i = 0; i <= 1500; i += 250)
@@ -123,6 +125,30 @@ public class SideKickOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("sidekick.complete",complete.isSelected());
 		jEdit.setIntegerProperty("sidekick.complete-delay",
 			completeDelay.getValue());
+	} //}}}
+
+	// XXX in 4.2 move this to AbstractOptionPane
+
+	//{{{ addComponent() method
+	/**
+	 * Adds a component to the option pane. Components are
+	 * added in a vertical fashion, one per row.
+	 * @param comp The component
+	 * @param fill Fill parameter to GridBagConstraints
+	 */
+	public void addComponent(Component comp, int fill)
+	{
+		GridBagConstraints cons = new GridBagConstraints();
+		cons.gridy = y++;
+		cons.gridheight = 1;
+		cons.gridwidth = cons.REMAINDER;
+		cons.fill = fill;
+		cons.anchor = GridBagConstraints.WEST;
+		cons.weightx = 1.0f;
+		cons.insets = new Insets(1,0,1,0);
+
+		gridBag.setConstraints(comp,cons);
+		add(comp);
 	} //}}}
 
 	//{{{ Private members

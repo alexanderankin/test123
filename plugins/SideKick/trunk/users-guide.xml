@@ -110,6 +110,17 @@
 
 </chapter>
 
+<chapter id="completion"><title>Completion</title>
+
+ <para>
+  A completion popup can be shown at any time
+  by invoking the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Show
+  Completion Popup</guimenuitem> command.
+ </para>
+
+</chapter>
+
 <chapter id="other-plugins"><title>Developing SideKick back-ends</title>
 
  <para>

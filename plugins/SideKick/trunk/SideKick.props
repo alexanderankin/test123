@@ -30,7 +30,7 @@ sidekick-menu=sidekick-tree \
 	sidekick-next-asset \
 	sidekick-select-asset \
 	- \
-	sidekick-complete - \
+	sidekick-complete \
 	- \
 	sidekick-parse \
 	sidekick-keystroke-parse
@@ -39,6 +39,7 @@ sidekick-tree.label=Structure Browser
 sidekick-prev-asset.label=Go to Previous Asset
 sidekick-next-asset.label=Go to Next Asset
 sidekick-select-asset.label=Select Asset at Caret
+sidekick-complete.label=Show Completion Popup
 sidekick-parse.label=Parse Buffer
 sidekick-keystroke-parse.label=Parse on Keystroke
 
@@ -53,12 +54,15 @@ sidekick.parsing-complete={0} parsing complete, {1} error(s)
 sidekick.parsing-complete-errors={0} parsing complete, more than {1} errors; \
 	only first {1} shown
 
+# Popup
+sidekick-complete.none=No completions
+
 # Option pane
 options.sidekick.label=SideKick
 
+options.sidekick.tree-follows-caret=Tree selection follows caret position
 options.sidekick.buffer-change-parse=Parse on buffer switch and save
 options.sidekick.keystroke-parse=Parse on keystroke
 options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
-options.sidekick.tree-follows-caret=Tree selection follows caret position
 options.sidekick.complete=Show completion popups where possible
 options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):

@@ -30,7 +30,7 @@ import org.gjt.sp.jedit.*;
 public class SideKickCompletionPopup extends JWindow
 {
 	//{{{ SideKickCompletionPopup constructor
-	public SideKickCompletionPopup(View view, SideKickParser parser, Point location)
+	public SideKickCompletionPopup(View view, SideKickParser parser, int caret)
 	{
 		super(view);
 
@@ -40,7 +40,13 @@ public class SideKickCompletionPopup extends JWindow
 
 		list = new JList();
 
-		//setListModel(completions);
+		updateListModel();
+
+		Point location = textArea.offsetToXY(caret - complete.getTokenLength());
+		location.y += textArea.getPainter().getFontMetrics().getHeight();
+
+		SwingUtilities.convertPointToScreen(location,
+			textArea.getPainter());
 
 		list.addMouseListener(new MouseHandler());
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -53,17 +59,17 @@ public class SideKickCompletionPopup extends JWindow
 
 		getContentPane().add(scroller, BorderLayout.CENTER);
 
-		GUIUtilities.requestFocus(this,list);
-
-		pack();
-		setLocation(location);
-		show();
-
 		KeyHandler keyHandler = new KeyHandler();
 		addKeyListener(keyHandler);
 		getRootPane().addKeyListener(keyHandler);
 		list.addKeyListener(keyHandler);
 		view.setKeyEventInterceptor(keyHandler);
+
+		GUIUtilities.requestFocus(this,list);
+
+		pack();
+		setLocation(location);
+		show();
 	} //}}}
 
 	//{{{ dispose() method
@@ -88,17 +94,32 @@ public class SideKickCompletionPopup extends JWindow
 	private JEditTextArea textArea;
 	private JList list;
 	private SideKickParser parser;
+	private SideKickCompletion complete;
 	//}}}
 
 	//{{{ updateListModel() method
 	private void updateListModel()
 	{
-		
-		///list.setCellRenderer(completion.getRenderer());
+		EditPane editPane = view.getEditPane();
+		int caret = editPane.getTextArea().getCaretPosition();
+		complete = parser.complete(editPane,caret);
+
+		if(complete == null || complete.size() == 0)
+		{
+			list.setListData(new String[] {
+				jEdit.getProperty("sidekick-complete.none")
+			});
+			list.setCellRenderer(new DefaultListCellRenderer());
+		}
+		else
+		{
+			setListModel(complete);
+			list.setCellRenderer(complete.getRenderer());
+		}
 	} //}}}
 
 	//{{{ setListModel() method
-	private void setListModel(final List items)
+	private void setListModel(final SideKickCompletion items)
 	{
 		ListModel model = new ListModel()
 		{
@@ -120,12 +141,6 @@ public class SideKickCompletionPopup extends JWindow
 		list.setSelectedIndex(0);
 	} //}}}
 
-	//{{{ insertSelected() method
-	private void insertSelected(char ch)
-	{
-		// XXX
-	} //}}}
-
 	//}}}
 
 	//{{{ KeyHandler class
@@ -139,16 +154,16 @@ public class SideKickCompletionPopup extends JWindow
 				return;
 
 			// XXX
-			/* switch(evt.getKeyCode())
+			switch(evt.getKeyCode())
 			{
-			case KeyEvent.VK_ENTER:
+			/* case KeyEvent.VK_ENTER:
 				insertSelected('\n');
 				evt.consume();
 				break;
 			case KeyEvent.VK_TAB:
 				insertSelected('\t');
 				evt.consume();
-				break;
+				break; */
 			case KeyEvent.VK_ESCAPE:
 				dispose();
 				evt.consume();
@@ -169,7 +184,7 @@ public class SideKickCompletionPopup extends JWindow
 				evt.consume();
 				break;
 			case KeyEvent.VK_DOWN:
-				/ int / selected = list.getSelectedIndex();
+				/* int */ selected = list.getSelectedIndex();
 
 				if(selected == list.getModel().getSize() - 1)
 					selected = 0;
@@ -186,18 +201,9 @@ public class SideKickCompletionPopup extends JWindow
 			case KeyEvent.VK_SPACE:
 				break;
 			case KeyEvent.VK_BACK_SPACE:
-				if(text.length() == 0)
-				{
-					textArea.backspace();
-					dispose();
-				}
-				else
-				{
-					text = text.substring(0,text.length() - 1);
-					textArea.backspace();
-					setUpListModel();
-				}
-				evt.consume();
+			case KeyEvent.VK_DELETE:
+				dispose();
+				view.processKeyEvent(evt);
 				break;
 			default:
 				if(evt.isActionKey())
@@ -206,7 +212,7 @@ public class SideKickCompletionPopup extends JWindow
 					view.processKeyEvent(evt);
 				}
 				break;
-			} */
+			}
 		} //}}}
 
 		//{{{ keyTyped() method
@@ -217,31 +223,16 @@ public class SideKickCompletionPopup extends JWindow
 				return;
 
 			// XXX
-			/* char ch = evt.getKeyChar();
+			char ch = evt.getKeyChar();
 			if(ch == '\b')
 				return;
-                        
-			if(ch == ';' || ch == '>'
-				|| ch == ' ' || ch == '\t')
-			{
-				insertSelected(ch);
-			}
-			else if(ch == '/')
-			{
-				// in an XML file, a closing tag
-				// must always close the most
-				// recently opened tag.
-				XmlActions.completeClosingTag(view);
-				dispose();
-			}
+
+			if(complete.handleKeystroke(list.getSelectedIndex(),ch))
+				updateListModel();
 			else
-			{
-				textArea.userInput(ch);
-				text = text + ch;
-				setUpListModel();
-			}
-                        
-			evt.consume(); */
+				dispose();
+
+			evt.consume();
 		} //}}}
 	} //}}}
 
@@ -250,7 +241,9 @@ public class SideKickCompletionPopup extends JWindow
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
-			insertSelected('\0');
+			// XXX
+			complete.handleKeystroke(list.getSelectedIndex(),'\n');
+			dispose();
 		}
 	} //}}}
 }
