@@ -48,7 +48,9 @@ install-macros.none=none
 install-macros.user=Install in user macro directory ({0})
 install-macros.system=Install in system macro directory ({0})
 install-macros.install=Install
-
+install-macros.sort-by-date=Sort By Date
+install-macros.sort-by-name=Sort By Name
+install-macros.searchField=Search for...
 macro-list.progress.title=Macro Manager
 macro-list.progress.caption=Downloading macro list
 macro-list.progress.stop=Stop

@@ -59,7 +59,6 @@ public class InstallMacrosDialog extends EnhancedDialog
 		JLabel label = new JLabel(jEdit.getProperty("install-macros.caption"));
 		content.add(BorderLayout.NORTH,label);
 
-		MacroList list = null;
 		try
 		{
 			list = new MacroListDownloadProgress(InstallMacrosDialog.this)
@@ -188,6 +187,41 @@ public class InstallMacrosDialog extends EnhancedDialog
 		box.add(Box.createHorizontalStrut(6));
 		box.add(Box.createGlue());
 
+		sort = new JButton(jEdit.getProperty("install-macros.sort-by-date"));
+		sort.addActionListener(new ActionHandler());
+		box.add(sort);
+		box.add(Box.createHorizontalStrut(6));
+		box.add(Box.createGlue());
+
+		searchField = new JTextField(jEdit.getProperty("install-macros.searchField"));
+		searchField.addKeyListener(new KeyHandler());
+		searchField.addFocusListener(new FocusAdapter()
+		{
+			public void focusGained(FocusEvent evt)
+			{
+				searchField.selectAll();
+			}
+		});
+		searchField.addMouseListener(new MouseAdapter()
+		{
+			public void mouseClicked(MouseEvent evt)
+			{
+				searchField.selectAll();
+			}
+		});
+			
+			
+		searchField.setColumns(20);
+		box.add(searchField);
+		box.add(Box.createHorizontalStrut(6));
+		box.add(Box.createGlue());
+		
+/*		search = new JButton(jEdit.getProperty("install-macros.search"));
+		search.addActionListener(new ActionHandler());
+		box.add(search);
+		box.add(Box.createHorizontalStrut(6));
+		box.add(Box.createGlue());  */
+		
 		panel.add(BorderLayout.SOUTH,box);
 
 		content.add(BorderLayout.SOUTH,panel);
@@ -261,8 +295,14 @@ public class InstallMacrosDialog extends EnhancedDialog
 
 	private JButton install;
 	private JButton cancel;
+	private JButton sort;
+	private JTextField searchField;
+//	private JButton search;
 
+	private MacroList list;
+	
 	private boolean cancelled;
+	private boolean sortedByDate = false;
 	private Thread thread;
 	//}}}
 
@@ -316,6 +356,54 @@ public class InstallMacrosDialog extends EnhancedDialog
 
 	//}}}
 
+	//{{{ sortByDate method
+	void sort()
+	{
+		String sortLabel = jEdit.getProperty("install-macros.sort-by-date");
+		int constraint;
+		if(sort.getText().equals(sortLabel))
+		{
+			constraint = MacroList.SORT_BY_DATE;
+			sort.setText(jEdit.getProperty("install-macros.sort-by-name"));
+		}
+		else
+		{
+			constraint = MacroList.SORT_BY_NAME;
+			sort.setText(sortLabel);
+		}
+		list.sortMacroList(constraint);
+		macros.setModel(list.macros);
+		macros.getSelectionModel().addListSelectionListener(new ListHandler());
+		macros.getModel().addTableModelListener(new TableModelHandler());
+	}  //}}}
+		
+	//{{{ sortByDate method
+	void search()
+	{
+		String srch = searchField.getText();
+		Log.log(Log.DEBUG, this, "searching for " + srch);
+		if(srch == null || srch.length() == 0)
+		{
+			macros.setModel(list.macros);
+			macros.getSelectionModel().addListSelectionListener(new ListHandler());
+			macros.getModel().addTableModelListener(new TableModelHandler());
+		}
+		
+		Vector results = list.searchMacroList(srch);
+		if(results.size() > 0)
+		{
+			macros.setModel(results);
+			macros.getSelectionModel().addListSelectionListener(new ListHandler());
+			macros.getModel().addTableModelListener(new TableModelHandler());
+			searchField.selectAll();
+		}
+		else
+		{
+			searchField.setText("No matches");
+			searchField.selectAll();
+		}
+	}  //}}}
+		
 	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
@@ -326,6 +414,22 @@ public class InstallMacrosDialog extends EnhancedDialog
 				ok();
 			else if(source == cancel)
 				cancel();
+			else if(source == sort)
+				sort();
+//			else if(search == sort)
+//				search();
+		}
+	} //}}}
+
+	//{{{ KeyHandler class
+	class KeyHandler extends KeyAdapter
+	{
+		public void keyReleased(KeyEvent evt)
+		{
+			if(evt.getKeyCode() == KeyEvent.VK_ENTER)
+			{
+				search();
+			}
 		}
 	} //}}}
 

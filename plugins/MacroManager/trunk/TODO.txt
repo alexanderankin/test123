@@ -1,5 +1,5 @@
-TODO for Macro Manager
-----------------------
+TODO for Macro Manager 1.0
+--------------------------
 
 - GZIP the xml coming from the server (John Gellene)
 - cache the results and add a 'refresh' button to the gui?
