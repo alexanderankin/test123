@@ -48,7 +48,8 @@ antfarm.run.icon=/icons/RunTarget.gif
 antfarm.run.label=Run Current Target
 
 antfarm.options.icon=/icons/ToolbarMenu.gif
-antfarm.options.label=Ant Options
+antfarm.options.label=AntFarm Options
+antfarm.options.text=Options
 
 antfarm.root.label=Ant Projects
 antfarm.root.noBuildFiles=No build files...
@@ -114,3 +115,8 @@ tools-jar-missing.message=The tools.jar archive cannot be located by AntFarm. Th
 			  configure jEdit to run with a Java Development Kit (JDK), not the\n\
 			  Java Runtime Environment (JRE). \n\n\
 			  View the Activity Log for more details.
+			  
+# Option menu commands
+antfarm.commands.properties.label=Prompt for properties
+antfarm.commands.supress-sub-targets.label=Hide sub-targets
+antfarm.commands.save-on-execute.label=Save all before build
