@@ -31,6 +31,7 @@ public class ProjectDirectory {
   private List subdirectories;
   private List files;
   private String name;
+  private String pathWithSep;
   
   /**
    * Create a new <code>ProjectDirectory</code>.
@@ -140,6 +141,16 @@ public class ProjectDirectory {
   }
   
   /**
+   * Returns <code>true</code> if the given file is under this directory
+   * or its subdirectories.
+   */
+  public boolean isDescendant( ProjectFile aFile ) {
+    if ( pathWithSep == null )
+      pathWithSep = getPath() + File.separator;
+    return aFile.getPath().startsWith( pathWithSep );
+  }
+  
+  /**
    * Returns list of directories needed to reach the given project artifact. 
    */
   List getProjectPath( File anArtifact ) {
@@ -185,14 +196,6 @@ public class ProjectDirectory {
     return -1;
   }
 
-  /**
-   * Remove all subdirectories and files.
-   */
-  void clear() {
-    files.clear();
-    subdirectories.clear();
-  }
-  
   /**
    * Add a file to this directory.
    */

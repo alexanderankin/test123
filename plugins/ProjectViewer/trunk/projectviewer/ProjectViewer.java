@@ -461,7 +461,7 @@ public class ProjectViewer
    * Create and initialize a tree widget.
    */
   private JTree createTree() {
-    JTree tree = new JTree();
+    JTree tree = new ProjectTree();
     tree.getSelectionModel().setSelectionMode( TreeSelectionModel.SINGLE_TREE_SELECTION );
     tree.setCellRenderer( new TreeRenderer() );
     tree.addTreeSelectionListener( tsl );

@@ -15,15 +15,18 @@
  */
 package projectviewer;
 
+import java.awt.datatransfer.*;
 import java.io.File;
-import java.util.Comparator;
+import java.util.*;
 import org.gjt.sp.jedit.*;
 
 
 /**
  * A project file.
  */
-public class ProjectFile {
+public class ProjectFile
+  implements Transferable
+{
   
   private final static int KEY_UNSET = -1;
   
@@ -142,6 +145,36 @@ public class ProjectFile {
     if ( comparator == null )
       comparator = new FileComparator();
     return comparator;
+  }
+  
+  /**
+   * Returns an array of DataFlavor objects indicating the flavors the data 
+   * can be provided in.
+   */
+  public DataFlavor[] getTransferDataFlavors() {
+    return new DataFlavor[] { DataFlavor.javaFileListFlavor };
+  }
+  
+  /**
+   * Returns whether or not the specified data flavor is supported for
+   * this object.
+   */
+  public boolean isDataFlavorSupported(DataFlavor flavor) {
+    return flavor.equals( DataFlavor.javaFileListFlavor );
+  }
+  
+  /**
+   * Returns an object which represents the data to be transferred. 
+   */
+  public Object getTransferData( DataFlavor flavor )
+    throws UnsupportedFlavorException
+  {
+    if ( !isDataFlavorSupported( flavor ) )
+      throw new UnsupportedFlavorException( flavor );
+      
+    List fileList = new ArrayList(1);
+    fileList.add( toFile() );
+    return fileList;
   }
   
   /**
