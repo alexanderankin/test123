@@ -33,6 +33,7 @@ public final class ProjectOptionsPanel extends JPanel {
     final JLabel label = new JLabel("root : ");
     final MyActionListener actionListener = new MyActionListener();
     rootField.addKeyListener(new MyKeyAdapter());
+    rootField.setEditable(false);
 
     browse.addActionListener(actionListener);
     browse.setToolTipText("Browse to find the root of your project");

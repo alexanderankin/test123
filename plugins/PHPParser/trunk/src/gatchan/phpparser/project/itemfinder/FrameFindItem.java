@@ -5,8 +5,10 @@ import gatchan.phpparser.project.ProjectManager;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 
 import javax.swing.*;
@@ -25,7 +27,7 @@ import java.util.ListIterator;
  *
  * @author Matthieu Casanova
  */
-public final class FrameFindItem extends JFrame implements EBComponent {
+public final class FrameFindItem extends JFrame {
   public static final int CLASS_MODE = 0;
   public static final int METHOD_MODE = 1;
 
@@ -97,16 +99,10 @@ public final class FrameFindItem extends JFrame implements EBComponent {
         listModel.setList(itemContaining);
       } else {
         final ListIterator listIterator = itemContaining.listIterator();
-        int i = 0;
         while (listIterator.hasNext()) {
-          if (i > 25) { // to remove items and do not have lists > 25 items
-            listIterator.remove();
-          }
           final PHPItem phpItem = (PHPItem) listIterator.next();
           if (doNotAcceptItem(phpItem, searchText)) {
             listIterator.remove();
-          } else {
-            i++;
           }
         }
         Log.log(Log.DEBUG, this, itemContaining.size() + " items found");
@@ -122,6 +118,7 @@ public final class FrameFindItem extends JFrame implements EBComponent {
           window.setVisible(true);
         }
       }
+      searchField.setCaretPosition(searchText.length());
       searchField.requestFocus();
     }
 
@@ -133,41 +130,38 @@ public final class FrameFindItem extends JFrame implements EBComponent {
     return (mode == CLASS_MODE && !(phpItem instanceof ClassHeader) || mode == METHOD_MODE && !(phpItem instanceof MethodHeader)) || phpItem.getName().toLowerCase().indexOf(searchText) == -1;
   }
 
-  private void selectionMade(PHPItem selectedValue) {
+  /**
+   * A selection has been made, we will move to the good file.
+   *
+   * @param selectedValue the selected PHPItem
+   */
+  private void selectionMade(final PHPItem selectedValue) {
     if (selectedValue != null) {
       final String path = selectedValue.getPath();
-      wantedCaretPosition = selectedValue.getSourceStart();
       buffer = jEdit.openFile(view, path);
-      if (buffer.isLoaded()) {
-        setBufferAndPosition();
-      } else {
-        EditBus.addToBus(this);
-      }
+      VFSManager.runInAWTThread(new Runnable() {
+        public void run() {
+          JEditTextArea textArea = jEdit.getActiveView().getTextArea();
+
+          final int caretPosition = buffer.getLineStartOffset(selectedValue.getBeginLine()-1) +
+                              selectedValue.getBeginColumn()-1;
+          textArea.moveCaretPosition(caretPosition);
+          Log.log(Log.MESSAGE, this, "Moving to line " + (selectedValue.getBeginLine()-1) + " "+caretPosition);
+          /*
+          Selection[] s = getSelection();
+          if (s == null)
+            return;
+
+          JEditTextArea textArea = editPane.getTextArea();
+          if (textArea.isMultipleSelectionEnabled())
+            textArea.addToSelection(s);
+          else
+            textArea.setSelection(s);
+
+          textArea.moveCaretPosition(occur.endPos.getOffset());*/
+        }
+      });
       setVisible(false);
-    }
-  }
-
-  private void setBufferAndPosition() {
-    Log.log(Log.DEBUG, this, "Opening " + buffer.getPath() + " moving caret at " + wantedCaretPosition);
-    final JEditTextArea textArea = view.getTextArea();
-    textArea.setBuffer(buffer);
-    if (textArea.getBufferLength() < wantedCaretPosition) {
-      //todo maybe reparse this buffer !
-      Log.log(Log.WARNING, this, "The buffer do not have the expected length. It should be reparsed");
-    } else {
-      textArea.setCaretPosition(wantedCaretPosition);
-    }
-    buffer = null;
-    wantedCaretPosition = -1;
-  }
-
-  public void handleMessage(EBMessage message) {
-    if (message instanceof BufferUpdate) {
-      final BufferUpdate bufferUpdate = (BufferUpdate) message;
-      if (buffer.equals(bufferUpdate.getSource()) && bufferUpdate.getWhat() == BufferUpdate.LOADED) {
-        setBufferAndPosition();
-        EditBus.removeFromBus(this);
-      }
     }
   }
 
@@ -201,9 +195,9 @@ public final class FrameFindItem extends JFrame implements EBComponent {
 
   private static boolean handledByList(KeyEvent e) {
     return e.getKeyCode() == KeyEvent.VK_DOWN ||
-           e.getKeyCode() == KeyEvent.VK_UP ||
-           e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
-           e.getKeyCode() == KeyEvent.VK_PAGE_UP;
+                                                      e.getKeyCode() == KeyEvent.VK_UP ||
+                                                      e.getKeyCode() == KeyEvent.VK_PAGE_DOWN ||
+                                                      e.getKeyCode() == KeyEvent.VK_PAGE_UP;
   }
 
   private final class SearchFieldKeyAdapter extends KeyAdapter {

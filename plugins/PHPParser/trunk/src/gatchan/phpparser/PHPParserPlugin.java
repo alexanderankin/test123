@@ -84,9 +84,21 @@ public final class PHPParserPlugin extends EBPlugin {
   private static void findItem(View view, int mode) {
     moveFindItemWindow(view);
     findItemWindow.init(view, mode);
-    GUIUtilities.centerOnScreen(findItemWindow);
+    centerOnScreen(findItemWindow);
     findItemWindow.setVisible(true);
   }
+
+  public static void centerOnScreen(Window win)
+	{
+    GraphicsDevice gd = jEdit.getActiveView().getGraphicsConfiguration().getDevice();
+		/*GraphicsDevice gd = GraphicsEnvironment
+			.getLocalGraphicsEnvironment()
+			.getDefaultScreenDevice();   */
+		Rectangle gcbounds = gd.getDefaultConfiguration().getBounds();
+		int x = gcbounds.x + (gcbounds.width - win.getWidth()) / 2;
+		int y = gcbounds.y + (gcbounds.height - win.getHeight()) / 2;
+		win.setLocation(x,y);
+	}
 
   private static void moveFindItemWindow(View view) {
     final Dimension viewSize = view.getSize();

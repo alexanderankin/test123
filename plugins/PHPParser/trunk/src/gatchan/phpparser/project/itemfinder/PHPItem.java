@@ -16,6 +16,10 @@ public interface PHPItem {
 
   int getSourceStart();
 
+  int getBeginLine();
+
+  int getBeginColumn();
+
   String getPath();
 
   Icon getIcon();

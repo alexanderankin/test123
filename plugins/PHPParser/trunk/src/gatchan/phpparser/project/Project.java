@@ -477,11 +477,11 @@ public final class Project {
           parseFile(phpParser, files[i]);
         }
       } else {
-        BufferedReader reader = null;
+        Reader reader = null;
         try {
           Log.log(Log.DEBUG, this, "Parsing file " + f.getAbsolutePath());
           if (mode.accept(f.getAbsolutePath(), "")) {
-            reader = new BufferedReader(new FileReader(f));
+            reader = new FileReader(f);
             parsedFileCount++;
             phpParser.parse(f.getAbsolutePath(), reader);
           }

@@ -27,6 +27,7 @@ public final class PHPErrorSource implements PHPParserListener {
   private boolean variableMayBeUnassigned;
   private boolean unnecessaryGlobal;
   private boolean caseSemicolon;
+  private boolean deprecatedVarToken;
 
   /** Instantiate the PHP error source. */
   public PHPErrorSource() {
@@ -67,6 +68,7 @@ public final class PHPErrorSource implements PHPParserListener {
         (!variableMayBeUnassigned && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_VARIABLE_MAY_BE_UNASSIGNED) ||
         (!unnecessaryGlobal && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_UNNECESSARY_GLOBAL) ||
         (!caseSemicolon && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_CASE_SEMICOLON) ||
+        (!deprecatedVarToken && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_DEPRECATED_VAR_TOKEN) ||
         (!whileEndWhile && e.getMessageClass() == PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG)) {
       return;
     }
@@ -89,5 +91,6 @@ public final class PHPErrorSource implements PHPParserListener {
     variableMayBeUnassigned = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED);
     unnecessaryGlobal = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_UNNECESSARY_GLOBAL);
     caseSemicolon = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_CASE_SEMICOLON);
+    deprecatedVarToken = jEdit.getBooleanProperty(PHPParserOptionPane.PROP_WARN_DEPRECATED_VAR_TOKEN);
   }
 }
