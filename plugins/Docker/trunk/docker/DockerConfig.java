@@ -43,7 +43,7 @@ class DockerConfig {
     * Returns <code>true</code> if the named dock has auto hide enabled.
     */
    public boolean isAutoHideEnabled(String dockName) {
-      return jEdit.getBooleanProperty(formatPropertyName(dockName + ".enabled"), true);
+      return jEdit.getBooleanProperty(formatPropertyName(dockName + ".enabled"), false);
    }
 
    /**
