@@ -358,7 +358,7 @@ public class ExuberantCTagsParser
     for (int i = 0; i < length; i++)
     {
       c = string.charAt(i);
-      if (c == '\\' && string.charAt(i + 1) == '/') // removes '/' from "\// foo"
+      if (c == '\\' && (i + 1 < length) && string.charAt(i + 1) == '/') // removes '/' from "\// foo"
         continue;
       else
         buf.append(c);

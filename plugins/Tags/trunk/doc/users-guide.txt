@@ -3,8 +3,8 @@ Tags Plugin
 ===========
 
 :Author: Kenrick Drew
-:Maintainer: Ollie Rutherfurd <oliver@rutherfurd.net>
-:Version: 1.1.1
+:Maintainer: Ollie Rutherfurd <oliver@jedit.org>
+:Version: 1.1.2
 
 .. $Id$
 
@@ -272,6 +272,11 @@ Credits
 
 Changelog
 =========
+
+* Version 1.1.2, bug fix (Jun 2004)
+
+  - Fixed StringIndexOutOfBoundsException, if tag ended with "\\".
+    Bug report & patch from Ian MacLarty.
 
 * Version 1.1.1, bug fix (Apr 2004)
 
