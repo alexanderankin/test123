@@ -29,6 +29,13 @@ import org.gjt.sp.jedit.io.VFSManager;
 
 
 public abstract class ArchiveVFS extends VFS {
+    public static final char   archiveSeparatorChar = '!';
+    public static final String archiveSeparator     = "!";
+
+    public static final char   fileSeparatorChar = '/';
+    public static final String fileSeparator     = "/";
+
+
     public class ArchivePath {
         public String protocol;
         public String pathName;
@@ -40,14 +47,14 @@ public abstract class ArchiveVFS extends VFS {
             String archiveEntry = "";
 
             int idx = -1;
-            if ((idx = archive.lastIndexOf('!')) != -1) {
+            if ((idx = archive.lastIndexOf(ArchiveVFS.archiveSeparatorChar)) != -1) {
                 archivePath  = archive.substring(0, idx);
                 archiveEntry = archive.substring(idx + 1);
             }
 
             // Remove archiveEntry trailing slashes
             for (int i = archiveEntry.length() - 1; i >= 0; i--) {
-                if (archiveEntry.charAt(i) != '/') {
+                if (archiveEntry.charAt(i) != ArchiveVFS.fileSeparatorChar) {
                     if (i < archiveEntry.length() - 1) {
                         archiveEntry = archiveEntry.substring(0, i + 1);
                     }
@@ -73,13 +80,13 @@ public abstract class ArchiveVFS extends VFS {
         String archivePath  = archive.pathName;
         String archiveEntry = archive.entryName;
 
-        int slashIdx = archiveEntry.lastIndexOf('/');
-        if (slashIdx != -1) {
+        int fileSeparatorIdx = archiveEntry.lastIndexOf(ArchiveVFS.fileSeparatorChar);
+        if (fileSeparatorIdx != -1) {
             return (
                   archiveProtocol + ':'
                 + archivePath
-                + '!'
-                + archiveEntry.substring(0, slashIdx)
+                + ArchiveVFS.archiveSeparatorChar
+                + archiveEntry.substring(0, fileSeparatorIdx)
             );
         }
 
@@ -87,12 +94,30 @@ public abstract class ArchiveVFS extends VFS {
             return (
                   archiveProtocol + ':'
                 + archivePath
-                + '!'
+                + ArchiveVFS.archiveSeparatorChar
             );
         }
 
         VFS vfs = VFSManager.getVFSForPath(archivePath);
         return vfs.getParentOfPath(archivePath);
+    }
+
+
+    public String constructPath(String parent, String path) {
+        if (parent.endsWith(ArchiveVFS.archiveSeparator)) {
+            return parent + path;
+        } else {
+            if (parent.endsWith(ArchiveVFS.fileSeparator)) {
+                return parent + path;
+            } else {
+                return parent + ArchiveVFS.fileSeparator + path;
+            }
+        }
+    }
+
+
+    public char getFileSeparator() {
+        return '/';
     }
 
 
@@ -112,7 +137,7 @@ public abstract class ArchiveVFS extends VFS {
             return null;
         }
 
-        return this.getName() + ':' + entry.path + '!';
+        return this.getName() + ':' + entry.path + ArchiveVFS.archiveSeparatorChar;
     }
 
 
@@ -123,7 +148,7 @@ public abstract class ArchiveVFS extends VFS {
     ) {
         // We add all possible directories to directories hashtable
         Hashtable directoryEntries = null;
-        StringTokenizer tokenizer = new StringTokenizer(entryName, "/");
+        StringTokenizer tokenizer = new StringTokenizer(entryName, ArchiveVFS.fileSeparator);
 
         String currentPath = "";
         String nextPath    = "";
@@ -135,11 +160,11 @@ public abstract class ArchiveVFS extends VFS {
             if (currentPath.equals("")) {
                 nextPath = token;
             } else {
-                nextPath = currentPath + '/' + token;
+                nextPath = currentPath + ArchiveVFS.fileSeparatorChar + token;
             }
 
-            String currentVFSPath = vfsPath + "!" + currentPath;
-            String nextVFSPath    = vfsPath + "!" + nextPath;
+            String currentVFSPath = vfsPath + ArchiveVFS.archiveSeparatorChar + currentPath;
+            String nextVFSPath    = vfsPath + ArchiveVFS.archiveSeparatorChar + nextPath;
 
             directoryEntries = (Hashtable) directories.get(currentVFSPath);
             if (directoryEntries == null) {

@@ -1,6 +1,6 @@
 plugin.ArchivePlugin.name=Archive
 plugin.ArchivePlugin.author=André Kaplan
-plugin.ArchivePlugin.version=0.2
+plugin.ArchivePlugin.version=0.2.1
 plugin.ArchivePlugin.docs=Archive.html
 
 plugins.ArchivePlugin.depend.0=jdk 1.1
