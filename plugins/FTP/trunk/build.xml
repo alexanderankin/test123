@@ -32,7 +32,7 @@
 
 
 	<path id="project.class.path">
-		<pathelement location="${install.dir}/sshtools-j2ssh-0.0.5-alpha.jar"/>
+		<pathelement location="${install.dir}/sshtools-j2ssh-0.1.2-beta.jar"/>
 		<pathelement location="${install.dir}/log4j-1.2.6.jar"/>
 		<pathelement location="."/>
 	</path>
@@ -73,6 +73,7 @@
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
 				<include name="dockables.xml"/>
+				<include name="services.xml"/>
 				<include name="*.props"/>
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>

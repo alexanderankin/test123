@@ -43,7 +43,7 @@ class SFtpConnection extends ConnectionManager.Connection
 
 		client = new SshClient();
 		client.connect(info.host,info.port,new DialogHostKeyVerification(null));
-		PasswordAuthentication auth = new PasswordAuthentication();
+		PasswordAuthenticationClient auth = new PasswordAuthenticationClient();
 		auth.setUsername(info.user);
 		auth.setPassword(info.password);
 		client.authenticate(auth);
