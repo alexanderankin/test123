@@ -1,0 +1,345 @@
+<?xml version="1.0"?>
+<!-- SQL user's guide -->
+<!-- (C) 2001 Sergey V. Udaltsov -->
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=2:noTabs=true: -->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+"/usr/share/sgml/docbook/xml-dtd-4.1.2/docbookx.dtd">
+<!--
+  VERY BAD SYSTEM ID - but openjade cannot handle URLs:(
+  Should be "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd"
+-->
+<book>
+  <bookinfo>
+    <title>Common Controls user's guide</title>
+
+    <copyright>
+      <year>2000</year>
+
+      <year>2001</year>
+
+      <year>2002</year>
+
+      <holder>Sergey V. Udaltsov</holder>
+    </copyright>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+
+      <para>Permission is granted to copy, distribute and/or
+      modify this document under the terms of the GNU Free
+      Documentation License, Version 1.1 or any later version
+      published by the Free Software Foundation; with no
+      <quote>Invariant Sections</quote>
+
+      ,
+      <quote>Front-Cover Texts</quote>
+
+      or
+      <quote>Back-Cover Texts</quote>
+
+      , each as defined in the license. A copy of the license can
+      be found in the file
+      <filename>COPYING.DOC.txt</filename>
+
+      included with jEdit.</para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="purpose">
+    <title>Purpose</title>
+
+    <para>The plugin provides some set of common controls which
+    can be useful for development of various jEdit plugins. These
+    are the controls
+    <emphasis>not</emphasis>
+
+    included into the jEdit distribution</para>
+
+    <para>At the moment, the following controls are
+    included:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>
+          <ulink url="#HelpfulJTable">HelpfulJTable</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#JMouseComboBox">JMouseComboBox</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#Kappalayout">Kappa and Lambda layout managers</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#PathBuilder">PathBuilder</ulink>
+        </para>
+      </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#PopupList">PopupList</ulink>
+        </para>
+      </listitem>
+    </itemizedlist>
+  </chapter>
+
+  <chapter id="descriptions">
+    <title>Description of controls</title>
+
+    <sect1 id="HelpfulJTable">
+      <title>HelpfulJTable</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Dirk</firstname>
+
+            <surname>Moebius</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>An extension of the default Swing JTable, that passes
+      action key events, displays tooltips and autoresizes
+      columns.</para>
+
+      <para>In detail, the following features are
+      provided:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Fires an
+          <keycode>ActionEvent</keycode>
+
+          ,if
+          <emphasis>Enter</emphasis>
+
+          ,
+          <emphasis>Tab</emphasis>
+
+          or
+          <emphasis>Shift-Tab</emphasis>
+
+          is pressed.</para>
+
+          <para>Therefore,
+          <keycode>addActionListener(ActionListener)</keycode>
+
+          and
+          <keycode>removeActionListener(ActionListener)</keycode>
+
+          methods are provided.</para>
+        </listitem>
+
+        <listitem>
+          <para>Displays tooltips for partially visible text
+          entries.</para>
+
+          <para>To use this feature, you must use a
+          <keycode>TableCellRenderer</keycode>
+
+          that implements the methods
+          <keycode>getToolTipText()</keycode>
+
+          and/or
+          <keycode>getToolTipText(MouseEvent)</keycode>
+
+          , otherwise you won't see any tooltips.</para>
+        </listitem>
+
+        <listitem>
+          <para>utoresizes all columns to the length of its
+          longest content string.</para>
+
+          <para>As a drawback, this
+          <keycode>HelpfulJTable</keycode>
+
+          can only be used to with a String cell renderer,
+          nothing complicated as a JList. (Complex components may
+          be used a CellEditor, however).</para>
+        </listitem>
+      </itemizedlist>
+
+      <para>Only the default constructor of
+      <keycode>JTable</keycode>
+
+      is provided. Please use
+      <keycode>setModel(TableModel)</keycode>
+
+      to set another model.</para>
+    </sect1>
+
+    <sect1 id="JMouseComboBox">
+      <title>JMouseComboBox</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Dirk</firstname>
+
+            <surname>Moebius</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>This is a combo-box that allows listeners to be
+      informed of mouse entered and mouse exited events.</para>
+
+      <para>Note that other mouse events besides MOUSE_ENTERED
+      and MOUSE_EXITED still do
+      <emphasis>not</emphasis>
+
+      get delivered. This is because sending a MOUSE_PRESSED,
+      MOUSE_CLICKED or MOUSE_RELEASED event would cause the combo
+      box popup to be hidden immediately after it has been shown,
+      resulting in that it would not be shown at all.</para>
+
+      <para>This class was created as a fix/workaround for Swing
+      bug #4144505.</para>
+    </sect1>
+
+    <sect1 id="Kappalayout">
+      <title>Kappa and Lambda layout managers</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Dale</firstname>
+
+            <surname>Anson</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <formalpara>
+        <title>URL:</title>
+
+        <para>
+          <ulink url="http://kappalayout.sourceforge.net/">http://kappalayout.sourceforge.net/</ulink>
+        </para>
+      </formalpara>
+
+
+      <para>Advanced layout managers.</para>
+    </sect1>
+
+    <sect1 id="PathBuilder">
+      <title>PathBuilder</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>David</firstname>
+
+            <surname>Taylor</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>Nice panel for composing some path ($PATH or $CLASSPATH).</para>
+    </sect1>
+
+    <sect1 id="PopupList">
+      <title>PopupList</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Calvin</firstname>
+
+            <surname>Yu</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <para>The control is a generic popup component that displays a list of items.</para>
+
+      <para>Here's a list of potential uses for it:</para>
+
+      <itemizedlist>
+        <listitem>
+          <para>Pop up a list of Templates to apply;</para>
+        </listitem>
+
+        <listitem>
+          <para>Pop up a list of dockables to switch between, much like the fast views concept in Eclipse;</para>
+        </listitem>
+
+        <listitem>
+          <para>Pop up a list of open buffers (yet another buffer switching mechanism);</para>
+        </listitem>
+
+        <listitem>
+          <para>Pop up list of auto-completions.</para>
+        </listitem>
+      </itemizedlist>
+    </sect1>
+  </chapter>
+
+  <appendix id="changelog">
+    <title>Change log</title>
+
+    <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.4</title>
+
+          <para />
+        </formalpara>
+
+        <para><ulink url="#PopupList">PopupList</ulink> added</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.3</title>
+
+          <para />
+        </formalpara>
+
+        <para><ulink url="#Kappalayout">Kappa and Lambda layout managers</ulink> added</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.2</title>
+
+          <para />
+        </formalpara>
+
+        <para><ulink url="#PathBuilder">PathBuilder</ulink> package added</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.1</title>
+
+          <para />
+        </formalpara>
+
+        <para>First release.</para>
+      </listitem>
+    </itemizedlist>
+  </appendix>
+</book>
+
+
