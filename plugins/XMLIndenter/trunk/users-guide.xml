@@ -58,6 +58,28 @@
     </para>
   </chapter>
 
+  <chapter id="whitespace">
+    <title>Configuring whitespace preservation options</title>
+    <para>
+      You can configure elements whose enclosing text nodes should have whitespace 
+      preserved by going to:
+           "Plugins->Plugin Options->XML Indenter".
+    </para>
+    <para>
+      On the options pane click the add button and in the dialog enter the qualified name
+      of an element whose whitespace should be preserved.
+    </para>
+    <para>
+      A qualified name consists of the element name plus any namespace prefix if there
+      is one. For example the XML Indenter comes preconfigured with whitespace preservation
+      for elements named xsl:text, text and tspan.
+    </para>
+    <para>      
+      You can remove elements from the list by selecting them
+      and clicking the remove button.
+    </para>
+  </chapter>
+
   <chapter id="contributors">
     <title>Contributors</title>
 
@@ -91,6 +113,15 @@
     <para>
       <emphasis role="bold">From 0.2 to 0.3</emphasis>
       <itemizedlist>
+        <listitem>
+          <para>Added options pane where user can configure a list of elements
+          whose enclosing text nodes should have whitespace preserved.</para>
+        </listitem>
+        <listitem>
+          <para>Attributes that start on a new line will stay on a new line
+          after indenting. They will be indented two levels deeper that the
+          element start tag.</para>
+        </listitem>        
         <listitem>
           <para>Fixed bug where line breaks and tab characters were being
           removed without being replaced with a single space character.</para>

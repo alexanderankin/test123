@@ -147,6 +147,10 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
   protected abstract void indent(int levelAdjustment) throws SAXException;
 
   protected String indentXml(final String xmlString, final Writer outputWriter) throws IOException, SAXException {
+    this.isContinue = true;
+    this.isClosingTag = false;
+    this.isEmptyElement = false;
+    this.isDocType = false;
     this.writer = outputWriter;
     this.xml = xmlString;
     this.chars = xml.toCharArray();
@@ -324,7 +328,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
         i++; // get past equals
 
         while(i < chars.length && Character.isWhitespace(chars[i])) {
-          i++;
+          i++; // get past whitespace before first quote
         }
 
         if(i < chars.length) {
@@ -332,14 +336,14 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
             throw new SAXException("value for attribute " + qName.toString().trim() + " must be in quotes");
           } else {
             quote = chars[i];
-            i++;
+            i++; // get past first quote
           }
         }
 
         while(i < chars.length && chars[i] != quote) {
           if(Character.isWhitespace(chars[i])) {
             if(!isLastSpace) {
-              if(chars[i] == '\r' || chars[i] == '\n' || chars[i] == '\t') {
+              if(chars[i] == '\f' || chars[i] == '\n' || chars[i] == '\r' || chars[i] == '\t' || chars[i] == ' ') {
                 value.append(' ');
               }
               isLastSpace = true;

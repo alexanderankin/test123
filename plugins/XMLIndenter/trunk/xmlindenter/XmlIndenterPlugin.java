@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 package xmlindenter;
 
 import org.gjt.sp.jedit.EditPlugin;
@@ -30,6 +30,8 @@ import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  * EditPlugin implementation for the XML Indenter plugin.
@@ -37,6 +39,22 @@ import java.text.MessageFormat;
  * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
 public class XmlIndenterPlugin extends EditPlugin {
+
+  private static final String XSL_TEXT_ELEMENT = "xsl:text";
+  private static final String SVG_TEXT_ELEMENT = "text";
+  private static final String SVG_TSPAN_ELEMENT = "tspan";
+
+  private static final IndentingTransformerImpl TRANSFORMER = new IndentingTransformerImpl();
+
+  public void start() {
+    String modified = jEdit.getProperty("xmlindenter.preserve-whitespace-element.modified");
+    boolean settingModified = (modified != null);
+    if(!settingModified) {
+      jEdit.setProperty("xmlindenter.preserve-whitespace-element.0", XSL_TEXT_ELEMENT);
+      jEdit.setProperty("xmlindenter.preserve-whitespace-element.1", SVG_TEXT_ELEMENT);
+      jEdit.setProperty("xmlindenter.preserve-whitespace-element.2", SVG_TSPAN_ELEMENT);
+    }
+  }
 
   /**
    * Displays a user-friendly error message to go with the supplied exception.
@@ -121,11 +139,24 @@ public class XmlIndenterPlugin extends EditPlugin {
 
 
   private static String indent(String inputString, int indentAmount, boolean indentWithTabs) throws Exception {
+    List preserveWhitespaceList = getEnumeratedProperty("xmlindenter.preserve-whitespace-element");
     StringWriter writer = new StringWriter();
-    IndentingTransformerImpl transformer = new IndentingTransformerImpl(indentAmount, indentWithTabs);
-    transformer.indentXml(inputString, writer);
+    Log.log(Log.ERROR, XmlIndenterPlugin.class, "" + preserveWhitespaceList.size());
+    TRANSFORMER.indentXml(inputString, writer, indentAmount, indentWithTabs, preserveWhitespaceList);
     String resultString = writer.toString();
 //    return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
     return resultString;
   }
+
+  public static List getEnumeratedProperty(String key) {
+    List values = new ArrayList();
+    int i = 0;
+    String value;
+    while((value = jEdit.getProperty(key+"."+i)) != null) {
+      values.add(value);
+      i++;
+    }
+    return values;
+  }
+
 }
