@@ -97,9 +97,9 @@ public class SearchAction extends Action {
 	 *	Implements a SearchFileSet representing files that are children of a given
 	 *	node and its children.
 	 *
-	 *	@author
+	 *	@since	PV 2.1.0 (was private before)
 	 */
-	private static class NodeFileSet extends DirectoryListSet {
+	public static class NodeFileSet extends DirectoryListSet {
 
 		//{{{ Private Members
 		private VPTNode node;
