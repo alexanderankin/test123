@@ -21,6 +21,7 @@
 package xslt;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Frame;
 import java.awt.GridBagConstraints;
@@ -28,98 +29,178 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileReader;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 import java.text.MessageFormat;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import org.apache.xalan.processor.TransformerFactoryImpl;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.BufferUpdate;
 
 /**
  * GUI for performing XSL Transformations. 
  */
-public class XSLTProcessor extends JPanel implements EBComponent {
+public class XSLTProcessor extends JPanel {
 
   public XSLTProcessor (View theView) {
     super(new GridBagLayout());
     this.view = theView;
-    EditBus.addToBus(this);
 
-    Insets insets = new Insets(4, 4, 4, 4);
+    // initialize components
 
-    GridBagConstraints gbc = new GridBagConstraints();
-    gbc.anchor = GridBagConstraints.WEST;
-    gbc.insets = insets;
-    add(new JLabel(jEdit.getProperty("XSLTProcessor.source.label")), gbc);
+    sourceDocumentTextField = new JTextField();
+    sourceDocumentTextField.setEditable(false);
+    String lastSource = jEdit.getProperty("XSLTProcessor.lastSource");
+    if (lastSource == null) {
+      sourceDocumentTextField.setText(jEdit.getProperty("XSLTProcessor.source.pleaseSelect"));
+    } else {
+      sourceDocumentTextField.setText(lastSource);
+    }
 
-    gbc = new GridBagConstraints();
-    gbc.weightx = 1;
-    gbc.fill = GridBagConstraints.HORIZONTAL;
-    gbc.insets = insets;
-    sourceModel = new DefaultComboBoxModel(jEdit.getBuffers());
-    add(new JComboBox(sourceModel), gbc);
+    selectButton = new JButton(jEdit.getProperty("XSLTProcessor.select.button"));
+    selectButton.addActionListener(new ActionListener() {
+      public void actionPerformed (ActionEvent e) {
+        String[] selections = GUIUtilities.showVFSFileDialog(view, null, JFileChooser.OPEN_DIALOG, false);
+        if (selections != null) {
+          sourceDocumentTextField.setText(selections[0]);
+          jEdit.setProperty("XSLTProcessor.lastSource", selections[0]);
+        }
+        Container topLevelAncestor = XSLTProcessor.this.getTopLevelAncestor();
+        if (topLevelAncestor instanceof JFrame) {
+          ((JFrame)topLevelAncestor).toFront();
+        }
+      }
+    });
 
-    gbc = new GridBagConstraints();
-    gbc.gridy = 1;
-    gbc.anchor = GridBagConstraints.NORTHWEST;
-    gbc.insets = insets;
-    add(new JLabel(jEdit.getProperty("XSLTProcessor.stylesheets.label")), gbc);
+    stylesheetsListModel = new DefaultListModel();
+    List values = PropertyUtil.getEnumeratedProperty("XSLTProcessor.lastStylesheet", jEdit.getProperties());
+    Iterator it = values.iterator();
+    while (it.hasNext()) { stylesheetsListModel.addElement(it.next()); }
+    stylesheetsList = new JList(stylesheetsListModel);
+    stylesheetsList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+    stylesheetsList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged (ListSelectionEvent e) {
+        boolean selectionExists = stylesheetsList.getSelectedIndex() != -1;
+        deleteButton.setEnabled(selectionExists);
+        upButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
+          && (stylesheetsList.getSelectedIndex() != 0));
+        downButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
+          && (stylesheetsList.getSelectedIndex() < stylesheetsListModel.getSize()-1));
+      }
+    });
 
-    gbc = new GridBagConstraints();
-    gbc.gridy = 1;
-    gbc.weightx = gbc.weighty = 1;
-    gbc.fill = GridBagConstraints.BOTH;
-    gbc.insets = insets;
-    stylesheetsPanel = new StylesheetsPanel();
-    add(stylesheetsPanel, gbc);
+    addButton = new JButton(jEdit.getProperty("XSLTProcessor.add.button"));
+    addButton.addActionListener(new ActionListener() {
+      public void actionPerformed (ActionEvent e) {
+        String[] selections = GUIUtilities.showVFSFileDialog(view, null, JFileChooser.OPEN_DIALOG, false);
+        if (selections != null) {
+          stylesheetsListModel.addElement(selections[0]);
+          transformButton.setEnabled(true);
+          if ((stylesheetsList.getSelectedIndex() != -1)
+            && (stylesheetsListModel.getSize() > 1)) {
+            downButton.setEnabled(true);
+          }
+          PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet", 
+            Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
+        }
+        Container topLevelAncestor = XSLTProcessor.this.getTopLevelAncestor();
+        if (topLevelAncestor instanceof JFrame) {
+          ((JFrame)topLevelAncestor).toFront();
+        }
+      }
+    });
 
-    gbc = new GridBagConstraints();
-    gbc.gridy = 2;
-    gbc.gridwidth = 2;
-    gbc.anchor = GridBagConstraints.CENTER;
-    gbc.insets = insets;
+    deleteButton = new JButton(jEdit.getProperty("XSLTProcessor.delete.button"));
+    deleteButton.addActionListener(new ActionListener() {
+      public void actionPerformed (ActionEvent e) {
+        stylesheetsListModel.remove(stylesheetsList.getSelectedIndex());
+        if (stylesheetsListModel.getSize() > 0) {
+          stylesheetsList.setSelectedIndex(0);
+        }
+        else { 
+          deleteButton.setEnabled(false);
+          transformButton.setEnabled(false);
+        }
+        PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet", 
+          Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
+      }
+    });
+    deleteButton.setEnabled(false);
+
+    upButton = new JButton(jEdit.getProperty("XSLTProcessor.up.button"));
+    upButton.addActionListener(new ActionListener() {
+      public void actionPerformed (ActionEvent e) {
+        int selectedIndex = stylesheetsList.getSelectedIndex();
+        Object selected = stylesheetsListModel.get(selectedIndex);
+        stylesheetsListModel.remove(selectedIndex);
+        stylesheetsListModel.insertElementAt(selected, selectedIndex-1);
+        stylesheetsList.setSelectedIndex(selectedIndex-1);
+        PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet", 
+          Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
+      }
+    });
+    upButton.setEnabled(false);
+
+    downButton = new JButton(jEdit.getProperty("XSLTProcessor.down.button"));
+    downButton.addActionListener(new ActionListener() {
+      public void actionPerformed (ActionEvent e) {
+        int selectedIndex = stylesheetsList.getSelectedIndex();
+        Object selected = stylesheetsListModel.get(selectedIndex);
+        stylesheetsListModel.remove(selectedIndex);
+        stylesheetsListModel.insertElementAt(selected, selectedIndex+1);
+        stylesheetsList.setSelectedIndex(selectedIndex+1);
+        PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet", 
+          Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
+      }
+    });
+    downButton.setEnabled(false);
+
     transformButton = new JButton(jEdit.getProperty("XSLTProcessor.transform.button"));
     transformButton.addActionListener(new ActionListener() {
       public void actionPerformed (ActionEvent evt) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        Buffer stylesheetBuffer = null;
+        String docFileName = null;
+        String stylesheetFileName = null;
         try {
           TransformerFactory transformerFactory = new TransformerFactoryImpl();
-          Buffer docBuffer = (Buffer)sourceModel.getSelectedItem();
-          String docBeingTransformed = docBuffer.getText(0, docBuffer.getLength());
-          for (int i=0; i < stylesheetsPanel.stylesheetsList.getModel().getSize(); i++) {
-            stylesheetBuffer = (Buffer)stylesheetsPanel.stylesheetsList.getModel().getElementAt(i);
-            String stylesheetText = stylesheetBuffer.getText(0, stylesheetBuffer.getLength());
-            StreamSource stylesheetSource = new StreamSource(new StringReader(stylesheetText));
-            stylesheetSource.setSystemId(stylesheetBuffer.getFile().getPath());
+          docFileName = (String)sourceDocumentTextField.getText();
+          String docBeingTransformed = null;
+          for (int i=0; i < stylesheetsListModel.getSize(); i++) {
+            stylesheetFileName = (String)stylesheetsListModel.getElementAt(i);
+            StreamSource stylesheetSource = new StreamSource(new FileReader(stylesheetFileName));
+            stylesheetSource.setSystemId(stylesheetFileName);
             Templates templates = transformerFactory.newTemplates(stylesheetSource);
             Transformer transformer = templates.newTransformer();
-            StreamSource docSource = new StreamSource(new StringReader(docBeingTransformed));
-            docSource.setSystemId(docBuffer.getFile().getPath());
+            StreamSource docSource = (docBeingTransformed == null)
+              ? new StreamSource(new FileReader(docFileName))
+              : new StreamSource(new StringReader(docBeingTransformed));
+            docSource.setSystemId(docFileName);
             StringWriter stringWriter = new StringWriter();
             StreamResult result = new StreamResult(stringWriter);
             transformer.transform(docSource, result);
@@ -129,239 +210,115 @@ public class XSLTProcessor extends JPanel implements EBComponent {
           newBuffer.insert(0, docBeingTransformed);
           setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         }
-        catch (TransformerException e) {
+        catch (Exception e) {
           setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-          if (stylesheetBuffer == null) {
+          if (stylesheetFileName == null) {
             XSLTPlugin.processException(e, jEdit.getProperty("XSLTProcessor.error.preProcessProblem"), XSLTProcessor.this);
           }
           else {
             String msg = MessageFormat.format(jEdit.getProperty("XSLTProcessor.error.stylesheetProblem"),
-              new Object[]{stylesheetBuffer.getName()});
+              new Object[]{stylesheetFileName});
             XSLTPlugin.processException(e, msg, XSLTProcessor.this);
           }
         }
       }
     });
-    transformButton.setEnabled(false);
+    transformButton.setEnabled(stylesheetsListModel.size() > 0);
+
+    // perform layout 
+
+    Insets insets = new Insets(4, 4, 4, 4);
+
+    GridBagConstraints gbc = new GridBagConstraints();
+    gbc.anchor = GridBagConstraints.WEST;
+    gbc.insets = insets;
+    add(new JLabel(jEdit.getProperty("XSLTProcessor.source.label")), gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.weightx = 5;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.insets = insets;
+    add(sourceDocumentTextField, gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.weightx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    gbc.insets = insets;
+    add(selectButton, gbc);
+    
+    gbc = new GridBagConstraints();
+    gbc.gridy = 1;
+    gbc.gridheight = 5;
+    gbc.anchor = GridBagConstraints.NORTHWEST;
+    gbc.insets = insets;
+    add(new JLabel(jEdit.getProperty("XSLTProcessor.stylesheets.label")), gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.gridy = 1;
+    gbc.gridheight = 5;
+    gbc.weightx = gbc.weighty = 5;
+    gbc.fill = GridBagConstraints.BOTH;
+    gbc.insets = insets;
+    add(new JScrollPane(stylesheetsList), gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.gridy = 1;
+    gbc.insets = new Insets(4, 4, 0, 4);
+    gbc.weightx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    add(addButton, gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.gridy = 2;
+    gbc.insets = new Insets(0, 4, 4, 4);
+    gbc.weightx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    add(deleteButton, gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.gridy = 3;
+    gbc.insets = new Insets(4, 4, 0, 4);
+    gbc.weightx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    add(upButton, gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.gridy = 4;
+    gbc.insets = new Insets(0, 4, 4, 4);
+    gbc.weightx = 1;
+    gbc.fill = GridBagConstraints.HORIZONTAL;
+    add(downButton, gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.gridy = 5;
+    gbc.gridheight = 1;
+    gbc.fill = GridBagConstraints.VERTICAL;
+    gbc.insets = insets;
+    add(new JPanel(), gbc);
+
+    gbc = new GridBagConstraints();
+    gbc.gridx = 1;
+    gbc.gridy = 6;
+    gbc.insets = insets;
+    gbc.anchor = GridBagConstraints.CENTER;
     add(transformButton, gbc);
   }
 
+  /**
+   * @return "Transform" button
+   */
+  public JButton getTransformButton () { return transformButton; }
+
   private View view;
-  private DefaultComboBoxModel sourceModel;
-  private StylesheetsPanel stylesheetsPanel;
+  private JTextField sourceDocumentTextField;
+  private JButton selectButton;
+  private DefaultListModel stylesheetsListModel;
+  private JList stylesheetsList;
+  private JButton addButton;
+  private JButton deleteButton;
+  private JButton upButton;
+  private JButton downButton;
   private JButton transformButton;
-
-  /**
-   * @see org.gjt.sp.jedit.EBComponent#handleMessage(EBMessage)
-   */
-  public void handleMessage (EBMessage msg) {
-    if (msg instanceof BufferUpdate) {
-      BufferUpdate bufferUpdate = (BufferUpdate)msg;
-      if (BufferUpdate.CLOSED == bufferUpdate.getWhat()) {
-        sourceModel.removeElement(bufferUpdate.getBuffer());
-        stylesheetsPanel.buttonPanel.addStylesheetDialog.
-          addStylesheetComboBoxModel.removeElement(bufferUpdate.getBuffer());
-      }
-      else if (BufferUpdate.LOADED == bufferUpdate.getWhat()) {
-        Buffer buffer = bufferUpdate.getBuffer();
-        if (sourceModel.getIndexOf(buffer) == -1) {
-          sourceModel.addElement(buffer);
-        }
-        if (stylesheetsPanel.buttonPanel.addStylesheetDialog.
-          addStylesheetComboBoxModel.getIndexOf(buffer) == -1) {
-          stylesheetsPanel.buttonPanel.addStylesheetDialog.
-            addStylesheetComboBoxModel.addElement(bufferUpdate.getBuffer());
-        }
-      }
-    }
-  }
-
-  /**
-   * Panel housing the "Stylesheets" list & accompanying buttons
-   */
-  class StylesheetsPanel extends JPanel {
-    StylesheetsPanel () {
-      super(new GridBagLayout());
-
-      GridBagConstraints gbc = new GridBagConstraints();
-      gbc.weightx = gbc.weighty = 1;
-      gbc.fill = GridBagConstraints.BOTH;
-      stylesheetsListModel = new DefaultListModel();
-      stylesheetsList = new JList(stylesheetsListModel);
-      stylesheetsList.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-      add(new JScrollPane(stylesheetsList), gbc);
-
-      gbc = new GridBagConstraints();
-      gbc.weighty = 1;
-      gbc.fill = GridBagConstraints.VERTICAL;
-      gbc.insets = new Insets(0, 4, 0, 0);
-      buttonPanel = new ButtonPanel();
-      add(buttonPanel, gbc);
-    }
-
-    private JList stylesheetsList;
-    private DefaultListModel stylesheetsListModel;
-    private ButtonPanel buttonPanel;
-
-    /**
-     * Panel housing the "Add" & "Delete" buttons which accompany the
-     * stylesheets list
-     */
-    class ButtonPanel extends JPanel {
-      ButtonPanel () {
-        super(new GridBagLayout());
-
-        addStylesheetDialog = new AddStylesheetDialog();
-        addStylesheetDialog.pack();
-        addButton = new JButton(jEdit.getProperty("XSLTProcessor.add.button"));
-        addButton.addActionListener(new ActionListener() {
-          public void actionPerformed (ActionEvent e) {
-            addStylesheetDialog.setLocationRelativeTo(XSLTProcessor.this);
-            addStylesheetDialog.show();
-          }
-        });
-        deleteButton = new JButton(jEdit.getProperty("XSLTProcessor.delete.button"));
-        deleteButton.addActionListener(new ActionListener() {
-          public void actionPerformed (ActionEvent e) {
-            stylesheetsListModel.remove(stylesheetsList.getSelectedIndex());
-            if (stylesheetsListModel.getSize() > 0) {
-              stylesheetsList.setSelectedIndex(0);
-            }
-            else { 
-              deleteButton.setEnabled(false);
-              transformButton.setEnabled(false);
-            }
-          }
-        });
-        deleteButton.setEnabled(false);
-        upButton = new JButton(jEdit.getProperty("XSLTProcessor.up.button"));
-        upButton.addActionListener(new ActionListener() {
-          public void actionPerformed (ActionEvent e) {
-            int selectedIndex = stylesheetsList.getSelectedIndex();
-            Object selected = stylesheetsListModel.get(selectedIndex);
-            stylesheetsListModel.remove(selectedIndex);
-            stylesheetsListModel.insertElementAt(selected, selectedIndex-1);
-            stylesheetsList.setSelectedIndex(selectedIndex-1);
-          }
-        });
-        upButton.setEnabled(false);
-        downButton = new JButton(jEdit.getProperty("XSLTProcessor.down.button"));
-        downButton.addActionListener(new ActionListener() {
-          public void actionPerformed (ActionEvent e) {
-            int selectedIndex = stylesheetsList.getSelectedIndex();
-            Object selected = stylesheetsListModel.get(selectedIndex);
-            stylesheetsListModel.remove(selectedIndex);
-            stylesheetsListModel.insertElementAt(selected, selectedIndex+1);
-            stylesheetsList.setSelectedIndex(selectedIndex+1);
-          }
-        });
-        downButton.setEnabled(false);
-
-        stylesheetsList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
-          public void valueChanged (ListSelectionEvent e) {
-            boolean selectionExists = stylesheetsList.getSelectedIndex() != -1;
-            deleteButton.setEnabled(selectionExists);
-            upButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
-              && (stylesheetsList.getSelectedIndex() != 0));
-            downButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
-              && (stylesheetsList.getSelectedIndex() < stylesheetsListModel.getSize()-1));
-          }
-        });
-
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(addButton, gbc);
-
-        gbc = new GridBagConstraints();
-        gbc.gridy = 1;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(deleteButton, gbc);
-  
-        gbc = new GridBagConstraints();
-        gbc.gridy = 2;
-        gbc.weightx = 1;
-        gbc.insets = new Insets(4, 0, 0, 0);
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(upButton, gbc);
-
-        gbc = new GridBagConstraints();
-        gbc.gridy = 3;
-        gbc.weightx = 1;
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        add(downButton, gbc);
-
-        gbc = new GridBagConstraints();
-        gbc.gridy = 4;
-        gbc.weighty = 1;
-        gbc.fill = GridBagConstraints.VERTICAL;
-        add(new JPanel(), gbc);
-      }
-
-      private JButton addButton;
-      private JButton deleteButton;
-      private JButton upButton;
-      private JButton downButton;
-      private AddStylesheetDialog addStylesheetDialog;
-
-      /**
-       * Dialog displayed when the "Add" button is pressed.
-       */
-      class AddStylesheetDialog extends JDialog {
-        AddStylesheetDialog () {
-          setTitle(jEdit.getProperty("XSLTProcessor.addStylesheet.title"));
-          JPanel contentPane = (JPanel)getContentPane();
-          contentPane.setLayout(new GridBagLayout());
-
-          Insets insets = new Insets(4, 4, 4, 4);
-
-          GridBagConstraints gbc = new GridBagConstraints();
-          gbc.weightx = 1;
-          gbc.fill = GridBagConstraints.HORIZONTAL;
-          gbc.insets = insets;
-          addStylesheetComboBoxModel = new DefaultComboBoxModel(jEdit.getBuffers());
-          contentPane.add(new JComboBox(addStylesheetComboBoxModel), gbc);
-
-          JPanel buttons = new JPanel();
-
-          gbc = new GridBagConstraints();
-          JButton okButton = new JButton(jEdit.getProperty("XSLTProcessor.ok.button"));
-          okButton.setDefaultCapable(true);
-          okButton.addActionListener(new ActionListener() {
-            public void actionPerformed (ActionEvent e) {
-              stylesheetsListModel.addElement(addStylesheetComboBoxModel.getSelectedItem());
-              transformButton.setEnabled(true);
-              if ((stylesheetsList.getSelectedIndex() != -1)
-                && (stylesheetsListModel.getSize() > 1)) {
-                downButton.setEnabled(true);
-              }
-              AddStylesheetDialog.this.hide();
-            }
-          });
-          getRootPane().setDefaultButton(okButton);
-          buttons.add(okButton, gbc);
-
-          gbc = new GridBagConstraints();
-          JButton cancelButton = new JButton(jEdit.getProperty("XSLTProcessor.cancel.button"));
-          cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed (ActionEvent e) {
-              AddStylesheetDialog.this.hide();
-            }
-          });
-          buttons.add(cancelButton, gbc);
-
-          gbc = new GridBagConstraints();
-          gbc.gridy = 1;
-          gbc.anchor = GridBagConstraints.CENTER;
-          contentPane.add(buttons, gbc);
-        }
-        private DefaultComboBoxModel addStylesheetComboBoxModel;
-      }
-
-    }
-
-  }
 
 }
 
