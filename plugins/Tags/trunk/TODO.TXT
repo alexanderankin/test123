@@ -1,0 +1,124 @@
+Initial beta release
+--------------------
+
+- Get SourceForge account, and commit plugin to jEdit project.
+
+- Get and install JDK 1.1 for backwards compatibility.
+
+- Matching tag stuff.  See vim...
+   - ExuberantCTags collision strings...
+      - Make choose tag list a part of the parser, so that each parser can have
+        its own list item renderer.
+
+
+Before 1.0
+----------
+- Use JOptionPane.showMessage() as in Misc/Show_Free_Memory.bsh
+
+- When tagging from enter tag dialog, put up a collision dialog instead of
+  the collision list.
+
+
+- Ability to set num of columns for filename
+
+- From JEditTextArea.java tagging on getLineStartOffset() doesn't give me
+  ScrollLayout.  RE tester seems to pick it up though...
+
+- Tagging on buffer.shiftIndentLeft() in JEditTextArea.java takes a long
+  time to get possible tag search names.  Can this be shortened?  What about
+  an escape?  Perhaps we should only have in our search pattern the stuff for
+  variables?
+   
+- Use properties to store values
+   - better naming scheme
+      - tags.options.something.label
+      - tags.options.something.title
+      
+      - tags.options.open-new-view=false
+      - tags.enter-tag.title
+      
+      - tags.ok.label
+      - tags.cancel.label
+   
+   - TagsPlugin.getOptionString() to TagsPlugin.getString()
+   
+- Tag properties/manager dialog needs to go into Global Options...  Also remove
+  as stand alone dialog? 
+   - tag file dialog
+      - Probably should use AbstractOptionPane as in
+        options/ToolBarOptionPane.java
+
+- Rename Tags.manageTagFiles() to Tags.tagOptions() (or something like that).
+
+- Escape doesn't work in "Enter Tag" dialog...
+       
+- Documentation
+
+Version > initial public release version
+----------------------------------------
+- Ability to switch to a different set of tag files easily (shouldn't have to
+  remove and add a whole new set).  The catagory stuff is a step in this
+  direction.
+
+- handle this.something specially (i.e. turn it into ClassName.something)
+
+- ETagsParser.java?
+
+- History panel in Enter Tag dialog.
+        
+- Use properties to store values
+   - Size and position of Tag To: dialog
+   - previous value of "open new view" in Tag To: dialog.
+   - Previous loaded tag files.
+  
+- Possibly recursively search the parent directory for a tags file.  (DIRECT 
+  FEEDBACK).  
+
+- Progress dialog with the ability to stop if tagging is taking more than 1
+  second... 
+
+- Tag stack
+   - Ability to view tag stack and select to goto item...
+      - Netscape style toolbar back and forward buttons?
+   - View local tag stack...
+      - This should probably have a hash table based on the View?
+   - Perhaps if we open up another window when tagging we should add to tag
+     stack.  Perhaps it should behave as Netscape?  Is that bad?
+
+- When searching file, check func at end of file to see if we should even be
+  checking this file...
+
+- Ability to goto the next matching tag  
+  
+- TagsOO
+   - Extend past Java
+   
+- Ability for macros to register tagging routine.  This would be helpful in
+  implementing notes...
+  
+- Perhaps drop down shouldn't display possible tags, but all found items in tag 
+  files?  This would require looking through all lines in the tag file.  My
+  company's flaship product that I work on has 6 tag files totalling over 108
+  MB worth of data to search.  I may keep it the way it currently works. 
+  
+Limitations/Known Bugs
+----------------------  
+- Has only been tested in C and Java.
+- Currently when using exuberant c tags we are not using any of the extra
+  tag info.  I'm not sure what we would want to use it for.  It doesn't seem
+  as if vi or vim use this information (NOTE:  I only did a quick 5 min.
+  check).
+- Tag files *MUST* be sorted.  Else, the tag will probably never be found
+  b/c we are using a binary searching mechanism. 
+- Doesn't handle function overloading.  I'm not sure that this can be
+  overcome, since the tags file (that ctags produces) skips multiple
+  tags, and the whole function signature isn't in the tag file.  Perhaps this
+  can be controlled with a flag.  We could always include duplicates, and let
+  the unimplemented feature of going to the next matching tag do the work...
+- OO is only for Java for now
+- Bachward searching patterns (?...?) are not supported.
+- Currently you can't mix types of tag files.  This really only comes into play
+  when mixing c tag files with exuberant c tag files with --format=2.  If one
+  really wants to do this, setting the tag parser to exuberant c will do so...
+- On Sun Java, Enter tag dialog has shortcut character in input panel.
+  

@@ -1,0 +1,63 @@
+INTRODUCTION
+------------
+
+The TagsPlugin for use with the jEdit text editor.  Excerpt from the Exuberant
+C Tags man page: 
+
+       Tag index files are supported by numerous  editors,  which
+       allow the user to locate the object associated with a name
+       appearing in a source file and jump to the file  and  line
+       which  defines  the name.
+
+You can find the Exuberant C Tags program at:
+
+   http://ctags.sourceforge.net
+
+You can also use the standard UNIX ctags program, or the GNU C Tags program,
+but you'll find that Exuberant C Tags provides a bit more info (or too much
+depending on how much of a minimalist you are).
+       
+HOW TO USE
+----------
+
+From the Plugin > Tags menu:
+
+  Follow Tag:  Find the tag under the cursor (or optionally, the selected 
+  text).  If there is a tag collision, a drop down list will allow you to
+  choose among the collisions.
+  
+  Follow Tag (New View):  Find the tag under the cursor in a new view.
+  
+  Follow Tag...:  A dialog will appear where you can enter a tag name.
+  
+  Pop Tag:  Return to the location previous to following a tag. 
+  
+  Tagging Options:  Use this dialog to set the various options for tagging.
+     Tag file type:  The type of tag files used.  This will affect the
+     searching of the tag files.  It should be set based on the program used 
+     to generate the tag files 
+
+     Search tag file in current buffer's directory first:  If in the current
+     buffer's directory there is a tag file, then look in this file for the
+     tag first.
+     
+     Search all tag files:  By default, the first matching tag found will stop
+     the search.  Using this option will allow all tag files to be searched.
+     
+     Tag search files:  The set of tag files for searching.  The order of the
+     list will be the order of the search.
+
+SUGGESTED KEY BINDINGS
+----------------------
+
+Here are some suggested key bindings.  These do stomp on some JEdit key
+bindings, but I find that they work well.  They are based on the vi (and it's
+clones) key bindings for tagging.
+
+Follow Tag:     Ctrl + ]
+Follow Tag...:  Ctrl + SHIFT + ]     
+Pop Tag:        Ctrl + T
+
+Copyright (c) 2001 Kenrick Drew
+kdrew@earthlink.net
+
