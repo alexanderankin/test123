@@ -51,9 +51,9 @@ import javax.swing.JPanel;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.jEdit;
-
+import org.gjt.sp.util.*;
 
 public class CompilationMacros {
 
@@ -187,11 +187,10 @@ public class CompilationMacros {
         runCommand(view, texRoot, command, detach);
     }
 
-    private static void runCommand(View view, String dir, String command, 
-                                   boolean detach) {
-
-        Console console = (Console)view.getDockableWindowManager().getDockable(
-                                      "console");
+    private static void runCommand(View view, String dir, String command, boolean detach) {
+        DockableWindowManager manager = view.getDockableWindowManager();
+        manager.showDockableWindow("console");
+        Console console = (Console) manager.getDockable("console");
         Shell _shell = Shell.getShell("System");
         console.setShell(_shell);
         console.run(_shell, console, "%kill");
