@@ -103,7 +103,8 @@ public class appLauncher {
         //props.save(outprops,"ext links");
     }
     
-    private void launchApp(String ext,String sFileName) {
+	// was private, but gets called from TreeContextMenuListener.java::LaunchExternal()
+    public void launchApp(String ext,String sFileName) {
         String executable = (String)appCol.get(ext);
         
             if (appCol.containsKey(ext)) {

@@ -81,6 +81,9 @@
     which shows the files as if in a file manager, organised in directories. The
     "Files" view, which shows all the project's files in a flat list. And the
     "Working Files", which shows the files currently opened in jEdit.
+	The files in the different views are colored according to the patterns and
+	colors you have choosen for the filesystem-browser. Furthermore currently
+	open files are highlighted by underlining their names.
     </para>
     
     <para>
