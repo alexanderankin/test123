@@ -997,7 +997,7 @@ Another format: 08-MAY-2002
    <programlisting>
 #beanshell ()
     context.put("filename", buffer.getName());
-    context.put("author", System.getProperty("user"));
+    context.put("author", System.getProperty("user.name"));
 #end
 </programlisting>
    </example>
