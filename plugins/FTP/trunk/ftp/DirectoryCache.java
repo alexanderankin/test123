@@ -141,13 +141,15 @@ public class DirectoryCache
 
 		synchronized(lock)
 		{
-			String path = (String)urlToCacheFileHash.remove(url);
-			if(path == null)
-				return;
-			else
+			Enumeration enum = urlToCacheFileHash.keys();
+			while(enum.hasMoreElements())
 			{
-				Log.log(Log.DEBUG,DirectoryCache.class,"Deleting " + path);
-				new File(path).delete();
+				String path = (String)enum.nextElement();
+				if(path.startsWith(url))
+				{
+					Log.log(Log.DEBUG,DirectoryCache.class,"Deleting " + path);
+					new File((String)urlToCacheFileHash.remove(path)).delete();
+				}
 			}
 		}
 	}

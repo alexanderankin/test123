@@ -83,8 +83,23 @@ To force jEdit to forget all passwords while it is running, use the
    requires jEdit 4.0pre3.</para>
 
    <itemizedlist>
+
     <listitem><para>
      Now uses jEdit 4.0pre3 I/O error reporting API.
+    </para></listitem>
+
+    <listitem><para>
+     <guibutton>Reload</guibutton> button in file system browser did not
+     flush subdirectories of the current directory from the cache.
+    </para></listitem>
+
+    <listitem><para>
+     You can now use @ in user names (some ISPs require this).
+    </para></listitem>
+
+    <listitem><para>
+     File listings from Microsoft FTP servers in DOS listing mode are now
+     parsed.
     </para></listitem>
 
  </itemizedlist>
