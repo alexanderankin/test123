@@ -42,7 +42,7 @@ public class AntFarmOptionPane
 	private JButton _pickPath;
 	private JButton _buildClasspath;
 	private JTextField _classPath;
-
+	private JComboBox _loggingLevel;
 
 	public AntFarmOptionPane()
 	{
@@ -152,6 +152,17 @@ public class AntFarmOptionPane
 			AntFarmPlugin.OPTION_PREFIX + "choose-antpath" ) );
 		_pickPath.addActionListener( this );
 
+		JPanel levelPanel = new JPanel();
+		levelPanel.setLayout(new FlowLayout());
+		levelPanel.add(new JLabel(jEdit.getProperty(
+			AntFarmPlugin.OPTION_PREFIX + "logging-level-label"))
+		);
+		_loggingLevel = new JComboBox(LogLevelEnum.getAll());
+		_loggingLevel.setSelectedItem(LogLevelEnum.getLogLevel(jEdit.getIntegerProperty(
+			AntFarmPlugin.OPTION_PREFIX + "logging-level", LogLevelEnum.INFO.getValue()))
+		);
+		levelPanel.add(_loggingLevel);
+		
 		JPanel pathPanel = new JPanel();
 		pathPanel.add( _command );
 		pathPanel.add( _pickPath );
@@ -174,6 +185,7 @@ public class AntFarmOptionPane
 		addComponent( _useEmacsOutput );
 		addComponent( _saveOnExecute );
 		addComponent( _supressSubTargets );
+		addComponent( levelPanel);
 	}
 
 
@@ -194,7 +206,12 @@ public class AntFarmOptionPane
 			 );
 		jEdit.setBooleanProperty(
 			AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets", _supressSubTargets.isSelected()
-			 );
+			);
+			 
+		jEdit.setIntegerProperty( 
+			AntFarmPlugin.OPTION_PREFIX + "logging-level",
+			((LogLevelEnum)_loggingLevel.getSelectedItem()).getValue()
+			);
 	}
 
 

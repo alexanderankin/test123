@@ -106,6 +106,7 @@ options.antfarm.table.value-label=Value
 options.antfarm.classpath-label=Enter the classpath to use when invoking Ant.
 options.antfarm.save-on-execute-label=Save all buffers before running a target.
 options.antfarm.supress-sub-targets-label=Hide targets that do not have a description attribute.
+options.antfarm.logging-level-label=Select Ant logging level.
 
 # Message dialogs
 tools-jar-missing.title=AntFarm cannot locate tools.jar
