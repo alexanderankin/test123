@@ -45,6 +45,11 @@
 
     <para>If necessary, the background image is tiled to fill the entire text area.</para>
 
+    <para>
+    It's also possible to set a &quot;tinted glass&quot; effect thanks to the blend
+    options.
+    </para>
+
     <para>Background requires:</para>
 
     <itemizedlist>
@@ -59,8 +64,8 @@
     <title>Usage</title>
 
     <para>
-    The background image can be configured in the Background option pane in
-    the jEdit global options:
+    The background image and blend options can be configured
+    in the Background option pane in the jEdit global options:
     <guimenu>Utilities&gt;</guimenu>
     <guimenuitem>Global Options...&gt;</guimenuitem>
     <guimenu>Plugin Options&gt;</guimenu>
@@ -69,6 +74,14 @@
 
     <para>
     The accepted image formats include GIF, JPEG and PNG (JDK 1.3).
+    </para>
+
+    <para>
+    The blend options produce a &quot;tinted glass&quot; effect over
+    the background image.
+    If you check the <guimenuitem>Use color blending</guimenuitem> option,
+    you'll have the possibility to set <guimenuitem>Blend color</guimenuitem>
+    and the <guimenuitem>Color opacity</guimenuitem>.
     </para>
 
     <para>
