@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -68,13 +68,14 @@ public class ErrorList extends JPanel implements EBComponent,
 		for(int i = 0; i < sources.length; i++)
 		{
 			ErrorSource source = sources[i];
-			ErrorSource.Error[] errors = source.getAllErrors();
-			if(errors == null)
-				continue;
-			for(int j = 0; j < errors.length; j++)
-			{
-				addError(errors[j]);
-			}
+			addErrorSource(source);
+		}
+
+		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			expandPath[1] = errorRoot.getChildAt(i);
+			errorTree.expandPath(new TreePath(expandPath));
 		}
 
 		JScrollPane scroller = new JScrollPane(errorTree);
@@ -414,65 +415,96 @@ public class ErrorList extends JPanel implements EBComponent,
 	{
 		Object what = message.getWhat();
 
+		if(what == ErrorSourceUpdate.ERROR_SOURCE_ADDED)
+		{
+			addErrorSource(message.getErrorSource());
+			updateStatus();
+		}
 		if(what == ErrorSourceUpdate.ERROR_ADDED)
 		{
-			addError(message.getError());
+			addError(message.getError(),false);
 			updateStatus();
 		}
 		else if(what == ErrorSourceUpdate.ERROR_REMOVED)
 		{
 			removeError(message.getError());
-			errorModel.reload(errorRoot);
 			updateStatus();
 		}
-		else if(what == ErrorSourceUpdate.ERRORS_CLEARED)
+		else if(what == ErrorSourceUpdate.ERRORS_CLEARED
+			|| what == ErrorSourceUpdate.ERROR_SOURCE_REMOVED)
 		{
-			ErrorSource source = message.getErrorSource();
-
-			for(int i = 0; i < errorRoot.getChildCount(); i++)
-			{
-				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-					errorRoot.getChildAt(i);
-
-				for(int j = 0; j < node.getChildCount(); j++)
-				{
-					DefaultMutableTreeNode errorNode
-						= (DefaultMutableTreeNode)
-						node.getChildAt(j);
-
-					if(((ErrorSource.Error)errorNode.getUserObject())
-						.getErrorSource() == source)
-					{
-						node.remove(errorNode);
-						if(node.getChildCount() == 0)
-						{
-							errorRoot.remove(node);
-							i--;
-						}
-
-						j--;
-					}
-				}
-			}
-
-			errorModel.reload(errorRoot);
-
-			// this is a silly hack, because changing branches
-			// collapses all existing ones.
-
-			TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
-			for(int i = 0; i < errorRoot.getChildCount(); i++)
-			{
-				expandPath[1] = errorRoot.getChildAt(i);
-				errorTree.expandPath(new TreePath(expandPath));
-			}
-
+			removeErrorSource(message.getErrorSource());
 			updateStatus();
 		}
 	} //}}}
 
+	//{{{ addErrorSource() method
+	private void addErrorSource(ErrorSource source)
+	{
+		ErrorSource.Error[] errors = source.getAllErrors();
+		if(errors == null)
+			return;
+;
+		for(int j = 0; j < errors.length; j++)
+		{
+			addError(errors[j],true);
+		}
+
+		errorModel.reload(errorRoot);
+
+		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			expandPath[1] = errorRoot.getChildAt(i);
+			errorTree.expandPath(new TreePath(expandPath));
+		}
+	} //}}}
+
+	//{{{ removeErrorSource() method
+	private void removeErrorSource(ErrorSource source)
+	{
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				errorRoot.getChildAt(i);
+
+			for(int j = 0; j < node.getChildCount(); j++)
+			{
+				DefaultMutableTreeNode errorNode
+					= (DefaultMutableTreeNode)
+					node.getChildAt(j);
+
+				if(((ErrorSource.Error)errorNode.getUserObject())
+					.getErrorSource() == source)
+				{
+					node.remove(errorNode);
+					if(node.getChildCount() == 0)
+					{
+						errorRoot.remove(node);
+						i--;
+					}
+
+					j--;
+				}
+			}
+		}
+
+		errorModel.reload(errorRoot);
+
+		// this is a silly hack, because changing branches
+		// collapses all existing ones.
+
+		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		{
+			expandPath[1] = errorRoot.getChildAt(i);
+			errorTree.expandPath(new TreePath(expandPath));
+		}
+	} //}}}
+
 	//{{{ addError() method
-	private synchronized void addError(ErrorSource.Error error)
+	private void addError(ErrorSource.Error error,
+		boolean init)
 	{
 		String[] extras = error.getExtraMessages();
 		final DefaultMutableTreeNode newNode
@@ -493,10 +525,14 @@ public class ErrorList extends JPanel implements EBComponent,
 			{
 				node.add(newNode);
 
-				errorModel.reload(node);
+				if(!init)
+				{
+					errorModel.reload(node);
 
-				errorTree.expandPath(new TreePath(
-					new TreeNode[] { errorRoot, node }));
+					errorTree.expandPath(new TreePath(
+						new TreeNode[] { errorRoot,
+						node, newNode }));
+				}
 
 				return;
 			}
@@ -508,11 +544,14 @@ public class ErrorList extends JPanel implements EBComponent,
 		errorRoot.add(node);
 		errorModel.reload(errorRoot);
 
-		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
-		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		if(!init)
 		{
-			expandPath[1] = errorRoot.getChildAt(i);
-			errorTree.expandPath(new TreePath(expandPath));
+			TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+			for(int i = 0; i < errorRoot.getChildCount(); i++)
+			{
+				expandPath[1] = errorRoot.getChildAt(i);
+				errorTree.expandPath(new TreePath(expandPath));
+			}
 		}
 	} //}}}
 
@@ -540,6 +579,8 @@ public class ErrorList extends JPanel implements EBComponent,
 				}
 			}
 		}
+
+		errorModel.reload(errorRoot);
 	} //}}}
 
 	//{{{ openError() method

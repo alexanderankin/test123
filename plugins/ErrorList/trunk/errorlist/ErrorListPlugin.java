@@ -90,6 +90,8 @@ public class ErrorListPlugin extends EBPlugin
 				else
 					removeErrorOverview(textArea);
 			}
+
+			view = view.getNext();
 		}
 	} //}}}
 

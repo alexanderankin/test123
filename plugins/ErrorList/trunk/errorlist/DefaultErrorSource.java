@@ -180,15 +180,18 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		errorCount = 0;
 		removeOrAddToBus();
 
-		SwingUtilities.invokeLater(new Runnable()
+		if(registered)
 		{
-			public void run()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
-					ErrorSourceUpdate.ERRORS_CLEARED,null);
-				EditBus.send(message);
-			}
-		});
+				public void run()
+				{
+					ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
+						ErrorSourceUpdate.ERRORS_CLEARED,null);
+					EditBus.send(message);
+				}
+			});
+		}
 	} //}}}
 
 	//{{{ removeFileErrors() method
@@ -206,19 +209,22 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		errorCount -= list.size();
 		removeOrAddToBus();
 
-		SwingUtilities.invokeLater(new Runnable()
+		if(registered)
 		{
-			public void run()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				for(int i = 0; i < list.size(); i++)
+				public void run()
 				{
-					DefaultError error = (DefaultError)list.get(i);
-					ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
-						ErrorSourceUpdate.ERROR_REMOVED,error);
-					EditBus.send(message);
+					for(int i = 0; i < list.size(); i++)
+					{
+						DefaultError error = (DefaultError)list.get(i);
+						ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
+							ErrorSourceUpdate.ERROR_REMOVED,error);
+						EditBus.send(message);
+					}
 				}
-			}
-		});
+			});
+		}
 	} //}}}
 
 	//{{{ addError() method
@@ -253,15 +259,18 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		errorCount++;
 		removeOrAddToBus();
 
-		SwingUtilities.invokeLater(new Runnable()
+		if(registered)
 		{
-			public void run()
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
-					ErrorSourceUpdate.ERROR_ADDED,error);
-				EditBus.send(message);
-			}
-		});
+				public void run()
+				{
+					ErrorSourceUpdate message = new ErrorSourceUpdate(DefaultErrorSource.this,
+						ErrorSourceUpdate.ERROR_ADDED,error);
+					EditBus.send(message);
+				}
+			});
+		}
 	} //}}}
 
 	//{{{ addError() method
