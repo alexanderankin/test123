@@ -31,6 +31,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
   private final JButton buttonDel = new JButton("Del");
   private final JTextField projectNameField = new JTextField();
   private final JButton closeProject = new JButton(GUIUtilities.loadIcon("Cancel.png"));
+  private final JComboBox listProjects;
 
   public PHPProjectPanel() {
     super(new BorderLayout());
@@ -44,7 +45,6 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
 
 
     final java.util.List projectList = projectManager.getProjectList();
-    JComboBox listProjects;
     if (projectList == null) {
       listProjects = new JComboBox();
     } else {
@@ -55,7 +55,9 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
           Project project = (Project) e.getItem();
-          projectManager.openProject(project);
+          if (projectManager.getProject() != project) {
+            projectManager.openProject(project);
+          }
         }
       }
     });
@@ -113,10 +115,12 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
       tabs.setProject(null);
       buttonDel.setEnabled(false);
       closeProject.setEnabled(false);
+      listProjects.setSelectedItem(null);
     } else {
       buttonDel.setEnabled(true);
       closeProject.setEnabled(true);
       projectNameField.setText(project.getName());
+      listProjects.getModel().setSelectedItem(project);
       tabs.setProject((Project) project);
       validate();
     }
