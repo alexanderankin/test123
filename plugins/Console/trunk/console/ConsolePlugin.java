@@ -1,5 +1,8 @@
 /*
  * ConsolePlugin.java - Console plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +22,7 @@
 
 package console;
 
+//{{{ Imports
 import gnu.regexp.REException;
 import java.io.*;
 import java.net.URL;
@@ -28,12 +32,14 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 import errorlist.*;
+//}}}
 
 public class ConsolePlugin extends EBPlugin
 {
 	public static final Shell SYSTEM_SHELL = new SystemShell();
 	public static final Shell BEAN_SHELL = new ConsoleBeanShell();
 
+	//{{{ start() method
 	public void start()
 	{
 		// register shells
@@ -60,21 +66,24 @@ public class ConsolePlugin extends EBPlugin
 
 		consoleToolBarMap = new Hashtable();
 		commandoToolBarMap = new Hashtable();
-	}
+	} //}}}
 
+	//{{{ createMenuItems() method
 	public void createMenuItems(Vector menuItems)
 	{
 		menuItems.addElement(new ConsoleMenu());
-	}
+	} //}}}
 
+	//{{{ createOptionPanes() method
 	public void createOptionPanes(OptionsDialog dialog)
 	{
 		OptionGroup grp = new OptionGroup("console");
 		grp.addOptionPane(new GeneralOptionPane());
 		grp.addOptionPane(new ErrorsOptionPane());
 		dialog.addOptionGroup(grp);
-	}
+	} //}}}
 
+	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
 		if(msg instanceof ViewUpdate)
@@ -105,24 +114,28 @@ public class ConsolePlugin extends EBPlugin
 		}
 		else if(msg instanceof PropertiesChanged)
 			propertiesChanged();
-	}
+	} //}}}
 
+	//{{{ getConsoleSettingsDirectory() method
 	public static String getConsoleSettingsDirectory()
 	{
 		return consoleDirectory;
-	}
+	} //}}}
 
+	//{{{ getCommandoDirectory() method
 	public static String getCommandoDirectory()
 	{
 		return commandoDirectory;
-	}
+	} //}}}
 
+	//{{{ rescanCommandoDirectory() method
 	public static void rescanCommandoDirectory()
 	{
 		commands = null;
 		EditBus.send(new CommandoCommandsChanged());
-	}
+	} //}}}
 
+	//{{{ getCommandoCommands() method
 	public static CommandoCommand[] getCommandoCommands()
 	{
 		if(commands != null)
@@ -165,8 +178,9 @@ public class ConsolePlugin extends EBPlugin
 		MiscUtilities.quicksort(commands,new CommandCompare());
 
 		return commands;
-	}
+	} //}}}
 
+	//{{{ CommandCompare class
 	static class CommandCompare implements MiscUtilities.Compare
 	{
 		public int compare(Object obj1, Object obj2)
@@ -175,8 +189,9 @@ public class ConsolePlugin extends EBPlugin
 			CommandoCommand cmd2 = (CommandoCommand)obj2;
 			return cmd1.name.compareTo(cmd2.name);
 		}
-	}
+	} //}}}
 
+	//{{{ parseLine() method
 	/**
 	 * Parses the specified line for errors, and if it contains one,
 	 * adds an error to the specified error source.
@@ -224,8 +239,9 @@ public class ConsolePlugin extends EBPlugin
 		}
 
 		return -1;
-	}
+	} //}}}
 
+	//{{{ finishErrorParsing() method
 	/**
 	 * This should be called after all lines to parse have been handled.
 	 * It handles the corner case where the last line parsed was an
@@ -240,17 +256,20 @@ public class ConsolePlugin extends EBPlugin
 			lastError = null;
 			lastMatcher = null;
 		}
-	}
+	} //}}}
 
-	// package-private members
+	//{{{ Package-private members
+
+	//{{{ getErrorMatchers() method
 	static ErrorMatcher[] getErrorMatchers()
 	{
 		if(errorMatchers == null)
 			loadMatchers();
 
 		return errorMatchers;
-	}
+	} //}}}
 
+	//{{{ loadMatchers() method
 	static void loadMatchers()
 	{
 		lastMatcher = null;
@@ -262,8 +281,9 @@ public class ConsolePlugin extends EBPlugin
 
 		errorMatchers = new ErrorMatcher[vec.size()];
 		vec.copyInto(errorMatchers);
-	}
+	} //}}}
 
+	//{{{ loadMatchers() method
 	static void loadMatchers(boolean user, String list, Vector vec)
 	{
 		if(list == null)
@@ -275,8 +295,9 @@ public class ConsolePlugin extends EBPlugin
 		{
 			loadMatcher(user,st.nextToken(),vec);
 		}
-	}
+	} //}}}
 
+	//{{{ loadMatcher() method
 	static void loadMatcher(boolean user, String internalName, Vector vec)
 	{
 		String name = jEdit.getProperty("console.error." + internalName + ".name");
@@ -299,9 +320,13 @@ public class ConsolePlugin extends EBPlugin
 				"Invalid regexp in matcher " + internalName);
 			Log.log(Log.ERROR,ConsolePlugin.class,re);
 		}
-	}
+	} //}}}
 
-	// private members
+	//}}}
+
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private static ErrorMatcher[] errorMatchers;
 	private static ErrorMatcher lastMatcher;
 	private static DefaultErrorSource.DefaultError lastError;
@@ -311,13 +336,16 @@ public class ConsolePlugin extends EBPlugin
 
 	private Hashtable consoleToolBarMap;
 	private Hashtable commandoToolBarMap;
+	//}}}
 
+	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
 		// lazily load the matchers the next time they are
 		// needed
 		errorMatchers = null;
 
+		//{{{ Show console tool bar...
 		if(jEdit.getBooleanProperty("console.toolbar.enabled"))
 		{
 			View[] views = jEdit.getViews();
@@ -332,6 +360,8 @@ public class ConsolePlugin extends EBPlugin
 				}
 			}
 		}
+		//}}}
+		//{{{ Hide console tool bar...
 		else
 		{
 			Enumeration enum = consoleToolBarMap.keys();
@@ -344,8 +374,9 @@ public class ConsolePlugin extends EBPlugin
 			}
 
 			consoleToolBarMap.clear();
-		}
+		} //}}}
 
+		//{{{ Show commando tool bar...
 		if(jEdit.getBooleanProperty("commando.toolbar.enabled"))
 		{
 			View[] views = jEdit.getViews();
@@ -359,7 +390,8 @@ public class ConsolePlugin extends EBPlugin
 					view.addToolBar(toolBar);
 				}
 			}
-		}
+		} //}}}
+		//{{{ Hide commando tool bar...
 		else
 		{
 			Enumeration enum = commandoToolBarMap.keys();
@@ -372,10 +404,12 @@ public class ConsolePlugin extends EBPlugin
 			}
 
 			commandoToolBarMap.clear();
-		}
+		} //}}}
 
 		// lazily load aliases and variables next time system
 		// shell is used
 		SystemShell.propertiesChanged();
-	}
+	} //}}}
+
+	//}}}
 }

@@ -1,5 +1,8 @@
 /*
  * ConsoleMenu.java - Console menu
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,38 +22,44 @@
 
 package console;
 
+//{{{ Imports
 import javax.swing.*;
 import java.awt.event.*;
 import org.gjt.sp.jedit.gui.EnhancedMenu;
 import org.gjt.sp.jedit.*;
+//}}}
 
 class ConsoleMenu extends EnhancedMenu implements EBComponent
 {
+	//{{{ ConsoleMenu
 	ConsoleMenu()
 	{
 		super("console-menu");
 		updateMenu();
-	}
+	} //}}}
 
+	//{{{ addNotify() method
 	public void addNotify()
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-	}
+	} //}}}
 
+	//{{{ removeNotify() method
 	public void removeNotify()
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-	}
+	} //}}}
 
+	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
 		if(msg instanceof CommandoCommandsChanged)
 			updateMenu();
-	}
+	} //}}}
 
-	// private members
+	//{{{ updateMenu() method
 	private void updateMenu()
 	{
 		for(int i = getMenuComponentCount() - 1; i >= 0; i--)
@@ -79,5 +88,5 @@ class ConsoleMenu extends EnhancedMenu implements EBComponent
 			menuItem.addActionListener(actionHandler);
 			add(menuItem);
 		}
-	}
+	} //}}}
 }

@@ -1,5 +1,8 @@
 /*
  * ConsoleToolBar.java - Console tool bar
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,14 +22,17 @@
 
 package console;
 
+//{{{ Imports
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
 class ConsoleToolBar extends JToolBar
 {
+	//{{{ ConsoleToolBar constructor
 	public ConsoleToolBar(View view)
 	{
 		setLayout(new BorderLayout(6,0));
@@ -50,13 +56,15 @@ class ConsoleToolBar extends JToolBar
 
 		cmd.setModel("console." + shells.getSelectedItem());
 		cmd.addActionListener(new ActionHandler());
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private View view;
 	private JComboBox shells;
 	private HistoryTextField cmd;
+	//}}}
 
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -80,5 +88,5 @@ class ConsoleToolBar extends JToolBar
 				}
 			}
 		}
-	}
+	} //}}}
 }

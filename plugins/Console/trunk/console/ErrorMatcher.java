@@ -1,5 +1,8 @@
 /*
  * ErrorMatcher.java - Error pattern matcher
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,13 +22,16 @@
 
 package console;
 
+//{{{ Imports
 import gnu.regexp.*;
 import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.jedit.*;
 import errorlist.*;
+//}}}
 
 class ErrorMatcher implements Cloneable
 {
+	//{{{ Instance variables
 	boolean user; // true if not one of the default matchers
 	String internalName;
 	String name;
@@ -38,7 +44,9 @@ class ErrorMatcher implements Cloneable
 	RE matchRE;
 	RE warningRE;
 	RE extraRE;
+	//}}}
 
+	//{{{ ErrorMatcher constructor
 	ErrorMatcher(boolean user, String internalName, String name, String match,
 		String warning, String extra, String filename, String line,
 		String message)
@@ -68,12 +76,14 @@ class ErrorMatcher implements Cloneable
 			extraRE = new RE(extra,RE.REG_ICASE,
 				RESearchMatcher.RE_SYNTAX_JEDIT);
 		}
-	}
+	} //}}}
 
+	//{{{ ErrorMatcher constructor
 	ErrorMatcher()
 	{
-	}
+	} //}}}
 
+	//{{{ match() method
 	DefaultErrorSource.DefaultError match(String text, String directory,
 			DefaultErrorSource errorSource)
 	{
@@ -107,8 +117,9 @@ class ErrorMatcher implements Cloneable
 		}
 
 		return null;
-	}
+	} //}}}
 
+	//{{{ matchExtra() method
 	String matchExtra(String text, String directory,
 		DefaultErrorSource errorSource)
 	{
@@ -116,8 +127,9 @@ class ErrorMatcher implements Cloneable
 			return extraRE.substitute(text,"$1");
 		else
 			return null;
-	}
+	} //}}}
 
+	//{{{ save() method
 	void save()
 	{
 		jEdit.setProperty("console.error." + internalName + ".name",name);
@@ -127,13 +139,15 @@ class ErrorMatcher implements Cloneable
 		jEdit.setProperty("console.error." + internalName + ".filename",filename);
 		jEdit.setProperty("console.error." + internalName + ".line",line);
 		jEdit.setProperty("console.error." + internalName + ".message",message);
-	}
+	} //}}}
 
+	//{{{ toString() method
 	public String toString()
 	{
 		return name;
-	}
+	} //}}}
 
+	//{{{ clone() method
 	public Object clone()
 	{
 		try
@@ -145,5 +159,5 @@ class ErrorMatcher implements Cloneable
 			// can't happen
 			throw new InternalError();
 		}
-	}
+	} //}}}
 }

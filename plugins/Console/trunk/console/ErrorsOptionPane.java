@@ -1,5 +1,8 @@
 /*
  * ErrorsOptionPane.java - Error pattern option pane
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +22,7 @@
 
 package console;
 
+//{{{ Imports
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
@@ -27,16 +31,20 @@ import java.awt.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
+//{{{ ErrorsOptionPane class
 class ErrorsOptionPane extends AbstractOptionPane
 {
+	//{{{ ErrorsOptionPane constructor
 	public ErrorsOptionPane()
 	{
 		super("console.errors");
-	}
+	} //}}}
 
-	// protected members
+	//{{{ Protected members
 
+	//{{{ _init() method
 	protected void _init()
 	{
 		addComponent(new JLabel(jEdit.getProperty(
@@ -89,8 +97,9 @@ class ErrorsOptionPane extends AbstractOptionPane
 
 		gridBag.setConstraints(errors,cons);
 		add(errors);
-	}
+	} //}}}
 
+	//{{{ _save() method
 	protected void _save()
 	{
 		StringBuffer list = new StringBuffer();
@@ -108,15 +117,21 @@ class ErrorsOptionPane extends AbstractOptionPane
 		}
 
 		jEdit.setProperty("console.error.user",list.toString());
-	}
+	} //}}}
 
-	// private members
+	//}}}
+
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private JList errorList;
 	private DefaultListModel errorListModel;
 	private JButton edit;
 	private JButton add;
 	private JButton remove;
+	//}}}
 
+	//{{{ createMatcherListModel() method
 	private DefaultListModel createMatcherListModel()
 	{
 		DefaultListModel listModel = new DefaultListModel();
@@ -128,8 +143,9 @@ class ErrorsOptionPane extends AbstractOptionPane
 		}
 
 		return listModel;
-	}
+	} //}}}
 
+	//{{{ updateButtons() method
 	private void updateButtons()
 	{
 		int index = errorList.getSelectedIndex();
@@ -145,8 +161,11 @@ class ErrorsOptionPane extends AbstractOptionPane
 			ErrorMatcher matcher = (ErrorMatcher)errorList.getSelectedValue();
 			remove.setEnabled(matcher.user);
 		}
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -193,16 +212,18 @@ class ErrorsOptionPane extends AbstractOptionPane
 				errorList.setSelectedIndex(index+1);
 			} */
 		}
-	}
+	} //}}}
 
+	//{{{ ListHandler class
 	class ListHandler implements ListSelectionListener
 	{
 		public void valueChanged(ListSelectionEvent evt)
 		{
 			updateButtons();
 		}
-	}
+	} //}}}
 
+	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent evt)
@@ -215,11 +236,13 @@ class ErrorsOptionPane extends AbstractOptionPane
 				errorList.repaint();
 			}
 		}
-	}
-}
+	} //}}}
+} //}}}
 
+//{{{ ErrorMatcherDialog class
 class ErrorMatcherDialog extends EnhancedDialog
 {
+	//{{{ ErrorMatcherDialog constructor
 	public ErrorMatcherDialog(Component comp, ErrorMatcher matcher)
 	{
 		super(JOptionPane.getFrameForComponent(comp),
@@ -286,8 +309,9 @@ class ErrorMatcherDialog extends EnhancedDialog
 		setLocation((screen.width - getSize().width) / 2,
 			(screen.height - getSize().height) / 2);
 		show();
-	}
+	} //}}}
 
+	//{{{ ok() method
 	public void ok()
 	{
 		// Check values
@@ -296,8 +320,11 @@ class ErrorMatcherDialog extends EnhancedDialog
 		String _filename = filename.getText();
 		String _line = line.getText();
 		String _message = message.getText();
-		if(_name == null || _match == null || _filename == null
-			|| _line == null || _message == null)
+		if(_name.length() == 0
+			|| _match.length() == 0
+			|| _filename.length() == 0
+			|| _line.length() == 0
+			|| _message.length() == 0)
 		{
 			GUIUtilities.error(JOptionPane.getFrameForComponent(this),
 				"console.not-filled-out",null);
@@ -329,19 +356,21 @@ class ErrorMatcherDialog extends EnhancedDialog
 
 		isOK = true;
 		dispose();
-	}
+	} //}}}
 
+	//{{{ cancel() method
 	public void cancel()
 	{
 		dispose();
-	}
+	} //}}}
 
+	//{{{ isOK() method
 	public boolean isOK()
 	{
 		return isOK;
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private ErrorMatcher matcher;
 	private JTextField name;
 	private JTextField match;
@@ -353,7 +382,9 @@ class ErrorMatcherDialog extends EnhancedDialog
 	private JButton ok;
 	private JButton cancel;
 	private boolean isOK;
+	//}}}
 
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -363,5 +394,5 @@ class ErrorMatcherDialog extends EnhancedDialog
 			else
 				cancel();
 		}
-	}
-}
+	} //}}}
+} //}}}
