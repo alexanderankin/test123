@@ -55,6 +55,8 @@ public class AntPrintStream extends PrintStream
 
 	public void print( String msg )
 	{
+		// Ant 1.4 org.apache.tools.ant.taskdefs.compilers.Javac13 sends output
+		// incorrectly. It must be tokenized and sent to println().
 		if ( msg.indexOf( "\n" ) > 0 ) {
 			StringTokenizer tokenizer = new StringTokenizer( msg, "\n" );
 			while ( tokenizer.hasMoreElements() )

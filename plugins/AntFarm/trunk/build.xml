@@ -2,7 +2,7 @@
 
 <project name="AntFarm" default="jar" basedir=".">
 
-	<property name="plugin.lib" value="lib" />
+	<property name="plugin.lib" value=".." />
 	<property name="plugin.src" value="." />
 	<property name="plugin.build" value="." />
 	<property name="jedit.jars" value=".." />
