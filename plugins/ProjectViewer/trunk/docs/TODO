@@ -1,7 +1,7 @@
 - use JEdits VFS code to allow projects on virtual file systems such as ftp
   see:  org.gjt.sp.jedit.io.VFS
   
-- use newer icons
+- use newer icons (don't forget to delete old icons from repository)
   see: jEdit/org/gjt/sp/jedit/icons/
   Create project : 'Drive.png', how does a project look like ;-) ?
   Expand list : 'ZoomIn.png'
@@ -18,19 +18,16 @@
 
 - The file filter (on importing) should be obtained from jEdit
 
-- Ability to "refresh" a project and look for new files.
-
-- Add a "close all" option.  This is different than jEdit's "close all 
-  buffers"  as this one would just close all buffers within the current 
-  project.
-
 - RFE: provide an alternate icon when the the file you are editing is dirty
 
 ---------------------------------------------------------------------------
 
 * Toolbar
   ** remove "new project" -> add entry to combo-box "new project ..."
-  ** remove button "remove all files", but add button "refresh project"
+  ** remove "remove all files", but add button "refresh project"
+  ** add "close all project files"
+     This is different than jEdit's "close all buffers"  as this one would just
+     close all buffers within the current project.
   
 ---------------------------------------------------------------------------
 
@@ -74,6 +71,3 @@
     wants to import files on the account of these information (and not
     via filtering)
 
-* Behaviour
-  * '=' icon should remove files below a selection, if there is any
-    (isn't this icon going to be removed?)
