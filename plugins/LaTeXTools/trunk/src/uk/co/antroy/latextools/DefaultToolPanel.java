@@ -69,9 +69,10 @@ public abstract class DefaultToolPanel
     boolean bufferLoaded = (message instanceof BufferUpdate);
     if (bufferLoaded){
       BufferUpdate bu = (BufferUpdate) message;
-      bufferLoaded = bufferLoaded && 
-          (bu.getWhat() == BufferUpdate.CREATED || 
-          bu.getWhat() == BufferUpdate.LOADED);
+      Object what = bu.getWhat();
+      bufferLoaded = (what == BufferUpdate.CREATED ||
+                      what == BufferUpdate.LOADED  ||
+                      what == BufferUpdate.SAVED  );
     }
     
     if ((message instanceof EditPaneUpdate) || bufferLoaded) {

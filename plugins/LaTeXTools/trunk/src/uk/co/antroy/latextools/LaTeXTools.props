@@ -1,6 +1,6 @@
 plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
 plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy
-plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.2.0
+plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.2.1
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
 
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.01.99.00
@@ -37,14 +37,14 @@ bibliography-dock.label = Insert Citation...
 
 navigation-dock.title = LaTeX Navigator
 navigation-dock.label = Navigation Toolbar
-navigation-dock.nottex = Document*is not a*TeX*Document!
+navigation-dock.nottex = Not a*TeX*Document!
 
 label-dock.title = Label Navigator
 label-dock.label = Insert Cross-reference...
 
 navigation.title = LaTeX Navigator
 navigation.label = Navigate Document
-navigation.nottex = Document*is not a*TeX*Document!
+navigation.nottex = Not a*TeX*Document!
 
 labels.label=Labels
 labels.title=Find Labels

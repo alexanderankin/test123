@@ -17,6 +17,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import java.awt.event.ActionEvent;
+import java.awt.Component;
 import java.awt.Dimension;
 
 /*:folding=indent:
@@ -130,17 +131,18 @@ public abstract class AbstractToolPanel
 
     while (st.hasMoreTokens()) {
 
-      String s = st.nextToken();
-      p.add(new JLabel(s));
+      JLabel s = new JLabel(st.nextToken());
+      s.setAlignmentX(Component.CENTER_ALIGNMENT);
+      p.add(s);
     }
 
     setLayout(new BorderLayout());
     add(p, position);
-    if (position.equals(BorderLayout.SOUTH)){
-      add(createButtonPanel(REFRESH),BorderLayout.NORTH);
-    }else{
-      add(createButtonPanel(REFRESH),BorderLayout.SOUTH);      
-    }
+//    if (position.equals(BorderLayout.SOUTH)){
+//      add(createButtonPanel(REFRESH),BorderLayout.NORTH);
+//    }else{
+//      add(createButtonPanel(REFRESH),BorderLayout.SOUTH);      
+//    }
   }
 
   protected void log(String s) {
