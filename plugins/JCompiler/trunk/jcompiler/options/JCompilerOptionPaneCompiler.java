@@ -97,12 +97,19 @@ public class JCompilerOptionPaneCompiler
 		libPath.setPreferredSize(new Dimension(270, libPath.getPreferredSize().height));
 		addComponent(jEdit.getProperty("options.jcompiler.libpath"), libPath);
 
-		// "Class path"
+		// "Class path" (+ select system cp button)
 		classPath = new JTextField();
 		String classPathValue = jEdit.getProperty("jcompiler.classpath");
 		classPath.setText(classPathValue == null ? "" : classPathValue);
 		classPath.setPreferredSize(new Dimension(270, classPath.getPreferredSize().height));
-		addComponent(jEdit.getProperty("options.jcompiler.classpath"), classPath);
+		pickCP = new JButton(pickCPIcon);
+		pickCP.setMargin(new Insets(0,0,0,0));
+		pickCP.setToolTipText(jEdit.getProperty("options.jcompiler.pickCP.tooltip"));
+		pickCP.addActionListener(this);
+		JPanel cpPanel = new JPanel(new BorderLayout());
+		cpPanel.add(classPath, BorderLayout.CENTER);
+		cpPanel.add(pickCP, BorderLayout.EAST);
+		addComponent(jEdit.getProperty("options.jcompiler.classpath"), cpPanel);
 
 		// Output directory text field (+ select button)
 		String output = null;
@@ -164,6 +171,9 @@ public class JCompilerOptionPaneCompiler
 			File file = chooseDirectory();
 			setDirectoryText(file, basePath);
 		}
+		else if (e.getSource() == pickCP) {
+			classPath.setText(System.getProperty("java.class.path"));
+		}
 	}
 
 
@@ -207,6 +217,7 @@ public class JCompilerOptionPaneCompiler
 	private JTextField outputDirectory;
 	private JTextField otherOptions;
 	private JButton pickDirectory;
+	private JButton pickCP;
 	private JButton pickBasePathButton;
 	private JTextField basePath;
 	private JTextField srcPath;
@@ -218,6 +229,7 @@ public class JCompilerOptionPaneCompiler
 	private final static boolean isOldJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.2") < 0);
 
 	private static Icon pickIcon = null;
+	private static Icon pickCPIcon = null;
 
 
 	static {
@@ -226,6 +238,12 @@ public class JCompilerOptionPaneCompiler
 			pickIcon = new ImageIcon(url);
 		else
 			Log.log(Log.ERROR, JCompilerOptionPaneCompiler.class, "Error fetching image DirOpen.gif");
+
+		url = JCompilerOptionPaneCompiler.class.getResource("JavaCup.gif");
+		if (url != null)
+			pickCPIcon = new ImageIcon(url);
+		else
+			Log.log(Log.ERROR, JCompilerOptionPaneCompiler.class, "Error fetching image JavaCup.gif");
 	}
 
 
