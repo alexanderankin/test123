@@ -46,9 +46,11 @@ import sql.*;
  * @created    26 ?????? 2001 ?.
  */
 public class ResultSetWindow extends JPanel
+     implements SqlUtils.SelectedServerListener
 {
 
   protected View view;
+  protected JLabel server;
   protected JLabel info;
   protected JLabel status;
 
@@ -68,8 +70,18 @@ public class ResultSetWindow extends JPanel
     this.view = view;
 
     setLayout( new BorderLayout() );
-    add( BorderLayout.NORTH, info = new JLabel() );
+    final JPanel p = new JPanel( new BorderLayout() );
+    server = new JLabel( "blahblahblah" );
+    p.add( BorderLayout.NORTH, server );
+    info = new JLabel();
+    p.add( BorderLayout.SOUTH, info );
+
+    add( BorderLayout.NORTH, p );
     add( BorderLayout.SOUTH, status = new JLabel() );
+
+    SqlUtils.addSelectedServerListener( this );
+
+    selectedServerChanged( SqlUtils.getSelectedServerName() );
 
     updateByModel( null );
 
@@ -135,6 +147,18 @@ public class ResultSetWindow extends JPanel
     updateStatus( model );
 
     revalidate();
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  name  Description of Parameter
+   */
+  public void selectedServerChanged( String name )
+  {
+    server.setText(
+        jEdit.getProperty( "sql.resultSet.server", new Object[]{name} ) );
   }
 
 
@@ -278,7 +302,9 @@ public class ResultSetWindow extends JPanel
       } catch ( SQLException ex )
       {
         Log.log( Log.DEBUG, ResultSetWindow.class, ex );
-        /* not supported? */
+        /*
+         *  not supported?
+         */
       }
 
       if ( rsmd.columnNoNulls == rsmd.isNullable( i ) )
