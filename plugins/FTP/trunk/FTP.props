@@ -1,9 +1,13 @@
 # Plugin properties
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
-plugin.ftp.FtpPlugin.version=0.3.2
+plugin.ftp.FtpPlugin.version=0.3.3
 plugin.ftp.FtpPlugin.docs=index.html
-plugin.ftp.FtpPlugin.depend.0=jedit 04.00.02.00
+plugin.ftp.FtpPlugin.depend.0=jedit 04.00.03.00
+
+# Settings
+vfs.ftp.passive=true
+vfs.ftp.binary=true
 
 # Menu
 ftp=open-ftp save-ftp - clear-directory-cache forget-passwords
@@ -15,6 +19,9 @@ save-ftp.label=Save to FTP Server...
 clear-directory-cache.label=Clear Remote Directory Cache
 forget-passwords.label=Forget Remote Passwords
 
+# FTP VFS label
+vfs.ftp.label=Connect to FTP Server...
+
 # Login dialog box
 login.title=Log in
 login.host=Remote host:
@@ -22,39 +29,16 @@ login.user=User name:
 login.password=Password:
 login.passive=Connect using passive mode
 
-# FTP VFS
-vfs.ftp.label=Connect to FTP Server...
-vfs.ftp.passive=true
-vfs.ftp.binary=true
-
-# Connect error
-vfs.ftp.connect-error.title=Cannot Connect
-vfs.ftp.connect-error.message=Cannot connect to {0}:{1}.\n\
-	{2}\n\
+# Error messages
+ftperror.connect-error=Cannot connect: {0}\n\
 	See Utilities->Activity Log for a full connection trace.
-
-# Login error
-vfs.ftp.login-error.title=Cannot Log in
-vfs.ftp.login-error.message=Cannot log in to {0}:{1} with username {2}.\n\
-	{3}\n\
+ftperror.login-error=Cannot log in: {0}\n\
 	See Utilities->Activity Log for a full connection trace.
-
-# Download error
-vfs.ftp.download-error.title=Cannot Download File
-vfs.ftp.download-error.message=An error occurred while downloading {0}:{1}{2}.\n\
-	{3}\n\
+ftperror.download-error=Cannot download: {0}\n\
 	See Utilities->Activity Log for a full connection trace.
-
-# Upload error
-vfs.ftp.upload-error.title=Cannot Upload File
-vfs.ftp.upload-error.message=An error occurred while uploading {0}:{1}{2}.\n\
-	{3}\n\
+ftperror.upload-error=Cannot upload: {0}\n\
 	See Utilities->Activity Log for a full connection trace.
-
-# File list error
-vfs.ftp.list-error.title=Cannot List Directory
-vfs.ftp.list-error.message=An error occurred while listing {0}.\n\
-	{1}\n\
+ftperror.list-error=Cannot list: {0}\n\
 	See Utilities->Activity Log for a full connection trace.
 
 # File listing regexps
