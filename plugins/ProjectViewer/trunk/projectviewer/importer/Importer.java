@@ -261,6 +261,8 @@ public abstract class Importer implements Runnable {
 									importNode(n);
 								}
 								ProjectViewer.nodeStructureChangedFlat(project);
+								if (VPTProject.hasListeners())
+									fireProjectEvent(c);
 							}
 						});
 					} catch (InterruptedException ie) {
@@ -296,6 +298,45 @@ public abstract class Importer implements Runnable {
 		}
 		if (postAction != null)
 			SwingUtilities.invokeLater(postAction);
+	} //}}}
+
+	//{{{ fireProjectEvent(Collection) method
+	/** Fires an event based on the imported file(s). */
+	private void fireProjectEvent(Collection added) {
+		if (added.size() == 1) {
+			VPTNode node = (VPTNode) added.iterator().next();
+			if (node.isFile()) {
+				VPTProject.fireFileAdded(project, (VPTFile) node);
+			}
+		} else {
+			ArrayList files = new ArrayList();
+			for (Iterator i = added.iterator(); i.hasNext(); ) {
+				VPTNode n = (VPTNode) i.next();
+				if (n.isFile()) {
+					files.add(n);
+				} else if (n.getAllowsChildren()) {
+					collectFiles(n.children(), files);
+				}
+			}
+			if (files.size() == 1) {
+				VPTProject.fireFileAdded(project, (VPTFile) files.get(0));
+			} else if (files.size() > 0) {
+				VPTProject.fireFilesAdded(project, files);
+			}
+		}
+	} //}}}
+
+	//{{{ collectFiles(Enumeration, ArrayList) method
+	/** Collects all files in the enumeration and puts them in the given collection. */
+	private void collectFiles(Enumeration e, ArrayList lst) {
+		while (e.hasMoreElements()) {
+			VPTNode n = (VPTNode) e.nextElement();
+			if (n.isFile()) {
+				lst.add(n);
+			} else if (n.getAllowsChildren()) {
+				collectFiles(n.children(), lst);
+			}
+		}
 	} //}}}
 
 	//{{{ ShowNode class
