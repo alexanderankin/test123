@@ -27,13 +27,19 @@ import javax.swing.tree.TreePath;
 
 // Import jEdit
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
+
+import projectviewer.event.ProjectEvent;
+import projectviewer.event.ProjectListener;
 
 /**
- *  Miscleaneous methods to remove things from projects.
+ *  <p>Miscleaneous methods to remove things from projects.</p>
  *
  *  @author     Marcelo Vanzin
+ *  @version    $Id$
  */
-public final class RemovalManager {
+public final class RemovalManager implements ProjectListener {
     
     //--------------- Static Members
     
@@ -68,6 +74,7 @@ public final class RemovalManager {
     //--------------- Instance Variables
     
     private ProjectViewer viewer;
+    private boolean willDelete;
     
     //--------------- Constructor
     
@@ -100,6 +107,9 @@ public final class RemovalManager {
      */
     public void handleSelectionRemoval(boolean delete) {
         JTree tree = viewer.getCurrentTree();
+        Project p = viewer.getCurrentProject();
+        willDelete = delete; 
+        p.addProjectListener(this);
         
         switch (tree.getSelectionCount()) {
             case 0:
@@ -122,6 +132,8 @@ public final class RemovalManager {
                 }
             }
         }
+        
+        p.removeProjectListener(this);
     }
     
 
@@ -221,4 +233,25 @@ public final class RemovalManager {
         }
     }
     
+    //--------------- Project Listener interface
+    
+	public void fileOpened(ProjectEvent evt) { }
+
+	public void fileClosed(ProjectEvent evt) { }
+
+	public void fileRemoved(ProjectEvent evt) { 
+        if (willDelete) {
+            ProjectFile aFile = (ProjectFile) evt.getArtifact();
+            Buffer buf = aFile.getBuffer();
+            if (buf != null) {
+                jEdit.closeBuffer(viewer.getView(),buf);
+            }
+        }
+    }
+
+	public void directoryRemoved(ProjectEvent evt)  { }
+
+	public void directoryAdded(ProjectEvent evt) { }
+
+	public void fileAdded(ProjectEvent evt) { }    
 }
