@@ -16,7 +16,8 @@
 package projectviewer;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.PrintWriter;
 import java.io.IOException;
 
 import java.util.*;
@@ -236,7 +237,7 @@ public final class Project implements EBComponent {
      *  @param  delete  If the file should be deleted from disk.
      */
     public void removeFile(ProjectFile aFile, boolean delete) {
-		Log.log(Log.DEBUG, this, "removeFile :" + aFile.toString());
+		//Log.log(Log.DEBUG, this, "removeFile :" + aFile.toString());
 		files.remove(aFile.getPath());
 
 		List path = getRoot().getPathToFile(aFile);
@@ -266,14 +267,14 @@ public final class Project implements EBComponent {
      *  contents from disk.
      */
     public void removeDirectory(ProjectDirectory aDir, boolean delete) {
-		Log.log(Log.DEBUG, this, "removeDirectory :" + aDir.toString());
+		//Log.log(Log.DEBUG, this, "removeDirectory :" + aDir.toString());
 		Iterator it;
 		// remove all files from this dir
 		it = aDir.safeFileIterator();
 		while(it.hasNext()) {
 			//removeFile((ProjectFile)it.next());
 			ProjectFile aFile=(ProjectFile)it.next();
-			Log.log(Log.DEBUG, this, "removeFile :" + aFile.toString());
+			//Log.log(Log.DEBUG, this, "removeFile :" + aFile.toString());
 			files.remove(aFile.getPath());
 			int fileIndex = aDir.getIndexOfChild(aFile);
 			aDir.removeFile(aFile);
@@ -292,7 +293,7 @@ public final class Project implements EBComponent {
 		List path = getRoot().getPathToDirectory(aDir);
 		ProjectDirectory parent = (ProjectDirectory) path.get(path.size() - 1);
 		int childIndex = parent.getIndexOfChild(aDir);
-		Log.log( Log.DEBUG, this, "Removing Directory " + aDir.getPath() + " childIndex is " + childIndex);
+		//Log.log( Log.DEBUG, this, "Removing Directory " + aDir.getPath() + " childIndex is " + childIndex);
 		parent.removeDirectory(aDir);
 		fireDirectoryRemoved(aDir, childIndex);
         
@@ -624,8 +625,6 @@ public final class Project implements EBComponent {
             return;
         }
         
-        long t1 = System.currentTimeMillis();
-
         setRoot(new ProjectDirectory(fileProps.getProperty("root")));
 
         Enumeration pname = fileProps.propertyNames();
@@ -647,8 +646,6 @@ public final class Project implements EBComponent {
             }
         }
 
-        t1 = System.currentTimeMillis() - t1;
-        Log.log(Log.DEBUG, this, "Loaded project in " + t1 + "ms");
         setLoaded(true);
     }
     
@@ -662,33 +659,7 @@ public final class Project implements EBComponent {
             ProjectManager.getInstance().save();
             return;
         }
-        
-        Properties p = new Properties();
-        
-        // Project Root
-        p.setProperty("root", root.getPath());
-        
-        // URL Root
-        p.setProperty("webroot", getURLRoot());
-        
-        // List of open files
-        if (openFiles.size() > 0) {
-            for (int i = 0; i < openFiles.size(); i++) {
-                p.setProperty("open_files." + (i+1), openFiles.get(i).toString());
-            }
-        }
-        
-        // List of project files
-        int counter = 1;
-        for ( Iterator i = projectFiles(); i.hasNext(); ) {
-            p.setProperty(
-                "file." + counter,
-                ((ProjectFile)i.next()).getPath()
-            );
-            counter++;
-        }
-        
-        // Saves the output to disk
+
         try {
             File f = 
                 new File(
@@ -698,8 +669,36 @@ public final class Project implements EBComponent {
                 );
             f.createNewFile();
             
-            FileOutputStream out = new FileOutputStream(f);
-            p.store(out, "Project " + getName() + " configuration");
+            PrintWriter out = new PrintWriter(new FileWriter(f));
+            out.println("# Project " + getName() + " configuration");
+
+            // Project Root
+            out.println("root=" + root.getPath());
+            
+            // URL Root
+            out.println("webroot=" + getURLRoot());
+            
+            // List of project files
+            int counter = 1;
+            for ( Iterator i = projectFiles(); i.hasNext(); ) {
+                out.println(
+                    "file." + counter + "=" +
+                    ((ProjectFile)i.next()).getPath()
+                );
+                counter++;
+            }
+
+            // List of open files
+            if (openFiles.size() > 0) {
+                for (int i = 0; i < openFiles.size(); i++) {
+                   out.println("open_files." + (i+1) + "=" + openFiles.get(i).toString());
+                }
+            }
+            
+            // Finishing
+            out.flush();
+            out.close();
+        
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
         }

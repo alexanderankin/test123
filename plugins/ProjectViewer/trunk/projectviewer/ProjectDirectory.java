@@ -19,8 +19,6 @@ import java.io.File;
 import java.util.*;
 import javax.swing.tree.TreePath;
 
-import org.gjt.sp.util.Log;
-
 /** A project directory.
  */
 public final class ProjectDirectory {
