@@ -71,10 +71,8 @@ class ConsoleToolBar extends JToolBar
 
 				Console cons = (Console)wm.getDockableWindow("console");
 				cons.setShell((Shell)shells.getSelectedItem());
-				cons.run(command);
+				cons.run(cons.getShell(),cons,command);
 			}
-			else
-				wm.addDockableWindow("console");
 		}
 	}
 }

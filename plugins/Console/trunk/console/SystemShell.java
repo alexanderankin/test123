@@ -22,7 +22,6 @@ package console;
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
-import org.gjt.sp.jedit.gui.HelpViewer;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -37,7 +36,6 @@ class SystemShell extends Shell
 		// some built-ins can be invoked without the % prefix
 		aliases.put("cd","%cd");
 		aliases.put("pwd","%pwd");
-		aliases.put("clear","%clear");
 
 		// on Windows, we need a special calling convention to run system
 		// shell built-ins
@@ -59,12 +57,12 @@ class SystemShell extends Shell
 		}
 	}
 
-	public void printInfoMessage(Console console)
+	public void printInfoMessage(Output output)
 	{
-		console.printInfo(jEdit.getProperty("console.shell.info"));
+		output.print(null,jEdit.getProperty("console.shell.info"));
 	}
 
-	public void execute(Console console, String command)
+	public void execute(Console console, Output output, String command)
 	{
 		Vector args = parse(command);
 		// will be null if the command is an empty string
@@ -77,7 +75,11 @@ class SystemShell extends Shell
 		if(commandName.charAt(0) == '%')
 		{
 			// a console built-in
-			executeBuiltIn(console,commandName.substring(1),args);
+			args.removeElementAt(0);
+
+			SystemShellBuiltIn.executeBuiltIn(console,output,
+				commandName.substring(1),args);
+			output.commandDone();
 		}
 		else
 		{
@@ -95,7 +97,9 @@ class SystemShell extends Shell
 				foreground = true;
 			}
 
-			new ConsoleProcess(console,args,foreground);
+			String[] _args = new String[args.size()];
+			args.copyInto(_args);
+			new ConsoleProcess(console,output,_args,foreground);
 		}
 	}
 
@@ -106,7 +110,10 @@ class SystemShell extends Shell
 		if(process != null)
 			process.stop();
 		else
-			console.printError(jEdit.getProperty("console.shell.noproc"));
+		{
+			console.print(console.getErrorColor(),
+				jEdit.getProperty("console.shell.noproc"));
+		}
 	}
 
 	public synchronized boolean waitFor()
@@ -140,11 +147,8 @@ class SystemShell extends Shell
 		return java13exec != null;
 	}
 
-	static Process exec(String currentDirectory, Vector _args) throws Exception
+	static Process exec(String currentDirectory, String[] args) throws Exception
 	{
-		String[] args = new String[_args.size()];
-		_args.copyInto(args);
-
 		String[] extensionsToTry;
 		if(DOS)
 			extensionsToTry = new String[] { ".cmd", ".exe", ".bat", ".com" };
@@ -389,136 +393,35 @@ loop:			for(;;)
 		return buf.toString();
 	}
 
-	private void executeBuiltIn(Console console, String name, Vector args)
-	{
-		if(name.equals("cd"))
-		{
-			if(!cdCommandAvailable())
-			{
-				console.printError(jEdit.getProperty("console.shell.cd.unsup"));
-				return;
-			}
-			else if(checkArgs("cd",args,2,console))
-			{
-				ConsoleState state = getConsoleState(console);
-
-				String newDir = (String)args.elementAt(1);
-				if(newDir.equals(".."))
-				{
-					newDir = MiscUtilities.getParentOfPath(
-						state.currentDirectory);
-				}
-				else
-				{
-					newDir = MiscUtilities.constructPath(
-						state.currentDirectory,newDir);
-				}
-
-				String[] pp = { newDir };
-				if(new File(newDir).exists())
-				{
-					state.currentDirectory = newDir;
-					console.printInfo(jEdit.getProperty(
-						"console.shell.cd.ok",pp));
-				}
-				else
-				{
-					console.printError(jEdit.getProperty(
-						"console.shell.cd.error",pp));
-				}
-			}
-		}
-		else if(name.equals("clear"))
-		{
-			if(checkArgs("clear",args,1,console))
-				console.clear();
-		}
-		else if(name.equals("detach"))
-		{
-			if(checkArgs("detach",args,1,console))
-			{
-				ConsoleState state = getConsoleState(console);
-				ConsoleProcess process = state.process;
-				if(process == null)
-				{
-					console.printError(jEdit.getProperty("console.shell.noproc"));
-					return;
-				}
-
-				process.detach();
-			}
-		}
-		else if(name.equals("echo"))
-		{
-			if(checkArgs("echo",args,-2,console))
-			{
-				for(int i = 1; i < args.size(); i++)
-				{
-					console.printPlain((String)args.elementAt(i));
-				}
-			}
-		}
-		else if(name.equals("help"))
-		{
-			if(checkArgs("help",args,1,console))
-			{
-				new HelpViewer(getClass().getResource("/console/Console.html")
-					.toString());
-			}
-		}
-		else if(name.equals("kill"))
-		{
-			if(checkArgs("kill",args,1,console))
-			{
-				stop(console);
-			}
-		}
-		else if(name.equals("pwd"))
-		{
-			if(checkArgs("pwd",args,1,console))
-			{
-				console.printPlain(getConsoleState(console)
-					.currentDirectory);
-			}
-		}
-		else if(name.equals("version"))
-		{
-			if(checkArgs("version",args,1,console))
-			{
-				console.printPlain(jEdit.getProperty(
-					"plugin.console.ConsolePlugin.version"));
-			}
-		}
-		else
-		{
-			String[] pp = { name };
-			console.printError(jEdit.getProperty("console.shell.unknown-builtin",pp));
-		}
-	}
-
-	// if count < 0, then at least -count arguments must be specified
-	// if count > 0, then exactly count arguments must be specified
-	private boolean checkArgs(String command, Vector args, int count,
-		Console console)
-	{
-		if(count < 0)
-		{
-			if(args.size() >= -count)
-				return true;
-		}
-		else if(count > 0)
-		{
-			if(args.size() == count)
-				return true;
-		}
-
-		console.printError(jEdit.getProperty("console.shell." + command + ".usage"));
-		return false;
-	}
-
 	static class ConsoleState
 	{
 		String currentDirectory = System.getProperty("user.dir");
+		Stack directoryStack = new Stack();
 		ConsoleProcess process;
+
+		void setCurrentDirectory(Console console, String newDir)
+		{
+			if(!cdCommandAvailable())
+			{
+				console.print(console.getErrorColor(),
+					jEdit.getProperty("console.shell.cd.unsup"));
+				return;
+			}
+
+			String[] pp = { newDir };
+			if(new File(newDir).exists())
+			{
+				currentDirectory = newDir;
+				console.print(console.getInfoColor(),
+					jEdit.getProperty(
+					"console.shell.cd.ok",pp));
+			}
+			else
+			{
+				console.print(console.getErrorColor(),
+					jEdit.getProperty(
+					"console.shell.cd.error",pp));
+			}
+		}
 	}
 }
