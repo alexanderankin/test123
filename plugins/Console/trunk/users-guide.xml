@@ -1138,6 +1138,10 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     command didn't work</para></listitem>
     <listitem><para>The buttons on the commando tool bar didn't work properly</para>
     </listitem>
+    <listitem><para>Added two new public methods --
+    <function>ConsolePlugin.getSystemShellVariableValue()</function> and
+    <function>ConsolePlugin.expandSystemShellVariables()</function>.</para>
+    </listitem>
    </itemizedlist>
   </listitem>
 
