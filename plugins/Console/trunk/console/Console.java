@@ -299,6 +299,8 @@ implements EBComponent, Output
 		{
 			outputDocument.insertString(outputDocument.getLength(),
 				msg,style);
+			outputDocument.insertString(outputDocument.getLength(),
+				"\n",style);
 		}
 		catch(BadLocationException bl)
 		{

@@ -97,7 +97,8 @@ class CommandoThread extends Thread
 
 						console.run(shell,
 							command.toBuffer
-							? (Output)new BufferOutput(console)
+							? (Output)new BufferOutput(console,
+							command.mode)
 							: (Output)console,
 							command.command);
 					}

@@ -34,8 +34,15 @@ public class BufferOutput implements Output
 	//{{{ BufferOutput constructor
 	public BufferOutput(Console console)
 	{
+		this(console,"text");
+	} //}}}
+
+	//{{{ BufferOutput constructor
+	public BufferOutput(Console console, String mode)
+	{
 		this.console = console;
 		this.view = console.getView();
+		this.mode = mode;
 		buf = new StringBuffer();
 	} //}}}
 
@@ -55,6 +62,9 @@ public class BufferOutput implements Output
 			{
 				console.commandDone();
 				Buffer buffer = jEdit.newFile(view);
+				Mode _mode = jEdit.getMode(mode);
+				if(_mode != null)
+					buffer.setMode(_mode);
 				buffer.insert(0,buf.toString());
 			}
 		});
@@ -63,6 +73,7 @@ public class BufferOutput implements Output
 	//{{{ Private members
 	private Console console;
 	private View view;
+	private String mode;
 	private StringBuffer buf;
 	//}}}
 }

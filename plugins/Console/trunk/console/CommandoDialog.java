@@ -260,13 +260,16 @@ public class CommandoDialog extends EnhancedDialog
 	{
 		boolean confirm;
 		boolean toBuffer;
+		String mode;
 		String shell;
 		String code;
 
-		Script(boolean confirm, boolean toBuffer, String shell, String code)
+		Script(boolean confirm, boolean toBuffer, String mode,
+			String shell, String code)
 		{
 			this.confirm = confirm;
 			this.toBuffer = toBuffer;
+			this.mode = mode;
 			this.shell = shell;
 			this.code = code;
 		}
@@ -277,7 +280,7 @@ public class CommandoDialog extends EnhancedDialog
 				code,false);
 			if(command == null)
 				return null;
-			return new Command(confirm,toBuffer,
+			return new Command(confirm,toBuffer,mode,
 				shell,String.valueOf(command));
 		}
 	} //}}}
@@ -288,13 +291,16 @@ public class CommandoDialog extends EnhancedDialog
 	{
 		boolean confirm;
 		boolean toBuffer;
+		String mode;
 		String shell;
 		String command;
 
-		Command(boolean confirm, boolean toBuffer, String shell, String command)
+		Command(boolean confirm, boolean toBuffer, String mode,
+			String shell, String command)
 		{
 			this.confirm = confirm;
 			this.toBuffer = toBuffer;
+			this.mode = mode;
 			this.shell = shell;
 			this.command = command;
 		}
@@ -380,6 +386,8 @@ public class CommandoDialog extends EnhancedDialog
 				confirm = "TRUE".equals(value);
 			else if(aname == "TO_BUFFER")
 				toBuffer = "TRUE".equals(value);
+			else if(aname == "BUFFER_MODE")
+				mode = value;
 			else if(aname == "SHELL")
 				shell = value;
 		} //}}}
@@ -476,7 +484,8 @@ public class CommandoDialog extends EnhancedDialog
 				else if(tag == "COMMAND")
 				{
 					scripts.addElement(new Script(
-						confirm,toBuffer,shell,code));
+						confirm,toBuffer,mode,
+						shell,code));
 					confirm = false;
 					toBuffer = false;
 					shell = code = null;
@@ -515,6 +524,7 @@ public class CommandoDialog extends EnhancedDialog
 		private String label;
 		private boolean confirm;
 		private boolean toBuffer;
+		private String mode;
 		private String shell;
 		private String code;
 

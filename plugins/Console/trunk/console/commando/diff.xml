@@ -57,7 +57,8 @@
 	</UI>
 
 	<COMMANDS>
-		<COMMAND CONFIRM="FALSE" TO_BUFFER="TRUE" SHELL="System">
+		<COMMAND CONFIRM="FALSE" TO_BUFFER="TRUE"
+			BUFFER_MODE="patch" SHELL="System">
 			StringBuffer buf = new StringBuffer("diff ");
 
 			if(recursive)
