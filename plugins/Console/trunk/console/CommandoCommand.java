@@ -1,5 +1,8 @@
 /*
  * CommandoCommand.java - Commando command wrapper
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -29,20 +32,23 @@ class CommandoCommand
 	String path;
 	String propertyPrefix;
 
+	//{{{ CommandoCommand constructor
 	CommandoCommand(String name, URL url)
 	{
 		this.name = name;
 		this.url = url;
 		this.propertyPrefix = "commando." + name.replace(' ','_') + '.';
-	}
+	} //}}}
 
+	//{{{ CommandoCommand constructor
 	CommandoCommand(String name, String path)
 	{
 		this.name = name;
 		this.path = path;
 		this.propertyPrefix = "commando." + name.replace(' ','_') + '.';
-	}
+	} //}}}
 
+	//{{{ openStream() method
 	Reader openStream() throws IOException
 	{
 		if(url != null)
@@ -54,10 +60,11 @@ class CommandoCommand
 		{
 			return new BufferedReader(new FileReader(path));
 		}
-	}
+	} //}}}
 
+	//{{{ toString() method
 	public String toString()
 	{
 		return name;
-	}
+	} //}}}
 }

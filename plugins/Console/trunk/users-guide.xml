@@ -806,6 +806,9 @@ the command output will be shown in a new buffer.</para></listitem>
     <listitem><para>
      Updated error patterns
     </para></listitem>
+    <listitem><para>
+     Changing the console font didn't work
+    </para></listitem>
    </itemizedlist>
   </listitem>
 

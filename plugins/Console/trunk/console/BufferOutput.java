@@ -1,5 +1,8 @@
 /*
  * BufferOutput.java - Output to buffer implementation
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,27 +22,31 @@
 
 package console;
 
-import javax.swing.text.BadLocationException;
+//{{{ Imports
 import javax.swing.SwingUtilities;
 import java.awt.Color;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+//}}}
 
 public class BufferOutput implements Output
 {
+	//{{{ BufferOutput constructor
 	public BufferOutput(Console console)
 	{
 		this.console = console;
 		this.view = console.getView();
 		buf = new StringBuffer();
-	}
+	} //}}}
 
+	//{{{ print() method
 	public void print(Color color, String msg)
 	{
 		buf.append(msg);
 		buf.append('\n');
-	}
+	} //}}}
 
+	//{{{ commandDone() method
 	public void commandDone()
 	{
 		SwingUtilities.invokeLater(new Runnable()
@@ -51,10 +58,11 @@ public class BufferOutput implements Output
 				buffer.insert(0,buf.toString());
 			}
 		});
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private Console console;
 	private View view;
 	private StringBuffer buf;
+	//}}}
 }
