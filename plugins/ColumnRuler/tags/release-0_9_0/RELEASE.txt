@@ -1,0 +1,22 @@
+Column Ruler 0.9.0
+
+Requirements:
+	* JDK 1.4.1
+	* jEdit 4.2pre8
+
+Announcement:
+	Initial plugin central release
+
+Source:
+	plugins/ColumnRuler
+	tag: release-0_9_0
+
+Short Description:
+	Provides a ruler across the top of the text area which marks off columns.
+
+Long Description:
+	This plugin provides a ruler above the text area which marks off columns. Hopefully it's obvious that this only makes sense if you're using a fixed-width font such as Courier.
+
+	It also indicates the column where the caret is, the wrap column (if using soft wrap), and when text is selected, it highlights the columns of the current selection and displays the selection size.
+
+	The wrap mode for the current buffer can be set by right-clicking the ruler, and the wrap column for a buffer can be set by dragging the wrap marker.
