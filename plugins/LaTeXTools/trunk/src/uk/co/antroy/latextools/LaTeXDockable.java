@@ -25,20 +25,19 @@ import javax.swing.JTabbedPane;
  */
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
+import javax.swing.*;
+import java.util.*;
 
+public class LaTeXDockable  extends JPanel{
 
-public class LaTeXDockable
-  extends JTabbedPane {
+//  extends JTabbedPane {
 
   //~ Instance/static variables ...............................................
 
   Buffer buffer;
-  JPanel jp = new JPanel();
-  Action refresh;
-  Action reload;
-  JTabbedPane tp = new JTabbedPane(JTabbedPane.BOTTOM);
   View view;
-
+  private JComboBox nav_list = new JComboBox();
+  
   //~ Constructors ............................................................
 
   /**
@@ -47,12 +46,17 @@ public class LaTeXDockable
    * @param v ¤
    * @param b ¤
    */
-  public LaTeXDockable(View v, Buffer b) {
-    this.buffer = b;
-    this.view = v;
-    this.setTabPlacement(JTabbedPane.BOTTOM);
-    add(new NavigationPanel(view, buffer));
-    add(new BibTeXPanel(view, buffer));
-    add(new ReferencePanel(view, buffer));
+  public LaTeXDockable() {
+    
+    ArrayList nav = new ArrayList(NavigationList.getNavigationData());
+    nav_list = new JComboBox(nav.toArray());
+    
+    add(new JLabel("Under Construction!"));
+    add(nav_list);
   }
+  
+  public JComboBox getComboBox(){
+    return nav_list;
+  }
+  
 }

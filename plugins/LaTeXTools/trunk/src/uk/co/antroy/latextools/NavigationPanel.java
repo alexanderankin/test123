@@ -60,7 +60,6 @@ public class NavigationPanel
   //~ Instance/static variables ...............................................
 
   private int lowlev = 0;
-  private HashSet navData = new HashSet();
   private ArrayList navItems = new ArrayList();
   private JTree navTree;
   private JComboBox options;
@@ -141,10 +140,7 @@ public class NavigationPanel
    * ¤
    */
   public void _init() {
-    loadNavigationData();
-
-    ArrayList navList = new ArrayList(navData);
-    Collections.sort(navList);
+    ArrayList navList = new ArrayList(NavigationList.getNavigationData());
     options = new JComboBox(navList.toArray());
     options.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
@@ -184,10 +180,7 @@ public class NavigationPanel
    * ¤
    */
   public void reload() {
-    loadNavigationData();
-
-    ArrayList navList = new ArrayList(navData);
-    Collections.sort(navList);
+    ArrayList navList = new ArrayList(NavigationList.getNavigationData());
     options.removeAllItems();
 
     Iterator it = navList.iterator();
@@ -265,86 +258,6 @@ public class NavigationPanel
     }
   }
 
-  private void loadNavigationData() {
-
-    File navDir = new File(jEdit.getProperty("options.navigation.userdir"));
-
-    try {
-
-      Reader reader = new InputStreamReader(NavigationPanel.class.getResourceAsStream(
-                                                  "default.nav"));
-      loadNavigationFile(reader);
-    } catch (Exception e) {
-    }
-
-    if (navDir.exists()) {
-
-      try {
-
-        File[] files = navDir.listFiles(new FileFilter() {
-          public boolean accept(File f) {
-
-            return f.toString().endsWith(".nav");
-          }
-        });
-
-        for (int i = 0; i < files.length; i++) {
-          loadNavigationFile(new FileReader(files[i]));
-        }
-      } catch (Exception e) {
-      }
-    }
-  }
-
-  private void loadNavigationFile(Reader reader) {
-
-    try {
-
-      BufferedReader in = new BufferedReader(reader);
-      String nextLine = in.readLine().trim();
-
-      while (nextLine != null) {
-
-        int lowestLevel = 0;
-
-        if (nextLine.length() > 1 && nextLine.startsWith("@")) {
-
-          if (nextLine.endsWith("0")) {
-
-            NavigationList nl = new NavigationList(nextLine.substring(1, 
-                                                                      nextLine.length() - 1));
-            navData.remove(nl);
-            nextLine = in.readLine();
-          } else {
-
-            int importance = Integer.parseInt(nextLine.substring(
-                                                    nextLine.length() - 1));
-            NavigationList nl = new NavigationList(nextLine.substring(1, 
-                                                                      nextLine.length() - 1), 
-                                                   importance);
-            navData.remove(nl);
-            navData.add(nl);
-            nextLine = in.readLine().trim();
-
-            while (nextLine.length() > 3 && 
-                   nextLine.substring(1, 2).equals(":")) {
-
-              int lev = Integer.parseInt(nextLine.substring(0, 1));
-              lowestLevel = Math.max(lowestLevel, lev);
-              nl.add(new TagPair(nextLine.substring(2), lev));
-              nextLine = in.readLine().trim();
-            }
-
-            nl.setLowestLevel(lowestLevel);
-            navData.add(nl);
-          }
-        } else {
-          nextLine = in.readLine();
-        }
-      }
-    } catch (Exception e) {
-    }
-  }
 
   private void loadNavigationItems() {
     navItems.clear();
@@ -475,75 +388,4 @@ public class NavigationPanel
     view.getTextArea().setFirstLine(line);
   }
 
-  //~ Inner classes ...........................................................
-
-  class NavigationList
-    extends ArrayList
-    implements Comparable {
-
-    //~ Instance/static variables .............................................
-
-    int importance = 0;
-    int lowestLevel;
-    String title;
-
-    //~ Constructors ..........................................................
-
-    NavigationList(String s) {
-      super();
-      this.title = s;
-    }
-
-    NavigationList(String s, int imp) {
-      super();
-      this.title = s;
-      this.importance = imp;
-    }
-
-    //~ Methods ...............................................................
-
-    public int compareTo(NavigationList be) {
-
-      return this.importance - be.importance;
-    }
-
-    public int compareTo(Object o) {
-
-      return compareTo((NavigationList) o);
-    }
-
-    public boolean equals(Object o) {
-
-      return equals((NavigationList) o);
-    }
-
-    public boolean equals(NavigationList n) {
-
-      return this.toString().equals(n.toString());
-    }
-
-    public int hashCode() {
-
-      return title.hashCode();
-    }
-
-    public String toString() {
-
-      return title;
-    }
-
-    void setLowestLevel(int lev) {
-      lowestLevel = lev;
-    }
-
-    int getLowestLevel() {
-
-      return lowestLevel;
-    }
-
-    String getTitle() {
-
-      return title;
-    }
-  }
 }
