@@ -479,11 +479,15 @@ public final class Project {
       } else {
         Reader reader = null;
         try {
-          Log.log(Log.DEBUG, this, "Parsing file " + f.getAbsolutePath());
           if (mode.accept(f.getAbsolutePath(), "")) {
-            reader = new FileReader(f);
+            reader = new BufferedReader(new FileReader(f));
             parsedFileCount++;
-            phpParser.parse(f.getAbsolutePath(), reader);
+            try {
+              phpParser.parse(f.getAbsolutePath(), reader);
+            } catch (Exception e) {
+              Log.log(Log.ERROR, this, "Error while parsing file " + f.getAbsolutePath());
+              Log.log(Log.ERROR,this,e);
+            }
           }
           setProgressValue(++current);
         } catch (FileNotFoundException e) {
