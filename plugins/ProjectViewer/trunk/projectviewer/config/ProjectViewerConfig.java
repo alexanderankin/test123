@@ -488,9 +488,9 @@ public final class ProjectViewerConfig {
     } //}}}
 
 	//{{{ isJEdit42()
-	/** Returns whether we're using jEdit 4.2 (pre2 or better). */
+	/** Returns whether we're using jEdit 4.2 (pre5 or better). */
 	public boolean isJEdit42() {
-		return MiscUtilities.compareStrings(jEdit.getBuild(), "04.02.02.00", false) >= 0;
+		return MiscUtilities.compareStrings(jEdit.getBuild(), "04.02.05.00", false) >= 0;
 	} //}}}
 
 	//}}}
