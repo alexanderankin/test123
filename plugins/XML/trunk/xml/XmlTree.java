@@ -22,9 +22,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Vector;
-import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
@@ -66,6 +64,8 @@ public class XmlTree extends JPanel implements EBComponent
 		add(BorderLayout.CENTER,new JScrollPane(tree));
 
 		propertiesChanged();
+
+		update();
 	} //}}}
 
 	//{{{ requestDefaultFocus() method
@@ -96,7 +96,7 @@ public class XmlTree extends JPanel implements EBComponent
 			.getClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY);
 		if(model == null)
 		{
-			DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode(view.getBuffer().getName());
 			model = new DefaultTreeModel(root);
 
 			root.insert(new DefaultMutableTreeNode(
@@ -127,53 +127,23 @@ public class XmlTree extends JPanel implements EBComponent
 
 	private boolean showAttributes;
 	private boolean parse;
-	private int delay;
 
 	private View view;
-	private Buffer buffer;
-	private Timer keystrokeTimer, caretTimer;
+	private Timer caretTimer;
 	//}}}
 
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
 		showAttributes = jEdit.getBooleanProperty("xml.show-attributes");
-
-		try
-		{
-			delay = Integer.parseInt(jEdit.getProperty("xml.auto-parse-delay"));
-		}
-		catch(NumberFormatException nf)
-		{
-			delay = 1500;
-		}
-	} //}}}
-
-	//{{{ parseWithDelay() method
-	private void parseWithDelay()
-	{
-		if(keystrokeTimer != null)
-			keystrokeTimer.stop();
-
-		keystrokeTimer = new Timer(0,new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				//parse(false);
-			}
-		});
-
-		keystrokeTimer.setInitialDelay(delay);
-		keystrokeTimer.setRepeats(false);
-		keystrokeTimer.start();
 	} //}}}
 
 	//{{{ expandTagWithDelay() method
 	private void expandTagWithDelay()
 	{
 		// if keystroke parse timer is running, do nothing
-		if(keystrokeTimer != null && keystrokeTimer.isRunning())
-			return;
+		// if(keystrokeTimer != null && keystrokeTimer.isRunning())
+			// return;
 
 		if(caretTimer != null)
 			caretTimer.stop();
@@ -318,7 +288,7 @@ public class XmlTree extends JPanel implements EBComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			//parse(true);
+			XmlPlugin.getParser(view).parse(true);
 		}
 	} //}}}
 

@@ -19,21 +19,28 @@ package xml;
 //{{{ Imports
 import javax.swing.tree.*;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
+import java.awt.event.*;
+import java.awt.Component;
 import java.io.*;
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Stack;
+import java.util.StringTokenizer;
+import java.util.Vector;
 import org.xml.sax.ext.DeclHandler;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import errorlist.*;
 //}}}
 
-class XmlParser
+public class XmlParser implements EBComponent
 {
 	//{{{ XmlParser constructor
-	XmlParser(View view)
+	public XmlParser(View view)
 	{
 		this.view = view;
 
@@ -47,14 +54,24 @@ class XmlParser
 		ErrorSource.registerErrorSource(errorSource);
 
 		handler = new Handler();
+
+		EditPane[] editPanes = view.getEditPanes();
+		for(int i = 0; i < editPanes.length; i++)
+		{
+			editPanes[i].getTextArea().addFocusListener(
+				new FocusHandler());
+		}
+
+		EditBus.addToBus(this);
 	} //}}}
 
 	//{{{ parse() method
-	void parse(final boolean showParsingMessage)
+	public void parse(final boolean showParsingMessage)
 	{
 		stopThread();
 
 		this.showParsingMessage = showParsingMessage;
+		buffer = view.getBuffer();
 
 		//{{{ Run this when I/O is complete
 		VFSManager.runInAWTThread(new Runnable()
@@ -102,13 +119,118 @@ class XmlParser
 		}); //}}}
 	} //}}}
 
+	//{{{ parseWithDelay() method
+	private void parseWithDelay()
+	{
+		if(keystrokeTimer != null)
+			keystrokeTimer.stop();
+
+		keystrokeTimer = new Timer(0,new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				parse(false);
+			}
+		});
+
+		keystrokeTimer.setInitialDelay(delay);
+		keystrokeTimer.setRepeats(false);
+		keystrokeTimer.start();
+	} //}}}
+
+	//{{{ showNotParsedMessage() method
+	public void showNotParsedMessage()
+	{
+		stopThread();
+
+		buffer = view.getBuffer();
+
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+		model = new DefaultTreeModel(root);
+
+		root.insert(new DefaultMutableTreeNode(
+			jEdit.getProperty("xml-tree.not-xml-file")),0);
+		model.reload(root);
+
+		view.getEditPane().putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
+		finish();
+		return;
+	} //}}}
+
 	//{{{ dispose() method
-	void dispose()
+	public void dispose()
 	{
 		stopThread();
 
 		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
+
+		EditBus.removeFromBus(this);
+	} //}}}
+
+	//{{{ handleMessage() method
+	public void handleMessage(EBMessage msg)
+	{
+		//{{{ BufferUpdate
+		if(msg instanceof BufferUpdate)
+		{
+			BufferUpdate bmsg = (BufferUpdate)msg;
+			if(bmsg.getWhat() == BufferUpdate.DIRTY_CHANGED
+				&& bmsg.getBuffer() == buffer
+				&& !bmsg.getBuffer().isDirty())
+			{
+				if(buffer.getBooleanProperty(
+					"xml.buffer-change-parse")
+					|| buffer.getBooleanProperty(
+					"xml.keystroke-parse"))
+				{
+					parse(true);
+				}
+				else
+					showNotParsedMessage();
+			}
+			else if((bmsg.getWhat() == BufferUpdate.MODE_CHANGED
+				|| bmsg.getWhat() == BufferUpdate.LOADED)
+				&& bmsg.getBuffer() == buffer)
+			{
+				if(buffer.getBooleanProperty(
+					"xml.buffer-change-parse")
+					|| buffer.getBooleanProperty(
+					"xml.keystroke-parse"))
+				{
+					parse(true);
+				}
+				else
+					showNotParsedMessage();
+			}
+		} //}}}
+		//{{{ EditPaneUpdate
+		else if(msg instanceof EditPaneUpdate)
+		{
+			EditPaneUpdate epu = (EditPaneUpdate)msg;
+			EditPane editPane = epu.getEditPane();
+
+			if(epu.getWhat() == EditPaneUpdate.CREATED)
+				editPane.getTextArea().addFocusListener(new FocusHandler());
+			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+			{
+				// check if this is the currently focused edit pane
+				if(editPane == editPane.getView().getEditPane())
+				{
+					Buffer buffer = editPane.getBuffer();
+
+					if(buffer.getBooleanProperty(
+						"xml.buffer-change-parse")
+						|| buffer.getBooleanProperty(
+						"xml.keystroke-parse"))
+					{
+						parse(true);
+					}
+					else
+						showNotParsedMessage();
+				}
+			}
+		} //}}}
 	} //}}}
 
 	//{{{ Private members
@@ -135,7 +257,23 @@ class XmlParser
 	private DefaultErrorSource errorSource;
 
 	private boolean showParsingMessage;
+
+	private int delay;
+	private Timer keystrokeTimer;
 	//}}}
+
+	//{{{ propertiesChanged() method
+	private void propertiesChanged()
+	{
+		try
+		{
+			delay = Integer.parseInt(jEdit.getProperty("xml.auto-parse-delay"));
+		}
+		catch(NumberFormatException nf)
+		{
+			delay = 1500;
+		}
+	} //}}}
 
 	//{{{ _parse() method
 	private void _parse()
@@ -209,7 +347,6 @@ class XmlParser
 		// we could reuse a single parser instance to preserve
 		// performance, but it eats too much memory, especially
 		// if the file being parsed has an associated DTD.
-		buffer = null;
 		text = null;
 		parser = null;
 
@@ -597,6 +734,34 @@ class XmlParser
 					finish();
 				}
 			});
+		}
+	} //}}}
+
+	//{{{ FocusHandler class
+	class FocusHandler extends FocusAdapter
+	{
+		public void focusGained(FocusEvent evt)
+		{
+			View view = GUIUtilities.getView((Component)evt.getSource());
+			Buffer buffer = view.getBuffer();
+
+			if(buffer.getBooleanProperty(
+				"xml.buffer-change-parse")
+				|| buffer.getBooleanProperty(
+				"xml.keystroke-parse"))
+			{
+				if(buffer != XmlParser.this.buffer)
+				{
+					System.err.println(buffer + ":" + XmlParser.this.buffer);
+					parse(true);
+				}
+				else
+				{
+					// XXX: expand tree to caret pos
+				}
+			}
+			else
+				showNotParsedMessage();
 		}
 	} //}}}
 

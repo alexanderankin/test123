@@ -17,6 +17,7 @@ package xml;
 
 //{{{ Imports
 import javax.swing.*;
+import java.util.HashMap;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
@@ -59,8 +60,21 @@ public class XmlPlugin extends EBPlugin
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
+		//{{{ BufferUpdate
+		if(msg instanceof BufferUpdate)
+		{
+			BufferUpdate bu = (BufferUpdate)msg;
+			Buffer buffer = bu.getBuffer();
+
+			if(bu.getWhat() == BufferUpdate.CREATED)
+				TagHighlight.bufferCreated(buffer);
+			else if(bu.getWhat() == BufferUpdate.LOADED)
+				TagHighlight.bufferLoaded(buffer);
+			else if(bu.getWhat() == BufferUpdate.CLOSED)
+				TagHighlight.bufferClosed(buffer);
+		} //}}}
 		//{{{ EditPaneUpdate
-		if(msg instanceof EditPaneUpdate)
+		else if(msg instanceof EditPaneUpdate)
 		{
 			EditPaneUpdate epu = (EditPaneUpdate)msg;
 			EditPane editPane = epu.getEditPane();
@@ -76,22 +90,15 @@ public class XmlPlugin extends EBPlugin
 				textAreaPainter.addCustomHighlight(tagHighlight);
 			}
 			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+			{
 				TagHighlight.removeHighlightFrom(editPane);
-			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-				TagHighlight.bufferChanged(editPane);
-		} //}}}
-		//{{{ BufferUpdate
-		else if(msg instanceof BufferUpdate)
-		{
-			BufferUpdate bu = (BufferUpdate)msg;
-			Buffer buffer = bu.getBuffer();
 
-			if(bu.getWhat() == BufferUpdate.CREATED)
-				TagHighlight.bufferCreated(buffer);
-			else if(bu.getWhat() == BufferUpdate.LOADED)
-				TagHighlight.bufferLoaded(buffer);
-			else if(bu.getWhat() == BufferUpdate.CLOSED)
-				TagHighlight.bufferClosed(buffer);
+				JEditTextArea textArea = editPane.getTextArea();
+			}
+			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+			{
+				TagHighlight.bufferChanged(editPane);
+			}
 		} //}}}
 		//{{{ PropertiesChanged
 		else if(msg instanceof PropertiesChanged)
@@ -100,5 +107,30 @@ public class XmlPlugin extends EBPlugin
 			CatalogManager.propertiesChanged();
 			TagHighlight.propertiesChanged();
 		} //}}}
+		//{{{ ViewUpdate
+		else if(msg instanceof ViewUpdate)
+		{
+			ViewUpdate vu = (ViewUpdate)msg;
+			View view = vu.getView();
+
+			if(vu.getWhat() == ViewUpdate.CREATED)
+				parsers.put(view,new XmlParser(view));
+			else if(vu.getWhat() == ViewUpdate.CLOSED)
+			{
+				XmlParser parser = (XmlParser)parsers.get(view);
+				parser.dispose();
+				parsers.remove(view);
+			}
+		} //}}}
 	} //}}}
+
+	//{{{ getParser() method
+	public static XmlParser getParser(View view)
+	{
+		return (XmlParser)parsers.get(view);
+	} //}}}
+
+	//{{{ Private members
+	private static HashMap parsers = new HashMap();
+	//}}}
 }
