@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+
+<!-- Console user's guide -->
+<!-- (C) 2001 Slava Pestov -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :tabSize=1:indentSize=1:noTabs=true: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">
+
+<book>
+
+<bookinfo><title>Console plugin user's guide</title>
+
+ <copyright>
+  <year>1999</year>
+  <year>2000</year>
+  <year>2001</year>
+  <holder>Slava Pestov</holder>
+ </copyright>
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+ </legalnotice>
+</bookinfo>
+
+- console window
+- console tool bar
+- system shell
+- system shell variables
+- system shell 'cd' command
+- system shell backgrounding, process management
+- system shell other built-ins
+- bean shell
+- commando
+- commando directory
+- commando files
+- commando tool bar
+- writing shells
+- dependencies
+- shell interface
+- registering shells
+- methods in Console class, Output interface
+
+<appendix id="changes"><title>Change log</title>
+
+ <itemizedlist>
+
+  <listitem><formalpara><title>Version 3.0</title><para>requires jEdit 3.2pre9,
+   the EditBus plugin 1.0.1, and the ErrorList plugin 1.1.</para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>
+     Compatibility fixes for jEdit 3.2
+    </para></listitem>
+
+    <listitem><para>
+     Now loads a BeanShell code snippet on startup,
+     with <function>runCommandInConsole()</function>
+     and <function>runCommandInConsoleToBuffer()</function>
+     methods for macros
+    </para></listitem>
+
+    <listitem><para>
+     Shell interface changed; you will need to install a new version of the
+     JCompiler plugin if you use it
+    </para></listitem>
+
+    <listitem><para>
+     The current directory is now set on a per-console, rather than global, basis
+    </para></listitem>
+
+    <listitem><para>
+     Each console can run its own process. Processes can also be started in
+     the background (ie, with no associated console)
+     by appending "&amp;" to the command string
+    </para></listitem>
+
+    <listitem><para>
+     Process output can now be redirected to a buffer
+    </para></listitem>
+
+    <listitem><para>
+     Long lines in command output no longer cause problems and slow everything
+     down (Dirk Moebius)
+    </para></listitem>
+
+    <listitem><para>
+     <guimenuitem>Console to Front</guimenuitem> action added, it displays the
+     console if not already open and sets keyboard focus to the input text field.
+     Replaces 'Go to Console' macro in jEdit
+    </para></listitem>
+
+    <listitem><para>
+     <guimenuitem>Run Last Command</guimenuitem> action added, it runs the most
+     recently run command. Replaces <guimenuitem>Run Last Command</guimenuitem>
+     macro in jEdit.
+    </para></listitem>
+
+    <listitem><para>
+     Error patterns are now stored in a more reliable manner
+    </para></listitem>
+
+    <listpara><para>
+     <userinput>$varname</userinput>, <userinput>${varname}</userinput> and
+     <userinput>%varname%</userinput> can be used to insert contents of
+     environment variable <userinput>varname</userinput> in command string
+    </para></listitem>
+
+    <listitem><para>
+     Environment variables can be changed with <filename>%set</filename>,
+     <filename>%unset</filename>, built-ins; run
+     <filename>%env</filename> to see a list
+    </para></listitem>
+
+    <listitem><para>
+     On Unix and Windows, environment variables are obtained using system-specific
+     means and passed to child processes
+    </para></listitem>
+
+    <listitem><para>
+     Error patterns can now define a warning regexp. Previously, the code to
+     determine of an error is a warning was hard-coded to check if the error
+     contained the string "warning" or "caution"
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
+
+ </itemizedlist>
+
+</appendix>
+
+</book>
