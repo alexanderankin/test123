@@ -89,12 +89,12 @@ public class ReImporter extends RootImporter {
 					}
 				}
 			}
-		} else if (defineFileFilter(selected.getName(), false)) {
+		} else if (defineFileFilter(null, selected.getName(), FILTER_MSG_RE_IMPORT, parent)) {
 			String state = viewer.getFolderTreeState(selected);
 			reimportDirectory((VPTDirectory)selected);
 			postAction = new NodeStructureChange(selected, state);
 		}
-		
+
 		try {
 			SwingUtilities.invokeAndWait(new Runnable() {
 				public void run() {

@@ -21,15 +21,12 @@ package projectviewer.importer;
 //{{{ Imports
 import java.io.File;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.FileNotFoundException;
 
 import java.util.HashMap;
 import java.util.HashSet;
-
-import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
@@ -51,18 +48,18 @@ import org.gjt.sp.jedit.jEdit;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
+public class CVSEntriesFilter extends ImporterFileFilter {
 
 	//{{{ Private members
 	private HashMap entries = new HashMap();
 	//}}}
 
-	//{{{ getDescription() method
+	//{{{ +getDescription() : String
 	public String getDescription() {
 		return jEdit.getProperty("projectviewer.cvs-filter");
 	} //}}}
 
-	//{{{ accept(File) method
+	//{{{ +accept(File) : boolean
 	/**
 	 *	accept() method for the Swing JFileChooser. Accepts files only if they
 	 *	are in the CVS/Entries file for the directory. All directories not named
@@ -73,7 +70,7 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 				|| accept(file.getParentFile(), file.getName());
 	} //}}}
 
-	//{{{ accept(File, String) method
+	//{{{ +accept(File, String) : boolean
 	/**
 	 *	accept() method for the FilenameFilter implementation. Accepts only
 	 *	files and directories that are listed in the CVS/Entries file.
@@ -83,7 +80,7 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 				new File(file.getAbsolutePath(), fileName).isDirectory();
 	} //}}}
 
-	//{{{ getEntries(String) method
+	//{{{ -getEntries(String) : HashSet
 	/**
 	 *	Returns the set of files ffrom the CVS/Entries file for the given path.
 	 *	In case the file has not yet been read, parse it.
@@ -92,12 +89,13 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 		HashSet h = (HashSet) entries.get(dirPath);
 		if (h == null) {
 			// parse file
+			BufferedReader br = null;
 			try {
 				h = new HashSet();
 
 				String fPath = dirPath + File.separator + "CVS" +
 					File.separator + "Entries";
-				BufferedReader br = new BufferedReader(new FileReader(fPath));
+				br = new BufferedReader(new FileReader(fPath));
 				String line;
 
 				while ( (line = br.readLine()) != null ) {
@@ -115,10 +113,16 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 				//shouldn't happen
 				Log.log(Log.ERROR,this,ioe);
 			} finally {
+				if (br != null) try { br.close(); } catch (Exception e) { }
 				entries.put(dirPath, h);
 			}
 		}
 		return h;
+	} //}}}
+
+	//{{{ +getRecurseDescription() : String
+	public String getRecurseDescription() {
+		return	jEdit.getProperty("projectviewer.import.yes-cvs");
 	} //}}}
 
 }
