@@ -64,7 +64,7 @@ public class WhiteSpacePlugin
 
 
     public void createOptionPanes(OptionsDialog dialog) {
-        OptionGroup group = new OptionGroup("WhiteSpace");
+        OptionGroup group = new OptionGroup("white-space");
 
         group.addOptionPane(new SpaceOptionPane());
         group.addOptionPane(new TabOptionPane());

@@ -77,6 +77,7 @@ white-space.tabify-leading-white-space=false
 
 
 # Option pane titles
+options.white-space.label=WhiteSpace
 options.white-space.space.label=Spaces
 options.white-space.tab.label=Tabs
 options.white-space.other.label=Other whitespaces
