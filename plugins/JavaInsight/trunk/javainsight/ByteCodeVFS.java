@@ -89,7 +89,7 @@ public abstract class ByteCodeVFS extends VFS {
     public String constructPath(String parent, String path) {
         String protocol = this.getName();
 
-        if (path.startsWith(protocol + ':')) {
+        if (parent.startsWith(protocol + ':')) {
             String clazzPath = parent.substring((protocol + ':').length());
             VFS vfs = VFSManager.getVFSForPath(clazzPath);
 
@@ -99,7 +99,6 @@ public abstract class ByteCodeVFS extends VFS {
 
             return vfs.constructPath(parent, path);
         }
-
     }
 
 
