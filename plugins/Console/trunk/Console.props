@@ -18,7 +18,7 @@ commando.label=Commando...
 browse-commando-directory.label=Browse Commando Directory
 rescan-commando-directory.label=Rescan Commando Directory
 
-go-to-console.label=Go to Console
+console-to-front.label=Console to Front
 
 ### Console component
 
@@ -107,6 +107,9 @@ console.shell.dirstack.usage=Usage: %dirstack\n\
 console.shell.echo.usage=Usage: %echo <arguments> ...\n\
 	Prints arguments in console.
 
+console.shell.env.usage=Usage: %env\n\
+	Prints all environment variables in console.
+
 console.shell.edit.usage=Usage: %edit <files> ...\n\
 	Opens all specified files.
 
@@ -127,6 +130,12 @@ console.shell.pushd.ok=Directory {0} pushed; use %popd to return.
 
 console.shell.pwd.usage=Usage: %pwd\n\
 	Prints current working directory.
+
+console.shell.set.usage=Usage: %set <variable> <value>\n\
+	Sets value of environment variable <variable> to <value>.
+
+console.shell.unset.usage=Usage: %unset <variable>\n\
+	Clears value of environment variable <variable>.
 
 console.shell.version.usage=Usage: %version\n\
 	Prints console plugin version.

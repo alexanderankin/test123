@@ -226,6 +226,7 @@ public abstract class SystemShellBuiltIn
 		commands.put("detach", new detach());
 		commands.put("echo", new echo());
 		commands.put("edit", new edit());
+		commands.put("env", new env());
 		commands.put("help", new help());
 		commands.put("kill", new kill());
 		/* commands.put("ls", new ls()); */
@@ -233,11 +234,10 @@ public abstract class SystemShellBuiltIn
 		commands.put("pushd", new pushd());
 		commands.put("pwd", new pwd());
 		commands.put("run", new run());
-		/* commands.put("set", new set());
-		commands.put("touch", new touch());
-		commands.put("unalias", new unalias());
+		commands.put("set", new set());
+		/* commands.put("touch", new touch());
+		commands.put("unalias", new unalias()); */
 		commands.put("unset", new unset());
-		commands.put("variables", new variables()); */
 		commands.put("version", new version());
 	}
 
@@ -387,6 +387,39 @@ public abstract class SystemShellBuiltIn
 		}
 	}
 
+	static class env extends SystemShellBuiltIn
+	{
+		public int getMinArguments()
+		{
+			return 0;
+		}
+
+		public int getMaxArguments()
+		{
+			return 0;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			Hashtable variables = SystemShell.getVariables();
+			Vector returnValue = new Vector();
+			Enumeration keys = variables.keys();
+			while(keys.hasMoreElements())
+			{
+				Object key = keys.nextElement();
+				returnValue.addElement(key + "=" + variables.get(key));
+			}
+
+			MiscUtilities.quicksort(returnValue,
+				new MiscUtilities.StringICaseCompare());
+			for(int i = 0; i < returnValue.size(); i++)
+			{
+				output.print(null,(String)returnValue.elementAt(i));
+			}
+		}
+	}
+
 	static class help extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -526,6 +559,46 @@ public abstract class SystemShellBuiltIn
 					(String)args.elementAt(i)),
 					true,false);
 			}
+		}
+	}
+
+	static class set extends SystemShellBuiltIn
+	{
+		public int getMinArguments()
+		{
+			return 2;
+		}
+
+		public int getMaxArguments()
+		{
+			return 2;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			Hashtable variables = SystemShell.getVariables();
+			variables.put(args.elementAt(0),args.elementAt(1));
+		}
+	}
+
+	static class unset extends SystemShellBuiltIn
+	{
+		public int getMinArguments()
+		{
+			return 2;
+		}
+
+		public int getMaxArguments()
+		{
+			return 2;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			Hashtable variables = SystemShell.getVariables();
+			variables.remove(args.elementAt(0));
 		}
 	}
 

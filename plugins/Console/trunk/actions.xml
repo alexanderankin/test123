@@ -11,7 +11,7 @@
 			return view.getDockableWindowManager().isDockableWindowVisible("console");
 		</IS_SELECTED>
 	</ACTION>
-	<ACTION NAME="go-to-console">
+	<ACTION NAME="console-to-front">
 		<CODE>
 			view.getDockableWindowManager().addDockableWindow("console");
 			console = view.getDockableWindowManager().getDockableWindow("console");
