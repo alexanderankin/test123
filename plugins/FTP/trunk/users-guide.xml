@@ -94,6 +94,23 @@ You can close unused connections at any other itme using the
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.4.1</emphasis>
+   requires jEdit 4.0pre3.</para>
+
+  <itemizedlist>
+    <listitem><para>Fixed problems if the remote server drops the connection
+    before the keep-alive timeout expires.
+    </para></listitem>
+    <listitem><para>If passive mode could not be established or if the
+    response to the <command>PASV</command> command could not be parsed, the
+    client switches to data port mode instead of failing.
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
+ </itemizedlist>
+
+ <itemizedlist>
+
   <listitem><para><emphasis role="bold">Version 0.4</emphasis>
    requires jEdit 4.0pre3.</para>
 

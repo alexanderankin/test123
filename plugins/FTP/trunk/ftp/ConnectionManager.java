@@ -116,7 +116,25 @@ public class ConnectionManager
 				if(_connect.info.equals(info) && !_connect.inUse())
 				{
 					connect = _connect;
-					break;
+					if(!connect.checkIfOpen())
+					{
+						Log.log(Log.DEBUG,ConnectionManager.class,
+							"Connection to "
+							+ connect.info.host + ":"
+							+ connect.info.port + " expired");
+						try
+						{
+							connect.client.logout();
+						}
+						catch(IOException io)
+						{
+						}
+
+						connections.remove(connect);
+						connect = null;
+					}
+					else
+						break;
 				}
 			}
 
@@ -127,7 +145,8 @@ public class ConnectionManager
 				FtpClient client = new FtpClient();
 
 				Log.log(Log.DEBUG,ConnectionManager.class,
-					"Connecting to " + info.host + ":"
+					Thread.currentThread() +
+					": Connecting to " + info.host + ":"
 					+ info.port);
 				client.connect(info.host,info.port);
 
@@ -260,7 +279,8 @@ public class ConnectionManager
 
 		void lock()
 		{
-			Log.log(Log.DEBUG,this,"Connection to " + info.host
+			Log.log(Log.DEBUG,this,Thread.currentThread() +
+					": Connection to " + info.host
 				+ ":" + info.port + " locked");
 			inUse = true;
 			closeTimer.stop();
@@ -271,11 +291,13 @@ public class ConnectionManager
 			if(!inUse)
 			{
 				Log.log(Log.WARNING,this,new Exception(
-					"Trying to release connection twice!"));
+					Thread.currentThread() +
+					": Trying to release connection twice!"));
 			}
 			else
 			{
-				Log.log(Log.DEBUG,this,"Connection to " + info.host
+				Log.log(Log.DEBUG,this,Thread.currentThread() +
+					": Connection to " + info.host
 					+ ":" + info.port + " released");
 			}
 
@@ -284,6 +306,22 @@ public class ConnectionManager
 			closeTimer.setInitialDelay(connectionTimeout);
 			closeTimer.setRepeats(false);
 			closeTimer.start();
+		}
+
+		boolean checkIfOpen()
+		{
+			try
+			{
+				// to ensure that the server didn't disconnect
+				// before the keep-alive timeout expires
+				client.noOp();
+				client.getResponse();
+				return true;
+			}
+			catch(Exception e)
+			{
+				return false;
+			}
 		}
 
 		private boolean inUse;

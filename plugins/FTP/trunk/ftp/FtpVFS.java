@@ -148,33 +148,36 @@ public class FtpVFS extends VFS
 	public String _canonPath(Object _session, String path, Component comp)
 		throws IOException
 	{
-		ConnectionManager.Connection session
-			= ConnectionManager.getConnection(
-			(ConnectionManager.ConnectionInfo)_session);
+		FtpAddress address = new FtpAddress(path);
 
-		try
+		if(address.path.startsWith("/~"))
 		{
-			FtpAddress address = new FtpAddress(path);
+			ConnectionManager.Connection session
+				= ConnectionManager.getConnection(
+				(ConnectionManager.ConnectionInfo)_session);
 
-			if(session.home != null && address.path.startsWith("/~"))
+			try
 			{
-				if(session.home.endsWith("/"))
-					address.path = session.home + address.path.substring(2);
-				else
-					address.path = session.home + '/' + address.path.substring(2);
-				if(address.path.endsWith("/") && address.path.length() != 1)
+				if(session.home != null)
 				{
-					address.path = address.path.substring(0,
+					if(session.home.endsWith("/"))
+						address.path = session.home + address.path.substring(2);
+					else
+						address.path = session.home + '/' + address.path.substring(2);
+					if(address.path.endsWith("/") && address.path.length() != 1)
+					{
+						address.path = address.path.substring(0,
 						address.path.length() - 1);
+					}
 				}
 			}
+			finally
+			{
+				ConnectionManager.releaseConnection(session);
+			}
+		}
 
-			return address.toString();
-		}
-		finally
-		{
-			ConnectionManager.releaseConnection(session);
-		}
+		return address.toString();
 	}
 
 	public VFS.DirectoryEntry[] _listDirectory(Object _session, String url,
@@ -476,6 +479,14 @@ public class FtpVFS extends VFS
 			}
 			else
 				return null;
+		}
+		catch(FtpException e)
+		{
+			// if being called from resolveSymlink()
+			if(doNotRelease)
+				return null;
+			else
+				throw e;
 		}
 		finally
 		{
