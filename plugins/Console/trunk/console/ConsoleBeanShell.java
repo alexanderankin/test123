@@ -25,8 +25,9 @@ package console;
 //{{{ Imports
 import bsh.EvalError;
 import bsh.NameSpace;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.BeanShell;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 //}}}
 
@@ -54,18 +55,17 @@ class ConsoleBeanShell extends Shell
 		{
 			ns.setVariable("console",console);
 			ns.setVariable("output",output);
-			Object retVal = org.gjt.sp.jedit.BeanShell.eval(view,command,false);
+			Object retVal = BeanShell._eval(view,
+				BeanShell.getNameSpace(),command);
 			ns.setVariable("console",null);
 			ns.setVariable("output",null);
 
 			if(retVal != null)
 				output.print(null,retVal.toString());
 		}
-		catch(EvalError e)
+		catch(Exception e)
 		{
-			// thrown if set/unset fails...
-			// can't do anything about it.
-			Log.log(Log.ERROR,this,e);
+			output.print(console.getErrorColor(),e.toString());
 		}
 
 		output.commandDone();
