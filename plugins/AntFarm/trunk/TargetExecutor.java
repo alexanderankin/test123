@@ -122,13 +122,12 @@ public class TargetExecutor
     Project project = new Project();
 
     Throwable error = null;
-
+	AntFarmLogger logger = null;
     try
     {
-      AntFarmLogger logger = new AntFarmLogger( farm );
+      logger = new AntFarmLogger( farm );
       logger.setOutputPrintStream( this.getStdOut() );
       logger.setErrorPrintStream( this.getStdErr() );
-
       project.addBuildListener( logger );
       project.init();
 
@@ -181,13 +180,14 @@ public class TargetExecutor
     }
     catch (BuildException be)
     {
-      //System.err.println(be.getMessage());
+      System.err.println(be.getMessage());
       farm.handleBuildMessage( new BuildMessage( "\nBUILD FAILED: " +
-                               be.getMessage()), Color.red );
+                               be.toString()), Color.red );
     }
     catch (Throwable exc)
     {
-      farm.handleBuildMessage( new BuildMessage( exc.getMessage() ));
+      farm.handleBuildMessage( new BuildMessage( exc.toString() ));
+      exc.printStackTrace(logger.getErrorPrintStream());
     }
     finally
     {

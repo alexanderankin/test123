@@ -106,6 +106,17 @@ public class AntFarmLogger implements BuildLogger
     this.err = err;
   }
 
+  public PrintStream getOutputPrintStream()
+  {
+    return this.output;
+  }
+
+  public PrintStream getErrorPrintStream()
+  {
+    return this.err;
+  }
+
+
   public void setEmacsMode(boolean emacsMode)
   {}
 
@@ -191,7 +202,7 @@ public class AntFarmLogger implements BuildLogger
         String compiler =
           event.getTask().getProject().getProperty("build.compiler");
 
-        if (compiler.equals("jikes"))
+        if (compiler != null && compiler.equals("jikes"))
           usingJikes = true;
 
         // Retrieve the message
