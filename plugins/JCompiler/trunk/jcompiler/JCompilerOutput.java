@@ -29,5 +29,6 @@ public interface JCompilerOutput
 	public void outputText(String line);
 	public void outputInfo(String line);
 	public void outputError(String line);
+	public void outputDone();
 
 }

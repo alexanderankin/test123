@@ -3,7 +3,7 @@
 plugin.jcompiler.JCompilerPlugin.name=Java Compiler
 plugin.jcompiler.JCompilerPlugin.author=Dirk Moebius
 plugin.jcompiler.JCompilerPlugin.contributors=Kevin A. Burton, Aziz Sharif, Logan Bauer, Mike Hansen
-plugin.jcompiler.JCompilerPlugin.version=1.3.2
+plugin.jcompiler.JCompilerPlugin.version=1.3.3
 plugin.jcompiler.JCompilerPlugin.docs=index.html
 
 plugin.jcompiler.JCompilerPlugin.depend.0=jdk 1.1.1
@@ -124,6 +124,7 @@ jcompiler.msg.stopping=\
 	Stopping Java Compiler...\n\
 	Note: If an exception follows indicating a ThreadDeath, together with \
 	a request to file a bug report at the JDC, please ignore this. \
+	The exception is harmless. \
 	(There is no way for JCompiler to suppress this. Sorry.)
 
 jcompiler.msg.done=Java Compiler done.\n

@@ -37,7 +37,8 @@ import buildtools.*;
 /**
  * The class that performs the javac compile run.
  */
-public class JCompiler {
+public class JCompiler
+{
 
 	/** true, if JDK version is older than 1.2 */
 	private final static boolean isOldJDK = (MiscUtilities.compareVersions(System.getProperty("java.version"), "1.2") < 0);
@@ -51,9 +52,11 @@ public class JCompiler {
 	private JCompilerOutput output;
 	private View view;
 	private Buffer buffer;
+	private int threadDoneCount;
 
 
-	public JCompiler(JCompilerOutput output, View view, Buffer buffer) {
+	public JCompiler(JCompilerOutput output, View view, Buffer buffer)
+	{
 		this.output = output;
 		this.view = view;
 		this.buffer = buffer;
@@ -72,35 +75,47 @@ public class JCompiler {
 	 *                    every outdated file.
 	 * @param rebuild     if true, JCompiler compiles <i>every</i> file in the
 	 *                    package hierarchy.
+	 * @return            true if the compiler was actually started,
+	 *                    false if the compiler wasn't started due to some
+	 *                    error.
 	 */
-	public void compile(boolean pkgCompile, boolean rebuild) {
-		if (compilerMethod == null) {
+	public boolean compile(boolean pkgCompile, boolean rebuild)
+	{
+		if (compilerMethod == null)
+		{
 			// compiler method not found.
 			// initCompiler() should have already printed an error,
 			// so we can silently return here.
-			return;
+			return false;
 		}
 
 		// Check output directory:
 		String outDir = getOutputDirectory();
 
-		if (outDir != null) {
+		if (outDir != null)
+		{
 			File fOutDir = new File(outDir);
-			try {
+			try
+			{
 				// Canonize outDir:
 				outDir = fOutDir.getCanonicalPath();
 			}
-			catch (IOException ioex) {
+			catch (IOException ioex)
+			{
 				printError("jcompiler.msg.errorOutputDir", new Object[] { outDir, ioex });
-				return;
+				return false;
 			}
 
-			if (fOutDir.exists()) {
-				if (!fOutDir.isDirectory()) {
+			if (fOutDir.exists())
+			{
+				if (!fOutDir.isDirectory())
+				{
 					printError("jcompiler.msg.noOutputDir", new Object[] {outDir });
-					return;
+					return false;
 				}
-			} else {
+			}
+			else
+			{
 				// Ask whether output dir should be created:
 				int reply = JOptionPane.showConfirmDialog(view,
 					jEdit.getProperty("jcompiler.msg.createOutputDir.message", new Object[] { outDir }),
@@ -109,11 +124,12 @@ public class JCompiler {
 					JOptionPane.WARNING_MESSAGE);
 
 				if (reply != JOptionPane.YES_OPTION)
-					return;
+					return false;
 
-				if (!fOutDir.mkdirs()) {
+				if (!fOutDir.mkdirs())
+				{
 					GUIUtilities.message(view, "jcompiler.msg.errorCreateOutputDir", null);
-					return;
+					return false;
 				}
 			}
 		}
@@ -126,18 +142,22 @@ public class JCompiler {
 		String sourceBaseDir;
 		String[] files;
 
-		if (pkgCompile) {
+		if (pkgCompile)
+		{
 			sourceBaseDir = getSourceBaseDir(filename);
 			files = getFiles(sourceBaseDir, outDir, rebuild);
-		} else {
+		}
+		else
+		{
 			sourceBaseDir = new File(filename).getParent();
 			files = new String[] { filename };
 		}
 
-		if (files.length == 0) {
+		if (files.length == 0)
+		{
 			// No files to compile:
 			printInfo("jcompiler.msg.nofiles", new Object[] { sourceBaseDir });
-			return;
+			return false;
 		}
 
 		// Show files to compile:
@@ -155,9 +175,11 @@ public class JCompiler {
 		String[] arguments = constructArguments(getClassPath(filename), getSourcePath(), outDir, files);
 
 		// Show command line:
-		if (jEdit.getBooleanProperty("jcompiler.showcommandline", false)) {
+		if (jEdit.getBooleanProperty("jcompiler.showcommandline", false))
+		{
 			StringBuffer msg = new StringBuffer("javac");
-			for (int i = 0; i < arguments.length; ++i) {
+			for (int i = 0; i < arguments.length; ++i)
+			{
 				msg.append(' ');
 				boolean argNeedsQuote = arguments[i].indexOf(' ') >= 0;
 				if (argNeedsQuote && arguments[i].charAt(0) != '"')
@@ -171,6 +193,7 @@ public class JCompiler {
 
 		// Start the compiler:
 		invokeCompiler(arguments);
+		return true;
 	}
 
 
@@ -179,30 +202,38 @@ public class JCompiler {
 	 * command line arguments.
 	 *
 	 * @param arguments  the command line arguments
+	 * @return           true if the compiler was actually started,
+	 *                   false if the compiler wasn't started due to some
+	 *                   error.
 	 */
-	public void compile(String[] arguments) {
+	public boolean compile(String[] arguments)
+	{
 		// Search for the compiler method:
 		initCompiler();
 
 		if (compilerMethod == null)
-			return; // compiler method not found
+			return false; // compiler method not found
 
 		// Start the compiler:
 		invokeCompiler(arguments);
+		return true;
 	}
 
 
-	private void initCompiler() {
+	private void initCompiler()
+	{
 		boolean isModern = false;
 		String compilerClassname = "sun.tools.javac.Main";
 
-		if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false)) {
+		if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false))
+		{
 			compilerClassname = "com.sun.tools.javac.Main";
 			isModern = true;
 		}
 
 		// Find compiler class:
-		try {
+		try
+		{
 			compilerClass = Class.forName(compilerClassname);
 
 			// Get constructor:
@@ -219,21 +250,22 @@ public class JCompiler {
 			Class[] methodSignature = { String[].class };
 			compilerMethod = compilerClass.getMethod("compile", methodSignature);
 		}
-		catch (ClassNotFoundException cnf) {
+		catch (ClassNotFoundException cnf)
+		{
 			Log.log(Log.ERROR, this, cnf);
 			printError("jcompiler.msg.class_not_found", new Object[] { compilerClassname });
-			return;
 		}
-		catch (Exception e) {
+		catch (Exception e)
+		{
 			Log.log(Log.ERROR, this, e);
 			printError("jcompiler.msg.class_not_found_other_error", new Object[] { compilerClassname, e });
 		}
 	}
 
 
-	private void invokeCompiler(String[] arguments) {
-		boolean completed = true;
-		ThreadDeath threadDeath = null;
+	private void invokeCompiler(String[] arguments)
+	{
+		threadDoneCount = 0;
 		PrintStream origOut = System.out;
 		PrintStream origErr = System.err;
 		PipedOutputStream pipeComp = new PipedOutputStream();
@@ -243,17 +275,21 @@ public class JCompiler {
 		OutputThread threadOut = new OutputThread("stdout", pipeOut);
 		OutputThread threadErr = new OutputThread("stderr", pipeErr);
 
-		try {
+		try
+		{
 			// redirect stdout/stderr:
 			System.setOut(new PrintStream(pipeOut, true));
 			System.setErr(new PrintStream(pipeErr, true));
 
 			// instantiate a new compiler class with the constructor arguments:
 			Object compiler;
-			if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false)) {
+			if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", false))
+			{
 				// modern compiler constructor needs no arguments:
 				compiler = compilerConstructor.newInstance(null);
-			} else {
+			}
+			else
+			{
 				// classic compiler constructor needs two arguments:
 				// an OutputStream for compiler error output, and a String
 				// with the program name, which is always "javac":
@@ -264,63 +300,60 @@ public class JCompiler {
 			// Note: the return value of the compile method is ignored.
 			compilerMethod.invoke(compiler, new Object[] { arguments });
 		}
-		catch (InvocationTargetException invex) {
+		catch (InvocationTargetException invex)
+		{
 			// the invoked method itself has thrown an exception
-			completed = false;
 			Throwable targetException = invex.getTargetException();
-			if (targetException instanceof InterruptedException) {
+			if (targetException instanceof InterruptedException)
+			{
 				Log.log(Log.DEBUG, this, "JCompiler interrupted.");
 				printError("jcompiler.msg.interrupted");
-			} else {
+			}
+			else
+			{
 				Log.log(Log.ERROR, this, "The compiler method itself just threw a runtime exception:");
 				Log.log(Log.ERROR, this, targetException);
 				Object[] args = new Object[] { compilerClass, targetException };
 				printError("jcompiler.msg.compilermethod_exception", args);
 			}
 		}
-		catch (Exception e) {
-			completed = false;
-			if (e instanceof InterruptedException) {
+		catch (Exception e)
+		{
+			if (e instanceof InterruptedException)
+			{
 				Log.log(Log.DEBUG, this, "JCompiler interrupted.");
 				printError("jcompiler.msg.interrupted");
-			} else {
+			}
+			else
+			{
 				Log.log(Log.ERROR, this, e);
 				Object[] args = new Object[] { compilerClass, e };
 				printError("jcompiler.msg.compilermethod_exception", args);
 			}
 		}
-		catch (ThreadDeath td) {
-			// catch this so that the following cleanup can be performed
-			completed = false;
-			threadDeath = td; // store for rethrow
-		}
-
-		try { pipeComp.close(); } catch (IOException e) { Log.log(Log.WARNING, this, e); }
-		try { pipeOut.close(); } catch (IOException e) { Log.log(Log.WARNING, this, e); }
-		try { pipeErr.close(); } catch (IOException e) { Log.log(Log.WARNING, this, e); }
-
-		try {
-			// wait for the output threads to die:
-			threadComp.join();
-			threadOut.join();
-			threadErr.join();
-		}
-		catch (InterruptedException e) {
-			completed = false;
-		}
-		finally {
+		finally
+		{
+			// close pipes, this causes the OutputThreads to terminate:
+			try { pipeComp.close(); } catch (IOException ioex) { Log.log(Log.WARNING, this, ioex); }
+			try { pipeOut.close(); } catch (IOException ioex) { Log.log(Log.WARNING, this, ioex); }
+			try { pipeErr.close(); } catch (IOException ioex) { Log.log(Log.WARNING, this, ioex); }
 			// restore stdout/err:
 			System.setOut(origOut);
 			System.setErr(origErr);
+			// free some memory:
+			System.gc();
 		}
+	}
 
-		System.gc();
 
-		if (completed)
+	private synchronized void threadDone()
+	{
+		++threadDoneCount;
+		if (threadDoneCount == 3)
+		{
 			printInfo("jcompiler.msg.done");
-
-		if (threadDeath != null)
-			throw threadDeath; // so that the thread actually dies
+			output.outputDone();
+		}
 	}
 
 
@@ -332,15 +365,18 @@ public class JCompiler {
 	private void printError(String property, Object[] args) { output.outputError(jEdit.getProperty(property, args)); }
 
 
-	private String[] constructArguments(String cp, String srcPath, String outDir, String[] files) {
+	private String[] constructArguments(String cp, String srcPath, String outDir, String[] files)
+	{
 		Vector vectorArgs = new Vector();
 
-		if (cp != null && !cp.equals("")) {
+		if (cp != null && !cp.equals(""))
+		{
 			vectorArgs.addElement("-classpath");
 			vectorArgs.addElement(cp);
 		}
 
-		if (srcPath != null && !srcPath.equals("") && !isOldJDK) {
+		if (srcPath != null && !srcPath.equals("") && !isOldJDK)
+		{
 			vectorArgs.addElement("-sourcepath");
 			vectorArgs.addElement(srcPath);
 		}
@@ -355,17 +391,18 @@ public class JCompiler {
 			vectorArgs.addElement("-deprecation");
 
 		if (jEdit.getBooleanProperty("jcompiler.specifyoutputdirectory")
-			&& outDir != null && !outDir.equals("")) {
+			&& outDir != null && !outDir.equals(""))
+		{
 			vectorArgs.addElement("-d");
 			vectorArgs.addElement(outDir);
 		}
 
 		String otherOptions = jEdit.getProperty("jcompiler.otheroptions");
-		if (otherOptions != null) {
+		if (otherOptions != null)
+		{
 			StringTokenizer st = new StringTokenizer(otherOptions, " ");
-			while (st.hasMoreTokens()) {
+			while (st.hasMoreTokens())
 				vectorArgs.addElement(st.nextToken());
-			}
 		}
 
 		for (int i = 0; i < files.length; ++i)
@@ -383,7 +420,8 @@ public class JCompiler {
 	 * @param  path  the path to be expanded.
 	 * @return the path with directories expanded.
 	 */
-	private static String expandLibPath(String path) {
+	private static String expandLibPath(String path)
+	{
 		StringTokenizer st;
 		File f;
 		StringBuffer result;
@@ -395,7 +433,8 @@ public class JCompiler {
 		st = new StringTokenizer(path, File.pathSeparator);
 		result = new StringBuffer(path.length());
 
-		while (st.hasMoreTokens()) {
+		while (st.hasMoreTokens())
+		{
 			token = st.nextToken();
 			f = new File(token);
 
@@ -419,9 +458,12 @@ public class JCompiler {
 	 * @param  f  a directory
 	 * @return a classpath containg all the jar and zip files from the given directory.
 	 */
-	private static String buildPathForDirectory(File f) {
-		String[] archiveFiles = f.list(new FilenameFilter() {
-			public boolean accept(File dir, String filename) {
+	private static String buildPathForDirectory(File f)
+	{
+		String[] archiveFiles = f.list(new FilenameFilter()
+		{
+			public boolean accept(File dir, String filename)
+			{
 				return filename.toLowerCase().endsWith(".jar") || filename.toLowerCase().endsWith(".zip");
 			}
 		});
@@ -430,7 +472,8 @@ public class JCompiler {
 			return "";
 
 		StringBuffer result = new StringBuffer();
-		for (int i = 0; i < archiveFiles.length; i++) {
+		for (int i = 0; i < archiveFiles.length; i++)
+		{
 			if (i > 0)
 				result.append(File.pathSeparator);
 			result.append(f.getPath());
@@ -452,7 +495,8 @@ public class JCompiler {
 	 * @param  s  the string, possibly containing variables
 	 * @return the string with all variables expanded.
 	 */
-	public static String expandVariables(String s) {
+	public static String expandVariables(String s)
+	{
 		if (s == null || s.length() == 0)
 			return "";
 
@@ -473,7 +517,8 @@ public class JCompiler {
 	 * @param  value  to value to be set in for the variable
 	 * @return the modified string.
 	 */
-	private static String replaceAll(String s, String variable, String value) {
+	private static String replaceAll(String s, String variable, String value)
+	{
 		if (s == null || s.length() == 0)
 			return s;
 
@@ -487,7 +532,8 @@ public class JCompiler {
 		int matchIndex = result.indexOf(variable);
 		int vlen = variable.length();
 
-		while (matchIndex != -1) {
+		while (matchIndex != -1)
+		{
 			result = result.substring(0, matchIndex) + value + result.substring(matchIndex + vlen);
 			matchIndex = result.indexOf(variable, matchIndex + vlen);
 		}
@@ -496,7 +542,8 @@ public class JCompiler {
 	}
 
 
-	private void saveBuffers(boolean pkgCompile) {
+	private void saveBuffers(boolean pkgCompile)
+	{
 		String prop = pkgCompile ? "jcompiler.javapkgcompile.autosave" : "jcompiler.javacompile.autosave";
 		String which = jEdit.getProperty(prop, "ask");
 
@@ -511,8 +558,10 @@ public class JCompiler {
 
 
 	/** Save current buffer, if dirty. */
-	private void saveCurrentBuffer() {
-		if (buffer.isDirty()) {
+	private void saveCurrentBuffer()
+	{
+		if (buffer.isDirty())
+		{
 			buffer.save(view, null);
 			VFSManager.waitForRequests();
 		}
@@ -520,15 +569,19 @@ public class JCompiler {
 
 
 	/** Save all buffers without asking. */
-	private void saveAllBuffers() {
+	private void saveAllBuffers()
+	{
 		boolean savedSomething = false;
 		Buffer[] buffers = jEdit.getBuffers();
 
 		for(int i = 0; i < buffers.length; i++)
-			if (buffers[i].isDirty()) {
+		{
+			if (buffers[i].isDirty())
+			{
 				buffers[i].save(view, null);
 				savedSomething = true;
 			}
+		}
 
 		if (savedSomething)
 			VFSManager.waitForRequests();
@@ -536,9 +589,11 @@ public class JCompiler {
 
 
 	/** Ask for unsaved changes and save. */
-	private void saveBuffersAsk(boolean pkgCompile) {
+	private void saveBuffersAsk(boolean pkgCompile)
+	{
 		boolean savedSomething = false;
-		if (pkgCompile) {
+		if (pkgCompile)
+		{
 			// Check if there are any unsaved buffers:
 			Buffer[] buffers = jEdit.getBuffers();
 			boolean dirty = false;
@@ -546,7 +601,8 @@ public class JCompiler {
 				if (buffers[i].isDirty())
 					dirty = true;
 
-			if (dirty) {
+			if (dirty)
+			{
 				int result = JOptionPane.showConfirmDialog(view,
 					jEdit.getProperty("jcompiler.msg.saveAllChanges.message"),
 					jEdit.getProperty("jcompiler.msg.saveAllChanges.title"),
@@ -556,14 +612,18 @@ public class JCompiler {
 					return;
 				if (result == JOptionPane.YES_OPTION)
 					for(int i = 0; i < buffers.length; i++)
-						if (buffers[i].isDirty()) {
+						if (buffers[i].isDirty())
+						{
 							buffers[i].save(view, null);
 							savedSomething = true;
 						}
 			}
-		} else { // !pkgCompile
+		}
+		else // !pkgCompile
+		{
 			// Check if current buffer is unsaved:
-			if (buffer.isDirty()) {
+			if (buffer.isDirty())
+			{
 				int result = JOptionPane.showConfirmDialog(view,
 					jEdit.getProperty("jcompiler.msg.saveChanges.message", new Object[] { buffer.getName() }),
 					jEdit.getProperty("jcompiler.msg.saveChanges.title"),
@@ -571,7 +631,8 @@ public class JCompiler {
 					JOptionPane.WARNING_MESSAGE);
 				if (result == JOptionPane.CANCEL_OPTION)
 					return;
-				if (result == JOptionPane.YES_OPTION) {
+				if (result == JOptionPane.YES_OPTION)
+				{
 					buffer.save(view, null);
 					savedSomething = true;
 				}
@@ -594,15 +655,13 @@ public class JCompiler {
 	 *
 	 * @see #getClassPath(String)
 	 */
-	public static String getClassPath() {
+	public static String getClassPath()
+	{
 		String cp = expandVariables(jEdit.getProperty("jcompiler.classpath"));
-
 		String outputDir = getOutputDirectory();
 
 		if (outputDir != null)
-		{
 			cp = appendClassPath(cp, outputDir);
-		}
 
 		cp = appendClassPath(cp, getRequiredLibraryPath());
 
@@ -617,31 +676,38 @@ public class JCompiler {
 	 *
 	 * @param filename the filename of the class for determining the package.
 	 */
-	public static String getClassPath(String filename) {
+	public static String getClassPath(String filename)
+	{
 		String cp = getClassPath();
 
 		// Check if package dir should be added to classpath:
-		if (jEdit.getBooleanProperty("jcompiler.addpkg2cp")) {
-			try {
+		if (jEdit.getBooleanProperty("jcompiler.addpkg2cp"))
+		{
+			try
+			{
 				String pkgName = JavaUtils.getPackageName(filename);
 				String parent = new File(filename).getParent();
 
 				// If no package stmt found then pkgName would be null
-				if (parent != null) {
-					if (pkgName == null) {
+				if (parent != null)
+				{
+					if (pkgName == null)
 						cp = appendClassPath(cp, parent);
-					} else {
+					else
+					{
 						String pkgPath = pkgName.replace('.', File.separatorChar);
 
-						if (parent.endsWith(pkgPath)) {
+						if (parent.endsWith(pkgPath))
+						{
 							parent = parent.substring(0, parent.length() - pkgPath.length() - 1);
 							cp = appendClassPath(cp, parent);
 						}
 					}
 				}
 			}
-			catch (Exception exp) {
-				exp.printStackTrace();
+			catch (Exception ex)
+			{
+				Log.log(Log.WARNING, JCompiler.class, ex);
 			}
 		}
 
@@ -653,7 +719,8 @@ public class JCompiler {
 	 * @return the sourcepath defined by jcompiler.sourcepath, with
 	 * variable expansion.
 	 */
-	public static String getSourcePath() {
+	public static String getSourcePath()
+	{
 		return expandVariables(jEdit.getProperty("jcompiler.sourcepath"));
 	}
 
@@ -666,7 +733,6 @@ public class JCompiler {
 	{
 		// expand variables first
 		String libPath = expandVariables(jEdit.getProperty("jcompiler.libpath"));
-
 		// expand directories to get all jars
 		return expandLibPath(libPath);
 	}
@@ -680,13 +746,11 @@ public class JCompiler {
 	 *
 	 * @return the expanded output directory or null if the option is turned off.
 	 */
-	public static String getOutputDirectory() {
+	public static String getOutputDirectory()
+	{
 		String outDir = null;
-
-		if (jEdit.getBooleanProperty( "jcompiler.specifyoutputdirectory")) {
+		if (jEdit.getBooleanProperty( "jcompiler.specifyoutputdirectory"))
 			outDir = expandVariables(jEdit.getProperty("jcompiler.outputdirectory"));
-		}
-
 		return outDir;
 	}
 
@@ -701,15 +765,18 @@ public class JCompiler {
 	 *    file, or simply the parent directory containing the file, if the
 	 *    base directory could not be determined.
 	 */
-	public static String getSourceBaseDir(String filename) {
+	public static String getSourceBaseDir(String filename)
+	{
 		File file = new File(filename);
 		String parent = file.getParent();
 		String sourceDir;
 
-		try {
+		try
+		{
 			sourceDir = JavaUtils.getBaseDirectory(file.getAbsolutePath());
 		}
-		catch (IOException ioex) {
+		catch (IOException ioex)
+		{
 			Log.log(Log.ERROR, "JCompiler",
 				"couldn't get base directory of file " + filename
 				+ ": " + ioex.toString());
@@ -737,10 +804,9 @@ public class JCompiler {
 	 *    paths.
 	 * @see #getSourceBaseDir(String)
 	 */
-	public static String[] getFiles(String baseDir, String destDir, boolean all) {
-		FileChangeMonitor monitor = new FileChangeMonitor(
-			baseDir, "java", destDir, "class");
-
+	public static String[] getFiles(String baseDir, String destDir, boolean all)
+	{
+		FileChangeMonitor monitor = new FileChangeMonitor(baseDir, "java", destDir, "class");
 		return all ? monitor.getAllFiles() : monitor.getChangedFiles();
 	}
 
@@ -754,21 +820,16 @@ public class JCompiler {
 	 * @return the new classpath, consisting of classPath + pathSseparator
 	 *    + additionalPath
 	 */
-	public static String appendClassPath(String classPath, String additionalPath) {
+	public static String appendClassPath(String classPath, String additionalPath)
+	{
 		String result;
 
-		if (additionalPath.length() == 0) {
-			// nothing to append
-			result = classPath;
-		}
-		else if (classPath.length() > 0) {
-			// append separator and additional path
+		if (additionalPath.length() == 0)
+			result = classPath; // nothing to append
+		else if (classPath.length() > 0)
 			result = classPath + File.pathSeparator + additionalPath;
-		}
-		else {
-			// nothing to append to
-			result = additionalPath;
-		}
+		else
+			result = additionalPath; // nothing to append to
 
 		return result;
 	}
@@ -780,40 +841,41 @@ public class JCompiler {
 	 */
 	class OutputThread extends Thread
 	{
-
 		private BufferedReader buf;
 
-
-		OutputThread(String name, PipedOutputStream outpipe) {
+		OutputThread(String name, PipedOutputStream outpipe)
+		{
 			super("OutputThread for " + name);
 			this.setDaemon(true);
-			this.setPriority(NORM_PRIORITY - 1);
+			//this.setPriority(NORM_PRIORITY - 1);
 
-			try {
+			try
+			{
 				buf = new BufferedReader(new InputStreamReader(new PipedInputStream(outpipe)));
 				this.start();
 			}
-			catch (IOException ioex) {
+			catch (IOException ioex)
+			{
 				Log.log(Log.ERROR, this, ioex);
 			}
 		}
 
-
-		public void run() {
+		public void run()
+		{
 			String line;
-
-			try {
+			try
+			{
 				while ((line = buf.readLine()) != null)
 					output.outputText(line);
-
 				Log.log(Log.DEBUG, JCompiler.this, this.toString() + " ends.");
 				buf.close();
+				threadDone();
 			}
-			catch (IOException ioex) {
+			catch (IOException ioex)
+			{
 				Log.log(Log.ERROR, this, ioex);
 			}
 		}
-
 	}
 
 }

@@ -88,6 +88,7 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 
 	public void run()
 	{
+		boolean compileOk;
 		JCompiler jcompiler = new JCompiler(
 			this,
 			console.getView(),
@@ -95,12 +96,13 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 		);
 
 		if (args == null)
-			jcompiler.compile(pkgCompile, rebuild);
+			compileOk = jcompiler.compile(pkgCompile, rebuild);
 		else
-			jcompiler.compile(args);
+			compileOk = jcompiler.compile(args);
 
-		cleanUp();
-		output.commandDone();
+		if (!compileOk)
+			outputDone();
+
 		Log.log(Log.DEBUG, this, toString() + " ends.");
 	}
 
@@ -184,6 +186,15 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 		console.print(console.getErrorColor(), line);
 	}
 
+
+	/** notify the Console that the command is complete. */
+	public synchronized void outputDone()
+	{
+		finishErrorParsing();
+		output.commandDone();
+		notifyAll();
+	}
+
 	// END JCompilerOutput implementation
 
 
@@ -246,7 +257,7 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	}
 
 
-	private void cleanUp()
+	private void finishErrorParsing()
 	{
 		if (pendingError != null)
 		{
