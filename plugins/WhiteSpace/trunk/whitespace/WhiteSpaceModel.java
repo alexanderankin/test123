@@ -24,138 +24,138 @@ public class WhiteSpaceModel
 {
     public static final String MODEL_PROPERTY = "white-space.model";
 
-    private HighlightOption blockHighlight;
+    private Option blockHighlight;
 
-    private HighlightOption foldHighlight;
-    private HighlightOption foldTooltip;
+    private Option foldHighlight;
+    private Option foldTooltip;
 
-    private HighlightOption spaceHighlight;
-    private HighlightOption leadingSpaceHighlight;
-    private HighlightOption innerSpaceHighlight;
-    private HighlightOption trailingSpaceHighlight;
+    private Option spaceHighlight;
+    private Option leadingSpaceHighlight;
+    private Option innerSpaceHighlight;
+    private Option trailingSpaceHighlight;
 
-    private HighlightOption tabHighlight;
-    private HighlightOption leadingTabHighlight;
-    private HighlightOption innerTabHighlight;
-    private HighlightOption trailingTabHighlight;
+    private Option tabHighlight;
+    private Option leadingTabHighlight;
+    private Option innerTabHighlight;
+    private Option trailingTabHighlight;
 
-    private HighlightOption whitespaceHighlight;
+    private Option whitespaceHighlight;
 
 
     public WhiteSpaceModel() {
-        this.blockHighlight         = new HighlightOption(
+        this.blockHighlight         = new Option(
             WhiteSpaceDefaults.getBlockHighlightDefault()
         );
 
-        this.foldHighlight         = new HighlightOption(
+        this.foldHighlight         = new Option(
             WhiteSpaceDefaults.getFoldHighlightDefault()
         );
-        this.foldTooltip           = new HighlightOption(
+        this.foldTooltip           = new Option(
             WhiteSpaceDefaults.getFoldTooltipDefault()
         );
 
-        this.spaceHighlight         = new HighlightOption(
+        this.spaceHighlight         = new Option(
             WhiteSpaceDefaults.getSpaceHighlightDefault()
         );
-        this.leadingSpaceHighlight  = new HighlightOption(
+        this.leadingSpaceHighlight  = new Option(
             WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
         );
-        this.innerSpaceHighlight    = new HighlightOption(
+        this.innerSpaceHighlight    = new Option(
             WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
         );
-        this.trailingSpaceHighlight = new HighlightOption(
+        this.trailingSpaceHighlight = new Option(
             WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
         );
 
-        this.tabHighlight           = new HighlightOption(
+        this.tabHighlight           = new Option(
             WhiteSpaceDefaults.getTabHighlightDefault()
         );
-        this.leadingTabHighlight    = new HighlightOption(
+        this.leadingTabHighlight    = new Option(
             WhiteSpaceDefaults.getLeadingTabHighlightDefault()
         );
-        this.innerTabHighlight      = new HighlightOption(
+        this.innerTabHighlight      = new Option(
             WhiteSpaceDefaults.getInnerTabHighlightDefault()
         );
-        this.trailingTabHighlight   = new HighlightOption(
+        this.trailingTabHighlight   = new Option(
             WhiteSpaceDefaults.getTrailingTabHighlightDefault()
         );
 
-        this.whitespaceHighlight    = new HighlightOption(
+        this.whitespaceHighlight    = new Option(
             WhiteSpaceDefaults.getWhitespaceHighlightDefault()
         );
     }
 
 
-    public HighlightOption getBlockHighlight() {
+    public Option getBlockHighlight() {
         return this.blockHighlight;
     }
 
 
-    public HighlightOption getFoldHighlight() {
+    public Option getFoldHighlight() {
         return this.foldHighlight;
     }
 
 
-    public HighlightOption getFoldTooltip() {
+    public Option getFoldTooltip() {
         return this.foldTooltip;
     }
 
 
-    public HighlightOption getSpaceHighlight() {
+    public Option getSpaceHighlight() {
         return this.spaceHighlight;
     }
 
 
-    public HighlightOption getLeadingSpaceHighlight() {
+    public Option getLeadingSpaceHighlight() {
         return this.leadingSpaceHighlight;
     }
 
 
-    public HighlightOption getInnerSpaceHighlight() {
+    public Option getInnerSpaceHighlight() {
         return this.innerSpaceHighlight;
     }
 
 
-    public HighlightOption getTrailingSpaceHighlight() {
+    public Option getTrailingSpaceHighlight() {
         return this.trailingSpaceHighlight;
     }
 
 
-    public HighlightOption getTabHighlight() {
+    public Option getTabHighlight() {
         return this.tabHighlight;
     }
 
 
-    public HighlightOption getLeadingTabHighlight() {
+    public Option getLeadingTabHighlight() {
         return this.leadingTabHighlight;
     }
 
 
-    public HighlightOption getInnerTabHighlight() {
+    public Option getInnerTabHighlight() {
         return this.innerTabHighlight;
     }
 
 
-    public HighlightOption getTrailingTabHighlight() {
+    public Option getTrailingTabHighlight() {
         return this.trailingTabHighlight;
     }
 
 
-    public HighlightOption getWhitespaceHighlight() {
+    public Option getWhitespaceHighlight() {
         return this.whitespaceHighlight;
     }
 
 
-    public class HighlightOption {
+    public class Option {
         private boolean enabled;
 
 
-        public HighlightOption() {
+        public Option() {
             this(false);
         }
 
 
-        public HighlightOption(boolean enabled) {
+        public Option(boolean enabled) {
             this.enabled = enabled;
         }
 
