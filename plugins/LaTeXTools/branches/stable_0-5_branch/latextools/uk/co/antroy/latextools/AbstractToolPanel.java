@@ -144,7 +144,7 @@ public abstract class AbstractToolPanel
     protected void displayNotTeX(String position) {
         JPanel p = new JPanel();
         StringTokenizer st = new StringTokenizer(jEdit.getProperty(
-                                                         "navigation.nottex"), 
+                                                         "latextools-navigation.nottex"), 
                                                  "*");
         p.setLayout(new BoxLayout(p, BoxLayout.Y_AXIS));
 
