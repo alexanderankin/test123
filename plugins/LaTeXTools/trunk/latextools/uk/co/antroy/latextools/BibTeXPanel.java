@@ -271,8 +271,8 @@ public class BibTeXPanel
     List files = LaTeXMacros.getProjectFiles(view, buffer);
     
     filesLoop:
-    for (ListIterator it = files.listIterator(files.size()); it.hasPrevious(); ){
-       File in = (File) it.previous();
+    for (ListIterator it = files.listIterator(); it.hasNext(); ){
+       File in = (File) it.next();
        log(in.toString());
        Buffer buff = jEdit.openTemporary(view, in.getParent(), in.getName(),false);
        bufferLoop:
