@@ -40,7 +40,7 @@ import javax.swing.JTextField;
 
 public class TextToolsPlugin extends EditPlugin
 {
-	public static boolean debugTT = true;  // debug flag, can be set via Utilities->BeanShell
+	public static boolean debugTT = false;  // debug flag, can be set via Utilities->BeanShell
 									// TextToolsPlugin.debugTT = true
   public void createMenuItems(Vector menuItems)
   {
