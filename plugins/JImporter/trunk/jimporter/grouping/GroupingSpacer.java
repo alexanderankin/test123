@@ -25,7 +25,7 @@ import java.util.Iterator;
 import jimporter.grouping.ImportGroupItem;
 import jimporter.grouping.ImportGroupOption;
 import jimporter.grouping.WhiteSpaceGroupItem;
-import jimporter.ImportList;
+import jimporter.importer.JavaImportList;
 import org.gjt.sp.jedit.Buffer;
 
 /**
@@ -62,8 +62,8 @@ public class GroupingSpacer {
         }
     }
     
-    public static void addGroupingSpaces(Buffer buffer, ImportList list) {
-        Iterator importStatements = new ImportList().getImportList().iterator();
+    public static void addGroupingSpaces(Buffer buffer, JavaImportList list) {
+        Iterator importStatements = new JavaImportList().getImportList().iterator();
     }
     
 }

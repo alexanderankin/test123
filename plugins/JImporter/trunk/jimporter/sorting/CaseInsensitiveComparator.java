@@ -20,7 +20,7 @@
 package jimporter.sorting;
 
 import java.util.Comparator;
-import jimporter.ImportItem;
+import jimporter.importer.ImportItem;
 
 /**
  * Defines an object ordering class that doesn't care if a string value is upper

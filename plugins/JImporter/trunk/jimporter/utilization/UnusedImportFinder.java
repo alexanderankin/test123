@@ -30,8 +30,9 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.JOptionPane;
-import jimporter.ImportItem;
-import jimporter.ImportList;
+import jimporter.importer.ImportItem;
+import jimporter.importer.ImportList;
+import jimporter.importer.ImportListFactory;
 import org.gjt.sp.jedit.Buffer;
 
 
@@ -121,8 +122,10 @@ public class UnusedImportFinder {
         ArrayList unusedImports = new ArrayList();
         
         //Load a list of all of the existing import statements into the toReturn list
-        ArrayList imports = new ImportList(buffer).getImportList();
-        
+        ImportList importList = ImportListFactory.getInstance("java");
+        importList.setSourceBuffer(buffer);
+        ArrayList imports = importList.getImportList();
+
         //Add any imports that are in the current package to the unused list
         unusedImports.addAll(findImportsInPackage(findPackage(buffer), imports, true));
         

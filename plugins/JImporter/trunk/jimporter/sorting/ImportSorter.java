@@ -21,7 +21,7 @@ package jimporter.sorting;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import jimporter.ImportItem;
+import jimporter.importer.ImportItem;
 import jimporter.sorting.SortedImportList;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
