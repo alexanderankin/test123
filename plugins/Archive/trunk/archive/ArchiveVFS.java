@@ -610,7 +610,8 @@ public class ArchiveVFS extends VFS {
                     Log.log(Log.DEBUG,this,"Copy entry " + next);
 
                     if(next.getName().equals(archive.entryName)) {
-                        next.setSize(length);
+                        next = new ZipEntry(archive.entryName);
+                        //next.setSize(length);
                         archiveOut.putNextEntry(next);
                         copy(outputFile,archiveOut);
                         saved = true;
@@ -688,7 +689,7 @@ public class ArchiveVFS extends VFS {
                 if(!saved) {
                     // new entry
                     TarEntry newEntry = new TarEntry(archive.entryName);
-                    newEntry.setSize(length);
+                    //newEntry.setSize(length);
                     archiveOut.putNextEntry(newEntry);
                     copy(outputFile,archiveOut);
                     archiveOut.closeEntry();
