@@ -34,7 +34,9 @@ import projectviewer.*;
  *	@author     <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
  *	@version	$Id$
  */
-public final class VPTSelectionListener implements TreeSelectionListener, MouseListener, ChangeListener, TreeModelListener, Runnable {
+public final class VPTSelectionListener 
+				implements TreeSelectionListener, MouseListener, 
+							ChangeListener, TreeModelListener, Runnable {
 
 	private ProjectViewer viewer;
 	private JTree currentTree;
@@ -104,7 +106,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 				if (!ProjectManager.getInstance().isLoaded(node.getName())) {
 					viewer.setStatus("Loading project \"" + node.getName() + "\"");
 					ProjectManager.getInstance().getProject(node.getName());
-					((VPTModel)viewer.getCurrentTree().getModel()).nodeStructureChanged(node);
+					ProjectViewer.nodeStructureChanged(node);
 				}
 			}
 		}
