@@ -47,6 +47,14 @@ public final class PHPSideKickParser extends SideKickParser {
     projectManager = ProjectManager.getInstance();
   }
 
+  /**
+   * Parses the given text and returns a tree model. This method is called by the sidekick plugin
+   *
+   * @param buffer      The buffer to parse.
+   * @param errorSource An error source to add errors to.
+   *
+   * @return A new instance of the <code>SideKickParsedData</code> class.
+   */
   public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
     phpErrorSource.setErrorSource(errorSource);
     final String path = buffer.getPath();
@@ -61,7 +69,7 @@ public final class PHPSideKickParser extends SideKickParser {
       errorSource.removeFileErrors(path);
       parser.addParserListener(phpErrorSource);
       try {
-        parser.parseInfo(null, buffer.getText(0, buffer.getLength()));
+        parser.parse(buffer.getText(0, buffer.getLength()));
       } catch (ParsingAbortedError parsingAbortedError) {
         Log.log(Log.MESSAGE, PHPSideKickParser.class, "The parser was aborted");
         return null;
@@ -88,11 +96,11 @@ public final class PHPSideKickParser extends SideKickParser {
     return null;
   }
 
-  public void parse(String path, Reader data) {
+  public void parse(String path, Reader reader) {
     final PHPParser parser = new PHPParser();
     parser.setPath(path);
     try {
-      parser.parseInfo(null, data);
+      parser.parse(reader);
     } catch (ParsingAbortedError parsingAbortedError) {
       Log.log(Log.MESSAGE, PHPSideKickParser.class, "The parser was aborted");
     } catch (ParseException e) {
@@ -164,24 +172,20 @@ public final class PHPSideKickParser extends SideKickParser {
     final int wordStart = TextUtilities.findWordStart(line, caretInLine - 1, "");
     final String currentWord = line.substring(wordStart, caretInLine);
 
-
-    final String lastWord = getPreviousWord(caret, buffer);
-
     final AbstractProject project = projectManager.getProject();
-    if ("::".equals(currentWord)) {
-      final int previousWordStart = TextUtilities.findWordStart(line, wordStart - 1, "_");
-      final String classAccessed = line.substring(previousWordStart, wordStart);
-      final ClassHeader classHeader = project.getClass(classAccessed);
-      return completeClassMembers(textArea, classHeader, "", classAccessed + "::");
-    } else if (wordStart > 2 && (line.charAt(wordStart - 1) == ':' || line.charAt(wordStart - 2) == ':')) {
-      final int previousWordStart = TextUtilities.findWordStart(line, wordStart - 3, "_");
-      final String classAccessed = line.substring(previousWordStart, wordStart-2);
-      final ClassHeader classHeader = project.getClass(classAccessed);
-      return completeClassMembers(textArea, classHeader, currentWord, classAccessed + "::");
-    }
+
+    //Static class access
+    PHPSideKickCompletion phpSideKickCompletion = null;
+
+    phpSideKickCompletion = completeStaticClassAccess(currentWord, line, wordStart, project, textArea);
+    if (phpSideKickCompletion != null) return phpSideKickCompletion;
 
     final ClassDeclaration currentClass = phpDocument.insideWichClassIsThisOffset(caret);
     final MethodDeclaration currentMethod;
+
+
+    final String lastWord2 = getPreviousWord(caret, buffer);
+
 
     if (currentClass == null) {
       //We are not inside a class
@@ -193,35 +197,73 @@ public final class PHPSideKickParser extends SideKickParser {
 
       if (currentMethod == null) {
         //We are inside a class but not inside a method
-        if (lastWord.endsWith(";") || lastWord.endsWith("{") || lastWord.endsWith("}")) {
-          final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea,
-                                                                                        currentWord,
-                                                                                        lastWord);
+        if (lastWord2.endsWith(";") || lastWord2.endsWith("{") || lastWord2.endsWith("}")) {
+          phpSideKickCompletion = new PHPSideKickCompletion(textArea, currentWord, lastWord2);
           phpSideKickCompletion.addItem("var", currentWord);
           phpSideKickCompletion.addItem("function", currentWord);
           return phpSideKickCompletion;
         }
       } else {
+        String lastWord = null;
+        if (wordStart != 0) {
+          int previousWordStart = TextUtilities.findWordStart(line, wordStart - 1, "$_->");
+          lastWord = line.substring(previousWordStart, wordStart);
+        }
         //We are inside a method of a class
-        if ("$this->".equals(lastWord)) {
+        if ("$this->".equals(lastWord) || ("->".equals(currentWord) && "$this".equals(lastWord))) {
           Log.log(Log.DEBUG, this, "Completing $this->");
-          return completeClassMembers(textArea, currentClass.getClassHeader(), "", "$this->");
-        } else if (wordStart > 7 && "$this->".equals(line.substring(wordStart - 7, wordStart))) {
-          //We got a $this-> just before checking if we have a  before $this
-          Log.log(Log.DEBUG, this, "Completing $this->");
-          return completeClassMembers(textArea, currentClass.getClassHeader(), currentWord, "$this->");
+          if ("->".equals(currentWord)) {
+            phpSideKickCompletion = completeClassMembers(textArea, currentClass.getClassHeader(), "", "$this->");
+          } else {
+            phpSideKickCompletion = completeClassMembers(textArea,
+                                                         currentClass.getClassHeader(),
+                                                         currentWord,
+                                                         "$this->");
+          }
+          return phpSideKickCompletion;
         }
       }
     }
 
-    // Log.log(Log.DEBUG, PHPSideKickParser.class, "Word found : '"+lastWord+"'");
-    if ("new".equals(lastWord) || "extends".equals(lastWord)) {
+    // Log.log(Log.DEBUG, PHPSideKickParser.class, "Word found : '"+lastWord2+"'");
+    if ("new".equals(lastWord2) || "extends".equals(lastWord2)) {
       Log.log(Log.DEBUG, this, "Completing class name");
-      return completeClassDeclaration(textArea, currentWord, lastWord);
+      return completeClassDeclaration(textArea, currentWord, lastWord2);
     }
 
     return null;
   }
+
+  private PHPSideKickCompletion completeStaticClassAccess(String currentWord,
+                                                          String line,
+                                                          int wordStart,
+                                                          AbstractProject project,
+                                                          JEditTextArea textArea) {
+    PHPSideKickCompletion phpSideKickCompletion = null;
+    if ("::".equals(currentWord)) {
+      final int previousWordStart = TextUtilities.findWordStart(line, wordStart - 1, "_");
+      final String classAccessed = line.substring(previousWordStart, wordStart);
+      final ClassHeader classHeader = project.getClass(classAccessed);
+      phpSideKickCompletion = completeClassMembers(textArea, classHeader, "", classAccessed + "::");
+    } else if (wordStart > 2 && (line.charAt(wordStart - 1) == ':' || line.charAt(wordStart - 2) == ':')) {
+      final int previousWordStart = TextUtilities.findWordStart(line, wordStart - 3, "_");
+      final String classAccessed = line.substring(previousWordStart, wordStart - 2);
+      final ClassHeader classHeader = project.getClass(classAccessed);
+      phpSideKickCompletion = completeClassMembers(textArea, classHeader, currentWord, classAccessed + "::");
+    }
+    return phpSideKickCompletion;
+  }
+
+  /* private void addKeywords(Buffer buffer,
+                           int caret,
+                           PHPSideKickCompletion sideKickCompletion,
+                           String currentWord) {
+    String[] keywords = buffer.getKeywordMapAtOffset(caret).getKeywords();
+    for (int i = 0; i < keywords.length; i++) {
+      String keyword = keywords[i];
+      sideKickCompletion.addItem(keyword,currentWord);
+    }
+  }  */
 
   /**
    * Returns the previous word in a buffer.
@@ -254,12 +296,9 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @return a completion list
    */
-  private SideKickCompletion completeClassDeclaration(JEditTextArea textArea,
-                                                      String word,
-                                                      String lastWord) {
+  private SideKickCompletion completeClassDeclaration(JEditTextArea textArea, String word, String lastWord) {
     final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea, word, lastWord);
     final AbstractProject project = projectManager.getProject();
-
     final Map classes = project.getClasses();
     final Collection collection = classes.values();
     for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
@@ -305,10 +344,10 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @return a completion list or null if we aren't in a class
    */
-  private static SideKickCompletion completeClassMembers(JEditTextArea textArea,
-                                                         ClassHeader classHeader,
-                                                         String currentWord,
-                                                         String lastWord) {
+  private static PHPSideKickCompletion completeClassMembers(JEditTextArea textArea,
+                                                            ClassHeader classHeader,
+                                                            String currentWord,
+                                                            String lastWord) {
     if (classHeader == null) return null;
     final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea, currentWord, lastWord);
     final List methods = classHeader.getMethodsHeaders();

@@ -27,7 +27,7 @@ public final class ClassAccess extends AbstractVariable {
    * Instantiate a class access.
    *
    * @param prefix    usualy the class name
-   * @param suffix    the field or method called
+   * @param suffix    the field or method called (it can be null in case of parse error)
    * @param type      the type of access
    * @param sourceEnd the end offset
    * @param endLine   the end line
