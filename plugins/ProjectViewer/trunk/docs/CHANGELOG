@@ -72,6 +72,8 @@ VERSION 2.1.0
 		  widget shows the menu created by the new GroupMenu class allowing
 		  the user to choose either groups or projects in the tree. As a result,
 		  removed a lot of code from the ProjectViewer class.
+		- use EnhancedMenuItems for the PV actions that have jEdit actions
+		  available, so that the shortcuts are displayed in the context menu.
 
 		Bug fixes:
 		- fixed possible problem in ReImporter (could lose nodes if they
