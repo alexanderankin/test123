@@ -1,0 +1,7 @@
+TODO
+====
+
+- show status of directory entries: sum of all buffer status
+- new option: collapse inactive directories after n seconds
+- update docs
+
