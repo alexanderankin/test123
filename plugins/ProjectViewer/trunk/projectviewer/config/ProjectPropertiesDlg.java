@@ -82,6 +82,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
     
     private JTextField projName;
     private JTextField projRoot;
+    private JTextField projURLRoot;
     
     private JButton    chooseRoot;
     private JButton    updateProject;
@@ -231,7 +232,6 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         getContentPane().add(projName);
         
         // Project root
-        
         label = new JLabel("Root directory:");
         gc.weightx = 0;
         gc.gridx = 0;
@@ -253,6 +253,8 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         gridbag.setConstraints(projRoot,gc);
         getContentPane().add(projRoot);
 
+	
+	
         chooseRoot = new JButton("Choose");   
         chooseRoot.addActionListener(this);
         gc.weightx = 0;
@@ -262,12 +264,31 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         gridbag.setConstraints(chooseRoot,gc);
         getContentPane().add(chooseRoot);
 
-        // Lower buttons
+        // URL Root for web projects.  Used to launch files in web browser against webserver
+	
+	label = new JLabel("Web URL Root(optional)");
+	gc.weightx = 0;
+        gc.gridx = 0;
+        gc.gridy = 2;
+        gc.gridwidth = 1;
+	gridbag.setConstraints(label, gc);
+	
+	getContentPane().add(label);
+	projURLRoot = new JTextField();
+	
+	gc.weightx = 1;
+        gc.gridx = 1;
+        gc.gridy = 2;
+        gc.gridwidth = 2;
+	gridbag.setConstraints(projURLRoot, gc);
+	getContentPane().add(projURLRoot);
+
+	// Lower buttons
         
         JPanel panel = new JPanel();
         gc.weightx = 1;
         gc.gridx = 0;
-        gc.gridy = 2;
+        gc.gridy = 3;
         gc.gridwidth = 3;
         gridbag.setConstraints(panel,gc);
         getContentPane().add(panel);
@@ -285,7 +306,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
    
         // Finishing
         setResizable(false);
-        setSize(new Dimension(350,150));
+        setSize(new Dimension(350,180));
     }
     
 } 
