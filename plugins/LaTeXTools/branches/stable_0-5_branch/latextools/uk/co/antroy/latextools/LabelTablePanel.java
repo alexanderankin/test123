@@ -43,7 +43,7 @@ import org.gjt.sp.util.*;
 
 import javax.swing.table.TableModel;
 import javax.swing.AbstractAction;
-import javax.swing.JTable;
+import javax.swing.*;
 import javax.swing.KeyStroke;
 
 import uk.co.antroy.latextools.parsers.LabelParser;
@@ -93,8 +93,18 @@ public class LabelTablePanel
     }
 
   }
-
   private void buildPanel(){
+      //Thread parseThread = new Thread(new Runnable(){
+      //    public void run(){
+              _buildPanel();
+      //    }
+      //});
+      //parseThread.start();
+  }
+      
+  private void _buildPanel(){
+    JLabel parsingLabel = new JLabel("<html><font color='#dd0000'>Parsing...");
+    add(parsingLabel);
     LabelParser parser = new LabelParser(view, buffer);
     model = new LabelTableModel(parser.getLabelList());
     
@@ -147,7 +157,9 @@ public class LabelTablePanel
                                         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     setLayout(new BorderLayout());
     setPreferredSize(new Dimension(400, 400));
+    remove(parsingLabel);
     add(scp, BorderLayout.CENTER);
+    //super.refresh();
   }
   
   public void reload(){

@@ -6,18 +6,11 @@
     <DOCKABLE NAME="latextools-navigation-dock">
         uk.co.antroy.latextools.LaTeXDockable.getInstance();
     </DOCKABLE>
-<!--    <DOCKABLE NAME="latextools-bibliography-dock">
-        new uk.co.antroy.latextools.BibTeXPanel(view, buffer);
-    </DOCKABLE>
--->
     <DOCKABLE NAME="latextools-bibliography-table-dock">
         new uk.co.antroy.latextools.BibTeXTablePanel(view, buffer);
     </DOCKABLE>
     <DOCKABLE NAME="latextools-label-table-dock">
         new uk.co.antroy.latextools.LabelTablePanel(view, buffer);
     </DOCKABLE>
-<!--    <DOCKABLE NAME="latextools-label-dock">
-			  new uk.co.antroy.latextools.ReferencePanel(view, buffer);
-    </DOCKABLE>-->
 </DOCKABLES>
 

@@ -42,7 +42,8 @@ public class ImageViewer {
        //imagePanel = new JPanel(new BorderLayout());
     }
     
-    private File findFileName(JEditTextArea textArea, Buffer buffer) {
+    private File findFileName(View view, Buffer buffer) {
+        JEditTextArea textArea = view.getTextArea();
         int line = textArea.getCaretLine();
         String currentLine = buffer.getLineText(line);
         RE pattern = null;
@@ -88,18 +89,18 @@ public class ImageViewer {
         return imagePanel;
     }
 
-    public static void showInInfoPane(JEditTextArea textArea, 
+    public static void showInInfoPane(View view, 
                                           Buffer buffer){
         ImageViewer viewer = ImageViewer.getInstance();
-        viewer.setImageFromBuffer(textArea, buffer);
+        viewer.setImageFromBuffer(view, buffer);
         JComponent p = viewer.showImage();
         LaTeXDockable.getInstance().setInfoPanel(p, "Image Under Caret:");
     }
     
 
-    public void setImageFromBuffer(JEditTextArea textArea, 
+    public void setImageFromBuffer(View view, 
                                           Buffer buffer) {
-        File file = findFileName(textArea, buffer);
+        File file = findFileName(view, buffer);
 
         if (file == null) {
             imagePanel = new JLabel("<html><font color='#dd0000'><b>There are no images under the caret!");

@@ -46,6 +46,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.util.Log;
+import java.io.*;
 
 
 public abstract class AbstractToolPanel
@@ -83,17 +84,20 @@ public abstract class AbstractToolPanel
    * @param message ¤
    */
     public void handleMessage(EBMessage message) {
-        boolean bufferLoaded = false;
+        boolean refreshPane = false;
 
         if (message instanceof BufferUpdate) {
             BufferUpdate bu = (BufferUpdate) message;
             Object what = bu.getWhat();
-            bufferLoaded = (what == BufferUpdate.CREATED || 
-                           what == BufferUpdate.LOADED || 
-                           what == BufferUpdate.SAVED);
+            refreshPane = (what.equals(BufferUpdate.CREATED) || 
+                            what.equals(BufferUpdate.LOADED) || 
+                            what.equals(BufferUpdate.SAVED));
         }
-
-        if ((message instanceof EditPaneUpdate) || bufferLoaded) {
+        else if (message instanceof EditPaneUpdate) {
+            refreshPane = true;
+        }
+        
+        if (refreshPane) {
             buffer = view.getBuffer();
             tex = buffer.getPath();
             bufferChanged = true;
@@ -104,7 +108,10 @@ public abstract class AbstractToolPanel
     /**
    * ¤
    */
-    public abstract void refresh();
+   public void refresh(){
+       //repaint();
+       //view.getEditPane().getTextArea().grabFocus();
+   }
 
     /**
    * ¤

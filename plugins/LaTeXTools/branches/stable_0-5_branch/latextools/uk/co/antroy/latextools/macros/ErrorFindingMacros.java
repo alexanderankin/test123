@@ -51,7 +51,16 @@ import org.gjt.sp.jedit.search.SearchAndReplace;
 
 public class ErrorFindingMacros {
 
-    public static void displayDuplicateLabels(final View view, Buffer buff){
+     public static void displayDuplicateLabels(final View view, final Buffer buff){
+        Thread t = new Thread(new Runnable(){
+            public void run(){
+                _displayDuplicateLabels(view, buff);
+            }
+        });
+        t.start();            
+    }
+     public static void _displayDuplicateLabels(final View view, Buffer buff){
+        LaTeXDockable.getInstance().setInfoPanel(new JLabel("<html><font color='#dd0000'>Working..."), "Orphaned References:");
         LabelParser parser = new LabelParser(view, buff);
         List duplicates = parser.getDuplicateList();
         JComponent out = null;
@@ -75,7 +84,17 @@ public class ErrorFindingMacros {
         
     }
     
-    public static void displayOrphanedRefs(final View view, Buffer buff){
+    public static void displayOrphanedRefs(final View view, final Buffer buff){
+        Thread t = new Thread(new Runnable(){
+            public void run(){
+                _displayOrphanedRefs(view, buff);
+            }
+        });
+        t.start();            
+    }
+    
+    public static void _displayOrphanedRefs(final View view, Buffer buff){
+        LaTeXDockable.getInstance().setInfoPanel(new JLabel("<html><font color='#dd0000'>Working..."), "Orphaned References:");
         LabelParser labParser = new LabelParser(view, buff);
         Set labels = labParser.getLabelNameSet();
         LabelParser refParser = new LabelParser(view, buff, LabelParser.REF);
@@ -93,7 +112,7 @@ public class ErrorFindingMacros {
         JComponent out = null;
         
         if (orphans.size() == 0) {
-            out = new JLabel("Success! No Duplicates Found!");
+            out = new JLabel("Success! No Orphaned References Found!");
         }else {
             final JList list = new JList(orphans.toArray());
             list.addMouseListener(new MouseAdapter() {

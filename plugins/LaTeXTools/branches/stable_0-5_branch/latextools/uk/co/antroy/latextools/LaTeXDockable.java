@@ -38,7 +38,6 @@ public class LaTeXDockable  extends AbstractToolPanel {
   private static final LaTeXDockable instance = new LaTeXDockable();
   private JComponent infoPanel = new JLabel("");
   private JLabel infoLabel = new JLabel("");
-
   private JLabel navig;
   
   //~ Constructors ............................................................
@@ -54,27 +53,32 @@ public class LaTeXDockable  extends AbstractToolPanel {
     controls.setAlignmentX(Component.LEFT_ALIGNMENT);
     controls.add(navig);
     controls.add(nav_list);
+    controls.add(new JButton(new ButtonAction(ButtonAction.DISPLAY_IMAGE)));
+    controls.add(new JButton(new ButtonAction(ButtonAction.DUPLICATES)));
+    controls.add(new JButton(new ButtonAction(ButtonAction.ORPHANS))); 
     
     this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
     this.setAlignmentX(Component.LEFT_ALIGNMENT);
     this.add(controls);
     this.add(infoPanel);
-    
+    this.setPreferredSize(new Dimension(500,300));
+
     LaTeXDockableListener listener = new LaTeXDockableListener();
     nav_list.addActionListener(listener);
-    refresh();
+    //refresh();
   }
   
   public void refresh(){
       view = jEdit.getActiveView();
       buffer = jEdit.getActiveView().getEditPane().getTextArea().getBuffer();
       
+      
       if (!ProjectMacros.isTeXFile(buffer)){
-          setInfoPanel(new JLabel(""), "<html><b>Not a TeX File.");
+          this.setInfoPanel(new JLabel(""), "<html><b>Not a TeX File.");
       }else{
           ProjectMacros.showInformation(view, buffer);
       }
-      
+       
   }
   
   public static LaTeXDockable getInstance(){
@@ -91,17 +95,17 @@ public class LaTeXDockable  extends AbstractToolPanel {
     return infoPanel;
   }
 
-  public void setInfoPanel(JComponent panel, String label){
-      this.remove(infoPanel);
-      this.remove(infoLabel);
-      this.infoPanel = panel;
-      
-      Dimension d = new Dimension(300,300);
-      infoPanel.setPreferredSize(d);
-      infoLabel = new JLabel("<html><font color='#0000aa'><b>" + label);
-      this.add(infoLabel);
-      this.add(infoPanel);
-  }
+    public synchronized void setInfoPanel(JComponent panel, String label){
+        this.remove(infoPanel);
+        this.remove(infoLabel);
+        this.infoPanel = panel;
+        
+        Dimension d = new Dimension(300,300);
+        infoPanel.setPreferredSize(d);
+        infoLabel = new JLabel("<html><font color='#0000aa'><b>" + label);
+        this.add(infoLabel);
+        this.add(infoPanel);
+    }
   
   private class LaTeXDockableListener implements ActionListener {
     
@@ -111,5 +115,31 @@ public class LaTeXDockable  extends AbstractToolPanel {
     public void actionPerformed(ActionEvent e) {
       LaTeXPlugin.parse(jEdit.getActiveView(),true);
     }
+  } 
+  
+  private class ButtonAction extends AbstractAction {
+    
+    static final String DISPLAY_IMAGE = "View Image";
+    static final String DUPLICATES    = "Duplicates";
+    static final String ORPHANS       = "Orphans";
+      
+    private ButtonAction(String name){
+        super(name);
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+        String command = e.getActionCommand();
+        Log.log(Log.DEBUG, this, "COMMAND: " + command);
+        if (command.equals(DISPLAY_IMAGE)){
+            ImageViewer.showInInfoPane(view, buffer);
+        }
+        else if (command.equals(DUPLICATES)){
+            ErrorFindingMacros.displayDuplicateLabels(view, buffer);        
+        }
+        else if (command.equals(ORPHANS)){
+            ErrorFindingMacros.displayOrphanedRefs(view, buffer);            
+        }
+    }
   }
+
 }
