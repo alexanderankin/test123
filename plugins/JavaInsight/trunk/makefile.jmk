@@ -18,7 +18,7 @@ javac_opts = "-deprecation";
 #javac_opts = "-g" "-deprecation" "+E";
 
 # set up the class path
-new_class_path = "../jode-1.0.92-1.1.jar;../../jedit.jar;.";
+new_class_path = "../jode-1.0.93-1.1.jar;../../jedit.jar;.";
 old_class_path = (getprop "java.class.path");
 
 # concatenate the old and new class paths
