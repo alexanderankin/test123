@@ -148,7 +148,7 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 		for ( int i = 0; i < buildFiles.size(); i++ ) {
 			String fileName = (String) buildFiles.elementAt( i );
 			if ( fileName.equals( filePath ) ) {
-				Console console = AntFarmPlugin.getConsole( _view );
+				Console console = AntFarmPlugin.getConsole( _view, false );
 				console.run( AntFarmPlugin.ANT_SHELL, console, "="
 					 + ( i + 1 ) );
 				break;
