@@ -3,8 +3,8 @@
 <!-- XSLT plugin user's guide -->
 <!-- (C) 2002 Greg Merrill, Robert McKinnon -->
 
-<!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">-->
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
 <book>
 
@@ -35,8 +35,7 @@
     </legalnotice>
   </bookinfo>
 
-  <chapter id="overview">
-    <title>Overview</title>
+  <chapter id="overview"><title>Overview</title>
     <para>
       The XSLT plugin contains facilities to perform XSL Transformations, 
       and evaluate XPath expressions. It also includes an evocable
@@ -44,7 +43,7 @@
     </para>
   </chapter>
 
-  <chapter id="XSLTProcessor">
+  <chapter id="xslt-processor">
     <title>XSLT Processor</title>
     <para>
       The XSLT Processor allows you to transform a source XML document using
@@ -93,32 +92,32 @@
       The following improvements should eventually be made to XSLT Processor.
       (Any volunteers?)
       <itemizedlist>
-        <listitem>
+        <listitem><para>
           The ability to save the current list of stylesheets under a user
           defined name. Then the named list of stylesheets could be retrieved 
           when needed for later use.
-        </listitem>
-        <listitem>
+        </para></listitem>
+        <listitem><para>
           DTD handling is still somewhat weak.  URL-specified DTDs
           are reloaded on each evaluation, and SYSTEM DTDs are
           assumed to be in the same directory as the XML file
           which references them.  Ultimately, this should be enhanced
           to behave more intelligently, as in the XML plugin.
-        </listitem>
-        <listitem>
+        </para></listitem>
+        <listitem><para>
           Users should be able to edit the XSLT Processor settings (indent
           amount) via an XSLT plugin section in global options.
-        </listitem>
-        <listitem>
+        </para></listitem>
+        <listitem><para>
           Once an output file has been named for the result via the GUI,
           the auto-saving of the result buffer can't be turned off. Though
           maybe this is not a problem.
-        </listitem>
+        </para></listitem>
       </itemizedlist>
     </para>
   </chapter>
 
-  <chapter id="Indent XML Buffer">
+  <chapter id="indent-action">
     <title>Indent XML Buffer Action</title>
     <para>
       An action named "Indent XML Buffer" is provided that allows you to indent
@@ -137,16 +136,16 @@
       The following improvements should eventually be made to Indent Action.
       (Any volunteers?)
       <itemizedlist>
-        <listitem>
+        <listitem><para>
           Users should be able to edit the Indent XML Buffer settings (indent
           amount, strip-space and normalize-space) via an XSLT plugin section in
           in global options.
-        </listitem>
+        </para></listitem>
       </itemizedlist>
     </para>
   </chapter>
 
-  <chapter id="XPathTool">
+  <chapter id="xpath-tool">
     <title>XPath Tool</title>
     <para>
       The XPath Tool allows you to evaluate XPath expressions on an open
@@ -178,15 +177,15 @@
       The following improvements should eventually be made to XPath Tool.
       (Any volunteers?)
       <itemizedlist>
-        <listitem>
+        <listitem><para>
           DTD handling as per XSLT Processor.
-        </listitem>
-        <listitem>
+        </para></listitem>
+        <listitem><para>
           When the result of an evaluation is a Node set, it would be nice
           to have a "Hyper Search" type of result.  In other words, each
           node in the list could be clicked to highlight the relevant portion
           of the XML doc in the current buffer.
-        </listitem>
+        </para></listitem>
       </itemizedlist>
     </para>
   </chapter>
@@ -221,23 +220,23 @@
     </para>
     <para>You can also write to:</para>
     <itemizedlist>
-        <listitem>
+        <listitem><para>
           Greg Merrill <email>greghmerrill@yahoo.com</email>
-        </listitem>
+        </para></listitem>
 
-        <listitem>
+        <listitem><para>
           Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
-        </listitem>
+        </para></listitem>
 
-        <listitem>
+        <listitem><para>
           jEdit-users mailing-list
           <email>jedit-users@lists.sourceforge.net</email>
-        </listitem>
+        </para></listitem>
 
-        <listitem>
+        <listitem><para>
           or jEdit-devel mailing-list
           <email>jedit-devel@lists.sourceforge.net</email>
-        </listitem>
+        </para></listitem>
     </itemizedlist>
   </chapter>
 
@@ -246,16 +245,16 @@
     <para>
       <emphasis role="bold">Version 0.2</emphasis>
       <itemizedlist>
-        <listitem>
+        <listitem><para>
           Improved XSLT functionality, including facility to auto-save
           result buffer to a named file, and an Indent XML Buffer action.
-        </listitem>
+        </para></listitem>
       </itemizedlist>
     </para>
     <para>
       <emphasis role="bold">Version 0.1</emphasis>
       <itemizedlist>
-        <listitem>Initial release</listitem>
+        <listitem><para>Initial release</para></listitem>
       </itemizedlist>
     </para>
   </appendix>
