@@ -1,7 +1,7 @@
 /*
  *  IndentingTransformerImpl.java - Indents XML elements, by adding whitespace where appropriate.
  *
- *  Copyright (c) 2002 Robert McKinnon
+ *  Copyright (C) 2002, 2003 Robert McKinnon
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -22,18 +22,12 @@
 
 package xslt;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 
-import javax.swing.*;
 import javax.xml.transform.Result;
 import javax.xml.transform.Transformer;
-import java.io.StringWriter;
 
 /**
  * Indents elements, by adding whitespace where appropriate.
@@ -47,6 +41,9 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
   /** indent by this many spaces */
   private int indentAmount = 2;
+
+  /** indent with tabs instead of spaces */
+  private char indentChar;
 
   /** current indentation level */
   private int indentLevel = 0;
@@ -66,8 +63,14 @@ public class IndentingTransformerImpl extends IndentingTransformer {
   private char[] newLine = {'\n'};
 
 
-  public IndentingTransformerImpl(int indentAmount) {
+  public IndentingTransformerImpl(int indentAmount, boolean indentWithTabs) {
     this.indentAmount = indentAmount;
+
+    if(indentWithTabs) {
+      this.indentChar = '\t';
+    } else {
+      this.indentChar = ' ';
+    }
   }
 
 
@@ -143,7 +146,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     indent[0] = '\n';
 
     for(int i = 1; i < indent.length; i++) {
-      indent[i] = ' ';
+      indent[i] = indentChar;
     }
 
     super.characters(indent, 0, indent.length);
@@ -292,36 +295,5 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
   public void internalEntityDecl(String s, String s1) throws SAXException {
   }
-
-
-  public static void indent(View view, int indentAmount) {
-    Buffer buffer = view.getBuffer();
-    buffer.writeLock();
-
-    try {
-      String inputString = buffer.getText(0, buffer.getLength());
-
-      String resultString = IndentingTransformerImpl.indent(inputString, indentAmount);
-      buffer.remove(0, buffer.getLength());
-      buffer.insert(0, resultString);
-      view.getTextArea().setCaretPosition(0);
-    } catch(Exception e) {
-      Log.log(Log.ERROR, IndentingTransformerImpl.class, e);
-      JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.Indent.error") + " " + e.getMessage());
-    } finally {
-      buffer.writeUnlock();
-    }
-  }
-
-
-  private static String indent(String inputString, int indentAmount) throws Exception {
-    StringWriter writer = new StringWriter();
-    IndentingTransformerImpl transformer = new IndentingTransformerImpl(indentAmount);
-    transformer.indentXml(inputString, writer);
-    String resultString = writer.toString();
-//    return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
-    return resultString;
-  }
-
 
 }
