@@ -1,6 +1,6 @@
 /*
  * BufferTabsPlugin.java - Main class of the BufferTabs plugin for jEdit.
- * Copyright (C) 1999, 2000, 2001 Jason Ginchereau, Andre Kaplan
+ * Copyright (C) 1999, 2000, 2001, 2002 Jason Ginchereau, Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,23 +47,6 @@ public class BufferTabsPlugin extends EBPlugin {
     private static Hashtable tabsMap = new Hashtable();
 
     private static JPopupMenu popupMenu;
-
-
-    /**
-     * Called at start up time when the plugin is being loaded.
-     */
-    public void start() {
-        super.start();
-        popupMenu = GUIUtilities.loadPopupMenu("buffertabs.popup");
-    }
-
-
-    /**
-     * Called when jEdit is exiting.
-     */
-    public void stop() {
-        super.stop();
-    }
 
 
     /**
@@ -180,6 +163,9 @@ public class BufferTabsPlugin extends EBPlugin {
 
 
     protected static JPopupMenu getRightClickPopup() {
-        return popupMenu;
+	if (popupMenu == null)
+		return popupMenu = GUIUtilities.loadPopupMenu("buffertabs.popup");
+	else
+		return popupMenu;
     }
 }
