@@ -30,7 +30,7 @@ public class PropertyDialog extends JDialog
 {
 
 	private PropertiesTable _propertiesTable = new PropertiesTable();
-
+	private boolean _isCanceled = false;
 
 	public PropertyDialog( Frame frame, String title )
 	{
@@ -64,8 +64,20 @@ public class PropertyDialog extends JDialog
 				}
 			} );
 
+		JButton cancelButton = new JButton( "Cancel");
+		cancelButton.addActionListener(
+			new ActionListener()
+			{
+				public void actionPerformed( ActionEvent e)
+				{
+					_isCanceled = true;
+					setVisible( false );
+				}
+			} );
+			
 		JPanel buildButtonPanel = new JPanel();
 		buildButtonPanel.add( buildButton );
+		buildButtonPanel.add( cancelButton );
 		buttons.add( buildButtonPanel );
 		buttons.add( noPrompt );
 
@@ -80,5 +92,9 @@ public class PropertyDialog extends JDialog
 		return _propertiesTable.getProperties();
 	}
 
+	public boolean isCanceled()
+	{
+		return _isCanceled;
+	}
 }
 
