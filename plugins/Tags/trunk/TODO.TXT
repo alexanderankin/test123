@@ -1,8 +1,6 @@
 Initial beta release
 --------------------
 
-cvsc "" TODO.TXT
-
 
 Before 1.0 (public release)
 ---------------------------
@@ -16,6 +14,9 @@ Version > initial public release version
       - Make choose tag list a part of the parser, so that each parser can have
         its own list item renderer.
 
+      - Plugin GenericChooseTagList into ChooseTagListPopup
+      - continue...
+        
 - When tagging from enter tag dialog, put up a collision dialog instead of
   the collision popup list.
 
