@@ -23,6 +23,7 @@ package whitespace;
 import java.awt.Color;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 
@@ -84,14 +85,14 @@ public class BlockHighlight extends TextAreaExtension
                 && ((this.textArea.getLineEndOffset(physicalLine + 1) - this.textArea.getLineStartOffset(physicalLine + 1)) > 1)
             ) {
                 // Log.log(Log.DEBUG, this, "Block Highlight at line: " + line);
-                int x0 = 0;
+                Point p0 = new Point();
                 if (indentBlock) {
                     char c;
                     this.textArea.getLineText(physicalLine + 1, segment);
                     for (int i = 0, off = segment.offset ; i < segment.count; i++, off++) {
                         c = segment.array[off];
                         if (!(c == ' ' || c == '\t')) {
-                            x0 = this.textArea.offsetToX(physicalLine + 1, i);
+                            this.textArea.offsetToXY(physicalLine + 1, i, p0);
                             break;
                         }
                     }
@@ -101,7 +102,7 @@ public class BlockHighlight extends TextAreaExtension
                 FontMetrics fm = painter.getFontMetrics();
                 int y0 = y + fm.getDescent() + fm.getLeading();
                 gfx.setColor(blockColor);
-                gfx.drawLine(x0, y0, painter.getWidth() - 1, y0);
+                gfx.drawLine(p0.x, y0, painter.getWidth() - 1, y0);
             }
         }
     }
