@@ -142,7 +142,7 @@ public final class ViewerListener implements ActionListener, ItemListener {
            String[] callAndArgs = { browserExecPath, sURL };
            try {
                Process child = rt.exec(callAndArgs);
-               child.waitFor();
+               child.wait(4);
                System.out.println("Process exit code is: " + child.exitValue());
                }
            catch(IOException e) {
