@@ -206,7 +206,7 @@ mailing list (for which membership is required).
 Revision History
 ================
 
-* Revision 0.4.2, March ??, 2003
+* Revision 0.4.2, March 13, 2003
 
   - Fixed sf bug 535882, "TaskList, removing and jumping"
   - Fixed a sorting bug (NPE if no ":" in Task.text)

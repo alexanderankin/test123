@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE book 
+<!DOCTYPE article 
         PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
         "http://www.oasis-open.org/docbook/xml/4.0/docbookx.dtd">
-<book>
-<bookinfo>
+<article>
+<articleinfo>
 <authorgroup>
 <author><othername>Ollie Rutherfurd</othername></author>
 <author><othername>John Gellene</othername></author>
@@ -12,9 +12,9 @@
 <legalnotice>
 <para>Copyright © 2002 John Gellene, 2003 Ollie Rutherfurd</para>
 </legalnotice>
-</bookinfo>
+</articleinfo>
 <title>TaskList Plugin Users' Guide</title>
-<chapter id="summary">
+<section id="summary">
 <title>Summary</title>
 <para>This plugin provides a dockable tabular list of comments extracted from
 the text of a file being edited in jEdit. The display shows an icon
@@ -116,8 +116,8 @@ distinctive icon:</para>
 plugin's settings in the <emphasis>Utilities</emphasis> -&gt; <emphasis>Global Options</emphasis> dialog. You can
 also add your own comment types, using the icons supplied with the
 plugin or your own custom icons.</para>
-</chapter>
-<chapter id="operation">
+</section>
+<section id="operation">
 <title>Operation</title>
 <para>Whenever the plugin is activated, it will parse a buffer and display
 formatted comments when the buffer is first loaded, when it is saved,
@@ -161,8 +161,8 @@ to find or change your comment text. You can reparse a buffer at any
 time using the <emphasis>Task List</emphasis> -&gt; <emphasis>Parse buffer</emphasis> menu item in the <emphasis>Plugins</emphasis>
 menu (which you can tie to a keyboard shortcut) or by double-clicking on
 the header row of the TaskList table.</para>
-</chapter>
-<chapter id="settings-and-options">
+</section>
+<section id="settings-and-options">
 <title>Settings and Options</title>
 <para>There are three option pane windows available for user settings from the
 <emphasis>Utilities</emphasis> -&gt; <emphasis>Global Options</emphasis> dialog.</para>
@@ -204,8 +204,8 @@ extract tasks from comments.</para>
 <para>As <literal>text</literal> and <literal>hex</literal> don't have comments, they are not enabled by
 default.</para>
 </section>
-</chapter>
-<chapter id="known-bugs-and-limitations">
+</section>
+<section id="known-bugs-and-limitations">
 <title>Known bugs and limitations</title>
 <para>The name of a task item must currently be identical to the tag text
 contained in the regular expression defining the task item. These items
@@ -214,8 +214,8 @@ may be corrected in a future version.</para>
 one line of buffer text. There is also no facility for serializing the
 contents of the TaskList display. These features may be added in a
 future version.</para>
-</chapter>
-<chapter id="legal-notices">
+</section>
+<section id="legal-notices">
 <title>Legal notices</title>
 <para>The TaskList plugin and it's documentation are released under the GNU
 General Public License (either version 2 or any later version, at the
@@ -229,18 +229,18 @@ any later version published by the Free Software Foundation; with no
 &quot;Invariant Sections&quot;, &quot;Front-Cover Texts&quot; or &quot;Back-Cover Texts&quot;, each as
 defined in the license. A copy of the license is included in the file
 COPYING.DOC.txt included with the jEdit distribution.</para>
-</chapter>
-<chapter id="feedback">
+</section>
+<section id="feedback">
 <title>Feedback</title>
 <para>Bug reports, comments and suggestions regarding TaskList may be sent to
 Ollie Rutherfurd at <ulink url="mailto:oliver@rutherfurd.net">oliver@rutherfurd.net</ulink> or posted on the jedit-users
 mailing list (for which membership is required).</para>
-</chapter>
-<chapter id="revision-history">
+</section>
+<section id="revision-history">
 <title>Revision History</title>
 <itemizedlist>
 <listitem>
-<para>Revision 0.4.2, March ??, 2003</para>
+<para>Revision 0.4.2, March 13, 2003</para>
 <itemizedlist>
 <listitem>
 <para>Fixed sf bug 535882, &quot;TaskList, removing and jumping&quot;</para>
@@ -355,5 +355,5 @@ mailing list (for which membership is required).</para>
 </itemizedlist>
 <!-- $Id$ -->
 <!-- :lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard: -->
-</chapter>
-</book>
+</section>
+</article>
