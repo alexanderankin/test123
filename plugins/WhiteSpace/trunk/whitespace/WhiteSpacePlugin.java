@@ -34,7 +34,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.EditorExiting;
 import org.gjt.sp.jedit.msg.EditorStarted;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -103,17 +102,11 @@ public class WhiteSpacePlugin
                 BlockHighlight.bufferCreated(bu.getBuffer());
                 FoldHighlight.bufferCreated(bu.getBuffer());
                 WhiteSpaceHighlight.bufferCreated(bu.getBuffer());
-            } else if (bu.getWhat() == BufferUpdate.CLOSED) {
-                BlockHighlight.bufferClosed(bu.getBuffer());
-                FoldHighlight.bufferClosed(bu.getBuffer());
             }
         } else if (message instanceof EditorStarted) {
             BlockHighlight.editorStarted();
             FoldHighlight.editorStarted();
             WhiteSpaceHighlight.editorStarted();
-        } else if (message instanceof EditorExiting) {
-            BlockHighlight.editorExiting();
-            FoldHighlight.editorExiting();
         }
     }
 
