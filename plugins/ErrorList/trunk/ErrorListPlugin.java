@@ -33,7 +33,7 @@ public class ErrorListPlugin extends EBPlugin
 
 	public void createMenuItems(View view, Vector menus, Vector menuItems)
 	{
-		menuItems.addElement(GUIUtilities.loadMenuItem(view,"error-list"));
+		menuItems.addElement(GUIUtilities.loadMenuItem("error-list"));
 	}
 
 	public void createOptionPanes(OptionsDialog dialog)
