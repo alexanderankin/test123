@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+
+<!-- Templates plugin user's guide -->
+<!-- (C) 2002 Steve Jakob -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true:folding=explicit: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" [
+  <!ENTITY ch-intro SYSTEM "ug-introduction.xml">
+  <!ENTITY ch-quickstart SYSTEM "ug-quickstart.xml">
+  <!ENTITY ch-vtl SYSTEM "ug-vtl.xml">
+  <!ENTITY ch-directives SYSTEM "ug-directives.xml">
+  <!ENTITY ch-accelerators SYSTEM "ug-accelerators.xml">
+  ]>
+
+<book>
+
+<!-- {{{ bookinfo section -->
+<bookinfo><title>Templates plugin user's guide</title>
+
+ <authorgroup>
+  <author><firstname>Steve</firstname><surname>Jakob</surname></author>
+  <author><firstname>Calvin</firstname><surname>Yu</surname></author>
+ </authorgroup>
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+ </legalnotice>
+</bookinfo>
+<!-- }}} -->
+
+<!-- {{{ Chapter: Introduction -->
+&ch-intro;
+<!-- }}} -->
+
+<!-- {{{ Chapter: Quick Start -->
+&ch-quickstart;
+<!-- }}} -->
+
+<!-- {{{ Chapter: Velocity Template Language -->
+&ch-vtl;
+<!-- }}} -->
+
+<!-- {{{ Chapter: Directives -->
+&ch-directives;
+<!-- }}} -->
+
+<!-- {{{ Chapter: Accelerators -->
+&ch-accelerators;
+<!-- }}} -->
+
+</book>
