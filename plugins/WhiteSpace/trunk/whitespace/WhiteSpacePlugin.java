@@ -128,11 +128,11 @@ public class WhiteSpacePlugin
 
 
     private void bufferSaving(Buffer buffer) {
-        boolean removeTrailingWhitespace    = jEdit.getBooleanProperty(
-            "white-space.remove-trailing-white-space", false
+        boolean removeTrailingWhitespace    = buffer.getBooleanProperty(
+            "white-space.remove-trailing-white-space"
         );
-        boolean softTabifyLeadingWhitespace = jEdit.getBooleanProperty(
-            "white-space.soft-tabify-leading-white-space", false
+        boolean softTabifyLeadingWhitespace = buffer.getBooleanProperty(
+            "white-space.soft-tabify-leading-white-space"
         );
 
         boolean tabifyLeadingWhitespace   = false;
@@ -142,11 +142,11 @@ public class WhiteSpacePlugin
             tabifyLeadingWhitespace   = !noTabs;
             untabifyLeadingWhitespace = noTabs;
         } else {
-            tabifyLeadingWhitespace   = jEdit.getBooleanProperty(
-                "white-space.tabify-leading-white-space", false
+            tabifyLeadingWhitespace   = buffer.getBooleanProperty(
+                "white-space.tabify-leading-white-space"
             );
-            untabifyLeadingWhitespace = jEdit.getBooleanProperty(
-                "white-space.untabify-leading-white-space", false
+            untabifyLeadingWhitespace = buffer.getBooleanProperty(
+                "white-space.untabify-leading-white-space"
             );
         }
 
