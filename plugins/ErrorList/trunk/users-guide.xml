@@ -400,6 +400,9 @@ errorSource.addError(new ErrorSource.DefaultError(
     enabled.
     </para></listitem>
 
+    <listitem><para>Error tool tips were not shown for some errors.
+    </para></listitem>
+
     <listitem><para>If the <quote>show on error</quote> feature is enabled, the
     error list will now open in the currently focused view, not the most
     recently opened view as before.
