@@ -19,7 +19,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package uk.co.antroy.latextools; 
+package uk.co.antroy.latextools;
 //{{{ Imports
 import javax.swing.*;
 import java.awt.event.*;
@@ -33,7 +33,7 @@ import javax.swing.text.*;
 
 public class BibTeXOptionPane extends AbstractOptionPane
 {
-	//{{{ ErrorListOptionPane constructor
+	//{{{ BibTexOptionPane constructor
 	public BibTeXOptionPane()
 	{
 		super("bibtex");
@@ -44,15 +44,15 @@ public class BibTeXOptionPane extends AbstractOptionPane
 	{
 		wordlength = new WholeNumberField(jEdit.getIntegerProperty("bibtex.bibtitle.wordlength",0),4);
 		wordcount = new WholeNumberField(jEdit.getIntegerProperty("bibtex.bibtitle.wordcount",0),4);
-		
+
 		wordlengthPan = new JPanel();
 		wordlengthPan.add(new JLabel(jEdit.getProperty("options.bibtex.wordlength")));
 		wordlengthPan.add(wordlength);
-		
+
 		wordcountPan  = new JPanel();
 		wordcountPan.add(new JLabel(jEdit.getProperty("options.bibtex.wordcount")));
 		wordcountPan.add(wordcount);
-		
+
 		addComponent(inserttags = new JCheckBox(jEdit.getProperty(
 			"options.bibtex.inserttags")));
 		inserttags.getModel().setSelected(jEdit.getBooleanProperty(
@@ -79,7 +79,7 @@ public class BibTeXOptionPane extends AbstractOptionPane
 	private WholeNumberField wordlength,
 	                         wordcount;
 //	}}}
-	
+
   protected class WholeNumberField extends JTextField {
     private Toolkit toolkit;
     private NumberFormat integerFormatter;
@@ -113,9 +113,9 @@ public class BibTeXOptionPane extends AbstractOptionPane
     }
 
     protected class WholeNumberDocument extends PlainDocument {
-        public void insertString(int offs, 
+        public void insertString(int offs,
                                  String str,
-                                 AttributeSet a) 
+                                 AttributeSet a)
                 throws BadLocationException {
             char[] source = str.toCharArray();
             char[] result = new char[source.length];
