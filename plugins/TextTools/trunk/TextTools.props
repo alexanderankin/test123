@@ -1,13 +1,14 @@
 plugin.TextToolsPlugin.name=TextTools
 plugin.TextToolsPlugin.author=mike dillon
-plugin.TextToolsPlugin.version=1.8.1
+plugin.TextToolsPlugin.version=1.9
 plugin.TextToolsPlugin.docs=TextTools.html
 plugin.TextToolsPlugin.depend.0=jedit 04.00.01.00
 
 # Menu
 text-tools.label=TextTools
 text-tools=sort-lines revsort-lines field-sort-lines shuffle-lines - \
-	transpose-chars transpose-words transpose-lines - column-insert
+	transpose-chars transpose-words transpose-lines - column-insert \
+	textblock - spacetotabs
 sort-lines.label=Sort Lines
 revsort-lines.label=Reverse Sort Lines
 field-sort-lines.label=Sort Lines by Fields
@@ -16,7 +17,8 @@ transpose-chars.label=Transpose Characters
 transpose-words.label=Transpose Words
 transpose-lines.label=Transpose Lines
 column-insert.label=Column Insert
-
+textblock.label=Block Fill Insert
+spacetotabs.label=Spaces to Tabs
 
 # sort options window title
 text-tools.sortcontrol.label=TextTools - Sort Lines by Field
