@@ -17,6 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * $Id$
  */
 
 package tags;
@@ -32,12 +33,12 @@ import org.gjt.sp.jedit.*;
 class ChooseTagList extends JList {
   
   /***************************************************************************/
-	private TagsParser parser_;
+  private ExuberantCTagsParser parser_;
   private Vector tagIdentifiers_;
   private View view_;
   
   /***************************************************************************/
-	public ChooseTagList(View view, TagsParser parser) {
+	public ChooseTagList(View view, ExuberantCTagsParser parser) {
     super();
 
     view_ = view;

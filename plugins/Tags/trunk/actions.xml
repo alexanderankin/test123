@@ -1,39 +1,41 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id$ -->
 
 <ACTIONS>
 
-    <ACTION NAME="tags-follow-tag">
+    <ACTION NAME="tags-follow-tag" NO_REPEAT="TRUE">
       <CODE>
-         import tags.Tags;
-         Tags.followTag(view, textArea, buffer, false);
+         tags.Tags.followTag(view, textArea, buffer, false);
       </CODE>
     </ACTION>
 
-    <ACTION NAME="tags-follow-tag-new-view">
+    <ACTION NAME="tags-follow-tag-new-view" NO_REPEAT="TRUE">
 		   <CODE>
-         import tags.Tags;
-         Tags.followTag(view, textArea, buffer, true);
+         tags.Tags.followTag(view, textArea, buffer, true);
        </CODE>
     </ACTION>
 
-    <ACTION NAME="tags-enter-and-follow-tag">
+    <ACTION NAME="tags-enter-and-follow-tag" NO_REPEAT="TRUE">
       <CODE>
-         import tags.Tags;
-         Tags.enterAndFollowTag(view, textArea, buffer);
-      </CODE>
-    </ACTION>
-    
-    <ACTION NAME="tags-pop-tag">
-      <CODE>
-         import tags.Tags;
-         Tags.popTag(view, textArea);
+         tags.Tags.enterAndFollowTag(view, textArea, buffer);
       </CODE>
     </ACTION>
 
-    <ACTION NAME="tags-clear-tag-stack">
+	<ACTION NAME="tags-push-position" NO_REPEAT="TRUE">
+		<CODE>
+			tags.TagsPlugin.pushPosition(view);
+		</CODE>
+	</ACTION>
+
+    <ACTION NAME="tags-pop-tag">
       <CODE>
-         import tags.Tags;
-         Tags.clearTagStack();
+         tags.TagsPlugin.popPosition(view);
+      </CODE>
+    </ACTION>
+
+    <ACTION NAME="tags-clear-tag-stack" NO_REPEAT="TRUE">
+      <CODE>
+         tags.TagsPlugin.clearStack(view);
       </CODE>
     </ACTION>
     

@@ -17,6 +17,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ *
+ * $Id$
  */
 
 package tags;
@@ -32,7 +34,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.util.Log;
 
-class ChooseTagListDialog extends JDialog 
+class ChooseTagListDialog extends JDialog
 {
   /***************************************************************************/
   protected ChooseTagList tagList_;
@@ -41,30 +43,30 @@ class ChooseTagListDialog extends JDialog
 	protected View view_;
   protected boolean canceled_ = false;
   protected boolean openNewView_;
-  protected TagsParser parser_;
-  
+  protected ExuberantCTagsParser parser_;
+
   /***************************************************************************/
-  public ChooseTagListDialog(TagsParser parser, View view, boolean openNewView)
+  public ChooseTagListDialog(ExuberantCTagsParser parser, View view, boolean openNewView)
   {
-    super(view, 
-          (view != null) ? jEdit.getProperty("tag-collision-dlg.title") : 
+    super(view,
+          (view != null) ? jEdit.getProperty("tag-collision-dlg.title") :
                          "Tag Collisions",
           false);
 
     view_ = view;
     openNewView_ = openNewView;
     parser_ = parser;
-    
+
     getContentPane().setLayout(new BorderLayout());
-        
+
     // label
     JLabel label = new JLabel(
-          (view_ != null) ? jEdit.getProperty("tag-collision-dlg.label") : 
+          (view_ != null) ? jEdit.getProperty("tag-collision-dlg.label") :
                             "Choose tag:");
 
     // collision list
     tagList_ = parser.getCollisionListComponent(view_);
-    JScrollPane scrollPane = new JScrollPane(tagList_, 
+    JScrollPane scrollPane = new JScrollPane(tagList_,
                                       JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                                       JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     tagList_.addKeyListener(keyListener_);
@@ -74,7 +76,7 @@ class ChooseTagListDialog extends JDialog
     contentPanel.add(label, BorderLayout.NORTH);
     contentPanel.add(scrollPane, BorderLayout.CENTER);
     getContentPane().add(contentPanel, BorderLayout.CENTER);
-                
+
     // keep dialog
     keepDialogCheckBox_ = new JCheckBox(
                     jEdit.getProperty("tags.enter-tag-dlg.keep-dialog.label"));
@@ -83,33 +85,33 @@ class ChooseTagListDialog extends JDialog
     if (view_ == null)
       keepDialogCheckBox_.setEnabled(false);
     contentPanel.add(keepDialogCheckBox_, BorderLayout.SOUTH);
-    
+
     // OK/Cancel/Close buttons
     JButton ok = new JButton(
-             (view_ != null) ? jEdit.getProperty("options.tags.tag-ok.label") : 
+             (view_ != null) ? jEdit.getProperty("options.tags.tag-ok.label") :
                                "OK");
     getRootPane().setDefaultButton(ok);
     ok.addActionListener(okButtonListener_);
-    
+
     cancelButton_ = new JButton(
-          (view_ != null) ? jEdit.getProperty("options.tags.tag-cancel.label") : 
+          (view_ != null) ? jEdit.getProperty("options.tags.tag-cancel.label") :
                             "Cancel");
     cancelButton_.addActionListener(cancelButtonListener_);
-        
+
     JPanel buttonPanelFlow = new JPanel(new FlowLayout());
     JPanel buttonPanelGrid = new JPanel(new GridLayout(1,0,5,0));
     buttonPanelFlow.add(buttonPanelGrid);
     buttonPanelGrid.add(ok);
     buttonPanelGrid.add(cancelButton_);
     getContentPane().add(buttonPanelFlow, BorderLayout.SOUTH);
-    
+
     // dialog setup
     setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
     addKeyListener(keyListener_);
-    
-		// show				
+
+		// show
     showDialog();
-    
+
     scrollPane = null;
     contentPanel = null;
     ok = null;
@@ -120,34 +122,31 @@ class ChooseTagListDialog extends JDialog
   /***************************************************************************/
   protected void showDialog() {
     pack();
-    
     // Place dialog
     Tags.setDialogPosition(view_, this);
-      
-    GUIUtilities.requestFocus(this, tagList_);
-    
     show();
+	GUIUtilities.requestFocus(this, tagList_);
   }
 
   /***************************************************************************/
   protected void followSelectedTag()
   {
-    Tags.processTagLine(tagList_.getSelectedIndex(), view_, openNewView_, 
+    Tags.processTagLine(tagList_.getSelectedIndex(), view_, openNewView_,
                         parser_.getTag());
   }
-  
+
   /*+*************************************************************************/
-  protected ActionListener keepDialogListener_ = new ActionListener() 
+  protected ActionListener keepDialogListener_ = new ActionListener()
   {
-    public void actionPerformed(ActionEvent e) 
+    public void actionPerformed(ActionEvent e)
     {
       if (keepDialogCheckBox_.isSelected())
-        cancelButton_.setText((view_ != null) ? 
-                          jEdit.getProperty("options.tags.tag-close.label") : 
+        cancelButton_.setText((view_ != null) ?
+                          jEdit.getProperty("options.tags.tag-close.label") :
                           "Cancel");
       else
-        cancelButton_.setText((view_ != null) ? 
-                          jEdit.getProperty("options.tags.tag-cancel.label") : 
+        cancelButton_.setText((view_ != null) ?
+                          jEdit.getProperty("options.tags.tag-cancel.label") :
                           "Cancel");
       tagList_.requestFocus();
     }
@@ -156,14 +155,14 @@ class ChooseTagListDialog extends JDialog
 
   /*+*************************************************************************/
   protected ActionListener okButtonListener_ = new ActionListener() {
-    public void actionPerformed(ActionEvent e) 
+    public void actionPerformed(ActionEvent e)
     {
       followSelectedTag();
       if (!keepDialogCheckBox_.isSelected())
         dispose();
     }
   };
-  
+
   /*+*************************************************************************/
   protected ActionListener cancelButtonListener_ = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
@@ -174,13 +173,13 @@ class ChooseTagListDialog extends JDialog
 
   /*+*************************************************************************/
   protected KeyListener keyListener_ = new KeyListener() {
-    public void keyPressed(KeyEvent e) 
+    public void keyPressed(KeyEvent e)
     {
       e = KeyEventWorkaround.processKeyEvent(e);
       if(e == null)
         return;
-    
-      switch (e.getKeyCode()) 
+
+      switch (e.getKeyCode())
       {
         case KeyEvent.VK_ESCAPE:
           cancelButtonListener_.actionPerformed(null);
@@ -193,8 +192,8 @@ class ChooseTagListDialog extends JDialog
             return; // Let JList handle the event
           else
             selected = selected - 1;
-          
-	
+
+
           tagList_.setSelectedIndex(selected);
           tagList_.ensureIndexIsVisible(selected);
 
@@ -217,13 +216,13 @@ class ChooseTagListDialog extends JDialog
       }
     }
     public void keyReleased(KeyEvent e) {}
-    public void keyTyped(KeyEvent e) 
+    public void keyTyped(KeyEvent e)
     {
       e = KeyEventWorkaround.processKeyEvent(e);
       if(e == null)
         return;
 
-      switch (e.getKeyChar()) 
+      switch (e.getKeyChar())
       {
         case KeyEvent.VK_1:
         case KeyEvent.VK_2:
@@ -236,7 +235,7 @@ class ChooseTagListDialog extends JDialog
         case KeyEvent.VK_9:
           if (getFocusOwner() != tagList_)
             return;
-              
+
           /* There may actually be more than 9 items in the list, but since
            * the user would have to scroll to see them either with the mouse
            * or with the arrow keys, then they can select the item they want
@@ -253,12 +252,12 @@ class ChooseTagListDialog extends JDialog
       }
     }
   };
-  
+
   /***************************************************************************/
   protected MouseListener mouseListener_ = new MouseAdapter() {
-    public void mouseClicked(MouseEvent e) 
+    public void mouseClicked(MouseEvent e)
     {
-      if (e.getClickCount() == 2) 
+      if (e.getClickCount() == 2)
       {
         int selected = tagList_.locationToIndex(e.getPoint());
         tagList_.setSelectedIndex(selected);
@@ -269,5 +268,5 @@ class ChooseTagListDialog extends JDialog
       }
     }
   };
-  
+
 }
