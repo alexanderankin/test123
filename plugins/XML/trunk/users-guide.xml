@@ -473,7 +473,7 @@
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.9</emphasis> requires
-  jEdit 4.0.3 and the ErrorList plugin 1.2.</para>
+  jEdit 4.1pre1 and the ErrorList plugin 1.2.</para>
 
   <itemizedlist>
    <listitem><para><guimenuitem>Complete Element or Entity</guimenuitem> command

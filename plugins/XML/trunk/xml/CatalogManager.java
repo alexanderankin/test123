@@ -16,6 +16,8 @@
 package xml;
 
 //{{{ Imports
+import javax.swing.SwingUtilities;
+import java.awt.Component;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -76,9 +78,32 @@ public class CatalogManager
 				newSystemId = current + systemId;
 		}
 
-		if(!(networkOK || newSystemId.startsWith("file:")
+		if(!(newSystemId.startsWith("file:")
 			|| newSystemId.startsWith("jeditresource:")))
-			throw new SAXException(jEdit.getProperty("xml.network.error"));
+		{
+			final String _newSystemId = newSystemId;
+			final String[] inputSystemId = new String[1];
+			try
+			{
+				SwingUtilities.invokeAndWait(new Runnable()
+				{
+					public void run()
+					{
+						inputSystemId[0] = showUnknownDTDDialog(
+							jEdit.getActiveView(),_newSystemId);
+					}
+				});
+			}
+			catch(Exception e)
+			{
+				Log.log(Log.ERROR,CatalogManager.class,e);
+			}
+
+			newSystemId = inputSystemId[0];
+		}
+
+		if(newSystemId == null)
+			return null;
 
 		// Xerces has a bug where an InputSource without a byte
 		// stream is loaded incorrectly.
@@ -91,14 +116,44 @@ public class CatalogManager
 	public static void propertiesChanged()
 	{
 		loaded = false;
-		networkOK = jEdit.getBooleanProperty("xml.network-ok");
+	} //}}}
+
+	//{{{ save() method
+	public static void save()
+	{
+		int systemCount = 0;
+		int publicCount = 0;
+
+		Iterator keys = userCatalog.keySet().iterator();
+		while(keys.hasNext())
+		{
+			Entry entry = (Entry)keys.next();
+			if(entry.type == Entry.PUBLIC)
+			{
+				jEdit.setProperty("xml.user.public-id." + publicCount,entry.id);
+				jEdit.setProperty("xml.user.public-id." + publicCount
+					+ ".uri",(String)userCatalog.get(entry));
+				publicCount++;
+			}
+			else
+			{
+				jEdit.setProperty("xml.user.system-id." + systemCount,entry.id);
+				jEdit.setProperty("xml.user.system-id." + systemCount
+					+ ".uri",(String)userCatalog.get(entry));
+				systemCount++;
+			}
+		}
+
+		jEdit.unsetProperty("xml.user.public-id." + publicCount);
+		jEdit.unsetProperty("xml.user.public-id." + publicCount + ".uri");
+		jEdit.unsetProperty("xml.user.system-id." + systemCount);
+		jEdit.unsetProperty("xml.user.system-id." + systemCount + ".uri");
 	} //}}}
 
 	//{{{ Private members
 
 	//{{{ Static variables
 	private static boolean loaded;
-	private static boolean networkOK;
 	private static HashMap defaultCatalog;
 	private static HashMap userCatalog;
 	//}}}
@@ -121,6 +176,12 @@ public class CatalogManager
 		if(uri == null)
 			uri = (String)defaultCatalog.get(e);
 		return uri;
+	} //}}}
+
+	//{{{ showUnknownDTDDialog() method
+	private static String showUnknownDTDDialog(Component comp, String systemId)
+	{
+		return null;
 	} //}}}
 
 	//{{{ load() method
