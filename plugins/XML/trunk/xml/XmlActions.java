@@ -47,6 +47,12 @@ public class XmlActions
 	{
 		EditPane editPane = view.getEditPane();
 
+		if(CompletionInfo.isDelegated(editPane))
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
 		CompletionInfo completionInfo = CompletionInfo
 			.getCompletionInfo(editPane);
 
@@ -300,10 +306,17 @@ public class XmlActions
 	//{{{ insertClosingTag() method
 	public static void insertClosingTag(View view)
 	{
-		Buffer buffer = view.getBuffer();
+		EditPane editPane = view.getEditPane();
+		Buffer buffer = editPane.getBuffer();
+
+		if(CompletionInfo.isDelegated(editPane))
+		{
+			view.getToolkit().beep();
+			return;
+		}
 
 		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(view.getEditPane());
+			.getCompletionInfo(editPane);
 
 		if(!(buffer.isEditable()
 			&& completion
@@ -313,7 +326,7 @@ public class XmlActions
 			return;
 		}
 
-		JEditTextArea textArea = view.getTextArea();
+		JEditTextArea textArea = editPane.getTextArea();
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
@@ -322,6 +335,10 @@ public class XmlActions
 
 		if(tag != null)
 			textArea.setSelectedText("</" + tag.tag + ">");
+		else
+		{
+			view.getToolkit().beep();
+		}
 	} //}}}
 
 	//{{{ split() method
@@ -336,10 +353,17 @@ public class XmlActions
 	 */
 	public static void split(View view)
 	{
-		Buffer buffer = view.getBuffer();
+		EditPane editPane = view.getEditPane();
+		Buffer buffer = editPane.getBuffer();
+
+		if(CompletionInfo.isDelegated(editPane))
+		{
+			view.getToolkit().beep();
+			return;
+		}
 
 		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(view.getEditPane());
+			.getCompletionInfo(editPane);
 
 		if(!(buffer.isEditable()
 			&& completion
@@ -349,7 +373,7 @@ public class XmlActions
 			return;
 		}
 
-		JEditTextArea textArea = view.getTextArea();
+		JEditTextArea textArea = editPane.getTextArea();
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(
 			buffer.getText(0,textArea.getCaretPosition()),
@@ -582,6 +606,9 @@ public class XmlActions
 
 		Buffer buffer = textArea.getBuffer();
 
+		if(CompletionInfo.isDelegated(editPane))
+			return;
+
 		CompletionInfo completionInfo = CompletionInfo
 			.getCompletionInfo(editPane);
 
@@ -617,6 +644,11 @@ public class XmlActions
 		EditPane editPane = view.getEditPane();
 		JEditTextArea textArea = editPane.getTextArea();
 
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(editPane);
+		if(completionInfo == null)
+			return;
+
 		// first, we get the word before the caret
 		int caretLine = textArea.getCaretLine();
 		String line = textArea.getLineText(caretLine);
@@ -630,11 +662,6 @@ public class XmlActions
 
 		int wordStart = TextUtilities.findWordStart(line,dot-1,"<&");
 		String word = line.substring(wordStart + 1,dot);
-
-		CompletionInfo completionInfo = CompletionInfo
-			.getCompletionInfo(editPane);
-		if(completionInfo == null)
-			return;
 
 		ArrayList completions;
 		if(mode == ELEMENT_COMPLETE)
@@ -688,6 +715,9 @@ public class XmlActions
 
 		Buffer buffer = textArea.getBuffer();
 
+		if(CompletionInfo.isDelegated(editPane))
+			return;
+
 		CompletionInfo completionInfo = CompletionInfo
 			.getCompletionInfo(editPane);
 
@@ -729,6 +759,9 @@ public class XmlActions
 		textArea.userInput('>');
 
 		Buffer buffer = view.getBuffer();
+
+		if(CompletionInfo.isDelegated(editPane))
+			return;
 
 		CompletionInfo completionInfo = CompletionInfo
 			.getCompletionInfo(editPane);

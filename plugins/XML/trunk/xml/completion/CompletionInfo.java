@@ -18,6 +18,7 @@ package xml.completion;
 //{{{ Imports
 import gnu.regexp.*;
 import java.util.*;
+import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.xml.sax.XMLReader;
@@ -82,6 +83,25 @@ public class CompletionInfo
 		}
 
 		return returnValue;
+	} //}}}
+
+	//{{{ isDelegated() method
+	/**
+	 * The idea with this is to not show completion popups, etc
+	 * when we're inside a JavaScript in an HTML file or whatever.
+	 */
+	public static boolean isDelegated(EditPane editPane)
+	{
+		Buffer buffer = editPane.getBuffer();
+		ParserRuleSet rules = getRuleSetAtOffset(buffer,
+			editPane.getTextArea().getCaretPosition());
+
+		// Am I an idiot?
+		if("PHP".equals(rules.getName()))
+			return true;
+
+		return jEdit.getProperty("mode." + rules.getMode().getName()
+			+ "." + XmlPlugin.COMPLETION_INFO_PROPERTY) == null;
 	} //}}}
 
 	//{{{ getCompletionInfo() method
@@ -195,6 +215,24 @@ public class CompletionInfo
 	//{{{ Private members
 	private static HashMap globs;
 	private static HashMap completionInfo;
+
+	//{{{ getRuleSetAtOffset() method
+	/**
+	 * I don't want to make this plugin depend on jEdit 4.1 yet.
+	 * In 4.0 this method is private in Buffer.java.
+	 */
+	private static ParserRuleSet getRuleSetAtOffset(Buffer buffer, int offset)
+	{
+		int line = buffer.getLineOfOffset(offset);
+		offset -= buffer.getLineStartOffset(line);
+		if(offset != 0)
+			offset--;
+
+		Token token = buffer.markTokens(line).getFirstToken();
+		token = TextUtilities.getTokenAtOffset(token,offset);
+
+		return token.rules;
+	} //}}}
 
 	//{{{ Class initializer
 	static

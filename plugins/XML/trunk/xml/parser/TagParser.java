@@ -108,7 +108,7 @@ public class TagParser
 		// this works fine for JSP, PHP, and maybe others.
 		boolean notATag = false;
 
-loop:		for (int i = pos; i >= 0; i--)
+loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 		{
 			char ch = text.charAt(i);
 			if(ch == '<')
@@ -233,6 +233,13 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 					{
 						tagCounter++;
 					}
+				}
+				else if(tag.type == T_END_TAG)
+				{
+					// something like <foo> </bar>
+					// this means we probably won't
+					// see </foo>...
+					return null;
 				}
 			}
 			else if(ch == '>')
