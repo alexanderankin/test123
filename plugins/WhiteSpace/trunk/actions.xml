@@ -33,7 +33,7 @@
     </ACTION>
 
 
-    <ACTION NAME="toggle-space-highlight">
+    <ACTION NAME="white-space.toggle-space-highlight">
         <CODE>
              WhiteSpaceHighlight.toggleSpaceHighlightFor(view);
         </CODE>
@@ -43,7 +43,7 @@
     </ACTION>
 
 
-    <ACTION NAME="toggle-tab-highlight">
+    <ACTION NAME="white-space.toggle-tab-highlight">
         <CODE>
              WhiteSpaceHighlight.toggleTabHighlightFor(view);
         </CODE>
