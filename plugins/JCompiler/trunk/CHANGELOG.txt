@@ -3,14 +3,13 @@ VERSION 1.3
 - new option in the compiler option dialog to choose between classic and modern
   compiler on JDK >= 1.3 (just like in Ant)
 - updated for Console 3.0 API
-- multi-line compiler errors are now shown in a tree in ErrorList
+- support for multi-line compiler errors
 - all textfields in the compiler option dialog now have history popups
 - menu command "Options..." renamed to "Java Compiler Options..."
   (existing shortcuts for "Options..." should stay valid)
-- command 'help' and unknown commands no longer cause the existing error list
-  to be cleared
+- command 'help' and unknown commands no longer clear existing errors
 - better parsing for '^' error line indicators
-- requires jEdit 3.2pre6 or higher, EditBus 1.0 or higher, Console 3.0 or higher
+- requires jEdit 3.2pre10 or higher, EditBus 1.0 or higher, Console 3.0 or higher
 
 
 VERSION 1.2.1
@@ -23,7 +22,7 @@ VERSION 1.2.1
 VERSION 1.2
 
 - new public get methods for properties like $basepath, source dir, output dir,
-  class path, for use from third parties (Mike Dillon)
+  class path, for use from third parties (Mike Hansen???)
 - new command "javac" to use the in-VM compiler with any command line
 - now prints a command line ready for use with javac
 - bugfix: NullPointerException if "Show command line" is on
