@@ -56,19 +56,6 @@ public class ZipCommand extends ArchiveCommand {
     }
 
 
-    public ArchiveEntry getDirectoryEntry(String path) throws IOException {
-        ZipInputStream in = this.source;
-
-        for (ZipEntry entry = null; (entry = in.getNextEntry()) != null; ) {
-            if (path.equals(entry.getName())) {
-                return new ArchiveEntry(entry);
-            }
-        }
-
-        return null;
-    }
-
-
     public InputStream createInputStream(String path) throws IOException {
         ZipInputStream in = this.source;
 
