@@ -592,7 +592,15 @@ public class TaskListPlugin extends EBPlugin
 					type = token.id;
 					chunkStart = tokenStart;
 					chunkLength = token.length;
-					while(token.next.id == type)
+					// Ensure the next token is the same as the current
+					// or that the token after the next is the same type.
+					// The second check is to allow detecting tasks
+					// in PHPdoc, where @TODO is a label, so one might have
+					// ` * @TODO foo`.
+					while(token.next.id == type 
+						  || (token.next.id != Token.END 
+							  && token.next.id != Token.NULL
+							  && token.next.next.id == type))
 					{
 						token = token.next;
 						chunkLength += token.length;

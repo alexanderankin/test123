@@ -8,7 +8,7 @@
 <author><othername>Ollie Rutherfurd</othername></author>
 <author><othername>John Gellene</othername></author>
 </authorgroup>
-<edition>Version 0.4.3</edition>
+<edition>Version 0.4.4</edition>
 <legalnotice>
 <para>Copyright (C) 2002 John Gellene, 2003-2004 Ollie Rutherfurd</para>
 </legalnotice>
@@ -202,10 +202,20 @@ COPYING.DOC.txt included with the jEdit distribution.</para></section>
 <para>Bug reports, comments and suggestions regarding TaskList may be sent to
 Ollie Rutherfurd at <ulink url="mailto:oliver@jedit.org">oliver@jedit.org</ulink> or posted on the jedit-users
 mailing list (for which membership is required).</para></section>
-<section id="revision-history">
-<title>Revision History</title>
-<section id="revision-0-4-3-april-2004">
-<title>Revision 0.4.3, April, 2004</title>
+<section id="version-history">
+<title>Version History</title>
+<section id="version-0-4-4-august-2004">
+<title>Version 0.4.4, August, 2004</title>
+<itemizedlist>
+<listitem>
+<para>Recognize Tasks that contain tokens other than comment types,
+if the other tokens are surrounded by comment tokens.  This
+allows PHPDoc <literal>@TODO: ....</literal> comments, where <literal>@TODO</literal> is a 
+<literal>LABEL</literal> token, to be recognized.</para></listitem>
+</itemizedlist>
+</section>
+<section id="version-0-4-3-april-2004">
+<title>Version 0.4.3, April, 2004</title>
 <itemizedlist>
 <listitem>
 <para>Fixed NullPointerException when trying to extract tasks 
@@ -220,8 +230,8 @@ from a mode that was added since jEdit was started.</para></listitem>
 <para>Changing default sort column or order is applied immediately.</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-4-2-march-13-2003">
-<title>Revision 0.4.2, March 13, 2003</title>
+<section id="version-0-4-2-march-13-2003">
+<title>Version 0.4.2, March 13, 2003</title>
 <itemizedlist>
 <listitem>
 <para>Fixed sf bug 535882, &quot;TaskList, removing and jumping&quot;</para></listitem>
@@ -241,8 +251,8 @@ from a mode that was added since jEdit was started.</para></listitem>
 <para>Fixed bug removing task patterns</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-4-1-february-18-2003">
-<title>Revision 0.4.1, February 18, 2003</title>
+<section id="version-0-4-1-february-18-2003">
+<title>Version 0.4.1, February 18, 2003</title>
 <itemizedlist>
 <listitem>
 <para>Better performance in default patterns (Antonio Argentieri).</para></listitem>
@@ -250,8 +260,8 @@ from a mode that was added since jEdit was started.</para></listitem>
 <para>Removed uses of APIs deprecated by jEdit 4.1 (Slava Pestov).</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-4-0-june-04-2002">
-<title>Revision 0.4.0, June 04, 2002</title>
+<section id="version-0-4-0-june-04-2002">
+<title>Version 0.4.0, June 04, 2002</title>
 <itemizedlist>
 <listitem>
 <para>Option to specify which modes to use</para></listitem>
@@ -261,29 +271,29 @@ from a mode that was added since jEdit was started.</para></listitem>
 <para>parsing updates for jEdit 4.1</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-3-5-march-17-2002">
-<title>Revision 0.3.5, March 17, 2002</title>
+<section id="version-0-3-5-march-17-2002">
+<title>Version 0.3.5, March 17, 2002</title>
 <itemizedlist>
 <listitem>
 <para>Fixed bug in parsing routine</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-3-4-march-4-2002">
-<title>Revision 0.3.4, March 4, 2002</title>
+<section id="version-0-3-4-march-4-2002">
+<title>Version 0.3.4, March 4, 2002</title>
 <itemizedlist>
 <listitem>
 <para>Release on jEdit Plugin Central</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-3-3-january-29-2002">
-<title>Revision 0.3.3, January 29, 2002</title>
+<section id="version-0-3-3-january-29-2002">
+<title>Version 0.3.3, January 29, 2002</title>
 <itemizedlist>
 <listitem>
 <para>Port to jEdit 4.0 API</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-3-2-december-13-2001">
-<title>Revision 0.3.2, December 13, 2001</title>
+<section id="version-0-3-2-december-13-2001">
+<title>Version 0.3.2, December 13, 2001</title>
 <itemizedlist>
 <listitem>
 <para>Fixed highlighting option</para></listitem>
@@ -291,22 +301,22 @@ from a mode that was added since jEdit was started.</para></listitem>
 <para>cleaned up table appearance</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-3-1-december-12-2001">
-<title>Revision 0.3.1, December 12, 2001</title>
+<section id="version-0-3-1-december-12-2001">
+<title>Version 0.3.1, December 12, 2001</title>
 <itemizedlist>
 <listitem>
 <para>Fixed bug affecting deletion on entire task comment</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-3-december-11-2001">
-<title>Revision 0.3, December 11, 2001</title>
+<section id="version-0-3-december-11-2001">
+<title>Version 0.3, December 11, 2001</title>
 <itemizedlist>
 <listitem>
 <para>Revised for beta version 0.3</para></listitem>
 </itemizedlist>
 </section>
-<section id="revision-0-2-december-1-2001">
-<title>Revision 0.2, December 1, 2001</title>
+<section id="version-0-2-december-1-2001">
+<title>Version 0.2, December 1, 2001</title>
 <itemizedlist>
 <listitem>
 <para>Initial version of documentation</para></listitem>
