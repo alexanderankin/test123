@@ -5,7 +5,6 @@
 - jikes warning pattern
 - %edit -n, -p, -s
 - caret color option
-- buffer output broken
 
 - default dir option
 - on win: foo "bar baz" needs to be passed literally
