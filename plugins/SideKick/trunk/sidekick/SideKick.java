@@ -138,9 +138,6 @@ class SideKick implements EBComponent
 
 				errorSource.clear();
 
-				// get buffer text
-				text = buffer.getText(0,buffer.getLength());
-
 				// start parser thread
 				stopThread();
 
@@ -296,8 +293,6 @@ class SideKick implements EBComponent
 
 	private ParseThread thread;
 
-	private String text;
-
 	private SideKickParser parserImpl;
 
 	private DefaultErrorSource errorSource;
@@ -417,7 +412,7 @@ class SideKick implements EBComponent
 				if(parserImpl == null)
 					return;
 
-				data = parserImpl.parse(buffer,text,errorSource);
+				data = parserImpl.parse(buffer,errorSource);
 			}
 
 			SwingUtilities.invokeLater(new Runnable()
@@ -454,13 +449,6 @@ class SideKick implements EBComponent
 							data);
 
 						thread = null;
-
-						// to avoid keeping pointers to stale objects.
-						// we could reuse a single parser instance to preserve
-						// performance, but it eats too much memory, especially
-						// if the file being parsed has an associated DTD.
-						text = null;
-
 						parserImpl = null;
 
 						sendUpdate();
