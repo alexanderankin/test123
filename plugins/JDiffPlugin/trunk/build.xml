@@ -58,7 +58,7 @@
 	<echo file="docbook-wrapper.xsl" append="true"
 		message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
 	<echo file="docbook-wrapper.xsl" append="true"
-		message=" xsl:version='1.0'&gt;"/>
+		message=" version='1.0'&gt;"/>
 	<echo file="docbook-wrapper.xsl" append="true"
 		message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
 	<echo file="docbook-wrapper.xsl" append="true"
@@ -71,6 +71,7 @@
             srcdir="${src.dir}"
             destdir="${build.dir}"
             deprecation="on"
+						debug="on"
             includeJavaRuntime="yes"
         >
             <classpath refid="project.class.path"/>

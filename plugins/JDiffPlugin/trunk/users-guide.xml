@@ -4,7 +4,7 @@
 <!-- (C) 2002 Andre Kaplan -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+"file:///c:/develop/docbook-xml-4.2/docbookx.dtd">
 
 <book>
 
@@ -16,6 +16,10 @@
         <author>
             <firstname>Andr&eacute;</firstname>
             <surname>Kaplan</surname>
+        </author>
+        <author>
+            <firstname>Mark</firstname>
+            <surname>Wickens</surname>
         </author>
     </authorgroup>
 
@@ -57,7 +61,7 @@
     <para>It requires:</para>
     <itemizedlist>
         <listitem>JDK 1.3</listitem>
-        <listitem>jEdit 4.1pre1</listitem>
+        <listitem>jEdit 4.2+</listitem>
     </itemizedlist>
 
 </chapter>
@@ -311,6 +315,10 @@
     <para>You can also write to:</para>
     <itemizedlist>
         <listitem>
+            Mark Wickens <email>m.wickens@rhodium-consulting.com</email>;
+        </listitem>
+
+        <listitem>
             Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
         </listitem>
 
@@ -326,6 +334,20 @@
     </itemizedlist>
 </chapter>
 
+<chapter id="history">
+    <title>History</title>
+
+    <itemizedlist>
+        <listitem>
+				Version 1.4. Updated to work with jEdit v4.2+, including edits for new
+				JEditTextArea handling and new plugin API.
+        </listitem>
+
+        <listitem>
+				Version 1.3.2. Last pre-jEdit v4.2 version of plugin by Andr&eacute;.
+        </listitem>
+    </itemizedlist>
+</chapter>
 
 <chapter id="credits">
     <title>Credits</title>

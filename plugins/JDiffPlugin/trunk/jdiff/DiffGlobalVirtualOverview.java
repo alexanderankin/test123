@@ -46,11 +46,11 @@ public class DiffGlobalVirtualOverview extends DiffOverview
 
 
     public void paint(Graphics gfx) {
-		DisplayManager displayManager0 = textArea0.getDisplayManager();
-		DisplayManager displayManager1 = textArea1.getDisplayManager();
+        /*DisplayManager foldVisibilityManager0 = this.textArea0.getDisplayManager();
+        DisplayManager foldVisibilityManager1 = this.textArea1.getDisplayManager();
 
-        int virtualLineCount0 = displayManager0.getScrollLineCount();
-        int virtualLineCount1 = displayManager1.getScrollLineCount();
+        int virtualLineCount0 = foldVisibilityManager0.getScrollLineCount();
+        int virtualLineCount1 = foldVisibilityManager1.getScrollLineCount();
 
         int lineCount0 = this.textArea0.getLineCount();
         int lineCount1 = this.textArea1.getLineCount();
@@ -122,7 +122,7 @@ public class DiffGlobalVirtualOverview extends DiffOverview
 
             virtualLeftHeight = 0;
             if (hunk.line0 >= lineCount0) {
-                virtualLeftOffset = displayManager0.getScrollLineCount();
+                virtualLeftOffset = foldVisibilityManager0.getScrollLineCount();
             } else {
                 virtualLeftOffset  = foldVisibilityManager0.physicalToVirtual(hunk.line0);
                 if (hunk.deleted != 0) {
@@ -135,7 +135,7 @@ public class DiffGlobalVirtualOverview extends DiffOverview
 
             virtualRightHeight = 0;
             if (hunk.line1 >= lineCount1) {
-                virtualRightOffset = displayManager1.getScrollLineCount();
+                virtualRightOffset = foldVisibilityManager1.getVirtualLineCount();
             } else {
                 virtualRightOffset = foldVisibilityManager1.physicalToVirtual(hunk.line1);
                 if (hunk.inserted != 0) {
@@ -160,12 +160,13 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         }
 
         // Display the textArea cursor
-        //this.paintCursor(gfx);
+        this.paintCursor(gfx);*/
     }
 
+
     public void paintCursor(Graphics gfx) {
-        int virtualLineCount0 = this.textArea0.getDisplayManager().getScrollLineCount();
-        int virtualLineCount1 = this.textArea1.getDisplayManager().getScrollLineCount();
+        /*int virtualLineCount0 = this.textArea0.getVirtualLineCount();
+        int virtualLineCount1 = this.textArea1.getVirtualLineCount();
 
         Rectangle size = getBounds();
 
@@ -208,8 +209,7 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         gfx.setColor(JDiffPlugin.leftCursorColor);
         gfx.drawRect(leftCursor.x, leftCursor.y, leftCursor.width - 1, leftCursor.height - 1);
         gfx.setColor(JDiffPlugin.rightCursorColor);
-        gfx.drawRect(rightCursor.x, rightCursor.y, rightCursor.width - 1, rightCursor.height - 1);
+        gfx.drawRect(rightCursor.x, rightCursor.y, rightCursor.width - 1, rightCursor.height - 1);*/
     }
-	
 }
 
