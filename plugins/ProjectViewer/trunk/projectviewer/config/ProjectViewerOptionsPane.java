@@ -20,8 +20,14 @@
 package projectviewer.config;
 
 //{{{ Imports
+import java.awt.FlowLayout;
+
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JCheckBox;
 import javax.swing.JTextField;
+import javax.swing.ButtonGroup;
+import javax.swing.JRadioButton;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -42,6 +48,10 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 	private JCheckBox rememberOpen;
 	private JCheckBox deleteNotFoundFiles;
 	private JCheckBox saveOnChange;
+	
+	private JRadioButton askAlways;
+	private JRadioButton askOnce;
+	private JRadioButton askNever;
 
 	private JCheckBox showToolBar;
 	private JCheckBox showFoldersTree;
@@ -95,6 +105,40 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		saveOnChange.setSelected(config.getSaveOnChange());
 		addComponent(saveOnChange);
 
+		// Button group: "ask import"
+		JLabel label = new JLabel(jEdit.getProperty("projectviewer.options.ask_import"));
+		label.setToolTipText(jEdit.getProperty("projectviewer.options.ask_import.tooltip"));
+		addComponent(label);
+		
+		JPanel pane = new JPanel(new FlowLayout());
+		ButtonGroup bg = new ButtonGroup();
+		
+		askAlways = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.always"));
+		bg.add(askAlways);
+		pane.add(askAlways);
+		askOnce = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.once"));
+		bg.add(askOnce);
+		pane.add(askOnce);
+		askNever = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.never"));
+		bg.add(askNever);
+		pane.add(askNever);
+		
+		switch (config.getAskImport()) {
+			case ProjectViewerConfig.ASK_ALWAYS:
+				askAlways.setSelected(true);
+				break;
+				
+			case ProjectViewerConfig.ASK_ONCE:
+				askOnce.setSelected(true);
+				break;
+			
+			case ProjectViewerConfig.ASK_NEVER:
+				askNever.setSelected(true);
+				break;
+		}
+
+		addComponent(pane);
+		
 		//-- gui options
 		addSeparator("options.projectviewer.gui-opt.label");
 
@@ -163,6 +207,14 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		config.setShowFoldersTree(showFoldersTree.isSelected());
 		config.setShowFilesTree(showFilesTree.isSelected());
 		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
+		
+		if (askAlways.isSelected()) {
+			config.setAskImport(ProjectViewerConfig.ASK_ALWAYS);
+		} else if (askOnce.isSelected()) {
+			config.setAskImport(ProjectViewerConfig.ASK_ONCE);
+		} else {
+			config.setAskImport(ProjectViewerConfig.ASK_NEVER);
+		}
 
 		config.setImportExts(importExts.getText());
 		config.setExcludeDirs(excludeDirs.getText());
