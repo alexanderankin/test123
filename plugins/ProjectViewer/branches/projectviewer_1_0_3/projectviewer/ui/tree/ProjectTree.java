@@ -21,6 +21,7 @@ import java.awt.dnd.*;
 import java.awt.event.MouseEvent;
 import javax.swing.JTree;
 import javax.swing.tree.TreeModel;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.util.Log;
 import projectviewer.ProjectFile;
 
@@ -55,8 +56,8 @@ implements DragGestureListener, DragSourceListener
       Object node = getLastSelectedPathComponent();
       if ( !( node instanceof ProjectFile ) )
          return;
-      if ( evt.getTriggerEvent() instanceof MouseEvent &&
-         ((MouseEvent) evt.getTriggerEvent()).isPopupTrigger() ) {
+      if (evt.getTriggerEvent() instanceof MouseEvent &&
+         GUIUtilities.isPopupTrigger((MouseEvent) evt.getTriggerEvent())) {
          return;
       }
       evt.getDragSource().startDrag( evt,

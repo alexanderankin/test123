@@ -1,14 +1,14 @@
 <!-- ================================================== -->
 <!-- Build file for the Project Viewer plugin           -->
 <!-- ================================================== -->
-<project name="Project Viewer" default="compile" basedir=".">
+<project name="Project Viewer" default="build" basedir=".">
 
 
   <!-- ================================================ -->
   <!-- Property definitions                             -->
   <!-- ================================================ -->
   <property file="build.properties"/>
- 
+
   <property name="version"          value="1.0.2"/>
 
   <property name="build"            value="build"/>
@@ -20,10 +20,10 @@
   <property name="src.main"         value="${src}"/>
   <property name="src.etc"          value="."/>
   <property name="src.lib"          value="lib"/>
-  
+
   <property name="docs"             value="docs"/>
 
-  
+
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
@@ -40,7 +40,7 @@
 
 
   <!-- ================================================ -->
-  <target name="compile" 
+  <target name="compile"
           description="Compile all main classes">
 
     <mkdir dir="${build.classes}"/>
@@ -61,7 +61,7 @@
 
 
   <!-- ================================================ -->
-  <target name="build" 
+  <target name="build"
           depends="compile"
           description="Build the plugin">
 
@@ -72,24 +72,24 @@
         <include name="projectviewer/**/*.gif"/>
       </fileset>
     </copy>
-    
+
     <copy todir="${build.classes}">
       <fileset dir="${src.etc}">
         <include name="actions.xml"/>
       </fileset>
     </copy>
-    
+
     <mkdir dir="${build.docs}"/>
     <copy todir="${build.docs}">
       <fileset dir="${docs}"/>
     </copy>
-    
+
     <jar jarfile="${build}/ProjectViewer.jar">
       <fileset dir="${build.classes}"/>
     </jar>
   </target>
 
-  
+
   <!-- ================================================ -->
   <target name="dist"
           depends="build"
@@ -109,10 +109,10 @@
           description="Deploy the plugin">
     <unzip src="ProjectViewer-${version}.zip" dest="${jedit.user.home}/jars"/>
   </target>
-  
+
 
   <!-- ================================================ -->
-  <target name="javadoc" 
+  <target name="javadoc"
           description="Compile JavaDoc">
 
     <mkdir dir="${build.api}"/>

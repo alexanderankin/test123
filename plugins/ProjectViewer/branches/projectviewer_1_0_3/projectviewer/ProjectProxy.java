@@ -54,7 +54,8 @@ public class ProjectProxy implements Project
          } catch (ProjectException e) {
             // TODO: Two options - throw runtime or log.  Log for now.
             // We probably want to log and then add a ProjectError child
-            // which will display an error.
+            // which will display an error.  Another possibility - create a null
+            // project.
             ProjectPlugin.error(e);
          }
       }
@@ -79,6 +80,13 @@ public class ProjectProxy implements Project
    public void setName(String aName)
    {
       getProject().setName(aName);
+   }
+
+   /**
+    * Returns the names of all available properties.
+    */
+   public Iterator propertyNames() {
+      return getProject().propertyNames();
    }
 
    /**

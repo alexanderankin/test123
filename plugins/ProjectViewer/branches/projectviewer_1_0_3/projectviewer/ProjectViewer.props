@@ -27,6 +27,7 @@ projectviewer.tree-action.import-files=Import File(s)...
 projectviewer.tree-action.add-buffer=Add Buffer
 projectviewer.tree-action.create-directory=Add Directory
 projectviewer.tree-action.synchronize-view=Synchronize
+projectviewer.tree-action.config-properties=Properties...
 
 projectviewer.dialog-title.import-files=File Import Preferences
 
@@ -34,13 +35,21 @@ projectviewer.message.import-completed.message=Imported {0} file(s) into project
 projectviewer.message.import-completed.title=Import Completed
 
 #
+# Text for the add project property action.
+#
+projectviewer.input.add-property.title=Add Property
+projectviewer.input.add-property.message=Property Name:
+projectviewer.confirm.overwrite-property.title=Overwrite Property
+projectviewer.confirm.overwrite-property.message=Property ''{0}'' exists.  Overwrite?
+
+#
 # Text for the import project action.
 #
-projectviewer.overwrite-project.confirm.title=Overwrite Project
-projectviewer.overwrite-project.confirm.message=Project {0} exists.  Overwrite?
+projectviewer.confirm.overwrite-project.title=Overwrite Project
+projectviewer.confirm.overwrite-project.message=Project {0} exists.  Overwrite?
 
 #
 # Text for the add directory action (Custom View Only).
 #
-projectviewer.directory-name.input.title=Directory Name
-projectviewer.directory-name.input.message=Enter the name of the directory
+projectviewer.input.directory-name.title=Directory Name
+projectviewer.input.directory-name.message=Enter the name of the directory

@@ -43,9 +43,9 @@ public class ImportProjectAction extends ActionBase {
       if (file == null) return;
       Project prj = getProjectManager().loadProject(file);
       if (getProjectManager().hasProject(prj.getName())) {
-         int result = UI.confirmYesNo(projectViewer, "overwrite-project",
-                                      new Object[] { prj.getName() });
-         if (result != JOptionPane.YES_OPTION) return;
+         boolean result = UI.confirmYesNo(projectViewer, "overwrite-project",
+                                          new Object[] { prj.getName() });
+         if (!result) return;
          getProjectManager().remove(prj.getName());
       }
       getProjectManager().addProject(prj);
