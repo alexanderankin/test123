@@ -20,10 +20,10 @@
 
 package org.etheridge.openit;
 
-import org.etheridge.openit.OpenItProperties;
+import org.etheridge.openit.sourcepath.filter.RegularExpressionSourcePathFilter;
+import org.etheridge.openit.sourcepath.filter.SourcePathFilter;
 import org.etheridge.openit.sourcepath.QuickAccessSourcePath;
 import org.etheridge.openit.sourcepath.SourcePath;
-
 import org.gjt.sp.jedit.jEdit;
 
 /**
@@ -122,7 +122,10 @@ public class SourcePathManager
   private void recreateSourcePaths()
   {
     // create both sourcepaths and store as local variables
-    SourcePath sourcePath = new SourcePath(jEdit.getProperty(OpenItProperties.SOURCE_PATH_STRING, ""));
+    SourcePathFilter filter = new RegularExpressionSourcePathFilter
+      (jEdit.getProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, ""));
+    SourcePath sourcePath = new SourcePath
+      (jEdit.getProperty(OpenItProperties.SOURCE_PATH_STRING, ""), filter);
     QuickAccessSourcePath quickAccessSourcePath = new QuickAccessSourcePath(sourcePath);
     
     synchronized(this) {

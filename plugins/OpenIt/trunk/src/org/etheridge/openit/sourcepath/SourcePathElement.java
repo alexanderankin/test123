@@ -24,6 +24,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.etheridge.openit.sourcepath.filter.*;
+
 /**
  * Represents an element in the source path (ie. D:\source or D:\source.jar)
  */
@@ -35,13 +37,17 @@ public abstract class SourcePathElement
   // list of source files in this source path element
   protected List mSourceFiles;
   
-  public SourcePathElement(String name)
+  // source path filter
+  private SourcePathFilter mFilter;
+  
+  public SourcePathElement(String name, SourcePathFilter filter)
   {
     mName = name;
+    mFilter = filter;
     
     mSourceFiles = new ArrayList();
     
-    loadFiles();
+    loadFiles(filter);
   }
 
   public String getName()
@@ -57,7 +63,7 @@ public abstract class SourcePathElement
   /**
    * Loads the files in this source path element.
    */
-  protected abstract void loadFiles();
+  protected abstract void loadFiles(SourcePathFilter filter);
   
   /**
    * @return whether this source path element is a link (ie. symlink), defaults

@@ -31,6 +31,9 @@ public interface OpenItProperties
   // the excludes regular expression string
   public static final String EXCLUDES_REGULAR_EXPRESSION = "OpenIt.ExcludesRegularExpression";
   
+  // the excludes directories regular expression string
+  public static final String EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION = "OpenIt.ExcludesDirectoriesRegularExpression";
+  
   // polling property
   public static final String SOURCE_PATH_POLLING_INTERVAL = "OpenIt.SourcePathPollingInterval";
   

@@ -22,26 +22,29 @@ package org.etheridge.openit.sourcepath;
 
 import java.io.File;
 
+import org.etheridge.openit.sourcepath.filter.SourcePathFilter;
+
 /**
  * A directory element in a source path (ie. D:\source)
  */
 public class DirectorySourcePathElement extends SourcePathElement
 {
   private boolean mIsLink = false;
+
   
-  public DirectorySourcePathElement(String elementName)
+  public DirectorySourcePathElement(String elementName, SourcePathFilter filter)
   {
-    super(elementName);
+    super(elementName, filter);
   }
   
-  protected void loadFiles()
+  protected void loadFiles(SourcePathFilter filter)
   {
     try {
       // get the name and attempt 
       File file = new File(getName());
 
-      if (file.isDirectory()) {
-        findSourceFilesInDirectory(file, file);
+      if (file.isDirectory() && filter.isSourcePathElementAllowed(file.getAbsolutePath())) {
+        findSourceFilesInDirectory(file, file, filter);
       }
       
       // determine whether or not the directory is a link (ie. symbolic link)
@@ -62,7 +65,7 @@ public class DirectorySourcePathElement extends SourcePathElement
   // Private Helper Methods
   //
   
-  private void findSourceFilesInDirectory(File baseDirectory, File directory) 
+  private void findSourceFilesInDirectory(File baseDirectory, File directory, SourcePathFilter filter) 
   {
     // see if there are any subdirectories
     File[] fileList = directory.listFiles();
@@ -71,7 +74,9 @@ public class DirectorySourcePathElement extends SourcePathElement
     for (int i = 0; i < fileList.length; i++) {
       // if the current file is a directory call method recursively
       if (fileList[i].isDirectory()) {
-        findSourceFilesInDirectory(baseDirectory, fileList[i]);
+        if (filter.isSourcePathElementAllowed(fileList[i].getAbsolutePath())) {
+          findSourceFilesInDirectory(baseDirectory, fileList[i], filter);
+        }
       } else {
         mSourceFiles.add(SourcePathFile.createSourcePathFile(this, fileList[i]));
       }
