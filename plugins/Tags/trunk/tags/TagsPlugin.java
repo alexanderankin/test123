@@ -67,37 +67,6 @@ public class TagsPlugin extends EditPlugin {
   public void createOptionPanes(OptionsDialog od) {
     od.addOptionPane(new TagsOptionsPanel());
   }
-  
- /*****************************************************************************/
- static public void main(String args[]) {
-   debug_ = true;
-   
-   String PTCSRC = "/sportsrc/spg/system_1";
-   
-   // setup tag files
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.1", "CATAGORY_1");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.2", "CATAGORY_1");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.3", "CATAGORY_1");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.4", "CATAGORY_1");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.5", "CATAGORY_1");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.1", "CATAGORY_2");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.2", "CATAGORY_2");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.3", "CATAGORY_2");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.4", "CATAGORY_2");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.5", "CATAGORY_2");
-
-   String funcName = null;
-   if (args.length != 0)
-     funcName = args[0];
-   else
-     funcName = "get_cur_draw";
-   
-   Tags.followTag(null, null, null, false, false, funcName);   
-   
-   Tags.clearTagFiles("CATAGORY_1");
-   Tags.displayTagFiles(null);      
-
- }
 
 }
 

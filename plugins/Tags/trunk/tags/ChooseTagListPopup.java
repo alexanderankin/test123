@@ -42,6 +42,7 @@ class ChooseTagListPopup extends JWindow
   private boolean openNewView_;
   private Vector tagIdentifiers_;
 	private ChooseTagList tagIdentifierList_;
+  private boolean numberKeyProcessed_ = false;
 
   /***************************************************************************/
 	public ChooseTagListPopup(TagsParser parser, View view, boolean openNewView) 
@@ -140,6 +141,39 @@ class ChooseTagListPopup extends JWindow
   /***************************************************************************/
 	class KeyHandler extends KeyAdapter	
   {
+    public void keyTyped(KeyEvent evt)
+    {
+      switch (evt.getKeyChar())
+      {
+        case '1':
+        case '2':
+        case '3':
+        case '4':
+        case '5':
+        case '6':
+        case '7':
+        case '8':
+        case '9':
+          if (numberKeyProcessed_) // Since many components have this handeler
+            return;
+
+          /* There may actually be more than 9 items in the list, but since
+           * the user would have to scroll to see them either with the mouse
+           * or with the arrow keys, then they can select the item they want
+           * with those means.
+           */
+          int selected = Character.getNumericValue(evt.getKeyChar()) - 1;
+          if (selected >= 0 && 
+              selected < tagIdentifierList_.getModel().getSize())
+          {
+            tagIdentifierList_.setSelectedIndex(selected);
+            selected();
+            numberKeyProcessed_ = true;
+          }
+          evt.consume();
+      }
+    }
+    
 		public void keyPressed(KeyEvent evt) 
     {
 			switch(evt.getKeyCode()) 
@@ -192,32 +226,9 @@ class ChooseTagListPopup extends JWindow
         case KeyEvent.VK_7:
         case KeyEvent.VK_8:
         case KeyEvent.VK_9:
-        case KeyEvent.VK_NUMPAD1:
-        case KeyEvent.VK_NUMPAD2:
-        case KeyEvent.VK_NUMPAD3:
-        case KeyEvent.VK_NUMPAD4:
-        case KeyEvent.VK_NUMPAD5:
-        case KeyEvent.VK_NUMPAD6:
-        case KeyEvent.VK_NUMPAD7:
-        case KeyEvent.VK_NUMPAD8:
-        case KeyEvent.VK_NUMPAD9:
-          if (getFocusOwner() == tagIdentifierList_)
-            return;
-
-          /* There may actually be more than 9 items in the list, but since
-           * the user would have to scroll to see them either with the mouse
-           * or with the arrow keys, then they can select the item they want
-           * with those means.
-           */
-          selected = Character.getNumericValue(evt.getKeyChar()) - 1;
-          if (selected >= 0 && 
-              selected < tagIdentifierList_.getModel().getSize())
-          {
-            tagIdentifierList_.setSelectedIndex(selected);
-            selected();
-          }
-          evt.consume();
+          evt.consume();  /* so that we don't automatically dismiss */
           break;
+
         default:
           dispose();
           evt.consume();

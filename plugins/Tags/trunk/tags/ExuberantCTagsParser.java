@@ -58,20 +58,21 @@ class ExuberantCTagsParser extends GenericTagsParser {
     tagLineNumber_ = -1;
   }
 
-  /*****************************************************************************/
-  public String getDefinitionFileName(String tagLine) {
+  /***************************************************************************/
+  public TagLine createTagLine(String tagLine, String tagIndexFile)
+  {
     if (tagLine == null)
       return null;
 
-    String tagDefinitionFileName = null;
-
+    /*** Get the definition file name ***/
+    String tagDefinitionFileName = null;      
+      
     StringTokenizer st = new StringTokenizer(tagLine);
     if (st.hasMoreTokens())  // skip tag from tag line
       st.nextToken();
     if (st.hasMoreTokens()) {
       tagDefinitionFileName = st.nextToken();  // get file name
     }
-    st = null;
 
     /* Exuberant C Tags comes with Cygwin.  However the path names are in a 
      * form that Cygwin emulates Unix with.  The path /cygdrive/c/* isn't 
@@ -84,29 +85,27 @@ class ExuberantCTagsParser extends GenericTagsParser {
       tagDefinitionFileName = driveLetter + ":" +
                                tagDefinitionFileName.substring(11);
     }
-    
-    return tagDefinitionFileName; 
-  }
 
-  /***************************************************************************/
-  public String getDefinitionSearchString(String tagLine) {
-    tagLineNumber_ = -1;
-
-    if (tagLine == null)
-      return null;
+    /* resolve relative path names here */
+    File tagFile = new File(tagDefinitionFileName);
+    if (!tagFile.isAbsolute())
+    {
+      File tagIndexFilePath = new File(tagIndexFile);
+      tagDefinitionFileName = tagIndexFilePath.getParent() + 
+                              System.getProperty("file.separator") +
+                              tagDefinitionFileName;
+      tagIndexFilePath = null;
+    }
+    tagFile = null;
     
+    /*** Get the search string ***/
     String tagDefinitionSearchString = null;
     
-    StringTokenizer st = new StringTokenizer(tagLine);
-    st.nextToken(); // skip tag from tag line
-    st.nextToken(); // skip tag definition file name
-
     // get search string
     if (tagLine.lastIndexOf(";\"") == -1)  // --format=2 (default)
       tagDefinitionSearchString = st.nextToken("");
     else                                    // --format=1
       tagDefinitionSearchString = st.nextToken(";\"");
-
 
     // Check to see if the search string is a number.  Number search
     // strings are actually line numbers of #define tags
@@ -124,24 +123,24 @@ class ExuberantCTagsParser extends GenericTagsParser {
     /* Tags.displayMessage(view, searchString + "  " + isNumber + " " + 
                            lineNumber);*/
 
-    if (!isNumber) {
+    String origTagDefinitionSearchString = null;
+    if (!isNumber && tagDefinitionSearchString != null) 
+    {
+      origTagDefinitionSearchString = 
+                       tagDefinitionSearchString.substring(2,
+                                       tagDefinitionSearchString.length() - 2);
       tagDefinitionSearchString = 
                               massageSearchString(tagDefinitionSearchString);
     }
 
-    st = null;
+    TagLine tl = new TagLine(tag_, tagDefinitionFileName,
+                             origTagDefinitionSearchString, 
+                             tagDefinitionSearchString, lineNumber,
+                             tagIndexFile);
+
+    return tl;
+  }
   
-    return tagDefinitionSearchString; 
-  }
-
-  /***************************************************************************/
-  public int getDefinitionLineNumber(String tagLine) {
-    getDefinitionSearchString(tagLine); // This will parse and get number if 
-                                        // there is one.
-      
-    return tagLineNumber_; 
-  }
-
   /***************************************************************************/
   public String toString() { return "Exuberant C Tags"; }
 }

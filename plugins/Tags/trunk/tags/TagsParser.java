@@ -44,9 +44,8 @@ interface TagsParser {
    * @param tagToLookFor The tag to look for in the file.
    * @return Vector of tag lines found in the file, null if it couldn't find it. 
    */
-  public boolean findTagLines(String tagFileName, String tagToLookFor);
   public boolean findTagLines(String tagFileName, String tagToLookFor, 
-                             View view);
+                              View view);
   
   public TagLine createTagLine(String tagLine, String tagIndexFile);
   
@@ -57,32 +56,6 @@ interface TagsParser {
    */
   public int getNumberOfFoundTags();
   
-  /**
-   * Returns the tag definition file name.
-   *
-   * @return Path to the file with the tag definition found with 
-   * <code>findTagLines()</code>.  If tag wasn't found, returns null.
-   */
-  public String getDefinitionFileName(String tagLine);
-
-  /**
-   * Returns the tag defintion search string. 
-   *
-   * @return Search string to use when looking for the tag defintion in 
-   * the tag defintion file.  If tag defintion search string is a number,
-   * returns null.  If tag wasn't found, returns null.
-   */
-  public String getDefinitionSearchString(String tagLine);
-
-  /**
-   * Returns the tag defintion line number.
-   *
-   * @return The line number of the tag definition in the tag definition file.
-   * If one should use the search string, <code>-1</code> will be returned.
-   * If tag wasn't found, returns null.
-   */
-  public int getDefinitionLineNumber(String tagLine);
-
   public Vector getTagLines();
   
   public ChooseTagList getCollisionListComponent(View view);

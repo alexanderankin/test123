@@ -26,7 +26,7 @@ import java.io.*;
 import java.lang.System.*;
 import java.util.*;
 import java.util.Vector;
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.awt.Toolkit;
 
 import org.gjt.sp.jedit.*;
@@ -134,13 +134,8 @@ public class Tags {
   }
   
   /*+*************************************************************************/
-  public static void appendTagFile(String file, String catagory) {
-    tagFiles_.addElement(new TagFile(file, catagory));
-  }
-
-  /*+*************************************************************************/
-  public static void addTagFile(String file, String catagory, int index) {
-    tagFiles_.insertElementAt(new TagFile(file, catagory),index); 
+  public static void addTagFile(String file, int index) {
+    tagFiles_.insertElementAt(new TagFile(file, TagFile.DEFAULT_CATAGORY),index); 
   }
   
   /*+*************************************************************************/
@@ -148,11 +143,29 @@ public class Tags {
     tagFiles_.insertElementAt(new TagFile(file, TagFile.DEFAULT_CATAGORY),0);
   }
   
-  /*+*************************************************************************/
-  public static void prependTagFile(String file, String catagory) {
-    tagFiles_.insertElementAt(new TagFile(file, catagory),0);
+  /***************************************************************************/
+  public static int getTagFileCount()
+  {
+    if (tagFiles_ == null)
+      return 0;
+      
+    return tagFiles_.size();
   }
+  
+  /***************************************************************************/
+  public static String getTagFileName(int index) 
+  {
+   if (tagFiles_ == null)
+      return null;
+   
+   int size = tagFiles_.size();
+   if (index >= 0 && index < size)
+     return ((TagFile) tagFiles_.elementAt(index)).getPath();
 
+   return null;
+  }
+  
+  
   /*+*************************************************************************/
   public static Object removeTagFile(int index) {
     Object obj = tagFiles_.elementAt(index);
@@ -221,18 +234,25 @@ public class Tags {
                              jEdit.getProperty("options.tags.tag-cancel.label") 
                            };
 	
-		int ret = JOptionPane.showOptionDialog(view, enterTagPanel,
-                          jEdit.getProperty("tags.enter-tag-dlg.title"),
-                          JOptionPane.DEFAULT_OPTION,
-                          JOptionPane.QUESTION_MESSAGE, null, 
-                          buttonNames, buttonNames[0]);
-																
-		if (ret == 0) {
+    JOptionPane pane = new JOptionPane(enterTagPanel,
+                                       JOptionPane.QUESTION_MESSAGE, 
+                                       JOptionPane.DEFAULT_OPTION, null, 
+                                       buttonNames, buttonNames[0]);
+    JDialog dialog = pane.createDialog(view, 
+                                jEdit.getProperty("tags.enter-tag-dlg.title"));
+    GUIUtilities.requestFocus(dialog, enterTagPanel.tagFuncTextField_);
+                          
+    dialog.show();		
+    
+		if (((String) pane.getValue()).equals(buttonNames[0])) {
 			followTag(view, textArea, buffer, enterTagPanel.getOtherWindow(), false,
 								enterTagPanel.getFuncName());
 		}
 		
-		enterTagPanel = null;  // we probably should reuse this...
+		enterTagPanel = null;  // we probably should reuse these...
+    buttonNames = null;
+    pane = null;
+    dialog = null;
   }  
   
   /*+*************************************************************************/
@@ -374,11 +394,8 @@ public class Tags {
     if (tagFileName_ != null) {
   
       // Remember current position on tag stack
-      if (ui_) {
-        tagFileStack_.push(buffer.getPath());
-        tagCaretPosStack_.push(
-                    new Integer(currentTextArea.getCaretPosition()));
-      }
+      if (ui_) 
+        pushPosition(currentView);
                            
       // Open the file
       //displayMessage(currentView, tagFileName);
@@ -471,6 +488,13 @@ public class Tags {
   /***************************************************************************/
   public static int getLineNumber() { return lineNumber_; }
   
+  /***************************************************************************/
+  public static void pushPosition(View view) 
+  {
+    tagFileStack_.push(view.getBuffer().getPath());
+    tagCaretPosStack_.push(new Integer(view.getTextArea().getCaretPosition()));
+  }
+  
   /*+*************************************************************************/
   public static void popTag(View view, JEditTextArea textArea) {
     view.hideWaitCursor();
@@ -554,22 +578,14 @@ public class Tags {
   static protected boolean openDefinitionFile(View view, TagLine tagLine) 
   {
     File tagFile = new File(tagLine.getDefinitionFileName());
-    if (!tagFile.isAbsolute())
+    if (!tagFile.exists()) 
     {
-      tagFile = new File(tagLine.getTagIndexFile().getParent() + 
-                         System.getProperty("file.separator") +
-                         tagLine.getDefinitionFileName());
-      Macros.message(view, tagFile.getAbsolutePath());
-      if (!tagFile.exists()) 
-      {
-        Macros.error(view, 
-                     "The tag file name path \"" + tagFileName_ + "\"\n" +
-                     "that is listed in the tag index file, does not\n" +
-                     "exist.  You may need to update your tag index\n" +
-                     "files, or perhaps you passed a relative path to\n" +
-                     "the ctags program.");
-        return false;
-      }
+      Macros.error(view, 
+                   "The tag file name path \"" + tagFileName_ + "\"\n" +
+                   "that is listed in the tag index file, does not\n" +
+                   "exist.  You may need to update your tag index\n" +
+                   "files.");
+      return false;
     }
     
     jEdit.openFile(view, tagFile.getAbsolutePath());

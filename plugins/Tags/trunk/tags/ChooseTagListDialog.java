@@ -49,6 +49,9 @@ class ChooseTagListDialog extends JDialog
         
     // create components
     tagList_ = parser.getCollisionListComponent(view_);
+    JScrollPane scrollPane = new JScrollPane(tagList_, 
+                                      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     JLabel label = new JLabel(
           (view_ != null) ? jEdit.getProperty("tag-collision-dlg.label") : 
                             "Choose tag:");
@@ -78,7 +81,7 @@ class ChooseTagListDialog extends JDialog
     getContentPane().add(contentPanel_, BorderLayout.CENTER);
       contentPanel_.setBorder(BorderFactory.createEmptyBorder(5,5,0,5));
 			contentPanel_.add(label, BorderLayout.NORTH);
-			contentPanel_.add(tagList_, BorderLayout.CENTER);
+			contentPanel_.add(scrollPane, BorderLayout.CENTER);
 			contentPanel_.add(buttonPanelFlow, BorderLayout.SOUTH);
 				buttonPanelFlow.add(buttonPanelGrid);
 					buttonPanelGrid.add(ok);
@@ -159,7 +162,7 @@ class ChooseTagListDialog extends JDialog
              * with those means.
              */
             int selected = Character.getNumericValue(e.getKeyChar()) - 1;
-            if (selected > 0 && selected < tagList_.getModel().getSize())
+            if (selected >= 0 && selected < tagList_.getModel().getSize())
             {
               tagList_.setSelectedIndex(selected);
               tagList_.ensureIndexIsVisible(selected);

@@ -35,34 +35,48 @@ import javax.swing.event.*;
 class TagListCellRenderer extends JPanel implements ListCellRenderer 
 {
   /***************************************************************************/
+  protected JPanel tagNameAndFilePanel_ = null;
   protected JLabel indexLabel_ = null;
   protected JLabel tagLabel_ = null;
+  protected JLabel pathLabel_ = null;
   protected JLabel fileLabel_ = null;
   protected JLabel searchString_ = null;
 
+  protected String fileSeperator;
+  
   /***************************************************************************/
   public TagListCellRenderer() 
   {
     super();
     
+    fileSeperator = System.getProperty("file.separator");
+    
+    // create components
     indexLabel_ = new JLabel();
     tagLabel_ = new JLabel();
+    pathLabel_ = new JLabel();
     fileLabel_ = new JLabel();
     searchString_ = new JLabel();
+    tagNameAndFilePanel_ = new JPanel(new FlowLayout(FlowLayout.LEFT,0,0));
     
-    Font plain = new Font("Monospaced", Font.PLAIN, 12);
-    Font bold  = new Font("Monospaced", Font.BOLD, 12);
+    // setup
+    Font plain = new Font("Courier New", Font.PLAIN, 12);
+    Font bold  = new Font("Courier New", Font.BOLD, 12);
     indexLabel_.setFont(plain); 
     tagLabel_.setFont(bold);
-    fileLabel_.setFont(plain);
+    pathLabel_.setFont(plain);
+    fileLabel_.setFont(bold);
     searchString_.setFont(plain);
     
     //setOpaque(false);
-    setLayout(new BorderLayout());
     
-    add(BorderLayout.WEST, indexLabel_);
-    add(BorderLayout.CENTER, tagLabel_);
-    add(BorderLayout.EAST, fileLabel_);
+    // Layout
+    setLayout(new BorderLayout());
+    add(BorderLayout.CENTER, tagNameAndFilePanel_);
+      tagNameAndFilePanel_.add(indexLabel_);
+      tagNameAndFilePanel_.add(tagLabel_);
+      tagNameAndFilePanel_.add(pathLabel_);
+      tagNameAndFilePanel_.add(fileLabel_);
     add(BorderLayout.SOUTH, searchString_);
   }
 
@@ -73,21 +87,32 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
     
     TagLine tagLine = (TagLine) value;
     
-    if (tagLine.index_ < 9)
+    if (tagLine.index_ <= 9)
       indexLabel_.setText(" " + tagLine.index_ + ": ");
     else
-      indexLabel_.setText(String.valueOf(tagLine.index_) + ": ");
+      indexLabel_.setText("    ");
     tagLabel_.setText(tagLine.tag_);
-    fileLabel_.setText("  " + tagLine.definitionFile_ + "  ");
-    searchString_.setText("     " + tagLine.searchString_.trim());
-    
+    File file = new File(tagLine.definitionFile_);
+    pathLabel_.setText("  " + file.getParent() + fileSeperator);
+    // space is added so that edge of popup is immediately next to end of label
+    fileLabel_.setText(file.getName() + " ");
+    if (tagLine.origSearchString_ != null)
+      searchString_.setText("     " + tagLine.origSearchString_.trim() + " ");
+    else
+      searchString_.setText("     Line:  " + tagLine.definitionLineNumber_);
+      
     Color background = (isSelected ? list.getSelectionBackground()
                                                        : list.getBackground());
     Color foreground = (isSelected ? list.getSelectionForeground()
                                                        : list.getForeground());
+    // set backgrounds on panels
     setBackground(background);
+    tagNameAndFilePanel_.setBackground(background);
+    
+    // set foregrounds on text labels
     indexLabel_.setForeground(foreground);
     tagLabel_.setForeground(foreground);
+    pathLabel_.setForeground(Color.blue);
     fileLabel_.setForeground(Color.blue);
     searchString_.setForeground(foreground);
     

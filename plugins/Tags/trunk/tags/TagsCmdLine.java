@@ -104,17 +104,17 @@ public class TagsCmdLine {
    
    // Setup PTC tags files
    String PTCSRC = args[0];
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.1", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.2", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.3", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.4", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.5", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.1", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.2", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.3", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.4", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.5", "PTC");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.prodev", "PTC");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.1");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.2");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.3");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.4");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.5");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.1");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.2");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.3");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.4");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.5");
+   Tags.appendTagFile(PTCSRC + "/softdb/tags.prodev");
 
    PTCSRC = null;
    
