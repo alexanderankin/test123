@@ -56,12 +56,27 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	public static final VPTNodeType DIRECTORY 	= new VPTNodeType("directory");
 	public static final VPTNodeType FILE 		= new VPTNodeType("file");
 
+	//{{{ findProjectFor(VPTNode) method
+	/**
+	 *	Returns the project associated with the node, or null if the node
+	 *	is the root of the project tree.
+	 */
+	public static VPTProject findProjectFor(VPTNode node) {
+		if (node.isRoot()) {
+			return null;
+		} else {
+			while (!node.isProject()) {
+				node = (VPTNode) node.getParent();
+			}
+			return (VPTProject) node;
+		}
+	} //}}}
+	
 	//}}}
 
 	//{{{ Attributes
 
 	protected VPTNodeType	nodeType;
-	protected VPTNode		vParent;
 	protected String		name;
 
 	//}}}
@@ -105,25 +120,25 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 	//{{{ isFile() method
 	/** Returns true if this node is a file. */
-	public boolean isFile() {
+	public final boolean isFile() {
 		return (nodeType == FILE);
 	} //}}}
 
 	//{{{ isDirectory() method
 	/** Returns true if this node is a file. */
-	public boolean isDirectory() {
+	public final boolean isDirectory() {
 		return (nodeType == DIRECTORY);
 	} //}}}
 
 	//{{{ isProject() method
 	/** Returns true if this node is a file. */
-	public boolean isProject() {
+	public final boolean isProject() {
 		return (nodeType == PROJECT);
 	} //}}}
 
 	//{{{ isRoot() method
 	/** Returns whether this node is a root node. */
-	public boolean isRoot() {
+	public final boolean isRoot() {
 		return (nodeType == ROOT);
 	} //}}}
 
@@ -135,12 +150,6 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 */
 	public boolean isOpened() {
 		return false;
-	} //}}}
-
-	//{{{ setParent(VPTNode) method
-	public void setParent(VPTNode parent) {
-		super.setParent(parent);
-		vParent = parent;
 	} //}}}
 
 	//{{{ getName() method
