@@ -1,3 +1,16 @@
+VERSION 1.2
+
+- new public get methods for properties like $basepath, source dir, output dir,
+  class path, for use from third parties (Mike Dillon)
+- new command "javac" to use the in-VM compiler with any command line
+- now prints a command line ready for use with javac
+- bugfix: NullPointerException if "Show command line" is on
+- bugfix: "Show command line" option didn't show commandline
+- bugfix: options -g and -O were not remembered, JCompiler always compiled with
+  -g and without -O
+- requires jEdit 3.1final or higher, EditBus 0.10 or higher, Console 2.3 or higher
+
+
 VERSION 1.1.4
 
 - no longer replaces the SecurityManager (because it now calls

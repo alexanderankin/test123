@@ -2,6 +2,8 @@
  * JCompilerOptionPaneCompiler.java - plugin options pane for JCompiler - compiler options
  * (c) 1999, 2000 Kevin A. Burton and Aziz Sharif
  *
+ * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -14,9 +16,12 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA. */
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
 
 package jcompiler.options;
+
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,13 +49,13 @@ public class JCompilerOptionPaneCompiler
 
 	public void _init() {
 		// "Generate debug info (-g)"
-		genDebug = new JCheckBox(jEdit.getProperty("options.jcompiler.gendebug"));
-		genDebug.setSelected(jEdit.getBooleanProperty("jcompiler.gendebug", true));
+		genDebug = new JCheckBox(jEdit.getProperty("options.jcompiler.genDebug"));
+		genDebug.setSelected(jEdit.getBooleanProperty("jcompiler.genDebug", true));
 		addComponent(genDebug);
 
 		// "Generate optimized code (-O)"
-		genOptimized = new JCheckBox(jEdit.getProperty("options.jcompiler.genoptimized"));
-		genOptimized.setSelected(jEdit.getBooleanProperty("jcompiler.genoptimized", false));
+		genOptimized = new JCheckBox(jEdit.getProperty("options.jcompiler.genOptimized"));
+		genOptimized.setSelected(jEdit.getBooleanProperty("jcompiler.genOptimized", false));
 		addComponent(genOptimized);
 
 		// "Warn about use of deprecated API (-deprecation)"
@@ -245,7 +250,6 @@ public class JCompilerOptionPaneCompiler
 		else
 			Log.log(Log.ERROR, JCompilerOptionPaneCompiler.class, "Error fetching image JavaCup.gif");
 	}
-
 
 }
 

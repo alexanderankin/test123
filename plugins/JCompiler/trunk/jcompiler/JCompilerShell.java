@@ -2,6 +2,8 @@
  * JCompilerShell.java - ConsolePlugin shell for JCompiler
  * Copyright (C) 2000 Dirk Moebius
  *
+ * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,12 +19,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
 package jcompiler;
 
-// from Java:
-import java.io.*;
 
-// from jEdit:
+import java.io.*;
+import java.util.Vector;
 import gnu.regexp.RE;
 import gnu.regexp.RESyntax;
 import gnu.regexp.REException;
@@ -33,17 +35,10 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
-
-// from EditBus plugin:
 import org.gjt.sp.jedit.DefaultErrorSource;
 import org.gjt.sp.jedit.ErrorSource;
-
-// from Console plugin:
 import console.Shell;
 import console.Console;
-
-// from JCompiler plugin:
-import JCompilerPlugin;
 
 
 /**
@@ -63,9 +58,8 @@ public class JCompilerShell extends Shell implements EBComponent
 
 
 	public void handleMessage(EBMessage msg) {
-		if (msg instanceof PropertiesChanged) {
+		if (msg instanceof PropertiesChanged)
 			propertiesChanged();
-		}
 	}
 
 
@@ -74,17 +68,16 @@ public class JCompilerShell extends Shell implements EBComponent
 	 *
 	 * @param  console  the Console
 	 */
-	public void printInfoMessage(Console _console) {
-		if (_console != null) {
-			_console.printInfo(jEdit.getProperty("jcompiler.msg.info"));
-		}
+	public void printInfoMessage(Console console) {
+		if (console != null)
+			console.printInfo(jEdit.getProperty("jcompiler.msg.info"));
 	}
 
 
 	/**
 	 * execute a command.
 	 *
-	 * @param  view	 the view that was open when the command was invoked.
+	 * @param  view  the view that was open when the command was invoked.
 	 * @param  command  the command.
 	 * @param  console  the Console where output should go to.
 	 */
@@ -103,6 +96,13 @@ public class JCompilerShell extends Shell implements EBComponent
 		}
 		else if ("rebuildpkg".equals(cmd)) {
 			jthread = new CompilerThread(view, true, true);
+		}
+		else if ("javac".equals(cmd)) {
+			// command "javac" invoked without arguments
+			jthread = new CompilerThread(new String[] {});
+		}
+		else if (cmd.startsWith("javac ")) {
+			jthread = new CompilerThread(parseCmdLineArguments(cmd.substring(6)));
 		}
 		else if ("help".equals(cmd)) {
 			printInfoMessage(console);
@@ -149,6 +149,7 @@ public class JCompilerShell extends Shell implements EBComponent
 		rfilenamepos = jEdit.getProperty("jcompiler.regexp.filename");
 		rlinenopos = jEdit.getProperty("jcompiler.regexp.lineno");
 		rmessagepos = jEdit.getProperty("jcompiler.regexp.message");
+
 		try {
 			errorRE = new RE(sErrorRE, RE.REG_ICASE, RESyntax.RE_SYNTAX_PERL5);
 		}
@@ -159,6 +160,7 @@ public class JCompilerShell extends Shell implements EBComponent
 			Log.log(Log.ERROR, this, errorMsg);
 			printLine(errorMsg + '\n');
 		}
+
 		try {
 			warningRE = new RE(sWarningRE, RE.REG_ICASE, RESyntax.RE_SYNTAX_PERL5);
 		}
@@ -177,17 +179,19 @@ public class JCompilerShell extends Shell implements EBComponent
 	 */
 	private void printLine(String line) {
 		int type = -1;
+
 		if (errorRE != null && errorRE.isMatch(line)) {
-			if (warningRE != null && warningRE.isMatch(line)) {
+			if (warningRE != null && warningRE.isMatch(line))
 				type = ErrorSource.WARNING;
-			} else {
+			else
 				type = ErrorSource.ERROR;
-			}
+
 			String filename = errorRE.substitute(line, rfilenamepos);
 			String lineno = errorRE.substitute(line, rlinenopos);
 			String message = errorRE.substitute(line, rmessagepos);
 			pendingError = new PendingError(type, filename,
 				Integer.parseInt(lineno) - 1, 0, 0, message);
+
 			if (!parseAccentChar) {
 				// don't wait for a line with '^', add error immediately
 				pendingError.addToErrorSource();
@@ -219,6 +223,53 @@ public class JCompilerShell extends Shell implements EBComponent
 	}
 
 
+	private String[] parseCmdLineArguments(String cmd) {
+		// Expand any variables in the command line arguments:
+		cmd = JCompiler.expandVariables(cmd);
+
+		// The following is stolen from Slava Pestov's DefaultShell.java (Console plugin):
+
+		// We replace \ with a non-printable char because StreamTokenizer
+		// handles \ specially, which causes problems on Windows as \ is the
+		// file separator there. After parsing is done, the non printable
+		// char is changed to \ once again.
+		cmd = cmd.replace('\\', NON_PRINTABLE);
+
+		StreamTokenizer st = new StreamTokenizer(new StringReader(cmd));
+		st.resetSyntax();
+		st.wordChars('!',255);
+		st.whitespaceChars(0,' ');
+		st.quoteChar('"');
+		st.quoteChar('\'');
+
+		Vector args = new Vector();
+
+		try {
+loop:
+			for(;;) {
+				switch(st.nextToken()) {
+					case StreamTokenizer.TT_EOF:
+						break loop;
+				case StreamTokenizer.TT_WORD:
+				case '"':
+				case '\'':
+					args.addElement(st.sval.replace(NON_PRINTABLE, '\\'));
+					break;
+				}
+			}
+		}
+		catch (IOException ex) {
+			console.printError(jEdit.getProperty("jcompiler.msg.errorCommandLine", new Object[] { ex }));
+		}
+
+		Log.log(Log.DEBUG, this, "arguments=" + args);
+
+		String[] array = new String[args.size()];
+		args.copyInto(array);
+		return array;
+	}
+
+
 	private DefaultErrorSource errorSource = null;
 	private PendingError pendingError = null;
 	private CompilerThread jthread = null;
@@ -229,6 +280,8 @@ public class JCompilerShell extends Shell implements EBComponent
 	private String rlinenopos;
 	private String rmessagepos;
 	private boolean parseAccentChar;
+
+	private static final char NON_PRINTABLE = 127;
 
 
 	/**
@@ -242,7 +295,15 @@ public class JCompilerShell extends Shell implements EBComponent
 			this.view = view;
 			this.pkgCompile = pkgCompile;
 			this.rebuild = rebuild;
-			this.setPriority(Thread.MIN_PRIORITY);
+			this.setPriority(NORM_PRIORITY - 1);
+			this.start();
+		}
+
+
+		CompilerThread(String[] args) {
+			super();
+			this.args = args;
+			this.setPriority(NORM_PRIORITY + 1);
 			this.start();
 		}
 
@@ -250,7 +311,10 @@ public class JCompilerShell extends Shell implements EBComponent
 		public void run() {
 			JCompiler jcompiler = new JCompiler();
 			Thread outputThread = new OutputThread(jcompiler.getOutputPipe());
-			jcompiler.compile(view, view.getBuffer(), pkgCompile, rebuild);
+			if (args == null)
+				jcompiler.compile(view, view.getBuffer(), pkgCompile, rebuild);
+			else
+				jcompiler.compile(args);
 			jcompiler = null;
 			view = null;
 			outputThread = null;
@@ -260,7 +324,7 @@ public class JCompilerShell extends Shell implements EBComponent
 		private View view;
 		private boolean pkgCompile;
 		private boolean rebuild;
-
+		private String[] args;
 	} // inner class CompilerThread
 
 

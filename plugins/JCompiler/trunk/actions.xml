@@ -6,34 +6,19 @@
 
 	<ACTION NAME="jcompiler-compile">
 		<CODE>
-			DockableWindowManager wm = view.getDockableWindowManager();
-			wm.addDockableWindow("console");
-			console.Console console = (console.Console) wm.getDockableWindow("console");
-			console.setShell(JCompilerPlugin.getShell());
-			console.run("compile");
-			textArea.requestFocus();
+			jcompiler.JCompilerPlugin.compileFile(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="jcompiler-compilepkg">
 		<CODE>
-			DockableWindowManager wm = view.getDockableWindowManager();
-			wm.addDockableWindow("console");
-			console.Console console = (console.Console) wm.getDockableWindow("console");
-			console.setShell(JCompilerPlugin.getShell());
-			console.run("compilepkg");
-			textArea.requestFocus();
+			jcompiler.JCompilerPlugin.compilePackage(view);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="jcompiler-rebuildpkg">
 		<CODE>
-			DockableWindowManager wm = view.getDockableWindowManager();
-			wm.addDockableWindow("console");
-			console.Console console = (console.Console) wm.getDockableWindow("console");
-			console.setShell(JCompilerPlugin.getShell());
-			console.run("rebuildpkg");
-			textArea.requestFocus();
+			jcompiler.JCompilerPlugin.rebuildPackage(view);
 		</CODE>
 	</ACTION>
 
