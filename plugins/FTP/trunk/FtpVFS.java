@@ -134,7 +134,7 @@ public class FtpVFS extends VFS
 		try
 		{
 			//Use ASCII mode for dir listing
-			client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
+			//client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
 			
 			//CWD into the directory - Doing a LIST on a path with spaces in the
 			//name fails; however, if you CWD to the dir and then LIST it
@@ -290,7 +290,7 @@ public class FtpVFS extends VFS
 			return null;
 
 		//Use ASCII mode for dir listing
-		client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
+		//client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
 		
 		//CWD into the directory - Doing a LIST on a path with spaces in the
 		//name fails; however, if you CWD to the dir and then LIST it
@@ -455,6 +455,8 @@ public class FtpVFS extends VFS
 	private static void _setupSocket(FtpClient client)
 		throws IOException
 	{
+		//Use binary mode
+		client.representationType(FtpClient.BINARY_TYPE);
 		if(jEdit.getBooleanProperty("vfs.ftp.passive"))
 			client.passive();
 		else
