@@ -99,9 +99,9 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 		if ( msg instanceof BufferUpdate ) {
 			BufferUpdate updateMessage = (BufferUpdate) msg;
 			if ( updateMessage.getWhat() == BufferUpdate.LOADED ) {
-				File file = updateMessage.getBuffer().getFile();
-				if ( file.getName().equals( "build.xml" ) )
-					addAntBuildFile( FileUtils.getAbsolutePath( file ) );
+				Buffer buffer = updateMessage.getBuffer();
+				if ( buffer.getName().equals( "build.xml" ) )
+					addAntBuildFile( buffer.getPath() );
 			}
 		}
 
