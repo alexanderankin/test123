@@ -14,6 +14,7 @@
 	<ACTION NAME="console-to-front">
 		<CODE>
 			import console.Console;
+			import console.Shell;
 			view.getDockableWindowManager().addDockableWindow("console");
 			console = view.getDockableWindowManager().getDockableWindow("console");
 			console.setShell(Shell.getShell("System"));

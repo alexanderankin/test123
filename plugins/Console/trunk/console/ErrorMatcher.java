@@ -67,16 +67,6 @@ class ErrorMatcher implements Cloneable
 			extraRE = new RE(extra,RE.REG_ICASE,
 				RESearchMatcher.RE_SYNTAX_JEDIT);
 		}
-
-		StringBuffer buf = new StringBuffer();
-		for(int i = 0; i < name.length(); i++)
-		{
-			char ch = name.charAt(i);
-			if(Character.isLetterOrDigit(ch))
-				buf.append(ch);
-		}
-
-		this.internalName = buf.toString();
 	}
 
 	ErrorMatcher()

@@ -301,10 +301,10 @@ public class ConsolePlugin extends EBPlugin
 				name,match,warning,extra,filename,line,message);
 			vec.addElement(matcher);
 		}
-		catch(REException re)
+		catch(Exception re)
 		{
 			Log.log(Log.ERROR,ConsolePlugin.class,
-				"Invalid regexp: " + match);
+				"Invalid regexp in matcher " + internalName);
 			Log.log(Log.ERROR,ConsolePlugin.class,re);
 		}
 	}

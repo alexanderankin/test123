@@ -789,19 +789,22 @@ the command output will be shown in a new buffer.</para></listitem>
 
    <itemizedlist>
     <listitem><para>
-     There was no way to insert a literal <quote>$</quote> in the command line
+     There was no way to insert a literal <quote>$</quote> in the command line.
     </para></listitem>
     <listitem><para>
-     Fixed a bug with the console tool bar's handling of history
+     Fixed a bug with the console tool bar's handling of history.
     </para></listitem>
     <listitem><para>
-     Improved error patterns
+     Fixed many bugs in error matcher handling.
     </para></listitem>
     <listitem><para>
-     Ant build-file included instead of JMK makefile
+     <guimenuitem>Console To Front</guimenuitem> command didn't work.
     </para></listitem>
     <listitem><para>
-     Documentation is now generated with the DocBook-XSL stylesheets
+     Ant build-file included instead of JMK makefile.
+    </para></listitem>
+    <listitem><para>
+     Documentation is now generated with the DocBook-XSL stylesheets.
     </para></listitem>
    </itemizedlist>
   </listitem>

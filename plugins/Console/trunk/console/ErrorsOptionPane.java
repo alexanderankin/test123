@@ -94,14 +94,15 @@ class ErrorsOptionPane extends AbstractOptionPane
 		StringBuffer list = new StringBuffer();
 		for(int i = 0; i < errorListModel.getSize(); i++)
 		{
-			if(i != 0)
-				list.append(' ');
-
 			ErrorMatcher matcher = (ErrorMatcher)errorListModel.getElementAt(i);
 			matcher.save();
 
 			if(matcher.user)
+			{
+				if(i != 0)
+					list.append(' ');
 				list.append(matcher.internalName);
+			}
 		}
 
 		jEdit.setProperty("console.error.user",list.toString());
@@ -312,6 +313,16 @@ class ErrorMatcherDialog extends EnhancedDialog
 			matcher.filename = _filename;
 			matcher.line = _line;
 			matcher.message = _message;
+
+			StringBuffer buf = new StringBuffer();
+			for(int i = 0; i < name.length(); i++)
+			{
+				char ch = name.charAt(i);
+				if(Character.isLetterOrDigit(ch))
+					buf.append(ch);
+			}
+
+			matcher.internalName = buf.toString();
 		}
 
 		isOK = true;

@@ -1,5 +1,6 @@
 - finish documentation
 - why is it so slow?
+- warning pattern fucked
 
 + general to do's
 
