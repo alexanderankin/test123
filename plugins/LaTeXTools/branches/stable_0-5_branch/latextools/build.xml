@@ -18,12 +18,12 @@
 
   <!-- set global properties for this build -->
   <property name="src"          value="."/>
-  <property name="build"        value="../build"/>
+  <property name="build"        value="build"/>
   <property name="build.images" value="${build}/images"/>
-  <property name="dist"         value="../dist"/>
+  <property name="dist"         value="dist"/>
   <property name="config"       value="config"/>
   <property name="images"       value="images"/>
-  <property name="docs"         value="../docs"/>
+  <property name="docs"         value="docs"/>
   <property name="docs.javadoc" value="${docs}/javadocs"/>
   <property name="can.reload.plugins" value="false"/>
 
@@ -109,14 +109,17 @@
   <target name="dist" depends="build"
                      description="Build a distribution">
 		<zip zipfile="${dist}\LaTeXToolsSrc.zip">
-			<fileset dir="${src}">
-        <include name="build.xml"/>
-        <include name="build.properties.template"/>
-			<exclude name="build.properties"/>
-        <exclude name="config\bugs.html"/>
-        <exclude name="config\featurereq.html"/>
-        <include name="**"/>
-			</fileset>
+        <fileset dir="${src}">
+          <include name="build.xml"/>
+          <include name="build.properties.template"/>
+          <exclude name="build.properties"/>
+          <exclude name="${build}\**"/>
+          <exclude name="${dist}\**"/>
+          <exclude name="${docs}\**"/>
+          <exclude name="config\bugs.html"/>
+          <exclude name="config\featurereq.html"/>
+          <include name="**"/>
+        </fileset>
     </zip>
   </target>
 
