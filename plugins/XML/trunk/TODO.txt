@@ -1,15 +1,26 @@
-- HTML: taglist.xml
-- Tag palette
++ XML 0.4:
 
-- tag completion:
-  - option to set delay before showing popup
-  - <: shows popup
-  - </: in XML mode, auto close last tag; in HTML mode, tag list
+- document id resolving, xml insert, edit tag
+- edit tag dialog: cell renderer/editor is really dodgy
+- entity manager option pane
+- different icons for internal/external entities
+- different icons for empty elements
+- DTD cache
 - root document property, proper handling of tags in nested files
-- public id option pane
 
++ XML 0.5:
+
+- Edit tag dialog box:
+  - parse/unparse entities automatically
+- entity conversion
+- All/1/2/3/4 buttons in XML tree?
+- borrow tags list handler code from Jext
+- does not require XML tree to be open for HTML or XSL files
+- tag completion
+- move some HTML plugin features (tag commands, tag highlight) to XML
+  plugin
+- entitylist for HTML/XSL
+- 'new xml file' command
 - investigate typing lag
 - handle parsing open buffers better
 - OASIS catalog support
-- move some HTML plugin features (tag commands, tag highlight) to XML
-  plugin

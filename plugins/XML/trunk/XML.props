@@ -29,13 +29,17 @@ xml.show-attributes=false
 # DTD validation
 buffer.xml.validate=true
 
+# Entity management
+xml.xcatalog.0=jeditresource:XML.jar!/xml/catalog.xml
+
 # Menu bar stuff
-xml-menu=xml-tree - xml-parse xml-keystroke-parse - xml-tag-palette
+xml-menu=xml-tree - xml-parse xml-keystroke-parse - xml-insert xml-edit-tag
 xml-menu.label=XML
 xml-tree.label=XML Tree
 xml-parse.label=Parse XML Buffer
 xml-keystroke-parse.label=Parse XML on Keystroke
-xml-insert-tag.label=Insert Tag Palette
+xml-insert.label=XML Insert
+xml-edit-tag.label=Edit Tag at Caret
 
 # XML tree window
 xml-tree.title=XML Tree
@@ -43,9 +47,30 @@ xml-tree.parse=Parse
 xml-tree.parsing=Parsing
 xml-tree.not-xml-file=Not an XML file
 xml-tree.not-parsed=Not parsed
+xml-tree.parsing-complete=XML parsing complete, {0} error(s)
 
 # Insert tag window
-xml-tag-palette.title=Tag Palette
+xml-insert.title=XML Insert
+xml-insert.elements=Elements:
+xml-insert.entities=Entities:
+xml-insert.not-parsed=Not parsed
+
+# Edit tag dialog box
+xml-edit-tag.no-tree.title=XML Tree Not Open
+xml-edit-tag.no-tree.message=Before using this command, you must open the\n\
+	"XML Tree" window, and ensure the current buffer is fully parsed.
+
+xml-edit-tag.undefined-element.title=Element Not Defined
+xml-edit-tag.undefined-element.message=The element "<{0}>" is not defined.
+
+xml-edit-tag.title=Edit Tag
+xml-edit-tag.element-name=Element name:
+xml-edit-tag.empty=Empty
+xml-edit-tag.set=Set
+xml-edit-tag.attribute=Attribute
+xml-edit-tag.type=Type
+xml-edit-tag.value=Value
+xml-edit-tag.preview=Preview:
 
 # Option pane
 #options.xml.label=XML
@@ -57,6 +82,3 @@ options.xml.general.delay=After last keystroke, wait (seconds):
 options.xml.general.show-attributes=Show tag attributes in tree
 options.xml.general.validate=Validate if DTD or schema available
 options.xml.general.modes=Enable XML parsing for the following edit modes:
-
-# Entity management
-xml.xcatalog.0=jeditresource:XML.jar!/xml/catalog.xml

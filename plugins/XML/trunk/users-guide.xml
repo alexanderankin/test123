@@ -6,7 +6,8 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "file:///usr/local/share/sgml/dtd/docbook-xml/docbookx.dtd">
 
 <book>
 
@@ -183,6 +184,35 @@
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+  <listitem><formalpara><title>Version 0.4</title><para>requires jEdit 3.2final,
+   the EditBus plugin 1.0.1, and the ErrorList plugin 1.1.</para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>
+     Fixes a few bugs
+    </para></listitem>
+
+    <listitem><para>
+     Can now use catalogs in XCatalog format to resolve system and public IDs
+    </para></listitem>
+
+    <listitem><para>
+     New <guimenuitem>XML Insert</guimenuitem> window lists elements and
+     entities declared in current buffer's DTD; clicking on an entity will
+     insert it; clicking on an element will insert it and show the
+     <guimenuitem>Edit Tag</guimenuitem> dialog box.
+    </para></listitem>
+
+    <listitem><para>
+     <guimenuitem>Edit Tag</guimenuitem> dialog box, also accessable from a
+     menu item command, lets you edit attributes of a tag using attribute
+     declaration data from the DTD.
+    </para></listitem>
+
+  </itemizedlist>
+
+  </listitem>
 
   <listitem><formalpara><title>Version 0.3</title><para>requires jEdit 3.2pre9,
    the EditBus plugin 1.0.1, and the ErrorList plugin 1.1.</para></formalpara>

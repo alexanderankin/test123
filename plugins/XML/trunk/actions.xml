@@ -34,4 +34,19 @@
 			return buffer.getBooleanProperty("xml.keystroke-parse");
 		</IS_SELECTED>
 	</ACTION>
+	<ACTION NAME="xml-insert">
+		<CODE>
+			view.getDockableWindowManager()
+				.toggleDockableWindow("xml-insert");
+		</CODE>
+		<IS_SELECTED>
+			return view.getDockableWindowManager()
+				.isDockableWindowVisible("xml-insert");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="xml-edit-tag">
+		<CODE>
+			xml.XmlPlugin.showEditTagDialog(view);
+		</CODE>
+	</ACTION>
 </ACTIONS>

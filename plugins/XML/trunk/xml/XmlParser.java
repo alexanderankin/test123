@@ -14,6 +14,7 @@
 package xml;
 
 import javax.swing.text.BadLocationException;
+import javax.swing.text.Element;
 import javax.swing.tree.*;
 import javax.swing.SwingUtilities;
 import java.io.*;
@@ -33,6 +34,7 @@ class XmlParser
 		this.insert = (XmlInsert)view.getDockableWindowManager()
 			.getDockableWindow(XmlPlugin.INSERT_NAME);
 
+		this.view = view;
 		this.buffer = buffer;
 
 		root = new DefaultMutableTreeNode(buffer.getName());
@@ -57,6 +59,8 @@ class XmlParser
 		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
 		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
 		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
+
+		ids = new Vector();
 
 		parser = new org.apache.xerces.parsers.SAXParser();
 
@@ -109,11 +113,20 @@ class XmlParser
 
 		MiscUtilities.quicksort(elements,new ElementDeclCompare());
 		MiscUtilities.quicksort(entities,new EntityDeclCompare());
+		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
 
-		buffer.putProperty(XmlPlugin.DECLARED_ELEMENTS_PROPERTY,
+		view.getEditPane().putClientProperty(
+			XmlPlugin.ELEMENTS_PROPERTY,
 			elements);
-		buffer.putProperty(XmlPlugin.DECLARED_ENTITIES_PROPERTY,
+		view.getEditPane().putClientProperty(
+			XmlPlugin.ELEMENT_HASH_PROPERTY,
+			elementHash);
+		view.getEditPane().putClientProperty(
+			XmlPlugin.ENTITIES_PROPERTY,
 			entities);
+		view.getEditPane().putClientProperty(
+			XmlPlugin.IDS_PROPERTY,
+			ids);
 
 		if(insert != null)
 		{
@@ -126,8 +139,8 @@ class XmlParser
 	{
 		public int compare(Object obj1, Object obj2)
 		{
-			return ((ElementDecl)obj1).name
-				.compareTo(((ElementDecl)obj2).name);
+			return ((ElementDecl)obj1).name.toLowerCase()
+				.compareTo(((ElementDecl)obj2).name.toLowerCase());
 		}
 	}
 
@@ -141,7 +154,11 @@ class XmlParser
 			if(entity1.type != entity2.type)
 				return entity2.type - entity1.type;
 			else
-				return entity1.name.compareTo(entity2.name);
+			{
+				return entity1.name.toLowerCase()
+					.compareTo(entity2.name
+					.toLowerCase());
+			}
 		}
 	}
 
@@ -151,6 +168,7 @@ class XmlParser
 	private Vector elements;
 	private Hashtable elementHash;
 	private Vector entities;
+	private Vector ids;
 	private View view;
 	private Buffer buffer;
 	private String text;
@@ -202,16 +220,30 @@ class XmlParser
 				return;
 			}
 
+			String id = attrs.getValue("id");
+			if(id == null)
+				id = attrs.getValue("Id");
+			if(id == null)
+				id = attrs.getValue("ID");
+
+			if(id != null && ids.indexOf(id) == -1)
+				ids.addElement(id);
+
 			// ignore tags inside nested files for now
 			//if(!buffer.getPath().equals(loc.getSystemId()))
 			//	return;
 
 			try
 			{
-				int line = loc.getLineNumber() - 1;
+				buffer.readLock();
+
+				Element map = buffer.getDefaultRootElement();
+				int line = Math.min(map.getElementCount() - 1,
+					loc.getLineNumber() - 1);
 				int column = loc.getColumnNumber() - 1;
-				int offset = buffer.getDefaultRootElement()
-					.getElement(line).getStartOffset() + column - 1;
+				int offset = Math.min(buffer.getLength() - 1,
+					map.getElement(line).getStartOffset()
+					+ column - 1);
 
 				offset = findTagStart(offset);
 
@@ -233,6 +265,10 @@ class XmlParser
 			catch(BadLocationException ble)
 			{
 				throw new SAXException(ble);
+			}
+			finally
+			{
+				buffer.readUnlock();
 			}
 		}
 
@@ -256,11 +292,15 @@ class XmlParser
 					currentNodeStack.peek();
 				XmlTag tag = (XmlTag)node.getUserObject();
 
-				int line = loc.getLineNumber()-1;
-				int column = loc.getColumnNumber()-1;
+				buffer.readLock();
 
-				int offset = buffer.getDefaultRootElement()
-					.getElement(line).getStartOffset() + column;
+				Element map = buffer.getDefaultRootElement();
+				int line = Math.min(map.getElementCount() - 1,
+					loc.getLineNumber() - 1);
+				int column = loc.getColumnNumber() - 1;
+				int offset = Math.min(buffer.getLength() - 1,
+					map.getElement(line).getStartOffset()
+					+ column - 1);
 
 				tag.end = buffer.createPosition(offset);
 
@@ -269,6 +309,10 @@ class XmlParser
 			catch(BadLocationException ble)
 			{
 				throw new SAXException(ble);
+			}
+			finally
+			{
+				buffer.readUnlock();
 			}
 		}
 
@@ -312,7 +356,7 @@ class XmlParser
 		// DeclHandler implementation
 		public void elementDecl(String name, String model)
 		{
-			ElementDecl elementDecl = new ElementDecl(name,model);
+			ElementDecl elementDecl = new ElementDecl(name,model,false);
 			elementHash.put(name,elementDecl);
 			elements.addElement(elementDecl);
 		}
