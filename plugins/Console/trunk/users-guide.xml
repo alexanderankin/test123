@@ -1148,7 +1148,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 3.3.1</emphasis>
-   requires jEdit 4.0final and the ErrorList plugin 1.2.</para>
+   requires jEdit 4.1pre5 and the ErrorList plugin 1.2.</para>
 
    <itemizedlist>
     <listitem><para>File name completion can now be used in the console
@@ -1157,6 +1157,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     directory.</para></listitem>
     <listitem><para>Pressing the tab key in the command input field when there
     was nothing to complete would have strange results.</para></listitem>
+    <listitem><para>Fixed incompatibility with 4.1pre5.</para></listitem>
    </itemizedlist>
   </listitem>
 
