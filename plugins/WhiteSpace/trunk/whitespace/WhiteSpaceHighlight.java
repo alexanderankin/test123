@@ -381,7 +381,10 @@ public class WhiteSpaceHighlight
             WhiteSpaceModel model;
             for (int j = 0; j < editPanes.length; j++) {
                 highlight = (WhiteSpaceHighlight) highlights.get(editPanes[j]);
+                if (highlight == null) { continue; }
+
                 model = highlight.getModel();
+                if (model == null) { continue; }
 
                 if (   (spaceColorChanged      && model.getSpaceHighlight().isEnabled())
                     || (tabColorChanged        && model.getTabHighlight().isEnabled())
