@@ -19,10 +19,11 @@
 package projectviewer.action;
 
 //{{{ Imports
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.Enumeration;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JMenuItem;
@@ -30,7 +31,7 @@ import javax.swing.JMenuItem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.search.SearchDialog;
-import org.gjt.sp.jedit.search.SearchFileSet;
+import org.gjt.sp.jedit.search.DirectoryListSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 
 import projectviewer.vpt.VPTNode;
@@ -55,7 +56,7 @@ public class SearchAction extends Action {
 	public void actionPerformed(ActionEvent e) {
 		VPTNode node = viewer.getSelectedNode();
 		SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
-		SearchDialog.showSearchDialog(jEdit.getLastView(), null, SearchDialog.DIRECTORY);
+		SearchDialog.showSearchDialog(viewer.getView(), null, SearchDialog.DIRECTORY);
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
@@ -64,9 +65,11 @@ public class SearchAction extends Action {
 		if (node != null && (node.isDirectory() || node.isProject())) {
 			cmItem.setVisible(true);
 			if (node.isDirectory()) {
-				((JMenuItem)cmItem).setText(jEdit.getProperty("projectviewer.action.hypersearch_dir"));
+				((JMenuItem)cmItem).setText(
+					jEdit.getProperty("projectviewer.action.hypersearch_dir"));
 			} else {
-				((JMenuItem)cmItem).setText(jEdit.getProperty("projectviewer.action.hypersearch_project"));
+				((JMenuItem)cmItem).setText(
+					jEdit.getProperty("projectviewer.action.hypersearch_project"));
 			}
 		} else {
 			cmItem.setVisible(false);
@@ -80,21 +83,32 @@ public class SearchAction extends Action {
 	 *
 	 *	@author
 	 */
-	private static class NodeFileSet implements SearchFileSet {
+	private static class NodeFileSet extends DirectoryListSet {
 
-		//{{{ Private members
-		private ArrayList fileset;
-		private Iterator it;
+		//{{{ Private Members
+		private VPTNode node;
 		//}}}
 
-		//{{{ Constructors
-
+		//{{{ Constructor
 		public NodeFileSet(VPTNode node) {
-			fileset = new ArrayList();
-			addFiles(node);
-			it = fileset.iterator();
+			super(null, "*", true);
+			this.node = node;
 		}
+		//}}}
 
+		//{{{ getDirectory() method
+		/** Returns the path to the node. */
+		public String getDirectory() {
+			return node.getNodePath();
+		} //}}}
+
+		//{{{ _getFiles(Component) method
+		/** Returns an array with the files to be searched. */
+		protected String[] _getFiles(Component comp) {
+			HashSet fileset = new HashSet();
+			addFiles(node, fileset);
+			return (String[]) fileset.toArray(new String[fileset.size()]);
+		}
 		//}}}
 
 		//{{{ addFiles(VPTNode) method
@@ -102,44 +116,18 @@ public class SearchAction extends Action {
 		 *	Adds all the files below the given node to the list of search files,
 		 *	recursively.
 		 */
-		private void addFiles(VPTNode node) {
+		private void addFiles(VPTNode node, HashSet fileset) {
 			Enumeration e = node.children();
 			if (e != null)
 			while(e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				if (n.isFile()) {
-					fileset.add(n);
-				} else if (n.getAllowsChildren()) {
-					addFiles(n);
+					fileset.add(n.getNodePath());
+				} else if (n.getAllowsChildren() && isRecursive()) {
+					addFiles(n, fileset);
 				}
 			}
 		} //}}}
-
-		//{{{ SearchFileSet implementation
-
-		public String getCode() {
-			return(null);
-		}
-
-		public int getFileCount(View view) {
-			return(fileset.size());
-		}
-
-		public String[] getFiles(View view) {
-			return (String[]) fileset.toArray(new String[fileset.size()]);
-		}
-
-		public String getFirstFile(View view) {
-			if (fileset.size() == 0) return null;
-			return (String) fileset.get(0);
-		}
-
-		public String getNextFile(View view, String path) {
-			if (fileset.size() == 0) return null;
-			return (String) it.next();
-		}
-
-		//}}}
 
 	} //}}}
 
