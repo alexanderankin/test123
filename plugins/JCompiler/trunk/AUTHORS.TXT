@@ -6,10 +6,11 @@ Maintainers:
 	0.4.9: Dominic Stolerman
 	>= 0.7.0: Dirk Moebius
 
-	The current maintainer is Dirk Moebius <dmoebius@gmx.net>.
+	The current maintainer is Dirk Möbius <dmoebius@gmx.net>.
 
 Contributors:
 
 	Logan Bauer
 	Mike Hansen
+	Andreas Schörk
 

@@ -43,17 +43,73 @@ public class JCompilerOptionPaneCompiler
 		 implements ActionListener
 {
 
-	public JCompilerOptionPaneCompiler() {
+	public JCompilerOptionPaneCompiler()
+	{
 		super("jcompiler.compiler");
 	}
 
 
-	public void _init() {
-		// "Use modern compiler (JDK 1.3 or higher)"
-		modernCompiler = new JCheckBox(jEdit.getProperty("options.jcompiler.modernCompiler"));
-		modernCompiler.setSelected(isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", true));
-		modernCompiler.setEnabled(isModernJDK);
-		addComponent(modernCompiler);
+	public void _init()
+	{
+		JLabel label = new JLabel(jEdit.getProperty("options.jcompiler.compiler"));
+		useOldCompiler = new JRadioButton(jEdit.getProperty("options.jcompiler.compiler.old"));
+		useModernCompiler = new JRadioButton(jEdit.getProperty("options.jcompiler.compiler.modern"));
+		useExternalCompiler = new JRadioButton(jEdit.getProperty("options.jcompiler.compiler.external"));
+
+		ButtonGroup group1 = new ButtonGroup();
+		group1.add(useOldCompiler);
+		group1.add(useModernCompiler);
+		group1.add(useExternalCompiler);
+
+		boolean modernCompile = jEdit.getBooleanProperty("jcompiler.modernCompiler", true);
+		boolean externalCompile = jEdit.getBooleanProperty("jcompiler.compileexternal", false);
+		if (externalCompile)
+			useExternalCompiler.setSelected(true);
+		else if (modernCompile)
+			useModernCompiler.setSelected(true);
+		else
+			useOldCompiler.setSelected(true);
+
+		addComponent(label);
+		addComponent(useOldCompiler);
+		addComponent(useModernCompiler);
+		addComponent(useExternalCompiler);
+
+		externalCompilerTextField = new HistoryTextField("jcompiler.externalcompiler");
+		String externalCompilerTextFieldValue = jEdit.getProperty("jcompiler.externalcompiler");
+		externalCompilerTextField.setText(externalCompilerTextFieldValue == null ? "" : externalCompilerTextFieldValue);
+		externalCompilerTextField.setEnabled(externalCompile);
+		JPanel externalCompilerPanel = new JPanel(new BorderLayout());
+		externalCompilerPanel.add(externalCompilerTextField, BorderLayout.CENTER);
+		pickExternalCompilerButton = new JButton(pickIcon);
+		pickExternalCompilerButton.setMargin(new Insets(0,0,0,0));
+		pickExternalCompilerButton.setToolTipText(jEdit.getProperty("options.jcompiler.pick.tooltip"));
+		pickExternalCompilerButton.setEnabled(externalCompile);
+		pickExternalCompilerButton.addActionListener(this);
+		externalCompilerPanel.add(pickExternalCompilerButton, BorderLayout.EAST);
+		addComponent(jEdit.getProperty("options.jcompiler.compilerpath"), externalCompilerPanel);
+
+		ActionListener compListener = new java.awt.event.ActionListener()
+		{
+			public void actionPerformed(java.awt.event.ActionEvent evt)
+			{
+				if (useExternalCompiler.isSelected())
+				{
+					externalCompilerTextField.setEnabled(true);
+					pickExternalCompilerButton.setEnabled(true);
+				}
+				else
+				{
+					externalCompilerTextField.setEnabled(false);
+					pickExternalCompilerButton.setEnabled(false);
+				}
+			}
+		};
+		useExternalCompiler.addActionListener(compListener);
+		useOldCompiler.addActionListener(compListener);
+		useModernCompiler.addActionListener(compListener);
+
+		addComponent(Box.createVerticalStrut(12));
 
 		// "Generate debug info (-g)"
 		genDebug = new JCheckBox(jEdit.getProperty("options.jcompiler.genDebug"));
@@ -98,7 +154,6 @@ public class JCompilerOptionPaneCompiler
 		String srcPathValue = jEdit.getProperty("jcompiler.sourcepath");
 		srcPath.setText(srcPathValue == null ? "" : srcPathValue);
 		srcPath.setPreferredSize(new Dimension(270, srcPath.getPreferredSize().height));
-		srcPath.setEnabled(!isOldJDK); // enabled only on JDK 1.2 or higher
 		addComponent(jEdit.getProperty("options.jcompiler.sourcepath"), srcPath);
 
 		// "Required library path"
@@ -153,8 +208,10 @@ public class JCompilerOptionPaneCompiler
 	}
 
 
-	public void _save() {
-		jEdit.setBooleanProperty("jcompiler.modernCompiler", isModernJDK && modernCompiler.isSelected());
+	public void _save()
+	{
+		jEdit.setBooleanProperty("jcompiler.modernCompiler", useModernCompiler.isSelected());
+		jEdit.setBooleanProperty("jcompiler.compileexternal", useExternalCompiler.isSelected());
 		jEdit.setBooleanProperty("jcompiler.genDebug", genDebug.isSelected());
 		jEdit.setBooleanProperty("jcompiler.genOptimized", genOptimized.isSelected());
 		jEdit.setBooleanProperty("jcompiler.showdeprecated", showDeprecation.isSelected());
@@ -164,35 +221,52 @@ public class JCompilerOptionPaneCompiler
 		jEdit.setProperty("jcompiler.libpath", libPath.getText().trim());
 		jEdit.setProperty("jcompiler.classpath", classPath.getText().trim());
 		jEdit.setProperty("jcompiler.otheroptions", otherOptions.getText().trim());
+		jEdit.setProperty("jcompiler.externalcompiler",externalCompilerTextField.getText().trim());
+		jEdit.setProperty("jcompiler.sourcepath", srcPath.getText().trim());
+
+		String outputDir = outputDirectory.getText().trim();
+		jEdit.setBooleanProperty("jcompiler.specifyoutputdirectory", outputDir.length() > 0);
+		jEdit.setProperty("jcompiler.outputdirectory", outputDir);
 
 		basePath.addCurrentToHistory();
 		libPath.addCurrentToHistory();
 		classPath.addCurrentToHistory();
 		otherOptions.addCurrentToHistory();
-
-		String outputDir = outputDirectory.getText().trim();
-		jEdit.setBooleanProperty("jcompiler.specifyoutputdirectory", outputDir.length() > 0);
-		jEdit.setProperty("jcompiler.outputdirectory", outputDir);
 		outputDirectory.addCurrentToHistory();
-
-		if (!isOldJDK) {
-			jEdit.setProperty("jcompiler.sourcepath", srcPath.getText().trim());
-			srcPath.addCurrentToHistory();
-		}
+		externalCompilerTextField.addCurrentToHistory();
+		srcPath.addCurrentToHistory();
 	}
 
 
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == pickDirectory) {
+	public void actionPerformed(ActionEvent e)
+	{
+		if (e.getSource() == pickDirectory)
+		{
 			File file = chooseDirectory();
 			setDirectoryText(file, outputDirectory);
 		}
-		else if (e.getSource() == pickBasePathButton) {
+		else if (e.getSource() == pickBasePathButton)
+		{
 			File file = chooseDirectory();
 			setDirectoryText(file, basePath);
 		}
-		else if (e.getSource() == pickCP) {
+		else if (e.getSource() == pickCP)
+		{
 			classPath.setText(System.getProperty("java.class.path"));
+		}
+		else if (e.getSource() == pickExternalCompilerButton)
+		{
+			if (useExternalCompiler.isSelected())
+			{
+				JFileChooser chooser = new JFileChooser();
+				chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+				chooser.setDialogTitle(jEdit.getProperty("options.jcompiler.pick.tooltip"));
+				int retVal = chooser.showOpenDialog(this);
+				File file;
+
+				if (retVal == JFileChooser.APPROVE_OPTION)
+					setDirectoryText(chooser.getSelectedFile(),externalCompilerTextField);
+			}
 		}
 	}
 
@@ -202,7 +276,8 @@ public class JCompilerOptionPaneCompiler
 	 *
 	 * @return the File if one was selected, or null if user clicked cancel.
 	 */
-	private File chooseDirectory() {
+	private File chooseDirectory()
+	{
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		chooser.setDialogTitle(jEdit.getProperty("options.jcompiler.pick.tooltip"));
@@ -215,13 +290,17 @@ public class JCompilerOptionPaneCompiler
 	}
 
 
-	private void setDirectoryText(File file, JTextField textField) {
-		if (file != null) {
-			try {
+	private void setDirectoryText(File file, JTextField textField)
+	{
+		if (file != null)
+		{
+			try
+			{
 				String dirName = file.getCanonicalPath();
 				textField.setText(dirName);
 			}
-			catch(IOException e) {
+			catch(IOException e)
+			{
 				Log.log(Log.ERROR, this, "Something went wrong getting the canonical path for directory " + file);
                 Log.log(Log.ERROR, this, e);
 			}
@@ -229,7 +308,9 @@ public class JCompilerOptionPaneCompiler
 	}
 
 
-	private JCheckBox modernCompiler;
+	private JRadioButton useOldCompiler;
+	private JRadioButton useModernCompiler;
+	private JRadioButton useExternalCompiler;
 	private JCheckBox genDebug;
 	private JCheckBox genOptimized;
 	private JCheckBox showDeprecation;
@@ -238,25 +319,21 @@ public class JCompilerOptionPaneCompiler
 	private JButton pickDirectory;
 	private JButton pickCP;
 	private JButton pickBasePathButton;
+	private JButton pickExternalCompilerButton;
 	private HistoryTextField basePath;
 	private HistoryTextField srcPath;
 	private HistoryTextField libPath;
 	private HistoryTextField classPath;
 	private HistoryTextField outputDirectory;
 	private HistoryTextField otherOptions;
-
-
-	/** true, if JDK version is less than 1.2. */
-	private final static boolean isOldJDK = (MiscUtilities.compareStrings(System.getProperty("java.version"), "1.2", true) < 0);
-
-	/** true, if JDK version is 1.3 or higher */
-	private final static boolean isModernJDK = (MiscUtilities.compareStrings(System.getProperty("java.version"), "1.3", true) >= 0);
+	private HistoryTextField externalCompilerTextField;
 
 	private static Icon pickIcon = null;
 	private static Icon pickCPIcon = null;
 
 
-	static {
+	static
+	{
 		URL url = JCompilerOptionPaneCompiler.class.getResource("DirOpen.gif");
 		if (url != null)
 			pickIcon = new ImageIcon(url);

@@ -40,19 +40,13 @@ import buildtools.*;
 public class JCompiler
 {
 
-	/** true, if JDK version is older than 1.2 */
-	private final static boolean isOldJDK = (MiscUtilities.compareStrings(System.getProperty("java.version"), "1.2", true) < 0);
-
-	/** true, if JDK version is 1.3 or higher */
-	private final static boolean isModernJDK = (MiscUtilities.compareStrings(System.getProperty("java.version"), "1.3", true) >= 0);
-
 	private Class compilerClass;
 	private Constructor compilerConstructor;
 	private Method compilerMethod;
 	private JCompilerOutput output;
 	private View view;
 	private Buffer buffer;
-	private int threadDoneCount;
+	private File tmpFile = null;
 
 
 	public JCompiler(JCompilerOutput output, View view, Buffer buffer)
@@ -193,6 +187,14 @@ public class JCompiler
 
 		// Start the compiler:
 		invokeCompiler(arguments);
+
+		// Cleanup:
+		if (tmpFile != null)
+		{
+			tmpFile.delete();
+			tmpFile = null;
+		}
+
 		return true;
 	}
 
@@ -222,25 +224,26 @@ public class JCompiler
 
 	private void initCompiler()
 	{
-		boolean isModern = false;
-		String compilerClassname = "sun.tools.javac.Main";
+		String compilerClassname;
+		Class[] constructorSignature;
 
-		if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", true))
+		if (jEdit.getBooleanProperty("jcompiler.modernCompiler", true))
 		{
 			compilerClassname = "com.sun.tools.javac.Main";
-			isModern = true;
+			// The modern compiler constructor has signature Main():
+			constructorSignature = new Class[] {};
+		}
+		else
+		{
+			compilerClassname = "sun.tools.javac.Main";
+			// The classic compiler constructor has signature Main(OutputStream,String):
+			constructorSignature = new Class[] { OutputStream.class, String.class };
 		}
 
 		// Find compiler class:
 		try
 		{
 			compilerClass = Class.forName(compilerClassname);
-
-			// Get constructor:
-			// The classic compiler constructor has signature Main(OutputStream,String).
-			// The modern compiler constructor has signature Main().
-			Class[] constructorSignature = isModern ? new Class[] {}
-				: new Class[] {OutputStream.class, String.class};
 			compilerConstructor = compilerClass.getConstructor(constructorSignature);
 
 			// Get the method "compile(String[] arguments)".
@@ -265,40 +268,59 @@ public class JCompiler
 
 	private void invokeCompiler(String[] arguments)
 	{
-		threadDoneCount = 0;
-		PrintStream origOut = System.out;
-		PrintStream origErr = System.err;
-		PipedOutputStream pipeComp = new PipedOutputStream();
-		PipedOutputStream pipeOut = new PipedOutputStream();
-		PipedOutputStream pipeErr = new PipedOutputStream();
-		OutputThread threadComp = new OutputThread("compiler output", pipeComp);
-		OutputThread threadOut = new OutputThread("stdout", pipeOut);
-		OutputThread threadErr = new OutputThread("stderr", pipeErr);
-
 		try
 		{
-			// redirect stdout/stderr:
-			System.setOut(new PrintStream(pipeOut, true));
-			System.setErr(new PrintStream(pipeErr, true));
-
-			// instantiate a new compiler class with the constructor arguments:
-			Object compiler;
-			if (isModernJDK && jEdit.getBooleanProperty("jcompiler.modernCompiler", true))
+			if (jEdit.getBooleanProperty("jcompiler.compileexternal", false))
 			{
-				// modern compiler constructor needs no arguments:
-				compiler = compilerConstructor.newInstance(null);
+				// use the external compiler:
+				String[] newargs = new String[arguments.length + 1];
+				newargs[0] = jEdit.getProperty("jcompiler.externalcompiler");
+				for (int i = 0; i < arguments.length; i++)
+					newargs[i + 1] = arguments[i];
+				Process p = Runtime.getRuntime().exec(newargs);
+				OutputThread threadOut = new OutputThread("external compiler output", p.getInputStream());
+				OutputThread threadErr = new OutputThread("external compiler error output", p.getErrorStream());
+				p.waitFor();
+			}
+			else if (jEdit.getBooleanProperty("jcompiler.modernCompiler", true))
+			{
+				// use the modern compiler:
+				// stdout/stderr need to be redirected:
+				PrintStream origOut = System.out;
+				PrintStream origErr = System.err;
+				PrintStream newOut = new PrintStream(new Output(), false);
+				PrintStream newErr = new PrintStream(new Output(), false);
+				try
+				{
+					System.setOut(newOut);
+					System.setErr(newErr);
+					// the modern compiler has no constructor arguments:
+					Object compiler = compilerConstructor.newInstance(null);
+					// invoke the method 'compile(String[] arguments)' on the compiler instance.
+					// Note: the return value of the compile method is ignored.
+					compilerMethod.invoke(compiler, new Object[] { arguments });
+					newOut.flush();
+					newErr.flush();
+				}
+				finally
+				{
+					// restore stdout/err:
+					System.setOut(origOut);
+					System.setErr(origErr);
+				}
 			}
 			else
 			{
-				// classic compiler constructor needs two arguments:
+				// the classic compiler constructor needs two arguments:
 				// an OutputStream for compiler error output, and a String
 				// with the program name, which is always "javac":
-				compiler = compilerConstructor.newInstance(new Object[] { pipeComp, "javac" });
+				Object compiler = compilerConstructor.newInstance(new Object[] { new Output(), "javac" });
+				// invoke the method 'compile(String[] arguments)' on the compiler instance.
+				// Note: the return value of the compile method is ignored.
+				compilerMethod.invoke(compiler, new Object[] { arguments });
 			}
 
-			// invoke the method 'compile(String[] arguments)' on the compiler instance.
-			// Note: the return value of the compile method is ignored.
-			compilerMethod.invoke(compiler, new Object[] { arguments });
+			printInfo("jcompiler.msg.done");
 		}
 		catch (InvocationTargetException invex)
 		{
@@ -324,6 +346,11 @@ public class JCompiler
 				Log.log(Log.DEBUG, this, "JCompiler interrupted.");
 				printError("jcompiler.msg.interrupted");
 			}
+			else if (e instanceof IOException)
+			{
+				Object[] args = new Object[] { jEdit.getProperty("jcompiler.externalcompiler"), e };
+				printError("jcompiler.msg.external_compiler_error", args);
+			}
 			else
 			{
 				Log.log(Log.ERROR, this, e);
@@ -333,26 +360,10 @@ public class JCompiler
 		}
 		finally
 		{
-			// close pipes, this causes the OutputThreads to terminate:
-			try { pipeComp.close(); } catch (IOException ioex) { Log.log(Log.WARNING, this, ioex); }
-			try { pipeOut.close(); } catch (IOException ioex) { Log.log(Log.WARNING, this, ioex); }
-			try { pipeErr.close(); } catch (IOException ioex) { Log.log(Log.WARNING, this, ioex); }
-			// restore stdout/err:
-			System.setOut(origOut);
-			System.setErr(origErr);
+			// notify the output that the compiler is no longer running:
+			output.outputDone();
 			// free some memory:
 			System.gc();
-		}
-	}
-
-
-	private synchronized void threadDone()
-	{
-		++threadDoneCount;
-		if (threadDoneCount == 3)
-		{
-			printInfo("jcompiler.msg.done");
-			output.outputDone();
 		}
 	}
 
@@ -367,6 +378,7 @@ public class JCompiler
 
 	private String[] constructArguments(String cp, String srcPath, String outDir, String[] files)
 	{
+		boolean compileExternal = jEdit.getBooleanProperty("jcompiler.compileexternal", false);
 		Vector vectorArgs = new Vector();
 
 		if (cp != null && !cp.equals(""))
@@ -375,7 +387,7 @@ public class JCompiler
 			vectorArgs.addElement(cp);
 		}
 
-		if (srcPath != null && !srcPath.equals("") && !isOldJDK)
+		if (srcPath != null && !srcPath.equals(""))
 		{
 			vectorArgs.addElement("-sourcepath");
 			vectorArgs.addElement(srcPath);
@@ -405,8 +417,31 @@ public class JCompiler
 				vectorArgs.addElement(st.nextToken());
 		}
 
-		for (int i = 0; i < files.length; ++i)
-			vectorArgs.addElement(files[i]);
+		if (compileExternal && files.length > 2)
+		{
+			try
+			{
+				tmpFile = File.createTempFile("JCompiler", "rsp");
+				PrintStream tmpFileOutput = new PrintStream(new FileOutputStream(tmpFile));
+				for (int i = 0; i < files.length; ++i)
+					tmpFileOutput.println(files[i]);
+				tmpFileOutput.close();
+				vectorArgs.addElement("@" + tmpFile.getAbsolutePath());
+			}
+			catch (IOException ioex)
+			{
+				Log.log(Log.DEBUG, this, "JCompiler could not create temporary file.");
+				printError("jcompiler.msg.interrupted");
+			}
+		}
+		else
+		{
+			if (tmpFile != null)
+				tmpFile.delete();
+			tmpFile = null;
+			for (int i = 0; i < files.length; ++i)
+				vectorArgs.addElement(files[i]);
+		}
 
 		String[] arguments = new String[vectorArgs.size()];
 		vectorArgs.copyInto(arguments);
@@ -836,40 +871,68 @@ public class JCompiler
 
 
 	/**
-	 * This class monitors output created by a PipedOutputStream.
+	 * This class is an OutputStream that writes to the
+	 * output associated with this JCompiler instance.
+	 */
+	class Output extends OutputStream
+	{
+		private StringBuffer buf = new StringBuffer();
+		private Object lock = new Object();
+
+		public void write(int b)
+		{
+			synchronized(lock)
+			{
+				buf.append((char)b);
+				if(b == '\n')
+					flush();
+			}
+		}
+
+		public void flush()
+		{
+			synchronized(lock)
+			{
+				StringTokenizer st = new StringTokenizer(buf.toString(), "\n\r");
+				while(st.hasMoreTokens())
+					JCompiler.this.output.outputText(st.nextToken());
+				buf = new StringBuffer();
+			}
+		}
+
+		public void close()
+		{
+			flush();
+		}
+	}
+
+
+	/**
+	 * This thread monitors output created by the external process.
 	 * Note: this thread starts itself on construction.
 	 */
 	class OutputThread extends Thread
 	{
-		private BufferedReader buf;
+		private InputStream input;
 
-		OutputThread(String name, PipedOutputStream outpipe)
+		OutputThread(String name, InputStream input)
 		{
 			super("OutputThread for " + name);
+			this.input = input;
 			this.setDaemon(true);
-			//this.setPriority(NORM_PRIORITY - 1);
-
-			try
-			{
-				buf = new BufferedReader(new InputStreamReader(new PipedInputStream(outpipe)));
-				this.start();
-			}
-			catch (IOException ioex)
-			{
-				Log.log(Log.ERROR, this, ioex);
-			}
+			this.start();
 		}
 
 		public void run()
 		{
 			String line;
+			BufferedReader buf = new BufferedReader(new InputStreamReader(input));
 			try
 			{
 				while ((line = buf.readLine()) != null)
 					output.outputText(line);
-				Log.log(Log.DEBUG, JCompiler.this, this.toString() + " ends.");
 				buf.close();
-				threadDone();
+				Log.log(Log.DEBUG, JCompiler.this, this.toString() + " ends.");
 			}
 			catch (IOException ioex)
 			{
