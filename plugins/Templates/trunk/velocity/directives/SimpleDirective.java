@@ -21,6 +21,7 @@ package velocity.directives;
 import org.apache.velocity.context.InternalContextAdapter;
 import org.apache.velocity.exception.MethodInvocationException;
 import org.apache.velocity.runtime.directive.Directive;
+import org.apache.velocity.runtime.parser.node.ASTBlock;
 import org.apache.velocity.runtime.parser.node.Node;
 
 /**
@@ -70,15 +71,27 @@ public abstract class SimpleDirective extends Directive
    /**
     * Returns the indexed argument as an optional boolean.
     */
-   protected boolean getOptionalBoolean(Node node, int idx)
+   protected boolean getOptionalBoolean(Node node, int idx,
+                                        InternalContextAdapter ctx)
+   throws MethodInvocationException
    {
-      Node target = getOptionalNode(node, idx);
-      if (target == null) {
-         return false;
-      }
-      return "true".equals(node.literal());
+      return getOptionalBoolean(node, idx, ctx, false);
    }
 
+   /**
+    * Returns the indexed argument as an optional boolean.
+    */
+   protected boolean getOptionalBoolean(Node node, int idx,
+                                        InternalContextAdapter ctx,
+                                        boolean defaultValue)
+   throws MethodInvocationException
+   {
+      Object obj = getOptionalValue(node, idx, ctx);
+      if (obj == null || !(obj instanceof Boolean))
+         return defaultValue;
+      return ((Boolean) obj).booleanValue();
+   }
+   
    /**
     * Returns an optional argument as a value.
     */
@@ -122,6 +135,18 @@ public abstract class SimpleDirective extends Directive
    protected boolean hasArgument(Node node, int idx)
    {
       return idx < node.jjtGetNumChildren();
+   }
+
+   /**
+    * Returns the block child node.
+    */
+   protected Node getBlockNode(Node parent)
+   {
+      for (int i=0; i<parent.jjtGetNumChildren(); i++) {
+         if (parent.jjtGetChild(i) instanceof ASTBlock)
+            return parent.jjtGetChild(i);
+      }
+      return null;
    }
 
 }

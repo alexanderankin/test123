@@ -64,7 +64,7 @@ public class Prompt extends SimpleDirective
       }
       String key = getRequiredVariable(node, 1, "key");
       Object defaultValue = getOptionalValue(node, 2, context);
-      boolean overrideContext = getOptionalBoolean(node, 3);
+      boolean overrideContext = getOptionalBoolean(node, 3, context);
 
       if (!overrideContext && context.getInternalUserContext().get(key) != null) {
          return true;
