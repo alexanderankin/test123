@@ -1,7 +1,7 @@
 #Jump plugin for Jedit4.1
 plugin.JumpPlugin.name=Jump!
 plugin.JumpPlugin.author=Pavlikus
-plugin.JumpPlugin.version=0.2
+plugin.JumpPlugin.version=0.2.1
 
 #{{{ Dependecies
 plugin.JumpPlugin.depend.0=plugin projectviewer.ProjectPlugin 2.0.1
