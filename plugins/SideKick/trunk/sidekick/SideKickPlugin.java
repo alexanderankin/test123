@@ -101,7 +101,9 @@ public class SideKickPlugin extends EBPlugin
 		}
 		else if(msg instanceof BufferUpdate)
 		{
-			parsedBufferSet.remove(((BufferUpdate)msg).getBuffer());
+			BufferUpdate bu = (BufferUpdate)msg;
+			if(bu.getWhat() == BufferUpdate.CLOSED)
+				finishParsingBuffer(bu.getBuffer());
 		}
 		else if(msg instanceof PropertiesChanged)
 			SideKickActions.propertiesChanged();
