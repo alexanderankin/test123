@@ -48,6 +48,8 @@ import org.gjt.sp.util.Log;
 **/
 public class FtpClient {
 
+    public static final int TIMEOUT = 45000;
+
     //
     // interface
     //
@@ -97,6 +99,7 @@ public class FtpClient {
     **/
     public void connect(String hostName, int port) throws IOException {
         cmdSocket = new Socket(hostName, port);
+	cmdSocket.setSoTimeout(TIMEOUT);
         in = new BufferedReader(new InputStreamReader(
             cmdSocket.getInputStream()));
         out = new PrintWriter(cmdSocket.getOutputStream(), true);
@@ -272,6 +275,7 @@ public class FtpClient {
             dataSocket.close();
         }
         dataSocket = new ServerSocket(0);
+	dataSocket.setSoTimeout(TIMEOUT);
         int port = dataSocket.getLocalPort();
         command.append(',');
         command.append(port/256);
@@ -312,6 +316,7 @@ public class FtpClient {
 	    remoteAddr = remoteAddr.substring(0, comma2).replace(',', '.');
 
 	    passiveSocket = new Socket(remoteAddr, port);
+	    passiveSocket.setSoTimeout(TIMEOUT);
 	}
 	catch(StringIndexOutOfBoundsException e) {
 	    Log.log(Log.ERROR, this, "Couldn't set passive, trying data port");
@@ -1033,6 +1038,7 @@ public class FtpClient {
         else if (dataSocket != null)
         {
             dataXfrSocket = dataSocket.accept();
+	    dataXfrSocket.setSoTimeout(TIMEOUT);
         }
 
         return dataXfrSocket;
