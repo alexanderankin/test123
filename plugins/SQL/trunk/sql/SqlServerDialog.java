@@ -174,7 +174,8 @@ public class SqlServerDialog extends JDialog
         final String paramDesc = param.getDescription();
         serverPane.addC( paramDesc.substring( 0, 1 ).toUpperCase() + paramDesc.substring( 1 ), tf );
       }
-      final JLabel defStmtDelimiterRegexLbl = new JLabel( type.getDefaultStatementDelimiterRegex() );
+      final String dsdr = regex2Text( type.getDefaultStatementDelimiterRegex() );
+      final JLabel defStmtDelimiterRegexLbl = new JLabel( dsdr );
       serverPane.addC( jEdit.getProperty( "sql.defaultStatementDelimiterRegex.label" ), defStmtDelimiterRegexLbl );
 
       controls.put( type.getName(), serverTypeControls );
@@ -322,7 +323,7 @@ public class SqlServerDialog extends JDialog
       return;
 
     nameField.setText( rec.getName() );
-    statementDelimiterRegexField.setText( rec.getStatementDelimiterRegex() );
+    statementDelimiterRegexField.setText( regex2Text( rec.getStatementDelimiterRegex() ) );
 
     final String typeName = rec.getServerType().getName();
 
@@ -352,7 +353,6 @@ public class SqlServerDialog extends JDialog
       final SqlServerType type = SqlServerType.getByName( typeName );
       rec = new SqlServerRecord( type );
       rec.setName( nameField.getText() );
-      rec.setStatementDelimiterRegex( statementDelimiterRegexField.getText() );
     }
 
     final Map serverControls = (Map) controls.get( typeName );
@@ -362,6 +362,7 @@ public class SqlServerDialog extends JDialog
       final JTextField tf = (JTextField) serverControls.get( propName );
       rec.setProperty( propName, tf.getText() );
     }
+    rec.setStatementDelimiterRegex( text2Regex( statementDelimiterRegexField.getText() ) );
   }
 
 
@@ -377,7 +378,33 @@ public class SqlServerDialog extends JDialog
     if ( type == null )
       return;
 
-    statementDelimiterRegexField.setText( type.getDefaultStatementDelimiterRegex() );
+    statementDelimiterRegexField.setText( regex2Text( type.getDefaultStatementDelimiterRegex() ) );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  regexp  Description of Parameter
+   * @return         Description of the Returned Value
+   */
+  protected static String regex2Text( String regexp )
+  {
+    return regexp == null ? null :
+        regexp.replaceAll( "\\n", "\\\\n" ).replaceAll( "\\r", "\\\\r" );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  text  Description of Parameter
+   * @return       Description of the Returned Value
+   */
+  protected static String text2Regex( String text )
+  {
+    return text == null ? null :
+        text.replaceAll( "\\\\n", "\\\\n" ).replaceAll( "\\\\r", "\\\\r" );
   }
 
 
