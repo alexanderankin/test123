@@ -161,6 +161,15 @@ public abstract class Shell
 	 */
 	public abstract boolean waitFor(Console console); //}}}
 
+	//{{{ endOfFile() method
+	/**
+	 * Sends an end of file.
+	 * @param console The console
+	 */
+	public void endOfFile(Console console)
+	{
+	} //}}}
+
 	//{{{ getCompletions() method
 	/**
 	 * Returns possible completions for the specified command.

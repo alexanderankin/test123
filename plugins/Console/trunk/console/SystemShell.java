@@ -259,6 +259,29 @@ public class SystemShell extends Shell
 			return true;
 	} //}}}
 
+	//{{{ endOfFile() method
+	/**
+	 * Sends an end of file.
+	 * @param console The console
+	 */
+	public void endOfFile(Console console)
+	{
+		ConsoleState state = getConsoleState(console);
+
+		if(state.process != null)
+		{
+			console.write(console.getInfoColor(),"^D\n");
+			PipedOutputStream out = state.process.getPipeOutput();
+			try
+			{
+				out.close();
+			}
+			catch(IOException e)
+			{
+			}
+		}
+	} //}}}
+
 	//{{{ getCompletions() method
 	/**
 	 * Returns possible completions for the specified command.
