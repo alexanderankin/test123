@@ -52,6 +52,26 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 
 </para>
 
+
+<sect1 id="chmod"><title>File permissions</title>
+
+<para>
+Since an FTP server does not allow execution of arbitrary shell commands, the plugin sends the <quote>SITE CHMOD</quote> FTP command to set a file's mode. This command is reasonably standard, but not all FTP servers support it.
+</para>
+
+<para>
+If you notice that file permissions are not preserved after saving a file to an FTP server, check <guimenu>Utilities</guimenu>&gt;<guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity Log</guimenuitem> for messages like the following, which indicate your FTP server does not support this command:
+</para>
+
+<programlisting>[debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: sending command: SITE CHMOD 644 /home/swenv
+[debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: received response: 502 SITE command not implemented.</programlisting>
+
+<para>
+A workaround is to disable two-stage save in the <guilabel>General</guilabel> pane of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem> dialog box.
+</para>
+
+</sect1>
+
 </chapter>
 
 <chapter id="sftp"><title>Connecting to SFTP servers</title>
@@ -127,25 +147,6 @@ You can close unused connections at any other time using the
 
 </chapter>
 
-<chapter id="chmod"><title>File permissions</title>
-
-<para>
-Since an FTP server does not allow execution of arbitrary shell commands, the plugin sends the <quote>SITE CHMOD</quote> FTP command to set a file's mode. This command is reasonably standard, but not all FTP servers support it.
-</para>
-
-<para>
-If you notice that file permissions are not preserved after saving a file to an FTP server, check <guimenu>Utilities</guimenu>&gt;<guimenuitem>Troubleshooting</guimenuitem>&gt;<guimenuitem>Activity Log</guimenuitem> for messages like the following, which indicate your FTP server does not support this command:
-</para>
-
-<programlisting>[debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: sending command: SITE CHMOD 644 /home/swenv
-[debug] FtpClient: Thread[jEdit I/O #3,4,jEdit I/O]: received response: 502 SITE command not implemented.</programlisting>
-
-<para>
-A workaround is to disable two-stage save in the <guilabel>General</guilabel> pane of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem> dialog box.
-</para>
-
-</chapter>
-
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
@@ -158,6 +159,7 @@ A workaround is to disable two-stage save in the <guilabel>General</guilabel> pa
    <listitem><para>Fixed file listing on servers that don't output a file owner and group - again.</para></listitem>
    <listitem><para>For non-existent files, the FTP file system would always report that they are directories. This made it impossible to <guimenuitem>Save as</guimenuitem> to a new file.</para></listitem>
    <listitem><para>More fixes for VMS servers.</para></listitem>
+   <listitem><para>Fixed a problem that could cause "connection timeout" errors and failed operations.</para></listitem>
   </itemizedlist>
   </listitem>
 
