@@ -13,7 +13,7 @@
  * parser package."
  */
 
-package xml;
+package xml.completion;
 
 //{{{ Imports
 import java.io.*;
@@ -22,12 +22,14 @@ import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import xml.parser.*;
+import xml.*;
 //}}}
 
-class CompletionInfoHandler extends DefaultHandler
+public class CompletionInfoHandler extends DefaultHandler
 {
 	//{{{ CompletionInfoHandler constructor
-	CompletionInfoHandler()
+	public CompletionInfoHandler()
 	{
 		completionInfo = new CompletionInfo(
 			false,
@@ -43,7 +45,7 @@ class CompletionInfoHandler extends DefaultHandler
 	} //}}}
 
 	//{{{ getCompletionInfo() method
-	CompletionInfo getCompletionInfo()
+	public CompletionInfo getCompletionInfo()
 	{
 		return completionInfo;
 	} //}}}
@@ -58,9 +60,9 @@ class CompletionInfoHandler extends DefaultHandler
 	public void endDocument()
 	{
 		MiscUtilities.quicksort(completionInfo.elements,
-			new XmlParser.ElementDeclCompare());
+			new ElementDecl.Compare());
 		MiscUtilities.quicksort(completionInfo.entities,
-			new XmlParser.EntityDeclCompare());
+			new EntityDecl.Compare());
 	} //}}}
 
 	//{{{ resolveEntity() method

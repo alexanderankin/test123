@@ -23,6 +23,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import xml.parser.*;
 //}}}
 
 public class XmlPlugin extends EBPlugin

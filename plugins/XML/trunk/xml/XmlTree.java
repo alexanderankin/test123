@@ -26,6 +26,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import xml.parser.*;
 //}}}
 
 public class XmlTree extends JPanel implements EBComponent
@@ -99,7 +100,7 @@ public class XmlTree extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ update() method
-	void update()
+	public void update()
 	{
 		DefaultTreeModel model = (DefaultTreeModel)view.getEditPane()
 			.getClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY);

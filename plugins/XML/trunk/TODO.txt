@@ -1,3 +1,10 @@
+- 'advanced' option pane for selecting a parser, with a 'don't change this
+  if you don't know what you're doing' warning. tag highlight in modes that
+  set 'xml.parser' property, move tag highlight setting to 'general', get
+  rid of 'tag highlight' option pane.
+- html: support id attribute
+- html: get rid of _implied_ crap
+- html: need to get error reporting figured out
 - if no closing tag, should not insert </>
 - fix up tag highlighting
 - switching between two edit panes with same buffer: expand tree at

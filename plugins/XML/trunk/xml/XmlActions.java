@@ -31,6 +31,8 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import xml.completion.*;
+import xml.parser.*;
 //}}}
 
 public class XmlActions
@@ -399,7 +401,7 @@ public class XmlActions
 		if(!(buffer.isEditable()
 			&& closeCompletion
 			&& (completionInfo != null
-			|| buffer.getBooleanProperty("xml.parse"))))
+			|| buffer.getProperty("xml.parser") != null)))
 		{
 			return;
 		}
@@ -448,7 +450,7 @@ public class XmlActions
 		if(!(buffer.isEditable()
 			&& closeCompletionOpen
 			&& (completionInfo != null
-			|| buffer.getBooleanProperty("xml.parse"))))
+			|| buffer.getProperty("xml.parser") != null)))
 		{
 			return;
 		}

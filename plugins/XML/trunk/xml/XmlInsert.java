@@ -27,6 +27,8 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+import xml.completion.*;
+import xml.parser.*;
 //}}}
 
 public class XmlInsert extends JPanel implements EBComponent
@@ -127,7 +129,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	} //}}}
 
 	//{{{ update() method
-	void update()
+	public void update()
 	{
 		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
 			view.getEditPane());

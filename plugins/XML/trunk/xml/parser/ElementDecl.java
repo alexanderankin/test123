@@ -1,5 +1,8 @@
 /*
  * ElementDecl.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -10,28 +13,31 @@
  * parser package."
  */
 
-package xml;
+package xml.parser;
 
 import java.util.*;
+import org.gjt.sp.jedit.MiscUtilities;
 
-class ElementDecl
+public class ElementDecl
 {
-	String name;
-	boolean empty;
-	boolean html;
+	public String name;
+	public boolean empty;
+	public boolean html;
 
-	ArrayList attributes;
+	public ArrayList attributes;
 
-	ElementDecl(String name, boolean empty, boolean html)
+	//{{{ ElementDecl constructor
+	public ElementDecl(String name, boolean empty, boolean html)
 	{
 		this.name = name;
 		this.empty = empty;
 		this.html = html;
 
 		attributes = new ArrayList();
-	}
+	} //}}}
 
-	void addAttribute(AttributeDecl attribute)
+	//{{{ addAttribute() method
+	public void addAttribute(AttributeDecl attribute)
 	{
 		for(int i = 0; i < attributes.size(); i++)
 		{
@@ -44,8 +50,9 @@ class ElementDecl
 		}
 
 		attributes.add(attribute);
-	}
+	} //}}}
 
+	//{{{ toString() method
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
@@ -73,17 +80,18 @@ class ElementDecl
 		}
 
 		return buf.toString();
-	}
+	} //}}}
 
-	static class AttributeDecl
+	//{{{ AttributeDecl class
+	public static class AttributeDecl
 	{
-		String name;
-		String value;
-		ArrayList values;
-		String type;
-		boolean required;
+		public String name;
+		public String value;
+		public ArrayList values;
+		public String type;
+		public boolean required;
 
-		AttributeDecl(String name, String value, ArrayList values,
+		public AttributeDecl(String name, String value, ArrayList values,
 			String type, boolean required)
 		{
 			this.name = name;
@@ -116,5 +124,16 @@ class ElementDecl
 			buf.append(" />");
 			return buf.toString();
 		}
-	}
+	} //}}}
+
+	//{{{ Compare class
+	public static class Compare implements MiscUtilities.Compare
+	{
+		public int compare(Object obj1, Object obj2)
+		{
+			return MiscUtilities.compareStrings(
+				((ElementDecl)obj1).name,
+				((ElementDecl)obj2).name,true);
+		}
+	} //}}}
 }
