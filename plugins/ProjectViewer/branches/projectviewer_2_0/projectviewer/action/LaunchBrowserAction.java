@@ -21,7 +21,6 @@ package projectviewer.action;
 //{{{ Imports
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
@@ -42,19 +41,13 @@ import projectviewer.config.ProjectViewerConfig;
  *	@version	$Id$
  */
 public class LaunchBrowserAction extends Action {
-	
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.launch_browser");
 	} //}}}
-	
-	//{{{ getIcon() method
-	/** Returns null. Shouldn't be on the toolbar. */
-	public Icon getIcon() {
-		return null;
-	} //}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
@@ -65,19 +58,19 @@ public class LaunchBrowserAction extends Action {
 			n = (VPTNode) n.getParent();
 		}
 		p = (VPTProject) n;
-		
+
 		String sURL;
 		if (p.getURL() != null && file.getNodePath().startsWith(p.getRootPath())) {
 			sURL = p.getURL() + file.getNodePath().substring(p.getRootPath().length());
 		} else {
 			sURL = file.getNodePath();
 		}
-	
+
 		try {
 			Runtime rt = Runtime.getRuntime();
 			rt.exec(new String[] { ProjectViewerConfig.getInstance().getBrowserPath(), sURL });
 		} catch(java.io.IOException ioe) {
-			JOptionPane.showMessageDialog(viewer, 
+			JOptionPane.showMessageDialog(viewer,
 				jEdit.getProperty("projectviewer.launcher.io_error", new Object[] { ioe.getMessage() }),
 				jEdit.getProperty("projectviewer.error"),
 				JOptionPane.ERROR_MESSAGE);
@@ -89,6 +82,6 @@ public class LaunchBrowserAction extends Action {
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null && node.isFile());
 	} //}}}
-	
+
 }
 
