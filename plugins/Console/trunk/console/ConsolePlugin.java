@@ -31,7 +31,7 @@ import org.gjt.sp.util.Log;
 public class ConsolePlugin extends EBPlugin
 {
 	public static final Shell SYSTEM_SHELL = new SystemShell();
-	public static final Shell BEAN_SHELL = new BeanShell();
+	public static final Shell BEAN_SHELL = new ConsoleBeanShell();
 
 	public void start()
 	{
@@ -48,10 +48,7 @@ public class ConsolePlugin extends EBPlugin
 			getClass().getResourceAsStream(
 			"/console/console.bsh")));
 
-		// have to write org.gjt.sp.jedit.BeanShell otherwise javac
-		// will think we want console.BeanShell class 
-		org.gjt.sp.jedit.BeanShell.runScript(null,"console.bsh",
-			in,false,false);
+		BeanShell.runScript(null,"console.bsh",in,false,false);
 
 		String settings = jEdit.getSettingsDirectory();
 		if(settings != null)
@@ -248,7 +245,7 @@ public class ConsolePlugin extends EBPlugin
 			for(int i = 0; i < views.length; i++)
 			{
 				View view = views[i];
-				if(!consoleToolBarMap.contains(view))
+				if(!consoleToolBarMap.containsKey(view))
 				{
 					ConsoleToolBar toolBar = new ConsoleToolBar(view);
 					consoleToolBarMap.put(view,toolBar);
@@ -276,7 +273,7 @@ public class ConsolePlugin extends EBPlugin
 			for(int i = 0; i < views.length; i++)
 			{
 				View view = views[i];
-				if(!commandoToolBarMap.contains(view))
+				if(!commandoToolBarMap.containsKey(view))
 				{
 					CommandoToolBar toolBar = new CommandoToolBar(view);
 					commandoToolBarMap.put(view,toolBar);

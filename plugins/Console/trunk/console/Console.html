@@ -9,113 +9,7 @@
 <h3>By Slava Pestov</h3>
 <i>slava@jedit.org</i><p>
 
-<hr>
-
-<a href=#general>General Information</a><br>
-<a href=#cshell>The Console Shell</a><br>
-<a href=#bshell>The BeanShell</a><br>
-<a href=#other>Using Other Shells</a><br>
-<a href=#toolbar>The Console Tool Bar</a><br>
-<a href=#changes>Change Log</a>
-
-<hr>
-
-<a name=general>
-<h1>General Information</h1>
-</a>
-
-The console plugin allows the user to run commands in various
-available <i>shells</i>. The default console shell runs
-system processes (such as programs, compilers, etc). The BeanShell
-runs commands in jEdit's BeanShell interpreter. Some plugins such as
-JCompiler add their own shells which perform other tasks.<p>
-
-A console can be opened by selecting <b>Plugins</b>&gt;<b>Console</b>.
-The console window can be set to dock into the view in
-<b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Docking</b>.<p>
-
-The console consists of a shell selection combo box, a text field for
-entering commands, and an output area.<p>
-
-Pressing <b>ENTER</b> in the command field will execute the
-currently entered command. Previously entered strings can be recalled
-with the <b>UP</b> and <b>DOWN</b> keys.<p>
-
-Entering the `clear' command in any shell will remove all text from the
-output area.<p>
-
-<b>Tip</b>: if you find yourself executing the same console command frequently,
-record it in a macro. Simply enter the command in the console while a
-macro recording is in progress.<p>
-
-<hr>
-
-<a name=cshell>
-<h1>The Console Shell</h1>
-</a>
-
-The console shell runs operating system commands.
-To use it, select <b>Console</b> from the popup menu to the right of the
-command text field.<p>
-
-The default shell understands the following variables as part of a command:
-
-<ul>
-<li>~ - expands to the user's home directory
-<li>$d - expands to the current file's parent directory
-<li>$f - expands to the current file's full path
-<li>$u - expands to the current file's URL (file: is prepended if it is
-a local file)
-<li>$j - expands to the directory where jEdit is installed
-<li>$n - expands to the current file's name, without the trailing extension,
-if any
-<li>$$ - expands to the $ character
-</ul>
-
-You can use both single (<tt>'</tt>) and double (<tt>"</tt>) quotes if you would
-like to pass arguments that contain spaces to a command. Note that variables
-will be expanded in quoted arguments too.<p>
-
-The default shell also parses command output for compiler errors. A number
-of different formats are supported, and new error patterns can be added
-in <b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Console</b>. Parsed errors
-are added to the error list, which can be viewed by invoking
-<b>Plugins</b>&gt;<b>Error List</b> (if you do not see that menu item, then
-you need to install the ErrorList plugin).<p>
-
-When running on Java 1.3 or later, the working directory from which commands
-are executed can be changed with the "cd" command.
-To display the current working directory, use the "pwd" command.
-
-<hr>
-
-<a name=bshell>
-<h1>The BeanShell</h1>
-</a>
-
-The BeanShell runs commands in jEdit's BeanShell interpreter.
-To use it, select <b>BeanShell</b> from the popup menu to the right of the
-command text field.
-
-<hr>
-
-<a name=others>
-<h1>Using Other Shells</h1>
-</a>
-
-A few other plugins define shells of their own; JCompiler, for example.
-To use an alternative shell, select it from the shell popup
-in the console window.
-
-<hr>
-
-<a name=toolbar>
-<h1>The Console Tool Bar</h1>
-</a>
-
-If enabled in <b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Console</b>,
-the console will add a tool bar to each view allowing quick and easy
-command invocation.
+Documentation not yet written.
 
 <hr>
 
@@ -125,22 +19,22 @@ command invocation.
 
 <h3>Version 3.0</h3>
 
-Requires jEdit 3.2pre5, EditBus 1.0, and ErrorList 1.0.
+Requires jEdit 3.2pre6, EditBus 1.0, and ErrorList 1.0. Many parts of the
+plugin have been rewritten and expanded. Here is a partial list of major changes:
 
 <ul>
-<li>Compatibility fix for jEdit 3.2pre5
-<li>Now loads a BeanShell code snippet with a <code>runCommandInConsole()</code>
-method for macros
-<li>Shell interface no longer defines stop() method
-<li>The 'clear' command is no longer handled by the console itself; now, each
-shell should provide its own means of clearing the output area. The default
-shell has a 'clear' command that worked as before.
-<li>Cleaned up DefaultShell class, moved portions to DefaultShellBuiltIns,
-ProcessManager and ConsoleProcess classes
-<li>The current directory is now set on a per-view, rather than global, basis
-<li>Multiple processes can be run from one console, and starting a new
-process does not automatically kill the currently running one. Use the %bg, %fg,
-%kill and %ps commands to deal with multiple processes
+<li>Compatibility fixes for jEdit 3.2
+<li>Now loads a BeanShell code snippet on startup,
+with <code>runCommandInConsole()</code>
+and <code>runCommandInConsoleToBuffer()</code>
+methods for macros
+<li>Shell interface changed; you will need to install a new version of the
+JCompiler plugin if you use it
+<li>The current directory is now set on a per-console, rather than global, basis
+<li>Each console can run its own process. Processes can also be started in
+the background (ie, with no associated console)
+by appending "&amp;" to the command string
+<li>Process output can now be redirected to a buffer
 <li>Long lines in command output no longer cause problems and slow everything
 down (Dirk Moebius)
 <li>'Go to Console' action added, it displays the console if not already open
