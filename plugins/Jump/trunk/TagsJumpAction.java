@@ -110,13 +110,14 @@ class TagsJumpAction
     }
 //}}}
 
+//{{{ updateStatusBar
 // TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
     public void updateStatusBar(Object o)
     {
         JList l = (JList) o;
         CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
         view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
-    }
+    } //}}}
         
 //{{{ prepareStatusMsg
         private String prepareStatusMsg(CTAGS_Entry en)
@@ -143,12 +144,13 @@ class TagsJumpAction
     } 
 //}}}
         
-//{{{ void processAction       
+//{{{ void processAction
         public void processAction(Object o) {
 
             JList l = (JList) o;
             SearchAndReplace search = new SearchAndReplace();
-
+            //
+            view = jEdit.getActiveView();
             //String tag = (String) l.getModel().getElementAt(l.getSelectedIndex());
             //tag = tag.substring(tag.indexOf(" ",0)+2,tag.length()-1);
             
@@ -183,27 +185,37 @@ class TagsJumpAction
 //{{{ void processInsertAction
         public void processInsertAction(Object o) 
         {
+            view = jEdit.getActiveView();
             JList l = (JList) o;
             CTAGS_Entry en = (CTAGS_Entry)l.getModel().getElementAt(l.getSelectedIndex());
             String tag = en.getTagName();
             view.getTextArea().setSelectedText(tag);
         }
+   
+//}}}
+
+//{{{ void processActionInNewView
+    public void processActionInNewView(Object o)
+    {
+        CtagsJumpMenu.this.processAction(o);       
     }
 //}}}
+
+}
 
 //}}}
 
 //{{{ class TagsListModel
     class TagsListModel extends AbstractListModel 
     {
-//{{{  int getSize()       
+//{{{ int getSize()       
         public int getSize() 
         {
             return entries.length;
         }
 //}}}
 
-//{{{  Object getElementAt      
+//{{{ Object getElementAt      
         public Object getElementAt(int index) 
         {
             return entries[index];
