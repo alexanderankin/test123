@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
@@ -124,7 +125,7 @@ public class SessionManager implements EBComponent
 
 		// load new session
 		// make sure this is not done from the AWT thread
-		
+
 		// {{{ This section changed by Steve Jakob
 		//     Opening the new session in a separate thread would occasionally
 		//     cause jEdit to freeze.
@@ -147,6 +148,9 @@ public class SessionManager implements EBComponent
 		EditBus.send(new SessionChanged(
 			SessionManager.this, oldSessionName, newSessionName, currentSession));
 		// }}} End of section changed by Steve Jakob
+
+		// Change FSB directory if appropriate
+		changeFSBToBaseDirectory(view);
 	}
 
 
@@ -193,7 +197,7 @@ public class SessionManager implements EBComponent
 
 	/**
 	 * Save current session under a different name and switch to it.
- 	 * This sends out SessionListChanged and SessionChanged messages
+	 * This sends out SessionListChanged and SessionChanged messages
 	 * on EditBus, if the session could be changed successfully, in this
 	 * order.
 	 *
@@ -251,6 +255,22 @@ public class SessionManager implements EBComponent
 		currentSession.open(view); // ignore any errors and return value
 	}
 
+	/**
+	 * Change FSB directory if relevant option selected, "basedir" property
+	 * set, and FSB is visible.
+	 *
+	 * @param view look for FSB in this View
+	 */
+	public void changeFSBToBaseDirectory(View view)
+	{
+		if ((jEdit.getBooleanProperty("sessions.switcher.changeFSBDirectory", false)) &&
+			!("".equals(currentSession.getProperty(Session.BASE_DIRECTORY))) &&
+			(view.getDockableWindowManager().isDockableWindowVisible(VFSBrowser.NAME)))
+		{
+			VFSBrowser.browseDirectory(view,
+				currentSession.getProperty(Session.BASE_DIRECTORY));
+		}
+	}
 
 	/**
 	 * Show the Session Manager dialog.

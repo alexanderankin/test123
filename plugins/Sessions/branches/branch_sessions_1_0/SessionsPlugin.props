@@ -4,7 +4,7 @@
 
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=1.0.1
+plugin.sessions.SessionsPlugin.version=1.0.3
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
 plugin.sessions.SessionsPlugin.depend.0=jedit 04.00.99.00
 
@@ -112,7 +112,7 @@ sessions.manager.info.restore.message=\
 	If you want to restore the last open session at startup,\n\
 	please enable this option again.\n\
 	\n\
-	You can want to load your last open session now, please\n\
+	If you want to load your last open session now, please\n\
 	invoke the action "Reload Session".\n\
 	\ 
 
@@ -151,6 +151,7 @@ options.sessions.switcher.showBelowToolBar=Show below jEdit\' main toolbar
 options.sessions.switcher.showJEditToolBar=Show inside JEdit\'s main toolbar
 options.sessions.switcher.showInsideBufferList=Show inside BufferList (>=0.8 required, only if docked)
 options.sessions.switcher.showTitle=Show "Session:" label
+options.sessions.switcher.changeFSBDirectory=Change FSB directory on switch (only if currently visible)
 
 
 #
