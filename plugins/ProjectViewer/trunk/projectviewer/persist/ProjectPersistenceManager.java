@@ -227,16 +227,27 @@ public final class ProjectPersistenceManager {
 				if (nh == null) {
 					Log.log(Log.WARNING,this, "Unknown node: " + qName);
 				} else {
-					VPTNode node = nh.createNode(attrs, proj);
-					attrs.clear();
-					if (node != null) {
-						if (nh.isChild()) {
-							currNode.add(node);
+					try {
+						VPTNode node = nh.createNode(attrs, proj);
+						attrs.clear();
+						if (node != null) {
+							if (nh.isChild()) {
+								currNode.add(node);
+							}
+							if (nh.hasChildren()) {
+								currNode = node;
+								openNodes.push(qName);
+							}
 						}
-						if (nh.hasChildren()) {
-							currNode = node;
-							openNodes.push(qName);
-						}
+					} catch (Exception e) {
+						Log.log(Log.WARNING, this, "Error loading project node, error follows.");
+						Log.log(Log.ERROR, this, e);
+					} catch (NoClassDefFoundError ncde) {
+						Log.log(Log.WARNING, this, "Error loading project node, error follows.");
+						Log.log(Log.ERROR, this, ncde);
+					} catch (ExceptionInInitializerError eiie) {
+						Log.log(Log.WARNING, this, "Error loading project node, error follows.");
+						Log.log(Log.ERROR, this, eiie);
 					}
 				}
 			}

@@ -193,17 +193,28 @@ public final class ProjectPlugin extends EBPlugin {
 	private void checkPluginUpdate(PluginUpdate msg) {
 		if (msg.getWhat() == PluginUpdate.LOADED
 				|| msg.getWhat() == PluginUpdate.ACTIVATED) {
-			ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), null);
-			ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
-			ProjectViewer.addToolbarActions(msg.getPluginJAR());
-			VPTContextMenu.registerActions(msg.getPluginJAR());
-			ProjectPersistenceManager.loadNodeHandlers(msg.getPluginJAR());
+			try {
+				ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), null);
+				ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
+				ProjectViewer.addToolbarActions(msg.getPluginJAR());
+				VPTContextMenu.registerActions(msg.getPluginJAR());
+				ProjectPersistenceManager.loadNodeHandlers(msg.getPluginJAR());
 
-			View[] v = jEdit.getViews();
-			for (int i = 0; i < v.length; i++) {
-				if (ProjectViewer.getViewer(v[i]) != null) {
-					ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), v[i]);
+				View[] v = jEdit.getViews();
+				for (int i = 0; i < v.length; i++) {
+					if (ProjectViewer.getViewer(v[i]) != null) {
+						ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), v[i]);
+					}
 				}
+			} catch (Exception e) {
+				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
+				Log.log(Log.ERROR, this, e);
+			} catch (NoClassDefFoundError ncde) {
+				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
+				Log.log(Log.ERROR, this, ncde);
+			} catch (ExceptionInInitializerError eiie) {
+				Log.log(Log.WARNING, this, "Error loading PV extension, error follows.");
+				Log.log(Log.ERROR, this, eiie);
 			}
 		} else {
 			ProjectViewer.removeProjectViewerListeners(msg.getPluginJAR());
