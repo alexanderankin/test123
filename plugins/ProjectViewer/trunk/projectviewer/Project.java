@@ -83,6 +83,17 @@ public final class Project implements EBComponent {
 		return name;
 	}
 
+	/**
+	 * Returns the WebRoot for the project
+	 */
+	public String getURLRoot() {
+		  return urlRoot == null ? "" : urlRoot;  
+	  }
+   
+   	public void setURLRoot(String sWebRoot) {
+		urlRoot = sWebRoot;
+	}
+   
 	/** Returns <code>true</code> if the specified file identifies a file thata is
 	 *  in this project.
 	 *
