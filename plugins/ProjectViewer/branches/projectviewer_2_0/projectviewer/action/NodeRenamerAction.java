@@ -35,6 +35,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -151,6 +152,13 @@ public class NodeRenamerAction extends Action {
 			ProjectViewer.nodeChanged(node);
 		}
 	
+		while (!node.isProject()) {
+			node = (VPTNode) node.getParent();
+		}
+		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+			ProjectManager.getInstance().saveProject((VPTProject)node);
+		}
+
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
