@@ -91,7 +91,7 @@ public class CTAGS_Parser implements Serializable
             {
                 if (CTAGS_BG.DEBUG == true)
                 {
-                    System.out.println("CTAGS: Invalid type of file: "+fn);
+                    //System.out.println("CTAGS: Invalid type of file: "+fn);
                 }
                 return false;
             }
@@ -99,8 +99,6 @@ public class CTAGS_Parser implements Serializable
 
         return true;
     }
-
-
 
     // End of checkUnsupportedExtensions
 
@@ -134,6 +132,13 @@ public class CTAGS_Parser implements Serializable
     {
 
         arguments[6] = fn;
+        
+        // TESTING
+        // for (int p=0 ; p<arguments.length; p++)
+        // {
+            // System.out.println("CTAGS: TESTING - "+arguments[p]);   
+        // }
+        
         Process ctags = Runtime.getRuntime().exec(arguments);
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(ctags.getInputStream()));
