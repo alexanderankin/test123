@@ -44,7 +44,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	public void save()
 	{
 		jEdit.setProperty("error-list.showOnError",showOnError
-			.getModel().isSelected() ? "yes" : "on");
+			.getModel().isSelected() ? "on" : "off");
 		jEdit.setProperty("error-list.warningColor",GUIUtilities
 			.getColorHexString(warningColor.getBackground()));
 		jEdit.setProperty("error-list.errorColor",GUIUtilities
