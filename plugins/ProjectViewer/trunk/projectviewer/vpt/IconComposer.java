@@ -297,7 +297,8 @@ public final class IconComposer {
 					msg_state = IconComposer.MSG_STATE_MESSAGES;
 					ErrorSource.Error[] errors = sources[i].getAllErrors();
 					for(int j=0; j < errors.length; j++) {
-						if(errors[j].getErrorType() == ErrorSource.ERROR) {
+						if(errors[j].getErrorType() == ErrorSource.ERROR
+								&& errors[j].getFilePath().equals(path)) {
 							msg_state = IconComposer.MSG_STATE_ERRORS;
 							break;
 						}
