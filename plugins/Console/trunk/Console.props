@@ -1,13 +1,12 @@
 ### Plugin properties
 
 plugin.ConsolePlugin.name=Console
-plugin.ConsolePlugin.version=2.0.2
+plugin.ConsolePlugin.version=2.1
 plugin.ConsolePlugin.author=Slava Pestov
 plugin.ConsolePlugin.docs=Console.html
 
-plugin.ConsolePlugin.depend.0=jedit 02.03.03.00
-plugin.ConsolePlugin.depend.1=class EditBusPlugin
-plugin.ConsolePlugin.depend.2=class org.gjt.sp.jedit.msg.CreateShell
+plugin.ConsolePlugin.depend.0=jedit 02.03.06.00
+plugin.ConsolePlugin.depend.1=plugin EditBusPlugin 0.9
 
 ### Console component
 
@@ -42,6 +41,19 @@ options.console.plainColor=Plain text:\
 options.console.infoColor=Information messages:\ 
 options.console.warningColor=Warning messages:\ 
 options.console.errorColor=Error messages:\ 
+options.console.errors=Error patterns:
+options.console.errors.edit=Edit
+options.console.errors.add=Add
+options.console.errors.del=Delete
+options.console.errors.up=Move Up
+options.console.errors.down=Move Down
+
+options.console.errors.title=Edit Error Pattern
+options.console.errors.name=Name:\ 
+options.console.errors.match=Regexp:\ 
+options.console.errors.filename=Filename:\ 
+options.console.errors.line=Line number:\ 
+options.console.errors.message=Error message:\ 
 
 ### Console shell
 
