@@ -581,7 +581,7 @@ public final class Project implements EBComponent {
 
 		openFiles.clear();
 		files.clear();
-
+	
 		try {
 			fileProps = ProjectManager.load("projects/project" + key + ".properties");
 		}
@@ -590,7 +590,21 @@ public final class Project implements EBComponent {
 			return;
 		}
 
-		setRoot(new ProjectDirectory(fileProps.getProperty("root")));
+		Log.log( Log.DEBUG, this, "load() chk2" + this.getRoot());
+		/*  Bug fix for issue where 
+		    users are unable to create projects when selector is not
+		    on all projects 
+		*/ 
+		if (this.getRoot() == null) {
+		// MattP should follow this case when loading from an existing project
+			setRoot(new ProjectDirectory(fileProps.getProperty("root")));
+		}
+		else {
+		// MattP since file info does not exist yet for new project. on disk we are getting path via
+		// the state was set by the createproject wrapper
+			setRoot(new ProjectDirectory(this.root.getPath()));
+		}
+		Log.log( Log.DEBUG, this, "load() chk3" + this.getRoot());
 
 		Enumeration pname = fileProps.propertyNames();
 		while(pname.hasMoreElements()) {
