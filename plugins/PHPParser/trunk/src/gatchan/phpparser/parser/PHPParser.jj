@@ -3330,9 +3330,9 @@ Expression PrimaryExpression() :
   [token = <BIT_AND>] expr = refPrimaryExpression(token)
   {return expr;}
 |
-  expr = ArrayDeclarator()
-  {return expr;}
+  expr = ArrayDeclarator()  {return expr;}
 | expr = ListExpression()         {return expr;}
+| expr = IncludeExpression()         {return expr;}
 }
 
 //}}}
@@ -3911,12 +3911,12 @@ Statement StatementNoBreak() :
 | statement = ContinueStatement()       {return statement;}
 | statement = ReturnStatement()         {return statement;}
 | statement = EchoStatement()           {return statement;}
-| [token=<AT>] statement = IncludeStatement()
+/*| [token=<AT>] statement = IncludeStatement()
   {if (token != null) {
     ((InclusionStatement)statement).silent = true;
     statement.sourceStart = token.sourceStart;
   }
-  return statement;}
+  return statement;}*/
 | statement = StaticStatement()         {return statement;}
 | statement = GlobalStatement()         {return statement;}
 | statement = tryStatement()            {return statement;}
@@ -4391,29 +4391,51 @@ HTMLBlock htmlBlock() :
 }
 
 //}}}
-//{{{ IncludeStatement()
+//{{{ IncludeExpression()
 
 /**
  * An include statement. It's "include" an expression;
  */
-InclusionStatement IncludeStatement() :
+InclusionExpression IncludeExpression() :
 {
   Expression expr;
   final int keyword;
-  final InclusionStatement inclusionStatement;
-  final Token token, token2;
-  int pos,line,column;
+  final InclusionExpression inclusionExpression;
+  final Token token;
+  int end,line,column;
 }
 {
-      (  token = <REQUIRE>      {keyword = InclusionStatement.REQUIRE     ;pos=token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
-       | token = <REQUIRE_ONCE> {keyword = InclusionStatement.REQUIRE_ONCE;pos=token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
-       | token = <INCLUDE>      {keyword = InclusionStatement.INCLUDE     ;pos=token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
-       | token = <INCLUDE_ONCE> {keyword = InclusionStatement.INCLUDE_ONCE;pos=token.sourceEnd;line=token.beginLine;column=token.beginColumn;})
+  (
+     token = <REQUIRE>      {keyword = InclusionExpression.REQUIRE     ;end=token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
+   | token = <REQUIRE_ONCE> {keyword = InclusionExpression.REQUIRE_ONCE;end=token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
+   | token = <INCLUDE>      {keyword = InclusionExpression.INCLUDE     ;end=token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
+   | token = <INCLUDE_ONCE> {keyword = InclusionExpression.INCLUDE_ONCE;end=token.sourceEnd;line=token.beginLine;column=token.beginColumn;}
+  )
   try {
-    expr = Expression()
+    (
+       expr = PrimaryExpression()
+     | expr = Literal()
+     | <LPAREN> expr = Expression()
+       try {
+         <RPAREN>
+       } catch (ParseException e) {
+         fireParseError(new PHPParseErrorEvent(ERROR,
+                                               path,
+                                               "')'n expected",
+                                               ")",
+                                               e.currentToken.image,
+                                               expr.sourceEnd,
+                                               expr.sourceEnd+1,
+                                               e.currentToken.beginLine,
+                                               e.currentToken.endLine,
+                                               e.currentToken.endColumn,
+                                               e.currentToken.endColumn+1));
+       }
+    )
+
     {
-      pos = expr.sourceEnd;
-      line = expr.getBeginLine();
+      end    = expr.sourceEnd;
+      line   = expr.getBeginLine();
       column = expr.getBeginColumn();
     }
   } catch (ParseException e) {
@@ -4421,12 +4443,12 @@ InclusionStatement IncludeStatement() :
       throw e;
     }
     expr = new ConstantIdentifier(SYNTAX_ERROR_CHAR,
-                                  pos,
-                                  pos+1,
-                                  line,
-                                  line,
-                                  column,
-                                  column+1);
+                                  token.sourceEnd,
+                                  token.sourceEnd+1,
+                                  token.endLine,
+                                  token.endLine,
+                                  token.endColumn,
+                                  token.endColumn+1);
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "expression expected",
@@ -4439,33 +4461,20 @@ InclusionStatement IncludeStatement() :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
-  try {
-    token2 = <SEMICOLON>
-    {pos=token2.sourceEnd;}
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "';' expected",
-                                          ";",
-                                          e.currentToken.image,
-                                          e.currentToken.next.sourceStart,
-                                          e.currentToken.next.sourceEnd,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
   {
-   inclusionStatement = new InclusionStatement(currentSegment,
-                                               keyword,
-                                               expr,
-                                               token.sourceStart,
-                                               pos);
-   currentSegment.add(inclusionStatement);
-   return inclusionStatement;
+   inclusionExpression = new InclusionExpression(currentSegment,
+                                                 keyword,
+                                                 expr,
+                                                 token.sourceStart,
+                                                 end,
+                                                 token.beginLine,
+                                                 line,
+                                                 token.beginColumn,
+                                                 column);
+   currentSegment.add(inclusionExpression);
+   return inclusionExpression;
   }
 }
-
 //}}}
 //{{{ PrintExpression()
 
@@ -4476,7 +4485,9 @@ PrintExpression PrintExpression() :
 }
 {
   printToken = <PRINT> expr = Expression()
-  {return new PrintExpression(expr,printToken.sourceStart,expr.sourceEnd,printToken.beginLine,expr.getEndLine(),printToken.beginColumn,expr.getEndColumn());}
+  {
+    return new PrintExpression(expr,printToken.sourceStart,expr.sourceEnd,printToken.beginLine,expr.getEndLine(),printToken.beginColumn,expr.getEndColumn());
+  }
 }
 
 //}}}
@@ -4607,7 +4618,7 @@ EchoStatement EchoStatement() :
    expressions.toArray(exprs);
    if (semicolonToken == null) {
      return new EchoStatement(exprs,
-                              echoToken.sourceStart, 
+                              echoToken.sourceStart,
                               exprs[exprs.length-1].sourceEnd,
                               echoToken.beginLine,
                               exprs[exprs.length-1].getEndLine(),
@@ -4871,9 +4882,9 @@ Statement BlockStatement() :
 }
 {
   try {
-    statement = Statement() 
+    statement = Statement()
     {
-      if (phpDocument == currentSegment) pushOnAstNodes(statement); 
+      if (phpDocument == currentSegment) pushOnAstNodes(statement);
       return statement;
     }
   } catch (ParseException e) {
@@ -4914,7 +4925,7 @@ Statement BlockStatement() :
   {
     return statement;
   }
-| statement = MethodDeclaration(CONST_FUNCTION,null) 
+| statement = MethodDeclaration(CONST_FUNCTION,null)
   {
     if (phpDocument == currentSegment) pushOnAstNodes(statement);
     currentSegment.add((MethodDeclaration) statement);
@@ -4929,7 +4940,7 @@ Statement BlockStatement() :
 /**
  * A Block statement that will not contain any 'break'
  */
-Statement BlockStatementNoBreak() :           
+Statement BlockStatementNoBreak() :
 {
   final Statement statement;
 }
@@ -4937,7 +4948,7 @@ Statement BlockStatementNoBreak() :
   statement = StatementNoBreak()  {return statement;}
 | LOOKAHEAD(1)
   statement = ClassDeclaration()  {return statement;}
-| statement = MethodDeclaration(CONST_FUNCTION,null) 
+| statement = MethodDeclaration(CONST_FUNCTION,null)
   {
     currentSegment.add((MethodDeclaration) statement);
     ((MethodDeclaration) statement).analyzeCode(this);
@@ -5334,8 +5345,8 @@ Expression SwitchLabel() :
   }
   try {
     (
-      token = <COLON> 
-    | token = <SEMICOLON> 
+      token = <COLON>
+    | token = <SEMICOLON>
       {
         fireParseMessage(new PHPParseMessageEvent(INFO,
                                                   PHPParseMessageEvent.MESSAGE_CASE_SEMICOLON,
@@ -5348,7 +5359,7 @@ Expression SwitchLabel() :
                                                   token.beginColumn,
                                                   token.endColumn));
       }// todo ugly do a warning ;)
-    ) 
+    )
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -6239,20 +6250,13 @@ ReturnStatement ReturnStatement() :
 {
   Statement expr = null;
   final Token token;
-  Token token2 = null;
+  Token semicolonToken = null;
 }
 {
   token = <RETURN>
-(
-   expr = IncludeStatement()
-  {
-    return new ReturnStatement(expr,token.sourceStart,expr.sourceEnd);
-  }
-|
-
   [ expr = Expression()]
   try {
-    token2 = <SEMICOLON>
+    semicolonToken = <SEMICOLON>
   } catch (ParseException e) {
     final int errorStart, errorEnd;
     if (expr == null) {
@@ -6274,16 +6278,15 @@ ReturnStatement ReturnStatement() :
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
   }
-    {
-      if (token2 == null) {
-        if (expr == null) {
-          return new ReturnStatement(expr,token.sourceStart,token.sourceEnd);
-        }
-        return new ReturnStatement(expr,token.sourceStart,expr.sourceEnd);
+  {
+    if (semicolonToken == null) {
+      if (expr == null) {
+        return new ReturnStatement(expr,token.sourceStart,token.sourceEnd);
       }
-      return new ReturnStatement(expr,token.sourceStart,token2.sourceEnd);
+      return new ReturnStatement(expr,token.sourceStart,expr.sourceEnd);
     }
-    )
+    return new ReturnStatement(expr,token.sourceStart,semicolonToken.sourceEnd);
+  }
 }
 
 //}}}

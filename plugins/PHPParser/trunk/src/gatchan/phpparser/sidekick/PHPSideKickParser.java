@@ -144,7 +144,7 @@ public final class PHPSideKickParser extends SideKickParser {
       asset = new MethodAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
     } else if (astNode instanceof VariableDeclaration) {
       asset = new FieldAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
-    } else if (astNode instanceof InclusionStatement) {
+    } else if (astNode instanceof InclusionExpression) {
       asset = new IncludeAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
     } else {
       asset = new PHPAsset(astNode.toString(), position, buffer.createPosition(astNode.sourceEnd));
