@@ -123,11 +123,13 @@ public class CTAGS_Entry implements Serializable
         return Extension_Fields;
     }
 
-    public String getSignature() {
+    public String getSignature() 
+    {
         return Signature;
     }
 
-    public String getSignatureDescr() {
+    public String getSignatureDescr() 
+    {
         return Signature_Descr;
     }
 }
