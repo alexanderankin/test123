@@ -23,8 +23,6 @@
 package sidekick;
 
 //{{{ Imports
-import javax.swing.text.Position;
-import javax.swing.Icon;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.View;
 //}}}
