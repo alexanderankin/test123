@@ -33,7 +33,7 @@ public class JCompilerClasspathSource extends javacore.AbstractClasspathSource
 	{
 		super(JCompilerPlugin.class);
 	}
-	
+
 	public String getClasspath()
 	{
 		return JCompiler.expandVariables(jEdit.getProperty("jcompiler.classpath"));

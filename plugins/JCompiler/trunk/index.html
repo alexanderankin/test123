@@ -12,14 +12,13 @@
 
 Copyright (c) 1999, 2000 by Kevin A. Burton and Aziz Sharif.<br>
 Modified by Logan Bauer, Mike Hansen, Dirk M&ouml;bius,
-Andreas Sch&ouml;rk and Dominic Stolerman.<p>
+Andreas Sch&ouml;rk, Dominic Stolerman and Doug Breaux.<p>
 
 Current maintainer: Dirk M&ouml;bius
 (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)<p>
 
 <ol>
   <li><a href="#requirements">Requirements</a></li>
-  <li><a href="#installation">Installation</a></li>
   <li><a href="#usage">Usage</a></li>
   <li><a href="#options">Options</a></li>
   <li><a href="#troubleshooting">Troubleshooting</a></li>
@@ -28,33 +27,22 @@ Current maintainer: Dirk M&ouml;bius
 
 
 <a name="requirements"></a>
-<h2>1. Requirements</h2>
+<h2>Requirements</h2>
 
 <ul>
-  <li>jEdit &gt;= 4.0pre1</li>
-  <li>plugin ErrorList &gt;= 1.2</li>
-  <li>plugin Console &gt;= 3.1</li>
+  <li>jEdit &gt;= 4.2pre6</li>
+  <li>plugin ErrorList &gt;= 1.3.1</li>
+  <li>plugin Console &gt;= 3.6</li>
+  <li>plugin JavaCore &gt;= 0.7.1</li>
   <li>a Java Development Kit (JDK), but <b>not</b> a Java Runtime
       Environment (JRE) !</li>
 </ul>
 
 
-<a name="installation"></a>
-<h2>2. Installation</h2>
-
-You should use jEdit's PluginManager to install the JCompiler plugin.
-(Since you're reading this, I assume you have already done this).<p>
-
-<b>Note:</b> The installation of JCompiler also forces you to install the
-ErrorList plugin, which is a good thing. It provides one-click access to
-error positions, and highlightening of compilation errors in the edit pane with
-wavy red lines.<p>
-
-
 <a name="usage"></a>
-<h2>3. Usage</h2>
+<h2>Usage</h2>
 
-<h3>3.1 Menu actions</h3>
+<h3>Menu actions</h3>
 
 JCompiler has 4 menu actions in menu <b>Plugins&gt;JCompiler</b>:
 
@@ -76,16 +64,17 @@ JCompiler has 4 menu actions in menu <b>Plugins&gt;JCompiler</b>:
 
   <li>
     <b>Rebuild Package(s)</b><p>
-    Same as "Build Package(s)", but always compiles every file.<p>
+    Same as "Build Package(s)", but always compiles every file, even those that
+    are not out of date.<p>
   </li>
 
   <li>
     <b>JCompiler options...</b><p>
-    A shortcut to <b>Utilities&gt;Global Options&gt;Plugins&gt;JCompiler.</b>
+    A shortcut to <b>Plugins&gt;Plugin Options&gt;JCompiler.</b>
   </li>
 </ul>
 
-<h3>3.2 Commands</h3>
+<h3>Commands</h3>
 
 The JCompiler shell in the Console plugin understands the following
 commands:
@@ -125,14 +114,14 @@ commands:
 
 
 <a name="options"></a>
-<h2>4. Options</h2>
+<h2>Options</h2>
 
 You may configure some options in
 <b>Utilities&gt;Global&nbsp;Options&gt;Plugin&nbsp;Options&gt;Java&nbsp;Compiler</b>.
 Most of them are self explaining, but some need special explanation:
 
 
-<h3>4.1 General options</h3>
+<h3><i>General options</i></h3>
 
 <ul>
   <li>
@@ -152,7 +141,7 @@ Most of them are self explaining, but some need special explanation:
     decide whether it is a warning message or not. In the <i>ErrorList</i>
     plugin, warning messages are marked with a yellow traffic light instead of
     a red one.<p>
-    The default is: <code>.+(note|warning|caution):.+</code><p>
+    The default is: <code>(.+(note|warning|caution):.+)|(.+deprecated.+)</code><p>
   </li>
 
   <li>
@@ -172,38 +161,50 @@ Most of them are self explaining, but some need special explanation:
     output for these lines. The column position information is used in the
     <i>ErrorList</i> plugin to highlight errors in the source code with
     wavy lines.<p>
-    This option is on per default.<p>
+    This option is enabled by default.<p>
 </ul>
 
 
-<h3>4.2 Compiler options</h3>
+<h3><i>Compiler options</i></h3>
 
+<b>Use Java Compiler</b>
 <ul>
   <li>
-    <b>Use modern compiler (JDK 1.3 or higher)</b><p>
-    If checked, the new compiler shipped with JDK 1.3 is used. Otherwise, the
-    old compiler is used. See <a href="#compiler">below</a> for an
-    explanation.<p>
+    <b>Modern (JDK 1.3 or higher)</b><br>
+    If checked, JCompiler uses the new compiler which is shipped since JDK 1.3.
+    This is the default. The modern compiler is the same as the one that gets
+    used when you invoke <code>javac</code> on the command line. It supports
+    the <code>assert</code> keyword and, since JDK 1.5, generics and enums.
+    It is much faster than the old compiler.<br>
+    Note that JCompiler does <i>not</i> spawn a new process for the compiler,
+    but instead uses the same virtual machine in which jEdit runs. Therefore,
+    using this compiler is the fastest way to compile Java source code.
   </li>
-
   <li>
-    <b>Required library path</b><p>
-    One or more directories that will be scanned for JAR/ZIP libraries.
-    All found libraries will be added automatically to the classpath.<p>
-
-    If you specify more than one directory, separated them by the Java path
-    separator, like in $CLASSPATH. Examples:<p>
-
-    Unix: "<tt>/usr/local/java/lib:/usr/share/java/lib</tt>" or <br>
-    Windows: "<tt>C:\Software\Java\libs;C:\Java\Programming\libraries</tt>"<p>
+    <b>Old (pre 1.3 JDK)</b><br>
+    This is the old javac compiler implementation, that has been used in
+    JDK 1.2 and earlier versions. It is still included in newer JDK's (even
+    JDK 1.5) for backwards compatibility. Use this compiler if you want to
+    compile legacy code.
   </li>
-
   <li>
-    <b>Source path</b><p>
-    This sets the "-sourcepath" option for the compiler. Available only on JDK
-    versions 1.2 or higher.<p>
+    <b>External</b><br>
+    You may use any other external Java compiler here, e.g. <code>javac</code>
+    or <code>jikes</code> or <code>kjc</code>. Note that you'll probably have
+    to modify the regular expressions for compiler error messages on the
+    <i>General options</i> tab.<br>
+    JCompiler spawns a new process for each invocation of the external
+    compiler binary.
   </li>
+</ul>
+<p>
 
+<b>Path Options</b><p>
+
+<u>Note:</u> in all path fields below you may use the character '~' as an
+abbreviation for your home directory.<br>
+
+<ul>
   <li>
     <b>$basepath</b><p>
     Set the <tt>$basepath</tt> variable to the base directory of your project.
@@ -222,44 +223,62 @@ Most of them are self explaining, but some need special explanation:
     e.g. </em>project files<em>. Someday the ProjectManager plugin will be
     ready to do this. Have patience and faith, please.</em> {:-} <p>
   </li>
+
+  <li>
+    <b>Required library path</b><p>
+    One or more directories that will be scanned for JAR/ZIP libraries.
+    All found libraries will be added automatically to the classpath.<p>
+
+    If you specify more than one directory, separated them by the Java path
+    separator, like in $CLASSPATH. Examples:<p>
+
+    Unix: "<tt>/usr/local/java/lib:/usr/share/java/lib</tt>" or <br>
+    Windows: "<tt>C:\Software\Java\libs;C:\Java\Programming\libraries</tt>"<p>
+  </li>
+
+  <li>
+    <b>Source path</b><p>
+    This sets the "-sourcepath" option for the compiler.<p>
+  </li>
 </ul>
 
 
 <a name="troubleshooting"></a>
-<h2>5. Troubleshooting</h2>
+<h2>Troubleshooting</h2>
 
 <h3>Upon startup, I get an error saying that <tt>tools.jar</tt> cannot be
 found!</h3>
-
-This error should occur only on JDK 1.2 or higher.<p>
 
 <tt>tools.jar</tt> is a Java system library, provided by Sun,
 that contains the Java compiler, among other things. It is usually installed in
 <tt><i>jdkhome</i>/lib/</tt>, where <tt><i>jdkhome</i></tt> denotes the
 JDK installation directory.<p>
 
-JCompiler searched for this library, but couldn't find it. Please search for
-this library manually, and configure your JDK to find the library. You must
-do this, <i>before</i> jEdit is started.
+JCompiler searched for this library, but couldn't find it. This usually happens
+if jEdit has been started with a Java Runtime Environment (JRE), and not with a
+Java Development Kit (JDK). If jEdit is started with a JDK, then <tt>tools.jar</tt>
+is usually found.<p>
 
-The easiest way to do this is to copy <tt>tools.jar</tt> to the right place.
-That is, copy <tt>tools.jar</tt> to:
-
-<blockquote>
-    <tt><i>jdkhome</i>/jre/lib/ext/</tt>
-</blockquote><p>
-
-That way, the JDK will find the library automatically, and you don't have to
-configure anything else.
-
-If, for any reason, you cannot copy the library (maybe because you don't have
-write access to the JDK installation directory), you have a lot of
-alternatives:
-
+There are several ways to ensure that <tt>tools.jar</tt> can be found by JCompiler:
 <ul>
   <li>
-    <b>Copy <code>tools.jar</code> to <i>home</i>/.jedit/jars/,</b><br>
-    where <i>home</i> denotes your user home. The following table shows
+    Start jEdit with a JDK, not a JRE.<br>
+    On Windows you'll probably have to edit the shortcut or the batch file that
+    starts jEdit.
+  </li>
+  <li>
+    Find <tt>tools.jar</tt> and copy it to the right place.<br>
+    That is, copy <tt>tools.jar</tt> to:
+    <blockquote>
+      <tt><i>jdkhome</i>/jre/lib/ext/</tt>
+    </blockquote><p>
+    That way, the JDK will find the library automatically, and you don't have to
+    configure anything else.
+
+    If, for any reason, you cannot copy the library to this directory (maybe
+    because you don't have write access to the JDK installation directory), you
+    can also copy <tt>tools.jar</tt> to <tt><i>home</i>/.jedit/jars/</tt>,
+    where <tt><i>home</i></tt> denotes your user home. The following table shows
     the location of your user home:<p>
 
     <table border="1">
@@ -273,7 +292,15 @@ alternatives:
       </tr>
       <tr>
         <td>Windows NT</td>
-        <td>C:\WINNT\profiles\<i>&lt;username&gt;</i>\</td>
+        <td>C:\WINNT\profiles\<i>&lt;username&gt;</i>\<br>
+        Note: this is the default value, but the administrator could
+        configure it otherwise.</td>
+      </tr>
+      <tr>
+        <td>Windows 2000, XP</td>
+        <td>C:\Documents and Settings\<i>&lt;username&gt;</i>\<br>
+        Note: this is the default value, but the administrator could
+        configure it otherwise.</td>
       </tr>
       <tr>
         <td>Unix</td>
@@ -284,15 +311,9 @@ alternatives:
         <td>??? (please tell me)</td>
       </tr>
     </table><br>
-
-    Using this alternative has the same effect as copying to
-    <i>jdkhome</i>/jre/lib/ext/, but you run into difficulties, if you
-    switch back to JDK 1.1 later on.<p>
   </li>
-
   <li>
-    <b>Change the CLASSPATH that is used when jEdit is started.</b><p>
-
+    <b>Change the CLASSPATH that is used when jEdit is started.</b><br>
     <table border="1">
       <tr bgcolor="#E0E0E0">
         <td>Operating system</td>
@@ -304,7 +325,7 @@ alternatives:
       </tr>
       <tr>
         <td>Unix</td>
-        <td><code>-classpath "$CLASSPATH:<br><u><i>jdkhome</i>/lib/tools.jar:</u>/usr/local/jEdit/3.0/jedit.jar"</code></td>
+        <td><code>-classpath "$CLASSPATH:<br><u><i>jdkhome</i>/lib/tools.jar:</u>/usr/local/share/jEdit/4.2/jedit.jar"</code></td>
       </tr>
     </table><br>
   </li>
@@ -312,9 +333,9 @@ alternatives:
 
 
 <a name="compiler"></a>
-<h2>6. Compiler Versions</h2>
+<h2>Compiler Versions</h2>
 
-<h3>6.1 The modern compiler</h3>
+<h3>The modern compiler</h3>
 
 Starting with version 1.3, Sun shipped a new compiler with the JDK. From the
 Sun documentation:
@@ -325,7 +346,7 @@ of the Java 2 SDK. The compiler implementation from previous releases of the
 SDK is still available as <b>oldjavac</b>. The new javac is faster than the
 old javac.<p>
 
-The nonstandard options, those prefixed with '-X', are no longer supported.
+The nonstandard options, those prefixed with '-X', have been changed.
 In particular, the <code>-Xdepend</code> option is no longer available.<p>
 
 When searching the classpath or sourcepath, the new compiler does not follow
@@ -346,15 +367,37 @@ behavior in the future. The new compiler is substantially faster overall,
 however, which should tend to offset this somewhat.
 </em></blockquote><p>
 
-If you have JDK 1.3 or higher, you can enable the modern compiler with the
-option <b>Use modern compiler</b> on the <b>Compiler options</b> dialog.
-
-<h3>6.2 Internals</h3>
+<h3>Internals</h3>
 
 In case you're interested: the following classes get used when invoking the
 compiler:
 
-<h4>6.2.1 Classic compiler</h4>
+<h4>Modern compiler</h4>
+
+<font size="-1">
+&nbsp;&nbsp;&nbsp;&nbsp;<b>package</b> com.sun.tools.javac;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>class</b> <u>Main</u><br>
+&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Create a new compiler instance.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compiler output and errors go to <code>System.out</code> and <code>System.err</code>.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <u>Main</u>();<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compile files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>arguments</code> the command line options and files.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@return</b> the exit status of the compile run: 0 for EXIT_OK,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;1 for EXIT_ERROR, 2 for EXIT_CMDERR, 3 for EXIT_SYSERR,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;4 for EXIT_ABNORMAL.<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>int</b> <u>compile</u>(String[] arguments);<br>
+&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+</font>
+<br>
+
+<h4>Old compiler</h4>
 
 <font size="-1">
 &nbsp;&nbsp;&nbsp;&nbsp;<b>package</b> sun.tools.javac;<br>
@@ -385,30 +428,6 @@ compiler:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>int</b> <u>getExitStatus</u>();<br>
 &nbsp;&nbsp;&nbsp;&nbsp;}<br>
 </font>
-
-<h4>6.2.2 Modern compiler</h4>
-
-<font size="-1">
-&nbsp;&nbsp;&nbsp;&nbsp;<b>package</b> com.sun.tools.javac;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>class</b> <u>Main</u><br>
-&nbsp;&nbsp;&nbsp;&nbsp;{<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Create a new compiler instance.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compiler output and errors go to <code>System.out</code> and <code>System.err</code>.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <u>Main</u>();<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<em>/**<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* Compile files.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@param</b> <code>arguments</code> the command line options and files.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* <b>@return</b> the exit status of the compile run: 0 for EXIT_OK,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;1 for EXIT_ERROR, 2 for EXIT_CMDERR, 3 for EXIT_SYSERR,<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;* &nbsp;&nbsp;4 for EXIT_ABNORMAL.<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;*/<br></em>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>public</b> <b>int</b> <u>compile</u>(String[] arguments);<br>
-&nbsp;&nbsp;&nbsp;&nbsp;}<br>
-</font>
 <br>
 
 
@@ -422,3 +441,4 @@ The current maintainer of the JCompiler plugin is Dirk M&ouml;bius
 
 </body>
 </html>
+

@@ -40,7 +40,8 @@ public class JCompilerOptionDialog extends EnhancedDialog
 	implements ActionListener
 {
 
-	public JCompilerOptionDialog(View view) {
+	public JCompilerOptionDialog(View view)
+	{
 		super(view, jEdit.getProperty("options.jcompiler.label"), true);
 
 		view.showWaitCursor();
@@ -90,22 +91,26 @@ public class JCompilerOptionDialog extends EnhancedDialog
 		view.hideWaitCursor();
 		pack();
 		setLocationRelativeTo(view);
-		show();
+		setVisible(true);
 	}
 
 
-	// EnhancedDialog implementation
-	public void ok() {
+	//{{{ EnhancedDialog implementation
+	public void ok()
+	{
 		ok(true);
 	}
 
-	public void cancel() {
+
+	public void cancel()
+	{
 		dispose();
 	}
-	// end EnhancedDialog implementation
+	//}}} end EnhancedDialog implementation
 
 
-	public void ok(boolean dispose) {
+	public void ok(boolean dispose)
+	{
 		paneGeneral.save();
 		paneCompiler.save();
 
@@ -118,7 +123,8 @@ public class JCompilerOptionDialog extends EnhancedDialog
 	}
 
 
-	public void actionPerformed(ActionEvent evt){
+	public void actionPerformed(ActionEvent evt)
+	{
 		Object source = evt.getSource();
 
 		if (source == ok)
@@ -135,5 +141,5 @@ public class JCompilerOptionDialog extends EnhancedDialog
 	private JButton apply;
 	private AbstractOptionPane paneGeneral;
 	private AbstractOptionPane paneCompiler;
-
 }
+

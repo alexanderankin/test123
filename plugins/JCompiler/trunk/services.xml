@@ -6,7 +6,7 @@
 	<SERVICE CLASS="console.Shell" NAME="JCompiler">
 		new jcompiler.JCompilerShell();
 	</SERVICE>
-  <SERVICE CLASS="javacore.ClasspathSource" NAME="JCompiler">
-    new jcompiler.JCompilerClasspathSource();
-  </SERVICE>
+	<SERVICE CLASS="javacore.ClasspathSource" NAME="JCompiler">
+		new jcompiler.JCompilerClasspathSource();
+	</SERVICE>
 </SERVICES>
