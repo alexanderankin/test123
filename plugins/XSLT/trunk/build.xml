@@ -1,6 +1,6 @@
 <project name="XSLT" default="dist" basedir=".">
 
-  <property name="jedit.dir" value="c:/Program Files/jEdit"/>
+  <property name="jedit.dir" value="c:/jEdit"/>
   <property name="docbook.dir" value="c:/docbook-xsl-1.49"/>
 
   <target name="compile">
@@ -35,7 +35,7 @@
     <jar jarfile="build/XSLT.jar">
       <fileset dir="build/classes"/>
       <fileset dir="build" includes="users-guide.html"/>
-      <fileset dir="." includes="dockables.xml,*.props"/>
+      <fileset dir="." includes="actions.xml,dockables.xml,*.props"/>
     </jar>
   </target>
 
