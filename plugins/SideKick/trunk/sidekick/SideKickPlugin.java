@@ -134,6 +134,10 @@ public class SideKickPlugin extends EBPlugin
 		{
 			worker = new WorkThreadPool("SideKick",1);
 			worker.start();
+			for(int i = 0; i < worker.getThreadCount(); i++)
+			{
+				worker.getThread(i).setPriority(Thread.MIN_PRIORITY);
+			}
 		}
 		worker.addWorkRequest(run,inAWT);
 	} //}}}
