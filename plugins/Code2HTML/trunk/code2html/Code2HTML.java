@@ -38,6 +38,9 @@ import org.gjt.sp.jedit.textarea.Selection;
 
 import org.gjt.sp.util.Log;
 
+import code2html.line.LineTabExpander;
+import code2html.line.LineWrapper;
+
 
 public class Code2HTML
 {
