@@ -1,4 +1,7 @@
 /*
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -16,12 +19,16 @@
 
 package javainsight;
 
+
 import buildtools.java.packagebrowser.PackageBrowser;
 
-/**
-Parse out the Project Resources if they haven't already been done.
 
-*/
+/**
+ * Parse out the Project Resources if they haven't already been done.
+ *
+ * @author Kevin A. Burton
+ * @version $Id$
+ */
 public class ThreadedParser extends Thread {
 
     public ThreadedParser() {
@@ -32,4 +39,5 @@ public class ThreadedParser extends Thread {
     public void run() {
         PackageBrowser.parse();
     }
+
 }

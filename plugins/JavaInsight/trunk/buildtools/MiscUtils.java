@@ -1,4 +1,7 @@
 /*
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -14,65 +17,64 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
- 
-package buildtools; 
+package buildtools;
+
 
 import java.io.File;
+import org.gjt.sp.jedit.MiscUtilities;
 
+
+/**
+ * Miscelleanous utilities.
+ *
+  * @author Kevin A. Burton
+  * @version $Id$
+  */
 public class MiscUtils {
 
     /**
-    Given a string... replaces all occurences of "find" with "replacement" in "original"
+     * A cross platform (JDK and OS) way to determine the temp directory.
+     *
+     * <code>java.io.tmpdir</code> is only available on JDK 1.2 and there
+     * is no real easy way to figure this out under JDK 1.1.8
+     */
+    public static String getTempDir() {
+        String os_name = System.getProperty("os.name");
 
-    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-    @version $Id$
-    */
-    public static String globalStringReplace(String original, String find, String replacement) {
+        // check for Windows 95, 98, ME, NT:
+        if (os_name.toLowerCase().indexOf("windows") >= 0) {
+            if (new File("C:\\WINNT\\TEMP").exists())
+                return "C:\\WINNT\\TEMP";
+            if (new File("C:\\WINDOWS\\TEMP").exists())
+                return "C:\\WINDOWS\\TEMP";
+            if (new File("C:\\TEMP").exists())
+                return "C:\\TEMP";
+        }
 
-        StringUtil buffer = new StringUtil( original );
-        
-        
-        int space_location = buffer.toString().indexOf(find);
+        // check for Unix:
+        if (File.separatorChar == '/') {
+            // maybe we're unix
+            if (new File("/tmp").exists())
+                return "/tmp";
+        }
 
-        while(space_location != -1) {
-
-            int start = space_location;
-            int end = space_location + find.length();
-
-            buffer.replace(start, end, replacement);
-
-            //this speed could be improved by starting off where the last string was found...
-            //this is why it starts off from space_location.. the length of the string you are finding.. plus 1 
-
-            //space_location = buffer.toString().indexOf(find, space_location + find.length() + 1);
-            space_location = buffer.toString().indexOf(find, space_location + find.length() + 1);
-      }
-
-      return buffer.toString();
-
+        // I give up. Return a temp folder in the user's home:
+        String user_home = System.getProperty("user.home");
+        return MiscUtilities.constructPath(user_home, "tmp");
     }
 
-    
+
     /**
-    A cross platform (JDK and OS) way to determine the temp directory.  
-    java.io.tmpdir is only available on JDK 1.2 and there is no real easy way to
-    figure this out under JDK 1.1.8
-    
-    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-    @version $Id$
-    */
-    public static String getTempDir() {
-        
-        String separator = System.getProperty("file.separator");
-        
-        if ( separator.equals("/") && new File("/tmp").exists() ) {
-            return "/tmp";
-        } else if ( separator.equals("\\") && new File("c:\\temp").exists() ) {
-            return "c:\\temp";
-        } else {
-            return "/tmp";
-        }
-        
+     * Get a temp dir for a certain product.
+     *
+     * <B>Implementation note:</B> This implementation just returns
+     * concats the system temp dir with the product string, resulting in
+     * a new subdirectory.
+     *
+     * @author Dirk Moebius
+     */
+    public static String getTempDir(String product) {
+        return MiscUtilities.constructPath(getTempDir(), product);
     }
 
 }

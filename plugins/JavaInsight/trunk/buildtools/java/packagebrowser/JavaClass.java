@@ -1,4 +1,7 @@
 /*
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,63 +20,82 @@
 package buildtools.java.packagebrowser;
 
 
+/**
+ * A class representing a Java class.
+ *
+ * @author Kevin A. Burton
+ * @version $Id$
+ */
 public class JavaClass {
-    
+
     public static final String PACKAGE_SEPARATOR = ".";
 
-    private String  name;
-    private String  source;
-    
+    private String name;
+    private String source;
+
 
     /**
      * Creates a JavaClass
      *
-     * @param name The name of this package/class fully qualified
-     * @param source The source where this package/class can be found.  This 
-     *               should be either a directory or a .jar file.
-     * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     * @version $Id$
+     * @param name  The name of this class fully qualified
+     * @param source  The source where this class can be found.
+     *                This should be either a directory or a .jar file.
      */
     public JavaClass(String name, String source) {
-
         this.name = name;
         this.source = source;
     }
-    
+
+
     /**
-     * Returns the fully-qualified name of the class
-     * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     * @version $Id$
+     * Returns the fully-qualified name of the class.
      */
     public String getName() {
-        return this.name;
+        return name;
     }
+
 
     public String getClassName() {
-
-        int start = this.name.lastIndexOf( PACKAGE_SEPARATOR );
-        int end = this.name.length();
-
+        int start = name.lastIndexOf(PACKAGE_SEPARATOR);
+        int end = name.length();
         if (start == -1) {
-            return this.name;
+            return name;
         } else {
-            return this.name.substring(start + 1, end);
+            return name.substring(start + 1, end);
         }
-
     }
-    
+
+
     /**
-     * Returns the source of this class
-     * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
-     * @version $Id$
+     * Returns the source of this class.
      */
     public String getSource() {
-        return this.source;
+        return source;
     }
 
+
     public String toString() {
-        return this.getClassName();
+        return getClassName();
     }
-    
+
+
+    /**
+     * Returns <code>true</code> if this class equals the other class.
+     * Two classes are considered equal if their name and source are equal.
+     *
+     * @author Dirk Moebius
+     */
+    public boolean equals(Object other) {
+        if (other == null)
+            return false;
+        if (other == this)
+            return true;
+        if (other instanceof JavaClass) {
+            JavaClass otherClass = (JavaClass) other;
+            return name.equals(otherClass.name) && source.equals(otherClass.source);
+        }
+        return false;
+    }
+
 }
 

@@ -2,6 +2,9 @@
  * JavaInsightDockable.java
  * Copyright (c) 2000 Andre Kaplan
  *
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,22 +20,22 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-
 package javainsight;
 
-import java.awt.Component;
 
+import java.awt.Component;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.DockableWindow;
 
 
 /**
- * Dockable JavaInsight panel
+ * Dockable JavaInsight panel.
+ *
  * @author Andre Kaplan
  * @version $Id$
-**/
-public class JavaInsightDockable implements DockableWindow
-{
+ */
+public class JavaInsightDockable implements DockableWindow {
+
     private JavaInsight javaInsight = null;
 
 
@@ -49,5 +52,6 @@ public class JavaInsightDockable implements DockableWindow
     public Component getComponent() {
         return this.javaInsight;
     }
+
 }
 

@@ -1,0 +1,23 @@
+TODO
+
+
+- Set the name of any new decompile buffer to the name of the decompiled
+  class (can't do this withou jEdit API change).
+
+- Ability to use reflection and see the methods within a class... then you
+  can expand this class.
+  Use the JBrowse code to render the class nodes.
+
+- Ability to view by individual package hierarchy org,net etc.
+
+- add support for showing the user where a specific class was loaded from.
+
+- ability to cache all documents. When the user reparses the classpath
+  then all .class files should be re-generated
+
+- ability to change the classpath, and reparse it and all its jars.
+  This can be done easily by just adding support within PackageBrowser
+  and also adding a button to JavaInsight's JPanel.
+
+- ability to view by classname
+
