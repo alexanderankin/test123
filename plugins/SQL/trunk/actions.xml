@@ -12,11 +12,11 @@
   <ACTION NAME="sql.resultSet">
     <CODE>
       view.getDockableWindowManager()
-        .toggleDockableWindow("sql.resultSet");
+          .toggleDockableWindow("sql.resultSet");
     </CODE>
     <IS_SELECTED>
       return view.getDockableWindowManager()
-        .isDockableWindowVisible("sql.resultSet");
+                 .isDockableWindowVisible("sql.resultSet");
     </IS_SELECTED>
   </ACTION>
   <ACTION NAME="sql.publishBuffer">

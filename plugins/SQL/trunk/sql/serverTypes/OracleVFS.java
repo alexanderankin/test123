@@ -152,7 +152,7 @@ public class OracleVFS extends SqlSubVFS
       Component comp, int level )
        throws IOException
   {
-    return new VFS.DirectoryEntry( path, path, path,
+    return new VFS.DirectoryEntry( getSqlVFS().getFileName( path ), path, path,
         level == OBJECT_LEVEL ?
         VFS.DirectoryEntry.FILE :
         VFS.DirectoryEntry.DIRECTORY,

@@ -2,7 +2,7 @@
 
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 
-<!-- QuickNotepad dockable window -->
+<!-- SQL Result set dockable window -->
 
 <DOCKABLES>
   <DOCKABLE NAME="sql.resultSet">

@@ -213,7 +213,7 @@ public class SqlVFS extends VFS
       return null;
 
     if ( level <= DB_LEVEL )
-      return new VFS.DirectoryEntry( path, path, path,
+      return new VFS.DirectoryEntry( getFileName( path ), path, path,
           VFS.DirectoryEntry.FILESYSTEM, 0L, false );
 
     final SqlServerRecord rec = getServerRecord( path );
