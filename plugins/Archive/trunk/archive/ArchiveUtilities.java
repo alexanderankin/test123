@@ -1,5 +1,8 @@
 /*
  * ArchiveUtilities.java
+ *
+ * :tabSize=4:indentSize=4:noTabs=true:
+ *
  * Copyright (c) 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -41,7 +44,8 @@ public class ArchiveUtilities {
         // have a GZIP or ZIP archive. If so, we will wrap the input stream...
 
         int pushbackLen = 2;
-        PushbackInputStream pushback = new PushbackInputStream(source, pushbackLen);
+        PushbackInputStream pushback = new PushbackInputStream(
+            source, pushbackLen);
         byte[] magic = new byte[pushbackLen];
         int numRead = pushback.read(magic);
 
@@ -81,27 +85,6 @@ public class ArchiveUtilities {
     public static InputStream openArchiveStream(InputStream source)
             throws IOException
     {
-        return ArchiveUtilities.openArchiveStream(source, true, true);
-    }
-
-
-    public static InputStream openTarStream(InputStream source)
-            throws IOException
-    {
-        return ArchiveUtilities.openArchiveStream(source, true, false);
-    }
-
-
-    public static InputStream openZipStream(InputStream source)
-            throws IOException
-    {
-        return ArchiveUtilities.openArchiveStream(source, false, true);
-    }
-
-
-    private static InputStream openArchiveStream(InputStream source,
-             boolean tar, boolean zip) throws IOException
-    {
         // From /etc/magic:
 
         // # ZIP archives (Greg Roelofs, c/o zip-bugs@wkuvx1.wku.edu)
@@ -116,9 +99,9 @@ public class ArchiveUtilities {
         // 257  string      ustar\040\040\0 GNU tar archive
 
         // We need the first 4 bytes to determine if we have a zip stream
-        int zipMagicLen = ((zip) ? 4 : 0);
+        int zipMagicLen = 4;
         // We need the first 257 + 8 bytes to determine if we have a tar stream
-        int tarMagicLen = ((tar) ? 257 + 8 : 0);
+        int tarMagicLen = 257 + 8;
         // PushbackInputStream length
         int pushbackLen = Math.max(zipMagicLen, tarMagicLen);
 
@@ -141,47 +124,43 @@ public class ArchiveUtilities {
             }
         }
 
-        if (zip) {
-            // Guess whether source is a zip stream
-            if (numRead < zipMagicLen) {
-                return dest;
-            }
-
-            if (    (magic[0] == (byte) 'P')
-                 && (magic[1] == (byte) 'K')
-                 && (magic[2] == (byte) 0x03)
-                 && (magic[3] == (byte) 0x04)
-            ) {
-                dest = new ZipInputStream(dest);
-                return dest;
-            } else {}
+        // Guess whether source is a zip stream
+        if (numRead < zipMagicLen) {
+            return dest;
         }
 
-        if (tar) {
-            // Guess whether source is a tar stream
-            if (numRead < tarMagicLen) {
+        if (    (magic[0] == (byte) 'P')
+             && (magic[1] == (byte) 'K')
+             && (magic[2] == (byte) 0x03)
+             && (magic[3] == (byte) 0x04)
+        ) {
+            dest = new ZipInputStream(dest);
+            return dest;
+        }
+
+        // Guess whether source is a tar stream
+        if (numRead < tarMagicLen) {
+            return dest;
+        }
+
+        int off = 257;
+        if (    (magic[off    ] == (byte) 'u')
+             && (magic[off + 1] == (byte) 's')
+             && (magic[off + 2] == (byte) 't')
+             && (magic[off + 3] == (byte) 'a')
+             && (magic[off + 4] == (byte) 'r')
+        ) {
+            // Looks good until here...
+            if (magic[off + 5] == (byte) '\0') {
+                dest = new TarInputStream(dest);
+                return dest;
+            } else if (    (magic[off + 5] == (byte) '\040')
+                        && (magic[off + 6] == (byte) '\040')
+                        && (magic[off + 7] == (byte) '\0')
+            ) {
+                dest = new TarInputStream(dest);
                 return dest;
             }
-
-            int off = 257;
-            if (    (magic[off    ] == (byte) 'u')
-                 && (magic[off + 1] == (byte) 's')
-                 && (magic[off + 2] == (byte) 't')
-                 && (magic[off + 3] == (byte) 'a')
-                 && (magic[off + 4] == (byte) 'r')
-            ) {
-                // Looks good until here...
-                if (magic[off + 5] == (byte) '\0') {
-                    dest = new TarInputStream(dest);
-                    return dest;
-                } else if (    (magic[off + 5] == (byte) '\040')
-                            && (magic[off + 6] == (byte) '\040')
-                            && (magic[off + 7] == (byte) '\0')
-                ) {
-                    dest = new TarInputStream(dest);
-                    return dest;
-                } else {}
-            } else {}
         }
 
         return dest;

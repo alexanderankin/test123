@@ -13,7 +13,7 @@
                 xmlns="http://www.w3.org/TR/xhtml1/transitional"
                 exclude-result-prefixes="#default">
 
-<xsl:import href="/usr/share/xsl/docbook-xsl-1.49/html/docbook.xsl"/>
+<xsl:import href="docbook-wrapper.xsl"/>
 
 <!-- Swing HTML control doesn't support &ldquo; and &rdquo; -->
 <xsl:template match="quote">&quot;<xsl:apply-templates/>&quot;</xsl:template>
@@ -48,5 +48,14 @@
 
 <xsl:variable name="funcsynopsis.style">ansi</xsl:variable>
 <xsl:template match="void"><xsl:apply-templates/></xsl:template>
+
+<xsl:param name="chunk.first.sections">1</xsl:param>
+
+<xsl:template match="*" mode="object.title.markup.textonly">
+  <xsl:variable name="title">
+    <xsl:apply-templates select="." mode="title.markup"/>
+  </xsl:variable>
+  <xsl:value-of select="$title"/>
+</xsl:template>
 
 </xsl:stylesheet>

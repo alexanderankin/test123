@@ -1,6 +1,10 @@
 /*
  * ArchivePlugin.java
+ *
+ * :tabSize=4:indentSize=4:noTabs=true:
+ *
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
+ * Portions copyright (C) 2004 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,39 +24,57 @@
 
 package archive;
 
-import java.util.Vector;
-
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.EditorExiting;
+import java.io.File;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.VFSUpdate;
 import org.gjt.sp.util.Log;
 
-
 public class ArchivePlugin extends EBPlugin
 {
+    private static Object tempLock = new Object();
+    private static String tempDirectory;
+    private static int tmpFileCount;
+
+    /**
+     * This is not really safe!
+     * Check for null return value.
+     */
+    public static String tempFileName() {
+        synchronized(tempLock) {
+            if(tempDirectory == null)
+                return null;
+            else {
+                tmpFileCount++;
+                long time = System.currentTimeMillis();
+                return MiscUtilities.constructPath(tempDirectory,
+                    "cache-" + tmpFileCount + "-" + time + ".tmp");
+            }
+        }
+    }
+
     public void start() {
-        VFSManager.registerVFS(ArchiveVFS.PROTOCOL, new ArchiveVFS());
-        VFSManager.registerVFS(TarVFS.PROTOCOL,     new TarVFS());
-        VFSManager.registerVFS(ZipVFS.PROTOCOL,     new ZipVFS());
+        String settingsDirectory = jEdit.getSettingsDirectory();
+        if(settingsDirectory == null)
+        {
+            Log.log(Log.WARNING,ArchiveDirectoryCache.class,"-nosettings "
+                + "command line switch specified; archive directories");
+            Log.log(Log.WARNING,ArchiveDirectoryCache.class,"will not be cached.");
+        }
+        else
+        {
+            tempDirectory = MiscUtilities.constructPath(settingsDirectory,
+                "archive");
+            new File(tempDirectory).mkdirs();
+        }
     }
 
-
-    public void stop() {}
-
-
-    public void createMenuItems(Vector menuItems) {
-        menuItems.addElement(GUIUtilities.loadMenu("archive-menu"));
-    }
-
+    public void stop() {
+		// Clear cached directory listings
+		ArchiveDirectoryCache.clearAllCachedDirectories();
+	}
 
     public void handleMessage(EBMessage msg) {
-        if (msg instanceof EditorExiting) {
-            // Clear cached directory listings
-            ArchiveDirectoryCache.clearAllCachedDirectories();
-        } else if (msg instanceof VFSUpdate) {
+        if (msg instanceof VFSUpdate) {
             VFSUpdate vmsg = (VFSUpdate) msg;
             ArchiveDirectoryCache.clearCachedDirectory(vmsg.getPath());
         }
