@@ -30,7 +30,7 @@ import org.gjt.sp.util.Log;
 
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.config.ProjectViewerOptionsPane;
-import projectviewer.config.ProjectAppConfig;
+import projectviewer.config.ProjectAppConfigPane;
 
 /**
  * A Project Viewer plugin for jEdit.
@@ -153,7 +153,7 @@ public final class ProjectPlugin extends EBPlugin {
     public void createOptionPanes(OptionsDialog optionsDialog) {
    OptionGroup optionGroup = new OptionGroup(NAME);
    optionGroup.addOptionPane(new ProjectViewerOptionsPane("ProjectViewer"));
-   optionGroup.addOptionPane(new ProjectAppConfig("projectviewer.appconfig"));
+   optionGroup.addOptionPane(new ProjectAppConfigPane("projectviewer.appconfig"));
    optionsDialog.addOptionGroup(optionGroup);
         //optionsDialog.addOptionPane();
     }
