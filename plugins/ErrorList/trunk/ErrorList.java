@@ -25,10 +25,11 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.DockableWindow;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 
-public class ErrorList extends JFrame implements EBComponent
+public class ErrorList extends JPanel implements EBComponent, DockableWindow
 {
 	public static final ImageIcon ERROR_ICON = new ImageIcon(
 		ErrorList.class.getResource("TrafficRed.gif"));
@@ -37,40 +38,41 @@ public class ErrorList extends JFrame implements EBComponent
 
 	public ErrorList(View view)
 	{
-		super(jEdit.getProperty("error-list.title"));
-
 		this.view = view;
 
-		getContentPane().add(BorderLayout.NORTH,status = new JLabel());
-		getContentPane().add(BorderLayout.CENTER,createListScroller());
+		setLayout(new BorderLayout());
+		add(BorderLayout.NORTH,status = new JLabel());
+		add(BorderLayout.CENTER,createListScroller());
 		updateStatus();
+	}
 
+	public void addNotify()
+	{
+		super.addNotify();
 		EditBus.addToBus(this);
+	}
 
-		setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-		addWindowListener(new WindowHandler());
-
-		setIconImage(GUIUtilities.getPluginIcon());
-
-		pack();
-		GUIUtilities.loadGeometry(this,"error-list");
-		show();
+	public void removeNotify()
+	{
+		super.removeNotify();
+		EditBus.removeFromBus(this);
 	}
 
 	public void handleMessage(EBMessage message)
 	{
 		if(message instanceof ErrorSourceUpdate)
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
-		else if(message instanceof ViewUpdate)
-			handleViewMessage((ViewUpdate)message);
 	}
 
-	public void close()
+	// DockableWindow implementation
+	public String getName()
 	{
-		EditBus.removeFromBus(this);
-		ErrorListPlugin.closeErrorList(view);
-		GUIUtilities.saveGeometry(this,"error-list");
-		dispose();
+		return ErrorListPlugin.NAME;
+	}
+
+	public Component getComponent()
+	{
+		return this;
 	}
 
 	// private members
@@ -123,15 +125,6 @@ public class ErrorList extends JFrame implements EBComponent
 			}
 
 			updateStatus();
-		}
-	}
-
-	private void handleViewMessage(ViewUpdate message)
-	{
-		if(message.getWhat() == ViewUpdate.CLOSED)
-		{
-			if(message.getView() == view)
-				view = null;
 		}
 	}
 
@@ -260,14 +253,6 @@ public class ErrorList extends JFrame implements EBComponent
 					view.getTextArea().select(start,end);
 				}
 			});
-		}
-	}
-
-	class WindowHandler extends WindowAdapter
-	{
-		public void windowClosing(WindowEvent evt)
-		{
-			close();
 		}
 	}
 }
