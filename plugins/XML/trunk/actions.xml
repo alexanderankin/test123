@@ -51,4 +51,9 @@
 			xml.CatalogManager.clearCache();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="xml-reload-catalogs">
+		<CODE>
+			xml.CatalogManager.reloadCatalogs();
+		</CODE>
+	</ACTION>
 </ACTIONS>

@@ -40,6 +40,11 @@ public class XmlPlugin extends EBPlugin
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 
+		CatalogManager.init();
+
+		XmlActions.propertiesChanged();
+		CatalogManager.propertiesChanged();
+
 		tagMouseHandler = new TagMouseHandler();
 
 		View view = jEdit.getFirstView();
@@ -54,9 +59,6 @@ public class XmlPlugin extends EBPlugin
 			}
 			view = view.getNext();
 		}
-
-		XmlActions.propertiesChanged();
-		CatalogManager.propertiesChanged();
 	} //}}}
 
 	//{{{ stop() method
@@ -76,6 +78,8 @@ public class XmlPlugin extends EBPlugin
 		}
 
 		CatalogManager.save();
+
+		CatalogManager.uninit();
 	} //}}}
 
 	//{{{ handleMessage() method

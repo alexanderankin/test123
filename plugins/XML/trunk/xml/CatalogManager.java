@@ -326,6 +326,28 @@ public class CatalogManager
 		resourceCache.clear();
 	} //}}}
 
+	//{{{ reloadCatalogs() method
+	public static void reloadCatalogs()
+	{
+		loadedCatalogs = false;
+	} //}}}
+
+	//{{{ Package-private members
+
+	//{{{ init() method
+	static void init()
+	{
+		EditBus.addToBus(vfsUpdateHandler = new VFSUpdateHandler());
+	} //}}}
+
+	//{{{ uninit() method
+	static void uninit()
+	{
+		EditBus.removeFromBus(vfsUpdateHandler);
+	} //}}}
+
+	//}}}
+
 	//{{{ Private members
 
 	//{{{ Static variables
@@ -341,13 +363,9 @@ public class CatalogManager
 
 	// placeholder for DTDs we never want to download
 	private static Object IGNORE = new Object();
-	//}}}
 
-	//{{{ Class initializer
-	static
-	{
-		EditBus.addToBus(new VFSUpdateHandler());
-	} //}}}
+	private static EBComponent vfsUpdateHandler;
+	//}}}
 
 	//{{{ addUserResource() method
 	/**
