@@ -107,6 +107,10 @@ class SAXParserImpl implements XmlParser.Impl
 					0,se.getMessage());
 			}
 		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR,this,e);
+		}
 	} //}}}
 
 	//{{{ getElementTree() method

@@ -32,7 +32,6 @@
 	<path id="project.class.path">
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/xerces.jar"/>
-		<pathelement location="${install.dir}/jaxp.jar"/>
 		<pathelement location="."/>
 	</path>
 

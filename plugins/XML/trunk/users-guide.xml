@@ -524,6 +524,10 @@
     if the text contained an unknown entity.
    </para></listitem>
    <listitem><para>
+    Fixed possible race condition in XML parsing code that could result in a
+    NullPointerException.
+   </para></listitem>
+   <listitem><para>
     Xerces 1.4.4 included.
    </para></listitem>
   </itemizedlist>
