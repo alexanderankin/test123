@@ -19,6 +19,8 @@ import java.io.File;
 import java.util.*;
 import javax.swing.tree.TreePath;
 
+import org.gjt.sp.util.Log;
+
 /**
  * A project directory.
  */
@@ -211,9 +213,19 @@ public final class ProjectDirectory {
     * @since
     */
    public int getIndexOfChild( Object child ) {
-      if ( child instanceof ProjectFile )
-         return subdirectories.size() + files.indexOf( child );
-
+      if ( child instanceof ProjectFile ) {
+		  //Log.log(Log.DEBUG,this,"getIndexOfChild : "+subdirectories.size()+" + "+files.indexOf( child ));
+		  if(files.indexOf( child ) == -1) {
+			  //Log.log( Log.DEBUG, this, "not direct child in "+name);
+			  List path=getPathToFile((ProjectFile)child);
+			  //Log.log( Log.DEBUG, this, " path to file : "+path.toString());
+			  return(subdirectories.size()+1);
+			  //return(subdirectories.size()+((ProjectDirectory)path.get(0)).getIndexOfChild(child));
+		  }
+		  else {
+			  return subdirectories.size() + files.indexOf( child );
+		  }
+	  }
       if ( child instanceof ProjectDirectory )
          return subdirectories.indexOf( child );
 

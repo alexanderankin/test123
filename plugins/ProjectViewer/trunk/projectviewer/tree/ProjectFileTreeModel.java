@@ -81,7 +81,7 @@ public class ProjectFileTreeModel extends ProjectTreeModel implements ProjectLis
 
       if (parent instanceof ProjectDirectory)
          return ((ProjectDirectory) parent).getIndexOfChild(child);
-
+	  
       return -1;
    }
 
