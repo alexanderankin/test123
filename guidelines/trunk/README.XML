@@ -1,0 +1,10 @@
+CVS policy file
+
+plugin: XML
+
+These people may commit changes any time:
+
+Andre Kaplan <akaplan@jedit.org>
+Slava Pestov <slava@jedit.org>
+
+Others should send unified diffs to the jEdit-devel mailing list.
