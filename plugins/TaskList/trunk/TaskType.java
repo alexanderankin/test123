@@ -40,6 +40,14 @@ public class TaskType
 		RESyntax.RE_SYNTAX_PERL5).set(
 			RESyntax.RE_CHAR_CLASSES);
 
+	public TaskType()
+	{
+		this.pattern = "";
+		this.sample = "";
+		this.ignoreCase = false;
+		setIconPath("Exclamation.gif");
+	}
+
 
 	public TaskType(String pattern, String sample,
 		boolean ignoreCase, String iconPath)
