@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -279,8 +279,7 @@ public class ErrorList extends JPanel implements EBComponent
 
 		TreePath path = new TreePath(new TreeNode[]
 			{ errorRoot, parent, next });
-		errorTree.setSelectionPath(path);
-		errorTree.scrollPathToVisible(path);
+		selectPath(path);
 
 		openError((ErrorSource.Error)next.getUserObject());
 	} //}}}
@@ -364,8 +363,7 @@ public class ErrorList extends JPanel implements EBComponent
 
 		TreePath path = new TreePath(new TreeNode[]
 			{ errorRoot, parent, prev });
-		errorTree.setSelectionPath(path);
-		errorTree.scrollPathToVisible(path);
+		selectPath(path);
 
 		openError((ErrorSource.Error)prev.getUserObject());
 	} //}}}
@@ -609,10 +607,28 @@ public class ErrorList extends JPanel implements EBComponent
 
 				view.getTextArea().setSelection(
 					new Selection.Range(start,end));
+
 				view.getTextArea().moveCaretPosition(end);
 			}
 		});
 	} //}}}
+
+	//{{{ selectPath() method
+	private void selectPath(TreePath path)
+	{
+		errorTree.setSelectionPath(path);
+		DefaultMutableTreeNode node =
+			(DefaultMutableTreeNode) path.getLastPathComponent();
+		if(node.getChildCount() > 0)
+		{
+			errorTree.expandPath(path);
+			errorTree.scrollPathToVisible(path.pathByAddingChild(
+				node.getChildAt(node.getChildCount() - 1)));
+		}
+		else
+			errorTree.scrollPathToVisible(path);
+	}
+	//}}}
 
 	//}}}
 
