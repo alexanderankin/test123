@@ -480,6 +480,14 @@
     <literal>&lt;br&gt;</literal>, but it would try closing
     <literal>&lt;BR&gt;</literal>, for example.
    </para></listitem>
+   <listitem><para>
+    Tag matching should no longer be confused by PHP, JSP and ASP inline
+    scripts.
+   </para></listitem>
+   <listitem><para>
+    Completion popups will no longer be shown inside PHP, JSP and ASP inline
+    scripts.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>

@@ -1,5 +1,6 @@
 + version 0.9:
 
+- no completions: backspace doesn't hide
 - open file from VFS: DTD not loaded
 - TagParser: use segments, not strings
 - more friendly way to find DTDs (some kind of 'wizard'?)
@@ -14,7 +15,6 @@
 - documentation: XML catalog format, OASIS catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
 - tag highlight scope bracket in gutter
-- use getContextSensitiveProperty()
 
 + before 1.0:
 
