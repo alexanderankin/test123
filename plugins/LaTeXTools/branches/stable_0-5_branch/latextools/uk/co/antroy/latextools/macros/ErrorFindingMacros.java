@@ -60,7 +60,8 @@ public class ErrorFindingMacros {
         t.start();            
     }
      public static void _displayDuplicateLabels(final View view, Buffer buff){
-        LaTeXDockable.getInstance().setInfoPanel(new JLabel("<html><font color='#dd0000'>Working..."), "Orphaned References:");
+        LaTeXDockable dockable = LaTeXDockable.getInstance();
+        dockable.setInfoPanel(new JLabel("<html><font color='#dd0000'>Working..."), "Orphaned References:");
         LabelParser parser = new LabelParser(view, buff);
         List duplicates = parser.getDuplicateList();
         JComponent out = null;
@@ -80,7 +81,7 @@ public class ErrorFindingMacros {
                                   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         }
 
-        LaTeXDockable.getInstance().setInfoPanel(out, "Duplicate Labels:");
+        dockable.setInfoPanel(out, "Duplicate Labels:");
         
     }
     

@@ -79,16 +79,17 @@ public class BibTeXTablePanel
         enableInsert = !ProjectMacros.isBibFile(buffer);
         buildPanel();
     }
+      super.refresh();
 
   }
   private void buildPanel(){
-    //  Thread parseThread = new Thread(new Runnable(){
-    //      public void run(){
+     Thread parseThread = new Thread(new Runnable(){
+         public void run(){
               _buildPanel();
-    //      }
-    //  });
+         }
+     });
       
-    //  parseThread.start();
+     parseThread.start();
   }
   
   private void _buildPanel(){
@@ -126,7 +127,7 @@ public class BibTeXTablePanel
     setPreferredSize(new Dimension(400, 400));
     remove(parsingLabel);
     add(scp, BorderLayout.CENTER);
-    //super.refresh();
+    sendUpdateEvent("latextools-bibliography-table-dock");
   }
   
   public void reload(){

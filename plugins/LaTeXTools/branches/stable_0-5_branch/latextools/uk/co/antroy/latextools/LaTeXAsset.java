@@ -31,32 +31,21 @@ import java.io.*;
 
     public Icon getIcon(){
 
-      StringBuffer filename = new StringBuffer("/");
+      StringBuffer filename = new StringBuffer("");
 
       switch (iconType){
-        case DEFAULT_ICON: filename.append("images/default.png"); break;
-        case SECTION_ICON: filename.append("images/sections.png"); break;
-        case GRAPHIC_ICON: filename.append("images/graphics.png"); break;
-        case THEOREM_ICON: filename.append("images/theorem.png"); break;
-        case TABLE_ICON: filename.append("images/table.png"); break;
-        case LIST_ICON: filename.append("images/list.png"); break;
-        case VERBATIM_ICON: filename.append("images/verbatim.png"); break;
-        case LINK_ICON: filename.append("images/link.png"); break;
+        case DEFAULT_ICON: filename.append("default.png"); break;
+        case SECTION_ICON: filename.append("sections.png"); break;
+        case GRAPHIC_ICON: filename.append("graphics.png"); break;
+        case THEOREM_ICON: filename.append("theorem.png"); break;
+        case TABLE_ICON: filename.append("table.png"); break;
+        case LIST_ICON: filename.append("list.png"); break;
+        case VERBATIM_ICON: filename.append("verbatim.png"); break;
+        case LINK_ICON: filename.append("link.png"); break;
         default: filename = null;
       }
 
-      Icon icon;
-      if (filename == null) {
-        icon = null;
-      }else{
-        try{
-          icon = new ImageIcon(LaTeXAsset.class.getResource(filename.toString()));
-        }catch (Exception e){
-          Log.log(Log.DEBUG,this,filename.toString() + "Not found");
-          icon = null;
-        }
-      }
-      return icon;
+      return UtilityMacros.getIcon(filename.toString());
     }
 
     public String getSection() {

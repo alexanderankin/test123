@@ -91,15 +91,16 @@ public class LabelTablePanel
     } else {
         buildPanel();
     }
+      super.refresh();
 
   }
   private void buildPanel(){
-      //Thread parseThread = new Thread(new Runnable(){
-      //    public void run(){
+      Thread parseThread = new Thread(new Runnable(){
+         public void run(){
               _buildPanel();
-      //    }
-      //});
-      //parseThread.start();
+         }
+      });
+      parseThread.start();
   }
       
   private void _buildPanel(){
@@ -159,7 +160,7 @@ public class LabelTablePanel
     setPreferredSize(new Dimension(400, 400));
     remove(parsingLabel);
     add(scp, BorderLayout.CENTER);
-    //super.refresh();
+    sendUpdateEvent("latextools-label-table-dock");
   }
   
   public void reload(){
