@@ -19,6 +19,7 @@ package projectviewer;
 import java.awt.Cursor;
 import java.awt.event.*;
 import java.io.File;
+import java.io.*;
 import java.util.*;
 import javax.swing.*;
 import javax.swing.event.*;
@@ -99,9 +100,58 @@ public final class ViewerListener implements ActionListener, ItemListener {
 		}
 		else if (source == this.viewer.configBtn) {
 			this.showConfig();
-		}
+		}  else if (source == this.viewer.launchBrowserBtn) {
+		 // this.showConfig(); // will need to be commented out
+		this.launchBrowser(); }
+	
+	}
+	
+  
+  /** Launched the selected project file in the web-browser, against the webserver.
+	 *
+	 *browser property must be set for jedit & urlRoot must be set for the given project
+	 *
+  */
+	
+  
+  private void launchBrowser() {
+	/* need to get browser setting */
+	String sURLRoot = viewer.getCurrentProject().getURLRoot();
+	String sURL;
+
+	if (sURLRoot == "" )
+	{
+		JOptionPane.showMessageDialog(viewer, "Web URL Not set for project");
+		return;	
 	}
 
+	if (viewer.isFileSelected())
+	{
+	ProjectFile fileToView = viewer.getSelectedFile();
+	
+	/* Produce the url of the file based upon the projects urlRoot */
+	sURL = sURLRoot + fileToView.getPath().toString().substring(viewer.getCurrentProject().getRoot().getPath().length());
+	//sURL = sURLRoot + fileToView.getPath();
+	JOptionPane.showMessageDialog(viewer, sURL);
+	
+       Runtime rt = Runtime.getRuntime();
+       String[] callAndArgs = { "mozilla", sURL };
+       try {
+	       Process child = rt.exec(callAndArgs);
+	       child.waitFor();
+	       System.out.println("Process exit code is: " + child.exitValue());
+       	   }
+	   catch(IOException e) {
+		System.err.println(
+		"IOException starting process!");
+	   }
+	   catch(InterruptedException e) {
+		   System.err.println(
+		   "Interrupted waiting for process!");
+	   }
+	} else { JOptionPane.showMessageDialog(viewer, "No File selected");}	
+	
+}	
 	/** Handle project combo changes.
 	 *
 	 *@param  evt  Description of Parameter
