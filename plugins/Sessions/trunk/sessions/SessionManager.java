@@ -131,22 +131,19 @@ public class SessionManager implements EBComponent
 
 		// load new session:
 		final Buffer buffer = loadSession(newSession);
+		VFSManager.waitForRequests();
+		if (VFSManager.errorOccurred())
+			return; // some strange files couldn't be loaded 
 
-		VFSManager.runInAWTThread( new Runnable() 
-		{
-			public void run()
-			{
-				// set new session:
-				String oldSession = currentSession;
-				currentSession = newSession;
-				saveCurrentSessionProperty();
-				EditBus.send(new SessionChanged(SessionManager.this, oldSession));
+		// set new session:
+		String oldSession = currentSession;
+		currentSession = newSession;
+		saveCurrentSessionProperty();
+		EditBus.send(new SessionChanged(SessionManager.this, oldSession));
 
-				// open session's recent buffer:
-				if (buffer != null)
-					view.setBuffer(buffer);
-			}
-		} );
+		// open session's recent buffer:
+		if (buffer != null)
+			view.setBuffer(buffer);
 	}
 
 
@@ -242,14 +239,8 @@ public class SessionManager implements EBComponent
 
 		final Buffer buffer = loadSession(currentSession);
 		
-		VFSManager.runInAWTThread( new Runnable() 
-		{
-			public void run()
-			{
-				if (buffer != null)
-					view.setBuffer(buffer);
-			}
-		} );
+		if (buffer != null)
+			view.setBuffer(buffer);
 	}
 
 
@@ -371,6 +362,7 @@ public class SessionManager implements EBComponent
 	 * open files and without firing any events or messages.
 	 */
 	void saveCurrentSessionProperty() {
+		Log.log(Log.DEBUG, this, "saveCurrentSessionProperty: currentSession=" + currentSession);
 		jEdit.setProperty(SESSION_PROPERTY, currentSession);
 	}
 
@@ -384,6 +376,7 @@ public class SessionManager implements EBComponent
 	 *     an error occured or there is no last session.
 	 */
 	private Buffer loadSession(String session) {
+		Log.log(Log.DEBUG, this, "loadSession: session=" + session);
 		String filename = createSessionFileName(session);
 		if (!new File(filename).exists())
 			return null;
@@ -459,6 +452,7 @@ public class SessionManager implements EBComponent
 	 *     (.session suffix not required)
 	 */
 	private void saveSession(View view, String session) {
+		Log.log(Log.DEBUG, this, "saveSession: session=" + session);
 		if (view != null)
 			view.getEditPane().saveCaretInfo();
 
