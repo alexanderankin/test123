@@ -37,7 +37,7 @@
   </para>
   <para>
    The XML plugin bundles the Xerces XML parser from the Apache Software
-   Foundation. Xerces is released under the <ulink url="Xerces.LICENSE.txt">Apache
+   Foundation. Xerces is released under the <ulink url="Apache.LICENSE.txt">Apache
    License</ulink>.
   </para>
  </legalnotice>
