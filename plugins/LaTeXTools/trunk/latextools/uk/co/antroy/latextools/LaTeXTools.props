@@ -57,7 +57,7 @@ increment-phrase-from-x.label = Increment Phrase from...
 surround-selection.label = Surround Selection
 insert-environment.label = Insert Environment
 insert-command.label = Insert Command
-
+# TODO: Convert following menu's to 4.2 format (see LaTeXPlugin.java for details)
 latex-main-menu=navigation-dock \
   bibliography-dock \
   label-dock
@@ -69,6 +69,7 @@ latex-insert-menu=  increment-phrase \
   insert-environment \
   insert-command
 latex-insert-menu.label = Insert
+# TODO: Add Option pane details here (see LaTeXPlugin.java for details)
 
 panel.text.refresh=Refresh
 panel.text.reload=Reload

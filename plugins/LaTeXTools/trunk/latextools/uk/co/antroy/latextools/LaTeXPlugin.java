@@ -55,6 +55,9 @@ public class LaTeXPlugin
    * @param menuItems Vector of menuitems in plugins menu.
    */
   public void createMenuItems(Vector menuItems) {
+
+    // TODO: Remove this method and add menu items to LaTeXTools.props
+
     JMenu menu = GUIUtilities.loadMenu("latex-main-menu");
     JMenu insertMenu = GUIUtilities.loadMenu("latex-insert-menu");
     
@@ -70,6 +73,15 @@ public class LaTeXPlugin
    */
   public void createOptionPanes(OptionsDialog dialog) {
 
+/* TODO: Remove this method, and add options to the props file. eg.
+    plugin.templates.TemplatesPlugin.option-group=templates accelerators
+    options.templates.label=General
+    options.templates.code=new templates.TemplatesOptionPane();
+    options.accelerators.label=Accelerators
+    options.accelerators.code=new templates.AcceleratorOptionPane();
+ */
+
+    
     OptionGroup grp = new OptionGroup("latex");
     grp.addOptionPane(new BibTeXOptionPane());
     grp.addOptionPane(new ReferenceOptionPane());
