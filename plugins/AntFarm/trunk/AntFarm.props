@@ -1,8 +1,8 @@
 # Properties used by jEdit
 plugin.AntFarmPlugin.name=Ant Farm
 plugin.AntFarmPlugin.author=Chris Scott, Rick Gibbs
-plugin.AntFarmPlugin.contributor=Todd Papaioannou, Richard F. Wan
-plugin.AntFarmPlugin.version=0.3
+plugin.AntFarmPlugin.contributor=Todd Papaioannou, Richard F. Wan, Christoph Steinbeck
+plugin.AntFarmPlugin.version=0.4
 plugin.AntFarmPlugin.docs=AntFarm.html
 plugin.AntFarmPlugin.depend.0=jdk 1.1
 plugin.AntFarmPlugin.depend.1=jedit 03.02.06.00
