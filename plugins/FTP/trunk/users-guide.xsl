@@ -13,7 +13,10 @@
                 xmlns="http://www.w3.org/TR/xhtml1/transitional"
                 exclude-result-prefixes="#default">
 
-<xsl:import href="/usr/share/xsl/docbook-xsl-1.45/html/chunk.xsl"/>
+<xsl:import href="docbook-wrapper.xsl"/>
+
+<!-- Swing HTML control doesn't support &ldquo; and &rdquo; -->
+<xsl:template match="quote">&quot;<xsl:apply-templates/>&quot;</xsl:template>
 
 <xsl:template match="guibutton">
   <xsl:call-template name="inline.boldseq"/>
@@ -40,34 +43,19 @@
 </xsl:template>
 
 <xsl:variable name="toc.list.type">ul</xsl:variable>
-<xsl:param name="local.l10n.xml" select="document('')"/>
-
-<!-- Swing HTML control doesn't support &ldquo; and &rdquo; -->
-<i18n xmlns="http://docbook.sourceforge.net/xmlns/l10n/1.0">
-<l10n language="en">
-
-<dingbat key="startquote" text="&quot;"/>
-<dingbat key="endquote" text="&quot;"/>
-<dingbat key="nestedstartquote" text="&quot;"/>
-<dingbat key="nestedendquote" text="&quot;"/>
-
-<context name="section-xref">
-   <template name="bridgehead" text="the section called &quot;%t&quot;"/>
-   <template name="sect1" text="the section called &quot;%t&quot;"/>
-   <template name="sect2" text="the section called &quot;%t&quot;"/>
-   <template name="sect3" text="the section called &quot;%t&quot;"/>
-   <template name="sect4" text="the section called &quot;%t&quot;"/>
-   <template name="sect5" text="the section called &quot;%t&quot;"/>
-   <template name="section" text="the section called &quot;%t&quot;"/>
-   <template name="simplesect" text="the section called &quot;%t&quot;"/>
-</context>
-
-</l10n>
-</i18n>
 
 <xsl:variable name="shade.verbatim">1</xsl:variable>
 
 <xsl:variable name="funcsynopsis.style">ansi</xsl:variable>
 <xsl:template match="void"><xsl:apply-templates/></xsl:template>
+
+<xsl:param name="chunk.first.sections">1</xsl:param>
+
+<xsl:template match="*" mode="object.title.markup.textonly">
+  <xsl:variable name="title">
+    <xsl:apply-templates select="." mode="title.markup"/>
+  </xsl:variable>
+  <xsl:value-of select="$title"/>
+</xsl:template>
 
 </xsl:stylesheet>

@@ -75,6 +75,14 @@ browser's <guimenu>Plugins</guimenu> menu, or use the
 
 </para>
 
+<para>
+
+SFTP support is provided using the
+<ulink url="http://www.sshtools.com">sshtools</ulink>
+library.
+
+</para>
+
 </chapter>
 
 <chapter id="misc"><title>Miscellaneous features</title>
