@@ -28,7 +28,7 @@
 	<property name="jedit.install.dir" value="../../jEdit"/>
 	<property name="install.dir"			value=".." />
 	<property name="jedit.user.home"  value="${user.home}/.jedit" />
-	<property name="pvversion"          value="2.0.2"/>
+	<property name="pvversion"          value="2.0.3"/>
 
 	<property name="jar.name"         value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target" value="xsltproc"/>
@@ -49,7 +49,6 @@
   <path id="default.classpath">
     <pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${install.dir}/InfoViewer.jar" />
-		<!-- <pathelement location="${install.dir}/JarMaker.jar" /> -->
 	</path>
 
 
@@ -135,6 +134,37 @@
 		<copy todir=".." file="${build}/ProjectViewer.jar" />
   </target>
 
+	<!-- build.debug: builds the pvdebug plugin -->
+	<target name="build.debug" description="builds the debug plugin">
+
+    <javac srcdir="${src}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}"
+           classpathref="default.classpath" >
+				<include name="pvdebug/*.java" />
+    </javac>
+
+    <jar jarfile="${debug.target.dir}/ProjectViewerDebug.jar">
+      <fileset dir="${src}">
+				<include name="pvdebug/**.*" />
+			</fileset>
+    </jar>
+
+	</target>
+	
+	<target name="clean.debug" description="cleans up the debug plugin">
+	
+		<delete>
+			<fileset dir="${src}/pvdebug">
+				<include name="**/*.class" />
+			</fileset>
+		</delete>
+		
+		<delete file="${debug.target.dir}/ProjectViewerDebug.jar" />
+	
+	</target>
 
   <!-- ================================================ -->
   <target name="dist"
@@ -215,4 +245,3 @@
 	</target>
 
 </project>
-
