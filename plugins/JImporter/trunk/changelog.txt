@@ -1,6 +1,15 @@
 Changelog for JImporter
 
-0.4.0
+0.5.0
+* No longer are multiple identical fq classes allowed in the importer dialog box.
+Previously, it was possible to have two entries named "java.lang.String".
+* Start sorting all of the imports in the importer dialog box.  (It makes it 
+easier to find a class if there are multiple classes with the same name.)
+* Previously, imports were being imported even if cancel was being pressed.  Now
+it shouldn't.
+* 
+
+0.4.0 - Initial release in plugin central
 * Added the concept of import grouping.
 * Implemented the "Sort Imports" menu option.  
 * Added option which will determine if the sorting algorithm cares about character

@@ -5,8 +5,6 @@ Todo's Before I Can Release the Next Version
 look for the default package.  (Everything is just a regex.)  Also, this resulted
 in the grouping spacer getting a copy of ImportGroupingComparator's loadGrouping
 method.  Fix that too.
-* Don't let there be two identical fq paths to imports in the importer dialog box.
-* Sort all of the imports in the importer dialog box.
 * Add option to combine multiple imports into an asterisk after a given number 
   of imports from the same package (perhaps more than 4).
 * Add importing for JSP pages -- this will require that the ClassImporter file
@@ -29,6 +27,7 @@ Longer Term Todo's
 ------------------
 * Implement a buffered lookup of class names for slower computers that don't do
   the brute force lookup quickly.
+* Define a list of imports that should always be imported with a .*
 * Allow users to search multiple classpaths at one time.  (Jigar Patel)
 * Implement a switch for the JImporter Dialog Box that will allow us to match as
   we type, instead of having to press the search button.
