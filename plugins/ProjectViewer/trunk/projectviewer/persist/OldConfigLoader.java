@@ -128,8 +128,11 @@ public final class OldConfigLoader {
 		// ensures that the path does not have a trailing '/'
 		p.setRootPath(new File(props.getProperty("root")).getAbsolutePath());
 
-		p.setURL(props.getProperty("webroot"));
-		
+
+		String tmp = props.getProperty("webroot");
+		if (tmp != null && !tmp.equals("http://<projecturl>"))
+			p.setURL(tmp);
+
 		if (props.get("folderTreeState") != null) {
 			p.setProperty("projectviewer.folder_tree_state", (String) props.get("folderTreeState"));
 		}
