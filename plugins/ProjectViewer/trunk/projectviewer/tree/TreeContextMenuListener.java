@@ -41,7 +41,8 @@ import javax.swing.tree.TreePath;
 // Import jEdit
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-//import org.gjt.sp.jedit.search.*;
+import org.gjt.sp.jedit.search.*;
+
 // Import ProjectViewer
 import projectviewer.Project;
 import projectviewer.ProjectFile;
@@ -430,6 +431,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		
 	} //}}}
 	
+	//{{{ addFileToProject() method
 	/** Prompt the user to a file, get the current project, and then add the file
 	 *  to the project.
 	 */
@@ -460,7 +462,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			viewer.getCurrentProject().save();
 		}
 
-	}
+	}//}}}
 	
 	//{{{ renameFile() method
 	/** 
@@ -544,28 +546,18 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	
 	} //}}}
 	
-	//}}}
 	//{{{ searchDir() method
-	/**
-	 *  Popups up a Search and Replace dialog for the currently selected directory.
+	/** Popups up a Search and Replace dialog for the currently selected directory.
 	 */
 	private void searchDir() {
-			//org.gjt.sp.jedit.search.SearchDialog(View view, "blah"searchString, int searchIn);
-			ProjectDirectory dir = (ProjectDirectory) viewer.getSelectedNode();
-			org.gjt.sp.jedit.browser.VFSBrowser browser =(org.gjt.sp.jedit.browser.VFSBrowser) jEdit.getLastView().getDockableWindowManager().getDockable("vfs.browser");
-			browser.setDirectory(dir.getPath());
-			browser.searchInDirectory();
-			/*  
-			Matthew Payne -->
-			Tried to do the following, but unable to get the directory to search this way.
-			
-			//SearchDialog sb = new SearchDialog(jEdit.getLastView(), "/home/sergei", 2);
-			//sb.show();
-			//sb.showSearchDialog()
-	
-	       */
-			
-	} //}}}
-	
+		ProjectDirectory dir = (ProjectDirectory) viewer.getSelectedNode();
+		//-- version 1
+		//org.gjt.sp.jedit.browser.VFSBrowser browser =(org.gjt.sp.jedit.browser.VFSBrowser) jEdit.getLastView().getDockableWindowManager().getDockable("vfs.browser");
+		//browser.setDirectory(dir.getPath());
+		//browser.searchInDirectory();
+		//-- version 2
+		SearchAndReplace.setSearchFileSet(new DirectoryListSet(dir.getPath(),null,true));
+		SearchDialog.showSearchDialog(jEdit.getLastView(), null, SearchDialog.DIRECTORY);
+	}//}}}
 	//}}}
 }
