@@ -1,22 +1,27 @@
-- add Archive Project to package contents in jar/zip
-
-- use JEdits VFS code to allow projects on virtual file systems such as ftp
-  see:  org.gjt.sp.jedit.io.VFS (this would change things quite a lot!)
- 
-- Implement functionality from old version:
-  * drag files from the tree to the EditPane
-  * close files from current project (is it useful?) 
-  * what else?
-
-- Merge FastOpen into ProjectViewer (and think about a nice way to
-  integrate the UI into the PV pane - or keep it separated?)
+--------------------------------------------------------------------------------
+Problems:
 
 - Reduce memory footprint: keep track of "active" projects and remove nodes
   from inactive ones (freeing memory). (?)
-  
-- Working files TreeModel is still shaky... have to check AllFiles also.
-  (Or is it????)
 
-- when adding files the filter "Non-project files" should still hide
-  backup ("*~,*.bak") files
+- In "Old Style Importer", should we ask for what to filter to use instead of
+  just using the selected filter in the dialog?
+
+--------------------------------------------------------------------------------
+Features:
+
+- Implement functionality from old version:
+  * drag files from the tree to the EditPane
+  * close files from current project (is it useful?)
+  * what else?
+
+- project templates (using the Templates plugin, if available)
+
+- add macros to the context menu
+
+- Merge FastOpen into ProjectViewer (and think about a nice way to
+  integrate the UI into the PV pane - or keep it separated?) (?)
+
+- use JEdits VFS code to allow projects on virtual file systems such as ftp
+  see:  org.gjt.sp.jedit.io.VFS (this would change things quite a lot!)
 
