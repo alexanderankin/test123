@@ -161,6 +161,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	 * @param  project  The new currentProject value
 	 */
 	public void setCurrentProject(Project project) {
+		Log.log( Log.DEBUG, this, "setCurrentProject() project="+project);
 		if(projectView != null) {
 			Project cp = getCurrentProject();
 			if(isAllProjects() && project == null)
@@ -168,18 +169,22 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 			if(!isAllProjects() && project != null && project.equals(cp))
 				return;
 			if(cp != null) {
+				Log.log( Log.DEBUG, this, "saving state of current project");
 				// save the state of the previous project
 				launcher.closeProject(cp);
 				cp.setFolderTree(folderTree);
+				// remember currently active tab
 				cp.setTabState(tabs.getSelectedIndex());
 			}
 			projectView.deactivate();
 		}
 
-		Log.log( Log.DEBUG, this, "setCurrentProject() chk1");
+		Log.log( Log.DEBUG, this, "setCurrentProject() chk1 project="+project);
 		
 		// set up the new project
 		projectView = getProjectViewFor(project);
+		
+		Log.log( Log.DEBUG, this, "setCurrentProject() chk2");
 
 		if(isAllProjects()) {
 			if(!allProjectsLoaded) {
@@ -201,6 +206,8 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 			ProjectManager.getInstance().setCurrentProject(project);
 		}
 
+		Log.log( Log.DEBUG, this, "setCurrentProject() chk3");
+
 		// set the trees
 		if(folderTree != null) {
 			folderTree.getSelectionModel().setSelectionMode(projectView.getSelectionModel());
@@ -215,6 +222,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		projectView.activate();
 
 		loadProject();
+		Log.log( Log.DEBUG, this, "setCurrentProject() end");
 	}//}}}
 
 	//{{{ setStatus() method
@@ -387,6 +395,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 
 	/** Reload ProjectResources and then reparse the object tree. */
 	public void refresh() {
+		Log.log(Log.NOTICE, this, "refresh()");
 		loadProjectCombo();
 		loadProject();
 	}
@@ -565,9 +574,9 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		//createProjectBtn = createButton("/projectviewer/icons/CreateProject.gif", "Create project");
 		addFileBtn = createButton("New.png", "Add file to project");
 		//addFileBtn = createButton("/projectviewer/icons/AddFile.gif", "Add file to project");
-		importFilesBtn = createButton("Parse.png", "Import files into this project");
+		importFilesBtn = createButton("CopyToBuffer.png", "Import files into this project");
 		//importFilesBtn = createButton("/projectviewer/icons/Import.gif", "Import files into this project");
-		openAllBtn = createButton("Open.gif", "Open all files in this project");
+		openAllBtn = createButton("Open.png", "Open all files in this project");
 		//openAllBtn = createButton("/projectviewer/icons/OpenAll.gif", "Open all files in this project");
 		expandBtn = createButton("ZoomIn.png", "Expand the file list");
 		//expandBtn = createButton("/projectviewer/icons/Expand.gif", "Expand the file list");

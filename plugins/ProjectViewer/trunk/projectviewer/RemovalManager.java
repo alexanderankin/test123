@@ -215,35 +215,40 @@ public final class RemovalManager implements ProjectListener {
 		boolean removed = false;
 		
 		if(o == null) {
-			Log.log(Log.NOTICE, this, "Removing: unexpected object o==null");
+			Log.log(Log.DEBUG, this, "Removing: unexpected object o==null");
 			return;
 		}
         if (o instanceof ProjectFile) {
             if (!delete || (!ask || confirmAction(delete,FILE))) {
-                Log.log(Log.NOTICE, this, "Removing: " + o);
+                Log.log(Log.DEBUG, this, "Removing: " + o);
                 Project p = viewer.getCurrentProject();
                 p.removeFile((ProjectFile)o,delete);
 				removed = true;
             }
-        } else if (o instanceof ProjectDirectory) {
+        }
+		else if (o instanceof ProjectDirectory) {
             if (!ask || confirmAction(delete,DIR)) {
-                Log.log(Log.NOTICE, this, "Removing: " + o);
+                Log.log(Log.DEBUG, this, "Removing: " + o);
                 Project p = viewer.getCurrentProject();
                 p.removeDirectory((ProjectDirectory)o,delete);
 				removed = true;
             }
-        } else if (o instanceof Project) {
+        }
+		else if (o instanceof Project) {
             if (!ask || confirmAction(false,PROJ)) {
-                Log.log(Log.NOTICE, this, "Removing: " + o);
+                Log.log(Log.DEBUG, this, "Removing: " + o);
                 ProjectManager.getInstance().removeProject((Project)o);
+				Log.log(Log.DEBUG, this, "  after removing");
                 viewer.setCurrentProject(null);
                 viewer.refresh();
 				removed = true;
             }
         }
+		Log.log(Log.DEBUG, this, "  done");
 		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
 			viewer.getCurrentProject().save();
 		}
+		Log.log(Log.DEBUG, this, "  end");
     }
     
     //--------------- Project Listener interface

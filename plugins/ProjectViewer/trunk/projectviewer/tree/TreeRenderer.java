@@ -18,10 +18,14 @@ package projectviewer.tree;
 import javax.swing.tree.*;
 import java.awt.*;
 import javax.swing.*;
+import javax.swing.tree.*;
+import javax.swing.border.*;
 import java.net.URL;
 
 import projectviewer.*;
 
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.util.Log;
 
@@ -31,21 +35,20 @@ import org.gjt.sp.util.Log;
  */
 public final class TreeRenderer extends DefaultTreeCellRenderer {
 
-	private static Font normalFont;
-	private static Font openedFont;
+	private static Font leafFont = UIManager.getFont("Tree.font");
+	private static Font folderFont = leafFont.deriveFont(Font.BOLD);
 
-	private static Icon fileIcon;
-	private static Icon dirClosedIcon;
-	private static Icon dirOpenIcon;
-	private static Icon projectIcon;
+	private static Icon fileClosedIcon = GUIUtilities.loadIcon("File.png");
+	private static Icon fileOpenedIcon = GUIUtilities.loadIcon("OpenFile.png");
+	private static Icon dirClosedIcon = GUIUtilities.loadIcon("Folder.png");
+	private static Icon dirOpenedIcon = GUIUtilities.loadIcon("OpenFolder.png");
+	private static Icon projectIcon = GUIUtilities.loadIcon("DriveSmall.png");
 
-	private static Color treeSelectionForeground;
-	private static Color treeNoSelectionForeground;
-	private static Color treeSelectionBackground;
-	private static Color treeNoSelectionBackground;
-
-	private JLabel listCellRenderer = null;
-	private JLabel treeCellRenderer = null;
+	private static Color treeSelectionForeground = UIManager.getColor("Tree.selectionForeground");
+	private static Color treeNoSelectionForeground = UIManager.getColor("Tree.textForeground");
+	private static Color treeSelectionBackground = UIManager.getColor("Tree.selectionBackground");
+	private static Color treeNoSelectionBackground = UIManager.getColor("Tree.textBackground");
+	
 	
 	private boolean underlined;
 
@@ -62,9 +65,11 @@ public final class TreeRenderer extends DefaultTreeCellRenderer {
 		 * fileIcon      = UIManager.getIcon("Tree.leafIcon");
 		 * dirClosedIcon = UIManager.getIcon("Tree.closedIcon");
 		 * dirOpenIcon   = UIManager.getIcon("Tree.openIcon");
+		 * URL url = getClass().getResource("/projectviewer/icons/Project.gif");
+		 * projectIcon = new ImageIcon(url);
 		 */
-		URL url = getClass().getResource("/projectviewer/icons/Project.gif");
-		projectIcon = new ImageIcon(url);
+		setBorder(new EmptyBorder(1,0,1,0));
+		//setOpaque(true);
 	}
 
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
@@ -75,95 +80,99 @@ public final class TreeRenderer extends DefaultTreeCellRenderer {
 
 		//Log.log(Log.DEBUG,this,"getTreeCellRendererComponent() : "+value.toString());
 
-		//-- do this the first time
-		if(treeCellRenderer == null) {
-			treeCellRenderer =
-				new JLabel() {
-					public Dimension getPreferredSize() {
-						// this prevents the "..." from showing up
-						Dimension d = super.getPreferredSize();
-						int width = d.width + (int)(d.width * .15);
-						if(d != null)
-							d = new Dimension(width, d.height);
-						return d;
-					}
-				};
-			treeCellRenderer.setOpaque(true);
-		}
-
 		//-- change colors to highlight selected items
 		if(sel) {
-			treeCellRenderer.setBackground(treeSelectionBackground);
-			treeCellRenderer.setForeground(treeSelectionForeground);
+			setBackground(treeSelectionBackground);
+			setForeground(treeSelectionForeground);
 		}
 		else {
-			treeCellRenderer.setBackground(treeNoSelectionBackground);
-			treeCellRenderer.setForeground(treeNoSelectionForeground);
+			setBackground(treeNoSelectionBackground);
+			setForeground(treeNoSelectionForeground);
 		}
 
-		//-- set font && foreground color
-		treeCellRenderer.setFont(normalFont);
+		//-- set font
+		setFont(leaf ? leafFont : folderFont);
+		
+		//-- set foreground color
 		if(value instanceof ProjectFile) {
 			//-/treeCellRenderer.setFont(getFontForFile((ProjectFile)value));
 			underlined=((ProjectFile)value).isOpened();
 			if(!sel) {
-				treeCellRenderer.setForeground(VFS.getDefaultColorFor(value.toString()));
+				setForeground(VFS.getDefaultColorFor(value.toString()));
 			}
 		}
 		else {
 			underlined=false;
-		//-/	treeCellRenderer.setFont(normalFont);
+			//-/treeCellRenderer.setFont(leafFont);
 		}
 
 		//-- set the icons for these entries
 		if(value instanceof Project) {
-			treeCellRenderer.setIcon(projectIcon);
+			//Log.log(Log.DEBUG,this," setIcon(projectIcon)="+projectIcon);
+			setIcon(projectIcon);
 		}
 		else if(value instanceof ProjectDirectory) {
 			if(expanded) {
-				treeCellRenderer.setIcon(dirOpenIcon);
+				//Log.log(Log.DEBUG,this," setIcon(dirOpenedIcon)="+dirOpenedIcon);
+				setIcon(dirOpenedIcon);
 			}
 			else {
-				treeCellRenderer.setIcon(dirClosedIcon);
+				//Log.log(Log.DEBUG,this," setIcon(dirClosedIcon)="+dirClosedIcon);
+				setIcon(dirClosedIcon);
 			}
 		}
 		else if(value instanceof ProjectFile) {
-			treeCellRenderer.setIcon(fileIcon);
-		}
-		else {
-			if(leaf) {
-				treeCellRenderer.setIcon(fileIcon);
-			}
-			else if(expanded) {
-				treeCellRenderer.setIcon(dirOpenIcon);
+			if(((ProjectFile)value).isOpened()) {
+				//Log.log(Log.DEBUG,this," setIcon(fileOpenedIcon)="+fileOpenedIcon);
+				setIcon(fileOpenedIcon);
 			}
 			else {
-				treeCellRenderer.setIcon(dirClosedIcon);
+				//Log.log(Log.DEBUG,this," setIcon(fileClosedIcon)="+fileClosedIcon);
+				setIcon(fileClosedIcon);
+			}
+		}
+		else {	// should not happen at all
+			//Log.log(Log.DEBUG,this," setIcon() for unknow object !!");
+			if(leaf) {
+				if(((ProjectFile)value).isOpened()) {
+					setIcon(fileOpenedIcon);
+				}
+				else {
+					setIcon(fileClosedIcon);
+				}
+			}
+			else if(expanded) {
+				setIcon(dirOpenedIcon);
+			}
+			else {
+				setIcon(dirClosedIcon);
 			}
 		}
 
-		treeCellRenderer.setText(value.toString());
+		setText(value.toString());
 		//Log.log(Log.DEBUG,this,"  getTreeCellRendererComponent() : tree.isEnabled()="+tree.isEnabled());
 		//-- as the tree is never disabled, we can save this call
 		//treeCellRenderer.setEnabled(tree.isEnabled());
 		return this;
+		//return treeCellRenderer;
 	}
 
 	public void paintComponent(Graphics g) {
-		//Log.log(Log.DEBUG,this,"paintComponent() : "+underlined);
+		//Log.log(Log.DEBUG,this,"paintComponent() : "+underlined+" text="+getText());
 		if(underlined) {
-			Font font = getFont();
-
 			FontMetrics fm = getFontMetrics(getFont());
 			int x, y;
 			if(getIcon() == null) {
+				//Log.log(Log.DEBUG,this,"  no Icon");
 				x = 0;
 				y = fm.getAscent() + 2;
 			}
 			else {
+				//Log.log(Log.DEBUG,this,"  with Icon : w="+getIcon().getIconWidth()+" h="+getIcon().getIconHeight());
 				x = getIcon().getIconWidth() + getIconTextGap();
 				y = Math.max(fm.getAscent() + 2,16);
 			}
+			//Log.log(Log.DEBUG,this,"  coords : xs="+x+" ys="+y+" xe="+(x+fm.stringWidth(getText())));
 			g.setColor(getForeground());
 			g.drawLine(x,y,x + fm.stringWidth(getText()),y);
 		}
@@ -176,24 +185,8 @@ public final class TreeRenderer extends DefaultTreeCellRenderer {
 	 * @param  file  Description of Parameter
 	 * @return       The fontForFile value
 	 */
-	protected Font getFontForFile(ProjectFile file) {
-		return file.isOpened() ? openedFont : normalFont;
-	}
-
-	static {
-		normalFont = UIManager.getFont("Tree.font");
-		openedFont = normalFont.deriveFont(Font.BOLD);
-
-		treeSelectionForeground = UIManager.getColor("Tree.selectionForeground");
-		treeNoSelectionForeground = UIManager.getColor("Tree.textForeground");
-		treeSelectionBackground = UIManager.getColor("Tree.selectionBackground");
-		treeNoSelectionBackground = UIManager.getColor("Tree.textBackground");
-
-		fileIcon = UIManager.getIcon("Tree.leafIcon");
-		dirClosedIcon = UIManager.getIcon("Tree.closedIcon");
-		dirOpenIcon = UIManager.getIcon("Tree.openIcon");
-		//projectIcon   = new ImageIcon(getClass().getResource("/projectviewer/icons/Project.gif"));
-	}
-
+	//protected Font getFontForFile(ProjectFile file) {
+	//	return file.isOpened() ? openedFont : normalFont;
+	//}
 }
 

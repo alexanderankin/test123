@@ -182,6 +182,9 @@ public final class Project implements EBComponent {
 	 * @since
 	 */
 	public ProjectDirectory getRoot() {
+		if(root == null) {
+			Log.log( Log.ERROR, this, "root is null !");
+		}
 		return root;
 	}
 
@@ -191,6 +194,9 @@ public final class Project implements EBComponent {
 	 * @since
 	 */
 	public String getName() {
+		if(name == null) {
+			Log.log( Log.ERROR, this, "name is null !");
+		}
 		return name;
 	}
 
@@ -520,11 +526,12 @@ public final class Project implements EBComponent {
 		if(message instanceof BufferUpdate) {
 			BufferUpdate update = (BufferUpdate)message;
 			ProjectFile file = getFile(update.getBuffer().getPath());
-			Log.log(Log.DEBUG, this, "BufferUpdate -> "+file );
 			if(update.getWhat().equals(BufferUpdate.LOADED)) {
+				Log.log(Log.DEBUG, this, "BufferUpdate(LOADED) -> "+file );
 				if(file != null) fireFileOpened(file);
 			}
 			if(update.getWhat().equals(BufferUpdate.CLOSED)) {
+				Log.log(Log.DEBUG, this, "BufferUpdate(CLOSED) -> "+file );
 				if(file != null) fireFileClosed(file);
 			}
         }

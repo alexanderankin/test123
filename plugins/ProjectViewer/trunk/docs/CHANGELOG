@@ -21,9 +21,9 @@ VERSION 1.0.5
 	  optionally be opened up with gimp or paintshop, or "css" with w/topstyle).
     - added menu item to JTree for launching the ext. apps ("Open with (xxx)")
     - added new configuration layout pane for external applications
-    (more)
-    	- If application is in assoicated with the current application, AppLauncher will
-	prompt the user for select an application
+      (more)
+    - if application is in assoicated with the current application, AppLauncher
+	  will prompt the user for select an application
     
   [stefan kost]
     - fixed NPE in TabNumber to Model resolving code
@@ -33,7 +33,8 @@ VERSION 1.0.5
 	- switching the trees via the tabs, keeps the cur. file active in the trees
 	- removed obsolete action.xml
 	- use new RolloverButton class of jEdit 4.1
-	- use jEdit 4.1 icons
+	- use jEdit 4.1 icons for toolbar and trees
+	- use bold font for folders/projects (like Filesystembrowser does)
 
 VERSION 1.0.4
   [stefan kost]
