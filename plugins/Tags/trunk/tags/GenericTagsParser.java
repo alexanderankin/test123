@@ -71,7 +71,8 @@ abstract class GenericTagsParser implements TagsParser {
       raf = new RandomAccessFile(file, "r");
     } catch (Exception e) {
       Log.log(Log.ERROR, this, 
-          e + ":  File says file exists, but RandomAccessFile says otherwise");
+          e + ":  File says file exists, but RandomAccessFile says otherwise" +
+          " (" + file.getPath() + ")");
       return false;
     }
 
