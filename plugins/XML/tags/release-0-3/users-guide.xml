@@ -1,0 +1,234 @@
+<?xml version="1.0"?>
+
+<!-- XML user's guide -->
+<!-- (C) 2001 Slava Pestov -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">
+
+<book>
+
+<bookinfo><title>XML plugin user's guide</title>
+
+ <copyright>
+  <year>2000</year>
+  <year>2001</year>
+  <holder>Slava Pestov</holder>
+ </copyright>
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+ </legalnotice>
+</bookinfo>
+
+<chapter id="intro"><title>Introduction</title>
+
+ <para>
+  The XML plugin validates XML files, displays a tree of elements in a dockable
+  window, and provides an XML parser that other plugins can use.
+ </para>
+
+</chapter>
+
+<chapter id="window"><title>The XML tree window</title>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>XML
+  Tree</guimenuitem> displays the XML tree window. This window is floating by
+  default, but it can be made to
+  dock into the view in the <guibutton>Docking</guibutton> pane of the
+  <guimenuitem>Global Options</guimenuitem> dialog box.
+ </para>
+
+ <para>
+  Clicking on an element in the tree will select it in the text area;
+  conversely, moving the caret in the text area will select the corresponding
+  element in the tree.
+ </para>
+
+ <para>
+  If the XML tree window is docked into the current view, hovering the mouse
+  over an element in the tree will display all attributes of that element in
+  the view's status bar. If you want attributes to be displayed in
+  the tree itself, you can specify so in the <guibutton>XML</guibutton> pane
+  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+  dialog box.
+ </para>
+
+</chapter>
+
+<chapter id="highlight"><title>XML validation</title>
+
+ <para>
+  As long as the XML tree window is open,
+  any errors found while parsing XML are handled by the
+  <application>ErrorList</application> plugin; this means they are highlighted
+  in the text area, and shown in the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> window. See the
+  documentation for the <application>ErrorList</application> plugin for details.
+ </para>
+
+ <para>
+  If a DTD or XML schema is available, it will be used to validate the XML
+  file; otherwise, only minimal error checking will be performed. Note that
+  currently, the XML plugin does not support any notion of a catalog, nor
+  does it attempt to resolve public IDs when locating a DTD or schema.
+ </para>
+
+ <para>
+  By default, switching to a new buffer will parse it if it is an XML file;
+  saving an XML file will also parse it. The XML plugin can also
+  optionally re-parse files on the fly; this should only be used on faster systems.
+  The current buffer can be parsed at any other time by clicking the parse button
+  in the XML tree window.
+ </para>
+
+ <para>
+  You can specify when to parse, and which edit modes to parse in, in the
+  <guibutton>XML</guibutton> pane
+  of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+  dialog box.
+ </para>
+
+</chapter>
+
+<chapter id="actions"><title>Additional commands</title>
+
+ <para>
+  The XML plugin provides a few additional commands that can be bound to
+  keyboard shortcuts in the <guibutton>Shortcuts</guibutton> pane of the
+  <guimenuitem>Global Options</guimenuitem> dialog box.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Parse
+  XML</guimenuitem> has the same effect as clicking the parse button in the
+  XML tree window.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Parse
+  XML on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly
+  parsing, for the current buffer only.
+ </para>
+
+</chapter>
+
+<chapter id="api"><title>Using the XML parser in other plugins</title>
+
+ <para>
+  The jEdit core only includes a very simple non-validating parser, found
+  in the <classname>com.microstar.xml</classname> package.
+  The XML plugin includes and uses the much better Xerces
+  XML parser, from <ulink url="http://xml.apache.org">xml.apache.org</ulink>.
+  If you are developing your own plugin that needs to handle XML, you
+  might prefer to use Xerces over the default jEdit parser.
+ </para>
+
+ <para>
+  If you would like to use this parser from your own plugin, you will first
+  need to change your plugin's license if it is licensed under the GPL.
+  The GPL is not compatible with the Xerces license.
+ </para>
+
+ <para>
+  The XML plugin itself is licensed under a modified GPL; this will
+  probably be sufficent for your plugin. Here is the text of the license,
+  embedded in each source file of the XML plugin:
+ </para>
+
+  <blockquote><para>
+   The XML plugin is licensed under the GNU General Public License, with
+   the following exception:
+  </para>
+
+  <para>
+   Permission is granted to link this code with software released under
+   the Apache license version 1.1, for example used by the Xerces XML
+   parser package.
+  </para></blockquote>
+
+ <para>
+  You will also need to add a dependency for the XML plugin in your plugin's
+  property file:
+ </para>
+
+ <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xml.XmlPlugin 0.3</programlisting>
+
+ <para>
+  Note that you must replace <replaceable>n</replaceable> with the
+  appropriate number, as dependency properties must have consecutive numbers..
+ </para>
+
+ <para>
+  That's all there is to it; you can now use the Xerces parser in your plugin.
+  While <classname>com.microstar.xml</classname> has its own, non-standard API,
+  Xerces includes its own implementations of the JAXP, SAX2 and DOM APIs, so
+  integrating existing code should be relatively easy.
+ </para>
+
+</chapter>
+
+<appendix id="changes"><title>Change log</title>
+
+ <itemizedlist>
+
+  <listitem><formalpara><title>Version 0.3</title><para>requires jEdit 3.2pre9,
+   the EditBus plugin 1.0.1, and the ErrorList plugin 1.1.</para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>
+     Now uses Apache Xerces parser to parse XML, instead of brain-dead
+     Microstar parser included with jEdit
+    </para></listitem>
+
+    <listitem><para>
+     Automatic parsing can be disabled, and even if enabled, is only
+     performed if the XML tree window is open. It is disabled by default
+    </para></listitem>
+
+    <listitem><para>
+     Delay before automatic parsing begins can be configured
+    </para></listitem>
+
+    <listitem><para>
+     Display of attributes can be configured
+    </para></listitem>
+
+    <listitem><para>
+     Option pane lets you set which modes XML parsing is performed in, previously
+     this list of modes was hard-coded
+    </para></listitem>
+
+    <listitem><para>
+     Menu item command to re-parse current buffer, can be bound to a keystroke,
+     for example
+    </para></listitem>
+
+    <listitem><para>
+     Menu item command to toggle automatic parse for the current buffer only
+    </para></listitem>
+
+    <listitem><para>
+     One error source per XML tree, instead of a global error source
+    </para></listitem>
+   </itemizedlist>
+
+  </listitem>
+
+ </itemizedlist>
+
+</appendix>
+
+</book>
