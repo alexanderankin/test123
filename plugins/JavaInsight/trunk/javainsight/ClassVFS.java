@@ -21,19 +21,18 @@
 package javainsight;
 
 
-import de.fub.bytecode.classfile.Code;
-import de.fub.bytecode.classfile.Method;
-import de.fub.bytecode.classfile.ClassParser;
-import de.fub.bytecode.classfile.JavaClass;
-
 import java.awt.Component;
-
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
+
+import de.fub.bytecode.classfile.ClassParser;
+import de.fub.bytecode.classfile.Code;
+import de.fub.bytecode.classfile.JavaClass;
+import de.fub.bytecode.classfile.Method;
 
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -64,12 +63,10 @@ public class ClassVFS extends ByteCodeVFS {
         String path, boolean ignoreErrors, Component comp)
         throws IOException
     {
-        Log.log(Log.DEBUG, this, "_createInputStream Path: " + path);
         String clazzPath = path;
         if (path.startsWith(PROTOCOL + ':')) {
             clazzPath = clazzPath.substring(PROTOCOL.length() + 1);
         }
-        Log.log(Log.DEBUG, this, "_createInputStream clazz Path: [" + clazzPath + "]");
 
         VFS vfs = VFSManager.getVFSForPath(clazzPath);
 
@@ -78,7 +75,7 @@ public class ClassVFS extends ByteCodeVFS {
         boolean verbose   = true;
 
         if (clazzPath.endsWith(".marks")) {
-            return vfs._createInputStream(session, clazzPath, ignoreErrors, comp);
+            return null;
         }
 
         try {
