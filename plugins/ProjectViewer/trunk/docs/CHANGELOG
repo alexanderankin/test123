@@ -27,13 +27,16 @@ VERSION 1.0.2
     the opening and closing or project files in the edit pane.
     
   - Tree rendering on file and directory additions should be faster because the
-    trees are not being rebuilt
+    trees are not being rebuilt on these events.
     
   - Project viewer will ask if you want to import a file if you save it under
     the current project's root directory.
     
-  - The project viewer and project can will not generate events so that other
+  - The project viewer and project can will now generate events so that other
     plugins can interact with the current project.
+
+  - Project properties will now be stored under <settings directory>/projectviewer.  The
+    plugin should move old properties files to this directory, as well as rename them.
   
 
 VERSION 0.095

@@ -18,6 +18,7 @@ package projectviewer;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
+import org.gjt.sp.util.Log;
 
 
 /**
@@ -123,7 +124,7 @@ class ProjectFileImporter {
         copyPropertyIntoSet( props, "exclude-dirs", excludedDirectories );
         
       } catch ( IOException e ) {
-        // TODO: Log.
+        Log.log(Log.ERROR, this, e);
       }
     }
     

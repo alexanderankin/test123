@@ -41,6 +41,7 @@ public class ProjectTree
    */
   public ProjectTree() {
     super();
+    putClientProperty("JTree.lineStyle", "Angled");
     dragSrc = new DragSource();
     
     DragGestureRecognizer dragRecognizer = dragSrc.createDefaultDragGestureRecognizer(
