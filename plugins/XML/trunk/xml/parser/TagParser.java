@@ -98,7 +98,7 @@ public class TagParser
 
 	//{{{ findLastOpenTag() method
 	public static Tag findLastOpenTag(String text, int pos,
-		HashMap elementDecls)
+		HashMap elementDecls, boolean html)
 	{
 		Stack tagStack = new Stack();
 
@@ -106,10 +106,14 @@ loop:		for (int i = text.lastIndexOf('<', pos);
 			i != -1; i = text.lastIndexOf('<', --i))
 		{
 			Tag tag = getTagAtOffset(text,i + 1);
+
 			if (tag == null)
 				continue;
 			else
 			{
+				if(html)
+					tag.tag = tag.tag.toLowerCase();
+
 				ElementDecl decl = (ElementDecl)elementDecls.get(tag.tag);
 				if(tag.type == T_STANDALONE_TAG
 					|| (decl != null && decl.empty))

@@ -63,7 +63,7 @@ public class CompletionInfo
 	public ArrayList getAllowedElements(Buffer buffer, int pos)
 	{
 		TagParser.Tag parentTag = TagParser.findLastOpenTag(
-			buffer.getText(0,pos),pos,elementHash);
+			buffer.getText(0,pos),pos,elementHash,html);
 
 		ArrayList returnValue;
 
