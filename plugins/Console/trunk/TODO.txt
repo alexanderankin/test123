@@ -1,11 +1,18 @@
-- commando: text area
+Version 3.5:
+
+- a--viper's perl commando
 - cvs commandos
+- commando: text area
+- console completion doesn't work w/ $BROWSER_DIR/foo
+
+Later:
+
 - periodic execution feature
 - tool bar should be able to output to a buffer
 - need <INIT> code block in commando files
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
 - error hyperlinks
-
+- stdin
 - notify of process exit
 - multiple-line env vars don't work
 - see if an extra pattern can eat all javac errors
@@ -24,7 +31,6 @@
   - VFS support
   - cd to a non-local directory (don't allow running commands from non
     local dir, only built-ins)
-- shift-click on toolbar button runs without displaying dialog box
 - after jEdit API additions: tips of the day
 - integration with project manager
 - synchronize browser & console pwd (but make this toggle option)
