@@ -25,22 +25,17 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 
-/** 
+/**
  * Storage for CTAGS_Entry objects.
  */
 public class CtagsBuffer extends ArrayList {
-	
     /** Store list of all files which already parsed into this CTAGS_Buffer */
     private ArrayList filenames;
 
-    /** Parser which generate this buffer */
-    private CtagsParser parser;
-
     /** Create new CTAGS_Buffer */
-    public CtagsBuffer(CtagsParser parser) {
+    public CtagsBuffer() {
         super();
         filenames = new ArrayList();
-        this.parser = parser;
     }
 
     /** Append CTAGS_Buffer.
@@ -78,8 +73,10 @@ public class CtagsBuffer extends ArrayList {
     /**
     * Refresh CTAGS_Buffer (after removing file from project, for example)
     */
+
     //  TODO: NEED IMPLEMENTATION
-    public void reload() {}
+    public void reload() {
+    }
 
     /**
     * remove all tags of spec. file from CTAGS_Buffer
@@ -98,6 +95,12 @@ public class CtagsBuffer extends ArrayList {
     public ArrayList getFileNames() {
         return filenames;
     }
+    
+    public void addFileName(String fn) {
+        if (!filenames.contains(fn)) {
+            filenames.add(fn);
+        }
+    }
 
     /**
     * Returns Vector of CTAGS_Entries with spec. tag_name.
@@ -115,6 +118,7 @@ public class CtagsBuffer extends ArrayList {
                 result.add(en);
             }
         }
+
         return result;
     }
 
@@ -125,17 +129,12 @@ public class CtagsBuffer extends ArrayList {
         for (int i = 0; i < this.size(); i++) {
             en = (CtagsEntry) this.get(i);
 
-            if (en.getTagName().startsWith(prefix)) {
-                if (!result.contains(en.getTagName())) {
-                    result.add(en);
-                }
+            if (en.isTagNameStartsWith(prefix)) {
+                result.add(en);
             }
         }
-        return result;
-    }
 
-    public void addFileName(String fn) {
-    	if (!filenames.contains(fn)) filenames.add(fn);
+        return result;
     }
 
     /**
@@ -163,7 +162,7 @@ public class CtagsBuffer extends ArrayList {
     public Vector getTagsByFile(String filename) {
         Vector result = new Vector();
         CtagsEntry entry;
-        
+
         for (int i = 0; i < this.size(); i++) {
             entry = (CtagsEntry) this.get(i);
 
@@ -171,11 +170,13 @@ public class CtagsBuffer extends ArrayList {
                 result.add(entry);
             }
         }
+
         return result;
     }
-    
+
     public boolean add(CtagsEntry entry) {
         this.addFileName(entry.getFileName());
+
         return super.add(entry);
     }
 

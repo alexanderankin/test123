@@ -4,7 +4,6 @@ import java.util.Vector;
 
 import jump.ctags.CtagsBuffer;
 import jump.ctags.CtagsEntry;
-import jump.ctags.CtagsParser;
 import junit.framework.TestCase;
 
 public class CtagsBufferTest extends TestCase {
@@ -28,6 +27,18 @@ public class CtagsBufferTest extends TestCase {
 	private CtagsBuffer buf;
 	
 	
+	protected void setUp() throws Exception {
+		super.setUp();
+		buf = new CtagsBuffer();
+		buf.add(new CtagsEntry(LINE1));
+		buf.add(new CtagsEntry(LINE2));
+		buf.add(new CtagsEntry(LINE3));
+	}
+
+	protected void tearDown() throws Exception {
+		super.tearDown();
+	}
+
 	public void testAddRemoveFile() {
 		assertEquals(2, buf.getFileNames().size());
 		buf.removeFile(".\\includes\\misc\\PersistenceUtilities.inc.php");
@@ -74,7 +85,7 @@ public class CtagsBufferTest extends TestCase {
 	}
 
 	private CtagsBuffer getAddonCtagsBuffer() {
-		CtagsBuffer addBuf = new CtagsBuffer(new CtagsParser());
+		CtagsBuffer addBuf = new CtagsBuffer();
 		addBuf.add(new CtagsEntry(ADDON_CTAGS_LINE));
 		return addBuf;
 	}
@@ -84,18 +95,5 @@ public class CtagsBufferTest extends TestCase {
 		buf.append(addBuf, ".\\includes\\pages\\NewsPage.inc.php");
 		assertEquals(4, buf.size());
 		assertEquals(1, buf.getTagsByFile(".\\includes\\pages\\NewsPage.inc.php").size());
-	}
-
-	protected void setUp() throws Exception {
-		super.setUp();
-		buf = new CtagsBuffer(new CtagsParser());
-		buf.add(new CtagsEntry(LINE1));
-		buf.add(new CtagsEntry(LINE2));
-		buf.add(new CtagsEntry(LINE3));
-	}
-
-	protected void tearDown() throws Exception {
-		super.tearDown();
-		buf = null;
 	}
 }

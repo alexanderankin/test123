@@ -38,7 +38,7 @@ public class CtagsEntry implements Serializable {
     private String extensionFields;
 
     // In Java mode, for example: 
-    // signature "m" for methods, "f"-fields etc.
+    // signature "m" for methods, "f" - fields etc.
     private String signature;
 
     // In Java mode, for example: 
@@ -71,6 +71,11 @@ public class CtagsEntry implements Serializable {
         }
     }
 
+	public boolean isTagNameStartsWith(String prefix) {
+		return getTagName().startsWith(prefix);
+		
+	}
+    
     public String toString() {
         return this.stringValue;
     }
