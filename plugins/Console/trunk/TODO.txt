@@ -1,5 +1,7 @@
 + version 3.3:
 
+- command to copy a commando file to the user commando dir for easy
+  customization
 - need <INIT> code block in commando files
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
 - file name, built-in, alias completion
