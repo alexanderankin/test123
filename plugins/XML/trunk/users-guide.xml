@@ -6,13 +6,13 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!--DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd" -->
 
 <!-- I am using the DocBook schema for this to test the XML plugin's schema support. -->
 
-<book> <!-- xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:noNamespaceSchemaLocation='http://www.oasis-open.org/docbook/xmlschema/1.0b1/docbook.xsd'-->
+<book xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation='http://www.oasis-open.org/docbook/xmlschema/1.0b1/docbook.xsd'>
 
 <bookinfo><title>XML plugin user's guide</title>
 
@@ -488,6 +488,19 @@
     dependency. Other plugins can make use of SideKick to present a structure
     tree along and code completion popups.
    </para></listitem>
+   <listitem><para>Improved handling of external entities; if an external
+   entity is opened in a buffer, the contents of the buffer are parsed instead
+   of the entity file on disk.
+   </para>
+   <para>
+   Also, external entities can specify an
+   <literal>xml.root</literal> buffer-local property pointing to the top-level
+   file that includes them; this causes the parser to always parse the top-level
+   file (which eventually parses the entity), instead of the entity itself.
+   This allows code completion and validation to be performed
+   using the <literal><![CDATA[<!DOCTYPE>]]></literal>
+   specified in the top-level file.
+   </para></listitem>
    <listitem><para>Schema completion popups now only show the elements that
    can be inserted at the caret position.
    </para></listitem>
@@ -495,6 +508,9 @@
    </para></listitem>
    <listitem><para>Schema completion lists did not contain elements declared
    inside complex types.
+   </para></listitem>
+   <listitem><para>Schemas containing <literal><![CDATA[<xsd:import>]]></literal>
+   should be handled better.
    </para></listitem>
    <listitem><para>If completion popups were disabled, the plugin would beep
    when <keycap>&lt;</keycap> or <keycap>&amp;</keycap> was pressed, very annoying.

@@ -1,12 +1,14 @@
 XML 0.11:
 
-- xsl:import
 - update docs
-- work thread pool priority
+- fix xerces 2.3 deprecation
+- ids in nested files
+- recording completion and /
+- / shows an empty popup
+- completion should check isDelegated()
 
 before XML 1.0:
 
-- recording completion and /
 - swing HTML parser should be replaced with something else
 - complete <foo / to <foo />
 - html parser: empty tags
@@ -20,8 +22,6 @@ before XML 1.0:
 - xml insert: show CDATA, comment in list?
 - xmlns attributes, XMLSchema-instance stuff
 - TagParser: use segments, not strings
-- proper handling of tags in nested files
-- handle parsing open buffers better
 - instead of built-in completion info for xsd and xsl, pre-parse some
   schemas to validate these file types.
 - preparsing and grammar cache needs a rework.

@@ -139,7 +139,7 @@ xml.download-resource.message=This XML file depends on a resource which is store
 	for future use?\n\
 	\n\
 	If you want resources to be downloaded every time without prompting,\n\
-	disable the resource cache in the XML plugin's options.
+	disable the resource cache in the XML plugin options.
 
 # Option pane
 options.xml.label=XML
