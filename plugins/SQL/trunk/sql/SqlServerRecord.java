@@ -31,7 +31,7 @@ import org.gjt.sp.util.*;
  *Description of the Class
  *
  * @author     svu
- * @created    29 Август 2001 г.
+ * @created    29 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public class SqlServerRecord extends Properties
 {
@@ -406,6 +406,19 @@ public class SqlServerRecord extends Properties
 
 
   /**
+   *  Gets the AllNames attribute of the SqlServerRecord class
+   *
+   * @return    The AllNames value
+   */
+  public static Object[] getAllNames()
+  {
+    final Object[] allNames = getAllRecords().keySet().toArray();
+    Arrays.sort( allNames, Collator.getInstance() );
+    return allNames;
+  }
+
+
+  /**
    *  Gets the AllRecords attribute of the SqlServerRecord class
    *
    * @return    The AllRecords value
@@ -435,6 +448,13 @@ public class SqlServerRecord extends Properties
         if ( sr != null )
           allRecords.put( sr.getName(), sr );
       }
+        new Thread()
+        {
+          public void run()
+          {
+            EditBus.send( new SqlServerListChanged( null ) );
+          }
+        }.start();
     }
     return allRecords;
   }

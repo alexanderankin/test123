@@ -47,7 +47,7 @@ import sql.*;
  * @created    26 ?????? 2001 ?.
  */
 public class ResultSetWindow extends JPanel
-     implements SqlUtils.SelectedServerListener
+     implements EBComponent
 {
 
   protected View view;
@@ -85,9 +85,7 @@ public class ResultSetWindow extends JPanel
     add( BorderLayout.NORTH, p );
     add( BorderLayout.SOUTH, status = new JLabel() );
 
-    SqlUtils.addSelectedServerListener( this );
-
-    selectedServerChanged( SqlUtils.getSelectedServerName() );
+    updateServerName( SqlUtils.getSelectedServerName() );
 
     updateByModel( null );
 
@@ -159,12 +157,12 @@ public class ResultSetWindow extends JPanel
   /**
    *  Description of the Method
    *
-   * @param  name  Description of Parameter
+   * @param  message  Description of Parameter
    */
-  public void selectedServerChanged( String name )
+  public void handleMessage( EBMessage message )
   {
-    server.setText(
-        jEdit.getProperty( "sql.resultSet.server", new Object[]{name} ) );
+    if ( message instanceof SqlServerChanged )
+      updateServerName( ( (SqlServerChanged) message ).getNewServer() );
   }
 
 
@@ -191,6 +189,18 @@ public class ResultSetWindow extends JPanel
   {
     sortColumn = column;
     resort( table );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  name  Description of Parameter
+   */
+  protected void updateServerName( String name )
+  {
+    server.setText(
+        jEdit.getProperty( "sql.resultSet.server", new Object[]{name} ) );
   }
 
 

@@ -53,8 +53,6 @@ public class SqlUtils
 
   protected static java.util.List preprocessors = null;
 
-  protected static java.util.List selectedServerListeners = new ArrayList();
-
 
   /**
    *  Sets the SelectedServerName attribute of the SqlUtils class
@@ -62,7 +60,7 @@ public class SqlUtils
    * @param  name  The new SelectedServerName value
    * @since
    */
-  public final static void setSelectedServerName( String name )
+  public final static void setSelectedServerName( final String name )
   {
     if ( name != null )
       SqlPlugin.setProperty( "sql.currentServerName", name );
@@ -70,11 +68,15 @@ public class SqlUtils
       SqlPlugin.unsetProperty( "sql.currentServerName" );
 
     SqlPlugin.commitProperties();
-    for ( Iterator i = selectedServerListeners.listIterator(); i.hasNext();  )
-    {
-      SelectedServerListener l = (SelectedServerListener) i.next();
-      l.selectedServerChanged( name );
-    }
+
+      new Thread()
+      {
+        public void run()
+        {
+          EditBus.send( new SqlServerChanged(
+              null, name ) );
+        }
+      }.start();
   }
 
 
@@ -175,28 +177,6 @@ public class SqlUtils
     if ( preprocessors == null )
       fillPreprocessors();
     return preprocessors;
-  }
-
-
-  /**
-   *  Adds a feature to the SelectedServerListener attribute of the SqlUtils class
-   *
-   * @param  o  The feature to be added to the SelectedServerListener attribute
-   */
-  public static void addSelectedServerListener( SelectedServerListener o )
-  {
-    selectedServerListeners.add( o );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  o  Description of Parameter
-   */
-  public static void removeSelectedServerListener( SelectedServerListener o )
-  {
-    selectedServerListeners.remove( o );
   }
 
 
@@ -769,12 +749,6 @@ public class SqlUtils
         Log.log( Log.ERROR, SqlUtils.class, ex );
       }
     }
-  }
-
-
-  public static interface SelectedServerListener extends EventListener
-  {
-    public void selectedServerChanged( String newServer );
   }
 }
 

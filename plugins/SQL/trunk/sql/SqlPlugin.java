@@ -47,6 +47,7 @@ import sql.options.*;
  */
 public class SqlPlugin extends EBPlugin
 {
+  protected Hashtable sqlToolBars = new Hashtable();
   /**
    *  Description of the Field
    *
@@ -150,8 +151,70 @@ public class SqlPlugin extends EBPlugin
   public void handleMessage( EBMessage message )
   {
     if ( message instanceof SessionChanging )
+    {
       handleSessionChange( (SessionChanging) message );
+    }
+    else if ( message instanceof ViewUpdate )
+    {
+      final ViewUpdate vu = (ViewUpdate) message;
+      if ( vu.getWhat() == ViewUpdate.CREATED )
+      {
+        if ( SqlToolBar.showToolBar() )
+          addToolBar( vu.getView() );
+      }
+      else if ( vu.getWhat() == ViewUpdate.CLOSED )
+      {
+        sqlToolBars.remove( vu.getView() );
+      }
+    }
+    else if ( message instanceof PropertiesChanged )
+    {
+      Log.log( Log.DEBUG, SqlPlugin.class, "properties changed!" );
+      handlePropertiesChanged();
+    }
   }
+
+
+  private void handlePropertiesChanged()
+  {
+    final boolean show = SqlToolBar.showToolBar();
+    View view = jEdit.getFirstView();
+
+    while ( view != null )
+    {
+      if ( show )
+        addToolBar( view );
+      else
+        removeToolBar( view );
+      view = view.getNext();
+    }
+  }
+
+
+  private synchronized void addToolBar( final View view )
+  {
+    // remove old
+    removeToolBar( view );
+
+    // create new
+    final SqlToolBar toolbar = new SqlToolBar( view );
+    sqlToolBars.put( view, toolbar );
+    view.addToolBar( toolbar );
+  }
+
+
+  private synchronized void removeToolBar( View view )
+  {
+    final SqlToolBar toolbar = (SqlToolBar) sqlToolBars.get( view );
+    if ( toolbar != null )
+    {
+      // Try to remove toolbar
+      // (this does nothing if there is no toolbar)
+      view.removeToolBar( toolbar );
+      sqlToolBars.remove( view );
+    }
+  }
+
 
 
   /**
@@ -286,6 +349,7 @@ public class SqlPlugin extends EBPlugin
   {
     ResultSetWindow.clearProperties();
     SqlServerRecord.clearProperties();
+    SqlToolBar.clearProperties();
   }
 
 

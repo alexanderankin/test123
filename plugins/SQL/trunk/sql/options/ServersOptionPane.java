@@ -42,7 +42,7 @@ import sql.preprocessors.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 á×ÇÕÓÔ 2001 Ç.
+ * @created    26 ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ 2001 ï¿½.
  */
 public class ServersOptionPane extends SqlOptionPane
 {
@@ -51,7 +51,6 @@ public class ServersOptionPane extends SqlOptionPane
   private JButton addServerBtn;
   private JButton editServerBtn;
   private JButton delServerBtn;
-  private Map allServers;
 
   private JFrame parentFrame = null;
 
@@ -144,7 +143,10 @@ public class ServersOptionPane extends SqlOptionPane
       {
         public void actionPerformed( ActionEvent evt )
         {
-          final SqlServerRecord rec = (SqlServerRecord) allServersLst.getSelectedValue();
+          final String name = (String) allServersLst.getSelectedValue();
+          if ( name == null )
+            return;
+          final SqlServerRecord rec = SqlServerRecord.get( name );
           if ( rec == null )
             return;
 
@@ -162,7 +164,10 @@ public class ServersOptionPane extends SqlOptionPane
       {
         public void actionPerformed( ActionEvent evt )
         {
-          final SqlServerRecord rec = (SqlServerRecord) allServersLst.getSelectedValue();
+          final String name = (String) allServersLst.getSelectedValue();
+          if ( name == null )
+            return;
+          final SqlServerRecord rec = SqlServerRecord.get( name );
           if ( rec == null )
             return;
 
@@ -203,15 +208,15 @@ public class ServersOptionPane extends SqlOptionPane
    */
   public void _save()
   {
-    for ( Iterator e = allServers.values().iterator(); e.hasNext();  )
+    for ( Iterator e = SqlServerRecord.getAllRecords().values().iterator(); e.hasNext();  )
     {
       final SqlServerRecord rec = (SqlServerRecord) e.next();
       rec.save();
     }
 
-    final SqlServerRecord selrec = (SqlServerRecord) allServersLst.getSelectedValue();
-    if ( selrec != null )
-      SqlUtils.setSelectedServerName( selrec.getName() );
+    final String name = (String) allServersLst.getSelectedValue();
+    if ( name != null )
+      SqlUtils.setSelectedServerName( name );
     else
       SqlUtils.setSelectedServerName( null );
 
@@ -226,23 +231,11 @@ public class ServersOptionPane extends SqlOptionPane
    */
   protected void updateServerList()
   {
-    allServers = SqlServerRecord.getAllRecords();
-
-    final java.util.List allServersV = new ArrayList();
-    for ( Iterator e = allServers.values().iterator(); e.hasNext();  )
-    {
-      final SqlServerRecord sr = (SqlServerRecord) e.next();
-      allServersV.add( sr );
-    }
-
-    MiscUtilities.quicksort( allServersV, new MiscUtilities.StringCompare() );
-
-    allServersLst.setListData( allServersV.toArray() );
+    allServersLst.setListData( SqlServerRecord.getAllNames() );
 
     final String srv2select = SqlUtils.getSelectedServerName();
 
-    final Object selSrv = srv2select == null ? null : allServers.get( srv2select );
-    allServersLst.setSelectedValue( selSrv, true );
+    allServersLst.setSelectedValue( srv2select, true );
 
     updateServerListButtons();
   }
