@@ -44,6 +44,7 @@ public class TemplatesPlugin extends EditPlugin
 {
 	// private static TemplatesAction myAction = null;
 	private static String defaultTemplateDir;
+	private static String defaultVelocityDir;
 	private static String sepChar;		// System-dependant separator character
 	private static TemplateDir templates = null;
     private static VelocityEngine engine;
@@ -102,7 +103,7 @@ public class TemplatesPlugin extends EditPlugin
          engine = new VelocityEngine();
          Properties props = loadVelocityProperties();
          props.setProperty(RUNTIME_LOG, getVelocityLog());
-         props.setProperty(FILE_RESOURCE_LOADER_PATH, getVelocityResourcePath());
+         props.setProperty(FILE_RESOURCE_LOADER_PATH, TemplatesPlugin.getTemplateDir());
          engine.init(props);
       }
       return engine;
@@ -113,20 +114,28 @@ public class TemplatesPlugin extends EditPlugin
     */
    public static String getVelocityDirectory()
    {
-      return MiscUtilities.constructPath(jEdit.getSettingsDirectory(),
-         "velocity");
+		String velocityDir = jEdit.getProperty("plugin.TemplatesPlugin.velocityDir.0","");
+		if (velocityDir.equals("")) {
+			velocityDir = defaultVelocityDir;
+		}
+		return velocityDir;
    }
 
-   /**
-    * Returns the path used to load velocity resources.
-    */
-   public static String getVelocityResourcePath()
-   {
-      // return MiscUtilities.constructPath(getVelocityDirectory(),
-      //    "templates");
-      return TemplatesPlugin.getTemplateDir();
-   }
-
+	/** 
+	 * Change the directory where velocity resources are stored
+	 * @param velocityDirVal The new velocity directory
+	 */
+	public static void setVelocityDir(String velocityDirVal) {
+		if (!velocityDirVal.endsWith(sepChar)) {
+			velocityDirVal = velocityDirVal + sepChar;
+		}
+		if (defaultVelocityDir.equals(velocityDirVal)) {
+			jEdit.unsetProperty("plugin.TemplatesPlugin.velocityDir.0");
+		} else {
+			jEdit.setProperty("plugin.TemplatesPlugin.velocityDir.0",velocityDirVal);
+		}
+	}
+	
    /**
     * Returns the file for velocity logging messages.
     */
@@ -180,6 +189,8 @@ public class TemplatesPlugin extends EditPlugin
       sepChar = System.getProperty("file.separator");
       defaultTemplateDir = jEdit.getSettingsDirectory() + sepChar +
 				"templates" + sepChar;
+      defaultVelocityDir = jEdit.getSettingsDirectory() + sepChar +
+				"velocity" + sepChar;
       File velocityDir = new File(getVelocityDirectory());
       if (velocityDir.isFile()) {
          Log.log(Log.DEBUG, this, "'" + getVelocityDirectory() + "' is a file");
@@ -188,12 +199,12 @@ public class TemplatesPlugin extends EditPlugin
          Log.log(Log.DEBUG, this, "Cannot make directory '" + getVelocityDirectory() + "'");
       }
 
-      File resourcesDir = new File(getVelocityResourcePath());
-      if (!resourcesDir.exists() && !resourcesDir.mkdirs()) {
-         Log.log(Log.DEBUG, this, "Cannot make directory '" + getVelocityResourcePath() + "'");
+      File templatesDir = new File(TemplatesPlugin.getTemplateDir());
+      if (!templatesDir.exists() && !templatesDir.mkdirs()) {
+         Log.log(Log.DEBUG, this, "Cannot make directory '" + TemplatesPlugin.getTemplateDir() + "'");
       }
       // templates = new TemplateDir(new File(this.getTemplateDir()));
-      templates = new TemplateDir(null, resourcesDir);
+      templates = new TemplateDir(null, templatesDir);
       templates.refreshTemplates();
    }
 
@@ -373,6 +384,9 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2002/07/24 15:33:33  sjakob
+	 * Changed hard-coded Velocity resource directory to a jEdit property.
+	 *
 	 * Revision 1.1  2002/04/30 19:26:10  sjakob
 	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
 	 *
