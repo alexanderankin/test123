@@ -300,6 +300,7 @@ public class ConsolePlugin extends EBPlugin
 	//{{{ loadMatcher() method
 	static void loadMatcher(boolean user, String internalName, Vector vec)
 	{
+		fdsafdsafdsa
 		String name = jEdit.getProperty("console.error." + internalName + ".name");
 		String error = jEdit.getProperty("console.error." + internalName + ".match");
 		String warning = jEdit.getProperty("console.error." + internalName + ".warning");

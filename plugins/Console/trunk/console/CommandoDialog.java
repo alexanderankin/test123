@@ -85,6 +85,8 @@ public class CommandoDialog extends EnhancedDialog
 			}
 		}
 
+		load((CommandoCommand)commandCombo.getSelectedItem());
+
 		content.add(BorderLayout.CENTER,tabs);
 
 		Box buttons = new Box(BoxLayout.X_AXIS);

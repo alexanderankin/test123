@@ -297,22 +297,8 @@ implements EBComponent, Output
 
 		try
 		{
-			// split long output text in small chunks of size 800:
-			StringChunkTokenizer sct =
-				new StringChunkTokenizer(msg,800," ,;\t\n",80);
-			while (sct.hasMoreTokens())
-			{
-				String chunk = sct.nextToken();
-				if (chunk.length() > 0)
-					outputDocument.insertString(
-						outputDocument.getLength(),
-						chunk,style);
-				if (chunk.length() == 0 ||
-				    chunk.charAt(chunk.length()-1) != '\n')
-					outputDocument.insertString(
-						outputDocument.getLength(),
-						"\n",null);
-			}
+			outputDocument.insertString(outputDocument.getLength(),
+				msg,style);
 		}
 		catch(BadLocationException bl)
 		{
@@ -381,15 +367,10 @@ implements EBComponent, Output
 	{
 		style = new SimpleAttributeSet();
 
-		StyleConstants.setFontFamily(style,jEdit.getProperty("console.font"));
-		StyleConstants.setFontSize(style,jEdit.getIntegerProperty("console.fontsize",12));
-
-		int _style = jEdit.getIntegerProperty("console.fontstyle",Font.PLAIN);
-		StyleConstants.setBold(style,(_style & Font.BOLD) != 0);
-		StyleConstants.setItalic(style,(_style & Font.ITALIC) != 0);
-
 		output.setBackground(jEdit.getColorProperty("console.bgColor"));
 		output.setForeground(jEdit.getColorProperty("console.plainColor"));
+		output.setFont(jEdit.getFontProperty("console.font"));
+
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
