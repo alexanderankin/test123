@@ -1,6 +1,6 @@
 /*
  * GenericTagsParser.java
- * Copyright (c) 2001 Kenrick Drew
+ * Copyright (c) 2001, 2002 Kenrick Drew
  * kdrew@earthlink.net
  *
  * This file is part of TagsPlugin
@@ -284,6 +284,28 @@ abstract class GenericTagsParser implements TagsParser {
     }
     
     return matches;
+  }
+  
+  /***************************************************************************/
+  protected String removeUnwantedChars(String string)
+  {
+    Log.log(Log.DEBUG, this, "Orig search string:  " + string);
+    
+    StringBuffer buf = new StringBuffer(string.length());
+
+    int length = string.length();
+    char c;
+    for (int i = 0; i < length; i++) 
+    {
+      c = string.charAt(i);
+      if (c == '\\' && string.charAt(i + 1) == '/') // removes '/' from "\// foo"
+        continue;
+      else
+        buf.append(c);
+    }
+    
+    Log.log(Log.DEBUG, this, "New orig search string:  " + buf.toString());   
+    return buf.toString();
   }
   
   /*+*************************************************************************/
