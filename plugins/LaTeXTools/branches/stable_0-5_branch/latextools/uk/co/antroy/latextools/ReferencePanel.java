@@ -20,6 +20,8 @@ package uk.co.antroy.latextools;
 
 import gnu.regexp.*;
 import uk.co.antroy.latextools.parsers.*;
+import uk.co.antroy.latextools.macros.*;
+
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
@@ -63,7 +65,7 @@ public class ReferencePanel
    * @param view the current view
    * @param buff the active buffer
    */
-    public ReferencePanel(View view, Buffer buff) {
+    public ReferencePanel(final View view, Buffer buff) {
         super(view, buff, "Ref");
         refList = new JList();
         refList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -83,8 +85,8 @@ public class ReferencePanel
                     } else {
                         suppress = false;
                     }
-
-                    visitLabel();
+                    LaTeXAsset asset = (LaTeXAsset)refList.getSelectedValue();
+                    TextMacros.visitAsset(view, asset);
                 }
             }
             public void mouseExited(MouseEvent e) {
@@ -121,9 +123,6 @@ public class ReferencePanel
         ed.show();
     }
 
-    /**
-   * ¤
-   */
     public void refresh() {
 
         if (suppress)
@@ -135,7 +134,7 @@ public class ReferencePanel
             bufferChanged = false;
         }
 
-        if (!LaTeXMacros.isTeXFile(buffer)) {
+        if (!ProjectMacros.isTeXFile(buffer)) {
             displayNotTeX(BorderLayout.CENTER);
         } else {
             LabelParser parser = new LabelParser(view, buffer);
@@ -172,21 +171,5 @@ public class ReferencePanel
             view.getTextArea().setCaretPosition(
                     currentCursorPosn + ref.length());
         }
-    }
-
- 
-    private void visitLabel() {
-        LaTeXAsset asset = (LaTeXAsset)refList.getSelectedValue();
-        Buffer goToBuff = jEdit.openFile(view, asset.getFile().toString());
-        view.setBuffer(goToBuff);
-        int line = goToBuff.getLineOfOffset(asset.start.getOffset());
-        JEditTextArea textArea = view.getTextArea();
-        DisplayManager fvm = textArea.getDisplayManager();
-        fvm.expandFold(line, false);
-        textArea.setFirstPhysicalLine(line);
-        int lineStart = view.getTextArea().getLineStartOffset(line);
-        int lineEnd = view.getTextArea().getLineEndOffset(line);
-        Selection.Range sel = new Selection.Range(lineStart, lineEnd);
-        view.getTextArea().setSelection(sel);
     }
 }

@@ -4,6 +4,8 @@
 //  :latex.root='D:\Projects\Thesis\src\Thesis.tex':
 package uk.co.antroy.latextools;
 
+import uk.co.antroy.latextools.macros.*;
+
 import gnu.regexp.RE;
 import gnu.regexp.REException;
 import gnu.regexp.REMatch;
@@ -15,7 +17,7 @@ import java.io.File;
 
 import java.net.MalformedURLException;
 
-import javax.swing.ImageIcon;
+import javax.swing.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -32,12 +34,12 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class ImageViewer {
    
-    private JPanel imagePanel;
+    private JComponent imagePanel;
 
     private static final ImageViewer imageViewer = new ImageViewer();
     
     private ImageViewer(){
-       imagePanel = new JPanel(new BorderLayout());
+       //imagePanel = new JPanel(new BorderLayout());
     }
     
     private File findFileName(JEditTextArea textArea, Buffer buffer) {
@@ -64,7 +66,7 @@ public class ImageViewer {
         File imageFile = new File(filename);
 
         if (!imageFile.exists()) {
-            String tex = LaTeXMacros.getMainTeXPath(buffer);
+            String tex = ProjectMacros.getMainTeXPath(buffer);
             File texFile = new File(tex);
             imageFile = new File(texFile.getParent(), filename);
         }
@@ -81,29 +83,31 @@ public class ImageViewer {
        return imageViewer;
     }
     
-    public JPanel showImage() {
+    public JComponent showImage() {
 
         return imagePanel;
     }
 
-    //          \includegraphics*[width=7cm]{graphics\complexes.png}
-    // \hfill\includegraphics[width=.3\textwidth]{graphics/cchalfspace1.png}\hfill
-    // \includegraphics[width=.3\textwidth]{graphics/cchalfspace2.png}\hfill\textcolor{white}{.}
+    public static void showInInfoPane(JEditTextArea textArea, 
+                                          Buffer buffer){
+        ImageViewer viewer = ImageViewer.getInstance();
+        viewer.setImageFromBuffer(textArea, buffer);
+        JComponent p = viewer.showImage();
+        LaTeXDockable.instance.setInfoPanel(p, "Image Under Caret:");
+    }
+    
 
     public void setImageFromBuffer(JEditTextArea textArea, 
                                           Buffer buffer) {
         File file = findFileName(textArea, buffer);
 
         if (file == null) {
-
+            imagePanel = new JLabel("<html><font color='#dd0000'><b>There are no images under the caret!");
             return;
         }
 
-        imagePanel.removeAll(); //= new JPanel();
+//        imagePanel.removeAll(); //= new JPanel();
         JLabel imageLabel = new JLabel(file.getPath());
-        JScrollPane scrollpane = new JScrollPane(
-                                         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
-                                         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         ImageIcon image = null;
 
         if (file.exists()) {
@@ -118,15 +122,12 @@ public class ImageViewer {
         }
 
         JLabel label = new JLabel(image);
-        JViewport viewport = new JViewport();
-        viewport.setView(label);
-        scrollpane.setViewport(viewport);
-        imagePanel.add(scrollpane, BorderLayout.CENTER);
-        imagePanel.add(imageLabel, BorderLayout.SOUTH);
-        int imageHeight = image.getIconHeight();
-        int imageWidth = image.getIconWidth();
+        JPanel inner = new JPanel();
+        inner.add(label, BorderLayout.CENTER);
+        imagePanel = new JScrollPane(inner, 
+                                    JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+                                    JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 
-        imagePanel.setPreferredSize(new Dimension(imageWidth + 12, imageHeight + 12));
      }
 
 }

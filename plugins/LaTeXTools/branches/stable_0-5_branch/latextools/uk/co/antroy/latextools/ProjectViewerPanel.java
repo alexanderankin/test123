@@ -1,4 +1,5 @@
 package uk.co.antroy.latextools;
+import uk.co.antroy.latextools.macros.*;
 
 import console.Console;
 import console.Shell;
@@ -59,12 +60,12 @@ public class ProjectViewerPanel extends AbstractToolPanel implements MouseListen
         
         public void refresh(){
             
-          if (!LaTeXMacros.isTeXFile(buffer)) {
+          if (!ProjectMacros.isTeXFile(buffer)) {
               log("!isTexFile");
               displayNotTeX(BorderLayout.CENTER);
             } else {
                 removeAll();
-                tree = new JTree(LaTeXMacros.getProjectFiles(view, buffer));
+                tree = new JTree(ProjectMacros.getProjectFiles(view, buffer));
                 tree.setShowsRootHandles(true);
                 tree.addMouseListener(this);
                 tree.setToggleClickCount(3);

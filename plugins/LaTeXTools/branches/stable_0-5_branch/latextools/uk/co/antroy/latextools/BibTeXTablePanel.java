@@ -18,6 +18,7 @@
 */
 package uk.co.antroy.latextools; 
 
+import uk.co.antroy.latextools.macros.*;
 
 import java.awt.BorderLayout;
 import java.awt.*;
@@ -72,10 +73,10 @@ public class BibTeXTablePanel
   public void refresh() {
     removeAll();
 
-    if (!LaTeXMacros.isTeXFile(buffer) && !LaTeXMacros.isBibFile(buffer)) {
+    if (!ProjectMacros.isTeXFile(buffer) && !ProjectMacros.isBibFile(buffer)) {
       displayNotTeX(BorderLayout.CENTER);
     } else {
-        enableInsert = !LaTeXMacros.isBibFile(buffer);
+        enableInsert = !ProjectMacros.isBibFile(buffer);
         buildPanel();
     }
 

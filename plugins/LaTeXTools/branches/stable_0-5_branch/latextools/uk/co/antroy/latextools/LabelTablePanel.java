@@ -18,6 +18,7 @@
 */
 package uk.co.antroy.latextools; 
 
+import uk.co.antroy.latextools.macros.*;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
@@ -85,7 +86,7 @@ public class LabelTablePanel
         bufferChanged = false;
     }
 
-    if (!LaTeXMacros.isTeXFile(buffer)) {
+    if (!ProjectMacros.isTeXFile(buffer)) {
       displayNotTeX(BorderLayout.CENTER);
     } else {
         buildPanel();
@@ -108,19 +109,21 @@ public class LabelTablePanel
                 insert();
             } else if (e.getClickCount() == 1) {
                 if (!suppress) {
- Log.log(Log.DEBUG, this, "Refreshing Cursor Position");
                     refreshCurrentCursorPosn();
                 }
 
                 if ((e.getModifiers() & e.ALT_MASK) == e.ALT_MASK) {
- Log.log(Log.DEBUG, this, "Suppress");
                    suppress = true;
                 } else {
                     suppress = false;
- Log.log(Log.DEBUG, this, "UnSuppress");
                 }
-
-                visitLabel();
+                
+                int sel = table.getSelectedRow();
+                LabelTableModel mod = (LabelTableModel) model;
+                LaTeXAsset asset = mod.getRowEntry(sel);
+                
+                TextMacros.visitAsset(view, asset);
+                //visitLabel();
             }
         }
         public void mouseExited(MouseEvent e) {
@@ -169,26 +172,6 @@ public class LabelTablePanel
             currentCursorPosn + sb.length());
   }
   
-    private void visitLabel() {
-        int sel = table.getSelectedRow();
-        LabelTableModel mod = (LabelTableModel) model;
-        LaTeXAsset asset = mod.getRowEntry(sel);
-        Buffer goToBuff = jEdit.openFile(view, asset.getFile().toString());
-        view.setBuffer(goToBuff);
-        
-        Log.log(Log.DEBUG,this,"Ref Start: " + asset.start.getOffset());
-        Log.log(Log.DEBUG,this,"Buffer Length: " + goToBuff.getLength());
-        int line = goToBuff.getLineOfOffset(asset.start.getOffset());
-        Log.log(Log.DEBUG,this,"***");
-        
-        JEditTextArea textArea = view.getTextArea();
-        DisplayManager fvm = textArea.getDisplayManager();
-        fvm.expandFold(line, false);
-        textArea.setFirstPhysicalLine(line);
-        int lineStart = view.getTextArea().getLineStartOffset(line);
-        int lineEnd = view.getTextArea().getLineEndOffset(line);
-        Selection.Range selectionRange = new Selection.Range(lineStart, lineEnd);
-        view.getTextArea().setSelection(selectionRange);
-    }
+
 
 }

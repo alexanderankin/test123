@@ -5,51 +5,51 @@
 <ACTIONS>
   <ACTION NAME="set-main">
 		<CODE>
-		       uk.co.antroy.latextools.LaTeXMacros.setMainFile(buffer);
+		       uk.co.antroy.latextools.macros.ProjectMacros.setMainFile(buffer);
  		</CODE>
   </ACTION>
   <ACTION NAME="reset-main">
 		<CODE>
-		       uk.co.antroy.latextools.LaTeXMacros.resetMainFile();
+		       uk.co.antroy.latextools.macros.ProjectMacros.resetMainFile();
  		</CODE>
   </ACTION>
    <ACTION NAME="show-main">
 		<CODE>
-		       uk.co.antroy.latextools.LaTeXMacros.showMainFile(view);
+		       uk.co.antroy.latextools.macros.ProjectMacros.showMainFile(view);
  		</CODE>
   </ACTION>
   
    <ACTION NAME="increment-phrase">
 		<CODE>
-            uk.co.antroy.latextools.LaTeXMacros.repeat(view,false);
+            uk.co.antroy.latextools.macros.TextMacros.repeat(view,false);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="increment-phrase-from-x">
 		<CODE>
-            uk.co.antroy.latextools.LaTeXMacros.repeat(view,true);
+            uk.co.antroy.latextools.macros.TextMacros.repeat(view,true);
  		</CODE>
   </ACTION>
   <ACTION NAME="surround-selection">
 		<CODE>
-            uk.co.antroy.latextools.LaTeXMacros.surround(view);
+            uk.co.antroy.latextools.macros.TextMacros.surround(view);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="insert-environment">
 		<CODE>
-            uk.co.antroy.latextools.LaTeXMacros.newEnvironment(view);
+            uk.co.antroy.latextools.macros.TextMacros.newEnvironment(view);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="insert-command">
 		<CODE>
-            uk.co.antroy.latextools.LaTeXMacros.newCommand(view);
+            uk.co.antroy.latextools.macros.TextMacros.newCommand(view);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="show-image-under-caret">
-		<CODE>
+<!--		<CODE>
             viewer = uk.co.antroy.latextools.ImageViewer.getInstance();
             viewer.setImageFromBuffer(textArea, buffer);
             manager = view.getDockableWindowManager();
@@ -57,59 +57,88 @@
             setAccessibility(true);
             manager.propertiesChanged();
  		</CODE>
+-->	
+        <CODE>
+            uk.co.antroy.latextools.ImageViewer.showInInfoPane(textArea, buffer);
+            manager = view.getDockableWindowManager();
+            manager.showDockableWindow("navigation-dock");
+            setAccessibility(true);
+            manager.propertiesChanged();
+ 		</CODE>
   </ACTION>
   
   <ACTION NAME="compile">
 		<CODE>
-        uk.co.antroy.latextools.LaTeXMacros.compile(view, buffer, false);
+        uk.co.antroy.latextools.macros.CompilationMacros.compile(view, buffer, false);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="compile-prompt">
 		<CODE>
-        uk.co.antroy.latextools.LaTeXMacros.compile(view, buffer, true);
+        uk.co.antroy.latextools.macros.CompilationMacros.compile(view, buffer, true);
  		</CODE>
   </ACTION>
 
   <ACTION NAME="viewoutput">
 		<CODE>
-        uk.co.antroy.latextools.LaTeXMacros.viewOutput(view, buffer, false);
+        uk.co.antroy.latextools.macros.CompilationMacros.viewOutput(view, buffer, false);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="viewoutput-prompt">
 		<CODE>
-        uk.co.antroy.latextools.LaTeXMacros.viewOutput(view, buffer, true);
+        uk.co.antroy.latextools.macros.CompilationMacros.viewOutput(view, buffer, true);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="bibtex">
 		<CODE>
-        uk.co.antroy.latextools.LaTeXMacros.bibtex(view, buffer);
+        uk.co.antroy.latextools.macros.CompilationMacros.bibtex(view, buffer);
  		</CODE>
   </ACTION>
   
   <ACTION NAME="erase-working">
 		<CODE>
-        uk.co.antroy.latextools.LaTeXMacros.deleteWorkingFiles(view, buffer);
+        uk.co.antroy.latextools.macros.CompilationMacros.deleteWorkingFiles(view, buffer);
  		</CODE>
   </ACTION>
 
   <ACTION NAME="open-import">
 		<CODE>
-        uk.co.antroy.latextools.LaTeXMacros.openImport(view, buffer);
+        uk.co.antroy.latextools.macros.ProjectMacros.openImport(view, buffer);
  		</CODE>
   </ACTION>
 
   <ACTION NAME="open-main">
 		<CODE>
-        jEdit.openFile(view, uk.co.antroy.latextools.LaTeXMacros.getMainTeXPath(buffer));
+        jEdit.openFile(view, uk.co.antroy.latextools.macros.ProjectMacros.getMainTeXPath(buffer));
  		</CODE>
   </ACTION>
   
   <ACTION NAME="rename-label">
 		<CODE>
-        uk.co.antroy.latextools.LaTeXMacros.renameLabel(view, buffer);
+        uk.co.antroy.latextools.macros.ProjectMacros.renameLabel(view, buffer);
  		</CODE>
   </ACTION>
+  
+  <ACTION NAME="find-duplicate-labels">
+		<CODE>
+        uk.co.antroy.latextools.macros.ErrorFindingMacros.displayDuplicateLabels(view, buffer);
+        manager = view.getDockableWindowManager();
+        manager.showDockableWindow("navigation-dock");
+        setAccessibility(true);
+        manager.propertiesChanged();
+ 		</CODE>
+  </ACTION>
+  
+  <ACTION NAME="find-orphaned-references">
+		<CODE>
+        uk.co.antroy.latextools.macros.ErrorFindingMacros.displayOrphanedRefs(view, buffer);
+        manager = view.getDockableWindowManager();
+        manager.showDockableWindow("navigation-dock");
+        setAccessibility(true);
+        manager.propertiesChanged();
+ 		</CODE>
+  </ACTION>
+  
 </ACTIONS>

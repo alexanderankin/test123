@@ -18,6 +18,8 @@
  */
 package uk.co.antroy.latextools; 
 
+import uk.co.antroy.latextools.macros.*;
+
 import gnu.regexp.RE;
 import gnu.regexp.REException;
 import gnu.regexp.REMatch;
@@ -160,7 +162,7 @@ public class NavigationPanel
       bufferChanged = false;
     }
 
-    if (!LaTeXMacros.isTeXFile(buffer)) {
+    if (!ProjectMacros.isTeXFile(buffer)) {
       displayNotTeX(BorderLayout.CENTER);
     } else {
       loadNavigationItems();
@@ -263,7 +265,7 @@ public class NavigationPanel
     navItems.clear();
 		
 		NavigationList nlist = (NavigationList) options.getSelectedItem();
-		File main = LaTeXMacros.getMainTeXFile(buffer);
+		File main = ProjectMacros.getMainTeXFile(buffer);
 		
 		if (main.exists()) {
 			searchInput(main, nlist);
