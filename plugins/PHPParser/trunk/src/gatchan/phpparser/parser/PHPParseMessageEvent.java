@@ -19,6 +19,7 @@ public class PHPParseMessageEvent {
 
   /** message for syntax case '' ;. */
   public static int MESSAGE_CASE_SEMICOLON = 10;
+  public static int MESSAGE_DEPRECATED_VAR_TOKEN = 11;
 
   private int messageClass;
   private int level;

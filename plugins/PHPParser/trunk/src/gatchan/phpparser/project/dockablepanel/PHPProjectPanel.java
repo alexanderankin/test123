@@ -35,6 +35,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     buttonDel.setEnabled(false);
     projectManager = ProjectManager.getInstance();
     final JToolBar toolbar = new JToolBar();
+    toolbar.setFloatable(false);
     final JButton newProject = new JButton(GUIUtilities.loadIcon("New.png"));
     final JButton openProject = new JButton(GUIUtilities.loadIcon("Open.png"));
     newProject.setToolTipText("Create a new project");

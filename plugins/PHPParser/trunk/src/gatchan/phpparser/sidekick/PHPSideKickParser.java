@@ -3,6 +3,7 @@ package gatchan.phpparser.sidekick;
 import errorlist.DefaultErrorSource;
 import errorlist.ErrorSource;
 import gatchan.phpparser.PHPErrorSource;
+import gatchan.phpparser.PHPParserOptionPane;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.ParseException;
 import gatchan.phpparser.parser.ParsingAbortedError;
@@ -12,10 +13,7 @@ import gatchan.phpparser.project.ProjectManager;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.TextUtilities;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 import sidekick.SideKickCompletion;
@@ -68,6 +66,7 @@ public final class PHPSideKickParser extends SideKickParser {
       stop();
     }
     parser = new PHPParser();
+    parser.setPhp5Enabled(jEdit.getBooleanProperty(PHPParserOptionPane.PROP_PHP5_SUPPORT));
     parser.setPath(path);
     try {
       errorSource.removeFileErrors(path);

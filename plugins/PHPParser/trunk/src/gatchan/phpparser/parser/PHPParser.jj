@@ -94,6 +94,7 @@ public final class PHPParser {
   /** Tell if the parsing should be stopped. */
   private boolean shouldStop;
   
+  private boolean php5Enabled;
   //}}}
 
   //{{{ PHPParser()
@@ -120,7 +121,10 @@ public final class PHPParser {
   public String getPath() {
     return path;
   }
-  
+  //{{{ 
+  public void setPhp5Enabled(boolean php5Enabled) {
+    this.php5Enabled = php5Enabled;
+  } //}}}  
   //}}}
   //{{{ stop()
   
@@ -416,6 +420,37 @@ MORE :
 {
   < ~[] >
 }
+
+
+//{{{ PHP5 tokens
+/* VISIBILITY */
+<PHPPARSING> TOKEN :
+{
+  <PUBLIC    : "public">
+| <PROTECTED : "protected">
+| <PRIVATE   : "private">
+}
+
+<PHPPARSING> TOKEN :
+{
+  <ABSTRACT : "abstract">
+}
+
+<PHPPARSING> TOKEN :
+{
+  <INTERFACE  : "interface">
+| <IMPLEMENTS : "implements">
+| <FINAL      : "final">
+}
+
+/* Exceptions */
+<PHPPARSING> TOKEN :
+{
+  <TRY   : "try">
+| <CATCH : "catch">
+}
+//}}}
+
 
 /* KEYWORDS */
 <PHPPARSING> TOKEN :
@@ -715,7 +750,7 @@ MORE :
 
 //}}}
 
-//{{{ PARSER
+
 
 //{{{ PHP Structures
 
@@ -870,6 +905,76 @@ void Php() :
 
 //}}}
 
+//{{{ interfaceDeclaration()
+InterfaceDeclaration interfaceDeclaration() :
+{
+  Token visibilityToken = null;
+  Token interfaceToken;
+}
+{
+  interfaceToken = <INTERFACE>
+  <IDENTIFIER>
+  <LBRACE>
+  (
+    [visibilityToken = visibility()]
+    interfaceMethodDeclaration()
+  )*
+  <RBRACE>
+  {
+    //todo return interface declaration
+    return new InterfaceDeclaration(interfaceToken.sourceStart,
+                                    interfaceToken.sourceEnd,
+                                    interfaceToken.beginLine,
+                                    interfaceToken.endLine,
+                                    interfaceToken.beginColumn,
+                                    interfaceToken.endColumn);
+  }
+} //}}}
+
+//{{{ interfaceMethodDeclaration()
+/**
+ * A Method Declaration.
+ * <b>function</b> MetodDeclarator() Block()
+ *
+ * @return a MethodDeclaration
+ */
+MethodDeclaration interfaceMethodDeclaration() :
+{
+  final MethodDeclaration functionDeclaration;
+  final MethodHeader methodHeader;
+  final Block block;
+  final OutlineableWithChildren seg = currentSegment;
+  final Token functionToken;
+}
+{
+  functionToken = <FUNCTION>
+  
+  methodHeader = methodHeader(functionToken,CONST_METHOD)
+  {
+    functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
+  }
+  try {
+    <SEMICOLON>
+  } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected token : "+e.currentToken.image,
+                                            ";",
+                                            e.currentToken.image,
+                                            e.currentToken.sourceStart,
+                                            e.currentToken.sourceEnd,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.beginColumn,
+                                            e.currentToken.endColumn));
+    
+  }
+  {
+    return functionDeclaration;
+  }
+} //}}}
+
+
 //{{{ Class methods
 
 //{{{ ClassDeclaration()
@@ -886,103 +991,171 @@ ClassDeclaration ClassDeclaration() :
   final ClassDeclaration classDeclaration;
   Token className = null;
   final Token superclassName, classToken;
+  Token abstractToken = null;
+  String classNameImage = SYNTAX_ERROR_CHAR;
+  String superclassNameImage = null;
+}
+{
+  abstractToken = <ABSTRACT>
+  {
+    //{{{ Parse error
+    if (!php5Enabled) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected token : abstract",
+                                            "",
+                                            "abstract",
+                                            abstractToken.sourceStart,
+                                            abstractToken.sourceEnd,
+                                            abstractToken.beginLine,
+                                            abstractToken.endLine,
+                                            abstractToken.endColumn,
+                                            abstractToken.endColumn+1));
+    } //}}}
+  }
+  classHeader = classHeader(abstractToken)
+  {
+    classDeclaration = new ClassDeclaration(currentSegment,
+                                            classHeader,
+                                            classHeader.getSourceStart(),
+                                            classHeader.getSourceEnd(),
+                                            classHeader.getBeginLine(),
+                                            classHeader.getEndLine(),
+                                            classHeader.getBeginColumn(),
+                                            classHeader.getEndColumn());
+      currentSegment.add(classDeclaration);
+      currentSegment = classDeclaration;
+  }
+  //todo change this
+  abstractClassBody(classDeclaration)
+  {
+    currentSegment = (OutlineableWithChildren) currentSegment.getParent();
+    pushOnAstNodes(classDeclaration);
+    return classDeclaration;
+  }
+|
+  classHeader = classHeader(null)
+  {
+    classDeclaration = new ClassDeclaration(currentSegment,
+                                            classHeader,
+                                            classHeader.getSourceStart(),
+                                            classHeader.getSourceEnd(),
+                                            classHeader.getBeginLine(),
+                                            classHeader.getEndLine(),
+                                            classHeader.getBeginColumn(),
+                                            classHeader.getEndColumn());
+      currentSegment.add(classDeclaration);
+      currentSegment = classDeclaration;
+  }
+  //todo change this
+  ClassBody(classDeclaration)
+  {
+    currentSegment = (OutlineableWithChildren) currentSegment.getParent();
+    pushOnAstNodes(classDeclaration);
+    return classDeclaration;
+  }
+}
+//}}}
+
+//{{{ classHeader(Token abstractToken)
+ClassHeader classHeader(Token abstractToken) :
+{
+  Token classToken;
+  Token className = null;
+  Token superclassName;
+  Token firstToken = abstractToken;
   String classNameImage = SYNTAX_ERROR_CHAR;
   String superclassNameImage = null;
 }
 {
   classToken = <CLASS>
+  {
+    if (firstToken == null) firstToken = classToken;
+  }
   try {
     className = <IDENTIFIER>
     {
       classNameImage = className.image;
     }
   } catch (ParseException e) {
+    //{{{ Parse error
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "identifier expected",
                                           "identifier",
                                           e.currentToken.image,
-                                          classToken.sourceStart,
                                           classToken.sourceEnd,
-                                          classToken.beginLine,
+                                          classToken.sourceEnd+1,
+                                          classToken.endLine,
                                           classToken.endLine,
                                           classToken.endColumn,
-                                          classToken.endColumn+1));
+                                          classToken.endColumn+1)); //}}}
   }
   [
-    <EXTENDS>
-    try {
-      superclassName = <IDENTIFIER>
-      {superclassNameImage = superclassName.image;}
-    } catch (ParseException e) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "identifier expected",
-                                            "identifier",
-                                            e.currentToken.next.image,
-                                            e.currentToken.next.sourceStart,
-                                            e.currentToken.next.sourceEnd,
-                                            e.currentToken.next.beginLine,
-                                            e.currentToken.next.endLine,
-                                            e.currentToken.next.beginColumn,
-                                            e.currentToken.next.endColumn));
-      superclassNameImage = SYNTAX_ERROR_CHAR;
-      error_skipto(LBRACE);
+  <EXTENDS>
+  try {
+    superclassName = <IDENTIFIER>
+    {
+      superclassNameImage = superclassName.image;
     }
+  } catch (ParseException e) {
+    //{{{ Parse error
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "identifier expected",
+                                          "identifier",
+                                          e.currentToken.next.image,
+                                          e.currentToken.next.sourceStart,
+                                          e.currentToken.next.sourceEnd,
+                                          e.currentToken.next.beginLine,
+                                          e.currentToken.next.endLine,
+                                          e.currentToken.next.beginColumn,
+                                          e.currentToken.next.endColumn)); 
+    superclassNameImage = SYNTAX_ERROR_CHAR;
+    error_skipto(LBRACE);//}}}
+  }
+  ]
+  [
+    <IMPLEMENTS>
+    <IDENTIFIER>
+    ( <COMMA> <IDENTIFIER> )*
   ]
   {
     final int end,endLine,endColumn;
     if (className == null) {
-      end         = classToken.sourceEnd;
-      endLine     = classToken.endLine;
-      endColumn   = classToken.endColumn;
+      end         = firstToken.sourceEnd;
+      endLine     = firstToken.endLine;
+      endColumn   = firstToken.endColumn;
     } else {
       end         = className.sourceEnd;
       endLine     = className.endLine;
       endColumn   = className.endColumn;
     }
     if (superclassNameImage == null) {
-      classHeader = new ClassHeader(path,
-                                    classNameImage,
-                                    classToken.sourceStart,
-                                    end,
-                                    classToken.beginLine,
-                                    endLine,
-                                    classToken.beginColumn,
-                                    endColumn);
-    } else {
-      classHeader = new ClassHeader(path,
-                                    classNameImage,
-                                    superclassNameImage,
-                                    classToken.sourceStart,
-                                    end,
-                                    classToken.beginLine,
-                                    endLine,
-                                    classToken.beginColumn,
-                                    endColumn);
+      return new ClassHeader(path,
+                             classNameImage,
+                             firstToken.sourceStart,
+                             end,
+                             firstToken.beginLine,
+                             endLine,
+                             firstToken.beginColumn,
+                             endColumn);
     }
-    classDeclaration = new ClassDeclaration(currentSegment,
-                                            classHeader,
-                                            classToken.sourceStart,
-                                            end,
-                                            classToken.beginLine,
-                                            endLine,
-                                            classToken.beginColumn,
-                                            endColumn);
-      currentSegment.add(classDeclaration);
-      currentSegment = classDeclaration;
+    return new ClassHeader(path,
+                           classNameImage,
+                           superclassNameImage,
+                           firstToken.sourceStart,
+                           end,
+                           firstToken.beginLine,
+                           endLine,
+                           firstToken.beginColumn,
+                           endColumn);
   }
-  //todo change this
-  ClassBody(classDeclaration)
-  {currentSegment = (OutlineableWithChildren) currentSegment.getParent();
-   pushOnAstNodes(classDeclaration);
-   return classDeclaration;}
-}
+}//}}}
 
-//}}}
-//{{{ ClassBody(final ClassDeclaration classDeclaration)
+//{{{ ClassBody(ClassDeclaration classDeclaration)
 
-void ClassBody(final ClassDeclaration classDeclaration) :
+void ClassBody(ClassDeclaration classDeclaration) :
 {
   final Token lBraceToken;
   Token rBraceToken;
@@ -994,6 +1167,7 @@ void ClassBody(final ClassDeclaration classDeclaration) :
       classDeclaration.setBodyStart(lBraceToken.sourceStart);
     }
   } catch (ParseException e) {
+    //{{{ Parse error
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "'{' expected",
@@ -1004,7 +1178,7 @@ void ClassBody(final ClassDeclaration classDeclaration) :
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+                                          e.currentToken.endColumn+1)); //}}}
   }
   ( ClassBodyDeclaration(classDeclaration) )*
   try {
@@ -1013,6 +1187,7 @@ void ClassBody(final ClassDeclaration classDeclaration) :
       classDeclaration.setBodyEnd(rBraceToken.sourceEnd);
     }
   } catch (ParseException e) {
+    //{{{ Parse error
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "'}' expected",
@@ -1023,13 +1198,63 @@ void ClassBody(final ClassDeclaration classDeclaration) :
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+                                          e.currentToken.endColumn+1)); //}}}
     rBraceToken = error_skipto(RBRACE);
     classDeclaration.setBodyEnd(rBraceToken.sourceEnd);
   }
 }
 
 //}}}
+//{{{ abstractClassBody(ClassDeclaration classDeclaration)
+void abstractClassBody(ClassDeclaration classDeclaration) :
+{
+  final Token lBraceToken;
+  Token rBraceToken;
+}
+{
+  try {
+    lBraceToken = <LBRACE>
+    {
+      classDeclaration.setBodyStart(lBraceToken.sourceStart);
+    }
+  } catch (ParseException e) {
+    //{{{ Parse error
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'{' expected",
+                                          "{",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1)); //}}}
+  }
+  ( abstractClassBodyDeclaration(classDeclaration) )*
+  try {
+    rBraceToken = <RBRACE>
+    {
+      classDeclaration.setBodyEnd(rBraceToken.sourceEnd);
+    }
+  } catch (ParseException e) {
+    //{{{ Parse error
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "'}' expected",
+                                          "}",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1)); //}}}
+    rBraceToken = error_skipto(RBRACE);
+    classDeclaration.setBodyEnd(rBraceToken.sourceEnd);
+  }
+} //}}}
+
 //{{{ ClassBodyDeclaration(final ClassDeclaration classDeclaration)
 
 /**
@@ -1039,13 +1264,211 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
 {
   final MethodDeclaration method;
   final FieldDeclaration field;
+  Token visibilityToken = null;
+  Token visibilityToken2 = null;
+  Token finalToken = null;
 }
 {
-  method = MethodDeclaration(CONST_METHOD) {method.analyzeCode(this); classDeclaration.addMethod(method);}
-| field  = FieldDeclaration()              {if (field != null) classDeclaration.addField(field);}
+  
+  [ 
+   visibilityToken = visibility()
+   {
+     //{{{ Parse error if not in php5
+     if (!php5Enabled) {
+       fireParseError(new PHPParseErrorEvent(ERROR,
+                                             path,
+                                             "unexpected token " + visibilityToken.image,
+                                             "",
+                                             visibilityToken.image,
+                                             visibilityToken.sourceStart,
+                                             visibilityToken.sourceEnd,
+                                             visibilityToken.beginLine,
+                                             visibilityToken.endLine,
+                                             visibilityToken.beginColumn,
+                                             visibilityToken.endColumn));
+     } //}}}
+   }
+  ]
+  try {
+    (
+       field  = FieldDeclarationPHP5(visibilityToken)
+       {
+         if (field != null) classDeclaration.addField(field);
+       }
+     |
+       [ 
+         finalToken = <FINAL>
+         [ 
+           visibilityToken2 = visibility()
+           {
+             //{{{ Parse error if not in php5
+             if (!php5Enabled) {
+               fireParseError(new PHPParseErrorEvent(ERROR,
+                                                     path,
+                                                     "unexpected token " + visibilityToken.image,
+                                                     "",
+                                                     visibilityToken.image,
+                                                     visibilityToken.sourceStart,
+                                                     visibilityToken.sourceEnd,
+                                                     visibilityToken.beginLine,
+                                                     visibilityToken.endLine,
+                                                     visibilityToken.beginColumn,
+                                                     visibilityToken.endColumn));
+             } //}}}
+             if (visibilityToken != null) {
+               fireParseError(new PHPParseErrorEvent(ERROR,
+                                                     path,
+                                                     "unexpected token " + visibilityToken2.image,
+                                                     "",
+                                                     visibilityToken2.image,
+                                                     visibilityToken2.sourceStart,
+                                                     visibilityToken2.sourceEnd,
+                                                     visibilityToken2.beginLine,
+                                                     visibilityToken2.endLine,
+                                                     visibilityToken2.beginColumn,
+                                                     visibilityToken2.endColumn));
+             }
+           }
+         ]
+       ]
+       method = MethodDeclaration(CONST_METHOD,visibilityToken)
+       {
+         method.analyzeCode(this);
+         classDeclaration.addMethod(method);
+       }
+     )
+  } catch (ParseException e) {
+    //{{{ Parse error
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "unexpected token " + e.currentToken.image,
+                                          "",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.beginColumn,
+                                          e.currentToken.endColumn)); //}}}
+  }
+|
+  field  = FieldDeclaration()
+  {
+    if (field != null) classDeclaration.addField(field);
+  }
 }
 
 //}}}
+//{{{ abstractClassBodyDeclaration(ClassDeclaration classDeclaration)
+
+/**
+ * A class can contain only methods and fields.
+ */
+void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
+{
+  final MethodDeclaration method;
+  final FieldDeclaration field;
+  Token visibilityToken = null;
+  Token visibilityToken2;
+  Token finalToken = null;
+}
+{
+  
+  [ 
+   visibilityToken = visibility()
+   {
+     //{{{ Parse error if not in php5
+     if (!php5Enabled) {
+       fireParseError(new PHPParseErrorEvent(ERROR,
+                                             path,
+                                             "unexpected token " + visibilityToken.image,
+                                             "",
+                                             visibilityToken.image,
+                                             visibilityToken.sourceStart,
+                                             visibilityToken.sourceEnd,
+                                             visibilityToken.beginLine,
+                                             visibilityToken.endLine,
+                                             visibilityToken.beginColumn,
+                                             visibilityToken.endColumn));
+     } //}}}
+   }
+  ]
+  try {
+    (
+       field  = FieldDeclarationPHP5(visibilityToken)
+       {
+         if (field != null) classDeclaration.addField(field);
+       }
+     |
+       [ 
+         finalToken = <FINAL>
+         [
+           visibilityToken2 = visibility()
+           {
+             //{{{ Parse error if not in php5
+             if (!php5Enabled) {
+               fireParseError(new PHPParseErrorEvent(ERROR,
+                                                     path,
+                                                     "unexpected token " + visibilityToken.image,
+                                                     "",
+                                                     visibilityToken.image,
+                                                     visibilityToken.sourceStart,
+                                                     visibilityToken.sourceEnd,
+                                                     visibilityToken.beginLine,
+                                                     visibilityToken.endLine,
+                                                     visibilityToken.beginColumn,
+                                                     visibilityToken.endColumn));
+             } //}}}
+             if (visibilityToken != null) {
+               fireParseError(new PHPParseErrorEvent(ERROR,
+                                                     path,
+                                                     "unexpected token " + visibilityToken2.image,
+                                                     "",
+                                                     visibilityToken2.image,
+                                                     visibilityToken2.sourceStart,
+                                                     visibilityToken2.sourceEnd,
+                                                     visibilityToken2.beginLine,
+                                                     visibilityToken2.endLine,
+                                                     visibilityToken2.beginColumn,
+                                                     visibilityToken2.endColumn));
+             }
+           }
+         ]
+       ]
+       method = MethodDeclaration(CONST_METHOD,visibilityToken)
+       {
+         method.analyzeCode(this);
+         classDeclaration.addMethod(method);
+       }
+     |
+       method = abstractMethodDeclaration(CONST_METHOD,visibilityToken)
+       {
+         classDeclaration.addMethod(method);
+       }
+     )
+  } catch (ParseException e) {
+    //{{{ Parse error
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "unexpected token " + e.currentToken.image,
+                                          "",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.beginColumn,
+                                          e.currentToken.endColumn)); //}}}
+  }
+|
+  field  = FieldDeclaration()
+  {
+    if (field != null) classDeclaration.addField(field);
+  }
+}
+
+//}}}
+
 //{{{ FieldDeclaration()
 
 /**
@@ -1131,10 +1554,269 @@ FieldDeclaration FieldDeclaration() :
                                varToken.beginLine,
                                endLine,
                                varToken.beginColumn,
-                               endColumn);}
+                               endColumn);
+  }
 }
 
 //}}}
+//{{{ FieldDeclarationPHP5()
+/**
+ * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
+ * it is only used by ClassBodyDeclaration()
+ */
+FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
+{
+  VariableDeclaration variableDeclaration;
+  final VariableDeclaration[] list;
+  final ArrayList arrayList = new ArrayList();
+  Token semicolonToken = null;
+  Token varToken = null;
+  Token modifierToken = null;
+  Token visibility2 = null;
+  int start = -1;
+  int beginLine = -1;
+  int beginColumn = -1;
+}
+{
+  {
+    //{{{ if not php5 skipping to semicolon and fire parse error
+    if (!php5Enabled) {
+      final Token semicolon = error_skipto(SEMICOLON);
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected token "+varToken.image,
+                                            "",
+                                            semicolon.image,
+                                            semicolon.sourceStart-1,
+                                            semicolon.sourceStart,
+                                            semicolon.beginLine,
+                                            semicolon.beginLine,
+                                            semicolon.beginColumn-1,
+                                            semicolon.beginColumn));
+      return null;
+    } //}}}
+  }
+  [
+    modifierToken = modifier()
+    [
+      visibility2 = visibility()
+      {
+        if (visibilityToken != null) {
+          fireParseError(new PHPParseErrorEvent(ERROR,
+                                                path,
+                                                "unexpected token "+visibility2.image,
+                                                "",
+                                                visibility2.image,
+                                                visibility2.sourceStart,
+                                                visibility2.sourceEnd,
+                                                visibility2.beginLine,
+                                                visibility2.endLine,
+                                                visibility2.endColumn,
+                                                visibility2.endColumn));      
+        }
+      }
+    ]
+    {
+      //{{{ 
+      if (visibilityToken != null) {
+        modifierToken = visibilityToken;
+      } else {
+      }
+      start       = modifierToken.sourceStart;
+      beginLine   = modifierToken.beginLine;
+      beginColumn = modifierToken.beginColumn;
+      //}}}
+    } 
+  ]
+  try {
+    variableDeclaration = VariableDeclaratorNoSuffix()
+      {
+        if (start == -1) {
+          start       = variableDeclaration.getSourceStart();
+          beginLine   = variableDeclaration.getBeginLine();
+          beginColumn = variableDeclaration.getBeginColumn();
+        }
+        arrayList.add(variableDeclaration);
+        if (!php5Enabled && varToken == null) {
+          fireParseError(new PHPParseErrorEvent(ERROR,
+                                                path,
+                                                "var token expected",
+                                                "var",
+                                                variableDeclaration.toStringExpression(),
+                                                variableDeclaration.getSourceStart()-1,
+                                                variableDeclaration.getSourceStart(),
+                                                variableDeclaration.getBeginLine(),
+                                                variableDeclaration.getBeginLine(),
+                                                variableDeclaration.getBeginColumn()-1,
+                                                variableDeclaration.getBeginColumn()));
+        }
+      }
+    } catch (ParseException e) {
+      start       = e.currentToken.sourceStart;
+      beginLine   = e.currentToken.beginLine;
+      beginColumn = e.currentToken.beginColumn;
+      final Token semicolon = error_skipto(SEMICOLON);
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "variable expected",
+                                            "variable",
+                                            e.currentToken.next.image,
+                                            varToken.sourceEnd,
+                                            semicolon.sourceEnd,
+                                            varToken.beginLine,
+                                            semicolon.endLine,
+                                            varToken.endColumn,
+                                            semicolon.endColumn));
+      return null;
+  }
+  try {
+    semicolonToken = <SEMICOLON>
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "';' expected",
+                                          ";",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+  }
+  {
+    if (arrayList.size() == 0) {
+      //todo : strange
+      return null;
+    } else {
+      list = new VariableDeclaration[arrayList.size()];
+      arrayList.toArray(list);
+    }
+    final int end, endLine, endColumn;
+    if (semicolonToken == null) {
+      end       = list[list.length-1].sourceEnd;
+      endLine   = list[list.length-1].getEndLine();
+      endColumn = list[list.length-1].getEndColumn();
+    } else {
+      end       = semicolonToken.sourceEnd;
+      endLine   = semicolonToken.endLine;
+      endColumn = semicolonToken.endColumn;
+    }
+
+    return new FieldDeclaration(path,
+                                list,
+                                currentSegment,
+                                start,
+                                end,
+                                beginLine,
+                                endLine,
+                                beginColumn,
+                                endColumn);
+  }
+}//}}}
+
+//{{{ abstractMethodDeclaration(int type, Token visibility)
+/**
+ * A Method Declaration.
+ * <b>function</b> MetodDeclarator() Block()
+ *
+ * @return a MethodDeclaration
+ */
+MethodDeclaration abstractMethodDeclaration(int type, Token visibility) :
+{
+  final MethodDeclaration functionDeclaration;
+  final MethodHeader methodHeader;
+  final Block block;
+  final OutlineableWithChildren seg = currentSegment;
+  final Token functionToken;
+  Token abstractToken = null;
+  Token visibility2 = null;
+}
+{
+  abstractToken = <ABSTRACT>
+  {
+    //{{{ if not php5 fire parse error
+    if (!php5Enabled) {
+      final Token semicolon = error_skipto(SEMICOLON);
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected token abstract",
+                                            "",
+                                            abstractToken.image,
+                                            abstractToken.sourceStart,
+                                            abstractToken.sourceEnd,
+                                            abstractToken.beginLine,
+                                            abstractToken.endLine,
+                                            abstractToken.beginColumn,
+                                            abstractToken.endColumn));
+      return null;
+    } //}}}
+  }
+  [
+    visibility2 = visibility()
+    {
+      if (visibility != null) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected token : "+visibility2.image,
+                                              "",
+                                              visibility2.image,
+                                              visibility2.sourceStart,
+                                              visibility2.sourceEnd,
+                                              visibility2.beginLine,
+                                              visibility2.endLine,
+                                              visibility2.beginColumn,
+                                              visibility2.endColumn));
+      }
+    }
+  ]
+  functionToken = <FUNCTION>
+  methodHeader = methodHeader(functionToken,type)
+  {
+    functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
+  }
+  try {
+    <SEMICOLON>
+  } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected token : "+e.currentToken.image,
+                                            ";",
+                                            e.currentToken.image,
+                                            e.currentToken.sourceStart,
+                                            e.currentToken.sourceEnd,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.beginColumn,
+                                            e.currentToken.endColumn));
+    
+  }
+  {
+    return functionDeclaration;
+  }
+} //}}}
+
+
+
+//{{{ modifier()
+Token modifier() :
+{
+  Token modifierToken;
+}
+{
+  modifierToken = <STATIC>    { return modifierToken; }
+| modifierToken = <CONST>     { return modifierToken; }
+} //}}}
+//{{{ visibility()
+Token visibility() :
+{
+  Token visibilityToken;
+}
+{
+  visibilityToken = <PUBLIC>    { return visibilityToken; }
+| visibilityToken = <PROTECTED> { return visibilityToken; }
+| visibilityToken = <PRIVATE>   { return visibilityToken; }
+} //}}}
 
 //}}}
 
@@ -1502,7 +2184,7 @@ ArrayVariableDeclaration[] ArrayInitializer() :
 
 //{{{ Methods functions
 
-//{{{ MethodDeclaration()
+//{{{ MethodDeclaration(int type, Token visibility)
 
 /**
  * A Method Declaration.
@@ -1510,13 +2192,14 @@ ArrayVariableDeclaration[] ArrayInitializer() :
  *
  * @return a MethodDeclaration
  */
-MethodDeclaration MethodDeclaration(int type) :
+MethodDeclaration MethodDeclaration(int type, Token visibility) :
 {
   final MethodDeclaration functionDeclaration;
   final MethodHeader methodHeader;
   final Block block;
   final OutlineableWithChildren seg = currentSegment;
   final Token functionToken;
+  Token visibility2 = null;
 }
 {
   functionToken = <FUNCTION>
@@ -1526,15 +2209,17 @@ MethodDeclaration MethodDeclaration(int type) :
     currentSegment = functionDeclaration;
   }
   block = Block()
-  {functionDeclaration.statements = block.statements;
-   functionDeclaration.setBodyStart(block.getSourceStart());
-   functionDeclaration.setBodyEnd(token.sourceEnd);
-   currentSegment = seg;
-   return functionDeclaration;}
+  {
+    functionDeclaration.statements = block.statements;
+    functionDeclaration.setBodyStart(block.getSourceStart());
+    functionDeclaration.setBodyEnd(token.sourceEnd);
+    currentSegment = seg;
+    return functionDeclaration;
+  }
 }
 
 //}}}
-//{{{ methodHeader(final int functionToken)
+//{{{ methodHeader(int functionToken,int type)
 
 /**
  * A MethodDeclarator.
@@ -1542,11 +2227,12 @@ MethodDeclaration MethodDeclaration(int type) :
  *
  * @return a function description for the outline
  */
-MethodHeader methodHeader(final Token functionToken,int type) :
+MethodHeader methodHeader(Token functionToken,int type) :
 {
   Token reference = null;
   final ArrayList formalParameters = new ArrayList();
   final Token methodNameToken;
+  Token visibilityToken = null;
   String identifierChar = SYNTAX_ERROR_CHAR;
 }
 {
@@ -1561,6 +2247,7 @@ MethodHeader methodHeader(final Token functionToken,int type) :
       identifierChar = methodNameToken.image;
     } catch (ParseException e) {
       if (e.currentToken.next.kind == PHPParserConstants.LPAREN) {
+        //{{{ Parse error
         fireParseError(new PHPParseErrorEvent(ERROR,
                                               path,
                                               "identifier expected",
@@ -1571,8 +2258,9 @@ MethodHeader methodHeader(final Token functionToken,int type) :
                                               e.currentToken.beginLine,
                                               e.currentToken.endLine,
                                               e.currentToken.beginColumn-1,
-                                              e.currentToken.endColumn));
+                                              e.currentToken.endColumn)); //}}}
       } else {
+        //{{{ Parse error
         fireParseError(new PHPParseErrorEvent(ERROR,
                                               path,
                                               "unexpected token",
@@ -1583,7 +2271,7 @@ MethodHeader methodHeader(final Token functionToken,int type) :
                                               e.currentToken.next.beginLine,
                                               e.currentToken.next.endLine,
                                               e.currentToken.next.beginColumn,
-                                              e.currentToken.next.endColumn));
+                                              e.currentToken.next.endColumn)); //}}}
       }
     }
   }
@@ -1744,6 +2432,7 @@ FormalParameter FormalParameter() :
   Token bitAndToken = null;
 }
 {
+  [<IDENTIFIER>]
   [bitAndToken = <BIT_AND>] variableDeclaration = VariableDeclaratorNoSuffix()
   {
     if (bitAndToken != null) {
@@ -3928,7 +4617,11 @@ Statement BlockStatement() :
 }
 {
   try {
-    statement = Statement() {if (phpDocument == currentSegment) pushOnAstNodes(statement); return statement;}
+    statement = Statement() 
+    {
+      if (phpDocument == currentSegment) pushOnAstNodes(statement); 
+      return statement;
+    }
   } catch (ParseException e) {
     final Token semicolumn = error_skipto(SEMICOLON);
     final Token nextToken = e.currentToken.next;
@@ -3959,15 +4652,15 @@ Statement BlockStatement() :
     }
     return null;
   }
-/*  } catch (ParseException e) {
-    errorMessage = "unexpected token : '"+ e.currentToken.image +"', a statement was expected";
-    errorLevel   = ERROR;
-    errorStart = e.currentToken.sourceStart;
-    errorEnd   = e.currentToken.sourceEnd;
-    throw e;
-  }*/
-| statement = ClassDeclaration()  {return statement;}
-| statement = MethodDeclaration(CONST_FUNCTION) 
+| statement = ClassDeclaration()
+  {
+    return statement;
+  }
+| statement = interfaceDeclaration()
+  {
+    return statement;
+  }
+| statement = MethodDeclaration(CONST_FUNCTION,null) 
   {
     if (phpDocument == currentSegment) pushOnAstNodes(statement);
     currentSegment.add((MethodDeclaration) statement);
@@ -3982,14 +4675,15 @@ Statement BlockStatement() :
 /**
  * A Block statement that will not contain any 'break'
  */
-Statement BlockStatementNoBreak() :
+Statement BlockStatementNoBreak() :           
 {
   final Statement statement;
 }
 {
   statement = StatementNoBreak()  {return statement;}
-| statement = ClassDeclaration()  {return statement;}
-| statement = MethodDeclaration(CONST_FUNCTION) 
+| LOOKAHEAD(1)
+  statement = ClassDeclaration()  {return statement;}
+| statement = MethodDeclaration(CONST_FUNCTION,null) 
   {
     currentSegment.add((MethodDeclaration) statement);
     ((MethodDeclaration) statement).analyzeCode(this);
@@ -5342,5 +6036,4 @@ ReturnStatement ReturnStatement() :
 
 //}}}
 
-//}}}
 
