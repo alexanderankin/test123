@@ -2,7 +2,7 @@
 
 plugin.templates.TemplatesPlugin.name=Templates
 plugin.templates.TemplatesPlugin.author=Steve Jakob, Calvin Yu
-plugin.templates.TemplatesPlugin.version=3.0.0
+plugin.templates.TemplatesPlugin.version=3.0.1
 plugin.templates.TemplatesPlugin.docs=docs/index.html
 
 # Dependencies
