@@ -22,6 +22,7 @@ package projectviewer;
 import java.util.HashMap;
 import java.util.TreeMap;
 import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import java.io.File;
@@ -92,8 +93,6 @@ public final class ProjectManager {
 
 	private ProjectManager() {
 		projects = new TreeMap();
-		fileNames = new HashMap();
-		loaded = new HashMap();
 	}
 
 	//}}}
@@ -101,8 +100,6 @@ public final class ProjectManager {
 	//{{{ Instance variables
 
 	private TreeMap projects;
-	private HashMap fileNames;
-	private HashMap loaded;
 
 	//}}}
 
@@ -128,8 +125,6 @@ public final class ProjectManager {
 
 			// clear the list
 			projects.clear();
-			fileNames.clear();
-			loaded.clear();
 
 			// re-instantiate the InputStream
 			cfg = ProjectPlugin.getResourceAsStream(CONFIG_FILE);
@@ -149,7 +144,7 @@ public final class ProjectManager {
 		// Projects loaded, add all of them to the root node
 		VPTRoot root = VPTRoot.getInstance();
 		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
-			root.add((VPTProject)projects.get(it.next()));
+			root.add((/*  */(Entry)projects.get(it.next())).project);
 		}
 	} //}}}
 
@@ -160,18 +155,16 @@ public final class ProjectManager {
 		// if not loaded, no need to save.
 		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
 			String pName = (String) it.next();
-			if (loaded.get(pName) == Boolean.TRUE) {
-				String fName = (String) fileNames.get(pName);
-				if (fName == null) {
-					fName = createFileName(pName);
-					fileNames.put(pName, fName);
+			Entry e = (Entry) projects.get(pName);
+			if (e.isLoaded) {
+				if (e.fileName == null) {
+					e.fileName = createFileName(pName);
 				}
-				ProjectPersistenceManager.save((VPTProject)projects.get(pName), fName);
+				ProjectPersistenceManager.save(e.project, e.fileName);
 			}
 		}
 
 		saveProjectList();
-
 	} //}}}
 
 	//{{{ saveProject(VPTProject) method
@@ -182,10 +175,9 @@ public final class ProjectManager {
 	 *	before calling this method).
 	 */
 	public void saveProject(VPTProject p) {
-		String fName = (String) fileNames.get(p.getName());
-		if (fName == null) {
-			fName = createFileName(p.getName());
-			fileNames.put(p.getName(), fName);
+		Entry e = (Entry) projects.get(p.getName());
+		if (e.fileName == null) {
+			e.fileName = createFileName(p.getName());
 			// since we're saving the project for the first time, let's be
 			// paranoid and save all configuration along with it
 			try{
@@ -195,10 +187,11 @@ public final class ProjectManager {
 			}
 		}
 		try {
-			ProjectPersistenceManager.save(p, fName);
+			ProjectPersistenceManager.save(p, e.fileName);
 		} catch (IOException ioe) {
 			Log.log(Log.ERROR, this, ioe);
 		}
+		e.isLoaded = true;
 	} //}}}
 
 	//{{{ removeProject(VPTProject) method
@@ -208,10 +201,9 @@ public final class ProjectManager {
 	 *	the project does not exist anymore.
 	 */
 	public void removeProject(VPTProject p) {
-		String fName = (String) fileNames.get(p.getName());
-		if (fName != null) {
-			new File(ProjectPlugin.getResourcePath("projects/" + fName)).delete();
-			fileNames.remove(p.getName());
+		Entry e = (Entry) projects.get(p.getName());
+		if (e.fileName != null) {
+			new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
 			// project list changed, save "global" data.
 			try{
 				saveProjectList();
@@ -220,7 +212,6 @@ public final class ProjectManager {
 			}
 		}
 		projects.remove(p.getName());
-		loaded.remove(p.getName());
 		ProjectViewer.removeNodeFromParent(p);
 		ProjectViewer.projectRemoved(p);
 	} //}}}
@@ -228,22 +219,22 @@ public final class ProjectManager {
 	//{{{ renameProject(String, String) method
 	/** Updates information about a project to reflect its name change. */
 	public void renameProject(String oldName, String newName) {
-		VPTProject p = (VPTProject) projects.remove(oldName);
-		projects.put(newName, p);
-		loaded.put(newName, projects.remove(oldName));
-		if (fileNames.get(oldName) != null) {
-			String oldFile = (String) fileNames.remove(oldName);
-			new File(ProjectPlugin.getResourcePath("projects/" + oldFile)).delete();
+		Entry e = (Entry) projects.remove(oldName);
+		projects.put(newName, e);
+		if (e.fileName != null) {
+			new File(ProjectPlugin.getResourcePath("projects/" + e.fileName)).delete();
 		}
-		saveProject(p);
-		ProjectViewer.nodeChanged(p);
+		saveProject(e.project);
+		ProjectViewer.nodeChanged(e.project);
 	} //}}}
 
 	//{{{ addProject(VPTProject) method
 	/** Adds a project to the list. */
 	public void addProject(VPTProject p) {
-		projects.put(p.getName(), p);
-		loaded.put(p.getName(), Boolean.TRUE);
+		Entry e = new Entry();
+		e.project = p;
+		e.isLoaded = true;
+		projects.put(p.getName(), e);
 
 		VPTRoot root = VPTRoot.getInstance();
 		ProjectViewer.insertNodeInto(p, root);
@@ -258,13 +249,12 @@ public final class ProjectManager {
 	 *	return null.
 	 */
 	public VPTProject getProject(String name) {
-		VPTProject p = (VPTProject) projects.get(name);
-		if (loaded.get(name) == Boolean.FALSE) {
-			String fName = (String) fileNames.get(name);
-			if (fName != null) {
+		Entry e = (Entry) projects.get(name);
+		if (!e.isLoaded) {
+			if (e.fileName != null) {
 				try {
-					ProjectPersistenceManager.load(p, fName);
-					loaded.put(name, Boolean.TRUE);
+					ProjectPersistenceManager.load(e.project, e.fileName);
+					e.isLoaded = true;
 				} catch (IOException ioe) {
 					Log.log(Log.ERROR, this, ioe);
 				}
@@ -272,7 +262,7 @@ public final class ProjectManager {
 				Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
 			}
 		}
-		return p;
+		return e.project;
 	} //}}}
 
 	//{{{ getProjects() method
@@ -281,7 +271,11 @@ public final class ProjectManager {
 	 *	managed by this manager. The Iterator is read-only.
 	 */
 	public Iterator getProjects() {
-		return Collections.unmodifiableCollection(projects.values()).iterator();
+		ArrayList lst = new ArrayList();
+		for (Iterator it = projects.values().iterator(); it.hasNext(); ) {
+			lst.add(((Entry)it.next()).project);
+		}
+		return lst.iterator();
 	} //}}}
 
 	//{{{ isLoaded(String) method
@@ -292,7 +286,7 @@ public final class ProjectManager {
 	 *	@return	If the project was loaded from disk.
 	 */
 	public boolean isLoaded(String pName) {
-		return (loaded.get(pName) == Boolean.TRUE);
+		return ((Entry)projects.get(pName)).isLoaded;
 	} //}}}
 
 	//{{{ hasProject(String) method
@@ -341,12 +335,14 @@ public final class ProjectManager {
 		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF-8");
 		writeXMLHeader("UTF-8", out);
 		out.write("<" + PROJECT_ROOT + ">\n");
-		for (Iterator it = fileNames.keySet().iterator(); it.hasNext(); ) {
+		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
 			String pName = (String) it.next();
-			String fName = (String) fileNames.get(pName);
-			out.write("<" + PROJECT_ELEMENT + " " +
-				PRJ_NAME + "=\"" + pName + "\" " +
-				PRJ_FILE + "=\"" + fName + "\"/>\n");
+			Entry e = (Entry) projects.get(pName);
+			if (e.fileName != null) {
+				out.write("<" + PROJECT_ELEMENT + " " +
+					PRJ_NAME + "=\"" + pName + "\" " +
+					PRJ_FILE + "=\"" + e.fileName + "\"/>\n");
+			}
 		}
 		out.write("</" + PROJECT_ROOT + ">\n");
 		out.flush();
@@ -363,13 +359,25 @@ public final class ProjectManager {
 									Attributes attributes) throws SAXException {
 			if (qName.equals(PROJECT_ELEMENT)) {
 				String pName = attributes.getValue(PRJ_NAME);
-				fileNames.put(pName, attributes.getValue(PRJ_FILE));
-				projects.put(pName, new VPTProject(pName));
-				loaded.put(pName, Boolean.FALSE);
+				Entry e = new Entry();
+				e.fileName = attributes.getValue(PRJ_FILE);
+				e.isLoaded = false;
+				e.project = new VPTProject(pName);
+				projects.put(pName, e);
 			} else if (!qName.equals(PROJECT_ROOT)) {
 				Log.log(Log.WARNING, this, "Unknown node in config file: " + qName);
 			}
 		} //}}}
+
+	} //}}}
+
+	//{{{ Entry class
+	/** Holds info for a project in the internal map. */
+	private static class Entry {
+
+		public VPTProject	project;
+		public String		fileName = null;
+		public boolean		isLoaded = false;
 
 	} //}}}
 
