@@ -26,7 +26,7 @@ import projectviewer.vpt.VPTProject;
 /**
  *	A project viewer event.
  *
- *	@author
+ *	@author		Dale Anson, Marcelo Vanzin
  *	@version	$Id$
  */
 public final class ProjectViewerEvent extends EventObject {
