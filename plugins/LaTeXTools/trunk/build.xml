@@ -71,7 +71,7 @@
     <copy file="${src}\uk\co\antroy\latextools\LaTeXTools.props" todir="${build}\uk\co\antroy\latextools"/>
    </target>
   
-  <target name="zip" depends="compile,pack" 
+  <target name="zip" depends="cross-compile,pack" 
                      description="Pack the source in a zip archive. JAR the binaries.">
      <jar jarfile="${dist}\LaTeXTools.jar" basedir="${build}"/>
      <zip basedir="." zipfile="${dist}\LaTeXToolsSrc.zip">

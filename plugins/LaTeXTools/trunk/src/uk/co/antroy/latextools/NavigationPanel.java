@@ -346,7 +346,11 @@ public class NavigationPanel
 
           if (refStart >= 0) {
 
-            LaTeXAsset asset = LaTeXAsset.createAsset(line, lineNumber, srch.getLevel(), srch.getIcon());
+            LaTeXAsset asset = LaTeXAsset.createAsset(line,
+                                                      buffer.createPosition(buffer.getLineStartOffset(lineNumber)),
+                                                      buffer.createPosition(buffer.getLineEndOffset(lineNumber)),
+                                                      srch.getLevel(),
+                                                      srch.getIcon());
             navItems.add(asset);
 
             break;
@@ -373,7 +377,11 @@ public class NavigationPanel
               result = line;
             }
 
-            LaTeXAsset asset = LaTeXAsset.createAsset(result, lineNumber, srch.getLevel(), srch.getIcon());
+            LaTeXAsset asset = LaTeXAsset.createAsset(result,
+                                                      buffer.createPosition(buffer.getLineStartOffset(lineNumber)),
+                                                      buffer.createPosition(buffer.getLineEndOffset(lineNumber)),
+                                                      srch.getLevel(),
+                                                      srch.getIcon());
             navItems.add(asset);
 
             break;
