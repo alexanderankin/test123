@@ -86,6 +86,7 @@ class EditTagDialog extends EnhancedDialog
 		preview = new JTextArea(5,5);
 		preview.setLineWrap(true);
 		preview.setWrapStyleWord(true);
+		preview.setEditable(false);
 		previewPanel.add(BorderLayout.CENTER,new JScrollPane(preview));
 
 		center.add(BorderLayout.SOUTH,previewPanel);
@@ -144,6 +145,11 @@ class EditTagDialog extends EnhancedDialog
 	public String getNewTag()
 	{
 		return (isOK ? newTag : null);
+	}
+
+	public boolean isEmpty()
+	{
+		return empty.isSelected();
 	}
 
 	// private members
