@@ -39,6 +39,7 @@
   <property name="build.docs"       value="${build}/docs"/>
   <property name="build.javadoc"    value="${build.docs}/javadoc"/>
   <property name="build.doxydoc"    value="${build.docs}/doxydoc"/>
+  <property name="build.images"     value="${build}/images"/>
 
   <property name="docbookx.dtd"     value="../XML/xml/dtds/docbookx.dtd" />
   <property name="docbook.xsl"		value="/usr/share/xsl/docbook-xsl" />
@@ -49,6 +50,7 @@
   <path id="default.classpath">
     <pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${install.dir}/InfoViewer.jar" />
+		<pathelement location="${install.dir}/ErrorList.jar" />
 	</path>
 
 
@@ -121,13 +123,21 @@
       <fileset dir="docs">
 	  		<exclude name="**/*.xml"/>
 				<exclude name="**/*.xsl"/>
-	  </fileset>
+			</fileset>
+    </copy>
+
+    <mkdir dir="${build.images}"/>
+    <copy todir="${build.images}">
+      <fileset dir="projectviewer/images"/>
     </copy>
 
     <jar jarfile="${build}/ProjectViewer.jar">
       <fileset dir="${build.classes}"/>
 			<fileset dir="${build.docs}">
 				<exclude name="**/javadoc/**" />
+			</fileset>
+      <fileset dir="${build}">
+				<include name="images/**"/>
 			</fileset>
     </jar>
 
