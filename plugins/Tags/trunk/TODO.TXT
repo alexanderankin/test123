@@ -1,16 +1,6 @@
-Before 1.0 (public release)
----------------------------
+TODO
+----
 
-For Tags.html
-   Made Enter Tag dialog a stand alone dialog (no JOptionPane)
-   Moved enter event into KeyPressed() in enter tag dialog.
-   Added the display of exuberant info from the tag indx file
-   Reverted back to platform independent Monospaced font for tag collision list
-   
-   
-
-Version > initial public release version
-----------------------------------------
 - ./tag checkbox usage puts ./tags in file list for user to reorder... 
 
 - Acknowledge beta testers in documentation
