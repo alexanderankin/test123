@@ -35,6 +35,8 @@ import java.io.IOException;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
@@ -186,10 +188,17 @@ public class DualDiffDialog extends JDialog {
 
             DualDiffDialog.this.dispose();
             // here is where JDiff gets activated
+            Buffer baseBuffer = jEdit.openFile(DualDiffDialog.this.view, basePath);
+            Buffer newBuffer = jEdit.openFile(DualDiffDialog.this.view, newPath);
+
+            if (baseBuffer == null) { return; }
+            if (newBuffer == null) { return; }
+
             DualDiffDialog.this.view.unsplit();
-            jEdit.openFile(DualDiffDialog.this.view, basePath);
             DualDiffDialog.this.view.splitVertically();
-            jEdit.openFile(DualDiffDialog.this.view, newPath);
+            EditPane[] editPanes = DualDiffDialog.this.view.getEditPanes();
+            editPanes[0].setBuffer(baseBuffer);
+            editPanes[1].setBuffer(newBuffer);
             DualDiff.toggleFor(DualDiffDialog.this.view);
         }
     }
