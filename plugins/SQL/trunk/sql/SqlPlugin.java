@@ -559,8 +559,6 @@ public class SqlPlugin extends EBPlugin
         }
       }
 
-    SqlServerType.loadAll();
-
     VFSManager.sendVFSUpdate( sqlVFS, SqlVFS.PROTOCOL + ":/", false );
   }
 
