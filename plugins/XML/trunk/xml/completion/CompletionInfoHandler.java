@@ -90,10 +90,16 @@ public class CompletionInfoHandler extends DefaultHandler
 			String extend = attrs.getValue("extend");
 			if(extend != null)
 			{
-				CompletionInfo extendInfo = CompletionInfo
-					.getCompletionInfo(extend);
-				if(extendInfo != null)
-					completionInfo = (CompletionInfo)extendInfo.clone();
+				String infoURI = jEdit.getProperty(
+					"mode." + extend + "."
+					+ XmlPlugin.COMPLETION_INFO_PROPERTY);
+				if(infoURI != null)
+				{
+					CompletionInfo extendInfo = CompletionInfo
+						.getCompletionInfo(infoURI);
+					if(extendInfo != null)
+						completionInfo = (CompletionInfo)extendInfo.clone();
+				}
 			}
 
 			completionInfo.html = "true".equals(attrs.getValue("html"));

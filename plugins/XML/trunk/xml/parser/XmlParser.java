@@ -206,6 +206,11 @@ public class XmlParser implements EBComponent
 				else
 					showNotParsedMessage();
 			}
+			else if(bmsg.getWhat() == BufferUpdate.CLOSED
+				&& bmsg.getBuffer() == buffer)
+			{
+				errorSource.clear();
+			}
 		} //}}}
 		//{{{ EditPaneUpdate
 		else if(msg instanceof EditPaneUpdate)

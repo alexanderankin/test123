@@ -1,5 +1,6 @@
 + version 0.7:
 
+- add XHTML, and maybe DocBook DTDs
 - recording <, >, /, &
 - threaddeath -- wtf?
 - 'advanced' option pane for selecting a parser, with a 'don't change this
@@ -18,7 +19,7 @@
   level
 - handle parsing open buffers better
 - let user specify completion info files in advanced option pane.
-- option to show first attr only in tree
+- option to show id attr only in tree
 
 + before 1.0:
 
