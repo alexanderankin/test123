@@ -163,7 +163,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		if (ok) {
 			project.setName(name);
 			project.setRootPath(root);
-			if (!urlRoot.equals(DEFAULT_URL)) {
+			if (urlRoot.length() != 0 && !urlRoot.equals(DEFAULT_URL)) {
 				project.setURL(urlRoot);
 			} else {
 				project.setURL(null);
