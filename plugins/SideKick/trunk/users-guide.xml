@@ -300,8 +300,7 @@ mode.velocity.sidekick.parser=html</programlisting>
   jEdit 4.1pre11.</para>
 
   <itemizedlist>
-   <listitem><para>Fixed a thread safety problem that could result in the
-   structure tree not being displayed.
+   <listitem><para>Fixed a thread safety problem.
    </para></listitem>
    <listitem><para>Added <function>activate()</function> and
    <function>deactivate()</function> methods to
