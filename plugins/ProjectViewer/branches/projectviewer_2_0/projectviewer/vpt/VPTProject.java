@@ -30,15 +30,7 @@ import java.util.Properties;
 import javax.swing.Icon;
 
 import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.msg.ViewUpdate;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
-
-import projectviewer.event.ProjectEvent;
-import projectviewer.event.ProjectListener;
 //}}}
 
 /**
@@ -51,7 +43,7 @@ import projectviewer.event.ProjectListener;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class VPTProject extends VPTNode implements EBComponent {
+public class VPTProject extends VPTNode {
 
 	//{{{ Constants
 
@@ -68,8 +60,9 @@ public class VPTProject extends VPTNode implements EBComponent {
 	private String		rootPath;
 	private String		url;
 	private File		buildFile;
-	private HashMap		files;
 	private Properties	properties;
+	
+	protected HashMap		files;
 	
 	//}}}
 	
@@ -100,13 +93,6 @@ public class VPTProject extends VPTNode implements EBComponent {
 	/** Returns the project's build file for Ant. */
 	public File getBuildFile() {
 		return buildFile;
-	} //}}}
-	
-	//{{{ setBuildFile(File) method
-	/** Changes the project's build file. */
-	public void setBuildFile(VPTFile file) {
-		buildFile = file.getFile();
-		fireBuildFileSelected(file);
 	} //}}}
 	
 	//{{{ getURL() method
@@ -143,6 +129,12 @@ public class VPTProject extends VPTNode implements EBComponent {
 	/**	Returns a set containing all property names for this project. */
 	public Set getPropertyNames() {
 		return properties.keySet();
+	} //}}}
+	
+	//{{{ getProperties() method.
+	/** Return the project's property set. */
+	public Properties getProperties() {
+		return properties;
 	} //}}}
 	
 	//{{{ getOpenFiles() method
@@ -220,171 +212,6 @@ public class VPTProject extends VPTNode implements EBComponent {
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
 		return getRootPath();
-	} //}}}
-
-	//}}}
-	
-	//{{{ Event Handling, Subscribing & Dispatching
-
-	//{{{ handleMessage(EBMessage) method
-	/** 
-	 *	Handle any buffer updates or closes and notify the Project Viewer instance
-	 *	that is running.
-	 *
-	 *	@param  message  Description of Parameter
-	 *	@since
-	 */
-	public void handleMessage(EBMessage message) {
-		if(message instanceof BufferUpdate) {
-			BufferUpdate update = (BufferUpdate)message;
-			if(update.getWhat().equals(BufferUpdate.LOADED)) {
-				VPTFile file = getFile(update.getBuffer().getPath());
-				if (file != null) {
-					openFiles.add(update.getBuffer().getPath());
-					fireFileOpened(file);
-				}
-			}
-			if(update.getWhat().equals(BufferUpdate.CLOSED)) {
-				VPTFile file = getFile(update.getBuffer().getPath());
-				if(file != null) {
-					openFiles.remove(update.getBuffer().getPath());
-					fireFileClosed(file);
-				}
-			}
-        }
-		else if (message instanceof EditPaneUpdate) {
-            EditPaneUpdate update = (EditPaneUpdate)message;
-            //if ((update.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) || (update.getWhat().equals(EditPaneUpdate.CREATED))) {
-            if (update.getWhat().equals(EditPaneUpdate.BUFFER_CHANGED)) {
-				VPTFile file = getFile(update.getEditPane().getBuffer().getPath());
-				if(file != null) fireFileOpened(file);				
-			}
-            if (update.getWhat().equals(EditPaneUpdate.CREATED)) {
-				VPTFile file = getFile(update.getEditPane().getBuffer().getPath());
-				if(file != null) fireFileOpened(file);				
-			}
-		}
-		else if (message instanceof ViewUpdate) {
-			ViewUpdate update = (ViewUpdate)message;
-			if (update.getWhat().equals(ViewUpdate.EDIT_PANE_CHANGED)) {
-				VPTFile file = getFile(update.getView().getEditPane().getBuffer().getPath());
-				if(file != null) fireFileOpened(file);				
-			}
-		}
-	} //}}}
-	
-	//{{{ addListeners(Iterator) method
-	/** Add all objects in the iterator to the list of listeners. */
-	public void addListeners(Iterator it) {
-		while (it.hasNext()) {
-			listeners.add(it.next());
-		}
-	} //}}}
-	
-	//{{{ removeListeners(Iterator) method
-	/** remove all objects in the iterator from the list of listeners. */
-	public void removeListeners(Iterator it) {
-		while (it.hasNext()) {
-			listeners.remove(it.next());
-		}
-	} //}}}
-
-	//{{{ fireBuildFileSelected(VPTFile) method 
-	/** 
-	 *	Fire notification that a build file has been selected
-	 *
-	 *	@param  aFile  Description of Parameter
-	 */
-	private void fireBuildFileSelected(VPTFile aFile) {
-		ProjectEvent evt = new ProjectEvent(this, aFile);
-		for(int i = 0; i < listeners.size(); i++)
-			((ProjectListener)listeners.get(i)).buildFileSelected(evt);
-	} //}}}
-
-	//{{{ fireFileOpened(VPTFile) method
-	/** 
-	 * Fire notification that a project file has been opened.
-	 *
-	 *	@param  aFile  Description of Parameter
-	 *	@since
-	 */
-	private void fireFileOpened(VPTFile aFile) {
-		//Log.log( Log.DEBUG, this, "fireFileOpened("+aFile.toString()+"), listeners.size()="+listeners.size() );
-		if(listeners.size() > 0) {
-			ProjectEvent evt = new ProjectEvent(this, aFile);
-			for(int i = 0; i < listeners.size(); i++) {
-				//Log.log( Log.DEBUG, this, "  "+i+" "+((ProjectListener)listeners.get(i)).toString());
-				((ProjectListener)listeners.get(i)).fileOpened(evt);
-			}
-		}
-	} //}}}
-
-	//{{{ fireFileClosed(VPTFile) method
-	/** 
-	 *	Fire notification that a project file has been closed.
-	 *
-	 *	@param  aFile  Description of Parameter
-	 *	@since
-	 */
-	private void fireFileClosed(VPTFile aFile) {
-		ProjectEvent evt = new ProjectEvent(this, aFile);
-		for(int i = 0; i < listeners.size(); i++)
-			((ProjectListener)listeners.get(i)).fileClosed(evt);
-	} //}}}
-
-	//{{{ fireFileRemoved(VPTFile, int) method
-	/** 
-	 *	Fire notification that a project file has been removed.
-	 *
-	 *	@param  aFile  Description of Parameter
-	 *	@param  index  Description of Parameter
-	 *	@since
-	 */
-	private void fireFileRemoved(VPTFile aFile, int index) {
-		ProjectEvent evt = new ProjectEvent(this, aFile, index);
-		for(int i = 0; i < listeners.size(); i++)
-			((ProjectListener)listeners.get(i)).fileRemoved(evt);
-	} //}}}
-
-	//{{{ fireFileAdded(VPTFile) method
-	/** 
-	 * Fire notification that a project file has been added.
-	 *
-	 * @param  aFile  Description of Parameter
-	 * @since
-	 */
-	private void fireFileAdded(VPTFile aFile) {
-		ProjectEvent evt = new ProjectEvent(this, aFile);
-		//Log.log( Log.DEBUG, this, "Firing file added: file(" + aFile + ")" );
-		for(int i = 0; i < listeners.size(); i++)
-			((ProjectListener)listeners.get(i)).fileAdded(evt);
-	} //}}}
-
-	//{{{ fireDirectoryAdded(VPTFile) method
-	/** 
-	 *	Fire notification that a project directory has been added.
-	 *
-	 *	@param  aDirectory  Description of Parameter
-	 *	@since
-	 */
-	private void fireDirectoryAdded(VPTFile aDirectory) {
-		ProjectEvent evt = new ProjectEvent(this, aDirectory);
-		for(int i = 0; i < listeners.size(); i++)
-			((ProjectListener)listeners.get(i)).directoryAdded(evt);
-	} //}}}
-
-	//{{{ fireDirectoryRemoved(VPTFile) method
-	/** 
-	 *	Fire notification that a project directory has been removed.
-	 *
-	 *	@param  aDirectory  Description of Parameter
-	 *	@param  index       Description of Parameter
-	 *	@since
-	 */
-	private void fireDirectoryRemoved(VPTFile aDirectory, int index) {
-		ProjectEvent evt = new ProjectEvent(this, aDirectory, index);
-		for(int i = 0; i < listeners.size(); i++)
-			((ProjectListener)listeners.get(i)).directoryRemoved(evt);
 	} //}}}
 
 	//}}}
