@@ -1,0 +1,31 @@
++ version 0.10:
+
+- DTD downloader -- clear cache command should remove d/l'd files too
+- &, < or > will show up twice if a DTD defines it
+
++ before 1.0:
+
+- use AssetBrowser
+- VFS support
+- Xerces 2
+- documentation: XML catalog format
+- test XMLCatalog support, include an XMLCatalog DTD
+- threaddeath -- wtf?
+- id completion
+- tag highlight scope bracket in gutter
+- element and entity lists for schemas
+- recording <, >, /, &
+- move Xerces to its own plugin
+- switching between two edit panes with same buffer: expand tree at
+  appropriate location
+- TagParser: use segments, not strings
+- 'advanced' option pane for selecting parsers
+- xalan integration:
+  - merge with XSLT plugin?
+  - 'xsl' parser validates stylesheets
+- proper handling of tags in nested files
+- handle parsing open buffers better
+- let user specify completion info files in advanced option pane.
+- new xml file wizard
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available
