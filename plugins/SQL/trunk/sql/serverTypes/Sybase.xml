@@ -7,6 +7,8 @@
 <!--The name of the JDBC driver -->
   <driverClass>com.sybase.jdbc.SybDriver</driverClass>
 
+  <defStatementDelimiterRegex>^(?i)go$</defStatementDelimiterRegex>
+                                                                                                                     
   <vfs>
     <driverClass>sql.serverTypes.SybaseVFS</driverClass>
   </vfs>
