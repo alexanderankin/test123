@@ -27,6 +27,8 @@ import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
 
 import projectviewer.ProjectViewer;
+import projectviewer.ProjectManager;
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -138,10 +140,14 @@ public abstract class Importer implements Runnable {
 	//{{{ run() method
 	public void run() {
 		Collection c = internalDoImport();
-		if (c != null && c.size() > 0)
-		for (Iterator i = c.iterator(); i.hasNext(); ) {
-			importNode((VPTNode)i.next());
+		if (c != null && c.size() > 0) {
+			for (Iterator i = c.iterator(); i.hasNext(); ) {
+				importNode((VPTNode)i.next());
+			}
+			ProjectViewer.nodeStructureChangedFlat(project);
+			if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+				ProjectManager.getInstance().saveProject(project);
+			}
 		}
-		ProjectViewer.nodeStructureChangedFlat(project);
 	} //}}}
 }
