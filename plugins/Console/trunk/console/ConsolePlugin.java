@@ -182,8 +182,15 @@ public class ConsolePlugin extends EBPlugin
 		}
 	}
 
-	// package-private members
-	static synchronized int parseLine(String text, String directory,
+	/**
+	 * Parses the specified line for errors, and if it contains one,
+	 * adds an error to the specified error source.
+	 * @param text The line text
+	 * @param directory The directory to base relative path names in the
+	 * error on
+	 * @param errorSource The error source
+	 */
+	public static synchronized int parseLine(String text, String directory,
 		DefaultErrorSource errorSource)
 	{
 		if(errorMatchers == null)
@@ -200,6 +207,7 @@ public class ConsolePlugin extends EBPlugin
 		return -1;
 	}
 
+	// package-private members
 	static ErrorMatcher[] getErrorMatchers()
 	{
 		if(errorMatchers == null)
