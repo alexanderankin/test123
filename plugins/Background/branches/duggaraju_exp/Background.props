@@ -22,3 +22,8 @@ options.background.blend=Use color blending
 options.background.blend-color=Blend color:\ 
 options.background.blend-alpha=Color opacity:\ 
 
+options.background.image-position=Position:
+options.background.image-tile=Tile
+options.background.image-center=Center
+options.background.image-strech=Strech
+background.position=tile
