@@ -13,6 +13,7 @@ plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 mode.xml.xml.parser=xml
 mode.xsl.xml.parser=xml
 
+# File types that use the html parser
 mode.asp.xml.parser=html
 mode.coldfusion.xml.parser=html
 mode.html.xml.parser=html
@@ -54,6 +55,10 @@ xml.close-complete-open=false
 # Tag highlight
 xml.tag-highlight=true
 xml.tag-highlight-color=black
+
+# Fetch stuff from the net?
+xml.network-ok=false
+xml.network.error=Will not load DTD from network. See XML plugin documentation.
 
 # Completion info
 
@@ -123,7 +128,6 @@ xml-tree.not-parsed=Not parsed
 xml-tree.parsing-complete=XML parsing complete, {0} error(s)
 xml-tree.parsing-complete-errors=XML parsing complete, more than {0} errors; \
 	only first {0} shown
-
 xml-tree.parsing-complete-html=HTML parsing complete
 
 # Insert tag window
@@ -167,6 +171,7 @@ options.xml.general.buffer-change-parse=Parse on buffer switch and save
 options.xml.general.keystroke-parse=Parse on keystroke
 options.xml.general.auto-parse-delay=After last keystroke, wait (seconds):
 options.xml.general.validate=Validate if DTD or schema available
+options.xml.general.network-ok=Allow downloading DTDs from Internet
 options.xml.general.tag-highlight-enabled=Highlight matching tags
 options.xml.general.tag-highlight-color=Tag highlight color:
 options.xml.general.show-attributes=Show tag attributes in tree:

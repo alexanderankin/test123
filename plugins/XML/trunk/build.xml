@@ -64,9 +64,11 @@
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
 				<include name="**/*.gif"/>
-				<include name="xml/completion/*.xml"/>
-				<include name="xml/completion/*.dtd"/>
-				<include name="xml/catalog"/>
+				<include name="xml/**/*.xml"/>
+				<include name="xml/**/*.dtd"/>
+				<include name="xml/**/*.ent"/>
+				<include name="xml/**/*.mod"/>
+				<include name="xml/dtds/catalog"/>
 			</fileset>
 		</jar>
 	</target>

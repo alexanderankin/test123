@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001 Slava Pestov
+ * Copyright (C) 2001, 2002 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -15,6 +15,7 @@
 
 package xml;
 
+//{{{ Imports
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -22,6 +23,7 @@ import com.arbortext.catalog.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.xml.sax.*;
+//}}}
 
 public class CatalogManager
 {
@@ -65,6 +67,10 @@ public class CatalogManager
 				newSystemId = systemId;
 		}
 
+		if(!(networkOK || newSystemId.startsWith("file:")
+			|| newSystemId.startsWith("jeditresource:")))
+			throw new SAXException(jEdit.getProperty("xml.network.error"));
+
 		// Xerces has a bug where an InputSource without a byte
 		// stream is loaded incorrectly.
 		InputSource source = new InputSource(newSystemId);
@@ -82,6 +88,7 @@ public class CatalogManager
 	public static void propertiesChanged()
 	{
 		loaded = false;
+		networkOK = jEdit.getBooleanProperty("xml.network-ok");
 	} //}}}
 
 	//{{{ Private members
@@ -90,6 +97,7 @@ public class CatalogManager
 	private static Catalog catalog;
 	private static boolean loaded;
 	private static Vector addedCatalogs = new Vector();
+	private static boolean networkOK;
 	//}}}
 
 	//{{{ load() method

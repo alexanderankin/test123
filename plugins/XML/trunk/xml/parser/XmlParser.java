@@ -239,7 +239,7 @@ public class XmlParser implements EBComponent
 	//{{{ addError() method
 	public boolean addError(int type, String path, int line, String message)
 	{
-		if(errorSource.getErrorCount() > MAX_ERRORS)
+		if(errorSource.getErrorCount() >= MAX_ERRORS)
 		{
 			maxErrors = true;
 			return false;
@@ -416,7 +416,7 @@ public class XmlParser implements EBComponent
 						{
 							Object[] pp = { new Integer(errorCount) };
 							view.getStatus().setMessageAndClear(jEdit.getProperty(
-								"xml-tree.parsing-complete-error",pp));
+								"xml-tree.parsing-complete-errors",pp));
 						}
 						else
 						{
