@@ -132,7 +132,7 @@ xml-tree.parsing-complete-html=HTML parsing complete
 
 # Insert tag window
 xml-insert.title=XML Insert
-xml-insert.elements=Elements:
+xml-insert.elements=Elements allowed at caret:
 xml-insert.entities=Entities:
 xml-insert.ids=IDs:
 xml-insert.not-parsed=Not parsed

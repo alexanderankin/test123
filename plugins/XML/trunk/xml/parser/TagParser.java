@@ -218,6 +218,21 @@ loop:		for (int i = text.lastIndexOf('<', endTag.start - 1);
 		public int type = -1;
 		public int start = -1;
 		public int end = -1;
+
+		public String toString()
+		{
+			switch(type)
+			{
+			case T_START_TAG:
+				return "<" + tag + ">";
+			case T_STANDALONE_TAG:
+				return "<" + tag + " />";
+			case T_END_TAG:
+				return "</" + tag + ">";
+			default:
+				throw new InternalError();
+			}
+		}
 	} //}}}
 }
 

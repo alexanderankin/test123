@@ -131,6 +131,7 @@ public class XmlComplete extends JWindow
 		if(model.getSize() == 0)
 		{
 			model.addElement(new XmlListCellRenderer.EmptyListPlaceholder());
+			pack();
 		}
 
 		list.setModel(model);

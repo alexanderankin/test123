@@ -17,6 +17,7 @@ package xml.parser;
 
 import java.util.*;
 import org.gjt.sp.jedit.MiscUtilities;
+import xml.completion.*;
 
 public class ElementDecl
 {
@@ -27,15 +28,51 @@ public class ElementDecl
 	public ArrayList attributes;
 	public HashMap attributeHash;
 
+	private ArrayList content;
+
 	//{{{ ElementDecl constructor
-	public ElementDecl(String name, boolean empty, boolean html)
+	public ElementDecl(String name, String content, boolean html)
 	{
 		this.name = name;
-		this.empty = empty;
 		this.html = html;
+
+		if(content.equals("EMPTY"))
+			empty = true;
+		else
+		{
+			this.content = new ArrayList();
+
+			StringTokenizer st = new StringTokenizer(content,
+				"(?*+|,) \t\n");
+			while(st.hasMoreTokens())
+			{
+				String element = st.nextToken();
+				if(element.equals("#PCDATA"))
+					continue;
+
+				this.content.add(element);
+			}
+		}
 
 		attributes = new ArrayList();
 		attributeHash = new HashMap();
+	} //}}}
+
+	//{{{ getChildElements() method
+	public ArrayList getChildElements(CompletionInfo info)
+	{
+		ArrayList children = new ArrayList();
+		for(int i = 0; i < content.size(); i++)
+		{
+			ElementDecl decl = (ElementDecl)info.elementHash
+				.get(content.get(i));
+			if(decl != null)
+				children.add(decl);
+		}
+
+		MiscUtilities.quicksort(children,new ElementDecl.Compare());
+
+		return children;
 	} //}}}
 
 	//{{{ addAttribute() method

@@ -22,6 +22,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
+import xml.parser.*;
 import xml.*;
 //}}}
 
@@ -45,6 +46,42 @@ public class CompletionInfo
 		this.elementHash = elementHash;
 		this.entities = entities;
 		this.entityHash = entityHash;
+	} //}}}
+
+	//{{{ getAllowedElements() method
+	public ArrayList getAllowedElements(Buffer buffer, int pos)
+	{
+		if(pos == 0)
+			return new ArrayList();
+
+		String text = buffer.getText(0,buffer.getLength());
+		TagParser.Tag currentTag = TagParser.getTagAtOffset(text,pos - 1);
+		if(currentTag != null && pos != currentTag.end)
+		{
+			// can't put something in the middle of an element
+			return new ArrayList();
+		}
+
+		TagParser.Tag parentTag = TagParser.findLastOpenTag(
+			text,pos,elementHash);
+
+		ArrayList returnValue;
+
+		if(parentTag == null)
+			returnValue = elements;
+		else
+		{
+			ElementDecl parentDecl = (ElementDecl)elementHash.get(
+				parentTag.tag);
+			if(parentDecl == null)
+				returnValue = new ArrayList();
+			else
+			{
+				returnValue = parentDecl.getChildElements(this);
+			}
+		}
+
+		return returnValue;
 	} //}}}
 
 	//{{{ getCompletionInfo() method

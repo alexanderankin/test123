@@ -115,7 +115,7 @@ public class CompletionInfoHandler extends DefaultHandler
 		{
 			element = new ElementDecl(
 				attrs.getValue("name"),
-				"true".equals(attrs.getValue("empty")),
+				"FOO" /* "true".equals(attrs.getValue("empty")) */,
 				"true".equals(attrs.getValue("html")));
 
 			completionInfo.elements.add(element);
