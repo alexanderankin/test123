@@ -1,0 +1,7 @@
+CVS policy file
+
+plugin: FilePermission 
+author/maintainer: Greg Cooper <gregc@users.sourceforge.net>
+original author:   Greg Cooper
+
+please do not commit changes to this plugin without first consulting the author.
