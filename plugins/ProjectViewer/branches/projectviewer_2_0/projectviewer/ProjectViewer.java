@@ -81,7 +81,7 @@ import projectviewer.importer.SingleFileImporter;
  *
  *	@version    $Id$
  */
-public final class ProjectViewer extends JPanel 
+public final class ProjectViewer extends JPanel
 								 implements EBComponent {
 
 	//{{{ Static members
@@ -505,9 +505,11 @@ public final class ProjectViewer extends JPanel
 		}
 
 		if (count == 0) {
-			topPane.remove(toolBar);
-			toolBar.removeAll();
-			toolBar = null;
+			if (toolBar != null) {
+				topPane.remove(toolBar);
+				toolBar.removeAll();
+				toolBar = null;
+			}
 		} else if (toolBar == null && config.getShowToolBar()) {
 			toolBar = new JToolBar();
 			populateToolBar();
