@@ -48,7 +48,10 @@ public class TemplateTree extends JTree
     */
    public void reload()
    {
-      ((DefaultTreeModel) getModel()).nodeStructureChanged(root);
+		// Log.log(Log.DEBUG,this,"... TemplateTree.reload()");
+      root = TemplatesPlugin.getTemplates();
+      this.setModel(new DefaultTreeModel(root));
+      // Log.log(Log.DEBUG,this,((TemplateDir)root).printDir());
    }
 
    /**
