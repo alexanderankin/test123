@@ -40,7 +40,7 @@ jar = (cat "../" jar_name ".jar");
 
 get_files = function (dummy)
 {
-	extensions = "class" "gif" "html" "props";
+	extensions = "class" "gif" "html" "props" "bsh";
 	file_globs = (join "/*.", extensions);
 	other_files = "actions.xml";
 

@@ -61,10 +61,17 @@ class ErrorMatcher
 			String _line = regexp.substitute(text,line);
 			String _message = regexp.substitute(text,message);
 
-			ConsolePlugin.addError(type,_filename,
-				Integer.parseInt(_line) - 1,_message);
+			try
+			{
+				ConsolePlugin.addError(type,_filename,
+					Integer.parseInt(_line) - 1,_message);
 
-			return type;
+				return type;
+			}
+			catch(NumberFormatException nf)
+			{
+				return -1;
+			}
 		}
 		else
 			return -1;
