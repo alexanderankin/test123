@@ -25,6 +25,7 @@ package sidekick;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.Component;
+import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 
@@ -36,6 +37,7 @@ class SideKickBindings extends KeyAdapter
 	//{{{ keyTyped() method
 	public void keyTyped(KeyEvent evt)
 	{
+		evt = KeyEventWorkaround.processKeyEvent(evt);
 		char ch = evt.getKeyChar();
 		if(ch == '\b')
 			return;
