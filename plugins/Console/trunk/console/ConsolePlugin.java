@@ -53,7 +53,8 @@ public class ConsolePlugin extends EBPlugin
 		String settings = jEdit.getSettingsDirectory();
 		if(settings != null)
 		{
-			commandoDirectory = MiscUtilities.constructPath(settings,"commando");
+			consoleDirectory = MiscUtilities.constructPath(settings,"console");
+			commandoDirectory = MiscUtilities.constructPath(consoleDirectory,"commando");
 			File file = new File(commandoDirectory);
 			if(!file.exists())
 				file.mkdirs();
@@ -109,6 +110,11 @@ public class ConsolePlugin extends EBPlugin
 		}
 		else if(msg instanceof PropertiesChanged)
 			propertiesChanged();
+	}
+
+	public static String getConsoleSettingsDirectory()
+	{
+		return consoleDirectory;
 	}
 
 	public static String getCommandoDirectory()
@@ -228,6 +234,7 @@ public class ConsolePlugin extends EBPlugin
 
 	// private members
 	private static ErrorMatcher[] errorMatchers;
+	private static String consoleDirectory;
 	private static String commandoDirectory;
 	private static CommandoCommand[] commands;
 
