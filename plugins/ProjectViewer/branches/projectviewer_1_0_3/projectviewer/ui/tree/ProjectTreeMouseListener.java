@@ -61,7 +61,7 @@ public class ProjectTreeMouseListener implements MouseListener {
     * Receive notification that the mouse was pressed.
     */
    public void mousePressed(MouseEvent evt) {
-      if (!evt.isPopupTrigger()) return;
+      if (!GUIUtilities.isPopupTrigger(evt)) return;
 
       TreeNode target = getTarget(evt);
       projectViewer.setTreeSelection(target);

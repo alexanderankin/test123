@@ -72,7 +72,7 @@ public class ConfigDialog extends EnhancedDialog implements ActionListener
    /**
     * Handle button actions.
     */
-   public void actionPerformed(ActionEvent evt)
+   public final void actionPerformed(ActionEvent evt)
    {
       if (evt.getSource() == okButton)
          ok();

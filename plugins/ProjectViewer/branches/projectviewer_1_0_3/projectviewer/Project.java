@@ -39,6 +39,11 @@ public interface Project extends TreeNode, Comparable
    public void setName(String aName);
 
    /**
+    * Returns the names of all available properties.
+    */
+   public Iterator propertyNames();
+
+   /**
     * Set a project property.
     */
    public void setProperty(String name, String value);

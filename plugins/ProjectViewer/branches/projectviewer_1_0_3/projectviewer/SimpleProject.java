@@ -17,6 +17,7 @@ package projectviewer;
 
 import java.util.*;
 import javax.swing.tree.*;
+import org.apache.commons.collections.EnumerationIterator;
 import org.apache.commons.digester.*;
 import org.mobix.xml.*;
 import org.xml.sax.SAXException;
@@ -71,6 +72,13 @@ public class SimpleProject implements Project
    public void setName(String aName)
    {
       name = aName;
+   }
+
+   /**
+    * Returns the names of all available properties.
+    */
+   public Iterator propertyNames() {
+      return new EnumerationIterator(props.propertyNames());
    }
 
    /**

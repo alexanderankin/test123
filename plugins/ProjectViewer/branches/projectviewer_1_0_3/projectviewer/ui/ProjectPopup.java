@@ -53,6 +53,8 @@ public class ProjectPopup extends Popup
       addSeparator();
       add(new ImportProjectAction(projectViewer));
       add(new CreateProjectAction(projectViewer));
+      addSeparator();
+      add(new ConfigPropertiesAction(projectViewer, project));
    }
 
 }
