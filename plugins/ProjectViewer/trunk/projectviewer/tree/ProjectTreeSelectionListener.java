@@ -88,7 +88,7 @@ public class ProjectTreeSelectionListener
     if (target == lastClickTarget &&
         target == viewer.getSelectedNode() &&
         lastClickButton == evt.getModifiers() &&
-        (System.currentTimeMillis() - lastClickTime < 2000L))
+        (System.currentTimeMillis() - lastClickTime < 500L))
     {
       lastClickTarget = null;
       return true;
