@@ -301,6 +301,7 @@ mode.velocity.sidekick.parser=html</programlisting>
  
   <itemizedlist>
    <listitem><para>Fixed NullPointerException in <guimenuitem>Select Asset</guimenuitem>.</para></listitem>
+   <listitem><para>Sometimes a buffer would be parsed more than once in a row.</para></listitem>
   </itemizedlist>
  </listitem>
  <listitem><para><emphasis role="bold">Version 0.3.1</emphasis> requires
