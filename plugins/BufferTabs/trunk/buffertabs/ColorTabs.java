@@ -65,7 +65,7 @@ public class ColorTabs
    private Vector colors;
    private Hashtable colorsAssigned = new Hashtable();
    private Object lock = new Object();
-   private boolean muteColours = true;
+   private boolean muteColors = true;
    private Random rnd = null;
 
 
@@ -216,7 +216,7 @@ public class ColorTabs
             if (entry.re.isMatch(name))
             {
                Color newColour = null;
-               if (muteColours)
+               if (muteColors)
                {
                   if (colorTitles)
                   {
@@ -349,9 +349,9 @@ public class ColorTabs
 
       if (useColors)
       {
-         if (muteColours != jEdit.getBooleanProperty("buffertabs.colourmute"))
+         if (muteColors != jEdit.getBooleanProperty("buffertabs.colourmute"))
          {
-            muteColours = !muteColours;
+            muteColors = !muteColors;
          }
 
          if (colorText != jEdit.getBooleanProperty("buffertabs.colourizetext"))
