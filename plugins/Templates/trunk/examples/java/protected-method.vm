@@ -1,0 +1,2 @@
+#set ( $accessModifier = "protected" )
+#parse ( "java/method.vm" )
