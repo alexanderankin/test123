@@ -87,6 +87,9 @@ public final class ProjectOptionsPanel extends JPanel {
     cons.weightx = 0;
     add(browse, cons);
 
+    final int visibleRows = 3;
+    cons.gridheight = visibleRows;
+    cons.weighty = 1;
     cons.gridy = ++line;
     add(excludedLabel, cons);
     cons.fill = GridBagConstraints.BOTH;
@@ -95,8 +98,11 @@ public final class ProjectOptionsPanel extends JPanel {
     cons.fill = GridBagConstraints.NONE;
     cons.weightx = 0;
     add(excludedBrowse, cons);
+    cons.gridheight = 1;
+    cons.weighty = 0;
 
-    cons.gridy = ++line;
+    line += visibleRows;
+    cons.gridy = line;
     final JToolBar toolBar = new JToolBar();
     toolBar.add(save);
     toolBar.add(reparse);
@@ -118,7 +124,7 @@ public final class ProjectOptionsPanel extends JPanel {
   }
 
   /**
-   * This method is called by {@link gatchan.phpparser.project.dockablepanel.ProjectTabbedPane#setProject(Project)}
+   * This method is called by {@link ProjectTabbedPane#setProject(Project)}
    *
    * @param project the project
    */
@@ -149,17 +155,18 @@ public final class ProjectOptionsPanel extends JPanel {
 
   private final class MyActionListener implements ActionListener {
     public void actionPerformed(ActionEvent e) {
+      final String currentPath = rootField.getText();
       if (e.getSource() == reparse) {
         project.rebuildProject();
       } else if (e.getSource() == browse) {
-        final String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+        final String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, currentPath, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
         if (choosenFolder != null) {
           rootField.setText(choosenFolder[0]);
           project.setRoot(choosenFolder[0]);
           save.setEnabled(true);
         }
       } else if (e.getSource() == excludedBrowse) {
-        final String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, null, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, false);
+        final String[] choosenFolder = GUIUtilities.showVFSFileDialog(null, currentPath, VFSBrowser.CHOOSE_DIRECTORY_DIALOG, true);
         if (choosenFolder != null) {
           for (int i = 0; i < choosenFolder.length; i++) {
             final String path = choosenFolder[i];
@@ -170,8 +177,7 @@ public final class ProjectOptionsPanel extends JPanel {
           save.setEnabled(true);
         }
       } else if (e.getSource() == save) {
-        final String root = rootField.getText();
-        project.setRoot(root);
+        project.setRoot(currentPath);
         project.save();
         save.setEnabled(false);
       }
