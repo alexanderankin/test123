@@ -93,27 +93,153 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
 	}
 
-	public void nextError()
+	public void nextErrorFile()
 	{
-		/* if(errorModel.getSize() > 0)
+		if(errorRoot.getChildCount() == 0)
 		{
-			int index = errorList.getSelectedIndex() + 1;
-			if(index < errorModel.getSize())
-			{
-				errorList.setSelectedIndex(index);
-				openErrorAt(index);
-			}
-			else
-				getToolkit().beep();
+			getToolkit().beep();
+			return;
 		}
 
-		SwingUtilities.invokeLater(new Runnable()
+		TreePath selected = errorTree.getSelectionPath();
+
+		DefaultMutableTreeNode next;
+		if(selected == null)
+			next = (DefaultMutableTreeNode)errorRoot.getChildAt(0);
+		else
 		{
-			public void run()
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				selected.getLastPathComponent();
+
+			if(node.getUserObject() instanceof ErrorSource.Error)
+				node = (DefaultMutableTreeNode)node.getParent();
+
+			if(node.getUserObject() instanceof String)
 			{
-				view.getEditPane().focusOnTextArea();
+				int index = errorRoot.getIndex(node);
+				if(index == errorRoot.getChildCount() - 1)
+				{
+					getToolkit().beep();
+					return;
+				}
+				else
+				{
+					next = (DefaultMutableTreeNode)
+						errorRoot.getChildAt(index + 1);
+				}
 			}
-		}); */
+			else
+			{
+				// wtf?
+				return;
+			}
+		}
+
+		TreePath path = new TreePath(new TreeNode[] { errorRoot, next });
+		errorTree.setSelectionPath(path);
+
+		jEdit.openFile(view,(String)next.getUserObject());
+	}
+
+	public void prevErrorFile()
+	{
+		if(errorRoot.getChildCount() == 0)
+		{
+			getToolkit().beep();
+			return;
+		}
+
+		TreePath selected = errorTree.getSelectionPath();
+
+		DefaultMutableTreeNode prev;
+		if(selected == null)
+		{
+			prev = (DefaultMutableTreeNode)errorRoot.getChildAt(
+				errorRoot.getChildCount() - 1);
+		}
+		else
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				selected.getLastPathComponent();
+
+			if(node.getUserObject() instanceof ErrorSource.Error)
+				node = (DefaultMutableTreeNode)node.getParent();
+
+			if(node.getUserObject() instanceof String)
+			{
+				int index = errorRoot.getIndex(node);
+				if(index == 0)
+				{
+					getToolkit().beep();
+					return;
+				}
+				else
+				{
+					prev = (DefaultMutableTreeNode)
+						errorRoot.getChildAt(index - 1);
+				}
+			}
+			else
+			{
+				// wtf?
+				return;
+			}
+		}
+
+		TreePath path = new TreePath(new TreeNode[] { errorRoot, prev });
+		errorTree.setSelectionPath(path);
+
+		jEdit.openFile(view,(String)prev.getUserObject());
+	}
+
+	public void nextError()
+	{
+		/* if(errorRoot.getChildCount() == 0)
+		{
+			getToolkit().beep();
+			return;
+		}
+
+		TreePath selected = errorTree.getSelectionPath();
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+			selected.getLastPathComponent();
+
+		DefaultMutableTreeNode next;
+
+		if(node.getUserObject() instanceof )
+			node = node.getParent();
+
+		if(node.getUserObject() instanceof ErrorSource.Error)
+		{
+			DefaultMutableTreeNode parent = node.getParent();
+
+			int index = errorRoot.getIndex(parent);
+			if(index == errorRoot.getChildCount() - 1)
+			{
+				int index = errorRoot.getIndex(parent);
+				if(index == errorRoot.getChildCount() - 1)
+				{
+					getToolkit().beep();
+					return;
+				}
+				else
+				{
+					parent = errorRoot.getChildAt(index + 1);
+					next = (DefaultMutableTreeNode)parent.getChildAt(0);
+				}
+			}
+			else
+			{
+				next = (DefaultMutableTreeNode)
+					parent.getChildAt(index + 1);
+			}
+
+			TreePath path = new TreePath(new TreeNode[]
+				{ errorRoot, parent, next });
+			errorTree.setSelectionPath(path);
+
+			openError((ErrorSource.Error)next.getUserObject());
+		} */
 	}
 
 	public void previousError()
