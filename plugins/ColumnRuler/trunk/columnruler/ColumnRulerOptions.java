@@ -8,6 +8,7 @@ import org.gjt.sp.jedit.gui.*;
 
 public class ColumnRulerOptions extends AbstractOptionPane {
 	private JCheckBox activeByDefault;
+	private JCheckBox tabIndicator;
 
 	ButtonGroup borderOptions = new ButtonGroup();
 	private JRadioButton noBorder;
@@ -22,13 +23,16 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 	private ColorWellButton bgcolor;
 
 	public ColumnRulerOptions() {
-		super("Column Ruler");
+		super("columnruler.ruler");
 	}
+
 	protected void _init() {
 		activeByDefault = new JCheckBox("Active by Default",jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate","defer").equals("startup"));
+		tabIndicator = new JCheckBox("Draw indicator for next tab stop",jEdit.getBooleanProperty("options.columnruler.nextTab"));
 
-		JPanel mainPanel = new JPanel(new GridLayout(1,1));
+		JPanel mainPanel = new JPanel(new GridLayout(2,1));
 		mainPanel.add(activeByDefault);
+		mainPanel.add(tabIndicator);
 		mainPanel.setBorder(BorderFactory.createTitledBorder(BorderFactory.createEtchedBorder(),"General"));
 		addComponent(mainPanel);
 
@@ -78,6 +82,7 @@ public class ColumnRulerOptions extends AbstractOptionPane {
 		} else {
 			jEdit.setProperty("plugin.columnruler.ColumnRulerPlugin.activate","defer");
 		}
+		jEdit.setBooleanProperty("options.columnruler.nextTab",tabIndicator.isSelected());
 
 		if (useTextAreaBackground.isSelected()) {
 			jEdit.setProperty("options.columnruler.background.src","textarea");

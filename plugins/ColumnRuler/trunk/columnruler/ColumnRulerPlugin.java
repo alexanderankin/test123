@@ -13,10 +13,11 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-01-15 19:47:36 $ by $Author: bemace $
- * @version    $Revision: 1.4 $
+ * @modified   $Date: 2004-01-19 19:49:52 $ by $Author: bemace $
+ * @version    $Revision: 1.5 $
  */
 public class ColumnRulerPlugin extends EBPlugin {
+	private static LineGuidesExtension guides;
 	private static Hashtable rulerMap = new Hashtable();
 	public final static String NAME = "columnruler";
 	public final static String OPTION_PREFIX = "options.columnruler.";
@@ -39,15 +40,28 @@ public class ColumnRulerPlugin extends EBPlugin {
 		ColumnRuler columnRuler = new ColumnRuler(textArea);
 		textArea.addTopComponent(columnRuler);
 		rulerMap.put(textArea, columnRuler);
+		guides.addTo(textArea);
 	}
 
 	private static void removeColumnRulerFromTextArea(JEditTextArea textArea) {
 		ColumnRuler columnRuler = (ColumnRuler) rulerMap.get(textArea);
 		textArea.removeTopComponent(columnRuler);
 		rulerMap.remove(textArea);
+		guides.removeFrom(textArea);
 	}
 
+	//{{{ start/stop
 	public void start() {
+		guides = new LineGuidesExtension();
+		if (jEdit.getProperty("plugin.columnruler.ColumnRulerPlugin.activate").equals("startup")) {
+			View[] views = jEdit.getViews();
+			for (int i = 0; i < views.length; i++) {
+				EditPane[] panes = views[i].getEditPanes();
+				for(int j = 0; j < panes.length; j++) {
+					addColumnRulerToTextArea(panes[j].getTextArea());
+				}
+			}
+		}
 		addNotify();
 	}
 
@@ -59,6 +73,7 @@ public class ColumnRulerPlugin extends EBPlugin {
 			removeColumnRulerFromTextArea(textArea);
 		}
 	}
+	//}}}
 
 	/**
 	 * Handles a message sent on the EditBus.
@@ -69,6 +84,13 @@ public class ColumnRulerPlugin extends EBPlugin {
 				ViewUpdate vu = (ViewUpdate) message;
 				if (vu.getWhat().equals(ViewUpdate.CREATED)) {
 					addColumnRulerToTextArea(vu.getView().getTextArea());
+					Log.log(Log.DEBUG,this,"Added ruler");
+				}
+			}
+			if (message instanceof EditPaneUpdate) {
+				EditPaneUpdate epu = (EditPaneUpdate) message;
+				if (epu.getWhat().equals(EditPaneUpdate.CREATED)) {
+					addColumnRulerToTextArea(epu.getEditPane().getTextArea());
 					Log.log(Log.DEBUG,this,"Added ruler");
 				}
 			}
