@@ -11,7 +11,7 @@ import org.gjt.sp.util.*;
 import common.gui.actions.*;
 import common.gui.util.*;
 
-public class ReloadPanel extends JPanel {
+public class ReloadPanel extends JPanel implements Observer {
 	private static ReloadPanel instance;
 	java.util.List<Entry> plugins = new ArrayList<Entry>();
 	ConstraintFactory cf = new ConstraintFactory();
@@ -20,6 +20,7 @@ public class ReloadPanel extends JPanel {
 		setLayout(new GridBagLayout());
 		setBackground(Color.GRAY);
 		update();
+		PluginList.getInstance().addObserver(this);
 	}
 	
 	public static ReloadPanel getInstance() {
@@ -27,6 +28,10 @@ public class ReloadPanel extends JPanel {
 			instance = new ReloadPanel();
 		}
 		return instance;
+	}
+	
+	public void update(Observable o, Object arg) {
+		update();
 	}
 	
 	public void update() {

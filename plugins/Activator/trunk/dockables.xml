@@ -4,7 +4,7 @@
 
 <DOCKABLES>
 	<DOCKABLE NAME="activator">
-		new activator.ActivationPanel();
+		activator.ActivationPanel.getInstance();
 	</DOCKABLE>
 	<DOCKABLE NAME="activator.reloader">
 		new javax.swing.JScrollPane(activator.ReloadPanel.getInstance());
