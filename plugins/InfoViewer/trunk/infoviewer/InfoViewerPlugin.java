@@ -58,7 +58,7 @@ public class InfoViewerPlugin extends EBPlugin
 
 
 	public void createOptionPanes(OptionsDialog optionsDialog) {
-		OptionGroup og = new OptionGroup(jEdit.getProperty("options.infoviewer.label"));
+		OptionGroup og = new OptionGroup("infoviewer");
 		og.addOptionPane(new InfoViewerOptionPane());
 		og.addOptionPane(new InfoViewerOptionPane2());
 		optionsDialog.addOptionGroup(og);
