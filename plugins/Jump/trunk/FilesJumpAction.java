@@ -24,7 +24,7 @@ import projectviewer.event.*;
 
 import ctags.bg.*;
 //}}}
-
+// TODO: tabs_files - can't be a HashMap. If may cause problems when more than one build.xml, for ex., founded in current project.
 class FilesJumpAction
 {
 
@@ -56,7 +56,7 @@ class FilesJumpAction
     }
 //}}}
 
-//{{{ Object[] getTabsList()
+//{{{ Object[] getFileList()
 private Object[] getFileList() 
     {
         view = jEdit.getActiveView();
@@ -142,7 +142,6 @@ private Object[] getFileList()
 //{{{ processActionInNewView 
         public void processActionInNewView(Object o)
         {
-            // TODO: Pass focus to newly opened view
             JList l = (JList) o;
             String tab_name = (String) l.getModel().getElementAt(l.getSelectedIndex());
             String file_name = (String)tabs_files.get(tab_name);
