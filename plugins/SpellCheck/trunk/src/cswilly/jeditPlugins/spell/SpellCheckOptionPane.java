@@ -1,7 +1,7 @@
 /*
  * $Revision: 1.1 $
- * $Date: 2001-09-09 15:04:14 $
- * $Author: cswilly $
+ * $Date: 2002-06-07 14:46:21 $
+ * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -20,19 +20,21 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
- package cswilly.jeditPlugins.spell;
+package cswilly.jeditPlugins.spell;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 import javax.swing.JTextField;
+import javax.swing.JLabel;
 import java.io.File;
 
-public class JEditOptionPane
+public class SpellCheckOptionPane
   extends AbstractOptionPane
 {
   private JTextField _aspellExeFilenameField;
+  private JTextField _aspellMainLanguageField;
 
-  public JEditOptionPane()
+  public SpellCheckOptionPane()
   {
     super( SpellCheckPlugin.PLUGIN_NAME );
   }
@@ -44,7 +46,14 @@ public class JEditOptionPane
       aspellExeFilename = "";
 
     _aspellExeFilenameField = new JTextField( aspellExeFilename, 25 );
-    this.addComponent("Aspell executable filename", _aspellExeFilenameField );
+    this.addComponent("Aspell executable filename (full path and filename)", _aspellExeFilenameField );
+
+    String  aspellMainLanguage = jEdit.getProperty( SpellCheckPlugin.ASPELL_LANG_PROP );
+    if( aspellMainLanguage == null )
+      aspellMainLanguage = "";
+
+    _aspellMainLanguageField = new JTextField( aspellMainLanguage, 25 );
+    this.addComponent("lang dictionary (e.g. fr_FR or empty for default)", _aspellMainLanguageField );
   }
 
   public void _save()
@@ -56,6 +65,9 @@ public class JEditOptionPane
       if ( aspellExeFile.exists() )
         jEdit.setProperty( SpellCheckPlugin.ASPELL_EXE_PROP, aspellExeFilename );
     }
+
+    String  aspellMainLanguage = _aspellMainLanguageField.getText().trim();
+    jEdit.setProperty( SpellCheckPlugin.ASPELL_LANG_PROP, aspellMainLanguage );
   }
 
 }
