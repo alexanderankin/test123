@@ -395,14 +395,11 @@ public class DualDiff implements EBComponent
 
 
     private FileLine[] getFileLines(Buffer buffer) {
-        Element map = buffer.getDefaultRootElement();
+        FileLine[] lines = new FileLine[buffer.getLineCount()];
 
-        FileLine[] lines = new FileLine[map.getElementCount()];
-
-        for (int i = map.getElementCount() - 1; i >= 0; i--) {
-            Element line = map.getElement(i);
-            int start = line.getStartOffset();
-            int end   = line.getEndOffset();
+        for (int i = buffer.getLineCount() - 1; i >= 0; i--) {
+            int start = buffer.getLineStartOffset(i);
+            int end   = buffer.getLineEndOffset(i);
 
             // We get the line i without the line separator (always \n)
             int len = (end - 1) - start;
@@ -413,23 +410,20 @@ public class DualDiff implements EBComponent
 
             String text = "";
             String canonical = "";
-            try {
-                text = buffer.getText(start, len);
-                canonical = text;
-                if (ignoreCase) {
-                    canonical = canonical.toUpperCase();
-                }
-                if (trimWhitespace) {
-                    canonical = trimWhitespaces(canonical);
-                }
-                if (ignoreWhitespace) {
-                    canonical = squeezeRepeatedWhitespaces(canonical);
-                }
-            } catch (BadLocationException ble) {
-                Log.log(Log.ERROR, this, ble);
-            } finally {
-                lines[i] = new FileLine(text, canonical);
+
+            text = buffer.getText(start, len);
+            canonical = text;
+            if (ignoreCase) {
+                canonical = canonical.toUpperCase();
             }
+            if (trimWhitespace) {
+                canonical = trimWhitespaces(canonical);
+            }
+            if (ignoreWhitespace) {
+                canonical = squeezeRepeatedWhitespaces(canonical);
+            }
+
+            lines[i] = new FileLine(text, canonical);
         }
 
         return lines;
@@ -741,16 +735,12 @@ public class DualDiff implements EBComponent
         Buffer outputBuffer = jEdit.newFile(outputView);
 
         // Insert the normal output into the buffer
-        try {
-            String s = sw.toString();
-            outputBuffer.insertString(0, s, null);
-            // When the string ends with a newline, the generated buffer
-            // adds one extra newline so we remove it
-            if (s.endsWith("\n") && outputBuffer.getLength() > 0) {
-                outputBuffer.remove(outputBuffer.getLength() - 1, 1);
-            }
-        } catch (BadLocationException ble) {
-            Log.log(Log.DEBUG, DualDiff.class, ble);
+        String s = sw.toString();
+        outputBuffer.insertString(0, s, null);
+        // When the string ends with a newline, the generated buffer
+        // adds one extra newline so we remove it
+        if (s.endsWith("\n") && outputBuffer.getLength() > 0) {
+            outputBuffer.remove(outputBuffer.getLength() - 1, 1);
         }
     }
 
