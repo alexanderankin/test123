@@ -18,11 +18,11 @@ xslt-menu=\
 xslt-menu.label=XSLT
 
 XSLTProcessor.title=XSLT Processor
-XSLTProcessor-toggle.label=XSLT Processor
+XSLTProcessor.label=XSLT Processor
 XSLTProcessor.Transform.label=Transform
 XSLTProcessor.Indent.label=Indent XML Buffer
 XPathTool.title=XPath Tool
-XPathTool-toggle.label=XPath Tool
+XPathTool.label=XPath Tool
 XPathTool.Evaluate.label=Evaluate
 
 xslt.error={0}\nReason: "{1}"\n\nA stacktrace has been written to the Activity Log.
