@@ -19,8 +19,7 @@ package xml.parser;
 import java.util.ArrayList;
 import java.util.List;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.*;
 import sidekick.*;
 import xml.completion.*;
 import xml.parser.TagParser;
@@ -90,6 +89,8 @@ public abstract class XmlParser extends SideKickParser
 					: ENTITY_COMPLETE);
 				break;
 			}
+			else if(ch == '/' && (i == 0 || text.charAt(i - 1) != '<'))
+				return null;
 		}
 
 		String closingTag = null;
@@ -123,7 +124,7 @@ public abstract class XmlParser extends SideKickParser
 					allowedCompletions.add(new XmlListCellRenderer.CDATA());
 				if(closingTag != null && ("/" + closingTag).startsWith(word))
 				{
-					if(word.length() == 0)
+					if(word.length() == 0 || !jEdit.getBooleanProperty("xml.close-complete"))
 						allowedCompletions.add(new XmlListCellRenderer.ClosingTag(closingTag));
 					else
 					{

@@ -4,10 +4,10 @@ XML 0.11:
 - fix xerces 2.3 deprecation
 - ids in nested files
 - fatal errors with null uri
-- / in the middle of text shows 'no completions'
 
 before XML 1.0:
 
+- if close complete off, / should not show a popup immediately
 - swing HTML parser should be replaced with something else
 - complete <foo / to <foo />
 - html parser: empty tags
