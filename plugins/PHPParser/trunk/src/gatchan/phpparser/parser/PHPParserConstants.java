@@ -95,42 +95,43 @@ public interface PHPParserConstants {
   int STRING_1 = 108;
   int STRING_2 = 109;
   int STRING_3 = 110;
-  int DOLLAR = 111;
-  int IDENTIFIER = 112;
-  int LETTER = 113;
-  int DIGIT = 114;
-  int SPECIAL = 115;
-  int LPAREN = 116;
-  int RPAREN = 117;
-  int LBRACE = 118;
-  int RBRACE = 119;
-  int LBRACKET = 120;
-  int RBRACKET = 121;
-  int SEMICOLON = 122;
-  int COMMA = 123;
-  int DOT = 124;
-  int GT = 125;
-  int LT = 126;
-  int EQUAL_EQUAL = 127;
-  int LE = 128;
-  int GE = 129;
-  int NOT_EQUAL = 130;
-  int DIF = 131;
-  int BANGDOUBLEEQUAL = 132;
-  int TRIPLEEQUAL = 133;
-  int ASSIGN = 134;
-  int PLUSASSIGN = 135;
-  int MINUSASSIGN = 136;
-  int STARASSIGN = 137;
-  int SLASHASSIGN = 138;
-  int ANDASSIGN = 139;
-  int ORASSIGN = 140;
-  int XORASSIGN = 141;
-  int DOTASSIGN = 142;
-  int REMASSIGN = 143;
-  int TILDEEQUAL = 144;
-  int LSHIFTASSIGN = 145;
-  int RSIGNEDSHIFTASSIGN = 146;
+  int HEREDOCSTARTTOKEN = 111;
+  int DOLLAR = 112;
+  int IDENTIFIER = 113;
+  int LETTER = 114;
+  int DIGIT = 115;
+  int SPECIAL = 116;
+  int LPAREN = 117;
+  int RPAREN = 118;
+  int LBRACE = 119;
+  int RBRACE = 120;
+  int LBRACKET = 121;
+  int RBRACKET = 122;
+  int SEMICOLON = 123;
+  int COMMA = 124;
+  int DOT = 125;
+  int GT = 126;
+  int LT = 127;
+  int EQUAL_EQUAL = 128;
+  int LE = 129;
+  int GE = 130;
+  int NOT_EQUAL = 131;
+  int DIF = 132;
+  int BANGDOUBLEEQUAL = 133;
+  int TRIPLEEQUAL = 134;
+  int ASSIGN = 135;
+  int PLUSASSIGN = 136;
+  int MINUSASSIGN = 137;
+  int STARASSIGN = 138;
+  int SLASHASSIGN = 139;
+  int ANDASSIGN = 140;
+  int ORASSIGN = 141;
+  int XORASSIGN = 142;
+  int DOTASSIGN = 143;
+  int REMASSIGN = 144;
+  int TILDEEQUAL = 145;
+  int LSHIFTASSIGN = 146;
+  int RSIGNEDSHIFTASSIGN = 147;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
@@ -251,6 +252,7 @@ public interface PHPParserConstants {
     "<STRING_1>",
     "<STRING_2>",
     "<STRING_3>",
+    "\"<<<\"",
     "\"$\"",
     "<IDENTIFIER>",
     "<LETTER>",

@@ -497,7 +497,6 @@ MORE :
   <DOUBLEQUOTE : "\""> : IN_STRING
 }
 
-
 <IN_STRING> TOKEN :
 {
   <DOLLARS : "$"> : DOLLAR_IN_STRING
@@ -548,13 +547,15 @@ MORE :
   <~[]>
 }
 */
-/* IDENTIFIERS */
+
+<PHPPARSING> TOKEN :
+{
+  <HEREDOCSTARTTOKEN : "<<<">
+}
 
 
 <PHPPARSING,IN_VARIABLE> TOKEN : {<DOLLAR : "$"> : IN_VARIABLE}
 
-
-//<PHPPARSING, IN_VARIABLE, DOLLAR_IN_STRING> TOKEN :
 <PHPPARSING, IN_VARIABLE> TOKEN :
 {
   <IDENTIFIER: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*) | <DEFINE> | <OBJECT> >
@@ -571,6 +572,22 @@ MORE :
     "_" | ["\u007f"-"\u00ff"]
   >
 }
+
+  /*
+<HEREDOC> SKIP :
+{
+  <NEWLINE2 : "\n"> : HEREDOCLINESTART
+| <~[]>
+}
+  */
+
+/* IDENTIFIERS */
+
+
+
+
+//<PHPPARSING, IN_VARIABLE, DOLLAR_IN_STRING> TOKEN :
+
   /*
 <DOLLAR_IN_STRING> SPECIAL_TOKEN :
 {
@@ -2097,7 +2114,93 @@ Literal Literal() :
 | token = <TRUE>                   {return new TrueLiteral(token);}
 | token = <FALSE>                  {return new FalseLiteral(token);}
 | token = <NULL>                   {return new NullLiteral(token);}
+| literal = heredoc()              {return literal;}
 //| literal = evaluableString()        {return literal;}
+}
+
+StringLiteral heredoc() :
+{
+  Token heredocStart;
+  Token startToken = null;
+  Token endToken;
+  String endImage;
+}
+{
+  heredocStart = <HEREDOCSTARTTOKEN>
+  try {
+    startToken = <IDENTIFIER>
+    {
+      if(heredocStart.sourceEnd != startToken.sourceStart) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected spaces",
+                                              "",
+                                              "",
+                                              heredocStart.sourceEnd+1,
+                                              startToken.sourceStart-1,
+                                              startToken.beginLine,
+                                              startToken.endLine,
+                                              heredocStart.endColumn+1,
+                                              startToken.beginColumn-1));
+      }
+    }
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "identifier expected",
+                                          "identifier",
+                                          e.currentToken.image,
+                                          errorStart,
+                                          errorEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.endColumn,
+                                          e.currentToken.endColumn+1));
+    return new StringLiteral("",jj_input_stream.getBeginOffset(),jj_input_stream.getBeginOffset()+1);
+  }
+  {
+  while (true) {
+    endToken = getNextToken();
+    if (endToken.kind == PHPParserConstants.EOF) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected EOF",
+                                            "",
+                                            "",
+                                            endToken.sourceStart,
+                                            endToken.sourceEnd,
+                                            endToken.beginLine,
+                                            endToken.endLine,
+                                            endToken.beginColumn,
+                                            endToken.endColumn));
+      break;
+    }
+
+    if (endToken.beginLine == startToken.beginLine) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "unexpected token",
+                                            "identifier",
+                                            endToken.image,
+                                            endToken.sourceStart,
+                                            endToken.sourceEnd,
+                                            endToken.beginLine,
+                                            endToken.endLine,
+                                            endToken.beginColumn,
+                                            endToken.endColumn));
+      continue;
+    }
+    if (endToken.beginColumn != 1) continue;
+    endImage = (endToken.image.charAt(endToken.image.length()-1) == ';') ? endToken.image.substring(0,endToken.image.length()-2) : endToken.image;
+    if (endImage.equals(startToken.image)) {
+      break;
+    }
+  }
+
+  return new StringLiteral(jj_input_stream.getCurrentBuffer().substring(startToken.sourceEnd+1,endToken.sourceStart-1),
+                           startToken.sourceEnd+1,
+                           endToken.sourceStart-1);
+  }
 }
        /*
 StringLiteral evaluableString() :
