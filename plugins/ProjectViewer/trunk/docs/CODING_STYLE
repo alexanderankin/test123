@@ -14,7 +14,8 @@ Not all current source respects all the rules, but the vast majority does.
 Eventually, all source will be updated to follow all these rules. 
 
 Many of these rules match the recommendations of Sun's "Code Conventions for
-the Java Programming Language".
+the Java Programming Language"
+(see http://java.sun.com/docs/codeconv/html/CodeConvTOC.doc.html).
 
 --------------------------------------------------------------------------------
 (i) Indentation, curly brackets, whitespace and folding
