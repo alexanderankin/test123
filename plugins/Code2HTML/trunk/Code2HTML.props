@@ -6,7 +6,7 @@ plugin.code2html.Code2HTMLPlugin.docs=users-guide.html
 plugin.code2html.Code2HTMLPlugin.depend.0=jdk 1.1
 plugin.code2html.Code2HTMLPlugin.depend.1=jedit 04.00.03.00
 
-# Option Pane label & menu label
+# Menu label
 code2html.label=Code2HTML
 
 #Menu
@@ -17,6 +17,7 @@ code2html.current-buffer.label=HTMLize current buffer
 code2html.current-selection.label=HTMLize current selection
 
 # Option Pane labels
+options.code2html.label=Code2HTML
 options.code2html.use-css=Use CSS
 options.code2html.show-gutter=Show gutter
 options.code2html.wrap=Wrap at column (0 for no wrapping):

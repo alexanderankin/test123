@@ -1,6 +1,6 @@
 /*
  * Code2HTMLOptionPane.java
- * Copyright (c) 2000 Andre Kaplan
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ public class Code2HTMLOptionPane
 
 
     public Code2HTMLOptionPane() {
-        super(jEdit.getProperty("code2html.label", "Code2HTML"));
+        super("code2html");
     }
 
 
@@ -75,3 +75,4 @@ public class Code2HTMLOptionPane
         jEdit.setProperty("code2html.wrap", "" + wrap);
     }
 }
+
