@@ -97,4 +97,4 @@ public class TagStackModel
   } //}}}
 }
 
-// :collapseFolds=1:noTabs=true:lineSeparator=\r\n:tabSize=2:indentSize=2:deepIndent=false:folding=explicit:
+// :collapseFolds=1:noTabs=true:tabSize=2:indentSize=2:deepIndent=false:folding=explicit:

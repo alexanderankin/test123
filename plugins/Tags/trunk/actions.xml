@@ -3,23 +3,23 @@
 
 <ACTIONS>
 
-    <ACTION NAME="tags-follow-tag" NO_REPEAT="TRUE">
-      <CODE>
-         tags.Tags.followTag(view, textArea, buffer, false);
-      </CODE>
-    </ACTION>
+	<ACTION NAME="tags-follow-tag" NO_REPEAT="TRUE">
+		<CODE>
+			tags.TagsPlugin.followTag(view, false);
+		</CODE>
+	</ACTION>
 
-    <ACTION NAME="tags-follow-tag-new-view" NO_REPEAT="TRUE">
-		   <CODE>
-         tags.Tags.followTag(view, textArea, buffer, true);
-       </CODE>
-    </ACTION>
+	<ACTION NAME="tags-follow-tag-new-view" NO_REPEAT="TRUE">
+		<CODE>
+			tags.TagsPlugin.followTag(view, true);
+		</CODE>
+	</ACTION>
 
-    <ACTION NAME="tags-enter-and-follow-tag" NO_REPEAT="TRUE">
-      <CODE>
-         tags.Tags.enterAndFollowTag(view, textArea, buffer);
-      </CODE>
-    </ACTION>
+	<ACTION NAME="tags-enter-and-follow-tag" NO_REPEAT="TRUE">
+		<CODE>
+			tags.TagsPlugin.enterAndFollowTag(view);
+		</CODE>
+	</ACTION>
 
 	<ACTION NAME="tags-push-position" NO_REPEAT="TRUE">
 		<CODE>
@@ -27,17 +27,23 @@
 		</CODE>
 	</ACTION>
 
-    <ACTION NAME="tags-pop-tag">
-      <CODE>
-         tags.TagsPlugin.popPosition(view);
-      </CODE>
-    </ACTION>
+	<ACTION NAME="tags-pop-tag">
+		<CODE>
+			tags.TagsPlugin.popPosition(view);
+		</CODE>
+	</ACTION>
 
-    <ACTION NAME="tags-clear-tag-stack" NO_REPEAT="TRUE">
-      <CODE>
-         tags.TagsPlugin.clearStack(view);
-      </CODE>
-    </ACTION>
-    
+	<ACTION NAME="tags-clear-tag-stack" NO_REPEAT="TRUE">
+		<CODE>
+			tags.TagsPlugin.clearStack(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="tags-cache-dialog" NO_REPEAT="TRUE">
+		<CODE>
+			new tags.TagFileCacheDialog(view);
+		</CODE>
+	</ACTION>
+
 </ACTIONS>
 
