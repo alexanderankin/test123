@@ -47,6 +47,7 @@ public class CTAGS_Parser implements Serializable
 
         ctags_args[0] = CTAGS_BG.CTAGS_EXECUTABLE;
         ctags_args[1] = "--verbose=yes";
+        //ctags_args[2] = "--extra=+q-f";
         ctags_args[2] = s;
         ctags_args[3] = this.excmd;
         ctags_args[4] = "-f";
