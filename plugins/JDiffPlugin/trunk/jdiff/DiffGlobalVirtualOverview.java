@@ -1,6 +1,6 @@
 /*
  * DiffGlobalVirtualOverview.java
- * Copyright (C) 2000 Andre Kaplan
+ * Copyright (C) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,6 +53,9 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         int virtualLineCount0 = this.textArea0.getVirtualLineCount();
         int virtualLineCount1 = this.textArea1.getVirtualLineCount();
 
+        int lineCount0 = this.textArea0.getLineCount();
+        int lineCount1 = this.textArea1.getLineCount();
+
         Rectangle size = getBounds();
 
         gfx.setColor(getBackground());
@@ -93,11 +96,15 @@ public class DiffGlobalVirtualOverview extends DiffOverview
 
         Diff.change hunk = this.edits;
 
-        int virtualLeftOffset  = 0;
-        int virtualRightOffset = 0;
         int virtualLeftHeight  = 0;
         int virtualRightHeight = 0;
+        int virtualLeftOffset  = 0;
+        int virtualRightOffset = 0;
         for (; hunk != null; hunk = hunk.link) {
+
+            if ((hunk.line0 + hunk.deleted) >= lineCount0) { break; }
+            if ((hunk.line1 + hunk.inserted) >= lineCount1) { break; }
+
             virtualLeftOffset  = foldVisibilityManager0.physicalToVirtual(hunk.line0);
             virtualRightOffset = foldVisibilityManager1.physicalToVirtual(hunk.line1);
 
@@ -112,14 +119,21 @@ public class DiffGlobalVirtualOverview extends DiffOverview
                rightColor = JDiffPlugin.overviewChangedColor;
             }
 
-            virtualLeftHeight = (
-                  foldVisibilityManager0.physicalToVirtual(hunk.line0 + hunk.deleted)
-                - virtualLeftOffset
-            );
-            virtualRightHeight = (
-                  foldVisibilityManager1.physicalToVirtual(hunk.line1 + hunk.inserted)
-                - virtualRightOffset
-            );
+            virtualLeftHeight = 0;
+            if (hunk.deleted != 0) {
+                virtualLeftHeight = (
+                      foldVisibilityManager0.physicalToVirtual(Math.min(lineCount0 - 1, hunk.line0 + hunk.deleted))
+                    - virtualLeftOffset
+                );
+            }
+
+            virtualRightHeight = 0;
+            if (hunk.inserted != 0) {
+                virtualRightHeight = (
+                      foldVisibilityManager1.physicalToVirtual(Math.min(lineCount1 - 1, hunk.line1 + hunk.inserted))
+                    - virtualRightOffset
+                );
+            }
 
             left.y  = inner.y + (int) Math.round(virtualLeftOffset * pxlPerLine);
             right.y = inner.y + (int) Math.round(virtualRightOffset * pxlPerLine);
@@ -179,3 +193,4 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         gfx.drawRect(rightCursor.x, rightCursor.y, rightCursor.width - 1, rightCursor.height - 1);
     }
 }
+
