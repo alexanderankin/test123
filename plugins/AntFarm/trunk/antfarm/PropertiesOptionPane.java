@@ -37,7 +37,6 @@ public class PropertiesOptionPane extends AbstractOptionPane
 	final static String VALUE = ".value";
 
 	private PropertiesTable _table;
-	private JCheckBox _noPrompt;
 
 
 	public PropertiesOptionPane()
@@ -48,14 +47,15 @@ public class PropertiesOptionPane extends AbstractOptionPane
 
 	public void _init()
 	{
-		_noPrompt = new JCheckBox( jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-poperties-label" ) );
-		_noPrompt.setSelected( jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ) );
-		addComponent( _noPrompt );
-		addComponent( new JLabel(
-			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "set-global-properties-label" )
-			 ) );
+		addComponent( new JLabel( "Set global properties to use when running ant builds." ) );
 
 		_table = new PropertiesTable( AntFarmPlugin.getGlobalProperties() );
+		TableColumn column = null;
+		for ( int i = 0; i < 2; i++ ) {
+			column = _table.getColumnModel().getColumn( i );
+			column.setPreferredWidth( 100 );
+		}
+
 		JScrollPane scrollPane = new JScrollPane( _table );
 		addComponent( scrollPane );
 	}
@@ -70,38 +70,39 @@ public class PropertiesOptionPane extends AbstractOptionPane
 	public void _save()
 	{
 
-		jEdit.setBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties",
-			_noPrompt.isSelected()
-			 );
-
 		// get rid of old settings
-		deleteGlobalProperties();
-
-		// put in the new ones
-		Properties properties = _table.getProperties();
-
-		Enumeration names = properties.keys();
-		for ( int i = 0; names.hasMoreElements(); i++ ) {
-			String name = (String) names.nextElement();
-			String value = properties.getProperty( name );
-			jEdit.setProperty( PropertiesOptionPane.PROPERTY + ( i + 1 ) + PropertiesOptionPane.NAME, name );
-			jEdit.setProperty( PropertiesOptionPane.PROPERTY + ( i + 1 ) + PropertiesOptionPane.VALUE, value );
+		String name;
+		int counter = 1;
+		while ( ( name = jEdit.getProperty( PROPERTY + counter + NAME ) ) != null ) {
+			jEdit.setProperty( PROPERTY + counter + NAME, null );
+			jEdit.setProperty( PROPERTY + counter + VALUE, null );
+			counter++;
 		}
+		// put in the new ones
 
+		Properties properties = _table.getProperties();
+		Enumeration propertyNames = properties.propertyNames();
+		for ( int i = 0; propertyNames.hasMoreElements(); i++ ) {
+			name = (String) propertyNames.nextElement();
+			String value = properties.getProperty( name );
+
+			// Check if there is anything to save.
+			if ( name == null || value == null )
+				continue;
+
+			if ( name.trim().length() > 0 && value.trim().length() > 0 ) {
+				jEdit.setProperty( PROPERTY + ( i + 1 ) + NAME, name );
+				jEdit.setProperty( PROPERTY + ( i + 1 ) + VALUE, value );
+			}
+		}
 	}
 
 
-	private void deleteGlobalProperties()
+	public void tableChanged( TableModelEvent e )
 	{
-		String name;
-		int counter = 1;
-		while ( ( name = jEdit.getProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.NAME ) ) != null ) {
-			jEdit.setProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.NAME, null );
-			jEdit.setProperty( PropertiesOptionPane.PROPERTY + counter + PropertiesOptionPane.VALUE, null );
-			counter++;
-		}
-
+		repaint();
 	}
 
 }
+
 
