@@ -1,14 +1,14 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
-plugin.antfarm.AntFarmPlugin.author=Brian Knowles, John Gellene
-plugin.antfarm.AntFarmPlugin.version=1.1
+plugin.antfarm.AntFarmPlugin.author=Brian Knowles
+plugin.antfarm.AntFarmPlugin.version=1.2
 plugin.antfarm.AntFarmPlugin.docs=index.html
 plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-optional.jar
 
-plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.00.04.00
-plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 3.1
-plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2
-plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.6
+plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.00.07.00
+plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 3.3
+plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2.2
+plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.8.1
 plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.2
 
 antfarm-toggle.label=Ant Farm Toggle
