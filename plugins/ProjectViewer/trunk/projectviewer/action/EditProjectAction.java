@@ -23,6 +23,7 @@ import java.awt.event.ActionEvent;
 
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -101,7 +102,7 @@ public class EditProjectAction extends Action {
 		if (proj != null) {
 			if (add) {
 				ProjectManager.getInstance().addProject(proj);
-				RootImporter ipi = new RootImporter(proj, viewer, jEdit.getActiveView());
+				RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
 				ipi.doImport();
 				viewer.setProject(proj);
 			} else {
@@ -109,7 +110,15 @@ public class EditProjectAction extends Action {
 					ProjectManager.getInstance().renameProject(oldName, proj.getName());
 				}
 				if (!proj.getRootPath().equals(oldRoot)) {
-					RootImporter ipi = new RootImporter(proj, viewer, jEdit.getActiveView());
+					RootImporter ipi;
+					if (JOptionPane.showConfirmDialog(jEdit.getActiveView(),
+							jEdit.getProperty("projectviewer.action.clean_old_root"),
+							jEdit.getProperty("projectviewer.action.clean_old_root.title"),
+							JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						ipi = new RootImporter(proj, oldRoot, viewer, jEdit.getActiveView());
+					} else {
+						ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
+					}
 					ipi.doImport();
 				}
 				proj.firePropertiesChanged();

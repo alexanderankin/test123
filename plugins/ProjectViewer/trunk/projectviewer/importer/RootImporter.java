@@ -29,7 +29,6 @@ import java.util.Enumeration;
 
 import java.awt.Component;
 import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
 import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
@@ -53,6 +52,7 @@ public class RootImporter extends FileImporter {
 
 	//{{{ Private members
 	private Component parent;
+	private String oldRoot;
 	private boolean clean;
 	//}}}
 
@@ -60,20 +60,23 @@ public class RootImporter extends FileImporter {
 
 	/**
 	 *	Creates an Importer that uses a component other than the ProjectViewer
-	 *	as the parent of the dialogs shown to the user.
+	 *	as the parent of the dialogs shown to the user. If "oldRoot" is not null,
+	 *	files under this directory will be removed from the root node of the
+	 *	project.
 	 */
-	public RootImporter(VPTNode node, ProjectViewer viewer, Component parent) {
+	public RootImporter(VPTNode node, String oldRoot, ProjectViewer viewer, Component parent) {
 		super(node, viewer);
 		if (parent != null) {
 			this.parent = parent;
 		} else {
 			this.parent = viewer;
 		}
-		clean = false;
+		clean = (oldRoot != null);
+		this.oldRoot = oldRoot;
 	}
 
 	public RootImporter(VPTNode node, ProjectViewer viewer) {
-		this(node, viewer, null);
+		this(node, null, viewer, null);
 	}
 
 	/**
@@ -82,7 +85,7 @@ public class RootImporter extends FileImporter {
 	 *	before the importing.
 	 */
 	public RootImporter(VPTNode node, ProjectViewer viewer, boolean clean) {
-		this(node, viewer, null);
+		this(node, null, viewer, null);
 		this.clean = clean;
 	}
 
@@ -115,12 +118,15 @@ public class RootImporter extends FileImporter {
 		}
 
 		if (clean) {
+			if (oldRoot == null) {
+				oldRoot = project.getRootPath();
+			}
 			Enumeration e = project.children();
 			ArrayList toRemove = new ArrayList();
 			removed = new ArrayList();
 			while (e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
-				if (n.getNodePath().startsWith(project.getRootPath())) {
+				if (n.getNodePath().startsWith(oldRoot)) {
 					toRemove.add(n);
 				}
 			}
