@@ -4,7 +4,7 @@ plugin.Code2HTMLPlugin.version=0.1.2
 plugin.Code2HTMLPlugin.docs=index.html
 
 plugin.Code2HTMLPlugin.depend.0=jdk 1.1
-plugin.Code2HTMLPlugin.depend.1=jedit 02.06.01.00
+plugin.Code2HTMLPlugin.depend.1=jedit 02.05.99.01
 
 # Option Pane label & menu label
 code2html.label=Code2HTML

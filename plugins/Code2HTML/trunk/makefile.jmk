@@ -36,7 +36,7 @@ cmd_javac = javac_bin "-classpath" class_path javac_opts;
 # jar executable and args
 ##
 jar_bin = "jar";
-jar_opts = "cfM0";
+jar_opts = "cf0";
 cmd_jar = jar_bin jar_opts;
 
 srcs     = (glob "*.java");
