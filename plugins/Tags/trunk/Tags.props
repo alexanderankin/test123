@@ -11,11 +11,11 @@ tags-follow-tag.label=Follow Tag
 tags-follow-tag-new-view.label=Follow Tag (New View)
 tags-enter-and-follow-tag.label=Follow Tag...
 tags-pop-tag.label=Pop Tag
-tags-options.label=Tagging Options
+tags-clear-tag-stack.label=Clear Tag Stack
 
 # application menu items
 tags.menu.label=Tags
-tags.menu=tags-follow-tag tags-follow-tag-new-view tags-enter-and-follow-tag tags-pop-tag
+tags.menu=tags-follow-tag tags-follow-tag-new-view tags-enter-and-follow-tag tags-pop-tag - tags-clear-tag-stack
 
 # Messages
 no-tag-index-files.title=Error
@@ -32,10 +32,13 @@ tag-def-file-not-found.message=The tag file name path \"{0}\"\nthat is listed in
 tags.enter-tag-dlg.title=Enter And Follow Tag
 tags.enter-tag-dlg.tag-to.label=Tag to:
 tags.enter-tag-dlg.new-view-checkbox.label=Open new view
+tags.enter-tag-dlg.keep-dialog.label=Keep dialog
 
 # Tag collision dialog
 tag-collision-dlg.title=Tag Collisions
 tag-collision-dlg.label=Choose tag:
+
+tag-collision-popup-help.label=ESC key to cancel, SPACE key for dialog
 
 # Option strings
 options.tags.label=Tags
@@ -49,11 +52,20 @@ options.tags.tag-search-files-move-up.label=Move Up
 options.tags.tag-search-files-move-down.label=Move Down
 options.tags.tag-options.title=Tagging Options
 options.tags.current-buffer-file-name.label=Tag index file name:
-options.tags.current-buffer-file-name=tags
+options.tags.open-dialogs-under-cursor.label=Position dialogs under cursor (Experimental)
+options.tags.tag-extends-through-dot.label=Tags extend through member access operator
+options.tags.tag-index-file-path-column.label=Tag Index File Paths
+options.tags.tag-index-file-enabled-column.label=Enabled
 options.tags.tag-ok.label=OK
 options.tags.tag-cancel.label=Cancel
+options.tags.tag-close.label=Close
 
 # Option values
+options.tags.current-buffer-file-name=tags
 options.tags.tag-search-current-buff-tag-file=false
 options.tags.tag-search-all-files=false
+options.tags.note-all-tags-in-tag-history=true
+options.tags.open-dialogs-under-cursor=false
+options.tags.tag-extends-through-dot=true
+tags.enter-tag-dlg.keep-dialog=false
 

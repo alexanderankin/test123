@@ -156,6 +156,9 @@ class ExuberantCTagsParser extends GenericTagsParser {
     if (exuberantInfoItems != null)
       tl.exuberantInfoItems_ = exuberantInfoItems;
       
+    st = null;
+    exuberantInfoItems = null;
+      
     return tl;
   }
   

@@ -1,6 +1,6 @@
 /*
  * TagsEnterTagDialog.java
- * Copyright (c) 2001 Kenrick Drew
+ * Copyright (c) 2001, 2002 Kenrick Drew
  * kdrew@earthlink.net
  *
  * This file is part of TagsPlugin
@@ -51,18 +51,20 @@ public class TagsEnterTagDialog extends JDialog {
         protected JButton cancelButton_ = null;
       
   protected View view_ = null;
+  protected TagsParser parser_;
   
   protected boolean returnValue_ = true;
   
   /***************************************************************************/
-  public TagsEnterTagDialog(View view, String initialValue, 
-                           boolean otherWindow) {
+  public TagsEnterTagDialog(View view, TagsParser parser, String initialValue) 
+  {
 
     super(view, jEdit.getProperty("tags.enter-tag-dlg.title"), true);
     
     view_ = view;
+  	parser_ = parser;
     
-    createComponents(initialValue, otherWindow);
+    createComponents(initialValue);
     setupComponents();
     placeComponents();
   }
@@ -71,8 +73,8 @@ public class TagsEnterTagDialog extends JDialog {
   public boolean showDialog() {
     pack();
 
-    // Place dialog in center of screen
-    setLocationRelativeTo(view_);
+    // Place dialog
+    Tags.setDialogPosition(view_, this);
 
     // Set focus to text field
     GUIUtilities.requestFocus(this, enterTagPanel_.tagFuncTextField_);
@@ -100,9 +102,10 @@ public class TagsEnterTagDialog extends JDialog {
   }
 
   /***************************************************************************/
-  protected void createComponents(String initialValue, boolean otherWindow) {
+  protected void createComponents(String initialValue) 
+  {
     contentPanel_ = new JPanel(new BorderLayout());
-    enterTagPanel_ = new TagsEnterTagPanel(initialValue, otherWindow);
+    enterTagPanel_ = new TagsEnterTagPanel(initialValue, view_, parser_);
 
     buttonPanelFlow_ = new JPanel(new FlowLayout(FlowLayout.CENTER));
     buttonPanelGrid_ = new JPanel(new GridLayout(1,0,5,5));
@@ -112,10 +115,9 @@ public class TagsEnterTagDialog extends JDialog {
   }
   
   /***************************************************************************/
-  protected void setupComponents() {
+  protected void setupComponents() 
+  {
     setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-
-    enterTagPanel_.setDebug(debug_);
 
     getContentPane().setLayout(new BorderLayout());
     
@@ -125,10 +127,15 @@ public class TagsEnterTagDialog extends JDialog {
     okButton_.setMnemonic(KeyEvent.VK_O);
     cancelButton_.setMnemonic(KeyEvent.VK_C);
 
+    if (!enterTagPanel_.TESTING)
+      enterTagPanel_.getFuncTextField().addActionListener(okButtonListener_);
     enterTagPanel_.getFuncTextField().addKeyListener(keyListener_);
     addKeyListener(keyListener_);
-
-    getRootPane().setDefaultButton(okButton_);
+    
+    if (enterTagPanel_.TESTING)
+      getRootPane().setDefaultButton(enterTagPanel_.findButton_);
+    else
+      getRootPane().setDefaultButton(okButton_);
   }
   
   /***************************************************************************/
@@ -173,19 +180,12 @@ public class TagsEnterTagDialog extends JDialog {
       e = KeyEventWorkaround.processKeyEvent(e);
       if (e == null)
         return;
-    
+
       switch (e.getKeyCode()) {
         case KeyEvent.VK_ESCAPE:
           cancelButtonListener_.actionPerformed(null);
           e.consume();
           break;
-       case KeyEvent.VK_ENTER:
-         if (getFocusOwner() == enterTagPanel_.tagFuncTextField_)
-         {
-           okButtonListener_.actionPerformed(null);
-           e.consume();
-         }
-         break;
       }
    }
   };

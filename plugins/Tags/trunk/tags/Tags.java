@@ -1,6 +1,6 @@
 /*
  * Tags.java
- * Copyright (c) 2001 Kenrick Drew
+ * Copyright (c) 2001, 2002 Kenrick Drew
  * kdrew@earthlink.net
  *
  * This file is part of TagsPlugin
@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.search.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
+import org.gjt.sp.jedit.gui.HistoryModel;
 
 import gnu.regexp.*;
 
@@ -78,10 +79,45 @@ final public class Tags {
   protected static String searchString_;
   protected static int    lineNumber_;
   
+  protected static Point currentMousePoint_;
+  protected static boolean jEditAvailable = true;
+  
   /***************************************************************************/
-  public static void loadTagFiles() {
-    // NOTE:  We are not remembering tag file catagories at this time...
+        public static boolean setJEditAvailable(boolean status)
+  {
+    boolean old = jEditAvailable;
+    jEditAvailable = status;
+    return old;
+  }
+  
+  /***************************************************************************/
+        public static String getProperty(String prop)
+  {
+    return getProperty(prop, null);
+  } 
+  
+  /***************************************************************************/
+  public static String getProperty(String prop, String def)
+  {
+    String value = null;
     
+    if (jEditAvailable)
+      value = jEdit.getProperty(prop, def);
+    else if (def != null)
+      value = new String(def);
+      
+    return value;
+  }
+  
+  /***************************************************************************/
+  public static void init()
+  {
+    Tags.loadTagFiles();
+  }
+  
+  /***************************************************************************/
+  public static void loadTagFiles() 
+  {
     // Clear out all tag files (just to make sure...)
     Tags.clearTagFiles();
     
@@ -94,44 +130,54 @@ final public class Tags {
     
     // Get old property string
     String tagFiles = jEdit.getProperty("tags-tag-files");
+    TagFile newTagFile = null;
+    
     
     if (tagFiles != null)
     {
+      String tagIndexFileName = null;
       // Break into tokens and append tag filename
       StringTokenizer st = new StringTokenizer(tagFiles, ",");
-      String fileName = null;
       while (st.hasMoreElements()) 
       {
-        fileName = (String) st.nextElement();
-        if (fileName != null)
+        tagIndexFileName = (String) st.nextElement();
+        if (tagIndexFileName != null)
         {
-          Log.log(Log.DEBUG, null, "Loading tag index file: " + fileName);
-          Tags.appendTagFile(fileName);
+          newTagFile = new TagFile(tagIndexFileName);
+          Log.log(Log.DEBUG, null, 
+                  "Loading " + newTagFile.toDebugString());
+          Tags.addTagFile(newTagFile);
         }
       }
+      tagIndexFileName = null;
+      st = null;
     }
     else
     {
+      String tagFileProperty = null;
       int index = 0;
-      String tagIndexFileName = null;
-      while ((tagIndexFileName = 
-                jEdit.getProperty("tags-tag-index-file" + index)) != null)
+      while ((tagFileProperty = 
+                     jEdit.getProperty("tags-tag-index-file" + index)) != null)
       {
+        newTagFile = new TagFile(tagFileProperty);
         Log.log(Log.DEBUG, null, 
-                "Loading tag index file: " + tagIndexFileName);
-        Tags.appendTagFile(tagIndexFileName);
+                "Loading: " + newTagFile.toDebugString());
+        Tags.addTagFile(newTagFile);
         index++;
       }
+      tagFileProperty = null;
     }
     jEdit.setProperty("tags-tag-files", null);  // remove old property
+    newTagFile = null;
+    tagFiles = null;
   }
   
   /***************************************************************************/
-  public static void writeTagFiles() {
-    
+  public static void writeTagFiles() 
+  {
     jEdit.setProperty("tags-tag-files", null); // remove old property
 
-    String tagFileName = null;
+    TagFile tf = null;
     int numTagFiles = tagFiles_.size();
     int i = 0;
     while (i < numTagFiles ||
@@ -139,22 +185,72 @@ final public class Tags {
     {
       if (i < numTagFiles)
       {
-        tagFileName = (String) ((TagFile)tagFiles_.elementAt(i)).getPath();
-        if (tagFileName != null) 
+        tf = (TagFile) tagFiles_.elementAt(i);
+        if (tf != null) 
         {
-          /* yes I know "propertizing" isn't a word! */
+          /* yes, I know "propertizing" isn't a word! */
           Log.log(Log.DEBUG, null, 
-                  "Propertizing tag index file: " + tagFileName);
-          jEdit.setProperty("tags-tag-index-file" + i, tagFileName);
+                  "'Propertizing' tag index file: " + tf.toDebugString());
+          jEdit.setProperty("tags-tag-index-file" + i, tf.getPropertyString());
         }
       }
       else // remove any previous entries >= numTagFiles
         jEdit.setProperty("tags-tag-index-file" + i, null);
         
       i++;
-    }    
+    }
+    tf = null;    
   }
 
+  /***************************************************************************/
+  public static void setMousePosition(Point p) {currentMousePoint_ = p; }
+  
+  /***************************************************************************/
+  public static void setDialogPosition(Component parentComponent,
+                                       JDialog dialog)
+  {
+    if (parentComponent == null)
+      return;
+    
+    if (currentMousePoint_ != null &&
+        jEdit.getBooleanProperty("options.tags.open-dialogs-under-cursor"))
+    {
+      Point p = new Point(currentMousePoint_);
+      Dimension dlgSize = dialog.getSize();
+      p.x = p.x - (dlgSize.width / 2);
+      p.y = p.y - (dlgSize.height / 2);
+      
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      
+      if (p.x + dlgSize.width > screenSize.width)  // off the right
+      {
+        p.x = screenSize.width - dlgSize.width;
+      }
+      if (p.x < 0)   // off the left
+      {
+        p.x = 0;  // prefer left to right screen aligned...
+      } 
+      
+      if (p.y + dlgSize.height > screenSize.height)  // off the bottom
+      {
+        p.y = screenSize.height - dlgSize.height;
+      }
+      if (p.y < 0)  // off the top
+      {
+        p.y = 0;
+      }
+        
+      dialog.setLocation(p);
+      p = null;
+    }
+    else
+    {
+      dialog.setLocationRelativeTo(parentComponent);
+      if (currentMousePoint_ == null)
+        Log.log(Log.DEBUG, null, 
+                "Placed dialog relative to parent b/c no mouse point.");
+    }
+  }
   
   /***************************************************************************/
   // See Note 1
@@ -171,42 +267,24 @@ final public class Tags {
   public static int getParserType() { return currentParserType_; }
   
   /*+*************************************************************************/
-  public static void appendTagFile(String file) 
+  public static void addTagFile(TagFile tf)
   {
-    TagFile tf = new TagFile(file, TagFile.DEFAULT_CATAGORY);
-    tf.currentDirIndexFile_ = 
-       file.equals(jEdit.getProperty("options.tags.current-buffer-file-name"));
-    
-    tagFiles_.addElement(tf);
+    addTagFile(tf, tagFiles_.size());
   }
   
   /*+*************************************************************************/
-  public static void addTagFile(String file, int index) 
+  public static void addTagFile(TagFile tf, int index) 
   {
-    TagFile tf = new TagFile(file, TagFile.DEFAULT_CATAGORY);
-    tf.currentDirIndexFile_ = 
-       file.equals(jEdit.getProperty("options.tags.current-buffer-file-name"));
+    tf.currentDirIndexFile_ = tf.getPath().equals(
+                         getProperty("options.tags.current-buffer-file-name"));
     
     tagFiles_.insertElementAt(tf, index); 
-  }
-  
-  /*+*************************************************************************/
-  public static void prependTagFile(String file) 
-  {
-    TagFile tf = new TagFile(file, TagFile.DEFAULT_CATAGORY);
-    tf.currentDirIndexFile_ = 
-       file.equals(jEdit.getProperty("options.tags.current-buffer-file-name"));
-    
-    tagFiles_.insertElementAt(tf, 0);
   }
   
   /***************************************************************************/
   public static int getTagFileCount()
   {
-    if (tagFiles_ == null)
-      return 0;
-      
-    return tagFiles_.size();
+    return (tagFiles_ != null) ? tagFiles_.size() : 0;
   }
   
   /***************************************************************************/
@@ -269,12 +347,13 @@ final public class Tags {
                                        final JEditTextArea textArea,
                                        final Buffer buffer) 
   {
-    TagsEnterTagDialog dialog = new TagsEnterTagDialog(view, null, false);
+    TagsEnterTagDialog dialog = new TagsEnterTagDialog(view, parser_, null);
     if (dialog.showDialog())
     {
       followTag(view, textArea, buffer, dialog.getOtherWindow(), false,
-      dialog.getFuncName());
+                dialog.getFuncName());
     }
+    dialog = null;
   }  
   
   /*+*************************************************************************/
@@ -327,56 +406,45 @@ final public class Tags {
       
     parser_.reinitialize();
 
-    // Search default tag file if needed
-    boolean found = false;
-    String tagFileName = null;
-    File defaultTagFile = null;
-    if (useCurrentBufTagFile) {
-      File currentBufferFile = new File(buffer.getPath());
-      defaultTagFile = new File(currentBufferFile.getParent() + 
-                   System.getProperty("file.separator") + 
-                   jEdit.getProperty("options.tags.current-buffer-file-name"));
-      if (defaultTagFile.exists()) 
-      {
-        found = parser_.findTagLines(defaultTagFile.getPath(),
-                                     funcName, currentView) || found;
-      }
-      else
-        Log.log(Log.WARNING, null, "Default tag file " + 
-                defaultTagFile.getPath() + " does not exist");
-    }
-    
     // Search tag files if needed
     TagFile tf = null;
-    if (!found || serachAllTagFiles) 
+    int numTagFiles = tagFiles_.size();
+    boolean found = false;
+    String tagFileName = null;
+    long start = System.currentTimeMillis();
+    for (int i = 0; i < numTagFiles; i++) 
     {
-      int numTagFiles = tagFiles_.size();
-      for (int i = 0; i < numTagFiles; i++) 
+      tf = (TagFile) tagFiles_.elementAt(i);
+      if (!tf.isEnabled())
       {
-        tf = (TagFile) tagFiles_.elementAt(i);
-        if (TagsOptionsPanel.newCurBufStuff_ && tf.currentDirIndexFile_ &&
-            useCurrentBufTagFile)
-        {
-          File currentBufferFile = new File(buffer.getPath());
-          tagFileName = currentBufferFile.getParent() + 
+        Log.log(Log.DEBUG, null, "Skipping " + tf.getPath() + 
+                                 " b/c not enabled");
+        continue;
+      }
+      if (tf.currentDirIndexFile_ && useCurrentBufTagFile)
+      {
+        File currentBufferFile = new File(buffer.getPath());
+        tagFileName = currentBufferFile.getParent() + 
                    System.getProperty("file.separator") + 
                    jEdit.getProperty("options.tags.current-buffer-file-name");
-        }
-        else
-          tagFileName = tf.getPath();
-        if (defaultTagFile != null && 
-            tagFileName.equals(defaultTagFile.getPath()))
-          continue;
-        
-        found = parser_.findTagLines(tagFileName, funcName, 
-                                     currentView) || found;
-        if (!serachAllTagFiles && found)
-          break;
+        currentBufferFile = null;
       }
+      else
+        tagFileName = tf.getPath();
+        
+      found = parser_.findTagLines(tagFileName, funcName, 
+                                   currentView) || found;
+      if (!serachAllTagFiles && found)
+        break;
     }
+    long end = System.currentTimeMillis();
+    
+    Log.log(Log.DEBUG, null, 
+            "Found tag(s) in " + (end - start) * .001 + " seconds.");
     
     // Handle what was found (or not found)
-    if (parser_.getNumberOfFoundTags() > 1) {
+    if (parser_.getNumberOfFoundTags() > 1) 
+    {
       if (ui_) 
       {
         if (collisionPopup)
@@ -399,8 +467,8 @@ final public class Tags {
   }
   
   /***************************************************************************/
-  public static void processTagLine(int tagLineIndex, View currentView, 
-                                    boolean openNewView, String funcName) {
+  protected static void processTagLine(int tagLineIndex, View currentView, 
+                                       boolean openNewView, String funcName) {
     
     View           tagToView = null;
     JEditTextArea  currentTextArea = null;
@@ -452,7 +520,8 @@ final public class Tags {
 						
             // get current search values/parameters
             SearchAndReplace.save();
-            SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
+            SearchFileSet oldFileset = SearchAndReplace.getSearchFileSet();
+            String oldSearchString = SearchAndReplace.getSearchString();
             
             // set current search values/parameters
             SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
@@ -467,7 +536,8 @@ final public class Tags {
             
             // Be nice and restore search values/parameters
             SearchAndReplace.load();
-            SearchAndReplace.setSearchFileSet(fileset);
+            SearchAndReplace.setSearchFileSet(oldFileset);
+            SearchAndReplace.setSearchString(oldSearchString);
             
 						v.getTextArea().removeFromSelection(
 																			 v.getTextArea().getCaretPosition());
@@ -491,8 +561,13 @@ final public class Tags {
       }
   
       if (ui_)
+      {
         tagToView.getStatus().setMessage("Found: " + funcName);
-  
+        
+        HistoryModel taggingHistoryModel = 
+                               HistoryModel.getModel("tags.enter-tag.history");
+        taggingHistoryModel.addItem(funcName);
+      }
     }
     else
       Log.log(Log.ERROR, null, "What?:  " + tagLine);
@@ -501,13 +576,13 @@ final public class Tags {
   }
   
   /***************************************************************************/
-  public static String getTagFileName() { return tagFileName_; }
+  protected static String getTagFileName() { return tagFileName_; }
   
   /***************************************************************************/
-  public static String getSearchString() { return searchString_; }
+  protected static String getSearchString() { return searchString_; }
   
   /***************************************************************************/
-  public static int getLineNumber() { return lineNumber_; }
+  protected static int getLineNumber() { return lineNumber_; }
   
   /***************************************************************************/
   public static void pushPosition(View view) 
@@ -526,6 +601,13 @@ final public class Tags {
       Toolkit.getDefaultToolkit().beep();
     }
   }
+  
+  /***************************************************************************/
+  public static void clearTagStack()
+  {
+    tagFileStack_.removeAllElements();
+    tagCaretPosStack_.removeAllElements();
+  }
 
   /***************************************************************************/
   static protected String getFuncNameUnderCursor(JEditTextArea textArea) {
@@ -540,11 +622,13 @@ final public class Tags {
     
     String tagName = null;
     char ch = lineText.charAt(lineIdx);
-    if (Character.isLetter(ch) || ch == '_') {
+    if (Character.isLetter(ch) || ch == '_') 
+    {
       // Search forward from cursor for '.'
       boolean found = false;
       int i;
-      for (i = lineIdx; i < lineLength && !found; i++) {
+      for (i = lineIdx; i < lineLength && !found; i++) 
+      {
         ch = lineText.charAt(i);  
         if (Character.isLetter(ch))
           continue;
@@ -554,8 +638,9 @@ final public class Tags {
           break;
       }
       
-      if (found) {   // of form ClassName.method()OrFieldName
-        
+      if (found &&      // of form ClassName.method()OrFieldName
+          jEdit.getBooleanProperty("options.tags.tag-extends-through-dot"))
+      { 
         // Get class name
         int start = TextUtilities.findWordStart(lineText, lineIdx, "_");
         int end   = TextUtilities.findWordEnd(lineText, lineIdx + 1, "_");
@@ -563,7 +648,8 @@ final public class Tags {
         
         // Get method or field name
         String methodOrFieldName = null;
-        if (i != lineLength) {
+        if (i != lineLength) 
+        {
           start = TextUtilities.findWordStart(lineText, i + 2, "_");
           end   = TextUtilities.findWordEnd(lineText, i + 2, "_");
           methodOrFieldName = lineText.substring(start, end);
@@ -575,7 +661,8 @@ final public class Tags {
         
         //Macros.message(view_, "Letter:  \"" + tagName);
       }
-      else {        // of form method()OrFieldName or ClassName
+      else         // of form method()OrFieldName or ClassName
+      {
         // method or field name
         int start = TextUtilities.findWordStart(lineText, lineIdx, "_");
         int end   = TextUtilities.findWordEnd(lineText, lineIdx + 1, "_");
@@ -585,7 +672,8 @@ final public class Tags {
       }
       
     }
-    else {
+    else 
+    {
       return null;
     }
     
@@ -604,6 +692,7 @@ final public class Tags {
     }
     
     jEdit.openFile(view, tagFile.getAbsolutePath());
+    tagFile = null;
     return true;
   }
   
@@ -624,7 +713,8 @@ final public class Tags {
     
     int start = TextUtilities.findWordStart(lineText, lineIdx, "_");
     int end   = TextUtilities.findWordEnd(lineText, lineIdx + 1, "_");
-    if (start != -1 && end != -1) {
+    if (start != -1 && end != -1) 
+    {
       funcName = lineText.substring(start,end);
       funcName = funcName.trim();
       if (funcName.length() == 0)

@@ -85,6 +85,7 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
       Font labelFont = (Font) UIManager.get("Label.font");
       exuberantLabel_.setFont(new Font(labelFont.getName(), Font.PLAIN, 
                                        labelFont.getSize()));
+      labelFont = null;
     }
     else
       exuberantLabel_.setFont(plain);
@@ -106,6 +107,9 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
     add(BorderLayout.SOUTH, searchPanel_);
       searchPanel_.add(Box.createHorizontalStrut(INDENT));
       searchPanel_.add(searchString_);
+      
+    plain = null;
+    bold = null;
   }
 
   /***************************************************************************/
@@ -176,6 +180,8 @@ class TagListCellRenderer extends JPanel implements ListCellRenderer
     fileLabel_.setForeground(Color.blue);
     searchString_.setForeground(foreground);
     exuberantLabel_.setForeground(foreground);
+    
+    file = null;
     
     return this;
   }

@@ -1,6 +1,6 @@
 /*
  * TagsCmdLine.java
- * Copyright (c) 2001 Kenrick Drew
+ * Copyright (c) 2001, 2002 Kenrick Drew
  * kdrew@earthlink.net
  *
  * This file is part of TagsPlugin
@@ -31,7 +31,8 @@ import gnu.regexp.*;
 public class TagsCmdLine {
  
  /****************************************************************************/
- static protected int getLineNumber(String fileName, String searchString) {
+ static protected int getLineNumber(String fileName, String searchString) 
+ {
    
    BufferedReader bufferedReader = null;
    try { 
@@ -101,20 +102,22 @@ public class TagsCmdLine {
      System.exit(2);
    }
    dir = null;
+
+   Tags.setJEditAvailable(false);
    
    // Setup PTC tags files
    String PTCSRC = args[0];
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.1");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.2");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.3");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.4");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.5");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.1");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.2");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.3");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.4");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.o.5");
-   Tags.appendTagFile(PTCSRC + "/softdb/tags.prodev");
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.1"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.2"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.3"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.4"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.5"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.1"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.2"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.3"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.4"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.o.5"));
+   Tags.addTagFile(new TagFile(PTCSRC + "/softdb/tags.prodev"));
 
    PTCSRC = null;
    

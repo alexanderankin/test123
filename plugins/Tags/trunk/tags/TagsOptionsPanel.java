@@ -1,6 +1,6 @@
 /*
  * TagsOptionsPanel.java
- * Copyright (c) 2001 Kenrick Drew
+ * Copyright (c) 2001, 2002 Kenrick Drew
  * kdrew@earthlink.net
  *
  * This file is part of TagsPlugin
@@ -31,6 +31,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
+import javax.swing.table.*;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -42,66 +43,63 @@ import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 class TagsOptionsPanel extends AbstractOptionPane {
 
   /***************************************************************************/
-  // This panel
-		// Row 1
-		protected JPanel parserPanel_;  // labeled panel (not currently labeled)
-			protected JPanel parserButtonPanel_;  // panel w/ radio group
-				protected ButtonGroup parserGroup_;
-	
-		// Row 2
-		protected JPanel tagFilesPanel_; // labeled panel (not currently labeled)
-			protected JPanel tagFilesUIPanel_;  // panel w/ tag files ui components
-				
-				// North
-				protected JPanel tagFilesOptionsPanel_;
-					protected JCheckBox useCurrentBufTagFileCheckBox_;
-          protected JPanel curBufFilenamePanel_;
-            protected JLabel curBufFileNameLabel_;
-            protected JTextField curBufFileNameField_;
-					protected JCheckBox searchAllFilesCheckBox_;
-           
-				
-				// Center
-				protected JScrollPane pane_;
-					protected JList list_;
-						protected DefaultListModel listModel_;
+  protected JCheckBox openDialogsUnderCursorCheckBox_;
+  protected JCheckBox extendThroughMemberOpCheckBox_;
+  protected JCheckBox useCurrentBufTagFileCheckBox_;
+  protected JLabel curBufFileNameLabel_;
+  protected JTextField curBufFileNameField_;
+  protected JCheckBox searchAllFilesCheckBox_;
+
+  protected JScrollPane pane_;
+  protected JTable table_;
+  protected TagIndexFileTableModel tableModel_;
+  protected Vector tagIndexFilesInfo_;
 				 
-				// South
-				protected JPanel buttonPanel_;  // panel w/ buttons
-					protected JButton addButton_;
-					protected JButton removeButton_;
-					protected JButton moveUpButton_;
-					protected JButton moveDownButton_;
+  protected JButton addButton_;
+  protected JButton removeButton_;
+  protected JButton moveUpButton_;
+  protected JButton moveDownButton_;
 			 
-		// Row 3
-		protected JCheckBox debugCheckBox_;
+  protected JCheckBox debugCheckBox_;
 		 
-  protected int origParserType_;
-  
-  static protected boolean newCurBufStuff_ = false;
-  
   /***************************************************************************/
-  public TagsOptionsPanel() {
+  public TagsOptionsPanel() 
+  {
     super("tags");
   }
   
   /***************************************************************************/
-  public void _init() {
-    
-    setup();
-
+  public void _init() 
+  {
     Log.log(Log.DEBUG, this, "Current tag index files (init):");
     int numFiles = Tags.tagFiles_.size();
     TagFile tf = null;
+    boolean foundCurBufIndexFile = false;
+    tagIndexFilesInfo_ = new Vector(5);    
     for (int i = 0; i < numFiles; i++)
     {
       tf = (TagFile) Tags.tagFiles_.elementAt(i);
+      foundCurBufIndexFile = foundCurBufIndexFile || tf.currentDirIndexFile_;
       if (tf != null)
       {
         Log.log(Log.DEBUG, this, tf.toDebugString());
-        listModel_.addElement(tf);
+        tagIndexFilesInfo_.add(tf);
       }
     }
+
+    setup();
+    
+    /* Previously the user didn't have the ability to change the order of the
+     * current buffer's tag index file in the search (it was always done first).
+     * Now that we allow it, if it wasn't already in the list add it.
+     */
+    if (!foundCurBufIndexFile &&
+        jEdit.getBooleanProperty(
+             "options.tags.tag-search-current-buff-tag-file"))
+    { /* as if user check box */
+      useCurBufTagFileListener_.actionPerformed(null);
+    }
+    
     tf = null;
   }
   
@@ -115,15 +113,27 @@ class TagsOptionsPanel extends AbstractOptionPane {
     
     TagsPlugin.debug_ = debugCheckBox_.isSelected();
 
+    jEdit.setBooleanProperty("options.tags.open-dialogs-under-cursor",
+                             openDialogsUnderCursorCheckBox_.isSelected());
+    
+    jEdit.setBooleanProperty("options.tags.tag-extends-through-dot",
+                             extendThroughMemberOpCheckBox_.isSelected());
+
     // remove all tag index files and reload with the ones from the pane
     Log.log(Log.DEBUG, this, "Tag index files (from pane):");    
     Tags.clearTagFiles();
-    int numTagFiles = listModel_.getSize();
+    int numTagFiles = tagIndexFilesInfo_.size();
     TagFile tf = null;
     for (int i = 0; i < numTagFiles; i++)
     {
-      tf = (TagFile) listModel_.get(i);
-      if (tf != null)
+      tf = (TagFile) tagIndexFilesInfo_.get(i);
+      if (   tf.path_ == null 
+          || (tf.path_.length() == 0 && tf.currentDirIndexFile_))
+      {
+        // User entered nothing for file name
+        Tags.setUseCurrentBufTagFile(false);
+      }
+      else if (tf != null)
       {
         Log.log(Log.DEBUG, this, tf.toDebugString());
         Tags.tagFiles_.add(tf);
@@ -133,147 +143,105 @@ class TagsOptionsPanel extends AbstractOptionPane {
   }
   
   /***************************************************************************/
-  protected void setup() {
+  protected void setup() 
+  {
+    // Open dialog under cursor
+    openDialogsUnderCursorCheckBox_ = new JCheckBox(jEdit.getProperty(
+                              "options.tags.open-dialogs-under-cursor.label"));
+    openDialogsUnderCursorCheckBox_.setSelected(jEdit.getBooleanProperty(
+                              "options.tags.open-dialogs-under-cursor"));
+    addComponent(openDialogsUnderCursorCheckBox_);                              
     
-    createComponents();
-    setupComponents();
+    // tags through member operator
+    extendThroughMemberOpCheckBox_ = new JCheckBox(jEdit.getProperty(
+                              "options.tags.tag-extends-through-dot.label"));
+    extendThroughMemberOpCheckBox_.setSelected(jEdit.getBooleanProperty(
+                                      "options.tags.tag-extends-through-dot"));
+    addComponent(extendThroughMemberOpCheckBox_);
     
-    JRadioButton b;
-    parserGroup_ = new ButtonGroup();
-    origParserType_ = Tags.getParserType();
-    for (int i = 0; i < Tags.NUM_PARSERS; i++) {
-      b = new JRadioButton(Tags.parsers_[i].toString());
-      if (i == origParserType_)
-        b.setSelected(true);
-
-      b.setActionCommand(String.valueOf(i));
-      b.addActionListener(parserRadioListener_);
-      
-      parserGroup_.add(b);
-      parserButtonPanel_.add(b);
-      b = null;
-    }
+    // search all tag index files
+    searchAllFilesCheckBox_ = new JCheckBox(jEdit.getProperty(
+                                   "options.tags.tag-search-all-files.label"));
+    searchAllFilesCheckBox_.setSelected(Tags.getSearchAllTagFiles());
+    addComponent(searchAllFilesCheckBox_);
     
-    placeComponents();
-    
-    updateGUI();
-  }
-  
-  /***************************************************************************/
-  protected void createComponents() {
-
-		parserPanel_ = new JPanel(new GridLayout(0,1,0,0));
-			parserButtonPanel_ = new JPanel(new GridLayout(0,1,0,0));
-				//parserPanel_.setBorder(
-				//   BorderFactory.createTitledBorder(
-				//                       jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
-				//                                         "tag-file-type.title")));
-			parserButtonPanel_.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
-			
-		tagFilesPanel_ = new JPanel(new GridLayout(0,1,0,0));
-			//tagFilesPanel_.setBorder(
-			//  BorderFactory.createTitledBorder(jEdit.getProperty(
-			//               TagsPlugin.OPTION_PREFIX + "tag-search-files.label")));
-			
-			tagFilesUIPanel_ = new JPanel(new BorderLayout(5,5));
-			tagFilesUIPanel_.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
-			
-				tagFilesOptionsPanel_ = new JPanel(new GridLayout(0,1,0,0));
-			
-					useCurrentBufTagFileCheckBox_ = new JCheckBox(
-		            jEdit.getProperty(
+  	// Use current buffer's tag index file
+    useCurrentBufTagFileCheckBox_ = new JCheckBox(jEdit.getProperty(
                        "options.tags.tag-search-current-buff-tag-file.label"));
-          curBufFilenamePanel_ = new JPanel(new BorderLayout(5,0));
-             curBufFileNameLabel_ = new JLabel(jEdit.getProperty(
-                               "options.tags.current-buffer-file-name.label"));
-             curBufFileNameField_ = new JTextField(jEdit.getProperty(
-                             "options.tags.current-buffer-file-name"));
-					searchAllFilesCheckBox_ = new JCheckBox(
-								 jEdit.getProperty("options.tags.tag-search-all-files.label"));
-																	
-				listModel_ = new DefaultListModel();
-		
-				list_ = new JList(listModel_);
-				pane_ = new JScrollPane(list_, 
-																JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-																JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-					
-				buttonPanel_ = new JPanel(new GridLayout(1,0,5,5));
-					addButton_ = new JButton(
-									jEdit.getProperty("options.tags.tag-search-files-add.label"));
-					removeButton_ = new JButton(
-							 jEdit.getProperty("options.tags.tag-search-files-remove.label"));
-					moveUpButton_ = new JButton(
-						  jEdit.getProperty("options.tags.tag-search-files-move-up.label"));
-					moveDownButton_ = new JButton(
-					  jEdit.getProperty("options.tags.tag-search-files-move-down.label"));
-			
-    debugCheckBox_ = new JCheckBox("Debug");
-  }
-  
-  /***************************************************************************/
-  protected void setupComponents() {
-    
+    useCurrentBufTagFileCheckBox_.setSelected(Tags.getUseCurrentBufTagFile());                       
     useCurrentBufTagFileCheckBox_.addActionListener(useCurBufTagFileListener_);
-    
-    curBufFileNameLabel_.setLabelFor(curBufFileNameField_);
-    
-    addButton_.addActionListener(addButtonListener_);
-    removeButton_.addActionListener(removeButtonListener_);
-    moveUpButton_.addActionListener(moveUpButtonListener_);
-    moveDownButton_.addActionListener(moveDownButtonListener_);
-    list_.addListSelectionListener(listSelectionListener_);
-    
+    addComponent(useCurrentBufTagFileCheckBox_);
+
+    // Current buffer's tag index file name
+    curBufFileNameLabel_ = new JLabel(jEdit.getProperty(
+                               "options.tags.current-buffer-file-name.label"));
+    curBufFileNameField_ = new JTextField(jEdit.getProperty(
+                              "options.tags.current-buffer-file-name"), 20);
     curBufFileNameField_.getDocument().addDocumentListener(
                                                       curBufFilenameListener_);
+    curBufFileNameLabel_.setLabelFor(curBufFileNameField_);
+    JPanel p = new JPanel(new BorderLayout(5,0));
+    p.add(curBufFileNameLabel_, BorderLayout.WEST);
+    p.add(curBufFileNameField_, BorderLayout.CENTER);
+    addComponent(p);
     
-    useCurrentBufTagFileCheckBox_.setSelected(Tags.getUseCurrentBufTagFile());
-    searchAllFilesCheckBox_.setSelected(Tags.getSearchAllTagFiles());
-                                    
+    // tag index file table
+    p = new JPanel(new BorderLayout(5,5));
+    p.setBorder(BorderFactory.createEmptyBorder(5,0,0,0));
+    tableModel_ = new TagIndexFileTableModel();
+    table_ = new JTable(tableModel_);
+    pane_ = new JScrollPane(table_, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                            JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+    table_.getSelectionModel().addListSelectionListener(listSelectionListener_);
+    table_.setPreferredScrollableViewportSize(new Dimension(250, 110));
+    p.add(pane_, BorderLayout.CENTER);
+    
+    // tag index file list buttons
+    JPanel bp = new JPanel(new GridLayout(1,0,5,5));
+    addButton_ = new JButton(
+									jEdit.getProperty("options.tags.tag-search-files-add.label"));
+    addButton_.addActionListener(addButtonListener_);
     addButton_.setMnemonic(KeyEvent.VK_A);
+    bp.add(addButton_);    
+    
+    removeButton_ = new JButton(
+							 jEdit.getProperty("options.tags.tag-search-files-remove.label"));
+    removeButton_.addActionListener(removeButtonListener_);           
     removeButton_.setMnemonic(KeyEvent.VK_R);
+    bp.add(removeButton_);    
+       
+		moveUpButton_ = new JButton(
+						  jEdit.getProperty("options.tags.tag-search-files-move-up.label"));
+    moveUpButton_.addActionListener(moveUpButtonListener_);          
     moveUpButton_.setMnemonic(KeyEvent.VK_U);
+    bp.add(moveUpButton_);    
+    
+		moveDownButton_ = new JButton(
+					  jEdit.getProperty("options.tags.tag-search-files-move-down.label"));
+    moveDownButton_.addActionListener(moveDownButtonListener_);
     moveDownButton_.setMnemonic(KeyEvent.VK_D);
+    bp.add(moveDownButton_);
     
+    p.add(bp, BorderLayout.SOUTH);
+    addComponent(p);
+
+		// debug    
+    debugCheckBox_ = new JCheckBox("Debug");
     debugCheckBox_.setSelected(TagsPlugin.debug_);
-  }
-  
-  /***************************************************************************/
-  protected void placeComponents() {
-    
-    // See Note 1 in Tags.java
-    //addSeparator("options.tags.tag-file-type.title");
-    //parserPanel_.add(parserButtonPanel_);
-    //addComponent(parserPanel_);
-
-    //addSeparator("options.tags.tag-search-files.label");
-    tagFilesOptionsPanel_.add(useCurrentBufTagFileCheckBox_);
-      curBufFilenamePanel_.add(curBufFileNameLabel_, BorderLayout.WEST);
-      curBufFilenamePanel_.add(curBufFileNameField_, BorderLayout.CENTER);
-    tagFilesOptionsPanel_.add(curBufFilenamePanel_);
-    tagFilesOptionsPanel_.add(searchAllFilesCheckBox_);
-    tagFilesUIPanel_.add(tagFilesOptionsPanel_, BorderLayout.NORTH);
-    tagFilesPanel_.add(tagFilesUIPanel_);
-
-    tagFilesUIPanel_.add(pane_, BorderLayout.CENTER);
-    
-    buttonPanel_.add(addButton_);    
-    buttonPanel_.add(removeButton_);    
-    buttonPanel_.add(moveUpButton_);    
-    buttonPanel_.add(moveDownButton_);
-    tagFilesUIPanel_.add(buttonPanel_, BorderLayout.SOUTH);    
-
-    addComponent(tagFilesPanel_);
-
     //addComponent(debugCheckBox_);
+    
+    // Update the GUI
+    updateGUI();
+    
+    p = bp = null;
   }
   
   /***************************************************************************/
   protected ActionListener addButtonListener_ = new ActionListener() {
     public void actionPerformed(ActionEvent e) {
-      int selectedIndex = list_.getSelectedIndex();
-      if (selectedIndex == -1)
-        selectedIndex = 0;
+      int selectedRow = table_.getSelectedRow();
+      if (selectedRow == -1)
+        selectedRow = 0;
 
       String newTagFiles[] = null;
 
@@ -285,12 +253,17 @@ class TagsOptionsPanel extends AbstractOptionPane {
       {
         for (int i = 0; i < newTagFiles.length; i++) 
         {
-          listModel_.add(selectedIndex, new TagFile(newTagFiles[i], 
-                                                    TagFile.DEFAULT_CATAGORY));
+          tagIndexFilesInfo_.add(selectedRow, 
+                                 new TagFile(newTagFiles[i], 
+                                             TagFile.DEFAULT_CATAGORY));
         }
         
-        list_.setSelectedIndex(selectedIndex);
-        list_.ensureIndexIsVisible(selectedIndex);
+        tableModel_.fireTableRowsInserted(selectedRow, 
+                                          selectedRow + newTagFiles.length);
+        
+        table_.getSelectionModel().clearSelection();
+        table_.getSelectionModel().setSelectionInterval(selectedRow, 
+                                                        selectedRow);
       }
       
       updateGUI();
@@ -298,21 +271,36 @@ class TagsOptionsPanel extends AbstractOptionPane {
   };
 
   /***************************************************************************/
-  protected ActionListener removeButtonListener_ = new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-      int selectedIndices[] = list_.getSelectedIndices();
-      for (int i = selectedIndices.length - 1; i >= 0; i--) 
+  protected ActionListener removeButtonListener_ = new ActionListener() 
+  {
+    public void actionPerformed(ActionEvent e) 
+    {
+      int selectedRows[] = table_.getSelectedRows();
+      TagFile tf = null;
+      for (int i = selectedRows.length - 1; i >= 0; i--) 
       {
-        listModel_.removeElementAt(selectedIndices[i]);      
+        tf = (TagFile) tagIndexFilesInfo_.get(i);
+        if (tf.currentDirIndexFile_)
+        {
+          useCurrentBufTagFileCheckBox_.setSelected(false);
+        }
+        tagIndexFilesInfo_.removeElementAt(selectedRows[i]);
       }
+      tf = null;
       
-      int newSize = listModel_.size();
-      if (newSize != 0) {
-        int index = selectedIndices[0];
+      if (selectedRows.length != 0)
+        tableModel_.fireTableRowsDeleted(selectedRows[0],
+                             selectedRows[selectedRows.length - 1]);
+      
+      int newSize = tagIndexFilesInfo_.size();
+      if (newSize != 0) 
+      {
+        int index = selectedRows[0];
         if (index > (newSize - 1))
           index = newSize - 1;
-        list_.setSelectedIndex(index);
-        list_.ensureIndexIsVisible(index);
+
+        table_.getSelectionModel().clearSelection();
+        table_.getSelectionModel().setSelectionInterval(index, index);
       }
       
       updateGUI();
@@ -337,31 +325,23 @@ class TagsOptionsPanel extends AbstractOptionPane {
   };
 
   /***************************************************************************/
-  protected ActionListener parserRadioListener_ = new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-      try {
-        int parserType = Integer.parseInt(e.getActionCommand());
-        Tags.setParserType(parserType);
-      }
-      catch (NumberFormatException nfe) {
-        Log.log(Log.DEBUG, this, nfe);
-      }
-    }
-  };
-  
-  /***************************************************************************/
   protected void moveItem(int indexDir) {
-    int selectedIndex = list_.getSelectedIndex();
+    int selectedRow = table_.getSelectedRow();
     int newIndex = 0;
-    Object element = list_.getSelectedValue();
+    Object element = tagIndexFilesInfo_.get(selectedRow);
 
-    newIndex = selectedIndex + indexDir;
+    newIndex = selectedRow + indexDir;
 
-    listModel_.removeElementAt(selectedIndex);
-    listModel_.add(newIndex, element);
+    tagIndexFilesInfo_.removeElementAt(selectedRow);
+    tagIndexFilesInfo_.add(newIndex, element);
     
-    list_.setSelectedIndex(newIndex);
-    list_.ensureIndexIsVisible(newIndex);
+    if (indexDir > 0)
+      tableModel_.fireTableRowsUpdated(selectedRow, selectedRow + indexDir);
+    else
+      tableModel_.fireTableRowsUpdated(selectedRow + indexDir, selectedRow);
+        
+    table_.getSelectionModel().clearSelection();
+    table_.getSelectionModel().setSelectionInterval(newIndex, newIndex);
   }
 
 
@@ -387,20 +367,23 @@ class TagsOptionsPanel extends AbstractOptionPane {
         TagFile tf = new TagFile(path, TagFile.DEFAULT_CATAGORY);
         tf.currentDirIndexFile_ = true;
         
-        if (newCurBufStuff_)
-          listModel_.add(0, tf);
+        tagIndexFilesInfo_.add(0, tf);
+        tableModel_.fireTableRowsInserted(0, 0);
+        table_.getSelectionModel().clearSelection();
+        
+        tf = null;
       }
       else  // remove
       {
-        int numTagIndexFiles = listModel_.getSize();
+        int numTagIndexFiles = tagIndexFilesInfo_.size();
         TagFile tf = null;
         for (int i = 0; i < numTagIndexFiles; i++)
         {
-          tf = (TagFile) listModel_.get(i);
+          tf = (TagFile) tagIndexFilesInfo_.get(i);
           if (tf.currentDirIndexFile_)
           {
-            if (newCurBufStuff_)
-              listModel_.removeElementAt(i);
+            tagIndexFilesInfo_.removeElementAt(i);
+            tableModel_.fireTableRowsDeleted(i, i);
             break;
           }
         }
@@ -417,50 +400,96 @@ class TagsOptionsPanel extends AbstractOptionPane {
     
     public void update(DocumentEvent e) 
     {
-      String path = curBufFileNameField_.getText();
-      path = path.trim();
+      String name = curBufFileNameField_.getText();
+      name = name.trim();
       
-      int numTagIndexFiles = listModel_.getSize();
+      int numTagIndexFiles = tagIndexFilesInfo_.size();
       TagFile tf = null;
       for (int i = 0; i < numTagIndexFiles; i++)
       {
-        tf = (TagFile) listModel_.get(i);
+        tf = (TagFile) tagIndexFilesInfo_.get(i);
         if (tf.currentDirIndexFile_)
         {
-          Log.log(Log.DEBUG, this, tf.path_ + " > " + path);
-          if (newCurBufStuff_)
-          {
-            TagFile newTagFile = new TagFile(path, TagFile.DEFAULT_CATAGORY);
-            newTagFile.currentDirIndexFile_ = true;
+          Log.log(Log.DEBUG, this, tf.path_ + " > " + name);
 
-            listModel_.removeElementAt(i);
-            listModel_.add(i, newTagFile);
-            
-            newTagFile = null;
-          }
+          TagFile newTagFile = new TagFile(name, TagFile.DEFAULT_CATAGORY);
+          newTagFile.currentDirIndexFile_ = true;
+
+          tagIndexFilesInfo_.removeElementAt(i);
+          tagIndexFilesInfo_.add(i, newTagFile);
+          tableModel_.fireTableRowsUpdated(i, i);
+          
+          newTagFile = null;
         }
       }
       
-      path = null;
+      name = null;
       tf = null;
     }
   };
   
-  
   /***************************************************************************/
   protected void updateGUI() {
-    int selectedIndices[] = list_.getSelectedIndices();
-    int selectionCount = (selectedIndices != null) ? selectedIndices.length : 0;
-    int numItems = listModel_.size();
+    int selectedRows[] = table_.getSelectedRows();
+    int selectionCount = (selectedRows != null) ? selectedRows.length : 0;
+    int numItems = tagIndexFilesInfo_.size();
     removeButton_.setEnabled(selectionCount != 0 && numItems != 0);
-    moveUpButton_.setEnabled(selectionCount == 1 && selectedIndices[0] != 0 && 
+    moveUpButton_.setEnabled(selectionCount == 1 && selectedRows[0] != 0 && 
                              numItems != 0);
     moveDownButton_.setEnabled(selectionCount == 1 && 
-                            selectedIndices[0] != (listModel_.getSize() - 1) &&
+                            selectedRows[0] != (numItems - 1) &&
                             numItems != 0);
-                     
+                            
     boolean selected = useCurrentBufTagFileCheckBox_.isSelected();
     curBufFileNameLabel_.setEnabled(selected);
     curBufFileNameField_.setEnabled(selected);
+  }
+  
+  /***************************************************************************/
+  class TagIndexFileTableModel extends AbstractTableModel
+  {
+    /*************************************************************************/
+    public int getColumnCount() { return 2; };
+    
+    /*************************************************************************/
+    public int getRowCount() { return tagIndexFilesInfo_.size(); }
+    
+    /*************************************************************************/
+    public String getColumnName(int col)
+    {
+      if (col == 0)
+        return jEdit.getProperty(
+                              "options.tags.tag-index-file-path-column.label");
+      else
+        return jEdit.getProperty(
+                           "options.tags.tag-index-file-enabled-column.label");
+    }
+    
+    /*************************************************************************/
+    public Object getValueAt(int r, int c)
+    {
+      TagFile tf = (TagFile) tagIndexFilesInfo_.get(r);
+      return (c == 0) ? (Object) tf.getPath() : (Object) new Boolean(tf.isEnabled());
+    }
+    
+    /*************************************************************************/
+    public Class getColumnClass(int c) 
+    {
+      return getValueAt(0, c).getClass();
+    }
+    
+    /*************************************************************************/
+    public boolean isCellEditable(int r, int c) { return (c == 1); }
+    
+    /*************************************************************************/
+    public void setValueAt(Object v, int r, int c)
+    {
+      if (c == 1)
+      {
+        TagFile tf = (TagFile) tagIndexFilesInfo_.get(r);
+        tf.setEnabled(((Boolean) v).booleanValue());
+        tf = null;
+      }
+    }
   }
 }
