@@ -23,7 +23,7 @@ public class ConsolePlugin extends EditPlugin
 {
 	public void start()
 	{
-		jEdit.addPlugin(new ConsoleFramePluginPart());
+		jEdit.addPlugin(new ConsoleDockablePluginPart());
 		jEdit.addPlugin(new ConsoleShellPluginPart());
 	}
 }
