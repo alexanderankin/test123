@@ -4,8 +4,8 @@ plugin.javainsight.JavaInsightPlugin.version=0.5.1
 plugin.javainsight.JavaInsightPlugin.docs=users-guide.html
 
 # Dependencies
-plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.2
-plugin.javainsight.JavaInsightPlugin.depend.1=jedit 04.00.03.00
+plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.3
+plugin.javainsight.JavaInsightPlugin.depend.1=jedit 04.01.99.00
 plugin.javainsight.JavaInsightPlugin.depend.2=plugin jakartacommons.JakartaCommonsPlugin 0.2
 plugin.javainsight.JavaInsightPlugin.jars=jode.jar
 
