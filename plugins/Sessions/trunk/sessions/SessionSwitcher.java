@@ -60,31 +60,31 @@ public class SessionSwitcher
 		combo.setEditable(false);
 		combo.addItemListener(this);
 
-		save = new JButton(GUIUtilities.loadIcon("Save24.gif"));
+		save = new JButton(new ImageIcon(getClass().getResource("Save24.gif")));
 		save.setMargin(nullInsets);
 		save.setToolTipText(jEdit.getProperty("sessions.switcher.save.tooltip"));
 		save.setFocusPainted(false);
 		save.addActionListener(this);
 
-		saveAs = new JButton(GUIUtilities.loadIcon("SaveAs24.gif"));
+		saveAs = new JButton(new ImageIcon(getClass().getResource("SaveAs24.gif")));
 		saveAs.setMargin(nullInsets);
 		saveAs.setToolTipText(jEdit.getProperty("sessions.switcher.saveAs.tooltip"));
 		saveAs.setFocusPainted(false);
 		saveAs.addActionListener(this);
 
-		reload = new JButton(GUIUtilities.loadIcon("Redo24.gif"));
+		reload = new JButton(new ImageIcon(getClass().getResource("Redo24.gif")));
 		reload.setMargin(nullInsets);
 		reload.setToolTipText(jEdit.getProperty("sessions.switcher.reload.tooltip"));
 		reload.setFocusPainted(false);
 		reload.addActionListener(this);
 
-		props = new JButton(GUIUtilities.loadIcon("History24.gif"));
+		props = new JButton(new ImageIcon(getClass().getResource("History24.gif")));
 		props.setMargin(nullInsets);
 		props.setToolTipText(jEdit.getProperty("sessions.switcher.props.tooltip"));
 		props.setFocusPainted(false);
 		props.addActionListener(this);
 
-		prefs = new JButton(GUIUtilities.loadIcon("Preferences24.gif"));
+		prefs = new JButton(new ImageIcon(getClass().getResource("Preferences24.gif")));
 		prefs.setMargin(nullInsets);
 		prefs.setToolTipText(jEdit.getProperty("sessions.switcher.prefs.tooltip"));
 		prefs.setFocusPainted(false);
@@ -100,7 +100,7 @@ public class SessionSwitcher
 		add(save);
 		add(saveAs);
 		add(reload);
-		add(props);
+		//add(props);  // FIXME: not yet - EXPERIMENTAL
 		add(prefs);
 
 		// if we're not added to jEdit's default toolbar, then add some glue at

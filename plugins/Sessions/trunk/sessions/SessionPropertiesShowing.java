@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.EBMessage;
  * to the dialog, using <code>addPropertyPane()</code> and
  * <code>addPropertyGroup()</code>.
  */
-public final class SessionPropertiesShowing extends EBMessage.NonVetoable
+public final class SessionPropertiesShowing extends EBMessage
 {
 
 	SessionPropertiesShowing(EBComponent source, Session session)
