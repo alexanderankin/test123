@@ -22,8 +22,11 @@ package projectviewer.config;
 import java.util.Iterator;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 
@@ -46,7 +49,7 @@ public class ProjectOptions extends OptionsDialog {
 	
 	private static VPTProject		p;
 	private static boolean			isNew;
-
+	
 	/**
 	 *	Adds a new plugin callback to the internal list. When the project
 	 *	options dialog is shown, it calls the 
@@ -62,6 +65,10 @@ public class ProjectOptions extends OptionsDialog {
 	 *	them to the old store. This way, the same GUI can be used, and making
 	 *	project-specific options require only two extra classes with little
 	 *	extra code.</p>
+	 *
+	 *	<p><strong>IMPORTANT</strong>: do not call this method if your
+	 *	ProjectOptionsPlugin class is the same class that implements your
+	 *	EditPlugin. These cases are handled automatically.</p>
 	 */
 	public static void registerPlugin(ProjectOptionsPlugin plugin) {
 		if (plugin != null) plugins.add(plugin);
@@ -85,7 +92,6 @@ public class ProjectOptions extends OptionsDialog {
 		if (project == null) {
 			p = new VPTProject("");
 			p.setRootPath("");
-			p.setURL(VPTProject.DEFAULT_URL);
 			isNew = true;
 		} else {
 			p = project;
@@ -108,7 +114,7 @@ public class ProjectOptions extends OptionsDialog {
 	//{{{ Constructor
 	
 	private ProjectOptions(View view, String name) {
-		super(view, name);
+		super(JOptionPane.getFrameForComponent(view), name, null);
 		setModal(true);
 	}
 	
@@ -146,9 +152,15 @@ public class ProjectOptions extends OptionsDialog {
 		OptionTreeModel paneTreeModel = new OptionTreeModel();
 		rootGroup = (OptionGroup) paneTreeModel.getRoot();
 
-		pOptPane = new ProjectPropertiesPane(p);
+		pOptPane = new ProjectPropertiesPane(p, isNew);
 		addOptionPane(pOptPane);
 		
+		EditPlugin[] eplugins = jEdit.getPlugins();
+		for (int i = 0; i < eplugins.length; i++) {
+			if (eplugins[i] instanceof ProjectOptionsPlugin)
+				((ProjectOptionsPlugin)eplugins[i]).createOptionPanes(this, p);
+		}
+
 		for (Iterator it = plugins.iterator(); it.hasNext(); ) {
 			((ProjectOptionsPlugin)it.next()).createOptionPanes(this, p);
 		}
