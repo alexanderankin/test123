@@ -5,11 +5,9 @@ import gatchan.phpparser.project.itemfinder.QuickAccessItemFinder;
 import gatchan.phpparser.sidekick.PHPSideKickParser;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.WorkRequest;
 
@@ -129,12 +127,14 @@ public final class Project {
       files = readObjects(fileFile);
     } catch (FileNotFoundException e) {
       Log.log(Log.ERROR, this, e.getMessage());
-      GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.unabletoreadproject", new String[] {e.getMessage()});
+      GUIUtilities.error(jEdit.getActiveView(),
+                         "gatchan-phpparser.errordialog.unabletoreadproject",
+                         new String[]{e.getMessage()});
       reset();
     } catch (InvalidClassException e) {
       Log.log(Log.WARNING,
               this,
-                      "A class is invalid probably because the project used an old plugin " + e.getMessage());
+              "A class is invalid probably because the project used an old plugin " + e.getMessage());
       GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.invalidprojectformat", null);
       reset();
     } catch (ClassNotFoundException e) {
@@ -144,7 +144,9 @@ public final class Project {
       reset();
     } catch (IOException e) {
       Log.log(Log.ERROR, this, e);
-      GUIUtilities.error(jEdit.getActiveView(), "gatchan-phpparser.errordialog.unabletoreadproject", new String[] {e.getMessage()});
+      GUIUtilities.error(jEdit.getActiveView(),
+                         "gatchan-phpparser.errordialog.unabletoreadproject",
+                         new String[]{e.getMessage()});
       reset();
     }
     end = System.currentTimeMillis();
@@ -317,9 +319,7 @@ public final class Project {
     if (root == null) {
       Log.log(Log.MESSAGE, this, "No root file for that project");
     } else {
-      final File path = new File(root);
-
-      VFSManager.runInWorkThread(new Rebuilder(this, path));
+      VFSManager.runInWorkThread(new Rebuilder(this, root));
     }
   }
 
@@ -436,9 +436,8 @@ public final class Project {
    * @author Matthieu Casanova
    */
   private static final class Rebuilder extends WorkRequest {
-    private final File path;
+    private final String path;
 
-    private int max;
     private int current;
 
     private int parsedFileCount;
@@ -447,7 +446,7 @@ public final class Project {
 
     private final Project project;
 
-    private Rebuilder(Project project, File path) {
+    private Rebuilder(Project project, String path) {
       this.path = path;
       this.project = project;
       setAbortable(true);
@@ -455,7 +454,21 @@ public final class Project {
 
     public void run() {
       final long start = System.currentTimeMillis();
-      parseFile(new PHPSideKickParser("rebuilder"), path);
+      VFS vfs = VFSManager.getVFSForPath(path);
+      try {
+        final String[] files = vfs._listDirectory(null, path, "*", true, null);
+        setProgressMaximum(files.length);
+        PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
+        for (int i = 0; i < files.length; i++) {
+          String file = files[i];
+          if (mode.accept(file, "")) {
+            parseFile(phpParser, VFSManager.getVFSForPath(file), file);
+          }
+          setProgressValue(++current);
+        }
+      } catch (IOException e) {
+        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      }
       final long end = System.currentTimeMillis();
       Log.log(Log.MESSAGE, this, "Project rebuild in " + (end - start) + "ms, " + parsedFileCount + " files parsed");
       EditBus.send(new PHPProjectChangedMessage(this, project));
@@ -468,36 +481,27 @@ public final class Project {
      * @param phpParser the php parser.
      * @param f         the file to parse. If it is a directory, it will be parsed recursively
      */
-    private void parseFile(PHPSideKickParser phpParser, File f) {
-      if (f.isDirectory()) {
-        final File[] files = f.listFiles();
-        max += files.length;
-        setProgressMaximum(max);
-        for (int i = 0; i < files.length; i++) {
-          parseFile(phpParser, files[i]);
-        }
-      } else {
-        Reader reader = null;
+    private void parseFile(PHPSideKickParser phpParser, VFS f, String path) {
+      Reader reader = null;
+      try {
         try {
-          if (mode.accept(f.getAbsolutePath(), "")) {
-            reader = new BufferedReader(new FileReader(f));
-            parsedFileCount++;
-            try {
-              phpParser.parse(f.getAbsolutePath(), reader);
-            } catch (Exception e) {
-              Log.log(Log.ERROR, this, "Error while parsing file " + f.getAbsolutePath());
-              Log.log(Log.ERROR,this,e);
-            }
-          }
-          setProgressValue(++current);
-        } catch (FileNotFoundException e) {
-          Log.log(Log.WARNING, this, e.getMessage());
-        } finally {
+          InputStream inputStream = f._createInputStream(null, path, false, null);
+          reader = new BufferedReader(new InputStreamReader(inputStream));
+          parsedFileCount++;
           try {
-            if (reader != null) reader.close();
-          } catch (IOException e) {
-            Log.log(Log.WARNING, this, "Unable to close reader " + e.getMessage());
+            phpParser.parse(path, reader);
+          } catch (Exception e) {
+            Log.log(Log.ERROR, this, "Error while parsing file " + path);
+            Log.log(Log.ERROR, this, e);
           }
+        } catch (IOException e) {
+          Log.log(Log.WARNING, this, e.getMessage());
+        }
+      } finally {
+        try {
+          if (reader != null) reader.close();
+        } catch (IOException e) {
+          Log.log(Log.WARNING, this, "Unable to close reader " + e.getMessage());
         }
       }
     }
