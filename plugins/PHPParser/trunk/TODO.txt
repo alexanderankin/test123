@@ -1,11 +1,11 @@
-Project folders should use VFS api
+-Fix sidekick tree
+-when creating new project the project list should be rescanned
 
 
 Option pane :
 -option to open VFS browser when changing project
 
 Browsing :
--quickbrowse in current file
 -able to keep track of methods, classes that have same names ...
 
 Parser :
