@@ -646,12 +646,12 @@ public final class Project implements EBComponent {
         Properties p = new Properties();
         
         // Project Root
-        p.setProperty("root", escape(root.getPath()));
+        p.setProperty("root", root.getPath());
         
         // List of open files
         if (openFiles.size() > 0) {
             for (int i = 0; i < openFiles.size(); i++) {
-                p.setProperty("open_files." + (i+1), escape(openFiles.get(i).toString()) );
+                p.setProperty("open_files." + (i+1), openFiles.get(i).toString());
             }
         }
         
@@ -660,7 +660,7 @@ public final class Project implements EBComponent {
         for ( Iterator i = projectFiles(); i.hasNext(); ) {
             p.setProperty(
                 "file." + counter,
-                escape(((ProjectFile)i.next()).getPath())
+                ((ProjectFile)i.next()).getPath()
             );
             counter++;
         }
@@ -682,22 +682,6 @@ public final class Project implements EBComponent {
         }
     }
     
-	/** Escape property characters.
-	 *
-	 *@param  s  Description of Parameter
-	 *@return    Description of the Returned Value
-	 */
-	private String escape(String s) {
-        if (s == null) return "";
-        
-		StringBuffer buf = new StringBuffer(s);
-		for (int i = 0; i < buf.length(); i++) {
-			if (buf.charAt(i) == '\\')
-				buf.replace(i, ++i, "\\\\");
-		}
-		return buf.toString();
-	}
-
     /** Clears the open files list. */
     public void clearOpenFiles() {
         openFiles.clear();
