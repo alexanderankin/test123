@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="jcompiler-compile">
+		<CODE>
+			jcompiler.JCompilerPlugin.compileFile(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="jcompiler-compilepkg">
+		<CODE>
+			jcompiler.JCompilerPlugin.compilePackage(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="jcompiler-rebuildpkg">
+		<CODE>
+			jcompiler.JCompilerPlugin.rebuildPackage(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="jcompiler-options">
+		<CODE>
+			new jcompiler.options.JCompilerOptionDialog(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
+
