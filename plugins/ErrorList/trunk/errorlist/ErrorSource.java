@@ -148,10 +148,13 @@ public abstract class ErrorSource implements EBComponent
 
 	//{{{ getLineErrors() method
 	/**
-	 * Returns all errors on the specified line.
-	 * @param lineIndex The line number
+	 * Returns all errors in the specified line range.
+	 * @param startLineIndex The line number
+	 * @param endLineIndex The line number
+	 * @since ErrorList 1.3
 	 */
-	public abstract Error[] getLineErrors(Buffer buffer, int lineIndex);
+	public abstract ErrorSource.Error[] getLineErrors(Buffer buffer,
+		int startLineIndex, int endLineIndex);
 	//}}}
 
 	//{{{ Private members
