@@ -72,8 +72,9 @@ jar: srcs;
 
 "docs":;
 {
-  exec "openjade" "-t" "sgml" "/usr/share/sgml/xml.dcl"
-        "users-guide.xml";
+  exec "openjade" "-t" "sgml"
+       "-V" "nochunks" "-V" "rootchunk"
+       "/usr/share/sgml/xml.dcl" "users-guide.xml";
 }
 
 ".PHONY": "all" "clean" "install" "docs";
