@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="bufferlist-next-buffer">
+		<CODE>
+			DockableWindowManager mgr = view.getDockableWindowManager();
+			bufferlist.BufferList bufferlist = mgr.getDockable("bufferlist");
+			if(bufferlist == null)
+			{
+				mgr.addDockableWindow("bufferlist");
+				bufferlist = mgr.getDockable("bufferlist");
+			}
+
+			bufferlist.nextBuffer();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="bufferlist-previous-buffer">
+		<CODE>
+			DockableWindowManager mgr = view.getDockableWindowManager();
+			bufferlist.BufferList bufferlist = mgr.getDockable("bufferlist");
+			if(bufferlist == null)
+			{
+				mgr.addDockableWindow("bufferlist");
+				bufferlist = mgr.getDockable("bufferlist");
+			}
+
+			bufferlist.previousBuffer();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="bufferlist-to-front">
+		<CODE>
+			DockableWindowManager mgr = view.getDockableWindowManager();
+			mgr.showDockableWindow("bufferlist");
+			bufferlist.BufferList bufferlist = mgr.getDockable("bufferlist");
+			bufferlist.requestFocusOpenFiles();
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
