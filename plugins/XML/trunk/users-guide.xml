@@ -233,7 +233,8 @@
  </para>
 
  <para>
-  Clicking an element in the list will insert it into the buffer and show
+  Clicking an element in the list with the left mouse button
+  will insert it into the buffer and show
   the <guimenuitem>Edit Tag</guimenuitem> dialog box for specifying attributes.
   See <xref linkend="edit-tag" /> for information about the
   <guimenuitem>Edit Tag</guimenuitem> dialog box. Clicking an element
@@ -501,6 +502,9 @@
   <programlisting><![CDATA[<xref linkend="foo"/>]]></programlisting>
   <para>You get this:</para>
   <programlisting><![CDATA[<xref linkend="foo" />]]></programlisting></listitem>
+  <listitem><para><guimenuitem>XML Insert</guimenuitem> window was rather
+  counter-intuitive with regards to inserting closing tags. Now it always
+  inserts a closing tag, no matter what.</para></listitem>
   </itemizedlist>
   </listitem>
 
