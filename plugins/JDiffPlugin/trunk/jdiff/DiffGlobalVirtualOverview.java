@@ -176,10 +176,11 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         int lines = Math.max(virtualLineCount0, virtualLineCount1);
         double pxlPerLine = ((double) inner.height) / lines;
 
-        int virtualFirstLine0 = this.textArea0.getFirstLine();
-        int virtualLastLine0  = (
-              this.textArea0.getFirstLine()
-            + this.textArea0.getVisibleLines() - 1
+        int virtualFirstLine0 = this.textArea0.physicalToVirtual(
+            this.textArea0.getPhysicalLineOfScreenLine(0)
+        );
+        int virtualLastLine0 = this.textArea0.physicalToVirtual(
+            this.textArea0.getPhysicalLineOfScreenLine(this.textArea0.getVisibleLines() - 1)
         );
         Rectangle leftCursor = new Rectangle(
             inner.x, inner.y + ((int) Math.round(pxlPerLine * virtualFirstLine0)),
@@ -187,10 +188,11 @@ public class DiffGlobalVirtualOverview extends DiffOverview
             Math.max(1, (int) Math.round(pxlPerLine * Math.min(virtualLineCount0, virtualLastLine0 - virtualFirstLine0 + 1)))
         );
 
-        int virtualFirstLine1 = this.textArea1.getFirstLine();
-        int virtualLastLine1  = (
-              this.textArea1.getFirstLine()
-            + this.textArea1.getVisibleLines() - 1
+        int virtualFirstLine1 = this.textArea1.physicalToVirtual(
+            this.textArea1.getPhysicalLineOfScreenLine(0)
+        );
+        int virtualLastLine1 = this.textArea1.physicalToVirtual(
+            this.textArea1.getPhysicalLineOfScreenLine(this.textArea1.getVisibleLines() - 1)
         );
         Rectangle rightCursor = new Rectangle(
             inner.x + (inner.width - leftCursor.width),
