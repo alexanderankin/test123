@@ -1,36 +1,44 @@
 /*
- *  $Id$
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or any later version.
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more detaProjectTreeSelectionListenerils.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package projectviewer.event;
 
 import java.util.*;
-import projectviewer.*;
+import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTDirectory;
 
-/** A project event.
+/** 
+ *	A project event.
+ *
+ *	@version	$Id$
  */
 public final class ProjectEvent extends EventObject {
 
-	private Object artifact;
+	private VPTNode artifact;
 	private int index;
 
 	/** Create a new <code>ProjectEvent</code>.
 	 *
 	 *@param  project  Description of Parameter
 	 */
-	public ProjectEvent(Project project) {
+	public ProjectEvent(VPTProject project) {
 		super(project);
 	}
 
@@ -39,7 +47,7 @@ public final class ProjectEvent extends EventObject {
 	 *@param  project   Description of Parameter
 	 *@param  artifact  Description of Parameter
 	 */
-	public ProjectEvent(Project project, Object artifact) {
+	public ProjectEvent(VPTProject project, VPTFile artifact) {
 		this(project, artifact, -1);
 	}
 
@@ -49,34 +57,36 @@ public final class ProjectEvent extends EventObject {
 	 *@param  anArtifact  Description of Parameter
 	 *@param  anIndex     Description of Parameter
 	 */
-	public ProjectEvent(Project project, Object anArtifact, int anIndex) {
+	public ProjectEvent(VPTProject project, VPTFile anArtifact, int anIndex) {
 		super(project);
 		artifact = anArtifact;
 		index = anIndex;
 	}
 
-	/** Returns the artifact as a {@link ProjectDirectory}.
+	/** 
+	 *	Returns the artifact as a {@link VPTDirectory VPTDirectory}.
 	 *
-	 *@return    The projectDirectory value
+	 *	@return    The projectDirectory value
 	 */
-	public ProjectDirectory getProjectDirectory() {
-		return (ProjectDirectory) artifact;
+	public VPTDirectory getProjectDirectory() {
+		return (VPTDirectory) artifact;
 	}
 
 	/** Returns the project file.
 	 *
 	 *@return    The projectFile value
 	 */
-	public ProjectFile getProjectFile() {
-		return (ProjectFile) artifact;
+	public VPTFile getProjectFile() {
+		return (VPTFile) artifact;
 	}
 
-	/** Returns the {@link Project}.
+	/** 
+	 *	Returns the {@link VPTProject Project}.
 	 *
 	 *@return    The project value
 	 */
-	public Project getProject() {
-		return (Project) getSource();
+	public VPTProject getProject() {
+		return (VPTProject) getSource();
 	}
 
 	/** Returns the project artifact.
@@ -101,10 +111,10 @@ public final class ProjectEvent extends EventObject {
 	 *@return    The path value
 	 */
 	public List getPath() {
-		if (artifact instanceof ProjectFile)
-			return getProject().getRoot().getPathToFile(getProjectFile());
-		if (artifact instanceof ProjectDirectory)
-			return getProject().getRoot().getPathToDirectory(getProjectDirectory());
+		//if (artifact.isFile())
+			//return getProject().getRoot().getPathToFile(getProjectFile());
+		//if (artifact.isDirectory())
+			//return getProject().getRoot().getPathToDirectory(getProjectDirectory());
 		return null;
 	}
 

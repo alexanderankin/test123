@@ -19,6 +19,9 @@
 package projectviewer.vpt;
 
 //{{{ Imports
+import java.util.Comparator;
+import java.util.Collections;
+
 import java.awt.Color;
 import javax.swing.Icon;
 import javax.swing.UIManager;
@@ -36,7 +39,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public abstract class VPTNode extends DefaultMutableTreeNode implements Comparable {
+public abstract class VPTNode extends DefaultMutableTreeNode {
 	
 	//{{{ Constants
 	
@@ -67,9 +70,13 @@ public abstract class VPTNode extends DefaultMutableTreeNode implements Comparab
 	//{{{ Constructors 
 	
 	protected VPTNode(VPTNodeType type, String name) {
+		this(type, name, type != FILE);
+	}
+	
+	protected VPTNode(VPTNodeType type, String name, boolean allowsChildren) {
 		this.nodeType	= type;
 		this.name		= name;
-		setAllowsChildren(nodeType != FILE);
+		setAllowsChildren(allowsChildren);
 	}
 	
 	//}}}
@@ -77,20 +84,10 @@ public abstract class VPTNode extends DefaultMutableTreeNode implements Comparab
 	//{{{ Public methods
 	
 	//{{{ add(MutableTreeNode) method
-	/**
-	 *	Overrides the add() method of the superclass, registering VPTFiles added
-	 *	to projects (for performance reasons).
-	 */
+	/**	Keeps the children list sorted. */
 	public void add(MutableTreeNode newChild) {
 		super.add(newChild);
-		
-		if (((VPTNode)newChild).isFile()) {
-			VPTNode proj = (VPTNode) newChild.getParent();
-			while (!proj.isProject()) {
-				proj = (VPTNode) proj.getParent();
-			}
-			((VPTProject)proj).registerFile((VPTFile)newChild);
-		}
+		Collections.sort(children, new VPTNodeComparator());
 	} //}}}
 	
 	//{{{ delete() method
@@ -181,40 +178,64 @@ public abstract class VPTNode extends DefaultMutableTreeNode implements Comparab
 		return false;
 	} //}}}
 	
-	//{{{ compareTo(Object) method
-	public int compareTo(Object o) {
-		if (o == this) return 0;
-		if (o instanceof VPTNode) {
-			VPTNode node = (VPTNode) o;
-			if (this.isFile()) {
-				if(node.isFile()) {
-					return getName().compareTo(node.getName());
-				} else {
-					return 1; 
-				}
-			} else if (this.isDirectory()) {
-				if (node.isFile()) {
-					return -1;
-				} else if (node.isDirectory()) {
-					return getName().compareTo(node.getName());
-				} else {
-					return 1;
-				}
-			} else if (this.isProject()) {
-				if (node.isProject()) {
-					return getName().compareTo(node.getName());
-				} else if (node.isFile() || node.isDirectory()) {
-					return -1;
-				} else {
-					return 1;
-				}
-			} else {
-				// root node
-				return -1;
-			}
-		} else {
-			return getName().compareTo(o.toString());
-		}
+	//{{{ toString() method
+	/** Returns a string representation of the current node. */
+	public String toString() {
+		return "VPTNode [" + getName() + "]";
+	} //}}}
+	
+	//{{{ canOpen() method
+	/**
+	 *	This method should return whether it makes sense to "open" the node.
+	 *	For example, for file nodes, it should be reasonable to open the file
+	 *	in a jEdit buffer, so this method should return "true" and implement
+	 *	{@link #open() open()} and {@link #close() close()} to execute 
+	 *	the opening and closing operations.
+	 */
+	public boolean canOpen() {
+		return false;
+	} //}}}
+	
+	//{{{ open() method
+	/**
+	 *	"Opens" the node. The default implementation does nothing. If a node can
+	 *	be opened, it should implement the opening action in this method.
+	 */
+	public void open() {
+	
+	} //}}}
+	
+	//{{{ close() method
+	/**
+	 *	"Closes" the node. This should "undo" what was done by 
+	 *	{@link #open() open()}, normally.
+	 */
+	public void close() {
+	
+	} //}}}
+	
+	//{{{ getNodePath() method
+	/**
+	 *	Returns a String representing a "path" for this node. This can be any
+	 *	arbitrary String, but the idea is to have the string represent some kind
+	 *	of URL or file path. This makes more sense for nodes that deal with
+	 *	files and directories, or even URL links.
+	 */
+	public abstract String getNodePath(); //}}}
+	
+	//{{{ compareToNode(VPTNode) method
+	/**
+	 *	This method will only get called by nodes which are not recognized
+	 *	by the default Comparator provided by the class VPTNodeComparator.
+	 *	It's purpose is to be implemented by other types of node unknown
+	 *	to the default node hierarchy, so that they can be sorted within 
+	 *	the tree. Since this is not going to be called on the classes
+	 *	provided by the plugin, the return value does not matter. For other
+	 *	implementing classes, the return value should be as the normal
+	 *	"compareTo(Object)" method returns. 
+	 */
+	public int compareToNode(VPTNode node) {
+		return 1;
 	}
 	//}}}
 
@@ -252,8 +273,6 @@ public abstract class VPTNode extends DefaultMutableTreeNode implements Comparab
 	
 	//}}}
 	
-	//{{{ Inner classes
-	
 	//{{{ VPTNodeType class
 	/**
 	 *	Class to provide a type-safe enumeration for node types.
@@ -261,7 +280,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode implements Comparab
 	public static class VPTNodeType {
 		private String name = null;
 		
-		private VPTNodeType(String name) {
+		public VPTNodeType(String name) {
 			this.name = name;
 		}
 		
@@ -269,7 +288,51 @@ public abstract class VPTNode extends DefaultMutableTreeNode implements Comparab
 			return name;
 		}
 	} //}}}
-	
-	//}}}
 
+	//{{{ VPTNodeComparator class
+	/**
+ 	 *	Compares two VPTNode objects. It makes assumptions about the base nodes
+	 *	provided by the plugin. If the nodes are not recognized by any of the
+	 *	"isSomething" methods, the {@link VPTNode.compareToNode(VPTNode), 
+	 *	compareToNode(VPTNode)}	method is called.
+	 */
+	private static class VPTNodeComparator implements Comparator {
+
+		public int compare(Object o1, Object o2) {
+			if (o1 == o2) return 0;
+			
+			VPTNode node1 = (VPTNode) o1;
+			VPTNode node2 = (VPTNode) o2;
+			
+			if (node1.isFile()) {
+				if(node2.isFile()) {
+					return node1.getName().compareTo(node2.getName());
+				} else {
+					return 1; 
+				}
+			} else if (node1.isDirectory()) {
+				if (node2.isFile()) {
+					return -1;
+				} else if (node2.isDirectory()) {
+					return node1.getName().compareTo(node2.getName());
+				} else {
+					return 1;
+				}
+			} else if (node1.isProject()) {
+				if (node2.isProject()) {
+					return node1.getName().compareTo(node2.getName());
+				} else if (node2.isFile() || node2.isDirectory()) {
+					return -1;
+				} else {
+					return 1;
+				}
+			} else if (node1.isRoot()){
+				return -1;
+			} else {
+				return node1.compareToNode(node2);
+			}
+		}
+		
+	} //}}}
+	
 }

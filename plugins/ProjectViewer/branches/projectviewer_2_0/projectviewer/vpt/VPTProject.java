@@ -20,6 +20,8 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.io.File;
+
+import java.util.Set;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -53,6 +55,8 @@ public class VPTProject extends VPTNode implements EBComponent {
 
 	//{{{ Constants
 
+	public final static String DEFAULT_URL = "http://";
+	
 	private final static Icon projectIcon 	= GUIUtilities.loadIcon("DriveSmall.png");
 
 	//}}}
@@ -61,10 +65,11 @@ public class VPTProject extends VPTNode implements EBComponent {
 	
 	private ArrayList	listeners;
 	private ArrayList	openFiles;
-	private File		buildFile;
+	private String		rootPath;
 	private String		url;
+	private File		buildFile;
 	private HashMap		files;
-	private HashMap		propertySets;
+	private Properties	properties;
 	
 	//}}}
 	
@@ -73,8 +78,9 @@ public class VPTProject extends VPTNode implements EBComponent {
 	public VPTProject(String name) {
 		super(VPTNode.PROJECT, name);
 		files 		= new HashMap();
-		listeners 	= new ArrayList();
-		openFiles 	= new ArrayList();
+		listeners	= new ArrayList();
+		openFiles	= new ArrayList();
+		properties	= new Properties();
 	}
 	
 	//}}}
@@ -115,27 +121,60 @@ public class VPTProject extends VPTNode implements EBComponent {
 		this.url = url;
 	} //}}}
 	
-	//{{{ addPropertySet(String,Properties) method 
-	/**
-	 *	Adds a property set to the project. A property set is a 
-	 *	java.util.Properties object specific to a particular
-	 *	owner. The owner can be, for example, and external jEdit
-	 *	plugin that wishes to add project-specific options.
-	 *
-	 *	@param	owner	The name of the owner of the set.
-	 *	@param	set		The properties.
-	 */
-	public void addPropertySet(String owner, Properties set) {
-		if (propertySets == null) {
-			propertySets = new HashMap();
-		}
-		propertySets.put(owner, set);
+	//{{{ getProperty(String) method
+	/** Returns the property set for the project. */
+	public String getProperty(String property) {
+		return properties.getProperty(property);
 	} //}}}
 	
-	//{{{ getPropertySet(String) method
-	/** Returns the property set for the given owner. */
-	public Properties getPropertySet(String owner) {
-		return (Properties) propertySets.get(owner);
+	//{{{ setProperty(String, String) method
+	/**
+	 *	Sets a property.
+	 *
+	 *	@return	The old value for the property (can be null).
+	 */
+	public String setProperty(String name, String value) {
+		String old = properties.getProperty(name);
+		properties.setProperty(name, value);
+		return old;
+	} //}}}
+	
+	//{{{ getPropertyNames() method
+	/**	Returns a set containing all property names for this project. */
+	public Set getPropertyNames() {
+		return properties.keySet();
+	} //}}}
+	
+	//{{{ getOpenFiles() method
+	/**
+	 *	Returns an iterator to the list of open files that this project
+	 *	remembers.
+	 */
+	public Iterator getOpenFiles() {
+		return openFiles.iterator();
+	} //}}}
+	
+	//{{{ addOpenFile(String) method
+	/**
+	 *	Adds a file to the list of the project's opened files.
+	 */
+	public void addOpenFile(String path) {
+		openFiles.add(path);
+	} //}}}
+	
+	//{{{ clearOpenFiles() method
+	/** Clears the list of open files. */
+	public void clearOpenFiles() {
+		openFiles.clear();
+	} //}}}
+	
+	//{{{ isProjectFile(String) method
+	/**
+	 *	Returns whether the file denoted by the given path is part of this
+	 *	project.
+	 */
+	public boolean isProjectFile(String path) {
+		return files.containsKey(path);
 	} //}}}
 	
 	//{{{ getIcon(boolean) method
@@ -148,7 +187,23 @@ public class VPTProject extends VPTNode implements EBComponent {
 		return projectIcon;
 	} //}}}
 
-	//}}}
+	//{{{ toString() method
+	/** Returns a string representation of the current node. */
+	public String toString() {
+		return "Project [" + getName() + "]";
+	} //}}}
+	
+	//{{{ getRootPath() method
+	/** Returns the path to the root of the project. */
+	public String getRootPath() {
+		return rootPath;
+	} //}}}
+	
+	//{{{ setRootPath(String) method
+	/** Sets the path to the root of the project. */
+	public void setRootPath(String path) {
+		rootPath = path;
+	} //}}}
 	
 	//{{{ registerFile(VPTFile) method
 	/**
@@ -156,9 +211,17 @@ public class VPTProject extends VPTNode implements EBComponent {
 	 *	belong to the project. This is mainly for performance reasons when
 	 *	firing project events.
 	 */
-	protected void registerFile(VPTFile file) {
+	public void registerFile(VPTFile file) {
 		files.put(file.getFile().getAbsolutePath(), file);
 	}
+	//}}}
+	
+	//{{{ getNodePath()
+	/**	Returns the path to the file represented by this node. */
+	public String getNodePath() {
+		return getRootPath();
+	} //}}}
+
 	//}}}
 	
 	//{{{ Event Handling, Subscribing & Dispatching

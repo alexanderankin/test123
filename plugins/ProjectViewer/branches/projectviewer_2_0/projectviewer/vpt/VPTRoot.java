@@ -20,7 +20,10 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.io.File;
+import java.util.Collections;
+
 import javax.swing.Icon;
+import javax.swing.tree.MutableTreeNode;
 
 import org.gjt.sp.jedit.GUIUtilities;
 import projectviewer.ProjectViewer;
@@ -57,11 +60,11 @@ public class VPTRoot extends VPTNode {
 	//{{{ Constructors 
 	
 	private VPTRoot() {
-		super(VPTNode.ROOT, ProjectViewer.ALL_PROJECTS);
+		super(VPTNode.ROOT, "All Projects");
 	}
 	
 	//}}}
-
+	
 	//{{{ getIcon(boolean) method
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
@@ -71,5 +74,11 @@ public class VPTRoot extends VPTNode {
 	public Icon getIcon(boolean expanded) {
 		return (expanded ? dirOpenedIcon : dirClosedIcon);
 	} //}}}
-		
+
+	//{{{ getNodePath()
+	/**	Returns File.separator. */
+	public String getNodePath() {
+		return File.separator;
+	} //}}}
+
 }
