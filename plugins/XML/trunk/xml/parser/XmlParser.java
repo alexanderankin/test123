@@ -34,26 +34,31 @@ public abstract class XmlParser extends SideKickParser
 	public XmlParser(String name)
 	{
 		super(name);
-		highlights = new HashMap();
+		highlight = new TagHighlight();
+	} //}}}
+
+	//{{{ stop() method
+	/**
+	 * Stops the parse request currently in progress. It is up to the
+	 * parser to implement this.
+	 * @since SideKick 0.3
+	 */
+	public void stop()
+	{
+		stopped = true;
 	} //}}}
 
 	//{{{ activate() method
 	public void activate(View view)
 	{
 		if(jEdit.getBooleanProperty("xml.tag-highlight"))
-		{
-			TagHighlight highlight = new TagHighlight();
 			view.getTextArea().addStructureMatcher(highlight);
-			highlights.put(view,highlight);
-		}
 	} //}}}
 
 	//{{{ deactivate() method
 	public void deactivate(View view)
 	{
-		TagHighlight highlight = (TagHighlight)highlights.get(view);
-		if(highlight != null)
-			view.getTextArea().removeStructureMatcher(highlight);
+		view.getTextArea().removeStructureMatcher(highlight);
 	} //}}}
 
 	//{{{ supportsCompletion() method
@@ -188,7 +193,11 @@ public abstract class XmlParser extends SideKickParser
 			return new XmlCompletion(editPane.getView(),allowedCompletions,word,data,closingTag);
 	} //}}}
 
+	//{{{ Package-private members
+	boolean stopped;
+	//}}}
+
 	//{{{ Private members
-	private Map highlights;
+	private TagHighlight highlight;
 	//}}}
 }

@@ -78,9 +78,7 @@ public class TagParser
 			}
 		}
 
-		Tag tag = new Tag();
-		tag.start = startTag;
-		tag.end   = endTag;
+		Tag tag = new Tag(startTag,endTag);
 		tag.tag   = text.substring(startTagName, endTagName);
 		tag.type  = tagType;
 
@@ -350,9 +348,10 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 		public String tag = null;
 		public int type = -1;
 
-		Tag()
+		Tag(int start, int end)
 		{
-			start = end = -1;
+			this.start = start;
+			this.end = end;
 		}
 
 		public String toString()

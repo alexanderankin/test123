@@ -18,6 +18,7 @@ package xml;
 //{{{ Imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.*;
+import sidekick.SideKickActions;
 import xml.parser.*;
 //}}}
 
@@ -36,6 +37,29 @@ public class TagHighlight implements StructureMatcher
 		if(current == null)
 			return null;
 		else
-			return TagParser.getMatchingTag(text,current);
+		{
+			TagParser.Tag tag = TagParser
+				.getMatchingTag(text,current);
+			if(tag != null)
+			{
+				tag.startLine = textArea.getLineOfOffset(
+					tag.start);
+				tag.endLine = textArea.getLineOfOffset(
+					tag.end);
+				tag.matcher = this;
+			}
+			return tag;
+		}
+	} //}}}
+
+	//{{{ selectMatch() method
+	/**
+	 * Selects from the caret to the matching structure element (if there is
+	 * one, otherwise the behavior of this method is undefined).
+	 * @since jEdit 4.2pre3
+	 */
+	public void selectMatch(JEditTextArea textArea)
+	{
+		SideKickActions.selectAsset(GUIUtilities.getView(textArea));
 	} //}}}
 }
