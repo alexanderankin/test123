@@ -29,9 +29,7 @@ plugin.logviewer.LogViewerPlugin.menu=logviewer.open \
                 - \
                 logviewer.firstLine \
                 logviewer.lastLine \
-                logviewer.tail \
                 logviewer.find \
-                logviewer.wordWrap \
                 - \
                 logviewer.clear \
                 logviewer.clearAll \
@@ -134,9 +132,6 @@ logviewer.dialog.Configure.tabPlacement.Right.displayValue=Right
 logviewer.dialog.Configure.confirmDelete.label=Confirm Delete:
 logviewer.dialog.Configure.confirmDelete.yes.displayValue=Yes
 logviewer.dialog.Configure.confirmDelete.no.displayValue=No
-logviewer.dialog.Configure.wordWrap.label=Word Wrap:
-logviewer.dialog.Configure.wordWrap.yes.displayValue=Yes
-logviewer.dialog.Configure.wordWrap.no.displayValue=No
 logviewer.dialog.Configure.confirmDeleteAll.label=Confirm Delete All:
 logviewer.dialog.Configure.confirmDeleteAll.yes.displayValue=Yes
 logviewer.dialog.Configure.confirmDeleteAll.no.displayValue=No

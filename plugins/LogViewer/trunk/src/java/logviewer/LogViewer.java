@@ -340,6 +340,7 @@ public class LogViewer extends JPanel implements EBComponent {
       wordWrapMI_ = new JCheckBoxMenuItem( wordWrap_ );
       tail_ = new Tail(this, getProperty("tail.label"));
       tailMI_ = new JCheckBoxMenuItem(tail_);
+      tailMI_.setSelected(true);
       about_ = new About( this, getProperty( "about.label" ) );
    }
 
