@@ -281,6 +281,8 @@ public class SqlOptionPane extends AbstractOptionPane
     final SqlServerRecord selrec = (SqlServerRecord) allServersLst.getSelectedValue();
     if ( selrec != null )
       SqlUtils.setSelectedServerName( selrec.getName() );
+    else
+      SqlUtils.setSelectedServerName( null );
 
     int mr = ResultSetWindow.getMaxRecordsToShow();
     try

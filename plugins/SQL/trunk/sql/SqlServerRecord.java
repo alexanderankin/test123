@@ -465,7 +465,10 @@ public class SqlServerRecord extends Properties
    */
   public static void clearProperties()
   {
+    allRecords = null;
+
     final Vector v = new Vector();
+
     for ( Enumeration e = SqlPlugin.getPropertyNames(); e.hasMoreElements();  )
     {
       final String pname = (String) e.nextElement();
