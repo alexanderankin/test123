@@ -44,7 +44,18 @@ import net.sourceforge.jedit.pluginholder.*;
 */
 public class JCompilerPlugin extends EBPlugin {
 
+    //constants for JCompiler actions
+    
+    public static final String JCOMPILER_BUILD_FILE_LABEL_KEY 
+        = "jcompiler.build.file.label";
 
+    public static final String JCOMPILER_BUILD_PACKAGE_LABEL_KEY 
+        = "jcompiler.build.package.label";
+
+    public static final String JCOMPILER_BUILD_EVERYTHING_LABEL_KEY 
+        = "jcompiler.build.everything.label";
+
+    
 
     /**
     @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
@@ -106,28 +117,6 @@ public class JCompilerPlugin extends EBPlugin {
     }
     
 
-    /**
-    Handle message for decompile requests..
-
-    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-    @version $Id$
-    */
-    public void handleMessage(EBMessage message) {
-
-        if (message instanceof DecompileClassMessage) {
-            
-            BuildMessage bm = (BuildMessage)((DecompileClassMessage)message).getMessage();
-
-            DecompileClassMessage decompile = (DecompileClassMessage)message;
-            
-
-            //FIX ME
-            //JCompilerPlugin.setEditorFile( decompile.getFileName(), bm.getLineNumber() );
-            //JCompilerPlugin.dlg.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-
-        }
-
-    }
 
 
 }

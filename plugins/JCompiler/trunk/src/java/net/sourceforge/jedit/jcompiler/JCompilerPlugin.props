@@ -16,16 +16,16 @@ options.jcompiler.label=JCompiler
 ########################################
 # Menu definition                      #
 ########################################
-jcompiler.label=Build File
-jcompiler.shortcut=S+F6
+jcompiler.build.file.label=Build File
+jcompiler.build.file.shortcut=S+F6
 
-jpkgcompiler.label=Build Package(s)
-jpkgcompiler.shortcut=S+F7
+jcompiler.build.package.label=Build Package(s)
+jcompiler.build.package.shortcut=S+F7
 
-jpkgrebuild.label=Rebuild Package(s)
-jpkgrebuild.shortcut=S+F8
+jcompiler.build.everything.label=Rebuild Package(s)
+jcompiler.build.everything.shortcut=S+F8
 
-jcompiler-menu=jcompiler jpkgcompiler jpkgrebuild 
+jcompiler-menu=jcompiler.build.file jcompiler.build.package jcompiler.build.everything
 jcompiler-menu.label=Java Compiler
 
 

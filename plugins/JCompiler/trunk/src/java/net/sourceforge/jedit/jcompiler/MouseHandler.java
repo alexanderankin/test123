@@ -80,9 +80,9 @@ public class MouseHandler extends MouseAdapter implements ActionListener {
     private void showFullMenu(int x, int y)	{
 
         this.stackTrace = new JMenuItem("Load stack trace...");
-        this.one = new JMenuItem( jEdit.getProperty( "jcompiler.label" ) );
-        this.two = new JMenuItem( jEdit.getProperty( "jpkgcompiler.label") );
-        this.three = new JMenuItem( jEdit.getProperty( "jpkgrebuild.label" ) );
+        this.one = new JMenuItem( jEdit.getProperty( "jcompiler.build.file.label" ) );
+        this.two = new JMenuItem( jEdit.getProperty( "jcompiler.build.package.label") );
+        this.three = new JMenuItem( jEdit.getProperty( "jcompiler.build.everything.label" ) );
 
 
         this.menu = new JPopupMenu();

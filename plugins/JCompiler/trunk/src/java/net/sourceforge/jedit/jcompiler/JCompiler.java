@@ -40,7 +40,9 @@ import java.util.Vector;
 import java.io.*;
 import java.lang.*;
 
+//PluginHolder support
 import net.sourceforge.jedit.pluginholder.*;
+import net.sourceforge.jedit.pluginholder.msg.*;
 
 
 /**
@@ -417,6 +419,46 @@ public class JCompiler extends HoldablePlugin {
                                    pkgCompile, 
                                    rebuild );
     }
+    
+
+    /**
+    Handle all messages, specifically those that are from PluginHolder about
+    build/action entries
+    
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+    @version $Id$
+    */
+    public void handleMessage(EBMessage message) { 
+    
+        if ( message instanceof EntrySelectedMessage ) {
+
+            EntrySelectedMessage esm = (EntrySelectedMessage)message;
+
+            if ( esm.getEntry().getLabel().equals( JCompilerPlugin.JCOMPILER_BUILD_FILE_LABEL_KEY ) && 
+                 esm.getEntry().getLabel().equals( JCompilerPlugin.JCOMPILER_BUILD_PACKAGE_LABEL_KEY ) && 
+                 esm.getEntry().getLabel().equals( JCompilerPlugin.JCOMPILER_BUILD_EVERYTHING_LABEL_KEY ) ) {
+
+                Log.log( Log.DEBUG, this, "Received action from jEdit to do some compile stuff" );
+            }
+
+
+        }
+
+        if (message instanceof DecompileClassMessage) {
+            
+            BuildMessage bm = (BuildMessage)((DecompileClassMessage)message).getMessage();
+
+            DecompileClassMessage decompile = (DecompileClassMessage)message;
+
+            //FIX ME
+            //JCompilerPlugin.setEditorFile( decompile.getFileName(), bm.getLineNumber() );
+            //JCompilerPlugin.dlg.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+
+        }
+
+        
+    }    
+    
     
 }
 
