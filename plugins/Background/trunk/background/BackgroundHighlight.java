@@ -27,8 +27,8 @@ import java.util.Vector;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
@@ -112,7 +112,7 @@ public class BackgroundHighlight extends TextAreaExtension
         if (icon.getImageLoadStatus() != MediaTracker.COMPLETE) { return; }
 
         TextAreaPainter painter = this.textArea.getPainter();
-        FontMetrics fm = this.textArea.getPainter().getFontMetrics();
+        FontMetrics fm = painter.getFontMetrics();
 
         final int lineX = 0;
 
@@ -144,9 +144,18 @@ public class BackgroundHighlight extends TextAreaExtension
         }
 
         if (blend) {
+            // Remember the original color and composite
+            Color     color     = gfx.getColor();
+            Composite composite = gfx.getComposite();
+
             gfx.setColor(alphaColor);
             gfx.setComposite(alphaComposite);
+
             gfx.fillRect(lineX, lineY, width, height);
+
+            // Restore the original color and composite
+            gfx.setColor(color);
+            gfx.setComposite(composite);
         }
 
         // Restore the original clip bounds
@@ -158,7 +167,24 @@ public class BackgroundHighlight extends TextAreaExtension
             final Graphics2D gfx, final int screenLine, final int physicalLine,
             final int start, final int end, final int y
     ) {
+        TextAreaPainter painter = this.textArea.getPainter();
+
+        int caret = this.textArea.getCaretPosition();
+        boolean paintLineHighlight = (
+               painter.isLineHighlightEnabled()
+            && ((caret >= start) && (caret < end))
+            && (this.textArea.getSelectionCount() == 0)
+        );
+
         this.paintLine(gfx, y);
+
+        if (paintLineHighlight) {
+            FontMetrics fm = painter.getFontMetrics();
+            Color bgColor = painter.getLineHighlightColor();
+
+            gfx.setColor(bgColor);
+            gfx.fillRect(0, y, painter.getWidth(), fm.getHeight());
+        }
     }
 
 
