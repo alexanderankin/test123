@@ -137,6 +137,7 @@ You can close unused connections at any other time using the
   <itemizedlist>
    <listitem><para>Updated to SSHTools 0.2.2 beta.</para></listitem>
    <listitem><para>Fixed file listing on VMS FTP servers.</para></listitem>
+   <listitem><para>Fixed file listing on Solaris servers with ACLs enabled (Brion Vibber).</para></listitem>
   </itemizedlist>
   </listitem>
 
