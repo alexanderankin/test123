@@ -80,8 +80,10 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	private JMenuItem  renameDir;
 	
 	private JPopupMenu fileMenu;
-	private JMenuItem  removeFile;
-	private JMenuItem  deleteFile;
+		private javax.swing.JMenu fileMenuSubRemove;
+			private JMenuItem  removeFile;
+			private JMenuItem  deleteFile;
+
 	private JMenuItem  renameFile;
 	private JMenuItem  miLaunchBrowser;
 	private JMenuItem  miBuildFile;
@@ -342,22 +344,31 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		fileMenu.add(tmp);
 		fileMenu.addSeparator();
 		
-		removeFile = new JMenuItem("Remove from project");
-		removeFile.addActionListener(this);
-		fileMenu.add(removeFile);
+		// sutter2k: need to tap in here for preview in browser
+		miLaunchBrowser= new JMenuItem("Preview in Browser");
+		miLaunchBrowser.addActionListener(this);
+		fileMenu.add(miLaunchBrowser);
+		fileMenu.addSeparator();
 		
-		deleteFile = new JMenuItem("Delete from disk");
+		fileMenuSubRemove = new javax.swing.JMenu("Delete from");
+		removeFile = new JMenuItem("Project");
+		removeFile.addActionListener(this);
+		fileMenuSubRemove.add(removeFile);
+		//fileMenu.add(removeFile);
+		
+		
+		deleteFile = new JMenuItem("Disk (and project)");
 		deleteFile.addActionListener(this);
-		fileMenu.add(deleteFile);
+		fileMenuSubRemove.add(deleteFile);
+		//fileMenu.add(deleteFile);
+		fileMenu.add(fileMenuSubRemove);
 		
 		renameFile = new JMenuItem("Rename");
 		renameFile.addActionListener(this);
 		fileMenu.add(renameFile);
-   
-	   // sutter2k: need to tap in here for preview in browser
-		miLaunchBrowser= new JMenuItem("Preview in Browser");
-		miLaunchBrowser.addActionListener(this);
-		fileMenu.add(miLaunchBrowser);
+		
+		fileMenu.addSeparator();
+	   
 		
 		// danson, added for build file selection
 		miBuildFile = new JMenuItem("Set as Build File");
