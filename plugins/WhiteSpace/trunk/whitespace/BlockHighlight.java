@@ -22,7 +22,7 @@ package whitespace;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 
@@ -34,13 +34,12 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.TextAreaHighlight;
+import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.util.Log;
 
 
-public class BlockHighlight
-    implements TextAreaHighlight
+public class BlockHighlight extends TextAreaExtension
 {
     // (EditPane, BlockHighlight) association
     private static Hashtable highlights = new Hashtable();
@@ -52,24 +51,21 @@ public class BlockHighlight
         jEdit.getProperty("white-space.block-color"));
 
     private JEditTextArea textArea;
-    private TextAreaHighlight next;
     private Segment segment = new Segment();
 
 
-    private BlockHighlight() {}
-
-
-    public void init(JEditTextArea textArea, TextAreaHighlight next) {
+    private BlockHighlight(JEditTextArea textArea) {
         this.textArea = textArea;
-        this.next = next;
     }
 
 
-    public void paintHighlight(Graphics gfx, final int virtualLine, int y) {
+    public void paintValidLine(
+            Graphics2D gfx, int physicalLine, int start, int end, int y
+    ) {
         WhiteSpaceModel model = this.getModel();
         if ((model != null) && model.getBlockHighlight().isEnabled())
         {
-            int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
+            // int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
 
             try {
                 if (    (this.textArea.getLineStartOffset(physicalLine) == -1)
@@ -108,18 +104,6 @@ public class BlockHighlight
                 gfx.drawLine(x0, y0, painter.getWidth() - 1, y0);
             }
         }
-
-        if (this.next != null) {
-            this.next.paintHighlight(gfx, virtualLine, y);
-        }
-    }
-
-
-    public String getToolTipText(MouseEvent evt)
-    {
-        if (this.next == null) { return null; }
-
-        return this.next.getToolTipText(evt);
     }
 
 
@@ -166,8 +150,8 @@ public class BlockHighlight
     }
 
 
-    public static TextAreaHighlight addHighlightTo(EditPane editPane) {
-        TextAreaHighlight textAreaHighlight = new BlockHighlight();
+    public static TextAreaExtension addHighlightTo(EditPane editPane) {
+        TextAreaExtension textAreaHighlight = new BlockHighlight(editPane.getTextArea());
         highlights.put(editPane, textAreaHighlight);
         return textAreaHighlight;
     }
