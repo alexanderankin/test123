@@ -14,7 +14,7 @@ SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/syntax/xmode.dtd"
 
 SYSTEM "plugins.dtd" "jeditresource:/org/gjt/sp/jedit/pluginmgr/plugins.dtd"
 
--- XHTML DTDs --
+-- XHTML 1.0 DTDs --
 
 PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "xhtml1-frameset.dtd"
 SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" "xhtml1-frameset.dtd"
@@ -33,6 +33,12 @@ SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml-special.ent" "ent/xhtml-special.en
 
 PUBLIC "-//W3C//ENTITIES Symbols for XHTML//EN" "ent/xhtml-symbol.ent"
 SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml-symbol.ent" "ent/xhtml-symbol.ent"
+
+-- XHTML 1.1 DTDs --
+
+PUBLIC "-//W3C//DTD XHTML 1.1//EN"                                "xhtml11-flat.dtd"
+
+PUBLIC "-//W3C//ENTITIES XHTML 1.1 Document Model 1.0//EN"        "xhtml11-model-1.mod"
 
 -- Plugin DTDs --
 

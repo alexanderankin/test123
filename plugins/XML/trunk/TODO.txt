@@ -1,6 +1,6 @@
 + version 0.10:
 
-- empty tag shown for tags with text inside; this should not happen
+- misplaced closing tags break everything
 - finish element lists for schemas
 - CDATA breaks getLastOpenTag() if the CDATA contains a <, also
   backward tag matching too

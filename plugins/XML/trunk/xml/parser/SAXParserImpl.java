@@ -158,7 +158,7 @@ class SAXParserImpl implements XmlParser.Impl
 		System.err.println("uri = " + uri);
 		System.err.println("description = " + schemaDesc);
 		Grammar grammar = grammarPool.getGrammar(schemaDesc);
-		System.err.println("grammar = " + grammar);
+		Log.log(Log.DEBUG,this,"URI " + uri + " has grammar " + grammar);
 		return grammar;
 	} //}}}
 
@@ -171,7 +171,6 @@ class SAXParserImpl implements XmlParser.Impl
 		CompletionInfo info = new CompletionInfo();
 
 		XSModel model = ((XSGrammar)grammar).toXSModel();
-		System.err.println("got XSModel: " + model);
 
 		XSNamedMap elements = model.getComponents(XSConstants.ELEMENT_DECLARATION);
 		for(int i = 0; i < elements.getMapLength(); i++)
@@ -422,6 +421,13 @@ class SAXParserImpl implements XmlParser.Impl
 				buffer.readUnlock();
 			}
 
+			empty = false;
+		} //}}}
+
+		//{{{ characters() method
+		public void characters (char ch[], int start, int length)
+			throws SAXException
+		{
 			empty = false;
 		} //}}}
 

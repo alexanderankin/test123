@@ -107,15 +107,9 @@ public class XmlParsedData
 		else
 		{
 			String parentPrefix = getElementNamePrefix(parentTag.tag);
-			System.err.println("parentPrefix = " + parentPrefix);
-			System.err.println("parent tag = " + parentTag.tag);
-			System.err.println("mappings = " + mappings.keySet());
 			ElementDecl parentDecl = getElementDecl(parentTag.tag);
 			if(parentDecl != null)
-			{
-				System.err.println("adding children");
 				returnValue.addAll(parentDecl.getChildElements(parentPrefix));
-			}
 
 			// add everything but the parent's prefix now
 			Iterator iter = mappings.keySet().iterator();
@@ -124,7 +118,6 @@ public class XmlParsedData
 				String prefix = (String)iter.next();
 				if(!prefix.equals(parentPrefix))
 				{
-					System.err.println("adding for prefix " + prefix);
 					CompletionInfo info = (CompletionInfo)
 						mappings.get(prefix);
 					info.getAllElements(prefix,returnValue);
