@@ -1,0 +1,56 @@
+/* This is a utility function that executes the specified command in the
+ * console. This saves a bit of code duplication in macros that use the
+ * console. */
+runCommandInConsole(View view, String shell, String command)
+{
+	import console.Shell;
+
+	// Open the console if it isn't already open
+	view.getDockableWindowManager().addDockableWindow("console");
+
+	// Obtain the console instance
+	console = view.getDockableWindowManager().getDockableWindow("console");
+
+	// Set the shell to use
+	Shell _shell = Shell.getShell(_shell);
+	console.setShell(_shell);
+
+	// Run the command
+	console.run(console.getShell(),console,command);
+}
+
+bsh.help.runCommandInConsole
+	= "usage: runCommandInConsole(View view, String shell, String command)";
+
+/* This is a utility function that executes the specified command in the
+ * console, placing the output in a new buffer. */
+runCommandToBuffer(View view, String shell, String command)
+{
+	import console.Shell;
+
+	// Open the console if it isn't already open
+	view.getDockableWindowManager().addDockableWindow("console");
+
+	// Obtain the console instance
+	console = view.getDockableWindowManager().getDockableWindow("console");
+
+	// Set the shell to use
+	Shell _shell = Shell.getShell(_shell);
+	console.setShell(_shell);
+
+	// Run the command
+	console.run(console.getShell(),new BufferOutput(),command);
+}
+
+bsh.help.runCommandToBuffer
+	= "usage: runCommandToBuffer(View view, String shell, String command)";
+
+/* This is a utility method that executes the specified command in the
+ * system shell. */
+runInSystemShell(View view, String command)
+{
+	runCommandInConsole(view,"System",command);
+}
+
+bsh.help.runInSystemShell
+	= "usage: runInSystemShell(View view, String shell, String command)";
