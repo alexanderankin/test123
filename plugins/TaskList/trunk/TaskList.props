@@ -4,18 +4,18 @@
 # Plugin properties
 plugin.TaskListPlugin.name=TaskList
 plugin.TaskListPlugin.author=Ollie Rutherfurd, John Gellene
-plugin.TaskListPlugin.version=0.3.3
+plugin.TaskListPlugin.version=0.3.4
 plugin.TaskListPlugin.docs=TaskList.html
 
 plugin.TaskListPlugin.depend.0=jdk 1.1
-plugin.TaskListPlugin.depend.1=jedit 04.00.01.00
+plugin.TaskListPlugin.depend.1=jedit 04.00.04.00
 
 # dockable window name
 tasklist.title=Task List
 tasklist.label=Task List
 tasklist-toggle.label=Task List Toggle
 
-# TODO: compatible with jEdit API 4.0
+# DONE: compatible with jEdit API 4.0
 
 # action labels
 tasklist.toggle.label=Task List

@@ -51,8 +51,8 @@ public class Task
 		this.lineIndex = line;
 		this.text = text.replace('\t', (char)187);
 		int posOffset = buffer.getLineStartOffset(line);
-		this.startPosition = buffer.getPosition(posOffset + startOffset);
-		this.endPosition = buffer.getPosition(posOffset + endOffset);
+		this.startPosition = buffer.createPosition(posOffset + startOffset);
+		this.endPosition = buffer.createPosition(posOffset + endOffset);
 
 	}
 
@@ -94,7 +94,7 @@ public class Task
 	{
 		if(startPosition != null)
 		{
-			return buffer.getLineOfOffset(startPos.getOffset());
+			return buffer.getLineOfOffset(startPosition.getOffset());
 		}
 		else
 		{
@@ -124,5 +124,7 @@ public class Task
 	private int lineIndex;
 
 	private Position position;
+	private Position startPosition;
+	private Position endPosition;
 
 }
