@@ -122,7 +122,7 @@ public class ImportGroupOption extends JImporterOption {
 
         return importGroupList;
     }
-
+    
     /**
      * Construct the "options" pane for grouping.
      *
@@ -198,23 +198,23 @@ public class ImportGroupOption extends JImporterOption {
                 }
             });
 
-        JButton addSpace = new JButton("Add Whitespace", new ImageIcon(JImporterPlugin.class.getResource("/images/addspace.gif")));
-        addSpace.setHorizontalAlignment(SwingConstants.LEFT);
-        addSpace.setPreferredSize(new Dimension(150, 28));
-        addSpace.setMinimumSize(new Dimension(150, 28));
-        addSpace.setMaximumSize(new Dimension(150, 28));
-        addSpace.addActionListener(
-            new ActionListener() {
-                public void actionPerformed(ActionEvent ae) {
-                    addSpaceClicked();
-                }
-            });
+        //JButton addSpace = new JButton("Add Whitespace", new ImageIcon(JImporterPlugin.class.getResource("/images/addspace.gif")));
+        //addSpace.setHorizontalAlignment(SwingConstants.LEFT);
+        //addSpace.setPreferredSize(new Dimension(150, 28));
+        //addSpace.setMinimumSize(new Dimension(150, 28));
+        //addSpace.setMaximumSize(new Dimension(150, 28));
+        //addSpace.addActionListener(
+        //    new ActionListener() {
+        //        public void actionPerformed(ActionEvent ae) {
+        //            addSpaceClicked();
+        //        }
+        //    });
 
         upDownPanel.add(sortUp);
         upDownPanel.add(sortDown);
         upDownPanel.add(addImport);
         upDownPanel.add(removeImport);
-        upDownPanel.add(addSpace);
+        //upDownPanel.add(addSpace);
 
         panel.add(importGroup, BorderLayout.WEST);
         panel.add(upDownPanel);
