@@ -68,15 +68,29 @@ public class AntFarmShell extends Shell
 				output.commandDone();
 				return;
 			}
-			String requestedTarget = command.substring( 1 );
+			String requestedTarget = command.indexOf( " " ) > 0 ?
+				command.substring( 1, command.indexOf( " " ) ) :
+				command.substring( 1 );
+
 			if ( requestedTarget.equals( "" ) ) {
 				requestedTarget = _currentProject.getDefaultTarget();
 			}
 			Target target = (Target)
 				_currentProject.getTargets().get( requestedTarget );
 
-			_targetRunner = new TargetRunner( target
-				, _currentBuildFile, console.getView(), output );
+			if ( target == null ) {
+				printUsage( "Not a valid target: " + requestedTarget, console.getErrorColor(), output );
+				output.commandDone();
+				return;
+			}
+
+			_targetRunner = new TargetRunner(
+				target,
+				_currentBuildFile,
+				console.getView(),
+				output,
+				AntCommandParser.parseAntCommandProperties( command )
+				 );
 		}
 		else if ( command.equals( "?" ) ) {
 

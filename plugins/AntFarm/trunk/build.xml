@@ -8,10 +8,10 @@
 	<property name="jedit.jars" value=".." />
 	<property name="jedit.home" value="../.." />
 
-
 	<path id="build.classpath">
 		<!-- External plugin dependencies -->
 		<pathelement path="${plugin.lib}/ant.jar" />
+		<pathelement path="lib/junit.jar" />
 		<!-- Other plugin dependencies -->
 		<pathelement path="${jedit.jars}/Console.jar" />
 		<pathelement path="${jedit.jars}/EditBus.jar" />
@@ -28,9 +28,9 @@
 						destdir="${plugin.build}"
 						deprecation="off"
 		>
- 			<classpath>
+<!--  			<classpath>
 				<path refid="build.classpath"/>
-			</classpath>
+			</classpath> -->
 		</javac>
 	</target>
 
@@ -64,4 +64,12 @@
 			destdir="."/>
 	</target>
 
+	<target name="test" description="Runs the unit tests for the project">
+		<junit printsummary="yes" haltonfailure="yes">
+ 			<classpath>
+				<path refid="build.classpath"/>
+			</classpath>
+  		<test name="antfarm.AntCommandParserTest" />
+		</junit>
+	</target>
 </project>

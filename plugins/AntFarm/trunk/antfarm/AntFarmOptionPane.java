@@ -141,7 +141,6 @@ public class AntFarmOptionPane
 			AntFarmPlugin.OPTION_PREFIX + "output-emacs", _useEmacsOutput.isSelected()
 			 );
 
-		jEdit.propertiesChanged();
 	}
 
 
