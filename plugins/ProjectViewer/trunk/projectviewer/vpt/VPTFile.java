@@ -49,7 +49,8 @@ public class VPTFile extends VPTNode {
 
 	//{{{ Attributes
 
-	private File		file;
+	private File	file;
+	private Color	fileTypeColor;
 
 	//}}}
 
@@ -62,6 +63,7 @@ public class VPTFile extends VPTNode {
 	public VPTFile(File file) {
 		super(VPTNode.FILE, file.getName());
 		this.file = file;
+		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
 	}
 
 	//}}}
@@ -93,6 +95,7 @@ public class VPTFile extends VPTNode {
 	/** Sets the file associated with this node. */
 	public void setFile(File f) {
 		this.file = f;
+		fileTypeColor = VFS.getDefaultColorFor(file.getName());
 		setName(f.getName());
 	} //}}}
 
@@ -128,7 +131,11 @@ public class VPTFile extends VPTNode {
 	 */
 	public Color getForegroundColor(boolean sel) {
 		if (sel) return super.getForegroundColor(sel);
-		return VFS.getDefaultColorFor(file.getName());
+		if (fileTypeColor == null) {
+			return super.getForegroundColor(sel);
+		} else {
+			return fileTypeColor;
+		}
 	} //}}}
 
 	//{{{ toString() method
