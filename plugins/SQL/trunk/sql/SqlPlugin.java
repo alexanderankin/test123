@@ -130,11 +130,7 @@ public class SqlPlugin extends EBPlugin
         final VPTProject project = SqlUtils.getProject( view );
         Log.log( Log.DEBUG, SqlPlugin.class, "new View " + view + " got project " + project );
 
-        removeToolBar( view );
-        if ( SqlToolBar.showToolBar() )
-        {
-          addToolBar( view, project );
-        }
+        refreshToolBar( view, project );
 
         ProjectViewer.addProjectViewerListener( this, view );
       }
@@ -159,11 +155,45 @@ public class SqlPlugin extends EBPlugin
    */
   public void projectLoaded( ProjectViewerEvent evt )
   {
-    final VPTProject project = evt.getProject();
-    final View view = evt.getProjectViewer().getView();
     Log.log( Log.DEBUG, SqlPlugin.class,
-        "Loading the project [" + project + "]" );
+        "Loading the project [" + evt.getProject() + "]" );
 
+    refreshToolBar( evt.getProjectViewer().getView(), evt.getProject() );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  evt  Description of Parameter
+   */
+  public void projectAdded( ProjectViewerEvent evt )
+  {
+    Log.log( Log.DEBUG, SqlPlugin.class,
+        "Removing the project [" + evt.getProject() + "]" );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  evt  Description of Parameter
+   */
+  public void projectRemoved( ProjectViewerEvent evt )
+  {
+    Log.log( Log.DEBUG, SqlPlugin.class,
+        "Removing the project [" + evt.getProject() + "]" );
+  }
+
+
+  /**
+   *  Dsescription of the Method
+   *
+   * @param  view     Description of Parameter
+   * @param  project  Description of Parameter
+   */
+  protected void refreshToolBar( View view, VPTProject project )
+  {
     removeToolBar( view );
     if ( SqlToolBar.showToolBar() )
     {
@@ -174,14 +204,11 @@ public class SqlPlugin extends EBPlugin
 
   private void handlePropertiesChanged()
   {
-    final boolean show = SqlToolBar.showToolBar();
     View view = jEdit.getFirstView();
 
     while ( view != null )
     {
-      removeToolBar( view );
-      if ( show )
-        addToolBar( view, SqlUtils.getProject( view ) );
+      refreshToolBar( view, SqlUtils.getProject( view ) );
       view = view.getNext();
     }
   }
@@ -519,7 +546,8 @@ public class SqlPlugin extends EBPlugin
         {
           Log.log( Log.ERROR, SqlPlugin.class,
               "Strange, classpath element " + path + " was not registered" );
-        } else
+        }
+        else
           jEdit.removePluginJAR( jar, false );
       }
 
