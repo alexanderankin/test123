@@ -118,7 +118,7 @@ minute timer. This improves performance by reducing network traffic.
 </para>
 
 <para>
-You can close unused connections at any other itme using the
+You can close unused connections at any other time using the
 <guimenuitem>Close Unused Connections</guimenuitem> command in the
 <guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para></listitem>
@@ -136,22 +136,10 @@ You can close unused connections at any other itme using the
   
   <itemizedlist>
    <listitem><para>Updated to SSHTools 0.1.7 beta.</para></listitem>
-  </itemizedlist>
-
-  <itemizedlist>
    <listitem><para>Permissions are now preserved on SFTP servers.
    </para></listitem>
-  </itemizedlist>
-
-  <itemizedlist>
    <listitem><para>Incomplete support for VMS FTP servers.</para></listitem>
-  </itemizedlist>
-
-  <itemizedlist>
    <listitem><para>Support for AS/400 FTP servers (Nagy Gabor).</para></listitem>
-  </itemizedlist>
-
-  <itemizedlist>
    <listitem><para>Moved Log4J to JakartaCommons plugin.</para></listitem>
   </itemizedlist>
 
