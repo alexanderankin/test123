@@ -27,6 +27,7 @@ import java.util.Vector;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
@@ -119,6 +120,25 @@ public class BackgroundHighlight extends TextAreaExtension
                 icon.paintIcon(this.textArea, gfx, x, y);
             }
         }
+
+        boolean blend = jEdit.getBooleanProperty("background.blend", false);
+        if (blend) {
+            int alpha = jEdit.getIntegerProperty("background.blend-alpha", 127);
+            if (alpha < 0)   { alpha = 0; }
+            if (alpha > 255) { alpha = 255; }
+
+            Color color = GUIUtilities.parseColor(
+                jEdit.getProperty("background.blend-color", "#ffffff"), Color.white
+            );
+            Color alphaColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
+
+            AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
+
+            gfx.setColor(alphaColor);
+            gfx.setComposite(alphaComposite);
+            gfx.fillRect(lineX, lineY, width, height);
+        }
+
 
         // Restore the original clip bounds
         gfx.setClip(rect);

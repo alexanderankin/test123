@@ -10,6 +10,9 @@ plugin.background.BackgroundPlugin.depend.1=jedit 04.00.04.00
 background.toggle-background.label=Background
 
 background.file=
+background.blend=false
+background.blend-alpha=127
+background.blend-color=#ffffff
 
 # options
 options.background.label=Background
