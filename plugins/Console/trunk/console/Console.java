@@ -124,13 +124,13 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		command.getModel().addItem(cmd);
 
 		// Record the command
-		InputHandler.MacroRecorder recorder = view.getInputHandler()
-			.getMacroRecorder();
-		if(recorder != null)
-		{
-			recorder.actionPerformed(jEdit.getAction("console-shell"),shell.getName());
-			recorder.actionPerformed(jEdit.getAction("console"),cmd);
-		}
+		//InputHandler.MacroRecorder recorder = view.getInputHandler()
+		//	.getMacroRecorder();
+		//if(recorder != null)
+		//{
+		//	recorder.actionPerformed(jEdit.getAction("console-shell"),shell.getName());
+		//	recorder.actionPerformed(jEdit.getAction("console"),cmd);
+		//}
 
 		if(cmd.trim().equalsIgnoreCase("clear"))
 		{

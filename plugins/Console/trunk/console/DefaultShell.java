@@ -107,11 +107,17 @@ class DefaultShell extends Shell
 					switch(command.charAt(++i))
 					{
 					case 'd':
-						buf.append(MiscUtilities.getParentOfPath(
-							buffer.getPath()));
+						String path = MiscUtilities.getParentOfPath(
+							buffer.getPath());
+						if(path.endsWith("/")
+							|| path.endsWith(File.separator))
+							path = path.substring(0,
+	
+								path.length() - 1);
+						buf.append(path);
 						break;
 					case 'u':
-						String path = buffer.getPath();
+						path = buffer.getPath();
 						if(!MiscUtilities.isURL(path))
 							path = "file:" + path;
 						buf.append(path);
@@ -226,10 +232,14 @@ class DefaultShell extends Shell
 	private String dir;
 	private boolean java13;
 
+	private int threadDoneCount;
 	private boolean exitStatus;
 
 	private void parseLine(String line)
 	{
+		if(console == null)
+			return;
+
 		int type = ConsolePlugin.parseLine(line);
 		switch(type)
 		{
@@ -245,8 +255,41 @@ class DefaultShell extends Shell
 		}
 	}
 
+	private synchronized void threadDone()
+	{
+		threadDoneCount++;
+		if(threadDoneCount == 2)
+			commandDone();
+	}
+
 	private synchronized void commandDone()
 	{
+		if(process != null)
+		{
+			int exitCode;
+			try
+			{
+				exitCode = process.waitFor();
+			}
+			catch(InterruptedException e)
+			{
+				Log.log(Log.ERROR,this,"Yo Flav, what is this?");
+				return;
+			}
+
+			Object[] args = { command, new Integer(exitCode) };
+
+			String msg = jEdit.getProperty("console.shell.exited",args);
+			if(exitCode == 0)
+				console.printInfo(msg);
+			else
+				console.printError(msg);
+
+			exitStatus = (exitCode == 0);
+		}
+
+		threadDoneCount = 0;
+
 		command = null;
 		stdout = null;
 		stderr = null;
@@ -298,21 +341,15 @@ class DefaultShell extends Shell
 					parseLine(line);
 				}
 				in.close();
-
-				int exitCode = process.waitFor();
-				Object[] args = { command, new Integer(exitCode) };
-
-				console.printInfo(jEdit.getProperty("console.shell.exited",args));
-				exitStatus = (exitCode == 0);
-				commandDone();
 			}
 			catch(IOException io)
 			{
 				String[] args = { io.getMessage() };
 				console.printError(jEdit.getProperty("console.shell.ioerror",args));
 			}
-			catch(InterruptedException ie)
+			finally
 			{
+				threadDone();
 			}
 		}
 	}
@@ -349,6 +386,10 @@ class DefaultShell extends Shell
 			{
 				String[] args = { io.getMessage() };
 				console.printError(jEdit.getProperty("console.shell.ioerror",args));
+			}
+			finally
+			{
+				threadDone();
 			}
 		}
 	}
