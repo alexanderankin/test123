@@ -24,6 +24,7 @@
 
 package buffertabs;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -34,6 +35,7 @@ import java.awt.event.MouseAdapter;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.ColorUIResource;
 
 import java.util.Vector;
 
@@ -213,7 +215,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         //CES: Force correct color for new buffer tab
         if(index>=0) {
            this.setSelectedIndex(index);
-           ColorTabs.instance().updateHighlight(this,index);
+           this.updateHighlight(index);
         }
     }
 
@@ -239,9 +241,9 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                  this.textArea.setVisible(true);
             }
 
-            if(selectedIndex>=0) {
+            if (selectedIndex >= 0) {
                 //CES: Ensure selected tab has correct color
-                ColorTabs.instance().updateHighlight(this,selectedIndex);
+                this.updateHighlight(selectedIndex);
             }
 
         } finally {
@@ -273,7 +275,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                 Buffer buffer = (Buffer) BufferTabs.this.buffers.elementAt(index);
                 if (buffer != null) {
                     BufferTabs.this.editPane.setBuffer(buffer);
-                    ColorTabs.instance().updateHighlight((BufferTabs)evt.getSource(),index); //CES
+                    BufferTabs.this.updateHighlight(index); //CES
                 }
             }
         }
@@ -304,6 +306,36 @@ public class BufferTabs extends JTabbedPane implements EBComponent
 
     private void updateColorAt(int index) {
         ColorTabs.instance().setColor(this, index);
+    }
+
+
+    /**
+     *  Force the Look and Feel to use the given color as its 'selected' color.
+     *  TODO: This may cause side-effects with other tab panes.
+     */
+    public void updateHighlight(int index) {
+        if (   ColorTabs.instance().isEnabled()
+            && ColorTabs.instance().isSelectedColorized()
+        ) {
+            if (index == this.getSelectedIndex()) {
+                Buffer buffer = (Buffer) this.buffers.elementAt(index);
+                String name = buffer.getName();
+                Color color = ColorTabs.instance().getDefaultColorFor(name);
+
+                try {
+                    this.getUI().uninstallUI(this);
+                    UIManager.getDefaults().put(
+                        "TabbedPane.selected",
+                        new ColorUIResource(
+                            ColorTabs.instance().alterColorHighlight(color)
+                        )
+                    );
+                    this.getUI().installUI(this);
+                } catch (Exception e) {
+                    Log.log(Log.ERROR, BufferTabs.class, "updateHighlight: " + e.toString());
+                }
+            }
+        }
     }
 
 

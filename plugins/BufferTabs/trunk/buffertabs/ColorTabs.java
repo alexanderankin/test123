@@ -444,45 +444,7 @@ public class ColorTabs
             // Log.flushStream();
 
          }
-         updateHighlight(parent, index);
-      }
-   }
-
-
-   /**
-    *  Force the Look and Feel to use the given color as it 'selected' color.
-    *  TODO:This may cause side-effects with other tab panes.
-    *
-    *@param  parent
-    *@param  index
-    */
-   void updateHighlight(BufferTabs parent, int index)
-   {
-      if (this.enabled && this.selectedColorized)
-      {
-
-         // System.out.println("CES: updateHighlight  index="+index +"   selectedIndex="+parent.getSelectedIndex());
-         if (index == parent.getSelectedIndex())
-         {
-            Buffer buffer = (Buffer) parent.getBuffers().elementAt(index);
-            String name = buffer.getName();
-            // System.out.println( "CES: name=" + name );
-            Color color = getDefaultColorFor(name);
-
-            try
-            {
-               parent.getUI().uninstallUI(parent);
-               UIManager.getDefaults().put("TabbedPane.selected", new ColorUIResource(alterColorHighlight(color)));
-               parent.getUI().installUI(parent);
-            }
-            catch (Exception e)
-            {
-               Log.log(Log.ERROR, ColorTabs.class, "updateHighlight: " + e.toString());
-               // Log.log( Log.ERROR, ColorTabs.class, e );
-               // Log.flushStream();
-            }
-
-         }
+         parent.updateHighlight(index);
       }
    }
 
