@@ -121,7 +121,7 @@ public class ClasspathManager extends JPanel implements TreeSelectionListener, M
         if (!(userObject instanceof JavaClass))
             return;
 
-        javaInsight.decompileClass(((JavaClass)userObject).getName());
+        javaInsight.decompile(((JavaClass)userObject).getName());
     }
 
 
