@@ -332,7 +332,7 @@ public class FtpVFS extends VFS
 
 		FtpAddress address = new FtpAddress(url);
 
-		VFSFile directoryEntry = _getDirectoryEntry(
+		VFSFile directoryEntry = _getFile(
 			_session,url,comp);
 		if(directoryEntry == null)
 			return false;
@@ -360,12 +360,12 @@ public class FtpVFS extends VFS
 
 		String toPath = new FtpAddress(to).path;
 
-		VFSFile directoryEntry = _getDirectoryEntry(
+		VFSFile directoryEntry = _getFile(
 			_session,from,comp);
 		if(directoryEntry == null)
 			return false;
 
-		directoryEntry = _getDirectoryEntry(_session,to,comp);
+		directoryEntry = _getFile(_session,to,comp);
 		if(directoryEntry != null && directoryEntry.getType() == VFSFile.FILE
 			&& !address.path.equalsIgnoreCase(toPath))
 			session.removeFile(toPath);
