@@ -95,8 +95,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             errorMsg("JumpPlugin.no_project");
             return false;
         }
-        
-        JumpPlugin.pja = new ProjectJumpAction();
+        if (JumpPlugin.pja == null) JumpPlugin.pja = new ProjectJumpAction();
         
         this.PROJECT = p;
         
@@ -108,32 +107,39 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         
         String s = System.getProperty("file.separator");
         
-        PROJECT_TAGS = new File (System.getProperty("user.home")+s+".jedit"+s+"projectviewer"+s+"projects"+s+PROJECT_NAME+".jump");
+        this.PROJECT_TAGS = new File (System.getProperty("user.home")+s+".jedit"+s+"projectviewer"+s+"projects"+s+this.PROJECT_NAME+".jump");
         
                 Collection v0 = Collections.synchronizedCollection(p.getFiles());
                 Vector v = new Vector(v0);
                 
                 this.ProjectFiles.clear();
+                System.out.println("Files total = "+v.size());
                 for (int i=0; i<v.size(); i++)
                 {
                     VPTFile f = (VPTFile)v.get(i);
                     this.ProjectFiles.add(f.getCanonicalPath());
+                    System.out.println("Added: "+f.getCanonicalPath());
                 }
         try
         {   // If no .jump file found - try to create new one
-            if (PROJECT_TAGS.exists() == false)
+            if (this.PROJECT_TAGS.exists() == false)
             {
+                System.out.println("create tags");
                 ctags_buff = ctags_bg.getParser().parse(this.ProjectFiles);
-                ctags_bg.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
+                ctags_bg.saveBuffer(ctags_buff , this.PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
-                return true;
+                return true; 
             }
             // Read already seriailzed file 
             else
-            {
+            {   
+                // Unwanted workaround
+                // If file deleted form project I must save tags before reload it.
+                //System.out.println("read tags");
+                //ctags_bg.saveBuffer(ctags_buff , PROJECT_TAGS.toString());
+                
                 ctags_buff = ctags_bg.loadBuffer(PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
-                //Log.log(Log.DEBUG,this,"JumpEventListener: reload done;");
                 return true;
             }
         }
@@ -155,8 +161,11 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         if (evt.getProject() != null)
         {
             ProjectFiles.clear();
+            JumpPlugin.pja = null;
             reloadTags(evt.getProjectViewer(), evt.getProject()); 
-            JumpPlugin.pja.clearHistory();
+            //JumpPlugin.pja.clearHistory();
+            
+            
         }
     }
 //}}}
@@ -175,7 +184,9 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         }
         if (evt.getProject() != null)
         {
+            JumpPlugin.pja = null;
             reloadTags(evt.getProjectViewer(), evt.getProject());
+            
         }
     }
 //}}}
@@ -197,6 +208,7 @@ public void saveProjectBuffer()
         }   
 }
 
+//{{{ boolean CtagsTest()
 public boolean CtagsTest()
 {
     CTAGS_BG test_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path")); 
@@ -211,6 +223,8 @@ public boolean CtagsTest()
         return false;
     }
 }
+//}}}
+
 //}}}
 }
 //}}}
