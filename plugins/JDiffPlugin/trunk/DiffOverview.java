@@ -55,18 +55,22 @@ public class DiffOverview extends JComponent
     private int lineCount1;
     private JEditTextArea textArea;
     private JEditTextArea textArea1;
+    private boolean viewAll;
+
 
     public DiffOverview(Diff.change edits,
         int lineCount0,
         int lineCount1,
         JEditTextArea textArea0,
-        JEditTextArea textArea1)
+        JEditTextArea textArea1,
+        boolean viewAll)
     {
         this.edits     = edits;
         this.lineCount0 = lineCount0;
         this.lineCount1 = lineCount1;
         this.textArea  = textArea0;
         this.textArea1 = textArea1;
+        this.viewAll   = viewAll;
 
         Dimension dim = getPreferredSize();
         dim.width = 40;
@@ -76,6 +80,15 @@ public class DiffOverview extends JComponent
 
     public void paint(Graphics gfx)
     {
+        if (this.viewAll) {
+            this.paintOverview(gfx);
+        } else {
+            this.paintNormalView(gfx);
+        }
+    }
+
+
+    public void paintOverview(Graphics gfx) {
         Rectangle size = getBounds();
 
         gfx.setColor(getBackground());
@@ -177,7 +190,140 @@ public class DiffOverview extends JComponent
     }
 
 
-    public void synchroScrollVertical() {
+    public void paintNormalView(Graphics gfx) {
+        int line0  = this.textArea.getFirstLine();
+        int count0 = this.textArea.getVisibleLines();
+        int line1  = this.textArea1.getFirstLine();
+        int count1 = this.textArea1.getVisibleLines();
+
+        Rectangle size = getBounds();
+
+        gfx.setColor(getBackground());
+        gfx.fillRect(0, 0, size.width, size.height);
+
+        Rectangle inner = new Rectangle(4, 4, size.width - 8, size.height - 8);
+
+        int lines = Math.max(count0, count1);
+        double pxlPerLine = ((double) inner.height) / lines;
+
+        Rectangle left = new Rectangle(
+            inner.x,
+            inner.y,
+            inner.width / 3,
+            Math.max(1, (int) Math.round(pxlPerLine * count0))
+        );
+        Rectangle right = new Rectangle(
+            inner.x + (inner.width - left.width),
+            inner.y,
+            left.width,
+            Math.max(1, (int) Math.round(pxlPerLine * count1))
+        );
+
+        gfx.setColor(Color.black);
+        gfx.drawRect(left.x - 1, left.y - 1, left.width + 1, left.height + 1);
+        gfx.drawRect(right.x - 1, right.y - 1, right.width + 1, right.height + 1);
+
+        gfx.setColor(Color.white);
+        gfx.fillRect(left.x, left.y, left.width, left.height);
+        gfx.fillRect(right.x, right.y, right.width, right.height);
+
+        Color color;
+
+        Diff.change hunk = this.edits;
+        for (; hunk != null; hunk = hunk.link) {
+            if ((hunk.line0 + hunk.deleted - 1) < line0) {
+                continue;
+            }
+
+            if (hunk.line0 >= (line0 + count0)) {
+                break;
+            }
+
+            if (hunk.deleted == 0) {
+                color = DiffOverview.invalidLineColor;
+            } else if (hunk.inserted == 0) {
+                color = DiffOverview.deletedLineColor;
+            } else {
+                color = DiffOverview.changedLineColor;
+            }
+
+            int leftOffset = Math.max(0, hunk.line0 - line0);
+            int leftCount  = Math.min(
+                hunk.deleted - Math.max(0, line0 - hunk.line0),
+                count0       - Math.max(0, hunk.line0 - line0) // leftOffset
+            );
+            left.y  = inner.y + (int) Math.round(leftOffset * pxlPerLine);
+            left.height  = Math.max(1, (int) Math.round(leftCount * pxlPerLine));
+            gfx.setColor(color);
+            gfx.fillRect(left.x, left.y, left.width, left.height);
+        }
+
+        hunk = this.edits;
+        for (; hunk != null; hunk = hunk.link) {
+            if ((hunk.line1 + hunk.inserted - 1) < line1) {
+                continue;
+            }
+
+            if (hunk.line1 >= (line1 + count1)) {
+                break;
+            }
+
+            if (hunk.inserted == 0) {
+                color = DiffOverview.invalidLineColor;
+            } else if (hunk.deleted == 0) {
+                color = DiffOverview.insertedLineColor;
+            } else {
+                color = DiffOverview.changedLineColor;
+            }
+
+            int rightOffset = Math.max(0, hunk.line1 - line1);
+            int rightCount  = Math.min(
+                hunk.inserted - Math.max(0, line1 - hunk.line1),
+                count1        - Math.max(0, hunk.line1 - line1) // rightOffset
+            );
+            right.y  = inner.y + (int) Math.round(rightOffset * pxlPerLine);
+            right.height  = Math.max(1, (int) Math.round(rightCount * pxlPerLine));
+            gfx.setColor(color);
+            gfx.fillRect(right.x, right.y, right.width, right.height);
+        }
+
+        hunk = this.edits;
+        for (; hunk != null; hunk = hunk.link) {
+            if (hunk.line0 < line0) {
+                continue;
+            }
+
+            if (hunk.line1 < line1) {
+                continue;
+            }
+
+            if ((hunk.line0 + hunk.deleted - 1) < line0) {
+                continue;
+            }
+
+            if ((hunk.line1 + hunk.inserted - 1) < line1) {
+                continue;
+            }
+
+            if (hunk.line0 >= (line0 + count0)) {
+                break;
+            }
+
+            if (hunk.line1 >= (line1 + count1)) {
+                break;
+            }
+
+            int leftOffset = hunk.line0 - line0;
+            int rightOffset = hunk.line1 - line1;
+            int y0 = inner.y + (int) Math.round(leftOffset * pxlPerLine);
+            int y1 = inner.y + (int) Math.round(rightOffset * pxlPerLine);
+            gfx.setColor(Color.black);
+            gfx.drawLine(left.x + left.width + 1, y0, right.x - 1, y1);
+        }
+    }
+
+
+    public void synchroScrollRight() {
         Diff.change hunk = this.edits;
 
         int leftFirstLine  = this.textArea.getFirstLine();
@@ -211,6 +357,44 @@ public class DiffOverview extends JComponent
 
         if (rightFirstLine >= 0) {
             this.textArea1.setFirstLine(rightFirstLine);
+        }
+    }
+
+
+    public void synchroScrollLeft() {
+        Diff.change hunk = this.edits;
+
+        int leftFirstLine  = -1;
+        int rightFirstLine = this.textArea1.getFirstLine();
+
+        int prevLeftOffset  = 0;
+        int prevRightOffset = 0;
+        int leftOffset  = 0;
+        int rightOffset = 0;
+        for (; hunk != null; hunk = hunk.link) {
+            leftOffset  = hunk.line0;
+            rightOffset = hunk.line1;
+
+            if (   (rightFirstLine >= prevRightOffset)
+                && (rightFirstLine <  rightOffset)
+            ) {
+                leftFirstLine = prevLeftOffset + (rightFirstLine - prevRightOffset);
+                break;
+            }
+
+            if (   (rightFirstLine >= rightOffset)
+                && (rightFirstLine <  (rightOffset + hunk.inserted))
+            ) {
+                leftFirstLine = leftOffset;
+                break;
+            }
+
+            prevLeftOffset  = leftOffset  + hunk.deleted;
+            prevRightOffset = rightOffset + hunk.inserted;
+        }
+
+        if (leftFirstLine >= 0) {
+            this.textArea.setFirstLine(leftFirstLine);
         }
     }
 

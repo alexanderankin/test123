@@ -63,6 +63,7 @@ public class JDiffPlugin
         if (message instanceof PropertiesChanged) {
             DiffOverview.propertiesChanged();
             DualDiff.propertiesChanged();
+            DiffHighlight.propertiesChanged();
         } else if (message instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate) message;
             EditPane editPane = epu.getEditPane();
@@ -71,12 +72,11 @@ public class JDiffPlugin
                 return;
             }
             if (epu.getWhat() == EditPaneUpdate.CREATED) {
-                DualDiff.removeFrom(view);
+                DualDiff.editPaneCreated(view, editPane);
             } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
-                DualDiff.removeFrom(view);
+                DualDiff.editPaneDestroyed(view, editPane);
             } else if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
-                DualDiff.removeFrom(view);
-                DualDiff.addTo(view);
+                DualDiff.editPaneBufferChanged(view, editPane);
             } else {
             }
         }
