@@ -489,6 +489,7 @@ public final class ProjectViewer extends JPanel
 	 *	open list (if desired).
 	 */
 	private void closeProject(VPTProject p, boolean close, boolean remember) {
+		p.clearOpenFiles();
 		if (close || remember) {
 			Buffer[] bufs = jEdit.getBuffers();
 			for (int i = 0; i < bufs.length; i++) {
@@ -653,11 +654,8 @@ public final class ProjectViewer extends JPanel
 	 */
 	public void setProject(VPTProject p) {
 		if (treeRoot.isProject()) {
-			((VPTProject)treeRoot).clearOpenFiles();
-			if (config.getCloseFiles() || config.getRememberOpen()) {
-				closeProject((VPTProject)treeRoot, config.getCloseFiles(),
-					config.getRememberOpen());
-			}
+			closeProject((VPTProject)treeRoot, config.getCloseFiles(),
+				config.getRememberOpen());
 		}
 
 		if (p != null) {
