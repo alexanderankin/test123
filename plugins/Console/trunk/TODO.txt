@@ -1,0 +1,48 @@
+- error parsing
+- move default shell stuff to console.consoleshell
+- console.msg package for messages sent when processes start and stop
+- %ps command invokes Plugins->Console->Process Manager, a graphical display
+  of all running procs, with kill option, etc. a click will go to the console
+  where it is foreground, if bg, open new console?
+- process manager dockable too!
+- exit status, waitFor() support
+- commando:
+  - ~/.jedit/console/commando/openjade_PDF.xml
+    <recipe>
+     <caption label="Foo" />
+     <toggle name="xml" label="XML" />
+     <choice name="foo" label="What's my name:">
+      <option name="ar" label="Bobic" />
+     </choice>
+     <entry name="dsl" label="Stylesheet" />
+     <command>
+      if(xml)
+       args.addElement("/usr/local/share/OpenSP/xml.dcl");
+      if(foo.equals("ar"))
+       ...
+     </command>
+
+     <command confirm="true|false">
+      The next command
+     </command>
+
+     ... after each command, show confirm dialog box with exit status of
+         last command ...
+    </recipe>
+  - default values are buffer-local properties
+  - some loaded from JAR:
+    - perl
+    - javac
+    - java
+    - jikes
+    - jmk
+    - make
+    - openjade HTML
+    - openjade PDF
+  - ConsoleProcess: support to run multiple plugins in a row
+  - console shell: @<cmd> opens it in commando
+- button 'output to buffer'
+- aliases option pane
+- add tips of the day
+- documentation
+

@@ -161,6 +161,21 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		shell.execute(view,cmd,this);
 	}
 
+	/**
+	 * Meant to be used as a user action.
+	 */
+	public void runLastCommand()
+	{
+		history = command.getModel();
+		if(history.getSize() == 0)
+		{
+			getToolkit().beep();
+			return;
+		}
+		else
+			run(history.getItem(0));
+	}
+
 	public void handleMessage(EBMessage msg)
 	{
 		if(msg instanceof PropertiesChanged)
@@ -214,29 +229,6 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 			"console.warningColor"));
 		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
 			"console.errorColor"));
-
-		String family = jEdit.getProperty("console.font");
-		int size;
-		try
-		{
-			size = Integer.parseInt(jEdit.getProperty(
-				"console.fontsize"));
-		}
-		catch(NumberFormatException nf)
-		{
-			size = 14;
-		}
-		int style;
-		try
-		{
-			style = Integer.parseInt(jEdit.getProperty(
-				"console.fontstyle"));
-		}
-		catch(NumberFormatException nf)
-		{
-			style = Font.PLAIN;
-		}
-		output.setFont(new Font(family,style,size));
 	}
 
 	protected synchronized void addOutput(Color color, String msg)

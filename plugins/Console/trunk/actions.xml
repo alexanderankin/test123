@@ -18,4 +18,11 @@
 			console.getTextField().requestFocus();
 		</CODE>
 	</ACTION>
+	<ACTION NAME="run-last-console-command">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow("console");
+			console = view.getDockableWindowManager().getDockableWindow("console");
+			console.runLastCommand();
+		</CODE>
+	</ACTION>
 </ACTIONS>
