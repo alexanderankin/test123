@@ -536,13 +536,6 @@ loop:			for(;;)
 
 		void setCurrentDirectory(Console console, String newDir)
 		{
-			if(!OperatingSystem.getOperatingSystem().cdCommandAvailable())
-			{
-				console.print(console.getErrorColor(),
-					jEdit.getProperty("console.shell.cd.unsup"));
-				return;
-			}
-
 			String[] pp = { newDir };
 			if(new File(newDir).exists())
 			{
