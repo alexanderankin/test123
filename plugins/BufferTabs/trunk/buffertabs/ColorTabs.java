@@ -46,11 +46,13 @@ import org.gjt.sp.util.Log;
  */
 public class ColorTabs
 {
+   private static final int jnd = 4;
+
    private static final int darkRange = 150;
    private static final float darkRatio = ((float) darkRange / 254);
+
    private static final int lowestColor = 150;
    private static final int highestColor = 230;
-   private static final int jnd = 4;
    private static final int muteRange = highestColor - lowestColor;
    private static final float muteRatio = ((float) muteRange / 254);
 
