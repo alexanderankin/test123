@@ -24,13 +24,12 @@ package hex;
 import java.util.Vector;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.util.Log;
 
@@ -52,15 +51,18 @@ public class HexPlugin extends EBPlugin
         if (message instanceof BufferUpdate) {
             BufferUpdate bu = (BufferUpdate) message;
 
-            if (bu.getWhat() == BufferUpdate.CREATED) {
+            if (bu.getWhat() == BufferUpdate.LOADED) {
                 Buffer buffer = bu.getBuffer();
                 VFS    vfs    = buffer.getVFS();
                 Mode   mode   = null;
                 if (vfs instanceof HexVFS) {
-                    mode = jEdit.getMode("text");
+                    mode = jEdit.getMode("hex");
+                    if (mode == null) {
+                        mode = jEdit.getMode("text");
+                    }
                 } else {}
 
-                if (mode != null) {
+                if ((mode != null) && (mode != buffer.getMode())) {
                     buffer.setMode(mode);
                 }
             }
