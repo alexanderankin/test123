@@ -222,13 +222,24 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		}
 	} //}}}
 
+	//{{{ isURLSet() method
+	private boolean isURLSet() {
+		String sURLRoot = viewer.getCurrentProject().getURLRoot();
+		if (sURLRoot.trim() == "" || sURLRoot.equals("http://<projecturl>"))
+			return false;
+		else 
+			return true;
+	}
+	
+	
+	//}}}
 	//{{{ launchBrowser() method
-	private void launchBrowser() {
+		private void launchBrowser() {
 		/* need to get browser setting */
 		String sURLRoot = viewer.getCurrentProject().getURLRoot();
 		String sURL;
 		String browserExecPath = ProjectViewerConfig.getInstance().getBrowserPath();
-		if (sURLRoot == "" ) {
+		if (!this.isURLSet()) {
 			JOptionPane.showMessageDialog(viewer, "Web URL Not set for project");
 			return; 
 		}
@@ -347,6 +358,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		// sutter2k: need to tap in here for preview in browser
 		miLaunchBrowser= new JMenuItem("Preview in Browser");
 		miLaunchBrowser.addActionListener(this);
+		
 		fileMenu.add(miLaunchBrowser);
 		fileMenu.addSeparator();
 		
