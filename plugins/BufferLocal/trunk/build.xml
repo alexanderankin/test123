@@ -1,18 +1,20 @@
-<project name="Bufferminer Plugin" default="plugin" basedir=".">
+<project name="BufferLocal Plugin" default="dist" basedir=".">
     <!-- $Id$ -->
     
-    <!--
-      read build.props for what is required and some optional settings for 
-      the build.
-    -->
+    <!-- read build.props to override properties set below -->
     <property file="build.props"/>
+
+    <!-- default location of jedit.jar -->
+    <property name="jedit.install.dir"  value="../.."/> 
+    
+    <!-- jar name -->
+    <property name="jar.name" value="BufferLocal.jar"/>
     
     <!-- version number -->
     <property name="build.num" value="1.0"/>
         
     <!-- where to put the finished plugin -->
-    <property name="install.dir" value="${user.home}/.jedit/jars" />
-    <property name="jedit.jars.dir" location="${install.dir}"/>
+    <property name="install.dir" value=".." />
     
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
@@ -29,9 +31,6 @@
       included in the finished jar file. -->
     <property name="classes.dir" location="classes" />
     
-    <!-- where to put distribution files -->
-    <property name="dist.dir" location="dist"/>
-
    <!-- ========================================================================
       Target: set classpath
    ========================================================================= -->
@@ -42,8 +41,7 @@
          <pathelement path="${java.class.path}"/>
          
          <!-- required for jEdit plugin -->
-         <pathelement location="${jedit.home}/jedit.jar" />
-         
+         <pathelement location="${jedit.install.dir}/jedit.jar" />
       </path>
    </target>
 
@@ -52,8 +50,7 @@
    ========================================================================= -->
     <target name="compile"
             description="Compile"
-            depends="init,setClasspath" 
-            if="jedit.home">
+            depends="init,setClasspath">
         <echo>compiling</echo>
         <javac deprecation="on" 
                debug="on" 
@@ -65,21 +62,21 @@
     </target>
     
    <!-- ========================================================================
-      Target: plugin
-      creates jar file suitable for dropping into jEdit, and puts it in the
-      jedit.jars.dir
+      Target: dist
+      creates jar file suitable for dropping into jEdit, and puts it up one
+      directory level
    ========================================================================= -->
-    <target name="plugin"
+    <target name="dist"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="init,compile,-prep_files">
+            depends="init,compile,prep_files">
         <echo>creating plugin</echo>
         <delete>
-            <fileset dir="${dist.dir}" includes="**/BufferLocalPlugin*.jar"/>
+            <fileset dir="${dist.dir}" includes="**/${jar.name}"/>
         </delete>
         
         <!-- deleting an existing plugin on Windows will fail if jEdit is running -->
         <delete>
-            <fileset dir="${jedit.jars.dir}" includes="**/BufferLocalPlugin*.jar"/>
+            <fileset dir="${install.dir}" includes="**/${jar.name}"/>
         </delete>
         
         <!-- make the plugin jar file -->
@@ -87,7 +84,7 @@
         <jar jarfile="${dist.dir}/BufferLocalPlugin_${build.num}.jar">
             <manifest>
                 <attribute name="AppName" value="BufferLocalPlugin" />
-                <attribute name="AppVersion" value="BufferLocalPlugin_${build.num}" />
+                <attribute name="AppVersion" value="${build.num}" />
                 <attribute name="Created-By" value="Dale Anson" />
                 <attribute name="Created-On" value="${TODAY}"/>
             </manifest>
@@ -108,18 +105,17 @@
             </fileset>
         </jar>
         
-        <!-- copy the plugin jar to the jedit plugin directory -->
-        <mkdir dir="${jedit.jars.dir}" />
-        <copy file="${dist.dir}/BufferLocalPlugin_${build.num}.jar" 
-              todir="${jedit.jars.dir}"/>
+        <!-- copy the plugin jar to the dist directory -->
+        <copy file="${dist.dir}/${jar.name}" 
+              todir="${install.dir}"/>
     </target>
 
    <!-- ========================================================================
-      Target: -prep_files
+      Target: prep_files
       prepares certain files for distribution by doing string replacement. 
       Assumes that the configuration files and documentation files are ready.
    ========================================================================= -->
-    <target name="-prep_files">
+    <target name="prep_files">
         <echo>preparing files</echo>
         <!-- clean out the config and doc deployment directories -->
         <delete>
@@ -157,16 +153,8 @@
    ========================================================================= -->
     <target name="init" 
             description="Create directory structure.">
-        <fail unless="jedit.home" message="Please set jedit.home property."/>
-        
-        <!-- all source code, including actions.xml, props, dockables, docs, and
-        .java files are in src.dir -->
+        <fail unless="jedit.install.dir" message="Please set jedit.install.dir property."/>
         <mkdir dir="${src.dir}" />
-        
-        <!-- where to put the completed jar files for distribution -->
-        <mkdir dir="${dist.dir}"/>
-
-        <!-- for making the distribution, does not contain source -->
         <mkdir dir="${classes.dir}" />
         <mkdir dir="${doc.dir}" />          
         <mkdir dir="${config.dir}" />
