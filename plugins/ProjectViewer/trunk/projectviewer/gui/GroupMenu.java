@@ -98,7 +98,7 @@ public class GroupMenu extends JMenu implements ActionListener {
 	} //}}}
 
 	//{{{ +GroupMenu(String, Object, View, ActionListener) : <init>
-	public GroupMenu(String label, Object ignore, View v, ActionListener al) {
+	public GroupMenu(String label, Object ignore, ActionListener al) {
 		this(label, false, al);
 	} //}}}
 

@@ -430,6 +430,7 @@ public final class ProjectViewer extends JPanel
 		for (Iterator i = notify.iterator(); i.hasNext(); ) {
 			((ProjectViewerListener)i.next()).nodeMoved(pve);
 		}
+
 	} //}}}
 
 	//{{{ +_fireGroupAddedEvent(VPTGroup)_ : void
@@ -1389,6 +1390,8 @@ public final class ProjectViewer extends JPanel
 					break;
 
 				TreePath path = folderTree.getPathForRow(row);
+				if (path == null)
+					return;
 				VPTNode n = (VPTNode) path.getLastPathComponent();
 				if (!node.isNodeDescendant(n))
 					break;

@@ -23,10 +23,11 @@ package projectviewer.config;
 import java.io.File;
 
 // Import AWT/Swing
-import java.awt.Insets;
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.Insets;
+import java.awt.Point;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
@@ -39,6 +40,7 @@ import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
+import javax.swing.JPopupMenu;
 import javax.swing.WindowConstants;
 
 // Import jEdit
@@ -50,8 +52,13 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
+
+import projectviewer.gui.GroupMenu;
 import projectviewer.gui.ModalJFileChooser;
+
+import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTRoot;
 //}}}
 
 /**
@@ -75,6 +82,9 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	private JTextField projURLRoot;
 
 	private JButton	chooseRoot;
+	private JButton chooseGroup;
+
+	private JPopupMenu groupPopupMenu;
 
 	private boolean ok;
 	private boolean isNew;
@@ -105,35 +115,53 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	 *  JTextField is updated to show the selection.
 	 */
 	public void actionPerformed(ActionEvent ae) {
-		JFileChooser chooser = new ModalJFileChooser();
-		chooser.setDialogTitle(jEdit.getProperty("projectviewer.project.options.root_dialog"));
-		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+		if (ae.getSource() == chooseRoot) {
+			JFileChooser chooser = new ModalJFileChooser();
+			chooser.setDialogTitle(jEdit.getProperty("projectviewer.project.options.root_dialog"));
+			chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 
-		String root = projRoot.getText().trim();
-		if (root.length() > 0) {
-			chooser.setSelectedFile(new File(root));
-			chooser.setCurrentDirectory(new File(root).getParentFile());
-		} else if (lookupPath != null) {
-			File f = new File(lookupPath);
-			if (!f.isDirectory()) {
-				f = f.getParentFile();
+			String root = projRoot.getText().trim();
+			if (root.length() > 0) {
+				chooser.setSelectedFile(new File(root));
+				chooser.setCurrentDirectory(new File(root).getParentFile());
+			} else if (lookupPath != null) {
+				File f = new File(lookupPath);
+				if (!f.isDirectory()) {
+					f = f.getParentFile();
+				}
+				chooser.setCurrentDirectory(f.getParentFile());
+			} else {
+				Buffer b = jEdit.getActiveView().getBuffer();
+				chooser.setCurrentDirectory(new File(b.getPath()).getParentFile());
 			}
-			chooser.setCurrentDirectory(f.getParentFile());
-		} else {
-			Buffer b = jEdit.getActiveView().getBuffer();
-			chooser.setCurrentDirectory(new File(b.getPath()).getParentFile());
-		}
 
-		if (chooser.showDialog(this, jEdit.getProperty("projectviewer.general.choose"))
-				== JFileChooser.APPROVE_OPTION) {
-			root = chooser.getSelectedFile().getAbsolutePath();
-			projRoot.setText(root);
-			projRoot.setToolTipText(projRoot.getText());
+			if (chooser.showDialog(this, jEdit.getProperty("projectviewer.general.choose"))
+					== JFileChooser.APPROVE_OPTION) {
+				root = chooser.getSelectedFile().getAbsolutePath();
+				projRoot.setText(root);
+				projRoot.setToolTipText(projRoot.getText());
 
-			if (projName.getText() != null && projName.getText().length() == 0) {
-				String name = root.substring(root.lastIndexOf(File.separator) + 1, root.length());
-				projName.setText(name);
+				if (projName.getText() != null && projName.getText().length() == 0) {
+					String name = root.substring(root.lastIndexOf(File.separator) + 1, root.length());
+					projName.setText(name);
+				}
 			}
+		} else if (ae.getSource() == chooseGroup) {
+			if (groupPopupMenu == null) {
+				String label = jEdit.getProperty("projectviewer.project.options.choose_group");
+				GroupMenu gm = new GroupMenu(label, null, this);
+				gm.populate(gm, VPTRoot.getInstance(), jEdit.getActiveView());
+
+				groupPopupMenu = new JPopupMenu();
+				groupPopupMenu.add(gm);
+			}
+
+			Point p = chooseGroup.getLocation();
+			groupPopupMenu.show(this, (int) p.getX(), (int) p.getY() + chooseGroup.getHeight());
+		} else if (ae.getSource() instanceof VPTGroup) {
+			project.setProperty("projectviewer.new-parent", ae.getSource());
+			chooseGroup.setText(((VPTGroup)ae.getSource()).getName());
+			groupPopupMenu.setVisible(false);
 		}
 
 	} //}}}
@@ -199,7 +227,6 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 	//{{{ _init() method
 	/** Load the GUI components of the dialog. */
 	protected void _init() {
-
 		// Builds the dialog
 
 		GridBagLayout gridbag = new GridBagLayout();
@@ -287,6 +314,30 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		gridbag.setConstraints(projURLRoot, gc);
 		add(projURLRoot);
 
+		// The group where the project will be attached
+		label = new JLabel(jEdit.getProperty("projectviewer.project.options.parent_group"));
+		gc.weightx = 0;
+		gc.gridx = 0;
+		gc.gridy = 3;
+		gc.gridwidth = 1;
+		gridbag.setConstraints(label, gc);
+		add(label);
+
+		VPTGroup parent = (VPTGroup) project.getParent();
+		if (parent == null) {
+			parent = VPTRoot.getInstance();
+		}
+		chooseGroup = new JButton(parent.getName());
+
+		gc.weightx = 1;
+		gc.gridx = 1;
+		gc.gridy = 3;
+		gc.gridwidth = 2;
+		gridbag.setConstraints(chooseGroup, gc);
+		chooseGroup.addActionListener(this);
+		add(chooseGroup);
+
+		// finish
 		setPreferredSize(new Dimension(300,250));
 	} //}}}
 

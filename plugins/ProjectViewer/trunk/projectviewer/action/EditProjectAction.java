@@ -129,6 +129,13 @@ public class EditProjectAction extends Action {
 		proj = ProjectOptions.run(proj, lookupPath);
 
 		if (proj != null) {
+			boolean newParent = false;
+			if (proj.getObjectProperty("projectviewer.new-parent") != null) {
+				parent = (VPTGroup) proj.getObjectProperty("projectviewer.new-parent");
+				proj.removeProperty("projectviewer.new-parent");
+				newParent = true;
+			}
+
 			if (add) {
 				ProjectManager.getInstance().addProject(proj, parent);
 				RootImporter ipi = new RootImporter(proj, null, viewer, jEdit.getActiveView());
@@ -162,8 +169,16 @@ public class EditProjectAction extends Action {
 								|| viewer.getRoot() == proj);
 				}
 
-				if (notify)
+				if (newParent) {
+					VPTGroup oldParent = (VPTGroup) proj.getParent();
+					ProjectViewer.removeNodeFromParent(proj);
+					ProjectViewer.insertNodeInto(proj, parent);
+					ProjectManager.getInstance().saveProjectList();
+					ProjectManager.getInstance().fireDynamicMenuChange();
+					ProjectViewer.fireNodeMovedEvent(proj, oldParent);
+				} else if (notify) {
 					ProjectViewer.nodeChanged(proj);
+				}
 			}
 		}
 

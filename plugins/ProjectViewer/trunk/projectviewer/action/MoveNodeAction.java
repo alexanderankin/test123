@@ -82,7 +82,6 @@ public class MoveNodeAction extends Action {
 		ProjectManager.getInstance().saveProjectList();
 		ProjectManager.getInstance().fireDynamicMenuChange();
 
-
 		JTree tree = viewer.getCurrentTree();
 		TreePath path = new TreePath(((DefaultTreeModel)tree.getModel()).getPathToRoot(toMove));
 		tree.expandPath(path);

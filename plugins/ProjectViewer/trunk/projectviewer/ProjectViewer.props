@@ -10,8 +10,8 @@ plugin.projectviewer.ProjectPlugin.activate=defer
 plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.02.12.00
 plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.3
 
-plugin.projectviewer.ProjectPlugin.depend.2=optional plugin ErrorList 1.3.1
-plugin.projectviewer.ProjectPlugin.depend.3=optional plugin InfoViewer 1.2
+plugin.projectviewer.ProjectPlugin.depend.2=optional plugin errorlist.ErrorListPlugin 1.3.1
+plugin.projectviewer.ProjectPlugin.depend.3=optional plugin infoviewer.InfoViewerPlugin 1.2
 #}}}
 
 projectviewer.title=Project Viewer
@@ -270,5 +270,7 @@ projectviewer.project.options.root=Root directory:
 projectviewer.project.options.root_choose=Choose
 projectviewer.project.options.url_root=Web root URL:
 projectviewer.project.options.url_root.tooltip=sets the URL for a web project e.g. http://<projecturl>
+projectviewer.project.options.parent_group=Parent group:
+projectviewer.project.options.choose_group=Choose group
 #}}}
 
