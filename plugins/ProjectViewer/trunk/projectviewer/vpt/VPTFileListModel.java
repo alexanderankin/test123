@@ -130,6 +130,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 			if (lastParent == p) {
 				lastList = lst;
 			}
+			node = p;
 		}
 		super.nodeStructureChanged(node);
 	} //}}}
