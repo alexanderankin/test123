@@ -16,515 +16,139 @@
 
 package xml.parser;
 
-//{{{ Imports
-import javax.swing.tree.*;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import java.awt.event.*;
-import java.util.*;
-import org.gjt.sp.jedit.buffer.*;
-import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.*;
-import errorlist.*;
-import xml.*;
-//}}}
+import java.util.ArrayList;
+import java.util.List;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
+import sidekick.*;
+import xml.completion.*;
+import xml.parser.TagParser;
+import xml.XmlListCellRenderer;
+import xml.XmlParsedData;
 
-public class XmlParser implements EBComponent
+public abstract class XmlParser extends SideKickParser
 {
-	public static final int MAX_ERRORS = 100;
+	public static final String COMPLETION_TRIGGERS = "<&";
+	public static final int ELEMENT_COMPLETE = '<';
+	public static final int ENTITY_COMPLETE = '&';
 
 	//{{{ XmlParser constructor
-	public XmlParser(View view)
+	public XmlParser(String name)
 	{
-		this.view = view;
+		super(name);
+	} //}}}
 
-		errorSource = new DefaultErrorSource("XML");
-		ErrorSource.registerErrorSource(errorSource);
+	//{{{ supportsCompletion() method
+	public boolean supportsCompletion()
+	{
+		return true;
+	} //}}}
 
-		FocusHandler focusHandler = new FocusHandler();
-		EditPane[] editPanes = view.getEditPanes();
-		for(int i = 0; i < editPanes.length; i++)
+	//{{{ getCompletionTriggers() method
+	public String getCompletionTriggers()
+	{
+		return COMPLETION_TRIGGERS;
+	} //}}}
+
+	//{{{ complete() method
+	public SideKickCompletion complete(EditPane editPane, int caret)
+	{
+		XmlParsedData data = (XmlParsedData)SideKickParsedData
+			.getParsedData(editPane);
+
+		Buffer buffer = editPane.getBuffer();
+
+		// first, we get the word before the caret
+		JEditTextArea textArea = editPane.getTextArea();
+
+		List allowedCompletions = new ArrayList(20);
+
+		int caretLine = buffer.getLineOfOffset(caret);
+		String text = buffer.getText(0,caret);
+		int lineStart = textArea.getLineStartOffset(caretLine);
+
+		int mode = -1;
+		int wordStart = -1;
+		for(int i = caret - 1; i >= lineStart; i--)
 		{
-			editPanes[i].getTextArea().addFocusListener(
-				focusHandler);
+			char ch = text.charAt(i);
+			if(ch == '<' || ch == '&')
+			{
+				wordStart = i;
+				mode = (ch == '<' ? ELEMENT_COMPLETE
+					: ENTITY_COMPLETE);
+				break;
+			}
 		}
 
-		bufferHandler = new BufferChangeHandler();
+		String word;
 
-		propertiesChanged();
-
-		keystrokeTimer = new Timer(0,new ActionListener()
+		if(wordStart != -1 && mode != -1)
 		{
-			public void actionPerformed(ActionEvent evt)
+			word = text.substring(wordStart + 1,caret);
+
+			List completions;
+			if(mode == ELEMENT_COMPLETE)
 			{
-				parse(false);
+				// Try to only list elements that are valid at the caret
+				// position
+				completions = data.getAllowedElements(buffer,wordStart);
 			}
-		});
+			else if(mode == ENTITY_COMPLETE)
+				completions = data.getNoNamespaceCompletionInfo().entities;
+			else
+				throw new InternalError("Bad mode: " + mode);
 
-		EditBus.addToBus(this);
-	} //}}}
-
-	//{{{ parse() method
-	public void parse(final boolean showParsingMessage)
-	{
-		stopThread();
-
-		maxErrors = false;
-
-		buffer = view.getBuffer();
-		this.showParsingMessage = showParsingMessage;
-
-		//{{{ Run this when I/O is complete
-		VFSManager.runInAWTThread(new Runnable()
-		{
-			public void run()
+			if(mode == ELEMENT_COMPLETE)
 			{
-				if(thread != null)
-					return;
+				String closingTag = null;
+				TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,data);
+				if(tag != null)
+					closingTag = tag.tag;
 
-				EditPane editPane = view.getEditPane();
-				editPane.putClientProperty(XmlPlugin.PARSED_DATA_PROPERTY,null);
+				if("!--".startsWith(word))
+					allowedCompletions.add(new XmlListCellRenderer.Comment());
+				if(!data.html && "![CDATA[".startsWith(word))
+					allowedCompletions.add(new XmlListCellRenderer.CDATA());
+				if(closingTag != null && ("/" + closingTag).startsWith(word))
+					allowedCompletions.add(new XmlListCellRenderer.ClosingTag(closingTag));
 
-				//{{{ check for non-XML file
-				if(XmlPlugin.getParserType(buffer) == null)
+				for(int i = 0; i < completions.size(); i++)
 				{
-					showNotParsedMessage();
-					return;
-				} //}}}
-				//{{{ Show 'parsing in progress' message
-				else if(showParsingMessage)
-				{
-					DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-					root.insert(new DefaultMutableTreeNode(
-						jEdit.getProperty("xml-tree.parsing")),0);
-
-					XmlParsedData data = new XmlParsedData(
-						XmlPlugin.getParserType(buffer)
-						.equals("html"));
-					data.tree = new DefaultTreeModel(root);
-					editPane.putClientProperty(XmlPlugin.PARSED_DATA_PROPERTY,data);
-
-					XmlTree tree = (XmlTree)view.getDockableWindowManager()
-						.getDockable(XmlPlugin.TREE_NAME);
-					if(tree != null)
-						tree.update();
-				} //}}}
-
-				_parse();
-			}
-		}); //}}}
-	} //}}}
-
-	//{{{ dispose() method
-	public void dispose()
-	{
-		stopThread();
-
-		errorSource.clear();
-		ErrorSource.unregisterErrorSource(errorSource);
-
-		EditBus.removeFromBus(this);
-
-		removeBufferChangeListener(buffer);
-	} //}}}
-
-	//{{{ handleMessage() method
-	public void handleMessage(EBMessage msg)
-	{
-		//{{{ BufferUpdate
-		if(msg instanceof BufferUpdate)
-		{
-			BufferUpdate bmsg = (BufferUpdate)msg;
-			if(bmsg.getBuffer() != buffer)
-				return;
-
-			if(bmsg.getWhat() == BufferUpdate.SAVED)
-			{
-				if(thread != null)
-					return;
-
-				if(buffer.getBooleanProperty(
-					"xml.buffer-change-parse")
-					|| buffer.getBooleanProperty(
-					"xml.keystroke-parse"))
-				{
-					parse(true);
-				}
-				else
-					showNotParsedMessage();
-			}
-			else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED
-				|| bmsg.getWhat() == BufferUpdate.LOADED)
-			{
-				if(XmlPlugin.getParserType(buffer) == null)
-					removeBufferChangeListener(buffer);
-				else
-					addBufferChangeListener(buffer);
-
-				if(thread != null)
-					return;
-
-				if(buffer.getBooleanProperty(
-					"xml.buffer-change-parse")
-					|| buffer.getBooleanProperty(
-					"xml.keystroke-parse"))
-				{
-					parse(true);
-				}
-				else
-					showNotParsedMessage();
-			}
-			else if(bmsg.getWhat() == BufferUpdate.CLOSED)
-			{
-				errorSource.clear();
-			}
-		} //}}}
-		//{{{ EditPaneUpdate
-		else if(msg instanceof EditPaneUpdate)
-		{
-			EditPaneUpdate epu = (EditPaneUpdate)msg;
-			EditPane editPane = epu.getEditPane();
-			if(editPane.getView() != view)
-				return;
-
-			if(epu.getWhat() == EditPaneUpdate.CREATED)
-				editPane.getTextArea().addFocusListener(new FocusHandler());
-			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
-			{
-				// check if this is the currently focused edit pane
-				if(editPane == editPane.getView().getEditPane())
-					removeBufferChangeListener(this.buffer);
-			}
-			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
-			{
-				// check if this is the currently focused edit pane
-				if(editPane == view.getEditPane())
-				{
-					removeBufferChangeListener(this.buffer);
-
-					Buffer buffer = editPane.getBuffer();
-					if(XmlPlugin.getParserType(buffer) != null)
-						addBufferChangeListener(buffer);
-					if(buffer.getBooleanProperty(
-						"xml.buffer-change-parse")
-						|| buffer.getBooleanProperty(
-						"xml.keystroke-parse"))
+					Object obj = completions.get(i);
+					ElementDecl element = (ElementDecl)obj;
+					if(element.name.startsWith(word)
+						|| (data.html && element.name.toLowerCase()
+						.startsWith(word.toLowerCase())))
 					{
-						parse(true);
+						allowedCompletions.add(element);
 					}
-					else
-						showNotParsedMessage();
-				}
-				else
-				{
-					editPane.putClientProperty(
-						XmlPlugin.PARSED_DATA_PROPERTY,
-						null);
 				}
 			}
-		} //}}}
-	} //}}}
-
-	//{{{ getBuffer() method
-	public Buffer getBuffer()
-	{
-		return buffer;
-	} //}}}
-
-	//{{{ addError() method
-	public boolean addError(int type, String path, int line, String message)
-	{
-		if(errorSource.getErrorCount() >= MAX_ERRORS)
-		{
-			maxErrors = true;
-			return false;
+			else if(mode == ENTITY_COMPLETE)
+			{
+				for(int i = 0; i < completions.size(); i++)
+				{
+					Object obj = completions.get(i);
+					EntityDecl entity = (EntityDecl)obj;
+					if(entity.name.startsWith(word))
+						allowedCompletions.add(entity);
+				}
+			}
+			/* else if(mode == ID_COMPLETE)
+			{
+				else if(obj instanceof IDDecl)
+				{
+					IDDecl id = (IDDecl)obj;
+					if(id.id.startsWith(word))
+						allowedCompletions.add(id);
+				}
+			} */
 		}
 		else
-		{
-			errorSource.addError(type,path,line,0,0,message);
-			return true;
-		}
+			word = "";
+
+		return new XmlCompletion(editPane.getView(),allowedCompletions,word,data);
 	} //}}}
-
-	//{{{ Private members
-
-	//{{{ Instance variables
-	private View view;
-	private Buffer buffer;
-
-	private ParseThread thread;
-
-	private String text;
-
-	private Impl parserImpl;
-
-	private DefaultErrorSource errorSource;
-
-	private boolean showParsingMessage;
-
-	private int delay;
-	private Timer keystrokeTimer;
-
-	private boolean maxErrors;
-
-	private BufferChangeHandler bufferHandler;
-	private boolean addedBufferChangeHandler;
-	//}}}
-
-	//{{{ addBufferChangeListener() method
-	private void addBufferChangeListener(Buffer buffer)
-	{
-		if(!addedBufferChangeHandler)
-		{
-			buffer.addBufferChangeListener(bufferHandler);
-			addedBufferChangeHandler = true;
-		}
-	} //}}}
-
-	//{{{ removeBufferChangeListener() method
-	private void removeBufferChangeListener(Buffer buffer)
-	{
-		if(addedBufferChangeHandler)
-		{
-			buffer.removeBufferChangeListener(bufferHandler);
-			addedBufferChangeHandler = false;
-		}
-	} //}}}
-
-	//{{{ propertiesChanged() method
-	private void propertiesChanged()
-	{
-		try
-		{
-			delay = Integer.parseInt(jEdit.getProperty("xml.auto-parse-delay"));
-		}
-		catch(NumberFormatException nf)
-		{
-			delay = 1500;
-		}
-	} //}}}
-
-	//{{{ showNotParsedMessage() method
-	private void showNotParsedMessage()
-	{
-		errorSource.clear();
-
-		stopThread();
-
-		buffer = view.getBuffer();
-
-		DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
-		root.insert(new DefaultMutableTreeNode(
-			jEdit.getProperty("xml-tree.not-parsed")),0);
-
-		XmlParsedData data = new XmlParsedData(false);
-		data.tree = new DefaultTreeModel(root);
-
-		view.getEditPane().putClientProperty(XmlPlugin.PARSED_DATA_PROPERTY,data);
-
-		finish();
-		return;
-	} //}}}
-
-	//{{{ parseWithDelay() method
-	private void parseWithDelay()
-	{
-		if(keystrokeTimer.isRunning())
-			keystrokeTimer.stop();
-
-		keystrokeTimer.setInitialDelay(delay);
-		keystrokeTimer.setRepeats(false);
-		keystrokeTimer.start();
-	} //}}}
-
-	//{{{ _parse() method
-	private void _parse()
-	{
-		errorSource.clear();
-
-		// get buffer text
-		text = buffer.getText(0,buffer.getLength());
-
-		// start parser thread
-		stopThread();
-
-		if(XmlPlugin.getParserType(buffer).equals("xml"))
-			parserImpl = new SAXParserImpl();
-		else if(XmlPlugin.getParserType(buffer).equals("html"))
-			parserImpl = new SwingHTMLParserImpl();
-
-		thread = new ParseThread();
-		thread.start();
-	} //}}}
-
-	//{{{ stopThread() method
-	private void stopThread()
-	{
-		if(thread != null)
-		{
-			thread.stop();
-			thread = null;
-		}
-	} //}}}
-
-	//{{{ finish() method
-	private void finish()
-	{
-		if(view.isClosed())
-			return;
-
-		XmlTree tree = (XmlTree)view.getDockableWindowManager()
-			.getDockable(XmlPlugin.TREE_NAME);
-		if(tree != null)
-			tree.update();
-
-		XmlInsert insert = (XmlInsert)view.getDockableWindowManager()
-			.getDockable(XmlPlugin.INSERT_NAME);
-		if(insert != null)
-			insert.update();
-	} //}}}
-
-	//}}}
-
-	//{{{ Inner classes
-
-	//{{{ Impl interface
-	interface Impl
-	{
-		XmlParsedData parse(XmlParser parser, String text);
-	} //}}}
-
-	//{{{ ParseThread class
-	class ParseThread extends Thread
-	{
-		ParseThread()
-		{
-			super("XML parser thread");
-			setPriority(Thread.MIN_PRIORITY);
-		}
-
-		public void run()
-		{
-			final XmlParsedData data;
-
-			synchronized(XmlParser.this)
-			{
-				if(parserImpl == null)
-					return;
-
-				data = parserImpl.parse(XmlParser.this,text);
-				Collections.sort(data.ids,new IDDecl.Compare());
-			}
-
-			SwingUtilities.invokeLater(new Runnable()
-			{
-				public void run()
-				{
-					synchronized(XmlParser.this)
-					{
-						if(thread == null)
-							return;
-
-						int errorCount = errorSource.getErrorCount();
-
-						if(showParsingMessage || errorCount != 0)
-						{
-							if(parserImpl instanceof SwingHTMLParserImpl)
-							{
-								view.getStatus().setMessageAndClear(
-									jEdit.getProperty(
-									"xml-tree.parsing-complete-html"));
-							}
-							else if(maxErrors)
-							{
-								Object[] pp = { new Integer(errorCount) };
-								view.getStatus().setMessageAndClear(jEdit.getProperty(
-									"xml-tree.parsing-complete-errors",pp));
-							}
-							else
-							{
-								Object[] pp = { new Integer(errorCount) };
-								view.getStatus().setMessageAndClear(jEdit.getProperty(
-									"xml-tree.parsing-complete",pp));
-							}
-						}
-
-						view.getEditPane().putClientProperty(
-							XmlPlugin.PARSED_DATA_PROPERTY,
-							data);
-
-						thread = null;
-
-						// to avoid keeping pointers to stale objects.
-						// we could reuse a single parser instance to preserve
-						// performance, but it eats too much memory, especially
-						// if the file being parsed has an associated DTD.
-						text = null;
-
-						parserImpl = null;
-
-						finish();
-					}
-				}
-			});
-		}
-	} //}}}
-
-	//{{{ BufferChangeHandler class
-	class BufferChangeHandler extends BufferChangeAdapter
-	{
-		//{{{ contentInserted() method
-		public void contentInserted(Buffer buffer, int startLine, int offset,
-			int numLines, int length)
-		{
-			if(buffer == XmlParser.this.buffer
-				&& buffer.isLoaded()
-				&& XmlPlugin.getParserType(buffer) != null
-				&& buffer.getBooleanProperty("xml.keystroke-parse"))
-				parseWithDelay();
-		} //}}}
-
-		//{{{ contentRemoved() method
-		public void contentRemoved(Buffer buffer, int startLine, int offset,
-			int numLines, int length)
-		{
-			if(buffer == XmlParser.this.buffer
-				&& buffer.isLoaded()
-				&& XmlPlugin.getParserType(buffer) != null
-				&& buffer.getBooleanProperty("xml.keystroke-parse"))
-				parseWithDelay();
-		} //}}}
-	} //}}}
-
-	//{{{ FocusHandler class
-	class FocusHandler extends FocusAdapter
-	{
-		public void focusGained(FocusEvent evt)
-		{
-			removeBufferChangeListener(XmlParser.this.buffer);
-
-			Buffer buffer = view.getBuffer();
-
-			if(XmlPlugin.getParserType(buffer) != null)
-				addBufferChangeListener(buffer);
-
-			if(buffer.getBooleanProperty(
-				"xml.buffer-change-parse")
-				|| buffer.getBooleanProperty(
-				"xml.keystroke-parse"))
-			{
-				if(buffer != XmlParser.this.buffer)
-					parse(true);
-				else
-				{
-					// XXX: expand tree to caret pos
-				}
-			}
-			else
-				showNotParsedMessage();
-		}
-	} //}}}
-
-	//}}}
 }

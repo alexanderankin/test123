@@ -34,8 +34,8 @@ import xml.parser.*;
 
 public class XmlPlugin extends EBPlugin
 {
-	public static final XmlSideKickParser XML_PARSER_INSTANCE = new SAXParserImpl();
-	public static final XmlSideKickParser HTML_PARSER_INSTANCE = new SwingHTMLParserImpl();
+	public static final XmlParser XML_PARSER_INSTANCE = new SAXParserImpl();
+	public static final XmlParser HTML_PARSER_INSTANCE = new SwingHTMLParserImpl();
 
 	//{{{ start() method
 	public void start()
@@ -150,7 +150,7 @@ public class XmlPlugin extends EBPlugin
 				final View view = GUIUtilities.getView(
 					(Component)evt.getSource());
 				if(!(SideKickPlugin.getParserForBuffer(view.getBuffer())
-					instanceof XmlSideKickParser))
+					instanceof XmlParser))
 					return;
 
 				JEditTextArea textArea = view.getTextArea();

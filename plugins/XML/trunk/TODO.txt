@@ -22,8 +22,7 @@ XML 0.11:
 - misplaced closing tags break everything
 - documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
-
-- recording <, >, /, &
+- recording '/'
 - clean up entity code
 - &, < or > will show up twice if a DTD defines it
 - xml insert: show CDATA in list?

@@ -111,7 +111,7 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 			textArea.getPainter().removeExtension(this);
 		}
 
-		if(SideKickPlugin.getParserForBuffer(buffer) instanceof XmlSideKickParser)
+		if(SideKickPlugin.getParserForBuffer(buffer) instanceof XmlParser)
 		{
 			//System.err.println("adding to " + buffer);
 			this.buffer = buffer;
