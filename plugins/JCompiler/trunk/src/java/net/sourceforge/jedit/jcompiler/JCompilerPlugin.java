@@ -57,9 +57,10 @@ public class JCompilerPlugin extends EBPlugin {
 
             
             //register the plugin
-            PluginHolder.registerPlugin( "net.sourceforge.jedit.jcompiler.JCompiler", "jcompiler-menu" );
+            PluginHolderEntry entry = new PluginHolderEntry( "net.sourceforge.jedit.jcompiler.JCompiler", "jcompiler-menu" );
+            entry.setType( PluginHolderEntry.TYPE_MENU );
+            PluginHolder.registerPlugin( entry );
 
-            
             //FIX ME:  Need to add actions for starting JCompiler
             //jEdit.addAction( new JCompiler(sm, "jcompiler", false) );
             //jEdit.addAction( new JCompiler(sm, "jpkgcompiler", true) );
