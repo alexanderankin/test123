@@ -98,7 +98,7 @@ public class ErrorListPlugin extends EBPlugin
 
 	private static void propertiesChanged()
 	{
-		showOnError = "yes".equals(jEdit.getProperty("error-list.showOnError"));
+		showOnError = "on".equals(jEdit.getProperty("error-list.showOnError"));
 		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
 			"error-list.warningColor"));
 		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
