@@ -82,50 +82,42 @@ class SideKick implements EBComponent
 	 */
 	void parse(final boolean showParsingMessage)
 	{
+		if(!buffer.isLoaded())
+			return;
+
 		if(SideKickPlugin.isParsingBuffer(buffer))
 			return;
+		else
+			SideKickPlugin.startParsingBuffer(buffer);
 
 		this.showParsingMessage = showParsingMessage;
 
-		//{{{ Run this when I/O is complete
-		VFSManager.runInAWTThread(new Runnable()
+		ErrorSource.unregisterErrorSource(errorSource);
+		errorSource.clear();
+
+		//{{{ check for unknown file
+		if(parser == null)
 		{
-			public void run()
-			{
-				if(SideKickPlugin.isParsingBuffer(buffer))
-					return;
-				else
-					SideKickPlugin.startParsingBuffer(buffer);
+			showNotParsedMessage();
+			SideKickPlugin.finishParsingBuffer(buffer);
+			return;
+		} //}}}
+		//{{{ Show 'parsing in progress' message
+		else if(showParsingMessage)
+		{
+			SideKickParsedData data = new SideKickParsedData(buffer.getName());
+			data.root.add(new DefaultMutableTreeNode(
+				jEdit.getProperty("sidekick-tree.parsing")));
+			SideKickParsedData.setParsedData(view,data);
 
-				//SideKickParsedData.setParsedData(view,null);
-				ErrorSource.unregisterErrorSource(errorSource);
-				errorSource.clear();
+			sendUpdate();
+		} //}}}
 
-				//{{{ check for unknown file
-				if(parser == null)
-				{
-					showNotParsedMessage();
-					SideKickPlugin.finishParsingBuffer(buffer);
-					return;
-				} //}}}
-				//{{{ Show 'parsing in progress' message
-				else if(showParsingMessage)
-				{
-					SideKickParsedData data = new SideKickParsedData(buffer.getName());
-					data.root.add(new DefaultMutableTreeNode(
-						jEdit.getProperty("sidekick-tree.parsing")));
-					SideKickParsedData.setParsedData(view,data);
+		SideKickParsedData[] data = new SideKickParsedData[1];
 
-					sendUpdate();
-				} //}}}
-
-				SideKickParsedData[] data = new SideKickParsedData[1];
-
-				SideKickPlugin.addWorkRequest(new ParseRequest(
-					parser,buffer,errorSource,data),false);
-				SideKickPlugin.addWorkRequest(new ParseAWTRequest(parser,buffer,data),true);
-			}
-		}); //}}}
+		SideKickPlugin.addWorkRequest(new ParseRequest(
+			parser,buffer,errorSource,data),false);
+		SideKickPlugin.addWorkRequest(new ParseAWTRequest(parser,buffer,data),true);
 	} //}}}
 
 	//{{{ dispose() method
