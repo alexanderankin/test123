@@ -1,9 +1,6 @@
-+ version 0.8.1:
-
-- more friendly way to find DTDs (some kind of 'wizard'?)
-
 + version 0.9:
 
+- more friendly way to find DTDs (some kind of 'wizard'?)
 - element and entity lists for schemas
 - see if closing view causes problems
 - recording <, >, /, &
