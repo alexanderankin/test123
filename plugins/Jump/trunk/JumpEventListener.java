@@ -55,7 +55,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
                 return;   
             }
         }
-        
     }
 //}}} 
 
@@ -89,7 +88,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             return false;
         }
         
-        
         pja = new ProjectJumpAction();
         
         this.PROJECT = p;
@@ -97,13 +95,12 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         ctags_bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path"));
         this.PROJECT_ROOT = p.getRootPath();
         this.PROJECT_NAME = p.getName();
-        //this.ProjectFiles = new Vector(p.getFiles());
+        
         Log.log(Log.DEBUG,this,"ProjectFiles initialized! Total files = "+ ProjectFiles.size());
         
         String s = System.getProperty("file.separator");
         
         PROJECT_TAGS = new File (System.getProperty("user.home")+s+".jedit"+s+"projectviewer"+s+"projects"+s+PROJECT_NAME+".jump");
-        
         
                 Collection v0 = Collections.synchronizedCollection(p.getFiles());
                 Vector v = new Vector(v0);
@@ -112,10 +109,9 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
                 {
                     VPTFile f = (VPTFile)v.get(i);
                     this.ProjectFiles.add(f.getCanonicalPath());
-                    //v2.add(f.getCanonicalPath());  
                 }
         try
-        {
+        {   // If no .jump file found - try to create new one
             if (PROJECT_TAGS.exists() == false)
             {
                 ctags_buff = ctags_bg.getParser().parse(this.ProjectFiles);
@@ -123,7 +119,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
                 viewer.setEnabled(true);
                 return true;
             }
-            
             // Read already seriailzed file 
             else
             {
