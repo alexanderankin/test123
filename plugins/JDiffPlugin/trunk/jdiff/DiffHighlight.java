@@ -69,7 +69,8 @@ public class DiffHighlight extends TextAreaExtension
 
 
     public void paintValidLine(
-            Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y
+            Graphics2D gfx, final int screenLine, final int physicalLine,
+            final int start, final int end, final int y
     ) {
         if (this.isEnabled())
         {
@@ -97,11 +98,8 @@ public class DiffHighlight extends TextAreaExtension
                         if (hunk.line0 != physicalLine) { continue; }
                         color = JDiffPlugin.highlightInvalidColor;
                         TextAreaPainter painter = this.textArea.getPainter();
-                        FontMetrics fm = painter.getFontMetrics();
-                        int descent = fm.getDescent();
-                        int y0 = y + descent + 1;
                         gfx.setColor(color);
-                        gfx.drawLine(0, y0, painter.getWidth() - 1, y0);
+                        gfx.drawLine(0, y, painter.getWidth() - 1, y);
                         continue;
                     }
 
@@ -119,10 +117,8 @@ public class DiffHighlight extends TextAreaExtension
 
                     TextAreaPainter painter = this.textArea.getPainter();
                     FontMetrics fm = painter.getFontMetrics();
-                    int descent = fm.getDescent();
-                    int y0 = y + descent + 1;
                     gfx.setColor(color);
-                    gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
+                    gfx.fillRect(0, y, painter.getWidth(), fm.getHeight());
 
                     // We paint the selected part of the hunk
                     Selection[] selections = this.textArea.getSelection();
@@ -142,11 +138,8 @@ public class DiffHighlight extends TextAreaExtension
                         if (hunk.line1 != physicalLine) { continue; }
                         color = JDiffPlugin.highlightInvalidColor;
                         TextAreaPainter painter = this.textArea.getPainter();
-                        FontMetrics fm = painter.getFontMetrics();
-                        int descent = fm.getDescent();
-                        int y0 = y + descent + 1;
                         gfx.setColor(color);
-                        gfx.drawLine(0, y0, painter.getWidth() - 1, y0);
+                        gfx.drawLine(0, y, painter.getWidth() - 1, y);
                         continue;
                     }
 
@@ -164,10 +157,8 @@ public class DiffHighlight extends TextAreaExtension
 
                     TextAreaPainter painter = this.textArea.getPainter();
                     FontMetrics fm = painter.getFontMetrics();
-                    int descent = fm.getDescent();
-                    int y0 = y + descent + 1;
                     gfx.setColor(color);
-                    gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
+                    gfx.fillRect(0, y, painter.getWidth(), fm.getHeight());
 
                     // We paint the selected part of the hunk
                     Selection[] selections = this.textArea.getSelection();
@@ -182,16 +173,16 @@ public class DiffHighlight extends TextAreaExtension
     }
 
 
-    private void paintSelectionHighlight(Graphics2D gfx, int physicalLine, int y,
-        Color selectionColor, Selection s)
-    {
+    private void paintSelectionHighlight(
+            Graphics2D gfx, final int physicalLine, final int y,
+            Color selectionColor, Selection s
+    ) {
         if ((physicalLine < s.getStartLine()) || (physicalLine > s.getEndLine())) {
             return;
         }
 
         TextAreaPainter painter = this.textArea.getPainter();
         FontMetrics fm = painter.getFontMetrics();
-        y += fm.getLeading() + fm.getDescent();
 
         int lineStart = this.textArea.getLineStartOffset(physicalLine);
         int x1, x2;
