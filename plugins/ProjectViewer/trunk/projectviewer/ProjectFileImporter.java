@@ -113,8 +113,7 @@ public final class ProjectFileImporter {
 		for (int i = 0; i < files.length; i++) {
 			count += doImport(files[i]);
 		}
-		viewer.getView().getStatus().setMessageAndClear(
-			"Imported " + count + " files into project \"" + project.getName() + "\"."); 
+		viewer.setStatus("Imported " + count + " files into project \"" + project.getName() + "\"."); 
 	} //}}}
 	
 	//{{{ doImport(File) method

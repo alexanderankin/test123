@@ -154,8 +154,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			Project p = viewer.getCurrentProject();
 			p.removeAllFiles();
 			int count = new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
-			viewer.getView().getStatus().setMessageAndClear(
-				"Imported " + count + " files into project \"" + p.getName() + "\"."); 		
+			viewer.setStatus("Imported " + count + " files into project \"" + p.getName() + "\"."); 		
 			new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
 		} else if (src == addFile) {
 			this.addFileToProject();
