@@ -35,7 +35,7 @@
     <!-- Show the JImporter option pane -->
     <ACTION NAME="jimporter.options">
         <CODE>
-            new jimporter.JImporterOptionDialog(view); 
+            new jimporter.options.JImporterOptionDialog(view);
         </CODE>
     </ACTION>
 </ACTIONS>
