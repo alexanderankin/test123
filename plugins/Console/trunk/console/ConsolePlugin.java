@@ -21,7 +21,8 @@ package console;
 
 import gnu.regexp.REException;
 import java.io.*;
-import java.util.Vector;
+import java.net.URL;
+import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
@@ -51,11 +52,20 @@ public class ConsolePlugin extends EBPlugin
 		// will think we want console.BeanShell class 
 		org.gjt.sp.jedit.BeanShell.runScript(null,"console.bsh",
 			in,false,false);
+
+		String settings = jEdit.getSettingsDirectory();
+		if(settings != null)
+		{
+			commandoDirectory = MiscUtilities.constructPath(settings,"commando");
+			File file = new File(commandoDirectory);
+			if(!file.exists())
+				file.mkdirs();
+		}
 	}
 
 	public void createMenuItems(Vector menuItems)
 	{
-		menuItems.addElement(GUIUtilities.loadMenu("console-menu"));
+		menuItems.addElement(new ConsoleMenu());
 	}
 
 	public void createOptionPanes(OptionsDialog dialog)
@@ -79,15 +89,89 @@ public class ConsolePlugin extends EBPlugin
 			{
 				if(jEdit.getBooleanProperty("console.toolbar.enabled"))
 				{
-					view.addToolBar(new ConsoleToolBar(view));
+					ConsoleToolBar toolBar = new ConsoleToolBar(view);
+					consoleToolBarMap.put(view,toolBar);
+					view.addToolBar(toolBar);
 				}
+
+				if(jEdit.getBooleanProperty("commando.toolbar.enabled"))
+				{
+					CommandoToolBar toolBar = new CommandoToolBar(view);
+					commandoToolBarMap.put(view,toolBar);
+					view.addToolBar(toolBar);
+				}
+			}
+			else if(vmsg.getWhat() == ViewUpdate.CLOSED)
+			{
+				consoleToolBarMap.remove(view);
+				commandoToolBarMap.remove(view);
 			}
 		}
 		else if(msg instanceof PropertiesChanged)
+			propertiesChanged();
+	}
+
+	public static String getCommandoDirectory()
+	{
+		return commandoDirectory;
+	}
+
+	public static void rescanCommandoDirectory()
+	{
+		commands = null;
+		EditBus.send(new CommandoCommandsChanged());
+	}
+
+	public static CommandoCommand[] getCommandoCommands()
+	{
+		if(commands != null)
+			return commands;
+
+		Vector vector = new Vector();
+
+		StringTokenizer st = new StringTokenizer(jEdit.getProperty(
+			"commando.built-ins"));
+		while(st.hasMoreTokens())
 		{
-			// lazily load the matchers the next time they are
-			// needed
-			errorMatchers = null;
+			String name = st.nextToken();
+			vector.addElement(new CommandoCommand(name,
+				ConsolePlugin.class.getResource(
+				"/console/commando/" + name + ".xml")));
+		}
+
+		if(commandoDirectory != null)
+		{
+			String[] files = new File(commandoDirectory).list();
+			if(files != null)
+			{
+				for(int i = 0; i < files.length; i++)
+				{
+					String file = files[i];
+					if(!file.endsWith(".xml"))
+						continue;
+
+					vector.addElement(new CommandoCommand(
+						file.substring(0,file.length() - 4),
+						MiscUtilities.constructPath(
+						commandoDirectory,file)));
+				}
+			}
+		}
+
+		commands = new CommandoCommand[vector.size()];
+		vector.copyInto(commands);
+		MiscUtilities.quicksort(commands,new CommandCompare());
+
+		return commands;
+	}
+
+	static class CommandCompare implements MiscUtilities.Compare
+	{
+		public int compare(Object obj1, Object obj2)
+		{
+			CommandoCommand cmd1 = (CommandoCommand)obj1;
+			CommandoCommand cmd2 = (CommandoCommand)obj2;
+			return cmd1.name.compareTo(cmd2.name);
 		}
 	}
 
@@ -143,4 +227,71 @@ public class ConsolePlugin extends EBPlugin
 
 	// private members
 	private static ErrorMatcher[] errorMatchers;
+	private static String commandoDirectory;
+	private static CommandoCommand[] commands;
+	private static Hashtable consoleToolBarMap;
+	private static Hashtable commandoToolBarMap;
+
+	private void propertiesChanged()
+	{
+		// lazily load the matchers the next time they are
+		// needed
+		errorMatchers = null;
+
+		if(jEdit.getBooleanProperty("console.toolbar.enabled"))
+		{
+			View[] views = jEdit.getViews();
+			for(int i = 0; i < views.length; i++)
+			{
+				View view = views[i];
+				if(!consoleToolBarMap.contains(view))
+				{
+					ConsoleToolBar toolBar = new ConsoleToolBar(view);
+					consoleToolBarMap.put(view,toolBar);
+					view.addToolBar(toolBar);
+				}
+			}
+		}
+		else
+		{
+			Enumeration enum = consoleToolBarMap.keys();
+			while(enum.hasMoreElements())
+			{
+				View view = (View)enum.nextElement();
+				ConsoleToolBar toolBar = (ConsoleToolBar)
+					consoleToolBarMap.get(view);
+				view.removeToolBar(toolBar);
+			}
+
+			consoleToolBarMap.clear();
+		}
+
+		if(jEdit.getBooleanProperty("commando.toolbar.enabled"))
+		{
+			View[] views = jEdit.getViews();
+			for(int i = 0; i < views.length; i++)
+			{
+				View view = views[i];
+				if(!commandoToolBarMap.contains(view))
+				{
+					CommandoToolBar toolBar = new CommandoToolBar(view);
+					commandoToolBarMap.put(view,toolBar);
+					view.addToolBar(toolBar);
+				}
+			}
+		}
+		else
+		{
+			Enumeration enum = commandoToolBarMap.keys();
+			while(enum.hasMoreElements())
+			{
+				View view = (View)enum.nextElement();
+				CommandoToolBar toolBar = (CommandoToolBar)
+					commandoToolBarMap.get(view);
+				view.removeToolBar(toolBar);
+			}
+
+			commandoToolBarMap.clear();
+		}
+	}
 }
