@@ -20,7 +20,9 @@
   <property name="jar.xquery.name" value="XQuery.jar" description="name of the XQuery plugin jar"/>
   <property name="jar.saxon.name" value="SaxonAdapter.jar" description="name of the SaxonAdapter jar"/>
   <property name="resources.dir" value="resources" description="contains plugin icons"/>
+  <property name="saxon.api" value="ext/saxon7.jar" description="saxon api"/>
 
+  
   <property name="build.dir" value="build"/>
   <property name="install.dir"  value=".."/>
   <property name="classes.xquery.dir" value="${build.dir}/classesXQuery" description="XQuery plugin classes compiled into here"/>
@@ -28,16 +30,15 @@
 
   <path id="xquery.class.path">
     <pathelement location="${jedit.dir}/jedit.jar"/>
-    <pathelement location="${plugins.dir}/ErrorList.jar"/>
-    <pathelement location="${plugins.dir}/XmlIndenter.jar"/>
-    <pathelement location="${plugins.dir}/InfoViewer.jar"/>
-  	<pathelement location="${plugins.dir}/saxon7.jar"/>
+    <pathelement location="${install.dir}/ErrorList.jar"/>
+    <pathelement location="${install.dir}/XmlIndenter.jar"/>
+    <pathelement location="${install.dir}/InfoViewer.jar"/>
   </path>
 	
   <path id="saxon.class.path">
   	<pathelement location="${jedit.dir}/jedit.jar"/>
-    <pathelement location="${plugins.dir}/XQuery.jar"/>
-  	<pathelement location="${plugins.dir}/saxon7.jar"/>
+    <pathelement location="${install.dir}/XQuery.jar"/>
+  	<pathelement location="${install.dir}/saxon7.jar"/>
   </path>
 	
 	<target name="init">
@@ -55,6 +56,11 @@
 			message="&lt;/xsl:stylesheet&gt;"/>
 	</target>
 
+  
+  <target name="saxonAPI" description="copies the Saxon API in the install.dir">
+   <copy file="${saxon.api}" todit="${install.dir}"/>
+  </target>
+  
   <target name="compileXQuery" depends="init" description="compiles java source of XQueryPlugin">
     <delete dir="${classes.xquery.dir}"/>
     <mkdir dir="${classes.xquery.dir}"/>
