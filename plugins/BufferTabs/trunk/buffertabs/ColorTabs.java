@@ -412,49 +412,6 @@ public class ColorTabs
 
 
    /**
-    * Sets the color of the given tab
-    *
-    * @param  index   The index of the buffer to change
-    * @param  parent  The instance of the BufferTabs class to use
-    */
-   public void setColor(BufferTabs parent, int index)
-   {
-      if (this.enabled)
-      {
-         Buffer buffer = (Buffer) parent.getBuffers().elementAt(index);
-         String name = buffer.getName();
-
-         try
-         {
-            if (!this.foregroundColorized)
-            {
-               Color color = getDefaultColorFor(name);
-               parent.setBackgroundAt(index, color);
-               parent.setForegroundAt(index, null);
-
-            }
-            else
-            {
-               Color color = getDefaultColorFor(name);
-               parent.setForegroundAt(index, color);
-               parent.setBackgroundAt(index, null);
-
-            }
-
-         }
-         catch (java.lang.NullPointerException npe)
-         {
-            Log.log(Log.ERROR, ColorTabs.class, "setColor: " + npe.toString());
-            // Log.log( Log.ERROR, ColorTabs.class, npe );
-            // Log.flushStream();
-
-         }
-         parent.updateHighlight(index);
-      }
-   }
-
-
-   /**
     * Class to store color match data
     *
     * @author     Chris Samuels

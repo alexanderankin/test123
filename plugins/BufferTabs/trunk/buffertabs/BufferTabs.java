@@ -305,7 +305,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
 
 
     private void updateColorAt(int index) {
-        ColorTabs.instance().setColor(this, index);
+        this.setColor(index);
     }
 
 
@@ -335,6 +335,35 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                     Log.log(Log.ERROR, BufferTabs.class, "updateHighlight: " + e.toString());
                 }
             }
+        }
+    }
+
+
+    /**
+     * Sets the color of the given tab
+     *
+     * @param  index   The index of the buffer to change
+     */
+    public void setColor(int index) {
+        if (ColorTabs.instance().isEnabled()) {
+            Buffer buffer = (Buffer) this.buffers.elementAt(index);
+            String name = buffer.getName();
+
+            try {
+                if (!ColorTabs.instance().isForegroundColorized()) {
+                    Color color = ColorTabs.instance().getDefaultColorFor(name);
+                    this.setBackgroundAt(index, color);
+                    this.setForegroundAt(index, null);
+                } else {
+                    Color color = ColorTabs.instance().getDefaultColorFor(name);
+                    this.setForegroundAt(index, color);
+                    this.setBackgroundAt(index, null);
+                }
+            } catch (NullPointerException npe) {
+                Log.log(Log.ERROR, BufferTabs.class, "setColor: " + npe.toString());
+            }
+
+            this.updateHighlight(index);
         }
     }
 
