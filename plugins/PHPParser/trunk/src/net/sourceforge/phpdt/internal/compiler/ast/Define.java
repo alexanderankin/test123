@@ -85,4 +85,10 @@ public final class Define extends Statement implements Outlineable {
    */
   public void getUsedVariable(final List list) {
   }
+
+  public String getName() {
+    //todo : change this
+    return null;
+  }
+  
 }

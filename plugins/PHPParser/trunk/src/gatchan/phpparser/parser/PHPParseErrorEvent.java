@@ -1,7 +1,6 @@
 package gatchan.phpparser.parser;
 
 import org.gjt.sp.util.Log;
-import gatchan.phpparser.PHPParserPlugin;
 
 /**
  * The PHPParseErrorEvent.

@@ -95,4 +95,9 @@ public final class GlobalStatement extends Statement implements Outlineable {
       }
     }
   }
+
+  public String getName() {
+    //todo : change this
+    return null;
+  }
 }

@@ -46,6 +46,7 @@ public abstract class AstNode {
    * @return a String containing some spaces
    */
   public static String tabString(final int tab) {
+    if (tab == 0) return "";
     final StringBuffer s = new StringBuffer(2 * tab);
     for (int i = tab; i > 0; i--) {
       s.append("  "); //$NON-NLS-1$

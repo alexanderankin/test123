@@ -294,6 +294,7 @@ TOKEN_MGR_DECLS:
   void CommonTokenAction(Token t) {
     t.sourceStart = input_stream.getBeginOffset();
     t.sourceEnd = input_stream.getEndOffset();
+    
   } // CommonTokenAction
 } // TOKEN_MGR_DECLS
 
@@ -810,15 +811,16 @@ void Php() :
  */
 ClassDeclaration ClassDeclaration() :
 {
+  final ClassHeader classHeader;
   final ClassDeclaration classDeclaration;
   Token className = null;
-  final Token superclassName, token, extendsToken;
+  final Token superclassName, classToken, extendsToken;
   String classNameImage = SYNTAX_ERROR_CHAR;
   String superclassNameImage = null;
   final int classEnd;
 }
 {
-  token = <CLASS>
+  classToken = <CLASS>
   try {
     className = <IDENTIFIER>
     {classNameImage = className.image;}
@@ -828,12 +830,12 @@ ClassDeclaration ClassDeclaration() :
                                           "identifier expected",
                                           "identifier",
                                           e.currentToken.image,
-                                          token.sourceStart,
-                                          token.sourceEnd,
-                                          token.beginLine,
-                                          token.endLine,
-                                          token.endColumn,
-                                          token.endColumn+1));
+                                          classToken.sourceStart,
+                                          classToken.sourceEnd,
+                                          classToken.beginLine,
+                                          classToken.endLine,
+                                          classToken.endColumn,
+                                          classToken.endColumn+1));
   }
   [
     extendsToken = <EXTENDS>
@@ -859,59 +861,79 @@ ClassDeclaration ClassDeclaration() :
   {
     int start, end,beginLine,endLine,beginColumn,endColumn;
     if (className == null) {
-      start       = token.sourceStart;
-      end         = token.sourceEnd;
-      beginLine   = token.beginLine;
-      endLine     = token.endLine;
-      beginColumn = token.beginColumn;
-      endColumn   = token.endColumn;
+      end         = classToken.sourceEnd;
+      endLine     = classToken.endLine;
+      endColumn   = classToken.endColumn;
     } else {
-      start       = className.sourceStart;
       end         = className.sourceEnd;
-      beginLine   = className.beginLine;
       endLine     = className.endLine;
-      beginColumn = className.beginColumn;
       endColumn   = className.endColumn;
     }
     if (superclassNameImage == null) {
-
+      classHeader = new ClassHeader(classNameImage,
+                                    classToken.sourceStart,
+                                    end,
+                                    classToken.beginLine,
+                                    endLine,
+                                    classToken.beginColumn,
+                                    endColumn);
+                                    /*
       classDeclaration = new ClassDeclaration(currentSegment,
                                               classNameImage,
-                                              start,
+                                              classToken.sourceStart,
                                               end,
-                                              beginLine,
+                                              classToken.beginLine,
                                               endLine,
-                                              beginColumn,
-                                              endColumn);
+                                              classToken.beginColumn,
+                                              endColumn); */
     } else {
-      classDeclaration = new ClassDeclaration(currentSegment,
+      classHeader = new ClassHeader(classNameImage,
+                                    superclassNameImage,
+                                    classToken.sourceStart,
+                                    end,
+                                    classToken.beginLine,
+                                    endLine,
+                                    classToken.beginColumn,
+                                    endColumn);
+/*                                    classDeclaration = new ClassDeclaration(currentSegment,
                                               classNameImage,
                                               superclassNameImage,
-                                              start,
+                                              classToken.sourceStart,
                                               end,
-                                              beginLine,
+                                              classToken.beginLine,
                                               endLine,
-                                              beginColumn,
-                                              endColumn);
+                                              classToken.beginColumn,
+                                              endColumn);    */
     }
+    classDeclaration = new ClassDeclaration(currentSegment,
+                                            classHeader,
+                                            classToken.sourceStart,
+                                            end,
+                                            classToken.beginLine,
+                                            endLine,
+                                            classToken.beginColumn,
+                                            endColumn);
       currentSegment.add(classDeclaration);
       currentSegment = classDeclaration;
   }
   //todo change this
-  classEnd = ClassBody(classDeclaration)
+  ClassBody(classDeclaration)
   {currentSegment = (OutlineableWithChildren) currentSegment.getParent();
-   classDeclaration.sourceEnd = classEnd;
+   //classDeclaration.sourceEnd = classEnd;
    pushOnAstNodes(classDeclaration);
    return classDeclaration;}
 }
 
-int ClassBody(final ClassDeclaration classDeclaration) :
+void ClassBody(final ClassDeclaration classDeclaration) :
 {
-Token token;
+Token lBraceToken, rBraceToken;
 }
 {
   try {
-    <LBRACE>
+    lBraceToken = <LBRACE>
+    {
+      classDeclaration.setBodyStart(lBraceToken.sourceStart);
+    }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -927,8 +949,10 @@ Token token;
   }
   ( ClassBodyDeclaration(classDeclaration) )*
   try {
-    token = <RBRACE>
-    {return token.sourceEnd;}
+    rBraceToken = <RBRACE>
+    {
+      classDeclaration.setBodyEnd(rBraceToken.sourceEnd);
+    }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -941,7 +965,8 @@ Token token;
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
-    return this.token.sourceEnd;
+    rBraceToken = error_skipto(RBRACE);
+    classDeclaration.setBodyEnd(rBraceToken.sourceEnd);
   }
 }
 
@@ -1991,27 +2016,22 @@ Expression UnaryExpression() :
 
 Expression AtNotTildeUnaryExpression() :
 {
+  if (shouldStop) throw new ParsingAbortedError();
   final Expression expr;
   final Token token;
 }
 {
   token = <AT>
   expr = AtNotTildeUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,OperatorIds.AT,token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
+  {return new PrefixedUnaryExpression(expr,OperatorIds.AT,token.sourceStart,token.beginLine,token.beginColumn);}
 |
   token = <TILDE>
   expr = AtNotTildeUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,OperatorIds.TWIDDLE,token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
+  {return new PrefixedUnaryExpression(expr,OperatorIds.TWIDDLE,token.sourceStart,token.beginLine,token.beginColumn);}
 |
   token = <BANG>
   expr = AtNotUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
+  {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart,token.beginLine,token.beginColumn);}
 |
   expr = UnaryExpressionNoPrefix()
   {return expr;}
@@ -2029,15 +2049,11 @@ Expression AtNotUnaryExpression() :
 {
   token = <AT>
   expr = AtNotUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,OperatorIds.AT,token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
+  {return new PrefixedUnaryExpression(expr,OperatorIds.AT,token.sourceStart,token.beginLine,token.beginColumn);}
 |
   token = <BANG>
   expr = AtNotUnaryExpression()
-  {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
+  {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart,token.beginLine,token.beginColumn);}
 |
   expr = UnaryExpressionNoPrefix()
   {return expr;}
@@ -4515,8 +4531,7 @@ Expression[] StatementExpressionList() :
   final Expression expr;
 }
 {
-  expr = Expression()   {list.add(expr);}
-  (<COMMA> Expression() {list.add(expr);})*
+  expr = Expression()   {list.add(expr);} (<COMMA> Expression() {list.add(expr);})*
   {
     final Expression[] exprsArray = new Expression[list.size()];
     list.toArray(exprsArray);
