@@ -145,13 +145,13 @@ public class JCompilerShell extends Shell
 		if (compileTask != null) {
 			try {
 				synchronized(compileTask) {
-					compileTask.join();
-					compileTask = null;
+					compileTask.wait();
 				}
 			}
 			catch (InterruptedException ie) {
 				return false;
 			}
+			compileTask = null;
 		}
 		return true;
 	}
