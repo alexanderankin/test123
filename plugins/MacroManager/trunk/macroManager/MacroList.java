@@ -30,6 +30,8 @@ import java.util.zip.GZIPInputStream;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.*;
 
+import javax.swing.*;
+
 /**
  * Macro list downloaded from server.
  */
@@ -53,10 +55,16 @@ class MacroList implements Comparator
 		XmlParser parser = new XmlParser();
 		parser.setHandler(handler);
 
-		parser.parse(null,null,new BufferedReader(new InputStreamReader(
-			(new URL(path).openStream()),"ISO-8859-1")));
-//		parser.parse(null,null,new BufferedReader(new InputStreamReader(
-//			new GZIPInputStream(new URL(path).openStream()),"ISO-8859-1")));
+		try
+		{
+			parser.parse(null,null,new BufferedReader(new InputStreamReader(
+				new GZIPInputStream(new URL(path).openStream()),"ISO-8859-1")));
+		}
+		catch(Exception e)
+		{
+			parser.parse(null,null,new BufferedReader(new InputStreamReader(
+				(new URL(path).openStream()),"ISO-8859-1")));
+		}
 	}
 
 	void addMacro(MacroList.Macro macro)

@@ -4,7 +4,7 @@
 
 plugin.macroManager.MacroManagerPlugin.name=MacroManager
 plugin.macroManager.MacroManagerPlugin.author=Carmine Lucarelli
-plugin.macroManager.MacroManagerPlugin.version=0.1
+plugin.macroManager.MacroManagerPlugin.version=1.0
 plugin.macroManager.MacroManagerPlugin.docs=index.html
 
 plugin.macroManager.MacroManagerPlugin.depend.1=jedit 04.00.00.00
