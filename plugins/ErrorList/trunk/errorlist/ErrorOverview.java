@@ -36,6 +36,7 @@ public class ErrorOverview extends JPanel
 	{
 		super(new BorderLayout());
 		this.textArea = textArea;
+		setRequestFocusEnabled(false);
 
 		addMouseListener(new MouseAdapter()
 		{
@@ -143,7 +144,7 @@ public class ErrorOverview extends JPanel
 				int y = lineToY(line);
 
 				gfx.setColor(ErrorListPlugin.getErrorColor(
-					errors[0].getErrorType()));
+					errors[j].getErrorType()));
 				gfx.fillRect(0,y,getWidth(),HILITE_HEIGHT);
 			}
 		}
