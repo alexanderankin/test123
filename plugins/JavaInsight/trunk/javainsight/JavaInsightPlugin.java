@@ -21,14 +21,19 @@ package javainsight;
 
 
 import java.util.Vector;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.gui.DockableWindow;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.CreateDockableWindow;
 import org.gjt.sp.util.Log;
 import buildtools.msg.DecompileClassMessage;
@@ -52,6 +57,10 @@ public class JavaInsightPlugin extends EBPlugin {
      * Start the plugin.
      */
     public void start() {
+        VFSManager.registerVFS("class",  new ClassVFS());
+        VFSManager.registerVFS("jasmin", new JasminVFS());
+        VFSManager.registerVFS("jode",   new JodeVFS());
+
         EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, DOCKABLE_NAME);
 
         // parse out the resources as a thread so that when the plugin is
@@ -82,15 +91,33 @@ public class JavaInsightPlugin extends EBPlugin {
      * Handle message for decompile requests.
      */
     public void handleMessage(EBMessage message) {
-        if (message instanceof CreateDockableWindow) {
+        if (message instanceof BufferUpdate) {
+            BufferUpdate bu = (BufferUpdate) message;
+
+            if (bu.getWhat() == BufferUpdate.CREATED) {
+                Buffer buffer = bu.getBuffer();
+                VFS    vfs    = buffer.getVFS();
+                Mode   mode   = null;
+                if (   (vfs instanceof ClassVFS)
+                    || (vfs instanceof JasminVFS)
+                ) {
+                    mode = jEdit.getMode("bcel");
+                } else if (vfs instanceof JodeVFS) {
+                    mode = jEdit.getMode("java");
+                } else {}
+
+                if (mode != null) {
+                    buffer.setMode(mode);
+                }
+            }
+        } else if (message instanceof CreateDockableWindow) {
             CreateDockableWindow cmsg = (CreateDockableWindow) message;
             if (cmsg.getDockableWindowName().equals(DOCKABLE_NAME)) {
                 JavaInsightDockable jid = new JavaInsightDockable(cmsg.getView());
                 javaInsight = (JavaInsight) jid.getComponent();
                 cmsg.setDockableWindow(jid);
             }
-        }
-        else if (message instanceof DecompileClassMessage) {
+        } else if (message instanceof DecompileClassMessage) {
             DecompileClassMessage dmsg = (DecompileClassMessage) message;
             String classname = dmsg.getClassName();
             String destination = dmsg.getDestination();

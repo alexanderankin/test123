@@ -37,6 +37,7 @@ srcs = (subst ".java", ".class",
     (glob (join (join (dirs "."), "/"), "*.java"))
 );
 
+bcel_source = "lib/BCEL.jar";
 jode_source = "lib/jode.jar";
 
 
@@ -45,7 +46,7 @@ jode_source = "lib/jode.jar";
 ##
 
 extensions = "class" "html" "props" "xml";
-files = (glob (join (dirs "."), (join "/*.", extensions)));
+bcel_dest = "../BCEL.jar";
 jode_dest = "../jode.jar";
 
 
@@ -53,7 +54,7 @@ jode_dest = "../jode.jar";
 # set up the class path
 ##
 
-new_class_path = (cat jode_source ";" ".");
+new_class_path = (cat bcel_source ";" jode_source ";" "../../jedit.jar" ";" ".");
 old_class_path = (getprop "java.class.path");
 
 if (equal "", old_class_path) then
@@ -64,12 +65,20 @@ end
 
 cmd_javac = javac_bin javac_opts "-classpath" class_path;
 
+get_files = function (dummy)
+{
+    file_globs = (join "/*.", extensions);
+
+    (glob (join (dirs "."), file_globs))
+}
+end;
+
 
 ##
 # targets
 ##
 
-"all": jar_file jode_dest;
+"all": jar_file bcel_dest jode_dest;
 
 
 "%.class" : "%.java";
@@ -80,7 +89,13 @@ cmd_javac = javac_bin javac_opts "-classpath" class_path;
 
 jar_file: srcs;
 {
-    exec cmd_jar @ files;
+    exec cmd_jar @ (get_files "1");
+}
+
+
+bcel_dest: bcel_source;
+{
+    copy bcel_source bcel_dest;
 }
 
 
