@@ -78,9 +78,9 @@ public class VPTProject extends VPTNode {
 	public VPTProject(String name) {
 		super(name);
 		openableNodes	= new HashMap();
-		canonicalFiles	= new HashMap();
 		openFiles		= new ArrayList();
 		properties		= new Properties();
+		canonicalFiles	= null;
 	}
 
 	//}}}
@@ -110,7 +110,7 @@ public class VPTProject extends VPTNode {
 	/** Returns the node that matches the given path. */
 	public VPTNode getChildNode(String path) {
 		Object o = openableNodes.get(path);
-		if (o == null) {
+		if (o == null && canonicalFiles != null) {
 			return (VPTNode) canonicalFiles.get(path);
 		} else {
 			return (VPTNode) o;
@@ -332,6 +332,9 @@ public class VPTProject extends VPTNode {
 	 *	@param	path	Canonical path of the file.
 	 */
 	public void registerCanonicalPath(String path, VPTFile file) {
+		if (canonicalFiles == null) {
+			canonicalFiles = new HashMap();
+		}
 		canonicalFiles.put(path, file);
 	} //}}}
 
@@ -339,7 +342,10 @@ public class VPTProject extends VPTNode {
 	/** Removes all children from the project, and unregisters all files. */
 	public void removeAllChildren() {
 		openableNodes.clear();
-		canonicalFiles.clear();
+		if (canonicalFiles != null) {
+			canonicalFiles.clear();
+			canonicalFiles = null;
+		}
 		super.removeAllChildren();
 	} //}}}
 
@@ -347,12 +353,11 @@ public class VPTProject extends VPTNode {
 	/** Unegister a node from the project. */
 	public void unregisterNodePath(VPTNode node) {
 		openableNodes.remove(node.getNodePath());
-		if (!ProjectViewerConfig.getInstance().isJEdit42() &&
+		if (canonicalFiles != null && !ProjectViewerConfig.getInstance().isJEdit42() &&
 				node.isFile()) {
 			canonicalFiles.remove(((VPTFile)node).getCanonicalPath());
 		}
-	}
-	//}}}
+	} //}}}
 
 	//{{{ +getNodePath() : String
 	/**	Returns the path to the file represented by this node. */
