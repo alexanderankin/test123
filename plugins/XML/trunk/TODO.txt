@@ -1,20 +1,17 @@
 + for version 0.4
 
-- jEdit bug: not all key typed events passed to key event interceptor
-- 'extend' attribute of completion info file
 - catalog manager option pane
-- different icons for internal/external entities
-- different icons for empty elements
-- load tag lists, entity lists for HTML/XSL
-  - when a buffer is loaded or its mode is changed, load it's mode's tag
-  list
-  - load from buffer-local properties
-  - cache of loaded tag lists
+- tag list for HTML
 - documentation: id resolving, xml insert, edit tag, tag/entity completion,
   tag commands, tag highlight
 
 + for version 0.5
 
+- different icons for internal/external entities
+- different icons for empty elements
+- different icons for tags available in different HTML versions
+- 'extend' attribute of completion info file
+- tag lists for JSP, XSL, ASP, JHTML, ...
 - initial setup wizard when xml file opened for the first time
 - DTD cache
 - root document property, proper handling of tags in nested files

@@ -12,6 +12,6 @@ SYSTEM "xmode.dtd" "jeditresource:/org/gjt/sp/jedit/xmode.dtd"
 
 SYSTEM "plugins.dtd" "jeditresource:/org/gjt/sp/jedit/pluginmgr/plugins.dtd"
 
-SYSTEM "commando.dtd" "jeditresource:Console.jar!/console/commando/commando.dtd"
+SYSTEM "commando.dtd" "jeditresource:/Console.jar!/console/commando/commando.dtd"
 
-SYSTEM "xml-completion-info.dtd" "jeditresource:XML.jar!/xml/xml-completion-info.dtd"
+SYSTEM "xml-completion-info.dtd" "jeditresource:/XML.jar!/xml/xml-completion-info.dtd"
