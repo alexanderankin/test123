@@ -1,0 +1,41 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+    <ACTION NAME="tags-follow-tag">
+      <CODE>
+         import tags.Tags;
+         Tags.followTag(view, textArea, buffer, false);
+      </CODE>
+    </ACTION>
+
+    <ACTION NAME="tags-follow-tag-new-view">
+		   <CODE>
+         import tags.Tags;
+         Tags.followTag(view, textArea, buffer, true);
+       </CODE>
+    </ACTION>
+
+    <ACTION NAME="tags-enter-and-follow-tag">
+      <CODE>
+         import tags.Tags;
+         Tags.enterAndFollowTag(view, textArea, buffer);
+      </CODE>
+    </ACTION>
+    
+    <ACTION NAME="tags-pop-tag">
+      <CODE>
+         import tags.Tags;
+         Tags.popTag(view, textArea);
+      </CODE>
+    </ACTION>
+
+    <ACTION NAME="tags-clear-tag-stack">
+      <CODE>
+         import tags.Tags;
+         Tags.clearTagStack();
+      </CODE>
+    </ACTION>
+    
+</ACTIONS>
+
