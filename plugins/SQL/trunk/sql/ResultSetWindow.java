@@ -76,7 +76,21 @@ public class ResultSetWindow extends JPanel
     notebook = new JTabbedPane();
     add( BorderLayout.CENTER, notebook );
 
-    add( BorderLayout.SOUTH, status = new JLabel() );
+    status = new JLabel();
+    final JPanel p = new JPanel( new BorderLayout() );
+    p.add( BorderLayout.WEST, status );
+    final JButton closeAll = new JButton( jEdit.getProperty( "sql.resultSet.closeAll" ) );
+    p.add( BorderLayout.EAST, closeAll );
+    add( BorderLayout.SOUTH, p );
+    closeAll.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          while ( notebook.getComponentCount() != 0 )
+            notebook.remove( notebook.getComponent(0) );
+        }
+      } );
 
     status.setText( jEdit.getProperty( "sql.resultSet.status",
         new Object[]{new Integer( SqlUtils.getThreadGroup().getNumberOfRequest() )} ) );
@@ -160,7 +174,7 @@ public class ResultSetWindow extends JPanel
       args[0] = new String( " > " + maxRecs );
     final JLabel info = new JLabel( jEdit.getProperty( "sql.resultSet.info", args ), SwingConstants.LEFT );
     p.add( BorderLayout.SOUTH, info );
-
+   
     notebook.addTab( "", new ImageIcon( Toolkit.getDefaultToolkit().getImage( getClass().getResource( "/icons/ResultSetWindowTab.png" ) ) ), p );
     notebook.setSelectedComponent( p );
 
