@@ -612,7 +612,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	public ProjectViewer(View aView) {
 		if (viewers.get(aView) != null) {
 			throw new UnsupportedOperationException(
-				"ProjectViewer does not support multiple instances per view.");
+				jEdit.getProperty("projectviewer.error.multiple_views"));
 		}
 
 		setLayout(new BorderLayout());

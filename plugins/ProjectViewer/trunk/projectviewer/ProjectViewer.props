@@ -100,6 +100,7 @@ projectviewer.archive_filter=Archive files
 projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
 projectviewer.error=Error
+projectviewer.error.multiple_views=ProjectViewer does not support multiple instances per view.
 projectviewer.loading_project=Loading project "{0}"...
 projectviewer.no_active_project=There's no active project.
 projectviewer.path_not_in_project=Open buffer is not part of the active project.
