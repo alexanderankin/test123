@@ -248,7 +248,7 @@ public class TextToolsSortControl extends EnhancedDialog implements ActionListen
 		}
 		else 
 		{
-			new org.gjt.sp.jedit.gui.HelpViewer(helpUrl.toString());
+			new org.gjt.sp.jedit.help.HelpViewer(helpUrl.toString());
 		}
 	} //}}}
 
