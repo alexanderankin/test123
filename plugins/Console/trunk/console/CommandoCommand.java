@@ -27,17 +27,20 @@ class CommandoCommand
 	String name;
 	URL url;
 	String path;
+	String propertyPrefix;
 
 	CommandoCommand(String name, URL url)
 	{
 		this.name = name;
 		this.url = url;
+		this.propertyPrefix = "commando." + name.replace(' ','_') + '.';
 	}
 
 	CommandoCommand(String name, String path)
 	{
 		this.name = name;
 		this.path = path;
+		this.propertyPrefix = "commando." + name.replace(' ','_') + '.';
 	}
 
 	Reader openStream() throws IOException

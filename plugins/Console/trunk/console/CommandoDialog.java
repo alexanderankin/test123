@@ -67,9 +67,6 @@ public class CommandoDialog extends EnhancedDialog
 		tabs.addTab(jEdit.getProperty("commando.properties"),
 			properties = new TextAreaPane());
 
-		nameSpace = new NameSpace(BeanShell.getNameSpace(),
-			"commando");
-
 		if(command == null)
 			command = jEdit.getProperty("commando.last-command");
 
@@ -110,6 +107,15 @@ public class CommandoDialog extends EnhancedDialog
 	public void ok()
 	{
 		jEdit.setProperty("commando.last-command",command.name);
+
+		Buffer buffer = view.getBuffer();
+
+		Enumeration keys = propertyValues.keys();
+		while(keys.hasMoreElements())
+		{
+			Object key = keys.nextElement();
+			buffer.putProperty(key,propertyValues.get(key));
+		}
 
 		Vector commands = new Vector();
 
@@ -158,6 +164,7 @@ public class CommandoDialog extends EnhancedDialog
 
 	private CommandoCommand command;
 	private NameSpace nameSpace;
+	private Hashtable propertyValues;
 	private Vector scripts;
 
 	private boolean init;
@@ -171,6 +178,9 @@ public class CommandoDialog extends EnhancedDialog
 		commandLine.setText(null);
 		properties.setText(null);
 
+		nameSpace = new NameSpace(BeanShell.getNameSpace(),
+			"commando");
+		propertyValues = new Hashtable();
 		scripts = new Vector();
 
 		XmlParser parser = new XmlParser();
@@ -236,6 +246,21 @@ public class CommandoDialog extends EnhancedDialog
 		}
 
 		commandLine.setText(buf.toString());
+
+		buf = new StringBuffer();
+
+		Enumeration enum = propertyValues.keys();
+		while(enum.hasMoreElements())
+		{
+			buf.append(':');
+			Object key = enum.nextElement();
+			buf.append(key);
+			buf.append('=');
+			buf.append(propertyValues.get(key));
+			buf.append(":\n");
+		}
+
+		properties.setText(buf.toString());
 	}
 
 	class Script
@@ -373,6 +398,10 @@ public class CommandoDialog extends EnhancedDialog
 				settings.addComponent(pane);
 				label = null;
 			}
+			else if(tag == "CHOICE")
+			{
+				choiceLabel = label;
+			}
 		}
 
 		public void endElement(String name)
@@ -407,9 +436,13 @@ public class CommandoDialog extends EnhancedDialog
 				}
 				else if(tag == "CHOICE")
 				{
-					// XXX
+					JLabel left = new JLabel(choiceLabel);
+					left.setBorder(new EmptyBorder(0,0,0,12));
+					pane.addComponent(left,
+						new CommandoComboBox(
+						varName,defaultValue,eval,options));
 					options.removeAllElements();
-					label = varName = eval = null;
+					choiceLabel = varName = eval = null;
 				}
 				else if(tag == "OPTION")
 				{
@@ -453,6 +486,7 @@ public class CommandoDialog extends EnhancedDialog
 		private String defaultValue;
 		private String eval;
 		private String optionValue;
+		private String choiceLabel;
 		private String label;
 		private boolean confirm;
 		private String shell;
@@ -488,8 +522,7 @@ public class CommandoDialog extends EnhancedDialog
 			super(label);
 
 			this.varName = varName;
-			this.property = "commando." + command.name + "." + varName;
-			this.eval = eval;
+			this.property = command.propertyPrefix + varName;
 
 			setSelected("TRUE".equalsIgnoreCase(defaultValue));
 
@@ -522,11 +555,10 @@ public class CommandoDialog extends EnhancedDialog
 		// private members
 		private String varName;
 		private String property;
-		private String eval;
 
 		private void valueChanged()
 		{
-			view.getBuffer().putBooleanProperty(property,isSelected());
+			propertyValues.put(property,new Boolean(isSelected()));
 
 			try
 			{
@@ -559,8 +591,7 @@ public class CommandoDialog extends EnhancedDialog
 			setText(defaultValue);
 
 			this.varName = varName;
-			this.property = "commando." + command.name + "." + varName;
-			this.eval = eval;
+			this.property = command.propertyPrefix + varName;
 
 			if(eval != null)
 			{
@@ -577,7 +608,7 @@ public class CommandoDialog extends EnhancedDialog
 					setText(value.toString());
 			}
 
-			Dimension size = getPreferredSize();
+			Dimension size = CommandoTextField.this.getPreferredSize();
 			size.width = 200;
 			setPreferredSize(size);
 
@@ -588,7 +619,6 @@ public class CommandoDialog extends EnhancedDialog
 		// private members
 		private String varName;
 		private String property;
-		private String eval;
 
 		private void valueChanged()
 		{
@@ -596,11 +626,11 @@ public class CommandoDialog extends EnhancedDialog
 			if(text == null)
 				text = "";
 
-			view.getBuffer().putProperty(property,"");
+			propertyValues.put(property,text);
 
 			try
 			{
-				nameSpace.setVariable(varName,"");
+				nameSpace.setVariable(varName,text);
 			}
 			catch(EvalError e)
 			{
@@ -615,6 +645,96 @@ public class CommandoDialog extends EnhancedDialog
 			public void actionPerformed(ActionEvent evt)
 			{
 				valueChanged();
+			}
+		}
+	}
+
+	class CommandoComboBox extends JComboBox
+	{
+		CommandoComboBox(String varName, String defaultValue, String eval,
+			Vector options)
+		{
+			this.varName = varName;
+			this.property = command.propertyPrefix + varName;
+
+			setModel(new DefaultComboBoxModel(options));
+			setRenderer(new Renderer());
+
+			if(eval != null)
+			{
+				defaultValue = String.valueOf(BeanShell.eval(
+					view,eval,false));
+			}
+			else
+			{
+				Buffer buffer = view.getBuffer();
+				Object value = buffer.getProperty("commando."
+					+ command.name + "." + varName);
+				if(value != null)
+					defaultValue = String.valueOf(value);
+			}
+
+			if(defaultValue != null)
+			{
+				for(int i = 0; i < options.size(); i++)
+				{
+					Option opt = (Option)options.elementAt(i);
+					if(defaultValue.equals(opt.value))
+					{
+						setSelectedIndex(i);
+						break;
+					}
+				}
+			}
+
+			addActionListener(new ActionHandler());
+			valueChanged();
+		}
+
+		// private members
+		private String varName;
+		private String property;
+		private String eval;
+
+		private void valueChanged()
+		{
+			Option value = (Option)getSelectedItem();
+
+			propertyValues.put(property,value.value);
+
+			try
+			{
+				nameSpace.setVariable(varName,value.value);
+			}
+			catch(EvalError e)
+			{
+				// can't do much...
+			}
+
+			updateTextAreas();
+		}
+
+		class ActionHandler implements ActionListener
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				valueChanged();
+			}
+		}
+
+		class Renderer extends DefaultListCellRenderer
+		{
+			public Component getListCellRendererComponent(
+				JList list, Object value, int index,
+				boolean isSelected, boolean cellHasFocus
+			)
+			{
+				super.getListCellRendererComponent(list,value,
+					index,isSelected,cellHasFocus);
+
+				setText(((Option)value).label);
+
+				return this;
 			}
 		}
 	}

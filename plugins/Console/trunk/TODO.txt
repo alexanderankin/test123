@@ -1,8 +1,10 @@
+- sort property list in commando dialog box
+- combo box renderer is wrong
+- import not working in BeanShell
 - better handling of warning -vs- error
-- finish commando: CHOICE tag, TOGGLE_ENTRY tag, test, debug
+- finish commando: TOGGLE_ENTRY tag, test, debug
 - improve commando error handling
 - documentation generated with docbook
-- support COMMANDs with no shell; they're just evaluated, that's it
 - variables:
   $<char> abbreviation for ${<char>}
   some variables ($d, etc) have default values
