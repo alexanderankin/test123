@@ -13,11 +13,10 @@
                 xmlns="http://www.w3.org/TR/xhtml1/transitional"
                 exclude-result-prefixes="#default">
 
-<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets-1.50.0/html/onechunk.xsl"/>
 <!-- NOTE: path to onechunk.xsl on local instalation follows -->
-<!-- <xsl:import href="file:///I:/sgml/docbook-xsl-1.45/html/onechunk.xsl"/> -->
+<!--<xsl:import href="/usr/share/sgml/docbook/xsl-stylesheets-1.50.0/html/onechunk.xsl"/>-->
+<xsl:import href="c:/docbook-xsl-1.60.1/html/onechunk.xsl"/>
 <xsl:param name="use.id.as.filename" select="'1'" doc:type="boolean"/>
-
 
 <!-- NOTE: Swing HTML control doesn't support &ldquo; and &rdquo; -->
 <xsl:template match="quote">&quot;<xsl:apply-templates/>&quot;</xsl:template>
