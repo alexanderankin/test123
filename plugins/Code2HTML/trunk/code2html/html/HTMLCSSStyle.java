@@ -28,7 +28,7 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.Log;
 
 
-public class HTMLCSSStyle extends HTMLStyle
+public class HTMLCSSStyle extends HtmlStyle
 {
     public HTMLCSSStyle(SyntaxStyle[] styles) {
         super(styles);

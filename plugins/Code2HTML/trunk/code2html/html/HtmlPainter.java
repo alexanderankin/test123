@@ -38,7 +38,7 @@ import code2html.line.LineWrapper;
 
 public class HtmlPainter
 {
-    private HTMLStyle       style;
+    private HtmlStyle       style;
     private HtmlGutter      gutter;
     private LineTabExpander expander;
     private LineWrapper     wrapper;
@@ -49,7 +49,7 @@ public class HtmlPainter
     private int             wrap;
 
 
-    public HtmlPainter(HTMLStyle style, HtmlGutter gutter,
+    public HtmlPainter(HtmlStyle style, HtmlGutter gutter,
                        LineTabExpander expander, LineWrapper wrapper
     ) {
         this.style    = style;
