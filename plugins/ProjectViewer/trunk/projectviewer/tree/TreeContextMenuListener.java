@@ -93,7 +93,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
     public TreeContextMenuListener(ProjectViewer viewer) {
         this.viewer = viewer;
         loadGUI();
-	appList  = new appLauncher (jEdit.getSettingsDirectory() + java.io.File.separator + "fileassocs.properties");
+	appList  = ProjectViewerConfig.getAppLauncherInstance(); //new appLauncher (jEdit.getSettingsDirectory() + File.separator + "projectviewer/fileassocs.properties");
     }
     
     //--------------- Public Methods
