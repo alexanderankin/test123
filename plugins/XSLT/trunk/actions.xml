@@ -5,11 +5,23 @@
 <ACTIONS>
   <ACTION NAME="XSLTProcessor.Indent">
     <CODE>
+      String stripSpace = "";
+
+      if(jEdit.getProperty("XSLTProcessor.indent.stripSpace").equals("yes")) {
+        stripSpace = "&lt;xsl:strip-space elements='*'/&gt;";
+      }
+
+      String valueOfText = "&lt;xsl:value-of select='.'/&gt;";
+
+      if(jEdit.getProperty("XSLTProcessor.indent.normalizeSpace").equals("yes")) {
+        valueOfText = "&lt;xsl:value-of select='normalize-space(.)'/&gt;";
+      }
+
       String indentyTransformStylesheet = "" +
         "&lt;?xml version='1.0' encoding='UTF-8'?&gt;" +
         "&lt;xsl:stylesheet xmlns:xsl='http://www.w3.org/1999/XSL/Transform' version='1.0'&gt;" +
         "	&lt;xsl:output method='xml' version='1.0' encoding='UTF-8' indent='yes'/&gt;" +
-        "  &lt;xsl:strip-space elements=''/&gt;" +
+        "  " + stripSpace +
 
         "  &lt;xsl:template match='/'&gt;" +
         "    &lt;xsl:apply-templates/&gt;" +
@@ -22,7 +34,7 @@
         "  &lt;/xsl:template&gt;" +
 
         "  &lt;xsl:template match='text()'&gt;" +
-        "    &lt;xsl:value-of select='normalize-space(.)'/&gt;" +
+        "    " + valueOfText +
         "  &lt;/xsl:template&gt;" +
         "&lt;/xsl:stylesheet&gt;";
 
