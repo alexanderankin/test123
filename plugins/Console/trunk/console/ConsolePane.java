@@ -84,6 +84,8 @@ public class ConsolePane extends JTextPane
 
 		documentHandler = new DocumentHandler();
 		setDocument(getDocument());
+		
+		setInputStart(0);
 	} //}}}
 
 	//{{{ setDocument() method
