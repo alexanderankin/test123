@@ -244,7 +244,9 @@ public class AntFarmShell extends Shell
 			null,
 			jEdit.getProperty( AntFarmPlugin.NAME + ".shell.label.current-file" )
 			 );
-		output.print( color, _currentProject.getName() + " ("
+		String projectName = _currentProject.getName() != null ? _currentProject.getName() : "Untitled";
+
+		output.print( color, projectName + " ("
 			 + _currentBuildFile.getAbsolutePath() + ")\n" );
 
 		output.print(

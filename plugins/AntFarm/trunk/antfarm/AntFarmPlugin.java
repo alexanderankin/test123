@@ -55,12 +55,22 @@ public class AntFarmPlugin extends EBPlugin
 
 	static Console getConsole( View view )
 	{
+		return getConsole( view, true );
+	}
+
+
+	static Console getConsole( View view, boolean bringToFront )
+	{
 		// Open the console if it isn't already open
 		view.getDockableWindowManager().addDockableWindow( "console" );
 		// Obtain the console instance
 		Console console =
 			(Console) view.getDockableWindowManager().getDockableWindow( "console" );
 		console.setShell( AntFarmPlugin.ANT_SHELL );
+
+		if ( !bringToFront )
+			view.getDockableWindowManager().addDockableWindow( NAME );
+
 		return console;
 	}
 

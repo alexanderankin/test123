@@ -704,6 +704,11 @@ public class AntTree extends JTree
 				boolean isAdded = false;
 				for ( int k = 0; k < projectNodes.size(); k++ ) {
 					ProjectNode pn = (ProjectNode) projectNodes.elementAt( k );
+
+					// if there is no name, just add it to the end.
+					if ( newProjectNode.getProject().getName() == null )
+						break;
+
 					if ( !pn.isProjectBroken() &&
 						newProjectNode.getProject().getName().compareTo( pn.getProject().getName() ) < 0
 						 ) {
