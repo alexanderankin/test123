@@ -721,6 +721,16 @@ public final class ProjectViewer extends JPanel
 		return (n != null && n.isProject()) ? (VPTProject) n : null;
 	} //}}}
 
+	//{{{ #_cleanViewEntry(View)_ : void
+	/**
+	 *	Removes the "viewer entry" related to the given view. Called
+	 *	by the ProjectPlugin class when a view closed message is
+	 *	received.
+	 */
+	protected static void cleanViewEntry(View aView) {
+		viewers.remove(aView);
+	} //}}}
+
 	//}}}
 
 	//{{{ Constants
@@ -905,10 +915,8 @@ public final class ProjectViewer extends JPanel
 		if (config.getCloseFiles()) {
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ViewerEntry ve = (ViewerEntry) it.next();
-				if (ve.dockable != this) {
-					if (ve.node.isNodeDescendant(p)) {
-						return;
-					}
+				if (ve.dockable != this && ve.node.isNodeDescendant(p)) {
+					return;
 				}
 			}
 		}
@@ -920,9 +928,6 @@ public final class ProjectViewer extends JPanel
 			String currFile = null;
 			if (p.getChildNode(view.getBuffer().getPath()) != null) {
 				currFile = view.getBuffer().getPath();
-				if (config.getRememberOpen() && currFile != null) {
-					p.addOpenFile(currFile);
-				}
 			}
 
 			for (int i = 0; i < bufs.length; i++) {
@@ -936,6 +941,9 @@ public final class ProjectViewer extends JPanel
 				}
 			}
 
+			if (config.getRememberOpen() && currFile != null) {
+				p.addOpenFile(currFile);
+			}
 		}
 
 		// saves the folder tree state
@@ -952,7 +960,11 @@ public final class ProjectViewer extends JPanel
 	private void openProject(final VPTProject p) {
 		if (config.getRememberOpen()) {
 			for (Iterator i = p.getOpenFiles(); i.hasNext(); ) {
-				jEdit.openFile(null, (String) i.next());
+				String next = (String) i.next();
+				if (i.hasNext())
+					jEdit.openFile(null, next);
+				else
+					jEdit.openFile(view, next);
 			}
 		}
 		p.clearOpenFiles();
