@@ -33,72 +33,72 @@ import javax.swing.*;
 import javax.swing.event.*;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.AbstractOptionPane;
 
-
-public class TagsOptionsPanel extends JPanel {
+public class TagsOptionsPanel extends AbstractOptionPane {
 
   /***************************************************************************/
-  static protected boolean debug_ = false;
-  
-  /***************************************************************************/
-  
   // This panel
-     // North
-     protected JPanel parserPanel_;  // labeled panel
-       protected JPanel parserButtonPanel_;  // panel w/ radio group
-         protected ButtonGroup parserGroup_;
-
-     // Center
-     protected JPanel tagFilesPanel_; // labeled panel
-       protected JPanel tagFilesUIPanel_;  // panel w/ tag files ui components
-         
-         // North
-         protected JPanel tagFilesOptionsPanel_;
-           protected JCheckBox useCurrentBufTagFileCheckBox_;
-           protected JCheckBox searchAllFilesCheckBox_;
-         
-         // Center
-         protected JScrollPane pane_;
-           protected JList list_;
-             protected DefaultListModel listModel_;
-          
-         // South
-         protected JPanel buttonPanel_;  // panel w/ button
-           protected JButton addButton_;
-           protected JButton removeButton_;
-           protected JButton moveUpButton_;
-           protected JButton moveDownButton_;
-        
-      // South
-      protected JCheckBox debugCheckBox_;
-      
-  protected View view_;
-
+		// Row 1
+		protected JPanel parserPanel_;  // labeled panel (not currently labeled)
+			protected JPanel parserButtonPanel_;  // panel w/ radio group
+				protected ButtonGroup parserGroup_;
+	
+		// Row 2
+		protected JPanel tagFilesPanel_; // labeled panel (not currently labeled)
+			protected JPanel tagFilesUIPanel_;  // panel w/ tag files ui components
+				
+				// North
+				protected JPanel tagFilesOptionsPanel_;
+					protected JCheckBox useCurrentBufTagFileCheckBox_;
+					protected JCheckBox searchAllFilesCheckBox_;
+				
+				// Center
+				protected JScrollPane pane_;
+					protected JList list_;
+						protected DefaultListModel listModel_;
+				 
+				// South
+				protected JPanel buttonPanel_;  // panel w/ buttons
+					protected JButton addButton_;
+					protected JButton removeButton_;
+					protected JButton moveUpButton_;
+					protected JButton moveDownButton_;
+			 
+		// Row 3
+		protected JCheckBox debugCheckBox_;
+		 
   protected Vector origList_;
   protected int origParserType_;
   
   /***************************************************************************/
-  public TagsOptionsPanel(View view) {
+  public TagsOptionsPanel() {
+    super("tags");
+  }
+  
+  /***************************************************************************/
+  public void _init() {
     origList_ = new Vector(15);
     
-    setup(view);
+    setup();
 
     int numFiles = Tags.tagFiles_.size();
     for (int i = 0; i < numFiles; i++) {
       listModel_.addElement(Tags.tagFiles_.elementAt(i));
       origList_.addElement(Tags.tagFiles_.elementAt(i));
     }
+
   }
   
   /***************************************************************************/
-  public void setDebug(boolean debug) { debug_ = debug; }
+  public void _save() {
+    TagsPlugin.debug_ = debugCheckBox_.isSelected();
+  }
   
   /***************************************************************************/
-  protected void setup(View view) {
-    view_ = view;
+  protected void setup() {
     
     createComponents();
     setupComponents();
@@ -126,53 +126,50 @@ public class TagsOptionsPanel extends JPanel {
   
   /***************************************************************************/
   protected void createComponents() {
-    setBorder(BorderFactory.createEmptyBorder(5,5,0,5));
-    
-    setLayout(new BorderLayout(5,5));    
 
-      parserPanel_ = new JPanel(new GridLayout(0,1,0,0));
-        parserButtonPanel_ = new JPanel(new GridLayout(0,1,0,0));
-        parserPanel_.setBorder(
-           BorderFactory.createTitledBorder(
-                                 jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
-                                                      "tag-file-type.title")));
-        parserButtonPanel_.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
-        
-      tagFilesPanel_ = new JPanel(new GridLayout(0,1,0,0));
-      tagFilesPanel_.setBorder(
-        BorderFactory.createTitledBorder(jEdit.getProperty(
-                        TagsPlugin.OPTION_PREFIX + "tag-search-files.label")));
-      
-        tagFilesUIPanel_ = new JPanel(new BorderLayout(5,5));
-        tagFilesUIPanel_.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
-        
-          tagFilesOptionsPanel_ = new JPanel(new GridLayout(0,1,0,0));
-        
-            useCurrentBufTagFileCheckBox_ = new JCheckBox(
-                                  jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
-                                    "tag-search-current-buff-tag-file.label"));
-            searchAllFilesCheckBox_ = new JCheckBox(
-                                  jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
-                                    "tag-search-all-files.label"));
-                                    
-					listModel_ = new DefaultListModel();
+		parserPanel_ = new JPanel(new GridLayout(0,1,0,0));
+			parserButtonPanel_ = new JPanel(new GridLayout(0,1,0,0));
+				//parserPanel_.setBorder(
+				//   BorderFactory.createTitledBorder(
+				//                       jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
+				//                                         "tag-file-type.title")));
+			parserButtonPanel_.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
 			
-          list_ = new JList(listModel_);
-          pane_ = new JScrollPane(list_, 
-                                  JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                  JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-            
-          buttonPanel_ = new JPanel(new GridLayout(1,0,5,5));
-            addButton_ = new JButton(
-                      TagsPlugin.getOptionString("tag-search-files-add.label"));
-            removeButton_ = new JButton(
-                   TagsPlugin.getOptionString("tag-search-files-remove.label"));
-            moveUpButton_ = new JButton(
-                  TagsPlugin.getOptionString("tag-search-files-move-up.label"));
-            moveDownButton_ = new JButton(
-                TagsPlugin.getOptionString("tag-search-files-move-down.label"));
-        
-      debugCheckBox_ = new JCheckBox("Debug");
+		tagFilesPanel_ = new JPanel(new GridLayout(0,1,0,0));
+			//tagFilesPanel_.setBorder(
+			//  BorderFactory.createTitledBorder(jEdit.getProperty(
+			//               TagsPlugin.OPTION_PREFIX + "tag-search-files.label")));
+			
+			tagFilesUIPanel_ = new JPanel(new BorderLayout(5,5));
+			tagFilesUIPanel_.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
+			
+				tagFilesOptionsPanel_ = new JPanel(new GridLayout(0,1,0,0));
+			
+					useCurrentBufTagFileCheckBox_ = new JCheckBox(
+																jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
+																	"tag-search-current-buff-tag-file.label"));
+					searchAllFilesCheckBox_ = new JCheckBox(
+																jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
+																	"tag-search-all-files.label"));
+																	
+				listModel_ = new DefaultListModel();
+		
+				list_ = new JList(listModel_);
+				pane_ = new JScrollPane(list_, 
+																JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+																JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+					
+				buttonPanel_ = new JPanel(new GridLayout(1,0,5,5));
+					addButton_ = new JButton(
+										TagsPlugin.getOptionString("tag-search-files-add.label"));
+					removeButton_ = new JButton(
+								 TagsPlugin.getOptionString("tag-search-files-remove.label"));
+					moveUpButton_ = new JButton(
+								TagsPlugin.getOptionString("tag-search-files-move-up.label"));
+					moveDownButton_ = new JButton(
+							TagsPlugin.getOptionString("tag-search-files-move-down.label"));
+			
+    debugCheckBox_ = new JCheckBox("Debug");
   }
   
   /***************************************************************************/
@@ -193,41 +190,33 @@ public class TagsOptionsPanel extends JPanel {
     moveDownButton_.setMnemonic(KeyEvent.VK_D);
     
     debugCheckBox_.setSelected(TagsPlugin.debug_);
-    debugCheckBox_.addActionListener(debugCheckBoxListener_);
   }
   
   /***************************************************************************/
   protected void placeComponents() {
+    
+    addSeparator("options.tags.tag-file-type.title");
+    parserPanel_.add(parserButtonPanel_);
+    addComponent(parserPanel_);
+
+    addSeparator("options.tags.tag-search-files.label");
+    tagFilesOptionsPanel_.add(useCurrentBufTagFileCheckBox_);
+    tagFilesOptionsPanel_.add(searchAllFilesCheckBox_);
+    tagFilesUIPanel_.add(tagFilesOptionsPanel_, BorderLayout.NORTH);
+    tagFilesPanel_.add(tagFilesUIPanel_);
+
+    tagFilesUIPanel_.add(pane_, BorderLayout.CENTER);
+    
     buttonPanel_.add(addButton_);    
     buttonPanel_.add(removeButton_);    
     buttonPanel_.add(moveUpButton_);    
     buttonPanel_.add(moveDownButton_);
-
-    parserPanel_.add(parserButtonPanel_);
-    
-    tagFilesPanel_.add(tagFilesUIPanel_);
-    
-    tagFilesOptionsPanel_.add(useCurrentBufTagFileCheckBox_);
-    tagFilesOptionsPanel_.add(searchAllFilesCheckBox_);
-    
-    tagFilesUIPanel_.add(tagFilesOptionsPanel_, BorderLayout.NORTH);
-    tagFilesUIPanel_.add(pane_, BorderLayout.CENTER);
     tagFilesUIPanel_.add(buttonPanel_, BorderLayout.SOUTH);    
-    
-    add(parserPanel_, BorderLayout.NORTH);
-    add(tagFilesPanel_, BorderLayout.CENTER);
-    add(debugCheckBox_, BorderLayout.SOUTH);
-    
-    //add(Box.createRigidArea(new Dimension(5,5)), BorderLayout.EAST);
-    //add(Box.createRigidArea(new Dimension(5,5)), BorderLayout.WEST);
+
+    addComponent(tagFilesPanel_);
+
+    //addComponent(debugCheckBox_);
   }
-  
-  /***************************************************************************/
-  protected ActionListener debugCheckBoxListener_ = new ActionListener() {
-    public void actionPerformed(ActionEvent e) {
-      TagsPlugin.debug_ = debugCheckBox_.isSelected();
-    }
-  };
   
   /***************************************************************************/
   protected ActionListener addButtonListener_ = new ActionListener() {
@@ -238,17 +227,9 @@ public class TagsOptionsPanel extends JPanel {
 
       String newTagFile = null;
       String newTagFiles[] = null;
-      if (debug_) {
-        JFileChooser chooser = new JFileChooser();
-        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
-          newTagFile = chooser.getSelectedFile().getPath();
-        else
-          newTagFile = null;
-      }
-      else {
-        newTagFiles = GUIUtilities.showVFSFileDialog(view_, null, 
+
+      newTagFiles = GUIUtilities.showVFSFileDialog(null, null, 
                                                  VFSBrowser.OPEN_DIALOG,false);
-      }
         
       if (newTagFile != null) {
         listModel_.add(selectedIndex, newTagFile);
@@ -344,7 +325,7 @@ public class TagsOptionsPanel extends JPanel {
 
   /***************************************************************************/
   protected ListSelectionListener listSelectionListener_ =
-                                                    new ListSelectionListener() {
+                                                  new ListSelectionListener() {
     public void valueChanged(ListSelectionEvent e) {
       updateGUI(); 
     }
@@ -359,33 +340,7 @@ public class TagsOptionsPanel extends JPanel {
     moveUpButton_.setEnabled(selectionCount == 1 && selectedIndices[0] != 0 && 
                              numItems != 0);
     moveDownButton_.setEnabled(selectionCount == 1 && 
-                             selectedIndices[0] != (listModel_.getSize() - 1) &&
-                             numItems != 0);
-  }
-  
-  /***************************************************************************/
-  static public void main(String args[]) {
-    
-    debug_ = true;
-    
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.1");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.2");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.3");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.4");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.5");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.1");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.2");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.3");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.4");
-    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.5");
-    
-    TagsOptionsPanel panel = new TagsOptionsPanel(null);
-    JFrame frame = new JFrame("Tag Files");
-    frame.getContentPane().setLayout(new BorderLayout());
-    frame.getContentPane().add(panel, BorderLayout.CENTER);
-    frame.pack();
-    frame.setVisible(true);
-    
-    Tags.displayTagFiles(null);
+                            selectedIndices[0] != (listModel_.getSize() - 1) &&
+                            numItems != 0);
   }
 }
