@@ -29,6 +29,7 @@ white-space-menu=\
     white-space.toggle-tabify-leading-white-space      \
     white-space.toggle-untabify-leading-white-space
 
+
 # Action labels
 white-space.toggle-space-highlight.label=Show spaces
 white-space.toggle-leading-space-highlight.label=Show leading spaces
@@ -49,14 +50,14 @@ white-space.toggle-tabify-leading-white-space.label=Tabify leading whitespaces
 
 
 # Options default values
-white-space.show-space-default=true
-white-space.show-leading-space-default=true
-white-space.show-inner-space-default=true
-white-space.show-trailing-space-default=true
-white-space.show-tab-default=true
-white-space.show-leading-tab-default=true
-white-space.show-inner-tab-default=true
-white-space.show-trailing-tab-default=true
+white-space.show-space-default=false
+white-space.show-leading-space-default=false
+white-space.show-inner-space-default=false
+white-space.show-trailing-space-default=false
+white-space.show-tab-default=false
+white-space.show-leading-tab-default=false
+white-space.show-inner-tab-default=false
+white-space.show-trailing-tab-default=false
 white-space.show-whitespace-default=false
 white-space.show-block-default=false
 white-space.show-fold-default=true
@@ -74,6 +75,7 @@ white-space.soft-tabify-leading-white-space=false
 white-space.untabify-leading-white-space=false
 white-space.tabify-leading-white-space=false
 
+
 # Option pane titles
 options.white-space.space.label=Spaces
 options.white-space.tab.label=Tabs
@@ -81,6 +83,7 @@ options.white-space.other.label=Other whitespaces
 options.white-space.fold.label=Fold guides
 options.white-space.paragraph.label=Paragraph separators
 options.white-space.on-save.label=On save actions
+
 
 # Option panes labels
 options.white-space.show-space-default=Show spaces by default
