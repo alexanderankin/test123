@@ -1,13 +1,10 @@
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Kenrick Drew
-plugin.tags.TagsPlugin.version=1.0
+plugin.tags.TagsPlugin.version=1.0.1
 plugin.tags.TagsPlugin.docs=Tags.html
 plugin.tags.TagsPlugin.depend.0=jdk 1.1
 plugin.tags.TagsPlugin.depend.1=jedit 03.02.99.00
-
-# Tag files
-tags-tag-files=
 
 # action labels
 tags-follow-tag.label=Follow Tag
