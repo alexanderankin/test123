@@ -54,10 +54,11 @@ vfs.sftp.no-java14.title=Java 2 version 1.4 required
 vfs.sftp.no-java14.message=Secure FTP support requires Java 2 version 1.4.
 
 # File listing regexps
-vfs.ftp.list.count=2
+vfs.ftp.list.count=3
 
-vfs.ftp.list.0=[ld-](.{9})\\+?\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
-vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
+vfs.ftp.list.0=[ld-](.{9})\\s+\\d+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+vfs.ftp.list.1=[ld-](.{9})\\+?\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+vfs.ftp.list.2=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
 
 vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)\\s*
 vfs.ftp.list.vms=(.+?);\\d+\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\\((.+)\\)
