@@ -45,14 +45,5 @@ public class LogViewerPlugin extends EditPlugin {
         menuItems.addElement(GUIUtilities.loadMenu(MENU));
     }
 
-    /**
-     *  Creates the option pane
-     *
-     * @param  od  The options dialog
-     */
-    public void createOptionPanes(OptionsDialog od) {
-        od.addOptionPane(new LogViewerOptionPane());
-    }
-
 }
 

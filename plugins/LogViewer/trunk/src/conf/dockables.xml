@@ -4,8 +4,6 @@
 
 <DOCKABLES>
     <DOCKABLE NAME="logviewer">
-        logviewer.LogViewer lv = new logviewer.LogViewer(view, position);
-        lv.setDocked(true);
-        lv;
+        new logviewer.LogViewer(view, position);
     </DOCKABLE>
 </DOCKABLES>
