@@ -30,12 +30,5 @@
       </CODE>
     </ACTION>
 
-    <ACTION NAME="tags-options">
-      <CODE>
-         import tags.Tags;
-         Tags.showTagOptionsDialog(view);
-      </CODE>
-    </ACTION>
-    
 </ACTIONS>
 
