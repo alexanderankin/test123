@@ -314,15 +314,18 @@ class ErrorMatcherDialog extends EnhancedDialog
 			matcher.line = _line;
 			matcher.message = _message;
 
-			StringBuffer buf = new StringBuffer();
-			for(int i = 0; i < _name.length(); i++)
+			if(matcher.internalName == null)
 			{
-				char ch = _name.charAt(i);
-				if(Character.isLetterOrDigit(ch))
-					buf.append(ch);
-			}
+				StringBuffer buf = new StringBuffer();
+				for(int i = 0; i < _name.length(); i++)
+				{
+					char ch = _name.charAt(i);
+					if(Character.isLetterOrDigit(ch))
+						buf.append(ch);
+				}
 
-			matcher.internalName = buf.toString();
+				matcher.internalName = buf.toString();
+			}
 		}
 
 		isOK = true;
