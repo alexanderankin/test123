@@ -52,8 +52,13 @@ public class DualDiff {
     private static Hashtable dualDiffs = new Hashtable();
 
     private View view;
+    private EditPane      editPane0;
+    private EditPane      editPane1;
     private JEditTextArea textArea0;
     private JEditTextArea textArea1;
+
+    private Diff.change   edits;
+
     private DiffOverview  diffOverview0;
     private DiffOverview  diffOverview1;
     private JScrollBar    vertical0;
@@ -69,25 +74,26 @@ public class DualDiff {
 
         EditPane[] editPanes = this.view.getEditPanes();
 
-        Buffer buf0 = editPanes[0].getBuffer();
-        Buffer buf1 = editPanes[1].getBuffer();
+        this.editPane0 = editPanes[0];
+        this.editPane1 = editPanes[1];
 
-        this.textArea0 = editPanes[0].getTextArea();
-        this.textArea1 = editPanes[1].getTextArea();
+        Buffer buf0 = this.editPane0.getBuffer();
+        Buffer buf1 = this.editPane1.getBuffer();
+
+        this.textArea0 = this.editPane0.getTextArea();
+        this.textArea1 = this.editPane1.getTextArea();
 
         FileData fileData0 = this.getFileData(buf0);
         FileData fileData1 = this.getFileData(buf1);
 
-        Diff d0 = new Diff(fileData0.getLines(), fileData1.getLines());
-        Diff d1 = new Diff(fileData1.getLines(), fileData0.getLines());
-        Diff.change edits0 = d0.diff_2(false);
-        Diff.change edits1 = d1.diff_2(false);
+        Diff d = new Diff(fileData0.getLines(), fileData1.getLines());
+        this.edits = d.diff_2(false);
 
         int lineCount0 = fileData0.getLines().length;
         int lineCount1 = fileData1.getLines().length;
 
-        this.diffOverview0 = new DiffOverview(edits0, lineCount0, lineCount1, this.textArea0, this.textArea1);
-        this.diffOverview1 = new DiffOverview(edits1, lineCount1, lineCount0, this.textArea1, this.textArea0);
+        this.diffOverview0 = new DiffOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1, false);
+        this.diffOverview1 = new DiffOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1, true);
 
         this.box0      = new Box(BoxLayout.X_AXIS);
         this.vertical0 = this.findVerticalScrollBar(this.textArea0);
@@ -110,6 +116,53 @@ public class DualDiff {
         // JEditTextArea.RIGHT is private...
         // "right" == JEditTextArea.RIGHT
         this.textArea1.add("right", this.box1);
+    }
+
+
+    private void enableHighlighters() {
+        DiffHighlight diffHighlight0 =
+             (DiffHighlight) DiffHighlight.getHighlightFor(this.editPane0);
+
+        if (diffHighlight0 == null) {
+            diffHighlight0 = (DiffHighlight)
+                DiffHighlight.addHighlightTo(this.editPane0, this.edits, DiffHighlight.LEFT);
+            this.textArea0.getPainter().addCustomHighlight(diffHighlight0);
+        } else {
+            diffHighlight0.setEdits(this.edits);
+            diffHighlight0.setPosition(DiffHighlight.LEFT);
+        }
+
+        DiffHighlight diffHighlight1 =
+            (DiffHighlight) DiffHighlight.getHighlightFor(this.editPane1);
+
+        if (diffHighlight1 == null) {
+            diffHighlight1 = (DiffHighlight)
+                DiffHighlight.addHighlightTo(this.editPane1, this.edits, DiffHighlight.RIGHT);
+            this.textArea1.getPainter().addCustomHighlight(diffHighlight1);
+        } else {
+            diffHighlight1.setEdits(this.edits);
+            diffHighlight1.setPosition(DiffHighlight.RIGHT);
+        }
+
+        diffHighlight0.setEnabled(true);
+        diffHighlight1.setEnabled(true);
+    }
+
+
+    private void disableHighlighters() {
+        DiffHighlight diffHighlight0 =
+             (DiffHighlight) DiffHighlight.getHighlightFor(this.editPane0);
+
+        if (diffHighlight0 != null) {
+            diffHighlight0.setEnabled(false);
+        }
+
+        DiffHighlight diffHighlight1 =
+            (DiffHighlight) DiffHighlight.getHighlightFor(this.editPane1);
+
+        if (diffHighlight1 != null) {
+            diffHighlight1.setEnabled(false);
+        }
     }
 
 
@@ -197,19 +250,45 @@ public class DualDiff {
     }
 
 
-    public static void addTo(View view) {
+    public static void editPaneCreated(View view, EditPane editPane) {
+        DualDiff.removeFrom(view);
+    }
+
+    public static void editPaneDestroyed(View view, EditPane editPane) {
+        DualDiff.removeFrom(view);
+        DiffHighlight.removeHighlightFrom(editPane);
+    }
+
+    public static void editPaneBufferChanged(View view, EditPane editPane) {
+        DualDiff.removeFrom(view);
+        DualDiff.addTo(view);
+    }
+
+
+    public static void toggle(View view) {
+        if (DualDiff.isEnabledFor(view)) {
+            DualDiff.removeFrom(view);
+        } else {
+            DualDiff.addTo(view);
+        }
+    }
+
+
+    private static void addTo(View view) {
         DualDiff dualDiff = new DualDiff(view);
 
+        dualDiff.enableHighlighters();
         dualDiff.addHandlers();
 
         dualDiffs.put(view, dualDiff);
     }
 
 
-    public static void removeFrom(View view) {
+    private static void removeFrom(View view) {
         DualDiff dualDiff = (DualDiff) dualDiffs.get(view);
         if (dualDiff != null) {
             dualDiff.removeHandlers();
+            dualDiff.disableHighlighters();
 
             dualDiff.textArea0.remove(dualDiff.box0);
             // JEditTextArea.RIGHT is private...
@@ -243,12 +322,12 @@ public class DualDiff {
 
             if (this.source == DualDiff.this.vertical0) {
                 DualDiff.this.diffOverview0.repaint();
-                DualDiff.this.diffOverview0.synchroScrollVertical();
+                DualDiff.this.diffOverview0.synchroScrollRight();
 
                 DualDiff.this.diffOverview1.repaint();
             } else if (this.source == DualDiff.this.vertical1) {
                 DualDiff.this.diffOverview1.repaint();
-                DualDiff.this.diffOverview1.synchroScrollVertical();
+                DualDiff.this.diffOverview1.synchroScrollLeft();
 
                 DualDiff.this.diffOverview0.repaint();
             } else {}

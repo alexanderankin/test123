@@ -56,10 +56,8 @@ public class toggle_dual_diff extends EditAction {
             view.splitVertically();
         }
 
-        if (DualDiff.isEnabledFor(view)) {
-            DualDiff.removeFrom(view);
-        } else {
-            DualDiff.addTo(view);
-        }
+        DualDiff.toggle(view);
+        view.invalidate();
+        view.validate();
     }
 }
