@@ -4,32 +4,35 @@
 <HTML>
   
   <HEAD>
-    <TITLE>XSearch</TITLE>
+    <TITLE>Extended Search Plugin</TITLE>
   </HEAD>
   
   <BODY>
     
-    <H1>XSearch</H1>
+    <H1>Extended Search Plugin</H1>
     
     <P>by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
     
-    <P>The XSearch plugin provides extensions of the search and replace function of the jedit text
-      editor. </P>
+    <P>The Extended Search plugin provides extensions of the search and replace function of the
+      jedit text editor. </P>
     
     <P>It doesn't extend the search bar, which is a view related feature</P>
     
     <P>It is 100 % compatible to the standart search and replace functions described in jEdit user
       guide.</P>
+    
+    <P>Topics:</P>
     <UL>
-      <LI><A HREF="#Dialog">XSearch Dialog</A></LI>
-      <LI><A HREF="#menu">XSearch menu</A></LI>
+      <LI><A HREF="#Dialog">Extended Search Dialog</A></LI>
+      <LI><A HREF="#xhyper">Extended Hypersearch Window</A></LI>
+      <LI><A HREF="#menu">Extended Search menu</A></LI>
       <LI><A HREF="#Beanshell">bean shell support</A></LI>
-      <LI><A HREF="#options">XSearch global options</A></LI>
+      <LI><A HREF="#options">Extended Search global options</A></LI>
     </UL>
     
-    <H2><A NAME="Dialog">XSearch Dialog</A> </H2>
+    <H2><A NAME="Dialog">Extended Search Dialog</A> </H2>
     
-    <P>The XSearch Dialog is an extension of the core search-and-replace dialog</P>
+    <P>The Extended Search Dialog is an extension of the core search-and-replace dialog</P>
     
     <P><STRONG>find All</STRONG></P>
     
@@ -122,7 +125,7 @@
       is invoked, the matching lines are displayed in the hyper search window, and additionally the
       surrounding lines before (up) and after (down) the match. </P>
     
-    <P>Tip: extremly useful if you search where a method is called and which parameters are used.</P>
+    <P>Tip: extremly useful if you search where a method is called and which parameters, specified in the next lines, are used.</P>
     
     <P><STRONG>tentativ search</STRONG></P>
     
@@ -130,9 +133,9 @@
     <UL>
       <LI>double typed char (toown instead of. town) </LI>
       <LI>dash instead of underscore (Fast-Macro instead of Fast_Macro)</LI>
-      <LI><B>removed:</B> few char (ton instead of toon) </LI>
+      <!-- <LI><B>removed:</B> few char (ton instead of toon) </LI>
       <LI><B>removed:</B> wrong char typed (Rzdi instead of Rudi) </LI>
-      <LI><B>removed:</B> wrong sequence (Rdui instead of Rudi)</LI>
+      <LI><B>removed:</B> wrong sequence (Rdui instead of Rudi)</LI> -->
     </UL>
     
     <P>combination with option &quot;regular expression&quot; is not supported</P>
@@ -182,7 +185,29 @@
       <LI>the search dialog is kept as long as 'keep dialog' is not switched off explicitely</LI>
     </UL>
     
-    <H2><A NAME="menu">XSearch menu</A> </H2>
+    <H2><A NAME="xhyper">Extended Hypersearch Window</A> </H2>
+	    <P><B>Note:</B> The hyper search results are displayed in the dockable window &quot;XHyperserarch&quot;.
+	      In the context menu, you have the options:</P>
+	    <DL compact>
+	      <DT>Expand Node </DT>
+	      <DD>expand all subnodes of the selected node</DD>
+	      <DT>Collapse Node </DT>
+	      <DD>collapse all subnodes of the selected node</DD>
+	      <DT>Expand Level 1 </DT>
+	      <DD>expand exactly 1 sublevel of the selected node</DD>
+	      <DT>Expand Level 2 </DT>
+	      <DD>expand exactly 2 sublevel of the selected node</DD>
+	      <DT>Expand all Nodes </DT>
+	      <DD>expand all nodes</DD>
+	      <DT>Collapse all Nodes </DT>
+	      <DD>collapse all nodes</DD>
+	      <DT>Write Node to buffer</DT>
+	      <DD>writes the hypersearch result of the selected node to a new buffer</DD>
+	      <DT>Write all Nodes to buffer</DT>
+	      <DD>writes the hypersearch result of all nodes to a new buffer</DD>
+	    </DL>
+
+    <H2><A NAME="menu">Extended Search menu</A> </H2>
     
     <P><STRONG>xfind replace</STRONG></P>
     
@@ -198,18 +223,22 @@
     
     <P><STRONG>xfind-first</STRONG></P>
     
-    <P>Same as xfind-refind, but the search starts from the <B>top</B> of the document.</P>
+    <P>Same as xfind-refind, but the search starts from the <B>top</B> of the document. The search
+      string is the current selection or, if nothing is selected, the previous search string.</P>
     
     <P><STRONG>xfind-next</STRONG></P>
     
-    <P>Same as xfind-refind, but the search direction is <B>forward</B></P>
+    <P>Same as xfind-refind, but the search direction is <B>forward</B>. The search string is the
+      current selection or, if nothing is selected, the previous search string.</P>
     
     <P><STRONG>xfind-prev</STRONG></P>
     
-    <P>Same as xfind-refind, but the search direction is <B>backward</B></P>
+    <P>Same as xfind-refind, but the search direction is <B>backward</B>. The search string is the
+      current selection or, if nothing is selected, the previous search string.</P>
+
+<!-- <P><B>Note:</B> If the option regexp is activ, no search is performed.The message &quot;invalid
+      search settings&quot; is displayed</P> -->
     
-    <P><B>Note:</B> If the option regexp is activ, no search is performed.The message &quot;invalid
-      search settings&quot; is displayed</P>
     
     <P><STRONG>xreplace-in-selection</STRONG></P>
     
@@ -273,7 +302,7 @@
     
     <P><STRONG>getMatchedSubexpressions</STRONG></P>
     
-    <P>After a search with regular expressions, you can obtain the subexpressions <BR>Method: String[] xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;) <BR>or String xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;, 
+    <P>After a search with regular expressions, you can obtain the subexpressions <BR>Method: String[] xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;) <BR>or String xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;,
       int &lt;number of required subexpression)</P>
     
     <P><U>Example:</U></P>
@@ -320,7 +349,7 @@
     <P>xsearch.SearchSettings.push(); <BR>xsearch.SearchSettings.resetSettings(); <BR>xsearch.XSearchAndReplace.setSearchString(&quot;target&quot;); <BR>if (xsearch.XSearchAndReplace.find(view, buffer, 0, buffer.getLength(), false, false,
       xsearch.XSearchAndReplace.FIND_OPTION_SILENT)) <BR>Log.log(Log.DEBUG, BeanShell.class,&quot;+++ Temporary_Macro.9 &quot;+xsearch.XSearchAndReplace.getLastMatchedSelection()); <BR>xsearch.SearchSettings.pop(); </P>
     
-    <H2><A NAME="options">XSearch global options</A></H2>
+    <H2><A NAME="options">Extended Search global options</A></H2>
     
     <P>It is possible to tailor the layout of the xsearch-and-replace dialog box. Disable features
       you will &quot;never&quot; use. They won't consume any space on the xsearch-and-replace
@@ -344,8 +373,8 @@
       of the particular instance of the search string being replaced (see jEidt user guide: &quot;Replacing
       text&quot;).</P>
     
-    <P>If this behavious is not required, it is possible to swich it off in the XSearch global
-      options </P>
+    <P>If this behavious is not required, it is possible to swich it off in the Extended Search
+      global options </P>
     
     <P><B>Use textArea Font in search and replace field</B></P>
     

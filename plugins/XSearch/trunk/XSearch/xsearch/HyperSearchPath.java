@@ -24,7 +24,7 @@ package xsearch;
 
 //{{{ Imports
 import javax.swing.text.*;
-import org.gjt.sp.jedit.search.HyperSearchResult;
+//import org.gjt.sp.jedit.search.HyperSearchResult;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 //}}}
@@ -37,9 +37,11 @@ public class HyperSearchPath extends HyperSearchResult
 {
 
 	//{{{ HyperSearchResult method
-	public HyperSearchPath(Buffer buffer, int line, int start, int end)
+	HyperSearchPath(Buffer buffer, int line, int start, int end)
 	{
-		super(buffer,  line,  start,  end);
+		//super(buffer,  line,  start,  end);
+		super(buffer,  line);
+		this.addOccur(start, end);
 		//Log.log(Log.DEBUG, BeanShell.class,"+++ HyperSearchPath.38: path = "+path);
 		//Log.log(Log.DEBUG, BeanShell.class,"+++ HyperSearchPath.51: MiscUtilities.getFileName(path) = "+MiscUtilities.getFileName(path));
 		//Log.log(Log.DEBUG, BeanShell.class,"+++ HyperSearchPath.53: MiscUtilities.getParentOfPath(path) = "+MiscUtilities.getParentOfPath(path));

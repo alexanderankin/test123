@@ -1,6 +1,6 @@
 /*
  * XSearchDialog.java - xsearch and replace dialog
- * :tabSize=2:indentSize=2:noTabs=false:
+ * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2002 Rudolf Widmann
@@ -26,7 +26,6 @@ package xsearch;
 
 //{{{ Imports
 import javax.swing.border.*;
-//import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -39,7 +38,6 @@ import org.gjt.sp.jedit.msg.SearchSettingsChanged;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
-
 import org.gjt.sp.jedit.search.*;
 //}}}
 
@@ -71,7 +69,25 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	//{{{ getSearchDialog() method
 	public static XSearchDialog getSearchDialog(View view)
 	{
-		return (XSearchDialog)viewHash.get(view);
+		if(Debug.DISABLE_SEARCH_DIALOG_POOL)
+			return new XSearchDialog(view);
+		else
+			return (XSearchDialog)viewHash.get(view);
+	} //}}}
+
+	//{{{ preloadSearchDialog() method
+	/**
+	 * Preloads the search dialog for the given for so that it can be
+	 * quickly displayed later.
+	 * @since jEdit 4.2pre3
+	 */
+	public static void preloadSearchDialog(View view)
+	{
+		if(Debug.DISABLE_SEARCH_DIALOG_POOL)
+			return;
+
+		XSearchDialog dialog = new XSearchDialog(view);
+		viewHash.put(view,dialog);
 	} //}}}
 
 	//{{{ showSearchDialog() method
@@ -88,159 +104,28 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	{
 		if (XSearchAndReplace.debug) Log.log(Log.DEBUG, BeanShell.class,
 			"XSearchDialog.82: invoke showSearchDialog with searchString = "+searchString);
-		XSearchDialog dialog = (XSearchDialog)viewHash.get(view);
-		if(dialog != null)
+		XSearchDialog dialog = getSearchDialog(view);
+		/* in the org.gjt.sp.jedit.search package, the dialog is preloaded
+		 * therefore, no check is necessary
+		 * to be solved here!
+		 */
+		if(dialog == null)
 		{
-			// ugly workaround
-			if(OperatingSystem.isUnix() && !OperatingSystem.isMacOS())
-			{
-				dialog.setVisible(false);
-				dialog.setVisible(true);
-			}
-
-			dialog.setSearchString(searchString,searchIn);
-			GUIUtilities.requestFocus(dialog,dialog.find);
-			dialog.toFront();
-			dialog.requestFocus();
-		}
-		else
-		{
-			dialog = new XSearchDialog(view,searchString,searchIn);
+			dialog = new XSearchDialog(view);
 			viewHash.put(view,dialog);
 		}
+		GUIUtilities.requestFocus(dialog,dialog.find);
+		
+		// ugly workaround
+		if(OperatingSystem.isUnix() && !OperatingSystem.isMacOS())
+			dialog.setVisible(false);
+		
+		dialog.setVisible(true);
+		dialog.setSearchString(searchString,searchIn);
+		dialog.toFront();
+		dialog.requestFocus();
 		XSearchAndReplace.resetIgnoreFromTop();
 		dialog.keepDialogChanged = false;
-	} //}}}
-
-	//{{{ XSearchDialog constructor
-	/**
-	 * Creates a new search and replace dialog box.
-	 * @param view The view
-	 * @param searchString The search string
-	 */
-	public XSearchDialog(View view, String searchString)
-	{
-		this(view,searchString,CURRENT_BUFFER);
-	} //}}}
-
-	//{{{ XSearchDialog constructor
-	/**
-	 * Creates a new search and replace dialog box.
-	 * @param view The view
-	 * @param searchString The search string
-	 * @param searchIn One of CURRENT_BUFFER, ALL_BUFFERS, or DIRECTORY
-	 * @since jEdit 3.2pre2
-	 * Dialog layout:
-	 * ==============
-			content.add(BorderLayout.EAST,buttonsPanel);
-				grid.add(findBtn);
-				grid.add(findAllBtn);
-				grid.add(replaceAndFindBtn);
-				grid.add(replaceAllBtn);
-				grid.add(closeBtn);
-			content.add(BorderLayout.CENTER,centerPanel);
-				centerPanel.add(BorderLayout.NORTH,globalFieldPanel);
-					fieldPanel.add(label);
-					fieldPanel.add(find);
-					fieldPanel.add(selectivShowBox);
-					fieldPanel.add(currentSelectedOptionsLabel);
-					fieldPanel.add(fieldPanelReplaceLabel);
-					fieldPanel.add(replaceModeBox);
-					fieldPanel.add(fieldPanelVerticalStrut);
-					fieldPanel.add(replace);
-				centerPanel.add(BorderLayout.CENTER,searchSettingsPanel);
-					searchSettings.add(new JLabel(jEdit.getProperty("search.fileset")));
-					searchSettings.add(new JLabel(jEdit.getProperty("search.settings")));
-					searchSettings.add(new JLabel(jEdit.getProperty("search.direction")));
-					searchSettings.add(searchSelection);
-					searchSettings.add(keepDialog);
-					searchSettings.add(searchFromTop);
-					searchSettings.add(searchCurrentBuffer);
-					searchSettings.add(ignoreCase);
-					searchSettings.add(searchBack);
-					searchSettings.add(searchAllBuffers);
-					searchSettings.add(regexp);
-					searchSettings.add(searchForward);
-					searchSettings.add(searchDirectory);
-					searchSettings.add(hyperSearch);
-					searchSettings.add(wrap);
-			content.add(BorderLayout.SOUTH,southPanel);
-				southPanel.add(BorderLayout.CENTER,extendedOptionsPanel);
-					extendedOptions.add(columnBox);
-					extendedOptions.add(commentBox);
-					extendedOptions.add(foldBox);
-					extendedOptions.add(resetSettingsButton);
-					extendedOptions.add(rowBox);
-					extendedOptions.add(tentativRadioBtn);
-					extendedOptions.add(wordPartBox);
-				southPanel.add(BorderLayout.SOUTH,multiFilePanel);
-					multifile.add(choose);
-					multifile.add(directory);
-					multifile.add(filter);
-					multifile.add(label);
-					multifile.add(searchSubDirectories);
-	 */
-	public XSearchDialog(View view, String searchString, int searchIn)
-	{
-		super(view,jEdit.getProperty("xsearch.title"),false);
-
-		this.view = view;
-
-		content = new JPanel(new BorderLayout());
-		content.setBorder(new EmptyBorder(0,12,12,12));
-		setContentPane(content);
-
-		centerPanel = new JPanel(new BorderLayout());
-		southPanel = new JPanel(new BorderLayout());
-		// rwchg: switchable panel display
-		// memorize add-panels
-		globalFieldPanel = createFieldPanel();
-		searchSettingsPanel = createSearchSettingsPanel();
-		multiFilePanel = createMultiFilePanel();
-		buttonsPanel = createButtonsPanel();
-		extendedOptionsPanel = createExtendedOptionsPanelGridBag();
-
-		centerPanel.add(BorderLayout.NORTH,globalFieldPanel);
-		centerPanel.add(BorderLayout.CENTER,searchSettingsPanel);
-		content.add(BorderLayout.CENTER,centerPanel);
-		southPanel.add(BorderLayout.CENTER,extendedOptionsPanel);
-		southPanel.add(BorderLayout.SOUTH,multiFilePanel);
-		content.add(BorderLayout.SOUTH,southPanel);
-
-		content.add(BorderLayout.EAST,buttonsPanel);
-		
-		setupSearchSettings();
-
-		// moved to  (0.9)
-		setSearchString(searchString,searchIn);
-
-		// all pre-selections are done: show / hide panels
-		if (!showSettings.isSelected()) showHideOptions(showSettings);
-		if (!showReplace.isSelected()) showHideOptions(showReplace);
-		if (!showExtendedOptions.isSelected()) showHideOptions(showExtendedOptions);
-		if (!searchDirectory.isSelected() && !searchAllBuffers.isSelected()) showHideOptions(searchDirectory);
-		setupCurrentSelectedOptionsLabel();
-
-		directory.addCurrentToHistory();
-
-		keepDialog.setSelected(jEdit.getBooleanProperty(
-			"search.keepDialog.toggle"));
-		searchSettingsHistoryRadioBtn.setSelected(jEdit.getBooleanProperty(
-			"search.settingsHistory.toggle"));
-
-		// moved from (0.9) setSearchString(searchString,searchIn);
-
-		pack();
-		jEdit.unsetProperty("search.width");
-		jEdit.unsetProperty("search.d-width");
-		jEdit.unsetProperty("search.height");
-		jEdit.unsetProperty("search.d-height");
-		GUIUtilities.loadGeometry(this,"search");
-		show();
-
-		EditBus.addToBus(this);
-
-		GUIUtilities.requestFocus(this,find);
 	} //}}}
 
 	//{{{ setSearchString() method
@@ -250,14 +135,18 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	 */
 	public void setSearchString(String searchString, int searchIn)
 	{
+		find.setText(null);
+		replace.setText(null);
+
 		if(searchString == null)
-			find.setText(null);
+			searchCurrentBuffer.setSelected(true);
 		else
 		{
 			if(searchString.indexOf('\n') == -1)
 			{
 				find.setText(searchString);
 				find.selectAll();
+				searchCurrentBuffer.setSelected(true);
 			}
 			else if(searchIn == CURRENT_BUFFER)
 			{
@@ -293,11 +182,29 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		}
 		else if(searchIn == DIRECTORY)
 		{
+			SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+
+			if(fileset instanceof DirectoryListSet)
+			{
+				filter.setText(((DirectoryListSet)fileset)
+					.getFileFilter());
+				directory.setText(((DirectoryListSet)fileset)
+					.getDirectory());
+				Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.190: directory.getText = "+directory.getText());
+				searchSubDirectories.setSelected(((DirectoryListSet)fileset)
+					.isRecursive());
+			}
+
 			hyperSearch.setSelected(true);
 			searchDirectory.setSelected(true);
+			if (synchronize.isSelected())
+				synchronizeMultiFileSettings();
+			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchDialog.191");
+			showHideOptions(searchDirectory);  // 20031228
 		}
 
 		updateEnabled();
+		revalidatePanels();
 	} //}}}
 
 	//{{{ ok() method
@@ -312,6 +219,13 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			if(!save(false))
 				return;
 			
+			if(searchSelection.isSelected()
+				&& view.getTextArea().getSelectionCount() == 0)
+			{
+				GUIUtilities.error(view,"search-no-selection",null);
+				return;
+			}
+
 			if(hyperSearch.isSelected() || searchSelection.isSelected())
 			{
 				if(XSearchAndReplace.hyperSearch(view,
@@ -342,7 +256,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	{
 		save(true);
 		GUIUtilities.saveGeometry(this,"search");
-		dispose();
+		setVisible(false);
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -350,10 +264,10 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	{
 		if(msg instanceof SearchSettingsChanged)
 		{
-			ignoreCase.setSelected(XSearchAndReplace.getIgnoreCase());
-			regexp.setSelected(XSearchAndReplace.getRegexp());
+			if(!saving)
+				load();
 		}
-		else if(msg instanceof ViewUpdate)
+		/* else if(msg instanceof ViewUpdate)
 		{
 			ViewUpdate vmsg = (ViewUpdate)msg;
 			if(vmsg.getView() == view
@@ -361,7 +275,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			{
 				viewHash.remove(view);
 			}
-		}
+		} */
 	} //}}}
 
 	//{{{ dispose() method
@@ -442,8 +356,8 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	private JCheckBox keepDialog, ignoreCase, regexp, hyperSearch,
 		wrap;
 	private JRadioButton searchFromTop, searchBack, searchForward;
-	private JRadioButton searchSelection, searchCurrentBuffer, searchAllBuffers,
-		searchDirectory;
+	private JRadioButton searchSelection, searchCurrentBuffer, 
+		searchAllBuffers, searchDirectory;
 
 	// extended options: column search
 	private JRadioButton columnRadioBtn;
@@ -464,6 +378,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	private HistoryTextField filter, directory;
 	private JCheckBox searchSubDirectories;
 	private JButton choose;
+	private JCheckBox synchronize;
 
 	// buttons
 	private JButton findBtn, /* replaceBtn, */ replaceAndFindBtn, replaceAllBtn,
@@ -472,7 +387,129 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	private JButton resetSettingsButton; // since XSearch0.7
 	private boolean resetSettingsButtonPresent = false; // since XSearch0.7
 	private boolean keepDialogChanged;  // flag: keep dialog changed by user
+
+	private boolean saving;
 	//}}}
+
+	//{{{ XSearchDialog constructor
+	/**
+	 * Creates a new search and replace dialog box.
+	 * @param view The view
+	 * @param searchString The search string
+	 *
+	public XSearchDialog(View view, String searchString)
+	{
+		this(view,searchString,CURRENT_BUFFER);
+	} //}}} */
+
+	//{{{ XSearchDialog constructor
+	/**
+	 * Creates a new search and replace dialog box.
+	 * @param view The view
+	 * @param searchString The search string
+	 * @param searchIn One of CURRENT_BUFFER, ALL_BUFFERS, or DIRECTORY
+	 * @since jEdit 3.2pre2
+	 * Dialog layout:
+	 * ==============
+			content.add(BorderLayout.EAST,buttonsPanel);
+				grid.add(findBtn);
+				grid.add(findAllBtn);
+				grid.add(replaceAndFindBtn);
+				grid.add(replaceAllBtn);
+				grid.add(closeBtn);
+			content.add(BorderLayout.CENTER,centerPanel);
+				centerPanel.add(BorderLayout.NORTH,globalFieldPanel);
+					fieldPanel.add(label);
+					fieldPanel.add(find);
+					fieldPanel.add(selectivShowBox);
+					fieldPanel.add(currentSelectedOptionsLabel);
+					fieldPanel.add(fieldPanelReplaceLabel);
+					fieldPanel.add(replaceModeBox);
+					fieldPanel.add(fieldPanelVerticalStrut);
+					fieldPanel.add(replace);
+				centerPanel.add(BorderLayout.CENTER,searchSettingsPanel);
+					searchSettings.add(new JLabel(jEdit.getProperty("search.fileset")));
+					searchSettings.add(new JLabel(jEdit.getProperty("search.settings")));
+					searchSettings.add(new JLabel(jEdit.getProperty("search.direction")));
+					searchSettings.add(searchSelection);
+					searchSettings.add(keepDialog);
+					searchSettings.add(searchFromTop);
+					searchSettings.add(searchCurrentBuffer);
+					searchSettings.add(ignoreCase);
+					searchSettings.add(searchBack);
+					searchSettings.add(searchAllBuffers);
+					searchSettings.add(regexp);
+					searchSettings.add(searchForward);
+					searchSettings.add(searchDirectory);
+					searchSettings.add(hyperSearch);
+					searchSettings.add(wrap);
+			content.add(BorderLayout.SOUTH,southPanel);
+				southPanel.add(BorderLayout.CENTER,extendedOptionsPanel);
+					extendedOptions.add(columnBox);
+					extendedOptions.add(commentBox);
+					extendedOptions.add(foldBox);
+					extendedOptions.add(resetSettingsButton);
+					extendedOptions.add(rowBox);
+					extendedOptions.add(tentativRadioBtn);
+					extendedOptions.add(wordPartBox);
+				southPanel.add(BorderLayout.SOUTH,multiFilePanel);
+					multifile.add(choose);
+					multifile.add(directory);
+					multifile.add(filter);
+					multifile.add(label);
+					multifile.add(searchSubDirectories);
+	 */
+	public XSearchDialog(View view)
+	//, String searchString, int searchIn)
+	{
+		super(view,jEdit.getProperty("xsearch.title"),false);
+
+		this.view = view;
+
+		content = new JPanel(new BorderLayout());
+		content.setBorder(new EmptyBorder(0,12,12,12));
+		setContentPane(content);
+
+		centerPanel = new JPanel(new BorderLayout());
+		southPanel = new JPanel(new BorderLayout());
+		// rwchg: switchable panel display
+		// memorize add-panels
+		globalFieldPanel = createFieldPanel();
+		searchSettingsPanel = createSearchSettingsPanel();
+		multiFilePanel = createMultiFilePanel();
+		buttonsPanel = createButtonsPanel();
+		extendedOptionsPanel = createExtendedOptionsPanelGridBag();
+
+		centerPanel.add(BorderLayout.NORTH,globalFieldPanel);
+		centerPanel.add(BorderLayout.CENTER,searchSettingsPanel);
+		content.add(BorderLayout.CENTER,centerPanel);
+		southPanel.add(BorderLayout.CENTER,extendedOptionsPanel);
+		southPanel.add(BorderLayout.SOUTH,multiFilePanel);
+		content.add(BorderLayout.SOUTH,southPanel);
+
+		content.add(BorderLayout.EAST,buttonsPanel);
+		
+		load();
+
+		// moved to  (0.9)
+		//setSearchString(searchString,searchIn);
+
+		// all pre-selections are done: show / hide panels
+		if (!showSettings.isSelected()) showHideOptions(showSettings);
+		if (!showReplace.isSelected()) showHideOptions(showReplace);
+		if (!showExtendedOptions.isSelected()) showHideOptions(showExtendedOptions);
+		if (!searchDirectory.isSelected() && !searchAllBuffers.isSelected()) showHideOptions(searchDirectory);
+		setupCurrentSelectedOptionsLabel();
+
+		pack();
+		jEdit.unsetProperty("search.width");
+		jEdit.unsetProperty("search.d-width");
+		jEdit.unsetProperty("search.height");
+		jEdit.unsetProperty("search.d-height");
+		GUIUtilities.loadGeometry(this,"search");
+
+		EditBus.addToBus(this);
+	} //}}}
 
 	//{{{ createFieldPanel() method
 	private JPanel createFieldPanel()
@@ -898,10 +935,25 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		layout.setConstraints(label,cons);
 		multifile.add(label);
 
+		cons.gridwidth = 2;
 		cons.insets = new Insets(0,0,3,6);
 		cons.weightx = 1.0f;
 		layout.setConstraints(filter,cons);
 		multifile.add(filter);
+
+		cons.gridwidth = 1;
+		cons.weightx = 0.0f;
+		cons.insets = new Insets(0,0,3,0);
+
+		synchronize = new JCheckBox(jEdit.getProperty(
+			"search.ext.synchronize"));
+		synchronize.setMnemonic(jEdit.getProperty(
+			"search.synchronize.mnemonic")
+			.charAt(0));
+		synchronize.setEnabled(true);
+		synchronize.addActionListener(actionListener);
+		layout.setConstraints(synchronize,cons);
+		multifile.add(synchronize);
 
 		cons.gridy++;
 
@@ -939,7 +991,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 
 		cons.insets = new Insets(0,0,0,0);
 		cons.gridy++;
-		cons.gridwidth = 4;
+		cons.gridwidth = 3;
 
 		searchSubDirectories = new JCheckBox(jEdit.getProperty(
 			"search.subdirs"));
@@ -995,7 +1047,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		resetSettingsButton.addActionListener(new java.awt.event.ActionListener() {
 			public void actionPerformed(java.awt.event.ActionEvent e) {
 				SearchSettings.resetSettings();
-				setupSearchSettings();
+				load();
 				showHideOptions(searchCurrentBuffer);
 				setupCurrentSelectedOptionsLabel();
 			}
@@ -1018,136 +1070,6 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		return box;
 	} //}}}
 
-	//{{{ setupSearchSettings() method
-	private void setupSearchSettings() {
-		//boolean resetRegex = true; 
-		// ico wordpart, regex was implicit set: reset it
-		switch (XSearchAndReplace.getWordPartOption()) {
-			case SEARCH_PART_PREFIX: wordPartPrefixRadioBtn.setSelected(true);
-				break;
-			case SEARCH_PART_SUFFIX: wordPartSuffixRadioBtn.setSelected(true);
-				break;
-			case SEARCH_PART_WHOLE_WORD: wordPartWholeRadioBtn.setSelected(true);
-				break;
-		//	default: resetRegex = false;	
-	  	default: wordPartDefaultRadioBtn.setSelected(true);
-		}
-		// if (resetRegex) XSearchAndReplace.setRegexp(false);
-		tentativRadioBtn.setSelected(XSearchAndReplace.getTentativOption());
-		
-		switch (XSearchAndReplace.getCommentOption()) {
-			case SEARCH_IN_OUT_INSIDE: searchCommentInsideRadioBtn.setSelected(true);
-				break;
-			case SEARCH_IN_OUT_OUTSIDE: searchCommentOutsideRadioBtn.setSelected(true);
-				break;
-	  	default: searchCommentDefaultRadioBtn.setSelected(true);
-				
-		}
-		switch (XSearchAndReplace.getFoldOption()) {
-			case SEARCH_IN_OUT_INSIDE: searchFoldInsideRadioBtn.setSelected(true);
-				break;
-			case SEARCH_IN_OUT_OUTSIDE: searchFoldOutsideRadioBtn.setSelected(true);
-				break;
-	  	default: searchFoldDefaultRadioBtn.setSelected(true);
-		}
-		if (XSearchAndReplace.getColumnOption()) {
-			columnRadioBtn.setSelected(true);
-			columnExpandTabsRadioBtn.setSelected(XSearchAndReplace.getColumnExpandTabsOption());
-			columnLeftColumnField.setText(Integer.toString(XSearchAndReplace.getColumnLeftCol()));
-			columnRightColumnField.setText(Integer.toString(XSearchAndReplace.getColumnRightCol()));
-			enableColumnOptions(true);
-		} else {
-			columnRadioBtn.setSelected(false);
-			enableColumnOptions(false);
-		}
-		if (XSearchAndReplace.getRowOption()) {
-			rowRadioBtn.setSelected(true);
-			rowLeftRowField.setText(Integer.toString(XSearchAndReplace.getRowLeftRow()));
-			rowRightRowField.setText(Integer.toString(XSearchAndReplace.getRowRightRow()));
-			enableRowOptions(true);
-		} else {
-			rowRadioBtn.setSelected(false);
-			enableRowOptions(false);
-		}
-		//setup hyper range
-		if (XSearchAndReplace.getHyperRangeUpper() == -1) 
-			hyperRangeUpTextField.setText("");
-		else
-			hyperRangeUpTextField.setText(Integer.toString(XSearchAndReplace.getHyperRangeUpper()));
-		if (XSearchAndReplace.getHyperRangeLower() == -1) 
-			hyperRangeDownTextField.setText("");
-		else
-			hyperRangeDownTextField.setText(Integer.toString(XSearchAndReplace.getHyperRangeLower()));
-		
-		ignoreCase.setSelected(XSearchAndReplace.getIgnoreCase());
-		regexp.setSelected(XSearchAndReplace.getRegexp());
-		wrap.setSelected(XSearchAndReplace.getAutoWrapAround());
-
-		if(XSearchAndReplace.getReverseSearch())
-			searchBack.setSelected(true);
-		else if (XSearchAndReplace.getSearchFromTop())
-			searchFromTop.setSelected(true);
-		else
-			searchForward.setSelected(true);
-
-		// disable column/row options ico searchSelection
-		if (searchSelection.isSelected())
-			enableRowColumnSearch(false);
-		if(XSearchAndReplace.getBeanShellReplace())
-		{
-			replace.setModel("replace.script");
-			beanShellReplace.setSelected(true);
-		}
-		else
-		{
-			replace.setModel("replace");
-			stringReplace.setSelected(true);
-		}
-		
-		// setup search fileset
-		SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
-
-		if(fileset instanceof DirectoryListSet)
-		{
-			filter.setText(((DirectoryListSet)fileset)
-				.getFileFilter());
-			directory.setText(((DirectoryListSet)fileset)
-				.getDirectory());
-			searchSubDirectories.setSelected(((DirectoryListSet)fileset)
-				.isRecursive());
-			searchDirectory.setSelected(true);
-		}
-		else
-		{
-			String path = view.getBuffer().getDirectory();
-			//String path = MiscUtilities.getParentOfPath(
-			//	view.getBuffer().getPath());
-
-			if(path.endsWith("/") || path.endsWith(File.separator))
-				path = path.substring(0,path.length() - 1);
-
-			directory.setText(path);
-
-			if(fileset instanceof AllBufferSet)
-			{
-				filter.setText(((AllBufferSet)fileset)
-					.getFileFilter());
-				searchAllBuffers.setSelected(true);
-			}
-			else
-			{
-				filter.setText("*" + MiscUtilities
-					.getFileExtension(view.getBuffer()
-					.getName()));
-				if (!searchSelection.isSelected())
-					searchCurrentBuffer.isSelected();
-			}
-
-			searchSubDirectories.setSelected(true);
-		}
-  }
-  //}}}
-	
 	//{{{ updateEnabled() method
 	private void updateEnabled()
 	{
@@ -1180,11 +1102,11 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		filter.setEnabled(searchAllBuffers.isSelected()
 			|| searchDirectory.isSelected());
 
-		boolean directoryEnabled = searchDirectory.isSelected();
-
-		directory.setEnabled(directoryEnabled);
-		choose.setEnabled(directoryEnabled);
-		searchSubDirectories.setEnabled(directoryEnabled);
+		directory.setEnabled(searchDirectory.isSelected());
+		choose.setEnabled(searchDirectory.isSelected());
+		searchSubDirectories.setEnabled(searchDirectory.isSelected());
+		//synchronize.setEnabled(searchAllBuffers.isSelected()
+		//	|| searchDirectory.isSelected());
 
 		findBtn.setEnabled(!searchSelection.isSelected()
 			|| hyperSearch.isSelected());
@@ -1223,7 +1145,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			SearchSettings searchHist = settingsHistory.getItem(find.getText());
 			if (searchHist != null) {
 				searchHist.update();
-				setupSearchSettings();
+				load();
 				showHideOptions(searchCurrentBuffer);
 				if (!searchCurrentBuffer.isSelected())
 					hyperSearch.setSelected(true);
@@ -1240,12 +1162,23 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 	 */
 	private boolean save(boolean cancel)
 	{
-		String filter = this.filter.getText();
-		this.filter.addCurrentToHistory();
-		if(filter.length() == 0)
-			filter = "*";
+		try
+		{
+			// prevents us from handling SearchSettingsChanged
+			// as a result of below
+			saving = true;
+			XSearchAndReplace.setIgnoreCase(ignoreCase.isSelected());
+			XSearchAndReplace.setRegexp(regexp.isSelected());
+			XSearchAndReplace.setReverseSearch(searchBack.isSelected());
+			XSearchAndReplace.setAutoWrapAround(wrap.isSelected());
 
-		SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+			String filter = this.filter.getText();
+			this.filter.addCurrentToHistory();
+			if(filter.length() == 0)
+				filter = "*";
+	
+			SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+			boolean recurse = searchSubDirectories.isSelected();
 
 		if(searchSelection.isSelected())
 			fileset = new CurrentBufferSet();
@@ -1262,6 +1195,8 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		{
 			String directory = this.directory.getText();
 			this.directory.addCurrentToHistory();
+				directory = MiscUtilities.constructPath(
+					view.getBuffer().getDirectory(),directory);
 
 			if((VFSManager.getVFSForPath(directory).getCapabilities()
 				& VFS.LOW_LATENCY_CAP) == 0)
@@ -1277,15 +1212,13 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 					return false;
 			}
 
-			boolean recurse = searchSubDirectories.isSelected();
-
 			if(fileset instanceof DirectoryListSet)
 			{
 				DirectoryListSet dset = (DirectoryListSet)fileset;
-				if(!dset.getDirectory().equals(directory)
-					|| !dset.getFileFilter().equals(filter)
-					|| !dset.isRecursive() == recurse)
-					fileset = new DirectoryListSet(directory,filter,recurse);
+					dset.setDirectory(directory);
+					dset.setFileFilter(filter);
+					dset.setRecursive(recurse);
+					EditBus.send(new SearchSettingsChanged(null));
 			}
 			else
 				fileset = new DirectoryListSet(directory,filter,recurse);
@@ -1296,17 +1229,27 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			fileset = null;
 		}
 
+			jEdit.setBooleanProperty("search.subdirs.toggle",
+				recurse);
 		jEdit.setBooleanProperty("search.keepDialog.toggle",
 			keepDialog.isSelected());
-		jEdit.setBooleanProperty("search.settingsHistory.toggle",
-			searchSettingsHistoryRadioBtn.isSelected());
-
-		boolean ok = true;
+		jEdit.setBooleanProperty("xsearch.synchronize.toggle",
+			synchronize.isSelected());
+		// moved to actionListener
+		//jEdit.setBooleanProperty("search.settingsHistory.toggle",
+		//	searchSettingsHistoryRadioBtn.isSelected());
 
 		XSearchAndReplace.setSearchFileSet(fileset);
 
-		if(find.getText().length() != 0)
-		{
+			replace.addCurrentToHistory();
+			XSearchAndReplace.setReplaceString(replace.getText());
+
+			if(find.getText().length() == 0)
+			{
+				if(!cancel)
+					getToolkit().beep();
+				return false;
+			}
 			find.addCurrentToHistory();
 			SearchSettings currSs = new SearchSettings();
 			currSs.load();
@@ -1319,13 +1262,35 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			}
 			// because of word part search, we have to set search string even if equal
 			XSearchAndReplace.setSearchString(find.getText());
-			replace.addCurrentToHistory();
-			XSearchAndReplace.setReplaceString(replace.getText());
+			return true;
+		}
+		finally
+		{
+			saving = false;
+		}
+	} //}}}
+
+	//{{{ synchronizeMultiFileSettings() method
+	private void synchronizeMultiFileSettings()
+	{
+		directory.setText(view.getBuffer().getDirectory());
+		Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1276: directory.getText = "+directory.getText());
+
+		SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+
+		if(fileset instanceof AllBufferSet)
+		{
+			filter.setText(((AllBufferSet)fileset)
+				.getFileFilter());
 		}
 		else
-			ok = false;
-
-			return ok;
+		{
+			filter.setText("*" + MiscUtilities
+				.getFileExtension(view.getBuffer()
+				.getName()));
+			fileset = new DirectoryListSet(directory.getText(),filter.getText(),searchSubDirectories.isEnabled());
+			XSearchAndReplace.setSearchFileSet(fileset);
+		}
 	} //}}}
 
 	//{{{ evalExtendedOptions() method
@@ -1549,10 +1514,146 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		else
 		{
 			GUIUtilities.saveGeometry(this,"search");
-			dispose();
+			setVisible(false);
 		}
 	} //}}}
 
+	//{{{ load() method
+	private void load() 
+	{
+		//boolean resetRegex = true; 
+		// ico wordpart, regex was implicit set: reset it
+		switch (XSearchAndReplace.getWordPartOption()) {
+			case SEARCH_PART_PREFIX: wordPartPrefixRadioBtn.setSelected(true);
+				break;
+			case SEARCH_PART_SUFFIX: wordPartSuffixRadioBtn.setSelected(true);
+				break;
+			case SEARCH_PART_WHOLE_WORD: wordPartWholeRadioBtn.setSelected(true);
+				break;
+		//	default: resetRegex = false;	
+	  	default: wordPartDefaultRadioBtn.setSelected(true);
+		}
+		// if (resetRegex) XSearchAndReplace.setRegexp(false);
+		tentativRadioBtn.setSelected(XSearchAndReplace.getTentativOption());
+		
+		switch (XSearchAndReplace.getCommentOption()) {
+			case SEARCH_IN_OUT_INSIDE: searchCommentInsideRadioBtn.setSelected(true);
+				break;
+			case SEARCH_IN_OUT_OUTSIDE: searchCommentOutsideRadioBtn.setSelected(true);
+				break;
+	  	default: searchCommentDefaultRadioBtn.setSelected(true);
+				
+		}
+		switch (XSearchAndReplace.getFoldOption()) {
+			case SEARCH_IN_OUT_INSIDE: searchFoldInsideRadioBtn.setSelected(true);
+				break;
+			case SEARCH_IN_OUT_OUTSIDE: searchFoldOutsideRadioBtn.setSelected(true);
+				break;
+	  	default: searchFoldDefaultRadioBtn.setSelected(true);
+		}
+		if (XSearchAndReplace.getColumnOption()) {
+			columnRadioBtn.setSelected(true);
+			columnExpandTabsRadioBtn.setSelected(XSearchAndReplace.getColumnExpandTabsOption());
+			columnLeftColumnField.setText(Integer.toString(XSearchAndReplace.getColumnLeftCol()));
+			columnRightColumnField.setText(Integer.toString(XSearchAndReplace.getColumnRightCol()));
+			enableColumnOptions(true);
+		} else {
+			columnRadioBtn.setSelected(false);
+			enableColumnOptions(false);
+		}
+		if (XSearchAndReplace.getRowOption()) {
+			rowRadioBtn.setSelected(true);
+			rowLeftRowField.setText(Integer.toString(XSearchAndReplace.getRowLeftRow()));
+			rowRightRowField.setText(Integer.toString(XSearchAndReplace.getRowRightRow()));
+			enableRowOptions(true);
+		} else {
+			rowRadioBtn.setSelected(false);
+			enableRowOptions(false);
+		}
+		//setup hyper range
+		if (XSearchAndReplace.getHyperRangeUpper() == -1) 
+			hyperRangeUpTextField.setText("");
+		else
+			hyperRangeUpTextField.setText(Integer.toString(XSearchAndReplace.getHyperRangeUpper()));
+		if (XSearchAndReplace.getHyperRangeLower() == -1) 
+			hyperRangeDownTextField.setText("");
+		else
+			hyperRangeDownTextField.setText(Integer.toString(XSearchAndReplace.getHyperRangeLower()));
+		
+		ignoreCase.setSelected(XSearchAndReplace.getIgnoreCase());
+		regexp.setSelected(XSearchAndReplace.getRegexp());
+		wrap.setSelected(XSearchAndReplace.getAutoWrapAround());
+
+		if(XSearchAndReplace.getReverseSearch())
+			searchBack.setSelected(true);
+		else if (XSearchAndReplace.getSearchFromTop())
+			searchFromTop.setSelected(true);
+		else
+			searchForward.setSelected(true);
+
+		// disable column/row options ico searchSelection
+		if (searchSelection.isSelected())
+			enableRowColumnSearch(false);
+		if(XSearchAndReplace.getBeanShellReplace())
+		{
+			replace.setModel("replace.script");
+			beanShellReplace.setSelected(true);
+		}
+		else
+		{
+			replace.setModel("replace");
+			stringReplace.setSelected(true);
+		}
+		
+		// setup search fileset
+		SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+		HistoryModel model = filter.getModel();
+		if(model.getSize() != 0)
+			filter.setText(model.getItem(0));
+		else
+		{
+			filter.setText("*" + MiscUtilities
+				.getFileExtension(view.getBuffer()
+				.getName()));
+		}
+		model = directory.getModel();
+		if(model.getSize() != 0)
+			directory.setText(model.getItem(0));
+		else
+			directory.setText(view.getBuffer().getDirectory());
+		Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1621: directory.getText = "+directory.getText());
+
+		searchSubDirectories.setSelected(jEdit.getBooleanProperty(
+			"search.subdirs.toggle"));
+
+		if(fileset instanceof DirectoryListSet)
+		{
+			filter.setText(((DirectoryListSet)fileset)
+				.getFileFilter());
+			directory.setText(((DirectoryListSet)fileset)
+				.getDirectory());
+		Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1632: directory.getText = "+directory.getText());
+			searchSubDirectories.setSelected(((DirectoryListSet)fileset)
+				.isRecursive());
+		}
+		else if(fileset instanceof AllBufferSet)
+		{
+			filter.setText(((AllBufferSet)fileset)
+				.getFileFilter());
+		}
+
+		directory.addCurrentToHistory();
+
+		keepDialog.setSelected(jEdit.getBooleanProperty(
+			"search.keepDialog.toggle"));
+			synchronize.setSelected(jEdit.getBooleanProperty(
+			"xsearch.synchronize.toggle"));
+			Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1648: synchronize.isSelected = "+synchronize.isSelected());
+		searchSettingsHistoryRadioBtn.setSelected(jEdit.getBooleanProperty(
+			"search.settingsHistory.toggle"));
+
+  } //}}}
+	
 	//{{{ showHideOptions() method
 	private void showHideOptions(Object source)	{
 		if(source == showSettings) {
@@ -1775,7 +1876,11 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 					updateEnabled();
 			}
 			else if (source == searchSettingsHistoryRadioBtn) {
-				loadSettingsFromHistory();
+				// i don't remeber why, but this statement is useless
+				// loadSettingsFromHistory();
+				jEdit.setBooleanProperty("search.settingsHistory.toggle",
+					searchSettingsHistoryRadioBtn.isSelected());
+
 			}
 /*
 			else if (source == searchFoldInsideRadioBtn || source == searchFoldOutsideRadioBtn) {
@@ -1821,7 +1926,7 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 		{
 			XSearchAndReplace.resetIgnoreFromTop(); // rwchg: when settings change, no refind
 			Object source = evt.getSource();
-
+			/* these checks are removed in 42pre6, but I'm not sure if needed */
 			if(source == ignoreCase)
 				XSearchAndReplace.setIgnoreCase(ignoreCase.isSelected());
 			else if(source == regexp)
@@ -1832,16 +1937,24 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 			}
 			else if(source == wrap)
 				XSearchAndReplace.setAutoWrapAround(wrap.isSelected());
-			else if(source == searchCurrentBuffer) {
+			else
+				/* end of 42pre6 nopping */
+			if(source == searchCurrentBuffer) {
 				hyperSearch.setSelected(false);
 				enableRowColumnSearch(true);
 			}
-			else if(source == searchSelection
+			else if (source == searchSelection
 				|| source == searchAllBuffers
-				|| source == searchDirectory)
+				|| source == searchDirectory) 
+			{
 				hyperSearch.setSelected(true);
+				if ((source == searchAllBuffers || source == searchDirectory)
+					&& synchronize.isSelected())
+					synchronizeMultiFileSettings();
+			}
 				
 			enableRowColumnSearch(source != searchSelection);
+			save(true);
 			updateEnabled();
 		}
 	} //}}}
@@ -1859,6 +1972,14 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 					false);
 				if(dirs != null)
 					directory.setText(dirs[0]);
+			}
+			else if(evt.getSource() == synchronize)
+			{
+				Log.log(Log.DEBUG, BeanShell.class,"XSearchDialog.1972: synchronize.isSelected() = "+synchronize.isSelected());
+				jEdit.setBooleanProperty("xsearch.synchronize.toggle",
+					synchronize.isSelected());
+				if (synchronize.isSelected())
+					synchronizeMultiFileSettings();
 			}
 			else // source is directory or filter field
 			{
@@ -1909,9 +2030,22 @@ public class XSearchDialog extends EnhancedDialog implements EBComponent
 				}
 				else if(source == replaceAllBtn)
 				{
+				if(searchSelection.isSelected() &&
+					view.getTextArea().getSelectionCount()
+					== 0)
+				{
+					GUIUtilities.error(view,"search-no-selection",null);
+					return;
+				}
+
 					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 
-					save(false);
+				if(!save(false))
+				{
+					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					getToolkit().beep();
+					return;
+				}
 
 					if(searchSelection.isSelected())
 					{

@@ -34,9 +34,8 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.search.*;
+//import org.gjt.sp.jedit.search.*;
 import org.gjt.sp.util.*;
-//import bsh.BshMethod;
 import org.gjt.sp.util.Log;  // for debugging
 import org.gjt.sp.jedit.BeanShell;
 
@@ -59,9 +58,6 @@ class HyperSearchRequest extends WorkRequest
 		this.matcher = matcher;
 
 		this.results = results;
-//		this.resultTreeModel = results.getTreeModel();
-//		this.resultTreeRoot = (DefaultMutableTreeNode)resultTreeModel
-//			.getRoot();
 		this.searchString = XSearchAndReplace.getSearchString();
 		this.rootSearchNode = new DefaultMutableTreeNode(searchString);
 
@@ -75,7 +71,7 @@ class HyperSearchRequest extends WorkRequest
 	public void run()
 	{
 		setStatus(jEdit.getProperty("hypersearch-status"));  // added 4.1pre5
-		SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
+		org.gjt.sp.jedit.search.SearchFileSet fileset = XSearchAndReplace.getSearchFileSet();
 		String[] files = fileset.getFiles(view);
 		if(files == null || files.length == 0)
 		{
@@ -84,13 +80,13 @@ class HyperSearchRequest extends WorkRequest
 				public void run()
 				{
 					GUIUtilities.error(view,"empty-fileset",null);
+					results.searchDone(rootSearchNode);
 				}
 			});
 			return;
 		}
 
 		setProgressMaximum(fileset.getFileCount(view));
-
 
 		// to minimise synchronization and stuff like that, we only
 		// show a status message at most twice a second
@@ -117,10 +113,10 @@ loop:				for(int i = 0; i < files.length; i++)
 					current++;
 
 					long currentTime = System.currentTimeMillis();
-					if(currentTime - lastStatusTime > 500)
+					if(currentTime - lastStatusTime > 250)
 					{
-						setStatus(jEdit.getProperty("hypersearch.status",
-							new String[] { file }));
+						//setStatus(jEdit.getProperty("hypersearch.status",
+						//	new String[] { file }));
 						setProgressValue(current);
 						lastStatusTime = currentTime;
 					}
@@ -129,13 +125,6 @@ loop:				for(int i = 0; i < files.length; i++)
 					if(buffer == null)
 						continue loop;
 
-					// int thisResultCount = doHyperSearch(buffer,
-						// 0,buffer.getLength());
-					// if(thisResultCount != 0)
-					// {
-						// bufferCount++;
-						// resultCount += thisResultCount;
-					// }
 					doHyperSearch(buffer);
 				};
 			}
@@ -147,8 +136,7 @@ loop:				for(int i = 0; i < files.length; i++)
 			{
 				public void run()
 				{
-					GUIUtilities.error(view,"searcherror",
-						new String[] { e.toString() });
+					XSearchAndReplace.handleError(view,e);
 				}
 			});
 		}
@@ -219,8 +207,6 @@ loop:				for(int i = 0; i < files.length; i++)
 	private View view;
 	private SearchMatcher matcher;
 	private HyperSearchResults results;
-//	private DefaultTreeModel resultTreeModel;
-//	private DefaultMutableTreeNode resultTreeRoot;
 	private DefaultMutableTreeNode rootSearchNode;
 
 	private Selection[] selection;
@@ -239,9 +225,6 @@ loop:				for(int i = 0; i < files.length; i++)
 		try
 		{
 			buffer.readLock();
-
-			//final DefaultMutableTreeNode bufferNode = new DefaultMutableTreeNode(
-			//	buffer.getPath());
 
 			for(int i = 0; i < selection.length; i++)
 			{
@@ -294,16 +277,6 @@ loop:				for(int i = 0; i < files.length; i++)
 
 		if(resultCount != 0)
 		{
-			// resultTreeRoot.insert(bufferNode,resultTreeRoot.getChildCount());
-// 
-			// SwingUtilities.invokeLater(new Runnable()
-			// {
-				// public void run()
-				// {
-					// resultTreeModel.reload(resultTreeRoot);
-				// }
-			// });
-		// }
 			rootSearchNode.insert(bufferNode,rootSearchNode.getChildCount());
 		}
 
@@ -327,7 +300,8 @@ loop:				for(int i = 0; i < files.length; i++)
 
 			Segment text = new Segment();
 			int offset = start;
-			int line = -1;
+			//int line = -1;
+			HyperSearchResult lastResult = null;
 
 			loop:			for(int counter = 0; ; counter++)
 			{
@@ -335,42 +309,46 @@ loop:				for(int i = 0; i < files.length; i++)
 					buffer.getLineOfOffset(offset)) == offset);
 
 				buffer.getText(offset,end - offset,text);
-				int[] match = matcher.nextMatch(
+				//int[] match = matcher.nextMatch(
+				SearchMatcher.Match match = matcher.nextMatch(
 					new CharIndexedSegment(text,false),
 					startOfLine,endOfLine,counter == 0,
 					false);
 				if(match == null)
 					break loop;
 
-				int matchStart = offset + match[0];
-				int matchEnd = offset + match[1];
-
-				offset += match[1];
 // Log.log(Log.DEBUG, BeanShell.class,"tp275: matchStart = "+matchStart+", matchEnd = "+matchEnd+", offset = "+offset+
 //				" ,found: "+buffer.getText(matchStart, matchEnd - matchStart));
 				// rwchg: check extended parameters
-				if (!XSearchAndReplace.checkXSearchParameters(view.getTextArea(), buffer, matchStart, matchEnd, true)) {
+				if (!XSearchAndReplace.checkXSearchParameters(view.getTextArea(), buffer, offset+match.start, offset+match.end, true)) {
 					// Log.log(Log.DEBUG, BeanShell.class,"tp281: match invalid");
 					// this match was not valid: skip
+					offset += match.end;
 					continue loop;
 				}
 				
 				resultCount++;  // this line has been moved: count match, even if on same line
 
-				int newLine = buffer.getLineOfOffset(offset);
-				if(line >= newLine+lineRangeDown)
+				int newLine = buffer.getLineOfOffset(
+					offset + match.start);
+				if(lastResult != null && lastResult.line >= newLine+lineRangeDown)
 				{
 					// already had a result on this
 					// line, skip
+					if(lastResult.line == newLine)
+						lastResult.addOccur(offset + match.start,
+						offset + match.end);
+					offset += match.end;
 					continue loop;
 				}
 
+				lastResult = new HyperSearchResult(
+					buffer,newLine);
 				if(lineRangeUp > 0 || lineRangeDown > 0) {
 					//Log.log(Log.DEBUG, BeanShell.class,"HyperSearchRequest.330: lineRangeUp = "+lineRangeUp+", lineRangeDown = "+lineRangeDown);
 					// create subnode to separate hyper ranges
 					DefaultMutableTreeNode subNode = new DefaultMutableTreeNode(
-							new HyperSearchResult(buffer,newLine,
-							matchStart,matchEnd));
+							lastResult);
 					bufferNode.add(subNode);
 				
 					for (int i = newLine-lineRangeUp; 
@@ -390,21 +368,24 @@ loop:				for(int i = 0; i < files.length; i++)
 						*/						
 						int startOfI = buffer.getLineStartOffset(i); 
 						int endOfI = buffer.getLineEndOffset(i); 
-						subNode.add(new DefaultMutableTreeNode(
-							new HyperSearchResult(
-								buffer,i,
-								i == newLine ? matchStart : startOfI,
-								i == newLine ? matchEnd   : endOfI
-								)
-								,false));
+						HyperSearchResult rangeResult = new HyperSearchResult(buffer,i);
+						subNode.add(new DefaultMutableTreeNode(rangeResult, false));
+						rangeResult.addOccur(
+								i == newLine ? offset + match.start : startOfI, 
+								i == newLine ? offset + match.end   : endOfI);
 					}
 				}
 				else {
-						bufferNode.add(new DefaultMutableTreeNode(
-							new HyperSearchResult(buffer,newLine,
-							matchStart,matchEnd),false));
+					bufferNode.add(
+						new DefaultMutableTreeNode(
+						lastResult,false));
+
 				}
-				line = newLine+lineRangeDown;
+				lastResult.addOccur(offset + match.start,
+					offset + match.end);
+
+				offset += match.end;
+				//line = newLine+lineRangeDown;
 			}
 		}
 		finally
