@@ -57,11 +57,11 @@ public class HtmlCssGutter extends HtmlGutter
         }
 
         String s = Integer.toString(lineNumber);
-        buf.append("<SPAN CLASS=\"" + style + "\">")
+        buf.append("<span class=\"" + style + "\">")
             .append(spacer.substring(0, this.gutterSize - s.length()))
             .append(s)
             .append(this.gutterBorder)
-            .append("</SPAN>");
+            .append("</span>");
 
         return buf.toString();
     }
@@ -80,10 +80,10 @@ public class HtmlCssGutter extends HtmlGutter
             style = "gutterH";
         }
 
-        buf.append("<SPAN CLASS=\"" + style + "\">")
+        buf.append("<span class=\"" + style + "\">")
             .append(spacer)
             .append(':')
-            .append("</SPAN>");
+            .append("</span>");
 
         return buf.toString();
     }
