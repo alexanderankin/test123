@@ -5,10 +5,12 @@
 - &, < or > will show up twice if a DTD defines it
 - documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
-- element and entity lists for schemas
+- element lists for schemas
+- clean up entity code, in general, clean up the code
 
 + version 1.0:
 
+- xmlns attributes, XMLSchema-instance stuff
 - use AssetBrowser
 - recording <, >, /, &
 - switching between two edit panes with same buffer: expand tree at

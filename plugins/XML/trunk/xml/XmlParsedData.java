@@ -69,7 +69,14 @@ public class XmlParsedData
 			return null;
 		else
 		{
-			ElementDecl decl = (ElementDecl)info.elementHash.get(name);
+			String lName;
+			int prefixLen = prefix.length();
+			if(prefixLen == 0)
+				lName = name;
+			else
+				lName = name.substring(prefixLen + 1);
+
+			ElementDecl decl = (ElementDecl)info.elementHash.get(lName);
 			if(decl == null)
 				return null;
 			else
@@ -93,16 +100,22 @@ public class XmlParsedData
 			{
 				String prefix = (String)iter.next();
 				CompletionInfo info = (CompletionInfo)
-					mappings.get(prefix);
+				mappings.get(prefix);
 				info.getAllElements(prefix,returnValue);
 			}
 		}
 		else
 		{
 			String parentPrefix = getElementNamePrefix(parentTag.tag);
+			System.err.println("parentPrefix = " + parentPrefix);
+			System.err.println("parent tag = " + parentTag.tag);
+			System.err.println("mappings = " + mappings.keySet());
 			ElementDecl parentDecl = getElementDecl(parentTag.tag);
 			if(parentDecl != null)
+			{
+				System.err.println("adding children");
 				returnValue.addAll(parentDecl.getChildElements(parentPrefix));
+			}
 
 			// add everything but the parent's prefix now
 			Iterator iter = mappings.keySet().iterator();
@@ -111,6 +124,7 @@ public class XmlParsedData
 				String prefix = (String)iter.next();
 				if(!prefix.equals(parentPrefix))
 				{
+					System.err.println("adding for prefix " + prefix);
 					CompletionInfo info = (CompletionInfo)
 						mappings.get(prefix);
 					info.getAllElements(prefix,returnValue);
@@ -129,8 +143,10 @@ public class XmlParsedData
 			XmlPlugin.PARSED_DATA_PROPERTY);
 	} //}}}
 
+	//{{{ Private members
+
 	//{{{ getElementPrefix() method
-	public static String getElementNamePrefix(String name)
+	private static String getElementNamePrefix(String name)
 	{
 		int index = name.indexOf(':');
 		if(index == -1)
@@ -138,4 +154,6 @@ public class XmlParsedData
 		else
 			return name.substring(0,index);
 	} //}}}
+
+	//}}}
 }
