@@ -42,9 +42,10 @@ public class BackgroundHighlight extends TextAreaExtension
     // (EditPane, BackgroundHighlight) association
     private static Hashtable highlights = new Hashtable();
 
-    private static String    iconName = null;
-    private static ImageIcon icon     = null;
-    private static boolean   blend    = false;
+    private static String    iconName   = null;
+    private static ImageIcon icon       = null;
+    private static boolean   blend      = false;
+    private static Color     blendColor = null;
 
     private boolean enabled = true;
 
@@ -66,7 +67,11 @@ public class BackgroundHighlight extends TextAreaExtension
             Log.log(Log.DEBUG, BackgroundHighlight.class, e);
         }
 
-        blend = jEdit.getBooleanProperty("background.blend", false);
+        blend      = jEdit.getBooleanProperty("background.blend", false);
+        blendColor = jEdit.getColorProperty(
+            "background.blend-color",
+            jEdit.getColorProperty("view.bgColor", Color.white)
+        );
     }
 
 
@@ -129,10 +134,9 @@ public class BackgroundHighlight extends TextAreaExtension
             if (alpha < 0)   { alpha = 0; }
             if (alpha > 255) { alpha = 255; }
 
-            Color color = GUIUtilities.parseColor(
-                jEdit.getProperty("background.blend-color", "#ffffff"), Color.white
+            Color alphaColor = new Color(
+                blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue(), alpha
             );
-            Color alphaColor = new Color(color.getRed(), color.getGreen(), color.getBlue(), alpha);
 
             AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
 
@@ -228,7 +232,11 @@ public class BackgroundHighlight extends TextAreaExtension
         iconName = newIconName;
         icon     = newIcon;
 
-        blend = jEdit.getBooleanProperty("background.blend", false);
+        blend      = jEdit.getBooleanProperty("background.blend", false);
+        blendColor = jEdit.getColorProperty(
+            "background.blend-color",
+            jEdit.getColorProperty("view.bgColor", Color.white)
+        );
 
         // Propagate the changes to all textareas
         View[] views = jEdit.getViews();

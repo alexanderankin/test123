@@ -35,6 +35,7 @@ public class BackgroundOptionPane extends AbstractOptionPane
     private JButton    btnBackground;
     private JTextField tfBackground;
     private JCheckBox  blend;
+    private JButton    blendColor;
 
 
     public BackgroundOptionPane() {
@@ -50,7 +51,7 @@ public class BackgroundOptionPane extends AbstractOptionPane
         this.btnBackground = new JButton(jEdit.getProperty(
             "options.background.choose-file"
         ));
-        this.btnBackground.addActionListener(new ActionHandler());
+        this.btnBackground.addActionListener(new FileActionHandler());
 
         JPanel filePanel = new JPanel(new BorderLayout(5, 0));
         filePanel.add(this.tfBackground,  BorderLayout.CENTER);
@@ -66,6 +67,14 @@ public class BackgroundOptionPane extends AbstractOptionPane
             jEdit.getBooleanProperty("background.blend", false)
         );
         addComponent(this.blend);
+
+        this.blendColor = this.createColorButton(
+            "background.blend-color", jEdit.getColorProperty("view.bgColor", Color.white)
+        );
+        addComponent(
+            jEdit.getProperty("options.background.blend-color"),
+            this.blendColor
+        );
     }
 
 
@@ -77,10 +86,14 @@ public class BackgroundOptionPane extends AbstractOptionPane
         jEdit.setBooleanProperty(
             "background.blend", this.blend.isSelected()
         );
+
+        jEdit.setColorProperty(
+            "background.blend-color", this.blendColor.getBackground()
+        );
     }
 
 
-    private class ActionHandler implements ActionListener
+    private class FileActionHandler implements ActionListener
     {
         public void actionPerformed(ActionEvent evt) {
             String[] paths = GUIUtilities.showVFSFileDialog(
@@ -89,6 +102,30 @@ public class BackgroundOptionPane extends AbstractOptionPane
 
             if (paths != null) {
                 BackgroundOptionPane.this.tfBackground.setText(paths[0]);
+            }
+        }
+    }
+
+
+    private JButton createColorButton(String property, Color defaultColor) {
+        JButton b = new JButton(" ");
+        b.setBackground(jEdit.getColorProperty(property, defaultColor));
+        b.addActionListener(new ColorActionHandler());
+        b.setRequestFocusEnabled(false);
+        return b;
+    }
+
+
+    private class ColorActionHandler implements ActionListener
+    {
+        public void actionPerformed(ActionEvent evt) {
+            JButton button = (JButton) evt.getSource();
+            Color c = JColorChooser.showDialog(BackgroundOptionPane.this,
+                jEdit.getProperty("colorChooser.title"),
+                button.getBackground()
+            );
+            if (c != null) {
+                button.setBackground(c);
             }
         }
     }

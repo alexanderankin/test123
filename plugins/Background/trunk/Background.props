@@ -11,12 +11,13 @@ background.toggle-background.label=Background
 
 background.file=
 background.blend=false
-background.blend-alpha=127
 background.blend-color=#ffffff
+background.blend-alpha=127
 
 # options
 options.background.label=Background
 options.background.file=File:\ 
 options.background.choose-file=Choose
 options.background.blend=Use color blending
+options.background.blend-color=Blend color:\ 
 
