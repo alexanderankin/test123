@@ -4,6 +4,7 @@
 
 
 <ACTIONS>
+	<!-- commands invoked by user input -->
 	<ACTION NAME="xml-complete-closing-tag">
 		<CODE>
 			xml.XmlActions.completeClosingTag(view);

@@ -322,7 +322,6 @@ public class XmlActions
 
 		if(tag != null)
 			textArea.setSelectedText("</" + tag.tag + ">");
-			
 	} //}}}
 
 	//{{{ split() method

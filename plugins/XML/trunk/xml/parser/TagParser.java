@@ -102,52 +102,83 @@ public class TagParser
 	{
 		Stack tagStack = new Stack();
 
-loop:		for (int i = text.lastIndexOf('<', pos);
-			i != -1; i = text.lastIndexOf('<', --i))
+		// some voodoo to skip inline scripts and comments and such...
+		// basically we do not look for stuff that looks like a tag
+		// between <X ... X> where X is a non-alphanumeric character.
+		// this works fine for JSP, PHP, and maybe others.
+		boolean notATag = false;
+
+loop:		for (int i = pos; i >= 0; i--)
 		{
-			Tag tag = getTagAtOffset(text,i + 1);
-
-			if (tag == null)
-				continue;
-			else
+			char ch = text.charAt(i);
+			if(ch == '<')
 			{
-				if(html)
-					tag.tag = tag.tag.toLowerCase();
-
-				ElementDecl decl = (ElementDecl)elementDecls.get(tag.tag);
-				if(tag.type == T_STANDALONE_TAG
-					|| (decl != null && decl.empty))
+				if(i != text.length() - 1)
 				{
+					char ch2 = text.charAt(i + 1);
+					if(ch2 != '/' && !Character.isLetter(ch2))
+					{
+						if(notATag)
+							notATag = false;
+						else
+							return null;
+					}
+				}
+			}
+			else if(ch == '>')
+			{
+				if(notATag)
+					continue;
+
+				if(i != 0 && !Character.isLetter(text.charAt(i - 1)))
+				{
+					notATag = true;
 					continue;
 				}
-				else if(tag.type == T_START_TAG)
+
+				Tag tag = getTagAtOffset(text,i + 1);
+
+				if (tag == null)
+					continue;
+				else
 				{
-					if(tagStack.empty())
-						return tag;
-	
-					int unwindIndex = -1;
-	
-					for(int j = tagStack.size() - 1;
-						j >= 0; j--)
+					String tagName = (html ? tag.tag.toLowerCase() : tag.tag);
+
+					ElementDecl decl = (ElementDecl)elementDecls.get(tagName);
+					if(tag.type == T_STANDALONE_TAG
+						|| (decl != null && decl.empty))
 					{
-						if(tagStack.get(j).equals(tag.tag))
+						continue;
+					}
+					else if(tag.type == T_START_TAG)
+					{
+						if(tagStack.empty())
+							return tag;
+
+						int unwindIndex = -1;
+
+						for(int j = tagStack.size() - 1;
+							j >= 0; j--)
 						{
-							unwindIndex = j;
-							break;
+							if(tagStack.get(j).equals(tagName))
+							{
+								unwindIndex = j;
+								break;
+							}
+						}
+
+						if(unwindIndex == -1)
+							return tag;
+						else
+						{
+							while(unwindIndex != tagStack.size())
+								tagStack.remove(unwindIndex);
 						}
 					}
-
-					if(unwindIndex == -1)
-						return tag;
-					else
+					else if(tag.type == T_END_TAG)
 					{
-						while(unwindIndex != tagStack.size())
-							tagStack.remove(unwindIndex);
+						tagStack.push(tagName);
 					}
-				}
-				else if(tag.type == T_END_TAG)
-				{
-					tagStack.push(tag.tag);
 				}
 			}
 		}
@@ -162,24 +193,56 @@ loop:		for (int i = text.lastIndexOf('<', pos);
 	{
 		int tagCounter = 0;
 
-loop:		for (int i = text.indexOf('<', startTag.end);
-			i != -1; i = text.indexOf('<', ++i))
+		// some voodoo to skip inline scripts and comments and such...
+		// basically we do not look for stuff that looks like a tag
+		// between <X ... X> where X is a non-alphanumeric character.
+		// this works fine for JSP, PHP, and maybe others.
+		boolean notATag = false;
+
+loop:		for (int i = startTag.end; i < text.length(); i++)
 		{
-			Tag tag = getTagAtOffset(text,i + 1);
-			if (tag == null)
-				continue;
-			else if(tag.tag.equals(startTag.tag))
+			char ch = text.charAt(i);
+			if(ch == '<')
 			{
-				if(tag.type == T_END_TAG)
+				if(notATag)
+					continue;
+
+				if(i != text.length() - 1)
 				{
-					if(tagCounter == 0)
-						return tag;
-					else
-						tagCounter--;
+					char ch2 = text.charAt(i + 1);
+					if(ch2 != '/' && !Character.isLetter(ch2))
+					{
+						notATag = true;
+						continue;
+					}
 				}
-				else if(tag.type == T_START_TAG)
+
+				Tag tag = getTagAtOffset(text,i + 1);
+				if (tag == null)
+					continue;
+				else if(tag.tag.equals(startTag.tag))
 				{
-					tagCounter++;
+					if(tag.type == T_END_TAG)
+					{
+						if(tagCounter == 0)
+							return tag;
+						else
+							tagCounter--;
+					}
+					else if(tag.type == T_START_TAG)
+					{
+						tagCounter++;
+					}
+				}
+			}
+			else if(ch == '>')
+			{
+				if(i != 0 && !Character.isLetter(text.charAt(i - 1)))
+				{
+					if(notATag)
+						notATag = false;
+					else
+						return null;
 				}
 			}
 		}
@@ -192,23 +255,58 @@ loop:		for (int i = text.indexOf('<', startTag.end);
 	{
 		int tagCounter = 0;
 
-loop:		for (int i = text.lastIndexOf('<', endTag.start - 1);
-			i != -1; i = text.lastIndexOf('<', --i))
+		// some voodoo to skip inline scripts and comments and such...
+		// basically we do not look for stuff that looks like a tag
+		// between <X ... X> where X is a non-alphanumeric character.
+		// this works fine for JSP, PHP, and maybe others.
+		boolean notATag = false;
+
+loop:		for (int i = endTag.start - 1; i >= 0; i--)
 		{
-			Tag tag = getTagAtOffset(text,i + 1);
-			if (tag == null)
-				continue;
-			else if(tag.tag.equals(endTag.tag))
+			char ch = text.charAt(i);
+			if(ch == '<')
 			{
-				if(tag.type == T_START_TAG)
+				if(i != text.length() - 1)
 				{
-					if(tagCounter == 0)
-						return tag;
-					else
+					char ch2 = text.charAt(i + 1);
+					if(ch2 != '/' && !Character.isLetter(ch2))
+					{
+						if(notATag)
+							notATag = false;
+						else
+							return null;
+					}
+				}
+			}
+			else if(ch == '>')
+			{
+				if(notATag)
+					continue;
+
+				if(i != 0)
+				{
+					if(!Character.isLetter(text.charAt(i - 1)))
+					{
+						notATag = true;
+						continue;
+					}
+				}
+
+				Tag tag = getTagAtOffset(text,i + 1);
+				if (tag == null)
+					continue;
+				else if(tag.tag.equals(endTag.tag))
+				{
+					if(tag.type == T_START_TAG)
+					{
+						if(tagCounter == 0)
+							return tag;
+						else
+							tagCounter++;
+					}
+					else if(tag.type == T_END_TAG)
 						tagCounter++;
 				}
-				else if(tag.type == T_END_TAG)
-					tagCounter++;
 			}
 		}
 
