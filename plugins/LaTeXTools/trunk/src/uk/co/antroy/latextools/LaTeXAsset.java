@@ -4,7 +4,7 @@ import sidekick.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
-
+//This must implement features of TagPair.
  public class LaTeXAsset extends Asset{
     
     public LaTeXAsset(String name){

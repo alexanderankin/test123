@@ -4,7 +4,7 @@
 
 <DOCKABLES>
     <DOCKABLE NAME="navigation-dock">
-        new uk.co.antroy.latextools.LaTeXDockable(view, buffer);
+        uk.co.antroy.latextools.LaTeXParser.getControls();
     </DOCKABLE>
 </DOCKABLES>
 
