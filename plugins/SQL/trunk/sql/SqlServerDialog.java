@@ -391,7 +391,7 @@ public class SqlServerDialog extends JDialog
   protected static String regex2Text( String regexp )
   {
     return regexp == null ? null :
-        regexp.replaceAll( "\\n", "\\\\n" ).replaceAll( "\\r", "\\\\r" );
+        regexp.replaceAll( "\\n", "\\n" ).replaceAll( "\\r", "\\r" );
   }
 
 
