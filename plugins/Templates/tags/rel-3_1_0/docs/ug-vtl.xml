@@ -1,0 +1,175 @@
+<!-- Templates plugin user's guide: Velocity Template Language chapter -->
+<!-- (C) 2002 Steve Jakob -->
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true:folding=explicit: -->
+
+<!-- {{{ Chapter: Velocity Template Language -->
+<chapter id="vtl"><title>Velocity Template Language</title>
+
+ <para>
+  The Velocity Template Language (VTL) is used to embed dynamic elements 
+  within what would otherwise be static templates. By using VTL it is possible  
+  to interact with the user, calculate values, incorporate conditional logic, 
+  and much more.
+ </para>
+
+ <!-- {{{ Section: References -->
+ <sect1><title>References</title>
+  <para>
+   Dynamic content is embedded in a template file using <emphasis>references
+   </emphasis>. VTL supports three types of references:
+    <itemizedlist>
+     <listitem><para>variables</para></listitem>
+     <listitem><para>properties</para></listitem>
+     <listitem><para>methods</para></listitem>
+    </itemizedlist>
+  </para>
+  <para>
+   References in Velocity are always treated as String objects.
+  </para>
+  <sect2 id="jedit-variables"><title>jEdit-Specific Variables</title>
+   <para>
+     Several "special" variable are added by the Templates plugin into the 
+     Velocity context, and are available for use by plugins. This section 
+     describes these jEdit-specific variables.
+   </para>
+   <sect3 id="variable-buffer"><title>"buffer" variable</title>
+    <para>
+     This variable can be used to obtain a handle to the current jEdit buffer.
+    </para>
+   </sect3>
+   <sect3 id="variable-textarea"><title>"textarea" variable</title>
+    <para>
+     This variable can be used to obtain a handle to the current jEdit textarea.
+    </para>
+   </sect3>
+   <sect3 id="variable-view"><title>"view" variable</title>
+    <para>
+     This variable can be used to obtain a handle to the current jEdit view.
+    </para>
+   </sect3>
+   <sect3 id="variable-jeditindentation"><title>"_jeditIndentation" variable</title>
+    <para>
+     This variable can be used to indent the current line, based on the 
+     indentation values configured for the current buffer.
+    </para>
+   </sect3>
+   <sect3 id="variable-jedittab"><title>"_jeditTab" variable</title>
+    <para>
+     This variable can be used to insert a tab into the current buffer. The tab 
+     may be a soft or hard tab, depending on the buffer configuration.
+    </para>
+   </sect3>
+   <sect3 id="variable-jeditselection"><title>"_jeditSelection" variable</title>
+    <para>
+     This variable will contain any text in the current buffer which was 
+     selected at the time the template began processing.
+    </para>
+   </sect3>
+  </sect2>
+ </sect1>
+ <!-- }}} -->
+ 
+ <!-- {{{ Section: Directives -->
+ <sect1><title>Directives</title>
+  <para>
+  </para>
+ </sect1>
+ <!-- }}} -->
+ 
+ <!-- {{{ Section: Comments -->
+ <sect1><title>Comments</title>
+  <para>
+   Like most programming languages, VTL includes constructs for inserting 
+   descriptive text comments into a template. Both single-line and multi-line 
+   (block) comments are supported.
+  </para>
+
+  <para>
+   A single-line comments starts with ## and only lasts until the end of the 
+   line. The following are examples of single-line comments:
+  </para>
+  <programlisting>
+This is not a comment.     ## This is a comment.
+## This whole line is a comment.
+</programlisting>
+  <para>
+   Multi-line comments are indicated by a start comment indicator (#*) and end 
+   comment indicator (*#). For example:
+  </para>
+  <programlisting>
+This text is outside of the comment block. It will be processed by the
+template engine.
+#*
+  This text is inside the comment block.
+  Therefore it will be ignored by the template engine.
+*#
+Back outside the comment block. This text will be processed.
+</programlisting>
+  <para>
+   There is a third form of comment referred to in the Velocity documentation 
+   as a VTL comment. This is another form of block comment. The following 
+   example is taken from the Velocity User's Guide: 
+  </para>
+  <programlisting>
+#**
+This is a VTL comment block and
+may be used to store such information
+as the document author and versioning
+information:
+@author
+@version 5
+*#
+</programlisting>
+  <para>
+    It is unclear to this author the difference between multi-line comments 
+    and a VTL comment block.
+  </para>
+   
+  <sect2 id="template-label"><title>Special Comment: Template Label</title>
+   <para>
+    The Templates plugin also supports a special instance of the single-line 
+    comment to allow templates to be labelled. To label a template, add a 
+    single-line comment as <emphasis>the first line</emphasis> of the template 
+    file, using the following format:
+   </para>
+   <programlisting>## template = template_name</programlisting>
+   <para>
+    where <emphasis>template_name</emphasis> is the desired label.
+   </para>
+   <para>
+    For example, adding this comment as the first line of a template file:
+   </para>
+   <programlisting>## template = Java class</programlisting>
+   <para>
+    would indicate that the template file is to be labelled "Java class".
+   </para>
+   <para>
+    This label is used in place of the file name in the following locations:
+   </para>
+   <itemizedlist>
+    <listitem>
+     <para>dynamic menus under 
+     <guimenu>Plugins</guimenu>&gt;<guimenuitem>Templates</guimenuitem>
+     </para>
+    </listitem>
+    <listitem><para>dockable templates dialog</para></listitem>
+    <listitem>
+     <para>Templates accelerator option pane under
+     <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+     </para>
+    </listitem>
+   </itemizedlist>
+   <para>
+    PLEASE NOTE: the <quote><function>##template =</function></quote> statement 
+    replaces the <quote><function>#ctpragma label</function></quote> and 
+    <quote><function>#ctpragma name</function></quote> 
+    statements used by the Templates plugin until version 2.0.2.
+   </para>
+  </sect2>
+ </sect1>
+ <!-- }}} -->
+ 
+</chapter>
+<!-- }}} -->
+
