@@ -176,7 +176,9 @@ console.error.msvc.name=Microsoft Visual C++
 console.error.msvc.filename=$1
 console.error.msvc.line=$2
 console.error.msvc.message=$4
-console.error.msvc.match=([^\\(]*)[\\(](\\d+)[)].\:.(.*).\:.(.*)
+console.error.msvc.match=([^\\(]*)[\\(](\\d+)[)].\:.([^\:]*)\:\\s*(.*)
+console.error.msvc.warning=([^\\(]*)[\\(](\\d+)[)].\:.(warning[^\:]*)\:\\s*(.*)
+console.error.msvc.extra=\\s+([^\\(]*)[\\(](\\d+)[)].\:.([^\:]*)\:\\s*(.*)
 
 console.error.msnet.name=Microsoft.Net
 console.error.msnet.filename=$1
