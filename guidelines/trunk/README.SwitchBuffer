@@ -1,0 +1,6 @@
+CVS policy file
+
+plugin: SwitchBuffer
+author: Lee Turner <lee@leeturner.org>
+
+please do not commit changes to this plugin without first consulting the author.
