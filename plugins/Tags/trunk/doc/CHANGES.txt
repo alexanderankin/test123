@@ -54,3 +54,7 @@ Version 1.1
   popping, otherwise the topmost element is popped.
 * Changed label of `Pop Tag` to `Pop Position`.
 
+* Fixed NPE when following a Tag before a Search has ever been done
+  (was trying to restore a null value)
+* Fixed passing null to GUIUtilities.showVFSBrowserDialog.
+

@@ -37,6 +37,7 @@ import javax.swing.event.*;
 import javax.swing.table.*;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.AbstractOptionPane;
@@ -261,7 +262,8 @@ public class TagsOptionsPanel extends AbstractOptionPane {
 
       String newTagFiles[] = null;
 
-      newTagFiles = GUIUtilities.showVFSFileDialog(null, null,
+      View view = GUIUtilities.getView(TagsOptionsPanel.this);
+      newTagFiles = GUIUtilities.showVFSFileDialog(view, null,
                                                    VFSBrowser.OPEN_DIALOG,
                                                    false);
 
