@@ -75,7 +75,6 @@
 	<property name="install.dir" value=".."/>
 	<property name="build.dir" value="build"/>
 	<property name="docs.dir" value="docs"/>
-  <property name="helpfile.name" value="index.html"/>
 
 	<property name="velocity.jar" value="${src.lib}/velocity-core-1.3-rc1.jar"/>
 	<!-- }}} -->
@@ -89,8 +88,6 @@
 		<include name="dockables.xml"/>
 		<include name="actions.xml"/>
 		<include name="**/*.prop*"/>
-		<include name="**/*.gif"/>
-		<include name="**/*.html"/>
 		<include name="**/*.txt"/>
 	</patternset>
 	<!-- }}} -->
@@ -127,7 +124,7 @@
 		<property name="users-guide.xsl" value="default-users-guide.xsl"/>
 
 		<uptodate property="build-docs.not-required"
-				targetfile="${build.dir}/${docs.dir}/${helpfile.name}">
+				targetfile="${docs.dir}/index.html">
 			<srcfiles dir="${docs.dir}" includes="users-guide.xml"/>
 		</uptodate>
 	</target>
@@ -196,7 +193,6 @@
 	<!-- {{{ 'docs-xsltproc' target -->
 	<target name="docs-xsltproc"
 			description="Generate docs with xsltproc tool from www.xmlsoft.org">
-		<!-- <exec executable="xsltproc" output="${build.dir}/${helpfile.name}"> -->
 		<exec executable="xsltproc" dir="${src.dir}/${docs.dir}">
 			<arg value="--catalogs"/>
 			<arg value="--nonet"/>
@@ -209,8 +205,8 @@
 	<!-- {{{ 'docs-xalan' target -->
 	<target name="docs-xalan"
 			description="Generate docs with Xalan tool from xml.apache.org">
-		<style style="${users-guide.xsl}" in="users-guide.xml"
-				out="${build.dir}/${helpfile.name}"/>
+		<style style="${users-guide.xsl}" in="${docs.dir}/users-guide.xml"
+				out="${docs.dir}/index.html"/>
 	</target>
 	<!-- }}} -->
 
@@ -218,6 +214,7 @@
 	<target name="clean" description="Clean project directory">
 		<delete dir="${build.dir}"/>
 		<delete>
+         <fileset dir="${docs.dir}" includes="**/*.html"/>
 			<fileset dir="." defaultexcludes="no">
 				<include name="**/*~"/>
 				<!--
