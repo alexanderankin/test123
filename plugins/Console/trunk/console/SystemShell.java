@@ -25,6 +25,7 @@ package console;
 //{{{ Imports
 import java.io.*;
 import java.util.*;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 //}}}
@@ -64,7 +65,7 @@ class SystemShell extends Shell
 			return;
 		}
 
-		args = preprocess(console.getView(),args);
+		args = preprocess(console.getView(),console,args);
 
 		String commandName = (String)args.elementAt(0);
 		if(commandName.charAt(0) == '%')
@@ -74,6 +75,14 @@ class SystemShell extends Shell
 
 			SystemShellBuiltIn.executeBuiltIn(console,output,
 				commandName.substring(1),args);
+			output.commandDone();
+		}
+		else if(new File(MiscUtilities.constructPath(
+			getConsoleState(console).currentDirectory,
+			commandName)).isDirectory() && args.size() == 1)
+		{
+			SystemShellBuiltIn.executeBuiltIn(console,output,
+				"cd",args);
 			output.commandDone();
 		}
 		else
@@ -326,7 +335,7 @@ loop:			for(;;)
 	/**
 	 * Expand aliases, variables and globs.
 	 */
-	private Vector preprocess(View view, Vector args)
+	private Vector preprocess(View view, Console console, Vector args)
 	{
 		Vector newArgs = new Vector();
 
@@ -338,29 +347,29 @@ loop:			for(;;)
 			Vector expansionArgs = parse(expansion);
 			for(int i = 0; i < expansionArgs.size(); i++)
 			{
-				expandGlobs(view,newArgs,(String)expansionArgs
+				expandGlobs(view,console,newArgs,(String)expansionArgs
 					.elementAt(i));
 			}
 		}
 		else
-			expandGlobs(view,newArgs,commandName);
+			expandGlobs(view,console,newArgs,commandName);
 
 		// add remaining arguments
 		for(int i = 1; i < args.size(); i++)
-			expandGlobs(view,newArgs,(String)args.elementAt(i));
+			expandGlobs(view,console,newArgs,(String)args.elementAt(i));
 
 		return newArgs;
 	} //}}}
 
 	//{{{ expandGlobs() method
-	private void expandGlobs(View view, Vector args, String arg)
+	private void expandGlobs(View view, Console console, Vector args, String arg)
 	{
 		// XXX: to do
-		args.addElement(expandVariables(view,arg));
+		args.addElement(expandVariables(view,console,arg));
 	} //}}}
 
 	//{{{ expandVariables() method
-	private String expandVariables(View view, String arg)
+	private String expandVariables(View view, Console console, String arg)
 	{
 		StringBuffer buf = new StringBuffer();
 
@@ -389,7 +398,7 @@ loop:			for(;;)
 
 					i = index;
 
-					String expansion = getExpansion(view,varName);
+					String expansion = getExpansion(view,console,varName);
 
 					if(expansion != null)
 						buf.append(expansion);
@@ -441,7 +450,7 @@ loop:			for(;;)
 						break;
 				}
 
-				String expansion = getExpansion(view,varName);
+				String expansion = getExpansion(view,console,varName);
 
 				if(expansion != null)
 					buf.append(expansion);
@@ -488,7 +497,7 @@ loop:			for(;;)
 	} //}}}
 
 	//{{{ getExpansion() method
-	private String getExpansion(View view, String varName)
+	private String getExpansion(View view, Console console, String varName)
 	{
 		String expansion;
 
@@ -523,14 +532,26 @@ loop:			for(;;)
 			expansion = buffer.getName();
 		else if(varName.equals("c"))
 			expansion = ConsolePlugin.getClassName(buffer);
-		else if(varName.equals("pkg"))
+		else if(varName.equals("PKG"))
 		{
 			expansion = ConsolePlugin.getPackageName(buffer);
 			if(expansion == null)
 				expansion = "";
 		}
-		else if(varName.equals("root"))
+		else if(varName.equals("ROOT"))
 			expansion = ConsolePlugin.getPackageRoot(buffer);
+		else if(varName.equals("PWD"))
+			expansion = getConsoleState(console).currentDirectory;
+		else if(varName.equals("BROWSER_DIR"))
+		{
+			VFSBrowser browser = (VFSBrowser)view
+				.getDockableWindowManager()
+				.getDockable("vfs.browser");
+			if(browser == null)
+				expansion = null;
+			else
+				expansion = browser.getDirectory();
+		}
 		else
 			expansion = (String)variables.get(varName);
 

@@ -229,14 +229,13 @@
 <sect1 id="changing-dirs"><title>Changing directories</title>
 
 <para>
- When running on Java 2 version 1.3 and later, you can change the current
- working directory used when running commands. On earlier Java versions,
- the current working directory cannot be changed from its initial value
- of the directory from where jEdit was started.
+ To change the current working directory, simply enter its name, as if you were
+ going to execute a command. Relative paths are resolved
+ automatically.
 </para>
 
 <para>
- The following system shell built-ins change the current working directory:
+ The following system shell built-ins relate to the current working directory:
 </para>
 
 <itemizedlist>
@@ -245,9 +244,8 @@
  with <quote>%</quote> for convenience and consistency with other command
  lines.</para></listitem>
  <listitem><para><command>cd <replaceable>directory</replaceable></command>
- - changes the current working directory. Relative paths are resolved
- automatically. Just as with the <command>pwd</command> built-in, this
- one is not prefixed with a <quote>%</quote> for convenience.
+ - does the same thing as just entering
+ <command><replaceable>directory</replaceable></command>.
  </para></listitem>
  <listitem><para><command>%pushd</command> - pushes the current directory
  onto the directory stack.</para></listitem>
@@ -329,16 +327,9 @@
  </para></listitem>
  <listitem><para><varname>${n}</varname> - the current buffer's name.
  </para></listitem>
- <listitem><para><varname>${pkg}</varname> - if the current buffer is a Java file,
- the current buffer's package name (or if the
- buffer doesn't contain a <userinput>package</userinput> statement, an empty
- string).
- </para></listitem>
- <listitem><para><varname>${root}</varname> - the package root of the current
- buffer. For example, if the current buffer's fully qualified class name is
- <classname>org.gjt.sp.jedit.jEdit</classname> and it is contained in the
- <filename>/home/slava/jEdit/org/gjt/sp/jedit/</filename> directory, this will
- return <filename>/home/slava/jEdit/</filename>.
+ <listitem><para><varname>${BROWSER_DIR}</varname> - the current directory
+ displayed in the file system browser, or an empty string if the file system
+ browser is not visible.
  </para></listitem>
  <listitem><para><varname>${JEDIT_HOME}</varname> - the full path of the
  directory where jEdit is installed.</para></listitem>
@@ -348,6 +339,19 @@
  per se, and it is specified using a different syntax, but it makes sense to
  mention it here.
  It expands to the full path of the user's home directory.</para></listitem>
+ <listitem><para><varname>${PKG}</varname> - if the current buffer is a Java file,
+ the current buffer's package name (or if the
+ buffer doesn't contain a <userinput>package</userinput> statement, an empty
+ string).
+ </para></listitem>
+ <listitem><para><varname>${PWD}</varname> - the current working directory.
+ </para></listitem>
+ <listitem><para><varname>${ROOT}</varname> - the package root of the current
+ buffer. For example, if the current buffer's fully qualified class name is
+ <classname>org.gjt.sp.jedit.jEdit</classname> and it is contained in the
+ <filename>/home/slava/jEdit/org/gjt/sp/jedit/</filename> directory, this will
+ return <filename>/home/slava/jEdit/</filename>.
+ </para></listitem>
 </itemizedlist>
 
 <para>
@@ -442,8 +446,9 @@
 
 <para>
  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Commando</guimenuitem>
- displays the commando window. A menu item is also added for each known commando
- file in the <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu> menu;
+ displays the commando window. A menu item for each known commando
+ file is also shown in the
+ <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu> menu;
  invoking one of these menu items opens the commando window with that
  commando file pre-selected.
 </para>
@@ -725,6 +730,28 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
 
 </chapter>
 
+<chapter id="compile-run"><title>Invoking compilers and interpreters</title>
+
+<para>
+ <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Compile
+ Current Buffer</guimenuitem> opens a mode-specific commando that should invoke a
+ compiler suitable for compiling the current buffer.
+</para>
+
+<para>
+ <guimenu>Plugins</guimenu>&gt;<guisubmenu>Console</guisubmenu>&gt;<guimenuitem>Run
+ Current Buffer</guimenuitem> opens a mode-specific commando that should invoke
+ an interpreter suitable for running the current buffer.
+</para>
+
+<para>
+ Commandos can be associated with edit modes in the
+ <guilabel>Console</guilabel>&gt;<guilabel>Compile &amp; Run</guilabel> pane of
+ the <guimenuitem>Global Options</guimenuitem> dialog box.
+</para>
+
+</chapter>
+
 <chapter id="macros"><title>Macros and the Console plugin</title>
 
 <para>
@@ -789,13 +816,6 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
 </chapter>
 
 <chapter id="extending"><title>Extending the Console plugin</title>
-
-<!--
-- writing shells
-- shell interface
-- registering shells
-- methods in Console class, Output interface
--->
 
 <para>
  To add a shell to the console, a plugin must specify that it requires the
@@ -869,16 +889,133 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <sect1><title>The Shell interface</title>
 
 <para>
- Not yet written.
+ The <classname>Shell</classname> class is an abstract class. It contains a
+ constructor that takes one parameter, which is the name of the shell to
+ display in the console window and various other places:
 </para>
+
+<itemizedlist>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public <function>Shell</function></funcdef>
+   <paramdef>String <parameter>name</parameter></paramdef>
+  </funcprototype>
+  </funcsynopsis>
+ </listitem>
+</itemizedlist>
+
+<para>
+ This class also defines the following abstract methods, which your shell must
+ override:
+</para>
+
+<itemizedlist>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>printInfoMessage</function></funcdef>
+   <paramdef>Console <parameter>console</parameter></paramdef>
+  </funcprototype>
+  </funcsynopsis>
+  <para>
+   This method is invoked by the console when the user selects the shell in
+   question. It should print a short informational message, outlining the main
+   capabilities of the shell.
+  </para>
+ </listitem>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>execute</function></funcdef>
+   <paramdef>Console <parameter>console</parameter></paramdef>
+   <paramdef>Output <parameter>output</parameter></paramdef>
+   <paramdef>String <parameter>command</parameter></paramdef>
+  </funcprototype>
+  </funcsynopsis>
+  <para>
+   This method is called when the user enters a command. The complete command
+   line is passed in as one string; how it is parsed is entirely up to you.
+  </para>
+  <para>
+   The <varname>output</varname> object is either the console window itself, or
+   a special <classname>BufferOutput</classname> object if the user elected to
+   have the command output go into a new buffer.
+  </para>
+  <para>
+   Note that both the <varname>console</varname> and <varname>output</varname>
+   objects implement the <classname>Output</classname> interface. As a
+   convention, fatal errors (for example, parse errors in shell commands)
+   should be printed in the console; everything else should go to the output
+   instance.
+  </para>
+ </listitem>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>stop</function></funcdef>
+   <paramdef>Console <parameter>console</parameter></paramdef>
+  </funcprototype>
+  </funcsynopsis>
+  <para>
+   If your shell executes commands in a separate thread, this method should stop
+   the currently running thread, if any.
+  </para>
+ </listitem>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public boolean <function>waitFor</function></funcdef>
+   <paramdef>Console <parameter>console</parameter></paramdef>
+  </funcprototype>
+  </funcsynopsis>
+  <para>
+   This method should block until the currently running command has completed,
+   and return <literal>true</literal> if the command executed successfully,
+   <literal>false</literal> otherwise. If no command is currently running, it
+   should return the status of the most recently run command.
+  </para>
+ </listitem>
+</itemizedlist>
 
 </sect1>
 
 <sect1><title>The Output interface</title>
 
 <para>
- Not yet written.
+ The <classname>Output</classname> interface consists of the following two
+ methods:
 </para>
+
+<itemizedlist>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>print</function></funcdef>
+   <paramdef>Color <parameter>color</parameter></paramdef>
+   <paramdef>String <parameter>msg</parameter></paramdef>
+  </funcprototype>
+  </funcsynopsis>
+  <para>
+   This method prints a message to the output instance in question. Note that
+   not all outputs support color - those that don't just ignore the
+   <parameter>color</parameter> parameter.
+  </para>
+ </listitem>
+ <listitem>
+  <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>commandDone</function></funcdef>
+   <void />
+  </funcprototype>
+  </funcsynopsis>
+  <para>
+   Your shell should call this when a command has finished executing. The
+   console window's implementation of this method stops the silly little fish
+   animation.
+  </para>
+ </listitem>
+</itemizedlist>
 
 </sect1>
 
@@ -918,7 +1055,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
 </sect1>
 
-<sect1><title>Error parsing</title>
+<sect1><title>Custom shells and error parsing</title>
 
 <para>
  Most plugin shells will need to report compiler errors and such. To do this,
@@ -994,14 +1131,19 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     </para></listitem>
     <listitem><para>
      Added some new pre-defined variables to the system shell -
-     <varname>${c}</varname>, <varname>${pkg}</varname> and
-     <varname>${root}</varname>. See <xref linkend="env-vars"/> for information
+     <varname>${c}</varname>, <varname>${BROWSER_DIR}</varname>,
+     <varname>${PKG}</varname>, <varname>${PWD}</varname> and
+     <varname>${ROOT}</varname>. See <xref linkend="env-vars"/> for information
      about the new variables.
     </para></listitem>
     <listitem><para>
      The behavior of the <varname>${n}</varname> built-in has changed; it now
      returns the buffer's name, without stripping the extension like it did
      previously.
+    </para></listitem>
+    <listitem><para>
+     To change the current working directory, you can now simply enter its name;
+     the <command>cd</command> is optional.
     </para></listitem>
     <listitem><para>
      In a commando file, you can now specify an edit mode of a buffer used for
