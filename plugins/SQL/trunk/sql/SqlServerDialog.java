@@ -171,8 +171,12 @@ public class SqlServerDialog extends JDialog
           tf = new JTextField( param.getDefaultValue(), 15 );
 
         serverTypeControls.put( param.getName(), tf );
-        serverPane.addC( param.getDescription(), tf );
+        final String paramDesc = param.getDescription();
+        serverPane.addC( paramDesc.substring( 0, 1 ).toUpperCase() + paramDesc.substring( 1 ), tf );
       }
+      final JLabel defStmtDelimiterRegexLbl = new JLabel( type.getDefaultStatementDelimiterRegex() );
+      serverPane.addC( jEdit.getProperty( "sql.defaultStatementDelimiterRegex.label" ), defStmtDelimiterRegexLbl );
+
       controls.put( type.getName(), serverTypeControls );
       serverTypePanel.add( name, serverPane );
     }
@@ -185,6 +189,8 @@ public class SqlServerDialog extends JDialog
           final String name = (String) serverTypeList.getSelectedItem();
           serverTypeCards.show( serverTypePanel,
               name == null ? EMPTY_CARD : name );
+          if ( ADD_MODE == mode )
+            resetStatementDelimiterRegex();
         }
       } );
 
