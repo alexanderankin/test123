@@ -41,22 +41,22 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 
-	//{{{ Private members 
+	//{{{ Private members
 	private HashSet includedExtensions;
 	private HashSet includedFiles;
-	private HashSet excludedDirectories; 
+	private HashSet excludedDirectories;
 	//}}}
 
 	//{{{ getDescription() method
 	public String getDescription() {
 		return jEdit.getProperty("projectviewer.importer-filter");
 	} //}}}
-	
+
 	//{{{ accept(File) method
 	public boolean accept(File file) {
 		return accept(file.getParentFile(), file.getName());
 	} //}}}
-		
+
 	//{{{ accept(File, String) method
 	public boolean accept(File file, String fileName) {
 		if (includedExtensions == null) {
@@ -65,17 +65,17 @@ public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 			excludedDirectories = new HashSet();
 
 			ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-			
+
 			copyPropertyIntoSet(config.getImportExts(),includedExtensions);
 			copyPropertyIntoSet(config.getIncludeFiles(),includedFiles);
-			copyPropertyIntoSet(config.getExcludeDirs(),excludedDirectories);			
+			copyPropertyIntoSet(config.getExcludeDirs(),excludedDirectories);
 		}
-		
+
 		File child = new File(file, fileName);
 		if (child.isFile()) {
 			if (includedFiles.contains(fileName))
 				return true;
-			
+
 			// check file extension
 			int dotIndex = fileName.lastIndexOf('.');
 			if (dotIndex == -1 || dotIndex == fileName.length() - 1)
@@ -85,7 +85,7 @@ public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 			return !excludedDirectories.contains(fileName);
 		}
 	} //}}}
-	
+
 	//{{{ copyPropertyIntoSet(String, HashSet) method
 	/**
 	 *	Load the specified list property to the specified set.
@@ -102,5 +102,6 @@ public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 		while (strtok.hasMoreTokens())
 			set.add(strtok.nextToken());
 	} //}}}
-	
+
 }
+

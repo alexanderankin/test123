@@ -12,17 +12,17 @@ toolbar for new actions.</p>
 <li>Create a new class that extends {@link projectviewer.action.Action Action}.</li>
 <li>Implement the {@link projectviewer.action.Action#actionPerformed(ActionEvent)
 	actionPerformed()} method to execute the desired operations.</li>
-<li>Register the action in the context menu 
+<li>Register the action in the context menu
 	({@link projectviewer.vpt.VPTContextMenu#registerAction(Action) registerAction()})
 	or in the toolbar
 	({@link projectviewer.ProjectViewer#registerAction(Action) registerAction()})
 	by calling the appropriate method.</li>
 </ul>
-	
-<p>The menu item show in the context menu is provided by the 
-{@link projectviewer.action.Action#getMenuItem() getMenuItem()} of the Action 
+
+<p>The menu item show in the context menu is provided by the
+{@link projectviewer.action.Action#getMenuItem() getMenuItem()} of the Action
 class. Subclasses are welcome to override this method to provide other kinds
-of menu items (a sub-menu, for example). For the toolbar button, the 
+of menu items (a sub-menu, for example). For the toolbar button, the
 {@link projectviewer.action.Action#getButton() getButton()} method is used.</p>
 
 <p>Before showing the menu item in the context menu, ProjectViewer will call

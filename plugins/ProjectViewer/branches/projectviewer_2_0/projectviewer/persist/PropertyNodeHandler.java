@@ -18,14 +18,15 @@
  */
 package projectviewer.persist;
 
+//{{{ Imports
 import java.io.Writer;
 import java.io.IOException;
 
 import org.xml.sax.Attributes;
 
-import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+//}}}
 
 /**
  *	Handler for property nodes.
@@ -34,11 +35,11 @@ import projectviewer.vpt.VPTProject;
  *	@version	$Id$
  */
 public class PropertyNodeHandler extends NodeHandler {
-	
+
 	private final static String NODE_NAME		= "property";
 	private final static String PROP_NAME_ATTR	= "name";
-	private final static String PROP_VALUE_ATTR	= "value";	
-	
+	private final static String PROP_VALUE_ATTR	= "value";
+
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
 	 *	when loading configuration data.
@@ -54,12 +55,12 @@ public class PropertyNodeHandler extends NodeHandler {
 	public Class getNodeClass() {
 		return null;
 	}
-	
+
 	/**
 	 *	Returns whether the node is a child of nome other node or not.
 	 */
-	public boolean isChild() { 
-		return false; 
+	public boolean isChild() {
+		return false;
 	}
 
 	/**
@@ -69,7 +70,7 @@ public class PropertyNodeHandler extends NodeHandler {
 	public boolean hasChildren() {
 		return false;
 	}
-	
+
 	/**
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
@@ -78,15 +79,15 @@ public class PropertyNodeHandler extends NodeHandler {
 		project.setProperty(attrs.getValue(PROP_NAME_ATTR), attrs.getValue(PROP_VALUE_ATTR));
 		return null;
 	}
-	
-	/**	
-	 *	Saving property nodes is going to be handled differently by the 
+
+	/**
+	 *	Saving property nodes is going to be handled differently by the
 	 *	persistence manager...
 	 */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
-		
+
 	}
-	
+
 	/**
 	 *	This actually saves the property to the config file...
 	 */
@@ -96,5 +97,6 @@ public class PropertyNodeHandler extends NodeHandler {
 		writeAttr(PROP_VALUE_ATTR, value, out);
 		out.write(" />");
 	}
-	
+
 }
+

@@ -40,35 +40,35 @@ public class VPTDirectory extends VPTNode {
 	private final static Icon dirOpenedIcon 	= GUIUtilities.loadIcon("OpenFolder.png");
 
 	//}}}
-	
+
 	//{{{ Attributes
-	
+
 	protected File		file;
-	
+
 	//}}}
-	
-	//{{{ Constructors 
-	
+
+	//{{{ Constructors
+
 	public VPTDirectory(String path) {
 		this(new File(path));
 	}
-	
+
 	public VPTDirectory(File file) {
 		super(VPTNode.DIRECTORY, file.getName());
 		this.file = file;
 	}
-	
+
 	//}}}
-	
+
 	//{{{ Public methods
-	
+
 	//{{{ canWrite() method
 	/** Returns is the underlying file is writable. */
 	public boolean canWrite() {
 		return file.canWrite();
 	} //}}}
 
-	//{{{ delete() method	
+	//{{{ delete() method
 	/**
 	 *	Deletes the file from disk and removes it from the current container.
 	 */
@@ -76,13 +76,13 @@ public class VPTDirectory extends VPTNode {
 		// deletes directory recursively?
 		return false;
 	} //}}}
-	
+
 	//{{{ getFile() method
 	/** Return the file associated with this node. */
 	public File getFile() {
 		return file;
 	} //}}}
-	
+
 	//{{{ getIcon(boolean) method
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
@@ -92,13 +92,13 @@ public class VPTDirectory extends VPTNode {
 	public Icon getIcon(boolean expanded) {
 		return (expanded ? dirOpenedIcon : dirClosedIcon);
 	} //}}}
-	
+
 	//{{{ toString() method
 	/** Returns a string representation of the current node. */
 	public String toString() {
 		return"Directory [" + getFile().getAbsolutePath() + "]";
 	} //}}}
-	
+
 	//{{{ getNodePath()
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
@@ -113,5 +113,6 @@ public class VPTDirectory extends VPTNode {
 	} //}}}
 
 	//}}}
-	
+
 }
+

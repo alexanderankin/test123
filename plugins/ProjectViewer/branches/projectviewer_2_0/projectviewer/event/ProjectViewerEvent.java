@@ -23,9 +23,9 @@ import java.util.EventObject;
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
 
-/** 
+/**
  *	A project viewer event.
- *	
+ *
  *	@author
  *	@version	$Id$
  */
@@ -33,7 +33,7 @@ public final class ProjectViewerEvent extends EventObject {
 
 	private VPTProject project;
 
-	/** 
+	/**
 	 *	Create a new <code>ProjectViewerEvent</code>.
 	 *
 	 *	@param  src  the project viewer instance that fired the event.
@@ -44,7 +44,7 @@ public final class ProjectViewerEvent extends EventObject {
 		project = prj;
 	}
 
-	/** 
+	/**
 	 *	Returns the {@link ProjectViewer}.
 	 *
 	 *	@return    The viewer where the event occurred.

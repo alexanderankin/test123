@@ -1,4 +1,4 @@
-/* 
+/*
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -19,8 +19,8 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.util.HashMap;
 import java.util.Vector;
+import java.util.HashMap;
 import java.util.Collections;
 
 import javax.swing.tree.TreeNode;
@@ -48,18 +48,25 @@ import org.gjt.sp.util.Log;
  */
 public class VPTFileListModel extends DefaultTreeModel {
 
+	//{{{ Private members
 	private HashMap fileLists;
-	
-	/** 
+	//}}}
+
+	//{{{ Constructors
+
+	/**
 	 *	Create a new <code>VPTFileListModel</code>.
 	 *
-	 *	@param rootNode	The root node of the tree.  
+	 *	@param rootNode	The root node of the tree.
 	 */
 	public VPTFileListModel(VPTNode rootNode) {
 		super(rootNode, true);
 		fileLists = new HashMap();
 	}
-	
+
+	//}}}
+
+	//{{{ getChildCount(Object) method
 	/**
 	 *	Returns the child at the given index of the given parent. If the parent
 	 *	is a project, returns the number of files in the project, not just the
@@ -74,8 +81,9 @@ public class VPTFileListModel extends DefaultTreeModel {
 		}
 		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent = " + parent);
 		return 0; // shouldn't reach here
-	}
+	} //}}}
 
+	//{{{ getChild(Object, int) method
 	/**
 	 *	Returns the child at the given index of the given parent. If the parent
 	 *	is a project, treats the children in such a way to allow all files in the
@@ -98,10 +106,11 @@ public class VPTFileListModel extends DefaultTreeModel {
 		}
 		Log.log(Log.WARNING, this, "Reached the supposedly unreachable! parent = " + parent);
 		return null; // shouldn't reach here
-	}
-	
+	} //}}}
+
+	//{{{ nodeStructureChanged(TreeNode) method
 	/**
-	 *	Called when some node in the tree is changed. If not the root, then 
+	 *	Called when some node in the tree is changed. If not the root, then
 	 *	tracks down which project was changed and updates the child list.
 	 */
 	public void nodeStructureChanged(TreeNode node) {
@@ -115,8 +124,8 @@ public class VPTFileListModel extends DefaultTreeModel {
 			fileLists.put(n, lst);
 		}
 		super.nodeStructureChanged(node);
-	}
-	
+	} //}}}
+
 	//{{{ removeRef(VPTProject) method
 	/**
 	 *	Removes any reference to the given project stored internally. This does
@@ -126,7 +135,6 @@ public class VPTFileListModel extends DefaultTreeModel {
 	public void removeRef(VPTProject p) {
 		fileLists.remove(p);
 	} //}}}
-	
-	
+
 }
 

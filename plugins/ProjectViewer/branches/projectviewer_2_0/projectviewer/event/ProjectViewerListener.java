@@ -20,7 +20,7 @@ package projectviewer.event;
 
 import java.util.EventListener;
 
-/** 
+/**
  *	A listener for {@link ProjectViewerEvent}s.
  *
  *	@author
@@ -28,7 +28,7 @@ import java.util.EventListener;
  */
 public interface ProjectViewerListener extends EventListener {
 
-	/** 
+	/**
 	 *	Receive notification that the current project has changed.
 	 *
 	 *	@param  evt  Description of Parameter

@@ -41,13 +41,13 @@ import projectviewer.importer.InitialProjectImporter;
  *	@version	$Id$
  */
 public class EditProjectAction extends Action {
-	
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.a_e_project");
 	} //}}}
-	
+
 	//{{{ getIcon() method
 	/**
 	 *	Returns the icon to be shown on the toolbar button. The default
@@ -57,7 +57,7 @@ public class EditProjectAction extends Action {
 	public Icon getIcon() {
 		return GUIUtilities.loadIcon("Drive.png");
 	} //}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
@@ -73,7 +73,7 @@ public class EditProjectAction extends Action {
 		} else {
 			add = true;
 		}
-		
+
 		proj = ProjectOptions.run(proj);
 		if (proj != null) {
 			if (add) {
@@ -91,7 +91,7 @@ public class EditProjectAction extends Action {
 				}
 			}
 		}
-		
+
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
@@ -99,13 +99,13 @@ public class EditProjectAction extends Action {
 	public void prepareForNode(VPTNode node) {
 		if (node != null && (node.isRoot() || node.isProject())) {
 			cmItem.setVisible(true);
-			((JMenuItem)cmItem).setText( node.isRoot() ? 
-				jEdit.getProperty("projectviewer.action.add_project") : 
+			((JMenuItem)cmItem).setText( node.isRoot() ?
+				jEdit.getProperty("projectviewer.action.add_project") :
 				jEdit.getProperty("projectviewer.action.edit_project"));
 		} else {
 			cmItem.setVisible(false);
 		}
 	} //}}}
-	
+
 }
 

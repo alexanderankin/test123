@@ -56,25 +56,25 @@ import projectviewer.vpt.VPTProject;
  *	@version	$Id$
  */
 public final class ProjectPersistenceManager {
-	
+
 	//{{{ Constants
-	
+
 	private final static String CONFIG_DIR		= "projects" + File.separator;
-	
+
 	//}}}
-		
+
 	/** Private constructor. No instances! */
 	private ProjectPersistenceManager() { }
-	
+
 	/** The map of handlers based on nome names. */
 	private static final HashMap handlerNames = new HashMap();
-	
+
 	/** the map of handlers based on classes. */
-	private static final HashMap handlerClasses = new HashMap();	
-	
+	private static final HashMap handlerClasses = new HashMap();
+
 	/** the node handler for projects (cannot be changed). */
 	private static final NodeHandler projHandler = new ProjectNodeHandler();
-	
+
 	/** static initializer, registers the default handlers. */
 	static {
 		registerHandler(new FileNodeHandler());
@@ -82,7 +82,7 @@ public final class ProjectPersistenceManager {
 		registerHandler(new PropertyNodeHandler());
 		registerHandler(new OpenFileNodeHandler());
 	}
-	
+
 	//{{{ registerHandler(NodeHandler) method
 	/**
 	 *	Registers a node handler. The same instance will be used at all times
@@ -93,7 +93,7 @@ public final class ProjectPersistenceManager {
 		handlerNames.put(nh.getNodeName(), nh);
 		handlerClasses.put(nh.getNodeClass(), nh);
 	} //}}}
-	
+
 	//{{{ load(String, String) method
 	/** Loads a project from the given file name. */
 	public static VPTProject load(VPTProject p, String file) throws IOException {
@@ -102,7 +102,7 @@ public final class ProjectPersistenceManager {
 			Log.log(Log.WARNING, ProjectPersistenceManager.class.getName(), "Cannot read config file " + file);
 			return null;
 		}
-		
+
 		// OK, let's parse the config file
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -113,33 +113,33 @@ public final class ProjectPersistenceManager {
 		} catch (ParserConfigurationException pce) {
 			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), pce);
 		}
-		
+
 		return p;
 	} //}}}
-	
+
 	//{{{ save(VPTProject, String) method
 	/** Saves the given project data to the disk. */
 	public static void save(VPTProject p, String filename) throws IOException {
 		OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_DIR + filename);
 		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF-8");
 		ProjectManager.writeXMLHeader("UTF-8", out);
-		
+
 		saveNode(p, out);
-		
+
 		out.flush();
 		out.close();
 	} //}}}
-	
+
 	//{{{ saveNode(VPTNode, Writer) method
 	/** recursive method for saving nodes and their children. */
 	private static void saveNode(VPTNode node, Writer out) throws IOException {
 		if (node.isProject()) {
 			projHandler.saveNode(node, out);
-			
+
 			for (Enumeration e = node.children(); e.hasMoreElements(); ) {
 				saveNode((VPTNode)e.nextElement(), out);
 			}
-	
+
 			out.write("</" + projHandler.getNodeName() + ">\n");
 		} else {
 			NodeHandler handler = (NodeHandler) handlerClasses.get(node.getClass());
@@ -155,27 +155,27 @@ public final class ProjectPersistenceManager {
 			}
 		}
 	} //}}}
-	
+
 	//{{{ ProjectHandler class
 	/**
 	 *	SAX Handler to read project configuration files.
 	 */
 	public static final class ProjectHandler extends DefaultHandler {
-		
+
 		//{{{ Instance variables
 		private VPTProject proj;
 		private VPTNode currNode;
-		
+
 		private Stack openNodes;
 		//}}}
-		
+
 		//{{{ Constructor
 		public ProjectHandler(VPTProject proj) {
 			this.proj = proj;
 			this.currNode = proj;
 			openNodes = new Stack();
 		} //}}}
-		
+
 		//{{{ startElement() method
 		/** takes care of identifying nodes read from the file. */
 		public void startElement(String uri, String localName, String qName,
@@ -200,7 +200,7 @@ public final class ProjectPersistenceManager {
 				}
 			}
 		} //}}}
-		
+
 		//{{{ endElement(String,String,String) method
 		/** Handles the closing of a directory element. */
 		public void endElement(String uri, String localName, String qName) {
@@ -210,7 +210,8 @@ public final class ProjectPersistenceManager {
 				openNodes.pop();
 			}
 		} //}}}
-		
+
 	} //}}}
-	
+
 }
+
