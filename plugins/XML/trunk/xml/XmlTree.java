@@ -35,7 +35,6 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		// create toolbar with parse button
 		JToolBar buttonBox = new JToolBar();
 		buttonBox.setFloatable(false);
-		buttonBox.putClientProperty("JToolBar.isRollover",Boolean.TRUE);
 
 		parseBtn = new JButton(GUIUtilities.loadIcon("Refresh24.gif"));
 		parseBtn.setToolTipText(jEdit.getProperty("xml-tree.parse"));

@@ -166,3 +166,8 @@ options.xml.tag-highlight.label=Tag Highlighting
 options.xml.tag-highlight.enabled=Highlight matching tags
 options.xml.tag-highlight.color=Tag highlight color:
 options.xml.tag-highlight.modes=Enabled tag highlighting for the following edit modes:
+
+options.xml.catalogs.label=Catalogs
+options.xml.catalogs.caption=Catalog files:
+options.xml.catalogs.add=Add
+options.xml.catalogs.remove=Remove

@@ -46,6 +46,7 @@ public class XmlPlugin extends EBPlugin
 		grp.addOptionPane(new GeneralOptionPane());
 		grp.addOptionPane(new CompletionOptionPane());
 		grp.addOptionPane(new TagHighlightOptionPane());
+		grp.addOptionPane(new CatalogsOptionPane());
 		dialog.addOptionGroup(grp);
 	}
 
