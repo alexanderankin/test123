@@ -29,7 +29,7 @@ public class CreateProjectAction extends ActionBase {
     * Create a new <code>CreateProjectAction</code>.
     */
    public CreateProjectAction(ProjectViewer aProjectViewer) {
-      super("New Project...", aProjectViewer);
+      super("create-project", aProjectViewer);
    }
 
    /**

@@ -15,6 +15,25 @@ open-viewer-menu-item.label=Project Viewer
 options.projectviewer.label=Project Viewer
 
 #
+# Menu item text.
+#
+projectviewer.tree-action.add-files=Add File(s)...
+projectviewer.tree-action.remove-artifact=Remove
+projectviewer.tree-action.save-project=Save
+projectviewer.tree-action.remove-project=Remove
+projectviewer.tree-action.import-project=Import Project...
+projectviewer.tree-action.create-project=New Project...
+projectviewer.tree-action.import-files=Import File(s)...
+projectviewer.tree-action.add-buffer=Add Buffer
+projectviewer.tree-action.create-directory=Add Directory
+projectviewer.tree-action.synchronize-view=Synchronize
+
+projectviewer.dialog-title.import-files=File Import Preferences
+
+projectviewer.message.import-completed.message=Imported {0} file(s) into project {1}
+projectviewer.message.import-completed.title=Import Completed
+
+#
 # Text for the import project action.
 #
 projectviewer.overwrite-project.confirm.title=Overwrite Project

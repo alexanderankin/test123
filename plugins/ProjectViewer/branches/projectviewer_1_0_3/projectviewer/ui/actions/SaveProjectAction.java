@@ -31,7 +31,7 @@ public class SaveProjectAction extends ActionBase {
     * Create a new <code>SaveProjectAction</code>.
     */
    public SaveProjectAction(ProjectViewer aViewer, Project aProject) {
-      super("Save", aViewer);
+      super("save-project", aViewer);
       project = aProject;
    }
 

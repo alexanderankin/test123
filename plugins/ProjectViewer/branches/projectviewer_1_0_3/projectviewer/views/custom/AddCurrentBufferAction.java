@@ -29,7 +29,7 @@ class AddCurrentBufferAction extends ViewAction {
     * Create a new <code>AddCurrentBufferAction</code>.
     */
    public AddCurrentBufferAction() {
-      super("Add Buffer To Project");
+      super("add-buffer");
    }
 
    /**

@@ -37,7 +37,15 @@ public abstract class ActionBase extends AbstractAction
     */
    public ActionBase(String aName, ProjectViewer aProjectViewer)
    {
-      super(aName);
+      super(ProjectPlugin.getProperty("tree-action", aName));
+      projectViewer = aProjectViewer;
+   }
+
+   /**
+    * Create a new <code>ActionBase</code>.
+    */
+   public ActionBase(ProjectViewer aProjectViewer)
+   {
       projectViewer = aProjectViewer;
    }
 

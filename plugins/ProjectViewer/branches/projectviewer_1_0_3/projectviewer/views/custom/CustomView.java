@@ -23,7 +23,7 @@ import org.mobix.xml.*;
 import org.xml.sax.SAXException;
 import projectviewer.*;
 import projectviewer.ui.UI;
-import projectviewer.ui.ActionMap;
+import projectviewer.ui.Actions;
 import projectviewer.views.BaseView;
 
 
@@ -56,39 +56,16 @@ public class CustomView extends BaseView
    }
 
    /**
-    * Add a file to this view.
-    *
-    * <p>SPECIFIED ID: projectviewer.FileView</p>
-    */
-   public ProjectFile addProjectFile(View view, ProjectArtifact prjArtifact)
-   {
-      String[] files = UI.getFiles(view, null);
-      // TODO: Use Filter.  chooser.setFileFilter( new NonViewFileFilter(this) );
-      //chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
-      if (files == null || files.length < 1)
-         return null;
-      ProjectDirectory parent = (prjArtifact instanceof ProjectFile) ?
-         (ProjectDirectory) prjArtifact.getParent() :
-         (ProjectDirectory) prjArtifact;
-      ProjectFile firstFile = null;
-      for (int i=0; i<files.length; i++) {
-         ProjectFile eachFile = addFile(new File(files[i]));
-         if (firstFile == null && eachFile != null)
-            firstFile = eachFile;
-      }
-      return firstFile;
-   }
-
-   /**
     * Returns a map of actions that are available for artifacts of this view.
     * If <code>null</code> is returned, there are no additional actions.
     *
     * <p>SPECIFIED ID: projectviewer.FileView</p>
     */
-   public ActionMap getActions()
+   public Actions getActions()
    {
-      ActionMap actions = new ActionMap();
+      Actions actions = new Actions();
       actions.addProjectDirectoryAction(new AddCurrentBufferAction());
+      actions.addProjectDirectoryAction(new AddProjectFileAction());
       actions.addProjectDirectoryAction(new AddDirectoryAction());
       return actions;
    }

@@ -50,6 +50,13 @@ implements FileView
    }
 
    /**
+    * Returns the project.
+    */
+   public Project getProject() {
+      return (Project) getParent();
+   }
+
+   /**
     * Remove an artifact.
     *
     * <p>SPECIFIED ID: projectviewer.FileView</p>
@@ -117,13 +124,6 @@ implements FileView
    public String toString()
    {
       return getName();
-   }
-
-   /**
-    * Returns the project.
-    */
-   protected Project getProject() {
-      return (Project) getParent();
    }
 
    /**
