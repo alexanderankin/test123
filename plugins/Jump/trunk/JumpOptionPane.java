@@ -30,11 +30,14 @@ import org.gjt.sp.jedit.browser.VFSBrowser;
 public class JumpOptionPane extends AbstractOptionPane implements ActionListener
 {
 
+//{{{ FIELDS
     private JTextField pathName;
     private JCheckBox enableJump;
     private JCheckBox parseOnSave;
+    private JCheckBox sortFoldList;
     private JButton BrowseButt;
-    private FontSelector font; 
+    private FontSelector font;
+//}}} 
     
 //{{{ Constructor
     /**
@@ -49,9 +52,7 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
 //{{{ actionPerformed
 
     /**
-     *  Button TEST action (reload ctags on curr. project)
-     *
-     *@param  e  Description of the Parameter
+     *  Button TEST action 
      */
     public void actionPerformed(ActionEvent e)
     {
@@ -89,6 +90,8 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
         setBorder(new EmptyBorder(15, 15, 15, 15));
         
         Dimension big = new Dimension(0,25);
+        Dimension medium = new Dimension(0,15);
+        
         enableJump = new JCheckBox(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "enable.label"));
         enableJump.setSelected(jEdit.getBooleanProperty("jump.enable", false));
         addComponent(enableJump);
@@ -151,6 +154,11 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
         ctags_panel.add(test_panel, BorderLayout.SOUTH);
         
         addComponent(ctags_panel);
+        
+        addComponent(new Box.Filler(medium, medium, medium));
+        sortFoldList = new JCheckBox(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "sort_foldlist.label"));
+        sortFoldList.setSelected(jEdit.getBooleanProperty("jump.sort_foldlist", true));
+        addComponent(sortFoldList);
     }
 //}}}
 
@@ -164,6 +172,7 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
         jEdit.setBooleanProperty("jump.enable", enableJump.isSelected());
         jEdit.setFontProperty("jump.list.font", font.getFont());
         jEdit.setBooleanProperty("jump.parse_on_save", parseOnSave.isSelected());
+        jEdit.setBooleanProperty("jump.sort_foldlist", sortFoldList.isSelected());
     }
 //}}}
 

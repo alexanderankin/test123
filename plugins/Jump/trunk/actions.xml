@@ -27,15 +27,15 @@
         </CODE>
     </ACTION>
     
-    <!--<ACTION NAME="JumpPlugin.reloadtagsonproject">
-        <CODE>
-            JumpPlugin.jump_actions.reloadTagsOnProject();
-        </CODE>
-    </ACTION>-->
-    
     <ACTION NAME="JumpPlugin.gettagbyinput">
         <CODE>
             JumpPlugin.jump_actions.jumpByInput();
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="JumpPlugin.foldjump">
+        <CODE>
+            JumpPlugin.jump_actions.showFoldJump();
         </CODE>
     </ACTION>
     

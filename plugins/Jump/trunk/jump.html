@@ -8,7 +8,7 @@
 <body>
 <h1><font color="#990000">Jump! plugin</font></h1>
 
-<h4><font color="#666666">Jump!v0.1.1 (ProjectViewer companion) - by Pavlikus, 
+<h4><font color="#666666">Jump!v0.2 (ProjectViewer companion) - by Pavlikus, 
   2003</font></h4>
 <hr>
 <h3><font color="#990000">Legal Notice</font></h3>
@@ -23,12 +23,12 @@ included with jEdit
 1. <a href="#ch1">Summary</a><br>
 2. <a href="#ch2">Usage</a> 
 <ul>
-  <li> Jump to file</li>
-  <li>Jump to tag</li>
-  <li>Search tag</li>
-  <li>Type a tag...</li>
+  <li> Jump to File</li>
+  <li>Jump to Tag</li>
+  <li>Search Tag</li>
+  <li>Type a Tag...</li>
   <li>Jump Back (Search tag mode only, yet...)</li>
-  <li><font color="#999999">Reload tags for project</font></li>
+  <li>Jump to Fold</li>
 </ul>
 3. <a href="#ch3">Troubleshooting</a><br>
     4. <a href="#ch4">For plugin authors</a><br>
@@ -65,8 +65,8 @@ included with jEdit
 <h3>Jump Back </h3> 
 <font color="#666666"><b>Stack type history.</b></font> After several "search tag" jumpings, you may go back to 
   tags, which you already vistit.<br>
-<h3>Reload tags for project</h3>
-Experimental, will removed from v1.0
+<h3>Jump to Fold</h3>
+<font color="#666666"><b>Shows list of folds founded in current buffer.</b></font> This action not depends on ProjectViewer's project. I hope it will be a helpful for you  (especially if you give a sensible names to your folds:) 
 <hr>
 <h3><a name="ch3" id="ch3"></a><font color="#990000">Chapter 3. Troubleshooting</font></h3>
 <p>See Options - Jump, where you can test ctags setup. This test works like: ctags.exe &quot;user.home/.jedit/properties&quot; &gt;&gt; null, just for setup test purpose.<br>

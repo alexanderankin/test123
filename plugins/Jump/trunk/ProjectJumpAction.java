@@ -292,17 +292,14 @@ public class ProjectJumpAction
         }
         else
         {
-            System.out.println("getTagBySelection: Preparing JumpList...");
-            System.out.println("getTagBySelection: items to show = "+tags.size());
             entries = new CTAGS_Entry[tags.size()];
             for (int i = 0; i < tags.size(); i++)
             {
                 entries[i] = (CTAGS_Entry) tags.get(i);
             }
             Arrays.sort(entries, new AlphabeticComparator());
-            System.out.println("Sorting ok. Entries = "+entries.length);
             jm = new ProjectTagsJump(view , entries,
-                    new ProjectTagsListModel(), true, "Files where tag found:",50);
+                    new ProjectTagsListModel(), true, "Files where tag found:",35);
         }
     }
 //}}}
@@ -330,7 +327,7 @@ public class ProjectJumpAction
 //}}}
         
 //{{{ void updateStatusBar
-        public void updateStatusBar(Object o)
+        public void updateStatusBar(Object o) 
         {
 // TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
             JList l = (JList) o;

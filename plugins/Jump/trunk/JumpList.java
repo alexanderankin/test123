@@ -194,7 +194,7 @@ public void dispose()
     {
         public void valueChanged(ListSelectionEvent e) 
         {
-            System.out.println("valueChanged");
+            //System.out.println("valueChanged");
             updateStatusBar((JList)e.getSource());     
         }
     }
