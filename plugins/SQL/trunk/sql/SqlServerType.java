@@ -87,7 +87,8 @@ public class SqlServerType extends Properties
       "/sql/serverTypes/db2Local.xml",
       "/sql/serverTypes/db2Remote.xml",
       "/sql/serverTypes/pgsql.xml",
-      "/sql/serverTypes/ASA.xml"
+      "/sql/serverTypes/ASA.xml",
+      "/sql/serverTypes/MSSQL.FreeTDS.xml"
       };
 
 
