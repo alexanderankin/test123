@@ -1,15 +1,15 @@
 + version 0.9:
 
 - don't parse DTDs
-- more friendly way to find DTDs (some kind of 'wizard'?)
+- DTD downloader -- if "No" clicked, store a buffer property
 - threaddeath -- wtf?
-- see if closing view causes problems
-- id completion
+- catalog option pane needs a redesign
 - test XMLCatalog support, include an XMLCatalog DTD
 - documentation: XML catalog format, OASIS catalog format
 
 + before 1.0:
 
+- id completion
 - tag highlight scope bracket in gutter
 - element and entity lists for schemas
 - recording <, >, /, &

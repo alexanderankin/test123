@@ -193,22 +193,27 @@ public class CatalogManager
 		if(jEdit.getSettingsDirectory() == null)
 			return null;
 
-		BufferedReader in = new BufferedReader(
-			new InputStreamReader(url.openStream()));
-
 		String userDir = jEdit.getSettingsDirectory();
 
 		File dtdDir = new File(userDir, "dtds");
 		if (!dtdDir.exists())
 			dtdDir.mkdir();
 
+		// Need to put this "copy from one stream to another"
+		// into a common method some day, since other parts
+		// of jEdit need it too...
+		BufferedInputStream in = new BufferedInputStream(
+			url.openStream());
+
 		File localFile = File.createTempFile("tmp", ".dtd", dtdDir);
 
-		FileWriter out = new FileWriter(localFile);
+		BufferedOutputStream out = new BufferedOutputStream(
+			new FileOutputStream(localFile));
 
-		String line;
-		while ((line = in.readLine()) != null)
-			out.write(line);
+		byte[] buf = new byte[4096];
+		int count = 0;
+		while ((count = in.read(buf)) != -1)
+			out.write(buf,0,count);
 		out.close();
 
 		return localFile;
