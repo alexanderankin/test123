@@ -840,11 +840,11 @@ public class AntTree extends JTree
 					;
 			}
 			else {
-				return
-					_project.getName().length() > 0 ?
-					_project.getName() + jEdit.getProperty( AntFarm.NAME + ".project.build-file" ) :
-					jEdit.getProperty( AntFarmPlugin.NAME + ".project.untitled" )
-					;
+				if ( _project.getName() != null && _project.getName().length() > 0 ) {
+					return _project.getName() + jEdit.getProperty( AntFarm.NAME
+						 + ".project.build-file" );
+				}
+				return jEdit.getProperty( AntFarmPlugin.NAME + ".project.untitled" );
 			}
 		}
 
