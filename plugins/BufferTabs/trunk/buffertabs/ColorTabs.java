@@ -61,7 +61,7 @@ public class ColorTabs
    private static ColorTabs colorTabs = null;
 
    private boolean enabled = false;
-   private boolean colorHighlight = true;
+   private boolean selectedColorized = true;
    private boolean colorTitles = false;
    private boolean colorVariation = true;
    private Vector colors;
@@ -79,6 +79,11 @@ public class ColorTabs
 
    public boolean isEnabled() {
       return this.enabled;
+   }
+
+
+   public boolean isSelectedColorized() {
+      return this.selectedColorized;
    }
 
 
@@ -370,12 +375,12 @@ public class ColorTabs
             colorTitles = !colorTitles;
          }
 
-         if (colorHighlight != jEdit.getBooleanProperty("buffertabs.color-selected"))
+         if (this.selectedColorized != jEdit.getBooleanProperty("buffertabs.color-selected"))
          {
-            colorHighlight = !colorHighlight;
+            this.selectedColorized = !this.selectedColorized;
 
             //Turn off all colorhighlight
-            if (!colorHighlight)
+            if (!this.selectedColorized)
             {
                try
                {
@@ -453,7 +458,7 @@ public class ColorTabs
     */
    void updateHighlight(BufferTabs parent, int index)
    {
-      if (this.enabled && colorHighlight)
+      if (this.enabled && this.selectedColorized)
       {
 
          // System.out.println("CES: updateHighlight  index="+index +"   selectedIndex="+parent.getSelectedIndex());
