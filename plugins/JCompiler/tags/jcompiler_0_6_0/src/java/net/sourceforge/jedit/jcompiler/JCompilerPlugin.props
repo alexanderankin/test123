@@ -1,0 +1,60 @@
+########################################
+# Required jEdit plugin meta-data      #
+########################################
+plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.name=Java Compiler
+plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.author=Kevin A. Burton and aziz sharif
+plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.version=0.6.0
+plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.docs=index.html
+
+
+########################################
+# MISC labels                          #
+########################################
+jcompiler.open.label=JCompiler
+options.jcompiler.label=JCompiler
+
+########################################
+# Menu definition                      #
+########################################
+jcompiler.build.file.label=Build File
+jcompiler.build.file.shortcut=S+F6
+
+jcompiler.build.package.label=Build Package(s)
+jcompiler.build.package.shortcut=S+F7
+
+jcompiler.build.everything.label=Rebuild Package(s)
+jcompiler.build.everything.shortcut=S+F8
+
+jcompiler-menu=jcompiler.build.file jcompiler.build.package jcompiler.build.everything
+jcompiler-menu.label=Java Compiler
+
+
+########################################
+# Default option values                #
+########################################
+jcompiler.showerrorwindow=T
+
+jcompiler.usejavacp=T
+jcompiler.classpath=.
+jcompiler.addpkg2cp=T
+
+jcompiler.javacompile.autosave=F
+jcompiler.javacompile.autosaveall=F
+jcompiler.javapkgcompile.autosave=F
+jcompiler.javapkgcompile.autosaveall=F
+
+jcompiler.showdeprecated=F
+jcompiler.specifyoutputdirectory=F
+
+########################################
+# Messages                             #
+########################################
+jcompiler.error.nodirectory=The target directory you have specified does not exist
+
+########################################
+# Compiler entries                     #
+########################################
+
+jcompiler.compiler-entr=asdf
+
+

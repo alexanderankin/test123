@@ -1,0 +1,57 @@
+# A plugin makefile
+#
+# To recompile this plugin, start jmk in the plugin's source directory.
+#
+# jEdit buffer-local properties:
+# :mode=makefile:tabSize=4:noTabs=yes:
+# :indentOpenBrackets={:indentCloseBrackets=}:
+
+jar_name = "JCompiler";
+
+##
+# javac executable and args
+##
+javac_bin = "javac";
+javac_opts = "-classpath" "../../jedit.jar;../BuildTools.jar;.";
+cmd_javac = javac_bin javac_opts;
+
+##
+# jar executable and args
+##
+jar_bin = "jar";
+jar_opts = "cf0";
+cmd_jar = jar_bin jar_opts;
+
+srcs = (subst ".java", ".class", 
+	(glob (join (join (dirs "."), "/"), "*Plugin.java" "*.java"))
+);
+jar = (cat "../" jar_name ".jar");
+
+get_files = function (dummy)
+{
+	extensions = "class" "gif" "html" "props";
+	file_globs = (join "/*.", extensions);
+#	other_files = "./CHANGES" "./README" "./TODO" "./LICENSE";
+
+	(glob (join (dirs "."), file_globs)) other_files
+}
+end;
+
+"all": jar;
+
+"%.class" : "%.java";
+{
+    exec cmd_javac <;
+}
+
+jar: srcs;
+{
+    exec cmd_jar @ (get_files "1");
+}
+
+"clean":;
+{
+	delete (glob (join (dirs "."), "/*.class"));
+}
+
+".PHONY": "all";
