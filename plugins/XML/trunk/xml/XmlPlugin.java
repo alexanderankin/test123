@@ -45,8 +45,8 @@ public class XmlPlugin extends EBPlugin
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 
-		SideKickPlugin.registerParser("xml",XML_PARSER_INSTANCE);
-		SideKickPlugin.registerParser("html",HTML_PARSER_INSTANCE);
+		SideKickPlugin.registerParser(XML_PARSER_INSTANCE);
+		SideKickPlugin.registerParser(HTML_PARSER_INSTANCE);
 
 		XmlActions.propertiesChanged();
 	} //}}}
@@ -54,8 +54,8 @@ public class XmlPlugin extends EBPlugin
 	//{{{ stop() method
 	public void stop()
 	{
-		SideKickPlugin.unregisterParser("xml");
-		SideKickPlugin.unregisterParser("html");
+		SideKickPlugin.unregisterParser(XML_PARSER_INSTANCE);
+		SideKickPlugin.unregisterParser(HTML_PARSER_INSTANCE);
 
 		CatalogManager.save();
 	} //}}}
