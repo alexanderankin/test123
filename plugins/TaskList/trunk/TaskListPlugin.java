@@ -94,6 +94,7 @@ public class TaskListPlugin extends EBPlugin
 
 	public void createMenuItems(Vector menuItems)
 	{
+		Log.log(Log.DEBUG, TaskListPlugin.class, "createMenuItems() called.");
 		menuItems.addElement(GUIUtilities.loadMenu("tasklist.menu"));
 	}
 
@@ -103,7 +104,7 @@ public class TaskListPlugin extends EBPlugin
 	public void start()
 	{
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
-
+		Log.log(Log.DEBUG, TaskListPlugin.class, "start() called.");
 		propertiesChanged();
 	}
 
@@ -115,6 +116,8 @@ public class TaskListPlugin extends EBPlugin
 
 	public void handleMessage(EBMessage message)
 	{
+		Log.log(Log.MESSAGE, TaskListPlugin.class,
+					"handleMessage()");//##
 		if(message instanceof CreateDockableWindow)
 		{
 			CreateDockableWindow cmsg = (CreateDockableWindow)message;
@@ -124,8 +127,8 @@ public class TaskListPlugin extends EBPlugin
 				// QUESTION: would it make sense to keep a hash of
 				//	views and TaskLists so we can re-use them here?
 
-				//Log.log(Log.DEBUG, TaskListPlugin.class,
-				//	"Creating TaskList window");//##
+				Log.log(Log.NOTICE, TaskListPlugin.class,
+					"Creating TaskList window");//##
 
 				TaskList taskList = new TaskList(cmsg.getView());
 				cmsg.setDockableWindow(taskList);
@@ -228,8 +231,8 @@ public class TaskListPlugin extends EBPlugin
 			i++;
 		}
 
-		//Log.log(Log.DEBUG, TaskListPlugin.class,
-		//	"starting class list plugin");//##
+		Log.log(Log.DEBUG, TaskListPlugin.class,
+			"starting class list plugin");//##
 	}
 
 	private static void propertiesChanged()

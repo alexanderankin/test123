@@ -34,7 +34,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 public class TaskList extends JPanel
-	implements DockableWindow
+	implements DockableWindow, EBComponent
 {
 
 	public TaskList(View view)
@@ -60,7 +60,8 @@ public class TaskList extends JPanel
 			taskListModel = new TaskListModel(view);
 			setModel(taskListModel);
 			setRowHeight(18);
-			setShowVerticalLines(false);
+			setShowVerticalLines(jEdit.getBooleanProperty("tasklist.table.vertical-lines"));
+			setShowHorizontalLines(jEdit.getBooleanProperty("tasklist.table.horizontal-lines"));
 			setIntercellSpacing(new Dimension(0,1));
 
 			if(getTableHeader() != null)
@@ -163,12 +164,20 @@ public class TaskList extends JPanel
 
 	public void handleMessage(EBMessage message)
 	{
-		// QUESTION: what messages need to be handled here?
+		if(message instanceof PropertiesChanged)
+		{
+			table.setShowVerticalLines(
+				jEdit.getBooleanProperty("tasklist.table.vertical-lines"));
+			table.setShowHorizontalLines(
+				jEdit.getBooleanProperty("tasklist.table.horizontal-lines"));
+		}
+		// QUESTION: what other messages need to be handled here?
 	}
 
 	public void addNotify()
 	{
 		super.addNotify();
+		EditBus.addToBus(this);
 		EditBus.addToBus(taskListModel);
 
 		// register table model to be notified when task are added/removed
@@ -178,6 +187,7 @@ public class TaskList extends JPanel
 	public void removeNotify()
 	{
 		super.removeNotify();
+		EditBus.removeFromBus(this);
 		EditBus.removeFromBus(taskListModel);
 
 		// table model doesn't need to be notified when task are added/removed

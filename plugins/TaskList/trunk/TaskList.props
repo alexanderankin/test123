@@ -27,10 +27,12 @@ tasklist.menu=tasklist.toggle tasklist.parse-buffer
 
 # Option pane labels
 options.tasklist.general.label=General
-options.tasklist.general.parsedelay=Parse Delay:
-options.tasklist.general.buffer.display=Buffer Display Format:
-options.tasklist.general.highlight.tasks=Highlight Tasks:
-options.tasklist.general.highlight.color=Highlight Color:
+options.tasklist.general.parsedelay=Parse delay:
+options.tasklist.general.buffer.display=Buffer display format:
+options.tasklist.general.table.horizontal-lines=Show horizontal lines
+options.tasklist.general.table.vertical-lines=Show vertical lines
+options.tasklist.general.highlight.tasks=Highlight tasks
+options.tasklist.general.highlight.color=Highlight color:
 
 options.tasklist.general.buffer.display.fullpath=Complete Path
 options.tasklist.general.buffer.display.namedir=Filename (Directory)
@@ -55,6 +57,8 @@ options.tasklist.tasktype.noicon=(None Selected)
 # Initial default settings
 tasklist.parsedelay=1000
 tasklist.highlight.color=#0000ff
+tasklist.table.horizontal-lines=true
+tasklist.table.verticall-lines=false
 tasklist.highlight.tasks=true
 
 
