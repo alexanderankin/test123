@@ -523,7 +523,18 @@ public class InfoViewer
 
         tb.add(Box.createHorizontalGlue());
 
-        bStartStop = new JButton(ICON_ANIM);
+        bStartStop = new JButton(ICON_ANIM){
+            
+            // Otherwise the animated gif keeps calling this method even when
+            // the component is no longer visible, causing a memory leak.
+            public boolean imageUpdate(Image img, int infoflags, int x, int y, int w, int h) {
+                if (!isDisplayable())
+                    return false;
+                else
+                    return super.imageUpdate(img,infoflags,x,y,w,h);
+            }
+            
+        };
         bStartStop.setDisabledIcon(ICON_NOANIM);
         bStartStop.setBorderPainted(false);
         bStartStop.setEnabled(false);
