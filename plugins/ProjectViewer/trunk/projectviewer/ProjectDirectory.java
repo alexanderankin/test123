@@ -56,6 +56,22 @@ public class ProjectDirectory {
   }
   
   /**
+   * Returns the number of files in the directory.  This method
+   * differs from {@link #getChildCount()} in that the other method
+   * returns the number of project files <b>and</b> directories.
+   */
+  public int getFileCount() {
+    return files.size();
+  }
+  
+  /**
+   * Returns the {@link ProjectFile} at the specified index.
+   */
+  public ProjectFile getFile( int index ) {
+    return (ProjectFile) files.get( index );
+  }
+  
+  /**
    * Returns the named file.
    */
   public ProjectFile getFile( String name ) {

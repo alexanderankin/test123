@@ -10,14 +10,16 @@
   <property file="build.properties"/>
 
   <property name="build"            value="build"/>
-  <property name="build.classes"    value="${build}"/>
-  <property name="build.docs"       value="${build}/docs"/>
+  <property name="build.classes"    value="${build}/classes"/>
+  <property name="build.docs"       value="${build}/ProjectViewer/docs"/>
   <property name="build.api"        value="${build.docs}/api"/>
 
   <property name="src"              value="."/>
   <property name="src.main"         value="${src}"/>
   <property name="src.etc"          value="."/>
   <property name="src.lib"          value="lib"/>
+  
+  <property name="docs"             value="docs"/>
 
   
   <!-- ================================================ -->
@@ -48,7 +50,9 @@
            deprecation="${compiler.deprecation}"
            verbose="${compiler.verbose}"
            classpathref="default.classpath"
-    />
+    >
+      <include name="projectviewer/**"/>
+    </javac>
 
   </target>
 
@@ -71,7 +75,12 @@
       </fileset>
     </copy>
     
-    <jar jarfile="ProjectViewer.jar">
+    <mkdir dir="${build.docs}"/>
+    <copy todir="${build.docs}">
+      <fileset dir="${docs}"/>
+    </copy>
+    
+    <jar jarfile="${build}/ProjectViewer.jar">
       <fileset dir="${build.classes}"/>
     </jar>
   </target>
@@ -82,7 +91,10 @@
           depends="build"
           description="Build a distribution">
     <zip zipfile="ProjectViewer.zip">
-      <fileset dir="${build}"/>
+      <fileset dir="${build}">
+        <include name="ProjectViewer/**"/>
+        <include name="ProjectViewer.jar"/>
+      </fileset>
     </zip>
   </target>
 

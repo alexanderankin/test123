@@ -128,8 +128,11 @@ public class ProjectManager {
       out.writeBytes( "#project.1=projectName\n" );
       out.writeBytes( "#project.2=projectName\n" );
       
-      for ( Iterator i = projects(); i.hasNext(); )
-        writeProjectData( out, (Project) i.next() ); 
+      for ( int i=0; i<projects.size(); i++ ) {
+        Project each = (Project) projects.get( i );
+        each.setKey( i + 1 );
+        writeProjectData( out, each );
+      }
   
     } catch (IOException e) {
       // TODO: Log.
@@ -157,9 +160,12 @@ public class ProjectManager {
 
       for ( Iterator i = projects(); i.hasNext(); ) {
         Project eachProject = (Project) i.next();
-        Iterator j = eachProject.projectFiles();
-        while ( j.hasNext() )
-          writeProjectFileData( out, eachProject, (ProjectFile) j.next() );
+        int count = 1;
+        for ( Iterator j = eachProject.projectFiles(); j.hasNext(); ) {
+          ProjectFile each = (ProjectFile) j.next();
+          each.setKey( count++ );
+          writeProjectFileData( out, eachProject, each );
+        }
       }
     } catch (IOException e) {
       // TODO: Log.
@@ -248,7 +254,9 @@ public class ProjectManager {
       int counter = 1;
       String prjName = projectProps.getProperty("project." + counter);
       while ( prjName != null ) {
+        
         String root = projectProps.getProperty("project." + counter + ".root");
+        Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
         Project project = new Project(prjName, new ProjectDirectory(root), counter); 
         addProject( project );
         prjName = projectProps.getProperty("project." + ++counter);
@@ -267,7 +275,7 @@ public class ProjectManager {
         }
       }
           
-    } catch  (Exception e) {
+    } catch  ( Throwable e ) {
       Log.log( Log.WARNING, this, e );
     }
   }

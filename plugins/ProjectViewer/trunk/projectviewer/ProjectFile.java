@@ -123,8 +123,8 @@ public class ProjectFile {
    * equals <code>obj</code>.
    */
   public boolean equals( Object obj ) {
-    if ( super.equals( obj ) )
-      return true;
+    if ( super.equals( obj ) ) return true;
+    if ( !( obj instanceof ProjectFile ) ) return false;
     return pathEquals( ((ProjectFile) obj).getPath() );
   }
   
