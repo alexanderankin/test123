@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 2000, 2003 Slava Pestov
  * Portions copyright (C) 2001 David Walend
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -214,7 +214,7 @@ public class XmlParser implements EBComponent
 				{
 					removeBufferChangeListener(this.buffer);
 
-					if(XmlPlugin.getParserType(buffer) != null)
+					if(XmlPlugin.getParserType(editPane.getBuffer()) != null)
 						addBufferChangeListener(editPane.getBuffer());
 
 					if(buffer.getBooleanProperty(

@@ -507,6 +507,10 @@
    <listitem><para>Fixed possible <classname>ClassCastException</classname>
    when saving the resource cache.
    </para></listitem>
+   <listitem><para>Fixed <classname>NullPointerException</classname> when
+   clicking <guibutton>Cancel</guibutton> in the file dialog box shown when
+   adding a catalog in the <guimenuitem>Catalogs</guimenuitem> option pane.
+   </para></listitem>
   </itemizedlist>
   </listitem>
 
