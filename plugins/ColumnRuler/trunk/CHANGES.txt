@@ -1,19 +1,33 @@
 {{{ 0.9
 
 	{{{ 0.9.1
-		- Moved guide drawing to Mark class
 
-		- Caret guide now has ticks to distinguish current line
+		{{{ Interface
 
-		- Ruler height will now be increased to accomodate the border when it is on
+			- Caret guide now has ticks to distinguish current line
+	
+			- Ruler height will now be increased to accomodate the border when it is on
+	
+			- Added "Toggle Caret guide" action
+			
+			- Fixed tab indicator when scrolling horizontally
+			
+			- Double-clicking on a mark will toggle its associated guide
 
-		- Added "Toggle Caret guide" action
+			- selected chars message will now disappear after a certain time
+			
+		}}}
 		
-		- Fixed tab indicator when scrolling horizontally
+		{{{ Code
 		
-		- Double-clicking on a mark will toggle its associated guide
+			- Moved guide drawing to Mark class
+	
+			- No longer using jEdit's built-in wrap guide
+			
+			- Added JavaDocs
+			
+		}}}
 		
-		- No longer using jEdit's built-in wrap guide
 	}}}
 
 	{{{ 0.9.0
