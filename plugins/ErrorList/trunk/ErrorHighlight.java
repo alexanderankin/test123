@@ -25,8 +25,6 @@ import org.gjt.sp.jedit.*;
 
 public class ErrorHighlight implements TextAreaHighlight
 {
-	public static final Color WARNING_COLOR = new Color(0xffa800);
-
 	public void init(JEditTextArea textArea, TextAreaHighlight next)
 	{
 		this.textArea = textArea;
@@ -112,14 +110,13 @@ public class ErrorHighlight implements TextAreaHighlight
 			int start = error.getStartOffset();
 			int end = error.getEndOffset();
 
-			start = textArea._offsetToX(line,start);
+			start = textArea.offsetToX(line,start);
 			if(end == 0)
-				end = textArea._offsetToX(line,textArea.getLineLength(line));
+				end = textArea.offsetToX(line,textArea.getLineLength(line));
 			else
-				end = textArea._offsetToX(line,end);
+				end = textArea.offsetToX(line,end);
 
-			gfx.setColor(error.getErrorType() == ErrorSource.WARNING
-				? WARNING_COLOR : Color.red);
+			gfx.setColor(ErrorListPlugin.getErrorColor(error.getErrorType()));
 			paintWavyLine(gfx,y,start,end);
 		}
 	}
