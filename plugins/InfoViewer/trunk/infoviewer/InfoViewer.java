@@ -212,74 +212,89 @@ public class InfoViewer
             // the style of the viewer
             if(viewer.getEditorKit() instanceof HTMLEditorKit ) {
                 HTMLEditorKit htmlEditorKit=(HTMLEditorKit)(viewer.getEditorKit());
+                //HTMLDocument doc=(HTMLDocument)viewer.getDocument();
                 //Log.log(Log.DEBUG, this, "htmleditorkit in use");
-                StyleSheet styles=htmlEditorKit.getStyleSheet();
+                StyleSheet styles;
+                //StyleSheet styles=htmlEditorKit.getStyleSheet();
+                //if(doc!=null) {
+                    //Log.log(Log.DEBUG, this, "styles from doc");
+                    //styles=doc.getStyleSheet();
+                    // code below dies with NPE then
+                //}
+                //else {
+                    //Log.log(Log.DEBUG, this, "styles from editor");
+                    styles=htmlEditorKit.getStyleSheet();
+                //}
                 Enumeration rules;
-                
-                // list available styles (which contain 'font-size')
-                rules = styles.getStyleNames();
-                while(rules.hasMoreElements()) {
-                    String name = (String) rules.nextElement();
-                    Style rule = styles.getStyle(name);
-                    if(rule.toString().indexOf("font-size")>-1) {
-                        Log.log(Log.DEBUG, this, name+"[old] : "+rule.toString());
-                    }
-                }               
-
-                // make body fontsize smaller
-                Style bodyrule = styles.getStyle("body");
-                Style bodyruleparent = (Style)bodyrule.getResolveParent();
-                if(bodyrule!=null) {
-                    styles.removeStyle("body");
-                    Style newbodyrule=styles.addStyle("body",bodyruleparent);
-
-                    if(bodyruleparent!=null) Log.log(Log.DEBUG, this, "bodyrule.p="+bodyruleparent.toString());
-                    Log.log(Log.DEBUG, this, "bodyrule.1="+bodyrule.toString());
-                    //String val=(String)bodyrule.getAttribute("font-size");
-                    //Log.log(Log.DEBUG, this, "body.font-size="+val);
-                    //bodyrule.removeAttribute("font-size");
-                    Enumeration attrs=bodyrule.getAttributeNames();
-                    if(attrs!=null) {
-                        //Log.log(Log.DEBUG, this, "copying attributes");
-                        while(attrs.hasMoreElements()) {
-                            Object name = attrs.nextElement();
-                            //Log.log(Log.DEBUG, this, "  attribute.name="+name.toString());
-                            if(!name.toString().equals("font-size")) {
-                                newbodyrule.addAttribute(name,bodyrule.getAttribute(name));
+                if(styles!=null) {
+                    // list available styles (which contain 'font-size')
+                    rules = styles.getStyleNames();
+                    while(rules.hasMoreElements()) {
+                        String name = (String) rules.nextElement();
+                        Style rule = styles.getStyle(name);
+                        if(rule.toString().indexOf("font-size")>-1) {
+                            Log.log(Log.DEBUG, this, name+"[old] : "+rule.toString());
+                        }
+                    }               
+    
+                    // make body fontsize smaller
+                    Style bodyrule = styles.getStyle("body");
+                    Style bodyruleparent = (Style)bodyrule.getResolveParent();
+                    if(bodyrule!=null) {
+                        styles.removeStyle("body");
+                        Style newbodyrule=styles.addStyle("body",bodyruleparent);
+    
+                        if(bodyruleparent!=null) Log.log(Log.DEBUG, this, "bodyrule.p="+bodyruleparent.toString());
+                        Log.log(Log.DEBUG, this, "bodyrule.1="+bodyrule.toString());
+                        //String val=(String)bodyrule.getAttribute("font-size");
+                        //Log.log(Log.DEBUG, this, "body.font-size="+val);
+                        //bodyrule.removeAttribute("font-size");
+                        Enumeration attrs=bodyrule.getAttributeNames();
+                        if(attrs!=null) {
+                            //Log.log(Log.DEBUG, this, "copying attributes");
+                            while(attrs.hasMoreElements()) {
+                                Object name = attrs.nextElement();
+                                //Log.log(Log.DEBUG, this, "  attribute.name="+name.toString());
+                                if(!name.toString().equals("font-size")) {
+                                    newbodyrule.addAttribute(name,bodyrule.getAttribute(name));
+                                }
                             }
                         }
+                        String size=jEdit.getProperty("infoviewer.viewer.fontsize");
+                        if(size==null) size="14";
+                        Log.log(Log.DEBUG, this, "new fontSize:"+size);
+                        newbodyrule.addAttribute("font-size",size+"pt");
+    
+                        //Action myaction=new StyledEditorKit.FontSizeAction("new font size", Integer.parseInt(size));
+                        //myaction.actionPerformed(null);
+    
+                        //HTMLDocument doc = ((HTMLDocument) viewer.getDocument());
+                        //doc.setCharacterAttributes(0, doc.getLength(), newbodyrule, true);
+                        
+                        /*
+                        Log.log(Log.DEBUG, this, "bodyrule.2="+bodyrule.toString());
+                        bodyrule.addAttribute("font-size","10pt");
+                        Log.log(Log.DEBUG, this, "bodyrule.3="+bodyrule.toString());
+                        newbodyrule.addAttributes(bodyrule);
+                        */
+                        Log.log(Log.DEBUG, this, "bodyrule.2="+newbodyrule.toString());
                     }
-                    String size=jEdit.getProperty("infoviewer.viewer.fontsize");
-                    if(size==null) size="14";
-                    Log.log(Log.DEBUG, this, "new fontSize:"+size);
-                    newbodyrule.addAttribute("font-size",size+"pt");
-
-                    //Action myaction=new StyledEditorKit.FontSizeAction("new font size", Integer.parseInt(size));
-                    //myaction.actionPerformed(null);
-
-                    //HTMLDocument doc = ((HTMLDocument) viewer.getDocument());
-                    //doc.setCharacterAttributes(0, doc.getLength(), newbodyrule, true);
-                    
-                    /*
-                    Log.log(Log.DEBUG, this, "bodyrule.2="+bodyrule.toString());
-                    bodyrule.addAttribute("font-size","10pt");
-                    Log.log(Log.DEBUG, this, "bodyrule.3="+bodyrule.toString());
-                    newbodyrule.addAttributes(bodyrule);
-                    */
-                    Log.log(Log.DEBUG, this, "bodyrule.2="+newbodyrule.toString());
+                    //styles.setBaseFontSize(1);
+                    //htmlEditorKit.setStyleSheet(styles);
+                    viewer.repaint();
+     
+                    // list available styles (which contain 'font-size')
+                    rules = styles.getStyleNames();
+                    while(rules.hasMoreElements()) {
+                        String name = (String) rules.nextElement();
+                        Style rule = styles.getStyle(name);
+                        if(rule.toString().indexOf("font-size")>-1) {
+                            Log.log(Log.DEBUG, this, name+"[new] : "+rule.toString());
+                        }
+                    }
                 }
-                //styles.setBaseFontSize(1);
-                //htmlEditorKit.setStyleSheet(styles);
-                viewer.repaint();
- 
-                // list available styles (which contain 'font-size')
-                rules = styles.getStyleNames();
-                while(rules.hasMoreElements()) {
-                    String name = (String) rules.nextElement();
-                    Style rule = styles.getStyle(name);
-                    if(rule.toString().indexOf("font-size")>-1) {
-                        Log.log(Log.DEBUG, this, name+"[new] : "+rule.toString());
-                    }
+                else {
+                    //Log.log(Log.WARNING, this, "empty style set");
                 }
             }
             else {

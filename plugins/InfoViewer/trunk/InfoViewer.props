@@ -75,13 +75,13 @@ infoviewer.open_file.description=Open a file...
 infoviewer.open_file.shortcut=C+o
 
 infoviewer.open_buffer=Open Current Buffer
-infoviewer.open_buffer.icon=XXXXX.png
+infoviewer.open_buffer.icon=New.png
 infoviewer.open_buffer.mnemonic=B
 infoviewer.open_buffer.description=Open the current selected jEdit buffer
 infoviewer.open_buffer.shortcut=C+b
 
 infoviewer.edit_url=Edit Current URL
-infoviewer.edit_url.icon=XXXXX.png
+infoviewer.edit_url.icon=Save.png
 infoviewer.edit_url.mnemonic=O
 infoviewer.edit_url.description=Edit the current document with jEdit
 infoviewer.edit_url.shortcut=C+e
@@ -93,7 +93,7 @@ infoviewer.reload.description=Reload the current page
 infoviewer.reload.shortcut=C+r
 
 infoviewer.close=Close
-infoviewer.close.icon=XXXXX.png
+infoviewer.close.icon=BrokenImage.png
 infoviewer.close.mnemonic=C
 infoviewer.close.description=Close InfoViewer
 infoviewer.close.shortcut=C+q
@@ -105,7 +105,7 @@ infoviewer.copy.description=Copy selected text to clipboard
 infoviewer.copy.shortcut=C+c
 
 infoviewer.select_all=Select All
-infoviewer.select_all.icon=XXXXX.png
+infoviewer.select_all.icon=BrokenImage.png
 infoviewer.select_all.mnemonic=S
 infoviewer.select_all.description=Select all
 infoviewer.select_all.shortcut=C+a
