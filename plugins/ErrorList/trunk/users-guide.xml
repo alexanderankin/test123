@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- ErrorList user's guide -->
-<!-- (C) 2001, 2003 Slava Pestov -->
+<!-- (C) 2001, 2005 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
@@ -402,6 +402,14 @@ errorSource.addError(new ErrorSource.DefaultError(
 
  <itemizedlist>
 
+ <listitem><formalpara><title>Version 1.3.3</title><para>requires
+   jEdit 4.2final.
+   </para></formalpara>
+   <itemizedlist>
+    <listitem><para>Add option to close error list after no errors remain (Gerd Knops).
+    </para></listitem>
+   </itemizedlist>
+  </listitem>
  <listitem><formalpara><title>Version 1.3.2</title><para>requires
    jEdit 4.2pre8.
    </para></formalpara>

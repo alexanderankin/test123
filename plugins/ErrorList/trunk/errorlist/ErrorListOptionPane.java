@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2005 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,6 +44,11 @@ public class ErrorListOptionPane extends AbstractOptionPane
 		showOnError.getModel().setSelected(jEdit.getBooleanProperty(
 			"error-list.showOnError"));
 
+		addComponent(autoCloseOnNoErrors = new JCheckBox(jEdit.getProperty(
+			"options.error-list.autoCloseOnNoErrors")));
+		autoCloseOnNoErrors.getModel().setSelected(jEdit.getBooleanProperty(
+			"error-list.autoCloseOnNoErrors"));
+
 		addComponent(showErrorOverview = new JCheckBox(jEdit.getProperty(
 			"options.error-list.showErrorOverview")));
 		showErrorOverview.getModel().setSelected(jEdit.getBooleanProperty(
@@ -65,6 +70,8 @@ public class ErrorListOptionPane extends AbstractOptionPane
 			.getModel().isSelected());
 		jEdit.setBooleanProperty("error-list.showErrorOverview",
 			showErrorOverview.getModel().isSelected());
+		jEdit.setBooleanProperty("error-list.autoCloseOnNoErrors",
+			autoCloseOnNoErrors.getModel().isSelected());
 		jEdit.setColorProperty("error-list.warningColor",
 			warningColor.getSelectedColor());
 		jEdit.setColorProperty("error-list.errorColor",
@@ -74,6 +81,7 @@ public class ErrorListOptionPane extends AbstractOptionPane
 	//{{{ Private members
 	private JCheckBox showOnError;
 	private JCheckBox showErrorOverview;
+	private JCheckBox autoCloseOnNoErrors;
 	private ColorWellButton warningColor;
 	private ColorWellButton errorColor;
 	//}}}
