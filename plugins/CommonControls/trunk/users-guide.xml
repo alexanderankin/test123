@@ -303,6 +303,16 @@
     <itemizedlist>
       <listitem>
         <formalpara>
+            <title>Version 0.8.1</title>
+
+            <para />
+        </formalpara>
+
+        <para>Uses deferred loading with jEdit 4.2.</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
           <title>Version 0.8</title>
 
           <para />
