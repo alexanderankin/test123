@@ -319,11 +319,8 @@
 		</para>
 
 		<para>
-			For developers, there's a comprehensive documentation included with
-			the source distribution in Javadoc format. Just download the source from
-			the jEdit CVS and create the documentation by executing the "javadoc" Ant
-			task in the Project Viewer directory. Documentation will be created under
-			the directory "build/docs/javadoc".
+      For developers go to chapter <link linkend="developer" endterm="developer.title"/>
+      to get some starting help fo how to cooperate with the Project Viewer plugin.
 		</para>
 	</chapter>
 
@@ -492,7 +489,15 @@
 	</chapter>
 
 	<chapter id="developer">
-		<title>Developer Documentation</title>
+		<title id="developer.title">Developer Documentation</title>
+
+		<para>
+			At first, there's a comprehensive documentation included with
+			the source distribution in Javadoc format. Just download the source from
+			the jEdit CVS and create the documentation by executing the "javadoc" Ant
+			task in the Project Viewer directory. Documentation will be created under
+			the directory "build/docs/javadoc".
+		</para>
 
 		<para>External plugins can interact with the Project Viewer plugin in various ways:
 			<itemizedlist>
