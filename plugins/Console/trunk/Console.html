@@ -32,11 +32,14 @@ system processes (such as programs, compilers, etc). Other plugins,
 for example BeanShell, add shells of their own which perform other
 tasks.<p>
 
-A console can be opened by selecting Plugins&gt;Console.<p>
+A console can be opened by selecting Plugins&gt;Console. The console
+window can be docked into the view if you specify so in
+Utilities&gt;Global Options&gt;Docking. <p>
 
-Each console window has a number of tabs, one tab for each installed
-shell. Each tab has a text field where commands can be entered, and
-an output area that lists output of running commands.<p>
+Each console window has a text field where commands can be entered, and
+an output area that lists output of running commands. The combo box to
+the left of the command field allows you to select the shell to execute
+commands in.<p>
 
 Pressing enter in the command field will execute the
 currently entered command. The command field supports a history;
@@ -56,7 +59,8 @@ macro recording is in progress.<p>
 </a>
 
 The default console shell runs operating system commands.
-To use it, select the <b>Console</b> tab in a console window.<p>
+To use it, select <b>Console</b> from the popup menu to the right of the
+command text field.<p>
 
 The default shell understands the following variables as part of a command:
 
@@ -132,6 +136,23 @@ the console:
 <a name=changes>
 <h1>Change Log</h1>
 </a>
+
+<h3>Version 2.2</h3>
+
+Requires EditBus 0.9.4 and jEdit 2.6pre3.
+
+<ul>
+<li>Uses jEdit 2.6pre3 window docking API
+</ul>
+
+<h3>Version 2.1.3</h3>
+
+Requires EditBus 0.9.4 and jEdit 2.5.1.
+
+<ul>
+<li>Option pane fixed to work with jEdit 2.6pre2
+<li>Compiler error pattern for Microsoft Visual C++ added
+</ul>
 
 <h3>Version 2.1.2</h3>
 

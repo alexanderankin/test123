@@ -1,0 +1,254 @@
+/*
+ * Console.java - The console window
+ * Copyright (C) 2000 Slava Pestov
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.event.*;
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.*;
+import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
+
+public class Console extends JPanel implements DockableWindow, Output, EBComponent
+{
+	public Console(View view)
+	{
+		super(new BorderLayout());
+
+		this.view = view;
+
+		shellCombo = new JComboBox(EditBus.getNamedList(Shell.SHELLS_LIST));
+		shellCombo.addActionListener(new ActionHandler());
+
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(BorderLayout.WEST,shellCombo);
+
+		Box box = new Box(BoxLayout.Y_AXIS);
+		box.add(Box.createGlue());
+		command = new HistoryTextField("console");
+		command.addActionListener(new ActionHandler());
+		Dimension dim = command.getPreferredSize();
+		dim.width = Integer.MAX_VALUE;
+		command.setMaximumSize(dim);
+		box.add(command);
+		box.add(Box.createGlue());
+		panel.add(box);
+
+		add(BorderLayout.NORTH,panel);
+
+		output = new JTextPane();
+		add(BorderLayout.CENTER,new JScrollPane(output));
+
+		propertiesChanged();
+		setShell(jEdit.getProperty("console.shell"));
+	}
+
+	public void addNotify()
+	{
+		super.addNotify();
+		EditBus.addToBus(this);
+	}
+
+	public void removeNotify()
+	{
+		super.removeNotify();
+		EditBus.removeFromBus(this);
+	}
+
+	// dockable window implementation
+	public String getName()
+	{
+		return "console";
+	}
+
+	public Component getComponent()
+	{
+		return this;
+	}
+
+	public void setShell(String shellName)
+	{
+		if(shellName.equals(this.shellName))
+			return;
+
+		this.shellName = shellName;
+
+		shellCombo.setSelectedItem(shellName);
+		command.setModel("console." + shellName);
+
+		CreateShell msg = new CreateShell(null,shellName);
+		EditBus.send(msg);
+		shell = msg.getShell();
+
+		shell.printInfoMessage(this);
+	}
+
+	public void run(String cmd)
+	{
+		// Add to history
+		command.getModel().addItem(cmd);
+
+		// Record the command
+		InputHandler.MacroRecorder recorder = view.getInputHandler()
+			.getMacroRecorder();
+		if(recorder != null)
+		{
+			recorder.actionPerformed(jEdit.getAction("console-shell"),shellName);
+			recorder.actionPerformed(jEdit.getAction("console"),cmd);
+		}
+
+		if(cmd.trim().equalsIgnoreCase("clear"))
+		{
+			clear();
+			return;
+		}
+
+		printInfo("> " + cmd);
+
+		shell.stop();
+		shell.execute(view,cmd,this);
+	}
+
+	public void handleMessage(EBMessage msg)
+	{
+		if(msg instanceof PropertiesChanged)
+			propertiesChanged();
+	}
+
+	public void printPlain(String msg)
+	{
+		addOutput(null,msg);
+	}
+
+	public void printInfo(String msg)
+	{
+		addOutput(infoColor,msg);
+	}
+
+	public void printWarning(String msg)
+	{
+		addOutput(warningColor,msg);
+	}
+
+	public void printError(String msg)
+	{
+		addOutput(errorColor,msg);
+	}
+
+	public void clear()
+	{
+		output.setText("");
+	}
+
+	// private members
+	private View view;
+	private JComboBox shellCombo;
+	private HistoryTextField command;
+	private JTextPane output;
+	private String shellName;
+	private Shell shell;
+
+	private Color infoColor, warningColor, errorColor;
+
+	private void propertiesChanged()
+	{
+		output.setBackground(GUIUtilities.parseColor(jEdit.getProperty(
+			"console.bgColor")));
+		output.setForeground(GUIUtilities.parseColor(jEdit.getProperty(
+			"console.plainColor")));
+		infoColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.infoColor"));
+		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.warningColor"));
+		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.errorColor"));
+
+		String family = jEdit.getProperty("console.font");
+		int size;
+		try
+		{
+			size = Integer.parseInt(jEdit.getProperty(
+				"console.fontsize"));
+		}
+		catch(NumberFormatException nf)
+		{
+			size = 14;
+		}
+		int style;
+		try
+		{
+			style = Integer.parseInt(jEdit.getProperty(
+				"console.fontstyle"));
+		}
+		catch(NumberFormatException nf)
+		{
+			style = Font.PLAIN;
+		}
+		output.setFont(new Font(family,style,size));
+	}
+
+	private synchronized void addOutput(Color color, String msg)
+	{
+		Document outputDocument = output.getDocument();
+
+		SimpleAttributeSet style = new SimpleAttributeSet();
+
+		if(color != null)
+			style.addAttribute(StyleConstants.Foreground,color);
+
+		try
+		{
+			outputDocument.insertString(outputDocument.getLength(),
+				msg,style);
+			outputDocument.insertString(outputDocument.getLength(),
+				"\n",null);
+		}
+		catch(BadLocationException bl)
+		{
+			Log.log(Log.ERROR,this,bl);
+		}
+
+		output.setCaretPosition(outputDocument.getLength());
+	}
+
+	class ActionHandler implements ActionListener
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			Object source = evt.getSource();
+
+			if(source == shellCombo)
+				setShell((String)shellCombo.getSelectedItem());
+			else if(source == command)
+			{
+				String cmd = command.getText();
+				if(cmd == null || cmd.length() == 0)
+					return;
+
+				command.setText(null);
+				run(cmd);
+			}
+		}
+	}
+}

@@ -1,6 +1,6 @@
 /*
  * ConsoleToolBar.java - Console tool bar
- * Copyright (C) 1999 Slava Pestov
+ * Copyright (C) 1999, 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
-import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 
 public class ConsoleToolBar extends JToolBar
@@ -59,6 +59,9 @@ public class ConsoleToolBar extends JToolBar
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
+			DockableWindowManager wm = view.getDockableWindowManager();
+			wm.addDockableWindow("console");
+
 			String command = cmd.getText();
 			if(command != null && command.length() != 0)
 			{
@@ -66,16 +69,12 @@ public class ConsoleToolBar extends JToolBar
 				cmd.addCurrentToHistory();
 				cmd.setText(null);
 
-				ConsoleFrame cons = ConsoleFramePluginPart
-					.getConsole(view);
-				cons.run((String)shells.getSelectedItem(),command);
+				Console cons = (Console)wm.getDockableWindow("console");
+				cons.setShell((String)shells.getSelectedItem());
+				cons.run(command);
 			}
 			else
-			{
-				ConsoleFrame cons = ConsoleFramePluginPart
-					.getConsole(view);
-				cons.selectShell((String)shells.getSelectedItem());
-			}
+				wm.addDockableWindow("console");
 		}
 	}
 }

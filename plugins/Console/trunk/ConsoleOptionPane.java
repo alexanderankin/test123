@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
@@ -49,33 +50,28 @@ public class ConsoleOptionPane extends AbstractOptionPane
 			shells);
 
 		/* Font */
-		font = new FontComboBox();
-		font.setSelectedItem(jEdit.getProperty("console.font"));
-		addComponent(jEdit.getProperty("options.console.font"),font);
-
-		/* Font style */
-		String[] styles = { jEdit.getProperty("options.console.plain"),
-			jEdit.getProperty("options.console.bold"),
-			jEdit.getProperty("options.console.italic"),
-			jEdit.getProperty("options.console.boldItalic") };
-		style = new JComboBox(styles);
+		String _fontFamily = jEdit.getProperty("console.font");
+		int _fontStyle;
 		try
 		{
-			style.setSelectedIndex(Integer.parseInt(jEdit
-				.getProperty("console.fontstyle")));
+			_fontStyle = Integer.parseInt(jEdit.getProperty("console.fontstyle"));
 		}
 		catch(NumberFormatException nf)
 		{
+			_fontStyle = Font.PLAIN;
 		}
-		addComponent(jEdit.getProperty("options.console.fontstyle"),
-			style);
+		int _fontSize;
+		try
+		{
+			_fontSize = Integer.parseInt(jEdit.getProperty("console.fontsize"));
+		}
+		catch(NumberFormatException nf)
+		{
+			_fontSize = 14;
+		}
+		font = new FontSelector(new Font(_fontFamily,_fontStyle,_fontSize));
 
-		/* Font size */
-		String[] sizes = { "9", "10", "12", "14", "18", "24" };
-		size = new JComboBox(sizes);
-		size.setEditable(true);
-		size.setSelectedItem(jEdit.getProperty("console.fontsize"));
-		addComponent(jEdit.getProperty("options.console.fontsize"),size);
+		addComponent(jEdit.getProperty("options.console.font"),font);
 
 		addComponent(jEdit.getProperty("options.console.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
@@ -88,6 +84,8 @@ public class ConsoleOptionPane extends AbstractOptionPane
 		addComponent(jEdit.getProperty("options.console.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
 		addComponent(new JLabel(jEdit.getProperty("options.console.errors")));
+
+		addComponent(Box.createVerticalStrut(6));
 
 		JPanel errors = new JPanel(new BorderLayout());
 		errorListModel = createListModel();
@@ -116,7 +114,7 @@ public class ConsoleOptionPane extends AbstractOptionPane
 		cons.gridheight = cons.REMAINDER;
 		cons.gridwidth = cons.REMAINDER;
 		cons.fill = GridBagConstraints.BOTH;
-		cons.weightx = 1.0f;
+		cons.weightx = cons.weighty = 1.0f;
 
 		gridBag.setConstraints(errors,cons);
 		add(errors);
@@ -127,10 +125,10 @@ public class ConsoleOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("console.toolbar.enabled",toolBarEnabled
 			.getModel().isSelected());
 		jEdit.setProperty("console.shell",(String)shells.getSelectedItem());
-		jEdit.setProperty("console.font",(String)font.getSelectedItem());
-		jEdit.setProperty("console.fontsize",(String)size.getSelectedItem());
-		jEdit.setProperty("console.fontstyle",String.valueOf(
-			style.getSelectedIndex()));
+		Font _font = font.getFont();
+		jEdit.setProperty("console.font",_font.getFamily());
+		jEdit.setProperty("console.fontsize",String.valueOf(_font.getSize()));
+		jEdit.setProperty("console.fontstyle",String.valueOf(_font.getStyle()));
 		jEdit.setProperty("console.bgColor",GUIUtilities
 			.getColorHexString(bgColor.getBackground()));
 		jEdit.setProperty("console.plainColor",GUIUtilities
@@ -155,9 +153,7 @@ public class ConsoleOptionPane extends AbstractOptionPane
 	// private members
 	private JCheckBox toolBarEnabled;
 	private JComboBox shells;
-	private JComboBox font;
-	private JComboBox size;
-	private JComboBox style;
+	private FontSelector font;
 	private JButton bgColor;
 	private JButton plainColor;
 	private JButton infoColor;
@@ -331,38 +327,49 @@ class ErrorMatcherDialog extends EnhancedDialog
 			jEdit.getProperty("options.console.errors.title"),true);
 		this.matcher = matcher;
 
-		JPanel panel = new JPanel(new GridLayout(5,2));
-		panel.add(new JLabel(jEdit.getProperty(
-			"options.console.errors.name"),
-			JLabel.RIGHT));
+		JPanel panel = new JPanel(new GridLayout(5,2,0,6));
+		panel.setBorder(new EmptyBorder(12,12,6,12));
+		JLabel label = new JLabel(jEdit.getProperty(
+			"options.console.errors.name"),JLabel.RIGHT);
+		label.setBorder(new EmptyBorder(0,0,0,12));
+		panel.add(label);
 		panel.add(name = new JTextField(matcher.name));
-		panel.add(new JLabel(jEdit.getProperty(
-			"options.console.errors.match"),
-			JLabel.RIGHT));
+		label = new JLabel(jEdit.getProperty(
+			"options.console.errors.match"),JLabel.RIGHT);
+		label.setBorder(new EmptyBorder(0,0,0,12));
+		panel.add(label);
 		panel.add(match = new JTextField(matcher.match));
-		panel.add(new JLabel(jEdit.getProperty(
-			"options.console.errors.filename"),
-			JLabel.RIGHT));
+		label = new JLabel(jEdit.getProperty(
+			"options.console.errors.filename"),JLabel.RIGHT);
+		label.setBorder(new EmptyBorder(0,0,0,12));
+		panel.add(label);
 		panel.add(filename = new JTextField(matcher.filename));
-		panel.add(new JLabel(jEdit.getProperty(
-			"options.console.errors.line"),
-			JLabel.RIGHT));
+		label = new JLabel(jEdit.getProperty(
+			"options.console.errors.line"),JLabel.RIGHT);
+		label.setBorder(new EmptyBorder(0,0,0,12));
+		panel.add(label);
 		panel.add(line = new JTextField(matcher.line));
-		panel.add(new JLabel(jEdit.getProperty(
-			"options.console.errors.message"),
-			JLabel.RIGHT));
+		label = new JLabel(jEdit.getProperty(
+			"options.console.errors.message"),JLabel.RIGHT);
+		label.setBorder(new EmptyBorder(0,0,0,12));
+		panel.add(label);
 		panel.add(message = new JTextField(matcher.message));
 
 		getContentPane().add(BorderLayout.CENTER,panel);
 
 		panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
+		panel.setBorder(new EmptyBorder(6,12,12,12));
+		panel.add(Box.createGlue());
 		ok = new JButton(jEdit.getProperty("common.ok"));
 		ok.addActionListener(new ActionHandler());
 		getRootPane().setDefaultButton(ok);
 		panel.add(ok);
+		panel.add(Box.createHorizontalStrut(6));
 		cancel = new JButton(jEdit.getProperty("common.cancel"));
 		cancel.addActionListener(new ActionHandler());
 		panel.add(cancel);
+		panel.add(Box.createGlue());
 		getContentPane().add(BorderLayout.SOUTH,panel);
 
 		Dimension screen = getToolkit().getScreenSize();
