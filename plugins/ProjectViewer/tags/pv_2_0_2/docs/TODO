@@ -1,0 +1,24 @@
+--------------------------------------------------------------------------------
+Problems:
+
+- Reduce memory footprint: keep track of "active" projects and remove nodes
+  from inactive ones (freeing memory). (?)
+
+- In "Old Style Importer", should we ask for what to filter to use instead of
+  just using the selected filter in the dialog?
+
+--------------------------------------------------------------------------------
+Features:
+
+- Implement functionality from old version:
+  * drag files from the tree to the EditPane
+  * what else?
+
+- project templates (using the Templates plugin, if available)
+
+- use jEdit's VFS to allow projects on virtual file systems such as ftp
+  see: org.gjt.sp.jedit.io.VFS (this would change things quite a lot!)
+
+- "reimport" should traverse directories not under the root looking for
+  new/stale files.
+
