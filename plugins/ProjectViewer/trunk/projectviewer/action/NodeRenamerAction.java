@@ -80,7 +80,7 @@ public class NodeRenamerAction extends Action {
 			}
 
 			// checks the input
-			if (node.isFile() || node.isDirectory()) {
+			if ((node.isFile() || node.isDirectory()) && node.canWrite()) {
 				if (!dlg.getDontChangeDisk() &&
 					(newName.indexOf('/') != -1 || newName.indexOf('\\') != -1)) {
 					JOptionPane.showMessageDialog(viewer,
@@ -99,6 +99,8 @@ public class NodeRenamerAction extends Action {
 				} else {
 					isValid = true;
 				}
+			} else if (node.isDirectory() && !((VPTDirectory)node).getFile().exists()) {
+				isValid = true;
 			}
 		}
 
@@ -121,28 +123,32 @@ public class NodeRenamerAction extends Action {
 			}
 			project.registerFile(f);
 			ProjectViewer.nodeChanged(f);
-		} else if (node.isDirectory()) {
+		} else if (node.isDirectory() ) {
 			VPTDirectory dir = (VPTDirectory) node;
-			String oldDir = dir.getFile().getAbsolutePath();
-			String newDir = dir.getFile().getParent() + File.separator + newName;
-			File newFile = new File(newDir);
+			if (dir.getFile().exists()) {
+				String oldDir = dir.getFile().getAbsolutePath();
+				String newDir = dir.getFile().getParent() + File.separator + newName;
+				File newFile = new File(newDir);
 
-			if (!dir.getFile().renameTo(newFile)) {
-				JOptionPane.showMessageDialog(viewer,
-						jEdit.getProperty("projectviewer.action.rename.rename_error"),
-						jEdit.getProperty("projectviewer.action.rename.title"),
-						JOptionPane.ERROR_MESSAGE);
-				return;
-			}
-
-			dir.setFile(newFile);
-
-			// updates all files from the old directory to point to the new one
-			for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
-				VPTFile f = (VPTFile) i.next();
-				if (f.getNodePath().startsWith(oldDir)) {
-					renameFile(f, new File(dir.getFile(), f.getName()));
+				if (!dir.getFile().renameTo(newFile)) {
+					JOptionPane.showMessageDialog(viewer,
+							jEdit.getProperty("projectviewer.action.rename.rename_error"),
+							jEdit.getProperty("projectviewer.action.rename.title"),
+							JOptionPane.ERROR_MESSAGE);
+					return;
 				}
+
+				dir.setFile(newFile);
+
+				// updates all files from the old directory to point to the new one
+				for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
+					VPTFile f = (VPTFile) i.next();
+					if (f.getNodePath().startsWith(oldDir)) {
+						renameFile(f, new File(dir.getFile(), f.getName()));
+					}
+				}
+			} else {
+				dir.setName(newName);
 			}
 			ProjectViewer.nodeChanged(dir);
 		} else if (node.isProject()) {
@@ -221,7 +227,8 @@ public class NodeRenamerAction extends Action {
 			fName.setSelectionStart(0);
 			fName.setSelectionEnd(node.getName().length());
 
-			if (node.isProject()) {
+			if (node.isProject() ||
+				(node.isDirectory() && !((VPTDirectory)node).getFile().exists())) {
 				getContentPane().add(BorderLayout.CENTER, fName);
 			} else {
 				JPanel p = new JPanel(new GridLayout(2, 1));
