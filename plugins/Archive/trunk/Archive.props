@@ -1,12 +1,12 @@
 plugin.archive.ArchivePlugin.activate=defer
 plugin.archive.ArchivePlugin.name=Archive
 plugin.archive.ArchivePlugin.author=André Kaplan
-plugin.archive.ArchivePlugin.version=0.4
+plugin.archive.ArchivePlugin.version=0.4.2
 plugin.archive.ArchivePlugin.docs=users-guide.html
 
-plugin.archive.ArchivePlugin.depend.0=jedit 04.02.09.00
+plugin.archive.ArchivePlugin.depend.0=jedit 04.03.02.00
 plugin.archive.ArchivePlugin.menu=archive.clear-directory-cache
-plugin.archive.ArchivePlugin.browser-menu-item=vfs.archive
+plugin.archive.ArchivePlugin.browser-menu=vfs.archive
 
 archive.clear-directory-cache.label=Clear directory cache
 

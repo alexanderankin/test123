@@ -37,8 +37,7 @@ import java.util.zip.*;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.io.VFS;
-import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.io.*;
 
 import org.gjt.sp.util.Log;
 
@@ -225,10 +224,10 @@ public class ArchiveVFS extends VFS {
                 String name = (String) e.nextElement();
                 Hashtable h = (Hashtable) directories.get(name);
 
-                VFS.DirectoryEntry[] list = new VFS.DirectoryEntry[h.size()];
+                VFSFile[] list = new VFSFile[h.size()];
                 int idx1 = 0;
                 for (Enumeration e1 = h.elements(); e1.hasMoreElements(); ) {
-                    list[idx1++] = (VFS.DirectoryEntry) e1.nextElement();
+                    list[idx1++] = (VFSFile) e1.nextElement();
                 }
                 ArchiveDirectoryCache.setCachedDirectory(name, list);
             }
@@ -290,11 +289,10 @@ public class ArchiveVFS extends VFS {
         return directories;
     }
 
-    public VFS.DirectoryEntry[] _listDirectory(Object session, String path,
+    public VFSFile[] _listFiles(Object session, String path,
         Component comp)
     {
-        VFS.DirectoryEntry[] directory =
-            ArchiveDirectoryCache.getCachedDirectory(path);
+        VFSFile[] directory = ArchiveDirectoryCache.getCachedDirectory(path);
 
         if (directory != null) {
             return directory;
@@ -317,7 +315,7 @@ public class ArchiveVFS extends VFS {
     }
 
 
-    public DirectoryEntry _getDirectoryEntry(Object session, String path,
+    public VFSFile _getFile(Object session, String path,
         Component comp)
     {
         ArchivePath archive = new ArchivePath(path);
@@ -329,11 +327,10 @@ public class ArchiveVFS extends VFS {
             return null;
         }
 
-        VFS.DirectoryEntry[] directory = this._listDirectory(
-            session, this.getParentOfPath(path), comp
-        );
+        VFSFile[] directory = this._listFiles(
+            session,this.getParentOfPath(path),comp);
 
-        if  (directory == null) {
+        if (directory == null) {
             return null;
         }
 
@@ -344,8 +341,8 @@ public class ArchiveVFS extends VFS {
         );
 
         for (int i = 0; i < directory.length; i++) {
-            VFS.DirectoryEntry entry = directory[i];
-            if (entry.path.equals(canonPath)) {
+            VFSFile entry = directory[i];
+            if (entry.getPath().equals(canonPath)) {
                 return entry;
             }
         }
@@ -501,19 +498,19 @@ public class ArchiveVFS extends VFS {
                 directories.put(currentVFSPath, directoryEntries);
             }
 
-            int type = VFS.DirectoryEntry.DIRECTORY;
+            int type = VFSFile.DIRECTORY;
             long length = 0;
 
             if (!tokenizer.hasMoreTokens()) { // Last Element
                 if (!entryIsDirectory) {
-                    type   = VFS.DirectoryEntry.FILE;
+                    type   = VFSFile.FILE;
                     length = entrySize;
                 }
             }
 
             directoryEntries.put(
                 token,
-                new VFS.DirectoryEntry(
+                new VFSFile(
                     token, nextVFSPath, nextVFSPath, type, length, false
                 )
             );
