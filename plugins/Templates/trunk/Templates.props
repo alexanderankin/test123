@@ -2,7 +2,7 @@
 
 plugin.TemplatesPlugin.name=Templates
 plugin.TemplatesPlugin.author=Steve Jakob
-plugin.TemplatesPlugin.version=1.0.0
+plugin.TemplatesPlugin.version=1.0.1
 plugin.TemplatesPlugin.docs=Templates.html
 
 # Menu labels

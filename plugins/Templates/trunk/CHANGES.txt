@@ -1,5 +1,11 @@
 CHANGES file for Templates plugin.
 
+Version 1.0.1 (20-APR-2000)
+=============================
+CHANGES:
+- updated TemplatesOptionPane for compliance with new OptionPane interface 
+in jEdit 2.4pre6. The class remains compatible with earlier releases, though.
+
 Version 1.0.0 (08-MAR-2000)
 =============================
 BUG FIXES:
