@@ -56,8 +56,11 @@ class SAXParserImpl implements XmlParser.Impl
 		reader = new org.apache.xerces.parsers.SAXParser();
 		try
 		{
-			reader.setFeature("http://apache.org/xml/features/validation/dynamic",
+			reader.setFeature("http://xml.org/sax/features/validation",
 				jEdit.getBooleanProperty("xml.validate"));
+			reader.setFeature("http://apache.org/xml/features/validation/schema",
+				true);
+			reader.setFeature("http://xml.org/sax/features/namespaces",true);
 			reader.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
 			reader.setErrorHandler(handler);
 			reader.setEntityResolver(handler);

@@ -2,19 +2,17 @@
 
 - DTD downloader -- clear cache command should remove d/l'd files too
 - &, < or > will show up twice if a DTD defines it
-- still elements showing up twice?
 - broken catalog support?
+- documentation: XML catalog format
+- test XMLCatalog support, include an XMLCatalog DTD
+- element and entity lists for schemas
 
 + before 1.0:
 
 - use AssetBrowser
-- Xerces 2
-- documentation: XML catalog format
-- test XMLCatalog support, include an XMLCatalog DTD
 - threaddeath -- wtf?
 - id completion
 - tag highlight scope bracket in gutter
-- element and entity lists for schemas
 - recording <, >, /, &
 - move Xerces to its own plugin
 - switching between two edit panes with same buffer: expand tree at

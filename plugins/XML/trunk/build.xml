@@ -33,7 +33,8 @@
 
 	<path id="project.class.path">
 		<pathelement location="${install.dir}/ErrorList.jar"/>
-		<pathelement location="${install.dir}/xerces.jar"/>
+		<pathelement location="${install.dir}/xercesImpl.jar"/>
+		<pathelement location="${install.dir}/xmlParserAPIs.jar"/>
 		<pathelement location="."/>
 	</path>
 
