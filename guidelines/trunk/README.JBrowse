@@ -1,0 +1,7 @@
+CVS policy file
+
+plugin: JBrowse
+author/maintainer: Andre Kaplan <kaplaan@hotmail.com>
+original author:   George Latkiewicz <georgel@arvotek.net>
+
+please do not commit changes to this plugin without first consulting the author.
