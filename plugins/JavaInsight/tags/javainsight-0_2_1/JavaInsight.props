@@ -1,0 +1,14 @@
+plugin.javainsight.JavaInsightPlugin.name=Java Insight
+plugin.javainsight.JavaInsightPlugin.author=Kevin A. Burton, Andre Kaplan
+plugin.javainsight.JavaInsightPlugin.version=0.2.1
+plugin.javainsight.JavaInsightPlugin.docs=/JavaInsight.html
+
+plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.1
+plugin.javainsight.JavaInsightPlugin.depend.1=jedit 02.06.09.00
+
+# Menu bar properties
+javainsight.toggle-dockable.label=Java Insight
+
+# Dockable window title
+javainsight-dockable.title=JavaInsight
+
