@@ -100,7 +100,7 @@ public class FtpPlugin extends EditPlugin
 	} //}}}
 
 	//{{{ initSshtoolsHome() method
-	public void initSshtoolsHome()
+	public static void initSshtoolsHome()
 	{
 		String path = MiscUtilities.constructPath(
 			jEdit.getSettingsDirectory(),"sshtools");
@@ -124,7 +124,7 @@ public class FtpPlugin extends EditPlugin
 				File file = new File(dir,files[i]);
 				if(!file.exists())
 				{
-					copy(getClass().getResourceAsStream(
+					copy(FtpPlugin.class.getResourceAsStream(
 						"/conf/" + files[i]),
 						new FileOutputStream(
 						file));
@@ -140,14 +140,14 @@ public class FtpPlugin extends EditPlugin
 		}
 		catch(IOException io)
 		{
-			Log.log(Log.ERROR,this,io);
+			Log.log(Log.ERROR,FtpPlugin.class,io);
 		}
 	} //}}}
 
 	//{{{ Private members
 
 	//{{{ copy() method
-	private void copy(InputStream in, OutputStream out) throws IOException
+	private static void copy(InputStream in, OutputStream out) throws IOException
 	{
 		try
 		{

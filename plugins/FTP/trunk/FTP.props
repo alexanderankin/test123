@@ -1,4 +1,6 @@
 # Plugin properties
+plugin.ftp.FtpPlugin.activate=defer
+
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
 plugin.ftp.FtpPlugin.version=0.6
