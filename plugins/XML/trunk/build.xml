@@ -37,6 +37,7 @@
 		<pathelement location="${install.dir}/xercesImpl.jar"/>
 		<pathelement location="${install.dir}/xmlParserAPIs.jar"/>
 		<pathelement location="${install.dir}/xml-commons-resolver.jar"/>
+		<pathelement location="${install.dir}/htmlparser.jar"/>
 		<pathelement location="."/>
 	</path>
 

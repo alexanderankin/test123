@@ -18,7 +18,6 @@
 
  <authorgroup>
   <author><firstname>Slava</firstname><surname>Pestov</surname></author>
-  <author><firstname>Andre</firstname><surname>Kaplan</surname></author>
  </authorgroup>
 
  <legalnotice><title>Legal Notice</title>
@@ -494,6 +493,19 @@
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+ <listitem><para><emphasis role="bold">Version 0.13</emphasis> requires
+  jEdit 4.2pre5, SideKick plugin 0.3, and ErrorList plugin 1.3.1.</para>
+
+  <itemizedlist>
+  <listitem><para>We now use the HTML parser from <ulink url="htmlparser.sf.net">htmlparser.sf.net</ulink> instead of the extremely moronic Swing HTML parser (Will Sargent).</para></listitem>
+  <listitem><para>JHTML completion (Will Sargent).</para></listitem>
+  <listitem><para>The element completion code now tries to preserve case when editing HTML files.</para></listitem>
+  <listitem><para>Changing a catalog from within jEdit will automatically reload it.</para></listitem>
+  <listitem><para>Validation was only working for schemas, not DTDs.</para></listitem>
+  <listitem><para>Fixed <classname>NullPointerException</classname> when closing <guimenuitem>Plugin Options</guimenuitem> dialog box.</para></listitem>
+  </itemizedlist>
+  </listitem>
 
   <listitem><para><emphasis role="bold">Version 0.12</emphasis> requires
   jEdit 4.2pre3, SideKick plugin 0.3, and ErrorList plugin 1.3.</para>
