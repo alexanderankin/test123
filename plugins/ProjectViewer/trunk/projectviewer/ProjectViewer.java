@@ -160,7 +160,6 @@ public final class ProjectViewer extends JPanel
             cp.setTabState(tabs.getSelectedIndex());
             cp.save();
          }
-         launcher.openProject( project );
       }
 
       // set up the new project
@@ -180,6 +179,7 @@ public final class ProjectViewer extends JPanel
       else {
          //if ( !project.isLoaded() ) {
             project.load();
+            launcher.openProject( project );
          //}
       }
 
