@@ -27,12 +27,12 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 
 
-public final class SessionChanged extends SessionMessage
+public final class SessionChanging extends SessionMessage
 {
 
-	SessionChanged(EBComponent source, String oldSession)
+	SessionChanging(EBComponent source, String newSession)
 	{
-		super(source, oldSession, ((SessionManager)source).getCurrentSession());
+		super(source, newSession, ((SessionManager)source).getCurrentSession());
 	}
 
 }

@@ -27,13 +27,36 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 
 
-public final class SessionChanged extends SessionMessage
+public class SessionMessage extends EBMessage.NonVetoable
 {
 
-	SessionChanged(EBComponent source, String oldSession)
+	SessionMessage(EBComponent source, String oldSession, String newSession)
 	{
-		super(source, oldSession, ((SessionManager)source).getCurrentSession());
+		super(source);
+		this.oldSession = oldSession;
+		this.newSession = newSession;
 	}
+
+
+	public final SessionManager getSessionManager()
+	{
+		return (SessionManager) getSource();
+	}
+
+
+	public final String getNewSession()
+	{
+		return newSession;
+	}
+
+	public final String getOldSession()
+	{
+		return oldSession;
+	}
+
+
+	private String oldSession;
+	private String newSession;
 
 }
 

@@ -1,6 +1,6 @@
 /*
  * SessionManager.java
- * Copyright (c) 2001 Dirk Moebius
+ * Copyright (c) 2001 Dirk Moebius, Sergey V. Udaltsov
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
  *
@@ -104,6 +104,8 @@ public class SessionManager implements EBComponent
 
 		if (newSession.equals(currentSession))
 			return;
+
+		EditBus.send(new SessionChanging(this, newSession));
 
 		if (jEdit.getBooleanProperty("sessions.switcher.autoSave", true))
 		{
