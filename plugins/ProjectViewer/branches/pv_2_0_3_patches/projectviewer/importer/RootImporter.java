@@ -100,7 +100,10 @@ public class RootImporter extends FileImporter {
 		if (!defineFileFilter(project.getName(), (project.getChildCount() == 0))) {
 			return null;
 		}
-		String state = viewer.getFolderTreeState(project);
+		String state = null;
+		if (viewer != null) {
+			state = viewer.getFolderTreeState(project);
+		}
 
 		if (clean) {
 			if (oldRoot == null) {
@@ -130,7 +133,9 @@ public class RootImporter extends FileImporter {
 		}
 
 		addTree(new File(project.getRootPath()), project, fnf);
-		postAction = new NodeStructureChange(project, state);
+		if (state != null) {
+			postAction = new NodeStructureChange(project, state);
+		}
 
 		showFileCount();
 		return null;

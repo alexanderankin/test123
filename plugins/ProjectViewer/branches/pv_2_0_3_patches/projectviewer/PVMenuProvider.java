@@ -33,6 +33,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.menu.DynamicMenuProvider;
 
+import projectviewer.config.ProjectViewerConfig;
 import projectviewer.vpt.VPTProject;
 //}}}
 
@@ -96,6 +97,8 @@ public final class PVMenuProvider implements DynamicMenuProvider,
 		ProjectViewer viewer = ProjectViewer.getViewer(view);
 		if (viewer != null && p != null) {
 			viewer.setProject(p);
+		} else {
+			ProjectViewerConfig.getInstance().setLastProject(p.getName());
 		}
 	} //}}}
 
