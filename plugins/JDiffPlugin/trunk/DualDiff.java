@@ -58,19 +58,26 @@ import org.gjt.sp.util.Log;
 public class DualDiff {
     private static boolean ignoreCaseDefault  =
         jEdit.getBooleanProperty("jdiff.ignore-case", false);
+    private static boolean trimWhitespaceDefault =
+        jEdit.getBooleanProperty("jdiff.trim-whitespace", false);
     private static boolean ignoreWhitespaceDefault =
         jEdit.getBooleanProperty("jdiff.ignore-whitespace", false);
     private static Hashtable dualDiffs = new Hashtable();
 
-    private boolean ignoreCase;
-    private boolean ignoreWhitespace;
-    private View view;
+    private boolean       ignoreCase;
+    private boolean       trimWhitespace;
+    private boolean       ignoreWhitespace;
+
+    private View          view;
     private EditPane      editPane0;
     private EditPane      editPane1;
     private JEditTextArea textArea0;
     private JEditTextArea textArea1;
 
     private Diff.change   edits;
+
+    private JScrollBar    horizontal0;
+    private JScrollBar    horizontal1;
 
     private DiffOverview  diffOverview0;
     private DiffOverview  diffOverview1;
@@ -79,16 +86,20 @@ public class DualDiff {
     private Box           box0;
     private Box           box1;
 
-    private AdjustHandler adjustHandler;
+    private HorizontalAdjustHandler horizontalAdjust;
+    private VerticalAdjustHandler   verticalAdjust;
 
 
     public DualDiff(View view) {
-        this(view, ignoreCaseDefault, ignoreWhitespaceDefault);
+        this(view, ignoreCaseDefault, trimWhitespaceDefault, ignoreWhitespaceDefault);
     }
 
 
-    public DualDiff(View view, boolean ignoreCase, boolean ignoreWhiteSpace) {
+    public DualDiff(View view, boolean ignoreCase,
+            boolean trimWhitespace, boolean ignoreWhiteSpace
+    ) {
         this.ignoreCase       = ignoreCase;
+        this.trimWhitespace   = trimWhitespace;
         this.ignoreWhitespace = ignoreWhiteSpace;
 
         this.view = view;
@@ -100,6 +111,9 @@ public class DualDiff {
 
         this.textArea0 = this.editPane0.getTextArea();
         this.textArea1 = this.editPane1.getTextArea();
+
+        this.horizontal0 = this.findHorizontalScrollBar(this.textArea0);
+        this.horizontal1 = this.findHorizontalScrollBar(this.textArea1);
 
         this.box0      = new Box(BoxLayout.X_AXIS);
         this.vertical0 = this.findVerticalScrollBar(this.textArea0);
@@ -124,6 +138,21 @@ public class DualDiff {
 
     public void toggleIgnoreCase() {
         this.ignoreCase = !this.ignoreCase;
+    }
+
+
+    public boolean getTrimWhitespace() {
+        return this.trimWhitespace;
+    }
+
+
+    public void setTrimWhitespace(boolean trimWhitespace) {
+        this.trimWhitespace = trimWhitespace;
+    }
+
+
+    public void toggleTrimWhitespace() {
+        this.trimWhitespace = !this.trimWhitespace;
     }
 
 
@@ -158,7 +187,8 @@ public class DualDiff {
         this.diffOverview0 = new DiffLocalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
         this.diffOverview1 = new DiffGlobalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
 
-        this.adjustHandler = new AdjustHandler();
+        this.horizontalAdjust = new HorizontalAdjustHandler();
+        this.verticalAdjust   = new VerticalAdjustHandler();
     }
 
 
@@ -264,28 +294,48 @@ public class DualDiff {
 
 
     private void addHandlers() {
-        this.vertical0.addAdjustmentListener((AdjustmentListener) this.adjustHandler);
-        this.vertical0.addMouseListener((MouseListener) this.adjustHandler);
-        this.textArea0.addFocusListener((FocusListener) this.adjustHandler);
-        this.textArea0.addCaretListener((CaretListener) this.adjustHandler);
+        this.horizontal0.addAdjustmentListener((AdjustmentListener) this.horizontalAdjust);
+        this.horizontal0.addMouseListener((MouseListener) this.horizontalAdjust);
+        this.textArea0.addFocusListener((FocusListener) this.horizontalAdjust);
+        this.textArea0.addCaretListener((CaretListener) this.horizontalAdjust);
 
-        this.vertical1.addAdjustmentListener((AdjustmentListener) this.adjustHandler);
-        this.vertical1.addMouseListener((MouseListener) this.adjustHandler);
-        this.textArea1.addFocusListener((FocusListener) this.adjustHandler);
-        this.textArea1.addCaretListener((CaretListener) this.adjustHandler);
+        this.horizontal1.addAdjustmentListener((AdjustmentListener) this.horizontalAdjust);
+        this.horizontal1.addMouseListener((MouseListener) this.horizontalAdjust);
+        this.textArea1.addFocusListener((FocusListener) this.horizontalAdjust);
+        this.textArea1.addCaretListener((CaretListener) this.horizontalAdjust);
+
+        this.vertical0.addAdjustmentListener((AdjustmentListener) this.verticalAdjust);
+        this.vertical0.addMouseListener((MouseListener) this.verticalAdjust);
+        this.textArea0.addFocusListener((FocusListener) this.verticalAdjust);
+        this.textArea0.addCaretListener((CaretListener) this.verticalAdjust);
+
+        this.vertical1.addAdjustmentListener((AdjustmentListener) this.verticalAdjust);
+        this.vertical1.addMouseListener((MouseListener) this.verticalAdjust);
+        this.textArea1.addFocusListener((FocusListener) this.verticalAdjust);
+        this.textArea1.addCaretListener((CaretListener) this.verticalAdjust);
     }
 
 
     private void removeHandlers() {
-        this.vertical0.removeAdjustmentListener((AdjustmentListener) this.adjustHandler);
-        this.vertical0.removeMouseListener((MouseListener) this.adjustHandler);
-        this.textArea0.removeFocusListener((FocusListener) this.adjustHandler);
-        this.textArea0.removeCaretListener((CaretListener) this.adjustHandler);
+        this.horizontal0.removeAdjustmentListener((AdjustmentListener) this.horizontalAdjust);
+        this.horizontal0.removeMouseListener((MouseListener) this.horizontalAdjust);
+        this.textArea0.removeFocusListener((FocusListener) this.horizontalAdjust);
+        this.textArea0.removeCaretListener((CaretListener) this.horizontalAdjust);
 
-        this.vertical1.removeAdjustmentListener((AdjustmentListener) this.adjustHandler);
-        this.vertical1.removeMouseListener((MouseListener) this.adjustHandler);
-        this.textArea1.removeFocusListener((FocusListener) this.adjustHandler);
-        this.textArea1.removeCaretListener((CaretListener) this.adjustHandler);
+        this.horizontal1.removeAdjustmentListener((AdjustmentListener) this.horizontalAdjust);
+        this.horizontal1.removeMouseListener((MouseListener) this.horizontalAdjust);
+        this.textArea1.removeFocusListener((FocusListener) this.horizontalAdjust);
+        this.textArea1.removeCaretListener((CaretListener) this.horizontalAdjust);
+
+        this.vertical0.removeAdjustmentListener((AdjustmentListener) this.verticalAdjust);
+        this.vertical0.removeMouseListener((MouseListener) this.verticalAdjust);
+        this.textArea0.removeFocusListener((FocusListener) this.verticalAdjust);
+        this.textArea0.removeCaretListener((CaretListener) this.verticalAdjust);
+
+        this.vertical1.removeAdjustmentListener((AdjustmentListener) this.verticalAdjust);
+        this.vertical1.removeMouseListener((MouseListener) this.verticalAdjust);
+        this.textArea1.removeFocusListener((FocusListener) this.verticalAdjust);
+        this.textArea1.removeCaretListener((CaretListener) this.verticalAdjust);
     }
 
 
@@ -313,6 +363,9 @@ public class DualDiff {
                 canonical = text;
                 if (ignoreCase) {
                     canonical = canonical.toUpperCase();
+                }
+                if (trimWhitespace) {
+                    canonical = trimWhitespaces(canonical);
                 }
                 if (ignoreWhitespace) {
                     canonical = squeezeRepeatedWhitespaces(canonical);
@@ -358,17 +411,52 @@ public class DualDiff {
     }
 
 
-    public JScrollBar findVerticalScrollBar(Container container) {
+    public static String trimWhitespaces(String str) {
+        int inLen     = str.length();
+        char[] inStr  = new char[inLen];
+        str.getChars(0, inLen, inStr, 0);
+
+        // Skip leading whitespaces
+        int startIdx = 0;
+        while ((startIdx < inLen) && Character.isWhitespace(inStr[startIdx])) {
+            startIdx++;
+        }
+
+        // Skip trailing whitespaces
+        int endIdx = inLen - 1;
+        while ((endIdx >= startIdx) && Character.isWhitespace(inStr[endIdx])) {
+            endIdx--;
+        }
+
+        if ((startIdx > 0) || (endIdx < inLen - 1)) {
+            return new String(inStr, startIdx, endIdx - startIdx + 1);
+        } else {
+            return str;
+        }
+    }
+
+
+    public JScrollBar findScrollBar(Container container, int orientation) {
         Component[] comps = container.getComponents();
         for (int i = 0; i < comps.length; i++) {
             if (   (comps[i] instanceof JScrollBar)
-                && (((JScrollBar) comps[i]).getOrientation() == JScrollBar.VERTICAL)
+                && (((JScrollBar) comps[i]).getOrientation() == orientation)
             ) {
                 return (JScrollBar) comps[i];
             }
         }
 
         return null;
+    }
+
+
+    public JScrollBar findHorizontalScrollBar(Container container) {
+        return this.findScrollBar(container, JScrollBar.HORIZONTAL);
+    }
+
+
+    public JScrollBar findVerticalScrollBar(Container container) {
+        return this.findScrollBar(container, JScrollBar.VERTICAL);
     }
 
 
@@ -458,6 +546,30 @@ public class DualDiff {
         DualDiff dualDiff = DualDiff.getDualDiffFor(view);
         if (dualDiff != null) {
             dualDiff.toggleIgnoreCase();
+            dualDiff.refresh();
+
+            view.invalidate();
+            view.validate();
+        } else {
+            view.getToolkit().beep();
+        }
+    }
+
+
+    public static boolean getTrimWhitespaceFor(View view) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+        if (dualDiff == null) {
+            return false;
+        }
+
+        return dualDiff.getTrimWhitespace();
+    }
+
+
+    public static void toggleTrimWhitespaceFor(View view) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(view);
+        if (dualDiff != null) {
+            dualDiff.toggleTrimWhitespace();
             dualDiff.refresh();
 
             view.invalidate();
@@ -589,7 +701,8 @@ public class DualDiff {
 
 
     private void nextDiff0() {
-        this.adjustHandler.source = this.vertical0;
+        this.horizontalAdjust.source = this.horizontal0;
+        this.verticalAdjust.source = this.vertical0;
 
         Diff.change hunk = this.edits;
         int firstLine = this.textArea0.getFirstLine();
@@ -614,7 +727,8 @@ public class DualDiff {
 
 
     private void nextDiff1() {
-        this.adjustHandler.source = this.vertical1;
+        this.horizontalAdjust.source = this.horizontal1;
+        this.verticalAdjust.source = this.vertical1;
 
         Diff.change hunk = this.edits;
         int firstLine = this.textArea1.getFirstLine();
@@ -639,7 +753,8 @@ public class DualDiff {
 
 
     private void prevDiff0() {
-        this.adjustHandler.source = this.vertical0;
+        this.horizontalAdjust.source = this.horizontal0;
+        this.verticalAdjust.source = this.vertical0;
 
         Diff.change hunk = this.edits;
         int firstLine = this.textArea0.getFirstLine();
@@ -666,7 +781,8 @@ public class DualDiff {
 
 
     private void prevDiff1() {
-        this.adjustHandler.source = this.vertical1;
+        this.horizontalAdjust.source = this.horizontal1;
+        this.verticalAdjust.source = this.vertical1;
 
         Diff.change hunk = this.edits;
         int firstLine = this.textArea1.getFirstLine();
@@ -718,7 +834,7 @@ public class DualDiff {
     }
 
 
-    private class AdjustHandler
+    private class VerticalAdjustHandler
             implements AdjustmentListener, CaretListener, FocusListener, MouseListener
     {
         private Object source = null;
@@ -742,7 +858,7 @@ public class DualDiff {
         };
 
 
-        public AdjustHandler() {}
+        public VerticalAdjustHandler() {}
 
 
         public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -801,7 +917,97 @@ public class DualDiff {
 
         public void mouseReleased(MouseEvent e) {
             Log.log(Log.DEBUG, this, "**** mouseReleased " + e);
-            // this.source = null;
+        }
+    }
+
+
+    private class HorizontalAdjustHandler
+            implements AdjustmentListener, CaretListener, FocusListener, MouseListener
+    {
+        private Object source = null;
+
+        private Runnable syncWithRight = new Runnable() {
+            public void run() {
+                // DualDiff.this.diffOverview0.repaint();
+                DualDiff.this.textArea1._setHorizontalOffset(
+                    DualDiff.this.textArea0.getHorizontalOffset()
+                );
+
+                // DualDiff.this.diffOverview1.repaint();
+            }
+        };
+
+        private Runnable syncWithLeft = new Runnable() {
+            public void run() {
+                // DualDiff.this.diffOverview1.repaint();
+                DualDiff.this.textArea0._setHorizontalOffset(
+                    DualDiff.this.textArea1.getHorizontalOffset()
+                );
+
+                // DualDiff.this.diffOverview0.repaint();
+            }
+        };
+
+
+        public HorizontalAdjustHandler() {}
+
+
+        public void adjustmentValueChanged(AdjustmentEvent e) {
+            if (this.source == null) {
+                this.source = e.getSource();
+            }
+            // Log.log(Log.DEBUG, this, "**** Adjustment " + e);
+
+            if (this.source == DualDiff.this.horizontal0) {
+                SwingUtilities.invokeLater(this.syncWithRight);
+            } else if (this.source == DualDiff.this.horizontal1) {
+                SwingUtilities.invokeLater(this.syncWithLeft);
+            } else {}
+        }
+
+
+        public void caretUpdate(CaretEvent e) {
+            if (e.getSource() == DualDiff.this.textArea0) {
+                this.source = DualDiff.this.horizontal0;
+            } else if (e.getSource() == DualDiff.this.textArea1) {
+                this.source = DualDiff.this.horizontal1;
+            } else {}
+        }
+
+
+        public void focusGained(FocusEvent e) {
+            Log.log(Log.DEBUG, this, "**** focusGained " + e);
+
+            if (e.getSource() == DualDiff.this.textArea0) {
+                this.source = DualDiff.this.horizontal0;
+            } else if (e.getSource() == DualDiff.this.textArea1) {
+                this.source = DualDiff.this.horizontal1;
+            } else {}
+        }
+
+
+        public void focusLost(FocusEvent e) {
+            Log.log(Log.DEBUG, this, "**** focusLost " + e);
+        }
+
+
+        public void mouseClicked(MouseEvent e) {}
+
+
+        public void mouseEntered(MouseEvent e) {}
+
+
+        public void mouseExited(MouseEvent e) {}
+
+
+        public void mousePressed(MouseEvent e) {
+            Log.log(Log.DEBUG, this, "**** mousePressed " + e);
+            this.source = e.getSource();
+        }
+
+
+        public void mouseReleased(MouseEvent e) {
+            Log.log(Log.DEBUG, this, "**** mouseReleased " + e);
         }
     }
 
@@ -809,13 +1015,17 @@ public class DualDiff {
     public static void propertiesChanged() {
         boolean newIgnoreCaseDefault =
             jEdit.getBooleanProperty("jdiff.ignore-case", false);
+        boolean newTrimWhitespaceDefault =
+            jEdit.getBooleanProperty("jdiff.trim-whitespace", false);
         boolean newIgnoreWhitespaceDefault =
             jEdit.getBooleanProperty("jdiff.ignore-whitespace", false);
 
-        if (   (newIgnoreCaseDefault != ignoreCaseDefault)
+        if (   (newIgnoreCaseDefault       != ignoreCaseDefault)
+            || (newTrimWhitespaceDefault   != trimWhitespaceDefault)
             || (newIgnoreWhitespaceDefault != ignoreWhitespaceDefault)
         ) {
             ignoreCaseDefault       = newIgnoreCaseDefault;
+            trimWhitespaceDefault   = newTrimWhitespaceDefault;
             ignoreWhitespaceDefault = newIgnoreWhitespaceDefault;
         }
     }

@@ -2,7 +2,7 @@
 # Author: Andre Kaplan
 plugin.JDiffPlugin.name=JDiff Plugin
 plugin.JDiffPlugin.author=Andre Kaplan
-plugin.JDiffPlugin.version=1.1.1
+plugin.JDiffPlugin.version=1.2
 plugin.JDiffPlugin.docs=JDiffPlugin.html
 
 # Dependencies
@@ -18,6 +18,7 @@ jdiff-menu=\
     jdiff.next-diff \
     - \
     jdiff.toggle-ignore-case \
+    jdiff.toggle-trim-whitespace \
     jdiff.toggle-ignore-whitespace \
     - \
     jdiff.diff-normal-output
@@ -29,10 +30,12 @@ jdiff.refresh-diff.label=Refresh diff
 jdiff.prev-diff.label=Go to Previous Difference
 jdiff.next-diff.label=Go to Next Difference
 jdiff.toggle-ignore-case.label=Ignore case
+jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
 jdiff.toggle-ignore-whitespace.label=Ignore all whitespace
 jdiff.diff-normal-output.label=Normal Diff Output
 
 jdiff.ignore-case=false
+jdiff.trim-whitespace=false
 jdiff.ignore-whitespace=false
 jdiff.changed-color=\#FFCC66
 jdiff.deleted-color=\#FF6666
@@ -45,6 +48,7 @@ jdiff.right-cursor-color=\#000000
 
 options.jdiff.label=JDiff
 options.jdiff.ignore-case=Ignore case
+oprions.jdiff.trim-whitespace=Ignore leading and trailing whitespace
 options.jdiff.ignore-whitespace=Ignore all whitespace
 options.jdiff.changed-color=Changed lines color:\ 
 options.jdiff.deleted-color=Deleted lines color:\ 
