@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more detaProjectTreeSelectionListenerils.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -23,18 +23,17 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 
+import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
+
 import org.gjt.sp.util.Log;
 import projectviewer.ProjectPlugin;
+import projectviewer.ProjectViewer;
 //}}}
 
 /**
-* @author payne
-*
-* To change this generated comment edit the template variable "typecomment":
-* Window>Preferences>Java>Templates.
-* To enable and disable the creation of type comments go to
-* Window>Preferences>Java>Code Generation.
-*/
+ *	@author payne
+ */
 public class AppLauncher {
 
 	//{{{ Factory method & variable
@@ -69,41 +68,30 @@ public class AppLauncher {
 
 	//}}}
 	
-	//{{{ getExec() method
-	public String getExec(String fileExt) {
-
-		if (fileExt.length() > 0)
-
-			return (String)appCol.get(fileExt.trim());
-		else
-
-			return "";
-	} //}}}
-
+	//{{{ Public methods
+	
 	//{{{ getAppList() method
 	public Set getAppList() {
 	   //return all the values
 		return appCol.entrySet(); 
-		
 	} //}}}
-	
+
 	//{{{ addAppExt() method
 	public void addAppExt(String fileExt, String execPath) {
-		Log.log(Log.DEBUG, this, "Addin mapping: " + fileExt + " , " + execPath);
 		if (fileExt.trim().length() > 0)
 			appCol.put(fileExt.trim(), execPath);
 	} //}}}
-	
+
 	//{{{ removeAppExt() method
 	public void removeAppExt(String fileExt) {
 		appCol.remove(fileExt);
 	} //}}}
-	
+
 	//{{{ getCount() method
 	public int getCount() {
 	   return appCol.size();
 	} //}}}
-	
+
 	//{{{ loadExts() method
 	/** load extension properties from file **/
 	public void loadExts() throws IOException {
@@ -145,34 +133,74 @@ public class AppLauncher {
 		out.println("");
 		out.close();	
 	} //}}}
-	
+
 	//{{{ launchApp() method
 	// was private, but gets called from TreeContextMenuListener.java::LaunchExternal()
-	public void launchApp(String ext,String sFileName) {
-		String executable = (String)appCol.get(ext);
-		if (appCol.containsKey(ext)) {
+	public void launchApp(File f, ProjectViewer viewer) {
+		String ext = getFileExtension(f.getName());
+		String executable = (String) appCol.get(ext);
+		if (executable == null) {
+			if (JOptionPane.showConfirmDialog(viewer, 
+					"No application has been chosen for extension \"" + ext + "\".\n" +
+					"Would you like to select one?", 
+					"No application set",
+					javax.swing.JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+				 executable = pickApp(ext, viewer);	
+			 } else {
+				 return;
+			 }
+		}
+		if (executable != null) {
 			Runtime rt = Runtime.getRuntime();
-			String[] callAndArgs = { executable, sFileName};
+			String[] callAndArgs = { executable, f.getAbsolutePath() };
 			try {
-			   Process child = rt.exec(callAndArgs);
-			   child.waitFor();
-			   System.out.println("Process exit code is: " + child.exitValue());
-			} catch(java.io.IOException e) {
-				System.err.println("IOException starting process!");
-			} catch(InterruptedException e) {
-			   System.err.println("Interrupted waiting for process!");
+			   rt.exec(callAndArgs);
+			} catch(java.io.IOException ioe) {
+				JOptionPane.showMessageDialog(viewer, 
+					"Error starting process: " + ioe.getMessage(),
+					"Error",
+					JOptionPane.ERROR_MESSAGE);
 			}
-		} else {
-		
-			//javax.swing.JOptionPane.showMessageDialog(null, "No application set for this extension!");	
-			int retval = javax.swing.JOptionPane.showConfirmDialog(null, "Would you like to select one?", 
-					"No application set for this extension!",  javax.swing.JOptionPane.YES_NO_OPTION);			
-		     if (retval == javax.swing.JOptionPane.YES_OPTION)
-				 	pickApp(ext);	
-					// could retry launch here		
 		}
 	} //}}}
 	
+	//{{{ copy() method
+	/** Copies the data from another AppLauncher into this one. */
+	public void copy(AppLauncher other) {
+		appCol.clear();
+		for (Iterator it = other.appCol.keySet().iterator(); it.hasNext(); ) {
+			Object key = it.next();
+			appCol.put(key, other.appCol.get(key));
+		}
+	} //}}}
+
+	//{{{ getAppName(String) method
+	/**
+	 *	Returns the application name associated to the given file extension.
+	 */
+	public String getAppName(File f) {
+		return (String) appCol.get(getFileExtension(f.getName()));
+	} //}}}
+	
+	//}}}
+		
+	//{{{ Private methods	
+	
+	//{{{ getFileExtension() method
+	/**
+	 *	Returns the file's extension, or the file name if no extension can be 
+	 *	recognized.
+	 *
+	 *@param  filename  
+	 *@return	   The fileExtension value
+	 */
+	private String getFileExtension(String fileName) {
+		int dotIndex = fileName.lastIndexOf('.');
+		if (dotIndex == -1 || dotIndex == fileName.length() - 1)
+			return fileName;
+		return fileName.substring(dotIndex + 1);
+	} //}}}
+
 	//{{{ replaceString() method
 	private static String replaceString(String aSearch, String aFind, String aReplace)
 	{ /* MP could not get regex replace to work.
@@ -194,36 +222,32 @@ public class AppLauncher {
 		return result;
 	} //}}}
 	
-	
 	//{{{ pickApp() method
-	private void pickApp(String ext) {
+	/**
+	 *	Prompts the user for an application to run, and returns the path to the
+	 *	executable file.
+	 */
+	private String pickApp(String ext, ProjectViewer viewer) {
 		// Used for selected and executable file
 		javax.swing.JFileChooser chooser = new javax.swing.JFileChooser();
 		chooser.setFileSelectionMode(javax.swing.JFileChooser.FILES_ONLY);
-		if (chooser.showDialog(null, "Choose") != javax.swing.JFileChooser.APPROVE_OPTION)
-			return;
+		if (chooser.showDialog(null, "Choose") != javax.swing.JFileChooser.APPROVE_OPTION) {
+			return null;
+		}
+		
+		String exec = replaceString(chooser.getSelectedFile().getPath(), "\\", "/");
+		this.addAppExt(ext, exec);
+
 		try {
-			
-			//this.addAppExt(ext, chooser.getSelectedFile().getPath().replaceAll("\\","hellow"));
-			
-			this.addAppExt(ext, this.replaceString(chooser.getSelectedFile().getPath(), "\\", "/"));
 			this.storeExts();
-			
-		} catch (Exception Excp) { 
-			javax.swing.JOptionPane.showMessageDialog(null, "Problem setting application for:" + ext);
-			
+		} catch (Exception e) {
+			Log.log(Log.ERROR, this, e);
 		}
+		
+		return exec;
 	} //}}}
-	
-	//{{{ copy() method
-	/** Copies the data from another AppLauncher into this one. */
-	public void copy(AppLauncher other) {
-		appCol.clear();
-		for (Iterator it = other.appCol.keySet().iterator(); it.hasNext(); ) {
-			Object key = it.next();
-			appCol.put(key, other.appCol.get(key));
-		}
-	} //}}}
-	
+		
+	//}}}	
+
 }
 
