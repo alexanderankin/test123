@@ -20,6 +20,7 @@ package projectviewer.importer;
 
 //{{{ Imports
 import java.io.File;
+
 import java.util.Stack;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -34,6 +35,7 @@ import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.util.Log;
 
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -123,9 +125,7 @@ public abstract class Importer implements Runnable {
 	//{{{ +Importer(VPTNode, boolean) : <init>
 	public Importer(VPTNode node, boolean noThread) {
 		this(node, null, noThread);
-	}
-
-	//}}}
+	} //}}}
 
 	//{{{ +doImport() : void
 	/**
@@ -193,6 +193,10 @@ public abstract class Importer implements Runnable {
 			VPTNode n = (VPTNode) e.nextElement();
 			if (n.getNodePath().equals(dir.getAbsolutePath())) {
 				return n;
+			} else if (n.isFile()) {
+				if (((VPTFile)n).getCanonicalPath().equals(dir.getAbsolutePath())) {
+					return n;
+				}
 			}
 		}
 		return (create) ? new VPTDirectory(dir) : null;
