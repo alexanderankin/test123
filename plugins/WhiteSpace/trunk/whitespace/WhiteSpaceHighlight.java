@@ -240,29 +240,31 @@ public class WhiteSpaceHighlight extends TextAreaExtension
         if ((model != null) && model.getWhitespaceHighlight().isEnabled()) {
             JEditTextArea ta = this.textArea;
 
-            int offset = ta.xyToOffset(x, y);
+            int offset = ta.xyToOffset(x, y, false);
+
+            if (offset == -1) { return null; }
 
             String s = ta.getText(offset, 1);
-            if (s != null) {
-                char c = s.charAt(0);
-                if (    (    Character.isWhitespace(c)
-                          || (displayControlChars && Character.isISOControl(c))
-                        )
-                     && (c != '\t')
-                     && (c != '\n')
-                     && (c != ' ')
-                ) {
-                    int i = (int) c;
-                    String tooltip = i + " - " + "0x" + Integer.toHexString(i);
-                    if ((i >= 0) && (i < ASCII_CONTROLS.length)) {
-                        tooltip += " - " + ASCII_CONTROLS[i];
-                        if ((i >= 7) && (i <= 13)) {
-                            String c_escape = "abtnvfr";
-                            tooltip += " (\\" + c_escape.charAt(i - 7) + ")";
-                        }
+            if (s == null) { return null; }
+
+            char c = s.charAt(0);
+            if (    (    Character.isWhitespace(c)
+                      || (displayControlChars && Character.isISOControl(c))
+                    )
+                 && (c != '\t')
+                 && (c != '\n')
+                 && (c != ' ')
+            ) {
+                int i = (int) c;
+                String tooltip = i + " - " + "0x" + Integer.toHexString(i);
+                if ((i >= 0) && (i < ASCII_CONTROLS.length)) {
+                    tooltip += " - " + ASCII_CONTROLS[i];
+                    if ((i >= 7) && (i <= 13)) {
+                        String c_escape = "abtnvfr";
+                        tooltip += " (\\" + c_escape.charAt(i - 7) + ")";
                     }
-                    return tooltip;
                 }
+                return tooltip;
             }
         }
 
