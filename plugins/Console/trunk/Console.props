@@ -5,15 +5,18 @@ plugin.console.ConsolePlugin.version=3.2
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 04.00.07.00
+plugin.console.ConsolePlugin.depend.0=jedit 04.00.08.00
 plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 console-menu=console run-last-console-command - \
-	commando browse-commando-directory rescan-commando-directory -
+	commando - commando-compile commando-run - \
+	browse-commando-directory rescan-commando-directory -
 console-menu.label=Console
 console.label=Console
 run-last-console-command.label=Run Last Command
 commando.label=Commando...
+commando-compile.label=Compile Current Buffer...
+commando-run.label=Run Current Buffer...
 browse-commando-directory.label=Browse Commando Directory
 rescan-commando-directory.label=Rescan Commando Directory
 
@@ -266,3 +269,22 @@ commando.exit-status.message=Execution of the following command failed:\n\
 commando.confirm.title=Confirmation Required
 commando.confirm.message=Do you want to run the following command?\n\
 	{0}
+
+commando.no-compiler.title=No Compiler Defined
+commando.no-compiler.message=There is no compiler associated with this buffer.\n\
+	You can specify compilers on a mode-specific basis in the\n\
+	Utilities->Global Options dialog box.
+	{0}
+
+commando.no-runner.title=No Interpreter Defined
+commando.no-runner.message=There is no interpreter associated with this buffer.\n\
+	You can specify interpreters on a mode-specific basis in the\n\
+	Utilities->Global Options dialog box.
+
+commando.no-command.title=Unknown Commando Panel
+commando.no-command.message=Unknown commando panel: {0}
+
+### Default compilers and interpreters
+
+mode.java.commando.compiler=javac
+mode.java.commando.runner=java

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@ package console;
 
 //{{{ Imports
 import gnu.regexp.REException;
+import javax.swing.JOptionPane;
 import java.io.*;
 import java.net.URL;
 import java.util.*;
@@ -52,7 +53,7 @@ public class ConsolePlugin extends EBPlugin
 			getClass().getResourceAsStream(
 			"/console/console.bsh")));
 
-		BeanShell.runScript(null,"console.bsh",in,false,false);
+		BeanShell.runScript(null,"console.bsh",in,false);
 
 		String settings = jEdit.getSettingsDirectory();
 		if(settings != null)
@@ -197,6 +198,82 @@ public class ConsolePlugin extends EBPlugin
 		MiscUtilities.quicksort(commands,new ActionCompare());
 
 		return commands;
+	} //}}}
+
+	//{{{ compile() method
+	public static void compile(View view, Buffer buffer)
+	{
+		String compiler = buffer.getStringProperty("commando.compile");
+		if(compiler == null)
+		{
+			GUIUtilities.error(view,"commando.no-compiler",null);
+			return;
+		}
+
+		CommandoCommand command = (CommandoCommand)commando.getAction(
+			compiler);
+		if(command == null)
+		{
+			GUIUtilities.error(view,"commando.no-command",
+				new String[] { compiler });
+		}
+		else
+		{
+			if(buffer.isDirty())
+			{
+				Object[] args = { buffer.getName() };
+				int result = GUIUtilities.confirm(view,"notsaved",args,
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+				if(result == JOptionPane.YES_OPTION)
+				{
+					if(!buffer.save(view,null,true))
+						return;
+				}
+				else if(result != JOptionPane.NO_OPTION)
+					return;
+			}
+
+			command.invoke(view);
+		}
+	} //}}}
+
+	//{{{ run() method
+	public static void run(View view, Buffer buffer)
+	{
+		String runner = buffer.getStringProperty("commando.run");
+		if(runner == null)
+		{
+			GUIUtilities.error(view,"commando.no-runner",null);
+			return;
+		}
+
+		CommandoCommand command = (CommandoCommand)commando.getAction(
+			runner);
+		if(command == null)
+		{
+			GUIUtilities.error(view,"commando.no-command",
+				new String[] { runner });
+		}
+		else
+		{
+			if(buffer.isDirty())
+			{
+				Object[] args = { buffer.getName() };
+				int result = GUIUtilities.confirm(view,"notsaved",args,
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+				if(result == JOptionPane.YES_OPTION)
+				{
+					if(!buffer.save(view,null,true))
+						return;
+				}
+				else if(result != JOptionPane.NO_OPTION)
+					return;
+			}
+
+			command.invoke(view);
+		}
 	} //}}}
 
 	//{{{ ActionCompare class
