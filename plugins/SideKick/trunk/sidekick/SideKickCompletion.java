@@ -23,30 +23,55 @@
 package sidekick;
 
 //{{{ Imports
-import javax.swing.Icon;
-import javax.swing.ListCellRenderer;
-import org.gjt.sp.jedit.EditPane;
+import javax.swing.*;
+import java.util.*;
 //}}}
 
-public interface SideKickCompletion
+public abstract class SideKickCompletion
 {
-	int size();
-	public Object get(int index);
+	public int size()
+	{
+		return items.size();
+	}
 
-	public ListCellRenderer getRenderer();
+	public String getLongestPrefix()
+	{
+		return "";
+	}
+
+	public Object get(int index)
+	{
+		return items.get(index);
+	}
+
+	public String getCompletionDescription(int index)
+	{
+		return null;
+	}
+
+	public boolean isCompletionSelectable(int index)
+	{
+		return true;
+	}
+
+	public ListCellRenderer getRenderer()
+	{
+		return new DefaultListCellRenderer();
+	}
+
+	public abstract void insert(int index);
 
 	/**
 	 * The length of the text being completed (popup will be positioned there).
 	 */
-	public int getTokenLength();
+	public abstract int getTokenLength();
 
 	/**
 	 * @param selectedIndex -1 if the popup is empty, otherwise the index of
-	 * the selection completion.
+	 * the selected completion.
 	 * @param keyChar the character typed by the user.
 	 */
-	boolean handleKeystroke(int selectedIndex, char keyChar);
+	public abstract boolean handleKeystroke(int selectedIndex, char keyChar);
 
-	String getCompletionDescription(int index);
-	boolean isCompletionSelectable(int index);
+	protected List items = new ArrayList();
 }

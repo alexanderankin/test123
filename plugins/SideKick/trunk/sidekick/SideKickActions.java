@@ -33,83 +33,93 @@ import org.gjt.sp.jedit.*;
 
 public class SideKickActions
 {
-	//{{{ completeKeyTyped() method
-	public static void completeKeyTyped(final View view, char ch)
+	//{{{ keyComplete() method
+	public static void keyComplete(View view)
 	{
-		final JEditTextArea textArea = view.getTextArea();
+		if(timer != null)
+			timer.stop();
 
-		textArea.userInput(ch);
+		complete(view,true);
+	} //}}}
 
+	//{{{ keyCompleteWithDelay() method
+	public static void keyCompleteWithDelay(final View view)
+	{
 		if(!completion)
-			return;
-
-		Buffer buffer = textArea.getBuffer();
-
-		SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
-		if(parser == null || !parser.supportsCompletion())
-			return;
-
-		// XXX
-		if(/* XmlPlugin.isDelegated(textArea) || */ !buffer.isEditable())
-			return;
-
-		SideKickParsedData data = SideKickParsedData.getParsedData(view);
-		if(data == null)
 			return;
 
 		if(timer != null)
 			timer.stop();
 
-		String delayCompletionTriggers = parser.getDelayCompletionTriggers();
-		if(delayCompletionTriggers != null && delayCompletionTriggers.indexOf(ch) != -1)
+		final JEditTextArea textArea = view.getTextArea();
+
+		caretWhenCompleteKeyPressed = textArea.getCaretPosition();
+
+		if(timer == null)
 		{
-			caretWhenCompleteKeyPressed = textArea.getCaretPosition();
-
-			if(timer == null)
+			timer = new Timer(0,new ActionListener()
 			{
-				timer = new Timer(0,new ActionListener()
+				public void actionPerformed(ActionEvent evt)
 				{
-					public void actionPerformed(ActionEvent evt)
-					{
-						if(caretWhenCompleteKeyPressed == textArea.getCaretPosition())
-							complete(view);
-					}
-				});
+					if(caretWhenCompleteKeyPressed == textArea.getCaretPosition())
+						complete(view,false);
+				}
+			});
 
-				timer.setInitialDelay(delay);
-				timer.setRepeats(false);
-			}
-
-			timer.start();
-
-			return;
+			timer.setInitialDelay(delay);
+			timer.setRepeats(false);
 		}
 
-		String instantCompletionTriggers = parser.getInstantCompletionTriggers();
-		if(instantCompletionTriggers != null && instantCompletionTriggers.indexOf(ch) != -1)
-				complete(view);
+		timer.start();
 	} //}}}
 
 	//{{{ complete() method
-	public static void complete(View view)
+	public static void complete(View view, boolean insertLongestPrefix)
 	{
-		Buffer buffer = view.getBuffer();
-		JEditTextArea textArea = view.getTextArea();
-		SideKickParsedData data = SideKickParsedData.getParsedData(view);
-		SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
+		EditPane editPane = view.getEditPane();
+		Buffer buffer = editPane.getBuffer();
+		SideKickParser parser = SideKickPlugin
+			.getParserForBuffer(buffer);
 
-		// XXX
-		if(/* XmlPlugin.isDelegated(textArea) || */ !buffer.isEditable()
+		SideKickParsedData data = SideKickParsedData
+			.getParsedData(view);
+
+		if(!buffer.isEditable()
 			|| data == null || parser == null
 			|| !parser.supportsCompletion())
 		{
-			view.getToolkit().beep();
+			System.err.println("data is " + data);
 			return;
 		}
 
+		JEditTextArea textArea = editPane.getTextArea();
 		int caret = textArea.getCaretPosition();
 
-		new SideKickCompletionPopup(view,parser,caret);
+		SideKickCompletion complete = parser.complete(editPane,caret);
+		if(insertLongestPrefix)
+		{
+			if(complete == null || complete.size() == 0)
+			{
+				// nothing to do
+				return;
+			}
+			else if(complete.size() == 1)
+			{
+				complete.insert(0);
+				return;
+			}
+			else
+			{
+				String longestPrefix = complete.getLongestPrefix();
+				if(longestPrefix != null
+					&& longestPrefix.length() != 0)
+				{
+					textArea.setSelectedText(longestPrefix);
+				}
+			}
+		}
+
+		new SideKickCompletionPopup(view,parser,caret,complete);
 	} //}}}
 
 	//{{{ selectAsset() method
@@ -291,46 +301,6 @@ public class SideKickActions
 	private static int caretWhenCompleteKeyPressed;
 	private static Timer timer;
 	//}}}
-
-	//{{{ Inner classes
-	static class CompleteAction extends EditAction
-	{
-		private char ch;
-
-		CompleteAction(char ch)
-		{
-			super("-xml-key-typed-" + ch);
-			this.ch = ch;
-		}
-
-		public boolean noRecord()
-		{
-			return true;
-		}
-
-		public void invoke(View view)
-		{
-			Macros.Recorder recorder = view.getMacroRecorder();
-			if(recorder != null)
-				recorder.record(1,ch);
-			Buffer buffer = view.getBuffer();
-			SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
-			if(parser != null)
-			{
-				String parseKeys = parser.getParseTriggers();
-				if(parseKeys != null && parseKeys.indexOf(ch) != -1)
-				{
-					SideKickPlugin.parse(view,false);
-				}
-			}
-			completeKeyTyped(view,ch);
-		}
-
-		public String getCode()
-		{
-			return null;
-		}
-	} //}}}
 
 	//}}}
 }

@@ -84,7 +84,6 @@ public abstract class SideKickParser
 	public void activate(View view)
 	{
 		Log.log(Log.DEBUG,this,getName() + ": activated for " + view.getBuffer());
-		initKeyBindings(view);
 	} //}}}
 
 	//{{{ deactivate() method
@@ -173,39 +172,6 @@ public abstract class SideKickParser
 	public SideKickCompletion complete(EditPane editPane, int caret)
 	{
 		return null;
-	} //}}}
-
-	//{{{ initKeyBindings() method
-	void initKeyBindings(View view)
-	{
-		if(!supportsCompletion())
-			return;
-
-		InputHandler ih = view.getInputHandler();
-		if(!(ih instanceof DefaultInputHandler))
-			return;
-
-		String delayPopupTriggerKeys = getDelayCompletionTriggers();
-		if(delayPopupTriggerKeys != null)
-		{
-			for(int i = 0; i < delayPopupTriggerKeys.length(); i++)
-			{
-				char ch = delayPopupTriggerKeys.charAt(i);
-				ih.addKeyBinding(String.valueOf(ch),
-					new SideKickActions.CompleteAction(ch));
-			}
-		}
-
-		String instantPopupTriggerKeys = getInstantCompletionTriggers();
-		if(instantPopupTriggerKeys != null)
-		{
-			for(int i = 0; i < instantPopupTriggerKeys.length(); i++)
-			{
-				char ch = instantPopupTriggerKeys.charAt(i);
-				ih.addKeyBinding(String.valueOf(ch),
-					new SideKickActions.CompleteAction(ch));
-			}
-		}
 	} //}}}
 
 	private String name;
