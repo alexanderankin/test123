@@ -1,220 +1,220 @@
-<HTML>
+<html>
 
-<HEAD>
-<TITLE>JavaInsight plugin</TITLE>
-</HEAD>
+<head>
+<title>JavaInsight plugin</title>
+</head>
 
-<BODY BGCOLOR="#FFFFFF">
+<body bgcolor="#FFFFFF">
 
-<TABLE
-    BGCOLOR="#CCCCFF"
-    BORDER="0"
-    CELLSPACING="0"
-    CELLPADDING="3"
-    WIDTH="100%"
-    SUMMARY="title"
+<table
+    bgcolor="#CCCCFF"
+    border="0"
+    cellspacing="0"
+    cellpadding="3"
+    width="100%"
+    summary="title"
 >
-  <TR WIDTH="100%">
-  <TD><BIG><BIG><STRONG>JavaInsight plugin</STRONG></BIG></BIG></TD>
-  <TD ALIGN="right">
-    <SMALL>
+  <tr width="100%">
+  <td><big><big><strong>JavaInsight plugin</strong></big></big></td>
+  <td align="right">
+    <small>
       Kevin A. Burton
-      (<A HREF="mailto:burton@relativity.yi.org">burton@relativity.yi.org</A>)<BR>
+      (<a href="mailto:burton@relativity.yi.org">burton@relativity.yi.org</a>)<br>
 
       Andr&eacute; Kaplan
-      (<A HREF="mailto:akaplan@jedit.org">akaplan@jedit.org</A>)<BR>
+      (<a href="mailto:akaplan@jedit.org">akaplan@jedit.org</a>)<br>
 
       Dirk M&ouml;bius
-      (<A HREF="mailto:dmoebius@gmx.net">dmoebius@gmx.net</A>)
-    </SMALL>
-  </TD>
-  </TR>
-</TABLE>
+      (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)
+    </small>
+  </td>
+  </tr>
+</table>
 
 
-<H2>Introduction</H2>
+<h2>Introduction</h2>
 
-<P>
+<p>
 The main purpose of JavaInsight is to view the content of java bytecode
-(<CODE>*.class</CODE> files) in a disassembled or decompiled form.
-</P>
+(<code>*.class</code> files) in a disassembled or decompiled form.
+</p>
 
-<P>
+<p>
 JavaInsight comes with two external libraries.
-</P>
+</p>
 
-<UL>
-  <LI>
-    <P>
+<ul>
+  <li>
+    <p>
       The bytecode disassembling is performed by
-      <STRONG>BCEL</STRONG> (Byte Code Engineering Library) by
+      <strong>BCEL</strong> (Byte Code Engineering Library) by
       Markus Dahm
-      (<A HREF="mailto:markus.dahm@berlin.de">markus.dahm@berlin.de</A>).
-      <BR>
+      (<a href="mailto:markus.dahm@berlin.de">markus.dahm@berlin.de</a>).
+      <br>
       More information about BCEL can be found at
-      <A HREF="http://bcel.sourceforge.net">http://bcel.sourceforge.net</A>.
-    </P>
-  </LI>
+      <a href="http://bcel.sourceforge.net">http://bcel.sourceforge.net</a>.
+    </p>
+  </li>
 
-  <LI>
-    <P>
-      The decompilation is performed by <STRONG>Jode</STRONG>, a tool written by
-      Jochen Hoenicke (<A HREF="mailto:jochen@gnu.org">jochen@gnu.org</A>).
-      <BR>
+  <li>
+    <p>
+      The decompilation is performed by <strong>Jode</strong>, a tool written by
+      Jochen Hoenicke (<a href="mailto:jochen@gnu.org">jochen@gnu.org</a>).
+      <br>
       More information about Jode can be found at
-      <A HREF="http://jode.sourceforge.net">http://jode.sourceforge.net</A>.
-    </P>
-  </LI>
-</UL>
+      <a href="http://jode.sourceforge.net">http://jode.sourceforge.net</a>.
+    </p>
+  </li>
+</ul>
 
 
-<H2>Actions</H2>
+<h2>Actions</h2>
 
-<H3>... in Class Tree:</H3>
+<h3>... in Class Tree:</h3>
 
-<UL>
-  <LI>Double-click a class to decompile it with Jode.</LI>
-  <LI>Right-click to show a popup menu with the following actions:
-    <UL>
-      <LI>
-        <P>
-          <STRONG>Decompile with Jode</STRONG><BR>
+<ul>
+  <li>Double-click a class to decompile it with Jode.</li>
+  <li>Right-click to show a popup menu with the following actions:
+    <ul>
+      <li>
+        <p>
+          <strong>Decompile with Jode</strong><br>
           Decompiles the currently selected class with Jode. Only shown,
           when a class is selected.
-        </P>
-      </LI>
-      <LI>
-        <P>
-          <STRONG>Add Archives...</STRONG><BR>
+        </p>
+      </li>
+      <li>
+        <p>
+          <strong>Add Archives...</strong><br>
           Add a JAR or ZIP file archive to the current classpath.
-        </P>
-      </LI>
-      <LI>
-        <P>
-          <STRONG>Classpath View</STRONG><BR>
+        </p>
+      </li>
+      <li>
+        <p>
+          <strong>Classpath View</strong><br>
           Switches the tree to classpath view.
-        <P>
-      </LI>
-      <LI>
-        <P>
-          <STRONG>Package View</STRONG><BR>
+        <p>
+      </li>
+      <li>
+        <p>
+          <strong>Package View</strong><br>
           Switches the tree to package view.
-        </P>
-      </LI>
-      <LI>
-        <P>
-          <STRONG>Flat Packages</STRONG><BR>
+        </p>
+      </li>
+      <li>
+        <p>
+          <strong>Flat Packages</strong><br>
           Toggles between flat and hierarchical view of the packages.
-        </P>
-      </LI>
-    </UL>
-  </LI>
-</UL>
+        </p>
+      </li>
+    </ul>
+  </li>
+</ul>
 
-<H3>... in File System Browser:</H3>
+<h3>... in File System Browser:</h3>
 
 Right-click a file. The popup menu shows the following additional actions:
 
-<UL>
-  <LI>
-    <P>
-      <STRONG>Decompile with Jode</STRONG><BR>
+<ul>
+  <li>
+    <p>
+      <strong>Decompile with Jode</strong><br>
       Decompiles the currently selected file with Jode. The file should
       be a class file, otherwise you'll get an error.
-    </P>
-  </LI>
-  <LI>
-    <P>
-      <STRONG>Show bytecode</STRONG><BR>
+    </p>
+  </li>
+  <li>
+    <p>
+      <strong>Show bytecode</strong><br>
       Show bytecode decompiler output from the BCEL library.
-    </P>
-  </LI>
-  <LI>
-    <P>
-      <STRONG>Show Jasmin output</STRONG><BR>
+    </p>
+  </li>
+  <li>
+    <p>
+      <strong>Show Jasmin output</strong><br>
       Shows Jasmin assembly output for the currently selected file.
-    </P>
-  </LI>
-</UL>
+    </p>
+  </li>
+</ul>
 
 
-<H2>Configuration</H2>
+<h2>Configuration</h2>
 
 To configure JavaInsight, open the Global Options dialog
-(<EM>Utilities-&gt;Global&nbsp;Options</EM>) and select the entry
-<EM>Plugins-&gt;Java&nbsp;Insight</EM>.
+(<em>Utilities-&gt;Global&nbsp;Options</em>) and select the entry
+<em>Plugins-&gt;Java&nbsp;Insight</em>.
 
-<P>
+<p>
 The following options can be set:
-</P>
+</p>
 
-<UL>
-  <LI>
-    <P>
-      <STRONG>Use "pretty" names for local variables.</STRONG><BR>
-      Jode tries to prettify the local variable names.<BR>
+<ul>
+  <li>
+    <p>
+      <strong>Use "pretty" names for local variables.</strong><br>
+      Jode tries to prettify the local variable names.<br>
       This option is on per default.
-    </P>
-  </LI>
+    </p>
+  </li>
 
-  <LI>
-    <P>
-      <STRONG>Remove locals, that are used only one time.</STRONG><BR>
+  <li>
+    <p>
+      <strong>Remove locals, that are used only one time.</strong><br>
       Such local variables are defined, but apparently never used. Since they
       only clutter up the code, they can be removed without problems.
       Note, that such local variables are only produced by crappy Java
-      compilers; good compilers strip them out anyway.<BR>
+      compilers; good compilers strip them out anyway.<br>
       This option is off per default.
-    </P>
-  </LI>
+    </p>
+  </li>
 
-  <LI>
-    <P>
-      <STRONG>Decrypt encrypted strings.</STRONG><BR>
+  <li>
+    <p>
+      <strong>Decrypt encrypted strings.</strong><br>
       This option is meant for obfuscators that "encrypt" strings. Jode tries
       to recognize encrypted strings and to decrypt them automatically.
       If activated, Jode searches for expressions like
-      <CODE>methodX("abc")</CODE> and assumes that <CODE>methodX</CODE>
-      is an decryption routine and <CODE>"abc"</CODE> is an encrypted
-      string. It is checked whether <CODE>methodX</CODE> is
-      <STRONG>static</STRONG>, <STRONG>final</STRONG> and returns a
-      <CODE>String</CODE>. If this is the case,
-      Jode tries to invoke <CODE>methodX</CODE> with the constant
-      argument <CODE>"abc"</CODE>. If successful, Jode replaces the
-      method call with the resulting string.<BR>
+      <code>methodX("abc")</code> and assumes that <code>methodX</code>
+      is an decryption routine and <code>"abc"</code> is an encrypted
+      string. It is checked whether <code>methodX</code> is
+      <strong>static</strong>, <strong>final</strong> and returns a
+      <code>String</code>. If this is the case,
+      Jode tries to invoke <code>methodX</code> with the constant
+      argument <code>"abc"</code>. If successful, Jode replaces the
+      method call with the resulting string.<br>
       This option is on per default, because it shouldn't do anything harmful.
-    </P>
-  </LI>
+    </p>
+  </li>
 
-  <LI>
-    <P>
-      <STRONG>Generate imports for packages with more than <EM>nnn</EM> classes.</STRONG><BR>
+  <li>
+    <p>
+      <strong>Generate imports for packages with more than <em>nnn</em> classes.</strong><br>
       Set this to 0, if you don't want to generate imports for whole packages,
-      such as:<BR>
-      <CODE>import&nbsp;java.awt.*;</CODE><BR>
+      such as:<br>
+      <code>import&nbsp;java.awt.*;</code><br>
       The default is 0.
-    </P>
-  </LI>
+    </p>
+  </li>
 
-  <LI>
-    <P>
-      <STRONG>Generate imports for classes used more than <EM>nnn</EM> times.</STRONG><BR>
+  <li>
+    <p>
+      <strong>Generate imports for classes used more than <em>nnn</em> times.</strong><br>
       Set this to 0, if you don't want to generate imports for classes, rather
-      use full qualified class names always.<BR>
+      use full qualified class names always.<br>
       The default is 1.
-    </P>
-  </LI>
+    </p>
+  </li>
 
-  <LI>
-    <P>
-      <STRONG>Set status of buffer to "saved" after decompile.</STRONG><BR>
+  <li>
+    <p>
+      <strong>Set status of buffer to "saved" after decompile.</strong><br>
       Use this if you want to get rid of "Save changes?" messages when you
       close the decompilation buffer.
-    </P>
-  </LI>
-</UL>
+    </p>
+  </li>
+</ul>
 
 
-</BODY>
-</HTML>
+</body>
+</html>
 
