@@ -78,12 +78,6 @@ public class SideKickPlugin extends EBPlugin
 		}
 	} //}}}
 
-	//{{{ getInstance() method
-	public static SideKick getInstance(View view)
-	{
-		return (SideKick)sidekicks.get(view);
-	} //}}}
-
 	//{{{ registerParser() method
 	public static void registerParser(SideKickParser parser)
 	{
@@ -112,6 +106,16 @@ public class SideKickPlugin extends EBPlugin
 			return (SideKickParser)parsers.get(parserName);
 	} //}}}
 
+	//{{{ parse() method
+	/**
+	 * Immediately begins parsing the current buffer in a background thread.
+	 * @param view The view
+	 */
+	public static void parse(View view)
+	{
+		((SideKick)sidekicks.get(view)).parse(true);
+	} //}}}
+
 	//{{{ Private members
 	private static HashMap sidekicks = new HashMap();
 	private static HashMap parsers = new HashMap();
@@ -128,19 +132,25 @@ public class SideKickPlugin extends EBPlugin
 				continue;
 
 			String delayPopupTriggerKeys = parser.getDelayCompletionTriggers();
-			for(int i = 0; i < delayPopupTriggerKeys.length(); i++)
+			if(delayPopupTriggerKeys != null)
 			{
-				char ch = delayPopupTriggerKeys.charAt(i);
-				ih.addKeyBinding(String.valueOf(ch),
-					new SideKickActions.CompleteAction(ch));
+				for(int i = 0; i < delayPopupTriggerKeys.length(); i++)
+				{
+					char ch = delayPopupTriggerKeys.charAt(i);
+					ih.addKeyBinding(String.valueOf(ch),
+						new SideKickActions.CompleteAction(ch));
+				}
 			}
 
 			String instantPopupTriggerKeys = parser.getInstantCompletionTriggers();
-			for(int i = 0; i < instantPopupTriggerKeys.length(); i++)
+			if(instantPopupTriggerKeys != null)
 			{
-				char ch = instantPopupTriggerKeys.charAt(i);
-				ih.addKeyBinding(String.valueOf(ch),
-					new SideKickActions.CompleteAction(ch));
+				for(int i = 0; i < instantPopupTriggerKeys.length(); i++)
+				{
+					char ch = instantPopupTriggerKeys.charAt(i);
+					ih.addKeyBinding(String.valueOf(ch),
+						new SideKickActions.CompleteAction(ch));
+				}
 			}
 		}
 	} //}}}

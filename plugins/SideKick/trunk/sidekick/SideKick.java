@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.*;
 import errorlist.*;
 //}}}
 
-public class SideKick implements EBComponent
+class SideKick implements EBComponent
 {
 	public static final int MAX_ERRORS = 100;
 
@@ -58,7 +58,7 @@ public class SideKick implements EBComponent
 				}
 			}
 		};
-		
+
 		ErrorSource.registerErrorSource(errorSource);
 
 		bufferHandler = new BufferChangeHandler();
@@ -73,16 +73,33 @@ public class SideKick implements EBComponent
 			}
 		});
 
+		Buffer buffer = view.getBuffer();
+
+		if(SideKickPlugin.getParserForBuffer(buffer) != null)
+			addBufferChangeListener(buffer);
+
+		if(buffer.getBooleanProperty(
+			"sidekick.buffer-change-parse")
+			|| buffer.getBooleanProperty(
+			"sidekick.keystroke-parse"))
+		{
+			parse(true);
+		}
+		else
+		{
+			showNotParsedMessage();
+		}
+
 		EditBus.addToBus(this);
 	} //}}}
 
 	//{{{ parse() method
 	/**
-	 * Immediately begins parsing the current buffer in a backgroud thread.
+	 * Immediately begins parsing the current buffer in a background thread.
 	 * @param showParsingMessage Clear the tree and show a status message
 	 * there?
 	 */
-	public void parse(final boolean showParsingMessage)
+	void parse(final boolean showParsingMessage)
 	{
 		stopThread();
 
@@ -136,7 +153,7 @@ public class SideKick implements EBComponent
 	} //}}}
 
 	//{{{ dispose() method
-	public void dispose()
+	void dispose()
 	{
 		stopThread();
 
@@ -173,8 +190,7 @@ public class SideKick implements EBComponent
 				else
 					showNotParsedMessage();
 			}
-			else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED
-				|| bmsg.getWhat() == BufferUpdate.LOADED)
+			else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
 			{
 				if(SideKickPlugin.getParserForBuffer(buffer) == null)
 					removeBufferChangeListener(buffer);
@@ -192,7 +208,9 @@ public class SideKick implements EBComponent
 					parse(true);
 				}
 				else
+				{
 					showNotParsedMessage();
+				}
 			}
 			else if(bmsg.getWhat() == BufferUpdate.CLOSED)
 			{

@@ -47,38 +47,48 @@ public class SideKickActions
 		Buffer buffer = textArea.getBuffer();
 
 		SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
-		if(parser == null)
-			return;
-
-		String completionTriggers = parser.getDelayCompletionTriggers();
-		if(completionTriggers.indexOf(ch) == -1)
-			return;
-
-		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
-		if(data == null)
+		if(parser == null || !parser.supportsCompletion())
 			return;
 
 		// XXX
 		if(/* XmlPlugin.isDelegated(textArea) || */ !buffer.isEditable())
 			return;
 
+		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
+		if(data == null)
+			return;
+
 		if(timer != null)
 			timer.stop();
 
-		final int caret = textArea.getCaretPosition();
-
-		timer = new Timer(0,new ActionListener()
+		String delayCompletionTriggers = parser.getDelayCompletionTriggers();
+		if(delayCompletionTriggers != null && delayCompletionTriggers.indexOf(ch) != -1)
 		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				if(caret == textArea.getCaretPosition())
-					complete(view);
-			}
-		});
+			caretWhenCompleteKeyPressed = textArea.getCaretPosition();
 
-		timer.setInitialDelay(delay);
-		timer.setRepeats(false);
-		timer.start();
+			if(timer == null)
+			{
+				timer = new Timer(0,new ActionListener()
+				{
+					public void actionPerformed(ActionEvent evt)
+					{
+						if(caretWhenCompleteKeyPressed == textArea.getCaretPosition())
+							complete(view);
+					}
+				});
+
+				timer.setInitialDelay(delay);
+				timer.setRepeats(false);
+			}
+
+			timer.start();
+
+			return;
+		}
+
+		String instantCompletionTriggers = parser.getInstantCompletionTriggers();
+		if(instantCompletionTriggers != null && instantCompletionTriggers.indexOf(ch) != -1)
+				complete(view);
 	} //}}}
 
 	//{{{ complete() method
@@ -242,11 +252,14 @@ public class SideKickActions
 	{
 		completion = jEdit.getBooleanProperty("sidekick.complete");
 		delay = jEdit.getIntegerProperty("sidekick.complete-delay",500);
+		if(timer != null)
+			timer.setInitialDelay(delay);
 	} //}}}
 
 	//{{{ Private members
 	private static boolean completion;
 	private static int delay;
+	private static int caretWhenCompleteKeyPressed;
 	private static Timer timer;
 	//}}}
 

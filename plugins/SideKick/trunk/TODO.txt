@@ -1,3 +1,4 @@
+- non-popup completion
 - isDelegated() equivalent, or move it to XML
 - parent/child asset actions
 - finish docs
