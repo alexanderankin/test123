@@ -24,7 +24,7 @@
 
 // package org.gjt.sp.jedit.search;
 package xsearch;
-
+ 
 //{{{ Imports
 import bsh.BshMethod;
 import java.util.ArrayList;
@@ -428,8 +428,8 @@ public class XSearchAndReplace
 		boolean createREMatcher = false;
 		if((regexp && replace.length() != 0) 
 			|| wordPart != XSearchDialog.SEARCH_PART_NONE || tentativSearch
-			|| // RE compiler passes ".", "^" and "$" transparent
-			search.indexOf('.') != -1 || search.indexOf('^') != -1 || search.indexOf('$') != -1)
+			|| (regexp && // RE compiler passes ".", "^" and "$" transparent
+			(search.indexOf('.') != -1 || search.indexOf('^') != -1 || search.indexOf('$') != -1)))
 			createREMatcher = true;
 		else if (regexp) {
 			RE re = new RE(search);
