@@ -1,0 +1,9 @@
+* Add a progress bar
+  Maybe jEdit's progress monitor can be used for this.
+  Use the -verbose option with javac to determine the build progress.  Put
+  output through a filter and any "[wrote" messages should signal that a file
+  has been compiled so you can increase the progress bar by this much.
+  But this is slow.
+
+* New command to rebuild _current_ package only
+
