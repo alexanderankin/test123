@@ -291,7 +291,7 @@ public class ArchiveVFS extends VFS {
         String archivePath  = archive.pathName;
         String archiveEntry = archive.entryName;
 
-        if (archive.entryName.equals("")) {
+        if (archiveEntry.equals("")) {
             return null;
         }
 
@@ -303,12 +303,16 @@ public class ArchiveVFS extends VFS {
             return null;
         }
 
+        String canonPath = (
+              archiveProtocol + ':' + archivePath
+            + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator
+            + archiveEntry
+        );
+
         for (int i = 0; i < directory.length; i++) {
             VFS.DirectoryEntry entry = directory[i];
-            if (    (entry.type == VFS.DirectoryEntry.FILE)
-                 && entry.name.equals(archive.entryName)
-            ) {
-                return directory[i];
+            if (entry.path.equals(canonPath)) {
+                return entry;
             }
         }
 
