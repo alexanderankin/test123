@@ -13,7 +13,7 @@ import org.gjt.sp.util.Log;
 /**
  * A jEdit plugin that provides file search capabilities.
  * @author Nicholas O'Leary
- * @version $Id: FindFilePlugin.java,v 1.1.1.1 2003-11-20 17:19:14 olearyni Exp $
+ * @version $Id: FindFilePlugin.java,v 1.2 2004-04-01 21:26:19 olearyni Exp $
  */
 public class FindFilePlugin extends EBPlugin
 {
@@ -25,7 +25,11 @@ public class FindFilePlugin extends EBPlugin
          if (bu.getWhat().equals(BufferUpdate.LOADED) ||
              bu.getWhat().equals(BufferUpdate.CLOSED))
          {
-            FindFileResults results = (FindFileResults)bu.getView().getDockableWindowManager().getDockable("FindFilePlugin");
+            // Thanks to Ollie Rutherford for the NPE fix.
+            View view = bu.getView();
+            if(view == null)
+                view=  jEdit.getActiveView();
+            FindFileResults results = (FindFileResults)view.getDockableWindowManager().getDockable("FindFilePlugin");
             if (results != null)
                results.repaint();
          } else if(bu.getWhat().equals(BufferUpdate.PROPERTIES_CHANGED)) {
