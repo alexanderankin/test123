@@ -98,13 +98,13 @@ public class DiffLocalOverview extends DiffOverview
                 }
 
                 if (hunk.deleted == 0) {
-                    color = JDiffPlugin.invalidHunkColor;
+                    color = JDiffPlugin.overviewInvalidColor;
                     rect0.height = 1;
                 } else {
                     if (hunk.inserted == 0) {
-                        color = JDiffPlugin.deletedHunkColor;
+                        color = JDiffPlugin.overviewDeletedColor;
                     } else {
-                        color = JDiffPlugin.changedHunkColor;
+                        color = JDiffPlugin.overviewChangedColor;
                     }
 
                     rect0.height = Math.max(1, pxlPerLine);
@@ -132,13 +132,13 @@ public class DiffLocalOverview extends DiffOverview
                 }
 
                 if (hunk.inserted == 0) {
-                    color = JDiffPlugin.invalidHunkColor;
+                    color = JDiffPlugin.overviewInvalidColor;
                     rect1.height = 1;
                 } else {
                     if (hunk.deleted == 0) {
-                        color = JDiffPlugin.insertedHunkColor;
+                        color = JDiffPlugin.overviewInsertedColor;
                     } else {
-                        color = JDiffPlugin.changedHunkColor;
+                        color = JDiffPlugin.overviewChangedColor;
                     }
 
                     rect1.height = Math.max(1, pxlPerLine);

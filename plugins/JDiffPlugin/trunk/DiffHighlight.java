@@ -97,7 +97,7 @@ public class DiffHighlight
 
                     if (hunk.deleted == 0) {
                         if (hunk.line0 != physicalLine) { continue; }
-                        color = JDiffPlugin.invalidLineColor;
+                        color = JDiffPlugin.highlightInvalidColor;
                         TextAreaPainter painter = this.textArea.getPainter();
                         FontMetrics fm = painter.getFontMetrics();
                         int descent = fm.getDescent();
@@ -112,11 +112,11 @@ public class DiffHighlight
                     }
 
                     if (hunk.inserted == 0) {
-                        color = JDiffPlugin.deletedLineColor;
-                        selectionColor = JDiffPlugin.deletedHunkColor;
+                        color = JDiffPlugin.highlightDeletedColor;
+                        selectionColor = JDiffPlugin.selectedHighlightDeletedColor;
                     } else {
-                        color = JDiffPlugin.changedLineColor;
-                        selectionColor = JDiffPlugin.changedHunkColor;
+                        color = JDiffPlugin.highlightChangedColor;
+                        selectionColor = JDiffPlugin.selectedHighlightChangedColor;
                     }
 
                     TextAreaPainter painter = this.textArea.getPainter();
@@ -143,7 +143,7 @@ public class DiffHighlight
 
                     if (hunk.inserted == 0) {
                         if (hunk.line1 != physicalLine) { continue; }
-                        color = JDiffPlugin.invalidLineColor;
+                        color = JDiffPlugin.highlightInvalidColor;
                         TextAreaPainter painter = this.textArea.getPainter();
                         FontMetrics fm = painter.getFontMetrics();
                         int descent = fm.getDescent();
@@ -158,11 +158,11 @@ public class DiffHighlight
                     }
 
                     if (hunk.deleted == 0) {
-                        color = JDiffPlugin.insertedLineColor;
-                        selectionColor = JDiffPlugin.insertedHunkColor;
+                        color = JDiffPlugin.highlightInsertedColor;
+                        selectionColor = JDiffPlugin.selectedHighlightInsertedColor;
                     } else {
-                        color = JDiffPlugin.changedLineColor;
-                        selectionColor = JDiffPlugin.changedHunkColor;
+                        color = JDiffPlugin.highlightChangedColor;
+                        selectionColor = JDiffPlugin.selectedHighlightChangedColor;
                     }
 
                     TextAreaPainter painter = this.textArea.getPainter();
