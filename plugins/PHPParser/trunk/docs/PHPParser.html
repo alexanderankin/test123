@@ -11,7 +11,7 @@
       <tr>
         <td valign="top" style="font-weight:bold;font-size:x-large">PHP Parser</td>
         <td align="right" valign="top" style="font-size:small">
-          <span style="font-weight:bold">Version 1.2.0 alpha (Jan 29, 2005)</span><br>
+          <span style="font-weight:bold">Version 1.2.0 beta (Mar 12, 2005)</span><br>
       Matthieu Casanova &lt;chocolat.mou@gmail.com&gt;&nbsp;
  </td>
       </tr>
@@ -21,31 +21,59 @@
 I worked on it, and finaly wrote an alternative php parser for the project.
 The matter is that I don't like SWT very much so when I discovered discovered jEdit
 I loved it. So I decided to write a plugin using my php parser.
-It uses ErrorList plugin to show the errors.
-    <br>
-This plugin uses some classes from phpeclipse. It is not a complete replacement of phpeclipse,
-that will probably always remains more complete.
-You can find more infos at http://www.phpeclipse.de
-
+It uses ErrorList plugin to show the errors and Sidekick plugin to manage parser.
  </p>
-    <p>
-    About code analysis, you should be very careful because it's far from being perfect. If a variable is given to a
-    method and is assigned by reference, the parser will not know that and report it as variable used but not assigned ...
-    </p>
-    <h2>Usage</h2>
-    <p>There are no actions to do the files finishing by .php will be parsed</p>
+<h2>Usage</h2>
+<h3>Parsing</h3>
+<p>
+The parser is now launched by Sidekick plugin. You can ask to reparse the file with the "parse buffer" action of Sidekick.
+You can choose to enable parse on keystroke within Sidekick, it should be slower, but with good computer there will be no problem.
+It supports php5 if you activate it in the options panel.
+</p>
+<h3>Project management</h3>
+<p>
+The project management is a feature that will allow you to describe a project. A project is a group of files (under a root folder). It supports VFS so you can
+have a root on a ftp for example. To manage project please open the dockable view.
+When you create a project you'll have to choose a root folder. After that, click on the "reparse" button. It will parse all php files in your project
+and keep track of them in memory (you can show the parsing progress in the jEdit's IO threads). Of course, each time you'll open a file in your project and
+work on it, this file will be updated in the project memory. But only files under your root will be added.
+This feature will be useful for code completion (there is a little but I hope I'll add a lot more after), and for code browsing
+</p>
+<h3>Code Browsing</h3>
+The parser will provide a Sidekick structure view of you file, to show it, use the "Structure browser" of Sidekick plugin.
+There are also 3 actions to browse php code : Find class, Find method and Find in file. Those actions will work if you have a project up to date.
+It will display a small dialog working like OpenIt plugin (I took a lot of ideas from this plugin), and you'll be able to do incremental search on classes, methods,
+displaying a little list of matching class or methods (depends on action you choosed). When you select one, the file will be opened at the good position.
+<h3>Code completion</h3>
+<p>
+I added some code completion, but it doesn't work very well for the moment. To enable it, please use the action "Show completion popup" from Sidekick.
+There are completion after the following situation :
+<ul>
+	<li><b>extends</b></li>
+	<li><b>new </b></li>
+	<li><b>$this-></b></li>
+	<li><b>AnyClass::</b></li>
+</ul>
+The completion will work better with a project too, for example after <b>new</b> and <b>extends</b>, I will display all classes in the project. 
+After <b>$this-></b> I'll display methods and fields of the class and superclasses.
+After <b>AnyClass::</b> I'll display methods of the class and superclasses ...
+</p>
+<h3>Code analysis</h3>
+<p>
+There are some code analysis but you should be very careful because it's far from being perfect. If a variable is given to a
+method and is assigned by reference, the parser will not know that and report it as variable used but not assigned ...
+</p>
     <h2>History</h2>
     <ul>
-      <li>1.2.0 alpha<br>
+      <li>1.2.0 beta<br>
         <ul>
-          <li>Warning this is an alpha version, there will be a lot of changes before release, and the projects file will not
-	      be compatible</li>
           <li>Bugs fixed
             <ul>
               <li>1098323 A <b>?></b> in an heredoc syntax will not crash the parser anymore</li>
               <li>1098321 The keyword <b>xor</b> is now supported</li>
               <li>Fix warning in code analysis on global requiring super globals variables</li>
               <li>a memory leak, the PHPErrorSource was instantiated on each parse and never released</li>
+              <li>Keywords that can be method names should now be managed.</li>
             </ul>
           </li>
           <li>Features
@@ -54,6 +82,8 @@ You can find more infos at http://www.phpeclipse.de
               <li>Project handling</li>
               <li>Quick access to find class and methods</li>
               <li>new warning for syntax case '' ; (semicolon instead of colon)</li>
+              <li>Parsing of double quoted strings</li>
+              <li>php 5 support</li>
             </ul>
           </li>
           <li>Others
@@ -89,16 +119,10 @@ You can find more infos at http://www.phpeclipse.de
     </ul>
     </li>
   </ul>
-  <h2>todo</h2>
-  <ul>
-    <li>Add an option pane to choose the reported warnings</li>
-    <li>Maybe keep track of all methods classes, defines in the project</li>
-  </ul>
   <h2>known issue</h2>
   <ul>
     <li>when you deactivate the parser the errors aren't removed from ErrorList (but is it really a bug or a feature ?)</li>
-    <li>sometimes on network mounted drivers when you reparse a document the old errors aren't removed.</li>
-    <li>The keywords cannot be parsed as identifier, I have to fix that</li>
+    <li>When you have several classes or methods with the same name in the project only one is kept in the project memory</li>
   </ul>
   <h2>Feedback</h2>
   <p>You can send mails to Matthieu Casanova &lt;chocolat.mou@gmail.com&gt; to report bugs, ideas ...
