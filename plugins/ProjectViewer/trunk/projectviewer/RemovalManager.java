@@ -32,6 +32,7 @@ import org.gjt.sp.jedit.Buffer;
 
 import projectviewer.event.ProjectEvent;
 import projectviewer.event.ProjectListener;
+import projectviewer.config.ProjectViewerConfig;
 
 /**
  *  <p>Miscleaneous methods to remove things from projects.</p>
@@ -211,17 +212,20 @@ public final class RemovalManager implements ProjectListener {
      *  @param  ask     Is we should ask for confirmation.
      */
     private void remove(Object o, boolean delete, boolean ask) {
+		boolean removed = false;
         if (o instanceof ProjectFile) {
             if (!delete || (!ask || confirmAction(delete,FILE))) {
                 Log.log(Log.NOTICE, this, "Removing: " + o);
                 Project p = viewer.getCurrentProject();
                 p.removeFile((ProjectFile)o,delete);
+				removed = true;
             }
         } else if (o instanceof ProjectDirectory) {
             if (!ask || confirmAction(delete,DIR)) {
                 Log.log(Log.NOTICE, this, "Removing: " + o);
                 Project p = viewer.getCurrentProject();
                 p.removeDirectory((ProjectDirectory)o,delete);
+				removed = true;
             }
         } else if (o instanceof Project) {
             if (!ask || confirmAction(false,PROJ)) {
@@ -229,8 +233,12 @@ public final class RemovalManager implements ProjectListener {
                 ProjectManager.getInstance().removeProject((Project)o);
                 viewer.setCurrentProject(null);
                 viewer.refresh();
+				removed = true;
             }
         }
+		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+			viewer.getCurrentProject().save();
+		}
     }
     
     //--------------- Project Listener interface
