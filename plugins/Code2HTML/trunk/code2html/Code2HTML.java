@@ -38,7 +38,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 
 import org.gjt.sp.util.Log;
 
-import code2html.html.HTMLCSSGutter;
+import code2html.html.HtmlCssGutter;
 import code2html.html.HTMLCSSStyle;
 import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
@@ -81,7 +81,7 @@ public class Code2HTML
         if (this.showGutter) {
             int gutterSize = Integer.toString(this.textArea.getLineCount()).length();
             if (this.useCSS) {
-                this.gutter = new HTMLCSSGutter();
+                this.gutter = new HtmlCssGutter();
             } else {
                 this.gutter = new HtmlGutter();
             }

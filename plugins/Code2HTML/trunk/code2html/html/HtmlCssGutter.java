@@ -1,5 +1,5 @@
 /*
- * HTMLCSSGutter.java
+ * HtmlCssGutter.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -20,17 +20,15 @@
 
 package code2html.html;
 
-import org.gjt.sp.jedit.jEdit;
 
-
-public class HTMLCSSGutter extends HtmlGutter
+public class HtmlCssGutter extends HtmlGutter
 {
-    public HTMLCSSGutter() {
+    public HtmlCssGutter() {
         super();
     }
 
 
-    public HTMLCSSGutter(int gutterSize) {
+    public HtmlCssGutter(int gutterSize) {
         super(gutterSize);
     }
 
