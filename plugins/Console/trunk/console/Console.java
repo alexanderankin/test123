@@ -302,8 +302,6 @@ implements DockableWindow, EBComponent, Output
 		{
 			Log.log(Log.ERROR,this,bl);
 		}
-
-		output.setCaretPosition(outputDocument.getLength());
 	}
 
 	/**
@@ -316,6 +314,9 @@ implements DockableWindow, EBComponent, Output
 			public void run()
 			{
 				animation.setIcon(NO_ANIMATION);
+
+				output.setCaretPosition(output.getDocument()
+					.getLength());
 			}
 		});
 	}

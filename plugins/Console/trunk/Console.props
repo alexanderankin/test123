@@ -205,7 +205,7 @@ console.error.jade.message=$4
 console.error.ant-emacs.name=Ant Emacs
 console.error.ant-emacs.match=\\s*\\[\\w+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
 console.error.ant-emacs.warning=\\s*\\[\\w+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+: \
-	(Warning|warning|Caution|caution)\\s*(.+)
+	(?:Warning|warning|Caution|caution)\\s*(.+)
 console.error.ant-emacs.filename=$1
 console.error.ant-emacs.line=$2
 console.error.ant-emacs.message=$3
@@ -213,7 +213,7 @@ console.error.ant-emacs.message=$3
 console.error.ant.name=Ant
 console.error.ant.match=\\s*\\[\\w+\\]\\s+(.+?):(\\d+):(.+)
 console.error.ant.warning=\\s*\\[\\w+\\]\\s+(.+?):(\\d+): \
-	(Warning|warning|Caution|caution)\\s(.+)
+	(?:Warning|warning|Caution|caution)\\s(.+)
 console.error.ant.filename=$1
 console.error.ant.line=$2
 console.error.ant.message=$3
@@ -221,7 +221,7 @@ console.error.ant.message=$3
 console.error.emacs.name=Emacs
 console.error.emacs.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
 console.error.emacs.warning=(.+):(\\d+):\\d+:\\d+:\\d+: \
-	(Warning|warning|Caution|caution)\\s*(.+)
+	(?:Warning|warning|Caution|caution)\\s*(.+)
 console.error.emacs.filename=$1
 console.error.emacs.line=$2
 console.error.emacs.message=$3
