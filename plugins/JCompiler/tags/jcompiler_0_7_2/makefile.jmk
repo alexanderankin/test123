@@ -1,0 +1,71 @@
+# jmk makefile for the JCompiler plugin
+# To recompile this plugin, start jmk in the plugin's source directory.
+#
+# :noTabs=true:
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!   ATTENTION!   The file jcompiler/NoExitSecurityManager2.java   !!!
+# !!!   can only be compiled on JDK 1.2.                              !!!
+# !!!   The code will run on JDK 1.1, too, because this class is      !!!
+# !!!   only invoked on Java2 VM's.                                   !!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+NAME = "JCompiler";
+
+# uncomment the following lines for jikes (make sure that $JIKESPATH
+# lists the following jars: rt.jar, tools.jar, jedit.jar, EditBus.jar):
+#javac     = "jikes" "+E" "-g" "-deprecation";
+#javaflags =  "-g" "-dep	recation";  # don't define classpath here --> troubles!
+
+# uncomment the following lines for javac:
+javac     = "javac";
+javaflags =  "-g" "-deprecation" 
+             "-classpath" (cat (getprop "java.class.path")
+                     ";" "../EditBus.jar" ";" "../Console.jar");
+
+# directories to compile and include
+pkgs = "." "jcompiler" "jcompiler/actions" "buildtools";
+
+# target jar filename
+jarfile = (cat "../" NAME ".jar");
+
+# jar tool
+cmd_jar = "jar";
+
+
+##########################################################################
+
+cmd_javac = javac javaflags;
+srcs = (subst ".java", ".class", (glob (join pkgs, "/*.java")));
+
+"all": jarfile;
+
+"%.class" : "%.java";
+{
+    exec cmd_javac <;
+}
+
+jarfile: srcs;
+{
+    exec cmd_jar "cfM0" @
+        (glob 
+            (join pkgs, "/*.class")
+            (join pkgs, "/*.gif")
+            (join pkgs, "/*.html")
+            (join pkgs, "/*.props"));
+}
+
+"jar": jarfile;
+
+"clean":;
+{
+    -delete
+        (glob 
+            (join pkgs, "/*.class")
+            (join pkgs, "/*~")
+            (join pkgs, "/*.bak"));
+}
+
+
+".PHONY": "all" "jar" "clean";
+

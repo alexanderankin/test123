@@ -1,0 +1,172 @@
+<html>
+<body>
+
+<h1>Java Compiler</h1>
+
+<p>Copyright (c) 1999, 2000 Kevin A. Burton, Aziz Sharif, Dominic Stolerman
+and Dirk M&ouml;bius</p>
+
+
+<h2>Requirements</h2>
+
+<ul>
+<li>jEdit &gt;= 2.6pre7</li>
+<li>plugin EditBus &gt;= 0.10</li>
+<li>plugin Console &gt;= 2.3</li>
+<li>a Java Development Kit (JDK) &gt;= 1.1, <i>not</i> a Java Runtime
+Environment (JRE) !</li>
+</ul>
+
+<p><b>Note:</b> If you want to highlight the compile errors in the edit
+pane with wavy red lines, I suggest you install the <b>ErrorList plugin</b>,
+too. Version should be 0.11 or higher.<p>
+
+
+<h2>Installation</h2>
+
+<ol>
+<li>
+<p>Use jEdit's PluginManager to install the JCompiler plugin, or:<br>
+Unzip the contents of JCompiler.zip into the directory 
+<i>&lt;jedithome&gt;</i><code>/jars:</code></p>
+
+<p>
+<table border="0" bgcolor="#E0E0E0" width="85%">
+  <tr><td><pre>
+     $ cd &lt;jedithome&gt;
+     $ cd jars
+     $ unzip JCompiler.zip</pre></td></tr></table></p>
+
+<p>Depending on your OS and your JDK, here's the location of
+<i>&lt;jedithome&gt;</i>:
+</p>
+
+<p>
+<table border="1" width="85%">
+  <tr bgcolor="#E0E0E0">
+    <td>Operating system</td>
+    <td>JDK</td>
+    <td>Directory <i>&lt;jedithome&gt;</i></td>
+  </tr>
+  <tr>
+    <td>Windows 95,98,ME</td>
+    <td>SUN JDK, IBM JDK</td>
+    <td>C:\WINDOWS\.jedit</td>
+  </tr>
+  <tr>
+    <td>&nbsp;</td>
+    <td>Microsoft JDK</td>
+    <td>C:\WINDOWS\JAVA\.jedit</td>
+  </tr>
+  <tr>
+    <td>Windows NT</td>
+    <td>all</td>
+    <td>C:\WINNT\profiles\<i>&lt;user&gt;</i>\.jedit</td>
+  </tr>
+  <tr>
+    <td>Unix</td>
+    <td>all</td>
+    <td>$HOME/.jedit</td>
+  </tr>
+  <tr>
+    <td>Macintosh</td>
+    <td>???</td>
+    <td>??? (please tell me)</td>
+  </tr>
+</table>  
+</p>
+
+</li>
+
+<li>
+<p>If you have an JDK 1.1, you're ready.<br>
+If you have an JDK 1.2 or higher (ie. a JDK for Java2), you must perform an
+<b>additional installation step</b>:
+</p>
+
+<p>Make sure, that the file <code>tools.jar</code> from the JDK lib directory is in your
+classpath. This can be done in two ways:
+</p>
+
+<ol>
+  <li>
+  Copy <i>&lt;jdkdir</i>&gt;/lib/tools.jar to <i>&lt;jedithome&gt;</i>/jars, or
+  </li>
+  <li>
+  Set the environment variable CLASSPATH to contain <code>tools.jar</code>, ie:
+  
+    <ul>
+      <li>on Unix:<br>
+      <pre>
+           export $CLASSPATH=$CLASSPATH:<jdkdir>/lib/tools.jar
+      </pre>
+      </li>
+      
+      <li>on Windows:
+      <pre>
+           set CLASSPATH %CLASSPATH%;<jdkdir>\lib\tools.jar
+      </pre>
+      </li>
+    </ul>
+  </li>
+</ol>
+
+</li>
+</ol>  
+
+
+<h2>Usage</h2>
+
+JCompiler basically has 3 menu actions in the menu (Plugins-&gt;JCompiler):
+
+<ul>
+<li>
+<p><b>Compile File</b></p>
+<p>Compiles the file currently being edited.</p>
+<br>
+</li>
+
+<li>
+<p><b>Build Package(s)</b><p>
+<p>Builds the package currently being edited.  This is determined by finding out 
+the package that the current file is in and then goes it's root directory and
+then finds all sub packages.  It does a smart compile in that if you have 
+compiled a file and it's .java file hasn't changed then it doesn't recompile it.
+</p>
+<br>
+</li>
+
+<li>
+<p><b>Rebuild Package(s)</b><p>
+<p>Does basically what "Build Package(s)" does but always compiles every file.</p>
+<br>
+</li>
+</ul>
+
+These menu entries correspond to the following <b>commands</b>, that can
+be invoked from the JCompiler shell in the Console plugin:
+
+<ul>
+<li><b>compile</b> = Compile File</li>
+<li><b>compilepkg</b> = Build Package(s)</li>
+<li><b>rebuildpkg</b> = Rebuilds Package(s)</li>
+</ul>
+
+<p><b><u>Important Note:</u></b></p>
+
+<p>
+The see the output of the compile process, you <i><b>must</b></i> enable
+the Console and switch to the JConsole shell <i><b>before</b></i> you
+invoke the command.
+</p>
+
+<br>
+<hr>
+
+<font size=-1>
+The current maintainer of JCompiler is Dirk M&ouml;bius 
+<a href="mailto:dmoebius@gmx.net">&lt;dmoebius@gmx.net&gt;</a>.
+</font>
+
+</body>
+</html>
