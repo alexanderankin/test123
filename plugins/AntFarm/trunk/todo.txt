@@ -40,5 +40,6 @@ Future additions/fixes:
 - If tools.jar is not found and loaded, present a message and
   exit AntFarm.
 - Allow properties to be system/environmental variables.
+- Allow targets to be displayed based on a regex.
 
 

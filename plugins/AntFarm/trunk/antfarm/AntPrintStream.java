@@ -68,7 +68,14 @@ public class AntPrintStream extends PrintStream
 		}
 	}
 
+	
+	public void write(byte b[], int i, int j)
+	{
+		  String msg = new String(b,i,j);
+		  print(msg);
+	}
 
+	
 	public void flush()
 	{
 		super.flush();
