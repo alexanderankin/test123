@@ -2,6 +2,8 @@ package gatchan.phpparser.project;
 
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.util.Log;
 
 import javax.swing.*;
@@ -125,9 +127,7 @@ public final class ProjectManager {
     return project;
   }
 
-  /**
-   * Create a project.
-   */
+  /** Create a project. */
   public void createProject() {
     final String projectName = JOptionPane.showInputDialog("Project name : ");
     final Project project;
@@ -178,6 +178,11 @@ public final class ProjectManager {
     try {
       project = new Project(projectFile);
       project.load();
+      // todo : add an option for that
+      View activeView = jEdit.getActiveView();
+      if (activeView != null) {
+        VFSBrowser.browseDirectory(activeView, project.getRoot());
+      }
       this.project = project;
     } catch (InvalidProjectPropertiesException e) {
       Log.log(Log.ERROR, this, e.getMessage());
