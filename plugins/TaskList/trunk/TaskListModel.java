@@ -50,9 +50,29 @@ public class TaskListModel extends AbstractTableModel
 	private static final int NAME_ONLY = 2; // filename
 
 
+	public void setSortCol(int sortCol) {
+		this.sortCol = sortCol;
+	}
+
+	public void setSortAscending(boolean sortAscending) {
+		this.sortAscending = sortAscending;
+	}
+
+	public int getSortCol() {
+		return sortCol;
+	}
+
+	public boolean getSortAscending() {
+		return sortAscending;
+	}
+
+
+
 	/**
-	*
-	*/
+	 * Constructs a TaskListModel object
+	 *
+	 * @param view the View with which the model is associated
+	 */
 	public TaskListModel(View view)
 	{
 		this.view = view;
@@ -61,6 +81,15 @@ public class TaskListModel extends AbstractTableModel
 		buffers = new Vector();
 
 		this.bufferDisplay = getBufferDisplay();
+
+		// NOTE:  default sort column is column 1 (line number)
+		try {
+			this.sortCol = Integer.parseInt(jEdit.getProperty("tasklist.table.sort-column", "1"));
+		} catch(NumberFormatException e) {
+			this.sortCol = 1;
+		}
+		this.sortAscending = jEdit.getBooleanProperty("tasklist.table.sort-ascending");
+
 
 		try
 		{
@@ -223,6 +252,10 @@ public class TaskListModel extends AbstractTableModel
 	private View view;
 	private Vector tasks;
 	private Vector buffers;
+	private	int sortCol;
+	private boolean sortAscending;
+
+
 
 	// ~ start of TaskListener interface implementation
 
@@ -241,6 +274,11 @@ public class TaskListModel extends AbstractTableModel
 	public void taskRemoved(Task task)
 	{
 		removeTask(task);
+	}
+
+	public void tasksUpdated()
+	{
+		sort(sortCol, sortAscending);
 	}
 	// ~ end of TaskListener interface implementation
 
@@ -423,4 +461,69 @@ public class TaskListModel extends AbstractTableModel
 			bufferDisplay = _bufferDisplay;
 		}
 	}
+
+	public void sort()
+	{
+		sort(sortCol, sortAscending);
+	}
+
+	public void sort(int sortCol, boolean sortAscending)
+	{
+		// DEBUG: get sort parameters
+		Log.log(Log.DEBUG, TaskListModel.class, "sorting TaskList items: "
+			+ "sortCol = " + String.valueOf(sortCol)
+			+ ", SortAscending = " + String.valueOf(sortAscending));
+		MiscUtilities.quicksort(tasks, new ColumnSorter(sortCol, sortAscending));
+		fireTableDataChanged();
+	}
+
+	/**
+	 * A class to perform comparisons on task data; available sortings are
+	 * by tasks type
+	 * and line number and by line number only
+	 *
+	 * @author John Gellene (jgellene@nyc.rr.com)
+	 */
+	class ColumnSorter implements org.gjt.sp.jedit.MiscUtilities.Compare
+	{
+		private final int LINENUMBER = 0;
+		private final int TASKTAG = 1;
+
+		private int sortType;
+		private boolean ascending;
+
+		public ColumnSorter(int col, boolean ascending)
+		{
+			this.sortType = (col == 1) ? LINENUMBER : TASKTAG;
+			this.ascending = ascending;
+		}
+
+		public int compare(Object obj1, Object obj2)
+		{
+			Task task1 = (Task)obj1;
+			Task task2 = (Task)obj2;
+			int result = 0;
+
+			if(sortType == TASKTAG)
+			{
+				String text1 = task1.getText();
+				String tag1 = text1.substring(0, text1.indexOf(':'));
+				String text2 = task2.getText();
+				String tag2 = text2.substring(0, text2.indexOf(':'));
+				result = tag1.compareTo(tag2);
+			}
+
+			if(result == 0)
+			{
+				result = task1.getLine() - task2.getLine();
+			}
+
+			if(!ascending)
+			{
+				result = -result;
+			}
+
+			return result;
+		}
+    }
 }

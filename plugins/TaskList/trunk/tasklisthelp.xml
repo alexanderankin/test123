@@ -104,18 +104,48 @@
 	of a comment in the buffer, double-click on the row containing the comment.
 </para>
 <para>
+	By default, the task comments are sorted in ascending order by the line of
+	buffer text in which each comment appears. You can change the sorting
+	arrangement by double-clicking on the header above the column corresponding
+	to the sort criteria.  Clicking on the icon or <guilabel>Description</guilabel>
+	column will trigger sorting by the comment tag (such as <guiulabel>NOTE</guiulabel>
+	or <guilabel>QUESTION</guilabel>), and by buffer line number within a group of
+	identically tagged comment.  The text of the comment following the tag will be
+	ignored for sorting purposes.  If the column being clicked already corresponds
+	to the existing sort criteria, the direction ofmthe sort is reversed -
+	from ascending to descending, for example.  A given sorting arrangement changed
+	in this fashion will persist as long as the TaskList plugin is active.
+</para>
+<para>
+	You can change or delete a comment by right-clicking on a rwo containing a
+	comment.  A popup menu will appear with two selections,
+	<guilabel>Change task tag</guilabel> and <guilabel>Delete task</guilabel>.
+</para>
+<para>
 	You can change the type of comment (for example, from <guilabel>IDEA</guilabel>
 	to <guilabel>TODO</guilabel>, or from <guilabel>TODO</guilabel> to
-	<guilabel>DONE</guilabel>, by right-clicking on a row contaiing a comment. A
-	popup menu will appear with the text of available comment tags.  Clicking on
-	on an item will cause the buffer text to be updated to show the new comment
-	tag. The TaskList display will alos be updated.
+	<guilabel>DONE</guilabel>, by selecting the <guilabel>Change task tag</guilabel>
+	option. A child	popup menu will appear with the text of available comment tags.
+	Clicking on	an item will cause the buffer text to be updated to show the new comment
+	tag. The TaskList display will also be updated.
+</para>
+<para>
+	You can delete a task comment by selecting <guilabel>Delete task</guilabel>
+	from the popup menu.  You then have the choice between deleting the comment
+	tag only (so the comment text will remain but will not be parsed as a task
+	comment) and deleting the entire comment.  This operation will also
+	refresh the TaskList display.
+</para>
+<para>
+	Any change or deletion to a task comment in a text buffer can be reversed
+	using the editor's <guilabel>Undo</guilabel> feature.
 </para>
 <para>
 	The TaskList display is not refreshed with every change made to a buffer.
-	It is updated when a buffer is loaded or saved, and when you switch
-	edit panes or buffers in the view window. As a result, if you have made
-	unsaved changes to a buffer, TaskList may not be able to find or change
+	It is updated when a buffer is loaded or saved, when you switch
+	edit panes or buffers in the view window and when you make changes to a
+	task comment using the plugin context (right-click) menu. As a result, if
+	you have made unsaved changes to a buffer, TaskList may not be able to find or change
 	your comment text.  You can reparse a buffer at any time using the
 	<guimenuitem>Task List</guimenuitem>&gt;<guimenuitem>Parse buffer</guimenuitem>
 	menu item in the <guimenu>Plugins</guimenu> menu (which you can tie to a
@@ -133,8 +163,9 @@
 	There are two option pane windows available for user settings from the
 	<guimenu>Utilities</guimenu>&gt;<guimenuitem>Global	Options</guimenuitem>
 	dialog. The	<guimenuitem>General</guimenuitem> options pane allows you to
-	change the 	appearance of the TaskList table dksiaply and select highlighting
-	of commented buffer text. The <guimenuitem>Task Types</guimenuitem> options
+	change the appearance of the TaskList table display, including the default
+	sorting criteria, and to select highlighting of commented buffer text.
+	The <guimenuitem>Task Types</guimenuitem> options
 	pane allows you to add, delete or edit comment tags corresponding to task
  	types.
 </para>
@@ -164,6 +195,24 @@
 	When using the current beta version, the name of the task type should match
 	the tag name used in regular expression.
 </para>
+
+</simplesect>
+
+<simplesect><title>Known bugs and limitations</title>
+<para>
+	The current version will not adjust highighting of a task comment when a line
+	is inserted in or removed from a buffer.  In addition, the name of a task item
+	must currently be identical to the tag text contained in the regular
+	expression defining the task item.  These items will be corrected in a future
+	version.
+</para>
+<para>
+	The current version also does not parse task comments spanning more than one
+	line of buffer text or more than one buffer at a time.  There is also no
+	facility for serializing the the contents of the TaskList display.  These
+	features will be added in a future version.
+</para>
+
 
 </simplesect>
 

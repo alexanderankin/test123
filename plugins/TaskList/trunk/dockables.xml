@@ -5,7 +5,7 @@
 <!-- TaskList dockable window -->
 
 <DOCKABLES>
-  <DOCKABLE NAME="bufferlist">
+  <DOCKABLE NAME="tasklist">
     new TaskList(view);
   </DOCKABLE>
 </DOCKABLES>

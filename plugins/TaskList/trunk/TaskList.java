@@ -53,6 +53,7 @@ public class TaskList extends JPanel
 		super(new BorderLayout());
 
 		this.view = view;
+		this.taskListModel = new TaskListModel(view);
 
 		table = new TaskListTable();
 
@@ -69,8 +70,9 @@ public class TaskList extends JPanel
 		TaskListTable()
 		{
 			setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			taskListModel = new TaskListModel(view);
-			setModel(taskListModel);
+			//setRowSelectionAllowed(true);
+			//setCellSelectionEnabled(false);
+			setModel(TaskList.this.taskListModel);
 			setRowHeight(18);
 			setShowVerticalLines(jEdit.getBooleanProperty("tasklist.table.vertical-lines"));
 			setShowHorizontalLines(jEdit.getBooleanProperty("tasklist.table.horizontal-lines"));
@@ -85,6 +87,11 @@ public class TaskList extends JPanel
 			}
 			init = true;
 			resizeTable();
+		}
+
+		public TaskListModel getTaskListModel()
+		{
+			return (TaskListModel)getModel();
 		}
 
 		/**
@@ -133,6 +140,17 @@ public class TaskList extends JPanel
 				columnModel.getColumn(3).setPreferredWidth(500);
 			}
 		}
+
+		private void sort()
+		{
+			getTaskListModel().sort();
+		}
+
+		private void sort(int col, boolean ascending)
+		{
+			getTaskListModel().sort(col, ascending);
+		}
+
 	}
 
 	/**
@@ -148,22 +166,45 @@ public class TaskList extends JPanel
 		 */
 		public void mouseClicked(MouseEvent e)
 		{
+			TaskListPlugin.parseBuffer(view.getBuffer());
 			Point p = e.getPoint();
 			final int rowNum = table.rowAtPoint(p);
 			if(e.getClickCount() == 1 &&
 				(e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
 			{
 				e.consume();
-				table.setRowSelectionInterval(rowNum, rowNum);
 				showPopup(view, rowNum, p);
 			}
 			else if(e.getClickCount() > 1)
 			{
 				if(e.getComponent() == table.getTableHeader())
-					TaskListPlugin.parseBuffer(view.getBuffer());
+				{
+					TaskListModel model = table.getTaskListModel();
+					int sortCol = table.columnAtPoint(p);
+					switch(sortCol)
+					{
+						case 0:
+							sortCol = 2;
+						case 1:
+						case 2:
+						{
+							if(model.getSortCol() == sortCol)
+								model.setSortAscending(!model.getSortAscending());
+							else
+								model.setSortCol(sortCol);
+							break;
+						}
+						default:
+						{
+							return;
+						}
+					}
+					model.sort();
+				}
 				else if(rowNum > -1)
 					showTaskText(rowNum);
 			}
+			table.setRowSelectionInterval(rowNum, rowNum);
 		}
 
 		/**
@@ -294,7 +335,7 @@ public class TaskList extends JPanel
 	 * The table display task items; given package access
 	 * to allow for calls by a TaskListPopup object.
 	 */
-	JTable table;
+	TaskListTable table;
 	/**
 	 * The data model for the TaskList's table; given package access
 	 * to allow for calls by a TaskListPopup object.

@@ -21,11 +21,14 @@
  * $Id$
  */
 
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.event.*;
 import javax.swing.table.*;
 import javax.swing.text.Element;
+import javax.swing.JMenu;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -48,13 +51,16 @@ public class TaskListPopup extends JPopupMenu
 	private View view;
 	private TaskList list;
 	private int taskNum;
+	private ActionListener listener;
+	private BoundedMenu changeMenu;
+	private BoundedMenu deleteMenu;
 
 	/**
 	 * Constructor
 	 *
 	 * @param View view the view in which the popup menu will appear
 	 * @param TaskList list the TaskList object represented in the window in which the popup menu will appear
-	 * @param int TaskNum the zero-based index of the selected table roe that will be the subject of the popup
+	 * @param int TaskNum the zero-based index of the selected table row that will be the subject of the popup
 	 */
 	public TaskListPopup(View view, TaskList list, int taskNum)
 	{
@@ -63,18 +69,121 @@ public class TaskListPopup extends JPopupMenu
 		this.view = view;
 		this.list = list;
 		this.taskNum = taskNum;
+		this.listener = new ActionHandler();
+
+		changeMenu =
+			new BoundedMenu(list, jEdit.getProperty("tasklist.popup.change-menu"));
 
 		int item = 0;
 		String name = jEdit.getProperty("tasklist.tasktype." + String.valueOf(item) + ".name");
 		while(name != null)
 		{
-			add(createMenuItem(name));
+			changeMenu.add(createMenuItem(name));
 			item++;
 			name = jEdit.getProperty("tasklist.tasktype." + String.valueOf(item)
 				+ ".name");
 		}
+		add(changeMenu);
+
+		deleteMenu = new BoundedMenu(list, "Delete task");
+		deleteMenu.add(createMenuItem("Delete task tag", "%Dtag"));
+		deleteMenu.add(createMenuItem("Delete entire task", "%Dtask"));
+		add(deleteMenu);
 	}
 
+	/**
+	 * An extension of the JMenu class that relocates the object's child popup menu
+	 * as necessary so that it does not appear to right or below the bounds of
+	 * another component.
+	 * <p>
+	 * In the TaskList implementation, the bounding component is the TaskList panel
+	 * containing the table display of taks items.
+	 *
+	 * @author John Gellene (jgellene@nyc.rr.com)
+	 */
+	public class BoundedMenu extends JMenu
+	{
+		/**
+		 * The component that defines the bounds of the child popup menu.
+		 */
+		private Component bounds;
+
+		/**
+		 * Constructs a BoundedMenu object.
+		 *
+		 * @param bounds the Component forming the bounds for the object's
+		 * child popup menu.
+		 * @param title the text to be displayed on the parent menu item
+		 */
+		public BoundedMenu(Component bounds, String title) {
+			super(title);
+			this.bounds = bounds;
+		}
+
+		/**
+		 * Overrides the implementation in JMenu to relocate the child
+		 * popup menu so it does not appear outside the right-hand
+		 * or lower borders of the menu's bounding component.
+		 *
+		 * @param visible determines whether the child popup menu is to
+		 * made visible.
+		 */
+		public void setPopupMenuVisible(boolean visible) {
+			boolean oldValue = isPopupMenuVisible();
+			if(visible != oldValue) {
+				if((visible == true) && isShowing()) {
+					Point p = setLocation();
+					getPopupMenu().show(this, p.x, p.y);
+				}
+				else {
+					getPopupMenu().setVisible(false);
+				}
+			}
+		}
+
+		/**
+		 * Determines the location of the child popup menu.
+		 *
+		 * @return a Point representing the upper left-hand corner
+		 * of the child popup menu, expressed relative to the parent
+		 * menu of this BoundedMenu object.
+		 */
+		private Point setLocation() {
+			Component parent = getParent();
+			Dimension dParent = parent.getPreferredSize();
+			// IDEA: default location of child popup menu
+			Point pPopup = new Point(dParent.width - 1 , -1);
+	        SwingUtilities.convertPointToScreen(pPopup, parent);
+        	SwingUtilities.convertPointFromScreen(pPopup, list);
+        	Dimension dList = list.getSize();
+			Dimension dPopup = getPopupMenu().getPreferredSize();
+			Point pThis = this.getLocation();
+        	if (pPopup.x + dPopup.width > dList.width)
+            	pPopup.x -= (dPopup.width + dParent.width);
+        	if (pPopup.y + pThis.y + dPopup.height > dList.height)
+            	pPopup.y -= (dPopup.height - dParent.height + pThis.y);
+	        SwingUtilities.convertPointToScreen(pPopup, list);
+        	SwingUtilities.convertPointFromScreen(pPopup, parent);
+			return pPopup;
+		}
+	}
+
+
+	/**
+	 * Creates a menu item for the popup menu
+	 *
+	 * @param name Represents the menu item entry's text
+	 * @param cmd Represents the action command associated
+	 * with the menu item
+	 *
+	 * @return a JMenuItem representing the new menu item
+	 */
+	private JMenuItem createMenuItem(String name, String cmd) {
+		JMenuItem mi = new JMenuItem(name);
+		mi.setActionCommand(cmd != null ? cmd : name);
+		mi.addActionListener(listener);
+		return mi;
+	}
 
 	/**
 	 * Creates a menu item for the popup menu containing an
@@ -85,12 +194,8 @@ public class TaskListPopup extends JPopupMenu
 	 * @return a JMenuItem representing the new menu item
 	 */
 	private JMenuItem createMenuItem(String name) {
-		JMenuItem mi = new JMenuItem(name);
-		mi.setActionCommand(name);
-		mi.addActionListener(new ActionHandler());
-		return mi;
+		return createMenuItem(name, null);
 	}
-
 
 	/**
 	 * Causes substitution of the comment tag for the selected task item;
@@ -100,49 +205,75 @@ public class TaskListPopup extends JPopupMenu
 	class ActionHandler implements ActionListener {
 
 		public void actionPerformed(ActionEvent evt) {
-			final String newTaskTag = evt.getActionCommand();
 			final View v = view;
 			final Task task = (Task)(list.taskListModel).elementAt(taskNum);
-
-			SwingUtilities.invokeLater(new Runnable()
+			final Buffer buffer = task.getBuffer();
+			final Element map = buffer.getDefaultRootElement();
+			final Element line = map.getElement(task.getLine());
+			String cmd = evt.getActionCommand();
+			if(cmd.equals("%Dtask"))
 			{
-				public void run()
+				SwingUtilities.invokeLater(new Runnable()
 				{
-					final String taskText = task.getText();
-					final String oldTaskTag = taskText.substring(0, taskText.indexOf(':'));
-					final Buffer buffer = task.getBuffer();
-					final Element map = buffer.getDefaultRootElement();
-					final Element line = map.getElement(task.getLine());
-					boolean replace = false;
-					if(oldTaskTag.equals(newTaskTag))
-						replace = true;
-					else if(line != null)
+					public void run()
 					{
-						int tokenStart = line.getStartOffset();
-						Token token = buffer.markTokens(task.getLine()).getFirstToken();
-						while(token.id != Token.END)
+						if(line != null)
 						{
-							if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
-							{
-								SearchAndReplace.setSearchString(oldTaskTag);
-								SearchAndReplace.setReplaceString(newTaskTag);
-								replace =
-									SearchAndReplace.replace(v, buffer, tokenStart,
-										line.getEndOffset());
-								break;
-							}
-							tokenStart += token.length;
-							token = token.next;
+							boolean replace = false;
+							int searchStart = line.getStartOffset();
+							int searchEnd  = line.getEndOffset();
+							SearchAndReplace.setSearchString(task.getText());
+							SearchAndReplace.setReplaceString("");
+							replace = SearchAndReplace.replace(v, buffer,
+								searchStart, searchEnd);
 						}
 					}
-					if(!replace)
-						JOptionPane.showMessageDialog(v,
-							jEdit.getProperty("tasklist.popup.parse-error"),
-							jEdit.getProperty("tasklist.title"),
-							JOptionPane.ERROR_MESSAGE);
-					TaskListPlugin.parseBuffer(buffer);
-				}
-			});
+				});
+			}
+			else
+			{
+				if(cmd.equals("%Dtag"))
+					cmd = "";
+				else cmd = cmd + ":";
+				final String newTaskTag = cmd;
+
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						final String taskText = task.getText();
+						final String oldTaskTag = taskText.substring(0, taskText.indexOf(':') + 1);
+						boolean replace = false;
+						if(oldTaskTag.equals(newTaskTag))
+							replace = true;
+						else if(line != null)
+						{
+							int tokenStart = line.getStartOffset();
+							Token token = buffer.markTokens(task.getLine()).getFirstToken();
+							while(token.id != Token.END)
+							{
+								if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
+								{
+									SearchAndReplace.setSearchString(oldTaskTag);
+									SearchAndReplace.setReplaceString(newTaskTag);
+									replace =
+										SearchAndReplace.replace(v, buffer, tokenStart,
+											line.getEndOffset());
+									break;
+								}
+								tokenStart += token.length;
+								token = token.next;
+							}
+						}
+						if(!replace)
+							JOptionPane.showMessageDialog(v,
+								jEdit.getProperty("tasklist.popup.parse-error"),
+								jEdit.getProperty("tasklist.title"),
+								JOptionPane.ERROR_MESSAGE);
+						TaskListPlugin.parseBuffer(buffer);
+					}
+				});
+			}
 			view = null;
 		}
 	}

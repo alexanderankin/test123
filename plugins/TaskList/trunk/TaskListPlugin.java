@@ -69,6 +69,10 @@ import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
 
+/**
+ * The main plugin class for the TaskList plugin,
+ * conforming to the jEdit Plugin API.
+ */
 public class TaskListPlugin extends EBPlugin
 {
 	public static final String NAME = "tasklist";
@@ -79,8 +83,10 @@ public class TaskListPlugin extends EBPlugin
 	private static boolean highlightTasks = false;
 
 	/**
-	*
-	*/
+	 * Creates options panes for jEdit's "Global options" window
+	 *
+	 * @param od The OptionsDialog in which the oprions panes will be included.
+	 */
 	public void createOptionPanes(OptionsDialog od)
 	{
 		OptionGroup optionGroup = new OptionGroup(
@@ -92,6 +98,12 @@ public class TaskListPlugin extends EBPlugin
 		od.addOptionGroup(optionGroup);
 	}
 
+	/**
+	 * Adds menu items to jEdit's "Plugins" menu
+	 *
+	 * @param menuItems the collection of menu items being assembled by
+	 * the application
+	 */
 	public void createMenuItems(Vector menuItems)
 	{
 		Log.log(Log.DEBUG, TaskListPlugin.class, "createMenuItems() called.");
@@ -99,8 +111,8 @@ public class TaskListPlugin extends EBPlugin
 	}
 
 	/**
-	*
-	*/
+	 * Initialization routine called after the plugin is first loaded
+	 */
 	public void start()
 	{
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
@@ -108,12 +120,29 @@ public class TaskListPlugin extends EBPlugin
 		propertiesChanged();
 	}
 
-
+	/**
+	 * Returns the user-specified color used for highlighting task items
+	 * in the current buffer.
+	 *
+	 * @return a Color representing the highlighting color.
+	 */
 	public static Color getHighlightColor()
 	{
 		return highlightColor;
 	}
 
+	/**
+	 * Handles selected messages received by the TaskListPlugin object
+	 * from jEdit's EditBus messaging facility.
+	 * <p>
+	 * The methods handles the following messages:
+	 * <ul><li>CreateDockableWindow (deprecated in jEdit 4.0)</li>
+	 * <li>BufferUpdate (to trigger reparsing and updating of the task display)</li>
+	 * <li>EditPaneUpdate (also to trigger task list updates)</li>
+	 * <li>PropertiesChanged (to update disaply following changes in user options)</li></ul>
+	 *
+	 * @param message a EBMessage object received from jEdit's EditBus.
+	 */
 	public void handleMessage(EBMessage message)
 	{
 		if(message instanceof CreateDockableWindow)
@@ -123,7 +152,6 @@ public class TaskListPlugin extends EBPlugin
 			CreateDockableWindow cmsg = (CreateDockableWindow)message;
 			if(cmsg.getDockableWindowName().equals(NAME))
 			{
-
 				// QUESTION: would it make sense to keep a hash of
 				//	views and TaskLists so we can re-use them here?
 
@@ -212,8 +240,10 @@ public class TaskListPlugin extends EBPlugin
 
 
 	/**
-	*
-	*/
+	 * Adds a TaskType object to the list maintained by the plugin object.
+	 *
+	 * @param taskType the TaskType object to be added
+	 */
 	public static void addTaskType(TaskType taskType)
 	{
 		taskTypes.addElement(taskType);
@@ -221,8 +251,9 @@ public class TaskListPlugin extends EBPlugin
 
 
 	/**
-	*
-	*/
+	 * loads TaskType objects from data maintained in the Properties object
+	 * currently maintained by the application.
+	 */
 	private static void loadTaskTypes()
 	{
 		int i = 0;
@@ -249,6 +280,10 @@ public class TaskListPlugin extends EBPlugin
 			"starting class list plugin");//##
 	}
 
+	/**
+	 * Causes an update of application data, typically aafter a change
+	 * in the plugin's user settings.
+	 */
 	private static void propertiesChanged()
 	{
 		TaskListPlugin.clearTaskTypes();
@@ -268,23 +303,49 @@ public class TaskListPlugin extends EBPlugin
 
 		if(parseDelay <= 0)
 			parseDelay = PARSE_DELAY;
+
+		fireTasksUpdated();
 	}
 
+	/**
+	 * Removes all TaskType data from the collection maintained by the plugin.
+	 */
 	public static void clearTaskTypes()
 	{
 		taskTypes.removeAllElements();
 	}
 
+	/**
+	 * A collection of pending requests to parse buffers, maintained to
+	 * prevent unnecessary duplication.
+	 */
 	private static Hashtable parseRequests = new Hashtable();
 
+	/**
+	 * A collection of TaskType objects representing the form of comments that
+	 * will be parsed from a buffer and store as Task objects
+	 */
 	private static Vector taskTypes = new Vector();
+
+	/**
+	 * A collection of collections: each member represents a collection of
+	 * Task objects associated with a particular buffer. The plugin uses this
+	 * object to keep track of Task objects.
+	 */
 	private static Hashtable bufferMap = new Hashtable();
+
+	/**
+	 * A collection of TaskListener objects that will be notified when
+	 * Task objects are added or removed from the collection maintained
+	 * by the plugin.
+	 */
 	private static Vector listeners = new Vector();
 
 
 	/**
 	* Returns the current set of tasks for the buffer requested, if there is a
 	* set.  If there is no set, the buffer is parsed.
+	* <p>
 	* NOTE: This method will not cause a re-parse of a buffer.
 	*/
 	public synchronized static Hashtable requestTasksForBuffer(final Buffer buffer)
@@ -310,8 +371,14 @@ public class TaskListPlugin extends EBPlugin
 
 
 	/**
-	*
-	*/
+	 * Directs the parsing of a buffer for task data if no request for parsing
+	 * that buffer is currently pending.
+	 * <p>
+	 * This method is more effcient than parserBuffer() because it prevents
+	 * duplicate parse requests.
+	 *
+	 * @param buffer the Buffer to be parsed for task data.
+	 */
 	public synchronized static void extractTasks(final Buffer buffer)
 	{
 
@@ -333,8 +400,11 @@ public class TaskListPlugin extends EBPlugin
 
 
 	/**
-	*
-	*/
+	 * Parses a Buffer and extracts task item data to be stored in the plugin's
+	 * collection.
+	 *
+	 * @param buffer the Buffer to be parsed
+	 */
 	public synchronized static void parseBuffer(Buffer buffer)
 	{
 		// DEBUG: starting method
@@ -405,11 +475,15 @@ public class TaskListPlugin extends EBPlugin
 		// remove 'buffer' from parse queue
 		parseRequests.remove(buffer);
 
+		fireTasksUpdated();
+
 	}
 
 
 	/**
-	* Add a task
+	* Add a Task to the collection maintained by the plugin.
+	*
+	* @param task the Task to be added.
 	*/
 	private static void addTask(Task task)
 	{
@@ -441,7 +515,10 @@ public class TaskListPlugin extends EBPlugin
 
 
 	/**
-	* Remove all tasks from the buffer.
+	* Remove all tasks relating to a given Buffer from the collection
+	* of Task objects maintained by the plugin.
+	*
+	* @param buffer the Buffer whose tasks are to be removed.
 	*/
 	private static void clearTasks(Buffer buffer)
 	{
@@ -475,16 +552,23 @@ public class TaskListPlugin extends EBPlugin
 
 	// QUESTION: what about 'batch' operations (clearing all the tasks for
 	//	a specific buffer, finished parsing buffer, etc)
+	/**
+	 * An interface defining actions to be taken upon the addition (or removal)
+	 * of a Task object to (or from) the collection maintained by the plugin.
+	 */
 	public interface TaskListener
 	{
 		public void taskAdded(Task task);
 		public void taskRemoved(Task task);
+		public void tasksUpdated();
 	}
 
 
 	/**
-	*
-	*/
+	 * Adds a TaskListener to the collection maintined by the plugin.
+	 *
+	 * @param listener the TaskListener to be added
+	 */
 	public static void addTaskListener(TaskListener listener)
 	{
 		//Log.log(Log.DEBUG, TaskListPlugin.class,
@@ -500,8 +584,10 @@ public class TaskListPlugin extends EBPlugin
 
 
 	/**
-	*
-	*/
+	 * Removes a TaskListener from the collection maintined by the plugin.
+	 *
+	 * @param listener the TaskListener to be removed
+	 */
 	public static boolean removeTaskListener(TaskListener listener)
 	{
 		//Log.log(Log.DEBUG, TaskListPlugin.class,
@@ -512,8 +598,12 @@ public class TaskListPlugin extends EBPlugin
 
 
 	/**
-	*
-	*/
+	 * Calls the taskAdded() method of each of the TaskListener objects
+	 * in the collection maintained by the plugin.
+	 *
+	 * @param task the Task being added to the collection of Task objects
+	 * maintained by the plugin.
+	 */
 	private static void fireTaskAdded(Task task)
 	{
 		//Log.log(Log.DEBUG, TaskListPlugin.class,
@@ -525,8 +615,12 @@ public class TaskListPlugin extends EBPlugin
 
 
 	/**
-	*
-	*/
+	 * Calls the taskRemoved() method of each of the TaskListener objects
+	 * in the collection maintained by the plugin.
+	 *
+	 * @param task the Task being removed from the collection of Task objects
+	 * maintained by the plugin.
+	 */
 	private static void fireTaskRemoved(Task task)
 	{
 		//Log.log(Log.DEBUG, TaskListPlugin.class,
@@ -534,6 +628,12 @@ public class TaskListPlugin extends EBPlugin
 
 		for(int i = 0; i < listeners.size(); i++)
 			((TaskListener)listeners.elementAt(i)).taskRemoved(task);
+	}
+
+	private static void fireTasksUpdated()
+	{
+		for(int i = 0; i < listeners.size(); i++)
+			((TaskListener)listeners.elementAt(i)).tasksUpdated();
 	}
 
 }

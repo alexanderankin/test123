@@ -12,6 +12,7 @@ $Id$
 			return view.getDockableWindowManager().isDockableWindowVisible("tasklist");
 		</IS_SELECTED>
 	</ACTION>
+
 	<ACTION NAME="tasklist.parse-buffer">
 		<CODE>
 			Log.log(Log.DEBUG, TaskListPlugin.class, "starting parseBuffer()");

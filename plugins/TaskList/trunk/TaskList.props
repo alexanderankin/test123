@@ -13,6 +13,7 @@ plugin.TaskListPlugin.depend.1=jedit 02.07.03.00
 # dockable window name
 tasklist.title=Task List
 tasklist.label=Task List
+tasklist-toggle.label=Task List Toggle
 
 # TODO: compatible with jEdit API 4.0
 
@@ -26,6 +27,7 @@ tasklist.menu=tasklist.toggle tasklist.parse-buffer
 
 # popup menu items
 tasklist.popup.heading=Change task name
+tasklist.popup.change-menu=Change task tag
 
 # error message string
 tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
@@ -36,6 +38,12 @@ tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
 options.tasklist.general.label=General
 options.tasklist.general.parsedelay=Parse delay:
 options.tasklist.general.buffer.display=Buffer display format:
+options.tasklist.general.sort.choice=Sort tasks by:
+options.tasklist.general.sort.choice.0=Buffer line number
+options.tasklist.general.sort.choice.1=Task tag
+options.tasklist.general.sort.direction=Sort direction:
+options.tasklist.general.sort.direction.0=Ascending
+options.tasklist.general.sort.direction.1=Descending
 options.tasklist.general.table.horizontal-lines=Show horizontal lines
 options.tasklist.general.table.vertical-lines=Show vertical lines
 options.tasklist.general.highlight.tasks=Highlight tasks
@@ -66,7 +74,9 @@ options.tasklist.tasktype.noicon=(None Selected)
 tasklist.parsedelay=1000
 tasklist.highlight.color=#0000ff
 tasklist.table.horizontal-lines=true
-tasklist.table.verticall-lines=false
+tasklist.table.vertical-lines=false
+tasklist.table.sort-column=1
+tasklist.table.sort-ascending=true
 tasklist.highlight.tasks=true
 
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" standalone="no" ?>
 
 
-<!-- TaskList 0.2 help documentation -->
+<!-- TaskList 0.3 help documentation -->
 <!-- Copyright (C) 2001 John Gellene	 -->
 <!-- $Id$
 -->
@@ -37,12 +37,17 @@
 				included with the jEdit distribution.
 			</para>
 		</legalnotice>
-		<title>TaskList plugin beta 0.2</title>
+		<title>TaskList plugin beta 0.3</title>
 		<revhistory>
 			<revision>
 				<revnumber>0.2</revnumber>
 				<date>December 1, 2001</date>
 				<revremark>Initial version of documentation</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3</revnumber>
+				<date>December 11, 2001</date>
+				<revremark>Revised for beta version 0.3</revremark>
 			</revision>
 		</revhistory>
 	</articleinfo>
