@@ -9,10 +9,8 @@ import java.util.List;
  */
 public abstract class AbstractCase extends Statement {
 
-  /**
-   * The statements in the case.
-   */
-  public final Statement[] statements;
+  /** The statements in the case. */
+  protected final Statement[] statements;
 
   /**
    * Create a case statement.
@@ -20,6 +18,10 @@ public abstract class AbstractCase extends Statement {
    * @param statements  the statements array
    * @param sourceStart the beginning source offset
    * @param sourceEnd   the ending offset
+   * @param beginLine   begin line
+   * @param endLine     end line
+   * @param beginColumn begin column
+   * @param endColumn   end column
    */
   protected AbstractCase(final Statement[] statements,
                          final int sourceStart,
