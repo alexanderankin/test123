@@ -24,12 +24,15 @@ import java.io.IOException;
 
 import java.awt.Color;
 import javax.swing.Icon;
+import javax.swing.filechooser.FileSystemView;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
+
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -45,6 +48,9 @@ public class VPTFile extends VPTNode {
 	private final static Icon fileClosedIcon 	= GUIUtilities.loadIcon("File.png");
 	private final static Icon fileOpenedIcon 	= GUIUtilities.loadIcon("OpenFile.png");
 
+	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+	private static FileSystemView fsView;
+
 	//}}}
 
 	//{{{ Attributes
@@ -53,6 +59,8 @@ public class VPTFile extends VPTNode {
 	private String	canPath;
 	private Color	fileTypeColor;
 
+	private Icon	fileIcon;
+	private boolean	loadedIcon;
 	//}}}
 
 	//{{{ Constructors
@@ -66,6 +74,7 @@ public class VPTFile extends VPTNode {
 		this.file = file;
 		this.canPath = null;
 		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
+		this.loadedIcon = false;
 	}
 
 	//}}}
@@ -117,7 +126,20 @@ public class VPTFile extends VPTNode {
 	 *	@param	expanded	If the node is currently expanded or not.
 	 */
 	public Icon getIcon(boolean expanded) {
-		return (isOpened() ? fileOpenedIcon : fileClosedIcon);
+		if (isOpened()) {
+			return fileOpenedIcon;
+		} else {
+			if (config.getUseSystemIcons()) {
+				if (!loadedIcon) {
+					if (fsView == null) fsView = FileSystemView.getFileSystemView();
+					fileIcon = fsView.getSystemIcon(file);
+					loadedIcon = true;
+				}
+				return (fileIcon != null) ? fileIcon : fileClosedIcon;
+			} else {
+				return fileClosedIcon;
+			}
+		}
 	} //}}}
 
 	//{{{ getForegroundColor(boolean) method

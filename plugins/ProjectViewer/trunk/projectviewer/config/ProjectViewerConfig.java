@@ -33,6 +33,8 @@ import java.beans.PropertyChangeListener;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
+
 import projectviewer.ProjectPlugin;
 //}}}
 
@@ -66,6 +68,7 @@ public final class ProjectViewerConfig {
 	public static final String ASK_IMPORT_OPT             = "projectviewer.ask-import";
     public static final String BROWSER_PATH_OPT           = "browser-path";
 	public static final String BROWSER_USE_INFOVIEWER     = "projectviewer.browser.use_infoviewer";
+	public static final String USE_SYSTEM_ICONS_OPT		  = "projectviewer.use_system_icons";
 
     public static final String SHOW_TOOLBAR_OPT           = "projectviewer.show_toolbar";
     public static final String SHOW_FOLDERS_OPT           = "projectviewer.show_folder_tree";
@@ -145,6 +148,7 @@ public final class ProjectViewerConfig {
     private boolean showFilesTree           = true;
     private boolean showWorkingFilesTree    = true;
 	private boolean useInfoViewer			= false;
+	private boolean useSystemIcons			= false;
 
     private String importExts               = null;
     private String excludeDirs              = null;
@@ -221,7 +225,7 @@ public final class ProjectViewerConfig {
             setShowWorkingFilesTree("true".equalsIgnoreCase(tmp));
         }
 
-		// ask_inport
+		// ask_import
         tmp = props.getProperty(ASK_IMPORT_OPT);
         if (tmp != null) {
 			try {
@@ -229,6 +233,12 @@ public final class ProjectViewerConfig {
 			} catch (NumberFormatException nfe) {
 				// ignore
 			}
+        }
+
+        // use_system_icons
+        tmp = props.getProperty(USE_SYSTEM_ICONS_OPT);
+        if (tmp != null) {
+            setUseSystemIcons("true".equalsIgnoreCase(tmp));
         }
 
         // Importing options
@@ -256,6 +266,7 @@ public final class ProjectViewerConfig {
         if (tmp != null) {
             setUserContextMenu(tmp);
         }
+
     }
 
 	//}}}
@@ -410,6 +421,16 @@ public final class ProjectViewerConfig {
 	}
 	// }}}
 
+	// {{{ property useSystemIcons
+	public void setUseSystemIcons(boolean useSystemIcons) {
+		this.useSystemIcons = useSystemIcons;
+	}
+
+	public boolean getUseSystemIcons() {
+		return useSystemIcons;
+	}
+	// }}}
+
     //}}}
 
     //{{{ Public Methods
@@ -428,6 +449,7 @@ public final class ProjectViewerConfig {
         listeners.remove(listener);
     }
 
+    //{{{ update(Properties) method
     /**
      *  <p>Updates the properties in the properties object passed to
      *  reflect the current state of the config.</p>
@@ -438,6 +460,7 @@ public final class ProjectViewerConfig {
         props.setProperty(DELETE_NOT_FOUND_FILES_OPT, String.valueOf(deleteNotFoundFiles));
         props.setProperty(SAVE_ON_CHANGE_OPT, String.valueOf(saveOnChange));
 		props.setProperty(ASK_IMPORT_OPT, String.valueOf(askImport));
+		props.setProperty(USE_SYSTEM_ICONS_OPT, String.valueOf(useSystemIcons));
 
         props.setProperty(SHOW_TOOLBAR_OPT, String.valueOf(showToolBar));
         props.setProperty(SHOW_FOLDERS_OPT, String.valueOf(showFoldersTree));
@@ -458,8 +481,9 @@ public final class ProjectViewerConfig {
         if (lastProject != null) {
             props.setProperty(LAST_PROJECT_OPT, lastProject);
         }
-    }
+    } //}}}
 
+    //{{{ save() method
     /** Save the configuration to the plugin's config file on disk. */
     public void save() {
         Properties p = new Properties();
@@ -479,7 +503,16 @@ public final class ProjectViewerConfig {
             Log.log(Log.ERROR, this, "Cannot write to config file!");
         }
 
-    }
+    } //}}}
+
+	//{{{ isJarMakerAvailable() method
+	/** Returns true if JarMaker is available, and its version is at least 0.5. */
+	public boolean isJarMakerAvailable() {
+		return (jEdit.getPlugin("jarmaker.JarMakerPlugin") != null) &&
+				(MiscUtilities.compareStrings(
+					jEdit.getProperty("plugin.jarmaker.JarMakerPlugin.version"),
+					"0.5", false) >= 0);
+	} //}}}
 
 	//}}}
 
@@ -504,5 +537,6 @@ public final class ProjectViewerConfig {
     }
 
 	//}}}
+
 }
 

@@ -33,6 +33,8 @@ import javax.swing.JRadioButton;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
+
+import projectviewer.ProjectViewer;
 //}}}
 
 /**
@@ -60,6 +62,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox showFoldersTree;
 	private JCheckBox showFilesTree;
 	private JCheckBox showWorkingFilesTree;
+	private JCheckBox useSystemIcons;
 
 	private JTextField importExts;
 	private JTextField excludeDirs;
@@ -165,6 +168,10 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		showWorkingFilesTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_working_files"));
 		showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
 		addComponent(showWorkingFilesTree);
+
+		useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
+		useSystemIcons.setSelected(config.getUseSystemIcons());
+		addComponent(useSystemIcons);
 		//}}}
 
 		//{{{ importer options
@@ -221,6 +228,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setShowFoldersTree(showFoldersTree.isSelected());
 		config.setShowFilesTree(showFilesTree.isSelected());
 		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
+		config.setUseSystemIcons(useSystemIcons.isSelected());
 
 		if (askAlways.isSelected()) {
 			config.setAskImport(ProjectViewerConfig.ASK_ALWAYS);
@@ -236,6 +244,11 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setBrowserpath(browserExecPath.getText());
 		config.setUseInfoViewer(useInfoViewer.isSelected());
 		config.save();
+
+		ProjectViewer pv = ProjectViewer.getViewer(jEdit.getActiveView());
+		if (pv != null) {
+			pv.repaint();
+		}
 	} //}}}
 
 	//{{{ actionPerformed(ActionEvent) method
