@@ -285,6 +285,9 @@ abstract class GenericTagsParser implements TagsParser {
     // This func and foundTagMatch should really be combined!
     try 
     {
+      if (raf.length() == 0)  // Thanks Ollie...
+        return true;
+        
       raf.seek(file.length()); 
       skipBackwardToBeginningOfLine(raf, view);
       String lineFromFile = raf.readLine();

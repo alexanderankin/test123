@@ -127,15 +127,11 @@ public class TagsEnterTagDialog extends JDialog {
     okButton_.setMnemonic(KeyEvent.VK_O);
     cancelButton_.setMnemonic(KeyEvent.VK_C);
 
-    if (!enterTagPanel_.TESTING)
-      enterTagPanel_.getFuncTextField().addActionListener(okButtonListener_);
+    enterTagPanel_.getFuncTextField().addActionListener(okButtonListener_);
     enterTagPanel_.getFuncTextField().addKeyListener(keyListener_);
     addKeyListener(keyListener_);
-    
-    if (enterTagPanel_.TESTING)
-      getRootPane().setDefaultButton(enterTagPanel_.findButton_);
-    else
-      getRootPane().setDefaultButton(okButton_);
+
+    getRootPane().setDefaultButton(okButton_);
   }
   
   /***************************************************************************/

@@ -95,13 +95,13 @@ sorted.
 There are 2 ways to jump to a desired tag:
 
 <ol>
-  <li>Place the cursor on or select the desired tag.  From the Plugins > Tags 
-  menu use "Follow Tag".  "Follow Tag (New View)" will jump to a tag
-  in a new view.</li>
+  <li>Place the cursor on or select the desired tag.  Use <b>Plugins > Tags >
+  Follow Tag</b>.  <b>Plugins > Tags > Follow Tag (New View)</b> will jump to a 
+  tag in a new view.</li>
 
-	<li>From the Plugins > Tags menu use "Follow Tag..." which will prompt you for
-	the desired tag. The "Open new view" checkbox will jump to the entered tag in
-	an new view.</li>
+  <li><b>Plugins > Tags > Follow Tag...</b> will prompt you for
+  the desired tag. The <b>"Open new view"</b> checkbox will jump to the entered 
+  tag in an new view.</li>
 </ol>
     
 </p>
@@ -109,9 +109,9 @@ There are 2 ways to jump to a desired tag:
 <h3><a name="tag_stack">The tag stack</a></h3>
 <p>
 Once you have jumped to a tag, your previous position is remembered with the
-tag stack.  You can return to your previous position from the Plugins > Tags
-menu using "Pop Tag".  You can clear the tag stack from the Plugins > Tags menu
-using "Clear Tag Stack".  Currently the stack is a global stack.
+tag stack.  You can return to your previous position by using <b>Plugins > Tags > 
+Pop Tag</b>.  You can clear the tag stack with <b>Plugins > Tags > Clear Tag 
+Stack</b>.  Currently the stack is a global stack.
 </p>
 
 <h3><a name="tag_collisions">Tag collisions</a></h3>
@@ -132,7 +132,7 @@ with the Space key.</p>
 <p>The Tags plugin can be configured under the Plugin Options node of the Global 
 Options dialog.</p>
 
-<p>Position dialogs under cursor (Experimental):  If your window manager is set
+<p><b>Position dialogs under cursor (Experimental)</b>:  If your window manager is set
 to have window focus follow the mouse pointer, and doesn't automatically shift
 the window focus to new dialogs/windows, this option can be helpful.  Any dialog
 that the plugin creates will be automatically placed under the cursor.  This is
@@ -140,30 +140,31 @@ currently experimental.  Note that this doesn't work well for window managers
 which automatically shift focus to new dialogs/windows.
 </p>
 
-<p>If tag match is found continue searching subsequent tag index files:  By 
-default, the first matching tag (or groups of tags if
-a tag collision occurs) found will stop the search. Using this option will
-allow all tag files to be searched.</p>
+<p><b>If tag match is found continue searching subsequent tag index
+files</b>:  By default, the first matching tag (or groups of tags if
+a tag collision occurs) found will stop the search. Using this option
+will allow all tag files to be searched.</p> 
 
-<p>Tags extend through member access operator:  When tagging in the
+<p><b>Tags extend through member access operator</b>:  When tagging in the
 text area, the plugin by default will consider the tag to be the word
 under the cursor as well as any member access.</p>
 
-<p>Search tag file in current buffer's directory: Check this option if
- you want the tag search to use the tag index file in the current
- buffer's directory.  After specifying this you will be able to change
- the search order of the tag index file.  The default is for the tag
- index file to be searched first.</p> 
+<p><b>Search tag file in current buffer's directory</b>: Check this option if
+you want the tag search to use the tag index file in the current
+buffer's directory.  After specifying this you will be able to change
+the search order of the tag index file.  The default is for the tag
+index file to be searched first.</p> 
 
-<p>Tag index file name:  If you have configured Tags to use the tag index file
-in the current buffer's directory you can change the file named that the plugin
-looks for.  The default is "tags".  This should be the file name without any
-path related characters.</p>
+<p><b>Tag index file name</b>:  If you have configured Tags to use the
+tag index file in the current buffer's directory you can change the
+file named that the plugin looks for.  The default is "tags".  This
+should be the file name without any path related characters.</p> 
 
-<p>Tag search files (in order of search):  Add tag index files that should be 
-searched to this table.  The order of the table is the search order. You can 
-also enable or disable a tag index file from being searched without having to
-remove the file path from the table.</p>
+<p><b>Tag search files (in order of search)</b>:  Add tag index files
+that should be searched to this table.  The order of the table is
+the search order. You can also enable or disable a tag index file
+from being searched without having to remove the file path from the
+table.</p> 
 
 <h2><a name="shortcuts">Suggested Keyboard shortcuts and UI</a></h2>
 
@@ -272,19 +273,9 @@ Sourceforge Bug Tracker at
         visible search string.</li>
     <li>Used JEditTextArea.offsetToXY() to position popup within folded, and
         wrapped text.</li>
-    <li>Requires java 1.3<\li>
-    <li>Requires JEdit 4.0<\li>    
+    <li>Requires java 1.3</li>
+    <li>Requires JEdit 4.0</li>    
     </ul>
-
-	<li>Version 1.0.6, bug fixes (Feb 2002)</li>
-  <ul>
-    <li>Fixed bug where the escape character '\' was showing up in the user
-        visible search string.</li>
-    <li>Used JEditTextArea.offsetToXY() to position popup within folded, and
-        wrapped text.</li>
-    <li>Requires java 1.3<\li>
-    <li>Requires JEdit 4.0<\li>    
-  </ul>
 
 	<li>Version 1.0.3, update (Nov 2001)</li>
    <ul>

@@ -38,17 +38,15 @@ import org.gjt.sp.util.Log;
 
 class TagsEnterTagPanel extends JPanel 
 {
-  static final boolean TESTING = true;
-  
   /***************************************************************************/
-  protected JLabel            textFieldLabel_;
-  protected HistoryTextField  tagFuncTextField_;
-  protected JCheckBox         otherWindowCheckBox_;
-  protected JCheckBox         keepDialogCheckBox_;
-  protected ChooseTagList     chooseTagList_;
-  protected JButton           findButton_;
+  protected JLabel textFieldLabel_;
+  protected HistoryTextField tagFuncTextField_;
+  protected JCheckBox  otherWindowCheckBox_;
+  protected JCheckBox  viewFoundTagsCheckBox_;
+  protected JCheckBox  keepDialogCheckBox_;
+  protected ChooseTagList chooseTagList_;
   
-  View       view_;
+  View view_;
   TagsParser parser_;
   
   /***************************************************************************/
@@ -63,76 +61,52 @@ class TagsEnterTagPanel extends JPanel
     tagFuncTextField_ = new HistoryTextField("tags.enter-tag.history", false, 
                                              false);
     tagFuncTextField_.setColumns(16);
-    tagFuncTextField_.addActionListener(findButtonListener_);
     textFieldLabel_.setLabelFor(tagFuncTextField_);
-    
-    JPanel p = new JPanel(new BorderLayout(5,5));                                         
+                                         
+    JPanel p = new JPanel();                                         
+    p.setLayout(new BorderLayout(5,5));
     p.add(textFieldLabel_, BorderLayout.WEST);
     p.add(tagFuncTextField_, BorderLayout.CENTER);
-    
-    // find button
-    JPanel fieldAndFindPanel = new JPanel(new BorderLayout(5,5));
-    if (TESTING)
-    {
-      findButton_ = new JButton("Find");
-      findButton_.setPreferredSize(
-               new Dimension(findButton_.getPreferredSize().width , 
-                             tagFuncTextField_.getPreferredSize().height));
-      findButton_.addActionListener(findButtonListener_);
-      fieldAndFindPanel.add(p, BorderLayout.CENTER);
-      fieldAndFindPanel.add(findButton_, BorderLayout.EAST);
-    }
     
     // open in other window check box                                             
     otherWindowCheckBox_ = new JCheckBox(
               jEdit.getProperty("tags.enter-tag-dlg.new-view-checkbox.label"));
     otherWindowCheckBox_.setMnemonic(KeyEvent.VK_V);
     otherWindowCheckBox_.addActionListener(otherWindowCheckboxListener_);
-    
-    JPanel checkPanel = new JPanel();
-    checkPanel.setLayout(new GridLayout(TESTING ? 2 : 1, 1));
-    
-    checkPanel.add(otherWindowCheckBox_);
+    p.add(otherWindowCheckBox_, BorderLayout.SOUTH);
     
     setBorder(BorderFactory.createEmptyBorder(5,5,0,5));
     setLayout(new BorderLayout());    
-    if (TESTING)
-      add(fieldAndFindPanel, BorderLayout.NORTH);
-    else
-      add(p, BorderLayout.NORTH);
-        
+    add(p, BorderLayout.NORTH);
+    
     // view found tags
-    if (TESTING)
-    {
-      // incrementally found tags panel
-      chooseTagList_ = parser_.getCollisionListComponent(view_);;
-      chooseTagList_.setVisibleRowCount(12);
-      JScrollPane scrollPane = new JScrollPane(chooseTagList_, 
-                                      JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                                      JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-      add(scrollPane, BorderLayout.CENTER);
-            
-      // keep dialog
-      keepDialogCheckBox_ = new JCheckBox(
+/*    
+    viewFoundTagsCheckBox_ = new JCheckBox(
+                jEdit.getProperty("tags.enter-tag-dlg.view-found-tags.label"));
+    viewFoundTagsCheckBox_.setSelected(jEdit.getBooleanProperty(
+                                        "tags.enter-tag-dlg.view-found-tags"));
+    viewFoundTagsCheckBox_.setMnemonic(KeyEvent.VK_F);
+    viewFoundTagsCheckBox_.addActionListener(viewFoundTagsListener_);
+    add(viewFoundTagsCheckBox_, BorderLayout.CENTER);
+    
+    // incrementally found tags panel
+    chooseTagList_ = new ChooseTagList(view_, parser_);
+    chooseTagList_.setVisibleRowCount(4);
+    add(chooseTagList_, BorderLayout.SOUTH);
+    
+    // keep dialog
+    keepDialogCheckBox_ = new JCheckBox(
                     jEdit.getProperty("tags.enter-tag-dlg.keep-dialog.label"));
-      //keepDialogCheckBox_.setSelected(jEdit.getBooleanProperty(
-      //                                      "tags.enter-tag-dlg.keep-dialog"));
-      keepDialogCheckBox_.setMnemonic(KeyEvent.VK_K);
-      checkPanel.add(keepDialogCheckBox_);
-      scrollPane = null;
-    }
-
-    add(checkPanel, BorderLayout.SOUTH);
-        
+    //keepDialogCheckBox_.setSelected(jEdit.getBooleanProperty(
+    //                                      "tags.enter-tag-dlg.keep-dialog"));
+    keepDialogCheckBox_.setMnemonic(KeyEvent.VK_K);
+*/
+    
     // re-init
     reinitialize(initialValue);
     
     // update GUI
     updateGUI();
-    
-    p = null;
-    fieldAndFindPanel = null;
-    checkPanel = null;
   }
   
   /***************************************************************************/
@@ -173,7 +147,6 @@ class TagsEnterTagPanel extends JPanel
   {
     public void actionPerformed(ActionEvent e)
     {
-      tagFuncTextField_.requestFocus();
       Log.log(Log.DEBUG, this, "Show results");
     }
   };
@@ -186,35 +159,4 @@ class TagsEnterTagPanel extends JPanel
     }
   };
 
-  /***************************************************************************/
-  protected ActionListener findButtonListener_ = new ActionListener() 
-  {
-    public void actionPerformed(ActionEvent e)
-    {
-      String name = tagFuncTextField_.getText();
-      final String funcName = name.trim();
-      
-      Tags.followTag(null, null, null, false, false, funcName);
-
-      Vector tagIdentifiers = parser_.getTagLines();
-      
-      if (tagIdentifiers != null)
-      {
-/*
-        if (tagIdentifiers.size() == 1 &&
-            !keepDialogCheckBox_.isSelected())
-        {
-          Tags.processTagLine(0, view_, otherWindowCheckBox_.isSelected(),
-                              parser_.getTag());
-        }
-*/        
-        chooseTagList_.setListData(tagIdentifiers);
-        
-        // This doesn't currently work...
-        chooseTagList_.revalidate();
-        chooseTagList_.repaint();
-      }
-    }
-  };
-  
 }

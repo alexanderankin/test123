@@ -45,6 +45,7 @@ class TagsOptionsPanel extends AbstractOptionPane {
   /***************************************************************************/
   protected JCheckBox openDialogsUnderCursorCheckBox_;
   protected JCheckBox extendThroughMemberOpCheckBox_;
+  protected JCheckBox searchInParentDirs_;
   protected JCheckBox useCurrentBufTagFileCheckBox_;
   protected JLabel curBufFileNameLabel_;
   protected JTextField curBufFileNameField_;
@@ -119,6 +120,12 @@ class TagsOptionsPanel extends AbstractOptionPane {
     jEdit.setBooleanProperty("options.tags.tag-extends-through-dot",
                              extendThroughMemberOpCheckBox_.isSelected());
 
+    Log.log(Log.DEBUG, this, "Search in parent dir:  " + searchInParentDirs_.isSelected());
+    jEdit.setBooleanProperty("options.tags.tags-search-parent-dir",
+                             searchInParentDirs_.isSelected());
+    Log.log(Log.DEBUG, this, "After setting:  " + 
+            jEdit.getBooleanProperty("options.tags.tags-search-parent-dir"));
+                             
     // remove all tag index files and reload with the ones from the pane
     Log.log(Log.DEBUG, this, "Tag index files (from pane):");    
     Tags.clearTagFiles();
@@ -184,6 +191,12 @@ class TagsOptionsPanel extends AbstractOptionPane {
     p.add(curBufFileNameLabel_, BorderLayout.WEST);
     p.add(curBufFileNameField_, BorderLayout.CENTER);
     addComponent(p);
+    
+    // Search in parent dirs
+    searchInParentDirs_ = new JCheckBox(jEdit.getProperty(
+                                "options.tags.tags-search-parent-dirs.label"));
+    searchInParentDirs_.setSelected(Tags.getSearchInParentDirs());
+    addComponent(searchInParentDirs_);
     
     // tag index file table
     p = new JPanel(new BorderLayout(5,5));
@@ -370,7 +383,6 @@ class TagsOptionsPanel extends AbstractOptionPane {
         tagIndexFilesInfo_.add(0, tf);
         tableModel_.fireTableRowsInserted(0, 0);
         table_.getSelectionModel().clearSelection();
-        
         tf = null;
       }
       else  // remove
