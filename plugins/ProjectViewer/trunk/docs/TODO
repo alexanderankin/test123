@@ -1,11 +1,6 @@
 
-- Create a option pane that configure the properties in 'import.properties'
-
 - Change the tree control to allow multiple single-selections.  This way 
   multiple files can be removed.
-
-- tooltip on obscured items (project files should have a tooltip that is their
-  path).
 
 - Do documentation.  This is important as people are starting to get 
   confused on how to use Project Viewer, what open files are, etc.
@@ -18,15 +13,14 @@
   buffers"  as this one would just close all buffers within the current 
   project.
 
-- RFE: When you "Right click" on a project you should have a place for 
-  "Properties" (IE name and root) and "Re-import files" (IE check for any 
-  new additions and re-add them)
-  
 - RFE: provide an alternate icon when the the file you are editing is dirty
 
 ---------------------------------------------------------------------------
 
 * ContextMenu
+  ** Project
+    "properties" (IE name and root)
+	"re-import files" (IE check for any new additions and re-add them)
   ** Dir
     remove all files from project
     delete dir (and remove all subfiles from project)
@@ -41,10 +35,13 @@
 * Options
   ** for Tabs Files/Working files
     boolean : ignoreCase
+  ** make properties in 'import.properties' configurable
 
 * Tooltips
   ** when over a file
     display full path and size
+  ** when over project 
+    display their path).
 
 * Add files
   ** via CVS/Entries
