@@ -25,6 +25,8 @@ import java.io.BufferedWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import javax.swing.text.Segment;
+
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
@@ -200,9 +202,31 @@ public class Code2HTML
 
     private void htmlText(Writer out, int first, int last) throws IOException {
         long start = System.currentTimeMillis();
-        this.painter.paintLines(out, this.textArea, first, last);
+        this.paintLines(out, this.textArea, first, last);
         long end = System.currentTimeMillis();
         Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
+    }
+
+
+    private void paintLines(
+            Writer out, JEditTextArea textArea, int first, int last
+    ) throws IOException
+    {
+        Buffer buffer = textArea.getBuffer();
+
+        Segment line = new Segment();
+        Token tokens = null;
+        for (int i = first; i <= last; i++) {
+            textArea.getLineText(i, line);
+            tokens = buffer.markTokens(i).getFirstToken();
+            this.painter.setPos(0);
+            if (tokens == null) {
+                this.painter.paintPlainLine(out, i + 1, line, tokens);
+            } else {
+                this.painter.paintSyntaxLine(out, i + 1, line, tokens);
+            }
+            out.write("\n");
+        }
     }
 
 
