@@ -721,7 +721,7 @@ public class ErrorList extends JPanel implements EBComponent,
 		//{{{ ErrorCellRenderer constructor
 		ErrorCellRenderer()
 		{
-			setOpaque(true);
+			//setOpaque(true);
 		} //}}}
 
 		//{{{ getTreeCellRendererComponent() method
