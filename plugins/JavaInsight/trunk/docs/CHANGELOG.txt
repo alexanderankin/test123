@@ -1,8 +1,16 @@
+VERSION 0.4.2
+
+- Bugfix: minor fix in the bytecode virtual file systems that caused problems
+  when used with BufferList
+- Requires jEdit 3.1final or higher
+
+
 VERSION 0.4.1
 
 - BCEL.jar updated, no longer includes gnu.regexp package which caused many
   problems
 - Doc updates
+- Requires jEdit 3.1final or higher
 
 
 VERSION 0.4
