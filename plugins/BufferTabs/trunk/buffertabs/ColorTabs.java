@@ -320,12 +320,12 @@ public class ColorTabs
     */
    public void propertiesChanged(BufferTabs parent)
    {
-      if (this.enabled != jEdit.getBooleanProperty("buffertabs.color-tabs"))
+      if (this.isEnabled() != jEdit.getBooleanProperty("buffertabs.color-tabs"))
       {
-         this.enabled = !this.enabled;
+         this.setEnabled(!this.isEnabled());
 
          //Turn off all color features
-         if (!this.enabled)
+         if (!this.isEnabled())
          {
             try
             {
@@ -353,7 +353,7 @@ public class ColorTabs
          }
       }
 
-      if (this.enabled)
+      if (this.isEnabled())
       {
          this.muteColors = jEdit.getBooleanProperty("buffertabs.color-mute");
          this.colorVariation = jEdit.getBooleanProperty("buffertabs.color-variation");
