@@ -6,8 +6,8 @@ plugin.GfxViewPlugin.activate=defer
 # general plugin information
 plugin.GfxViewPlugin.name=GfxView
 plugin.GfxViewPlugin.author=Ludovic ANCIAUX
-plugin.GfxViewPlugin.version=0.9.9.1
-plugin.GfxViewPlugin.docs=GfxView.html
+plugin.GfxViewPlugin.version=1.0
+plugin.GfxViewPlugin.docs=index.html
 plugin.GfxViewPlugin.depend.0=jedit 04.02.09.00
 plugin.GfxViewPlugin.depend.1=jdk 1.3
 plugin.GfxViewPlugin.jars=ImgrRdr130.jar
