@@ -98,7 +98,7 @@
 
     <!-- Generate docs with Xalan tool from xml.apache.org -->
     <target name="docs-xalan">
-        <style
+        <xslt            
             style="users-guide.xsl"
             in="users-guide.xml"
             out="users-guide.html"
