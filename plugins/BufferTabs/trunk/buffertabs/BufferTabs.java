@@ -302,6 +302,11 @@ public class BufferTabs extends JTabbedPane implements EBComponent
     }
 
 
+    private void updateColorAt(int index) {
+        ColorTabs.instance().setColor(this, index);
+    }
+
+
     private void updateTitleAt(int index) {
         Buffer buffer = (Buffer) this.buffers.elementAt(index);
         String title = buffer.getName();
@@ -315,7 +320,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         this.setTitleAt(index, title);
         this.setIconAt(index, icon);
 
-        ColorTabs.instance().setColor( this, index ); //CES
+        this.updateColorAt(index);
     }
 
 
