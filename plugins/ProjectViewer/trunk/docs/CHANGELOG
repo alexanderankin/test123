@@ -16,6 +16,47 @@
  * CHANGELOG version: $Id$
  */
 
+VERSION 2.0.3
+	[marcelo vanzin]
+		Enhancements:
+		- added jEdit action to launch current buffer in browser
+		- updated to used the jEdit 4.2 deferred plugin loading API
+		- use a jEdit 4.2-style API for PV plugins (option panes, listeners
+		  and context menu items); updated dev docs (package javadocs)
+		- clean the project when it's deactivated; saves memory in exchange
+		  of a little slow down when reloading the project.
+		- do not calculate canonical paths when using jEdit 4.2, since jEdit's
+		  behavior has been fixed.
+		- reimporting now also traverses directories not under the root,
+		  removing stale files and reimporting when the directory exists.
+		- added ability to add a file from a jEdit VFS. It's not a "first-class"
+		  citizen such as VPTFile, but the main stuff is there.
+		- got tired of trying to contact the JarMaker maintainer and added an
+		  enhanced version of JarMaker to ProjectViewer, in the place of the
+		  former ProjectZipper.
+
+		Bug fixes:
+		- "project loaded" event was being fired when "create project" was
+		  chosen on the combo and the current project was set again as the
+		  current value, creating a "fake" event.
+		- VPTFile.close() was not using canonical paths, so buffers would not
+		  close in some cases under jEdit 4.1.
+		- Fixed a not very easy to reproduce misbehavior of the mouse clicks on
+		  the tree changing the active buffer when they shouldn't.
+		- projectPropertiesChanged was being fired when options dialog was
+		  canceled.
+		- fixed possible ClassCastException in FileImporter.java.
+
+		Other changes:
+		- removed the VPTNodeType class; it was just adding bloat, and could be
+		  easily substituted by comparing the objects' classes.
+		- removed the "saveOnChange" option. It's assumed to be true now.
+		- remodeled VPTProject and the "flat lists" to map paths to any node
+		  that reports itself as being "openable", not only VPTFile nodes. Some
+		  methods have been deprecated in the process.
+		- hacked ActionSeparator a little more to deal with nodes that are not
+		  Root/Project/Directory/File.
+
 VERSION 2.0.2
 	[stefan kost]
 		- rename action shows old value as initial selection
