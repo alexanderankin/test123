@@ -33,24 +33,56 @@ public abstract class Preprocessor
 {
   protected boolean enabled;
 
+  protected View view;
+
+
+  /**
+   *Constructor for the Preprocessor object
+   *
+   * @since
+   */
   public Preprocessor()
   {
     enabled = jEdit.getBooleanProperty( getClass().getName() + ".enabled" );
     Log.log( Log.DEBUG, Preprocessor.class,
-     getClass().getName() + " is enabled: " + enabled );
+        getClass().getName() + " is enabled: " + enabled );
   }
 
-  protected View view;
 
+  /**
+   *Sets the View attribute of the Preprocessor object
+   *
+   * @param  v  The new View value
+   * @since
+   */
   public void setView( View v )
-  { view = v; }
+  {
+    view = v;
+  }
 
+
+  /**
+   *Description of the Method
+   *
+   * @param  text  Description of Parameter
+   * @return       Description of the Returned Value
+   * @since
+   */
   public String process( String text )
   {
-    if ( !enabled ) return text;
+    if ( !enabled )
+      return text;
     return doProcess( text );
   }
 
+
+  /**
+   *Description of the Method
+   *
+   * @param  text  Description of Parameter
+   * @return       Description of the Returned Value
+   * @since
+   */
   protected abstract String doProcess( String text );
 }
 

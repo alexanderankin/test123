@@ -42,10 +42,16 @@ import SqlPlugin;
 public class SqlSubVFS
 {
 
+  /**
+   *Description of the Field
+   *
+   * @since
+   */
+  public VFS sqlVFS;
+
   protected final static int TABLEGROUP_LEVEL = 2;
   protected final static int TABLE_LEVEL = 3;
 
-  public VFS sqlVFS;
 
   /**
    *  Description of the Method
@@ -170,6 +176,12 @@ public class SqlSubVFS
   }
 
 
+  /**
+   *Gets the SqlVFS attribute of the SqlSubVFS object
+   *
+   * @return    The SqlVFS value
+   * @since
+   */
   protected VFS getSqlVFS()
   {
     if ( sqlVFS == null )
@@ -203,7 +215,7 @@ public class SqlSubVFS
       Object[] stmtParams )
        throws IOException
   {
-    final Vector tableGroups = getVFSObjects( rec,
+    final java.util.List tableGroups = getVFSObjects( rec,
         stmtPurpose,
         stmtParams );
 
@@ -212,9 +224,9 @@ public class SqlSubVFS
 
     final VFS.DirectoryEntry[] retval = new VFS.DirectoryEntry[tableGroups.size()];
     int i = 0;
-    for ( Enumeration e = tableGroups.elements(); e.hasMoreElements();  )
+    for ( Iterator e = tableGroups.iterator(); e.hasNext();  )
     {
-      final String r = (String) e.nextElement();
+      final String r = (String) e.next();
       retval[i++] =
           _getDirectoryEntry( session, path + SqlVFS.separatorString + r, comp, level + 1 );
     }
@@ -231,7 +243,7 @@ public class SqlSubVFS
    * @return           The VFSObjects value
    * @since
    */
-  protected Vector getVFSObjects( SqlServerRecord rec, String stmtName, Object args[] )
+  protected java.util.List getVFSObjects( SqlServerRecord rec, String stmtName, Object args[] )
   {
     Log.log( Log.DEBUG, SqlServerRecord.class,
         "Looking for vfs objects in:" );
@@ -240,7 +252,7 @@ public class SqlSubVFS
         Log.log( Log.DEBUG, SqlServerRecord.class,
             ">" + args[i] );
 
-    final Vector rv = new Vector();
+    final java.util.List rv = new ArrayList();
     Connection conn = null;
     try
     {
@@ -252,7 +264,7 @@ public class SqlSubVFS
       while ( rs.next() )
       {
         final String tgname = rs.getString( 1 );
-        rv.addElement( tgname );
+        rv.add( tgname );
       }
       rec.releaseStatement( pstmt );
     } catch ( SQLException ex )

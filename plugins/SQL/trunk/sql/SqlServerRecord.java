@@ -43,8 +43,8 @@ public class SqlServerRecord extends Properties
 
   protected String name;
 
-  protected Hashtable callableStmts = null;
-  protected Hashtable preparedStmts = null;
+  protected Map callableStmts = null;
+  protected Map preparedStmts = null;
   /**
    *  Description of the Field
    *
@@ -65,7 +65,7 @@ public class SqlServerRecord extends Properties
    */
   public final static String PASSWORD = "password";
 
-  protected static Hashtable allRecords = null;
+  protected static Map allRecords = null;
 
 
   /**
@@ -250,8 +250,8 @@ public class SqlServerRecord extends Properties
   public Connection allocConnection()
        throws SQLException
   {
-    preparedStmts = new Hashtable();
-    callableStmts = new Hashtable();
+    preparedStmts = new HashMap();
+    callableStmts = new HashMap();
 
     final String connString = getConnectionString();
     Log.log( Log.DEBUG, SqlServerRecord.class,
@@ -272,10 +272,10 @@ public class SqlServerRecord extends Properties
   {
     allRecords = null;
 
-    final Hashtable connParams = dbType.getConnectionParameters();
-    for ( Enumeration e = connParams.elements(); e.hasMoreElements();  )
+    final Map connParams = dbType.getConnectionParameters();
+    for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
-      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.nextElement();
+      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
       SqlPlugin.setProperty( "sql.server." + name + "." + param.getName(),
           getProperty( param.getName() ) );
     }
@@ -304,10 +304,10 @@ public class SqlServerRecord extends Properties
    */
   public boolean hasValidProperties()
   {
-    final Hashtable connParams = dbType.getConnectionParameters();
-    for ( Enumeration e = connParams.elements(); e.hasMoreElements();  )
+    final Map connParams = dbType.getConnectionParameters();
+    for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
-      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.nextElement();
+      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
       final String value = getProperty( param.getName() );
       if ( value == null )
         return false;
@@ -325,10 +325,10 @@ public class SqlServerRecord extends Properties
   {
     allRecords = null;
 
-    final Hashtable connParams = dbType.getConnectionParameters();
-    for ( Enumeration e = connParams.elements(); e.hasMoreElements();  )
+    final Map connParams = dbType.getConnectionParameters();
+    for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
-      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.nextElement();
+      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
       SqlPlugin.unsetProperty( "sql.server." + name + "." + param.getName() );
     }
 
@@ -352,8 +352,8 @@ public class SqlServerRecord extends Properties
     if ( stmt == null )
       return;
 
-    if ( preparedStmts.contains( stmt ) ||
-        callableStmts.contains( stmt ) )
+    if ( preparedStmts.containsValue( stmt ) ||
+        callableStmts.containsValue( stmt ) )
       return;
 
     stmt.close();
@@ -370,10 +370,10 @@ public class SqlServerRecord extends Properties
   {
     StringBuffer stringPattern = new StringBuffer( dbType.getProperty( "connection.string" ) );
 
-    final Hashtable connParams = dbType.getConnectionParameters();
-    for ( Enumeration e = connParams.elements(); e.hasMoreElements();  )
+    final Map connParams = dbType.getConnectionParameters();
+    for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
-      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.nextElement();
+      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
       final String searchPattern = "{" + param.getName() + "}";
       final String value = getProperty( param.getName() );
 
@@ -413,19 +413,19 @@ public class SqlServerRecord extends Properties
    * @return    The AllRecords value
    * @since
    */
-  public static Hashtable getAllRecords()
+  public static Map getAllRecords()
   {
     if ( null == allRecords )
     {
-      allRecords = new Hashtable();
+      allRecords = new HashMap();
 
       Log.log( Log.DEBUG, SqlServerRecord.class,
           "Loading all records" );
-      final Hashtable servers = new Hashtable();
+      final Map servers = new HashMap();
 
-      for ( Enumeration e = SqlPlugin.getPropertyNames(); e.hasMoreElements();  )
+      for ( Iterator e = SqlPlugin.getPropertyNames(); e.hasNext();  )
       {
-        final String pname = (String) e.nextElement();
+        final String pname = (String) e.next();
 
         if ( !( pname.startsWith( "sql.server." ) &&
             pname.endsWith( "." + TYPE ) ) )
@@ -451,7 +451,7 @@ public class SqlServerRecord extends Properties
    */
   public static SqlServerRecord get( String name )
   {
-    final Hashtable recs = getAllRecords();
+    final Map recs = getAllRecords();
     if ( recs == null )
       return null;
     return (SqlServerRecord) recs.get( name );
@@ -467,19 +467,19 @@ public class SqlServerRecord extends Properties
   {
     allRecords = null;
 
-    final Vector v = new Vector();
+    final java.util.List v = new ArrayList();
 
-    for ( Enumeration e = SqlPlugin.getPropertyNames(); e.hasMoreElements();  )
+    for ( Iterator e = SqlPlugin.getPropertyNames(); e.hasNext();  )
     {
-      final String pname = (String) e.nextElement();
+      final String pname = (String) e.next();
 
       if ( pname.startsWith( "sql.server." ) )
-        v.addElement( pname );
+        v.add( pname );
     }
 
-    for ( Enumeration e = v.elements(); e.hasMoreElements();  )
+    for ( Iterator e = v.iterator(); e.hasNext();  )
     {
-      SqlPlugin.unsetProperty( (String) e.nextElement() );
+      SqlPlugin.unsetProperty( (String) e.next() );
     }
 
     SqlPlugin.unsetProperty( "sql.currentServerName" );
@@ -507,10 +507,10 @@ public class SqlServerRecord extends Properties
 
     final SqlServerRecord rv = new SqlServerRecord( dbType );
 
-    final Hashtable connParams = dbType.getConnectionParameters();
-    for ( Enumeration e = connParams.elements(); e.hasMoreElements();  )
+    final Map connParams = dbType.getConnectionParameters();
+    for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
-      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.nextElement();
+      final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
       final String value =
           SqlPlugin.getProperty( "sql.server." + name + "." + param.getName() );
 

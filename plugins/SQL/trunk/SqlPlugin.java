@@ -213,14 +213,14 @@ public class SqlPlugin extends EBPlugin
    */
   public static String[] getJdbcClassPath()
   {
-    Vector v = new Vector();
+    final java.util.List v = new ArrayList();
     int i = 0;
     while ( true )
     {
       final String s = getProperty( "sql.jdbcClassPath." + i++ );
       if ( s == null )
         break;
-      v.addElement( s );
+      v.add( s );
     }
     return (String[]) v.toArray( new String[0] );
   }
@@ -232,12 +232,12 @@ public class SqlPlugin extends EBPlugin
    * @return    The PropertyNames value
    * @since
    */
-  public static Enumeration getPropertyNames()
+  public static Iterator getPropertyNames()
   {
     if ( props == null )
       loadProperties();
 
-    return props.propertyNames();
+    return props.keySet().iterator();
   }
 
 
@@ -628,7 +628,8 @@ public class SqlPlugin extends EBPlugin
   protected static DbCodeObject chooseCodeObjectInAWTThread( final View view,
       final Object objs[] )
   {
-    final Vector rv = new Vector();
+    final java.util.List rv = Collections.synchronizedList( new ArrayList() );
+
     final Runnable r =
       new Runnable()
       {
@@ -663,7 +664,7 @@ public class SqlPlugin extends EBPlugin
 
           final Object obj = combo.getItemAt( combo.getSelectedIndex() );
 
-          rv.addElement( obj );
+          rv.add( obj );
         }
       };
 

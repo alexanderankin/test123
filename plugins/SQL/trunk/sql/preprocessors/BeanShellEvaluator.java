@@ -30,11 +30,16 @@ import sql.*;
  */
 public class BeanShellEvaluator extends Preprocessor
 {
+  /**
+   *Description of the Method
+   *
+   * @param  text  Description of Parameter
+   * @return       Description of the Returned Value
+   * @since
+   */
   public String doProcess( String text )
   {
-    System.out.println("BSH Preprocessing " + text );
-    return
-        (String)org.gjt.sp.jedit.BeanShell.eval( view, text, false );
+    return (String) org.gjt.sp.jedit.BeanShell.eval( view, text, false );
   }
 }
 

@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!-- SQL user's guide -->
-<!-- (C) 2001 Sergey V. Udaltsov -->
+<!-- (c) 2001 Sergey V. Udaltsov -->
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=2:noTabs=true: -->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
@@ -99,8 +99,8 @@
       <filename>$JEDIT_HOME/sql/serverTypes</filename>
 
       (some configuration files - for Oracle, MySQL, PostgreSQL,
-      DB2 are bundled with the plugin). Each file contains the
-      following info:</para>
+      DB2, Sybase are bundled with the plugin). Each file contains
+      the following info:</para>
 
       <itemizedlist>
         <listitem>
@@ -240,6 +240,18 @@
 
               <entry>N</entry>
             </row>
+
+            <row>
+              <entry>Sybase</entry>
+
+              <entry>Y</entry>
+
+              <entry>N</entry>
+
+              <entry>Y</entry>
+
+              <entry>N</entry>
+            </row>
           </tbody>
         </tgroup>
       </table>
@@ -271,8 +283,8 @@
     </sect1>
   </chapter>
 
-  <chapter id="commands">
-    <title>Commands</title>
+  <chapter id="basic.commands">
+    <title>Basic Commands</title>
 
     <itemizedlist>
       <listitem>
@@ -365,6 +377,47 @@
     type.</para>
   </chapter>
 
+  <chapter id="preprocessors">
+    <title>Preprocessors</title>
+    <para>
+       The plugin supports preprocessors as a standard way of changing
+       the text before execution. There are currently two preprocessors
+       implemented.
+       <itemizedlist>
+       <listitem>
+         <para>
+           <guimenu>BeanShell evaluator</guimenu>
+
+           performs BeanShell evaluation of the text. The return value
+           of the BeanShell expression should be String. Example:
+           <programlisting>
+table = "user";
+return "select * from " + table;</programlisting>
+         </para>
+       </listitem>
+
+       <listitem>
+         <para>
+           <guimenu>Variable substitution</guimenu>
+           finds the question marks ('?') and asks user to input
+           values for them.
+           <programlisting>
+select * from user where user=?</programlisting>
+         </para>
+         <para>
+           Note: these characters are only processed
+           after equal sign ('='). So "select * from ?" is not
+           substituted. Do not forget to quote all string values!
+         </para>
+       </listitem>
+       </itemizedlist>
+    </para>
+    <para>
+      These preprocessors are enabled/disabled by corresponding actions.
+      See the last group in the SQL plugin submenu.
+    </para>
+  </chapter>
+
   <chapter id="sqlvfs">
     <title>SqlVFS</title>
 
@@ -397,6 +450,32 @@
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.92</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>Support for jEdit 4.0</para>
+          </listitem>
+
+          <listitem>
+            <para>Introduction of preprocessors</para>
+          </listitem>
+
+          <listitem>
+            <para>All the internal data structures are moved to Collections API.</para>
+          </listitem>
+
+          <listitem>
+            <para>Some bugfixes</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
       <listitem>
         <formalpara>
           <title>Version 0.9</title>
@@ -444,7 +523,7 @@
           </listitem>
 
           <listitem>
-            <para>Some minor bugfixes.</para>
+            <para>Some minor bugfixes</para>
           </listitem>
         </itemizedlist>
       </listitem>

@@ -32,7 +32,7 @@ public class SqlThreadGroup
 {
   protected ThreadGroup threadGroup = null;
 
-  protected Vector listeners = new Vector();
+  protected ArrayList listeners = new ArrayList();
 
 
   /**
@@ -70,7 +70,7 @@ public class SqlThreadGroup
   {
     synchronized ( listeners )
     {
-      listeners.addElement( l );
+      listeners.add( l );
     }
   }
 
@@ -85,7 +85,7 @@ public class SqlThreadGroup
   {
     synchronized ( listeners )
     {
-      listeners.removeElement( l );
+      listeners.remove( l );
     }
   }
 
@@ -121,15 +121,16 @@ public class SqlThreadGroup
    */
   protected void fireChange( int numberOfActiveThreads )
   {
-    Vector v = null;
+    List v = null;
     synchronized ( listeners )
     {
-      v = (Vector) listeners.clone();
+      v = (List) listeners.clone();
     }
-    for ( Enumeration e = v.elements();
-        e.hasMoreElements();  )
+
+    for ( Iterator e = v.iterator();
+        e.hasNext();  )
     {
-      final Listener l = (Listener) e.nextElement();
+      final Listener l = (Listener) e.next();
       l.groupChanged( numberOfActiveThreads );
     }
   }
