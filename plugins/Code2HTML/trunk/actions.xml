@@ -5,7 +5,11 @@
 <ACTIONS>
     <ACTION NAME="code2html.current-buffer">
         <CODE>
-            code2html.Code2HTML c2h = new code2html.Code2HTML(textArea, false);
+            code2html.Code2HTML c2h = new code2html.Code2HTML(
+                buffer,
+                textArea.getPainter().getStyles(),
+                null
+            );
             c2h.toHTML(view);
         </CODE>
     </ACTION>
@@ -13,7 +17,11 @@
 
     <ACTION NAME="code2html.current-selection">
         <CODE>
-            code2html.Code2HTML c2h = new code2html.Code2HTML(textArea, true);
+            code2html.Code2HTML c2h = new code2html.Code2HTML(
+                buffer,
+                textArea.getPainter().getStyles(),
+                textArea.getSelection()
+            );
             c2h.toHTML(view);
         </CODE>
     </ACTION>

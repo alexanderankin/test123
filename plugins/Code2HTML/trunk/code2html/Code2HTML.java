@@ -32,13 +32,9 @@ import javax.swing.text.Segment;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
-
-import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-
 import org.gjt.sp.util.Log;
 
 import code2html.html.HtmlCssStyle;
@@ -71,15 +67,6 @@ public class Code2HTML
         this.style   = config.getStyle();
         this.gutter  = config.getGutter();
         this.painter = config.getPainter();
-    }
-
-
-    public Code2HTML(JEditTextArea textArea, boolean useSelection) {
-        this(
-            textArea.getBuffer(),
-            textArea.getPainter().getStyles(),
-            useSelection ? textArea.getSelection() : null
-        );
     }
 
 
