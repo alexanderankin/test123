@@ -1,0 +1,141 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+<head>
+	<title>FindFile Plugin</title>
+	<style type="text/css">
+		body { background: #FFFFFF; margin-left: 2%; margin-right: 2%; }
+		p  { margin-top: 0.4em; margin-bottom: 0.0em; }
+		ul { margin-top: 0.2em; margin-bottom: 0.0em; }
+		h1 { margin-top: 0.0em; margin-bottom: 0.0em; font-family: serif; font-size: x-large; font-weight: bold; font-style: normal; }
+		h2 { margin-top: 1.8em; margin-bottom: 0.0em; font-family: serif; font-size: large; font-weight: bold; font-style: normal; }
+		h3 { margin-top: 1.2em; margin-bottom: 0.0em; font-family: serif; font-size: medium; font-weight: normal; font-style: italic; }
+		.title_box   { width: 100%; background: #CCCCFF; padding: 0.5em; border: none; }
+		.warning_box { width: 80%; margin-left: 8%; margin-right: 8%; border: solid; border-width: thin; border-color: #BB0000; padding: 1.0em; text-align: center; font-weight: bold; }
+		.contact     { font-family: "Verdana", sans-serif; font-size: 80%; font-weight: bold; }
+		.version     { font-family: serif; color=#555555; font-size: 80%; text-align: center; }
+		.copyright   { font-family: serif; color=#555555; font-size: 80%; text-align: center; }
+	</style>
+</head>
+
+<body>
+<div class="title_box">
+	<table border="0" width="100%">
+		<tr>
+			<td align="left"><h1>FindFile Plugin</h1></td>
+			<td align="right"><span class="contact">Nicholas O'Leary<br>
+			nol@nol-edge.co.uk</span></td>
+		</tr>
+	</table>
+</div>
+
+<h2>Introduction</h2>
+
+<p>This plugin allows you to search with in a filesystem for any files that match
+a given filter.</p>
+
+<h2>Features</h2>
+
+<ul>
+<li>Search within any VFS supported by jEdit.</li>
+<li>Recursive searches through filesystems.</li>
+<li>Integrated with jEdit's own file browser - via plugin menu</li>
+<li>Supports multiple search result sets</li>
+<li>Able to copy search results to jEdit clipboard</li>
+</ul>
+
+<h2>Change Log</h2>
+<p>Nov 18 2003: 0.3</p>
+<ul>
+<li>Added option to automatically open search results</li>
+<li>Uses the proper SearchDialog if using 4.2pre7 or later</li>
+<li>Results' path can be hidden, just showing the filename</li>
+<li>Results can be sorted by path or by filename</li>
+</ul>
+
+<p>Nov 06 2003: 0.2</p>
+<ul>
+<li>Renamed plugin to FindFile</li>
+<li>Added more configuration options</li>
+<li>Added 'Search in file' option to file context menu</li>
+</ul>
+
+<p>Nov 03 2003: 0.1</p>
+<ul>
+<li>Initial Beta release</li>
+</ul>
+
+<h2>Usage</h2>
+
+<h3>Performing a search</h3>
+
+There are two ways to launch a search:
+<ul><li>From the plugins menu of the file system browser, select 'Search for files...'</li>
+<li>From the toolbar of the FindFile Results dockable pane.</li>
+</ul>
+
+Launching a search will open the FindFile dialog.
+<ul>
+ <li>Search options:
+  <ul><li>Path - the root of the search.</li>
+      <li>Filter - the filter to search on.</li>
+      <li>Search Subdirectories - select whether to do a recursive search</li></ul></li>
+</ul>
+
+The results appear in the FindFile Results pane, where further actions can be applied.
+
+<h3>Working with results</h3>
+
+The pane displays the results in a similar manner to the Hypersearch Results.
+Each search is listed as a parent node, with the results as children.
+<p>
+Right-clicking on a search (ie parent node) provides the following options:
+<ul><li>Open all files - attemps to open the files in jEdit. It will only open
+files that have a recognisable file extension, based on the installed edit modes.
+This can be disabled from the options pane.</li>
+<li>Close all files</li>
+<li>Copy results - copies the results to the clipboard, so they can be pasted into a buffer.</li>
+<li>Remove search - removes this search from the tree</li></ul>
+<p>
+Clicking on a result will switch to that file, if it is already open in a buffer.
+<p>
+Double-Clicking on a result will attempt to open the file if it is not already open, or alternatively
+close it if it is. As with the 'Open all' option, it will only allowed recognisable file extensions
+to be opened unless that feature has been disabled.
+<p>
+Right-clicking on a result provides the following options:
+<ul><li>Open</li>
+<li>Close</li>
+<li>Copy Path - copies the files complete path to the clipboard</li>
+<li>Browse file's path - opens the file's path in the file system browser</li>
+<li>Browse file as archive - this option is only available if a VFS other than 
+<code>org.gjt.sp.jedit.io.UrlVFS</code> (the default) is installed for the 'archive'
+protocol. The Archive plugin provides a suitable set of protocols to enable this option.</li>
+<li>Search in file - allows a simple text search within the file. The results are displayed in
+the HyperSearch results pane. This does not make use of the proper Search dialog - to be addressed.</li>
+</ul>
+
+<h2>Known bugs and issues</h2>
+<ul><li>The plugin has so far largely been developed in a single View environment. Using the result list
+to open or close files that are open in another View causes probably undesirable behaviour.</li>
+</ul>
+
+<h2>Future development</h2>
+
+<p>This is the very first version of the plugin. As such there is a huge scope for
+further work. Just some of the enhancements that are in the plan are:</p>
+<ul>
+<li>Allow basic file operations, such as delete and rename.</li>
+<li>Add a user-definable list of extensions that may be opened</li>
+<li>Support the Project Viewer plugin's 'Open with...' feature</li>
+<li>Plugin options in general can be expanded.</li>
+<li>Expand the options on which a search can be performed.</li>
+<li>Make use of the proper Search dialog for searching in a file</li>
+</ul>
+
+<h2>Feedback</h2>
+Please send all feedback to <a href='mailto:nol@nol-edge.co.uk'>me</a>.
+<h2>Version</h2>
+<code>$Id: about.html,v 1.1.1.1 2003-11-20 17:19:14 olearyni Exp $</code>
+</body>
+</html>
+
