@@ -419,6 +419,9 @@ public class SAXParserImpl extends XmlParser
 
 			String currentURI = XmlPlugin.uriToFile(loc.getSystemId());
 
+			if(!buffer.getPath().equals(currentURI))
+				return;
+
 			// add all attributes with type "ID" to the ids vector
 			for(int i = 0; i < attrs.getLength(); i++)
 			{

@@ -204,7 +204,10 @@ loop:			for(;;)
 			newTag = "<" + elementDecl.name
 				+ (!data.html && elementDecl.empty
 				? XmlActions.getStandaloneEnd() : ">");
-			closingTag = "";
+			if(elementDecl.empty)
+				closingTag = "";
+			else
+				closingTag = "</" + elementDecl.name + ">";
 		}
 		else
 		{
@@ -246,7 +249,12 @@ loop:			for(;;)
 				}
 			}
 			else
+			{
 				textArea.setSelectedText(newTag);
+				int caret = textArea.getCaretPosition();
+				textArea.setSelectedText(closingTag);
+				textArea.setCaretPosition(caret);
+			}
 
 			textArea.selectNone();
 			textArea.requestFocus();
