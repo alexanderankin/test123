@@ -37,7 +37,7 @@
 				<entry><guilabel>DEBUG</guilabel></entry>
 				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
 				<entry><inlinemediaobject><imageobject>
-					<imagedata fileref="icons/Debug.gif" format="gif"/>
+					<imagedata fileref="icons/stock_preferences-16.png" format="png"/>
 					</imageobject></inlinemediaobject>
 				</entry>
 			</row>
@@ -46,7 +46,16 @@
 				<entry><guilabel>DONE</guilabel></entry>
 				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
 				<entry><inlinemediaobject><imageobject>
-					<imagedata fileref="icons/Done.gif" format="gif"/>
+					<imagedata fileref="icons/stock_spellcheck-16.png" format="png"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>FIXME</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/stock_broken_image-16.png" format="png"/>
 					</imageobject></inlinemediaobject>
 				</entry>
 			</row>
@@ -55,7 +64,7 @@
 				<entry><guilabel>IDEA</guilabel></entry>
 				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
 				<entry><inlinemediaobject><imageobject>
-					<imagedata fileref="icons/Intranet.gif" format="gif"/>
+					<imagedata fileref="icons/stock_about-16.png" format="png"/>
 					</imageobject></inlinemediaobject>
 				</entry>
 			</row>
@@ -64,7 +73,7 @@
 				<entry><guilabel>NOTE</guilabel></entry>
 				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
 				<entry><inlinemediaobject><imageobject>
-					<imagedata fileref="icons/Document.gif" format="gif"/>
+					<imagedata fileref="icons/stock_attach-16.png" format="png"/>
 					</imageobject></inlinemediaobject>
 				</entry>
 			</row>
@@ -73,7 +82,7 @@
 				<entry><guilabel>QUESTION</guilabel></entry>
 				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
 				<entry><inlinemediaobject><imageobject>
-					<imagedata fileref="icons/Question.gif" format="gif"/>
+					<imagedata fileref="icons/stock_help-16.png" format="png"/>
 					</imageobject></inlinemediaobject>
 				</entry>
 			</row>
@@ -82,7 +91,25 @@
 				<entry><guilabel>TODO</guilabel></entry>
 				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
 				<entry><inlinemediaobject><imageobject>
-					<imagedata fileref="icons/Exclamation.gif" format="gif"/>
+					<imagedata fileref="icons/stock_jump-to-16.png" format="png"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>XXX</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/stock_right-16.png" format="png"/>
+					</imageobject></inlinemediaobject>
+				</entry>
+			</row>
+			<row>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><guilabel>???</guilabel></entry>
+				<entry>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</entry>
+				<entry><inlinemediaobject><imageobject>
+					<imagedata fileref="icons/stock_help-16.png" format="png"/>
 					</imageobject></inlinemediaobject>
 				</entry>
 			</row>
@@ -190,7 +217,7 @@
 	expression being in the basic form of the default types:
 </para>
 <para>
-	<userinput>(?:\s*)(<replaceable>tag-name</replaceable>):(?:\s+)(.+)$</userinput>
+	<userinput>\s+(<replaceable>tag-name</replaceable>):\s+(.+)$</userinput>
 </para>
 <para>
 	When using the current version, the name of the task type should match

@@ -81,6 +81,12 @@
 					fixed case-senstive matching and task name saving; 
 					parsing updates for jEdit 4.1</revremark>
 			</revision>
+			<revision>
+				<revnumber>0.4.1</revnumber>
+				<date>February 18, 2003</date>
+				<revremark>Better performance in default patterns. Thanks
+					to Antonio Argentieri for this fix.</revremark>
+			</revision>
 		</revhistory>
 	</articleinfo>
 

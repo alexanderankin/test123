@@ -10,4 +10,6 @@ TODO:
 	}
 
 - multi-line task comments
+- parse text in text mode?
 
+:lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard:
