@@ -133,6 +133,19 @@ public abstract class SideKickParser
 		return null;
 	} //}}}
 
+	//{{{ getParseTriggers() method
+	/**
+	 * Returns a list of characters which trigger a buffer re-parse.
+	 *
+	 * Returns null by default.
+	 * @since SideKick 0.3
+	 *
+	 */
+	public String getParseTriggers()
+	{
+		return null;
+	} //}}}
+
 	//{{{ complete() method
 	/**
 	 * Returns completions suitable for insertion at the specified position.

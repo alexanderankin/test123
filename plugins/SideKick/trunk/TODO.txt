@@ -8,3 +8,4 @@
 - popup height
 - position: don't obscure text area
 - doesn't always update on buffer switch
+- race conditions, eg / inserts both closing tag and literal /

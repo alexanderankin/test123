@@ -159,7 +159,7 @@ public class SideKickActions
 		}
 		Asset asset = (Asset)((DefaultMutableTreeNode)path
 			.getLastPathComponent()).getUserObject();
-		textArea.getFoldVisibilityManager().narrow(
+		textArea.getDisplayManager().narrow(
 			textArea.getLineOfOffset(asset.start.getOffset()),
 			textArea.getLineOfOffset(asset.end.getOffset()));
 	} //}}}
@@ -293,13 +293,13 @@ public class SideKickActions
 	//}}}
 
 	//{{{ Inner classes
-	static class CompleteAction extends EditAction
+	static class KeyTypedAction extends EditAction
 	{
 		private char ch;
 
 		CompleteAction(char ch)
 		{
-			super("-xml-complete-key-" + ch);
+			super("-xml-key-typed-" + ch);
 			this.ch = ch;
 		}
 
@@ -313,6 +313,17 @@ public class SideKickActions
 			Macros.Recorder recorder = view.getMacroRecorder();
 			if(recorder != null)
 				recorder.record(1,ch);
+			Buffer buffer = view.getBuffer();
+			SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
+			if(parser == null)
+				return;
+
+			String parseKeys = parser.getParseTriggers();
+			if(parseKeys.indexOf(ch) != -1)
+			{
+				parse(view,false);
+			}
+
 			completeKeyTyped(view,ch);
 		}
 
