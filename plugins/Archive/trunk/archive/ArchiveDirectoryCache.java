@@ -1,6 +1,7 @@
 /*
  * ArchiveDirectoryCache.java - Caches remote directories to improve performance
- * Copyright (C) 2000 Slava Pestov
+ * Copyright (c) 2000 Slava Pestov
+ * Copyright (c) 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,13 +18,18 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
+package archive;
+
 import java.io.*;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+
 
 public class ArchiveDirectoryCache
 {

@@ -5,7 +5,7 @@
 <ACTIONS>
     <ACTION NAME="archive.clear-directory-cache">
         <CODE>
-            ArchiveDirectoryCache.clearAllCachedDirectories();
+            archive.ArchiveDirectoryCache.clearAllCachedDirectories();
         </CODE>
     </ACTION>
 </ACTIONS>
