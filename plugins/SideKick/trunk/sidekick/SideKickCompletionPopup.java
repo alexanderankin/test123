@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2003 Slava Pestov
+ * Copyright (C) 2000, 2005 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -19,8 +19,7 @@ package sidekick;
 import javax.swing.event.ListDataListener;
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.BorderLayout;
-import java.awt.Point;
+import java.awt.*;
 import java.util.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
@@ -29,6 +28,15 @@ import org.gjt.sp.jedit.*;
 
 public class SideKickCompletionPopup extends JWindow
 {
+	//{{{ fitInScreen() method
+	public static Point fitInScreen(Point p, Window w, int lineHeight)
+	{
+		Rectangle screenSize = w.getGraphicsConfiguration().getBounds();
+		if(p.y + w.getHeight() >= screenSize.height)
+			p.y = p.y - w.getHeight() - lineHeight;
+		return p;
+	} //}}}
+	
 	//{{{ SideKickCompletionPopup constructor
 	public SideKickCompletionPopup(View view, SideKickParser parser,
 		int caret, SideKickCompletion complete)
@@ -69,7 +77,9 @@ public class SideKickCompletionPopup extends JWindow
 		SwingUtilities.convertPointToScreen(location,
 			textArea.getPainter());
 
-		setLocation(location);
+		setLocation(fitInScreen(location,this,
+			textArea.getPainter().getFontMetrics()
+			.getHeight()));
 		show();
 	} //}}}
 
