@@ -18,18 +18,13 @@
  */
 package antfarm;
 
-import java.awt.*;
-import java.awt.event.*;
 import java.io.*;
 
 import java.util.*;
-import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.browser.*;
+import org.gjt.sp.jedit.menu.EnhancedMenu;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.io.*;
-import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 
 import console.*;
@@ -154,21 +149,14 @@ public class AntFarmPlugin extends EditPlugin
 		StringTokenizer st = new StringTokenizer( classpath, File.pathSeparator );
 		while ( st.hasMoreTokens() ) {
 			String path = st.nextToken();
-			EditPlugin.JAR jar = jEdit.getPluginJAR( path );
-			if ( jar == null ) {
+
+            PluginJAR jar;
+            jar = jEdit.getPluginJAR( path );
+            if ( jar == null ) {
 				Log.log( Log.DEBUG, null,
 					"- adding " + path + " to jEdit plugins." );
-				try {
-					jEdit.addPluginJAR( new EditPlugin.JAR( path,
-						new JARClassLoader( path ) ) );
-				}
-				catch ( IOException ioex ) {
-					Log.log( Log.ERROR, null,
-						"- I/O error loading " + path );
-					Log.log( Log.ERROR, null, ioex );
-					return;
-				}
-			}
+                jEdit.addPluginJAR(path);
+            }
 			else
 				Log.log( Log.DEBUG, null,
 					"- has been loaded before: " + path );
