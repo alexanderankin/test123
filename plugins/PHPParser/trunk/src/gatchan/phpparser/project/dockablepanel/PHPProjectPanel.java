@@ -36,46 +36,20 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     projectManager = ProjectManager.getInstance();
     final JToolBar toolbar = new JToolBar();
     final JButton newProject = new JButton(GUIUtilities.loadIcon("New.png"));
+    final JButton openProject = new JButton(GUIUtilities.loadIcon("Open.png"));
     newProject.setToolTipText("Create a new project");
-    newProject.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        projectManager.createProject();
-      }
-    });
+    final MyActionListener myActionListener = new MyActionListener(newProject,
+                                                                   openProject,
+                                                                   closeProject,
+                                                                   buttonDel);
+    newProject.addActionListener(myActionListener);
     toolbar.add(newProject);
 
-    final JButton openProject = new JButton(GUIUtilities.loadIcon("Open.png"));
     openProject.setToolTipText("Open a project");
-    openProject.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        final JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setCurrentDirectory(new File(ProjectManager.projectDirectory));
-        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-        fileChooser.setApproveButtonText("Open");
-        fileChooser.setDialogTitle("Open project ...");
-        fileChooser.setFileFilter(new FileFilter() {
-          public boolean accept(File f) {
-            return f.isDirectory() || (f.isFile() && f.getName().endsWith(".project.props"));
-          }
-
-          public String getDescription() {
-            return "Directories and projects";
-          }
-        });
-        final int returnVal = fileChooser.showOpenDialog(jEdit.getActiveView());
-        if (returnVal == JFileChooser.APPROVE_OPTION) {
-          final File projectFile = fileChooser.getSelectedFile();
-          projectManager.openProject(projectFile);
-        }
-      }
-    });
+    openProject.addActionListener(myActionListener);
     toolbar.add(openProject);
 
-    closeProject.addActionListener(new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        projectManager.closeProject();
-      }
-    });
+    closeProject.addActionListener(myActionListener);
     toolbar.add(closeProject);
 
 
@@ -84,19 +58,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     final JPanel panelTop = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
     buttonDel.setToolTipText("Delete the current project");
-    buttonDel.addActionListener(
-            //replace with a single action listener
-            new ActionListener() {
-      public void actionPerformed(ActionEvent e) {
-        final Project project = (Project) projectManager.getProject();
-        final int ret = JOptionPane.showConfirmDialog(PHPProjectPanel.this,
-                                                      "Do you really want to remove the project " + project.getName());
-        if (ret == JOptionPane.YES_OPTION) {
-          Log.log(Log.DEBUG, this, "Removing project requested by user");
-          projectManager.deleteProject(project);
-        }
-      }
-    });
+    buttonDel.addActionListener(myActionListener);
     toolbar.add(buttonDel);
 
     closeProject.setToolTipText("Close the current project");
@@ -117,8 +79,9 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
   }
 
   public void removeNotify() {
-    super.removeNotify();
     EditBus.removeFromBus(this);
+    super.removeNotify();
+    setProject(null);
   }
 
   private void setProject(Project project) {
@@ -140,6 +103,61 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     if (message instanceof PHPProjectChangedMessage) {
       final PHPProjectChangedMessage projectChangedMessage = (PHPProjectChangedMessage) message;
       setProject(projectChangedMessage.getSelectedProject());
+    }
+  }
+
+  private static class MyActionListener implements ActionListener {
+    private final JButton newProject;
+    private final JButton openProject;
+    private final JButton closeProject;
+    private final JButton buttonDel;
+
+    public MyActionListener(JButton newProject,
+                            JButton openProject,
+                            JButton closeProject,
+                            JButton buttonDel) {
+      this.newProject = newProject;
+      this.openProject = openProject;
+      this.closeProject = closeProject;
+      this.buttonDel = buttonDel;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      ProjectManager projectManager = ProjectManager.getInstance();
+      final Object source = e.getSource();
+      if (source == newProject) {
+        projectManager.createProject();
+      } else if (source == openProject) {
+        final JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setCurrentDirectory(new File(ProjectManager.projectDirectory));
+        fileChooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+        fileChooser.setApproveButtonText("Open");
+        fileChooser.setDialogTitle("Open project ...");
+        fileChooser.setFileFilter(new FileFilter() {
+          public boolean accept(File f) {
+            return f.isDirectory() || (f.isFile() && f.getName().endsWith(".project.props"));
+          }
+
+          public String getDescription() {
+            return "Directories and projects";
+          }
+        });
+        final int returnVal = fileChooser.showOpenDialog(jEdit.getActiveView());
+        if (returnVal == JFileChooser.APPROVE_OPTION) {
+          final File projectFile = fileChooser.getSelectedFile();
+          projectManager.openProject(projectFile);
+        }
+      } else if (source == closeProject) {
+        projectManager.closeProject();
+      } else if (source == buttonDel) {
+        final Project project = (Project) projectManager.getProject();
+        final int ret = JOptionPane.showConfirmDialog(closeProject,
+                                                              "Do you really want to remove the project " + project.getName());
+        if (ret == JOptionPane.YES_OPTION) {
+          Log.log(Log.DEBUG, this, "Removing project requested by user");
+          projectManager.deleteProject(project);
+        }
+      }
     }
   }
 }

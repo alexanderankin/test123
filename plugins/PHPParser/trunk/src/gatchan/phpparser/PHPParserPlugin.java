@@ -52,17 +52,34 @@ public final class PHPParserPlugin extends EBPlugin {
     }
   }
 
+  /**
+   * show the dialog to find a class.
+   *
+   * @param view the jEdit's view
+   */
   public static void findClass(View view) {
     findItem(view, FrameFindItem.CLASS_MODE);
   }
 
+  /**
+   * show the dialog to find a method.
+   *
+   * @param view the jEdit's view
+   */
   public static void findMethod(View view) {
     findItem(view, FrameFindItem.METHOD_MODE);
   }
 
+  /**
+   * Open the find item frame for the view in the given mode
+   *
+   * @param view the view
+   * @param mode one of the following  {@link FrameFindItem#CLASS_MODE} or {@link FrameFindItem#METHOD_MODE}
+   */
   private static void findItem(View view, int mode) {
     moveFindItemWindow(view);
     findItemWindow.init(view, mode);
+    GUIUtilities.centerOnScreen(findItemWindow);
     findItemWindow.setVisible(true);
   }
 
@@ -71,7 +88,7 @@ public final class PHPParserPlugin extends EBPlugin {
     final Point locationOnScreen = view.getLocationOnScreen();
     final Dimension findItemWindowsSize = findItemWindow.getSize();
     findItemWindow.setLocation(locationOnScreen.x + ((viewSize.width - findItemWindowsSize.width) >> 1),
-                               locationOnScreen.y + ((viewSize.height - findItemWindowsSize.height) >> 1));
+                    locationOnScreen.y + ((viewSize.height - findItemWindowsSize.height) >> 1));
   }
 
 

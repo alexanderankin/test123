@@ -6,7 +6,7 @@ import org.gjt.sp.jedit.jEdit;
 import javax.swing.*;
 
 /**
- * The option pane of the PHPParserPlugin. You will set the files you want to parse here
+ * The option pane of the PHPParserPlugin.
  *
  * @author Matthieu Casanova
  */
@@ -53,7 +53,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     switchEndSwitch.setSelected(jEdit.getBooleanProperty(PROP_WARN_SWITCHENDSWITCH));
 
     ifEndSwitch = new JCheckBox("report if() : endif; syntax");
-    ifEndSwitch.setSelected(jEdit.getBooleanProperty("gatchan.phpparser.warnings.ifEndSwitch"));
+    ifEndSwitch.setSelected(jEdit.getBooleanProperty(PROP_WARN_IFENDIF));
 
     whileEndWhile = new JCheckBox("report while() : endwhile; syntax");
     whileEndWhile.setSelected(jEdit.getBooleanProperty(PROP_WARN_WHILEENDWHILE));
@@ -71,7 +71,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     unassignedVariable = new JCheckBox("variable may be unassigned");
     unassignedVariable.setSelected(jEdit.getBooleanProperty(PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED));
 
-    unnecessaryGlobal = new JCheckBox("variable may be unassigned");
+    unnecessaryGlobal = new JCheckBox("Unnecessary global");
     unnecessaryGlobal.setSelected(jEdit.getBooleanProperty(PROP_WARN_UNNECESSARY_GLOBAL));
 
     addComponent(warningLabels);
