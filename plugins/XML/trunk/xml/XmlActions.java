@@ -474,6 +474,51 @@ loop:			for(;;)
 		}
 	} //}}}
 
+	//{{{ completeClosingTag() method
+	public static void completeClosingTag(View view)
+	{
+		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
+
+		textArea.userInput('/');
+
+		Buffer buffer = textArea.getBuffer();
+
+		if(XmlPlugin.isDelegated(textArea))
+			return;
+
+		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
+
+		if(!(_data instanceof XmlParsedData))
+			return;
+
+		XmlParsedData data = (XmlParsedData)_data;
+
+		if(!buffer.isEditable() || !closeCompletion)
+		{
+			return;
+		}
+
+		int caret = textArea.getCaretPosition();
+		if(caret == 1)
+			return;
+
+		String text = buffer.getText(0,buffer.getLength());
+
+		if(text.charAt(caret - 2) != '<')
+			return;
+
+		// check if caret is inside a tag
+		if(TagParser.getTagAtOffset(text,caret) != null)
+			return;
+
+		TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,data);
+		if(tag != null)
+		{
+			textArea.setSelectedText(tag.tag + ">");
+		}
+	} //}}}
+
 	//{{{ charactersToEntities() method
 	public static String charactersToEntities(String s, Map hash)
 	{

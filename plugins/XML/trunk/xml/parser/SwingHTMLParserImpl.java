@@ -39,7 +39,7 @@ public class SwingHTMLParserImpl extends XmlParser
 	//{{{ SwingHTMLParserImpl constructor
 	public SwingHTMLParserImpl()
 	{
-		super("htmlml");
+		super("html");
 	} //}}}
 
 	//{{{ parse() method

@@ -31,6 +31,9 @@ xml.show-attributes=1
 # DTD validation
 xml.validate=true
 
+# Resource cache
+xml.cache=true
+
 # Insert closing tag automatically after '</' typed
 xml.close-complete=true
 
@@ -130,13 +133,17 @@ xml.download-resource.message=This XML file depends on a resource which is store
 	{0}\n\
 	\n\
 	Do you want the XML plugin to download the resource and cache it\n\
-	for future use?
+	for future use?\n\
+	\n\
+	If you want resources to be downloaded every time without prompting,\n\
+	disable the resource cache in the XML plugin's options.
 
 # Option pane
 options.xml.label=XML
 
 options.xml.general.label=General
 options.xml.general.validate=Validate if DTD or schema available
+options.xml.general.cache=Cache downloaded DTDs and schemas
 options.xml.general.tag-highlight-enabled=Highlight matching tags:
 options.xml.general.show-attributes=Show tag attributes in tree:
 options.xml.general.show-attributes.none=None

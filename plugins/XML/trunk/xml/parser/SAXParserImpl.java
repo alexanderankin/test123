@@ -354,10 +354,19 @@ public class SAXParserImpl extends XmlParser
 			}
 
 			if(source == null)
-				return new InputSource(new StringReader("<!-- -->"));
+			{
+				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
+					+ ", SYSTEM=" + systemId
+					+ " cannot be resolved");
+				InputSource dummy = new InputSource(new StringReader("<!-- -->"));
+				dummy.setSystemId(systemId);
+				dummy.setPublicId(publicId);
+				return dummy;
+			}
 			else
 			{
-				Log.log(Log.DEBUG,this,publicId + "::" + systemId
+				Log.log(Log.DEBUG,this,"PUBLIC=" + publicId
+					+ ", SYSTEM=" + systemId
 					+ " resolved to " + source.getSystemId());
 				return source;
 			}
@@ -473,7 +482,7 @@ public class SAXParserImpl extends XmlParser
 					int line = Math.min(buffer.getLineCount() - 1,
 						loc.getLineNumber() - 1);
 					int column = loc.getColumnNumber() - 1;
-					int offset = Math.min(buffer.getLength() - 1,
+					int offset = Math.min(buffer.getLength(),
 						buffer.getLineStartOffset(line)
 						+ column);
 

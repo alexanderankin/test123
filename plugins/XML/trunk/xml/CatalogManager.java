@@ -37,6 +37,8 @@ public class CatalogManager
 		String publicId, String systemId)
 		throws Exception
 	{
+		System.err.println("ASKED TO RESOLVE " + publicId + "," + systemId
+			+ " CURRENT = " + current);
 		load();
 
 		if(publicId != null && publicId.length() == 0)
@@ -47,15 +49,31 @@ public class CatalogManager
 
 		String newSystemId = null;
 
-		if(publicId == null && systemId != null && current != null)
+		/* we need this hack to support relative path names inside
+		 * cached files. we want them to be resolved relative to
+		 * the original system ID of the cached resource, not the
+		 * cache file name on disk. */
+		String parent;
+		if(current != null)
 		{
-			current = MiscUtilities.getParentOfPath(current);
-			if(systemId.startsWith(current))
+			Entry entry = (Entry)reverseResourceCache.get(current);
+			if(entry != null)
+				parent = entry.uri;
+			else
+				parent = MiscUtilities.getParentOfPath(current);
+		}
+		else
+			parent = null;
+
+		System.err.println("parent of " + current + " is " + parent);
+		if(publicId == null && systemId != null && parent != null)
+		{
+			if(systemId.startsWith(parent))
 			{
 				// first, try resolving a relative name,
 				// to handle jEdit built-in DTDs
 				newSystemId = systemId.substring(
-					current.length());
+					parent.length());
 				if(newSystemId.startsWith("/"))
 					newSystemId = newSystemId.substring(1);
 				newSystemId = resolveSystem(newSystemId);
@@ -79,13 +97,14 @@ public class CatalogManager
 				return null;
 			else if(MiscUtilities.isURL(systemId))
 				newSystemId = systemId;
-			else if(systemId.startsWith("/"))
+			// XXX: is this correct?
+			/* else if(systemId.startsWith("/"))
 				newSystemId = "file://" + systemId;
-			else if(current != null && !MiscUtilities.isURL(current))
-				newSystemId = current + systemId;
+			else if(parent != null && !MiscUtilities.isURL(parent))
+				newSystemId = parent + systemId; */
 		}
 
-		if(!(newSystemId.startsWith("file:")
+		if(cache && !(newSystemId.startsWith("file:")
 			|| newSystemId.startsWith("jeditresource:")))
 		{
 			final String _newSystemId = newSystemId;
@@ -151,21 +170,6 @@ public class CatalogManager
 			source.setByteStream(new URL(newSystemId).openStream());
 			return source;
 		}
-	} //}}}
-
-	//{{{ addUserResource() method
-	public static void addUserResource(String publicId, String systemId, String url)
-	{
-		load();
-
-		if(publicId != null)
-		{
-			Entry pe = new Entry( Entry.PUBLIC, publicId, url );
-			resourceCache.put( pe, url );
-		}
-
-		Entry se = new Entry( Entry.SYSTEM, systemId, url );
-		resourceCache.put( se, url );
 	} //}}}
 
 	/*{{{ reload() method
@@ -280,12 +284,32 @@ public class CatalogManager
 
 	//{{{ Static variables
 	private static boolean loaded;
+	private static boolean cache;
 	private static Catalog catalog;
 	private static HashMap resourceCache;
+	private static HashMap reverseResourceCache;
 
 	// placeholder for DTDs we never want to download
 	private static Object IGNORE = new Object();
 	//}}}
+
+	//{{{ addUserResource() method
+	/**
+	 * Don't want this public because then invoking {@link clearCache()}
+	 * will remove this file, not what you would expect!
+	 */
+	private static void addUserResource(String publicId, String systemId, String url)
+	{
+		if(publicId != null)
+		{
+			Entry pe = new Entry( Entry.PUBLIC, publicId, url );
+			resourceCache.put( pe, url );
+		}
+
+		Entry se = new Entry( Entry.SYSTEM, systemId, url );
+		resourceCache.put( se, url );
+		reverseResourceCache.put(url,se);
+	} //}}}
 
 	//{{{ copyToLocalFile() method
 	private static File copyToLocalFile(Object session, VFS vfs, String path)
@@ -372,7 +396,10 @@ public class CatalogManager
 		if(loaded)
 			return;
 
+		cache = jEdit.getBooleanProperty("xml.cache");
+
 		resourceCache = new HashMap();
+		reverseResourceCache = new HashMap();
 
 		int i;
 		String id, prop, uri;
@@ -399,13 +426,18 @@ public class CatalogManager
 			try
 			{
 				uri = jEdit.getProperty(prop + ".uri");
-				resourceCache.put(new Entry(Entry.SYSTEM,id,uri),uri);
+				Entry se = new Entry(Entry.SYSTEM,id,uri);
+				resourceCache.put(se,uri);
+				reverseResourceCache.put(uri,se);
 			}
 			catch(Exception ex2)
 			{
 				Log.log(Log.ERROR,CatalogManager.class,ex2);
 			}
 		}
+
+		if(!cache)
+			clearCache();
 
 		catalog = new Catalog();
 		catalog.setParserClass("org.apache.xerces.parsers.SAXParser");

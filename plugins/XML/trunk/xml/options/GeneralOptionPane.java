@@ -38,6 +38,9 @@ public class GeneralOptionPane extends AbstractOptionPane
 		addComponent(validate = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
+		addComponent(cache = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.cache")));
+		cache.setSelected(jEdit.getBooleanProperty("xml.cache"));
 
 		tagHighlight = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.tag-highlight-enabled"));
@@ -80,14 +83,15 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ _save() method
 	protected void _save()
 	{
-		jEdit.setIntegerProperty("xml.show-attributes",
-			showAttributes.getSelectedIndex());
 		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
+		jEdit.setBooleanProperty("xml.cache",cache.isSelected());
 		jEdit.setBooleanProperty("xml.tag-highlight",
 			tagHighlight.isSelected());
 		jEdit.setProperty("xml.tag-highlight-color",
 			GUIUtilities.getColorHexString(
 			tagHighlightColor.getSelectedColor()));
+		jEdit.setIntegerProperty("xml.show-attributes",
+			showAttributes.getSelectedIndex());
 		jEdit.setBooleanProperty("xml.close-complete",
 			closeComplete.isSelected());
 		jEdit.setBooleanProperty("xml.close-complete-open",
@@ -95,10 +99,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 	} //}}}
 
 	//{{{ Private members
-	private JCheckBox bufferChangeParse;
-	private JCheckBox keystrokeParse;
-	private JSlider autoParseDelay;
 	private JCheckBox validate;
+	private JCheckBox cache;
 	private JCheckBox tagHighlight;
 	private ColorWellButton tagHighlightColor;
 	private JComboBox showAttributes;
@@ -111,14 +113,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			Object source = evt.getSource();
-			if(source == keystrokeParse)
-			{
-				autoParseDelay.setEnabled(keystrokeParse.isSelected());
-				if(keystrokeParse.isSelected())
-					bufferChangeParse.setSelected(true);
-			}
-			else if(source == tagHighlight)
+			if(evt.getSource() == tagHighlight)
 				tagHighlightColor.setEnabled(tagHighlight.isSelected());
 		}
 	} //}}}

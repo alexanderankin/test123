@@ -167,6 +167,9 @@ public abstract class XmlParser extends SideKickParser
 		else
 			word = "";
 
-		return new XmlCompletion(editPane.getView(),allowedCompletions,word,data,closingTag);
+		if(word.endsWith("/") && allowedCompletions.size() == 0)
+			return null;
+		else
+			return new XmlCompletion(editPane.getView(),allowedCompletions,word,data,closingTag);
 	} //}}}
 }
