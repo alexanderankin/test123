@@ -1,9 +1,5 @@
 
 
-- Copy 'import-sample.properties' to '<jedit.user.home>/projectviewer/import.properties'
-  if one doesn't exist.  This needs to be done before this plugin can go to
-  production.
-
 - Create a option pane that configure the properties in 'import.properties'
 
 - Change the tree control to allow multiple single-selections.  This way 
