@@ -545,15 +545,15 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	} //}}}
 	
 	//}}}
-	//{{{ searchDirectory() method
+	//{{{ searchDir() method
 	/**
 	 *  Popups up a Search and Replace dialog for the currently selected directory.
 	 */
-	private void searchDirectory() {
+	private void searchDir() {
 			//org.gjt.sp.jedit.search.SearchDialog(View view, "blah"searchString, int searchIn);
 			ProjectDirectory dir = (ProjectDirectory) viewer.getSelectedNode();
 			org.gjt.sp.jedit.browser.VFSBrowser browser =(org.gjt.sp.jedit.browser.VFSBrowser) jEdit.getLastView().getDockableWindowManager().getDockable("vfs.browser");
-			browser.setDirectory(dir.getPath(););
+			browser.setDirectory(dir.getPath());
 			browser.searchInDirectory();
 			/*  
 			Matthew Payne -->
