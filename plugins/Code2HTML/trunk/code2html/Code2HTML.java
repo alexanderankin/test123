@@ -38,6 +38,12 @@ import org.gjt.sp.jedit.textarea.Selection;
 
 import org.gjt.sp.util.Log;
 
+import code2html.html.HTMLCSSGutter;
+import code2html.html.HTMLCSSStyle;
+import code2html.html.HTMLGutter;
+import code2html.html.HTMLPainter;
+import code2html.html.HTMLStyle;
+
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
 
