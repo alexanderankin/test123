@@ -1,6 +1,7 @@
 Changelog for JImporter
 
 0.4.0
+* Added the concept of import grouping.
 * Implemented the "Sort Imports" menu option.  
 * Added option which will determine if the sorting algorithm cares about character
 case.
@@ -10,6 +11,8 @@ import list.  If it is, tell the user in the status line.
 * Did some internal cleanup of how option checkboxes are created.  (The code was
 remarkably inelegant before, it is almost palatable now.)
 * Code is now hosted in the JEdit CVS repository on Sourceforge.
+* Rearranged the option dialogs into multiple pages -- the page was getting much
+to long for the global options.
 
 0.3.2 - Announced as beta on JEdit-Users list
 * Add an option to "Automatically Search when importing class at point" to save
