@@ -19,10 +19,9 @@
 package projectviewer.persist;
 
 //{{{ Imports
+import java.util.Map;
 import java.io.Writer;
 import java.io.IOException;
-
-import org.xml.sax.Attributes;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -83,7 +82,7 @@ public abstract class NodeHandler {
 	 *	@param	attrs	The attributes read from the config file.
 	 *	@param	project	The project that holds this node.
 	 */
-	public abstract VPTNode createNode(Attributes attrs, VPTProject project);
+	public abstract VPTNode createNode(Map attrs, VPTProject project);
 
 	/**
 	 *	Saves a node to the given Writer. The node is guaranteed to be an

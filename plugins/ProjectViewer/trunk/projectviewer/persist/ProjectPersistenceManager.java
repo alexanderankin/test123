@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.Writer;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 
@@ -31,13 +32,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Enumeration;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import com.microstar.xml.XmlParser;
+import com.microstar.xml.HandlerBase;
 
 import org.gjt.sp.util.Log;
 
@@ -65,7 +61,7 @@ public final class ProjectPersistenceManager {
 	//}}}
 
 	//{{{ Private members
-	
+
 	/** Private constructor. No instances! */
 	private ProjectPersistenceManager() { }
 
@@ -84,8 +80,8 @@ public final class ProjectPersistenceManager {
 		registerHandler(new DirectoryNodeHandler());
 		registerHandler(new PropertyNodeHandler());
 		registerHandler(new OpenFileNodeHandler());
-	} 
-	
+	}
+
 	//}}}
 
 	//{{{ registerHandler(NodeHandler) method
@@ -101,7 +97,7 @@ public final class ProjectPersistenceManager {
 
 	//{{{ load(String, String) method
 	/** Loads a project from the given file name. */
-	public static VPTProject load(VPTProject p, String file) throws IOException {
+	public static VPTProject load(VPTProject p, String file) {
 		InputStream in = ProjectPlugin.getResourceAsStream(CONFIG_DIR + file);
 		if (in == null) {
 			Log.log(Log.WARNING, ProjectPersistenceManager.class.getName(), "Cannot read config file " + file);
@@ -110,13 +106,15 @@ public final class ProjectPersistenceManager {
 
 		// OK, let's parse the config file
 		try {
-			SAXParserFactory spf = SAXParserFactory.newInstance();
-			SAXParser parser = spf.newSAXParser();
-			parser.parse(in, new ProjectHandler(p));
-		} catch (SAXException se) {
-			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), se);
-		} catch (ParserConfigurationException pce) {
-			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), pce);
+			System.err.println("Parsing...");
+			XmlParser parser = new XmlParser();
+			parser.setHandler(new ProjectHandler(p));
+			System.err.println("Parsing 2...");
+			parser.parse(null, null, new InputStreamReader(in));
+			System.err.println("Parsing 3...");
+		} catch (Exception e) {
+			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), e);
+			return null;
 		}
 
 		p.sortChildren();
@@ -171,12 +169,11 @@ public final class ProjectPersistenceManager {
 	} //}}}
 
 	//{{{ ProjectHandler class
-	/**
-	 *	SAX Handler to read project configuration files.
-	 */
-	public static final class ProjectHandler extends DefaultHandler {
+	/** Handler to read project configuration files. */
+	public static final class ProjectHandler extends HandlerBase {
 
 		//{{{ Instance variables
+		private HashMap attrs;
 		private VPTProject proj;
 		private VPTNode currNode;
 
@@ -187,21 +184,28 @@ public final class ProjectPersistenceManager {
 		public ProjectHandler(VPTProject proj) {
 			this.proj = proj;
 			this.currNode = proj;
-			openNodes = new Stack();
+			this.attrs = new HashMap();
+			this.openNodes = new Stack();
+		} //}}}
+
+		//{{{ attribute(String, String, boolean) method
+		public void attribute(String name, String value, boolean spec) {
+			attrs.put(name, value);
 		} //}}}
 
 		//{{{ startElement() method
 		/** takes care of identifying nodes read from the file. */
-		public void startElement(String uri, String localName, String qName,
-									Attributes attributes) throws SAXException {
+		public void startElement(String qName) {
 			if (qName.equals(ProjectNodeHandler.NODE_NAME)) {
-				projHandler.createNode(attributes, proj);
+				projHandler.createNode(attrs, proj);
+				attrs.clear();
 			} else {
 				NodeHandler nh = (NodeHandler) handlerNames.get(qName);
 				if (nh == null) {
 					Log.log(Log.WARNING,this, "Unknown node: " + qName);
 				} else {
-					VPTNode node = nh.createNode(attributes, proj);
+					VPTNode node = nh.createNode(attrs, proj);
+					attrs.clear();
 					if (node != null) {
 						if (nh.isChild()) {
 							currNode.add(node);
@@ -215,9 +219,9 @@ public final class ProjectPersistenceManager {
 			}
 		} //}}}
 
-		//{{{ endElement(String,String,String) method
+		//{{{ endElement(String) method
 		/** Handles the closing of a directory element. */
-		public void endElement(String uri, String localName, String qName) {
+		public void endElement(String qName) {
 			if (!openNodes.isEmpty() && qName.equals(openNodes.peek())) {
 				currNode.sortChildren();
 				currNode = (VPTNode) currNode.getParent();

@@ -19,10 +19,9 @@
 package projectviewer.persist;
 
 //{{{ Imports
+import java.util.Map;
 import java.io.Writer;
 import java.io.IOException;
-
-import org.xml.sax.Attributes;
 
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -75,8 +74,8 @@ public class PropertyNodeHandler extends NodeHandler {
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
 	 */
-	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		project.setProperty(attrs.getValue(PROP_NAME_ATTR), attrs.getValue(PROP_VALUE_ATTR));
+	public VPTNode createNode(Map attrs, VPTProject project) {
+		project.setProperty((String)attrs.get(PROP_NAME_ATTR), (String)attrs.get(PROP_VALUE_ATTR));
 		return null;
 	}
 

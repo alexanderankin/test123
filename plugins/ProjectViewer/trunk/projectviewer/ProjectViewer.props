@@ -8,7 +8,6 @@ plugin.projectviewer.ProjectPlugin.docs=users-guide.html
 
 plugin.projectviewer.ProjectPlugin.depend.0=jedit 04.01.08.00
 plugin.projectviewer.ProjectPlugin.depend.1=jdk 1.3
-plugin.projectviewer.ProjectPlugin.depend.2=plugin xml.XmlPlugin 0.10
 #}}}
 
 projectviewer.title=Project Viewer
