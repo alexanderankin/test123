@@ -194,6 +194,9 @@
           depends="dist"
           description="Deploy the plugin">
     <unzip src="ProjectViewer-${pvversion}.zip" dest="${jedit.user.home}/jars"/>
+		<!--
+			invoke 'jedit -run=reload_plugin.bsh' to reload the plugin
+		-->
   </target>
 
 
