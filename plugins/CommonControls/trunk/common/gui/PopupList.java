@@ -42,6 +42,8 @@ public class PopupList
 
    static final private int DEFAULT_VISIBLE_ROW_COUNT = 5;
 
+   private boolean requestTextAreaFocusOnCancel;
+
    private JPanel panel;
    private JList list;
    private ListModel model;
@@ -54,6 +56,7 @@ public class PopupList
    public PopupList()
    {
       this(DEFAULT_VISIBLE_ROW_COUNT);
+      requestTextAreaFocusOnCancel = true;
    }
 
    /**
@@ -99,12 +102,30 @@ public class PopupList
    }
 
    /**
-    * Returns the actual selected item.  This is equivalent of calling
+    * Returns the selected actual item.  This is equivalent of calling
     * <code>getSelectedItem().getActualItem()</code>.
     */
-   public Object getActualSelectedItem()
+   public Object getSelectedActualItem()
    {
       return getSelectedItem().getActualItem();
+   }
+
+   /**
+    * Sets the selected actual item.
+    */
+   public void setSelectedActualItem(Object actualItem)
+   {
+      int itemIndex = model.indexOfActualItem(actualItem);
+      list.setSelectedIndex(itemIndex);
+   }
+
+   /**
+    * Set whether focus should go to the main text area if this popup is
+    * cancelled.  The default is <code>false</code>.
+    */
+   public void setRequestTextAreaFocusOnCancel(boolean b)
+   {
+      requestTextAreaFocusOnCancel = b;
    }
 
    /**
@@ -137,8 +158,10 @@ public class PopupList
    {
       if (window != null) {
          window.dispose();
-         View view = (View) window.getOwner();
-         view.getEditPane().getTextArea().requestFocus();
+         if (requestTextAreaFocusOnCancel) {
+            View view = (View) window.getOwner();
+            view.getEditPane().getTextArea().requestFocus();
+         }
          window = null;
       }
    }
@@ -156,16 +179,33 @@ public class PopupList
     *
     * @param view The view requesting the popup.
     * @param items The list of {@link ListItem}s to show.
+    * @param selectedActualItem The {@link ListItem#getActualItem()} that is selected.
+    * @param listener The <code>java.awt.event.ActionListener</code> to invoke
+    * when a selection is made.
+    */
+   static public PopupList show(View view, List items,
+                                Object selectedActualItem,
+                                ActionListener listener)
+   {
+      PopupList popupList = new PopupList();
+      popupList.addActionListener(listener);
+      popupList.setItems(items);
+      popupList.setSelectedActualItem(selectedActualItem);
+      popupList.show(view);
+      return popupList;
+   }
+
+   /**
+    * Show this popup.
+    *
+    * @param view The view requesting the popup.
+    * @param items The list of {@link ListItem}s to show.
     * @param listener The <code>java.awt.event.ActionListener</code> to invoke
     * when a selection is made.
     */
    static public PopupList show(View view, List items, ActionListener listener)
    {
-      PopupList popupList = new PopupList();
-      popupList.addActionListener(listener);
-      popupList.setItems(items);
-      popupList.show(view);
-      return popupList;
+      return show(view, items, null, listener);
    }
 
    // {{{ FocusListener Methods
@@ -258,6 +298,25 @@ public class PopupList
          if (!items.isEmpty()) {
             fireIntervalAdded(this, 0, items.size() - 1);
          }
+      }
+
+      /**
+       * Returns the index of the first {@link ListItem} that contains the given
+       * actual item.
+       */
+      public int indexOfActualItem(Object actualItem)
+      {
+         int i = 0;
+         for (Iterator iter = items.iterator(); iter.hasNext();) {
+            ListItem each = (ListItem) iter.next();
+            if (actualItem == null && each.getActualItem() == null) {
+               return i;
+            } else if (actualItem != null && actualItem.equals(each.getActualItem())) {
+               return i;
+            }
+            i++;
+         }
+         return -1;
       }
 
       /**
