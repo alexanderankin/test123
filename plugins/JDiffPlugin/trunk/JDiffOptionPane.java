@@ -18,7 +18,10 @@
 */
 
 
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
+import javax.swing.JRadioButton;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
@@ -29,6 +32,9 @@ public class JDiffOptionPane extends AbstractOptionPane
     private JCheckBox ignoreCase;
     private JCheckBox trimWhitespace;
     private JCheckBox ignoreWhitespace;
+
+    private JRadioButton virtualOverview;
+    private JRadioButton physicalOverview;
 
 
     public JDiffOptionPane() {
@@ -41,9 +47,31 @@ public class JDiffOptionPane extends AbstractOptionPane
         this.trimWhitespace    = this.createCheckBox("jdiff.trim-whitespace", false);
         this.ignoreWhitespace  = this.createCheckBox("jdiff.ignore-whitespace", false);
 
+        this.virtualOverview  = new JRadioButton(jEdit.getProperty(
+            "options.jdiff.virtual-overview"
+        ));
+        this.physicalOverview = new JRadioButton(jEdit.getProperty(
+            "options.jdiff.physical-overview"
+        ));
+
+        ButtonGroup overviewGroup = new ButtonGroup();
+        overviewGroup.add(this.virtualOverview);
+        overviewGroup.add(this.physicalOverview);
+        boolean isVirtual = (
+            jEdit.getBooleanProperty("jdiff.global-virtual-overview", true)
+        );
+        this.virtualOverview.setSelected(isVirtual);
+        this.physicalOverview.setSelected(!isVirtual);
+
         addComponent(this.ignoreCase);
         addComponent(this.trimWhitespace);
         addComponent(this.ignoreWhitespace);
+
+        addComponent(new JLabel(jEdit.getProperty(
+            "options.jdiff.overview-display"
+        )));
+        addComponent(this.virtualOverview);
+        addComponent(this.physicalOverview);
     }
 
 
@@ -56,6 +84,10 @@ public class JDiffOptionPane extends AbstractOptionPane
         );
         jEdit.setBooleanProperty("jdiff.ignore-whitespace",
             this.ignoreWhitespace.isSelected()
+        );
+
+        jEdit.setBooleanProperty("jdiff.global-virtual-overview",
+            this.virtualOverview.isSelected()
         );
     }
 

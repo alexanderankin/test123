@@ -38,6 +38,8 @@ jdiff.ignore-case=false
 jdiff.trim-whitespace=false
 jdiff.ignore-whitespace=false
 
+jdiff.global-virtual-overview=true
+
 jdiff.overview-changed-color=\#FFCC66
 jdiff.overview-deleted-color=\#FF6666
 jdiff.overview-inserted-color=\#99CC66
@@ -64,6 +66,10 @@ options.jdiff-highlight.label=Highlight colors
 options.jdiff.ignore-case=Ignore case
 options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
 options.jdiff.ignore-whitespace=Ignore all whitespace
+
+options.jdiff.overview-display=Global overview display:
+options.jdiff.physical-overview=Physical overview
+options.jdiff.virtual-overview=Virtual overview
 
 options.jdiff.overview=Overview colors:
 options.jdiff.overview-changed-color=Changed lines color:\ 
