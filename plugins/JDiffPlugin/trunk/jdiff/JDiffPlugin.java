@@ -51,18 +51,32 @@ public class JDiffPlugin extends EBPlugin
     public static Color highlightInsertedColor;
     public static Color highlightInvalidColor;
 
+    static {
+        propertiesChanged();
+    }
+
 
     public JDiffPlugin() {
         super();
     }
 
 
-    public void start() {
-        propertiesChanged();
-	}
+    public void start() {}
 
 
     public void stop() {}
+
+
+/*    public void createOptionPanes(OptionsDialog dialog) {
+        OptionGroup jdiffGroup = new OptionGroup("jdiff");
+
+        jdiffGroup.addOptionPane(new JDiffOptionPane());
+        jdiffGroup.addOptionPane(new JDiffOverviewOptionPane());
+        jdiffGroup.addOptionPane(new JDiffHighlightOptionPane());
+
+        dialog.addOptionGroup(jdiffGroup);
+    }*/
+
 
     public void handleMessage(EBMessage message) {
         if (message instanceof PropertiesChanged) {

@@ -59,6 +59,7 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
+import org.gjt.sp.jedit.textarea.ScrollListener;
 
 import org.gjt.sp.util.Log;
 
@@ -85,19 +86,12 @@ public class DualDiff implements EBComponent
 
     private Diff.change   edits;
 
-    private JScrollBar    horizontal0;
-    private JScrollBar    horizontal1;
-
     private DiffOverview  diffOverview0;
     private DiffOverview  diffOverview1;
-    private JScrollBar    vertical0;
-    private JScrollBar    vertical1;
     private Box           box0;
     private Box           box1;
 
-    private final HorizontalAdjustHandler horizontalAdjust = new HorizontalAdjustHandler();
-    private final VerticalAdjustHandler   verticalAdjust   = new VerticalAdjustHandler();
-
+	private final ScrollHandler scrollHandler = new ScrollHandler();
 
     private DualDiff(View view) {
         this(view, ignoreCaseDefault, trimWhitespaceDefault, ignoreWhitespaceDefault);
@@ -120,15 +114,6 @@ public class DualDiff implements EBComponent
 
         this.textArea0 = this.editPane0.getTextArea();
         this.textArea1 = this.editPane1.getTextArea();
-
-        this.horizontal0 = this.findHorizontalScrollBar(this.textArea0);
-        this.horizontal1 = this.findHorizontalScrollBar(this.textArea1);
-
-        this.box0      = new Box(BoxLayout.X_AXIS);
-        this.vertical0 = this.findVerticalScrollBar(this.textArea0);
-
-        this.box1      = new Box(BoxLayout.X_AXIS);
-        this.vertical1 = this.findVerticalScrollBar(this.textArea1);
 
         this.initOverviews();
         this.addOverviews();
@@ -248,36 +233,39 @@ public class DualDiff implements EBComponent
 
 
     private void addOverviews() {
-        this.textArea0.remove(this.vertical0);
-        this.box0.add(this.diffOverview0);
-        this.box0.add(this.vertical0);
+        //this.textArea0.remove(this.vertical0);
+        this.textArea0.addLeftOfScrollBar(this.diffOverview0);
+        //this.box0.add(this.vertical0);
         // JEditTextArea.RIGHT is private...
         // "right" == JEditTextArea.RIGHT
-        this.textArea0.add("right", this.box0);
+        //this.textArea0.add("right", this.box0);
 
-        this.textArea1.remove(this.vertical1);
-        this.box1.add(this.diffOverview1);
-        this.box1.add(this.vertical1);
+        //this.textArea1.remove(this.vertical1);
+        this.textArea1.addLeftOfScrollBar(this.diffOverview1);
+        //this.box1.add(this.diffOverview1);
+        //this.box1.add(this.vertical1);
         // JEditTextArea.RIGHT is private...
         // "right" == JEditTextArea.RIGHT
-        this.textArea1.add("right", this.box1);
+        //this.textArea1.add("right", this.box1);
     }
 
 
     private void removeOverviews() {
-        this.box0.remove(this.vertical0);
-        this.box0.remove(this.diffOverview0);
-        this.textArea0.remove(this.box0);
+		this.textArea0.removeLeftOfScrollBar(this.diffOverview0);
+        //this.box0.remove(this.vertical0);
+        //this.box0.remove(this.diffOverview0);
+        //this.textArea0.remove(this.box0);
         // JEditTextArea.RIGHT is private...
         // "right" == JEditTextArea.RIGHT
-        this.textArea0.add("right", this.vertical0);
+        //this.textArea0.add("right", this.vertical0);
 
-        this.box1.remove(this.vertical1);
-        this.box1.remove(this.diffOverview1);
-        this.textArea1.remove(this.box1);
+		this.textArea1.removeLeftOfScrollBar(this.diffOverview1);
+        //this.box1.remove(this.vertical1);
+        //this.box1.remove(this.diffOverview1);
+        //this.textArea1.remove(this.box1);
         // JEditTextArea.RIGHT is private...
         // "right" == JEditTextArea.RIGHT
-        this.textArea1.add("right", this.vertical1);
+        //this.textArea1.add("right", this.vertical1);
     }
 
 
@@ -353,48 +341,24 @@ public class DualDiff implements EBComponent
 
 
     private void addHandlers() {
-        this.horizontal0.addAdjustmentListener((AdjustmentListener) this.horizontalAdjust);
-        this.horizontal0.addMouseListener((MouseListener) this.horizontalAdjust);
-        this.textArea0.addFocusListener((FocusListener) this.horizontalAdjust);
-        this.textArea0.addCaretListener((CaretListener) this.horizontalAdjust);
+        this.textArea0.addScrollListener(this.scrollHandler);
+        this.textArea0.addFocusListener(this.scrollHandler);
+        this.textArea0.addCaretListener(this.scrollHandler);
 
-        this.horizontal1.addAdjustmentListener((AdjustmentListener) this.horizontalAdjust);
-        this.horizontal1.addMouseListener((MouseListener) this.horizontalAdjust);
-        this.textArea1.addFocusListener((FocusListener) this.horizontalAdjust);
-        this.textArea1.addCaretListener((CaretListener) this.horizontalAdjust);
-
-        this.vertical0.addAdjustmentListener((AdjustmentListener) this.verticalAdjust);
-        this.vertical0.addMouseListener((MouseListener) this.verticalAdjust);
-        this.textArea0.addFocusListener((FocusListener) this.verticalAdjust);
-        this.textArea0.addCaretListener((CaretListener) this.verticalAdjust);
-
-        this.vertical1.addAdjustmentListener((AdjustmentListener) this.verticalAdjust);
-        this.vertical1.addMouseListener((MouseListener) this.verticalAdjust);
-        this.textArea1.addFocusListener((FocusListener) this.verticalAdjust);
-        this.textArea1.addCaretListener((CaretListener) this.verticalAdjust);
+        this.textArea1.addScrollListener(this.scrollHandler);
+        this.textArea1.addFocusListener(this.scrollHandler);
+        this.textArea1.addCaretListener(this.scrollHandler);
     }
 
 
     private void removeHandlers() {
-        this.horizontal0.removeAdjustmentListener((AdjustmentListener) this.horizontalAdjust);
-        this.horizontal0.removeMouseListener((MouseListener) this.horizontalAdjust);
-        this.textArea0.removeFocusListener((FocusListener) this.horizontalAdjust);
-        this.textArea0.removeCaretListener((CaretListener) this.horizontalAdjust);
+        this.textArea0.removeScrollListener(this.scrollHandler);
+        this.textArea0.removeFocusListener(this.scrollHandler);
+        this.textArea0.removeCaretListener(this.scrollHandler);
 
-        this.horizontal1.removeAdjustmentListener((AdjustmentListener) this.horizontalAdjust);
-        this.horizontal1.removeMouseListener((MouseListener) this.horizontalAdjust);
-        this.textArea1.removeFocusListener((FocusListener) this.horizontalAdjust);
-        this.textArea1.removeCaretListener((CaretListener) this.horizontalAdjust);
-
-        this.vertical0.removeAdjustmentListener((AdjustmentListener) this.verticalAdjust);
-        this.vertical0.removeMouseListener((MouseListener) this.verticalAdjust);
-        this.textArea0.removeFocusListener((FocusListener) this.verticalAdjust);
-        this.textArea0.removeCaretListener((CaretListener) this.verticalAdjust);
-
-        this.vertical1.removeAdjustmentListener((AdjustmentListener) this.verticalAdjust);
-        this.vertical1.removeMouseListener((MouseListener) this.verticalAdjust);
-        this.textArea1.removeFocusListener((FocusListener) this.verticalAdjust);
-        this.textArea1.removeCaretListener((CaretListener) this.verticalAdjust);
+        this.textArea1.removeScrollListener(this.scrollHandler);
+        this.textArea1.removeFocusListener(this.scrollHandler);
+        this.textArea1.removeCaretListener(this.scrollHandler);
     }
 
 
@@ -486,42 +450,6 @@ public class DualDiff implements EBComponent
         } else {
             return str;
         }
-    }
-
-
-    public JScrollBar findScrollBar(Container container, int orientation) {
-        Component[] comps = container.getComponents();
-        for (int i = 0; i < comps.length; i++) {
-            if (   (comps[i] instanceof JScrollBar)
-                && (((JScrollBar) comps[i]).getOrientation() == orientation)
-            ) {
-                return (JScrollBar) comps[i];
-            }
-        }
-
-        return null;
-    }
-
-
-    public JScrollBar findHorizontalScrollBar(Container container) {
-        return this.findScrollBar(container, JScrollBar.HORIZONTAL);
-    }
-
-
-    public JScrollBar findVerticalScrollBar(Container container) {
-        return this.findScrollBar(container, JScrollBar.VERTICAL);
-    }
-
-
-    public Box findBox(Container container) {
-        Component[] comps = container.getComponents();
-        for (int i = 0; i < comps.length; i++) {
-            if (comps[i] instanceof Box) {
-                return (Box) comps[i];
-            }
-        }
-
-        return null;
     }
 
 
@@ -750,8 +678,8 @@ public class DualDiff implements EBComponent
 
 
     private void nextDiff0() {
-        this.horizontalAdjust.source = this.horizontal0;
-        this.verticalAdjust.source = this.vertical0;
+        //this.horizontalAdjust.source = this.horizontal0;
+        //this.verticalAdjust.source = this.vertical0;
 
         Diff.change hunk = this.edits;
         int firstLine = this.textArea0.getFirstLine();
@@ -776,8 +704,8 @@ public class DualDiff implements EBComponent
 
 
     private void nextDiff1() {
-        this.horizontalAdjust.source = this.horizontal1;
-        this.verticalAdjust.source = this.vertical1;
+        //this.horizontalAdjust.source = this.horizontal1;
+        //this.verticalAdjust.source = this.vertical1;
 
         Diff.change hunk = this.edits;
         int firstLine = this.textArea1.getFirstLine();
@@ -802,8 +730,8 @@ public class DualDiff implements EBComponent
 
 
     private void prevDiff0() {
-        this.horizontalAdjust.source = this.horizontal0;
-        this.verticalAdjust.source = this.vertical0;
+        //this.horizontalAdjust.source = this.horizontal0;
+        //this.verticalAdjust.source = this.vertical0;
 
         Diff.change hunk = this.edits;
         int firstLine = this.textArea0.getFirstLine();
@@ -830,8 +758,8 @@ public class DualDiff implements EBComponent
 
 
     private void prevDiff1() {
-        this.horizontalAdjust.source = this.horizontal1;
-        this.verticalAdjust.source = this.vertical1;
+        //this.horizontalAdjust.source = this.horizontal1;
+        //this.verticalAdjust.source = this.vertical1;
 
         Diff.change hunk = this.edits;
         int firstLine = this.textArea1.getFirstLine();
@@ -887,13 +815,9 @@ public class DualDiff implements EBComponent
         }
     }
 
-
-    private class VerticalAdjustHandler
-            implements AdjustmentListener, CaretListener, FocusListener, MouseListener
-    {
-        private Object source = null;
-
-        private Runnable syncWithRight = new Runnable() {
+	private class ScrollHandler implements ScrollListener, CaretListener, FocusListener, MouseListener
+	{
+        private Runnable syncWithRightVert = new Runnable() {
             public void run() {
                 DualDiff.this.diffOverview0.repaint();
                 DualDiff.this.diffOverview0.synchroScrollRight();
@@ -902,7 +826,7 @@ public class DualDiff implements EBComponent
             }
         };
 
-        private Runnable syncWithLeft = new Runnable() {
+        private Runnable syncWithLeftVert = new Runnable() {
             public void run() {
                 DualDiff.this.diffOverview1.repaint();
                 DualDiff.this.diffOverview1.synchroScrollLeft();
@@ -911,76 +835,7 @@ public class DualDiff implements EBComponent
             }
         };
 
-
-        public VerticalAdjustHandler() {}
-
-
-        public void adjustmentValueChanged(AdjustmentEvent e) {
-            if (this.source == null) {
-                this.source = e.getSource();
-            }
-            // Log.log(Log.DEBUG, this, "**** Adjustment " + e);
-
-            if (this.source == DualDiff.this.vertical0) {
-                SwingUtilities.invokeLater(this.syncWithRight);
-            } else if (this.source == DualDiff.this.vertical1) {
-                SwingUtilities.invokeLater(this.syncWithLeft);
-            } else {}
-        }
-
-
-        public void caretUpdate(CaretEvent e) {
-            if (e.getSource() == DualDiff.this.textArea0) {
-                this.source = DualDiff.this.vertical0;
-            } else if (e.getSource() == DualDiff.this.textArea1) {
-                this.source = DualDiff.this.vertical1;
-            } else {}
-        }
-
-
-        public void focusGained(FocusEvent e) {
-            Log.log(Log.DEBUG, this, "**** focusGained " + e);
-
-            if (e.getSource() == DualDiff.this.textArea0) {
-                this.source = DualDiff.this.vertical0;
-            } else if (e.getSource() == DualDiff.this.textArea1) {
-                this.source = DualDiff.this.vertical1;
-            } else {}
-        }
-
-
-        public void focusLost(FocusEvent e) {
-            Log.log(Log.DEBUG, this, "**** focusLost " + e);
-        }
-
-
-        public void mouseClicked(MouseEvent e) {}
-
-
-        public void mouseEntered(MouseEvent e) {}
-
-
-        public void mouseExited(MouseEvent e) {}
-
-
-        public void mousePressed(MouseEvent e) {
-            Log.log(Log.DEBUG, this, "**** mousePressed " + e);
-            this.source = e.getSource();
-        }
-
-
-        public void mouseReleased(MouseEvent e) {
-            Log.log(Log.DEBUG, this, "**** mouseReleased " + e);
-        }
-    }
-
-
-    private class HorizontalAdjustHandler
-            implements AdjustmentListener, CaretListener, FocusListener, MouseListener
-    {
-        private Object source = null;
-
-        private Runnable syncWithRight = new Runnable() {
+        private Runnable syncWithRightHoriz = new Runnable() {
             public void run() {
                 // DualDiff.this.diffOverview0.repaint();
                 DualDiff.this.textArea1.setHorizontalOffset(
@@ -991,7 +846,7 @@ public class DualDiff implements EBComponent
             }
         };
 
-        private Runnable syncWithLeft = new Runnable() {
+        private Runnable syncWithLeftHoriz = new Runnable() {
             public void run() {
                 // DualDiff.this.diffOverview1.repaint();
                 DualDiff.this.textArea0.setHorizontalOffset(
@@ -1002,48 +857,36 @@ public class DualDiff implements EBComponent
             }
         };
 
+        public void caretUpdate(CaretEvent e) {
+        }
 
-        public HorizontalAdjustHandler() {}
-
-
-        public void adjustmentValueChanged(AdjustmentEvent e) {
-            if (this.source == null) {
-                this.source = e.getSource();
-            }
+		public void scrolledHorizontally(JEditTextArea textArea)
+		{
             // Log.log(Log.DEBUG, this, "**** Adjustment " + e);
 
-            if (this.source == DualDiff.this.horizontal0) {
-                SwingUtilities.invokeLater(this.syncWithRight);
-            } else if (this.source == DualDiff.this.horizontal1) {
-                SwingUtilities.invokeLater(this.syncWithLeft);
+            if (textArea == DualDiff.this.textArea0) {
+                SwingUtilities.invokeLater(this.syncWithRightHoriz);
+            } else if (textArea == DualDiff.this.textArea1) {
+                SwingUtilities.invokeLater(this.syncWithLeftHoriz);
             } else {}
-        }
-
-
-        public void caretUpdate(CaretEvent e) {
-            if (e.getSource() == DualDiff.this.textArea0) {
-                this.source = DualDiff.this.horizontal0;
-            } else if (e.getSource() == DualDiff.this.textArea1) {
-                this.source = DualDiff.this.horizontal1;
+		}
+		
+		public void scrolledVertically(JEditTextArea textArea)
+		{
+            if (textArea == DualDiff.this.textArea0) {
+                SwingUtilities.invokeLater(this.syncWithRightVert);
+            } else if (textArea == DualDiff.this.textArea1) {
+                SwingUtilities.invokeLater(this.syncWithLeftVert);
             } else {}
-        }
-
-
+		}
+		
         public void focusGained(FocusEvent e) {
             Log.log(Log.DEBUG, this, "**** focusGained " + e);
-
-            if (e.getSource() == DualDiff.this.textArea0) {
-                this.source = DualDiff.this.horizontal0;
-            } else if (e.getSource() == DualDiff.this.textArea1) {
-                this.source = DualDiff.this.horizontal1;
-            } else {}
         }
-
 
         public void focusLost(FocusEvent e) {
             Log.log(Log.DEBUG, this, "**** focusLost " + e);
         }
-
 
         public void mouseClicked(MouseEvent e) {}
 
@@ -1056,16 +899,14 @@ public class DualDiff implements EBComponent
 
         public void mousePressed(MouseEvent e) {
             Log.log(Log.DEBUG, this, "**** mousePressed " + e);
-            this.source = e.getSource();
         }
 
 
         public void mouseReleased(MouseEvent e) {
             Log.log(Log.DEBUG, this, "**** mouseReleased " + e);
         }
-    }
-
-
+	}
+	
     public static void propertiesChanged() {
         boolean newIgnoreCaseDefault =
             jEdit.getBooleanProperty("jdiff.ignore-case", false);
