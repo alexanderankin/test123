@@ -1,119 +1,140 @@
+<!-- ================================================== -->
+<!-- Build file for the Project Viewer plugin           -->
+<!-- :tabSize=2:indentSize=2:noTabs=false:              -->
+<!-- :folding=explicit:collapseFolds=1:                 -->
+<!-- ================================================== -->
 <project name="LaTeXTools" default="install" basedir=".">
-    <description>
-        LaTeX Tools jEdit Plugin.
-    </description>
-  <!-- set global properties for this build -->
-  <property name="src" location="."/>
-  <property name="build" location="..\\build"/>
-  <property name="buildim" location="..\\build\\images"/>
-  <property name="dist"  location="..\\dist"/>
-  <property name="config"  location="config"/>
-  <property name="images"  location="images"/>
-  <property name="docs"  location="..\\docs"/>
-  <property name="javadocs"  location="..\\docs\\javadocs"/>
-  <property name="local.jedit.jars"  location="c:/docume~1/admin/.jedit/jars"/>
-  <property name="global.jedit.jars"  location="c:/progra~1/jedit 4.2/jars"/>
-  <property name="local.jedit.classpath"  location="."/>
-  <property name="jsdk1.3"  value="C:\Java\jdk1.3.1_07\jre\lib"/>
-  <property name="target" value="1.3"/>
-  <property name="verbose" value="false"/>
+  <description>
+    LaTeX Tools jEdit Plugin.
+  </description>
 
-  <!-- Classpath setup -->  
-<path id="common.path">
-    <pathelement path="${local.jedit.classpath}"/>
-    <pathelement path="${local.jedit.jars}\SideKick.jar"/>
-    <pathelement path="${local.jedit.jars}\ErrorList.jar"/>
-    <pathelement path="${local.jedit.jars}"/>
-    <pathelement path="${global.jedit.jars}\SideKick.jar"/>
-    <pathelement path="${global.jedit.jars}\ErrorList.jar"/>
-    <pathelement path="${global.jedit.jars}"/>
-  </path>
+  <!-- ================================================ -->
+  <!-- Property definitions                             -->
+  <!-- ================================================ -->
+  <property file="build.properties"/>
+  <property file="../build.properties"/>
+  <property file="${user.home}/.build.properties"/>
+  <property file="${user.home}/build.properties"/>
+
+  <!-- set global properties for this build -->
+  <property name="src"          value="."/>
+  <property name="build"        value="../build"/>
+  <property name="build.images" value="${build}/images"/>
+  <property name="dist"         value="../dist"/>
+  <property name="config"       value="config"/>
+  <property name="images"       value="images"/>
+  <property name="docs"         value="../docs"/>
+  <property name="docs.javadoc" value="${docs}/javadocs"/>
+
+  <!-- ================================================ -->
+  <!-- Classpath definitions                            -->
+  <!-- ================================================ -->
+  <path id="default.classpath">
+    <pathelement location="${jedit.install.dir}/jedit.jar" />
+    <pathelement location="${sidekick.jar}"/>
+    <pathelement location="${errorlist.jar}"/>
+    <pathelement location="${local.jedit.jars}"/>
+	</path>
 
   <path id="bootclass.path">
-    <path refid="common.path"/>
-    <fileset dir="${jsdk1.3}">
+    <path refid="default.classpath"/>
+    <fileset dir="${crosscompiler.lib}">
       <include name="**\*.jar"/>
     </fileset>
   </path>
 
   <path id="class.path">
-    <path refid="common.path"/>
+    <path refid="default.classpath"/>
     <pathelement path="${classpath}"/>
   </path>
-  
+
+  <!-- ================================================ -->
+  <!-- Targets                                          -->
+  <!-- ================================================ -->
+
   <target name="init">
     <tstamp/>
     <mkdir dir="${build}"/>
-    <mkdir dir="${buildim}"/>
+    <mkdir dir="${build.images}"/>
     <mkdir dir="${dist}"/>
     <mkdir dir="${docs}"/>
-    <mkdir dir="${javadocs}"/>
+    <mkdir dir="${docs.javadoc}"/>
   </target>
 
-  <target name="compile" depends="init"
-        description="compile the source " >
+  <target name="compile" depends="init" description="compile the source">
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac srcdir="${src}" destdir="${build}" deprecation="true">
+    <javac srcdir="${src}" destdir="${build}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}">
        <classpath refid="class.path"></classpath>
     </javac>
   </target>
-  
+
   <target name="cross-compile" depends="init" description="compile the source against the bootstrap compiler" >
     <!-- Compile the java code from ${src} into ${build} -->
-    <javac deprecation="true" verbose="${verbose}" srcdir="${src}" destdir="${build}" target="${target}">
+    <javac srcdir="${src}" destdir="${build}" target="${crosscompiler.version}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}">
         <bootclasspath refid="bootclass.path"></bootclasspath>
     </javac>
   </target>
 
-  <target name="pack">
+  <target name="build" depends="cross-compile" description="Build the plugin">
     <copy todir="${build}">
       <fileset dir="${config}" casesensitive="no" excludes="*.*~"/>
     </copy>
     <copy file="build.xml" todir="${build}"/>
-     <copy todir="${buildim}">
+     <copy todir="${build.images}">
       <fileset dir="${images}" casesensitive="no" excludes="*.*~"/>
     </copy>
     <copy file="${src}\uk\co\antroy\latextools\LaTeXTools.props" todir="${build}\uk\co\antroy\latextools"/>
+		<jar jarfile="${dist}\LaTeXTools.jar" basedir="${build}"/>
    </target>
-  
-  <target name="zip" depends="cross-compile,pack" 
-                     description="Pack the source in a zip archive. JAR the binaries.">
-     <jar jarfile="${dist}\LaTeXTools.jar" basedir="${build}"/>
-     <zip basedir="." zipfile="${dist}\LaTeXToolsSrc.zip">
-       <include name="build.xml"/>
-       <include name="src/**"/>
-     </zip>
+
+  <target name="dist" depends="build"
+                     description="Build a distribution">
+		<zip zipfile="${dist}\LaTeXToolsSrc.zip">
+			<fileset dir="${src}">
+        <include name="build.xml"/>
+        <include name="build.properties.template"/>
+        <include name="**"/>
+			</fileset>
+    </zip>
   </target>
-    
-  <target name="install" depends="zip">
-    <copy file="${dist}\LaTeXTools.jar" tofile="..\LaTeXTools.jar"/>  
+
+  <target name="install" depends="dist">
+    <copy file="${dist}\LaTeXTools.jar" tofile="..\LaTeXTools.jar"/>
   </target>
-  
-  <target name="deploy" depends="zip">
-    <copy file="${dist}\LaTeXTools.jar" todir="${global.jedit.jars}"/> 
+
+  <target name="deploy" depends="dist">
+    <copy file="${dist}\LaTeXTools.jar" todir="${jedit.jars.dir}"/>
   </target>
-  
+
   <target name="clean-install" depends="clean, install">
   </target>
-  
-  <target name="clean"
-        description="clean up" >
-	<delete dir="${build}"></delete>
+
+  <target name="clean" description="clean up" >
+		<delete dir="${build}"></delete>
   </target>
-  
-  <target name="document-all" depends="zip" description="Document the source.">
-    <javadoc classpath="${build};${local.jedit.classpath}" destdir="${javadocs}">
-      <fileset dir="${src}" casesensitive="no">
-        <include name="*.java"/>
-      </fileset>
+
+  <target name="javadoc" description="Generates javadoc sourcecode documentation">
+    <javadoc sourcepath="${src}"
+						 destdir="${docs.javadoc}"
+             packagenames="uk.co.antroy.latextools.*"
+             windowtitle="${ant.project.name} API"
+						 classpathref="default.classpath">
     </javadoc>
   </target>
-  
-  <target name="document" description="Copy documentation.">
+
+  <!--target name="document" description="Copy documentation.">
     <copy todir="${docs}">
       <fileset dir="${src}" includes="**/*.htm,**/*.html,**/*.css"/>
     </copy>
-  </target>
-  
+  </target-->
+
 </project>
 
