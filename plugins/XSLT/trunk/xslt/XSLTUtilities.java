@@ -130,12 +130,6 @@ public class XSLTUtilities {
   }
 
 
-  private static Result getResult(OutputStream outputStream, String encoding) throws Exception {
-    Writer writer = new OutputStreamWriter(outputStream, encoding);
-    return new StreamResult(writer);
-  }
-
-
   private static String transform(TransformerFactory factory, Source inputSource,
       Source xsltSource, boolean indent) throws Exception {
     Templates templates = factory.newTemplates(xsltSource);
@@ -147,11 +141,11 @@ public class XSLTUtilities {
       transformer.setOutputProperty(OutputKeys.INDENT, "no");
     }
 
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    Result result = getResult(outputStream, transformer.getOutputProperty("encoding"));
+    StringWriter writer = new StringWriter();
+    Result result = new StreamResult(writer);
 
     transformer.transform(inputSource, result);
-    String resultString = outputStream.toString();
+    String resultString = writer.toString();
     return resultString;
   }
 
@@ -178,12 +172,13 @@ public class XSLTUtilities {
     Transformer lastTransformer = handlers[lastIndex].getTransformer();
     lastTransformer.setOutputProperty(OutputProperties.S_KEY_INDENT_AMOUNT, XSLTUtilities.indentAmount);
 
-    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-    Result result = getResult(outputStream, lastTransformer.getOutputProperty("encoding"));
+    StringWriter writer = new StringWriter();
+    Result result = new StreamResult(writer);
+
     handlers[lastIndex].setResult(result);
 
     reader.parse(inputFile);
-    return outputStream.toString();
+    return writer.toString();
   }
 }
 
