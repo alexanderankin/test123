@@ -4,7 +4,7 @@ import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
 import java.util.*;
-//import javax.swing.table.*;
+
 import javax.swing.table.TableColumnModel.*;
 
 import javax.swing.JTable;
@@ -16,10 +16,6 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.*;
 
 
-//import javax.swing.DefaultCellEditor;
-//import javax.swing.table.TableCellRenderer;
-//import javax.swing.table.DefaultTableCellRenderer;
- 
 /**
  * <p>Title: </p>
  * <p>Description: </p>
@@ -72,23 +68,30 @@ public class ProjectAppConfig extends AbstractOptionPane  {
     extLabel.setText("Extension:");
     appLabel.setText("Application:");
     cmdAdd.setText("Add");
+    cmdChooseFile = new JButton();
+    cmdChooseFile.setText("...");
+    
     //this.getContentPane().add(jPanel1, BorderLayout.CENTER);
     addComponent(jPanel1);
     jPanel1.add(extLabel,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 28, 0, 0), 16, 3));
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 10, 0, 0), 16, 3));
     jPanel1.add(extField,  new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 27, 0, 0), 68, 2));
+            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 10, 0, 0), 68, 2));
     jPanel1.add(appLabel,  new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 39, 0, 83), 36, 2));
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(21, 20, 0, 83), 36, 2));
     jPanel1.add(appField,  new GridBagConstraints(1, 1, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 36, 0, 0), 181, 6));
-    jPanel1.add(cmdAdd,  new GridBagConstraints(2, 0, 1, 2, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(0, 20, 0, 0), 181, 6));
+   
+   jPanel1.add(cmdChooseFile,  new GridBagConstraints(2, 0, 1, 2, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(36, 8, 0, 0), 1, 0));
+   
+    jPanel1.add(cmdAdd,  new GridBagConstraints(3, 0, 1, 2, 0.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(36, 8, 0, 28), 5, 0));
-    jPanel1.add(jScrollPane1,  new GridBagConstraints(0, 3, 3, 1, 1.0, 1.0
+    jPanel1.add(jScrollPane1,  new GridBagConstraints(0, 3, 4, 1, 1.0, 1.0
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(11, 4, 0, 0), -40, -194));
     jScrollPane1.getViewport().add(appTable, null);
     col =appTable.getColumnModel().getColumn(1);
-    col.setPreferredWidth(appTable.getColumnModel().getColumn(0).getWidth() * 3);
+    col.setPreferredWidth(appTable.getColumnModel().getColumn(0).getWidth() * 5);
     cmdAdd.addActionListener(new
          ActionListener()
          {
@@ -96,7 +99,7 @@ public class ProjectAppConfig extends AbstractOptionPane  {
             {
                 if (extField.getText().length() >= 1 && appField.getText().length() >=1) 
                 {
-                    apps.addAppExt(extField.getText(), appField.getText());
+                    apps.addAppExt(extField.getText(), replaceString(appField.getText(), "\\", "/"));
                     extField.setText("");
                     appField.setText("");
                     try {
@@ -116,7 +119,14 @@ public class ProjectAppConfig extends AbstractOptionPane  {
             }
          }); 
    
-    popmenu = new JPopupMenu();
+    	cmdChooseFile.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+                doChoose();
+            
+        }
+        });
+
+	popmenu = new JPopupMenu();
         menuActions = new javax.swing.JMenuItem();
         jSep = new javax.swing.JSeparator();
         delApp= new javax.swing.JMenuItem();
@@ -140,7 +150,6 @@ public class ProjectAppConfig extends AbstractOptionPane  {
         
          appTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-              //  if (evt.isPopupTrigger())
                 if (javax.swing.SwingUtilities.isRightMouseButton(evt))
                 popmenu.show((Component)evt.getSource(), evt.getX(), evt.getY());
             }
@@ -149,6 +158,38 @@ public class ProjectAppConfig extends AbstractOptionPane  {
    
     }
   
+   public void doChoose() {
+	// Used for selected and executable file
+		JFileChooser chooser = new JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
+		if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
+			return;
+		try { appField.setText(chooser.getSelectedFile().getPath());}
+		catch  (   Exception Excp) {;;}
+     }
+  
+   private static String replaceString(String aSearch, String aFind, String aReplace)
+    {
+    String result = aSearch;
+    if (result != null && result.length() > 0)
+        {
+        int a = 0;
+        int b = 0;
+        while (true)
+           {
+            a = result.indexOf(aFind, b);
+            if (a != -1)
+                {
+                result = result.substring(0, a) + aReplace + result.substring(a + aFind.length());
+                b = a + aReplace.length();
+            }
+            else
+            break;
+        }
+    }
+    return result;
+    }		   
+    
    private void deleteRow() {
         // Deletes a row from the Table:
         int targetRow;
@@ -192,8 +233,9 @@ public class ProjectAppConfig extends AbstractOptionPane  {
   JTable appTable = new JTable(model);
   TableColumn col = null;
   JButton cmdAdd = new JButton();
+  JButton cmdChooseFile;
   JButton cmdSave = new JButton();
-  private static final int WIDTH = 425;
+  private static final int WIDTH = 450;
   private static final int  HEIGHT = 300;
   GridBagLayout gridBagLayout1 = new GridBagLayout();
   private boolean DEBUG = true;
