@@ -395,6 +395,19 @@
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 0.71</title>
+
+          <para />
+        </formalpara>
+
+        <para>Temporary "downgrade" from HelpfulJTable to JTable
+        in SQL Result Set dockable. Hopefully HelpfulJTable will
+        be returned once the issue with the common controls will
+        be resolved.</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
           <title>Version 0.7</title>
 
           <para />
