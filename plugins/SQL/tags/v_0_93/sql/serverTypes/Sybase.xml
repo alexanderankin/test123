@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="Sybase">
+
+<!--The name of the JDBC driver -->
+  <driver>com.sybase.jdbc.SybDriver</driver>
+
+  <vfs>sql.serverTypes.SybaseVFS</vfs>
+
+  <connection>
+
+<!-- These parameters affect the UI used to manage server records -->
+    <parameter name="host" default="dev"/>
+    <parameter name="port" default="5000"/>
+    <parameter name="dbName" default=""/>
+    <parameter name="extra" default=""/>
+    <parameter name="user" default="user"/>
+    <parameter name="password" default="password"/>
+
+<!--
+  This string is used as a pattern for connecting to the database.
+  See DriverManager.getConnection() function.
+  Parameters named "user" and "password" are used directly in the function call.
+-->
+    <string>jdbc:sybase:Tds:{host}:{port}?ServiceName={dbName}</string>
+  </connection>
+
+  <statements>
+<!--
+  These are various DB statements used in SqlVFS, code publishing etc.
+  The concrete "purposes" depend on the server type and class named in <vfs> tag
+  Some standard ones are:
+
+    - selectTableGroups:
+        used in VFS to get the list of the tablegroups
+    - selectTablesInGroup:
+        used in VFS to get the list of the tables in the group
+
+  There is a lot of others used for the stored procedures handling (see
+  oracle.xml)
+-->
+
+    <statement purpose="dbNameMask">??</statement>
+
+    <statement purpose="selectSchemas">
+        select name from master..sysdatabases
+    </statement>
+
+    <statement purpose="selectTablesInSchema">
+        select name from ??..sysobjects where type = 'U'
+    </statement>
+
+    <statement purpose="selectCodeObjectsInSchema">
+        select name from ??..sysobjects where type = 'P'
+    </statement>
+    <statement purpose="selectCodeObjectLines">
+        select c.text from ??..syscomments c, ??..sysobjects o where c.id = o.id and o.name = ?
+    </statement>
+
+
+</statements>
+
+</serverType>
+

@@ -1,0 +1,82 @@
+<!-- This file defines actions. Each action is a short snippet of
+     BeanShell code that may be bound to a menu item or keystroke.
+
+     Menu item labels for actions should be defined in properties named
+     <action>.label. -->
+
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+  <ACTION NAME="sql.preprocessors.BeanShellEvaluator">
+    <CODE>
+      jEdit.setBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled",
+        !jEdit.getBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled" ) );
+      sql.SqlUtils.resetPreprocessors();
+    </CODE>
+    <IS_SELECTED>
+      return jEdit.getBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled" );
+    </IS_SELECTED>
+  </ACTION>
+  <ACTION NAME="sql.preprocessors.VariableSubstitutor">
+    <CODE>
+      jEdit.setBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled",
+        !jEdit.getBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled" ) );
+      sql.SqlUtils.resetPreprocessors();
+    </CODE>
+    <IS_SELECTED>
+      return jEdit.getBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled" );
+    </IS_SELECTED>
+  </ACTION>
+  <ACTION NAME="sql.preprocessors.SpecialCommentRemover">
+    <CODE>
+      jEdit.setBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled",
+        !jEdit.getBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled" ) );
+      sql.SqlUtils.resetPreprocessors();
+    </CODE>
+    <IS_SELECTED>
+      return jEdit.getBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled" );
+    </IS_SELECTED>
+  </ACTION>
+  <ACTION NAME="sql.resultSet">
+    <CODE>
+      view.getDockableWindowManager()
+          .toggleDockableWindow("sql.resultSet");
+    </CODE>
+    <IS_SELECTED>
+      return view.getDockableWindowManager()
+                 .isDockableWindowVisible("sql.resultSet");
+    </IS_SELECTED>
+  </ACTION>
+  <ACTION NAME="sql.publishBuffer">
+    <CODE>
+      sql.SqlPlugin.publishBuffer(view, sql.SqlUtils.getSelectedServerName() );
+    </CODE>
+  </ACTION>
+  <ACTION NAME="sql.publishSelection">
+    <CODE>
+      sql.SqlPlugin.publishSelection(view, sql.SqlUtils.getSelectedServerName() );
+    </CODE>
+  </ACTION>
+  <ACTION NAME="sql.publishBufferToServer">
+    <CODE>
+      sql.SqlPlugin.publishBufferToServer(view);
+    </CODE>
+  </ACTION>
+  <ACTION NAME="sql.publishSelectionToServer">
+    <CODE>
+      sql.SqlPlugin.publishSelectionToServer(view);
+    </CODE>
+  </ACTION>
+  <ACTION NAME="sql.loadObject">
+    <CODE>
+      sql.SqlPlugin.loadObject( view, sql.SqlUtils.getSelectedServerName() );
+    </CODE>
+  </ACTION>
+  <ACTION NAME="sql.loadObjectFromServer">
+    <CODE>
+      sql.SqlPlugin.loadObjectFromServer( view );
+    </CODE>
+  </ACTION>
+</ACTIONS>
