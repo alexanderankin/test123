@@ -406,8 +406,6 @@ errorSource.addError(new ErrorSource.DefaultError(
    <listitem><para>Updated code to use a few 4.1 API additions.
    </para></listitem>
   </itemizedlist>
-  </listitem>
- </itemizedlist>
 
   </listitem>
 
