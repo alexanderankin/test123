@@ -29,6 +29,8 @@ import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.filechooser.*;
 
+import common.gui.pathbuilder.*;
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
@@ -51,10 +53,7 @@ public class SqlOptionPane extends AbstractOptionPane
   private JButton delServerBtn;
   private Hashtable allServers;
 
-  private JList jdbcClassPathLst;
-  private JButton addClassPathBtn;
-  private JButton delClassPathBtn;
-
+  private PathBuilder pathBuilder;
   private JTextField maxRecsField;
 
   private JFrame parentFrame = null;
@@ -81,116 +80,98 @@ public class SqlOptionPane extends AbstractOptionPane
     allServersLst = new JList();
 
     Box vp = Box.createVerticalBox();
-    vp.add( vp.createVerticalStrut( 10 ) );
+    {
+      vp.add( vp.createVerticalStrut( 10 ) );
 
-    Box hp = Box.createHorizontalBox();
-    hp.add( hp.createHorizontalStrut( 40 ) );
+      Box hp = Box.createHorizontalBox();
+      {
+        hp.add( hp.createHorizontalStrut( 40 ) );
 
-    hp.add( new JLabel( SqlPlugin.Icon ) );
+        hp.add( new JLabel( SqlPlugin.Icon ) );
 
-    hp.add( hp.createHorizontalStrut( 40 ) );
-    vp.add( hp );
-    vp.add( vp.createVerticalStrut( 10 ) );
+        hp.add( hp.createHorizontalStrut( 40 ) );
+        vp.add( hp );
+      }
+      vp.add( vp.createVerticalStrut( 10 ) );
+    }
     addComponent( vp );
 
     JPanel panel = new JPanel();
-    panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
-    panel.setBorder( createTitledBorder( jEdit.getProperty( "sql.options.servers.label" ) ) );
+    {
+      panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+      panel.setBorder( createTitledBorder( jEdit.getProperty( "sql.options.servers.label" ) ) );
 
-    hp = Box.createHorizontalBox();
-    hp.add( Box.createHorizontalStrut( 10 ) );
+      Box hp = Box.createHorizontalBox();
+      {
+        hp.add( Box.createHorizontalStrut( 10 ) );
 
-    hp.add( hp.createHorizontalGlue() );
+        hp.add( hp.createHorizontalGlue() );
 
-    hp.add( allServersLst );
+        hp.add( allServersLst );
 
-    hp.add( hp.createHorizontalGlue() );
-    panel.add( hp );
+        hp.add( hp.createHorizontalGlue() );
+        panel.add( hp );
 
-    panel.add( Box.createVerticalStrut( 10 ) );
+        panel.add( Box.createVerticalStrut( 10 ) );
 
-    hp = Box.createHorizontalBox();
-    hp.add( hp.createHorizontalStrut( 10 ) );
+        hp = Box.createHorizontalBox();
+        hp.add( hp.createHorizontalStrut( 10 ) );
 
-    hp.add( hp.createHorizontalGlue() );
+        hp.add( hp.createHorizontalGlue() );
 
-    addServerBtn = new JButton( jEdit.getProperty( "sql.options.addServerBtn.label" ) );
-    hp.add( addServerBtn );
+        addServerBtn = new JButton( jEdit.getProperty( "sql.options.addServerBtn.label" ) );
+        hp.add( addServerBtn );
 
-    hp.add( hp.createHorizontalStrut( 10 ) );
+        hp.add( hp.createHorizontalStrut( 10 ) );
 
-    editServerBtn = new JButton( jEdit.getProperty( "sql.options.editServerBtn.label" ) );
-    hp.add( editServerBtn );
+        editServerBtn = new JButton( jEdit.getProperty( "sql.options.editServerBtn.label" ) );
+        hp.add( editServerBtn );
 
-    hp.add( hp.createHorizontalStrut( 10 ) );
+        hp.add( hp.createHorizontalStrut( 10 ) );
 
-    delServerBtn = new JButton( jEdit.getProperty( "sql.options.delServerBtn.label" ) );
-    hp.add( delServerBtn );
+        delServerBtn = new JButton( jEdit.getProperty( "sql.options.delServerBtn.label" ) );
+        hp.add( delServerBtn );
 
-    hp.add( hp.createHorizontalGlue() );
+        hp.add( hp.createHorizontalGlue() );
 
-    hp.add( hp.createHorizontalStrut( 10 ) );
-    panel.add( hp );
+        hp.add( hp.createHorizontalStrut( 10 ) );
+      }
+      panel.add( hp );
 
-    panel.add( Box.createVerticalStrut( 10 ) );
-
+      panel.add( Box.createVerticalStrut( 10 ) );
+    }
     addComponent( panel );
 
     panel = new JPanel();
-    panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
-    panel.setBorder( createTitledBorder( jEdit.getProperty( "sql.options.jdbcClassPath.label" ) ) );
-
-    hp = Box.createHorizontalBox();
-
-    hp.add( Box.createHorizontalStrut( 10 ) );
-
-    hp.add( hp.createHorizontalGlue() );
-
-    hp.add( jdbcClassPathLst = new JList( SqlPlugin.getJdbcClassPath() ) );
-
-    hp.add( hp.createHorizontalGlue() );
-    panel.add( hp );
-
-    panel.add( Box.createVerticalStrut( 10 ) );
-
-    hp = Box.createHorizontalBox();
-    hp.add( hp.createHorizontalStrut( 10 ) );
-
-    hp.add( hp.createHorizontalGlue() );
-
-    addClassPathBtn = new JButton( jEdit.getProperty( "sql.options.addClassPathBtn.label" ) );
-    hp.add( addClassPathBtn );
-
-    hp.add( hp.createHorizontalStrut( 10 ) );
-
-    delClassPathBtn = new JButton( jEdit.getProperty( "sql.options.delClassPathBtn.label" ) );
-    hp.add( delClassPathBtn );
-
-    hp.add( hp.createHorizontalGlue() );
-
-    hp.add( hp.createHorizontalStrut( 10 ) );
-    panel.add( hp );
-
-    panel.add( Box.createVerticalStrut( 10 ) );
-
-    panel.add( Box.createVerticalStrut( 10 ) );
-
+    {
+      panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+      panel.setBorder( createTitledBorder( jEdit.getProperty( "sql.options.jdbcClassPath.label" ) ) );
+      pathBuilder = new PathBuilder();
+      {
+        pathBuilder.setMoveButtonsEnabled( false );
+        pathBuilder.setFileFilter( new ClasspathFilter() );
+      }
+      panel.add( pathBuilder );
+    }
     addComponent( panel );
 
     panel = new JPanel();
-    panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
-    panel.setBorder( createTitledBorder( jEdit.getProperty( "sql.options.recordSetView.label" ) ) );
+    {
+      panel.setLayout( new BoxLayout( panel, BoxLayout.Y_AXIS ) );
+      panel.setBorder( createTitledBorder( jEdit.getProperty( "sql.options.recordSetView.label" ) ) );
 
-    hp = Box.createHorizontalBox();
-    hp.add( new JLabel( jEdit.getProperty( "sql.options.maxRecs2Show.label" ) ) );
+      Box hp = Box.createHorizontalBox();
+      {
+        hp.add( new JLabel( jEdit.getProperty( "sql.options.maxRecs2Show.label" ) ) );
 
-    hp.add( vp.createHorizontalStrut( 10 ) );
+        hp.add( vp.createHorizontalStrut( 10 ) );
 
-    hp.add( maxRecsField = new JTextField( "" + ResultSetWindow.getMaxRecordsToShow() ) );
+        hp.add( maxRecsField = new JTextField( "" + ResultSetWindow.getMaxRecordsToShow() ) );
 
-    hp.add( hp.createHorizontalGlue() );
-    panel.add( hp );
-
+        hp.add( hp.createHorizontalGlue() );
+      }
+      panel.add( hp );
+    }
     addComponent( panel );
 
     allServersLst.addListSelectionListener(
@@ -264,70 +245,12 @@ public class SqlOptionPane extends AbstractOptionPane
 
     updateServerList();
 
-    jdbcClassPathLst.addListSelectionListener(
-      new ListSelectionListener()
-      {
-        public void valueChanged( ListSelectionEvent evt )
-        {
-          updateClassPathButtons();
-        }
-      } );
-
-    addClassPathBtn.addActionListener(
-      new ActionListener()
-      {
-        public void actionPerformed( ActionEvent evt )
-        {
-          final JFileChooser fc = new JFileChooser();
-
-          fc.setFileFilter(
-            new FileFilter()
-            {
-              public String getDescription()
-              {
-                return jEdit.getProperty( "sql.options.jdbcClassPath.filterDescr" );
-              }
-
-
-              public boolean accept( java.io.File file )
-              {
-                if ( file.isDirectory() )
-                  return true;
-
-                if ( file.isHidden() )
-                  return false;
-
-                final String path = file.getAbsolutePath().toLowerCase();
-                return path.endsWith( ".zip" ) ||
-                    path.endsWith( ".jar" );
-              }
-            } );
-          final int res = fc.showOpenDialog( parentFrame );
-          if ( res != fc.APPROVE_OPTION )
-            return;
-          final String fileName = fc.getSelectedFile().getAbsolutePath();
-          jdbcClassPath.put( fileName, fileName );
-          updateClassPathList();
-        }
-      } );
-
-    delClassPathBtn.addActionListener(
-      new ActionListener()
-      {
-        public void actionPerformed( ActionEvent evt )
-        {
-          final String fileName = (String) jdbcClassPathLst.getSelectedValue();
-          jdbcClassPath.remove( fileName );
-          updateClassPathList();
-        }
-      } );
-
     final String paths[] = SqlPlugin.getJdbcClassPath();
     jdbcClassPath = new TreeMap();
     for ( int i = paths.length; --i >= 0;  )
       jdbcClassPath.put( paths[i], paths[i] );
 
-    updateClassPathList();
+    pathBuilder.setPathArray( (String[]) jdbcClassPath.values().toArray( new String[0] ) );
 
     Component cp = this;
     while ( cp != null )
@@ -368,7 +291,7 @@ public class SqlOptionPane extends AbstractOptionPane
     }
     ResultSetWindow.setMaxRecordsToShow( mr );
 
-    SqlPlugin.setJdbcClassPath( (String[]) jdbcClassPath.values().toArray( new String[0] ) );
+    SqlPlugin.setJdbcClassPath( pathBuilder.getPathArray() );
 
     SqlPlugin.commitProperties();
 
@@ -402,32 +325,6 @@ public class SqlOptionPane extends AbstractOptionPane
     allServersLst.setSelectedValue( selSrv, true );
 
     updateServerListButtons();
-  }
-
-
-  /**
-   *Description of the Method
-   *
-   * @since
-   */
-  protected void updateClassPathList()
-  {
-    jdbcClassPathLst.setListData( jdbcClassPath.values().toArray( new String[0] ) );
-
-    updateClassPathButtons();
-  }
-
-
-  /**
-   *Description of the Method
-   *
-   * @since
-   */
-  protected void updateClassPathButtons()
-  {
-    final boolean isAny = jdbcClassPathLst.getSelectedIndex() != -1;
-
-    delClassPathBtn.setEnabled( isAny );
   }
 
 

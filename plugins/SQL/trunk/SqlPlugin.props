@@ -2,13 +2,13 @@
 
 plugin.SqlPlugin.name=SQL
 plugin.SqlPlugin.author=Sergey V. Udaltsov
-plugin.SqlPlugin.version=0.71
+plugin.SqlPlugin.version=0.9
 plugin.SqlPlugin.docs=users-guide.html
 
 plugin.SqlPlugin.depend.0=jedit 02.07.02.00
 plugin.SqlPlugin.depend.1=plugin EditBusPlugin 0.9.4
 plugin.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.3
-plugin.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.1
+plugin.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.2
 
 # The menu item label
 sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer
@@ -89,6 +89,7 @@ sql.resultSet.status={0} request(s) running
 sql.resultSet.title=SQL Result Set
 
 sql.resultSet.popup.copy_all_csv.label=Copy all as CSV
+sql.resultSet.popup.copy_all_tab.label=Copy all as Tab-separated
 sql.resultSet.colHeaders.notNullable=Not nullable
 
 sql.illegalName=The name of the database configuration must be without white space
