@@ -39,8 +39,9 @@ import projectviewer.vpt.VPTProject;
  */
 public class ProjectNodeHandler extends NodeHandler {
 
-	protected static final String NODE_NAME = "project";
-	private static final String PATH_ATTR = "path";
+	protected static final String NODE_NAME	= "project";
+	private static final String PATH_ATTR	= "path";
+	private static final String URL_ATTR	= "url";
 
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
@@ -79,6 +80,7 @@ public class ProjectNodeHandler extends NodeHandler {
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
 		project.setRootPath(attrs.getValue(PATH_ATTR));
+		project.setURL(attrs.getValue(URL_ATTR));
 		return project;
 	}
 
@@ -90,6 +92,7 @@ public class ProjectNodeHandler extends NodeHandler {
 	public void saveNode(VPTNode node, Writer out) throws IOException {
 		startElement(out);
 		writeAttr(PATH_ATTR, xlatePath(((VPTProject)node).getRootPath()), out);
+		writeAttr(URL_ATTR, ((VPTProject)node).getURL(), out);
 		out.write(">\n");
 
 		// save the properties
