@@ -64,7 +64,7 @@ class TagsJumpAction {
 
         // TODO: if checkbox in options checked - display tags for whole project, if not checked - just for current file. For now it just for current file. 
         Vector e = new Vector();
-        Vector v = currentTags.PROJECT_CTBUFFER.getTagsByFile(jEdit.getActiveView()
+        Vector v = currentTags.ctagsBuffer.getTagsByFile(jEdit.getActiveView()
                                                                    .getBuffer()
                                                                    .getPath());
 
@@ -157,8 +157,8 @@ class TagsJumpAction {
 
             try {
                 if (SearchAndReplace.find(view, view.getBuffer(), 0)) {
-                    JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.add(en);
-                    JumpPlugin.getActiveProjectBuffer().HISTORY.addItem(en.getTagName());
+                    JumpPlugin.getActiveProjectBuffer().history.add(en);
+                    JumpPlugin.getActiveProjectBuffer().historyModel.addItem(en.getTagName());
                 }
             } catch (Exception e) {
                 Log.log(Log.DEBUG, this, "failed to find - " + tag);

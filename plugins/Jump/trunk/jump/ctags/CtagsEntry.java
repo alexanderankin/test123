@@ -30,7 +30,8 @@ import java.io.Serializable;
 * its methods. getExtensionFields(), getFileName(), etc.
 */
 public class CtagsEntry implements Serializable {
-    private static final String CONSTRUCT_EXCEPTION_MSG = "Exception during construct CTAGS_Entry. Line:";
+    private static final String CONSTRUCT_EXCEPTION_MSG = 
+    	"Exception during construct CTAGS_Entry. Line:";
     private String stringValue;
     private String tagName;
     private String filename;
@@ -43,7 +44,7 @@ public class CtagsEntry implements Serializable {
 
     // In Java mode, for example: 
     // "methods" is description of signature "m"
-    private String signatureDescr;
+    //private String signatureDescr;
 
     public CtagsEntry(String lineFromCtags) {
         try {
@@ -122,7 +123,7 @@ public class CtagsEntry implements Serializable {
         return signature;
     }
 
-    public String getSignatureDescr() {
-        return signatureDescr;
-    }
+//    public String getSignatureDescr() {
+//        return signatureDescr;
+//    }
 }

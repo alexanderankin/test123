@@ -25,7 +25,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.ArrayList;
+import java.util.Vector;
 
 import org.gjt.sp.util.Log;
 
@@ -56,7 +56,7 @@ public class CtagsParser implements Serializable {
     public CtagsBuffer parse(String filename) throws IOException {
     	if (!isValidExtension(filename)) return null;
     	
-        ArrayList list = new ArrayList();
+        Vector list = new Vector();
         list.add(filename);
 
         return doParse(list);
@@ -65,7 +65,7 @@ public class CtagsParser implements Serializable {
     /**
     * Parse list file and return new CTAGS_Buffer
     */
-    public CtagsBuffer parse(ArrayList filenames) throws IOException {
+    public CtagsBuffer parse(Vector filenames) throws IOException {
         return doParse(filenames);
     }
 
@@ -78,7 +78,7 @@ public class CtagsParser implements Serializable {
         return true;
     }
   
-    private CtagsBuffer doParse(ArrayList list) throws IOException {
+    private CtagsBuffer doParse(Vector list) throws IOException {
         CtagsBuffer buf = new CtagsBuffer();
 
         for (int i = 0; i < list.size(); i++) {

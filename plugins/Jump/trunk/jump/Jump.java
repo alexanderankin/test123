@@ -38,14 +38,7 @@ public class Jump {
     // Is any active VTProject loaded?
     // TODO: this method must be called just once!!!
     public boolean isProjectLoaded() {
-        System.out.println("isProjectLoaded: return" +
-            PVActions.getCurrentProject(jEdit.getActiveView()));
-
-        if (PVActions.getCurrentProject(jEdit.getActiveView()) == null) {
-            return false;
-        }
-
-        return true;
+        return null != PVActions.getCurrentProject(jEdit.getActiveView());
     }
 
     public void showFilesJump() {
@@ -67,7 +60,7 @@ public class Jump {
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer) {
             JumpPlugin.getListener().reloadProjectForced();
 
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) {
+            if (JumpPlugin.getActiveProjectBuffer().ctagsBuffer != null) {
                 JumpPlugin.fja.showList();
             }
         } else {
@@ -77,7 +70,7 @@ public class Jump {
             if (PVActions.getCurrentProject(view) != null) {
                 JumpPlugin.getListener().reloadProjectForced();
 
-                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(
+                ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(
                             view).getName());
 
                 if (b == null) {
@@ -109,7 +102,7 @@ public class Jump {
             JumpPlugin.getListener().reloadProjectForced();
             System.out.println("1.");
 
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) {
+            if (JumpPlugin.getActiveProjectBuffer().ctagsBuffer != null) {
                 JumpPlugin.tja.showList();
             }
         } else {
@@ -119,7 +112,7 @@ public class Jump {
             if (PVActions.getCurrentProject(view) != null) {
                 System.out.println("2.");
 
-                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(
+                ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(
                             view).getName());
 
                 if (b == null) {
@@ -154,7 +147,7 @@ public class Jump {
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer) {
             JumpPlugin.getListener().reloadProjectForced();
 
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) {
+            if (JumpPlugin.getActiveProjectBuffer().ctagsBuffer != null) {
                 JumpPlugin.pja.JumpToTag();
             }
         } else {
@@ -164,7 +157,7 @@ public class Jump {
             if (PVActions.getCurrentProject(view) != null) {
                 JumpPlugin.getListener().reloadProjectForced();
 
-                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(
+                ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(
                             view).getName());
 
                 if (b == null) {
@@ -176,7 +169,7 @@ public class Jump {
 
                 JumpPlugin.setActiveProjectBuffer(b);
 
-                if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) {
+                if (JumpPlugin.getActiveProjectBuffer().ctagsBuffer != null) {
                     JumpPlugin.pja.JumpToTag();
                 }
             }
@@ -184,8 +177,6 @@ public class Jump {
     }
 
     public void showFoldJump() {
-        System.out.println("Jump.showFoldJump");
-
         FoldJumpAction foldja = new FoldJumpAction();
         foldja.showFoldsList();
     }
@@ -211,7 +202,7 @@ public class Jump {
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer) {
             JumpPlugin.getListener().reloadProjectForced();
 
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) {
+            if (JumpPlugin.getActiveProjectBuffer().ctagsBuffer != null) {
                 JumpPlugin.pja.completeTag(isGlobalSearch);
             }
         } else {
@@ -220,7 +211,7 @@ public class Jump {
             if (PVActions.getCurrentProject(view) != null) {
                 JumpPlugin.getListener().reloadProjectForced();
 
-                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(
+                ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(
                             view).getName());
 
                 if (b == null) {
@@ -232,7 +223,7 @@ public class Jump {
 
                 JumpPlugin.setActiveProjectBuffer(b);
 
-                if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) {
+                if (JumpPlugin.getActiveProjectBuffer().ctagsBuffer != null) {
                     JumpPlugin.pja.completeTag(isGlobalSearch);
                 }
             }
@@ -271,7 +262,7 @@ public class Jump {
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer) {
             JumpPlugin.getListener().reloadProjectForced();
 
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) {
+            if (JumpPlugin.getActiveProjectBuffer().ctagsBuffer != null) {
                 JumpPlugin.pja.JumpToPreviousTag();
             }
         } else {
@@ -281,7 +272,7 @@ public class Jump {
             if (PVActions.getCurrentProject(view) != null) {
                 JumpPlugin.getListener().reloadProjectForced();
 
-                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(
+                ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(
                             view).getName());
 
                 if (b == null) {
@@ -312,14 +303,14 @@ public class Jump {
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer) {
             JumpPlugin.getListener().reloadProjectForced();
 
-            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) {
+            if (JumpPlugin.getActiveProjectBuffer().ctagsBuffer != null) {
                 JumpPlugin.pja.JumpToTagByInput();
             }
         } else {
             if (PVActions.getCurrentProject(view) != null) {
                 JumpPlugin.getListener().reloadProjectForced();
 
-                ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(
+                ProjectBuffer b = new ProjectBuffer(PVActions.getCurrentProject(
                             view).getName());
 
                 if (b == null) {

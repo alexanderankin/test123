@@ -30,12 +30,12 @@ import java.util.Vector;
  */
 public class CtagsBuffer extends ArrayList {
     /** Store list of all files which already parsed into this CTAGS_Buffer */
-    private ArrayList filenames;
+    private Vector filenames;
 
     /** Create new CTAGS_Buffer */
     public CtagsBuffer() {
         super();
-        filenames = new ArrayList();
+        filenames = new Vector();
     }
 
     /** Append CTAGS_Buffer.
@@ -92,7 +92,7 @@ public class CtagsBuffer extends ArrayList {
     }
 
     /** Files (full path) for which CTAGS_Buffer was generated */
-    public ArrayList getFileNames() {
+    public Vector getFileNames() {
         return filenames;
     }
     
