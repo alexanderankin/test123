@@ -1,6 +1,10 @@
 /*
  * TagHighlight.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (c) 2000 Andre Kaplan
+ * Portions copyright (c) 2002 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -12,368 +16,226 @@
 
 package xml;
 
+//{{{ Imports
+import javax.swing.event.*;
+import javax.swing.Timer;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.util.*;
+import java.awt.event.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.Log;
-
+//}}}
 
 public class TagHighlight implements TextAreaHighlight
 {
-	// (EditPane, TagHighlight) association
-	private static Hashtable highlights = new Hashtable();
-
-	private static BufferChangeAdapter bufferHandler = new BufferHandler();
-
-	private static Color tagHighlightColor = GUIUtilities.parseColor(
-		jEdit.getProperty("xml.tag-highlight-color"));
-
-	private boolean bufferUpdated = false;
-	private int caretPos  = -1;
-	private int firstLine = -1;
-	private MatchTag.TagAttribute match = null;
-
-	private JEditTextArea textArea;
-	private boolean enabled = false;
-
-
-	private TagHighlight(JEditTextArea textArea)
+	//{{{ TagHighlight constructor
+	public TagHighlight(View view, JEditTextArea textArea)
 	{
+		this.view = view;
 		this.textArea = textArea;
-	}
+		textArea.addCaretListener(new CaretHandler());
 
+		bufferHandler = new BufferHandler();
+		buffer = textArea.getBuffer();
+		buffer.addBufferChangeListener(bufferHandler);
 
+		timer = new Timer(0,new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				updateHighlight();
+			}
+		});
+	} //}}}
+
+	//{{{ paintHighlight() method
 	public void paintHighlight(Graphics gfx, int virtualLine, int y)
 	{
-		if (this.isEnabled())
+		if(match != null && virtualLine < textArea.getVirtualLineCount())
 		{
-			Buffer buffer = this.textArea.getBuffer();
-			if(!buffer.isLoaded())
-				return;
-
 			int physicalLine = textArea.virtualToPhysical(virtualLine);
 
-			try
-			{
-				if (	(this.textArea.getLineStartOffset(physicalLine) == -1)
-					||  (this.textArea.getLineEndOffset(physicalLine) == -1)
-				)
-				{
-					return;
-				}
-			}
-			catch (Exception e)
-			{
+			FontMetrics fm = textArea.getPainter().getFontMetrics();
+			int height = fm.getHeight();
+
+			int matchStartLine = buffer.getLineOfOffset(match.start);
+			int matchEndLine = buffer.getLineOfOffset(match.end);
+
+			if(physicalLine < matchStartLine || physicalLine > matchEndLine)
 				return;
-			}
 
-			if (this.bufferUpdated ||
-				this.caretPos != this.textArea.getCaretPosition() ||
-				this.firstLine != textArea.virtualToPhysical(this.textArea.getFirstLine())
-			)
-			{
-				this.updateCaretPosition();
-				this.bufferUpdated = false;
-			}
-			if (this.match != null) {
-				int match_start_line = this.textArea.getLineOfOffset(this.match.start);
-				if (match_start_line == physicalLine) {
-					int match_end_line = this.textArea.getLineOfOffset(this.match.end);
-					int nLines = match_end_line - match_start_line + 1;
-					int nPoints = (nLines) * 4;
-					int[] xs = new int[nPoints];
-					int[] ys = new int[nPoints];
-					FontMetrics fm = this.textArea.getPainter().getFontMetrics();
+			int x1, x2;
 
-					for (int i = 0; i < nLines; ++i) {
-						int i2 = i * 2;
-						if (i == 0) {
-							xs[0] = xs[1] = this.textArea.offsetToX(
-								match_start_line,
-								this.match.start - this.textArea.getLineStartOffset(match_start_line)
-							);
-							ys[0] = ys[nPoints - 1] = y + fm.getDescent();
-						} else {
-							xs[i2] = xs[i2+1] = this.textArea.offsetToX(match_start_line + i, 0);
-							ys[i2] = ys[nPoints-(i2+1)] = ys[i2-1];
-						}
-						if (i == nLines - 1) {
-							xs[nPoints-(i2+1)] = xs[nPoints-(i2+2)] = this.textArea.offsetToX(
-								match_start_line + i,
-								this.match.end - this.textArea.getLineStartOffset(match_start_line + i)
-							);
-							ys[i2+1] = ys[nPoints-(i2+2)] = ys[i2] + fm.getHeight() - 1;
-						} else {
-							xs[nPoints-(i2+1)] = xs[nPoints-(i2+2)] = this.textArea.offsetToX(
-								match_start_line + i,
-								this.textArea.getLineEndOffset(match_start_line + i) - 1
-							);
-							ys[i2+1] = ys[nPoints-(i2+2)] = ys[i2] + fm.getHeight();
-						}
-					}
-					gfx.setColor(tagHighlightColor);
-					gfx.drawPolygon(xs, ys, nPoints);
-				}
-			}
+			if(matchStartLine == physicalLine)
+				x1 = match.start - buffer.getLineStartOffset(matchStartLine);
+			else
+				x1 = 0;
+
+			if(matchEndLine == physicalLine)
+				x2 = match.end - buffer.getLineStartOffset(matchEndLine);
+			else
+				x2 = buffer.getLineLength(physicalLine);
+
+			x1 = textArea.offsetToX(physicalLine,x1);
+			x2 = textArea.offsetToX(physicalLine,x2);
+
+			gfx.setColor(tagHighlightColor);
+			gfx.drawRect(x1,y + fm.getDescent() + fm.getLeading(),
+				x2 - x1,height - 1);
 		}
-	}
+	} //}}}
 
-
+	//{{{ getToolTipText() method
 	public String getToolTipText(MouseEvent evt)
 	{
 		return null;
-	}
+	} //}}}
 
-
-	private void updateTextArea()
+	//{{{ bufferChanged() method
+	public void bufferChanged(Buffer buffer)
 	{
-		Buffer buffer = this.textArea.getBuffer();
-		int physicalFirst = textArea.virtualToPhysical(
-			this.textArea.getFirstLine()
-		);
-		int physicalLast  = textArea.virtualToPhysical(
-			this.textArea.getFirstLine() + this.textArea.getVisibleLines()
-		);
-		this.textArea.invalidateLineRange(physicalFirst, physicalLast);
-	}
+		this.buffer.removeBufferChangeListener(bufferHandler);
+		this.buffer = buffer;
+		buffer.addBufferChangeListener(bufferHandler);
+		current = match = null;
+		updateHighlightWithDelay();
+	} //}}}
 
-	private boolean isEnabled()
+	//{{{ propertiesChanged() method
+	public static void propertiesChanged()
 	{
-		return enabled;
-	}
+		tagHighlightColor = jEdit.getColorProperty(
+			"xml.tag-highlight-color");
+		tagHighlightEnabled = jEdit.getBooleanProperty(
+			"xml.tag-highlight");
+	} //}}}
 
-	private void setEnabled(boolean enabled)
+	//{{{ Private members
+
+	//{{{ Instance variables
+	private static Color tagHighlightColor;
+	private static boolean tagHighlightEnabled;
+
+	private Timer timer;
+
+	private BufferHandler bufferHandler;
+	private MatchTag.TagAttribute current;
+	private MatchTag.TagAttribute match;
+
+	private View view;
+	private JEditTextArea textArea;
+	private Buffer buffer;
+
+	private boolean bufferChanged;
+	//}}}
+
+	//{{{ updateHighlightWithDelay() method
+	private void updateHighlightWithDelay()
 	{
-		this.enabled = enabled;
-	}
-
-	private void updateCaretPosition()
-	{
-		/* if(textArea.getVisibleLines() == 0)
-			return;
-
-		Buffer buffer  = this.textArea.getBuffer();
-		this.match	 = null;
-		this.caretPos  = this.textArea.getCaretPosition();
-		this.firstLine = textArea.virtualToPhysical(this.textArea.getFirstLine());
-
-		int firstLineStartOffset = this.textArea.getLineStartOffset(
-			this.firstLine
-		);
-		int lastLineEndOffset	= this.textArea.getLineEndOffset(Math.min(
-			 textArea.virtualToPhysical(this.textArea.getFirstLine() + this.textArea.getVisibleLines() - 1)
-		   , this.textArea.getLineCount() - 1
-		));
-
-		if (!(this.caretPos >= firstLineStartOffset && this.caretPos < lastLineEndOffset)) {
-			return;
-		}
-
-		String visibleText = this.textArea.getText(
-			firstLineStartOffset, (lastLineEndOffset - 1) - firstLineStartOffset
-		);
-
-		MatchTag.TagAttribute tagAttr =
-			MatchTag.getSelectedTag(
-				this.caretPos - firstLineStartOffset,
-				visibleText
-			); */
-
-
-		/*
-		if (tagAttr != null) {
-			Log.log(Log.DEBUG, this, "**** Tag:start:end = " + tagAttr.tag + ":" + tagAttr.start + ":" + tagAttr.end);
-		}
-		*/
-
-
-		/* if (tagAttr != null && tagAttr.type != MatchTag.T_STANDALONE_TAG) {
-			MatchTag.TagAttribute matchingTagAttr = MatchTag.getMatchingTagAttr(visibleText, tagAttr);
-			if (matchingTagAttr != null) {
-				//Log.log(Log.DEBUG, this, "**** MatchingTag:start:end = " + matchingTagAttr.tag + ":" + matchingTagAttr.start + ":" + matchingTagAttr.end);
-
-				this.match = matchingTagAttr;
-				this.match.start += firstLineStartOffset;
-				this.match.end   += firstLineStartOffset + 1;
-			}
-		}
-
-		this.updateTextArea(); */
-	}
-
-	/**
-	* Tests if the tag highlights are enabled for an editPane
-	**/
-	public static boolean isTagHighlightEnabledFor(EditPane editPane) {
-		Buffer buffer = editPane.getBuffer();
-		return buffer.getBooleanProperty("xml.tag-highlight");
-	}
-
-
-	/**
-	 * Gets TagHighlight for an editPane
-	**/
-	public static TagHighlight getTagHighlightFor(EditPane editPane)
-	{
-		return (TagHighlight) highlights.get(editPane);
-	}
-
-
-	/**
-	 * Sets tag highlighting to enabled or disabled for a editPane
-	**/
-	public static void setTagHighlightFor(EditPane editPane, boolean enabled)
-	{
-		Buffer buffer   = editPane.getBuffer();
-		buffer.setBooleanProperty("xml.tag-highlight",enabled);
-
-		// Propagate the change to all edit panes with the same buffer
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++)
+		if(!tagHighlightEnabled || !buffer.isLoaded()
+			|| buffer.getProperty("xml.parser") == null)
 		{
+			return;
+		}
 
-			EditPane[] editPanes = views[i].getEditPanes();
-			for (int j = 0; j < editPanes.length; j++)
+		if(match != null)
+		{
+			if(match.start < buffer.getLength()
+				&& match.end <= buffer.getLength())
 			{
-				if (editPanes[j].getBuffer() != buffer) { continue; }
-				TagHighlight highlight;
-				highlight = (TagHighlight) highlights.get(editPanes[j]);
-				if (highlight != null && highlight.isEnabled() != enabled)
+				textArea.invalidateLineRange(
+					textArea.getLineOfOffset(match.start),
+					textArea.getLineOfOffset(match.end)
+				);
+			}
+
+			match = null;
+		}
+
+		if(timer.isRunning())
+			timer.stop();
+
+		timer.setInitialDelay(250);
+		timer.setRepeats(false);
+		timer.start();
+	} //}}}
+
+	//{{{ updateHighlight() method
+	private void updateHighlight()
+	{
+		int caret = textArea.getCaretPosition();
+
+		if(bufferChanged || current == null
+			|| caret < current.start
+			|| caret > current.end)
+		{
+			System.err.println("updating match");
+			String text = textArea.getText();
+			current = MatchTag.getSelectedTag(caret,text);
+			if(current == null)
+			{
+				match = null;
+			}
+			else
+			{
+				match = MatchTag.getMatchingTag(text,current);
+
+				if(match != null)
 				{
-					highlight.bufferUpdated = true;
-					highlight.setEnabled(enabled);
-					highlight.updateTextArea();
+					int line = textArea.physicalToVirtual(
+						buffer.getLineOfOffset(match.start));
+					if(line < textArea.getFirstLine()
+						|| line >= textArea.getFirstLine()
+						+ textArea.getVisibleLines() - 1)
+					{
+						view.getStatus().setMessageAndClear(
+							jEdit.getProperty("view.status.bracket",
+							new String[] { text.substring(
+							match.start,match.end) }));
+					}
+
+					textArea.invalidateLineRange(
+						buffer.getLineOfOffset(match.start),
+						buffer.getLineOfOffset(match.end)
+					);
 				}
 			}
 		}
-	}
 
-	public static TextAreaHighlight addHighlightTo(EditPane editPane)
-	{
-		TagHighlight textAreaHighlight = new TagHighlight(
-			editPane.getTextArea());
-		textAreaHighlight.setEnabled(jEdit.getBooleanProperty(
-			"xml.tag-highlight"));
-		highlights.put(editPane, textAreaHighlight);
-		return textAreaHighlight;
-	}
+		bufferChanged = false;
+	} //}}}
 
-	public static void removeHighlightFrom(EditPane editPane)
-	{
-		highlights.remove(editPane);
-	}
+	//}}}
 
-	public static void bufferCreated(Buffer buffer)
-	{
-		buffer.addBufferChangeListener(TagHighlight.bufferHandler);
-	}
-
-	public static void bufferLoaded(Buffer buffer)
-	{
-		boolean enabled = buffer.getBooleanProperty("xml.tag-highlight");
-
-		// Propagate the changes to all textareas
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++)
-		{
-			EditPane[] editPanes = views[i].getEditPanes();
-			TagHighlight highlight;
-			for (int j = 0; j < editPanes.length; j++)
-			{
-				if (editPanes[j].getBuffer() != buffer)
-					continue;
-
-				highlight = (TagHighlight) highlights.get(editPanes[j]);
-
-				highlight.setEnabled(enabled);
-			}
-		}
-	}
-
-	public static void bufferClosed(Buffer buffer)
-	{
-		buffer.removeBufferChangeListener(TagHighlight.bufferHandler);
-	}
-
-	public static void bufferChanged(EditPane editPane)
-	{
-		Buffer buffer = editPane.getBuffer();
-		boolean enabled = buffer.getBooleanProperty("xml.tag-highlight");
-
-		TagHighlight tagHighlight =
-			TagHighlight.getTagHighlightFor(editPane);
-
-		tagHighlight.setEnabled(enabled);
-	}
-
-
-	public static void propertiesChanged()
-	{
-		Color newTagHighlightColor = GUIUtilities.parseColor(
-			jEdit.getProperty("xml.tag-highlight-color")
-		);
-
-		boolean tagHighlightColorChanged = !(newTagHighlightColor.equals(tagHighlightColor));
-
-		if (!tagHighlightColorChanged)
-			return;
-
-		tagHighlightColor = newTagHighlightColor;
-
-		// Propagate the changes to all textareas
-		View[] views = jEdit.getViews();
-		for (int i = 0; i < views.length; i++)
-		{
-			EditPane[] editPanes = views[i].getEditPanes();
-			TagHighlight highlight;
-			for (int j = 0; j < editPanes.length; j++)
-			{
-				highlight = (TagHighlight) highlights.get(editPanes[j]);
-
-				if (highlight.isEnabled())
-					highlight.updateTextArea();
-			}
-		}
-	}
-
-
-	private static class BufferHandler extends BufferChangeAdapter
+	//{{{ BufferHandler class
+	class BufferHandler extends BufferChangeAdapter
 	{
 		public void contentInserted(Buffer buffer, int startLine,
 			int offset, int numLines, int length)
 		{
-			this.bufferUpdated(buffer);
+			bufferChanged = true;
+			updateHighlightWithDelay();
 		}
-
 
 		public void contentRemoved(Buffer buffer, int startLine,
 			int offset, int numLines, int length)
 		{
-			this.bufferUpdated(buffer);
+			bufferChanged = true;
+			updateHighlightWithDelay();
 		}
+	} //}}}
 
-
-		private void bufferUpdated(Buffer buffer)
+	//{{{ CaretHandler class
+	class CaretHandler implements CaretListener
+	{
+		public void caretUpdate(CaretEvent evt)
 		{
-			// Propagate the changes to all textareas
-			View[] views = jEdit.getViews();
-			for (int i = 0; i < views.length; i++)
-			{
-				EditPane[] editPanes = views[i].getEditPanes();
-				TagHighlight highlight;
-				for (int j = 0; j < editPanes.length; j++)
-				{
-					if (editPanes[j].getBuffer() != buffer)
-						continue;
+			// hack
+			if(textArea.getBuffer() != buffer)
+				return;
 
-					highlight = (TagHighlight) highlights.get(editPanes[j]);
-
-					highlight.bufferUpdated = true;
-				}
-			}
+			updateHighlightWithDelay();
 		}
-	}
+	} //}}}
 }

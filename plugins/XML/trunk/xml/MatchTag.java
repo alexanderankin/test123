@@ -28,7 +28,7 @@ public class MatchTag {
 		String text = textArea.getText();
 		TagAttribute tagAttr = getSelectedTag(textArea.getCaretPosition(), text);
 		if (tagAttr != null) {
-			TagAttribute matchingTagAttr = getMatchingTagAttr(text, tagAttr);
+			TagAttribute matchingTagAttr = getMatchingTag(text, tagAttr);
 			if (matchingTagAttr != null) {
 				textArea.setSelection(new Selection.Range(
 					matchingTagAttr.start, matchingTagAttr.end
@@ -103,7 +103,7 @@ public class MatchTag {
 							return null;
 						tagType = T_STANDALONE_TAG;
 					}
-					endTag = i;
+					endTag = i + 1;
 					if (endTagName == -1)
 						endTagName = i;
 				}
@@ -150,7 +150,7 @@ public class MatchTag {
 	}
 
 
-	public static TagAttribute getMatchingTagAttr(String text, TagAttribute tagAttr) {
+	public static TagAttribute getMatchingTag(String text, TagAttribute tagAttr) {
 		if (tagAttr.type == T_START_TAG)
 			return findEndTag(text, tagAttr);
 		else if (tagAttr.type == T_END_TAG)
@@ -161,7 +161,7 @@ public class MatchTag {
 
 	private static TagAttribute findEndTag(String text, TagAttribute startTagAttr) {
 		Stack tagStack = new Stack();
-		for (int i = text.indexOf('<', startTagAttr.end + 1); i != -1; i = text.indexOf('<', ++i)) {
+		for (int i = text.indexOf('<', startTagAttr.end); i != -1; i = text.indexOf('<', ++i)) {
 			TagAttribute tagAttr = getSelectedTag(i + 1, text);
 			if (tagAttr != null && tagAttr.type != T_STANDALONE_TAG) {
 				if (tagAttr.type == T_END_TAG) {

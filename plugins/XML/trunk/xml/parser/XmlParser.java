@@ -67,6 +67,14 @@ public class XmlParser implements EBComponent
 
 		propertiesChanged();
 
+		keystrokeTimer = new Timer(0,new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				parse(false);
+			}
+		});
+
 		EditBus.addToBus(this);
 	} //}}}
 
@@ -285,16 +293,8 @@ public class XmlParser implements EBComponent
 	//{{{ parseWithDelay() method
 	private void parseWithDelay()
 	{
-		if(keystrokeTimer != null)
+		if(keystrokeTimer.isRunning())
 			keystrokeTimer.stop();
-
-		keystrokeTimer = new Timer(0,new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				parse(false);
-			}
-		});
 
 		keystrokeTimer.setInitialDelay(delay);
 		keystrokeTimer.setRepeats(false);

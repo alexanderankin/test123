@@ -61,21 +61,8 @@ public class XmlPlugin extends EBPlugin
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
-		//{{{ BufferUpdate
-		if(msg instanceof BufferUpdate)
-		{
-			BufferUpdate bu = (BufferUpdate)msg;
-			Buffer buffer = bu.getBuffer();
-
-			if(bu.getWhat() == BufferUpdate.CREATED)
-				TagHighlight.bufferCreated(buffer);
-			else if(bu.getWhat() == BufferUpdate.LOADED)
-				TagHighlight.bufferLoaded(buffer);
-			else if(bu.getWhat() == BufferUpdate.CLOSED)
-				TagHighlight.bufferClosed(buffer);
-		} //}}}
 		//{{{ EditPaneUpdate
-		else if(msg instanceof EditPaneUpdate)
+		if(msg instanceof EditPaneUpdate)
 		{
 			EditPaneUpdate epu = (EditPaneUpdate)msg;
 			EditPane editPane = epu.getEditPane();
@@ -85,20 +72,20 @@ public class XmlPlugin extends EBPlugin
 				JEditTextArea textArea = editPane.getTextArea();
 				TextAreaPainter textAreaPainter = textArea.getPainter();
 
-				TagHighlight tagHighlight =
-					(TagHighlight)TagHighlight.addHighlightTo(editPane);
-
+				TagHighlight tagHighlight = new TagHighlight(
+					editPane.getView(),textArea);
+				tagHighlights.put(editPane,tagHighlight);
 				textAreaPainter.addCustomHighlight(tagHighlight);
 			}
 			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 			{
-				TagHighlight.removeHighlightFrom(editPane);
-
-				JEditTextArea textArea = editPane.getTextArea();
+				tagHighlights.remove(editPane);
 			}
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 			{
-				TagHighlight.bufferChanged(editPane);
+				TagHighlight highlight = (TagHighlight)
+					tagHighlights.get(editPane);
+				highlight.bufferChanged(editPane.getBuffer());
 			}
 		} //}}}
 		//{{{ PropertiesChanged
@@ -133,5 +120,6 @@ public class XmlPlugin extends EBPlugin
 
 	//{{{ Private members
 	private static HashMap parsers = new HashMap();
+	private static HashMap tagHighlights = new HashMap();
 	//}}}
 }
