@@ -21,7 +21,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Hashtable;
-import org.gjt.sp.jedit.gui.JCheckBoxList;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
@@ -77,10 +77,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
 
-		addComponent(networkOK = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.network-ok")));
-		networkOK.setSelected(jEdit.getBooleanProperty("xml.network-ok"));
-
 		addComponent(tagHighlight = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.tag-highlight-enabled")));
 		tagHighlight.setSelected(jEdit.getBooleanProperty(
@@ -88,8 +84,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 		tagHighlight.addActionListener(new ActionHandler());
 
 		addComponent(jEdit.getProperty("options.xml.general.tag-highlight-color"),
-			tagHighlightColor = createColorButton(
-			"xml.tag-highlight-color"));
+			tagHighlightColor = new ColorWellButton(
+			jEdit.getColorProperty("xml.tag-highlight-color")));
 		tagHighlightColor.setEnabled(tagHighlight.isSelected());
 
 		String[] values = {
@@ -102,8 +98,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 			showAttributes = new JComboBox(values));
 		showAttributes.setSelectedIndex(jEdit.getIntegerProperty(
 			"xml.show-attributes",0));
-
-		
 	} //}}}
 
 	//{{{ _save() method
@@ -118,12 +112,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setIntegerProperty("xml.show-attributes",
 			showAttributes.getSelectedIndex());
 		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
-		jEdit.setBooleanProperty("xml.network-ok",networkOK.isSelected());
 		jEdit.setBooleanProperty("xml.tag-highlight",
 			tagHighlight.isSelected());
 		jEdit.setProperty("xml.tag-highlight-color",
 			GUIUtilities.getColorHexString(
-			tagHighlightColor.getBackground()));
+			tagHighlightColor.getSelectedColor()));
 	} //}}}
 
 	//{{{ Private members
@@ -133,9 +126,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
 	private JCheckBox validate;
-	private JCheckBox networkOK;
 	private JCheckBox tagHighlight;
-	private JButton tagHighlightColor;
+	private ColorWellButton tagHighlightColor;
 	private JComboBox showAttributes;
 	//}}}
 

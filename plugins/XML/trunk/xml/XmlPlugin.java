@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (C) 2000, 2001, 2002 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -32,6 +32,7 @@ import xml.parser.*;
 
 public class XmlPlugin extends EBPlugin
 {
+	//{{{ Some constants
 	public static final String TREE_NAME = "xml-tree";
 	public static final String INSERT_NAME = "xml-insert";
 
@@ -39,6 +40,7 @@ public class XmlPlugin extends EBPlugin
 	public static final String PARSER_PROPERTY = "xml.parser";
 	public static final String COMPLETION_INFO_PROPERTY = "xml.completion-info";
 	public static final String IDS_PROPERTY = "xml.ids";
+	//}}}
 
 	//{{{ start() method
 	public void start()
@@ -48,8 +50,13 @@ public class XmlPlugin extends EBPlugin
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 
-		CatalogManager.propertiesChanged();
 		XmlActions.propertiesChanged();
+	} //}}}
+
+	//{{{ stop() method
+	public void stop()
+	{
+		CatalogManager.save();
 	} //}}}
 
 	//{{{ createMenuItems() method
