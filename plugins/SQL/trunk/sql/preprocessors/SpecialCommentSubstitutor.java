@@ -41,7 +41,7 @@ public class SpecialCommentSubstitutor extends Preprocessor {
 		for ( int i = 0;i < COMMENT.length;i++ ) {
 			int curPos = text.indexOf( COMMENT[ i ] );
 			while ( curPos > -1 ) {
-				text = substituteFragment( text, curPos + 1, COMMENT[ i ].length() );
+				text = substituteFragment( text, curPos , COMMENT[ i ].length() );
 				curPos = text.indexOf( COMMENT[ i ], curPos + COMMENT[ i ].length() );
 			}
 		}
