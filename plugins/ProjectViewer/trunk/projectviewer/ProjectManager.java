@@ -370,7 +370,9 @@ public final class ProjectManager {
 			if (e.fileName != null) {
 				out.write("<");
 				out.write(PROJECT_ELEMENT);
-				out.write(" =\"");
+				out.write(" ");
+				out.write(PRJ_NAME);
+				out.write("=\"");
 				for (int i = 0; i < pName.length(); i++) {
 					switch (pName.charAt(i)) {
 						case '<':
