@@ -622,7 +622,7 @@ implements EBComponent, Output, DefaultFocusComponent
 			return ((Integer)scrollback.getProperty(
 				ConsolePane.InputStart)).intValue();
 		} //}}}
-	
+
 		//{{{ setInputStart() method
 		public void setInputStart(int cmdStart)
 		{

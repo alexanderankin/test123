@@ -100,19 +100,6 @@ public class SystemShell extends Shell
 			return;
 		}
 
-		// if current working directory doesn't exist, print an error.
-		String cwd = state.currentDirectory;
-		if(!new File(cwd).exists())
-		{
-			error.print(console.getErrorColor(),
-				jEdit.getProperty(
-				"console.shell.error.working-dir",
-				new String[] { cwd }));
-			output.commandDone();
-			error.commandDone();
-			return;
-		}
-
 		// lazily initialize aliases and variables
 		init();
 
@@ -133,6 +120,19 @@ public class SystemShell extends Shell
 			// a console built-in
 			args.removeElementAt(0);
 			executeBuiltIn(console,output,error,commandName,args);
+			output.commandDone();
+			error.commandDone();
+			return;
+		}
+
+		// if current working directory doesn't exist, print an error.
+		String cwd = state.currentDirectory;
+		if(!new File(cwd).exists())
+		{
+			error.print(console.getErrorColor(),
+				jEdit.getProperty(
+				"console.shell.error.working-dir",
+				new String[] { cwd }));
 			output.commandDone();
 			error.commandDone();
 			return;
@@ -198,7 +198,8 @@ public class SystemShell extends Shell
 				console,output,error,_args,
 				env,state,foreground);
 
-			if(foreground)
+			/* If startup failed its no longer running */
+			if(foreground && proc.isRunning())
 			{
 				console.getErrorSource().clear();
 				state.process = proc;
