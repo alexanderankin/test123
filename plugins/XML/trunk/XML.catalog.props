@@ -17,7 +17,7 @@ xml.default.system-id.3=recent.dtd
 xml.default.system-id.3.uri=jeditresource:/org/gjt/sp/jedit/recent.dtd
 
 xml.default.system-id.4=xmode.dtd
-xml.default.system-id.4.uri=jeditresource:/org/gjt/sp/jedit/xmode.dtd
+xml.default.system-id.4.uri=jeditresource:/org/gjt/sp/jedit/syntax/xmode.dtd
 
 xml.default.system-id.5=plugins.dtd
 xml.default.system-id.5.uri=jeditresource:/org/gjt/sp/jedit/pluginmgr/plugins.dtd
