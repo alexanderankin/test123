@@ -30,7 +30,7 @@
 	<property name="src.dir" value="."/>
 	<property name="jedit.install.dir"  value="../../.."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value=".."/>
+	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
 	<property name="doc.dir"  value="doc"/>
 
 
@@ -64,11 +64,15 @@
 		>
 			<fileset dir="${build.dir}"/>
 			<fileset dir="${src.dir}">
-				<include name="actions.xml"/>
-				<include name="dockables.xml"/>
-				<include name="**/*.props"/>
+				<include name="*.xml"/>
+				<include name="*.xsl"/>
+				<include name="XSearch.props"/>
 				<include name="XSearch.html"/>
+				<!-- add source code <include name="**/*.java"/> -->
 			</fileset>
+			<!-- <fileset dir="d:\html\compuserve">
+				<include name="XSearch.html"/>
+			</fileset> -->
 		</jar>
 	</target>
 

@@ -1,0 +1,236 @@
+# Plugin properties
+plugin.xsearch.XSearchPlugin.activate=defer
+
+plugin.xsearch.XSearchPlugin.name=XSearch
+plugin.xsearch.XSearchPlugin.author=Rudi Widmann
+plugin.xsearch.XSearchPlugin.version=1.0.7
+plugin.xsearch.XSearchPlugin.docs=XSearch.html
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.02.13.00
+# new in version 1.1:
+# adapted to plugin API 4.2
+# new RMB options in HyperSearch menu
+# changed sync from button to box
+# add RE support (1.07)
+
+# Menu
+plugin.xsearch.XSearchPlugin.menu=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
+	xreplace-in-selection xreplace-and-find-next xreplace-all - \
+	xsearch-directory-dialog quick-xfind-standard-options quick-hypersearch-standard-options \
+	quick-allbuffersearch-standard-options - \
+	quick-xfind-current-options quick-hypersearch-current-options 
+# xsearch.label=XSearch
+# xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
+#	xreplace-in-selection xreplace-and-find-next xreplace-all - \
+#	xsearch-directory-dialog quick-xfind-standard-options quick-hypersearch-standard-options \
+#	quick-allbuffersearch-standard-options - \
+#	quick-xfind-current-options quick-hypersearch-current-options
+
+xfind-replace-dialog.label=xfind replace...
+xfind-refind.label=xfind-refind
+xfind-first.label=xfind-first
+xfind-next.label=xfind-next
+xfind-prev.label=xfind-prev
+xreplace-in-selection.label=xreplace-in-selection
+xreplace-and-find-next.label=xreplace-and-find-next
+xreplace-all.label=xreplace-all
+
+xsearch.title=Extended Search And Replace Plugin
+
+xsearch-directory-dialog.label=xsearch-directory...
+quick-xfind-standard-options.label=quick-xfind-standard-options 
+quick-hypersearch-standard-options.label=quick-hypersearch-standard-options
+quick-allbuffersearch-standard-options.label=quick-allbuffersearch-standard-options
+quick-xfind-current-options.label=quick-xfind-current-options
+quick-hypersearch-current-options.label=quick-hypersearch-current-options
+	
+# Search properties
+search.synchronize=sync
+search.synchronize.mnemonic=synchronize
+search.subdirs=subdir
+search.subdirs.mnemonic=ubdir
+
+# XSearch_gui properties (alined to jedit_gui.props)
+search.fromTop=From top
+search.fromTop.mnemonic=m
+search.show-button.findAll=true
+
+# XSearch status bar properties
+view.status.no-further-search-string-found=no further search string found
+view.status.search-ends-with-blank-warning= warning: search string ends with space
+view.status.findAll.number-of-occurance-found=Found {0} occurrence(s)
+view.status.illegal-search-settings=illegal search settings
+view.status.replace.buffer-is-not-editable=buffer is not editable
+
+# XSearch dockable
+xsearch-hypersearch-results.title=XHypersearch
+
+# hypersearch result actions
+xsearch-hypersearch-results.expand-node-0-level=Collapse Node
+xsearch-hypersearch-results.expand-node-1-level=Expand level 1
+xsearch-hypersearch-results.expand-node-2-level=Expand level 2
+xsearch-hypersearch-results.expand-node=Expand Node
+xsearch-hypersearch-results.expand-all-nodes=Expand all Nodes
+xsearch-hypersearch-results.collapse-all-nodes=Collapse all Nodes
+xsearch-hypersearch-results.write-node-to-buffer=Write Node to Buffer
+xsearch-hypersearch-results.write-all-nodes-to-buffer=Write all Nodes to Buffer
+
+# buttons
+search.findAllBtn=Find All
+search.ext.reset=Reset
+# search.findAllBtn.mnemonic= (no more mnemonic)
+
+# selectiv show options
+search.show-options=show options: 
+search.show-settings=search
+search.show-replace=replace
+search.show-extended=extended
+
+# display current options
+search.currOpt.label=Options:
+search.currOpt.ignoreCase=ignoreCase
+search.currOpt.regexp=regexp
+search.currOpt.hyper=hyper
+search.currOpt.fromTop=fromTop
+search.currOpt.backward=back
+search.currOpt.wrap=wrap
+search.currOpt.word=word
+search.currOpt.prefix=prefix
+search.currOpt.suffix=suffix
+search.currOpt.column=column
+search.currOpt.row=row
+search.currOpt.insideFold=inFold
+search.currOpt.outsideFold=outFold
+search.currOpt.insideComment=inComment
+search.currOpt.outsideComment=outComment
+search.currOpt.tentativ=tentativ
+
+# shorter text for regexp
+search.ext.regexp=Regular exp
+
+# regexp support
+search.ext.regexp-support.label=RE
+search.ext.regexp-support.popup-title=regular expression support
+search.ext.regexp-support.find1.label=escape string
+search.ext.regexp-support.find1.value=esc
+search.ext.regexp-support.find2.label=begin of line
+search.ext.regexp-support.find2.value=^
+search.ext.regexp-support.find3.label=end of line
+search.ext.regexp-support.find3.value=$
+search.ext.regexp-support.find4.label=start of word
+search.ext.regexp-support.find4.value=\\<
+search.ext.regexp-support.find5.label=end of word
+search.ext.regexp-support.find5.value=\\>
+search.ext.regexp-support.find6.label=any character
+search.ext.regexp-support.find6.value=.
+search.ext.regexp-support.find7.label=any digit
+search.ext.regexp-support.find7.value=\\d
+search.ext.regexp-support.find8.label=non digit
+search.ext.regexp-support.find8.value=\\D
+search.ext.regexp-support.find9.label=any whitespace
+search.ext.regexp-support.find9.value=\\s
+search.ext.regexp-support.find10.label=non whitespace
+search.ext.regexp-support.find10.value=\\S
+search.ext.regexp-support.find11.label=any word (alphanumeric)
+search.ext.regexp-support.find11.value=\\w
+search.ext.regexp-support.find12.label=non word (alphanumeric)
+search.ext.regexp-support.find12.value=\\W
+search.ext.regexp-support.find13.label=backslash
+search.ext.regexp-support.find13.value=\\\\
+search.ext.regexp-support.find14.label=matching set (match any char in set)
+search.ext.regexp-support.find14.value=[]
+search.ext.regexp-support.find15.label=non matching set
+search.ext.regexp-support.find15.value=[^]
+search.ext.regexp-support.find16.label=group a subexpression
+search.ext.regexp-support.find16.value=()
+search.ext.regexp-support.find17.label=result of 1st subexpression
+search.ext.regexp-support.find17.value=\\0
+search.ext.regexp-support.find18.label=OR (match left or right)
+search.ext.regexp-support.find18.value=|
+search.ext.regexp-support.find19.label=match any times
+search.ext.regexp-support.find19.value=*
+search.ext.regexp-support.find20.label=match 1 or several times
+search.ext.regexp-support.find20.value=+
+search.ext.regexp-support.find21.label=match 0 or 1 times (or: minimal matching)
+search.ext.regexp-support.find21.value=?
+search.ext.regexp-support.find22.label=match m upto n times
+search.ext.regexp-support.find22.value={m,n}
+
+# replace
+search.ext.regexp-support.replace1.label=complete match
+search.ext.regexp-support.replace1.value=$0
+search.ext.regexp-support.replace2.label=match of subexpression 1
+search.ext.regexp-support.replace2.value=$1
+search.ext.regexp-support.replace3.label=match of subexpression 2
+search.ext.regexp-support.replace3.value=$2
+
+# extended options
+search.ext.word-whole=whole word
+search.ext.word-prefix=prefix
+search.ext.word-suffix=suffix
+search.ext.column=column search
+search.ext.column.expand-tabs=expTabs
+search.ext.column.left=left col
+search.ext.column.right=right col
+search.ext.row=row search
+search.ext.row.left=upper row
+search.ext.row.right=lower row
+search.ext.fold=fold search:  
+search.ext.fold-inside=inside folds
+search.ext.fold-outside=outside folds
+search.ext.comment=comment search:  
+search.ext.comment-inside=inside comment
+search.ext.comment-outside=outside comment
+
+search.ext.hyperRangeLabel=hyperrange: 
+search.ext.hyperRangeLabelUp=up 
+search.ext.hyperRangeLabelDown=down 
+search.ext.tentativ=tentativ search
+search.ext.settings-history=search settings history
+search.ext.synchronize=sync
+# values
+search.show-settings.value=true
+search.show-replace.value=true
+search.show-extended.value=true
+# default characters for tentativ search
+# note: dash ("-") not in the middle, or escaped
+search.ext.tentativ.addition=_-
+
+# default comment values for hypersearch
+search.comment.blockbegin=/*
+search.comment.blockend=*/
+search.comment.line=//
+
+# Option pane
+plugin.xsearch.XSearchPlugin.option-pane=xsearch
+options.xsearch.code=new xsearch.XSearchOptionPane();
+options.xsearch.label=XSearch
+
+xsearch.options.checkBoxLabel=Please select the additional check boxes you want to see when invoking xsearch and replace dialog
+xsearch.options.buttonLabel=Please select the additional buttons you want to see when invoking xsearch and replace dialog
+xsearch.options.functionsLabel=Please select the additional functionalities which shall apply when invoking xsearch and replace
+xsearch.options.wordPartSearch=word part search
+xsearch.options.tooltip.wordPartSearch=enables search for "whole word", "prefix" or "suffix"
+xsearch.options.columnSearch=column search
+xsearch.options.tooltip.columnSearch=enables search in a column range
+xsearch.options.rowSearch=row search
+xsearch.options.tooltip.rowSearch=enables search in a row range
+xsearch.options.foldSearch=fold search
+xsearch.options.tooltip.foldSearch=enables search inside or outside of folds only
+xsearch.options.commentSearch=comment search
+xsearch.options.tooltip.commentSearch=enables search inside or outside of comments only
+xsearch.options.tentativSearch=tentativ search
+xsearch.options.tooltip.tentativSearch=tolerates typical type mismatches inside of the search string
+xsearch.options.hyperRange=hyper range
+xsearch.options.tooltip.hyperRange=displays the lines before and after the hypersearch match
+xsearch.options.findAllButton=find-all Button
+xsearch.options.tooltip.findAllButton=select all matches
+xsearch.options.resetButton=reset Button
+xsearch.options.tooltip.resetButton=reset search settings to standard values
+xsearch.options.settingsHistory=search settings history
+xsearch.options.tooltip.settingsHistory=memorizes search settings, can be recalled when selecting from search listbox
+xsearch.options.replaceCaseSensitiv=replace case sensitiv
+xsearch.options.tooltip.replaceCaseSensitiv=don't replace with the "replace string", but with its case sensitiv adaption
+xsearch.options.hyperReplace=hyperSearch enables hyperReplace, too
+xsearch.options.tooltip.hyperReplace=hyperReplace displays all "replace all" matches in hyper search window
+xsearch.options.textAreaFont=use textArea Font in search and replace fields
+xsearch.options.tooltip.textAreaFont=use textArea Font in search and replace fields
