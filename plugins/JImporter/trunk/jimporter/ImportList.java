@@ -1,5 +1,5 @@
 /*
- *  ImportList.java -` A collection of imports from a java file.  
+ *  ImportList.java - A collection of imports from a java file.  
  *  Copyright (C) 2002  Matthew Flower (MattFlower@yahoo.com)
  *
  *  This program is free software; you can redistribute it and/or
@@ -29,7 +29,7 @@ import org.gjt.sp.jedit.Buffer;
 /**
  * List of the import source lines present in the current file.
  *
- * @author    Matthew Flower
+ * @author Matthew Flower
  */
 public class ImportList {
     private ArrayList importList = new ArrayList();
@@ -78,6 +78,7 @@ public class ImportList {
     public void setStartingOffset(int startingOffset) {
         this.startingOffset = startingOffset;
     }
+    
     /** 
      * Get the offset of the first character of the first import that we found while
      * parsing the source buffer for import statements.
@@ -96,16 +97,19 @@ public class ImportList {
      *
      * @param endingOffset The offset of the last character of the last import statement we found in the
      * source buffer.
+     * @see #getEndingOffset
      */    
     public void setEndingOffset(int endingOffset) {
         this.endingOffset = endingOffset;
     }
+    
     /** 
      * Get the offset of the last character in the last import statement that we found
      * while parsing the source buffer.
      *
      * @return An <CODE>int</CODE> value that indicates the last character offset of the last
      * import statement in the source buffer.
+     * @see #setEndingOffset
      */    
     public int getEndingOffset() {
         return endingOffset;
@@ -137,7 +141,7 @@ public class ImportList {
     }
 
     /**
-     * Gets the last attribute of the ImportList object
+     * Gets the last attribute of the ImportList object.
      *
      * @return   The last value in the import list.
      */

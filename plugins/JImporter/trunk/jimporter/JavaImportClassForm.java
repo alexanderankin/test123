@@ -65,7 +65,7 @@ public class JavaImportClassForm extends JDialog {
     private boolean importCancelled = false;
 
     /**
-     * Creates new form JavaImportClassForm
+     * Creates new form JavaImportClassForm.
      *
      * @param parent Parent frame to the dialog we are going to display.
      * @param className A name of a class that we should fill in the class name
@@ -101,7 +101,7 @@ public class JavaImportClassForm extends JDialog {
 
     /**
      * The main method allows the class to be instantiated from the command
-     * line. it is intended primarily for testing purposes.
+     * line.  It is intended primarily for testing purposes.
      *
      * @param args a <code>String[]</code> value containing the command line 
      * arguments.
@@ -324,7 +324,10 @@ public class JavaImportClassForm extends JDialog {
     }
     
     /** 
-     * Get the number of classes that matched the search string
+     * Get the number of classes that matched the search string.
+     *
+     * @return an <code>int</code> specifying the number of classes that matched
+     * the search string.
      */
     public int getMatchCount() {
         int toReturn = 0;
