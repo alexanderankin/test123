@@ -25,7 +25,7 @@ import org.gjt.sp.jedit.*;
 
 public class ErrorHighlight implements TextAreaPainter.Highlight
 {
-	public static final Color WARNING_COLOR = new Color(0xffc800);
+	public static final Color WARNING_COLOR = new Color(0xffa800);
 
 	public void init(JEditTextArea textArea,
 		TextAreaPainter.Highlight next)
