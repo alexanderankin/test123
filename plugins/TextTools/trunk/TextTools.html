@@ -22,8 +22,6 @@ in a buffer.</p>
 	<li><a href="#TransposeChars">Transpose Characters</a></li>
 	<li><a href="#TransposeLines">Transpose Lines</a></li>
 	<li><a href="#TransposeWords">Transpose Words</a></li>
-	<li><a href="#ColumnInsert">Column Insert</a></li>
-	<li><a href="#BlockHandling">Block Fill Insert</a></li>
 </ul>
 
 
@@ -107,43 +105,9 @@ sequence.</p>
 
 <p><strong><a name="ColumnInsert">Column Insert</a></strong>
 by Nathan Tenney &lt;eulernt@yahoo.com&gt;</p>
-
 <p>Inserts text in place of a rectangular selection.  When invoked, a small
 dialog pops up for user input.  When enter is pressed, the text is placed on
-each line of the selection, replacing any text selected.</p>
-
-<p><strong><a name="BlockHandling">Block Fill Insert</a></strong>
-by Rudolf Widmann &lt;Rudi.Widmann@web.de&gt;</p>
-
-<p>Inserts or replaces, fills or increments, a given <q>text</q> into a
-<q>target box</q>. When invoked, a dialog pops-up, with the fields:</p>
-
-<ul>
-<li><q>Text to be inserted</q>: text you want to insert
-<li><q>Increment</q>: int value serving as increment
-<li><q>Overwrite checkbox</q>: checked: Overwrite selection, not checked:
-insert
-<li><q>Leading Zeros checkbox</q>: checked: Fill unused digits with nulls , not
-checked: fill with blanks
-</ul>
-
-<p><q>text</q> is either a string or a number to be incremented.</p>
-
-<p>the <q>target box</q> depends on the selection:</p>
-
-<ul>
-<li>no selection: a box starting at the caret position till EOF, width of
-<q>insert text</q>
-<li>selection in one line: a box starting at the caret position till EOF, width
-as selected
-<li>rect selection: box as selected, width
-</ul>
-
-<p>If the insertion does not match the target box, it is filled with blanks, or
-cut.</p>
-
-<p>Multiple selection is supported, but the width is according the the first
-selection</p>
+each line of the selection, replacing any text selected.
 
 </body>
 </html>

@@ -97,7 +97,18 @@ public class TextToolsBlockHandlingDialog extends JDialog implements KeyListener
     insertLabel = new JLabel("Text to be inserted at every selected line   ");
     incrementField = new JTextField(5);
     incrementLabel = new JLabel("Increment");
+		incrementField.setEnabled(false);
+		incrementLabel.setEnabled(false);
     overwriteCheckBox = new JCheckBox("overwrite", false);
+		overwriteCheckBox.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e)
+			{
+				incrementField.setEnabled(overwriteCheckBox.isSelected());
+				incrementLabel.setEnabled(overwriteCheckBox.isSelected());
+				incrementField.setText("");
+			}
+		}
+		);
     leadingZerosCheckBox = new JCheckBox("leading Zeros", true);
     leadingZerosCheckBox.setEnabled(false);
     fieldPanel.add(insertLabel, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
@@ -140,7 +151,7 @@ public class TextToolsBlockHandlingDialog extends JDialog implements KeyListener
     // add key listener to incrementField, to enable leadingZerosCheckBox
     incrementField.addKeyListener(new KeyListener() {
       public void keyPressed(KeyEvent e)	{
-	leadingZerosCheckBox.setEnabled(true);
+				leadingZerosCheckBox.setEnabled(true);
       }
       public void keyReleased(KeyEvent e)	{
       };
