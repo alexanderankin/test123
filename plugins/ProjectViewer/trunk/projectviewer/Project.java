@@ -134,18 +134,24 @@ public class Project
   public void removeFiles() {
     while ( getRoot().getChildCount() != 0 ) {
       Object child = getRoot().getChild( 0 );
+      
       if ( child instanceof ProjectFile ) {
         ProjectFile each = (ProjectFile) child;
         int childIndex = getRoot().getIndexOfChild( each );
+        //Log.log( Log.DEBUG, this, "Removing File " + each.getPath() );
         getRoot().removeFile( each );
+        files.remove( each.getPath() );
         fireFileRemoved( each, childIndex );
+        
       } else {
         ProjectDirectory each = (ProjectDirectory) child;
         int childIndex = getRoot().getIndexOfChild( each );
+        //Log.log( Log.DEBUG, this, "Removing Directory " + each.getPath() );
         getRoot().removeDirectory( each );
         fireDirectoryRemoved( each, childIndex );        
       }
     }
+    files.clear();
   }
   
   /**

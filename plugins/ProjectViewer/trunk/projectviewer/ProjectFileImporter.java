@@ -78,11 +78,13 @@ class ProjectFileImporter {
     File[] fileArray = directory.listFiles( getFilter() );
     
     for ( int i=0; i < fileArray.length; ++i ) {
-      if ( fileArray[i].isDirectory() )
+      if ( fileArray[i].isDirectory() ) {
         buildFileList( fileArray[i], files );
-            
-      else
-        files.add( new ProjectFile( fileArray[i].getAbsolutePath() ) );
+      } else {
+        String path = fileArray[i].getAbsolutePath();
+        if ( !viewer.getCurrentProject().isProjectFile( path ) )
+          files.add( new ProjectFile( path ) );
+      }
     }
   }
   

@@ -102,7 +102,17 @@ public class ProjectFileFlatTreeModel
   /**
    * Notification that a project directory has been removed.  
    */
-  public void directoryRemoved( ProjectEvent evt ) {}
+  public void directoryRemoved( ProjectEvent evt ) {
+    ProjectDirectory dir = evt.getProjectDirectory();
+    int i = 0;
+    while ( i < files.size() ) {
+      ProjectFile each = (ProjectFile) files.get( i );
+      //Log.log( Log.DEBUG, this, "Checking file: " + each.getPath() );
+      if ( dir.isDescendant( each ) )
+        removeProjectFile( each );
+      else i++;
+    }
+  }
    
   /**
    * Add a file.
@@ -119,6 +129,7 @@ public class ProjectFileFlatTreeModel
    */
   protected void removeProjectFile( ProjectFile aFile ) {
     int fileIndex = files.indexOf( aFile );
+    //Log.log( Log.DEBUG, this, "Removing file " + aFile.getPath() );
     files.remove( aFile );
     //Log.log( Log.DEBUG, this, "File List Size: " + files.size() );
     fireNodeRemoved( getPathToRoot(), fileIndex, aFile );

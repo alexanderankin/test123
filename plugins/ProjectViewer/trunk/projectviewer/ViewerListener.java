@@ -20,17 +20,17 @@ import java.awt.Cursor;
 import java.awt.event.*;
 import java.io.File;
 import java.util.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
 import javax.swing.*;
+import javax.swing.event.*;
+import javax.swing.filechooser.FileFilter;
+import javax.swing.tree.*;
 
 
 /**
-Listen to all buttons and GUI events and respond to them.  
-
-@author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-@version $Revision$
-*/
+ * Listen to all buttons and GUI events and respond to them.  
+ *
+ * @version $Id$
+ */
 class ViewerListener
   implements ActionListener, ItemListener
 {
@@ -38,6 +38,8 @@ class ViewerListener
   private ProjectViewer viewer;
   private Launcher launcher;
   private boolean paused;
+  private FileFilter nonProjectFileFilter;
+  
   
   /**
    * Create a new <code>ViewerListener</code>.
@@ -63,10 +65,8 @@ class ViewerListener
   }
   
   /**
-  Listen to specific GUI events.
-  
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-  */
+   * Listen to specific GUI events.
+   */
   public void actionPerformed(ActionEvent evt) {
     if ( paused ) return;
     
@@ -118,10 +118,8 @@ class ViewerListener
   }
 
   /**
-  Create a new Project
-  
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-  */    
+   * Create a new Project
+   */    
   private void createProject() {
     String projectName = JOptionPane.showInputDialog( viewer, 
       "Please enter a project name.  You will also be prompted for a home directory." );
@@ -157,11 +155,8 @@ class ViewerListener
   }
   
   /**
-  Show the config dialog to the user.
-  
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-  @version $Id$
-  */    
+   * Show the config dialog to the user.
+   */    
   public void showConfig() {
     JDialog dialog = new JDialog();
     dialog.setTitle("Config");
@@ -174,26 +169,32 @@ class ViewerListener
   }
     
   /**
-  Prompt the user to a file, get the current project, and then add the file
-  to the project.
-  
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-  @version $Id$
-  */    
+   * Prompt the user to a file, get the current project, and then add the file
+   * to the project.
+   */    
   private void addFileToProject() {
     JFileChooser chooser = viewer.createFileChooser();
+    if ( nonProjectFileFilter == null ) {
+      nonProjectFileFilter = new FileFilter() {
+        public boolean accept( File f ) {
+          return !viewer.getCurrentProject().isProjectFile( f.getAbsolutePath() );
+        }
+        public String getDescription() {
+          return "Non Project Files";
+        }
+      };
+    }
+    chooser.setFileFilter( nonProjectFileFilter );
+    chooser.setAcceptAllFileFilterUsed(false);
     if (chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) return;
-
-    // TODO: handle same file addition.
+    
     viewer.getCurrentProject().importFile(
       new ProjectFile( chooser.getSelectedFile().getAbsolutePath() ) );
   }
 
   /**
-  Prompt the user if they want to remove all projects from the user.
-  
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-  */    
+   * Prompt the user if they want to remove all projects from the user.
+   */    
   private void removeAllFilesFromProject() {
       int answer = JOptionPane.showConfirmDialog( viewer, 
                       "Are you sure you want to remove all files from the current project?",
@@ -207,10 +208,8 @@ class ViewerListener
   }
 
   /**
-  Delete all this project and select all projects.
-  
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-  */    
+   * Delete all this project and select all projects.
+   */    
   private void deleteSelectedProject() {
     Project project = this.viewer.getCurrentProject();
 
@@ -235,10 +234,8 @@ class ViewerListener
   }
 
   /**
-  Progmatically open all files under the current project...
-  
-  @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
-  */
+   * Progmatically open all files under the current project...
+   */
   private void openAllFilesInProject() {
     viewer.showDefaultCursor();
     for ( Iterator i = viewer.getCurrentProject().projectFiles(); i.hasNext(); )
