@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import javax.swing.event.EventListenerList;
+import jimporter.options.AppendRTJarToClasspathOption;
 import org.gjt.sp.jedit.jEdit;
 
 /** 
@@ -48,41 +49,6 @@ public class Classpath {
      * are going to use.
      */
     private static String JEDIT_CLASSPATH_TYPE_PROPERTY = "jimporter.classpath.source";
-    /**
-     * The option that will contain whether we are going to append rt.jar
-     * automatically to the classpath.
-     */
-    private static String APPEND_RT_JAR_PROPERTY = "jimporter.classpath.appendrtjar";
-    private static boolean APPEND_RT_JAR_DEFAULT = true;
-    public static String APPEND_RT_JAR_LABEL_PROPERTY = "options.jimporter.classpath.appendrtjar.label";
-    
-    /**
-     * Should the classpath object automatically append rt.jar to the classpath.
-     *
-     * @return a <code>boolean</code> value that indicates that rt.jar should be
-     * added to the classpath.
-     */
-    public static boolean isAppendRTJar() {
-        boolean toReturn = APPEND_RT_JAR_DEFAULT;
-        String isAppendRTJarProperty = jEdit.getProperty(APPEND_RT_JAR_PROPERTY);
-        
-        if (isAppendRTJarProperty != null) {
-            toReturn = Boolean.valueOf(isAppendRTJarProperty).booleanValue();
-        }
-        
-        return toReturn;
-    }
-    
-    /**
-     * Indicate whether the classpath objects should automatically append rt.jar
-     * to the classpath.
-     *
-     * @param state a <code>boolean</code> value indicating whether rt.jar should
-     * automatically be appended.
-     */
-    public static void setAppendRTJar(boolean state) {
-        jEdit.setProperty(APPEND_RT_JAR_PROPERTY, new Boolean(state).toString());
-    }
     
     /**
      * This classpath object will fetch the classpath from a path that the user
@@ -126,6 +92,7 @@ public class Classpath {
          *
          * @return A <CODE>String</CODE> value that contains the classpath that JImporter should
          * use to find files.
+         * @see #setClasspath
          */    
         public String getClasspath() {
             return appendRuntimeJarLocation(System.getProperty("java.class.path", ".")); 
@@ -146,6 +113,11 @@ public class Classpath {
     
     /**
      * Given a unique identifier, find the classpath that is associated with it.
+     *
+     * @param uniqueIdentifier a <code>String</code> object that contains the
+     * unique identifier for a classpath we wish to find.
+     * @return a <code>Classpath</code> object that corresponds to our unique 
+     * identifier, or the DEFAULT classpath object if none match.
      */
     public static Classpath getForID(String uniqueIdentifier) {
         Classpath classpathToReturn = DEFAULT;
@@ -167,6 +139,7 @@ public class Classpath {
      *
      * @return The <code>Classpath</code> variable that should be currently 
      * used by the system.
+     * @see #setCurrent
      */
     public static Classpath getCurrent() {
         return getForID(jEdit.getProperty(JEDIT_CLASSPATH_TYPE_PROPERTY));
@@ -176,6 +149,7 @@ public class Classpath {
      * Set the current classpath.
      *
      * @param typeToSet A new <code>Classpath</code>.
+     * @see #getCurrent
      */
     public static void setCurrent(Classpath typeToSet) {
         //Grab this now, before the classpath object changes it to the new value.
@@ -190,6 +164,10 @@ public class Classpath {
     
     /**
      * Allow a class to be notified when the current classpath type changes.
+     *
+     * @param l a <code>ClasspathChangeListener</code> object that will be 
+     * notified when the classpath changes.
+     * @see #removeClasspathChangeListener
      */
     public static void addClasspathChangeListener(ClasspathChangeListener l) {
         classpathChangeListeners.add(ClasspathChangeListener.class, l);
@@ -198,6 +176,10 @@ public class Classpath {
     /**
      * Remove classpath from the list of classpaths to be notified when the 
      * current classpath changes.
+     *
+     * @param l a <code>ClasspathChangeListener</code> object that the user wishes
+     * to remove from the change listener list.
+     * @see #addClasspathChangeListener
      */
     public static void removeClasspathChangeListener(ClasspathChangeListener l) {
         classpathChangeListeners.remove(ClasspathChangeListener.class, l);
@@ -205,6 +187,9 @@ public class Classpath {
     
     /** 
      * Get the list of all listeners that want to know when the classpath changes.
+     *
+     * @return an array of <code>ClasspathChangeListener</code> objects that are
+     * listening to changes in the classpath.
      */
     public static ClasspathChangeListener[] getClasspathChangeListeners() {
         return (ClasspathChangeListener[])classpathChangeListeners.getListeners(
@@ -214,6 +199,11 @@ public class Classpath {
     /**
      * Signal all of the <code>ClasspathChangeListener</code>s that the classpath
      * has changed.
+     *
+     * @param oldClasspath a <code>Classpath</code> object that identifies what 
+     * the old classpath was.
+     * @param newClasspath a <code>Classpath</code> object that identifies what
+     * the classpath is going to be changed to.
      */
     protected static void fireClasspathChange(Classpath oldClasspath, Classpath newClasspath) {
        ClasspathChangeListener[] listeners = (ClasspathChangeListener[])
@@ -240,7 +230,7 @@ public class Classpath {
         
         //If we should be appending rt.jar and it isn't already in the classpath,
         //add it.
-        if ((isAppendRTJar()) && (classpath.indexOf(File.separator+"rt.jar") == -1)) {
+        if ((new AppendRTJarToClasspathOption().state()) && (classpath.indexOf(File.separator+"rt.jar") == -1)) {
             String rtjarlocation = System.getProperty("java.home") + File.separator 
               + "lib" + File.separator + "rt.jar";
               
@@ -313,6 +303,14 @@ public class Classpath {
         classpathList.add(this);
     }
     
+    /**
+     * Get a string that uniquely identifies this classpath source type.  These
+     * values should really only be used so that we can store the classpath type
+     * in the property system.  They aren't for the user to see.
+     *
+     * @return a <code>String</code> value that uniquely identifies this classpath
+     * source type.
+     */
     public String getUniqueIdentifier() {
        return this.uniqueIdentifier;
     }
@@ -323,6 +321,7 @@ public class Classpath {
      *
      * @return A <CODE>String</CODE> value that contains the classpath that JImporter should
      * use to find files.
+     * @see #setClasspath
      */    
     public String getClasspath() {
         return appendRuntimeJarLocation(jEdit.getProperty(classpathSourcePropertyID));
@@ -334,6 +333,7 @@ public class Classpath {
      *
      * @param classpath a <code>String</code> value that indicates what the 
      * classpath is.
+     * @see #getClasspath
      */
     public void setClasspath(String classpath) {
         jEdit.setProperty(classpathSourcePropertyID, classpath);
@@ -364,6 +364,7 @@ public class Classpath {
      *
      * @param toCompare a <code>Object</code> value to compare to the current
      * object.
+     * @return false if the objects aren't equal.  Otherwise true.
      */
     public boolean equals(Object toCompare) {
         boolean isEqual = true;
