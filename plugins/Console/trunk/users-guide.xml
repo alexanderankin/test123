@@ -1100,6 +1100,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <funcsynopsis>
    <funcprototype>
     <funcdef>public static int <function>parseLine</function></funcdef>
+    <paramdef>View <parameter>view</parameter></paramdef>
     <paramdef>String <parameter>text</parameter></paramdef>
     <paramdef>String <parameter>directory</parameter></paramdef>
     <paramdef>DefaultErrorSource <parameter>errorSource</parameter></paramdef>
@@ -1137,7 +1138,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 3.3</emphasis>
-   requires jEdit 4.1pre1 and the ErrorList plugin 1.2.</para>
+   requires jEdit 4.0final and the ErrorList plugin 1.2.</para>
    <itemizedlist>
     <listitem><para>File name completion when <keycap>Tab</keycap> key is
     pressed (Alexander Maryanovsky).</para></listitem>

@@ -82,8 +82,8 @@ public class ErrorMatcher implements Cloneable
 	} //}}}
 
 	//{{{ match() method
-	public DefaultErrorSource.DefaultError match(String text,
-		String currentBuffer, DefaultErrorSource errorSource)
+	public DefaultErrorSource.DefaultError match(View view, String text,
+		String directory, DefaultErrorSource errorSource)
 	{
 		int type;
 		RE re;
@@ -102,11 +102,10 @@ public class ErrorMatcher implements Cloneable
 
 		String _filename;
 		if(filename.equals("$f"))
-			_filename = currentBuffer;
+			_filename = view.getBuffer().getPath();
 		else
 		{
-			_filename = MiscUtilities.constructPath(
-				MiscUtilities.getParentOfPath(currentBuffer),
+			_filename = MiscUtilities.constructPath(directory,
 				re.substitute(text,filename));
 		}
 		String _line = re.substitute(text,line);

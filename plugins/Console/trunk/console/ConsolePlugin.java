@@ -413,18 +413,29 @@ public class ConsolePlugin extends EBPlugin
 		}
 	} //}}}
 
-	//{{{ parseLineForErrors() method
+	//{{{ parseLine() method
+	/**
+	 * @deprecated Call the other form of <code>parseLine() instead.
+	 */
+	public static synchronized int parseLine(String text, String directory,
+		DefaultErrorSource errorSource)
+	{
+		return parseLine(jEdit.getLastView(),text,directory,errorSource);
+	} //}}}
+
+	//{{{ parseLine() method
 	/**
 	 * Parses the specified line for errors, and if it contains one,
 	 * adds an error to the specified error source.
+	 * @param view The current view
 	 * @param text The line text
-	 * @param currentBuffer The path of the current buffer
+	 * @param directory The path of the current directory
 	 * @param errorSource The error source
 	 * @return Returns either <code>ErrorSource.WARNING</code>,
 	 * <code>ErrorSource.ERROR</code>, or <code>NO_ERROR</code>.
 	 */
-	public static synchronized int parseLineForErrors(String text,
-		String currentBuffer, DefaultErrorSource errorSource)
+	public static synchronized int parseLine(View view,
+		String text, String directory, DefaultErrorSource errorSource)
 	{
 		if(errorMatchers == null)
 			loadMatchers();
@@ -433,7 +444,7 @@ public class ConsolePlugin extends EBPlugin
 		{
 			String message = null;
 			if(lastMatcher != null &&
-				lastMatcher.match(text,currentBuffer,errorSource) == null)
+				lastMatcher.match(view,text,directory,errorSource) == null)
 				message = lastMatcher.matchExtra(text);
 			if(message != null)
 			{
@@ -452,7 +463,7 @@ public class ConsolePlugin extends EBPlugin
 		{
 			ErrorMatcher m = errorMatchers[i];
 			DefaultErrorSource.DefaultError error
-				= m.match(text,currentBuffer,errorSource);
+				= m.match(view,text,directory,errorSource);
 			if(error != null)
 			{
 				lastError = error;

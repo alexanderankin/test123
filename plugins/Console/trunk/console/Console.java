@@ -460,8 +460,11 @@ implements EBComponent, Output
 
 				for(int i = 0; i < info.completions.length; i++)
 				{
-					Console.this.print(getInfoColor(),info.completions[i]);
+					Console.this.print(null,info.completions[i]);
 				}
+
+				Console.this.print(getInfoColor(),jEdit.getProperty(
+					"console.completions-end"));
 			}
 		}
 	} //}}}

@@ -1,5 +1,6 @@
 + version 3.3:
 
+- TeX, Tidy error patterns
 - document file name completion
 - foo"aaaa" broken
 - command to copy a commando file to the user commando dir for easy
