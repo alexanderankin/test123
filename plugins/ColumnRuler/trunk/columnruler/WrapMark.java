@@ -1,6 +1,7 @@
 package columnruler;
 
 import java.awt.*;
+import java.awt.geom.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
@@ -9,7 +10,7 @@ import org.gjt.sp.jedit.msg.*;
  * Description of the Class
  *
  * @author    mace
- * @version   $Revision: 1.6 $ modified $Date: 2004-02-11 19:53:33 $ by $Author: bemace $
+ * @version   $Revision: 1.7 $ modified $Date: 2004-02-13 21:16:42 $ by $Author: bemace $
  */
 public class WrapMark extends Mark implements EBComponent {
 	private ColumnRuler ruler;
@@ -48,6 +49,19 @@ public class WrapMark extends Mark implements EBComponent {
 		setBuffer(ruler.getTextArea().getBuffer());
 	}
 
+	public void drawGuide(Graphics2D gfx, ColumnRuler ruler) {
+		gfx.setColor(getColor());
+		int hScroll = ruler.getTextArea().getHorizontalOffset();
+		double x = getColumn()*ruler.charWidth + hScroll;
+		Line2D guide = new Line2D.Double();
+		double dashLength = 2*ruler.lineHeight/3;
+		for (double y = 0; y < ruler.getTextArea().getHeight(); y+= dashLength*2) {
+			guide.setLine(x,y,x,y+dashLength);
+			gfx.draw(guide);
+		}
+	}
+
+	//{{{ Accessors and Mutators
 	public void setColumn(int col) {
 		super.setColumn(col);
 		_buffer.setIntegerProperty("maxLineLen", col);
@@ -82,5 +96,8 @@ public class WrapMark extends Mark implements EBComponent {
 			return false;
 		return super.isGuideVisible();
 	}
+	
+	//}}}
+	
 }
 
