@@ -131,9 +131,13 @@ You can close unused connections at any other itme using the
 
  <itemizedlist>
 
-  <listitem><para><emphasis role="bold">Version 0.5.1</emphasis>
-   requires jEdit 4.1pre9.</para>
+  <listitem><para><emphasis role="bold">Version 0.6</emphasis>
+   requires jEdit 4.2pre1.</para>
   
+  <itemizedlist>
+   <listitem><para>Updated to SSHTools 0.1.2 beta.</para></listitem>
+  </itemizedlist>
+
   </listitem>
 
   <listitem><para><emphasis role="bold">Version 0.5</emphasis>

@@ -39,43 +39,10 @@ import org.apache.log4j.*;
 
 public class FtpPlugin extends EditPlugin
 {
-	//{{{ start() method
-	public void start()
-	{
-		VFSManager.registerVFS(FtpVFS.FTP_PROTOCOL,new FtpVFS(false));
-
-		if(OperatingSystem.hasJava14())
-		{
-			String settings = jEdit.getSettingsDirectory();
-			if(settings == null)
-			{
-				Log.log(Log.WARNING,this,"SFTP support cannot "
-					+ "be used if -nosettings switch specified");
-			}
-			else
-			{
-				String sshtoolsHome = MiscUtilities.constructPath(
-					settings,"sshtools");
-				initSshtoolsHome(sshtoolsHome);
-				System.getProperties().put("sshtools.home",sshtoolsHome);
-
-				VFSManager.registerVFS(FtpVFS.SFTP_PROTOCOL,new FtpVFS(true));
-			}
-		}
-		else
-			Log.log(Log.NOTICE,this,"SFTP support requires Java 1.4");
-	} //}}}
-
 	//{{{ stop() method
 	public void stop()
 	{
 		DirectoryCache.clearAllCachedDirectories();
-	} //}}}
-
-	//{{{ createMenuItems() method
-	public void createMenuItems(Vector menuItems)
-	{
-		menuItems.addElement(GUIUtilities.loadMenu("ftp"));
 	} //}}}
 
 	//{{{ showOpenFTPDialog() method
@@ -132,11 +99,14 @@ public class FtpPlugin extends EditPlugin
 		}
 	} //}}}
 
-	//{{{ Private members
-
 	//{{{ initSshtoolsHome() method
-	private void initSshtoolsHome(String path)
+	public void initSshtoolsHome()
 	{
+		String path = MiscUtilities.constructPath(
+			jEdit.getSettingsDirectory(),"sshtools");
+
+		System.getProperties().put("sshtools.home",path);
+
 		String[] files = new String[] {
 			"authorization.xml",
 			"automation.xml",
@@ -173,6 +143,8 @@ public class FtpPlugin extends EditPlugin
 			Log.log(Log.ERROR,this,io);
 		}
 	} //}}}
+
+	//{{{ Private members
 
 	//{{{ copy() method
 	private void copy(InputStream in, OutputStream out) throws IOException
