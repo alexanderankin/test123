@@ -79,7 +79,7 @@ public class CtagsParser implements Serializable {
     }
   
     private CtagsBuffer doParse(ArrayList list) throws IOException {
-        CtagsBuffer buf = new CtagsBuffer(this);
+        CtagsBuffer buf = new CtagsBuffer();
 
         for (int i = 0; i < list.size(); i++) {
             if (isValidExtension((String)list.get(i))) {
@@ -102,7 +102,7 @@ public class CtagsParser implements Serializable {
         BufferedReader in = new BufferedReader(new InputStreamReader(
                     ctags.getInputStream()));
 
-        CtagsBuffer buff = new CtagsBuffer(this);
+        CtagsBuffer buff = new CtagsBuffer();
         String line;
 
         while ((line = in.readLine()) != null) {
