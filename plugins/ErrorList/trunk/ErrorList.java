@@ -441,22 +441,52 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+			final DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 				errorRoot.getChildAt(i);
 
 			String nodePath = (String)node.getUserObject();
 			if(nodePath.equals(path))
 			{
-				node.add(new DefaultMutableTreeNode(error,false));
+				final DefaultMutableTreeNode newNode
+					= new DefaultMutableTreeNode(error,false);
+				node.add(newNode);
+
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						// this is a silly hack, because adding branches
+						// collapses all existing ones.
+						errorTree.expandPath(new TreePath(
+							new TreeNode[] { errorRoot, node, newNode }));
+					}
+				});
+
 				return;
 			}
 		}
 
 		// no node for this file exists yet, so add a new one
-		DefaultMutableTreeNode node = new DefaultMutableTreeNode(path,true);
+		final DefaultMutableTreeNode node = new DefaultMutableTreeNode(path,true);
 		errorRoot.add(node);
 
 		node.add(new DefaultMutableTreeNode(error,false));
+
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				// this is a silly hack, because adding branches
+				// collapses all existing ones.
+
+				TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+				for(int i = 0; i < errorRoot.getChildCount(); i++)
+				{
+					expandPath[1] = errorRoot.getChildAt(i);
+					errorTree.expandPath(new TreePath(expandPath));
+				}
+			}
+		});
 	}
 
 	private void removeError(ErrorSource.Error error)
