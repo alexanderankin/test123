@@ -528,6 +528,14 @@
 
  <itemizedlist>
 
+ <listitem><para><emphasis role="bold">Version 0.14</emphasis> requires
+  jEdit 4.2pre9, SideKick plugin 0.3, and ErrorList plugin 1.3.1.</para>
+
+  <itemizedlist>
+  <listitem><para>The <guimenuitem>XML Insert</guimenuitem> window does not let you insert tags in the middle of existing tags (Jason Rosenberg).</para></listitem>
+  </itemizedlist>
+ </listitem>
+
  <listitem><para><emphasis role="bold">Version 0.13</emphasis> requires
   jEdit 4.2pre5, SideKick plugin 0.3, and ErrorList plugin 1.3.1.</para>
 

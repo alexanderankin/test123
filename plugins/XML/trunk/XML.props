@@ -123,6 +123,9 @@ xml.completion.namespace.3.value=jeditresource:/XML.jar!/xml/completion/html-com
 xml.completion.namespace.4.key=http://www.w3.org/1999/xhtml
 xml.completion.namespace.4.value=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 
+xml.completion.namespace.5.key=http://www.w3.org/1999/XSL/Format
+xml.completion.namespace.5.value=jeditresource:/XML.jar!/xml/completion/fo-complete.xml
+
 mode.asp.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.coldfusion.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
 mode.html.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-complete.xml
