@@ -291,7 +291,7 @@ public class WhiteSpaceHighlight
     }
 
 
-    public void updateTextArea() {
+    private void updateTextArea() {
         if (this.textArea == null) { return; }
 
         Buffer buffer = this.textArea.getBuffer();
@@ -302,6 +302,28 @@ public class WhiteSpaceHighlight
             this.textArea.getFirstLine() + this.textArea.getVisibleLines()
         );
         this.textArea.invalidateLineRange(physicalFirst, physicalLast);
+    }
+
+
+    /**
+     * Updates the highlighting for the <code>JEditTextArea</code>
+     * which display the given <code>buffer</code>
+     */
+    public static void updateTextAreas(Buffer buffer) {
+        View[] views = jEdit.getViews();
+        for (int i = 0; i < views.length; i++) {
+            EditPane[] editPanes = views[i].getEditPanes();
+            WhiteSpaceHighlight highlight;
+
+            for (int j = 0; j < editPanes.length; j++) {
+                if (editPanes[j].getBuffer() != buffer) { continue; }
+
+                highlight = (WhiteSpaceHighlight) highlights.get(editPanes[j]);
+                if (highlight != null) {
+                    highlight.updateTextArea();
+                }
+            }
+        }
     }
 
 
