@@ -24,12 +24,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.JTree;
-import javax.swing.tree.TreeNode;
-import javax.swing.tree.TreePath;
-import javax.swing.SwingUtilities;
-import javax.swing.tree.DefaultTreeModel;
-
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
@@ -81,35 +75,14 @@ public class NewFileImporter extends Importer {
 		} else {
 			if (where.getParent() == null) {
 				where.insert(vf, where.findIndexForChild(vf));
-				SwingUtilities.invokeLater(new ShowNode(vf));
 			} else {
 				ProjectViewer.insertNodeInto(vf, where);
 				ProjectViewer.nodeStructureChangedFlat(where);
 			}
+			postAction = new ShowNode(vf);
 		}
 		registerFile(vf);
 		return added;
-	} //}}}
-
-	//{{{ ShowNode class
-	/** Makes sure a node is visible. */
-	private class ShowNode implements Runnable {
-
-		private VPTNode toShow;
-
-		public ShowNode(VPTNode toShow) {
-			this.toShow = toShow;
-		}
-
-		public void run() {
-			JTree tree = viewer.getCurrentTree();
-			if (tree != null) {
-				DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
-				TreeNode[] nodes = tModel.getPathToRoot(toShow);
-				tree.makeVisible(new TreePath(nodes));
-			}
-		}
-
 	} //}}}
 
 }
