@@ -24,6 +24,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import javax.swing.SwingUtilities;
+
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
@@ -73,11 +75,34 @@ public class NewFileImporter extends Importer {
 			added = new ArrayList();
 			added.add(vf);
 		} else {
-			ProjectViewer.insertNodeInto(vf, where);
-			ProjectViewer.nodeStructureChangedFlat(where);
+			if (where.getParent() == null) {
+				SwingUtilities.invokeLater(new AddNode(vf, where));
+			} else {
+				ProjectViewer.insertNodeInto(vf, where);
+				ProjectViewer.nodeStructureChangedFlat(where);
+			}
 		}
 		project.registerFile(vf);
 		return added;
+	} //}}}
+
+	//{{{ AddNode class
+	/** Adds a node to a parent and fires some events. */
+	private static class AddNode implements Runnable {
+
+		private VPTNode toAdd;
+		private VPTNode where;
+
+		public AddNode(VPTNode toAdd, VPTNode where) {
+			this.toAdd = toAdd;
+			this.where = where;
+		}
+
+		public void run() {
+			ProjectViewer.insertNodeInto(toAdd, where);
+			ProjectViewer.nodeStructureChangedFlat(where);
+		}
+
 	} //}}}
 
 }

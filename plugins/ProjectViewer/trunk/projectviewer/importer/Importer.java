@@ -174,7 +174,7 @@ public abstract class Importer implements Runnable {
 		while (!path.equals(project.getRootPath())) {
 			File pf = new File(path);
 			dirs.push(pf);
-			path= pf.getParent();
+			path = pf.getParent();
 		}
 
 		VPTNode where = project;
