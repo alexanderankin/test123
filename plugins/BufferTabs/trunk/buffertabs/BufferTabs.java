@@ -201,7 +201,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             // workaround: calls to SwingUtilities.updateComponentTreeUI
             this.getUI().uninstallUI(this);
             this.changeHandler.setEnabled(false);
-			ColorTabs.instance().setEnabled( false );
+			//ColorTabs.instance().setEnabled( false );
 			
             Component component = null;
             if (super.indexOfComponent(this.textArea) == -1) {
@@ -218,7 +218,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             }
         } finally {
             this.changeHandler.setEnabled(true);
-			ColorTabs.instance().setEnabled( true );
+			//ColorTabs.instance().setEnabled( true );
             // workaround: calls to SwingUtilities.updateComponentTreeUI
             this.getUI().installUI(this);
         }
