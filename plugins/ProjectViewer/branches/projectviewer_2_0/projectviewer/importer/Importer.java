@@ -29,6 +29,8 @@ import javax.swing.tree.DefaultTreeModel;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
+
+import projectviewer.ProjectViewer;
 //}}}
 
 /**
@@ -46,13 +48,11 @@ public abstract class Importer {
 	protected VPTNode		where;
 	protected VPTProject	project;
 	
-	private final DefaultTreeModel	treeModel;
-	
 	//}}}
 	
 	//{{{ Constructor
 	
-	public Importer(VPTNode node, JTree tree) {
+	public Importer(VPTNode node) {
 		if (node.isFile()) {
 			node = (VPTNode) node.getParent();
 		}
@@ -65,7 +65,6 @@ public abstract class Importer {
 			}
 			project = (VPTProject) node;
 		}
-		this.treeModel = (DefaultTreeModel) tree.getModel();
 	}
 	
 	//}}}
@@ -114,7 +113,7 @@ public abstract class Importer {
 			}
 			where.add(node);
 		}
-		treeModel.nodeStructureChanged(where);
+		ProjectViewer.nodeStructureChanged(where);
 	} //}}}
 
 }

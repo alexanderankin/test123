@@ -49,7 +49,7 @@ public class FileImporter extends Importer {
 	//{{{ Constructor
 	
 	public FileImporter(VPTNode node, ProjectViewer viewer) {
-		super(node, viewer.getCurrentTree());
+		super(node);
 		this.viewer = viewer;
 	}
 	
