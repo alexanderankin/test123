@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.FtpPlugin.name=FTP
 plugin.FtpPlugin.author=Slava Pestov
-plugin.FtpPlugin.version=0.2.5
+plugin.FtpPlugin.version=0.2.4
 plugin.FtpPlugin.docs=FTP.html
 plugin.FtpPlugin.depend.0=jedit 02.07.02.00
 
@@ -25,6 +25,7 @@ login.passive=Connect using passive mode
 # FTP VFS
 vfs.ftp.label=Connect to FTP Server...
 vfs.ftp.passive=true
+vfs.ftp.binary=true
 
 # Connect error
 vfs.ftp.connect-error.title=Cannot Connect
