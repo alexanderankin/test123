@@ -1,0 +1,30 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<!-- $Id$ -->
+<!--
+   NavigatorPlugin actions.
+-->
+<ACTIONS>
+   <ACTION NAME="navigator.back">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.goBack(view);
+      </CODE>
+   </ACTION>
+   <ACTION NAME="navigator.forward">
+      <CODE>
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         plugin.goForward(view);
+      </CODE>
+   </ACTION>
+   <ACTION NAME="navigator.toolbar">
+      <CODE>
+         boolean show = jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", false);
+         jEdit.setBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", !show);
+         view.getDockableWindowManager().showDockableWindow(ise.plugin.nav.NavigatorPlugin.NAME);
+      </CODE>
+      <IS_SELECTED>
+         jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", false);
+      </IS_SELECTED>
+   </ACTION>
+</ACTIONS>
+
