@@ -24,15 +24,27 @@ package console;
 
 //{{{ Imports
 import java.util.*;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.help.HelpViewer;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 //}}}
 
 public abstract class SystemShellBuiltIn
 {
+	//{{{ SystemShellBuiltIn constructor
+	public SystemShellBuiltIn()
+	{
+		name = getClass().getName();
+		name = name.substring(name.lastIndexOf('$') + 1);
+
+		help = jEdit.getProperty("console.shell." + name + ".usage");
+		if(help == null)
+			Log.log(Log.WARNING,this,name + " is missing usage info");
+	} //}}}
+
 	//{{{ getOptions() method
 	public Option[] getOptions()
 	{
@@ -68,7 +80,7 @@ public abstract class SystemShellBuiltIn
 	} //}}}
 
 	//{{{ execute() method
-	public void execute(Console console, Output output, String command, Vector args)
+	public void execute(Console console, Output output, Vector args)
 	{
 		Hashtable values = new Hashtable();
 		Option[] options = getOptions();
@@ -82,8 +94,7 @@ public abstract class SystemShellBuiltIn
 				break;
 			else if(arg.equals("--help"))
 			{
-				console.print(null,jEdit.getProperty("console.shell."
-					+ command.substring(1) + ".usage"));
+				console.print(null,help);
 				return;
 			} //}}}
 			//{{{ long option
@@ -210,6 +221,11 @@ public abstract class SystemShellBuiltIn
 	protected abstract void execute(Console console, Output output,
 		Vector args, Hashtable values); //}}}
 
+	//}}}
+
+	//{{{ Protected members
+	protected String name;
+	protected String help;
 	//}}}
 
 	//{{{ Inner classes
@@ -628,11 +644,11 @@ public abstract class SystemShellBuiltIn
 
 			for(int i = 0; i < args.size(); i++)
 			{
-				BeanShell.runScript(console.getView(),
+				Macros.runScript(console.getView(),
 					MiscUtilities.constructPath(
 					currentDirectory,
-					(String)args.get(i)),null,
-					true);
+					(String)args.get(i)),
+					false);
 			}
 		}
 	} //}}}

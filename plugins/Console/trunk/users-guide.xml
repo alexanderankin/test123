@@ -416,7 +416,9 @@
   opens the specified files in jEdit.</para></listitem>
 
   <listitem><para><command>%run <replaceable>scripts ...</replaceable></command>:
-  runs the specified script files in jEdit's BeanShell interpreter.
+  runs the specified script files. You can run BeanShell scripts, or any script
+  type supported by an installed plugin (for example you can run Python scripts
+  if JythonInterpreter is installed).
   </para></listitem>
 
  </itemizedlist>
@@ -1168,7 +1170,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
  <itemizedlist>
 
-  <listitem><para><emphasis role="bold">Version 3.3.1</emphasis>
+  <listitem><para><emphasis role="bold">Version 3.4</emphasis>
    requires jEdit 4.1pre8 and the ErrorList plugin 1.2.</para>
 
    <itemizedlist>
@@ -1177,15 +1179,16 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     tool bar.</para></listitem>
     <listitem><para><command>cd -</command> now goes to the last visited
     directory.</para></listitem>
-    <listitem><para>Pressing the tab key in the command input field when there
+    <listitem><para>Pressing the <keycap>Tab</keycap> key in the command input
+    field when there
     was nothing to complete would have strange results.</para></listitem>
     <listitem><para>Updated for jEdit 4.1 icon theme.</para></listitem>
     <listitem><para>Fixed incompatibility with 4.1pre5.</para></listitem>
     <listitem><para>Fixed problems caused by having commandos with spaces in
     their names.</para></listitem>
-    <listitem><para>On Windows, all commands are now run through
-    <filename>cmd.exe</filename> or <filename>command.com</filename>
-    (depending on the Windows version).</para></listitem>
+    <listitem><para>On Windows NT/2000/XP, all commands are now run through
+    <filename>cmd.exe</filename>. This allows batch files to be run by
+    entering their name.</para></listitem>
     <listitem><para>When running on Windows ME, child processes should now
     inherit jEdit's environment variables (there is still no way to change
     them from within jEdit though).</para></listitem>
@@ -1196,6 +1199,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     <listitem><para>Pressing <keycap>Enter</keycap> after changing a value in
     a commando dialog box text field without first moving focus out of the
     text field did not make the change take effect.
+    </para></listitem>
+    <listitem><para>Some built-ins were missing usage information.
+    </para></listitem>
+    <listitem><para><command>%run</command> can now run scripts in any
+    scripting language supported by an installed plugin, not just BeanShell.
     </para></listitem>
    </itemizedlist>
   </listitem>
