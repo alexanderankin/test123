@@ -467,7 +467,7 @@
     </para></listitem>
 
     <listitem><para>
-     Can now use catalogs in XMLCatalog and OASIS OPEN (also known as SOCAT)
+     Can now use catalogs in XMLCatalog and OASIS OPEN
      format to resolve system and public IDs.
     </para></listitem>
 
