@@ -80,6 +80,7 @@ import projectviewer.vpt.VPTFileListModel;
 import projectviewer.vpt.VPTSelectionListener;
 import projectviewer.vpt.VPTWorkingFileListModel;
 
+//import projectviewer.event.ProjectEventDumper;
 import projectviewer.event.ProjectViewerEvent;
 import projectviewer.event.ProjectViewerListener;
 
@@ -488,6 +489,9 @@ public final class ProjectViewer extends JPanel
 	private VPTContextMenu			vcm;
 	private VPTSelectionListener	vsl;
 	private ConfigChangeListener	ccl;
+
+	// DEBUG
+	//private ProjectEventDumper		eventDumper = new ProjectEventDumper();
 	//}}}
 
 	//{{{ Constructor
@@ -823,6 +827,7 @@ public final class ProjectViewer extends JPanel
 	 */
 	public synchronized void setProject(VPTProject p) {
 		if (treeRoot != null && treeRoot.isProject()) {
+			//((VPTProject)treeRoot).removeProjectListener(eventDumper);
 			closeProject((VPTProject)treeRoot, config.getCloseFiles(),
 				config.getRememberOpen());
 		}
@@ -849,6 +854,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		dontAsk = null;
+		//p.addProjectListener(eventDumper);
 		fireProjectLoaded(this, p, view);
 	} //}}}
 
@@ -901,8 +907,10 @@ public final class ProjectViewer extends JPanel
 			// Editor is exiting, save info about current project
 			EditorExitRequested eer = (EditorExitRequested) msg;
 			ProjectViewer active = (ProjectViewer) viewers.get(eer.getView());
-			if (active == this || active == null || active.treeRoot != treeRoot)
+			if (active == this || active == null || active.treeRoot != treeRoot) {
 				closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
+				config.setLastProject(((VPTProject)treeRoot).getName());
+			}
 		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate) msg;
 
