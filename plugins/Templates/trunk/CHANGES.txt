@@ -7,9 +7,11 @@ BUG FIX:
 - fixed problem where, if #caret() directive was the first thing in a template, the caret would end up at the end of the file, rather than the beginning (reported by Hajo Wuellner)
 - Fix bug where the 'Edit Template' doesn't open to the template directory (Calvin Yu).
 - Applied same fix to 'Save Template' option (Steve Jakob)
+- overhauled accelerator expansion function to fix bug where expansion of template accelerator at the start of a buffer would cause a BeanShell error (array index out of bounds (-1)) (Steve Jakob)
 ENHANCEMENTS:
 - Added $_jeditSelection which represents the current buffer selection (Calvin Yu).
-- added ability (configurable in Global Options) to "pass through" an abbreviation from the "Expand Accelerator" action to jEdit's abbreviation expandion function, if no matching template accelerator is found
+- added ability to "pass through" an abbreviation from the "Expand Accelerator" action to jEdit's abbreviation expansion function, if no matching template accelerator is found (Steve Jakob)
+- added option to Templates General option pane to configure "pass through" to abbreviation expansion (Steve Jakob)
 
 Version 3.0.1 (16-AUG-2002)
 =============================
