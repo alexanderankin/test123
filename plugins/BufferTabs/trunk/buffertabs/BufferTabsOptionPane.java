@@ -108,7 +108,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         addComponent( indent );
 
         JPanel indent2 = new JPanel();
-        variationColorsCB = new JCheckBox( jEdit.getProperty( "options.buffertabs.colourvariation.label" ) );
+        variationColorsCB = new JCheckBox( jEdit.getProperty( "options.buffertabs.color-variation.label" ) );
         variationColorsCB.addItemListener( this );
         indent2.add( new Box.Filler( space, space, space ) );
         indent2.add( variationColorsCB );
@@ -157,7 +157,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         );
 
         variationColorsCB.setSelected(
-            jEdit.getBooleanProperty( "buffertabs.colourvariation", true )
+            jEdit.getBooleanProperty( "buffertabs.color-variation", true )
         );
 
         colorTabRB.setSelected(
@@ -193,7 +193,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         jEdit.setBooleanProperty( "buffertabs.color-tabs", enableColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-selected", highlightColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-mute", muteColorsCB.isSelected() );
-        jEdit.setBooleanProperty( "buffertabs.colourvariation", variationColorsCB.isSelected() );
+        jEdit.setBooleanProperty( "buffertabs.color-variation", variationColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.colourizetext", colorTextRB.isSelected() );
     }
 
