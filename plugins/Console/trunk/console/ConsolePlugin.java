@@ -25,7 +25,6 @@ package console;
 
 //{{{ Imports
 import console.commando.*;
-import console.options.*;
 import gnu.regexp.REException;
 import javax.swing.JOptionPane;
 import java.io.*;
@@ -40,8 +39,7 @@ import errorlist.*;
 
 public class ConsolePlugin extends EBPlugin
 {
-	public static final SystemShell SYSTEM_SHELL = new SystemShell();
-	public static final ConsoleBeanShell BEAN_SHELL = new ConsoleBeanShell();
+	public static final String MENU = "plugin.console.ConsolePlugin.menu";
 
 	/**
 	 * Return value of {@link #parseLine()} if the text does not match
@@ -49,13 +47,16 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static final int NO_ERROR = -1;
 
+	//{{{ getSystemShell() method
+	public static SystemShell getSystemShell()
+	{
+		return (SystemShell)ServiceManager.getService(
+			"console.Shell","System");
+	} //}}}
+
 	//{{{ start() method
 	public void start()
 	{
-		// register shells
-		Shell.registerShell(SYSTEM_SHELL);
-		Shell.registerShell(BEAN_SHELL);
-
 		// load script with useful runCommandInConsole() method
 		BufferedReader in = new BufferedReader(
 			new InputStreamReader(
@@ -81,22 +82,26 @@ public class ConsolePlugin extends EBPlugin
 		jEdit.addActionSet(commando);
 
 		rescanCommandoDirectory();
+
+		View[] views = jEdit.getViews();
+		for(int i = 0; i < views.length; i++)
+		{
+			viewOpened(views[i]);
+		}
+
+		propertiesChanged();
 	} //}}}
 
-	//{{{ createMenuItems() method
-	public void createMenuItems(Vector menuItems)
+	//{{{ stop() method
+	public void stop()
 	{
-		menuItems.addElement(new ConsoleMenu());
-	} //}}}
+		View[] views = jEdit.getViews();
+		for(int i = 0; i < views.length; i++)
+		{
+			viewClosed(views[i]);
+		}
 
-	//{{{ createOptionPanes() method
-	public void createOptionPanes(OptionsDialog dialog)
-	{
-		OptionGroup grp = new OptionGroup("console");
-		grp.addOptionPane(new GeneralOptionPane());
-		grp.addOptionPane(new ErrorsOptionPane());
-		grp.addOptionPane(new CompileRunOptionPane());
-		dialog.addOptionGroup(grp);
+		jEdit.removeActionSet(commando);
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -108,27 +113,11 @@ public class ConsolePlugin extends EBPlugin
 			View view = vmsg.getView();
 			if(vmsg.getWhat() == ViewUpdate.CREATED)
 			{
-				if(view.isPlainView())
-					return;
-
-				if(jEdit.getBooleanProperty("console.toolbar.enabled"))
-				{
-					ConsoleToolBar toolBar = new ConsoleToolBar(view);
-					consoleToolBarMap.put(view,toolBar);
-					view.addToolBar(toolBar);
-				}
-
-				if(jEdit.getBooleanProperty("commando.toolbar.enabled"))
-				{
-					CommandoToolBar toolBar = new CommandoToolBar(view);
-					commandoToolBarMap.put(view,toolBar);
-					view.addToolBar(toolBar);
-				}
+				viewOpened(view);
 			}
 			else if(vmsg.getWhat() == ViewUpdate.CLOSED)
 			{
-				consoleToolBarMap.remove(view);
-				commandoToolBarMap.remove(view);
+				viewClosed(view);
 			}
 		}
 		else if(msg instanceof PropertiesChanged)
@@ -202,7 +191,7 @@ public class ConsolePlugin extends EBPlugin
 				jEdit.getInputHandler().addKeyBinding(shortcut2,action);
 		}
 
-		EditBus.send(new CommandoCommandsChanged());
+		EditBus.send(new DynamicMenuChanged(MENU));
 	} //}}}
 
 	//{{{ getCommandoCommands() method
@@ -391,7 +380,7 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static String expandSystemShellVariables(View view, String text)
 	{
-		return SYSTEM_SHELL.expandVariables(view,text);
+		return getSystemShell().expandVariables(view,text);
 	} //}}}
 
 	//{{{ getSystemShellVariableValue() method
@@ -402,7 +391,7 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static String getSystemShellVariableValue(View view, String var)
 	{
-		return SYSTEM_SHELL.getVariableValue(view,var);
+		return getSystemShell().getVariableValue(view,var);
 	} //}}}
 
 	//{{{ setSystemShellVariableValue() method
@@ -414,7 +403,7 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static void setSystemShellVariableValue(String var, String value)
 	{
-		SYSTEM_SHELL.getVariables().put(var,value);
+		getSystemShell().getVariables().put(var,value);
 	} //}}}
 
 	//{{{ ActionCompare class
@@ -529,6 +518,34 @@ public class ConsolePlugin extends EBPlugin
 	private Hashtable consoleToolBarMap;
 	private Hashtable commandoToolBarMap;
 	//}}}
+
+	//{{{ viewOpened() method
+	private void viewOpened(View view)
+	{
+		if(view.isPlainView())
+			return;
+
+		if(jEdit.getBooleanProperty("console.toolbar.enabled"))
+		{
+			ConsoleToolBar toolBar = new ConsoleToolBar(view);
+			consoleToolBarMap.put(view,toolBar);
+			view.addToolBar(toolBar);
+		}
+
+		if(jEdit.getBooleanProperty("commando.toolbar.enabled"))
+		{
+			CommandoToolBar toolBar = new CommandoToolBar(view);
+			commandoToolBarMap.put(view,toolBar);
+			view.addToolBar(toolBar);
+		}
+	} //}}}
+
+	//{{{ viewClosed() method
+	private void viewClosed(View view)
+	{
+		consoleToolBarMap.remove(view);
+		commandoToolBarMap.remove(view);
+	} //}}}
 
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()

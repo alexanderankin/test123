@@ -246,7 +246,8 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
+			Hashtable aliases = ConsolePlugin.getSystemShell()
+				.getAliases();
 			aliases.put(args.elementAt(0),args.elementAt(1));
 		}
 	} //}}}
@@ -267,7 +268,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
+			Hashtable aliases = ConsolePlugin.getSystemShell().getAliases();
 			Vector returnValue = new Vector();
 			Enumeration keys = aliases.keys();
 			while(keys.hasMoreElements())
@@ -480,7 +481,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
+			Hashtable variables = ConsolePlugin.getSystemShell().getVariables();
 			Vector returnValue = new Vector();
 			Enumeration keys = variables.keys();
 			while(keys.hasMoreElements())
@@ -668,7 +669,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
+			Hashtable variables = ConsolePlugin.getSystemShell().getVariables();
 			variables.put(args.elementAt(0),args.elementAt(1));
 		}
 	} //}}}
@@ -689,7 +690,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
+			Hashtable aliases = ConsolePlugin.getSystemShell().getAliases();
 			aliases.remove(args.elementAt(0));
 		}
 	} //}}}
@@ -710,7 +711,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output,
 			Output error, Vector args, Hashtable values)
 		{
-			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
+			Hashtable variables = ConsolePlugin.getSystemShell().getVariables();
 			variables.remove(args.elementAt(0));
 		}
 	} //}}}

@@ -1,30 +1,35 @@
+3.6:
+
+- update for 4.2pre2 API.
+- on win: foo "bar baz" needs to be passed literally
 - cloned consoles: completion doesn't work
 - %edit -n, -p, -s
 - escaping ~, also ~foo should not expand
-- after change still need to update lastphysicalline even if scroll line
-  doesn't change but physical line changes
 - user error patterns first in list
-- cvs commandos
 - commando: text area
 - periodic execution feature
 - tool bar should be able to output to a buffer
+- command to copy a commando file to the user commando dir for easy
+  customization
+- globs (non-Windows only, Windows programs do their own glob expansion)
+- error hyperlinks
+- URL hyperlinks.
+- synchronize browser & console pwd (but make this toggle option)
+- exception tracebacks handled, maybe
+  --> use JLib for this
+
+- cvs commandos
 - need <INIT> code block in commando files
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
-- error hyperlinks
 - stdin
 - notify of process exit
 - multiple-line env vars don't work
 - see if an extra pattern can eat all javac errors
 - TeX, Tidy error patterns
 - foo"aaaa" doesn't parse like in a Unix shell
-- command to copy a commando file to the user commando dir for easy
-  customization
 - beanshell completion
 - aliases option pane
-- globs (non-Windows only, Windows programs do their own glob expansion)
 - hyperlinks in output; %ls output lines open files and directories;
-  exception tracebacks handled, maybe
-- URL hyperlinks.
 - ${beanshell:...} syntax
 - file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?
   - VFS support
@@ -32,6 +37,5 @@
     local dir, only built-ins)
 - after jEdit API additions: tips of the day
 - integration with project manager
-- synchronize browser & console pwd (but make this toggle option)
 - console tool bar: dir commands don't open console
 - console tool bar: show status msg, regarding completion.
