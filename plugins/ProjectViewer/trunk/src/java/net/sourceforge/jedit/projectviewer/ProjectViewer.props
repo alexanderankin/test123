@@ -1,11 +1,10 @@
 # Plugin properties
-plugin.ProjectPlugin.name=Project Viewer
-plugin.ProjectPlugin.author=Kevin A. Burton
-plugin.ProjectPlugin.version=1.0.1
-plugin.ProjectPlugin.docs=index.html
+plugin.net.sourceforge.jedit.projectviewer.ProjectPlugin.name=Project Viewer
+plugin.net.sourceforge.jedit.projectviewer.ProjectPlugin.author=Kevin A. Burton
+plugin.net.sourceforge.jedit.projectviewer.ProjectPlugin.version=1.0.1
+plugin.net.sourceforge.jedit.projectviewer.ProjectPlugin.docs=index.html
 
-plugin.ProjectViewer.depend.0=jdk 1.1
-#plugin.JBrowsePlugin.depend.1=jedit 02.01.03.00
+plugin.net.sourceforge.jedit.projectviewer.ProjectViewer.depend.0=jdk 1.1
 
 # Menu bar properties
 projectviewer.open.label=Project Viewer
