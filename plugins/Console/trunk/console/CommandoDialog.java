@@ -102,8 +102,6 @@ public class CommandoDialog extends EnhancedDialog
 
 		content.add(BorderLayout.SOUTH,buttons);
 
-		scripts = new Vector();
-
 		pack();
 		setLocationRelativeTo(view);
 		show();
@@ -114,6 +112,7 @@ public class CommandoDialog extends EnhancedDialog
 		jEdit.setProperty("commando.last-command",command.name);
 
 		Vector commands = new Vector();
+
 		for(int i = 0; i < scripts.size(); i++)
 		{
 			Script script = (Script)scripts.elementAt(i);
@@ -160,12 +159,18 @@ public class CommandoDialog extends EnhancedDialog
 	private NameSpace nameSpace;
 	private Vector scripts;
 
-	private void loadCommand(CommandoCommand command)
+	private boolean init;
+
+	private void load(CommandoCommand command)
 	{
+		init = true;
+
 		this.command = command;
 		settings.removeAll();
 		commandLine.setText(null);
 		properties.setText(null);
+
+		scripts = new Vector();
 
 		XmlParser parser = new XmlParser();
 		CommandoHandler handler = new CommandoHandler();
@@ -199,6 +204,37 @@ public class CommandoDialog extends EnhancedDialog
 
 		getRootPane().revalidate();
 		pack();
+
+		init = false;
+
+		updateTextAreas();
+	}
+
+	private void updateTextAreas()
+	{
+		if(init)
+			return;
+
+		StringBuffer buf = new StringBuffer();
+
+		for(int i = 0; i < scripts.size(); i++)
+		{
+			Script script = (Script)scripts.elementAt(i);
+			Command command = script.getCommand();
+			if(command == null)
+			{
+				// user has already seen the BeanShell error,
+				// so just exit
+				return;
+			}
+
+			buf.append(command.shell);
+			buf.append(": ");
+			buf.append(command.command);
+			buf.append('\n');
+		}
+
+		commandLine.setText(buf.toString());
 	}
 
 	class Script
@@ -231,7 +267,7 @@ public class CommandoDialog extends EnhancedDialog
 		String shell;
 		String command;
 
-		Command(boolean confirm, String shell, String code)
+		Command(boolean confirm, String shell, String command)
 		{
 			this.confirm = confirm;
 			this.shell = shell;
@@ -247,7 +283,7 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				CommandoCommand command = (CommandoCommand)commandCombo
 					.getSelectedItem();
-				loadCommand(command);
+				load(command);
 			}
 			else if(evt.getSource() == ok)
 				ok();
@@ -322,7 +358,7 @@ public class CommandoDialog extends EnhancedDialog
 
 			if(tag == "CAPTION")
 				caption = text;
-			else if(tag == "SCRIPT")
+			else if(tag == "COMMAND")
 				code = text;
 		}
 
@@ -377,7 +413,7 @@ public class CommandoDialog extends EnhancedDialog
 					settings.addCaption(caption);
 					caption = null;
 				}
-				else if(tag == "SCRIPT")
+				else if(tag == "COMMAND")
 				{
 					scripts.addElement(new Script(
 						confirm,shell,code));
@@ -490,6 +526,8 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				// can't do much...
 			}
+
+			updateTextAreas();
 		}
 
 		class ActionHandler implements ActionListener
@@ -539,17 +577,22 @@ public class CommandoDialog extends EnhancedDialog
 
 		private void valueChanged()
 		{
-			System.err.println("foo!!!");
-			view.getBuffer().putProperty(property,getText());
+			String text = getText();
+			if(text == null)
+				text = "";
+
+			view.getBuffer().putProperty(property,"");
 
 			try
 			{
-				nameSpace.setVariable(varName,getText());
+				nameSpace.setVariable(varName,"");
 			}
 			catch(EvalError e)
 			{
 				// can't do much...
 			}
+
+			updateTextAreas();
 		}
 
 		class ActionHandler implements ActionListener
@@ -665,7 +708,7 @@ public class CommandoDialog extends EnhancedDialog
 			add(BorderLayout.NORTH,panel);
 
 			add(BorderLayout.CENTER,new JScrollPane(
-				textArea = new JTextArea()));
+				textArea = new JTextArea(4,30)));
 			textArea.setEditable(false);
 		}
 

@@ -15,8 +15,9 @@
 		<COMMAND CONFIRM="FALSE" SHELL="System">
 			"openjade -d \"" + stylesheet + "\" -D \"" + dir
 				+ "\" -t sgml "
-				+ (dcl == null ? " \""
-				: "\"" + dcl + "\" \"") + file + "\"";
+				+ (dcl.equals("") ? ""
+				: "\"" + dcl + "\"")
+				+ " \"" + file + "\"";
 		</COMMAND>
 	</COMMANDS>
 </COMMANDO>

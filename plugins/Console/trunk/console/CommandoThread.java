@@ -32,7 +32,7 @@ class CommandoThread extends Thread
 
 	public void run()
 	{
-		final CommandoDialog.Command[] lastCommand = new CommandoDialog.Command[0];
+		final CommandoDialog.Command[] lastCommand = new CommandoDialog.Command[1];
 		final boolean[] returnValue = new boolean[] { true };
 
 		for(int i = 0; i < commands.size(); i++)

@@ -170,10 +170,10 @@ console.error.3.line=$3
 console.error.3.message=$1
 
 console.error.4.name=Jade error
-console.error.4.match=(.+?)jade:(.+):(\\d+):\\d+:.:(.+)
-console.error.4.filename=$1
-console.error.4.line=$2
-console.error.4.message=$3
+console.error.4.match=(.+?)jade:(.+?):(\\d+?):\\d+?:(.+)
+console.error.4.filename=$2
+console.error.4.line=$3
+console.error.4.message=$4
 
 console.error.5.name=Ant javac error
 console.error.5.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
@@ -195,7 +195,7 @@ console.error.7.message=$3
 
 ### Commando
 
-commando.built-ins=java javac jmk
+commando.built-ins=java javac jmk openjade_HTML
 
 commando.toolbar.enabled=false
 
