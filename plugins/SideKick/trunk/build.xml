@@ -1,23 +1,23 @@
 <?xml version="1.0"?>
 
 <!--
-     This is a build.xml file for building the SideKick plugin.
+	 This is a build.xml file for building the SideKick plugin.
 
-     The 'dist' target compiles the plugin and creates the JAR file.
-     Before running the 'dist' target, you will need to generate the
-     documentation using one of these two targets:
+	 The 'dist' target compiles the plugin and creates the JAR file.
+	 Before running the 'dist' target, you will need to generate the
+	 documentation using one of these two targets:
 
-     - 'docs-xalan': Creates documentation using the Xalan XSLT processor
-     - 'docs-xsltproc': Creates documentation using the xsltproc tool
+	 - 'docs-xalan': Creates documentation using the Xalan XSLT processor
+	 - 'docs-xsltproc': Creates documentation using the xsltproc tool
 
-     To use it for building your own plugin, make these changes:
+	 To use it for building your own plugin, make these changes:
 
-     - Change definition of 'jar.name' to the name of your plugin's JAR file
-     - If necessary, add any dependencies to the 'project.class.path'
-       definition
-     - If necessary, change the list of files in the 'dist' targtet
-     - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets
-       accordingly.
+	 - Change definition of 'jar.name' to the name of your plugin's JAR file
+	 - If necessary, add any dependencies to the 'project.class.path'
+	   definition
+	 - If necessary, change the list of files in the 'dist' targtet
+	 - If necessary, change the 'docs-xalan' and 'docs-xsltproc' targets
+	   accordingly.
 -->
 
 <project name="sidekick" default="dist" basedir=".">
@@ -32,7 +32,9 @@
 
 
 	<path id="project.class.path">
+		<pathelement location="../../jedit.jar" />
 		<pathelement location="${install.dir}/ErrorList.jar"/>
+		<pathelement location="${user.home}/.jedit/jars/ErrorList.jar" />
 		<pathelement location="."/>
 	</path>
 
@@ -77,6 +79,23 @@
 				<include name="**/*.html"/>
 			</fileset>
 		</jar>
+	</target>
+
+	<target name="javadoc">
+		<javadoc sourcepath="${src.classes}"
+			destdir="docs/api"
+			classpathref="project.class.path"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="${ant.project.name} API"
+			Doctitle="${ant.project.name} API Documentation"
+			source="${jdk.source}"
+			linksource="yes">
+			<packageset dir="${src.dir}" />
+			<link href="http://java.sun.com/j2se/1.4/docs/api/"/>
+			<link href="http://jedit.org/42docs/api/"/>
+		</javadoc>
 	</target>
 
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
