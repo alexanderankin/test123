@@ -71,7 +71,6 @@ public class ConsolePlugin extends EBPlugin
 				file.mkdirs();
 		}
 
-		consoleToolBarMap = new Hashtable();
 		commandoToolBarMap = new Hashtable();
 
 		commando = new ActionSet(jEdit.getProperty("action-set.commando.label"));
@@ -514,7 +513,6 @@ public class ConsolePlugin extends EBPlugin
 	private static String commandoDirectory;
 	private static ActionSet commando;
 
-	private Hashtable consoleToolBarMap;
 	private Hashtable commandoToolBarMap;
 	//}}}
 
@@ -523,13 +521,6 @@ public class ConsolePlugin extends EBPlugin
 	{
 		if(view.isPlainView())
 			return;
-
-		if(jEdit.getBooleanProperty("console.toolbar.enabled"))
-		{
-			ConsoleToolBar toolBar = new ConsoleToolBar(view);
-			consoleToolBarMap.put(view,toolBar);
-			view.addToolBar(toolBar);
-		}
 
 		if(jEdit.getBooleanProperty("commando.toolbar.enabled"))
 		{
@@ -542,7 +533,6 @@ public class ConsolePlugin extends EBPlugin
 	//{{{ viewClosed() method
 	private void viewClosed(View view)
 	{
-		consoleToolBarMap.remove(view);
 		commandoToolBarMap.remove(view);
 	} //}}}
 
@@ -552,37 +542,6 @@ public class ConsolePlugin extends EBPlugin
 		// lazily load the matchers the next time they are
 		// needed
 		errorMatchers = null;
-
-		//{{{ Show console tool bar...
-		if(jEdit.getBooleanProperty("console.toolbar.enabled"))
-		{
-			View[] views = jEdit.getViews();
-			for(int i = 0; i < views.length; i++)
-			{
-				View view = views[i];
-				if(!consoleToolBarMap.containsKey(view))
-				{
-					ConsoleToolBar toolBar = new ConsoleToolBar(view);
-					consoleToolBarMap.put(view,toolBar);
-					view.addToolBar(toolBar);
-				}
-			}
-		}
-		//}}}
-		//{{{ Hide console tool bar...
-		else
-		{
-			Enumeration enum = consoleToolBarMap.keys();
-			while(enum.hasMoreElements())
-			{
-				View view = (View)enum.nextElement();
-				ConsoleToolBar toolBar = (ConsoleToolBar)
-					consoleToolBarMap.get(view);
-				view.removeToolBar(toolBar);
-			}
-
-			consoleToolBarMap.clear();
-		} //}}}
 
 		//{{{ Show commando tool bar...
 		if(jEdit.getBooleanProperty("commando.toolbar.enabled"))

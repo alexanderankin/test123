@@ -8,7 +8,7 @@ plugin.console.ConsolePlugin.version=4.0
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 04.03.01.00
+plugin.console.ConsolePlugin.depend.0=jedit 04.02.99.00
 plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.3.1
 
 # Menu
@@ -27,8 +27,6 @@ rescan-commando-directory.label=Rescan Commando Directory
 action-set.commando.label=Plugin: Console Commandos
 
 ### Console component
-
-console.toolbar.enabled=false
 
 console.title=Console
 console.run=Run
@@ -58,7 +56,6 @@ plugin.console.ConsolePlugin.option-group=console.compile-run \
 
 options.console.general.label=General
 options.console.general.code=new console.options.GeneralOptionPane();
-options.console.general.toolbar=Console tool bar
 options.console.general.commando.toolbar=Commando tool bar
 options.console.general.font=Font:
 options.console.general.bgColor=Console background:

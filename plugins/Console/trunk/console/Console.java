@@ -479,6 +479,12 @@ implements EBComponent, Output, DefaultFocusComponent
 		add(BorderLayout.NORTH,box);
 
 		text = new ConsolePane();
+		InputMap inputMap = text.getInputMap();
+		
+		/* Press tab to complete input */
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,0),
+			new CompletionAction());
+
 		text.addActionListener(new RunActionHandler());
 		JScrollPane scroller = new JScrollPane(text);
 		scroller.setPreferredSize(new Dimension(400,100));
@@ -532,6 +538,64 @@ implements EBComponent, Output, DefaultFocusComponent
 			animation.start();
 		else
 			animation.stop();
+	} //}}}
+
+	//{{{ complete() method
+	private void complete()
+	{
+		String input = text.getInput();
+		int cmdStart = text.getInputStart();
+		int caret = text.getCaretPosition();
+		int offset = caret - cmdStart;
+		Shell.CompletionInfo info = shell.getCompletions(this,
+			input.substring(0,offset));
+
+		if(info == null || info.completions.length == 0)
+			getToolkit().beep();
+		else if(info.completions.length == 1)
+		{
+			text.select(cmdStart + info.offset,caret);
+			text.replaceSelection(info.completions[0]);
+		}
+		else //if(info.completions.length > 1)
+		{
+			// Find a partial completion
+			String longestCommonStart = MiscUtilities
+				.getLongestPrefix(info.completions,
+				ProcessRunner.getProcessRunner()
+				.isCaseSensitive());
+
+			if(longestCommonStart.length() != 0)
+			{
+				if(offset - info.offset
+					!= longestCommonStart.length())
+				{
+					text.select(cmdStart + info.offset,caret);
+					text.replaceSelection(longestCommonStart);
+					return;
+				}
+			}
+
+			print(null,"");
+
+			print(getInfoColor(), jEdit.getProperty(
+				"console.completions"));
+
+			Arrays.sort(info.completions,new MiscUtilities
+				.StringICaseCompare());
+
+			for(int i = 0; i < info.completions.length; i++)
+				print(null,info.completions[i]);
+
+			print(getInfoColor(),jEdit.getProperty(
+				"console.completions-end"));
+
+			shell.printPrompt(this,shellState);
+			cmdStart = text.getDocument().getLength();
+			print(null,input);
+			text.setInputStart(cmdStart);
+			text.setCaretPosition(cmdStart + offset);
+		}
 	} //}}}
 
 	//}}}
@@ -673,6 +737,15 @@ implements EBComponent, Output, DefaultFocusComponent
 
 			run(getShell(),view.getTextArea().getSelectedText(),
 				shellState,shellState,cmd,printInput);
+		}
+	} //}}}
+
+	//{{{ CompletionAction class
+	class CompletionAction extends AbstractAction
+	{
+		public void actionPerformed(ActionEvent evt)
+		{
+			complete();
 		}
 	} //}}}
 }
