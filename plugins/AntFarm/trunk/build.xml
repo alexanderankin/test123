@@ -21,6 +21,7 @@
 	</path>
 
 	<target name="compile" description="Compiles all java files for the plugin">
+
 		<property name="build.compiler" value="jikes" />
 		<property name="build.compiler.emacs" value="yes" />
     <javac	srcdir="${plugin.src}"
