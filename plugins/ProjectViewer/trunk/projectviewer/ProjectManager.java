@@ -319,6 +319,7 @@ public final class ProjectManager {
 	 *
 	 *	@param	pName	The project's name.
 	 *	@return	If the project was loaded from disk.
+	 *	@throws NullPointerException	If the project does not exist.
 	 */
 	public boolean isLoaded(String pName) {
 		return ((Entry)projects.get(pName)).isLoaded;
