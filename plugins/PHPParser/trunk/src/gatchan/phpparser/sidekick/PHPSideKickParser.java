@@ -205,7 +205,7 @@ public final class PHPSideKickParser extends SideKickParser {
       if (currentMethod == null) {
         //We are inside a class but not inside a method
         if (lastWord2.endsWith(";") || lastWord2.endsWith("{") || lastWord2.endsWith("}")) {
-          phpSideKickCompletion = new PHPSideKickCompletion(textArea, currentWord, lastWord2);
+          phpSideKickCompletion = new PHPSideKickCompletion(currentWord, lastWord2);
           phpSideKickCompletion.addItem("var", currentWord);
           phpSideKickCompletion.addItem("function", currentWord);
           return phpSideKickCompletion;
@@ -304,7 +304,7 @@ public final class PHPSideKickParser extends SideKickParser {
    * @return a completion list
    */
   private SideKickCompletion completeClassDeclaration(JEditTextArea textArea, String word, String lastWord) {
-    final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea, word, lastWord);
+    final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(word, lastWord);
     final Project project = projectManager.getProject();
     if (project != null) {
       final Map classes = project.getClasses();
@@ -358,7 +358,7 @@ public final class PHPSideKickParser extends SideKickParser {
                                                             String currentWord,
                                                             String lastWord) {
     if (classHeader == null) return null;
-    final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea, currentWord, lastWord);
+    final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(currentWord, lastWord);
     completeClassMembers(classHeader, phpSideKickCompletion, currentWord);
     Log.log(Log.DEBUG, PHPSideKickParser.class, "Items in list : " + phpSideKickCompletion.getItemsCount());
     return phpSideKickCompletion;

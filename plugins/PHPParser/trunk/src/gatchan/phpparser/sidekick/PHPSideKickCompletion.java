@@ -6,7 +6,7 @@ import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.Selection;
 import sidekick.SideKickCompletion;
 
@@ -16,13 +16,10 @@ import java.util.List;
 /** @author Matthieu Casanova */
 public class PHPSideKickCompletion extends SideKickCompletion {
 
-  private JEditTextArea textArea;
+  private String lastWord;
 
-  private String word, lastWord;
-
-  public PHPSideKickCompletion(JEditTextArea textArea, String word, String lastWord) {
-    this.textArea = textArea;
-    this.word = word;
+  public PHPSideKickCompletion(String word, String lastWord) {
+    super(jEdit.getActiveView(), word);
     this.lastWord = lastWord;
   }
 
@@ -48,17 +45,17 @@ public class PHPSideKickCompletion extends SideKickCompletion {
   }
 
   public void insert(int index) {
-    final Object object = items.get(index);
+    Object object = items.get(index);
     String insertText;
     int caret = textArea.getCaretPosition();
-    if (word.length() != 0) {
+    if (text.length() != 0) {
       Selection selection = textArea.getSelectionAtOffset(caret);
       if (selection == null) {
-        selection = new Selection.Range(caret-word.length(),caret);
+        selection = new Selection.Range(caret-text.length(),caret);
       } else {
         int start = selection.getStart();
         int end = selection.getEnd();
-        selection = new Selection.Range(start - word.length(), end);
+        selection = new Selection.Range(start - text.length(), end);
       }
       textArea.setSelection(selection);
     }
@@ -85,7 +82,7 @@ public class PHPSideKickCompletion extends SideKickCompletion {
   }
 
   public int getTokenLength() {
-    return word.length();
+    return text.length();
   }
 
   public boolean handleKeystroke(int selectedIndex, char keyChar) {
