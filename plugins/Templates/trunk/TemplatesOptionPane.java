@@ -51,13 +51,11 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 
 	//Implementors
 	public void _init() {
-		this.init(jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0",""));
+		this.init(TemplatesPlugin.getTemplateDir());
 	}
 	
 	public void _save() {
-		jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",
-					dirTextField.getText());
-		TemplatesPlugin.refreshTemplates();
+		TemplatesPlugin.setTemplateDir(dirTextField.getText());
 	}
 	
 	/**
@@ -127,6 +125,10 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.5  2002/02/26 03:36:46  sjakob
+	 * BUGFIX: Templates directory path is no longer stored in a jEdit property if
+	 * it is equal to the default Templates path (requested by Mike Dillon).
+	 *
 	 * Revision 1.4  2002/02/22 02:34:36  sjakob
 	 * Updated Templates for jEdit 4.0 actions API changes.
 	 * Selection of template menu items can now be recorded in macros.
