@@ -21,8 +21,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-11 19:53:33 $ by $Author: bemace $
- * @version    $Revision: 1.16 $
+ * @modified   $Date: 2004-02-13 20:46:07 $ by $Author: bemace $
+ * @version    $Revision: 1.17 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -347,22 +347,33 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	public void mouseExited(MouseEvent e) { }
 
 	public void mousePressed(MouseEvent e) {
+		Mark mark = (Mark) getMarkAtPoint(e.getPoint());
 		if (GUIUtilities.isPopupTrigger(e)) {
 			JPopupMenu p = new JPopupMenu();
-			p.add(new SetWrapAction("No Wrap","none"));
-			p.add(new SetWrapAction("Soft Wrap","soft"));
-			p.add(new SetWrapAction("Hard Wrap","hard"));
-			p.setInvoker(this);
-			p.setLocation(e.getPoint());
-			p.pack();
-			p.show(this,e.getX(),e.getY());
+			if (mark == null) {
+				p.add(new SetWrapAction("No Wrap","none"));
+				p.add(new SetWrapAction("Soft Wrap","soft"));
+				p.add(new SetWrapAction("Hard Wrap","hard"));
+				p.setInvoker(this);
+				p.setLocation(e.getPoint());
+				p.pack();
+				p.show(this,e.getX(),e.getY());
+			} else {
+				
+			}
 		}
 		if (e.getClickCount() == 2) {
-			Mark mark = (Mark) getMarkAtPoint(e.getPoint());
-			if (mark != null) {
+			if (mark == null) {
+				/*
+				LineGuidesOptions.MarkDialog d = new LineGuidesOptions.MarkDialog(getColumnAtPoint(e.getPoint()));
+				d.pack();
+				d.show();
+				*/
+			} else {
 				mark.setGuideVisible(!mark.isGuideVisible());
 			}
 		}
+		
 	}
 
 	public void mouseReleased(MouseEvent e) { }
