@@ -19,7 +19,6 @@
 
 package console;
 
-import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
@@ -30,31 +29,6 @@ class SystemShell extends Shell
 	public SystemShell()
 	{
 		super("System");
-
-		aliases = new Hashtable();
-
-		// some built-ins can be invoked without the % prefix
-		aliases.put("cd","%cd");
-		aliases.put("pwd","%pwd");
-
-		// on Windows, we need a special calling convention to run system
-		// shell built-ins
-		if(DOS)
-		{
-			String prefix;
-			if(System.getProperty("os.name").indexOf("Windows 9") != -1)
-				prefix = "command.com /C ";
-			else
-				prefix = "cmd.exe /C ";
-
-			String[] builtins  = { "md", "rd", "del", "dir", "copy",
-				"move", "erase", "mkdir", "rmdir", "start",
-				"path", "ver", "vol", "ren", "type"};
-			for(int i = 0; i < builtins.length; i++)
-			{
-				aliases.put(builtins[i],prefix + builtins[i]);
-			}
-		}
 	}
 
 	public void printInfoMessage(Output output)
@@ -64,10 +38,23 @@ class SystemShell extends Shell
 
 	public void execute(Console console, Output output, String command)
 	{
+		// comments, for possible future scripting support
+		if(command.startsWith("#"))
+		{
+			output.commandDone();
+			return;
+		}
+
+		// lazily initialize aliases and variables
+		init();
+
 		Vector args = parse(command);
 		// will be null if the command is an empty string
 		if(args == null)
+		{
+			output.commandDone();
 			return;
+		}
 
 		args = preprocess(console.getView(),args);
 
@@ -99,7 +86,25 @@ class SystemShell extends Shell
 
 			String[] _args = new String[args.size()];
 			args.copyInto(_args);
-			new ConsoleProcess(console,output,_args,foreground);
+
+			String[] env;
+
+			if(OperatingSystem.getOperatingSystem()
+				.supportsEnvironmentVariables())
+			{
+				env = new String[variables.size()];
+				int counter = 0;
+				Enumeration keys = variables.keys();
+				while(keys.hasMoreElements())
+				{
+					Object key = keys.nextElement();
+					env[counter++]= (key + "=" + variables.get(key));
+				}
+			}
+			else
+				env = null;
+
+			new ConsoleProcess(console,output,_args,env,foreground);
 		}
 	}
 
@@ -157,73 +162,42 @@ class SystemShell extends Shell
 		return (ConsoleState)consoleStateMap.get(console);
 	}
 
-	static boolean cdCommandAvailable()
+	static Hashtable getVariables()
 	{
-		return java13exec != null;
-	}
-
-	static Process exec(String currentDirectory, String[] args) throws Exception
-	{
-		String[] extensionsToTry;
-		if(DOS)
-			extensionsToTry = new String[] { ".cmd", ".exe", ".bat", ".com" };
-		else
-			extensionsToTry = new String[] { "" };
-
-		String commandName = args[0];
-
-		for(int i = 0; i < extensionsToTry.length; i++)
-		{
-			args[0] = commandName + extensionsToTry[i];
-
-			try
-			{
-				if(java13exec != null)
-				{
-					Object[] methodArgs = { args, null, new File(currentDirectory) };
-					return (Process)java13exec.invoke(
-						Runtime.getRuntime(),methodArgs);
-				}
-				else
-				{
-					return Runtime.getRuntime().exec(args);
-				}
-			}
-			catch(Exception e)
-			{
-				if(i == extensionsToTry.length - 1)
-					throw e;
-			}
-		}
-
-		// can't happen
-		return null;
+		return variables;
 	}
 
 	// private members
-	private static Hashtable consoleStateMap;
-	private static Method java13exec;
-	private static boolean DOS;
+	private static Hashtable consoleStateMap = new Hashtable();
 	private static final char dosSlash = 127;
-	private Hashtable aliases;
+	private static Hashtable aliases;
+	private static Hashtable variables;
 
-	static
+	private static void init()
 	{
-		String osName = System.getProperty("os.name");
-		DOS = (osName.indexOf("Windows") != -1 ||
-			osName.indexOf("OS/2") != -1);
+		if(aliases != null && variables != null)
+			return;
 
-		consoleStateMap = new Hashtable();
+		aliases = new Hashtable();
 
-		try
-		{
-			Class[] classes = { String[].class, String[].class, File.class };
-			java13exec = Runtime.class.getMethod("exec",classes);
-		}
-		catch(Exception e)
-		{
-			// use Java 1.1/1.2 code instead
-		}
+		// some built-ins can be invoked without the % prefix
+		aliases.put("cd","%cd");
+		aliases.put("pwd","%pwd");
+
+		OperatingSystem os = OperatingSystem.getOperatingSystem();
+
+		os.setUpDefaultAliases(aliases);
+
+		variables = os.getEnvironmentVariables();
+
+		if(jEdit.getJEditHome() != null)
+			variables.put("JEDIT_HOME",jEdit.getJEditHome());
+
+		if(jEdit.getSettingsDirectory() != null)
+			variables.put("JEDIT_SETTINGS",jEdit.getSettingsDirectory());
+
+		// for the sake of Unix programs that try to be smart
+		variables.put("TERM","dumb");
 	}
 
 	/**
@@ -330,47 +304,81 @@ loop:			for(;;)
 				break;
 			case '$':
 				if(i == arg.length() - 1)
+				{
 					buf.append(c);
+					break;
+				}
+
+				String varName;
+
+				if(arg.charAt(i + 1) == '{')
+				{
+					int index = arg.indexOf('}',i + 1);
+					if(index == -1)
+						index = arg.length();
+					varName = arg.substring(i + 2,index);
+
+					i = index;
+				}
 				else
 				{
-					Buffer buffer = view.getBuffer();
-					switch(arg.charAt(++i))
+					int index;
+					for(index = i + 1; index < arg.length(); index++)
 					{
-					case 'd':
-						String path = MiscUtilities.getParentOfPath(
-							buffer.getPath());
-						if(path.endsWith("/")
-							|| path.endsWith(File.separator))
-							path = path.substring(0,
+						char ch = arg.charAt(index);
+						if(!Character.isLetterOrDigit(ch)
+							&& ch != '_')
+						{
+							index--;
+							break;
+						}
+					}
 
-								path.length() - 1);
-						buf.append(path);
-						break;
-					case 'u':
-						path = buffer.getPath();
-						if(!MiscUtilities.isURL(path))
-							path = "file:" + path;
-						buf.append(path);
-						break;
-					case 'f':
-						buf.append(buffer.getPath());
-						break;
-					case 'j':
-						buf.append(jEdit.getJEditHome());
-						break;
-					case 'n':
-						String name = buffer.getName();
-						int index = name.lastIndexOf('.');
-						if(index == -1)
-							buf.append(name);
-						else
-							buf.append(name.substring(0,index));
-						break;
-					case '$':
-						buf.append('$');
-						break;
+					varName = arg.substring(i + 1,index);
+
+					i = index;
+				}
+
+				String expansion;
+
+				// Expand some special variables
+				Buffer buffer = view.getBuffer();
+
+				if(varName.equals("d"))
+				{
+					expansion = MiscUtilities.getParentOfPath(
+						buffer.getPath());
+					if(expansion.endsWith("/")
+						|| expansion.endsWith(File.separator))
+					{
+						expansion = expansion.substring(0,
+							expansion.length() - 1);
 					}
 				}
+				else if(varName.equals("u"))
+				{
+					expansion = buffer.getPath();
+					if(!MiscUtilities.isURL(expansion))
+					{
+						expansion = "file:/" + expansion
+							.replace(File.separatorChar,'/');
+					}
+				}
+				else if(varName.equals("f"))
+					expansion = buffer.getPath();
+				else if(varName.equals("n"))
+				{
+					expansion = buffer.getName();
+					int index = expansion.lastIndexOf('.');
+					if(index != -1)
+						expansion = expansion.substring(0,index);
+				}
+				else
+					expansion = (String)variables.get(varName);
+
+				if(expansion != null)
+					buf.append(expansion);
+
 				break;
 			case '~':
 				String home = System.getProperty("user.home");
@@ -417,7 +425,7 @@ loop:			for(;;)
 
 		void setCurrentDirectory(Console console, String newDir)
 		{
-			if(!cdCommandAvailable())
+			if(!OperatingSystem.getOperatingSystem().cdCommandAvailable())
 			{
 				console.print(console.getErrorColor(),
 					jEdit.getProperty("console.shell.cd.unsup"));

@@ -26,13 +26,14 @@ import org.gjt.sp.util.Log;
 
 class ConsoleProcess
 {
-	ConsoleProcess(Console console, Output output, String[] args,
+	ConsoleProcess(Console console, Output output, String[] args, String[] env,
 		boolean foreground)
 	{
 		SystemShell.ConsoleState consoleState
 			= SystemShell.getConsoleState(console);
 
 		this.args = args;
+		this.env = env;
 		this.currentDirectory = consoleState.currentDirectory;
 
 		if(foreground)
@@ -52,7 +53,8 @@ class ConsoleProcess
 
 		try
 		{
-			process = SystemShell.exec(currentDirectory,args);
+			process = OperatingSystem.getOperatingSystem()
+				.exec(args,env,currentDirectory);
 			stdout = new StreamThread(process.getInputStream());
 			stderr = new StreamThread(process.getErrorStream());
 			stdout.start();
@@ -112,6 +114,7 @@ class ConsoleProcess
 	private Console console;
 	private Output output;
 	private String[] args;
+	private String[] env;
 	private Process process;
 	private StreamThread stdout;
 	private StreamThread stderr;
