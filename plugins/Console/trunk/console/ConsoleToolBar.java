@@ -49,7 +49,7 @@ class ConsoleToolBar extends JToolBar
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
-		cmd = new ConsoleTextField(view);
+		cmd = new ConsoleTextField(view,null,this);
 		Dimension dim = cmd.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
 		cmd.setMaximumSize(dim);
@@ -59,6 +59,12 @@ class ConsoleToolBar extends JToolBar
 
 		cmd.setModel("console." + shellCombo.getSelectedItem());
 		cmd.addActionListener(new ActionHandler());
+	} //}}}
+
+	//{{{ getShell() method
+	public Shell getShell()
+	{
+		return Shell.getShell((String)shellCombo.getSelectedItem());
 	} //}}}
 
 	//{{{ Private members
