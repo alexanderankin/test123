@@ -87,12 +87,15 @@ public class ConnectionManager
 		/* since this can be called at startup time,
 		 * we need to hide the splash screen. */
 		GUIUtilities.hideSplashScreen();
+		String privateKeyFile = null;
+		if (secure && host!=null && user!=null)
+			privateKeyFile = jEdit.getProperty("ftp.keys."+host+"."+user);
 
-		LoginDialog dialog = new LoginDialog(comp,secure,host,user,null);
+		LoginDialog dialog = new LoginDialog(comp,secure,host,user,null,privateKeyFile);
 		if(!dialog.isOK())
 			return null;
-
 		host = dialog.getHost();
+				
 		int port = FtpVFS.getDefaultPort(secure);
 		int index = host.indexOf(':');
 		if(index != -1)
@@ -109,6 +112,9 @@ public class ConnectionManager
 
 		ConnectionInfo info = new ConnectionInfo(secure,host,port,
 			dialog.getUser(),dialog.getPassword(),dialog.getPrivateKey());
+
+		if (secure && dialog.getPrivateKey()!=null)
+			jEdit.setProperty("ftp.keys."+host+":"+port+"."+dialog.getUser(),dialog.getPrivateKeyFilename());
 
 		// hash by host name
 		logins.put(host + ":" + port,info);

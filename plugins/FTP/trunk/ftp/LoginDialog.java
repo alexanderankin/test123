@@ -40,7 +40,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 {
 	//{{{ LoginDialog constructor
 	public LoginDialog(Component comp, boolean secure, String host,
-	String user, String password)
+	String user, String password, String keyFile)
 	{
 		super(JOptionPane.getFrameForComponent(comp),
 		jEdit.getProperty(secure ?
@@ -52,7 +52,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 		
-		content.add(createFieldPanel(secure,host,user,password));
+		content.add(createFieldPanel(secure,host,user,password,keyFile));
 		
 		if(!secure)
 		{
@@ -127,6 +127,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 					} else {
 						privateKey = file.toPrivateKey(null);
 					}
+					privateKeyFilename = privateKeyField.getText();
 				} catch (InvalidSshKeyException iske) {
 					GUIUtilities.error(this,"vfs.sftp.invalid-privatekey",new Object[] {iske.getMessage()});
 					return;
@@ -183,6 +184,12 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		return privateKey;
 	} //}}}
 	
+	//{{{ getPrivateKeyFilename() method
+	public String getPrivateKeyFilename()
+	{
+		return privateKeyFilename;
+	} //}}}
+	
 	//{{{ actionPerformed() method
 	public void actionPerformed(ActionEvent evt)
 	{
@@ -211,6 +218,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private String host;
 	private String user;
 	private String password;
+	private String privateKeyFilename;
 	private SshPrivateKey privateKey;
 	private boolean isOK;
 	private JButton ok;
@@ -218,7 +226,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	
 	//{{{ createFieldPanel() method
 	private JPanel createFieldPanel(boolean secure, String host, String user,
-	String password)
+	String password, String keyFile)
 	{
 		JPanel panel = new JPanel(new VariableGridLayout(
 		VariableGridLayout.FIXED_NUM_COLUMNS,2,6,6));
@@ -257,6 +265,8 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		{
 			Box privateKeyBox = Box.createHorizontalBox();
 			privateKeyField = new HistoryTextField("sftp.privateKey");
+			if (keyFile!=null)
+				privateKeyField.setText(keyFile);
 			privateKeyField.addActionListener(this);
 			label = new JLabel(jEdit.getProperty("login.privateKey"),
 			SwingConstants.RIGHT);
