@@ -32,7 +32,7 @@ import org.gjt.sp.jedit.jEdit;
  * import statement and insert it into the code.
  *
  * @author    Matthew Flower
- * @created   August 25, 2002
+ * @since   August 25, 2002
  */
 public class ClassImporter {
     private String importClass;
@@ -40,17 +40,32 @@ public class ClassImporter {
     
     private boolean sortImportStatements = false;
     
-    /** Set the buffer that we are going to add the import to.
+    /** 
+     * Set the buffer that we are going to add the import to.
+     * 
      * @param source The source buffer we are going to add the import to.
+     * @see #getSourceBuffer
      */
     public void setSourceBuffer(Buffer source) {
         sourceBuffer = source;
     }
     
     /**
+     * Get the buffer we are going to add the import to.
+     *
+     * @return A <code>Buffer</code> that is the buffer we are going to add the
+     * import into.
+     * @see #setSourceBuffer
+     */
+    public Buffer getSourceBuffer() {
+        return sourceBuffer;
+    }
+    
+    /**
      * Sets the fully qualified name of the class we are going to import.
      *
      * @param fqClassName The new importClass value
+     * @see #getImportClass
      */
     public void setImportClass(String fqClassName) {
         importClass = fqClassName;
@@ -73,20 +88,11 @@ public class ClassImporter {
     }
     
     /**
-     * Get the buffer we are going to add the import to.
-     *
-     * @return A <code>Buffer</code> that is the buffer we are going to add the
-     * import into.
-     */
-    public Buffer getSourceBuffer() {
-        return sourceBuffer;
-    }
-    
-    /**
      * Gets the name of the class we are going to import.
      *
      * @return A <code>String</code> value containing the fq class name of the
      * class we are going to import.
+     * @see #setImportClass
      */
     public String getImportClass() {
         return importClass;
@@ -109,26 +115,25 @@ public class ClassImporter {
             try {
                 RE packageRE = new RE("[^][[:space:]]*package[[:space:]]+[[:alnum:].$_*]*;", RE.REG_MULTILINE, RESyntax.RE_SYNTAX_POSIX_EXTENDED);
                 REMatch packageLocation = packageRE.getMatch(sourceBuffer.getText(0, sourceBuffer.getLength()));
-                RE classRE = new RE("^[[:space:]]*(public|private)?[[:space:]]class[[:space:]]+.*$", RE.REG_MULTILINE, RESyntax.RE_SYNTAX_POSIX_EXTENDED);
+                RE classRE = new RE("[^][[:space:]]*(public|private)?[[:space:]](abstract|final)?class[[:space:]]+.*$", RE.REG_MULTILINE, RESyntax.RE_SYNTAX_POSIX_EXTENDED);
                 REMatch classLocation = classRE.getMatch(sourceBuffer.getText(0, sourceBuffer.getLength()));
                 
                 if (packageLocation != null) {
                     //Find the first line after the package
-                    insertLocation = sourceBuffer.getLineStartOffset(sourceBuffer.getLineOfOffset(packageLocation.getStartIndex())+1);
+                    insertLocation = sourceBuffer.getLineStartOffset(sourceBuffer.getLineOfOffset(packageLocation.getStartIndex())+2);
+                    
+                    //Make sure we aren't overflowing
+                    insertLocation = Math.min(insertLocation, sourceBuffer.getLength());
                     
                     //We found the package, add a blank line before where the import
                     //is going to be inserted.
-                    sourceBuffer.insert(insertLocation, "\r\n");
-                    
-                    //Increment the insert location to be the location after our
-                    //space, being careful to avoid the end of the buffer.
-                    insertLocation = Math.min(insertLocation+2, sourceBuffer.getLength());
+                    sourceBuffer.insert(insertLocation, "\n");
                 } else if (classLocation != null) {
                     //Find the first character of the class
                     insertLocation = sourceBuffer.getLineStartOffset(sourceBuffer.getLineOfOffset(classLocation.getStartIndex()));
                     
                     //Add a space before the class
-                    sourceBuffer.insert(insertLocation, "\r\n");
+                    sourceBuffer.insert(insertLocation, "\n");
                     
                     //Adjust the insert location for the new entries we just
                     //added, being careful to not go before the beginning of the
@@ -240,8 +245,6 @@ public class ClassImporter {
             while (it.hasNext()) {
                 ImportItem ii = (ImportItem)it.next();
                 
-                System.out.println("Current Import Statement = " + ii.getImportStatement());
-                
                 if ((singleView.isMatch(ii.getImportStatement())) ||
                 (combinedView.isMatch(ii.getImportStatement()))) {
                     duplicateFound = true;
@@ -255,13 +258,6 @@ public class ClassImporter {
         
         return duplicateFound;
     }
-    
-    /*
-     *  private boolean combineMultipleClassesToAsterisk = false;
-     *  private int minimumClassesToConvertToAsterisk = 4;
-     *  private boolean removeSpacesInImportBlock = false;
-     *  private boolean useCaseWhenSorting = false;
-     */
 }
 
 
