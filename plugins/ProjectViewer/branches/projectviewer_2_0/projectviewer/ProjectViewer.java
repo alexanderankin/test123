@@ -636,7 +636,7 @@ public final class ProjectViewer extends JPanel
 		if (workingFileTree != null)
 			((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
 		
-		if (pList.getSelectedItem() != p) {
+		if (p != null && pList.getSelectedItem() != p) {
 			pList.setSelectedItem(p);
 		}
 		
