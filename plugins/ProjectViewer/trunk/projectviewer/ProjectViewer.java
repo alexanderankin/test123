@@ -728,9 +728,8 @@ public final class ProjectViewer extends JPanel
 	 *	@since	PV 2.1.0
 	 */
 	public static VPTProject getActiveProject(View aView) {
-		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
-		return (ve != null && ve.node != null && ve.node.isProject()) ?
-			(VPTProject) ve.node : null;
+		VPTNode n = getActiveNode(aView);
+		return (n != null && n.isProject()) ? (VPTProject) n : null;
 	} //}}}
 
 	//}}}
