@@ -277,21 +277,20 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 *	itself from the project in case the parent is being set to null.
 	 */
 	public void setParent(MutableTreeNode newParent) {
-		VPTProject p = findProjectFor(this);
-		super.setParent(newParent);
-		if (newParent == null) {
-			if (canOpen()) {
+		if (canOpen()) {
+			if (newParent == null) {
+				VPTProject p = findProjectFor(this);
 				if (p != null) {
 					p.unregisterNodePath(this);
 				}
-			}
-		} else {
-			if (canOpen()) {
+			} else {
+				VPTProject p = findProjectFor((VPTNode)newParent);
 				if (p != null) {
 					p.registerNodePath(this);
 				}
 			}
 		}
+		super.setParent(newParent);
 	} //}}}
 
 	//}}}
