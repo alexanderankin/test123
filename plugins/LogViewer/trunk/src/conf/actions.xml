@@ -31,6 +31,38 @@
 			logviewer.bottom();
         </CODE>
     </ACTION>
+   <ACTION NAME="logviewer.wordWrap">
+      <CODE>
+            view.getDockableWindowManager().addDockableWindow("logviewer");
+			logviewer = view.getDockableWindowManager().getDockable("logviewer");
+			logviewer.wordWrap();
+      </CODE>
+      <IS_SELECTED>
+            view.getDockableWindowManager().addDockableWindow("logviewer");
+			logviewer = view.getDockableWindowManager().getDockable("logviewer");
+         ffp = logviewer.getSelectedFileFollowingPane();
+         if ( ffp != null ) {
+            return ffp.getWordWrap();
+         }
+         return false;
+      </IS_SELECTED>
+   </ACTION>
+   <ACTION NAME="logviewer.tail">
+      <CODE>
+            view.getDockableWindowManager().addDockableWindow("logviewer");
+			logviewer = view.getDockableWindowManager().getDockable("logviewer");
+			logviewer.tail();
+      </CODE>
+      <IS_SELECTED>
+            view.getDockableWindowManager().addDockableWindow("logviewer");
+			logviewer = view.getDockableWindowManager().getDockable("logviewer");
+         ffp = logviewer.getSelectedFileFollowingPane();
+         if ( ffp != null ) {
+            return ffp.autoPositionCaret();
+         }
+         return false;
+      </IS_SELECTED>
+   </ACTION>
     <ACTION NAME="logviewer.clear">
         <CODE>
             view.getDockableWindowManager().addDockableWindow("logviewer");

@@ -29,6 +29,9 @@ plugin.logviewer.LogViewerPlugin.menu=logviewer.open \
                 - \
                 logviewer.firstLine \
                 logviewer.lastLine \
+                logviewer.tail \
+                logviewer.find \
+                logviewer.wordWrap \
                 - \
                 logviewer.clear \
                 logviewer.clearAll \
@@ -49,6 +52,7 @@ logviewer.deleteAll.label=Delete All Logs
 logviewer.about.label=About Log Viewer
 logviewer.wordWrap.label=Wrap Lines
 logviewer.find.label=Find
+logviewer.tail.label=Tail
 
 # Dockable window title
 logviewer.title=Log Viewer
@@ -194,7 +198,8 @@ logviewer.WhatIsThis.wordWrap.text=\
 logviewer.WhatIsThis.autoScroll.title=What Is Auto-Scroll?
 logviewer.WhatIsThis.autoScroll.text=\
   When auto-scroll is enabled, log viewer automatically scrolls\n\
-  to the bottom of a followed file when new text is appended that file.
+  to the bottom of a followed file when new text is appended to\n\
+  that file.
 logviewer.WhatIsThis.font.title=What Is Font?
 logviewer.WhatIsThis.font.text=\
   You can choose a font to be used to show the text of the log.

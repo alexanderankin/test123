@@ -1,5 +1,9 @@
 <project name="logviewer" default="jar" basedir=".">
 
+    <description>
+       This build file creates LogViewer as a jEdit plugin.
+    </description>
+
     <!-- ========== Initialization Properties ================================= -->
     <!--
             These property values may optionally be overridden with property
@@ -8,10 +12,19 @@
             script.
     -->
     
-    <property file="build.props"/>
     
-    <!-- where to put the finished plugin -->
-    <property name="install.dir" value=".." />
+    <!-- read build.props to override properties set below -->
+   <property file="build.props"/>
+
+    <!-- default location of jedit.jar, override in build.props if necessary -->
+   <property name="jedit.install.dir" value="../.."/> 
+    
+    <!-- default location of the finished plugin, override in build.props
+    if necessary -->
+   <property name="install.dir" value=".." />
+    
+   
+    <!-- shouldn't need to override the following properties -->
 
 
     <!-- Java compilation options -->
@@ -52,6 +65,7 @@
     <path id="base.classpath">
         <pathelement location="${build.target}"/>
         <pathelement location="${build.test}" />
+        <pathelement location="${jedit.install.dir}/jedit.jar" />
     </path> 
 
     <!-- ========== Executable Targets ======================================== -->

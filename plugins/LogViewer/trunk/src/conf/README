@@ -4,10 +4,4 @@ This allows you to follow several log files at a time within jEdit.
 It is heavily based off Follow, http://follow.sourceforge.net.  For
 more information, visit http://www.twdata.org/logviewer
 
-Changes by Dale:
-o Updated for dynamic reload by jEdit 4.2
-o Minor changes to build file
-o Added word wrap 
-o Added "Find" dialog
-o Added ability to "lock" the horizontal scroll bar.
 
