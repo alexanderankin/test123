@@ -49,21 +49,23 @@ import code2html.html.HtmlStyle;
 
 public class Code2HTML
 {
-    private boolean useSelection;
+    private Buffer      buffer    = null;
+    private Selection[] selection = null;
 
-    private JEditTextArea   textArea = null;
-    private HtmlStyle       style    = null;
-    private HtmlGutter      gutter   = null;
-    private HtmlPainter     painter  = null;
+    private HtmlStyle   style     = null;
+    private HtmlGutter  gutter    = null;
+    private HtmlPainter painter   = null;
 
 
-    public Code2HTML(JEditTextArea textArea, boolean useSelection) {
-        this.textArea     = textArea;
-        this.useSelection = useSelection;
+    public Code2HTML(
+            Buffer buffer, SyntaxStyle[] syntaxStyle, Selection[] selection
+    ) {
+        this.buffer    = buffer;
+        this.selection = selection;
 
         Config config = new JEditConfig(
-            textArea.getPainter().getStyles(),
-            textArea.getBuffer().getTabSize()
+            syntaxStyle,
+            buffer.getTabSize()
         );
 
         this.style   = config.getStyle();
@@ -72,9 +74,18 @@ public class Code2HTML
     }
 
 
+    public Code2HTML(JEditTextArea textArea, boolean useSelection) {
+        this(
+            textArea.getBuffer(),
+            textArea.getPainter().getStyles(),
+            useSelection ? textArea.getSelection() : null
+        );
+    }
+
+
     public void toHTML(View view) {
         int physicalFirst = 0;
-        int physicalLast  = this.textArea.getLineCount() - 1;
+        int physicalLast  = this.buffer.getLineCount() - 1;
 
         StringWriter sw  = new StringWriter();
 
@@ -83,11 +94,9 @@ public class Code2HTML
 
             this.htmlOpen(out);
 
-            if (!this.useSelection) {
+            if (this.selection == null) {
                 this.htmlText(out, physicalFirst, physicalLast);
             } else {
-                Selection[] selection = textArea.getSelection();
-
                 int last = 0;
                 for (int i = 0; i < selection.length; i++) {
                     if (selection[i].getEndLine() > last) {
@@ -132,11 +141,10 @@ public class Code2HTML
 
     private void htmlOpen(Writer out) throws IOException
     {
-        Buffer buffer = this.textArea.getBuffer();
         out.write(
               "<HTML>\n"
             + "<HEAD>\n"
-            + "<TITLE>" + buffer.getName() + "</TITLE>\n"
+            + "<TITLE>" + this.buffer.getName() + "</TITLE>\n"
         );
         if (this.style instanceof HtmlCssStyle) {
             out.write(
@@ -157,7 +165,7 @@ public class Code2HTML
 
     private void htmlText(Writer out, int first, int last) throws IOException {
         long start = System.currentTimeMillis();
-        this.paintLines(out, this.textArea.getBuffer(), first, last);
+        this.paintLines(out, this.buffer, first, last);
         long end = System.currentTimeMillis();
         Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
     }
