@@ -1,0 +1,6 @@
+CVS policy file
+
+plugin: Blogging
+author: Chris Whitmore <soma@somatose.com>
+
+Please do not commit changes to this plugin without first consulting the author.
