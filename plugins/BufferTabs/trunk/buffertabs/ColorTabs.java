@@ -78,21 +78,21 @@ public class ColorTabs
 
    /**
     *  Creates colors suitable for reading text labels. Uniformly moves the
-    *  colour range to a darker range.
+    *  color range to a darker range.
     *
-    * @param  colour
+    * @param  color
     * @return
     */
-   Color alterColourDarken(Color colour)
+   Color alterColourDarken(Color color)
    {
-      if (colour == null)
+      if (color == null)
       {
          return Color.black;
       }
 
-      int r = colour.getRed();
-      int g = colour.getGreen();
-      int b = colour.getBlue();
+      int r = color.getRed();
+      int g = color.getGreen();
+      int b = color.getBlue();
 
       r = (int) (lowestColor - (r * darkRatio));
       g = (int) (lowestColor - (g * darkRatio));
@@ -121,18 +121,18 @@ public class ColorTabs
     *  Creates colors suitable for highlighting an active tab. Boosts the
     *  brightness and lowers saturation to achieve this.
     *
-    * @param  colour
+    * @param  color
     * @return
     */
-   Color alterColourHighlight(Color colour)
+   Color alterColourHighlight(Color color)
    {
-      if (colour == null)
+      if (color == null)
       {
          return Color.lightGray;
       }
-      int r = colour.getRed();
-      int g = colour.getGreen();
-      int b = colour.getBlue();
+      int r = color.getRed();
+      int g = color.getGreen();
+      int b = color.getBlue();
 
       float[] hsb = Color.RGBtoHSB(r, g, b, null);
 
@@ -150,22 +150,22 @@ public class ColorTabs
 
 
    /**
-    *  Creates colors suitable for backgrounds. Uniformly moves the colour
+    *  Creates colors suitable for backgrounds. Uniformly moves the color
     *  range to a lighter paler range.
     *
-    *@param  colour
+    *@param  color
     *@return
     */
-   Color alterColourMute(Color colour)
+   Color alterColourMute(Color color)
    {
-      if (colour == null)
+      if (color == null)
       {
          return Color.gray;
       }
 
-      int r = colour.getRed();
-      int g = colour.getGreen();
-      int b = colour.getBlue();
+      int r = color.getRed();
+      int g = color.getGreen();
+      int b = color.getBlue();
 
       r = (int) (lowestColor + (r * muteRatio));
       g = (int) (lowestColor + (g * muteRatio));
