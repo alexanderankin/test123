@@ -112,32 +112,6 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	
 	//{{{ Public Methods
 	
-	//{{{ getFileExtension() method
-	/**
-	 * Returns the file's extension.
-	 *
-	 *@param  filename  
-	 *@return	   The fileExtension value
-	 */
-	private String getFileExtension(String fileName) {
-		//String fileName = file.getName();
-		int dotIndex = fileName.lastIndexOf('.');
-		if (dotIndex == -1 || dotIndex == fileName.length() - 1)
-			return null;
-		return fileName.substring(dotIndex + 1);
-	} //}}}
-
-	//{{{ launchExternal() method
-	/**
-	 * Uses the AppLauncher to determine if a custom application found for the selected file type
-	 * If an app is found, appLaunch launch the file into the external application
-	 *
-	 * @param  file  Description of Parameter
-	 */
-	public void launchExternal(ProjectFile file) {
-		appList.launchApp(getFileExtension(file.getName()), file.getPath());
-	} //}}}
-
 	//{{{ Event Handling
 	
 	//{{{ mousePressed() method
@@ -179,6 +153,9 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		} else if (src == reimport) {
 			Project p = viewer.getCurrentProject();
 			p.removeAllFiles();
+			int count = new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
+			viewer.getView().getStatus().setMessageAndClear(
+				"Imported " + count + " files into project \"" + p.getName() + "\"."); 		
 			new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
 		} else if (src == addFile) {
 			this.addFileToProject();
@@ -272,6 +249,17 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		}	
 	} //}}}
 	
+	//{{{ launchExternal() method
+	/**
+	 * Uses the AppLauncher to determine if a custom application found for the selected file type
+	 * If an app is found, appLaunch launch the file into the external application
+	 *
+	 * @param  file  Description of Parameter
+	 */
+	private void launchExternal(ProjectFile file) {
+		appList.launchApp(file.toFile(), viewer);
+	} //}}}
+
 	//{{{ handleMouseEvent() method
 	/** Handles the mouse event internally. */
 	private void handleMouseEvent(MouseEvent me) {
@@ -292,6 +280,18 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			} else if (node instanceof ProjectDirectory) {
 				dirMenu.show(me.getComponent(), me.getX(), me.getY());
 			} else if (node instanceof ProjectFile) {
+				// "Beautify" the "Open with..." entry
+				String app = appList.getAppName(((ProjectFile)node).toFile());
+				if (app != null) {
+					int idx = app.lastIndexOf("/");
+					if (idx != -1) {
+						app = app.substring(idx + 1, app.length());
+					}
+					miExtenalOpen.setText("Open with \"" + app + "\"");
+				} else {
+					miExtenalOpen.setText("Open with...");
+				}
+				// show the menu
 				fileMenu.show(me.getComponent(), me.getX(), me.getY());
 			}
 		}
