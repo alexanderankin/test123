@@ -27,6 +27,8 @@ import javax.swing.Icon;
 import javax.swing.UIManager;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
+
+import org.gjt.sp.jedit.jEdit;
 //}}}
 
 /**
@@ -82,35 +84,26 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	//}}}
 	
 	//{{{ Public methods
-	
-	//{{{ add(MutableTreeNode) method
-	/**	Keeps the children list sorted. */
-	public void add(MutableTreeNode newChild) {
-		super.add(newChild);
-		Collections.sort(children, new VPTNodeComparator());
+
+	//{{{ sortChildren()
+	/**
+	 *	Sort the children list for this node using the default node comparator.
+	 *	The trees containing the node are not notified of the update.
+	 */
+	public void sortChildren() {
+		if (children != null && children.size() > 1)
+			Collections.sort(children, new VPTNodeComparator());
 	} //}}}
-	
+		
 	//{{{ delete() method
 	/**
-	 *	The "delete()" method should remove the resource from the project and
-	 *	from the disk, if applicable. The default is to call the "remove" method,
-	 *	which simply removes the resource from the project.
+	 *	The "delete()" method should remove the resource from the the disk,
+	 *	if applicable. This method does not call remove().
 	 *
 	 *	@return		Whether the deletion was successful or not.
 	 */
 	public boolean delete() {
-		remove();
-		return true;
-	} //}}}
-
-	//{{{ remove() method
-	/**
-	 *	The "remove()" method should remove the resource from the project, but
-	 *	not from the disk (when applicable).
-	 */
-	public void remove() {
-		super.remove(this);
-		setParent(null);
+		return false;
 	} //}}}
 
 	//{{{ isFile() method	
@@ -239,6 +232,43 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	}
 	//}}}
 
+	//{{{ findIndexForChild(VPTNode) method
+	/**
+	 *	Do a binary search with the goal of finding in what index of the child
+	 *	array of this node the given child would be inserted to maintain order
+	 *	according to the {@link VPTNodeComparator VPTNodeComparator} rules.
+	 *
+	 *	@param	child	The child to be inserted.
+	 *	@return	The index where to put the child as to maintain the child array
+	 *			in ascendant order.
+	 */
+	public int findIndexForChild(VPTNode child) {
+		if (children == null || children.size() == 0) return 0;
+		
+		VPTNodeComparator c = new VPTNodeComparator();
+		int b = 0, e = children.size(), i = e/2;
+		VPTNode n;
+		
+		while (e - b > 1) {
+			n = (VPTNode) children.get(i);
+			int comp = c.compare(child,n);
+			
+			if (comp < 0) {
+				e = i;
+			} else if (comp == 0) {
+				i++;
+				b = e = i;
+			} else {
+				b = i;
+			}
+			i = (e+b)/2;
+		}
+		if (b == children.size()) return b;
+		n = (VPTNode) children.get(b);
+		return (c.compare(child,n) < 0 ? b : b + 1);
+	} //}}}
+	
+	
 	//}}}
 
 	//{{{ GUI stuff
@@ -293,17 +323,17 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	/**
  	 *	Compares two VPTNode objects. It makes assumptions about the base nodes
 	 *	provided by the plugin. If the nodes are not recognized by any of the
-	 *	"isSomething" methods, the {@link VPTNode.compareToNode(VPTNode), 
+	 *	"isSomething" methods, the {@link VPTNode#compareToNode(VPTNode) 
 	 *	compareToNode(VPTNode)}	method is called.
 	 */
 	protected static class VPTNodeComparator implements Comparator {
 
 		public int compare(Object o1, Object o2) {
 			if (o1 == o2) return 0;
-			
-			VPTNode node1 = (VPTNode) o1;
-			VPTNode node2 = (VPTNode) o2;
-			
+			return compare((VPTNode)o1, (VPTNode)o2);
+		}
+
+		public int compare(VPTNode node1, VPTNode node2) {			
 			if (node1.isFile()) {
 				if(node2.isFile()) {
 					return node1.getName().compareTo(node2.getName());
@@ -332,6 +362,8 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 				return node1.compareToNode(node2);
 			}
 		}
+		
+
 		
 	} //}}}
 	
