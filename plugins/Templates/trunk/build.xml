@@ -78,7 +78,7 @@
 	<property name="install.dir" value=".."/>
 	<property name="build.dir" value="build"/>
 	<property name="docs.dir" value="docs"/>
-  <property name="helpfile.name" value="Templates.html"/>
+  <property name="helpfile.name" value="index.html"/>
 
 	<property name="velocity.jar" value="${src.lib}/velocity-core-1.3-rc1.jar"/>
 	<!-- }}} -->
@@ -128,8 +128,8 @@
 		<property name="users-guide.xsl" value="default-users-guide.xsl"/>
 
 		<uptodate property="build-docs.not-required"
-				targetfile="${build.dir}/${helpfile.name}">
-			<srcfiles dir="." includes="users-guide.xml"/>
+				targetfile="${build.dir}/${docs.dir}/${helpfile.name}">
+			<srcfiles dir="${docs.dir}" includes="users-guide.xml"/>
 		</uptodate>
 	</target>
 	<!-- }}} -->
