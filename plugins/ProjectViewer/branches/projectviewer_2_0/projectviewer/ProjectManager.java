@@ -196,13 +196,51 @@ public final class ProjectManager {
 		}
 	} //}}}
 	
+	//{{{ removeProject(VPTProject) method
+	/**
+	 *	Removes the project from the internal list of projects. Removes the 
+	 *	project's config file (if it exists), and notifies the Viewer that
+	 *	the project does not exist anymore.
+	 */
+	public void removeProject(VPTProject p) {
+		String fName = (String) fileNames.get(p.getName());
+		if (fName != null) {
+			new File(ProjectPlugin.getResourcePath("projects/" + fName)).delete();
+			fileNames.remove(p.getName());
+			// project list changed, save "global" data.
+			try{
+				saveGlobalData();
+			} catch (IOException ioe) {
+				Log.log(Log.ERROR, this, ioe);
+			}
+		}
+		VPTRoot.getInstance().remove(p);
+		projects.remove(p.getName());
+		loaded.remove(p.getName());
+		ProjectViewer.projectRemoved(p);
+	} //}}}
+	
+	//{{{ renameProject(String, String) method
+	/** Updates information about a project to reflect its name change. */
+	public void renameProject(String oldName, String newName) {
+		VPTProject p = (VPTProject) projects.remove(oldName); 
+		projects.put(newName, p);
+		loaded.put(newName, projects.remove(oldName));
+		if (fileNames.get(oldName) != null) {
+			String oldFile = (String) fileNames.remove(oldName);
+			new File(ProjectPlugin.getResourcePath("projects/" + oldFile)).delete();
+		}
+		saveProject(p);
+		ProjectViewer.nodeChanged(p);
+	} //}}}
+	
 	//{{{ addProject(VPTProject) method
 	/** Adds a project to the list. */
 	public void addProject(VPTProject p) {
 		projects.put(p.getName(), p);
 		loaded.put(p.getName(), Boolean.TRUE);
 		ProjectViewer.updateProjectCombos();
-	} //}}}`
+	} //}}}
 	
 	//{{{ getProject(String) method
 	/**
@@ -237,7 +275,7 @@ public final class ProjectManager {
 		return Collections.unmodifiableCollection(projects.values()).iterator();
 	} //}}}
 	
-	//{{{ ensureLoaded(String) method
+	//{{{ isLoaded(String) method
 	/**	
 	 *	Returns whether a project is loaded or not.
 	 *
@@ -246,6 +284,12 @@ public final class ProjectManager {
 	 */
 	public boolean isLoaded(String pName) {
 		return (loaded.get(pName) == Boolean.TRUE);
+	} //}}}
+	
+	//{{{ hasProject(String) method
+	/** Returns whether a project with the given name exists. */
+	public boolean hasProject(String name) {
+		return projects.containsKey(name);
 	} //}}}
 	
 	//{{{ Private Stuff
@@ -288,9 +332,14 @@ public final class ProjectManager {
 		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF8");
 		writeXMLHeader("UTF8", out);
 		out.write("<" + PROJECT_ROOT + ">\n");
-		for (Iterator it = fileNames.keySet().iterator(); it.hasNext(); ) {
+		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
 			String pName = (String) it.next();
 			String fName = (String) fileNames.get(pName);
+			if (fName == null) {
+				fName = createFileName(pName);
+				fileNames.put(pName, fName);
+				ProjectPersistenceManager.save((VPTProject)projects.get(pName), fName);
+			}
 			out.write("<" + PROJECT_ELEMENT + " " + 
 				PRJ_NAME + "=\"" + pName + "\" " + 
 				PRJ_FILE + "=\"" + fName + "\"/>\n");
