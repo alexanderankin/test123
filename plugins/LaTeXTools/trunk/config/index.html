@@ -230,12 +230,12 @@ LaTeX as they are in <code>\cite</code> commands).</p>
 Clicking a label has the following effects:
 
 <ul>
-<li><strong>Single Click</strong>: scrolls to the label in the appropriate buffer. Note that this may change the current buffer.</li>
+<li><strong>Single Click</strong>: "locks" the insertion point for the reference to the cursor position of the current buffer. This saves the cursor position and buffer, so that clicking the table entries navigates the documents, but double clicking inserts the reference at the original location. The lock is released when a click is performed with the ALT key held down and when the mouse exits the table.</li>
+<li><strong>Alt-Click</strong>: Removes any lock and scrolls to the label in the appropriate buffer. Note that this may change the current buffer and caret position.</li>
 <li><strong>Double Click</strong>: inserts a reference to the label at the cursor position in the current buffer.</li>
-<li><strong>ALT-Click</strong>: "locks" the insertion point for the reference to the cursor position of the current buffer, and then acts like the Single Click above. The lock is released when a click is performed without the ALT key and when the mouse leaves the navigator window.</li>
 </ul>
 
-The ALT-Click locking mechanism allows the entire list of labels to be explored by keeping ALT held down and clicking the labels to view their positions. Double clicking a reference (with or without the ALT key) will insert the reference at the saved cursor location.
+The locking mechanism allows the entire list of labels to be explored by clicking the labels to view their positions. Double clicking a reference  will insert the reference at the saved cursor location.
 </p>
 
 <h3>Options</h3>

@@ -18,15 +18,17 @@
 */
 package uk.co.antroy.latextools;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
+import java.awt.event.*;
 import java.awt.event.MouseEvent;
 
-import javax.swing.AbstractAction;
+import java.net.*;
+
+import javax.swing.*;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -37,11 +39,12 @@ import javax.swing.table.TableModel;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-
+import org.gjt.sp.jedit.help.HelpViewer;
+import org.gjt.sp.util.Log;
 import tableutils.TableSorter;
 
 import uk.co.antroy.latextools.macros.ProjectMacros;
-import uk.co.antroy.latextools.macros.TextMacros;
+import uk.co.antroy.latextools.macros.*;
 import uk.co.antroy.latextools.parsers.LabelParser;
 import uk.co.antroy.latextools.parsers.LabelTableModel;
 import uk.co.antroy.latextools.parsers.LaTeXAsset;
@@ -57,6 +60,10 @@ public class LabelTablePanel
     private ActionListener insert;
     private boolean enableInsert = true;
     private boolean suppress = false;
+    private Icon LOCKED_ICON = UtilityMacros.getIcon("locked.png");
+    private Icon UNLOCKED_ICON = UtilityMacros.getIcon("unlocked.png");
+    private JButton corner;
+    
 
     //~ Constructors ..........................................................
 
@@ -99,6 +106,21 @@ public class LabelTablePanel
 
     private void _buildPanel() {
 
+        Action openHelp = new AbstractAction("",UNLOCKED_ICON){
+            public void actionPerformed(ActionEvent e){
+                try{
+                    URL help = new URL(LabelTablePanel.class.getResource("/index.html"), "#label");
+                    new HelpViewer(help);
+                } catch(MalformedURLException ex){
+                    ex.printStackTrace();
+                    Log.log(Log.ERROR, this, "Url Malformed");
+                }
+            }
+        };
+        
+        corner = new JButton(openHelp);
+        corner.setToolTipText("Click here for help with the Label Navigator.");
+        
         JLabel parsingLabel = new JLabel("<html><font color='#dd0000'>Parsing...");
         add(parsingLabel);
 
@@ -121,9 +143,9 @@ public class LabelTablePanel
                     }
 
                     if ((e.getModifiers() & e.ALT_MASK) == e.ALT_MASK) {
-                        suppress = true;
+                        unSuppress();
                     } else {
-                        suppress = false;
+                        suppress();
                     }
 
                     int sel = table.getSelectedRow();
@@ -132,12 +154,11 @@ public class LabelTablePanel
                     TextMacros.visitAsset(view, asset);
                 }
             }
-
-            public void mouseExited(MouseEvent e) {
-                suppress = false;
+            public void mouseExited(MouseEvent e){
+                unSuppress();
             }
         });
-
+        
         String key = "Enter";
         table.getActionMap().put(key, 
                                  new AbstractAction() {
@@ -145,13 +166,18 @@ public class LabelTablePanel
                 insert();
             }
         });
+        
         table.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), 
                                 key);
         sorter.addMouseListenerToHeaderInTable(table);
 
-        JScrollPane scp = new JScrollPane(table, 
-                                          JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
+        final JScrollPane scp = new JScrollPane(table, 
+                                          JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
                                           JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        scp.setCorner(JScrollPane.UPPER_RIGHT_CORNER, corner);
+        
+                
+        corner.setToolTipText("Click here for help on Label Navigation.");
         setLayout(new BorderLayout());
         setPreferredSize(new Dimension(400, 400));
         remove(parsingLabel);
@@ -159,6 +185,16 @@ public class LabelTablePanel
         sendUpdateEvent("latextools-label-table-dock");
     }
 
+    private void suppress(){
+        suppress = true;
+        corner.setIcon(LOCKED_ICON);
+    }
+    
+    private void unSuppress(){
+        suppress = false;
+        corner.setIcon(UNLOCKED_ICON);
+    }
+    
     private void buildPanel() {
 
         Thread parseThread = new Thread(new Runnable() {
