@@ -23,6 +23,7 @@ import java.io.*;
 import java.util.*;
 import org.apache.tools.ant.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 public class AntFarmShell extends Shell
 {
@@ -75,8 +76,10 @@ public class AntFarmShell extends Shell
 			Target target = (Target)
 				_currentProject.getTargets().get( requestedTarget );
 
-			_targetRunner = new TargetRunner( target
-				, _currentBuildFile, console.getView(), output );
+			int logLevel = getAntFarm(console).getMessageOutputLevel();
+
+			_targetRunner = new TargetRunner( target,
+				_currentBuildFile, console.getView(), output, logLevel );
 		}
 		else if ( command.equals( "?" ) ) {
 
@@ -225,7 +228,7 @@ public class AntFarmShell extends Shell
 
 	private AntFarm getAntFarm( Console console )
 	{
-		AntFarm antBrowser = (AntFarm) console.getView().getDockableWindowManager().getDockableWindow( "antfarm" );
+		AntFarm antBrowser = (AntFarm) console.getView().getDockableWindowManager().getDockable( "antfarm" );
 		if ( antBrowser != null ) {
 			return antBrowser;
 		}
