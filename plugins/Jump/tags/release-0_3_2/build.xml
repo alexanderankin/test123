@@ -1,0 +1,89 @@
+<project name="JumpPlugin" default="jar" basedir=".">
+    <description>
+Hi packager! This is a Jump Plugin build file.
+    </description>
+  <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.2pre5/"/>
+  <property name="jar.name"  value="Jump"/>
+
+  <property name="install.dir"  value="${user.home}/.jedit/jars/"/>
+
+
+  <path id="project.class.path">
+    <pathelement location="${jedit.install.dir}/jedit.jar"/>
+    <pathelement location="${user.home}/.jedit/jars/ProjectViewer.jar"/>
+    <pathelement location="./src"/>
+  </path>
+
+<!--{{{ compile -->
+    <target name="compile"> 
+    <javac
+      srcdir="."
+      deprecation="on"
+      includeJavaRuntime="yes"
+    >
+      <classpath refid="project.class.path"/>
+    </javac>
+  </target> <!--}}}-->
+
+<!--{{{ jar -->
+    <target name="jar" depends="compile">
+    <description>
+"jar" target - Compile plugin, makes jar file in parent directory. (binaries only)
+    </description>
+    <jar jarfile="../${jar.name}.jar">
+      <fileset dir=".">
+        <include name="**/*.class"/>
+        <include name="**/*.props"/>
+        <include name="**/*.html"/>
+        <include name="**/*.gif"/>
+        <include name="actions.xml"/>
+        <include name="dockables.xml"/>
+      </fileset>
+    </jar>
+    <delete>
+        <fileset dir="." includes="**/*.class"/>
+    </delete>
+  </target>   <!--}}}-->
+
+<!--{{{ test -->
+    <target name="test" depends="compile">
+    <mkdir dir="${install.dir}"/>
+    <jar jarfile="${install.dir}/${jar.name}.jar">
+      <fileset dir=".">
+        <include name="**/*.class"/>
+        <include name="**/*.props"/>
+        <include name="**/*.html"/>
+        <include name="img/*.gif"/>
+        <include name="actions.xml"/>
+        <include name="dockables.xml"/>
+      </fileset>
+    </jar>
+    <delete>
+        <fileset dir="." includes="**/*.class"/>
+    </delete>
+  </target> <!--}}}-->
+  
+<!--{{{ dist -->
+    <target name="dist" depends="compile,jar">
+        <description>
+"dist" target - Compile plugin, makes Jump.zip (which contains Jump.jar and sources in /Jump) in parent directory.
+Also create binary Jump.jar in parent dir.
+    </description>
+    <mkdir dir="${install.dir}"/>
+    <mkdir dir="../tmp/Jump"/>
+    
+    <copy todir="../tmp/Jump">
+        <fileset dir="." excludes="CVS" />
+    </copy>
+    
+    <copy file="../${jar.name}.jar" todir="../tmp" />
+    
+   <zip destfile="../${jar.name}.zip">
+        <zipfileset dir="../tmp" includes="**/*.*" />
+    </zip>
+    
+    <delete dir="../tmp" />
+  
+  </target> <!--}}}-->
+  
+</project>
