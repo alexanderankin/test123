@@ -1,22 +1,27 @@
 #
+# use the 4.2 api, our start method doesn't do anything...
+#
+plugin.macroManager.MacroManagerPlugin.activate=defer
+
+#
 # Plugin properties
 #
-
 plugin.macroManager.MacroManagerPlugin.name=MacroManager
 plugin.macroManager.MacroManagerPlugin.author=Carmine Lucarelli
 plugin.macroManager.MacroManagerPlugin.version=1.2
 plugin.macroManager.MacroManagerPlugin.docs=index.html
-
 plugin.macroManager.MacroManagerPlugin.depend.1=jedit 04.00.00.00
-
 
 #
 # Menu properties
 #
-
 macroManager.label=Macro Manager
 macroManager-toggle.label=Character Map Toggle
 
+#
+# menu for 4.2 api
+#
+plugin.macroManager.MacroManagerPlugin.menu-item=macroManager
 
 #
 # errors
