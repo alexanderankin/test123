@@ -369,7 +369,10 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	private void removeOrAddToBus()
 	{
 		if(addedToBus && errorCount == 0)
+		{
+			addedToBus = false;
 			EditBus.removeFromBus(this);
+		}
 		else if(!addedToBus && errorCount != 0)
 		{
 			addedToBus = true;

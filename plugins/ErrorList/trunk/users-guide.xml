@@ -6,8 +6,8 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :tabSize=1:indentSize=1:noTabs=true:folding=sidekick: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.2/docbookx.dtd">
 
 <book>
 
@@ -402,6 +402,14 @@ errorSource.addError(new ErrorSource.DefaultError(
 
  <itemizedlist>
 
+ <listitem><formalpara><title>Version 1.3.2</title><para>requires
+   jEdit 4.2pre8.
+   </para></formalpara>
+   <itemizedlist>
+    <listitem><para>After adding and adding an error source, removing and adding it again would not add the error source to the EditBus, so it would not receive notifications of buffers being opened, and as a result floating positions for errors would not be created.</para></listitem>
+    <listitem><para>Fix display of selected entires in the error list when using the GTK look and feel.</para></listitem>
+   </itemizedlist>
+  </listitem>
  <listitem><formalpara><title>Version 1.3.1</title><para>requires
    jEdit 4.2pre2.
    </para></formalpara>
