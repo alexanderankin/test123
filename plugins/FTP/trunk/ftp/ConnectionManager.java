@@ -209,8 +209,12 @@ public class ConnectionManager
 				&& c.host.equals(host)
 				&& c.port == port
 				&& c.user.equals(user)
-				&& c.password.equals(password)
-				&& c.privateKey.equals(privateKey);
+				&& ( (c.password==null && password==null) ||
+				     (c.password!=null && password!=null &&
+				      c.password.equals(privateKey)))
+				&& ( (c.privateKey==null && privateKey==null) ||
+				     (c.privateKey!=null && privateKey!=null &&
+				      c.privateKey.equals(privateKey)));
 		}
 
 		public String toString()
