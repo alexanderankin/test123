@@ -108,14 +108,14 @@ public final class ProjectViewer extends JPanel
 	} //}}}
 
 	//{{{ registerAction(Action) method
-	/** Adds an action to be shown on the context menu. */
+	/** Adds an action to be shown on the toolbar. */
 	public static void registerAction(Action action) {
 		actions.add(action);
 		actionsChanged();
 	} //}}}
 
 	//{{{ unregisterAction(Action) method
-	/** Removes an action from the context menu. */
+	/** Removes an action from the toolbar. */
 	public static void unregisterAction(Action action) {
 		actions.remove(action);
 		actionsChanged();
