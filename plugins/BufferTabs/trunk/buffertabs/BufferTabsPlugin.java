@@ -80,7 +80,7 @@ public class BufferTabsPlugin extends EBPlugin {
                .loadMenuItem("buffertabs.toggle-vis");
         if (menuItem != null) {
             menuItem.setSelected(
-                  jEdit.getBooleanProperty("buffertabs.enable", true));
+                  jEdit.getBooleanProperty("buffertabs.enable", false));
             menuItems.addElement(menuItem);
         }
     }
@@ -100,7 +100,7 @@ public class BufferTabsPlugin extends EBPlugin {
 
 
     void editPaneCreated(EditPane editPane) {
-        if (jEdit.getBooleanProperty("buffertabs.enable", true)) {
+        if (jEdit.getBooleanProperty("buffertabs.enable", false)) {
             addBufferTabsToEditPane(editPane);
         }
     }

@@ -1,6 +1,6 @@
 plugin.buffertabs.BufferTabsPlugin.name=BufferTabs
 plugin.buffertabs.BufferTabsPlugin.author=Jason Ginchereau, Andre Kaplan
-plugin.buffertabs.BufferTabsPlugin.version=0.7.4
+plugin.buffertabs.BufferTabsPlugin.version=0.7.5
 plugin.buffertabs.BufferTabsPlugin.docs=BufferTabs.html
 
 plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.1
