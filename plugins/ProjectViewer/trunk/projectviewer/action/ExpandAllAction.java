@@ -29,8 +29,6 @@ import javax.swing.tree.TreeModel;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
-
-import projectviewer.vpt.VPTNode;
 //}}}
 
 /**
@@ -41,26 +39,31 @@ import projectviewer.vpt.VPTNode;
  */
 public class ExpandAllAction extends Action {
 
-	//{{{ getText() method
+	//{{{ +ExpandAllAction() : <init>
+	public ExpandAllAction() {
+		super("projectviewer_wrapper_expand_all");
+	} //}}}
+
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.expand_all");
 	} //}}}
 
-	//{{{ getIcon() method
+	//{{{ +getIcon() : Icon
 	/** Returns the icon for the action. */
 	public Icon getIcon() {
 		return GUIUtilities.loadIcon("ZoomIn.png");
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		JTree tree = viewer.getCurrentTree();
 		expand(new TreePath(tree.getModel().getRoot()), tree);
 	} //}}}
 
-	//{{{ expand() method
+	//{{{ +expand(TreePath, JTree) : void
 	/** Expand the given sub tree. */
 	public void expand(TreePath path, JTree tree) {
 		TreeModel model = tree.getModel();

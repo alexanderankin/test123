@@ -20,7 +20,6 @@ package projectviewer.action;
 
 //{{{ Imports
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Enumeration;
 
 import java.awt.Component;
@@ -29,7 +28,6 @@ import java.awt.event.ActionEvent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.search.SearchDialog;
 import org.gjt.sp.jedit.search.DirectoryListSet;
@@ -47,13 +45,18 @@ import projectviewer.vpt.VPTNode;
  */
 public class SearchAction extends Action {
 
-	//{{{ getText() method
+	//{{{ +SearchAction() : <init>
+	public SearchAction() {
+		super("projectviewer_wrapper_search");
+	} //}}}
+
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.hypersearch");
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode node = null;
@@ -75,7 +78,7 @@ public class SearchAction extends Action {
 		}
 	} //}}}
 
-	//{{{ prepareForNode(VPTNode) method
+	//{{{ +prepareForNode(VPTNode) : void
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		if (node != null && (node.isDirectory() || node.isProject())) {
@@ -92,7 +95,7 @@ public class SearchAction extends Action {
 		}
 	} //}}}
 
-	//{{{ NodeFileSet class
+	//{{{ +class _NodeFileSet_
 	/**
 	 *	Implements a SearchFileSet representing files that are children of a given
 	 *	node and its children.
@@ -105,20 +108,20 @@ public class SearchAction extends Action {
 		private VPTNode node;
 		//}}}
 
-		//{{{ Constructor
+		//{{{ +NodeFileSet(VPTNode) : <init>
 		public NodeFileSet(VPTNode node) {
 			super(null, "*", true);
 			this.node = node;
 		}
 		//}}}
 
-		//{{{ getDirectory() method
+		//{{{ +getDirectory() : String
 		/** Returns the path to the node. */
 		public String getDirectory() {
 			return node.getNodePath();
 		} //}}}
 
-		//{{{ _getFiles(Component) method
+		//{{{ #_getFiles(Component) : String[]
 		/** Returns an array with the files to be searched. */
 		protected String[] _getFiles(Component comp) {
 			HashSet fileset = new HashSet();
@@ -127,7 +130,7 @@ public class SearchAction extends Action {
 		}
 		//}}}
 
-		//{{{ addFiles(VPTNode) method
+		//{{{ -addFiles(VPTNode, HashSet) : void
 		/**
 		 *	Adds all the files below the given node to the list of search files,
 		 *	recursively.

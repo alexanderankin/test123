@@ -32,8 +32,6 @@ import org.gjt.sp.jedit.jEdit;
 import projectviewer.ProjectManager;
 import projectviewer.ProjectViewer;
 
-import projectviewer.event.ProjectViewerEvent;
-
 import projectviewer.gui.GroupMenu;
 
 import projectviewer.vpt.VPTGroup;

@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JTree;
 import javax.swing.JMenuItem;
@@ -38,7 +37,6 @@ import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
-import projectviewer.config.ProjectViewerConfig;
 
 import projectviewer.vpt.VPTDirectory;
 import projectviewer.vpt.VPTFile;

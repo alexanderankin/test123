@@ -39,7 +39,8 @@ projectviewer_wrapper_rename.label=Rename Node
 projectviewer_wrapper_archive.label=Archive Project
 projectviewer_wrapper_expand_all.label=Expand All Nodes
 projectviewer_wrapper_collapse_all.label=Collapse All Nodes
-projectviewer_wrapper_openwith=Open with External Application
+projectviewer_wrapper_openwith.label=Open with External Application
+projectviewer_wrapper_reimport.label=Re-import files on Project/Directory
 
 projectviewer_open_all_files.label=Open All Project Files
 projectviewer_close_all_files.label=Close All Project Files
@@ -55,9 +56,9 @@ plugin.projectviewer.ProjectPlugin.menu.label=Project Viewer
 plugin.projectviewer.ProjectPlugin.menu.code=new projectviewer.PVMenuProvider();
 projectviewer.menu=\
 	projectviewer_focuswindow \
-	projectviewer_wrapper_create \
 	- \
 	projectviewer_wrapper_edit \
+	projectviewer_wrapper_reimport \
 	projectviewer_open_all_files \
 	projectviewer_close_all_files \
 	projectviewer_remove_all_files \

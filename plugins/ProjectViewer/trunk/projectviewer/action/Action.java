@@ -21,11 +21,13 @@ package projectviewer.action;
 //{{{ Imports
 import java.awt.event.ActionListener;
 
+import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JComponent;
 
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 import projectviewer.ProjectViewer;
@@ -46,17 +48,38 @@ public abstract class Action implements ActionListener, Cloneable {
 	protected ProjectViewer		viewer;
 	protected RolloverButton	tbButton;
 	protected JComponent		cmItem;
+	protected String			action;
 
 	//}}}
 
-	//{{{ getText() method
+	//{{{ #Action() : <init>
+	/** Creates a regular action. */
+	protected Action() {
+		this(null);
+	} //}}}
+
+	//{{{ #Action(String) : <init>
+	/**
+	 * 	Creates an action tied to an action name. If the action name is not
+	 *	null, the default menu item created will be a jEdit EnhancedMenuItem
+	 *	tied to the action name; this will allow the item to show the
+	 *	currently assigned shortcut of the action, if any. The action
+	 *	listeners are removed from the menu item so that only the
+	 *	actionPerformed() method on this instance is called, avoiding
+	 *	using the jEdit action mechanism for this instance.
+	 */
+	protected Action(String action) {
+		this.action = action;
+	} //}}}
+
+	//{{{ +*getText()* : String
 	/**
 	 *	Returns a String that will be shown as the text of the menu item or
 	 *	the tooltip of the toolbar button.
 	 */
 	public abstract String getText(); //}}}
 
-	//{{{ prepareForNode(VPTNode) method
+	//{{{ +prepareForNode(VPTNode) : void
 	/**
 	 *	When a node is selected (for the toolbar button) or when the context
 	 *	menu is shown (for the menu item), this method is called and the
@@ -73,7 +96,7 @@ public abstract class Action implements ActionListener, Cloneable {
 
 	}//}}}
 
-	//{{{ getIcon() method
+	//{{{ +getIcon() : Icon
 	/**
 	 *	Returns the icon to be shown on the toolbar button. The default
 	 *	implementation returns "null" so that actions that will only be
@@ -83,7 +106,7 @@ public abstract class Action implements ActionListener, Cloneable {
 		return null;
 	} //}}}
 
-	//{{{ getMenuItem() method
+	//{{{ +getMenuItem() : JComponent
 	/**
 	 *	Returns the menu item that triggers this action. This returns a
 	 *	JComponent, which makes it possible to add virtually anything to
@@ -93,13 +116,22 @@ public abstract class Action implements ActionListener, Cloneable {
 	 */
 	public JComponent getMenuItem() {
 		if (cmItem == null) {
-			cmItem = new JMenuItem(getText());
+			if (action == null) {
+				cmItem = new JMenuItem(getText());
+			} else {
+				cmItem = GUIUtilities.loadMenuItem(action);
+				ActionListener[] l = ((AbstractButton)cmItem).getActionListeners();
+				for (int i = 0; i < l.length; i++) {
+					((AbstractButton)cmItem).removeActionListener(l[i]);
+				}
+				((AbstractButton)cmItem).setText(getText());
+			}
 			((JMenuItem)cmItem).addActionListener(this);
 		}
 		return cmItem;
 	} //}}}
 
-	//{{{ getButton() method
+	//{{{ +getButton() : RolloverButton
 	/** Returns the toolbar button that triggers this action. */
 	public RolloverButton getButton() {
 		if (tbButton == null) {
@@ -116,7 +148,7 @@ public abstract class Action implements ActionListener, Cloneable {
 		return tbButton;
 	} //}}}
 
-	//{{{ clone() method
+	//{{{ +clone() : Object
 	/** Clones the current action, returning a copy of it. */
 	public Object clone() {
 		try {
@@ -128,7 +160,7 @@ public abstract class Action implements ActionListener, Cloneable {
 		}
 	} //}}}
 
-	//{{{ setViewer(ProjectViewer) method
+	//{{{ +setViewer(ProjectViewer) : void
 	/** Sets the viewer where this action is being used. */
 	public void setViewer(ProjectViewer viewer) {
 		this.viewer = viewer;

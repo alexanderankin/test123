@@ -32,7 +32,6 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTFile;
 //}}}
 
 /**
