@@ -15,8 +15,6 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
   private PHPParser phpParser;
 
   public void testNew() {
-    checkPHP("@list($sFormatted, $sExt) = explode(' ', $sFormatted, 2);");
-    checkPHP("$tpl->define(array());");
     checkPHP("session_start");
   }
 
@@ -24,6 +22,8 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
   }
 
   public void testParserSuccess() {
+    checkPHP("@list($sFormatted, $sExt) = explode(' ', $sFormatted, 2);");
+    checkPHP("$tpl->define(array());");
     checkPHP("if ($a && !empty($c)) {echo 'coucou';}");
     checkPHP("class test { function &fetchRow($result, $fetchmode = DB_FETCHMODE_DEFAULT, $rownum=null) \n{ \n } \n }");
     checkPHP("($plant_loc == \"KV\") ? PRINT \"<TH>OEE %</TH>\" : PRINT \"<TH>UEE %</TH>\";");
