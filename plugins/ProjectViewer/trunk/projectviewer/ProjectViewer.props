@@ -27,7 +27,7 @@ projectviewer.menu=projectviewer \
 	- \
 	projectviewer_edit_project
 projectviewer.menu.label=Project Viewer
-projectviewer_edit_project.label=Edit Project
+projectviewer_edit_project.label=Project Options
 selectedfiles-viewer-menu-item.label=Paste File Names
 #}}}
 
