@@ -40,7 +40,6 @@ import sql.*;
  *  SQL VFS "sql:/server/tablespace/table"
  *
  * @author     svu
- * @created    26 ������ 2001 �.
  */
 public class SqlVFS extends VFS
 {
@@ -97,7 +96,7 @@ public class SqlVFS extends VFS
    */
   public SqlVFS()
   {
-    super( "sql", READ_CAP );
+    super( "sql", READ_CAP | CASE_INSENSITIVE_CAP );
     EditBus.addToBus( new LoadListener() );
   }
 
@@ -247,7 +246,10 @@ public class SqlVFS extends VFS
 
     final SqlServerRecord rec = getServerRecord( getProject( session ), path );
     if ( rec != null )
-      return rec.getServerType().getSubVFS()._getDirectoryEntry( session, path, comp, level );
+		{
+			final SqlSubVFS.VFSObjectRec or = new SqlSubVFS.VFSObjectRec( path );
+      return rec.getServerType().getSubVFS()._getDirectoryEntry( session, or, comp, level );
+		}
     else
       return null;
   }

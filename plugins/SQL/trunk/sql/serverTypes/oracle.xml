@@ -83,13 +83,13 @@
       FROM all_tables
     </statement>
     <statement purpose="selectTablesInSchema">
-      SELECT table_name AS tableName
+      SELECT table_name AS tableName, to_char( nvl ( num_rows, 0 ) ) || ' row(s)' AS numRows
       FROM all_tables
       WHERE owner=?
     </statement>
     <statement purpose="selectViewsInSchema">
       SELECT view_name AS viewName
-      FROM all_views
+			FROM all_views
       WHERE owner=?
     </statement>
     <statement purpose="selectCodeObjectsInSchema">
