@@ -85,6 +85,9 @@ import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 
+import errorlist.ErrorSource;
+import errorlist.ErrorSourceUpdate;
+
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTRoot;
@@ -1145,7 +1148,45 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					}
 				}
 			}
+		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof ErrorSourceUpdate) {
+			ErrorSourceUpdate esu = (ErrorSourceUpdate) msg;
+			Log.log(Log.DEBUG, this, "ErrorSourceUpdate received :["+esu.getWhat()+"]");
+			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED ||
+				esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED) {
+				VPTProject p = (VPTProject) treeRoot;
+				ErrorSource.Error error = esu.getError();
+				VPTNode f = p.getChildNode(error.getFilePath());
+				if ( f != null ) {
+					//Log.log(Log.DEBUG, this, "ErrorSourceUpdate for :["+error.getFilePath()+"]");
+					if (folderTree != null) {
+						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+					}
+					if (fileTree != null) {
+						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+					}
+					if (workingFileTree != null) {
+						/** @todo: update node, if file is open */
+					}
+				}
+			}
+			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED ||
+				esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED ||
+				esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
+				VPTProject p = (VPTProject) treeRoot;
+				/** @todo this unfortunately closes all tree nodes, but it should only repaint all nodes
+				if (folderTree != null) {
+					((DefaultTreeModel)folderTree.getModel()).reload();
+				}
+				if (fileTree != null) {
+					((DefaultTreeModel)fileTree.getModel()).reload();
+				}
+				if (workingFileTree != null) {
+					((VPTWorkingFileListModel)workingFileTree.getModel()).reload();
+				}
+				*/
+			}
 		}
+
 
 	} //}}}
 
