@@ -5,3 +5,4 @@
 - a lot of the ConnectionManager stuff is just wrappers around the VFS
   API trying to make it look sane. it should be moved into the core.
 - canonPath() should give all paths a port number for consistency.
+- user name field: enter does not work
