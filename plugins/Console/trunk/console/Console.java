@@ -272,7 +272,7 @@ implements DockableWindow, EBComponent, Output
 	 */
 	public synchronized void print(Color color, String msg)
 	{
-		Document outputDocument = output.getDocument();
+		final Document outputDocument = output.getDocument();
 
 		SimpleAttributeSet style = new SimpleAttributeSet();
 
@@ -302,6 +302,15 @@ implements DockableWindow, EBComponent, Output
 		{
 			Log.log(Log.ERROR,this,bl);
 		}
+
+
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				output.setCaretPosition(outputDocument.getLength());
+			}
+		});
 	}
 
 	/**
@@ -314,9 +323,6 @@ implements DockableWindow, EBComponent, Output
 			public void run()
 			{
 				animation.setIcon(NO_ANIMATION);
-
-				output.setCaretPosition(output.getDocument()
-					.getLength());
 			}
 		});
 	}
