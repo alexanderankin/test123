@@ -149,6 +149,12 @@
  distinguish them from external commands.
 </para>
 
+<para>
+ Pressing <keycap>Tab</keycap> in the console's command input field will
+ attempt to complete the filename before the caret. If there is more than
+ one possible completion, they will be listed in the output area.
+</para>
+
 <sect1 id="error-parsing"><title>Error parsing</title>
  <para>
   Each line of output produced by an external program is fed through several
