@@ -35,13 +35,13 @@
 
 	<ACTION NAME="open-sftp">
 		<CODE>
-			ftp.FtpPlugin.showOpenFTPDialog(view,false);
+			ftp.FtpPlugin.showOpenFTPDialog(view,true);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="save-sftp">
 		<CODE>
-			ftp.FtpPlugin.showSaveFTPDialog(view,false);
+			ftp.FtpPlugin.showSaveFTPDialog(view,true);
 		</CODE>
 	</ACTION>
 </ACTIONS>

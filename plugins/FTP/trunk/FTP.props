@@ -51,3 +51,6 @@ vfs.ftp.list.vms=(.+?);\\d+\\s+.+
 
 # SFTP VFS
 vfs.sftp.label=Connect to Secure FTP Server...
+
+vfs.sftp.no-java14.title=Java 2 version 1.4 required
+vfs.sftp.no-java14.message=Secure FTP support requires Java 2 version 1.4.

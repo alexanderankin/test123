@@ -81,6 +81,12 @@ public class FtpPlugin extends EditPlugin
 	//{{{ showOpenFTPDialog() method
 	public static void showOpenFTPDialog(View view, boolean secure)
 	{
+		if(secure && !OperatingSystem.hasJava14())
+		{
+			GUIUtilities.error(view,"vfs.sftp.no-java14",null);
+			return;
+		}
+
 		String path = ((FtpVFS)VFSManager.getVFSForProtocol(
 			secure ? "sftp" : "ftp"))
 			.showBrowseDialog(new Object[1],view);
@@ -106,6 +112,12 @@ public class FtpPlugin extends EditPlugin
 	//{{{ showSaveFTPDialog() method
 	public static void showSaveFTPDialog(View view, boolean secure)
 	{
+		if(secure && !OperatingSystem.hasJava14())
+		{
+			GUIUtilities.error(view,"vfs.sftp.no-java14",null);
+			return;
+		}
+
 		String path = ((FtpVFS)VFSManager.getVFSForProtocol(
 			secure ? "sftp" : "ftp"))
 			.showBrowseDialog(new Object[1],view);
