@@ -39,6 +39,8 @@ import javax.swing.JFileChooser;
 import javax.swing.WindowConstants;
 
 // Import jEdit
+import org.gjt.sp.util.Log;
+
 import projectviewer.Project;
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
@@ -72,7 +74,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
      *  @param  proj    The project to be edited, or null to create a new one.
      *  @param  refresh If the viewer should be refreshed after modifying the project.
      */
-    public static Project run(ProjectViewer owner, Project proj, boolean refresh) {
+    public static Project run(ProjectViewer owner, Project proj) {
         ProjectPropertiesDlg dialog = new ProjectPropertiesDlg();
         dialog.setProject(proj);
         dialog.setLocationRelativeTo(owner);
@@ -172,8 +174,8 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             root = chooser.getSelectedFile().getAbsolutePath();
-            String oldRoot = project.getRoot().getPath();
             if (project != null) {
+                String oldRoot = project.getRoot().getPath();
                 if ( !(oldRoot.startsWith(root) &&
                        root.length() < oldRoot.length()) ) { 
                     project.changeRoot(new ProjectDirectory(root));
