@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-//SoftQuad//DTD HoTMetaL PRO 4.0::19971010::extensions to HTML 4.0//EN" "hmpro4.dtd"
+>
+
+<HTML>
+  
+  <HEAD>
+    <TITLE>XSearch</TITLE>
+  </HEAD>
+  
+  <BODY>
+    
+    <H1>XSearch</H1>
+    
+    <P>by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
+    
+    <P>The XSearch plugin provides following extentions of the search and replace function of the
+      jedit text editor:</P>
+    <UL>
+      <LI><A HREF="#Options">extended search options</A></LI>
+      <LI><A HREF="#Beanshell">bean shell support</A></LI>
+      <LI><A HREF="#display">smart display of search dialog</A></LI>
+    </UL>
+    
+    <P>Via Global Options panel, the display of all extended options is customizable.</P>
+    
+    <H2><A NAME="Options">Extended search options</A> </H2>
+    
+    <P><STRONG>find from top</STRONG></P>
+    
+    <P>Start searching from top of buffer.<BR>
+       Note: &quot;refind&quot; will search for the next occurance, as lond as no search settings
+      are changed</P>
+    
+    <P><STRONG>find All</STRONG></P>
+    
+    <P>Search for all occurances of the search string in the current buffer, according to the
+      current settings. <BR>All matches are selected, and a match counter is displayed.</P>
+    
+    <P><U>Restriction</U>: only applicable for the current buffer</P>
+    
+    <P><STRONG>word part search</STRONG></P>
+    <UL>
+      <LI>whole word: matches only complete words (according to regular expressions convention)</LI>
+      <LI>prefix: matches only words with the search string as prefix</LI>
+      <LI>suffix: matches only words with the search string as suffix</LI>
+    </UL>
+    
+    <P><U>Restriction</U>: combination with option &quot;regular expression&quot; is not supported</P>
+    
+    <P><STRONG>column search</STRONG></P>
+    
+    <P>Search for all occurances of the search string in the given column range</P>
+    <UL>
+      <LI>expandTabs: if selected, tabs are expanded to the visible size. Otherwise, tabs are
+        treated as 1 space</LI>
+      <LI>left col: left range, line begins with '1' (as displayed in status bar)</LI>
+      <LI>right col: right range, must be &gt; left col + length(search string) (if no regexp). <BR>
+         If right col is omitted, it is calculated automatically, to right col = left col +
+        length(search string)</LI>
+    </UL>
+    
+    <P><STRONG>row search</STRONG></P>
+    
+    <P>Search for all occurances of the search string in the given row range</P>
+    <UL>
+      <LI>upper row: upper range, first line begins with '1' (as displayed in status bar)</LI>
+      <LI>lower row: lower range, must be &gt;= upper row</LI>
+    </UL>
+    
+    <P>Hints: </P>
+    <UL>
+      <LI>If multiple lines are selected before invoking the search dialog, the upper / lower rows
+        are predefined with the selected line range.</LI>
+      <LI>Row search allows &quot;find all&quot; and &quot;replace&amp;find&quot; only inside the
+        specified line range.</LI>
+    </UL>
+    
+    <P><STRONG>fold search</STRONG></P>
+    <UL>
+      <LI>inside folds: matches only text inside of a fold</LI>
+      <LI>outside folds: matches only text outside of a fold </LI>
+    </UL>
+    
+    <P><U>Restriction</U>: not applicable for hypersearch</P>
+    
+    <P><STRONG>comment search</STRONG></P>
+    <UL>
+      <LI>inside comments: matches only text inside of a comments</LI>
+      <LI>outside comments: matches only text outside of a comments </LI>
+    </UL>
+    
+    <P><STRONG></STRONG>Note: &quot;comment search&quot; in the current buffer uses identifies
+      comments according to the definition in the according edit mode. For hypersearch, this is not
+      possible. Therefore, the comment indicators are defined in XSearch.props. </P>
+    
+    <P><STRONG>hyper range</STRONG> </P>
+    
+    <P><STRONG></STRONG>This feature is an extention to the hyper search facility. If hyper search
+      is invoked, the matching lines are displayed in the hyper search window, and additionally the
+      surrounding lines before (up) and after (down) the match. </P>
+    
+    <P>Tip: extremly useful if you search where a method is called and which parameters are used.</P>
+    
+    <P><B>tentativ search</B></P>
+    
+    <P>Tentativ search uses a search algorithm which tolerates following type mismatching. </P>
+    <UL>
+      <LI>double typed char (toown instead of. town) </LI>
+      <LI>few char (ton instead of toon) </LI>
+      <LI>wrong char typed (Rzdi instead of Rudi) </LI>
+      <LI>wrong sequence (Rdui instead of Rudi)</LI>
+      <LI>dash instead of underscore (Fast-Macro instead of Fast_Macro)</LI>
+    </UL>
+    
+    <P>combination with option &quot;regular expression&quot; is not supported</P>
+    
+    <P>Note: For this feature, a regulare expression is composed for each character of the search
+      string, with:</P>
+    <UL>
+      <LI>left and right neighbour at the keyboard (for 'b' these are 'v' and 'n')</LI>
+      <LI>preceeding and following character</LI>
+      <LI>default characters: '-' and '_', as defined in XSearch.props</LI>
+    </UL>
+    
+    <P>Example: the regular expression for &quot;abc&quot; is
+      [asbASB_-]+[vbnacVBNAC_-]+[xcvbXCVB_-]+</P>
+    
+    <P><U>Warning:</U> This feature is very time consuming, &quot;find all&quot; or &quot;hypersearch&quot;
+      is not recommended</P>
+    
+    <P><B>Replace case sensitiv</B></P>
+    
+    <P>The default replace implementation in jEdit is case sensitiv, that means that if the search
+      is case-insensitive, jEdit attempts to modify the case of the replacement string to match that
+      of the particular instance of the search string being replaced (see jEidt user guide: &quot;Replacing
+      text&quot;).</P>
+    
+    <P>If this behavious is not required, it is possible to swich it off in the XSearch global
+      options </P>
+    
+    <P><B>Improved Search &amp; Replace</B></P>
+    
+    <P>If Search and Replace is invoked</P>
+    <UL>
+      <LI>and nothing is selected, the first occurance of the search string will be replaced.</LI>
+      <LI>the search dialog is kept as long as 'keep dialog' is not switched off explicitely</LI>
+    </UL>
+    
+    <H2><A NAME="Beanshell">Bean shell support</A> </H2>
+    
+    <P><STRONG>getMatchedSubexpressions</STRONG></P>
+    
+    <P>After a search with regular expressions, you can obtain the subexpressions <BR>Execution: XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;)</P>
+    
+    <P><STRONG>resetSettings</STRONG></P>
+    
+    <P>Resets search settings to default values <BR>Execution: SearchSettings.resetSettings()</P>
+    
+    <P><B>push Settings</B></P>
+    
+    <P>Saves the current search settings on a stack. Useful if you don't want to overwrite the
+      settings during macro run <BR>Execution: SearchSettings.push();</P>
+    
+    <P><B>pop Settings</B></P>
+    
+    <P>Restores the last pushed search settings. <BR>Execution: SearchSettings.pop();</P>
+    
+    <P><B>find all</B></P>
+    
+    <P>To manipulate all matches inside the current buffer, &quot;findAll&quot; selects all
+      matches. With the method &quot;textArea.getSelectedLines()&quot;, they can be manipulated.</P>
+    
+    <P>Example: The following bsh macro deletes all lines which contain the string &quot;jEdit ist
+      doof&quot;</P>
+    
+    <P>SearchSettings.push(); <BR>SearchSettings.resetSettings(); <BR>XSearchAndReplace.setSearchString(&quot;jEdit ist doof&quot;); <BR>XSearchAndReplace.setSearchFileSet(new CurrentBufferSet()); <BR>XSearchAndReplace.setFindAll(true); <BR>XSearchAndReplace.find(view); <BR>int[] lines = textArea.getSelectedLines(); <BR>for (int i=lines.length-1;i&gt;=0;i--) { <BR>textArea.moveCaretPosition(buffer.getLineStartOffset(lines[i])); <BR>textArea.deleteLine(); } <BR>SearchSettings.pop();</P>
+    
+    <H2><A NAME="display">Smart display of search dialog</A></H2>
+    
+    <P>With the &quot;show options&quot; </P>
+    <UL>
+      <LI>search</LI>
+      <LI>replace</LI>
+      <LI>extended</LI>
+    </UL>
+    
+    <P>you can fold/unfold the display of the according options. <BR>Note: If there are non-default options selected but not visible, they are displayed in a line
+      below &quot;show options&quot;.</P>
+    
+    <P></P>
+  </BODY>
+</HTML>

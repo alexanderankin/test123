@@ -4,35 +4,67 @@
 <!-- jEdit plugin    XSearchAndReplace       action table                   -->
 
 <ACTIONS>
-	<ACTION NAME="xfind">
+	<ACTION NAME="xfind" NO_RECORD="TRUE">
 		<CODE>
-			XSearchDialog.showSearchDialog(view,textArea.getSelectedText(),
+			xsearch.XSearchDialog.showSearchDialog(view,textArea.getSelectedText(),
 			SearchDialog.CURRENT_BUFFER);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-next" NO_RECORD="TRUE">
 		<CODE>
-			XSearchAndReplace.setReverseSearch(false);
-			XSearchAndReplace.find(view);
+			xsearch.XSearchAndReplace.setReverseSearch(false);
+			xsearch.XSearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	
 	<ACTION NAME="xfind-prev" NO_RECORD="TRUE">
 		<CODE>
-			XSearchAndReplace.setReverseSearch(true);
-			XSearchAndReplace.find(view);
+			xsearch.XSearchAndReplace.setReverseSearch(true);
+			xsearch.XSearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-refind" NO_RECORD="TRUE">
 		<CODE>
-			XSearchAndReplace.find(view);
+			xsearch.XSearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-first" NO_RECORD="TRUE">
 		<CODE>
-			XSearchAndReplace.setSearchFromTop(true);
-			XSearchAndReplace.setReverseSearch(false);
-			XSearchAndReplace.find(view);
+			xsearch.XSearchAndReplace.setSearchFromTop(true);
+			xsearch.XSearchAndReplace.resetIgnoreFromTop();
+			xsearch.XSearchAndReplace.setReverseSearch(false);
+			xsearch.XSearchAndReplace.find(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xreplace-all" NO_REPEAT="TRUE" NO_RECORD="TRUE">
+		<CODE>
+			xsearch.XSearchAndReplace.replaceAll(view);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="xreplace-and-find-next" NO_REPEAT="TRUE" NO_RECORD="TRUE">
+		<CODE>
+			if(xsearch.XSearchAndReplace.replace(view))
+				xsearch.XSearchAndReplace.find(view);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="xreplace-in-selection" NO_REPEAT="TRUE" NO_RECORD="TRUE">
+		<CODE>
+			xsearch.XSearchAndReplace.replace(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="quick-xfind-standard-options" NO_RECORD="TRUE">
+		<CODE>
+			xsearch.XSearchAndReplace.push();
+			xsearch.XSearchAndReplace.reset();
+			xsearch.XSearchAndReplace.quickXfind(view, textArea);
+			xsearch.XSearchAndReplace.pop();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="quick-xfind-current-options" NO_RECORD="TRUE">
+		<CODE>
+			xsearch.XSearchAndReplace.quickXfind(view, textArea);
 		</CODE>
 	</ACTION>
 
