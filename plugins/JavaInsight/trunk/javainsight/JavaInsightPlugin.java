@@ -57,9 +57,9 @@ public class JavaInsightPlugin extends EBPlugin {
      * Start the plugin.
      */
     public void start() {
-        VFSManager.registerVFS("class",  new ClassVFS());
-        VFSManager.registerVFS("jasmin", new JasminVFS());
-        VFSManager.registerVFS("jode",   new JodeVFS());
+        VFSManager.registerVFS(ClassVFS.PROTOCOL,  new ClassVFS());
+        VFSManager.registerVFS(JasminVFS.PROTOCOL, new JasminVFS());
+        VFSManager.registerVFS(JodeVFS.PROTOCOL,   new JodeVFS());
 
         EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, DOCKABLE_NAME);
 
