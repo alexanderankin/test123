@@ -1,0 +1,244 @@
+<?xml version="1.0"?>
+
+<!-- ProjectViewer plugin user's guide -->
+<!-- (C) 2004 Marcelo Vanzin           -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "docbookx.dtd">
+
+<book>
+
+	<bookinfo>
+    	<title>TextFilter plugin</title>
+		<authorgroup>
+			<author><firstname>Marcelo</firstname><surname>Vanzin</surname></author>
+		</authorgroup>
+		<legalnotice>
+			<title>Legal Notice</title>
+
+			<para>
+				Permission is granted to copy, distribute and/or modify this
+				document under the terms of the GNU Free Documentation License,
+				Version 2 or any later version published by the
+				Free Software Foundation; with no
+				<quote>Invariant Sections</quote>,
+				<quote>Front-Cover Texts</quote> or
+				<quote>Back-Cover Texts</quote>,
+				each as defined in the license.
+				A copy of the license can be found in the file
+				<filename>COPYING.txt</filename> included with jEdit.
+			</para>
+		</legalnotice>
+	</bookinfo>
+
+	<chapter id="presentation">
+		<title>Presentation</title>
+
+		<para>
+			The TextFilter plugin allows you to use text from a jEdit buffer as
+			input to an external process, and capture the process' output into
+			a jEdit buffer.
+		</para>
+
+	</chapter>
+
+	<chapter id="usage">
+		<title>Using the TextFilter plugin</title>
+
+		<para>
+			There are two main ways to use the plugin: running a filter once, or
+			creating a filter that will be stored in the plugin's configuration
+			file.
+		</para>
+
+		<para>
+			To run a filter once, choose the "Run filter" option from the
+			plugin's menu (under jEdit's Plugins menu). To create a new
+			filter, choose the "Create new filter" option. The "Remove filter"
+			option allows you to delete one of the created filters.
+		</para>
+
+		<para>
+			The only limitation is that the name of the filters cannot have the
+			"," (comma) character.
+		</para>
+
+		<para>
+			To substitute and existing filter, just create a new filter and give
+			it the same name as an existing one. You'll be promped for whether
+			you want to overwrite the existing filter.
+		</para>
+
+		<para>
+			Below, the several options available for the filter are explained.
+		</para>
+
+		<bridgehead renderas='sect3'>Data source type</bridgehead>
+
+		<para>
+			These options control from where the external process expects to
+			collect the data that TextFilter will provide.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis>Standard IN</emphasis>: the text will be passed
+					to the external process via the standard input. The most
+					common form of transfer, used by most UNIX utilities.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis>Argument</emphasis>: the text will be passed
+					to the external process as an argument line. If the text
+					contains more than one word, this will mean the external
+					process will receive more than one argument.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis>String</emphasis>: the text will be passed
+					to the external process as a string. This means that the
+					text will be escaped and surrounded by quotes, and the
+					external process will see all the text as a single argument.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			When choosing something other than "standard in", be aware that if
+			the process being called expect input though stdin, it will hang
+			waiting for input, and jEdit will be unusable until you kill the
+			offending process.
+		</para>
+
+		<bridgehead renderas='sect3'>Text source</bridgehead>
+
+		<para>
+			This option tells TextFilter where to look for the text to pass
+			to the external process.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis>Buffer</emphasis>: use all the content of the
+					buffer as input to the external process.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis>Selection</emphasis>: use the current selection
+					as input. Will generate an error in case nothing is
+					selected.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis>None</emphasis>: will call the external process
+					without providing any other information that that present
+					in the given command line. The same warning about processes
+					that expect input from stdin applies here.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<bridgehead renderas='sect3'>Destination</bridgehead>
+
+		<para>
+			This option controls what will be done with the output of the
+			process once the external program finishes its execution.
+		</para>
+
+		<itemizedlist>
+			<listitem>
+				<para>
+					<emphasis>New Buffer</emphasis>: creates a new jEdit buffer
+					and appends the output of the process to it.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis>Selection</emphasis>: substitues the current
+					selection with the output from the process. If no selection
+					exists, the output is appended to the current caret
+					position.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
+					<emphasis>Append</emphasis>: the output of the process is
+					appended to the end of the active buffer.
+				</para>
+			</listitem>
+		</itemizedlist>
+
+		<para>
+			When executing external processes, errors may occur. In case any
+			errors are seen on stderr, a dialog is shown with the error output
+			and you are given the option to discard any output the process has
+			generated, or process the output anyway.
+		</para>
+
+	</chapter>
+
+	<chapter id="license">
+		<title>License</title>
+
+		<para>
+			The source code is distributed under the GPL.
+			Please see
+			<ulink url="http://www.fsf.org/copyleft/gpl.html">
+				http://www.fsf.org/copyleft/gpl.html
+			</ulink>
+		</para>
+	</chapter>
+
+	<chapter id="feedback">
+		<title>Feedback</title>
+
+		<para>
+			The preferred way to send bug reports is to use the
+			Sourceforge Bug Tracker at
+			<ulink url="http://sourceforge.net/tracker/?atid=565475&amp;group_id=588">
+				http://sourceforge.net/tracker/?atid=565475&amp;group_id=588
+			</ulink>
+			Please start the report subject with the text "ProjectViewer:".
+		</para>
+
+		<para>You can also write to:</para>
+		<itemizedlist>
+			<listitem>
+			<para>
+				Marcelo Vanzin <email>mvanzin@yahoo.com</email>;
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+				or jEdit-users mailing-list
+				<email>jedit-users@lists.sourceforge.net</email>;
+			</para>
+			</listitem>
+			<listitem>
+			<para>
+				or jEdit-devel mailing-list
+				<email>jedit-devel@lists.sourceforge.net</email>.
+			</para>
+			</listitem>
+		</itemizedlist>
+	</chapter>
+
+	<chapter id="credits">
+		<title>Credits</title>
+
+		<itemizedlist>
+			<listitem>
+			<para>
+				TextFilter is developed by Marcelo Vanzin.
+			</para>
+			</listitem>
+		</itemizedlist>
+	</chapter>
+
+</book>
+
