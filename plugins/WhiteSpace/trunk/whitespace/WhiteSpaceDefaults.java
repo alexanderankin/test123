@@ -34,7 +34,7 @@ public class WhiteSpaceDefaults
 
     public static boolean getFoldTooltipDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-fold-tooltip-default", true
+            "white-space.show-fold-tooltip-default", false
         );
     }
 
@@ -48,56 +48,56 @@ public class WhiteSpaceDefaults
 
     public static boolean getSpaceHighlightDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-space-default", true
+            "white-space.show-space-default", false
         );
     }
 
 
     public static boolean getLeadingSpaceHighlightDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-leading-space-default", true
+            "white-space.show-leading-space-default", false
         );
     }
 
 
     public static boolean getInnerSpaceHighlightDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-inner-space-default", true
+            "white-space.show-inner-space-default", false
         );
     }
 
 
     public static boolean getTrailingSpaceHighlightDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-trailing-space-default", true
+            "white-space.show-trailing-space-default", false
         );
     }
 
 
     public static boolean getTabHighlightDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-tab-default", true
+            "white-space.show-tab-default", false
         );
     }
 
 
     public static boolean getLeadingTabHighlightDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-leading-tab-default", true
+            "white-space.show-leading-tab-default", false
         );
     }
 
 
     public static boolean getInnerTabHighlightDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-inner-tab-default", true
+            "white-space.show-inner-tab-default", false
         );
     }
 
 
     public static boolean getTrailingTabHighlightDefault() {
         return jEdit.getBooleanProperty(
-            "white-space.show-trailing-tab-default", true
+            "white-space.show-trailing-tab-default", false
         );
     }
 
