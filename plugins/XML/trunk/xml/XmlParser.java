@@ -34,6 +34,7 @@ class XmlParser
 		elements = new Vector();
 		elementHash = new Hashtable();
 		entities = new Vector();
+		entityHash = new Hashtable();
 		ids = new Vector();
 
 		errorSource = new DefaultErrorSource("XML");
@@ -47,9 +48,14 @@ class XmlParser
 		elements.removeAllElements();
 		elementHash.clear();
 		entities.removeAllElements();
-		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
-		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
-		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
+		entityHash.clear();
+
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"quot","\""));
+		addEntity(new EntityDecl(EntityDecl.INTERNAL,"apos","'"));
+
 		ids.removeAllElements();
 		handler.currentNodeStack.removeAllElements();
 
@@ -167,6 +173,7 @@ class XmlParser
 	private Vector elements;
 	private Hashtable elementHash;
 	private Vector entities;
+	private Hashtable entityHash;
 	private Vector ids;
 	private DefaultTreeModel model;
 	private DefaultMutableTreeNode root;
@@ -239,6 +246,9 @@ class XmlParser
 			XmlPlugin.ENTITIES_PROPERTY,
 			entities);
 		view.getEditPane().putClientProperty(
+			XmlPlugin.ENTITY_HASH_PROPERTY,
+			entityHash);
+		view.getEditPane().putClientProperty(
 			XmlPlugin.IDS_PROPERTY,
 			ids);
 
@@ -256,6 +266,19 @@ class XmlParser
 		{
 			insert.setDeclaredElements(elements);
 			insert.setDeclaredEntities(entities);
+		}
+	}
+
+	private void addEntity(EntityDecl entity)
+	{
+		entities.addElement(entity);
+		if(entity.type == EntityDecl.INTERNAL
+			&& entity.value.length() == 1)
+		{
+			Character ch = new Character(
+				entity.value.charAt(0));
+			entityHash.put(entity.name,ch);
+			entityHash.put(ch,entity.name);
 		}
 	}
 
@@ -456,7 +479,7 @@ class XmlParser
 			if(name.startsWith("%"))
 				return;
 
-			entities.addElement(new EntityDecl(
+			addEntity(new EntityDecl(
 				EntityDecl.INTERNAL,name,value));
 		}
 
@@ -467,7 +490,7 @@ class XmlParser
 			if(name.startsWith("%"))
 				return;
 
-			entities.addElement(new EntityDecl(
+			addEntity(new EntityDecl(
 				EntityDecl.EXTERNAL,name,publicId,systemId));
 		}
 

@@ -39,10 +39,12 @@ public class XmlActions
 
 		Hashtable elements = (Hashtable)editPane.getClientProperty(
 			XmlPlugin.ELEMENT_HASH_PROPERTY);
+		Hashtable entities = (Hashtable)editPane.getClientProperty(
+			XmlPlugin.ENTITY_HASH_PROPERTY);
 
-		if(elements == null)
+		if(elements == null || entities == null)
 		{
-			GUIUtilities.error(view,"xml-edit-tag.no-tree",null);
+			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
 
@@ -165,7 +167,9 @@ public class XmlActions
 						if(seenEquals)
 						{
 							attributes.put(attributeName,
-								st.sval.replace(backslashSub,'\\'));
+								entitiesToCharacters(
+								st.sval.replace(backslashSub,'\\'),
+								entities,true));
 							seenEquals = false;
 						}
 						else
@@ -197,7 +201,7 @@ public class XmlActions
 		}
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
-			attributes,empty,ids);
+			attributes,empty,entities,ids);
 
 		String newTag = dialog.getNewTag();
 
@@ -227,10 +231,12 @@ public class XmlActions
 
 		Hashtable elements = (Hashtable)editPane.getClientProperty(
 			XmlPlugin.ELEMENT_HASH_PROPERTY);
+		Hashtable entities = (Hashtable)editPane.getClientProperty(
+			XmlPlugin.ENTITY_HASH_PROPERTY);
 
-		if(elements == null)
+		if(elements == null || entities == null)
 		{
-			GUIUtilities.error(view,"xml-edit-tag.no-tree",null);
+			GUIUtilities.error(view,"xml-no-data",null);
 			return;
 		}
 
@@ -238,7 +244,7 @@ public class XmlActions
 			XmlPlugin.IDS_PROPERTY);
 
 		EditTagDialog dialog = new EditTagDialog(view,elementDecl,
-			new Hashtable(),elementDecl.empty,ids);
+			new Hashtable(),elementDecl.empty,entities,ids);
 
 		String newTag = dialog.getNewTag();
 
@@ -597,8 +603,7 @@ public class XmlActions
 			"removeTags time: " + (endTime - startTime) + " ms");
 	}
 
-
-	public static class Position
+	static class Position
 	{
 		int off = -1;
 		int len = -1;
@@ -611,6 +616,119 @@ public class XmlActions
 		}
 	}
 
+	// if markupChars is true, <, > and & will be ignored.
+	public static String charactersToEntities(String s, Hashtable hash,
+		boolean markupChars)
+	{
+		StringBuffer buf = new StringBuffer();
+		for(int i = 0; i < s.length(); i++)
+		{
+			char ch = s.charAt(i);
+			if(
+				(markupChars
+				&& (ch >= 0x7f
+				|| ch == '<'
+				|| ch == '>'
+				|| ch == '&'
+				|| ch == '"'
+				|| ch == '\''))
+				|| (ch >= 0x7f))
+			{
+				Character c = new Character(ch);
+				String entity = (String)hash.get(c);
+				if(entity != null)
+				{
+					buf.append('&');
+					buf.append(entity);
+					buf.append(';');
+
+					continue;
+				}
+			}
+
+			buf.append(ch);
+		}
+
+		return buf.toString();
+	}
+
+	// if markupChars is true, &lt;, &gt; and &amp; will be ignored.
+	public static String entitiesToCharacters(String s, Hashtable hash,
+		boolean markupChars)
+	{
+		StringBuffer buf = new StringBuffer();
+		for(int i = 0; i < s.length(); i++)
+		{
+			char ch = s.charAt(i);
+			if(ch == '&')
+			{
+				int index = s.indexOf(';',i);
+				if(index != -1)
+				{
+					String entityName = s.substring(i + 1,index);
+					Character c = (Character)hash.get(entityName);
+					if(markupChars || c.charValue() >= 0x7f)
+					{
+						buf.append(c.charValue());
+						i = index;
+						continue;
+					}
+				}
+			}
+
+			buf.append(ch);
+		}
+
+		return buf.toString();
+	}
+
+	public static void charactersToEntities(View view)
+	{
+		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
+
+		if(!textArea.isEditable())
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		Hashtable entities = (Hashtable)editPane.getClientProperty(
+			XmlPlugin.ENTITY_HASH_PROPERTY);
+
+		if(entities == null)
+		{
+			GUIUtilities.error(view,"xml-no-data",null);
+			return;
+		}
+
+		textArea.setText(charactersToEntities(
+			textArea.getText(),entities,false));
+	}
+
+	public static void entitiesToCharacters(View view)
+	{
+		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
+
+		if(!textArea.isEditable())
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		Hashtable entities = (Hashtable)editPane.getClientProperty(
+			XmlPlugin.ENTITY_HASH_PROPERTY);
+
+		if(entities == null)
+		{
+			GUIUtilities.error(view,"xml-no-data",null);
+			return;
+		}
+
+		textArea.setText(entitiesToCharacters(
+			textArea.getText(),entities,false));
+	}
 
 	// package-private members
 	static void propertiesChanged()

@@ -5,9 +5,11 @@
 - entity manager option pane
 - different icons for internal/external entities
 - different icons for empty elements
-- Edit tag dialog box: parse/unparse entities automatically
-- entity conversion
 - load tag lists, entity lists for HTML/XSL
+  - when a buffer is loaded or its mode is changed, load it's mode's tag
+  list of set all properties to null
+  - load from buffer-local properties
+  - cache of loaded tag lists
 
 + for version 0.5
 

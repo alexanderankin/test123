@@ -28,6 +28,21 @@
 	</ACTION>
 
 	<!-- normal actions -->
+	<ACTION NAME="xml-chars-to-entities">
+		<CODE>
+			xml.XmlActions.charactersToEntities(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-entities-to-chars">
+		<CODE>
+			xml.XmlActions.entitiesToCharacters(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-edit-tag">
+		<CODE>
+			xml.XmlActions.showEditTagDialog(view);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="xml-close-tag">
 		<CODE>
 			xml.XmlActions.insertClosingTag(textArea);

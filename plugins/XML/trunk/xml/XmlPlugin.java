@@ -36,6 +36,10 @@ public class XmlPlugin extends EBPlugin
 	// property
 	public static final String ENTITIES_PROPERTY = "xml.declared-entities";
 
+	// We store the list of declared entities in this edit pane client
+	// property
+	public static final String ENTITY_HASH_PROPERTY = "xml.declared-entity-hash";
+
 	// We store the list of id attribute values here
 	public static final String IDS_PROPERTY = "xml.declared-ids";
 
