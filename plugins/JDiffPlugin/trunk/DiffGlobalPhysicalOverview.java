@@ -1,5 +1,5 @@
 /*
- * DiffGlobalOverview.java
+ * DiffGlobalPhysicalOverview.java
  * Copyright (C) 2000 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -30,9 +30,9 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
 
 
-public class DiffGlobalOverview extends DiffOverview
+public class DiffGlobalPhysicalOverview extends DiffOverview
 {
-    public DiffGlobalOverview(
+    public DiffGlobalPhysicalOverview(
         Diff.change edits,
         int lineCount0,
         int lineCount1,
