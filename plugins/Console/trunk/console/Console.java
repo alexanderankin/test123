@@ -32,6 +32,7 @@ import javax.swing.text.StyleConstants;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.Arrays;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
@@ -49,7 +50,9 @@ implements EBComponent, Output
 
 		this.view = view;
 
-		shellCombo = new JComboBox(Shell.getShells());
+		Shell[] shells = Shell.getShells();
+		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
+		shellCombo = new JComboBox(shells);
 		shellCombo.addActionListener(new ActionHandler());
 		shellCombo.setRequestFocusEnabled(false);
 
@@ -162,7 +165,7 @@ implements EBComponent, Output
 		shellCombo.setSelectedItem(shell);
 		command.setModel("console." + shell.getName());
 
-		shell.printInfoMessage(this);
+		clear();
 	} //}}}
 
 	//{{{ getTextField() method
@@ -175,6 +178,13 @@ implements EBComponent, Output
 	public JTextPane getOutputPane()
 	{
 		return output;
+	} //}}}
+
+	//{{{ clear() method
+	public void clear()
+	{
+		output.setText("");
+		shell.printInfoMessage(this);
 	} //}}}
 
 	//{{{ run() method
@@ -411,7 +421,7 @@ implements EBComponent, Output
 			else if(source == stop)
 				shell.stop(Console.this);
 			else if(source == clear)
-				output.setText("");
+				clear();
 		}
 	} //}}}
 

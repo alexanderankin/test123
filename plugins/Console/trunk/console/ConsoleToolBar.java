@@ -26,6 +26,7 @@ package console;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
+import java.util.Arrays;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 //}}}
@@ -40,9 +41,11 @@ class ConsoleToolBar extends JToolBar
 
 		this.view = view;
 
-		add(BorderLayout.WEST,shells = new JComboBox(Shell.getShells()));
-		shells.setSelectedItem(ConsolePlugin.SYSTEM_SHELL);
-		shells.addActionListener(new ActionHandler());
+		Shell[] shells = Shell.getShells();
+		Arrays.sort(shells,new MiscUtilities.StringICaseCompare());
+		add(BorderLayout.WEST,shellCombo = new JComboBox(shells));
+		shellCombo.setSelectedItem(ConsolePlugin.SYSTEM_SHELL);
+		shellCombo.addActionListener(new ActionHandler());
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
@@ -54,13 +57,13 @@ class ConsoleToolBar extends JToolBar
 		box.add(Box.createGlue());
 		add(BorderLayout.CENTER,box);
 
-		cmd.setModel("console." + shells.getSelectedItem());
+		cmd.setModel("console." + shellCombo.getSelectedItem());
 		cmd.addActionListener(new ActionHandler());
 	} //}}}
 
 	//{{{ Private members
 	private View view;
-	private JComboBox shells;
+	private JComboBox shellCombo;
 	private HistoryTextField cmd;
 	//}}}
 
@@ -69,8 +72,8 @@ class ConsoleToolBar extends JToolBar
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			if(evt.getSource() == shells)
-				cmd.setModel("console." + shells.getSelectedItem());
+			if(evt.getSource() == shellCombo)
+				cmd.setModel("console." + shellCombo.getSelectedItem());
 			else if(evt.getSource() == cmd)
 			{
 				DockableWindowManager wm = view.getDockableWindowManager();
@@ -83,7 +86,7 @@ class ConsoleToolBar extends JToolBar
 					cmd.setText(null);
 
 					Console cons = (Console)wm.getDockable("console");
-					cons.setShell((Shell)shells.getSelectedItem());
+					cons.setShell((Shell)shellCombo.getSelectedItem());
 					cons.run(cons.getShell(),cons,command);
 				}
 			}
