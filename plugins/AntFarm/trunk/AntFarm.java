@@ -271,13 +271,13 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		String buildString = buildField.getText().trim();
 		buildField.addCurrentToHistory();
 
-		jEdit.openFile(view, null, buildField.getText(), false, false);
+		jEdit.openFile(view, buildField.getText());
 	}
 
 
 	/**
-	 *  Uses the TargetParser class to retrieve a list of 
-	 *  targets from the build file, specified by the string in 
+	 *  Uses the TargetParser class to retrieve a list of
+	 *  targets from the build file, specified by the string in
 	 *  buildField, and fill the targetBox with these values.
 	 *  It the identifies the default target and sets it selected.
 	 */
@@ -322,7 +322,7 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 		if (source == edit) {
 			edit();
 		}
-		if (source == buildField) 
+		if (source == buildField)
 		{
 			populateTargetBox();
 		}
@@ -335,8 +335,8 @@ public class AntFarm extends JPanel implements DockableWindow, ActionListener, K
 	 */
 	public void keyReleased(KeyEvent e) {
 		Object source = e.getSource();
-		/* If someone changes the path to the build file manually, 
-		 * we give a visual feedback wheather current string in the 
+		/* If someone changes the path to the build file manually,
+		 * we give a visual feedback wheather current string in the
 		 * the buildField points to a valid file.
 		 */
 		if (source == buildField) {
