@@ -821,7 +821,7 @@ public final class ProjectViewer extends JPanel
 	 *	Sets the given project to be the root of the tree. If "p" is null,
 	 *	then the root node is set to the "VPTRoot" node.
 	 */
-	public void setProject(VPTProject p) {
+	public synchronized void setProject(VPTProject p) {
 		if (treeRoot != null && treeRoot.isProject()) {
 			closeProject((VPTProject)treeRoot, config.getCloseFiles(),
 				config.getRememberOpen());
@@ -854,7 +854,7 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ getRoot() method
 	/**	Returns the root node of the current tree. */
-	public VPTNode getRoot() {
+	public synchronized VPTNode getRoot() {
 		return treeRoot;
 	} //}}}
 
@@ -1134,47 +1134,48 @@ public final class ProjectViewer extends JPanel
 		}
 
 		public void run() {
-			setEnabled(false);
-			final JTree tree = getCurrentTree();
-			final DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
-			final VPTNode oldRoot = treeRoot;
-			treeRoot = null;
-			try {
-				SwingUtilities.invokeAndWait(
-					new Runnable() {
-						public void run() {
-							tree.setModel(new DefaultTreeModel(
-								new DefaultMutableTreeNode(
-									jEdit.getProperty("projectviewer.loading_project",
-										new Object[] { pName } ))));
-										}
-					});
-			} catch (InterruptedException ie) {
-				// not gonna happen
-			} catch (java.lang.reflect.InvocationTargetException ite) {
-				// not gonna happen
-			}
+			synchronized (ProjectViewer.this) {
+				setEnabled(false);
+				final JTree tree = getCurrentTree();
+				final DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+				final VPTNode oldRoot = treeRoot;
+				treeRoot = null;
+				try {
+					SwingUtilities.invokeAndWait(
+						new Runnable() {
+							public void run() {
+								tree.setModel(new DefaultTreeModel(
+									new DefaultMutableTreeNode(
+										jEdit.getProperty("projectviewer.loading_project",
+											new Object[] { pName } ))));
+											}
+						});
+				} catch (InterruptedException ie) {
+					// not gonna happen
+				} catch (java.lang.reflect.InvocationTargetException ite) {
+					// not gonna happen
+				}
 
-			final VPTProject p = ProjectManager.getInstance().getProject(pName);
+				final VPTProject p = ProjectManager.getInstance().getProject(pName);
 
-			try {
-				SwingUtilities.invokeAndWait(
-					new Runnable() {
-						public void run() {
-							treeRoot = oldRoot;
-							tModel.setRoot(p);
-							tree.setModel(tModel);
-							setProject(p);
-							setEnabled(true);
-						}
-					});
-			} catch (InterruptedException ie) {
-				// not gonna happen
-			} catch (java.lang.reflect.InvocationTargetException ite) {
-				// not gonna happen
+				try {
+					SwingUtilities.invokeAndWait(
+						new Runnable() {
+							public void run() {
+								treeRoot = oldRoot;
+								tModel.setRoot(p);
+								tree.setModel(tModel);
+								setProject(p);
+								setEnabled(true);
+							}
+						});
+				} catch (InterruptedException ie) {
+					// not gonna happen
+				} catch (java.lang.reflect.InvocationTargetException ite) {
+					// not gonna happen
+				}
 			}
 		}
-
 	} //}}}
 
 }
