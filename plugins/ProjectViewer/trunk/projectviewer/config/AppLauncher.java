@@ -38,6 +38,7 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import projectviewer.ProjectPlugin;
 import projectviewer.ProjectViewer;
+import projectviewer.gui.ModalJFileChooser;
 //}}}
 
 /**
@@ -241,7 +242,7 @@ public class AppLauncher {
 	 */
 	private String pickApp(String ext, ProjectViewer viewer) {
 		// Used for selected and executable file
-		JFileChooser chooser = new JFileChooser();
+		JFileChooser chooser = new ModalJFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 		if (chooser.showDialog(null, jEdit.getProperty("projectviewer.launcher.choose_app")) != JFileChooser.APPROVE_OPTION) {
 			return null;

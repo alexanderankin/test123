@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import projectviewer.ProjectViewer;
+import projectviewer.gui.ModalJFileChooser;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTDirectory;
@@ -74,9 +75,9 @@ public class OldStyleFileImporter extends FileImporter {
 
 		JFileChooser chooser = null;
 		if (selected.isDirectory() && ((VPTDirectory)selected).getFile().exists()) {
-			chooser = new JFileChooser(selected.getNodePath());
+			chooser = new ModalJFileChooser(selected.getNodePath());
 		} else {
-			chooser = new JFileChooser(project.getRootPath());
+			chooser = new ModalJFileChooser(project.getRootPath());
 		}
 
 		chooser.setMultiSelectionEnabled(true);

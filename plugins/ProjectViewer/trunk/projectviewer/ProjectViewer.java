@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more detaProjectTreeSelectionListenerils.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -98,6 +98,7 @@ import projectviewer.vpt.VPTCellRenderer;
 import projectviewer.vpt.VPTFileListModel;
 import projectviewer.vpt.VPTSelectionListener;
 import projectviewer.vpt.VPTWorkingFileListModel;
+import projectviewer.vpt.VPTCompactModel;
 
 import projectviewer.event.ProjectListener;
 import projectviewer.event.ProjectViewerEvent;
@@ -140,13 +141,11 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		actions.add(new CollapseAllAction());
 		actions.add(new OldStyleAddFileAction());
 		// Listeners and Actions from other plugins
-		if (config.isJEdit42()) {
-			EditPlugin[] plugins = jEdit.getPlugins();
-			for (int i = 0; i < plugins.length; i++) {
-				addProjectViewerListeners(plugins[i].getPluginJAR(), null);
-				addToolbarActions(plugins[i].getPluginJAR());
-				VPTContextMenu.registerActions(plugins[i].getPluginJAR());
-			}
+		EditPlugin[] plugins = jEdit.getPlugins();
+		for (int i = 0; i < plugins.length; i++) {
+			addProjectViewerListeners(plugins[i].getPluginJAR(), null);
+			addToolbarActions(plugins[i].getPluginJAR());
+			VPTContextMenu.registerActions(plugins[i].getPluginJAR());
 		}
 	} //}}}
 
@@ -206,8 +205,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	/** Reloads the action list for the toolbar. */
 	private static void actionsChanged() {
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ProjectViewer v = (ProjectViewer) it.next();
-			if (v.toolBar != null)
+			ViewerEntry ve = (ViewerEntry) it.next();
+			ProjectViewer v = ve.dockable;
+			if (v != null && v.toolBar != null)
 				v.populateToolBar();
 		}
 	} //}}}
@@ -220,7 +220,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *	exists.
 	 */
 	public static ProjectViewer getViewer(View view) {
-		return (ProjectViewer) viewers.get(view);
+		ViewerEntry ve = (ViewerEntry) viewers.get(view);
+		if (ve != null)
+			return ve.dockable;
+		return null;
 	} //}}}
 
 	//{{{ +_updateProjectCombos()_ : void
@@ -232,17 +235,20 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		DISABLE_EVENTS = true;
 
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ProjectViewer v = (ProjectViewer) it.next();
+			ViewerEntry ve = (ViewerEntry) it.next();
+			ProjectViewer v = ve.dockable;
 
-			v.pList.removeAllItems();
-			v.pList.addItem(CREATE_NEW_PROJECT);
-			v.pList.addItem(VPTRoot.getInstance());
-
-			for (Iterator it2 = ProjectManager.getInstance().getProjects(); it2.hasNext(); ) {
-				v.pList.addItem(it2.next());
+			if (v != null) {
+				v.pList.removeAllItems();
+				v.pList.addItem(CREATE_NEW_PROJECT);
+				v.pList.addItem(VPTRoot.getInstance());
+	
+				for (Iterator it2 = ProjectManager.getInstance().getProjects(); it2.hasNext(); ) {
+					v.pList.addItem(it2.next());
+				}
+	
+				v.pList.setSelectedItem(v.treeRoot);
 			}
-
-			v.pList.setSelectedItem(v.treeRoot);
 		}
 
 		DISABLE_EVENTS = false;
@@ -303,7 +309,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (src instanceof ProjectViewer) {
 			evt = new ProjectViewerEvent((ProjectViewer) src, p);
 		} else {
-			ProjectViewer viewer = (ProjectViewer) viewers.get(v);
+			ProjectViewer viewer = getViewer(v);
 			if (viewer != null) {
 				viewer.setProject(p);
 				return;
@@ -414,7 +420,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	public static void nodeStructureChanged(VPTNode node) {
 		VPTProject p = VPTNode.findProjectFor(node);
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ProjectViewer v = (ProjectViewer) it.next();
+			ViewerEntry ve = (ViewerEntry) it.next();
+			ProjectViewer v = ve.dockable;
+			if (v == null)
+				continue;
 			if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
 			}
@@ -425,6 +434,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			if (v.workingFileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
 			}
+
+			if (v.compactTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
+				((DefaultTreeModel)v.compactTree.getModel()).nodeStructureChanged(node);
+			}
 		}
 	} //}}}
 
@@ -433,7 +446,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	public static void nodeChanged(VPTNode node) {
 		VPTProject p = VPTNode.findProjectFor(node);
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-			ProjectViewer v = (ProjectViewer) it.next();
+			ViewerEntry ve = (ViewerEntry) it.next();
+			ProjectViewer v = ve.dockable;
+			if (v == null)
+				continue;
 			if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
 			}
@@ -444,6 +460,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 				if (v.workingFileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
+				}
+
+				if (v.compactTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
+					((DefaultTreeModel)v.compactTree.getModel()).nodeChanged(node);
 				}
 			}
 		}
@@ -463,9 +483,16 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (config.getShowFoldersTree()) {
 			int[] ind = new int[] { idx };
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-				ProjectViewer v = (ProjectViewer) it.next();
+				ViewerEntry ve = (ViewerEntry) it.next();
+				ProjectViewer v = ve.dockable;
+				if (v == null)
+					continue;
 				if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.folderTree.getModel())
+						.nodesWereInserted(parent, ind);
+				}
+				if (v.compactTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
+					((DefaultTreeModel)v.compactTree.getModel())
 						.nodesWereInserted(parent, ind);
 				}
 			}
@@ -481,7 +508,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		VPTProject p = VPTNode.findProjectFor(node);
 		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-				ProjectViewer v = (ProjectViewer) it.next();
+				ViewerEntry ve = (ViewerEntry) it.next();
+				ProjectViewer v = ve.dockable;
+				if (v == null)
+					continue;
 				if (v.fileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
 				}
@@ -508,9 +538,27 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			Object[] removed = new Object[] { child };
 			int[] idx = new int[] { index };
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-				ProjectViewer v = (ProjectViewer) it.next();
+				ViewerEntry ve = (ViewerEntry) it.next();
+				ProjectViewer v = ve.dockable;
+				if (v == null)
+					continue;
 				if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.folderTree.getModel())
+						.nodesWereRemoved(parent, idx, removed);
+				}
+			}
+		}
+
+		if (config.getShowCompactTree()) {
+			Object[] removed = new Object[] { child };
+			int[] idx = new int[] { index };
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+				ViewerEntry ve = (ViewerEntry) it.next();
+				ProjectViewer v = ve.dockable;
+				if (v == null)
+					continue;
+				if (v.compactTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
+					((DefaultTreeModel)v.compactTree.getModel())
 						.nodesWereRemoved(parent, idx, removed);
 				}
 			}
@@ -528,13 +576,16 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		parent.remove(index);
 
 		if (config.getShowFoldersTree() || config.getShowFilesTree() ||
-				config.getShowWorkingFilesTree()) {
+				config.getShowWorkingFilesTree() || config.getShowCompactTree()) {
 
 			Object[] removed = new Object[] { p };
 			int[] idx = new int[] { index };
 
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-				ProjectViewer v = (ProjectViewer) it.next();
+				ViewerEntry ve = (ViewerEntry) it.next();
+				ProjectViewer v = ve.dockable;
+				if (v == null)
+					continue;
 				if (v.folderTree != null && v.treeRoot.isRoot()) {
 					((DefaultTreeModel)v.folderTree.getModel())
 						.nodesWereRemoved(parent, idx, removed);
@@ -549,6 +600,11 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					((DefaultTreeModel)v.workingFileTree.getModel())
 						.nodesWereRemoved(parent, idx, removed);
 				}
+
+				if (v.compactTree != null && v.treeRoot.isRoot()) {
+					((DefaultTreeModel)v.compactTree.getModel())
+						.nodesWereRemoved(parent, idx, removed);
+				}
 				if (p == v.treeRoot) {
 					v.setProject(null);
 				}
@@ -560,6 +616,26 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 	//}}}
 
+	//{{{ +_setActiveProject(View, VPTProject)_ : void
+	public static void setActiveProject(View aView, VPTProject p) {
+		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
+		if (ve == null) {
+			ve = new ViewerEntry();
+			ve.project = p;
+			viewers.put(aView, ve);
+		} else if (ve.dockable != null) {
+			ve.dockable.setProject(p);
+		} else {
+			ve.project = p;
+		}
+	} //}}}
+	
+	//{{{ +_getActiveProject(View)_ : void
+	public static VPTProject getActiveProject(View aView) {
+		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
+		return (ve != null) ? ve.project : null;
+	} //}}}
+	
 	//}}}
 
 	//{{{ Constants
@@ -569,6 +645,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private final static String FOLDERS_TAB_TITLE 		= "projectviewer.folderstab";
 	private final static String FILES_TAB_TITLE 		= "projectviewer.filestab";
 	private final static String WORKING_FILES_TAB_TITLE = "projectviewer.workingfilestab";
+	private final static String COMPACT_TAB_TITLE = "projectviewer.compacttab";
 
 	private final static String TREE_STATE_PROP = "projectviewer.folder_tree_state";
 	private final static char NOT_EXPANDED		= '0';
@@ -586,6 +663,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private JScrollPane				fileTreeScroller;
 	private JTree					workingFileTree;
 	private JScrollPane				workingFileTreeScroller;
+	private JTree					compactTree;
+	private JScrollPane				compactTreeScroller;
 	private JToolBar				toolBar;
 
 	private JPanel					topPane;
@@ -611,8 +690,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *											for the given view.
 `	 */
 	public ProjectViewer(View aView) {
-		if (viewers.get(aView) != null) {
-			ProjectViewer existant = (ProjectViewer) viewers.get(aView);
+		ProjectViewer existant = getViewer(aView);
+		if (existant != null) {
 			Window wnd = SwingUtilities.getWindowAncestor(existant);
 			if (wnd != null && wnd.isShowing()) {
 				throw new UnsupportedOperationException(
@@ -636,23 +715,33 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		ccl = new ConfigChangeListener();
 		config.addPropertyChangeListener(ccl);
 
-		viewers.put(aView, this);
-		EditBus.addToBus(this);
 		// Loads the listeners from plugins that register listeners using global
 		// properties instead of calling the addProjectViewerListener() method.
-		if (config.isJEdit42()) {
-			EditPlugin[] plugins = jEdit.getPlugins();
-			for (int i = 0; i < plugins.length; i++) {
-				addProjectViewerListeners(plugins[i].getPluginJAR(), view);
-			}
+		EditPlugin[] plugins = jEdit.getPlugins();
+		for (int i = 0; i < plugins.length; i++) {
+			addProjectViewerListeners(plugins[i].getPluginJAR(), view);
 		}
 
+		// Register the dockable window in the viewer list
+		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
+		VPTProject toSet = null;
+		if (ve != null) {
+			ve.dockable = this;
+			toSet = ve.project;
+		} else {
+			ve = new ViewerEntry();
+			ve.dockable = this;
+		}
+		viewers.put(aView, ve);
+		EditBus.addToBus(this);
+
 		// Loads the last project into the viewer
-		if (config.getLastProject() != null) {
+		if (toSet != null) {
+			setProject(toSet);
+		} else if (config.getLastProject() != null) {
 			if (ProjectManager.getInstance().hasProject(config.getLastProject()))
 				new ProjectLoader(config.getLastProject()).loadProject();
 		}
-
 	} //}}}
 
 	//{{{ Private methods
@@ -740,17 +829,15 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		// don't mess up that guy.
 		if (close) {
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
-				ProjectViewer pv = (ProjectViewer) it.next();
-				if (pv != this) {
-					if (pv.treeRoot == p) {
-						return;
-					} else if (!pv.treeRoot.isProject()) {
-						usingAllProjects = true;
-					}
+				ViewerEntry ve = (ViewerEntry) it.next();
+				if (ve.project == p) {
+					return;
+				} else if (ve.dockable != null && !ve.dockable.treeRoot.isProject()) {
+					usingAllProjects = true;
 				}
 			}
 		}
-
+		
 		// close files & populate "remember" list
 		if (close || remember) {
 			Buffer[] bufs = jEdit.getBuffers();
@@ -777,19 +864,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		}
 
 		// saves the folder tree state
-		if (folderTree != null) {
-			int row_count = folderTree.getRowCount();
-			StringBuffer state = new StringBuffer();
-			if(folderTree.isExpanded(0)) {
-				for(int i = 1; i < row_count; i++) {
-					if (folderTree.isExpanded(i)) {
-						state.append(EXPANDED);
-					} else {
-						state.append(NOT_EXPANDED);
-					}
-				}
-			}
-			p.setProperty(TREE_STATE_PROP, state.toString());
+		String state = getFolderTreeState(p);
+		if (state != null) {
+			p.setProperty(TREE_STATE_PROP, state);
 		} else {
 			p.removeProperty(TREE_STATE_PROP);
 		}
@@ -804,7 +881,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 	//{{{ -openProject(VPTProject) : void
 	/** Opens all the files that were previously opened in the project. */
-	private void openProject(VPTProject p) {
+	private void openProject(final VPTProject p) {
 		Buffer lastBuf = null;
 		if (config.getRememberOpen()) {
 			for (Iterator i = p.getOpenFiles(); i.hasNext(); ) {
@@ -817,9 +894,15 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		}
 
 		// loads tree state from the project, if saved
-		String state = p.getProperty(TREE_STATE_PROP);
+		final String state = p.getProperty(TREE_STATE_PROP);
 		if (state != null && folderTree != null) {
-			SwingUtilities.invokeLater(new TreeStateLoader(state));
+			SwingUtilities.invokeLater(
+			new Runnable() {
+				//{{{ +run() : void
+				public void run() {
+					setFolderTreeState(p, state);
+				} //}}}
+			});
 		}
 	} //}}}
 
@@ -868,6 +951,20 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			workingFileTreeScroller = null;
 		}
 
+		// compact tree
+		if(config.getShowCompactTree()) {
+			if(compactTree == null) {
+				VPTCompactModel model = new VPTCompactModel(treeRoot);
+				compactTree = createTree(model);
+				compactTreeScroller = new JScrollPane(compactTree);
+			}
+			treePane.addTab(jEdit.getProperty(COMPACT_TAB_TITLE,"Compact"), compactTreeScroller);
+		} else {
+			compactTree = null;
+			compactTreeScroller = null;
+		}
+
+
 		if (treePane.getTabCount() == 0) {
 			remove(treePane);
 		} else if (treePane.getTabCount() == 1) {
@@ -893,6 +990,29 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			toolBar.setFloatable(false);
 			populateToolBar();
 			topPane.add(BorderLayout.EAST, toolBar);
+		}
+	} //}}}
+
+	//{{{ -unloadInactiveProjects() : void
+	/** Checks if some of the projects that are loaded can be unloaded. */
+	private void unloadInactiveProjects() {
+		ArrayList active = null;
+		for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
+			ViewerEntry ve = (ViewerEntry) i.next();
+			if (ve.project != null) {
+				if (active == null)
+					active = new ArrayList();
+				active.add(ve.project.getName());
+			}
+		}
+
+		ProjectManager pm = ProjectManager.getInstance();
+		for (Iterator i = pm.getProjects(); i.hasNext(); ) {
+			VPTProject p = (VPTProject) i.next();
+			if (pm.isLoaded(p.getName())
+					&& (active == null || !active.contains(p.getName()))) {
+				pm.unloadProject(p);
+			}
 		}
 	} //}}}
 
@@ -959,12 +1079,16 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					if (folderTree != null) return folderTree;
 					if (fileTree != null) return fileTree;
 					if (workingFileTree != null) return workingFileTree;
+					if (compactTree != null) return compactTree;
 				case 1:
 					if (fileTree != null) return fileTree;
 					if (workingFileTree != null) return workingFileTree;
+					if (compactTree != null) return compactTree;
 				case 2:
 					if (workingFileTree != null) return workingFileTree;
-
+					if (compactTree != null) return compactTree;
+				case 3:
+					if (compactTree != null) return compactTree;
 				default:
 					return null;
 			}
@@ -972,6 +1096,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			if (folderTree != null) return folderTree;
 			if (fileTree != null) return fileTree;
 			if (workingFileTree != null) return workingFileTree;
+			if (compactTree != null) return compactTree;
 			return null;
 		}
 	} //}}}
@@ -988,9 +1113,13 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *	then the root node is set to the "VPTRoot" node.
 	 */
 	public synchronized void setProject(VPTProject p) {
-		if (treeRoot != null && treeRoot.isProject()) {
-			closeProject((VPTProject)treeRoot, config.getCloseFiles(),
-				config.getRememberOpen());
+		if (treeRoot != null) {
+			if (treeRoot.isProject()) {
+				closeProject((VPTProject)treeRoot, config.getCloseFiles(),
+					config.getRememberOpen());
+			} else {
+				unloadInactiveProjects();
+			}
 		}
 
 		if (p != null) {
@@ -1008,15 +1137,21 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			((DefaultTreeModel)fileTree.getModel()).setRoot(treeRoot);
 		if (workingFileTree != null)
 			((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
+		if (compactTree != null)
+			((DefaultTreeModel)compactTree.getModel()).setRoot(treeRoot);
 
 		if (p != null && pList.getSelectedItem() != p) {
 			DISABLE_EVENTS = true;
 			pList.setSelectedItem(p);
 			DISABLE_EVENTS = false;
 		}
+		
+		ViewerEntry ve = (ViewerEntry) viewers.get(view);
+		ve.project = p;
 
 		dontAsk = null;
 		fireProjectLoaded(this, p, view);
+		ProjectManager.getInstance().fireDynamicMenuChange();
 	} //}}}
 
 	//{{{ +getRoot() : VPTNode
@@ -1024,6 +1159,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	public synchronized VPTNode getRoot() {
 		return treeRoot;
 	} //}}}
+
+	//{{{ Message handling
 
 	//{{{ +handleMessage(EBMessage) : void
 	/** Handles an EditBus message.
@@ -1086,7 +1223,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 */
 	private void handleEditorExitRequestedMessage(EditorExitRequested eer) {
 		// Editor is exiting, save info about current project
-		ProjectViewer active = (ProjectViewer) viewers.get(eer.getView());
+		ProjectViewer active = getViewer(eer.getView());
 		if (active == this || active == null || active.treeRoot != treeRoot) {
 			config.setLastProject(((VPTProject)treeRoot).getName());
 		}
@@ -1094,11 +1231,14 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 	//{{{ -handleEditorExitingMessage(EditorExiting) : void
 	private void handleEditorExitingMessage(EditorExiting ee) {
-		closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
-		for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
-			ProjectViewer v = (ProjectViewer) i.next();
-			if (v.treeRoot == treeRoot) {
-				v.treeRoot = null;
+		synchronized (treeRoot) {
+			closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
+			for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
+				ViewerEntry ve = (ViewerEntry) i.next();
+				ProjectViewer v = ve.dockable;
+				if (v != null && v != this && v.treeRoot == treeRoot) {
+					v.treeRoot = null;
+				}
 			}
 		}
 	} //}}}
@@ -1114,35 +1254,38 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		VPTNode f = p.getChildNode(bu.getBuffer().getPath());
 
 		boolean ask = false;
-		if (f == null) {
+		if (f == null && bu.getWhat() == BufferUpdate.SAVED) {
 			File file = new File(bu.getBuffer().getPath());
 			String fileParentPath = file.getParent() + File.separator;
 			String projectRootPath = p.getRootPath() + File.separator;
 			ask = (config.getAskImport() != ProjectViewerConfig.ASK_NEVER &&
-					bu.getWhat() == BufferUpdate.SAVED &&
 					(dontAsk == null ||
 						config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
 						!dontAsk.contains(bu.getBuffer().getPath())) &&
 					fileParentPath.startsWith(projectRootPath));
-		}
 
-		// Try to import newly created files to the project
-		if (ask) {
-			int res = JOptionPane.showConfirmDialog(view,
-					jEdit.getProperty("projectviewer.import_new",
-						new Object[] { bu.getBuffer().getName(), p.getName() }),
-					jEdit.getProperty("projectviewer.import_new.title"),
-					JOptionPane.YES_NO_OPTION);
-
-			if(res == JOptionPane.YES_OPTION) {
-				new NewFileImporter(p, this, bu.getBuffer().getPath()).doImport();
-			} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE) {
-				if (dontAsk == null) {
-					dontAsk = new HashSet();
+			// Try to import newly created files to the project
+			if (ask) {
+				int res = JOptionPane.YES_OPTION;
+				if (config.getAskImport() != ProjectViewerConfig.AUTO_IMPORT) {
+					res = JOptionPane.showConfirmDialog(view,
+							jEdit.getProperty("projectviewer.import_new",
+								new Object[] { bu.getBuffer().getName(), p.getName() }),
+							jEdit.getProperty("projectviewer.import_new.title"),
+							JOptionPane.YES_NO_OPTION);
 				}
-				dontAsk.add(bu.getBuffer().getPath());
+
+				if (res == JOptionPane.YES_OPTION) {
+					new NewFileImporter(p, this, bu.getBuffer().getPath()).doImport();
+				} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE) {
+					if (dontAsk == null) {
+						dontAsk = new HashSet();
+					}
+					dontAsk.add(bu.getBuffer().getPath());
+				}
 			}
 		}
+
 
 		// Notifies trees when a buffer is closed (so it should not be
 		// underlined anymore) or opened (should underline it).
@@ -1158,6 +1301,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					((VPTWorkingFileListModel)workingFileTree.getModel())
 						.removeOpenFile(f.getNodePath());
 				}
+				if (compactTree != null) {
+					((DefaultTreeModel)compactTree.getModel()).nodeChanged(f);
+				}
 			} else if (bu.getWhat() == BufferUpdate.LOADED) {
 				if (folderTree != null) {
 					((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
@@ -1169,6 +1315,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					((VPTWorkingFileListModel)workingFileTree.getModel())
 						.addOpenFile(f.getNodePath());
 				}
+				if (compactTree != null) {
+					((DefaultTreeModel)compactTree.getModel()).nodeChanged(f);
+				}
 			} else if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
 				if (folderTree != null) {
 					((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
@@ -1179,9 +1328,14 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				if (workingFileTree != null) {
 					((VPTWorkingFileListModel)workingFileTree.getModel()).nodeChanged(f);
 				}
+				if (compactTree != null) {
+					((DefaultTreeModel)compactTree.getModel()).nodeChanged(f);
+				}
 			}
 		}
  	}//}}}
+
+	//}}}
 
 	//{{{ +setEnabled(boolean) : void
 	/** Enables or disables the viewer GUI. */
@@ -1191,12 +1345,73 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (folderTree != null) folderTree.setEnabled(flag);
 		if (fileTree != null) fileTree.setEnabled(flag);
 		if (workingFileTree != null) workingFileTree.setEnabled(flag);
+		if (compactTree != null) compactTree.setEnabled(flag);
 		if (toolBar != null) {
 			Component[] buttons = toolBar.getComponents();
 			for (int i = 0; i < buttons.length; i++)
 				buttons[i].setEnabled(flag);
 		}
 		super.setEnabled(flag);
+	} //}}}
+
+	//{{{ +getFolderTreeState(VPTNode) : String
+	/**
+	 *	Returns a String representing the state of the folder tree.
+	 *
+	 *	@see	#setFolderTreeState(VPTNode, String)
+	 *	@return	The state of the tree, starting at the given node, or
+	 *			null if the folderTree is not visible.
+	 */
+	public String getFolderTreeState(VPTNode node) {
+		if (folderTree != null) {
+			DefaultTreeModel model = (DefaultTreeModel) folderTree.getModel();
+			int start = folderTree.getRowForPath(new TreePath(model.getPathToRoot(node)));
+			if (start >= 0) {
+				StringBuffer state = new StringBuffer();
+				if(folderTree.isExpanded(start)) {
+					for(int i = start; i < folderTree.getRowCount(); i++) {
+						VPTNode n = (VPTNode) folderTree.getPathForRow(i)
+										.getLastPathComponent();
+						if (!node.isNodeDescendant(n))
+							break;
+						if (folderTree.isExpanded(i)) {
+							state.append(EXPANDED);
+						} else {
+							state.append(NOT_EXPANDED);
+						}
+					}
+				}
+				return state.toString();
+			}
+		}
+		return null;
+	} //}}}
+
+	//{{{ +setFolderTreeState(VPTNode, String) : void
+	/**
+	 *	Sets the folder tree state from the given String.
+	 *
+	 *	@see	#getFolderTreeState(VPTNode)
+	 */
+	public void setFolderTreeState(VPTNode node, String state) {
+		if (folderTree != null && state != null) {
+			DefaultTreeModel model = (DefaultTreeModel) folderTree.getModel();
+			int start = folderTree.getRowForPath(new TreePath(model.getPathToRoot(node)));
+			for(int i = 0; i < state.length(); i++) {
+				int row = start + i;
+				if (row >= folderTree.getRowCount())
+					break;
+
+				TreePath path = folderTree.getPathForRow(row);
+				VPTNode n = (VPTNode) path.getLastPathComponent();
+				if (!node.isNodeDescendant(n))
+					break;
+
+				if (state.charAt(i) == EXPANDED) {
+					folderTree.expandRow(row);
+				}
+			}
+		}
 	} //}}}
 
 	//}}}
@@ -1229,6 +1444,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				if (treeRoot.isProject()) {
 					closeProject((VPTProject)treeRoot, config.getCloseFiles(),
 						config.getRememberOpen());
+					treeRoot = null;
+				} else {
+					unloadInactiveProjects();
 				}
 				VPTProject p = (VPTProject) ie.getItem();
 				new ProjectLoader(p.getName()).loadProject();
@@ -1273,7 +1491,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			// Toolbar show/hide.
 			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
 				showToolBar( ((Boolean)evt.getNewValue()).booleanValue() &&
-					(folderTree != null || fileTree != null || workingFileTree != null) );
+					(folderTree != null || fileTree != null || workingFileTree != null || compactTree != null) );
 				return;
 			}
 
@@ -1288,7 +1506,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
 					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT) ||
-					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT)) {
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT)||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_COMPACT_OPT)) {
 				if (!willRun) {
 					SwingUtilities.invokeLater(this);
 					willRun = true;
@@ -1306,31 +1525,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			showTrees();
 			showToolBar(config.getShowToolBar());
 			willRun = false;
-		}//}}}
-
-	} //}}}
-
-	//{{{ -class TreeStateLoader
-	/** Loads the folder tree state from a string. */
-	private class TreeStateLoader implements Runnable {
-
-		private String state;
-
-		//{{{ +TreeStateLoader(String) : <init>
-		public TreeStateLoader(String state) {
-			this.state = state;
-		} //}}}
-
-		//{{{ +run() : void
-		/** "Run" method, called by the Swing runtime after a config option for one
-		 *  or more of the trees has changed.
-		 */
-		public void run() {
-			for(int i = 0; i < state.length(); i++) {
-				if (state.charAt(i) == EXPANDED) {
-					folderTree.expandRow(i+1);
-				}
-			}
 		}//}}}
 
 	} //}}}
@@ -1494,6 +1688,12 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 	} //}}}
 
+	//{{{ -class _ViewerEntry_
+	private static class ViewerEntry {
+		public ProjectViewer dockable;
+		public VPTProject project;
+	} //}}}
+	
 	//{{{ -class Helper
 	/**
 	 *	Class to hold methods that require classes that may not be available,
@@ -1528,11 +1728,14 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					if (workingFileTree != null) {
 						((VPTWorkingFileListModel)workingFileTree.getModel()).nodeChanged(f);
 					}
+					if (compactTree != null) {
+						((DefaultTreeModel)compactTree.getModel()).nodeChanged(f);
+					}
 				}
 			}
-			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED ||
-				esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED ||
-				esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
+			if (esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED
+					|| esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED
+					|| esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
 				VPTProject p = (VPTProject) treeRoot;
 				if (folderTree != null) {
 					folderTree.repaint();
@@ -1542,6 +1745,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				}
 				if (workingFileTree != null) {
 					workingFileTree.repaint();
+				}
+				if (compactTree != null) {
+					compactTree.repaint();
 				}
 			}
 		}//}}}

@@ -10,7 +10,7 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more detaProjectTreeSelectionListenerils.
+ * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
@@ -49,6 +49,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectPlugin;
+import projectviewer.gui.ModalJFileChooser;
 //}}}
 
 /**
@@ -239,9 +240,10 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 	//{{{ doChoose() method
 	public void doChoose() {
 		// Used for selected and executable file
-		JFileChooser chooser = new JFileChooser();
+		JFileChooser chooser = new ModalJFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		if (chooser.showDialog(this, "Choose") != JFileChooser.APPROVE_OPTION)
+		if (chooser.showDialog(this, jEdit.getProperty("projectviewer.general.choose"))
+				!= JFileChooser.APPROVE_OPTION)
 			return;
 		try {
 			appField.setText(chooser.getSelectedFile().getPath());

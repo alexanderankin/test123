@@ -84,13 +84,22 @@ public class EditProjectAction extends Action {
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode selected = null;
+		String lookupPath = null;
+		VPTProject proj = null;
+
 		if (viewer != null) {
 			selected = viewer.getSelectedNode();
-			if (selected == null || !selected.isProject())
-				selected  = viewer.getRoot();
+			if (selected != null)
+				lookupPath = selected.getNodePath();
+			if (selected == null || !selected.isProject()) {
+				selected = viewer.getRoot();
+				if (lookupPath == null && selected.isProject())
+					lookupPath = selected.getNodePath();
+			}
+		} else if (!forceNew) {
+			proj = ProjectViewer.getActiveProject(jEdit.getActiveView());
 		}
 
-		VPTProject proj = null;
 		boolean add = false;
 		String oldName = null;
 		String oldRoot = null;
@@ -98,11 +107,11 @@ public class EditProjectAction extends Action {
 			proj = VPTNode.findProjectFor(selected);
 			oldName = proj.getName();
 			oldRoot = proj.getRootPath();
-		} else {
+		} else if (proj != null) {
 			add = true;
 		}
 
-		proj = ProjectOptions.run(proj);
+		proj = ProjectOptions.run(proj, lookupPath);
 		if (proj != null) {
 			if (add) {
 				ProjectManager.getInstance().addProject(proj);
@@ -138,9 +147,9 @@ public class EditProjectAction extends Action {
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		if (node != null && (node.isRoot() || node.isProject())) {
+		if (forceNew || (node != null && (node.isRoot() || node.isProject()))) {
 			cmItem.setVisible(true);
-			((JMenuItem)cmItem).setText( node.isRoot() ?
+			((JMenuItem)cmItem).setText( (forceNew || node.isRoot()) ?
 				jEdit.getProperty("projectviewer.action.add_project") :
 				jEdit.getProperty("projectviewer.action.edit_project"));
 		} else {

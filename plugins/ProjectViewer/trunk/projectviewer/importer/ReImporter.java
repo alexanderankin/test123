@@ -69,24 +69,42 @@ public class ReImporter extends RootImporter {
 	 *	not under the root.
 	 */
 	protected Collection internalDoImport() {
-		super.internalDoImport();
+		if (selected.isProject()) {
+			super.internalDoImport();
 
-		// iterates through the children
-		for (Enumeration en = project.children(); en.hasMoreElements(); ) {
-			VPTNode node = (VPTNode) en.nextElement();
-			String path = node.getNodePath();
+			// iterates through the children
+			for (int i = 0; i < project.getChildCount(); i++) {
+				VPTNode node = (VPTNode) project.getChildAt(i);
+				String path = node.getNodePath();
 
-			// check whether the node is under the root (new or old)
-			if (!path.startsWith(project.getRootPath())) {
-				if (node.isFile()) {
-					if (!((VPTFile)node).getFile().exists()) {
-						unregisterFile((VPTFile)node);
+				// check whether the node is under the root (new or old)
+				if (!path.startsWith(project.getRootPath())) {
+					if (node.isFile()) {
+						if (!((VPTFile)node).getFile().exists()) {
+							unregisterFile((VPTFile)node);
+							project.remove(i--);
+						}
+					} else if (node.isDirectory()) {
+						reimportDirectory((VPTDirectory)node);
 					}
-				} else if (node.isDirectory()) {
-					reimportDirectory((VPTDirectory)node);
 				}
 			}
-
+		} else if (defineFileFilter(selected.getName(), false)) {
+			String state = viewer.getFolderTreeState(selected);
+			reimportDirectory((VPTDirectory)selected);
+			postAction = new NodeStructureChange(selected, state);
+		}
+		
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					fireProjectEvent();
+				}
+			});
+		} catch (InterruptedException ie) {
+			// not gonna happen
+		} catch (java.lang.reflect.InvocationTargetException ite) {
+			// not gonna happen
 		}
 
 		return null;
@@ -126,7 +144,8 @@ public class ReImporter extends RootImporter {
 				if (cdir.getFile().exists() &&
 						cdir.getFile().getParent().equals(dir.getNodePath())) {
 					unregisterFiles((VPTDirectory)n);
-					dir.remove(i--);
+					if (cdir.getChildCount() == 0)
+						dir.remove(i--);
 				} else {
 					reimportDirectory(cdir);
 				}
@@ -136,7 +155,6 @@ public class ReImporter extends RootImporter {
 			}
 		}
 	} //}}}
-
 
 }
 

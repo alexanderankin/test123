@@ -54,6 +54,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox rememberOpen;
 	private JCheckBox deleteNotFoundFiles;
 
+	private JRadioButton autoImport;
 	private JRadioButton askAlways;
 	private JRadioButton askOnce;
 	private JRadioButton askNever;
@@ -62,6 +63,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 	private JCheckBox showFoldersTree;
 	private JCheckBox showFilesTree;
 	private JCheckBox showWorkingFilesTree;
+	private JCheckBox showCompactTree;
 	private JCheckBox useSystemIcons;
 
 	private JTextField importExts;
@@ -114,6 +116,9 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		JPanel pane = new JPanel(new FlowLayout());
 		ButtonGroup bg = new ButtonGroup();
 
+		autoImport = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.auto_import"));
+		bg.add(autoImport);
+		pane.add(autoImport);
 		askAlways = new JRadioButton(jEdit.getProperty("projectviewer.options.ask_import.always"));
 		bg.add(askAlways);
 		pane.add(askAlways);
@@ -125,6 +130,10 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		pane.add(askNever);
 
 		switch (config.getAskImport()) {
+			case ProjectViewerConfig.AUTO_IMPORT:
+				autoImport.setSelected(true);
+				break;
+
 			case ProjectViewerConfig.ASK_ALWAYS:
 				askAlways.setSelected(true);
 				break;
@@ -163,6 +172,11 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
 		addComponent(showWorkingFilesTree);
 
+		showCompactTree = new JCheckBox(jEdit.getProperty("projectviewer.options.show_compact_tree"));
+		showCompactTree.setSelected(config.getShowCompactTree());
+		addComponent(showCompactTree);
+
+		
 		if (OperatingSystem.hasJava14()) {
 			useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
 			useSystemIcons.setSelected(config.getUseSystemIcons());
@@ -223,6 +237,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setShowFoldersTree(showFoldersTree.isSelected());
 		config.setShowFilesTree(showFilesTree.isSelected());
 		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
+		config.setShowCompactTree(showCompactTree.isSelected());
 		if (OperatingSystem.hasJava14())
 			config.setUseSystemIcons(useSystemIcons.isSelected());
 
@@ -230,8 +245,10 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 			config.setAskImport(ProjectViewerConfig.ASK_ALWAYS);
 		} else if (askOnce.isSelected()) {
 			config.setAskImport(ProjectViewerConfig.ASK_ONCE);
-		} else {
+		} else if (askNever.isSelected()) {
 			config.setAskImport(ProjectViewerConfig.ASK_NEVER);
+		} else {
+			config.setAskImport(ProjectViewerConfig.AUTO_IMPORT);
 		}
 
 		config.setImportExts(importExts.getText());

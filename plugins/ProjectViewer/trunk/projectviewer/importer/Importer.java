@@ -194,8 +194,13 @@ public abstract class Importer implements Runnable {
 			if (n.getNodePath().equals(dir.getAbsolutePath())) {
 				return n;
 			} else if (n.isFile()) {
-				if (((VPTFile)n).getCanonicalPath().equals(dir.getAbsolutePath())) {
-					return n;
+				try {
+					if (((VPTFile)n).getFile().getCanonicalPath().equals(dir.getAbsolutePath())) {
+						return n;
+					}
+				} catch (java.io.IOException ioe) {
+					// shouldn't happen
+					Log.log(Log.WARNING, this, ioe);
 				}
 			}
 		}
@@ -246,6 +251,7 @@ public abstract class Importer implements Runnable {
 			if (added == null) added = new ArrayList();
 			added.add(file);
 		}
+		System.err.println("registered : " + file.getNodePath());
 	} //}}}
 
 	//{{{ #unregisterFile(VPTFile) : void
@@ -261,6 +267,7 @@ public abstract class Importer implements Runnable {
 			if (removed == null) removed = new ArrayList();
 			removed.add(file);
 		}
+		System.err.println("unregistered : " + file.getNodePath());
 	} //}}}
 
 	//{{{ -contains(ArrayList, VPTFile) : boolean
@@ -323,7 +330,17 @@ public abstract class Importer implements Runnable {
 					}
 					ProjectViewer.nodeStructureChangedFlat(project);
 					if (project.hasListeners()) {
-						fireProjectEvent();
+						try {
+							SwingUtilities.invokeAndWait(new Runnable() {
+								public void run() {
+									fireProjectEvent();
+								}
+							});
+						} catch (InterruptedException ie) {
+							// not gonna happen
+						} catch (java.lang.reflect.InvocationTargetException ite) {
+							// not gonna happen
+						}
 					}
 				}
 				ProjectManager.getInstance().saveProject(project);
@@ -365,7 +382,12 @@ public abstract class Importer implements Runnable {
 
 	//{{{ -fireProjectEvent() : void
 	/** Fires an event based on the imported file(s). */
-	private void fireProjectEvent() {
+	protected void fireProjectEvent() {
+		if ((added == null || added.size() == 0)
+				&& (removed == null || removed.size() == 0)) {
+			return;
+		}
+
 		if (added == null || added.size() == 0) {
 			if (removed != null && removed.size() > 0) {
 				project.fireFilesChanged(null, removed);
@@ -396,6 +418,30 @@ public abstract class Importer implements Runnable {
 				TreeNode[] nodes = tModel.getPathToRoot(toShow);
 				tree.makeVisible(new TreePath(nodes));
 			}
+		} //}}}
+
+	} //}}}
+
+	//{{{ #class NodeStructureChange
+	protected class NodeStructureChange implements Runnable {
+
+		private VPTNode node;
+		private String state;
+
+		//{{{ +NodeStructureChange(VPTNode, String) : <init>
+		/**
+		 *	Calls "nodeStructureChanged" for the given node. If "state" is
+		 *	not null, also sets the tree state.
+		 */
+		public NodeStructureChange(VPTNode node, String state) {
+			this.node = node;
+			this.state = state;
+		} //}}}
+
+		//{{{ +run() : void
+		public void run() {
+			ProjectViewer.nodeStructureChanged(node);
+			viewer.setFolderTreeState(node, state);
 		} //}}}
 
 	} //}}}

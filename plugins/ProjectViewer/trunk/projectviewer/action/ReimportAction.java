@@ -52,14 +52,14 @@ public class ReimportAction extends Action {
 	//{{{ actionPerformed(ActionEvent) method
 	/** Reimports files below the project root. */
 	public void actionPerformed(ActionEvent ae) {
-		VPTProject p = (VPTProject) viewer.getSelectedNode();
-		new ReImporter(p, viewer).doImport();
+		VPTNode n = viewer.getSelectedNode();
+		new ReImporter(n, viewer).doImport();
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		cmItem.setVisible(node != null && node.isProject());
+		cmItem.setVisible(node != null && (node.isProject() || node.isDirectory()));
 	} //}}}
 
 }

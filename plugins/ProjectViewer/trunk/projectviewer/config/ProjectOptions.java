@@ -48,38 +48,9 @@ import projectviewer.vpt.VPTProject;
 public class ProjectOptions extends OptionsDialog {
 
 	//{{{ Static Members
-
-	private static final ArrayList plugins = new ArrayList();
-
+	private static String			lookupPath;
 	private static VPTProject		p;
 	private static boolean			isNew;
-
-	/**
-	 *	Adds a new plugin callback to the internal list. When the project
-	 *	options dialog is shown, it calls the
-	 *	{@link ProjectOptionsPlugin#createOptionPanes(OptionsDialog, VPTProject)
-	 *	createOptionPanes()} method on the given object so that its options
-	 *	panes are added to the dialog.
-	 *
-	 *	<p>Plugins that use a java.util.Properties style configuration can
-	 *	reuse most of their code from the standard jEdit EBPlugin and OptionPane
-	 *	implementations. They can simply extend those existing classes and instead
-	 *	of querying the old property source, query the given project for the
-	 *	properties, and later save them to the project instead of saving
-	 *	them to the old store. This way, the same GUI can be used, and making
-	 *	project-specific options require only two extra classes with little
-	 *	extra code.</p>
-	 *
-	 *	<p><strong>IMPORTANT</strong>: do not call this method if your
-	 *	ProjectOptionsPlugin class is the same class that implements your
-	 *	EditPlugin. These cases are handled automatically.</p>
-	 *
-	 *	@deprecated	Use the jEdit 4.2-style API to add option panels. This 
-	 *				method will be removed in subsequent versions of the plugin.
-	 */
-	public static void registerPlugin(ProjectOptionsPlugin plugin) {
-		if (plugin != null) plugins.add(plugin);
-	}
 
 	/**
 	 *	Shows the project options dialog for the given project.
@@ -89,6 +60,23 @@ public class ProjectOptions extends OptionsDialog {
 	 *			dialog was cancelled.
 	 */
 	public static VPTProject run(VPTProject project) {
+		return run(project, null);
+	}
+
+	/**
+	 *	Shows the project options dialog for the given project, with an
+	 *	optional default start folder where to open the file chooser
+	 *	dialog.
+	 *
+	 *	<p>Method is sychronized so that the use of the static variables
+	 *	is safe.</p>
+	 *
+	 *	@param	project	The project to edit or null to create a new one.
+	 *	@param	startPath	Where to open the "choose root" file dialog.
+	 *	@return	The new or modified project, or null if p was null and
+	 *			dialog was cancelled.
+	 */
+	public static synchronized VPTProject run(VPTProject project, String startPath) {
 		String title;
 		if (project == null) {
 			title = "projectviewer.create_project";
@@ -105,6 +93,7 @@ public class ProjectOptions extends OptionsDialog {
 			isNew = false;
 		}
 
+		lookupPath = startPath;
 		new ProjectOptions(jEdit.getActiveView(), title);
 		return p;
 	}
@@ -159,23 +148,13 @@ public class ProjectOptions extends OptionsDialog {
 		OptionTreeModel paneTreeModel = new OptionTreeModel();
 		rootGroup = (OptionGroup) paneTreeModel.getRoot();
 
-		pOptPane = new ProjectPropertiesPane(p, isNew);
+		pOptPane = new ProjectPropertiesPane(p, isNew, lookupPath);
 		addOptionPane(pOptPane);
 
 		EditPlugin[] eplugins = jEdit.getPlugins();
 		boolean added;
 		for (int i = 0; i < eplugins.length; i++) {
-			added = false;
-			if (ProjectViewerConfig.getInstance().isJEdit42()) {
-				added = createOptions(eplugins[i]);
-			}
-			if (!added && eplugins[i] instanceof ProjectOptionsPlugin) {
-				((ProjectOptionsPlugin)eplugins[i]).createOptionPanes(this, p);
-			}
-		}
-
-		for (Iterator it = plugins.iterator(); it.hasNext(); ) {
-			((ProjectOptionsPlugin)it.next()).createOptionPanes(this, p);
+			createOptions(eplugins[i]);
 		}
 
 		return paneTreeModel;

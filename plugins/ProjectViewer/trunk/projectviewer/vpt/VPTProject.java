@@ -65,11 +65,9 @@ public class VPTProject extends VPTNode {
 	private HashSet		listeners;
 	private String		rootPath;
 	private String		url;
-	private File		buildFile;
 	private Properties	properties;
 
 	protected HashMap		openableNodes;
-	protected HashMap		canonicalFiles;
 
 	//}}}
 
@@ -80,7 +78,6 @@ public class VPTProject extends VPTNode {
 		openableNodes	= new HashMap();
 		openFiles		= new ArrayList();
 		properties		= new Properties();
-		canonicalFiles	= null;
 	}
 
 	//}}}
@@ -91,9 +88,6 @@ public class VPTProject extends VPTNode {
 	/**
 	 *	Returns a VPTFile included in this project that references the given
 	 *	path.
-	 *
-	 *	<p>If in the file list returns null, returns a file from the list
-	 *	where we use canonical paths to do the mapping.</p>
 	 *
 	 *	@deprecated Use {@link #getChildNode(String) getChildNode(String)}
 	 *				instead.
@@ -107,14 +101,14 @@ public class VPTProject extends VPTNode {
 	} //}}}
 
 	//{{{ +getChildNode(String) : VPTNode
-	/** Returns the node that matches the given path. */
+	/** 
+	 *	Returns the node that matches the given path. Despite the name (too
+	 *	late to change, don't want to break other plugins), this only applies
+	 *	to "openable nodes", i.e., nodes whose canOpen() method return true
+	 *	and which are correcty registered with their respective projects.
+	 */
 	public VPTNode getChildNode(String path) {
-		Object o = openableNodes.get(path);
-		if (o == null && canonicalFiles != null) {
-			return (VPTNode) canonicalFiles.get(path);
-		} else {
-			return (VPTNode) o;
-		}
+		return (VPTNode) openableNodes.get(path);
 	} //}}}
 
 	//{{{ +getFiles() : Collection
@@ -138,19 +132,13 @@ public class VPTProject extends VPTNode {
 
 	//{{{ +getOpenableNodes() : Collection
 	/**
-	 *	Returns a read-only collection of the nods that can be opened contained
+	 *	Returns a read-only collection of the nodes that can be opened contained
 	 *	in this project.
 	 */
 	public Collection getOpenableNodes() {
 		return Collections.unmodifiableCollection(openableNodes.values());
 	}
 	//}}}
-
-	//{{{ +getBuildFile() : File
-	/** Returns the project's build file for Ant. */
-	public File getBuildFile() {
-		return buildFile;
-	} //}}}
 
 	//{{{ +getURL() : String
 	/** Returns the project's URL. */
@@ -294,59 +282,27 @@ public class VPTProject extends VPTNode {
 	//{{{ +registerFile(VPTFile) : void
 	/**
 	 *	Register a file in the project, adding it to the list of files that
-	 *	belong to the project. This is mainly for performance reasons when
-	 *	firing project events. Also, if the canonical path of the file differs
-	 *	from the absolute path, register it in the internal canonical paths
-	 *	list.
+	 *	belong to the project
 	 */
 	public void registerFile(VPTFile file) {
 		registerNodePath(file);
-		if (!ProjectViewerConfig.getInstance().isJEdit42()) {
-			try {
-				String cPath = file.getFile().getCanonicalPath();
-				if (!cPath.equals(file.getFile().getAbsolutePath())) {
-					registerCanonicalPath(cPath, file);
-				}
-			} catch (IOException ioe) {
-				Log.log(Log.WARNING, this, ioe);
-			}
-		}
 	}
 	//}}}
 
 	//{{{ +registerNodePath(VPTNode) : void
 	/**
 	 *	Register a node in the project, adding it to the mapping of paths to
-	 *	nodes kept internally. This method does not register canonical file
-	 *	names for file nodes.
+	 *	nodes kept internally.
 	 */
 	public void registerNodePath(VPTNode node) {
 		openableNodes.put(node.getNodePath(), node);
 	}
 	//}}}
 
-	//{{{ +registerCanonicalPath(String, VPTFile) : void
-	/**
-	 *	Register a file whose canonical path differs from the path returned
-	 *	by File.getAbsolutePath().
-	 *
-	 *	@param	path	Canonical path of the file.
-	 */
-	public void registerCanonicalPath(String path, VPTFile file) {
-		if (canonicalFiles == null) {
-			canonicalFiles = new HashMap();
-		}
-		canonicalFiles.put(path, file);
-	} //}}}
-
 	//{{{ +removeAllChildren() : void
 	/** Removes all children from the project, and unregisters all files. */
 	public void removeAllChildren() {
 		openableNodes.clear();
-		if (canonicalFiles != null) {
-			canonicalFiles.clear();
-			canonicalFiles = null;
-		}
 		super.removeAllChildren();
 	} //}}}
 
@@ -354,10 +310,6 @@ public class VPTProject extends VPTNode {
 	/** Unegister a node from the project. */
 	public void unregisterNodePath(VPTNode node) {
 		openableNodes.remove(node.getNodePath());
-		if (canonicalFiles != null && !ProjectViewerConfig.getInstance().isJEdit42() &&
-				node.isFile()) {
-			canonicalFiles.remove(((VPTFile)node).getCanonicalPath());
-		}
 	} //}}}
 
 	//{{{ +getNodePath() : String

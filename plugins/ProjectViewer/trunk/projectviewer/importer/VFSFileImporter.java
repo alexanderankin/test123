@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.JOptionPane;
-import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;

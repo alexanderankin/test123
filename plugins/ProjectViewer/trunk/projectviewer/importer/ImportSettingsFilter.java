@@ -29,6 +29,9 @@ import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;
 
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
+
 import projectviewer.config.ProjectViewerConfig;
 //}}}
 
@@ -45,6 +48,8 @@ public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 	private HashSet includedExtensions;
 	private HashSet includedFiles;
 	private HashSet excludedDirectories;
+
+	private boolean ignoreCase;
 	//}}}
 
 	//{{{ getDescription() method
@@ -69,10 +74,15 @@ public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 			copyPropertyIntoSet(config.getImportExts(),includedExtensions);
 			copyPropertyIntoSet(config.getIncludeFiles(),includedFiles);
 			copyPropertyIntoSet(config.getExcludeDirs(),excludedDirectories);
+
+			ignoreCase = (VFSManager.getFileVFS().getCapabilities()
+							& VFS.CASE_INSENSITIVE_CAP) != 0;
 		}
 
 		File child = new File(file, fileName);
 		if (child.isFile()) {
+			if (ignoreCase)
+				fileName = fileName.toLowerCase();
 			if (includedFiles.contains(fileName))
 				return true;
 
@@ -99,8 +109,12 @@ public class ImportSettingsFilter extends FileFilter implements FilenameFilter {
 			return;
 
 		StringTokenizer strtok = new StringTokenizer(property);
-		while (strtok.hasMoreTokens())
-			set.add(strtok.nextToken());
+		while (strtok.hasMoreTokens()) {
+			String next = strtok.nextToken();
+			if (ignoreCase)
+				next = next.toLowerCase();
+			set.add(next);
+		}
 	} //}}}
 
 }

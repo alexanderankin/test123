@@ -22,8 +22,8 @@ VERSION 2.1.0
 		- clean up inactive projects when switching from "All Projects" view
 		- use directory name as project name when creating project, if no
 		  name has been provided
-		- use current project's root (or buffer path) as default path when
-		  creating new directory
+		- use current project's root's parent (or buffer path) as default path
+		  when creating new project
 		- option to automatically import newly created files that are under
 		  the project root
 		- can re-import single directories; tree state is maintained after
@@ -32,6 +32,12 @@ VERSION 2.1.0
 		  not automatic, though, actions have to be manually added to the
 		  actions.xml file.
 		- added CompactView mode contributed by Francis Dobi
+		- projects now are active in a view even if no dockable is visible if
+		  the user uses the plugin menu. This means that the user doesn't need
+		  to open the dockable to run (most of) the actions in PV's plugin
+		  menu. Made sure that the actions are prepared for this case.
+		- ImportSettingsFilter: ignore case if the file VFS has the
+		  "CASE_INSENSITIVE_CAP" capability set.
 
 		Bug fixes:
 		- fixed possible problem in ReImporter (could loose nodes if they
@@ -42,11 +48,18 @@ VERSION 2.1.0
 		- removed unneeded check for ErrorList plugin in IconComposer
 		- fixed project being saved twice when changing projects, leading to
 		  loss of project data (thanks to Stefan for pointing this out).
-		- properly clean up edit bus when unloading the plugin
+		- properly clean up edit bus when unloading the plugin.
+		- re-added the entry for the PV dockable to the plugin menu.
+		- fixed possible ClassCastException in PVActions.openAllNodes()
 
 		Other changes:
 		- added methods to ProjectViewer to get/set the folder tree state from
 		  a node in the tree, so re-importing can work better.
+		- use a new JFileChooser implementation that properly chooses the parent
+		  when instantiated from a dialog and not from the main window; also
+		  allows to force the viewing of hidden files.
+		- added the begginings of a version control extension to the
+		  IconComposer class. Not too happy about it yet.
 
 VERSION 2.0.4
 	[marcelo vanzin]
@@ -59,7 +72,7 @@ VERSION 2.0.4
 		- backported: fixed double-save of project data.
 		- backported: VPTNode.setParent() fix
 		- backported: fix for NPE in OpenWithEncodingAction
-		
+		- fixed NPE when creating project with no viewer open
 
 VERSION 2.0.3
 	[marcelo vanzin]

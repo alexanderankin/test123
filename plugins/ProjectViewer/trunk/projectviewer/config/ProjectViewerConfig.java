@@ -75,12 +75,14 @@ public final class ProjectViewerConfig {
     public static final String SHOW_FOLDERS_OPT           = "projectviewer.show_folder_tree";
     public static final String SHOW_FILES_OPT             = "projectviewer.show_files_tree";
     public static final String SHOW_WFILES_OPT            = "projectviewer.show_working_files_tree";
+	public static final String SHOW_COMPACT_OPT            = "projectviewer.show_compact_tree";
 
 	public static final String USER_CONTEXT_MENU			= "projectviewer.user_context_menu";
 
 	public static final int ASK_ALWAYS	= 0;
 	public static final int ASK_ONCE	= 1;
 	public static final int ASK_NEVER	= 2;
+	public static final int AUTO_IMPORT	= 3;
 
     private static final ProjectViewerConfig config = new ProjectViewerConfig();
 
@@ -92,7 +94,8 @@ public final class ProjectViewerConfig {
     public static ProjectViewerConfig getInstance() {
         return config;
     }
-     //}}}
+
+	//}}}
 
 	//{{{ Instance variables
 
@@ -105,6 +108,7 @@ public final class ProjectViewerConfig {
     private boolean showFoldersTree         = true;
     private boolean showFilesTree           = true;
     private boolean showWorkingFilesTree    = true;
+	private boolean showCompactTree		    = true;
 	private boolean useInfoViewer			= false;
 	private boolean useSystemIcons			= false;
 
@@ -167,7 +171,7 @@ public final class ProjectViewerConfig {
 				}
 			}
 		}
-		
+
 		// instance initialization
         listeners = new ArrayList();
 
@@ -216,6 +220,12 @@ public final class ProjectViewerConfig {
         if (tmp != null) {
             setShowWorkingFilesTree("true".equalsIgnoreCase(tmp));
         }
+
+        // show_compact_tree
+        tmp = props.getProperty(SHOW_COMPACT_OPT);
+        //if (tmp != null) { not required
+            setShowCompactTree("true".equalsIgnoreCase(tmp));
+        //}
 
 		// ask_import
         tmp = props.getProperty(ASK_IMPORT_OPT);
@@ -279,7 +289,7 @@ public final class ProjectViewerConfig {
 
     public void setAskImport(int newAskImport) {
         int old = this.askImport;
-        if (newAskImport > ASK_NEVER || newAskImport < ASK_ALWAYS) {
+        if (newAskImport > AUTO_IMPORT || newAskImport < ASK_ALWAYS) {
 			askImport = ASK_ALWAYS;
 		} else {
 			this.askImport = newAskImport;
@@ -330,6 +340,12 @@ public final class ProjectViewerConfig {
         boolean old = this.showWorkingFilesTree;
         this.showWorkingFilesTree = newShowWorkingFilesTree;
         firePropertyChanged(SHOW_WFILES_OPT, old, newShowWorkingFilesTree);
+    }
+
+    public void setShowCompactTree(boolean newValue) {
+        boolean old = this.showCompactTree;
+        this.showCompactTree = newValue;
+        firePropertyChanged(SHOW_COMPACT_OPT, old, newValue);
     }
 
     public boolean getCloseFiles() {
@@ -383,6 +399,10 @@ public final class ProjectViewerConfig {
 
     public boolean getShowWorkingFilesTree() {
         return showWorkingFilesTree;
+    }
+
+    public boolean getShowCompactTree() {
+        return showCompactTree;
     }
 
 	// {{{ property useInfoViewer
@@ -449,6 +469,7 @@ public final class ProjectViewerConfig {
         props.setProperty(SHOW_FOLDERS_OPT, String.valueOf(showFoldersTree));
         props.setProperty(SHOW_FILES_OPT, String.valueOf(showFilesTree));
         props.setProperty(SHOW_WFILES_OPT, String.valueOf(showWorkingFilesTree));
+		props.setProperty(SHOW_COMPACT_OPT, String.valueOf(showCompactTree));
 
         props.setProperty(IMPORT_EXTS_OPT, importExts);
         props.setProperty(EXCLUDE_DIRS_OPT, excludeDirs);
@@ -488,22 +509,16 @@ public final class ProjectViewerConfig {
 
     } //}}}
 
-	//{{{ isJEdit42()
-	/** Returns whether we're using jEdit 4.2 (pre5 or better). */
-	public boolean isJEdit42() {
-		return MiscUtilities.compareStrings(jEdit.getBuild(), "04.02.05.00", false) >= 0;
-	} //}}}
-
 	//{{{ isInfoViewerAvailable()
 	public boolean isInfoViewerAvailable() {
 		return (jEdit.getPlugin(INFOVIEWER_PLUGIN) != null);
 	} //}}}
-	
+
 	//{{{ isErrorListAvailable()
 	public boolean isErrorListAvailable() {
 		return (jEdit.getPlugin(ERRORLIST_PLUGIN) != null);
 	} //}}}
-	
+
 	//}}}
 
 	//{{{ Private Methods

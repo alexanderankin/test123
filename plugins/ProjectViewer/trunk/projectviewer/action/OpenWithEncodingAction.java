@@ -88,11 +88,13 @@ public class OpenWithEncodingAction extends Action {
 	/** Enable action only for openable nodes. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null && node.canOpen());
-		Buffer b = jEdit.getBuffer(node.getNodePath());
-		if (b == null) {
-			((JMenu)cmItem).setText(jEdit.getProperty("projectviewer.action.open_with_encoding"));
-		} else {
-			((JMenu)cmItem).setText(jEdit.getProperty("projectviewer.action.set_encoding"));			
+		if (node != null && node.canOpen()) {
+			Buffer b = jEdit.getBuffer(node.getNodePath());
+			if (b == null) {
+				((JMenu)cmItem).setText(jEdit.getProperty("projectviewer.action.open_with_encoding"));
+			} else {
+				((JMenu)cmItem).setText(jEdit.getProperty("projectviewer.action.set_encoding"));
+			}
 		}
 	} //}}}
 

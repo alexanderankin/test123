@@ -27,6 +27,7 @@ import java.awt.Component;
 import java.awt.event.ActionEvent;
 
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -34,6 +35,7 @@ import org.gjt.sp.jedit.search.SearchDialog;
 import org.gjt.sp.jedit.search.DirectoryListSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 
+import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 //}}}
 
@@ -54,9 +56,23 @@ public class SearchAction extends Action {
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		VPTNode node = viewer.getSelectedNode();
-		SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
-		SearchDialog.showSearchDialog(viewer.getView(), null, SearchDialog.DIRECTORY);
+		VPTNode node = null;
+		if (viewer != null) {
+			node = viewer.getSelectedNode();
+		}
+		if (node == null) {
+			node = ProjectViewer.getActiveProject(jEdit.getActiveView());
+		}
+		if (node != null) {
+			SearchAndReplace.setSearchFileSet(new NodeFileSet(node));
+			SearchDialog.showSearchDialog(jEdit.getActiveView(), null, SearchDialog.DIRECTORY);
+		} else {
+			JOptionPane.showMessageDialog(
+					(viewer != null) ? (Component) viewer : (Component) jEdit.getActiveView(),
+					jEdit.getProperty("projectviewer.acrion.search.error"),
+					jEdit.getProperty("projectviewer.error"),
+					JOptionPane.ERROR_MESSAGE);
+		}
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method

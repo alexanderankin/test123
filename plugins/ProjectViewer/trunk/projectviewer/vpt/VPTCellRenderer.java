@@ -24,6 +24,7 @@ import java.awt.Graphics;
 import java.awt.Component;
 import java.awt.FontMetrics;
 
+import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;
@@ -48,7 +49,7 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 	private boolean underlined;
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +VPTCellRenderer() : <init>
 
 	public VPTCellRenderer() {
 		setBorder(new EmptyBorder(1,0,1,0));
@@ -56,7 +57,7 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 
  	//}}}
 
-	//{{{ getTreeCellRendererComponent(JTree, Object) method
+	//{{{ +getTreeCellRendererComponent(JTree, Object, boolean, boolean, boolean, int, boolean) : Component
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean sel, boolean expanded,
 			boolean leaf, int row,
@@ -76,7 +77,7 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 		return this;
 	} //}}}
 
-	//{{{ paintComponent(Graphics) method
+	//{{{ +paintComponent(Graphics) : void
 	public void paintComponent(Graphics g) {
 		if(underlined) {
 			FontMetrics fm = getFontMetrics(getFont());

@@ -15,6 +15,8 @@
 		by the "install.dir" property for compilation.
 	- set the "docs-proc.target" to "xalan" to use Xalan instead of xsltproc
 	  to generate the documentation.
+	- if bulding a release version using the "build" taget, remember to create
+	  the documentation first by calling the "docs" target.
 -->
 
 	<!-- ================================================ -->
@@ -28,7 +30,7 @@
 	<property name="jedit.install.dir" value="/usr/share/jedit/recent"/>
 	<property name="install.dir"			 value="${jedit.install.dir}/jars" />
 	<property name="jedit.user.home"   value="${user.home}/.jedit" />
-	<property name="pvversion"         value="2.0.3"/>
+	<property name="pvversion"         value="2.0.99"/>
 
 	<property name="jar.name"         value="${ant.project.name}.jar"/>
 	<property name="docs-proc.target" value="xsltproc"/>
