@@ -30,6 +30,7 @@ import org.gjt.sp.util.Log;
 
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.config.ProjectViewerOptionsPane;
+import projectviewer.config.ProjectAppConfig;
 
 /** A Project Viewer plugin for jEdit.
  *
@@ -145,7 +146,11 @@ public final class ProjectPlugin extends EBPlugin {
      *  Add out option pane to jEdit's option dialog.
      */
     public void createOptionPanes(OptionsDialog optionsDialog) {
-        optionsDialog.addOptionPane(new ProjectViewerOptionsPane("ProjectViewer"));
+	OptionGroup optionGroup = new OptionGroup(NAME);
+	optionGroup.addOptionPane(new ProjectViewerOptionsPane("ProjectViewer"));
+	optionGroup.addOptionPane(new ProjectAppConfig("projectviewer.appconfig"));
+	optionsDialog.addOptionGroup(optionGroup);
+        //optionsDialog.addOptionPane();
     }
 
 	/** Perform a check for old project properties files.
