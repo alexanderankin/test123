@@ -72,7 +72,10 @@ public abstract class Importer implements Runnable {
 
 	protected VPTNode		selected;
 	protected VPTProject	project;
-	private	 boolean	noThread;
+	private	 boolean		noThread;
+
+	/** The list of removed files, if any, for event firing purposes. */
+	protected ArrayList		removed;
 
 	/**
 	 *	An action to be executed after the import occurs. It will be executed
@@ -208,7 +211,8 @@ public abstract class Importer implements Runnable {
 			VPTNode n = findDirectory(curr, where, false);
 			if (n == null) {
 				n = new VPTDirectory(curr);
-				if (where == project) {
+				if (added.size() == 0) {
+					selected = where;
 					added.add(n);
 				} else {
 					where.insert(n, where.findIndexForChild(n));
@@ -261,8 +265,12 @@ public abstract class Importer implements Runnable {
 									importNode(n);
 								}
 								ProjectViewer.nodeStructureChangedFlat(project);
-								if (VPTProject.hasListeners())
-									fireProjectEvent(c);
+								if (project.hasListeners()) {
+									if (c instanceof ArrayList)
+										fireProjectEvent((ArrayList)c);
+									else
+										fireProjectEvent(new ArrayList(c));
+								}
 							}
 						});
 					} catch (InterruptedException ie) {
@@ -302,11 +310,11 @@ public abstract class Importer implements Runnable {
 
 	//{{{ fireProjectEvent(Collection) method
 	/** Fires an event based on the imported file(s). */
-	private void fireProjectEvent(Collection added) {
-		if (added.size() == 1) {
+	private void fireProjectEvent(ArrayList added) {
+		if (added.size() == 1 && removed == null) {
 			VPTNode node = (VPTNode) added.iterator().next();
 			if (node.isFile()) {
-				VPTProject.fireFileAdded(project, (VPTFile) node);
+				project.fireFileAdded((VPTFile) node);
 			}
 		} else {
 			ArrayList files = new ArrayList();
@@ -318,10 +326,14 @@ public abstract class Importer implements Runnable {
 					collectFiles(n.children(), files);
 				}
 			}
-			if (files.size() == 1) {
-				VPTProject.fireFileAdded(project, (VPTFile) files.get(0));
-			} else if (files.size() > 0) {
-				VPTProject.fireFilesAdded(project, files);
+			if (files.size() == 1 && (removed == null || removed.size() == 0)) {
+				project.fireFileAdded((VPTFile) files.get(0));
+			} else {
+				cleanUpLists(files);
+				if (files.size() > 0 || (removed != null && removed.size() > 0)) {
+					if (files.size() == 0) files = null;
+					project.fireFilesChanged(files, removed);
+				}
 			}
 		}
 	} //}}}
@@ -336,6 +348,27 @@ public abstract class Importer implements Runnable {
 			} else if (n.getAllowsChildren()) {
 				collectFiles(n.children(), lst);
 			}
+		}
+	} //}}}
+
+	//{{{ cleanUpLists(ArrayList) method
+	/** Cleans up the lists of added and removed files by deleting duplicates. */
+	private void cleanUpLists(ArrayList added) {
+		// its not a very nice algorithm, but, since the lists aren't sorted...
+		if (added != null && removed != null) {
+			VPTNode.VPTNodeComparator c = new VPTProject.VPTNodeComparator();
+			for (Iterator i = added.iterator(); i.hasNext(); ) {
+				Object o = i.next();
+				for (Iterator j = removed.iterator(); j.hasNext(); ) {
+					Object o2 = j.next();
+					if (c.compare(o, o2) == 0) {
+						j.remove();
+						i.remove();
+						break;
+					}
+				}
+			}
+			if (removed.size() == 0) removed = null;
 		}
 	} //}}}
 
