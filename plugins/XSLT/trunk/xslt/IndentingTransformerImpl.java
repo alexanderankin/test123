@@ -62,7 +62,6 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
   /** buffer to hold character data */
   private StringBuffer buffer = new StringBuffer();
-  private StringBuffer preCommentSpaceBuffer = new StringBuffer();
 
   private char[] newLine = {'\n'};
 
@@ -132,8 +131,6 @@ public class IndentingTransformerImpl extends IndentingTransformer {
   public void comment(char[] chars, int start, int len) throws SAXException {
     flush();
     super.characters(newLine, 0, 1);
-    char[] preCommentSpace = preCommentSpaceBuffer.toString().toCharArray();
-    super.characters(preCommentSpace, 0, preCommentSpace.length);
     super.comment(chars, start, len);
   }
 
@@ -169,10 +166,8 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
         boolean stripNewLineFromStart = true;
 
-        preCommentSpaceBuffer.setLength(0);
         while(start < end && Character.isWhitespace(array[start])) {
           if(Character.isSpaceChar(array[start])) {
-            preCommentSpaceBuffer.append(' ');
             start++;
           } else if(stripNewLineFromStart) {
             start++;
@@ -183,11 +178,9 @@ public class IndentingTransformerImpl extends IndentingTransformer {
         }
 
         if(start < end && Character.isWhitespace(array[end - 1])) {
-          preCommentSpaceBuffer.setLength(0);
 
           while(start < end && Character.isWhitespace(array[end - 1])) {
             if(Character.isSpaceChar(array[end - 1])) {
-              preCommentSpaceBuffer.append(' ');
               end--;
             } else {
               break;
@@ -215,6 +208,8 @@ public class IndentingTransformerImpl extends IndentingTransformer {
 
 
   public void startCDATA() throws SAXException {
+    flush();
+    indent();
   }
 
 
