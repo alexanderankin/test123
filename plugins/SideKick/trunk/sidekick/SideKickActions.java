@@ -153,14 +153,8 @@ public class SideKickActions
 
 		JEditTextArea textArea = view.getTextArea();
 
-		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
-		if(path == null)
-		{
-			view.getToolkit().beep();
-			return;
-		}
-		Asset asset = (Asset)((DefaultMutableTreeNode)path
-			.getLastPathComponent()).getUserObject();
+		Asset asset = data.getAssetAtPosition(
+			textArea.getCaretPosition());
 		textArea.setCaretPosition(asset.end.getOffset());
 		textArea.addToSelection(
 			new Selection.Range(

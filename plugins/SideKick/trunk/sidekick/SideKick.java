@@ -157,22 +157,9 @@ class SideKick implements EBComponent
 	//{{{ setParser() method
 	void setParser()
 	{
-		EditPane editPane = view.getEditPane();
-		if(parser != null)
-		{
-			parser.deactivate(this.editPane);
-			this.editPane = null;
-		}
-
+		deactivateParser();
 		parser = SideKickPlugin.getParserForBuffer(buffer);
-		if(parser != null)
-		{
-			addBufferChangeListener(buffer);
-			this.editPane = editPane;
-			parser.activate(editPane);
-		}
-		else
-			removeBufferChangeListener(buffer);
+		activateParser();
 
 		if(buffer.getBooleanProperty(
 			"sidekick.buffer-change-parse")
@@ -348,12 +335,9 @@ class SideKick implements EBComponent
 		{
 			// check if this is the currently focused edit pane
 			if(editPane == editPane.getView().getEditPane())
-				removeBufferChangeListener(this.buffer);
-
-			if(parser != null)
 			{
-				parser.deactivate(this.editPane);
-				this.editPane = null;
+				removeBufferChangeListener(this.buffer);
+				deactivateParser();
 			}
 		}
 		else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
@@ -362,21 +346,11 @@ class SideKick implements EBComponent
 			if(editPane == view.getEditPane())
 			{
 				removeBufferChangeListener(this.buffer);
-
-				if(parser != null)
-				{
-					parser.deactivate(this.editPane);
-					this.editPane = null;
-				}
+				deactivateParser();
 
 				Buffer buffer = editPane.getBuffer();
 				parser = SideKickPlugin.getParserForBuffer(buffer);
-				if(parser != null)
-				{
-					addBufferChangeListener(buffer);
-					this.editPane = editPane;
-					parser.activate(editPane);
-				}
+				activateParser();
 
 				if(buffer.getBooleanProperty(
 					"sidekick.buffer-change-parse")
@@ -398,18 +372,13 @@ class SideKick implements EBComponent
 			&& vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
 		{
 			removeBufferChangeListener(this.buffer);
-			if(parser != null)
-				parser.deactivate(this.editPane);
+			deactivateParser();
 
 			Buffer buffer = view.getBuffer();
 			this.editPane = view.getEditPane();
 
 			parser = SideKickPlugin.getParserForBuffer(buffer);
-			if(parser != null)
-			{
-				addBufferChangeListener(buffer);
-				parser.activate(editPane);
-			}
+			activateParser();
 
 			if(buffer.getBooleanProperty(
 				"sidekick.buffer-change-parse")
@@ -425,7 +394,35 @@ class SideKick implements EBComponent
 				showNotParsedMessage();
 		}
 	} //}}}
-	
+
+	//{{{ deactivateParser() method
+	private void deactivateParser()
+	{
+		if(parser != null)
+		{
+			if(this.editPane == null)
+				Log.log(Log.ERROR,this,"Null editPane!");
+			else
+				parser.deactivate(this.editPane);
+			this.editPane = null;
+		}
+	} //}}}
+
+	//{{{ activateParser() method
+	private void activateParser()
+	{
+		EditPane editPane = view.getEditPane();
+
+		if(parser != null)
+		{
+			addBufferChangeListener(buffer);
+			this.editPane = editPane;
+			parser.activate(editPane);
+		}
+		else
+			removeBufferChangeListener(buffer);
+	} //}}}
+
 	//}}}
 
 	//{{{ Inner classes
