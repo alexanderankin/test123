@@ -30,6 +30,7 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
@@ -38,22 +39,24 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
 
 
-public class JDiffPlugin
-    extends EBPlugin
+public class JDiffPlugin extends EBPlugin
 {
-
-    public static Color changedLineColor;
-    public static Color deletedLineColor;
-    public static Color insertedLineColor;
-    public static Color invalidLineColor;
-
-    public static Color changedHunkColor;
-    public static Color deletedHunkColor;
-    public static Color insertedHunkColor;
-    public static Color invalidHunkColor;
+    public static Color overviewChangedColor;
+    public static Color overviewDeletedColor;
+    public static Color overviewInsertedColor;
+    public static Color overviewInvalidColor;
 
     public static Color leftCursorColor;
     public static Color rightCursorColor;
+
+    public static Color highlightChangedColor;
+    public static Color highlightDeletedColor;
+    public static Color highlightInsertedColor;
+    public static Color highlightInvalidColor;
+
+    public static Color selectedHighlightChangedColor;
+    public static Color selectedHighlightDeletedColor;
+    public static Color selectedHighlightInsertedColor;
 
     static {
         propertiesChanged();
@@ -77,7 +80,15 @@ public class JDiffPlugin
 
 
     public void createOptionPanes(OptionsDialog dialog) {
-        dialog.addOptionPane(new JDiffOptionPane());
+        OptionGroup jdiffGroup = new OptionGroup(
+            jEdit.getProperty("options.jdiff.label")
+        );
+
+        jdiffGroup.addOptionPane(new JDiffOptionPane());
+        jdiffGroup.addOptionPane(new JDiffOverviewOptionPane());
+        jdiffGroup.addOptionPane(new JDiffHighlightOptionPane());
+
+        dialog.addOptionGroup(jdiffGroup);
     }
 
 
@@ -110,48 +121,51 @@ public class JDiffPlugin
 
 
     public static void propertiesChanged() {
-        Color changedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.changed-color", "#FFCC66")
+        // Overview colors
+        overviewChangedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.overview-changed-color", "#FFCC66")
         );
-        Color deletedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.deleted-color", "#FF6666")
+        overviewDeletedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.overview-deleted-color", "#FF6666")
         );
-        Color insertedColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.inserted-color", "#99CC66")
+        overviewInsertedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.overview-inserted-color", "#99CC66")
         );
-        Color invalidColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.invalid-color", "#CCCCCC")
+        overviewInvalidColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.overview-invalid-color", "#CCCCCC")
         );
-
-        if (jEdit.getBooleanProperty("jdiff.brighter-highlight", true)) {
-            changedLineColor  = changedColor.brighter();
-            deletedLineColor  = deletedColor.brighter();
-            insertedLineColor = insertedColor.brighter();
-            invalidLineColor  = invalidColor.brighter();
-        } else {
-            changedLineColor  = changedColor;
-            deletedLineColor  = deletedColor;
-            insertedLineColor = insertedColor;
-            invalidLineColor  = invalidColor;
-        }
-
-        if (jEdit.getBooleanProperty("jdiff.darker-overview", false)) {
-            changedHunkColor  = changedColor.darker();
-            deletedHunkColor  = deletedColor.darker();
-            insertedHunkColor = insertedColor.darker();
-            invalidHunkColor  = invalidColor.darker();
-        } else {
-            changedHunkColor  = changedColor;
-            deletedHunkColor  = deletedColor;
-            insertedHunkColor = insertedColor;
-            invalidHunkColor  = invalidColor;
-        }
 
         leftCursorColor = GUIUtilities.parseColor(
             jEdit.getProperty("jdiff.left-cursor-color", "#000000")
         );
         rightCursorColor = GUIUtilities.parseColor(
             jEdit.getProperty("jdiff.right-cursor-color", "#000000")
+        );
+
+        // Highlight colors
+        highlightChangedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.highlight-changed-color", "#FFFF90")
+        );
+        highlightDeletedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.highlight-deleted-color", "#FF9090")
+        );
+        highlightInsertedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.highlight-inserted-color", "#D9FF90")
+        );
+
+        highlightInvalidColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.highlight-invalid-color", "#909090")
+        );
+
+        // Selected highlight colors
+        selectedHighlightChangedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.selected-highlight-changed-color", "#FFCC66")
+        );
+        selectedHighlightDeletedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.selected-highlight-deleted-color", "#FF6666")
+        );
+        selectedHighlightInsertedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.selected-highlight-inserted-color", "#99CC66")
         );
     }
 

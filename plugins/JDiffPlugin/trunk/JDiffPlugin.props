@@ -37,27 +37,53 @@ jdiff.diff-normal-output.label=Normal Diff Output
 jdiff.ignore-case=false
 jdiff.trim-whitespace=false
 jdiff.ignore-whitespace=false
-jdiff.changed-color=\#FFCC66
-jdiff.deleted-color=\#FF6666
-jdiff.inserted-color=\#99CC66
-jdiff.invalid-color=\#CCCCCC
-jdiff.brighter-highlight=true
-jdiff.darker-overview=false
+
+jdiff.overview-changed-color=\#FFCC66
+jdiff.overview-deleted-color=\#FF6666
+jdiff.overview-inserted-color=\#99CC66
+jdiff.overview-invalid-color=\#CCCCCC
 jdiff.left-cursor-color=\#000000
 jdiff.right-cursor-color=\#000000
 
+jdiff.highlight-changed-color=\#FFFF90
+jdiff.highlight-deleted-color=\#FF9090
+jdiff.highlight-inserted-color=\#D9FF90
+jdiff.highlight-invalid-color=\#909090
+
+jdiff.selected-highlight-changed-color=\#FFCC66
+jdiff.selected-highlight-deleted-color=\#FF6666
+jdiff.selected-highlight-inserted-color=\#99CC66
+jdiff.selected-highlight-invalid-color=\#CCCCCC
+
+# Option panes titles
 options.jdiff.label=JDiff
+options.jdiff-general.label=General
+options.jdiff-overview.label=Overview colors
+options.jdiff-highlight.label=Highlight colors
+
 options.jdiff.ignore-case=Ignore case
 options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
 options.jdiff.ignore-whitespace=Ignore all whitespace
-options.jdiff.changed-color=Changed lines color:\ 
-options.jdiff.deleted-color=Deleted lines color:\ 
-options.jdiff.inserted-color=Inserted lines color:\ 
-options.jdiff.invalid-color=Invalid lines color:\ 
-options.jdiff.brighter-highlight=Highlights use brighter colors
-options.jdiff.darker-overview=Overviews use darker colors
+
+options.jdiff.overview=Overview colors:
+options.jdiff.overview-changed-color=Changed lines color:\ 
+options.jdiff.overview-deleted-color=Deleted lines color:\ 
+options.jdiff.overview-inserted-color=Inserted lines color:\ 
+options.jdiff.overview-invalid-color=Invalid lines color:\ 
 options.jdiff.left-cursor-color=Left cursor color:\ 
 options.jdiff.right-cursor-color=Right cursor color:\ 
+
+options.jdiff.highlight=Highlight colors:
+options.jdiff.highlight-changed-color=Changed lines color:\ 
+options.jdiff.highlight-deleted-color=Deleted lines color:\ 
+options.jdiff.highlight-inserted-color=Inserted lines color:\ 
+options.jdiff.highlight-invalid-color=Invalid lines color:\ 
+
+options.jdiff.selected-highlight=Selected highlight colors:
+options.jdiff.selected-highlight-changed-color=Changed lines color:\ 
+options.jdiff.selected-highlight-deleted-color=Deleted lines color:\ 
+options.jdiff.selected-highlight-inserted-color=Inserted lines color:\ 
+options.jdiff.selected-highlight-invalid-color=Invalid lines color:\ 
 
 # Messages
 jdiff.identical-files.title=Identical files

@@ -70,8 +70,8 @@ public class DiffGlobalPhysicalOverview extends DiffOverview
         Rectangle cursor = new Rectangle(inner.x + inner.width / 2 - 1, inner.y,
             2, 0);
 
-        Color leftColor  = JDiffPlugin.invalidHunkColor;
-        Color rightColor = JDiffPlugin.invalidHunkColor;
+        Color leftColor  = JDiffPlugin.overviewInvalidColor;
+        Color rightColor = JDiffPlugin.overviewInvalidColor;
 
         gfx.setColor(Color.black);
         gfx.drawRect(left.x - 1, left.y - 1, left.width + 1, left.height + 1);
@@ -90,14 +90,14 @@ public class DiffGlobalPhysicalOverview extends DiffOverview
             rightOffset = hunk.line1;
 
             if (hunk.inserted == 0 && hunk.deleted != 0) { // DELETE
-               leftColor  = JDiffPlugin.deletedHunkColor;
-               rightColor = JDiffPlugin.invalidHunkColor;
+               leftColor  = JDiffPlugin.overviewDeletedColor;
+               rightColor = JDiffPlugin.overviewInvalidColor;
             } else if (hunk.inserted != 0 && hunk.deleted == 0) { // INSERT
-               leftColor  = JDiffPlugin.invalidHunkColor;
-               rightColor = JDiffPlugin.insertedHunkColor;
+               leftColor  = JDiffPlugin.overviewInvalidColor;
+               rightColor = JDiffPlugin.overviewInsertedColor;
             } else { // CHANGE
-               leftColor  = JDiffPlugin.changedHunkColor;
-               rightColor = JDiffPlugin.changedHunkColor;
+               leftColor  = JDiffPlugin.overviewChangedColor;
+               rightColor = JDiffPlugin.overviewChangedColor;
             }
 
             left.y  = inner.y + (int) Math.round(leftOffset * pxlPerLine);
