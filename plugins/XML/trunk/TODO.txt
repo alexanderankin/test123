@@ -1,6 +1,5 @@
 XML 0.11:
 
-- foo> in completion popup -- hide the popup
 - complete <foo / to <foo />
 - why is the top level tag end off by 1?
 - html parser: empty tags
@@ -18,7 +17,6 @@ XML 0.11:
 [error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
 [error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
 [error]         at projectviewer.ProjectViewer.openProject(Unknown Source)
-- completion popup width
 - html files before parsing complete -- don't show CDATA in popup
 - fix IBM JDK problem
 - misplaced closing tags break everything
