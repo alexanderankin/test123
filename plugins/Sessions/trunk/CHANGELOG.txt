@@ -3,6 +3,7 @@ VERSION 1.0.1
 - new option to add the session toolbar at the top of the BufferList plugin
   (needs BufferList 0.8 or higher)
 - fixed toolbar icons
+- fixed #461523: Session files occasionally get corrupted
 - requires jEdit 4.0 or higher
 
 
