@@ -8,6 +8,8 @@
   <!-- Property definitions                             -->
   <!-- ================================================ -->
   <property file="build.properties"/>
+  
+  <property name="version"          value="1.0.2"/>
 
   <property name="build"            value="build"/>
   <property name="build.classes"    value="${build}/classes"/>
@@ -64,9 +66,9 @@
 
     <copy todir="${build.classes}">
       <fileset dir="${src.main}">
-        <include name="**/*.props"/>
-        <include name="**/*.properties"/>
-        <include name="**/icons/*.gif"/>
+        <include name="projectviewer/**/*.props"/>
+        <include name="projectviewer/**/*.properties"/>
+        <include name="projectviewer/**/icons/*.gif"/>
       </fileset>
     </copy>
     
@@ -91,7 +93,7 @@
   <target name="dist"
           depends="build"
           description="Build a distribution">
-    <zip zipfile="ProjectViewer.zip">
+    <zip zipfile="ProjectViewer-${version}.zip">
       <fileset dir="${build}">
         <include name="ProjectViewer/**"/>
         <include name="ProjectViewer.jar"/>
@@ -104,7 +106,7 @@
   <target name="deploy"
           depends="dist"
           description="Deploy the plugin">
-    <unzip src="ProjectViewer.zip" dest="${jedit.user.home}/jars"/>
+    <unzip src="ProjectViewer-${version}.zip" dest="${jedit.user.home}/jars"/>
   </target>
   
   
@@ -137,7 +139,11 @@
   <target name="clean"
           description="Cleans project directories">
     <delete dir="${build}"/>
-    <delete file="ProjectViewer.zip"/>
+    <delete>
+      <fileset dir=".">
+        <include name="ProjectViewer-*.zip"/>
+      </fileset>
+    </delete>
   </target>
 
 </project>
