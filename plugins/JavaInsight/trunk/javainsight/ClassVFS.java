@@ -29,9 +29,11 @@ import de.fub.bytecode.classfile.JavaClass;
 import java.awt.Component;
 
 import java.io.IOException;
-import java.io.File;
 import java.io.InputStream;
 import java.io.ByteArrayInputStream;
+import java.io.OutputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
@@ -98,7 +100,13 @@ public class ClassVFS extends ByteCodeVFS {
                 this.dumpCode(sb, java_class.getMethods(), verbose);
             }
 
-            return new ByteArrayInputStream(sb.toString().getBytes());
+            ByteArrayOutputStream baOut = new ByteArrayOutputStream();
+            OutputStream out = new NewlineOutputFilter(new BufferedOutputStream(baOut));
+
+            out.write(sb.toString().getBytes());
+            out.close();
+
+            return new ByteArrayInputStream(baOut.toByteArray());
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
         } catch (Exception e) {
