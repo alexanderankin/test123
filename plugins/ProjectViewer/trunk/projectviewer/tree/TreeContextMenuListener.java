@@ -16,6 +16,8 @@
 package projectviewer.tree;
 
 // Import Swing/AWT
+import java.io.File;
+
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.ActionEvent;
@@ -134,7 +136,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
         } else if (src == renameDir) {
             
         } else if (src == renameFile) {
-            
+            renameFile();
         } else if (src == removeProject ||
                    src == removeDir ||
                    src == removeFile ||
@@ -260,5 +262,42 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
         deleteMulti.addActionListener(this);
         multipleSelMenu.add(deleteMulti);
         
+    }
+    
+    /** 
+     *  Renames the currently selected file in the viewer, both in the project
+     *  view and on disk. To update the view, the file is removed from the
+     *  project, and a new ProjectFile is added.
+     */
+    private void renameFile() {
+        ProjectFile file = (ProjectFile) viewer.getSelectedNode();
+        String newName = (String)
+            JOptionPane.showInputDialog(
+                viewer,
+                "Enter the new name of the file:",
+                "Rename file",
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                file.toFile().getName()
+            );
+            
+        if (newName != null) {
+            Project p = viewer.getCurrentProject();
+            
+            File oldFile = file.toFile();
+            File newFile = new File(oldFile.getParent() + File.separator + newName);
+            if (!oldFile.renameTo(newFile)) {
+                JOptionPane.showMessageDialog(
+                    viewer,
+                    "Could not rename selected file!",
+                    "Error",
+                    JOptionPane.ERROR_MESSAGE
+                );
+            }
+            
+            p.removeFile(file);
+            p.importFile(new ProjectFile(newFile.getAbsolutePath()));
+        }
     }
 }
