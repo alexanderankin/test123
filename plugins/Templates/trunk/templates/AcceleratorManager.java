@@ -29,6 +29,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
+import gnu.regexp.*;
 
 /**
  * Manages keyword expansion of templates.
@@ -41,8 +42,23 @@ public class AcceleratorManager
    public final static String KEYWORD_MAPPINGS_FILE = "accelerator-mappings";
 
    private static AcceleratorManager instance;
+   
+   private static final String mappingRE = "(.*)\\.(.*)=(.*)";
+   private static RE acceleratorFilter = null;
 
+   /**
+    * The mappings member contains a HashMap for each mode that has at least  
+	* one defined accelerator. Each of these HashMaps maps the accelerator 
+	* name to the path of the template file, relative to the templates 
+	* directory.
+	*/
    private Map mappings;
+   
+   /**
+    * The dirtyFlag member is used to determine whether the accelerator 
+	* mappings have been updated, and need to be saved to disk.
+	*/
+   private boolean dirtyFlag = false;
 
    /**
     * Create a new <code>AcceleratorManager</code>.
@@ -51,6 +67,20 @@ public class AcceleratorManager
    {
       mappings = new HashMap();
       loadAcceleratorMappings();
+   }
+   
+   /**
+    * Set the dirtyFlag to the desired value.
+	*/
+   public void setDirtyFlag(boolean isDirty) {
+	   dirtyFlag = isDirty;
+   }
+   
+   /**
+    * Returns the state of the dirtyFlag.
+	*/
+   public boolean isDirty() {
+	   return dirtyFlag; 
    }
 
    /**
@@ -100,6 +130,7 @@ public class AcceleratorManager
          mappings.put(mode, modeMap);
       }
       modeMap.put(accelerator, templatePath);
+	  setDirtyFlag(true);
    }
 
    /**
@@ -112,6 +143,7 @@ public class AcceleratorManager
          return;
       }
       modeMap.remove(accelerator);
+	  setDirtyFlag(true);
    }
 
    /**
@@ -160,32 +192,40 @@ public class AcceleratorManager
     */
    private void loadAcceleratorMappings()
    {
-      DataInputStream in = null;
+	  BufferedReader in = null;
       File mappingsFile = new File(getMappingsFilePath());
       if (!mappingsFile.exists()) {
          return;
       }
-      try {
-         in = new DataInputStream(new FileInputStream(mappingsFile));
-         int modeCount = in.readInt();
-         for (int i=0; i<modeCount; i++) {
-            String mode = in.readUTF();
-            int acceleratorCount = in.readInt();
-            Map modeMap = (Map) mappings.get(mode);
-            if (modeMap == null) {
-               modeMap = new HashMap(acceleratorCount);
-               mappings.put(mode, modeMap);
-            }
-            for (int j=0; j<acceleratorCount; j++) {
-               String accelerator = in.readUTF();
-               String templatePath = in.readUTF();
-               modeMap.put(accelerator, templatePath);
-            }
-         }
-      } catch (IOException e) {
+	  if (acceleratorFilter == null) {
+      	try {
+      		acceleratorFilter = new RE(mappingRE,RE.REG_ICASE);
+      	} catch (gnu.regexp.REException e) { }		// this shouldn't happen
+	  }
+	  try {
+         in = new BufferedReader(new FileReader(mappingsFile));
+		 String line = null;
+		 String modeName = null;
+		 String acceleratorName = null;
+		 String acceleratorPath = null;
+		 while ((line = in.readLine()) != null) {
+			REMatch acceleratorMatch = acceleratorFilter.getMatch(line);
+		 	if (acceleratorMatch != null) {
+		 		modeName = acceleratorMatch.toString(1);
+				acceleratorName = acceleratorMatch.toString(2);
+				acceleratorPath = acceleratorMatch.toString(3);
+				addAccelerator(modeName, acceleratorName, acceleratorPath);
+		 	}
+		 }
+		 setDirtyFlag(false);
+	  } catch (IOException e) {
          Log.log(Log.ERROR, this, e);
       } finally {
-         IO.close(in);
+		 try {
+         	in.close();
+		 } catch (IOException ioe) {
+			 Log.log(Log.ERROR, this, ioe);
+		 }
       }
    }
 
@@ -194,26 +234,36 @@ public class AcceleratorManager
     */
    private void saveAcceleratorMappings()
    {
-      DataOutputStream out = null;
+	  // No point in saving the accelerator mappings if nothing has changed
+	  if (!isDirty()) {
+		  return;
+	  }
+	  BufferedWriter out = null; 
       try {
          String filePath = getMappingsFilePath();
-         out = new DataOutputStream(new FileOutputStream(filePath));
-         out.writeInt(mappings.size());
-         for (Iterator i = mappings.entrySet().iterator(); i.hasNext();) {
-            Map.Entry entry = (Map.Entry) i.next();
-            out.writeUTF(entry.getKey().toString());
-            Map modeMap = (Map) entry.getValue();
-            out.writeInt(modeMap.size());
+         out = new BufferedWriter(new FileWriter(filePath));
+		 for (Iterator i = mappings.entrySet().iterator(); i.hasNext();) {
+            Map.Entry modeEntry = (Map.Entry) i.next();
+            String modeName = modeEntry.getKey().toString();
+            Map modeMap = (Map) modeEntry.getValue();
             for (Iterator j = modeMap.entrySet().iterator(); j.hasNext();) {
-               Map.Entry insertEntry = (Map.Entry) j.next();
-               out.writeUTF(insertEntry.getKey().toString());
-               out.writeUTF(insertEntry.getValue().toString());
+               Map.Entry acceleratorEntry = (Map.Entry) j.next();
+               out.write(modeName + "." 
+			   		+ acceleratorEntry.getKey().toString()
+					+ "="
+					+ acceleratorEntry.getValue().toString());
+               out.newLine();
             }
          }
+		 setDirtyFlag(false);
       } catch (IOException e) {
          Log.log(Log.ERROR, this, e);
       } finally {
-         IO.close(out);
+		 try {
+         	out.close();
+		 } catch (IOException ioe) {
+			 Log.log(Log.ERROR, this, ioe);
+		 }
       }
    }
 

@@ -3,9 +3,11 @@ CHANGES file for Templates plugin.
 Version 3.0.0 (???)
 =============================
 ENHANCEMENTS:
-Added support for template labeling via "#template=" statement.
+Added support for template labeling via "## template=" statement.
 Added Calvin's dockable window for template selection.
 Switched to Docbook for help documentation.
+Modified Calvin's AcceleratorManager to use a more readable storage format, very similar to property files.
+Added a dirty flag to AcceleratorManager so that accelerators are saved only if there are changes.
 
 Version 2.9.9 (30-APR-2002)
 =============================
