@@ -8,7 +8,7 @@ plugin.TextToolsPlugin.depend.1=jedit 02.03.02.00
 # Menu
 text-tools.label=TextTools
 text-tools=reverse rot13 - remove-trailing-ws - sort-lines revsort-lines - \
-	format insert-date - transpose-chars transpose-words
+	format insert-date - transpose-chars transpose-words transpose-lines
 reverse.label=Reverse
 rot13.label=Rot13
 remove-trailing-ws.label=Remove Trailing Whitespace
@@ -18,3 +18,4 @@ format.label=Format Text
 insert-date.label=Insert Date
 transpose-chars.label=Transpose Characters
 transpose-words.label=Transpose Words
+transpose-lines.label=Transpose Lines
