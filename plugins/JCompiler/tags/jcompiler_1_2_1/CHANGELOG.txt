@@ -1,0 +1,191 @@
+VERSION 1.2.1
+
+- bugfix: StringIndexOutOfBoundsException if "Show Command Line" is on and
+  a filename contains spaces (Logan Bauer)
+
+
+VERSION 1.2
+
+- new public get methods for properties like $basepath, source dir, output dir,
+  class path, for use from third parties (Mike Dillon)
+- new command "javac" to use the in-VM compiler with any command line
+- now prints a command line ready for use with javac
+- bugfix: NullPointerException if "Show command line" is on
+- bugfix: "Show command line" option didn't show commandline
+- bugfix: options -g and -O were not remembered, JCompiler always compiled with
+  -g and without -O
+- requires jEdit 3.1final or higher, EditBus 0.10 or higher, Console 2.3 or higher
+
+
+VERSION 1.1.4
+
+- no longer replaces the SecurityManager (because it now calls
+  new sun.tools.javac.Main().compile() instead of sun.tools.javac.Main.main()).
+- now compiles on JDK 1.1
+- bugfix: text area no longer looses focus on compile
+- requires jEdit 3.1final or higher, EditBus 0.10 or higher, Console 2.3 or higher
+
+
+VERSION 1.1.3
+
+- bugfix: #410755 (buildtools.JavaUtils.getFullClassname() returned wrong
+  class name for default packages classes)
+- bugfix: didn't wait till save finished
+- bugfix: fixed some error messages
+- does a garbage collection after compilation
+- button for inserting system classpath in "Classpath:" option
+
+
+VERSION 1.1.2
+
+- changed order of tabs in options dialog (because compile options are used
+  more often)
+- bugfix: #407949 (JCompiler hangs with NPE on compile)
+- bugfix: #408474
+
+
+VERSION 1.1.1
+
+- on JDK's >= 1.2, search for the compiler method in <jdkhome>/lib/tools.jar
+  automatically, if it cannot be found on the system classpath.
+  Note, that you no longer have to copy tools.jar around. Please remove it
+  from <jdkhome>/jre/lib/ext/ or jEdit's jars/ directory, if you copied
+  it there once.
+- bugfix: -sourcepath option may not be used on JDK 1.1
+- cleaned up option panes
+- requires jEdit 3.0final or higher, EditBus 0.10 or higher, Console 2.3 or higher
+
+
+VERSION 1.1
+
+- new compiler options "Source path", "Required library path" (Mike Hansen)
+- new compiler option "$basepath", may be substituted in class-, source- and
+  library-path (Mike Hansen)
+- removed "Use CLASSPATH defined when running jEdit" option
+- new menu entry "Options..." for faster access to the JCompiler options
+- requires jEdit 3.0final or higher, EditBus 0.10 or higher, Console 2.3 or higher
+
+
+VERSION 1.0
+
+- parses error messages for '^' column indicator (optionally)
+- second RE for identifying warnings in plugin options
+- can now start compile from a non-java file
+- new option to show command line
+- new option to pass arbitrary options to javac
+- new options to disable "ask for unsaved changes" dialogs
+- some configuration check errors are now shown in Console instead of GUI dialogs.
+- bugfix: compilepkg ("Build package(s)") didn't compile outdated files only
+- switched to new jEdit action API
+- requires jEdit 3.0final or higher, EditBus 0.10 or higher, Console 2.3 or higher
+
+
+VERSION 0.7.2
+
+- bugfix: NPE if compile process completed very fast on JDK 1.1.x
+- bugfix: won't see anything, if JCompilerShell is not started. Now JCompiler
+  is started together with Console (thanks to new Console 2.3 API!)
+- better error messages if tools.jar is missing
+- requires EditBus 0.10, Console 2.3 and jEdit 2.6pre7
+
+
+VERSION 0.7.1
+
+- now recognizes "Notes" as compiler warnings.
+- bugfix: SecurityException and unknown method when run on JDK 1.1.x
+- requires jEdit 2.6pre7 and EditBus 0.9.4 (Console 2.2 and ErrorList 0.11
+  are suggested, but not required)
+
+
+VERSION 0.7.0 (not released)
+
+- uses ErrorList
+- uses Console, JCompiler is a ConsoleShell
+- configurable regular expression for parsing errors
+- uses reflection to call sun.tools.javac.Main.main()
+- removed API doc from distribution (developers can create them for themselves!)
+- use jmk again (like all other plugins), removed other makefiles
+- moved source back to package "jcompiler"
+- show errors incrementally instead after the compile run
+- removed stack trace parser
+- integrated neccessary parts of buildtools, obsoleting the need for the
+  BuildTools plugin
+- tons of bug fixes
+- requires jEdit 2.6pre7 and EditBus 0.9.4 (Console 2.2 and ErrorList 0.11
+  are suggested, but not required)
+
+
+VERSION 0.6 (not released)
+
+- moved to package "net.sourceforge.jedit.jcompiler"
+- use Ant
+- more changes to the stack trace parser
+- ability to use jikes or any other external compiler
+
+
+VERSION 0.4.9
+
+- Updated to use new Option Pane API.
+- (DONE) When you goto compiler on a system with out the destination
+  directory, the compile proceeds correctly but actually nothing happens.
+  Before you actually compile to a directory make sure that it exists.
+- Gives warning message if compiler class (tools.jar) is not in Classpath.
+- Displays error message if nothing to compile.
+- (DONE) Removed keyboard shortcuts from properties file.
+- (DONE) All references to StaticLogger removed.
+- (DONE) Documentation updated
+
+
+VERSION 0.4.8
+
+No Change Log?
+
+
+VERSION 0.4.7 (not released)
+
+- (DONE) set the Thread priority during Thread compiles to Thread.MIN_PRIORITY
+- (DONE) add the support to prompt for a JTextArea and then assume it is a
+  stack trace which you can double click on and decompile the file and view
+  what's up.
+- (DONE) Every once in a file... sun.tools.java.Main throws an NPE.  catch
+  this and print it as a stack trace
+- (DONE) Incorporate the bug fixes sent in.
+- (DONE) an exception is thrown if you double click on no text.
+- (DONE) Uses a StringWriter for output instead of a text file... faster, no
+  exceptions, in memory
+- after this, fix the progress bar,
+- (DONE) Implement a basic progress bar... setting up get's 50% and the other
+  get's 100%
+
+
+VERSION 0.4.2
+
+- (DONE) JCompiler code now under jcompiler
+- (DONE) JDK 1.3 was using the 1.1 Security Manager.
+- (DONE) Remove the "smartcompile" option.  This isn't necessary if I am
+  already doing package compiles
+
+
+VERSION 0.4.0
+
+- (DONE) Migrate to BuildTools and not JavaBuildTools
+- (DONE) BUG when finding .java files they should "END" in .java and not just
+  contain it.
+- (DONE) add a Rebuld Package(s) option that doesn't use the
+  FileChangeController, but calls FileChangeMonitor.getAllFiles()
+- (DONE) Currently "Compile File" is broken.  It doesn't bring up a GUI dialog
+  when compiling files
+- (DONE) Better handle exceptions
+- (DONE) Rebuild Package(s): Rebuild (all packages and all files regardless
+  of whether they need it or not)
+- (DONE) make a -d destination directory option
+- (DONE) remove smart compiler
+- (DONE) place a box around the top MISC options and the bottom CLASSPATH
+  options. Also change the layout manager to be similar to JavaDoc
+
+
+VERSION 0.3.7
+
+- (DONE) add recursive package compile support
+- (DONE) removed shortcuts
+- (DONE) removed stand-alone plugin pulldowns... now off of a submenus
