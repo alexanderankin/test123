@@ -10,17 +10,17 @@
      Shortcuts for actions should *not* be assigned by plugins. -->
 
 <ACTIONS>
-	<!-- Menu action for spell checking the current selection -->
-	<ACTION NAME="spell-check-selection">
-		<CODE>
-			cswilly.jeditPlugins.spell.SpellCheckPlugin.showDefaultLangSpellDialog(view);
-		</CODE>
-	</ACTION>
+  <!-- Menu action for spell checking the current selection -->
+  <ACTION NAME="spell-check-selection">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.showDefaultLangSpellDialog(view);
+    </CODE>
+  </ACTION>
 
-	<!-- Menu action for spell checking the current selection with a specified lang -->
-	<ACTION NAME="spell-check-selection-with-lang">
-		<CODE>
-			cswilly.jeditPlugins.spell.SpellCheckPlugin.showCustomLangSpellDialog(view);
-		</CODE>
-	</ACTION>
+  <!-- Menu action for spell checking the current selection with a specified lang -->
+  <ACTION NAME="spell-check-selection-with-lang">
+    <CODE>
+      cswilly.jeditPlugins.spell.SpellCheckPlugin.showCustomLangSpellDialog(view);
+    </CODE>
+  </ACTION>
 </ACTIONS>

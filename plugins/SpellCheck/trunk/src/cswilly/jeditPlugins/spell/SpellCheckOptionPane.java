@@ -1,6 +1,6 @@
 /*
- * $Revision: 1.3 $
- * $Date: 2002-07-19 15:31:43 $
+ * $Revision: 1.4 $
+ * $Date: 2002-07-26 15:36:20 $
  * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
@@ -324,17 +324,18 @@ class Entry
   String name;
   Boolean isSelected;
 
-  Entry(String name)
+  Entry( String name )
   {
     this.name = name;
-    isSelected = new Boolean(jEdit.getBooleanProperty("spell-check-mode-" + name + "-isSelected"));
+    boolean isDefault = ( ( SpellCheckPlugin.defaultModes.contains( name ) ) ? true : false );
+    isSelected = new Boolean( jEdit.getBooleanProperty( "spell-check-mode-" + name + "-isSelected", isDefault ) );
   }
 
   void save()
   {
-    if(isSelected.booleanValue())
-      jEdit.setBooleanProperty("spell-check-mode-" + name + "-isSelected", isSelected.booleanValue());
+    if ( isSelected.booleanValue() || SpellCheckPlugin.defaultModes.contains( name ) )
+      jEdit.setBooleanProperty( "spell-check-mode-" + name + "-isSelected", isSelected.booleanValue() );
     else
-      jEdit.unsetProperty("spell-check-mode-" + name + "-isSelected");
+      jEdit.unsetProperty( "spell-check-mode-" + name + "-isSelected" );
   }
 }

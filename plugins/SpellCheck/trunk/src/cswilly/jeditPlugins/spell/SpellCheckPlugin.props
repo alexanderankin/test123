@@ -2,7 +2,7 @@
 
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.name=Spell Check
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.author=C. Scott Willy, L. Fiol
-plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004pre3
+plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.version=R004
 plugin.cswilly.jeditPlugins.spell.SpellCheckPlugin.docs=cswilly/jeditPlugins/spell/help.html
 
 ### These tell jEdit what JDK and jEdit version we require

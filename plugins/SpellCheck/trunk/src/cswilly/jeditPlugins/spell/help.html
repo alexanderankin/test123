@@ -1,15 +1,15 @@
 <html>
-<head>
-  <title>Spell check jEdit plugin</title>
-</head>
+  <head>
+    <title>Spell check jEdit plugin</title>
+  </head>
 <body>
 
 
-<h1>Spell Check jEdit Plugin</h1>
+<h1>Spell Check jEdit plugin release 4</h1>
 
-This is an jEdit plugin to perform spell checking of text in a jEdit buffer.
+This is a jEdit plugin to perform spell checking of text in a jEdit buffer.
 It is based on <a href="http://aspell.sourceforge.net/">Aspell</a>
-(which you will need to download and install before using this plugin) which is
+(which you may need to download and install before using this plugin) which is
 available for Windows and various Unix platforms.
 
 
@@ -23,7 +23,9 @@ available for Windows and various Unix platforms.
   <li>Configurable location of <a href="http://aspell.sourceforge.net/">Aspell</a>
     executable.</li>
   <li>Configurable main language dictionary (requires the correct installation
-    of the corresponding language for aspell).</li>
+    of the corresponding language for Aspell).</li>
+  <li>Automatically (or manually) discards tags for all defined markup edit modes
+    likes html, xml, ...</li>
   <li>Spell check dialog to allow the user to validate each suspect word. The
     dialog has buttons for: Cancel, Change, Change All, Ignore, and Ignore All.
     It shows the suspect word, lists suggested replacements, and has a field
@@ -35,7 +37,7 @@ available for Windows and various Unix platforms.
 
 <ul>
   <li>The plugin requires jEdit 4.0 or later.</li>
-  <li>The plugin requires Java JDK 1.3--for no real reason (bummer).</li>
+  <li>The plugin requires Java JDK 1.3 --for no real reason (bummer).</li>
   <li>Tested on Windows 2000, XP and Linux.</li>
   <li>Aspell .32.6 alpha or better (I am using Aspell .33.5 alpha).</li>
 </ul>
@@ -45,27 +47,32 @@ available for Windows and various Unix platforms.
 
 <ul>
   <li>Download and install <a href="http://prdownloads.sourceforge.net/aspell/aspell-.33.5-win32-i386.zip">aspell-.33.5-win32-i386.zip</a>
-    for Windows. If you are running some flavour of Unix, you can get the source
-    as well as some binarys from <a href="http://aspell.sourceforge.net/">Aspell</a>.</li>
+    for Windows. If you are running some flavor of Unix, you can get the source
+    as well as some binaries from <a href="http://aspell.sourceforge.net/">Aspell</a> (note that Aspell
+    is generally installed by default on Linux and is in the path).</li>
   <li>Copy the the <code>SpellCheck.jar</code> file to your jEdit <code>jars</code>
     directory.</li>
-  <li>Restart jEdit. You should see a <code>Spell Check</code> entry on the <code>Plugin</code>
+  <li>Restart jEdit. You should see a <code>Spell Check</code> entry on the <code>Plugins</code>
     menu.</li>
   <li>In the <code>Utilities/Global Options.../Plugin Options/Spell Check</code>
-    option dialog set the <code>Aspell executable filename</code> to where
-    installed it. You can also specify here a different language dictionnary.</li>
+    option dialog set the <code>Aspell executable filename</code> to where you have
+    installed it or leave the default if any. You can also specify here a different
+    language dictionary or choose in the dictionary list (correct Aspell executable
+    path must be correctly set for that). You can also choose to let markup mode be
+    set automatically or not and add any extra Aspell command line arguments (type
+    Aspell --help in a console to know what they are).</li>
 </ul>
 
 
 <h2>Usage</h2>
 
 <ul>
-  <li>Select the text you would like to spell check.</li>
+  <li>Select the text you would like to spell check (no selection will spell check all the buffer).</li>
   <li>Choose the menu item <code>Plugins/Spell check/Spell check selection...</code>
     for default lang dictionary or <code>Plugins/Spell check/Spell check selection with lang...</code>
     to use an alternate lang dictionary.</li>
-  <li>The Aspell subprocess will start. (On Windows for jdk older than 1.4.0 a DOS
-    console is displayed).</li>
+  <li>The Aspell subprocess will start. (On Windows for JDK older than 1.4.0 a DOS
+    console is displayed and may hide the Spell Check validation dialog).</li>
   <li>You will be prompted with a MS-Office-like spell check dialog box for each
     word that needs to be validated.</li>
   <li>Below is more info on the dialog box.</li>
@@ -78,7 +85,7 @@ available for Windows and various Unix platforms.
 <dl>
   <dt>Add (not in this version)</dt>
   <dd>Adds the word not in the <cite> Not in Dictionary</cite> field to the dictionary.</dd>
-  <dt>Cancel</dt>
+  <dt>Cancel</dt> HystoryTextField
   <dd>Closes the dialog box without making any changes you have made.</dd>
   <dt>Change</dt>
   <dd>Replaces the word not in the <cite> Not in Dictionary</cite> text field with the word in the
@@ -89,7 +96,7 @@ available for Windows and various Unix platforms.
   <dd>Replaces all instances of the word not in the <cite> Not in Dictionary</cite>
     text field with the word in the
     <cite> Change to</cite>  text field. If the <cite> Change to</cite> text field is empty,
-    the button name changes to <cite>Delete</cite>. To remove all instances of the selected word from the item, click
+    the button name changes to <cite>Delete All</cite>. To remove all instances of the selected word from the item, click
     <cite>Delete</cite>.</dd>
   <dt>Ignore</dt>
   <dd>Leaves the word not in the <cite> Not in Dictionary</cite> text field unchanged.</dd>
@@ -116,7 +123,7 @@ available for Windows and various Unix platforms.
 I do the build using
 <a href="http://jakarta.apache.org/ant/index.html">Ant</a>. Look in the
 <code>build.cmd</code> file for the version of Ant used. To see the build targets,
-type <code>build -projecthelp</code>. The most important target is
+type <code>build -project help</code>. The most important target is
 <code>make.jar.spellPlugin</code> which creates the
 <code>SpellPlugin.jar</code>. There are other targets, but the <code>build.xml</code>
 is still a bit full of crap.
@@ -149,7 +156,6 @@ but should make some people happy.
 
 <h2>Current Todo List</h2>
 <ul>
-  <li>Display all available lang dictionary as a pull-down list in the option panel</li>
   <li>Add words to an user dictionary</li>
   <li>Allow the user to reset Ignore All and Change All options (currently these
     are result only if jEdit is restarted)</li>
@@ -164,21 +170,25 @@ but should make some people happy.
 
 <h2>Change Log</h2>
 
-<h3>Release 004 (June 11, 2002) - <a href="mailto:lio-sand@ifrance.com">L.Fiol</a></h3>
+<h3>Release 004 (Jul 25, 2002) - <a href="mailto:lio-sand@ifrance.com">L.Fiol</a></h3>
   <ul>
     <li>Fix: the current buffer is no more changed when there were no spell
       errors corrected in the buffer. Instead a status message tells there
       were nothing to correct.</li>
     <li>Fix: the last line separator of the selection which is spell
       checked is removed if any.</li>
+    <li>Fix: Exception was thrown when there was no suggestion for a word.</li>
     <li>Updated for jEdit 4.0 API.</li>
     <li>Spell checks for entire buffer when no selection.</li>
-    <li>If the aspell executable field is empty it is defaulted to 'aspell'
+    <li>If the Aspell executable field is empty it is defaulted to 'Aspell'
       on Unix systems. On others systems an open file dialog is displayed.
-      The aspell executable property is saved afterwards.</li>
+      The Aspell executable property is saved afterward.</li>
     <li>Add the ability to choose another language dictionary than the default
-      one (use both the --lang and --language-tag parameters as some system
-      seems to need the first and other the second).</li>
+      one (use both the --lang and --language-tag parameters as some systems
+      seems to need the first and others the second).</li>
+    <li>Add the ability to choose to automatically discard tags in all defined
+      markup edit modes.</li>
+    <li>Add the ability to specify any additional Aspell parameter.</li>
   </ul>
 
 <h3>Release 003 (Sep 09, 2001)</h3>
@@ -193,7 +203,7 @@ but should make some people happy.
     to distribution</li>
   <li>Updated <code>help.html</code> with test feedback and system requirements</li>
   <li>The <code>ValidationDialog</code> now remembers its last placement. This
-    mean that once you move it out-of-the-way, it stays out-of-the-way.</li>
+    means that once you move it out-of-the-way, it stays out-of-the-way.</li>
 </ul>
 
 <h3>Release 001 (Apr 16, 2001)</h3>
