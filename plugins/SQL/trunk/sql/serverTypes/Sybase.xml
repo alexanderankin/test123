@@ -7,11 +7,11 @@
 <!--The name of the JDBC driver -->
   <driverClass>com.sybase.jdbc.SybDriver</driverClass>
 
-  <defStatementDelimiterRegex>(?i)([\n\r]+go)+[\n\r]+</defStatementDelimiterRegex>
-                                                                                                                     
   <vfs>
     <driverClass>sql.serverTypes.SybaseVFS</driverClass>
   </vfs>
+
+  <defStatementDelimiterRegex>(?i)([\n\r]+go)+[\n\r]+</defStatementDelimiterRegex>
 
   <connection>
 
