@@ -666,7 +666,8 @@ public final class ProjectViewer extends JPanel
 
       if ( folderTree != null ) {
          folderTree.setModel( projectView.getFolderViewModel() );
-         getCurrentProject().restoreFolderTreeState( folderTree );
+         if (getCurrentProject() != null)
+            getCurrentProject().restoreFolderTreeState( folderTree );
       }
       if ( fileTree != null ) {
          fileTree.setModel( projectView.getFileViewModel() );
@@ -683,7 +684,8 @@ public final class ProjectViewer extends JPanel
       importFilesBtn.setEnabled( true );
       openAllBtn.setEnabled( true );
 
-      tabs.setSelectedIndex( getCurrentProject().getTabState() );
+      if (getCurrentProject() != null)
+         tabs.setSelectedIndex( getCurrentProject().getTabState() );
 
       vsl.pause();
       projectCombo.setSelectedItem( isAllProjects() ? (Object)ALL_PROJECTS : getCurrentProject() );
