@@ -160,8 +160,9 @@ xml-edit-tag.preview=Preview:
 
 xml-edit-tag.required=#REQUIRED
 
-# Status message shown when doing element completion
-xml-complete-status=Space: insert; Enter: edit tag
+# Status messages shown when doing completion
+xml-element-complete-status=Space: insert; Enter: edit tag
+xml-id-complete-status=Tab: go to; Enter or Space: insert
 
 # "No completions" message
 xml-no-completions=<no completions>

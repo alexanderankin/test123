@@ -25,6 +25,7 @@ public class ElementDecl
 	public boolean html;
 
 	public ArrayList attributes;
+	public HashMap attributeHash;
 
 	//{{{ ElementDecl constructor
 	public ElementDecl(String name, boolean empty, boolean html)
@@ -34,11 +35,14 @@ public class ElementDecl
 		this.html = html;
 
 		attributes = new ArrayList();
+		attributeHash = new HashMap();
 	} //}}}
 
 	//{{{ addAttribute() method
 	public void addAttribute(AttributeDecl attribute)
 	{
+		attributeHash.put(attribute.name,attribute);
+
 		for(int i = 0; i < attributes.size(); i++)
 		{
 			AttributeDecl attr = (AttributeDecl)attributes.get(i);

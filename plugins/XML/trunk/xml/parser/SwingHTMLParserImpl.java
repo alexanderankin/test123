@@ -41,6 +41,9 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 	SwingHTMLParserImpl()
 	{
 		ids = new ArrayList();
+		String prop = jEdit.getProperty("mode.html.xml.completion-info");
+		if(prop != null)
+			info = CompletionInfo.getCompletionInfo(prop);
 	} //}}}
 
 	//{{{ parse() method
@@ -90,6 +93,7 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 	private DocumentParser htmlParser;
 	private Buffer buffer;
 	private DefaultMutableTreeNode root;
+	private CompletionInfo info;
 	private ArrayList ids;
 	//}}}
 
@@ -97,6 +101,15 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 	private Attributes attributesToSAX(MutableAttributeSet a,
 		String element, Position pos)
 	{
+		ElementDecl elementDecl;
+		if(info != null)
+		{
+			elementDecl = (ElementDecl)info.elementHash
+				.get(element.toLowerCase());
+		}
+		else
+			elementDecl = null;
+
 		AttributesImpl attrs = new AttributesImpl();
 		Enumeration enum = a.getAttributeNames();
 		while(enum.hasMoreElements())
@@ -104,16 +117,27 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 			Object attr = enum.nextElement();
 			String name = attr.toString();
 			String value = a.getAttribute(attr).toString();
-			if(name.equalsIgnoreCase("id")
-				|| name.equalsIgnoreCase("name"))
+
+			String type = "CDATA";
+			if(elementDecl != null)
 			{
-				if(!ids.contains(value))
-					ids.add(new IDDecl(value,element,pos));
+				ElementDecl.AttributeDecl attrDecl
+					= (ElementDecl.AttributeDecl)
+					elementDecl.attributeHash
+					.get(name.toLowerCase());
+				if(attrDecl != null)
+				{
+					type = attrDecl.type;
+
+					if(type.equals("ID"))
+					{
+						if(!ids.contains(value))
+							ids.add(new IDDecl(value,element,pos));
+					}
+				}
 			}
 
-			// TODO: is CDATA really appropriate here?
-			// does anyone even check the type value?
-			attrs.addAttribute(null,null,name,"CDATA",value);
+			attrs.addAttribute(null,null,name,type,value);
 		}
 
 		return attrs;

@@ -317,6 +317,7 @@ public class XmlInsert extends JPanel implements EBComponent
 				if(index == -1)
 					return;
 
+				idList.setSelectedIndex(index);
 				Object obj = elementList.getModel().getElementAt(index);
 				if(!(obj instanceof ElementDecl))
 					return;
@@ -359,9 +360,16 @@ public class XmlInsert extends JPanel implements EBComponent
 						{
 							buffer.endCompoundEdit();
 						}
+
+						textArea.selectNone();
 					}
 					else
+					{
+						textArea.setSelectedText(openingTag);
+						int caret = textArea.getCaretPosition();
 						textArea.setSelectedText(closingTag);
+						textArea.setCaretPosition(caret);
+					}
 
 					textArea.selectNone();
 					textArea.requestFocus();
@@ -389,6 +397,36 @@ public class XmlInsert extends JPanel implements EBComponent
 				JEditTextArea textArea = view.getTextArea();
 
 				textArea.setSelectedText("&" + entity.name + ";");
+				textArea.requestFocus();
+			} //}}}
+			//{{{ Handle clicks in ID list
+			else if(evt.getSource() == idList)
+			{
+				int index = idList.locationToIndex(
+					evt.getPoint());
+				if(index == -1)
+					return;
+
+				idList.setSelectedIndex(index);
+				Object obj = idList.getModel().getElementAt(index);
+				if(!(obj instanceof IDDecl))
+					return;
+
+				IDDecl id = (IDDecl)obj;
+
+				JEditTextArea textArea = view.getTextArea();
+
+				if(GUIUtilities.isPopupTrigger(evt))
+				{
+					textArea.setCaretPosition(
+						id.declaringLocation
+						.getOffset());
+				}
+				else
+				{
+					textArea.setSelectedText(id.id);
+				}
+
 				textArea.requestFocus();
 			} //}}}
 		}

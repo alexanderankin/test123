@@ -72,7 +72,10 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 			/* setIcon(entity.type == EntityDecl.INTERNAL
 				? INTERNAL_ENTITY_ICON
 				: EXTERNAL_ENTITY_ICON); */
-			setText(id.id + " [element: <" + id.element + ">]");
+			// it's toString() already does this cos I'm too
+			// lazy to write a custom renderer for the edit tag
+			// dialog box.
+			//setText(id.id + " [element: <" + id.element + ">]");
 		}
 		else
 			setIcon(null);

@@ -1,32 +1,45 @@
-- edit tag dialog and ids
-- id completion
++ version 0.6:
+
 - icon for ids
 - threaddeath -- wtf?
+- fix up tag highlighting
 - tag highlight: use a timer, show status message
 - 'advanced' option pane for selecting a parser, with a 'don't change this
   if you don't know what you're doing' warning. tag highlight in modes that
   set 'xml.parser' property
-- html: support id attribute
 - html: get rid of _implied_ crap
-- html: need to get error reporting figured out
-- if no closing tag, should not insert </>
-- fix up tag highlighting
-- switching between two edit panes with same buffer: expand tree at
-  appropriate location
 - use getContextSensitiveProperty()
 - better docs: moving around xml file, editing xml file, etc.
 - xsd completion file is broken
-- better handling of ant and xsd
 - add name of tag highlight guy
-- entering </foo>
 - option to not fetch stuff from 'net
+
++ version 0.7:
+
+- id completion
+- html: use jtidy instead of retarded Swing parser.
+- switching between two edit panes with same buffer: expand tree at
+  appropriate location
 - empty/opening tag only/opening and closing in edit tag dialog
-- try resolving public ID first
-- required attrs in ant tag list
-- documentation: XML catalog format, OASIS catalog format
 - proper handling of tags in nested files
+- documentation: XML catalog format, OASIS catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
-- All/1/2/3/4 buttons in XML tree?
+- All/1/2/3/4 buttons in XML tree that expand/collapse tree that certain
+  level
 - handle parsing open buffers better
+- let user specify completion info files in advanced option pane.
+  XML->Advanced menu:
+   - Open xml-completion-info.dtd
+   - Open ant-complete.xml
+   - ...
+   - Write tidy config file
+
++ before 1.0:
+
+- new xml file wizard
 - pluggable parsers, don't rely on Xerces-specific features, fail
   gracefully if some parser features are not available
+- maybe some features for editing dtds:
+  - a different xml insert window lists <!ELEMENT, <!ATTLIST, ...
+  - a different edit tag dialog for editing dtd declarations
+  - list all dtd tags in xml tree

@@ -37,9 +37,7 @@ public class IDDecl
 	//{{{ toString() method
 	public String toString()
 	{
-		return getClass().getName() + "[" + id + "@"
-			+ declaringLocation.getOffset()
-			+ ",element=" + element + "]";
+		return id + " [element: <" + element + ">]";
 	} //}}}
 
 	//{{{ Compare class

@@ -94,4 +94,9 @@
 			xml.XmlActions.removeTags(buffer);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="xml-complete-id">
+		<CODE>
+			xml.XmlActions.complete(view,xml.XmlActions.ID_COMPLETE);
+		</CODE>
+	</ACTION>
 </ACTIONS>
