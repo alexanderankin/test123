@@ -78,6 +78,22 @@ import org.gjt.sp.jedit.jEdit;
     public int getIconType(){
       return iconType;
     }
+    
+    public void setStart(Position start){
+        this.start = start;
+    }
+
+    public void setEnd(Position end){
+        this.end = end;
+    }
+
+    public Position getStart(){
+        return start;
+    }
+
+    public Position getEnd(){
+        return end;
+    }
 
     public static LaTeXAsset createAsset(String name, Position start, Position end, int icon_type, int lev){
       LaTeXAsset asset = createAsset(name, start, end, icon_type);

@@ -6,9 +6,10 @@ import gnu.regexp.RE;
 import gnu.regexp.REException;
 import gnu.regexp.REMatch;
 
-import java.util.Collection;
+import java.util.Set;
 import java.util.Iterator;
 import java.util.TreeSet;
+import java.util.LinkedList;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
@@ -27,7 +28,7 @@ public class LaTeXParser
     private SideKickParsedData data;
     private Buffer buffer;
     private static final LaTeXDockable controls = new LaTeXDockable();
-    private Collection navItems = new TreeSet();
+    private Set navItems = new TreeSet();
     private DefaultMutableTreeNode root;
     private int lowlev;
 
@@ -106,19 +107,16 @@ public class LaTeXParser
             return lastNode;
         }
 
-        LaTeXAsset thisTp = (LaTeXAsset)thisNode.getUserObject();
+        LaTeXAsset thisTp = (LaTeXAsset) thisNode.getUserObject();
         int thisLevel = thisTp.getLevel();
-        LaTeXAsset lastTp = (LaTeXAsset)lastNode.getUserObject();
+        LaTeXAsset lastTp = (LaTeXAsset) lastNode.getUserObject();
         int lastLevel = lastTp.getLevel();
 
         if (thisLevel > lastLevel) {
-
             return lastNode;
         } else if (thisLevel == lastLevel) {
-
             return (DefaultMutableTreeNode)lastNode.getParent();
         } else {
-
             return findCorrectNode(thisNode, 
                                    (DefaultMutableTreeNode)lastNode.getParent());
         }
@@ -151,14 +149,16 @@ public class LaTeXParser
     private void searchBuffer(NavigationList navList) {
 
         String text = buffer.getText(0, buffer.getLength());
+        LinkedList stack = new LinkedList();
 
         for (Iterator it = navList.iterator(); it.hasNext();) {
 
             TagPair srch = (TagPair)it.next();
             String replace = srch.getReplace();
+            String endTag = srch.getEndTag();
             boolean default_replace = true;
 
-            if (!(replace.equals(" "))) { // TODO: This code belongs in TagPair.java
+            if (!(replace.equals(" "))) { // NOTE: This code probably belongs in TagPair.java
 
                 try {
 
@@ -216,24 +216,63 @@ public class LaTeXParser
 
                     LaTeXAsset asset = LaTeXAsset.createAsset(result, 
                                                               buffer.createPosition(match[m].getStartIndex()), 
-                                                              buffer.createPosition(match[m].getEndIndex()), 
+                                                              //buffer.createPosition(match[m].getEndIndex()), 
+                                                              buffer.createPosition(text.length()), 
                                                               srch.getIcon(), 
                                                               srch.getLevel());
                     navItems.add(asset);
                 }
             }
         }
-        updateAssetEnd();
+        //updateAssetEnd();
     }
     
-    private void updateAssetEnd(){
-        // TODO: Run through the navItems TreeSet. 
-        // Create a stack. Add each item to the stack in turn.
-        // If the next items nesting level == top of stacks nesting level
-        // then take the item off of the stack, and set its end to the next items level -1.
-        // else add next item to stack. If there are no more items, 
-        // set the end of each remaining item in the stack to the end of the buffer.
+    private void updateAssetEnd(){ 
+       // NOTE: This method assumes that Sidekick cannot handle nested Assets.
+       LaTeXAsset previousAsset = null;
+       for (Iterator it = navItems.iterator(); it.hasNext(); ){
+           if (previousAsset == null){
+               previousAsset = (LaTeXAsset) it.next();
+               break;
+           }
+           LaTeXAsset currentAsset = (LaTeXAsset) it.next();
+           previousAsset.setEnd(currentAsset.getStart());
+           previousAsset = currentAsset;
+       }
+       if (previousAsset != null){
+           int endOfText = text.length();
+           previousAsset.setEnd(buffer.createPosition(endOfText));
+       }
+    }
+    
+    private void updateAssetEnd2(){
+        // NOTE: This method assumes that Sidekick can handle nested Assets.
+        LinkedList stack = new LinkedList();
         
+        for (Iterator it = navItems.iterator(); it.hasNext(); ){
+           LaTeXAsset currentAsset = (LaTeXAsset) it.next();
+           if (stack.size()==0){
+              stack.addLast(currentAsset);
+              break;
+           }
+           LaTeXAsset top = (LaTeXAsset) stack.getLast();
+           if (currentAsset.getLevel() > top.getLevel()){
+              stack.addLast(currentAsset);
+              break;
+           }
+           else{
+              top.setEnd(buffer.createPosition(currentAsset.getStart().getOffset()-1));
+              stack.removeLast();
+           }
+        }
+        if (stack.size()>0){
+           int endOfText = text.length();
+           for (Iterator it = stack.iterator(); it.hasNext(); ){
+              LaTeXAsset next = (LaTeXAsset) it.next();
+              next.setEnd(buffer.createPosition(endOfText));
+           }
+        }
+
     }
     
 }

@@ -12,8 +12,14 @@ public class TagPair
   int icon;
   String tag;
   String replace = " ";
+  String endTag = "";
 
   //~ Constructors ............................................................
+  TagPair(String tag, String replace, String endTag, int level, int icon) {
+      this(tag,replace,level,icon);
+      this.endTag = endTag;
+  }
+
   TagPair(String tag, String replace, int level, int icon) {
       this(tag,level,icon);
       this.replace = replace;
@@ -74,6 +80,23 @@ public class TagPair
   public String getReplace() {
 
     return replace;
+  }
+  /**
+   * ¤
+   * 
+   * @return ¤
+   */
+  public String getEndTag() {
+
+    return endTag;
+  }
+  /**
+   * ¤
+   * 
+   * @return ¤
+   */
+  public void setEndTag(String et) {
+      endTag = et;
   }
 
   /**
