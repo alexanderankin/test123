@@ -17,13 +17,15 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package console;
+
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 
-public class ConsoleToolBar extends JToolBar
+class ConsoleToolBar extends JToolBar
 {
 	public ConsoleToolBar(View view)
 	{
@@ -34,12 +36,11 @@ public class ConsoleToolBar extends JToolBar
 
 		add(BorderLayout.WEST,shells = new JComboBox(EditBus
 			.getNamedList(Shell.SHELLS_LIST)));
-		String defaultShell = jEdit.getProperty("console.shell");
-		shells.setSelectedItem(defaultShell);
+		shells.setSelectedItem(ConsolePlugin.SHELL);
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
-		cmd = new HistoryTextField("console." + defaultShell);
+		cmd = new HistoryTextField("console.console");
 		Dimension dim = cmd.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
 		cmd.setMaximumSize(dim);
@@ -70,7 +71,7 @@ public class ConsoleToolBar extends JToolBar
 				cmd.setText(null);
 
 				Console cons = (Console)wm.getDockableWindow("console");
-				cons.setShell((String)shells.getSelectedItem());
+				cons.setShell((Shell)shells.getSelectedItem());
 				cons.run(command);
 			}
 			else

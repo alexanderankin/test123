@@ -17,6 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package console;
+
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
@@ -26,7 +28,7 @@ import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 
-public class ConsoleOptionPane extends AbstractOptionPane
+class ConsoleOptionPane extends AbstractOptionPane
 {
 	public ConsoleOptionPane()
 	{
@@ -41,13 +43,6 @@ public class ConsoleOptionPane extends AbstractOptionPane
 			"options.console.toolbar")));
 		toolBarEnabled.getModel().setSelected(jEdit.getBooleanProperty(
 			"console.toolbar.enabled"));
-
-		add(shells = new JComboBox(EditBus.getNamedList(
-			Shell.SHELLS_LIST)));
-		shells.setSelectedItem(jEdit.getProperty("console.shell"));
-
-		addComponent(jEdit.getProperty("options.console.shell"),
-			shells);
 
 		/* Font */
 		String _fontFamily = jEdit.getProperty("console.font");
@@ -124,7 +119,6 @@ public class ConsoleOptionPane extends AbstractOptionPane
 	{
 		jEdit.setBooleanProperty("console.toolbar.enabled",toolBarEnabled
 			.getModel().isSelected());
-		jEdit.setProperty("console.shell",(String)shells.getSelectedItem());
 		Font _font = font.getFont();
 		jEdit.setProperty("console.font",_font.getFamily());
 		jEdit.setProperty("console.fontsize",String.valueOf(_font.getSize()));
@@ -152,7 +146,6 @@ public class ConsoleOptionPane extends AbstractOptionPane
 
 	// private members
 	private JCheckBox toolBarEnabled;
-	private JComboBox shells;
 	private FontSelector font;
 	private JButton bgColor;
 	private JButton plainColor;

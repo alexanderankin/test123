@@ -1,5 +1,5 @@
 /*
- * ConsoleShell.java - Console shell
+ * DefaultShell.java - Executes OS commands
  * Copyright (C) 1999, 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -17,45 +17,49 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+package console;
+
 import java.lang.reflect.*;
 import java.io.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
-public class ConsoleShell implements Shell
+class DefaultShell extends Shell
 {
-	public ConsoleShell()
+	public DefaultShell()
 	{
+		super("Console");
+
 		java13 = (System.getProperty("java.version").compareTo("1.3") >= 0);
 		Log.log(Log.DEBUG,this,"cd command " + (java13 ? "enabled" : "disabled"));
 		dir = System.getProperty("user.dir");
 	}
 
-	public void printInfoMessage(Output output)
+	public void printInfoMessage(Console console)
 	{
-		output.printInfo(jEdit.getProperty("console.shell.info"));
+		console.printInfo(jEdit.getProperty("console.shell.info"));
 	}
 
-	public void execute(View view, String command, Output output)
+	public void execute(View view, String command, Console console)
 	{
 		stop();
-		ConsoleShellPluginPart.clearErrors();
+		ConsolePlugin.clearErrors();
 
 		if(command.equals("pwd"))
 		{
-			output.printPlain(dir);
+			console.printPlain(dir);
 			return;
 		}
 		else if(command.startsWith("cd"))
 		{
 			if(!java13)
-				output.printError(jEdit.getProperty("console.shell.cd-error"));
+				console.printError(jEdit.getProperty("console.shell.cd-error"));
 			else
 			{
 				dir = MiscUtilities.constructPath(dir,command
 					.substring(2).trim());
 				String[] args = { dir };
-				output.printPlain(jEdit.getProperty("console.shell.cd",args));
+				console.printPlain(jEdit.getProperty("console.shell.cd",args));
 			}
 			return;
 		}
@@ -156,7 +160,7 @@ public class ConsoleShell implements Shell
 		catch(IOException io)
 		{
 			String[] args = { io.getMessage() };
-			output.printInfo(jEdit.getProperty("console.shell.ioerror",args));
+			console.printInfo(jEdit.getProperty("console.shell.ioerror",args));
 			return;
 		}
 		catch(Exception e)
@@ -166,7 +170,7 @@ public class ConsoleShell implements Shell
 		}
 
 		this.command = command;
-		this.output = output;
+		this.console = console;
 
 		stdout = new StdoutThread();
 		stderr = new StderrThread();
@@ -181,7 +185,7 @@ public class ConsoleShell implements Shell
 			process.destroy();
 
 			String[] args = { command };
-			output.printError(jEdit.getProperty("console.shell.killed",args));
+			console.printError(jEdit.getProperty("console.shell.killed",args));
 
 			exitStatus = false;
 			commandDone();
@@ -206,7 +210,7 @@ public class ConsoleShell implements Shell
 
 	// private members
 	private String command;
-	private Output output;
+	private Console console;
 	private Process process;
 	private Thread stdout;
 	private Thread stderr;
@@ -217,17 +221,17 @@ public class ConsoleShell implements Shell
 
 	private void parseLine(String line)
 	{
-		int type = ConsoleShellPluginPart.parseLine(line);
+		int type = ConsolePlugin.parseLine(line);
 		switch(type)
 		{
 		case ErrorSource.ERROR:
-			output.printError(line);
+			console.printError(line);
 			break;
 		case ErrorSource.WARNING:
-			output.printWarning(line);
+			console.printWarning(line);
 			break;
 		default:
-			output.printPlain(line);
+			console.printPlain(line);
 			break;
 		}
 	}
@@ -238,6 +242,7 @@ public class ConsoleShell implements Shell
 		stdout = null;
 		stderr = null;
 		process = null;
+		console = null;
 
 		notify();
 	}
@@ -281,14 +286,14 @@ public class ConsoleShell implements Shell
 				int exitCode = process.waitFor();
 				Object[] args = { command, new Integer(exitCode) };
 
-				output.printInfo(jEdit.getProperty("console.shell.exited",args));
+				console.printInfo(jEdit.getProperty("console.shell.exited",args));
 				exitStatus = (exitCode == 0);
 				commandDone();
 			}
 			catch(IOException io)
 			{
 				String[] args = { io.getMessage() };
-				output.printError(jEdit.getProperty("console.shell.ioerror",args));
+				console.printError(jEdit.getProperty("console.shell.ioerror",args));
 			}
 			catch(InterruptedException ie)
 			{
@@ -327,7 +332,7 @@ public class ConsoleShell implements Shell
 			catch(IOException io)
 			{
 				String[] args = { io.getMessage() };
-				output.printError(jEdit.getProperty("console.shell.ioerror",args));
+				console.printError(jEdit.getProperty("console.shell.ioerror",args));
 			}
 		}
 	}
