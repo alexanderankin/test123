@@ -2,10 +2,10 @@
 
 <project name="GfxView" default="dist" basedir=".">
 
-	<property name="jedit.install.dir"  value=".."/>
+	<property name="jedit.install.dir"  value="../jEdit 4.2"/>
 	<property name="jar.name"  value="GfxView.jar"/>
 
-	<property name="install.dir"  value="${jedit.install.dir}/Build"/>
+	<property name="install.dir"  value="${jedit.install.dir}/jars"/>
 
 
 	<path id="project.class.path">
@@ -36,6 +36,7 @@
 				<include name="actions.xml"/>
 				<include name="browser.actions.xml"/>
 				<include name="dockables.xml"/>
+				<include name="licence_ImgrRdr.txt"/>
 			</fileset>
 		</jar>
 	</target>

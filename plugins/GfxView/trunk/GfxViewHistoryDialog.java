@@ -65,6 +65,16 @@ public class GfxViewHistoryDialog extends JDialog
 		dispose(); // also for butOk
 	}//}}}
 
+	//{{{ +valueChanged(ListSelectionEvent) : void
+	public void valueChanged(ListSelectionEvent evt) {
+		// TODO: A examiner et parachever !!
+		if (!evt.getValueIsAdjusting()) {
+				selectValue(list.getSelectedIndex());
+		}
+	} //}}}
+
+
+	//{{{ -selectValue(int) : void
 	private void selectValue(int index) {
 			if (index!=-1) {
 				Object newURL = model.getElementAt(index);
@@ -81,15 +91,7 @@ public class GfxViewHistoryDialog extends JDialog
 				changes.firePropertyChange("UrlGfxView-display",oldURL_display,newURL_display);
 				oldURL_display = newURL_display;
 			}
-	}
-	
-	//{{{ +valueChanged(ListSelectionEvent) : void
-	public void valueChanged(ListSelectionEvent evt) {
-		// TODO: A examiner et parachever !!
-		if (!evt.getValueIsAdjusting()) {
-				selectValue(list.getSelectedIndex());
-		}
-	} //}}}
+	}//}}}
 
 	//{{{ +loadNext() : void
 	public void loadNext() {
@@ -108,28 +110,16 @@ public class GfxViewHistoryDialog extends JDialog
 		}
 	}//}}}
 
-	//{{{ +loadPrev() : void
+	//{{{ +addEntry(Object) : void
 	public void addEntry(Object urlPath) {
 		model.addEntry(urlPath);
 	}//}}}
 
-/*	
-	//{{{ +selectNext() : void
-	public void selectNext() {
-			int index = list.getSelectedIndex();
-			if (index < list.getModel().getSize()) {
-				list.setSelectedIndex(index+1);
-			}
+	//{{{ +removeEntry(Object) : void
+	public void removeEntry(Object urlPath) {
+		model.removeEntry(urlPath);
 	}//}}}
 
-	//{{{ +selectPrevious() : void
-	public void selectPrevious() {
-			int index = list.getSelectedIndex();
-			if (index > 0) {
-				list.setSelectedIndex(index-1);
-			}
-	}//}}}
-*/
 
 	//{{{ +addPropertyChangeListener(PropertyChangeListener) : void
 	public void addPropertyChangeListener(PropertyChangeListener listener)
