@@ -69,24 +69,30 @@ public class ReImporter extends RootImporter {
 	 *	not under the root.
 	 */
 	protected Collection internalDoImport() {
-		super.internalDoImport();
-
-		// iterates through the children
-		for (Enumeration en = project.children(); en.hasMoreElements(); ) {
-			VPTNode node = (VPTNode) en.nextElement();
-			String path = node.getNodePath();
-
-			// check whether the node is under the root (new or old)
-			if (!path.startsWith(project.getRootPath())) {
-				if (node.isFile()) {
-					if (!((VPTFile)node).getFile().exists()) {
-						unregisterFile((VPTFile)node);
+		if (selected.isProject()) {
+			super.internalDoImport();
+	
+			// iterates through the children
+			for (int i = 0; i < project.getChildCount(); i++) {
+				VPTNode node = (VPTNode) project.getChildAt(i);
+				String path = node.getNodePath();
+	
+				// check whether the node is under the root (new or old)
+				if (!path.startsWith(project.getRootPath())) {
+					if (node.isFile()) {
+						if (!((VPTFile)node).getFile().exists()) {
+							unregisterFile((VPTFile)node);
+							project.remove(i--);
+						}
+					} else if (node.isDirectory()) {
+						reimportDirectory((VPTDirectory)node);
 					}
-				} else if (node.isDirectory()) {
-					reimportDirectory((VPTDirectory)node);
 				}
 			}
-
+		} else if (defineFileFilter(selected.getName(), false)) {
+			String state = viewer.getFolderTreeState(selected);
+			reimportDirectory((VPTDirectory)selected);
+			postAction = new NodeStructureChange(selected, state);
 		}
 
 		return null;
@@ -136,7 +142,6 @@ public class ReImporter extends RootImporter {
 			}
 		}
 	} //}}}
-
 
 }
 

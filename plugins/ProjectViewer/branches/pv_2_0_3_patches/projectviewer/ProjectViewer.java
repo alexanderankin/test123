@@ -1123,6 +1123,66 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		super.setEnabled(flag);
 	} //}}}
 
+	//{{{ +getFolderTreeState(VPTNode) : String
+	/**
+	 *	Returns a String representing the state of the folder tree.
+	 *
+	 *	@see	#setFolderTreeState(VPTNode, String)
+	 *	@return	The state of the tree, starting at the given node, or
+	 *			null if the folderTree is not visible.
+	 */
+	public String getFolderTreeState(VPTNode node) {
+		if (folderTree != null) {
+			DefaultTreeModel model = (DefaultTreeModel) folderTree.getModel();
+			int start = folderTree.getRowForPath(new TreePath(model.getPathToRoot(node)));
+			if (start >= 0) {
+				StringBuffer state = new StringBuffer();
+				if(folderTree.isExpanded(start)) {
+					for(int i = start; i < folderTree.getRowCount(); i++) {
+						VPTNode n = (VPTNode) folderTree.getPathForRow(i)
+										.getLastPathComponent();
+						if (!node.isNodeDescendant(n))
+							break;
+						if (folderTree.isExpanded(i)) {
+							state.append(EXPANDED);
+						} else {
+							state.append(NOT_EXPANDED);
+						}
+					}
+				}
+				return state.toString();
+			}
+		}
+		return null;
+	} //}}}
+
+	//{{{ +setFolderTreeState(VPTNode, String) : void
+	/**
+	 *	Sets the folder tree state from the given String.
+	 *
+	 *	@see	#getFolderTreeState(VPTNode)
+	 */
+	public void setFolderTreeState(VPTNode node, String state) {
+		if (folderTree != null && state != null) {
+			DefaultTreeModel model = (DefaultTreeModel) folderTree.getModel();
+			int start = folderTree.getRowForPath(new TreePath(model.getPathToRoot(node)));
+			for(int i = 0; i < state.length(); i++) {
+				int row = start + i;
+				if (row >= folderTree.getRowCount())
+					break;
+
+				TreePath path = folderTree.getPathForRow(row);
+				VPTNode n = (VPTNode) path.getLastPathComponent();
+				if (!node.isNodeDescendant(n))
+					break;
+
+				if (state.charAt(i) == EXPANDED) {
+					folderTree.expandRow(row);
+				}
+			}
+		}
+	} //}}}
+
 	//}}}
 
 	//{{{ -class _VPTListCellRenderer_

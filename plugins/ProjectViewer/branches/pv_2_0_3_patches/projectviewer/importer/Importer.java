@@ -400,5 +400,29 @@ public abstract class Importer implements Runnable {
 
 	} //}}}
 
+	//{{{ #class NodeStructureChange
+	protected class NodeStructureChange implements Runnable {
+
+		private VPTNode node;
+		private String state;
+
+		//{{{ +NodeStructureChange(VPTNode, String) : <init>
+		/**
+		 *	Calls "nodeStructureChanged" for the given node. If "state" is
+		 *	not null, also sets the tree state.
+		 */
+		public NodeStructureChange(VPTNode node, String state) {
+			this.node = node;
+			this.state = state;
+		} //}}}
+
+		//{{{ +run() : void
+		public void run() {
+			ProjectViewer.nodeStructureChanged(node);
+			viewer.setFolderTreeState(node, state);
+		} //}}}
+
+	} //}}}
+
 }
 
