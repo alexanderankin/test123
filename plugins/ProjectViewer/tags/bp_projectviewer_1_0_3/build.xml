@@ -1,0 +1,137 @@
+<!-- ================================================== -->
+<!-- Build file for the Project Viewer plugin           -->
+<!-- ================================================== -->
+<project name="Project Viewer" default="compile" basedir=".">
+
+
+  <!-- ================================================ -->
+  <!-- Property definitions                             -->
+  <!-- ================================================ -->
+  <property file="build.properties"/>
+ 
+  <property name="version"          value="1.0.2"/>
+
+  <property name="build"            value="build"/>
+  <property name="build.classes"    value="${build}/classes"/>
+  <property name="build.docs"       value="${build}/ProjectViewer/docs"/>
+  <property name="build.api"        value="${build.docs}/api"/>
+
+  <property name="src"              value="."/>
+  <property name="src.main"         value="${src}"/>
+  <property name="src.etc"          value="."/>
+  <property name="src.lib"          value="lib"/>
+  
+  <property name="docs"             value="docs"/>
+
+  
+  <!-- ================================================ -->
+  <!-- Classpath definitions                            -->
+  <!-- ================================================ -->
+  <path id="default.classpath">
+    <fileset dir="${src.lib}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+
+  <!-- ================================================ -->
+  <!-- Targets                                          -->
+  <!-- ================================================ -->
+
+
+  <!-- ================================================ -->
+  <target name="compile" 
+          description="Compile all main classes">
+
+    <mkdir dir="${build.classes}"/>
+
+    <javac srcdir="${src.main}"
+           destdir="${build.classes}"
+           debug="${compiler.debug}"
+           optimize="${compiler.optimize}"
+           deprecation="${compiler.deprecation}"
+           verbose="${compiler.verbose}"
+           classpathref="default.classpath"
+    >
+      <include name="projectviewer/**"/>
+    </javac>
+
+  </target>
+
+
+  <!-- ================================================ -->
+  <target name="build" 
+          depends="compile"
+          description="Build the plugin">
+
+    <copy todir="${build.classes}">
+      <fileset dir="${src.main}">
+        <include name="projectviewer/**/*.props"/>
+        <include name="projectviewer/**/*.properties"/>
+        <include name="projectviewer/**/icons/*.gif"/>
+      </fileset>
+    </copy>
+    
+    <copy todir="${build.classes}">
+      <fileset dir="${src.etc}">
+        <include name="actions.xml"/>
+      </fileset>
+    </copy>
+    
+    <mkdir dir="${build.docs}"/>
+    <copy todir="${build.docs}">
+      <fileset dir="${docs}"/>
+    </copy>
+    
+    <jar jarfile="${build}/ProjectViewer.jar">
+      <fileset dir="${build.classes}"/>
+    </jar>
+  </target>
+  
+  
+  <!-- ================================================ -->
+  <target name="dist"
+          depends="build"
+          description="Build a distribution">
+    <zip zipfile="ProjectViewer-${version}.zip">
+      <fileset dir="${build}">
+        <include name="ProjectViewer/**"/>
+        <include name="ProjectViewer.jar"/>
+      </fileset>
+    </zip>
+  </target>
+
+
+  <!-- ================================================ -->
+  <target name="deploy"
+          depends="dist"
+          description="Deploy the plugin">
+    <unzip src="ProjectViewer-${version}.zip" dest="${jedit.user.home}/jars"/>
+  </target>
+  
+
+  <!-- ================================================ -->
+  <target name="javadoc" 
+          description="Compile JavaDoc">
+
+    <mkdir dir="${build.api}"/>
+    <javadoc sourcepath="${src}"
+             destdir="${build.api}"
+             packagenames="projectviewer.*"
+             windowtitle="${ant.project.name} API"
+             classpathref="default.classpath"/>
+  </target>
+
+
+  <!-- ================================================ -->
+  <target name="clean"
+          description="Cleans project directories">
+    <delete dir="${build}"/>
+    <delete>
+      <fileset dir=".">
+        <include name="ProjectViewer-*.zip"/>
+      </fileset>
+    </delete>
+  </target>
+
+</project>
