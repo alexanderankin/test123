@@ -29,6 +29,7 @@ package xsearch;
 import bsh.BshMethod;
 import java.util.ArrayList;
 import javax.swing.text.Segment;
+import javax.swing.tree.*;
 import javax.swing.JOptionPane;
 import java.awt.Component;
 import java.text.CharacterIterator;
@@ -37,6 +38,7 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.SearchSettingsChanged;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.HistoryModel;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.search.*;
 import org.gjt.sp.util.Log;
@@ -73,6 +75,14 @@ public class XSearchAndReplace
 {
 	public static boolean debug=false; // debug-flag, may be modified by bsh
 																		 // xsearch.XSearchAndReplace.debug=true
+
+	//{{{ Constants
+	public static final boolean FIND_OPTION_SILENT = true;
+	public static final int SEARCH_TYPE_SINGLE = 1;
+	public static final int SEARCH_TYPE_HYPER_CURRENT_BUFFER = 2;
+	public static final int SEARCH_TYPE_HYPER_ALL_BUFFER = 3;
+	public static final int SEARCH_TYPE_HYPER_DIRECTORY = 4;
+	//}}}
 	
 	//{{{ Getters and setters
 
@@ -430,6 +440,15 @@ public class XSearchAndReplace
 			return null;
 	}//}}}
 
+	//{{{ getLastMatchedSelection() method
+	/**
+	 * Return the last matched selection
+	 * used for silent search option
+	 */
+	public static Selection getLastMatchedSelection() {
+		return lastMatchedSelection;
+	}//}}}
+
 	//{{{ setSearchFileSet() method
 	/**
 	 * Sets the current search file set.
@@ -617,28 +636,28 @@ public class XSearchAndReplace
 	public static String staticToString()
 	{
 		StringBuffer sb = new StringBuffer();
-		sb.append("XSearchAndReplace.search = "+XSearchAndReplace.search);
-		sb.append("XSearchAndReplace.origSearch = "+XSearchAndReplace.origSearch);
-		sb.append("XSearchAndReplace.replace = "+XSearchAndReplace.replace);
-		sb.append("XSearchAndReplace.getRegexp() = "+XSearchAndReplace.getRegexp());
-		sb.append("XSearchAndReplace.getIgnoreCase() = "+XSearchAndReplace.getIgnoreCase());
-		sb.append("XSearchAndReplace.getReverseSearch() = "+XSearchAndReplace.getReverseSearch());  
-		sb.append("XSearchAndReplace.getSearchFromTop() = "+XSearchAndReplace.getSearchFromTop());  
-		sb.append("XSearchAndReplace.getBeanShellReplace() = "+XSearchAndReplace.getBeanShellReplace());
-		sb.append("XSearchAndReplace.getAutoWrapAround() = "+XSearchAndReplace.getAutoWrapAround());	    
-		sb.append("XSearchAndReplace.getIgnoreCase() = "+XSearchAndReplace.getIgnoreCase());
-		sb.append("XSearchAndReplace.matcher = "+XSearchAndReplace.matcher);
-		sb.append("XSearchAndReplace.fileset = "+XSearchAndReplace.fileset);
-		sb.append("XSearchAndReplace.getColumnOption() = "+XSearchAndReplace.getColumnOption());
-		sb.append("XSearchAndReplace.getColumnExpandTabsOption() = "+XSearchAndReplace.getColumnExpandTabsOption());
-		sb.append("XSearchAndReplace.getColumnLeftCol() = "+XSearchAndReplace.getColumnLeftCol());
-		sb.append("XSearchAndReplace.getColumnRightCol() = "+XSearchAndReplace.getColumnRightCol());
-		sb.append("XSearchAndReplace.getRowOption() = "+XSearchAndReplace.getRowOption());
-		sb.append("XSearchAndReplace.getRowLeftRow() = "+XSearchAndReplace.getRowLeftRow());
-		sb.append("XSearchAndReplace.getRowRightRow() = "+XSearchAndReplace.getRowRightRow());
-		sb.append("XSearchAndReplace.getCommentOption() = "+XSearchAndReplace.getCommentOption());
-		sb.append("XSearchAndReplace.getFoldOption() = "+XSearchAndReplace.getFoldOption());
-		sb.append("XSearchAndReplace.getWordPartOption() = "+XSearchAndReplace.getWordPartOption());
+		sb.append("search = "+XSearchAndReplace.search);
+		sb.append(", origSearch = "+XSearchAndReplace.origSearch);
+		sb.append(", replace = "+XSearchAndReplace.replace);
+		sb.append(", getRegexp() = "+XSearchAndReplace.getRegexp());
+		sb.append(", getIgnoreCase() = "+XSearchAndReplace.getIgnoreCase());
+		sb.append(", getReverseSearch() = "+XSearchAndReplace.getReverseSearch());  
+		sb.append(", getSearchFromTop() = "+XSearchAndReplace.getSearchFromTop());  
+		sb.append(", getBeanShellReplace() = "+XSearchAndReplace.getBeanShellReplace());
+		sb.append(", getAutoWrapAround() = "+XSearchAndReplace.getAutoWrapAround());	    
+		sb.append(", getIgnoreCase() = "+XSearchAndReplace.getIgnoreCase());
+		sb.append(", matcher = "+XSearchAndReplace.matcher);
+		sb.append(", fileset = "+XSearchAndReplace.fileset);
+		sb.append(", getColumnOption() = "+XSearchAndReplace.getColumnOption());
+		sb.append(", getColumnExpandTabsOption() = "+XSearchAndReplace.getColumnExpandTabsOption());
+		sb.append(", getColumnLeftCol() = "+XSearchAndReplace.getColumnLeftCol());
+		sb.append(", getColumnRightCol() = "+XSearchAndReplace.getColumnRightCol());
+		sb.append(", getRowOption() = "+XSearchAndReplace.getRowOption());
+		sb.append(", getRowLeftRow() = "+XSearchAndReplace.getRowLeftRow());
+		sb.append(", getRowRightRow() = "+XSearchAndReplace.getRowRightRow());
+		sb.append(", getCommentOption() = "+XSearchAndReplace.getCommentOption());
+		sb.append(", getFoldOption() = "+XSearchAndReplace.getFoldOption());
+		sb.append(", getWordPartOption() = "+XSearchAndReplace.getWordPartOption());
 		return sb.toString();
 	} //}}}
 
@@ -669,9 +688,13 @@ public class XSearchAndReplace
 	public static boolean hyperSearch(View view, boolean selection)
 	{
 		// component that will parent any dialog boxes
-		Object obj = XSearchDialog.getSearchDialog(view);
-		Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.671: obj = "+obj.getClass());
+		/* Object obj = XSearchDialog.getSearchDialog(view);
 		Component comp = (Component)obj;
+		if (comp == null)
+			comp = view; */
+		
+		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.692"+staticToString());
+		Component comp = xsearch.XSearchDialog.getSearchDialog(view);
 		if(comp == null)
 			comp = view;
 
@@ -735,7 +758,49 @@ public class XSearchAndReplace
 	/**
 	 * Quick Xfind
 	 */
-	public void quickXfind(View view, JEditTextArea textArea)
+	public static void quickXfind(View view, JEditTextArea textArea, int searchType)
+	{
+		String text = textArea.getSelectedText();
+		if (text == null && 
+			!Character.isWhitespace(textArea.getText(textArea.getCaretPosition(),1).charAt(0)))
+		{
+			textArea.selectWord();
+			text = textArea.getSelectedText();
+		}
+
+		if(text != null && text.indexOf('\n') == -1)
+		{
+			HistoryModel.getModel("find").addItem(text);
+			setSearchString(text);
+			switch (searchType) {
+				case SEARCH_TYPE_SINGLE:
+					setSearchFileSet(new CurrentBufferSet());
+					find(view);
+					break;
+				case SEARCH_TYPE_HYPER_CURRENT_BUFFER:
+					setSearchFileSet(new CurrentBufferSet());
+					hyperSearch(view,false);
+					break;
+				case SEARCH_TYPE_HYPER_ALL_BUFFER:
+					setSearchFileSet(new AllBufferSet("*"));
+					hyperSearch(view,false);
+					break;
+				case SEARCH_TYPE_HYPER_DIRECTORY:
+					xsearch.XSearchDialog.showSearchDialog(view,
+						text,XSearchDialog.DIRECTORY);
+					break;
+			}
+		}
+		else
+			XSearchDialog.showSearchDialog(view,textArea.getSelectedText(),
+				XSearchDialog.CURRENT_BUFFER);
+	} //}}}
+
+	//{{{ getSelectionOrWord() method
+	/**
+	 * Return selected text or word under caret
+	 */
+	public static String getSelectionOrWord(View view, JEditTextArea textArea)
 	{
 		String text = textArea.getSelectedText();
 		if(text == null)
@@ -745,15 +810,9 @@ public class XSearchAndReplace
 		}
 
 		if(text != null && text.indexOf('\n') == -1)
-		{
-			//HistoryModel.getModel("find").addItem(text);
-			XSearchAndReplace.setSearchString(text);
-			XSearchAndReplace.setSearchFileSet(new CurrentBufferSet());
-			XSearchAndReplace.find(view);
-		}
+			return text;
 		else
-			XSearchDialog.showSearchDialog(view,textArea.getSelectedText(),
-				XSearchDialog.CURRENT_BUFFER);
+			return null;
 	} //}}}
 
 
@@ -765,6 +824,8 @@ public class XSearchAndReplace
 	 */
 	public static boolean find(View view)
 	{
+		
+		Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.822: "+staticToString());
 		// component that will parent any dialog boxes
 		Component comp = XSearchDialog.getSearchDialog(view);
 		if(comp == null)
@@ -810,10 +871,11 @@ public class XSearchAndReplace
 			Selection[] lastSelection=null;
 			int lastCaret = 0;
 			
-loop:			for(;;) //{{{
+			loop:			for(;;) //{{{
 			{
 				while(path != null)
 				{
+					if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.866: path = "+path);
 					Buffer buffer = jEdit.openTemporary(
 						view,null,path,false);
 
@@ -826,6 +888,7 @@ loop:			for(;;) //{{{
 					 * a 'finally' clause. you decide which one's
 					 * worse. */
 					path = fileset.getNextFile(view,path);
+					if (debug) Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.880: path = "+path);
 
 					if(buffer == null)
 						continue loop;
@@ -870,7 +933,7 @@ loop:			for(;;) //{{{
 						end = buffer.getLineEndOffset(rowSearchRightRow);
 					else 
 						end = buffer.getLength();
-					if(find(view,buffer,start,end,repeat,_reverse)) {
+					if(find(view,buffer,start,end,repeat,_reverse, false)) {
 						if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.674: found at start = "+start+", search = "+search);
 						testMatcher();
 						ignoreFromTop = true;
@@ -930,6 +993,7 @@ loop:			for(;;) //{{{
 
 				if(BeanShell.isScriptRunning())
 				{
+					Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.985");
 					restart = true;  // this leads to endless loops in bs-scripts when scanning a file
 								// i keep this function for compatibility
 				}
@@ -1013,7 +1077,7 @@ loop:			for(;;) //{{{
 	public static boolean find(View view, Buffer buffer, int start)
 		throws Exception
 	{
-		return find(view, buffer, start, buffer.getLength(), false, false);
+		return find(view, buffer, start, buffer.getLength(), false, false, false);
 	} //}}}
 
 	//{{{ find() method
@@ -1023,12 +1087,15 @@ loop:			for(;;) //{{{
 	 * @param view The view
 	 * @param buffer The buffer
 	 * @param start Location where to start the search
+	 * @param end Location where to end the search
 	 * @param firstTime See {@link SearchMatcher#nextMatch(CharIndexed,
 	 * boolean,boolean,boolean,boolean)}.
+	 * @param silent Enables silent search, without highlighting the matched string
+	 * the result is to be retrieved via getLastMatchedSelection
 	 * @since jEdit 4.1pre7
 	 */
 	public static boolean find(View view, Buffer buffer, int start, int end,
-		boolean firstTime, boolean reverse) throws Exception 
+		boolean firstTime, boolean reverse, boolean silent) throws Exception 
 	{
 		SearchMatcher matcher = getSearchMatcher();
 		if(matcher == null)
@@ -1082,23 +1149,28 @@ loop:			for(;;) //{{{
 					
 					if(reverse)
 					{
-						textArea.setSelection(new Selection.Range(
-							start - match[1],
-							start - match[0]));
-						textArea.moveCaretPosition(start - match[1]);
+						lastMatchedSelection = new Selection.Range(
+								start - match[1],
+								start - match[0]);
+						if (!silent) {
+							textArea.setSelection(lastMatchedSelection);
+							textArea.moveCaretPosition(start - match[1]);
+						}
 					}
 					else
 					{
-						Selection currSel = new Selection.Range(
+						lastMatchedSelection = new Selection.Range(
 							start + match[0],
 							start + match[1]);
-						if (findAll) {
-							findAllSelections.add(currSel);
-							start += match[1];
-						}
-						else {
-							textArea.setSelection(currSel);
-							textArea.moveCaretPosition(start + match[1]);
+						if (!silent) {
+							if (findAll) {
+								findAllSelections.add(lastMatchedSelection);
+								start += match[1];
+							}
+							else {
+								textArea.setSelection(lastMatchedSelection);
+								textArea.moveCaretPosition(start + match[1]);
+							}
 						}
 					}
 					if (!findAll) xFound = true;
@@ -1193,7 +1265,7 @@ loop:			for(;;) //{{{
 				{
 					retVal += _replace(view,buffer,matcher,
 						s.getStart(),s.getEnd(),
-						smartCaseReplace);
+						smartCaseReplace, null);
 
 					textArea.removeFromSelection(s);
 					textArea.addToSelection(new Selection.Range(
@@ -1205,7 +1277,7 @@ loop:			for(;;) //{{{
 					{
 						retVal += _replace(view,buffer,matcher,
 							s.getStart(buffer,j),s.getEnd(buffer,j),
-							smartCaseReplace);
+							smartCaseReplace, null);
 					}
 					textArea.addToSelection(new Selection.Rect(
 						start,s.getEnd()));
@@ -1284,7 +1356,7 @@ loop:			for(;;) //{{{
 			int retVal = 0;
 
 			retVal += _replace(view,buffer,matcher,start,end,
-				smartCaseReplace);
+				smartCaseReplace, null);
 
 			if(retVal != 0)
 				return true;
@@ -1306,12 +1378,18 @@ loop:			for(;;) //{{{
 	} //}}}
 
 	//{{{ replaceAll() method
+	public static boolean replaceAll(View view)
+	{
+		return replaceAll(view, false);
+	}
 	/**
 	 * Replaces all occurances of the search string with the replacement
 	 * string.
 	 * @param view The view
+	 * @param showChanges Flag indicating that all replacements are 
+	 *                    displayed in hyper window
 	 */
-	public static boolean replaceAll(View view)
+	public static boolean replaceAll(View view, boolean showChanges)
 	{
 		// component that will parent any dialog boxes
 		Component comp = XSearchDialog.getSearchDialog(view);
@@ -1334,6 +1412,23 @@ loop:			for(;;) //{{{
 		boolean smartCaseReplace = (replace != null
 			&& TextUtilities.getStringCase(replace)
 			== TextUtilities.LOWER_CASE);
+			
+		/*******************************************************************
+		 * allocate tree for display of replacements
+		 *******************************************************************/
+		DefaultMutableTreeNode rootSearchNode=null;
+		HyperSearchResults results=null;
+		if (showChanges) {
+			view.getDockableWindowManager().addDockableWindow(
+				HyperSearchResults.NAME);
+			results = (HyperSearchResults)
+				view.getDockableWindowManager()
+				.getDockable(HyperSearchResults.NAME);
+			results.searchStarted();
+			
+			rootSearchNode = new DefaultMutableTreeNode(
+				"replaceAll \""+search+"\" with \""+replace+"\"");
+		}
 
 		try
 		{
@@ -1366,7 +1461,10 @@ loop:			while(path != null)
 
 				if(!buffer.isEditable())
 					continue loop;
-
+				
+				// register replacements of this buffer in bufferNode
+				final DefaultMutableTreeNode bufferNode = new DefaultMutableTreeNode(
+					buffer.getPath());
 				// Leave buffer in a consistent state if
 				// an error occurs
 				int retVal = 0;
@@ -1392,7 +1490,8 @@ loop:			while(path != null)
 					retVal = _replace(view,buffer,matcher,
 						// 0, buffer.getLength(),
 						start, end,
-						smartCaseReplace);
+						smartCaseReplace,
+						showChanges ? bufferNode : null);
 				}
 				finally
 				{
@@ -1401,6 +1500,9 @@ loop:			while(path != null)
 
 				if(retVal != 0)
 				{
+					if (showChanges)
+						rootSearchNode.insert(bufferNode,
+							rootSearchNode.getChildCount());
 					fileCount++;
 					occurCount += retVal;
 					jEdit.commitTemporary(buffer);
@@ -1429,6 +1531,9 @@ loop:			while(path != null)
 				"view.status.replace-all",args));
 			if(occurCount == 0)
 				view.getToolkit().beep();
+			else if (showChanges) {
+					results.searchDone(rootSearchNode);
+			}
 		}
 
 		return (fileCount != 0);
@@ -1530,6 +1635,7 @@ loop:			while(path != null)
 	private static SearchFileSet fileset;
 
 	private static ArrayList findAllSelections;
+	private static Selection lastMatchedSelection;
 	
 	/* selectiv display
 	private static boolean showSettings;  // display the standart search settings
@@ -1911,11 +2017,12 @@ loop:			while(path != null)
 	 * @param end The end offset
 	 * @param matcher The search matcher to use
 	 * @param smartCaseReplace See user's guide
+	 * @param node     Node where to register replacements
 	 * @return The number of occurrences replaced
 	 */
 	private static int _replace(View view, Buffer buffer,
 		SearchMatcher matcher, int start, int end,
-		boolean smartCaseReplace)
+		boolean smartCaseReplace, DefaultMutableTreeNode node)
 		throws Exception
 	{
 		// make smart case replace optional
@@ -1927,6 +2034,7 @@ loop:			while(path != null)
 
 		Segment text = new Segment();
 		int offset = start;
+		int line = -1;
 loop:		for(int counter = 0; ; counter++)
 		{
 			buffer.getText(offset,end - offset,text);
@@ -1944,7 +2052,7 @@ loop:		for(int counter = 0; ; counter++)
 			int _length = occur[1] - occur[0];
 			// check xsearch parameters
 			if (!checkXSearchParameters(view.getTextArea(), buffer,
-				offset + _start, offset + _start + _length, false)) {
+				offset + _start, offset + _start + _length, true)) {
 				// current match was not ok ==> skip replacement
 				offset += _start + _length;
 				if (debug) Log.log(Log.DEBUG, BeanShell.class,"offset = "+offset);
@@ -1967,9 +2075,21 @@ loop:		for(int counter = 0; ; counter++)
 					buffer.remove(offset + _start,_length);
 					buffer.insert(offset + _start,subst);
 					occurCount++;
-					offset += _start + subst.length();
+					offset += _start;
+					
+					int newLine = buffer.getLineOfOffset(offset);
+					if (node != null && line < newLine) {
+						Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.2065: add node");
+						node.add(new DefaultMutableTreeNode(
+							new HyperSearchResult(buffer,newLine,
+							offset, offset+subst.length()),false));
+					}
+
+					
+					offset +=  subst.length();
 	
 					end += (subst.length() - found.length());
+					line = newLine;
 				}
 				else
 					offset += _start + _length;

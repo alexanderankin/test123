@@ -24,6 +24,8 @@ package xsearch;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JCheckBox;
+import javax.swing.JTextArea;
+import javax.swing.BoxLayout;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
@@ -42,6 +44,25 @@ public class XSearchOptionPane extends AbstractOptionPane
 
 	public void _init()
 	{
+		//this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		JTextArea checkBoxInfo = new JTextArea(jEdit.getProperty(
+		"xsearch.options.checkBoxLabel"),2,60);
+		checkBoxInfo.setLineWrap(true);
+		checkBoxInfo.setWrapStyleWord(true);
+		checkBoxInfo.setOpaque(false);
+
+		JTextArea buttonInfo = new JTextArea(jEdit.getProperty(
+		"xsearch.options.buttonLabel"),2,60);
+		buttonInfo.setLineWrap(true);
+		buttonInfo.setWrapStyleWord(true);
+		buttonInfo.setOpaque(false);
+
+		JTextArea functionInfo = new JTextArea(jEdit.getProperty(
+		"xsearch.options.functionsLabel"),2,60);
+		functionInfo.setLineWrap(true);
+		functionInfo.setWrapStyleWord(true);
+		functionInfo.setOpaque(false);
+
 		wordPartSearch = new JCheckBox(jEdit.getProperty("xsearch.options.wordPartSearch"),
 			jEdit.getBooleanProperty("xsearch.wordPartSearch", true));
 
@@ -60,11 +81,11 @@ public class XSearchOptionPane extends AbstractOptionPane
 		tentativSearch = new JCheckBox(jEdit.getProperty("xsearch.options.tentativSearch"),
 			jEdit.getBooleanProperty("xsearch.tentativSearch", false));
 
-		replaceCaseSensitiv = new JCheckBox(jEdit.getProperty("xsearch.options.replaceCaseSensitiv"),
-			jEdit.getBooleanProperty("xsearch.replaceCaseSensitiv", true));
-
 		hyperRange = new JCheckBox(jEdit.getProperty("xsearch.options.hyperRange"),
 			jEdit.getBooleanProperty("xsearch.hyperRange", true));
+
+		settingsHistory = new JCheckBox(jEdit.getProperty("xsearch.options.settingsHistory"),
+			jEdit.getBooleanProperty("xsearch.settingsHistory", true));
 
 		findAllButton = new JCheckBox(jEdit.getProperty("xsearch.options.findAllButton"),
 			jEdit.getBooleanProperty("xsearch.findAllButton", true));
@@ -72,20 +93,38 @@ public class XSearchOptionPane extends AbstractOptionPane
 		resetButton = new JCheckBox(jEdit.getProperty("xsearch.options.resetButton"),
 			jEdit.getBooleanProperty("xsearch.resetButton", true));
 
+		hyperReplace = new JCheckBox(jEdit.getProperty("xsearch.options.hyperReplace"),
+			jEdit.getBooleanProperty("xsearch.hyperReplace", true));
+		hyperReplace.setToolTipText(jEdit.getProperty("xsearch.options.tooltip.hyperReplace"));
 
-		addSeparator("xsearch.options.separator.searchoptions");
+		replaceCaseSensitiv = new JCheckBox(jEdit.getProperty("xsearch.options.replaceCaseSensitiv"),
+			jEdit.getBooleanProperty("xsearch.replaceCaseSensitiv", true));
+
+		textAreaFont = new JCheckBox(jEdit.getProperty("xsearch.options.textAreaFont"),
+			jEdit.getBooleanProperty("xsearch.textAreaFont", true));
+
+
+		//addSeparator("xsearch.options.separator.searchoptions");
+		addComponent(checkBoxInfo);
 		addComponent(wordPartSearch);
 		addComponent(columnSearch);
 		addComponent(rowSearch);
 		addComponent(foldSearch);
 		addComponent(commentSearch);
 		addComponent(tentativSearch);
-		addComponent(replaceCaseSensitiv);
 		addComponent(hyperRange);
+		addComponent(settingsHistory);
 
 		addSeparator("xsearch.options.separator.buttons");
+		addComponent(buttonInfo);
 		addComponent(findAllButton);
 		addComponent(resetButton);
+		
+		addSeparator("xsearch.options.separator.buttons");
+		addComponent(functionInfo);
+		addComponent(hyperReplace);
+		addComponent(replaceCaseSensitiv);
+		addComponent(textAreaFont);
 
 	}
 
@@ -99,11 +138,29 @@ public class XSearchOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("xsearch.foldSearch", foldSearch.isSelected());
 		jEdit.setBooleanProperty("xsearch.commentSearch", commentSearch.isSelected());
 		jEdit.setBooleanProperty("xsearch.tentativSearch", tentativSearch.isSelected());
-		jEdit.setBooleanProperty("xsearch.replaceCaseSensitiv", replaceCaseSensitiv.isSelected());
 		jEdit.setBooleanProperty("xsearch.hyperRange", hyperRange.isSelected());
+		jEdit.setBooleanProperty("xsearch.settingsHistory", settingsHistory.isSelected());
 		jEdit.setBooleanProperty("xsearch.findAllButton", findAllButton.isSelected());
 		jEdit.setBooleanProperty("xsearch.resetButton", resetButton.isSelected());
-
+		jEdit.setBooleanProperty("xsearch.hyperReplace", hyperReplace.isSelected());
+		jEdit.setBooleanProperty("xsearch.replaceCaseSensitiv", replaceCaseSensitiv.isSelected());
+		jEdit.setBooleanProperty("xsearch.textAreaFont", textAreaFont.isSelected());
+		
+		// reset settings which are not desired
+		if (!wordPartSearch.isSelected())
+			XSearchAndReplace.setWordPartOption(XSearchDialog.SEARCH_PART_NONE);
+		if (!columnSearch.isSelected())
+			XSearchAndReplace.resetColumnSearch();
+		if (!rowSearch.isSelected())
+			XSearchAndReplace.resetRowSearch();
+		if (!foldSearch.isSelected())
+			XSearchAndReplace.setFoldOption(XSearchDialog.SEARCH_IN_OUT_NONE);
+		if (!commentSearch.isSelected())
+			XSearchAndReplace.setCommentOption(XSearchDialog.SEARCH_IN_OUT_NONE);
+		if (!tentativSearch.isSelected())
+			XSearchAndReplace.setTentativOption(false);
+		if (!hyperRange.isSelected())
+			XSearchAndReplace.setHyperRange(-1, -1);
 	}
 
 	private JCheckBox wordPartSearch;
@@ -112,9 +169,12 @@ public class XSearchOptionPane extends AbstractOptionPane
 	private JCheckBox foldSearch;
 	private JCheckBox commentSearch;
 	private JCheckBox tentativSearch;
-	private JCheckBox replaceCaseSensitiv;
 	private JCheckBox hyperRange;
 	private JCheckBox findAllButton;
 	private JCheckBox resetButton;
+	private JCheckBox settingsHistory;
+	private JCheckBox hyperReplace;
+	private JCheckBox replaceCaseSensitiv;
+	private JCheckBox textAreaFont;
 }
 

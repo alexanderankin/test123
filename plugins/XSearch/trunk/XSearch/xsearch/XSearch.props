@@ -1,22 +1,33 @@
 plugin.xsearch.XSearchPlugin.name=XSearch
 plugin.xsearch.XSearchPlugin.author=Rudi Widmann
-plugin.xsearch.XSearchPlugin.version=0.8.0
+plugin.xsearch.XSearchPlugin.version=0.9.0
 plugin.xsearch.XSearchPlugin.docs=XSearch.html
-plugin.xsearch.XSearchPlugin.depend.0=jedit 04.01.02.00
+plugin.xsearch.XSearchPlugin.depend.0=jedit 04.01.00.00
 
 # Menu
 xsearch.title=Extended Search And Replace Plugin
 xsearch.label=XSearch
-xsearch=xfind xfind-next xfind-prev xfind-refind xfind-first xreplace-all xreplace-and-find-next xreplace-in-selection
-xfind.label=xfind
-xfind-next.label=xfind-next
-xfind-prev.label=xfind-prev
+xsearch=xfind-replace-dialog xfind-refind xfind-first xfind-next xfind-prev - \
+	xreplace-in-selection xreplace-and-find-next xreplace-all - \
+	xsearch-directory-dialog quick-xfind-standard-options quick-hypersearch-standard-options \
+	quick-allbuffersearch-standard-options - \
+	quick-xfind-current-options quick-hypersearch-current-options 
+xfind-replace-dialog.label=xfind replace...
 xfind-refind.label=xfind-refind
 xfind-first.label=xfind-first
-xreplace-all.label=xreplace-all
-xreplace-and-find-next.label=xreplace-and-find-next
+xfind-next.label=xfind-next
+xfind-prev.label=xfind-prev
 xreplace-in-selection.label=xreplace-in-selection
+xreplace-and-find-next.label=xreplace-and-find-next
+xreplace-all.label=xreplace-all
 
+xsearch-directory-dialog.label=xsearch-directory...
+quick-xfind-standard-options.label=quick-xfind-standard-options 
+quick-hypersearch-standard-options.label=quick-hypersearch-standard-options
+quick-allbuffersearch-standard-options.label=quick-allbuffersearch-standard-options
+quick-xfind-current-options.label=quick-xfind-current-options
+quick-hypersearch-current-options.label=quick-hypersearch-current-options
+	
 # XSearch_gui properties (alined to jedit_gui.props)
 search.fromTop=From top
 search.fromTop.mnemonic=m
@@ -58,6 +69,8 @@ search.currOpt.insideComment=inComment
 search.currOpt.outsideComment=outComment
 search.currOpt.tentativ=tentativ
 
+# shorter text for regexp
+search.ext.regexp=Regular exp
 # extended options
 search.ext.word-whole=whole word
 search.ext.word-prefix=prefix
@@ -80,6 +93,7 @@ search.ext.hyperRangeLabel=hyperrange:
 search.ext.hyperRangeLabelUp=up 
 search.ext.hyperRangeLabelDown=down 
 search.ext.tentativ=tentativ search
+search.ext.settings-history=search settings history
 # values
 search.show-settings.value=true
 search.show-replace.value=true
@@ -95,13 +109,20 @@ search.comment.line=//
 
 # xsearch option pane
 options.xsearch.label=XSearch
+xsearch.options.checkBoxLabel=Please select the additional check boxes you want to see when invoking xsearch and replace dialog
+xsearch.options.buttonLabel=Please select the additional buttons you want to see when invoking xsearch and replace dialog
+xsearch.options.functionsLabel=Please select the additional functionalities which shall apply when invoking xsearch and replace
 xsearch.options.wordPartSearch=word part search
 xsearch.options.columnSearch=column search
 xsearch.options.rowSearch=row search
 xsearch.options.foldSearch=fold search
 xsearch.options.commentSearch=comment search
 xsearch.options.tentativSearch=tentativ search (not recommended)
-xsearch.options.replaceCaseSensitiv=replace case sensitiv
 xsearch.options.hyperRange=hyper range
 xsearch.options.findAllButton=find-all Button
 xsearch.options.resetButton=reset Button
+xsearch.options.settingsHistory=search settings history
+xsearch.options.replaceCaseSensitiv=replace case sensitiv
+xsearch.options.hyperReplace=hyperSearch enables hyperReplace, too
+xsearch.options.tooltip.hyperReplace=hyperReplace displays all "replace all" matches in hyper search window
+xsearch.options.textAreaFont=use textArea Font in search and replace fields

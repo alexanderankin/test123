@@ -4,31 +4,21 @@
 <!-- jEdit plugin    XSearchAndReplace       action table                   -->
 
 <ACTIONS>
-	<ACTION NAME="xfind" NO_RECORD="TRUE">
+	<ACTION NAME="xfind-replace-dialog" NO_RECORD="TRUE">
+		<!-- display search dialog. Preset: searchString = selection     -->
 		<CODE>
 			xsearch.XSearchDialog.showSearchDialog(view,textArea.getSelectedText(),
-			SearchDialog.CURRENT_BUFFER);
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xfind-next" NO_RECORD="TRUE">
-		<CODE>
-			xsearch.XSearchAndReplace.setReverseSearch(false);
-			xsearch.XSearchAndReplace.find(view);
-		</CODE>
-	</ACTION>
-	
-	<ACTION NAME="xfind-prev" NO_RECORD="TRUE">
-		<CODE>
-			xsearch.XSearchAndReplace.setReverseSearch(true);
-			xsearch.XSearchAndReplace.find(view);
+			xsearch.XSearchDialog.CURRENT_BUFFER);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-refind" NO_RECORD="TRUE">
+		<!-- repeat search with current settings                        -->
 		<CODE>
 			xsearch.XSearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xfind-first" NO_RECORD="TRUE">
+		<!-- search from top with current settings                        -->
 		<CODE>
 			xsearch.XSearchAndReplace.setSearchFromTop(true);
 			xsearch.XSearchAndReplace.resetIgnoreFromTop();
@@ -36,16 +26,19 @@
 			xsearch.XSearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xreplace-all" NO_REPEAT="TRUE" NO_RECORD="TRUE">
+	<ACTION NAME="xfind-next" NO_RECORD="TRUE">
+		<!-- forward search with current settings                        -->
 		<CODE>
-			xsearch.XSearchAndReplace.replaceAll(view);
+			xsearch.XSearchAndReplace.setReverseSearch(false);
+			xsearch.XSearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
-	
-	<ACTION NAME="xreplace-and-find-next" NO_REPEAT="TRUE" NO_RECORD="TRUE">
+	<ACTION NAME="xfind-prev" NO_RECORD="TRUE">
+		<!-- backward search with current settings
+			note: if regexp, search will fail                -->
 		<CODE>
-			if(xsearch.XSearchAndReplace.replace(view))
-				xsearch.XSearchAndReplace.find(view);
+			xsearch.XSearchAndReplace.setReverseSearch(true);
+			xsearch.XSearchAndReplace.find(view);
 		</CODE>
 	</ACTION>
 	
@@ -54,17 +47,57 @@
 			xsearch.XSearchAndReplace.replace(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="xreplace-and-find-next" NO_REPEAT="TRUE" NO_RECORD="TRUE">
+		<CODE>
+			if(xsearch.XSearchAndReplace.replace(view))
+				xsearch.XSearchAndReplace.find(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xreplace-all" NO_REPEAT="TRUE" NO_RECORD="TRUE">
+		<CODE>
+			xsearch.XSearchAndReplace.replaceAll(view);
+		</CODE>
+	</ACTION>
+	
+	<ACTION NAME="xsearch-directory-dialog" NO_RECORD="TRUE">
+		<CODE>
+			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_DIRECTORY);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="quick-xfind-standard-options" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.XSearchAndReplace.push();
-			xsearch.XSearchAndReplace.reset();
-			xsearch.XSearchAndReplace.quickXfind(view, textArea);
-			xsearch.XSearchAndReplace.pop();
+			xsearch.SearchSettings.push();
+			xsearch.SearchSettings.resetSettings();
+			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_SINGLE);
+			xsearch.SearchSettings.pop();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="quick-xfind-current-options" NO_RECORD="TRUE">
 		<CODE>
-			xsearch.XSearchAndReplace.quickXfind(view, textArea);
+			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_SINGLE);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="quick-hypersearch-standard-options" NO_RECORD="TRUE">
+		<CODE>
+			//xsearch.SearchSettings.push();
+			xsearch.SearchSettings.resetSettings();
+			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
+			//xsearch.SearchSettings.pop();
+			// note: don't restore settings, because pop would overwrite settings immediately
+		</CODE>
+	</ACTION>
+	<ACTION NAME="quick-hypersearch-current-options" NO_RECORD="TRUE">
+		<CODE>
+			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_CURRENT_BUFFER);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="quick-allbuffersearch-standard-options" NO_RECORD="TRUE">
+		<CODE>
+			//xsearch.SearchSettings.push();
+			xsearch.SearchSettings.resetSettings();
+			xsearch.XSearchAndReplace.quickXfind(view, textArea, xsearch.XSearchAndReplace.SEARCH_TYPE_HYPER_ALL_BUFFER);
+			//xsearch.SearchSettings.pop();
 		</CODE>
 	</ACTION>
 
