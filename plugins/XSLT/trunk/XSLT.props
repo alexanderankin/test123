@@ -17,6 +17,10 @@ xslt-menu=\
   XPathTool.Evaluate
 xslt-menu.label=XSLT
 
+javax.xml.transform.TransformerFactory=org.apache.xalan.processor.TransformerFactoryImpl
+javax.xml.parsers.SAXParserFactory=org.apache.xerces.jaxp.SAXParserFactoryImpl
+org.xml.sax.driver=org.apache.xerces.parsers.SAXParser
+
 XSLTProcessor.title=XSLT Processor
 XSLTProcessor.label=XSLT Processor
 XSLTProcessor.Transform.label=Transform XML
