@@ -1,0 +1,12 @@
+CVS policy file
+
+plugin: JIndex
+author: Dirk Moebius <dmoebius@gmx.net>
+
+You may commit changes to this plugin without first consulting the author.
+
+New binary and source distributions for JIndex can be found on
+http://titan.informatik.uni-bonn.de/~moebius.
+
+"Stable" releases will be posted on Plugin Central.
+ 
