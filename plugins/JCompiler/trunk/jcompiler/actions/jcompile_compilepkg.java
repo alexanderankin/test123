@@ -20,9 +20,10 @@
 package jcompiler.actions;
 
 import java.awt.event.ActionEvent;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import console.Console;
 import JCompilerPlugin;
-import jcompiler.JCompilerShell;
 
 
 /**
@@ -35,8 +36,15 @@ public class jcompile_compilepkg extends EditAction {
     }
     
     public void actionPerformed(ActionEvent evt) {
-        JCompilerShell jsh = JCompilerPlugin.getShell();
-        jsh.execute(getView(evt), "compilepkg", null);
+        DockableWindowManager wm = getView(evt).getDockableWindowManager();
+        // start Console or make Console visible, if it is not already visible:
+        wm.addDockableWindow("console");
+        // get the Console instance:
+        Console console = (Console) wm.getDockableWindow("console");
+        // make sure the JCompiler shell is active:
+        console.setShell(JCompilerPlugin.getShell());
+        // run the "compilepkg" command:
+        console.run("compilepkg");
     }
 }
 

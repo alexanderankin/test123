@@ -19,21 +19,41 @@
 
 package jcompiler;
 
+// from Java:
 import java.io.*;
+
+// from jEdit:
 import gnu.regexp.RE;
 import gnu.regexp.RESyntax;
 import gnu.regexp.REException;
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
+
+// from EditBus plugin:
+import org.gjt.sp.jedit.DefaultErrorSource;
+import org.gjt.sp.jedit.ErrorSource;
+
+// from Console plugin:
+import console.Shell;
+import console.Console;
+
+// from JCompiler plugin:
+import JCompilerPlugin;
+
 
 /**
  * a JCompiler shell for the Console plugin.
  */
-public class JCompilerShell implements Shell, EBComponent {
+public class JCompilerShell extends Shell implements EBComponent {
 
     public JCompilerShell() {
-        errorSource = new DefaultErrorSource("JCompiler");
+        super(JCompilerPlugin.NAME);
+        errorSource = new DefaultErrorSource(JCompilerPlugin.NAME);
         EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST, errorSource);
         EditBus.addToBus(errorSource);
         EditBus.addToBus(this);
@@ -48,15 +68,13 @@ public class JCompilerShell implements Shell, EBComponent {
 
     
     /**
-     * print an information message to Output.
+     * print an information message to the Console.
      *
-     * @param output the output; may be null, if this interface method is
-     *               not invoked from ConsolePlugin.
+     * @param console the Console
      */
-    public void printInfoMessage(Output _output) {
-        if (_output != null) {
-            output = _output; // remember the output for later use
-            output.printInfo(jEdit.getProperty("jcompiler.msg.info"));
+    public void printInfoMessage(Console _console) {
+        if (_console != null) {
+            _console.printInfo(jEdit.getProperty("jcompiler.msg.info"));
         }
     }
 
@@ -66,17 +84,10 @@ public class JCompilerShell implements Shell, EBComponent {
      *
      * @param view    the view that was open when the command was invoked.
      * @param command the command.
-     * @param output  the output; may be null, if this interface method is
-     *                not invoked from ConsolePlugin.
+     * @param console the Console where output should go to.
      */
-    public void execute(View view, String command, Output _output) {
-        if (_output != null) {
-            output = _output; // remember the output for later use
-        }
-        if (output == null) {
-            Log.log(Log.NOTICE, this, 
-                "You should install and enable the Console plugin."); 
-        }
+    public void execute(View view, String command, Console console) {
+        this.console = console; // remember console instance
         
         stop(); // stop last command
         errorSource.clear();
@@ -92,11 +103,11 @@ public class JCompilerShell implements Shell, EBComponent {
             jthread = new CompilerThread(view, true, true);
         }
         else if ("help".equals(cmd)) {
-            printInfoMessage(output);
+            printInfoMessage(console);
         } 
         else {
-            if (output != null) {
-                output.printError("Unknown JCompiler command '" + cmd + "'");
+            if (console != null) {
+                console.printError("Unknown JCompiler command '" + cmd + "'");
             }
         }
     }
@@ -106,8 +117,8 @@ public class JCompilerShell implements Shell, EBComponent {
         if (jthread != null) {
             if (jthread.isAlive()) {
                 jthread.stop();
-                if (output != null) {
-                    output.printError("JCompiler thread killed.");
+                if (console != null) {
+                    console.printError("JCompiler thread killed.");
                 }
             }
             jthread = null;
@@ -165,16 +176,16 @@ public class JCompilerShell implements Shell, EBComponent {
             errorSource.addError(type, filename, 
                 Integer.parseInt(lineno) - 1, 0, 0, message);
         }
-        if (output != null) {
+        if (console != null) {
             switch (type) {
                 case ErrorSource.WARNING:
-                    output.printWarning(line);
+                    console.printWarning(line);
                     break;
                 case ErrorSource.ERROR:
-                    output.printError(line);
+                    console.printError(line);
                     break;
                 default:
-                    output.printPlain(line);
+                    console.printPlain(line);
                     break;
             }
         }
@@ -183,7 +194,7 @@ public class JCompilerShell implements Shell, EBComponent {
     
     private DefaultErrorSource errorSource = null;
     private CompilerThread jthread = null;
-    private Output output = null;
+    private Console console = null;
     private RE regexp = null;
     private String rfilenamepos;
     private String rlinenopos;
@@ -218,15 +229,20 @@ public class JCompilerShell implements Shell, EBComponent {
         /// this class monitors output created by JCompiler
         class OutputThread extends Thread {
             OutputThread(PipedOutputStream outpipe) {
-                this.outpipe = outpipe;
-                this.start();
-            }
-            public void run() {
                 try {
                     PipedInputStream inpipe = new PipedInputStream(outpipe);
                     InputStreamReader in = new InputStreamReader(inpipe);
-                    BufferedReader buf = new BufferedReader(in);
-                    String line;
+                    buf = new BufferedReader(in);
+                    this.start();
+                }
+                catch (IOException ioex) {
+                    // if there's an exception, the thread is never started.
+                }
+            }
+            public void run() {
+                String line;
+                if (buf == null) return;
+                try {
                     while ((line = buf.readLine()) != null) {
                         printLine(line);
                     }
@@ -236,7 +252,7 @@ public class JCompilerShell implements Shell, EBComponent {
                     // ignore
                 }
             }
-            private PipedOutputStream outpipe;
+            private BufferedReader buf = null;
         }                
     }
 }

@@ -1,7 +1,19 @@
+VERSION 0.7.2
+
+- bugfix: NPE if compile process completed very fast on JDK 1.1.x
+- bugfix: won't see anything, if JCompilerShell is not started. Now 
+          JCompiler is started together with Console (thanks to new
+          Console 2.3 API!)
+- even better error messages on missing tools.jar
+- requires EditBus 0.10, Console 2.3 and jEdit 2.6pre7
+
+
 VERSION 0.7.1
 
 - now recognizes "Notes" as compiler warnings.
 - bugfix: SecurityException and unknown method when run on JDK 1.1.x
+- requires jEdit 2.6pre7 and EditBus 0.9.4 (Console 2.2 and ErrorList 0.11
+  are suggested, but not required)
 
 
 VERSION 0.7.0 (not released)
@@ -18,6 +30,8 @@ VERSION 0.7.0 (not released)
 - integrated neccessary parts of buildtools, obsoleting the need for the
   BuildTools plugin
 - tons of bug fixes
+- requires jEdit 2.6pre7 and EditBus 0.9.4 (Console 2.2 and ErrorList 0.11
+  are suggested, but not required)
  
 
 VERSION 0.6 (not released)

@@ -1,6 +1,8 @@
 # jmk makefile for the JCompiler plugin
 # To recompile this plugin, start jmk in the plugin's source directory.
 #
+# :noTabs=true:
+#
 # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 # !!!   ATTENTION!   The file jcompiler/NoExitSecurityManager2.java   !!!
 # !!!   can only be compiled on JDK 1.2.                              !!!
@@ -18,7 +20,8 @@ NAME = "JCompiler";
 # uncomment the following lines for javac:
 javac     = "javac";
 javaflags =  "-g" "-deprecation" 
-             "-classpath" (cat (getprop "java.class.path") ";../EditBus.jar");
+             "-classpath" (cat (getprop "java.class.path")
+                     ";" "../EditBus.jar" ";" "../Console.jar");
 
 # directories to compile and include
 pkgs = "." "jcompiler" "jcompiler/actions" "buildtools";
