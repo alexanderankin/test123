@@ -29,10 +29,15 @@ import java.awt.event.ItemEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.ItemListener;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import javax.swing.JList;
 import javax.swing.JTree;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.BorderFactory;
@@ -41,6 +46,8 @@ import javax.swing.DefaultListCellRenderer;
 
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.DefaultTreeModel;
+
+import org.gjt.sp.util.Log;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -63,7 +70,10 @@ import projectviewer.vpt.VPTWorkingFileListModel;
 import projectviewer.event.ProjectViewerEvent;
 import projectviewer.event.ProjectViewerListener;
 
+import projectviewer.action.Action;
 import projectviewer.action.EditProjectAction;
+import projectviewer.config.ProjectViewerConfig;
+import projectviewer.importer.SingleFileImporter;
 //}}}
 
 /**
@@ -76,8 +86,30 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ Static members
 	
+	private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 	private static final HashMap viewers = new HashMap();
 	private static final HashMap listeners = new HashMap();
+	private static final ArrayList actions = new ArrayList();
+	private static boolean DISABLE_EVENTS;
+
+	//{{{ Default toolbar actions (static initializer)
+	static {
+		actions.add(new EditProjectAction());
+	} //}}}
+	
+	//{{{ registerAction(Action) method
+	/** Adds an action to be shown on the context menu. */
+	public static void registerAction(Action action) {
+		actions.add(action);
+		actionsChanged();
+	} //}}}
+	
+	//{{{ unregisterAction(Action) method
+	/** Removes an action from the context menu. */
+	public static void unregisterAction(Action action) {
+		actions.remove(action);
+		actionsChanged();
+	} //}}}
 	
 	//{{{ getViewer(View) method
 	/**
@@ -129,6 +161,8 @@ public final class ProjectViewer extends JPanel
 	 *	currently instantiated.
 	 */
 	public static void updateProjectCombos() {
+		
+		DISABLE_EVENTS = true;
 
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 			ProjectViewer v = (ProjectViewer) it.next();
@@ -143,28 +177,158 @@ public final class ProjectViewer extends JPanel
 			
 			v.pList.setSelectedItem(v.treeRoot);
 		}
+		
+		DISABLE_EVENTS = false;
 
 	} //}}}
 	
-	//{{{ broadcastNodeStructureChanged(VPTNode) node
+	//{{{ actionsChanged()
+	/** Reloads the action list for the toolbar. */
+	private static void actionsChanged() {
+		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+			ProjectViewer v = (ProjectViewer) it.next();
+			if (v.toolBar != null)
+				v.populateToolBar();
+		}
+	} //}}}
+		
+	//{{{ Tree Changes Broadcast Methods
+	
+	//{{{ nodeStructureChanged(VPTNode) node
 	/**
 	 *	Notify all project viewer instances of a change in a node's structure.
 	 */
 	public static void nodeStructureChanged(VPTNode node) {
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 			ProjectViewer v = (ProjectViewer) it.next();
-			((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
-			((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
-			((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
+			if (v.folderTree != null) {
+				((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
+			}
+			if (v.fileTree != null) {
+				((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
+			}
+			
+			if (v.workingFileTree != null) {
+				((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
+			}
 		}
 	} //}}}
+	
+	//{{{ nodeChanged(VPTNode) node
+	/** Notify all project viewer instances of a change in a node. */
+	public static void nodeChanged(VPTNode node) {
+		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+			ProjectViewer v = (ProjectViewer) it.next();
+			if (v.folderTree != null) {
+				((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
+			}
+			if (v.fileTree != null) {
+				((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
+			}
+			
+			if (v.workingFileTree != null) {
+				((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
+			}
+		}
+	} //}}}
+	
+	//{{{ insertNodeInto(VPTNode, VPTNode)
+	/**
+	 *	Notifies all trees in all instances of ProjectViewer that a node has
+	 *	been inserted to one of its nodes.
+	 */
+	public static void insertNodeInto(VPTNode child, VPTNode parent) {
+		int idx = parent.findIndexForChild(child);
+		if (config.getShowFoldersTree()) {
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+				ProjectViewer v = (ProjectViewer) it.next();
+				if (v.folderTree != null) {
+					((DefaultTreeModel)v.folderTree.getModel()).insertNodeInto(child, parent, idx);
+				}
+			}
+		} else {
+			parent.add(child);
+		}
+	} //}}}
+	
+	//{{{ nodeStructureChangedFlat(VPTNode) method
+	/**
+	 *	Notify all "flat trees" in any project viewer instances of a change in
+	 *	a node's structure.
+	 */
+	public static void nodeStructureChangedFlat(VPTNode node) {
+		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+				ProjectViewer v = (ProjectViewer) it.next();
+				if (v.fileTree != null) {
+					((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
+				}
+				
+				if (v.workingFileTree != null) {
+					((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
+				}
+			}
+		}
+	} //}}}
+	 
+	//{{{ removeNodeFromParent(VPTNode)
+	/**
+	 *	Notifies all trees in all instances of ProjectViewer that a node has
+	 *	been removed from its parent.
+	 */
+	public static void removeNodeFromParent(VPTNode child) {
+		VPTNode parent = (VPTNode) child.getParent();
+		if (config.getShowFoldersTree()) {
+			boolean removed = false;
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+				ProjectViewer v = (ProjectViewer) it.next();
+				if (v.folderTree != null) {
+					if (!removed) {
+						((DefaultTreeModel)v.folderTree.getModel()).removeNodeFromParent(child);
+						removed = true;
+					} else {
+						((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(parent);
+					}
+				}
+			}
+		} else {
+			parent.remove(child);
+		}
+	} //}}}
+	 
+	//{{{ projectRemoved(VPTProject) method
+	/**
+	 *	Notify all "flat trees" in any project viewer instances of a change in
+	 *	a node's structure. Then, rebuild the project combo boxes.
+	 */
+	public static void projectRemoved(VPTProject p) {
+		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
+			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+				ProjectViewer v = (ProjectViewer) it.next();
+				if (v.fileTree != null) {
+					((VPTFileListModel)v.fileTree.getModel()).removeRef(p);
+				}
+				
+				if (v.workingFileTree != null) {
+					((VPTWorkingFileListModel)v.workingFileTree.getModel()).removeRef(p);
+				}
+			}
+		}
+		updateProjectCombos();
+	} //}}}
+	 
+	//}}}
 	
 	//}}}
 			
 	//{{{ Constants
 	
-	public final static String CREATE_NEW_PROJECT = "Create Project";
+	public final static String CREATE_NEW_PROJECT = jEdit.getProperty("projectviewer.create_project");
 	
+	private final static String FOLDERS_TAB_TITLE = "projectviewer.folderstab";
+	private final static String FILES_TAB_TITLE = "projectviewer.filestab";
+	private final static String WORKING_FILES_TAB_TITLE = "projectviewer.workingfilestab";
+
 	//}}}
 			
 	//{{{ Attributes
@@ -173,13 +337,16 @@ public final class ProjectViewer extends JPanel
 	private JTree					folderTree;
 	private JTree					fileTree;
 	private JTree					workingFileTree;
+	private JToolBar				toolBar;
 	
+	private JPanel					topPane;
 	private JTabbedPane				treePane;
 	private JComboBox				pList;
 	
 	private VPTNode 				treeRoot;
 	private VPTContextMenu			vcm;
 	private VPTSelectionListener	vsl;
+	private ConfigChangeListener	ccl;
 	//}}}
 
 	//{{{ Constructor
@@ -188,6 +355,7 @@ public final class ProjectViewer extends JPanel
 	 * @param  aView  Description of Parameter
 `	 */
 	public ProjectViewer(View aView) {
+		super(new BorderLayout());
 		view = aView;
 		viewers.put(aView, this);
 		vcm = new VPTContextMenu(this);
@@ -195,6 +363,8 @@ public final class ProjectViewer extends JPanel
 		treeRoot = VPTRoot.getInstance();
 		buildGUI();
 		
+		ccl = new ConfigChangeListener();
+		config.addPropertyChangeListener(ccl);
 		EditBus.addToBus(this);
 	} //}}}
 
@@ -211,29 +381,31 @@ public final class ProjectViewer extends JPanel
 		tree.addMouseListener(vsl);
 		tree.addMouseListener(vcm);
 		
-		model.addTreeModelListener(vsl);
+		//model.addTreeModelListener(vsl);
 		tree.addTreeSelectionListener(vsl);
 		return tree;
+	} //}}}
+	
+	//{{{ populateToolBar() method
+	/** Loads the toolbar. */
+	private void populateToolBar() {
+		toolBar.removeAll();
+		for (Iterator i = actions.iterator(); i.hasNext(); ) {
+			Action a = (Action) i.next();
+			a = (Action) a.clone();
+			a.setViewer(this);
+			toolBar.add(a.getButton());
+		}
+		toolBar.repaint();
 	} //}}}
 	
 	//{{{ buildGUI() method
 	/** Builds the viewer GUI. */
 	private void buildGUI() {
-		setLayout(new BorderLayout());		
-		
 		treePane = new JTabbedPane();
 		add(BorderLayout.CENTER, treePane);
 		
-		folderTree = createTree(new DefaultTreeModel(treeRoot, true));
-		treePane.add(jEdit.getProperty("projectviewer.folderstab"), new JScrollPane(folderTree));
-		
-		fileTree = createTree(new VPTFileListModel(treeRoot));
-		treePane.add(jEdit.getProperty("projectviewer.filestab"), new JScrollPane(fileTree));
-		
-		VPTWorkingFileListModel model = new VPTWorkingFileListModel(treeRoot);
-		workingFileTree = createTree(model);
-		EditBus.addToBus(model);
-		treePane.add(jEdit.getProperty("projectviewer.workingfilestab"), new JScrollPane(workingFileTree));
+		showTrees();
 		
 		pList = new JComboBox();
 		pList.setRenderer(new VPTListCellRenderer());
@@ -247,7 +419,18 @@ public final class ProjectViewer extends JPanel
 		
 		pList.setSelectedItem(treeRoot);
 		pList.addItemListener(new ProjectComboListener());
-		add(BorderLayout.NORTH, pList);
+		
+		topPane = new JPanel(new BorderLayout());
+		
+		if (config.getShowToolBar()) {
+			toolBar = new JToolBar();
+			populateToolBar();
+			topPane.add(BorderLayout.NORTH, toolBar);
+		}
+		
+		topPane.add(BorderLayout.SOUTH, pList);
+		
+		add(BorderLayout.NORTH, topPane);
 		
 	} //}}}
 
@@ -274,6 +457,56 @@ public final class ProjectViewer extends JPanel
 		
 	} //}}}
 	
+	//{{{ showTrees() method
+	/** 
+	 *	Loads the trees (folders, files, working files) into the view, deciding
+	 *  what to show according to the configuration of the plugin
+	 */
+	private void showTrees() {
+		treePane.removeAll();
+		int count = 0;
+
+		// Folders tree
+		if(config.getShowFoldersTree()) {
+			if(folderTree == null) {
+				folderTree = createTree(new DefaultTreeModel(treeRoot, true));
+			}
+			count++;
+			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), new JScrollPane(folderTree));
+		} else {
+			folderTree = null;
+		}
+
+		// Files tree
+		if(config.getShowFilesTree()) {
+			if(fileTree == null) {
+				fileTree = createTree(new VPTFileListModel(treeRoot));
+			}
+			count++;
+			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), new JScrollPane(fileTree));
+		} else {
+			fileTree = null;
+		}
+
+		// Working files tree
+		if(config.getShowWorkingFilesTree()) {
+			if(workingFileTree == null) {
+				VPTWorkingFileListModel model = new VPTWorkingFileListModel(treeRoot);
+				workingFileTree = createTree(model);
+				EditBus.addToBus(model);
+			}
+			count++;
+			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), new JScrollPane(workingFileTree));
+		} else {
+			if (workingFileTree != null) {
+				EditBus.removeFromBus((VPTWorkingFileListModel)workingFileTree.getModel());
+				workingFileTree = null;
+			}
+		}
+
+		treePane.setSelectedIndex(0);
+	}//}}}
+	
 	//}}}
 
 	//{{{ Public Methods
@@ -297,17 +530,19 @@ public final class ProjectViewer extends JPanel
 	//{{{ getCurrentTree() method
 	/** Returns the currently active tree. */
 	public JTree getCurrentTree() {
-		switch (treePane.getSelectedIndex()) {
+		switch(treePane.getSelectedIndex()) {
 			case 0:
-				return folderTree;
-				
+				if (folderTree != null) return folderTree;
+				if (fileTree != null) return fileTree;
+				if (workingFileTree != null) return workingFileTree;
 			case 1:
-				return fileTree;
-				
+				if (fileTree != null) return fileTree;
+				if (workingFileTree != null) return workingFileTree;
 			case 2:
-				return workingFileTree;
+				if (workingFileTree != null) return workingFileTree;
 				
 			default:
+				Log.log(Log.DEBUG, this, "invalid tabnumber :" + treePane.getSelectedIndex());
 				return null;
 		}
 	} //}}}
@@ -330,9 +565,12 @@ public final class ProjectViewer extends JPanel
 		} else {
 			treeRoot = VPTRoot.getInstance();
 		}
-		((DefaultTreeModel)folderTree.getModel()).setRoot(treeRoot);
-		((DefaultTreeModel)fileTree.getModel()).setRoot(treeRoot);
-		((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
+		if (folderTree != null) 
+			((DefaultTreeModel)folderTree.getModel()).setRoot(treeRoot);
+		if (fileTree != null) 
+			((DefaultTreeModel)fileTree.getModel()).setRoot(treeRoot);
+		if (workingFileTree != null)
+			((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
 		fireProjectLoaded(p);
 	} //}}}
 	
@@ -354,6 +592,7 @@ public final class ProjectViewer extends JPanel
 			if (vu.getView() == view) {
 				if (vu.getWhat() == ViewUpdate.CLOSED) {
 					viewers.remove(view);
+					config.removePropertyChangeListener(ccl);
 					EditBus.removeFromBus(this);
 					
 					if (workingFileTree != null) {
@@ -373,6 +612,26 @@ public final class ProjectViewer extends JPanel
 					}
 				}
 			}
+		}
+	
+		// Try to import newly created files to the project
+		if (treeRoot.isProject() && msg instanceof BufferUpdate) {
+			BufferUpdate bu = (BufferUpdate) msg;
+			VPTProject p = (VPTProject) treeRoot;
+			if(bu.getView() == view && 
+					bu.getWhat() == BufferUpdate.SAVED &&
+					p.getFile(bu.getBuffer().getPath()) == null
+					) {
+				int res = JOptionPane.showConfirmDialog(view,
+						jEdit.getProperty("projectviewer.import_new",
+							new Object[] { bu.getBuffer().getName(), p.getName() }),
+						jEdit.getProperty("projectviewer.import_new.title"),
+						JOptionPane.YES_NO_OPTION);
+	
+				if(res == JOptionPane.YES_OPTION) {
+					new SingleFileImporter(p, bu.getBuffer().getPath()).doImport();
+				}
+			}		
 		}
 	
 	} //}}}
@@ -399,7 +658,7 @@ public final class ProjectViewer extends JPanel
 	private class ProjectComboListener implements ItemListener, Runnable {
 	
 		public void itemStateChanged(ItemEvent ie) {
-			if (ie.getStateChange() != ItemEvent.SELECTED) return;
+			if (ie.getStateChange() != ItemEvent.SELECTED || DISABLE_EVENTS) return;
 			
 			if(ie.getItem() instanceof VPTProject) {
 				VPTProject p = (VPTProject) ie.getItem();
@@ -420,11 +679,63 @@ public final class ProjectViewer extends JPanel
 		 *	"new project" dialog.
 		 */
 		public void run() {
-			EditProjectAction epa = new EditProjectAction(ProjectViewer.this);
+			EditProjectAction epa = new EditProjectAction();
+			epa.prepareForNode(null);
 			epa.actionPerformed(null);
 		}
 
 	} //}}}
 		
+	//{{{ ConfigChangeListener class
+	/** Listens for changes in the PV configuration. */
+	private class ConfigChangeListener implements PropertyChangeListener, Runnable {
+
+		private boolean willRun = false;
+		
+		//{{{ propertyChange() method
+		/** Listens for property change events in the plugin's configuration.
+		 *  Shows/Hides the toolbar and the trees, according to the user's wish.
+		 *
+		 * @param  evt  Description of Parameter
+		 */
+		public void propertyChange(PropertyChangeEvent evt) {
+			// Toolbar show/hide.
+			if(evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
+				if (toolBar != null) {
+					topPane.remove(toolBar);
+					toolBar.removeAll();
+					toolBar = null;
+				} else {
+					toolBar = new JToolBar();
+					populateToolBar();
+					topPane.add(BorderLayout.NORTH, toolBar);
+				}
+				return;
+			}
+
+			if(evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT) ||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT)) {
+				if(!willRun) {
+					Log.log(Log.DEBUG, this, "Scheduling tree rebuild");
+					SwingUtilities.invokeLater(this);
+					willRun = true;
+				}
+				return;
+			}
+			
+		}//}}}
+		
+		//{{{ run() method
+		/** "Run" method, called by the Swing runtime after a config option for one
+		 *  or more of the trees has changed.
+		 */
+		public void run() {
+			showTrees();
+			willRun = false;
+		}//}}}		
+	
+	} //}}}
+	
 }
 
