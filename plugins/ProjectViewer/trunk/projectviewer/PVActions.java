@@ -19,8 +19,11 @@
 package projectviewer;
 
 //{{{ Imports
+import java.util.Iterator;
+
 import org.gjt.sp.jedit.View;
 
+import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.action.EditProjectAction;
@@ -52,7 +55,20 @@ public final class PVActions {
 			action.actionPerformed(null);
 		}
 	} //}}}
-
+	
+	//{{{ openAllProjectFiles(View) method
+	/** If a project is currently active, open all its files. */
+	public static void openAllProjectFiles(View view) {
+		ProjectViewer viewer = ProjectViewer.getViewer(view);
+		if (viewer == null) return;
+		VPTNode sel = viewer.getRoot();
+		if (!sel.isRoot()) {
+			for (Iterator i = ((VPTProject)sel).getFiles().iterator(); i.hasNext(); ) {
+				((VPTFile)i.next()).open();
+			}
+		}
+	} //}}}
+	
 	//{{{ getCurrentProject(View) method
 	/**
 	 *	Returns the active project. If no viewer is opened for the given view,

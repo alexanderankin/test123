@@ -25,9 +25,11 @@ projectviewer.browser-path=mozilla
 #{{{ jEdit Plugins menu
 projectviewer.menu=projectviewer \
 	- \
-	projectviewer_edit_project
+	projectviewer_edit_project \
+	projectviewer_open_all_files
 projectviewer.menu.label=Project Viewer
 projectviewer_edit_project.label=Project Options
+projectviewer_open_all_files.label=Open All Project Files
 selectedfiles-viewer-menu-item.label=Paste File Names
 #}}}
 
