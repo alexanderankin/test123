@@ -1,10 +1,10 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
-plugin.xml.XmlPlugin.version=0.8
+plugin.xml.XmlPlugin.version=0.9
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xerces.jar
-plugin.xml.XmlPlugin.depend.0=jedit 04.00.04.00
+plugin.xml.XmlPlugin.depend.0=jedit 04.00.07.00
 plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 # Modes where xml parsing can theoretically to be performed

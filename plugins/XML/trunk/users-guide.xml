@@ -456,6 +456,23 @@
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.9</emphasis> requires
+  jEdit 4.0pre4 and the ErrorList plugin 1.2.</para>
+
+  <itemizedlist>
+   <listitem><para>
+    <guimenuitem>Parse XML Buffer</guimenuitem> and <guimenuitem>Parse on
+    Keystroke</guimenuitem> menu item commands didn't work.
+   </para></listitem>
+   <listitem><para>
+    Fixed bad interaction between 4.0pre7's
+    <function>MiscUtilities.constructPath()</function> method and Xerces path
+    handling.
+   </para></listitem>
+  </itemizedlist>
+
+  </listitem>
+
   <listitem><para><emphasis role="bold">Version 0.8</emphasis> requires
   jEdit 4.0pre4 and the ErrorList plugin 1.2.</para>
 

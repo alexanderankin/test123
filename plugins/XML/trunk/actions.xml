@@ -48,19 +48,11 @@
 			xml.XmlActions.insertClosingTag(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xml-edit-tag">
-		<CODE>
-			xml.XmlActions.showEditTagDialog(view);
-		</CODE>
-	</ACTION>
 	<ACTION NAME="xml-keystroke-parse">
 		<CODE>
 			buffer.putBooleanProperty("xml.keystroke-parse",
 				!buffer.getBooleanProperty("xml.keystroke-parse"));
-			view.getDockableWindowManager()
-				.addDockableWindow("xml-tree");
-			view.getDockableWindowManager()
-				.getDockable("xml-tree").parse(true);
+			xml.XmlPlugin.getParser(view).parse(true);
 		</CODE>
 		<IS_SELECTED>
 			return buffer.getBooleanProperty("xml.keystroke-parse");
@@ -83,10 +75,7 @@
 	</ACTION>
 	<ACTION NAME="xml-parse">
 		<CODE>
-			view.getDockableWindowManager()
-				.addDockableWindow("xml-tree");
-			view.getDockableWindowManager()
-				.getDockable("xml-tree").parse(true);
+			xml.XmlPlugin.getParser(view).parse(true);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-remove-tags">
