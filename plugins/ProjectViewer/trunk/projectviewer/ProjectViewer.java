@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.event.KeyEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.ItemListener;
@@ -523,7 +524,7 @@ public final class ProjectViewer extends JPanel
 	//{{{ createTree(TreeModel) method
 	/** Creates a new tree to be added to the viewer. */
 	private JTree createTree(TreeModel model) {
-		JTree tree = new JTree(model);
+		JTree tree = new PVTree(model);
 		tree.setCellRenderer(new VPTCellRenderer());
 		//tree.setBorder(BorderFactory.createEtchedBorder());
 
@@ -1176,6 +1177,31 @@ public final class ProjectViewer extends JPanel
 				// not gonna happen
 			} catch (java.lang.reflect.InvocationTargetException ite) {
 				// not gonna happen
+			}
+		}
+
+	} //}}}
+
+	//{{{ PVTree class
+	/** Listens for key events in the trees. */
+	private class PVTree extends JTree {
+
+		public PVTree(TreeModel model) {
+			super(model);
+		}
+
+		public void processKeyEvent(KeyEvent e) {
+			if (e.getID() == KeyEvent.KEY_PRESSED && e.getKeyCode() == KeyEvent.VK_ENTER) {
+				TreePath[] paths = getCurrentTree().getSelectionPaths();
+				for (int i = 0; i < paths.length; i++) {
+					VPTNode n = (VPTNode) paths[i].getLastPathComponent();
+					if (n.isFile()) {
+						n.open();
+					}
+				}
+				e.consume();
+			} else {
+				super.processKeyEvent(e);
 			}
 		}
 
