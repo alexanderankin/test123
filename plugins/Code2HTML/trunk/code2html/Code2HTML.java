@@ -71,7 +71,12 @@ public class Code2HTML
         this.painter  = config.getPainter();
 
         this.document = new HtmlDocument(
-            this.style, this.gutter, buffer.getName(), "\n"
+            jEdit.getProperty("view.bgColor", "#ffffff"),
+            jEdit.getProperty("view.fgColor", "#000000"),
+            this.style,
+            this.gutter,
+            buffer.getName(),
+            "\n"
         );
     }
 
