@@ -20,14 +20,14 @@ SYSTEM "xml-completion-info.dtd" "xml-completion-info.dtd"
 
 -- XHTML DTDs --
 
-PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "ent/xhtml1-frameset.dtd"
-SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" "ent/xhtml1-frameset.dtd"
+PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "xhtml1-frameset.dtd"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd" "xhtml1-frameset.dtd"
 
-PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "ent/xhtml1-strict.dtd"
-SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" "ent/xhtml1-strict.dtd"
+PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "xhtml1-strict.dtd"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd" "xhtml1-strict.dtd"
 
-PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "ent/xhtml1-transitional.dtd"
-SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" "ent/xhtml1-transitional.dtd"
+PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "xhtml1-transitional.dtd"
+SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" "xhtml1-transitional.dtd"
 
 PUBLIC "-//W3C//ENTITIES Latin 1 for XHTML//EN" "ent/xhtml-lat1.ent"
 SYSTEM "http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent" "ent/xhtml-lat1.ent"

@@ -264,7 +264,7 @@ class EditTagDialog extends EnhancedDialog
 			if(attr.value.value != null)
 			{
 				buf.append(XmlActions.charactersToEntities(
-					attr.value.value,entityHash,true));
+					attr.value.value,entityHash));
 			}
 			buf.append("\"");
 		}

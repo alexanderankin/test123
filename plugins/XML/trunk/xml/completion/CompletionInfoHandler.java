@@ -31,10 +31,7 @@ public class CompletionInfoHandler extends DefaultHandler
 	//{{{ CompletionInfoHandler constructor
 	public CompletionInfoHandler()
 	{
-		completionInfo = new CompletionInfo(
-			false,
-			new ArrayList(), new HashMap(),
-			new ArrayList(), new HashMap());
+		completionInfo = new CompletionInfo();
 
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
@@ -115,11 +112,14 @@ public class CompletionInfoHandler extends DefaultHandler
 		{
 			element = new ElementDecl(
 				attrs.getValue("name"),
-				"FOO" /* "true".equals(attrs.getValue("empty")) */,
+				attrs.getValue("content"),
 				"true".equals(attrs.getValue("html")));
 
 			completionInfo.elements.add(element);
 			completionInfo.elementHash.put(element.name,element);
+
+			if("true".equals(attrs.getValue("anywhere")))
+				completionInfo.elementsAllowedAnywhere.add(element);
 		}
 		else if(sName.equals("attribute"))
 		{
