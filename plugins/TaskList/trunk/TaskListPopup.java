@@ -41,7 +41,7 @@ import org.gjt.sp.util.Log;
 /**
  * A popup menu for the TaskList plugin
  *
- * @author   John Gellene
+ * @author John Gellene (jgellene@nyc.rr.com)
  */
 public class TaskListPopup extends JPopupMenu
 {
@@ -49,6 +49,13 @@ public class TaskListPopup extends JPopupMenu
 	private TaskList list;
 	private int taskNum;
 
+	/**
+	 * Constructor
+	 *
+	 * @param View view the view in which the popup menu will appear
+	 * @param TaskList list the TaskList object represented in the window in which the popup menu will appear
+	 * @param int TaskNum the zero-based index of the selected table roe that will be the subject of the popup
+	 */
 	public TaskListPopup(View view, TaskList list, int taskNum)
 	{
 		super(jEdit.getProperty("tasklist.popup.heading"));
@@ -69,6 +76,14 @@ public class TaskListPopup extends JPopupMenu
 	}
 
 
+	/**
+	 * Creates a menu item for the popup menu containing an
+	 * action command with the same name as the menu item
+	 *
+	 * @param name Represents the menu item entry's text
+	 *
+	 * @return a JMenuItem representing the new menu item
+	 */
 	private JMenuItem createMenuItem(String name) {
 		JMenuItem mi = new JMenuItem(name);
 		mi.setActionCommand(name);
@@ -77,6 +92,11 @@ public class TaskListPopup extends JPopupMenu
 	}
 
 
+	/**
+	 * Causes substitution of the comment tag for the selected task item;
+	 * displays a message if a parsing error occurs;
+	 * reparses buffer regardless of success
+	 */
 	class ActionHandler implements ActionListener {
 
 		public void actionPerformed(ActionEvent evt) {

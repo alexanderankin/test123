@@ -27,12 +27,20 @@ import org.gjt.sp.jedit.Buffer;
 
 import org.gjt.sp.util.Log;
 
+/**
+ * A data object containing the attributes of a formatted comment
+ * contained in a source file, along with an Icon represeting the
+ * type of task.
+ *
+ * @author Oliver Rutherfurd
+ */
 public class Task
 {
 
 	public Task(Buffer buffer, Icon icon, int line, String text,
 		int startOffset, int endOffset)
 	{
+		// DEBUG: dump of object properties
 		// Log.log(Log.DEBUG, Task.class,
 		// 	"Task.Task(buffer=" + buffer + ",icon=" + icon + ",line=" + line +
 		// 	",startOffset=" + startOffset + ",endOffset=" + endOffset +
@@ -62,6 +70,11 @@ public class Task
 		return endOffset;
 	}
 
+	/**
+	 * Provides String representation of the object.
+	 * @return A String containing the line number and text of the
+	 * formatted comment.
+	 */
 	public String toString()
 	{
 		return "[" + this.line + "]" + this.text;
