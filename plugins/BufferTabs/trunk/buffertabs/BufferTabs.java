@@ -54,6 +54,10 @@ import org.gjt.sp.util.Log;
 import java.awt.Rectangle;
 import java.awt.Cursor;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
+import java.awt.Graphics2D;
+import java.awt.AlphaComposite;
+import java.awt.geom.AffineTransform;
 
 /**
  * A tabbed pane that contains a text area.  The text area's buffer is
@@ -153,25 +157,27 @@ public class BufferTabs extends JTabbedPane implements EBComponent
     public void handleMessage(EBMessage msg) {
         Buffer buffer = null;
         if (msg instanceof BufferUpdate) {
+
             BufferUpdate bu = (BufferUpdate) msg;
             buffer = bu.getBuffer();
-            if (bu.getWhat() == BufferUpdate.CREATED) {
-                this.bufferCreated(buffer, buffer.getIndex());
-            }
-            else if (bu.getWhat() == BufferUpdate.CLOSED) {
-                this.bufferClosed(buffer);
-            }
-            else if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
-                this.bufferDirtyChanged(buffer);
-            }
-            else if (bu.getWhat() == BufferUpdate.LOADED) {
-                this.bufferLoaded(buffer);
-            }
-            else if (bu.getWhat() == BufferUpdate.SAVED) {
-                Buffer buff = bu.getBuffer();
-                int index = buffers.indexOf(buff);
-                setToolTipTextAt(index,buff.getPath());
-            }
+			if (bu.getWhat() == BufferUpdate.CREATED) {
+
+				this.bufferCreated(buffer, buffer.getIndex());
+			}
+			else if (bu.getWhat() == BufferUpdate.CLOSED) {
+				this.bufferClosed(buffer);
+			}
+			else if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
+				this.bufferDirtyChanged(buffer);
+			}
+			else if (bu.getWhat() == BufferUpdate.LOADED) {
+				this.bufferLoaded(buffer);
+			}
+			else if (bu.getWhat() == BufferUpdate.SAVED) {
+				Buffer buff = bu.getBuffer();
+				int index = buffers.indexOf(buff);
+				setToolTipTextAt(index,buff.getPath());
+			}
         } else if (msg instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate) msg;
             if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
@@ -232,11 +238,16 @@ public class BufferTabs extends JTabbedPane implements EBComponent
         }
 
         //CES: Force correct color for new buffer tab
-		this.updateColorAt(this.getSelectedIndex());
-
+		//this.updateColorAt(this.getSelectedIndex());
+	
 		if(index>=0) {
-           this.setSelectedIndex(index);
-           this.updateHighlightAt(index);
+				this.updateColorAt( index );
+			if ( buffer == this.getEditPane().getBuffer() )
+			{
+				this.updateColorAt(this.getSelectedIndex());
+				this.setSelectedIndex(index);
+				this.updateHighlightAt(index);
+			}
         }
     }
 
@@ -565,6 +576,8 @@ public class BufferTabs extends JTabbedPane implements EBComponent
      */
     class MouseHandler extends MouseAdapter
     {
+
+		
         /**
          * Handles the right-click, displaying the popup
          */
@@ -652,7 +665,6 @@ public class BufferTabs extends JTabbedPane implements EBComponent
                 if ( moving != -1 )
                 {
                     int index = getTabAt(me.getX(), me.getY() );
-              
                     if ( ( index != -1  ) && ( index != moving ) )
                     {
                         //System.out.println( "moving tab from " + moving + " to " + index );
