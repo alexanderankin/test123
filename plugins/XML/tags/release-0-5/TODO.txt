@@ -1,0 +1,17 @@
+- option to not fetch stuff from 'net
+- empty/opening tag only/opening and closing in edit tag dialog
+- try resolving public ID first
+- required attrs in ant tag list
+- documentation: XML catalog format, OASIS catalog format
+- proper handling of tags in nested files
+- test XMLCatalog support, include an XMLCatalog DTD
+- after 4.0pre1, remove own JCheckBoxList copy
+- tag lists for more file types, eg JSP, ASP, JHTML, ...
+- XmlComplete: support backspace (just get text from buffer from < pos
+  to caret pos)
+- initial setup wizard when xml file opened for the first time
+- All/1/2/3/4 buttons in XML tree?
+- 'new xml file' command
+- handle parsing open buffers better
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available
