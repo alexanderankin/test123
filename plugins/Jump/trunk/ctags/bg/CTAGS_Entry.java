@@ -49,7 +49,7 @@ public class CTAGS_Entry implements Serializable
             LineCtagsOutput = LineCtagsOutput.substring(i + 1);
             LineCtagsOutput = LineCtagsOutput.trim();
 
-            i = LineCtagsOutput.indexOf("/^",0);//????????? ("$/^",0)
+            i = LineCtagsOutput.indexOf("/^",0);//????????? ("$/^",0) (but jextlauncer.cpp not parsed)
             int end = LineCtagsOutput.indexOf("/;\"",0);
             Ex_Cmd = LineCtagsOutput.substring(i + 2, end - 1);
             Ex_Cmd = Ex_Cmd.trim();
