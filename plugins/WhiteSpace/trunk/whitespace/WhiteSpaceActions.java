@@ -24,79 +24,101 @@ import org.gjt.sp.jedit.Buffer;
 
 public class WhiteSpaceActions
 {
-    private WhiteSpaceActions() {}
+	private WhiteSpaceActions() {}
 
 
-    private static WhiteSpaceModel getWhiteSpaceModel(Buffer buffer) {
-        return (WhiteSpaceModel) buffer.getProperty(
-            WhiteSpaceModel.MODEL_PROPERTY
-        );
-    }
+	private static WhiteSpaceModel getWhiteSpaceModel(Buffer buffer) {
+		return (WhiteSpaceModel) buffer.getProperty(
+			WhiteSpaceModel.MODEL_PROPERTY
+		);
+	}
 
 
-    public static void toggleRemoveTrailing(Buffer buffer) {
-        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
-        if (model == null) { return; }
+	public static void toggleRemoveTrailing(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return; }
 
-        model.getRemoveTrailingWhitespace().toggleEnabled();
-    }
-
-
-    public static boolean isRemoveTrailingSelected(Buffer buffer) {
-        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
-        if (model == null) { return false; }
-
-        return model.getRemoveTrailingWhitespace().isEnabled();
-    }
+		model.getRemoveTrailingWhitespace().toggleEnabled();
+	}
 
 
-    public static void toggleSoftTabifyLeading(Buffer buffer) {
-        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
-        if (model == null) { return; }
+	public static boolean isRemoveTrailingSelected(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return false; }
 
-        model.getSoftTabifyLeadingWhitespace().toggleEnabled();
-    }
-
-
-    public static boolean isSoftTabifyLeadingSelected(Buffer buffer) {
-        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
-        if (model == null) { return false; }
-
-        return model.getSoftTabifyLeadingWhitespace().isEnabled();
-    }
+		return model.getRemoveTrailingWhitespace().isEnabled();
+	}
 
 
-    public static void toggleTabifyLeading(Buffer buffer) {
-        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
-        if (model == null) { return; }
+	public static void toggleSoftTabifyLeading(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return; }
 
-        model.getTabifyLeadingWhitespace().toggleEnabled();
-    }
+		WhiteSpaceModel.Option option = model.getSoftTabifyLeadingWhitespace();
 
+		option.toggleEnabled();
 
-    public static boolean isTabifyLeadingSelected(Buffer buffer) {
-        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
-            WhiteSpaceModel.MODEL_PROPERTY
-        );
-        if (model == null) { return false; }
-
-        return model.getTabifyLeadingWhitespace().isEnabled();
-    }
+		if (option.isEnabled()) {
+			// model.getSoftTabifyLeadingWhitespace().setEnabled(false);
+			model.getTabifyLeadingWhitespace().setEnabled(false);
+			model.getUntabifyLeadingWhitespace().setEnabled(false);
+		}
+	}
 
 
-    public static void toggleUntabifyLeading(Buffer buffer) {
-        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
-        if (model == null) { return; }
+	public static boolean isSoftTabifyLeadingSelected(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return false; }
 
-        model.getUntabifyLeadingWhitespace().toggleEnabled();
-    }
+		return model.getSoftTabifyLeadingWhitespace().isEnabled();
+	}
 
 
-    public static boolean isUntabifyLeadingSelected(Buffer buffer) {
-        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
-        if (model == null) { return false; }
+	public static void toggleTabifyLeading(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return; }
 
-        return model.getUntabifyLeadingWhitespace().isEnabled();
-    }
+		WhiteSpaceModel.Option option = model.getTabifyLeadingWhitespace();
+
+		option.toggleEnabled();
+
+		if (option.isEnabled()) {
+			model.getSoftTabifyLeadingWhitespace().setEnabled(false);
+			// model.getTabifyLeadingWhitespace().setEnabled(false);
+			model.getUntabifyLeadingWhitespace().setEnabled(false);
+		}
+	}
+
+
+	public static boolean isTabifyLeadingSelected(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return false; }
+
+		return model.getTabifyLeadingWhitespace().isEnabled();
+	}
+
+
+	public static void toggleUntabifyLeading(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return; }
+
+		WhiteSpaceModel.Option option = model.getUntabifyLeadingWhitespace();
+
+		option.toggleEnabled();
+
+		if (option.isEnabled()) {
+			model.getSoftTabifyLeadingWhitespace().setEnabled(false);
+			model.getTabifyLeadingWhitespace().setEnabled(false);
+			// model.getUntabifyLeadingWhitespace().setEnabled(false);
+		}
+	}
+
+
+	public static boolean isUntabifyLeadingSelected(Buffer buffer) {
+		WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+		if (model == null) { return false; }
+
+		return model.getUntabifyLeadingWhitespace().isEnabled();
+	}
 }
 
