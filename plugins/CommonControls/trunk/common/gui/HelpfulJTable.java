@@ -436,8 +436,10 @@ public class HelpfulJTable extends JTable
 	 * Computes the length of the text of cell (row,col), in pixels.
 	 */
 	private int getCellTextWidth(int row, int col) {
-		String value = getValueAt(row, col).toString();
-		Component comp = getCellRendererComponent(row, col);
+		final Object svalue = getValueAt(row, col);
+		if (svalue == null) return 0;
+		final String value = svalue.toString();
+		final Component comp = getCellRendererComponent(row, col);
 		return getTextWidthInComp( value, comp );
 	}
 
