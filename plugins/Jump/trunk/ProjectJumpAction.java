@@ -42,74 +42,23 @@ public class ProjectJumpAction
     private TypeTag typeTagWindow;
     
     private ProjectBuffer currentTags;
+    
+    private int carret_pos;
     //private int historyIndex;
 //}}}
 
 //{{{ CONSTRUCTOR
     public ProjectJumpAction()
-    {
-         //typeTagWindow = new TypeTag(); 
-         //historyIndex = -1;
-    }
+    { }
 //}}}
 
-//{{{ Old, unused methods
-//{{{ void reloadFile
-/**
-* When file modified and saved, we need to update tags
-*/ 
-   // public void reloadFile(String f)
-   //  {
-   //      listener.ctags_buff.remove(f);
-   //      this.addFile(f);
-   //  }
-//}}}
-
-//{{{ void removeFile
-/**
-* Remove all tags (which founded in spec. file) from CTAGS_Buffer
-*/ 
-    // public void removeFile(String f)
-    // {
-    //     listener.ctags_buff.removeFile(f);
-    // }
-    
-//}}}
-
-//{{{ void addFile
-/**
-* When new file open, add its tag to CTAGS_Buffer
-*/ 
-    // public void addFile(String f)
-    // {
-    //     try    
-    //     {
-    //         Log.log(Log.DEBUG,this,"addFile: - "+f); 
-    //         if (f==null) return;
-    //         CTAGS_Buffer new_buff = listener.ctags_bg.getParser().parse(f);
-    //         if (new_buff == null)
-    //         {
-    //             return;
-    //         }
-    //         TagsAlreadyLoaded = true;
-    //         listener.ctags_buff.append(new_buff,f);
-    //     } 
-    //     catch (IOException e)
-    //     {
-    //         return;  
-    //     }
-    // }
-//}}}
-//}}}
-
-//{{{ HISTORY
+//{{{ HISTORY STUFF
 
 //{{{ addToHistory(CTAGS_Entry en)
     public void addToHistory(CTAGS_Entry en) 
     {
         JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.add(en);
         JumpPlugin.getActiveProjectBuffer().HISTORY.addItem(en.getTagName());
-        //History.add(en);
     }
 //}}}
     
@@ -118,18 +67,12 @@ public class ProjectJumpAction
     public void clearHistory()
     {
         JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.clear();
-        //History.clear();
     }
 //}}}
     
 //{{{ JumpToPreviousTag()
     public void JumpToPreviousTag()
     {
-    //     if (jEdit.getBooleanProperty("jump.enable", false) == false)
-    //     {
-    //         GUIUtilities.message(jEdit.getActiveView(), "JumpPlugin.enable", new Object[0]);
-    //         return;    
-    //     }
         CTAGS_Entry en = (CTAGS_Entry)JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.getPrevious();
         
         if (en == null)
@@ -203,25 +146,27 @@ public class ProjectJumpAction
         search.setSearchString(pattern);
 
         Log.log(Log.DEBUG,this,"Try to find: - "+pattern);
-        try
-        {
-            if (search.find(v, v.getBuffer(), 0)==false)
+            try
             {
-                //Log.log(Log.DEBUG,this,"Can\'t find pattren: "+pattern);
-            }
-            else
-            {
-                if (add_hist==true)
+                if (!search.find(v, v.getBuffer(), 0))
                 {
-                    addToHistory(en_for_history);
-                    //HistoryModel.getModel(HistoryModelName).addItem(en_for_history.getTagName());
+                    //Log.log(Log.DEBUG,this,"Can\'t find pattren: "+pattern);
+                }
+                else
+                {
+                    if (add_hist==true)
+                    {
+                        addToHistory(en_for_history);
+                        //HistoryModel.getModel(HistoryModelName).addItem(en_for_history.getTagName());
+                    }
                 }
             }
-        }
-        catch (Exception e)
-        {
-            Log.log(Log.DEBUG,this,"Exception during search.find() " + pattern);
-        }
+            catch (Exception e)
+            {
+                Log.log(Log.DEBUG,this,"Exception during search.find() " + pattern);
+            }
+            
+            
         
         }
             });	
@@ -231,6 +176,8 @@ public class ProjectJumpAction
 //{{{ String getSelection()
     public String getSelection()
     {
+        
+        carret_pos = jEdit.getActiveView().getTextArea().getCaretPosition();
         String sel = jEdit.getActiveView().getTextArea().getSelectedText();
         //Log.log(Log.DEBUG,this,"Selection-"+sel);
         
@@ -259,6 +206,8 @@ public class ProjectJumpAction
         if (tags == null || tags.size() < 1)
         {
             Log.log(Log.DEBUG,this,"getTagBySelection: No tags found! - "+sel);
+            view.getTextArea().selectNone();
+            view.getTextArea().setCaretPosition(carret_pos);
             return;
         }
         

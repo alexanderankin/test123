@@ -1,5 +1,5 @@
 // * :tabSize=4:indentSize=4:
-// * :folding=none:collapseFolds=1:
+// * :folding=explicit:collapseFolds=1:
 
 //{{{ IMPORTS
 import org.gjt.sp.jedit.*;
@@ -11,16 +11,13 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 
 import java.util.*;
-import java.util.Comparator;
-import java.util.Vector;
+
 
 import java.awt.event.*;
 import java.awt.Component;
 import java.awt.Font;
 
-import javax.swing.AbstractListModel;
-import javax.swing.JList;
-import javax.swing.ListModel;
+import javax.swing.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 
@@ -38,13 +35,11 @@ import ctags.bg.*;
  */
 class FoldJumpAction
 {
-
 //{{{ ---------  fields
     private View view;
     private Object[] foundedFolds;
     private Buffer buff;
     private String fold_pattern;
-
 //}}}
 
 //{{{ --------- constructor
