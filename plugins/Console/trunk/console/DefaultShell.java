@@ -21,6 +21,7 @@ package console;
 
 import java.lang.reflect.*;
 import java.io.*;
+import java.util.Hashtable;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -33,6 +34,7 @@ class DefaultShell extends Shell
 		java13 = (System.getProperty("java.version").compareTo("1.3") >= 0);
 		Log.log(Log.DEBUG,this,"cd command " + (java13 ? "enabled" : "disabled"));
 		dir = System.getProperty("user.dir");
+		initTableWinBuiltIns();
 	}
 
 	public void printInfoMessage(Console console)
@@ -98,7 +100,7 @@ class DefaultShell extends Shell
 						if(path.endsWith("/")
 							|| path.endsWith(File.separator))
 							path = path.substring(0,
-	
+
 								path.length() - 1);
 						buf.append(path);
 						break;
@@ -153,67 +155,74 @@ class DefaultShell extends Shell
 
 		command = buf.toString();
 
+		// this will be set to true if adding a Windows extension
+		// to the executable file name works
+		boolean alreadyDone = false;
 		// On Windows and OS/2, try running <command>.bat,
 		// then <command>.exe
 		if(appendEXE)
 		{
+			// first, let's deal with some built-in Windows commands
+			// and pass them to an instance of the Windows command
+			// interpreter
+			if(IsWinBuiltIn(command))
+			{
+				// which command interpreter?
+				String cmdInterp;
+				if(osName.indexOf("Windows 9") != -1)
+					cmdInterp = new String("command.com /C ");
+				else cmdInterp = new String("cmd.exe /C ");
+				command = cmdInterp + command;
+			}
+
 			int spaceIndex = command.indexOf(' ');
 			if(spaceIndex == -1)
 				spaceIndex = command.length();
 			int dotIndex = command.indexOf('.');
 			if(dotIndex == -1 || dotIndex > spaceIndex)
 			{
-				try
-				{
-					String newCommand = command.substring(
-						0,spaceIndex) + ".bat" + command
-						.substring(spaceIndex);
-					process = _exec(newCommand);
-					process.getOutputStream().close();
-					return;
-				}
-				catch(IOException io)
+				String[] extensionsToTry = { ".cmd", ".bat", ".com", ".exe" };
+				for(int i = 0; i < extensionsToTry.length; i++)
 				{
 					try
 					{
 						String newCommand = command.substring(
-							0,spaceIndex) + ".exe" + command
-							.substring(spaceIndex);
+							0,spaceIndex) + extensionsToTry[i]
+							+ command.substring(spaceIndex);
 						process = _exec(newCommand);
 						process.getOutputStream().close();
+						alreadyDone = true;
+						break;
 					}
-					catch(IOException _io)
+					catch(IOException io)
 					{
-						String[] args = { _io.getMessage() };
-						console.printInfo(jEdit.getProperty("console.shell.ioerror",args));
 					}
 					catch(Throwable t)
 					{
 						Log.log(Log.ERROR,this,t);
+						return;
 					}
-					return;
-				}
-				catch(Throwable t)
-				{
-					Log.log(Log.ERROR,this,t);
 				}
 			}
 		}
 
-		try
+		if(!alreadyDone)
 		{
-			process = _exec(command);
-			process.getOutputStream().close();
-		}
-		catch(IOException io)
-		{
-			String[] args = { io.getMessage() };
-			console.printInfo(jEdit.getProperty("console.shell.ioerror",args));
-			return;
-		}
-		catch(Throwable t)
-		{
-			Log.log(Log.ERROR,this,t);
+			try
+			{
+				process = _exec(command);
+				process.getOutputStream().close();
+			}
+			catch(IOException io)
+			{
+				String[] args = { io.getMessage() };
+				console.printInfo(jEdit.getProperty("console.shell.ioerror",args));
+				return;
+			}
+			catch(Throwable t)
+			{
+				Log.log(Log.ERROR,this,t);
+			}
 		}
 
 		this.command = command;
@@ -266,6 +275,54 @@ class DefaultShell extends Shell
 
 	private int threadDoneCount;
 	private boolean exitStatus;
+
+	// used to store built-in commands
+	private Hashtable tableWinBuiltIns;
+
+	private void initTableWinBuiltIns()
+	{
+		String [] elems  = { "md", "rd", "del", "dir", "copy",
+					"move", "erase", "mkdir", "rmdir" };
+		this.tableWinBuiltIns = new Hashtable();
+		for( int i = 0; i < elems.length; ++i)
+		{
+			this.tableWinBuiltIns.put(elems[i], elems[i]);
+		}
+	}
+
+	private boolean IsWinBuiltIn(String command)
+	{
+		String com = command.trim();
+		final int i1 = com.indexOf(' ');
+		final int i2 = com.indexOf('.');
+		final int i3 = com.indexOf('\\');
+		final int i4 = com.indexOf('\"');
+		final int cLen = com.length();
+		int pos = cLen;
+		if( i1 != -1 && i1 < pos) pos = i1;
+		if( i2 != -1 && i2 < pos) pos = i2;
+		if( i3 != -1 && i3 < pos) pos = i3;
+		if( i4 != -1 && i4 < pos) pos = i4;
+		String builtIn = com.substring( 0, pos);
+		if( tableWinBuiltIns.get( builtIn) != null)
+		{
+			int bLen = builtIn.length();
+			if( cLen == bLen)
+				return true;
+			final char c = com.charAt(++bLen);
+			if( c == ' ' || c == '\\' || c == '\"')
+				return true;
+			if( c == '.')
+			{
+				if( cLen == bLen)
+					return true;
+				final char cc = com.charAt(++bLen);
+				if( cc == '.' || cc == '\\')
+					return true;
+			}
+		}
+		return false;
+	}
 
 	private void parseLine(String line)
 	{
