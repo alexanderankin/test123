@@ -57,7 +57,6 @@ public class XmlPlugin extends EBPlugin
 
 		XmlActions.propertiesChanged();
 		CatalogManager.propertiesChanged();
-		TagHighlight.propertiesChanged();
 	} //}}}
 
 	//{{{ stop() method
@@ -104,7 +103,6 @@ public class XmlPlugin extends EBPlugin
 		{
 			XmlActions.propertiesChanged();
 			CatalogManager.propertiesChanged();
-			TagHighlight.propertiesChanged();
 		} //}}}
 	} //}}}
 

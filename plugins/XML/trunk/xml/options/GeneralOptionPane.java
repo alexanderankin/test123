@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001 Slava Pestov
+ * Copyright (C) 2001, 2003 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -56,20 +56,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		else
 			network.setSelectedIndex(0);
 
-		tagHighlight = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.tag-highlight-enabled"));
-		tagHighlight.setSelected(jEdit.getBooleanProperty(
-			"xml.tag-highlight"));
-		tagHighlight.addActionListener(new ActionHandler());
-
-		tagHighlightColor = new ColorWellButton(
-			jEdit.getColorProperty("xml.tag-highlight-color"));
-
-		addComponent(tagHighlight,tagHighlightColor,
-			GridBagConstraints.VERTICAL);
-
-		tagHighlightColor.setEnabled(tagHighlight.isSelected());
-
 		String[] showAttributeValues = {
 			jEdit.getProperty("options.xml.general.show-attributes.none"),
 			jEdit.getProperty("options.xml.general.show-attributes.id-only"),
@@ -85,13 +71,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.close-complete")));
 		closeComplete.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete"));
-		closeComplete.addActionListener(new ActionHandler());
 
 		addComponent(closeCompleteOpen = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.close-complete-open")));
 		closeCompleteOpen.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete-open"));
-		closeCompleteOpen.addActionListener(new ActionHandler());
 
 		addComponent(standaloneExtraSpace = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.standalone-extra-space")));
@@ -105,8 +89,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
 		jEdit.setBooleanProperty("xml.cache",network.getSelectedIndex() == 1);
 		jEdit.setBooleanProperty("xml.network",network.getSelectedIndex() >= 1);
-		jEdit.setBooleanProperty("xml.tag-highlight",
-			tagHighlight.isSelected());
 		jEdit.setProperty("xml.tag-highlight-color",
 			GUIUtilities.getColorHexString(
 			tagHighlightColor.getSelectedColor()));
@@ -123,21 +105,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 	//{{{ Private members
 	private JCheckBox validate;
 	private JComboBox network;
-	private JCheckBox tagHighlight;
 	private ColorWellButton tagHighlightColor;
 	private JComboBox showAttributes;
 	private JCheckBox closeCompleteOpen;
 	private JCheckBox closeComplete;
 	private JCheckBox standaloneExtraSpace;
 	//}}}
-
-	//{{{ ActionHandler class
-	class ActionHandler implements ActionListener
-	{
-		public void actionPerformed(ActionEvent evt)
-		{
-			if(evt.getSource() == tagHighlight)
-				tagHighlightColor.setEnabled(tagHighlight.isSelected());
-		}
-	} //}}}
 }
