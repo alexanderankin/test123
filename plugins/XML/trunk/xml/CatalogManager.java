@@ -103,10 +103,30 @@ public class CatalogManager
 
 		if(newSystemId == null)
 			return null;
+
+		Buffer buf = jEdit.getBuffer(XmlPlugin.uriToFile(newSystemId));
+		if(buf != null)
+		{
+			if(buf.isPerformingIO())
+				VFSManager.waitForRequests();
+			Log.log(Log.DEBUG,CatalogManager.class,"Found open buffer for " + newSystemId);
+			InputSource source = new InputSource(systemId);
+			try
+			{
+				buf.readLock();
+				source.setCharacterStream(new StringReader(buf.getText(0,
+					buf.getLength())));
+			}
+			finally
+			{
+				buf.readUnlock();
+			}
+			return source;
+		}
 		else if(newSystemId.startsWith("file:")
 			|| newSystemId.startsWith("jeditresource:"))
 		{
-			InputSource source = new InputSource(newSystemId);
+			InputSource source = new InputSource(systemId);
 			//source.setByteStream(new URL(newSystemId).openStream());
 			return source;
 		}
@@ -149,7 +169,7 @@ public class CatalogManager
 
 			if(session[0] != null)
 			{
-				InputSource source = new InputSource(newSystemId);
+				InputSource source = new InputSource(systemId);
 				if(cache)
 				{
 					File file;
@@ -279,8 +299,13 @@ public class CatalogManager
 		Iterator files = resourceCache.values().iterator();
 		while(files.hasNext())
 		{
-			String file = (String)files.next();
-			new File(file).delete();
+			Object obj = files.next();
+			if(obj instanceof String)
+			{
+				String file = (String)XmlPlugin.uriToFile((String)obj);
+				Log.log(Log.NOTICE,CatalogManager.class,"Deleting " + file);
+				new File(file).delete();
+			}
 		}
 		resourceCache.clear();
 	} //}}}
@@ -294,6 +319,7 @@ public class CatalogManager
 	private static Catalog catalog;
 	private static HashMap resourceCache;
 	private static HashMap reverseResourceCache;
+	private static String resourceDir;
 
 	// placeholder for DTDs we never want to download
 	private static Object IGNORE = new Object();
@@ -326,9 +352,9 @@ public class CatalogManager
 
 		String userDir = jEdit.getSettingsDirectory();
 
-		File dtdDir = new File(userDir, "dtds");
-		if (!dtdDir.exists())
-			dtdDir.mkdir();
+		File _resourceDir = new File(resourceDir);
+		if (!_resourceDir.exists())
+			_resourceDir.mkdir();
 
 		// Need to put this "copy from one stream to another"
 		// into a common method some day, since other parts
@@ -336,7 +362,7 @@ public class CatalogManager
 		BufferedInputStream in = new BufferedInputStream(
 			vfs._createInputStream(session,path,false,null));
 
-		File localFile = File.createTempFile("cache", ".xml", dtdDir);
+		File localFile = File.createTempFile("cache", ".xml", _resourceDir);
 
 		BufferedOutputStream out = new BufferedOutputStream(
 			new FileOutputStream(localFile));
@@ -402,7 +428,16 @@ public class CatalogManager
 		if(loaded)
 			return;
 
-		cache = jEdit.getBooleanProperty("xml.cache");
+		if(jEdit.getSettingsDirectory() == null)
+		{
+			cache = false;
+		}
+		else
+		{
+			resourceDir = MiscUtilities.constructPath(
+				jEdit.getSettingsDirectory(),"dtds");
+			cache = jEdit.getBooleanProperty("xml.cache");
+		}
 		network = jEdit.getBooleanProperty("xml.network");
 
 		resourceCache = new HashMap();

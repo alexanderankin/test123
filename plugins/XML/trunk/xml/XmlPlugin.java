@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001, 2002 Slava Pestov
+ * Copyright (C) 2000, 2003 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -132,6 +132,23 @@ public class XmlPlugin extends EBPlugin
 
 		return jEdit.getProperty("mode." + modeName + "."
 			+ SideKickPlugin.PARSER_PROPERTY) == null;
+	} //}}}
+
+	//{{{ uriToFile() method
+	public static String uriToFile(String uri)
+	{
+		if(uri.startsWith("file:/"))
+		{
+			if(uri.startsWith("file:///") && OperatingSystem.isDOSDerived())
+				uri = uri.substring(8);
+			else if(uri.startsWith("file://"))
+				uri = uri.substring(7);
+			else
+				uri = uri.substring(6);
+
+			uri.replace('/',java.io.File.separatorChar);
+		}
+		return uri;
 	} //}}}
 
 	//{{{ Private members

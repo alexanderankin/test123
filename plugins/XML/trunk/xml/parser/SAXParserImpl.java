@@ -95,16 +95,32 @@ public class SAXParserImpl extends XmlParser
 			Log.log(Log.ERROR,this,se);
 		}
 
+		//TODO
 		CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(
 			buffer);
 		if(info != null)
 			data.mappings.put("",info);
 
+		InputSource source = new InputSource();
+
+		String rootDocument = buffer.getStringProperty("xml.root");
+		if(rootDocument != null)
+		{
+			Log.log(Log.NOTICE,this,"rootDocument specified; "
+				+ "parsing " + rootDocument);
+			rootDocument = MiscUtilities.constructPath(
+				MiscUtilities.getParentOfPath(
+				buffer.getPath()),rootDocument);
+			source.setSystemId(rootDocument);
+		}
+		else
+		{
+			source.setCharacterStream(new StringReader(text));
+			source.setSystemId(buffer.getPath());
+		}
+
 		try
 		{
-			InputSource source = new InputSource(
-				new StringReader(text));
-			source.setSystemId(buffer.getPath());
 			reader.parse(source);
 		}
 		catch(IOException ioe)
@@ -249,20 +265,8 @@ public class SAXParserImpl extends XmlParser
 		//{{{ addError() method
 		private void addError(int type, String uri, int line, String message)
 		{
-			if(uri == null)
-			{
-				System.err.println("null uri: " + message);
-				return;
-			}
-
-			// FIXME?
-			if(uri.startsWith("file:///") && OperatingSystem.isDOSDerived())
-				uri = uri.substring(8);
-			else if(uri.startsWith("file://"))
-				uri = uri.substring(7);
-			uri.replace('/',File.separatorChar);
-
-			errorSource.addError(type,uri,line,0,0,message);
+			errorSource.addError(type,XmlPlugin.uriToFile(uri),line,
+				0,0,message);
 		} //}}}
 
 		//{{{ getGrammarForNamespace() method
@@ -413,9 +417,8 @@ public class SAXParserImpl extends XmlParser
 		{
 			empty = true;
 
-			// ignore tags inside nested files for now
-			//if(!buffer.getPath().equals(loc.getSystemId()))
-			//	return;
+			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
+				return;
 
 			buffer.readLock();
 
@@ -466,9 +469,8 @@ public class SAXParserImpl extends XmlParser
 			String qName  // qualified name
 			) throws SAXException
 		{
-			// ignore tags inside nested files for now
-			//if(!buffer.getPath().equals(loc.getSystemId()))
-			//	return;
+			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
+				return;
 
 			buffer.readLock();
 
