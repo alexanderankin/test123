@@ -17,6 +17,12 @@
 
 ---------------------------------------------------------------------------
 
+* Toolbar
+  ** use new RolloverButton class in jEdit 4.1? (for ProjectViewer 1.0.4)
+  ** remove "new project" -> add entry to combo-box "new project ..."
+  ** join "Delete project" and "Remove file or directory"
+  ** remove button "remove all files", but add button "refresh project"
+
 * ContextMenu
   ** Project
     "properties" (IE name and root)

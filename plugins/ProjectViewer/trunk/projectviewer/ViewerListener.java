@@ -1,4 +1,4 @@
-/*
+/* $Id$
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -27,15 +27,9 @@ import javax.swing.tree.*;
 
 import org.gjt.sp.util.Log;
 
-/**
- * Listen to all buttons and GUI events and respond to them.
- *
- *@author     ensonic
- *@created    19. Juni 2002
- *@version    $Id$
+/** Listen to all buttons and GUI events and respond to them.
  */
-class ViewerListener
-		 implements ActionListener, ItemListener {
+public final class ViewerListener implements ActionListener, ItemListener {
 
 	private ProjectViewer viewer;
 	private Launcher launcher;
@@ -108,7 +102,6 @@ class ViewerListener
 		}
 	}
 
-
 	/** Handle project combo changes.
 	 *
 	 *@param  evt  Description of Parameter
@@ -124,7 +117,6 @@ class ViewerListener
 			viewer.setCurrentProject(null);
 		}
 	}
-
 
 	/** Show the config dialog to the user. */
 	public void showConfig() {
@@ -221,7 +213,7 @@ class ViewerListener
 
 		if (node instanceof ProjectFile) {
 			Log.log(Log.DEBUG, this, " is file");
-			viewer.getCurrentProject().removeFile((ProjectFile)node);
+			viewer.getCurrentProject().removeFile((ProjectFile) node);
 		}
 		else if (node instanceof ProjectDirectory) {
 			Log.log(Log.DEBUG, this, " is dir");
@@ -231,7 +223,7 @@ class ViewerListener
 					JOptionPane.YES_NO_OPTION);
 
 			if (answer == JOptionPane.YES_OPTION) {
-				viewer.getCurrentProject().removeDirectory((ProjectDirectory)node);
+				viewer.getCurrentProject().removeDirectory((ProjectDirectory) node);
 			}
 		}
 		else {
@@ -239,7 +231,6 @@ class ViewerListener
 			removeAllFilesFromProject();
 		}
 	}
-
 
 	/** Prompt the user if he want to remove all file from a projects. */
 	private void removeAllFilesFromProject() {
