@@ -173,7 +173,7 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 		private JButton cancel;
 		
 		public MarkDialog(Mark m,String title) {
-			super(jEdit.getActiveView(),title);
+			super(jEdit.getActiveView(),title,true);
 			if (m == null) {
 				name = new JTextField(30);
 				column = new JTextField(4);
