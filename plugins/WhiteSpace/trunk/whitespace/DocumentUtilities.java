@@ -63,13 +63,11 @@ public class DocumentUtilities {
 
 
     public static void tabifyLeading(Buffer buffer, int tabSize) {
-        Element map = buffer.getDefaultRootElement();
         WhiteSpaceInfo whiteSpaceInfo = new WhiteSpaceInfo();
 
-        for (int i = map.getElementCount() - 1; i >= 0; i--) {
-            Element line = map.getElement(i);
-            int start = line.getStartOffset();
-            int end   = line.getEndOffset();
+        for (int i = buffer.getLineCount() - 1; i >= 0; i--) {
+            int start = buffer.getLineStartOffset(i);
+            int end   = buffer.getLineEndOffset(i);
 
             // We get the line i without the line separator (always \n)
             int len = (end - 1) - start;
