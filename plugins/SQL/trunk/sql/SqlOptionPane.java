@@ -333,7 +333,19 @@ public class SqlOptionPane extends AbstractOptionPane
         {
           final String text = specialCommentField.getText();
           allSpecialComments.add( text );
-          MiscUtilities.quicksort( allSpecialComments, new MiscUtilities.StringCompare() );
+          MiscUtilities.quicksort( allSpecialComments, new Comparator()
+          {
+            public int compare( Object o1, Object o2 )
+            {
+              final String s1 = o1.toString();
+              final String s2 = o2.toString();
+              if ( s1.length() > s2.length() )
+                return -1;
+              if ( s1.length() < s2.length() )
+                return 1;
+              return s1.compareTo( s2 );
+            }
+          } );
 
           updateSpecialCommentList();
         }

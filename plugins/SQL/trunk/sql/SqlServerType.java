@@ -658,7 +658,8 @@ public class SqlServerType extends Properties
   {
     public InputSource resolveEntity( String publicId, String systemId )
     {
-      if ( systemId.endsWith( "sqlServerType.dtd" ) )
+      if ( systemId.endsWith( "sqlServerType.dtd" ) ||
+           publicId.endsWith( "sqlServerType.dtd" ) )
       {
         final InputStream ist = SqlServerType.class.getClassLoader().getResourceAsStream(
             "sqlServerType.dtd" );

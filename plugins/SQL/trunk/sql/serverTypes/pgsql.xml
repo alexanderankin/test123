@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+<!DOCTYPE serverType SYSTEM "http://www.jedit.org/sqlServerType.dtd">
 
 <serverType name="pgsql">
 

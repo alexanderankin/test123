@@ -51,32 +51,32 @@
   </ACTION>
   <ACTION NAME="sql.publishBuffer">
     <CODE>
-      SqlPlugin.publishBuffer(view, sql.SqlUtils.getSelectedServerName() );
+      sql.SqlPlugin.publishBuffer(view, sql.SqlUtils.getSelectedServerName() );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.publishSelection">
     <CODE>
-      SqlPlugin.publishSelection(view, sql.SqlUtils.getSelectedServerName() );
+      sql.SqlPlugin.publishSelection(view, sql.SqlUtils.getSelectedServerName() );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.publishBufferToServer">
     <CODE>
-      SqlPlugin.publishBufferToServer(view);
+      sql.SqlPlugin.publishBufferToServer(view);
     </CODE>
   </ACTION>
   <ACTION NAME="sql.publishSelectionToServer">
     <CODE>
-      SqlPlugin.publishSelectionToServer(view);
+      sql.SqlPlugin.publishSelectionToServer(view);
     </CODE>
   </ACTION>
   <ACTION NAME="sql.loadObject">
     <CODE>
-      SqlPlugin.loadObject( view, sql.SqlUtils.getSelectedServerName() );
+      sql.SqlPlugin.loadObject( view, sql.SqlUtils.getSelectedServerName() );
     </CODE>
   </ACTION>
   <ACTION NAME="sql.loadObjectFromServer">
     <CODE>
-      SqlPlugin.loadObjectFromServer( view );
+      sql.SqlPlugin.loadObjectFromServer( view );
     </CODE>
   </ACTION>
 </ACTIONS>
