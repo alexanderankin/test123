@@ -71,5 +71,14 @@ public class XSLTPlugin extends EditPlugin {
     JOptionPane.showMessageDialog(component, msg.toString());
   }
 
+
+  static void showMessageDialog(String property, Component component) {
+    String message = jEdit.getProperty(property);
+    JOptionPane.showMessageDialog(component, message);
+  }
+
+
+
+
 }
 

@@ -159,7 +159,6 @@ public class XSLTUtilities {
     reader.setContentHandler(handlers[0]);
     reader.setProperty("http://xml.org/sax/properties/lexical-handler", handlers[0]);
 
-//    String inputPath = inputFile.substring(0, inputFile.lastIndexOf(File.separatorChar));
     EntityResolver entityResolver = new EntityResolverImpl(inputFile);
     reader.setEntityResolver(entityResolver);
 
