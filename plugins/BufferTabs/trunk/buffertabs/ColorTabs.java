@@ -359,12 +359,12 @@ public class ColorTabs
             colorVariation = !colorVariation;
          }
 
-         if (colorText != jEdit.getBooleanProperty("buffertabs.colourizetext"))
+         if (colorText != jEdit.getBooleanProperty("buffertabs.color-foreground"))
          {
             colorText = !colorText;
          }
 
-         if (colorTitles != jEdit.getBooleanProperty("buffertabs.colourizetext"))
+         if (colorTitles != jEdit.getBooleanProperty("buffertabs.color-foreground"))
          {
             colorTitles = !colorTitles;
          }
