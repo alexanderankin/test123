@@ -55,22 +55,7 @@ projectviewer.options.include_files=Files to include:
 
 projectviewer.options.browser_path=Browser Path:
 projectviewer.options.browser_path.tooltip=This is used for web projects, to launch files in the browser
-projectviewer.options.browseable_ext=Browse-able Extensions:
-#}}}
 
-#{{{ UI messages
-projectviewer.folderstab=Folders
-projectviewer.filestab=Files
-projectviewer.workingfilestab=Working Files
-projectviewer.non-project-filter=Non Project Files
-projectviewer.archive_filter=Archive files
-projectviewer.create_project=Create Project
-projectviewer.all_projects=All Projects
-projectviewer.error=Error
-projectviewer.loading_project=Loading project "{0}"...
-#}}}
-
-#{{{ Options pane messages
 projectviewer.options.close_on_change=Close files on project change
 projectviewer.options.close_on_change.tooltip=Close current project's files when switching to another project?
 
@@ -94,6 +79,18 @@ projectviewer.options.show_folders=Show folders tree
 projectviewer.options.show_files=Show files tree
 projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
 projectviewer.options.show_working_files=Show working files tree
+#}}}
+
+#{{{ UI messages
+projectviewer.folderstab=Folders
+projectviewer.filestab=Files
+projectviewer.workingfilestab=Working Files
+projectviewer.non-project-filter=Non Project Files
+projectviewer.archive_filter=Archive files
+projectviewer.create_project=Create Project
+projectviewer.all_projects=All Projects
+projectviewer.error=Error
+projectviewer.loading_project=Loading project "{0}"...
 #}}}
 
 #{{{ Import messages
