@@ -41,8 +41,6 @@ import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
  */
 public final class PHPParser {
 
-  public static int MESSAGE_SHORT_OPEN_TAG = 1;
-
 //todo : fix the variables names bug
 //todo : handle tilde operator
 
@@ -717,7 +715,7 @@ void PhpBlock() :
     | token = <PHPSTARTSHORT>
     {
       fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                MESSAGE_SHORT_OPEN_TAG,
+                                                PHPParseMessageEvent.MESSAGE_SHORT_OPEN_TAG,
                                                 path,
                                                 "You should use '<?php' instead of '<?' it will avoid some problems with XML",
                                                 token.sourceStart,
@@ -3622,6 +3620,7 @@ AbstractCase[] switchStatementColon(final int start, final int end) :
   token = <COLON> {pos = token.sourceEnd;}
   {
     fireParseMessage(new PHPParseMessageEvent(INFO,
+                                              PHPParseMessageEvent.MESSAGE_SWITCH_ENDSWITCH_TAG,
                                               path,
                                               "Ugly syntax detected, you should switch () {...} instead of switch (): ... enswitch;",
                                               start,
