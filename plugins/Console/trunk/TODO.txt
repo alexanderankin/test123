@@ -1,7 +1,7 @@
 3.6:
 
-- handle plugin install/uninstall
 - on win: foo "bar baz" needs to be passed literally
+
 - %edit -n, -p, -s
 - user error patterns first in list
 - commando: text area

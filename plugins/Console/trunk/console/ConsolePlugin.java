@@ -40,6 +40,7 @@ import errorlist.*;
 public class ConsolePlugin extends EBPlugin
 {
 	public static final String MENU = "plugin.console.ConsolePlugin.menu";
+	public static final String CMD_PATH = "/console/bsh/";
 
 	/**
 	 * Return value of {@link #parseLine()} if the text does not match
@@ -57,13 +58,8 @@ public class ConsolePlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
-		// load script with useful runCommandInConsole() method
-		BufferedReader in = new BufferedReader(
-			new InputStreamReader(
-			getClass().getResourceAsStream(
-			"/console/console.bsh")));
-
-		BeanShell.runScript(null,"console.bsh",in,false);
+		BeanShell.getNameSpace().addCommandPath(CMD_PATH,
+			getClass().getClassLoader());
 
 		String settings = jEdit.getSettingsDirectory();
 		if(settings != null)
@@ -95,6 +91,9 @@ public class ConsolePlugin extends EBPlugin
 	//{{{ stop() method
 	public void stop()
 	{
+		BeanShell.getNameSpace().addCommandPath(CMD_PATH,
+			getClass().getClassLoader());
+
 		View[] views = jEdit.getViews();
 		for(int i = 0; i < views.length; i++)
 		{

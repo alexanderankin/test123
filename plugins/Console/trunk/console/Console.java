@@ -258,6 +258,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		HistoryModel.getModel("console." + shell.getName()).addItem(cmd);
 		print(infoColor,"> " + cmd);
 
+		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
 
 		try
@@ -294,6 +295,8 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		if(msg instanceof PropertiesChanged)
 			propertiesChanged();
+		else if(msg instanceof PluginUpdate)
+			handlePluginUpdate((PluginUpdate)msg);
 	} //}}}
 
 	//{{{ getErrorSource() method
@@ -483,6 +486,26 @@ implements EBComponent, Output, DefaultFocusComponent
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
+	} //}}}
+
+	//{{{ handlePluginUpdate() method
+	public void handlePluginUpdate(PluginUpdate pmsg)
+	{
+		if(pmsg.getWhat() == PluginUpdate.LOADED
+			|| pmsg.getWhat() == PluginUpdate.UNLOADED)
+		{
+			String[] shells = Shell.getShellNames();
+			shellCombo.setModel(new DefaultComboBoxModel(shells));
+			shellCombo.setSelectedItem(shell.getName());
+
+			Iterator iter = shellHash.keySet().iterator();
+			while(iter.hasNext())
+			{
+				String name = (String)iter.next();
+				if(Shell.getShell(name) == null)
+					iter.remove();
+			}
+		}
 	} //}}}
 
 	//{{{ updateAnimation() method
