@@ -34,6 +34,9 @@ public interface OpenItProperties
   // polling property
   public static final String SOURCE_PATH_POLLING_INTERVAL = "OpenIt.SourcePathPollingInterval";
   
+  // allow substring matching?
+  public static final String ALLOW_SUBSTRING_MATCHING = "OpenIt.AllowSubstringMatching";
+  
   // clean popup when popup visible?
   public static final String POP_UP_CLEAN_ON_VISIBLE = "OpenIt.CleanPopupOnVisible";
   

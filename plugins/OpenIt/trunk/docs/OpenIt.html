@@ -13,7 +13,7 @@
 <TR width="100%">
 <TD VALIGN=TOP><B><FONT SIZE=+2>OpenIt</FONT></B></TD>
 
-<TD ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=-1>Version 1.02 (Nov 22, 2003)</FONT></B>
+<TD ALIGN=RIGHT VALIGN=TOP><B><FONT SIZE=-1>Version 1.03 (Jan 09, 2004)</FONT></B>
 <BR><FONT SIZE=-1>By Matt Etheridge &lt;matt@etheridge.org>&nbsp;</FONT></TD>
 </TR>
 </TABLE>
@@ -87,12 +87,10 @@ in the user-specified source path will be shown in a scrollable list under
 the window.&nbsp; An example of this is shown below:
 <CENTER>
 <P><IMG SRC="images/openit.png" NOSAVE HEIGHT=280 WIDTH=602></CENTER>
-
-<P>The up, down, page up and page down buttons and the mouse can be used
-to select a file from the list.&nbsp; Once a file is selected the user
-can press enter or double click with the mouse to open the file.&nbsp;
-The escape button can be pressed to close the window without selecting
-a file.
+The up, down, page up and page down buttons and the mouse can be used to
+select a file from the list.&nbsp; Once a file is selected the user can
+press enter or double click with the mouse to open the file.&nbsp; The
+escape button can be pressed to close the window without selecting a file.
 <P>There is also a Hide/Show Filter button that, when pressed, shows/hides
 a small filter dialog that allows users to type in a regular expression
 that will filter the list of files currently in the file list (if there
@@ -137,7 +135,7 @@ type the following into the filter textbox:
 <P><TT>&nbsp;&nbsp;&nbsp; *.class</TT>
 <P>If multiple types of files need to be excluded, this can be done in
 the standard way by including the "|" character between file types.&nbsp;
-For example:<TT></TT>
+For example:
 <P><TT>&nbsp;&nbsp;&nbsp; *.class|*.xml|*.#*</TT>
 <P><I>HINT: these files are filtered out during the sourcepath refresh
 task - which is done periodically in a background thread, so you should
@@ -148,7 +146,7 @@ if you are creating a lot of files in jEdit that you may want to open again
 in the same jEdit session.&nbsp; This value defaults to 60 seconds.
 <P><I>HINT: the more directories you include in the source path, the longer
 it will take for the sourcepath to be refreshed!&nbsp; (However, this is
-done in a background thread so you can still continue in jEdit!)</I><I></I>
+done in a background thread so you can still continue in jEdit!)</I>
 <P><I>HINT: If any of the settings in this option panel change, when you
 press OK the sourcepath will be refreshed automatically in a background
 thread.&nbsp; Depending on the size of the sourcepath, this can take a
@@ -158,6 +156,17 @@ a few seconds and try again ;)</I>
 <P><A NAME="Popup Window Options"></A><B><FONT SIZE=+1>Popup Window Options</FONT></B>
 <P>This option panel allows the user to specify any configuration items
 that relate to the popup window.&nbsp; These settings include:
+<UL>
+<LI>
+<I>Substring Matching - </I>if this option is activated, any filename containing
+the entered substring will be displayed.&nbsp; For performance reasons,
+substring matching will only occur if the entered string is greater than
+one character long.&nbsp; For example, if I entered "a", only files <I>starting
+</I>with
+"a" would be found, however if I entered "al", both filenames
+<I>starting
+</I>with "al" <I>AND </I>filenames <I>containing</I> "al" would be displayed.</LI>
+<P><I>NOTE: substring matching may descrease performance slightly.</I></UL>
 <UL>
 <LI>
 <I>Clear Popup</I> - whether&nbsp; the file list should be cleared before
@@ -240,6 +249,17 @@ regular expression will not be shown.</LI>
 <LI>
 More granular configuration options for showing directories/packages with
 Java files. (This configuration is now distinct from other types of files).</LI>
+</UL>
+
+<LI>
+1.03 (Jan 09, 2004)</LI>
+
+<UL>
+<LI>
+New "substring matching" functionality - if this configurable option is
+activated, any filename that <I>contains</I> this string will be found
+(previously the file was only found if the filename <I>started</I> with
+the specified string).</LI>
 </UL>
 </UL>
 

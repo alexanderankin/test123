@@ -20,8 +20,13 @@
 
 package org.etheridge.openit.sourcepath;
 
+import java.io.File;
+
+import java.lang.StringBuffer;
+
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -41,8 +46,25 @@ public class SourcePath
     StringTokenizer tokenizer = new StringTokenizer(sourcePath, pathSeparator);
     mSourcePathElements = new ArrayList();
     while (tokenizer.hasMoreTokens()) {
-      mSourcePathElements.add(new DirectorySourcePathElement(tokenizer.nextToken()));
+      SourcePathElement element = new DirectorySourcePathElement(tokenizer.nextToken());
+      if (!element.isLink()) {
+        mSourcePathElements.add(element);
+      }
     }
+  }
+  
+  /**
+   * Adds a single element to the sourcepath
+   *
+   * @param sourcePathElement the string representation of a single source path
+   * element. (ie. D:\source)
+   */
+  public void addSourcePathElement(String sourcePathElement)
+  {
+   if (mSourcePathElements == null) {
+      mSourcePathElements = new ArrayList();
+    }
+    mSourcePathElements.add(new DirectorySourcePathElement(sourcePathElement));
   }
   
   public List getSourcePathElements()
@@ -50,5 +72,18 @@ public class SourcePath
     return Collections.unmodifiableList(mSourcePathElements);
   }
   
-    
+  /**
+   * @return a string representation of this source path.
+   */
+  public String toString()
+  {
+    StringBuffer buffer = new StringBuffer();
+    for (Iterator i = mSourcePathElements.iterator(); i.hasNext();) {
+      buffer.append(((SourcePathElement)i.next()).getName());
+      if (i.hasNext()) {
+        buffer.append(File.pathSeparatorChar);
+      }
+    }
+    return buffer.toString();
+  }
 }

@@ -7,4 +7,9 @@
 			org.etheridge.openit.OpenItPlugin.findFileInSourcePath(view);
     </CODE>
 	</ACTION>
+  <!--ACTION NAME="openit.add-current-buffer-directory-to-source-path">
+	  <CODE>
+			org.etheridge.openit.OpenItPlugin.addCurrentDirectoryToSourcePath(view);
+    </CODE>
+	</ACTION-->
 </ACTIONS>

@@ -4,13 +4,14 @@
 # general plugin information
 plugin.org.etheridge.openit.OpenItPlugin.name=OpenIt
 plugin.org.etheridge.openit.OpenItPlugin.author=Matt Etheridge
-plugin.org.etheridge.openit.OpenItPlugin.version=1.02
+plugin.org.etheridge.openit.OpenItPlugin.version=1.03
 plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
 plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.4
 plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.00.00.00
 
 # action labels
 openit.find-file-in-source-path.label=Open File
+openit.add-current-buffer-directory-to-source-path.label=Add Directory of Current Buffer to SearchPath
 
 # menu structure and labels
 openit.menu=openit.find-file-in-source-path
@@ -24,7 +25,7 @@ openit.menu.label=OpenIt
 openit.FindFileWindow.Instruction.label=Enter file name:
 openit.FindFileWindow.FilterButton.Show.label=Show Filter
 openit.FindFileWindow.FilterButton.Hide.label=Hide Filter
-openit.FindFileWindow.InitialLoadingMessage.label=Loading File Index... (this will dissapear when loaded)
+openit.FindFileWindow.InitialLoadingMessage.label=Loading File Index... (this will disappear when loaded)
 
 # Icons
 openit.FindFileWindow.ImagePropertyPrefix=openit.FindFileWindow.ImageFile.
@@ -71,6 +72,10 @@ options.OpenIt.SourcePathOptionPane.RefreshRate.title=Search Path Refresh Rate
 options.OpenIt.SourcePathOptionPane.RefreshRate.CheckBox.label=How often should the search path be refreshed? (in seconds): 
 
 # popups option pane
+options.OpenIt.PopupOptionsPane.SubstringMatching.title=Substring Matching
+options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.1=With substring matching activated, any filename containing the entered substring will be displayed.
+options.OpenIt.PopupOptionsPane.SubstringMatching.instruction.label.2=NOTE: substring matching may decrease performance slightly!
+options.OpenIt.PopupOptionsPane.SubstringMatching.label=Allow substring matching (anywhere in filename)?
 options.OpenIt.PopupOptionsPane.ClearPopup.title=Clear Popup
 options.OpenIt.PopupOptionsPane.label=Popup Window Options
 options.OpenIt.PopupOptionsPane.ClearPopup.ShouldClearPopup=Clear window on popup?
@@ -84,6 +89,14 @@ options.OpenIt.PopupOptionsPane.Display.DisplaySize=Display file size?
 options.OpenIt.PopupOptionsPane.JavaFileDisplay.title=Java File List Display
 options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayPackages=Display package name?
 options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayDirectory=Display directory where file exists?
+
+#
+# General Messages
+#
+
+openit.InitialLoadingNotComplete.StatusBarMessage=Initial SearchPath not loaded yet, try again in a few seconds
+openit.AddedDirectoryToSourcePath.StatusBarMessage.1=Added
+openit.AddedDirectoryToSourcePath.StatusBarMessage.2=directory to the OpenIt search path successfully!
 
 #
 # jEdit 4.2 Properties

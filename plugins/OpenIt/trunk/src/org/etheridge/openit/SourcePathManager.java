@@ -74,6 +74,15 @@ public class SourcePathManager
     mPollingThread = new SourcePathRefreshThread();
   }
   
+  public void refreshWithThisSourcePath(SourcePath sourcePath)
+  {
+    // set the global property for the sourcepath
+    jEdit.setProperty(OpenItProperties.SOURCE_PATH_STRING, sourcePath.toString());
+    
+    // refresh the source path
+    refreshSourcePath();
+  }
+  
   public synchronized QuickAccessSourcePath getQuickAccessSourcePath()
   {
     return mQuickAccessSourcePath;
