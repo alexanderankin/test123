@@ -62,7 +62,7 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 
 		init(console);
 
-		this.setPriority(NORM_PRIORITY + 1);
+		//this.setPriority(NORM_PRIORITY + 1);
 		this.start();
 	}
 
@@ -81,12 +81,13 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 
 		init(console);
 
-		this.setPriority(NORM_PRIORITY + 1);
+		//this.setPriority(NORM_PRIORITY + 1);
 		this.start();
 	}
 
 
-	public void run() {
+	public void run()
+	{
 		JCompiler jcompiler = new JCompiler(
 			this,
 			console.getView(),
@@ -110,20 +111,25 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	 * Print the line to the Output instance,
 	 * parse the line for errors and send any errors to ErrorList.
 	 */
-	public void outputText(String line) {
+	public void outputText(String line)
+	{
 		Color color = null;
 
-		if (errorRE != null && errorRE.isMatch(line)) {
+		if (errorRE != null && errorRE.isMatch(line))
+		{
 			// new error detected
 			String filename = errorRE.substitute(line, rfilenamepos);
 			String lineno = errorRE.substitute(line, rlinenopos);
 			String message = errorRE.substitute(line, rmessagepos);
 			int type = -1;
 
-			if (warningRE != null && warningRE.isMatch(line)) {
+			if (warningRE != null && warningRE.isMatch(line))
+			{
 				type = ErrorSource.WARNING;
 				color = console.getWarningColor();
-			} else {
+			}
+			else
+			{
 				type = ErrorSource.ERROR;
 				color = console.getErrorColor();
 			}
@@ -134,7 +140,8 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 			pendingError = new PendingError(type, filename,
 				Integer.parseInt(lineno) - 1, 0, 0, message, line);
 
-			if (!parseAccentChar) {
+			if (!parseAccentChar)
+			{
 				// don't wait for a line with '^', add error immediately
 				pendingError.send();
 				pendingError = null;
@@ -143,10 +150,12 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 
 		output.print(color, line);
 
-		if (parseAccentChar && pendingError != null && line.trim().equals("^")) {
+		if (parseAccentChar && pendingError != null && line.trim().equals("^"))
+		{
 			// a line with a single '^' in it: this determines the column
 			// position of the last compiler error.
 			pendingError.setStartPos(getStartPos(line));
+			pendingError.setEndPos(getEndPos(line));
 			pendingError.send();
 			pendingError = null;
 			prevLine = null;
@@ -163,13 +172,15 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 
 
 	/** print an informational message on the Console instance. */
-	public void outputInfo(String line) {
+	public void outputInfo(String line)
+	{
 		console.print(console.getInfoColor(), line);
 	}
 
 
 	/** print an error message on the Console instance. */
-	public void outputError(String line) {
+	public void outputError(String line)
+	{
 		console.print(console.getErrorColor(), line);
 	}
 
@@ -192,7 +203,8 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	private String prevLine;
 
 
-	private void init(Console console) {
+	private void init(Console console)
+	{
 		parseAccentChar = jEdit.getBooleanProperty("jcompiler.parseaccentchar", true);
 		String sErrorRE = jEdit.getProperty("jcompiler.regexp");
 		String sWarningRE = jEdit.getProperty("jcompiler.regexp.warning");
@@ -200,14 +212,16 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 		rlinenopos = jEdit.getProperty("jcompiler.regexp.lineno");
 		rmessagepos = jEdit.getProperty("jcompiler.regexp.message");
 
-		try {
+		try
+		{
 			// dot needs to match newlines, because the modern compiler
 			// (>= JDK1.3) outputs multiline errors:
 			errorRE = new RE(sErrorRE,
 				RE.REG_ICASE | RE.REG_DOT_NEWLINE,
 				RESyntax.RE_SYNTAX_PERL5);
 		}
-		catch (REException rex) {
+		catch (REException rex)
+		{
 			errorRE = null;
 			String errorMsg = jEdit.getProperty("jcompiler.msg.invalidErrorRE",
 				new Object[] { sErrorRE, rex.getMessage() }
@@ -215,12 +229,14 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 			outputError(errorMsg);
 		}
 
-		try {
+		try
+		{
 			warningRE = new RE(sWarningRE,
 				RE.REG_ICASE | RE.REG_DOT_NEWLINE,
 				RESyntax.RE_SYNTAX_PERL5);
 		}
-		catch (REException rex) {
+		catch (REException rex)
+		{
 			warningRE = null;
 			String errorMsg = jEdit.getProperty("jcompiler.msg.invalidWarningRE",
 				new Object[] { sWarningRE, rex.getMessage() }
@@ -230,8 +246,10 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	}
 
 
-	private void cleanUp() {
-		if (pendingError != null) {
+	private void cleanUp()
+	{
+		if (pendingError != null)
+		{
 			pendingError.send();
 			pendingError = null;
 		}
@@ -239,8 +257,10 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	}
 
 
-	private int getStartPos(String arrowLine) {
-		if (prevLine != null) {
+	private int getStartPos(String arrowLine)
+	{
+		if (prevLine != null)
+		{
 			// We assume that prevLine contains the source code containing
 			// the error. Calculate the startPos of the position indicated by
 			// the '^' in the prevLine, counting tabs as 8.
@@ -264,9 +284,21 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 			return prevLinePos;
 		}
 		else
-		{
 			return arrowLine.indexOf('^');
+	}
+
+
+	private int getEndPos(String arrowLine)
+	{
+		if (prevLine != null)
+		{
+			// We assume that prevLine contains the source code containing
+			// the error. The endPos of the error is simple the length of
+			// this line. The arrowLine is ignored.
+			return prevLine.length();
 		}
+		else
+			return 0;
 	}
 
 
@@ -275,6 +307,7 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	 */
 	class PendingError
 	{
+
 		public PendingError(
 				int type, String filename, int lineno,
 				int startpos, int endpos,
@@ -290,26 +323,31 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 		}
 
 
-		public String getLine() {
+		public String getLine()
+		{
 			return this.line;
 		}
 
 
-		public void setStartPos(int startpos) {
+		public void setStartPos(int startpos)
+		{
 			this.startpos = startpos;
 		}
 
 
-		public void setEndPos(int endpos) {
+		public void setEndPos(int endpos)
+		{
 			this.endpos = endpos;
 		}
 
 
-		public void send() {
+		public void send()
+		{
 			DefaultErrorSource.DefaultError error = new DefaultErrorSource.DefaultError(
 				errorSource, type, filename, lineno, startpos, endpos, errorText);
 
-			if (extras != null) {
+			if (extras != null)
+			{
 				Enumeration enum = extras.elements();
 				while (enum.hasMoreElements())
 					error.addExtraMessage((String)enum.nextElement());
@@ -319,11 +357,13 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 		}
 
 
-		public void addExtraMessage(String line) {
+		public void addExtraMessage(String line)
+		{
 			if (extras == null)
 				extras = new Vector();
 			extras.addElement(line);
 		}
+
 
 		private int type;
 		private String filename;
@@ -333,6 +373,7 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 		private String errorText;
 		private String line;
 		private Vector extras;
+
 	}
 
 }

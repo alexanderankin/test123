@@ -1,3 +1,13 @@
+VERSION 1.3.2
+
+- bugfix: tooltips for compile errors were not shown if "Parse errors for '^'
+  column indicator" is on.
+- bugfix: fish didn't stop after 'help' command.
+- bugfix: #472495 warning regexp changed so that deprecation messages are
+  classified as warnings, even if they are not preceded by "warning:".
+- requires jEdit 3.2.2, EditBus 1.1, Console 3.0
+
+
 VERSION 1.3.1
 
 - updated auto-detection of tools.jar on JDK 1.2 or higher, now uses
