@@ -84,6 +84,11 @@ public class SideKickPlugin extends EBPlugin
 	public static void registerParser(SideKickParser parser)
 	{
 		parsers.put(parser.getName(),parser);
+		String completionTriggers = parser.getCompletionTriggers();
+		if(completionTriggers != null)
+		{
+			// XXX
+		}
 	} //}}}
 
 	//{{{ unregisterParser() method

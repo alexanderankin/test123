@@ -54,18 +54,18 @@ public class SideKickOptionPane extends AbstractOptionPane
 			"buffer.sidekick.keystroke-parse"));
 		keystrokeParse.addActionListener(new ActionHandler());
 
-		int delayValue;
+		int autoParseDelayValue;
 		try
 		{
-			delayValue = Integer.parseInt(jEdit.getProperty("sidekick.auto-parse-delay"));
+			autoParseDelayValue = Integer.parseInt(jEdit.getProperty("sidekick.auto-parse-delay"));
 		}
 		catch(NumberFormatException nf)
 		{
-			delayValue = 1500;
+			autoParseDelayValue = 1500;
 		}
 
 		addComponent(jEdit.getProperty("options.sidekick.auto-parse-delay"),
-			autoParseDelay = new JSlider(500,3000,delayValue));
+			autoParseDelay = new JSlider(500,3000,autoParseDelayValue));
 		Hashtable labelTable = new Hashtable();
 		for(int i = 500; i <= 3000; i += 500)
 		{
@@ -84,6 +84,29 @@ public class SideKickOptionPane extends AbstractOptionPane
 		treeFollowsCaret.setSelected(jEdit.getBooleanProperty(
 			"sidekick-tree.follows-caret"));
 		treeFollowsCaret.addActionListener(new ActionHandler());
+
+		addComponent(complete = new JCheckBox(jEdit.getProperty(
+			"options.sidekick.complete")));
+		complete.setSelected(jEdit.getBooleanProperty("sidekick.complete"));
+		complete.addActionListener(new ActionHandler());
+
+		int completeDelayValue = jEdit.getIntegerProperty("sidekick.complete-delay",500);
+
+		addComponent(jEdit.getProperty("options.sidekick.complete-delay"),
+			completeDelay = new JSlider(0,1500,completeDelayValue));
+
+		labelTable = new Hashtable();
+		for(int i = 0; i <= 1500; i += 250)
+		{
+			labelTable.put(new Integer(i),new JLabel(
+				String.valueOf((double)i / 1000.0)));
+		}
+		completeDelay.setLabelTable(labelTable);
+		completeDelay.setPaintLabels(true);
+		completeDelay.setMajorTickSpacing(250);
+		completeDelay.setPaintTicks(true);
+
+		completeDelay.setEnabled(complete.isSelected());
 	} //}}}
 
 	//{{{ _save() method
@@ -97,6 +120,9 @@ public class SideKickOptionPane extends AbstractOptionPane
 			autoParseDelay.getValue()));
 		jEdit.setBooleanProperty("sidekick-tree.follows-caret",
 			treeFollowsCaret.isSelected());
+		jEdit.setBooleanProperty("sidekick.complete",complete.isSelected());
+		jEdit.setIntegerProperty("sidekick.complete-delay",
+			completeDelay.getValue());
 	} //}}}
 
 	//{{{ Private members
@@ -104,6 +130,8 @@ public class SideKickOptionPane extends AbstractOptionPane
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
 	private JCheckBox treeFollowsCaret;
+	private JCheckBox complete;
+	private JSlider completeDelay;
 	//}}}
 
 	//{{{ ActionHandler class
@@ -111,11 +139,16 @@ public class SideKickOptionPane extends AbstractOptionPane
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			if(evt.getSource() == keystrokeParse)
+			Object source = evt.getSource();
+			if(source == keystrokeParse)
 			{
 				autoParseDelay.setEnabled(keystrokeParse.isSelected());
 				if(keystrokeParse.isSelected())
 					bufferChangeParse.setSelected(true);
+			}
+			else if(source == complete)
+			{
+				completeDelay.setEnabled(complete.isSelected());
 			}
 		}
 	} //}}}

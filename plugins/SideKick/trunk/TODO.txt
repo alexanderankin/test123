@@ -2,7 +2,9 @@ Version 0.1:
 
 - parent/child asset actions
 - finish docs
-- code completion framework
+- code completion framework:
+  - keystroke triggers
+  - functional popup
 
 Later:
 

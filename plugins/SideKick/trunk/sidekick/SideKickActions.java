@@ -105,7 +105,7 @@ public class SideKickActions
 		SwingUtilities.convertPointToScreen(location,
 			textArea.getPainter());
 
-		//new SideKickComplete(editPane,parser);
+		new SideKickCompletionPopup(view,parser,location);
 	} //}}}
 
 	//{{{ selectAsset() method
