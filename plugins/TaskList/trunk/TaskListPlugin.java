@@ -27,13 +27,13 @@
 	TODO: need a text area change listener for re-parsing
 	TODO: toggle TextAreaHighlight depending on whether it is selected
 	TODO: write documentation
-	TODO: check into cvs
+	DONE: check into cvs
 	TODO: ensure task highlights are repainted when buffer reloaded, etc...
 
 	QUESTION: what about removing RE stuff in options, should users see?
 		- thoughts: yes, it's a programmer's editor - leave the power for the
 		user, but provide defaults which are easy to substitute (as done now)
-	QUESTION: are there portions of the code which are not thread safe?
+	DONE: are there portions of the code which are not thread safe?
 
 	FUTURE-TODO: allow for displaying all buffers or only current ones
 	FUTURE-TODO: add sorting
@@ -116,8 +116,6 @@ public class TaskListPlugin extends EBPlugin
 
 	public void handleMessage(EBMessage message)
 	{
-		Log.log(Log.MESSAGE, TaskListPlugin.class,
-					"handleMessage()");//##
 		if(message instanceof CreateDockableWindow)
 		{
 			CreateDockableWindow cmsg = (CreateDockableWindow)message;
@@ -134,6 +132,7 @@ public class TaskListPlugin extends EBPlugin
 				cmsg.setDockableWindow(taskList);
 			}
 		}
+
 		//  NOTE: don't need to parse buffer when they are loaded, just when
 		// they are displayed
 		else if(message instanceof BufferUpdate)
@@ -155,7 +154,8 @@ public class TaskListPlugin extends EBPlugin
 					});
 				}
 			}
-			else if(bu.getWhat() == BufferUpdate.LOADED)
+			else if(bu.getWhat() == BufferUpdate.LOADED ||
+				bu.getWhat() == BufferUpdate.SAVING)
 			{
 				final Buffer buffer = bu.getBuffer();
 				// if the bufferMap contains a null ref, no parse request
@@ -304,18 +304,9 @@ public class TaskListPlugin extends EBPlugin
 		// NOTE: remove this if this method becomes private
 		if(buffer.isLoaded() == false)
 			return;
-
-		Log.log(Log.DEBUG, TaskListPlugin.class,
-			"TaskListPlugin.extractTasks(" + buffer + ")");//##
-
 		// if buffer is already in the queue, return
 		if(parseRequests.get(buffer) != null)
-		{
-			Log.log(Log.DEBUG, TaskListPlugin.class,
-				"TaskListPlugin.extractTasks(...), returning parsein progress");//##
-
 			return;
-		}
 
 		parseRequests.put(buffer, buffer);
 		SwingUtilities.invokeLater(new Runnable(){
@@ -332,8 +323,7 @@ public class TaskListPlugin extends EBPlugin
 	*/
 	public synchronized static void parseBuffer(Buffer buffer)
 	{
-		Log.log(Log.DEBUG, TaskListPlugin.class, "starting parseBuffer()");//##
-
+		// DEBUG: starting method
 		Log.log(Log.DEBUG, TaskListPlugin.class,
 			"TaskListPlugin.parseBuffer('" + buffer.getName() + "');");//##
 
@@ -356,7 +346,6 @@ public class TaskListPlugin extends EBPlugin
 			{
 				if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 				{
-
 					try
 					{
 						String text = buffer.getText(tokenStart, token.length);
