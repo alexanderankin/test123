@@ -1,4 +1,4 @@
-//{{{ imports
+ //{{{ imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.*;
@@ -40,19 +40,17 @@ public class JumpPlugin extends EditPlugin
    /**
      *  Constructor for the JumpPlugin object
      */
-    public JumpPlugin()
-    {
-        super();
-    }
+    // public JumpPlugin()
+    // {
+        // super();
+    // }
 //}}}
 
 //{{{ void start()
     public void start()
     {
-        
         jump_actions = new Jump();
-        //addListener();
-        //isListenerAdded = true;
+
     }
 //}}}
     
@@ -104,7 +102,7 @@ public class JumpPlugin extends EditPlugin
 //{{{ void stop()
     public void stop()
     {
-        this.getListener().ctags_bg.saveBuffer(getListener().ctags_buff , getListener().PROJECT_TAGS.toString() );   
+        this.getListener().ctags_bg.saveBuffer(getListener().ctags_buff, getListener().PROJECT_TAGS.toString() );   
     }
 //}}}
 }
