@@ -32,25 +32,23 @@ public final class Variable extends AbstractVariable {
 
   /** Here is an array of all superglobals variables and the special "this". */
   public static final String[] SPECIAL_VARS = {_GET,
-          _POST,
-          _REQUEST,
-          _SERVER,
-          _SESSION,
-          _this,
-          GLOBALS,
-          _COOKIE,
-          _FILES,
-          _ENV};
+                                               _POST,
+                                               _REQUEST,
+                                               _SERVER,
+                                               _SESSION,
+                                               _this,
+                                               GLOBALS,
+                                               _COOKIE,
+                                               _FILES,
+                                               _ENV};
 
   /**
-     * Create a new simple variable.
-     *
-     * @param name        the name
-     * @param sourceStart the starting position
-     * @param sourceEnd   the ending position
-     *
-     * @deprecated todo virer ca
-     */
+   * Create a new simple variable.
+   *
+   * @param name        the name
+   * @param sourceStart the starting position
+   * @param sourceEnd   the ending position
+   */
   public Variable(String name,
                   int sourceStart,
                   int sourceEnd,
