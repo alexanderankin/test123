@@ -301,7 +301,7 @@ public class XPathTool extends JPanel implements ListSelectionListener, ActionLi
       String shortcut = jEdit.getProperty("xpath.evaluate.shortcut");
 
       if(shortcut != null) {
-        toolTipText += " - " + shortcut;
+        toolTipText += " (" + shortcut + ")";
       }
 
       URL url = XSLTProcessor.class.getResource(iconName);
