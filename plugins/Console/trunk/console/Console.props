@@ -1,7 +1,7 @@
 ### Plugin properties
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=2.4.6
+plugin.console.ConsolePlugin.version=2.4.7
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=console/Console.html
 
@@ -96,7 +96,7 @@ console.error.2.line=$2
 console.error.2.message=$3
 
 console.error.3.name=Ant javac error
-console.error.3.match=\\[javac\\]\\s+(.+)?:(\\d+):(.+)
+console.error.3.match=\\[javac\\]\\s+(.+?):(\\d+):(.+)
 console.error.3.filename=$1
 console.error.3.line=$2
 console.error.3.message=$3
