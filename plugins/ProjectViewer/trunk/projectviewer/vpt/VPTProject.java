@@ -20,6 +20,7 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.io.File;
+import java.io.IOException;
 
 import java.util.Set;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import java.util.Collections;
 
 import javax.swing.Icon;
 
+import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
 //}}}
 
@@ -62,6 +64,7 @@ public class VPTProject extends VPTNode {
 	private Properties	properties;
 
 	protected HashMap		files;
+	protected HashMap		canonicalFiles;
 
 	//}}}
 
@@ -69,10 +72,11 @@ public class VPTProject extends VPTNode {
 
 	public VPTProject(String name) {
 		super(VPTNode.PROJECT, name);
-		files 		= new HashMap();
-		listeners	= new ArrayList();
-		openFiles	= new ArrayList();
-		properties	= new Properties();
+		files 			= new HashMap();
+		canonicalFiles	= new HashMap();
+		listeners		= new ArrayList();
+		openFiles		= new ArrayList();
+		properties		= new Properties();
 	}
 
 	//}}}
@@ -83,9 +87,16 @@ public class VPTProject extends VPTNode {
 	/**
 	 *	Returns a VPTFile included in this project that references the given
 	 *	path.
+	 *
+	 *	<p>If in the file list returns null, returns a file from the list
+	 *	where we use canonical paths to do the mapping.</p>
 	 */
 	public VPTFile getFile(String path) {
-		return (VPTFile) files.get(path);
+		Object o = files.get(path);
+		if (o == null) {
+			o = canonicalFiles.get(path);
+		}
+		return (VPTFile) o;
 	} //}}}
 
 	//{{{ getFiles() method
@@ -223,11 +234,24 @@ public class VPTProject extends VPTNode {
 		files.put(file.getFile().getAbsolutePath(), file);
 	}
 	//}}}
+	
+	//{{{ registerCanonicalPath(String VPTFile) method
+	/**
+	 *	Register a file whose canonical path differs from the path returned
+	 *	by File.getAbsolutePath().
+	 */
+	public void registerCanonicalPath(String path, VPTFile file) {
+	} //}}}
 
 	//{{{ unregisterFile(VPTFile) method
 	/** Unegister a file from the project. */
 	public void unregisterFile(VPTFile file) {
 		files.remove(file.getFile().getAbsolutePath());
+		try {
+			canonicalFiles.remove(file.getFile().getCanonicalPath());
+		} catch (IOException ioe) {
+			Log.log(Log.WARNING, this, ioe);
+		}
 	}
 	//}}}
 
