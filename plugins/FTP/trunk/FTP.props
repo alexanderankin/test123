@@ -3,11 +3,12 @@ plugin.ftp.FtpPlugin.activate=defer
 
 plugin.ftp.FtpPlugin.name=FTP
 plugin.ftp.FtpPlugin.author=Slava Pestov
-plugin.ftp.FtpPlugin.version=0.6
+plugin.ftp.FtpPlugin.version=0.6.1
 plugin.ftp.FtpPlugin.docs=index.html
-plugin.ftp.FtpPlugin.depend.0=jedit 04.02.02.00
+plugin.ftp.FtpPlugin.depend.0=jedit 04.02.03.00
 plugin.ftp.FtpPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.3
-plugin.ftp.FtpPlugin.jars=SSHTools-j2ssh-0.1.7.jar \
+plugin.ftp.FtpPlugin.jars=j2ssh-common-0.2.2.jar
+	j2ssh-core-0.2.2.jar \
 	bouncycastle-ciphers-0.0.1-alpha.jar
 plugin.ftp.FtpPlugin.menu=open-ftp \
 	save-ftp \
@@ -59,7 +60,7 @@ vfs.ftp.list.0=[ld-](.{9})\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+
 vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
 
 vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)\\s*
-vfs.ftp.list.vms=(.+?);\\d+\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\((.+)\)
+vfs.ftp.list.vms=(.+?);\\d+\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\\((.+)\\)
 vfs.ftp.list.vms.partial.1=(.+?);\\d+\\s*
-vfs.ftp.list.vms.partial.2=\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\((.+)\)
+vfs.ftp.list.vms.partial.2=\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\\((.+)\\)
 vfs.ftp.list.as400=\\S+\\s+(\\S+)\\s+\\S+\\s+\\S+\\s+(\\*DIR|\\*STMF)\\s+(\\S+)\\s*
