@@ -51,6 +51,7 @@ public class AntFarm extends JPanel implements EBComponent
 	private JScrollPane _projects;
 	private AntTree _antTree;
 	private View _view;
+	private JPopupMenu _optionsPopup;
 
 
 	public AntFarm( View view )
@@ -126,6 +127,7 @@ public class AntFarm extends JPanel implements EBComponent
 		}
 		
 		if ( msg instanceof PropertiesChanged ) {
+			_optionsPopup = new OptionsPopup();
 			_antTree.reload();
 		}
 	}
@@ -322,13 +324,16 @@ public class AntFarm extends JPanel implements EBComponent
 
 		JScrollPane _projects = new JScrollPane();
 		_projects.getViewport().add( _antTree = new AntTree( this, _view ) );
-
+		
 		add( BorderLayout.CENTER, _projects );
+		
+		_optionsPopup = new OptionsPopup();
+		
 		setVisible( true );
 
 	}
 
-
+	
 	private JToolBar createToolBar()
 	{
 		JToolBar _toolBar = new JToolBar();
@@ -341,7 +346,9 @@ public class AntFarm extends JPanel implements EBComponent
 		_toolBar.addSeparator();
 		_toolBar.add( runTarget = createToolButton( "run" ) );
 		
+		_toolBar.addSeparator();
 		_toolBar.add( options = createToolButton( "options") );
+		options.setText("Options");
 
 		// default to enabled to false
 		removeAntFile.setEnabled( false );
@@ -357,12 +364,14 @@ public class AntFarm extends JPanel implements EBComponent
 
 	private JButton createToolButton( String name )
 	{
-		String prefix = AntFarmPlugin.NAME;
-		String buttonPrefix = prefix + "." + name + ".";
+		String buttonPrefix = AntFarmPlugin.NAME + "." + name + ".";
 		String iconProp = buttonPrefix + "icon";
+		String iconLabel = jEdit.getProperty( buttonPrefix + "text" );
 
-		JButton button = new JButton( AntFarm.loadIcon( iconProp ) );
+		JButton button = new JButton( iconLabel );
+		button.setIcon( AntFarm.loadIcon( iconProp ) );
 		button.setToolTipText( jEdit.getProperty( buttonPrefix + "label" ) );
+		button.setHorizontalTextPosition(SwingConstants.LEADING);
 
 		button.setRequestFocusEnabled( false );
 		button.setMargin( new Insets( 0, 0, 0, 0 ) );
@@ -385,6 +394,82 @@ public class AntFarm extends JPanel implements EBComponent
 			}
 			if ( source == runTarget ) {
 				_antTree.executeCurrentTarget();
+			}
+			if ( source == options ) {
+				if(!_optionsPopup.isVisible())
+				{
+					GUIUtilities.showPopupMenu(
+						_optionsPopup,options,0,
+						options.getHeight());
+				}
+				else
+				{
+					_optionsPopup.setVisible(false);
+				}
+			}
+		}
+	}
+	
+	class OptionsPopup extends JPopupMenu
+	{
+		
+		public OptionsPopup()
+		{
+			JCheckBoxMenuItem propertiesPrompt = new JCheckBoxMenuItem(
+				jEdit.getProperty(AntFarmPlugin.NAME + ".commands.properties.label")
+				);
+			propertiesPrompt.setActionCommand("properties-prompt");
+			propertiesPrompt.setSelected(!jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "suppress-properties" ));
+			propertiesPrompt.addActionListener(new ActionHandler());
+			this.add(propertiesPrompt);
+			
+			
+			JCheckBoxMenuItem supressSubTargets = new JCheckBoxMenuItem(
+				jEdit.getProperty(AntFarmPlugin.NAME + ".commands.supress-sub-targets.label")
+				);
+			supressSubTargets.setActionCommand("supress-sub-targets");
+			supressSubTargets.setSelected(jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets" ));
+			supressSubTargets.addActionListener(new ActionHandler());
+			this.add(supressSubTargets);
+			
+			JCheckBoxMenuItem saveAll = new JCheckBoxMenuItem(
+				jEdit.getProperty(AntFarmPlugin.NAME + ".commands.save-on-execute.label")
+				);
+			saveAll.setActionCommand("save-on-execute");
+			saveAll.setSelected(jEdit.getBooleanProperty(
+				AntFarmPlugin.OPTION_PREFIX + "save-on-execute")
+				);
+			saveAll.addActionListener(new ActionHandler());
+			this.add(saveAll);
+			
+			
+		}
+		
+		class ActionHandler implements ActionListener
+		{
+			public void actionPerformed( ActionEvent evt )
+			{
+				String actionCommand = evt.getActionCommand();
+				if (actionCommand.equals("properties-prompt")) {
+					JCheckBoxMenuItem item = (JCheckBoxMenuItem) evt.getSource();
+					jEdit.setBooleanProperty( 
+						AntFarmPlugin.OPTION_PREFIX + "suppress-properties", !item.isSelected()
+						);
+				}
+				if (actionCommand.equals("supress-sub-targets")) {
+					JCheckBoxMenuItem item = (JCheckBoxMenuItem) evt.getSource();
+					jEdit.setBooleanProperty(
+						AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets", item.isSelected()
+						);
+				}
+				if (actionCommand.equals("save-on-execute")) {
+					JCheckBoxMenuItem item = (JCheckBoxMenuItem) evt.getSource();
+					jEdit.setBooleanProperty(
+						AntFarmPlugin.OPTION_PREFIX + "save-on-execute", item.isSelected()
+					);
+				}
+				
+				EditBus.send(new PropertiesChanged(null));
 			}
 		}
 	}

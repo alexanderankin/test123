@@ -24,6 +24,7 @@ import java.util.*;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.msg.*;
 
 public class PropertyDialog extends JDialog
 {
@@ -54,6 +55,7 @@ public class PropertyDialog extends JDialog
 				{
 					jEdit.setBooleanProperty( AntFarmPlugin.OPTION_PREFIX
 						 + "suppress-properties", noPrompt.isSelected() );
+					EditBus.send(new PropertiesChanged(null));
 
 					if ( _propertiesTable.getCellEditor() != null )
 						_propertiesTable.getCellEditor().stopCellEditing();

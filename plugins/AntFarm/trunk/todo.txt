@@ -7,11 +7,12 @@ Future additions/fixes:
 	- choose the build file from the list.
 - Allow properties to be system/environmental variables.
 - Allow logging level to be set on the AntFarm toolbar and option pane.
-- Toggle property prompting on AntFarm toolbar.
+x Toggle property prompting, save all and hide sub-targets on AntFarm toolbar. - DONE
 - Provide the option to bring/not bring the console to the front when running a build. 
   Also give a build status indicator in AntFarm.
 - Re-implement ProjectViewer integration.
 - Execute multiple targets at once.
+
 x Create a default target icon and highlight default with color. - DONE
 x If tools.jar is not found and loaded, present a message. - DONE
 x Allow targets to be displayed based on a regex or on whether there is a description. - DONE
