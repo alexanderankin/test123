@@ -26,8 +26,6 @@ import java.io.BufferedWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
-import javax.swing.text.BadLocationException;
-
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
@@ -191,15 +189,10 @@ public class Code2HTML {
 
 
     private static void setBufferText(Buffer buffer, String text) {
-        try {
-            buffer.beginCompoundEdit();
-            buffer.remove(0, buffer.getLength());
-            buffer.insertString(0, text, null);
-        } catch (BadLocationException ble) {
-            Log.log(Log.ERROR, Code2HTML.class, ble);
-        } finally {
-            buffer.endCompoundEdit();
-        }
+        buffer.beginCompoundEdit();
+        buffer.remove(0, buffer.getLength());
+        buffer.insert(0, text);
+        buffer.endCompoundEdit();
     }
 
 
