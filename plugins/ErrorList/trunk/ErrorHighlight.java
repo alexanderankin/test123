@@ -35,26 +35,24 @@ public class ErrorHighlight implements TextAreaHighlight
 
 	public void paintHighlight(Graphics gfx, int line, int y)
 	{
-		int lineCount = textArea.getVirtualLineCount();
-		if(line >= lineCount)
-			return;
-
-		int physicalLine = textArea.getBuffer().virtualToPhysical(line);
-
 		Object[] errorSources = EditBus.getNamedList(
 			ErrorSource.ERROR_SOURCES_LIST);
 
-		if(errorSources == null)
-			return;
-
-		for(int i = 0; i < errorSources.length; i++)
+		int lineCount = textArea.getVirtualLineCount();
+		if(line < lineCount && errorSources != null
+			&& textArea.getBuffer().isLoaded())
 		{
-			ErrorSource source = (ErrorSource)errorSources[i];
-			ErrorSource.Error[] lineErrors = source.getLineErrors(
-				textArea.getBuffer(),physicalLine);
+			int physicalLine = textArea.getBuffer().virtualToPhysical(line);
 
-			if(lineErrors != null)
-				paintLineErrors(lineErrors,gfx,physicalLine,y);
+			for(int i = 0; i < errorSources.length; i++)
+			{
+				ErrorSource source = (ErrorSource)errorSources[i];
+				ErrorSource.Error[] lineErrors = source.getLineErrors(
+					textArea.getBuffer(),physicalLine);
+
+				if(lineErrors != null)
+					paintLineErrors(lineErrors,gfx,physicalLine,y);
+			}
 		}
 
 		if(next != null)
@@ -65,7 +63,7 @@ public class ErrorHighlight implements TextAreaHighlight
 	{
 		Object[] errorSources = EditBus.getNamedList(
 			ErrorSource.ERROR_SOURCES_LIST);
-		if(errorSources == null)
+		if(errorSources == null || !textArea.getBuffer().isLoaded())
 			return (next != null ? next.getToolTipText(evt) : null);
 
 		int y = evt.getY();
