@@ -64,7 +64,7 @@ implements DockableWindow, EBComponent, Output
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
 		buttonBox.add(run = new JButton(RUN));
 		run.setToolTipText(jEdit.getProperty("console.run"));
-		Insets margin = new Insets(1,1,1,3);
+		Insets margin = new Insets(0,0,0,0);
 		run.setMargin(margin);
 		run.addActionListener(actionHandler);
 		run.setRequestFocusEnabled(false);

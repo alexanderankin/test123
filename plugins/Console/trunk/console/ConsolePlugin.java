@@ -134,7 +134,7 @@ public class ConsolePlugin extends EBPlugin
 		while(st.hasMoreTokens())
 		{
 			String name = st.nextToken();
-			vector.addElement(new CommandoCommand(name,
+			vector.addElement(new CommandoCommand(name.replace('_',' '),
 				ConsolePlugin.class.getResource(
 				"/console/commando/" + name + ".xml")));
 		}
@@ -151,7 +151,8 @@ public class ConsolePlugin extends EBPlugin
 						continue;
 
 					vector.addElement(new CommandoCommand(
-						file.substring(0,file.length() - 4),
+						file.substring(0,file.length() - 4)
+						.replace('_',' '),
 						MiscUtilities.constructPath(
 						commandoDirectory,file)));
 				}
