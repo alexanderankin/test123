@@ -26,7 +26,7 @@
         <author>
             <firstname>Kevin</firstname>
             <surname>Burton</surname>
-            <othername role="mi">A</othername>
+            <othername role="mi">A.</othername>
         </author>
     </authorgroup>
 
@@ -65,14 +65,14 @@
         <listitem><para>
         The bytecode disassembling is performed by
         <emphasis>BCEL</emphasis> (Byte Code Engineering Library) by
-        Markus Dahm (<email>markus.dahm@berlin.de</email>).
+        Markus Dahm <email>markus.dahm@berlin.de</email>.
         More information about BCEL can be found at
         <ulink url="http://bcel.sourceforge.net">http://bcel.sourceforge.net</ulink>.
         </para></listitem>
 
         <listitem><para>
         The decompilation is performed by <emphasis>Jode</emphasis>, a tool written by
-        Jochen Hoenicke (<email>jochen@gnu.org</email>).
+        Jochen Hoenicke <email>jochen@gnu.org</email>.
         More information about Jode can be found at
         <ulink url="http://jode.sourceforge.net">http://jode.sourceforge.net</ulink>.
         </para></listitem>
@@ -176,6 +176,99 @@
         </variablelist>
 
     </simplesect>
+
+</chapter>
+
+
+<chapter id="configuration">
+    <title>Configuration</title>
+
+    <para>
+    To configure JavaInsight, open the Global Options dialog
+    (<guimenu>Utilities&gt;</guimenu>
+     <guimenuitem>Global&nbsp;Options</guimenuitem>) and select the entry
+     <guimenu>Plugins&gt;</guimenu>
+     <guimenuitem>Java&nbsp;Insight</guimenuitem>.
+    </para>
+
+    <para>
+    The following options can be set:
+    </para>
+
+    <variablelist>
+        <varlistentry>
+            <term>Use &quot;pretty&quot; names for local variables.</term>
+
+            <listitem><para>
+            Jode tries to prettify the local variable names.
+            This option is on per default.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Remove locals, that are used only one time.</term>
+
+            <listitem><para>
+            Such local variables are defined, but apparently never used. Since they
+            only clutter up the code, they can be removed without problems.
+            Note, that such local variables are only produced by crappy Java
+            compilers; good compilers strip them out anyway.
+            This option is off per default.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Decrypt encrypted strings.</term>
+
+            <listitem><para>
+            This option is meant for obfuscators that &quot;encrypt&quot; strings.
+            Jode tries to recognize encrypted strings and to decrypt them automatically.
+            If activated, Jode searches for expressions like
+            <programlisting>methodX(&quot;abc&quot;)</programlisting>
+            and assumes that <function>methodX</function>
+            is a decryption routine and <literal>&quot;abc&quot;</literal>
+            is an encrypted string.
+            It is checked whether <function>methodX</function> is
+            <token>static</token>, <token>final</token> and returns a
+            <token>String</token>.
+            If this is the case, Jode tries to invoke <function>methodX</function> with
+            the constant argument <literal>&quot;abc&quot;</literal>.
+            If successful, Jode replaces the method call with the resulting string.
+            This option is on per default, because it shouldn&#39;t do anything harmful.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Generate imports for packages with more than <varname>nnn</varname> classes.</term>
+
+            <listitem><para>
+            Set this to 0, if you don&#39;t want to generate imports for whole packages,
+            such as:
+            <programlisting>import&nbsp;java.awt.*;</programlisting>
+            The default is 0.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Generate imports for classes used more than <varname>nnn</varname> times.</term>
+
+            <listitem><para>
+            Set this to 0, if you don&#39;t want to generate imports for classes, rather
+            use full qualified class names always.
+            The default is 1.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term>Set status of buffer to &quot;saved&quot; after decompile.</term>
+
+            <listitem><para>
+            Use this if you want to get rid of &quot;Save changes?&quot; messages when you
+            close the decompilation buffer.
+            </para></listitem>
+        </varlistentry>
+
+    </variablelist>
 
 </chapter>
 
