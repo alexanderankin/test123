@@ -31,9 +31,9 @@ import java.util.StringTokenizer;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.Window;
 import java.awt.event.KeyEvent;
 import java.awt.event.ItemEvent;
-import java.awt.event.WindowEvent;
 import java.awt.event.ItemListener;
 
 import java.awt.dnd.DragSource;
@@ -611,8 +611,12 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 `	 */
 	public ProjectViewer(View aView) {
 		if (viewers.get(aView) != null) {
-			throw new UnsupportedOperationException(
-				jEdit.getProperty("projectviewer.error.multiple_views"));
+			ProjectViewer existant = (ProjectViewer) viewers.get(aView);
+			Window wnd = SwingUtilities.getWindowAncestor(existant);
+			if (wnd != null && wnd.isShowing()) {
+				throw new UnsupportedOperationException(
+					jEdit.getProperty("projectviewer.error.multiple_views"));
+			}
 		}
 
 		setLayout(new BorderLayout());
