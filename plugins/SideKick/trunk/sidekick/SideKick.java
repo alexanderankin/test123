@@ -94,6 +94,12 @@ class SideKick implements EBComponent
 		{
 			public void run()
 			{
+				if(SideKickPlugin.isParsingBuffer(buffer))
+				{
+					SideKickPlugin.finishParsingBuffer(buffer);
+					return;
+				}
+
 				//SideKickParsedData.setParsedData(view,null);
 				ErrorSource.unregisterErrorSource(errorSource);
 				errorSource.clear();
