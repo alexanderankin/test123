@@ -90,10 +90,10 @@ public abstract class SideKickParser
 	 * in the specified view.
 	 * @param view The view
 	 * @since SideKick 0.2
+	 * @deprecated Use the form taking an <code>EditPane</code> instead.
 	 */
 	public void activate(View view)
 	{
-		Log.log(Log.DEBUG,this,getName() + ": activated for " + view.getBuffer());
 	} //}}}
 
 	//{{{ deactivate() method
@@ -102,9 +102,35 @@ public abstract class SideKickParser
 	 * selected in the specified view.
 	 * @param view The view
 	 * @since SideKick 0.2
+	 * @deprecated Use the form taking an <code>EditPane</code> instead.
 	 */
 	public void deactivate(View view)
 	{
+	} //}}}
+
+	//{{{ activate() method
+	/**
+	 * This method is called when a buffer using this parser is selected
+	 * in the specified view.
+	 * @param editPane The edit pane
+	 * @since SideKick 0.3.1
+	 */
+	public void activate(EditPane editPane)
+	{
+		activate(editPane.getView());
+		Log.log(Log.DEBUG,this,getName() + ": activated for " + editPane.getBuffer());
+	} //}}}
+
+	//{{{ deactivate() method
+	/**
+	 * This method is called when a buffer using this parser is no longer
+	 * selected in the specified view.
+	 * @param editPane The edit pane
+	 * @since SideKick 0.3.1
+	 */
+	public void deactivate(EditPane editPane)
+	{
+		deactivate(editPane.getView());
 		Log.log(Log.DEBUG,this,getName() + ": deactivated");
 	} //}}}
 
