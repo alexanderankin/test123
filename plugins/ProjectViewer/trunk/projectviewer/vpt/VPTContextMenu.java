@@ -55,6 +55,7 @@ import projectviewer.action.NodeRenamerAction;
 import projectviewer.action.OpenWithAppAction;
 import projectviewer.action.LaunchBrowserAction;
 import projectviewer.action.VFSFileImportAction;
+import projectviewer.action.OpenWithEncodingAction;
 
 import projectviewer.config.AppLauncher;
 import projectviewer.config.ProjectViewerConfig;
@@ -86,6 +87,9 @@ public class VPTContextMenu extends MouseAdapter {
 		intActions.add(new NodeRenamerAction());
 		intActions.add(new LaunchBrowserAction());
 		intActions.add(new OpenWithAppAction());
+		if (ProjectViewerConfig.getInstance().isJEdit42()) {
+			intActions.add(new OpenWithEncodingAction());
+		}
 		intActions.add(new SearchAction());
 		intActions.add(new ArchiveAction());
 	}
