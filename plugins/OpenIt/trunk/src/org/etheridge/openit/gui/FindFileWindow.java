@@ -39,10 +39,8 @@ import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -70,8 +68,8 @@ import org.etheridge.openit.OpenItProperties;
 import org.etheridge.openit.sourcepath.QuickAccessSourcePath;
 import org.etheridge.openit.sourcepath.SourcePathFile;
 import org.etheridge.openit.SourcePathManager;
-
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 /**
  * Popup window that allows users to search for files
@@ -270,7 +268,9 @@ public class FindFileWindow extends JFrame
           updateList(mSourceFileNameField.getText());
         } catch (REException ree) {
           mSourceFileFilter.clearRegularExpression();
-          ree.printStackTrace();
+          
+          Log.log(Log.MESSAGE, FindFileWindow.class, 
+            "[OpenIt Plugin]: Invalid regular expression: " + regularExpression);
         }
       }
     });
@@ -454,7 +454,8 @@ public class FindFileWindow extends JFrame
         } catch (BadLocationException ble) {
           // if we get this exception something really funky has gone wrong, so
           // we'll just return and do nothing.
-          ble.printStackTrace();
+          Log.log(Log.MESSAGE, FindFileWindow.class, 
+            "[OpenIt Plugin]: BadLocationException caught!");
           return;
         }
         

@@ -35,7 +35,7 @@ import org.etheridge.openit.OpenItProperties;
 import org.etheridge.openit.sourcepath.SourcePath;
 import org.etheridge.openit.sourcepath.SourcePathElement;
 import org.etheridge.openit.sourcepath.SourcePathFile;
-
+import org.etheridge.openit.utility.OpenItRE;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
@@ -148,19 +148,10 @@ public class QuickAccessSourcePath
   
   private void initialize()
   {
-    RE regularExpression = null;
-    try {
-      String regularExpressionProperty = 
-        jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION);
-      if (regularExpressionProperty != null) {
-        regularExpression = new RE(org.gjt.sp.jedit.MiscUtilities.globToRE(
-          regularExpressionProperty), RE.REG_MULTILINE, RESyntax.RE_SYNTAX_POSIX_EXTENDED);
-      }
-    } catch (REException e) {
-      Log.log(Log.MESSAGE, QuickAccessSourcePath.class, 
-        "[OpenIt Plugin]: Invalid excludes regular expression: " + 
-          jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION));
-    }
+    // create OpenItRE
+    OpenItRE regularExpression = new OpenItRE(
+      jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION),
+      !jEdit.getBooleanProperty(OpenItProperties.IGNORE_CASE_EXCLUDES_FILE_REGULAR_EXPRESSION, false));
     
     // initialize the quick access map
     mQuickAccessMap = new HashMap();
@@ -176,7 +167,7 @@ public class QuickAccessSourcePath
         
         // if the filename does not match the excludes regular expression then
         // add it to the quick access map, otherwise ignore it.
-        if (regularExpression == null || !regularExpression.isMatch(sourcePathFile.getFullName())) {
+        if (!regularExpression.isMatch(sourcePathFile.getFullName())) {
           // get first letter
           String firstLetter = sourcePathFile.getFullName().toLowerCase().substring(0,1);
           List currentLetterList = (List) mQuickAccessMap.get(firstLetter);

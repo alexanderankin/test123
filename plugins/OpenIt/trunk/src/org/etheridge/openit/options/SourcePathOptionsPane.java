@@ -34,6 +34,7 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JList;
@@ -63,6 +64,9 @@ public class SourcePathOptionsPane extends AbstractOptionPane
   private JTextField mPollingIntervalTextField;
   private JTextField mExcludesDirectoriesRegularExpressionTextField;
 
+  private JCheckBox mIgnoreCaseExcludeFilesCheckBox;
+  private JCheckBox mIgnoreCaseExcludeDirectoriesCheckBox;
+  
   public SourcePathOptionsPane()
   {
     super("OpenIt.SourcePathOptionPane");
@@ -158,11 +162,17 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     JLabel instructionLabel = new JLabel(jEdit.getProperty("options.OpenIt.SourcePathOptionPane.ExcludeRegularExpression.label"));
     excludesPanel.add(instructionLabel);
     
+    JPanel textFieldPanel = new JPanel(new BorderLayout());
     mExcludesRegularExpressionTextField = new JTextField();
     mExcludesRegularExpressionTextField.setText
       (jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION, ""));
-    excludesPanel.add(mExcludesRegularExpressionTextField);
-    
+    mIgnoreCaseExcludeFilesCheckBox = new JCheckBox(jEdit.getProperty("options.OpenIt.SourcePathOptionPane.IgnoreCase.label"));
+    mIgnoreCaseExcludeFilesCheckBox.setSelected
+      (jEdit.getBooleanProperty(OpenItProperties.IGNORE_CASE_EXCLUDES_FILE_REGULAR_EXPRESSION, false));
+    textFieldPanel.add(mExcludesRegularExpressionTextField);
+    textFieldPanel.add(mIgnoreCaseExcludeFilesCheckBox, BorderLayout.EAST);
+    excludesPanel.add(textFieldPanel);
+       
     return excludesPanel;
   }
   
@@ -176,10 +186,16 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     JLabel instructionLabel = new JLabel(jEdit.getProperty("options.OpenIt.SourcePathOptionPane.ExcludeDirectoryRegularExpression.label"));
     excludesPanel.add(instructionLabel);
     
+    JPanel textFieldPanel = new JPanel(new BorderLayout());
     mExcludesDirectoriesRegularExpressionTextField = new JTextField();
     mExcludesDirectoriesRegularExpressionTextField.setText
       (jEdit.getProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, ""));
-    excludesPanel.add(mExcludesDirectoriesRegularExpressionTextField);
+    mIgnoreCaseExcludeDirectoriesCheckBox = new JCheckBox(jEdit.getProperty("options.OpenIt.SourcePathOptionPane.IgnoreCase.label"));
+    mIgnoreCaseExcludeDirectoriesCheckBox.setSelected
+      (jEdit.getBooleanProperty(OpenItProperties.IGNORE_CASE_EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, false));
+    textFieldPanel.add(mExcludesDirectoriesRegularExpressionTextField);
+    textFieldPanel.add(mIgnoreCaseExcludeDirectoriesCheckBox, BorderLayout.EAST);
+    excludesPanel.add(textFieldPanel);
     
     return excludesPanel;
   }
@@ -207,7 +223,9 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     if (!currentSourcePath.equals(mSourcePathList.getPathElementsString()) ||
         jEdit.getIntegerProperty(OpenItProperties.SOURCE_PATH_POLLING_INTERVAL, SourcePathManager.DEFAULT_POLLING_INTERVAL) != getPollingIntervalValue() ||
         !jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION, "").equals(mExcludesRegularExpressionTextField.getText()) ||
-        !jEdit.getProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, "").equals(mExcludesDirectoriesRegularExpressionTextField.getText())) {
+        !jEdit.getProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, "").equals(mExcludesDirectoriesRegularExpressionTextField.getText()) ||
+        jEdit.getBooleanProperty(OpenItProperties.IGNORE_CASE_EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, false) != mIgnoreCaseExcludeDirectoriesCheckBox.isSelected() ||
+        jEdit.getBooleanProperty(OpenItProperties.IGNORE_CASE_EXCLUDES_FILE_REGULAR_EXPRESSION, false) != mIgnoreCaseExcludeFilesCheckBox.isSelected()) {
       return true;
     }
     return false;
@@ -219,6 +237,8 @@ public class SourcePathOptionsPane extends AbstractOptionPane
     jEdit.setIntegerProperty(OpenItProperties.SOURCE_PATH_POLLING_INTERVAL, getPollingIntervalValue());
     jEdit.setProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION, mExcludesRegularExpressionTextField.getText());
     jEdit.setProperty(OpenItProperties.EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, mExcludesDirectoriesRegularExpressionTextField.getText());
+    jEdit.setBooleanProperty(OpenItProperties.IGNORE_CASE_EXCLUDES_DIRECTORIES_REGULAR_EXPRESSION, mIgnoreCaseExcludeDirectoriesCheckBox.isSelected()); 
+    jEdit.setBooleanProperty(OpenItProperties.IGNORE_CASE_EXCLUDES_FILE_REGULAR_EXPRESSION, mIgnoreCaseExcludeFilesCheckBox.isSelected());
   }
  
   private int getPollingIntervalValue()
