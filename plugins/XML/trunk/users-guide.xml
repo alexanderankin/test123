@@ -176,6 +176,13 @@
  </para>
 
  <para>
+  If text is selected, each selection is wrapped in a pair of opening and
+  closing tags. This is a very powerful feature; you can select any number
+  of text chunks, and surround them with tags, all sharing a common set of
+  attributes.
+ </para>
+
+ <para>
   With XML files, the <guimenuitem>XML Tree</guimenuitem> window must be open,
   and the list of elements and entities is loaded from the file's DTD.
   If the XML file specifies the DTD using a public ID, you will need to
@@ -488,6 +495,7 @@
     <classname>JCheckBoxList</classname> class, which fixes a bug. The bug
     fix will only appear in the jEdit core in version 4.0pre1, but I want
     to keep the XML plugin compatible with jEdit 3.2.
+   </para></listitem>
    <listitem><para>
     Edit tag dialog improvements.
    </para></listitem>
@@ -503,6 +511,10 @@
    </para></listitem>
    <listitem><para>
     Tag list for Ant <filename>build.xml</filename> files.
+   </para></listitem>
+   <listitem><para>
+    Clicking an element in the XML insert window while a selection is active
+    wraps each selection with opening and closing tags.
    </para></listitem>
    <listitem><para>
     Documentation is now generated with DocBook-XSL stylesheets.

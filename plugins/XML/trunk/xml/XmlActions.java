@@ -257,11 +257,47 @@ public class XmlActions
 			completionInfo.ids);
 
 		String newTag = dialog.getNewTag();
+		String closingTag;
+		if(dialog.isEmpty())
+			closingTag = "";
+		else
+			closingTag = "</" + elementDecl.name + ">";
 
 		if(newTag != null)
 		{
-			editPane.getTextArea().setSelectedText(newTag);
-			editPane.getTextArea().requestFocus();
+			JEditTextArea textArea = editPane.getTextArea();
+			Buffer buffer = editPane.getBuffer();
+
+			Selection[] selection = textArea.getSelection();
+
+			if(selection.length > 0)
+			{
+				try
+				{
+					buffer.beginCompoundEdit();
+
+					for(int i = 0; i < selection.length; i++)
+					{
+						buffer.insertString(selection[i].getStart(),
+							newTag,null);
+						buffer.insertString(selection[i].getEnd(),
+							closingTag,null);
+					}
+				}
+				catch(BadLocationException bl)
+				{
+					Log.log(Log.ERROR,XmlActions.class,bl);
+				}
+				finally
+				{
+					buffer.endCompoundEdit();
+				}
+			}
+			else
+				textArea.setSelectedText(newTag);
+
+			textArea.selectNone();
+			textArea.requestFocus();
 		}
 	}
 

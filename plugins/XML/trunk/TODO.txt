@@ -1,5 +1,3 @@
-+ version 0.5:
-
 - option to not fetch stuff from 'net
 - icons
 - empty/opening tag only/opening and closing in edit tag dialog
@@ -9,9 +7,6 @@
 - documentation: XML catalog format, OASIS catalog format
 - proper handling of tags in nested files
 - test XMLCatalog support, include an XMLCatalog DTD
-
-+ later:
-
 - after 4.0pre1, remove own JCheckBoxList copy
 - tag lists for more file types, eg JSP, ASP, JHTML, ...
 - XmlComplete: support backspace (just get text from buffer from < pos

@@ -14,14 +14,16 @@ package xml;
 
 import javax.swing.event.*;
 import javax.swing.table.*;
+import javax.swing.text.BadLocationException;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 {
@@ -109,6 +111,8 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 				textArea.removeFocusListener(editPaneHandler);
 				textArea.removeCaretListener(editPaneHandler);
 			}
+			else if(emsg.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+				update();
 		}
 		else if(msg instanceof BufferUpdate)
 		{
@@ -119,8 +123,6 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			{
 				update();
 			}
-			else if(bmsg.getWhat() == BufferUpdate.BUFFER_CHANGED)
-				update();
 		}
 	}
 
@@ -257,14 +259,50 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 				EditPane editPane = view.getEditPane();
 				JEditTextArea textArea = editPane.getTextArea();
+				Buffer buffer = editPane.getBuffer();
 
 				if(GUIUtilities.isPopupTrigger(evt))
 				{
-					// RMB click doesn't show edit tag dialog
-					textArea.setSelectedText("<" + element.name
-						+ (element.empty && !element.html
-						? "/>" : ">"));
+					// RMB click doesn't show edit tag dialog box
 
+					String openingTag = "<" + element.name
+						+ (element.empty && !element.html
+						? "/>" : ">");
+					String closingTag;
+					if(element.empty)
+						closingTag = "";
+					else
+						closingTag = "</" + element.name + ">";
+
+					Selection[] selection = textArea.getSelection();
+
+					if(selection.length > 0)
+					{
+						try
+						{
+							buffer.beginCompoundEdit();
+
+							for(int i = 0; i < selection.length; i++)
+							{
+								buffer.insertString(selection[i].getStart(),
+									openingTag,null);
+								buffer.insertString(selection[i].getEnd(),
+									closingTag,null);
+							}
+						}
+						catch(BadLocationException bl)
+						{
+							Log.log(Log.ERROR,XmlActions.class,bl);
+						}
+						finally
+						{
+							buffer.endCompoundEdit();
+						}
+					}
+					else
+						textArea.setSelectedText(closingTag);
+
+					textArea.selectNone();
 					textArea.requestFocus();
 				}
 				else
