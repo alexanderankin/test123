@@ -223,12 +223,14 @@ class SAXParserImpl implements XmlParser.Impl
 				boolean required = attr.getIsRequired();
 				XSAttributeDeclaration decl = attr.getAttrDeclaration();
 				String attrName = decl.getName();
-				// TODO: default value
+				String value = decl.getConstraintValue();
 				// TODO: possible values
-				// TODO: type
+				String type = decl.getTypeDefinition().getName();
+				if(type == null)
+					type = "CDATA";
 				System.err.println("attr " + attrName + ", " + required);
 				elementDecl.addAttribute(new ElementDecl.AttributeDecl(
-					attrName,null,null,"CDATA",required));
+					attrName,value,null,type,required));
 			}
 		}
 
