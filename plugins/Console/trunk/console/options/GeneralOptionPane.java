@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package console;
+package console.options;
 
 //{{{ Imports
 import javax.swing.border.*;
@@ -33,7 +33,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
-class GeneralOptionPane extends AbstractOptionPane
+public class GeneralOptionPane extends AbstractOptionPane
 {
 	//{{{ GeneralOptionPane constructor
 	public GeneralOptionPane()

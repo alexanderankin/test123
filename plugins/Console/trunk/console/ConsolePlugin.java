@@ -24,6 +24,8 @@
 package console;
 
 //{{{ Imports
+import console.commando.*;
+import console.options.*;
 import gnu.regexp.REException;
 import javax.swing.JOptionPane;
 import java.io.*;
@@ -87,6 +89,7 @@ public class ConsolePlugin extends EBPlugin
 		OptionGroup grp = new OptionGroup("console");
 		grp.addOptionPane(new GeneralOptionPane());
 		grp.addOptionPane(new ErrorsOptionPane());
+		grp.addOptionPane(new CompileRunOptionPane());
 		dialog.addOptionGroup(grp);
 	} //}}}
 
@@ -430,6 +433,15 @@ public class ConsolePlugin extends EBPlugin
 		return -1;
 	} //}}}
 
+	//{{{ getErrorMatchers() method
+	public static ErrorMatcher[] getErrorMatchers()
+	{
+		if(errorMatchers == null)
+			loadMatchers();
+
+		return errorMatchers;
+	} //}}}
+
 	//{{{ finishErrorParsing() method
 	/**
 	 * This should be called after all lines to parse have been handled.
@@ -448,15 +460,6 @@ public class ConsolePlugin extends EBPlugin
 	} //}}}
 
 	//{{{ Package-private members
-
-	//{{{ getErrorMatchers() method
-	static ErrorMatcher[] getErrorMatchers()
-	{
-		if(errorMatchers == null)
-			loadMatchers();
-
-		return errorMatchers;
-	} //}}}
 
 	//{{{ loadMatchers() method
 	static void loadMatchers()

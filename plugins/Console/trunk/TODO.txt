@@ -1,7 +1,6 @@
 + version 3.2:
 
-- need <INIT> code block in commando files
-- finish documentation
+- document writing shells
 - improve commando error handling
 - 'compile' and 'run' commands:
   - need more commandos: at least perl, python, make, sh
@@ -10,6 +9,7 @@
 
 + later:
 
+- need <INIT> code block in commando files
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
 - cdpath feature:
   %cdpath_add <dir>

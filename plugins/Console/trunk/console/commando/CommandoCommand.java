@@ -20,7 +20,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package console;
+package console.commando;
 
 //{{{ Imports
 import org.gjt.sp.jedit.*;
@@ -28,14 +28,10 @@ import java.io.*;
 import java.net.URL;
 //}}}
 
-class CommandoCommand extends EditAction
+public class CommandoCommand extends EditAction
 {
-	URL url;
-	String path;
-	String propertyPrefix;
-
 	//{{{ CommandoCommand constructor
-	CommandoCommand(String name, URL url)
+	public CommandoCommand(String name, URL url)
 	{
 		super("commando." + name.replace(' ','_'));
 
@@ -45,13 +41,19 @@ class CommandoCommand extends EditAction
 	} //}}}
 
 	//{{{ CommandoCommand constructor
-	CommandoCommand(String name, String path)
+	public CommandoCommand(String name, String path)
 	{
 		super("commando." + name.replace(' ','_'));
 
 		this.label = name;
 		this.path = path;
 		this.propertyPrefix = getName() + '.';
+	} //}}}
+
+	//{{{ getPropertyPrefix() method
+	public String getPropertyPrefix()
+	{
+		return propertyPrefix;
 	} //}}}
 
 	//{{{ getLabel() method
@@ -73,7 +75,7 @@ class CommandoCommand extends EditAction
 	} //}}}
 
 	//{{{ openStream() method
-	Reader openStream() throws IOException
+	public Reader openStream() throws IOException
 	{
 		if(url != null)
 		{
@@ -87,6 +89,10 @@ class CommandoCommand extends EditAction
 	} //}}}
 
 	//{{{ Private members
+	private URL url;
+	private String path;
+	private String propertyPrefix;
+
 	private String label;
 	//}}}
 }
