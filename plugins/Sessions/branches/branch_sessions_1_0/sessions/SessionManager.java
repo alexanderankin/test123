@@ -394,13 +394,13 @@ public class SessionManager implements EBComponent
 
 
 	/**
-	 * Save current session property only, without saving the current list of
-	 * open files and without firing any events or messages.
+	 * Save current session property.
 	 */
 	void saveCurrentSessionProperty()
 	{
 		Log.log(Log.DEBUG, this, "saveCurrentSessionProperty: currentSession=" + currentSession.getName());
 		jEdit.setProperty(SESSION_PROPERTY, currentSession.getName());
+		jEdit.saveSettings();
 	}
 
 
