@@ -390,8 +390,6 @@ errorSource.addError(new ErrorSource.DefaultError(
    and the EditBus plugin 1.1.</para></formalpara>
 
    <itemizedlist>
-    <listitem><para>Tree will no longer be collapsed when an error source
-    clears itself</para></listitem>
     <listitem><para>Line numbers in the tree are now increased by one, so that
     they match the textarea line numbers (Dirk Moebius)</para></listitem>
     <listitem><para>The commands "Next/Previous Error" and "Next/Previous File

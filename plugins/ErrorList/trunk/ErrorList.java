@@ -462,6 +462,13 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 	private void addError(ErrorSource.Error error)
 	{
+		String[] extras = error.getExtraMessages();
+		final DefaultMutableTreeNode newNode
+			= new DefaultMutableTreeNode(error,extras.length > 0);
+		for(int j = 0; j < extras.length; j++)
+			newNode.add(new DefaultMutableTreeNode(
+				new Extra(extras[j]),false));
+
 		String path = error.getFilePath();
 
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
@@ -472,12 +479,6 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			String nodePath = (String)node.getUserObject();
 			if(nodePath.equals(path))
 			{
-				String[] extras = error.getExtraMessages();
-				final DefaultMutableTreeNode newNode
-					= new DefaultMutableTreeNode(error,extras.length > 0);
-				for(int j = 0; j < extras.length; j++)
-					newNode.add(new DefaultMutableTreeNode(
-						new Extra(extras[j]),false));
 				node.add(newNode);
 
 				errorModel.reload(errorRoot);
@@ -499,24 +500,24 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 		// no node for this file exists yet, so add a new one
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(path,true);
-		String[] extras = error.getExtraMessages();
-		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(error,
-			extras.length > 0);
-		for(int j = 0; j < extras.length; j++)
-			newNode.add(new DefaultMutableTreeNode(
-				new Extra(extras[j]),false));
 		node.add(newNode);
 		errorRoot.add(node);
 		errorModel.reload(errorRoot);
 
-		// this is a silly hack, because adding branches
-		// collapses all existing ones.
-		TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
-		for(int i = 0; i < errorRoot.getChildCount(); i++)
+		SwingUtilities.invokeLater(new Runnable()
 		{
-			expandPath[1] = errorRoot.getChildAt(i);
-			errorTree.expandPath(new TreePath(expandPath));
-		}
+			public void run()
+			{
+				// this is a silly hack, because adding branches
+				// collapses all existing ones.
+				TreeNode[] expandPath = new TreeNode[] { errorRoot, null };
+				for(int i = 0; i < errorRoot.getChildCount(); i++)
+				{
+					expandPath[1] = errorRoot.getChildAt(i);
+					errorTree.expandPath(new TreePath(expandPath));
+				}
+			}
+		});
 	}
 
 	// silly hack so that we can tell the difference between a file node
@@ -665,8 +666,11 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 				setFont(UIManager.getFont("Tree.font"));
 				ErrorSource.Error error = (ErrorSource.Error)nodeValue;
 				setText((error.getLineNumber() + 1)
-					+ ": " + error.getErrorMessage()
-					.replace('\t',' '));
+					+ ": "
+					+ (error.getErrorMessage() == null
+					? ""
+					: error.getErrorMessage()
+					.replace('\t',' ')));
 				setIcon(error.getErrorType() == ErrorSource.WARNING
 					? WARNING_ICON : ERROR_ICON);
 			}
