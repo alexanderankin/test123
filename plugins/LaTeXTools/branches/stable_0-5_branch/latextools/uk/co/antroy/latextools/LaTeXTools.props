@@ -52,17 +52,16 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   latextools-insert-command \
   latextools-increment-phrase \
   latextools-increment-phrase-from-x \
-  latextools-surround-selection 
+  latextools-surround-selection \
   - \
   latextools-set-main \
   latextools-reset-main \
   latextools-show-main \
   - \
-  latextools-navigation-dock
-  latextools-bibliography-table-dock
-  latextools-label-table-dock
-  latextools-sidekick-tree \
-  
+  latextools-navigation-dock \
+  latextools-bibliography-table-dock \
+  latextools-label-table-dock \
+  sidekick-tree
 bibtex.label=BibTeX
 bibtex.title=BibTeX Entries
 bibtex.bibtitle.wordlength=0
@@ -81,7 +80,6 @@ latextools-label-table-dock.title = Label Navigator
 latextools-label-table-dock.label = Label Navigator
 latextools-navigation-dock.title = LaTeX Tools
 latextools-navigation-dock.label = LaTeX Information Panel
-latextools-navigation-dock.nottex = Not a*TeX*Document!
 latextools-label-dock.title = Label Navigator
 latextools-label-dock.label = Label Navigator
 
@@ -89,8 +87,8 @@ latextools-image-viewer-dock.title = LaTeX Image Viewer
 latextools-image-viewer-dock.label = Image Viewer
 latextools-show-image-under-caret.title = Display Image Under Caret
 latextools-show-image-under-caret.label = Display Image
-latextools-navigation.title = LaTeX Navigator
-latextools-navigation.label = Navigate Document
+# latextools-navigation.title = LaTeX Navigator
+# latextools-navigation.label = Navigate Document
 latextools-navigation.nottex = Not parsed.
 latextools-compile.title = Compile  
 latextools-compile.label = Compile 

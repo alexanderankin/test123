@@ -58,7 +58,7 @@ public class ProjectViewerPanel extends JPanel implements MouseListener{
             tree.setToggleClickCount(3);
             setLayout(new BorderLayout());
             //setPreferredSize(new Dimension(400,400));
-            add(tree, BorderLayout.WEST);
+            add(tree, BorderLayout.CENTER);
         }
         
         public void mouseClicked(MouseEvent e){} 

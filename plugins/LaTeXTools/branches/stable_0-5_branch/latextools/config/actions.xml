@@ -59,7 +59,7 @@
  		</CODE>
 -->	
         <CODE>
-            uk.co.antroy.latextools.ImageViewer.showInInfoPane(textArea, buffer);
+            uk.co.antroy.latextools.ImageViewer.showInInfoPane(view, buffer);
             manager = view.getDockableWindowManager();
             manager.showDockableWindow("navigation-dock");
             setAccessibility(true);

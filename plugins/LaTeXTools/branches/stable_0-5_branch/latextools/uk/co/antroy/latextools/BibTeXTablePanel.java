@@ -81,8 +81,19 @@ public class BibTeXTablePanel
     }
 
   }
-
   private void buildPanel(){
+    //  Thread parseThread = new Thread(new Runnable(){
+    //      public void run(){
+              _buildPanel();
+    //      }
+    //  });
+      
+    //  parseThread.start();
+  }
+  
+  private void _buildPanel(){
+    JLabel parsingLabel = new JLabel("<html><font color='#dd0000'>Parsing...");
+    add(parsingLabel);
     BibTeXParser parser = new BibTeXParser(view, buffer);
     model = new BibTeXTableModel(parser.getBibEntries());
     
@@ -113,7 +124,9 @@ public class BibTeXTablePanel
                                         JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
     setLayout(new BorderLayout());
     setPreferredSize(new Dimension(400, 400));
+    remove(parsingLabel);
     add(scp, BorderLayout.CENTER);
+    //super.refresh();
   }
   
   public void reload(){

@@ -250,6 +250,43 @@ public class ProjectMacros {
         return getImportsInRange(buffer, 0, buffer.getLineCount() - 1);
     }
 
+    
+    public static int getProjectWordCount(View view, Buffer buffer){
+        DefaultMutableTreeNode files = getProjectFiles(view, buffer);
+        int count = 0;
+        for (Enumeration it = files.preorderEnumeration(); it.hasMoreElements();) {
+            DefaultMutableTreeNode node = (DefaultMutableTreeNode) it.nextElement();
+            File in = (File) node.getUserObject();
+            Buffer buff = jEdit.openTemporary(view, in.getParent(), 
+                                              in.getName(), false);
+            count += getBufferWordCount(buff);
+        }
+        
+        return count;
+    }
+    
+    public static int getBufferWordCount(Buffer buff){
+        int count = 0;
+        String text = buff.getText(0,buff.getLength());
+        RE wordExp = null;
+        try{
+            wordExp = new RE("(\\b|\\\\)(?:(?:[a-zA-Z]{2,})|a|i)\\b");
+        } catch (REException e){
+            System.err.println( "Regular Expression Failed!! Check expression in " +
+                                "uk.co.antroy.latextools.macros.ProjectMacros.getBufferWordCount()");
+            return -1;
+        }
+        REMatch[] matches = wordExp.getAllMatches(text);
+        
+        for (int i=0; i<matches.length; i++){
+            if (!matches[i].toString(1).equals("\\")){
+                count++;
+            }
+        }
+        
+        return count;
+    }
+    
     public static boolean isTeXFile(Buffer b) {
       if (b == null) return false;
       
@@ -273,31 +310,49 @@ public class ProjectMacros {
       
       return out;
     }
-
-    public static void showInformation(View view, Buffer buffer){
-        
-       JTextArea info = new JTextArea("", 30, 20);
-       info.setEditable(false);
-       String main = getMainTeXPath(buffer);
-       info.append("Main File: ");
-       info.append(main);
-       info.append("\n");
-       
-       JPanel panel = new JPanel();
-       panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
+    
+    public static void showInformation( View view,  Buffer buffer){
+        //Thread t = new Thread(new Runnable(){
+        //    public void run(){
+                _showInformation(view, buffer);
+        //    }
+        //});
+        //t.start();
+    }
+    
+    private static void _showInformation(View view, Buffer buffer){
+       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO A!!");
+       LaTeXDockable.getInstance().setInfoPanel(
+                new JLabel("<html><font color='#dd0000'>Getting information..."), "Project Information:");
+       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 0!!");
        ProjectViewerPanel proj = new ProjectViewerPanel(view, buffer);
-       JScrollPane scr = new JScrollPane(proj);
-       proj.setMaximumSize(new Dimension(100,800));
-       scr.setMaximumSize(new Dimension(100,800));
+       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 1!!"); 
+
+       StringBuffer info = new StringBuffer("");
+       String main = getMainTeXPath(buffer);
+       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 2!!"); 
        
-       panel.add(new JScrollPane(info));
-       panel.add(scr);
+       info.append("<html>");
+       info.append("<b>Main File:</b> ");
+       info.append(main);
+       JEditorPane editor = new JEditorPane("text/html", info.toString());
        
-        
-       
+       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 3!!"); 
+       JSplitPane panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, true,
+                                         new JScrollPane(editor), 
+                                         new JScrollPane(proj));
+       JComponent wind = view.getDockableWindowManager().getDockable("latextools-navigation-dock");
+       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 4!!"); 
+       if (wind != null){
+           Dimension size = wind.getSize();
+           int w = (int) (size.getWidth() / 4) * 3;
+           panel.setDividerLocation(w);
+       }
               
+       Log.log(Log.DEBUG, ProjectMacros.class, "GOT TO 5!!"); 
        LaTeXDockable.getInstance().setInfoPanel(panel, "Project Information:");
     }
+    
     
     private static class LaTeXMutableTreeNode extends DefaultMutableTreeNode{
         File file;
