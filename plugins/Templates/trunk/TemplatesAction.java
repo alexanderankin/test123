@@ -24,10 +24,6 @@ import java.io.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.JFileChooser;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -38,7 +34,6 @@ import org.gjt.sp.util.Log;
 public class TemplatesAction extends EditAction implements ActionListener
 {
 	private static TemplateDir templates;
-	private static Hashtable templateMenus = new Hashtable();
 
 	//Constructors
 	public TemplatesAction() {
@@ -48,6 +43,7 @@ public class TemplatesAction extends EditAction implements ActionListener
 	// Accessors & Mutators
 	/**
 	 * Returns the directory where templates are stored
+	 * @return A string containing the template directory path.
 	 */
 	public String getTemplateDir() {
 		return jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0");
@@ -62,22 +58,20 @@ public class TemplatesAction extends EditAction implements ActionListener
 	}
 	
 	/**
-	 * Returns a copy of the Templates menu
-	 * @param view The view whose Templates menu we wish to retrieve.
-	 * @return A JMenu object which is the Templates menu for the given view.
+	 * Returns the root TemplateDir object, which represents templates as a  
+	 * hierarchical tree of TemplateDir and TemplateFile objects.
+	 * @return The current TemplateDir object.
 	 */
-	public JMenu getMenu(View view) {
-		JMenu menu;
-		if (templateMenus.containsKey(view)) {
-			menu = (JMenu)templateMenus.get(view);
-		} else {
-			menu = new JMenu(jEdit.getProperty("TemplatesPlugin.menu.label"));
-			buildMenu(menu);
-			templateMenus.put(view,menu);
-		}
-		return menu;
+	public static TemplateDir getTemplates() { return templates; }
+	
+	/**
+	 * Sets the root TemplateDir object to another value.
+	 * @param newTemplates The new TemplateDir object
+	 */
+	public static void setTemplates(TemplateDir newTemplates) {
+		templates = newTemplates;
 	}
-
+	
 	// Implementors
 	/**
 	 * Determines which menu item was selected from the
@@ -99,8 +93,8 @@ public class TemplatesAction extends EditAction implements ActionListener
 	}
 	
 	/**
-	 * Scans the templates directory and creates a Hashtable
-	 * mapping template names to template files. Backup files are ignored
+	 * Scans the templates directory and sends an EditBus message to all 
+	 * TemplatesMenu objects to update themselves. Backup files are ignored
 	 * based on the values of the backup prefix and suffix in the "Global
 	 * Options" settings.
 	 */
@@ -113,8 +107,8 @@ public class TemplatesAction extends EditAction implements ActionListener
 				if (!templateDir.exists())	// If insufficent privileges to create it
 					throw new java.lang.SecurityException();
 			}
-			this.templates = new TemplateDir(templateDir);
-			this.templates.refreshTemplates();
+			setTemplates(new TemplateDir(templateDir));
+			getTemplates().refreshTemplates();
 			buildAllMenus();
 		} catch (java.lang.SecurityException se) {
 			Log.log(Log.ERROR,this,jEdit.getProperty("plugin.TemplatesPlugin.error.create-dir") + templateDir);
@@ -122,29 +116,8 @@ public class TemplatesAction extends EditAction implements ActionListener
 		}
 	}
 	
-	private void buildMenu(JMenu menu) {
-		// Create menu items for the "Refresh" option and a separator
-		JMenuItem mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.refresh.label"));
-		mi.addActionListener(this);
-		menu.add(mi);
-		mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.edit.label"));
-		mi.addActionListener(this);
-		menu.add(mi);
-		mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.save.label"));
-		mi.addActionListener(this);
-		menu.add(mi);
-		menu.addSeparator();
-		this.templates.createMenus(menu);		
-	}
-	
 	private void buildAllMenus() {
-		Enumeration e = templateMenus.elements();
-		JMenu menu;
-		while (e.hasMoreElements()) {
-			menu = (JMenu)e.nextElement();
-			menu.removeAll();
-			buildMenu(menu);
-		}
+		EditBus.send(new TemplatesChanged());
 	}
 	
 	/**
@@ -205,6 +178,12 @@ public class TemplatesAction extends EditAction implements ActionListener
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.5  2001/07/16 19:10:13  sjakob
+	 * BUG FIX: updated TemplatesPlugin to use createMenuItems(Vector menuItems),
+	 * rather than the deprecated createMenuItems(View view, Vector menus,
+	 * Vector menuItems), which caused startup errors.
+	 * Added Mike Dillon's makefile.jmk.
+	 *
 	 * Revision 1.4  2001/02/26 05:47:37  sjakob
 	 * Added "Save Template" function to Templates menu.
 	 * Added TemplateMode (custom mode for Templates parsing).

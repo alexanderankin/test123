@@ -1,7 +1,10 @@
 CHANGES file for Templates plugin.
 
-Version 1.1.0 (FEB-2001)
+Version 1.1.0 (16-JULY-2001)
 =============================
+BUG FIX:
+- updated TemplatesPlugin to use createMenuItems(Vector menuItems), rather 
+than the deprecated createMenuItems(View view, Vector menus, Vector menuItems).
 ENHANCEMENTS:
 - added "Edit Template" function to Templates menu
 - added "Save Template" function to Templates menu

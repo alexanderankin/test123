@@ -20,7 +20,9 @@ classes=TemplatesPlugin.class \
 		TemplatesOptionPane.class \
 		TemplateVar.class \
 		Template.class \
-		TemplateMode.class
+		TemplateMode.class \
+		TemplatesMenu.class \
+		TemplatesChanged.class
 others= Templates.props \
 		Templates.html
 indist=	README.txt \

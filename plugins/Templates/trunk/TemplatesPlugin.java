@@ -60,14 +60,14 @@ public class TemplatesPlugin extends EditPlugin
 
 	/**
 	 * Create the "Templates" menu item.
-	 * @param view The current view
-	 * @param menus Used to add submenus
-	 * @param menuItems Used to add menu items
+	 * @param menuItems Used to add menus and menu items
 	 */
-	public void createMenuItems(View view, Vector menus, Vector menuItems) {
+	public void createMenuItems(Vector menuItems) {
 		// The TemplatesAction object is responsible for maintaining
 		// the Code Templates menu.
-		menus.addElement(myAction.getMenu(view));
+		TemplatesMenu myMenu = new TemplatesMenu();
+		menuItems.addElement(myMenu);
+		myMenu.addNotify();
 	}
 	
 	/**
@@ -82,6 +82,12 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2001/07/16 19:10:13  sjakob
+	 * BUG FIX: updated TemplatesPlugin to use createMenuItems(Vector menuItems),
+	 * rather than the deprecated createMenuItems(View view, Vector menus,
+	 * Vector menuItems), which caused startup errors.
+	 * Added Mike Dillon's makefile.jmk.
+	 *
 	 * Revision 1.2  2001/02/23 19:31:39  sjakob
 	 * Added "Edit Template" function to Templates menu.
 	 * Some Javadoc cleanup.
