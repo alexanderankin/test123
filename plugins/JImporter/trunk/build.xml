@@ -11,6 +11,11 @@
     <property name="plugin.jar.filename" value="${ant.project.name}.jar"/>
     <property name="plugin.jar.destpath" location="."/>
     <property name="plugin.lib.dir" location="./lib"/>
+    <property name="plugin.javadoc.src" location="${plugin.src.dir}"/>
+    <property name="plugin.javadoc.dest" location="${plugin.docs.dir}/api"/>
+    <property name="plugin.doccheck.src" location="${plugin.src.dir}"/>
+    <property name="plugin.doccheck.dest" location="${plugin.docs.dir}/doccheck"/>
+    <property name="plugin.doccheck.jarpath" location="c:\java\doccheck\lib\doccheck.jar"/>
     <property name="jedit.home" location="../../jEdit"/>
     
     <path id="plugin.build.classpath">
@@ -38,11 +43,29 @@
         <jar jarfile="${plugin.jar.filename}">
             <fileset dir="${plugin.docs.dir}" includes="*"/>
             <fileset dir="${plugin.build.dir}" includes="**/*.class"/>
+            <fileset dir="${plugin.src.dir}" includes="images/*.gif"/>
             <fileset dir="${plugin.src.dir}" includes="actions.xml"/>
             <fileset dir="${plugin.src.dir}" includes="**/*.props"/>
             <fileset dir="${plugin.src.dir}" includes="TODO.txt"/>
             <fileset dir="${plugin.src.dir}" includes="changelog.txt"/>
         </jar>
+    </target>
+    
+    <target name="javadoc" depends="compile" description="Generate the Javadoc for JImporter">
+        <javadoc sourcepath="${plugin.javadoc.src}" 
+                 destdir="${plugin.javadoc.dest}"
+                 windowtitle="JImporter Javadoc"
+                 packagenames="*"
+                 link="http://java.sun.com/j2se/1.4/docs/api/index.html"/>                    
+    </target>
+    
+    <target name="verify-javadoc" depends="compile" description="Verify the validity of javadoc tags in accordance to sun specification">
+        <mkdir dir="${plugin.doccheck.dest}"/>
+        <javadoc sourcepath="${plugin.doccheck.src}" 
+                 destdir="${plugin.doccheck.dest}"
+                 doclet="com.sun.tools.doclets.doccheck.DocCheck"
+                 docletpath="${plugin.doccheck.jarpath}"
+                 packagenames="*"/>                    
     </target>
     
     <target name="deploy" depends="jar" description="Copy the jar file to the jedit jars directory">
