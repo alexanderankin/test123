@@ -18,6 +18,7 @@
  */
 package projectviewer.persist;
 
+//{{{ Imports
 import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
@@ -27,6 +28,8 @@ import org.xml.sax.Attributes;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.config.ProjectViewerConfig; 
+//}}}
 
 /**
  *	Handler for file nodes.
@@ -75,7 +78,12 @@ public class FileNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		VPTFile vf = new VPTFile(new File(attrs.getValue(PATH_ATTR)));
+		File f = new File(attrs.getValue(PATH_ATTR));
+		if (ProjectViewerConfig.getInstance().getDeleteNotFoundFiles() &&
+				!f.exists()) {
+			return null;
+		}
+		VPTFile vf = new VPTFile(f);
 		project.registerFile(vf);
 		return vf;
 	}
