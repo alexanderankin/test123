@@ -35,10 +35,11 @@ public class PropertyOptionPane extends AbstractOptionPane {
 	}
 
 	public void _save() {
-		table.getCellEditor().stopCellEditing();
+		if (table.isEditing())
+			table.getCellEditor().stopCellEditing();
 		for (int i = 0; i < table.getRowCount(); i++) {
 			if (model.rowChanged(i)) {
-				Log.log(Log.DEBUG,this,"saved "+table.getValueAt(i,0));
+				//Log.log(Log.DEBUG,this,"saved "+table.getValueAt(i,0));
 				jEdit.setProperty(table.getValueAt(i,0).toString()+"."+suffix,table.getValueAt(i,1).toString());
 			}
 		}
