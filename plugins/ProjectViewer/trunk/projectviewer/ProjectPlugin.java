@@ -113,9 +113,6 @@ public final class ProjectPlugin extends EditPlugin {
 	//{{{ start() method
 	/** Start the plugin. */
 	public void start() {
-        System.setProperty("javax.xml.parsers.SAXParserFactory","org.apache.xerces.jaxp.SAXParserFactoryImpl");
-        System.setProperty("javax.xml.parsers.DocumentBuilderFactory","org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
-
 		File f = new File(getResourcePath("projects/null"));
 		if (!f.getParentFile().exists()) {
 			f.getParentFile().mkdirs();
