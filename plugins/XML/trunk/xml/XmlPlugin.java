@@ -13,6 +13,9 @@
 package xml;
 
 import javax.swing.text.BadLocationException;
+import javax.swing.*;
+import java.awt.event.*;
+import java.awt.Point;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
@@ -41,10 +44,16 @@ public class XmlPlugin extends EBPlugin
 	// We store the list of id attribute values here
 	public static final String IDS_PROPERTY = "xml.declared-ids";
 
+	// For complete() method
+	public static final int ELEMENT_COMPLETE = 0;
+	public static final int ENTITY_COMPLETE = 1;
+
 	public void start()
 	{
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,TREE_NAME);
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,INSERT_NAME);
+
+		propertiesChanged();
 	}
 
 	public void createMenuItems(Vector menuItems)
@@ -79,7 +88,7 @@ public class XmlPlugin extends EBPlugin
 			}
 		}
 		else if(msg instanceof PropertiesChanged)
-			EntityManager.propertiesChanged();
+			propertiesChanged();
 	}
 
 	public static void showEditTagDialog(View view)
@@ -284,6 +293,116 @@ loop:			for(;;)
 		String newTag = dialog.getNewTag();
 
 		if(newTag != null)
+		{
 			editPane.getTextArea().setSelectedText(newTag);
+			editPane.getTextArea().requestFocus();
+		}
+	}
+
+	public static void completeKeyTyped(final View view,
+		final JEditTextArea textArea, final int mode,
+		char ch)
+	{
+		if(ch != '\0')
+			textArea.userInput(ch);
+
+		Buffer buffer = textArea.getBuffer();
+
+		if(!(buffer.isEditable()
+			&& completion
+			&& buffer.getBooleanProperty("xml.parse")))
+		{
+			return;
+		}
+
+		XmlTree tree = (XmlTree)view.getDockableWindowManager()
+			.getDockableWindow(TREE_NAME);
+		if(tree == null)
+			return;
+
+		if(timer != null)
+			timer.stop();
+
+		final int caret = textArea.getCaretPosition();
+
+		timer = new Timer(0,new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				if(caret == textArea.getCaretPosition())
+					complete(view,textArea,mode);
+			}
+		});
+
+		timer.setInitialDelay(delay);
+		timer.setRepeats(false);
+		timer.start();
+	}
+
+	public static void complete(View view, JEditTextArea textArea, int mode)
+	{
+		// first, we get the word before the caret
+		int caretLine = textArea.getCaretLine();
+		String line = textArea.getLineText(caretLine);
+		int dot = textArea.getCaretPosition()
+			- textArea.getLineStartOffset(caretLine);
+		if(dot == 0)
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		int wordStart = TextUtilities.findWordStart(line,dot-1,"<&") + 1;
+		String word = line.substring(wordStart,dot);
+
+		Vector completions;
+		if(mode == ELEMENT_COMPLETE)
+		{
+			completions = (Vector)view.getEditPane().getClientProperty(
+				ELEMENTS_PROPERTY);
+		}
+		else
+		{
+			completions = (Vector)view.getEditPane().getClientProperty(
+				ENTITIES_PROPERTY);
+		}
+
+		if(completions == null || completions.size() == 0)
+			return;
+
+		Point location = new Point(textArea.offsetToX(caretLine,wordStart),
+			textArea.getPainter().getFontMetrics().getHeight()
+			* (textArea.getBuffer().physicalToVirtual(caretLine)
+			- textArea.getFirstLine() + 1));
+
+		SwingUtilities.convertPointToScreen(location,
+			textArea.getPainter());
+
+		if(mode == ELEMENT_COMPLETE)
+		{
+			view.getStatus().setMessageAndClear(jEdit.getProperty(
+				"xml-complete-status"));
+		}
+
+		new XmlComplete(view,word,completions,location);
+	}
+
+	// private members
+	private static boolean completion;
+	private static int delay;
+	private static Timer timer;
+
+	private static void propertiesChanged()
+	{
+		EntityManager.propertiesChanged();
+		completion = jEdit.getBooleanProperty("xml.complete");
+		try
+		{
+			delay = Integer.parseInt("xml.complete-delay");
+		}
+		catch(NumberFormatException nf)
+		{
+			delay = 500;
+		}
 	}
 }

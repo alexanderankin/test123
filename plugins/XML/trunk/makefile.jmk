@@ -63,7 +63,7 @@ jar: srcs;
 "docs":;
 {
     exec "openjade" "-t" "sgml" "-V" "nochunks" "-V" "rootchunk"
-        "/usr/local/share/OpenSP/xml.dcl" "users-guide.xml";
+        "/usr/share/sgml/xml.dcl" "users-guide.xml";
 }
 
 "clean":;

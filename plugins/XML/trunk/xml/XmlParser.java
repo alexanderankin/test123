@@ -27,18 +27,55 @@ import org.gjt.sp.util.Log;
 
 class XmlParser
 {
-	public XmlParser(View view, Buffer buffer)
+	XmlParser(View view)
 	{
-		this.tree = (XmlTree)view.getDockableWindowManager()
-			.getDockableWindow(XmlPlugin.TREE_NAME);
-		this.insert = (XmlInsert)view.getDockableWindowManager()
-			.getDockableWindow(XmlPlugin.INSERT_NAME);
-
 		this.view = view;
-		this.buffer = buffer;
+
+		elements = new Vector();
+		elementHash = new Hashtable();
+		entities = new Vector();
+		ids = new Vector();
+
+		errorSource = new DefaultErrorSource("XML");
+
+		parser = new org.apache.xerces.parsers.SAXParser();
+		handler = new Handler();
+
+		try
+		{
+			parser.setFeature("http://apache.org/xml/features/validation/dynamic",
+				jEdit.getBooleanProperty("xml.validate"));
+			parser.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
+			parser.setErrorHandler(handler);
+			parser.setEntityResolver(handler);
+			parser.setContentHandler(handler);
+			parser.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
+		}
+		catch(SAXException se)
+		{
+			Log.log(Log.ERROR,this,se);
+		}
+	}
+
+	void parse(Buffer buffer)
+	{
+		// prepare for parsing
+		elements.removeAllElements();
+		elementHash.clear();
+		entities.removeAllElements();
+		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
+		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
+		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
+		ids.removeAllElements();
+		handler.currentNodeStack.removeAllElements();
 
 		root = new DefaultMutableTreeNode(buffer.getName());
 		model = new DefaultTreeModel(root);
+
+		errorSource.clear();
+
+		// get buffer text
+		this.buffer = buffer;
 
 		try
 		{
@@ -49,90 +86,51 @@ class XmlParser
 			Log.log(Log.ERROR,this,ble);
 			return;
 		}
+
+		// start parser thread
+		stopThread();
+
+		thread = new ParseThread();
+		thread.start();
 	}
 
-	public void parse()
+	void stopThread()
 	{
-		elements = new Vector();
-		elementHash = new Hashtable();
-		entities = new Vector();
-		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
-		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));
-		entities.addElement(new EntityDecl(EntityDecl.INTERNAL,"amp","&"));
-
-		ids = new Vector();
-
-		parser = new org.apache.xerces.parsers.SAXParser();
-
-		try
+		if(thread != null)
 		{
-			parser.setFeature("http://apache.org/xml/features/validation/dynamic",true);
-			parser.setFeature("http://apache.org/xml/features/continue-after-fatal-error",true);
-		}
-		catch(SAXException se)
-		{
-			Log.log(Log.ERROR,this,se);
-		}
-
-		try
-		{
-			InputSource source = new InputSource(new StringReader(text));
-			source.setSystemId(buffer.getPath());
-
-			Handler handler = new Handler();
-			parser.setErrorHandler(handler);
-			parser.setEntityResolver(handler);
-			parser.setContentHandler(handler);
-			parser.setProperty("http://xml.org/sax/properties/declaration-handler",handler);
-			parser.parse(source);
-		}
-		catch(SAXParseException spe)
-		{
-			// fatal error, already handled
-		}
-		catch(SAXException se)
-		{
-			tree.addError(ErrorSource.ERROR,buffer.getPath(),
-				0,se.getMessage());
-		}
-		catch(IOException ioe)
-		{
-			Log.log(Log.ERROR,this,ioe);
-			tree.addError(ErrorSource.ERROR,buffer.getPath(),0,
-				ioe.toString());
+			thread.stop();
+			thread = null;
 		}
 	}
 
-	public void finish()
+	void addError(int type, String path, int line, String message)
 	{
-		if(tree != null)
-		{
-			model.reload(root);
-			tree.parsingComplete(model);
-		}
+		// FIXME?
+		if(path.startsWith("file://"))
+			path = path.substring(7);
+		path.replace('/',File.separatorChar);
 
-		MiscUtilities.quicksort(elements,new ElementDeclCompare());
-		MiscUtilities.quicksort(entities,new EntityDeclCompare());
-		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
+		errorSource.addError(type,path,line,0,0,message);
+	}
 
-		view.getEditPane().putClientProperty(
-			XmlPlugin.ELEMENTS_PROPERTY,
-			elements);
-		view.getEditPane().putClientProperty(
-			XmlPlugin.ELEMENT_HASH_PROPERTY,
-			elementHash);
-		view.getEditPane().putClientProperty(
-			XmlPlugin.ENTITIES_PROPERTY,
-			entities);
-		view.getEditPane().putClientProperty(
-			XmlPlugin.IDS_PROPERTY,
-			ids);
+	void addNotify()
+	{
+		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
+		EditBus.addToBus(errorSource);
+	}
 
-		if(insert != null)
-		{
-			insert.setDeclaredElements(elements);
-			insert.setDeclaredEntities(entities);
-		}
+	void removeNotify()
+	{
+		stopThread();
+
+		errorSource.clear();
+		EditBus.removeFromNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
+		EditBus.removeFromBus(errorSource);
+	}
+
+	ErrorSource getErrorSource()
+	{
+		return errorSource;
 	}
 
 	static class ElementDeclCompare implements MiscUtilities.Compare
@@ -163,23 +161,107 @@ class XmlParser
 	}
 
 	// private members
-	private XmlTree tree;
-	private XmlInsert insert;
+	private View view;
+	private Buffer buffer;
+
 	private Vector elements;
 	private Hashtable elementHash;
 	private Vector entities;
 	private Vector ids;
-	private View view;
-	private Buffer buffer;
-	private String text;
 	private DefaultTreeModel model;
 	private DefaultMutableTreeNode root;
+
+	private ParseThread thread;
+
+	private String text;
+
 	private XMLReader parser;
+	private Handler handler;
+
+	private DefaultErrorSource errorSource;
+
+	private void doParse()
+	{
+		try
+		{
+			InputSource source = new InputSource(new StringReader(text));
+			source.setSystemId(buffer.getPath());
+
+			parser.parse(source);
+		}
+		catch(SAXParseException spe)
+		{
+			// fatal error, already handled
+		}
+		catch(SAXException se)
+		{
+			Log.log(Log.ERROR,this,se.getException());
+			if(se.getMessage() != null)
+			{
+				addError(ErrorSource.ERROR,buffer.getPath(),
+				0,se.getMessage());
+			}
+		}
+		catch(IOException ioe)
+		{
+			Log.log(Log.ERROR,this,ioe);
+			addError(ErrorSource.ERROR,buffer.getPath(),0,
+			ioe.toString());
+		}
+	}
+
+	private void finish()
+	{
+		if(view.isClosed())
+			return;
+
+		thread = null;
+
+		// to avoid keeping pointers to stale buffers
+		buffer = null;
+		text = null;
+
+		MiscUtilities.quicksort(elements,new ElementDeclCompare());
+		MiscUtilities.quicksort(entities,new EntityDeclCompare());
+		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
+
+		view.getEditPane().putClientProperty(
+			XmlPlugin.ELEMENTS_PROPERTY,
+			elements);
+		view.getEditPane().putClientProperty(
+			XmlPlugin.ELEMENT_HASH_PROPERTY,
+			elementHash);
+		view.getEditPane().putClientProperty(
+			XmlPlugin.ENTITIES_PROPERTY,
+			entities);
+		view.getEditPane().putClientProperty(
+			XmlPlugin.IDS_PROPERTY,
+			ids);
+
+		XmlTree tree = (XmlTree)view.getDockableWindowManager()
+			.getDockableWindow(XmlPlugin.TREE_NAME);
+		if(tree != null)
+		{
+			model.reload(root);
+			tree.parsingComplete(model);
+		}
+
+		XmlInsert insert = (XmlInsert)view.getDockableWindowManager()
+			.getDockableWindow(XmlPlugin.INSERT_NAME);
+		if(insert != null)
+		{
+			insert.setDeclaredElements(elements);
+			insert.setDeclaredEntities(entities);
+		}
+	}
 
 	class Handler extends DefaultHandler implements DeclHandler
 	{
 		Stack currentNodeStack = new Stack();
 		Locator loc = null;
+
+		// DTD cache
+		private String lastDTD;
 
 		public void setDocumentLocator(Locator locator)
 		{
@@ -191,16 +273,8 @@ class XmlParser
 		{
 			try
 			{
-				InputSource in = EntityManager.resolveEntity(
+				return EntityManager.resolveEntity(
 					loc.getSystemId(),publicId,systemId);
-				if(in == null)
-				{
-					error(new SAXParseException("Not found: "
-						+ publicId + ":" + systemId,
-						loc));
-				}
-				else
-					return in;
 			}
 			catch(IOException io)
 			{
@@ -300,7 +374,7 @@ class XmlParser
 				int column = loc.getColumnNumber() - 1;
 				int offset = Math.min(buffer.getLength() - 1,
 					map.getElement(line).getStartOffset()
-					+ column - 1);
+					+ column);
 
 				tag.end = buffer.createPosition(offset);
 
@@ -323,7 +397,7 @@ class XmlParser
 				return;
 			}
 
-			tree.addError(ErrorSource.ERROR,spe.getSystemId(),
+			addError(ErrorSource.ERROR,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
 		}
@@ -335,7 +409,7 @@ class XmlParser
 				return;
 			}
 
-			tree.addError(ErrorSource.WARNING,spe.getSystemId(),
+			addError(ErrorSource.WARNING,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
 		}
@@ -348,7 +422,7 @@ class XmlParser
 				return;
 			}
 
-			tree.addError(ErrorSource.ERROR,spe.getSystemId(),
+			addError(ErrorSource.ERROR,spe.getSystemId(),
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
 		}
@@ -356,7 +430,8 @@ class XmlParser
 		// DeclHandler implementation
 		public void elementDecl(String name, String model)
 		{
-			ElementDecl elementDecl = new ElementDecl(name,model,false);
+			boolean empty = "EMPTY".equals(model);
+			ElementDecl elementDecl = new ElementDecl(name,empty,false);
 			elementHash.put(name,elementDecl);
 			elements.addElement(elementDecl);
 		}
@@ -368,8 +443,7 @@ class XmlParser
 			if(element == null)
 				return;
 
-			element.addAttribute(new ElementDecl.AttributeDecl(
-				aName,type,valueDefault,value));
+			element.addXMLAttribute(aName,type,valueDefault,value);
 		}
 
 		public void internalEntityDecl(String name, String value)
@@ -405,25 +479,23 @@ class XmlParser
 		}
 	}
 
-	static class ParseThread extends Thread
+	class ParseThread extends Thread
 	{
-		XmlParser parser;
-
-		ParseThread(View view, Buffer buffer)
+		ParseThread()
 		{
 			super("XML parser thread");
 			setPriority(Thread.MIN_PRIORITY);
-			parser = new XmlParser(view,buffer);
 		}
 
 		public void run()
 		{
-			parser.parse();
+			doParse();
+
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
 				{
-					parser.finish();
+					finish();
 				}
 			});
 		}
