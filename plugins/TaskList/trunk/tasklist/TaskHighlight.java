@@ -207,14 +207,22 @@ public class TaskHighlight extends TextAreaExtension
 		//if(start >= _end || end <= _start)
 		//		return;
 
-		if(start + textArea.getLineStartOffset(line) >= _start)
-			start = textArea.offsetToXY(line,start,point).x;
-		else
-			start = 0;
-		if(end + textArea.getLineStartOffset(line) >= _end)
-			end = textArea.offsetToXY(line,_end - 1,point).x;
-		else
-			end = textArea.offsetToXY(line,end,point).x;
+		try{
+
+			if(start + textArea.getLineStartOffset(line) >= _start)
+				start = textArea.offsetToXY(line,start,point).x;
+			else
+				start = 0;
+			if(end + textArea.getLineStartOffset(line) >= _end)
+				end = textArea.offsetToXY(line,_end - 1,point).x;
+			else
+				end = textArea.offsetToXY(line,end,point).x;
+
+		}catch(NullPointerException npe){
+			Log.log(Log.ERROR, this, 
+				"NullPointerException in TaskHighlight.underlineTask():"
+				+ task.getBuffer().getPath() + ":" + task.getLineIndex());
+		}
 
 		gfx.setColor(TaskListPlugin.getHighlightColor());
 		paintWavyLine(gfx,y,start,end);

@@ -154,7 +154,7 @@ public class Task
 	//{{{ getLineNumber() method
 	/**
 	 * Returns the line number of the task, which takes into
-	 * account the changes in the associtaed buffer
+	 * account the changes in the associated buffer
 	 * @return The line number of the task as found in the associated buffer
 	 */
 	public int getLineNumber()

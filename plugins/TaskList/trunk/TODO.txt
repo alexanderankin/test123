@@ -2,6 +2,37 @@ version 0.4.3
 =============
 
 * change patterns to \s|\b?
+* change underline to be straight, like error list?
+* fix: unloading plugin doesn't seem to remove Highlights
+* fix: does repaint need to be called once Highlights have been added?
+* fix:
+
+	[error] ExtensionManager: java.lang.NullPointerException
+	[error] ExtensionManager:  at tasklist.TaskHighlight.underlineTask(TaskHighlight.java:215)
+	[error] ExtensionManager:  at tasklist.TaskHighlight.paintValidLine(TaskHighlight.java:133)
+	[error] ExtensionManager:  at org.gjt.sp.jedit.textarea.TextAreaExtension.paintScreenLineRange(Unknown Source)
+	[error] ExtensionManager:  at org.gjt.sp.jedit.textarea.ExtensionManager.paintScreenLineRange(Unknown Source)
+	[error] ExtensionManager:  at org.gjt.sp.jedit.textarea.ExtensionManager.paintScreenLineRange(Unknown Source)
+	[error] ExtensionManager:  at org.gjt.sp.jedit.textarea.TextAreaPainter.paintComponent(Unknown Source)
+	[error] ExtensionManager:  at javax.swing.JComponent.paint(JComponent.java:808)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintChildren(JComponent.java:647)
+	[error] ExtensionManager:  at javax.swing.JComponent.paint(JComponent.java:817)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintChildren(JComponent.java:647)
+	[error] ExtensionManager:  at javax.swing.JComponent.paint(JComponent.java:817)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintWithOffscreenBuffer(JComponent.java:4795)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintDoubleBuffered(JComponent.java:4748)
+	[error] ExtensionManager:  at javax.swing.JComponent._paintImmediately(JComponent.java:4692)
+	[error] ExtensionManager:  at javax.swing.JComponent.paintImmediately(JComponent.java:4495)
+	[error] ExtensionManager:  at javax.swing.RepaintManager.paintDirtyRegions(RepaintManager.java:410)
+	[error] ExtensionManager:  at javax.swing.SystemEventQueueUtilities$ComponentWorkRequest.run(SystemEventQueueUtilities.java:117)
+	[error] ExtensionManager:  at java.awt.event.InvocationEvent.dispatch(InvocationEvent.java:178)
+	[error] ExtensionManager:  at java.awt.EventQueue.dispatchEvent(EventQueue.java:454)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.pumpOneEventForHierarchy(EventDispatchThread.java:201)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.pumpEventsForHierarchy(EventDispatchThread.java:151)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:145)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.pumpEvents(EventDispatchThread.java:137)
+	[error] ExtensionManager:  at java.awt.EventDispatchThread.run(EventDispatchThread.java:100)
+
 
 
 version 0.4.2
