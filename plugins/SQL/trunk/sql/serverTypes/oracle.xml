@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="Oracle">
+
+  <driver>oracle.jdbc.driver.OracleDriver</driver>
+
+  <vfs>sql.serverTypes.OracleVFS</vfs>
+
+  <editMode>pl-sql</editMode>
+
+  <connection>
+    <parameter name="host" default="127.0.0.1" description="Host name or IP"/>
+    <parameter name="port" default="1521" description="TCP port"/>
+    <parameter name="sid" default="SID" description="Oracle SID"/>
+    <parameter name="user" default="scott" description="Oracle user"/>
+    <parameter name="password" default="tiger" description="Oracle password"/>
+    <string>jdbc:oracle:thin:@{host}:{port}:{sid}</string>
+  </connection>
+
+  <statements>
+    <statement purpose="selectLastChangedObjects">
+  SELECT o.object_name AS objectName,
+         o.status AS status,
+         o.object_type AS objectType,
+         o.timestamp AS objectTime,
+         o.object_id AS objectId
+  FROM user_objects o
+  WHERE ( o.object_type = 'PROCEDURE' OR
+          o.object_type = 'FUNCTION' OR
+          o.object_type = 'PACKAGE' OR
+          o.object_type = 'PACKAGE BODY' )
+  AND ( o.timestamp &gt; = ? )
+  AND ( o.timestamp &lt; = ? )
+  ORDER BY o.timestamp
+    </statement>
+    <statement purpose="selectUserObjects">
+  SELECT DISTINCT o.object_name AS name,
+                  o.object_type AS type,
+                  o.status AS valid
+  FROM all_objects o
+  WHERE o.owner = ?
+  AND ( o.object_type = 'PROCEDURE' OR
+        o.object_type = 'FUNCTION' OR
+        o.object_type = 'PACKAGE' OR
+        o.object_type = 'PACKAGE BODY' )
+  ORDER by o.object_name, o.object_type
+    </statement>
+    <statement purpose="selectCodeObjectLines">
+      SELECT text AS sourceCodeLine
+      FROM all_source
+      WHERE owner=?
+      AND name=?
+      AND type=?
+      ORDER BY LINE
+    </statement>
+    <statement purpose="selectCodeObjectErrors">
+      SELECT line AS errRow,
+             position AS errCol,
+             text AS errorMessage
+      FROM user_errors
+      WHERE name = ?
+      AND type = ?
+      ORDER BY SEQUENCE
+    </statement>
+    <statement purpose="getSysdate">
+      BEGIN ? := SYSDATE; END;
+    </statement>
+    <statement purpose="selectSchemas">
+      SELECT DISTINCT owner AS tableGroup
+      FROM all_tables
+    </statement>
+    <statement purpose="selectTablesInSchema">
+      SELECT table_name AS tableName
+      FROM all_tables
+      WHERE owner=?
+    </statement>
+    <statement purpose="selectViewsInSchema">
+      SELECT view_name AS viewName
+      FROM all_views
+      WHERE owner=?
+    </statement>
+    <statement purpose="selectCodeObjectsInSchema">
+  SELECT DISTINCT o.object_name AS name,
+                  o.status AS valid
+  FROM all_objects o
+  WHERE o.owner = ?
+  AND o.object_type = ?
+  ORDER by o.object_name
+    </statement>
+    <statement purpose="selectTriggerCode">
+  SELECT
+  t.triggering_event AS event,
+  t.base_object_type AS baseObjectType,
+  t.table_owner AS tableOwner,
+  t.table_name AS tableName,
+  t.referencing_names AS referencingClause,
+  t.trigger_name AS triggerName,
+  t.trigger_type AS triggerType,
+  t.trigger_body AS sourceCode
+  FROM all_triggers t
+  WHERE t.owner = ?
+  AND t.trigger_name = ?
+    </statement>
+  </statements>
+
+</serverType>
