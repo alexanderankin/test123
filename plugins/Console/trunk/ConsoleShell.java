@@ -17,11 +17,20 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import java.lang.reflect.*;
 import java.io.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
 public class ConsoleShell implements Shell
 {
+	public ConsoleShell()
+	{
+		java13 = (System.getProperty("java.version").compareTo("1.3") >= 0);
+		Log.log(Log.DEBUG,this,"cd command " + (java13 ? "enabled" : "disabled"));
+		dir = System.getProperty("user.dir");
+	}
+
 	public void printInfoMessage(Output output)
 	{
 		output.printInfo(jEdit.getProperty("console.shell.info"));
@@ -31,6 +40,25 @@ public class ConsoleShell implements Shell
 	{
 		stop();
 		ConsoleShellPluginPart.clearErrors();
+
+		if(command.equals("pwd"))
+		{
+			output.printPlain(dir);
+			return;
+		}
+		else if(command.startsWith("cd"))
+		{
+			if(!java13)
+				output.printError(jEdit.getProperty("console.shell.cd-error"));
+			else
+			{
+				dir = MiscUtilities.constructPath(dir,command
+					.substring(2).trim());
+				String[] args = { dir };
+				output.printPlain(jEdit.getProperty("console.shell.cd",args));
+			}
+			return;
+		}
 
 		String osName = System.getProperty("os.name");
 		boolean appendEXE = (osName.indexOf("Windows") != -1 ||
@@ -66,7 +94,7 @@ public class ConsoleShell implements Shell
 					switch(command.charAt(++i))
 					{
 					case 'd':
-						buf.append(MiscUtilities.getFileParent(
+						buf.append(MiscUtilities.getParentOfPath(
 							buffer.getPath()));
 						break;
 					case 'u':
@@ -122,13 +150,18 @@ public class ConsoleShell implements Shell
 
 		try
 		{
-			process = Runtime.getRuntime().exec(command);
+			process = _exec(command);
 			process.getOutputStream().close();
 		}
 		catch(IOException io)
 		{
 			String[] args = { io.getMessage() };
 			output.printInfo(jEdit.getProperty("console.shell.ioerror",args));
+			return;
+		}
+		catch(Exception e)
+		{
+			Log.log(Log.ERROR,this,e);
 			return;
 		}
 
@@ -177,6 +210,8 @@ public class ConsoleShell implements Shell
 	private Process process;
 	private Thread stdout;
 	private Thread stderr;
+	private String dir;
+	private boolean java13;
 
 	private boolean exitStatus;
 
@@ -207,11 +242,24 @@ public class ConsoleShell implements Shell
 		notify();
 	}
 
+	private Process _exec(String command) throws Exception
+	{
+		if(java13)
+		{
+			Class[] classes = { String.class, String[].class, File.class };
+			Method method = Runtime.class.getMethod("exec",classes);
+			Object[] args = { command, null, new File(dir) };
+			return (Process)method.invoke(Runtime.getRuntime(),args);
+		}
+		else
+			return Runtime.getRuntime().exec(command);
+	}
+
 	class StdoutThread extends Thread
 	{
 		StdoutThread()
 		{
-			setName(getName() + "[" + command + "]");
+			setName(StdoutThread.class + "[" + command + "]");
 			start();
 		}
 
@@ -252,7 +300,7 @@ public class ConsoleShell implements Shell
 	{
 		StderrThread()
 		{
-			setName(getClass().getName() + "[" + command + "]");
+			setName(StderrThread.class + "[" + command + "]");
 			start();
 		}
 
