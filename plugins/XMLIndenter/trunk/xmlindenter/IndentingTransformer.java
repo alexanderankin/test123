@@ -113,9 +113,15 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
       for(int i = 0; i < atts.getLength(); i++) {
         writer.write(' ');
         writer.write(atts.getQName(i));
-        writer.write("=\"");
-        writer.write(atts.getValue(i));
-        writer.write('\"');
+
+        String value = atts.getValue(i);
+        boolean containsDoubleQuote = (value.indexOf('"') != -1);
+        char quote = containsDoubleQuote ? '\'' : '\"';
+
+        writer.write('=');
+        writer.write(quote);
+        writer.write(value);
+        writer.write(quote);
       }
 
       if(isEmptyElement) {
@@ -319,12 +325,12 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
         while(i < chars.length && chars[i] != quote) {
           if(Character.isWhitespace(chars[i])) {
             if(!isLastSpace) {
-              if(Character.isSpaceChar(chars[i])) {
+              if(chars[i] == '\r' || chars[i] == '\n' || chars[i] == '\t') {
                 value.append(' ');
               }
               isLastSpace = true;
             } else {
-              // don't add consequtive space
+              // don't add consecutive space
             }
           } else {
             value.append(chars[i]);
