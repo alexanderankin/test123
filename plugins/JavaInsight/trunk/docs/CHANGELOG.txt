@@ -1,34 +1,41 @@
+VERSION 0.4
+
+- May now choose between decompilation to a file or to a new jEdit buffer.
+- If compiling to a new jEdit buffer, the buffer is named accordingly.
+- Better support for DecompileClassMessage.
+
+
 VERSION 0.3
 
-- new option pane for setting some decompiler options
-- decompiles directly to a new jEdit buffer, not to a temp file
-- can now decompile entries from the classpath browser
-- entries in the classpath browser are now sorted, too
-- now shows boot classpath on JDK 1.2 or higher, too
-- show jode output (it's not much)
-- better error reporting
-- bugfix: duplicate entries in tree, if the same lib appeared twice with
+- New option pane for setting some decompiler options
+- Decompiles directly to a new jEdit buffer, not to a temp file
+- Can now decompile entries from the classpath browser
+- Entries in the classpath browser are now sorted, too
+- On JDK 1.2 or higher, show boot classpath and user classpath
+- Show jode output (it's not much... just in case)
+- Better error reporting
+- Bugfix: duplicate entries in tree, if the same lib appeared twice with
   different case in classpath (affected Windows platforms only)
-- switched to new jEdit action API
-- improved makefile
-- reformatted code
-- requires jEdit 3.0final or higher, JDK 1.1 or higher
-- maintained by Dirk Moebius
+- Switched to new jEdit action API
+- Improved makefile
+- Reformatted code
+- Requires jEdit 3.0final or higher, JDK 1.1 or higher
+- Maintained by Dirk Moebius
 
 
 VERSION 0.2.1
 
-- changes???
-- requires jEdit 2.6pre3 or higher, JDK 1.1 or higher
-- maintained by Andre Kaplan
+- Changes???
+- Requires jEdit 2.6pre3 or higher, JDK 1.1 or higher
+- Maintained by Andre Kaplan
 
 
 VERSION 0.2
 
-- moved from package net.sourceforge.jedit to javainsight
-- integrated buildtools library
-- other changes???
-- maintained by Andre Kaplan
+- Moved from package net.sourceforge.jedit to javainsight
+- Integrated buildtools library
+- Other changes???
+- Maintained by Andre Kaplan
 
 
 VERSION 0.1
