@@ -215,7 +215,7 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 		ProjectManager.getInstance().addProject(project);
 		viewer.setCurrentProject(project);
 
-		Log.log( Log.DEBUG, this, "createProject(), project.getRoot().2="+project.getRoot().toString());
+		Log.log( Log.DEBUG, this, "createProject(), project="+project);
 
 		File prjHome = project.getRoot().toFile();
 		int confirmed = JOptionPane.showConfirmDialog(this.viewer,
