@@ -149,11 +149,12 @@ public abstract class ErrorSource implements EBComponent
 	//{{{ getLineErrors() method
 	/**
 	 * Returns all errors in the specified line range.
+	 * @param path The file path
 	 * @param startLineIndex The line number
 	 * @param endLineIndex The line number
 	 * @since ErrorList 1.3
 	 */
-	public abstract ErrorSource.Error[] getLineErrors(Buffer buffer,
+	public abstract ErrorSource.Error[] getLineErrors(String path,
 		int startLineIndex, int endLineIndex);
 	//}}}
 

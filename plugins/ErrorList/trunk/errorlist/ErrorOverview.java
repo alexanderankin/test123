@@ -85,15 +85,18 @@ public class ErrorOverview extends JPanel
 			for(int i = 0; i < errorSources.length; i++)
 			{
 				ErrorSource.Error[] errors = errorSources[i]
-					.getLineErrors(buffer,line,line);
+					.getLineErrors(buffer.getPath(),
+					line,line);
 				// if there is no exact match, try next and
 				// prev lines
 				if(errors == null && line != 0)
 					errors = errorSources[i]
-					.getLineErrors(buffer,line - 1,line - 1);
+					.getLineErrors(buffer.getPath(),
+					line - 1,line - 1);
 				if(errors == null && line != lineCount - 1)
 					errors = errorSources[i]
-					.getLineErrors(buffer,line + 1,line + 1);
+					.getLineErrors(buffer.getPath(),
+					line + 1,line + 1);
 				if(errors != null)
 					return errors[0].getErrorMessage();
 			}
@@ -127,7 +130,7 @@ public class ErrorOverview extends JPanel
 		for(int i = 0; i < errorSources.length; i++)
 		{
 			ErrorSource.Error[] errors = errorSources[i].getLineErrors(
-				buffer,line1,line2);
+				buffer.getPath(),line1,line2);
 			if(errors == null)
 				continue;
 

@@ -39,66 +39,27 @@ public class ErrorHighlight extends TextAreaExtension
 	} //}}}
 
 	//{{{ paintScreenLineRange() method
-	public void paintScreenLineRange(Graphics2D gfx, int firstLine,
-		int lastLine, int[] physicalLines, int[] start, int[] end,
-		int y, int lineHeight)
+	public void paintValidLine(Graphics2D gfx, int screenLine,
+		int physicalLine, int start, int end, int y)
 	{
-		FontMetrics fm = textArea.getPainter().getFontMetrics();
-
 		ErrorSource[] errorSources = ErrorSource.getErrorSources();
 		if(errorSources == null)
 			return;
 
+		FontMetrics fm = textArea.getPainter().getFontMetrics();
+
 		for(int i = 0; i < errorSources.length; i++)
 		{
 			ErrorSource.Error[] errors = errorSources[i]
-				.getLineErrors(textArea.getBuffer(),
-				textArea.getPhysicalLineOfScreenLine(firstLine),
-				textArea.getPhysicalLineOfScreenLine(lastLine));
+				.getLineErrors(textArea.getBuffer().getPath(),
+				physicalLine,physicalLine);
 			if(errors == null)
 				continue;
 
-			int errorListIndex = 0;
-
-			for(int j = 0; j < physicalLines.length; j++)
+			for(int j = 0; j < errors.length; j++)
 			{
-				//System.err.println("screen line: " + (j
-				//	+ firstLine));
-				// for each screen line, find range of errors
-				// in errors array
-				for(int k = errorListIndex;
-					k < errors.length; k++)
-				{
-					int physicalLine = physicalLines[j];
-					if(
-						(textArea.getDisplayManager()
-						.isLineVisible(physicalLine))
-						&&
-						(errors[k].getLineNumber()
-						== physicalLine)
-					)
-					{
-						System.err.println("up: " + j + "," + k);
-						paintError(errors[k],gfx,
-							physicalLine,
-							start[j],
-							end[j],
-							y + j * lineHeight
-							+ fm.getAscent()
-						);
-					}
-					else
-					{
-						//System.err.println("down: " + j + "," + k);
-						if(j + 1 != physicalLines.length
-							&& physicalLines[j + 1]
-							!= physicalLine)
-						{
-							errorListIndex = k;
-						}
-						break;
-					}
-				}
+				paintError(errors[j],gfx,physicalLine,
+					start,end,y + fm.getAscent());
 			}
 		}
 	} //}}}
@@ -120,7 +81,8 @@ public class ErrorHighlight extends TextAreaExtension
 		{
 			ErrorSource.Error[] lineErrors =
 				errorSources[i].getLineErrors(
-				textArea.getBuffer(),line,line);
+				textArea.getBuffer().getPath(),
+				line,line);
 
 			if(lineErrors == null)
 				continue;
