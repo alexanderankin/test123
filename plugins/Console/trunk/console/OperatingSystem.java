@@ -45,7 +45,8 @@ abstract class OperatingSystem
 		if(os == null)
 		{
 			String osName = System.getProperty("os.name");
-			if(osName.startsWith("Windows 9"))
+			if(osName.startsWith("Windows 9")
+				|| osName.equals("Windows ME"))
 				os = new Windows9x();
 			else if(osName.startsWith("Windows"))
 				os = new WindowsNT();
@@ -175,19 +176,86 @@ abstract class OperatingSystem
 
 	abstract static class Windows extends Generic
 	{
-		String[] getExtensionsToTry()
-		{
-			if(extensionsToTry == null)
-				getEnvironmentVariables();
-
-			return extensionsToTry;
-		}
-
 		boolean shellExpandsGlobs()
 		{
 			return false;
 		}
 
+		Process exec(String[] args, String[] env, String dir)
+			throws Exception
+		{
+
+			String commandName = args[0];
+
+			String[] extensionsToTry;
+			if(commandName.indexOf('.') == -1)
+				extensionsToTry = getExtensionsToTry();
+			else
+				extensionsToTry = new String[] { "" };
+
+			for(int i = 0; i < extensionsToTry.length; i++)
+			{
+				args[0] = commandName + extensionsToTry[i];
+
+				try
+				{
+					return super.exec(args,env,dir);
+				}
+				catch(Exception e)
+				{
+					if(i == extensionsToTry.length - 1)
+					{
+						// throw a new exception cos
+						// Windows error messages are
+						// a bit cryptic
+						throw new Exception(
+							jEdit.getProperty(
+							"console.shell.not-found-win",
+							new String[] { commandName, }));
+					}
+				}
+			}
+
+			// can't happen
+			return null;
+		}
+
+		abstract String getBuiltInPrefix();
+
+		abstract String[] getExtensionsToTry();
+
+		void setUpDefaultAliases(Hashtable aliases)
+		{
+			String[] builtins  = { "md", "rd", "del", "dir", "copy",
+				"move", "erase", "mkdir", "rmdir", "start", "echo",
+				"path", "ver", "vol", "ren", "type"};
+			for(int i = 0; i < builtins.length; i++)
+			{
+				aliases.put(builtins[i],getBuiltInPrefix() + builtins[i]);
+			}
+		}
+	}
+
+	static class Windows9x extends Windows
+	{
+		boolean supportsEnvironmentVariables()
+		{
+			return false;
+		}
+
+		String getBuiltInPrefix()
+		{
+			return "command.com /c ";
+		}
+
+		String[] getExtensionsToTry()
+		{
+			return new String[] { ".cmd", ".bat", ".exe", ".com" };
+		}
+	}
+
+	static class WindowsNT extends Windows
+	{
 		boolean supportsEnvironmentVariables()
 		{
 			return true;
@@ -248,74 +316,19 @@ abstract class OperatingSystem
 			return vars;
 		}
 
-		Process exec(String[] args, String[] env, String dir)
-			throws Exception
-		{
-
-			String commandName = args[0];
-
-			String[] extensionsToTry;
-			if(commandName.indexOf('.') == -1)
-				extensionsToTry = getExtensionsToTry();
-			else
-				extensionsToTry = new String[] { "" };
-
-			for(int i = 0; i < extensionsToTry.length; i++)
-			{
-				args[0] = commandName + extensionsToTry[i];
-
-				try
-				{
-					return super.exec(args,env,dir);
-				}
-				catch(Exception e)
-				{
-					if(i == extensionsToTry.length - 1)
-					{
-						// throw a new exception cos
-						// Windows error messages are
-						// a bit cryptic
-						throw new Exception(
-							jEdit.getProperty(
-							"console.shell.not-found-win",
-							new String[] { commandName, }));
-					}
-				}
-			}
-
-			// can't happen
-			return null;
-		}
-
-		abstract String getBuiltInPrefix();
-
-		void setUpDefaultAliases(Hashtable aliases)
-		{
-			String[] builtins  = { "md", "rd", "del", "dir", "copy",
-				"move", "erase", "mkdir", "rmdir", "start", "echo",
-				"path", "ver", "vol", "ren", "type"};
-			for(int i = 0; i < builtins.length; i++)
-			{
-				aliases.put(builtins[i],getBuiltInPrefix() + builtins[i]);
-			}
-		}
-
-		private String[] extensionsToTry;
-	}
-
-	static class Windows9x extends Windows
-	{
-		String getBuiltInPrefix()
-		{
-			return "command.com /c ";
-		}
-	}
-
-	static class WindowsNT extends Windows
-	{
 		String getBuiltInPrefix()
 		{
 			return "cmd.exe /c ";
 		}
+
+		String[] getExtensionsToTry()
+		{
+			if(extensionsToTry == null)
+				getEnvironmentVariables();
+
+			return extensionsToTry;
+		}
+
+		String[] extensionsToTry;
 	}
 }
