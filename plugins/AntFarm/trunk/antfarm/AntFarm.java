@@ -273,6 +273,10 @@ public class AntFarm extends JPanel implements EBComponent
 			if ( buildFile.exists() ) {
 				project.init();
 
+				
+				//black magic for xerces 1.4.4 loading
+				Thread.currentThread().setContextClassLoader( AntFarm.class.getClassLoader() );
+				
 				// first use the ProjectHelper to create the project object
 				// from the given build file.
 
