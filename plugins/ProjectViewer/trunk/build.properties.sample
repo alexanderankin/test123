@@ -12,11 +12,12 @@ compiler.verbose=off
 jedit.user.home=${user.home}/.jedit
 jedit.install.dir=../../jEdit
 
-# Version number, for the zip file for the distribution
-version=2.0.1
+# Where to find other plugins
+# Note: ".." is included in the classpath; you don't need to add it here
+install.dir=${jedit.install.dir}/jars
 
-# InfoViewer plugin, necessary for compilation
-infoviewer.jar=${jedit.user.home}/jars/InfoViewer.jar
+# Version number, for the zip file for the distribution
+pvversion=2.0.3
 
 # Target directory for the documentation
 build.docs=build/docs
