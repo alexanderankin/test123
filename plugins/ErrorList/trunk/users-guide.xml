@@ -369,13 +369,16 @@ errorSource.addError(new ErrorSource.DefaultError(
    command is run.
   </para>
 
+  <funcsynopsis>
+   <funcprototype>
+    <funcdef>public void <function>removeFileErrors</function></funcdef>
+    <void />
+   </funcprototype>
+  </funcsynopsis>
+
   <para>
-   This method reveals a limitation of the
-   <classname>DefaultErrorSource</classname>
-   class; errors cannot be removed selectively. The main reason this hasn't
-   been implemented is lack of demand. If your plugin needs a means of only
-   removing a subset of errors in an error source, feel free to modify the
-   source for this class and contribute the changes back to the jEdit project.
+   For more selective error removal, this method can be used to remove errors
+   associated with one file only.
   </para>
 
  </sect1>
@@ -397,6 +400,9 @@ errorSource.addError(new ErrorSource.DefaultError(
     <listitem><para>Fixed problems with soft wrap.
     </para></listitem>
     <listitem><para>Updated for jEdit 4.2 API changes.
+    </para></listitem>
+    <listitem><para>Added <function>removeFileErrors()</function> method to
+    <classname>DefaultErrorSource</classname> class.
     </para></listitem>
    </itemizedlist>
   </listitem>

@@ -55,10 +55,10 @@ public class ErrorSourceUpdate extends EBMessage
 	 * @param errorSource The error source
 	 * @param error The error. Null if what is ERRORS_CLEARED
 	 */
-	public ErrorSourceUpdate(EBComponent source, Object what,
-		ErrorSource errorSource, ErrorSource.Error error)
+	public ErrorSourceUpdate(ErrorSource errorSource, Object what,
+		ErrorSource.Error error)
 	{
-		super(source);
+		super(null);
 		if(what == null || errorSource == null)
 			throw new NullPointerException("What and error source must be non-null");
 
