@@ -1,0 +1,31 @@
+- completion popup width
+- html files before parsing complete -- don't show CDATA in popup
+- fix IBM JDK problem
+- misplaced closing tags break everything
+- finish element lists for schemas
+- DTD downloader -- clear cache command should remove d/l'd files too
+- documentation: XML catalog format
+- test XMLCatalog support, include an XMLCatalog DTD
+- clean up entity code
+- &, < or > will show up twice if a DTD defines it
+- select tag command
+- xml insert: show CDATA in list?
+- empty data -- see what's up, & clean up
+- use pre9 mouse button API
+- xmlns attributes, XMLSchema-instance stuff
+- use AssetBrowser
+- recording <, >, /, &
+- switching between two edit panes with same buffer: expand tree at
+  appropriate location
+- TagParser: use segments, not strings
+- proper handling of tags in nested files
+- handle parsing open buffers better
+- instead of built-in completion info for xsd and xsl, pre-parse some
+  schemas to validate these file types.
+- preparsing and grammar cache needs a rework.
+- attribute completion.
+- tag highlight scope bracket in gutter
+- 'advanced' option pane for selecting parsers, completion info files,
+  built-in namespaces, etc.
+- pluggable parsers, don't rely on Xerces-specific features, fail
+  gracefully if some parser features are not available
