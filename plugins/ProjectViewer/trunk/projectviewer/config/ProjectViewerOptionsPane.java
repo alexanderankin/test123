@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.awt.Color;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
-
+import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JCheckBox;
@@ -37,11 +37,11 @@ import javax.swing.border.TitledBorder;
 // Import jEdit
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.AbstractOptionPane;
-
+import org.gjt.sp.jedit.*;
 import projectviewer.ProjectPlugin;
 
 /**
- *  <p>Option pane to configure the ProjectViewer plugin.</p>
+ *  <p>Option pane to configure the ProjectViewer plugin.</p> 
  *
  *  @author     Marcelo Vanzin
  */
@@ -59,6 +59,8 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
     private JTextField importExts;
     private JTextField excludeDirs;
     private JTextField includeFiles;
+    private JTextField browserExecPath;
+    
     
     //-------------- Constructors
     
@@ -158,6 +160,20 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
         pane.add(includeFiles);
         
         addComponent(pane);
+	
+	addSeparator("options.projectviewer.web-prj-opt.label");
+	
+	browserExecPath = new JTextField(30);
+	browserExecPath.setToolTipText("This is used for web projects, to Launch Files in the Browser")
+	if (config.getBrowserPath() != null) {
+	   browserExecPath.setText(config.getBrowserPath());
+	}
+	//jEdit.getProperty("options.jcompiler.autosave.ask")
+	addComponent("Browser Path:", browserExecPath);
+	
+	browseExts = new JTextField(35);
+	addComponent("Browse-able Extensions:", browseExts);
+	
     }
     
     /** Saves the options. */
@@ -170,7 +186,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
         config.setImportExts(importExts.getText());
         config.setExcludeDirs(excludeDirs.getText());
         config.setIncludeFiles(includeFiles.getText());
-        
+        config.setBrowserpath(browserExecPath.getText());
         config.save();
     }
 }
