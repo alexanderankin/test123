@@ -21,3 +21,7 @@ Rudolf Widmann <Rudi.Widmann@web.de>
 	Delete Duplicates
 	Sort Advanced
 	Rectangular Selection move
+
+Robert Fletcher <rfletch6@yahoo.co.uk>
+	Toggle Line Comment
+	Toggle Range Comment

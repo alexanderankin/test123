@@ -32,7 +32,7 @@
 			TextToolsPlugin.transposeWords(textArea);
 		</CODE>
 	</ACTION>
-	
+
 	<ACTION NAME="delete-duplicated">
 		<CODE>
 			TextToolsSorting.deleteDuplicates(view, textArea);
@@ -57,7 +57,7 @@
 	</ACTION>
 	<ACTION NAME="textblock">
 		<CODE>
-		  TextToolsPlugin.textToolsBlockHandling(view, textArea);
+			TextToolsPlugin.textToolsBlockHandling(view, textArea);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="spacetotabs">
@@ -85,6 +85,17 @@
 			TextToolsBlockMove.blockMove(view, textArea, buffer, TextToolsBlockMove.MOVE_RIGHT);
 		</CODE>
 	</ACTION>
-	
-	
+
+	<ACTION NAME="toggle-line-comment">
+		<CODE>
+			TextToolsComments.toggleLineComments(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="toggle-range-comment">
+		<CODE>
+			TextToolsComments.toggleRangeComments(view);
+		</CODE>
+	</ACTION>
+
 </ACTIONS>
