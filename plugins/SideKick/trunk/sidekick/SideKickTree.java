@@ -36,6 +36,9 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 //}}}
 
+/**
+ * The Structure Browser dockable.
+ */
 public class SideKickTree extends JPanel implements EBComponent,
 DefaultFocusComponent
 {
@@ -54,7 +57,7 @@ DefaultFocusComponent
 		parseBtn.setToolTipText(jEdit.getProperty("sidekick-tree.parse"));
 		parseBtn.setMargin(new Insets(0,0,0,0));
 		parseBtn.setRequestFocusEnabled(false);
-		parseBtn.addActionListener(new ActionHandler());
+		parseBtn.addActionListener(buildActionListener());
 		buttonBox.add(parseBtn);
 		buttonBox.add(Box.createGlue());
 
@@ -63,7 +66,7 @@ DefaultFocusComponent
 		// create a faux model that will do until a real one arrives
 		DefaultTreeModel emptyModel = new DefaultTreeModel(
 			new DefaultMutableTreeNode(null));
-		tree = new CustomTree(emptyModel);
+		tree = buildTree(emptyModel);
 		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
 		tree.addKeyListener(new KeyHandler());
 		if(docked)
@@ -132,28 +135,8 @@ DefaultFocusComponent
 		}
 	} //}}}
 
-	//{{{ Private members
-
-	//{{{ Instance variables
-	private RolloverButton parseBtn;
-	private JTree tree;
-
-	private boolean treeFollowsCaret;
-
-	private View view;
-	private Timer caretTimer;
-
-	private SideKickParsedData data;
-	//}}}
-
-	//{{{ propertiesChanged() method
-	private void propertiesChanged()
-	{
-		treeFollowsCaret = jEdit.getBooleanProperty("sidekick-tree.follows-caret");
-	} //}}}
-
 	//{{{ update() method
-	private void update()
+	protected void update()
 	{
 		data = SideKickParsedData.getParsedData(view);
 		if(SideKickPlugin.getParserForBuffer(view.getBuffer()) == null
@@ -173,8 +156,43 @@ DefaultFocusComponent
 		}
 	} //}}}
 
+	//{{{ buildTree() method
+	protected JTree buildTree(DefaultTreeModel model)
+	{
+		return new CustomTree(model);
+	}//}}}
+	
+	//{{{ buildActionListener() method
+	/**
+	 * Creates an action listener for the parse button.
+	 */
+	protected ActionListener buildActionListener()
+	{
+		return new ActionHandler();
+	}//}}}
+	
+	//{{{ Private members
+
+	//{{{ Instance variables
+	private RolloverButton parseBtn;
+	protected JTree tree;
+
+	protected boolean treeFollowsCaret;
+
+	protected View view;
+	private Timer caretTimer;
+
+	protected SideKickParsedData data;
+	//}}}
+
+	//{{{ propertiesChanged() method
+	private void propertiesChanged()
+	{
+		treeFollowsCaret = jEdit.getBooleanProperty("sidekick-tree.follows-caret");
+	} //}}}
+
 	//{{{ expandTreeWithDelay() method
-	private void expandTreeWithDelay()
+	protected void expandTreeWithDelay()
 	{
 		// if keystroke parse timer is running, do nothing
 		// if(keystrokeTimer != null && keystrokeTimer.isRunning())
@@ -200,7 +218,7 @@ DefaultFocusComponent
 	} //}}}
 
 	//{{{ expandTreeAt() method
-	private void expandTreeAt(int dot)
+	protected void expandTreeAt(int dot)
 	{
 		if(data == null)
 			return;
@@ -219,9 +237,9 @@ DefaultFocusComponent
 	//{{{ Inner classes
 
 	//{{{ CustomTree class
-	class CustomTree extends JTree
+	protected class CustomTree extends JTree
 	{
-		CustomTree(TreeModel model)
+		protected CustomTree(TreeModel model)
 		{
 			super(model);
 		}
@@ -245,27 +263,17 @@ DefaultFocusComponent
 
 						JEditTextArea textArea = view.getTextArea();
 
-						/* if(evt.getClickCount() == 2)
+						if(evt.getClickCount() == 2)
 						{
-							textArea.setCaretPosition(tag.start.getOffset());
-							expandPath(path);
-							XmlActions.showEditTagDialog(view);
-							return;
+							doubleClicked(view,asset,path);
 						}
-						else */
-						if(evt.isShiftDown())
+						else if(evt.isShiftDown())
 						{
-							textArea.setCaretPosition(asset.end.getOffset());
-							textArea.addToSelection(
-								new Selection.Range(
-									asset.start.getOffset(),
-									asset.end.getOffset()));
+							shiftClick(view,asset,path);
 						}
 						else if(evt.isControlDown())
 						{
-							textArea.getDisplayManager().narrow(
-								textArea.getLineOfOffset(asset.start.getOffset()),
-								textArea.getLineOfOffset(asset.end.getOffset()));
+							controlClick(view,asset,path);
 						}
 						else
 							textArea.setCaretPosition(asset.start.getOffset());
@@ -283,6 +291,28 @@ DefaultFocusComponent
 				super.processMouseEvent(evt);
 				break;
 			}
+		}
+		
+		protected void doubleClicked(View view, Asset asset, TreePath path)
+		{
+		}
+		
+		protected void shiftClick(View view, Asset asset, TreePath path)
+		{
+			JEditTextArea textArea = view.getTextArea();
+			textArea.setCaretPosition(asset.end.getOffset());
+			textArea.addToSelection(
+				new Selection.Range(
+					asset.start.getOffset(),
+					asset.end.getOffset()));
+		}
+		
+		protected void controlClick(View view, Asset asset, TreePath path)
+		{
+			JEditTextArea textArea = view.getTextArea();
+			textArea.getDisplayManager().narrow(
+				textArea.getLineOfOffset(asset.start.getOffset()),
+				textArea.getLineOfOffset(asset.end.getOffset()));
 		}
 	} //}}}
 
