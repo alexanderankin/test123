@@ -29,11 +29,23 @@ import org.gjt.sp.jedit.EditPane;
 //}}}
 
 /**
- * Encapsulates the results of parsing a buffer.
+ * Stores a buffer structure tree.
+ *
+ * Plugins can extend this class to persist plugin-specific information.
+ * For example, the XML plugin stores code completion-related structures using
+ * a subclass.
  */
 public class SideKickParsedData
 {
 	//{{{ getParsedData() method
+	/**
+	 * Returns an instance of this class for the specified edit pane.
+	 *
+	 * Note that this will only return a valid object after the
+	 * <code>SideKick.parse()</code> method is called.
+	 *
+	 * @param editPane The edit pane.
+	 */
 	public static SideKickParsedData getParsedData(EditPane editPane)
 	{
 		return (SideKickParsedData)editPane.getClientProperty(
@@ -41,9 +53,17 @@ public class SideKickParsedData
 	} //}}}
 
 	public DefaultTreeModel tree;
+
+	/**
+	 * Plugin parsers should add nodes to the root node.
+	 */
 	public DefaultMutableTreeNode root;
 
 	//{{{ SideKickParsedData constructor
+	/**
+	 * @param fileName The file name being parsed, used as the root of the
+	 * tree.
+	 */
 	public SideKickParsedData(String fileName)
 	{
 		root = new DefaultMutableTreeNode(fileName);

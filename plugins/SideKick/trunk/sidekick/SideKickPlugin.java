@@ -88,11 +88,6 @@ public class SideKickPlugin extends EBPlugin
 	public static void registerParser(SideKickParser parser)
 	{
 		parsers.put(parser.getName(),parser);
-		String completionTriggers = parser.getCompletionTriggers();
-		if(completionTriggers != null)
-		{
-			// XXX
-		}
 	} //}}}
 
 	//{{{ unregisterParser() method
@@ -132,10 +127,18 @@ public class SideKickPlugin extends EBPlugin
 			if(!parser.supportsCompletion())
 				continue;
 
-			String popupTriggerKeys = parser.getCompletionTriggers();
-			for(int i = 0; i < popupTriggerKeys.length(); i++)
+			String delayPopupTriggerKeys = parser.getDelayCompletionTriggers();
+			for(int i = 0; i < delayPopupTriggerKeys.length(); i++)
 			{
-				char ch = popupTriggerKeys.charAt(i);
+				char ch = delayPopupTriggerKeys.charAt(i);
+				ih.addKeyBinding(String.valueOf(ch),
+					new SideKickActions.CompleteAction(ch));
+			}
+
+			String instantPopupTriggerKeys = parser.getInstantCompletionTriggers();
+			for(int i = 0; i < instantPopupTriggerKeys.length(); i++)
+			{
+				char ch = instantPopupTriggerKeys.charAt(i);
 				ih.addKeyBinding(String.valueOf(ch),
 					new SideKickActions.CompleteAction(ch));
 			}
