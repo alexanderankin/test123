@@ -1589,7 +1589,9 @@ public final class ProjectViewer extends JPanel
 			config.setLastNode(treeRoot);
 		}
 		ViewerEntry ve = (ViewerEntry) viewers.get(view);
-		ve.dockable = null;
+		if (ve != null) {
+			ve.dockable = null;
+		}
 	} //}}}
 
 	//}}}

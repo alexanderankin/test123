@@ -55,7 +55,9 @@ handler's class so that it is possible to persist that node when the project
 is saved.</p>
 
 <p>If you develop custom nodes, you should keep this in mind to make sure
-that this does not affect the newly loaded instance of your plugin.</p>
+that this does not affect the newly loaded instance of your plugin. Declaring
+ProjectViewer as an optional dependency for your plugin should fix this issue,
+since it will make jEdit reload ProjectViewer when your plugin is reloaded.</p>
 
 </body>
 
