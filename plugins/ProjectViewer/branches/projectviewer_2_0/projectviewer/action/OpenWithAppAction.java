@@ -21,7 +21,6 @@ package projectviewer.action;
 //{{{ Imports
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
 import org.gjt.sp.jedit.jEdit;
@@ -40,21 +39,15 @@ import projectviewer.config.AppLauncher;
  *	@version	$Id$
  */
 public class OpenWithAppAction extends Action {
-	
+
 	private static final AppLauncher appList = AppLauncher.getInstance();
-	
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.launcher.open_with_none");
 	} //}}}
-	
-	//{{{ getIcon() method
-	/** Returns null. Shouldn't be on the toolbar. */
-	public Icon getIcon() {
-		return null;
-	} //}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
@@ -82,6 +75,6 @@ public class OpenWithAppAction extends Action {
 			cmItem.setVisible(false);
 		}
 	} //}}}
-	
+
 }
 
