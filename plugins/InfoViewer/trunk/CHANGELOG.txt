@@ -1,14 +1,18 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
+VERSION 1.2
+
+* fixed deprecation warnings (Stefan Kost)
+* updated icons (Stefan Kost)
+
+
 VERSION 1.1
 
 * updated to jEdit 4.0 dockable API
 * bugfix: #509058 (Verify Error On InfoViewer)
 * removed old JDK 1.1 workarounds
 * requires at least jEdit 4.0pre6
-* fixed deprecation warnings (Stefan Kost)
-* updated icons (Stefan Kost)
 
 
 VERSION 1.0
