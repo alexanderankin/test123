@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 
+import java.awt.Component;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
@@ -48,11 +49,22 @@ import projectviewer.vpt.VPTDirectory;
  */
 public class InitialProjectImporter extends FileImporter {
 
+	private Component parent;
+	
 	//{{{ Constructor
 	
-	public InitialProjectImporter(VPTNode node, ProjectViewer viewer) {
+	public InitialProjectImporter(VPTNode node, ProjectViewer viewer, Component parent) {
 		super(node, viewer);
+		if (parent != null) {
+			this.parent = parent;
+		} else {
+			this.parent = viewer;
+		}
 		prune = true;
+	}
+	
+	public InitialProjectImporter(VPTNode node, ProjectViewer viewer) {
+		this(node, viewer, null);
 	}
 	
 	//}}}
@@ -80,12 +92,12 @@ public class InitialProjectImporter extends FileImporter {
 		}
 		
 		FilenameFilter fnf = null;
-		if (sel == null || sel == options[0]) {
+		if (sel == null || sel == options[3]) {
 			return null;
-		} else if (sel == options[2]) {
+		} else if (sel == options[0]) {
 			fnf = new ImportSettingsFilter();
-		} else if (sel == options[3]) {
-			// TODO: CVS/Entries filter
+		} else if (sel == options[2]) {
+			fnf = new CVSEntriesFilter();
 		}
 
 		VPTDirectory root = new VPTDirectory(new File(project.getRootPath()));
