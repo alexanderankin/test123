@@ -20,25 +20,15 @@ package projectviewer.action;
 
 //{{{ Imports
 import java.io.File;
-import java.util.Iterator;
-import java.util.ArrayList;
-import java.util.Enumeration;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
-import javax.swing.JMenuItem;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.search.SearchDialog;
-import org.gjt.sp.jedit.search.SearchFileSet;
-import org.gjt.sp.jedit.search.SearchAndReplace;
 
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
 import projectviewer.persist.ProjectZipper;
 //}}}
@@ -50,19 +40,13 @@ import projectviewer.persist.ProjectZipper;
  *	@version	$Id$
  */
 public class ArchiveAction extends Action {
-	
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
-		return jEdit.getProperty("projectviewer.launcher.archive");
+		return jEdit.getProperty("projectviewer.action.archive");
 	} //}}}
-	
-	//{{{ getIcon() method
-	/** Returns null. Shouldn't be on the toolbar. */
-	public Icon getIcon() {
-		return null;
-	} //}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
@@ -73,7 +57,7 @@ public class ArchiveAction extends Action {
 		chooser.setFileFilter(
 			new FileFilter() {
 				public String getDescription() {
-					return "Archive File Types";
+					return jEdit.getProperty("projectviewer.archive_filter");
 				}
 
 				public boolean accept(File f) {
@@ -86,30 +70,30 @@ public class ArchiveAction extends Action {
 					return false;
 				}
 			});
-		
+
 		while (!node.isProject()) {
 			node = (VPTNode) node.getParent();
 		}
 		VPTProject project = (VPTProject) node;
 
-		chooser.setCurrentDirectory(new File (project.getRootPath())); 
-		
+		chooser.setCurrentDirectory(new File (project.getRootPath()));
+
  	   if (chooser.showSaveDialog(viewer) != javax.swing.JFileChooser.APPROVE_OPTION) {
 			return;
 		}
 
-		
+
 	    ProjectZipper pz = new ProjectZipper();
-		pz.createProjectAchive(new File (chooser.getSelectedFile().getAbsolutePath()), 	
+		pz.createProjectAchive(new File (chooser.getSelectedFile().getAbsolutePath()),
 								project.getFiles().iterator(),
-								project.getRootPath()); 
+								project.getRootPath());
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		cmItem.setVisible(node.isProject());
+		cmItem.setVisible(node != null && node.isProject());
 	} //}}}
-	
+
 }
 
