@@ -4,7 +4,7 @@ plugin.ArchivePlugin.version=0.2.1
 plugin.ArchivePlugin.docs=Archive.html
 
 plugins.ArchivePlugin.depend.0=jdk 1.1
-plugins.ArchivePlugin.depend.1=jedit 03.00.99.00
+plugins.ArchivePlugin.depend.1=jedit 03.01.99.00
 
 archive-menu.label=Archive
 archive-menu=archive.clear-directory-cache

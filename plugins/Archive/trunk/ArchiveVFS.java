@@ -44,6 +44,7 @@ public abstract class ArchiveVFS extends VFS {
         public String pathName;
         public String entryName;
 
+
         public ArchivePath(String path) {
             String archive = path.substring((ArchiveVFS.this.getName() + ':').length());
             String archivePath = archive;
@@ -83,6 +84,30 @@ public abstract class ArchiveVFS extends VFS {
 
     protected ArchiveVFS(String name) {
         super(name);
+    }
+
+
+    public String getFileName(String path) {
+        ArchivePath archive = new ArchivePath(path);
+        String archiveProtocol = archive.protocol;
+        String archivePath  = archive.pathName;
+        String archiveEntry = archive.entryName;
+
+        int fileSeparatorIdx = archiveEntry.lastIndexOf(ArchiveVFS.fileSeparatorChar);
+        if (fileSeparatorIdx != -1) {
+            return (
+                archiveEntry.substring(
+                    fileSeparatorIdx + ArchiveVFS.archiveSeparatorLen
+                )
+            );
+        }
+
+        if (archiveEntry.length() > 0) {
+            return archiveEntry;
+        }
+
+        VFS vfs = VFSManager.getVFSForPath(archivePath);
+        return vfs.getFileName(archivePath);
     }
 
 
