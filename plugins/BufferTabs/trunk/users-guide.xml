@@ -67,7 +67,8 @@
   <listitem><para>Buffer Tabs can be displayed on any of the four sides of the text area</para></listitem> 
   <listitem><para>Buffer Tabs right-click popup menu can be enabled or disabled.</para></listitem> 
   <listitem><para>Buffer Tabs can display colored backgrounds or colored titles</para></listitem> 
-  </itemizedlist>
+   <listitem><para>Closing a tab with a double left click or a single middle click can be enabled or disabled.</para></listitem>
+ </itemizedlist>
   </chapter>
 <chapter id="license">
   <title>License</title> 
@@ -112,6 +113,14 @@
   </chapter>
 <appendix id="changelog">
   <title>Change log</title> 
+      <formalpara>
+        <title>Version 0.8.3</title>
+        <para>Requires JDK 1.3, jEdit 4.2
+        <itemizedlist>
+	    <listitem><para>change the options panel. Add option for mouse actions</para></listitem>
+        </itemizedlist></para>
+    </formalpara>
+
   <formalpara>
         <title>Version 0.8.2</title>
         <para>Requires JDK 1.3, jEdit 4.2.1
