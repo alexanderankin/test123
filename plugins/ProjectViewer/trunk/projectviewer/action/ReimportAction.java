@@ -62,18 +62,5 @@ public class ReimportAction extends Action {
 		cmItem.setVisible(node != null && node.isProject());
 	} //}}}
 
-	//{{{ unregisterFiles(VPTDirectory, VPTProject) method
-	/** Unregisters all files in the directory from the project, recursively. */
-	private void unregisterFiles(VPTDirectory dir, VPTProject p) {
-		for (Enumeration e = dir.children(); e.hasMoreElements(); ) {
-			VPTNode n = (VPTNode) e.nextElement();
-			if (n.isDirectory()) {
-				unregisterFiles((VPTDirectory)n, p);
-			} else if (n.isFile()) {
-				p.unregisterFile((VPTFile)n);
-			}
-		}
-	} //}}}
-
 }
 
