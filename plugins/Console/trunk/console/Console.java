@@ -1,5 +1,8 @@
 /*
  * Console.java - The console window
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +22,7 @@
 
 package console;
 
+//{{{ Imports
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
 import javax.swing.text.BadLocationException;
@@ -33,10 +37,12 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import errorlist.*;
+//}}}
 
 public class Console extends JPanel
 implements EBComponent, Output
 {
+	//{{{ Console constructor
 	public Console(View view)
 	{
 		super(new BorderLayout());
@@ -101,14 +107,16 @@ implements EBComponent, Output
 
 		propertiesChanged();
 		setShell(ConsolePlugin.SYSTEM_SHELL);
-	}
+	} //}}}
 
+	//{{{ requestDefaultFocus() method
 	public boolean requestDefaultFocus()
 	{
 		command.requestFocus();
 		return true;
-	}
+	} //}}}
 
+	//{{{ addNotify() method
 	public void addNotify()
 	{
 		super.addNotify();
@@ -117,8 +125,9 @@ implements EBComponent, Output
 
 		errorSource = new DefaultErrorSource("error parsing");
 		ErrorSource.registerErrorSource(errorSource);
-	}
+	} //}}}
 
+	//{{{ removeNotify() method
 	public void removeNotify()
 	{
 		super.removeNotify();
@@ -127,18 +136,21 @@ implements EBComponent, Output
 
 		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
-	}
+	} //}}}
 
+	//{{{ getView() method
 	public View getView()
 	{
 		return view;
-	}
+	} //}}}
 
+	//{{{ getShell() method
 	public Shell getShell()
 	{
 		return (Shell)shellCombo.getSelectedItem();
-	}
+	} //}}}
 
+	//{{{ setShell() method
 	public void setShell(Shell shell)
 	{
 		if(this.shell == shell)
@@ -150,18 +162,21 @@ implements EBComponent, Output
 		command.setModel("console." + shell.getName());
 
 		shell.printInfoMessage(this);
-	}
+	} //}}}
 
+	//{{{ getTextField() method
 	public HistoryTextField getTextField()
 	{
 		return command;
-	}
+	} //}}}
 
+	//{{{ getOutputPane() method
 	public JTextPane getOutputPane()
 	{
 		return output;
-	}
+	} //}}}
 
+	//{{{ run() method
 	/**
 	 * Runs the specified command. Note that with most shells, this
 	 * method returns immediately, and execution of the command continues
@@ -202,8 +217,9 @@ implements EBComponent, Output
 		HistoryModel.getModel("console." + shell.getName()).addItem(cmd);
 		print(infoColor,"> " + cmd);
 		shell.execute(this,output,cmd);
-	}
+	} //}}}
 
+	//{{{ runLastCommand() method
 	/**
 	 * Meant to be used as a user action.
 	 */
@@ -217,14 +233,16 @@ implements EBComponent, Output
 		}
 		else
 			run(getShell(),this,history.getItem(0));
-	}
+	} //}}}
 
+	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
 		if(msg instanceof PropertiesChanged)
 			propertiesChanged();
-	}
+	} //}}}
 
+	//{{{ getErrorSource() method
 	/**
 	 * Returns this console's error source instance. Plugin shells can
 	 * either add errors to this error source, or use their own; both
@@ -233,32 +251,36 @@ implements EBComponent, Output
 	public DefaultErrorSource getErrorSource()
 	{
 		return errorSource;
-	}
+	} //}}}
 
+	//{{{ getInfoColor() method
 	/**
 	 * Returns the informational text color.
 	 */
 	public Color getInfoColor()
 	{
 		return infoColor;
-	}
+	} //}}}
 
+	//{{{ getWarningColor() method
 	/**
 	 * Returns the warning text color.
 	 */
 	public Color getWarningColor()
 	{
 		return warningColor;
-	}
+	} //}}}
 
+	//{{{ getErrorColor() method
 	/**
 	 * Returns the error text color.
 	 */
 	public Color getErrorColor()
 	{
 		return errorColor;
-	}
+	} //}}}
 
+	//{{{ print() method
 	/**
 	 * Prints a string of text with the specified color.
 	 * @param color The color. If null, the default color will be used
@@ -268,10 +290,10 @@ implements EBComponent, Output
 	{
 		final Document outputDocument = output.getDocument();
 
-		SimpleAttributeSet style = new SimpleAttributeSet();
-
 		if(color != null)
 			style.addAttribute(StyleConstants.Foreground,color);
+		else
+			style.removeAttribute(StyleConstants.Foreground);
 
 		try
 		{
@@ -304,8 +326,9 @@ implements EBComponent, Output
 				output.setCaretPosition(outputDocument.getLength());
 			}
 		});
-	}
+	} //}}}
 
+	//{{{ commandDone() method
 	/**
 	 * Called when the command finishes executing.
 	 */
@@ -318,9 +341,11 @@ implements EBComponent, Output
 				animation.setIcon(NO_ANIMATION);
 			}
 		});
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Icons
 	private static final ImageIcon RUN = new ImageIcon(
 		Console.class.getResource("/console/Play16.gif"));
 	private static final ImageIcon TO_BUFFER = new ImageIcon(
@@ -333,7 +358,9 @@ implements EBComponent, Output
 		Console.class.getResource("/console/fish_anim.gif"));
 	private static final ImageIcon NO_ANIMATION = new ImageIcon(
 		Console.class.getResource("/console/fish.gif"));
+	//}}}
 
+	//{{{ Instance variables
 	private View view;
 	private JComboBox shellCombo;
 	private Shell shell;
@@ -342,25 +369,35 @@ implements EBComponent, Output
 	private JLabel animation;
 
 	private JTextPane output;
+	private SimpleAttributeSet style;
 
 	private Color infoColor, warningColor, errorColor;
 
 	private DefaultErrorSource errorSource;
+	//}}}
 
+	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
-		String family = jEdit.getProperty("console.font");
-		int size = jEdit.getIntegerProperty("console.fontsize",12);
-		int style = jEdit.getIntegerProperty("console.fontstyle",Font.PLAIN);
-		output.setFont(jEdit.getFontProperty("console.font"));
+		style = new SimpleAttributeSet();
+
+		StyleConstants.setFontFamily(style,jEdit.getProperty("console.font"));
+		StyleConstants.setFontSize(style,jEdit.getIntegerProperty("console.fontsize",12));
+
+		int _style = jEdit.getIntegerProperty("console.fontstyle",Font.PLAIN);
+		StyleConstants.setBold(style,(_style & Font.BOLD) != 0);
+		StyleConstants.setItalic(style,(_style & Font.ITALIC) != 0);
 
 		output.setBackground(jEdit.getColorProperty("console.bgColor"));
 		output.setForeground(jEdit.getColorProperty("console.plainColor"));
 		infoColor = jEdit.getColorProperty("console.infoColor");
 		warningColor = jEdit.getColorProperty("console.warningColor");
 		errorColor = jEdit.getColorProperty("console.errorColor");
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -392,5 +429,5 @@ implements EBComponent, Output
 			else if(source == clear)
 				output.setText("");
 		}
-	}
+	} //}}}
 }

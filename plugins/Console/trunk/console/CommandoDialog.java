@@ -1,5 +1,8 @@
 /*
  * CommandoDialog.java - Commando dialog box
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +22,7 @@
 
 package console;
 
+//{{{ Imports
 import bsh.*;
 import com.microstar.xml.*;
 import javax.swing.border.*;
@@ -31,9 +35,11 @@ import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+//}}}
 
 public class CommandoDialog extends EnhancedDialog
 {
+	//{{{ CommandoDialog method
 	public CommandoDialog(View view, String command)
 	{
 		super(view,jEdit.getProperty("commando.title"),false);
@@ -102,8 +108,9 @@ public class CommandoDialog extends EnhancedDialog
 		pack();
 		setLocationRelativeTo(view);
 		show();
-	}
+	} //}}}
 
+	//{{{ ok() method
 	public void ok()
 	{
 		jEdit.setProperty("commando.last-command",command.name);
@@ -134,15 +141,18 @@ public class CommandoDialog extends EnhancedDialog
 		thread.start();
 
 		dispose();
-	}
+	} //}}}
 
+	//{{{ cancel() method
 	public void cancel()
 	{
 		jEdit.setProperty("commando.last-command",command.name);
 		dispose();
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private View view;
 
 	private JComboBox commandCombo;
@@ -158,7 +168,9 @@ public class CommandoDialog extends EnhancedDialog
 	private Vector scripts;
 
 	private boolean init;
+	//}}}
 
+	//{{{ load() method
 	private void load(CommandoCommand command)
 	{
 		init = true;
@@ -207,8 +219,9 @@ public class CommandoDialog extends EnhancedDialog
 		init = false;
 
 		tabs.setSelectedIndex(0);
-	}
+	} //}}}
 
+	//{{{ updateTextArea() method
 	private void updateTextAreas()
 	{
 		if(init)
@@ -234,8 +247,13 @@ public class CommandoDialog extends EnhancedDialog
 		}
 
 		commandLine.setText(buf.toString());
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ Inner classes
+
+	//{{{ Script class
 	class Script
 	{
 		boolean confirm;
@@ -260,8 +278,9 @@ public class CommandoDialog extends EnhancedDialog
 			return new Command(confirm,toBuffer,
 				shell,String.valueOf(command));
 		}
-	}
+	} //}}}
 
+	//{{{ Command class
 	// static for use by CommandoThread
 	static class Command
 	{
@@ -277,8 +296,9 @@ public class CommandoDialog extends EnhancedDialog
 			this.shell = shell;
 			this.command = command;
 		}
-	}
+	} //}}}
 
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -294,8 +314,9 @@ public class CommandoDialog extends EnhancedDialog
 			else if(evt.getSource() == cancel)
 				cancel();
 		}
-	}
+	} //}}}
 
+	//{{{ ChangeHandler class
 	class ChangeHandler implements ChangeListener
 	{
 		public void stateChanged(ChangeEvent evt)
@@ -303,16 +324,19 @@ public class CommandoDialog extends EnhancedDialog
 			if(tabs.getSelectedIndex() == 1)
 				updateTextAreas();
 		}
-	}
+	} //}}}
 
+	//{{{ CommandoHandler class
 	class CommandoHandler extends HandlerBase
 	{
+		//{{{ CommandoHandler constructor
 		CommandoHandler()
 		{
 			stateStack = new Stack();
 			options = new Vector();
-		}
+		} //}}}
 
+		//{{{ resolveEntity() method
 		public Object resolveEntity(String publicId, String systemId)
 		{
 			if("commando.dtd".equals(systemId))
@@ -332,8 +356,9 @@ public class CommandoDialog extends EnhancedDialog
 			}
 
 			return null;
-		}
+		} //}}}
 
+		//{{{ attribute() method
 		public void attribute(String aname, String value, boolean isSpecified)
 		{
 			aname = (aname == null) ? null : aname.intern();
@@ -355,8 +380,9 @@ public class CommandoDialog extends EnhancedDialog
 				toBuffer = "TRUE".equals(value);
 			else if(aname == "SHELL")
 				shell = value;
-		}
+		} //}}}
 
+		//{{{ doctypeDecl() method
 		public void doctypeDecl(String name, String publicId,
 			String systemId) throws Exception
 		{
@@ -364,8 +390,9 @@ public class CommandoDialog extends EnhancedDialog
 				return;
 
 			Log.log(Log.ERROR,this,command.name + ".xml: DOCTYPE must be COMMANDO");
-		}
+		} //}}}
 
+		//{{{ charData() method
 		public void charData(char[] c, int off, int len)
 		{
 			String tag = peekElement();
@@ -373,8 +400,9 @@ public class CommandoDialog extends EnhancedDialog
 
 			if(tag == "COMMAND")
 				code = text;
-		}
+		} //}}}
 
+		//{{{ startElement() method
 		public void startElement(String name)
 		{
 			pushElement(name);
@@ -391,8 +419,9 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				choiceLabel = label;
 			}
-		}
+		} //}}}
 
+		//{{{ endElement() method
 		public void endElement(String name)
 		{
 			if(name == null)
@@ -458,8 +487,9 @@ public class CommandoDialog extends EnhancedDialog
 				// can't happen
 				throw new InternalError();
 			}
-		}
+		} //}}}
 
+		//{{{ startDocument() method
 		public void startDocument()
 		{
 			try
@@ -470,10 +500,11 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				e.printStackTrace();
 			}
-		}
-		// end HandlerBase implementation
+		} //}}}
 
-		// private members
+		//{{{ Private members
+
+		//{{{ Instance variables
 		private String varName;
 		private String defaultValue;
 		private String eval;
@@ -488,27 +519,35 @@ public class CommandoDialog extends EnhancedDialog
 		private Vector options;
 
 		private Stack stateStack;
+		//}}}
 
+		//{{{ pushElement() method
 		private void pushElement(String name)
 		{
 			name = (name == null) ? null : name.intern();
 
 			stateStack.push(name);
-		}
+		} //}}}
 
+		//{{{ peekElement() method
 		private String peekElement()
 		{
 			return (String) stateStack.peek();
-		}
+		} //}}}
 
+		//{{{ popElement() method
 		private String popElement()
 		{
 			return (String) stateStack.pop();
-		}
-	}
+		} //}}}
 
+		//}}}
+	} //}}}
+
+	//{{{ CommandoCheckBox class
 	class CommandoCheckBox extends JCheckBox
 	{
+		//{{{ CommandoCheckBox constructor
 		CommandoCheckBox(String label, String varName, String defaultValue,
 			String eval)
 		{
@@ -542,12 +581,12 @@ public class CommandoDialog extends EnhancedDialog
 
 			addActionListener(new ActionHandler());
 			valueChanged();
-		}
+		} //}}}
 
-		// private members
 		private String varName;
 		private String property;
 
+		//{{{ valueChanged() method
 		private void valueChanged()
 		{
 			jEdit.setTemporaryProperty(property,isSelected() ? "true" : "false");
@@ -561,19 +600,22 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				// can't do much...
 			}
-		}
+		} //}}}
 
+		//{{{ ActionHandler class
 		class ActionHandler implements ActionListener
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
 				valueChanged();
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ CommandoTextField class
 	class CommandoTextField extends JTextField
 	{
+		//{{{{ CommandoTextField constructor
 		CommandoTextField(String varName, String defaultValue, String eval)
 		{
 			super("commando." + varName);
@@ -603,12 +645,12 @@ public class CommandoDialog extends EnhancedDialog
 			addActionListener(new ActionHandler());
 			CommandoTextField.this.addFocusListener(new FocusHandler());
 			valueChanged();
-		}
+		} //}}}
 
-		// private members
 		private String varName;
 		private String property;
 
+		//{{{ valueChanged() method
 		private void valueChanged()
 		{
 			String text = getText();
@@ -625,16 +667,18 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				// can't do much...
 			}
-		}
+		} //}}}
 
+		//{{{ ActionHandler class
 		class ActionHandler implements ActionListener
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
 				valueChanged();
 			}
-		}
+		} //}}}
 
+		//{{{ FocusHandler class
 		class FocusHandler implements FocusListener
 		{
 			public void focusGained(FocusEvent evt) {}
@@ -643,11 +687,13 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				valueChanged();
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ CommandoCheckBox class
 	class CommandoComboBox extends JComboBox
 	{
+		//{{{ CommandoComboBox constructor
 		CommandoComboBox(String varName, String defaultValue, String eval,
 			Vector options)
 		{
@@ -683,13 +729,13 @@ public class CommandoDialog extends EnhancedDialog
 
 			addActionListener(new ActionHandler());
 			valueChanged();
-		}
+		} //}}}
 
-		// private members
 		private String varName;
 		private String property;
 		private String eval;
 
+		//{{{ valueChanged() method
 		private void valueChanged()
 		{
 			Option value = (Option)getSelectedItem();
@@ -704,17 +750,19 @@ public class CommandoDialog extends EnhancedDialog
 			{
 				// can't do much...
 			}
-		}
+		} //}}}
 
+		//{{{ ActionHandler class
 		class ActionHandler implements ActionListener
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
 				valueChanged();
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ Option class
 	static class Option
 	{
 		String label;
@@ -730,15 +778,18 @@ public class CommandoDialog extends EnhancedDialog
 		{
 			return label;
 		}
-	}
+	} //}}}
 
+	//{{{ SettingsPane class
 	static class SettingsPane extends JPanel
 	{
+		//{{{ SettingsPane constructor
 		SettingsPane()
 		{
 			setLayout(gridBag = new GridBagLayout());
-		}
+		} //}}}
 
+		//{{{ addComponent() method
 		void addComponent(Component left, Component right)
 		{
 			GridBagConstraints cons = new GridBagConstraints();
@@ -754,8 +805,9 @@ public class CommandoDialog extends EnhancedDialog
 			cons.weightx = 1.0f;
 			gridBag.setConstraints(right,cons);
 			add(right);
-		}
+		} //}}}
 
+		//{{{ addComponent() method
 		void addComponent(Component comp)
 		{
 			GridBagConstraints cons = new GridBagConstraints();
@@ -768,15 +820,16 @@ public class CommandoDialog extends EnhancedDialog
 
 			gridBag.setConstraints(comp,cons);
 			add(comp);
-		}
+		} //}}}
 
-		// private members
 		private GridBagLayout gridBag;
 		private int y;
-	}
+	} //}}}
 
+	//{{{ TextAreaPane class
 	static class TextAreaPane extends JPanel
 	{
+		//{{{ TextAreaPane constructor
 		TextAreaPane()
 		{
 			super(new BorderLayout());
@@ -793,23 +846,26 @@ public class CommandoDialog extends EnhancedDialog
 				textArea = new JTextArea(4,30)));
 			textArea.setEditable(false);
 			textArea.setLineWrap(true);
-		}
+		} //}}}
 
+		//{{{ setText() method
 		void setText(String text)
 		{
 			textArea.setText(text);
-		}
+		} //}}}
 
-		// private emembers
 		private JButton copy;
 		private JTextArea textArea;
 
+		//{{{ ActionHandler class
 		class ActionHandler implements ActionListener
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
 				textArea.copy();
 			}
-		}
-	}
+		} //}}}
+	} //}}}
+
+	//}}}
 }

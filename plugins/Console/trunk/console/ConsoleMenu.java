@@ -66,7 +66,7 @@ class ConsoleMenu extends EnhancedMenu implements EBComponent
 			public void actionPerformed(ActionEvent evt)
 			{
 				new CommandoDialog(
-					EditAction.getView(ConsoleMenu.this),
+					GUIUtilities.getView(ConsoleMenu.this),
 					evt.getActionCommand());
 			}
 		};

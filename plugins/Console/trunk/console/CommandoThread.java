@@ -1,5 +1,8 @@
 /*
  * CommandoThread.java - Thread that runs commando commands
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,19 +22,23 @@
 
 package console;
 
+//{{{ Imports
 import javax.swing.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.*;
+//}}}
 
 class CommandoThread extends Thread
 {
+	//{{{ CommandoThread constructor
 	CommandoThread(Console console, Vector commands)
 	{
 		this.console = console;
 		this.commands = commands;
-	}
+	} //}}}
 
+	//{{{ run() method
 	public void run()
 	{
 		final View view = console.getView();
@@ -57,6 +64,7 @@ class CommandoThread extends Thread
 				{
 					public void run()
 					{
+						//{{{ Get confirmation if bad exit status...
 						if(!returnValue[0])
 						{
 							if(GUIUtilities.confirm(view,
@@ -66,8 +74,9 @@ class CommandoThread extends Thread
 								JOptionPane.ERROR_MESSAGE)
 								!= JOptionPane.YES_OPTION)
 								return;
-						}
+						} //}}}
 
+						//{{{ Get confirmation if user specified...
 						if(command.confirm)
 						{
 							if(GUIUtilities.confirm(view,
@@ -77,7 +86,7 @@ class CommandoThread extends Thread
 								JOptionPane.QUESTION_MESSAGE)
 								!= JOptionPane.YES_OPTION)
 								return;
-						}
+						} //}}}
 
 						console.run(shell,
 							command.toBuffer
@@ -94,9 +103,8 @@ class CommandoThread extends Thread
 			returnValue[0] = shell.waitFor(console);
 			lastCommand[0] = command;
 		}
-	}
+	} //}}}
 
-	// private members
 	private Console console;
 	private Vector commands;
 }
