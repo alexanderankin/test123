@@ -1,0 +1,115 @@
+======================
+Tags Plugin To Do List
+======================
+
+Items below may or may not appear in a future release of this 
+plugin -- it's more a collection of ideas than a task list.
+
+Version 2.0
+===========
+
+* See if refactored code works for Adrian B.
+* Test w/VFS's that aren't browseable, etc...
+* tidy up logging
+  - too much in tag parsing
+  - not enough elsewhere
+* don't search the same tag file twice
+* status messages for loading readers
+* would be nice to be able to pre-load readers
+* (./) PG_UP and PG_DOWN should work in popup
+* add line numbers for all line numbers in TagStack cells
+* searching for toString() finds a bug in the tags parser (see comment in TagFileReader)
+* test
+  - count, all the same
+  - find, different sizes
+  - tag extraction
+* check that all strings are in props
+* make sure all appropriate references are released when plugin is unloaded
+* update users-guide
+
+Post 2.0
+========
+
+* Refactor TagFileReader to accept a TagFileMatcher which would enable
+  searching for partial matches, case-insensitive, etc...
+  - only support CTags (read format from header)
+  - support linear or binary searching, based on the matcher
+  - allow picking of search type in dialog
+  - allow setting default search type
+  - pre-fill tag enter dialog with tag at cursor (+select)
+* might want to investigate keeping tags information in a sorted
+  tree structure w/a name -> list association (time for speed and memory usage).
+* add icons for positions in TagStack (tag,jump,explicit)?
+
+
+Later
+=====
+
+* pattern based (RE) matching (Me)
+  - maybe add a TagMatcher, and sub-classes could glob, re, etc...
+* interface w/PV -- how best to allow PV to provide Tag file for current project?
+* generate tag files?
+* case-insenstive search (Slava)
+* incremental search? (Slava)
+* forward and backwards to tag stack (Ken)
+* Keep current position on top of stack?  Maybe if
+  it's not in the same line as the topmost element
+  in the stack (if the stack is not empty) -- it would
+  just be TagStackModel.getTopMost.goTo() (Me)
+* option to close buffers when popping a tag if it's clean 
+  and it was opened when following a tag.  otherwise
+  it's easy to end up with *lots* of open buffers. (Me)
+* add a TagFileFinder -- which would be responsible for
+  returning a list of paths to search for tags in, for a
+  given file.
+
+Ken's List
+==========
+
+Item's which Ken had listed as To do's -- either for the next 
+version or for a future version.
+
+- Feature request: show the list of tags whose names start with the
+  text already entered in the field, inside the dialog box, and update
+  that list on the fly as characters are typed. You could add a key
+  listener to the text field to pass up and down arrow key presses to
+  the list.
+
+   * How to get dialog to dynamically change size...
+   * Check out use of setDefaultCloseOperation()
+   * Nix TagsEnterTagPanel.java
+
+- Should probably unify the Enter Tag dialog and the Tag collision
+  dialog.  Conversion from the popup to the dialog should use the
+  Enter tag dialog, where it populate the various components of the
+  dialog (i.e. new view, history text field).
+
+- UI help strings
+
+- Should move the common key handling code of the collision list into
+  the list class.
+
+- Ability to set num of columns for filename in tag collision dialog.
+  Automatically do it if collision list popup/dialog is larger than
+  screen.
+
+- Exuberant C Tags FAQ page has info about other source code analyzers
+  (sp?), such as where a function is called from etc.  Look at these
+  tools and see about either integrating them into Tags, or as a
+  closly related plugin.
+
+- Progress dialog with the ability to stop if tagging is taking more
+  than 1 second...?
+
+  * Use I/O progress monitor?
+  * Display wait cursor if taking more than a certain length of time.
+
+- Tag stack
+
+  * Netscape style toolbar back and forward buttons/commands?
+  * Perhaps if we open up another window when tagging we should add
+    to tag stack.  Perhaps it should behave as Netscape?  Is that
+    bad?
+
+- Ability to goto the next matching tag.
+
