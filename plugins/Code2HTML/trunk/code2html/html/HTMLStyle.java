@@ -18,7 +18,7 @@
  */
 
 
-package code2html;
+package code2html.html;
 
 import java.awt.Color;
 
