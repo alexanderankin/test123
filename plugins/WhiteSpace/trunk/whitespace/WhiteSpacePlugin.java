@@ -18,6 +18,9 @@
  */
 
 
+package whitespace;
+
+
 import java.util.Vector;
 
 import org.gjt.sp.jedit.Buffer;
