@@ -19,7 +19,7 @@
   <td align="right">
     <small>
       Kevin A. Burton
-      (<a href="mailto:burton@relativity.yi.org">burton@relativity.yi.org</a>)<br>
+      (No longer in the project)<br>
 
       Andr&eacute; Kaplan
       (<a href="mailto:akaplan@jedit.org">akaplan@jedit.org</a>)<br>
@@ -120,7 +120,7 @@ Right-click a file. The popup menu shows the following additional actions:
     <p>
       <strong>Decompile with Jode</strong><br>
       Decompiles the currently selected file with Jode. The file should
-      be a class file, otherwise you'll get an error.
+      be a class file, otherwise you&#39;ll get an error.
     </p>
   </li>
   <li>
@@ -151,7 +151,7 @@ The following options can be set:
 <ul>
   <li>
     <p>
-      <strong>Use "pretty" names for local variables.</strong><br>
+      <strong>Use &quot;pretty&quot; names for local variables.</strong><br>
       Jode tries to prettify the local variable names.<br>
       This option is on per default.
     </p>
@@ -171,25 +171,25 @@ The following options can be set:
   <li>
     <p>
       <strong>Decrypt encrypted strings.</strong><br>
-      This option is meant for obfuscators that "encrypt" strings. Jode tries
+      This option is meant for obfuscators that &quot;encrypt&quot; strings. Jode tries
       to recognize encrypted strings and to decrypt them automatically.
       If activated, Jode searches for expressions like
-      <code>methodX("abc")</code> and assumes that <code>methodX</code>
-      is an decryption routine and <code>"abc"</code> is an encrypted
+      <code>methodX(&quot;abc&quot;)</code> and assumes that <code>methodX</code>
+      is an decryption routine and <code>&quot;abc&quot;</code> is an encrypted
       string. It is checked whether <code>methodX</code> is
       <strong>static</strong>, <strong>final</strong> and returns a
       <code>String</code>. If this is the case,
       Jode tries to invoke <code>methodX</code> with the constant
-      argument <code>"abc"</code>. If successful, Jode replaces the
+      argument <code>&quot;abc&quot;</code>. If successful, Jode replaces the
       method call with the resulting string.<br>
-      This option is on per default, because it shouldn't do anything harmful.
+      This option is on per default, because it shouldn&#39;t do anything harmful.
     </p>
   </li>
 
   <li>
     <p>
       <strong>Generate imports for packages with more than <em>nnn</em> classes.</strong><br>
-      Set this to 0, if you don't want to generate imports for whole packages,
+      Set this to 0, if you don&#39;t want to generate imports for whole packages,
       such as:<br>
       <code>import&nbsp;java.awt.*;</code><br>
       The default is 0.
@@ -199,7 +199,7 @@ The following options can be set:
   <li>
     <p>
       <strong>Generate imports for classes used more than <em>nnn</em> times.</strong><br>
-      Set this to 0, if you don't want to generate imports for classes, rather
+      Set this to 0, if you don&#39;t want to generate imports for classes, rather
       use full qualified class names always.<br>
       The default is 1.
     </p>
@@ -207,8 +207,8 @@ The following options can be set:
 
   <li>
     <p>
-      <strong>Set status of buffer to "saved" after decompile.</strong><br>
-      Use this if you want to get rid of "Save changes?" messages when you
+      <strong>Set status of buffer to &quot;saved&quot; after decompile.</strong><br>
+      Use this if you want to get rid of &quot;Save changes?&quot; messages when you
       close the decompilation buffer.
     </p>
   </li>

@@ -1,9 +1,11 @@
 The JavaInsight plugin for jEdit
 ================================
 
-(c) Copyright 1999 by:
+The JavaInsight plugin developers/maintainers:
 
-    Kevin A. Burton (burton@relativity.yi.org)
+    * Kevin A. Burton <burton@relativity.yi.org> (No longer in the project)
+    * André Kaplan <akaplan@jedit.org>
+    * Dirk Möbius <dmoebius@gmx.net>
 
 
 The JavaInsight plugin uses the following external libraries:
@@ -14,9 +16,4 @@ The JavaInsight plugin uses the following external libraries:
   Markus Dahm (markus.dahm@berlin.de). BCEL is available at:
   http://bcel.sourceforge.net
 
-The JavaInsight plugin has been maintained by:
-
-    * Kevin A. Burton (burton@relativity.yi.org)
-    * André Kaplan (akaplan@users.sourceforge.net)
-    * Dirk Möbius (dmoebius@gmx.net)
 
