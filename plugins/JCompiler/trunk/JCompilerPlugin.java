@@ -20,17 +20,17 @@
 import java.util.Vector;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.msg.*;
 import jcompiler.*;
 import jcompiler.actions.*;
 
 
-public class JCompilerPlugin extends EBPlugin {
+public class JCompilerPlugin extends EditPlugin {
+    
     public static final String NAME = "JCompiler";
     
     public void start() {
         shell = new JCompilerShell();
-        EditBus.addToNamedList(Shell.SHELLS_LIST, NAME);
+        EditBus.addToNamedList(console.Shell.SHELLS_LIST, shell);
         jEdit.addAction(new jcompile_compile());
         jEdit.addAction(new jcompile_compilepkg());
         jEdit.addAction(new jcompile_rebuildpkg());
@@ -44,15 +44,6 @@ public class JCompilerPlugin extends EBPlugin {
         od.addOptionPane(new JCompilerPane());
     }
   
-    public void handleMessage(EBMessage message) {
-        if (message instanceof CreateShell) {
-            CreateShell cmsg = (CreateShell) message;
-            if (NAME.equals(cmsg.getShellName())) {
-                cmsg.setShell(shell);
-            }
-        }
-    }
-    
     public static JCompilerShell getShell() {
         return shell;
     }

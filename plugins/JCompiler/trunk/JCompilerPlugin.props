@@ -2,12 +2,13 @@
 
 plugin.JCompilerPlugin.name=Java Compiler
 plugin.JCompilerPlugin.author=Kevin A. Burton, Aziz Sharif, Dominic Stolerman and Dirk Moebius
-plugin.JCompilerPlugin.version=0.7.1
+plugin.JCompilerPlugin.version=0.7.2
 plugin.JCompilerPlugin.docs=index.html
 
 plugin.JCompilerPlugin.depend.0=jdk 1.1
 plugin.JCompilerPlugin.depend.1=jedit 02.06.07.00
-plugin.JCompilerPlugin.depend.2=plugin EditBusPlugin 0.9.4
+plugin.JCompilerPlugin.depend.2=plugin EditBusPlugin 0.10
+plugin.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 2.3
 
 
 # Menu options

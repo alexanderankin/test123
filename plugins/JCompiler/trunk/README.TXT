@@ -4,13 +4,12 @@ JCompiler - A java compiler plugin for jEdit
 REQUIREMENTS
 
 - jEdit >= 2.6pre7
-- plugin EditBus >= 0.9.4
-- plugin ErrorList >= 0.11
-- plugin Console >= 2.2
+- plugin EditBus >= 0.10
+- plugin Console >= 2.3
 - a Java Development Kit (JDK) >= 1.1, NOT a Java Runtime Environment (JRE)!
 
-Note: the plugins ErrorList and Console are not required directly. JCompiler
-should start without them. But without them you won't see anything. 
+Note: If you want highlightening of compile errors in the edit pane,
+      I suggest you install ErrorList plugin (>= 0.11). 
 
 
 INSTALLATION
@@ -21,7 +20,7 @@ INSTALLATION
 
         $ cd <jedithome>
         $ cd jars
-        $ unzip JCompiler.jar
+        $ unzip JCompiler.zip
         
    Depending on your OS and your JDK, here's the location of <jedithome>:
    
@@ -50,11 +49,11 @@ INSTALLATION
 
 DEVELOPERS
 
-Attention! If you want to compile the source yourself, compile the file
-jcompiler/NoExitSecurityManager2.java with a JDK1.2 javac, _not_ a
-JDK 1.1 javac.
+ATTENTION! If you want to compile the sources yourself: The file
+jcompiler/NoExitSecurityManager2.java can only be compiled with a Java2
+javac, _not_ a JDK 1.1 javac.
 
-The compiled code run will run on both JDK's nevertheless, because on a
+The compiled code run will run on old JDK's nevertheless, because on a
 JDK 1.1, NoExitSecurityManager2 is never invoked.
 
 

@@ -96,15 +96,28 @@ public class JCompiler {
             catch (Exception e) {
                 Log.log(Log.ERROR, this, e);
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(view,
-                    "Java compiler method '"
-                    + className + "." + methodName
-                    + "' not found.\n"
-                    + "Please ensure that $CLASSPATH is set correctly.\n\n"
-                    + "If you use JDK 1.2, make sure that tools.jar is in the path.\n"
-                    + "For more information look at the documentation.",
-                    "Compiler class not found",
-                    JOptionPane.ERROR_MESSAGE);
+                String errorString = "<html><body><b><p>Java compiler method '"
+                                     + className + "." + methodName
+                                     + "' not found!</b></p>";
+                if (System.getProperty("java.version").startsWith("1.1")) {
+                    errorString = errorString
+                        + "<p>Since you're using Java 1.1, this method should be there.</p>"
+                        + "<p>Are you <i>really</i> using a JDK, not a JRE only?!?</p>"
+                        + "<p>For more information look at the activity log "
+                        + "and the<br>"
+                        + "documentation under <b>Help-&gt;Java Compiler</b>.</p>"
+                        + "</body></html>";
+                } else {
+                    errorString = errorString 
+                        + "<p>Since you use JDK 1.2 or higher, make sure that "
+                        + "<code>tools.jar</code> is in the <b><code>CLASSPATH</code></b>.</p>"
+                        + "<p>For information about how to do this, "
+                        + "have a look at the documentation<br>"
+                        + "under <b>Help-&gt;Java Compiler</b>.</p>"
+                        + "</body></html>";
+                }
+                JOptionPane.showMessageDialog(view, errorString,
+                    "Compiler class not found", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
@@ -338,7 +351,7 @@ public class JCompiler {
         sendMessage("jcompiler.msg.done");
         
         try {
-            pipe.close();
+            pipe.flush();
         }
         catch (IOException ioex) {
             // ignored
@@ -360,11 +373,22 @@ public class JCompiler {
     
     private void sendString(String msg) {
         Log.log(Log.DEBUG, this, msg);
-        try {
-            pipe.write(msg.getBytes());
-        }
-        catch (IOException ioex) {
-            // ignored
+        byte[] bytes = msg.getBytes();
+        if (pipe != null && bytes != null) {
+            try {
+                pipe.write(bytes, 0, bytes.length);
+            }
+            catch (IOException ioex) {
+                // ignored
+            }
+            catch (NullPointerException ioex) {
+                // this exception occurs sometimes on crappy VM implementations
+                // like IBM JDK 1.1.8: pipe.write() throws it, if there's
+                // no sink, maybe because the connection to the sink has not
+                // yet been established or the the thread that creates the
+                // sink has stopped.
+                Log.log(Log.ERROR, this, "lost the output sink!");
+            }
         }
     }
 
