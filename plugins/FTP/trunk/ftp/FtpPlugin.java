@@ -1,6 +1,6 @@
 /*
  * FtpPlugin.java - Main class of virtual filesystem
- * Copyright (C) 2000 Slava Pestov
+ * Copyright (C) 2000, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,31 +27,21 @@ import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 
-public class FtpPlugin extends EBPlugin
+public class FtpPlugin extends EditPlugin
 {
 	public void start()
 	{
-		loginHash = new Hashtable();
 		VFSManager.registerVFS(FtpVFS.PROTOCOL,new FtpVFS());
+	}
+
+	public void stop()
+	{
+		DirectoryCache.clearAllCachedDirectories();
 	}
 
 	public void createMenuItems(Vector menuItems)
 	{
 		menuItems.addElement(GUIUtilities.loadMenu("ftp"));
-	}
-
-	public void handleMessage(EBMessage msg)
-	{
-		if(msg instanceof EditorExiting)
-		{
-			// Clear cached directory listings
-			DirectoryCache.clearAllCachedDirectories();
-		}
-		else if(msg instanceof VFSUpdate)
-		{
-			VFSUpdate vmsg = (VFSUpdate)msg;
-			DirectoryCache.clearCachedDirectory(vmsg.getPath());
-		}
 	}
 
 	public static void showOpenFTPDialog(View view)
@@ -105,6 +95,9 @@ public class FtpPlugin extends EBPlugin
 	{
 		FtpVFS.FtpSession session = (FtpVFS.FtpSession)_session;
 
+		if(loginHash == null)
+			loginHash = new Hashtable();
+
 		if(session.host != null)
 		{
 			LoginInfo login = (LoginInfo)loginHash.get(session.host);
@@ -143,11 +136,11 @@ public class FtpPlugin extends EBPlugin
 
 	/**
 	 * Forgets all saved passwords.
-	 * @since jEdit 2.6pre3
 	 */
 	public static void forgetPasswords()
 	{
-		loginHash.clear();
+		if(loginHash != null)
+			loginHash.clear();
 	}
 
 	static class LoginInfo
