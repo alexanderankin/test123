@@ -1,0 +1,67 @@
+#
+# Plugin properties
+#
+# :tabSize=8:indentSize=4:noTabs=false:maxLineLen=0:
+#
+
+
+plugin.astyleplugin.AStylePlugin.name=AStyle Beautifier
+plugin.astyleplugin.AStylePlugin.author=Dirk Moebius, Tal Davidson
+plugin.astyleplugin.AStylePlugin.version=0.1
+plugin.astyleplugin.AStylePlugin.docs=astyleplugin/help.html
+plugin.astyleplugin.AStylePlugin.depend.0=jdk 1.1
+plugin.astyleplugin.AStylePlugin.depend.1=jedit 03.01.99.00
+
+astyleplugin.label=AStyle Beautifier
+
+
+#
+# Menu/Action properties
+#
+
+beautify.label=Beautify Buffer
+
+
+#
+# Option pane properties
+#
+
+options.astyleplugin.title=AStyle Beautifier
+options.astyleplugin.label=AStyle Beautifier
+options.astyleplugin.helpArea.title=Description:
+options.astyleplugin.hidden.properties=cStyle, useTabs, tabIndentation, spaceIndentation, tabSpaceConversionMode
+
+
+#
+# Error messages
+#
+
+astyleplugin.confirm.mode.title=AStyle Beautifier
+astyleplugin.confirm.mode.message=\
+    The current buffer is not in C, C++ or Java mode.\n\
+    \n\
+    If the current buffer does not contain C, C++ or Java\n\
+    source code, the results may be unpredictable.\n\
+    \n\
+    Are you sure you want to beautify the current buffer,\n\
+    assuming is is Java code?
+
+astyleplugin.error.empty.title=AStyle Beautifier Error
+astyleplugin.error.empty.message=\
+    The Beautifier returned an empty result for the current buffer.\n\
+    I better leave the buffer untouched.
+
+astyleplugin.error.other.title=AStyle Beautifier Error
+astyleplugin.error.other.message=\
+    The Beautifier was unable to reformat the current buffer, because an\n\
+    unhandled exception occurred:\n\
+    {0}\n\
+    \n\
+    See the activity log for any details.\n\
+    Please report this error to the maintainer of the AStyle Beautifier plugin.\n\
+    Thank you.
+
+astyleplugin.error.isReadOnly.title=AStyle Beautifier Error
+astyleplugin.error.isReadOnly.message=\
+    Cannot format the current buffer, because it is read-only.
+
