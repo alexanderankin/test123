@@ -5,60 +5,178 @@
 <ACTIONS>
     <ACTION NAME="white-space.toggle-block-highlight">
         <CODE>
-             BlockHighlight.toggleBlockHighlightFor(view);
+             whitespace.BlockHighlight.toggleBlockHighlightFor(view);
         </CODE>
         <IS_SELECTED>
-             return BlockHighlight.isBlockHighlightEnabledFor(view);
+             return whitespace.BlockHighlight.isBlockHighlightEnabledFor(view);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-fold-highlight">
         <CODE>
-             FoldHighlight.toggleFoldHighlightFor(view);
+            whitespace.FoldHighlight.toggleFoldHighlightFor(view);
         </CODE>
         <IS_SELECTED>
-             return FoldHighlight.isFoldHighlightEnabledFor(view);
+            return (
+                whitespace.FoldHighlight.isFoldHighlightEnabledFor(view)
+            );
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-fold-tooltip">
         <CODE>
-             FoldHighlight.toggleFoldTooltipFor(view);
+            whitespace.FoldHighlight.toggleFoldTooltipFor(view);
         </CODE>
         <IS_SELECTED>
-             return FoldHighlight.isFoldTooltipEnabledFor(view);
+            return (
+                whitespace.FoldHighlight.isFoldTooltipEnabledFor(view)
+            );
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-space-highlight">
         <CODE>
-             WhiteSpaceHighlight.toggleSpaceHighlightFor(view);
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getSpaceHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
         </CODE>
         <IS_SELECTED>
-             return WhiteSpaceHighlight.isSpaceHighlightEnabledFor(view);
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getSpaceHighlight().isEnabled();
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-leading-space-highlight">
+        <CODE>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getLeadingSpaceHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
+        </CODE>
+        <IS_SELECTED>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getLeadingSpaceHighlight().isEnabled();
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-inner-space-highlight">
+        <CODE>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getInnerSpaceHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
+        </CODE>
+        <IS_SELECTED>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getInnerSpaceHighlight().isEnabled();
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-trailing-space-highlight">
+        <CODE>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getTrailingSpaceHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
+        </CODE>
+        <IS_SELECTED>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getTrailingSpaceHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-tab-highlight">
         <CODE>
-             WhiteSpaceHighlight.toggleTabHighlightFor(view);
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getTabHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
         </CODE>
         <IS_SELECTED>
-             return WhiteSpaceHighlight.isTabHighlightEnabledFor(view);
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getTabHighlight().isEnabled();
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-leading-tab-highlight">
+        <CODE>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getLeadingTabHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
+        </CODE>
+        <IS_SELECTED>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getLeadingTabHighlight().isEnabled();
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-inner-tab-highlight">
+        <CODE>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getInnerTabHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
+        </CODE>
+        <IS_SELECTED>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getInnerTabHighlight().isEnabled();
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-trailing-tab-highlight">
+        <CODE>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getTrailingTabHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
+        </CODE>
+        <IS_SELECTED>
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getTrailingTabHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-whitespace-highlight">
         <CODE>
-             WhiteSpaceHighlight.toggleWhitespaceHighlightFor(view);
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight != null) {
+                highlight.getWhitespaceHighlight().toggleEnabled();
+                highlight.updateTextArea();
+            }
         </CODE>
         <IS_SELECTED>
-             return WhiteSpaceHighlight.isWhitespaceHighlightEnabledFor(view);
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return false; }
+            return highlight.getWhitespaceHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 </ACTIONS>
