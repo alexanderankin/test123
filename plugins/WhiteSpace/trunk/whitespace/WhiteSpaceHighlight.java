@@ -51,6 +51,18 @@ import org.gjt.sp.util.Log;
 public class WhiteSpaceHighlight
     implements TextAreaHighlight
 {
+    public static final String SPACE_HIGHLIGHT_PROPERTY          = "white-space.space-highlight";
+    public static final String LEADING_SPACE_HIGHLIGHT_PROPERTY  = "white-space.leading-space-highlight";
+    public static final String INNER_SPACE_HIGHLIGHT_PROPERTY    = "white-space.inner-space-highlight";
+    public static final String TRAILING_SPACE_HIGHLIGHT_PROPERTY = "white-space.trailing-space-highlight";
+
+    public static final String TAB_HIGHLIGHT_PROPERTY            = "white-space.tab-highlight";
+    public static final String LEADING_TAB_HIGHLIGHT_PROPERTY    = "white-space.leading-tab-highlight";
+    public static final String INNER_TAB_HIGHLIGHT_PROPERTY      = "white-space.inner-tab-highlight";
+    public static final String TRAILING_TAB_HIGHLIGHT_PROPERTY   = "white-space.trailing-tab-highlight";
+
+    public static final String WHITESPACE_HIGHLIGHT_PROPERTY     = "white-space.whitespace-highlight";
+
     // ASCII control characters strictly below SPACE (0x20)
     private static final String[] ASCII_CONTROLS = new String[] {
         /* 000    001    002    003    004    005 */
@@ -104,24 +116,51 @@ public class WhiteSpaceHighlight
     private Segment lineSegment = new Segment();
 
 
-    private WhiteSpaceHighlight() {
-        this.spaceHighlight         = new HighlightOption(true);
-        this.leadingSpaceHighlight  = new HighlightOption(true);
-        this.innerSpaceHighlight    = new HighlightOption(true);
-        this.trailingSpaceHighlight = new HighlightOption(true);
-
-        this.tabHighlight           = new HighlightOption(true);
-        this.leadingTabHighlight    = new HighlightOption(true);
-        this.innerTabHighlight      = new HighlightOption(true);
-        this.trailingTabHighlight   = new HighlightOption(true);
-
-        this.whitespaceHighlight    = new HighlightOption(false);
-    }
+    private WhiteSpaceHighlight() {}
 
 
     public void init(JEditTextArea textArea, TextAreaHighlight next) {
         this.textArea = textArea;
         this.next = next;
+
+        this.spaceHighlight         = new HighlightOption(
+            SPACE_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getSpaceHighlightDefault()
+        );
+        this.leadingSpaceHighlight  = new HighlightOption(
+            LEADING_SPACE_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
+        );
+        this.innerSpaceHighlight    = new HighlightOption(
+            INNER_SPACE_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
+        );
+        this.trailingSpaceHighlight = new HighlightOption(
+            TRAILING_SPACE_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
+        );
+
+        this.tabHighlight           = new HighlightOption(
+            TAB_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getTabHighlightDefault()
+        );
+        this.leadingTabHighlight    = new HighlightOption(
+            LEADING_TAB_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getLeadingTabHighlightDefault()
+        );
+        this.innerTabHighlight      = new HighlightOption(
+            INNER_TAB_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getInnerTabHighlightDefault()
+        );
+        this.trailingTabHighlight   = new HighlightOption(
+            TRAILING_TAB_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getTrailingTabHighlightDefault()
+        );
+
+        this.whitespaceHighlight    = new HighlightOption(
+            WHITESPACE_HIGHLIGHT_PROPERTY,
+            WhiteSpaceDefaults.getWhitespaceHighlightDefault()
+        );
     }
 
 
@@ -469,32 +508,35 @@ public class WhiteSpaceHighlight
     }
 
 
-    public static class HighlightOption {
-        private boolean enabled;
+    public class HighlightOption {
+        private final String propertyName;
 
 
-        public HighlightOption() {
-            this.enabled = false;
+        public HighlightOption(String propertyName) {
+            this(propertyName, false);
         }
 
 
-        public HighlightOption(boolean enabled) {
-            this.enabled = enabled;
+        public HighlightOption(String propertyName, boolean enabled) {
+            this.propertyName = propertyName;
+            this.setEnabled(enabled);
         }
 
 
         public boolean isEnabled() {
-            return this.enabled;
+            Buffer buffer = WhiteSpaceHighlight.this.textArea.getBuffer();
+            return buffer.getBooleanProperty(this.propertyName);
         }
 
 
         public void setEnabled(boolean enabled) {
-            this.enabled = enabled;
+            Buffer buffer = WhiteSpaceHighlight.this.textArea.getBuffer();
+            buffer.putBooleanProperty(this.propertyName, enabled);
         }
 
 
         public void toggleEnabled() {
-            this.enabled = !this.enabled;
+            this.setEnabled(!this.isEnabled());
         }
     }
 }

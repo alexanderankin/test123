@@ -132,36 +132,6 @@ public class WhiteSpacePlugin
         JEditTextArea textArea = editPane.getTextArea();
         TextAreaPainter textAreaPainter = textArea.getPainter();
 
-        boolean showSpaceDefault         = jEdit.getBooleanProperty(
-            "white-space.show-space-default", true
-        );
-        boolean showLeadingSpaceDefault  = jEdit.getBooleanProperty(
-            "white-space.show-leading-space-default", true
-        );
-        boolean showInnerSpaceDefault    = jEdit.getBooleanProperty(
-            "white-space.show-inner-space-default", true
-        );
-        boolean showTrailingSpaceDefault = jEdit.getBooleanProperty(
-            "white-space.show-trailing-space-default", true
-        );
-
-        boolean showTabDefault         = jEdit.getBooleanProperty(
-            "white-space.show-tab-default", true
-        );
-        boolean showLeadingTabDefault  = jEdit.getBooleanProperty(
-            "white-space.show-leading-tab-default", true
-        );
-        boolean showInnerTabDefault    = jEdit.getBooleanProperty(
-            "white-space.show-inner-tab-default", true
-        );
-        boolean showTrailingTabDefault = jEdit.getBooleanProperty(
-            "white-space.show-trailing-tab-default", true
-        );
-
-        boolean showWhitespaceDefault  = jEdit.getBooleanProperty(
-            "white-space.show-whitespace-default", false
-        );
-
         BlockHighlight blockHighlight =
             (BlockHighlight) BlockHighlight.addHighlightTo(editPane);
         FoldHighlight foldHighlight =
@@ -175,18 +145,6 @@ public class WhiteSpacePlugin
         textAreaPainter.addCustomHighlight(whiteSpaceHighlight);
         // Drawn first
         textAreaPainter.addCustomHighlight(foldHighlight);
-
-        whiteSpaceHighlight.getSpaceHighlight().setEnabled(showSpaceDefault);
-        whiteSpaceHighlight.getLeadingSpaceHighlight().setEnabled(showLeadingSpaceDefault);
-        whiteSpaceHighlight.getInnerSpaceHighlight().setEnabled(showInnerSpaceDefault);
-        whiteSpaceHighlight.getTrailingSpaceHighlight().setEnabled(showTrailingSpaceDefault);
-
-        whiteSpaceHighlight.getTabHighlight().setEnabled(showTabDefault);
-        whiteSpaceHighlight.getLeadingTabHighlight().setEnabled(showLeadingTabDefault);
-        whiteSpaceHighlight.getInnerTabHighlight().setEnabled(showInnerTabDefault);
-        whiteSpaceHighlight.getTrailingTabHighlight().setEnabled(showTrailingTabDefault);
-
-        whiteSpaceHighlight.getWhitespaceHighlight().setEnabled(showWhitespaceDefault);
     }
 
 
