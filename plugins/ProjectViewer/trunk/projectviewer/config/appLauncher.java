@@ -124,9 +124,9 @@ public class appLauncher {
                "Interrupted waiting for process!");
             }
       
-              javax.swing.JOptionPane.showMessageDialog(null, "No application set for this extension!");
-            
-            }	
+            } else {
+		javax.swing.JOptionPane.showMessageDialog(null, "No application set for this extension!");    
+	    }
             
     
     }
