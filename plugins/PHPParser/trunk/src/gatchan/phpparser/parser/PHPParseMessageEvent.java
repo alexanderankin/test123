@@ -17,6 +17,9 @@ public class PHPParseMessageEvent {
   public static int MESSAGE_VARIABLE_MAY_BE_UNASSIGNED = 8;
   public static int MESSAGE_UNNECESSARY_GLOBAL = 9;
 
+  /** message for syntax case '' ;. */
+  public static int MESSAGE_CASE_SEMICOLON = 10;
+
   private int messageClass;
   private int level;
 
@@ -42,38 +45,6 @@ public class PHPParseMessageEvent {
                               int endColumn) {
     this.level = level;
     this.messageClass = messageClass;
-    this.path = path;
-    this.beginLine = beginLine;
-    this.message = message;
-    this.beginColumn = beginColumn;
-    this.endLine = endLine;
-    this.endColumn = endColumn;
-    this.sourceStart = sourceStart;
-    this.sourceEnd = sourceEnd;
-  }
-
-  /**
-   * @deprecated 
-   * @param level
-   * @param path
-   * @param message
-   * @param sourceStart
-   * @param sourceEnd
-   * @param beginLine
-   * @param endLine
-   * @param beginColumn
-   * @param endColumn
-   */
-  public PHPParseMessageEvent(int level,
-                              String path,
-                              String message,
-                              int sourceStart,
-                              int sourceEnd,
-                              int beginLine,
-                              int endLine,
-                              int beginColumn,
-                              int endColumn) {
-    this.level = level;
     this.path = path;
     this.beginLine = beginLine;
     this.message = message;

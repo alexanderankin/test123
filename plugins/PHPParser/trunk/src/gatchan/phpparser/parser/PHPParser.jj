@@ -42,7 +42,12 @@ public final class PHPParser {
 
   //{{{ Fields
   
+//{{{ constants for methods and function distinction (some keywords are allowed in method classes
   
+  public static final int CONST_METHOD = 0;
+  public static final int CONST_FUNCTION = 1;
+  //}}} 
+
   //todo : fix the variables names bug
   //todo : handle tilde operator
   
@@ -373,7 +378,7 @@ TOKEN_MGR_DECLS:
 | "\f"
 }
 
-<IN_VARIABLE,MODE_IDENTIFIER> SPECIAL_TOKEN :
+<IN_VARIABLE> SPECIAL_TOKEN :
 {
   " "  : PHPPARSING
 | "\t" : PHPPARSING
@@ -436,8 +441,25 @@ MORE :
 | <INCLUDE_ONCE       : "include_once">
 | <REQUIRE_ONCE       : "require_once">
 | <GLOBAL             : "global">
-| <DEFINE             : "define">
 | <STATIC             : "static">
+| <CASE               : "case">
+| <CONST              : "const">
+| <CONTINUE           : "continue">
+| <_DEFAULT           : "default">
+| <DO                 : "do">
+| <EXTENDS            : "extends">
+| <FOR                : "for">
+| <NEW                : "new">
+| <RETURN             : "return">
+| <SWITCH             : "switch">
+| <WHILE              : "while">
+| <ENDWHILE           : "endwhile">
+| <ENDSWITCH          : "endswitch">
+| <ENDIF              : "endif">
+| <ENDFOR             : "endfor">
+| <ENDFOREACH         : "endforeach">
+| <FOREACH            : "foreach">
+| <AS                 : "as" >
 }
 
 <PHPPARSING,IN_VARIABLE> TOKEN :
@@ -451,30 +473,13 @@ MORE :
 
 <PHPPARSING> TOKEN :
 {
-  <CASE     : "case">
-| <CONST    : "const">
-| <CONTINUE : "continue">
-| <_DEFAULT : "default">
-| <DO       : "do">
-| <EXTENDS  : "extends">
-| <FOR      : "for">
+ <DEFINE   : "define">
 | <GOTO     : "goto">
-| <NEW      : "new">
 | <NULL     : "null">
-| <RETURN   : "return">
 | <SUPER    : "super">
-| <SWITCH   : "switch">
 | <THIS     : "this">
 | <TRUE     : "true">
 | <FALSE    : "false">
-| <WHILE    : "while">
-| <ENDWHILE : "endwhile">
-| <ENDSWITCH: "endswitch">
-| <ENDIF    : "endif">
-| <ENDFOR   : "endfor">
-| <ENDFOREACH : "endforeach">
-| <FOREACH  : "foreach">
-| <AS       : "as" >
 }
 
 /* TYPES */
@@ -638,11 +643,6 @@ MORE :
   < #SPECIAL:
     "_" | ["\u007f"-"\u00ff"]
   >
-}
-
-<MODE_IDENTIFIER> TOKEN :
-{
-  <KIDENTIFIER: ((<LETTER>|<SPECIAL>) (<LETTER>|<DIGIT>|<SPECIAL>)*)> : PHPPARSING
 }
 
 /*
@@ -1041,8 +1041,8 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
   final FieldDeclaration field;
 }
 {
-  method = MethodDeclaration() {method.analyzeCode(this); classDeclaration.addMethod(method);}
-| field  = FieldDeclaration()  {if (field != null) classDeclaration.addField(field);}
+  method = MethodDeclaration(CONST_METHOD) {method.analyzeCode(this); classDeclaration.addMethod(method);}
+| field  = FieldDeclaration()              {if (field != null) classDeclaration.addField(field);}
 }
 
 //}}}
@@ -1510,7 +1510,7 @@ ArrayVariableDeclaration[] ArrayInitializer() :
  *
  * @return a MethodDeclaration
  */
-MethodDeclaration MethodDeclaration() :
+MethodDeclaration MethodDeclaration(int type) :
 {
   final MethodDeclaration functionDeclaration;
   final MethodHeader methodHeader;
@@ -1520,7 +1520,7 @@ MethodDeclaration MethodDeclaration() :
 }
 {
   functionToken = <FUNCTION>
-  methodHeader = methodHeader(functionToken)
+  methodHeader = methodHeader(functionToken,type)
   {
     functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
     currentSegment = functionDeclaration;
@@ -1542,46 +1542,49 @@ MethodDeclaration MethodDeclaration() :
  *
  * @return a function description for the outline
  */
-MethodHeader methodHeader(final Token functionToken) :
+MethodHeader methodHeader(final Token functionToken,int type) :
 {
-  Token identifier = null;
   Token reference = null;
   final ArrayList formalParameters = new ArrayList();
+  final Token methodNameToken;
   String identifierChar = SYNTAX_ERROR_CHAR;
 }
 {
   [reference = <BIT_AND>]
-  try {
-    identifier = <IDENTIFIER>
-    {
-      identifierChar = identifier.image;
-    }
-  } catch (ParseException e) {
-    if (e.currentToken.next.kind == PHPParserConstants.LPAREN) {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "identifier expected",
-                                            "identifier",
-                                            e.currentToken.image,
-                                            functionToken.sourceStart,
-                                            e.currentToken.sourceStart,
-                                            e.currentToken.beginLine,
-                                            e.currentToken.endLine,
-                                            e.currentToken.beginColumn-1,
-                                            e.currentToken.endColumn));
-    } else {
-      fireParseError(new PHPParseErrorEvent(ERROR,
-                                            path,
-                                            "unexpected token",
-                                            "identifier",
-                                            e.currentToken.next.image,
-                                            e.currentToken.next.sourceStart,
-                                            e.currentToken.next.sourceEnd,
-                                            e.currentToken.next.beginLine,
-                                            e.currentToken.next.endLine,
-                                            e.currentToken.next.beginColumn,
-                                            e.currentToken.next.endColumn));
-      //error_skipto(PHPParserConstants.LPAREN);
+  {
+    try {
+      if (type == CONST_FUNCTION) { 
+        methodNameToken = functionIdentifier();
+      } else {
+        methodNameToken = methodIdentifier();
+      }
+      identifierChar = methodNameToken.image;
+    } catch (ParseException e) {
+      if (e.currentToken.next.kind == PHPParserConstants.LPAREN) {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "identifier expected",
+                                              "identifier",
+                                              e.currentToken.image,
+                                              functionToken.sourceStart,
+                                              e.currentToken.sourceStart,
+                                              e.currentToken.beginLine,
+                                              e.currentToken.endLine,
+                                              e.currentToken.beginColumn-1,
+                                              e.currentToken.endColumn));
+      } else {
+        fireParseError(new PHPParseErrorEvent(ERROR,
+                                              path,
+                                              "unexpected token",
+                                              "identifier",
+                                              e.currentToken.next.image,
+                                              e.currentToken.next.sourceStart,
+                                              e.currentToken.next.sourceEnd,
+                                              e.currentToken.next.beginLine,
+                                              e.currentToken.next.endLine,
+                                              e.currentToken.next.beginColumn,
+                                              e.currentToken.next.endColumn));
+      }
     }
   }
   FormalParameters(formalParameters)
@@ -1597,9 +1600,40 @@ MethodHeader methodHeader(final Token functionToken) :
                             functionToken.beginColumn,
                             token.endColumn);
   }
+}//}}}
+//{{{ functionIdentifier()
+Token functionIdentifier() :
+{
+  Token methodIdentifier;
 }
+{
+  methodIdentifier = <IDENTIFIER> { return methodIdentifier; }
+} //}}}
 
-//}}}
+//{{{ methodIdentifier()
+Token methodIdentifier() :
+{
+  Token methodIdentifier;
+}
+{
+  methodIdentifier = <IDENTIFIER> { return methodIdentifier; }
+| methodIdentifier = <DEFINE>     { return methodIdentifier; }
+| methodIdentifier = <GOTO>       { return methodIdentifier; }
+| methodIdentifier = <NEW>        { return methodIdentifier; }
+| methodIdentifier = <SUPER>      { return methodIdentifier; }
+| methodIdentifier = <THIS>       { return methodIdentifier; }
+| methodIdentifier = <TRUE>       { return methodIdentifier; }
+| methodIdentifier = <FALSE>      { return methodIdentifier; }
+| methodIdentifier = <STRING>     { return methodIdentifier; }
+| methodIdentifier = <OBJECT>     { return methodIdentifier; }
+| methodIdentifier = <BOOL>       { return methodIdentifier; }
+| methodIdentifier = <BOOLEAN>    { return methodIdentifier; }
+| methodIdentifier = <REAL>       { return methodIdentifier; }
+| methodIdentifier = <DOUBLE>     { return methodIdentifier; }
+| methodIdentifier = <FLOAT>      { return methodIdentifier; }
+| methodIdentifier = <INT>        { return methodIdentifier; }
+| methodIdentifier = <INTEGER>    { return methodIdentifier; }
+} //}}}
 //{{{ FormalParameters(final ArrayList parameters)
 
 /**
@@ -1747,7 +1781,9 @@ FormalParameter FormalParameter() :
 //{{{ Type()
 
 ConstantIdentifier Type() :
-{final Token token;}
+{
+  final Token token;
+}
 {
   token = <STRING>    {return new ConstantIdentifier(token);}
 | token = <BOOL>      {return new ConstantIdentifier(token);}
@@ -1762,10 +1798,9 @@ ConstantIdentifier Type() :
 
 //}}}
 
-//{{{ Expressions
+//{{{ EXPRESSIONS
 
 //{{{ Expression()
-
 Expression Expression() :
 {
   final Expression expr;
@@ -1778,8 +1813,7 @@ Expression Expression() :
     return expr;
   }
 | expr = ConditionalExpression() { return expr; }
-}
-
+} //}}}
 //{{{ assignment()
 
 Expression assignment() :
@@ -2714,45 +2748,58 @@ Expression ClassIdentifier():
   final Token identifierToken;
 }
 {
-  identifierToken = <IDENTIFIER> {return new ConstantIdentifier(identifierToken);}
-| expr = Type()                  {return expr;}
-| expr = VariableDeclaratorId()  {return expr;}
+  identifierToken = methodIdentifier() {return new ConstantIdentifier(identifierToken);}
+| expr = VariableDeclaratorId()        {return expr;}
 }
 
 //}}}
+
+//{{{ SUFFIXES
 //{{{ VariableSuffix(final AbstractVariable prefix)
 
 /**
  * Used by Variabledeclaratorid and primarysuffix
  */
-AbstractVariable VariableSuffix(final AbstractVariable prefix) :
+AbstractVariable VariableSuffix(AbstractVariable prefix) :
 {
-  Expression expression = null;
-  final Token classAccessToken,lbrace,rbrace;
-  Token token;
-  int pos;
+  ClassAccess classAccess;
+  ArrayDeclarator arrayDeclarator;
+}
+{
+  classAccess     = classAccess(prefix)     { return classAccess; }
+| arrayDeclarator = arrayDeclarator(prefix) { return arrayDeclarator; }
+}
+
+//}}}
+//{{{ classAccess(AbstractVariable prefix)
+ClassAccess classAccess(AbstractVariable prefix) :
+{
+  Token classAccessToken, lbrace, rbrace, methodIdentifier;
+  Expression expression;
 }
 {
   classAccessToken = <CLASSACCESS>
-  try {
+  //try {
     (
-      lbrace = <LBRACE> expression = Expression() rbrace = <RBRACE>
-                {
-                 expression = new Variable(expression,
-                              lbrace.sourceStart,
-                              rbrace.sourceEnd,
-                              lbrace.beginLine,
-                              rbrace.endLine,
-                              lbrace.beginColumn,
-                              rbrace.endColumn);
-                }
+        lbrace = <LBRACE> expression = Expression() rbrace = <RBRACE>
+        {
+          expression = new Variable(expression,
+                                    lbrace.sourceStart,
+                                    rbrace.sourceEnd,
+                                    lbrace.beginLine,
+                                    rbrace.endLine,
+                                    lbrace.beginColumn,
+                                    rbrace.endColumn);
+        }
       |
-        token = <IDENTIFIER>
-        {expression = new ConstantIdentifier(token);}
+        methodIdentifier = methodIdentifier()
+        {
+          expression = new ConstantIdentifier(methodIdentifier);
+        }
       |
         expression = Variable()
     )
-  } catch (ParseException e) {
+ /* } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "function call or field access expected",
@@ -2764,75 +2811,119 @@ AbstractVariable VariableSuffix(final AbstractVariable prefix) :
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
                                           e.currentToken.endColumn+1));
+  }*/
+  {
+    return new ClassAccess(prefix,
+                           expression,
+                           ClassAccess.NORMAL,
+                           expression.getSourceEnd(),
+                           expression.getEndLine(),
+                           expression.getEndColumn());
   }
-  { //Here "expression" can be null !
-    if (expression == null) {
-      return new ClassAccess(prefix,
-                             expression,
-                             ClassAccess.NORMAL,
-                             classAccessToken.sourceEnd,
-                             classAccessToken.endLine,
-                             classAccessToken.endColumn);
-    } else {
-      return new ClassAccess(prefix,
-                             expression,
-                             ClassAccess.NORMAL,
-                             expression.getSourceEnd(),
-                             expression.getEndLine(),
-                             expression.getEndColumn());
-    }
-  }
-|
-  token = <LBRACKET> {pos = token.sourceEnd+1;}
-  [  expression = Expression() {pos = expression.sourceEnd+1;}
-   | expression = Type()       {pos = expression.sourceEnd+1;}]  //Not good
-  try {
-    token = <RBRACKET>
-    {pos = token.sourceEnd;}
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "']' expected",
-                                          "]",
-                                          e.currentToken.image,
-                                          pos,
-                                          pos+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  {return new ArrayDeclarator(prefix,
-                              expression,
-                              pos,
-                              token.endLine,
-                              token.endColumn);}
-|
-  token = <LBRACE> {pos = token.sourceEnd+1;}
-  [  expression = Expression() {pos = expression.sourceEnd+1;}
-   | expression = Type()       {pos = expression.sourceEnd+1;}]  //Not good
-  try {
-    token = <RBRACE>
-    {pos = token.sourceEnd;}
-  } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "'}' expected",
-                                          "}",
-                                          e.currentToken.image,
-                                          pos,
-                                          pos+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }
-  {return new ArrayDeclarator(prefix,
-                              expression,
-                              pos,
-                              token.endLine,
-                              token.endColumn);}//todo : check braces here
+} //}}}
+//{{{ arrayDeclarator(AbstractVariable prefix)
+ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
+{
+  Token open, keyToken;
+  Token close = null;
+  Expression expression = null;
+  int sourceEnd,endLine,endColumn;
 }
+{
+  (
+    open = <LBRACKET> 
+    [ expression = arrayKey() ]
+    try {
+      close = <RBRACKET>
+    } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "']' expected",
+                                            "]",
+                                            e.currentToken.image,
+                                            e.currentToken.sourceStart,
+                                            e.currentToken.sourceEnd,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
+    }
+  |
+    open = <LBRACE>
+    [ expression = arrayKey() ]
+    try {
+      close = <RBRACE>
+    } catch (ParseException e) {
+      fireParseError(new PHPParseErrorEvent(ERROR,
+                                            path,
+                                            "'}' expected",
+                                            "}",
+                                            e.currentToken.image,
+                                            e.currentToken.sourceStart,
+                                            e.currentToken.sourceEnd,
+                                            e.currentToken.beginLine,
+                                            e.currentToken.endLine,
+                                            e.currentToken.endColumn,
+                                            e.currentToken.endColumn+1));
+    }
+  )
+  {
+    if (close == null) {
+      if (expression == null) {
+        sourceEnd = open.sourceEnd;
+        endLine   = open.endLine;
+        endColumn = open.endColumn;
+      } else {
+        sourceEnd = expression.getSourceEnd();
+        endLine   = expression.getEndLine();
+        endColumn = expression.getEndColumn();
+      }
+    } else {
+      sourceEnd = open.sourceEnd;
+      endLine   = open.endLine;
+      endColumn = open.endColumn;
+    }
+    return new ArrayDeclarator(prefix,
+                               expression,
+                               sourceEnd,
+                               endLine,
+                               endColumn);
+  }
+} //}}}
+//{{{ arrayKey()
+/**
+ * defines the key of an array.
+ * @return the key of the array
+ */
+Expression arrayKey() :
+{
+  Expression expression;
+  Token keyToken;
+}
+{
+  expression = Expression()       { return expression; }
+| keyToken = arrayKeyIdentifier() { return  new ConstantIdentifier(keyToken); }
+} //}}}
+//{{{ arrayKeyIdentifier()
+Token arrayKeyIdentifier() :
+{
+  Token methodIdentifier;
+}
+{
+  methodIdentifier = <DEFINE>     { return methodIdentifier; }
+| methodIdentifier = <GOTO>       { return methodIdentifier; }
+| methodIdentifier = <SUPER>      { return methodIdentifier; }
+| methodIdentifier = <THIS>       { return methodIdentifier; }
+| methodIdentifier = <STRING>     { return methodIdentifier; }
+| methodIdentifier = <OBJECT>     { return methodIdentifier; }
+| methodIdentifier = <BOOL>       { return methodIdentifier; }
+| methodIdentifier = <BOOLEAN>    { return methodIdentifier; }
+| methodIdentifier = <REAL>       { return methodIdentifier; }
+| methodIdentifier = <DOUBLE>     { return methodIdentifier; }
+| methodIdentifier = <FLOAT>      { return methodIdentifier; }
+| methodIdentifier = <INT>        { return methodIdentifier; }
+| methodIdentifier = <INTEGER>    { return methodIdentifier; }
+} //}}}
 
 //}}}
 //{{{ Literal()
@@ -3529,7 +3620,7 @@ ListExpression ListExpression() :
 
 //}}}
 
-//{{{ Statements
+//{{{ STATEMENTS
 
 //{{{ EchoStatement()
 
@@ -3556,7 +3647,7 @@ EchoStatement EchoStatement() :
   } catch (ParseException e) {
     if (e.currentToken.next.kind != 4) {
       fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
+                                            path,
                                             "';' expected",
                                             ";",
                                             e.currentToken.image,
@@ -3876,10 +3967,13 @@ Statement BlockStatement() :
     throw e;
   }*/
 | statement = ClassDeclaration()  {return statement;}
-| statement = MethodDeclaration() {if (phpDocument == currentSegment) pushOnAstNodes(statement);
-                                   currentSegment.add((MethodDeclaration) statement);
-                                   ((MethodDeclaration) statement).analyzeCode(this);
-                                   return statement;}
+| statement = MethodDeclaration(CONST_FUNCTION) 
+  {
+    if (phpDocument == currentSegment) pushOnAstNodes(statement);
+    currentSegment.add((MethodDeclaration) statement);
+    ((MethodDeclaration) statement).analyzeCode(this);
+    return statement;
+  }
 }
 
 //}}}
@@ -3895,9 +3989,12 @@ Statement BlockStatementNoBreak() :
 {
   statement = StatementNoBreak()  {return statement;}
 | statement = ClassDeclaration()  {return statement;}
-| statement = MethodDeclaration() {currentSegment.add((MethodDeclaration) statement);
-                                   ((MethodDeclaration) statement).analyzeCode(this);
-                                   return statement;}
+| statement = MethodDeclaration(CONST_FUNCTION) 
+  {
+    currentSegment.add((MethodDeclaration) statement);
+    ((MethodDeclaration) statement).analyzeCode(this);
+    return statement;
+  }
 }
 
 //}}}
@@ -4023,6 +4120,8 @@ Expression StatementExpression() :
 }
 
 //}}}
+
+//{{{ SWITCH
 //{{{ SwitchStatement()
 
 SwitchStatement SwitchStatement() :
@@ -4288,7 +4387,19 @@ Expression SwitchLabel() :
   try {
     (
       token = <COLON> 
-    | token = <SEMICOLON> // todo ugly do a warning ;)
+    | token = <SEMICOLON> 
+      {
+        fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                  PHPParseMessageEvent.MESSAGE_CASE_SEMICOLON,
+                                                  path,
+                                                  "a ; was found in a case statement. You should use :",
+                                                  token.sourceStart,
+                                                  token.sourceEnd,
+                                                  token.beginLine,
+                                                  token.endLine,
+                                                  token.beginColumn,
+                                                  token.endColumn));
+      }// todo ugly do a warning ;)
     ) 
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
@@ -4325,6 +4436,8 @@ Expression SwitchLabel() :
 }
 
 //}}}
+//}}}
+
 //{{{ BreakStatement()
 
 Break BreakStatement() :
@@ -4353,21 +4466,6 @@ Break BreakStatement() :
                                           e.currentToken.endColumn+1));
   }
   {return new Break(expression, token.sourceStart, pos,token.beginLine,token.endLine,token.beginColumn,token.endColumn);}
-}
-
-//}}}
-//{{{ IfStatement()
-
-IfStatement IfStatement() :
-{
-  final Expression condition;
-  final IfStatement ifStatement;
-  final Token ifToken;
-}
-{
-  ifToken = <IF> condition = Condition("if")
-  ifStatement = IfStatement0(condition,ifToken.sourceStart,ifToken.sourceEnd)
-  {return ifStatement;}
 }
 
 //}}}
@@ -4410,6 +4508,23 @@ Expression Condition(final String keyword) :
                                           e.currentToken.endColumn+1));
   }
   {return condition;}
+}
+
+//}}}
+
+//{{{ IF
+//{{{ IfStatement()
+
+IfStatement IfStatement() :
+{
+  final Expression condition;
+  final IfStatement ifStatement;
+  final Token ifToken;
+}
+{
+  ifToken = <IF> condition = Condition("if")
+  ifStatement = IfStatement0(condition,ifToken.sourceStart,ifToken.sourceEnd)
+  {return ifStatement;}
 }
 
 //}}}
@@ -4605,6 +4720,9 @@ ElseIf ElseIfStatement() :
 }
 
 //}}}
+//}}}
+
+//{{{ WHILE
 //{{{ WhileStatement()
 
 WhileStatement WhileStatement() :
@@ -4679,6 +4797,8 @@ Statement WhileStatementAction(final int start, final int end) :
 }
 
 //}}}
+//}}}
+
 //{{{ DoStatement()
 
 DoStatement DoStatement() :
@@ -4728,6 +4848,7 @@ DoStatement DoStatement() :
 }
 
 //}}}
+
 //{{{ ForeachStatement()
 
 ForeachStatement ForeachStatement() :
@@ -4967,6 +5088,8 @@ ForeachStatement ForeachStatement() :
 }
 
 //}}}
+
+//{{{ FOR
 //{{{ ForStatement()
 
 /**
@@ -5093,6 +5216,8 @@ Expression[] ForInit() :
 }
 
 //}}}
+//}}}
+
 //{{{ StatementExpressionList()
 
 Expression[] StatementExpressionList() :
@@ -5215,19 +5340,6 @@ ReturnStatement ReturnStatement() :
 
 //}}}
 
-
-Token identifier() :
-{
-  token_source.SwitchTo(PHPParserTokenManager.MODE_IDENTIFIER);
-  Token identifier;
-}
-{
-  identifier = <IDENTIFIER>
-  {
-    token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
-    return identifier;
-  }
-}
 //}}}
 
 //}}}
