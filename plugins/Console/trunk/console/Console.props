@@ -9,19 +9,20 @@ plugin.console.ConsolePlugin.depend.0=jedit 03.02.05.00
 plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.0
 plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.0
 
+console-menu=console - run-last-console-command
+console-menu.label=Console
+console.label=Console
+run-last-console-command.label=Run Last Command
+
 go-to-console.label=Go to Console
 
 ### Console component
 
-console.label=Console
 console.title=Console
 console.run=Run
 console.stop=Stop
 console.toolbar.enabled=false
 
-console.font=Monospaced
-console.fontsize=12
-console.fontstyle=0
 console.bgColor=#ffffff
 console.plainColor=#000000
 console.infoColor=#009600
@@ -32,7 +33,6 @@ console.errorColor=#ff0000
 
 options.console.label=Console
 options.console.toolbar=Console tool bar
-options.console.font=Font:
 options.console.bgColor=Console background:
 options.console.plainColor=Plain text:
 options.console.infoColor=Information messages:
