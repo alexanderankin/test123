@@ -66,11 +66,6 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		run.addActionListener(actionHandler);
 		run.setRequestFocusEnabled(false);
 
-		buttonBox.add(Box.createHorizontalStrut(6));
-		buttonBox.add(stop = new JButton(jEdit.getProperty("console.stop")));
-		stop.setMargin(margin);
-		stop.addActionListener(actionHandler);
-		stop.setRequestFocusEnabled(false);
 		panel.add(BorderLayout.EAST,buttonBox);
 
 		add(BorderLayout.NORTH,panel);
@@ -147,23 +142,15 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		Macros.Recorder recorder = view.getMacroRecorder();
 		if(recorder != null)
 		{
-			recorder.record("view.getDockableWindowManager().addDockableWindow(\""
-				+ getName() + "\");");
-			recorder.record("console = view.getDockableWindowManager().getDockableWindow(\""
-				+ getName() + "\");");
-			recorder.record("console.setShell(\"" + shell.getName() + "\");");
-			recorder.record("console.run(\"" + MiscUtilities.charsToEscapes(cmd) + "\");");
-		}
-
-		if(cmd.trim().equalsIgnoreCase("clear"))
-		{
-			clear();
-			return;
+			recorder.record("runCommandInConsole(view,\""
+				+ shell.getName()
+				+ "\",\""
+				+ MiscUtilities.charsToEscapes(cmd)
+				+ "\")");
 		}
 
 		printInfo("> " + cmd);
 
-		shell.stop();
 		shell.execute(view,cmd,this);
 	}
 
@@ -202,7 +189,7 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 	protected View view;
 	protected JComboBox shellCombo;
 	protected HistoryTextField command;
-	protected JButton run, stop;
+	protected JButton run;
 	protected JTextPane output;
 	protected Shell shell;
 
@@ -286,8 +273,6 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 				command.setText(null);
 				run(cmd);
 			}
-			else if(source == stop)
-				shell.stop();
 		}
 	}
 }

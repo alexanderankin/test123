@@ -32,23 +32,35 @@ class DefaultShell extends Shell
 	{
 		super("Console");
 
-		try
-		{
-			Class[] classes = { String[].class, String[].class, File.class };
-			java13exec = Runtime.class.getMethod("exec",classes);
-		}
-		catch(Exception e)
-		{
-			// do nothing
-		}
-
-		dir = System.getProperty("user.dir");
+		aliases = new Hashtable();
 
 		String osName = System.getProperty("os.name");
-		appendEXE = (osName.indexOf("Windows") != -1 ||
+		dos = (osName.indexOf("Windows") != -1 ||
 			osName.indexOf("OS/2") != -1);
-		if(appendEXE)
-			initTableWinBuiltIns();
+
+		// some built-ins can be invoked without the % prefix
+		aliases.put("cd","%cd");
+		aliases.put("pwd","%pwd");
+		aliases.put("clear","%clear");
+
+		// on Windows, we need a special calling convention to run system
+		// shell built-ins
+		if(dos)
+		{
+			String prefix;
+			if(System.getProperty("os.name").indexOf("Windows 9") != -1)
+				prefix = "command.com /C ";
+			else
+				prefix = "cmd.exe /C ";
+
+			String[] builtins  = { "md", "rd", "del", "dir", "copy",
+				"move", "erase", "mkdir", "rmdir", "start",
+				"path", "ver", "vol", "ren", "type"};
+			for(int i = 0; i < builtins.length; i++)
+			{
+				aliases.put(builtins[i],prefix + builtins[i]);
+			}
+		}
 	}
 
 	public void printInfoMessage(Console console)
@@ -58,8 +70,44 @@ class DefaultShell extends Shell
 
 	public void execute(View view, String command, Console console)
 	{
-		stop();
-		ConsolePlugin.clearErrors();
+		Vector args = parse(command);
+		// will be null if the command is an empty string
+		if(args == null)
+			return;
+
+		args = preprocess(view,args);
+
+		String commandName = (String)args.elementAt(0);
+		if(commandName.charAt(0) == '%')
+		{
+			// a console built-in
+			DefaultShellBuiltIns.executeBuiltIn(view,
+				commandName.substring(1),args,console);
+		}
+		else
+		{
+			// pass it to the process manager
+			// TODO
+		}
+	}
+
+	public synchronized boolean waitFor()
+	{
+		// TODO
+		return true;
+	}
+
+	// private members
+	private static final char dosSlash = 127;
+	private boolean dos;
+	private Hashtable aliases;
+
+	/**
+	 * Convert a command into a vector of arguments.
+	 */
+	private Vector parse(String command)
+	{
+		Vector args = new Vector();
 
 		// We replace \ with a non-printable char because
 		// StreamTokenizer handles \ specially, which causes
@@ -71,9 +119,7 @@ class DefaultShell extends Shell
 
 		// StreamTokenizer needs a way to disable backslash
 		// handling...
-		String rawCommand = command;
-		if(appendEXE)
-			command = rawCommand.replace('\\',winSlash);
+		command = command.replace('\\',dosSlash);
 
 		StreamTokenizer st = new StreamTokenizer(new StringReader(command));
 		st.resetSyntax();
@@ -82,7 +128,6 @@ class DefaultShell extends Shell
 		st.quoteChar('"');
 		st.quoteChar('\'');
 
-		Vector args = new Vector();
 		StringBuffer buf = new StringBuffer();
 
 		try
@@ -96,224 +141,67 @@ loop:			for(;;)
 				case StreamTokenizer.TT_WORD:
 				case '"':
 				case '\'':
-					args.addElement(expandVariables(view,
-						st.sval,buf));
+					args.addElement(st.sval.replace(dosSlash,'\\'));
 					break;
 				}
 			}
 		}
 		catch(IOException io)
 		{
-			String[] pp = { io.getMessage() };
-			console.printError(jEdit.getProperty("console.shell.ioerror",pp));
+			// won't happen
 		}
 
 		if(args.size() == 0)
-		{
-			exitStatus = false;
-			return;
-		}
-
-		String executable = (String)args.elementAt(0);
-		if(executable.equals("pwd"))
-		{
-			if(args.size() != 1)
-			{
-				console.printError(jEdit.getProperty("console.shell.pwd-usage"));
-				exitStatus = false;
-			}
-			else
-			{
-				console.printPlain(dir);
-				exitStatus = true;
-			}
-			return;
-		}
-		else if(executable.equals("cd"))
-		{
-			if(java13exec == null)
-			{
-				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
-				exitStatus = false;
-			}
-			else if(args.size() != 2)
-			{
-				console.printError(jEdit.getProperty("console.shell.cd-usage"));
-				exitStatus = false;
-			}
-			else
-			{
-				String newDir = (String)args.elementAt(1);
-				if(newDir.equals(".."))
-					newDir = MiscUtilities.getParentOfPath(dir);
-				else
-					newDir = MiscUtilities.constructPath(dir,newDir);
-				String[] pp = { newDir };
-				if(new File(newDir).exists())
-				{
-					dir = newDir;
-					console.printPlain(jEdit.getProperty("console.shell.cd",pp));
-					exitStatus = true;
-				}
-				else
-				{
-					console.printError(jEdit.getProperty("console.shell.cd-error",pp));
-					exitStatus = false;
-				}
-			}
-
-			return;
-		}
-		else if(appendEXE && tableWinBuiltIns.contains(executable))
-		{
-			// which command interpreter?
-			if(System.getProperty("os.name").indexOf("Windows 9") != -1)
-				args.insertElementAt("command.com",0);
-			else
-				args.insertElementAt("cmd.exe",0);
-
-			executable = (String)args.elementAt(0);
-
-			args.insertElementAt("/C",1);
-		}
-
-		// Hack to look for executable in current directory
-		String cdPath = dir + System.getProperty("file.separator");
-		if( tryExtensions( cdPath, executable, args, console ) == null )
-		{
-			// Now  try the executable found along the PATH
-			if( tryExtensions( null, executable, args, console ) == null )
-			{
-				exitStatus = false;
-				return;
-			}
-		}
-
-		this.command = rawCommand;
-		this.console = console;
-
-		stdout = new StdoutThread();
-		stderr = new StderrThread();
+			return null;
+		else
+			return args;
 	}
-
-	public synchronized void stop()
-	{
-		if(command != null)
-		{
-			stdout.stop();
-			stderr.stop();
-			process.destroy();
-
-			String[] args = { command };
-			console.printError(jEdit.getProperty("console.shell.killed",args));
-
-			exitStatus = false;
-			commandDone();
-		}
-	}
-
-	public synchronized boolean waitFor()
-	{
-		if(command != null)
-		{
-			try
-			{
-				wait();
-			}
-			catch(InterruptedException ie)
-			{
-				return false;
-			}
-		}
-		return exitStatus;
-	}
-
-	// private members
-	private static final char winSlash = 127;
-
-	private String command;
-	private Console console;
-	private Process process;
-	private Thread stdout;
-	private Thread stderr;
-	private String dir;
-	private Method java13exec;
-	private boolean appendEXE;
-
-	private int threadDoneCount;
-	private boolean exitStatus;
-
-	// used to store built-in commands
-	private Hashtable tableWinBuiltIns;
 
 	/**
-	 Specical processing for some well known Windows file extensions.
+	 * Expand aliases, variables and globs.
 	 */
-	private Process tryExtensions(  String currentDir,
-					String  executable,
-					Vector  args,
-					Console console ) {
-		String[] extensionsToTry;
-		if(appendEXE && executable.indexOf('.') == -1)
-			extensionsToTry = new String[] { ".cmd", ".bat", ".com", ".exe" };
-		else
-			extensionsToTry = new String[] { "" };
+	private Vector preprocess(View view, Vector args)
+	{
+		Vector newArgs = new Vector();
 
-		String[] _args = new String[args.size()];
-		args.copyInto(_args);
-
-		for(int i = 0; i < extensionsToTry.length; i++)
+		// expand aliases
+		String commandName = (String)args.elementAt(0);
+		String expansion = (String)aliases.get(commandName);
+		if(expansion != null)
 		{
-			if( currentDir == null )
+			Vector expansionArgs = parse(expansion);
+			for(int i = 0; i < expansionArgs.size(); i++)
 			{
-				_args[0] = executable + extensionsToTry[i];
-			}
-			else
-			{
-				String exeFullPath = currentDir + executable + extensionsToTry[i];
-				File exeFile = new File( exeFullPath );
-				if( !exeFile.exists() )
-					return null;
-				_args[0] = exeFullPath;
-			}
-
-			try
-			{
-				process = _exec(_args);
-				process.getOutputStream().close();
-				return process;
-			}
-			catch(IOException io)
-			{
-				if(i == extensionsToTry.length - 1)
-				{
-					String[] tt = { io.getMessage() };
-					console.printError(jEdit.getProperty("console.shell.ioerror",tt));
-					exitStatus = false;
-					return null;
-				}
-			}
-			catch(Throwable t)
-			{
-				Log.log(Log.ERROR,this,t);
-				exitStatus = false;
-				return null;
+				expandGlobs(view,newArgs,(String)expansionArgs
+					.elementAt(i));
 			}
 		}
+		else
+			expandGlobs(view,newArgs,commandName);
 
-		return null;
+		// add remaining arguments
+		for(int i = 1; i < args.size(); i++)
+			expandGlobs(view,newArgs,(String)args.elementAt(i));
+
+		return newArgs;
 	}
 
-	private String expandVariables(View view, String arg, StringBuffer buf)
+	private void expandGlobs(View view, Vector args, String arg)
 	{
-		buf.setLength(0);
+		// XXX: to do
+		args.addElement(expandVariables(view,arg));
+	}
+
+	private String expandVariables(View view, String arg)
+	{
+		StringBuffer buf = new StringBuffer();
 
 		for(int i = 0; i < arg.length(); i++)
 		{
 			char c = arg.charAt(i);
 			switch(c)
 			{
-			case winSlash:
+			case dosSlash:
 				buf.append('\\');
 				break;
 			case '$':
@@ -361,20 +249,30 @@ loop:			for(;;)
 				}
 				break;
 			case '~':
-				// insert the home directory if the tilde
-				// is the last character on the line, or if
-				// the character after it is whitespace or
-				// a path separator.
-				if(i == arg.length() - 1)
+				String home = System.getProperty("user.home");
+
+				if(arg.length() == 1)
 				{
-					buf.append(System.getProperty("user.home"));
+					buf.append(home);
 					break;
 				}
-				c = arg.charAt(i + 1);
-				if(c == '/' || c == ' ' || c == File.separatorChar)
+				if(i != 0)
 				{
-					buf.append(System.getProperty("user.home"));
-					break;
+					c = arg.charAt(i - 1);
+					if(c == '/' || c == File.separatorChar)
+					{
+						buf.append(home);
+						break;
+					}
+				}
+				if(i != arg.length() - 1)
+				{
+					c = arg.charAt(i + 1);
+					if(c == '/' || c == File.separatorChar)
+					{
+						buf.append(home);
+						break;
+					}
 				}
 				buf.append('~');
 				break;
@@ -385,174 +283,5 @@ loop:			for(;;)
 		}
 
 		return buf.toString();
-	}
-
-	private void initTableWinBuiltIns()
-	{
-		String [] elems  = { "md", "rd", "del", "dir", "copy",
-					"move", "erase", "mkdir", "rmdir", "start",
-					"path", "ver", "vol", "ren", "type"};
-		this.tableWinBuiltIns = new Hashtable();
-		for( int i = 0; i < elems.length; ++i)
-		{
-			this.tableWinBuiltIns.put(elems[i], elems[i]);
-		}
-	}
-
-	private void parseLine(String line)
-	{
-		if(console == null)
-			return;
-
-		int type = ConsolePlugin.parseLine(line,dir);
-		switch(type)
-		{
-		case ErrorSource.ERROR:
-			console.printError(line);
-			break;
-		case ErrorSource.WARNING:
-			console.printWarning(line);
-			break;
-		default:
-			console.printPlain(line);
-			break;
-		}
-	}
-
-	private synchronized void threadDone()
-	{
-		threadDoneCount++;
-		if(threadDoneCount == 2)
-			commandDone();
-	}
-
-	private synchronized void commandDone()
-	{
-		if(process != null)
-		{
-			int exitCode;
-			try
-			{
-				exitCode = process.waitFor();
-			}
-			catch(InterruptedException e)
-			{
-				Log.log(Log.ERROR,this,"Yo Flav, what is this?");
-				return;
-			}
-
-			Object[] args = { command, new Integer(exitCode) };
-
-			String msg = jEdit.getProperty("console.shell.exited",args);
-			if(exitCode == 0)
-				console.printInfo(msg);
-			else
-				console.printError(msg);
-
-			exitStatus = (exitCode == 0);
-		}
-
-		threadDoneCount = 0;
-
-		command = null;
-		stdout = null;
-		stderr = null;
-		process = null;
-		console = null;
-
-		notify();
-	}
-
-	private Process _exec(String[] args) throws Throwable
-	{
-		if(java13exec != null)
-		{
-			try
-			{
-				Object[] params = { args, null, new File(dir) };
-				return (Process)java13exec.invoke(Runtime.getRuntime(),params);
-			}
-			catch(InvocationTargetException e)
-			{
-				throw e.getTargetException();
-			}
-		}
-		else
-			return Runtime.getRuntime().exec(args);
-	}
-
-	class StdoutThread extends Thread
-	{
-		StdoutThread()
-		{
-			setName(StdoutThread.class + "[" + command + "]");
-			start();
-		}
-
-		public void run()
-		{
-			try
-			{
-				BufferedReader in = new BufferedReader(
-					new InputStreamReader(process
-					.getInputStream()));
-
-				String line;
-				while((line = in.readLine()) != null)
-				{
-					parseLine(line);
-				}
-				in.close();
-			}
-			catch(IOException io)
-			{
-				String[] args = { io.getMessage() };
-				console.printError(jEdit.getProperty("console.shell.ioerror",args));
-			}
-			finally
-			{
-				threadDone();
-			}
-		}
-	}
-
-	class StderrThread extends Thread
-	{
-		StderrThread()
-		{
-			setName(StderrThread.class + "[" + command + "]");
-			start();
-		}
-
-		public void run()
-		{
-			try
-			{
-				// If process exits really fast, it could
-				// be null by now. So check first...
-				if(process == null)
-					return;
-
-				BufferedReader in = new BufferedReader(
-					new InputStreamReader(process
-					.getErrorStream()));
-
-				String line;
-				while((line = in.readLine()) != null)
-				{
-					parseLine(line);
-				}
-				in.close();
-			}
-			catch(IOException io)
-			{
-				String[] args = { io.getMessage() };
-				console.printError(jEdit.getProperty("console.shell.ioerror",args));
-			}
-			finally
-			{
-				threadDone();
-			}
-		}
 	}
 }
