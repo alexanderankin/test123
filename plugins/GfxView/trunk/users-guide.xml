@@ -63,7 +63,7 @@
    <listitem><para>Using <guimenu>Plugin</guimenu>&gt;<guisubmenu>GfxView</guisubmenu> :</para>
     <itemizedlist>
      <listitem><para><guibutton>Display a remote picture</guibutton> which opens a dialog box where you specify a valid URL</para></listitem>
-     <listitem><para><guibutton>Choose from history</guibutton> which shows a liste from you can choose from your previous entries (default : 10)</para></listitem>
+     <listitem><para><guibutton>Choose from history</guibutton> which shows a list from you can choose from your previous entries (default : 10)</para></listitem>
      <listitem><para><guibutton>Display previous from history</guibutton> which allows to step back in history</para></listitem>
      <listitem><para><guibutton>Display next from history</guibutton> which allows to step forward in history</para></listitem>
     </itemizedlist>
