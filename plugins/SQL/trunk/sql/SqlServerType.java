@@ -300,7 +300,7 @@ public class SqlServerType extends Properties
         docBuilder.setEntityResolver( new EResolver() );
       }
 
-      final Document typeDoc = docBuilder.parse( new BufferedInputStream( istream ) );
+      final Document typeDoc = docBuilder.parse( new BufferedInputStream( istream ), "http://www.jedit.org/" );
 
       final Element rootElement = typeDoc.getDocumentElement();
 
