@@ -90,6 +90,16 @@
   </itemizedlist>
 
  </listitem>
+ <listitem><para><emphasis role="bold">Version 0.2</emphasis> requires
+  jEdit 4.1</para>
+
+  <itemizedlist>
+   <listitem><para>Dock auto-hiding is disabled by default.</para></listitem>
+
+   <listitem><para>Auto-hide overrides can now be removed.</para></listitem>
+  </itemizedlist>
+
+ </listitem>
 
  </itemizedlist>
 
