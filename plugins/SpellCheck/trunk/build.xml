@@ -1,19 +1,19 @@
 <?xml version="1.0"?>
 
-<project name="SpellCheck" default="compile" basedir=".">
+<project name="SpellCheck" default="dist" basedir=".">
 
   <!-- ====================== -->
   <!-- Defines some variables -->
   <!-- ====================== -->
   <property name="name" value="SpellCheck"/>
-  <property name="cvs.tag.name" value="spellcheck003"/>
+  <property name="cvs.tag.name" value="spellcheck004"/>
   <property name="src.dir" value="src"/>
   <property name="build.dir" value="build"/>
   <property name="gen.doc.dir" value="${build.dir}/gendoc"/>
   <property name="gen.javadoc.dir" value="${build.dir}/javadoc"/>
   <property name="gen.classes.dir" value="${build.dir}/classes"/>
   <property name="packages" value="cswilly.*"/>
-  <property name="archive.name" value="spellCheck.jar"/>
+  <property name="archive.name" value="SpellCheck.jar"/>
 
   <property name="jedit.jars" value=".." />
   <property name="jedit.home" value="../.." />
@@ -60,8 +60,8 @@
   </target>
 
 
-  <target name="all"
-          depends="compile, javadoc, make.jar"
+  <target name="dist"
+          depends="compile, make.jar"
           description="Creates all generated files." />
 
 
@@ -103,27 +103,27 @@
 
   <target
      name="make.jar.spellPlugin"
-     depends="compile,make.doc"
+     depends="compile"
      description="Creates the jEdit spellcheck plugin jar file."
   >
-     <delete file="${build.dir}/SpellPlugin.jar"
+     <delete file="${jedit.jars}/${archive.name}"
              quiet="YES" />
 
-     <jar jarfile="${build.dir}/SpellPlugin.jar"
+     <jar jarfile="${jedit.jars}/${archive.name}"
         basedir="${build.dir}/classes"
         includes="cswilly/jeditPlugins/spell/**,cswilly/spell/**"
      >
        <fileset dir="src"
-                includes="cswilly/jeditPlugins/spell/**,cswilly/spell/**"  />
+                includes="cswilly/jeditPlugins/spell/**/*.html,cswilly/spell/**/*.html"  />
        <fileset dir="src/cswilly/jeditPlugins/spell"
-                includes="**/*.props,**/*.xml"/>
+                includes="**/*.props,**/*.xml"  />
        <fileset dir="${gen.doc.dir}"
                 includes="*"  />
      </jar>
   </target>
 
   <target name="make.doc"
-          depends="style.help" >
+          depends="javadoc, style.help" >
     <copy file="${basedir}/build.cmd" todir="${gen.doc.dir}"/>
     <copy file="${basedir}/build.cmd" todir="${gen.doc.dir}"/>
 
