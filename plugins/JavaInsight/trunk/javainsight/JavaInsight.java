@@ -297,7 +297,7 @@ public class JavaInsight extends JPanel {
      * <code>Decompiler.altPathSeparatorChar</code> (which is a comma,
      * in fact).
      */
-    private static String getJodeClassPath() {
+    static String getJodeClassPath() {
         //String entries[] = JavaUtils.getClasspath();
         ClasspathEntry[] entries = PackageBrowser.getPackagesAsClasspath();
         StringBuffer classpath = new StringBuffer();
