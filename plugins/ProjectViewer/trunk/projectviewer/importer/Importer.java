@@ -26,7 +26,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 
+import javax.swing.JTree;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 import javax.swing.SwingUtilities;
+import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.jedit.jEdit;
 
@@ -69,6 +73,12 @@ public abstract class Importer implements Runnable {
 	protected VPTProject	project;
 	private	 boolean	noThread;
 
+	/**
+	 *	An action to be executed after the import occurs. It will be executed
+	 *	in the AWT thread.
+	 */
+	protected Runnable		postAction;
+
 	//}}}
 
 	//{{{ Constructors
@@ -89,6 +99,7 @@ public abstract class Importer implements Runnable {
 		}
 		this.viewer = viewer;
 		this.noThread = noThread;
+		this.postAction = null;
 	}
 
 	public Importer(VPTNode node, ProjectViewer viewer) {
@@ -193,7 +204,7 @@ public abstract class Importer implements Runnable {
 		VPTNode where = project;
 		while (!dirs.isEmpty()) {
 			File curr = (File) dirs.pop();
-			VPTNode n = findDirectory(curr, project, false);
+			VPTNode n = findDirectory(curr, where, false);
 			if (n == null) {
 				n = new VPTDirectory(curr);
 				if (where == project) {
@@ -245,7 +256,8 @@ public abstract class Importer implements Runnable {
 						SwingUtilities.invokeAndWait(new Runnable() {
 							public void run() {
 								for (Iterator i = c.iterator(); i.hasNext(); ) {
-									importNode((VPTNode)i.next());
+									VPTNode n = (VPTNode) i.next();
+									importNode(n);
 								}
 								ProjectViewer.nodeStructureChangedFlat(project);
 							}
@@ -281,6 +293,29 @@ public abstract class Importer implements Runnable {
 				}
 			}
 		}
+		if (postAction != null)
+			SwingUtilities.invokeLater(postAction);
+	} //}}}
+
+	//{{{ ShowNode class
+	/** Makes sure a node is visible. */
+	protected class ShowNode implements Runnable {
+
+		private VPTNode toShow;
+
+		public ShowNode(VPTNode toShow) {
+			this.toShow = toShow;
+		}
+
+		public void run() {
+			JTree tree = viewer.getCurrentTree();
+			if (tree != null) {
+				DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+				TreeNode[] nodes = tModel.getPathToRoot(toShow);
+				tree.makeVisible(new TreePath(nodes));
+			}
+		}
+
 	} //}}}
 
 }
