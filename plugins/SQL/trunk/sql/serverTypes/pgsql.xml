@@ -6,6 +6,10 @@
 
   <driverClass>org.postgresql.Driver</driverClass>
 
+  <vfs>
+    <driverClass>sql.serverTypes.PostgresVFS</driverClass>
+  </vfs>
+  
   <connection>
     <parameter name="host" default="127.0.0.1"/>
     <parameter name="port" default="5432"/>
@@ -16,14 +20,33 @@
     <string>jdbc:postgresql://{host}:{port}/{dbName}{extra}</string>
   </connection>
   <statements>
-    <statement purpose="selectTableGroups">
-      SELECT DISTINCT tableowner
+    <statement purpose="selectSchemas">
+      SELECT DISTINCT schemaname
       FROM pg_tables
     </statement>
-    <statement purpose="selectTablesInGroup">
+    <statement purpose="selectTablesInSchema">
       SELECT tablename
       FROM pg_tables
-      WHERE tableowner = ?
+      WHERE schemaname = ?
+    </statement>
+    <statement purpose="selectViewsInSchema">
+      SELECT viewname
+      FROM pg_views
+      WHERE schemaname = ?
+    </statement>
+    <statement purpose="selectCodeObjectsInSchema">
+      SELECT proname
+      FROM pg_proc p, pg_namespace n
+      WHERE p.pronamespace = n.oid
+      AND nspname = ?
+    </statement>
+    <statement purpose="selectStoredProcedureCode">
+      SELECT prosrc as PROC_TEXT, lanname as PROC_LANG
+      FROM pg_proc p, pg_namespace n, pg_language l
+      WHERE p.pronamespace = n.oid
+      AND p.prolang=l.oid
+      AND nspname = ?
+      AND proname = ?
     </statement>
   </statements>
 
