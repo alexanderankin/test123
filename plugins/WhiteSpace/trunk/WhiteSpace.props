@@ -1,10 +1,10 @@
 plugin.whitespace.WhiteSpacePlugin.name=WhiteSpace
 plugin.whitespace.WhiteSpacePlugin.author=André Kaplan
-plugin.whitespace.WhiteSpacePlugin.version=0.9
+plugin.whitespace.WhiteSpacePlugin.version=0.9.1
 plugin.whitespace.WhiteSpacePlugin.docs=users-guide.html
 
-plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.1
-plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 03.02.99.02
+plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.2
+plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 04.00.04.00
 
 white-space-menu.label=WhiteSpace
 white-space-menu=\
