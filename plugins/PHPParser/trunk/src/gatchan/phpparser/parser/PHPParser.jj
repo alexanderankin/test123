@@ -6160,16 +6160,19 @@ ForeachStatement ForeachStatement() :
  */
 ForStatement ForStatement() :
 {
-final Token token,tokenEndFor,token2,tokenColon;
-int pos;
-Expression[] initializations = null;
-Expression condition = null;
-Expression[] increments = null;
-Statement action;
-final ArrayList list = new ArrayList();
+  final Token forToken,tokenEndFor,token2,tokenColon;
+  int pos;
+  Expression[] initializations = null;
+  Expression condition = null;
+  Expression[] increments = null;
+  Statement action;
+  final ArrayList list = new ArrayList();
+  int end       = 0;
+  int endLine   = 0;
+  int endColumn = 0;
 }
 {
-  token = <FOR>
+  forToken = <FOR>
   try {
     <LPAREN>
   } catch (ParseException e) {
@@ -6178,8 +6181,8 @@ final ArrayList list = new ArrayList();
                                           "'(' expected",
                                           "(",
                                           e.currentToken.image,
-                                          token.sourceEnd,
-                                          token.sourceEnd+1,
+                                          forToken.sourceEnd,
+                                          forToken.sourceEnd+1,
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
@@ -6190,15 +6193,30 @@ final ArrayList list = new ArrayList();
      [ increments = StatementExpressionList() ] <RPAREN>
     (
       action = Statement()
-      {return new ForStatement(initializations,
-                               condition,
-                               increments,
-                               action,
-                               token.sourceStart,
-                               action.sourceEnd);}
+      {
+        return new ForStatement(initializations,
+                                condition,
+                                increments,
+                                action,
+                                forToken.sourceStart,
+                                action.getSourceEnd(),
+                                forToken.beginLine,
+                                action.getEndLine(),
+                                forToken.beginColumn,
+                                action.getEndColumn());
+      }
     |
-      tokenColon = <COLON> {pos = tokenColon.sourceEnd+1;}
-      (action = Statement() {list.add(action);pos = action.sourceEnd+1;})*
+      tokenColon = <COLON> 
+      {
+        pos = tokenColon.sourceEnd+1;
+      }
+      (
+        action = Statement() 
+        {
+          list.add(action);
+          pos = action.sourceEnd+1;
+        }
+      )*
       {
         fireParseMessage(new PHPParseMessageEvent(INFO,
                                                   PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
@@ -6213,7 +6231,9 @@ final ArrayList list = new ArrayList();
       }
       try {
         tokenEndFor = <ENDFOR>
-        {pos = tokenEndFor.sourceEnd+1;}
+        {
+          pos = tokenEndFor.sourceEnd+1;
+        }
       } catch (ParseException e) {
         fireParseError(new PHPParseErrorEvent(ERROR,
                                               path,
@@ -6229,8 +6249,16 @@ final ArrayList list = new ArrayList();
       }
       try {
         token2 = <SEMICOLON>
-        {pos = token2.sourceEnd+1;}
+        {
+          pos = token2.sourceEnd+1;
+          end       = token2.sourceEnd;
+          endLine   = token2.endLine;
+          endColumn = token2.endColumn;
+        }
       } catch (ParseException e) {
+        end       = e.currentToken.sourceEnd;
+        endLine   = e.currentToken.endLine;
+        endColumn = e.currentToken.endColumn;
         fireParseError(new PHPParseErrorEvent(ERROR,
                                               path,
                                               "';' expected",
@@ -6244,20 +6272,25 @@ final ArrayList list = new ArrayList();
                                               e.currentToken.endColumn+1));
       }
       {
-      final Statement[] stmtsArray = new Statement[list.size()];
-      list.toArray(stmtsArray);
-      return new ForStatement(initializations,
-                              condition,
-                              increments,
-                              new Block(stmtsArray,
-                                        stmtsArray[0].sourceStart,
-                                        stmtsArray[stmtsArray.length-1].sourceEnd,
-                                        stmtsArray[0].getBeginLine(),
-                                        stmtsArray[stmtsArray.length-1].getEndLine(),
-                                        stmtsArray[0].getBeginColumn(),
-                                        stmtsArray[stmtsArray.length-1].getEndColumn()),
-                              token.sourceStart,
-                              pos);}
+        final Statement[] stmtsArray = new Statement[list.size()];
+        list.toArray(stmtsArray);
+        return new ForStatement(initializations,
+                                condition,
+                                increments,
+                                new Block(stmtsArray,
+                                          stmtsArray[0].sourceStart,
+                                          stmtsArray[stmtsArray.length-1].sourceEnd,
+                                          stmtsArray[0].getBeginLine(),
+                                          stmtsArray[stmtsArray.length-1].getEndLine(),
+                                          stmtsArray[0].getBeginColumn(),
+                                          stmtsArray[stmtsArray.length-1].getEndColumn()),
+                                forToken.sourceStart,
+                                end,
+                                forToken.beginLine,
+                                endLine,
+                                forToken.beginColumn,
+                                endColumn);
+      }
     )
 }
 

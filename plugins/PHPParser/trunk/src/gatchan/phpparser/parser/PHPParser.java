@@ -8546,14 +8546,17 @@ Token token;
  * @return a node representing the for statement
  */
   final public ForStatement ForStatement() throws ParseException {
-final Token token,tokenEndFor,token2,tokenColon;
-int pos;
-Expression[] initializations = null;
-Expression condition = null;
-Expression[] increments = null;
-Statement action;
-final ArrayList list = new ArrayList();
-    token = jj_consume_token(FOR);
+  final Token forToken,tokenEndFor,token2,tokenColon;
+  int pos;
+  Expression[] initializations = null;
+  Expression condition = null;
+  Expression[] increments = null;
+  Statement action;
+  final ArrayList list = new ArrayList();
+  int end       = 0;
+  int endLine   = 0;
+  int endColumn = 0;
+    forToken = jj_consume_token(FOR);
     try {
       jj_consume_token(LPAREN);
     } catch (ParseException e) {
@@ -8562,8 +8565,8 @@ final ArrayList list = new ArrayList();
                                           "'(' expected",
                                           "(",
                                           e.currentToken.image,
-                                          token.sourceEnd,
-                                          token.sourceEnd+1,
+                                          forToken.sourceEnd,
+                                          forToken.sourceEnd+1,
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
@@ -8767,16 +8770,23 @@ final ArrayList list = new ArrayList();
     case LBRACE:
     case SEMICOLON:
       action = Statement();
-       {if (true) return new ForStatement(initializations,
-                               condition,
-                               increments,
-                               action,
-                               token.sourceStart,
-                               action.sourceEnd);}
+        {if (true) return new ForStatement(initializations,
+                                condition,
+                                increments,
+                                action,
+                                forToken.sourceStart,
+                                action.getSourceEnd(),
+                                forToken.beginLine,
+                                action.getEndLine(),
+                                forToken.beginColumn,
+                                action.getEndColumn());}
       break;
     case COLON:
       tokenColon = jj_consume_token(COLON);
-                            pos = tokenColon.sourceEnd+1;
+        pos = tokenColon.sourceEnd+1;
+        end       = tokenColon.sourceEnd;
+        endLine   = tokenColon.endLine;
+        endColumn = tokenColon.endColumn;
       label_42:
       while (true) {
         switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -8842,7 +8852,11 @@ final ArrayList list = new ArrayList();
           break label_42;
         }
         action = Statement();
-                             list.add(action);pos = action.sourceEnd+1;
+          list.add(action);
+          pos = action.sourceEnd+1;
+          end       = action.getSourceEnd();
+          endLine   = action.getEndLine();
+          endColumn = action.getEndColumn();
       }
         fireParseMessage(new PHPParseMessageEvent(INFO,
                                                   PHPParseMessageEvent.MESSAGE_FOR_ENDFOR_TAG,
@@ -8856,8 +8870,14 @@ final ArrayList list = new ArrayList();
                                                   tokenColon.endColumn));
       try {
         tokenEndFor = jj_consume_token(ENDFOR);
-         pos = tokenEndFor.sourceEnd+1;
+          pos = tokenEndFor.sourceEnd+1;
+          end       = tokenEndFor.sourceEnd;
+          endLine   = tokenEndFor.endLine;
+          endColumn = tokenEndFor.endColumn;
       } catch (ParseException e) {
+        end       = e.currentToken.sourceEnd;
+        endLine   = e.currentToken.endLine;
+        endColumn = e.currentToken.endColumn;
         fireParseError(new PHPParseErrorEvent(ERROR,
                                               path,
                                               "'endfor' expected",
@@ -8872,8 +8892,14 @@ final ArrayList list = new ArrayList();
       }
       try {
         token2 = jj_consume_token(SEMICOLON);
-         pos = token2.sourceEnd+1;
+          pos = token2.sourceEnd+1;
+          end       = token2.sourceEnd;
+          endLine   = token2.endLine;
+          endColumn = token2.endColumn;
       } catch (ParseException e) {
+        end       = e.currentToken.sourceEnd;
+        endLine   = e.currentToken.endLine;
+        endColumn = e.currentToken.endColumn;
         fireParseError(new PHPParseErrorEvent(ERROR,
                                               path,
                                               "';' expected",
@@ -8886,20 +8912,24 @@ final ArrayList list = new ArrayList();
                                               e.currentToken.endColumn,
                                               e.currentToken.endColumn+1));
       }
-      final Statement[] stmtsArray = new Statement[list.size()];
-      list.toArray(stmtsArray);
-      {if (true) return new ForStatement(initializations,
-                              condition,
-                              increments,
-                              new Block(stmtsArray,
-                                        stmtsArray[0].sourceStart,
-                                        stmtsArray[stmtsArray.length-1].sourceEnd,
-                                        stmtsArray[0].getBeginLine(),
-                                        stmtsArray[stmtsArray.length-1].getEndLine(),
-                                        stmtsArray[0].getBeginColumn(),
-                                        stmtsArray[stmtsArray.length-1].getEndColumn()),
-                              token.sourceStart,
-                              pos);}
+        final Statement[] stmtsArray = new Statement[list.size()];
+        list.toArray(stmtsArray);
+        {if (true) return new ForStatement(initializations,
+                                condition,
+                                increments,
+                                new Block(stmtsArray,
+                                          stmtsArray[0].sourceStart,
+                                          stmtsArray[stmtsArray.length-1].sourceEnd,
+                                          stmtsArray[0].getBeginLine(),
+                                          stmtsArray[stmtsArray.length-1].getEndLine(),
+                                          stmtsArray[0].getBeginColumn(),
+                                          stmtsArray[stmtsArray.length-1].getEndColumn()),
+                                forToken.sourceStart,
+                                end,
+                                forToken.beginLine,
+                                endLine,
+                                forToken.beginColumn,
+                                endColumn);}
       break;
     default:
       jj_la1[146] = jj_gen;
@@ -9934,6 +9964,11 @@ final ArrayList list = new ArrayList();
     return false;
   }
 
+  final private boolean jj_3_6() {
+    if (jj_3R_50()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_199() {
     if (jj_scan_token(MINUS)) return true;
     if (jj_3R_188()) return true;
@@ -10053,11 +10088,6 @@ final ArrayList list = new ArrayList();
     xsp = jj_scanpos;
     if (jj_3R_165()) jj_scanpos = xsp;
     if (jj_scan_token(RBRACE)) return true;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_3R_50()) return true;
     return false;
   }
 

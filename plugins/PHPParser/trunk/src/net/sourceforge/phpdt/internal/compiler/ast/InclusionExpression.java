@@ -17,27 +17,6 @@ public final class InclusionExpression extends Expression implements Outlineable
 
   private transient final Object parent;
 
-  /**
-   * @deprecated 
-   * @param parent
-   * @param keyword
-   * @param expression
-   * @param sourceStart
-   * @param sourceEnd
-   */
-  public InclusionExpression(Object parent,
-                             int keyword,
-                             Expression expression,
-                             int sourceStart,
-                             int sourceEnd) {
-    this(parent, keyword, expression, sourceStart,
-          sourceEnd,
-          expression.getBeginLine(),
-          expression.getEndLine(),
-          expression.getBeginColumn(),
-          expression.getEndColumn());
-  }
-
   public InclusionExpression(Object parent,
                              int keyword,
                              Expression expression,

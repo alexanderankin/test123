@@ -38,20 +38,6 @@ public final class StringLiteral extends Literal {
     return source;
   }
 
-  /**
-   * @deprecated - use field instead
-   */
-  public int sourceEnd() {
-    return sourceEnd;
-  }
-
-  /**
-   * @deprecated - use field instead
-   */
-  public int sourceStart() {
-    return sourceStart;
-  }
-
   public void getUsedVariable(final List list) {
     if (variablesInside != null) {
       for (int i = 0; i < variablesInside.length; i++) {
