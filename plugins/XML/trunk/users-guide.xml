@@ -270,12 +270,9 @@
  </para>
 
  <para>
-  Just as with the <guimenuitem>XML Insert</guimenuitem> window,
-  the <guimenuitem>XML Tree</guimenuitem> window must be open
-  for tag and entity completion to work with XML files, but for HTML
-  files, the <guimenuitem>XML Tree</guimenuitem> window need not be
-  open and the list of elements and entities is stored in the XML plugin
-  itself.
+  An element or entity completion popup can also be shown by invoking the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Complete
+  Element or Entity</guimenuitem> command.
  </para>
 
  <para>
@@ -467,6 +464,8 @@
   jEdit 4.0pre7 and the ErrorList plugin 1.2.</para>
 
   <itemizedlist>
+   <listitem><para><guimenuitem>Complete Element or Entity</guimenuitem> command
+   lets you show a completion popup at any time.</para></listitem>
    <listitem><para><guimenuitem>Split Tag</guimenuitem> command
    (Chris Stevenson).</para></listitem>
    <listitem><para>Updated XSD completion info (Tom Gutwin).</para></listitem>

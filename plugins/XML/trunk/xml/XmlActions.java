@@ -595,8 +595,7 @@ public class XmlActions
 	} //}}}
 
 	//{{{ completeKeyTyped() method
-	public static void completeKeyTyped(final View view,
-		final int mode, char ch)
+	public static void completeKeyTyped(final View view, char ch)
 	{
 		EditPane editPane = view.getEditPane();
 		final JEditTextArea textArea = view.getTextArea();
@@ -629,7 +628,7 @@ public class XmlActions
 			public void actionPerformed(ActionEvent evt)
 			{
 				if(caret == textArea.getCaretPosition())
-					complete(view,mode);
+					complete(view);
 			}
 		});
 
@@ -639,7 +638,7 @@ public class XmlActions
 	} //}}}
 
 	//{{{ complete() method
-	public static void complete(View view, int mode)
+	public static void complete(View view)
 	{
 		EditPane editPane = view.getEditPane();
 		JEditTextArea textArea = editPane.getTextArea();
@@ -660,6 +659,7 @@ public class XmlActions
 			return;
 		}
 
+		int mode = -1;
 		int wordStart = -1;
 		for(int i = dot - 1; i >= 0; i--)
 		{
@@ -667,11 +667,12 @@ public class XmlActions
 			if(ch == '<' || ch == '&')
 			{
 				wordStart = i;
+				mode = (ch == '<' ? ELEMENT_COMPLETE : ENTITY_COMPLETE);
 				break;
 			}
 		}
 
-		if(wordStart == -1)
+		if(wordStart == -1 || mode == -1)
 		{
 			view.getToolkit().beep();
 			return;
