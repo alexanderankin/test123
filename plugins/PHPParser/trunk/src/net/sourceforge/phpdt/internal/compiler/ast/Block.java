@@ -3,49 +3,35 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 /**
- * A Block.
- * {
- * statements
- * }.
+ * A Block. { statements }.
+ *
  * @author Matthieu Casanova
  */
 public final class Block extends Statement {
-
   /** An array of statements inside the block. */
   public final Statement[] statements;
 
   /**
-   * @deprecated todo virer ca
    * Create a block.
-   * @param statements the statements
+   *
+   * @param statements  the statements
    * @param sourceStart starting offset
-   * @param sourceEnd ending offset
+   * @param sourceEnd   ending offset
    */
-  public Block(final Statement[] statements,
-               final int sourceStart,
-               final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+  public Block(Statement[] statements,
+               int sourceStart,
+               int sourceEnd,
+               int beginLine,
+               int endLine,
+               int beginColumn,
+               int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.statements = statements;
   }
 
-    /**
-   * Create a block.
-   * @param statements the statements
-   * @param sourceStart starting offset
-   * @param sourceEnd ending offset
-   */
-  public Block(final Statement[] statements,
-               final int sourceStart,
-               final int sourceEnd,
-                    final int beginLine,
-                    final int endLine,
-                    final int beginColumn,
-                    final int endColumn) {
-    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
-    this.statements = statements;
-  }
   /**
    * tell if the block is empty.
+   *
    * @return the block is empty if there are no statements in it
    */
   public boolean isEmptyBlock() {
@@ -54,10 +40,12 @@ public final class Block extends Statement {
 
   /**
    * Return the block as String.
+   *
    * @param tab how many tabs
+   *
    * @return the string representation of the block
    */
-  public String toString(final int tab) {
+  public String toString(int tab) {
     final String s = AstNode.tabString(tab);
     final StringBuffer buff = new StringBuffer(s);
     buff.append("{\n"); //$NON-NLS-1$
@@ -75,7 +63,7 @@ public final class Block extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getOutsideVariable(list);
     }
@@ -86,7 +74,7 @@ public final class Block extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getModifiedVariable(list);
     }
@@ -97,7 +85,7 @@ public final class Block extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     for (int i = 0; i < statements.length; i++) {
       statements[i].getUsedVariable(list);
     }

@@ -162,7 +162,7 @@ public final class PHPParser implements PHPParserConstants {
   public final void phpParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      jj_input_stream = new JavaCharStream(stream, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
     ReInit(new StringReader(strEval));
@@ -180,7 +180,7 @@ public final class PHPParser implements PHPParserConstants {
   public final void htmlParserTester(final File fileName) throws FileNotFoundException, ParseException {
     final Reader stream = new FileReader(fileName);
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      jj_input_stream = new JavaCharStream(stream, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
     ReInit(stream);
@@ -197,7 +197,7 @@ public final class PHPParser implements PHPParserConstants {
   public final void htmlParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      jj_input_stream = new JavaCharStream(stream, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
     ReInit(stream);
@@ -257,7 +257,7 @@ public final class PHPParser implements PHPParserConstants {
     phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(reader, 1, 1);
+      jj_input_stream = new JavaCharStream(reader, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
     ReInit(reader);
@@ -7941,8 +7941,8 @@ Token token;
   final Token whileToken;
     whileToken = jj_consume_token(WHILE);
     condition = Condition("while");
-    action = WhileStatementAction(whileToken.sourceStart,whileToken.sourceEnd);
-     {if (true) return new WhileStatement(condition,
+    action = WhileStatementAction(whileToken);
+      {if (true) return new WhileStatement(condition,
                                action,
                                whileToken.sourceStart,
                                action.sourceEnd,
@@ -7954,12 +7954,15 @@ Token token;
   }
 
 //}}}
-//{{{ WhileStatementAction(final int start, final int end)
-  final public Statement WhileStatementAction(final int start, final int end) throws ParseException {
+//{{{ WhileStatementAction(Token whileToken)
+  final public Statement WhileStatementAction(Token whileToken) throws ParseException {
   Statement statement;
   final ArrayList stmts = new ArrayList();
-  final int pos = jj_input_stream.getPosition();
   final Token colonToken;
+  int end       = 0;
+  int endLine   = 0;
+  int endColumn = 0;
+  Token semicolonToken;
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case COLON:
       colonToken = jj_consume_token(COLON);
@@ -8028,18 +8031,18 @@ Token token;
           break label_40;
         }
         statement = Statement();
-                                                 stmts.add(statement);
+      stmts.add(statement);
       }
-        fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                  PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
-                                                  path,
-                                                  "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
-                                                  start,
-                                                  end,
-                                                  colonToken.beginLine,
-                                                  colonToken.endLine,
-                                                  colonToken.beginColumn,
-                                                  colonToken.endColumn));
+    fireParseMessage(new PHPParseMessageEvent(INFO,
+                                              PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
+                                              path,
+                                              "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
+                                              colonToken.sourceStart,
+                                              colonToken.sourceEnd,
+                                              colonToken.beginLine,
+                                              colonToken.endLine,
+                                              colonToken.beginColumn,
+                                              colonToken.endColumn));
       try {
         jj_consume_token(ENDWHILE);
       } catch (ParseException e) {
@@ -8050,10 +8053,19 @@ Token token;
     {if (true) throw e;}
       }
       try {
-        jj_consume_token(SEMICOLON);
-    final Statement[] stmtsArray = new Statement[stmts.size()];
-    stmts.toArray(stmtsArray);
-    {if (true) return new Block(stmtsArray,pos,jj_input_stream.getPosition());}
+        semicolonToken = jj_consume_token(SEMICOLON);
+      end       = semicolonToken.sourceEnd;
+      endLine   = semicolonToken.beginLine;
+      endColumn = semicolonToken.beginColumn;
+      final Statement[] stmtsArray = new Statement[stmts.size()];
+      stmts.toArray(stmtsArray);
+      {if (true) return new Block(stmtsArray,
+                       whileToken.sourceStart,
+                       end,
+                       whileToken.beginLine,
+                       endLine,
+                       whileToken.beginColumn,
+                       endColumn);}
       } catch (ParseException e) {
     errorMessage = "';' expected after 'endwhile' keyword";
     errorLevel   = ERROR;
@@ -8118,7 +8130,7 @@ Token token;
     case LBRACE:
     case SEMICOLON:
       statement = Statement();
-   {if (true) return statement;}
+    {if (true) return statement;}
       break;
     default:
       jj_la1[139] = jj_gen;
@@ -10044,6 +10056,11 @@ final ArrayList list = new ArrayList();
     return false;
   }
 
+  final private boolean jj_3_6() {
+    if (jj_3R_50()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_137() {
     Token xsp;
     xsp = jj_scanpos;
@@ -10129,11 +10146,6 @@ final ArrayList list = new ArrayList();
   final private boolean jj_3R_132() {
     if (jj_scan_token(DOT)) return true;
     if (jj_3R_119()) return true;
-    return false;
-  }
-
-  final private boolean jj_3_6() {
-    if (jj_3R_50()) return true;
     return false;
   }
 
@@ -10685,7 +10697,7 @@ final ArrayList list = new ArrayList();
   }
 
   public PHPParserTokenManager token_source;
-  SimpleCharStream jj_input_stream;
+  JavaCharStream jj_input_stream;
   public Token token, jj_nt;
   private int jj_ntk;
   private Token jj_scanpos, jj_lastpos;
@@ -10726,7 +10738,7 @@ final ArrayList list = new ArrayList();
   private int jj_gc = 0;
 
   public PHPParser(java.io.InputStream stream) {
-    jj_input_stream = new SimpleCharStream(stream, 1, 1);
+    jj_input_stream = new JavaCharStream(stream, 1, 1);
     token_source = new PHPParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;
@@ -10746,7 +10758,7 @@ final ArrayList list = new ArrayList();
   }
 
   public PHPParser(java.io.Reader stream) {
-    jj_input_stream = new SimpleCharStream(stream, 1, 1);
+    jj_input_stream = new JavaCharStream(stream, 1, 1);
     token_source = new PHPParserTokenManager(jj_input_stream);
     token = new Token();
     jj_ntk = -1;

@@ -8,7 +8,7 @@ options {
   DEBUG_TOKEN_MANAGER = false;
   OPTIMIZE_TOKEN_MANAGER = false;
   ERROR_REPORTING = true;
-  JAVA_UNICODE_ESCAPE = false;
+  JAVA_UNICODE_ESCAPE = true;
   UNICODE_INPUT = false;
   IGNORE_CASE = true;
   USER_TOKEN_MANAGER = false;
@@ -184,7 +184,7 @@ public final class PHPParser {
   public final void phpParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      jj_input_stream = new JavaCharStream(stream, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
     ReInit(new StringReader(strEval));
@@ -202,7 +202,7 @@ public final class PHPParser {
   public final void htmlParserTester(final File fileName) throws FileNotFoundException, ParseException {
     final Reader stream = new FileReader(fileName);
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      jj_input_stream = new JavaCharStream(stream, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
     ReInit(stream);
@@ -219,7 +219,7 @@ public final class PHPParser {
   public final void htmlParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(stream, 1, 1);
+      jj_input_stream = new JavaCharStream(stream, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
     ReInit(stream);
@@ -279,7 +279,7 @@ public final class PHPParser {
     phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
     if (jj_input_stream == null) {
-      jj_input_stream = new SimpleCharStream(reader, 1, 1);
+      jj_input_stream = new JavaCharStream(reader, 1, 1);
       token_source = new PHPParserTokenManager(jj_input_stream);
     }
     ReInit(reader);
@@ -5773,40 +5773,51 @@ WhileStatement WhileStatement() :
 {
   whileToken = <WHILE>
     condition = Condition("while")
-    action    = WhileStatementAction(whileToken.sourceStart,whileToken.sourceEnd)
-    {return new WhileStatement(condition,
+    action    = WhileStatementAction(whileToken)
+    {
+      return new WhileStatement(condition,
                                action,
                                whileToken.sourceStart,
                                action.sourceEnd,
                                whileToken.beginLine,
                                action.getEndLine(),
                                whileToken.beginColumn,
-                               action.getEndColumn());}
+                               action.getEndColumn());
+    }
 }
 
 //}}}
-//{{{ WhileStatementAction(final int start, final int end)
+//{{{ WhileStatementAction(Token whileToken)
 
-Statement WhileStatementAction(final int start, final int end) :
+Statement WhileStatementAction(Token whileToken) :
 {
   Statement statement;
   final ArrayList stmts = new ArrayList();
-  final int pos = jj_input_stream.getPosition();
   final Token colonToken;
+  int end       = 0;
+  int endLine   = 0;
+  int endColumn = 0;
+  Token semicolonToken;
 }
 {
-  colonToken = <COLON> (statement = Statement() {stmts.add(statement);})*
+  colonToken = <COLON> 
+  (
+    statement = Statement() 
+    {
+      stmts.add(statement);
+    }
+  )*
   {
-        fireParseMessage(new PHPParseMessageEvent(INFO,
-                                                  PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
-                                                  path,
-                                                  "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
-                                                  start,
-                                                  end,
-                                                  colonToken.beginLine,
-                                                  colonToken.endLine,
-                                                  colonToken.beginColumn,
-                                                  colonToken.endColumn));
+    fireParseMessage(new PHPParseMessageEvent(INFO,
+                                              PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
+                                              path,
+                                              "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
+                                              colonToken.sourceStart,
+                                              colonToken.sourceEnd,
+                                              colonToken.beginLine,
+                                              colonToken.endLine,
+                                              colonToken.beginColumn,
+                                              colonToken.endColumn));
   }
   try {
     <ENDWHILE>
@@ -5818,11 +5829,21 @@ Statement WhileStatementAction(final int start, final int end) :
     throw e;
   }
   try {
-    <SEMICOLON>
+    semicolonToken = <SEMICOLON>
     {
-    final Statement[] stmtsArray = new Statement[stmts.size()];
-    stmts.toArray(stmtsArray);
-    return new Block(stmtsArray,pos,jj_input_stream.getPosition());}
+      end       = semicolonToken.sourceEnd;
+      endLine   = semicolonToken.beginLine;
+      endColumn = semicolonToken.beginColumn;
+      final Statement[] stmtsArray = new Statement[stmts.size()];
+      stmts.toArray(stmtsArray);
+      return new Block(stmtsArray,
+                       whileToken.sourceStart,
+                       end,
+                       whileToken.beginLine,
+                       endLine,
+                       whileToken.beginColumn,
+                       endColumn);
+    }
   } catch (ParseException e) {
     errorMessage = "';' expected after 'endwhile' keyword";
     errorLevel   = ERROR;
@@ -5832,7 +5853,9 @@ Statement WhileStatementAction(final int start, final int end) :
   }
 |
   statement = Statement()
-  {return statement;}
+  {
+    return statement;
+  }
 }
 
 //}}}
