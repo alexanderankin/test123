@@ -234,7 +234,7 @@ class SAXParserImpl implements XmlParser.Impl
 				int line = Math.min(buffer.getLineCount() - 1,
 					loc.getLineNumber() - 1);
 				int column = loc.getColumnNumber() - 1;
-				int offset = Math.min(buffer.getLength() - 1,
+				int offset = Math.min(text.length() - 1,
 					buffer.getLineStartOffset(line)
 					+ column - 1);
 
