@@ -45,7 +45,9 @@ import projectviewer.config.ProjectViewerConfig;
  *
  * @version    $Id$
  */
-public final class ProjectViewer extends JPanel implements EBComponent,Runnable,PropertyChangeListener {
+public final class ProjectViewer extends JPanel 
+								 implements EBComponent, Runnable, PropertyChangeListener {
+									 
 	//{{{ Constants
 	public final static String CREATE_NEW_PROJECT = "Create new project ...";
 	public final static String ALL_PROJECTS = "All projects";
@@ -65,9 +67,18 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 
 	/** The "main" viewer. Actually, the first instance to be created. */
 	private static ProjectViewer mainViewer;
+	
+	/** Maps jEdit views to ProjectViewer instances. */
+	private static final Hashtable viewers = new Hashtable();
 
-	private static View view;
-
+	/**
+	 *	Returns the ProjectViewer instance associated with the provided view,
+	 *	if any; else, returns null.
+	 */
+	public static ProjectViewer getProjectViewer(View view) {
+		return (ProjectViewer) viewers.get(view);
+	}
+	
 	//}}}
 
 	//{{{ Private / Protected variables
@@ -75,7 +86,6 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	RolloverButton removeAllFilesBtn;
 	RolloverButton createProjectBtn;
 	RolloverButton addFileBtn;
-	RolloverButton importFilesBtn;
 	RolloverButton openAllBtn;
 	RolloverButton expandBtn;
 	RolloverButton contractBtn;
@@ -93,8 +103,8 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	private List projectListeners;
 
 	private JComboBox projectCombo;
-	private JLabel status = new JLabel(" ");
 
+	private View view;
 	private ViewerListener vsl;
 	private ProjectTreeSelectionListener tsl;
 	private TreeContextMenuListener cml;
@@ -110,7 +120,6 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	 * @param  aView  Description of Parameter
 	 */
 	public ProjectViewer(View aView) {
-		Log.log(Log.DEBUG, this, "New ProjectViewer instance!");
 		allProjectsLoaded = false;
 		view = aView;
 		launcher = new Launcher(view, this);
@@ -121,20 +130,18 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		projectListeners = new ArrayList();
 		loadGUI();
 		enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
-
-		view.addWindowListener(vsl);
-
 		config.addPropertyChangeListener(this);
 
 		if(mainViewer == null) {
 			mainViewer = this;
 			setCurrentProject(getLastProject());
-		}
-		else {
+		} else {
 			setCurrentProject(mainViewer.getCurrentProject());
 		}
 		
 		tsl.stateChanged(null);
+		EditBus.addToBus(this);
+		viewers.put(view,this);
 	}//}}}
 
 	//{{{ getMainViewer() method
@@ -151,7 +158,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	 *
 	 * @return    The view value
 	 */
-	public static View getView() {
+	public View getView() {
 		return view;
 	}
 	//}}}
@@ -180,13 +187,9 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 			projectView.deactivate();
 		}
 
-		Log.log( Log.DEBUG, this, "setCurrentProject() chk1 project="+project);
-		
 		// set up the new project
 		projectView = getProjectViewFor(project);
 		
-		Log.log( Log.DEBUG, this, "setCurrentProject() chk2");
-
 		if(isAllProjects()) {
 			if(!allProjectsLoaded) {
 				for(Iterator i = ProjectManager.getInstance().projects(); i.hasNext(); ) {
@@ -207,8 +210,6 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 			ProjectManager.getInstance().setCurrentProject(project);
 		}
 
-		Log.log( Log.DEBUG, this, "setCurrentProject() chk3");
-
 		// set the trees
 		if(folderTree != null) {
 			folderTree.getSelectionModel().setSelectionMode(projectView.getSelectionModel());
@@ -223,7 +224,6 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		projectView.activate();
 
 		loadProject();
-		Log.log( Log.DEBUG, this, "setCurrentProject() end");
 	}//}}}
 
 	//{{{ setStatus() method
@@ -232,7 +232,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	 * @param  msg  The new status value
 	 */
 	public void setStatus(Object msg) {
-		status.setText(msg.toString());
+		view.getStatus().setMessageAndClear(msg.toString());
 	}//}}}
 
 	//{{{ isFileSelected() method
@@ -336,16 +336,18 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	}//}}}
 
 	//{{{ expandAll() method
-	/** Expands all nodes of the specified tree.
+	/** 
+	 *	Expands all nodes of the specified tree.
 	 *
-	 * @param  tree  Description of Parameter
+	 * 	@param  tree  Description of Parameter
 	 */
 	public void expandAll(JTree tree) {
 		expand(new TreePath(tree.getModel().getRoot()), tree);
-	}//}}}
+	} //}}}
 
 	//{{{ expand() method
-	/** Expand the given sub tree.
+	/**
+	 *	Expand the given sub tree.
 	 *
 	 * @param  path  Description of Parameter
 	 * @param  tree  Description of Parameter
@@ -363,18 +365,22 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		}
 	}//}}}
 
+	//{{{ showDefaultCursor() method
 	/** Show the default cursor. */
 	public void showDefaultCursor() {
 		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	}
+	} //}}}
 
+	//{{{ showWaitCursor() method
 	/** Show the wait cursor. */
 	public void showWaitCursor() {
 		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	}
+	} //}}}
 
-	/** Returns a file chooser that with a starting directory relative to the
-	 * currently selected node of the current displayed tree.
+	//{{{ createFileChooser() method
+	/** 
+	 *	Returns a file chooser that with a starting directory relative to the
+	 *	currently selected node of the current displayed tree.
 	 *
 	 * @return    Description of the Returned Value
 	 */
@@ -394,71 +400,93 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 			browsePath = getCurrentProject().getRoot().getPath();
 
 		return new JFileChooser(browsePath);
-	}
+	} //}}}
 
+	//{{{ refresh() method
 	/** Reload ProjectResources and then reparse the object tree. */
 	public void refresh() {
 		Log.log(Log.NOTICE, this, "refresh()");
 		loadProjectCombo();
 		loadProject();
-	}
+	} //}}}
 
-	/** Handle a message from the bus.
+	//{{{ handleMessage() method
+	/** 
+	 *	Handle a message from the bus.
 	 *
 	 * @param  msg  Description of Parameter
 	 */
 	public void handleMessage(EBMessage msg) {
-		if(isAllProjects() || !(msg instanceof BufferUpdate))
-			return;
-
-		BufferUpdate update = (BufferUpdate)msg;
-		if(update.getWhat().equals(BufferUpdate.DIRTY_CHANGED) &&
-				!update.getBuffer().isDirty() &&
-				getCurrentProject().canAddInProject(update.getBuffer().getPath())
-				) {
-			int res = JOptionPane.showConfirmDialog(getView(),
-					"Import " + update.getBuffer().getName() + " to " + getCurrentProject().getName() + "?",
-					jEdit.getProperty(ProjectPlugin.NAME + ".title"),
-					JOptionPane.YES_NO_OPTION);
-
-			if(res != JOptionPane.YES_OPTION)
-				return;
-			getCurrentProject().importFile(new ProjectFile(update.getBuffer().getPath()));
+		if (msg instanceof BufferUpdate) {
+			if (isAllProjects()) return;
+			
+			BufferUpdate update = (BufferUpdate)msg;
+			if(update.getView() == view && 
+					update.getWhat() == BufferUpdate.SAVED &&
+					getCurrentProject().canAddInProject(update.getBuffer().getPath())
+					) {
+				int res = JOptionPane.showConfirmDialog(getView(),
+						"Import " + update.getBuffer().getName() + " to " + getCurrentProject().getName() + "?",
+						jEdit.getProperty(ProjectPlugin.NAME + ".title"),
+						JOptionPane.YES_NO_OPTION);
+	
+				if(res != JOptionPane.YES_OPTION)
+					return;
+				getCurrentProject().importFile(new ProjectFile(update.getBuffer().getPath()));
+			}
 		}
-	}
 
+		// deregister a view when it's closed.
+		if (msg instanceof ViewUpdate) {
+			ViewUpdate vu = (ViewUpdate) msg;
+			if (vu.getView() == view && vu.getWhat() == ViewUpdate.CLOSED) {
+				config.removePropertyChangeListener(this);
+				viewers.remove(vu.getView());
+				EditBus.removeFromBus(this);
+			}
+			return;
+		}
+		
+
+	} //}}}
+
+	//{{{ addProjectViewerListener(ProjectViewerListener) method 
 	/** Add a {@link ProjectViewerListener}.
 	 *
 	 * @param  listener  The feature to be added to the ProjectViewerListener attribute
 	 */
 	public void addProjectViewerListener(ProjectViewerListener listener) {
 		listeners.add(listener);
-	}
+	} //}}}
 
+	//{{{ removeProjectViewerListener(ProjectViewerListener) methods
 	/** Remove a {@link ProjectViewerListener}.
 	 *
 	 * @param  listener  Description of Parameter
 	 */
 	public void removeProjectViewerListener(ProjectViewerListener listener) {
 		listeners.remove(listener);
-	}
+	} //}}}
 
+	//{{{ addProjectListener(ProjectListener) method
 	/** Adds a feature to the ProjectListener attribute of the ProjectViewer object
 	 *
 	 * @param  listener  The feature to be added to the ProjectListener attribute
 	 */
 	public void addProjectListener(ProjectListener listener) {
 		projectListeners.add(listener);
-	}
+	} //}}}
 
+	//{{{ removeProjectListener(ProjectListener) method
 	/** Description of the Method
 	 *
 	 * @param  listener  Description of Parameter
 	 */
 	public void removeProjectListener(ProjectListener listener) {
 		projectListeners.remove(listener);
-	}
+	} //}}}
 
+	//{{{ enableButtonsForNode(Object) method
 	/** Enable buttons for the given node.
 	 *
 	 * @param  node  Description of Parameter
@@ -466,12 +494,11 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	public void enableButtonsForNode(Object node) {
 		boolean isAllNode = node instanceof String;
 		openAllBtn.setEnabled(node != null && !isAllNode);
-		importFilesBtn.setEnabled(node != null && !isAllNode);
 		addFileBtn.setEnabled(node != null && !isAllNode);
 		//removeFileBtn	.setEnabled( node instanceof ProjectFile );
 		removeFileBtn.setEnabled(node != null && !isAllNode);
 		removeAllFilesBtn.setEnabled(node != null && !isAllNode);
-	}//}}}
+	} //}}}
 
 	//{{{ propertyChange() method
 	/** Listens for property change events in the plugin's configuration.
@@ -509,18 +536,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		willRun = false;
 	}//}}}
 
-	/** Process component events.
-	 *
-	 * @param  evt  Description of Parameter
-	 */
-	protected void processComponentEvent(ComponentEvent evt) {
-		if(evt.getID() == ComponentEvent.COMPONENT_HIDDEN)
-			EditBus.removeFromBus(this);
-		else if(evt.getID() == ComponentEvent.COMPONENT_SHOWN)
-			EditBus.addToBus(this);
-		super.processComponentEvent(evt);
-	}
-
+	//{{{ getProjectViewFor(Project) method
 	/** Returns project view for the given project.
 	 *
 	 * @param  aProject  Description of Parameter
@@ -529,16 +545,18 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	private ProjectView getProjectViewFor(Project aProject) {
 		return (aProject instanceof Project) ? (ProjectView)
 				new SimpleProjectView(aProject) : new AllProjectsView(this);
-	}
+	} //}}}
 
+	//{{{ getLastProject() method
 	/** Returns the last project of the previous session.
 	 *
 	 * @return    The lastProject value
 	 */
 	private Project getLastProject() {
 		return ProjectManager.getInstance().getProject(ProjectPlugin.getLastProject());
-	}
+	} //}}}
 
+	//{{{ fireProjectLoaded(Project) method
 	/** Fire the project loaded event.
 	 *
 	 * @param  project  Description of Parameter
@@ -548,12 +566,11 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		for(Iterator i = listeners.iterator(); i.hasNext(); ) {
 			try {
 				((ProjectViewerListener)i.next()).projectLoaded(evt);
-			}
-			catch(Throwable t) {
+			} catch(Throwable t) {
 				Log.log(Log.WARNING, this, t);
 			}
 		}
-	}
+	} //}}}
 
 	//{{{ loadGUI() method
 	/** loads the GUI of Project Viewer */
@@ -570,15 +587,13 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		toolbar.putClientProperty("JToolBar.isRollover", Boolean.TRUE);
 
 		removeFileBtn = createButton("Minus.png", "Remove file or directory");
-		//removeFileBtn = createButton("/projectviewer/icons/RemoveFile.gif", "Remove file or directory");
+		//removeFileBtn =` createButton("/projectviewer/icons/RemoveFile.gif", "Remove file or directory");
 		removeAllFilesBtn = createButton("BrokenImage.png", "Remove all files");
 		//removeAllFilesBtn = createButton("/projectviewer/icons/RemoveAllFiles.gif", "Remove all files");
 		createProjectBtn = createButton("Drive.png", "Create project");
 		//createProjectBtn = createButton("/projectviewer/icons/CreateProject.gif", "Create project");
-		addFileBtn = createButton("New.png", "Add file to project");
+		addFileBtn = createButton("New.png", "Add files to project");
 		//addFileBtn = createButton("/projectviewer/icons/AddFile.gif", "Add file to project");
-		importFilesBtn = createButton("CopyToBuffer.png", "Import files into this project");
-		//importFilesBtn = createButton("/projectviewer/icons/Import.gif", "Import files into this project");
 		openAllBtn = createButton("Open.png", "Open all files in this project");
 		//openAllBtn = createButton("/projectviewer/icons/OpenAll.gif", "Open all files in this project");
 		expandBtn = createButton("ZoomIn.png", "Expand the file list");
@@ -592,7 +607,6 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		toolbar.add(contractBtn);
 		toolbar.add(openAllBtn);
 		toolbar.add(addFileBtn);
-		toolbar.add(importFilesBtn);
 		toolbar.add(removeFileBtn);
 		toolbar.add(removeAllFilesBtn);
 		toolbar.add(launchBrowserBtn);
@@ -600,7 +614,6 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		removeFileBtn.setEnabled(false);
 		removeAllFilesBtn.setEnabled(false);
 		addFileBtn.setEnabled(false);
-		importFilesBtn.setEnabled(false);
 		openAllBtn.setEnabled(false);
 		expandBtn.setEnabled(true);
 		contractBtn.setEnabled(true);
@@ -623,15 +636,14 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		// ok.. add the bar to the tab...
 		//contentPanel.getContentPane().add(bar, BorderLayout.NORTH);
 		add(allComponents, BorderLayout.CENTER);
-		add(status, BorderLayout.SOUTH);
 
 		loadProjectCombo();
 		projectCombo.addItemListener(vsl);
 		
 		setVisible(true);
-	}
-	//}}}
+	} //}}}
 
+	//{{{ createButton(String,String) method
 	/** Create a tool bar button.
 	 *
 	 * @param  icon     Description of Parameter
@@ -639,10 +651,10 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 	 * @return          Description of the Returned Value
 	 */
 	private RolloverButton createButton(String icon, String tooltip) {
-		//return createButton(new ImageIcon(getClass().getResource(icon)), tooltip);
 		return createButton(GUIUtilities.loadIcon(icon), tooltip);
-	}
+	} //}}}
 
+	//{{{ createButton(Icon,String) method
 	/** Create a tool bar button.
 	 *
 	 * @param  icon     Description of Parameter
@@ -656,7 +668,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		init.setToolTipText(tooltip);
 		init.addActionListener(vsl);
 		return init;
-	}
+	} //}}}
 
 	//{{{ createTree() method
 	/** Create and initialize a tree widget.
@@ -716,7 +728,6 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 		removeFileBtn.setEnabled(false);
 		removeAllFilesBtn.setEnabled(true);
 		addFileBtn.setEnabled(true);
-		importFilesBtn.setEnabled(true);
 		openAllBtn.setEnabled(true);
 
 		if(getCurrentProject() != null)
@@ -730,7 +741,7 @@ public final class ProjectViewer extends JPanel implements EBComponent,Runnable,
 
 		if(getCurrentProject() != null)
 			fireProjectLoaded(getCurrentProject());
-	}//}}}
+	} //}}}
 
 	//{{{ showTrees() method
 	/** Loads the trees (folders, files, working files) into the view, deciding
