@@ -33,7 +33,7 @@ import java.awt.event.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.search.SearchAndReplace;
+import org.gjt.sp.jedit.search.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
@@ -104,7 +104,10 @@ final public class Tags {
       {
         fileName = (String) st.nextElement();
         if (fileName != null)
+        {
+          Log.log(Log.DEBUG, null, "Loading tag index file: " + fileName);
           Tags.appendTagFile(fileName);
+        }
       }
     }
     else
@@ -114,6 +117,8 @@ final public class Tags {
       while ((tagIndexFileName = 
                 jEdit.getProperty("tags-tag-index-file" + index)) != null)
       {
+        Log.log(Log.DEBUG, null, 
+                "Loading tag index file: " + tagIndexFileName);
         Tags.appendTagFile(tagIndexFileName);
         index++;
       }
@@ -128,15 +133,26 @@ final public class Tags {
 
     String tagFileName = null;
     int numTagFiles = tagFiles_.size();
-    for (int i = 0; i < numTagFiles; i++) 
+    int i = 0;
+    while (i < numTagFiles ||
+           jEdit.getProperty("tags-tag-index-file" + i) != null)
     {
-      tagFileName = (String) ((TagFile)tagFiles_.elementAt(i)).getPath();
-      if (tagFileName != null) 
+      if (i < numTagFiles)
       {
-        jEdit.setProperty("tags-tag-index-file" + i, tagFileName);
+        tagFileName = (String) ((TagFile)tagFiles_.elementAt(i)).getPath();
+        if (tagFileName != null) 
+        {
+          /* yes I know "propertizing" isn't a word! */
+          Log.log(Log.DEBUG, null, 
+                  "Propertizing tag index file: " + tagFileName);
+          jEdit.setProperty("tags-tag-index-file" + i, tagFileName);
+        }
       }
-    }
-    
+      else // remove any previous entries >= numTagFiles
+        jEdit.setProperty("tags-tag-index-file" + i, null);
+        
+      i++;
+    }    
   }
 
   
@@ -155,18 +171,33 @@ final public class Tags {
   public static int getParserType() { return currentParserType_; }
   
   /*+*************************************************************************/
-  public static void appendTagFile(String file) {
-    tagFiles_.addElement(new TagFile(file, TagFile.DEFAULT_CATAGORY));
+  public static void appendTagFile(String file) 
+  {
+    TagFile tf = new TagFile(file, TagFile.DEFAULT_CATAGORY);
+    tf.currentDirIndexFile_ = 
+       file.equals(jEdit.getProperty("options.tags.current-buffer-file-name"));
+    
+    tagFiles_.addElement(tf);
   }
   
   /*+*************************************************************************/
-  public static void addTagFile(String file, int index) {
-    tagFiles_.insertElementAt(new TagFile(file, TagFile.DEFAULT_CATAGORY),index); 
+  public static void addTagFile(String file, int index) 
+  {
+    TagFile tf = new TagFile(file, TagFile.DEFAULT_CATAGORY);
+    tf.currentDirIndexFile_ = 
+       file.equals(jEdit.getProperty("options.tags.current-buffer-file-name"));
+    
+    tagFiles_.insertElementAt(tf, index); 
   }
   
   /*+*************************************************************************/
-  public static void prependTagFile(String file) {
-    tagFiles_.insertElementAt(new TagFile(file, TagFile.DEFAULT_CATAGORY),0);
+  public static void prependTagFile(String file) 
+  {
+    TagFile tf = new TagFile(file, TagFile.DEFAULT_CATAGORY);
+    tf.currentDirIndexFile_ = 
+       file.equals(jEdit.getProperty("options.tags.current-buffer-file-name"));
+    
+    tagFiles_.insertElementAt(tf, 0);
   }
   
   /***************************************************************************/
@@ -285,8 +316,7 @@ final public class Tags {
     if (!useCurrentBufTagFile && tagFiles_.size() == 0) {
       Toolkit.getDefaultToolkit().beep();
       if (ui_) 
-        Macros.error(currentView, 
-                jEdit.getProperty("tags.message.no-tag-index-files"));
+        GUIUtilities.error(currentView, "no-tag-index-files", null);
 
       return;
     }
@@ -306,7 +336,8 @@ final public class Tags {
       defaultTagFile = new File(currentBufferFile.getParent() + 
                    System.getProperty("file.separator") + 
                    jEdit.getProperty("options.tags.current-buffer-file-name"));
-      if (defaultTagFile.exists()) {
+      if (defaultTagFile.exists()) 
+      {
         found = parser_.findTagLines(defaultTagFile.getPath(),
                                      funcName, currentView) || found;
       }
@@ -316,10 +347,23 @@ final public class Tags {
     }
     
     // Search tag files if needed
-    if (!found || serachAllTagFiles) {
+    TagFile tf = null;
+    if (!found || serachAllTagFiles) 
+    {
       int numTagFiles = tagFiles_.size();
-      for (int i = 0; i < numTagFiles; i++) {        
-        tagFileName = (String) ((TagFile)tagFiles_.elementAt(i)).getPath();
+      for (int i = 0; i < numTagFiles; i++) 
+      {
+        tf = (TagFile) tagFiles_.elementAt(i);
+        if (TagsOptionsPanel.newCurBufStuff_ && tf.currentDirIndexFile_ &&
+            useCurrentBufTagFile)
+        {
+          File currentBufferFile = new File(buffer.getPath());
+          tagFileName = currentBufferFile.getParent() + 
+                   System.getProperty("file.separator") + 
+                   jEdit.getProperty("options.tags.current-buffer-file-name");
+        }
+        else
+          tagFileName = tf.getPath();
         if (defaultTagFile != null && 
             tagFileName.equals(defaultTagFile.getPath()))
           continue;
@@ -346,8 +390,10 @@ final public class Tags {
     else if (parser_.getNumberOfFoundTags() > 0) {
       processTagLine(0, currentView, openNewView, funcName);
     }
-    else if (ui_) {
-      Macros.error(currentView, "\"" + funcName + "\" not found!");
+    else if (ui_) 
+    {
+      Object args[] = { funcName };
+      GUIUtilities.error(currentView, "func-not-found", args);
     }
 
   }
@@ -406,8 +452,10 @@ final public class Tags {
 						
             // get current search values/parameters
             SearchAndReplace.save();
-                           
+            SearchFileSet fileset = SearchAndReplace.getSearchFileSet();
+            
             // set current search values/parameters
+            SearchAndReplace.setSearchFileSet(new CurrentBufferSet());
             SearchAndReplace.setRegexp(true);
 						SearchAndReplace.setReverseSearch(false);
             SearchAndReplace.setIgnoreCase(false);
@@ -419,10 +467,10 @@ final public class Tags {
             
             // Be nice and restore search values/parameters
             SearchAndReplace.load();
+            SearchAndReplace.setSearchFileSet(fileset);
             
 						v.getTextArea().removeFromSelection(
 																			 v.getTextArea().getCaretPosition());
-
 					}
 				});
 
@@ -550,11 +598,8 @@ final public class Tags {
     File tagFile = new File(tagLine.getDefinitionFileName());
     if (!tagFile.exists()) 
     {
-      Macros.error(view, 
-                   "The tag file name path \"" + tagFileName_ + "\"\n" +
-                   "that is listed in the tag index file, does not\n" +
-                   "exist.  You may need to update your tag index\n" +
-                   "files.");
+      Object args[] = { tagFileName_ };
+      GUIUtilities.error(view, "tag-def-file-not-found", args);
       return false;
     }
     
@@ -587,5 +632,6 @@ final public class Tags {
     }
     return funcName;
   }
+  
 }
 
