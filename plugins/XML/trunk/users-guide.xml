@@ -6,8 +6,7 @@
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true: -->
 
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "file:///usr/local/share/sgml/dtd/docbook-xml/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">
 
 <book>
 
@@ -208,6 +207,11 @@
      <guimenuitem>Edit Tag</guimenuitem> dialog box, also accessable from a
      menu item command, lets you edit attributes of a tag using attribute
      declaration data from the DTD.
+    </para></listitem>
+
+    <listitem><para>
+     Tag and entity completion, invoked when <keycap>&lt;</keycap> or
+     <keycap>&amp;</keycap> is pressed.
     </para></listitem>
 
   </itemizedlist>

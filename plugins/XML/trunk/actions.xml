@@ -3,35 +3,50 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-	<ACTION NAME="xml-complete-entity">
+	<!-- actions prefixed with - are bound to normal keys -->
+	<ACTION NAME="-xml-complete-closing-tag">
 		<CODE>
-			xml.XmlPlugin.completeKeyTyped(view,textArea,
-				xml.XmlPlugin.ENTITY_COMPLETE,'&amp;');
+			xml.XmlActions.completeClosingTag(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xml-complete-tag">
+	<ACTION NAME="-xml-complete-entity">
 		<CODE>
-			xml.XmlPlugin.completeKeyTyped(view,textArea,
-				xml.XmlPlugin.ELEMENT_COMPLETE,'&lt;');
+			xml.XmlActions.completeKeyTyped(view,
+				xml.XmlActions.ENTITY_COMPLETE,'&amp;');
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xml-tree">
+	<ACTION NAME="-xml-complete-tag">
+		<CODE>
+			xml.XmlActions.completeKeyTyped(view,
+				xml.XmlActions.ELEMENT_COMPLETE,'&lt;');
+		</CODE>
+	</ACTION>
+	<ACTION NAME="-xml-insert-closing-tag">
+		<CODE>
+			xml.XmlActions.insertClosingTagKeyTyped(view);
+		</CODE>
+	</ACTION>
+
+	<!-- normal actions -->
+	<ACTION NAME="xml-close-tag">
+		<CODE>
+			xml.XmlActions.insertClosingTag(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-edit-tag">
+		<CODE>
+			xml.XmlActions.showEditTagDialog(view);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-insert">
 		<CODE>
 			view.getDockableWindowManager()
-				.toggleDockableWindow("xml-tree");
+				.toggleDockableWindow("xml-insert");
 		</CODE>
 		<IS_SELECTED>
 			return view.getDockableWindowManager()
-				.isDockableWindowVisible("xml-tree");
+				.isDockableWindowVisible("xml-insert");
 		</IS_SELECTED>
-	</ACTION>
-	<ACTION NAME="xml-parse">
-		<CODE>
-			view.getDockableWindowManager()
-				.addDockableWindow("xml-tree");
-			view.getDockableWindowManager()
-				.getDockableWindow("xml-tree").parse(true);
-		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-keystroke-parse">
 		<CODE>
@@ -46,19 +61,22 @@
 			return buffer.getBooleanProperty("xml.keystroke-parse");
 		</IS_SELECTED>
 	</ACTION>
-	<ACTION NAME="xml-insert">
+	<ACTION NAME="xml-parse">
 		<CODE>
 			view.getDockableWindowManager()
-				.toggleDockableWindow("xml-insert");
+				.addDockableWindow("xml-tree");
+			view.getDockableWindowManager()
+				.getDockableWindow("xml-tree").parse(true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-tree">
+		<CODE>
+			view.getDockableWindowManager()
+				.toggleDockableWindow("xml-tree");
 		</CODE>
 		<IS_SELECTED>
 			return view.getDockableWindowManager()
-				.isDockableWindowVisible("xml-insert");
+				.isDockableWindowVisible("xml-tree");
 		</IS_SELECTED>
-	</ACTION>
-	<ACTION NAME="xml-edit-tag">
-		<CODE>
-			xml.XmlPlugin.showEditTagDialog(view);
-		</CODE>
 	</ACTION>
 </ACTIONS>

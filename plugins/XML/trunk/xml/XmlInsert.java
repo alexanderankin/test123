@@ -37,7 +37,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			new JLabel(jEdit.getProperty("xml-insert.elements")));
 
 		elementList = new JList();
-		elementList.setCellRenderer(new Renderer());
+		elementList.setCellRenderer(new XmlListCellRenderer());
 		elementList.addMouseListener(new MouseHandler());
 		elementList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		elementPanel.add(BorderLayout.CENTER,
@@ -50,7 +50,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			new JLabel(jEdit.getProperty("xml-insert.entities")));
 
 		entityList = new JList();
-		entityList.setCellRenderer(new Renderer());
+		entityList.setCellRenderer(new XmlListCellRenderer());
 		entityList.addMouseListener(new MouseHandler());
 		entityList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		entityPanel.add(BorderLayout.CENTER,
@@ -238,37 +238,6 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 		}
 	}
 
-	static class Renderer extends DefaultListCellRenderer
-	{
-		public Component getListCellRendererComponent(
-			JList list,
-			Object value,
-			int index,
-			boolean isSelected,
-			boolean cellHasFocus)
-		{
-			super.getListCellRendererComponent(list,value,index,
-				isSelected,cellHasFocus);
-
-			if(value instanceof ElementDecl)
-			{
-				ElementDecl element = (ElementDecl)value;
-				setText("<" + element.name
-					+ (element.empty ? " /" : "")
-					+ ">");
-			}
-			else if(value instanceof EntityDecl)
-			{
-				EntityDecl entity = (EntityDecl)value;
-				setText("&" + entity.name + "; ("
-					+ (entity.type == EntityDecl.INTERNAL
-					? entity.value : "external") + ")");
-			}
-
-			return this;
-		}
-	}
-
 	class MouseHandler extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent evt)
@@ -311,7 +280,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 				else
 				{
 					// show edit tag dialog box
-					XmlPlugin.showEditTagDialog(view,editPane,
+					XmlActions.showEditTagDialog(view,editPane,
 						element);
 				}
 			}

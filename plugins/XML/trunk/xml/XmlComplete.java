@@ -32,7 +32,7 @@ class XmlComplete extends JWindow
 		this.completions = completions;
 
 		list = new JList();
-		list.setCellRenderer(new Renderer());
+		list.setCellRenderer(new XmlListCellRenderer());
 
 		list.setVisibleRowCount(Math.min(8,completions.size()));
 
@@ -77,6 +77,10 @@ class XmlComplete extends JWindow
 	private void setUpListModel()
 	{
 		DefaultListModel model = new DefaultListModel();
+
+		if(text.startsWith("/"))
+			text = text.substring(1);
+
 		for(int i = 0; i < completions.size(); i++)
 		{
 			Object obj = completions.elementAt(i);
@@ -117,19 +121,46 @@ class XmlComplete extends JWindow
 			ElementDecl element = (ElementDecl)obj;
 			JEditTextArea textArea = view.getTextArea();
 
-			int offset = (!element.html && element.empty) ? 3 : 1;
+			int caret = textArea.getCaretPosition();
 
-			textArea.setSelectedText(element.name.substring(
-				text.length())
-				+ ((!element.html && element.empty)
-				? " />" : ">"));
+			StringBuffer buf = new StringBuffer();
+			buf.append(element.name.substring(text.length()));
 
-			// put caret inside tag so 'edit tag' can work
-			textArea.setCaretPosition(textArea.getCaretPosition()
-				- offset);
+			if(element.empty)
+			{
+				if(!element.html)
+					buf.append(" />");
+				else
+					buf.append(">");
+
+				caret += buf.length();
+			}
+			else
+			{
+				buf.append(">");
+
+				caret += buf.length();
+
+				if(jEdit.getBooleanProperty(
+					"xml.close-complete-open"))
+				{
+					buf.append("</");
+					buf.append(element.name);
+					buf.append(">");
+				}
+			}
+			textArea.setSelectedText(buf.toString());
 
 			if(showEditTagDialog)
-				XmlPlugin.showEditTagDialog(view,view.getEditPane());
+			{
+				// put caret inside the tag
+				caret--;
+				textArea.setCaretPosition(caret);
+
+				XmlActions.showEditTagDialog(view);
+			}
+			else
+				textArea.setCaretPosition(caret);
 		}
 		else if(obj instanceof EntityDecl)
 		{
@@ -149,11 +180,6 @@ class XmlComplete extends JWindow
 		{
 			switch(evt.getKeyCode())
 			{
-			case KeyEvent.VK_SPACE:
-			case KeyEvent.VK_TAB:
-				insertSelected(false);
-				evt.consume();
-				break;
 			case KeyEvent.VK_ENTER:
 				insertSelected(true);
 				evt.consume();
@@ -207,9 +233,34 @@ class XmlComplete extends JWindow
 			else
 			{
 				char ch = evt.getKeyChar();
-				view.getTextArea().userInput(ch);
-				text = text + ch;
-				setUpListModel();
+				if(ch == ';' || ch == '>'
+					|| ch == ' ' || ch == '\t')
+				{
+					// same effect as SPACE
+					insertSelected(false);
+				}
+				else
+				{
+					JEditTextArea textArea = view.getTextArea();
+
+					if(ch == '/' && view.getBuffer()
+						.getBooleanProperty(
+						"xml.parse"))
+					{
+						// in an XML file, a closing tag
+						// must always close the most
+						// recently opened tag.
+						XmlActions.completeClosingTag(view);
+						dispose();
+					}
+					else
+					{
+						textArea.userInput(ch);
+						text = text + ch;
+						setUpListModel();
+					}
+				}
+
 				evt.consume();
 			}
 		}
@@ -220,24 +271,6 @@ class XmlComplete extends JWindow
 		public void mouseClicked(MouseEvent evt)
 		{
 			insertSelected(true);
-		}
-	}
-
-	class Renderer extends DefaultListCellRenderer
-	{
-		public Component getListCellRendererComponent(
-			JList list, Object value, int index,
-			boolean isSelected, boolean cellHasFocus)
-		{
-			super.getListCellRendererComponent(list,value,
-				index,isSelected,cellHasFocus);
-
-			if(value instanceof ElementDecl)
-				setText(((ElementDecl)value).name);
-			else if(value instanceof EntityDecl)
-				setText(((EntityDecl)value).name);
-
-			return this;
 		}
 	}
 }
