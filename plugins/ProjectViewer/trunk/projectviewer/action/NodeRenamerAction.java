@@ -157,6 +157,7 @@ public class NodeRenamerAction extends Action {
 			ProjectManager.getInstance().renameProject(oldName, newName);
 			ProjectViewer.nodeChanged(node);
 			((VPTProject)node).firePropertiesChanged();
+			viewer.repaint();
 		}
 
 		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
