@@ -20,7 +20,6 @@
 package xmlindenter;
 
 import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.Buffer;
@@ -31,7 +30,6 @@ import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
-import java.util.Vector;
 
 /**
  * EditPlugin implementation for the XML Indenter plugin.
@@ -39,22 +37,6 @@ import java.util.Vector;
  * @author Robert McKinnon - robmckinnon@users.sourceforge.net
  */
 public class XmlIndenterPlugin extends EditPlugin {
-
-  public void start() {
-  }
-
-
-  public void stop() {
-  }
-
-
-  /**
-   * Adds appropriate actions to the plugins menu
-   */
-  public void createMenuItems(Vector menuItems) {
-    menuItems.addElement(GUIUtilities.loadMenu("xmlindenter-menu"));
-  }
-
 
   /**
    * Displays a user-friendly error message to go with the supplied exception.
@@ -95,11 +77,21 @@ public class XmlIndenterPlugin extends EditPlugin {
       buffer.remove(0, buffer.getLength());
       buffer.insert(0, resultString);
 
-      if(caretPosition > buffer.getLength()) {
-        caretPosition = buffer.getLength();
-      }
+      if(caretPosition > (buffer.getLength() - 1)) {
+        view.getTextArea().setCaretPosition(buffer.getLength() - 1);
+      } else {
+        char c = resultString.charAt(caretPosition);
 
-      view.getTextArea().setCaretPosition(caretPosition);
+        while(caretPosition < buffer.getLength() && !(c == '>' || c == '<')) {
+          caretPosition++; //hack to prevent XML autocomplete of end element name
+          c = resultString.charAt(caretPosition);
+        }
+
+        if(c == '>') {
+          caretPosition++;
+        }
+        view.getTextArea().setCaretPosition(caretPosition);
+      }
     } catch(Exception e) {
       Log.log(Log.ERROR, IndentingTransformerImpl.class, e);
       String message = jEdit.getProperty("xmlindenter.indent.message.failure");
