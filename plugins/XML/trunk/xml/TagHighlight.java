@@ -189,6 +189,12 @@ public class TagHighlight extends TextAreaExtension
 	//{{{ updateHighlight() method
 	private void updateHighlight()
 	{
+		if(buffer != view.getBuffer())
+		{
+			// fix the race condition
+			return;
+		}
+
 		int caret = textArea.getCaretPosition();
 
 		if(bufferChanged || current == null
