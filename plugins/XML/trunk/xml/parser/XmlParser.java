@@ -204,11 +204,11 @@ public class XmlParser implements EBComponent
 				editPane.getTextArea().addFocusListener(new FocusHandler());
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 			{
+				Buffer buffer = editPane.getBuffer();
+
 				// check if this is the currently focused edit pane
 				if(editPane == editPane.getView().getEditPane())
 				{
-					Buffer buffer = editPane.getBuffer();
-
 					if(buffer.getBooleanProperty(
 						"xml.buffer-change-parse")
 						|| buffer.getBooleanProperty(
@@ -222,7 +222,8 @@ public class XmlParser implements EBComponent
 				else
 				{
 					view.getEditPane().putClientProperty(
-						XmlPlugin.COMPLETION_INFO_PROPERTY,null);
+						XmlPlugin.COMPLETION_INFO_PROPERTY,
+						getUnparsedCompletionInfo(buffer));
 					view.getEditPane().putClientProperty(
 						XmlPlugin.ELEMENT_TREE_PROPERTY,null);
 				}
@@ -305,7 +306,8 @@ public class XmlParser implements EBComponent
 		model.reload(root);
 
 		view.getEditPane().putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
-		view.getEditPane().putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
+		view.getEditPane().putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,
+			getUnparsedCompletionInfo(buffer));
 		view.getEditPane().putClientProperty(XmlPlugin.IDS_PROPERTY,null);
 
 		finish();
@@ -368,6 +370,17 @@ public class XmlParser implements EBComponent
 			.getDockable(XmlPlugin.INSERT_NAME);
 		if(insert != null)
 			insert.update();
+	} //}}}
+
+	//{{{ getUnparsedCompletionInfo() method
+	private CompletionInfo getUnparsedCompletionInfo(Buffer buffer)
+	{
+		// this silly little hack lets us use closing tag completion
+		// and a few other miscellaneous features in the few seconds
+		// before an XML buffer has been parsed. can be convinient
+		// sometimes.
+		if("xml".equals(buffer.getProperty(XmlPlugin.PARSER_PROPERTY)))
+			return new CompletionInfo();
 	} //}}}
 
 	//}}}

@@ -116,7 +116,9 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 				if(i != text.length() - 1)
 				{
 					char ch2 = text.charAt(i + 1);
-					if(ch2 != '/' && !Character.isLetter(ch2))
+					if(ch2 != '/' && ch2 != '"'
+						&& !Character.isWhitespace(ch2)
+						&& !Character.isLetter(ch2))
 					{
 						if(notATag)
 							notATag = false;
@@ -130,10 +132,16 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 				if(notATag)
 					continue;
 
-				if(i != 0 && !Character.isLetter(text.charAt(i - 1)))
+				if(i != 0)
 				{
-					notATag = true;
-					continue;
+					char ch2 = text.charAt(i - 1);
+					if(ch2 != '"'
+						&& !Character.isWhitespace(ch2)
+						&& !Character.isLetter(ch2))
+					{
+						notATag = true;
+						continue;
+					}
 				}
 
 				Tag tag = getTagAtOffset(text,i + 1);
@@ -210,7 +218,9 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 				if(i != text.length() - 1)
 				{
 					char ch2 = text.charAt(i + 1);
-					if(ch2 != '/' && !Character.isLetter(ch2))
+					if(ch2 != '/'
+						&& !Character.isWhitespace(ch2)
+						&& !Character.isLetter(ch2))
 					{
 						notATag = true;
 						continue;
@@ -244,12 +254,18 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 			}
 			else if(ch == '>')
 			{
-				if(i != 0 && !Character.isLetter(text.charAt(i - 1)))
+				if(i != 0)
 				{
-					if(notATag)
-						notATag = false;
-					else
-						return null;
+					char ch2 = text.charAt(i - 1);
+					if(ch2 != '"'
+						&& !Character.isWhitespace(ch2)
+						&& !Character.isLetter(ch2))
+					{
+						if(notATag)
+							notATag = false;
+						else
+							return null;
+					}
 				}
 			}
 		}
@@ -276,7 +292,9 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 				if(i != text.length() - 1)
 				{
 					char ch2 = text.charAt(i + 1);
-					if(ch2 != '/' && !Character.isLetter(ch2))
+					if(ch2 != '/' && ch2 != '"'
+						&& !Character.isWhitespace(ch2)
+						&& !Character.isLetter(ch2))
 					{
 						if(notATag)
 							notATag = false;
@@ -292,7 +310,10 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 
 				if(i != 0)
 				{
-					if(!Character.isLetter(text.charAt(i - 1)))
+					char ch2 = text.charAt(i - 1);
+					if(ch2 != '"'
+						&& !Character.isWhitespace(ch2)
+						&& !Character.isLetter(ch2))
 					{
 						notATag = true;
 						continue;

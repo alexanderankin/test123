@@ -27,15 +27,15 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 {
 	//{{{ Icons
 	public static final ImageIcon ELEMENT_ICON = new ImageIcon(
-		XmlListCellRenderer.class.getResource("/xml/element.gif"));
+		XmlListCellRenderer.class.getResource("/xml/Element.png"));
 	public static final ImageIcon EMPTY_ELEMENT_ICON = new ImageIcon(
-		XmlListCellRenderer.class.getResource("/xml/empty_element.gif"));
+		XmlListCellRenderer.class.getResource("/xml/EmptyElement.png"));
 	public static final ImageIcon INTERNAL_ENTITY_ICON = new ImageIcon(
-		XmlListCellRenderer.class.getResource("/xml/internal_entity.gif"));
+		XmlListCellRenderer.class.getResource("/xml/InternalEntity.png"));
 	public static final ImageIcon EXTERNAL_ENTITY_ICON = new ImageIcon(
-		XmlListCellRenderer.class.getResource("/xml/external_entity.gif"));
+		XmlListCellRenderer.class.getResource("/xml/ExternalEntity.png"));
 	public static final ImageIcon ID_ICON = new ImageIcon(
-		XmlListCellRenderer.class.getResource("/xml/id.gif"));
+		XmlListCellRenderer.class.getResource("/xml/ID.png"));
 	//}}}
 
 	//{{{ getListCellRendererComponent() method
