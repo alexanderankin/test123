@@ -1,6 +1,6 @@
 /*
  * BufferTabsPlugin.java - Main class of the BufferTabs plugin for jEdit.
- * Copyright (C) 1999, 2000 Jason Ginchereau, Andre Kaplan
+ * Copyright (C) 1999, 2000, 2001 Jason Ginchereau, Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +21,12 @@
 package buffertabs;
 
 
+import java.awt.Component;
+import java.awt.Container;
+import java.util.Hashtable;
+import java.util.Vector;
+import javax.swing.*;
+
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
@@ -30,12 +36,6 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-
-import java.awt.Component;
-import java.awt.Container;
-import java.util.Hashtable;
-import java.util.Vector;
-import javax.swing.*;
 
 
 /**
@@ -51,7 +51,7 @@ public class BufferTabsPlugin extends EBPlugin {
 
     /**
      * Called at start up time when the plugin is being loaded.
-    **/
+     */
     public void start() {
         super.start();
         popupMenu = GUIUtilities.loadPopupMenu("buffertabs.popup");
@@ -60,7 +60,7 @@ public class BufferTabsPlugin extends EBPlugin {
 
     /**
      * Called when jEdit is exiting.
-    **/
+     */
     public void stop() {
         super.stop();
     }
@@ -69,20 +69,16 @@ public class BufferTabsPlugin extends EBPlugin {
     /**
      * This allows plugins to add their own option pane to the
      * <code>OptionsDialog</code>.
-    **/
+     */
     public void createOptionPanes(OptionsDialog od) {
          od.addOptionPane(new BufferTabsOptionPane());
     }
 
 
     public void createMenuItems(Vector menuItems) {
-         JMenuItem menuItem = GUIUtilities
-               .loadMenuItem("buffertabs.toggle-vis");
-        if (menuItem != null) {
-            menuItem.setSelected(
-                  jEdit.getBooleanProperty("buffertabs.enable", false));
-            menuItems.addElement(menuItem);
-        }
+        menuItems.addElement(
+            GUIUtilities.loadMenuItem("buffertabs.toggle-vis")
+        );
     }
 
 
@@ -171,6 +167,7 @@ public class BufferTabsPlugin extends EBPlugin {
             }
         }
     }
+
 
     protected static JPopupMenu getRightClickPopup() {
         return popupMenu;
