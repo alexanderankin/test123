@@ -4,7 +4,6 @@
 [error] AWT-EventQueue-0:  at console.ConsoleTextField.processKeyEvent(Unknown Source)
 [error] AWT-EventQueue-0:  at java.awt.Component.processEvent(Component.java:4909)
 
-- highlighted errors in error list
 - default dir option
 - jdk 1.3: null shell?
 - on win: foo "bar baz" needs to be passed literally
