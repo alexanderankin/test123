@@ -19,12 +19,14 @@
 package projectviewer.event;
 
 //{{{ Imports
-import java.util.Collection;
+import java.util.Iterator;
+import java.util.ArrayList;
 import java.util.EventObject;
 
 import projectviewer.ProjectViewer;
 
 import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 //}}}
 
@@ -38,22 +40,26 @@ public final class ProjectEvent extends EventObject {
 
 	//{{{ Private Members
 	private VPTProject	src;
-	private Collection	files;
+	private ArrayList	addedFiles;
+	private ArrayList	removedFiles;
 	private VPTFile		file;
+	private boolean		added;
 	//}}}
 
 	//{{{ Constructor
 
-	public ProjectEvent(VPTProject p, Collection files) {
+	public ProjectEvent(VPTProject p, ArrayList added, ArrayList removed) {
 		super(p);
 		this.src = p;
-		this.files = files;
+		this.addedFiles = added;
+		this.removedFiles = removed;
 	}
 
-	public ProjectEvent(VPTProject p, VPTFile file) {
+	public ProjectEvent(VPTProject p, VPTFile file, boolean added) {
 		super(p);
 		this.src = p;
 		this.file = file;
+		this.added = added;
 	}
 
 	//}}}
@@ -64,16 +70,28 @@ public final class ProjectEvent extends EventObject {
 		return src;
 	} //}}}
 
-	//{{{ getFiles() method
-	/** Returns the list of files added (null if single file). */
-	public Collection getFiles() {
-		return files;
+	//{{{ getAddedFiles() method
+	/** Returns the list of files added (null if single file or no file(s) added). */
+	public ArrayList getAddedFiles() {
+		return addedFiles;
 	} //}}}
 
-	//{{{ getFiles() method
-	/** Returns the added file (null if multiple files). */
+	//{{{ getFile() method
+	/** Returns the added file (null if multiple files or no file(s) added). */
 	public VPTFile getFile() {
-		return file;
+		return (added) ? file : null;
+	} //}}}
+
+	//{{{ getRemovedFiles()
+	/** Returns the list of removed files (null if no file(s) were removed). */
+	public ArrayList getRemovedFiles() {
+		return removedFiles;
+	} //}}}
+
+	//{{{ getRemovedFile()
+	/** Returns the removed file (null if multiple files, or no file(s) were removed). */
+	public VPTFile getRemovedFile() {
+		return (added) ? null : file;
 	} //}}}
 
 }
