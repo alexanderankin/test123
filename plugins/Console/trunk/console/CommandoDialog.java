@@ -572,7 +572,7 @@ public class CommandoDialog extends EnhancedDialog
 		}
 	}
 
-	class CommandoTextField extends HistoryTextField
+	class CommandoTextField extends JTextField
 	{
 		CommandoTextField(String varName, String defaultValue, String eval)
 		{
