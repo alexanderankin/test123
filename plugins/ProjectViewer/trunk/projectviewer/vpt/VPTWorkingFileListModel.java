@@ -19,7 +19,7 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.util.HashMap;
+import java.util.WeakHashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,7 +43,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 public class VPTWorkingFileListModel extends DefaultTreeModel {
 
 	//{{{ Private members
-	private HashMap fileLists;
+	private WeakHashMap fileLists;
 
 	private Object lastParent;
 	private ArrayList lastList;
@@ -57,7 +57,7 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 	 */
 	public VPTWorkingFileListModel(VPTNode rootNode) {
 		super(rootNode, true);
-		fileLists = new HashMap();
+		fileLists = new WeakHashMap();
 		checkOpenFiles();
 	} //}}}
 
@@ -248,16 +248,6 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		}
 
 		return projs;
-	} //}}}
-
-	//{{{ removeRef(VPTProject) method
-	/**
-	 *	Removes any reference to the given project stored internally. This does
-	 *	not update the tree! To update the tree one of the usual methods (setRoot,
-	 *	nodeStructureChanged, etc) should be called.
-	 */
-	public void removeRef(VPTProject p) {
-		fileLists.remove(p);
 	} //}}}
 
 	//{{{ getPathToRoot(TreeNode) method
