@@ -110,10 +110,12 @@ public class SideKickPlugin extends EBPlugin
 	/**
 	 * Immediately begins parsing the current buffer in a background thread.
 	 * @param view The view
+	 * @param showParsingMessage Clear the tree and show a status message
+	 * there?
 	 */
-	public static void parse(View view)
+	public static void parse(View view, boolean showParsingMessage)
 	{
-		((SideKick)sidekicks.get(view)).parse(true);
+		((SideKick)sidekicks.get(view)).parse(showParsingMessage);
 	} //}}}
 
 	//{{{ Private members

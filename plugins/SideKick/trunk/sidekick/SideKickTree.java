@@ -284,7 +284,7 @@ public class SideKickTree extends JPanel implements EBComponent
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			SideKickPlugin.getInstance(view).parse(true);
+			SideKickPlugin.parse(view,true);
 		}
 	} //}}}
 
@@ -355,7 +355,8 @@ public class SideKickTree extends JPanel implements EBComponent
 
 				if(value instanceof Asset)
 				{
-					view.getStatus().setMessage(value.toString());
+					view.getStatus().setMessage(((Asset)value)
+						.getLongString());
 				}
 			}
 		}
@@ -377,7 +378,7 @@ public class SideKickTree extends JPanel implements EBComponent
 			{
 				Asset asset = (Asset)node.getUserObject();
 
-				setText(asset.getAttributeString());
+				setText(asset.getShortString());
 				setIcon(asset.getIcon());
 			}
 			// is root?

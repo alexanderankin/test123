@@ -41,5 +41,6 @@ public abstract class Asset
 	} //}}}
 
 	public abstract Icon getIcon();
-	public abstract String getAttributeString();
+	public abstract String getShortString();
+	public abstract String getLongString();
 }
