@@ -31,8 +31,7 @@ import org.gjt.sp.jedit.syntax.TokenMarker;
 import org.gjt.sp.jedit.textarea.*;
 
 import org.gjt.sp.util.Log;
-import org.gjt.sp.util.WorkThread;
- 
+
 public class Code2HTML
 	implements EBComponent
 {
@@ -149,8 +148,10 @@ public class Code2HTML
 				expander.resetPos();
 				Segment line = new Segment();
 				textArea.getLineText(i, line);
-				Token tokens = (tokenMarker == null) 
-					? null : tokenMarker.markTokens(line, i);
+				Token tokens = null;
+				if (tokenMarker != null) {
+					tokens = tokenMarker.markTokens(line, i).firstToken;
+				}
 				paintLine(out, line, tokens, expander, styles);
 				out.write("\n");
 			}
