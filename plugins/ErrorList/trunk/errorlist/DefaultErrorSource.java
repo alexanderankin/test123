@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -72,22 +72,21 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		if(errors.size() == 0)
 			return null;
 
-		Vector errorList = new Vector(errorCount);
+		List errorList = new LinkedList();
 
 		Enumeration enum = errors.elements();
 		while(enum.hasMoreElements())
 		{
-			Vector list = (Vector)enum.nextElement();
+			ArrayList list = (ArrayList)enum.nextElement();
 
 			for(int i = 0; i < list.size(); i++)
 			{
-				errorList.addElement(list.elementAt(i));
+				errorList.add(list.get(i));
 			}
 		}
 
-		ErrorSource.Error[] array = new ErrorSource.Error[errorList.size()];
-		errorList.copyInto(array);
-		return array;
+		return (ErrorSource.Error[])errorList.toArray(
+			new ErrorSource.Error[errorList.size()]);
 	} //}}}
 
 	//{{{ getFileErrorCount() method
@@ -97,7 +96,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public int getFileErrorCount(String path)
 	{
-		Vector list = (Vector)errors.get(path);
+		ArrayList list = (ArrayList)errors.get(path);
 		if(list == null)
 			return 0;
 		else
@@ -111,13 +110,12 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public ErrorSource.Error[] getFileErrors(String path)
 	{
-		Vector list = (Vector)errors.get(path);
+		ArrayList list = (ArrayList)errors.get(path);
 		if(list == null || list.size() == 0)
 			return null;
 
-		ErrorSource.Error[] array = new ErrorSource.Error[list.size()];
-		list.copyInto(array);
-		return array;
+		return (ErrorSource.Error[])list.toArray(
+			new ErrorSource.Error[list.size()]);
 	} //}}}
 
 	//{{{ getLineErrors() method
@@ -130,29 +128,42 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		if(errors.size() == 0)
 			return null;
 
-		Vector list = (Vector)errors.get(buffer.getPath());
+		List list = (List)errors.get(buffer.getPath());
 		if(list == null)
 			return null;
 
-		Vector errorList = null;
+		int index = findError(list,lineIndex);
+		if(index == -1)
+			return null;
 
-		for(int i = 0; i < list.size(); i++)
+		List errorList = new LinkedList();
+
+		for(int i = index; i >= 0; i--)
 		{
-			DefaultError error = (DefaultError)list.elementAt(i);
-			if(error.getLineNumber() == lineIndex)
+			if(((ErrorSource.Error)list.get(i)).getLineNumber()
+				== lineIndex)
 			{
-				if(errorList == null)
-					errorList = new Vector();
-				errorList.addElement(error);
+				index = i;
+			}
+			else
+			{
+				break;
 			}
 		}
 
-		if(errorList == null)
-			return null;
+		for(int i = index; i < list.size(); i++)
+		{
+			DefaultError error = (DefaultError)list.get(i);
+			if(error.getLineNumber() == lineIndex)
+			{
+				errorList.add(error);
+			}
+			else
+				break;
+		}
 
-		ErrorSource.Error[] array = new ErrorSource.Error[errorList.size()];
-		errorList.copyInto(array);
-		return array;
+		return (ErrorSource.Error[])errorList.toArray(
+			new ErrorSource.Error[errorList.size()]);
 	} //}}}
 
 	//{{{ clear() method
@@ -188,7 +199,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public synchronized void removeFileErrors(String path)
 	{
-		final Vector list = (Vector)errors.remove(path);
+		final ArrayList list = (ArrayList)errors.remove(path);
 		if(list == null)
 			return;
 
@@ -217,14 +228,28 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	 */
 	public synchronized void addError(final DefaultError error)
 	{
-		Vector list = (Vector)errors.get(error.getFilePath());
+		List list = (List)errors.get(error.getFilePath());
 		if(list == null)
 		{
-			list = new Vector();
+			list = new ArrayList();
 			errors.put(error.getFilePath(),list);
 		}
 
-		list.addElement(error);
+		boolean added = false;
+
+		for(int i = 0; i < list.size(); i++)
+		{
+			Error _error = (Error)list.get(i);
+			if(_error.getLineNumber() > error.getLineNumber())
+			{
+				list.add(i,error);
+				added = true;
+				break;
+			}
+		}
+
+		if(!added)
+			list.add(error);
 		errorCount++;
 		removeOrAddToBus();
 
@@ -279,8 +304,49 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	//}}}
 
 	//{{{ Private members
+	private boolean addedToBus;
 
-	boolean addedToBus;
+	//{{{ findError() method
+	private int findError(List errorList, int line)
+	{
+		int start = 0;
+		int end = errorList.size() - 1;
+
+		for(;;)
+		{
+			switch(end - start)
+			{
+			case 0:
+				if(((Error)errorList.get(start)).getLineNumber()
+					== line)
+					return start;
+				else
+					return -1;
+			case 1:
+				if(((Error)errorList.get(start)).getLineNumber()
+					== line)
+				{
+					return start;
+				}
+				else
+				{
+					start++;
+					break;
+				}
+			default:
+				int pivot = (end + start) / 2;
+				int value = ((Error)errorList.get(pivot))
+					.getLineNumber();
+				if(value == line)
+					return pivot;
+				else if(value < line)
+					start = pivot + 1;
+				else
+					end = pivot - 1;
+				break;
+			}
+		}
+	} //}}}
 
 	//{{{ removeOrAddToBus() method
 	private void removeOrAddToBus()
@@ -295,30 +361,30 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 	} //}}}
 
 	//{{{ handleBufferMessage() method
-	private void handleBufferMessage(BufferUpdate message)
+	private synchronized void handleBufferMessage(BufferUpdate message)
 	{
 		Buffer buffer = message.getBuffer();
 
 		if(message.getWhat() == BufferUpdate.LOADED)
 		{
-			Vector list = (Vector)errors.get(buffer.getPath());
+			ArrayList list = (ArrayList)errors.get(buffer.getPath());
 			if(list != null)
 			{
 				for(int i = 0; i < list.size(); i++)
 				{
-					((DefaultError)list.elementAt(i))
+					((DefaultError)list.get(i))
 						.openNotify(buffer);
 				}
 			}
 		}
 		else if(message.getWhat() == BufferUpdate.CLOSED)
 		{
-			Vector list = (Vector)errors.get(buffer.getPath());
+			ArrayList list = (ArrayList)errors.get(buffer.getPath());
 			if(list != null)
 			{
 				for(int i = 0; i < list.size(); i++)
 				{
-					((DefaultError)list.elementAt(i))
+					((DefaultError)list.get(i))
 						.closeNotify(buffer);
 				}
 			}
@@ -485,8 +551,8 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		public void addExtraMessage(String message)
 		{
 			if(extras == null)
-				extras = new Vector();
-			extras.addElement(message);
+				extras = new ArrayList();
+			extras.add(message);
 		} //}}}
 
 		//{{{ getExtraMessages() method
@@ -498,9 +564,8 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			if(extras == null)
 				return new String[0];
 
-			String[] retVal = new String[extras.size()];
-			extras.copyInto(retVal);
-			return retVal;
+			return (String[])extras.toArray(
+				new String[extras.size()]);
 		} //}}}
 
 		//{{{ toString() method
@@ -585,7 +650,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		private Position endPos;
 
 		private String error;
-		private Vector extras;
+		private List extras;
 		//}}}
 	} //}}}
 }

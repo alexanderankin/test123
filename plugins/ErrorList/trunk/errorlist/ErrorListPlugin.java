@@ -59,6 +59,7 @@ public class ErrorListPlugin extends EBPlugin
 			for(int j = 0; j < panes.length; j++)
 			{
 				uninitTextArea(panes[j].getTextArea());
+				removeErrorOverview(panes[j].getTextArea());
 			}
 		}
 	} //}}}
@@ -74,25 +75,57 @@ public class ErrorListPlugin extends EBPlugin
 			propertiesChanged();
 	} //}}}
 
+	//{{{ setErrorOverviewVisible() method
+	public static void setErrorOverviewVisible(boolean errorOverviewVisible)
+	{
+		View view = jEdit.getFirstView();
+		while(view != null)
+		{
+			EditPane[] editPanes = view.getEditPanes();
+			for(int i = 0; i < editPanes.length; i++)
+			{
+				JEditTextArea textArea = editPanes[i].getTextArea();
+				if(errorOverviewVisible)
+					addErrorOverview(textArea);
+				else
+					removeErrorOverview(textArea);
+			}
+		}
+	} //}}}
+
+	//{{{ usErrorOverviewVisible() method
+	public static boolean isErrorOverviewVisible()
+	{
+		return errorOverviewVisible;
+	} //}}}
+
 	//{{{ addErrorOverview() method
 	public static void addErrorOverview(JEditTextArea textArea)
 	{
 		ErrorOverview overview = new ErrorOverview(textArea);
 		textArea.addLeftOfScrollBar(overview);
 		textArea.putClientProperty(ErrorOverview.class,overview);
+		textArea.revalidate();
 	} //}}}
 
 	//{{{ removeErrorOverview() method
 	public static void removeErrorOverview(JEditTextArea textArea)
 	{
-		ErrorOverview overview = (ErrorOverview)textArea.getPainter()
-			.getClientProperty(ErrorOverview.class);
+		ErrorOverview overview = getErrorOverview(textArea);
 		if(overview != null)
 		{
 			textArea.removeLeftOfScrollBar(overview);
+			textArea.revalidate();
 			textArea.getPainter().putClientProperty(ErrorOverview.class,
 				null);
 		}
+	} //}}}
+
+	//{{{ getErrorOverview() method
+	public static ErrorOverview getErrorOverview(JEditTextArea textArea)
+	{
+		return (ErrorOverview)textArea.getClientProperty(
+			ErrorOverview.class);
 	} //}}}
 
 	//{{{ getErrorColor() method
@@ -105,6 +138,8 @@ public class ErrorListPlugin extends EBPlugin
 	private static boolean showOnError;
 	private static Color warningColor;
 	private static Color errorColor;
+
+	private static boolean errorOverviewVisible;
 
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
@@ -155,22 +190,7 @@ public class ErrorListPlugin extends EBPlugin
 			ErrorSource.Error error = message.getError();
 			Buffer buffer = error.getBuffer();
 			if(buffer != null)
-			{
-				int lineNumber = error.getLineNumber();
-
-				View view = jEdit.getFirstView();
-				while(view != null)
-				{
-					if(view.getBuffer() == buffer)
-					{
-						EditPane[] editPanes = view.getEditPanes();
-						for(int i = 0; i < editPanes.length; i++)
-							editPanes[i].getTextArea().invalidateLine(lineNumber);
-					}
-
-					view = view.getNext();
-				}
-			}
+				invalidateLineInAllViews(buffer,error.getLineNumber());
 
 			if(showOnError)
 			{
@@ -186,11 +206,41 @@ public class ErrorListPlugin extends EBPlugin
 				EditPane[] editPanes = view.getEditPanes();
 				for(int i = 0; i < editPanes.length; i++)
 				{
-					editPanes[i].getTextArea().getPainter()
+					EditPane pane = editPanes[i];
+					pane.getTextArea().getPainter()
 						.repaint();
+					ErrorOverview overview
+						= getErrorOverview(
+						pane.getTextArea());
+					if(overview != null)
+						overview.repaint();
 				}
 				view = view.getNext();
 			}
+		}
+	} //}}}
+
+	//{{{ invalidateLineInAllViews() method
+	private void invalidateLineInAllViews(Buffer buffer, int line)
+	{
+		View view = jEdit.getFirstView();
+		while(view != null)
+		{
+			EditPane[] editPanes = view.getEditPanes();
+			for(int i = 0; i < editPanes.length; i++)
+			{
+				EditPane pane = editPanes[i];
+				if(pane.getBuffer() == buffer)
+				{
+					pane.getTextArea().invalidateLine(line);
+					ErrorOverview overview = getErrorOverview(
+						pane.getTextArea());
+					if(overview != null)
+						overview.invalidateLine(line);
+				}
+			}
+
+			view = view.getNext();
 		}
 	} //}}}
 
@@ -202,7 +252,10 @@ public class ErrorListPlugin extends EBPlugin
 		if(message.getWhat() == EditPaneUpdate.CREATED)
 			initTextArea(textArea);
 		else if(message.getWhat() == EditPaneUpdate.DESTROYED)
+		{
 			uninitTextArea(textArea);
+			removeErrorOverview(textArea);
+		}
 	} //}}}
 
 	//}}}
