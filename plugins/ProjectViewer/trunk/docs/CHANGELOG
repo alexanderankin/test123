@@ -35,6 +35,7 @@ VERSION 1.0.5
 	- use new RolloverButton class of jEdit 4.1
 	- use jEdit 4.1 icons for toolbar and trees
 	- use bold font for folders/projects (like Filesystembrowser does)
+	- fixed NPE in RemovalManager when removing projects
 
 VERSION 1.0.4
   [stefan kost]
