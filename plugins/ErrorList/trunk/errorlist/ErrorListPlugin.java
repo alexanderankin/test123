@@ -163,7 +163,7 @@ public class ErrorListPlugin extends EBPlugin
 		{
 			JEditTextArea textArea = message.getEditPane().getTextArea();
 			ErrorHighlight highlight = new ErrorHighlight(textArea);
-			textArea.getPainter().addCustomHighlight(highlight);
+			textArea.getPainter().addExtension(highlight);
 		}
 	} //}}}
 

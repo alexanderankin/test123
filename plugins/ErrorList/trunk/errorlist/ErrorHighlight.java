@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -31,24 +31,26 @@ import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
-public class ErrorHighlight implements TextAreaHighlight
+public class ErrorHighlight extends TextAreaExtension
 {
 	//{{{ ErrorHighlight constructor
 	public ErrorHighlight(JEditTextArea textArea)
 	{
 		this.textArea = textArea;
 		seg = new Segment();
+		point = new Point();
 	} //}}}
 
-	//{{{ paintHighlight() method
-	public void paintHighlight(Graphics gfx, int line, int y)
+	//{{{ paintValidLine() method
+	public void paintValidLine(Graphics2D gfx, int physicalLine,
+		int start, int end, int y)
 	{
 		ErrorSource[] errorSources = ErrorSource.getErrorSources();
 
-		int lineCount = textArea.getVirtualLineCount();
-		if(line < lineCount && textArea.getBuffer().isLoaded())
+		if(textArea.getBuffer().isLoaded())
 		{
-			int physicalLine = textArea.virtualToPhysical(line);
+			FontMetrics fm = textArea.getPainter().getFontMetrics();
+			y += (fm.getHeight() - fm.getDescent() - fm.getLeading());
 
 			for(int i = 0; i < errorSources.length; i++)
 			{
@@ -57,21 +59,23 @@ public class ErrorHighlight implements TextAreaHighlight
 					textArea.getBuffer(),physicalLine);
 
 				if(lineErrors != null)
-					paintLineErrors(lineErrors,gfx,physicalLine,y);
+				{
+					paintLineErrors(lineErrors,gfx,physicalLine,
+						start,end,y);
+				}
 			}
 		}
 	} //}}}
 
 	//{{{ getToolTipText() method
-	public String getToolTipText(MouseEvent evt)
+	public String getToolTipText(int x, int y)
 	{
 		ErrorSource[] errorSources = ErrorSource.getErrorSources();
 		if(!textArea.getBuffer().isLoaded())
 			return null;
 
-		int y = evt.getY();
-		int line = textArea.virtualToPhysical(textArea.yToLine(y));
-		int offset = -1;
+		int offset = textArea.xyToOffset(x,y);
+		int line = textArea.getLineOfOffset(offset);
 
 		for(int i = 0; i < errorSources.length; i++)
 		{
@@ -81,10 +85,6 @@ public class ErrorHighlight implements TextAreaHighlight
 
 			if(lineErrors == null)
 				continue;
-
-			// delay calling xToOffset() which is 'expensive'
-			if(offset == -1)
-				offset = textArea.xToOffset(line,evt.getX());
 
 			for(int j = 0; j < lineErrors.length; j++)
 			{
@@ -104,10 +104,11 @@ public class ErrorHighlight implements TextAreaHighlight
 	//{{{ Private members
 	private JEditTextArea textArea;
 	private Segment seg;
+	private Point point;
 
 	//{{{ paintLineErrors() method
 	private void paintLineErrors(ErrorSource.Error[] lineErrors,
-		Graphics gfx, int line, int y)
+		Graphics2D gfx, int line, int _start, int _end, int y)
 	{
 		for(int i = 0; i < lineErrors.length; i++)
 		{
@@ -128,11 +129,15 @@ public class ErrorHighlight implements TextAreaHighlight
 				}
 			}
 
-			start = textArea.offsetToX(line,start);
-			if(end == 0)
-				end = textArea.offsetToX(line,textArea.getLineLength(line));
+			if(start + textArea.getLineStartOffset(line) >= _start)
+				start = textArea.offsetToXY(line,start,point).x;
 			else
-				end = textArea.offsetToX(line,end);
+				start = 0;
+
+			if(end == 0 || end + textArea.getLineStartOffset(line) >= _end)
+				end = textArea.offsetToXY(line,textArea.getLineLength(line),point).x;
+			else
+				end = textArea.offsetToXY(line,end,point).x;
 
 			gfx.setColor(ErrorListPlugin.getErrorColor(error.getErrorType()));
 			paintWavyLine(gfx,y,start,end);
@@ -140,10 +145,8 @@ public class ErrorHighlight implements TextAreaHighlight
 	} //}}}
 
 	//{{{ paintWavyLine() method
-	private void paintWavyLine(Graphics gfx, int y, int start, int end)
+	private void paintWavyLine(Graphics2D gfx, int y, int start, int end)
 	{
-		y += textArea.getPainter().getFontMetrics().getHeight();
-
 		for(int i = start; i < end; i+= 6)
 		{
 			gfx.drawLine(i,y + 3,i + 3,y + 1);
