@@ -1,0 +1,11 @@
+plugin.activator.ActivatorPlugin.name=Activator
+plugin.activator.ActivatorPlugin.author=Brad Mace
+plugin.activator.ActivatorPlugin.version=1.0.0
+plugin.activator.ActivatorPlugin.depend.0=jdk 1.4.1
+plugin.activator.ActivatorPlugin.depend.1=jedit 04.02.08.00
+plugin.activator.ActivatorPlugin.activate=defer
+
+activator.title=Activator
+activator.label=Activator
+
+plugin.activator.ActivatorPlugin.menu-item=activator

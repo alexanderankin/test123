@@ -1,0 +1,21 @@
+Rename 1.0.1
+
+Requirements:
+	* JDK 1.4.1
+	* jEdit 4.2pre8
+
+Announcement:
+Fixed bug where options wouldn't save if !table.isEditing()
+
+Source:
+	plugins/Rename
+	tag: release-1_0_1
+
+Short Description:
+	Allows you to rename dockable windows, actions, plugins, and option panes.
+
+Long Description:
+	Allows you to rename dockable windows,actions, plugins, and option panes.  
+	This is useful for shortening the names of docked windows, and for translating 
+	GUI elements into your native language.
+
