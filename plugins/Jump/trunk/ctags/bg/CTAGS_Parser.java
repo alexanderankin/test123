@@ -2,28 +2,26 @@ package ctags.bg;
 // * :tabSize=4:indentSize=4:
 // * :folding=explicit:collapseFolds=1:
 
+//{{{ imports
 import java.util.*;
-import java.io.*;
-/**
-*
-*/
+import java.io.*; 
+//}}}
+
 public class CTAGS_Parser implements Serializable
 {
-    /**
-    *  SET true to sort ctags output (--sort=yes)
-    */
-    public boolean sort = false;
-    /**
-    * SET "pattern" or "numbers" (--excmd=pattern)
-    */
-    public String excmd = "pattern";
-    private String[] ctags_args;
+//{{{ fields
+/**
+*  SET true to sort ctags output (--sort=yes)
+*/
+public boolean sort = false;
+/**
+* SET "pattern" or "numbers" (--excmd=pattern)
+*/
+public String excmd = "pattern";
+private String[] ctags_args; 
+//}}}
     
-    //**************************************************************************
-    // CONSTRUCTOR(S)
-    //**************************************************************************
-
-    // --sort=yes/no, excmd="pattern"/"number"
+//{{{ CONSTRUCTOR
     public CTAGS_Parser()
     {
         String s = new String();
@@ -49,31 +47,16 @@ public class CTAGS_Parser implements Serializable
 
         ctags_args[0] = CTAGS_BG.CTAGS_EXECUTABLE;
         ctags_args[1] = "--verbose=yes";
-        //ctags_args[2] = "--extra=+q-f";
         ctags_args[2] = s;
         ctags_args[3] = this.excmd;
         ctags_args[4] = "-f";
         ctags_args[5] = "-";
         ctags_args[6] = "";
 
-    }
-
-    //**************************************************************************
-    // PUBLIC
-    //**************************************************************************
+    } //}}}
     
-    // public void setSort(boolean s)
-    // {
-    //     this.sort = s;    
-    // }
-    
-    // public boolean isSorted()
-    // {
-    //     return this.sort;   
-    // }
-    
-    
-    /**
+//{{{ parse(String filename)
+        /**
     * Parse file and return new CTAGS_Buffer
     */
     public CTAGS_Buffer parse(String filename) throws IOException
@@ -81,20 +64,20 @@ public class CTAGS_Parser implements Serializable
         Vector v = new Vector();
         v.add(filename);
         return doParse(v);
-    }
+    } //}}}
 
-    /**
+//{{{ parse(Vector filenames)
+        /**
     * Parse list file and return new CTAGS_Buffer
     */
     public CTAGS_Buffer parse(Vector filenames) throws IOException
     {
         return doParse(filenames);
-    }
+    } //}}}
 
-    //**************************************************************************
-    // PRIVATE
-    //**************************************************************************
+//{{{ PRIVATE 
 
+//{{{ checkUnsupportedExtensions
     private boolean checkUnsupportedExtensions(String fn)
     {
 
@@ -112,10 +95,9 @@ public class CTAGS_Parser implements Serializable
         }
 
         return true;
-    }
+    } //}}}
 
-    // End of checkUnsupportedExtensions
-
+//{{{ doParse
     private CTAGS_Buffer doParse(Vector f) throws IOException
     {
         CTAGS_Buffer b = new CTAGS_Buffer(this);
@@ -139,19 +121,12 @@ public class CTAGS_Parser implements Serializable
             return null;
         }
         return b;
-    }
+    } //}}}
 
-    private CTAGS_Buffer parseFile(String fn,
-            String[] arguments) throws IOException
+//{{{ parseFile
+    private CTAGS_Buffer parseFile(String fn, String[] arguments) throws IOException
     {
-
         arguments[6] = fn;
-        
-        // TESTING
-        // for (int p=0 ; p<arguments.length; p++)
-        // {
-            // System.out.println("CTAGS: TESTING - "+arguments[p]);   
-        // }
         
         Process ctags = Runtime.getRuntime().exec(arguments);
         BufferedReader in = new BufferedReader(
@@ -166,10 +141,12 @@ public class CTAGS_Parser implements Serializable
             {
                 continue;
             }
+            
             buff.add(new CTAGS_Entry(line));
-
         }
         return buff;
-    }
+    } //}}}
+    
+ //}}}
 
 }

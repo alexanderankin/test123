@@ -2,16 +2,19 @@ package ctags.bg;
 // * :tabSize=4:indentSize=4:
 // * :folding=explicit:collapseFolds=1:
 
+//{{{ imports
 import ctags.bg.*;
-import java.io.*;
+import java.io.*; 
+//}}}
 /**
 * This class represents a one tag (line from ctags output), which splitted into logical units.
-* For everything you need to know about this tag - available by its methods. getExtensionFields(), getFileName(), etc.
+* For everything you need to know about this tag - available by its methods. getExtensionFields(), getFileName(), etc. 
 */
-public class CTAGS_Entry implements Serializable
+public class CTAGS_Entry implements Serializable  
 {
 
-    private String toString;
+//{{{ fields
+        private String toString;
     private String Tag_Name;
     private String File_Name;
     private String Ex_Cmd;
@@ -19,24 +22,12 @@ public class CTAGS_Entry implements Serializable
     private String Signature;
     // In Java mode, for example: "methods" is description of signature "m"
     private String Signature_Descr;
-    private String Extension_Fields;
+    private String Extension_Fields; 
+//}}}
 
-    //**************************************************************************
-    // CONSTRUCTOR(S)
-    //**************************************************************************
-
+//{{{ CONSTRUCTOR
     public CTAGS_Entry(String LineCtagsOutput)
     {
-
-        //        int index = LineCtagsOutput.lastIndexOf(";\"\t");
-        //
-        //        //Grab Signature
-        //        Signature = LineCtagsOutput.substring(index + 3, index + 4);
-
-        //TODO Signature_Descr!!!
-        //Signature_Descr = "temporary descr";
-
-        //Define fields
         try
         {
 
@@ -71,67 +62,73 @@ public class CTAGS_Entry implements Serializable
             System.out.println("ex_f = "+Extension_Fields);
         }
 
-    }
+    } //}}}
 
+//{{{ toString 
     public String toString()
     {
         return this.toString;
-    }
+    } //}}}
 
-    //**************************************************************************
-    // PUBLIC METHODS
-    //**************************************************************************
-
-    // I try to use this class in Jump.
-    // TagsJumpAction.java and WorkspacesTagsAction.java needs to display different presentations of same CTAGS_Entry (AbstractListModel).
-    // <TAG><SPACE><(EXCMD)> - for TagsJumpAction.java, and <FILENAME><SPACE><(EXCMD)> - for WorkspacesTagsAction.java
-    // First, I tryed to define my own classes, which extends CTAGS_Entry and overrides toString(). But it always ends by ClassCastError at startup.
-    // If you know the propely methods to extend CTAGS_Entry - mail me please. pavlikus@front.ru
-    //
+/* I try to use this class in Jump.
+ TagsJumpAction.java and WorkspacesTagsAction.java needs to display different presentations of same CTAGS_Entry (AbstractListModel).
+ <TAG><SPACE><(EXCMD)> - for TagsJumpAction.java, and <FILENAME><SPACE><(EXCMD)> - for WorkspacesTagsAction.java
+ First, I tryed to define my own classes, which extends CTAGS_Entry and overrides toString(). But it always ends by ClassCastError at startup.
+ If you know the propely methods to extend CTAGS_Entry - mail me please. pavlikus@front.ru
+ */
+    
+//{{{ setToStringValue
     public void setToStringValue(String i)
     {
         this.toString = i;
-    }
+    } //}}}
 
+//{{{ getTagName 
     /**
     *  return tag name. For ctags line: Jext<TAB>pathtoJext.java<TAB>public class Jext<TAB> c - it return "Jext"
     */
     public String getTagName()
     {
         return Tag_Name;
-    }
+    } //}}}
+
+//{{{ getFileName
     /**
     *  For ctags line: Jext<TAB>pathtoJext.java<TAB>public class Jext<TAB> c - it return path to Jext.java
     */
     public String getFileName()
     {
         return File_Name; 
-    }
+    } //}}}
 
-
+//{{{ getExCmd
     /**
     *  For ctags line: Jext<TAB>pathtoJext.java<TAB>public class Jext<TAB> c - it return "public class Jext"
     */   
     public String getExCmd()
     {
         return Ex_Cmd;
-    }
+    } //}}}
 
+//{{{ getExtensionFields
     /**
     *   Return everything after Excmd from line of ctags output.
     */
     public String getExtensionFields()     
     {
         return Extension_Fields;
-    }
+    } //}}}
 
+//{{{ getSignature
     public String getSignature() 
     {
         return Signature;
-    }
+    } //}}}
 
+//{{{ getSignatureDescr
     public String getSignatureDescr() 
     {
         return Signature_Descr;
-    }
+    } //}}}
+
 }
