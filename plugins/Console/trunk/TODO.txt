@@ -1,14 +1,13 @@
-- cvs remove console/Console.props, add Console.props
+- better handling of warning -vs- error
 - finish commando: CHOICE tag, TOGGLE_ENTRY tag, test, debug
 - improve commando error handling
 - documentation generated with docbook
 - support COMMANDs with no shell; they're just evaluated, that's it
-- separate user and default error pattern namespace
-- error patterns option pane
 - variables:
   $<char> abbreviation for ${<char>}
   some variables ($d, etc) have default values
   others loaded from option pane and can be set with %set/%unset
+  support OS-specific means to load environment variables
 - aliases option pane
 - finish built-ins:
   %ls, with colored output

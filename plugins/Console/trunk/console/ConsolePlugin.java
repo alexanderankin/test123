@@ -136,7 +136,7 @@ public class ConsolePlugin extends EBPlugin
 		Vector vector = new Vector();
 
 		StringTokenizer st = new StringTokenizer(jEdit.getProperty(
-			"commando.built-ins"));
+			"commando.default"));
 		while(st.hasMoreTokens())
 		{
 			String name = st.nextToken();
@@ -200,36 +200,58 @@ public class ConsolePlugin extends EBPlugin
 		return -1;
 	}
 
+	static ErrorMatcher[] getErrorMatchers()
+	{
+		if(errorMatchers == null)
+			loadMatchers();
+
+		return errorMatchers;
+	}
+
 	static void loadMatchers()
 	{
-		Vector vector = new Vector();
-		int i = 0;
-		String match;
-		while((match = jEdit.getProperty("console.error." + i + ".match")) != null)
+		Vector vec = new Vector();
+
+		loadMatchers(true,jEdit.getProperty("console.error.user"),vec);
+		loadMatchers(false,jEdit.getProperty("console.error.default"),vec);
+
+		errorMatchers = new ErrorMatcher[vec.size()];
+		vec.copyInto(errorMatchers);
+	}
+
+	static void loadMatchers(boolean user, String list, Vector vec)
+	{
+		if(list == null)
+			return;
+
+		StringTokenizer st = new StringTokenizer(list);
+
+		while(st.hasMoreTokens())
 		{
-			String name = jEdit.getProperty("console.error." + i + ".name");
-			String filename = jEdit.getProperty("console.error." + i + ".filename");
-			String line = jEdit.getProperty("console.error." + i + ".line");
-			String message = jEdit.getProperty("console.error." + i + ".message");
-
-			try
-			{
-				ErrorMatcher matcher = new ErrorMatcher(name,match,
-					filename,line,message);
-				vector.addElement(matcher);
-			}
-			catch(REException re)
-			{
-				Log.log(Log.ERROR,ConsolePlugin.class,
-					"Invalid regexp: " + match);
-				Log.log(Log.ERROR,ConsolePlugin.class,re);
-			}
-
-			i++;
+			loadMatcher(user,st.nextToken(),vec);
 		}
+	}
 
-		errorMatchers = new ErrorMatcher[vector.size()];
-		vector.copyInto(errorMatchers);
+	static void loadMatcher(boolean user, String internalName, Vector vec)
+	{
+		String name = jEdit.getProperty("console.error." + internalName + ".name");
+		String match = jEdit.getProperty("console.error." + internalName + ".match");
+		String filename = jEdit.getProperty("console.error." + internalName + ".filename");
+		String line = jEdit.getProperty("console.error." + internalName + ".line");
+		String message = jEdit.getProperty("console.error." + internalName + ".message");
+
+		try
+		{
+			ErrorMatcher matcher = new ErrorMatcher(user,internalName,
+				name,match,filename,line,message);
+			vec.addElement(matcher);
+		}
+		catch(REException re)
+		{
+			Log.log(Log.ERROR,ConsolePlugin.class,
+				"Invalid regexp: " + match);
+			Log.log(Log.ERROR,ConsolePlugin.class,re);
+		}
 	}
 
 	// private members
