@@ -51,6 +51,7 @@ import org.gjt.sp.util.Log;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBComponent;
@@ -71,14 +72,17 @@ import projectviewer.event.ProjectViewerEvent;
 import projectviewer.event.ProjectViewerListener;
 
 import projectviewer.action.Action;
+import projectviewer.action.ExpandAllAction;
+import projectviewer.action.CollapseAllAction;
 import projectviewer.action.EditProjectAction;
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.importer.SingleFileImporter;
 //}}}
 
 /**
- *  A Project Viewer plugin for jEdit.
+ *  Main GUI for the project viewer plugin.
  *
+ *	@author		Marcelo Vanzin (with much code from original version)
  *	@version    $Id$
  */
 public final class ProjectViewer extends JPanel
@@ -95,6 +99,8 @@ public final class ProjectViewer extends JPanel
 	//{{{ Default toolbar actions (static initializer)
 	static {
 		actions.add(new EditProjectAction());
+		actions.add(new ExpandAllAction());
+		actions.add(new CollapseAllAction());
 	} //}}}
 	
 	//{{{ registerAction(Action) method
@@ -171,7 +177,7 @@ public final class ProjectViewer extends JPanel
 			v.pList.addItem(CREATE_NEW_PROJECT);
 			v.pList.addItem(VPTRoot.getInstance());
 			
-			for (Iterator it2 = ProjectManager.getInstance().getProjects(); it.hasNext(); ) {
+			for (Iterator it2 = ProjectManager.getInstance().getProjects(); it2.hasNext(); ) {
 				v.pList.addItem(it2.next());
 			}
 			
@@ -312,6 +318,9 @@ public final class ProjectViewer extends JPanel
 				if (v.workingFileTree != null) {
 					((VPTWorkingFileListModel)v.workingFileTree.getModel()).removeRef(p);
 				}
+				if (p == v.treeRoot) {
+					v.setProject(null);
+				}
 			}
 		}
 		updateProjectCombos();
@@ -370,8 +379,11 @@ public final class ProjectViewer extends JPanel
 		if (config.getLastProject() != null) {
 			VPTProject p = ProjectManager.getInstance().getProject(config.getLastProject());
 			if (p != null) {
+				DISABLE_EVENTS = true;
 				setProject(p);
 				pList.setSelectedItem(p);
+				DISABLE_EVENTS = false;
+				fireProjectLoaded(p);
 			}
 		}
 	} //}}}
@@ -455,6 +467,34 @@ public final class ProjectViewer extends JPanel
 			((ProjectViewerListener)i.next()).projectLoaded(evt);
 		}
 		
+	} //}}}
+	
+	//{{{ closeProject(VPTProject) method
+	/**
+	 *	Closes a project: searches the open buffers for files related to the
+	 *	given project and closes them (if desired) and/or saves them to the
+	 *	open list (if desired).
+	 */
+	private void closeProject(VPTProject p, boolean close, boolean remember) {
+		Buffer[] bufs = jEdit.getBuffers();
+		for (int i = 0; i < bufs.length; i++) {
+			if (p.getFile(bufs[i].getPath()) != null) {
+				if (close) {
+					jEdit.closeBuffer(view, bufs[i]);
+				}
+				if (remember) {
+					p.addOpenFile(bufs[i].getPath());
+				}
+			}
+		}
+	} //}}}
+	
+	//{{{ openProject(VPTProject) method
+	/** Opens all the files that were previously opened in the project. */
+	private void openProject(VPTProject p) {
+		for (Iterator i = p.getOpenFiles(); i.hasNext(); ) {
+			jEdit.openFile(view, (String)i.next());
+		}
 	} //}}}
 	
 	//{{{ showTrees() method
@@ -571,10 +611,20 @@ public final class ProjectViewer extends JPanel
 	 *	then the root node is set to the "VPTRoot" node.
 	 */
 	public void setProject(VPTProject p) {
-		// TODO: deactivate current project, etc?
+		if (treeRoot.isProject()) {
+			((VPTProject)treeRoot).clearOpenFiles();
+			if (config.getCloseFiles() || config.getRememberOpen()) {
+				closeProject((VPTProject)treeRoot, config.getCloseFiles(),
+					config.getRememberOpen());
+			}
+		}
+
 		if (p != null) {
 			treeRoot = p;
 			config.setLastProject(p.getName());
+			if (config.getRememberOpen()) {
+				openProject(p);
+			}
 		} else {
 			treeRoot = VPTRoot.getInstance();
 			config.setLastProject(null);
@@ -585,6 +635,11 @@ public final class ProjectViewer extends JPanel
 			((DefaultTreeModel)fileTree.getModel()).setRoot(treeRoot);
 		if (workingFileTree != null)
 			((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
+		
+		if (pList.getSelectedItem() != p) {
+			pList.setSelectedItem(p);
+		}
+		
 		fireProjectLoaded(p);
 	} //}}}
 	
