@@ -131,8 +131,7 @@ public class SideKickParsedData
 		Asset asset = (Asset)userObject;
 
 		// check if the caret in inside this tag
-		if(dot >= asset.start.getOffset() && (asset.end == null
-			|| dot < asset.end.getOffset()))
+		if(dot >= asset.start.getOffset() && dot < asset.end.getOffset())
 		{
 			// check if any of our children contain the caret
 			for(int i = childCount - 1; i >= 0; i--)

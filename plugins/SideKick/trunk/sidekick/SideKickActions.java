@@ -132,16 +132,11 @@ public class SideKickActions
 		}
 		Asset asset = (Asset)((DefaultMutableTreeNode)path
 			.getLastPathComponent()).getUserObject();
-		if(asset.end != null)
-		{
-			textArea.setCaretPosition(asset.end.getOffset());
-			textArea.addToSelection(
-				new Selection.Range(
-					asset.start.getOffset(),
-					asset.end.getOffset()));
-		}
-		else
-			textArea.setCaretPosition(asset.start.getOffset());
+		textArea.setCaretPosition(asset.end.getOffset());
+		textArea.addToSelection(
+			new Selection.Range(
+				asset.start.getOffset(),
+				asset.end.getOffset()));
 	} //}}}
 
 	//{{{ goToPrevAsset() method
@@ -172,7 +167,7 @@ public class SideKickActions
 		{
 			Asset asset = (Asset)((DefaultMutableTreeNode)node.getChildAt(i))
 				.getUserObject();
-			if(asset.end != null && caret == asset.end.getOffset())
+			if(caret == asset.end.getOffset())
 			{
 				textArea.setCaretPosition(asset.start.getOffset());
 				return;
@@ -239,7 +234,7 @@ public class SideKickActions
 		{
 			Asset asset = (Asset)((DefaultMutableTreeNode)node.getChildAt(i))
 				.getUserObject();
-			if(asset.end != null && caret == asset.end.getOffset())
+			if(caret == asset.end.getOffset())
 			{
 				if(i != node.getChildCount() - 1)
 				{

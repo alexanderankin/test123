@@ -8,4 +8,4 @@
 - not always reparsing on save
 - work thread priority
 - auxilliary parsers -- eg tasklist
-- end cannot be null
+- narrow to asset command
