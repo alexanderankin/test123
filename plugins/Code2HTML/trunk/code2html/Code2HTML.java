@@ -37,6 +37,7 @@ import org.gjt.sp.jedit.textarea.Selection;
 import org.gjt.sp.util.Log;
 
 import code2html.html.HtmlCssStyle;
+import code2html.html.HtmlDocument;
 import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
 import code2html.html.HtmlStyle;
@@ -44,12 +45,14 @@ import code2html.html.HtmlStyle;
 
 public class Code2HTML
 {
-    private Buffer      buffer    = null;
-    private Selection[] selection = null;
+    private Buffer       buffer    = null;
+    private Selection[]  selection = null;
 
-    private HtmlStyle   style     = null;
-    private HtmlGutter  gutter    = null;
-    private HtmlPainter painter   = null;
+    private HtmlStyle    style     = null;
+    private HtmlGutter   gutter    = null;
+    private HtmlPainter  painter   = null;
+
+    private HtmlDocument document  = null;
 
 
     public Code2HTML(
@@ -63,9 +66,13 @@ public class Code2HTML
             buffer.getTabSize()
         );
 
-        this.style   = config.getStyle();
-        this.gutter  = config.getGutter();
-        this.painter = config.getPainter();
+        this.style    = config.getStyle();
+        this.gutter   = config.getGutter();
+        this.painter  = config.getPainter();
+
+        this.document = new HtmlDocument(
+            this.style, this.gutter, buffer.getName(), "\n"
+        );
     }
 
 
@@ -91,7 +98,7 @@ public class Code2HTML
         try {
             BufferedWriter out = new BufferedWriter(sw);
 
-            this.htmlOpen(out);
+            this.document.htmlOpen(out);
 
             if (this.selection == null) {
                 this.htmlText(out, physicalFirst, physicalLast);
@@ -123,7 +130,7 @@ public class Code2HTML
                 }
             }
 
-            this.htmlClose(out);
+            this.document.htmlClose(out);
 
             out.flush();
             out.close();
@@ -133,30 +140,6 @@ public class Code2HTML
         }
 
         return sw.toString();
-    }
-
-
-    private void htmlOpen(Writer out) throws IOException
-    {
-        out.write(
-              "<HTML>\n"
-            + "<HEAD>\n"
-            + "<TITLE>" + this.buffer.getName() + "</TITLE>\n"
-        );
-        if (this.style instanceof HtmlCssStyle) {
-            out.write(
-                  "<STYLE TYPE=\"text/css\"><!--\n"
-                + this.style.toCSS()
-                + ((this.gutter != null) ? this.gutter.toCSS() : "")
-                + "-->\n"
-                + "</STYLE>\n"
-            );
-        }
-        out.write(
-              "</HEAD>\n"
-            + "<BODY BGCOLOR=\"#FFFFFF\">\n"
-        );
-        out.write("<PRE>");
     }
 
 
@@ -188,15 +171,6 @@ public class Code2HTML
             }
             out.write("\n");
         }
-    }
-
-
-    private void htmlClose(Writer out) throws IOException {
-        out.write("</PRE>");
-        out.write(
-              "</BODY>\n"
-            + "</HTML>\n"
-        );
     }
 
 
