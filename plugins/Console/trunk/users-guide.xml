@@ -1172,10 +1172,6 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
      context menu, added to the tool bar, etc.
     </para></listitem>
     <listitem><para>
-     On Windows, entering <command>X:</command> where <command>X</command> is
-     a drive letter is now the same as <command>cd X:</command>.
-    </para></listitem>
-    <listitem><para>
      Previously, lines of output would only be checked against warning regexps
      if they already matched an error regexp. This didn't work for some
      compilers where the warnings are not of the same form as errors, so this
