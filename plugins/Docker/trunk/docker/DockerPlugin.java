@@ -51,13 +51,22 @@ public class DockerPlugin extends EBPlugin
    static private Icon dockIcon;
 
    private Map handlers;
+   private DockerConfig config;
 
    /**
     * Create a new <code>DockerPlugin</code>
     */
-   public DockerPlugin()
-   {
+   public DockerPlugin() {
       handlers = new HashMap(2);
+      config = new DockerConfig();
+   }
+
+   public DockerConfig getConfig() {
+      return config;
+   }
+
+   public ViewHandler getViewHandler(View view) {
+      return (ViewHandler) handlers.get(view);
    }
 
    /**
@@ -81,7 +90,7 @@ public class DockerPlugin extends EBPlugin
          if (editPaneUpdate.getWhat().equals(EditPaneUpdate.CREATED) ||
              editPaneUpdate.getWhat().equals(EditPaneUpdate.DESTROYED)) {
             View view = editPaneUpdate.getEditPane().getView();
-            ViewHandler viewHandler = (ViewHandler) handlers.get(view);
+            ViewHandler viewHandler = getViewHandler(view);
             if (viewHandler != null) {
                if (editPaneUpdate.getWhat().equals(EditPaneUpdate.CREATED)) {
                   viewHandler.editPaneCreated(editPaneUpdate.getEditPane());
@@ -142,30 +151,6 @@ public class DockerPlugin extends EBPlugin
    }
 
    /**
-    * Returns <code>true</code> if the named dock is enabled.
-    */
-   public boolean isEnabled(String dockName)
-   {
-      return jEdit.getBooleanProperty(formatPropertyName(dockName + ".enabled"), true);
-   }
-
-   /**
-    * Sets whether a given dock is enabled.
-    */
-   public void setEnabled(String dockName, boolean enabled)
-   {
-      jEdit.setBooleanProperty(formatPropertyName(dockName + ".enabled"), enabled);
-   }
-
-   /**
-    * Gets the Property attribute of the DockerPlugin class
-    */
-   static public String getProperty(String name)
-   {
-      return jEdit.getProperty(formatPropertyName(name));
-   }
-
-   /**
     * Gets the Plugin attribute of the DockerPlugin class
     */
    static public DockerPlugin getPlugin()
@@ -214,7 +199,7 @@ public class DockerPlugin extends EBPlugin
                view.getEditPane().getTextArea().requestFocus();
             } else {
                view.getDockableWindowManager().showDockableWindow(name);
-               view.getDockableWindowManager().getDockable(name).requestDefaultFocus();
+               //view.getDockableWindowManager().getDockable(name).requestDefaultFocus();
             }
          }
       });
@@ -232,14 +217,6 @@ public class DockerPlugin extends EBPlugin
             return names[i];
       }
       return null;
-   }
-
-   /**
-    * Format a property name.
-    */
-   static private String formatPropertyName(String name)
-   {
-      return "docker." + name;
    }
 
    /**
@@ -266,7 +243,7 @@ public class DockerPlugin extends EBPlugin
       public String getLabel()
       {
          if (dockableName == null) {
-            return jEdit.getProperty(formatPropertyName("no-dockable.label"));
+            return config.getProperty("no-dockable.label");
          } else {
             return dockableWindowManager.getDockableTitle(dockableName);
          }
@@ -296,4 +273,3 @@ public class DockerPlugin extends EBPlugin
    }
 
 }
-
