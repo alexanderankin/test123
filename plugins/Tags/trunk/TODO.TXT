@@ -1,6 +1,6 @@
 Before 1.0 (public release)
 ---------------------------
-      
+
 
 Version > initial public release version
 ----------------------------------------
@@ -45,6 +45,7 @@ Version > initial public release version
 - Progress dialog with the ability to stop if tagging is taking more than 1
   second...? 
   - Use I/O progress monitor?
+  - Display wait cursor if taking more than a certain length of time.
 
 - Tag stack
    - Ability to view tag stack and select to goto item...
