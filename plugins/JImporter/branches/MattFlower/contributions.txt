@@ -1,0 +1,17 @@
+CONTRIBUTIONS.txt
+
+If you would like to contribute, I welcome your contribution!
+
+BUGS
+----
+If you have a bug fix that you'd like to donate, please send it in unified diff
+format to MattFlower@yahoo.com.  Please include a bug id from the jedit bug list
+if there is one.  If there isn't, please include a detailed description of what
+you are fixing.
+
+If you are submitting more than a line or two, please remember to comment your
+code.  I've always been kind of a stickler about tidy code.
+
+TODO ITEMS
+----------
+
