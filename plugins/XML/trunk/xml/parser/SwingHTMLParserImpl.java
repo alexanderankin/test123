@@ -134,9 +134,11 @@ public class SwingHTMLParserImpl extends XmlParser
 					offset = buffer.getLength();
 
 				Position pos = buffer.createPosition(offset);
+				int line = buffer.getLineOfOffset(offset);
+				int column = offset - buffer.getLineStartOffset(line);
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
 					new XmlTag(t.toString(),
-					pos,attributesToSAX(a,t.toString(),pos)));
+					pos,attributesToSAX(a,t.toString(),line,column)));
 
 				//if(!Boolean.TRUE.equals(a.getAttribute(IMPLIED)))
 				{
@@ -198,10 +200,12 @@ public class SwingHTMLParserImpl extends XmlParser
 					offset = buffer.getLength();
 
 				Position pos = buffer.createPosition(offset);
+				int line = buffer.getLineOfOffset(offset);
+				int column = offset - buffer.getLineStartOffset(line);
 
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
 					new XmlTag(t.toString(),
-					pos,attributesToSAX(a,t.toString(),pos)));
+					pos,attributesToSAX(a,t.toString(),line,column)));
 
 				if(!currentNodeStack.isEmpty())
 				{
@@ -242,7 +246,7 @@ public class SwingHTMLParserImpl extends XmlParser
 
 		//{{{ attributesToSAX() method
 		private Attributes attributesToSAX(MutableAttributeSet a,
-			String element, Position pos)
+			String element, int line, int column)
 		{
 			ElementDecl elementDecl = data.getElementDecl(element);
 
@@ -268,7 +272,11 @@ public class SwingHTMLParserImpl extends XmlParser
 						if(type.equals("ID"))
 						{
 							if(!data.ids.contains(value))
-								data.ids.add(new IDDecl(value,element,pos));
+							{
+								data.ids.add(new IDDecl(
+									buffer.getPath(),
+									value,element,line,column));
+							}
 						}
 					}
 				}

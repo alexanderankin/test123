@@ -2,7 +2,6 @@ XML 0.11:
 
 - document xml.root property
 - xcatalog format
-- fatal errors with null uri
 
 before XML 1.0:
 

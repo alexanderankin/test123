@@ -190,7 +190,7 @@ public class XmlCompletion implements SideKickCompletion
 				textArea.setSelectedText(entity.name.substring(
 					word.length()) + ";");
 			}
-			else if(obj instanceof IDDecl)
+			/* else if(obj instanceof IDDecl)
 			{
 				IDDecl id = (IDDecl)obj;
 
@@ -201,7 +201,7 @@ public class XmlCompletion implements SideKickCompletion
 				}
 				else
 					textArea.setSelectedText(id.id);
-			}
+			} */
 		}
 
 		return false;
