@@ -86,6 +86,8 @@ public class SqlPlugin extends EBPlugin
 
     SqlServerType.loadAll();
 
+    registerJdbcClassPath();
+
     final Hashtable types = SqlServerType.getAllTypes();
 
     for ( Enumeration e = types.elements(); e.hasMoreElements();  )
@@ -182,6 +184,18 @@ public class SqlPlugin extends EBPlugin
 
 
   /**
+   *Sets the JdbcClassPath attribute of the SqlPlugin class
+   *
+   * @param  jdbcClassPath  The new JdbcClassPath value
+   * @since
+   */
+  public static void setJdbcClassPath( String jdbcClassPath )
+  {
+    setProperty( "sql.jdbcClassPath", jdbcClassPath );
+  }
+
+
+  /**
    *  Gets the Property attribute of the SqlPlugin class
    *
    * @param  name  Description of Parameter
@@ -194,6 +208,18 @@ public class SqlPlugin extends EBPlugin
       loadProperties();
 
     return props.getProperty( name );
+  }
+
+
+  /**
+   *Gets the JdbcClassPath attribute of the SqlPlugin class
+   *
+   * @return    The JdbcClassPath value
+   * @since
+   */
+  public static String getJdbcClassPath()
+  {
+    return getProperty( "sql.jdbcClassPath" );
   }
 
 
@@ -448,6 +474,46 @@ public class SqlPlugin extends EBPlugin
     final String name = SqlUtils.getServerForPublishing( view );
     if ( name != null )
       publishBuffer( view, name );
+  }
+
+
+  /**
+   *Constructor for the registerJdbcClass object
+   *
+   * @since
+   */
+  protected static void registerJdbcClassPath()
+  {
+    final String jdbcClassPath = getJdbcClassPath();
+    if ( jdbcClassPath == null ||
+        jdbcClassPath.length() == 0 )
+      return;
+    final StringTokenizer st = new StringTokenizer( jdbcClassPath, ";:" );
+    for ( ; st.hasMoreTokens();  )
+    {
+      final String path = st.nextToken();
+      if ( !( new File( path ).exists() ) )
+      {
+        Log.log( Log.ERROR, SqlPlugin.class,
+            "JDBC classpath component " + path + " does not exist" );
+        continue;
+      }
+      final EditPlugin.JAR jar = jEdit.getPluginJAR( path );
+      if ( jar == null )
+      {// not registered yet
+        try
+        {
+          jEdit.addPluginJAR( new EditPlugin.JAR( path,
+              new JARClassLoader( path ) ) );
+        } catch ( IOException ex )
+        {
+          Log.log( Log.ERROR, SqlPlugin.class,
+              "Error loading the jdbc driver from " + path + ": " );
+          Log.log( Log.ERROR, SqlPlugin.class, ex );
+          continue;
+        }
+      }
+    }
   }
 
 
