@@ -23,7 +23,7 @@ package code2html;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import code2html.html.HTMLEntity;
+import code2html.html.HtmlEntity;
 
 
 public class Code2HTMLUtilities
@@ -70,7 +70,7 @@ public class Code2HTMLUtilities
         for (int i = 0; i < strLen; strOff++, i++) {
             c = str[strOff];
 
-            String entity = HTMLEntity.lookupEntity((short) c);
+            String entity = HtmlEntity.lookupEntity((short) c);
             if (entity != null) {
                 buf.append(str,off,len).append("&").append(entity).append(";");
                 off += len + 1; len = 0;

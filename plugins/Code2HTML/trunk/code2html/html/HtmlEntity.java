@@ -1,5 +1,5 @@
 /*
- * HTMLEntity.java
+ * HtmlEntity.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan,
  * list of entities borrowed from org.w3c.tidy.EntityTable
  * by Andy Quick <ac.quick@sympatico.ca>
@@ -25,7 +25,7 @@ package code2html.html;
 import java.util.Hashtable;
 
 
-public class HTMLEntity
+public class HtmlEntity
 {
     private static Hashtable codesToEntities;
     private static Hashtable entitiesToCodes;
