@@ -161,7 +161,51 @@ public class Jump
           foldja.showFoldsList();
     }
 //}}}    
-    
+
+//{{{ 
+    public void completeTag()
+    {
+        View view = jEdit.getActiveView();
+        
+        if (!isJumpEnabled()) return;
+        if (!isProjectLoaded()) 
+        {
+            System.out.println("Jump.completeTag: project not loaded!");
+            return;
+        }
+        
+        if (!JumpPlugin.isListenerAdded)
+        { 
+            System.out.println("completeTag: init JumpPlugin...");
+            JumpPlugin.init();
+        }
+        
+        if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
+        {   
+            JumpPlugin.getListener().reloadProjectForced();
+            if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag();    
+        }
+        else
+        {
+            System.out.println("completeTag: Setting active ProjectBuffer. ");
+            if (PVActions.getCurrentProject(view) != null)
+                {
+                    JumpPlugin.getListener().reloadProjectForced();
+                    ProjectBuffer b = ProjectBuffer.getProjectBuffer(PVActions.getCurrentProject(view).getName());
+                    
+                    if (b == null) 
+                    {
+                        System.out.println("completeTag() - Error during construct ProjectBuffer.");
+                        return;
+                    }
+                    
+                    JumpPlugin.setActiveProjectBuffer(b);
+                    if (JumpPlugin.getActiveProjectBuffer().PROJECT_CTBUFFER != null) JumpPlugin.pja.completeTag();
+                }
+        }
+    }
+//}}}
+
 //{{{ void reloadTagsOnProject()
     public void reloadTagsOnProject()
     {

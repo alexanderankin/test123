@@ -150,6 +150,24 @@ public class CTAGS_Buffer extends ArrayList
         return v;
     } //}}}
 
+    public Vector getEntresByStartPrefix(String prefix)
+    {
+        Vector v = new Vector();
+        CTAGS_Entry en;
+        for (int i = 0; i < this.size(); i++)
+        {
+            en = (CTAGS_Entry) this.get(i);
+            if(en.getTagName().startsWith(prefix))
+            {
+                if (!v.contains(en.getTagName()))
+                {
+                    v.add(en.getTagName());
+                }
+            }
+        }
+        return v;
+    }   
+    
 //{{{ addFileName
     public void addFileName(String f) 
     {

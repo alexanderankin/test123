@@ -39,5 +39,11 @@
         </CODE>
     </ACTION>
     
+    <ACTION NAME="JumpPlugin.completetag">
+        <CODE>
+            JumpPlugin.jump_actions.completeTag();
+        </CODE>
+    </ACTION>
+    
     
 </ACTIONS>
