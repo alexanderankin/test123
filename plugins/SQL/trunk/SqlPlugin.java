@@ -189,9 +189,15 @@ public class SqlPlugin extends EBPlugin
    * @param  jdbcClassPath  The new JdbcClassPath value
    * @since
    */
-  public static void setJdbcClassPath( String jdbcClassPath )
+  public static void setJdbcClassPath( String[] jdbcClassPath )
   {
-    setProperty( "sql.jdbcClassPath", jdbcClassPath );
+    final String[] oldCp = getJdbcClassPath();
+
+    for ( int i = oldCp.length; --i >= 0;  )
+      unsetProperty( "sql.jdbcClassPath." + i );
+
+    for ( int i = jdbcClassPath.length; --i >= 0;  )
+      setProperty( "sql.jdbcClassPath." + i, jdbcClassPath[i] );
   }
 
 
@@ -217,9 +223,18 @@ public class SqlPlugin extends EBPlugin
    * @return    The JdbcClassPath value
    * @since
    */
-  public static String getJdbcClassPath()
+  public static String[] getJdbcClassPath()
   {
-    return getProperty( "sql.jdbcClassPath" );
+    Vector v = new Vector();
+    int i = 0;
+    while ( true )
+    {
+      final String s = getProperty( "sql.jdbcClassPath." + i++ );
+      if ( s == null )
+        break;
+      v.addElement( s );
+    }
+    return (String[]) v.toArray( new String[0] );
   }
 
 
@@ -482,16 +497,16 @@ public class SqlPlugin extends EBPlugin
    *
    * @since
    */
-  protected static void registerJdbcClassPath()
+  public static void registerJdbcClassPath()
   {
-    final String jdbcClassPath = getJdbcClassPath();
+    final String[] jdbcClassPath = getJdbcClassPath();
     if ( jdbcClassPath == null ||
-        jdbcClassPath.length() == 0 )
+        jdbcClassPath.length == 0 )
       return;
-    final StringTokenizer st = new StringTokenizer( jdbcClassPath, ";:" );
-    for ( ; st.hasMoreTokens();  )
+
+    for ( int i = jdbcClassPath.length; --i >= 0;  )
     {
-      final String path = st.nextToken();
+      final String path = jdbcClassPath[i];
       if ( !( new File( path ).exists() ) )
       {
         Log.log( Log.ERROR, SqlPlugin.class,

@@ -246,11 +246,11 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
     final ResultSetMetaData rsmd = rs.getMetaData();
     final int colNumber = rsmd.getColumnCount();
-    final Vector columnNames = new Vector( colNumber );
-    final Vector columnTypes = new Vector( colNumber );
+    final String[] columnNames = new String[colNumber];
+    final String[] columnTypes = new String[colNumber];
     for ( int i = colNumber + 1; --i > 0;  )
     {
-      columnNames.insertElementAt( rsmd.getColumnName( i ), 0 );
+      columnNames[i] = rsmd.getColumnName( i );
 
       String type = rsmd.getColumnTypeName( i );
 
@@ -264,7 +264,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
       if ( rsmd.columnNoNulls == rsmd.isNullable( i ) )
         type += "/" + jEdit.getProperty( "sql.resultSet.colHeaders.notNullable" );
 
-      columnTypes.insertElementAt( type, 0 );
+      columnTypes[i] = type;
     }
 
     final Vector rowData = new Vector();
@@ -275,17 +275,20 @@ public class ResultSetWindow extends JPanel implements DockableWindow
       if ( ++recCount > maxRecs )
         break;
 
-      final Vector aRow = new Vector( colNumber );
+      final String[] aRow = new String[colNumber];
       for ( int i = colNumber + 1; --i > 0;  )
-        aRow.insertElementAt( rs.getString( i ), 0 );
+        aRow[i] = rs.getString( i );
 
       rowData.addElement( aRow );
     }
 
     Log.log( Log.DEBUG, ResultSetWindow.class,
-        "Got " + rowData.size() + " records in " + columnNames.size() + " columns" );
+        "Got " + rowData.size() + " records in " + columnNames.length + " columns" );
     return new Data
-        ( rowData, columnNames, columnTypes, recCount );
+        ( (String[][]) rowData.toArray( new String[0][] ),
+        columnNames,
+        columnTypes,
+        recCount );
   }
 
 
@@ -322,7 +325,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
   protected static class TableModel extends AbstractTableModel
   {
-    private Vector rowData;
+    private String rowData[][];
     private String columnHeaders[];
 
 
@@ -333,16 +336,16 @@ public class ResultSetWindow extends JPanel implements DockableWindow
      * @param  columnHeaders  Description of Parameter
      * @since
      */
-    public TableModel( Vector rowData, Vector columnHeaders )
+    public TableModel( String rowData[][], String columnHeaders[] )
     {
       this.rowData = rowData;// can be 0 records ...
-      this.columnHeaders = (String[]) columnHeaders.toArray( new String[]{""} );
+      this.columnHeaders = columnHeaders;
     }
 
 
     public int getRowCount()
     {
-      return rowData.size();
+      return rowData.length;
     }
 
 
@@ -354,12 +357,12 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
     public Object getValueAt( int r, int c )
     {
-      if ( r >= rowData.size() || r < 0 )
+      if ( r >= rowData.length || r < 0 )
         return null;
       if ( c >= columnHeaders.length || c < 0 )
         return null;
 
-      return ( (Vector) rowData.elementAt( r ) ).elementAt( c );
+      return rowData[r][c];
     }
 
 
@@ -391,7 +394,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
     public TableHeader( JTable table, Data data )
     {
       super( table.getColumnModel() );
-      types = (String[]) data.columnTypes.toArray( new String[]{""} );
+      types = data.columnTypes;
     }
 
 
@@ -410,9 +413,9 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
   protected static class Data
   {
-    public Vector rowData;
-    public Vector columnNames;
-    public Vector columnTypes;
+    public String rowData[][];
+    public String columnNames[];
+    public String columnTypes[];
     public int recCount;
 
 
@@ -425,9 +428,9 @@ public class ResultSetWindow extends JPanel implements DockableWindow
      * @param  columnTypes  Description of Parameter
      * @since
      */
-    public Data( Vector rowData,
-        Vector columnNames,
-        Vector columnTypes,
+    public Data( String rowData[][],
+        String columnNames[],
+        String columnTypes[],
         int recCount )
     {
       this.rowData = rowData;

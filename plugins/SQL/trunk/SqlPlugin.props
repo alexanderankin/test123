@@ -27,17 +27,20 @@ options.sql.label=SQL
 sql.serverconfig.title=SQL Server Configuration
 sql.config.label=Connection configuration
 
-sql.options.allServers.label=All Servers
-sql.options.allServers.name=AllServers
+sql.options.servers.label=Servers
+sql.options.servers.name=Servers
+sql.options.addServerBtn.label=Add
+sql.options.delServerBtn.label=Delete
+sql.options.editServerBtn.label=Edit
 
-sql.options.addBtn.label=Add
-
-sql.options.delBtn.label=Delete
-
-sql.options.editBtn.label=Edit
-
+sql.options.recordSetView.label=Record Set dockable
 sql.options.maxRecs2Show.label=Max no. of records to show
+
 sql.options.jdbcClassPath.label=JDBC drivers' classpath
+sql.options.addClassPathBtn.label=Add
+sql.options.delClassPathBtn.label=Delete
+sql.options.editClassPathBtn.label=Edit
+sql.options.jdbcClassPath.filterDescr=JAR-compatible archives
 
 sql.serverType.label=SQL Server type
 
