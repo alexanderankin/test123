@@ -96,7 +96,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
      * Initializes tabs and starts listening for events.
      */
     public synchronized void start() {
-        ColorTabs.instance().propertiesChanged(this); //CES
+        this.propertiesChanged(); //CES
         Buffer buffer = jEdit.getFirstBuffer();
         for (int i = 0; buffer != null; buffer = buffer.getNext(), i++) {
             this.bufferCreated(buffer, i);
@@ -430,7 +430,7 @@ public class BufferTabs extends JTabbedPane implements EBComponent
 
 
     public synchronized void updateTitles() {
-        ColorTabs.instance().propertiesChanged(this); //CES
+        this.propertiesChanged(); //CES
         for (int index = this.getTabCount() - 1; index >= 0; index--) {
             this.updateTitleAt(index);
         }
