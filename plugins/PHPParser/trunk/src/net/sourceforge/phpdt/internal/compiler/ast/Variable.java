@@ -58,7 +58,7 @@ public final class Variable extends AbstractVariable {
    * @param name        the name
    * @param sourceStart the starting position
    * @param sourceEnd   the ending position
-   * @deprecated virer ca
+   * @deprecated todo virer ca
    */
   public Variable(final String name,
                   final int sourceStart,
@@ -151,7 +151,19 @@ public final class Variable extends AbstractVariable {
       varName = expression.toStringExpression();//todo : do a better thing like evaluate this ??
     }
     if (!arrayContains(SPECIAL_VARS, name)) {
-      list.add(new VariableUsage(varName, sourceStart,beginLine,beginColumn));
+      list.add(new VariableUsage(varName,
+                                 sourceStart,
+                                 sourceEnd,
+                                 beginLine,
+                                 endLine,
+                                 beginColumn,
+                                 endColumn));
     }
+  }
+
+  public void setStart(int sourceStart,int beginLine,int beginColumn) {
+    this.sourceStart = sourceStart;
+    this.beginLine = beginLine;
+    this.beginColumn = beginColumn;
   }
 }

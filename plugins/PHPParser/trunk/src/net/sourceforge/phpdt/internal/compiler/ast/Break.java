@@ -2,12 +2,17 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 /**
  * A break statement.
+ *
  * @author Matthieu Casanova
  */
 public final class Break extends BranchStatement {
 
-  public Break(final Expression expression, final int sourceStart, final int sourceEnd) {
-    super(expression, sourceStart, sourceEnd);
+  public Break(final Expression expression, final int sourceStart, final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(expression, sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
   }
 
   public String toString(final int tab) {
@@ -16,5 +21,5 @@ public final class Break extends BranchStatement {
       return s + "break " + expression.toString();//$NON-NLS-1$
     }
     return s + "break";//$NON-NLS-1$
-	}
+  }
 }

@@ -83,46 +83,12 @@ public class VariableDeclaration extends Expression implements Outlineable {
     this.parent = parent;
   }
 
-  public final void setReference(final boolean reference) {
+  public final void setReference(final boolean reference, final int sourceStart, final int beginLine, final int beginColumn) {
     this.reference = reference;
+    this.sourceStart = sourceStart;
+    this.beginLine = beginLine;
+    this.beginColumn = beginColumn;
   }
-
-  /**
-   * Return the operator as String.
-   * 
-   * @return the operator
-   */
-/*  private String operatorToString() {
-    switch (operator) {
-      case EQUAL:
-        return "="; //$NON-NLS-1$
-      case PLUS_EQUAL:
-        return "+=";   //$NON-NLS-1$
-      case MINUS_EQUAL:
-        return "-=";   //$NON-NLS-1$
-      case STAR_EQUAL:
-        return "*="; //$NON-NLS-1$
-      case SLASH_EQUAL:
-        return "/="; //$NON-NLS-1$
-      case AND_EQUAL:
-        return "<="; //$NON-NLS-1$
-      case OR_EQUAL:
-        return "|=";//$NON-NLS-1$
-      case XOR_EQUAL:
-        return "^=";//$NON-NLS-1$
-      case DOT_EQUAL:
-        return ".="; //$NON-NLS-1$
-      case REM_EQUAL:
-        return "%="; //$NON-NLS-1$
-      case TILDE_EQUAL:
-        return "~="; //$NON-NLS-1$
-      case LSHIFT_EQUAL:
-        return "<<="; //$NON-NLS-1$
-      case RSIGNEDSHIFT_EQUAL:
-        return ">>="; //$NON-NLS-1$
-    }
-    return " unknown operator ";//$NON-NLS-1$
-  }   */
 
   /**
    * Return the variable into String.
@@ -137,9 +103,9 @@ public class VariableDeclaration extends Expression implements Outlineable {
       //  final String operatorString = operatorToString();
       final String initString = initialization.toStringExpression();
       final StringBuffer buff = new StringBuffer(variableString.length() +
-              operator.length() +
-              initString.length() +
-              1);
+                                                 operator.length() +
+                                                 initString.length() +
+                                                 1);
       buff.append(variableString);
       buff.append(operator); //$NON-NLS-1$
       buff.append(initString);

@@ -1,27 +1,23 @@
 package gatchan.phpparser.sidekick;
 
-import sidekick.SideKickParser;
-import sidekick.SideKickParsedData;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.util.Log;
 import errorlist.DefaultErrorSource;
-import errorlist.ErrorList;
 import errorlist.ErrorSource;
+import gatchan.phpparser.PHPErrorSource;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.ParseException;
-import gatchan.phpparser.parser.ParsingAbortedError;
-import gatchan.phpparser.PHPParserPlugin;
-import gatchan.phpparser.PHPErrorSource;
-
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.text.Position;
-import java.util.Arrays;
-import java.util.List;
-
-import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
+//import gatchan.phpparser.parser.ParsingAbortedError;
 import net.sourceforge.phpdt.internal.compiler.ast.AstNode;
+import net.sourceforge.phpdt.internal.compiler.ast.PHPDocument;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.util.Log;
+import sidekick.SideKickParsedData;
+import sidekick.SideKickParser;
+
+import javax.swing.text.Position;
+import javax.swing.tree.DefaultMutableTreeNode;
+import java.util.List;
 
 /**
  * My sidekick implementation of the sidekick parser.
@@ -47,11 +43,11 @@ public class PHPSideKickParser extends SideKickParser {
       PHPErrorSource phpErrorSource = new PHPErrorSource(errorSource);
       errorSource.removeFileErrors(path);
       parser.addParserListener(phpErrorSource);
-      try {
+     // try {
         parser.parseInfo(null, buffer.getText(0, buffer.getLength()));
-      } catch (ParsingAbortedError parsingAbortedError) {
-        return null;
-      }
+     // } catch (ParsingAbortedError parsingAbortedError) {
+    //    return null;
+    //  }
       PHPDocument phpDocument = parser.getPHPDocument();
       parser = null;
       SideKickParsedData data = new SideKickParsedData(buffer.getName());

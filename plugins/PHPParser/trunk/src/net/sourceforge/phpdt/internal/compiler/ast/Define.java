@@ -61,7 +61,13 @@ public final class Define extends Statement implements Outlineable {
    * @param list the list where we will put variables
    */
   public void getOutsideVariable(final List list) {
-    list.add(new VariableUsage(defineName.toStringExpression(), sourceStart,beginLine,beginColumn));//todo: someday : evaluate the defineName
+    list.add(new VariableUsage(defineName.toStringExpression(),
+                               sourceStart,
+                               sourceEnd,
+                               beginLine,
+                               endLine,
+                               beginColumn,
+                               endColumn));//todo: someday : evaluate the defineName
   }
 
   /**

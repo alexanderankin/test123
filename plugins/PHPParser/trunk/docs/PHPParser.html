@@ -11,7 +11,7 @@
     <tr>
       <td valign="top" style="font-weight:bold;font-size:x-large">PHP Parser</td>
       <td align="right" valign="top" style="font-size:small">
-      <span style="font-weight:bold">Version 1.0.3 (Sep 07, 2004)</span><br>
+      <span style="font-weight:bold">Version 1.1.0 (Dec 11, 2004)</span><br>
       Matthieu Casanova &lt;chocolat.mou@gmail.com&gt;&nbsp;</td>
     </tr>
 </table>
@@ -26,10 +26,28 @@ This plugin uses some classes from phpeclipse. It is not a complete replacement 
 that will probably always remains more complete.
 You can find more infos at http://www.phpeclipse.de
 </p>
+  <p>
+    About code analysis, you should be very careful because it's far from being perfect. If a variable is given to a
+    method and is assigned by reference, the parser will not know that and report it as variable used but not assigned ...
+  </p>
 <h2>Usage</h2>
 <p>There are no actions to do the files finishing by .php will be parsed</p>
 <h2>History</h2>
 <ul>
+  <li>1.1.0<br>
+    <ul>
+      <li>The files edited with jEdit php mode are parsed, no more option pane to choose them</li>
+      <li>Sidekick structure tree</li>
+      <li>Parse on keystroke with sidekick</li>
+      <li>Code analysis:
+        <ul>
+          <li>Unused method parameters reported</li>
+          <li>Variable used before being assigned are reported</li>
+      </ul></li>
+    </ul>
+
+ </li>
+
   <li>1.0.3<br>
   	<ul>
 	  <li>Heredoc support</li>
@@ -42,8 +60,8 @@ You can find more infos at http://www.phpeclipse.de
 </ul>
 <h2>todo</h2>
 <ul>
-  <li>reactivate code analysis.</li>
-  <li>Add something like a code browser with classes, functions ...</li>
+  <li>Add an option pane to choose the reported warnings</li>
+  <li>Maybe keep track of all methods classes, defines in the project</li>
 </ul>
 <h2>known issue</h2>
 <ul>

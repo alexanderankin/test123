@@ -11,8 +11,12 @@ public final class StaticStatement extends Statement {
   /** An array of the variables called by this global statement. */
   private final VariableDeclaration[] variables;
 
-  public StaticStatement(final VariableDeclaration[] variables, final int sourceStart, final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+  public StaticStatement(final VariableDeclaration[] variables, final int sourceStart, final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.variables = variables;
   }
 

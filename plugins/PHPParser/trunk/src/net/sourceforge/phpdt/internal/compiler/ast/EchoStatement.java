@@ -13,8 +13,14 @@ public final class EchoStatement extends Statement {
   /** An array of expressions in this echo statement. */
   private final Expression[] expressions;
 
-  public EchoStatement(final Expression[] expressions, final int sourceStart, final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+  public EchoStatement(final Expression[] expressions,
+                       final int sourceStart,
+                       final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.expressions = expressions;
   }
 

@@ -18,8 +18,12 @@ public final class DoStatement extends Statement {
   public DoStatement(final Expression condition,
                      final Statement action,
                      final int sourceStart,
-                     final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                     final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.condition = condition;
     this.action = action;
   }

@@ -20,8 +20,12 @@ public final class Else extends Statement {
    */
   public Else(final Statement[] statements,
               final int sourceStart,
-              final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+              final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.statements = statements;
   }
 
@@ -33,8 +37,12 @@ public final class Else extends Statement {
    */
   public Else(final Statement statement,
               final int sourceStart,
-              final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+              final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     statements = new Statement[1];
     statements[0] = statement;
   }

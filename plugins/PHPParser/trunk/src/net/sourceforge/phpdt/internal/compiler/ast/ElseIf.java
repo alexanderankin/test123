@@ -14,8 +14,12 @@ public final class ElseIf extends Statement {
   /** The statements. */
   private final Statement[] statements;
 
-  public ElseIf(final Expression condition, final Statement[] statements, final int sourceStart, final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+  public ElseIf(final Expression condition, final Statement[] statements, final int sourceStart, final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart, sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.condition = condition;
     this.statements = statements;
   }
