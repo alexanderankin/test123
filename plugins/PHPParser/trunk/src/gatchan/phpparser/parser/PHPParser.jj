@@ -1754,7 +1754,7 @@ ConstantIdentifier Type() :
 //{{{ Expressions
 
 //{{{ Expression()
-Expression Expression() :
+/*Expression Expression() :
 {
   Token bangToken = null;
   Expression expr;
@@ -1767,9 +1767,9 @@ Expression Expression() :
     }
     return new PrefixedUnaryExpression(expr,OperatorIds.NOT,bangToken.sourceStart,bangToken.beginLine,bangToken.beginColumn);
   }
-}
+}*/
 
-Expression ExpressionNoBang() :
+Expression Expression() :
 {
   final Expression expr;
   Expression initializer = null;
@@ -1777,7 +1777,7 @@ Expression ExpressionNoBang() :
 }
 {
   expr = PrintExpression()   { return expr; }
-| LOOKAHEAD(PrimaryExpression() AssignmentOperator())
+| LOOKAHEAD(prefixedPrimaryExpression() AssignmentOperator())
   expr = assignment()
   {
     return expr;
@@ -1794,7 +1794,7 @@ Expression assignment() :
   Token assignOperator = null;
 }
 {
-  expr = PrimaryExpression()
+  expr = prefixedPrimaryExpression()
   assignOperator = AssignmentOperator()
   initializer = Expression()
   {
@@ -1841,6 +1841,31 @@ Expression assignment() :
     }
   }
 } //}}}
+
+Expression prefixedPrimaryExpression() :
+{
+  Expression expr;
+  Token prefixToken;
+}
+{
+  prefixToken = <BANG> expr = prefixedPrimaryExpression()
+  {
+    return new PrefixedUnaryExpression(expr,OperatorIds.NOT,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
+  }
+| 
+  prefixToken = <AT> expr = prefixedPrimaryExpression()
+  {
+    return new PrefixedUnaryExpression(expr,OperatorIds.AT,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
+  }
+| 
+  prefixToken = <TILDE> expr = prefixedPrimaryExpression()
+  {
+    return new PrefixedUnaryExpression(expr,OperatorIds.TWIDDLE,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
+  }
+|
+  expr = PrimaryExpression()
+  {return expr;}
+}
 
 /*
 Expression Expression() :
@@ -2409,16 +2434,16 @@ Expression UnaryExpression() :
                                               nextToken.endColumn));
       } else {
         fireParseError(new PHPParseErrorEvent(ERROR,
-                                        path,
-                                        "expression expected",
-                                        ")",
-                                        e.currentToken.next.image,
-                                        e.currentToken.sourceEnd,
-                                        nextToken.sourceStart,
-                                        e.currentToken.beginLine,
-                                        nextToken.endLine,
-                                        e.currentToken.endColumn+1,
-                                        nextToken.endColumn-1));
+                                              path,
+                                              "expression expected",
+                                              ")",
+                                              e.currentToken.next.image,
+                                              e.currentToken.sourceEnd,
+                                              nextToken.sourceStart,
+                                              e.currentToken.beginLine,
+                                              nextToken.endLine,
+                                              e.currentToken.endColumn+1,
+                                              nextToken.endColumn-1));
       }
       return null;
     /*
@@ -2449,11 +2474,10 @@ Expression AtNotTildeUnaryExpression() :
   token = <TILDE>
   expr = AtNotTildeUnaryExpression()
   {return new PrefixedUnaryExpression(expr,OperatorIds.TWIDDLE,token.sourceStart,token.beginLine,token.beginColumn);}
-/*|
+|
   token = <BANG>
   expr = AtNotUnaryExpression()
   {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart,token.beginLine,token.beginColumn);}
-*/
 |
   expr = UnaryExpressionNoPrefix()
   {return expr;}
@@ -2475,11 +2499,10 @@ Expression AtNotUnaryExpression() :
   token = <AT>
   expr = AtNotUnaryExpression()
   {return new PrefixedUnaryExpression(expr,OperatorIds.AT,token.sourceStart,token.beginLine,token.beginColumn);}
-/*|
+|
   token = <BANG>
   expr = AtNotUnaryExpression()
   {return new PrefixedUnaryExpression(expr,OperatorIds.NOT,token.sourceStart,token.beginLine,token.beginColumn);}
-  */
 |
   expr = UnaryExpressionNoPrefix()
   {return expr;}
@@ -2494,17 +2517,23 @@ Expression UnaryExpressionNoPrefix() :
   final Token token;
 }
 {
-  token = <PLUS> expr = AtNotTildeUnaryExpression()   {return new PrefixedUnaryExpression(expr,
-                                                                                     OperatorIds.PLUS,
-                                                                                     token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
+  token = <PLUS> expr = AtNotTildeUnaryExpression()   
+  {
+    return new PrefixedUnaryExpression(expr,
+                                       OperatorIds.PLUS,
+                                       token.sourceStart,
+                                       token.beginLine,
+                                       token.beginColumn);
+  }
 |
-  token = <MINUS> expr = AtNotTildeUnaryExpression()  {return new PrefixedUnaryExpression(expr,
-                                                                                     OperatorIds.MINUS,
-                                                                                     token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
+  token = <MINUS> expr = AtNotTildeUnaryExpression()  
+  {
+    return new PrefixedUnaryExpression(expr,
+                                       OperatorIds.MINUS,
+                                       token.sourceStart,
+                                       token.beginLine,
+                                       token.beginColumn);
+  }
 |
   expr = PreIncDecExpression()
   {return expr;}
@@ -2529,7 +2558,8 @@ final Token token;
       token = <MINUS_MINUS> {operator = OperatorIds.MINUS_MINUS;}
   )
   expr = PrimaryExpression()
-  {return new PrefixedUnaryExpression(expr,operator,token.sourceStart,
+  {return new PrefixedUnaryExpression(expr,operator,
+                                      token.sourceStart,
                                       token.beginLine,
                                       token.beginColumn);}
 }
