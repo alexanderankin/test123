@@ -40,40 +40,45 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.util.Log;
 
-import whitespace.options.FoldOptionPane;
-import whitespace.options.OnSaveOptionPane;
-import whitespace.options.ParagraphOptionPane;
-import whitespace.options.SpaceOptionPane;
-import whitespace.options.TabOptionPane;
-import whitespace.options.WhiteSpaceOptionPane;
+import whitespace.WhiteSpaceModel;
 
 
 public class WhiteSpacePlugin
     extends EBPlugin
 {
-    public void start() {}
+    public void start() {
+        // init buffer properties & models
+        WhiteSpaceDefaults.editorStarted();
+        // add highlights to editpanes
+        View view = jEdit.getFirstView();
+        while(view != null) {
+            EditPane[] panes = view.getEditPanes();
+            for(int i=0; i < panes.length; i++) {
+                addHighlightsTo(panes[i]);
+            }
+            view = view.getNext();
+        }
+    }
 
 
-    public void stop() {}
-
-
-//    public void createMenuItems(Vector menuItems) {
-//        menuItems.addElement(GUIUtilities.loadMenu("white-space-menu"));
-//    }
-
-
-//    public void createOptionPanes(OptionsDialog dialog) {
-//        OptionGroup group = new OptionGroup("white-space");
-
-//        group.addOptionPane(new SpaceOptionPane());
-//        group.addOptionPane(new TabOptionPane());
-//        group.addOptionPane(new WhiteSpaceOptionPane());
-//        group.addOptionPane(new FoldOptionPane());
-//        group.addOptionPane(new ParagraphOptionPane());
-//        group.addOptionPane(new OnSaveOptionPane());
-
-//        dialog.addOptionGroup(group);
-//    }
+    public void stop() {
+        Log.log(Log.DEBUG, this, "removing all highlights");
+        View view = jEdit.getFirstView();
+        while(view != null) {
+            EditPane[] panes = view.getEditPanes();
+            for(int i=0; i < panes.length; i++) {
+                BlockHighlight.removeHighlightFrom(panes[i]);
+                WhiteSpaceHighlight.removeHighlightFrom(panes[i]);
+                FoldHighlight.removeHighlightFrom(panes[i]);
+            }
+            view = view.getNext();
+        }
+        Log.log(Log.DEBUG, this, "removing WhiteSpaceModel properties");
+        Buffer[] buffers = jEdit.getBuffers();
+        for(int i=0; i < buffers.length; i++) {
+            buffers[i].setProperty(WhiteSpaceModel.MODEL_PROPERTY,null);
+        }
+    }
 
 
     // EditBus
@@ -83,7 +88,7 @@ public class WhiteSpacePlugin
             EditPane editPane = (EditPane) epu.getSource();
             View view = editPane.getView();
             if (epu.getWhat() == EditPaneUpdate.CREATED) {
-                this.editPaneCreated(view, editPane);
+                this.addHighlightsTo(editPane);
             } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
                 BlockHighlight.removeHighlightFrom(editPane);
                 WhiteSpaceHighlight.removeHighlightFrom(editPane);
@@ -103,29 +108,17 @@ public class WhiteSpacePlugin
             ) {
                 WhiteSpaceDefaults.bufferCreated(bu.getBuffer());
             }
-        } else if (message instanceof EditorStarted) {
-            WhiteSpaceDefaults.editorStarted();
         }
     }
 
 
-    private void editPaneCreated(View view, EditPane editPane) {
-        JEditTextArea textArea = editPane.getTextArea();
-        TextAreaPainter textAreaPainter = textArea.getPainter();
-
-        BlockHighlight blockHighlight =
-            (BlockHighlight) BlockHighlight.addHighlightTo(editPane);
-        FoldHighlight foldHighlight =
-            (FoldHighlight) FoldHighlight.addHighlightTo(editPane);
-        WhiteSpaceHighlight whiteSpaceHighlight =
-            (WhiteSpaceHighlight) WhiteSpaceHighlight.addHighlightTo(editPane);
-
-        // Drawn third
-        textAreaPainter.addExtension(TextAreaPainter.DEFAULT_LAYER, blockHighlight);
-        // Drawn second: whitespace highlights must be drawn after fold guides
-        textAreaPainter.addExtension(TextAreaPainter.DEFAULT_LAYER, whiteSpaceHighlight);
-        // Drawn first
-        textAreaPainter.addExtension(TextAreaPainter.DEFAULT_LAYER, foldHighlight);
+    private void addHighlightsTo(EditPane editPane) {
+        // drawn third
+        BlockHighlight.addHighlightTo(editPane);
+        // drawn second
+        WhiteSpaceHighlight.addHighlightTo(editPane);
+        // drawn first
+        FoldHighlight.addHighlightTo(editPane);
     }
 
 

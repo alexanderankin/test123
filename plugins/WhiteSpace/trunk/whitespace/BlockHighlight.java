@@ -33,7 +33,6 @@ import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-//import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
@@ -115,12 +114,7 @@ public class BlockHighlight extends TextAreaExtension
 
     private void updateTextArea() {
         if (this.textArea == null) { return; }
-
-//        FoldVisibilityManager foldVisibilityManager = this.textArea.getFoldVisibilityManager();
-         DisplayManager displayManager = this.textArea.getDisplayManager();
-         //.getDisplayManger();
-//        int physicalFirst = foldVisibilityManager.getFirstVisibleLine();
-//        int physicalLast  = foldVisibilityManager.getLastVisibleLine();
+        DisplayManager displayManager = this.textArea.getDisplayManager();
         int physicalFirst = displayManager.getFirstVisibleLine();
         int physicalLast  = displayManager.getLastVisibleLine();
         this.textArea.invalidateLineRange(physicalFirst, physicalLast);
@@ -150,13 +144,27 @@ public class BlockHighlight extends TextAreaExtension
 
 
     public static TextAreaExtension addHighlightTo(EditPane editPane) {
-        TextAreaExtension textAreaHighlight = new BlockHighlight(editPane.getTextArea());
-        highlights.put(editPane, textAreaHighlight);
-        return textAreaHighlight;
+        JEditTextArea textArea = editPane.getTextArea();
+        TextAreaPainter painter = textArea.getPainter();
+        TextAreaExtension highlight = null;
+        highlight = (BlockHighlight)painter.getClientProperty(BlockHighlight.class);
+        if(highlight == null) {
+             highlight = new BlockHighlight(textArea);
+             highlights.put(editPane, highlight);
+             painter.addExtension(TextAreaPainter.DEFAULT_LAYER, highlight);
+             painter.putClientProperty(BlockHighlight.class, highlight);
+        }
+        return highlight;
     }
 
 
     public static void removeHighlightFrom(EditPane editPane) {
+        BlockHighlight highlight = (BlockHighlight)editPane
+            .getTextArea().getPainter().getClientProperty(BlockHighlight.class);
+        if(highlight != null) {
+            editPane.getTextArea().getPainter().removeExtension(highlight);
+            editPane.getTextArea().getPainter().putClientProperty(BlockHighlight.class,null);
+        }
         highlights.remove(editPane);
     }
 
