@@ -51,6 +51,13 @@ VERSION 2.1.0
 		- properly clean up edit bus when unloading the plugin.
 		- re-added the entry for the PV dockable to the plugin menu.
 		- fixed possible ClassCastException in PVActions.openAllNodes()
+		- plugin was not receiving EditorExiting message, so a workaround
+		  was made to save project state when the EditorExitRequestedMessage
+		  is received, but being careful to avoid the data loss bug that
+		  we had in a previous version.
+		- after loading the project, clear the open file list so that opening
+		  a new view does not cause user-closed files that were on the list
+		  to be re-opened.
 
 		Other changes:
 		- added methods to ProjectViewer to get/set the folder tree state from

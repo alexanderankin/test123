@@ -242,11 +242,11 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				v.pList.removeAllItems();
 				v.pList.addItem(CREATE_NEW_PROJECT);
 				v.pList.addItem(VPTRoot.getInstance());
-	
+
 				for (Iterator it2 = ProjectManager.getInstance().getProjects(); it2.hasNext(); ) {
 					v.pList.addItem(it2.next());
 				}
-	
+
 				v.pList.setSelectedItem(v.treeRoot);
 			}
 		}
@@ -629,13 +629,13 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			ve.project = p;
 		}
 	} //}}}
-	
+
 	//{{{ +_getActiveProject(View)_ : void
 	public static VPTProject getActiveProject(View aView) {
 		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
 		return (ve != null) ? ve.project : null;
 	} //}}}
-	
+
 	//}}}
 
 	//{{{ Constants
@@ -821,7 +821,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *	given project and closes them (if desired) and/or saves them to the
 	 *	open list (if desired).
 	 */
-	private void closeProject(VPTProject p, boolean close, boolean remember) {
+	private void closeProject(VPTProject p, boolean close, boolean remember,
+			boolean unload) {
 		p.clearOpenFiles();
 		boolean usingAllProjects = false;
 
@@ -837,7 +838,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				}
 			}
 		}
-		
+
 		// close files & populate "remember" list
 		if (close || remember) {
 			Buffer[] bufs = jEdit.getBuffers();
@@ -874,7 +875,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		// unloads the project
 		// needs to check if project exists, in case it has just been removed
 		ProjectManager pm = ProjectManager.getInstance();
-		if (!usingAllProjects && pm.hasProject(p.getName())) {
+		if (unload && !usingAllProjects && pm.hasProject(p.getName())) {
 			pm.unloadProject(p);
 		}
 	} //}}}
@@ -887,6 +888,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			for (Iterator i = p.getOpenFiles(); i.hasNext(); ) {
 				lastBuf = jEdit.openFile(null, (String) i.next());
 			}
+			p.clearOpenFiles();
 		}
 
 		if (lastBuf != null) {
@@ -898,10 +900,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (state != null && folderTree != null) {
 			SwingUtilities.invokeLater(
 			new Runnable() {
-				//{{{ +run() : void
 				public void run() {
 					setFolderTreeState(p, state);
-				} //}}}
+				}
 			});
 		}
 	} //}}}
@@ -1116,7 +1117,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (treeRoot != null) {
 			if (treeRoot.isProject()) {
 				closeProject((VPTProject)treeRoot, config.getCloseFiles(),
-					config.getRememberOpen());
+					config.getRememberOpen(), true);
 			} else {
 				unloadInactiveProjects();
 			}
@@ -1145,7 +1146,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			pList.setSelectedItem(p);
 			DISABLE_EVENTS = false;
 		}
-		
+
 		ViewerEntry ve = (ViewerEntry) viewers.get(view);
 		ve.project = p;
 
@@ -1173,8 +1174,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				handleBufferUpdateMessage((BufferUpdate) msg);
 			} else if (msg instanceof EditorExitRequested) {
 				handleEditorExitRequestedMessage((EditorExitRequested) msg);
-			} else if (msg instanceof EditorExiting) {
-				handleEditorExitingMessage((EditorExiting) msg);
 			} else if (config.isErrorListAvailable()) {
 				new Helper().handleErrorListMessage(msg);
 			}
@@ -1197,7 +1196,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				EditBus.removeFromBus(this);
 
 				if (treeRoot.isProject()) {
-					closeProject((VPTProject)treeRoot, config.getCloseFiles(), config.getRememberOpen());
+					closeProject((VPTProject)treeRoot, config.getCloseFiles(),
+						config.getRememberOpen(), true);
 				}
 
 			} else if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
@@ -1219,20 +1219,11 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	}//}}}
 
 	//{{{ -handleEditorExitRequestedMessage(EditorExitRequested) : void
-	/** Handles a EditorExitRequested EditBus message.
-	 */
+	/** Handles a EditorExitRequested EditBus message. */
 	private void handleEditorExitRequestedMessage(EditorExitRequested eer) {
 		// Editor is exiting, save info about current project
-		ProjectViewer active = getViewer(eer.getView());
-		if (active == this || active == null || active.treeRoot != treeRoot) {
-			config.setLastProject(((VPTProject)treeRoot).getName());
-		}
-	}//}}}
-
-	//{{{ -handleEditorExitingMessage(EditorExiting) : void
-	private void handleEditorExitingMessage(EditorExiting ee) {
 		synchronized (treeRoot) {
-			closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
+			closeProject((VPTProject)treeRoot, false, config.getRememberOpen(), false);
 			for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
 				ViewerEntry ve = (ViewerEntry) i.next();
 				ProjectViewer v = ve.dockable;
@@ -1240,8 +1231,12 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					v.treeRoot = null;
 				}
 			}
+			ProjectViewer active = getViewer(eer.getView());
+			if (active == this || active == null || active.treeRoot != treeRoot) {
+				config.setLastProject(((VPTProject)treeRoot).getName());
+			}
 		}
-	} //}}}
+	}//}}}
 
 	//{{{ -handleBufferUpdateMessage(BufferUpdate) : void
 	/** Handles a BufferUpdate EditBus message.
@@ -1443,7 +1438,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			if(ie.getItem() instanceof VPTProject) {
 				if (treeRoot.isProject()) {
 					closeProject((VPTProject)treeRoot, config.getCloseFiles(),
-						config.getRememberOpen());
+						config.getRememberOpen(), true);
 					treeRoot = null;
 				} else {
 					unloadInactiveProjects();
@@ -1693,7 +1688,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		public ProjectViewer dockable;
 		public VPTProject project;
 	} //}}}
-	
+
 	//{{{ -class Helper
 	/**
 	 *	Class to hold methods that require classes that may not be available,
