@@ -25,35 +25,29 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.util.Vector;
+import java.util.ArrayList;
 
-public class CTAGS_Parser implements Serializable
-{
 
+public class CtagsParser implements Serializable {
     /** SET true to sort ctags output (--sort=yes) */
     public boolean sort = false;
+
     /** SET "pattern" or "numbers" (--excmd=pattern) */
     public String excmd = "pattern";
     private String[] ctags_args;
 
-    public CTAGS_Parser()
-    {
+    public CtagsParser() {
         String s = new String();
-        if (this.sort == false)
-        {
+
+        if (this.sort == false) {
             s = "--sort=no";
-        }
-        else
-        {
+        } else {
             s = "-sort=yes";
         }
 
-        if ("numbers".equals(this.excmd) == false)
-        {
+        if ("numbers".equals(this.excmd) == false) {
             this.excmd = "--excmd=pattern";
-        }
-        else
-        {
+        } else {
             this.excmd = "--excmd=numbers";
         }
 
@@ -67,27 +61,26 @@ public class CTAGS_Parser implements Serializable
         ctags_args[5] = "-";
         ctags_args[6] = "";
     }
-    
+
     /**
     * Parse file and return new CTAGS_Buffer
     */
-    public CTAGS_Buffer parse(String filename) throws IOException
-    {
-        Vector v = new Vector();
-        v.add(filename);
-        return doParse(v);
+    public CtagsBuffer parse(String filename) throws IOException {
+        ArrayList list = new ArrayList();
+        list.add(filename);
+
+        return doParse(list);
     }
-    
+
     /**
     * Parse list file and return new CTAGS_Buffer
     */
-    public CTAGS_Buffer parse(Vector filenames) throws IOException
-    {
+    public CtagsBuffer parse(ArrayList filenames) throws IOException {
         return doParse(filenames);
     }
 
-    public CTAGS_Buffer parseGlobalTags(String topFolder) throws IOException
-    {
+    public CtagsBuffer parseGlobalTags(String topFolder)
+        throws IOException {
         String[] comm_line = new String[5];
 
         comm_line[0] = CTAGS_BG.CTAGS_EXECUTABLE;
@@ -97,82 +90,84 @@ public class CTAGS_Parser implements Serializable
         comm_line[4] = topFolder;
 
         Process ctags = Runtime.getRuntime().exec(comm_line);
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(ctags.getInputStream()));
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+                    ctags.getInputStream()));
 
-        CTAGS_Buffer buff = new CTAGS_Buffer(this);
+        CtagsBuffer buff = new CtagsBuffer(this);
         String line = new String();
         int index;
-        while ((line = in.readLine()) != null)
-        {
+
+        while ((line = in.readLine()) != null) {
             index = line.lastIndexOf(";\"\t");
-            if (index < 0)
-            {
+
+            if (index < 0) {
                 continue;
             }
-            System.out.println("Added-"+line);
-            buff.add(new CTAGS_Entry(line));
+
+            System.out.println("Added-" + line);
+            buff.add(new CtagsEntry(line));
         }
+
         in.close();
+
         return buff;
     }
-    
-    private boolean checkUnsupportedExtensions(String fn)
-    {
-        for (int i = 0; i < CTAGS_BG.UnsupportedExtensions.length; i++)
-        {
-            if (fn.endsWith(CTAGS_BG.UnsupportedExtensions[i]) == true)
-            {
+
+    private boolean checkUnsupportedExtensions(String fn) {
+        for (int i = 0; i < CTAGS_BG.UnsupportedExtensions.length; i++) {
+            if (fn.endsWith(CTAGS_BG.UnsupportedExtensions[i]) == true) {
                 return false;
             }
         }
 
         return true;
     }
-    
-    private CTAGS_Buffer doParse(final Vector f) throws IOException
-    {
-        CTAGS_Buffer b = new CTAGS_Buffer(this);
-        CTAGS_Buffer b1 = new CTAGS_Buffer(this);
-        for (int i = 0; i < f.size(); i++)
-        {
-            if (checkUnsupportedExtensions(f.get(i).toString()) == false)
-            {
+
+    private CtagsBuffer doParse(final ArrayList list) throws IOException {
+        CtagsBuffer b = new CtagsBuffer(this);
+        CtagsBuffer b1 = new CtagsBuffer(this);
+
+        for (int i = 0; i < list.size(); i++) {
+            if (checkUnsupportedExtensions(list.get(i).toString()) == false) {
                 continue;
-            }
-            else
-            {
-                b1 = parseFile(f.get(i).toString(), this.ctags_args);
-                b.append(b1,f.get(i).toString());
+            } else {
+                b1 = parseFile(list.get(i).toString(), this.ctags_args);
+                b.append(b1, list.get(i).toString());
             }
         }
-        if (b.size() < 1)
-        {
+
+        if (b.size() < 1) {
             System.out.println("Jump!.CTAGS: No files to parse!");
+
             return null;
         }
+
         return b;
     }
-    
-    private CTAGS_Buffer parseFile(String fn, String[] arguments) throws IOException
-    {
-        arguments[6] = fn;
-        Process ctags = Runtime.getRuntime().exec(arguments);
-        BufferedReader in = new BufferedReader(
-                new InputStreamReader(ctags.getInputStream()));
 
-        CTAGS_Buffer buff = new CTAGS_Buffer(this);
+    private CtagsBuffer parseFile(String fn, String[] arguments)
+        throws IOException {
+        arguments[6] = fn;
+
+        Process ctags = Runtime.getRuntime().exec(arguments);
+        BufferedReader in = new BufferedReader(new InputStreamReader(
+                    ctags.getInputStream()));
+
+        CtagsBuffer buff = new CtagsBuffer(this);
         String line;
-        while ((line = in.readLine()) != null)
-        {
+
+        while ((line = in.readLine()) != null) {
             int index = line.lastIndexOf(";\"\t");
-            if (index < 0)
-            {
+
+            if (index < 0) {
                 continue;
             }
-            buff.add(new CTAGS_Entry(line));
+
+            buff.add(new CtagsEntry(line));
         }
+
         in.close();
+
         return buff;
     }
 }

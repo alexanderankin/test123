@@ -27,7 +27,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
-import java.util.Vector;
+import java.util.ArrayList;
 
 
 /**
@@ -62,8 +62,8 @@ public class CTAGS_BG implements Serializable {
      *
      *@return    The parser value
      */
-    public CTAGS_Parser getParser() {
-        return new CTAGS_Parser();
+    public CtagsParser getParser() {
+        return new CtagsParser();
     }
 
     /**
@@ -72,12 +72,12 @@ public class CTAGS_BG implements Serializable {
      *@param  buff  CTAGS_Buffer to refresh
      *@return       Refreshed CTAGS_Buffer
      */
-    public CTAGS_Buffer reloadBuffer(CTAGS_Buffer buff) {
-        Vector files = buff.getFileNames();
-        CTAGS_Parser p = this.getParser();
+    public CtagsBuffer reloadBuffer(CtagsBuffer buff) {
+        ArrayList files = buff.getFileNames();
+        CtagsParser p = this.getParser();
 
         try {
-            CTAGS_Buffer Buffer = p.parse(files);
+            CtagsBuffer Buffer = p.parse(files);
             buff = null;
 
             return Buffer;
@@ -93,7 +93,7 @@ public class CTAGS_BG implements Serializable {
      *@param  filename  Name of new file
      *@return           boolean
      */
-    public static boolean saveBuffer(CTAGS_Buffer buff, String filename) {
+    public static boolean saveBuffer(CtagsBuffer buff, String filename) {
         try {
             ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(
                         filename));
@@ -108,7 +108,7 @@ public class CTAGS_BG implements Serializable {
         }
     }
 
-    public static boolean saveGlobalTagsBuffer(CTAGS_Buffer buff,
+    public static boolean saveGlobalTagsBuffer(CtagsBuffer buff,
         String filename) {
         System.out.println("Try to save " + filename);
 
@@ -132,13 +132,13 @@ public class CTAGS_BG implements Serializable {
      *@param  filename  Filename. Look saveBuffer(CTAGS_Buffer buff, String filename)
      *@return           boolean
      */
-    public static CTAGS_Buffer loadBuffer(String filename) {
+    public static CtagsBuffer loadBuffer(String filename) {
         try {
             System.out.println("Loading CTAGS_Buffer from " + filename);
 
             ObjectInputStream in = new ObjectInputStream(new FileInputStream(
                         filename));
-            CTAGS_Buffer b = (CTAGS_Buffer) in.readObject();
+            CtagsBuffer b = (CtagsBuffer) in.readObject();
 
             return b;
         } catch (Exception e) {

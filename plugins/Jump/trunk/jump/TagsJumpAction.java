@@ -30,9 +30,9 @@ import javax.swing.JList;
 import javax.swing.ListModel;
 
 import jump.ctags.CTAGS_BG;
-import jump.ctags.CTAGS_Buffer;
-import jump.ctags.CTAGS_Entry;
-import jump.ctags.CTAGS_Parser;
+import jump.ctags.CtagsBuffer;
+import jump.ctags.CtagsEntry;
+import jump.ctags.CtagsParser;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -43,10 +43,10 @@ import org.gjt.sp.util.Log;
 
 class TagsJumpAction {
     private CTAGS_BG bg;
-    private CTAGS_Parser parser;
-    private CTAGS_Buffer buff;
+    private CtagsParser parser;
+    private CtagsBuffer buff;
     private CtagsJumpMenu jm;
-    private CTAGS_Entry[] entries;
+    private CtagsEntry[] entries;
     private View view;
     private ProjectBuffer currentTags;
 
@@ -75,7 +75,7 @@ class TagsJumpAction {
         String val = new String();
 
         for (int i = 0; i < v.size(); i++) {
-            CTAGS_Entry en = (CTAGS_Entry) v.get(i);
+            CtagsEntry en = (CtagsEntry) v.get(i);
             val = en.getTagName() + " (" + en.getExCmd().trim() + ")";
             en.setToStringValue(val);
             e.add(en);
@@ -83,10 +83,10 @@ class TagsJumpAction {
 
         Object[] a = new String[e.size()];
         a = e.toArray();
-        entries = new CTAGS_Entry[a.length];
+        entries = new CtagsEntry[a.length];
 
         for (int i = 0; i < a.length; i++) {
-            entries[i] = (CTAGS_Entry) a[i];
+            entries[i] = (CtagsEntry) a[i];
         }
 
         Arrays.sort(entries, new AlphabeticComparator());
@@ -112,11 +112,11 @@ class TagsJumpAction {
         // TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
         public void updateStatusBar(Object o) {
             JList l = (JList) o;
-            CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+            CtagsEntry tag = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
         }
 
-        private String prepareStatusMsg(CTAGS_Entry en) {
+        private String prepareStatusMsg(CtagsEntry en) {
             StringBuffer ret = new StringBuffer();
             String ext_fields = en.getExtensionFields();
 
@@ -143,7 +143,7 @@ class TagsJumpAction {
             //SearchAndReplace search = new SearchAndReplace();
             view = jEdit.getActiveView();
 
-            CTAGS_Entry en = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+            CtagsEntry en = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             String tag = en.getExCmd();
 
             Log.log(Log.DEBUG, this, "try to find-" + tag);
@@ -169,7 +169,7 @@ class TagsJumpAction {
             view = jEdit.getActiveView();
 
             JList l = (JList) o;
-            CTAGS_Entry en = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+            CtagsEntry en = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             String tag = en.getTagName();
             view.getTextArea().setSelectedText(tag);
         }
@@ -191,8 +191,8 @@ class TagsJumpAction {
 
     class AlphabeticComparator implements Comparator {
         public int compare(Object o1, Object o2) {
-            CTAGS_Entry s1 = (CTAGS_Entry) o1;
-            CTAGS_Entry s2 = (CTAGS_Entry) o2;
+            CtagsEntry s1 = (CtagsEntry) o1;
+            CtagsEntry s2 = (CtagsEntry) o2;
 
             return s1.getTagName().toLowerCase().compareTo(s2.getTagName()
                                                              .toLowerCase());

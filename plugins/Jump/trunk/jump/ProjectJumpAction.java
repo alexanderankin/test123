@@ -31,8 +31,8 @@ import javax.swing.AbstractListModel;
 import javax.swing.JList;
 import javax.swing.ListModel;
 
-import jump.ctags.CTAGS_Buffer;
-import jump.ctags.CTAGS_Entry;
+import jump.ctags.CtagsBuffer;
+import jump.ctags.CtagsEntry;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -51,10 +51,10 @@ public class ProjectJumpAction
     public boolean TagsAlreadyLoaded = false;
     private int carret_pos;
 
-    private CTAGS_Buffer buff;
+    private CtagsBuffer buff;
     private Vector DuplicateTags;
     private ProjectTagsJump jm;
-    private CTAGS_Entry[] entries;
+    private CtagsEntry[] entries;
     private JumpEventListener listener;
     private View view;
     private TypeTag typeTagWindow;
@@ -65,7 +65,7 @@ public class ProjectJumpAction
     {}
 
 
-    public void addToHistory(CTAGS_Entry en)
+    public void addToHistory(CtagsEntry en)
     {
         JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.add(en);
         JumpPlugin.getActiveProjectBuffer().HISTORY.addItem(en.getTagName());
@@ -78,7 +78,7 @@ public class ProjectJumpAction
     
     public void JumpToPreviousTag()
     {
-        CTAGS_Entry en = (CTAGS_Entry)JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.getPrevious();
+        CtagsEntry en = (CtagsEntry)JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.getPrevious();
         if (en == null)
         {
             return;
@@ -96,11 +96,11 @@ public class ProjectJumpAction
         JumpPlugin.getActiveProjectBuffer().getTypeTag()._show();
     }
     
-    private void JumpToTag(CTAGS_Entry en, boolean AddToHistory, boolean newView)
+    private void JumpToTag(CtagsEntry en, boolean AddToHistory, boolean newView)
     {
         final String HistoryModelName ="jump.tag_history.project."+JumpPlugin.listener.PROJECT_NAME;
         final String pattern = en.getExCmd();
-        final CTAGS_Entry en_for_history = en;
+        final CtagsEntry en_for_history = en;
         final boolean add_hist = AddToHistory;
         // for VFSManager inner class
         final View v;
@@ -200,7 +200,7 @@ public class ProjectJumpAction
 
         currentTags = JumpPlugin.getActiveProjectBuffer();
         if (currentTags == null) return;
-        tags = currentTags.PROJECT_CTBUFFER.getEntresByStartPrefix(sel);
+        tags = currentTags.PROJECT_CTBUFFER.getEntriesByStartPrefix(sel);
         if (tags == null || tags.size() < 1)
         {
             Log.log(Log.DEBUG,this,"completeTag: No tags found! - "+sel);
@@ -254,11 +254,11 @@ public class ProjectJumpAction
         }
 
         String ToStringValue;
-        CTAGS_Entry entry;
+        CtagsEntry entry;
         int a;
         for (int i = 0; i < tags.size(); i++)
         {
-            entry = (CTAGS_Entry) tags.get(i);
+            entry = (CtagsEntry) tags.get(i);
             a = entry.getFileName().lastIndexOf(System.getProperty("file.separator"));
             if (a == -1)
             {
@@ -276,15 +276,15 @@ public class ProjectJumpAction
 
         if (tags.size() == 1)
         {
-            CTAGS_Entry en = (CTAGS_Entry) tags.get(0);
+            CtagsEntry en = (CtagsEntry) tags.get(0);
             this.JumpToTag(en,true, false);
         }
         else
         {
-            entries = new CTAGS_Entry[tags.size()];
+            entries = new CtagsEntry[tags.size()];
             for (int i = 0; i < tags.size(); i++)
             {
-                entries[i] = (CTAGS_Entry) tags.get(i);
+                entries[i] = (CtagsEntry) tags.get(i);
             }
             Arrays.sort(entries, new AlphabeticComparator());
             jm = new ProjectTagsJump(view , entries,
@@ -305,26 +305,26 @@ public class ProjectJumpAction
         public void processAction(Object o)
         {
             JList l = (JList) o;
-            CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+            CtagsEntry tag = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true, false);
         }
         
         public void processActionInNewView(Object o)
         {
             JList l = (JList) o;
-            CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+            CtagsEntry tag = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true, true);
         } 
         
         public void updateStatusBar(Object o)
         {
             JList l = (JList) o;
-            CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+            CtagsEntry tag = (CtagsEntry) l.getModel().getElementAt(l.getSelectedIndex());
             view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
         }
         
         
-        private String prepareStatusMsg(CTAGS_Entry en)
+        private String prepareStatusMsg(CtagsEntry en)
         {
             StringBuffer ret = new StringBuffer();
             String ext_fields = en.getExtensionFields();
@@ -383,8 +383,8 @@ public class ProjectJumpAction
     {
         public int compare (Object o1, Object o2)
         {
-            CTAGS_Entry e1 = (CTAGS_Entry) o1;
-            CTAGS_Entry e2 = (CTAGS_Entry) o2;
+            CtagsEntry e1 = (CtagsEntry) o1;
+            CtagsEntry e2 = (CtagsEntry) o2;
 
             return e1.getFileName().toLowerCase().compareTo(
                     e2.getFileName().toLowerCase());

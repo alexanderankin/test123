@@ -135,7 +135,7 @@ public class CompleteWordList extends JWindow
 		Vector tags = new Vector();
 		ProjectBuffer currentTags = JumpPlugin.getActiveProjectBuffer();
 		if (currentTags == null) return null;
-		tags = currentTags.PROJECT_CTBUFFER.getEntresByStartPrefix(sel);
+		tags = currentTags.PROJECT_CTBUFFER.getEntriesByStartPrefix(sel);
 		Vector completions = new Vector();
 		String entry;
 		for(int i=0; i<tags.size(); i++)

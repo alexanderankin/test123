@@ -25,104 +25,80 @@ import java.util.ArrayList;
 import java.util.Vector;
 
 
-/** Storage for CTAGS_Entry objects. */
-public class CTAGS_Buffer extends ArrayList {
+/** 
+ * Storage for CTAGS_Entry objects.
+ */
+public class CtagsBuffer extends ArrayList {
+	
     /** Store list of all files which already parsed into this CTAGS_Buffer */
-    private Vector Files;
+    private ArrayList filenames;
 
     /** Parser which generate this buffer */
-    private CTAGS_Parser Parser;
+    private CtagsParser parser;
 
     /** Create new CTAGS_Buffer */
-    public CTAGS_Buffer(CTAGS_Parser p) {
+    public CtagsBuffer(CtagsParser parser) {
         super();
-        Files = new Vector();
-        Parser = p;
-    }
-
-    /**
-    * Create CTAGS_Buffer which represent ctags output for fn file.
-    * Later it can be append to existing CTAGS_Buffer
-    */
-    public CTAGS_Buffer(CTAGS_Parser p, String fn) {
-        super();
-
-        //Add filename to CTAGS_Buffer.Files
-        for (int i = 0; i < Files.size(); i++) {
-            if (!fn.equals(Files.get(i).toString())) {
-                this.addFileName(fn);
-            } else {
-                this.removeFile(fn);
-                Files.add(fn);
-            }
-        }
-
-        //Set CTAGS_Buffer.Parser
-        Parser = p;
+        filenames = new ArrayList();
+        this.parser = parser;
     }
 
     /** Append CTAGS_Buffer.
     * When new file is added to Project we need the
     * way to add it to CTAGS_Buffer.
     */
-    public void append(CTAGS_Buffer b) {
-        CTAGS_Entry en;
+    //TODO: NOT TESTED
+    public void append(CtagsBuffer b) {
+        CtagsEntry en;
 
         for (int i = 0; i < b.size(); i++) {
-            en = (CTAGS_Entry) b.get(i);
-            this.add(en);
-            this.addFileName(en.getFileName());
+            en = (CtagsEntry) b.get(i);
+            add(en);
+            addFileName(en.getFileName());
         }
     }
 
     /**
     * Append CTAGS_Buffer.
     * When new file is added to Workspace we need
-        * the way to add it to CTAGS_Buffer.
+    * the way to add it to CTAGS_Buffer.
     */
-    public void append(CTAGS_Buffer b, String filename) {
+    //TODO: NOT TESTED
+    public void append(CtagsBuffer b, String filename) {
         this.removeFile(filename);
 
-        CTAGS_Entry en;
+        CtagsEntry en;
 
         for (int i = 0; i < b.size(); i++) {
-            en = (CTAGS_Entry) b.get(i);
+            en = (CtagsEntry) b.get(i);
             this.add(en);
         }
 
         this.addFileName(filename);
     }
 
-    //TODO: NOT IMPLEMENTED YET!
-
     /**
     * Refresh CTAGS_Buffer (after removing file from project, for example)
     */
-    public void reload() {
-        Vector files = Files;
-        this.clear();
-
-        //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // = Parser.parse(files);
-    }
-     //}}}
+    //  TODO: NEED IMPLEMENTATION
+    public void reload() {}
 
     /**
     * remove all tags of spec. file from CTAGS_Buffer
     */
-    public void removeFile(String f) {
-        Vector files = getTagsByFile(f);
+    public void removeFile(String filename) {
+        Vector files = getTagsByFile(filename);
 
         for (int i = 0; i < files.size(); i++) {
-            this.remove((CTAGS_Entry) files.get(i));
+            this.remove((CtagsEntry) files.get(i));
         }
 
-        Files.remove(f);
+        filenames.remove(filename);
     }
 
     /** Files (full path) for which CTAGS_Buffer was generated */
-    public Vector getFileNames() {
-        return Files;
+    public ArrayList getFileNames() {
+        return filenames;
     }
 
     /**
@@ -131,90 +107,85 @@ public class CTAGS_Buffer extends ArrayList {
     * but how about repeated tags? For example - all actionPerformed()
     */
     public Vector getEntry(String tag_name) {
-        Vector v = new Vector();
-        CTAGS_Entry en;
+        Vector result = new Vector();
+        CtagsEntry en;
 
         for (int i = 0; i < this.size(); i++) {
-            en = (CTAGS_Entry) this.get(i);
+            en = (CtagsEntry) this.get(i);
 
             if (tag_name.equals(en.getTagName())) {
-                v.add(en);
+                result.add(en);
             }
         }
-
-        return v;
+        return result;
     }
 
-    public Vector getEntresByStartPrefix(String prefix) {
-        Vector v = new Vector();
-        CTAGS_Entry en;
+    public Vector getEntriesByStartPrefix(String prefix) {
+        Vector result = new Vector();
+        CtagsEntry en;
 
         for (int i = 0; i < this.size(); i++) {
-            en = (CTAGS_Entry) this.get(i);
+            en = (CtagsEntry) this.get(i);
 
             if (en.getTagName().startsWith(prefix)) {
-                if (!v.contains(en.getTagName())) {
-                    v.add(en.getTagName());
+                if (!result.contains(en.getTagName())) {
+                    result.add(en);
                 }
             }
         }
-
-        return v;
+        return result;
     }
 
-    public void addFileName(String f) {
-        for (int i = 0; i < Files.size(); i++) {
-            if (!f.equals(Files.get(i).toString())) {
-                Files.add(f);
-            }
-        }
+    public void addFileName(String fn) {
+    	if (!filenames.contains(fn)) filenames.add(fn);
     }
 
     /**
     * Scan entire CTAGS_Buffer for entries from spec. file
-       * which spec. signature.
+    * which spec. signature.
     */
+    //TODO: NOT TESTED
     public Vector getTagsBySignature(String signature) {
-        Vector v = new Vector();
-        CTAGS_Entry en;
+        Vector result = new Vector();
+        CtagsEntry en;
 
         for (int i = 0; i < this.size(); i++) {
-            en = (CTAGS_Entry) this.get(i);
+            en = (CtagsEntry) this.get(i);
 
             if (signature.equals(en.getSignature())) {
-                v.add(en);
-            }
-        }
-
-        return v;
-    }
-
-    /**
-    * Scan entire CTAGS_Buffer for entries from spec. file
-    */
-    public Vector getTagsByFile(String file) {
-        Vector result = new Vector();
-        CTAGS_Entry entry;
-
-        for (int i = 0; i < this.size(); i++) {
-            entry = (CTAGS_Entry) this.get(i);
-
-            if (file.equals(entry.getFileName())) {
-                result.add((Object) entry);
+                result.add(en);
             }
         }
 
         return result;
     }
 
-    public boolean add(CTAGS_Entry entry) {
-        this.addFileName(entry.getFileName());
+    /**
+    * Scan entire CTAGS_Buffer for entries from spec. file
+    */
+    public Vector getTagsByFile(String filename) {
+        Vector result = new Vector();
+        CtagsEntry entry;
+        
+        for (int i = 0; i < this.size(); i++) {
+            entry = (CtagsEntry) this.get(i);
 
+            if (filename.equals(entry.getFileName())) {
+                result.add(entry);
+            }
+        }
+        return result;
+    }
+    
+    //TODO: NOT TESTED
+    public boolean add(CtagsEntry entry) {
+        this.addFileName(entry.getFileName());
         return super.add(entry);
     }
-
+    
+    //TODO: NOT TESTED
     public void clear() {
-        Files.clear();
+        filenames.clear();
         super.clear();
     }
 
