@@ -22,10 +22,8 @@ Position end;
 - broken tag highlight with soft wrap:
 <EOL_SPAN_REGEXP AT_WHITESPACE_END="TRUE" HASH_CHAR="R" TYPE="COMMENT1">REM\s</EOL_SPAN_REGEXP>
 save triggers a close tag or something?
-- escape doesn't hide popup
 - ids in xml.root's other children
 - fuckups parsing build.xml
-- editing a tag triggers completer
 - use NekoXML
 - edit tag: preserve case
 - CatalogProperties complaints
