@@ -389,7 +389,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			console.getOutputPane().setText("");
+			console.clear();
 		}
 	} //}}}
 

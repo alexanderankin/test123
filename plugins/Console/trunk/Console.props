@@ -101,6 +101,9 @@ console.shell.info=This is the system shell. Use it like any system \
 	various other programs. They are listed for easy one-click \
 	access in the 'Error List' window, which can be opened from the \
 	Plugins->Error List menu.\n\
+	\n\
+	For information about these and other features, see the plugin \
+	documentation in jEdit's Help menu.\n
 
 console.shell.unknown-builtin=Built-in %{0} not recognized.\n\
 	Enter %help for documentation.
@@ -180,8 +183,9 @@ console.shell.exited=Process {0} exited with code {1}
 console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 	interpreter. For example, try evaluating "2+2".\n\
 	\n\
-	The current console instance is stored in the BeanShell variable \
-	"console".\n
+	In addition to the variables set by jEdit (view, editPane, textArea, \
+	buffer), the current console instance is stored in the variable \
+	named "console".\n
 
 ### Error parsing
 

@@ -57,8 +57,6 @@ class ConsoleBeanShell extends Shell
 			ns.setVariable("output",output);
 			Object retVal = BeanShell._eval(view,
 				BeanShell.getNameSpace(),command);
-			ns.setVariable("console",null);
-			ns.setVariable("output",null);
 
 			if(retVal != null)
 			{
@@ -67,6 +65,9 @@ class ConsoleBeanShell extends Shell
 					"print(retVal);");
 				ns.setVariable("retVal",null);
 			}
+
+			ns.setVariable("console",null);
+			ns.setVariable("output",null);
 		}
 		catch(Exception e)
 		{
