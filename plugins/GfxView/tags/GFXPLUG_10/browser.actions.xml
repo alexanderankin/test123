@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="vfs.browser.showpicture">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow(GfxViewPlugin.NAME);
+			browser = view.getDockableWindowManager().getDockable("vfs.browser");
+			VFS.DirectoryEntry[] entries = browser.getSelectedFiles();
+			if (entries.length==0 || entries[0].type==VFS.DirectoryEntry.DIRECTORY) {
+				JOptionPane.showMessageDialog(view,"GfxView shows only a selected picture file");
+			}
+			else {
+				view.getDockableWindowManager().getDockable(GfxViewPlugin.NAME).loadImage(entries[0].path);
+			}
+		</CODE>
+	</ACTION>
+</ACTIONS>

@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="gfxview.show-remote-picture">
+        <CODE>
+		view.getDockableWindowManager().addDockableWindow(GfxViewPlugin.NAME);
+		view.getDockableWindowManager()
+			.getDockable(GfxViewPlugin.NAME).loadRemoteImage();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="gfxview.show-history-picture">
+        <CODE>
+		view.getDockableWindowManager().addDockableWindow(GfxViewPlugin.NAME);
+		view.getDockableWindowManager()
+			.getDockable(GfxViewPlugin.NAME).showHistory();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="gfxview.show-history-picture-next">
+        <CODE>
+		view.getDockableWindowManager().addDockableWindow(GfxViewPlugin.NAME);
+		view.getDockableWindowManager()
+			.getDockable(GfxViewPlugin.NAME).loadNextFromHistory();
+        </CODE>
+    </ACTION>
+    <ACTION NAME="gfxview.show-history-picture-prev">
+        <CODE>
+		view.getDockableWindowManager().addDockableWindow(GfxViewPlugin.NAME);
+		view.getDockableWindowManager()
+			.getDockable(GfxViewPlugin.NAME).loadPrevFromHistory();
+        </CODE>
+    </ACTION>
+</ACTIONS>

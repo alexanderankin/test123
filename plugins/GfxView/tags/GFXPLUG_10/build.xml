@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+
+<project name="GfxView" default="dist" basedir=".">
+
+	<property name="jedit.install.dir"  value=".."/>
+	<property name="jar.name"  value="GfxView.jar"/>
+
+	<property name="install.dir"  value="${jedit.install.dir}/Build"/>
+
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="."/>
+		<pathelement location="./libs/ImgrRdr130.jar"/>
+	</path>
+
+	<target name="compile">
+		<javac
+			srcdir="."
+			deprecation="on"
+			includeJavaRuntime="yes"
+		>
+			<classpath refid="project.class.path"/>
+		</javac>
+	</target>
+
+
+	<target name="dist" depends="compile">
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/${jar.name}">
+			<fileset dir=".">
+				<include name="**/*.class"/>
+				<include name="**/*.props"/>
+				<include name="**/*.html"/>
+				<include name="**/*.gif"/>
+				<include name="actions.xml"/>
+				<include name="browser.actions.xml"/>
+				<include name="dockables.xml"/>
+			</fileset>
+		</jar>
+	</target>
+	<target name="clean" description="Clean everything">
+		<delete>
+			<fileset dir="." includes="*.class"/>
+		</delete>
+	</target>
+</project>
