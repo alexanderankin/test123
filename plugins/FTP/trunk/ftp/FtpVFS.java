@@ -184,7 +184,12 @@ public class FtpVFS extends VFS
 				if(entry == null
 					|| entry.name.equals(".")
 					|| entry.name.equals(".."))
+				{
+					//Log.log(Log.DEBUG,this,"Discarding " + line);
 					continue;
+				}
+				else
+					; //Log.log(Log.DEBUG,this,"Parsed " + line);
 
 				directoryVector.addElement(entry);
 			}
@@ -570,8 +575,6 @@ public class FtpVFS extends VFS
 	// Convert a line of LIST output to a VFS.DirectoryEntry
 	private VFS.DirectoryEntry lineToDirectoryEntry(String line)
 	{
-		Log.log(Log.DEBUG,this,line);
-
 		try
 		{
 			int type;

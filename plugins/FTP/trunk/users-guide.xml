@@ -7,7 +7,7 @@
 <!-- :indentSize=1:noTabs=true: -->
 
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
-  "/usr/share/docbook-xml/docbookx.dtd">
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
 
 <book>
 
@@ -79,7 +79,7 @@ To force jEdit to forget all passwords while it is running, use the
 
  <itemizedlist>
 
-  <listitem><para><emphasis role="bold">Version 0.2.8</emphasis>
+  <listitem><para><emphasis role="bold">Version 0.3</emphasis>
    requires jEdit 2.7pre2.</para>
 
    <itemizedlist>
