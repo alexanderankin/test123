@@ -48,7 +48,7 @@ XSLTProcessor.transform.status=Transform completed, time taken {0}ms
 XSLTProcessor.transform.indentAmount=2
 
 XSLTProcessor.indent.stripSpace=yes
-XSLTProcessor.indent.normalizeSpace=yes
+XSLTProcessor.indent.normalizeSpace=no
 
 XSLTProcessor.ok.button=OK
 XSLTProcessor.cancel.button=Cancel
