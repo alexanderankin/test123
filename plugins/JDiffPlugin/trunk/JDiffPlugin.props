@@ -1,0 +1,17 @@
+# JDiffPlugin properties
+# Author: Andre Kaplan
+plugin.JDiffPlugin.name=JDiff Plugin
+plugin.JDiffPlugin.author=Andre Kaplan
+plugin.JDiffPlugin.version=0.1
+plugin.JDiffPlugin.docs=JDiffPlugin.html
+
+# Dependencies
+plugin.JDiffPlugin.depend.0=jdk 1.1
+plugin.JDiffPlugin.depend.1=jedit 02.06.09.00
+plugin.JDiffPlugin.depend.1=class jdiff.JDiff
+
+jdiff-open.label=JDiff
+
+jdiff.include-sub-dirs.label=Include subdirectories
+jdiff.include-sub-dirs=false
+
