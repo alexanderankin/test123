@@ -26,9 +26,11 @@ sidekick.complete-delay=500
 
 # Menu bar stuff
 sidekick-menu=sidekick-tree \
+	- \
 	sidekick-prev-asset \
 	sidekick-next-asset \
 	sidekick-select-asset \
+	sidekick-narrow-asset \
 	- \
 	sidekick-complete \
 	- \
@@ -39,6 +41,7 @@ sidekick-tree.label=Structure Browser
 sidekick-prev-asset.label=Go to Previous Asset
 sidekick-next-asset.label=Go to Next Asset
 sidekick-select-asset.label=Select Asset at Caret
+sidekick-narrow-asset.label=Narrow to Asset at Caret
 sidekick-complete.label=Show Completion Popup
 sidekick-parse.label=Parse Buffer
 sidekick-keystroke-parse.label=Parse on Keystroke
