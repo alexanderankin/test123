@@ -23,13 +23,21 @@
 package sessions;
 
 
+import java.awt.FlowLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Mode;
 
 
 public class DefaultSessionPropertyPane extends SessionPropertyPane
+	implements ActionListener
 {
 
 	public DefaultSessionPropertyPane(Session session)
@@ -53,8 +61,15 @@ public class DefaultSessionPropertyPane extends SessionPropertyPane
 	public void _init()
 	{
 		// "Base directory:"
-		addComponent("sessions.sessionproperties.default.basedir",
-			tBasedir = new JTextField(session.getProperty("basedir", ""), 20));
+		JPanel dirPanel = new JPanel();
+		dirPanel.add(
+			tBasedir = new JTextField(session.getProperty(Session.BASE_DIRECTORY, ""), 20));
+
+		dirPanel.add(
+			bBrowse = new JButton(UIManager.getIcon("FileView.directoryIcon")));
+		bBrowse.setMargin(new java.awt.Insets(0,0,0,0));
+		bBrowse.addActionListener(this);
+		addComponent(dirPanel);
 
 		// "Preferred mode:"
 		cMode = new JComboBox(getModeNames());
@@ -66,7 +81,7 @@ public class DefaultSessionPropertyPane extends SessionPropertyPane
 
 	public void _save()
 	{
-		session.setProperty("basedir", tBasedir.getText());
+		session.setProperty(Session.BASE_DIRECTORY, tBasedir.getText());
 		session.setProperty("mode", cMode.getSelectedItem() != null
 			? cMode.getSelectedItem().toString()
 			: jEdit.getProperty("buffer.defaultMode"));
@@ -83,8 +98,18 @@ public class DefaultSessionPropertyPane extends SessionPropertyPane
 	}
 
 
+	public void actionPerformed(ActionEvent evt)
+	{
+		JFileChooser chooser = new javax.swing.JFileChooser();
+		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+
+		if(chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION)
+			tBasedir.setText(chooser.getSelectedFile().getPath());
+	}
+
+
 	private JTextField tBasedir;
+	private JButton bBrowse;
 	private JComboBox cMode;
 
 }
-
