@@ -2,6 +2,7 @@
 
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
+
 <ACTIONS>
 	<!-- actions prefixed with - are bound to normal keys -->
 	<ACTION NAME="-xml-complete-closing-tag">

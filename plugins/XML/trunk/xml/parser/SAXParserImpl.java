@@ -78,6 +78,9 @@ class SAXParserImpl implements XmlParser.Impl
 		buffer = parser.getBuffer();
 		root = new DefaultMutableTreeNode(buffer.getName());
 
+		if(buffer.getLength() == 0)
+			return;
+
 		try
 		{
 			InputSource source = new InputSource(
@@ -324,8 +327,7 @@ class SAXParserImpl implements XmlParser.Impl
 		//{{{ elementDecl() method
 		public void elementDecl(String name, String model)
 		{
-			boolean empty = "EMPTY".equals(model);
-			ElementDecl elementDecl = new ElementDecl(name,empty,false);
+			ElementDecl elementDecl = new ElementDecl(name,model,false);
 			elementHash.put(name,elementDecl);
 			elements.add(elementDecl);
 		} //}}}

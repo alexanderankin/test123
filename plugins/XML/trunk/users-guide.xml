@@ -212,7 +212,8 @@
  </para>
 
  <para>
-  This window lists all declared elements, entities and IDs (element attributes
+  This window lists elements that may be inserted at the caret position,
+  all declared entities, and IDs (element attributes
   with a value type of <property>ID</property>).
  </para>
 
@@ -246,7 +247,9 @@
   If the less-than symbol (<quote>&lt;</quote>) is typed and no other key
   is pressed within a
   specified delay (half a second by default), a tag list popup will be
-  shown. The arrow keys can be used to select a tag; if you start
+  shown. Note that only tags which are the parent element is
+  allowed to contain are listed. The arrow keys can be used to select a tag;
+  if you start
   typing a tag name, only tags whose names begin with the already-entered
   text will be shown.
  </para>
@@ -467,6 +470,10 @@
    <listitem><para>
     <keycap>Control</keycap>-double clicking on a tag in the text area opens the
     <guimenuitem>Edit Tag</guimenuitem> dialog box.
+   </para></listitem>
+   <listitem><para>
+    Tag completion popups and the <guimenuitem>XML Insert</guimenuitem> window
+    now only list elements that can be inserted at the caret position.
    </para></listitem>
    <listitem><para>
     Option added to only show the <literal>ID</literal> attributes of elements

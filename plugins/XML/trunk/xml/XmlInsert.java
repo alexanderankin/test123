@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001 Slava Pestov
+ * Copyright (C) 2001, 2002 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -21,7 +21,7 @@ import javax.swing.table.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
-import java.util.*;
+import java.util.ArrayList;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
@@ -37,7 +37,6 @@ public class XmlInsert extends JPanel implements EBComponent
 	public XmlInsert(View view, boolean sideBySide)
 	{
 		this.view = view;
-		editPaneHandler = new EditPaneHandler();
 
 		setLayout(new GridLayout(sideBySide ? 1 : 3,
 			sideBySide ? 3 : 1,3,3));
@@ -80,7 +79,22 @@ public class XmlInsert extends JPanel implements EBComponent
 
 		add(idPanel);
 
+		EditPane[] editPanes = view.getEditPanes();
+		for(int i = 0; i < editPanes.length; i++)
+		{
+			JEditTextArea textArea = editPanes[i].getTextArea();
+			textArea.addCaretListener(new CaretHandler());
+		}
+
 		update();
+
+		updateTimer = new Timer(0,new ActionListener()
+		{
+			public void actionPerformed(ActionEvent evt)
+			{
+				updateTagList();
+			}
+		});
 	} //}}}
 
 	//{{{ addNotify() method
@@ -114,15 +128,13 @@ public class XmlInsert extends JPanel implements EBComponent
 				&& editPane.getView() == view)
 			{
 				JEditTextArea textArea = editPane.getTextArea();
-				textArea.addFocusListener(editPaneHandler);
-				textArea.addCaretListener(editPaneHandler);
+				textArea.addCaretListener(new CaretHandler());
 			}
 			else if(emsg.getWhat() == EditPaneUpdate.DESTROYED
 				&& editPane.getView() == view)
 			{
 				JEditTextArea textArea = editPane.getTextArea();
-				textArea.removeFocusListener(editPaneHandler);
-				textArea.removeCaretListener(editPaneHandler);
+				textArea.removeCaretListener(new CaretHandler());
 			}
 			else if(emsg.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 				update();
@@ -146,15 +158,11 @@ public class XmlInsert extends JPanel implements EBComponent
 		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
 			view.getEditPane());
 		if(completionInfo != null)
-		{
-			setDeclaredElements(completionInfo.elements);
 			setDeclaredEntities(completionInfo.entities);
-		}
 		else
-		{
-			setDeclaredElements(null);
 			setDeclaredEntities(null);
-		}
+
+		updateTagList();
 
 		ArrayList ids = (ArrayList)view.getEditPane().getClientProperty(
 			XmlPlugin.IDS_PROPERTY);
@@ -165,11 +173,14 @@ public class XmlInsert extends JPanel implements EBComponent
 
 	//{{{ Instance variables
 	private View view;
-	private EditPaneHandler editPaneHandler;
+	private CaretHandler caretHandler;
 	private ArrayList elements;
 	private JList elementList;
 	private JList entityList;
 	private JList idList;
+
+	private int delay;
+	private Timer updateTimer;
 	//}}}
 
 	//{{{ showNotParsedMessage() method
@@ -193,12 +204,7 @@ public class XmlInsert extends JPanel implements EBComponent
 		}
 		else
 		{
-			// inefficent
-			DefaultListModel model = new DefaultListModel();
-			for(int i = 0; i < elements.size(); i++)
-			{
-				model.addElement(elements.get(i));
-			}
+			ArrayListModel model = new ArrayListModel(elements);
 			elementList.setModel(model);
 
 			if(model.getSize() != 0)
@@ -224,12 +230,7 @@ public class XmlInsert extends JPanel implements EBComponent
 		}
 		else
 		{
-			// inefficent
-			DefaultListModel model = new DefaultListModel();
-			for(int i = 0; i < entities.size(); i++)
-			{
-				model.addElement(entities.get(i));
-			}
+			ArrayListModel model = new ArrayListModel(entities);
 			entityList.setModel(model);
 
 			if(model.getSize() != 0)
@@ -256,12 +257,7 @@ public class XmlInsert extends JPanel implements EBComponent
 		}
 		else
 		{
-			// inefficent
-			DefaultListModel model = new DefaultListModel();
-			for(int i = 0; i < ids.size(); i++)
-			{
-				model.addElement(ids.get(i));
-			}
+			ArrayListModel model = new ArrayListModel(ids);
 			idList.setModel(model);
 
 			if(model.getSize() != 0)
@@ -279,28 +275,63 @@ public class XmlInsert extends JPanel implements EBComponent
 	//{{{ updateTagList() method
 	private void updateTagList()
 	{
-		// TODO: only show tags that can be inserted at caret
-		// position
+		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
+			view.getEditPane());
+		if(completionInfo != null)
+		{
+			setDeclaredElements(completionInfo.getAllowedElements(
+				view.getBuffer(),view.getTextArea()
+				.getCaretPosition()));
+		}
+		else
+		{
+			setDeclaredElements(null);
+		}
+	} //}}}
+
+	//{{{ updateTagListWithDelay() method
+	private void updateTagListWithDelay()
+	{
+		if(updateTimer.isRunning())
+			updateTimer.stop();
+
+		updateTimer.setInitialDelay(200);
+		updateTimer.setRepeats(false);
+		updateTimer.start();
 	} //}}}
 
 	//}}}
 
-	//{{{ EditPaneHandler class
-	class EditPaneHandler implements FocusListener, CaretListener
+	//{{{ ArrayListModel class
+	static class ArrayListModel implements ListModel
 	{
-		public void focusGained(FocusEvent evt)
+		ArrayList list;
+
+		ArrayListModel(ArrayList list)
 		{
-			showNotParsedMessage();
+			this.list = list;
 		}
 
-		public void focusLost(FocusEvent evt)
+		public int getSize()
 		{
+			return list.size();
+		}
+		public Object getElementAt(int index)
+		{
+			return list.get(index);
 		}
 
+		public void addListDataListener(ListDataListener l) {}
+		public void removeListDataListener(ListDataListener l) {}
+	} //}}}
+
+	//{{{ CaretHandler class
+	class CaretHandler implements CaretListener
+	{
 		public void caretUpdate(CaretEvent evt)
 		{
 			if(evt.getSource() == view.getTextArea())
-				updateTagList();
+				updateTagListWithDelay();
 		}
 	} //}}}
 

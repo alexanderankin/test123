@@ -495,7 +495,15 @@ public class XmlActions
 
 		ArrayList completions;
 		if(mode == ELEMENT_COMPLETE)
-			completions = completionInfo.elements;
+		{
+			// Try to only list elements that are valid at the caret
+			// position
+
+			Buffer buffer = editPane.getBuffer();
+			int end = buffer.getLineStartOffset(caretLine) + wordStart;
+
+			completions = completionInfo.getAllowedElements(buffer,end);
+		}
 		else if(mode == ENTITY_COMPLETE)
 			completions = completionInfo.entities;
 		else
@@ -504,8 +512,8 @@ public class XmlActions
 				XmlPlugin.IDS_PROPERTY);
 		}
 
-		if(completions.size() == 0)
-			return;
+		//if(completions.size() == 0)
+		//	return;
 
 		Point location = textArea.offsetToXY(caretLine,wordStart,new Point());
 		location.y += textArea.getPainter().getFontMetrics().getHeight();
@@ -579,6 +587,7 @@ public class XmlActions
 			.getCompletionInfo(editPane);
 
 		if(!(buffer.isEditable()
+			&& completionInfo != null
 			&& closeCompletionOpen
 			&& XmlPlugin.getParserType(buffer) != null))
 		{
