@@ -1,0 +1,36 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="error-list-next-error">
+		<CODE>
+			wm = view.getDockableWindowManager();
+			wm.addDockableWindow("error-list");
+			wm.getDockable("error-list").nextError();
+			textArea.requestFocus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-previous-error">
+		<CODE>
+			wm = view.getDockableWindowManager();
+			wm.addDockableWindow("error-list");
+			wm.getDockable("error-list").previousError();
+			textArea.requestFocus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-next-error-file">
+		<CODE>
+			wm = view.getDockableWindowManager();
+			wm.addDockableWindow("error-list");
+			wm.getDockable("error-list").nextErrorFile();
+			textArea.requestFocus();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="error-list-previous-error-file">
+		<CODE>
+			wm = view.getDockableWindowManager();
+			wm.addDockableWindow("error-list");
+			wm.getDockable("error-list").prevErrorFile();
+			textArea.requestFocus();
+		</CODE>
+	</ACTION>
+</ACTIONS>
