@@ -1035,14 +1035,14 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				handleEditorExitRequestedMessage((EditorExitRequested) msg);
 			} else if (msg instanceof BufferUpdate) {
 				handleBufferUpdateMessage((BufferUpdate) msg);
-			} else if (config.isErrorListAvailable() && msg instanceof ErrorSourceUpdate) {
-				handleErrorSourceUpdateMessage((ErrorSourceUpdate) msg);
+			} else if (config.isErrorListAvailable()) {
+				new Helper().handleErrorListMessage(msg);
 			}
 		}
 
 	} //}}}
 
-	//{{{ +handleViewUpdateMessage(ViewUpdate) : void
+	//{{{ -handleViewUpdateMessage(ViewUpdate) : void
 	/** Handles a ViewUpdate EditBus message.
 	 */
 	private void handleViewUpdateMessage(ViewUpdate vu) {
@@ -1078,7 +1078,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		}
 	}//}}}
 
-	//{{{ +handleEditorExitRequestedMessage(ViewUpdate) : void
+	//{{{ -handleEditorExitRequestedMessage(EditorExitRequested) : void
 	/** Handles a EditorExitRequested EditBus message.
 	 */
 	private void handleEditorExitRequestedMessage(EditorExitRequested eer) {
@@ -1090,7 +1090,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		}
 	}//}}}
 
-	//{{{ +handleBufferUpdateMessage(ViewUpdate) : void
+	//{{{ -handleBufferUpdateMessage(BufferUpdate) : void
 	/** Handles a BufferUpdate EditBus message.
 	 */
 	private void handleBufferUpdateMessage(BufferUpdate bu) {
@@ -1170,45 +1170,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		}
  	}//}}}
 
-	//{{{ +handleErrorSourceUpdateMessage(ViewUpdate) : void
-	/** Handles a ErrorSourceUpdate EditBus message.
-	 */
-	private void handleErrorSourceUpdateMessage(ErrorSourceUpdate esu) {
-		//Log.log(Log.DEBUG, this, "ErrorSourceUpdate received :["+esu.getWhat()+"]["+esu.getErrorSource().getName()+"]");
-		if ( esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED ||
-			esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED) {
-			VPTProject p = (VPTProject) treeRoot;
-			ErrorSource.Error error = esu.getError();
-			VPTNode f = p.getChildNode(error.getFilePath());
-			if ( f != null ) {
-				//Log.log(Log.DEBUG, this, "ErrorSourceUpdate for :["+error.getFilePath()+"]");
-				if (folderTree != null) {
-					((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
-				}
-				if (fileTree != null) {
-					((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
-				}
-				if (workingFileTree != null) {
-					((VPTWorkingFileListModel)workingFileTree.getModel()).nodeChanged(f);
-				}
-			}
-		}
-		if ( esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED ||
-			esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED ||
-			esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
-			VPTProject p = (VPTProject) treeRoot;
-			if (folderTree != null) {
-				folderTree.repaint();
-			}
-			if (fileTree != null) {
-				fileTree.repaint();
-			}
-			if (workingFileTree != null) {
-				workingFileTree.repaint();
-			}
-		}
-	}//}}}
-
 	//{{{ +setEnabled(boolean) : void
 	/** Enables or disables the viewer GUI. */
 	public void setEnabled(boolean flag) {
@@ -1252,6 +1213,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			if (ie.getStateChange() != ItemEvent.SELECTED || DISABLE_EVENTS) return;
 
 			if(ie.getItem() instanceof VPTProject) {
+				if (treeRoot.isProject()) {
+					closeProject((VPTProject)treeRoot, config.getCloseFiles(),
+						config.getRememberOpen());
+				}
 				VPTProject p = (VPTProject) ie.getItem();
 				new ProjectLoader(p.getName()).loadProject();
 			} else {
@@ -1383,7 +1348,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			final JTree tree = getCurrentTree();
 			final DefaultTreeModel tModel = (tree != null)
 					? (DefaultTreeModel) tree.getModel() : null;
-			final VPTNode oldRoot = treeRoot;
 			treeRoot = null;
 
 			try {
@@ -1418,7 +1382,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 					new Runnable() {
 						public void run() {
 							synchronized (ProjectViewer.this) {
-								treeRoot = oldRoot;
 								if (tree != null) {
 									tModel.setRoot(p);
 									tree.setModel(tModel);
@@ -1515,6 +1478,60 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		public boolean isDataFlavorSupported(DataFlavor flavor) {
 			return (flavor == DataFlavor.javaFileListFlavor);
 		} //}}}
+
+	} //}}}
+
+	//{{{ -class _Helper_
+	/**
+	 *	Class to hold methods that require classes that may not be available,
+	 *	so that PV behaves well when called from a BeanShell script.
+	 */
+	private class Helper {
+
+		//{{{ +_handleMessage(EBMessage)_ : void
+		public void handleErrorListMessage(EBMessage msg) {
+			if (msg instanceof ErrorSourceUpdate) {
+				handleErrorSourceUpdateMessage((ErrorSourceUpdate) msg);
+			}
+		} //}}}
+
+		//{{{ -handleErrorSourceUpdateMessage(ErrorSourceUpdate) : void
+		/** Handles a ErrorSourceUpdate EditBus message. */
+		private void handleErrorSourceUpdateMessage(ErrorSourceUpdate esu) {
+			//Log.log(Log.DEBUG, this, "ErrorSourceUpdate received :["+esu.getWhat()+"]["+esu.getErrorSource().getName()+"]");
+			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED ||
+				esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED) {
+				VPTProject p = (VPTProject) treeRoot;
+				ErrorSource.Error error = esu.getError();
+				VPTNode f = p.getChildNode(error.getFilePath());
+				if ( f != null ) {
+					//Log.log(Log.DEBUG, this, "ErrorSourceUpdate for :["+error.getFilePath()+"]");
+					if (folderTree != null) {
+						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+					}
+					if (fileTree != null) {
+						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+					}
+					if (workingFileTree != null) {
+						((VPTWorkingFileListModel)workingFileTree.getModel()).nodeChanged(f);
+					}
+				}
+			}
+			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED ||
+				esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED ||
+				esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
+				VPTProject p = (VPTProject) treeRoot;
+				if (folderTree != null) {
+					folderTree.repaint();
+				}
+				if (fileTree != null) {
+					fileTree.repaint();
+				}
+				if (workingFileTree != null) {
+					workingFileTree.repaint();
+				}
+			}
+		}//}}}
 
 	} //}}}
 
