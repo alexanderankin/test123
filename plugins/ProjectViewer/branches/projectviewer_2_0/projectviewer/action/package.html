@@ -35,6 +35,13 @@ selection. If your action depends on a certain kind of node, add it to the
 context menu, and not to the toolbar. If you want to add it to the toolbar,
 check for the node type in your <code>actionPerformed()</code> implementation.</p>
 
+<p>Another important thing to notice in the prepareForNode() method is that
+the actions should check is the node is of a certain type, and not if the
+node is not of a certain type. For example, use "node.isFile()" and not
+"!node.isDirectory()". This ensures that the action will not do anything
+wrong if a different node type is added in the future to PV, or if another
+plugin adds a new node type to PV.</p>
+
 <p>It's important to notice that the instance given to the <i>registerAction</i>
 methods is not the instance used by the viewer instances. Those instances are
 used as prototypes, and the viewers use {@link projectviewer.action.Action#clone()
