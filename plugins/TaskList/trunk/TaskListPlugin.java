@@ -81,6 +81,7 @@ public class TaskListPlugin extends EBPlugin
 	private static Color highlightColor = Color.blue;
 	private static int parseDelay = 1000;
 	private static boolean highlightTasks = false;
+	private static Hashtable highlights = new Hashtable();
 
 	/**
 	 * Creates options panes for jEdit's "Global options" window
@@ -205,9 +206,8 @@ public class TaskListPlugin extends EBPlugin
 			EditPaneUpdate epu = (EditPaneUpdate)message;
 			if(epu.getWhat() == EditPaneUpdate.CREATED)
 			{
-				// TODO: only add if property highlightTasks is true
-				// TODO: need to be able to remove highlights
 				TaskHighlight highlight = new TaskHighlight();
+				highlights.put(epu.getEditPane(), highlight);
 				epu.getEditPane().getTextArea().getPainter()
 					.addCustomHighlight(highlight);
 			}
@@ -221,6 +221,10 @@ public class TaskListPlugin extends EBPlugin
 						TaskListPlugin.parseBuffer(buffer);
 					}
 				});
+			}
+			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+			{
+				highlights.remove(epu.getEditPane());
 			}
 		}
 		else if(message instanceof PropertiesChanged)
@@ -281,7 +285,7 @@ public class TaskListPlugin extends EBPlugin
 	}
 
 	/**
-	 * Causes an update of application data, typically aafter a change
+	 * Causes an update of application data, typically after a change
 	 * in the plugin's user settings.
 	 */
 	private static void propertiesChanged()
@@ -303,6 +307,16 @@ public class TaskListPlugin extends EBPlugin
 
 		if(parseDelay <= 0)
 			parseDelay = PARSE_DELAY;
+
+
+		Enumeration elements = highlights.elements();
+		boolean highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
+		while(elements.hasMoreElements())
+		{
+			TaskHighlight highlight = (TaskHighlight)elements.nextElement();
+			if(highlight != null)
+				highlight.setEnabled(highlightEnabled);
+		}
 
 		fireTasksUpdated();
 	}
