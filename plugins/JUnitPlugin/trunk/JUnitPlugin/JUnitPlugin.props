@@ -1,6 +1,6 @@
 plugin.junit.JUnitPlugin.name=jUnit
 plugin.junit.JUnitPlugin.author=André Kaplan, Calvin Yu
-plugin.junit.JUnitPlugin.version=0.1
+plugin.junit.JUnitPlugin.version=0.0.1
 plugin.junit.JUnitPlugin.docs=index.html
 
 plugin.junit.JUnitPlugin.depend.0=jdk 1.3
