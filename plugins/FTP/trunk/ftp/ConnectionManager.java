@@ -97,9 +97,8 @@ public class ConnectionManager
 		ConnectionInfo info = new ConnectionInfo(secure,host,port,
 			dialog.getUser(),dialog.getPassword());
 
-		// hash by original host name (including port number, if
-		// there is one)
-		logins.put(info.toString(),info);
+		// hash by host name
+		logins.put(host,info);
 
 		return info;
 	}

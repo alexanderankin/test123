@@ -447,15 +447,10 @@ public class FtpVFS extends VFS
 					// but true, because BufferIORequest needs to know
 					// the size of the file being loaded) we can
 					// check if the path name in the session is the
-					// path this method was passed (the path in the
-					// session will always be the file loaded or
-					// saved, yet again another semi-documented
-					// feature).
-					/* if(address.path.equals(session.path))
+					// path this method was passed.
+					if(address.toString().equals(path))
 					{
-						Buffer buffer = jEdit.getBuffer(
-							/ not address.path, but
-							   full URI /path);
+						Buffer buffer = jEdit.getBuffer(path);
 						if(buffer != null)
 						{
 							Log.log(Log.DEBUG,this,
@@ -467,7 +462,12 @@ public class FtpVFS extends VFS
 							buffer.setIntegerProperty(PERMISSIONS_PROPERTY,
 								dirEntry.permissions);
 						}
-					} */
+						else
+						{
+							//Log.log(Log.ERROR,this,
+							//	path + " not open?");
+						}
+					}
 
 					return dirEntry;
 				}
@@ -613,6 +613,8 @@ public class FtpVFS extends VFS
 			{
 				if(!tryHiddenFiles)
 					throw new FtpException(client.getResponse());
+				else
+					return null;
 			}
 
 			in = new BufferedReader(_in);
@@ -707,6 +709,18 @@ public class FtpVFS extends VFS
 			if(!ok)
 			{
 				REMatch match;
+				if((match = vmsRegexp.getMatch(line)) != null)
+				{
+					name = match.toString(1);
+					if(name.endsWith(".DIR"))
+						type = VFS.DirectoryEntry.DIRECTORY;
+					ok = true;
+				}
+			}
+
+			if(!ok)
+			{
+				REMatch match;
 				if((match = dosRegexp.getMatch(line)) != null)
 				{
 					try
@@ -723,18 +737,6 @@ public class FtpVFS extends VFS
 					}
 
 					name = match.toString(2);
-					ok = true;
-				}
-			}
-
-			if(!ok)
-			{
-				REMatch match;
-				if((match = vmsRegexp.getMatch(line)) != null)
-				{
-					name = match.toString(1);
-					if(name.endsWith(".DIR"))
-						type = VFS.DirectoryEntry.DIRECTORY;
 					ok = true;
 				}
 			}
