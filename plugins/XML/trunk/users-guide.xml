@@ -486,7 +486,7 @@
 
  <itemizedlist>
 
-  <listitem><para><emphasis role="bold">Version 0.12</emphasis> requires
+  <listitem><para><emphasis role="bold">Version 0.11.1</emphasis> requires
   jEdit 4.1pre11, SideKick plugin 0.2, and ErrorList plugin 1.2.</para>
 
   <itemizedlist>
@@ -494,6 +494,8 @@
   with a malformed DTD.</para></listitem>
   <listitem><para>Validation would still be performed, even if the option was
   switched off.</para></listitem>
+  <listitem><para>Fixed a problem where the structure tree would be empty on
+  Windows.</para></listitem>
   </itemizedlist>
   </listitem>
 
