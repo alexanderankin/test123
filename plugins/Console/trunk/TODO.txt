@@ -1,11 +1,8 @@
 + version 3.2:
 
-- document writing shells
-- improve commando error handling
-- 'compile' and 'run' commands:
-  - need more commandos: at least perl, python, make, sh
-  - option pane
-  - documentation
+- documentation:
+  - compile and run command
+  - writing shells
 
 + later:
 
@@ -25,6 +22,5 @@
   - cd to a non-local directory (don't allow running commands from non
     local dir, only built-ins)
 - globs (non-Windows only, Windows programs do their own glob expansion)
-- commando: lower case tag names?
 - shift-click on toolbar button runs without displaying dialog box
 - after jEdit API additions: tips of the day

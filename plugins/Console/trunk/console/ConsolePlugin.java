@@ -208,7 +208,7 @@ public class ConsolePlugin extends EBPlugin
 	public static void compile(View view, Buffer buffer)
 	{
 		String compiler = buffer.getStringProperty("commando.compile");
-		if(compiler == null)
+		if(compiler == null || compiler.length() == 0)
 		{
 			GUIUtilities.error(view,"commando.no-compiler",null);
 			return;
@@ -246,19 +246,19 @@ public class ConsolePlugin extends EBPlugin
 	//{{{ run() method
 	public static void run(View view, Buffer buffer)
 	{
-		String runner = buffer.getStringProperty("commando.run");
-		if(runner == null)
+		String interpreter = buffer.getStringProperty("commando.run");
+		if(interpreter == null || interpreter.length() == 0)
 		{
-			GUIUtilities.error(view,"commando.no-runner",null);
+			GUIUtilities.error(view,"commando.no-interpreter",null);
 			return;
 		}
 
 		CommandoCommand command = (CommandoCommand)commando.getAction(
-			"commando." + runner);
+			"commando." + interpreter);
 		if(command == null)
 		{
 			GUIUtilities.error(view,"commando.no-command",
-				new String[] { runner });
+				new String[] { interpreter });
 		}
 		else
 		{

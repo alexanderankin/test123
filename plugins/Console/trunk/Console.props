@@ -81,6 +81,10 @@ console.not-filled-out.title=Fields not filled out
 console.not-filled-out.message=You must fill out all fields in this dialog box.
 
 options.console.compile-run.label=Compile & Run
+options.console.compile-run.caption=Compilers and interpreters:
+options.console.compile-run.mode=Mode
+options.console.compile-run.compiler=Compiler
+options.console.compile-run.interpreter=Interpreter
 
 ### SystemShell
 
@@ -279,8 +283,8 @@ commando.no-compiler.message=There is no compiler associated with this buffer.\n
 commando.not-saved-compile.title=Save Changes
 commando.not-saved-compile.message=Save changes to {0} before compiling?
 
-commando.no-runner.title=No Interpreter Defined
-commando.no-runner.message=There is no interpreter associated with this buffer.\n\
+commando.no-interpreter.title=No Interpreter Defined
+commando.no-interpreter.message=There is no interpreter associated with this buffer.\n\
 	You can specify interpreters on a mode-specific basis in the\n\
 	Utilities->Global Options dialog box.
 
@@ -298,5 +302,5 @@ mode.java.commando.run=java
 mode.jmk.commando.compile=jmk
 mode.jmk.commando.run=jmk
 
-mode.latex.commando.compile=latex
-mode.latex.commando.run=yap
+mode.tex.commando.compile=latex
+mode.tex.commando.run=yap

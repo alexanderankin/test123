@@ -813,6 +813,12 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
 
    <itemizedlist>
     <listitem><para>
+     Added <guimenuitem>Compile</guimenuitem> and
+     <guimenuitem>Run</guimenuitem> commands. They open mode-specific commandos;
+     you can customize them in the <guibutton>Compile &amp; Run</guibutton>
+     option pane.
+    </para></listitem>
+    <listitem><para>
      Added some new pre-defined variables to the system shell -
      <varname>${c}</varname>, <varname>${pkg}</varname> and
      <varname>${root}</varname>. See <xref linkend="env-vars"/> for information
@@ -831,7 +837,8 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
     <listitem><para>
      A few new commando files added: <filename>ant</filename>,
      <filename>jikes</filename>, <filename>latex</filename>,
-     <filename>yap</filename>
+     <filename>yap</filename>. The existing commandos have been improved
+     as well.
     </para></listitem>
     <listitem><para>
      Commandos are now made into normal jEdit actions using the new
