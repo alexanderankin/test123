@@ -25,35 +25,35 @@ public interface PHPParserConstants {
   int INCLUDE_ONCE = 38;
   int REQUIRE_ONCE = 39;
   int GLOBAL = 40;
-  int DEFINE = 41;
-  int STATIC = 42;
-  int CLASSACCESS = 43;
-  int STATICCLASSACCESS = 44;
-  int ARRAYASSIGN = 45;
-  int CASE = 46;
-  int CONST = 47;
-  int CONTINUE = 48;
-  int _DEFAULT = 49;
-  int DO = 50;
-  int EXTENDS = 51;
-  int FOR = 52;
-  int GOTO = 53;
-  int NEW = 54;
-  int NULL = 55;
-  int RETURN = 56;
-  int SUPER = 57;
-  int SWITCH = 58;
-  int THIS = 59;
-  int TRUE = 60;
-  int FALSE = 61;
-  int WHILE = 62;
-  int ENDWHILE = 63;
-  int ENDSWITCH = 64;
-  int ENDIF = 65;
-  int ENDFOR = 66;
-  int ENDFOREACH = 67;
-  int FOREACH = 68;
-  int AS = 69;
+  int STATIC = 41;
+  int CASE = 42;
+  int CONST = 43;
+  int CONTINUE = 44;
+  int _DEFAULT = 45;
+  int DO = 46;
+  int EXTENDS = 47;
+  int FOR = 48;
+  int NEW = 49;
+  int RETURN = 50;
+  int SWITCH = 51;
+  int WHILE = 52;
+  int ENDWHILE = 53;
+  int ENDSWITCH = 54;
+  int ENDIF = 55;
+  int ENDFOR = 56;
+  int ENDFOREACH = 57;
+  int FOREACH = 58;
+  int AS = 59;
+  int CLASSACCESS = 60;
+  int STATICCLASSACCESS = 61;
+  int ARRAYASSIGN = 62;
+  int DEFINE = 63;
+  int GOTO = 64;
+  int NULL = 65;
+  int SUPER = 66;
+  int THIS = 67;
+  int TRUE = 68;
+  int FALSE = 69;
   int STRING = 70;
   int OBJECT = 71;
   int BOOL = 72;
@@ -102,46 +102,44 @@ public interface PHPParserConstants {
   int LETTER = 115;
   int DIGIT = 116;
   int SPECIAL = 117;
-  int KIDENTIFIER = 118;
-  int LPAREN = 119;
-  int RPAREN = 120;
-  int LBRACE = 121;
-  int RBRACE = 122;
-  int LBRACKET = 123;
-  int RBRACKET = 124;
-  int SEMICOLON = 125;
-  int COMMA = 126;
-  int DOT = 127;
-  int GT = 128;
-  int LT = 129;
-  int EQUAL_EQUAL = 130;
-  int LE = 131;
-  int GE = 132;
-  int NOT_EQUAL = 133;
-  int DIF = 134;
-  int BANGDOUBLEEQUAL = 135;
-  int TRIPLEEQUAL = 136;
-  int ASSIGN = 137;
-  int PLUSASSIGN = 138;
-  int MINUSASSIGN = 139;
-  int STARASSIGN = 140;
-  int SLASHASSIGN = 141;
-  int ANDASSIGN = 142;
-  int ORASSIGN = 143;
-  int XORASSIGN = 144;
-  int DOTASSIGN = 145;
-  int REMASSIGN = 146;
-  int TILDEEQUAL = 147;
-  int LSHIFTASSIGN = 148;
-  int RSIGNEDSHIFTASSIGN = 149;
+  int LPAREN = 118;
+  int RPAREN = 119;
+  int LBRACE = 120;
+  int RBRACE = 121;
+  int LBRACKET = 122;
+  int RBRACKET = 123;
+  int SEMICOLON = 124;
+  int COMMA = 125;
+  int DOT = 126;
+  int GT = 127;
+  int LT = 128;
+  int EQUAL_EQUAL = 129;
+  int LE = 130;
+  int GE = 131;
+  int NOT_EQUAL = 132;
+  int DIF = 133;
+  int BANGDOUBLEEQUAL = 134;
+  int TRIPLEEQUAL = 135;
+  int ASSIGN = 136;
+  int PLUSASSIGN = 137;
+  int MINUSASSIGN = 138;
+  int STARASSIGN = 139;
+  int SLASHASSIGN = 140;
+  int ANDASSIGN = 141;
+  int ORASSIGN = 142;
+  int XORASSIGN = 143;
+  int DOTASSIGN = 144;
+  int REMASSIGN = 145;
+  int TILDEEQUAL = 146;
+  int LSHIFTASSIGN = 147;
+  int RSIGNEDSHIFTASSIGN = 148;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
   int IN_SINGLE_LINE_COMMENT = 2;
   int IN_VARIABLE = 3;
-  int MODE_IDENTIFIER = 4;
-  int IN_FORMAL_COMMENT = 5;
-  int IN_MULTI_LINE_COMMENT = 6;
+  int IN_FORMAL_COMMENT = 4;
+  int IN_MULTI_LINE_COMMENT = 5;
 
   String[] tokenImage = {
     "<EOF>",
@@ -185,11 +183,7 @@ public interface PHPParserConstants {
     "\"include_once\"",
     "\"require_once\"",
     "\"global\"",
-    "\"define\"",
     "\"static\"",
-    "\"->\"",
-    "\"::\"",
-    "\"=>\"",
     "\"case\"",
     "\"const\"",
     "\"continue\"",
@@ -197,15 +191,9 @@ public interface PHPParserConstants {
     "\"do\"",
     "\"extends\"",
     "\"for\"",
-    "\"goto\"",
     "\"new\"",
-    "\"null\"",
     "\"return\"",
-    "\"super\"",
     "\"switch\"",
-    "\"this\"",
-    "\"true\"",
-    "\"false\"",
     "\"while\"",
     "\"endwhile\"",
     "\"endswitch\"",
@@ -214,6 +202,16 @@ public interface PHPParserConstants {
     "\"endforeach\"",
     "\"foreach\"",
     "\"as\"",
+    "\"->\"",
+    "\"::\"",
+    "\"=>\"",
+    "\"define\"",
+    "\"goto\"",
+    "\"null\"",
+    "\"super\"",
+    "\"this\"",
+    "\"true\"",
+    "\"false\"",
     "\"string\"",
     "\"object\"",
     "\"bool\"",
@@ -262,7 +260,6 @@ public interface PHPParserConstants {
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
-    "<KIDENTIFIER>",
     "\"(\"",
     "\")\"",
     "\"{\"",
