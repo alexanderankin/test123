@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * a Define.
  * define(expression,expression)
- * 
+ *
  * @author Matthieu Casanova
  */
 public final class Define extends Statement implements Outlineable {
@@ -45,11 +45,7 @@ public final class Define extends Statement implements Outlineable {
   public String toString() {
     final String nameString = defineName.toStringExpression();
     final String valueString = defineValue.toStringExpression();
-    final StringBuffer buff = new StringBuffer(nameString.length() + valueString.length() + 3);
-    buff.append(nameString);
-    buff.append(" = ");
-    buff.append(valueString);
-    return buff.toString();
+    return nameString + " = " + valueString;
   }
 
   public Object getParent() {
@@ -70,12 +66,14 @@ public final class Define extends Statement implements Outlineable {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {}
+  public void getModifiedVariable(final List list) {
+  }
 
   /**
    * Get the variables used.
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {}
+  public void getUsedVariable(final List list) {
+  }
 }
