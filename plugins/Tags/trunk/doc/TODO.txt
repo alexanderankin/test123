@@ -27,12 +27,18 @@ Version 2.0
 * make sure all appropriate references are released when plugin is unloaded
 * update users-guide
 
-Post 2.1
+Post 2.0
 ========
 
 * Refactor TagFileReader to accept a TagFileMatcher which would enable
   searching for partial matches, case-insensitive, etc...
-
+  - only support CTags (read format from header)
+  - support linear or binary searching, based on the matcher
+  - allow picking of search type in dialog
+  - allow setting default search type
+  - pre-fill tag enter dialog with tag at cursor (+select)
+* might want to investigate keeping tags information in a sorted
+  tree structure w/a name -> list association (time for speed and memory usage).
 * add icons for positions in TagStack (tag,jump,explicit)?
 
 

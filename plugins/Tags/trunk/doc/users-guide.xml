@@ -8,7 +8,7 @@
 <author><othername>Kenrick Drew</othername></author>
 <author><othername>Ollie Rutherfurd</othername></author>
 </authorgroup>
-<edition>Version 1.1.2</edition>
+<edition>Version 2.0.1</edition>
 </articleinfo>
 <!-- $Id$ -->
 <section id="introduction">
@@ -263,6 +263,12 @@ to use the Sourceforge Bug Tracker at
 <title>Changelog</title>
 <itemizedlist>
 <listitem>
+<para>Version 2.0.1 (Mar 2005)</para><itemizedlist>
+<listitem>
+<para>Fixed recursive directory search on local FS.</para></listitem>
+</itemizedlist>
+</listitem>
+<listitem>
 <para>Version 2.0 (Nov 2004)</para><itemizedlist>
 <listitem>
 <para>Tags plugin now uses jEdit's Virtual File Systems 
@@ -498,7 +504,7 @@ directory.</para></listitem>
 <listitem>
 <para>Version 0.7 (Oct 2001)</para><itemizedlist>
 <listitem>
-<para>HTML Documentaiton</para></listitem>
+<para>HTML Documentation</para></listitem>
 <listitem>
 <para>Use AbstractOptionPane for Global Options dialog</para></listitem>
 </itemizedlist>
@@ -506,8 +512,7 @@ directory.</para></listitem>
 <listitem>
 <para>Version 0.5 (Oct 2001)</para><itemizedlist>
 <listitem>
-<para>Unexpected possible title overline or transition.
-Treating it as ordinary text because it's so short.</para><para>??</para></listitem>
+<para>??</para></listitem>
 </itemizedlist>
 </listitem>
 <listitem>
