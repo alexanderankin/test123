@@ -19,7 +19,6 @@
 
 package ftp;
 
-import com.fooware.net.*;
 import java.awt.Component;
 import java.awt.event.*;
 import java.io.InputStream;
@@ -126,7 +125,7 @@ public class ConnectionManager
 							+ connect + " expired");
 						try
 						{
-							connect.client.logout();
+							connect.logout();
 						}
 						catch(IOException io)
 						{
@@ -142,62 +141,10 @@ public class ConnectionManager
 
 			if(connect == null)
 			{
-				connect = new Connection(info);
-
-				FtpClient client = new FtpClient();
-
-				Log.log(Log.DEBUG,ConnectionManager.class,
-					Thread.currentThread() +
-					": Connecting to " + info);
-				client.connect(info.host,info.port);
-
-				if(!client.getResponse().isPositiveCompletion())
-				{
-					throw new FtpException(
-						client.getResponse());
-				}
-
-				client.userName(info.user);
-
-				if(client.getResponse().isPositiveIntermediary())
-				{
-					client.password(info.password);
-
-					FtpResponse response = client.getResponse();
-					if(!response.isPositiveCompletion())
-					{
-						client.logout();
-						throw new FtpLoginException(response);
-					}
-				}
-				else if(client.getResponse().isPositiveCompletion())
-				{
-					// do nothing, server let us in without
-					// a password
-				}
+				if(info.secure)
+					connect = new SFtpConnection(info);
 				else
-				{
-					FtpResponse response = client.getResponse();
-					client.logout();
-					throw new FtpLoginException(response);
-				}
-
-				connect.client = client;
-
-				client.printWorkingDirectory();
-				FtpResponse response = client.getResponse();
-				if(response != null
-					&& response.getReturnCode() != null
-					&& response.getReturnCode().charAt(0) == '2')
-				{
-					String msg = response.getMessage().substring(4);
-					if(msg.startsWith("\""))
-					{
-						int index = msg.indexOf('"',1);
-						if(index != -1)
-							connect.home = msg.substring(1,index);
-					}
-				}
+					connect = new FtpConnection(info);
 
 				connections.add(connect);
 			}
@@ -216,7 +163,7 @@ public class ConnectionManager
 		}
 	}
 
-	public static class ConnectionInfo
+	static class ConnectionInfo
 	{
 		public boolean secure;
 		public String host;
@@ -263,9 +210,15 @@ public class ConnectionManager
 		}
 	}
 
-	public static class Connection
+	abstract static class Connection
 	{
 		static int COUNTER;
+
+		int id;
+		ConnectionInfo info;
+		String home;
+		boolean inUse;
+		Timer closeTimer;
 
 		Connection(ConnectionInfo info)
 		{
@@ -281,50 +234,17 @@ public class ConnectionManager
 			});
 		}
 
-		void delete(String path) throws IOException
-		{
-			client.delete(path);
-		}
-
-		void removeDirectory(String path) throws IOException
-		{
-			client.removeDirectory(path);
-		}
-
-		void rename(String from, String to) throws IOException
-		{
-			client.renameFrom(from);
-			client.renameTo(to);
-		}
-
-		void makeDirectory(String path) throws IOException
-		{
-			client.makeDirectory(path);
-		}
-
-		InputStream retrieve(String path) throws IOException
-		{
-			setupSocket();
-			return client.retrieveStream(path);
-		}
-
-		OutputStream store(String path) throws IOException
-		{
-			setupSocket();
-			return client.storeStream(path);
-		}
-
-		void chmod(String path, int permissions) throws IOException
-		{
-			String cmd = "CHMOD " + Integer.toString(permissions,8)
-				+ " " + path;
-			client.siteParameters(cmd);
-		}
-
-		public int id;
-		public ConnectionInfo info;
-		public FtpClient client;
-		public String home;
+		abstract FtpVFS.FtpDirectoryEntry[] listDirectory(String path) throws IOException;
+		abstract FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException;
+		abstract boolean delete(String path) throws IOException;
+		abstract boolean removeDirectory(String path) throws IOException;
+		abstract boolean rename(String from, String to) throws IOException;
+		abstract boolean makeDirectory(String path) throws IOException;
+		abstract InputStream retrieve(String path) throws IOException;
+		abstract OutputStream store(String path) throws IOException;
+		abstract void chmod(String path, int permissions) throws IOException;
+		abstract boolean checkIfOpen() throws IOException;
+		abstract void logout() throws IOException;
 
 		boolean inUse()
 		{
@@ -370,49 +290,9 @@ public class ConnectionManager
 			closeTimer.start();
 		}
 
-		boolean checkIfOpen()
-		{
-			try
-			{
-				// to ensure that the server didn't disconnect
-				// before the keep-alive timeout expires
-				client.noOp();
-				client.getResponse();
-				return true;
-			}
-			catch(Exception e)
-			{
-				return false;
-			}
-		}
-
 		public String toString()
 		{
 			return id + ":" + info.host;
-		}
-
-		private boolean inUse;
-		private Timer closeTimer;
-
-		private void setupSocket()
-			throws IOException
-		{
-			if(jEdit.getBooleanProperty("vfs.ftp.passive"))
-				client.passive();
-			else
-				client.dataPort();
-
-			// See if we should use Binary mode to transfer files.
-			if (jEdit.getBooleanProperty("vfs.ftp.binary"))
-			{
-				//Go with Binary
-				client.representationType(FtpClient.IMAGE_TYPE);
-			}
-			else
-			{
-				//Stick to ASCII - let the line endings get converted
-				client.representationType(FtpClient.ASCII_TYPE);
-			}
 		}
 	}
 
@@ -429,7 +309,7 @@ public class ConnectionManager
 				+ connect.info);
 			try
 			{
-				connect.client.logout();
+				connect.logout();
 			}
 			catch(IOException io)
 			{
