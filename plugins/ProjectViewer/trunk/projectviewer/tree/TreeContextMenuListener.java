@@ -556,7 +556,10 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		//browser.setDirectory(dir.getPath());
 		//browser.searchInDirectory();
 		//-- version 2
-		SearchAndReplace.setSearchFileSet(new DirectoryListSet(dir.getPath(),null,true));
+		/** @todo develop an own class which implements 'org.gjt.sp.jedit.search.SearchFileSet'
+		 *  and returns the proper files
+		 */
+		SearchAndReplace.setSearchFileSet(new DirectoryListSet(dir.getPath(),"*",true));
 		SearchDialog.showSearchDialog(jEdit.getLastView(), null, SearchDialog.DIRECTORY);
 	}//}}}
 	//}}}
