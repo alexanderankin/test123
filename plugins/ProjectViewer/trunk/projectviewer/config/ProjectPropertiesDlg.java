@@ -172,11 +172,11 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
         
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             root = chooser.getSelectedFile().getAbsolutePath();
+            String oldRoot = project.getRoot().getPath();
             if (project != null) {
-                if (root.startsWith(project.getRoot().getPath()) &&
-                        root.length() > project.getRoot().getPath().length()) { 
+                if ( !(oldRoot.startsWith(root) &&
+                       root.length() < oldRoot.length()) ) { 
                     project.changeRoot(new ProjectDirectory(root));
-                } else {
                     JOptionPane.showMessageDialog(
                         this, 
                         "Changing to a root that isn't parent of the previous root " +
