@@ -1,5 +1,8 @@
 /*
  * FtpException.java - FTP error
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,9 +22,11 @@
 
 package ftp;
 
-import com.fooware.net.*;
+//{{{ Imports
+import com.fooware.net.FtpResponse;
 import java.io.IOException;
 import org.gjt.sp.jedit.jEdit;
+//}}}
 
 public class FtpException extends IOException
 {

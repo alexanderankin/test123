@@ -1,5 +1,8 @@
 /*
  * LoginDialog.java - FTP login dialog
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -29,6 +32,7 @@ import org.gjt.sp.jedit.*;
 
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
+	//{{{ LoginDialog constructor
 	public LoginDialog(Component comp, boolean secure, String host,
 		String user, String password)
 	{
@@ -77,9 +81,9 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		pack();
 		setLocationRelativeTo(comp);
 		show();
-	}
+	} //}}}
 
-	// EnhancedDialog implementation
+	//{{{ ok() method
 	public void ok()
 	{
 		hostField.addCurrentToHistory();
@@ -105,34 +109,39 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			isOK = true;
 			dispose();
 		}
-	}
+	} //}}}
 
+	//{{{ cancel() method
 	public void cancel()
 	{
 		dispose();
-	}
-	// end EnhancedDialog implementation
+	} //}}}
 
+	//{{{ isOK() method
 	public boolean isOK()
 	{
 		return isOK;
-	}
+	} //}}}
 
+	//{{{ getHost() method
 	public String getHost()
 	{
 		return host;
-	}
+	} //}}}
 
+	//{{{ getUser() method
 	public String getUser()
 	{
 		return user;
-	}
+	} //}}}
 
+	//{{{ getPassword() method
 	public String getPassword()
 	{
 		return password;
-	}
+	} //}}}
 
+	//{{{ actionPerformed() method
 	public void actionPerformed(ActionEvent evt)
 	{
 		Object source = evt.getSource();
@@ -140,9 +149,9 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			ok();
 		else if(source == cancel)
 			cancel();
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private HistoryTextField hostField;
 	private HistoryTextField userField;
 	private JPasswordField passwordField;
@@ -154,6 +163,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 	private JButton ok;
 	private JButton cancel;
 
+	//{{{ createFieldPanel() method
 	private JPanel createFieldPanel(String host, String user, String password)
 	{
 		JPanel panel = new JPanel(new VariableGridLayout(
@@ -187,5 +197,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		panel.add(passwordField);
 
 		return panel;
-	}
+	} //}}}
+
+	//}}}
 }

@@ -1,5 +1,8 @@
 /*
  * FtpAddress.java - FTP addressing encapsulator
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +31,7 @@ public class FtpAddress
 	public String user;
 	public String path;
 
+	//{{{ FtpAddress constructor
 	public FtpAddress(String url)
 	{
 		if(url.startsWith(FtpVFS.FTP_PROTOCOL + ":"))
@@ -66,16 +70,18 @@ public class FtpAddress
 		path = url.substring(index);
 		if(path.length() == 0)
 			path = "/";
-	}
+	} //}}}
 
+	//{{{ FtpAddress constructor
 	public FtpAddress(boolean secure, String host, String user, String path)
 	{
 		this.secure = secure;
 		this.host = host;
 		this.user = user;
 		this.path = path;
-	}
+	} //}}}
 
+	//{{{ toString() method
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
@@ -90,5 +96,5 @@ public class FtpAddress
 		buf.append(path);
 
 		return buf.toString();
-	}
+	} //}}}
 }

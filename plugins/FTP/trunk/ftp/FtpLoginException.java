@@ -1,5 +1,8 @@
 /*
  * FtpLoginException.java - FTP error
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,7 +22,7 @@
 
 package ftp;
 
-import com.fooware.net.*;
+import com.fooware.net.FtpResponse;
 import java.io.IOException;
 
 public class FtpLoginException extends FtpException

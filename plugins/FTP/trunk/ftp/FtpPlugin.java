@@ -1,5 +1,8 @@
 /*
  * FtpPlugin.java - Main class of FTP plugin
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +22,7 @@
 
 package ftp;
 
+//{{{ Imports
 import java.awt.Component;
 import java.io.*;
 import java.util.Hashtable;
@@ -31,9 +35,11 @@ import org.gjt.sp.util.Log;
 
 // SSHTools uses log4j
 import org.apache.log4j.*;
+//}}}
 
 public class FtpPlugin extends EditPlugin
 {
+	//{{{ start() method
 	public void start()
 	{
 		VFSManager.registerVFS(FtpVFS.FTP_PROTOCOL,new FtpVFS(false));
@@ -58,18 +64,21 @@ public class FtpPlugin extends EditPlugin
 		}
 		else
 			Log.log(Log.NOTICE,this,"SFTP support requires Java 1.4");
-	}
+	} //}}}
 
+	//{{{ stop() method
 	public void stop()
 	{
 		DirectoryCache.clearAllCachedDirectories();
-	}
+	} //}}}
 
+	//{{{ createMenuItems() method
 	public void createMenuItems(Vector menuItems)
 	{
 		menuItems.addElement(GUIUtilities.loadMenu("ftp"));
-	}
+	} //}}}
 
+	//{{{ showOpenFTPDialog() method
 	public static void showOpenFTPDialog(View view, boolean secure)
 	{
 		String path = ((FtpVFS)VFSManager.getVFSForProtocol(
@@ -92,8 +101,9 @@ public class FtpPlugin extends EditPlugin
 			if(buffer != null)
 				view.setBuffer(buffer);
 		}
-	}
+	} //}}}
 
+	//{{{ showSaveFTPDialog() method
 	public static void showSaveFTPDialog(View view, boolean secure)
 	{
 		String path = ((FtpVFS)VFSManager.getVFSForProtocol(
@@ -108,13 +118,15 @@ public class FtpPlugin extends EditPlugin
 
 			view.getBuffer().save(view,files[0],true);
 		}
-	}
+	} //}}}
 
-	// Private members
+	//{{{ Private members
+
+	//{{{ initSshtoolsHome() method
 	private void initSshtoolsHome(String path)
 	{
 		String[] files = new String[] {
-			"hosts.xml", "platform.xml", "server.xml", "sshtools.xml"
+			"hosts.xml", "sshtools.xml"
 		};
 
 		File dir = new File(path,"conf");
@@ -145,8 +157,9 @@ public class FtpPlugin extends EditPlugin
 		{
 			Log.log(Log.ERROR,this,io);
 		}
-	}
+	} //}}}
 
+	//{{{ copy() method
 	private void copy(InputStream in, OutputStream out) throws IOException
 	{
 		try
@@ -163,5 +176,7 @@ public class FtpPlugin extends EditPlugin
 			in.close();
 			out.close();
 		}
-	}
+	} //}}}
+
+	//}}}
 }
