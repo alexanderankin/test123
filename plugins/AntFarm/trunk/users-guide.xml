@@ -61,31 +61,83 @@
 </para>
 
 <itemizedlist>
- <listitem><para>View the structure of an <application>Ant</application> build
- file.</para></listitem>
- <listitem><para>Dynamically parse <application>Ant</application> build files
- and display errors.</para></listitem>
- <listitem><para>Run <application>Ant</application> targets from within jEdit.
+ <listitem><para><link linkend="structure">View the structure of an <application>Ant</application> build
+ file.</link></para></listitem>
+ <listitem><para><link linkend="errors">Dynamically parse <application>Ant</application> build files
+ and display errors.</link></para></listitem>
+ <listitem><para><link linkend="run">Run <application>Ant</application> targets
+ from within jEdit.</link>
  </para></listitem>
- <listitem><para>Integration with the <application>Console</application> plugin.</para></listitem>
- <listitem><para>Access to the <application>Ant</application> build
- file's assets.</para></listitem>
+ <listitem><para><link linkend="console-integration">Integration with the <application>Console</application>
+ plugin.</link></para></listitem>
+ <listitem><para><link linkend="asset-access">Access to the <application>Ant</application> build
+ file's assets.</link></para></listitem>
 </itemizedlist>
 
 <para>
  <application>Ant</application> is a Java based make tool developed by the
- Apache Jakarta project. <link>http://jakarta.apache.org/ant</link>
+ <ulink url="http://jakarta.apache.org/ant">Apache Jakarta project</ulink>.
 </para>
 <para>
  For help writing <application>Ant</application> build files, please refer to the
- <application>Ant</application> project's online help.
- <link>http://jakarta.apache.org/ant/manual/index.html</link>
+ <application>Ant</application> project's
+ <ulink url="http://jakarta.apache.org/ant/manual/index.html">online help</ulink>.
 </para>
 <para>
  AntFarm includes version 1.4 of <application>Ant</application>.
 </para>
 
+<sect1 id="configuration"><title>Configuring Ant Farm</title>
+<para>To configure Ant Farm, access <guimenu>Global Options</guimenu> -&gt;
+ <guilabel>Plugin Options</guilabel> -&gt; <guilabel>Ant Farm</guilabel>.
+</para>
+ <para>
+ Ant Farm can be configured to run builds within the current JVM or outside of
+ the current JVM using a shell script. Using the current JVM is faster but
+ large build tasks may not have enough memory to execute properly. Also, complex
+ Ant scripts that require multiple external resources might not run properly
+ from the current JVM.
+ </para>
+ <para>
+ If you experience OutOfMemory exceptions when running builds in the same JVM,
+ increase the size of the java heap when running jEdit, or use an external
+ script. To increase the heap size, use the <command>-mx&lt;size&gt;m</command>
+ java command line option when starting jEdit, where
+ &lt;size&gt; indicates the amount of memory to be assigned.
+ </para>
+ <para>
+ When you attempt to run an Ant build without having configured you build
+ preferences, you will be prompted to select whether you wish to use the current
+ JVM or an external script.
+ </para>
+ <para>
+ To run Ant builds outside of the current JVM, specify the build file you wish
+ to use. Default build files for multiple operating systems are included with
+ the binary distribution of the
+ <ulink url="http://jakarta.apache.org/ant">Jakarta-Ant project</ulink>.
+ </para>
+ <para>
+ Ant Farm can automatically load build.xml files from the root of any projects
+ you manage via the <application>Project Viewer</application>. To enable this,
+ check <guilabel>Load build files from the Project Viewer plugin</guilabel>,
+ make sure the Project Viewer is docked so it starts immediately with jEdit and
+ restart jEdit. Now, whenever you switch to a project that contains a file named
+ build.xml, it will be loaded into Ant Farm.
+ </para>
+ <para>
+ Ant Farm also automatically loads any file named build.xml that is opened for
+ editing.
+ </para>
+ <para>
+ When running an Ant target, the name of each task is prepended to the output
+ text by default. To avoid this and print output in
+ <application>emacs</application> friendly mode, check <guilabel>Produce logging
+ information without adornments (Emacs mode)</guilabel>.
+ </para>
+</sect1>
+
 </chapter>
+
 
 <chapter id="structure"><title>View the structure of an <application>Ant</application> build
  file.</title>

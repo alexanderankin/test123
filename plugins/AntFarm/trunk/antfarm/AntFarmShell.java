@@ -254,10 +254,19 @@ public class AntFarmShell extends Shell
 		String info = "";
 		Enumeration targets = _currentProject.getTargets().keys();
 		while ( targets.hasMoreElements() ) {
-			info += (String) targets.nextElement() + "\t";
+			String target = (String) targets.nextElement();
+			info += target + printDefaultLabel( _currentProject, target ) + "\t";
 		}
 		output.print( color, info );
 
+	}
+
+
+	private String printDefaultLabel( Project project, String target )
+	{
+		if ( project.getDefaultTarget().equals( target ) )
+			return " [default]";
+		return "";
 	}
 
 

@@ -762,7 +762,7 @@ public class AntTree extends JTree
 
 		public String toString()
 		{
-			if ( _target.getName().equals( getProject().getDefaultTarget() ) )
+			if ( isDefaultTarget() )
 				return _target.getName() + " [default]";
 			return _target.getName();
 		}
@@ -773,6 +773,12 @@ public class AntTree extends JTree
 			Console console = AntFarmPlugin.getConsole( _view );
 			console.run( AntFarmPlugin.ANT_SHELL, console, "!"
 				 + _target.getName() );
+		}
+
+
+		private boolean isDefaultTarget()
+		{
+			return _target.getName().equals( getProject().getDefaultTarget() );
 		}
 	}
 
