@@ -345,16 +345,6 @@ public class ColorTabs
    }
 
 
-
-   /**
-    * Check for changes to properties
-    */
-   public void propertiesChanged(BufferTabs parent)
-   {
-      parent.propertiesChanged();
-   }
-
-
    public void propertiesChanged()
    {
       loadColors();
