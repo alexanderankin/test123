@@ -2173,7 +2173,7 @@ content="(tar|fail|uptodate|jpcoverage|dependset|vsscheckin|java|execon|echo|nat
 <attribute name="description" type="CDATA" />
 <attribute name="id" type="ID" />
 <attribute name="if" type="CDATA" />
-<attribute name="name" type="CDATA" required="true" />
+<attribute name="name" type="ID" required="true" />
 <attribute name="unless" type="CDATA" />
 </element>
 <element name="targetfile"

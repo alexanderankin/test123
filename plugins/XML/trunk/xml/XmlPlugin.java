@@ -27,19 +27,15 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.syntax.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import sidekick.SideKickPlugin;
 import xml.options.*;
 import xml.parser.*;
 //}}}
 
 public class XmlPlugin extends EBPlugin
 {
-	//{{{ Some constants
-	public static final String TREE_NAME = "xml-tree";
-	public static final String INSERT_NAME = "xml-insert";
-
-	public static final String PARSER_PROPERTY = "xml.parser";
-	public static final String PARSED_DATA_PROPERTY = "xml.parsed-data";
-	//}}}
+	public static final XmlSideKickParser XML_PARSER_INSTANCE = new SAXParserImpl();
+	public static final XmlSideKickParser HTML_PARSER_INSTANCE = new SwingHTMLParserImpl();
 
 	//{{{ start() method
 	public void start()
@@ -49,12 +45,18 @@ public class XmlPlugin extends EBPlugin
 		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
 			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
 
+		SideKickPlugin.registerParser("xml",XML_PARSER_INSTANCE);
+		SideKickPlugin.registerParser("html",HTML_PARSER_INSTANCE);
+
 		XmlActions.propertiesChanged();
 	} //}}}
 
 	//{{{ stop() method
 	public void stop()
 	{
+		SideKickPlugin.unregisterParser("xml");
+		SideKickPlugin.unregisterParser("html");
+
 		CatalogManager.save();
 	} //}}}
 
@@ -108,67 +110,6 @@ public class XmlPlugin extends EBPlugin
 			CatalogManager.propertiesChanged();
 			TagHighlight.propertiesChanged();
 		} //}}}
-		//{{{ ViewUpdate
-		else if(msg instanceof ViewUpdate)
-		{
-			ViewUpdate vu = (ViewUpdate)msg;
-			View view = vu.getView();
-
-			if(vu.getWhat() == ViewUpdate.CREATED)
-				parsers.put(view,new XmlParser(view));
-			else if(vu.getWhat() == ViewUpdate.CLOSED)
-			{
-				XmlParser parser = (XmlParser)parsers.get(view);
-				parser.dispose();
-				parsers.remove(view);
-			}
-		} //}}}
-	} //}}}
-
-	//{{{ getParser() method
-	public static XmlParser getParser(View view)
-	{
-		return (XmlParser)parsers.get(view);
-	} //}}}
-
-	//{{{ getParserType() method
-	public static String getParserType(Buffer buffer)
-	{
-		String prop = buffer.getStringProperty(XmlPlugin.PARSER_PROPERTY);
-		if(prop == null || prop.equals("xml"))
-		{
-			if(buffer.getName().toLowerCase().endsWith(".dtd"))
-			{
-				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,null);
-				return null;
-			}
-			else
-				return prop;
-		}
-		else if(prop.equals("html-really"))
-			return "html";
-		else if(prop.equals("html"))
-		{
-			if(buffer.getLineText(0).toLowerCase().startsWith("<?xml"))
-			{
-				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,"xml");
-				return "xml";
-			}
-			else if(buffer.getName().toLowerCase().endsWith(".dtd"))
-			{
-				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,null);
-				return null;
-			}
-			else
-			{
-				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,"html-really");
-				return "html";
-			}
-		}
-		else
-		{
-			return null;
-		}
 	} //}}}
 
 	//{{{ isDelegated() method
@@ -191,11 +132,10 @@ public class XmlPlugin extends EBPlugin
 			return true;
 
 		return jEdit.getProperty("mode." + modeName + "."
-			+ XmlPlugin.PARSER_PROPERTY) == null;
+			+ SideKickPlugin.PARSER_PROPERTY) == null;
 	} //}}}
 
 	//{{{ Private members
-	private static HashMap parsers = new HashMap();
 	private static HashMap tagHighlights = new HashMap();
 	//}}}
 
@@ -210,7 +150,8 @@ public class XmlPlugin extends EBPlugin
 			{
 				final View view = GUIUtilities.getView(
 					(Component)evt.getSource());
-				if(XmlPlugin.getParserType(view.getBuffer()) == null)
+				if(!(SideKickPlugin.getParserForBuffer(view.getBuffer())
+					instanceof XmlSideKickParser))
 					return;
 
 				JEditTextArea textArea = view.getTextArea();

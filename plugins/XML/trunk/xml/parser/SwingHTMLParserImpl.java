@@ -29,53 +29,62 @@ import org.gjt.sp.util.Log;
 import org.xml.sax.helpers.AttributesImpl;
 import org.xml.sax.Attributes;
 import errorlist.*;
+import sidekick.*;
 import xml.completion.*;
 import xml.*;
 //}}}
 
-class SwingHTMLParserImpl implements XmlParser.Impl
+public class SwingHTMLParserImpl implements XmlSideKickParser
 {
-	//{{{ parse() method
-	public XmlParsedData parse(XmlParser parser, String text)
+	//{{{ getName() method
+	public String getName()
 	{
-		this.parser = parser;
-		buffer = parser.getBuffer();
+		return "html";
+	} //}}}
 
-		data = new XmlParsedData(true);
+	//{{{ parse() method
+	public SideKickParsedData parse(SideKick sidekick, String text)
+	{
+		if(text.startsWith("<?xml"))
+			return XmlPlugin.XML_PARSER_INSTANCE.parse(sidekick,text);
+
+		Buffer buffer = sidekick.getBuffer();
+
+		XmlParsedData data = new XmlParsedData(buffer.getName(),true);
 
 		CompletionInfo info = CompletionInfo.getCompletionInfoForBuffer(buffer);
 		if(info != null)
 			data.mappings.put("",info);
 
-		root = new DefaultMutableTreeNode(buffer.getName());
-
 		try
 		{
 			DocumentParser htmlParser = new DocumentParser(DTD.getDTD("html32"));
 
-			htmlParser.parse(new StringReader(text),new Handler(),true);
+			htmlParser.parse(new StringReader(text),
+				new Handler(sidekick,data),
+				true);
 		}
 		catch(IOException ioe)
 		{
 			Log.log(Log.ERROR,this,ioe);
-			parser.addError(ErrorSource.ERROR,buffer.getPath(),0,
+			sidekick.addError(ErrorSource.ERROR,buffer.getPath(),0,
 				ioe.toString());
 		}
 
 		// need to do some cleanup...
-		for(int i = 0; i < root.getChildCount(); i++)
+		for(int i = 0; i < data.root.getChildCount(); i++)
 		{
-			DefaultMutableTreeNode node = (DefaultMutableTreeNode)root.getChildAt(i);
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)data.root.getChildAt(i);
 			XmlTag tag = (XmlTag)node.getUserObject();
 			if(tag.attributes.getValue("_implied_") != null)
 			{
-				root.remove(i);
+				data.root.remove(i);
 
 				int j = 0;
 
 				while(node.getChildCount() != 0)
 				{
-					root.insert((DefaultMutableTreeNode)node.getChildAt(0),i + j);
+					data.root.insert((DefaultMutableTreeNode)node.getChildAt(0),i + j);
 					j++;
 				}
 
@@ -83,64 +92,30 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 			}
 		}
 
-		data.tree = new DefaultTreeModel(root);
+		Collections.sort(data.ids,new IDDecl.Compare());
 
 		return data;
 	} //}}}
 
-	//{{{ Package-private members
-	// For speedy access by Handler inner class
-	XmlParser parser;
-	Buffer buffer;
-	XmlParsedData data;
-	DefaultMutableTreeNode root;
-
-	//{{{ attributesToSAX() method
-	Attributes attributesToSAX(MutableAttributeSet a,
-		String element, Position pos)
-	{
-		ElementDecl elementDecl = data.getElementDecl(element);
-
-		AttributesImpl attrs = new AttributesImpl();
-		Enumeration enum = a.getAttributeNames();
-		while(enum.hasMoreElements())
-		{
-			Object attr = enum.nextElement();
-			String name = attr.toString();
-			String value = a.getAttribute(attr).toString();
-
-			String type = "CDATA";
-			if(elementDecl != null)
-			{
-				ElementDecl.AttributeDecl attrDecl
-					= (ElementDecl.AttributeDecl)
-					elementDecl.attributeHash
-					.get(name.toLowerCase());
-				if(attrDecl != null)
-				{
-					type = attrDecl.type;
-
-					if(type.equals("ID"))
-					{
-						if(!data.ids.contains(value))
-							data.ids.add(new IDDecl(value,element,pos));
-					}
-				}
-			}
-
-			attrs.addAttribute(null,name,name,type,value);
-		}
-
-		return attrs;
-	} //}}}
-
-	//}}}
-
 	//{{{ Handler class
 	class Handler extends HTMLEditorKit.ParserCallback
 	{
-		Stack currentNodeStack = new Stack();
+		Buffer buffer;
 
+		SideKick sidekick;
+		XmlParsedData data;
+		Stack currentNodeStack;
+
+		//{{{ Handler constructor
+		Handler(SideKick sidekick, XmlParsedData data)
+		{
+			this.sidekick = sidekick;
+			this.data = data;
+			this.currentNodeStack = new Stack();
+			buffer = sidekick.getBuffer();
+		} //}}}
+
+		//{{{ handleStartTag() method
 		public void handleStartTag(HTML.Tag t, MutableAttributeSet a, int offset)
 		{
 			try
@@ -166,7 +141,7 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 						node.insert(newNode,node.getChildCount());
 					}
 					else
-						root.insert(newNode,0);
+						data.root.insert(newNode,0);
 				}
 
 				currentNodeStack.push(newNode);
@@ -175,8 +150,9 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 			{
 				buffer.readUnlock();
 			}
-		}
+		} //}}}
 
+		//{{{ handleEndTag() method
 		public void handleEndTag(HTML.Tag t, int offset)
 		{
 			try
@@ -201,8 +177,9 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 			{
 				buffer.readUnlock();
 			}
-		}
+		} //}}}
 
+		//{{{ handleSimpleTag() method
 		public void handleSimpleTag(HTML.Tag t, MutableAttributeSet a, int offset)
 		{
 			try
@@ -226,14 +203,15 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 					node.add(newNode);
 				}
 				else
-					root.add(newNode);
+					data.root.add(newNode);
 			}
 			finally
 			{
 				buffer.readUnlock();
 			}
-		}
+		} //}}}
 
+		//{{{ handleError() method
 		public void handleError(String errorMsg, int pos)
 		{
 			// The Swing parser's error reporting is broken.
@@ -245,13 +223,52 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 					pos = buffer.getLength();
 				int line = buffer.getLineOfOffset(pos);
 
-				parser.addError(ErrorSource.ERROR,buffer.getPath(),
+				sidekick.addError(ErrorSource.ERROR,buffer.getPath(),
 					line,errorMsg);
 			}
 			finally
 			{
 				buffer.readUnlock();
 			}*/
-		}
+		} //}}}
+
+		//{{{ attributesToSAX() method
+		private Attributes attributesToSAX(MutableAttributeSet a,
+			String element, Position pos)
+		{
+			ElementDecl elementDecl = data.getElementDecl(element);
+
+			AttributesImpl attrs = new AttributesImpl();
+			Enumeration enum = a.getAttributeNames();
+			while(enum.hasMoreElements())
+			{
+				Object attr = enum.nextElement();
+				String name = attr.toString();
+				String value = a.getAttribute(attr).toString();
+
+				String type = "CDATA";
+				if(elementDecl != null)
+				{
+					ElementDecl.AttributeDecl attrDecl
+						= (ElementDecl.AttributeDecl)
+						elementDecl.attributeHash
+						.get(name.toLowerCase());
+					if(attrDecl != null)
+					{
+						type = attrDecl.type;
+
+						if(type.equals("ID"))
+						{
+							if(!data.ids.contains(value))
+								data.ids.add(new IDDecl(value,element,pos));
+						}
+					}
+				}
+
+				attrs.addAttribute(null,name,name,type,value);
+			}
+
+			return attrs;
+		} //}}}
 	} //}}}
 }

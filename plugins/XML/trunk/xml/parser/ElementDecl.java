@@ -30,6 +30,7 @@ public class ElementDecl
 
 	public List attributes;
 	public Map attributeHash;
+	public Set content;
 
 	//{{{ ElementDecl constructor
 	public ElementDecl(CompletionInfo completionInfo, String name, String content)
@@ -117,13 +118,16 @@ public class ElementDecl
 					.withPrefix(prefix));
 			}
 
-			Iterator iter = content.iterator();
-			while(iter.hasNext())
+			if(content != null)
 			{
-				ElementDecl decl = (ElementDecl)completionInfo
-					.elementHash.get(iter.next());
-				if(decl != null)
-					children.add(decl.withPrefix(prefix));
+				Iterator iter = content.iterator();
+				while(iter.hasNext())
+				{
+					ElementDecl decl = (ElementDecl)completionInfo
+						.elementHash.get(iter.next());
+					if(decl != null)
+						children.add(decl.withPrefix(prefix));
+				}
 			}
 		}
 
@@ -221,10 +225,6 @@ public class ElementDecl
 
 		return buf.toString();
 	} //}}}
-
-	//{{{ Private members
-	private Set content;
-	//}}}
 
 	//{{{ AttributeDecl class
 	public static class AttributeDecl

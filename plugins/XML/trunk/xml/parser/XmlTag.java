@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (C) 2000, 2003 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -17,14 +17,15 @@ package xml.parser;
 
 //{{{ Imports
 import javax.swing.text.Position;
+import javax.swing.Icon;
 import org.xml.sax.Attributes;
+import sidekick.Asset;
+import xml.XmlListCellRenderer;
 //}}}
 
-public class XmlTag
+public class XmlTag extends Asset
 {
 	//{{{ Instance variables
-	public String name;
-	public Position start, end;
 	public Attributes attributes;
 	public String attributeString;
 	public String idAttributeString;
@@ -34,7 +35,7 @@ public class XmlTag
 	//{{{ XmlTag constructor
 	public XmlTag(String name, Position start, Attributes attributes)
 	{
-		this.name = name;
+		super(name);
 		this.start = start;
 		this.attributes = attributes;
 
@@ -70,6 +71,29 @@ public class XmlTag
 			idAttributeString = name;
 		else
 			idAttributeString = name + ' ' + idName + "=\"" + idValue + '"';
+	} //}}}
+
+	//{{{ getIcon() method
+	public Icon getIcon()
+	{
+		return (empty ? XmlListCellRenderer.EMPTY_ELEMENT_ICON
+			: XmlListCellRenderer.ELEMENT_ICON);
+	} //}}}
+
+	//{{{ getAttributeString() method
+	public String getAttributeString(int showAttributes)
+	{
+		switch(showAttributes)
+		{
+		case 0:
+			return name;
+		case 1:
+			return idAttributeString;
+		case 2:
+			return attributeString;
+		default:
+			return null;
+		}
 	} //}}}
 
 	//{{{ toString() method

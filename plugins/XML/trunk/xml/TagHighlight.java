@@ -25,7 +25,8 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
-import xml.parser.TagParser;
+import sidekick.SideKickPlugin;
+import xml.parser.*;
 //}}}
 
 public class TagHighlight extends TextAreaExtension implements EBComponent
@@ -110,10 +111,7 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 			textArea.getPainter().removeExtension(this);
 		}
 
-		//System.err.println("parser type of " + buffer + " is "
-		//	+ XmlPlugin.getParserType(buffer) + ", mode is "
-		//	+ buffer.getMode().getName());
-		if(XmlPlugin.getParserType(buffer) != null)
+		if(SideKickPlugin.getParserForBuffer(buffer) instanceof XmlSideKickParser)
 		{
 			//System.err.println("adding to " + buffer);
 			this.buffer = buffer;

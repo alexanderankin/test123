@@ -1,11 +1,23 @@
-- "DTD cache" is a bad name
-- ant build.xml -- target names should be IDs
+- cvs remove XmlParser.java, XmlTree.java
+- cvs add XmlSideKickParser.java
+- html parser: empty tags
+- SideKick transition:
+  - .dtd files need to be ignored
+[error] java.lang.ThreadDeath
+[error]         at java.lang.Thread.stop(Thread.java:635)
+[error]         at xml.parser.XmlParser.stopThread(Unknown Source)
+[error]         at xml.parser.XmlParser.parse(Unknown Source)
+[error]         at xml.parser.XmlParser.handleMessage(Unknown Source)
+[error]         at org.gjt.sp.jedit.EditBus.send(Unknown Source)
+[error]         at org.gjt.sp.jedit.EditPane.setBuffer(Unknown Source)
+[error]         at org.gjt.sp.jedit.View.setBuffer(Unknown Source)
+[error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
+[error]         at org.gjt.sp.jedit.jEdit.openFile(Unknown Source)
+[error]         at projectviewer.ProjectViewer.openProject(Unknown Source)
 - completion popup width
 - html files before parsing complete -- don't show CDATA in popup
 - fix IBM JDK problem
 - misplaced closing tags break everything
-- finish element lists for schemas
-- DTD downloader -- clear cache command should remove d/l'd files too
 - documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
 - clean up entity code
@@ -13,9 +25,7 @@
 - select tag command
 - xml insert: show CDATA in list?
 - empty data -- see what's up, & clean up
-- use pre9 mouse button API
 - xmlns attributes, XMLSchema-instance stuff
-- use AssetBrowser
 - recording <, >, /, &
 - switching between two edit panes with same buffer: expand tree at
   appropriate location

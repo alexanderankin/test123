@@ -20,6 +20,7 @@ import javax.swing.tree.TreeModel;
 import java.util.*;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
+import sidekick.SideKickParsedData;
 import xml.completion.*;
 import xml.parser.*;
 //}}}
@@ -28,16 +29,16 @@ import xml.parser.*;
  * Encapsulates the results of parsing a buffer, either using Xerces or the
  * Swing HTML parser.
  */
-public class XmlParsedData
+public class XmlParsedData extends SideKickParsedData
 {
 	public boolean html;
 	public Map mappings;
 	public List ids;
-	public TreeModel tree;
 
 	//{{{ XmlParsedData constructor
-	public XmlParsedData(boolean html)
+	public XmlParsedData(String fileName, boolean html)
 	{
+		super(fileName);
 		this.html = html;
 		mappings = new HashMap();
 		ids = new ArrayList();
@@ -127,13 +128,6 @@ public class XmlParsedData
 
 		Collections.sort(returnValue,new ElementDecl.Compare());
 		return returnValue;
-	} //}}}
-
-	//{{{ getParsedData() method
-	public static XmlParsedData getParsedData(EditPane editPane)
-	{
-		return (XmlParsedData)editPane.getClientProperty(
-			XmlPlugin.PARSED_DATA_PROPERTY);
 	} //}}}
 
 	//{{{ Private members

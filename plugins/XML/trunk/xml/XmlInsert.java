@@ -26,6 +26,7 @@ import java.util.List;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
+import sidekick.*;
 import xml.parser.*;
 //}}}
 
@@ -148,26 +149,12 @@ public class XmlInsert extends JPanel implements EBComponent
 				update();
 			}
 		} //}}}
-	} //}}}
-
-	//{{{ update() method
-	public void update()
-	{
-		XmlParsedData data = XmlParsedData.getParsedData(view.getEditPane());
-		if(data == null || XmlPlugin.getParserType(view.getBuffer()) == null)
+		//{{{ SideKickUpdate
+		else if(msg instanceof SideKickUpdate)
 		{
-			setDeclaredEntities(null);
-			setDeclaredIDs(null);
-			html = false;
-		}
-		else
-		{
-			setDeclaredEntities(data.getNoNamespaceCompletionInfo().entities);
-			setDeclaredIDs(data.ids);
-			html = data.html;
-		}
-
-		updateTagList();
+			if(((SideKickUpdate)msg).getView() == view)
+				update();
+		} //}}}
 	} //}}}
 
 	//{{{ Private members
@@ -184,6 +171,27 @@ public class XmlInsert extends JPanel implements EBComponent
 	private int delay;
 	private Timer updateTimer;
 	//}}}
+
+	//{{{ update() method
+	private void update()
+	{
+		SideKickParsedData _data = SideKickParsedData.getParsedData(view.getEditPane());
+		if(!(_data instanceof XmlParsedData))
+		{
+			setDeclaredEntities(null);
+			setDeclaredIDs(null);
+			html = false;
+		}
+		else
+		{
+			XmlParsedData data = (XmlParsedData)_data;
+			setDeclaredEntities(data.getNoNamespaceCompletionInfo().entities);
+			setDeclaredIDs(data.ids);
+			html = data.html;
+		}
+
+		updateTagList();
+	} //}}}
 
 	//{{{ showNotParsedMessage() method
 	private void showNotParsedMessage()
@@ -278,9 +286,13 @@ public class XmlInsert extends JPanel implements EBComponent
 	private void updateTagList()
 	{
 		Buffer buffer = view.getBuffer();
-		XmlParsedData data = XmlParsedData.getParsedData(view.getEditPane());
-		if(XmlPlugin.getParserType(buffer) != null && data != null)
+
+		SideKickParsedData _data = SideKickParsedData.getParsedData(
+			view.getEditPane());
+
+		if(_data instanceof XmlParsedData)
 		{
+			XmlParsedData data = (XmlParsedData)_data;
 			setDeclaredElements(data.getAllowedElements(
 				buffer,view.getTextArea().getCaretPosition()));
 		}
