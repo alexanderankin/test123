@@ -1,3 +1,4 @@
+// $Id$
 /*
  * BufferWriter.java
  * Copyright (c) 2002 Calvin Yu
