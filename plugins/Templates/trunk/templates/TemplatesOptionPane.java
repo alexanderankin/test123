@@ -33,7 +33,8 @@ import org.gjt.sp.jedit.*;
  */
 public class TemplatesOptionPane extends AbstractOptionPane implements ActionListener
 {
-	protected JTextField dirTextField;
+	protected JTextField templateTextField;
+	protected JTextField velocityTextField;
 
 	//Constructors
 	public TemplatesOptionPane() {
@@ -44,37 +45,66 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 
 	//Implementors
 	public void _init() {
-		this.init(TemplatesPlugin.getTemplateDir());
+		this.initGUI();
 	}
 	
 	public void _save() {
-		TemplatesPlugin.setTemplateDir(dirTextField.getText());
+		TemplatesPlugin.setTemplateDir(templateTextField.getText());
+		TemplatesPlugin.setVelocityDir(velocityTextField.getText());
 	}
 	
 	/**
 	 * Initialize the TemplatesOptionPane.
 	 * @param textFieldStr A string containing the current Templates directory.
 	 */
-	private void init(String textFieldStr) {
+	private void initGUI() {
+		String templateFieldStr = TemplatesPlugin.getTemplateDir();
+		String velocityFieldStr = TemplatesPlugin.getVelocityDirectory();
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(5,5,5,5));
-		JLabel chooseDirLabel = new JLabel(jEdit.getProperty(
-				"options.Templates.general.choose-dir-msg"));
-		add(chooseDirLabel, BorderLayout.NORTH);
-		JPanel p = new JPanel();
+		// Panel for template directory
+		JPanel templateDirPanel = new JPanel();
 		BorderLayout bl = new BorderLayout();
 		bl.setHgap(5);
-		p.setLayout(bl);
-		dirTextField = new JTextField(textFieldStr);
-		p.add(dirTextField, BorderLayout.CENTER);
-		JButton chooseBtn = new JButton(jEdit.getProperty(
+		templateDirPanel.setLayout(bl);
+		JLabel chooseDirLabel = new JLabel(jEdit.getProperty(
+				"options.Templates.general.choose-dir-msg"));
+		templateDirPanel.add(chooseDirLabel, BorderLayout.NORTH);
+		templateTextField = new JTextField(templateFieldStr);
+		templateDirPanel.add(templateTextField, BorderLayout.CENTER);
+		JButton templateChooseBtn = new JButton(jEdit.getProperty(
 				"options.Templates.general.choose-btn-msg"));
-		chooseBtn.addActionListener(this);
-		p.add(chooseBtn, BorderLayout.EAST);
-		JPanel p2 = new JPanel();
-		p2.setLayout(new BorderLayout());
-		p2.add(p, BorderLayout.NORTH);
-		add(p2, BorderLayout.CENTER);
+		templateChooseBtn.setActionCommand("chooseTemplateDir");
+		templateChooseBtn.addActionListener(this);
+		templateDirPanel.add(templateChooseBtn, BorderLayout.EAST);
+		// Panel for Velocity directory
+		JPanel velocityDirPanel = new JPanel();
+		BorderLayout bl2 = new BorderLayout();
+		bl2.setHgap(5);
+		velocityDirPanel.setLayout(bl2);
+		JLabel velocityDirLabel = new JLabel(jEdit.getProperty(
+				"options.Templates.general.velocity-dir-msg"));
+		velocityDirPanel.add(velocityDirLabel, BorderLayout.NORTH);
+		velocityTextField = new JTextField(velocityFieldStr);
+		velocityDirPanel.add(velocityTextField, BorderLayout.CENTER);
+		JButton velocityChooseBtn = new JButton(jEdit.getProperty(
+				"options.Templates.general.choose-btn-msg"));
+		velocityChooseBtn.setActionCommand("chooseVelocityDir");
+		velocityChooseBtn.addActionListener(this);
+		velocityDirPanel.add(velocityChooseBtn, BorderLayout.EAST);
+		
+		JPanel masterPanel = new JPanel();
+		masterPanel.setLayout(new BoxLayout(masterPanel, BoxLayout.Y_AXIS));
+		masterPanel.add(templateDirPanel);
+		masterPanel.add(velocityDirPanel);
+		// Add warning message
+		JTextArea warningText = new JTextArea(jEdit.getProperty(
+				"options.Templates.general.dir-warning-msg"));
+		warningText.setLineWrap(true);
+		warningText.setWrapStyleWord(true);
+		warningText.setOpaque(false);
+		masterPanel.add(warningText);
+		add(masterPanel, BorderLayout.NORTH);
 	}
 	
 	/**
@@ -90,7 +120,11 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	 * @param evt The ActionEvent corresponding to the user's button press.
 	 */
 	public void actionPerformed(ActionEvent evt) {
-		JFileChooser chooser = new JFileChooser(dirTextField.getText());
+		String startDir = templateTextField.getText();
+		if ("chooseVelocityDir".equals(evt.getActionCommand())) {
+			startDir = velocityTextField.getText();
+		}
+		JFileChooser chooser = new JFileChooser(startDir);
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		int retVal = chooser.showDialog(this,jEdit.getProperty(
 					"options.Templates.general.choose-btn-msg"));
@@ -102,7 +136,11 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 				try
 				{
 					String dirName = file.getCanonicalPath();
-					dirTextField.setText(dirName);
+					if ("chooseVelocityDir".equals(evt.getActionCommand())) {
+						velocityTextField.setText(dirName);
+					} else {
+						templateTextField.setText(dirName);
+					}
 				}
 				catch(IOException e)
 				{
@@ -116,6 +154,9 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2002/07/29 14:11:46  sjakob
+	 * Added "Velocity directory" field to TemplatesOptionPane "General" tab.
+	 *
 	 * Revision 1.2  2002/07/24 15:40:45  sjakob
 	 * Removed compatability code for jEdit versions prior to 2.4.6, as the Templates
 	 * plugin now requires at least version 4.0.
