@@ -41,6 +41,8 @@
 
 		<pathelement location="${install.dir}/Console.jar"/>
 
+		<pathelement location="${install.dir}/JavaCore.jar"/>
+
 		<pathelement location="${jedit.install.dir}/jedit.jar"/>
     
 		<pathelement location="."/>
