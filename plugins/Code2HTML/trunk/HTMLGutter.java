@@ -22,12 +22,15 @@ import org.gjt.sp.jedit.jEdit;
 
 
 public class HTMLGutter {
-    private int gutterSize;
-    private String spacer;
-    private String bgColor;
-    private String fgColor;
-    private String highlightColor;
-    private int highlightInterval;
+    protected char gutterBorder     = ':';
+    protected int  gutterBorderSize = 1;
+
+    protected int gutterSize;
+    protected String spacer;
+    protected String bgColor;
+    protected String fgColor;
+    protected String highlightColor;
+    protected int highlightInterval;
 
 
     public HTMLGutter() {
@@ -99,41 +102,63 @@ public class HTMLGutter {
     }
 
 
-    public String toSpan(int lineNumber) {
-        StringBuffer buf = new StringBuffer();
-
-        String style = "gutter";
-
-        if (    (this.highlightInterval > 0)
+    public String toEmptyHTML(int lineNumber) {
+        boolean highlighted = (
+                (this.highlightInterval > 0)
             &&  (lineNumber % this.highlightInterval == 0)
-        ) {
-            style = "gutterH";
-        }
+        );
 
-        String s = Integer.toString(lineNumber);
-        buf.append("<SPAN CLASS=\"" + style + "\">")
-            .append(spacer.substring(0, this.gutterSize - s.length()))
-            .append(s)
-            .append(':')
-            .append("</SPAN>");
+        StringBuffer bufOpen = new StringBuffer();
+        StringBuffer bufClose = new StringBuffer();
+
+        if (highlighted) {
+            bufOpen.append("<FONT")
+                .append(" COLOR=\"")
+                .append(this.highlightColor)
+                .append("\">");
+
+        } else {
+            bufOpen.append("<FONT")
+                .append(" COLOR=\"")
+                .append(this.fgColor)
+                .append("\">");
+        }
+        bufClose.insert(0, "</FONT>");
+
+        /*
+        bufOpen.append("<FONT")
+            .append(" BGCOLOR=\"")
+            .append(this.bgColor)
+            .append("\">");
+        bufClose.insert(0, "</FONT>");
+        */
+
+        StringBuffer buf = new StringBuffer();
+        buf.append(bufOpen.toString())
+            .append(spacer)
+            .append(this.gutterBorder)
+            .append(bufClose.toString());
 
         return buf.toString();
     }
 
 
     public String toCSS() {
-        StringBuffer buf = new StringBuffer();
-
-        buf.append(".gutter {\n")
-            .append("background: " + this.bgColor + ";\n")
-            .append("color: " + this.fgColor + ";\n")
-            .append("}\n")
-            .append(".gutterH {\n")
-            .append("background: " + this.bgColor + ";\n")
-            .append("color: " + this.highlightColor + ";\n")
-            .append("}\n");
-
-        return buf.toString();
+        return "";
     }
 
+
+    public int getGutterSize() {
+        return this.gutterSize;
+    }
+
+
+    public int getGutterBorderSize() {
+        return this.gutterBorderSize;
+    }
+
+
+    public int getSize() {
+        return this.gutterSize + this.gutterBorderSize;
+    }
 }

@@ -47,24 +47,28 @@ import org.gjt.sp.util.Log;
 public class Code2HTML
     implements EBComponent
 {
+    private int     wrap;
     private boolean useCSS;
     private boolean showGutter;
 
 
     public Code2HTML() {
+        this.wrap = Code2HTMLUtilities.getIntegerProperty("code2html.wrap", 0);
+        if (this.wrap < 0) { this.wrap = 0; }
+
         this.useCSS     = jEdit.getBooleanProperty("code2html.use-css", false);
         this.showGutter = jEdit.getBooleanProperty("code2html.show-gutter", false);
     }
 
 
-    public void toHTML(View view, Buffer buffer) {
-        toHTML(view, buffer, false);
+    public void toHTML(View view) {
+        this.toHTML(view, false);
     }
 
 
-    public void toHTML(View view, Buffer buffer, boolean selection) {
-        EditPane editPane = view.getEditPane();
-        JEditTextArea textArea = editPane.getTextArea();
+    public void toHTML(View view, boolean selection) {
+        EditPane      editPane = view.getEditPane();
+        JEditTextArea textArea = view.getTextArea();
 
         int first = 0;
         int last  = textArea.getLineCount() - 1;
@@ -78,7 +82,7 @@ public class Code2HTML
             StringWriter   sw  = new StringWriter();
             BufferedWriter out = new BufferedWriter(sw);
 
-            this.toHTML(out, buffer, textArea, first, last);
+            this.toHTML(out, textArea, first, last);
             out.flush();
             this.job = new BufferJob(editPane, sw.toString());
             out.close();
@@ -118,21 +122,41 @@ public class Code2HTML
     }
 
 
-    private void toHTML(Writer out, Buffer buffer, JEditTextArea textArea,
-            int first, int last)
+    private void toHTML(Writer out, JEditTextArea textArea,
+                        int first, int last)
     {
-        TokenMarker tokenMarker = buffer.getTokenMarker();
-        LineTabExpander expander = new LineTabExpander(buffer.getTabSize());
+        Buffer      buffer      = textArea.getBuffer();
+        TokenMarker tokenMarker = textArea.getTokenMarker();
+
         SyntaxStyle[] styles = textArea.getPainter().getStyles();
+        HTMLStyle htmlStyle = null;
+        if (this.useCSS) {
+            htmlStyle = new HTMLCSSStyle(styles);
+        } else {
+            htmlStyle = new HTMLStyle(styles);
+        }
+
+        HTMLGutter htmlGutter = null;
+        if (this.showGutter) {
+            int gutterSize = Integer.toString(last).length();
+            if (this.useCSS) {
+                htmlGutter = new HTMLCSSGutter(gutterSize);
+            } else {
+                htmlGutter = new HTMLGutter(gutterSize);
+            }
+        }
+
+        LineTabExpander expander = new LineTabExpander(buffer.getTabSize());
+
+        LineWrapper     wrapper  = null;
+        if (this.wrap > 0) {
+            wrapper = new LineWrapper(this.wrap);
+        }
+
+        HTMLPainter htmlPainter =
+            new HTMLPainter(htmlStyle, htmlGutter, expander, wrapper);
 
         try {
-            HTMLGutter gutter = null;
-
-            if (this.showGutter) {
-                int gutterSize = Integer.toString(last).length();
-                gutter = new HTMLGutter(gutterSize);
-            }
-
             out.write(
                   "<HTML>\n"
                 + "<HEAD>\n"
@@ -141,8 +165,8 @@ public class Code2HTML
             if (this.useCSS) {
                 out.write(
                       "<STYLE TYPE=\"text/css\"><!--\n"
-                    + HTMLStyle.toCSS(styles)
-                    + ((this.showGutter) ? gutter.toCSS() : "")
+                    + HTMLCSSStyle.toCSS(styles)
+                    + ((this.showGutter) ? htmlGutter.toCSS() : "")
                     + "-->\n"
                     + "</STYLE>\n"
                 );
@@ -153,25 +177,10 @@ public class Code2HTML
             );
             out.write("<PRE>");
 
-            for (int i = first; i <= last; i++) {
-                if (this.showGutter) {
-                    if (this.useCSS) {
-                        out.write(gutter.toSpan(i + 1));
-                    } else {
-                        out.write(gutter.toHTML(i + 1));
-                    }
-                }
-
-                expander.resetPos();
-                Segment line = new Segment();
-                textArea.getLineText(i, line);
-                Token tokens = null;
-                if (tokenMarker != null) {
-                    tokens = tokenMarker.markTokens(buffer, i).firstToken;
-                }
-                paintLine(out, line, tokens, expander, styles);
-                out.write("\n");
-            }
+            long start = System.currentTimeMillis();
+            htmlPainter.paintLines(out, textArea, first, last);
+            long end = System.currentTimeMillis();
+            Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
 
             out.write("</PRE>");
             out.write(
@@ -182,60 +191,12 @@ public class Code2HTML
     }
 
 
-    private void paintLine(Writer out, Segment line, Token tokens,
-            LineTabExpander expander, SyntaxStyle[] styles)
-    {
-        if (tokens == null) {
-            try {
-                out.write(
-                    toHTML(expander.expand(line.array, line.offset, line.count))
-                );
-            } catch (IOException ioe) {}
-        } else {
-            paintSyntaxLine(out, line, tokens, expander, styles);
-        }
+    public static String toHTML(String s) {
+        return Code2HTML.toHTML(s.toCharArray(), 0, s.length());
     }
 
 
-    private void paintSyntaxLine(Writer out, Segment line, Token tokens,
-            LineTabExpander expander, SyntaxStyle[] styles)
-    {
-        for (;;) {
-            byte id = tokens.id;
-            if(id == Token.END) {
-                break;
-            }
-
-            int length = tokens.length;
-            line.count = length;
-
-            try {
-                String text =
-                    toHTML(expander.expand(line.array, line.offset, length));
-                if(id == Token.NULL) {
-                    out.write(text);
-                } else {
-                    if (this.useCSS) {
-                        out.write(HTMLStyle.toSpan(id, text));
-                    } else {
-                        out.write(HTMLStyle.toHTML(styles[id], text));
-                    }
-                }
-            } catch (IOException ioe) {}
-
-            line.offset += length;
-
-            tokens = tokens.next;
-        }
-    }
-
-
-    private String toHTML(String s) {
-        return this.toHTML(s.toCharArray(), 0, s.length());
-    }
-
-
-    private String toHTML(char[] str, int strOff, int strLen) {
+    public static String toHTML(char[] str, int strOff, int strLen) {
         StringBuffer buf = new StringBuffer();
         char c;
         int len = 0;
@@ -245,7 +206,6 @@ public class Code2HTML
 
             String entity = HTMLEntity.lookupEntity((short) c);
             if (entity != null) {
-                // buf.append(str,off,len).append("&#").append((short)c).append(";");
                 buf.append(str,off,len).append("&").append(entity).append(";");
                 off += len + 1; len = 0;
             } else if (((short) c) > 255) {

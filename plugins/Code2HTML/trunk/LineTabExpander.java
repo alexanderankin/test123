@@ -23,7 +23,6 @@ import org.gjt.sp.util.Log;
 
 public class LineTabExpander {
     private int tabSize;
-    private int pos;
     private char[] spacer;
 
 
@@ -36,7 +35,6 @@ public class LineTabExpander {
         if (tabSize > 0) {
             this.tabSize = tabSize;
         }
-        this.pos = 0;
 
         this.spacer = new char[this.tabSize];
         for (int i = 0; i < this.tabSize; i++) {
@@ -45,7 +43,7 @@ public class LineTabExpander {
     }
 
 
-    public String expand(char[] str, int strOff, int strLen) {
+    public String expand(int pos, char[] str, int strOff, int strLen) {
         StringBuffer buf = new StringBuffer();
 
         int off = strOff;
@@ -57,13 +55,13 @@ public class LineTabExpander {
 
             if (c != '\t') {
                 len++;
-                this.pos++;
+                pos++;
             } else {
-                int rem = this.tabSize - (this.pos % this.tabSize);
+                int rem = this.tabSize - (pos % this.tabSize);
                 buf.append(str, off, len).append(this.spacer, 0, rem);
                 off += len + 1;
                 len = 0;
-                this.pos += rem;
+                pos += rem;
             }
         }
 
@@ -72,16 +70,7 @@ public class LineTabExpander {
     }
 
 
-    public String expand(String s) {
-        return this.expand(s.toCharArray(), 0, s.length());
-    }
-
-    public int getPos() {
-        return this.pos;
-    }
-
-
-    public void resetPos() {
-        this.pos = 0;
+    public String expand(int pos, String s) {
+        return this.expand(pos, s.toCharArray(), 0, s.length());
     }
 }

@@ -1,5 +1,5 @@
 /*
- * code2html_current_selection.java
+ * LinePosition.java
  * Copyright (c) 2000 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -18,29 +18,29 @@
 */
 
 
-import java.awt.event.ActionEvent;
-
-import org.gjt.sp.jedit.EditAction;
-import org.gjt.sp.jedit.View;
+import java.util.Vector;
 
 import org.gjt.sp.util.Log;
 
 
-public class code2html_current_selection
-    extends EditAction
-{
-    public code2html_current_selection() {
-        super("code2html.current-selection");
+public class LinePosition {
+    private int pos = 0;
+
+
+    public LinePosition() {}
+
+
+    public int getPos() {
+        return this.pos;
     }
 
 
-    public void actionPerformed(ActionEvent evt) {
-        View v = EditAction.getView(evt);
+    public void setPos(int pos) {
+        this.pos = pos;
+    }
 
-        if (v != null) {
-            Code2HTML code2html = new Code2HTML();
-            code2html.toHTML(v, true);
-        }
+
+    public void incPos(int inc) {
+        this.pos += inc;
     }
 }
-

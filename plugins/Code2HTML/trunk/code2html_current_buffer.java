@@ -20,7 +20,6 @@
 
 import java.awt.event.ActionEvent;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditAction;
 import org.gjt.sp.jedit.View;
 
@@ -37,11 +36,10 @@ public class code2html_current_buffer
 
     public void actionPerformed(ActionEvent evt) {
         View v = EditAction.getView(evt);
-        Buffer b = (v == null) ? null : v.getBuffer();
 
-        if (v != null && b != null) {
+        if (v != null) {
             Code2HTML code2html = new Code2HTML();
-            code2html.toHTML(v, b);
+            code2html.toHTML(v);
         }
     }
 }
