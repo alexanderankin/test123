@@ -1,4 +1,0 @@
-. /usr/local/jdk1.2.2/env.sh && 
-cd build &&
-./build.sh
-
