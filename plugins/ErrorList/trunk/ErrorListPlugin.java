@@ -118,7 +118,7 @@ public class ErrorListPlugin extends EBPlugin
 				if(view == null)
 					showOnStartup = true;
 				else
-					getErrorList(jEdit.getFirstView());
+					getErrorList(view);
 			}
 
 			ErrorSource.Error error = message.getError();
