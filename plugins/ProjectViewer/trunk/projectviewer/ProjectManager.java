@@ -41,7 +41,9 @@ import com.microstar.xml.HandlerBase;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
 import projectviewer.vpt.VPTRoot;
 import projectviewer.vpt.VPTProject;
@@ -167,6 +169,10 @@ public final class ProjectManager {
 		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
 			root.add(((Entry)projects.get(it.next())).project);
 		}
+
+		if (ProjectViewerConfig.getInstance().isJEdit42()) {
+			Helper.fireDynamicMenuChange();
+		}
 	} //}}}
 
 	//{{{ +save() : void
@@ -277,6 +283,10 @@ public final class ProjectManager {
 		ProjectViewer.nodeStructureChangedFlat(root);
 		ProjectViewer.updateProjectCombos();
 		ProjectViewer.fireProjectAdded(this, p);
+
+		if (ProjectViewerConfig.getInstance().isJEdit42()) {
+			Helper.fireDynamicMenuChange();
+		}
 	} //}}}
 
 	//{{{ +getProject(String) : VPTProject
@@ -508,6 +518,18 @@ public final class ProjectManager {
 		out.write("</" + PROJECT_ROOT + ">\n");
 		out.flush();
 		out.close();
+	} //}}}
+
+	//{{{ -class _Helper_
+	private static class Helper {
+
+		//{{{ -_fireDynamicMenuChange()_ : void
+		private static void fireDynamicMenuChange() {
+			System.err.println("in here!");
+			DynamicMenuChanged msg = new DynamicMenuChanged("plugin.projectviewer.ProjectPlugin.menu");
+			EditBus.send(msg);
+		} //}}}
+
 	} //}}}
 
 	//{{{ -class PVConfigHandler

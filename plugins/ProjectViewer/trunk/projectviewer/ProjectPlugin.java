@@ -143,7 +143,7 @@ public final class ProjectPlugin extends EBPlugin {
 	 *	@param  menuItems  The list of menuItems from jEdit.
 	 */
 	public void createMenuItems(Vector menuItems) {
-		menuItems.addElement(GUIUtilities.loadMenu("plugin.projectviewer.ProjectPlugin.menu"));
+		menuItems.addElement(GUIUtilities.loadMenu("projectviewer.menu"));
 	} //}}}
 
 	//{{{ +createOptionPanes(OptionsDialog) : void
