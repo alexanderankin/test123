@@ -139,81 +139,97 @@ public class WhiteSpaceDefaults
 
     public static void bufferCreated(Buffer buffer) {
         // Paragraph separators highlighting option
-        buffer.putBooleanProperty(
+        putBooleanProperty(
+            buffer,
             BlockHighlight.BLOCK_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getBlockHighlightDefault()
         );
 
         // Folds highlighting options
-        buffer.putBooleanProperty(
+        putBooleanProperty(
+            buffer,
             FoldHighlight.FOLD_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getFoldHighlightDefault()
         );
-        buffer.putBooleanProperty(
+        putBooleanProperty(
+            buffer,
             FoldHighlight.FOLD_TOOLTIP_PROPERTY,
             WhiteSpaceDefaults.getFoldTooltipDefault()
         );
 
         // Space highlighting options
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.SPACE_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.SPACE_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getSpaceHighlightDefault()
         );
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.LEADING_SPACE_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.LEADING_SPACE_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
         );
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.INNER_SPACE_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.INNER_SPACE_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
         );
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.TRAILING_SPACE_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.TRAILING_SPACE_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
         );
 
         // Tab highlighting options
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.TAB_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.TAB_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getTabHighlightDefault()
         );
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.LEADING_TAB_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.LEADING_TAB_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getLeadingTabHighlightDefault()
         );
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.INNER_TAB_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.INNER_TAB_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getInnerTabHighlightDefault()
         );
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.TRAILING_TAB_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.TRAILING_TAB_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getTrailingTabHighlightDefault()
         );
 
         // Whitespace highlighting option
-        buffer.putBooleanProperty(
-              WhiteSpaceHighlight.WHITESPACE_HIGHLIGHT_PROPERTY
+        putBooleanProperty(
+              buffer
+            , WhiteSpaceModel.WHITESPACE_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getWhitespaceHighlightDefault()
         );
 
         // On save actions options
-        buffer.putBooleanProperty(
-              "white-space.remove-trailing-white-space"
+        putBooleanProperty(
+              buffer
+            , "white-space.remove-trailing-white-space"
             , WhiteSpaceDefaults.getRemoveTrailingWhitespace()
         );
 
-        buffer.putBooleanProperty(
-              "white-space.soft-tabify-leading-white-space"
+        putBooleanProperty(
+              buffer
+            , "white-space.soft-tabify-leading-white-space"
             , WhiteSpaceDefaults.getSoftTabifyLeadingWhitespace()
         );
 
-        buffer.putBooleanProperty(
-              "white-space.tabify-leading-white-space"
+        putBooleanProperty(
+              buffer
+            , "white-space.tabify-leading-white-space"
             , WhiteSpaceDefaults.getTabifyLeadingWhitespace()
         );
 
-        buffer.putBooleanProperty(
-              "white-space.untabify-leading-white-space"
+        putBooleanProperty(
+              buffer
+            , "white-space.untabify-leading-white-space"
             , WhiteSpaceDefaults.getUntabifyLeadingWhitespace()
         );
     }
@@ -223,6 +239,15 @@ public class WhiteSpaceDefaults
         Buffer[] buffers = jEdit.getBuffers();
         for (int i = 0; i < buffers.length; i++) {
             WhiteSpaceDefaults.bufferCreated(buffers[i]);
+        }
+    }
+
+
+    private static void putBooleanProperty(
+            Buffer buffer, String propertyName, boolean propertyValue
+    ) {
+        if (buffer.getProperty(propertyName) == null) {
+            buffer.putBooleanProperty(propertyName, propertyValue);
         }
     }
 }
