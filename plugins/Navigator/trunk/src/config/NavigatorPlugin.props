@@ -10,7 +10,7 @@ plugin.ise.plugin.nav.NavigatorPlugin.activate=startup
 
 # dependencies
 plugin.ise.plugin.nav.NavigatorPlugin.jdk=1.4
-plugin.ise.plugin.nav.NavigatorPlugin.jedit=04.02.01.00
+plugin.ise.plugin.nav.NavigatorPlugin.jedit=04.02.02.00
 
 # docs
 plugin.ise.plugin.nav.NavigatorPlugin.docs=index.html
