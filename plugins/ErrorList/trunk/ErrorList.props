@@ -1,14 +1,27 @@
 # Plugin properties
 plugin.ErrorListPlugin.name=ErrorList
 plugin.ErrorListPlugin.author=Slava Pestov
-plugin.ErrorListPlugin.version=0.7
+plugin.ErrorListPlugin.version=0.8
 plugin.ErrorListPlugin.docs=ErrorList.html
 
-plugin.ErrorListPlugin.depend.0=jedit 02.03.03.00
-plugin.ErrorListPlugin.depend.1=class EditBusPlugin
+plugin.ErrorListPlugin.depend.0=jedit 02.03.99.00
+plugin.ErrorListPlugin.depend.1=plugin EditBusPlugin 0.9
 
 # Menu bar properties
 error-list.label=Error List
 
 # Error list window
 error-list.title=Error List
+
+# Show on error?
+error-list.showOnError=yes
+
+# Colors
+error-list.warningColor=#ffa800
+error-list.errorColor=red
+
+# Option pane
+options.error-list.label=Error List
+options.error-list.showOnError=Automatically display on error
+options.error-list.errorColor=Error highlight color:\ 
+options.error-list.warningColor=Warning highlight color:\ 

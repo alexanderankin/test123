@@ -1,6 +1,6 @@
 /*
  * ErrorListPlugin.java - Error list plugin
- * Copyright (C) 1999 Slava Pestov
+ * Copyright (C) 1999, 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,8 +17,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import java.awt.Color;
 import java.util.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
@@ -27,11 +29,17 @@ public class ErrorListPlugin extends EBPlugin
 	public void start()
 	{
 		jEdit.addAction(new error_list());
+		propertiesChanged();
 	}
 
 	public void createMenuItems(View view, Vector menus, Vector menuItems)
 	{
 		menuItems.addElement(GUIUtilities.loadMenuItem(view,"error-list"));
+	}
+
+	public void createOptionPanes(OptionsDialog dialog)
+	{
+		dialog.addOptionPane(new ErrorListOptionPane());
 	}
 
 	public void handleMessage(EBMessage message)
@@ -40,6 +48,8 @@ public class ErrorListPlugin extends EBPlugin
 			handleErrorSourceMessage((ErrorSourceUpdate)message);
 		else if(message instanceof ViewUpdate)
 			handleViewMessage((ViewUpdate)message);
+		else if(message instanceof PropertiesChanged)
+			propertiesChanged();
 	}
 
 	// package-private members
@@ -74,8 +84,26 @@ public class ErrorListPlugin extends EBPlugin
 		errorLists.remove(view);
 	}
 
+	static Color getErrorColor(int type)
+	{
+		return (type == ErrorSource.WARNING ? warningColor : errorColor);
+	}
+
 	// private members
 	private static Hashtable errorLists;
+	private static boolean showOnError;
+	private static boolean showOnStartup;
+	private static Color warningColor;
+	private static Color errorColor;
+
+	private static void propertiesChanged()
+	{
+		showOnError = "yes".equals(jEdit.getProperty("error-list.showOnError"));
+		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"error-list.warningColor"));
+		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"error-list.errorColor"));
+	}
 
 	private void handleErrorSourceMessage(ErrorSourceUpdate message)
 	{
@@ -83,6 +111,16 @@ public class ErrorListPlugin extends EBPlugin
 		if(what == ErrorSourceUpdate.ERROR_ADDED
 			|| what == ErrorSourceUpdate.ERROR_REMOVED)
 		{
+			if((errorLists == null || errorLists.size() == 0)
+				&& showOnError)
+			{
+				View view = jEdit.getFirstView();
+				if(view == null)
+					showOnStartup = true;
+				else
+					getErrorList(jEdit.getFirstView());
+			}
+
 			ErrorSource.Error error = message.getError();
 			Buffer buffer = error.getBuffer();
 			if(buffer == null)
@@ -123,7 +161,15 @@ public class ErrorListPlugin extends EBPlugin
 
 	private void handleViewMessage(ViewUpdate message)
 	{
-		if(message.getWhat() == ViewUpdate.TEXTAREA_CREATED)
+		if(message.getWhat() == ViewUpdate.CREATED)
+		{
+			if(showOnStartup)
+			{
+				showOnStartup = false;
+				getErrorList(message.getView());
+			}
+		}
+		else if(message.getWhat() == ViewUpdate.TEXTAREA_CREATED)
 		{
 			ErrorHighlight highlight = new ErrorHighlight();
 			message.getTextArea().getPainter().addCustomHighlight(highlight);
