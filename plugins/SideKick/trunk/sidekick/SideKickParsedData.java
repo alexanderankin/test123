@@ -95,7 +95,8 @@ public class SideKickParsedData
 		if(node.getUserObject() instanceof Asset)
 		{
 			ArrayList _path = new ArrayList();
-			getTreePathForPosition(node,dot,_path);
+			if(!getTreePathForPosition(node,dot,_path))
+				return null;
 			_path.add(node);
 			_path.add(root);
 
@@ -117,7 +118,9 @@ public class SideKickParsedData
 		Object userObject = ((DefaultMutableTreeNode)node).getUserObject();
 		Asset asset = (Asset)userObject;
 
-		if(childCount != 0)
+		// check if the caret in inside this tag
+		if(dot >= asset.start.getOffset() && (asset.end == null
+			|| dot < asset.end.getOffset()))
 		{
 			// check if any of our children contain the caret
 			for(int i = childCount - 1; i >= 0; i--)
@@ -129,12 +132,7 @@ public class SideKickParsedData
 					return true;
 				}
 			}
-		}
 
-		// check if the caret in inside this tag
-		if(dot >= asset.start.getOffset() && (asset.end == null
-			|| dot < asset.end.getOffset()))
-		{
 			//path.add(node);
 			return true;
 		}

@@ -40,43 +40,18 @@ public class SideKickFoldHandler extends FoldHandler
 	//{{{ getFoldLevel() method
 	public int getFoldLevel(Buffer buffer, int lineIndex, Segment seg)
 	{
-		buffer.getLineText(lineIndex,seg);
+		if(lineIndex == 0)
+			return 0;
 
-		boolean seenNonWhiteSpace = false;
-
-loop:		for(int i = 0; i < seg.count; i++)
-		{
-			switch(seg.array[seg.offset + i])
-			{
-			case ' ':
-			case '\t':
-				break;
-			default:
-				seenNonWhiteSpace = true;
-				break loop;
-			}
-		}
-
-		if(seenNonWhiteSpace)
-		{
-			SideKickParsedData data = (SideKickParsedData)buffer.getProperty(
-				SideKickPlugin.PARSED_DATA_PROPERTY);
-			if(data == null)
-				return 0;
-			TreePath path = data.getTreePathForPosition(
-				buffer.getLineStartOffset(lineIndex));
-			if(path == null)
-				return 0;
-			else
-				return path.getPathCount();
-		}
+		SideKickParsedData data = (SideKickParsedData)buffer.getProperty(
+			SideKickPlugin.PARSED_DATA_PROPERTY);
+		if(data == null)
+			return 0;
+		TreePath path = data.getTreePathForPosition(
+			buffer.getLineStartOffset(lineIndex) - 1);
+		if(path == null)
+			return 0;
 		else
-		{
-			// empty line. inherit previous line's fold level
-			if(lineIndex != 0)
-				return buffer.getFoldLevel(lineIndex - 1);
-			else
-				return 0;
-		}
+			return path.getPathCount();
 	} //}}}
 }
