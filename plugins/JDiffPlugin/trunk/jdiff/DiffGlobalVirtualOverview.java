@@ -177,20 +177,18 @@ public class DiffGlobalVirtualOverview extends DiffOverview
         double pxlPerLine = ((double) inner.height) / lines;
 
         int screenFirstLine0 = this.textArea0.getPhysicalLineOfScreenLine(0);
-        int screenLastLine0  = this.textArea0.getPhysicalLineOfScreenLine(
-            this.textArea0.getVisibleLines() - 1
-        );
-
-        if (screenFirstLine0 == -1)  { return; }
-        if (screenLastLine0 == -1)  { return; }
+        int screenLastLine0  = -1;
+        for (int i = this.textArea0.getVisibleLines() - 1; i >= 0; i--) {
+            screenLastLine0 = this.textArea0.getPhysicalLineOfScreenLine(i);
+            if (screenLastLine0 != -1) { break; }
+        }
 
         int screenFirstLine1 = this.textArea1.getPhysicalLineOfScreenLine(0);
-        int screenLastLine1  = this.textArea1.getPhysicalLineOfScreenLine(
-            this.textArea1.getVisibleLines() - 1
-        );
-
-        if (screenFirstLine1 == -1)  { return; }
-        if (screenLastLine1 == -1)  { return; }
+        int screenLastLine1  = -1;
+        for (int i = this.textArea1.getVisibleLines() - 1; i >= 0; i--) {
+            screenLastLine1 = this.textArea1.getPhysicalLineOfScreenLine(i);
+            if (screenLastLine1 != -1) { break; }
+        }
 
         int virtualFirstLine0 = this.textArea0.physicalToVirtual(screenFirstLine0);
         int virtualLastLine0  = this.textArea0.physicalToVirtual(screenLastLine0);
