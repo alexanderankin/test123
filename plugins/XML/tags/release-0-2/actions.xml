@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="xml-tree">
+		<CODE>
+			view.getDockableWindowManager()
+				.toggleDockableWindow("xml-tree");
+		</CODE>
+		<IS_SELECTED>
+			return view.getDockableWindowManager()
+				.isDockableWindowVisible("xml-tree");
+		</IS_SELECTED>
+	</ACTION>
+</ACTIONS>
