@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (C) 2000, 2001, 2002 Slava Pestov
  * Portions copyright (C) 2001 David Walend
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -61,12 +61,6 @@ public class XmlParser implements EBComponent
 		}
 
 		bufferHandler = new BufferChangeHandler();
-		Buffer[] buffers = jEdit.getBuffers();
-		for(int i = 0; i < buffers.length; i++)
-		{
-			if(XmlPlugin.getParserType(buffers[i]) == null)
-				buffers[i].addBufferChangeListener(bufferHandler);
-		}
 
 		propertiesChanged();
 
@@ -142,6 +136,8 @@ public class XmlParser implements EBComponent
 		ErrorSource.unregisterErrorSource(errorSource);
 
 		EditBus.removeFromBus(this);
+
+		removeBufferChangeListener(buffer);
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -173,9 +169,9 @@ public class XmlParser implements EBComponent
 				|| bmsg.getWhat() == BufferUpdate.LOADED)
 			{
 				if(XmlPlugin.getParserType(buffer) == null)
-					buffer.removeBufferChangeListener(bufferHandler);
+					removeBufferChangeListener(buffer);
 				else
-					buffer.addBufferChangeListener(bufferHandler);
+					addBufferChangeListener(buffer);
 
 				if(thread != null)
 					return;
@@ -205,18 +201,22 @@ public class XmlParser implements EBComponent
 
 			if(epu.getWhat() == EditPaneUpdate.CREATED)
 				editPane.getTextArea().addFocusListener(new FocusHandler());
+			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+			{
+				// check if this is the currently focused edit pane
+				if(editPane == editPane.getView().getEditPane())
+					removeBufferChangeListener(this.buffer);
+			}
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 			{
-				Buffer buffer = editPane.getBuffer();
-
-				if(XmlPlugin.getParserType(buffer) == null)
-					buffer.removeBufferChangeListener(bufferHandler);
-				else
-					buffer.addBufferChangeListener(bufferHandler);
-
 				// check if this is the currently focused edit pane
 				if(editPane == editPane.getView().getEditPane())
 				{
+					removeBufferChangeListener(this.buffer);
+
+					if(XmlPlugin.getParserType(buffer) != null)
+						addBufferChangeListener(editPane.getBuffer());
+
 					if(buffer.getBooleanProperty(
 						"xml.buffer-change-parse")
 						|| buffer.getBooleanProperty(
@@ -284,7 +284,28 @@ public class XmlParser implements EBComponent
 	private boolean maxErrors;
 
 	private BufferChangeHandler bufferHandler;
+	private boolean addedBufferChangeHandler;
 	//}}}
+
+	//{{{ addBufferChangeListener() method
+	private void addBufferChangeListener(Buffer buffer)
+	{
+		if(!addedBufferChangeHandler)
+		{
+			buffer.addBufferChangeListener(bufferHandler);
+			addedBufferChangeHandler = true;
+		}
+	} //}}}
+
+	//{{{ removeBufferChangeListener() method
+	private void removeBufferChangeListener(Buffer buffer)
+	{
+		if(addedBufferChangeHandler)
+		{
+			buffer.removeBufferChangeListener(bufferHandler);
+			addedBufferChangeHandler = false;
+		}
+	} //}}}
 
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
@@ -526,7 +547,12 @@ public class XmlParser implements EBComponent
 	{
 		public void focusGained(FocusEvent evt)
 		{
+			removeBufferChangeListener(XmlParser.this.buffer);
+
 			Buffer buffer = view.getBuffer();
+
+			if(XmlPlugin.getParserType(buffer) != null)
+				addBufferChangeListener(buffer);
 
 			if(buffer.getBooleanProperty(
 				"xml.buffer-change-parse")

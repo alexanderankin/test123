@@ -502,6 +502,11 @@
    <listitem><para>Tag matching and closing tag completion was broken in various
    ways.
    </para></listitem>
+   <listitem><para>Fixed memory leaks when using multiple views.
+   </para></listitem>
+   <listitem><para>Fixed possible problem if a document contained a <quote>&lt;</quote>
+   but no corresponding <quote>&gt;.</quote>.
+   </para></listitem>
   </itemizedlist>
   </listitem>
 

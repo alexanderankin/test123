@@ -51,6 +51,15 @@ public class TagHighlight extends TextAreaExtension implements EBComponent
 		bufferChanged(textArea.getBuffer());
 
 		returnValue = new Point();
+
+		EditBus.addToBus(this);
+	} //}}}
+
+	//{{{ dispose() method
+	public void dispose()
+	{
+		EditBus.removeFromBus(this);
+		buffer.removeBufferChangeListener(bufferHandler);
 	} //}}}
 
 	//{{{ handleMessage() method

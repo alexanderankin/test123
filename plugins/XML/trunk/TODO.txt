@@ -2,6 +2,8 @@
 
 - enter text in tag; switch to non-xml buffer; npe
 - DTD downloader -- clear cache command should remove d/l'd files too
+- virtual to physical problems stil
+- too many buffer change listeners
 
 + before 1.0:
 
