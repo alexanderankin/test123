@@ -46,7 +46,7 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 		boolean isSelected,
 		boolean cellHasFocus)
 	{
-		super.getListCellRendererComponent(list,value,index,
+		super.getListCellRendererComponent(list,null,index,
 			isSelected,cellHasFocus);
 
 		if(value instanceof EmptyListPlaceholder)
@@ -76,8 +76,7 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 			// lazy to write a custom renderer for the edit tag
 			// dialog box.
 
-			//IDDecl id = (IDDecl)value;
-			//setText(id.id + " [element: <" + id.element + ">]");
+			setText(value.toString());
 		}
 		else
 			setIcon(null);
