@@ -33,11 +33,6 @@ import projectviewer.event.*;
 import projectviewer.tree.*;
 
 /** A Project Viewer plugin for jEdit.
- *
- *@author     <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
- *@author     <A HREF="mailto:cyu77@yahoo.com">Calvin Yu</A>
- *@author     <A HREF="mailto:ensonic@sonicpulse.de">Stefan Kost</A>
- *@version    1.0.3
  */
 public final class ProjectViewer extends JPanel implements EBComponent {
 
@@ -394,6 +389,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 		JPanel bar = new JPanel(new BorderLayout());
 
+		/** @todo  support new toolbar from jedit 4.1 */
 		JToolBar toolbar = new JToolBar();
 		toolbar.setFloatable(false);
 		toolbar.putClientProperty("JToolBar.isRollover", Boolean.TRUE);
