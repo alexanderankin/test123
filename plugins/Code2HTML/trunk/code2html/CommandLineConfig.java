@@ -35,7 +35,8 @@ public class CommandLineConfig implements Config
 {
     public static class Arguments
     {
-        public int     tabSize           = 4;
+        public int     gutterSize        = 3;
+        public int     tabSize           = 8;
         public int     wrap              = 0;
         public int     highlightInterval = 5;
 
@@ -84,6 +85,7 @@ public class CommandLineConfig implements Config
                     bgColor, fgColor, highlightColor, args.highlightInterval
                 );
             }
+            this.gutter.setGutterSize(args.gutterSize);
         }
 
         this.tabExpander = new LineTabExpander(args.tabSize);
