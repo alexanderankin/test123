@@ -20,29 +20,24 @@
  */
 package xslt;
 
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.Frame;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Properties;
 
-import javax.swing.DefaultComboBoxModel;
 import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -60,6 +55,7 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
+
 /**
  * GUI for performing XSL Transformations.
  *
@@ -76,7 +72,7 @@ public class XSLTProcessor extends JPanel {
   private DefaultListModel stylesheetsListModel;
   private JList stylesheetsList;
   private JButton addButton;
-  private JButton deleteButton;
+  private JButton removeButton;
   private JButton upButton;
   private JButton downButton;
   private JButton transformButton;
@@ -93,54 +89,19 @@ public class XSLTProcessor extends JPanel {
     this.view = theView;
     this.sourceDocumentTextField = initFileTextField("XSLTProcessor.lastSource", "XSLTProcessor.source.pleaseSelect");
     this.resultDocumentTextField = initFileTextField("XSLTProcessor.lastResult", "XSLTProcessor.result.pleaseName");
-    this.selectButton = initFileChooserButton("XSLTProcessor.select.button");
-    this.nameResultButton = initFileChooserButton("XSLTProcessor.name.button");
 
     this.stylesheetsListModel = initStylesheetListModel();
     this.stylesheetsList = initStylesheetList();
 
-    this.addButton = initAddButton();
-    this.deleteButton = initDeleteButton();
-    this.upButton = initMoveButton("XSLTProcessor.up.button");
-    this.downButton = initMoveButton("XSLTProcessor.down.button");
-    this.transformButton = initTransformButton();
-
-    setSize(addButton);
-    setSize(deleteButton);
-    setSize(upButton);
-    setSize(downButton);
-    setSize(selectButton);
-    setSize(nameResultButton);
+    this.selectButton = initButton("select", new FileChooserAction(true), true);
+    this.nameResultButton = initButton("name", new FileChooserAction(false), true);
+    this.addButton = initButton("add", new AddStylesheetAction(), true);
+    this.removeButton = initButton("remove", new RemoveStylesheetAction(), false);
+    this.upButton = initButton("up", new MoveStylesheetAction(true), false);
+    this.downButton = initButton("down", new MoveStylesheetAction(false), false);
+    this.transformButton = initButton("transform", new TransformAction(), stylesheetsListModel.size() > 0);
 
     addComponents();
-  }
-
-
-  private double getWidest(double widest, JButton button) {
-    if(button.getPreferredSize().getWidth() > widest) {
-      widest = button.getMinimumSize().getWidth();
-    }
-    return widest;
-  }
-
-
-  private Dimension getPreferredButtonDimension(JButton button) {
-    if(widestButtonWidth == -1) {
-      widestButtonWidth = getWidest(widestButtonWidth, this.addButton);
-      widestButtonWidth = getWidest(widestButtonWidth, this.deleteButton);
-      widestButtonWidth = getWidest(widestButtonWidth, this.downButton);
-      widestButtonWidth = getWidest(widestButtonWidth, this.upButton);
-      widestButtonWidth = getWidest(widestButtonWidth, this.nameResultButton);
-      widestButtonWidth = getWidest(widestButtonWidth, this.selectButton);
-    }
-
-    return new Dimension((int)widestButtonWidth, (int)button.getPreferredSize().getHeight());
-  }
-
-
-  private void setSize(JButton button) {
-    button.setMinimumSize(getPreferredButtonDimension(button));
-    button.setPreferredSize(getPreferredButtonDimension(button));
   }
 
 
@@ -169,32 +130,6 @@ public class XSLTProcessor extends JPanel {
   }
 
 
-  private JButton initFileChooserButton(String propertyName) {
-    JButton button = new JButton(jEdit.getProperty(propertyName));
-    button.setActionCommand(jEdit.getProperty(propertyName));
-    button.addActionListener(
-      new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String[] selections = GUIUtilities.showVFSFileDialog(view, null, JFileChooser.OPEN_DIALOG, false);
-          if(selections != null) {
-            if(e.getActionCommand() == jEdit.getProperty("XSLTProcessor.select.button")) {
-              sourceDocumentTextField.setText(selections[0]);
-              jEdit.setProperty("XSLTProcessor.lastSource", selections[0]);
-            } else {
-              resultDocumentTextField.setText(selections[0]);
-              jEdit.setProperty("XSLTProcessor.lastResult", selections[0]);
-            }
-          }
-          Container topLevelAncestor = XSLTProcessor.this.getTopLevelAncestor();
-          if(topLevelAncestor instanceof JFrame) {
-            ((JFrame)topLevelAncestor).toFront();
-          }
-        }
-      });
-    return button;
-  }
-
-
   private DefaultListModel initStylesheetListModel() {
     DefaultListModel stylesheetsListModel = new DefaultListModel();
     List values = PropertyUtil.getEnumeratedProperty("XSLTProcessor.lastStylesheet", jEdit.getProperties());
@@ -210,137 +145,40 @@ public class XSLTProcessor extends JPanel {
     JList list = new JList(stylesheetsListModel);
     list.getSelectionModel().setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     list.getSelectionModel().addListSelectionListener(
-      new ListSelectionListener() {
-        public void valueChanged(ListSelectionEvent e) {
-          boolean selectionExists = stylesheetsList.getSelectedIndex() != -1;
-          deleteButton.setEnabled(selectionExists);
-          upButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
-              && (stylesheetsList.getSelectedIndex() != 0));
-          downButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
-              && (stylesheetsList.getSelectedIndex() < stylesheetsListModel.getSize() - 1));
-        }
-      });
+        new ListSelectionListener() {
+          public void valueChanged(ListSelectionEvent e) {
+            boolean selectionExists = stylesheetsList.getSelectedIndex() != -1;
+            removeButton.setEnabled(selectionExists);
+            upButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
+                && (stylesheetsList.getSelectedIndex() != 0));
+            downButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
+                && (stylesheetsList.getSelectedIndex() < stylesheetsListModel.getSize() - 1));
+          }
+        });
     return list;
   }
 
 
-  private JButton initAddButton() {
-    JButton addButton = new JButton(jEdit.getProperty("XSLTProcessor.add.button"));
-    addButton.addActionListener(
-      new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          String[] selections = GUIUtilities.showVFSFileDialog(view, null, JFileChooser.OPEN_DIALOG, false);
-          if(selections != null) {
-            stylesheetsListModel.addElement(selections[0]);
-            transformButton.setEnabled(true);
-            if((stylesheetsList.getSelectedIndex() != -1)
-                && (stylesheetsListModel.getSize() > 1)) {
-              downButton.setEnabled(true);
-            }
-            PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet",
-                Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
-          }
-          Container topLevelAncestor = XSLTProcessor.this.getTopLevelAncestor();
-          if(topLevelAncestor instanceof JFrame) {
-            ((JFrame)topLevelAncestor).toFront();
-          }
-        }
-      });
-    return addButton;
-  }
+  private JButton initButton(String buttonType, ActionListener actionListener, boolean isEnabled) {
+    String toolTipText = jEdit.getProperty("XSLTProcessor." + buttonType + ".button.tooltip");
+    String iconName = jEdit.getProperty("XSLTProcessor." + buttonType + ".button.icon");
 
+    URL url = XSLTProcessor.class.getResource(iconName);
+    JButton button = new JButton(new ImageIcon(url));
+    button.setToolTipText(toolTipText);
+    button.addActionListener(actionListener);
+    button.setEnabled(isEnabled);
 
-  private JButton initDeleteButton() {
-    JButton button = new JButton(jEdit.getProperty("XSLTProcessor.delete.button"));
-    button.addActionListener(
-      new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          stylesheetsListModel.remove(stylesheetsList.getSelectedIndex());
-          if(stylesheetsListModel.getSize() > 0) {
-            stylesheetsList.setSelectedIndex(0);
-          } else {
-            deleteButton.setEnabled(false);
-            transformButton.setEnabled(false);
-          }
-          PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet",
-              Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
-        }
-      });
-    button.setEnabled(false);
+    Dimension dimension = new Dimension(30, 30);
+
+    if(buttonType.equals("transform")) {
+      dimension.setSize(74, 30);
+    }
+
+    button.setMinimumSize(dimension);
+    button.setPreferredSize(dimension);
+
     return button;
-  }
-
-
-  private JButton initMoveButton(String propertyName) {
-    JButton button = new JButton(jEdit.getProperty(propertyName));
-    button.setActionCommand(jEdit.getProperty(propertyName));
-    button.addActionListener(
-      new ActionListener() {
-        public void actionPerformed(ActionEvent e) {
-          int move = 1;
-
-          if(e.getActionCommand() == jEdit.getProperty("XSLTProcessor.up.button")) {
-            move = -1;
-          }
-
-          int selectedIndex = stylesheetsList.getSelectedIndex();
-          Object selected = stylesheetsListModel.get(selectedIndex);
-          stylesheetsListModel.remove(selectedIndex);
-          stylesheetsListModel.insertElementAt(selected, selectedIndex + move);
-          stylesheetsList.setSelectedIndex(selectedIndex + move);
-          PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet",
-              Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
-        }
-      });
-    button.setEnabled(false);
-    return button;
-  }
-
-
-  private JButton initTransformButton() {
-    JButton transformButton = new JButton(jEdit.getProperty("XSLTProcessor.transform.button"));
-    transformButton.addActionListener(
-      new ActionListener() {
-        public void actionPerformed(ActionEvent evt) {
-          Date start = new Date();
-          setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-          String inputFile = null;
-          String stylesheetFileName = null;
-          Object[] stylesheets = stylesheetsListModel.toArray();
-
-          try {
-            inputFile = sourceDocumentTextField.getText();
-            String docBeingTransformed = XSLTUtilities.transform(inputFile, stylesheets);
-
-            Buffer newBuffer = jEdit.newFile(view);
-            newBuffer.insert(0, docBeingTransformed);
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-
-            if(!resultDocumentTextField.getText().equals(jEdit.getProperty("XSLTProcessor.result.pleaseName"))) {
-              newBuffer.save(view, resultDocumentTextField.getText());
-            }
-
-            view.getTextArea().setCaretPosition(0);
-
-            Date end = new Date();
-            long timeTaken = end.getTime() - start.getTime();
-            Object[] param = {new Integer((int)timeTaken)};
-            String status = jEdit.getProperty("XSLTProcessor.transform.status", param);
-            Log.log(Log.MESSAGE, this, status);
-          } catch(Exception e) {
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-            if(stylesheetFileName == null) {
-              XSLTPlugin.processException(e, jEdit.getProperty("XSLTProcessor.error.preProcessProblem"), XSLTProcessor.this);
-            } else {
-              String msg = MessageFormat.format(jEdit.getProperty("XSLTProcessor.error.stylesheetProblem"),
-                  new Object[]{stylesheetFileName});
-              XSLTPlugin.processException(e, msg, XSLTProcessor.this);
-            }
-          }
-        }
-      });
-    transformButton.setEnabled(stylesheetsListModel.size() > 0);
-    return transformButton;
   }
 
 
@@ -393,7 +231,7 @@ public class XSLTProcessor extends JPanel {
 
     constraints = getConstraints(4, new Insets(0, 2, 2, 2));
     constraints.anchor = GridBagConstraints.EAST;
-    add(deleteButton, constraints);
+    add(removeButton, constraints);
 
     constraints = getConstraints(5, new Insets(2, 2, 0, 2));
     constraints.anchor = GridBagConstraints.EAST;
@@ -409,28 +247,151 @@ public class XSLTProcessor extends JPanel {
   }
 
 
+  private void addTransformComponents() {
+    GridBagConstraints constraints = getConstraints(8, new Insets(4, 4, 4, 4));
+    constraints.gridwidth = 2;
+    constraints.anchor = GridBagConstraints.CENTER;
+    add(this.transformButton, constraints);
+  }
+
+
   private void addResultComponents() {
-    GridBagConstraints constraints = getConstraints(8, new Insets(4, 4, 0, 4));
+    GridBagConstraints constraints = getConstraints(9, new Insets(4, 4, 0, 4));
     constraints.anchor = GridBagConstraints.WEST;
     add(new JLabel(jEdit.getProperty("XSLTProcessor.result.label")), constraints);
 
-    constraints = getConstraints(9, new Insets(4, 4, 4, 4));
+    constraints = getConstraints(10, new Insets(4, 4, 4, 4));
     constraints.weightx = 5;
     constraints.fill = GridBagConstraints.HORIZONTAL;
     add(this.resultDocumentTextField, constraints);
 
-    constraints = getConstraints(9, new Insets(2, 2, 4, 2));
+    constraints = getConstraints(10, new Insets(2, 2, 4, 2));
     constraints.anchor = GridBagConstraints.EAST;
-    add(nameResultButton, constraints);
+    add(this.nameResultButton, constraints);
   }
 
 
-  private void addTransformComponents() {
-    GridBagConstraints constraints = getConstraints(10, new Insets(4, 4, 4, 4));
-    constraints.gridwidth = 2;
-    constraints.anchor = GridBagConstraints.CENTER;
-    add(transformButton, constraints);
+  private class FileChooserAction implements ActionListener {
+    private boolean isSourceFile;
+
+    FileChooserAction(boolean isSourceFile) {
+      this.isSourceFile = isSourceFile;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      String[] selections = GUIUtilities.showVFSFileDialog(view, null, JFileChooser.OPEN_DIALOG, false);
+      if(selections != null) {
+        if(isSourceFile) {
+          sourceDocumentTextField.setText(selections[0]);
+          jEdit.setProperty("XSLTProcessor.lastSource", selections[0]);
+        } else {
+          resultDocumentTextField.setText(selections[0]);
+          jEdit.setProperty("XSLTProcessor.lastResult", selections[0]);
+        }
+      }
+      Container topLevelAncestor = XSLTProcessor.this.getTopLevelAncestor();
+      if(topLevelAncestor instanceof JFrame) {
+        ((JFrame)topLevelAncestor).toFront();
+      }
+    }
+  }
+
+
+  private class AddStylesheetAction implements ActionListener {
+    public void actionPerformed(ActionEvent e) {
+      String[] selections = GUIUtilities.showVFSFileDialog(view, null, JFileChooser.OPEN_DIALOG, false);
+      if(selections != null) {
+        stylesheetsListModel.addElement(selections[0]);
+        transformButton.setEnabled(true);
+        if((stylesheetsList.getSelectedIndex() != -1)
+            && (stylesheetsListModel.getSize() > 1)) {
+          downButton.setEnabled(true);
+        }
+        PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet",
+            Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
+      }
+      Container topLevelAncestor = XSLTProcessor.this.getTopLevelAncestor();
+      if(topLevelAncestor instanceof JFrame) {
+        ((JFrame)topLevelAncestor).toFront();
+      }
+    }
+  }
+
+
+  private class RemoveStylesheetAction implements ActionListener {
+    public void actionPerformed(ActionEvent e) {
+      stylesheetsListModel.remove(stylesheetsList.getSelectedIndex());
+      if(stylesheetsListModel.getSize() > 0) {
+        stylesheetsList.setSelectedIndex(0);
+      } else {
+        removeButton.setEnabled(false);
+        transformButton.setEnabled(false);
+      }
+      PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet",
+          Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
+    }
+  }
+
+
+  private class MoveStylesheetAction implements ActionListener {
+    boolean isMoveUp;
+
+    MoveStylesheetAction(boolean isMoveUp) {
+      this.isMoveUp = isMoveUp;
+    }
+
+    public void actionPerformed(ActionEvent e) {
+      int move = isMoveUp ? -1 : 1;
+
+      int selectedIndex = stylesheetsList.getSelectedIndex();
+      Object selected = stylesheetsListModel.get(selectedIndex);
+      stylesheetsListModel.remove(selectedIndex);
+      stylesheetsListModel.insertElementAt(selected, selectedIndex + move);
+      stylesheetsList.setSelectedIndex(selectedIndex + move);
+      PropertyUtil.setEnumeratedProperty("XSLTProcessor.lastStylesheet",
+          Arrays.asList(stylesheetsListModel.toArray()), jEdit.getProperties());
+    }
+  }
+
+
+  private class TransformAction implements ActionListener {
+    public void actionPerformed(ActionEvent evt) {
+      Date start = new Date();
+      setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+      String inputFile = null;
+      String stylesheetFileName = null;
+      Object[] stylesheets = stylesheetsListModel.toArray();
+
+      try {
+        inputFile = sourceDocumentTextField.getText();
+        String docBeingTransformed = XSLTUtilities.transform(inputFile, stylesheets);
+
+        Buffer newBuffer = jEdit.newFile(view);
+        newBuffer.insert(0, docBeingTransformed);
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
+        if(!resultDocumentTextField.getText().equals(jEdit.getProperty("XSLTProcessor.result.pleaseName"))) {
+          newBuffer.save(view, resultDocumentTextField.getText());
+        }
+
+        view.getTextArea().setCaretPosition(0);
+
+        Date end = new Date();
+        long timeTaken = end.getTime() - start.getTime();
+        Object[] param = {new Integer((int)timeTaken)};
+        String status = jEdit.getProperty("XSLTProcessor.transform.status", param);
+        Log.log(Log.MESSAGE, this, status);
+      } catch(Exception e) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        if(stylesheetFileName == null) {
+          XSLTPlugin.processException(e, jEdit.getProperty("XSLTProcessor.error.preProcessProblem"), XSLTProcessor.this);
+        } else {
+          String msg = MessageFormat.format(jEdit.getProperty("XSLTProcessor.error.stylesheetProblem"),
+              new Object[]{stylesheetFileName});
+          XSLTPlugin.processException(e, msg, XSLTProcessor.this);
+        }
+      }
+    }
   }
 
 }
-
