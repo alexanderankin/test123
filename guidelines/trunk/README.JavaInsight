@@ -1,0 +1,14 @@
+CVS policy file
+
+plugin: JavaInsight
+author: Kevin A. Burton <burton@relativity.yi.org>
+
+
+The current maintainers are:
+
+* André Kaplan <akaplan@jedit.org>
+* Dirk Möbius <dmoebius@gmx.net>
+
+
+Please do not commit changes to this plugin without first consulting the
+current maintainers.
