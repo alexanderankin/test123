@@ -130,7 +130,7 @@ public class HtmlPainter
     }
 
 
-    private void paintSyntaxLine(
+    public void paintSyntaxLine(
             Writer out, int lineNumber, Segment line, Token tokens
     ) {
         try {
