@@ -92,8 +92,6 @@ public class XSLTProcessor extends java.lang.Object
 				} else {
 					return;
 				}
-			} else {
-				Log.log(Log.WARNING, this, stylesheet.toString());
 			}
 
 			try {

@@ -13,9 +13,14 @@ plugin.xslt.XSLTPlugin.depend.2=jdk 1.2
 
 # Menu bar properties
 XSLT.label=XSLT
-XSLT=xslt.environment xslt.process xslt.repeat-last
+XSLT=xslt.process xslt.repeat-last - xslt.environment
 
 xslt.environment.label=Check Environment
 xslt.process.label=Process File...
 xslt.repeat-last.label=Repeat last...
 
+# Some text
+xslt.progressdialog.title=Progress
+xslt.progressdialog.label=Current Progress
+xslt.progressdialog.generated=Nodes Generated:
+xslt.progressdialog.close=Close
