@@ -132,66 +132,6 @@
     </itemizedlist>
 
     <para>
-    The highlightings of spaces, tabs and other whitespaces are independent.
-    Also it's possible to highlight spaces or tabs depending on their position
-    (leading/inner/trailing) in the text.
-    Use the following toggle actions available from the
-        <guimenu>Plugins</guimenu>&gt;
-        <guisubmenu>WhiteSpace</guisubmenu>
-    menu to obtain your favorite combination:
-    </para>
-
-    <itemizedlist>
-        <listitem>
-            <guimenuitem>Show&nbsp;spaces</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;tabs</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;other&nbsp;whitespaces</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;paragraph&nbsp;separators</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;fold&nbsp;guides</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;fold&nbsp;tooltips</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;leading&nbsp;spaces</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;inner&nbsp;spaces</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;trailing&nbsp;spaces</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;leading&nbsp;tabs</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;inner&nbsp;tabs</guimenuitem>
-        </listitem>
-
-        <listitem>
-            <guimenuitem>Show&nbsp;trailing&nbsp;tabs</guimenuitem>
-        </listitem>
-    </itemizedlist>
-
-    <para>
     At last, some jEdit actions are related to spaces and tabs handling:
     </para>
 
@@ -212,11 +152,11 @@
 </chapter>
 
 
-<chapter id="options">
-    <title>Options</title>
+<chapter id="default_options">
+    <title>Default Options</title>
 
     <para>
-    WhiteSpace options are available under:
+    WhiteSpace default options are available under:
         <guimenu>Utilities</guimenu>&gt;
         <guisubmenu>Global&nbsp;Options</guisubmenu>&gt;
         <guimenu>Plugin&nbsp;Options</guimenu>&gt;
@@ -359,6 +299,102 @@ Some Text&#92;<inlinemediaobject>
             </varlistentry>
         </variablelist>
     </simplesect>
+</chapter>
+
+
+<chapter id="buffer_options">
+    <title>Buffer Options</title>
+
+    <para>
+    The Buffer options are available from the
+        <guimenu>Plugins</guimenu>&gt;
+        <guisubmenu>WhiteSpace</guisubmenu>
+    menu.
+    </para>
+
+    <para>
+    The following Buffer options enable you to control the highlighting of
+    spaces, tabs and other whitespaces for a given jEdit buffer.
+    It's also possible to highlight spaces and tabs depending on their
+    position (leading/inner/trailing) in the text.
+    </para>
+
+    <itemizedlist>
+        <listitem>
+            <guimenuitem>Show&nbsp;spaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;tabs</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;other&nbsp;whitespaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;paragraph&nbsp;separators</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;fold&nbsp;guides</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;fold&nbsp;tooltips</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;leading&nbsp;spaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;inner&nbsp;spaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;trailing&nbsp;spaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;leading&nbsp;tabs</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;inner&nbsp;tabs</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;trailing&nbsp;tabs</guimenuitem>
+        </listitem>
+    </itemizedlist>
+
+    <para>
+    The following Buffer options control the actions to be taken when
+    a buffer is saved.
+    Note that the last three actions are mutually exclusive.
+    </para>
+
+    <itemizedlist>
+        <listitem>
+            <guimenuitem>Remove&nbsp;trailing&nbsp;whitespaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>
+            Tabify/untabify&nbsp;according&nbsp;to&nbsp;soft&nbsp;tabs&nbsp;setting
+            </guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Tabify&nbsp;according&nbsp;whitespaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Untabify&nbsp;leading&nbsp;whitespaces</guimenuitem>
+        </listitem>
+    </itemizedlist>
+
 </chapter>
 
 
