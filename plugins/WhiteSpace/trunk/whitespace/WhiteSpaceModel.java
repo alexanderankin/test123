@@ -25,6 +25,8 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class WhiteSpaceModel
 {
+    public static final String MODEL_PROPERTY = "white-space.model";
+
     public static final String SPACE_HIGHLIGHT_PROPERTY          = "white-space.space-highlight";
     public static final String LEADING_SPACE_HIGHLIGHT_PROPERTY  = "white-space.leading-space-highlight";
     public static final String INNER_SPACE_HIGHLIGHT_PROPERTY    = "white-space.inner-space-highlight";

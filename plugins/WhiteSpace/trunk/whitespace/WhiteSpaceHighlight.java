@@ -94,14 +94,14 @@ public class WhiteSpaceHighlight
     private Segment lineSegment = new Segment();
 
 
-    private WhiteSpaceHighlight() {}
+    private WhiteSpaceHighlight(WhiteSpaceModel model) {
+        this.model = model;
+    }
 
 
     public void init(JEditTextArea textArea, TextAreaHighlight next) {
         this.textArea = textArea;
         this.next = next;
-
-        this.model = new WhiteSpaceModel(textArea);
     }
 
 
@@ -354,8 +354,10 @@ public class WhiteSpaceHighlight
     }
 
 
-    public static TextAreaHighlight addHighlightTo(EditPane editPane) {
-        TextAreaHighlight textAreaHighlight = new WhiteSpaceHighlight();
+    public static TextAreaHighlight addHighlightTo(
+            EditPane editPane, WhiteSpaceModel model
+    ) {
+        TextAreaHighlight textAreaHighlight = new WhiteSpaceHighlight(model);
         highlights.put(editPane, textAreaHighlight);
         return textAreaHighlight;
     }
