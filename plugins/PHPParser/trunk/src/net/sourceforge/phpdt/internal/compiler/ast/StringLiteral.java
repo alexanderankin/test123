@@ -21,52 +21,15 @@ public final class StringLiteral extends Literal {
   private AbstractVariable[] variablesInside;
 
   public StringLiteral(final Token token) {
-    super(token.sourceStart,token.sourceEnd);
+    super(token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
     source = token.image;
   }
 
-  /**
-   * Create a new StringLiteral
-   * @param token the token
-   * @param s sourcestart
-   * @param e sourceend
-   * @deprecated
-   */
-  public StringLiteral(final String token, final int s, final int e) {
-    super(s, e);
-    source = token;
+  public StringLiteral(final String source, final int sourceStart, final int sourceEnd, final int beginLine, final int endLine, final int beginColumn, final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    this.source = source;
   }
 
-  /**
-   * Create a new StringLiteral
-   * @param token the token
-   * @param s sourcestart
-   * @param e sourceend
-   * @deprecated
-   */
-  public StringLiteral(final String token,
-                       final int s,
-                       final int e,
-                       final AbstractVariable[] variablesInside) {
-    super(s, e);
-    source = token;
-    this.variablesInside = variablesInside;
-  }
-
-  /**
-   * Create a new StringLiteral
-   * @param token the token
-   * @param s sourcestart
-   * @param e sourceend
-   * @deprecated
-   */
-  public StringLiteral(final char[] token, final int s, final int e) {
-    this(new String(token),s, e);
-  }
-
-  public StringLiteral(final int s, final int e) {
-    super(s, e);
-  }
   /**
    * Return the expression as String.
    * @return the expression

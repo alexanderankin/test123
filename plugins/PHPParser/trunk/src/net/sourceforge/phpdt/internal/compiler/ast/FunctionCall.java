@@ -14,21 +14,15 @@ public final class FunctionCall extends AbstractSuffixExpression {
   /** the arguments. */
   private final Expression[] args;
 
-  /**
-   * a function call.
-   * it's <code>functionName(args ...)
-   * @param functionName the function name
-   * @param args the arguments
-   * @param sourceEnd the source end
-   */
   public FunctionCall(final Expression functionName,
                       final Expression[] args,
-                      final int sourceEnd) {
-    super(functionName.sourceStart, sourceEnd);
+                      final int sourceEnd,
+                       final int endLine,
+                       final int endColumn) {
+    super(functionName.sourceStart, sourceEnd,functionName.getBeginLine(),endLine,functionName.getBeginColumn(),endColumn);
     this.functionName = functionName;
     this.args = args;
   }
-
   /**
    * Return the expression as String.
    * @return the expression

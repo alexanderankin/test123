@@ -3,6 +3,7 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 /**
  * A default case for a switch.
  * it's default : .....;
+ *
  * @author Matthieu Casanova
  */
 public final class DefaultCase extends AbstractCase {
@@ -10,12 +11,18 @@ public final class DefaultCase extends AbstractCase {
   /**
    * Create a default case.
    *
-   * @param statements the statements
+   * @param statements  the statements
    * @param sourceStart the starting offset
-   * @param sourceEnd the ending offset
+   * @param sourceEnd   the ending offset
    */
-  public DefaultCase(final Statement[] statements, final int sourceStart, final int sourceEnd) {
-    super(statements, sourceStart, sourceEnd);
+  public DefaultCase(final Statement[] statements,
+                     final int sourceStart,
+                     final int sourceEnd,
+                     final int beginLine,
+                     final int endLine,
+                     final int beginColumn,
+                     final int endColumn) {
+    super(statements, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
   }
 
   /**

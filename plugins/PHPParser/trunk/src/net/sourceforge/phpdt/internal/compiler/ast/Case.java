@@ -4,6 +4,7 @@ import java.util.List;
 
 /**
  * A Case statement for a Switch.
+ *
  * @author Matthieu Casanova
  */
 public final class Case extends AbstractCase {
@@ -13,13 +14,18 @@ public final class Case extends AbstractCase {
   public Case(final Expression value,
               final Statement[] statements,
               final int sourceStart,
-              final int sourceEnd) {
-    super(statements, sourceStart, sourceEnd);
+              final int sourceEnd,
+              final int beginLine,
+              final int endLine,
+              final int beginColumn,
+              final int endColumn) {
+    super(statements, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.value = value;
   }
 
   /**
    * Return the object into String.
+   *
    * @param tab how many tabs (not used here
    * @return a String
    */

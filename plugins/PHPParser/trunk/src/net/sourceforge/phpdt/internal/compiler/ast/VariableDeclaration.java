@@ -6,7 +6,7 @@ import java.util.List;
 
 /**
  * A variable declaration.
- * 
+ *
  * @author Matthieu Casanova
  */
 public class VariableDeclaration extends Expression implements Outlineable {
@@ -27,7 +27,9 @@ public class VariableDeclaration extends Expression implements Outlineable {
 
   protected final AbstractVariable variable;
 
-  /** The value for variable initialization. */
+  /**
+   * The value for variable initialization.
+   */
   public Expression initialization;
 
   private Object parent;
@@ -38,7 +40,7 @@ public class VariableDeclaration extends Expression implements Outlineable {
 
   /**
    * Create a variable.
-   * 
+   *
    * @param variable       the name of the variable
    * @param initialization the initialization (it could be null when you have a parse error)
    * @param operator       the assign operator
@@ -50,8 +52,12 @@ public class VariableDeclaration extends Expression implements Outlineable {
                              final Expression initialization,
                              final String operator,
                              final int sourceStart,
-                             final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                             final int sourceEnd,
+                             final int beginLine,
+                             final int endLine,
+                             final int beginColumn,
+                             final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.initialization = initialization;
     this.variable = variable;
     this.operator = operator;
@@ -60,50 +66,25 @@ public class VariableDeclaration extends Expression implements Outlineable {
 
   /**
    * Create a variable.
-   * 
+   *
    * @param variable    a variable (in case of $$variablename)
    * @param sourceStart the start point
    */
   public VariableDeclaration(final Object parent,
                              final AbstractVariable variable,
                              final int sourceStart,
-                             final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                             final int sourceEnd,
+                             final int beginLine,
+                             final int endLine,
+                             final int beginColumn,
+                             final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.variable = variable;
     this.parent = parent;
   }
 
   public final void setReference(final boolean reference) {
     this.reference = reference;
-  }
-
-  /**
-   * Create a variable.
-   * 
-   * @param initialization the initialization
-   * @param variable       a variable (in case of $$variablename)
-   * @param sourceStart    the start point
-   */
-  public VariableDeclaration(final AbstractVariable variable,
-                             final Expression initialization,
-                             final String operator,
-                             final int sourceStart) {
-    super(sourceStart, initialization.sourceEnd);
-    this.variable = variable;
-    this.initialization = initialization;
-    this.operator = operator;
-  }
-
-  /**
-   * Create a variable.
-   * 
-   * @param variable    a variable (in case of $$variablename)
-   * @param sourceStart the start point
-   */
-  public VariableDeclaration(final AbstractVariable variable,
-                             final int sourceStart) {
-    super(sourceStart, variable.sourceEnd);
-    this.variable = variable;
   }
 
   /**
@@ -145,7 +126,7 @@ public class VariableDeclaration extends Expression implements Outlineable {
 
   /**
    * Return the variable into String.
-   * 
+   *
    * @return a String
    */
   public String toStringExpression() {
@@ -153,12 +134,12 @@ public class VariableDeclaration extends Expression implements Outlineable {
     if (initialization == null) {
       if (reference) return '&' + variableString; else return variableString;
     } else {
-    //  final String operatorString = operatorToString();
+      //  final String operatorString = operatorToString();
       final String initString = initialization.toStringExpression();
       final StringBuffer buff = new StringBuffer(variableString.length() +
-                                                 operator.length() +
-                                                 initString.length() +
-                                                 1);
+              operator.length() +
+              initString.length() +
+              1);
       buff.append(variableString);
       buff.append(operator); //$NON-NLS-1$
       buff.append(initString);
@@ -177,7 +158,7 @@ public class VariableDeclaration extends Expression implements Outlineable {
 
   /**
    * Get the name of the field as String.
-   * 
+   *
    * @return the name of the String
    */
   public final String name() {

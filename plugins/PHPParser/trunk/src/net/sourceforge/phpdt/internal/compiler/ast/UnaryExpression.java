@@ -9,8 +9,15 @@ public abstract class UnaryExpression extends OperatorExpression {
 
   public final Expression expression;
 
-  protected UnaryExpression(final Expression expression, final int operator, final int sourceStart, final int sourceEnd) {
-    super(operator, sourceStart, sourceEnd);
+  protected UnaryExpression(final Expression expression,
+                            final int operator,
+                            final int sourceStart,
+                            final int sourceEnd,
+                            final int beginLine,
+                            final int endLine,
+                            final int beginColumn,
+                            final int endColumn) {
+    super(operator, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expression = expression;
   }
 
@@ -19,7 +26,8 @@ public abstract class UnaryExpression extends OperatorExpression {
    *
    * @param list the list where we will put variables
    */
-  public final void getOutsideVariable(final List list) {}
+  public final void getOutsideVariable(final List list) {
+  }
 
   /**
    * get the modified variables.

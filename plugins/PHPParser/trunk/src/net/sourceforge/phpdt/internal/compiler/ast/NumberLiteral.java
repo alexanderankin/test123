@@ -11,7 +11,7 @@ public final class NumberLiteral extends Literal {
   private final String source;
 
   public NumberLiteral(final Token token) {
-    super(token.sourceStart, token.sourceEnd);
+    super(token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
     source = token.image;
   }
 

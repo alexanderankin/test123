@@ -3,6 +3,8 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
+import gatchan.phpparser.parser.PHPParser;
+import gatchan.phpparser.parser.PHPParseMessageEvent;
 
 /**
  * A GlobalStatement statement in php.
@@ -74,18 +76,18 @@ public final class GlobalStatement extends Statement implements Outlineable {
    * if we have in globals a special variable it will be reported as a warning.
    * @see Variable#SPECIAL_VARS
    */
-  public void analyzeCode() {
+  public void analyzeCode(PHPParser parser) {
     for (int i = 0; i < variables.length; i++) {
       if (arrayContains(Variable.SPECIAL_VARS, variables[i].getName())) {
-      /*  try {
-          PHPParserSuperclass.setMarker("warning, you shouldn't request " + variables[i].getName() + " as global",
-                                        variables[i].sourceStart,
-                                        variables[i].sourceEnd,
-                                        PHPParserSuperclass.WARNING,
-                                        "");
-        } catch (CoreException e) {
-          PHPeclipsePlugin.log(e);
-        }  */
+                parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                        parser.getPath(),
+                        "warning, you shouldn't request " + variables[i].getName() + " as global",
+                        variables[i].sourceStart,
+                        variables[i].sourceEnd,
+                        0,
+                        0,
+                        0,
+                        0));
       }
     }
   }

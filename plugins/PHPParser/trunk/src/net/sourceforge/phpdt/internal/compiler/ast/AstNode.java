@@ -1,5 +1,7 @@
 package net.sourceforge.phpdt.internal.compiler.ast;
 
+import gatchan.phpparser.parser.PHPParser;
+
 import java.util.List;
 
 /**
@@ -11,17 +13,31 @@ public abstract class AstNode {
   /** Starting and ending position of the node in the sources. */
   public int sourceStart, sourceEnd;
 
-	protected AstNode() {
-		super();
-	}
+  protected int beginLine,endLine;
+  protected int beginColumn,endColumn;
+
   /**
-   * Create a node giving starting and ending offset.
+   * Create a node.
+   *
    * @param sourceStart starting offset
    * @param sourceEnd ending offset
+   * @param beginLine begin line
+   * @param endLine ending line
+   * @param beginColumn begin column
+   * @param endColumn ending column
    */
-  protected AstNode(final int sourceStart, final int sourceEnd) {
+  protected AstNode(final int sourceStart,
+                    final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
     this.sourceStart = sourceStart;
     this.sourceEnd = sourceEnd;
+    this.beginLine = beginLine;
+    this.endLine = endLine;
+    this.beginColumn = beginColumn;
+    this.endColumn = endColumn;
   }
 
   /**
@@ -75,7 +91,7 @@ public abstract class AstNode {
    * This method will analyze the code.
    * by default it will do nothing
    */
-  public void analyzeCode() {}
+  public void analyzeCode(PHPParser parser) {}
 
   /**
    * Check if the array array contains the object o.
@@ -90,5 +106,29 @@ public abstract class AstNode {
       }
     }
     return false;
+  }
+
+  public int getSourceStart() {
+    return sourceStart;
+  }
+
+  public int getSourceEnd() {
+    return sourceEnd;
+  }
+
+  public int getBeginLine() {
+    return beginLine;
+  }
+
+  public int getEndLine() {
+    return endLine;
+  }
+
+  public int getBeginColumn() {
+    return beginColumn;
+  }
+
+  public int getEndColumn() {
+    return endColumn;
   }
 }

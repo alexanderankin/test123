@@ -13,14 +13,20 @@ public final class VariableUsage {
   /** where the variable is declared. */
   private final int startOffset;
 
+  private final int line;
+
+  private final int column;
+
   /**
    * create a VariableUsage.
    * @param name the name of the variable
    * @param startOffset the offset
    */
-  public VariableUsage(final String name, final int startOffset) {
+  public VariableUsage(final String name, final int startOffset,final int line, final int column) {
     this.name = name;
     this.startOffset = startOffset;
+    this.line = line;
+    this.column = column;
   }
 
   public String toString() {
@@ -41,6 +47,14 @@ public final class VariableUsage {
    */
   public int getStartOffset() {
     return startOffset;
+  }
+
+  public int getLine() {
+    return line;
+  }
+
+  public int getColumn() {
+    return column;
   }
 
   public boolean equals(final Object object) {

@@ -2,16 +2,23 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 
 /**
  * Any expression that have an operator.
+ *
  * @author Matthieu Casanova
  */
 public abstract class OperatorExpression
-    extends Expression
-    implements OperatorIds {
+        extends Expression
+        implements OperatorIds {
 
   private final int operator;
 
-  protected OperatorExpression(final int operator, final int sourceStart, final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+  protected OperatorExpression(final int operator,
+                               final int sourceStart,
+                               final int sourceEnd,
+                               final int beginLine,
+                               final int endLine,
+                               final int beginColumn,
+                               final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.operator = operator;
   }
 
@@ -82,6 +89,6 @@ public abstract class OperatorExpression
       case NEW:
         return "new "; //$NON-NLS-1$
     }
-    return "unknown operator " +operator; //$NON-NLS-1$
+    return "unknown operator " + operator; //$NON-NLS-1$
   }
 }

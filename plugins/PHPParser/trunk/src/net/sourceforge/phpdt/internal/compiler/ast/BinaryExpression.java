@@ -24,7 +24,7 @@ public final class BinaryExpression extends OperatorExpression {
   public BinaryExpression(final Expression left,
                           final Expression right,
                           final int operator) {
-    super(operator, left.sourceStart, right.sourceEnd);
+    super(operator, left.sourceStart, right.sourceEnd,left.getBeginLine(),right.getEndLine(),left.getBeginColumn(),right.getEndColumn());
     this.left = left;
     this.right = right;
   }

@@ -15,16 +15,24 @@ public final class ListExpression extends Expression {
   public ListExpression(final Expression[] vars,
                         final Expression expression,
                         final int sourceStart,
-                        final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                        final int sourceEnd,
+                       final int beginLine,
+                       final int endLine,
+                       final int beginColumn,
+                       final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.vars = vars;
     this.expression = expression;
   }
 
   public ListExpression(final Expression[] vars,
                         final int sourceStart,
-                        final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                        final int sourceEnd,
+                       final int beginLine,
+                       final int endLine,
+                       final int beginColumn,
+                       final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.vars = vars;
   }
 

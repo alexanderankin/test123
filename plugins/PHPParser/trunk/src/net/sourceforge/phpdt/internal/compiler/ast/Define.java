@@ -22,13 +22,16 @@ public final class Define extends Statement implements Outlineable {
                 final Expression defineName,
                 final Expression defineValue,
                 final int sourceStart,
-                final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                final int sourceEnd,
+                       final int beginLine,
+                       final int endLine,
+                       final int beginColumn,
+                       final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.parent = parent;
     this.defineName = defineName;
     this.defineValue = defineValue;
   }
-
   public String toString(final int tab) {
     final String nameString = defineName.toStringExpression();
     final String valueString = defineValue.toStringExpression();
@@ -58,7 +61,7 @@ public final class Define extends Statement implements Outlineable {
    * @param list the list where we will put variables
    */
   public void getOutsideVariable(final List list) {
-    list.add(new VariableUsage(defineName.toStringExpression(), sourceStart));//todo: someday : evaluate the defineName
+    list.add(new VariableUsage(defineName.toStringExpression(), sourceStart,beginLine,beginColumn));//todo: someday : evaluate the defineName
   }
 
   /**

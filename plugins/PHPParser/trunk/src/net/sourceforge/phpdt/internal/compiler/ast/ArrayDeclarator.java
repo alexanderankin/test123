@@ -22,12 +22,14 @@ public final class ArrayDeclarator extends AbstractVariable {
    */
   public ArrayDeclarator(final AbstractVariable prefix,
                          final Expression key,
-                         final int sourceEnd) {
-    super(prefix.sourceStart, sourceEnd);
+                         final int sourceEnd,
+                         final int endLine,
+                         final int endColumn) {
+    super(prefix.sourceStart, sourceEnd,prefix.getBeginLine(),endLine,prefix.getBeginColumn(),endColumn);
     this.prefix = prefix;
     this.key = key;
   }
-
+  
   /**
    * Return the expression as String.
    * @return the expression

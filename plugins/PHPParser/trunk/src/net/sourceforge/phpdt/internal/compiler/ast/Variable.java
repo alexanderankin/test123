@@ -7,17 +7,24 @@ import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 /**
  * A variable.
  * It could be a simple variable, or contains another variable.
+ *
  * @author Matthieu Casanova
  */
 public final class Variable extends AbstractVariable {
 
-  /** The name of the variable. */
+  /**
+   * The name of the variable.
+   */
   private String name;
 
-  /** A variable inside ($$varname). */
+  /**
+   * A variable inside ($$varname).
+   */
   private AbstractVariable variable;
 
-  /** the variable is defined like this ${expression} */
+  /**
+   * the variable is defined like this ${expression}
+   */
   private Expression expression;
 
   private static final String _GET = "_GET";
@@ -31,7 +38,9 @@ public final class Variable extends AbstractVariable {
   private static final String _FILES = "_FILES";
   private static final String _ENV = "_ENV";
 
-  /** Here is an array of all superglobals variables and the special "this". */
+  /**
+   * Here is an array of all superglobals variables and the special "this".
+   */
   public static final String[] SPECIAL_VARS = {_GET,
                                                _POST,
                                                _REQUEST,
@@ -45,45 +54,62 @@ public final class Variable extends AbstractVariable {
 
   /**
    * Create a new simple variable.
-   * @param name the name
+   *
+   * @param name        the name
    * @param sourceStart the starting position
-   * @param sourceEnd the ending position
+   * @param sourceEnd   the ending position
+   * @deprecated virer ca
    */
   public Variable(final String name,
                   final int sourceStart,
-                  final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                  final int sourceEnd,
+                  final int beginLine,
+                  final int endLine,
+                  final int beginColumn,
+                  final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.name = name;
   }
 
   /**
    * Create a special variable ($$toto for example).
-   * @param variable the variable contained
+   *
+   * @param variable    the variable contained
    * @param sourceStart the starting position
-   * @param sourceEnd the ending position
+   * @param sourceEnd   the ending position
    */
   public Variable(final AbstractVariable variable,
                   final int sourceStart,
-                  final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                  final int sourceEnd,
+                  final int beginLine,
+                  final int endLine,
+                  final int beginColumn,
+                  final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.variable = variable;
   }
 
   /**
    * Create a special variable ($$toto for example).
-   * @param expression the variable contained
+   *
+   * @param expression  the variable contained
    * @param sourceStart the starting position
-   * @param sourceEnd the ending position
+   * @param sourceEnd   the ending position
    */
   public Variable(final Expression expression,
                   final int sourceStart,
-                  final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                  final int sourceEnd,
+                  final int beginLine,
+                  final int endLine,
+                  final int beginColumn,
+                  final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expression = expression;
   }
 
   /**
    * Return the expression as String.
+   *
    * @return the expression
    */
   public String toStringExpression() {
@@ -125,7 +151,7 @@ public final class Variable extends AbstractVariable {
       varName = expression.toStringExpression();//todo : do a better thing like evaluate this ??
     }
     if (!arrayContains(SPECIAL_VARS, name)) {
-      list.add(new VariableUsage(varName, sourceStart));
+      list.add(new VariableUsage(varName, sourceStart,beginLine,beginColumn));
     }
   }
 }

@@ -9,8 +9,12 @@ public final class PrintExpression extends Expression {
 
   private final Expression expression;
 
-  public PrintExpression(final Expression expression, final int sourceStart, final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+  public PrintExpression(final Expression expression, final int sourceStart, final int sourceEnd,
+                       final int beginLine,
+                       final int endLine,
+                       final int beginColumn,
+                       final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expression = expression;
   }
 
