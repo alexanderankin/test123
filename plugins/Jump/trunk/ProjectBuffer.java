@@ -60,7 +60,7 @@ public class ProjectBuffer
     {}
 //}}}
 
-//{{{   boolean init 
+//{{{ boolean init 
 /**
  * Init given ProjectBuffer. (load tags, init history etc.) 
  */   
@@ -94,7 +94,8 @@ public class ProjectBuffer
             pb.JUMP_HISTORY = new JumpHistory();
             pb.HISTORY = HistoryModel.getModel("jump.tag_history.project."+pb.PROJECT_NAME);
             // Init TypeTag window class
-            pb.TYPE_TAG_WINDOW = new TypeTag();
+            //pb.TYPE_TAG_WINDOW = new TypeTag();
+            
             System.out.println("Buffer creating took - "+(System.currentTimeMillis()-t1)+" ms");
             return true;
         }
@@ -104,6 +105,13 @@ public class ProjectBuffer
             return false;
         }
         
+    }
+//}}}
+
+//{{{ getTypeTag
+    public TypeTag getTypeTag()
+    {
+        return new TypeTag();    
     }
 //}}}
     
