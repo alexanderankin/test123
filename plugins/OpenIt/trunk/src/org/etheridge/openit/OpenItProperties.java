@@ -25,6 +25,12 @@ public interface OpenItProperties
   // stores the full source path string
   public static final String SOURCE_PATH_STRING = "OpenIt.SourcePathString";
   
+  // the last opened file chooser directory
+  public static final String LAST_OPENED_FILE_CHOOSER_DIRECTORY = "OpenIt.LastOpenedFileChooserDirectory";
+  
+  // the excludes regular expression string
+  public static final String EXCLUDES_REGULAR_EXPRESSION = "OpenIt.ExcludesRegularExpression";
+  
   // polling property
   public static final String SOURCE_PATH_POLLING_INTERVAL = "OpenIt.SourcePathPollingInterval";
   
@@ -58,5 +64,11 @@ public interface OpenItProperties
   
   // should the file size be displayed?
   public static final String DISPLAY_SIZE = "OpenIt.Display.DisplaySize";
+  
+  // should packages be displayed?
+  public static final String JAVA_FILE_DISPLAY_PACKAGES = "OpenIt.Display.JavaFileDisplayPackages";
+  
+  // should directories be displayed?
+  public static final String JAVA_FILE_DISPLAY_DIRECTORIES = "OpenIt.Display.JavaFileDisplayDirectories";
   
 }

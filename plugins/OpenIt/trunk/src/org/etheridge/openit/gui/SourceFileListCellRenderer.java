@@ -78,17 +78,23 @@ public class SourceFileListCellRenderer extends DefaultListCellRenderer
             ((JLabel)comp).setIcon(getImageIcon(file));
           }
           
-          // if the file is a java file, then show the package if required 
-          if (jEdit.getBooleanProperty(OpenItProperties.DISPLAY_PACKAGES, true) &&
-              file instanceof JavaSourcePathFile) {
-            showBuffer.append("(" + ((JavaSourcePathFile)file).getPackageName() + ") ");
+          // if the file is a java file, then show the package & direcotry if 
+          // required.
+          if (file instanceof JavaSourcePathFile) {
+            if (jEdit.getBooleanProperty(OpenItProperties.JAVA_FILE_DISPLAY_PACKAGES, true)) {
+              showBuffer.append("(" + ((JavaSourcePathFile)file).getPackageName() + ") ");
+            }
+            
+            if (jEdit.getBooleanProperty(OpenItProperties.JAVA_FILE_DISPLAY_DIRECTORIES, false)) {
+              showBuffer.append("[" + file.getDirectoryString() + "] ");
+            }
+          } else { // not a java file
+            // show directory if user wants          
+            if (jEdit.getBooleanProperty(OpenItProperties.DISPLAY_DIRECTORIES, false)) {
+              showBuffer.append("[" + file.getDirectoryString() + "] ");
+            }  
           }
-
-          // show directory if user wants          
-          if (jEdit.getBooleanProperty(OpenItProperties.DISPLAY_DIRECTORIES, false)) {
-            showBuffer.append("[" + file.getDirectoryString() + "] ");
-          }
-                    
+                  
           // show size if user wants
           if (jEdit.getBooleanProperty(OpenItProperties.DISPLAY_SIZE, false)) {
             showBuffer.append("(" + file.getFileSize() + ")");  

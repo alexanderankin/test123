@@ -4,7 +4,7 @@
 # general plugin information
 plugin.org.etheridge.openit.OpenItPlugin.name=OpenIt
 plugin.org.etheridge.openit.OpenItPlugin.author=Matt Etheridge
-plugin.org.etheridge.openit.OpenItPlugin.version=1.01
+plugin.org.etheridge.openit.OpenItPlugin.version=1.02
 plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
 plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.4
 plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.00.00.00
@@ -58,12 +58,17 @@ openit.FilterWindow.FilterCheckbox.label=Filter:
 options.OpenIt.label=OpenIt
 
 # source path option pane
-options.OpenIt.SourcePathOptionPane.label=SourcePath Options
-options.OpenIt.SourcePathOptionPane.SourcePath.title=Source Path
-options.OpenIt.SourcePathOptionPane.SourcePath.instruction.label=Enter the source path here, separated by path separators:
-options.OpenIt.SourcePathOptionPane.SourcePath.instruction2.label=(NOTE: This is usually the base directory of your source paths, but can actually be any directory)
-options.OpenIt.SourcePathOptionPane.RefreshRate.title=SourcePath Refresh Rate
-options.OpenIt.SourcePathOptionPane.RefreshRate.CheckBox.label=How often should the source path be refreshed? (in seconds): 
+options.OpenIt.SourcePathOptionPane.label=Search Path Options
+options.OpenIt.SourcePathOptionPane.SourcePath.title=Search Path
+options.OpenIt.SourcePathOptionPane.SourcePath.instruction.label=Add/Remove Search Paths:
+options.OpenIt.SourcePathOptionPane.SourcePath.instruction2.label=(NOTE: these are usually the base directory(s) of your Java source files, but can be any directory!)
+options.OpenIt.SourcePathOptionPane.SourcePath.AddButton.label=Add Search Path(s)
+options.OpenIt.SourcePathOptionPane.SourcePath.RemoveButton.label=Remove Search Path(s)
+options.OpenIt.SourcePathOptionPane.SourcePath.SearchPathsFileFilter=Search Paths
+options.OpenIt.SourcePathOptionPane.ExcludeRegularExpression.title=Exclude Regular Expression Filter
+options.OpenIt.SourcePathOptionPane.ExcludeRegularExpression.label=Excludes Regular Expression Filter (any matching files will be ignored): (eg. *.class|*.#*)
+options.OpenIt.SourcePathOptionPane.RefreshRate.title=Search Path Refresh Rate
+options.OpenIt.SourcePathOptionPane.RefreshRate.CheckBox.label=How often should the search path be refreshed? (in seconds): 
 
 # popups option pane
 options.OpenIt.PopupOptionsPane.ClearPopup.title=Clear Popup
@@ -72,11 +77,13 @@ options.OpenIt.PopupOptionsPane.ClearPopup.ShouldClearPopup=Clear window on popu
 options.OpenIt.PopupOptionsPane.CaseSensitive.title=Case Sensitivity
 options.OpenIt.PopupOptionsPane.CaseSensitive.label=Case sensitive file name matching?
 options.OpenIt.PopupOptionsPane.Display.title=List Display
-options.OpenIt.PopupOptionsPane.Display.DisplayPackages=Display package name? (Java files only)
 options.OpenIt.PopupOptionsPane.Display.DisplayExtensions=Display file extensions?
 options.OpenIt.PopupOptionsPane.Display.DisplayDirectory=Display directory where file exists?
 options.OpenIt.PopupOptionsPane.Display.DisplayIcons=Display file type icons?
 options.OpenIt.PopupOptionsPane.Display.DisplaySize=Display file size?
+options.OpenIt.PopupOptionsPane.JavaFileDisplay.title=Java File List Display
+options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayPackages=Display package name?
+options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayDirectory=Display directory where file exists?
 
 #
 # jEdit 4.2 Properties
@@ -91,7 +98,7 @@ plugin.org.etheridge.openit.OpenItPlugin.menu=openit.find-file-in-source-path
 # option panels
 plugin.org.etheridge.openit.OpenItPlugin.option-group=sourcePathOptionsPane \
   popupOptionsPane
-options.sourcePathOptionsPane.label=SourcePath Options
+options.sourcePathOptionsPane.label=Search Path Options
 options.sourcePathOptionsPane.code=new org.etheridge.openit.options.SourcePathOptionsPane();
 options.popupOptionsPane.code=new org.etheridge.openit.options.PopupOptionsPane();
 options.popupOptionsPane.label=Popup Window Options

@@ -24,6 +24,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 
@@ -41,11 +43,13 @@ public class PopupOptionsPane extends AbstractOptionPane
   private JCheckBox mCaseSensitiveCheckBox;
   
   // display gui components
-  private JCheckBox mDisplayPackagesCheckBox;
   private JCheckBox mDisplayDirectoriesCheckBox;
   private JCheckBox mDisplayExtensionsCheckBox;
   private JCheckBox mDisplayIconsCheckBox;
   private JCheckBox mDisplaySizeCheckBox;
+  
+  private JCheckBox mJavaFileDisplayPackagesCheckBox;
+  private JCheckBox mJavaFileDisplayDirectoriesCheckBox;
   
   public PopupOptionsPane()
   {
@@ -63,7 +67,7 @@ public class PopupOptionsPane extends AbstractOptionPane
     JPanel placerPanel = new JPanel(new BorderLayout());
     placerPanel.add(topPlacerPanel, BorderLayout.NORTH);
     placerPanel.add(createDisplayOptionsPanel(), BorderLayout.CENTER);
-      
+    placerPanel.add(createJavaFileOptionsPanel(), BorderLayout.SOUTH);
     add(placerPanel, BorderLayout.NORTH);
 	}
     
@@ -106,15 +110,11 @@ public class PopupOptionsPane extends AbstractOptionPane
   
   private JPanel createDisplayOptionsPanel()
   {
-    JPanel displayOptionsPanel = new JPanel(new GridLayout(5,1));
+    JPanel displayOptionsPanel = new JPanel(new GridLayout(4,1));
     displayOptionsPanel.setBorder(BorderFactory.createCompoundBorder
       (BorderFactory.createTitledBorder(jEdit.getProperty("options.OpenIt.PopupOptionsPane.Display.title")), 
        BorderFactory.createEmptyBorder(6,6,6,6)));
      
-    mDisplayPackagesCheckBox = new JCheckBox(jEdit.getProperty("options.OpenIt.PopupOptionsPane.Display.DisplayPackages"));
-    mDisplayPackagesCheckBox.setSelected(jEdit.getBooleanProperty(OpenItProperties.DISPLAY_PACKAGES, true));
-    displayOptionsPanel.add(mDisplayPackagesCheckBox);
-    
     mDisplayDirectoriesCheckBox = new JCheckBox(jEdit.getProperty("options.OpenIt.PopupOptionsPane.Display.DisplayDirectory"));
     mDisplayDirectoriesCheckBox.setSelected(jEdit.getBooleanProperty(OpenItProperties.DISPLAY_DIRECTORIES, false));
     displayOptionsPanel.add(mDisplayDirectoriesCheckBox);
@@ -133,16 +133,35 @@ public class PopupOptionsPane extends AbstractOptionPane
     
     return displayOptionsPanel;
   }
+  
+  private JPanel createJavaFileOptionsPanel()
+  {
+    JPanel javaFileOptionsPanel = new JPanel(new GridLayout(2,1));
+    javaFileOptionsPanel.setBorder(BorderFactory.createCompoundBorder
+      (BorderFactory.createTitledBorder(jEdit.getProperty("options.OpenIt.PopupOptionsPane.JavaFileDisplay.title")), 
+       BorderFactory.createEmptyBorder(6,6,6,6)));
+     
+    mJavaFileDisplayPackagesCheckBox = new JCheckBox(jEdit.getProperty("options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayPackages"));
+    mJavaFileDisplayPackagesCheckBox.setSelected(jEdit.getBooleanProperty(OpenItProperties.JAVA_FILE_DISPLAY_PACKAGES, true));
+    javaFileOptionsPanel.add(mJavaFileDisplayPackagesCheckBox);
     
+    mJavaFileDisplayDirectoriesCheckBox = new JCheckBox(jEdit.getProperty("options.OpenIt.PopupOptionsPane.JavaFileDisplay.DisplayDirectory"));
+    mJavaFileDisplayDirectoriesCheckBox.setSelected(jEdit.getBooleanProperty(OpenItProperties.JAVA_FILE_DISPLAY_DIRECTORIES, false));
+    javaFileOptionsPanel.add(mJavaFileDisplayDirectoriesCheckBox);
+   
+    return javaFileOptionsPanel;
+  }
+ 
   private void setProperties()
   {
     jEdit.setBooleanProperty(OpenItProperties.POP_UP_CLEAN_ON_VISIBLE, mClearWindowCheckBox.isSelected());
     jEdit.setBooleanProperty(OpenItProperties.POP_UP_CASE_SENSITIVE_FILE_MATCHING, mCaseSensitiveCheckBox.isSelected());
-    jEdit.setBooleanProperty(OpenItProperties.DISPLAY_PACKAGES, mDisplayPackagesCheckBox.isSelected());
     jEdit.setBooleanProperty(OpenItProperties.DISPLAY_DIRECTORIES, mDisplayDirectoriesCheckBox.isSelected());
     jEdit.setBooleanProperty(OpenItProperties.DISPLAY_EXTENSIONS, mDisplayExtensionsCheckBox.isSelected());
     jEdit.setBooleanProperty(OpenItProperties.DISPLAY_ICONS, mDisplayIconsCheckBox.isSelected());
     jEdit.setBooleanProperty(OpenItProperties.DISPLAY_SIZE, mDisplaySizeCheckBox.isSelected());
+    jEdit.setBooleanProperty(OpenItProperties.JAVA_FILE_DISPLAY_PACKAGES, mJavaFileDisplayPackagesCheckBox.isSelected());
+    jEdit.setBooleanProperty(OpenItProperties.JAVA_FILE_DISPLAY_DIRECTORIES, mJavaFileDisplayDirectoriesCheckBox.isSelected());
   }
 
 }
