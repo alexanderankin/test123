@@ -27,6 +27,16 @@ import javax.swing.*;
 import java.util.*;
 //}}}
 
+/**
+ * A code completion instance.<p>
+ *
+ * This is a wrapper around a collection of possible completions, with callbacks
+ * for inserting and displaying the completions in a popup menu.
+ *
+ * @author Slava Pestov
+ * @version $Id$
+ * @since SideKick 0.3
+ */
 public abstract class SideKickCompletion
 {
 	public int size()

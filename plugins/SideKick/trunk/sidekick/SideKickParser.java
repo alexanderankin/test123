@@ -122,19 +122,6 @@ public abstract class SideKickParser
 		return false;
 	} //}}}
 
-	//{{{ getDelayCompletionTriggers() method
-	/**
-	 * Returns a list of characters which trigger completion if they
-	 * are followed by a short period of inactivity.
-	 *
-	 * Returns null by default.
-	 *
-	 */
-	public String getDelayCompletionTriggers()
-	{
-		return null;
-	} //}}}
-
 	//{{{ getInstantCompletionTriggers() method
 	/**
 	 * Returns a list of characters which trigger completion immediately.

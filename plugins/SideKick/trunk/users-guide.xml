@@ -303,6 +303,8 @@ mode.velocity.sidekick.parser=html</programlisting>
    <listitem><para>Updated for jEdit 4.2 API changes.</para></listitem>
    <listitem><para>Added <function>getParseTriggers()</function> method
    to <classname>SideKickParser</classname> class.</para></listitem>
+   <listitem><para>Added <function>getErrorSource()</function> method
+   to <classname>SideKickPlugin</classname> class.</para></listitem>
    <listitem><para>Cleaned up and debugged completion code.</para></listitem>
   </itemizedlist>
   </listitem>

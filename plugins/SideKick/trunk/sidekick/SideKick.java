@@ -44,7 +44,6 @@ class SideKick implements EBComponent
 		this.view = view;
 
 		errorSource = new DefaultErrorSource("SideKick");
-		ErrorSource.registerErrorSource(errorSource);
 
 		bufferHandler = new BufferChangeHandler();
 
@@ -61,11 +60,7 @@ class SideKick implements EBComponent
 		Buffer buffer = view.getBuffer();
 
 		if(parser != null)
-		{
 			addBufferChangeListener(buffer);
-			SideKickBindings.initBindings(parser,view);
-			parser.activate(view);
-		}
 
 		if(buffer.getBooleanProperty(
 			"sidekick.buffer-change-parse")
@@ -106,6 +101,9 @@ class SideKick implements EBComponent
 			{
 				//SideKickParsedData.setParsedData(view,null);
 
+				ErrorSource.unregisterErrorSource(errorSource);
+				errorSource.clear();
+
 				//{{{ check for unknown file
 				if(parser == null)
 				{
@@ -124,8 +122,6 @@ class SideKick implements EBComponent
 					sendUpdate();
 				} //}}}
 
-				errorSource.clear();
-
 				SideKickParsedData[] data = new SideKickParsedData[1];
 
 				SideKickPlugin.addWorkRequest(new ParseRequest(
@@ -139,23 +135,29 @@ class SideKick implements EBComponent
 	//{{{ dispose() method
 	void dispose()
 	{
-		errorSource.clear();
 		ErrorSource.unregisterErrorSource(errorSource);
+		errorSource.clear();
 
 		EditBus.removeFromBus(this);
 
 		removeBufferChangeListener(buffer);
 	} //}}}
 
+	//{{{ getErrorSource() method
+	DefaultErrorSource getErrorSource()
+	{
+		return errorSource;
+	} //}}}
+
+	//{{{ getParser() method
+	SideKickParser getParser()
+	{
+		return parser;
+	} //}}}
+
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
-		//{{{ PropertiesChanged
-		if(msg instanceof PropertiesChanged)
-		{
-			if(parser != null)
-				SideKickBindings.initBindings(parser,view);
-		} //}}}
 		//{{{ BufferUpdate
 		if(msg instanceof BufferUpdate)
 		{
@@ -183,7 +185,6 @@ class SideKick implements EBComponent
 				if(parser != null)
 				{
 					addBufferChangeListener(buffer);
-					SideKickBindings.initBindings(parser,view);
 					parser.activate(view);
 				}
 				else
@@ -203,6 +204,7 @@ class SideKick implements EBComponent
 			}
 			else if(bmsg.getWhat() == BufferUpdate.CLOSED)
 			{
+				ErrorSource.unregisterErrorSource(errorSource);
 				errorSource.clear();
 			}
 		} //}}}
@@ -234,7 +236,6 @@ class SideKick implements EBComponent
 					if(parser != null)
 					{
 						addBufferChangeListener(buffer);
-						SideKickBindings.initBindings(parser,view);
 						parser.activate(view);
 					}
 
@@ -266,7 +267,6 @@ class SideKick implements EBComponent
 				if(parser != null)
 				{
 					addBufferChangeListener(buffer);
-					SideKickBindings.initBindings(parser,view);
 					parser.activate(view);
 				}
 
@@ -341,6 +341,7 @@ class SideKick implements EBComponent
 	//{{{ showNotParsedMessage() method
 	private void showNotParsedMessage()
 	{
+		ErrorSource.unregisterErrorSource(errorSource);
 		errorSource.clear();
 
 		buffer = view.getBuffer();
@@ -420,6 +421,8 @@ class SideKick implements EBComponent
 		public void run()
 		{
 			int errorCount = errorSource.getErrorCount();
+			if(errorCount != 0)
+				ErrorSource.registerErrorSource(errorSource);
 
 			if(showParsingMessage || errorCount != 0)
 			{
@@ -430,16 +433,16 @@ class SideKick implements EBComponent
 					"sidekick.parsing-complete",pp));
 			}
 
-			View[] views = jEdit.getViews();
-			for(int i = 0; i < views.length; i++)
+			buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data[0]);
+			if(buffer.getProperty("folding").equals("sidekick"))
+				buffer.invalidateCachedFoldLevels();
+
+			View _view = jEdit.getFirstView();
+			while(_view != null)
 			{
-				if(views[i].getBuffer() == buffer)
-				{
-					SideKickParsedData.setParsedData(view,data[0]);
-					buffer.setProperty(SideKickPlugin.PARSED_DATA_PROPERTY,data[0]);
-					if(buffer.getProperty("folding").equals("sidekick"))
-						buffer.invalidateCachedFoldLevels();
-				}
+				if(_view.getBuffer() == buffer)
+					SideKickParsedData.setParsedData(_view,data[0]);
+				_view = _view.getNext();
 			}
 
 			sendUpdate();

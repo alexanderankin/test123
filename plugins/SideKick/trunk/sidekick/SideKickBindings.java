@@ -22,132 +22,38 @@
 
 package sidekick;
 
-import org.gjt.sp.jedit.*;
-import java.util.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.Component;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
 
 /**
  * Manages our key bindings.
  */
-class SideKickBindings
+class SideKickBindings extends KeyAdapter
 {
-	//{{{ initBindings() method
-	static void initBindings(SideKickParser parser, View view)
+	//{{{ keyTyped() method
+	public void keyTyped(KeyEvent evt)
 	{
-		String parseTriggerKeys = parser.getParseTriggers();
-		if(parseTriggerKeys != null)
-		{
-			for(int i = 0; i < parseTriggerKeys.length(); i++)
-			{
-				char ch = parseTriggerKeys.charAt(i);
-				addBinding(ch);
-			}
-		}
-
-		if(!parser.supportsCompletion())
+		char ch = evt.getKeyChar();
+		if(ch == '\b')
 			return;
 
-		String delayPopupTriggerKeys = parser
-			.getDelayCompletionTriggers();
-		if(delayPopupTriggerKeys != null)
+		View view = GUIUtilities.getView((Component)evt.getSource());
+		SideKickParser parser = SideKickPlugin.getParserForView(view);
+
+		if(parser != null && parser.supportsCompletion())
 		{
-			for(int i = 0; i < delayPopupTriggerKeys.length(); i++)
-			{
-				char ch = delayPopupTriggerKeys.charAt(i);
-				addBinding(ch);
-			}
-		}
+			String parseKeys = parser.getParseTriggers();
+			if(parseKeys != null && parseKeys.indexOf(ch) != -1)
+				SideKickPlugin.parse(view,false);
 
-		String instantPopupTriggerKeys = parser
-			.getInstantCompletionTriggers();
-		if(instantPopupTriggerKeys != null)
-		{
-			for(int i = 0; i < instantPopupTriggerKeys.length(); i++)
-			{
-				char ch = instantPopupTriggerKeys.charAt(i);
-				addBinding(ch);
-			}
-		}
-	} //}}}
-
-	//{{{ removeBindings() method
-	/**
-	 * Called on plugin unload to remove bindings from input handler.
-	 */
-	static void removeBindings()
-	{
-		Iterator iter = bindingSet.iterator();
-		while(iter.hasNext())
-		{
-			jEdit.getInputHandler().removeKeyBinding(
-				(String)iter.next());
-		}
-	} //}}}
-
-	//{{{ Private members
-	private static Set bindingSet = new TreeSet(new ArrayList());
-
-	//{{{ addBinding() method
-	private static void addBinding(char ch)
-	{
-		String str = String.valueOf(ch);
-		bindingSet.add(str);
-		jEdit.getInputHandler().addKeyBinding(str,
-			new KeyTypedAction(ch));
-	} //}}}
-
-	//}}}
-
-	//{{{ KeyTypedAction class
-	static class KeyTypedAction extends EditAction
-	{
-		private char ch;
-
-		KeyTypedAction(char ch)
-		{
-			super("-sidekick-key-typed-" + ch);
-			this.ch = ch;
-		}
-
-		public boolean noRecord()
-		{
-			return true;
-		}
-
-		public void invoke(View view)
-		{
-			Macros.Recorder recorder = view.getMacroRecorder();
-			if(recorder != null)
-				recorder.record(1,ch);
-			view.getTextArea().userInput(ch);
-
-			Buffer buffer = view.getBuffer();
-			SideKickParser parser = SideKickPlugin
-				.getParserForBuffer(buffer);
-			if(parser != null)
-			{
-				String str = parser.getParseTriggers();
-				if(str != null && str.indexOf(ch) != -1)
-				{
-					SideKickPlugin.parse(view,false);
-				}
-
-				str = parser.getInstantCompletionTriggers();
-				if(str != null && str.indexOf(ch) != -1)
-				{
-					SideKickActions.keyComplete(view);
-				}
-
-				str = parser.getDelayCompletionTriggers();
-				if(str != null && str.indexOf(ch) != -1)
-				{
-					SideKickActions.keyCompleteWithDelay(view);
-				}
-			}
-		}
-
-		public String getCode()
-		{
-			return null;
+			String instantKeys = parser.getInstantCompletionTriggers();
+			if(instantKeys != null && instantKeys.indexOf(ch) != -1)
+				SideKickActions.keyComplete(view);
+			else
+				SideKickActions.keyCompleteWithDelay(view);
 		}
 	} //}}}
 }
