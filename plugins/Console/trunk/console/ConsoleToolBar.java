@@ -34,9 +34,8 @@ class ConsoleToolBar extends JToolBar
 
 		this.view = view;
 
-		add(BorderLayout.WEST,shells = new JComboBox(EditBus
-			.getNamedList(Shell.SHELLS_LIST)));
-		shells.setSelectedItem(ConsolePlugin.CONSOLE_SHELL);
+		add(BorderLayout.WEST,shells = new JComboBox(Shell.getShells()));
+		shells.setSelectedItem(ConsolePlugin.SYSTEM_SHELL);
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());

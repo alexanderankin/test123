@@ -37,8 +37,10 @@ class BeanShell extends Shell
 		console.printInfo(jEdit.getProperty("console.beanshell.info"));
 	}
 
-	public void execute(View view, String command, Console console)
+	public void execute(Console console, String command)
 	{
+		View view = console.getView();
+
 		NameSpace ns = org.gjt.sp.jedit.BeanShell.getNameSpace();
 		try
 		{
@@ -55,6 +57,10 @@ class BeanShell extends Shell
 			// can't do anything about it.
 			Log.log(Log.ERROR,this,e);
 		}
+	}
+
+	public void stop(Console console)
+	{
 	}
 
 	public boolean waitFor()

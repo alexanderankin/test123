@@ -1,48 +1,46 @@
-- error parsing
-- move default shell stuff to console.consoleshell
-- console.msg package for messages sent when processes start and stop
-- %ps command invokes Plugins->Console->Process Manager, a graphical display
-  of all running procs, with kill option, etc. a click will go to the console
-  where it is foreground, if bg, open new console?
-- process manager dockable too!
-- exit status, waitFor() support
+- cvs remove DefaultShell, DefaultShellBuiltIns, ProcessManager
+- cvs add SystemShell
+- after jEdit 4.0 is released, multiple consoles, and multiple processes, per view
+- SystemShell.waitFor()
 - commando:
   - ~/.jedit/console/commando/openjade_PDF.xml
     <recipe>
      <caption label="Foo" />
      <toggle name="xml" label="XML" />
      <choice name="foo" label="What's my name:">
-      <option name="ar" label="Bobic" />
+      <option name="ar" label="Bobic">
+       ... widgets only enabled if option selected ...
+      </option>
      </choice>
      <entry name="dsl" label="Stylesheet" />
-     <command>
-      if(xml)
-       args.addElement("/usr/local/share/OpenSP/xml.dcl");
-      if(foo.equals("ar"))
-       ...
-     </command>
-
-     <command confirm="true|false">
+     <toggle_entry ... />
+     <command confirm="true|false" shell="<foo>">
       The next command
      </command>
 
      ... after each command, show confirm dialog box with exit status of
          last command ...
+     ... always confirm if exit status is bad ...
     </recipe>
   - default values are buffer-local properties
   - some loaded from JAR:
     - perl
     - javac
     - java
+    - all tools shipped with JDK
     - jikes
     - jmk
     - make
     - openjade HTML
     - openjade PDF
-  - ConsoleProcess: support to run multiple plugins in a row
-  - console shell: @<cmd> opens it in commando
-- button 'output to buffer'
+  - use a commando thread to run multiple commands in a row
+  - utility methods in console.bsh
 - aliases option pane
+- %alias, %unalias built-ins
 - add tips of the day
-- documentation
-
+- documentation generated with docbook
+- error list 1.1:
+  - better icons
+  - tree
+  - file names in bold
+  - each branch shows number of warnings, errors

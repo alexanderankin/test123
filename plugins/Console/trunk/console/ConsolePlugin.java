@@ -1,6 +1,6 @@
 /*
  * ConsolePlugin.java - Console plugin
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,10 +20,7 @@
 package console;
 
 import gnu.regexp.REException;
-import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.io.*;
-import java.util.Hashtable;
 import java.util.Vector;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
@@ -32,19 +29,16 @@ import org.gjt.sp.util.Log;
 
 public class ConsolePlugin extends EBPlugin
 {
-	public static final Shell CONSOLE_SHELL = new DefaultShell();
+	public static final Shell SYSTEM_SHELL = new SystemShell();
 	public static final Shell BEAN_SHELL = new BeanShell();
 
 	public void start()
 	{
-		// initialize console shell
-		errorSource = new DefaultErrorSource("console");
-		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
-		EditBus.addToBus(errorSource);
-		EditBus.addToNamedList(Shell.SHELLS_LIST,CONSOLE_SHELL);
-		EditBus.addToNamedList(Shell.SHELLS_LIST,BEAN_SHELL);
+		// register shells
+		Shell.registerShell(SYSTEM_SHELL);
+		Shell.registerShell(BEAN_SHELL);
 
-		// initialize console GUI
+		// register dockable window
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,"console");
 
 		// load script with useful runCommandInConsole() method
@@ -53,14 +47,15 @@ public class ConsolePlugin extends EBPlugin
 			getClass().getResourceAsStream(
 			"/console/console.bsh")));
 
-		// console.BeanShell class already exists
+		// have to write org.gjt.sp.jedit.BeanShell otherwise javac
+		// will think we want console.BeanShell class 
 		org.gjt.sp.jedit.BeanShell.runScript(null,"console.bsh",
 			in,false,false);
 	}
 
 	public void createMenuItems(Vector menuItems)
 	{
-		menuItems.addElement(GUIUtilities.loadMenuItem("console"));
+		menuItems.addElement(GUIUtilities.loadMenu("console-menu"));
 	}
 
 	public void createOptionPanes(OptionsDialog dialog)
@@ -97,19 +92,8 @@ public class ConsolePlugin extends EBPlugin
 	}
 
 	// package-private members
-
-	/** Error matching stuff */
-	static void addError(int type, String file, int line, String message)
-	{
-		errorSource.addError(type,file,line,0,0,message);
-	}
-
-	static void clearErrors()
-	{
-		errorSource.clear();
-	}
-
-	static synchronized int parseLine(String text, String directory)
+	static synchronized int parseLine(String text, String directory,
+		DefaultErrorSource errorSource)
 	{
 		if(errorMatchers == null)
 			loadMatchers();
@@ -117,9 +101,9 @@ public class ConsolePlugin extends EBPlugin
 		for(int i = 0; i < errorMatchers.length; i++)
 		{
 			ErrorMatcher m = errorMatchers[i];
-			int result = m.match(text,directory);
-			if(result != -1)
-				return result;
+			int type = m.match(text,directory,errorSource);
+			if(type != -1)
+				return type;
 		}
 
 		return -1;
@@ -158,6 +142,5 @@ public class ConsolePlugin extends EBPlugin
 	}
 
 	// private members
-	private static DefaultErrorSource errorSource;
 	private static ErrorMatcher[] errorMatchers;
 }

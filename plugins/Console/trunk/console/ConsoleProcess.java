@@ -26,34 +26,57 @@ import org.gjt.sp.util.Log;
 
 class ConsoleProcess
 {
-	int pid;
-	String command;
-
-	ConsoleProcess(String currentDirectory, Vector args)
+	ConsoleProcess(Console console, Vector args, boolean foreground)
 	{
-		pid = PID_COUNTER++;
-		this.currentDirectory = currentDirectory;
+		SystemShell.ConsoleState consoleState
+			= SystemShell.getConsoleState(console);
+
 		this.args = args;
-		command = (String)args.elementAt(0);
-	}
+		this.currentDirectory = consoleState.currentDirectory;
 
-	void start(Console console)
-	{
+		if(foreground)
+		{
+			console.getErrorSource().clear();
+
+			this.console = console;
+			this.consoleState = consoleState;
+
+			ConsoleProcess runningProc = consoleState.process;
+			if(runningProc != null)
+				runningProc.stop();
+
+			consoleState.process = this;
+		}
+
 		try
 		{
-			process = ProcessManager.exec(currentDirectory,args);
+			process = SystemShell.exec(currentDirectory,args);
 			stdout = new StreamThread(process.getInputStream());
 			stderr = new StreamThread(process.getErrorStream());
+			stdout.start();
+			stderr.start();
 		}
 		catch(Exception e)
 		{
 			String[] pp = { e.toString() };
 			console.printError(jEdit.getProperty("console.shell.error",pp));
-			ProcessManager.destroyProcess(this);
+			stop();
 		}
 	}
 
-	synchronized void stop()
+	void detach()
+	{
+		if(console != null)
+		{
+			Object[] pp = { args.elementAt(0) };
+			console.printError(jEdit.getProperty("console.shell.detached",pp));
+		}
+
+		consoleState = null;
+		console = null;
+	}
+
+	void stop()
 	{
 		if(process != null)
 		{
@@ -62,50 +85,26 @@ class ConsoleProcess
 			stdout.stop();
 			stderr.stop();
 
-			if(viewState != null)
-				viewState.setForegroundProcess(null);
+			if(console != null)
+			{
+				Object[] pp = { args.elementAt(0) };
+				console.printError(jEdit.getProperty("console.shell.killed",pp));
+			}
 		}
-	}
 
-	synchronized ProcessManager.ViewState getViewState()
-	{
-		return viewState;
-	}
-
-	synchronized void setViewState(ProcessManager.ViewState viewState)
-	{
-		this.viewState = viewState;
+		if(consoleState != null)
+			consoleState.process = null;
 	}
 
 	// private members
-	private static int PID_COUNTER = 1;
-	private ProcessManager.ViewState viewState;
+	private SystemShell.ConsoleState consoleState;
 	private String currentDirectory;
+	private Console console;
 	private Vector args;
 	private Process process;
 	private StreamThread stdout;
 	private StreamThread stderr;
 	private int threadDoneCount;
-
-	private synchronized void parseLine(String line)
-	{
-		if(viewState != null)
-			viewState.console.printPlain(line);
-
-		/* int type = ConsolePlugin.parseLine(line,dir);
-		switch(type)
-		{
-		case ErrorSource.ERROR:
-			console.printError(line);
-			break;
-		case ErrorSource.WARNING:
-			console.printWarning(line);
-			break;
-		default:
-			console.printPlain(line);
-			break;
-		} */
-	}
 
 	private synchronized void threadDone()
 	{
@@ -119,28 +118,28 @@ class ConsoleProcess
 			}
 			catch(InterruptedException e)
 			{
-				Log.log(Log.ERROR,this,"Yo Flav, what is this?");
+				Log.log(Log.ERROR,this,e);
 				return;
 			}
 
-			Object[] args = { command, new Integer(exitCode) };
-
-			String msg = jEdit.getProperty("console.shell.exited",args);
-
-			if(viewState != null)
+			if(console != null)
 			{
+				Object[] pp = { args.elementAt(0), new Integer(exitCode) };
+
+				String msg = jEdit.getProperty("console.shell.exited",pp);
+
 				if(exitCode == 0)
-					viewState.console.printInfo(msg);
+					console.printInfo(msg);
 				else
-					viewState.console.printError(msg);
+					console.printError(msg);
 			}
 
 			process = null;
 		}
 
-		ProcessManager.destroyProcess(this);
+		if(consoleState != null)
+			consoleState.process = null;
 	}
-
 
 	class StreamThread extends Thread
 	{
@@ -148,9 +147,8 @@ class ConsoleProcess
 
 		StreamThread(InputStream inputStream)
 		{
-			setName(StreamThread.class + "[" + command + "]");
+			setName("" + StreamThread.class + args);
 			this.inputStream = inputStream;
-			start();
 		}
 
 		public void run()
@@ -163,19 +161,21 @@ class ConsoleProcess
 				String line;
 				while((line = in.readLine()) != null)
 				{
-					parseLine(line);
+					if(console != null)
+					{
+						console.printAndParseError(line,
+							currentDirectory);
+					}
 				}
 				in.close();
 			}
 			catch(Exception e)
 			{
-				synchronized(ConsoleProcess.this)
+				if(console != null)
 				{
-					if(viewState != null)
-					{
-						String[] args = { e.toString() };
-						viewState.console.printError(jEdit.getProperty("console.shell.error",args));
-					}
+					String[] args = { e.toString() };
+					console.printError(jEdit.getProperty(
+						"console.shell.error",args));
 				}
 			}
 			finally

@@ -1,5 +1,5 @@
 /*
- * DefaultShell.java - Executes OS commands
+ * SystemShell.java - Executes OS commands
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -21,16 +21,16 @@ package console;
 
 import java.lang.reflect.*;
 import java.io.*;
-import java.util.Hashtable;
-import java.util.Vector;
+import java.util.*;
+import org.gjt.sp.jedit.gui.HelpViewer;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
-class DefaultShell extends Shell
+class SystemShell extends Shell
 {
-	public DefaultShell()
+	public SystemShell()
 	{
-		super("Console");
+		super("System");
 
 		aliases = new Hashtable();
 
@@ -64,26 +64,25 @@ class DefaultShell extends Shell
 		console.printInfo(jEdit.getProperty("console.shell.info"));
 	}
 
-	public void execute(View view, String command, Console console)
+	public void execute(Console console, String command)
 	{
 		Vector args = parse(command);
 		// will be null if the command is an empty string
 		if(args == null)
 			return;
 
-		args = preprocess(view,args);
+		args = preprocess(console.getView(),args);
 
 		String commandName = (String)args.elementAt(0);
 		if(commandName.charAt(0) == '%')
 		{
 			// a console built-in
-			DefaultShellBuiltIns.executeBuiltIn(view,
-				commandName.substring(1),args,console);
+			executeBuiltIn(console,commandName.substring(1),args);
 		}
 		else
 		{
 			boolean foreground;
-			// pass it to the process manager
+
 			if(args.elementAt(args.size() - 1).equals("&"))
 			{
 				// run in background
@@ -96,8 +95,18 @@ class DefaultShell extends Shell
 				foreground = true;
 			}
 
-			ProcessManager.createProcess(view,console,args,foreground);
+			new ConsoleProcess(console,args,foreground);
 		}
+	}
+
+	public void stop(Console console)
+	{
+		ConsoleState consoleState = getConsoleState(console);
+		ConsoleProcess process = consoleState.process;
+		if(process != null)
+			process.stop();
+		else
+			console.printError(jEdit.getProperty("console.shell.noproc"));
 	}
 
 	public synchronized boolean waitFor()
@@ -107,18 +116,95 @@ class DefaultShell extends Shell
 	}
 
 	// package-private members
-	static boolean DOS;
+	static void consoleOpened(Console console)
+	{
+		consoleStateMap.put(console,new ConsoleState());
+	}
+
+	static void consoleClosed(Console console)
+	{
+		ConsoleProcess process = getConsoleState(console).process;
+		if(process != null)
+			process.stop();
+
+		consoleStateMap.remove(console);
+	}
+
+	static ConsoleState getConsoleState(Console console)
+	{
+		return (ConsoleState)consoleStateMap.get(console);
+	}
+
+	static boolean cdCommandAvailable()
+	{
+		return java13exec != null;
+	}
+
+	static Process exec(String currentDirectory, Vector _args) throws Exception
+	{
+		String[] args = new String[_args.size()];
+		_args.copyInto(args);
+
+		String[] extensionsToTry;
+		if(DOS)
+			extensionsToTry = new String[] { ".cmd", ".exe", ".bat", ".com" };
+		else
+			extensionsToTry = new String[] { "" };
+
+		String commandName = args[0];
+
+		for(int i = 0; i < extensionsToTry.length; i++)
+		{
+			args[0] = commandName + extensionsToTry[i];
+
+			try
+			{
+				if(java13exec != null)
+				{
+					Object[] methodArgs = { args, null, new File(currentDirectory) };
+					return (Process)java13exec.invoke(null,methodArgs);
+				}
+				else
+				{
+					return Runtime.getRuntime().exec(args);
+				}
+			}
+			catch(Exception e)
+			{
+				if(i == extensionsToTry.length - 1)
+					throw e;
+			}
+		}
+
+		// can't happen
+		return null;
+	}
+
+	// private members
+	private static Hashtable consoleStateMap;
+	private static Method java13exec;
+	private static boolean DOS;
+	private static final char dosSlash = 127;
+	private Hashtable aliases;
 
 	static
 	{
 		String osName = System.getProperty("os.name");
 		DOS = (osName.indexOf("Windows") != -1 ||
 			osName.indexOf("OS/2") != -1);
-	}
 
-	// private members
-	private static final char dosSlash = 127;
-	private Hashtable aliases;
+		consoleStateMap = new Hashtable();
+
+		try
+		{
+			Class[] classes = { String[].class, String[].class, File.class };
+			java13exec = Runtime.class.getMethod("exec",classes);
+		}
+		catch(Exception e)
+		{
+			// use Java 1.1/1.2 code instead
+		}
+	}
 
 	/**
 	 * Convert a command into a vector of arguments.
@@ -301,5 +387,138 @@ loop:			for(;;)
 		}
 
 		return buf.toString();
+	}
+
+	private void executeBuiltIn(Console console, String name, Vector args)
+	{
+		if(name.equals("cd"))
+		{
+			if(!cdCommandAvailable())
+			{
+				console.printError(jEdit.getProperty("console.shell.cd.unsup"));
+				return;
+			}
+			else if(checkArgs("cd",args,2,console))
+			{
+				ConsoleState state = getConsoleState(console);
+
+				String newDir = (String)args.elementAt(1);
+				if(newDir.equals(".."))
+				{
+					newDir = MiscUtilities.getParentOfPath(
+						state.currentDirectory);
+				}
+				else
+				{
+					newDir = MiscUtilities.constructPath(
+						state.currentDirectory,newDir);
+				}
+
+				String[] pp = { newDir };
+				if(new File(newDir).exists())
+				{
+					state.currentDirectory = newDir;
+					console.printInfo(jEdit.getProperty(
+						"console.shell.cd.ok",pp));
+				}
+				else
+				{
+					console.printError(jEdit.getProperty(
+						"console.shell.cd.error",pp));
+				}
+			}
+		}
+		else if(name.equals("clear"))
+		{
+			if(checkArgs("clear",args,1,console))
+				console.clear();
+		}
+		else if(name.equals("detach"))
+		{
+			if(checkArgs("detach",args,1,console))
+			{
+				ConsoleState state = getConsoleState(console);
+				ConsoleProcess process = state.process;
+				if(process == null)
+				{
+					console.printError(jEdit.getProperty("console.shell.noproc"));
+					return;
+				}
+
+				process.detach();
+			}
+		}
+		else if(name.equals("echo"))
+		{
+			if(checkArgs("echo",args,-2,console))
+			{
+				for(int i = 1; i < args.size(); i++)
+				{
+					console.printPlain((String)args.elementAt(i));
+				}
+			}
+		}
+		else if(name.equals("help"))
+		{
+			if(checkArgs("help",args,1,console))
+			{
+				new HelpViewer(getClass().getResource("/console/Console.html")
+					.toString());
+			}
+		}
+		else if(name.equals("kill"))
+		{
+			if(checkArgs("kill",args,1,console))
+			{
+				stop(console);
+			}
+		}
+		else if(name.equals("pwd"))
+		{
+			if(checkArgs("pwd",args,1,console))
+			{
+				console.printPlain(getConsoleState(console)
+					.currentDirectory);
+			}
+		}
+		else if(name.equals("version"))
+		{
+			if(checkArgs("version",args,1,console))
+			{
+				console.printPlain(jEdit.getProperty(
+					"plugin.console.ConsolePlugin.version"));
+			}
+		}
+		else
+		{
+			String[] pp = { name };
+			console.printError(jEdit.getProperty("console.shell.unknown-builtin",pp));
+		}
+	}
+
+	// if count < 0, then at least -count arguments must be specified
+	// if count > 0, then exactly count arguments must be specified
+	private boolean checkArgs(String command, Vector args, int count,
+		Console console)
+	{
+		if(count < 0)
+		{
+			if(args.size() >= -count)
+				return true;
+		}
+		else if(count > 0)
+		{
+			if(args.size() == count)
+				return true;
+		}
+
+		console.printError(jEdit.getProperty("console.shell." + command + ".usage"));
+		return false;
+	}
+
+	static class ConsoleState
+	{
+		String currentDirectory = System.getProperty("user.dir");
+		ConsoleProcess process;
 	}
 }
