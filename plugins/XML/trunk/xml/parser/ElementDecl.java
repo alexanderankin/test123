@@ -127,7 +127,7 @@ public class ElementDecl
 
 		buf.append('"');
 
-		if(true /*html*/)
+		if(html)
 			buf.append(" html=\"true\"");
 
 		if(attributes.size() == 0)

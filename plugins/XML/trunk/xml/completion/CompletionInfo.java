@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001 Slava Pestov
+ * Copyright (C) 2001, 2002 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -156,11 +156,26 @@ public class CompletionInfo
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
+
+		buf.append("<element-list>\n\n");
+
 		for(int i = 0; i < elements.size(); i++)
 		{
 			buf.append(elements.get(i));
 			buf.append('\n');
 		}
+
+		buf.append("\n</element-list>\n\n<entity-list>\n\n");
+
+		buf.append("<!-- not implemented yet -->\n");
+		/* for(int i = 0; i < entities.size(); i++)
+		{
+			buf.append(entities.get(i));
+			buf.append('\n');
+		} */
+
+		buf.append("\n</entity-list>");
+
 		return buf.toString();
 	} //}}}
 
