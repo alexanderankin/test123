@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 
-<!-- This was based around Sun javac 1.3.1. -->
+<!-- This was based around jikes 1.10. -->
 
 <!DOCTYPE COMMANDO SYSTEM "commando.dtd">
 
@@ -15,11 +15,8 @@
 
 		<CAPTION LABEL="Paths">
 
-		<ENTRY LABEL="Boot class path" VARNAME="bootclasspath"/>
 		<ENTRY LABEL="Class path" VARNAME="classpath"
 			EVAL="System.getProperty(&quot;java.class.path&quot;);" />
-		<ENTRY LABEL="Source path" VARNAME="sourcepath" />
-		<ENTRY LABEL="Extension directory" VARNAME="extdirs" />
 		<ENTRY LABEL="Output directory" VARNAME="outputpath" />
 
 		</CAPTION>
@@ -30,54 +27,23 @@
 		<TOGGLE LABEL="Optimize" VARNAME="optimize" />
 		<TOGGLE LABEL="Show warnings" VARNAME="warn" DEFAULT="TRUE" />
 		<TOGGLE LABEL="Show deprecation" VARNAME="deprecation" DEFAULT="TRUE" />
+		<TOGGLE LABEL="Pedantic warnings" VARNAME="pedantic" />
+		<TOGGLE LABEL="Treat cautions as errors" VARNAME="cautions" />
 		<TOGGLE LABEL="Verbose compile messages" VARNAME="verbose" />
 		<ENTRY LABEL="Source file encoding" VARNAME="encoding"
 			EVAL="buffer.getProperty(Buffer.ENCODING);" />
-
-		<CHOICE LABEL="Target JDK" VARNAME="target">
-			<OPTION LABEL="1.1" VALUE="1.1" />
-			<OPTION LABEL="1.2" VALUE="1.2" />
-			<OPTION LABEL="1.3" VALUE="1.3" />
-			<OPTION LABEL="1.4" VALUE="1.4" />
-		</CHOICE>
 
 		</CAPTION>
 	</UI>
 
 	<COMMANDS>
 		<COMMAND SHELL="System" CONFIRM="FALSE">
-			buf = new StringBuffer();
-			buf.append(System.getProperty("java.home"));
-			buf.append(File.separator);
-			buf.append("bin");
-			buf.append(File.separator);
-			buf.append("javac");
-
-			if(!bootclasspath.equals(""))
-			{
-				buf.append(" -bootclasspath \"");
-				buf.append(bootclasspath);
-				buf.append('"');
-			}
+			buf = new StringBuffer("jikes +E");
 
 			if(!classpath.equals(""))
 			{
 				buf.append(" -classpath \"");
 				buf.append(classpath);
-				buf.append('"');
-			}
-
-			if(!sourcepath.equals(""))
-			{
-				buf.append(" -sourcepath \"");
-				buf.append(sourcepath);
-				buf.append('"');
-			}
-
-			if(!extdirs.equals(""))
-			{
-				buf.append(" -extdirs \"");
-				buf.append(extdirs);
 				buf.append('"');
 			}
 
@@ -100,6 +66,9 @@
 			if(deprecation)
 				buf.append(" -deprecation");
 
+			if(pedantic)
+				buf.append(" +P");
+
 			if(verbose)
 				buf.append(" -verbose");
 
@@ -107,12 +76,6 @@
 			{
 				buf.append(" -encoding ");
 				buf.append(encoding);
-			}
-
-			if(!target.equals("1.1"))
-			{
-				buf.append(" -target ");
-				buf.append(target);
 			}
 
 			buf.append(' ');

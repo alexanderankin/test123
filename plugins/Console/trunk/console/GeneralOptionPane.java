@@ -49,6 +49,30 @@ class GeneralOptionPane extends AbstractOptionPane
 		commandoToolBar.getModel().setSelected(jEdit.getBooleanProperty(
 			"commando.toolbar.enabled"));
 
+		/* Font */
+		String _fontFamily = jEdit.getProperty("console.font");
+		int _fontStyle;
+		try
+		{
+			_fontStyle = Integer.parseInt(jEdit.getProperty("console.fontstyle"));
+		}
+		catch(NumberFormatException nf)
+		{
+			_fontStyle = Font.PLAIN;
+		}
+		int _fontSize;
+		try
+		{
+			_fontSize = Integer.parseInt(jEdit.getProperty("console.fontsize"));
+		}
+		catch(NumberFormatException nf)
+		{
+			_fontSize = 12;
+		}
+		font = new FontSelector(new Font(_fontFamily,_fontStyle,_fontSize));
+
+		addComponent(jEdit.getProperty("options.console.general.font"),font);
+
 		addComponent(jEdit.getProperty("options.console.general.bgColor"),
 			bgColor = createColorButton("console.bgColor"));
 		addComponent(jEdit.getProperty("options.console.general.plainColor"),
@@ -67,6 +91,12 @@ class GeneralOptionPane extends AbstractOptionPane
 			consoleToolBar.getModel().isSelected());
 		jEdit.setBooleanProperty("commando.toolbar.enabled",
 			commandoToolBar.getModel().isSelected());
+
+		Font _font = font.getFont();
+		jEdit.setProperty("console.font",_font.getFamily());
+		jEdit.setProperty("console.fontsize",String.valueOf(_font.getSize()));
+		jEdit.setProperty("console.fontstyle",String.valueOf(_font.getStyle()));
+
 		jEdit.setProperty("console.bgColor",GUIUtilities
 			.getColorHexString(bgColor.getBackground()));
 		jEdit.setProperty("console.plainColor",GUIUtilities
@@ -82,6 +112,7 @@ class GeneralOptionPane extends AbstractOptionPane
 	// private members
 	private JCheckBox consoleToolBar;
 	private JCheckBox commandoToolBar;
+	private FontSelector font;
 	private JButton bgColor;
 	private JButton plainColor;
 	private JButton infoColor;

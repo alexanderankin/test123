@@ -328,6 +328,29 @@ implements DockableWindow, EBComponent, Output
 
 	private void propertiesChanged()
 	{
+		String family = jEdit.getProperty("console.font");
+		int size;
+		try
+		{
+			size = Integer.parseInt(jEdit.getProperty(
+				"console.fontsize"));
+		}
+		catch(NumberFormatException nf)
+		{
+			size = 12;
+		}
+		int style;
+		try
+		{
+			style = Integer.parseInt(jEdit.getProperty(
+				"console.fontstyle"));
+		}
+		catch(NumberFormatException nf)
+		{
+			style = Font.PLAIN;
+		}
+		output.setFont(new Font(family,style,size));
+
 		output.setBackground(GUIUtilities.parseColor(jEdit.getProperty(
 			"console.bgColor")));
 		output.setForeground(GUIUtilities.parseColor(jEdit.getProperty(
