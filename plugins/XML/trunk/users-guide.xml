@@ -52,9 +52,9 @@
 
  <itemizedlist>
   <listitem><para>On-the-fly validation of XML files</para></listitem>
+  <listitem><para>Tag and entity completion popups</para></listitem>
   <listitem><para>Display of the element tree in a dockable window</para></listitem>
   <listitem><para>Matching tag highlighting</para></listitem>
-  <listitem><para>Tag and entity completion popups</para></listitem>
   <listitem><para>One click insertion of tags and entities</para></listitem>
   <listitem><para>Graphical editing of tags and attributes</para></listitem>
   <listitem><para>A number of miscellaneous commands</para></listitem>
@@ -74,9 +74,10 @@
 <chapter id="validation"><title>Validation</title>
 
  <para>
-  No validation of any kind is performed for HTML files. XML files,
+  XML files
   are validated against their DTD or schema. If no DTD or schema can be loaded,
   only minimal error checking will be performed.
+  No validation of any kind is performed for HTML files.
  </para>
 
  <para>
@@ -156,9 +157,6 @@
   Catalog files must either be in OASIS OPEN or XML catalog format. These two formats
   are documented below.
  </para>
- <para>
-  XXX -- need public and system IDs here
- </para>
  <itemizedlist>
   <listitem><para>DTDs declared by jEdit: <filename>actions.dtd</filename>,
   <filename>catalog.dtd</filename>,
@@ -169,9 +167,17 @@
   <listitem><para>A few plugin DTDs: <filename>commando.dtd</filename> (Console
   plugin), <filename>sqlServerType.dtd</filename> (SQL plugin).</para></listitem>
   <listitem><para>XHTML 1.0 and XHTML 1.1 DTDs, referenced using one of the
-  usual public or system IDs.</para></listitem>
-  <listitem><para>DocBook 4.1.2 DTDs, referenced using one of the usual public or
-  system IDs.</para></listitem>
+  following public IDs:</para>
+  <itemizedlist>
+  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Frameset//EN</literal></para></listitem>
+  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Strict//EN</literal></para></listitem>
+  <listitem><para><literal>-//W3C//DTD XHTML 1.0 Transitional//EN</literal></para></listitem>
+  <listitem><para><literal>-//W3C//DTD XHTML 1.1//EN</literal></para></listitem>
+  </itemizedlist>
+  </listitem>
+  <listitem><para>DocBook 4.1.2 DTDs, referenced with the
+  <literal>-//OASIS//DTD DocBook XML V4.1.2//EN</literal> public ID.
+  </para></listitem>
  </itemizedlist>
  <para>
   If the DTD or schema cannot be located in the catalogs, the plugin will ask
@@ -179,7 +185,7 @@
   subdirectory of the jEdit settings directory.
  </para>
  <para>
-  The downloaded resource cache can be cleared using the
+  The download cache can be cleared using the
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Clear
   DTD Cache</guimenuitem> command.
  </para>
@@ -204,7 +210,7 @@
 
  <sect1 id="xml-catalog-format"><title>XML catalog format</title>
   <para>
-   Not yet written.
+   XXX Not yet written.
   </para>
  </sect1>
 
@@ -294,7 +300,8 @@
 
  <para>
   These features can be enabled, disabled and configured in the
-  <guibutton>XML</guibutton>&gt;<guibutton>General</guibutton> pane
+  <guibutton>SideKick</guibutton> and
+  <guibutton>XML</guibutton>&gt;<guibutton>General</guibutton> panes
   of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
   dialog box.
  </para>
@@ -387,7 +394,8 @@
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Split
   Tag</guimenuitem> splits the current tag at the cursor, and creates a new tag at the same
   level. This is useful when editing HTML, DocBook or similar documents, for inserting 
-  many &lt;p&gt; or &lt;para&gt; tags. This command tries
+  many <literal>&lt;p&gt;</literal> or <literal>&lt;para&gt;</literal> tags.
+  This command tries
   to match the current indenting style.
  </para>
 
@@ -444,7 +452,7 @@
   property file:
  </para>
 
- <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xml.XmlPlugin 0.9</programlisting>
+ <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xml.XmlPlugin 0.11</programlisting>
 
  <para>
   Note that you must replace <replaceable>n</replaceable> with the

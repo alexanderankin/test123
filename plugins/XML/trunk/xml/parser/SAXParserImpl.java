@@ -417,7 +417,22 @@ public class SAXParserImpl extends XmlParser
 		{
 			empty = true;
 
-			if(!buffer.getPath().equals(XmlPlugin.uriToFile(loc.getSystemId())))
+			String currentURI = XmlPlugin.uriToFile(loc.getSystemId());
+
+			// add all attributes with type "ID" to the ids vector
+			for(int i = 0; i < attrs.getLength(); i++)
+			{
+				if(attrs.getType(i).equals("ID")
+					|| attrs.getLocalName(i).equalsIgnoreCase("id"))
+				{
+					data.ids.add(new IDDecl(currentURI,
+						attrs.getValue(i),qName,
+						loc.getLineNumber() - 1,
+						loc.getColumnNumber() - 1));
+				}
+			}
+
+			if(!buffer.getPath().equals(currentURI))
 				return;
 
 			buffer.readLock();
@@ -448,14 +463,6 @@ public class SAXParserImpl extends XmlParser
 					data.root.insert(newNode,0);
 
 				currentNodeStack.push(newNode);
-
-				// add all attributes with type "ID" to the ids vector
-				for(int i = 0; i < attrs.getLength(); i++)
-				{
-					if(attrs.getType(i).equals("ID")
-						|| attrs.getLocalName(i).equalsIgnoreCase("id"))
-						data.ids.add(new IDDecl(attrs.getValue(i),qName,pos));
-				}
 			}
 			finally
 			{

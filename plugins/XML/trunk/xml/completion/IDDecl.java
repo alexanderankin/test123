@@ -22,16 +22,20 @@ import org.gjt.sp.jedit.MiscUtilities;
 
 public class IDDecl
 {
+	public String uri;
 	public String id;
 	public String element;
-	public Position declaringLocation;
+	public int line;
+	public int column;
 
 	//{{{ IDDecl constructor
-	public IDDecl(String id, String element, Position declaringLocation)
+	public IDDecl(String uri, String id, String element, int line, int column)
 	{
+		this.uri = uri;
 		this.id = id;
 		this.element = element;
-		this.declaringLocation = declaringLocation;
+		this.line = line;
+		this.column = column;
 	} //}}}
 
 	//{{{ toString() method

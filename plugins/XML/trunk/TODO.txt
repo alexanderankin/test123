@@ -1,12 +1,14 @@
 XML 0.11:
 
-- update docs
-- fix xerces 2.3 deprecation
-- ids in nested files
+- document xml.root property
+- xcatalog format
 - fatal errors with null uri
 
 before XML 1.0:
 
+- [catalog] fatal error... etc.
+- ids are kind of hackish -- use something similar to a hypersearch result
+- fix xerces 2.3 deprecation
 - if close complete off, / should not show a popup immediately
 - swing HTML parser should be replaced with something else
 - complete <foo / to <foo />
@@ -15,7 +17,6 @@ before XML 1.0:
 - html files before parsing complete -- don't show CDATA in popup
 - fix IBM JDK problem
 - misplaced closing tags break everything
-- documentation: XML catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
 - &, < or > will show up twice if a DTD defines it
 - xml insert: show CDATA, comment in list?
