@@ -173,15 +173,20 @@ public final class ProjectPersistenceManager {
 			out.write("</" + projHandler.getNodeName() + ">\n");
 		} else {
 			NodeHandler handler = (NodeHandler) handlerClasses.get(node.getClass());
-			handler.saveNode(node, out);
-			if (node.getAllowsChildren() && node.persistChildren()) {
-				out.write(">\n");
-				for (Enumeration e = node.children(); e.hasMoreElements(); ) {
-					saveNode((VPTNode)e.nextElement(), out);
+			if (handler != null) {
+				handler.saveNode(node, out);
+				if (node.getAllowsChildren() && node.persistChildren()) {
+					out.write(">\n");
+					for (Enumeration e = node.children(); e.hasMoreElements(); ) {
+						saveNode((VPTNode)e.nextElement(), out);
+					}
+					out.write("</" + handler.getNodeName() + ">\n");
+				} else {
+					out.write(" />\n");
 				}
-				out.write("</" + handler.getNodeName() + ">\n");
 			} else {
-				out.write(" />\n");
+				Log.log(Log.WARNING, ProjectPersistenceManager.class,
+					"No handler found to save node of type: " + node.getClass().getName());
 			}
 		}
 	} //}}}

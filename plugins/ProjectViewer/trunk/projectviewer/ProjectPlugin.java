@@ -134,7 +134,8 @@ public final class ProjectPlugin extends EBPlugin {
 		// check plugins that are already loaded
 		EditPlugin[] plugins = jEdit.getPlugins();
 		for (int i = 0; i < plugins.length; i++) {
-			if (!(plugins[i] instanceof EditPlugin.Deferred)) {
+			if (jEdit.getBooleanProperty("plugin.projectviewer." +
+					plugins[i].getClassName() + ".pv-extension")) {
 				// create a "fake" PluginUpdate message
 				PluginUpdate msg =
 					new PluginUpdate(plugins[i].getPluginJAR(),
@@ -193,7 +194,8 @@ public final class ProjectPlugin extends EBPlugin {
 
 	//{{{ -checkPluginUpdate(PluginUpdate) : void
 	private void checkPluginUpdate(PluginUpdate msg) {
-		if (msg.getWhat() == PluginUpdate.LOADED) {
+		if (msg.getWhat() == PluginUpdate.LOADED
+				|| msg.getWhat() == PluginUpdate.ACTIVATED) {
 			ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), null);
 			ProjectManager.getInstance().addProjectListeners(msg.getPluginJAR());
 			ProjectViewer.addToolbarActions(msg.getPluginJAR());
@@ -206,7 +208,7 @@ public final class ProjectPlugin extends EBPlugin {
 					ProjectViewer.addProjectViewerListeners(msg.getPluginJAR(), v[i]);
 				}
 			}
-		} else if (msg.getWhat() == PluginUpdate.UNLOADED && !msg.isExiting()) {
+		} else {
 			ProjectViewer.removeProjectViewerListeners(msg.getPluginJAR());
 			ProjectManager.getInstance().removeProjectListeners(msg.getPluginJAR());
 			ProjectViewer.removeToolbarActions(msg.getPluginJAR());
