@@ -565,7 +565,7 @@ public abstract class SystemShellBuiltIn
 	{
 		public int getMaxArguments()
 		{
-			return 1;
+			return 0;
 		}
 
 		public void execute(Console console, Output output, Vector args,
@@ -574,19 +574,9 @@ public abstract class SystemShellBuiltIn
 			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
 			Stack directoryStack = state.directoryStack;
 
-			String newDir;
-			if(args.size() == 0)
-				newDir = System.getProperty("user.home");
-			else
-			{
-				newDir = MiscUtilities.constructPath(
-					state.currentDirectory,
-					(String)args.elementAt(1));
-			}
+			directoryStack.push(state.currentDirectory);
 
-			directoryStack.push(newDir);
-
-			String[] pp = { newDir };
+			String[] pp = { state.currentDirectory };
 			console.print(null,jEdit.getProperty("console.shell.pushd.ok",pp));
 		}
 	}
