@@ -2,7 +2,7 @@
 
 plugin.templates.TemplatesPlugin.name=Templates
 plugin.templates.TemplatesPlugin.author=Steve Jakob, Calvin Yu
-plugin.templates.TemplatesPlugin.version=3.0.1
+plugin.templates.TemplatesPlugin.version=3.1.0
 plugin.templates.TemplatesPlugin.docs=docs/index.html
 
 # Dependencies
@@ -35,6 +35,7 @@ options.Templates.general.dir-warning-msg=NOTE: The Templates and Velocity\
  \ be interpreted as templates. The Templates directory may be a sub-directory\
  \ of the Velocity directory (but not the other way around).
 options.Templates.general.choose-btn-msg=Choose
+options.Templates.general.accelPassThru-msg=Try jEdit abbreviation if accelerator not found?\ 
 
 options.Templates.accelerators.label=Accelerators
 options.Templates.accelerators.input.accelerator.title=Enter Accelerator
