@@ -1,5 +1,5 @@
 /*
- * HTMLGutter.java
+ * HtmlGutter.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -23,7 +23,7 @@ package code2html.html;
 import org.gjt.sp.jedit.jEdit;
 
 
-public class HTMLGutter
+public class HtmlGutter
 {
     protected char gutterBorder     = ':';
     protected int  gutterBorderSize = 1;
@@ -36,12 +36,12 @@ public class HTMLGutter
     protected int highlightInterval;
 
 
-    public HTMLGutter() {
+    public HtmlGutter() {
         this(4);
     }
 
 
-    public HTMLGutter(int gutterSize) {
+    public HtmlGutter(int gutterSize) {
         this.gutterSize = gutterSize;
 
         StringBuffer buf = new StringBuffer();
