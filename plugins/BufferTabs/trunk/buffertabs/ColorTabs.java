@@ -51,7 +51,7 @@ public class ColorTabs
    private static final int DARKEN_LOWEST_COLOR = 0;
    private static final int DARKEN_HIGHEST_COLOR = 150;
    private static final int DARKEN_RANGE = DARKEN_HIGHEST_COLOR - DARKEN_LOWEST_COLOR;
-   private static final float darkRatio = ((float) DARKEN_RANGE / 254);
+   private static final float DARKEN_RATIO = ((float) DARKEN_RANGE / 254);
 
    private static final int lowestColor = 150;
    private static final int highestColor = 230;
@@ -96,9 +96,9 @@ public class ColorTabs
       int g = color.getGreen();
       int b = color.getBlue();
 
-      r = (int) (DARKEN_HIGHEST_COLOR - (r * darkRatio));
-      g = (int) (DARKEN_HIGHEST_COLOR - (g * darkRatio));
-      b = (int) (DARKEN_HIGHEST_COLOR - (b * darkRatio));
+      r = (int) (DARKEN_HIGHEST_COLOR - (r * DARKEN_RATIO));
+      g = (int) (DARKEN_HIGHEST_COLOR - (g * DARKEN_RATIO));
+      b = (int) (DARKEN_HIGHEST_COLOR - (b * DARKEN_RATIO));
 
       if (colorVariation)
       {
