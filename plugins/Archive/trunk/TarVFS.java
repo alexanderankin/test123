@@ -168,8 +168,8 @@ public class TarVFS extends ArchiveVFS {
             res = (
                 new VFS.DirectoryEntry(
                     entryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparatorChar + tarEntryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparatorChar + tarEntryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + tarEntryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + tarEntryName,
                     type,
                     size,
                     false
