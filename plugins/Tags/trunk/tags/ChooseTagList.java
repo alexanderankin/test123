@@ -36,59 +36,72 @@ import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 public class ChooseTagList extends JWindow {
   
   /***************************************************************************/
-	private View view_;
-  private JEditTextArea textArea_;
-  private Buffer buffer_;
-  private boolean newView_;
-  private Vector tagNames_;
-	private JList tagNamesList_;
+	private TagsParser parser_;
+  private View view_;
+  private boolean openNewView_;
+  private Vector tagIdentifiers_;
+	private JList tagIdentifierList_;
 
+  protected int choosenIndex_ = -1;
+  
   /***************************************************************************/
-	public ChooseTagList(View view, JEditTextArea textArea, Buffer buffer,
-                       boolean newView, Vector tagNames, Point location)	{
+	public ChooseTagList(TagsParser parser, View view, boolean openNewView)	{
 		
     super(view);
 
+    parser_ = parser;
 		view_ = view;
-    textArea_ = textArea;
-    buffer_ = buffer;
-    newView_ = newView;
-    tagNames_ = tagNames;
+    openNewView_ = openNewView;
     
     createComponents();
     setupComponents();
     placeComponents();
     
-    GUIUtilities.requestFocus(this,tagNamesList_);
+    GUIUtilities.requestFocus(this,tagIdentifierList_);
     
     pack();
-    setLocation(location);
+    setLocation();
    
     super.show();
 
     KeyHandler keyHandler = new KeyHandler();
 		addKeyListener(keyHandler);
 		getRootPane().addKeyListener(keyHandler);
-		tagNamesList_.addKeyListener(keyHandler);
-		view_.setKeyEventInterceptor(keyHandler);
+		tagIdentifierList_.addKeyListener(keyHandler);
+    if (view_ != null)
+      view_.setKeyEventInterceptor(keyHandler);
 	}
 
   /***************************************************************************/
   protected void createComponents() {
-    tagNamesList_ = new JList(tagNames_);
+    int size = parser_.getNumberOfFoundTags();
+    tagIdentifiers_ = new Vector(size);
+    for (int i = 0; i < size; i++)
+      tagIdentifiers_.addElement(parser_.getCollisionChooseString(i));
+    
+    tagIdentifierList_ = new JList(tagIdentifiers_);
 
   }
 
   /***************************************************************************/
   protected void setupComponents() {
-		tagNamesList_.setVisibleRowCount(Math.min(tagNames_.size(),8));
+		tagIdentifierList_.setVisibleRowCount(Math.min(tagIdentifiers_.size(),8));
 
-		tagNamesList_.addMouseListener(new MouseHandler());
-		tagNamesList_.setSelectedIndex(0);
-		tagNamesList_.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		tagIdentifierList_.addMouseListener(new MouseHandler());
+		tagIdentifierList_.setSelectedIndex(0);
+		tagIdentifierList_.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
-    String fontName = TagsPlugin.getOptionString("choose.Font");
-    String sizeString = TagsPlugin.getOptionString("choose.font-size");
+    
+    String fontName = null;
+    String sizeString = null;
+    if (view_ != null) {
+      fontName = TagsPlugin.getOptionString("choose.Font");
+      sizeString = TagsPlugin.getOptionString("choose.font-size");
+    }
+    else {
+      fontName = "Monospaced";
+    }
+    
     int size = 12;
     try { size = Integer.parseInt(sizeString); }
     catch (NumberFormatException nfe) {
@@ -98,14 +111,14 @@ public class ChooseTagList extends JWindow {
     Font font = new Font(fontName, Font.PLAIN, size);
     if (font == null)
       font = new Font("Monospaced", Font.PLAIN, size);
-    tagNamesList_.setFont(font);
+    tagIdentifierList_.setFont(font);
   }
   
   /***************************************************************************/
   protected void placeComponents() {
 		// stupid scrollbar policy is an attempt to work around
 		// bugs people have been seeing with IBM's JDK -- 7 Sep 2000
-		JScrollPane scroller = new JScrollPane(tagNamesList_,
+		JScrollPane scroller = new JScrollPane(tagIdentifierList_,
 			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
 			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     
@@ -113,15 +126,60 @@ public class ChooseTagList extends JWindow {
   }
   
   /***************************************************************************/
+  public void setLocation() {
+    if (view_ != null) {
+      JEditTextArea textArea = view_.getTextArea();
+    
+      int caretLine = textArea.getCaretLine();
+      int lineIdx = textArea.getCaretPosition() - // offsets from beg of file
+                    textArea.getLineStartOffset(caretLine);
+    
+      Point location = new Point(textArea.offsetToX(caretLine, lineIdx),
+                           textArea.getPainter().getFontMetrics().getHeight() *
+                           (textArea.getBuffer().physicalToVirtual(caretLine) - 
+                           textArea.getFirstLine() + 1));
+      SwingUtilities.convertPointToScreen(location, textArea.getPainter());
+    
+      // make sure it fits on screen
+      int width = getWidth();
+      int height = getHeight();
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      if (location.x + width > screenSize.width)
+        location.x = screenSize.width - width;
+      if (location.y + height > screenSize.height)
+        location.y = screenSize.height - height;
+    
+      setLocation(location);
+    }
+  }
+  
+  /***************************************************************************/
 	public void dispose()	{
-		view_.setKeyEventInterceptor(null);
+    if (view_ != null)
+      view_.setKeyEventInterceptor(null);
 		super.dispose();
 	}
 
   /***************************************************************************/
 	private void selected()	{
-    String selectedTagName = (String) tagNamesList_.getSelectedValue();
-    Tags.followTag(view_, textArea_, buffer_, newView_, selectedTagName);
+    String selectedTagName = (String) tagIdentifierList_.getSelectedValue();
+    
+    int numCollisionTags = parser_.getNumberOfFoundTags();
+    String tagIdentifier = null;
+    int index;
+    for (index = 0; index < numCollisionTags; index++) {
+      tagIdentifier = (String) tagIdentifiers_.elementAt(index);
+      if (selectedTagName.equals(tagIdentifier))
+        break;
+    }
+    tagIdentifier = null;
+    //Macros.message(view_, parser_.getTagLine(index));
+    
+    choosenIndex_ = index;
+    Tags.processTagLine(choosenIndex_, view_, openNewView_, parser_.getTag());
+    
+    //Tags.followTag(view_, view_.getTextArea(), view_.getBuffer(), openNewView_, 
+    //               selectedTagName);
 		dispose();
 	}
 
@@ -139,32 +197,32 @@ public class ChooseTagList extends JWindow {
           evt.consume();
           break;
         case KeyEvent.VK_UP:
-          if(getFocusOwner() == tagNamesList_)
+          if(getFocusOwner() == tagIdentifierList_)
             return;
 
-          int selected = tagNamesList_.getSelectedIndex();
+          int selected = tagIdentifierList_.getSelectedIndex();
           if(selected == 0)
             return;
 
           selected = selected - 1;
 	
-          tagNamesList_.setSelectedIndex(selected);
-          tagNamesList_.ensureIndexIsVisible(selected);
+          tagIdentifierList_.setSelectedIndex(selected);
+          tagIdentifierList_.ensureIndexIsVisible(selected);
 
           evt.consume();
           break;
         case KeyEvent.VK_DOWN:
-          if(getFocusOwner() == tagNamesList_)
+          if(getFocusOwner() == tagIdentifierList_)
             return;
 
-          selected = tagNamesList_.getSelectedIndex();
-          if(selected == tagNamesList_.getModel().getSize() - 1)
+          selected = tagIdentifierList_.getSelectedIndex();
+          if(selected == tagIdentifierList_.getModel().getSize() - 1)
             return;
 
           selected = selected + 1;
 
-          tagNamesList_.setSelectedIndex(selected);
-          tagNamesList_.ensureIndexIsVisible(selected);
+          tagIdentifierList_.setSelectedIndex(selected);
+          tagIdentifierList_.ensureIndexIsVisible(selected);
 
           evt.consume();
           break;
@@ -183,15 +241,16 @@ public class ChooseTagList extends JWindow {
 			else
 			{
 				dispose();
-				view_.processKeyEvent(evt);
+        if (view_ != null)
+          view_.processKeyEvent(evt);
 			}
 		}
 	}
 
   /***************************************************************************/
-	class MouseHandler extends MouseAdapter	{
+  class MouseHandler extends MouseAdapter	{
 		public void mouseClicked(MouseEvent evt) {
-			selected();
-		}
-	}
+      selected();
+    }
+  }
 }
