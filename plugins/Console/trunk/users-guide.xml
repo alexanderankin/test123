@@ -91,7 +91,7 @@
 </itemizedlist>
 
 <para>
- Back to the shell popup. The Console plugin allows arbitriary
+ Back to the shell popup. The Console plugin allows arbitrary
  <quote>shells</quote> to be plugged in; one shell included with the plugin
  is called the <quote>system</quote> shell and it runs external programs and
  commands; another built-in shell is the <quote>BeanShell</quote> shell,
@@ -144,7 +144,7 @@
  Not all commands result in an external process being spawned; the system
  shell supports <quote>built-ins</quote>, which are handled by the
  Console plugin itself. Built-ins are prefixed with <quote>%</quote> to
- distingulish them from external commands.
+ distinguish them from external commands.
 </para>
 
 <sect1 id="error-parsing"><title>Error Parsing</title>
@@ -241,12 +241,12 @@
 <itemizedlist>
  <listitem><para><command>pwd</command> - prints the current working
  directory. Note that unlike other built-ins, this one is not prefixed
- with <quote>%</quote> for convinience and consistency with other command
+ with <quote>%</quote> for convenience and consistency with other command
  lines.</para></listitem>
  <listitem><para><command>cd <replaceable>directory</replaceable></command>
  - changes the current working directory. Relative paths are resolved
  automatically. Just as with the <command>pwd</command> built-in, this
- one is not prefixed with a <quote>%</quote> for convinience.
+ one is not prefixed with a <quote>%</quote> for convenience.
  </para></listitem>
  <listitem><para><command>%pushd</command> - pushes the current directory
  onto the directory stack.</para></listitem>
@@ -298,7 +298,7 @@
 </para>
 
 <para>
- To accomodate both Windows and Unix users, three forms of variable syntax are
+ To accommodate both Windows and Unix users, three forms of variable syntax are
  supported by the system shell:
 </para>
 
@@ -482,7 +482,7 @@
 <chapter id="macros"><title>Macros and the Console plugin</title>
 
 <para>
- The Console plugin defines three BeanShell convinience methods that can
+ The Console plugin defines three BeanShell convenience methods that can
  be called from macros:
 </para>
 
@@ -571,7 +571,7 @@
     <listitem><para>
      Now loads a BeanShell code snippet on startup,
      with <function>runCommandInConsole()</function>
-     and <function>runCommandInConsoleToBuffer()</function>
+     and <function>runCommandToBuffer()</function>
      methods for macros
     </para></listitem>
 
@@ -609,6 +609,10 @@
      <guimenuitem>Run Last Command</guimenuitem> action added, it runs the most
      recently run command. Replaces <guimenuitem>Run Last Command</guimenuitem>
      macro in jEdit.
+    </para></listitem>
+
+    <listitem><para>
+     Multi-line error patterns are now supported
     </para></listitem>
 
     <listitem><para>
