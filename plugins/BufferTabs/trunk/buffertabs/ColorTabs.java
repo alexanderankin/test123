@@ -202,7 +202,7 @@ public class ColorTabs
       {
          if (colors == null)
          {
-            loadColours();
+            loadColors();
          }
 
          if (colorsAssigned.containsKey(name))
@@ -260,7 +260,7 @@ public class ColorTabs
    /**
     *  Load the colors from 'File system browser' colour options
     */
-   private void loadColours()
+   private void loadColors()
    {
       synchronized (lock)
       {
@@ -391,7 +391,7 @@ public class ColorTabs
             }
          }
 
-         loadColours();
+         loadColors();
          colorsAssigned.clear();
          rnd = new java.util.Random(20020212);                   //Set seed so colour variation are 'mostly' consistent during a session
       }
