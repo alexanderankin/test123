@@ -1,6 +1,6 @@
 /**
  * SqlPlugin.java - Sql Plugin
- * Copyright (C) 26 Август 2001 г. Sergey V. Udaltsov
+ * Copyright (C) 26 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫. Sergey V. Udaltsov
  * svu@users.sourceforge.net
  *
  *
@@ -43,7 +43,7 @@ import sql.options.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 Август 2001 г.
+ * @created    26 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public class SqlPlugin extends EBPlugin
 {
@@ -121,7 +121,7 @@ public class SqlPlugin extends EBPlugin
    */
   public void createOptionPanes( OptionsDialog optionsDialog )
   {
-    final OptionGroup group = new OptionGroup( "SQL" );
+    final OptionGroup group = new OptionGroup( "sql" );
     group.addOptionPane( new GeneralOptionPane() );
     group.addOptionPane( new ServersOptionPane() );
     group.addOptionPane( new JdbcOptionPane() );

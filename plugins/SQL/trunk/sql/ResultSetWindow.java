@@ -22,6 +22,7 @@ package sql;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.*;
 import java.util.*;
 import java.sql.*;
 
@@ -55,6 +56,9 @@ public class ResultSetWindow extends JPanel
   protected JLabel status;
 
   protected JComponent dataView = null;
+
+  protected int sortOrder = HelpfulJTable.SORT_OFF;
+  protected int sortColumn = -1;
 
   protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
 
@@ -163,6 +167,84 @@ public class ResultSetWindow extends JPanel
 
 
   /**
+   *  Sets the SortOrder attribute of the ResultSetWindow object
+   *
+   * @param  order  The new SortOrder value
+   * @param  table  The new SortOrder value
+   */
+  protected void setSortOrder( JTable table, int order )
+  {
+    sortOrder = order;
+    //!! No Sort OFF - once it is pressed
+    if ( sortOrder == HelpfulJTable.SORT_OFF )
+    {
+      ( (HelpfulJTable) table ).setSortOrder( HelpfulJTable.SORT_ASCENDING );
+      return;
+    }
+    resort( table );
+  }
+
+
+  /**
+   *  Sets the SortColumn attribute of the ResultSetWindow object
+   *
+   * @param  column  The new SortColumn value
+   * @param  table   The new SortColumn value
+   */
+  protected void setSortColumn( JTable table, int column )
+  {
+    sortColumn = column;
+    resort( table );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  table  Description of Parameter
+   */
+  protected void resort( JTable table )
+  {
+    final TableModel model = (TableModel) table.getModel();
+    if ( model == null )
+      return;
+    if ( sortColumn < 0 || sortColumn >= model.getColumnCount() )
+      return;
+    if ( !( sortOrder == HelpfulJTable.SORT_ASCENDING ||
+        sortOrder == HelpfulJTable.SORT_DESCENDING ) )
+      return;
+    final SortedMap map = new TreeMap();
+    int rnum = 0;
+    for ( int row = model.getRowCount(); --row >= 0; rnum++ )
+    {
+      String key = (String) model.getValueAt( row, sortColumn );
+      if ( key == null )
+        key = "";
+      if ( map.get( key ) == null )
+        key = key + ".$$." + rnum;
+      final Object rowNum = new Integer( row );
+      map.put( key, rowNum );
+    }
+
+    final java.util.List ldata = new ArrayList();
+    for ( Iterator vals = map.values().iterator(); vals.hasNext();  )
+    {
+      final Integer rowNumber = (Integer) vals.next();
+      final String[] row = model.getRowData( rowNumber.intValue() );
+      if ( sortOrder == HelpfulJTable.SORT_ASCENDING )
+        ldata.add( row );
+      else
+        ldata.add( 0, row );
+    }
+
+    final String rowData[][] = (String[][]) ldata.toArray( new String[0][] );
+
+    final String columnNames[] = model.getColumnHeaders();
+    table.setModel( new TableModel( rowData, columnNames ) );
+  }
+
+
+  /**
    *  Description of the Method
    *
    * @param  model  Description of Parameter
@@ -203,7 +285,23 @@ public class ResultSetWindow extends JPanel
     final Data data = (Data) model;
 
     final HelpfulJTable tbl = new HelpfulJTable();
-    //final JTable tbl = new JTable();
+    tbl.addPropertyChangeListener( "sortOrder",
+      new PropertyChangeListener()
+      {
+        public void propertyChange( PropertyChangeEvent evt )
+        {
+          setSortOrder( tbl, ( (Number) evt.getNewValue() ).intValue() );
+        }
+      } );
+
+    tbl.addPropertyChangeListener( "sortColumn",
+      new PropertyChangeListener()
+      {
+        public void propertyChange( PropertyChangeEvent evt )
+        {
+          setSortColumn( tbl, ( (Number) evt.getNewValue() ).intValue() );
+        }
+      } );
 
     tbl.setAutoResizeColumns( false );
     //!!tbl.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
@@ -295,16 +393,16 @@ public class ResultSetWindow extends JPanel
       {
         switch ( rsmd.getColumnType( i ) )
         {
-          case Types.CLOB:
-          case Types.BLOB:
-            break;
-          default:
-            final int precision = rsmd.getPrecision( i );
-            if ( precision != 0 )
-            {
-              final int scale = rsmd.getScale( i );
-              type  += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
-            }
+            case Types.CLOB:
+            case Types.BLOB:
+              break;
+            default:
+              final int precision = rsmd.getPrecision( i );
+              if ( precision != 0 )
+              {
+                final int scale = rsmd.getScale( i );
+                type += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
+              }
         }
       } catch ( Exception ex )
       {
@@ -422,6 +520,12 @@ public class ResultSetWindow extends JPanel
     }
 
 
+    public String[] getColumnHeaders()
+    {
+      return columnHeaders;
+    }
+
+
     public int getRowCount()
     {
       return rowData.length;
@@ -454,6 +558,12 @@ public class ResultSetWindow extends JPanel
     public boolean isCellEditable( int r, int c )
     {
       return false;
+    }
+
+
+    public String[] getRowData( int r )
+    {
+      return rowData[r];
     }
   }
 
