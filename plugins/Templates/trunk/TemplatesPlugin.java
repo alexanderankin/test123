@@ -18,26 +18,60 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+import java.io.*;
+import javax.swing.JFileChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JMenu;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
+import org.gjt.sp.util.Log;
 
 /**
  * A jEdit plugin for adding a templating function.
  */
 public class TemplatesPlugin extends EditPlugin
 {
-	private static TemplatesAction myAction = null;
+	// private static TemplatesAction myAction = null;
+	private static TemplateDir templates = null;
+	
+	/**
+	 * Returns the root TemplateDir object, which represents templates as a  
+	 * hierarchical tree of TemplateDir and TemplateFile objects.
+	 * @return The current TemplateDir object.
+	 */
+	public static TemplateDir getTemplates() { return templates; }
+	
+	/**
+	 * Sets the root TemplateDir object to another value.
+	 * @param newTemplates The new TemplateDir object
+	 */
+	public static void setTemplates(TemplateDir newTemplates) {
+		templates = newTemplates;
+	}
+	
+	/**
+	 * Returns the directory where templates are stored
+	 * @return A string containing the template directory path.
+	 */
+	public static String getTemplateDir() {
+		return jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0");
+	}
+	
+	/** 
+	 * Change the directory where templates are stored
+	 * @param templateDirVal The new templates directory
+	 */
+	public static void setTemplateDir(String templateDirVal) {
+		jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",templateDirVal);
+	}
 	
 	/**
 	 * Initializes the TemplatesAction and registers it with jEdit.
 	 */
 	public void start()
 	{
-		if (myAction == null) {
-			myAction = new TemplatesAction();
+		if (templates == null) {
 			String templateDir = jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","");
 			String sepChar = System.getProperty("file.separator");
 			if (templateDir.equals("")) {
@@ -45,9 +79,8 @@ public class TemplatesPlugin extends EditPlugin
 								"templates" + sepChar;
 				jEdit.setProperty("plugin.TemplatesPlugin.templateDir.0",templateDir);
 			}
-			// myAction.setTemplateDir(templateDir);
-			myAction.refreshTemplates();
-			jEdit.addAction(myAction);
+			templates = new TemplateDir(new File(templateDir));
+			templates.refreshTemplates();
 		}
 	}
 
@@ -63,10 +96,9 @@ public class TemplatesPlugin extends EditPlugin
 	 * @param menuItems Used to add menus and menu items
 	 */
 	public void createMenuItems(Vector menuItems) {
-		// The TemplatesAction object is responsible for maintaining
-		// the Code Templates menu.
-		TemplatesMenu myMenu = new TemplatesMenu();
-		menuItems.addElement(myMenu);
+		TemplatesMenu templatesMenu = new TemplatesMenu();
+		menuItems.addElement(templatesMenu);
+		templatesMenu.addNotify();
 	}
 	
 	/**
@@ -74,13 +106,113 @@ public class TemplatesPlugin extends EditPlugin
 	 * @param optionsDialog The dialog in which the OptionPane is to be displayed.
 	 */
 	public void createOptionPanes(OptionsDialog optionsDialog) {
-		optionsDialog.addOptionPane(new TemplatesOptionPane(myAction));
+		optionsDialog.addOptionPane(new TemplatesOptionPane());
+	}
+	
+	/**
+	 * Scans the templates directory and sends an EditBus message to all 
+	 * TemplatesMenu objects to update themselves. Backup files are ignored
+	 * based on the values of the backup prefix and suffix in the "Global
+	 * Options" settings.
+	 */
+	public static void refreshTemplates() {
+		String templateDirStr = getTemplateDir();
+		File templateDir = new File(templateDirStr);
+		try {
+			if (!templateDir.exists()) {	// If the template directory doesn't exist
+				templateDir.mkdir();		// then create it
+				if (!templateDir.exists())	// If insufficent privileges to create it
+					throw new java.lang.SecurityException();
+			}
+			setTemplates(new TemplateDir(templateDir));
+			getTemplates().refreshTemplates();
+			buildAllMenus();
+		} catch (java.lang.SecurityException se) {
+			Log.log(Log.ERROR,
+				jEdit.getPlugin(jEdit.getProperty("plugin.TemplatesPlugin.name")),
+				jEdit.getProperty("plugin.TemplatesPlugin.error.create-dir") + templateDir
+				);
+		}
+	}
+	
+	private static void buildAllMenus() {
+		EditBus.send(new TemplatesChanged());
+	}
+	
+	/**
+	 * Prompt the user for a template file and load it into the view from
+	 * which the request was initiated.
+	 * @param view The view from which the "Edit Template" request was made.
+	 */
+	public static void editTemplate(View view) {
+		JFileChooser chooser = new JFileChooser(
+				jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","."));
+		int retVal = chooser.showOpenDialog(view);
+		if(retVal == JFileChooser.APPROVE_OPTION)
+		{
+			File file = chooser.getSelectedFile();
+			if(file != null)
+			{
+				try
+				{
+					// Load file into jEdit
+					jEdit.openFile(view, file.getCanonicalPath());
+				}
+				catch(IOException e)
+				{
+					// shouldn't happen
+				}
+			}
+		}
+	}
+
+	/**
+	 * Save the current buffer as a template. The file chooser displayed
+	 * uses the Templates directory as the default.
+	 * @param view The view from which the "Save Template" request was made.
+	 */
+	public static void saveTemplate(View view) {
+		JFileChooser chooser = new JFileChooser(
+				jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","."));
+		int retVal = chooser.showSaveDialog(view);
+		if(retVal == JFileChooser.APPROVE_OPTION)
+		{
+			File file = chooser.getSelectedFile();
+			if(file != null)
+			{
+				try
+				{
+					// Save file
+					view.getBuffer().save(view, file.getCanonicalPath());
+				}
+				catch(IOException e)
+				{
+					// shouldn't happen
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Process the template file indicated by the given path string, and
+	 * insert its text into the given view.
+	 * @param path The absolute path to the desired template file.
+	 * @param view The view into which the template text is to be inserted.
+	 */
+	public static void processTemplate(String path, View view) {
+		File templateFile = new File(path);
+		Template template = new Template(templateFile);
+		template.processTemplate(view);
 	}
 
 }
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.5  2002/02/22 02:34:36  sjakob
+	 * Updated Templates for jEdit 4.0 actions API changes.
+	 * Selection of template menu items can now be recorded in macros.
+	 *
 	 * Revision 1.4  2001/07/18 13:36:16  sjakob
 	 * Removed unnecessary call to TemplatesMenu.addNotify().
 	 *

@@ -25,6 +25,7 @@ import java.io.File;
 import java.util.*;
 import gnu.regexp.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.EnhancedMenuItem;
 import org.gjt.sp.util.Log;
 /**
  * A TemplateDir is a type of TemplateFile which is a container for other 
@@ -85,13 +86,21 @@ public class TemplateDir extends TemplateFile
 		backupFilter = new RE(exp,RE.REG_ICASE);
 	}
 	
+	/**
+	 * Add a menu item to the given menu object for each TemplateFile contained
+	 * within this TemplateDir. Recursively process any TemplateDir objects
+	 * contained within this TemplateDir.
+	 * @param menu The menu to which the new JMenuItem objects will be added.
+	 */
 	public void createMenus(JMenu menu) {
 		Object o;
 		JMenu submenu;
-		JMenuItem mi;
+		EnhancedMenuItem mi;
+		TemplateAction myAction;
 		TemplateDir td;
 		TemplateFile tf;
 		Enumeration e;
+		if (templateFiles == null) this.refreshTemplates();
 		e = this.templateFiles.elements();
 		while (e.hasMoreElements()) {
 			o = e.nextElement();
@@ -103,8 +112,8 @@ public class TemplateDir extends TemplateFile
 			}
 			else {
 				tf = (TemplateFile) o;
-				mi = new JMenuItem(tf.getLabel());
-				mi.addActionListener(tf);
+				myAction = new TemplateAction(tf);
+				mi = new EnhancedMenuItem(tf.getLabel(), myAction);
 				menu.add(mi);
 			}
 		}
@@ -114,6 +123,10 @@ public class TemplateDir extends TemplateFile
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2002/02/22 02:34:36  sjakob
+	 * Updated Templates for jEdit 4.0 actions API changes.
+	 * Selection of template menu items can now be recorded in macros.
+	 *
 	 * Revision 1.2  2001/02/23 19:31:39  sjakob
 	 * Added "Edit Template" function to Templates menu.
 	 * Some Javadoc cleanup.

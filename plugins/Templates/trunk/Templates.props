@@ -2,15 +2,18 @@
 
 plugin.TemplatesPlugin.name=Templates
 plugin.TemplatesPlugin.author=Steve Jakob
-plugin.TemplatesPlugin.version=1.1.0
+plugin.TemplatesPlugin.version=2.0.0
 plugin.TemplatesPlugin.docs=Templates.html
 
-# Menu labels
-TemplatesAction.label=Templates
-TemplatesPlugin.menu.label=Templates
-TemplatesPlugin.menu.refresh.label=Refresh templates
-TemplatesPlugin.menu.edit.label=Edit template
-TemplatesPlugin.menu.save.label=Save template
+# Action labels
+Templates.refresh-templates.label=Refresh templates
+Templates.edit-template.label=Edit template
+Templates.save-template.label=Save template
+
+# Plugins menu labels
+Templates.menu.label=Templates
+#Templates.menu=Templates.refresh-templates Templates.edit-template \
+#	Templates.save-template
 
 # OptionPane labels
 options.Templates.label=Templates
@@ -18,7 +21,7 @@ options.Templates.choose-dir-msg=Templates directory:\
 options.Templates.choose-btn-msg=Choose
 
 # Dependencies
-plugin.TemplatesPlugin.depend.0=jedit 03.02.05.00
+plugin.TemplatesPlugin.depend.0=jedit 04.00.04.00
 plugin.TemplatesPlugin.depend.1=jdk 1.1
 
 # Error messages

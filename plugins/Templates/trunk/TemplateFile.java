@@ -31,7 +31,7 @@ import gnu.regexp.*;
  * to a template file, but it also contains information describing the template 
  * (eg. a label to be used on the Templates menu).
  */
-public class TemplateFile implements ActionListener
+public class TemplateFile
 {
 	protected String label;
 	protected File templateFile;
@@ -52,7 +52,6 @@ public class TemplateFile implements ActionListener
 				Log.log(Log.ERROR,this,jEdit.getProperty("plugin.TemplatesPlugin.error.template-label")
 							+ templateFile.getName());
 				Log.log(Log.ERROR,this,e);
-				// System.out.println("Error creating template label for file: " + f.getName());
 			}
 			if (s != null)
 				label = s;
@@ -62,17 +61,16 @@ public class TemplateFile implements ActionListener
 	//Accessors & Mutators
 	public String getLabel() { return label; }
 	public void setLabel(String labelVal) { label = labelVal; }
+	public String getPath() { return templateFile.getPath(); }
 
 	//Implementors
 	public boolean isDirectory() { return false; }
+
 	
-	public void actionPerformed(ActionEvent evt) {
-		if (myTemplate == null) {
-			myTemplate = new Template(this);
-		}
-		myTemplate.processTemplate(EditAction.getView(evt));
-	}
-	
+	/**
+	 * Convenience method to create a BufferedReader to the template file.
+	 * @return A BufferedReader object corresponding to the underlying file.
+	 */
 	public BufferedReader getBufferedReader() throws FileNotFoundException {
 		return new BufferedReader(new FileReader(this.templateFile));
 	}
@@ -117,6 +115,10 @@ public class TemplateFile implements ActionListener
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.5  2002/02/22 02:34:36  sjakob
+	 * Updated Templates for jEdit 4.0 actions API changes.
+	 * Selection of template menu items can now be recorded in macros.
+	 *
 	 * Revision 1.4  2001/02/23 19:31:39  sjakob
 	 * Added "Edit Template" function to Templates menu.
 	 * Some Javadoc cleanup.

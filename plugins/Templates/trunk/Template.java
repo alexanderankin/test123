@@ -29,7 +29,7 @@ import gnu.regexp.*;
 public class Template
 {
 	private String name;
-	private TemplateFile templateFile;
+	private File templateFile;
 	private StringBuffer templateText;
 	private Hashtable vars = new Hashtable();
 	private TemplateVar lastVar = null;
@@ -37,7 +37,7 @@ public class Template
 	private static RE ctpragmaTest = null;
 
 	//Constructors
-	public Template(TemplateFile file) {
+	public Template(File file) {
 		if (!file.isDirectory()) {		// should never happen, but ...
 			this.templateFile = file;
 			createREs();
@@ -55,17 +55,19 @@ public class Template
 	public void processTemplate(org.gjt.sp.jedit.View view) {
 		BufferedReader in = null;
 		try {
-			in = templateFile.getBufferedReader();
+			in = new BufferedReader(new FileReader(templateFile));
 			parsePragmas(in);
 			// *** This section is for testing purposes only ***
+			/*
 			Enumeration e = vars.elements();
 			while (e.hasMoreElements()) {
 				System.out.println(e.nextElement());
 			}
+			*/
 			// *** End of test section ***
 			processTemplateText(view);
 		} catch (IOException e) {
-			Log.log(Log.ERROR, this, "Error reading template file: " + templateFile.getLabel());
+			Log.log(Log.ERROR, this, "Error reading template file: " + templateFile.getPath());
 		} finally {
 			try {
 				in.close();		// make sure the file gets closed
@@ -145,6 +147,10 @@ public class Template
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2002/02/22 02:34:36  sjakob
+	 * Updated Templates for jEdit 4.0 actions API changes.
+	 * Selection of template menu items can now be recorded in macros.
+	 *
 	 * Revision 1.1  2000/05/08 04:45:52  sjakob
 	 * Abstracted template processing to new Template class.
 	 * TemplateFile will now act merely as a proxy for a Template.

@@ -11,16 +11,14 @@ JAVA=java
 JAVAC=javac
 JAR=jar
 PROJHOME=/home/sjakob/projects
-deps=/share/jedit/3.0.2/jedit.jar
+deps=/share/jedit/4.0pre4/jedit.jar
 
 classes=TemplatesPlugin.class \
-		TemplatesAction.class \
 		TemplateFile.class \
 		TemplateDir.class \
 		TemplatesOptionPane.class \
 		TemplateVar.class \
 		Template.class \
-		TemplateMode.class \
 		TemplatesMenu.class \
 		TemplatesChanged.class
 others= Templates.props \
