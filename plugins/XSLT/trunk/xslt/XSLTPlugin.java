@@ -24,11 +24,14 @@ import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.util.Log;
 
 /**
@@ -52,6 +55,30 @@ public class XSLTPlugin extends EditPlugin {
   }
 
   /**
+   * @return shared XSLTProcessor instance for the supplied view
+   */
+  public static synchronized XSLTProcessor getXSLTProcessorInstance (View view) {
+    XSLTProcessor xsltProcessor = (XSLTProcessor)xsltProcessors.get(view);
+    if (xsltProcessor == null) {
+      xsltProcessor = new XSLTProcessor(view);
+      xsltProcessors.put(view, xsltProcessor);
+    }
+    return xsltProcessor;
+  }
+
+  /**
+   * @return shared XPathTool instance for the supplied view
+   */
+  public static synchronized XPathTool getXPathToolInstance (View view) {
+    XPathTool xPathTool = (XPathTool)xPathTools.get(view);
+    if (xPathTool == null) {
+      xPathTool = new XPathTool(view);
+      xPathTools.put(view, xPathTool);
+    }
+    return xPathTool;
+  }
+
+  /**
    * Displays a user-friendly error message to go with the supplied exception.
    */
   static void processException (Exception e, String message, Component component) {
@@ -62,6 +89,9 @@ public class XSLTPlugin extends EditPlugin {
       new Object[]{message, e.getMessage()});
     JOptionPane.showMessageDialog(component, msg.toString());
   }
+
+  private static Map xsltProcessors = new HashMap();
+  private static Map xPathTools = new HashMap();
 
 }
 
