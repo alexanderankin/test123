@@ -441,6 +441,9 @@ loop:			for(;;)
 	{
 		JEditTextArea textArea = view.getTextArea();
 
+		Macros.Recorder recorder = view.getMacroRecorder();
+		if(recorder != null)
+			recorder.recordInput(1,'>',false);
 		textArea.userInput('>');
 
 		Buffer buffer = view.getBuffer();
@@ -473,17 +476,33 @@ loop:			for(;;)
 
 		if(tag != null)
 		{
-			textArea.setSelectedText("</" + tag.tag + ">");
-			textArea.setCaretPosition(caret);
+			String insert = "</" + tag.tag + ">";
+			if(recorder != null)
+				recorder.recordInput(insert,false);
+			textArea.setSelectedText(insert);
+
+			String code = "textArea.setCaretPosition("
+				+ "textArea.getCaretPosition() - "
+				+ insert.length() + ");";
+			if(recorder != null)
+				recorder.record(code);
+			BeanShell.eval(view,BeanShell.getNameSpace(),code);
 		}
 	} //}}}
 
 	//{{{ completeClosingTag() method
-	public static void completeClosingTag(View view)
+	public static void completeClosingTag(View view, boolean insertSlash)
 	{
 		JEditTextArea textArea = view.getTextArea();
 
-		textArea.userInput('/');
+		Macros.Recorder recorder = view.getMacroRecorder();
+
+		if(insertSlash)
+		{
+			if(recorder != null)
+				recorder.recordInput(1,'/',false);
+			textArea.userInput('/');
+		}
 
 		Buffer buffer = textArea.getBuffer();
 
@@ -516,9 +535,13 @@ loop:			for(;;)
 			return;
 
 		TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,data);
+
 		if(tag != null)
 		{
-			textArea.setSelectedText(tag.tag + ">");
+			String insert = tag.tag + ">";
+			if(recorder != null)
+				recorder.recordInput(insert,false);
+			textArea.setSelectedText(insert);
 		}
 	} //}}}
 

@@ -503,7 +503,8 @@
   <listitem><para>The element completion code now tries to preserve case when editing HTML files.</para></listitem>
   <listitem><para>Changing a catalog from within jEdit will automatically reload it.</para></listitem>
   <listitem><para>Validation was only working for schemas, not DTDs.</para></listitem>
-  <listitem><para>Fixed <classname>NullPointerException</classname> when closing <guimenuitem>Plugin Options</guimenuitem> dialog box.</para></listitem>
+  <listitem><para>Fixed <classname>NullPointerException</classname> when closing <guimenuitem>Plugin Options</guimenuitem> dialog box.</para></listitem> DTDs.</para></listitem>
+  <listitem><para>Macros can now be recorded while the XML plugin's completion features are enabled.</para></listitem>
   </itemizedlist>
   </listitem>
 

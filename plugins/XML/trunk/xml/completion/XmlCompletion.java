@@ -77,7 +77,7 @@ public class XmlCompletion extends SideKickCompletion
 			case '/':
 				if(jEdit.getBooleanProperty("xml.close-complete"))
 				{
-					XmlActions.completeClosingTag(view);
+					XmlActions.completeClosingTag(view,true);
 					return false;
 				}
 			default:
