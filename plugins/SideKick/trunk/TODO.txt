@@ -1,7 +1,6 @@
 - recording completion
 - isDelegated() equivalent, or move it to XML
 - parent/child asset actions
-- finish docs
 - completion popup width
 - should not reparse on edit pane change
 - tree: custom actions on double-click, etc.

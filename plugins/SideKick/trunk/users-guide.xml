@@ -50,21 +50,24 @@
  </para>
 
  <para>
-  The SideKick plugin automatically parses buffers for which a parser is available
-  when they are loaded or saved.
+  The SideKick plugin automatically parses buffers
+  when they are loaded or saved, where possible.
   Optionally, buffers can also be parsed on the fly, but this uses a fair bit of
   memory and processor power so it is disabled by default.
-  The current buffer can be parsed at any other time by clicking the parse
-  button in the <guimenuitem>Structure Browser</guimenuitem> window, or by
-  invoking the
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
-  Buffer</guimenuitem> command.
  </para>
 
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
   on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly
   parsing, for the current buffer only.
+ </para>
+
+ <para>
+  The current buffer can be parsed at any other time by clicking the parse
+  button in the <guimenuitem>Structure Browser</guimenuitem> window, or by
+  invoking the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
+  Buffer</guimenuitem> command.
  </para>
 
  <para>
@@ -77,15 +80,15 @@
  </para>
 
  <para>
-  Clicking on an asset in the tree will move the caret to its location in the
+  Clicking on a node in the tree will move the caret to its location in the
   buffer;
   conversely, moving the caret in the buffer will select the corresponding
-  asset.
+  node.
  </para>
 
  <para>
   If the structure browser window is docked into the current view, hovering the mouse
-  over an asset will display its attributes in the status bar.
+  over a node will display its attributes in the status bar.
  </para>
 
 </chapter>
@@ -93,18 +96,18 @@
 <chapter id="moving-around"><title>Moving around</title>
 
 <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Go
   to Previous Asset</guimenuitem> moves the caret to start of the structure
   element (<quote>asset</quote>).
  </para>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Go
   to Next Asset</guimenuitem> moves the caret to start of the next asset.
  </para>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Select
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Select
   Asset at Caret</guimenuitem> selects the asset at the caret position.
  </para>
 
@@ -126,7 +129,9 @@
   A completion popup can be shown at any time
   by invoking the
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Show
-  Completion Popup</guimenuitem> command.
+  Completion Popup</guimenuitem> command. Each plugin that uses SideKick
+  implements its own specific completion behavior; see the plugin documentation
+  for details.
  </para>
 
 </chapter>
@@ -135,8 +140,11 @@
 
  <para>
   By itself the SideKick plugin is not very useful; it relies on other plugins to
-  provide buffer structure information.
+  provide buffer structure information. This chapter gives a brief overview of
+  how it's done.
  </para>
+
+ <sect1 id="preliminaries"><title>Preliminaries</title>
 
  <para>
   First you will also need to add a dependency for the SideKick plugin in your plugin's
@@ -179,6 +187,96 @@
    <paramdef>SideKickParser <parameter>parser</parameter></paramdef>
   </funcprototype>
  </funcsynopsis>
+
+ </sect1>
+
+ <sect1 id="class-sidekickparser"><title>The SideKickParser class</title>
+
+ <para>
+  <classname>SideKickParser</classname> is an abstract class. The constructor
+  takes one string parameter. This string is used in several properties:
+ </para>
+
+ <itemizedlist>
+  <listitem><para><literal>sidekick.parser.<replaceable>name</replaceable>.label</literal>
+  - specifies a human-readable label for the parser, shown in status messages.
+  </para></listitem>
+  <listitem><para><literal>mode.<replaceable>mode</replaceable>.sidekick.parser</literal>
+  - properties of this form are used to associate a parser with an edit mode.
+ </para></listitem>
+ </itemizedlist>
+
+ <para>
+  For example, the XML plugin, which provides two <classname>SideKickParser</classname>
+  implementations, defines these properties:
+ </para>
+
+ <programlisting>sidekick.parser.xml.label=XML
+mode.xml.sidekick.parser=xml
+mode.xsl.sidekick.parser=xml
+sidekick.parser.html.label=HTML
+mode.asp.sidekick.parser=html
+mode.coldfusion.sidekick.parser=html
+mode.html.sidekick.parser=html
+mode.jhtml.sidekick.parser=html
+mode.jsp.sidekick.parser=html
+mode.php.sidekick.parser=html
+mode.shtml.sidekick.parser=html
+mode.sgml.sidekick.parser=html
+mode.velocity.sidekick.parser=html</programlisting>
+
+</sect1>
+
+<sect1 id="implement-structure-tree"><title>Implementing a structure tree</title>
+
+ <para>
+  The <classname>SideKickParser</classname> has one abstract method that all
+  subclasses must implement:
+ </para>
+
+ <funcsynopsis>
+  <funcprototype>
+   <funcdef>public SideKickParsedData <function>parse</function></funcdef>
+   <paramdef>Buffer <parameter>buffer</parameter></paramdef>
+   <paramdef>DefaultErrorSource <parameter>errorSource</parameter></paramdef>
+  </funcprototype>
+ </funcsynopsis>
+
+ <para>
+  The latter parameter is an instance of a class provided by the
+  <application>ErrorList</application> plugin; consult its documentation for
+  details.
+ </para>
+
+ <para>
+  The method is called from a thread, so care must be taken to access the
+  buffer in a thread-safe manner; the API documentation for the
+  <classname>Buffer</classname> class describes how this is done.
+ </para>
+
+ <para>
+  The constructor of the <classname>SideKickParsedData</classname> class takes
+  one parameter, which is the file name (to be shown at the root of the structure
+  tree).
+ </para>
+
+ <para>
+  Your implementation of the <function>parse()</function> method should add
+  structure elements to the <varname>root</varname> field of the
+  <classname>SideKickParsedData</classname> instance. This field is an
+  instance of Java's <classname>DefaultMutableTreeNode</classname> class,
+  and is given a value by the <classname>SideKickParsedData</classname> constructor.
+ </para>
+
+ </sect1>
+
+ <sect1 id="implement-completion"><title>Implementing completion popups</title>
+ 
+ <para>
+  This part has not been written yet. Use the source, Luke!
+ </para>
+
+ </sect1>
 
 </chapter>
 
