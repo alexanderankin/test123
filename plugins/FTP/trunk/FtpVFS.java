@@ -18,11 +18,13 @@
  */
 
 import com.fooware.net.*;
+import gnu.regexp.*;
 import java.awt.Component;
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import org.gjt.sp.jedit.io.*;
+import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
@@ -40,6 +42,22 @@ public class FtpVFS extends VFS
 	public FtpVFS()
 	{
 		super("ftp");
+
+		regexps = new RE[Integer.parseInt(jEdit.getProperty(
+			"vfs.ftp.list.count"))];
+		for(int i = 0; i < regexps.length; i++)
+		{
+			try
+			{
+				regexps[i] = new RE(jEdit.getProperty(
+					"vfs.ftp.list." + i),0,
+					RESearchMatcher.RE_SYNTAX_JEDIT);
+			}
+			catch(REException re)
+			{
+				Log.log(Log.ERROR,this,re);
+			}
+		}
 	}
 
 	public int getCapabilities()
@@ -437,8 +455,7 @@ public class FtpVFS extends VFS
 
 	// private members
 	private static final int __LINK = 10;
-	private final StringBuffer buf = new StringBuffer(128);
-	private final Vector tokens = new Vector(16);
+	private RE[] regexps;
 
 	private FtpClient _getFtpClient(VFSSession session, FtpAddress address,
 		boolean ignoreErrors, Component comp)
@@ -582,90 +599,32 @@ public class FtpVFS extends VFS
 				break;
 			}
 
-			
-			//We search for the Month field (e.g. "Jan") and use this for
-			// reference to locate the filesize field (one in front of month) and
-			//the filename (3 after month).
-			//This is more compatible with a wider range of servers than looking
-			//for a particualr datum based upon it field number.
-			//I'm sure there will be some server that will break this though...
-			
-			int i;
-			long length = 0L;
-			String name = null;
-			int fileSizePos=0;
-			int namePos = -1;
-			buf.setLength(0);
-			tokens.removeAllElements(); 	//We stick the token in a Vector
-			for(i = 0; i < line.length(); i++)
-			{
-				if(line.charAt(i) == ' ')
-				{
-					if(buf.length() == 0)
-						continue;
-						
-					String tmp = buf.toString();
-					buf.setLength(0);
-					
-					//look for month
-					if((tmp.length() == 3) &&
-						(
-							tmp.equalsIgnoreCase("Jan") ||	//We are assuming
-							tmp.equalsIgnoreCase("Feb") ||	//English!!
-							tmp.equalsIgnoreCase("Mar") ||	//Most servers seem
-							tmp.equalsIgnoreCase("Apr") ||	//to use these.
-							tmp.equalsIgnoreCase("May") ||	
-							tmp.equalsIgnoreCase("Jun") ||	//This is more
-							tmp.equalsIgnoreCase("Jul") ||	//compatible than
-							tmp.equalsIgnoreCase("Aug") ||	//the fixed field
-							tmp.equalsIgnoreCase("Sep") ||	//approach...
-							tmp.equalsIgnoreCase("Oct") ||
-							tmp.equalsIgnoreCase("Nov") ||
-							tmp.equalsIgnoreCase("Dec") 
-						))
-					{
-						fileSizePos = tokens.size()-1;	 //note position of file
-														//size, which is in front 
-						namePos = fileSizePos+3;	//position of the name
-					}
+			// now, we use one of several regexps to obtain
+			// the file name and size
+			String name = null, size = null;
 
-					//See if we are on the name token
-					if(tokens.size() == namePos)
-					{
-						//We are on name token so add the rest of the line
-						//This accounts for names with spaces, etc.
-						tokens.addElement(line.substring(i+1));
-						break;
-					}
-					else
-					{
-						tokens.addElement(tmp);
-					}
-				}
-				else
+			for(int i = 0; i < regexps.length; i++)
+			{
+				RE regexp = regexps[i];
+				REMatch match;
+				if((match = regexp.getMatch(line)) != null)
 				{
-					buf.append(line.charAt(i));
+					size = match.toString(1);
+					name = match.toString(2);
+					break;
 				}
 			}
 
-			if(buf.length() != 0)
-				tokens.addElement(buf.toString());
+			Log.log(Log.DEBUG,this,"name=" + name + ",size=" + size);
 
-			name = (String)tokens.lastElement();
 			if(name == null)
 				return null;
-				
-			if(fileSizePos == 0)
-			{
-				if(tokens.size() >= 2)
-					fileSizePos = tokens.size() - 2;
-				else
-					return null;
-			}
-			
+
+			long length;
+
 			try
 			{
-				length = Long.parseLong(((String)tokens.elementAt(fileSizePos)).trim());
+				length = Long.parseLong(size);
 			}
 			catch(NumberFormatException e)
 			{
