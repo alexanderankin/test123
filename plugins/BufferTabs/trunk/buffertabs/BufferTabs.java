@@ -522,13 +522,5 @@ public class BufferTabs extends JTabbedPane implements EBComponent
             }
         }
     }
-
-
-   /**
-    * Let ColorTabs see the buffers
-    */
-   Vector getBuffers() {
-      return buffers;
-   }
 }
 
