@@ -26,6 +26,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JTree;
 import javax.swing.tree.TreePath;
+import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
@@ -41,6 +42,7 @@ import projectviewer.ProjectManager;
  *	Listens to the project JTree and responds to file selections.
  *
  *	@author     <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+ *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
 public final class VPTSelectionListener implements TreeSelectionListener, MouseListener {
@@ -70,50 +72,32 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 
 	//{{{ MouseListener interfaces
 
+	//{{{ mouseClicked(MouseEvent) method
 	/**
 	 *	Determines when the user clicks on the JTree.
 	 *
 	 * @param  evt  Description of Parameter
 	 */
 	public void mouseClicked(MouseEvent evt) {
-		if(isDoubleClick(evt) && isNodeClicked(evt)) {
-			VPTNode node = viewer.getSelectedNode();
+		if (SwingUtilities.isMiddleMouseButton(evt)) {
+			TreePath path = viewer.getCurrentTree()
+				.getPathForLocation(evt.getX(), evt.getY());
+			viewer.getCurrentTree().setSelectionPath(path);
+		}
 
+		if (SwingUtilities.isMiddleMouseButton(evt) || isDoubleClick(evt)) {
+			VPTNode node = viewer.getSelectedNode();
 			if(node.canOpen()) {
 				if(node.isOpened()) {
-					if (node.getNodePath().equals(viewer.getView().getBuffer().getPath())) {
-						node.close();
-					} else {
-						// try to set the selected node's buffer as the active
-						// buffer. Since "open" does not necessarily mean "open
-						// in jEdit", this falls back to "node.close()" if no
-						// buffer is found.
-						String path = null;
-						if (node.isFile()) {
-							try {
-								path = ((VPTFile)node).getFile().getCanonicalPath();
-							} catch (IOException ioe) {
-								//shouldn't happen
-								Log.log(Log.ERROR, this, ioe);
-							}
-						} else {
-							path = node.getNodePath();
-						}
-						Buffer b = jEdit.getBuffer(path);
-						if (b != null) {
-							viewer.getView().setBuffer(b);
-						} else {
-							node.close();
-						}
-					}
+					node.close();
 				} else {
 					node.open();
 				}
 			}
 		}
+	} //}}}
 
-	}
-
+	//{{{ mousePressed(MouseEvent) method
 	public void mousePressed(MouseEvent evt) {
 		if (viewer.getRoot().isRoot()) {
 			JTree tree = (JTree) evt.getSource();
@@ -122,13 +106,15 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 
 			if (node != null && node.isProject()) {
 				if (!ProjectManager.getInstance().isLoaded(node.getName())) {
-					viewer.setStatus("Loading project \"" + node.getName() + "\"");
+					viewer.setStatus(
+						jEdit.getProperty("projectviewer.loading_project",
+							new Object[] { node.getName() } ));
 					ProjectManager.getInstance().getProject(node.getName());
 					ProjectViewer.nodeStructureChanged(node);
 				}
 			}
 		}
-	}
+	} //}}}
 
 	public void mouseReleased(MouseEvent evt) { }
 
@@ -141,18 +127,38 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	//{{{ TreeSelectionListener interface
 
 	/**
-	 *	Receive notification that the tree selection has changed.
+	 *	Receive notification that the tree selection has changed. Shows node 
+	 *	information on the status bar and, if the selected node is opened
+	 *	but is not the current buffer, change the current buffer.
 	 *
-	 *	@param  e  Description of Parameter
+	 *	@param  e  The selection event.
 	 */
 	public void valueChanged(TreeSelectionEvent e) {
 		lastClickTarget = null;
-
-		VPTNode node = viewer.getSelectedNode();
-		if(node == null) return;
-
-		//viewer.enableButtonsForNode(node);
+		if (!e.isAddedPath()) return;
+		
+		VPTNode node = (VPTNode) e.getPath().getLastPathComponent();
 		viewer.setStatus(node.toString());
+		
+		if (viewer.getCurrentTree().getSelectionPaths().length == 1 &&
+				node.isOpened()) {
+			String nodePath;
+			if (node.isFile()) {
+				try {
+					nodePath = ((VPTFile)node).getFile().getCanonicalPath();
+				} catch (IOException ioe) {
+					//shouldn't happen
+					Log.log(Log.ERROR, this, ioe);
+					return;
+				}
+			} else {
+				nodePath = node.getNodePath();
+			}
+			Buffer b = jEdit.getBuffer(nodePath);
+			if (b != null) {
+				viewer.getView().setBuffer(b);
+			}
+		}
 	}
 
 	//}}}
@@ -166,9 +172,9 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	 *	@return      The doubleClick value
 	 */
 	private boolean isDoubleClick(MouseEvent evt) {
-		if(reportsClickCountCorrectly)
+		if (reportsClickCountCorrectly)
 			return evt.getClickCount() == 2;
-		if(evt.getClickCount() == 2) {
+		if (evt.getClickCount() == 2) {
 			reportsClickCountCorrectly = true;
 			return true;
 		}
@@ -193,26 +199,6 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 		lastClickTarget = target;
 		lastClickTime = System.currentTimeMillis();
 		return false;
-	} //}}}
-
-	//{{{ isNodeClicked(MouseEvent) method
-	/**
-	 *	Returns <code>true</code> if a node is selected and the given
-	 *	mouse event points to the specified node.
-	 *
-	 *	@param  evt  Description of Parameter
-	 *	@return      The fileClicked value
-	 */
-	private boolean isNodeClicked(MouseEvent evt) {
-		VPTNode selectedNode = viewer.getSelectedNode();
-
-		TreePath path = viewer.getCurrentTree().getPathForLocation(evt.getX(), evt.getY());
-		if(path == null)
-			return false;
-
-		Object clickedNode = path.getLastPathComponent();
-
-		return (selectedNode == clickedNode);
 	} //}}}
 
 }
