@@ -9,6 +9,10 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.*;
 
 class test {
+  
+  public void foo() {} // This is a comment
+  public void foo(int foo) {} // another comment
+  
   /***************************************************************************/
   static public void main(String args[]) {
     /* When tagging do all methods...
@@ -63,14 +67,12 @@ class test {
     // jEdit.java
  
     // getFirstBuffer
- 
+    
+    // Test that \/\/ is displayed as // in search string
     // foo
  
- 
- 
- 
- 
- 
+    // Test that popup is in correct location w/ folding and wrapping on... 
+    // offsetToX
  
  
  
