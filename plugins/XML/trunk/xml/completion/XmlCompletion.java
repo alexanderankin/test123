@@ -81,8 +81,11 @@ public class XmlCompletion implements SideKickCompletion
 				// execute below code
 				break;
 			case '/':
-				XmlActions.completeClosingTag(view);
-				return false;
+				if(jEdit.getBooleanProperty("xml.close-complete"))
+				{
+					XmlActions.completeClosingTag(view);
+					return false;
+				}
 			default:
 				textArea.userInput(ch);
 				return true;
@@ -115,7 +118,8 @@ public class XmlCompletion implements SideKickCompletion
 			}
 			else if(obj instanceof XmlListCellRenderer.ClosingTag)
 			{
-				textArea.setSelectedText("/" + closingTag + ">");
+				textArea.setSelectedText(("/" + closingTag + ">")
+					.substring(word.length()));
 				return false;
 			}
 			else if(obj instanceof ElementDecl)
