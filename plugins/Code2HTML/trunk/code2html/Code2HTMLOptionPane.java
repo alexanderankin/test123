@@ -55,7 +55,7 @@ public class Code2HTMLOptionPane
         addComponent(this.ckShowGutter);
 
         this.tfWrap = new JTextField(4);
-        int wrap = Code2HTMLUtilities.getIntegerProperty("code2html.wrap", 0);
+        int wrap = jEdit.getIntegerProperty("code2html.wrap", 0);
         if (wrap < 0) { wrap = 0; }
         this.tfWrap.setText("" + wrap);
         addComponent(jEdit.getProperty("options.code2html.wrap"), this.tfWrap);

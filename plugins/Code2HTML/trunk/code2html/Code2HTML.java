@@ -65,7 +65,7 @@ public class Code2HTML
         this.textArea     = textArea;
         this.useSelection = useSelection;
 
-        this.wrap = Code2HTMLUtilities.getIntegerProperty("code2html.wrap", 0);
+        this.wrap = jEdit.getIntegerProperty("code2html.wrap", 0);
         if (this.wrap < 0) { this.wrap = 0; }
 
         this.useCSS     = jEdit.getBooleanProperty("code2html.use-css", false);
