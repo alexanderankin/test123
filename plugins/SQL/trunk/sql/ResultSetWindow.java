@@ -176,14 +176,16 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
     final Data data = (Data) model;
 
-    final JTable tbl = new HelpfulJTable();
+    final HelpfulJTable tbl = new HelpfulJTable();
+
+    tbl.setAutoResizeColumns( false );
+    tbl.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
+
     tbl.setModel( new TableModel( data.rowData, data.columnNames ) );
 
     tbl.addMouseListener( new MouseHandler( tbl ) );
 
-    tbl.setTableHeader( new TableHeader( tbl.getColumnModel(), data ) );
-
-    tbl.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+    tbl.setTableHeader( new TableHeader( tbl, data ) );
 
     final JScrollPane scroller = new JScrollPane( tbl );
 
@@ -285,38 +287,6 @@ public class ResultSetWindow extends JPanel implements DockableWindow
   }
 
 
-  protected class TableHeader extends JTableHeader
-  {
-    protected String types[];
-
-
-    /**
-     *Constructor for the TableHeader object
-     *
-     * @param  tcm   Description of Parameter
-     * @param  data  Description of Parameter
-     * @since
-     */
-    public TableHeader( TableColumnModel tcm, Data data )
-    {
-      super( tcm );
-      types = (String[]) data.columnTypes.toArray( new String[]{""} );
-    }
-
-
-    public String getToolTipText( MouseEvent evt )
-    {
-      final Point p = evt.getPoint();
-      if ( p == null )
-        return null;
-      final int colNo = columnAtPoint( p );
-      if ( colNo == -1 )
-        return null;
-      return types[colNo];
-    }
-  }
-
-
   protected class MouseHandler extends MouseAdapter
   {
     protected JTable table;
@@ -348,7 +318,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
   }
 
 
-  protected class TableModel extends AbstractTableModel
+  protected static class TableModel extends AbstractTableModel
   {
     private Vector rowData;
     private String columnHeaders[];
@@ -400,6 +370,38 @@ public class ResultSetWindow extends JPanel implements DockableWindow
     public boolean isCellEditable( int r, int c )
     {
       return false;
+    }
+  }
+
+
+  protected static class TableHeader extends JTableHeader
+  {
+    protected String types[];
+
+
+    /**
+     *Constructor for the TableHeader object
+     *
+     * @param  data   Description of Parameter
+     * @param  table  Description of Parameter
+     * @since
+     */
+    public TableHeader( HelpfulJTable table, Data data )
+    {
+      super( table.getColumnModel() );
+      types = (String[]) data.columnTypes.toArray( new String[]{""} );
+    }
+
+
+    public String getToolTipText( MouseEvent evt )
+    {
+      final Point p = evt.getPoint();
+      if ( p == null )
+        return null;
+      final int colNo = columnAtPoint( p );
+      if ( colNo == -1 )
+        return null;
+      return types[colNo];
     }
   }
 
