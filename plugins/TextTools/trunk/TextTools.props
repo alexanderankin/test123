@@ -1,9 +1,9 @@
 plugin.TextToolsPlugin.name=TextTools
 plugin.TextToolsPlugin.author=mike dillon, Slava Pestov
-plugin.TextToolsPlugin.version=1.4.2
+plugin.TextToolsPlugin.version=1.4.3
 plugin.TextToolsPlugin.docs=index.html
 plugin.TextToolsPlugin.depend.0=jdk 1.1
-plugin.TextToolsPlugin.depend.1=jedit 02.01.01.00
+plugin.TextToolsPlugin.depend.1=jedit 02.03.02.00
 
 # Menu
 text-tools.label=TextTools
