@@ -86,14 +86,15 @@ public class SqlServerType extends Properties
 
   private final static String[] codebaseFiles =
       {
-      "/sql/serverTypes/oracle.xml",
-      "/sql/serverTypes/mysql.xml",
       "/sql/serverTypes/db2Local.xml",
       "/sql/serverTypes/db2Remote.xml",
+      "/sql/serverTypes/mysql.xml",
+      "/sql/serverTypes/odbc.xml",
+      "/sql/serverTypes/oracle.xml",
       "/sql/serverTypes/pgsql.xml",
       "/sql/serverTypes/ASA.xml",
-      "/sql/serverTypes/Sybase.xml",
-      "/sql/serverTypes/MSSQL.FreeTDS.xml"
+      "/sql/serverTypes/MSSQL.FreeTDS.xml",
+      "/sql/serverTypes/Sybase.xml"
       };
 
 
