@@ -91,7 +91,7 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  evt  Description of Parameter
 	 */
 	public void stateChanged(ChangeEvent evt) {
-		Log.log( Log.DEBUG, this, "stateChanged()");
+		//Log.log( Log.DEBUG, this, "stateChanged()");
 		
 		checkState();
 		if(currentTree != null) getCurrentModel().removeTreeModelListener(this);
@@ -236,7 +236,7 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  evt  Description of Parameter
 	 */
 	private void handleTreeModelEvent(TreeModelEvent evt) {
-		Log.log( Log.DEBUG, this, "handleTreeModelEvent()");
+		//Log.log( Log.DEBUG, this, "handleTreeModelEvent()");
 		
 		Object node = getChild(evt.getTreePath(), evt.getChildIndices()[0]);
 		if(!(node instanceof ProjectFile)) return;

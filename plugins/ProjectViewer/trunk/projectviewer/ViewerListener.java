@@ -195,8 +195,12 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 
 	/** Create a new Project */
 	private void createProject() {
+		Log.log( Log.DEBUG, this, "createProject()");
+
 		Project project = ProjectPropertiesDlg.run(viewer, null);
 
+		Log.log( Log.DEBUG, this, "createProject(), project="+project.toString());
+		
 		if(project == null)
 			return;
 
@@ -205,9 +209,13 @@ public final class ViewerListener implements WindowListener, ActionListener, Ite
 			return;
 		}
 
+		Log.log( Log.DEBUG, this, "createProject(), project.getRoot().1="+project.getRoot().toString());
+		
 		project.setLoaded(true);
 		ProjectManager.getInstance().addProject(project);
 		viewer.setCurrentProject(project);
+
+		Log.log( Log.DEBUG, this, "createProject(), project.getRoot().2="+project.getRoot().toString());
 
 		File prjHome = project.getRoot().toFile();
 		int confirmed = JOptionPane.showConfirmDialog(this.viewer,

@@ -213,6 +213,11 @@ public final class RemovalManager implements ProjectListener {
      */
     private void remove(Object o, boolean delete, boolean ask) {
 		boolean removed = false;
+		
+		if(o == null) {
+			Log.log(Log.NOTICE, this, "Removing: unexpected object o==null");
+			return;
+		}
         if (o instanceof ProjectFile) {
             if (!delete || (!ask || confirmAction(delete,FILE))) {
                 Log.log(Log.NOTICE, this, "Removing: " + o);
