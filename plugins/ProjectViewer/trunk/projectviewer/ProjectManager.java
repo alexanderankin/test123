@@ -2,375 +2,378 @@
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or any later version.
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
  *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 package projectviewer;
 
 //{{{ Imports
-import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.TreeMap;
+import java.util.Iterator;
+import java.util.Collections;
 
-import org.gjt.sp.jedit.*;
+import java.io.File;
+import java.io.Writer;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.IOException;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.SAXException;
+import org.xml.sax.helpers.DefaultHandler;
+
 import org.gjt.sp.util.Log;
 
-import projectviewer.config.ProjectViewerConfig;
+import projectviewer.vpt.VPTRoot;
+import projectviewer.vpt.VPTProject;
+import projectviewer.persist.OldConfigLoader;
+import projectviewer.persist.ProjectPersistenceManager;
 //}}}
 
 /**
- *  Manages all projects.
+ *	This class takes care of the global project configuration, that is, the list
+ *	of configured projects. This provides functionality to load the project
+ *	list in the project viewer and to map project names to configuration file
+ *	names.
  *
- *  @version	$Id$
+ *	@author		Marcelo Vanzin (with some code from older versions)
+ *	@version	$Id$
  */
 public final class ProjectManager {
 
-	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+	//{{{ Static members & constants
 
-	final static String PROJECTS_PROPS_FILE = "projects.properties";
-	final static String FILE_PROPS_FILE = "files.properties";
+	private final static String CONFIG_FILE = "pv.xml";
 
-	private final static ProjectManager instance = new ProjectManager();
+	private final static String PROJECT_ROOT	= "projects";
+	private final static String PROJECT_ELEMENT	= "project";
+	private final static String PRJ_NAME		= "name";
+	private final static String PRJ_FILE		= "file";
 
-	private List projects;
-	private Project currentProject;
-	
-	/**
-	 * Create a new <code>ProjectManager</code>.
-	 */
-	protected ProjectManager() {
-		projects = new Vector();
-		loadProjects();
-	}
+	private final static ProjectManager manager = new ProjectManager();
 
-	/**
-	 * Returns an instance of <code>ProjectManager</code>.
-	 *
-	 * @return	The instance value
-	 */
+	//{{{ getInstance() method
+	/** Returns the project manager instance. */
 	public static ProjectManager getInstance() {
-		return instance;
+		return manager;
+	} //}}}
+
+	//{{{ writeXMLHeader(String, Writer) method
+	/**
+	 *	Writes an XML header to the given writer. If encoding is not null,
+	 *	it is written in the encoding field; else, UTF-8 is used.
+	 */
+	public static void writeXMLHeader(String encoding, Writer out) throws IOException {
+		out.write("<?xml version=\"1.0\" encoding=\"" +
+			((encoding != null) ? encoding : "UTF8") +
+			"\" ?>\n\n");
+	} //}}}
+
+	//}}}
+
+	//{{{ Constructor
+
+	private ProjectManager() {
+		projects = new TreeMap();
+		fileNames = new HashMap();
+		loaded = new HashMap();
 	}
 
-	/**
-	 * Write project data to file.
-	 *
-	 * @param out				Description of Parameter
-	 * @param prj				Description of Parameter
-	 * @exception IOException	Description of Exception
-	 */
-	private static void writeProjectData( PrintWriter out, Project prj )
-		  throws IOException {
-		out.print( "project." );
-		out.print( Integer.toString( prj.getKey() ) );
-		out.print( "=" );
-		out.println( prj.getName() );
-	}
+	//}}}
 
-	/**
-	 * Returns a key identifying file of <code>index</code> for <code>aProject</code>.
-	 *
-	 * @param index	Description of Parameter
-	 * @param aProject  Description of Parameter
-	 * @return		 Description of the Returned Value
-	 */
-	private static String buildFileKey( int index, Project aProject ) {
-		return "file." + index + ".project." + aProject.getKey();
-	}
+	//{{{ Instance variables
 
+	private TreeMap projects;
+	private HashMap fileNames;
+	private HashMap loaded;
+
+	//}}}
+
+	//{{{ loadConfig() method
 	/**
-	 * Load the specified properties file.
+	 *	Reads the list of projects from disk. If the old configuration style is
+	 *	found, the OldConfigLoader is called to translate to the new object
+	 *	style, the data is saved, the list is cleared (so that we don't have
+	 *	useless data floating around) and the new config is finally loaded
+	 *	from the disk.
 	 *
-	 * @param fileName		Description of Parameter
-	 * @return				Description of the Returned Value
-	 * @exception IOException  Description of Exception
+	 *	@throws	IOException		Shouldn't happen, but who knows...
 	 */
-	public static Properties load( String fileName ) throws IOException {
-		Properties props = new Properties();
-		InputStream in = null;
+	public void loadConfig() throws IOException {
+		InputStream cfg = ProjectPlugin.getResourceAsStream(CONFIG_FILE);
+		if (cfg == null) {
+			Log.log(Log.NOTICE, this, "Converting old ProjectViewer configuration...");
+			// Load old config style data
+			OldConfigLoader.load(this);
+
+			// save data in new style
+			save();
+
+			// clear the list
+			projects.clear();
+			fileNames.clear();
+			loaded.clear();
+
+			// re-instantiate the InputStream
+			cfg = ProjectPlugin.getResourceAsStream(CONFIG_FILE);
+		}
+
+		// OK, let's parse the config file
 		try {
-			in = ProjectPlugin.getResourceAsStream( fileName );
-			if ( in != null )
-				props.load( in );
-			return props;
-		}
-		finally {
-			if ( in != null )
-			in.close();
-		}
-	}
-
-	/**
-	 * Returns the index of the given project.
-	 *
-	 * @param aProject  Description of Parameter
-	 * @return		 The indexOfProject value
-	 */
-	public int getIndexOfProject( Project aProject ) {
-		return projects.indexOf( aProject );
-	}
-
-	/**
-	 * Returns the number of projects.
-	 *
-	 * @return	The projectCount value
-	 */
-	public int getProjectCount() {
-		return projects.size();
-	}
-
-	/**
-	 * Returns the indexed project.
-	 *
-	 * @param index  Description of Parameter
-	 * @return	  The project value
-	 */
-	public Project getProject( int index ) {
-		return (Project)projects.get( index );
-	}
-
-	/**
-	* Returns the named project.
-	*
-	* @param aName  Description of Parameter
-	* @return	  The project value
-	*/
-	public Project getProject( String aName ) {
-	  for ( Iterator i = projects(); i.hasNext();  ) {
-		 Project each = (Project)i.next();
-		 if ( each.getName().equals( aName ) )
-			return each;
-	  }
-	  return null;
-	}
-
-	/**
-	 * Returns an iterator of projects.
-	 *
-	 * @return	Description of the Returned Value
-	 */
-	public Iterator projects() {
-		return projects.iterator();
-	}
-
-	/**
-	 * Returns <code>true</code> if the named project exists.
-	 *
-	 * @param name  Description of Parameter
-	 * @return	 Description of the Returned Value
-	 */
-	public boolean hasProject( String name ) {
-		return getProject( name ) != null;
-	}
-
-	/**
-	 * Add a project.
-	 *
-	 * @param aProject  The feature to be added to the Project attribute
-	 */
-	public synchronized void addProject( Project aProject ) {
-		if ( aProject.isKeyUnset() )
-			aProject.setKey( projects.size() + 1 );
-		projects.add( aProject );
-		sortProjectList();
-	}
-
-	/**
-	 * Remove a project.
-	 *
-	 * @param aProject  Description of Parameter
-	 */
-	public synchronized void removeProject( Project aProject ) {
-		if (!aProject.isKeyUnset()) {
-			// remove the project's file from disk
-			File pFile = new File(
-				ProjectPlugin.getResourcePath("projects/project" + aProject.getKey() + ".properties"));
-			pFile.delete();
-		}
-		projects.remove(aProject);
-	}
-	
-	/**
-	 * Save projects.
-	 */
-	public synchronized void save() {
-		for ( int i = 0; i < projects.size(); i++ ) {
-			((Project)projects.get(i)).load();
+			SAXParserFactory spf = SAXParserFactory.newInstance();
+			SAXParser parser = spf.newSAXParser();
+			parser.parse(cfg, new PVSAXHandler());
+		} catch (SAXException se) {
+			Log.log(Log.ERROR, this, se);
+		} catch (ParserConfigurationException pce) {
+			Log.log(Log.ERROR, this, pce);
 		}
 
-		// Cleanup the "projects" directory
-		File pDir = new File( ProjectPlugin.getResourcePath( "projects" ) );
-		File[] list = pDir.listFiles();
-		if ( list != null )
-			for ( int i = 0; i < list.length; i++ ) {
-				list[i].delete();
-			}
-		
-		// Saves all the data
-		Log.log( Log.DEBUG, this, "Saving all project data..." );
-		saveAllProjectData();
-		for ( Iterator i = projects(); i.hasNext();  ) {
-			((Project)i.next()).save();
+		// Projects loaded, add all of them to the root node
+		VPTRoot root = VPTRoot.getInstance();
+		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
+			root.add((VPTProject)projects.get(it.next()));
 		}
-	}
+	} //}}}
 
-	/**
-	 * Save data on all projects.
-	 */
-	private synchronized void saveAllProjectData() {
-		// Now, continues with saving.
-		PrintWriter out = null;
-		try {
-			out = new PrintWriter(
-				new OutputStreamWriter(
-					ProjectPlugin.getResourceAsOutputStream( PROJECTS_PROPS_FILE ),
-					"ISO-8859-1"
-				)
-			);
-
-			out.println( "# Projects configuration files" );
-			out.println( "#DO NOT MODIFY THIS FILE:\n\n" );
-			out.println( "#IF YOU DO WANT TO MODIFY IT... HERE IS THE SYNTAX\n" );
-			out.println( "#project.1=projectName\n" );
-			out.println( "#project.2=projectName\n" );
-			for ( int i = 0; i < projects.size(); i++ ) {
-				Project each = (Project)projects.get( i );
-				each.setKey( i + 1 );
-				writeProjectData( out, each );
-			}
-	
-		}
-		catch ( UnsupportedEncodingException uee ) {
-			// Not likely
-		}
-		catch ( IOException e ) {
-			Log.log( Log.ERROR, this, e );
-		}
-		finally {
-			close( out );
-		}
-	}
-
-	/**
-	 * Close output stream, catching any exceptions.
-	 *
-	 * @param out  Description of Parameter
-	 */
-	private void close( Writer out ) {
-		if ( out != null ) {
-			try {
-				out.close();
-			}
-			catch ( IOException e ) {
-				Log.log( Log.WARNING, this, e );
-			}
-		}
-	}
-
-	/**
-	 * Load all projects.
-	 */
-	private void loadProjects() {
-		//long ts=System.currentTimeMillis();
-		//Log.log( Log.DEBUG, this, "loadProjects() beg");
-		try {
-			Properties projectProps = load( PROJECTS_PROPS_FILE );
-			Properties fileProps = null;
-			ArrayList toLoad = new ArrayList();
-		
-			int counter = 1;
-			String prjName = projectProps.getProperty( "project." + counter );
-			while ( prjName != null ) {
-		
-				String root = projectProps.getProperty( "project." + counter + ".root" );
-		
-				//Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
-				Project project = new Project( prjName, counter );
-				if ( root != null ) {
-					project.setRoot( new ProjectDirectory( root ) );
-					project.setLoaded( true );
-					toLoad.add( project );
-					if ( fileProps == null ) {
-						fileProps = load( FILE_PROPS_FILE );
-					}
+	//{{{ save() method
+	/** Saves all the project data to the disk (config + each project). */
+	public void save() throws IOException {
+		// save each project's data, if loaded
+		// if not loaded, no need to save.
+		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
+			String pName = (String) it.next();
+			if (loaded.get(pName) == Boolean.TRUE) {
+				String fName = (String) fileNames.get(pName);
+				if (fName == null) {
+					fName = createFileName(pName);
+					fileNames.put(pName, fName);
 				}
-		
-				addProject( project );
-				prjName = projectProps.getProperty( "project." + ( ++counter ) );
+				ProjectPersistenceManager.save((VPTProject)projects.get(pName), fName);
 			}
-		
-			// Loads projects that use the old configuration scheme
-			for ( Iterator i = toLoad.iterator(); i.hasNext();  ) {
-				Project each = (Project)i.next();
-		
-				int fileCounter = 1;
-				String fileName = fileProps.getProperty( buildFileKey( fileCounter, each ) );
-				while ( fileName != null ) {
-					ProjectFile file = new ProjectFile( fileName );
-					if ( !config.getDeleteNotFoundFiles() || file.exists() )
-						each.importFile( file );
-					fileName = fileProps.getProperty( buildFileKey( ++fileCounter, each ) );
+		}
+
+		saveProjectList();
+
+	} //}}}
+
+	//{{{ saveProject(VPTProject) method
+	/**
+	 *	Save the project's data to the config file. Before calling this method,
+	 *	ensure that the project is in the internal list of projects (i.e., if
+	 *	it is a new project, call {@link #addProject(VPTProject) addProject(VPTProject)}
+	 *	before calling this method).
+	 */
+	public void saveProject(VPTProject p) {
+		String fName = (String) fileNames.get(p.getName());
+		if (fName == null) {
+			fName = createFileName(p.getName());
+			fileNames.put(p.getName(), fName);
+			// since we're saving the project for the first time, let's be
+			// paranoid and save all configuration along with it
+			try{
+				saveProjectList();
+			} catch (IOException ioe) {
+				Log.log(Log.ERROR, this, ioe);
+			}
+		}
+		try {
+			ProjectPersistenceManager.save(p, fName);
+		} catch (IOException ioe) {
+			Log.log(Log.ERROR, this, ioe);
+		}
+	} //}}}
+
+	//{{{ removeProject(VPTProject) method
+	/**
+	 *	Removes the project from the internal list of projects. Removes the
+	 *	project's config file (if it exists), and notifies the Viewer that
+	 *	the project does not exist anymore.
+	 */
+	public void removeProject(VPTProject p) {
+		String fName = (String) fileNames.get(p.getName());
+		if (fName != null) {
+			new File(ProjectPlugin.getResourcePath("projects/" + fName)).delete();
+			fileNames.remove(p.getName());
+			// project list changed, save "global" data.
+			try{
+				saveProjectList();
+			} catch (IOException ioe) {
+				Log.log(Log.ERROR, this, ioe);
+			}
+		}
+		projects.remove(p.getName());
+		loaded.remove(p.getName());
+		ProjectViewer.removeNodeFromParent(p);
+		ProjectViewer.projectRemoved(p);
+	} //}}}
+
+	//{{{ renameProject(String, String) method
+	/** Updates information about a project to reflect its name change. */
+	public void renameProject(String oldName, String newName) {
+		VPTProject p = (VPTProject) projects.remove(oldName);
+		projects.put(newName, p);
+		loaded.put(newName, projects.remove(oldName));
+		if (fileNames.get(oldName) != null) {
+			String oldFile = (String) fileNames.remove(oldName);
+			new File(ProjectPlugin.getResourcePath("projects/" + oldFile)).delete();
+		}
+		saveProject(p);
+		ProjectViewer.nodeChanged(p);
+	} //}}}
+
+	//{{{ addProject(VPTProject) method
+	/** Adds a project to the list. */
+	public void addProject(VPTProject p) {
+		projects.put(p.getName(), p);
+		loaded.put(p.getName(), Boolean.TRUE);
+
+		VPTRoot root = VPTRoot.getInstance();
+		ProjectViewer.insertNodeInto(p, root);
+		ProjectViewer.nodeStructureChangedFlat(root);
+		ProjectViewer.updateProjectCombos();
+	} //}}}
+
+	//{{{ getProject(String) method
+	/**
+	 *	Returns the project with the given name. If the project is not yet
+	 *	loaded, load its configuration from the disk. It it does not exist,
+	 *	return null.
+	 */
+	public VPTProject getProject(String name) {
+		VPTProject p = (VPTProject) projects.get(name);
+		if (loaded.get(name) == Boolean.FALSE) {
+			String fName = (String) fileNames.get(name);
+			if (fName != null) {
+				try {
+					ProjectPersistenceManager.load(p, fName);
+					loaded.put(name, Boolean.TRUE);
+				} catch (IOException ioe) {
+					Log.log(Log.ERROR, this, ioe);
 				}
+			} else {
+				Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
 			}
-		
-			// If we have any old configuration, let's save it as new config as
-			// soon as possible
-			if ( toLoad.size() > 0 ) {
-				Log.log( Log.NOTICE, this, "Migration to new configuration style..." );
-				save();
+		}
+		return p;
+	} //}}}
+
+	//{{{ getProjects() method
+	/**
+	 *	Returns an iterator that points to the (ordered) list of project names
+	 *	managed by this manager. The Iterator is read-only.
+	 */
+	public Iterator getProjects() {
+		return Collections.unmodifiableCollection(projects.values()).iterator();
+	} //}}}
+
+	//{{{ isLoaded(String) method
+	/**
+	 *	Returns whether a project is loaded or not.
+	 *
+	 *	@param	pName	The project's name.
+	 *	@return	If the project was loaded from disk.
+	 */
+	public boolean isLoaded(String pName) {
+		return (loaded.get(pName) == Boolean.TRUE);
+	} //}}}
+
+	//{{{ hasProject(String) method
+	/** Returns whether a project with the given name exists. */
+	public boolean hasProject(String name) {
+		return projects.containsKey(name);
+	} //}}}
+
+	//{{{ Private Stuff
+
+	//{{{ createFileName(String) method
+	/**
+	 *	Crates an unique file name where to save a project's configuration
+	 *	based on the project's name.
+	 */
+	 private String createFileName(String projName) {
+		String illegalChars = " /:\\\"'";
+		String substitutes  = "_---__";
+
+		StringBuffer fName = new StringBuffer(projName);
+		for (int i = 0; i < fName.length(); i++) {
+			int idx = illegalChars.indexOf(fName.charAt(i));
+			if (idx != -1) {
+				fName.setCharAt(i, substitutes.charAt(idx));
 			}
-		
 		}
-		catch ( Throwable e ) {
-			Log.log( Log.ERROR, this, e );
-		}
-		//Log.log( Log.DEBUG, this, "loadProjects() end "+(System.currentTimeMillis()-ts)+" ms");
-	}
 
-	public void setCurrentProject(Project p) {
-		this.currentProject = p;
-	}
-	
-	public Project getCurrentProject() {
-		return currentProject;
-	}
-	
-	/**
-	 * Object for comparing projects.
-	 */
-	private final class ProjectComparator implements MiscUtilities.Compare {
-		
-		/**
-		 * Perform a comparison.
-		 *
-		 * @param obj1  Description of Parameter
-		 * @param obj2  Description of Parameter
-		 * @return	  Description of the Returned Value
-		 */
-		public int compare( Object obj1, Object obj2 ) {
-			Project project1 = (Project)obj1;
-			Project project2 = (Project)obj2;
-		
-			return project1.getName().compareTo( project2.getName() );
+		File f = new File(ProjectPlugin.getResourcePath("projects" + File.separator + fName.toString() + ".xml"));
+		int cntr = 0;
+		while (f.exists()) {
+			cntr++;
+			f = new File(ProjectPlugin.getResourcePath("projects" + File.separator + fName.toString() + "_" + cntr + ".xml"));
 		}
-	}
 
+		return f.getName();
+	} //}}}
+
+	//{{{ saveProjectList() method
 	/**
-	 *  Sorts the project list.
+	 *	Saves the "global" data for the projects: the list of projects and
+	 *	the file names where each project data is stored.
 	 */
-	public void sortProjectList() {
-		MiscUtilities.quicksort( (Vector)projects, new ProjectComparator() );
-	}
+	private void saveProjectList() throws IOException {
+		// save the global configuration
+		OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_FILE);
+		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF-8");
+		writeXMLHeader("UTF-8", out);
+		out.write("<" + PROJECT_ROOT + ">\n");
+		for (Iterator it = fileNames.keySet().iterator(); it.hasNext(); ) {
+			String pName = (String) it.next();
+			String fName = (String) fileNames.get(pName);
+			out.write("<" + PROJECT_ELEMENT + " " +
+				PRJ_NAME + "=\"" + pName + "\" " +
+				PRJ_FILE + "=\"" + fName + "\"/>\n");
+		}
+		out.write("</" + PROJECT_ROOT + ">\n");
+		out.flush();
+		out.close();
+	} //}}}
+
+	//{{{ PVSAXHandler class
+	/**	SAX handler that takes care of reading the configuration file. */
+	private class PVSAXHandler extends DefaultHandler {
+
+		//{{{ startElement() method
+		/** Reads "project" elements and adds them to the list. */
+		public void startElement(String uri, String localName, String qName,
+									Attributes attributes) throws SAXException {
+			if (qName.equals(PROJECT_ELEMENT)) {
+				String pName = attributes.getValue(PRJ_NAME);
+				fileNames.put(pName, attributes.getValue(PRJ_FILE));
+				projects.put(pName, new VPTProject(pName));
+				loaded.put(pName, Boolean.FALSE);
+			} else if (!qName.equals(PROJECT_ROOT)) {
+				Log.log(Log.WARNING, this, "Unknown node in config file: " + qName);
+			}
+		} //}}}
+
+	} //}}}
+
+	//}}}
 
 }
 

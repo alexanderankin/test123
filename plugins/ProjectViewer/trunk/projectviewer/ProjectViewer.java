@@ -19,772 +19,869 @@
 package projectviewer;
 
 //{{{ Imports
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import java.util.List;
-import javax.swing.*;
-import javax.swing.tree.*;
-import javax.swing.event.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.ArrayList;
+
+import java.awt.Component;
+import java.awt.BorderLayout;
+import java.awt.event.ItemEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.ItemListener;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.jedit.msg.*;
+import javax.swing.JList;
+import javax.swing.JTree;
+import javax.swing.JPanel;
+import javax.swing.JToolBar;
+import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.BorderFactory;
+import javax.swing.SwingUtilities;
+import javax.swing.DefaultListCellRenderer;
+
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.DefaultTreeModel;
+
 import org.gjt.sp.util.Log;
 
-import projectviewer.event.*;
-import projectviewer.tree.*;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EBComponent;
+
+import org.gjt.sp.jedit.msg.ViewUpdate;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditorExitRequested;
+
+import projectviewer.vpt.VPTNode;
+import projectviewer.vpt.VPTRoot;
+import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTContextMenu;
+import projectviewer.vpt.VPTCellRenderer;
+import projectviewer.vpt.VPTFileListModel;
+import projectviewer.vpt.VPTSelectionListener;
+import projectviewer.vpt.VPTWorkingFileListModel;
+
+import projectviewer.event.ProjectViewerEvent;
+import projectviewer.event.ProjectViewerListener;
+
+import projectviewer.action.Action;
+import projectviewer.action.ExpandAllAction;
+import projectviewer.action.CollapseAllAction;
+import projectviewer.action.EditProjectAction;
+import projectviewer.action.OldStyleAddFileAction;
 import projectviewer.config.ProjectViewerConfig;
+import projectviewer.importer.NewFileImporter;
 //}}}
 
 /**
- *  A Project Viewer plugin for jEdit.
+ *  Main GUI for the project viewer plugin.
  *
- * @version    $Id$
+ *	@author		Marcelo Vanzin (with much code from original version)
+ *	@version    $Id$
  */
-public final class ProjectViewer extends JPanel 
-								 implements EBComponent, Runnable, PropertyChangeListener {
-									 
-	//{{{ Constants
-	public final static String CREATE_NEW_PROJECT = "Create new project ...";
-	public final static String ALL_PROJECTS = "All projects";
-
-	protected final static int FOLDERS_TAB = 0;
-	protected final static int FILES_TAB = 1;
-	protected final static int WORKING_FILES_TAB = 2;
-
-	private final static String FOLDERS_TAB_TITLE = "Folders";
-	private final static String FILES_TAB_TITLE = "Files";
-	private final static String WORKING_FILES_TAB_TITLE = "Working Files";
-
-	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
-	//}}}
+public final class ProjectViewer extends JPanel
+								 implements EBComponent {
 
 	//{{{ Static members
 
-	/** Maps jEdit views to ProjectViewer instances. */
-	private static final Hashtable viewers = new Hashtable();
+	private static final ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+	private static final HashMap viewers		= new HashMap();
+	private static final HashMap listeners		= new HashMap();
+	private static final ArrayList viewerList	= new ArrayList();
+	private static final ArrayList actions		= new ArrayList();
+	private static boolean DISABLE_EVENTS;
 
+	//{{{ Default toolbar actions (static initializer)
+	static {
+		actions.add(new EditProjectAction());
+		actions.add(new ExpandAllAction());
+		actions.add(new CollapseAllAction());
+		actions.add(new OldStyleAddFileAction());
+	} //}}}
+
+	//{{{ registerAction(Action) method
+	/** Adds an action to be shown on the context menu. */
+	public static void registerAction(Action action) {
+		actions.add(action);
+		actionsChanged();
+	} //}}}
+
+	//{{{ unregisterAction(Action) method
+	/** Removes an action from the context menu. */
+	public static void unregisterAction(Action action) {
+		actions.remove(action);
+		actionsChanged();
+	} //}}}
+
+	//{{{ getViewer(View) method
 	/**
-	 *	Returns the ProjectViewer instance associated with the provided view,
-	 *	if any; else, returns null.
+	 *	Returns the viewer associated with the given view, or null if none
+	 *	exists.
 	 */
-	public static ProjectViewer getProjectViewer(View view) {
+	public static ProjectViewer getViewer(View view) {
 		return (ProjectViewer) viewers.get(view);
-	}
-	
+	} //}}}
+
+	//{{{ addProjectViewerListener(ProjectViewerListener, View) method
+	/**
+	 *	Add a listener for the instance of project viewer of the given
+	 *	view. If the given view is null, the listener will be called from
+	 *	all instances.
+	 *
+	 *	<p>Additionally, for listeners that are registered for all views, a
+	 *	ProjectViewerEvent is fired when a different view is selected.</p>
+	 *
+	 *	@param	lstnr	The listener to add.
+	 *	@param	view	The view that the lstnr is attached to, or <code>null</code>
+	 *					if the listener wants to be called from all views.
+	 */
+	public static void addProjectViewerListener(ProjectViewerListener lstnr, View view) {
+		ArrayList lst = (ArrayList) listeners.get(view);
+		if (lst == null) {
+			lst = new ArrayList();
+			listeners.put(view, lst);
+		}
+		lst.add(lstnr);
+	} //}}}
+
+	//{{{ removeProjectViewerListener(ProjectViewerListener, View) method
+	/**
+	 *	Remove the listener from the list of listeners for the given view. As
+	 *	with the {@link #addProjectViewerListener(ProjectViewerListener, View) add}
+	 *	method, <code>view</code> can be <code>null</code>.
+	 */
+	public static void removeProjectViewerListener(ProjectViewerListener lstnr, View view) {
+		ArrayList lst = (ArrayList) listeners.get(view);
+		if (lst != null) {
+			lst.remove(lstnr);
+		}
+	} //}}}
+
+	//{{{ updateProjectCombos() method
+	/**
+	 *	Updates the combo box that lists the projects for all project viewers
+	 *	currently instantiated.
+	 */
+	public static void updateProjectCombos() {
+
+		DISABLE_EVENTS = true;
+
+		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+			ProjectViewer v = (ProjectViewer) it.next();
+
+			v.pList.removeAllItems();
+			v.pList.addItem(CREATE_NEW_PROJECT);
+			v.pList.addItem(VPTRoot.getInstance());
+
+			for (Iterator it2 = ProjectManager.getInstance().getProjects(); it2.hasNext(); ) {
+				v.pList.addItem(it2.next());
+			}
+
+			v.pList.setSelectedItem(v.treeRoot);
+		}
+
+		DISABLE_EVENTS = false;
+
+	} //}}}
+
+	//{{{ actionsChanged()
+	/** Reloads the action list for the toolbar. */
+	private static void actionsChanged() {
+		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
+			ProjectViewer v = (ProjectViewer) it.next();
+			if (v.toolBar != null)
+				v.populateToolBar();
+		}
+	} //}}}
+
+	//{{{ Tree Changes Broadcast Methods
+
+	//{{{ nodeStructureChanged(VPTNode) node
+	/**
+	 *	Notify all project viewer instances of a change in a node's structure.
+	 */
+	public static void nodeStructureChanged(VPTNode node) {
+		for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+			ProjectViewer v = (ProjectViewer) it.next();
+			if (v.folderTree != null) {
+				((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
+			}
+			if (v.fileTree != null) {
+				((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
+			}
+
+			if (v.workingFileTree != null) {
+				((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
+			}
+		}
+	} //}}}
+
+	//{{{ nodeChanged(VPTNode) node
+	/** Notify all project viewer instances of a change in a node. */
+	public static void nodeChanged(VPTNode node) {
+		for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+			ProjectViewer v = (ProjectViewer) it.next();
+			if (v.folderTree != null) {
+				((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
+			}
+			if (v.fileTree != null) {
+				((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
+			}
+
+			if (v.workingFileTree != null) {
+				((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
+			}
+		}
+	} //}}}
+
+	//{{{ insertNodeInto(VPTNode, VPTNode)
+	/**
+	 *	Notifies all trees in all instances of ProjectViewer that a node has
+	 *	been inserted to one of its nodes.
+	 */
+	public static void insertNodeInto(VPTNode child, VPTNode parent) {
+		int idx = parent.findIndexForChild(child);
+		if (config.getShowFoldersTree()) {
+			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+				ProjectViewer v = (ProjectViewer) it.next();
+				if (v.folderTree != null) {
+					((DefaultTreeModel)v.folderTree.getModel()).insertNodeInto(child, parent, idx);
+				}
+			}
+		} else {
+			parent.add(child);
+		}
+	} //}}}
+
+	//{{{ nodeStructureChangedFlat(VPTNode) method
+	/**
+	 *	Notify all "flat trees" in any project viewer instances of a change in
+	 *	a node's structure.
+	 */
+	public static void nodeStructureChangedFlat(VPTNode node) {
+		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
+			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+				ProjectViewer v = (ProjectViewer) it.next();
+				if (v.fileTree != null) {
+					((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
+				}
+
+				if (v.workingFileTree != null) {
+					((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
+				}
+			}
+		}
+	} //}}}
+
+	//{{{ removeNodeFromParent(VPTNode)
+	/**
+	 *	Notifies all trees in all instances of ProjectViewer that a node has
+	 *	been removed from its parent.
+	 */
+	public static void removeNodeFromParent(VPTNode child) {
+		VPTNode parent = (VPTNode) child.getParent();
+		if (config.getShowFoldersTree()) {
+			boolean removed = false;
+			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+				ProjectViewer v = (ProjectViewer) it.next();
+				if (v.folderTree != null) {
+					if (!removed) {
+						((DefaultTreeModel)v.folderTree.getModel()).removeNodeFromParent(child);
+						removed = true;
+					} else {
+						((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(parent);
+					}
+				}
+			}
+		} else {
+			parent.remove(child);
+		}
+	} //}}}
+
+	//{{{ projectRemoved(VPTProject) method
+	/**
+	 *	Notify all "flat trees" in any project viewer instances of a change in
+	 *	a node's structure. Then, rebuild the project combo boxes.
+	 */
+	public static void projectRemoved(VPTProject p) {
+		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
+			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
+				ProjectViewer v = (ProjectViewer) it.next();
+				if (v.fileTree != null) {
+					((VPTFileListModel)v.fileTree.getModel()).removeRef(p);
+				}
+
+				if (v.workingFileTree != null) {
+					((VPTWorkingFileListModel)v.workingFileTree.getModel()).removeRef(p);
+				}
+				if (p == v.treeRoot) {
+					v.setProject(null);
+				}
+			}
+		}
+		updateProjectCombos();
+	} //}}}
+
 	//}}}
 
-	//{{{ Private / Protected variables
-	RolloverButton removeFileBtn;
-	RolloverButton removeAllFilesBtn;
-	RolloverButton createProjectBtn;
-	RolloverButton addFileBtn;
-	RolloverButton openAllBtn;
-	RolloverButton expandBtn;
-	RolloverButton contractBtn;
-	RolloverButton launchBrowserBtn;// this will eventually be on the context menu
+	//}}}
 
-	private ProjectView projectView;
-	private JToolBar toolbar;
-	private JTabbedPane tabs = new JTabbedPane();
-	private JPanel allComponents;
+	//{{{ Constants
 
-	private JTree folderTree;
-	private JTree fileTree;
-	private JTree workingFileTree;
-	private List listeners;
-	private List projectListeners;
+	public final static String CREATE_NEW_PROJECT = jEdit.getProperty("projectviewer.create_project");
 
-	JComboBox projectCombo;
+	private final static String FOLDERS_TAB_TITLE 		= "projectviewer.folderstab";
+	private final static String FILES_TAB_TITLE 		= "projectviewer.filestab";
+	private final static String WORKING_FILES_TAB_TITLE = "projectviewer.workingfilestab";
 
-	private View view;
-	private ViewerListener vsl;
-	private ProjectTreeSelectionListener tsl;
-	private TreeContextMenuListener cml;
-	private Launcher launcher;
+	private final static String TREE_STATE_PROP = "projectviewer.folder_tree_state";
+	private final static char NOT_EXPANDED		= '0';
+	private final static char EXPANDED			= '1';
 
-	private boolean allProjectsLoaded;
-	private boolean willRun = false;
+	//}}}
+
+	//{{{ Attributes
+	private View 					view;
+
+	private JTree					folderTree;
+	private JTree					fileTree;
+	private JTree					workingFileTree;
+	private JToolBar				toolBar;
+
+	private JPanel					topPane;
+	private JTabbedPane				treePane;
+	private JComboBox				pList;
+
+	private VPTNode 				treeRoot;
+	private VPTContextMenu			vcm;
+	private VPTSelectionListener	vsl;
+	private ConfigChangeListener	ccl;
 	//}}}
 
 	//{{{ Constructor
 	/** Create a new <code>ProjectViewer</code>.
 	 *
 	 * @param  aView  Description of Parameter
-	 */
+`	 */
 	public ProjectViewer(View aView) {
-		allProjectsLoaded = false;
+		super(new BorderLayout());
 		view = aView;
-		launcher = new Launcher(view, this);
-		vsl = new ViewerListener(this, launcher);
-		tsl = new ProjectTreeSelectionListener(this, launcher);
-		cml = new TreeContextMenuListener(this);
-		listeners = new ArrayList();
-		projectListeners = new ArrayList();
-		loadGUI();
-		enableEvents(AWTEvent.COMPONENT_EVENT_MASK);
-		config.addPropertyChangeListener(this);
 
-		setCurrentProject(ProjectManager.getInstance().getCurrentProject());
-		
-		tsl.stateChanged(null);
+		if (viewers.get(aView) == null) {
+			viewers.put(aView, this);
+		}
+		viewerList.add(this);
+
+		vcm = new VPTContextMenu(this);
+		vsl = new VPTSelectionListener(this);
+		treeRoot = VPTRoot.getInstance();
+		buildGUI();
+
+		ccl = new ConfigChangeListener();
+		config.addPropertyChangeListener(ccl);
 		EditBus.addToBus(this);
-		viewers.put(view,this);
-	}//}}}
 
-	//{{{ getView() method
-	/** Return the view that this project viewer is working with
-	 *
-	 * @return    The view value
-	 */
-	public View getView() {
-		return view;
-	}
-	//}}}
-
-	//{{{ setCurrentProject() method
-	/** Set the project that the user is working with.
-	 *
-	 * @param  project  The new currentProject value
-	 */
-	public void setCurrentProject(Project project) {
-		Log.log( Log.DEBUG, this, "setCurrentProject() project="+project);
-		if(projectView != null) {
-			Project cp = getCurrentProject();
-			if(isAllProjects() && project == null)
-				return;
-			if(!isAllProjects() && project != null && project.equals(cp))
-				return;
-			if(cp != null) {
-				Log.log( Log.DEBUG, this, "saving state of current project");
-				// save the state of the previous project
-				launcher.closeProject(cp);
-				cp.setFolderTree(folderTree);
-				// remember currently active tab
-				cp.setTabState(tabs.getSelectedIndex());
+		if (config.getLastProject() != null) {
+			VPTProject p = ProjectManager.getInstance().getProject(config.getLastProject());
+			if (p != null) {
+				DISABLE_EVENTS = true;
+				setProject(p);
+				pList.setSelectedItem(p);
+				DISABLE_EVENTS = false;
+				fireProjectLoaded(p);
 			}
-			projectView.deactivate();
+		}
+	} //}}}
+
+	//{{{ Private methods
+
+	//{{{ createTree(TreeModel) method
+	/** Creates a new tree to be added to the viewer. */
+	private JTree createTree(TreeModel model) {
+		JTree tree = new JTree(model);
+		tree.setCellRenderer(new VPTCellRenderer());
+		tree.setBorder(BorderFactory.createEtchedBorder());
+
+		// don't change order!
+		tree.addMouseListener(vsl);
+		tree.addMouseListener(vcm);
+
+		//model.addTreeModelListener(vsl);
+		tree.addTreeSelectionListener(vsl);
+		return tree;
+	} //}}}
+
+	//{{{ populateToolBar() method
+	/** Loads the toolbar. */
+	private void populateToolBar() {
+		toolBar.removeAll();
+		for (Iterator i = actions.iterator(); i.hasNext(); ) {
+			Action a = (Action) i.next();
+			a = (Action) a.clone();
+			a.setViewer(this);
+			toolBar.add(a.getButton());
+		}
+		toolBar.repaint();
+	} //}}}
+
+	//{{{ buildGUI() method
+	/** Builds the viewer GUI. */
+	private void buildGUI() {
+		treePane = new JTabbedPane();
+		add(BorderLayout.CENTER, treePane);
+
+		topPane = new JPanel(new BorderLayout());
+		showTrees();
+
+		pList = new JComboBox();
+		pList.setRenderer(new VPTListCellRenderer());
+
+		pList.addItem(CREATE_NEW_PROJECT);
+		pList.addItem(VPTRoot.getInstance());
+
+		for (Iterator it = ProjectManager.getInstance().getProjects(); it.hasNext(); ) {
+			pList.addItem(it.next());
 		}
 
-		// set up the new project
-		projectView = getProjectViewFor(project);
-		
-		if(isAllProjects()) {
-			if(!allProjectsLoaded) {
-				for(Iterator i = ProjectManager.getInstance().projects(); i.hasNext(); ) {
-					Project p = (Project)i.next();
-					if(!p.isLoaded()) {
-						p.load();
+		pList.setSelectedItem(treeRoot);
+		pList.addItemListener(new ProjectComboListener());
+		topPane.add(BorderLayout.SOUTH, pList);
+
+		add(BorderLayout.NORTH, topPane);
+
+	} //}}}
+
+	//{{{ fireProjectLoaded(VPTProject) method
+	/**
+	 *	Fires an event for the loading of a project. Notify all the listeners
+	 *	registered for this instance's view and listeners registered for all
+	 *	views.
+	 */
+	private void fireProjectLoaded(VPTProject p) {
+		ProjectViewerEvent evt = new ProjectViewerEvent(this, p);
+
+		ArrayList lst = (ArrayList) listeners.get(view);
+		if (lst != null)
+		for (Iterator i = lst.iterator(); i.hasNext(); ) {
+			((ProjectViewerListener)i.next()).projectLoaded(evt);
+		}
+
+		lst = (ArrayList) listeners.get(null);
+		if (lst != null)
+		for (Iterator i = lst.iterator(); i.hasNext(); ) {
+			((ProjectViewerListener)i.next()).projectLoaded(evt);
+		}
+
+	} //}}}
+
+	//{{{ closeProject(VPTProject) method
+	/**
+	 *	Closes a project: searches the open buffers for files related to the
+	 *	given project and closes them (if desired) and/or saves them to the
+	 *	open list (if desired).
+	 */
+	private void closeProject(VPTProject p, boolean close, boolean remember) {
+		if (close || remember) {
+			Buffer[] bufs = jEdit.getBuffers();
+			for (int i = 0; i < bufs.length; i++) {
+				if (p.getFile(bufs[i].getPath()) != null) {
+					if (close) {
+						jEdit.closeBuffer(view, bufs[i]);
+					}
+					if (remember) {
+						p.addOpenFile(bufs[i].getPath());
 					}
 				}
-				allProjectsLoaded = true;
-			}
-		}
-		else {
-			project.load();
-			Iterator it = projectListeners.iterator();
-			while(it.hasNext())
-				project.addProjectListener((ProjectListener)it.next());
-			launcher.openProject(project);
-			ProjectManager.getInstance().setCurrentProject(project);
-		}
-
-		// set the trees
-		if(folderTree != null) {
-			folderTree.getSelectionModel().setSelectionMode(projectView.getSelectionModel());
-		}
-		if(fileTree != null) {
-			fileTree.getSelectionModel().setSelectionMode(projectView.getSelectionModel());
-		}
-		if(workingFileTree != null) {
-			workingFileTree.getSelectionModel().setSelectionMode(projectView.getSelectionModel());
-		}
-
-		projectView.activate();
-
-		loadProject();
-	}//}}}
-
-	//{{{ setStatus() method
-	/** Set the status message.
-	 *
-	 * @param  msg  The new status value
-	 */
-	public void setStatus(Object msg) {
-		view.getStatus().setMessageAndClear(msg.toString());
-	}//}}}
-
-	//{{{ isFileSelected() method
-	/** Returns <code>true</code> if currently selected node of the displayed
-	 * tree is a file.
-	 *
-	 * @return    The fileSelected value
-	 */
-	public boolean isFileSelected() {
-		return getCurrentTree().getLastSelectedPathComponent() instanceof ProjectFile;
-	}//}}}
-
-	//{{{ getCurrentTree() method
-	/** Returns the currently displayed tree, or <code>null</code> if none are
-	 *  displayed.
-	 *
-	 * @return    The currentTree value
-	 */
-	public JTree getCurrentTree() {
-		switch(tabs.getSelectedIndex()) {
-			case 0:
-				if(folderTree!=null) return folderTree;
-				if(fileTree!=null) return fileTree;
-				if(workingFileTree!=null) return workingFileTree;
-			case 1:
-				if(fileTree!=null) return fileTree;
-				if(workingFileTree!=null) return workingFileTree;
-			case 2:
-				if(workingFileTree!=null) return workingFileTree;
-		}
-		Log.log( Log.DEBUG, this, "   invalid tabnumber :"+tabs.getSelectedIndex());
-		return null;
-	}//}}}
-
-	//{{{ getCurrentProject() method
-	/** Returns the current project.
-	 *
-	 * @return    The currentProject value
-	 */
-	public Project getCurrentProject() {
-		return projectView.getCurrentProject();
-	}//}}}
-
-	//{{{ getSelectedNode() method
-	/** Returns the selected node of the current tree.
-	 *
-	 * @return    The selectedNode value
-	 */
-	public Object getSelectedNode() {
-		JTree curTree = getCurrentTree();
-		return (curTree != null) ? curTree.getLastSelectedPathComponent() : null;
-	}//}}}
-
-	//{{{ getSelectedFile() method
-	/** Returns the currently selected file in the current tree, or <code>null</code>
-	 * if no nodes are selected.
-	 *
-	 * @return    The selectedFile value
-	 */
-	public ProjectFile getSelectedFile() {
-		return (ProjectFile)getSelectedNode();
-	}//}}}
-
-	//{{{ getComponent() method
-	/** Returns this component.
-	 *
-	 * @return    The component value
-	 */
-	public Component getComponent() {
-		return this;
-	}//}}}
-
-	//{{{ getName() method
-	/** Returns the name of this component.
-	 *
-	 * @return    The name value
-	 */
-	public String getName() {
-		return ProjectPlugin.NAME;
-	}//}}}
-
-	//{{{ isAllProjects() method
-	/** Returns <code>true</code> if the current view is 'All Projects'.
-	 *
-	 * @return    The allProjects value
-	 */
-	public boolean isAllProjects() {
-		return projectView instanceof AllProjectsView;
-	}//}}}
-
-	//{{{ collapseAll() method
-	/** Collapses all nodes of the current tree. */
-	public void collapseAll() {
-		getCurrentTree().collapseRow(0);
-	}//}}}
-
-	//{{{ expandAll() method
-	/** Expands all nodes of the current tree. */
-	public void expandAll() {
-		expandAll(getCurrentTree());
-	}//}}}
-
-	//{{{ expandAll() method
-	/** 
-	 *	Expands all nodes of the specified tree.
-	 *
-	 * 	@param  tree  Description of Parameter
-	 */
-	public void expandAll(JTree tree) {
-		expand(new TreePath(tree.getModel().getRoot()), tree);
-	} //}}}
-
-	//{{{ expand() method
-	/**
-	 *	Expand the given sub tree.
-	 *
-	 * @param  path  Description of Parameter
-	 * @param  tree  Description of Parameter
-	 */
-	public void expand(TreePath path, JTree tree) {
-		TreeModel model = tree.getModel();
-		Object node = path.getLastPathComponent();
-		if(model.isLeaf(node))
-			return;
-		tree.expandPath(path);
-
-		int count = model.getChildCount(node);
-		for(int i = 0; i < count; i++) {
-			expand(path.pathByAddingChild(model.getChild(node, i)), tree);
-		}
-	}//}}}
-
-	//{{{ showDefaultCursor() method
-	/** Show the default cursor. */
-	public void showDefaultCursor() {
-		setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-	} //}}}
-
-	//{{{ showWaitCursor() method
-	/** Show the wait cursor. */
-	public void showWaitCursor() {
-		setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-	} //}}}
-
-	//{{{ createFileChooser() method
-	/** 
-	 *	Returns a file chooser that with a starting directory relative to the
-	 *	currently selected node of the current displayed tree.
-	 *
-	 * @return    Description of the Returned Value
-	 */
-	public JFileChooser createFileChooser() {
-		Object node = getSelectedNode();
-
-		String browsePath = "";
-		if(node instanceof Project)
-			browsePath = ((Project)node).getRoot().getPath();
-
-		else if(node instanceof ProjectDirectory)
-			browsePath = ((ProjectDirectory)node).getPath();
-
-		else if(node instanceof ProjectFile)
-			browsePath = ((ProjectFile)node).toFile().getParent();
-		else if(getCurrentProject() != null)
-			browsePath = getCurrentProject().getRoot().getPath();
-
-		return new JFileChooser(browsePath);
-	} //}}}
-
-	//{{{ refresh() method
-	/** Reload ProjectResources and then reparse the object tree. */
-	public void refresh() {
-		Log.log(Log.NOTICE, this, "refresh()");
-		loadProjectCombo();
-		loadProject();
-	} //}}}
-
-	//{{{ handleMessage() method
-	/** 
-	 *	Handle a message from the bus.
-	 *
-	 * @param  msg  Description of Parameter
-	 */
-	public void handleMessage(EBMessage msg) {
-		if (msg instanceof BufferUpdate) {
-			if (isAllProjects()) return;
-			
-			BufferUpdate update = (BufferUpdate)msg;
-			if(update.getView() == view && 
-					update.getWhat() == BufferUpdate.SAVED &&
-					getCurrentProject().canAddInProject(update.getBuffer().getPath())
-					) {
-				int res = JOptionPane.showConfirmDialog(getView(),
-						"Import " + update.getBuffer().getName() + " to " + getCurrentProject().getName() + "?",
-						jEdit.getProperty(ProjectPlugin.NAME + ".title"),
-						JOptionPane.YES_NO_OPTION);
-	
-				if(res != JOptionPane.YES_OPTION)
-					return;
-				getCurrentProject().importFile(new ProjectFile(update.getBuffer().getPath()));
 			}
 		}
 
-		// deregister a view when it's closed.
-		if (msg instanceof ViewUpdate) {
-			ViewUpdate vu = (ViewUpdate) msg;
-			if (vu.getView() == view && vu.getWhat() == ViewUpdate.CLOSED) {
-				config.removePropertyChangeListener(this);
-				viewers.remove(vu.getView());
-				EditBus.removeFromBus(this);
+		// saves the folder tree state
+		if (folderTree != null) {
+			int row_count = folderTree.getRowCount();
+			StringBuffer state = new StringBuffer();
+			if(folderTree.isExpanded(0)) {
+				for(int i = 1; i < row_count; i++) {
+					if (folderTree.isExpanded(i)) {
+						state.append(EXPANDED);
+					} else {
+						state.append(NOT_EXPANDED);
+					}
+				}
 			}
-			return;
+			p.setProperty(TREE_STATE_PROP, state.toString());
+		} else {
+			p.removeProperty(TREE_STATE_PROP);
 		}
-		
-
 	} //}}}
 
-	//{{{ addProjectViewerListener(ProjectViewerListener) method 
-	/** Add a {@link ProjectViewerListener}.
-	 *
-	 * @param  listener  The feature to be added to the ProjectViewerListener attribute
-	 */
-	public void addProjectViewerListener(ProjectViewerListener listener) {
-		listeners.add(listener);
-	} //}}}
-
-	//{{{ removeProjectViewerListener(ProjectViewerListener) methods
-	/** Remove a {@link ProjectViewerListener}.
-	 *
-	 * @param  listener  Description of Parameter
-	 */
-	public void removeProjectViewerListener(ProjectViewerListener listener) {
-		listeners.remove(listener);
-	} //}}}
-
-	//{{{ addProjectListener(ProjectListener) method
-	/** Adds a feature to the ProjectListener attribute of the ProjectViewer object
-	 *
-	 * @param  listener  The feature to be added to the ProjectListener attribute
-	 */
-	public void addProjectListener(ProjectListener listener) {
-		projectListeners.add(listener);
-	} //}}}
-
-	//{{{ removeProjectListener(ProjectListener) method
-	/** Description of the Method
-	 *
-	 * @param  listener  Description of Parameter
-	 */
-	public void removeProjectListener(ProjectListener listener) {
-		projectListeners.remove(listener);
-	} //}}}
-
-	//{{{ enableButtonsForNode(Object) method
-	/** Enable buttons for the given node.
-	 *
-	 * @param  node  Description of Parameter
-	 */
-	public void enableButtonsForNode(Object node) {
-		boolean isAllNode = node instanceof String;
-		openAllBtn.setEnabled(node != null && !isAllNode);
-		addFileBtn.setEnabled(node != null && !isAllNode);
-		//removeFileBtn	.setEnabled( node instanceof ProjectFile );
-		removeFileBtn.setEnabled(node != null && !isAllNode);
-		removeAllFilesBtn.setEnabled(node != null && !isAllNode);
-	} //}}}
-
-	//{{{ propertyChange() method
-	/** Listens for property change events in the plugin's configuration.
-	 *  Shows/Hides the toolbar and the trees, according to the user's wish.
-	 *
-	 * @param  evt  Description of Parameter
-	 */
-	public void propertyChange(PropertyChangeEvent evt) {
-		// Toolbar show/hide.
-		if(evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
-			Log.log(Log.DEBUG, this, "Show/Hide toolbar");
-			toolbar.setVisible(config.getShowToolBar());
-			return;
-		}
-
-		// Showing/Hiding Trees?
-		if(evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT) ||
-				evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
-				evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT)) {
-			if(!willRun) {
-				Log.log(Log.DEBUG, this, "Scheduling tree rebuild");
-				SwingUtilities.invokeLater(this);
-				willRun = true;
-			}
-			return;
-		}
-	}//}}}
-
-	//{{{ run() method
-	/** "Run" method, called by the Swing runtime after a config option for one
-	 *  or more of the trees has changed.
-	 */
-	public void run() {
-		showTrees();
-		willRun = false;
-	}//}}}
-
-	//{{{ getProjectViewFor(Project) method
-	/** Returns project view for the given project.
-	 *
-	 * @param  aProject  Description of Parameter
-	 * @return           The projectViewFor value
-	 */
-	private ProjectView getProjectViewFor(Project aProject) {
-		return (aProject instanceof Project) ? (ProjectView)
-				new SimpleProjectView(aProject) : new AllProjectsView(this);
-	} //}}}
-
-	//{{{ getLastProject() method
-	/** Returns the last project of the previous session.
-	 *
-	 * @return    The lastProject value
-	 */
-	private Project getLastProject() {
-		return ProjectManager.getInstance().getProject(ProjectPlugin.getLastProject());
-	} //}}}
-
-	//{{{ fireProjectLoaded(Project) method
-	/** Fire the project loaded event.
-	 *
-	 * @param  project  Description of Parameter
-	 */
-	private void fireProjectLoaded(Project project) {
-		ProjectViewerEvent evt = new ProjectViewerEvent(this, project);
-		for(Iterator i = listeners.iterator(); i.hasNext(); ) {
-			try {
-				((ProjectViewerListener)i.next()).projectLoaded(evt);
-			} catch(Throwable t) {
-				Log.log(Log.WARNING, this, t);
+	//{{{ openProject(VPTProject) method
+	/** Opens all the files that were previously opened in the project. */
+	private void openProject(VPTProject p) {
+		if (config.getRememberOpen()) {
+			for (Iterator i = p.getOpenFiles(); i.hasNext(); ) {
+				jEdit.openFile(view, (String)i.next());
 			}
 		}
-	} //}}}
 
-	//{{{ loadGUI() method
-	/** loads the GUI of Project Viewer */
-	private void loadGUI() {
-		setLayout(new BorderLayout());
-
-		projectCombo = new JComboBox();
-
-		JPanel bar = new JPanel(new BorderLayout());
-
-		toolbar = new JToolBar();
-		toolbar.setVisible(config.getShowToolBar());
-		toolbar.setFloatable(false);
-		toolbar.putClientProperty("JToolBar.isRollover", Boolean.TRUE);
-
-		removeFileBtn = createButton("Minus.png", "Remove file or directory");
-		//removeFileBtn =` createButton("/projectviewer/icons/RemoveFile.gif", "Remove file or directory");
-		removeAllFilesBtn = createButton("BrokenImage.png", "Remove all files");
-		//removeAllFilesBtn = createButton("/projectviewer/icons/RemoveAllFiles.gif", "Remove all files");
-		createProjectBtn = createButton("Drive.png", "Create project");
-		//createProjectBtn = createButton("/projectviewer/icons/CreateProject.gif", "Create project");
-		addFileBtn = createButton("New.png", "Add files to project");
-		//addFileBtn = createButton("/projectviewer/icons/AddFile.gif", "Add file to project");
-		openAllBtn = createButton("Open.png", "Open all files in this project");
-		//openAllBtn = createButton("/projectviewer/icons/OpenAll.gif", "Open all files in this project");
-		expandBtn = createButton("ZoomIn.png", "Expand the file list");
-		//expandBtn = createButton("/projectviewer/icons/Expand.gif", "Expand the file list");
-		contractBtn = createButton("ZoomOut.png", "Contract the file list");
-		//contractBtn = createButton("/projectviewer/icons/Contract.gif", "Contract the file list");
-		launchBrowserBtn = createButton("Run.png", "Preview in Browser");
-		//launchBrowserBtn = createButton("/projectviewer/icons/web.gif", "Preview in Browser");
-		toolbar.add(createProjectBtn);
-		toolbar.add(expandBtn);
-		toolbar.add(contractBtn);
-		toolbar.add(openAllBtn);
-		toolbar.add(addFileBtn);
-		toolbar.add(removeFileBtn);
-		toolbar.add(removeAllFilesBtn);
-		toolbar.add(launchBrowserBtn);
-		//  set the default state of the toggle buttons...
-		removeFileBtn.setEnabled(false);
-		removeAllFilesBtn.setEnabled(false);
-		addFileBtn.setEnabled(false);
-		openAllBtn.setEnabled(false);
-		expandBtn.setEnabled(true);
-		contractBtn.setEnabled(true);
-		launchBrowserBtn.setEnabled(true);
-
-		bar.add(toolbar, BorderLayout.NORTH);
-		bar.add(projectCombo, BorderLayout.SOUTH);
-
-		// ok... now create a JPanel for placing the bar and the tree into and then
-		// stick that into tabs...
-		allComponents = new JPanel(new BorderLayout());
-
-		allComponents.add(bar, BorderLayout.NORTH);
-
-		// Shows the configured trees in the JTabbedPane.
-		showTrees();
-
-		allComponents.add(tabs, BorderLayout.CENTER);
-
-		// ok.. add the bar to the tab...
-		//contentPanel.getContentPane().add(bar, BorderLayout.NORTH);
-		add(allComponents, BorderLayout.CENTER);
-
-		loadProjectCombo();
-		projectCombo.addItemListener(vsl);
-		
-		setVisible(true);
-	} //}}}
-
-	//{{{ createButton(String,String) method
-	/** Create a tool bar button.
-	 *
-	 * @param  icon     Description of Parameter
-	 * @param  tooltip  Description of Parameter
-	 * @return          Description of the Returned Value
-	 */
-	private RolloverButton createButton(String icon, String tooltip) {
-		return createButton(GUIUtilities.loadIcon(icon), tooltip);
-	} //}}}
-
-	//{{{ createButton(Icon,String) method
-	/** Create a tool bar button.
-	 *
-	 * @param  icon     Description of Parameter
-	 * @param  tooltip  Description of Parameter
-	 * @return          Description of the Returned Value
-	 */
-	private RolloverButton createButton(Icon icon, String tooltip) {
-		RolloverButton init = new RolloverButton(icon);
-		Insets zeroMargin = new Insets(0, 0, 0, 0);
-		init.setMargin(zeroMargin);
-		init.setToolTipText(tooltip);
-		init.addActionListener(vsl);
-		return init;
-	} //}}}
-
-	//{{{ createTree() method
-	/** Create and initialize a tree widget.
-	 *
-	 * @return    Description of the Returned Value
-	 */
-	private JTree createTree() {
-		//Log.log(Log.DEBUG, this, "createTree()");
-		JTree tree = new ProjectTree();
-		//tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
-		tree.setCellRenderer(new TreeRenderer());
-		tree.addTreeSelectionListener(tsl);
-		tree.addMouseListener(tsl);
-		tree.addMouseListener(cml);
-		ToolTipManager.sharedInstance().registerComponent(tree);
-		return tree;
-	}//}}}
-
-	//{{{ loadProjectCombo() method
-	/** Creates an initialzed project combo and adds all known projects */
-	private void loadProjectCombo() {
-		vsl.pause();
-		if(projectCombo.getItemCount() != 0)
-			projectCombo.removeAllItems();
-
-		projectCombo.addItem(CREATE_NEW_PROJECT);
-		projectCombo.addItem(ALL_PROJECTS);
-
-		Iterator i = ProjectManager.getInstance().projects();
-		while(i.hasNext())
-			projectCombo.addItem(i.next());
-		vsl.resume();
-	}//}}}
-
-	//{{{ loadProject() method
-	/** Load a project. */
-	private void loadProject() {
-		showWaitCursor();
-
-		if(folderTree != null) {
-			folderTree.setModel(projectView.getFolderViewModel());
-			if(getCurrentProject() != null)
-				getCurrentProject().restoreFolderTreeState(folderTree);
-			folderTree.repaint();
+		// loads tree state from the project, if saved
+		String state = p.getProperty(TREE_STATE_PROP);
+		if (state != null && folderTree != null) {
+			SwingUtilities.invokeLater(new TreeStateLoader(state));
 		}
-		if(fileTree != null) {
-			fileTree.setModel(projectView.getFileViewModel());
-			expandAll(fileTree);
-			fileTree.repaint();
-		}
-		if(workingFileTree != null) {
-			workingFileTree.setModel(projectView.getWorkingFileViewModel());
-			expandAll(workingFileTree);
-			workingFileTree.repaint();
-		}
-
-		removeFileBtn.setEnabled(false);
-		removeAllFilesBtn.setEnabled(true);
-		addFileBtn.setEnabled(true);
-		openAllBtn.setEnabled(true);
-
-		if(getCurrentProject() != null)
-			tabs.setSelectedIndex(getCurrentProject().getTabState());
-
-		vsl.pause();
-		projectCombo.setSelectedItem(isAllProjects() ? (Object)ALL_PROJECTS : getCurrentProject());
-		vsl.lastSelectedIndex = projectCombo.getSelectedIndex();
-		vsl.resume();
-
-		showDefaultCursor();
-
-		if(getCurrentProject() != null)
-			fireProjectLoaded(getCurrentProject());
 	} //}}}
 
 	//{{{ showTrees() method
-	/** Loads the trees (folders, files, working files) into the view, deciding
+	/**
+	 *	Loads the trees (folders, files, working files) into the view, deciding
 	 *  what to show according to the configuration of the plugin
 	 */
 	private void showTrees() {
-		tabs.removeChangeListener(tsl);
-		tabs.removeAll();
+		treePane.removeAll();
 		int count = 0;
 
 		// Folders tree
 		if(config.getShowFoldersTree()) {
 			if(folderTree == null) {
-				folderTree = createTree();
-				if(projectView != null) {
-					folderTree.setModel(projectView.getFolderViewModel());
-				}
+				folderTree = createTree(new DefaultTreeModel(treeRoot, true));
 			}
 			count++;
-			tabs.addTab(FOLDERS_TAB_TITLE, new JScrollPane(folderTree));
-		}
-		else {
+			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), new JScrollPane(folderTree));
+		} else {
 			folderTree = null;
 		}
 
 		// Files tree
 		if(config.getShowFilesTree()) {
 			if(fileTree == null) {
-				fileTree = createTree();
-				if(projectView != null) {
-					fileTree.setModel(projectView.getFileViewModel());
-				}
+				fileTree = createTree(new VPTFileListModel(treeRoot));
 			}
 			count++;
-			tabs.addTab(FILES_TAB_TITLE, new JScrollPane(fileTree));
-		}
-		else {
+			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), new JScrollPane(fileTree));
+		} else {
 			fileTree = null;
 		}
 
 		// Working files tree
 		if(config.getShowWorkingFilesTree()) {
 			if(workingFileTree == null) {
-				workingFileTree = createTree();
-				if(projectView != null) {
-					workingFileTree.setModel(projectView.getWorkingFileViewModel());
-				}
+				VPTWorkingFileListModel model = new VPTWorkingFileListModel(treeRoot);
+				workingFileTree = createTree(model);
+				EditBus.addToBus(model);
 			}
 			count++;
-			tabs.addTab(WORKING_FILES_TAB_TITLE, new JScrollPane(workingFileTree));
-		}
-		else {
-			workingFileTree = null;
+			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), new JScrollPane(workingFileTree));
+		} else {
+			if (workingFileTree != null) {
+				EditBus.removeFromBus((VPTWorkingFileListModel)workingFileTree.getModel());
+				workingFileTree = null;
+			}
 		}
 
-		toolbar.setVisible((count > 0) && config.getShowToolBar());
-		tabs.setSelectedIndex(0);
-		tabs.addChangeListener(tsl);
+		if (count == 0) {
+			if (toolBar != null) {
+				topPane.remove(toolBar);
+				toolBar.removeAll();
+				toolBar = null;
+			}
+		} else if (toolBar == null && config.getShowToolBar()) {
+			toolBar = new JToolBar();
+			populateToolBar();
+			topPane.add(BorderLayout.NORTH, toolBar);
+		}
+
+		treePane.setSelectedIndex(0);
 	}//}}}
+
+	//}}}
+
+	//{{{ Public Methods
+
+	//{{{ setStatus(String) method
+	/** Changes jEdit's status bar message for the current view. */
+	public void setStatus(String message) {
+		view.getStatus().setMessageAndClear(message);
+	} //}}}
+
+	//{{{ getSelectedNode() method
+	/** Returns the currently selected node in the tree. */
+	public VPTNode getSelectedNode() {
+		if (getCurrentTree().getSelectionPath() != null) {
+			return (VPTNode) getCurrentTree().getSelectionPath().getLastPathComponent();
+		} else {
+			return null;
+		}
+	} //}}}
+
+	//{{{ getCurrentTree() method
+	/** Returns the currently active tree. */
+	public JTree getCurrentTree() {
+		switch(treePane.getSelectedIndex()) {
+			case 0:
+				if (folderTree != null) return folderTree;
+				if (fileTree != null) return fileTree;
+				if (workingFileTree != null) return workingFileTree;
+			case 1:
+				if (fileTree != null) return fileTree;
+				if (workingFileTree != null) return workingFileTree;
+			case 2:
+				if (workingFileTree != null) return workingFileTree;
+
+			default:
+				Log.log(Log.WARNING, this, "invalid tabnumber :" + treePane.getSelectedIndex());
+				return null;
+		}
+	} //}}}
+
+	//{{{ getView() method
+	/** Returns the View associated with this instance. */
+	public View getView() {
+		return view;
+	} //}}}
+
+	//{{{ setProject(VPTProject) method
+	/**
+	 *	Sets the given project to be the root of the tree. If "p" is null,
+	 *	then the root node is set to the "VPTRoot" node.
+	 */
+	public void setProject(VPTProject p) {
+		if (treeRoot.isProject()) {
+			((VPTProject)treeRoot).clearOpenFiles();
+			if (config.getCloseFiles() || config.getRememberOpen()) {
+				closeProject((VPTProject)treeRoot, config.getCloseFiles(),
+					config.getRememberOpen());
+			}
+		}
+
+		if (p != null) {
+			treeRoot = p;
+			config.setLastProject(p.getName());
+			openProject(p);
+		} else {
+			treeRoot = VPTRoot.getInstance();
+			config.setLastProject(null);
+		}
+		if (folderTree != null)
+			((DefaultTreeModel)folderTree.getModel()).setRoot(treeRoot);
+		if (fileTree != null)
+			((DefaultTreeModel)fileTree.getModel()).setRoot(treeRoot);
+		if (workingFileTree != null)
+			((DefaultTreeModel)workingFileTree.getModel()).setRoot(treeRoot);
+
+		if (p != null && pList.getSelectedItem() != p) {
+			pList.setSelectedItem(p);
+		}
+
+		fireProjectLoaded(p);
+	} //}}}
+
+	//{{{ getRoot() method
+	/**	Returns the root node of the current tree. */
+	public VPTNode getRoot() {
+		return treeRoot;
+	} //}}}
+
+	//{{{ handleMessage(EBMessage) method
+	/** Handles an EditBus message. */
+	public void handleMessage(EBMessage msg) {
+
+		// View closed? Remove from edit bus and from viewers list
+		// EditPane changed? Fire a projectLoaded event for the global
+		// listeners.
+		if (msg instanceof ViewUpdate) {
+			ViewUpdate vu = (ViewUpdate) msg;
+			if (vu.getView() == view) {
+				if (vu.getWhat() == ViewUpdate.CLOSED) {
+					if (viewers.get(view) == this)
+						viewers.remove(view);
+					viewerList.remove(this);
+
+					config.removePropertyChangeListener(ccl);
+					listeners.remove(view);
+					EditBus.removeFromBus(this);
+
+					if (workingFileTree != null) {
+						EditBus.removeFromBus((VPTWorkingFileListModel)workingFileTree.getModel());
+					}
+
+					if (treeRoot.isProject()) {
+						closeProject((VPTProject)treeRoot, config.getCloseFiles(), config.getRememberOpen());
+					}
+
+				} else if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
+					VPTProject current = null;
+					if (treeRoot.isProject()) {
+						current = (VPTProject) treeRoot;
+						config.setLastProject(current.getName());
+					} else {
+						config.setLastProject(null);
+					}
+					ProjectViewerEvent evt = new ProjectViewerEvent(this, current);
+					ArrayList lst = (ArrayList) listeners.get(null);
+					if (lst != null)
+					for (Iterator i = lst.iterator(); i.hasNext(); ) {
+						((ProjectViewerListener)i.next()).projectLoaded(evt);
+					}
+				}
+			}
+		} else if (treeRoot.isProject() && msg instanceof EditorExitRequested) {
+			// Editor is exiting, save info about current project
+			EditorExitRequested eer = (EditorExitRequested) msg;
+			ProjectViewer active = (ProjectViewer) viewers.get(eer.getView());
+			if (active == this || active == null || active.treeRoot != treeRoot)
+				closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
+		} else if (treeRoot.isProject() && msg instanceof BufferUpdate) {
+			// Try to import newly created files to the project
+			BufferUpdate bu = (BufferUpdate) msg;
+			VPTProject p = (VPTProject) treeRoot;
+			if(bu.getView() == view &&
+					bu.getWhat() == BufferUpdate.SAVED &&
+					p.getFile(bu.getBuffer().getPath()) == null
+					) {
+				int res = JOptionPane.showConfirmDialog(view,
+						jEdit.getProperty("projectviewer.import_new",
+							new Object[] { bu.getBuffer().getName(), p.getName() }),
+						jEdit.getProperty("projectviewer.import_new.title"),
+						JOptionPane.YES_NO_OPTION);
+
+				if(res == JOptionPane.YES_OPTION) {
+					new NewFileImporter(p, bu.getBuffer().getPath()).doImport();
+				}
+			}
+		}
+
+	} //}}}
+
+	//}}}
+
+	//{{{ VPTListCellRenderer class
+	/** ListCellRenderer that understands VPTNodes. */
+	private static class VPTListCellRenderer extends DefaultListCellRenderer {
+
+		public Component getListCellRendererComponent(JList list, Object value,
+			int index, boolean isSelected, boolean cellHasFocus) {
+			super.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+			if (value instanceof VPTNode) {
+				setText(((VPTNode)value).getName());
+			}
+			return this;
+		}
+
+	} //}}}
+
+	//{{{ ProjectComboListener class
+	/** Listens for item changes in the project combo box. */
+	private class ProjectComboListener implements ItemListener, Runnable {
+
+		public void itemStateChanged(ItemEvent ie) {
+			if (ie.getStateChange() != ItemEvent.SELECTED || DISABLE_EVENTS) return;
+
+			if(ie.getItem() instanceof VPTProject) {
+				VPTProject p = (VPTProject) ie.getItem();
+				ProjectManager.getInstance().getProject(p.getName());
+				setProject(p);
+			} else {
+				if(ie.getItem().toString().equals(CREATE_NEW_PROJECT)) {
+					SwingUtilities.invokeLater(this);
+					pList.setSelectedItem(treeRoot);
+				} else {
+					setProject(null);
+				}
+			}
+		}
+
+		/**
+		 *	"Comestic" hack to let the combo box close before showing the
+		 *	"new project" dialog.
+		 */
+		public void run() {
+			EditProjectAction epa = new EditProjectAction();
+			epa.setViewer(ProjectViewer.this);
+			epa.actionPerformed(null);
+		}
+
+	} //}}}
+
+	//{{{ ConfigChangeListener class
+	/** Listens for changes in the PV configuration. */
+	private class ConfigChangeListener implements PropertyChangeListener, Runnable {
+
+		private boolean willRun = false;
+
+		//{{{ propertyChange() method
+		/** Listens for property change events in the plugin's configuration.
+		 *  Shows/Hides the toolbar and the trees, according to the user's wish.
+		 *
+		 * @param  evt  Description of Parameter
+		 */
+		public void propertyChange(PropertyChangeEvent evt) {
+			// Toolbar show/hide.
+			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
+				if (toolBar != null) {
+					topPane.remove(toolBar);
+					toolBar.removeAll();
+					toolBar = null;
+				} else {
+					toolBar = new JToolBar();
+					populateToolBar();
+					topPane.add(BorderLayout.NORTH, toolBar);
+				}
+				return;
+			}
+
+			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT) ||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT)) {
+				if (!willRun) {
+					SwingUtilities.invokeLater(this);
+					willRun = true;
+				}
+				return;
+			}
+
+		}//}}}
+
+		//{{{ run() method
+		/** "Run" method, called by the Swing runtime after a config option for one
+		 *  or more of the trees has changed.
+		 */
+		public void run() {
+			showTrees();
+			willRun = false;
+		}//}}}
+
+	} //}}}
+
+	//{{{ TreeStateLoader class
+	/** Loads the folder tree state from a string. */
+	private class TreeStateLoader implements Runnable {
+
+		private String state;
+
+		public TreeStateLoader(String state) {
+			this.state = state;
+		}
+
+		//{{{ run() method
+		/** "Run" method, called by the Swing runtime after a config option for one
+		 *  or more of the trees has changed.
+		 */
+		public void run() {
+			for(int i = 0; i < state.length(); i++) {
+				if (state.charAt(i) == EXPANDED) {
+					folderTree.expandRow(i+1);
+				}
+			}
+		}//}}}
+
+	} //}}}
 
 }
 
