@@ -102,44 +102,46 @@ public interface PHPParserConstants {
   int LETTER = 115;
   int DIGIT = 116;
   int SPECIAL = 117;
-  int LPAREN = 118;
-  int RPAREN = 119;
-  int LBRACE = 120;
-  int RBRACE = 121;
-  int LBRACKET = 122;
-  int RBRACKET = 123;
-  int SEMICOLON = 124;
-  int COMMA = 125;
-  int DOT = 126;
-  int GT = 127;
-  int LT = 128;
-  int EQUAL_EQUAL = 129;
-  int LE = 130;
-  int GE = 131;
-  int NOT_EQUAL = 132;
-  int DIF = 133;
-  int BANGDOUBLEEQUAL = 134;
-  int TRIPLEEQUAL = 135;
-  int ASSIGN = 136;
-  int PLUSASSIGN = 137;
-  int MINUSASSIGN = 138;
-  int STARASSIGN = 139;
-  int SLASHASSIGN = 140;
-  int ANDASSIGN = 141;
-  int ORASSIGN = 142;
-  int XORASSIGN = 143;
-  int DOTASSIGN = 144;
-  int REMASSIGN = 145;
-  int TILDEEQUAL = 146;
-  int LSHIFTASSIGN = 147;
-  int RSIGNEDSHIFTASSIGN = 148;
+  int KIDENTIFIER = 118;
+  int LPAREN = 119;
+  int RPAREN = 120;
+  int LBRACE = 121;
+  int RBRACE = 122;
+  int LBRACKET = 123;
+  int RBRACKET = 124;
+  int SEMICOLON = 125;
+  int COMMA = 126;
+  int DOT = 127;
+  int GT = 128;
+  int LT = 129;
+  int EQUAL_EQUAL = 130;
+  int LE = 131;
+  int GE = 132;
+  int NOT_EQUAL = 133;
+  int DIF = 134;
+  int BANGDOUBLEEQUAL = 135;
+  int TRIPLEEQUAL = 136;
+  int ASSIGN = 137;
+  int PLUSASSIGN = 138;
+  int MINUSASSIGN = 139;
+  int STARASSIGN = 140;
+  int SLASHASSIGN = 141;
+  int ANDASSIGN = 142;
+  int ORASSIGN = 143;
+  int XORASSIGN = 144;
+  int DOTASSIGN = 145;
+  int REMASSIGN = 146;
+  int TILDEEQUAL = 147;
+  int LSHIFTASSIGN = 148;
+  int RSIGNEDSHIFTASSIGN = 149;
 
   int DEFAULT = 0;
   int PHPPARSING = 1;
   int IN_SINGLE_LINE_COMMENT = 2;
   int IN_VARIABLE = 3;
-  int IN_FORMAL_COMMENT = 4;
-  int IN_MULTI_LINE_COMMENT = 5;
+  int MODE_IDENTIFIER = 4;
+  int IN_FORMAL_COMMENT = 5;
+  int IN_MULTI_LINE_COMMENT = 6;
 
   String[] tokenImage = {
     "<EOF>",
@@ -260,6 +262,7 @@ public interface PHPParserConstants {
     "<LETTER>",
     "<DIGIT>",
     "<SPECIAL>",
+    "<KIDENTIFIER>",
     "\"(\"",
     "\")\"",
     "\"{\"",
