@@ -27,7 +27,8 @@ import java.lang.System.*;
 import java.util.*;
 import java.util.Vector;
 import javax.swing.*;
-import java.awt.Toolkit;
+import java.awt.*;
+import java.awt.event.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
@@ -35,10 +36,11 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 
 import gnu.regexp.*;
 
-public class Tags {
+final public class Tags {
 
   /*+*************************************************************************/
   protected static final Vector tagFiles_ = new Vector(15);
@@ -209,36 +211,58 @@ public class Tags {
   }
 
   /***************************************************************************/
-  public static void enterAndFollowTag(View view, JEditTextArea textArea,
-                                       Buffer buffer) {
+  public static void enterAndFollowTag(final View view, 
+                                       final JEditTextArea textArea,
+                                       final Buffer buffer) {
+    // This needs to be a stand alone dialog.
     
 		// The panel is a bit overkill but it was done for a dialog before this
 		// was done using JOptionPane...
-    TagsEnterTagPanel enterTagPanel = new TagsEnterTagPanel(null, false);
+    final TagsEnterTagPanel enterTagPanel = new TagsEnterTagPanel(null, false);
 	
-		String[] buttonNames = { jEdit.getProperty("options.tags.tag-ok.label"), 
-                             jEdit.getProperty("options.tags.tag-cancel.label") 
+		final String[] buttonNames = { 
+                            jEdit.getProperty("options.tags.tag-ok.label"), 
+                            jEdit.getProperty("options.tags.tag-cancel.label")
                            };
 	
-    JOptionPane pane = new JOptionPane(enterTagPanel,
+    final JOptionPane pane = new JOptionPane(enterTagPanel,
                                        JOptionPane.QUESTION_MESSAGE, 
                                        JOptionPane.DEFAULT_OPTION, null, 
                                        buttonNames, buttonNames[0]);
-    JDialog dialog = pane.createDialog(view, 
+    final JDialog dialog = pane.createDialog(view, 
                                 jEdit.getProperty("tags.enter-tag-dlg.title"));
     GUIUtilities.requestFocus(dialog, enterTagPanel.tagFuncTextField_);
-                          
+    
+    /* HACK ALERT!  Slava says he doesn't get the dilaog to be dismissed on the
+     * enter key event even though the default button is the OK button.  This 
+     * may be due to the fact that his JDK is 1.1.  When this dialog goes to 
+     * a non JOptionPane dialog, keep this HACK.  This probably can be removed
+     * if the JDK 1.1 dependence is removed...
+     */
+    enterTagPanel.tagFuncTextField_.addKeyListener(new KeyAdapter()
+    {
+      public void keyTyped(KeyEvent evt)
+      {
+        evt = KeyEventWorkaround.processKeyEvent(evt);
+        if (evt == null)
+          return;
+
+        if (evt.getKeyChar() == KeyEvent.VK_ENTER)
+        {
+          pane.setValue(buttonNames[0]);
+          dialog.dispose();
+          evt.consume();
+        }
+      }
+    });
+    
     dialog.show();		
     
-		if (((String) pane.getValue()).equals(buttonNames[0])) {
-			followTag(view, textArea, buffer, enterTagPanel.getOtherWindow(), false,
+    if (((String) pane.getValue()).equals(buttonNames[0])) 
+    {
+      followTag(view, textArea, buffer, enterTagPanel.getOtherWindow(), false,
 								enterTagPanel.getFuncName());
-		}
-		
-		enterTagPanel = null;  // we probably should reuse these...
-    buttonNames = null;
-    pane = null;
-    dialog = null;
+    }
   }  
   
   /*+*************************************************************************/
@@ -371,9 +395,6 @@ public class Tags {
       buffer = currentView.getBuffer();
     }
     
-    if (ui_)
-      currentView.showWaitCursor();      
-
     TagLine tagLine = parser_.getTagLine(tagLineIndex);
     
     tagFileName_ = tagLine.getDefinitionFileName();
@@ -387,10 +408,7 @@ public class Tags {
       if (ui_) 
       {
         if (!openDefinitionFile(tagToView, tagLine))
-        {
-          currentView.hideWaitCursor();
           return;
-        }
       }
        
       searchString_ = tagLine.getDefinitionSearchString();
@@ -452,11 +470,6 @@ public class Tags {
       Log.log(Log.ERROR, null, "What?:  " + tagLine);
   
     tagLine = null;
-    
-    if (currentView != null) {
-      currentView.hideWaitCursor();
-    }
-
   }
   
   /***************************************************************************/
@@ -477,8 +490,6 @@ public class Tags {
   
   /*+*************************************************************************/
   public static void popTag(View view, JEditTextArea textArea) {
-    view.hideWaitCursor();
-
     if (!tagFileStack_.empty()) {
       jEdit.openFile(view, (String) tagFileStack_.pop());
       textArea.setCaretPosition(((Integer)tagCaretPosStack_.pop()).intValue());
