@@ -33,10 +33,13 @@
     rename dir
     search in dir
     hypersearch in dir
-  ** Files
+    search and replace (global search and replace for all files in a project)
+ 
+ ** Files
     remove from project
     delete file (and remove from project)
     rename file
+    Preview in Browser - (requires browser executable property(set for JEdit) and urlRoot property(set for the project) 
 
 * Options
   ** for Tabs Files/Working files
