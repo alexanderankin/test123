@@ -1,5 +1,5 @@
 /*
- * FtpPlugin.java - Main class of virtual filesystem
+ * FtpPlugin.java - Main class of FTP plugin
  * Copyright (C) 2000, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -32,6 +32,7 @@ public class FtpPlugin extends EditPlugin
 	public void start()
 	{
 		VFSManager.registerVFS(FtpVFS.PROTOCOL,new FtpVFS());
+		VFSManager.registerVFS(SFtpVFS.PROTOCOL,new SFtpVFS());
 	}
 
 	public void stop()
@@ -44,9 +45,10 @@ public class FtpPlugin extends EditPlugin
 		menuItems.addElement(GUIUtilities.loadMenu("ftp"));
 	}
 
-	public static void showOpenFTPDialog(View view)
+	public static void showOpenFTPDialog(View view, boolean secure)
 	{
-		String path = ((FtpVFS)VFSManager.getVFSForProtocol("ftp"))
+		String path = ((FtpVFS)VFSManager.getVFSForProtocol(
+			secure ? "sftp" : "ftp"))
 			.showBrowseDialog(new Object[1],view);
 		if(path != null)
 		{
@@ -67,9 +69,10 @@ public class FtpPlugin extends EditPlugin
 		}
 	}
 
-	public static void showSaveFTPDialog(View view)
+	public static void showSaveFTPDialog(View view, boolean secure)
 	{
-		String path = ((FtpVFS)VFSManager.getVFSForProtocol("ftp"))
+		String path = ((FtpVFS)VFSManager.getVFSForProtocol(
+			secure ? "sftp" : "ftp"))
 			.showBrowseDialog(new Object[1],view);
 		if(path != null)
 		{

@@ -29,10 +29,13 @@ import org.gjt.sp.jedit.*;
 
 public class LoginDialog extends EnhancedDialog implements ActionListener
 {
-	public LoginDialog(Component comp, String host, String user, String password)
+	public LoginDialog(Component comp, boolean secure, String host,
+		String user, String password)
 	{
 		super(JOptionPane.getFrameForComponent(comp),
-			jEdit.getProperty("login.title"),true);
+			jEdit.getProperty(secure ?
+			"login.title-sftp" : "login.title-ftp"),
+			true);
 
 		JPanel content = new JPanel(new BorderLayout());
 		content.setBorder(new EmptyBorder(12,12,12,0));
@@ -41,14 +44,20 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 		JPanel panel = createFieldPanel(host,user,password);
 		content.add(panel,BorderLayout.NORTH);
 
-		panel = new JPanel(new GridLayout(1,1));
-		panel.setBorder(new EmptyBorder(6,0,0,12));
+		if(!secure)
+		{
+			panel = new JPanel(new GridLayout(2,1,6,6));
+			panel.setBorder(new EmptyBorder(6,0,0,12));
 
-		passive = new JCheckBox(jEdit.getProperty("login.passive"),
-			jEdit.getBooleanProperty("vfs.ftp.passive"));
-		panel.add(passive);
+			passive = new JCheckBox(jEdit.getProperty("login.passive"),
+				jEdit.getBooleanProperty("vfs.ftp.passive"));
+			panel.add(passive);
 
-		content.add(panel,BorderLayout.CENTER);
+			panel.add(GUIUtilities.createMultilineLabel(
+				jEdit.getProperty("vfs.ftp.warning")));
+
+			content.add(panel,BorderLayout.CENTER);
+		}
 
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));

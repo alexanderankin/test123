@@ -23,13 +23,25 @@
 
 	<ACTION NAME="open-ftp">
 		<CODE>
-			ftp.FtpPlugin.showOpenFTPDialog(view);
+			ftp.FtpPlugin.showOpenFTPDialog(view,false);
 		</CODE>
 	</ACTION>
 
 	<ACTION NAME="save-ftp">
 		<CODE>
-			ftp.FtpPlugin.showSaveFTPDialog(view);
+			ftp.FtpPlugin.showSaveFTPDialog(view,false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="open-sftp">
+		<CODE>
+			ftp.FtpPlugin.showOpenFTPDialog(view,false);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="save-sftp">
+		<CODE>
+			ftp.FtpPlugin.showSaveFTPDialog(view,false);
 		</CODE>
 	</ACTION>
 </ACTIONS>
