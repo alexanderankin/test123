@@ -83,13 +83,10 @@ public class InfoViewer
 
         // the menu
         JMenuBar mb = createMenu();
-
         // the toolbar
         JToolBar tb = createToolbar();
-
         // the url address bar
         JPanel addressBar = createAddressBar();
-
         // the status bar
         JPanel statusBar = createStatusBar();
 

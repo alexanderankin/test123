@@ -31,17 +31,14 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.jEdit;
 
 
-public class InfoViewerOptionPane2 extends AbstractOptionPane implements ActionListener
-{
+public class InfoViewerOptionPane2 extends AbstractOptionPane implements ActionListener {
 
-    public InfoViewerOptionPane2()
-    {
+    public InfoViewerOptionPane2() {
         super("infoviewer.internalBrowser");
     }
 
 
-    public void _init()
-    {
+    public void _init() {
         // "Appearance"
         addSeparator("options.infoviewer.appearance.label");
 
