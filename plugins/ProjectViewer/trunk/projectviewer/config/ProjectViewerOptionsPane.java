@@ -32,6 +32,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JRadioButton;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectViewer;
@@ -169,9 +170,11 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		showWorkingFilesTree.setSelected(config.getShowWorkingFilesTree());
 		addComponent(showWorkingFilesTree);
 
-		useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
-		useSystemIcons.setSelected(config.getUseSystemIcons());
-		addComponent(useSystemIcons);
+		if (OperatingSystem.hasJava14()) {
+			useSystemIcons = new JCheckBox(jEdit.getProperty("projectviewer.options.use_system_icons"));
+			useSystemIcons.setSelected(config.getUseSystemIcons());
+			addComponent(useSystemIcons);
+		}
 		//}}}
 
 		//{{{ importer options
@@ -228,7 +231,8 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane
 		config.setShowFoldersTree(showFoldersTree.isSelected());
 		config.setShowFilesTree(showFilesTree.isSelected());
 		config.setShowWorkingFilesTree(showWorkingFilesTree.isSelected());
-		config.setUseSystemIcons(useSystemIcons.isSelected());
+		if (OperatingSystem.hasJava14())
+			config.setUseSystemIcons(useSystemIcons.isSelected());
 
 		if (askAlways.isSelected()) {
 			config.setAskImport(ProjectViewerConfig.ASK_ALWAYS);
