@@ -1,7 +1,6 @@
 BEFORE CONSOLE 3.0 RELEASE:
 
 - write documentation
-- patch commando file
 
 LATER:
 
