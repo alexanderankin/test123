@@ -117,6 +117,7 @@ public class TemplateTree extends JTree
     */
    private TreePath findTreePath(Object[] objPath)
    {
+      // NOTE: the supplied object path is an array of Strings
       List path = new LinkedList();
       path.add(root);
       for (int i=0; i<objPath.length; i++) {
@@ -137,7 +138,7 @@ public class TemplateTree extends JTree
       Enumeration children = parent.children();
       while (children.hasMoreElements()) {
          TreeNode node = (TreeNode) children.nextElement();
-         if (target.equals(((TemplateFile)node).getRelativePath())) {
+         if ((((TemplateFile)node).getRelativePath()).endsWith((String)target)) {
             path.add(node);
             return true;
          }
