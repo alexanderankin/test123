@@ -53,4 +53,9 @@
       sql.SqlUtils.repeatLastQuery( view, sql.SqlUtils.getSelectedServerName() );
     </CODE>
   </ACTION>
+  <ACTION NAME="sql.chooseCurrentServer">
+    <CODE>
+      sql.SqlUtils.showCurrentServerChooser( view );
+    </CODE>
+  </ACTION>
 </ACTIONS>

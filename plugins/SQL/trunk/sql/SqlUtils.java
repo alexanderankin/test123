@@ -492,6 +492,36 @@ public class SqlUtils
 
 
   /**
+   *  Description of the Method
+   *
+   * @param  view  Description of Parameter
+   */
+  public static void showCurrentServerChooser( View view )
+  {
+    final VPTProject project = SqlUtils.getProject( view );
+    final Map servers = SqlServerRecord.getAllRecords( project );
+
+    final Object[] serverList = new Object[servers.size()];
+    int i = 0;
+    for ( Iterator e = servers.keySet().iterator(); e.hasNext();  )
+      serverList[i++] = e.next();
+
+    String selection = getSelectedServerName( project );
+
+    selection = (String) JOptionPane.showInputDialog( view,
+        jEdit.getProperty( "sql.serverchooser.prompt" ),
+        jEdit.getProperty( "sql.serverchooser.title" ),
+        JOptionPane.INFORMATION_MESSAGE,
+        SqlPlugin.Icon,
+        serverList,
+        selection );
+
+    if ( selection != null )
+      setSelectedServerName( project, selection );
+  }
+
+
+  /**
    *  Gets the Sysdate attribute of the SqlUtils class
    *
    * @param  conn              Description of Parameter
@@ -752,5 +782,6 @@ public class SqlUtils
       }
     }
   }
+
 }
 
