@@ -1,3 +1,2 @@
 Before releasing 2.0:
 - option pane
-- macro recording only works for the default shell

@@ -31,6 +31,7 @@ public class ConsoleShellPane extends ConsoleOutputPane
 		super(frame);
 
 		this.shell = shell;
+		this.shellName = shellName;
 
 		command = new HistoryTextField("console." + shellName);
 		command.addActionListener(new ActionHandler());
@@ -45,7 +46,10 @@ public class ConsoleShellPane extends ConsoleOutputPane
 		InputHandler.MacroRecorder recorder = getView().getTextArea()
 			.getInputHandler().getMacroRecorder();
 		if(recorder != null)
+		{
+			recorder.actionPerformed(jEdit.getAction("console-shell"),shellName);
 			recorder.actionPerformed(jEdit.getAction("console"),cmd);
+		}
 
 		if(cmd.trim().equalsIgnoreCase("clear"))
 		{
@@ -66,6 +70,7 @@ public class ConsoleShellPane extends ConsoleOutputPane
 
 	// private members
 	private Shell shell;
+	private String shellName;
 	private HistoryTextField command;
 
 	class ActionHandler implements ActionListener
