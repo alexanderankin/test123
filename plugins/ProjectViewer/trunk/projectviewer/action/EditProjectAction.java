@@ -122,6 +122,7 @@ public class EditProjectAction extends Action {
 					ipi.doImport();
 				}
 				proj.firePropertiesChanged();
+				viewer.repaint();
 			}
 		}
 
