@@ -21,8 +21,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-02-09 19:57:13 $ by $Author: bemace $
- * @version    $Revision: 1.12 $
+ * @modified   $Date: 2004-02-09 21:59:09 $ by $Author: bemace $
+ * @version    $Revision: 1.13 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -61,6 +61,9 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	}
 
 	//{{{ Add/Remove Marks
+	/**
+	 * Adds a mark to the ruler.
+	 */
 	public void addMark(Mark m) {
 		m.activate(this);
 		marks.add(m);
@@ -71,7 +74,7 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 		m.deactivate();
 	}
 
-	public void removeAllMarkers() {
+	public void removeAllMarks() {
 		for (int i = 0; i < marks.size(); i++) {
 			Mark m = (Mark) marks.get(i);
 			removeMark(m);
@@ -306,10 +309,8 @@ public class ColumnRuler extends JComponent implements EBComponent, ScrollListen
 	private void fullUpdate() {
 		metricsExpired = true;
 		for (int i = 0; i < marks.size(); i++) {
-			try {
-				DynamicMark m = (DynamicMark) marks.get(i);
-				m.update();
-			} catch (ClassCastException e) {}
+			Mark m = (Mark) marks.get(i);
+			m.update();
 		}
 		repaint();
 	}

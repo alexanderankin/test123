@@ -11,8 +11,8 @@ import org.gjt.sp.jedit.*;
  *
  * @author     mace
  * @created    June 8, 2003
- * @modified   $Date: 2004-02-09 20:04:05 $ by $Author: bemace $
- * @version    $Revision: 1.6 $
+ * @modified   $Date: 2004-02-09 21:59:10 $ by $Author: bemace $
+ * @version    $Revision: 1.7 $
  */
 public class Mark implements Transferable {
 	static final DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class,"ColumnRuler.Mark");
@@ -33,9 +33,21 @@ public class Mark implements Transferable {
 		_color = c;
 	}
 
+	/**
+	 * Called when this mark is added to the ruler.
+	 */
 	public void activate(ColumnRuler ruler) {}
 
+	/**
+	 * Called when this mark is removed from the ruler.
+	 */
 	public void deactivate() {}
+
+	/**
+	 * Called by the ruler in response to events which will require marks to update themselves.
+	 * This should prevent most marks from needing to implement EBComponent.
+	 */
+	public void update() {}
 
 	/**
 	 * Subclasses can override this to draw fancier guides.
@@ -69,6 +81,10 @@ public class Mark implements Transferable {
 	//}}}
 
 	//{{{ Accessors + Mutators
+
+	/**
+	 * Moves this mark to the given column.
+	 */
 	public void setColumn(int col) {
 		_column = col;
 	}
@@ -136,5 +152,6 @@ public class Mark implements Transferable {
 		return guide;
 	}
 	//}}}
+
 }
 

@@ -9,9 +9,9 @@ import org.gjt.sp.jedit.msg.*;
  * Description of the Class
  *
  * @author    mace
- * @version   $Revision: 1.3 $ modified $Date: 2004-02-09 01:12:36 $ by $Author: bemace $
+ * @version   $Revision: 1.4 $ modified $Date: 2004-02-09 21:59:10 $ by $Author: bemace $
  */
-public class WrapMark extends DynamicMark implements EBComponent {
+public class WrapMark extends Mark implements EBComponent {
 	private ColumnRuler ruler;
 	private Buffer _buffer;
 

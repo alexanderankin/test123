@@ -10,7 +10,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
-public class CaretMark extends DynamicMark implements CaretListener, ScrollListener {
+public class CaretMark extends Mark implements CaretListener, ScrollListener {
 	private ColumnRuler ruler;
 
 	public CaretMark() {
