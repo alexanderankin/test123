@@ -11,8 +11,8 @@ import org.gjt.sp.jedit.*;
  *
  * @author     mace
  * @created    June 8, 2003
- * @modified   $Date: 2004-02-09 19:57:13 $ by $Author: bemace $
- * @version    $Revision: 1.5 $
+ * @modified   $Date: 2004-02-09 20:04:05 $ by $Author: bemace $
+ * @version    $Revision: 1.6 $
  */
 public class Mark implements Transferable {
 	static final DataFlavor MARK_FLAVOR = new DataFlavor(Mark.class,"ColumnRuler.Mark");
@@ -73,38 +73,65 @@ public class Mark implements Transferable {
 		_column = col;
 	}
 
+	/**
+	 * Shows/Hides this mark.
+	 */
 	public void setVisible(boolean b) {
 		_visible = b;
 	}
 
+	/**
+	 * Sets the width of the mark.
+	 */
 	public void setSize(int s) {
 		size = s;
 	}
 
+	/**
+	 * Turns guide drawing of/off.
+	 */
 	public void setGuideVisible(boolean b) {
 		guide = b;
 	}
 
+	/**
+	 * Gets the name of this marker, used in tooltips.
+	 */
 	public String getName() {
 		return _name;
 	}
 
+	/**
+	 * Gets the color to use for the mark and its guide.
+	 */
 	public Color getColor() {
 		return _color;
 	}
 
+	/**
+	 * Gets the current column of this mark.
+	 */
 	public int getColumn() {
 		return _column;
 	}
 
+	/**
+	 * Gets the width of this mark.
+	 */
 	public int getSize() {
 		return size;
 	}
 
+	/**
+	 * Returns true if the mark is currently visible.
+	 */
 	public boolean isVisible() {
 		return _visible;
 	}
 
+	/**
+	 * Returns true if the guide for this mark is visible.
+	 */
 	public boolean isGuideVisible() {
 		return guide;
 	}
