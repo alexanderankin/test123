@@ -1,7 +1,7 @@
 plugin.whitespace.WhiteSpacePlugin.name=WhiteSpace
 plugin.whitespace.WhiteSpacePlugin.author=André Kaplan
 plugin.whitespace.WhiteSpacePlugin.version=0.9
-plugin.whitespace.WhiteSpacePlugin.docs=WhiteSpace.html
+plugin.whitespace.WhiteSpacePlugin.docs=users-guide.html
 
 plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.1
 plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 03.02.99.02
