@@ -23,7 +23,7 @@
     
     <ACTION NAME="JumpPlugin.historyjump">
         <CODE>
-            JumpPlugin.pja.JumpToPreviousTag();
+            JumpPlugin.jump_actions.historyJump();
         </CODE>
     </ACTION>
     
