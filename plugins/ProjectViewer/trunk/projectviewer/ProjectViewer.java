@@ -653,27 +653,28 @@ public final class ProjectViewer extends JPanel
 				ProjectViewer v = ve.dockable;
 				if (v == null)
 					continue;
-				if (v.folderTree != null && v.treeRoot.isNodeDescendant(p)) {
+				if (p == v.treeRoot) {
+					v.setRootNode(VPTRoot.getInstance());
+					continue;
+				}
+				if (v.folderTree != null && v.treeRoot.isNodeDescendant(parent)) {
 					((DefaultTreeModel)v.folderTree.getModel())
 						.nodesWereRemoved(parent, idx, removed);
 				}
 
-				if (v.fileTree != null && v.treeRoot.isNodeDescendant(p)) {
+				if (v.fileTree != null && v.treeRoot.isNodeDescendant(parent)) {
 					((DefaultTreeModel)v.fileTree.getModel())
 						.nodesWereRemoved(parent, idx, removed);
 				}
 
-				if (v.workingFileTree != null && v.treeRoot.isNodeDescendant(p)) {
+				if (v.workingFileTree != null && v.treeRoot.isNodeDescendant(parent)) {
 					((DefaultTreeModel)v.workingFileTree.getModel())
 						.nodesWereRemoved(parent, idx, removed);
 				}
 
-				if (v.compactTree != null && v.treeRoot.isNodeDescendant(p)) {
+				if (v.compactTree != null && v.treeRoot.isNodeDescendant(parent)) {
 					((DefaultTreeModel)v.compactTree.getModel())
 						.nodesWereRemoved(parent, idx, removed);
-				}
-				if (p == v.treeRoot) {
-					v.setRootNode(VPTRoot.getInstance());
 				}
 			}
 		}
