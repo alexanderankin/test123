@@ -1,30 +1,22 @@
 //{{{ imports
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
-import org.gjt.sp.jedit.search.*;
-import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.gui.*;
 
-import java.awt.event.*;
-import java.awt.Component;
-import java.awt.Font;
+import org.gjt.sp.jedit.gui.EnhancedDialog;
+import org.gjt.sp.jedit.gui.HistoryTextField;
+
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.Dimension;
 import java.awt.BorderLayout;
 
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-
-import java.util.*;
-import java.io.*;
-
-import projectviewer.*;
-import projectviewer.vpt.*;
-import projectviewer.event.*;
-
-import ctags.bg.*;
-import java.awt.Dimension;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.border.EmptyBorder;
 //}}}
 
 //{{{ class TypeTag

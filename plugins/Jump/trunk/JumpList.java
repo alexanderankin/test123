@@ -121,13 +121,25 @@ public JumpList(View parent, Object[] list, ListModel model,
         itemsList.addKeyListener(handler);
         parent.setKeyEventInterceptor(handler);
         textArea.addCaretListener(this);
-
+// TODO: Check property SHOW_STATUSBAR_MESSAGES before updateStatusBar()
+        //if (jEdit.getProperty("SHOW_STATUSBAR_MESSAGES"))
+        try
+        {
+        updateStatusBar(itemsList);
+        }
+        catch(Exception e)
+        {
+            System.out.println("Can\'t setup init status bar.");   
+        }
     }
 //}}}
 
 //{{{ void dispose()
 public void dispose()
     {
+        // Clear status bar messages if need
+        jEdit.getActiveView().getStatus().setMessage(null);   
+        
         parent.setKeyEventInterceptor(null);
         textArea.removeCaretListener(this);
         super.dispose();
@@ -148,6 +160,10 @@ public void dispose()
     }
 
     public void processInsertAction(Object o)
+    {
+    }
+    
+    public void updateStatusBar(Object itemlist)
     {
     }
 //}}}
@@ -175,6 +191,7 @@ public void dispose()
 //{{{ void keyPressed
         public void keyPressed(KeyEvent evt)
         {
+            View view = jEdit.getActiveView();
             switch (evt.getKeyCode())
             {
             case KeyEvent.VK_ENTER:
@@ -203,6 +220,7 @@ public void dispose()
             case KeyEvent.VK_HOME:
                 itemsList.setSelectedIndex(0);
                 itemsList.ensureIndexIsVisible(0);
+                updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -211,6 +229,7 @@ public void dispose()
                         itemsList.getModel().getSize() - 1);
                 itemsList.ensureIndexIsVisible(
                         itemsList.getModel().getSize() - 1);
+                updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -221,6 +240,7 @@ public void dispose()
                     selected = itemsList.getModel().getSize() - 1;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
+                updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -231,6 +251,7 @@ public void dispose()
                     selected = 0;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
+                updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -242,6 +263,7 @@ public void dispose()
                     selected--;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
+                updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -252,6 +274,7 @@ public void dispose()
                 selected++;
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
+                updateStatusBar(itemsList);
                 evt.consume();
                 break;
 
@@ -291,11 +314,11 @@ public void dispose()
                 {
                     itemsList.setSelectedIndex(i);
                     itemsList.ensureIndexIsVisible(i);
-                    break;
+                    updateStatusBar(itemsList);
                 }
 
             }
-            itemsList.ensureIndexIsVisible(itemsList.getSelectedIndex());
+            itemsList.ensureIndexIsVisible(itemsList.getSelectedIndex());  
 
         }
 //}}}

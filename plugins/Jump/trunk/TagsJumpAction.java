@@ -38,15 +38,16 @@ class TagsJumpAction
 //}}}
 
 //{{{ CONSTRUCTOR
-    public TagsJumpAction() {
+    public TagsJumpAction() 
+    {
         super();
         view = jEdit.getActiveView();
     }
 //}}}
 
 //{{{ boolean parse()
-    public boolean parse() {
-        
+    public boolean parse() 
+    {
         bg = new CTAGS_BG(jEdit.getProperty("jump.ctags.path","options.JumpPlugin.ctags.def.path"));
         parser = bg.getParser();
         Vector v = new Vector();
@@ -101,16 +102,49 @@ class TagsJumpAction
 //}}}
 
 //{{{ class CtagsJumpMenu extends JumpList
-    public class CtagsJumpMenu extends JumpList {
+    public class CtagsJumpMenu extends JumpList 
+    {
 
 //{{{ CONSTRUCTOR       
-        public CtagsJumpMenu(View parent, Object[] list,
-                ListModel model, boolean incr_search, String title,
-                int list_width) {
-            super(parent, list, model, incr_search, title, list_width);
-        }
+    public CtagsJumpMenu(View parent, Object[] list,
+            ListModel model, boolean incr_search, String title,
+            int list_width) 
+    {
+        super(parent, list, model, incr_search, title, list_width);
+    }
 //}}}
 
+// QUESTION: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
+    public void updateStatusBar(Object o)
+    {
+        JList l = (JList) o;
+        CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
+        view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
+    }
+        
+    private String prepareStatusMsg(CTAGS_Entry en)
+    {
+        StringBuffer ret = new StringBuffer();
+        String ext_fields = en.getExtensionFields();
+           
+        if (ext_fields.length()>3)
+        {
+           ext_fields = ext_fields.substring(3);
+           
+           //Ugly workaround... :((
+           int f_pos = ext_fields.lastIndexOf("\t");
+           if (f_pos != -1)
+           {
+                ext_fields = ext_fields.substring(0,ext_fields.lastIndexOf("\t")+1);    
+           }
+        }
+        else
+        {
+           return null;  
+        }
+        return ext_fields;
+    }
+        
 //{{{  void processAction       
         public void processAction(Object o) {
 

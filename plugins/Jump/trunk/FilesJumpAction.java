@@ -18,6 +18,8 @@ import javax.swing.event.*;
 import projectviewer.*;
 import projectviewer.vpt.*;
 import projectviewer.event.*;
+
+import ctags.bg.*;
 //}}}
 
 //{{{ class FilesJumpAction
@@ -92,7 +94,22 @@ private Object[] getTabsList()
                 int list_width) {
             super(parent, list, model, incr_search, title, list_width);
         }
-
+        
+        public void updateStatusBar(Object o)
+        {
+// TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
+            JList l = (JList) o;
+            String tab_name = (String) l.getModel().getElementAt(l.getSelectedIndex());
+            String file_name = (String)tabs_files.get(tab_name);
+            view.getStatus().setMessageAndClear("file: "+file_name);
+        }
+        
+    // private String prepareStatusMsg(CTAGS_Entry en)
+    // {
+        
+    //     return ("file: "+en.getFileName());
+    // }
+        
         public void processAction(Object o) 
         {
             JList l = (JList) o;
