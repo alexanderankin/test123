@@ -61,12 +61,34 @@ import projectviewer.config.AppLauncher;
  */
 public class VPTContextMenu extends MouseAdapter {
 
+	//{{{ Static Members
+	
+	private static final ArrayList actions = new ArrayList();
+	private static long lastMod = System.currentTimeMillis();
+	
+	//{{{ registerAction(Action) method
+	/** Adds an action to be shown on the context menu. */
+	public static void registerAction(Action action) {
+		actions.add(action);
+		lastMod = System.currentTimeMillis();
+	} //}}}
+	
+	//{{{ unregisterAction(Action) method
+	/** Removes an action from the context menu. */
+	public static void unregisterAction(Action action) {
+		actions.remove(action);
+		lastMod = System.currentTimeMillis();
+	} //}}}
+	
+	//}}}
+	
 	//{{{ Instance Variables
 	private final ProjectViewer viewer;
 	private AppLauncher appList;
 	private JPopupMenu popupMenu;
   
-	private ArrayList	actions;
+	private ArrayList	internalActions;
+	private long pmLastBuilt;
 	//}}}
 	
 	//{{{ Constructors
@@ -134,17 +156,22 @@ public class VPTContextMenu extends MouseAdapter {
 	//{{{ loadGUI() method
 	/** Constructs the menus' GUI. */
 	private void loadGUI() {
-		actions = new ArrayList();
+		internalActions = new ArrayList();
 		popupMenu = new JPopupMenu();
 		
 		Action cpa = new EditProjectAction(viewer);
 		popupMenu.add(cpa.getMenuItem());
-		actions.add(cpa);
+		internalActions.add(cpa);
 
 		cpa = new FileImportAction(viewer);
 		popupMenu.add(cpa.getMenuItem());
-		actions.add(cpa);
+		internalActions.add(cpa);
 
+		for (Iterator it = actions.iterator(); it.hasNext(); ) {
+			popupMenu.add(((Action)it.next()).getMenuItem());
+		}
+		
+		pmLastBuilt = System.currentTimeMillis();
 	} //}}}
 	
 	//{{{ prepareMenu(VPTNode) method
@@ -155,6 +182,15 @@ public class VPTContextMenu extends MouseAdapter {
 	 *	nodes are selected, and chooses the appropriate entries.
 	 */
 	private void prepareMenu(VPTNode selectedNode) {
+		
+		if (pmLastBuilt < lastMod) {
+			loadGUI();
+		}
+		
+		for (Iterator it = internalActions.iterator(); it.hasNext(); ) {
+			((Action)it.next()).prepareForNode(selectedNode);
+		}
+		
 		for (Iterator it = actions.iterator(); it.hasNext(); ) {
 			((Action)it.next()).prepareForNode(selectedNode);
 		}
