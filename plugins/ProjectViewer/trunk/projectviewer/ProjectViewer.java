@@ -228,7 +228,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *	currently instantiated.
 	 */
 	public static void updateProjectCombos() {
-
 		DISABLE_EVENTS = true;
 
 		for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
@@ -246,7 +245,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		}
 
 		DISABLE_EVENTS = false;
-
 	} //}}}
 
 	//{{{ Event Handling
@@ -1027,171 +1025,194 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	} //}}}
 
 	//{{{ +handleMessage(EBMessage) : void
-	/** Handles an EditBus message. */
+	/** Handles an EditBus message.
+	 */
 	public void handleMessage(EBMessage msg) {
-
-		// View closed? Remove from edit bus and from viewers list
-		// EditPane changed? Fire a projectLoaded event for the global
-		// listeners.
 		if (msg instanceof ViewUpdate) {
-			ViewUpdate vu = (ViewUpdate) msg;
-			if (vu.getView() == view) {
-				if (vu.getWhat() == ViewUpdate.CLOSED) {
-					viewers.remove(view);
-					config.removePropertyChangeListener(ccl);
-					listeners.remove(view);
-					EditBus.removeFromBus(this);
-
-					if (treeRoot.isProject()) {
-						closeProject((VPTProject)treeRoot, config.getCloseFiles(), config.getRememberOpen());
-					}
-
-				} else if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
-					VPTProject current = null;
-					if (treeRoot.isProject()) {
-						current = (VPTProject) treeRoot;
-						config.setLastProject(current.getName());
-					} else {
-						config.setLastProject(null);
-					}
-					ProjectViewerEvent evt = new ProjectViewerEvent(this, current);
-					ArrayList lst = (ArrayList) listeners.get(null);
-					if (lst != null)
-					for (Iterator i = lst.iterator(); i.hasNext(); ) {
-						((ProjectViewerListener)i.next()).projectLoaded(evt);
-					}
-				}
-			}
+			handleViewUpdateMessage((ViewUpdate) msg);
 		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof EditorExitRequested) {
-			// Editor is exiting, save info about current project
-			EditorExitRequested eer = (EditorExitRequested) msg;
-			ProjectViewer active = (ProjectViewer) viewers.get(eer.getView());
-			if (active == this || active == null || active.treeRoot != treeRoot) {
-				closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
-				config.setLastProject(((VPTProject)treeRoot).getName());
-			}
+			handleEditorExitRequestedMessage((EditorExitRequested) msg);
 		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof BufferUpdate) {
-			BufferUpdate bu = (BufferUpdate) msg;
-
-			if (bu.getView() != null && bu.getView() != view) return;
-
-			VPTProject p = (VPTProject) treeRoot;
-
-			VPTNode f = p.getChildNode(bu.getBuffer().getPath());
-
-			boolean ask = false;
-			if (f == null) {
-				File file = new File(bu.getBuffer().getPath());
-				String fileParentPath = file.getParent() + File.separator;
-				String projectRootPath = p.getRootPath() + File.separator;
-				ask = (config.getAskImport() != ProjectViewerConfig.ASK_NEVER &&
-						bu.getWhat() == BufferUpdate.SAVED &&
-						(dontAsk == null ||
-							config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
-							!dontAsk.contains(bu.getBuffer().getPath())) &&
-						fileParentPath.startsWith(projectRootPath));
-			}
-
-			// Try to import newly created files to the project
-			if (ask) {
-				int res = JOptionPane.showConfirmDialog(view,
-						jEdit.getProperty("projectviewer.import_new",
-							new Object[] { bu.getBuffer().getName(), p.getName() }),
-						jEdit.getProperty("projectviewer.import_new.title"),
-						JOptionPane.YES_NO_OPTION);
-
-				if(res == JOptionPane.YES_OPTION) {
-					new NewFileImporter(p, this, bu.getBuffer().getPath()).doImport();
-				} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE){
-					if (dontAsk == null) {
-						dontAsk = new HashSet();
-					}
-					dontAsk.add(bu.getBuffer().getPath());
-				}
-			}
-
-			// Notifies trees when a buffer is closed (so it should not be
-			// underlined anymore) or opened (should underline it).
-			if (f != null) {
-				if (bu.getWhat() == BufferUpdate.CLOSED) {
-					if (folderTree != null) {
-						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
-					}
-					if (fileTree != null) {
-						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
-					}
-					if (workingFileTree != null) {
-						((VPTWorkingFileListModel)workingFileTree.getModel())
-							.removeOpenFile(f.getNodePath());
-					}
-				} else if (bu.getWhat() == BufferUpdate.LOADED) {
-					if (folderTree != null) {
-						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
-					}
-					if (fileTree != null) {
-						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
-					}
-					if (workingFileTree != null) {
-						((VPTWorkingFileListModel)workingFileTree.getModel())
-							.addOpenFile(f.getNodePath());
-					}
-				} else if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
-					if (folderTree != null) {
-						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
-					}
-					if (fileTree != null) {
-						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
-					}
-					if (workingFileTree != null) {
-						((VPTWorkingFileListModel)workingFileTree.getModel())
-							.addOpenFile(f.getNodePath());
-					}
-				}
-			}
+			handleBufferUpdateMessage((BufferUpdate) msg);
 		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof ErrorSourceUpdate) {
-			ErrorSourceUpdate esu = (ErrorSourceUpdate) msg;
-			//Log.log(Log.DEBUG, this, "ErrorSourceUpdate received :["+esu.getWhat()+"]["+esu.getErrorSource().getName()+"]");
-			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED ||
-				esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED) {
-				VPTProject p = (VPTProject) treeRoot;
-				ErrorSource.Error error = esu.getError();
-				VPTNode f = p.getChildNode(error.getFilePath());
-				if ( f != null ) {
-					//Log.log(Log.DEBUG, this, "ErrorSourceUpdate for :["+error.getFilePath()+"]");
-					if (folderTree != null) {
-						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
-					}
-					if (fileTree != null) {
-						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
-					}
-					if (workingFileTree != null) {
-						/** @todo: update node, if file is open */
-						workingFileTree.repaint();
-					}
-				}
-			}
-			if ( esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED ||
-				esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED ||
-				esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
-				VPTProject p = (VPTProject) treeRoot;
-				/** @todo .reload() unfortunately closes all tree nodes, but it should only repaint all nodes */
-				if (folderTree != null) {
-					//((DefaultTreeModel)folderTree.getModel()).reload();
-					folderTree.repaint();
-				}
-				if (fileTree != null) {
-					//((DefaultTreeModel)fileTree.getModel()).reload();
-					fileTree.repaint();
-				}
-				if (workingFileTree != null) {
-					//((VPTWorkingFileListModel)workingFileTree.getModel()).reload();
-					workingFileTree.repaint();
-				}
-			}
+			handleErrorSourceUpdateMessage((ErrorSourceUpdate) msg);
 		}
 
 
 	} //}}}
+
+	//{{{ +handleViewUpdateMessage(ViewUpdate) : void
+	/** Handles a ViewUpdate EditBus message.
+	 */
+	private void handleViewUpdateMessage(ViewUpdate vu) {
+		// View closed? Remove from edit bus and from viewers list
+		// EditPane changed? Fire a projectLoaded event for the global
+		// listeners.
+		if (vu.getView() == view) {
+			if (vu.getWhat() == ViewUpdate.CLOSED) {
+				viewers.remove(view);
+				config.removePropertyChangeListener(ccl);
+				listeners.remove(view);
+				EditBus.removeFromBus(this);
+
+				if (treeRoot.isProject()) {
+					closeProject((VPTProject)treeRoot, config.getCloseFiles(), config.getRememberOpen());
+				}
+
+			} else if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
+				VPTProject current = null;
+				if (treeRoot.isProject()) {
+					current = (VPTProject) treeRoot;
+					config.setLastProject(current.getName());
+				} else {
+					config.setLastProject(null);
+				}
+				ProjectViewerEvent evt = new ProjectViewerEvent(this, current);
+				ArrayList lst = (ArrayList) listeners.get(null);
+				if (lst != null)
+				for (Iterator i = lst.iterator(); i.hasNext(); ) {
+					((ProjectViewerListener)i.next()).projectLoaded(evt);
+				}
+			}
+		}
+	}//}}}
+
+	//{{{ +handleEditorExitRequestedMessage(ViewUpdate) : void
+	/** Handles a EditorExitRequested EditBus message.
+	 */
+	private void handleEditorExitRequestedMessage(EditorExitRequested eer) {
+		// Editor is exiting, save info about current project
+		ProjectViewer active = (ProjectViewer) viewers.get(eer.getView());
+		if (active == this || active == null || active.treeRoot != treeRoot) {
+			closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
+			config.setLastProject(((VPTProject)treeRoot).getName());
+		}
+	}//}}}
+
+	//{{{ +handleBufferUpdateMessage(ViewUpdate) : void
+	/** Handles a BufferUpdate EditBus message.
+	 */
+	private void handleBufferUpdateMessage(BufferUpdate bu) {
+		if (bu.getView() != null && bu.getView() != view) return;
+
+		VPTProject p = (VPTProject) treeRoot;
+
+		VPTNode f = p.getChildNode(bu.getBuffer().getPath());
+
+		boolean ask = false;
+		if (f == null) {
+			File file = new File(bu.getBuffer().getPath());
+			String fileParentPath = file.getParent() + File.separator;
+			String projectRootPath = p.getRootPath() + File.separator;
+			ask = (config.getAskImport() != ProjectViewerConfig.ASK_NEVER &&
+					bu.getWhat() == BufferUpdate.SAVED &&
+					(dontAsk == null ||
+						config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
+						!dontAsk.contains(bu.getBuffer().getPath())) &&
+					fileParentPath.startsWith(projectRootPath));
+		}
+
+		// Try to import newly created files to the project
+		if (ask) {
+			int res = JOptionPane.showConfirmDialog(view,
+					jEdit.getProperty("projectviewer.import_new",
+						new Object[] { bu.getBuffer().getName(), p.getName() }),
+					jEdit.getProperty("projectviewer.import_new.title"),
+					JOptionPane.YES_NO_OPTION);
+
+			if(res == JOptionPane.YES_OPTION) {
+				new NewFileImporter(p, this, bu.getBuffer().getPath()).doImport();
+			} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE) {
+				if (dontAsk == null) {
+					dontAsk = new HashSet();
+				}
+				dontAsk.add(bu.getBuffer().getPath());
+			}
+		}
+
+		// Notifies trees when a buffer is closed (so it should not be
+		// underlined anymore) or opened (should underline it).
+		if (f != null) {
+			if (bu.getWhat() == BufferUpdate.CLOSED) {
+				if (folderTree != null) {
+					((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+				}
+				if (fileTree != null) {
+					((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+				}
+				if (workingFileTree != null) {
+					((VPTWorkingFileListModel)workingFileTree.getModel())
+						.removeOpenFile(f.getNodePath());
+				}
+			} else if (bu.getWhat() == BufferUpdate.LOADED) {
+				if (folderTree != null) {
+					((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+				}
+				if (fileTree != null) {
+					((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+				}
+				if (workingFileTree != null) {
+					((VPTWorkingFileListModel)workingFileTree.getModel())
+						.addOpenFile(f.getNodePath());
+				}
+			} else if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
+				if (folderTree != null) {
+					((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+				}
+				if (fileTree != null) {
+					((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+				}
+				if (workingFileTree != null) {
+					((VPTWorkingFileListModel)workingFileTree.getModel())
+						.addOpenFile(f.getNodePath());
+				}
+			}
+		}
+ 	}//}}}
+
+	//{{{ +handleErrorSourceUpdateMessage(ViewUpdate) : void
+	/** Handles a ErrorSourceUpdate EditBus message.
+	 */
+	private void handleErrorSourceUpdateMessage(ErrorSourceUpdate esu) {
+		//Log.log(Log.DEBUG, this, "ErrorSourceUpdate received :["+esu.getWhat()+"]["+esu.getErrorSource().getName()+"]");
+		if ( esu.getWhat() == ErrorSourceUpdate.ERROR_ADDED ||
+			esu.getWhat() == ErrorSourceUpdate.ERROR_REMOVED) {
+			VPTProject p = (VPTProject) treeRoot;
+			ErrorSource.Error error = esu.getError();
+			VPTNode f = p.getChildNode(error.getFilePath());
+			if ( f != null ) {
+				//Log.log(Log.DEBUG, this, "ErrorSourceUpdate for :["+error.getFilePath()+"]");
+				if (folderTree != null) {
+					((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+				}
+				if (fileTree != null) {
+					((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+				}
+				if (workingFileTree != null) {
+					/** @todo: update node, if file is open */
+					workingFileTree.repaint();
+				}
+			}
+		}
+		if ( esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_ADDED ||
+			esu.getWhat() == ErrorSourceUpdate.ERROR_SOURCE_REMOVED ||
+			esu.getWhat() == ErrorSourceUpdate.ERRORS_CLEARED) {
+			VPTProject p = (VPTProject) treeRoot;
+			/** @todo .reload() unfortunately closes all tree nodes, but it should only repaint all nodes */
+			if (folderTree != null) {
+				//((DefaultTreeModel)folderTree.getModel()).reload();
+				folderTree.repaint();
+			}
+			if (fileTree != null) {
+				//((DefaultTreeModel)fileTree.getModel()).reload();
+				fileTree.repaint();
+			}
+			if (workingFileTree != null) {
+				//((VPTWorkingFileListModel)workingFileTree.getModel()).reload();
+				workingFileTree.repaint();
+			}
+		}
+	}//}}}
 
 	//{{{ +setEnabled(boolean) : void
 	/** Enables or disables the viewer GUI. */
