@@ -32,10 +32,24 @@ import buildtools.*;
  * The class that performs the javac compile run.
  */ 
 public class JCompiler {
+
+    // on first initialization, set a new SecurityManager. Note, that
+    // on JDK 1.1.x a SecurityManager can only be set _once_.
+    private static NoExitSecurityManager sm = NoExitSecurityManager.getInstance();
+    static {
+        try {
+            System.setSecurityManager(sm);
+        }
+        catch (SecurityException secex) {
+            Log.log(Log.ERROR, JCompiler.class, 
+                "Could not set new SecurityManager. Sorry.");
+        }
+    }
+
     
     private PipedOutputStream pipe = null;
     private Method compilerMethod = null;
-    
+
 
     public JCompiler() {
         pipe = new PipedOutputStream();
@@ -284,23 +298,15 @@ public class JCompiler {
         // Start the javac compiler...
         PrintStream origOut = System.out;
         PrintStream origErr = System.err;
-        SecurityManager origSM = System.getSecurityManager();        
         try {
             PrintStream ps = new PrintStream(pipe);
             System.setOut(ps);
             System.setErr(ps);
-            
             // set "no exit" security manager to prevent javac from exiting:
-            NoExitSecurityManager sm = NoExitSecurityManager.getNoExitSM();
-            System.setSecurityManager(sm);
-
+            if (sm != null) sm.setAllowExit(false);
             // now invoke the compiler method:
             Object methodParams[] = new Object[] { arguments };
             compilerMethod.invoke(null, methodParams);
-        }
-        catch (SecurityException secex) {
-            Log.log(Log.ERROR, this, 
-                "Could not set new SecurityManager. Good luck.");
         }
         catch (InvocationTargetException invex) {
             // the invoked method has thrown an exception
@@ -323,9 +329,10 @@ public class JCompiler {
             illaccex.printStackTrace();
         }
         finally {
+            // exit is allowed again
+            if (sm != null) sm.setAllowExit(true);
             System.setOut(origOut);   
             System.setErr(origErr);
-            System.setSecurityManager(origSM);
         }
         
         sendMessage("jcompiler.msg.done");
@@ -365,6 +372,5 @@ public class JCompiler {
     public PipedOutputStream getOutputPipe() {
         return pipe;
     }   
-     
 }
 

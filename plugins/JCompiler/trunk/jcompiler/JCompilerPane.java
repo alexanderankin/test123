@@ -146,6 +146,7 @@ public class JCompilerPane
         
         newCP = new JTextArea(2, 40);
         newCP.setLineWrap(true);
+        newCP.setMinimumSize(new Dimension(300, 20));
         addComponent(new JScrollPane(newCP));
 
         // ========== Error parsing options ==========

@@ -179,30 +179,13 @@ public class JavaUtils {
             return dirname;
         }
 
-        String javadir = replaceAll(packagename, ".",
-            System.getProperty("file.separator"));
+        String javadir = packagename.replace('.', 
+            System.getProperty("file.separator").charAt(0));
 
         return dirname.substring(0, dirname.lastIndexOf(javadir) - 1);
     }
 
     
-    /**
-     *  replaces all occurences of "find" with "replacement" in "original".
-     */
-    public static String replaceAll(String original, 
-                                    String find, 
-                                    String replacement)
-    {
-        StringBuffer buffer = new StringBuffer(original);
-        int location = buffer.toString().indexOf(find);
-        while (location != -1) {
-            buffer.replace(location, location + find.length(), replacement);
-            location = buffer.toString().indexOf(find, location + find.length() + 1);
-        }
-        return buffer.toString();
-    }
-    
-
     /**
      *  Returns the location of "tools.jar".
      */

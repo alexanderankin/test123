@@ -152,7 +152,9 @@ public class JCompilerShell implements Shell, EBComponent {
         int type = -1;
         if (regexp != null && regexp.isMatch(line)) {
             String loLine = line.toLowerCase();
-            if (loLine.indexOf("warning") != -1 || loLine.indexOf("caution") != -1) {
+            if (loLine.indexOf("warning:") != -1 
+                || loLine.indexOf("caution:") != -1
+                || loLine.indexOf("note:") != -1) {
                 type = ErrorSource.WARNING;
             } else {
                 type = ErrorSource.ERROR;

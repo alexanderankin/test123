@@ -1,4 +1,10 @@
-VERSION 0.7.0
+VERSION 0.7.1
+
+- now recognizes "Notes" as compiler warnings.
+- bugfix: SecurityException and unknown method when run on JDK 1.1.x
+
+
+VERSION 0.7.0 (not released)
 
 - uses ErrorList
 - uses Console, JCompiler is a ConsoleShell
