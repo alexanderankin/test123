@@ -15,14 +15,12 @@ commandoCHOICE(pane,ns,label,var,options)
 		}
 	}
 
-	listener = new ActionListener()
+	valueChanged()
 	{
-		actionPerformed(evt)
-		{
-			ns.setVariable(var,choice.getSelectedItem());
-		}
-	};
-	choice.addActionListener(listener);
+		ns.setVariable(var,choice.getSelectedItem().value);
+	}
 
-	pane.addComponent(label,entry);
+	pane.addComponent(label,choice);
+
+	return this;
 }

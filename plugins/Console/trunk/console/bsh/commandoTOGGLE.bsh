@@ -2,15 +2,20 @@ commandoTOGGLE(pane,ns,label,var,options)
 {
 	toggle = new JCheckBox(label);
 	value = ns.getVariable(var);
-	if(new bsh.Primitive(true).equals(value))
-		toggle.setSelected(true);
-	listener = new ActionListener()
+	if("true".equals(value))
 	{
-		actionPerformed(evt)
-		{
-			ns.setVariable(var,new Primitive(toggle.isSelected()));
-		}
-	};
-	toggle.addActionListener(listener);
+		toggle.setSelected(true);
+		ns.setVariable(var,true);
+	}
+	else if("false".equals(value))
+		ns.setVariable(var,false);
+
+	valueChanged()
+	{
+		ns.setVariable(var,toggle.isSelected());
+	}
+
 	pane.addComponent(toggle);
+
+	return this;
 }
