@@ -40,7 +40,19 @@ public abstract class Asset
 		this.name = name;
 	} //}}}
 
+	/**
+	 * Returns the icon to be shown for the asset in the structure tree.
+	 */
 	public abstract Icon getIcon();
+
+	/**
+	 * Returns a brief description of the asset to be shown in the tree.
+	 */
 	public abstract String getShortString();
+
+	/**
+	 * Returns a full description of the asset to be shown in the view's
+	 * status bar on when the mouse is over the asset in the tree.
+	 */
 	public abstract String getLongString();
 }
