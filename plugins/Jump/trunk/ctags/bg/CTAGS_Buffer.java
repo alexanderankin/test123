@@ -67,9 +67,9 @@ public class CTAGS_Buffer extends ArrayList
         
         for (int i = 0; i<b.size(); i++)
         {
-                en = (CTAGS_Entry) b.get(i);
-                this.add(en);
-                this.addFileName(en.getFileName());
+            en = (CTAGS_Entry) b.get(i);
+            this.add(en);
+            this.addFileName(en.getFileName());
         }
     }
 //}}}  
@@ -185,7 +185,6 @@ public class CTAGS_Buffer extends ArrayList
     /**
     * Scan entire CTAGS_Buffer for entries from spec. file
     */
-    //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     public Vector getTagsByFile(String file)
     {
         Vector v = new Vector();
@@ -209,7 +208,7 @@ public class CTAGS_Buffer extends ArrayList
         this.addFileName(entry.getFileName());
         return super.add(entry);  
     } //}}}
-    //String
+
 //{{{ clear
     public void clear() 
     {

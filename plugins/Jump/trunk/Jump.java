@@ -49,11 +49,11 @@ public class Jump
         if (!isProjectLoaded()) return;
         if (!JumpPlugin.isListenerAdded) JumpPlugin.init();
         //new FilesJumpAction().showList();
-        if (!JumpPlugin.isListenerAdded)
-        { 
-            System.out.println("Jump.showFilesJump: Try to init JumpPlugin...");
-            JumpPlugin.init();
-        }
+        // if (!JumpPlugin.isListenerAdded)
+        // { 
+            // System.out.println("Jump.showFilesJump: Try to init JumpPlugin...");
+            // JumpPlugin.init();
+        // }
         
         if (JumpPlugin.getActiveProjectBuffer() instanceof ProjectBuffer)
         {
@@ -229,13 +229,6 @@ public class Jump
     }
 //}}}
 
-//{{{ void initJumpPlugin()
-// init Jump. Used to avoid startup delay.
-// private void initJumpPlugin()
-// {
-       
-// }
-//}}}
 
 }
 

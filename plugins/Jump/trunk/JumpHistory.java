@@ -9,7 +9,7 @@ import org.gjt.sp.util.Log;
 
 public class JumpHistory
 {
-    public Stack history;
+    private Stack history;
     
 //{{{ JumpHistory()
     public JumpHistory()

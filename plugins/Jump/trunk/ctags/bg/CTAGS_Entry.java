@@ -14,12 +14,14 @@ public class CTAGS_Entry implements Serializable
 {
 
 //{{{ fields
-        private String toString;
+    private String toString;
     private String Tag_Name;
     private String File_Name;
     private String Ex_Cmd;
+    
     // In Java mode, for example: signature "m" for methods, "f"-fields etc.
     private String Signature;
+    
     // In Java mode, for example: "methods" is description of signature "m"
     private String Signature_Descr;
     private String Extension_Fields; 
@@ -30,7 +32,6 @@ public class CTAGS_Entry implements Serializable
     {
         try
         {
-
             int i = LineCtagsOutput.indexOf("\t", 0);
             Tag_Name = LineCtagsOutput.substring(0, i);
             Tag_Name.trim();
