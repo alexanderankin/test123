@@ -43,9 +43,6 @@
   <property name="build.doxydoc"    value="${build.docs}/doxydoc"/>
   <property name="build.images"     value="${build}/images"/>
 
-  <property name="docbookx.dtd"     value="../XML/xml/dtds/docbookx.dtd" />
-  <property name="docbook.xsl"		value="/usr/share/xsl/docbook-xsl" />
-
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
@@ -238,7 +235,7 @@
 			<arg value="docs/users-guide.xml"/>
 		</exec>
 
-  	<delete file="docbook-wrapper.catalog" quiet="true" />
+  	<!--delete file="docbook.catalog" quiet="true" /-->
 	</target>
 
 
