@@ -25,114 +25,126 @@ package jcompiler;
 
 import java.io.*;
 import java.util.Vector;
-import gnu.regexp.RE;
-import gnu.regexp.RESyntax;
-import gnu.regexp.REException;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.DefaultErrorSource;
 import org.gjt.sp.jedit.ErrorSource;
-import console.Shell;
 import console.Console;
+import console.Output;
+import console.Shell;
 
 
 /**
  * a JCompiler shell for the Console plugin.
  */
-public class JCompilerShell extends Shell implements EBComponent
+public class JCompilerShell extends Shell
 {
 
 	public JCompilerShell() {
 		super("Java Compiler");
+
+		// JCompiler uses it's own ErrorSource instead of Console's one:
 		errorSource = new DefaultErrorSource("JCompiler");
 		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST, errorSource);
 		EditBus.addToBus(errorSource);
-		EditBus.addToBus(this);
-		propertiesChanged();
 	}
 
 
-	public void handleMessage(EBMessage msg) {
-		if (msg instanceof PropertiesChanged)
-			propertiesChanged();
-	}
-
+	// ----- Begin Shell implementation -----
 
 	/**
-	 * print an information message to the Console.
+	 * print an information message.
 	 *
-	 * @param  console  the Console
+	 * @param  output  where to put the information
 	 */
-	public void printInfoMessage(Console console) {
-		if (console != null)
-			console.printInfo(jEdit.getProperty("jcompiler.msg.info"));
+	public void printInfoMessage(Output output) {
+		output.print(null, jEdit.getProperty("jcompiler.msg.info"));
 	}
 
 
 	/**
 	 * execute a command.
 	 *
-	 * @param  view  the view that was open when the command was invoked.
-	 * @param  command  the command.
-	 * @param  console  the Console where output should go to.
+	 * @param  console  the Console where the command was entered.
+	 * @param  output  where the output should go.
+	 * @param  command  the entered command.
 	 */
-	public void execute(View view, String command, Console console) {
-		this.console = console; // remember console instance
-
-		stop(); // stop last command
-		errorSource.clear();
+	public void execute(Console console, Output output, String command) {
+		stop(console); // stop last command
 
 		String cmd = command.trim();
-		if ("compile".equals(cmd)) {
-			jthread = new CompilerThread(view, false, false);
-		}
-		else if ("compilepkg".equals(cmd)) {
-			jthread = new CompilerThread(view, true, false);
-		}
-		else if ("rebuildpkg".equals(cmd)) {
-			jthread = new CompilerThread(view, true, true);
-		}
-		else if ("javac".equals(cmd)) {
-			// command "javac" invoked without arguments
-			jthread = new CompilerThread(new String[] {});
-		}
-		else if (cmd.startsWith("javac ")) {
-			jthread = new CompilerThread(parseCmdLineArguments(cmd.substring(6)));
-		}
-		else if ("help".equals(cmd)) {
-			printInfoMessage(console);
-		}
-		else {
-			if (console != null) {
-				console.printError("Unknown JCompiler command '" + cmd + "'");
-			}
-		}
-	}
 
-
-	public void stop() {
-		if (jthread != null) {
-			if (jthread.isAlive()) {
-				jthread.stop();
-				if (console != null) {
-					console.printError("JCompiler thread killed.");
-				}
-			}
-			jthread = null;
+		if ("compile".equals(cmd))
+		{
+			errorSource.clear();
+			compileTask = new JCompilerTask(false, false, console, output, errorSource);
 		}
-	}
-
-
-	public boolean waitFor() {
-		if (jthread != null) {
+		else if ("compilepkg".equals(cmd))
+		{
+			errorSource.clear();
+			compileTask = new JCompilerTask(true, false, console, output, errorSource);
+		}
+		else if ("rebuildpkg".equals(cmd))
+		{
+			errorSource.clear();
+			compileTask = new JCompilerTask(true, true, console, output, errorSource);
+		}
+		else if ("javac".equals(cmd))
+		{
+			// command "javac" invoked without arguments,
+			// prints javac usage
+			compileTask = new JCompilerTask(new String[] {}, console, output, errorSource);
+		}
+		else if (cmd.startsWith("javac "))
+		{
+			// command "javac" with arguments
+			String[] args;
 			try {
-				jthread.wait();
-				jthread = null;
+				args = parseCmdLineArguments(cmd.substring(6));
+			}
+			catch (IOException ex) {
+				console.print(console.getErrorColor(),
+					jEdit.getProperty("jcompiler.msg.errorCommandLine",
+						new Object[] { ex }));
+				return;
+			}
+
+			errorSource.clear();
+			compileTask = new JCompilerTask(args, console, output, errorSource);
+		}
+		else if ("help".equals(cmd))
+		{
+			printInfoMessage(output);
+		}
+		else
+		{
+			console.print(console.getInfoColor(),
+				"Unknown JCompiler command '" + cmd
+				+ "'. See 'help' for a list of commands.");
+		}
+	}
+
+
+	public void stop(Console console) {
+		if (compileTask != null) {
+			if (compileTask.isAlive()) {
+				compileTask.stop();
+				console.print(console.getErrorColor(), "JCompiler task killed.");
+			}
+			compileTask = null;
+		}
+	}
+
+
+	public boolean waitFor(Console console) {
+		if (compileTask != null) {
+			try {
+				synchronized(compileTask) {
+					compileTask.join();
+					compileTask = null;
+				}
 			}
 			catch (InterruptedException ie) {
 				return false;
@@ -141,93 +153,14 @@ public class JCompilerShell extends Shell implements EBComponent
 		return true;
 	}
 
-
-	private void propertiesChanged() {
-		parseAccentChar = jEdit.getBooleanProperty("jcompiler.parseaccentchar", true);
-		String sErrorRE = jEdit.getProperty("jcompiler.regexp");
-		String sWarningRE = jEdit.getProperty("jcompiler.regexp.warning");
-		rfilenamepos = jEdit.getProperty("jcompiler.regexp.filename");
-		rlinenopos = jEdit.getProperty("jcompiler.regexp.lineno");
-		rmessagepos = jEdit.getProperty("jcompiler.regexp.message");
-
-		try {
-			errorRE = new RE(sErrorRE, RE.REG_ICASE, RESyntax.RE_SYNTAX_PERL5);
-		}
-		catch (REException rex) {
-			String errorMsg = "The regular expression " + sErrorRE
-				+ " for compiler errors is invalid. Message is: " + rex.getMessage()
-				+ " at position " + rex.getPosition();
-			Log.log(Log.ERROR, this, errorMsg);
-			printLine(errorMsg + '\n');
-		}
-
-		try {
-			warningRE = new RE(sWarningRE, RE.REG_ICASE, RESyntax.RE_SYNTAX_PERL5);
-		}
-		catch (REException rex) {
-			String errorMsg = "The regular expression " + sWarningRE
-				+ " for compiler warnings is invalid. Message is: " + rex.getMessage()
-				+ " at position " + rex.getPosition();
-			Log.log(Log.ERROR, this, errorMsg);
-			printLine(errorMsg + '\n');
-		}
-	}
+	// ----- End Shell implementation -----
 
 
-	/**
-	 * parse the line for errors and send them to ErrorList and Console.
-	 */
-	private void printLine(String line) {
-		int type = -1;
-
-		if (errorRE != null && errorRE.isMatch(line)) {
-			if (warningRE != null && warningRE.isMatch(line))
-				type = ErrorSource.WARNING;
-			else
-				type = ErrorSource.ERROR;
-
-			String filename = errorRE.substitute(line, rfilenamepos);
-			String lineno = errorRE.substitute(line, rlinenopos);
-			String message = errorRE.substitute(line, rmessagepos);
-			pendingError = new PendingError(type, filename,
-				Integer.parseInt(lineno) - 1, 0, 0, message);
-
-			if (!parseAccentChar) {
-				// don't wait for a line with '^', add error immediately
-				pendingError.addToErrorSource();
-				pendingError = null;
-			}
-		}
-
-		if (parseAccentChar && pendingError != null && line.trim().equals("^")) {
-			// a line with a single '^' in it: this determines the column
-			// position of the last compiler error
-			pendingError.setStartPos(line.indexOf('^'));
-			pendingError.addToErrorSource();
-			pendingError = null;
-		}
-
-		if (console != null) {
-			switch (type) {
-				case ErrorSource.WARNING:
-					console.printWarning(line);
-					break;
-				case ErrorSource.ERROR:
-					console.printError(line);
-					break;
-				default:
-					console.printPlain(line);
-					break;
-			}
-		}
-	}
-
-
-	private String[] parseCmdLineArguments(String cmd) {
+	private String[] parseCmdLineArguments(String cmd) throws IOException {
 		// Expand any variables in the command line arguments:
 		cmd = JCompiler.expandVariables(cmd);
 
-		// The following is stolen from Slava Pestov's DefaultShell.java (Console plugin):
+		// The following is stolen from Slava Pestov's SystemShell.java (Console plugin):
 
 		// We replace \ with a non-printable char because StreamTokenizer
 		// handles \ specially, which causes problems on Windows as \ is the
@@ -244,22 +177,17 @@ public class JCompilerShell extends Shell implements EBComponent
 
 		Vector args = new Vector();
 
-		try {
 loop:
-			for(;;) {
-				switch(st.nextToken()) {
-					case StreamTokenizer.TT_EOF:
-						break loop;
-				case StreamTokenizer.TT_WORD:
-				case '"':
-				case '\'':
-					args.addElement(st.sval.replace(NON_PRINTABLE, '\\'));
-					break;
-				}
+		for(;;) {
+			switch(st.nextToken()) {
+				case StreamTokenizer.TT_EOF:
+					break loop;
+			case StreamTokenizer.TT_WORD:
+			case '"':
+			case '\'':
+				args.addElement(st.sval.replace(NON_PRINTABLE, '\\'));
+				break;
 			}
-		}
-		catch (IOException ex) {
-			console.printError(jEdit.getProperty("jcompiler.msg.errorCommandLine", new Object[] { ex }));
 		}
 
 		Log.log(Log.DEBUG, this, "arguments=" + args);
@@ -270,146 +198,8 @@ loop:
 	}
 
 
-	private DefaultErrorSource errorSource = null;
-	private PendingError pendingError = null;
-	private CompilerThread jthread = null;
-	private Console console = null;
-	private RE errorRE = null;
-	private RE warningRE = null;
-	private String rfilenamepos;
-	private String rlinenopos;
-	private String rmessagepos;
-	private boolean parseAccentChar;
-
+	private JCompilerTask compileTask;
+	private DefaultErrorSource errorSource;
 	private static final char NON_PRINTABLE = 127;
-
-
-	/**
-	 * Wraps the JCompiler run in a thread.
-	 */
-	class CompilerThread extends Thread
-	{
-
-		CompilerThread(View view, boolean pkgCompile, boolean rebuild) {
-			super();
-			this.view = view;
-			this.pkgCompile = pkgCompile;
-			this.rebuild = rebuild;
-			this.setPriority(NORM_PRIORITY - 1);
-			this.start();
-		}
-
-
-		CompilerThread(String[] args) {
-			super();
-			this.args = args;
-			this.setPriority(NORM_PRIORITY + 1);
-			this.start();
-		}
-
-
-		public void run() {
-			JCompiler jcompiler = new JCompiler();
-			Thread outputThread = new OutputThread(jcompiler.getOutputPipe());
-			if (args == null)
-				jcompiler.compile(view, view.getBuffer(), pkgCompile, rebuild);
-			else
-				jcompiler.compile(args);
-			jcompiler = null;
-			view = null;
-			outputThread = null;
-		}
-
-
-		private View view;
-		private boolean pkgCompile;
-		private boolean rebuild;
-		private String[] args;
-	} // inner class CompilerThread
-
-
-	/**
-	 * This class monitors output created by the CompilerThread.
-	 */
-	class OutputThread extends Thread
-	{
-		OutputThread(PipedOutputStream outpipe) {
-			try {
-				PipedInputStream inpipe = new PipedInputStream(outpipe);
-				InputStreamReader in = new InputStreamReader(inpipe);
-				buf = new BufferedReader(in);
-				this.start();
-			}
-			catch (IOException ioex) {
-				// if there's an exception, the thread will not be started.
-			}
-		}
-
-
-		public void run() {
-			if (buf == null) return;
-			try {
-				String line;
-				while ((line = buf.readLine()) != null) {
-					printLine(line);
-				}
-				Log.log(Log.DEBUG, this, "ends");
-			}
-			catch (IOException ioex) {
-				// ignore
-			}
-			finally {
-				if (pendingError != null) {
-					pendingError.addToErrorSource();
-					pendingError = null;
-				}
-			}
-		}
-
-
-		private BufferedReader buf = null;
-
-	} // inner class OutputThread
-
-
-
-	/**
-	 * Holds data of an error.
-	 */
-	class PendingError
-	{
-		public PendingError(int type, String filename, int lineno,
-		int startpos, int endpos, String error) {
-			this.type = type;
-			this.filename = filename;
-			this.lineno = lineno;
-			this.startpos = startpos;
-			this.endpos = endpos;
-			this.error = error;
-		}
-
-
-		public void setStartPos(int startpos) {
-			this.startpos = startpos;
-		}
-
-
-		public void setEndPos(int endpos) {
-			this.endpos = endpos;
-		}
-
-
-		public void addToErrorSource() {
-			errorSource.addError(type, filename, lineno, startpos, endpos, error);
-		}
-
-
-		private int type;
-		private String filename;
-		private int lineno;
-		private int startpos;
-		private int endpos;
-		private String error;
-	}
 
 }

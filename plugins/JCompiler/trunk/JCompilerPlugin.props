@@ -1,14 +1,14 @@
 # General options
 
 plugin.jcompiler.JCompilerPlugin.name=Java Compiler
-plugin.jcompiler.JCompilerPlugin.author=Kevin A. Burton, Aziz Sharif, Dominic Stolerman and Dirk Moebius
-plugin.jcompiler.JCompilerPlugin.version=1.2.1
+plugin.jcompiler.JCompilerPlugin.author=Dirk Moebius
+plugin.jcompiler.JCompilerPlugin.version=1.3
 plugin.jcompiler.JCompilerPlugin.docs=index.html
 
 plugin.jcompiler.JCompilerPlugin.depend.0=jdk 1.1.1
-plugin.jcompiler.JCompilerPlugin.depend.1=jedit 03.01.99.00
-plugin.jcompiler.JCompilerPlugin.depend.2=plugin EditBusPlugin 0.10
-plugin.jcompiler.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 2.3
+plugin.jcompiler.JCompilerPlugin.depend.1=jedit 03.02.06.00
+plugin.jcompiler.JCompilerPlugin.depend.2=plugin EditBusPlugin 1.0
+plugin.jcompiler.JCompilerPlugin.depend.2=plugin console.ConsolePlugin 3.0
 
 
 # Menu options
@@ -18,7 +18,7 @@ jcompiler-menu.label=Java Compiler
 jcompiler-compile.label=Compile File
 jcompiler-compilepkg.label=Build Package(s)
 jcompiler-rebuildpkg.label=Rebuild Package(s)
-jcompiler-options.label=Options...
+jcompiler-options.label=Java Compiler Options...
 
 
 # Default user properties
@@ -62,6 +62,7 @@ options.jcompiler.regexp.message=Message at:
 options.jcompiler.regexp.warning=Regexp for warnings:
 options.jcompiler.parseaccentchar=Parse errors for ^ column indicator
 
+options.jcompiler.modernCompiler=Use modern compiler (JDK 1.3 or higher)
 options.jcompiler.genDebug=Generate debug info (-g)
 options.jcompiler.genOptimized=Generate optimized code (-O)
 options.jcompiler.showdeprecated=Warn about use of deprecated API (-deprecation)
@@ -125,9 +126,23 @@ jcompiler.msg.errorOutputDir=Error resolving output directory {0}: {1}\n
 jcompiler.msg.noOutputDir=Error: Output directory {0} is not a directory.\n
 jcompiler.msg.nofiles=No new or outdated files in directory {0}.\n
 jcompiler.msg.compilefiles=Compiling {0,choice,1#{1}|1<{0} files from directory {2}}{3,choice,0#|1# to directory {4}}...\n
-jcompiler.msg.showcommandline=Command line:\n{0}\n
+jcompiler.msg.commandline=Command line:\n{0}\n
 jcompiler.msg.done=Java Compiler done.\n
 jcompiler.msg.errorCommandLine=Error: The command line is invalid. ({0})
+
+jcompiler.msg.invalidErrorRE=\
+	The regular expression for compiler errors "{0}" is invalid.\n\
+	Error messages will not be detected and sent to the ErrorList.\n\
+	However, compilation will continue.\n\
+	The error message for the invalid regular expression was:\n\
+	{1}\n
+
+jcompiler.msg.invalidWarningRE=\
+	The regular expression for compiler warnings "{0}" is invalid.\n\
+	Warning messages will not be identified.\n\
+	However, compilation will continue.\n\
+	The error message for the invalid regular expression was:\n\
+	{1}\n
 
 
 # Message dialogs

@@ -24,18 +24,32 @@ package jcompiler;
 
 
 import java.util.Vector;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-import jcompiler.*;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.OptionGroup;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
+import org.gjt.sp.jedit.gui.OptionsDialog;
 import jcompiler.options.*;
+import console.Console;
+import console.Shell;
 
 
 public class JCompilerPlugin extends EditPlugin
 {
 
+	/** holds a shared instance of the JCompiler shell. */
+	private static final JCompilerShell shell = new JCompilerShell();
+
+
 	public void start() {
-		shell = new JCompilerShell();
-		EditBus.addToNamedList(console.Shell.SHELLS_LIST, shell);
+		Shell.registerShell(shell);
+	}
+
+
+	public void stop() {
+		Shell.unregisterShell(shell);
 	}
 
 
@@ -45,8 +59,7 @@ public class JCompilerPlugin extends EditPlugin
 
 
 	public void createOptionPanes(OptionsDialog optionsDialog) {
-		OptionGroup group = new OptionGroup(
-			jEdit.getProperty("options.jcompiler.label"));
+		OptionGroup group = new OptionGroup(jEdit.getProperty("options.jcompiler.label"));
 		group.addOptionPane(new JCompilerOptionPaneGeneral());
 		group.addOptionPane(new JCompilerOptionPaneCompiler());
 		optionsDialog.addOptionGroup(group);
@@ -70,10 +83,10 @@ public class JCompilerPlugin extends EditPlugin
 		DockableWindowManager wm = view.getDockableWindowManager();
 		wm.addDockableWindow("console");
 		// set current Console shell to JCompilerShell:
-		console.Console console = (console.Console) wm.getDockableWindow("console");
+		Console console = (Console) wm.getDockableWindow("console");
 		console.setShell(shell);
 		// run the command:
-		console.run(command);
+		console.run(shell, console, command);
 		// bugfix: textarea looses focus after compile:
 		view.getTextArea().requestFocus();
 	}
@@ -104,9 +117,5 @@ public class JCompilerPlugin extends EditPlugin
 	public static void rebuildPackage(View view) {
 		executeCommand(view, "rebuildpkg");
 	}
-
-
-	/** holds a shared instance of the JCompiler shell. */
-	private static JCompilerShell shell;
 
 }
