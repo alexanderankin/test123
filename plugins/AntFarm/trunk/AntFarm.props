@@ -1,15 +1,15 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
-plugin.antfarm.AntFarmPlugin.author=Brian Knowles
-plugin.antfarm.AntFarmPlugin.version=1.2
+plugin.antfarm.AntFarmPlugin.author=Todd Papaioannou, James Wilson
+plugin.antfarm.AntFarmPlugin.version=1.3
 plugin.antfarm.AntFarmPlugin.docs=index.html
-plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-optional.jar
+plugin.antfarm.AntFarmPlugin.jars=ant.jar optional.jar
 
-plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.00.07.00
-plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 3.3
-plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2.2
-plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.8.1
-plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.2
+plugin.antfarm.AntFarmPlugin.depend.0=jedit 04.01.00.00
+plugin.antfarm.AntFarmPlugin.depend.1=plugin console.ConsolePlugin 3.4
+plugin.antfarm.AntFarmPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2.3
+plugin.antfarm.AntFarmPlugin.depend.3=plugin xml.XmlPlugin 0.11
+plugin.antfarm.AntFarmPlugin.depend.4=plugin CommonControlsPlugin 0.7
 
 antfarm-toggle.label=Ant Farm Toggle
 
@@ -50,7 +50,6 @@ antfarm.run.icon.name=Run.png
 antfarm.run.icon.type=stock
 antfarm.run.label=Run Current Target
 
-#antfarm.options.icon=Preferences.png
 antfarm.options.label=AntFarm Options
 antfarm.options.text=Options
 antfarm.options.icon.name=/icons/ToolbarMenu.gif
@@ -61,12 +60,16 @@ antfarm.root.noBuildFiles=No build files...
 
 antfarm.root.icon.name=/icons/Root.gif
 antfarm.root.icon.type=custom
+
 antfarm.project.icon.name=File.png
 antfarm.project.icon.type=stock
+
 antfarm.brokenProject.icon.name=/icons/Cancel.png
 antfarm.brokenProject.icon.type=custom
+
 antfarm.target.icon.name=/icons/normal.gif
 antfarm.target.icon.type=custom
+
 antfarm.defaultTarget.icon.name=/icons/new.gif
 antfarm.defaultTarget.icon.type=custom
 
