@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+  <ACTION NAME="antfarm">
+    <CODE>
+      view.getDockableWindowManager().toggleDockableWindow("antfarm");
+    </CODE>
+    <IS_SELECTED>
+      return view.getDockableWindowManager().isDockableWindowVisible("antfarm");
+    </IS_SELECTED>
+  </ACTION>
+
+  <ACTION NAME="antfarm.build">
+    <CODE>
+      view.getDockableWindowManager().addDockableWindow("ant-farm");
+      view.getDockableWindowManager().getDockableWindow("ant-farm").build();
+    </CODE>
+  </ACTION>
+
+  <ACTION NAME="antfarm.edit">
+    <CODE>
+      view.getDockableWindowManager().addDockableWindow("ant-farm");
+      view.getDockableWindowManager().getDockableWindow("ant-farm").edit();
+    </CODE>
+  </ACTION>
+
+</ACTIONS>
