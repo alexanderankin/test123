@@ -117,7 +117,7 @@ public class ErrorHighlight extends TextAreaExtension
 			int start = error.getStartOffset();
 			int end = error.getEndOffset();
 
-			if(start == 0)
+			if(start == 0 && end == 0)
 			{
 				textArea.getLineText(line,seg);
 				for(int j = 0; j < seg.count; j++)
@@ -127,15 +127,20 @@ public class ErrorHighlight extends TextAreaExtension
 					else
 						break;
 				}
+
+				end = seg.count;
 			}
+
+			if(start >= _end || end <= _start)
+				continue;
 
 			if(start + textArea.getLineStartOffset(line) >= _start)
 				start = textArea.offsetToXY(line,start,point).x;
 			else
 				start = 0;
 
-			if(end == 0 || end + textArea.getLineStartOffset(line) >= _end)
-				end = textArea.offsetToXY(line,textArea.getLineLength(line),point).x;
+			if(end + textArea.getLineStartOffset(line) >= _end)
+				end = textArea.offsetToXY(line,_end - 1,point).x;
 			else
 				end = textArea.offsetToXY(line,end,point).x;
 

@@ -51,13 +51,17 @@ public class ErrorList extends JPanel implements EBComponent
 		setLayout(new BorderLayout());
 		add(BorderLayout.NORTH,status = new JLabel());
 
-		errorRoot = new DefaultMutableTreeNode(null,true);
+		// Can't just use "" since the renderer expects string nodes
+		// to have Error children
+		errorRoot = new DefaultMutableTreeNode(new Extra(""),true);
+
 		errorModel = new DefaultTreeModel(errorRoot,true);
 
 		errorTree = new JTree(errorModel);
 		errorTree.putClientProperty("JTree.lineStyle", "Angled");
 		errorTree.addMouseListener(new MouseHandler());
 		errorTree.setCellRenderer(new ErrorCellRenderer());
+		errorTree.setRootVisible(false);
 
 		ErrorSource[] sources = ErrorSource.getErrorSources();
 
