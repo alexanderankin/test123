@@ -60,9 +60,6 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	//{{{ Constructor
 	/**
 	 *	Create a new <code>ProjectTreeSelectionListener
-	 *
-	 *	@param  aViewer    Description of Parameter
-	 *	@param  aLauncher  Description of Parameter
 	 */
 	public VPTSelectionListener(ProjectViewer aViewer) {
 		viewer = aViewer;
