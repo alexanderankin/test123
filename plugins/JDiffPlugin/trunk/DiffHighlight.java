@@ -71,12 +71,13 @@ public class DiffHighlight
     }
 
 
-    public void paintHighlight(Graphics gfx, int line, int y) {
+    public void paintHighlight(Graphics gfx, int virtualLine, int y) {
         if (this.isEnabled())
         {
+            int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
             try {
-                if (    (this.textArea.getLineStartOffset(line) == -1)
-                    ||  (this.textArea.getLineEndOffset(line) == -1)
+                if (    (this.textArea.getLineStartOffset(physicalLine) == -1)
+                    ||  (this.textArea.getLineEndOffset(physicalLine) == -1)
                 ) {
                     return;
                 }
@@ -86,15 +87,16 @@ public class DiffHighlight
 
             Diff.change hunk = this.edits;
             Color color;
+            Color selectionColor;
 
             if (this.position == DiffHighlight.LEFT) {
                 for (; hunk != null; hunk = hunk.link) {
-                    if (hunk.line0 > line) {
+                    if (hunk.line0 > physicalLine) {
                         break;
                     }
 
                     if (hunk.deleted == 0) {
-                        if (hunk.line0 != line) { continue; }
+                        if (hunk.line0 != physicalLine) { continue; }
                         color = JDiffPlugin.invalidLineColor;
                         TextAreaPainter painter = this.textArea.getPainter();
                         FontMetrics fm = painter.getFontMetrics();
@@ -105,14 +107,16 @@ public class DiffHighlight
                         continue;
                     }
 
-                    if ((hunk.line0 + hunk.deleted - 1) < line) {
+                    if ((hunk.line0 + hunk.deleted - 1) < physicalLine) {
                         continue;
                     }
 
                     if (hunk.inserted == 0) {
                         color = JDiffPlugin.deletedLineColor;
+                        selectionColor = JDiffPlugin.deletedHunkColor;
                     } else {
                         color = JDiffPlugin.changedLineColor;
+                        selectionColor = JDiffPlugin.changedHunkColor;
                     }
 
                     TextAreaPainter painter = this.textArea.getPainter();
@@ -121,16 +125,24 @@ public class DiffHighlight
                     int y0 = y + descent + 1;
                     gfx.setColor(color);
                     gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
+
+                    // We paint the selected part of the hunk
+                    if (   (this.textArea.getSelectionStartLine() <= physicalLine)
+                        && (physicalLine <= this.textArea.getSelectionEndLine())
+                    ) {
+                        this.paintSelectionHighlight(gfx, virtualLine, y, selectionColor);
+                    }
+
                     break;
                  }
             } else { // DiffHighlight.RIGHT
                 for (; hunk != null; hunk = hunk.link) {
-                    if (hunk.line1 > line) {
+                    if (hunk.line1 > physicalLine) {
                         break;
                     }
 
                     if (hunk.inserted == 0) {
-                        if (hunk.line1 != line) { continue; }
+                        if (hunk.line1 != physicalLine) { continue; }
                         color = JDiffPlugin.invalidLineColor;
                         TextAreaPainter painter = this.textArea.getPainter();
                         FontMetrics fm = painter.getFontMetrics();
@@ -141,14 +153,16 @@ public class DiffHighlight
                         continue;
                     }
 
-                    if ((hunk.line1 + hunk.inserted - 1) < line) {
+                    if ((hunk.line1 + hunk.inserted - 1) < physicalLine) {
                         continue;
                     }
 
                     if (hunk.deleted == 0) {
                         color = JDiffPlugin.insertedLineColor;
+                        selectionColor = JDiffPlugin.insertedHunkColor;
                     } else {
                         color = JDiffPlugin.changedLineColor;
+                        selectionColor = JDiffPlugin.changedHunkColor;
                     }
 
                     TextAreaPainter painter = this.textArea.getPainter();
@@ -157,6 +171,13 @@ public class DiffHighlight
                     int y0 = y + descent + 1;
                     gfx.setColor(color);
                     gfx.fillRect(0, y0, painter.getWidth(), fm.getHeight());
+
+                    // We paint the selected part of the hunk
+                    if (   (this.textArea.getSelectionStartLine() <= physicalLine)
+                        && (physicalLine <= this.textArea.getSelectionEndLine())
+                    ) {
+                        this.paintSelectionHighlight(gfx, physicalLine, y, selectionColor);
+                    }
 
                     break;
                  }
@@ -164,7 +185,80 @@ public class DiffHighlight
         }
 
         if (this.next != null) {
-            this.next.paintHighlight(gfx, line, y);
+            this.next.paintHighlight(gfx, virtualLine, y);
+        }
+    }
+
+
+    private void paintSelectionHighlight(Graphics gfx, int physicalLine, int y, Color selectionColor)
+    {
+        TextAreaPainter painter = this.textArea.getPainter();
+        FontMetrics fm = painter.getFontMetrics();
+        int height = fm.getHeight();
+        y += fm.getLeading() + fm.getDescent();
+
+        int selectionStart = this.textArea.getSelectionStart();
+        int selectionEnd = this.textArea.getSelectionEnd();
+
+        if(selectionStart == selectionEnd)
+        {
+            /*
+            if (lineHighlight)
+            {
+                gfx.setColor(lineHighlightColor);
+                gfx.fillRect(0,y,getWidth(),height);
+            }
+            */
+        }
+        else
+        {
+            gfx.setColor(selectionColor);
+
+            int selectionStartLine = this.textArea.getSelectionStartLine();
+            int selectionEndLine = this.textArea.getSelectionEndLine();
+            int lineStart = this.textArea.getLineStartOffset(physicalLine);
+
+            int x1, x2;
+            if(this.textArea.isSelectionRectangular())
+            {
+                int lineLen = this.textArea.getLineLength(physicalLine);
+                x1 = this.textArea.offsetToX(physicalLine,Math.min(lineLen,
+                    selectionStart - this.textArea.getLineStartOffset(
+                    selectionStartLine)));
+                x2 = this.textArea.offsetToX(physicalLine,Math.min(lineLen,
+                    selectionEnd - this.textArea.getLineStartOffset(
+                    selectionEndLine)));
+                if(x1 == x2)
+                    x2++;
+            }
+            else if(selectionStartLine == selectionEndLine)
+            {
+                x1 = this.textArea.offsetToX(physicalLine,
+                    selectionStart - lineStart);
+                x2 = this.textArea.offsetToX(physicalLine,
+                    selectionEnd - lineStart);
+            }
+            else if(physicalLine == selectionStartLine)
+            {
+                x1 = this.textArea.offsetToX(physicalLine,
+                    selectionStart - lineStart);
+                x2 = painter.getWidth();
+            }
+            else if(physicalLine == selectionEndLine)
+            {
+                x1 = 0;
+                x2 = this.textArea.offsetToX(physicalLine,
+                    selectionEnd - lineStart);
+            }
+            else
+            {
+                x1 = 0;
+                x2 = painter.getWidth();
+            }
+
+            // "inlined" min/max()
+            gfx.fillRect(x1 > x2 ? x2 : x1, y, x1 > x2 ?
+                (x1 - x2) : (x2 - x1), height);
         }
     }
 
@@ -217,7 +311,7 @@ public class DiffHighlight
 
         int first = this.textArea.getFirstLine();
         int last = first + this.textArea.getVisibleLines();
-        this.textArea.getPainter().invalidateLineRange(first, last);
+        this.textArea.invalidateLineRange(first, last);
     }
 
 
