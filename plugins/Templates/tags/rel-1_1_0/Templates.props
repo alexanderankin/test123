@@ -1,0 +1,28 @@
+# $Id$
+
+plugin.TemplatesPlugin.name=Templates
+plugin.TemplatesPlugin.author=Steve Jakob
+plugin.TemplatesPlugin.version=1.1.0
+plugin.TemplatesPlugin.docs=Templates.html
+
+# Menu labels
+TemplatesAction.label=Templates
+TemplatesPlugin.menu.label=Templates
+TemplatesPlugin.menu.refresh.label=Refresh templates
+TemplatesPlugin.menu.edit.label=Edit template
+TemplatesPlugin.menu.save.label=Save template
+
+# OptionPane labels
+options.Templates.label=Templates
+options.Templates.choose-dir-msg=Templates directory:\ 
+options.Templates.choose-btn-msg=Choose
+
+# Dependencies
+plugin.TemplatesPlugin.depend.0=jedit 03.02.05.00
+plugin.TemplatesPlugin.depend.1=jdk 1.1
+
+# Error messages
+plugin.TemplatesPlugin.error.bad-backup-filter=Templates: Bad RegExp for backup filter. Report to programmer.
+plugin.TemplatesPlugin.error.template-label=Error creating template label for file:\ 
+plugin.TemplatesPlugin.error.create-dir=Unable to create directory:\ 
+
