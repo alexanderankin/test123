@@ -1,12 +1,13 @@
 ### Plugin properties
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=2.4.5
+plugin.console.ConsolePlugin.version=2.4.6
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=console/Console.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 03.00.05.00
-plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 0.10
+plugin.console.ConsolePlugin.depend.0=jedit 03.01.99.00
+plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.0
+plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.0
 
 ### Console component
 
@@ -111,3 +112,9 @@ console.error.5.match=(.+):(\\d+):(.+)
 console.error.5.filename=$1
 console.error.5.line=$2
 console.error.5.message=$3
+
+console.error.6.filename=$1
+console.error.6.line=$2
+console.error.6.match=^(.+)\\((\\d+),(\\d+)\\)\:\\s+(.+)$
+console.error.6.message=$4
+console.error.6.name=Microsoft.Net
