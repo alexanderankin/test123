@@ -71,7 +71,7 @@ public class SqlServerRecord extends Properties
    */
   public final static String PASSWORD = "password";
 
-  protected static Map allRecordsPP = null;
+  protected static Map allRecordsPP = new HashMap();
 
 
   /**
@@ -425,10 +425,17 @@ public class SqlServerRecord extends Properties
   protected void ensureNameInServersList( VPTProject project, String name )
   {
     String allServerNames = SqlPlugin.getLocalProperty( project, LIST );
-    if ( allServerNames.matches( "[\\s]*" + name + "[\\s]*" ) )
+    if ( allServerNames == null )
+      allServerNames = "";
+    final String pattern = ".*\\s" + name + "\\s.*";
+
+    Log.log( Log.DEBUG, SqlServerRecord.class,
+        "matching [" + allServerNames + "] to [" + pattern + "]:" +
+        allServerNames.matches( pattern ) );
+    if ( allServerNames.matches( pattern ) )
       return;
 
-    allServerNames = allServerNames + " " + name;
+    allServerNames = allServerNames + " " + name + " ";
     SqlPlugin.setLocalProperty( project, LIST, allServerNames );
   }
 
@@ -483,7 +490,9 @@ public class SqlServerRecord extends Properties
       final Map servers = new HashMap();
 
       final String allServerNames = SqlPlugin.getLocalProperty( project, LIST );
-      for ( StringTokenizer st = new StringTokenizer( allServerNames );
+      Log.log( Log.DEBUG, SqlServerRecord.class,
+          "Server list: [" + allServerNames + "]" );
+      for ( StringTokenizer st = new StringTokenizer( allServerNames == null ? "" : allServerNames );
           st.hasMoreTokens();  )
       {
         final String name = st.nextToken();
@@ -570,6 +579,8 @@ public class SqlServerRecord extends Properties
       final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
       final String value =
           SqlPlugin.getLocalProperty( project, "sql.server." + name + "." + param.getName() );
+      Log.log( Log.DEBUG, SqlServerRecord.class,
+          "Looking for " + param.getName() + " in local properties -> /" + value + "/" );
 
       rv.setProperty( param.getName(), value );
     }

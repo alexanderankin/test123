@@ -44,15 +44,15 @@ public class SqlToolBar
   /**
    *Constructor for the SqlToolBar object
    *
-   * @param  view  Description of Parameter
+   * @param  view     Description of Parameter
+   * @param  project  Description of Parameter
    */
-  public SqlToolBar( View view )
+  public SqlToolBar( View view, final VPTProject project )
   {
     super();
     this.view = view;
 
     final Insets nullInsets = new Insets( 0, 0, 0, 0 );
-    final VPTProject project = SqlUtils.getProject( view );
 
     serverList = new JComboBox( SqlServerRecord.getAllNames( project ) );
 
