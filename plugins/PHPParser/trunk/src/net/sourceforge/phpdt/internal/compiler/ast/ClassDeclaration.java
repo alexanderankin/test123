@@ -59,17 +59,22 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   public void addMethod(final MethodDeclaration method) {
     methods.add(method);
     add(method);
-    if (method.getName().equals(classHeader.getClassName())) {
+    if (method.getName().equals(classHeader.getName())) {
       constructor = method;
     }
   }
 
-  public void addField(final FieldDeclaration var) {
-    for (int i = 0; i < var.vars.length; i++) {
-      final VariableDeclaration c = var.vars[i];
+  /**
+   * Add a method to the class.
+   *
+   * @param field the method declaration
+   */
+  public void addField(final FieldDeclaration field) {
+    for (int i = 0; i < field.vars.length; i++) {
+      final VariableDeclaration c = field.vars[i];
       children.add(c);
     }
-    fields.add(var);
+    fields.add(field);
   }
 
   public boolean add(final Outlineable o) {
@@ -142,10 +147,20 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     return children;
   }
 
+  /**
+   * Returns the methods of the class.
+   *
+   * @return a method list
+   */
   public List getMethods() {
     return methods;
   }
 
+  /**
+   * Returns the fields of the class.
+   *
+   * @return a field list
+   */
   public List getFields() {
     return fields;
   }
@@ -175,7 +190,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   }
 
   public String getName() {
-    return classHeader.getClassName();
+    return classHeader.getName();
   }
 
   public void setBodyStart(int bodyStart) {

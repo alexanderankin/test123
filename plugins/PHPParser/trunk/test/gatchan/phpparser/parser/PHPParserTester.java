@@ -4,7 +4,7 @@ import junit.framework.Assert;
 import junit.framework.TestCase;
 
 /**
- * The PHP Parser test case
+ * The PHP Parser test case.
  *
  * @author Matthieu Casanova
  */
