@@ -1,11 +1,3 @@
-+ version 3.2:
-
-- documentation:
-  - compile and run command
-  - shell class, output interface
-- $PWD and $BROWSER_DIR variables
-- just entering a directory name is the same as %cd
-
 + version 3.3:
 
 - need <INIT> code block in commando files
@@ -17,6 +9,8 @@
 
 + later:
 
+- hyperlinks in output; %ls output lines open files and directories;
+  exception tracebacks handled, maybe
 - ${beanshell:...} syntax
 - file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?
   - VFS support

@@ -534,7 +534,7 @@ public abstract class SystemShellBuiltIn
 		public void execute(Console console, Output output, Vector args,
 			Hashtable values)
 		{
-			new HelpViewer(getClass().getResource("/console/Console.html").toString());
+			new HelpViewer(getClass().getResource("/index.html").toString());
 		}
 	} //}}}
 
