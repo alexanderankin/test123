@@ -206,6 +206,13 @@ class SAXParserImpl implements XmlParser.Impl
 			{
 				error(new SAXParseException(io.toString(),loc));
 			}
+			catch(SAXException s)
+			{
+				parser.addError(ErrorSource.ERROR,
+					buffer.getPath(),
+					Math.max(0,loc.getLineNumber()-1),
+					s.getMessage());
+			}
 
 			if(source == null)
 				return new InputSource(new StringReader("<!-- -->"));

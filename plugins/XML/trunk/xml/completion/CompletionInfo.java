@@ -93,7 +93,7 @@ public class CompletionInfo
 	public static boolean isDelegated(EditPane editPane)
 	{
 		Buffer buffer = editPane.getBuffer();
-		ParserRuleSet rules = getRuleSetAtOffset(buffer,
+		ParserRuleSet rules = buffer.getRuleSetAtOffset(
 			editPane.getTextArea().getCaretPosition());
 
 		String rulesetName = rules.getName();
@@ -218,24 +218,6 @@ public class CompletionInfo
 	//{{{ Private members
 	private static HashMap globs;
 	private static HashMap completionInfo;
-
-	//{{{ getRuleSetAtOffset() method
-	/**
-	 * I don't want to make this plugin depend on jEdit 4.1 yet.
-	 * In 4.0 this method is private in Buffer.java.
-	 */
-	private static ParserRuleSet getRuleSetAtOffset(Buffer buffer, int offset)
-	{
-		int line = buffer.getLineOfOffset(offset);
-		offset -= buffer.getLineStartOffset(line);
-		if(offset != 0)
-			offset--;
-
-		Token token = buffer.markTokens(line).getFirstToken();
-		token = TextUtilities.getTokenAtOffset(token,offset);
-
-		return token.rules;
-	} //}}}
 
 	//{{{ Class initializer
 	static

@@ -244,20 +244,15 @@ loop:		for (int i = startTag.end; i < text.length(); i++)
 						tagCounter++;
 					}
 				}
-				else if(tag.type == T_END_TAG)
-				{
-					// something like <foo> </bar>
-					// this means we probably won't
-					// see </foo>...
-					return null;
-				}
+
+				i = tag.end;
 			}
 			else if(ch == '>')
 			{
 				if(i != 0)
 				{
 					char ch2 = text.charAt(i - 1);
-					if(ch2 != '"'
+					if(ch2 != '"' && ch2 != '\''
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetter(ch2))
 					{
@@ -292,7 +287,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 				if(i != text.length() - 1)
 				{
 					char ch2 = text.charAt(i + 1);
-					if(ch2 != '/' && ch2 != '"'
+					if(ch2 != '/' && ch2 != '"' && ch2 != '\''
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetter(ch2))
 					{
@@ -311,7 +306,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 				if(i != 0)
 				{
 					char ch2 = text.charAt(i - 1);
-					if(ch2 != '"'
+					if(ch2 != '"' && ch2 != '\''
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetter(ch2))
 					{
@@ -323,6 +318,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 				Tag tag = getTagAtOffset(text,i + 1);
 				if (tag == null)
 					continue;
+
 				else if(tag.tag.equals(endTag.tag))
 				{
 					if(tag.type == T_START_TAG)
@@ -335,6 +331,8 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 					else if(tag.type == T_END_TAG)
 						tagCounter++;
 				}
+
+				i = tag.end;
 			}
 		}
 
