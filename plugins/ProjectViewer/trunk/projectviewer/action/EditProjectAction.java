@@ -42,6 +42,24 @@ import projectviewer.importer.InitialProjectImporter;
  */
 public class EditProjectAction extends Action {
 
+	//{{{ Private members
+	private boolean forceNew;
+	//}}}
+
+	//{{{ Constructors
+
+	/** Default constructor. */
+	public EditProjectAction() {
+		this(false);
+	}
+
+	/** If forceNew is true, creation of new project will be forced. */
+	public EditProjectAction(boolean forceNew) {
+		this.forceNew = forceNew;
+	}
+
+	//}}}
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
@@ -62,12 +80,15 @@ public class EditProjectAction extends Action {
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode selected = viewer.getSelectedNode();
+		if (selected == null)
+			selected  = viewer.getRoot();
+
 		VPTProject proj = null;
 		boolean add = false;
 		String oldName = null;
 		String oldRoot = null;
-		if (selected != null && selected.isProject()) {
-			proj = (VPTProject) selected;
+		if (!forceNew && selected != null && !selected.isRoot()) {
+			proj = VPTNode.findProjectFor(selected);
 			oldName = proj.getName();
 			oldRoot = proj.getRootPath();
 		} else {
