@@ -3,7 +3,7 @@
 #{{{ Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=2.1.0
+plugin.projectviewer.ProjectPlugin.version=2.1.0.1
 plugin.projectviewer.ProjectPlugin.docs=index.html
 plugin.projectviewer.ProjectPlugin.activate=defer
 
@@ -77,7 +77,7 @@ projectviewer.options.use_info_viewer=Use InfoViewer's browser settings
 
 projectviewer.appconfig.no_value=No value found
 projectviewer.appconfig.application=Application
-projectviewer.appconfig.extension=Extension
+projectviewer.appconfig.extension=File name glob:
 
 options.projectviewer.general-opt.label=General Behaviour
 options.projectviewer.importer-opt.label=Importing Files

@@ -296,6 +296,17 @@ public final class ProjectViewerConfig {
 			updateImportSettings(props);
 		}
 
+		// only for 2.1.0.1 or below, update the AppLauncher config
+		// I had to do a "2.1.0.1" thing because I messed up when
+		// releasing the beta for 2.1.0 and numbering it "2.1.0"; so
+		// this avoids messing up the configuration for those people
+		// that were using the beta.
+		if (lastInitVersion == null ||
+				MiscUtilities.compareStrings(lastInitVersion,
+					"2.1.0.1", true) < 0) {
+			updateAppLauncherSettings(props);
+		}
+
 		// checks for incremental updates to import settings
 		String thisVersion = jEdit.getProperty("plugin.projectviewer.ProjectPlugin.version");
 		if (lastInitVersion == null ||
@@ -769,6 +780,51 @@ public final class ProjectViewerConfig {
 		setImportGlobs(globs.toString().trim());
 	}
 
+	/**
+	 *	Translates the old AppLauncher cofiguration into globs.
+	 *
+	 *	@since	PV 2.1.0.1
+	 */
+	private void updateAppLauncherSettings(Properties config) {
+		System.err.println("updating app launcher settings");
+		InputStream inprops =
+			ProjectPlugin.getResourceAsStream("fileassocs.properties");
+		Properties p = new Properties();
+
+		// loads the properties from the file and translates the extensions
+		// into globs
+		if (inprops != null) {
+			try {
+				p.load(inprops);
+
+				Properties newp = new Properties();
+				for (Iterator i = p.keySet().iterator(); i.hasNext(); ) {
+					String key = (String) i.next();
+					newp.put("*." + key, p.get(key));
+				}
+				p = newp;
+			} catch (IOException ioe) {
+				Log.log(Log.WARNING, this, ioe);
+			} finally {
+				try { inprops.close(); } catch (Exception e) { }
+			}
+
+		}
+
+		// saves the properties back to the file
+		Properties props = new Properties();
+		OutputStream out = ProjectPlugin.getResourceAsOutputStream("fileassocs.properties");
+		if (out != null) {
+			try {
+				p.store(out, "");
+			} catch (IOException ioe) {
+				Log.log(Log.WARNING, this, ioe);
+			} finally {
+				try { out.close(); } catch (Exception e) { }
+			}
+		}
+
+	}
 
 	//}}}
 

@@ -35,8 +35,12 @@ import java.util.Properties;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
+import gnu.regexp.RE;
+import gnu.regexp.REException;
+
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.io.VFSManager;
 
 import projectviewer.ProjectPlugin;
@@ -45,7 +49,7 @@ import projectviewer.gui.ModalJFileChooser;
 
 /**
  *	Holds information on what applications to use to open certain types of
- *	files, based on extension or complete file name.
+ *	files, based on user-configured file name globs.
  *
  *	@author		Matthew Payne
  *	@version	$Id$
@@ -55,6 +59,11 @@ public class AppLauncher {
 	//{{{ Singleton method & variable
 
 	private static AppLauncher instance;
+	static {
+		// make sure ProjectViewerConfig is loaded before the instance is
+		// initialized.
+		ProjectViewerConfig.getInstance();
+	}
 
 	//{{{ +_getInstance()_ : AppLauncher
 	public static synchronized AppLauncher getInstance() {
@@ -92,8 +101,14 @@ public class AppLauncher {
 
 	//{{{ +addAppExt(String, String) : void
 	public void addAppExt(String fileExt, String execPath) {
-		if (fileExt.trim().length() > 0)
-			appCol.put(fileExt.trim(), execPath);
+		if (fileExt.trim().length() > 0) {
+			try {
+				RE re = new ComparableRE(fileExt);
+				appCol.put(re, execPath);
+			} catch (REException re) {
+				Log.log(Log.ERROR, this, re);
+			}
+		}
 	} //}}}
 
 	//{{{ +removeAppExt(String) : void
@@ -131,17 +146,15 @@ public class AppLauncher {
 
 	//{{{ +storeExts() : void
 	public void storeExts() throws IOException {
-
-		Properties props = new Properties();
 		PrintWriter out = new PrintWriter(
 			new OutputStreamWriter(
 				ProjectPlugin.getResourceAsOutputStream("fileassocs.properties")
 			) );
 
 		for (Iterator iter = appCol.keySet().iterator(); iter.hasNext(); ) {
-			Object key = iter.next();
+			ComparableRE key = (ComparableRE) iter.next();
 			Object value = appCol.get(key);
-			out.println(key + "=" + value);
+			out.println(key.glob + "=" + value);
 		}
 
 		out.println("");
@@ -165,11 +178,11 @@ public class AppLauncher {
 	 *	@since	PV 2.1.0
 	 */
 	public void launchApp(String path, Component comp) {
-		String ext = getFileExtension(path);
-		String executable = (String) appCol.get(ext);
+		String executable = getAppName(path);
 		if (executable == null) {
+			String ext = "*." + getFileExtension(path);
 			if (JOptionPane.showConfirmDialog(comp,
-					jEdit.getProperty("projectviewer.launcher.no_app", new Object[] { ext }),
+				jEdit.getProperty("projectviewer.launcher.no_app", new Object[] { ext }),
 					jEdit.getProperty("projectviewer.launcher.no_app_title"),
 					javax.swing.JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 				 executable = pickApp(ext, comp);
@@ -208,7 +221,7 @@ public class AppLauncher {
 	 *	@deprecated	Use {@link #getAppName(String) getAppName(String)} instead.
 	 */
 	public String getAppName(File f) {
-		return (String) appCol.get(getFileExtension(f.getName()));
+		return getAppName(f.getAbsolutePath());
 	} //}}}
 
 	//{{{ +getAppName(String) : String
@@ -220,7 +233,14 @@ public class AppLauncher {
 	 */
 	public String getAppName(String path) {
 		String name = VFSManager.getVFSForPath(path).getFileName(path);
-		return (String) appCol.get(getFileExtension(name));
+		for (Iterator i = appCol.keySet().iterator(); i.hasNext(); ) {
+			RE re = (RE) i.next();
+			if (re.isMatch(name)) {
+				return (String) appCol.get(re);
+			}
+		}
+
+		return null;
 	} //}}}
 
 	//}}}
@@ -289,6 +309,38 @@ public class AppLauncher {
 	} //}}}
 
 	//}}}
+
+	//{{{ -class _ComparableRE_
+	/**
+	 *	An RE that is comparable by comparing the glob string used to
+	 *	create it. Stores the glob internally for ordering and for
+	 *	saving the AppLauncher information to the config file.
+	 */
+	private static class ComparableRE extends RE implements Comparable {
+
+		private String glob;
+
+		//{{{ +ComparableRE(String) : <init>
+		public ComparableRE(String glob) throws REException {
+			super(MiscUtilities.globToRE(glob));
+			this.glob = glob;
+		} //}}}
+
+		//{{{ +compareTo(Object) : int
+		public int compareTo(Object o) {
+			try {
+				return this.glob.compareTo(((ComparableRE)o).glob);
+			} catch (ClassCastException cce) {
+				return -1;
+			}
+		} //}}}
+
+		//{{{ +toString() : String
+		public String toString() {
+			return glob;
+		} //}}}
+
+	} //}}}
 
 }
 
