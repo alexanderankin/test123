@@ -85,37 +85,60 @@ final public class Tags {
     // Clear out all tag files (just to make sure...)
     Tags.clearTagFiles();
     
-    // Get property string
+    /* Previously we use to store tag index filenames in one property, 
+     * seperated by commas.  This wouldn't allow for tag index file paths to
+     * have commas, so we use a numbered property scheme.  But we need to 
+     * support and convert from the old to the new scheme, so check for the
+     * old, nix the old property, and convert to the new.
+     */
+    
+    // Get old property string
     String tagFiles = jEdit.getProperty("tags-tag-files");
     
-    // Break into tokens and append tag filename
-    StringTokenizer st = new StringTokenizer(tagFiles, ",");
-    String fileName = null;
-    while (st.hasMoreElements()) {
-      fileName = (String) st.nextElement();
-      if (fileName != null)
-        Tags.appendTagFile(fileName);
+    if (tagFiles != null)
+    {
+      // Break into tokens and append tag filename
+      StringTokenizer st = new StringTokenizer(tagFiles, ",");
+      String fileName = null;
+      while (st.hasMoreElements()) 
+      {
+        fileName = (String) st.nextElement();
+        if (fileName != null)
+          Tags.appendTagFile(fileName);
+      }
     }
+    else
+    {
+      int index = 0;
+      String tagIndexFileName = null;
+      while ((tagIndexFileName = 
+                jEdit.getProperty("tags-tag-index-file" + index)) != null)
+      {
+        Tags.appendTagFile(tagIndexFileName);
+        index++;
+      }
+    }
+    jEdit.setProperty("tags-tag-files", null);  // remove old property
   }
   
   /***************************************************************************/
   public static void writeTagFiles() {
     
-    StringBuffer b = new StringBuffer();
-    
+    jEdit.setProperty("tags-tag-files", null); // remove old property
+
     String tagFileName = null;
     int numTagFiles = tagFiles_.size();
-    for (int i = 0; i < numTagFiles; i++) {
+    for (int i = 0; i < numTagFiles; i++) 
+    {
       tagFileName = (String) ((TagFile)tagFiles_.elementAt(i)).getPath();
-      if (tagFileName != null) {
-        b.append(tagFileName);
-        if (i < (numTagFiles - 1))
-          b.append(",");
+      if (tagFileName != null) 
+      {
+        jEdit.setProperty("tags-tag-index-file" + i, tagFileName);
       }
     }
     
-    jEdit.setProperty("tags-tag-files", b.toString());
   }
+
   
   /***************************************************************************/
   // See Note 1
