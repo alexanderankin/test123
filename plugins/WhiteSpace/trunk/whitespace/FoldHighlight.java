@@ -45,9 +45,6 @@ import org.gjt.sp.util.Log;
 public class FoldHighlight
     implements TextAreaHighlight
 {
-    public static final String FOLD_HIGHLIGHT_PROPERTY = "white-space.fold-highlight";
-    public static final String FOLD_TOOLTIP_PROPERTY   = "white-space.fold-tooltip";
-
     // (EditPane, FoldHighlight) association
     private static final Hashtable highlights = new Hashtable();
 
@@ -70,7 +67,9 @@ public class FoldHighlight
 
 
     public void paintHighlight(Graphics gfx, final int virtualLine, int y) {
-        if (this.isHighlightEnabled()) {
+        WhiteSpaceModel model = this.getModel();
+
+        if ((model != null) && model.getFoldHighlight().isEnabled()) {
             int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
 
             try {
@@ -119,7 +118,12 @@ public class FoldHighlight
 
 
     public String getToolTipText(MouseEvent evt) {
-        if (this.isHighlightEnabled() && this.isTooltipEnabled()) {
+        WhiteSpaceModel model = this.getModel();
+
+        if (    (model != null)
+             &&  model.getFoldHighlight().isEnabled()
+             &&  model.getFoldTooltip().isEnabled()
+        ) {
             JEditTextArea ta = this.textArea;
             Buffer buffer = ta.getBuffer();
             int x = evt.getX();
@@ -212,23 +216,10 @@ public class FoldHighlight
     }
 
 
-    private boolean isHighlightEnabled() {
-        return isHighlightEnabledFor(this.textArea.getBuffer());
-    }
-
-
-    private void setHighlightEnabled(boolean enabled) {
-        setHighlightEnabledFor(this.textArea.getBuffer(), enabled);
-    }
-
-
-    private boolean isTooltipEnabled() {
-        return isTooltipEnabledFor(this.textArea.getBuffer());
-    }
-
-
-    private void setTooltipEnabled(boolean enabled) {
-        setTooltipEnabledFor(this.textArea.getBuffer(), enabled);
+    public WhiteSpaceModel getModel() {
+        return (WhiteSpaceModel) this.textArea.getBuffer().getProperty(
+            WhiteSpaceModel.MODEL_PROPERTY
+        );
     }
 
 
@@ -247,103 +238,24 @@ public class FoldHighlight
 
 
     /**
-     * Tests if the fold highlights are enabled for a buffer
+     * Updates the highlighting for the <code>JEditTextArea</code>
+     * which display the given <code>buffer</code>
      */
-    public static boolean isHighlightEnabledFor(Buffer buffer) {
-        Boolean enabled = (Boolean) buffer.getProperty(
-            FOLD_HIGHLIGHT_PROPERTY
-        );
-        if (enabled == null) {
-            enabled = Boolean.FALSE;
-        }
-
-        return enabled.booleanValue();
-    }
-
-
-    /**
-     * Sets fold highlighting enabled or disabled for a buffer
-     */
-    private static void setHighlightEnabledFor(Buffer buffer, boolean enabled) {
-        buffer.putProperty(
-            FOLD_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
-        );
-    }
-
-
-    /**
-     * Toggles fold highlights for a buffer
-     */
-    public static void toggleHighlightEnabledFor(Buffer buffer) {
-        Boolean enabled = (Boolean) buffer.getProperty(
-            FOLD_HIGHLIGHT_PROPERTY
-        );
-
-        if (enabled == null) {
-            return;
-        }
-
-        buffer.putProperty(
-            FOLD_HIGHLIGHT_PROPERTY,
-            enabled.booleanValue() ? Boolean.FALSE : Boolean.TRUE
-        );
-
+    public static void updateTextAreas(Buffer buffer) {
         View[] views = jEdit.getViews();
         for (int i = 0; i < views.length; i++) {
             EditPane[] editPanes = views[i].getEditPanes();
             FoldHighlight highlight;
+
             for (int j = 0; j < editPanes.length; j++) {
                 if (editPanes[j].getBuffer() != buffer) { continue; }
+
                 highlight = (FoldHighlight) highlights.get(editPanes[j]);
                 if (highlight != null) {
                     highlight.updateTextArea();
                 }
             }
         }
-    }
-
-
-    /**
-     * Tests if the fold tooltips are enabled for a buffer
-     */
-    public static boolean isTooltipEnabledFor(Buffer buffer) {
-        Boolean enabled = (Boolean) buffer.getProperty(
-            FOLD_TOOLTIP_PROPERTY
-        );
-        if (enabled == null) {
-            enabled = Boolean.FALSE;
-        }
-
-        return enabled.booleanValue();
-    }
-
-
-    /**
-     * Sets fold tooltips enabled or disabled for a buffer
-     */
-    private static void setTooltipEnabledFor(Buffer buffer, boolean enabled) {
-        buffer.putProperty(
-            FOLD_TOOLTIP_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
-        );
-    }
-
-
-    /**
-     * Toggles fold tooltips for a buffer
-     */
-    public static void toggleTooltipEnabledFor(Buffer buffer) {
-        Boolean enabled = (Boolean) buffer.getProperty(
-            FOLD_TOOLTIP_PROPERTY
-        );
-
-        if (enabled == null) {
-            return;
-        }
-
-        buffer.putProperty(
-            FOLD_TOOLTIP_PROPERTY,
-            enabled.booleanValue() ? Boolean.FALSE : Boolean.TRUE
-        );
     }
 
 
@@ -377,10 +289,15 @@ public class FoldHighlight
         for (int i = 0; i < views.length; i++) {
             EditPane[] editPanes = views[i].getEditPanes();
             FoldHighlight highlight;
+            WhiteSpaceModel model;
             for (int j = 0; j < editPanes.length; j++) {
                 highlight = (FoldHighlight) highlights.get(editPanes[j]);
+                if (highlight == null) { continue; }
 
-                if (highlight.isHighlightEnabled()) {
+                model = highlight.getModel();
+                if (model == null) { continue; }
+
+                if (model.getFoldHighlight().isEnabled()) {
                     highlight.updateTextArea();
                 }
             }

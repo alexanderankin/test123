@@ -26,6 +26,9 @@ public class WhiteSpaceModel
 
     private HighlightOption blockHighlight;
 
+    private HighlightOption foldHighlight;
+    private HighlightOption foldTooltip;
+
     private HighlightOption spaceHighlight;
     private HighlightOption leadingSpaceHighlight;
     private HighlightOption innerSpaceHighlight;
@@ -42,6 +45,13 @@ public class WhiteSpaceModel
     public WhiteSpaceModel() {
         this.blockHighlight         = new HighlightOption(
             WhiteSpaceDefaults.getBlockHighlightDefault()
+        );
+
+        this.foldHighlight         = new HighlightOption(
+            WhiteSpaceDefaults.getFoldHighlightDefault()
+        );
+        this.foldTooltip           = new HighlightOption(
+            WhiteSpaceDefaults.getFoldTooltipDefault()
         );
 
         this.spaceHighlight         = new HighlightOption(
@@ -78,6 +88,16 @@ public class WhiteSpaceModel
 
     public HighlightOption getBlockHighlight() {
         return this.blockHighlight;
+    }
+
+
+    public HighlightOption getFoldHighlight() {
+        return this.foldHighlight;
+    }
+
+
+    public HighlightOption getFoldTooltip() {
+        return this.foldTooltip;
     }
 
 
