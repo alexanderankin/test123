@@ -23,7 +23,10 @@ antfarm.shell.msg.usage=The Ant shell supports the following commands:\n\
 			   * "![target_name]"\t\t-- runs the specified target for the current build file\n\
 			   * "?"\t\t\t-- lists the available build files and usage\n\
 			   * "=build_file_number"\t-- changes the current build file to the number identified by "?"\n\
-			   * "+full_path_to_file"\t-- load this build file into Ant Farm\n\n
+			   * "+[full_path_to_file]"\t-- load this build file into Ant Farm. Searches up the current\n\
+			   		       \t\t\t   buffer's directory tree for a "build.xml" file to load if a \n\
+					       \t\t\t   file is not specified. Re-loads the build file if it is already\n\
+					       \t\t\t   loaded.\n\n
 antfarm.shell.msg.killed=Ant target killed.
 antfarm.shell.msg.broken-file=Build file cannot be parsed:\ 
 antfarm.shell.msg.no-build-file=Not a valid build file number, use "?" to display known build files./n

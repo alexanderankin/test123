@@ -23,6 +23,9 @@
   <firstname>Brian</firstname><surname>Knowles</surname>
  </othercredit>
  <othercredit><contrib>Co-authors</contrib>
+  <firstname>Richard</firstname><surname>Wan</surname>
+ </othercredit>
+ <othercredit><contrib>Co-authors</contrib>
   <firstname>Fernando</firstname><surname>Aranguiz</surname>
  </othercredit>
  <othercredit><contrib>Co-authors</contrib>
@@ -270,7 +273,7 @@
  <sect1 id="ant-shell"><title>The Ant Shell</title>
  <para>
  You can use the Ant Shell indepentently of the AntFarm tree.
- The Ant shell provides for the following commands:
+ The Ant shell provides the following commands:
  </para>
  <itemizedlist>
  <listitem><para>
@@ -285,8 +288,11 @@
  <listitem><para>
  <command>=<literal>build_file_number</literal></command>	-- changes the current build file to the number identified by "?"
  </para></listitem>
+
  <listitem><para>
- <command>+<literal>full_path_to_file</literal></command>	-- load this build file into Ant Farm
+ <command>+<literal>[full_path_to_file]</literal></command>	-- load this build
+ file into Ant Farm. Searches up the current buffer's directory tree for a
+ "build.xml" file to load if a file is not specified. Re-loads the build file if it is already loaded.
  </para></listitem>
  </itemizedlist>
  </sect1>

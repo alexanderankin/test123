@@ -161,8 +161,16 @@ public class AntFarmShell extends Shell
 
 			String filePath = command.substring( 1 );
 			try {
-				File file = new File( filePath );
-				Project project = getAntFarm( console ).getProject( file.getAbsolutePath() );
+
+				// Get the provided path, or look up the tree.
+				File file = getFile( filePath, console );
+				filePath = FileUtils.getAbsolutePath( file );
+
+				// try to reload the project
+				getAntFarm( console ).reloadAntBuildFile( filePath );
+
+				// initiate the project
+				Project project = getAntFarm( console ).getProject( filePath );
 				setCurrentProject( project, file, console );
 				getAntFarm( console ).addAntBuildFile( filePath );
 			}
@@ -237,6 +245,7 @@ public class AntFarmShell extends Shell
 	}
 
 
+
 	private AntFarm getAntFarm( Console console )
 	{
 		AntFarm antBrowser = (AntFarm) console.getView().getDockableWindowManager().getDockableWindow( "antfarm" );
@@ -247,6 +256,20 @@ public class AntFarmShell extends Shell
 			_antBrowser = new AntFarm( console.getView() );
 		}
 		return _antBrowser;
+	}
+
+
+	private File getFile( String filePath, Console console )
+	{
+		if ( filePath == null || filePath.length() == 0 ) {
+			filePath = "build.xml";
+		}
+		File file = new File( filePath );
+		if ( file.isAbsolute() ) {
+			return file;
+		}
+		File directory = new File( console.getView().getBuffer().getPath() );
+		return FileUtils.findFile( directory, filePath );
 	}
 
 
