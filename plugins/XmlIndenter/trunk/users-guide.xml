@@ -89,6 +89,21 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
+      <emphasis role="bold">From 0.2 to 0.3</emphasis>
+      <itemizedlist>
+        <listitem>
+          <para>Fixed bug where line breaks and tab characters were being
+          removed without being replaced with a single space character.</para>
+        </listitem>
+        <listitem>
+          <para>Fixed bug where attribute values in single quotes were being
+          replaced with attribute values in double quotes, regardless of whether
+          the attribute value contained double quotes.</para>
+        </listitem>
+        <listitem><para>Requires >=jEdit 4.2 and >=XML plugin 0.12</para></listitem>
+      </itemizedlist>
+    </para>
+    <para>
       <emphasis role="bold">From 0.1.2 to 0.2</emphasis>
       <itemizedlist>
         <listitem>
@@ -96,8 +111,7 @@
         </listitem>
         <listitem>
           <para>Fixed bug that occurred when attributes are separated by
-          line separater characters instead of space characters.
-          </para>
+          line separater characters instead of space characters.</para>
         </listitem>
         <listitem><para>Requires >=jEdit 4.2 and >=XML plugin 0.12</para></listitem>
       </itemizedlist>
