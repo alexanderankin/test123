@@ -595,7 +595,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private VPTContextMenu			vcm;
 	private VPTSelectionListener	vsl;
 	private ConfigChangeListener	ccl;
-	
+
 	private TreeDragListener		tdl;
 	private DragSource				dragSource;
 	//}}}
@@ -647,7 +647,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			if (ProjectManager.getInstance().hasProject(config.getLastProject()))
 				new ProjectLoader(config.getLastProject()).loadProject();
 		}
-		
+
 	} //}}}
 
 	//{{{ Private methods
@@ -663,11 +663,11 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		tree.addMouseListener(vsl);
 		tree.addMouseListener(vcm);
 		tree.addTreeSelectionListener(vsl);
-		
+
 		// drag support
 		dragSource.createDefaultDragGestureRecognizer(tree,
 			DnDConstants.ACTION_COPY, tdl);
-		
+
 		return tree;
 	} //}}}
 
@@ -1295,7 +1295,8 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			if (ProjectManager.getInstance().isLoaded(pName)) {
 				setProject(ProjectManager.getInstance().getProject(pName));
 			} else {
-				VFSManager.getIOThreadPool().addWorkRequest(this, false);
+				//VFSManager.getIOThreadPool().addWorkRequest(this, false);
+				new Thread(this).start();
 			}
 		} //}}}
 
@@ -1383,13 +1384,13 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 *	be ignored.
 	 */
 	private class TreeDragListener implements DragGestureListener {
-		
+
 		//{{{ +dragGestureRecognized(DragGestureEvent) : void
 		public void dragGestureRecognized(DragGestureEvent dge) {
 			JTree tree = getCurrentTree();
 			TreePath path = tree.getPathForLocation( (int) dge.getDragOrigin().getX(),
 								(int) dge.getDragOrigin().getY());
-								
+
 			if (path != null) {
 				VPTNode n = (VPTNode) path.getLastPathComponent();
 				if (n.isFile()) {
@@ -1398,18 +1399,18 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				}
 			}
 		} //}}}
-		
+
 	} //}}}
-	
+
 	//{{{ -class _FileListTransferable_
 	/** A transferable for a file. */
 	private static class FileListTransferable extends LinkedList implements Transferable {
-		
+
 		//{{{ +FileListTransferable(VPTFile) : <init>
 		public FileListTransferable(VPTFile file) {
 			super.add(file.getFile());
 		} //}}}
-		
+
 		//{{{ +getTransferData(DataFlavor) : Object
 		public Object getTransferData(DataFlavor flavor) {
 			if (flavor == DataFlavor.javaFileListFlavor) {
@@ -1417,17 +1418,17 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			}
 			return null;
 		} //}}}
-		
+
 		//{{{ +getTransferDataFlavors() : DataFlavor[]
 		public DataFlavor[] getTransferDataFlavors() {
 			return new DataFlavor[] { DataFlavor.javaFileListFlavor };
 		} //}}}
-		
+
 		//{{{ +isDataFlavorSupported(DataFlavor) : boolean
 		public boolean isDataFlavorSupported(DataFlavor flavor) {
 			return (flavor == DataFlavor.javaFileListFlavor);
 		} //}}}
-		
+
 	} //}}}
 
 }
