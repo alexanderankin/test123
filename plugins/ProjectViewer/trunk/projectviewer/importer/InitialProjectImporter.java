@@ -78,16 +78,11 @@ public class InitialProjectImporter extends FileImporter {
 			jEdit.getProperty("projectviewer.import.yes-cvs"),
 			jEdit.getProperty("projectviewer.import.no")
 		};
-		Object sel = JOptionPane.showInputDialog(jEdit.getActiveView(),
+		Object sel = JOptionPane.showInputDialog(parent,
 						jEdit.getProperty("projectviewer.import.msg_proj_root"),
 						jEdit.getProperty("projectviewer.import.msg_proj_root.title"),
 						JOptionPane.QUESTION_MESSAGE,
 						null, options, options[0]);
-
-		if (sel == null) {
-			// cancel
-			return null;
-		}
 
 		FilenameFilter fnf = null;
 		if (sel == null || sel == options[3]) {
@@ -98,16 +93,11 @@ public class InitialProjectImporter extends FileImporter {
 			fnf = new CVSEntriesFilter();
 		}
 
-		VPTDirectory root = new VPTDirectory(new File(project.getRootPath()));
-		addTree(root.getFile(), root, fnf);
-
-		ArrayList lst = new ArrayList();
-		for (Enumeration e = root.children(); e.hasMoreElements(); ) {
-			lst.add(e.nextElement());
-		}
+		addTree(new File(project.getRootPath()), project, fnf);
+		ProjectViewer.nodeStructureChanged(project);
 
 		showFileCount();
-		return lst;
+		return null;
 	} //}}}
 
 }
