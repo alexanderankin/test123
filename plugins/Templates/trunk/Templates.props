@@ -10,6 +10,7 @@ TemplatesAction.label=Templates
 TemplatesPlugin.menu.label=Templates
 TemplatesPlugin.menu.refresh.label=Refresh templates
 TemplatesPlugin.menu.edit.label=Edit template
+TemplatesPlugin.menu.save.label=Save template
 
 # OptionPane labels
 options.Templates.label=Templates

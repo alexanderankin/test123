@@ -93,6 +93,9 @@ public class TemplatesAction extends EditAction implements ActionListener
 		if (command.equals(jEdit.getProperty("TemplatesPlugin.menu.edit.label"))) {
 			this.loadTemplateForEdit(EditAction.getView(evt));
 		}
+		if (command.equals(jEdit.getProperty("TemplatesPlugin.menu.save.label"))) {
+			this.saveTemplate(EditAction.getView(evt));
+		}
 	}
 	
 	/**
@@ -125,6 +128,9 @@ public class TemplatesAction extends EditAction implements ActionListener
 		mi.addActionListener(this);
 		menu.add(mi);
 		mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.edit.label"));
+		mi.addActionListener(this);
+		menu.add(mi);
+		mi = new JMenuItem(jEdit.getProperty("TemplatesPlugin.menu.save.label"));
 		mi.addActionListener(this);
 		menu.add(mi);
 		menu.addSeparator();
@@ -168,10 +174,41 @@ public class TemplatesAction extends EditAction implements ActionListener
 		}
 	}
 
+	/**
+	 * Save the current buffer as a template. The file chooser displayed
+	 * uses the Templates directory as the default.
+	 * @param view The view from which the "Save Template" request was made.
+	 */
+	private void saveTemplate(View view) {
+		JFileChooser chooser = new JFileChooser(
+				jEdit.getProperty("plugin.TemplatesPlugin.templateDir.0","."));
+		int retVal = chooser.showSaveDialog(view);
+		if(retVal == JFileChooser.APPROVE_OPTION)
+		{
+			File file = chooser.getSelectedFile();
+			if(file != null)
+			{
+				try
+				{
+					// Save file
+					view.getBuffer().save(view, file.getCanonicalPath());
+				}
+				catch(IOException e)
+				{
+					// shouldn't happen
+				}
+			}
+		}
+	}
+
 }
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.4  2001/02/26 05:47:37  sjakob
+	 * Added "Save Template" function to Templates menu.
+	 * Added TemplateMode (custom mode for Templates parsing).
+	 *
 	 * Revision 1.3  2001/02/23 19:31:39  sjakob
 	 * Added "Edit Template" function to Templates menu.
 	 * Some Javadoc cleanup.
