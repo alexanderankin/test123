@@ -34,7 +34,7 @@
         </target>
 
     <target name="all" depends="dist">
-        <jar jarfile="${build.dir}/${final.name}-dist.jar" basedir=".." includes="INSTALL,src/,docs/,bin/${project}.jar"/>
+        <jar jarfile="${build.dir}/${final.name}-dist.jar" basedir=".." includes="src/,docs/,bin/${project}.jar"/>
     </target>
 
   
