@@ -37,6 +37,7 @@ class ConsoleMenu extends EnhancedMenu implements MenuListener
 	ConsoleMenu()
 	{
 		super("console-menu");
+		addMenuListener(this);
 	} //}}}
 
 	//{{{ menuSelected() method
