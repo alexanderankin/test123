@@ -169,8 +169,7 @@ public class EditProjectAction extends Action {
 				boolean notify = true;
 				if (viewer == null) {
 					viewer = ProjectViewer.getViewer(jEdit.getActiveView());
-					notify = (viewer.getRoot().isRoot()
-								|| viewer.getRoot() == proj);
+					notify = viewer.getRoot().isNodeDescendant(proj);
 				}
 
 				if (newParent) {
@@ -178,11 +177,11 @@ public class EditProjectAction extends Action {
 					ProjectViewer.removeNodeFromParent(proj);
 					ProjectViewer.insertNodeInto(proj, parent);
 					ProjectManager.getInstance().saveProjectList();
-					ProjectManager.getInstance().fireDynamicMenuChange();
 					ProjectViewer.fireNodeMovedEvent(proj, oldParent);
 				} else if (notify) {
 					ProjectViewer.nodeChanged(proj);
 				}
+				ProjectManager.getInstance().fireDynamicMenuChange();
 			}
 		}
 
