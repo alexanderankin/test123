@@ -1,8 +1,8 @@
 # Plugin properties
-plugin.ProjectViewer.name=Project Viewer
-plugin.ProjectViewer.author=Kevin A. Burton
-plugin.ProjectViewer.version=0.01
-plugin.ProjectViewer.docs=index.html
+plugin.ProjectPlugin.name=Project Viewer
+plugin.ProjectPlugin.author=Kevin A. Burton
+plugin.ProjectPlugin.version=0.095
+plugin.ProjectPlugin.docs=index.html
 
 plugin.ProjectViewer.depend.0=jdk 1.1
 #plugin.JBrowsePlugin.depend.1=jedit 02.01.03.00
