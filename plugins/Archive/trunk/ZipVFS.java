@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import org.gjt.sp.jedit.browser.VFSBrowser;
@@ -77,21 +76,11 @@ public class ZipVFS extends ArchiveVFS {
         VFS vfs = VFSManager.getVFSForPath(archivePath);
 
         try {
-            Hashtable directories = new Hashtable();
-
             boolean ignoreErrors = true;
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
             ZipInputStream archiveIn = ArchiveUtilities.openZipInputStream(in);
 
-            for (ZipEntry entry; (entry = archiveIn.getNextEntry()) != null; ) {
-                this.addAllDirectories(
-                      directories
-                    , archiveProtocol + ':' + archivePath
-                    , entry.getName()
-                    , Math.max(0, entry.getSize()) // Avoids -1 size
-                    , entry.isDirectory()
-                );
-            }
+            Hashtable directories = new ZipCommand(archiveIn).getDirectories(archiveProtocol, archivePath);
 
             archiveIn.close();
 
@@ -136,23 +125,17 @@ public class ZipVFS extends ArchiveVFS {
             boolean ignoreErrors = true;
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
             ZipInputStream archiveIn = ArchiveUtilities.openZipInputStream(in);
-            ZipEntry entry = null;
-            String zipEntryName = null;
-            for (; (entry = archiveIn.getNextEntry()) != null; ) {
-                zipEntryName = entry.getName();
-                if (archiveEntry.equals(zipEntryName)) {
-                    break;
-                }
-            }
+            ArchiveEntry entry = new ZipCommand(archiveIn).getDirectoryEntry(archiveEntry);
 
             if (entry == null) {
                 return null;
             }
 
-            String entryName = zipEntryName;
-            int slashIdx = entryName.lastIndexOf(ArchiveVFS.fileSeparatorChar);
+            String entryName      = entry.getName();
+            String entryShortName = entryName;
+            int slashIdx = entryShortName.lastIndexOf(ArchiveVFS.fileSeparatorChar);
             if (slashIdx > 0) {
-                entryName = entryName.substring(slashIdx + ArchiveVFS.fileSeparator.length());
+                entryShortName = entryShortName.substring(slashIdx + ArchiveVFS.fileSeparator.length());
             }
             int type = (
                 (entry.isDirectory())
@@ -163,9 +146,9 @@ public class ZipVFS extends ArchiveVFS {
 
             res = (
                 new VFS.DirectoryEntry(
-                    entryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + zipEntryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + zipEntryName,
+                    entryShortName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + entryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + entryName,
                     type,
                     size,
                     false
@@ -216,11 +199,8 @@ public class ZipVFS extends ArchiveVFS {
         try {
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
             ZipInputStream archiveIn = ArchiveUtilities.openZipInputStream(in);
-            for (ZipEntry entry; (entry = archiveIn.getNextEntry()) != null; ) {
-                if (entry.getName().equals(archiveEntry)) {
-                    return new BufferedInputStream(archiveIn);
-                }
-            }
+
+            return new ZipCommand(archiveIn).createInputStream(archiveEntry);
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
         }

@@ -183,9 +183,9 @@ public abstract class ArchiveVFS extends VFS {
     }
 
 
-    protected void addAllDirectories(
+    public static void addAllDirectories(
             Hashtable directories,
-            String vfsPath,
+            String archiveProtocol, String archivePath,
             String entryName, long entrySize, boolean entryIsDirectory
     ) {
         // We add all possible directories to directories hashtable
@@ -205,6 +205,7 @@ public abstract class ArchiveVFS extends VFS {
                 nextPath = currentPath + ArchiveVFS.fileSeparatorChar + token;
             }
 
+            String vfsPath = archiveProtocol + ':' + archivePath;
             String currentVFSPath = vfsPath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + currentPath;
             String nextVFSPath    = vfsPath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + nextPath;
 

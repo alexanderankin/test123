@@ -29,7 +29,6 @@ import java.util.Hashtable;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import com.ice.tar.TarEntry;
 import com.ice.tar.TarInputStream;
 
 import org.gjt.sp.jedit.browser.VFSBrowser;
@@ -77,21 +76,11 @@ public class TarVFS extends ArchiveVFS {
         VFS vfs = VFSManager.getVFSForPath(archivePath);
 
         try {
-            Hashtable directories = new Hashtable();
-
             boolean ignoreErrors = true;
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
             TarInputStream archiveIn = ArchiveUtilities.openTarInputStream(in);
 
-            for (TarEntry entry; (entry = archiveIn.getNextEntry()) != null; ) {
-                this.addAllDirectories(
-                      directories
-                    , archiveProtocol + ':' + archivePath
-                    , entry.getName()
-                    , entry.getSize()
-                    , entry.isDirectory()
-                );
-            }
+            Hashtable directories = new TarCommand(archiveIn).getDirectories(archiveProtocol, archivePath);
 
             archiveIn.close();
 
@@ -136,40 +125,30 @@ public class TarVFS extends ArchiveVFS {
             boolean ignoreErrors = true;
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
             TarInputStream archiveIn = ArchiveUtilities.openTarInputStream(in);
-            TarEntry entry = null;
-            String tarEntryName = null;
-            for (; (entry = archiveIn.getNextEntry()) != null; ) {
-                tarEntryName = entry.getName();
-                if (tarEntryName.endsWith(ArchiveVFS.fileSeparator)) {
-                    tarEntryName = tarEntryName.substring(0, tarEntryName.length() - ArchiveVFS.fileSeparator.length());
-                }
-
-                if (archiveEntry.equals(tarEntryName)) {
-                    break;
-                }
-            }
+            ArchiveEntry entry = new TarCommand(archiveIn).getDirectoryEntry(archiveEntry);
 
             if (entry == null) {
                 return null;
             }
 
-            String entryName = tarEntryName;
-            int slashIdx = entryName.lastIndexOf(ArchiveVFS.fileSeparatorChar);
+            String entryName      = entry.getName();
+            String entryShortName = entryName;
+            int slashIdx = entryShortName.lastIndexOf(ArchiveVFS.fileSeparatorChar);
             if (slashIdx > 0) {
-                entryName = entryName.substring(slashIdx + ArchiveVFS.fileSeparator.length());
+                entryShortName = entryShortName.substring(slashIdx + ArchiveVFS.fileSeparator.length());
             }
             int type = (
                 (entry.isDirectory())
                 ? VFS.DirectoryEntry.DIRECTORY
                 : VFS.DirectoryEntry.FILE
             );
-            long size = entry.getSize();
+            long size = Math.max(0, entry.getSize()); // Avoids -1 size
 
             res = (
                 new VFS.DirectoryEntry(
-                    entryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + tarEntryName,
-                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + tarEntryName,
+                    entryShortName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + entryName,
+                    archiveProtocol + ':' + archivePath + ArchiveVFS.archiveSeparator + ArchiveVFS.fileSeparator + entryName,
                     type,
                     size,
                     false
@@ -220,14 +199,8 @@ public class TarVFS extends ArchiveVFS {
         try {
             InputStream in = vfs._createInputStream(session, archivePath, ignoreErrors, comp);
             TarInputStream archiveIn = ArchiveUtilities.openTarInputStream(in);
-            for (TarEntry entry; (entry = archiveIn.getNextEntry()) != null;) {
-                if (entry.isDirectory()) {
-                    continue;
-                }
-                if (entry.getName().equals(archiveEntry)) {
-                    return new BufferedInputStream(archiveIn);
-                }
-            }
+
+            return new TarCommand(archiveIn).createInputStream(archiveEntry);
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
         }
