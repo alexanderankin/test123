@@ -235,6 +235,7 @@ public class BibTeXPanel
 
           nextLine = in.readLine();
         }
+        in.close();
       } catch (Exception e) {
       }
     }
