@@ -1,0 +1,74 @@
+<!-- Templates plugin user's guide: Accelerators chapter -->
+<!-- (C) 2002 Steve Jakob -->
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true:folding=explicit: -->
+
+<!-- {{{ Chapter: Accelerators -->
+<chapter id="accelerators"><title>Template Accelerators</title>
+
+ <para>
+  An Accelerator is a keyword that maps to a template for a particular edit 
+  mode. Using accelerators, a user can now call a template without having 
+  to navigate the Templates drop down menu or the Templates Tree view, allowing 
+  for a more continuous editing experience.  Furthermore, having different 
+  accelerators per edit modes allows a users the flexibility of using the same 
+  accelerator keyword to generate different template text based on the edit 
+  context. For example, if you have the 'if' accelerator keyword map to
+  different templates of the <emphasis>if</emphasis> construct for different
+  programming languages, expanding 'if' in a Java source file would generate 
+  different text than if you had expanded 'if' in a Python source file.
+ </para>
+
+ <!-- {{{ Section: Configuring Accelerators -->
+ <sect1><title>Configuring Template Accelerators</title>
+
+  <para>
+   You can add/change/remove accelerators from jEdit's
+   <guimenuitem>Global Options</guimenuitem> dialog. From the dialog, go to
+   <guilabel>Templates</guilabel>&gt;<guilabel>Accelerators</guilabel>. Select 
+   an edit mode from the <guilabel>Mode</guilabel> drop down list box to view 
+   the current accelerators for a given mode. The accelerators will be listed 
+   on the list box to the left. Select an accelerator, and the template for that 
+   accelerator will be selected on the template tree on the right. To change 
+   the template of an accelerator, select that accelerator, select the new 
+   template, and press <guibutton>Save</guibutton>. To add a new accelerator 
+   press <guibutton>Add</guibutton>, enter the accelerator keyword when 
+   prompted, select the desired template, and press <guibutton>Save</guibutton>. 
+   To delete an existing accelerator, select the accelerator and press
+   <guibutton>Remove</guibutton>.  Remember that when adding/changing/removing
+   templates to make sure that the correct mode is selected, since accelerator 
+   keywords can map to different templates for different edit modes.
+  </para>
+
+ </sect1>
+ <!-- }}} -->
+
+ <!-- {{{ Section: Using Accelerators -->
+ <sect1><title>Using Template Accelerators</title>
+
+  <para>
+    To expand an accelerator, type the accelerator keyword in the jEdit text 
+    area and select <guimenu>Plugins</guimenu>&gt; 
+    <guisubmenu>Templates</guisubmenu>&gt; 
+    <guimenuitem>Expand Accelerator</guimenuitem>. Alternatively, you can map 
+    the <guimenuitem>Expand Accelerator</guimenuitem> action to a shortcut and 
+    expand accelerators by keystroke. The plugin searches for the keyword from 
+    the current caret position in the textarea <emphasis>backwards</emphasis> 
+    to first whitespace character. So if you execute
+    <guimenuitem>Expand Accelerator</guimenuitem> on:
+    
+    <programlisting>
+    ... firstLoop: for|
+    </programlisting>
+    
+    where '|' is the current caret position, the plugin will attempt to find 
+    an accelerator with the keyword <emphasis>for</emphasis> for the current 
+    edit mode.
+  </para>
+
+ </sect1>
+ <!-- }}} -->
+
+</chapter>
+<!-- }}} -->
+
