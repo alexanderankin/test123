@@ -1533,6 +1533,16 @@ public final class ProjectViewer extends JPanel
 			if (where.isProject()) {
 				VPTNode f = ((VPTProject)where).getChildNode(bu.getBuffer().getPath());
 				if (f != null) {
+					if (workingFileTree != null) {
+						if (bu.getWhat() == BufferUpdate.CLOSED) {
+							((VPTWorkingFileListModel)workingFileTree.getModel())
+								.removeOpenFile(f.getNodePath());
+						} else if (bu.getWhat() == BufferUpdate.LOADED) {
+							((VPTWorkingFileListModel)workingFileTree.getModel())
+								.addOpenFile(f.getNodePath());
+						}
+					}
+
 					ProjectViewer.nodeChanged(f);
 					return true;
 				}
