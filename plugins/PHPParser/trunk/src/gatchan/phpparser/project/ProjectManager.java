@@ -18,7 +18,7 @@ import java.util.List;
  *
  * @author Matthieu Casanova
  */
-public final class ProjectManager {
+public class ProjectManager {
   /** The current project. */
   private Project project;
 
@@ -40,10 +40,10 @@ public final class ProjectManager {
   /** Instantiate the project manager. */
   private ProjectManager() {
     init();
-    final String projectFilePath = jEdit.getProperty(PROJECT_NAME_PROPERTY);
+    String projectFilePath = jEdit.getProperty(PROJECT_NAME_PROPERTY);
     if (projectFilePath != null) {
       Log.log(Log.DEBUG, this, "Opening project " + projectFilePath);
-      final File projectFile = new File(projectDirectory + File.separator + projectFilePath + ".project.props");
+      File projectFile = new File(projectDirectory + File.separator + projectFilePath + ".project.props");
       openProject(projectFile);
     }
   }
@@ -84,16 +84,16 @@ public final class ProjectManager {
    */
   private void init() {
     if (settingsDirectory != null) {
-      final File projectDirFile = new File(projectDirectory);
+      File projectDirFile = new File(projectDirectory);
       if (projectDirFile.exists()) {
-        final String[] projectsNames = projectDirFile.list(new FilenameFilter() {
+        String[] projectsNames = projectDirFile.list(new FilenameFilter() {
           public boolean accept(File dir, String name) {
             return name.endsWith(".project.props");
           }
         });
-        final List list = new ArrayList();
+        List list = new ArrayList();
         for (int i = 0; i < projectsNames.length; i++) {
-          final File projectFile = new File(projectDirectory, projectsNames[i]);
+          File projectFile = new File(projectDirectory, projectsNames[i]);
           if (projectFile.isFile()) {
             try {
               list.add(new Project(projectFile));
@@ -107,7 +107,7 @@ public final class ProjectManager {
             }
           }
         }
-        projectList = new ProjectList(new ArrayList());
+        projectList = new ProjectList(list);
       } else {
         projectDirFile.mkdirs();
         projectList = new ProjectList(new ArrayList());
@@ -126,8 +126,8 @@ public final class ProjectManager {
 
   /** Create a project. */
   public void createProject() {
-    final String projectName = JOptionPane.showInputDialog("Project name : ");
-    final Project project;
+    String projectName = JOptionPane.showInputDialog("Project name : ");
+    Project project;
     if (projectName == null) {
       Log.log(Log.DEBUG, this, "Project creation cancelled");
     } else if (projectName.length() == 0) {
@@ -171,7 +171,7 @@ public final class ProjectManager {
     if (this.project != null) {
       closeProject();
     }
-    final Project project;
+    Project project;
     try {
       project = projectList.getProject(projectFile);
       project.load();
@@ -206,8 +206,8 @@ public final class ProjectManager {
    */
   private static void browseToProjectRoot(Project project) {
     // todo : add an option for that
-    final View activeView = jEdit.getActiveView();
-    final String root = project.getRoot();
+    View activeView = jEdit.getActiveView();
+    String root = project.getRoot();
     if (activeView != null && root != null) {
       VFSBrowser.browseDirectory(activeView, root);
     }
