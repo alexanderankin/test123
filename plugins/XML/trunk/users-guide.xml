@@ -507,6 +507,8 @@
   instead of the outdated <classname>com.arbortext.catalog</classname> package.
   This brings improved support for OASIS and XML catalogs.
   </para></listitem>
+  <listitem><para>Now uses jEdit 4.2 structure matching API to paint tag highlight, so you will see a tag scope indicator in the gutter just like with brackets.
+  </para></listitem>
   </itemizedlist>
   </listitem>
 
