@@ -76,8 +76,11 @@ class SideKick implements EBComponent
 
 		Buffer buffer = view.getBuffer();
 
-		if(SideKickPlugin.getParserForBuffer(buffer) != null)
+		if(parser != null)
+		{
 			addBufferChangeListener(buffer);
+			parser.activate(view);
+		}
 
 		if(buffer.getBooleanProperty(
 			"sidekick.buffer-change-parse")
@@ -120,8 +123,8 @@ class SideKick implements EBComponent
 			{
 				SideKickParsedData.setParsedData(view,null);
 
-				//{{{ check for non-XML file
-				if(SideKickPlugin.getParserForBuffer(buffer) == null)
+				//{{{ check for unknown file
+				if(parser == null)
 				{
 					showNotParsedMessage();
 					SideKickPlugin.finishParsingBuffer(buffer);
@@ -140,13 +143,12 @@ class SideKick implements EBComponent
 
 				errorSource.clear();
 
-				SideKickParser parserImpl = SideKickPlugin.getParserForBuffer(buffer);
 				SideKickParsedData[] data = new SideKickParsedData[1];
 
 				SideKickPlugin.addWorkRequest(new ParseRequest(
-					parserImpl,buffer,errorSource,data),false);
+					parser,buffer,errorSource,data),false);
 				SideKickPlugin.addWorkRequest(new ParseAWTRequest(
-					parserImpl,buffer,data),false);
+					parser,buffer,data),true);
 			}
 		}); //}}}
 	} //}}}
@@ -186,10 +188,16 @@ class SideKick implements EBComponent
 			}
 			else if(bmsg.getWhat() == BufferUpdate.PROPERTIES_CHANGED)
 			{
-				if(SideKickPlugin.getParserForBuffer(buffer) == null)
-					removeBufferChangeListener(buffer);
-				else
+				if(parser != null)
+					parser.deactivate(view);
+				parser = SideKickPlugin.getParserForBuffer(buffer);
+				if(parser != null)
+				{
 					addBufferChangeListener(buffer);
+					parser.activate(view);
+				}
+				else
+					removeBufferChangeListener(buffer);
 
 				if(buffer.getBooleanProperty(
 					"sidekick.buffer-change-parse")
@@ -229,9 +237,16 @@ class SideKick implements EBComponent
 				{
 					removeBufferChangeListener(this.buffer);
 
+					if(parser != null)
+						parser.deactivate(view);
 					Buffer buffer = editPane.getBuffer();
-					if(SideKickPlugin.getParserForBuffer(buffer) != null)
+					parser = SideKickPlugin.getParserForBuffer(buffer);
+					if(parser != null)
+					{
 						addBufferChangeListener(buffer);
+						parser.activate(view);
+					}
+
 					if(buffer.getBooleanProperty(
 						"sidekick.buffer-change-parse")
 						|| buffer.getBooleanProperty(
@@ -250,12 +265,18 @@ class SideKick implements EBComponent
 			ViewUpdate vu = (ViewUpdate)msg;
 			if(vu.getView() == view && vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED)
 			{
-				removeBufferChangeListener(SideKick.this.buffer);
+				removeBufferChangeListener(this.buffer);
+				if(parser != null)
+					parser.deactivate(view);
 
 				Buffer buffer = view.getBuffer();
 
-				if(SideKickPlugin.getParserForBuffer(buffer) != null)
+				parser = SideKickPlugin.getParserForBuffer(buffer);
+				if(parser != null)
+				{
 					addBufferChangeListener(buffer);
+					parser.activate(view);
+				}
 
 				if(buffer.getBooleanProperty(
 					"sidekick.buffer-change-parse")
@@ -279,7 +300,7 @@ class SideKick implements EBComponent
 	private View view;
 	private Buffer buffer;
 
-	private SideKickParser parserImpl;
+	private SideKickParser parser;
 
 	private DefaultErrorSource errorSource;
 
@@ -371,15 +392,15 @@ class SideKick implements EBComponent
 	//{{{ ParseRequest class
 	static class ParseRequest implements Runnable
 	{
-		SideKickParser parserImpl;
+		SideKickParser parser;
 		Buffer buffer;
 		DefaultErrorSource errorSource;
 		SideKickParsedData[] data;
 
-		ParseRequest(SideKickParser parserImpl, Buffer buffer,
+		ParseRequest(SideKickParser parser, Buffer buffer,
 			DefaultErrorSource errorSource, SideKickParsedData[] data)
 		{
-			this.parserImpl = parserImpl;
+			this.parser = parser;
 			this.buffer = buffer;
 			this.errorSource = errorSource;
 			this.data = data;
@@ -387,21 +408,21 @@ class SideKick implements EBComponent
 
 		public void run()
 		{
-			data[0] = parserImpl.parse(buffer,errorSource);
+			data[0] = parser.parse(buffer,errorSource);
 		}
 	} //}}}
 
 	//{{{ ParseAWTRequest class
 	class ParseAWTRequest implements Runnable
 	{
-		SideKickParser parserImpl;
+		SideKickParser parser;
 		Buffer buffer;
 		SideKickParsedData[] data;
 
-		ParseAWTRequest(SideKickParser parserImpl, Buffer buffer,
+		ParseAWTRequest(SideKickParser parser, Buffer buffer,
 			SideKickParsedData[] data)
 		{
-			this.parserImpl = parserImpl;
+			this.parser = parser;
 			this.buffer = buffer;
 			this.data = data;
 		}
@@ -413,7 +434,7 @@ class SideKick implements EBComponent
 			if(showParsingMessage || errorCount != 0)
 			{
 				String label = jEdit.getProperty("sidekick.parser."
-					+ parserImpl.getName() + ".label");
+					+ parser.getName() + ".label");
 				if(maxErrors)
 				{
 					Object[] pp = { label, new Integer(errorCount) };

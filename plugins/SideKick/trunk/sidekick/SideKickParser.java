@@ -24,7 +24,9 @@ package sidekick;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.View;
 import errorlist.DefaultErrorSource;
+import org.gjt.sp.util.Log;
 
 /**
  * An abstract base class for plugin-provided parser implementations.
@@ -56,6 +58,30 @@ public abstract class SideKickParser
 	public final String getName()
 	{
 		return name;
+	} //}}}
+
+	//{{{ activate() method
+	/**
+	 * This method is called when a buffer using this parser is selected
+	 * in the specified view.
+	 * @param view The view
+	 * @since SideKick 0.2
+	 */
+	public void activate(View view)
+	{
+		Log.log(Log.DEBUG,this,getName() + ": activated for " + view.getBuffer());
+	} //}}}
+
+	//{{{ deactivate() method
+	/**
+	 * This method is called when a buffer using this parser is no longer
+	 * selected in the specified view.
+	 * @param view The view
+	 * @since SideKick 0.2
+	 */
+	public void deactivate(View view)
+	{
+		Log.log(Log.DEBUG,this,getName() + ": deactivated");
 	} //}}}
 
 	//{{{ parse() method
