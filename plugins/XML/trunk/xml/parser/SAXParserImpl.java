@@ -155,7 +155,9 @@ class SAXParserImpl implements XmlParser.Impl
 	private void addError(int type, String uri, int line, String message)
 	{
 		// FIXME?
-		if(uri.startsWith("file://"))
+		if(uri.startsWith("file:///") && OperatingSystem.isDOSDerived())
+			uri = uri.substring(8);
+		else if(uri.startsWith("file://"))
 			uri = uri.substring(7);
 		uri.replace('/',File.separatorChar);
 
