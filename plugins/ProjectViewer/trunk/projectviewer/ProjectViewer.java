@@ -498,11 +498,6 @@ public final class ProjectViewer extends JPanel
 		super(new BorderLayout());
 		view = aView;
 
-		if (viewers.get(aView) == null) {
-			viewers.put(aView, this);
-		}
-		viewerList.add(this);
-
 		vcm = new VPTContextMenu(this);
 		vsl = new VPTSelectionListener(this);
 		treeRoot = VPTRoot.getInstance();
@@ -516,6 +511,12 @@ public final class ProjectViewer extends JPanel
 			if (ProjectManager.getInstance().hasProject(config.getLastProject()))
 				new ProjectLoader(config.getLastProject()).loadProject();
 		}
+
+		if (viewers.get(aView) == null) {
+			viewers.put(aView, this);
+		}
+		viewerList.add(this);
+
 	} //}}}
 
 	//{{{ Private methods
