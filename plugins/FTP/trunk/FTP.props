@@ -1,9 +1,9 @@
 # Plugin properties
 plugin.FtpPlugin.name=FTP
 plugin.FtpPlugin.author=Slava Pestov
-plugin.FtpPlugin.version=0.1
+plugin.FtpPlugin.version=0.2
 plugin.FtpPlugin.docs=FTP.html
-plugin.FtpPlugin.depend.0=jedit 02.07.01.00
+plugin.FtpPlugin.depend.0=jedit 02.07.02.00
 
 # Menu
 ftp=open-ftp save-ftp - clear-directory-cache forget-passwords
