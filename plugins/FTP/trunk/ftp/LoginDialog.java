@@ -280,6 +280,7 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 			privateKeySelect.addActionListener(new PrivateKeySelectActionListener(this));
 			privateKeyBox.add(privateKeySelect);
 			panel.add(privateKeyBox);
+			checkKey();
 		}
 		
 		return panel;
