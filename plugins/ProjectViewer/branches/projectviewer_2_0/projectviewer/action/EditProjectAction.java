@@ -27,7 +27,6 @@ import javax.swing.JMenuItem;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
-import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -99,15 +98,13 @@ public class EditProjectAction extends Action {
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		if (cmItem != null) {
-			if (node != null) {
-				cmItem.setVisible( node.isRoot() || node.isProject() );
-				((JMenuItem)cmItem).setText( node.isRoot() ? 
-					jEdit.getProperty("projectviewer.action.add_project") : 
-					jEdit.getProperty("projectviewer.action.edit_project"));
-			} else {
-				cmItem.setVisible(false);
-			}
+		if (node != null && (node.isRoot() || node.isProject())) {
+			cmItem.setVisible(true);
+			((JMenuItem)cmItem).setText( node.isRoot() ? 
+				jEdit.getProperty("projectviewer.action.add_project") : 
+				jEdit.getProperty("projectviewer.action.edit_project"));
+		} else {
+			cmItem.setVisible(false);
 		}
 	} //}}}
 	
