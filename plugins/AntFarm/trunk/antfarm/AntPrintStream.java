@@ -28,12 +28,14 @@ import org.gjt.sp.util.*;
 public class AntPrintStream extends PrintStream
 {
 	View _view;
+    Output _output;
 	String _cache = "";
 
-	public AntPrintStream( PrintStream stream, View view )
+	public AntPrintStream( PrintStream stream, View view, Output output )
 	{
 		super( stream );
 		_view = view;
+        _output = output;
 	}
 
 
@@ -99,18 +101,18 @@ public class AntPrintStream extends PrintStream
 
 		switch ( type ) {
 			case ErrorSource.ERROR:
-				console.print( console.getErrorColor(), line );
+				_output.print( console.getErrorColor(), line );
 				break;
 			case ErrorSource.WARNING:
-				console.print( console.getWarningColor(), line );
+				_output.print( console.getWarningColor(), line );
 				break;
 			default:
 				if ( line.trim().equals( "BUILD SUCCESSFUL" ) )
-					console.print( console.getInfoColor(), line );
+					_output.print( console.getInfoColor(), line );
 				else if ( line.trim().equals( "BUILD FAILED" ) )
-					console.print( console.getErrorColor(), line );
+					_output.print( console.getErrorColor(), line );
 				else
-					console.print( null, line );
+					_output.print( null, line );
 				break;
 		}
 	}
