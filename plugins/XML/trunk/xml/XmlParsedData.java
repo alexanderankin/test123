@@ -62,13 +62,19 @@ public class XmlParsedData
 		if(html)
 			name = name.toLowerCase();
 
-		CompletionInfo info = (CompletionInfo)mappings.get(
-			getElementNamePrefix(name));
+		String prefix = getElementNamePrefix(name);
+		CompletionInfo info = (CompletionInfo)mappings.get(prefix);
 
 		if(info == null)
 			return null;
 		else
-			return (ElementDecl)info.elementHash.get(name);
+		{
+			ElementDecl decl = (ElementDecl)info.elementHash.get(name);
+			if(decl == null)
+				return null;
+			else
+				return decl.withPrefix(prefix);
+		}
 	} //}}}
 
 	//{{{ getAllowedElements() method
@@ -81,14 +87,22 @@ public class XmlParsedData
 
 		if(parentTag == null)
 		{
-			// everything
+			// add everything
+			Iterator iter = mappings.keySet().iterator();
+			while(iter.hasNext())
+			{
+				String prefix = (String)iter.next();
+				CompletionInfo info = (CompletionInfo)
+					mappings.get(prefix);
+				info.getAllElements(prefix,returnValue);
+			}
 		}
 		else
 		{
 			String parentPrefix = getElementNamePrefix(parentTag.tag);
 			ElementDecl parentDecl = getElementDecl(parentTag.tag);
 			if(parentDecl != null)
-				returnValue.addAll(parentDecl.getChildElements());
+				returnValue.addAll(parentDecl.getChildElements(parentPrefix));
 
 			// add everything but the parent's prefix now
 			Iterator iter = mappings.keySet().iterator();
@@ -99,11 +113,12 @@ public class XmlParsedData
 				{
 					CompletionInfo info = (CompletionInfo)
 						mappings.get(prefix);
-					info.elements.addAll(returnValue);
+					info.getAllElements(prefix,returnValue);
 				}
 			}
 		}
 
+		Collections.sort(returnValue,new ElementDecl.Compare());
 		return returnValue;
 	} //}}}
 

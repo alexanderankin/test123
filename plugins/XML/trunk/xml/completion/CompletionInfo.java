@@ -92,6 +92,15 @@ public class CompletionInfo
 		elements.add(element);
 	} //}}}
 
+	//{{{ getAllElements() method
+	public void getAllElements(String prefix, List out)
+	{
+		for(int i = 0; i < elements.size(); i++)
+		{
+			out.add(((ElementDecl)elements.get(i)).withPrefix(prefix));
+		}
+	} //}}}
+
 	//{{{ toString() method
 	public String toString()
 	{
