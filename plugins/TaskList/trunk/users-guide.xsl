@@ -13,9 +13,9 @@
                 xmlns="http://www.w3.org/TR/xhtml1/transitional"
                 exclude-result-prefixes="#default">
 
+<xsl:import href="/usr/share/xsl/docbook-xsl-1.44/html/onechunk.xsl"/>
 <!-- NOTE: path to onechunk.xsl on local instalation follows -->
-<!-- <xsl:import href="/usr/share/xsl/docbook-xsl-1.44/html/docbook.xsl"/> -->
-<xsl:import href="file:///I:/sgml/docbook-xsl-1.45/html/onechunk.xsl"/>
+<!-- <xsl:import href="file:///I:/sgml/docbook-xsl-1.45/html/onechunk.xsl"/> -->
 <xsl:param name="use.id.as.filename" select="'1'" doc:type="boolean"/>
 
 
