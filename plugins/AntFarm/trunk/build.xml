@@ -1,82 +1,117 @@
 <?xml version="1.0"?>
 
-<project name="AntFarm" default="jar" basedir=".">
+<!--
+		 Use this ant script to build the AntFarm plugin.
 
-	<property name="plugin.lib" value=".." />
-	<property name="plugin.src" value="." />
-	<property name="plugin.build" value="." />
-	<property name="jedit.jars" value=".." />
-	<property name="jedit.home" value="../.." />
+     This is based on the standard build.xml file for building a jEdit plugin.
 
-	<path id="build.classpath">
-		<!-- External plugin dependencies -->
-		<pathelement path="${plugin.lib}/ant.jar" />
+     The 'dist' target compiles the plugin, generates documentation, and creates
+     the JAR file.  Before running the 'dist' target, you will need to choose
+     whether to generate the documentation using one of these two targets:
+
+     - 'docs-xsltproc': Creates documentation using the xsltproc tool from
+       libxslt, available at http://xmlsoft.org/XSLT
+     - 'docs-xalan': Creates documentation using the Xalan XSLT processor,
+       available at http://xml.apache.org/
+
+     The default processor is xsltproc. You can change the processor to Xalan by
+     setting the docs-proc.target property to xalan. This can be done on the
+     command line by adding '-Ddocs-proc.target=xalan'. If you do not have any
+     documentation, you can remove the 'docs' target from the depends list for
+     the 'dist' target.
+
+-->
+
+<project name="AntFarm" default="dist" basedir=".">
+
+	<property name="jedit.install.dir"  value="../.."/>
+	<property name="jedit.jars" value="${jedit.install.dir}/jars"/>
+	<property name="jar.name"  value="${ant.project.name}.jar"/>
+	<property name="docs-proc.target"  value="xalan"/>
+
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+	<property name="install.dir"  value="${jedit.jars}"/>
+
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.install.dir}/jedit.jar"/>
+		<pathelement location="."/>
+		<!-- External dependencies -->
+		<pathelement path="${jedit.jars}/ant.jar" />
 		<pathelement path="lib/junit.jar" />
 		<!-- Other plugin dependencies -->
  		<pathelement path="${jedit.jars}/Console.jar" />
 		<pathelement path="${jedit.jars}/EditBus.jar" />
 		<pathelement path="${jedit.jars}/ProjectViewer.jar" />
 		<pathelement path="${jedit.jars}/CommonControls.jar" />
-		<!-- The main jEdit library -->
-		<pathelement path="${jedit.home}/jedit.jar" />
 	</path>
 
-	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
-	<target name="tags">
-		<exec executable="ctags">
-			<arg value="-R" />
-			<arg path="." />
-		</exec>
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
 	</target>
 
-	<target name="compile" description="Compiles all java files for the plugin">
 
-    <javac	srcdir="${plugin.src}"
-						destdir="${plugin.build}"
-						deprecation="off"
+	<target name="compile" depends="init">
+		<javac
+			srcdir="${src.dir}"
+			destdir="${build.dir}"
+			deprecation="on"
+			includeJavaRuntime="yes"
 		>
- 			<classpath>
-				<path refid="build.classpath"/>
-			</classpath>
+			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
 
-	<target name="clean" description="Removes all generated files">
-		<delete>
-			<fileset dir="." includes="**/*.class,*.html"/>
-		</delete>
-	</target>
 
-	<target name="jar" depends="compile" description="Packages the plugin in the jars directory">
-		<jar jarfile="${jedit.jars}/${ant.project.name}.jar"
-       basedir="${plugin.build}"
-	  	 includes="**/*.class,**/*.xml,**/*.html,**/*.props,**/*.gif"
-			 excludes="build.xml"
-		/>
-	</target>
-
-	<target name="package" depends="docs,jar" description="Packages the plugin for distribution">
-		<zip zipfile="${ant.project.name}.zip">
-			<zipfileset dir="${basedir}" prefix="${ant.project.name}" excludes="${ant.project.name}.zip,lib/*.jar,**/*.class" />
-			<zipfileset dir="${jedit.jars}" includes="${ant.project.name}.jar" />
-			<zipfileset dir="${plugin.lib}" includes="*.jar" />
-		</zip>
+	<target name="dist" depends="compile, docs">
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/${jar.name}"
+				 update="false"
+				 basedir="${src.dir}"
+				 includes="icons/*,bin/*">
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${src.dir}">
+				<include name="actions.xml"/>
+				<include name="**/*.props"/>
+				<include name="**/*.html"/>
+			</fileset>
+		</jar>
 	</target>
 
 
-	<target name="docs" description="Generate docs with Xalan tool from xml.apache.org">
+	<target name="docs">
+		<antcall target="docs-${docs-proc.target}"/>
+  </target>
+
+
+	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+	<target name="docs-xsltproc">
+		<exec executable="xsltproc" output="users-guide.html">
+			<arg value="--catalogs"/>
+			<arg value="users-guide.xsl"/>
+			<arg value="users-guide.xml"/>
+		</exec>
+	</target>
+
+
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+	<target name="docs-xalan">
 		<style
 			style="users-guide.xsl"
-			includes="users-guide.xml"
+			in="users-guide.xml"
+			out="users-guide.html"
 			destdir="."/>
 	</target>
 
-	<target name="test" description="Runs the unit tests for the project">
-		<junit printsummary="yes" haltonfailure="yes">
- 			<classpath>
-				<path refid="build.classpath"/>
-			</classpath>
-  		<test name="antfarm.AntCommandParserTest" />
-		</junit>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
+			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
+		</delete>
 	</target>
+
 </project>
