@@ -90,8 +90,7 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public void createOptionPanes(OptionsDialog od)
 	{
-		OptionGroup optionGroup = new OptionGroup(
-			jEdit.getProperty("tasklist.label"));
+		OptionGroup optionGroup = new OptionGroup(NAME);
 
 		optionGroup.addOptionPane(new TaskListGeneralOptionPane());
 		optionGroup.addOptionPane(new TaskListTaskTypesOptionPane());
@@ -151,35 +150,16 @@ public class TaskListPlugin extends EBPlugin
 		if(message instanceof BufferUpdate)
 		{
 			BufferUpdate bu = (BufferUpdate)message;
-			if(bu.getWhat() == BufferUpdate.MODE_CHANGED)
+			if(bu.getWhat() == BufferUpdate.MODE_CHANGED ||
+				bu.getWhat() == BufferUpdate.LOADED ||
+				bu.getWhat() == BufferUpdate.SAVED)
 			{
 				final Buffer buffer = bu.getBuffer();
 				// only re-parse if buffer is loaded and buffer map contains
 				// as non-null ref (null indicates no parse has been done)
 				if(buffer.isLoaded() && (bufferMap.get(buffer) != null))
 				{
-					SwingUtilities.invokeLater(new Runnable(){
-						public void run()
-						{
-							TaskListPlugin.parseBuffer(buffer);
-						}
-					});
-				}
-			}
-			else if(bu.getWhat() == BufferUpdate.LOADED ||
-				bu.getWhat() == BufferUpdate.SAVING)
-			{
-				final Buffer buffer = bu.getBuffer();
-				// if the bufferMap contains a null ref, no parse request
-				// has been received, so don't reparse
-				if(bufferMap.get(buffer) != null)
-				{
-					SwingUtilities.invokeLater(new Runnable(){
-						public void run()
-						{
-							TaskListPlugin.parseBuffer(buffer);
-						}
-					});
+					TaskListPlugin.extractTasks(buffer);
 				}
 			}
 		}
@@ -198,12 +178,7 @@ public class TaskListPlugin extends EBPlugin
 			{
 				final Buffer buffer = epu.getEditPane().getBuffer();
 				TaskListPlugin.clearTasks(buffer);
-				SwingUtilities.invokeLater(new Runnable(){
-					public void run()
-					{
-						TaskListPlugin.parseBuffer(buffer);
-					}
-				});
+				TaskListPlugin.extractTasks(buffer);
 			}
 			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 			{
@@ -371,7 +346,7 @@ public class TaskListPlugin extends EBPlugin
 	 * Directs the parsing of a buffer for task data if no request for parsing
 	 * that buffer is currently pending.
 	 * <p>
-	 * This method is more effcient than parserBuffer() because it prevents
+	 * This method is more effcient than parseBuffer() because it prevents
 	 * duplicate parse requests.
 	 *
 	 * @param buffer the Buffer to be parsed for task data.
@@ -404,6 +379,7 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public synchronized static void parseBuffer(Buffer buffer)
 	{
+		// NOTE: parseBuffer() method
 		// DEBUG: starting method
 //		Log.log(Log.DEBUG, TaskListPlugin.class,
 //			"TaskListPlugin.parseBuffer('" + buffer.getName() + "');");//##
@@ -424,12 +400,15 @@ public class TaskListPlugin extends EBPlugin
 			{
 				if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 				{
+//					Log.log(Log.DEBUG,TaskListPlugin.class,
+//						"Comment token found on line " + String.valueOf(lineNum)
+//						+ " length = " + String.valueOf(token.length));
 					try
 					{
 //						Log.log(Log.DEBUG,TaskListPlugin.class,"Comment token on line "
 //							+ String.valueOf(lineNum));
 						String text = buffer.getText(tokenStart, token.length);
-
+//						Log.log(Log.DEBUG,TaskListPlugin.class,"Parsing: " + text);
 						// NOTE: might want to have task types in an array
 						for(int i = 0; i < taskTypes.size(); i++)
 						{
@@ -452,7 +431,8 @@ public class TaskListPlugin extends EBPlugin
 					catch(Exception ex)
 					{
 						Log.log(Log.ERROR, TaskListPlugin.class,
-							ex.toString());
+//							ex.toString());
+							ex);
 					}
 
 				}
