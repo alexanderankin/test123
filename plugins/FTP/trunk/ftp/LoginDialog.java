@@ -156,53 +156,30 @@ public class LoginDialog extends EnhancedDialog implements ActionListener
 
 	private JPanel createFieldPanel(String host, String user, String password)
 	{
-		GridBagLayout layout = new GridBagLayout();
-		JPanel panel = new JPanel(layout);
+		JPanel panel = new JPanel(new VariableGridLayout(
+			VariableGridLayout.FIXED_NUM_COLUMNS,2,6,6));
 
-		GridBagConstraints cons = new GridBagConstraints();
-		cons.insets = new Insets(0,0,6,0);
-		cons.gridwidth = cons.gridheight = 1;
-		cons.gridx = cons.gridy = 0;
-		cons.fill = GridBagConstraints.BOTH;
 		JLabel label = new JLabel(jEdit.getProperty("login.host"),
 			SwingConstants.RIGHT);
-		layout.setConstraints(label,cons);
 		panel.add(label);
 
 		hostField = new JTextField(host,20);
 		if(host != null)
 			hostField.setEnabled(false);
-		cons.gridx = 1;
-		cons.weightx = 1.0f;
-		layout.setConstraints(hostField,cons);
 		panel.add(hostField);
 
 		label = new JLabel(jEdit.getProperty("login.user"),
 			SwingConstants.RIGHT);
-		cons.gridx = 0;
-		cons.weightx = 0.0f;
-		cons.gridy = 1;
-		layout.setConstraints(label,cons);
 		panel.add(label);
 
 		userField = new JTextField(user,20);
-		cons.gridx = 1;
-		cons.weightx = 1.0f;
-		layout.setConstraints(userField,cons);
 		panel.add(userField);
 
 		label = new JLabel(jEdit.getProperty("login.password"),
 			SwingConstants.RIGHT);
-		cons.gridx = 0;
-		cons.weightx = 0.0f;
-		cons.gridy = 2;
-		layout.setConstraints(label,cons);
 		panel.add(label);
 
 		passwordField = new JPasswordField(password,20);
-		cons.gridx = 1;
-		cons.weightx = 1.0f;
-		layout.setConstraints(passwordField,cons);
 		panel.add(passwordField);
 
 		return panel;
