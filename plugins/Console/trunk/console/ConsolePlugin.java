@@ -59,7 +59,7 @@ public class ConsolePlugin extends EBPlugin
 	public void start()
 	{
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH,
-			getClass().getClassLoader());
+			getClass());
 
 		String settings = jEdit.getSettingsDirectory();
 		if(settings != null)
@@ -92,7 +92,7 @@ public class ConsolePlugin extends EBPlugin
 	public void stop()
 	{
 		BeanShell.getNameSpace().addCommandPath(CMD_PATH,
-			getClass().getClassLoader());
+			getClass());
 
 		View[] views = jEdit.getViews();
 		for(int i = 0; i < views.length; i++)

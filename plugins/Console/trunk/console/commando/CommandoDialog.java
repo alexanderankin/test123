@@ -195,9 +195,11 @@ public class CommandoDialog extends EnhancedDialog
 		XmlParser parser = new XmlParser();
 		CommandoHandler handler = new CommandoHandler();
 		parser.setHandler(handler);
+		Reader in = null;
 		try
 		{
-			parser.parse(null, null, command.openStream());
+			in = command.openStream();
+			parser.parse(null, null, in);
 		}
 		catch(XmlException xe)
 		{
@@ -220,6 +222,19 @@ public class CommandoDialog extends EnhancedDialog
 		catch(Exception e)
 		{
 			Log.log(Log.ERROR,this,e);
+		}
+		
+		finally
+		{
+			try
+			{
+				if(in != null)
+					in.close();
+			}
+			catch(IOException io)
+			{
+				Log.log(Log.ERROR,this,io);
+			}
 		}
 
 		getRootPane().revalidate();
