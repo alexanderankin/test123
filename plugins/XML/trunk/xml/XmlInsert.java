@@ -78,12 +78,7 @@ public class XmlInsert extends JPanel implements EBComponent
 
 		add(idPanel);
 
-		EditPane[] editPanes = view.getEditPanes();
-		for(int i = 0; i < editPanes.length; i++)
-		{
-			JEditTextArea textArea = editPanes[i].getTextArea();
-			textArea.addCaretListener(new CaretHandler());
-		}
+		caretHandler = new CaretHandler();
 
 		update();
 
@@ -101,6 +96,13 @@ public class XmlInsert extends JPanel implements EBComponent
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
+
+		EditPane[] editPanes = view.getEditPanes();
+		for(int i = 0; i < editPanes.length; i++)
+		{
+			JEditTextArea textArea = editPanes[i].getTextArea();
+			textArea.addCaretListener(caretHandler);
+		}
 	} //}}}
 
 	//{{{ removeNotify() method
@@ -108,6 +110,15 @@ public class XmlInsert extends JPanel implements EBComponent
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
+
+		EditPane[] editPanes = view.getEditPanes();
+		for(int i = 0; i < editPanes.length; i++)
+		{
+			JEditTextArea textArea = editPanes[i].getTextArea();
+			textArea.removeCaretListener(caretHandler);
+		}
+
+		updateTimer.stop();
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -127,13 +138,13 @@ public class XmlInsert extends JPanel implements EBComponent
 				&& editPane.getView() == view)
 			{
 				JEditTextArea textArea = editPane.getTextArea();
-				textArea.addCaretListener(new CaretHandler());
+				textArea.addCaretListener(caretHandler);
 			}
 			else if(emsg.getWhat() == EditPaneUpdate.DESTROYED
 				&& editPane.getView() == view)
 			{
 				JEditTextArea textArea = editPane.getTextArea();
-				textArea.removeCaretListener(new CaretHandler());
+				textArea.removeCaretListener(caretHandler);
 			}
 			else if(emsg.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 				update();

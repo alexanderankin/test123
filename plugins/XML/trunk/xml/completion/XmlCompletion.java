@@ -34,7 +34,7 @@ import sidekick.SideKickCompletion;
 import xml.*;
 //}}}
 
-public class XmlCompletion implements SideKickCompletion
+public class XmlCompletion extends SideKickCompletion
 {
 	//{{{ XmlCompletion constructor
 	public XmlCompletion(View view, List items, String word, XmlParsedData data,
@@ -48,18 +48,6 @@ public class XmlCompletion implements SideKickCompletion
 		this.closingTag = closingTag;
 	} //}}}
 
-	//{{{ size() method
-	public int size()
-	{
-		return items.size();
-	} //}}}
-
-	//{{{ get() method
-	public Object get(int index)
-	{
-		return items.get(index);
-	} //}}}
-
 	//{{{ getRenderer() method
 	public ListCellRenderer getRenderer()
 	{
@@ -70,6 +58,12 @@ public class XmlCompletion implements SideKickCompletion
 	public int getTokenLength()
 	{
 		return word.length() + 1;
+	} //}}}
+
+	//{{{ insert() method
+	public void insert(int index)
+	{
+		insert(get(index),'\n');
 	} //}}}
 
 	//{{{ handleKeystroke() method
@@ -91,140 +85,123 @@ public class XmlCompletion implements SideKickCompletion
 				return true;
 		}
 
-		if(index == -1)
-		{
-			if(ch == '>')
-				XmlActions.insertClosingTagKeyTyped(view);
-			else
-				textArea.userInput(ch);
-
-			/* do nothing; dispose() is called below. */
-		}
+		if(index != -1)
+			insert(get(index),ch);
+		else if(ch == '>')
+			XmlActions.insertClosingTagKeyTyped(view);
 		else
-		{
-			Object obj = get(index);
-
-			if(obj instanceof XmlListCellRenderer.Comment)
-			{
-				int caret = textArea.getCaretPosition();
-				textArea.setSelectedText("!--  -->".substring(word.length()));
-				textArea.setCaretPosition(caret + 4 - word.length());
-			}
-			else if(obj instanceof XmlListCellRenderer.CDATA)
-			{
-				int caret = textArea.getCaretPosition();
-				textArea.setSelectedText("![CDATA[]]>".substring(word.length()));
-				textArea.setCaretPosition(caret + 8 - word.length());
-			}
-			else if(obj instanceof XmlListCellRenderer.ClosingTag)
-			{
-				textArea.setSelectedText(("/" + closingTag + ">")
-					.substring(word.length()));
-				return false;
-			}
-			else if(obj instanceof ElementDecl)
-			{
-				ElementDecl element = (ElementDecl)obj;
-
-				StringBuffer buf = new StringBuffer();
-				buf.append(element.name.substring(word.length()));
-
-				buf.append(element.getRequiredAttributesString());
-
-				if(ch == '\n' || ch == '>')
-				{
-					int caret = textArea.getCaretPosition();
-
-					if(element.empty)
-					{
-						if(data.html)
-							buf.append(">");
-						else
-							buf.append(XmlActions.getStandaloneEnd());
-
-						caret += buf.length();
-					}
-					else
-					{
-						buf.append(">");
-
-						caret += buf.length();
-
-						if(jEdit.getBooleanProperty(
-							"xml.close-complete-open"))
-						{
-							buf.append("</");
-							buf.append(element.name);
-							buf.append(">");
-						}
-					}
-
-					textArea.setSelectedText(buf.toString());
-					textArea.setCaretPosition(caret);
-
-					if(ch == '\n' && element.attributes.size() != 0)
-					{
-						// hide the popup first, since the edit tag
-						// dialog is modal
-						SwingUtilities.invokeLater(new Runnable()
-						{
-							public void run()
-							{
-								XmlActions.showEditTagDialog(view);
-							}
-						});
-					}
-					return false;
-				}
-				else
-				{
-					buf.append(ch);
-
-					textArea.setSelectedText(buf.toString());
-				}
-			}
-			else if(obj instanceof EntityDecl)
-			{
-				EntityDecl entity = (EntityDecl)obj;
-
-				textArea.setSelectedText(entity.name.substring(
-					word.length()) + ";");
-			}
-			/* else if(obj instanceof IDDecl)
-			{
-				IDDecl id = (IDDecl)obj;
-
-				if(ch == '\t')
-				{
-					textArea.setCaretPosition(id.declaringLocation
-						.getOffset());
-				}
-				else
-					textArea.setSelectedText(id.id);
-			} */
-		}
+			textArea.userInput(ch);
 
 		return false;
-	} //}}}
-
-	//{{{ getCompletionDescription() method
-	public String getCompletionDescription(int index)
-	{
-		return null;
-	} //}}}
-
-	//{{{ isCompletionSelectable() method
-	public boolean isCompletionSelectable(int index)
-	{
-		return true;
 	} //}}}
 
 	//{{{ Private members
 	private View view;
 	private JEditTextArea textArea;
-	private List items;
 	private String word;
 	private XmlParsedData data;
 	private String closingTag;
+
+	//{{{ insert() method
+	private void insert(Object obj, char ch)
+	{
+		if(obj instanceof XmlListCellRenderer.Comment)
+		{
+			int caret = textArea.getCaretPosition();
+			textArea.setSelectedText("!--  -->".substring(word.length()));
+			textArea.setCaretPosition(caret + 4 - word.length());
+		}
+		else if(obj instanceof XmlListCellRenderer.CDATA)
+		{
+			int caret = textArea.getCaretPosition();
+			textArea.setSelectedText("![CDATA[]]>".substring(word.length()));
+			textArea.setCaretPosition(caret + 8 - word.length());
+		}
+		else if(obj instanceof XmlListCellRenderer.ClosingTag)
+		{
+			textArea.setSelectedText(("/" + closingTag + ">")
+				.substring(word.length()));
+		}
+		else if(obj instanceof ElementDecl)
+		{
+			ElementDecl element = (ElementDecl)obj;
+
+			StringBuffer buf = new StringBuffer();
+			buf.append(element.name.substring(word.length()));
+
+			buf.append(element.getRequiredAttributesString());
+
+			if(ch == '\n' || ch == '>')
+			{
+				int caret = textArea.getCaretPosition();
+
+				if(element.empty)
+				{
+					if(data.html)
+						buf.append(">");
+					else
+						buf.append(XmlActions.getStandaloneEnd());
+
+					caret += buf.length();
+				}
+				else
+				{
+					buf.append(">");
+
+					caret += buf.length();
+
+					if(jEdit.getBooleanProperty(
+						"xml.close-complete-open"))
+					{
+						buf.append("</");
+						buf.append(element.name);
+						buf.append(">");
+					}
+				}
+
+				textArea.setSelectedText(buf.toString());
+				textArea.setCaretPosition(caret);
+
+				if(ch == '\n' && element.attributes.size() != 0)
+				{
+					// hide the popup first, since the edit tag
+					// dialog is modal
+					SwingUtilities.invokeLater(new Runnable()
+					{
+						public void run()
+						{
+							XmlActions.showEditTagDialog(view);
+						}
+					});
+				}
+			}
+			else
+			{
+				buf.append(ch);
+
+				textArea.setSelectedText(buf.toString());
+			}
+		}
+		else if(obj instanceof EntityDecl)
+		{
+			EntityDecl entity = (EntityDecl)obj;
+
+			textArea.setSelectedText(entity.name.substring(
+				word.length()) + ";");
+		}
+		/* else if(obj instanceof IDDecl)
+		{
+			IDDecl id = (IDDecl)obj;
+
+			if(ch == '\t')
+			{
+				textArea.setCaretPosition(id.declaringLocation
+					.getOffset());
+			}
+			else
+				textArea.setSelectedText(id.id);
+		} */
+	} //}}}
+
 	//}}}
 }

@@ -54,6 +54,10 @@ public class XmlPlugin extends EBPlugin
 			}
 			view = view.getNext();
 		}
+
+		XmlActions.propertiesChanged();
+		CatalogManager.propertiesChanged();
+		TagHighlight.propertiesChanged();
 	} //}}}
 
 	//{{{ stop() method

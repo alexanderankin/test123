@@ -106,7 +106,9 @@ public class TagHighlight extends TextAreaExtension
 		int start, int end, int y, TagParser.Tag tag)
 	{
 		if(tag.start >= end || tag.end < start)
+		{
 			return;
+		}
 
 		int tagStartLine = textArea.getScreenLineOfOffset(tag.start);
 		int tagEndLine = textArea.getScreenLineOfOffset(tag.end);
