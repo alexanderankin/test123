@@ -27,15 +27,15 @@ import common.gui.PopupList;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowFocusListener;
 import java.lang.reflect.Method;
 import java.util.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.SwingUtilities;
 
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.gui.PanelWindowContainer;
@@ -154,14 +154,7 @@ public class DockerPlugin extends EBPlugin
    }
 
    public void start() {
-      try {
-         Class c = Class.forName("docker.DockerFocusTraversalPolicy");
-         Method method = c.getMethod("install", null);
-         method.invoke(null, null);
-
-      } catch (Throwable t) {
-         Log.log(Log.NOTICE, this, "Unable to install focus traversal policy");
-      }
+      EditBus.addToBus(new DockFocusManager());
    }
 
    /**
@@ -206,16 +199,29 @@ public class DockerPlugin extends EBPlugin
                                        new ActionListener() {
          public void actionPerformed(ActionEvent evt) {
             PopupList popup = (PopupList) evt.getSource();
-            String name = (String) popup.getSelectedActualItem();
+            final String name = (String) popup.getSelectedActualItem();
             if (name == null) {
                dock.show(null);
+               view.addWindowFocusListener(new java.awt.event.WindowAdapter() {
+                  public void windowGainedFocus(WindowEvent evt) {
+                     view.getEditPane().getTextArea().requestFocus();
+                     view.removeWindowFocusListener(this);
+                     super.windowGainedFocus(evt);
+                  }
+               });
                popup.cancel();
-               Log.log(Log.DEBUG, this, "Sending focus to text area");
-               view.getEditPane().getTextArea().requestFocus();
+               /*Log.log(Log.DEBUG, this, "Sending focus to text area");
+               view.getEditPane().getTextArea().requestFocus();*/
             } else {
                Log.log(Log.DEBUG, this, "Sending focus to dockable: " + name);
+               view.addWindowFocusListener(new java.awt.event.WindowAdapter() {
+                  public void windowGainedFocus(WindowEvent evt) {
+                     view.getDockableWindowManager().getDockable(name).requestDefaultFocus();
+                     view.removeWindowFocusListener(this);
+                     super.windowGainedFocus(evt);
+                  }
+               });
                view.getDockableWindowManager().showDockableWindow(name);
-               //view.getDockableWindowManager().getDockable(name).requestDefaultFocus();
             }
          }
       });

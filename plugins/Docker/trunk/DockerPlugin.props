@@ -1,3 +1,13 @@
+#
+# Short Description:
+#     The Docker plugin enhances jEdit's existing docking features.
+#
+# Long Description:
+#     The Docker plugin provides some extra docking features not available by the
+#     jEdit core.  Extra features include: dock auto-hiding, popup to cycle through
+#     docks, and a toggle all docks shortcut.
+#
+
 # Plugin properties
 plugin.docker.DockerPlugin.name=Docker
 plugin.docker.DockerPlugin.author=Calvin Yu
