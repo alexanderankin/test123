@@ -82,6 +82,18 @@
   dialog box.
  </para>
 
+ <sect1><title>OASIS OPEN catalog format</title>
+  <para>
+   Not yet written.
+  </para>
+ </sect1>
+
+ <sect1><title>XML catalog format</title>
+  <para>
+   Not yet written.
+  </para>
+ </sect1>
+
  <sect1><title>Loading DTDs from the network</title>
   <para>
    If an XML file specifies a DTD using a system ID and the system ID was not
@@ -469,6 +481,9 @@
    <listitem><para><guimenuitem>Split Tag</guimenuitem> command
    (Chris Stevenson).</para></listitem>
    <listitem><para>Updated XSD completion info (Tom Gutwin).</para></listitem>
+   <listitem><para>New icons for <guimenuitem>XML Insert</guimenuitem> window
+   (Kris Kopicki).
+   </para></listitem>
    <listitem><para>
     Entering a <userinput>/</userinput> inside a tag will no longer cause
     problems - fixed for real this time!

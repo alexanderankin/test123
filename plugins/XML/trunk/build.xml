@@ -75,7 +75,7 @@
 				<include name="dockables.xml"/>
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
-				<include name="**/*.gif"/>
+				<include name="**/*.png"/>
 				<include name="xml/**/*.xml"/>
 				<include name="xml/**/*.dtd"/>
 				<include name="xml/**/*.ent"/>
