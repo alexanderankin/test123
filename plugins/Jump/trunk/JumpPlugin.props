@@ -11,6 +11,8 @@ plugin.JumpPlugin.depend.1=plugin projectviewer.ProjectPlugin 2.0.1
 
 #{{{ application menu items
 #plugin.JumpPlugin.menu.label=Jump!
+#plugin.JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.completeglobaltag JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.completetag JumpPlugin.gettagbyinput - JumpPlugin.foldjump
+
 plugin.JumpPlugin.menu=JumpPlugin.filesjump JumpPlugin.tagsjump JumpPlugin.workspacejump JumpPlugin.historyjump JumpPlugin.completetag JumpPlugin.gettagbyinput - JumpPlugin.foldjump
 #}}}
 
@@ -24,7 +26,7 @@ options.jumpplugin.code=new JumpOptionPane();
 plugin.JumpPlugin.docs=jump.html
 #}}}
 
-#{{{ action labels
+#{{{ action labels 
 JumpPlugin.label=Jump!
 JumpPlugin.filesjump.label=Jump to File
 JumpPlugin.tagsjump.label=Jump to Tag
@@ -33,6 +35,7 @@ JumpPlugin.historyjump.label=Back (History)
 JumpPlugin.gettagbyinput.label=Type a Tag...
 JumpPlugin.foldjump.label=Jump to Fold 
 JumpPlugin.completetag.label=Complete Tag 
+JumpPlugin.completeglobaltag.label=Complete a Global Tag
 #}}}
  
 #{{{ options

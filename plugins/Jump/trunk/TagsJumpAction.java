@@ -13,7 +13,7 @@ import org.gjt.sp.jedit.search.SearchAndReplace;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Vector;
-
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.Component;
 import java.awt.Font;
@@ -92,7 +92,7 @@ class TagsJumpAction
     {
         if (parse())
         {
-            jm = new CtagsJumpMenu(jEdit.getActiveView() , entries, new TagsListModel(), true, "Tag to jump:",35);
+            jm = new CtagsJumpMenu(jEdit.getActiveView() , entries, new TagsListModel(), true, "Tag to jump:",35, Jump.getListLocation());
         }
     }
 //}}}
@@ -104,9 +104,9 @@ class TagsJumpAction
 //{{{ CONSTRUCTOR       
     public CtagsJumpMenu(View parent, Object[] list,
             ListModel model, boolean incr_search, String title,
-            int list_width) 
+            int list_width, Point location) 
     {
-        super(parent, list, model, incr_search, title, list_width);
+        super(parent, list, model, incr_search, title, list_width, location);
     }
 //}}}
 

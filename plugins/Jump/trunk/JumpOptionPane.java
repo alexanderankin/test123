@@ -1,7 +1,7 @@
 // * :tabSize=4:indentSize=4:
 // * :folding=explicit:collapseFolds=1:
 
-//{{{ IMPORTS
+//{{{ imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.*;
@@ -23,36 +23,27 @@ import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 //}}}
 
-/**
- *  Jump! options
- *
- */
 public class JumpOptionPane extends AbstractOptionPane implements ActionListener
 {
 
-//{{{ FIELDS
-// TODO: Create checkboxes pane (Reparse on save, sort fold list, show statusbar messages) @see _init_checkboxes
+    //{{{ FIELDS
     private JTextField pathName;
     private JCheckBox enableJump;
     private JCheckBox parseOnSave;
     private JCheckBox sortFoldList;
-    //private JCheckBox showStatusMsg;
-    //private JPanel checkboxesPanel;
     private JButton BrowseButt;
-    private FontSelector font;
-//}}} 
+    private FontSelector font; //}}} 
     
-//{{{ Constructor
+    //{{{ Constructor
     /**
      *  Constructor for the JumpOptionPane object
      */
     public JumpOptionPane()
     {
         super("JumpPlugin");
-    }
-//}}}
+    } //}}}
 
-//{{{ actionPerformed
+    //{{{ actionPerformed
 
     /**
      *  Button TEST action 
@@ -81,10 +72,9 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
             else mess = "JumpPlugin.ctags.test.fail";
             JumpPlugin.getListener().errorMsg(mess);
         }
-    }
-//}}}
+    } //}}}
 
-//{{{ void _init()
+    //{{{ void _init()
     /**
      *  
      */
@@ -103,57 +93,52 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
         
         JPanel ctags_panel = new JPanel(new BorderLayout(8,8));
         
-            JPanel inner_panel = new JPanel(new BorderLayout(8,8));
-                ctags_panel.setOpaque(false);
-                
-                parseOnSave = new JCheckBox(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "parse_on_save.label"));
-                parseOnSave.setSelected(jEdit.getBooleanProperty("jump.parse_on_save", false));
-                inner_panel.add(parseOnSave,BorderLayout.NORTH);
-                
-                JLabel lab = new JLabel(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "ctags.def.path.label"));
-                inner_panel.add(lab,BorderLayout.CENTER);
-                
-                
-                JPanel path_panel = new JPanel(new BorderLayout(8,8));
-                
-                    pathName = new JTextField(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "ctags.def.path.label"), 45);
-                    pathName.setText(jEdit.getProperty("jump.ctags.path", jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "ctags.def.path")));
-                    
-                    BrowseButt = new JButton("...");
-                    BrowseButt.setActionCommand("chooser");
-                    BrowseButt.addActionListener(this);
-                
-                path_panel.add(pathName, BorderLayout.CENTER);
-                path_panel.add(BrowseButt, BorderLayout.EAST);
-            inner_panel.add(path_panel,BorderLayout.SOUTH);
+        JPanel inner_panel = new JPanel(new BorderLayout(8,8));
+        ctags_panel.setOpaque(false);
+        
+        parseOnSave = new JCheckBox(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "parse_on_save.label"));
+        parseOnSave.setSelected(jEdit.getBooleanProperty("jump.parse_on_save", false));
+        inner_panel.add(parseOnSave,BorderLayout.NORTH);
+        
+        JLabel lab = new JLabel(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "ctags.def.path.label"));
+        inner_panel.add(lab,BorderLayout.CENTER);
+        
+        
+        JPanel path_panel = new JPanel(new BorderLayout(8,8));
+        
+        pathName = new JTextField(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "ctags.def.path.label"), 45);
+        pathName.setText(jEdit.getProperty("jump.ctags.path", jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "ctags.def.path")));
+        
+        BrowseButt = new JButton("...");
+        BrowseButt.setActionCommand("chooser");
+        BrowseButt.addActionListener(this);
+        
+        path_panel.add(pathName, BorderLayout.CENTER);
+        path_panel.add(BrowseButt, BorderLayout.EAST);
+        inner_panel.add(path_panel,BorderLayout.SOUTH);
         
         ctags_panel.add(inner_panel,BorderLayout.NORTH);
 
-//***************************************************************   
-        //Fontselector
+//****************** Fontselector *******************************   
         JPanel font_panel = new JPanel(new BorderLayout(8,8));
         JLabel lab1 = new JLabel("List font:");
         font = new FontSelector(getListFont());
-        
-        
-
         
         font_panel.add(lab1,BorderLayout.WEST);
         font_panel.add(font,BorderLayout.CENTER);
         
         ctags_panel.add(font_panel,BorderLayout.CENTER);
-        
 //***************************************************************  
 
         JPanel test_panel = new JPanel(new BorderLayout(8,8));
         
-            JLabel lab2 = new JLabel("Test ctags:");
-            
-            JButton butt = new JButton("Test");
-            butt.setActionCommand("Test");
-            butt.addActionListener(this);
-            test_panel.add(lab2,BorderLayout.WEST);
-            test_panel.add(butt, BorderLayout.CENTER);
+        JLabel lab2 = new JLabel("Test ctags:");
+        
+        JButton butt = new JButton("Test");
+        butt.setActionCommand("Test");
+        butt.addActionListener(this);
+        test_panel.add(lab2,BorderLayout.WEST);
+        test_panel.add(butt, BorderLayout.CENTER);
         ctags_panel.add(test_panel, BorderLayout.SOUTH);
         
         addComponent(ctags_panel);
@@ -162,20 +147,9 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
         sortFoldList = new JCheckBox(jEdit.getProperty(JumpPlugin.OPTION_PREFIX + "sort_foldlist.label"));
         sortFoldList.setSelected(jEdit.getBooleanProperty("jump.sort_foldlist", true));
         addComponent(sortFoldList);
-    }
-//}}}
+    } //}}}
 
-//{{{ _init_checkboxes
-//    private JPanel _init_checkboxes()
-//    {
-//        checkboxesPanel = new JPanel(Box.createVerticalBox());
-//    }
-//}}}
-
-//{{{ void _save()
-    /**
-     *  Description of the Method
-     */
+    //{{{ void _save()
     public void _save()
     {
         jEdit.setProperty("jump.ctags.path", pathName.getText().trim());
@@ -183,13 +157,12 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
         jEdit.setFontProperty("jump.list.font", font.getFont());
         jEdit.setBooleanProperty("jump.parse_on_save", parseOnSave.isSelected());
         jEdit.setBooleanProperty("jump.sort_foldlist", sortFoldList.isSelected());
-    }
-//}}}
+    } //}}}
 
-//{{{ Font getListFont()
+    //{{{ Font getListFont()
     private Font getListFont()   
     {
         return (jEdit.getFontProperty("jump.list.font", new Font("Monospaced", Font.PLAIN, 11)));
-    }
-//}}}
+    } //}}}
+
 }

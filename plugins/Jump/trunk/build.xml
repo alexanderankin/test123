@@ -2,10 +2,12 @@
     <description>
 Hi packager! This is a Jump Plugin build file.
     </description>
-  <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.2pre5/"/>
+  <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.2pre8/"/> 
+   <!--<property name="jedit.install.dir"  value="/usr/local/share/jedit/4.2pre5"/>-->
   <property name="jar.name"  value="Jump"/>
 
   <property name="install.dir"  value="${user.home}/.jedit/jars/"/>
+  <!-- <property name="build.compiler" value="jikes"/> -->
 
 
   <path id="project.class.path">

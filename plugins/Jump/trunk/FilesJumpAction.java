@@ -116,7 +116,7 @@ private Object[] getFileList()
         public FilesJumpMenu(View parent, Object[] list,
                 ListModel model, boolean incr_search, String title,
                 int list_width) {
-            super(parent, list, model, incr_search, title, list_width);
+            super(parent, list, model, incr_search, title, list_width, Jump.getListLocation());
         }
         
 //{{{ updateStatusBar

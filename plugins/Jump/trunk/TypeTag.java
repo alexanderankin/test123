@@ -25,9 +25,10 @@ import javax.swing.border.EmptyBorder;
 public class TypeTag extends EnhancedDialog
 {
 
+//{{{ fields
 private HistoryTextField history;
-private TypeTagActionListener listener;
-    
+private TypeTagActionListener listener; //}}}
+
 //{{{ public TypeTag
     public TypeTag()
     {
@@ -35,7 +36,7 @@ private TypeTagActionListener listener;
         listener = new TypeTagActionListener();
     }
 //}}}
-    
+
 //{{{ void prepareGUI()
     private void prepareGUI()
     {    
@@ -88,7 +89,7 @@ public void _show()
         JumpPlugin.pja.getTagBySelection(search);
     }
 //}}}
-    
+
 //{{{ void cancel()
     public void cancel()
     {
@@ -96,7 +97,7 @@ public void _show()
         dispose();
     }
 
-//}}}
+//}}} String
 
 //{{{ class HistoryActionListener
 private class TypeTagActionListener implements ActionListener

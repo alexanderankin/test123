@@ -1,7 +1,7 @@
 // * :tabSize=4:indentSize=4:
 // * :folding=explicit:collapseFolds=1:
 
-//{{{ imports
+   //{{{ imports
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.*;
@@ -32,9 +32,8 @@ import ctags.bg.*;
 
 public class ProjectJumpAction
 {
-//{{{ fields
+    //{{{ fields
     public boolean TagsAlreadyLoaded = false;
-    //public JumpHistory History = new JumpHistory();
     private CTAGS_Buffer buff;
     private Vector DuplicateTags;
     private ProjectTagsJump jm;
@@ -42,37 +41,30 @@ public class ProjectJumpAction
     private JumpEventListener listener;
     private View view;
     private TypeTag typeTagWindow;
-    private String CTest;
     private ProjectBuffer currentTags;
     
-    private int carret_pos;
-    //private int historyIndex;
-//}}}
+    private int carret_pos; //}}}
 
-//{{{ CONSTRUCTOR
+    //{{{ CONSTRUCTOR
     public ProjectJumpAction()
-    { }
-//}}}
+    { }//}}}
 
-//{{{ HISTORY STUFF
-
-//{{{ addToHistory(CTAGS_Entry en)
+    //{{{ HISTORY STUFF
+    
+    //{{{ addToHistory method
     public void addToHistory(CTAGS_Entry en) 
     {
         JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.add(en);
         JumpPlugin.getActiveProjectBuffer().HISTORY.addItem(en.getTagName());
-    }
-//}}}
-    
-//{{{ clearHistory()
-// QUESTION: Did we use this method at all?
+    } //}}}
+        
+    //{{{ clearHistory method
     public void clearHistory()
     {
         JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.clear();
-    }
-//}}}
-    
-//{{{ JumpToPreviousTag()
+    } //}}}
+        
+    //{{{ JumpToPreviousTag method
     public void JumpToPreviousTag()
     {
         CTAGS_Entry en = (CTAGS_Entry)JumpPlugin.getActiveProjectBuffer().JUMP_HISTORY.getPrevious();
@@ -82,31 +74,25 @@ public class ProjectJumpAction
             return;
         }
         this.JumpToTag(en, false, false);
-    }
-//}}}
-    
-//}}}
+    } //}}}
+        
+    //}}}
 
-//{{{ JUMPINGS
+    //{{{ JUMPINGS
 
-//{{{ void JumpToTag()
-
-// This method proceed in actions.xml
+    //{{{ JumpToTag method
     public void JumpToTag()
     {   
         getTagBySelection(this.getSelection());
-    }
-//}}}
+    } //}}}
 
-//{{{ void JumpToTagByInput()
-// This method proceed in actions.xml
+    //{{{ JumpToTagByInput method
     public void JumpToTagByInput()
     {
         JumpPlugin.getActiveProjectBuffer().getTypeTag()._show();
-    }
-//}}}
-       
-//{{{ void JumpToTag(CTAGS_Entry en, boolean AddToHistory, boolean newView)
+    } //}}}
+
+    //{{{ JumpToTag(CTAGS_Entry en, boolean AddToHistory, boolean newView)
     private void JumpToTag(CTAGS_Entry en, boolean AddToHistory, boolean newView)
     {
         final String HistoryModelName ="jump.tag_history.project."+JumpPlugin.listener.PROJECT_NAME;
@@ -149,53 +135,48 @@ public class ProjectJumpAction
             jEdit.openFile(v,en.getFileName());
         }    
 
-        VFSManager.runInAWTThread(new Runnable() {
-                public void run() {
-                    // set the caret pos to the beginning for searching...
-                    v.getTextArea().setCaretPosition(0);
-
-        SearchAndReplace search = new SearchAndReplace();
-        search.setIgnoreCase(false);
-        search.setRegexp(false);
-        search.setReverseSearch(true);
-        search.setBeanShellReplace(false);
-        search.setAutoWrapAround(true);
-        search.setSearchString(pattern);
-
-        //Log.log(Log.DEBUG,this,"Try to find: - "+pattern);
-            try
+        VFSManager.runInAWTThread(new Runnable() 
+        {
+            public void run() 
             {
-                if (!search.find(v, v.getBuffer(), 0))
+                // set the caret pos to the beginning for searching...
+                v.getTextArea().setCaretPosition(0);
+
+                SearchAndReplace search = new SearchAndReplace();
+                search.setIgnoreCase(false);
+                search.setRegexp(false);
+                search.setReverseSearch(true);
+                search.setBeanShellReplace(false);
+                search.setAutoWrapAround(true);
+                search.setSearchString(pattern);
+
+                try
                 {
-                    //Log.log(Log.DEBUG,this,"Can\'t find pattren: "+pattern);
-                }
-                else
-                {
-                    if (add_hist==true)
+                    if (!search.find(v, v.getBuffer(), 0))
                     {
-                        addToHistory(en_for_history);
+                        //Log.log(Log.DEBUG,this,"Can\'t find pattren: "+pattern);
+                    }
+                    else
+                    {
+                        if (add_hist==true)
+                        {
+                            addToHistory(en_for_history);
+                        }
                     }
                 }
+                catch (Exception e)
+                {
+                    Log.log(Log.DEBUG,this,"Exception during search.find() " + pattern);
+                }
             }
-            catch (Exception e)
-            {
-                Log.log(Log.DEBUG,this,"Exception during search.find() " + pattern);
-            }
-            
-            
-        
-        }
-            });	
-    }
-//}}}
+        });	
+    } //}}}
 
-//{{{ String getSelection()
+    //{{{ getSelection method
     public String getSelection()
     {
-        
         carret_pos = jEdit.getActiveView().getTextArea().getCaretPosition();
         String sel = jEdit.getActiveView().getTextArea().getSelectedText();
-        //Log.log(Log.DEBUG,this,"Selection-"+sel);
         
         if (sel == null) 
         {
@@ -206,23 +187,30 @@ public class ProjectJumpAction
         if (sel==null) return null;
 
         return sel.trim();      
-    }
-//}}}
+    } //}}}
 
-    //{{{ completeTag
-    public void completeTag()
+    //{{{ completeTag method 
+    public void completeTag(boolean isGlobalSearch)
     {
-        //System.out.println("Complete tag started");
         JEditTextArea textArea = jEdit.getActiveView().getTextArea();
         int caret = textArea.getCaretPosition();
-        String sel = getSelection();
+        textArea.goToPrevWord(true,false);
+        String sel = textArea.getSelectedText();
         textArea.setCaretPosition(caret);
-        //System.out.println("Text - "+sel);
         
-        currentTags = JumpPlugin.getActiveProjectBuffer();
-        if (currentTags == null || sel == null) return;
+        if (sel.equals("") || sel==null) return;
         
-        Vector tags = currentTags.PROJECT_CTBUFFER.getEntresByStartPrefix(sel);
+		Vector tags = new Vector();
+		
+		
+			currentTags = JumpPlugin.getActiveProjectBuffer();
+			if (currentTags == null) return;
+			
+			tags = currentTags.PROJECT_CTBUFFER.getEntresByStartPrefix(sel);
+		
+			
+			
+		//}
         if (tags == null || tags.size() < 1)
         {
             Log.log(Log.DEBUG,this,"completeTag: No tags found! - "+sel);
@@ -245,42 +233,49 @@ public class ProjectJumpAction
             completions.add(new CompleteWordList.Completion(entry, false));
         }
         
-        Point location = textArea.offsetToXY(caret - sel.length());
-		location.y += textArea.getPainter().getFontMetrics().getHeight();
+        //Point location = textArea.offsetToXY(caret - sel.length());
+		//location.y += textArea.getPainter().getFontMetrics().getHeight();
 
-		SwingUtilities.convertPointToScreen(location,textArea.getPainter());
+		//SwingUtilities.convertPointToScreen(location,textArea.getPainter());
         
         MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
-        cw = new CompleteWordList(jEdit.getActiveView(), sel, completions, location, "");
+        cw = new CompleteWordList(jEdit.getActiveView(), sel, completions, Jump.getListLocation(), "", isGlobalSearch);
     } //}}}
-  
-    //{{{ completeWord
+
+    //{{{ completeWord method
     private void completeWord(String wordToPaste)
     {
-        jEdit.getActiveView().getTextArea().selectWord();
-        jEdit.getActiveView().getTextArea().setSelectedText(wordToPaste);           
+		JEditTextArea ta = jEdit.getActiveView().getTextArea();
+		ta.goToPrevWord(true,false);
+		ta.delete();
+        ta.setSelectedText(wordToPaste);
     } //}}}
-   
-  
-//{{{ void getTagBySelection(
-  public void getTagBySelection(String sel)
+
+    
+
+    //{{{ getTagBySelection method
+    public void getTagBySelection(String sel)
     {
         view = jEdit.getActiveView();
+        Vector tags;
         
-        // Grab active ctags project
-        currentTags = JumpPlugin.getActiveProjectBuffer();
-        if (currentTags == null || sel == null) return;
         
-        Vector tags = currentTags.PROJECT_CTBUFFER.getEntry(sel);
-        if (tags == null || tags.size() < 1)
-        {
-            Log.log(Log.DEBUG,this,"getTagBySelection: No tags found! - "+sel);
-            view.getTextArea().selectNone();
-            view.getTextArea().setCaretPosition(carret_pos);
-            return;
-        }
+            // Grab active ctags project
+            currentTags = JumpPlugin.getActiveProjectBuffer();
+            if (currentTags == null || sel == null) return;
+            
+            tags = currentTags.PROJECT_CTBUFFER.getEntry(sel);
+            if (tags == null || tags.size() < 1)
+            {
+                Log.log(Log.DEBUG,this,"getTagBySelection: No tags found! - "+sel);
+                view.getTextArea().selectNone();
+                view.getTextArea().setCaretPosition(carret_pos);
+                return;
+            }
         
-        // ToStringValue - how to display CTAGS_Entry at JumpList. See CTAGS_Entry setToStringValue()
+        
+        // ToStringValue - 
+        // how to display CTAGS_Entry at JumpList. See CTAGS_Entry setToStringValue()
         String ToStringValue;
         CTAGS_Entry entry;
         int a;
@@ -319,83 +314,76 @@ public class ProjectJumpAction
             jm = new ProjectTagsJump(view , entries,
                     new ProjectTagsListModel(), true, "Files where tag found:",35);
         }
-    }
-//}}}
-//}}}
+    } //}}}
 
-//{{{ class ProjectTagsJump
+    //}}} End of JUMPINGS
+
+    //{{{ class ProjectTagsJump
     public class ProjectTagsJump extends JumpList
-    {
+    {   
         View view = jEdit.getActiveView();
         
-//{{{ CONSTRUCTOR
+        //{{{ CONSTRUCTOR
         public ProjectTagsJump(View parent, Object[] list, ListModel model, boolean incr_search, String title, int list_width)
         {
-            super(parent, list, model, incr_search, title, list_width);
-        }
-//}}}
+            super(parent, list, model, incr_search, title, list_width, Jump.getListLocation());
+        } //}}}
 
-//{{{ void processAction
+        //{{{ processAction method
         public void processAction(Object o)
         {
             JList l = (JList) o;
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true, false);
-        }
-//}}}
+        } //}}}
 
-//{{{ processInsertAction 
+        //{{{ processInsertAction method 
         public void processActionInNewView(Object o)
         {
-            // TODO: Pass focus to newly opened view
             JList l = (JList) o;
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             JumpToTag(tag,true, true);
         } //}}}
-    //}
-//}}}
         
-//{{{ void updateStatusBar
-        public void updateStatusBar(Object o) 
+        //{{{ updateStatusBar method
+        public void updateStatusBar(Object o)
         {
-// TODO: Check property SHOW_STATUSBAR_MESSAGES before proceed updateStatusBar()
             JList l = (JList) o;
             CTAGS_Entry tag = (CTAGS_Entry) l.getModel().getElementAt(l.getSelectedIndex());
             view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
         }
-//}}}
+        //}}}
         
-//{{{ String prepareStatusMsg
-    private String prepareStatusMsg(CTAGS_Entry en)
-    {
-        StringBuffer ret = new StringBuffer();
-        String ext_fields = en.getExtensionFields();
-           
-        if (ext_fields.length()>3)
+        //{{{ prepareStatusMsg method
+        private String prepareStatusMsg(CTAGS_Entry en)
         {
-           ext_fields = ext_fields.substring(3);
-        }
-        else
-        {
-           ext_fields = "";  
-        }
+            StringBuffer ret = new StringBuffer();
+            String ext_fields = en.getExtensionFields();
+               
+            if (ext_fields.length()>3)
+            {
+               ext_fields = ext_fields.substring(3);
+            }
+            else
+            {
+               ext_fields = "";  
+            }
+            
+            if (!ext_fields.equals(""))
+            {
+                //Ugly workaround... :((
+               int f_pos = ext_fields.lastIndexOf("\t");
+               if (f_pos != -1)
+               {
+                    ext_fields = ext_fields.substring(0,ext_fields.lastIndexOf("\t")+1);    
+               }
+               ret.append(ext_fields+"   "); 
+            }
+            ret.append("file: "+en.getFileName());
+            return ret.toString();
+        } //}}}
         
-        if (!ext_fields.equals(""))
-        {
-            //Ugly workaround... :((
-           int f_pos = ext_fields.lastIndexOf("\t");
-           if (f_pos != -1)
-           {
-                ext_fields = ext_fields.substring(0,ext_fields.lastIndexOf("\t")+1);    
-           }
-           ret.append(ext_fields+"   "); 
-        }
-        ret.append("file: "+en.getFileName());
-        return ret.toString();
-    }
-//}}}
-        
-//{{{ void keyPressed
+        //{{{ keyPressed method
         public void keyPressed(KeyEvent evt)
         {
             switch (evt.getKeyCode())
@@ -407,39 +395,38 @@ public class ProjectJumpAction
                 break;
             }
         }
-    }
-//}}}
+    } //}}}
 
-//}}}
+    //}}}
 
-//{{{ class ProjectTagsListModel
+    //{{{ class ProjectTagsListModel
     class ProjectTagsListModel extends AbstractListModel
     {
+        //{{{ getSize method
         public int getSize()
         {
             return entries.length;
-        }
+        } //}}}
 
+        //{{{ getElementAt method
         public Object getElementAt(int index)
         {
             return entries[index];
-        }
-    }
-    // End of WorkspaceTagsListModel
-//}}}
+        } //}}}
+        
+    } //}}}
 
-//{{{ class AlphabeticComparator
+    //{{{ class AlphabeticComparator
     class AlphabeticComparator implements Comparator
     {
         public int compare (Object o1, Object o2)
         {
             CTAGS_Entry e1 = (CTAGS_Entry) o1;
             CTAGS_Entry e2 = (CTAGS_Entry) o2;
-
+    
             return e1.getFileName().toLowerCase().compareTo(
                     e2.getFileName().toLowerCase());
         }
-    }
-//}}}
+    } //}}}
 
 }
