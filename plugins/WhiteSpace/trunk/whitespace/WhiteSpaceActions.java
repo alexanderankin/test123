@@ -160,6 +160,78 @@ public class WhiteSpaceActions
     }
 
 
+    public static void toggleTabHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getTabHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isTabHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getTabHighlight().isEnabled();
+    }
+
+
+    public static void toggleLeadingTabHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getLeadingTabHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isLeadingTabHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getLeadingTabHighlight().isEnabled();
+    }
+
+
+    public static void toggleInnerTabHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getInnerTabHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isInnerTabHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getInnerTabHighlight().isEnabled();
+    }
+
+
+    public static void toggleTrailingTabHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getTrailingTabHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isTrailingTabHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getTrailingTabHighlight().isEnabled();
+    }
+
+
     public static void toggleRemoveTrailing(Buffer buffer) {
         WhiteSpaceModel model = getWhiteSpaceModel(buffer);
         if (model == null) { return; }
