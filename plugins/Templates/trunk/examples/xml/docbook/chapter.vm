@@ -1,3 +1,4 @@
+## template=Chapter
 #prompt ( "Chapter ID:" $chapterId )
 #prompt ( "Title:" $title )
 <chapter id="${chapterId}">

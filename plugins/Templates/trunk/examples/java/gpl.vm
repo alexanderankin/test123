@@ -1,3 +1,4 @@
+## template=GNU GPL
 #today ( $year "yyyy" )
 #beanshell()
    context.put("fileName", buffer.getName());

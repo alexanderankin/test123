@@ -1,3 +1,4 @@
+## template=Constructor
 #beanshell()
    if (jEdit.getPlugin("jane.JanePlugin") != null) {
       clazz = jane.Jane.getClassOfCaret(textArea);

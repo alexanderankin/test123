@@ -1,3 +1,4 @@
+## template=jEdit Action
 #prompt( "Action Name:" $actionName )
 <ACTION NAME="${actionName}">
 ${_jeditIndentation}${_jeditTab}<CODE>
