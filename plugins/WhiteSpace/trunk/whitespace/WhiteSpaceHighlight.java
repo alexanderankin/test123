@@ -25,6 +25,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
+import java.awt.Point;
 import java.util.Hashtable;
 
 import javax.swing.text.Segment;
@@ -117,9 +118,9 @@ public class WhiteSpaceHighlight extends TextAreaExtension
 
             ta.getLineText(physicalLine, s);
 
-            int height = fm.getHeight();
-            final int y0 = y + (height / 2);
-            int x0;
+            final int height = fm.getHeight();
+
+            Point p0 = new Point();
 
             final char[] array = s.array;
             final int count = s.count;
@@ -170,8 +171,8 @@ public class WhiteSpaceHighlight extends TextAreaExtension
                 }
 
                 if (painter != null) {
-                    x0 = ta.offsetToX(physicalLine, i0) + 1;
-                    painter.paint(gfx, x0, y0);
+                    ta.offsetToXY(physicalLine, i0, p0);
+                    painter.paint(gfx, p0.x + 1, p0.y + (height / 2));
                     painter = null;
                 }
             }
@@ -193,8 +194,8 @@ public class WhiteSpaceHighlight extends TextAreaExtension
                 }
 
                 if (painter != null) {
-                    x0 = ta.offsetToX(physicalLine, i1) + 1;
-                    painter.paint(gfx, x0, y0);
+                    ta.offsetToXY(physicalLine, i1, p0);
+                    painter.paint(gfx, p0.x + 1, p0.y + (height / 2));
                     painter = null;
                 }
             }
@@ -224,8 +225,8 @@ public class WhiteSpaceHighlight extends TextAreaExtension
                 }
 
                 if (painter != null) {
-                    x0 = ta.offsetToX(physicalLine, i) + 1;
-                    painter.paint(gfx, x0, y0);
+                    ta.offsetToXY(physicalLine, i, p0);
+                    painter.paint(gfx, p0.x + 1, p0.y + (height / 2));
                     painter = null;
                 }
             }
