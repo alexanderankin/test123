@@ -97,3 +97,6 @@ options.jdiff.selected-highlight-invalid-color=Invalid lines color:\
 jdiff.identical-files.title=Identical files
 jdiff.identical-files.message=The two files are identical
 
+jdiff.two-files-needed.title=Two files must be selected
+jdiff.two-files-needed.message=Two files must be selected
+
