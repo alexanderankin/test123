@@ -196,20 +196,19 @@ public class TaskList extends JPanel implements EBComponent
 		 */
 		public void mouseClicked(MouseEvent e)
 		{
-			Buffer buffer = view.getBuffer();
-			if(buffer.isDirty() && e.getClickCount() == 1)
-			{
-				TaskListPlugin.extractTasks(view.getBuffer());
-			}
 			Point p = e.getPoint();
 			final int rowNum = table.rowAtPoint(p);
+			/* single click with right mouse button on table header */
 			if(e.getClickCount() == 1 &&
-				(e.getModifiers() & InputEvent.BUTTON3_MASK) != 0)
+				(e.getModifiers() & InputEvent.BUTTON3_MASK) != 0 &&
+				e.getComponent() != table.getTableHeader())
 			{
 				e.consume();
 				showPopup(view, rowNum, p);
 			}
-			else if(e.getClickCount() > 1)
+			/* multiple clicks, not with right mouse button */
+			else if(e.getClickCount() > 1 &&
+				(e.getModifiers() & InputEvent.BUTTON3_MASK) == 0)
 			{
 				if(e.getComponent() == table.getTableHeader())
 				{
@@ -241,6 +240,7 @@ public class TaskList extends JPanel implements EBComponent
 					showTaskText(rowNum);
 				}
 			}
+			/* single non-right click */
 			else if(e.getClickCount() == 1)
 			{
 				if(e.getComponent() == table.getTableHeader())

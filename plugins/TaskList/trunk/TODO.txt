@@ -1,5 +1,15 @@
 TODO:
 
+version 0.4.2
+=============
+
+- docs to reST?
+- put tasklist into it's own package
+- explicit re-parse in TaskList popup?
+
+future
+======
+
 - buffer sets: display tasks for current buffer, buffers 
   visible in view, all buffers, others?
 

@@ -488,9 +488,9 @@ public class TaskListModel extends AbstractTableModel
 	public void sort(int sortCol, boolean sortAscending)
 	{
 		// DEBUG: get sort parameters
-		Log.log(Log.DEBUG, TaskListModel.class, "sorting TaskList items: "
-			+ "sortCol = " + String.valueOf(sortCol)
-			+ ", SortAscending = " + String.valueOf(sortAscending));
+		//Log.log(Log.DEBUG, TaskListModel.class, "sorting TaskList items: "
+		//	+ "sortCol = " + String.valueOf(sortCol)
+		//	+ ", SortAscending = " + String.valueOf(sortAscending));
 		MiscUtilities.quicksort(tasks, new ColumnSorter(sortCol, sortAscending));
 		fireTableDataChanged();
 	}//}}}
@@ -527,11 +527,10 @@ public class TaskListModel extends AbstractTableModel
 
 			if(sortType == TASKTAG)
 			{
-				String text1 = task1.getText();
-				String tag1 = text1.substring(0, text1.indexOf(':'));
-				String text2 = task2.getText();
-				String tag2 = text2.substring(0, text2.indexOf(':'));
-				result = tag1.compareTo(tag2);
+				// sort based on identifiers
+				String id1 = task1.getIdentifier();
+				String id2 = task2.getIdentifier();
+				result = id1.compareTo(id2);
 			}
 
 			if(result == 0)

@@ -83,9 +83,17 @@ public class TaskType
 
 		return new Task(buffer,
 			icon,
+			/* line number */
 			line,
+			/* identifier/name */
+			tokenText.substring(match.getStartIndex(1), match.getEndIndex(1)),
+			/* comment */
+			tokenText.substring(match.getStartIndex(2), match.getEndIndex(2)),
+			/* text to display in list: identifier, whitespace, and any comment */
 			tokenText.substring(start, end),
+			/* start position */
 			tokenOffset + start,
+			/* end position */
 			tokenOffset + end);
 	}//}}}
 
@@ -141,7 +149,6 @@ public class TaskType
 		{
 			this.iconPath = iconPath;
 			Icon _icon = TaskType.loadIcon(iconPath);
-			// QUESTION: do this?
 			if(_icon != null)
 				this.icon = _icon;
 		}
