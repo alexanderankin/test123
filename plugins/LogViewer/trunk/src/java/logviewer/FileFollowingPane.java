@@ -138,6 +138,10 @@ public class FileFollowingPane extends JScrollPane {
    public void setAutoPositionCaret( boolean value ) {
       destination_.setAutoPositionCaret( value );
    }
+   
+   public void toggleAutoPositionCaret(){
+      setAutoPositionCaret(!autoPositionCaret());
+   }
 
    /**
     *  Returns the FileFollower which is being used to print information in

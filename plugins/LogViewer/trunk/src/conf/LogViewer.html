@@ -28,23 +28,37 @@ This allows you to follow several log files at a time within jEdit.
 It is heavily based off Follow, http://follow.sourceforge.net.  For
 more information, visit http://www.twdata.org/logviewer
 <p>
-Changes by Dale Anson:
+<h2>
+POPUP MENU
+</h2>
+The popup menu items should be self-explanatory:
 <ul>
-<li> Updated for jEdit 4.2
-<li> Minor changes to build file
-<li> Added word wrap 
-<li> Added "Find" dialog
-<li> Added ability to "lock" the horizontal scroll bar.
+<li>Open Log
+<li>Close Log
+<li>Jump to First Line 
+<li>Jump to Last Line
+<li>Find
+<li>Tail -- toggles auto scroll on and off for the current log.
+<li>Wrap Lines
+<li>Clear Log -- Just clears the log window, does not alter the log file.
+<li>Clear All Logs -- Clears all log windows, does not alter the log files.
+<li>Delete Log -- Deletes the current log file from disk.
+<li>Delete All Logs -- Deletes all open log files from disk.
 </ul>
+
+<p>
+<h2>
+PLUGIN SETTINGS
+</h2>
 <h3>
-What Is Buffer Size?
+Buffer Size
 </h3>
   Buffer Size is the number of characters which log viewer
   reads from a file each time it pulls characters from that file.
   High values will increase the performance of log viewer, but
   will consume more RAM.
 <h3>  
-What Is Latency?
+Latency
 </h3>
 
   Latency is the number of milliseconds which log viewer rests
@@ -54,14 +68,14 @@ What Is Latency?
   may cause performance problems (due to thrashing).
   
 <h3>  
-What Is Tab Placement?
+Tab Placement
 </h3>
 
   Tab Placement dictates the location of the tabs within logviewer plugin.
   These tabs may be located at the Top, Bottom, Left, or Right side of the window.
   
 <h3>  
-What Is Confirm Delete?
+Confirm Delete
 </h3>
 
   When performing the Delete action, you may or may not want a dialog
@@ -71,7 +85,7 @@ What Is Confirm Delete?
   whether or not this dialog appears.
   
 <h3>  
-What Is Confirm Delete All?
+Confirm Delete All
 </h3>
 
   When performing the Delete All action, you may or may not want a dialog
@@ -81,7 +95,7 @@ What Is Confirm Delete All?
   whether or not this dialog appears.
 
 <h3>  
-What Is Word Wrap?
+Word Wrap
 </h3>
 
   The log file that you are viewing may have lines that are longer
@@ -91,17 +105,49 @@ What Is Word Wrap?
   several lines.
   
 <h3>  
-What Is Auto-Scroll?
+Auto-Scroll
 </h3>
 
   When auto-scroll is enabled, log viewer automatically scrolls
   to the bottom of a followed file when new text is appended that file.
+  This is a global setting, auto scrolling for individual log files can
+  be turned on or off using the "Tail" menu item on the LogViewer popup
+  menu.
   
 <h3>  
-What Is Font?
+Font
 </h3>
 
   You can choose a font to be used to show the text of the log.
+
+<h3>
+Horizontal Scroll Lock
+</h3>
+
+  In the bottom right corner of the of the LogViewer is a checkbox. When
+  checked, the horizontal scroll bar is locked at its current position.
+  This is useful when the log file has long lines that are better viewed
+  without word wrap on and all the good content is on the right end of the
+  lines. Set the horizontal scroll bar to the best viewing location, then
+  check the box. When new lines are added to the log file, the horizontal
+  scroll bar will stay "locked" at that location rather than moving to the
+  extreme left as usual.
+
+
+<hr>
+<h3>
+Change Log:
+</h3>
+Version 0.2:
+Changes by Dale Anson:
+<ul>
+<li> Updated for jEdit 4.2
+<li> Minor changes to build file to be jEdit 4.2 compliant
+<li> Added word wrap 
+<li> Added "Find" dialog
+<li> Added ability to "lock" the horizontal scroll bar.
+<li> Added "Tail" menu item to popup.
+</ul>
   
 </body>
 </html>
