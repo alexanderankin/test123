@@ -18,6 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package templates;
 
 import org.gjt.sp.jedit.*;
 /**
@@ -35,6 +36,9 @@ public class TemplatesChanged extends EBMessage
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.1  2002/04/30 19:26:10  sjakob
+	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
+	 *
 	 * Revision 1.1  2001/07/16 19:10:13  sjakob
 	 * BUG FIX: updated TemplatesPlugin to use createMenuItems(Vector menuItems),
 	 * rather than the deprecated createMenuItems(View view, Vector menus,

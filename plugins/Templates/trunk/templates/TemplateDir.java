@@ -19,10 +19,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package templates;
 
 import javax.swing.*;
 import java.io.File;
 import java.util.*;
+import javax.swing.tree.TreeNode;
 import gnu.regexp.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.EnhancedMenuItem;
@@ -35,12 +37,12 @@ import org.gjt.sp.util.Log;
  */
 public class TemplateDir extends TemplateFile
 {
-	private Hashtable templateFiles;
+	private Vector templateFiles;
 	private static RE backupFilter;
 	
 	//Constructors
-	public TemplateDir(File templateFile) {
-		super(templateFile);
+	public TemplateDir(TemplateDir parent, File templateFile) {
+		super(parent, templateFile);
 	}
 
 	//Accessors & Mutators
@@ -56,7 +58,7 @@ public class TemplateDir extends TemplateFile
 	 */
 	public void refreshTemplates() {
 		File f;
-		this.templateFiles = new Hashtable();
+		this.templateFiles = new Vector();
 		try {
 			if (backupFilter == null)
 				createBackupFilter();
@@ -64,13 +66,13 @@ public class TemplateDir extends TemplateFile
 			for (int i = 0; i < files.length; i++) {
 				f = new File(this.templateFile, files[i]);
 				if (f.isDirectory()) {
-					TemplateDir submenu = new TemplateDir(f);
-					this.templateFiles.put(files[i], submenu);	// Add subdirectory as a TemplateDir
+					TemplateDir submenu = new TemplateDir(this, f);
+					this.templateFiles.addElement(submenu);	// Add subdirectory as a TemplateDir
 					submenu.refreshTemplates();
 				}
 				else if (!backupFilter.isMatch(files[i])) {	// if not a backup file
-					TemplateFile tf = new TemplateFile(f);
-					this.templateFiles.put(files[i], tf);
+					TemplateFile tf = new TemplateFile(this, f);
+					this.templateFiles.addElement(tf);
 				}
 			}
 		} catch (gnu.regexp.REException ree) {
@@ -92,7 +94,7 @@ public class TemplateDir extends TemplateFile
 	 * contained within this TemplateDir.
 	 * @param menu The menu to which the new JMenuItem objects will be added.
 	 */
-	public void createMenus(JMenu menu) {
+	public void createMenus(JMenu menu, String parent) {
 		Object o;
 		JMenu submenu;
 		EnhancedMenuItem mi;
@@ -100,6 +102,11 @@ public class TemplateDir extends TemplateFile
 		TemplateDir td;
 		TemplateFile tf;
 		Enumeration e;
+		if (!parent.endsWith(File.separator)) {
+			if (!"".equals(parent)) {	// check for root of templates tree
+				parent = parent + File.separator;
+			}
+		}
 		if (templateFiles == null) this.refreshTemplates();
 		e = this.templateFiles.elements();
 		while (e.hasMoreElements()) {
@@ -108,21 +115,48 @@ public class TemplateDir extends TemplateFile
 				td = (TemplateDir) o;
 				submenu = new JMenu(td.getLabel());
 				menu.add(submenu);	// Add subdirectory as a sub-menu
-				td.createMenus(submenu);
+				td.createMenus(submenu, parent + td.getLabel());
 			}
 			else {
 				tf = (TemplateFile) o;
-				myAction = new TemplateAction(tf);
+				myAction = new TemplateAction(tf.getLabel(), parent + tf.getLabel());
 				mi = new EnhancedMenuItem(tf.getLabel(), myAction);
 				menu.add(mi);
 			}
 		}
 	}
 
+	public Enumeration children() {
+		return templateFiles.elements();
+	}
+	
+	public boolean getAllowsChildren() {
+		return true;
+	}
+	
+	public TreeNode getChildAt(int index) {
+		return (TreeNode)templateFiles.elementAt(index);
+	}
+	
+	public int getChildCount() {
+		return templateFiles.size();
+	}
+	
+	public int getIndex(TreeNode child) {
+		return templateFiles.indexOf(child);
+	}
+	
+	public boolean isLeaf() {
+		return false;
+	}
+	
 }
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.1  2002/04/30 19:26:10  sjakob
+	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
+	 *
 	 * Revision 1.3  2002/02/22 02:34:36  sjakob
 	 * Updated Templates for jEdit 4.0 actions API changes.
 	 * Selection of template menu items can now be recorded in macros.

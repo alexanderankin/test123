@@ -18,6 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package templates;
 
 import org.gjt.sp.jedit.BeanShellAction;
 import org.gjt.sp.util.Log;
@@ -29,8 +30,8 @@ import org.gjt.sp.util.Log;
 public class TemplateAction extends BeanShellAction
 {
 	private static String actionLabel = "Templates.process-template";
-	private static String code1 = "TemplatesPlugin.processTemplate(\"";
-	private static String code2 = "\", view);";
+	private static String code1 = "templates.TemplatesPlugin.processTemplate(\"";
+	private static String code2 = "\", textArea);";
 
 	//Constructors
 	public TemplateAction(String label, String filepath) {
@@ -56,6 +57,9 @@ public class TemplateAction extends BeanShellAction
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.1  2002/04/30 19:26:10  sjakob
+	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
+	 *
 	 * Revision 1.2  2002/03/10 02:04:32  sjakob
 	 * BUGFIX: Template selection resulted in a BeanShell exception on Windows
 	 * platforms, as BeanShell objected to the backslash character.

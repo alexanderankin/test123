@@ -18,6 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package templates;
 
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
@@ -63,7 +64,11 @@ public class TemplatesMenu extends JMenu implements EBComponent
 		Log.log(Log.DEBUG,this,"... TemplatesMenu.update()");
 		removeAll();
 		// Create menu items for the "Refresh" option and a separator
-		JMenuItem mi = GUIUtilities.loadMenuItem("Templates.refresh-templates");
+		JMenuItem mi;
+		mi = GUIUtilities.loadMenuItem("Templates.expand-accelerator");
+		this.add(mi);
+		this.addSeparator();
+		mi = GUIUtilities.loadMenuItem("Templates.refresh-templates");
 		this.add(mi);
 		mi = GUIUtilities.loadMenuItem("Templates.edit-template");
 		this.add(mi);
@@ -76,7 +81,7 @@ public class TemplatesMenu extends JMenu implements EBComponent
 	
 	private void createMenus() {
 		TemplateDir templateDir = TemplatesPlugin.getTemplates();
-		templateDir.createMenus(this);
+		templateDir.createMenus(this, "");
 	}
 	
 	/**
@@ -95,6 +100,9 @@ public class TemplatesMenu extends JMenu implements EBComponent
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.1  2002/04/30 19:26:10  sjakob
+	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
+	 *
 	 * Revision 1.2  2002/02/22 02:34:36  sjakob
 	 * Updated Templates for jEdit 4.0 actions API changes.
 	 * Selection of template menu items can now be recorded in macros.

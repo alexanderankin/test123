@@ -19,10 +19,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package templates;
 
 import java.awt.event.*;
 import java.io.*;
 import java.util.*;
+import javax.swing.tree.TreeNode;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import gnu.regexp.*;
@@ -31,16 +33,18 @@ import gnu.regexp.*;
  * to a template file, but it also contains information describing the template 
  * (eg. a label to be used on the Templates menu).
  */
-public class TemplateFile
+public class TemplateFile implements TreeNode
 {
 	protected String label;
 	protected File templateFile;
-	private Template myTemplate = null;
+	// private Template myTemplate = null;
 	private static RE ctpragmaLabelFilter = null;
+	private TemplateDir parent;
 
 	//Constructors
-	public TemplateFile(File templateFile) {
+	public TemplateFile(TemplateDir parent, File templateFile) {
 		super();
+		this.parent = parent;
 		this.templateFile = templateFile;
 		this.label = templateFile.getName();
 		createREs();
@@ -111,10 +115,46 @@ public class TemplateFile
 		} catch (gnu.regexp.REException e) { }		// this shouldn't happen
 	}
 	
+	public String toString() { return label; }
+	
+	//
+	// The next seven methods satisfy the TreeNode interface requirements.
+	//
+	public Enumeration children() {
+		return null;
+	}
+	
+	public boolean getAllowsChildren() {
+		return false;
+	}
+	
+	public TreeNode getChildAt(int index) {
+		return null;
+	}
+	
+	public int getChildCount() {
+		return 0;
+	}
+	
+	public int getIndex(TreeNode child) {
+		return -1;
+	}
+	
+	public TreeNode getParent() {
+		return parent;
+	}
+	
+	public boolean isLeaf() {
+		return true;
+	}
+	
 }
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.1  2002/04/30 19:26:10  sjakob
+	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
+	 *
 	 * Revision 1.5  2002/02/22 02:34:36  sjakob
 	 * Updated Templates for jEdit 4.0 actions API changes.
 	 * Selection of template menu items can now be recorded in macros.
