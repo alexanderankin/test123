@@ -91,28 +91,40 @@ public class JavaInsightPlugin extends EBPlugin {
             }
         }
         else if (message instanceof DecompileClassMessage) {
-            DecompileClassMessage decompileMsg = (DecompileClassMessage) message;
-            String classname = decompileMsg.getClassName();
-            String filename = decompileMsg.getFileName();
+            DecompileClassMessage dmsg = (DecompileClassMessage) message;
+            String classname = dmsg.getClassName();
+            String destination = dmsg.getDestination();
+            boolean generateFile = dmsg.isGeneratingFile();
+
             Log.log(Log.MESSAGE, this,
                 "Decompiling class "
                 + classname
-                + (filename != null ? " to " + filename : ""));
+                + (generateFile ?
+                    (destination == null ? " to temp directory" : " to " + destination)
+                    : " to new jEdit buffer"));
 
-            // create JavaInsight instance (and DockableWindow) if it not exists
+            // Notify the sender that we received the message, and don't need
+            // to propagate it any further on the EditBus:
+            dmsg.veto();
+
+            // create JavaInsight instance if it doesn't exist
             if (javaInsight == null) {
                 View view = jEdit.getFirstView();
                 JavaInsightDockable jid = new JavaInsightDockable(view);
                 javaInsight = (JavaInsight) jid.getComponent();
-                view.getDockableWindowManager().addDockableWindow(jid);
             }
 
             try {
-                String newFilename = javaInsight.decompileClass(classname, true);
-                decompileMsg.setFileName(newFilename);
+                if (generateFile) {
+                    String filename = javaInsight.decompileToFile(classname, destination);
+                    dmsg._setGeneratedFile(filename);
+                } else {
+                    javaInsight.decompileToBuffer(classname);
+                }
             }
             catch (Throwable t) {
                 Log.log(Log.ERROR, this, "Error decompiling class " + classname + ": " + t.getMessage());
+                dmsg._setException(t);
             }
         }
     }
