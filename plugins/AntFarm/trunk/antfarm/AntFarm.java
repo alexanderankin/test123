@@ -24,9 +24,6 @@ import java.awt.event.*;
 import java.io.*;
 import java.util.*;
 import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-import javax.swing.tree.*;
 
 import org.apache.tools.ant.*;
 import org.gjt.sp.jedit.*;

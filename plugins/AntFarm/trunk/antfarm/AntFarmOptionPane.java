@@ -22,7 +22,6 @@ import common.gui.pathbuilder.*;
 import java.awt.*;
 import java.awt.event.*;
 
-import java.io.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
