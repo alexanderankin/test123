@@ -1130,9 +1130,11 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
  <itemizedlist>
 
-  <listitem><para><emphasis role="bold">Version 3.2.2</emphasis>
+  <listitem><para><emphasis role="bold">Version 3.3</emphasis>
    requires jEdit 4.0pre8 and the ErrorList plugin 1.2.</para>
    <itemizedlist>
+    <listitem><para>File name completion when <keycap>Tab</keycap> key is
+    pressed (Alexander Maryanovsky).</para></listitem>
     <listitem><para>Fixed generic error pattern for g++.</para></listitem>
     <listitem><para>Fixed another possible problem if a program outputs an
     invalid line number in an error message.</para></listitem>

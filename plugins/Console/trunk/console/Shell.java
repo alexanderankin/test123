@@ -125,10 +125,11 @@ public abstract class Shell
 
 	//{{{ getCompletions() method
 	/**
-	 * Returns possible completions for the specified command.
+	 * Returns possible completions for the specified command in the
+	 * specified Console.
 	 * @param command The command
 	 */
-	public CompletionInfo getCompletions(String command)
+	public CompletionInfo getCompletions(Console console, String command)
 	{
 		return null;
 	} //}}}

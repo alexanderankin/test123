@@ -444,12 +444,13 @@ implements EBComponent, Output
 
 		private void complete()
 		{
-			Shell.CompletionInfo info = shell.getCompletions(
+			Shell.CompletionInfo info = shell.getCompletions(Console.this,
 				getText().substring(0,getCaretPosition()));
 			if(info == null)
 				ConsoleTextField.this.getToolkit().beep();
 			else if(info.completions.length == 1)
 			{
+				select(info.offset, getCaretPosition());
 				replaceSelection(info.completions[0]);
 			}
 			else if(info.completions.length > 1)

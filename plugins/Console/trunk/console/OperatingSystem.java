@@ -39,6 +39,8 @@ abstract class OperatingSystem
 	abstract Hashtable getEnvironmentVariables();
 
 	abstract void setUpDefaultAliases(Hashtable aliases);
+	
+	abstract boolean isCaseSensitive();
 
 	abstract Process exec(String[] args, String[] env, String dir)
 			throws Exception;
@@ -89,6 +91,12 @@ abstract class OperatingSystem
 		{
 		} //}}}
 
+		//{{{ isCaseSensitive() method
+		boolean isCaseSensitive()
+		{
+			return true;	
+		} //}}}
+				
 		//{{{ exec() method
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
@@ -139,6 +147,12 @@ abstract class OperatingSystem
 			}
 
 			return vars;
+		} //}}}
+
+		//{{{ isCaseSensitive() method
+		boolean isCaseSensitive()
+		{
+			return true;	
 		} //}}}
 	} //}}}
 
@@ -205,6 +219,12 @@ abstract class OperatingSystem
 			{
 				aliases.put(builtins[i],getBuiltInPrefix() + builtins[i]);
 			}
+		} //}}}
+
+		//{{{ isCaseSensitive() method
+		boolean isCaseSensitive()
+		{
+			return false;	
 		} //}}}
 	} //}}}
 
