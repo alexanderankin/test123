@@ -59,6 +59,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.TextAreaPainter;
 
 import org.gjt.sp.util.Log;
 
@@ -304,7 +305,9 @@ public class DualDiff implements EBComponent
         if (diffHighlight0 == null) {
             diffHighlight0 = (DiffHighlight)
                 DiffHighlight.addHighlightTo(this.editPane0, this.edits, DiffHighlight.LEFT);
-            this.textArea0.getPainter().addExtension(diffHighlight0);
+            this.textArea0.getPainter().addExtension(
+                TextAreaPainter.BELOW_SELECTION_LAYER, diffHighlight0
+            );
         } else {
             diffHighlight0.setEdits(this.edits);
             diffHighlight0.setPosition(DiffHighlight.LEFT);
@@ -316,7 +319,9 @@ public class DualDiff implements EBComponent
         if (diffHighlight1 == null) {
             diffHighlight1 = (DiffHighlight)
                 DiffHighlight.addHighlightTo(this.editPane1, this.edits, DiffHighlight.RIGHT);
-            this.textArea1.getPainter().addExtension(diffHighlight1);
+            this.textArea1.getPainter().addExtension(
+                TextAreaPainter.BELOW_SELECTION_LAYER, diffHighlight1
+            );
         } else {
             diffHighlight1.setEdits(this.edits);
             diffHighlight1.setPosition(DiffHighlight.RIGHT);
