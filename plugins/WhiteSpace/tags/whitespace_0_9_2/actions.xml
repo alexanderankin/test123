@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="white-space.toggle-block-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleBlockHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isBlockHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-fold-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleFoldHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isFoldHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-fold-tooltip">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleFoldTooltip(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isFoldTooltipSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-space-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleSpaceHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isSpaceHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-leading-space-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleLeadingSpaceHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isLeadingSpaceHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-inner-space-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleInnerSpaceHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isInnerSpaceHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-trailing-space-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleTrailingSpaceHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isTrailingSpaceHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-tab-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleTabHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isTabHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-leading-tab-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleLeadingTabHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isLeadingTabHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-inner-tab-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleInnerTabHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isInnerTabHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-trailing-tab-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleTrailingTabHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isTrailingTabHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-whitespace-highlight">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleWhitespaceHighlight(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isWhitespaceHighlightSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-remove-trailing-white-space">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleRemoveTrailing(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isRemoveTrailingSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-soft-tabify-leading-white-space">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleSoftTabifyLeading(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isSoftTabifyLeadingSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-tabify-leading-white-space">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleTabifyLeading(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isTabifyLeadingSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-untabify-leading-white-space">
+        <CODE>
+            whitespace.WhiteSpaceActions.toggleUntabifyLeading(buffer);
+        </CODE>
+        <IS_SELECTED>
+            return whitespace.WhiteSpaceActions.isUntabifyLeadingSelected(buffer);
+        </IS_SELECTED>
+    </ACTION>
+</ACTIONS>
+
