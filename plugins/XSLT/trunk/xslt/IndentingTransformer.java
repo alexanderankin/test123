@@ -233,7 +233,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
   /**
    * Ignores '>' characters that are inside of attribute values.
-   */ 
+   */
   private int getStartTagEnd(int start) {
     int end = -1;
     int index = start;
@@ -270,8 +270,14 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
       populateAttributes(chars, attributes);
     }
 
-    String elementName = xml.substring(start + 1, nameEnd);
-    return elementName;
+    StringBuffer elementName = new StringBuffer();
+    int index = start + 1;
+
+    while(!Character.isWhitespace(chars[index]) && chars[index] != '>') {
+      elementName.append(chars[index++]);
+    }
+
+    return elementName.toString();
   }
 
 
@@ -313,7 +319,9 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
         while(i < chars.length && chars[i] != quote) {
           if(Character.isWhitespace(chars[i])) {
             if(!isLastSpace) {
-              value.append(' ');
+              if(Character.isSpaceChar(chars[i])) {
+                value.append(' ');
+              }
               isLastSpace = true;
             } else {
               // don't add consequtive space
