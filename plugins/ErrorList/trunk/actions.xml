@@ -1,6 +1,12 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
+	<ACTION NAME="error-list-show">
+		<CODE>
+			wm.addDockableWindow("error-list");
+			wm.getDockableWindow("error-list").focus();
+		</CODE>
+	</ACTION>
 	<ACTION NAME="error-list-next-error">
 		<CODE>
 			wm.addDockableWindow("error-list");

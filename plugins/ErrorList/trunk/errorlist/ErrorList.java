@@ -150,7 +150,25 @@ public class ErrorList extends JPanel implements EBComponent,
 	} //}}}
 
 	//{{{ focusOnDefaultComponent() method
+	/**
+	 * This method is called by jEdit when ErrorList is shown by invoking
+	 * <code>DockableWindowManager.showDockableWindow(String)</code>, in
+	 * order to request the focus on some component of the Dockable.
+	 * In this implementation, the method does nothing, so that ErrorList
+	 * never requests focus automatically. If you really want to request
+	 * the focus on ErrorList, use the {@link #focus()} method.
+	 */
 	public void focusOnDefaultComponent()
+	{
+		// intentionally left empty; ErrorList should not request any focus
+	} //}}}
+
+	//{{{ focus() method
+	/**
+	 * Force focus on ErrorList.
+	 * This method is used by the 'errorlist-focus' action.
+	 */
+	public void focus()
 	{
 		errorTree.requestFocus();
 	} //}}}
@@ -641,7 +659,7 @@ public class ErrorList extends JPanel implements EBComponent,
 		}
 
 		errorModel.reload(errorRoot);
-		
+
 		if(errorRoot.getChildCount()==0
 			&& jEdit.getBooleanProperty("error-list.autoCloseOnNoErrors"))
 		{
