@@ -37,9 +37,9 @@ public class ErrorList extends JPanel implements EBComponent,
 	DefaultFocusComponent
 {
 	public static final ImageIcon ERROR_ICON = new ImageIcon(
-		ErrorList.class.getResource("error.gif"));
+		ErrorList.class.getResource("error.png"));
 	public static final ImageIcon WARNING_ICON = new ImageIcon(
-		ErrorList.class.getResource("warning.gif"));
+		ErrorList.class.getResource("warning.png"));
 
 	//{{{ ErrorList constructor
 	public ErrorList(View view)
@@ -716,7 +716,7 @@ public class ErrorList extends JPanel implements EBComponent,
 	} //}}}
 
 	//{{{ ErrorCellRenderer class
-	static class ErrorCellRenderer extends JLabel implements TreeCellRenderer
+	static class ErrorCellRenderer extends DefaultTreeCellRenderer
 	{
 		//{{{ ErrorCellRenderer constructor
 		ErrorCellRenderer()
@@ -729,16 +729,8 @@ public class ErrorList extends JPanel implements EBComponent,
 			Object value, boolean sel, boolean expanded,
 			boolean leaf, int row, boolean focus)
 		{
-			if(sel)
-			{
-				setBackground(UIManager.getColor("Tree.selectionBackground"));
-				setForeground(UIManager.getColor("Tree.selectionForeground"));
-			}
-			else
-			{
-				setBackground(UIManager.getColor("Tree.textBackground"));
-				setForeground(UIManager.getColor("Tree.textForeground"));
-			}
+			super.getTreeCellRendererComponent(tree,null,sel,
+				expanded,leaf,row,focus);
 
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)value;
 			Object nodeValue = node.getUserObject();
