@@ -102,22 +102,24 @@ public class WhiteSpacePlugin
             } else if (bu.getWhat() == BufferUpdate.CREATED) {
                 BlockHighlight.bufferCreated(
                     bu.getBuffer(),
-                    getBlockHighlightDefault()
+                    WhiteSpaceDefaults.getBlockHighlightDefault()
                 );
                 FoldHighlight.bufferCreated(
                     bu.getBuffer(),
-                    getFoldHighlightDefault(),
-                    getFoldTooltipDefault()
+                    WhiteSpaceDefaults.getFoldHighlightDefault(),
+                    WhiteSpaceDefaults.getFoldTooltipDefault()
                 );
             } else if (bu.getWhat() == BufferUpdate.CLOSED) {
                 BlockHighlight.bufferClosed(bu.getBuffer());
                 FoldHighlight.bufferClosed(bu.getBuffer());
             }
         } else if (message instanceof EditorStarted) {
-            BlockHighlight.editorStarted(getBlockHighlightDefault());
+            BlockHighlight.editorStarted(
+                WhiteSpaceDefaults.getBlockHighlightDefault()
+            );
             FoldHighlight.editorStarted(
-                getFoldHighlightDefault(),
-                getFoldTooltipDefault()
+                WhiteSpaceDefaults.getFoldHighlightDefault(),
+                WhiteSpaceDefaults.getFoldTooltipDefault()
             );
         } else if (message instanceof EditorExiting) {
             BlockHighlight.editorExiting();
@@ -185,27 +187,6 @@ public class WhiteSpacePlugin
         whiteSpaceHighlight.getTrailingTabHighlight().setEnabled(showTrailingTabDefault);
 
         whiteSpaceHighlight.getWhitespaceHighlight().setEnabled(showWhitespaceDefault);
-    }
-
-
-    public static boolean getFoldHighlightDefault() {
-       return jEdit.getBooleanProperty(
-            "white-space.show-fold-default", true
-        );
-    }
-
-
-    public static boolean getFoldTooltipDefault() {
-        return jEdit.getBooleanProperty(
-            "white-space.show-fold-tooltip-default", true
-        );
-    }
-
-
-    public static boolean getBlockHighlightDefault() {
-        return jEdit.getBooleanProperty(
-            "white-space.show-block-default", false
-        );
     }
 
 
