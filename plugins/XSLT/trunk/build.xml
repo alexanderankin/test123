@@ -1,52 +1,56 @@
-<project name="XSLT" default="dist" basedir=".">
+<?xml version="1.0"?>
 
-  <property name="jedit.install.dir" value="/home/rob/apps/jedit/4.0.3"/>
-  <property name="jedit.plugins.dir" value="/home/rob/.jedit/jars"/>
-  <property name="docbook.dir" value="c:/docbook-xsl-1.49"/>
+<project name="xslt" default="deploy" basedir=".">
 
-  <target name="compile">
-    <mkdir dir="build/classes"/>
-    <javac srcdir="." destdir="build/classes" deprecation="on" debug="on"
-     includes="xslt/*.java">
-      <classpath>
-        <pathelement location="${jedit.install.dir}/jedit.jar"/>
-        <!-- Expects whatever xerces version is used by the XML plugin -->
-        <pathelement location="${jedit.plugins.dir}/xerces.jar"/>
-        <!-- Expects xalan.jar & xml-apis.jar from Xalan 2.3.1 -->
-        <pathelement location="${jedit.plugins.dir}/xalan.jar"/>
-        <pathelement location="${jedit.plugins.dir}/xml-apis.jar"/>
-      </classpath>
+  <description description="This is a build.xml file for building the XSLT jEdit plugin."/>
+
+  <property file="build.properties" description="contains machine specific directory locations"/>
+
+  <property	name="jar.name" value="XSLT.jar" description="name of the plugin jar"/>
+  <property name="resources.dir" value="resources" description="contains plugin icons"/>
+  <property name="build.dir" value="build"/>
+  <property name="classes.dir" value="${build.dir}/classes" description="classes compiled into here"/>
+  <property name="docs.dir" value="${build.dir}/docs" description="docs generated into here"/>
+
+  <path id="project.class.path">
+    <pathelement location="${jedit.dir}/jedit.jar"/>
+    <pathelement location="${plugins.dir}/xml-apis.jar"/>
+    <pathelement location="${plugins.dir}/xerces.jar"/>
+    <pathelement location="${plugins.dir}/xalan.jar"/>
+  </path>
+
+  <target name="compile" description="compiles java source">
+    <delete dir="${classes.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+    <javac srcdir="${basedir}" destdir="${classes.dir}" deprecation="on" debug="on" includes="xslt/*.java">
+      <classpath refid="project.class.path"/>
     </javac>
   </target>
 
-  <target name="docs">
-    <mkdir dir="build"/>
-    <uptodate property="usersGuideUpToDate" targetfile="build/users-guide.html">
-      <srcfiles dir="${basedir}" includesfile="users-guide.xml"/>
-    </uptodate>
-    <antcall target="createUsersGuide"/>
-  </target>
-
-  <target name="createUsersGuide" unless="usersGuideUpToDate">
-    <style basedir="${docbook.dir}" destdir="${basedir}/build" style="html/docbook.xsl"
-     in="${basedir}/users-guide.xml" out="build/users-guide.html"/>
-  </target>
-
-  <target name="jar" depends="compile,docs">
-    <jar jarfile="build/XSLT.jar">
-      <fileset dir="build/classes"/>
-      <fileset dir="resources"/>
-      <fileset dir="build" includes="users-guide.html"/>
-      <fileset dir="." includes="actions.xml,dockables.xml,*.props"/>
+  <target name="jar" depends="compile" description="compiles, creates plugin jar file">
+    <jar jarfile="${build.dir}/${jar.name}">
+      <fileset dir="${classes.dir}"/>
+      <fileset dir="${resources.dir}"/>
+      <fileset dir="${docs.dir}"/>
+      <fileset dir="${basedir}" includes="actions.xml,dockables.xml,*.props"/>
     </jar>
   </target>
 
-  <target name="dist" depends="jar">
-    <copy file="build/XSLT.jar" todir="${jedit.plugins.dir}"/>
+  <target name="make-docs">
+    <uptodate property="isUserGuideUptodate" targetfile="${docs.jar}/index.html">
+      <srcfiles	dir="${basedir}" includesfile="users-guide.xml"/>
+    </uptodate>
+
+    <antcall target="create-docs"/>
   </target>
 
-  <target name="clean">
-    <delete dir="build"/>
+  <target name="create-docs" unless="isUserGuideUptodate" description="creates user guide documentation">
+    <mkdir dir="${docs.dir}"/>
+    <style destdir="${docs.dir}" in="users-guide.xml" style="${docbook-xsl.dir}/html/chunk.xsl" out="${docs.dir}/index.html"/>
+  </target>
+
+  <target name="deploy" depends="make-docs, jar" description="compilies, jars and copies jar to deploy.dir">
+    <copy file="${build.dir}/${jar.name}" todir="${deploy.dir}"/>
   </target>
 
 </project>
