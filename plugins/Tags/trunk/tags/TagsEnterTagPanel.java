@@ -70,8 +70,17 @@ public class TagsEnterTagPanel extends JPanel {
   }
   
   /***************************************************************************/
+  protected JTextField getFuncTextField() { return tagFuncTextField_; }
+  
+  /***************************************************************************/
   public String getFuncName() {
-    return tagFuncTextField_.getText();
+    String funcName = tagFuncTextField_.getText();
+    if (funcName != null) {
+      funcName = funcName.trim();
+      if (funcName.length() == 0)
+        funcName = null;
+    }
+    return funcName;
   }
 
   /***************************************************************************/
