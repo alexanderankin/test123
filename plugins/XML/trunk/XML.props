@@ -93,7 +93,7 @@ xml-entities-to-chars.label=Entities to Characters
 xml-clear-cache.label=Clear Resource Cache
 
 # Completion
-xml-complete-closing-tag.shortcut=/
+xml-insert-closing-tag.shortcut=>
 
 # Insert tag window
 xml-insert.title=XML Insert

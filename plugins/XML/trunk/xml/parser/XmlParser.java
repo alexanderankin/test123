@@ -30,7 +30,7 @@ import xml.XmlParsedData;
 public abstract class XmlParser extends SideKickParser
 {
 	public static final String DELAY_COMPLETION_TRIGGERS = "<&";
-	public static final String INSTANT_COMPLETION_TRIGGERS = "";
+	public static final String INSTANT_COMPLETION_TRIGGERS = "/";
 	public static final int ELEMENT_COMPLETE = '<';
 	public static final int ENTITY_COMPLETE = '&';
 
@@ -90,6 +90,7 @@ public abstract class XmlParser extends SideKickParser
 			}
 		}
 
+		String closingTag = null;
 		String word;
 
 		if(wordStart != -1 && mode != -1)
@@ -110,7 +111,6 @@ public abstract class XmlParser extends SideKickParser
 
 			if(mode == ELEMENT_COMPLETE)
 			{
-				String closingTag = null;
 				TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,data);
 				if(tag != null)
 					closingTag = tag.tag;
@@ -120,7 +120,17 @@ public abstract class XmlParser extends SideKickParser
 				if(!data.html && "![CDATA[".startsWith(word))
 					allowedCompletions.add(new XmlListCellRenderer.CDATA());
 				if(closingTag != null && ("/" + closingTag).startsWith(word))
-					allowedCompletions.add(new XmlListCellRenderer.ClosingTag(closingTag));
+				{
+					if(word.length() == 0)
+						allowedCompletions.add(new XmlListCellRenderer.ClosingTag(closingTag));
+					else
+					{
+						// just insert immediately
+						JEditTextArea textArea = editPane.getTextArea();
+						textArea.setSelectedText(closingTag + ">");
+						return null;
+					}
+				}
 
 				for(int i = 0; i < completions.size(); i++)
 				{
@@ -157,6 +167,6 @@ public abstract class XmlParser extends SideKickParser
 		else
 			word = "";
 
-		return new XmlCompletion(editPane.getView(),allowedCompletions,word,data);
+		return new XmlCompletion(editPane.getView(),allowedCompletions,word,data,closingTag);
 	} //}}}
 }
