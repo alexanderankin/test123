@@ -59,8 +59,8 @@ public class ColorTabs
    private static final float MUTE_RATIO = ((float) MUTE_RANGE / 254);
 
    private static ColorTabs colorTabs = null;
-   private static boolean useColors = false;
 
+   private boolean useColors = false;
    private boolean colorHighlight = true;
    private boolean colorTitles = false;
    private boolean colorVariation = true;
