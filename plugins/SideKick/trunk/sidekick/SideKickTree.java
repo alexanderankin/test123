@@ -36,7 +36,8 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 //}}}
 
-public class SideKickTree extends JPanel implements EBComponent
+public class SideKickTree extends JPanel implements EBComponent,
+DefaultFocusComponent
 {
 	//{{{ SideKickTree constructor
 	public SideKickTree(View view, boolean docked)
@@ -91,11 +92,10 @@ public class SideKickTree extends JPanel implements EBComponent
 		update();
 	} //}}}
 
-	//{{{ requestDefaultFocus() method
-	public boolean requestDefaultFocus()
+	//{{{ focusOnDefaultComponent() method
+	public void focusOnDefaultComponent()
 	{
 		tree.requestFocus();
-		return true;
 	} //}}}
 
 	//{{{ addNotify() method
