@@ -1,32 +1,33 @@
 Todo's Before I Can Release the Next Version
 --------------------------------------------
-* Add knowledge of classpath groupings that would allow a user to group the
-  imports.  (Maybe the user likes to have java.* in a separate block of imports
-* Add option to combine multiple imports into an asterisk after a given number 
-  of imports from the same package (perhaps more than 4).
-* Javadoc is getting a bit messy.  Do a quick run through to make sure that
-  everything is properly documented.
-* Combine the code in JEditClassImporter.importClass and 
-  JEditClassImporter.importClassAtPoint -- they have a lot of redundancy.
+* Add in the spaces between import groups.
+* Fix the reason why default imports are always at the top of the list.
+* Update the help
 
 Short Term Todo's
 -----------------
+* Don't let there be two identical fq paths to imports in the importer dialog box.
+* Sort all of the imports in the importer dialog box.
+* Add option to combine multiple imports into an asterisk after a given number 
+  of imports from the same package (perhaps more than 4).
 * Add "Transform Class at Point to FQ" action.
 * Add importing for JSP pages -- this will require that the ClassImporter file
   be sensitive to the type of the current file.  (This will probably be done by 
   looking at the edit mode.)  In reality, this shouldn't really be that hard.
-* Allow users to search multiple classpaths at one time.  (Jigar Patel)
 * It would also be handy if your plug-in warned users about *unused* import 
   statements; i.e. import statements where none of the classes were still in the 
   code.   I might be able to find some code for this at 
   http://importscrubber.sourceforge.net/, though I might need to be careful with
   licensing issues.  (Todd J, tbone@toddj.net)  (Thanks to Steve Snider for a good
   pointer on how to do this easily.)
+* Allow users to put the import warnings in "passive" mode.  That is, allow them
+  to adorn import statements (either change them to italic, change their color, etc.)
 
 Longer Term Todo's
 ------------------
 * Implement a buffered lookup of class names for slower computers that don't do
   the brute force lookup quickly.
+* Allow users to search multiple classpaths at one time.  (Jigar Patel)
 * Implement a switch for the JImporter Dialog Box that will allow us to match as
   we type, instead of having to press the search button.
 * Implement a couple more ways of looking up the path of a file other than the
@@ -45,8 +46,8 @@ Longer Term Todo's
   from using these classes elsewhere.)    
 * It would be nice to allow drop down completion of imports as you type import
   statements into jEdit.
-* Add the ability to hover over an import statement to see what file it is being
-  imported from.  (Similar to JWhich functionality.)
+* Add the ability to hover over an import statement to see what classpath element 
+  it is being imported from.  (Similar to JWhich functionality.)
 * Add an option that will automatically import any class that we use that isn't
   already imported.  (I'm talking about doing it in real time.) 
 
