@@ -157,6 +157,7 @@ public class ProjectManager {
   public void closeProject() {
     if (project != null && project.needSave()) {
       project.save();
+      project.unload();
     }
     project = null;
     EditBus.send(new PHPProjectChangedMessage(this, null,PHPProjectChangedMessage.SELECTED));
