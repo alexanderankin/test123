@@ -6,8 +6,8 @@ jode.jar
     A class decompiler library written by Jochen Hoenicke (jochen@gnu.org)
     Homepage: http://jode.sourceforge.net
 
-BCEL.jar
-    Version 4.2.5 (compiled with gnu.regexp 1.1.2, package not included)
+bcel.jar
+    Version 5.0
     The Byte Code Engineering Library by Markus Dahm (markus.dahm@berlin.de)
-    Homepage: http://bcel.sourceforge.net.
+    Homepage: http://jakarta.apache.org/bcel
 
