@@ -63,10 +63,11 @@ class SFtpConnection extends ConnectionManager.Connection
 		FtpVFS.FtpDirectoryEntry[] returnValue = null;
 		SftpFile dir = null;
 
+		ArrayList listing = new ArrayList();
+
 		try
 		{
 			dir = sftp.openDirectory(path);
-			ArrayList listing = new ArrayList();
 			int count = 0;
 			do
 			{
@@ -74,11 +75,20 @@ class SFtpConnection extends ConnectionManager.Connection
 			}
 			while(count != -1);
 
-			returnValue = new FtpVFS.FtpDirectoryEntry[listing.size()];
 			for(int i = 0; i < listing.size(); i++)
 			{
 				SftpFile file = (SftpFile)listing.get(i);
-				returnValue[i] = createDirectoryEntry(file);
+				String name = file.getFilename();
+				if(name.equals(".") || name.equals(".."))
+				{
+					listing.remove(i);
+					i--;
+				}
+				else
+				{
+					listing.set(i,createDirectoryEntry(
+						file));
+				}
 			}
 		}
 		finally
@@ -87,7 +97,8 @@ class SFtpConnection extends ConnectionManager.Connection
 				sftp.closeFile(dir);
 		}
 
-		return returnValue;
+		return (FtpVFS.FtpDirectoryEntry[])listing.toArray(
+			new FtpVFS.FtpDirectoryEntry[listing.size()]);
 	}
 
 	FtpVFS.FtpDirectoryEntry getDirectoryEntry(String path) throws IOException

@@ -4,7 +4,7 @@ plugin.ftp.FtpPlugin.author=Slava Pestov
 plugin.ftp.FtpPlugin.version=0.5
 plugin.ftp.FtpPlugin.docs=index.html
 plugin.ftp.FtpPlugin.depend.0=jedit 04.01.08.00
-plugin.ftp.FtpPlugin.jars=jaxb-rt-1.0-ea.jar sshtools-j2ssh-0.0.5-alpha.jar log4j-1.2.6.jar
+plugin.ftp.FtpPlugin.jars=sshtools-j2ssh-0.0.5-alpha.jar log4j-1.2.6.jar jaxb-rt-1.0-ea.jar
 
 # Settings
 vfs.ftp.passive=true
