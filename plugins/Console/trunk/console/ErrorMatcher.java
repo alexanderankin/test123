@@ -82,52 +82,51 @@ public class ErrorMatcher implements Cloneable
 	} //}}}
 
 	//{{{ match() method
-	public DefaultErrorSource.DefaultError match(String text, String directory,
-			DefaultErrorSource errorSource)
+	public DefaultErrorSource.DefaultError match(String text,
+		String currentBuffer, DefaultErrorSource errorSource)
 	{
+		int type;
+		RE re;
 		if(warningRE != null && warningRE.isMatch(text))
 		{
-			String _filename = MiscUtilities.constructPath(
-				directory,warningRE.substitute(text,filename));
-			String _line = warningRE.substitute(text,line);
-			String _message = warningRE.substitute(text,message);
-
-			try
-			{
-				return new DefaultErrorSource.DefaultError(
-					errorSource,ErrorSource.WARNING,_filename,
-					Math.max(0,Integer.parseInt(_line) - 1),
-					0,0,_message);
-			}
-			catch(NumberFormatException nf)
-			{
-			}
+			re = warningRE;
+			type = ErrorSource.WARNING;
 		}
 		else if(errorRE.isMatch(text))
 		{
-			String _filename = MiscUtilities.constructPath(
-				directory,errorRE.substitute(text,filename));
-			String _line = errorRE.substitute(text,line);
-			String _message = errorRE.substitute(text,message);
-
-			try
-			{
-				return new DefaultErrorSource.DefaultError(
-					errorSource,ErrorSource.ERROR,_filename,
-					Math.max(0,Integer.parseInt(_line) - 1),
-					0,0,_message);
-			}
-			catch(NumberFormatException nf)
-			{
-			}
+			re = errorRE;
+			type = ErrorSource.ERROR;
 		}
+		else
+			return null;
 
-		return null;
+		String _filename;
+		if(filename.equals("$f"))
+			_filename = currentBuffer;
+		else
+		{
+			_filename = MiscUtilities.constructPath(
+				MiscUtilities.getParentOfPath(currentBuffer),
+				re.substitute(text,filename));
+		}
+		String _line = re.substitute(text,line);
+		String _message = re.substitute(text,message);
+
+		try
+		{
+			return new DefaultErrorSource.DefaultError(
+				errorSource,type,_filename,
+				Math.max(0,Integer.parseInt(_line) - 1),
+				0,0,_message);
+		}
+		catch(NumberFormatException nf)
+		{
+			return null;
+		}
 	} //}}}
 
 	//{{{ matchExtra() method
-	public String matchExtra(String text, String directory,
-		DefaultErrorSource errorSource)
+	public String matchExtra(String text)
 	{
 		if(extraRE != null && extraRE.isMatch(text))
 			return extraRE.substitute(text,"$1");

@@ -161,6 +161,12 @@
  </para>
 
  <para>
+  If the error pattern specifies a filename of <quote>$f</quote>, the current
+  buffer's path is used; otherwise, the filename is resolved relative to the
+  current directory.
+ </para>
+
+ <para>
   It is also possible to specify an <quote>extra</quote> regular expression,
   against which lines subsequent to an error are checked and added to the
   error message if they match. This can be used to handle compilers which
@@ -1131,10 +1137,13 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 3.3</emphasis>
-   requires jEdit 4.0pre8 and the ErrorList plugin 1.2.</para>
+   requires jEdit 4.1pre1 and the ErrorList plugin 1.2.</para>
    <itemizedlist>
     <listitem><para>File name completion when <keycap>Tab</keycap> key is
     pressed (Alexander Maryanovsky).</para></listitem>
+    <listitem><para>Error patterns can now specify a file name value of
+    <quote>$f</quote>, in which case the current buffer's path will be
+    substituted.</para></listitem>
     <listitem><para>Fixed generic error pattern for g++.</para></listitem>
     <listitem><para>Fixed another possible problem if a program outputs an
     invalid line number in an error message.</para></listitem>
