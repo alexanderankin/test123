@@ -1,14 +1,16 @@
 package uk.co.antroy.latextools; 
 
-import sidekick.*;
-import javax.swing.tree.*;
-import javax.swing.text.*;
-import org.gjt.sp.jedit.*;
+import sidekick.SideKickParsedData;
+import sidekick.SideKickParser;
+import javax.swing.tree.DefaultMutableTreeNode;
+import org.gjt.sp.jedit.Buffer;
 import errorlist.DefaultErrorSource;
-import java.util.*;
-import gnu.regexp.*;
-import java.io.*;
-import org.gjt.sp.util.Log;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.TreeSet;
+import gnu.regexp.RE;
+import gnu.regexp.REException;
+import gnu.regexp.REMatch;
 
 public class LaTeXParser extends SideKickParser{
   

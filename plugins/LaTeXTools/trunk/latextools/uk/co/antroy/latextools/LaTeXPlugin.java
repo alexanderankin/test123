@@ -43,52 +43,7 @@ import sidekick.*;
 public class LaTeXPlugin
   extends SideKickPlugin {
 
-  //~ Instance/static variables ...............................................
-
-  private SpeedTeX speedTeX;
-  private LaTeXParser parser;
-  //~ Methods .................................................................
-
-  /**
-   * Adds the appropriate menu items to the Plugins Menu.
-   * 
-   * @param menuItems Vector of menuitems in plugins menu.
-   */
-//  public void createMenuItems(Vector menuItems) {
-//
-//     TODO: Remove this method and add menu items to LaTeXTools.props
-//
-//    JMenu menu = GUIUtilities.loadMenu("latex-main-menu");
-//    JMenu insertMenu = GUIUtilities.loadMenu("latex-insert-menu");
-//    
-//    menu.addSeparator();
-//    menu.add(insertMenu);
-//    menuItems.addElement(menu);
-//  }
-//
-  /**
-   * ¤
-   * 
-   * @param dialog ¤
-   */
-//  public void createOptionPanes(OptionsDialog dialog) {
-//
-///* TODO: Remove this method, and add options to the props file. eg.
-//
-//    plugin.templates.TemplatesPlugin.option-group=templates accelerators
-//    options.templates.label=General
-//    options.templates.code=new templates.TemplatesOptionPane();
-//    options.accelerators.label=Accelerators
-//    options.accelerators.code=new templates.AcceleratorOptionPane();
-// */
-//
-//    
-//    OptionGroup grp = new OptionGroup("latex");
-//    grp.addOptionPane(new BibTeXOptionPane());
-//    grp.addOptionPane(new ReferenceOptionPane());
-//    grp.addOptionPane(new NavigationOptionPane());
-//    dialog.addOptionGroup(grp);
-//  }
+   //~ Methods .................................................................
 
   /**
    * ¤
@@ -122,24 +77,4 @@ public class LaTeXPlugin
     // Add a BufferChangeListener (subclass the Adapter) to listen for typed events.
   }
 
-  /**
-   * ¤
-   */
-  public void start() {
-//    parser = new LaTeXParser("latex_parser");
-//    registerParser(parser);
-//    speedTeX = new SpeedTeX();
-  }
-
-   public void stop() {
-//    unregisterParser(parser);
-  }
-
-  private void popup(String s) {
-    JOptionPane.showMessageDialog(null, s);
-  }
-
-  private void popup() {
-    popup("Green Eggs and Ham");
-  }
 }
