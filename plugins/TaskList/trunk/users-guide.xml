@@ -8,9 +8,9 @@
 <author><othername>Ollie Rutherfurd</othername></author>
 <author><othername>John Gellene</othername></author>
 </authorgroup>
-<edition>Version 0.4.2</edition>
+<edition>Version 0.4.3</edition>
 <legalnotice>
-<para>Copyright © 2002 John Gellene, 2003 Ollie Rutherfurd</para>
+<para>Copyright (C) 2002 John Gellene, 2003 Ollie Rutherfurd</para>
 </legalnotice>
 </articleinfo>
 <title>TaskList Plugin Users' Guide</title>
@@ -22,6 +22,9 @@ representing the type of comment, the line where the comment appears and
 the comment text. You can jump to a comment by double-clicking on the
 corresponding row of the table. The comment text in the buffer can be
 highlighted as a user option.</para>
+</section>
+<section id="default-tags">
+<title>Default Tags</title>
 <para>A number of default comment tags are supplied, each with a 
 distinctive icon:</para>
 <informaltable frame="all">
@@ -116,6 +119,17 @@ distinctive icon:</para>
 plugin's settings in the <emphasis>Utilities</emphasis> -&gt; <emphasis>Global Options</emphasis> dialog. You can
 also add your own comment types, using the icons supplied with the
 plugin or your own custom icons.</para>
+</section>
+<section id="examples">
+<title>Examples</title>
+<para>TODO in a Java comment:</para>
+<programlisting>
+// TODO: add some more comments</programlisting>
+<para>NOTE in an HTML comment:</para>
+<programlisting>
+&lt;!--
+ NOTE: there must be at least one space character before ``NOTE``.
+--&gt;</programlisting>
 </section>
 <section id="operation">
 <title>Operation</title>
@@ -238,9 +252,29 @@ mailing list (for which membership is required).</para>
 </section>
 <section id="revision-history">
 <title>Revision History</title>
+<section id="revision-0-4-3">
+<title>Revision 0.4.3, ??? ??, ????</title>
+<blockquote>
 <itemizedlist>
 <listitem>
-<para>Revision 0.4.2, March 13, 2003</para>
+<para>Fixed NullPointerException when trying to extract tasks 
+from a mode that was added since jEdit was started.</para>
+</listitem>
+<listitem>
+<para>Updated for 4.2pre1 Token changes.</para>
+</listitem>
+<listitem>
+<para>Fixed deprecation warnings.</para>
+</listitem>
+<listitem>
+<para>Updated for 4.2 plugin API</para>
+</listitem>
+</itemizedlist>
+</blockquote>
+</section>
+<section id="revision-0-4-2-march-13-2003">
+<title>Revision 0.4.2, March 13, 2003</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Fixed sf bug 535882, &quot;TaskList, removing and jumping&quot;</para>
@@ -267,9 +301,11 @@ mailing list (for which membership is required).</para>
 <para>Fixed bug removing task patterns</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.4.1, February 18, 2003</para>
+</blockquote>
+</section>
+<section id="revision-0-4-1-february-18-2003">
+<title>Revision 0.4.1, February 18, 2003</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Better performance in default patterns (Antonio Argentieri).</para>
@@ -278,9 +314,11 @@ mailing list (for which membership is required).</para>
 <para>Removed uses of APIs deprecated by jEdit 4.1 (Slava Pestov).</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.4.0, June 04, 2002</para>
+</blockquote>
+</section>
+<section id="revision-0-4-0-june-04-2002">
+<title>Revision 0.4.0, June 04, 2002</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Option to specify which modes to use</para>
@@ -292,33 +330,41 @@ mailing list (for which membership is required).</para>
 <para>parsing updates for jEdit 4.1</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.3.5, March 17, 2002</para>
+</blockquote>
+</section>
+<section id="revision-0-3-5-march-17-2002">
+<title>Revision 0.3.5, March 17, 2002</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Fixed bug in parsing routine</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.3.4, March 4, 2002</para>
+</blockquote>
+</section>
+<section id="revision-0-3-4-march-4-2002">
+<title>Revision 0.3.4, March 4, 2002</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Release on jEdit Plugin Central</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.3.3, January 29, 2002</para>
+</blockquote>
+</section>
+<section id="revision-0-3-3-january-29-2002">
+<title>Revision 0.3.3, January 29, 2002</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Port to jEdit 4.0 API</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.3.2, December 13, 2001</para>
+</blockquote>
+</section>
+<section id="revision-0-3-2-december-13-2001">
+<title>Revision 0.3.2, December 13, 2001</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Fixed highlighting option</para>
@@ -327,33 +373,39 @@ mailing list (for which membership is required).</para>
 <para>cleaned up table appearance</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.3.1, December 12, 2001</para>
+</blockquote>
+</section>
+<section id="revision-0-3-1-december-12-2001">
+<title>Revision 0.3.1, December 12, 2001</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Fixed bug affecting deletion on entire task comment</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.3, December 11, 2001</para>
+</blockquote>
+</section>
+<section id="revision-0-3-december-11-2001">
+<title>Revision 0.3, December 11, 2001</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Revised for beta version 0.3</para>
 </listitem>
 </itemizedlist>
-</listitem>
-<listitem>
-<para>Revision 0.2, December 1, 2001</para>
+</blockquote>
+</section>
+<section id="revision-0-2-december-1-2001">
+<title>Revision 0.2, December 1, 2001</title>
+<blockquote>
 <itemizedlist>
 <listitem>
 <para>Initial version of documentation</para>
 </listitem>
 </itemizedlist>
-</listitem>
-</itemizedlist>
+</blockquote>
 <!-- $Id$ -->
 <!-- :lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard: -->
+</section>
 </section>
 </article>

@@ -1,3 +1,11 @@
+version 0.4.3
+=============
+
+* update for 4.2 api
+* change patterns to \s|\b?
+* use timer to delay parsing when switching buffers?
+
+
 version 0.4.2
 =============
 
@@ -17,6 +25,11 @@ future
 ======
 
 - use SideKick's work request API
+- insert task action(s)
+- example of inserting a task into a comment
+- empahsize that tasks are taken from comments
+- parse text in text mode?
+- don't parse buffers when they've saved, if they're not displayed?
 
 - buffer sets: display tasks for current buffer, buffers 
   visible in view, all buffers, others?
@@ -28,6 +41,5 @@ future
 	}
 
 - multi-line task comments
-- parse text in text mode?
 
 :lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard:
