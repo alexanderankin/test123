@@ -300,7 +300,8 @@ mode.velocity.sidekick.parser=html</programlisting>
   jEdit 4.2pre3.</para>
 
   <itemizedlist>
-   <listitem><para><code>SideKickCompletion</code> implementations can now disable automatic completion popups.</para></listitem>
+   <listitem><para><classname>SideKickCompletion</classname> implementations can now disable automatic completion popups.</para></listitem>
+   <listitem><para>Fix a problem in buffer listener handling..</para></listitem>
   </itemizedlist>
  </listitem>
 
