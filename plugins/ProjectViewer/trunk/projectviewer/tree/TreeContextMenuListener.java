@@ -79,6 +79,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	
 	private JPopupMenu dirMenu;
 	private JMenu	  dirSubRemove;
+	private JMenuItem  addFileDir;
 	private JMenuItem  removeDir;
 	private JMenuItem  deleteDir;
 	private JMenuItem  renameDir;
@@ -166,6 +167,9 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
 		} else if (src == addFile) {
 			this.addFileToProject();
+		} else if (src == addFileDir) {
+			ProjectDirectory dir = (ProjectDirectory) viewer.getSelectedNode();
+			this.addFileToProject(dir.toFile().getPath());
 		} else if (src == renameDir) {
 			renameDirectory();
 		} else if (src == searchDir) {
@@ -347,6 +351,9 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		tmp.setFont(font);
 		dirMenu.add(tmp);
 		dirMenu.addSeparator();
+        addFileDir = new JMenuItem("Add File");
+		addFileDir.addActionListener(this);
+		dirMenu.add(addFileDir);
 		
 		renameDir = new JMenuItem("Rename");
 		renameDir.addActionListener(this);
@@ -362,8 +369,9 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		deleteDir.addActionListener(this);
 		dirSubRemove.add(deleteDir);
 		dirMenu.add(dirSubRemove);
-		searchDir = new JMenuItem("Search Directory");
+		searchDir = new JMenuItem("Search in Directory");
 		searchDir.addActionListener(this);
+		dirMenu.addSeparator();
 		dirMenu.add(searchDir);
 		
 		// File menu
@@ -398,8 +406,6 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		//fileMenu.add(deleteFile);
 		fileMenu.add(fileMenuSubRemove);
 		
-		
-		
 		fileMenu.addSeparator();
 	   
 		
@@ -431,12 +437,18 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		multipleSelMenu.add(deleteMulti);
 		
 	} //}}}
+		
+
+	private void addFileToProject() {
+		addFileToProject(viewer.getCurrentProject().getRoot().getPath());
+	
+	}
 	
 	//{{{ addFileToProject() method
 	/** Prompt the user to a file, get the current project, and then add the file
 	 *  to the project.
 	 */
-	private void addFileToProject() {
+	private void addFileToProject(String dirPath) {
 		javax.swing.JFileChooser chooser = viewer.createFileChooser();
 		if(nonProjectFileFilter == null) {
 			nonProjectFileFilter =
@@ -450,9 +462,11 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 					}
 				};
 		}
+		
 		chooser.setFileFilter(nonProjectFileFilter);
-		//chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
-		if(chooser.showOpenDialog(this.viewer) != javax.swing.JFileChooser.APPROVE_OPTION) {
+		chooser.setCurrentDirectory(new File(dirPath)); 
+
+ 	   if(chooser.showOpenDialog(this.viewer) != javax.swing.JFileChooser.APPROVE_OPTION) {
 			return;
 		}
 
