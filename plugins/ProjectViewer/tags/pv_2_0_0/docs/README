@@ -1,0 +1,24 @@
+Project Viewer README
+
+
+--------------------------------------------------------------------------------
+IMPORTANT: ProjectViewer and XML parsers
+
+Since PV now stores some configuration data as XML, it needs an XML parser to
+read these files. This means that one of the following should be true:
+
+(i) You should be using Java version 1.4. The 1.4 JRE already has an XML parser
+(Apache Crimson), and it's enough for the needs of PV. 
+
+If your have Java version 1.4 and also have the XML plugin installed, you may
+need to remove the "xerces.jar" file from jEdit's "jars" directory and put it
+in your CLASSPATH, or in the "jre/lib/ext" directory, or PV won't be able to
+find the XML parser due to some class loader issues.
+
+(ii) If you're still using Java 1.3, you need to have either the XML plugin
+installed, or some XML parser available for your Java runtime. This may be
+done by downloading Apache Crimson (or another parser of your choice that
+implements the JAXP interfaces) and making it available by adding it to your
+CLASSPATH or putting the jar file in the "jre/lib/ext" directory.
+--------------------------------------------------------------------------------
+
