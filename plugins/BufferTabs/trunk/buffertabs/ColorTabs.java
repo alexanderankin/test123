@@ -55,7 +55,7 @@ public class ColorTabs
    private final static float muteRatio = ((float) muteRange / 254);
 
    private static int VERSION_THREE_JEDIT = 3;
-   private static ColorTabs colourTabs = null;
+   private static ColorTabs colorTabs = null;
    private static boolean useColours = false;
 
    private boolean colourHighlight = true;
@@ -249,11 +249,11 @@ public class ColorTabs
     */
    public static ColorTabs instance()
    {
-      if (colourTabs == null)
+      if (colorTabs == null)
       {
-         colourTabs = new ColorTabs();
+         colorTabs = new ColorTabs();
       }
-      return colourTabs;
+      return colorTabs;
    }
 
 
