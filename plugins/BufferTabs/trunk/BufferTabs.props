@@ -1,15 +1,18 @@
 plugin.buffertabs.BufferTabsPlugin.name=BufferTabs
-plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau, Chris Samuels
-plugin.buffertabs.BufferTabsPlugin.version=0.8
+plugin.buffertabs.BufferTabsPlugin.activate=startup
+plugin.buffertabs.BufferTabsPlugin.author=Andre Kaplan, Jason Ginchereau, Chris Samuels, Alain Robert
+plugin.buffertabs.BufferTabsPlugin.version=0.8.1
 plugin.buffertabs.BufferTabsPlugin.docs=users-guide.html
+plugin.buffertabs.BufferTabsPlugin.menu-item=buffertabs.toggle-vis
 
 plugin.buffertabs.BufferTabsPlugin.depend.0=jdk 1.3
-plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.01.99.00
+plugin.buffertabs.BufferTabsPlugin.depend.1=jedit 04.02.01.00
 
 buffertabs.toggle-vis.label=BufferTabs
 
+plugin.buffertabs.BufferTabsPlugin.option-pane=buffertabs
 options.buffertabs.label=BufferTabs
-
+options.buffertabs.code=new buffertabs.BufferTabsOptionPane();
 
 # Menu
 buffertabs.popup=\
@@ -38,19 +41,22 @@ buffertabs.color-selected=true
 buffertabs.color-mute=true
 buffertabs.color-variation=false
 buffertabs.color-foreground=false
-
-
+buffertabs.color-selected-foreground=false
+                                                                                                       
 # Option labels
 options.buffertabs.enable.label=Enable BufferTabs by default
 options.buffertabs.icons.label=Use icons to show buffer modified status
 options.buffertabs.popup.label=Enable right-click popup menu
 options.buffertabs.location.label=Location of BufferTabs:
 options.buffertabs.color-tabs.label=Enable colored tabs
-options.buffertabs.color-selected.label=Colorize selected tab
+options.buffertabs.color-selected.label=Colorize selected tab:
 options.buffertabs.color-mute.label=Mute colors
 options.buffertabs.color-variation.label=Show small variation in tab colors
 options.buffertabs.color-background.label=Colorize tab backgrounds
 options.buffertabs.color-foreground.label=Colorize tab titles
-
+options.buffertabs.color-selected-background.label= Background
+options.buffertabs.color-selected-foreground.label= Title
 options.buffertabs.color-tabs.separator=Options for colored BufferTabs
+
+
 

@@ -58,6 +58,7 @@ public class ColorTabs
 
    private boolean enabled             = false;
    private boolean selectedColorized   = true;
+  private boolean selectedForegroundColorized = false;
    private boolean foregroundColorized = false;
    private boolean muteColors          = true;
    private boolean colorVariation      = true;
@@ -98,11 +99,17 @@ public class ColorTabs
       return this.foregroundColorized;
    }
 
+      public boolean isSelectedForegroundColorized() {
+      return this.selectedForegroundColorized;
+   }
 
    public void setForegroundColorized(boolean foregroundColorized) {
       this.foregroundColorized = foregroundColorized;
    }
 
+      public void setSelectedForegroundColorized(boolean foregroundColorized) {
+      this.selectedForegroundColorized = foregroundColorized;
+   }
 
    public boolean hasMuteColors() {
       return this.muteColors;

@@ -55,17 +55,18 @@ public class BufferTabsPlugin extends EBPlugin {
      * This allows plugins to add their own option pane to the
      * <code>OptionsDialog</code>.
      */
+	 /*
     public void createOptionPanes(OptionsDialog od) {
          od.addOptionPane(new BufferTabsOptionPane());
     }
-
-
+*/
+/*
     public void createMenuItems(Vector menuItems) {
         menuItems.addElement(
             GUIUtilities.loadMenuItem("buffertabs.toggle-vis")
         );
     }
-
+*/
 
     public void handleMessage(EBMessage msg) {
         if (msg instanceof EditPaneUpdate) {

@@ -46,6 +46,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
 
     private JRadioButton colorTabRB;
     private JRadioButton colorTextRB;
+	    private JRadioButton colorSelTabRB;
+    private JRadioButton colorSelTextRB;
     private JCheckBox enableColorsCB;
     private JCheckBox muteColorsCB;
     private JCheckBox variationColorsCB;
@@ -98,6 +100,15 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         highlightColorsCB.addItemListener( this );
         indent3.add( new Box.Filler( space, space, space ) );
         indent3.add( highlightColorsCB );
+		colorSelTabRB = new JRadioButton( jEdit.getProperty( "options.buffertabs.color-selected-background.label" ) );
+        indent3.add( colorSelTabRB );
+
+        colorSelTextRB = new JRadioButton( jEdit.getProperty( "options.buffertabs.color-selected-foreground.label" ) );
+        indent3.add( colorSelTextRB );
+
+        ButtonGroup groupSel = new ButtonGroup();
+        groupSel.add( colorSelTabRB );
+        groupSel.add( colorSelTextRB );
         addComponent( indent3 );
 
         JPanel indent = new JPanel();
@@ -165,7 +176,15 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         );
 
         colorTextRB.setSelected(
-            jEdit.getBooleanProperty( "buffertabs.color-foreground", false )
+            jEdit.getBooleanProperty( "buffertabs.color-foreground", false )     
+	);
+
+        colorSelTabRB.setSelected(
+            !jEdit.getBooleanProperty( "buffertabs.color-selected-foreground", false )
+        );
+
+        colorSelTextRB.setSelected(
+            jEdit.getBooleanProperty( "buffertabs.color-selected-foreground", false )			
         );
 
 
@@ -174,7 +193,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         highlightColorsCB.setEnabled( enableColorsCB.isSelected() );
         colorTabRB.setEnabled( enableColorsCB.isSelected() );
         colorTextRB.setEnabled( enableColorsCB.isSelected() );
-
+        colorSelTabRB.setEnabled( enableColorsCB.isSelected() && highlightColorsCB.isSelected());
+        colorSelTextRB.setEnabled( enableColorsCB.isSelected() && highlightColorsCB.isSelected());
     }
 
 
@@ -195,6 +215,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         jEdit.setBooleanProperty( "buffertabs.color-mute", muteColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-variation", variationColorsCB.isSelected() );
         jEdit.setBooleanProperty( "buffertabs.color-foreground", colorTextRB.isSelected() );
+		jEdit.setBooleanProperty( "buffertabs.color-selected-foreground", colorSelTextRB.isSelected() );
     }
 
 
@@ -225,6 +246,8 @@ public class BufferTabsOptionPane extends AbstractOptionPane implements ItemList
         highlightColorsCB.setEnabled( enableColorsCB.isSelected() );
         colorTabRB.setEnabled( enableColorsCB.isSelected() );
         colorTextRB.setEnabled( enableColorsCB.isSelected() );
+   colorSelTabRB.setEnabled( enableColorsCB.isSelected() && highlightColorsCB.isSelected());
+        colorSelTextRB.setEnabled( enableColorsCB.isSelected() && highlightColorsCB.isSelected());
     }
 }
 
