@@ -27,8 +27,10 @@ import java.awt.event.ActionEvent;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.vpt.VPTDirectory;
 import projectviewer.importer.InitialProjectImporter;
 //}}}
 
@@ -62,6 +64,11 @@ public class ReimportAction extends Action {
 		if (toRemove.size() > 0) {
 			for (Iterator i = toRemove.iterator(); i.hasNext(); ) {
 				VPTNode n = (VPTNode) i.next();
+				if (n.isDirectory()) {
+					unregisterFiles((VPTDirectory)n, p);
+				} else if (n.isFile()) {
+					p.unregisterFile((VPTFile)n);
+				}
 				ProjectViewer.removeNodeFromParent(n);
 			}
 			ProjectViewer.nodeStructureChangedFlat(p);
@@ -73,6 +80,19 @@ public class ReimportAction extends Action {
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null && node.isProject());
+	} //}}}
+
+	//{{{ unregisterFiles(VPTDirectory, VPTProject) method
+	/** Unregisters all files in the directory from the project, recursively. */
+	private void unregisterFiles(VPTDirectory dir, VPTProject p) {
+		for (Enumeration e = dir.children(); e.hasMoreElements(); ) {
+			VPTNode n = (VPTNode) e.nextElement();
+			if (n.isDirectory()) {
+				unregisterFiles((VPTDirectory)n, p);
+			} else if (n.isFile()) {
+				p.unregisterFile((VPTFile)n);
+			}
+		}
 	} //}}}
 
 }
