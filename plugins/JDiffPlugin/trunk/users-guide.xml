@@ -56,8 +56,8 @@
 
     <para>It requires:</para>
     <itemizedlist>
-        <listitem>JDK 1.2</listitem>
-        <listitem>jEdit 4.0pre6</listitem>
+        <listitem>JDK 1.3</listitem>
+        <listitem>jEdit 4.1pre1</listitem>
     </itemizedlist>
 
 </chapter>
