@@ -107,14 +107,7 @@ public class VPTFile extends VPTNode {
 	 *	Returns "true" if the node is a file and is currently opened in jEdit.
 	 */
 	public boolean isOpened() {
-		if (this.canPath == null) {
-			try {
-				this.canPath = file.getCanonicalPath();
-			} catch (IOException ioe) {
-				Log.log(Log.WARNING, this, ioe);
-			}
-		}
-		return (org.gjt.sp.jedit.jEdit.getBuffer(canPath) != null);
+		return (org.gjt.sp.jedit.jEdit.getBuffer(getCanonicalPath()) != null);
 	} //}}}
 
 	//{{{ getIcon(boolean) method
@@ -183,6 +176,13 @@ public class VPTFile extends VPTNode {
 	//{{{ getCanonicalPath() method
 	/** Returns the file's canonical path. */
 	public String getCanonicalPath() {
+		if (this.canPath == null) {
+			try {
+				this.canPath = file.getCanonicalPath();
+			} catch (IOException ioe) {
+				Log.log(Log.WARNING, this, ioe);
+			}
+		}
 		return canPath;
 	} //}}}
 
