@@ -2,10 +2,12 @@ package sql;
 
 import java.awt.*;
 import java.awt.event.*;
+import java.beans.*;
 import java.text.*;
 import java.util.*;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import org.gjt.sp.jedit.*;
 
@@ -22,10 +24,12 @@ import projectviewer.vpt.*;
  */
 public class SqlToolBar
      extends JToolBar
-     implements ActionListener, EBComponent
+     implements EBComponent
 {
 
   protected JComboBox serverList;
+
+  protected final Map preprocessorButtons = new HashMap();
 
   private View view;
   private JComboBox combo;
@@ -153,7 +157,35 @@ public class SqlToolBar
     add( loadObject );
     addSeparator();
     add( requery );
+    addSeparator();
 
+    final Map preprocessors = SqlUtils.getPreprocessors();
+    for ( Iterator i = preprocessors.keySet().iterator(); i.hasNext();  )
+    {
+      final String className = (String) i.next();
+      final Preprocessor prep = (Preprocessor) preprocessors.get( className );
+      final JCheckBox cb = new JCheckBox( jEdit.getProperty( className + ".label" ), prep.isEnabled() );
+      preprocessorButtons.put( className, cb );
+      add( cb );
+      prep.addEnabledStateListener(
+        new PropertyChangeListener()
+        {
+          public void propertyChange( PropertyChangeEvent evt )
+          {
+            if ( ( cb.getSelectedObjects() != null ) != prep.isEnabled() )
+              cb.setSelected( prep.isEnabled() );
+          }
+        } );
+      cb.addChangeListener(
+        new ChangeListener()
+        {
+          public void stateChanged( ChangeEvent evt )
+          {
+            if ( ( cb.getSelectedObjects() != null ) != prep.isEnabled() )
+              prep.setEnabled( cb.getSelectedObjects() != null );
+          }
+        } );
+    }
     add( Box.createGlue() );
 
     updateTitle();
@@ -195,29 +227,6 @@ public class SqlToolBar
       handleSqlServerListChanged( (SqlServerListChanged) message );
 
   }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  evt  Description of Parameter
-   */
-  public void actionPerformed( ActionEvent evt )
-  {
-    /*
-     *  if ( evt.getSource() == save )
-     *  SessionManager.getInstance().saveCurrentSession( view );
-     *  else if ( evt.getSource() == saveAs )
-     *  SessionManager.getInstance().saveCurrentSessionAs( view );
-     *  else if ( evt.getSource() == reload )
-     *  SessionManager.getInstance().reloadCurrentSession( view );
-     *  else if ( evt.getSource() == props )
-     *  SessionManager.getInstance().showSessionPropertiesDialog( view );
-     *  else if ( evt.getSource() == prefs )
-     *  SessionManager.getInstance().showSessionManagerDialog( view );
-     */
-  }
-
 
 
   private void handleSqlServerChanged( SqlServerChanged msg )

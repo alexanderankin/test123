@@ -11,32 +11,26 @@
 <ACTIONS>
   <ACTION NAME="sql.preprocessors.BeanShellEvaluator">
     <CODE>
-      jEdit.setBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled",
-        !jEdit.getBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled" ) );
-      sql.SqlUtils.resetPreprocessors();
+      sql.SqlUtils.getPreprocessor( "sql.preprocessors.BeanShellEvaluator" ).toggleEnabled();
     </CODE>
     <IS_SELECTED>
-      return jEdit.getBooleanProperty( "sql.preprocessors.BeanShellEvaluator.enabled" );
+      return sql.SqlUtils.getPreprocessor( "sql.preprocessors.BeanShellEvaluator" ).isEnabled();
     </IS_SELECTED>
   </ACTION>
   <ACTION NAME="sql.preprocessors.VariableSubstitutor">
     <CODE>
-      jEdit.setBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled",
-        !jEdit.getBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled" ) );
-      sql.SqlUtils.resetPreprocessors();
+      sql.SqlUtils.getPreprocessor( "sql.preprocessors.VariableSubstitutor" ).toggleEnabled();
     </CODE>
     <IS_SELECTED>
-      return jEdit.getBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled" );
+      return sql.SqlUtils.getPreprocessor( "sql.preprocessors.VariableSubstitutor" ).isEnabled();
     </IS_SELECTED>
   </ACTION>
   <ACTION NAME="sql.preprocessors.SpecialCommentRemover">
     <CODE>
-      jEdit.setBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled",
-        !jEdit.getBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled" ) );
-      sql.SqlUtils.resetPreprocessors();
+      sql.SqlUtils.getPreprocessor( "sql.preprocessors.SpecialCommentRemover" ).toggleEnabled();
     </CODE>
     <IS_SELECTED>
-      return jEdit.getBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled" );
+      return sql.SqlUtils.getPreprocessor( "sql.preprocessors.SpecialCommentRemover" ).isEnabled();
     </IS_SELECTED>
   </ACTION>
   <ACTION NAME="sql.publishBuffer">
