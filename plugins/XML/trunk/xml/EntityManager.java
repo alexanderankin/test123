@@ -19,17 +19,15 @@ import java.util.*;
 import org.gjt.sp.jedit.io.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
-import org.xml.sax.InputSource;
+import org.apache.xerces.readers.XCatalog;
+import org.xml.sax.*;
+
+// This class is not finished and probably doesn't work.
 
 public class EntityManager
 {
-	public static void clearSearchPathCache()
-	{
-		searchPathCache.clear();
-	}
-
 	public static InputSource resolveSystemId(String current, String systemId)
-		throws IOException, MalformedURLException
+		throws SAXException, IOException, MalformedURLException
 	{
 		if(!loaded)
 			load();
@@ -39,17 +37,6 @@ public class EntityManager
 		if(entity != null)
 			return entity.getInputSource();
 
-		// now, look in the search path cache
-		String cacheKey = getCacheKey(current,systemId);
-		entity = (Entity)searchPathCache.get(cacheKey);
-		if(entity != null)
-		{
-			if(entity.type == INVALID)
-				return null;
-
-			return entity.getInputSource();
-		}
-
 		// next, see if it exists in current buffer's directory
 		VFS vfs = VFSManager.getVFSForPath(current);
 		if(vfs instanceof FileVFS)
@@ -58,28 +45,25 @@ public class EntityManager
 			String path = vfs.constructPath(current,systemId);
 			File file = new File(path);
 			if(file.exists())
-			{
-				entity = new Entity(FILE,path,null);
-				searchPathCache.put(cacheKey,entity);
-
 				return entity.getInputSource();
-			}
 		}
-
-		// cache it as invalid for future reference
-		entity = new Entity(INVALID,null,null);
-		searchPathCache.put(cacheKey,entity);
 
 		return null;
 	}
 
 	public static InputSource resolvePublicId(String current, String publicId)
-		throws IOException, MalformedURLException
+		throws SAXException, IOException, MalformedURLException
 	{
 		if(!loaded)
 			load();
 
-		return null;
+		// first, try explicit id -> url map
+		Entity entity = (Entity)publicIdMap.get(publicId);
+		if(entity != null)
+			return entity.getInputSource();
+
+		// try using the XCatalog
+		return catalog.resolveEntity(publicId,null);
 	}
 
 	public static void propertiesChanged()
@@ -89,22 +73,14 @@ public class EntityManager
 
 	// private members
 	private static Hashtable systemIdMap;
-	private static Hashtable searchPathCache;
+	private static Hashtable publicIdMap;
+	private static XCatalog catalog;
 	private static boolean loaded;
-
-	static
-	{
-		systemIdMap = new Hashtable();
-		searchPathCache = new Hashtable();
-	}
-
-	private static String getCacheKey(String current, String id)
-	{
-		return current + ':' + id;
-	}
 
 	private static void load()
 	{
+		systemIdMap = new Hashtable();
+
 		systemIdMap.put("actions.dtd",new Entity(JEDIT_RESOURCE,
 			"/org/gjt/sp/jedit/actions.dtd",null));
 		systemIdMap.put("catalog.dtd",new Entity(JEDIT_RESOURCE,
@@ -118,6 +94,8 @@ public class EntityManager
 
 		systemIdMap.put("commando.dtd",new Entity(PLUGIN_RESOURCE,
 			"console.ConsolePlugin","/console/commando/commando.dtd"));
+
+		catalog = new XCatalog();
 
 		loaded = true;
 	}
@@ -199,10 +177,10 @@ public class EntityManager
 			}
 		}
 
-		/* funky: we return archive: URLs here so if an error occurs
-		 * while parsing a plugin or jEdit resource DTD, the user
-		 * will be able to click on the error in the error list if
-		 * the Archive plugin is installed. */
+		// funky: we return archive: URLs here so if an error occurs
+		// while parsing a plugin or jEdit resource DTD, the user
+		// will be able to click on the error in the error list if
+		// the Archive plugin is installed.
 		String getSystemId()
 		{
 			switch(type)

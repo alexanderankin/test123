@@ -21,22 +21,17 @@
 				.getDockableWindow("xml-tree").parse();
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xml-auto-parse">
+	<ACTION NAME="xml-keystroke-parse">
 		<CODE>
-			buffer.putBooleanProperty("xml.auto-parse",
-				!buffer.getBooleanProperty("xml.auto-parse"));
+			buffer.putBooleanProperty("xml.keystroke-parse",
+				!buffer.getBooleanProperty("xml.keystroke-parse"));
 			view.getDockableWindowManager()
 				.addDockableWindow("xml-tree");
 			view.getDockableWindowManager()
 				.getDockableWindow("xml-tree").parse();
 		</CODE>
 		<IS_SELECTED>
-			return buffer.getBooleanProperty("xml.auto-parse");
+			return buffer.getBooleanProperty("xml.keystroke-parse");
 		</IS_SELECTED>
-	</ACTION>
-	<ACTION NAME="xml-clear-path-cache">
-		<CODE>
-			xml.EntityManager.clearSearchPathCache();
-		</CODE>
 	</ACTION>
 </ACTIONS>

@@ -60,6 +60,12 @@ jar: srcs;
     exec cmd_jar @ (get_files "1");
 }
 
+"docs":;
+{
+    exec "openjade" "-t" "sgml" "-V" "nochunks" "-V" "rootchunk"
+        "/usr/local/share/OpenSP/xml.dcl" "users-guide.xml";
+}
+
 "clean":;
 {
 	delete (glob (join (dirs "."), "/*.class"));

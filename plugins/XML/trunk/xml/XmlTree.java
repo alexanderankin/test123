@@ -37,12 +37,12 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		buttonBox.setFloatable(false);
 		buttonBox.putClientProperty("JToolBar.isRollover",Boolean.TRUE);
 
-		parse = new JButton(GUIUtilities.loadIcon("Refresh24.gif"));
-		parse.setToolTipText(jEdit.getProperty("xml-tree.parse"));
-		parse.setMargin(new Insets(0,0,0,0));
-		parse.setRequestFocusEnabled(false);
-		parse.addActionListener(new ActionHandler());
-		buttonBox.add(parse);
+		parseBtn = new JButton(GUIUtilities.loadIcon("Refresh24.gif"));
+		parseBtn.setToolTipText(jEdit.getProperty("xml-tree.parse"));
+		parseBtn.setMargin(new Insets(0,0,0,0));
+		parseBtn.setRequestFocusEnabled(false);
+		parseBtn.addActionListener(new ActionHandler());
+		buttonBox.add(parseBtn);
 		buttonBox.add(Box.createGlue());
 
 		add(BorderLayout.NORTH,buttonBox);
@@ -69,7 +69,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 	public void parse()
 	{
-		parse(true);
+		parse(true,true);
 	}
 
 	public String getName()
@@ -99,7 +99,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
 		EditBus.addToBus(errorSource);
 
-		parse(true);
+		parse(true,true);
 	}
 
 	public void removeNotify()
@@ -132,7 +132,15 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			if(emsg.getWhat() == EditPaneUpdate.BUFFER_CHANGED
 				&& editPane == view.getEditPane())
 			{
-				parse(false);
+				if(buffer.getBooleanProperty(
+					"xml.buffer-change-parse")
+					|| buffer.getBooleanProperty(
+					"xml.keystroke-parse"))
+				{
+					parse(false,true);
+				}
+				else
+					showNotParsedMessage();
 			}
 			else if(emsg.getWhat() == EditPaneUpdate.CREATED
 				&& editPane.getView() == view)
@@ -156,13 +164,29 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				&& bmsg.getBuffer() == buffer
 				&& !bmsg.getBuffer().isDirty())
 			{
-				parse(true);
+				if(buffer.getBooleanProperty(
+					"xml.buffer-change-parse")
+					|| buffer.getBooleanProperty(
+					"xml.keystroke-parse"))
+				{
+					parse(false,true);
+				}
+				else
+					showNotParsedMessage();
 			}
 			else if((bmsg.getWhat() == BufferUpdate.MODE_CHANGED
 				|| bmsg.getWhat() == BufferUpdate.LOADED)
 				&& bmsg.getBuffer() == buffer)
 			{
-				parse(true);
+				if(buffer.getBooleanProperty(
+					"xml.buffer-change-parse")
+					|| buffer.getBooleanProperty(
+					"xml.keystroke-parse"))
+				{
+					parse(false,true);
+				}
+				else
+					showNotParsedMessage();
 			}
 		}
 		else if(msg instanceof PropertiesChanged)
@@ -202,11 +226,11 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	}
 
 	// private members
-	private JButton parse;
+	private JButton parseBtn;
 	private JTree tree;
 
 	private boolean showAttributes;
-	private boolean autoParse;
+	private boolean parse;
 	private int delay;
 
 	private View view;
@@ -220,7 +244,6 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	private void propertiesChanged()
 	{
 		boolean newShowAttributes = jEdit.getBooleanProperty("xml.show-attributes");
-		autoParse = jEdit.getBooleanProperty("xml.auto-parse");
 		try
 		{
 			delay = Integer.parseInt(jEdit.getProperty("xml.delay"));
@@ -234,11 +257,11 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		if(newShowAttributes != showAttributes)
 		{
 			showAttributes = newShowAttributes;
-			parse(true);
+			parse(true,true);
 		}
 	}
 
-	private void parse(final boolean force)
+	private void parse(final boolean force, final boolean showParsingMessage)
 	{
 		VFSManager.runInAWTThread(new Runnable()
 		{
@@ -260,35 +283,63 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				// add listener to new buffer
 				buffer.addDocumentListener(documentHandler);
 
-				_parse();
+				parse = buffer.getBooleanProperty("xml.parse");
+
+				_parse(showParsingMessage);
 			}
 		});
 	}
 
 	// only ever called from parse()
-	private void _parse()
+	private void _parse(boolean showParsingMessage)
 	{
+		if(thread != null)
+			stopThread();
+
 		// check for non-XML file
-		if(!buffer.getBooleanProperty("xml.parse"))
+		if(!parse)
 		{
 			DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
 			DefaultTreeModel model = new DefaultTreeModel(root);
 
 			root.insert(new DefaultMutableTreeNode(
 				jEdit.getProperty("xml-tree.not-xml-file")),0);
-
 			model.reload(root);
 			tree.setModel(model);
+
 			return;
+		}
+		else if(showParsingMessage)
+		{
+			DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+			DefaultTreeModel model = new DefaultTreeModel(root);
+
+			root.insert(new DefaultMutableTreeNode(
+				jEdit.getProperty("xml-tree.parsing")),0);
+			model.reload(root);
+			tree.setModel(model);
 		}
 
 		errorSource.clear();
 
+		thread = new XmlParseThread(this,buffer);
+		thread.start();
+	}
+
+	private void showNotParsedMessage()
+	{
 		if(thread != null)
 			stopThread();
 
-		thread = new XmlParseThread(this,buffer);
-		thread.start();
+		// check for non-XML file
+		DefaultMutableTreeNode root = new DefaultMutableTreeNode(buffer.getName());
+		DefaultTreeModel model = new DefaultTreeModel(root);
+
+		root.insert(new DefaultMutableTreeNode(
+			jEdit.getProperty("xml-tree.not-parsed")),0);
+
+		model.reload(root);
+		tree.setModel(model);
 	}
 
 	private void parseWithDelay()
@@ -300,7 +351,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 		{
 			public void actionPerformed(ActionEvent evt)
 			{
-				parse(true);
+				parse(true,false);
 			}
 		});
 
@@ -333,6 +384,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 			TreePath treePath = new TreePath(path);
 			tree.expandPath(treePath);
 			tree.setSelectionPath(treePath);
+			tree.scrollPathToVisible(treePath);
 		}
 	}
 
@@ -448,7 +500,18 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	{
 		public void focusGained(FocusEvent evt)
 		{
-			parse(false);
+			if(buffer == null)
+				return;
+
+			if(buffer.getBooleanProperty(
+				"xml.buffer-change-parse")
+				|| buffer.getBooleanProperty(
+				"xml.keystroke-parse"))
+			{
+				parse(false,true);
+			}
+			else
+				showNotParsedMessage();
 		}
 
 		public void focusLost(FocusEvent evt)
@@ -466,17 +529,15 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 	{
 		public void insertUpdate(DocumentEvent evt)
 		{
-			if(buffer.isLoaded()
-				&& buffer.getBooleanProperty("xml.auto-parse")
-				&& buffer.getBooleanProperty("xml.parse"))
+			if(buffer.isLoaded() && parse
+				&& buffer.getBooleanProperty("xml.keystroke-parse"))
 				parseWithDelay();
 		}
 
 		public void removeUpdate(DocumentEvent evt)
 		{
-			if(buffer.isLoaded()
-				&& buffer.getBooleanProperty("xml.auto-parse")
-				&& buffer.getBooleanProperty("xml.parse"))
+			if(buffer.isLoaded() && parse
+				&& buffer.getBooleanProperty("xml.keystroke-parse"))
 				parseWithDelay();
 		}
 
