@@ -77,8 +77,6 @@ public class ErrorListPlugin extends EBPlugin
 	private static Color warningColor;
 	private static Color errorColor;
 
-	private static View mostRecentView;
-
 	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
@@ -105,10 +103,10 @@ public class ErrorListPlugin extends EBPlugin
 		{
 			if(showOnError)
 			{
-				if(mostRecentView == null)
+				if(jEdit.getActiveView() == null)
 					showOnStartup = true;
 				else
-					showErrorList(mostRecentView);
+					showErrorList(jEdit.getActiveView());
 			}
 
 			ErrorSource.Error error = message.getError();
@@ -152,16 +150,10 @@ public class ErrorListPlugin extends EBPlugin
 	{
 		if(message.getWhat() == ViewUpdate.CREATED)
 		{
-			View view = message.getView();
-			view.addWindowListener(new WindowHandler());
-
-			if(mostRecentView == null)
-				mostRecentView = view;
-
 			if(showOnStartup)
 			{
 				showOnStartup = false;
-				showErrorList(view);
+				showErrorList(message.getView());
 			}
 		}
 	} //}}}
@@ -179,12 +171,4 @@ public class ErrorListPlugin extends EBPlugin
 
 	//}}}
 
-	//{{{ WindowHandler class
-	static class WindowHandler extends WindowAdapter
-	{
-		public void windowActivated(WindowEvent evt)
-		{
-			mostRecentView = (View)evt.getSource();
-		}
-	} //}}}
 }
