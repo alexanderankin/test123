@@ -1,20 +1,18 @@
 <project name="Navigator Plugin" default="plugin" basedir=".">
     <!-- $Id$ -->
     
-    <!--
-      read build.props for what is required and some optional settings for 
-      the build.
-    -->
+    <!-- read build.props to override the properties set below -->
     <property file="build.props"/>
     
-    <property name="app.name" value="NavigatorPlugin"/>
+    <!-- jar name -->
+    <property name="jar.name" value="NavigatorPlugin.jar"/>
     
     <!-- version number -->
-    <property name="build.num" value="1.0"/>
+    <property name="build.num" value="1.0.1"/>
         
     <!-- where to put the finished plugin -->
-    <property name="install.dir" value="${user.home}/.jedit/jars" />
-    <property name="jedit.jars.dir" location="${install.dir}"/>
+    <property name="install.dir" value=".." />
+    <property name="jedit.install.dir" location="../.."/>
     
     <!-- source code directory, this is where the .java files live -->
     <property name="src.dir" location="src" />
@@ -44,8 +42,7 @@
          <pathelement path="${java.class.path}"/>
          
          <!-- required for jEdit plugin -->
-         <pathelement location="${jedit.home}/jedit.jar" />
-         
+         <pathelement location="${jedit.install.dir}/jedit.jar" />
       </path>
    </target>
    
@@ -66,8 +63,7 @@
    ========================================================================= -->
     <target name="compile"
             description="Compile"
-            depends="init,setClasspath" 
-            if="jedit.home">
+            depends="init,setClasspath">
         <echo>compiling</echo>
         <javac deprecation="on" 
                debug="on" 
@@ -85,23 +81,23 @@
    ========================================================================= -->
     <target name="plugin"
             description="Compiles, jars, puts the jar in the jEdit jars directory."
-            depends="init,compile,-prep_files">
+            depends="init,compile,prep_files">
         <echo>creating plugin</echo>
         <delete>
-            <fileset dir="${dist.dir}" includes="**/${app.name}*.jar"/>
+            <fileset dir="${dist.dir}" includes="**/${jar.name}"/>
         </delete>
         
         <!-- deleting an existing plugin on Windows will fail if jEdit is running -->
         <delete>
-            <fileset dir="${jedit.jars.dir}" includes="**/${app.name}*.jar"/>
+            <fileset dir="${install.dir}" includes="**/${jar.name}"/>
         </delete>
         
         <!-- make the plugin jar file -->
         <tstamp/>
-        <jar jarfile="${dist.dir}/${app.name}_${build.num}.jar">
+        <jar jarfile="${dist.dir}/${jar.name}">
             <manifest>
                 <attribute name="AppName" value="${app.name}" />
-                <attribute name="AppVersion" value="${app.name}_${build.num}" />
+                <attribute name="AppVersion" value="${build.num}" />
                 <attribute name="Created-By" value="Dale Anson" />
                 <attribute name="Created-On" value="${TODAY}"/>
             </manifest>
@@ -123,17 +119,15 @@
         </jar>
         
         <!-- copy the plugin jar to the jedit plugin directory -->
-        <mkdir dir="${jedit.jars.dir}" />
-        <copy file="${dist.dir}/${app.name}_${build.num}.jar" 
-              todir="${jedit.jars.dir}"/>
+        <copy file="${dist.dir}/${jar.name}" todir="${install.dir}"/>
     </target>
 
    <!-- ========================================================================
-      Target: -prep_files
+      Target: prep_files
       prepares certain files for distribution by doing string replacement. 
       Assumes that the configuration files and documentation files are ready.
    ========================================================================= -->
-    <target name="-prep_files">
+    <target name="prep_files">
         <echo>preparing files</echo>
         <!-- clean out the config and doc deployment directories -->
         <delete>
@@ -171,16 +165,12 @@
    ========================================================================= -->
     <target name="init" 
             description="Create directory structure.">
-        <fail unless="jedit.home" message="Please set jedit.home property."/>
+        <fail unless="jedit.install.dir" message="Please set jedit.install.dir property."/>
         
         <!-- all source code, including actions.xml, props, dockables, docs, and
         .java files are in src.dir -->
         <mkdir dir="${src.dir}" />
         
-        <!-- where to put the completed jar files for distribution -->
-        <mkdir dir="${dist.dir}"/>
-
-        <!-- for making the distribution, does not contain source -->
         <mkdir dir="${classes.dir}" />
         <mkdir dir="${doc.dir}" />          
         <mkdir dir="${config.dir}" />
