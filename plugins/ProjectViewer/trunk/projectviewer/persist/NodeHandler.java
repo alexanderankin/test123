@@ -117,14 +117,24 @@ public abstract class NodeHandler {
 		out.write(name);
 		out.write("=\"");
 		for (int i = 0; i < value.length(); i++) {
-			if (value.charAt(i) == '<') {
-				out.write("&lt;");
-			} else if (value.charAt(i) == '>') {
-				out.write("&gt;");
-			} else if (value.charAt(i) == '&') {
-				out.write("&amp;");
-			} else {
-				out.write(value.charAt(i));
+			switch (value.charAt(i)) {
+				case '<':
+					out.write("&lt;");
+					break;
+				case '>':
+					out.write("&gt;");
+					break;
+				case '&':
+					out.write("&amp;");
+					break;
+				case '"':
+					out.write("&quot;");
+					break;
+				case '\'':
+					out.write("&apos;");
+					break;
+				default:
+					out.write(value.charAt(i));
 			}
 		}
 		out.write("\"");
