@@ -6,7 +6,7 @@ plugin.jdiff.JDiffPlugin.version=1.3
 plugin.jdiff.JDiffPlugin.docs=users-guide.html
 
 # Dependencies
-plugin.jdiff.JDiffPlugin.depend.0=jdk 1.1
+plugin.jdiff.JDiffPlugin.depend.0=jdk 1.2
 plugin.jdiff.JDiffPlugin.depend.1=jedit 04.00.06.00
 
 # Menu

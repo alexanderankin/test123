@@ -56,8 +56,8 @@
 
     <para>It requires:</para>
     <itemizedlist>
-        <listitem>JDK 1.1</listitem>
-        <listitem>jEdit 3.2pre1</listitem>
+        <listitem>JDK 1.2</listitem>
+        <listitem>jEdit 4.0pre6</listitem>
     </itemizedlist>
 
 </chapter>
@@ -277,17 +277,6 @@
             <listitem>Deleted lines</listitem>
             <listitem>Inserted lines</listitem>
             <listitem>Invalid lines</listitem>
-        </itemizedlist>
-
-        <para>
-        The selected highlight colors allow to distinguish the selected parts
-        within text highlights. You can configure the colors of:
-        </para>
-
-        <itemizedlist>
-            <listitem>Selected changed lines</listitem>
-            <listitem>Selected deleted lines</listitem>
-            <listitem>Selected inserted lines</listitem>
         </itemizedlist>
 
     </simplesect>
