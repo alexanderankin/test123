@@ -38,28 +38,12 @@ import errorlist.*;
 
 class SideKick implements EBComponent
 {
-	public static final int MAX_ERRORS = 100;
-
 	//{{{ SideKick constructor
 	SideKick(View view)
 	{
 		this.view = view;
 
-		errorSource = new DefaultErrorSource("SideKick")
-		{
-			public void addError(int type, String path,
-				int lineIndex, int start, int end, String error)
-			{
-				if(errorSource.getErrorCount() >= MAX_ERRORS)
-					maxErrors = true;
-				else
-				{
-					super.addError(type,path,lineIndex,
-						start,end,error);
-				}
-			}
-		};
-
+		errorSource = new DefaultErrorSource("SideKick");
 		ErrorSource.registerErrorSource(errorSource);
 
 		bufferHandler = new BufferChangeHandler();
@@ -111,8 +95,6 @@ class SideKick implements EBComponent
 			return;
 
 		SideKickPlugin.startParsingBuffer(buffer);
-
-		maxErrors = false;
 
 		this.showParsingMessage = showParsingMessage;
 
@@ -167,6 +149,12 @@ class SideKick implements EBComponent
 	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
+		//{{{ PropertiesChanged
+		if(msg instanceof PropertiesChanged)
+		{
+			if(parser != null)
+				parser.initKeyBindings(view);
+		} //}}}
 		//{{{ BufferUpdate
 		if(msg instanceof BufferUpdate)
 		{
@@ -309,8 +297,6 @@ class SideKick implements EBComponent
 	private int delay;
 	private Timer keystrokeTimer;
 
-	private boolean maxErrors;
-
 	private BufferChangeHandler bufferHandler;
 	private boolean addedBufferChangeHandler;
 	//}}}
@@ -435,18 +421,9 @@ class SideKick implements EBComponent
 			{
 				String label = jEdit.getProperty("sidekick.parser."
 					+ parser.getName() + ".label");
-				if(maxErrors)
-				{
-					Object[] pp = { label, new Integer(errorCount) };
-					view.getStatus().setMessageAndClear(jEdit.getProperty(
-						"sidekick.parsing-complete-errors",pp));
-				}
-				else
-				{
-					Object[] pp = { label, new Integer(errorCount) };
-					view.getStatus().setMessageAndClear(jEdit.getProperty(
-						"sidekick.parsing-complete",pp));
-				}
+				Object[] pp = { label, new Integer(errorCount) };
+				view.getStatus().setMessageAndClear(jEdit.getProperty(
+					"sidekick.parsing-complete",pp));
 			}
 
 			View[] views = jEdit.getViews();

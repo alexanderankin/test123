@@ -22,25 +22,39 @@
 
 package sidekick;
 
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.View;
+//{{{ Imports
+import org.gjt.sp.jedit.gui.*;
+import org.gjt.sp.jedit.*;
 import errorlist.DefaultErrorSource;
 import org.gjt.sp.util.Log;
+//}}}
 
 /**
- * An abstract base class for plugin-provided parser implementations.
+ * An abstract base class for plugin-provided parser implementations.<p>
+ *
+ * Plugins can provide SideKick parsers by defining entries in their
+ * <code>services.xml</code> files like so:
+ *
+ * <pre>&lt;SERVICE CLASS="sidekick.SideKickParser" NAME="<i>name</i>"&gt;
+ *    new <i>MyParser<i>();
+ *&lt;/SERVICE&gt;</pre>
+ *
+ * See <code>org.gjt.sp.jedit.ServiceManager</code> for details.<p>
  *
  * Note that each <code>SideKickParser</code> subclass has a name which is
- * used to key a property <code>sidekick.parser.<i>name</i>.label</code>.
- * The parser name can also be referenced in a <code>sidekick.parser</code>
- * buffer-local property.
+ * used to key a property <code>sidekick.parser.<i>name</i>.label</code>.<p>
+ *
+ * To associate a parser with some edit modes, define properties like this:
+ * <pre>mode.scheme.sidekick.parser=lisp
+ *mode.lisp.sidekick.parser=lisp</pre>
  *
  * @version $Id$
  * @author Slava Pestov
  */
 public abstract class SideKickParser
 {
+	public static final String SERVICE = "sidekick.SideKickParser";
+
 	//{{{ SideKickParser constructor
 	/**
 	 * The parser constructor.
@@ -70,6 +84,7 @@ public abstract class SideKickParser
 	public void activate(View view)
 	{
 		Log.log(Log.DEBUG,this,getName() + ": activated for " + view.getBuffer());
+		initKeyBindings(view);
 	} //}}}
 
 	//{{{ deactivate() method
@@ -158,6 +173,39 @@ public abstract class SideKickParser
 	public SideKickCompletion complete(EditPane editPane, int caret)
 	{
 		return null;
+	} //}}}
+
+	//{{{ initKeyBindings() method
+	void initKeyBindings(View view)
+	{
+		if(!supportsCompletion())
+			return;
+
+		InputHandler ih = view.getInputHandler();
+		if(!(ih instanceof DefaultInputHandler))
+			return;
+
+		String delayPopupTriggerKeys = getDelayCompletionTriggers();
+		if(delayPopupTriggerKeys != null)
+		{
+			for(int i = 0; i < delayPopupTriggerKeys.length(); i++)
+			{
+				char ch = delayPopupTriggerKeys.charAt(i);
+				ih.addKeyBinding(String.valueOf(ch),
+					new SideKickActions.CompleteAction(ch));
+			}
+		}
+
+		String instantPopupTriggerKeys = getInstantCompletionTriggers();
+		if(instantPopupTriggerKeys != null)
+		{
+			for(int i = 0; i < instantPopupTriggerKeys.length(); i++)
+			{
+				char ch = instantPopupTriggerKeys.charAt(i);
+				ih.addKeyBinding(String.valueOf(ch),
+					new SideKickActions.CompleteAction(ch));
+			}
+		}
 	} //}}}
 
 	private String name;
