@@ -532,8 +532,6 @@ public class TextToolsPlugin extends EditPlugin
                         for(int i = startPos; i <= endPos; i++)
                             colNum[j++] = rSel.getStart(theView.getBuffer(),i);
                             
-                        Log.log(Log.DEBUG,this,"Matches a \\n");
-                        
                         ColumnInsertDialog d = 
                             (ColumnInsertDialog)((JTextField)e.getSource()).getTopLevelAncestor();
                         
@@ -541,15 +539,23 @@ public class TextToolsPlugin extends EditPlugin
                         
                         d.dispose();
                         //Need to do the text insert thing here.
-                        theView.getTextArea().setSelectedText(""); //clear out current selection
-                        //get an offset with Buffer.getLineStartOffset();
                         Buffer buff = theView.getTextArea().getBuffer();
-                        
-                        int strLen = text.length();
-                        
-                        for(int i = 0; i < colNum.length; i++)
+                        try
                         {
-                            buff.insert(colNum[i] + i*strLen - i*cols,text);
+                            buff.beginCompoundEdit();
+                            theView.getTextArea().setSelectedText(""); //clear out current selection
+                            //get an offset with Buffer.getLineStartOffset();
+                            
+                            int strLen = text.length();
+                            
+                            for(int i = 0; i < colNum.length; i++)
+                            {
+                                buff.insert(colNum[i] + i*strLen - i*cols,text);
+                            }
+                        }
+                        finally
+                        {
+                            buff.endCompoundEdit();
                         }
                     }
                 }
@@ -565,6 +571,10 @@ public class TextToolsPlugin extends EditPlugin
             
             //Set the location that the popup window appears at.
             dialog.setBounds(xCoord,yCoord,dialog.getWidth(),dialog.getHeight());
+        }
+        else //Selection was either not rectangular, or did not exist.
+        {
+            view.getToolkit().beep();
         }
     }
 }
