@@ -362,6 +362,11 @@
     the names of the columns in the result set) user gets
     tooltips with metainformation about each particular column
     type.</para>
+    
+    <para>Each result set is produced as a result of some query in some open 
+    buffer. So it is possible to close results sets automatically along with 
+    the buffers the query was executed from.
+    </para>
   </chapter>
 
   <chapter id="preprocessors">
@@ -449,6 +454,24 @@ SELECT * FROM user WHERE user=?</programlisting>
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.99</title>
+          <para/>
+        </formalpara>
+        <itemizedlist>
+          <listitem>
+            <para>Empty updates can be silent - don't produce annoying popup 
+            messages.
+            </para>
+          </listitem>
+          <listitem>
+            <para>Each buffer know knows about "his" result sets - so result 
+            sets can be closed automatically with their "source" buffers.
+            </para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
       <listitem>
         <formalpara>
           <title>Version 0.98</title>
