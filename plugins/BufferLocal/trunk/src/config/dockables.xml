@@ -3,10 +3,7 @@
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
 <!-- $Id$ -->
 <!-- 
-   NavigatorPlugin 
+   BufferLocalPlugin has no GUI, so isn't dockable.
 -->
 <DOCKABLES>
-    <DOCKABLE NAME="Navigator">
-        new ise.plugin.nav.Navigator(view, position);
-    </DOCKABLE>
 </DOCKABLES>
