@@ -34,6 +34,7 @@ class ProcessManager
 
 	static void consoleClosed(View view)
 	{
+		getViewState(view).setForegroundProcess(null);
 		viewStates.remove(view);
 	}
 
@@ -61,6 +62,67 @@ class ProcessManager
 				return process;
 		}
 
+		return null;
+	}
+
+	static ConsoleProcess createProcess(View view, Console console,
+		Vector args, boolean foreground)
+	{
+		ViewState state = getViewState(view);
+		ConsoleProcess process = new ConsoleProcess(state.currentDirectory,args);
+		processes.addElement(process);
+
+		if(foreground)
+			state.setForegroundProcess(process);
+
+		process.start(console);
+
+		return process;
+	}
+
+	static void destroyProcess(ConsoleProcess process)
+	{
+		process.stop();
+		processes.removeElement(process);
+	}
+
+	static Process exec(String currentDirectory, Vector _args) throws Exception
+	{
+		String[] args = new String[_args.size()];
+		_args.copyInto(args);
+
+		String[] extensionsToTry;
+		if(DefaultShell.DOS)
+			extensionsToTry = new String[] { ".cmd", ".exe", ".bat", ".com" };
+		else
+			extensionsToTry = new String[] { "" };
+
+		String commandName = args[0];
+
+		for(int i = 0; i < extensionsToTry.length; i++)
+		{
+			args[0] = commandName + extensionsToTry[i];
+
+			try
+			{
+				if(java13exec != null)
+				{
+					Object[] methodArgs = { args, null, new File(currentDirectory) };
+					return (Process)java13exec.invoke(null,methodArgs);
+				}
+				else
+				{
+					return Runtime.getRuntime().exec(args);
+				}
+			}
+			catch(Exception e)
+			{
+				if(i == extensionsToTry.length - 1)
+					throw e;
+			}
+		}
+
+		// can't happen
 		return null;
 	}
 
@@ -97,18 +159,19 @@ class ProcessManager
 		ViewState(View view, Console console)
 		{
 			this.view = view;
+			this.console = console;
 			currentDirectory = System.getProperty("user.dir");
 		}
 
 		void setForegroundProcess(ConsoleProcess process)
 		{
 			if(foreground != null)
-				foreground.viewState = null;
+				foreground.setViewState(null);
 
 			foreground = process;
 
 			if(process != null)
-				foreground.viewState = this;
+				foreground.setViewState(this);
 		}
 	}
 }

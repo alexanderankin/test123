@@ -5,12 +5,17 @@
 <ACTIONS>
 	<ACTION NAME="console">
 		<CODE>
-			view.getDockableWindowManager()
-				.toggleDockableWindow("console");
+			view.getDockableWindowManager().toggleDockableWindow("console");
 		</CODE>
 		<IS_SELECTED>
-			return view.getDockableWindowManager()
-				.isDockableWindowVisible("console");
+			return view.getDockableWindowManager().isDockableWindowVisible("console");
 		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="go-to-console">
+		<CODE>
+			view.getDockableWindowManager().addDockableWindow("console");
+			console = view.getDockableWindowManager().getDockableWindow("console");
+			console.getTextField().requestFocus();
+		</CODE>
 	</ACTION>
 </ACTIONS>

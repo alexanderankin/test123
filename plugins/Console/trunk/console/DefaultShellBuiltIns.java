@@ -42,7 +42,7 @@ class DefaultShellBuiltIns
 
 				Object[] pp = { new Integer(state.foreground.pid) };
 				state.setForegroundProcess(null);
-				console.printPlain(jEdit.getProperty("console.shell.bg.ok",pp));
+				console.printInfo(jEdit.getProperty("console.shell.bg.ok",pp));
 			}
 		}
 		else if(name.equals("cd"))
@@ -72,7 +72,7 @@ class DefaultShellBuiltIns
 				if(new File(newDir).exists())
 				{
 					state.currentDirectory = newDir;
-					console.printPlain(jEdit.getProperty(
+					console.printInfo(jEdit.getProperty(
 						"console.shell.cd.ok",pp));
 				}
 				else
@@ -116,7 +116,7 @@ class DefaultShellBuiltIns
 					state.setForegroundProcess(process);
 
 					Object[] pp = { new Integer(process.pid) };
-					console.printPlain(jEdit.getProperty("console.shell.fg.ok",pp));
+					console.printInfo(jEdit.getProperty("console.shell.fg.ok",pp));
 				}
 				catch(NumberFormatException nf)
 				{
@@ -138,19 +138,19 @@ class DefaultShellBuiltIns
 		{
 			if(checkArgs("kill",args,2,console))
 			{
-				ProcessManager.ViewState state = ProcessManager.getViewState(view);
 				try
 				{
 					int pid = Integer.parseInt((String)args.elementAt(1));
 					ConsoleProcess process = ProcessManager.getProcess(pid);
+					Object[] pp = { new Integer(pid) };
 					if(process == null)
 					{
-						Object[] pp = { new Integer(pid) };
 						console.printError(jEdit.getProperty("console.shell.bad-pid",pp));
 						return;
 					}
 
-					process.kill();
+					ProcessManager.destroyProcess(process);
+					console.printInfo(jEdit.getProperty("console.shell.kill.ok",pp));
 				}
 				catch(NumberFormatException nf)
 				{
