@@ -36,6 +36,9 @@ public class FtpVFS extends VFS
 	public static final String PROTOCOL = "ftp";
 
 	public static final String CLIENT_KEY = "FtpVFS.client";
+	
+	private final	StringBuffer buf = new StringBuffer(128);
+	private final 	Vector tokens = new Vector(16);
 
 	public FtpVFS()
 	{
@@ -130,8 +133,25 @@ public class FtpVFS extends VFS
 		Vector directoryVector = new Vector();
 		try
 		{
+			//Use ASCII mode for dir listing
+			client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
+			
+			//CWD into the directory - Doing a LIST on a path with spaces in the
+			//name fails; however, if you CWD to the dir and then LIST it
+			// succeeds.
+			client.changeWorkingDirectory(address.path);
+			//Check for successful response
+			FtpResponse response = client.getResponse();
+			if(response.getReturnCode().charAt(0)!='2')
+			{
+				String[] args = { url, response.toString() };
+				VFSManager.error(comp,"vfs.ftp.list-error",args);
+				return null;
+			}
+			
 			_setupSocket(client);
-			Reader _in = client.list(address.path);
+			Reader _in = client.list(); //we are in the right dir so just send LIST
+			
 			if(_in == null)
 			{
 				String[] args = { url, client.getResponse().toString() };
@@ -269,8 +289,24 @@ public class FtpVFS extends VFS
 		if(client == null)
 			return null;
 
+		//Use ASCII mode for dir listing
+		client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
+		
+		//CWD into the directory - Doing a LIST on a path with spaces in the
+		//name fails; however, if you CWD to the dir and then LIST it
+		// succeeds.
+		client.changeWorkingDirectory(address.path);
+		//Check for successful response
+		FtpResponse response = client.getResponse();
+		if(response.getReturnCode().charAt(0)!='2')
+		{
+			String[] args = { path, response.toString() };
+			VFSManager.error(comp,"vfs.ftp.list-error",args);
+			return null;
+		}
+			
 		_setupSocket(client);
-		Reader _reader = client.list(address.path);
+		Reader _reader = client.list();
 		if(_reader == null)
 		{
 			// eg, file not found
@@ -509,49 +545,96 @@ public class FtpVFS extends VFS
 				break;
 			}
 
-			// first, extract the fifth field, which is the file size
+			
+			//We search for the Month field (e.g. "Jan") and use this for
+			// reference to locate the filesize field (one in front of month) and
+			//the filename (3 after month).
+			//This is more compatible with a wider range of servers than looking
+			//for a particualr datum based upon it field number.
+			//I'm sure there will be some server that will break this though...
+			
 			int i;
-			int j = 0;
-			boolean lastWasSpace = false;
-			int fieldCount = 0;
-
 			long length = 0L;
 			String name = null;
-
+			int fileSizePos=0;
+			int namePos = -1;
+			buf.setLength(0);
+			tokens.removeAllElements(); 	//We stick the token in a Vector
 			for(i = 0; i < line.length(); i++)
 			{
 				if(line.charAt(i) == ' ')
 				{
-					lastWasSpace = true;
+					if(buf.length() == 0)
+						continue;
+						
+					String tmp = buf.toString();
+					buf.setLength(0);
+					
+					//look for month
+					if((tmp.length() == 3) &&
+						(
+							tmp.equalsIgnoreCase("Jan") ||	//We are assuming
+							tmp.equalsIgnoreCase("Feb") ||	//English!!
+							tmp.equalsIgnoreCase("Mar") ||	//Most servers seem
+							tmp.equalsIgnoreCase("Apr") ||	//to use these.
+							tmp.equalsIgnoreCase("May") ||	
+							tmp.equalsIgnoreCase("Jun") ||	//This is more
+							tmp.equalsIgnoreCase("Jul") ||	//compatible than
+							tmp.equalsIgnoreCase("Aug") ||	//the fixed field
+							tmp.equalsIgnoreCase("Sep") ||	//approach...
+							tmp.equalsIgnoreCase("Oct") ||
+							tmp.equalsIgnoreCase("Nov") ||
+							tmp.equalsIgnoreCase("Dec") 
+						))
+					{
+						fileSizePos = tokens.size()-1;	 //note position of file
+														//size, which is in front 
+														//of this element
+						
+						namePos = fileSizePos+3;	//position of the name
+					}
+					
+					//See if we are on the name token
+					if(tokens.size() == namePos)
+					{
+						//We are on name token so add the rest of the line
+						//This accounts for names with spaces, etc.
+						tokens.addElement(line.substring(i+1));
+						break;
+					}
+					else
+					{
+						tokens.addElement(tmp);
+					}
 				}
 				else
 				{
-					if(lastWasSpace)
-					{
-						fieldCount++;
-
-						if(fieldCount == 4)
-							j = i;
-						else if(fieldCount == 5)
-						{
-							length = Long.parseLong(
-								line.substring(
-								j,i).trim());
-						}
-						else if(fieldCount == 8)
-						{
-							name = line.substring(i);
-							break;
-						}
-					}
-
-					lastWasSpace = false;
+					buf.append(line.charAt(i));
 				}
 			}
-
+			
+			name = (String)tokens.lastElement();
 			if(name == null)
 				return null;
-
+				
+			if(fileSizePos != 0)	//be sure we found this
+			{
+				try{
+					length = Long.parseLong(((String)tokens.elementAt(fileSizePos)).trim());
+				}catch(NumberFormatException e)
+				{
+					//Probably ought to return null here because we haven't found
+					// the file size field correctly.
+					return null;
+				}
+			}
+			else
+			{
+				//Probably ought to return null here because we haven't found
+				// the month field and who knows what we have where
+				return null;	
+			}
+			
 			// path is null; it will be created later, by _listDirectory()
 			return new VFS.DirectoryEntry(name,null,null,type,
 				length,name.charAt(0) == '.' /* isHidden */);
@@ -570,6 +653,16 @@ public class FtpVFS extends VFS
 	{
 		String name = entry.name;
 		int index = name.indexOf(" -> ");
+		
+		if(index == -1)
+		{
+			//non-standard link representation. Treat as a file
+			//Some Mac and NT based servers do not use the "->" for symlinks
+			entry.path = constructPath(dir,name);
+			entry.type = VFS.DirectoryEntry.FILE;
+			Log.log(Log.NOTICE,this,"Dir Entry '"+name+"' is listed as a link, but will be treated as a file because no '->' was found.");
+			return;
+		}
 		String link = name.substring(index + " -> ".length());
 		link = constructPath(dir,link);
 		VFS.DirectoryEntry linkDirEntry = _getDirectoryEntry(
