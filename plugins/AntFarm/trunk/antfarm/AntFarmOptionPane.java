@@ -35,7 +35,7 @@ public class AntFarmOptionPane
 	private JTextField _command;
 	private JRadioButton _useSameJvm;
 	private JRadioButton _useExternalScript;
-	private JCheckBox _useProjectViewerIntegration;
+	//private JCheckBox _useProjectViewerIntegration;
 	private JCheckBox _useEmacsOutput;
 	private JCheckBox _saveOnExecute;
 	private JCheckBox _supressSubTargets;
@@ -93,12 +93,12 @@ public class AntFarmOptionPane
 				}
 			} );
 
-		_useProjectViewerIntegration = new JCheckBox(
-			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "use-project-bridge-label" )
-			 );
-		_useProjectViewerIntegration.setSelected(
-			jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-project-bridge" )
-			 );
+		//_useProjectViewerIntegration = new JCheckBox(
+		//	jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "use-project-bridge-label" )
+		//	 );
+		//_useProjectViewerIntegration.setSelected(
+		//	jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-project-bridge" )
+		//	 );
 		_useEmacsOutput = new JCheckBox(
 			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "output-emacs-label" )
 			 );
@@ -162,7 +162,7 @@ public class AntFarmOptionPane
 			AntFarmPlugin.OPTION_PREFIX + "logging-level", LogLevelEnum.INFO.getValue()))
 		);
 		levelPanel.add(_loggingLevel);
-		
+
 		JPanel pathPanel = new JPanel();
 		pathPanel.add( _command );
 		pathPanel.add( _pickPath );
@@ -181,7 +181,7 @@ public class AntFarmOptionPane
 		addComponent( pathPanel );
 
 		addSeparator( AntFarmPlugin.OPTION_PREFIX + "general-options" );
-		addComponent( _useProjectViewerIntegration );
+		//addComponent( _useProjectViewerIntegration );
 		addComponent( _useEmacsOutput );
 		addComponent( _saveOnExecute );
 		addComponent( _supressSubTargets );
@@ -195,9 +195,9 @@ public class AntFarmOptionPane
 		jEdit.setProperty( AntFarmPlugin.OPTION_PREFIX + "classpath", _classPath.getText() );
 		jEdit.setProperty( AntFarmPlugin.OPTION_PREFIX + "command", _command.getText() );
 		jEdit.setBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm", _useSameJvm.isSelected() );
-		jEdit.setBooleanProperty(
-			AntFarmPlugin.OPTION_PREFIX + "use-project-bridge", _useProjectViewerIntegration.isSelected()
-			 );
+		//jEdit.setBooleanProperty(
+		//	AntFarmPlugin.OPTION_PREFIX + "use-project-bridge", _useProjectViewerIntegration.isSelected()
+		//	 );
 		jEdit.setBooleanProperty(
 			AntFarmPlugin.OPTION_PREFIX + "output-emacs", _useEmacsOutput.isSelected()
 			 );
@@ -207,15 +207,15 @@ public class AntFarmOptionPane
 		jEdit.setBooleanProperty(
 			AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets", _supressSubTargets.isSelected()
 			);
-			 
-		jEdit.setIntegerProperty( 
+
+		jEdit.setIntegerProperty(
 			AntFarmPlugin.OPTION_PREFIX + "logging-level",
 			((LogLevelEnum)_loggingLevel.getSelectedItem()).getValue()
 			);
-		
+
 		// make sure all of the jars specified in _classPath are loaded.
 		AntFarmPlugin.loadCustomClasspath();
-		
+
 	}
 
 

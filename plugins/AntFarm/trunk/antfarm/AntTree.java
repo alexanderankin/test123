@@ -33,16 +33,17 @@ import org.gjt.sp.util.*;
 
 public class AntTree extends JTree
 {
-	public final static ImageIcon ICON_ROOT =
-		AntFarm.loadIcon( "antfarm.root.icon" );
-	public final static ImageIcon ICON_PROJECT =
-		AntFarm.loadIcon( "antfarm.project.icon" );
-	public final static ImageIcon ICON_BROKEN_PROJECT =
-		AntFarm.loadIcon( "antfarm.brokenProject.icon" );
-	public final static ImageIcon ICON_TARGET =
-		AntFarm.loadIcon( "antfarm.target.icon" );
-	public final static ImageIcon ICON_DEFAULT_TARGET =
-		AntFarm.loadIcon( "antfarm.defaultTarget.icon" );
+	public final static Icon ICON_ROOT =
+		AntFarm.loadIcon( "antfarm.root." );
+	public final static Icon ICON_PROJECT =
+        AntFarm.loadIcon("antfarm.project.");
+		// AntFarm.loadIcon( "antfarm.project.icon" );
+	public final static Icon ICON_BROKEN_PROJECT =
+		AntFarm.loadIcon( "antfarm.brokenProject." );
+	public final static Icon ICON_TARGET =
+		AntFarm.loadIcon( "antfarm.target." );
+	public final static Icon ICON_DEFAULT_TARGET =
+		AntFarm.loadIcon( "antfarm.defaultTarget." );
 
 	protected JPopupMenu _popup;
 	protected TreePath _clickedPath;
@@ -183,6 +184,13 @@ public class AntTree extends JTree
 
 	public void executeCurrentTarget()
 	{
+        // Console use change
+        AntNode antNode = getAntNode( getCurrentlySelectedNode() );
+        if ( antNode != null ) {
+            _antFarm.loadBuildFileInShell( antNode.getBuildFilePath() );
+        }
+        // End console use change.
+
 		ExecutingNode node = getExecutingNode( getCurrentlySelectedNode() );
 		if ( node != null )
 			node.execute();
@@ -212,11 +220,11 @@ public class AntTree extends JTree
 	{
 		_root = new RootNode();
 		_top = new DefaultMutableTreeNode( new IconData( ICON_ROOT, _root ) );
-		
+
 		String loading =
 		jEdit.getProperty( AntFarmPlugin.NAME + ".tree.loading" );
 		_top.add( new DefaultMutableTreeNode( loading ) );
-		
+
 		setModel( new DefaultTreeModel( _top ) );
 
 		TreeCellRenderer renderer = new IconCellRenderer();
@@ -239,7 +247,7 @@ public class AntTree extends JTree
 	class MouseTrigger extends MouseAdapter
 	{
 
-		public void mouseReleased( MouseEvent e )
+		public void mousePressed( MouseEvent e )
 		{
 
 			if ( GUIUtilities.isPopupTrigger( e ) ) {
@@ -484,10 +492,12 @@ public class AntTree extends JTree
 				_antFarm.runTarget.setEnabled( false );
 			}
 
-			AntNode antNode = getAntNode( getTreeNode( _clickedPath ) );
-			if ( antNode != null ) {
-				_antFarm.loadBuildFileInShell( antNode.getBuildFilePath() );
-			}
+            // Console use change.
+			// AntNode antNode = getAntNode( getTreeNode( _clickedPath ) );
+			// if ( antNode != null ) {
+				// _antFarm.loadBuildFileInShell( antNode.getBuildFilePath() );
+			// }
+            // End console use change.
 		}
 	}
 
@@ -574,7 +584,13 @@ public class AntTree extends JTree
 		{
 			if ( object instanceof AntNode ) {
 				AntNode antNode = (AntNode) object;
-				this.setToolTipText( antNode.getToolTipText() );
+
+                String toolTipText = antNode.getToolTipText();
+
+                if (! toolTipText.equals(""))
+                    this.setToolTipText( toolTipText );
+                else
+                    this.setToolTipText( null );
 			}
 		}
 	}
@@ -653,7 +669,7 @@ public class AntTree extends JTree
 			propertyDialog.show();
 
 			if (propertyDialog.isCanceled()) return null;
-			
+
 			Properties properties = propertyDialog.getProperties();
 
 			if ( properties == null ) {
@@ -785,10 +801,10 @@ public class AntTree extends JTree
 			String description = "";
 			if ( _target.getDescription() != null )
 				description += _target.getDescription();
-				
+
 			if ( isDefaultTarget() )
 				return "[default] " + description;
-				
+
 			return description;
 		}
 
@@ -820,9 +836,9 @@ public class AntTree extends JTree
 		public void execute()
 		{
 			String properties = promptForProperties();
-			
+
 			if (properties == null) return;
-			
+
 			Console console = AntFarmPlugin.getConsole( _view );
 			console.run( AntFarmPlugin.ANT_SHELL, console, "!"
 				 + _target.getName()
@@ -834,14 +850,14 @@ public class AntTree extends JTree
 		{
 			return _target.getDescription() == null;
 		}
-		
-		
+
+
 		private boolean isDefaultTarget()
 		{
 			return _target.getName().equals( getProject().getDefaultTarget() );
 		}
-		
-		
+
+
 	}
 
 
@@ -917,7 +933,7 @@ public class AntTree extends JTree
 			String properties = promptForProperties();
 
 			if (properties == null) return;
-						
+
 			Console console = AntFarmPlugin.getConsole( _view );
 			console.run(
 				AntFarmPlugin.ANT_SHELL, console, "!"
@@ -939,11 +955,11 @@ public class AntTree extends JTree
 
 			for ( int i = 0; i < targetNodes.size(); i++ ) {
 				TargetNode nd = (TargetNode) targetNodes.elementAt( i );
-				
+
 				// Skip sub-nodes...
-				if ( nd.isSubTarget() && AntFarmPlugin.supressSubTargets() ) 
+				if ( nd.isSubTarget() && AntFarmPlugin.supressSubTargets() )
 					continue;
-				
+
 				IconData idata = null;
 				if ( nd.isDefaultTarget() ) {
 					idata = new IconData( AntTree.ICON_DEFAULT_TARGET,
@@ -951,7 +967,7 @@ public class AntTree extends JTree
 				}
 				else {
 					idata = new IconData( AntTree.ICON_TARGET,
-						null, nd );				
+						null, nd );
 				}
 				DefaultMutableTreeNode node = new DefaultMutableTreeNode( idata );
 				parent.add( node );
