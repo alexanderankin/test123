@@ -85,24 +85,33 @@ public class BufferTabsPlugin extends EBPlugin {
     public void handleMessage(EBMessage msg) {
         if (msg instanceof EditPaneUpdate) {
             EditPaneUpdate epu = (EditPaneUpdate) msg;
+
             if (epu.getWhat() == EditPaneUpdate.CREATED) {
-                editPaneCreated(epu.getEditPane());
+                this.editPaneCreated(epu.getEditPane());
+            }
+            else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
+                this.editPaneDestroyed(epu.getEditPane());
             }
         }
         else if (msg instanceof PropertiesChanged) {
-            propertiesChanged();
+            this.propertiesChanged();
         }
     }
 
 
-    void editPaneCreated(EditPane editPane) {
+    private void editPaneCreated(EditPane editPane) {
         if (jEdit.getBooleanProperty("buffertabs.enable", false)) {
             addBufferTabsToEditPane(editPane);
         }
     }
 
 
-    void propertiesChanged() {
+    private void editPaneDestroyed(EditPane editPane) {
+        removeBufferTabsFromEditPane(editPane);
+    }
+
+
+    private void propertiesChanged() {
          String location = BufferTabsOptionPane
             .getLocationProperty("buffertabs.location", "bottom");
 
@@ -151,20 +160,21 @@ public class BufferTabsPlugin extends EBPlugin {
 
     private static void removeBufferTabsFromEditPane(EditPane editPane) {
         Component ta = editPane.getTextArea();
-        Container tabs = ta.getParent();
+        BufferTabs tabs = getBufferTabsForEditPane(editPane);
 
-        if (tabs instanceof BufferTabs) {
-            ((BufferTabs) tabs).stop();
-            Container container = tabs.getParent();
-            container.remove(tabs);
-            container.add(ta);
-            tabsMap.remove(editPane);
-            while (container != null && !(container instanceof JComponent)) {
-                container = container.getParent();
-            }
-            if (container != null) {
-                ((JComponent)container).revalidate();
-            }
+        if (tabs == null) { return; }
+
+        tabs.stop();
+        Container container = tabs.getParent();
+        container.remove(tabs);
+        container.add(ta);
+        tabsMap.remove(editPane);
+
+        while (container != null && !(container instanceof JComponent)) {
+            container = container.getParent();
+        }
+        if (container != null) {
+            ((JComponent)container).revalidate();
         }
     }
 
