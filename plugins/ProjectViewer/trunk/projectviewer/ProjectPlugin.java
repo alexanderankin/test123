@@ -106,10 +106,6 @@ public final class ProjectPlugin extends EBPlugin {
          f.getParentFile().mkdirs();
             
       checkOldProperties();
-
-      //parse out the resources as a thread so that when the plugin is
-      //requested there is nothing to do.
-      //new ThreadedParser().start();
    }
 
    /**
