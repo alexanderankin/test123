@@ -1,6 +1,6 @@
 /*
  * FtpVFS.java - Ftp VFS
- * Copyright (C) 2000 Slava Pestov
+ * Copyright (C) 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,9 +36,6 @@ public class FtpVFS extends VFS
 	public static final String PROTOCOL = "ftp";
 
 	public static final String CLIENT_KEY = "FtpVFS.client";
-	
-	private final	StringBuffer buf = new StringBuffer(128);
-	private final 	Vector tokens = new Vector(16);
 
 	public FtpVFS()
 	{
@@ -125,33 +122,38 @@ public class FtpVFS extends VFS
 			return directory;
 
 		FtpAddress address = new FtpAddress(url);
+
+		BufferedReader in = null;
+
 		FtpClient client = _getFtpClient(session,address,false,comp);
 		if(client == null)
 			return null;
 
-		BufferedReader in = null;
-		Vector directoryVector = new Vector();
 		try
 		{
+			Vector directoryVector = new Vector();
+
 			//Use ASCII mode for dir listing
 			client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
-			
+
 			//CWD into the directory - Doing a LIST on a path with spaces in the
 			//name fails; however, if you CWD to the dir and then LIST it
 			// succeeds.
 			client.changeWorkingDirectory(address.path);
 			//Check for successful response
 			FtpResponse response = client.getResponse();
-			if(response.getReturnCode().charAt(0)!='2')
+			if(response != null
+				&& response.getReturnCode() != null
+				&& response.getReturnCode().charAt(0) != '2')
 			{
 				String[] args = { url, response.toString() };
 				VFSManager.error(comp,"vfs.ftp.list-error",args);
 				return null;
 			}
-			
+
 			_setupSocket(client);
 			Reader _in = client.list(); //we are in the right dir so just send LIST
-			
+
 			if(_in == null)
 			{
 				String[] args = { url, client.getResponse().toString() };
@@ -163,6 +165,8 @@ public class FtpVFS extends VFS
 			String line;
 			while((line = in.readLine()) != null)
 			{
+				Log.log(Log.DEBUG,this,"File listing: " + line);
+
 				if(line.startsWith("total"))
 					continue;
 
@@ -305,7 +309,9 @@ public class FtpVFS extends VFS
 		client.changeWorkingDirectory(parentPath);
 		//Check for successful response
 		FtpResponse response = client.getResponse();
-		if(response.getReturnCode().charAt(0)!='2')
+		if(response != null
+			&& response.getReturnCode() != null
+			&& response.getReturnCode().charAt(0) != '2')
 		{
 			String[] args = { path, response.toString() };
 			VFSManager.error(comp,"vfs.ftp.list-error",args);
@@ -431,6 +437,8 @@ public class FtpVFS extends VFS
 
 	// private members
 	private static final int __LINK = 10;
+	private final StringBuffer buf = new StringBuffer(128);
+	private final Vector tokens = new Vector(16);
 
 	private FtpClient _getFtpClient(VFSSession session, FtpAddress address,
 		boolean ignoreErrors, Component comp)
@@ -455,19 +463,18 @@ public class FtpVFS extends VFS
 	private static void _setupSocket(FtpClient client)
 		throws IOException
 	{
-		
 		if(jEdit.getBooleanProperty("vfs.ftp.passive"))
 			client.passive();
 		else
 			client.dataPort();
-			
-		// See if we should use Binary mode to transfer files. 
+
+		// See if we should use Binary mode to transfer files.
 		if (jEdit.getBooleanProperty("vfs.ftp.binary"))
 		{
 			//Go with Binary
             		client.representationType(com.fooware.net.FtpClient.IMAGE_TYPE);
         	}
-		else 
+		else
 		{
 			//Stick to ASCII - let the line endings get converted
 			client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
@@ -495,20 +502,29 @@ public class FtpVFS extends VFS
 			}
 
 			client.userName(user);
-			if(!client.getResponse().isPositiveIntermediary())
-			{
-				if(!ignoreErrors)
-				{
-					String[] args = { host, port, user,
-						client.getResponse().toString() };
-					VFSManager.error(comp,"vfs.ftp.login-error",args);
-				}
-				client.logout();
-				return null;
-			}
 
-			client.password(password);
-			if(!client.getResponse().isPositiveCompletion())
+			if(client.getResponse().isPositiveIntermediary())
+			{
+				client.password(password);
+
+				if(!client.getResponse().isPositiveCompletion())
+				{
+					if(!ignoreErrors)
+					{
+						String[] args = { host, port, user,
+							client.getResponse().toString() };
+						VFSManager.error(comp,"vfs.ftp.login-error",args);
+					}
+					client.logout();
+					return null;
+				}
+			}
+			else if(client.getResponse().isPositiveCompletion())
+			{
+				// do nothing, server let us in without
+				// a password
+			}
+			else
 			{
 				if(!ignoreErrors)
 				{
@@ -610,11 +626,9 @@ public class FtpVFS extends VFS
 					{
 						fileSizePos = tokens.size()-1;	 //note position of file
 														//size, which is in front 
-														//of this element
-						
 						namePos = fileSizePos+3;	//position of the name
 					}
-					
+
 					//See if we are on the name token
 					if(tokens.size() == namePos)
 					{
@@ -633,29 +647,30 @@ public class FtpVFS extends VFS
 					buf.append(line.charAt(i));
 				}
 			}
-			
+
 			name = (String)tokens.lastElement();
 			if(name == null)
 				return null;
 				
-			if(fileSizePos != 0)	//be sure we found this
+			if(fileSizePos == 0)
 			{
-				try{
-					length = Long.parseLong(((String)tokens.elementAt(fileSizePos)).trim());
-				}catch(NumberFormatException e)
-				{
-					//Probably ought to return null here because we haven't found
-					// the file size field correctly.
+				if(tokens.size() >= 2)
+					fileSizePos = tokens.size() - 2;
+				else
 					return null;
-				}
-			}
-			else
-			{
-				//Probably ought to return null here because we haven't found
-				// the month field and who knows what we have where
-				return null;	
 			}
 			
+			try
+			{
+				length = Long.parseLong(((String)tokens.elementAt(fileSizePos)).trim());
+			}
+			catch(NumberFormatException e)
+			{
+				//Probably ought to return null here because we haven't found
+				// the file size field correctly.
+				return null;
+			}
+
 			// path is null; it will be created later, by _listDirectory()
 			return new VFS.DirectoryEntry(name,null,null,type,
 				length,name.charAt(0) == '.' /* isHidden */);
