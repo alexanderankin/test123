@@ -3,6 +3,8 @@ import java.lang.*;
 import java.lang.System.*;
 import java.util.*;
 
+// class test {
+
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.*;
 
@@ -43,6 +45,9 @@ class test {
     
     // tag to something known to not be found.  Make sure item is unhighlighted
 
+    // make sure this goes to the right place
+    // test
+    
     // main
     
     // (main())
@@ -55,7 +60,9 @@ class test {
     
     // jEdit.openFile
  
+    // jEdit.java
  
+    // getFirstBuffer
  
  
  
