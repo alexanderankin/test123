@@ -346,6 +346,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		removeProject.addActionListener(this);
 		projectMenu.add(removeProject);
 
+		projectMenu.addSeparator();
 		archiveProject = new JMenuItem("Archive Project");
 		archiveProject.addActionListener(this);
 		projectMenu.add(archiveProject);		
@@ -461,14 +462,20 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 					}
 
 					public boolean accept(File f) {
-						return true;
+						String name = f.getName();
+						if (name.endsWith(".zip")) return true;
+    					else if (name.endsWith(".jar")) return true;
+    					else if (name.endsWith(".war")) return true;
+    					else if (name.endsWith(".ear")) return true;
+						else if (f.isDirectory()) return true;
+    					return false;
 					}
 				};
 		}
 		
 		chooser.setFileFilter(nonProjectFileFilter);
 		chooser.setCurrentDirectory(new File (viewer.getCurrentProject().getRoot().getPath())); 
-
+		
  	   if((chooser.showSaveDialog(this.viewer) != javax.swing.JFileChooser.APPROVE_OPTION)) {
 			return;
 		}
@@ -528,6 +535,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	private void renameFile() {
 		ProjectFile file = (ProjectFile) viewer.getSelectedNode();
 		String newName = (String)
+		
 			JOptionPane.showInputDialog(
 				viewer,
 				"Enter the new name of the file:",
