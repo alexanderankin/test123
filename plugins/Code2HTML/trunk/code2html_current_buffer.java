@@ -15,29 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+*/
+
 
 import java.awt.event.ActionEvent;
 
-import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditAction;
+import org.gjt.sp.jedit.View;
 
 import org.gjt.sp.util.Log;
 
-public class code2html_current_buffer 
-	extends EditAction
+
+public class code2html_current_buffer
+    extends EditAction
 {
-	public code2html_current_buffer() {
-		super("code2html.current-buffer");
-	}
+    public code2html_current_buffer() {
+        super("code2html.current-buffer");
+    }
 
-	public void actionPerformed(ActionEvent evt) {
-		View v = EditAction.getView(evt);
-		Buffer b = (v == null) ? null : v.getBuffer();
 
-		if (v != null && b != null) {
-			Code2HTML code2html = new Code2HTML();
-			code2html.toHTML(v, b);
-		}
-	}
+    public void actionPerformed(ActionEvent evt) {
+        View v = EditAction.getView(evt);
+        Buffer b = (v == null) ? null : v.getBuffer();
+
+        if (v != null && b != null) {
+            Code2HTML code2html = new Code2HTML();
+            code2html.toHTML(v, b);
+        }
+    }
 }
 

@@ -15,22 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
+*/
 
-import java.io.*;
+
+import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.StringWriter;
+import java.io.Writer;
 
 import javax.swing.text.Segment;
 
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EBComponent;
+import org.gjt.sp.jedit.EBMessage;
+import org.gjt.sp.jedit.EditBus;
+import org.gjt.sp.jedit.EditPane;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
 import org.gjt.sp.jedit.syntax.TokenMarker;
 
-import org.gjt.sp.jedit.textarea.*;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
+
 
 public class Code2HTML
     implements EBComponent
@@ -38,14 +50,17 @@ public class Code2HTML
     private boolean useCSS;
     private boolean showGutter;
 
+
     public Code2HTML() {
         this.useCSS     = jEdit.getBooleanProperty("code2html.use-css", false);
         this.showGutter = jEdit.getBooleanProperty("code2html.show-gutter", false);
     }
 
+
     public void toHTML(View view, Buffer buffer) {
         toHTML(view, buffer, false);
     }
+
 
     public void toHTML(View view, Buffer buffer, boolean selection) {
         EditPane editPane = view.getEditPane();
@@ -81,6 +96,7 @@ public class Code2HTML
         }
     }
 
+
     public void handleMessage(EBMessage message) {
         if (message instanceof BufferUpdate) {
             BufferUpdate bu = (BufferUpdate) message;
@@ -100,6 +116,7 @@ public class Code2HTML
             }
         }
     }
+
 
     private void toHTML(Writer out, Buffer buffer, JEditTextArea textArea,
             int first, int last)
@@ -164,6 +181,7 @@ public class Code2HTML
         } catch (IOException ioe) {}
     }
 
+
     private void paintLine(Writer out, Segment line, Token tokens,
             LineTabExpander expander, SyntaxStyle[] styles)
     {
@@ -177,6 +195,7 @@ public class Code2HTML
             paintSyntaxLine(out, line, tokens, expander, styles);
         }
     }
+
 
     private void paintSyntaxLine(Writer out, Segment line, Token tokens,
             LineTabExpander expander, SyntaxStyle[] styles)
@@ -210,9 +229,11 @@ public class Code2HTML
         }
     }
 
+
     private String toHTML(String s) {
         return this.toHTML(s.toCharArray(), 0, s.length());
     }
+
 
     private String toHTML(char[] str, int strOff, int strLen) {
         StringBuffer buf = new StringBuffer();
@@ -239,7 +260,9 @@ public class Code2HTML
         return buf.toString();
     }
 
+
     private BufferJob job;
+
 
     private static class BufferJob
     {
@@ -247,12 +270,15 @@ public class Code2HTML
         private EditPane editPane;
         private String   text;
 
+
         private BufferJob() {}
+
 
         public BufferJob(EditPane editPane, String text) {
             this.editPane = editPane;
             this.text     = text;
         }
+
 
         public void run() {
             if (this.buffer != this.editPane.getBuffer()) {
@@ -261,6 +287,7 @@ public class Code2HTML
                 this.editPane.getTextArea().setText(this.text);
             }
         }
+
 
         public void setBuffer(Buffer buffer) {
             this.buffer = buffer;
