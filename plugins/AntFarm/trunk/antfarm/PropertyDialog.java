@@ -69,6 +69,7 @@ public class PropertyDialog extends JDialog
 
 		getContentPane().add( buttons, BorderLayout.SOUTH );
 		pack();
+		setLocationRelativeTo(frame);
 	}
 
 
