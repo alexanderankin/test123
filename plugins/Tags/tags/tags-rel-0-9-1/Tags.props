@@ -1,0 +1,54 @@
+# general plugin information
+plugin.tags.TagsPlugin.name=Tags
+plugin.tags.TagsPlugin.author=Kenrick Drew
+plugin.tags.TagsPlugin.version=0.9.1
+plugin.tags.TagsPlugin.docs=Tags.html
+plugin.tags.TagsPlugin.depend.0=jdk 1.1
+plugin.tags.TagsPlugin.depend.1=jedit 03.02.99.00
+
+# Tag files
+tags-tag-files=
+
+# action labels
+tags-follow-tag.label=Follow Tag
+tags-follow-tag-new-view.label=Follow Tag (New View)
+tags-enter-and-follow-tag.label=Follow Tag...
+tags-pop-tag.label=Pop Tag
+tags-options.label=Tagging Options
+
+# application menu items
+tags.menu.label=Tags
+tags.menu=tags-follow-tag tags-follow-tag-new-view tags-enter-and-follow-tag tags-pop-tag
+
+# Messages
+tags.message.no-tag-index-files=No tag index files to search.  Please add tag index files\nfrom the Global Options dialog.
+
+# Tag To dialog strings
+tags.enter-tag-dlg.title=Enter And Follow Tag
+tags.enter-tag-dlg.tag-to.label=Tag to:
+tags.enter-tag-dlg.new-view-checkbox.label=Open new view
+
+# Tag collision dialog
+tag-collision-dlg.title=Tag Collisions
+tag-collision-dlg.label=Choose tag:
+
+# Option strings
+options.tags.label=Tags
+options.tags.tag-file-type.title=Tag File Type
+options.tags.tag-search-files.label=Tag index files (in order of search)
+options.tags.tag-search-current-buff-tag-file.label=Search tag index file in current buffer's directory
+options.tags.tag-search-all-files.label=If tag match is found continue searching subsequent tag index files.
+options.tags.tag-search-files-add.label=Add...
+options.tags.tag-search-files-remove.label=Remove
+options.tags.tag-search-files-move-up.label=Move Up
+options.tags.tag-search-files-move-down.label=Move Down
+options.tags.tag-options.title=Tagging Options
+options.tags.current-buffer-file-name.label=Tag index file name:
+options.tags.current-buffer-file-name=tags
+options.tags.tag-ok.label=OK
+options.tags.tag-cancel.label=Cancel
+
+# Option values
+options.tags.tag-search-current-buff-tag-file=false
+options.tags.tag-search-all-files=false
+
