@@ -1,48 +1,27 @@
 <html>
 <body>
-<h1>BufferLocal Plugin</h1>
+<h1>Navigator Plugin</h1>
 <b>
 Author: Dale Anson, danson at germane-software dot com<br>
 Version: @@build.num@@<br>
-Date: @@tstamp@@
+Build Date: @@tstamp@@
 </b>
 <p>
-The BufferLocal Plugin saves the settings made using the Buffer Options dialog
-and restores those settings the next time the file is opened. This means that
-you don' have to manually change the settings each time the file is opened. The 
-motivation for this comes from jEdit itself...
+<b>Introduction:</b>
+<br>
+The Navigator Plugin provides a set of "Back" and "Forward" similar to a web browser. This is surprisingly handy. Click around through several files, click the "Back" and "Forward" buttons to retrace your path.
 <p>
-Swiped directly from the jEdit 4.2 documentation, with emphasis added:
+<b>Configuration:</b>
+<br>
+The Navigator can be docked. The top or bottom docking positions are generally the best fit. Use the standard docking configuration dialog under "Utilities" -> "Global Options" -> "Docking".
 <p>
-<table border="1" bgcolor="lightgray">
-<tr><td>
-Buffer-local properties provide an alternate way to change editor settings on a 
-per-buffer basis. <b><i>While changes made in the Buffer Options dialog box are lost 
-after the buffer is closed,</i></b> buffer-local properties take effect each time the 
-file is opened, because they are embedded in the file itself.
+The Navigator can also be added to the toolbar. This can be done in one of
+two ways:
+<ol>
+<li>If docked, check the "Show on toolbar" checkbox to move the "Back" and "Forward" buttons to the jEdit toolbar, uncheck to move them back to the docked plugin panel.</li>
+<li>If not docked, use the "Plugins" menu, then "Navigator", then check the "Show on toolbar" box.</li>
+</ol>
 <p>
-When jEdit loads a file, it checks the first and last 10 lines for colon-enclosed 
-name/value pairs. For example, placing the following in a buffer changes the 
-indent width to 4 characters, enables soft tabs, and activates the Perl edit mode:
-<p>
-:indentSize=4:noTabs=true:mode=perl:
-<p>
-Adding buffer-local properties to a buffer takes effect after the next time the 
-buffer is saved.
-</td></tr>
-</table>
-<p>
-Unfortunately, there isn't a nice gui to create the buffer-local line, and some
-coding standards prohibit putting such editor/ide specific lines directly into
-the source code.
-<p>
-To get around this, the BufferLocal plugin stores the settings made using the
-Buffer Options dialog box and applies those settings to each file as they are
-opened.
-<p>
-There is no set up or configuration for this plugin, once installed, it is active.
-Use the Buffer Option dialog to adjust the settings for a file, and those settings
-will automatically be saved and applied to the file the next time it is opened.
-<!-- $Id$ -->
+
 </body>
 </html>
