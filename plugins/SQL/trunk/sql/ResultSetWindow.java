@@ -250,7 +250,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
     final String[] columnTypes = new String[colNumber];
     for ( int i = colNumber + 1; --i > 0;  )
     {
-      columnNames[i] = rsmd.getColumnName( i );
+      columnNames[i - 1] = rsmd.getColumnName( i );
 
       String type = rsmd.getColumnTypeName( i );
 
@@ -264,7 +264,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
       if ( rsmd.columnNoNulls == rsmd.isNullable( i ) )
         type += "/" + jEdit.getProperty( "sql.resultSet.colHeaders.notNullable" );
 
-      columnTypes[i] = type;
+      columnTypes[i - 1] = type;
     }
 
     final Vector rowData = new Vector();
@@ -277,7 +277,7 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
       final String[] aRow = new String[colNumber];
       for ( int i = colNumber + 1; --i > 0;  )
-        aRow[i] = rs.getString( i );
+        aRow[i - 1] = rs.getString( i );
 
       rowData.addElement( aRow );
     }
