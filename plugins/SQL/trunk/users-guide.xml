@@ -231,8 +231,8 @@
       <listitem>
         <guibutton>Load Object</guibutton>
           - Downloads the object sources from the database. Creates new
-          buffer. In the drop-down list, <font color="red"><b>red</b></font>
-          objects are invalid ones, <font color="black"><b>black</b></font>
+          buffer. In the drop-down list, red
+          objects are invalid ones, black
           ones are valid.
       </listitem>
 
