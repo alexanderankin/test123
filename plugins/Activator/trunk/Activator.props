@@ -7,5 +7,7 @@ plugin.activator.ActivatorPlugin.activate=defer
 
 activator.title=Activator
 activator.label=Activator
+activator.reloader.title=Reloader
+activator.reloader.label=Reloader
 
-plugin.activator.ActivatorPlugin.menu-item=activator
+plugin.activator.ActivatorPlugin.menu=activator activator.reloader
