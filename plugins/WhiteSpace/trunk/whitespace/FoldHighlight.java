@@ -36,7 +36,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-//import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.DisplayManager;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaExtension;
@@ -217,18 +216,9 @@ public class FoldHighlight extends TextAreaExtension
 
     private void updateTextArea() {
         if (this.textArea == null) { return; }
-//        FoldVisibilityManager foldVisibilityManager = this.textArea.getFoldVisibilityManager();
-         DisplayManager displayManager = this.textArea.getDisplayManager();
-         //.getDisplayManger();
-//        int physicalFirst = foldVisibilityManager.getFirstVisibleLine();
-//        int physicalLast  = foldVisibilityManager.getLastVisibleLine();
+        DisplayManager displayManager = this.textArea.getDisplayManager();
         int physicalFirst = displayManager.getFirstVisibleLine();
         int physicalLast  = displayManager.getLastVisibleLine();
-//        FoldVisibilityManager foldVisibilityManager = this.textArea.getFoldVisibilityManager();
-
-//        int physicalFirst = foldVisibilityManager.getFirstVisibleLine();
-//        int physicalLast  = foldVisibilityManager.getLastVisibleLine();
-
         this.textArea.invalidateLineRange(physicalFirst, physicalLast);
     }
 
@@ -256,13 +246,27 @@ public class FoldHighlight extends TextAreaExtension
 
 
     public static TextAreaExtension addHighlightTo(EditPane editPane) {
-        TextAreaExtension textAreaHighlight = new FoldHighlight(editPane.getTextArea());
-        highlights.put(editPane, textAreaHighlight);
-        return textAreaHighlight;
+        JEditTextArea textArea = editPane.getTextArea();
+        TextAreaPainter painter = textArea.getPainter();
+        TextAreaExtension highlight = null;
+        highlight = (FoldHighlight)painter.getClientProperty(FoldHighlight.class);
+        if(highlight == null) {
+             highlight = new FoldHighlight(textArea);
+             highlights.put(editPane, highlight);
+             painter.addExtension(TextAreaPainter.DEFAULT_LAYER, highlight);
+             painter.putClientProperty(FoldHighlight.class, highlight);
+        }
+        return highlight;
     }
 
 
     public static void removeHighlightFrom(EditPane editPane) {
+        FoldHighlight highlight = (FoldHighlight)editPane
+            .getTextArea().getPainter().getClientProperty(FoldHighlight.class);
+        if(highlight != null) {
+            editPane.getTextArea().getPainter().removeExtension(highlight);
+            editPane.getTextArea().getPainter().putClientProperty(FoldHighlight.class,null);
+        }
         highlights.remove(editPane);
     }
 

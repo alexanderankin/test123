@@ -33,6 +33,11 @@
 
 <project name="WhiteSpace" default="dist" basedir=".">
 
+    <property file="build.properties"/>
+    <property file="../build.properties"/>
+    <property file="${user.home}/.build.properties"/>
+    <property file="${user.home}/build.properties"/>
+
     <property name="jedit.install.dir"  value="../.."/>
     <property name="jar.name"  value="${ant.project.name}.jar"/>
     <property name="docs-proc.target"  value="xsltproc"/>
@@ -50,6 +55,17 @@
 
     <target name="init">
         <mkdir dir="${build.dir}"/>
+        <delete file="docbook-wrapper.xsl" />
+        <echo file="docbook-wrapper.xsl"
+            message="&lt;xsl:stylesheet"/>
+        <echo file="docbook-wrapper.xsl" append="true"
+            message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+        <echo file="docbook-wrapper.xsl" append="true"
+            message=" version='1.0'&gt;"/>
+        <echo file="docbook-wrapper.xsl" append="true"
+            message="&lt;xsl:import href='${docbook.xsl}/html/docbook.xsl'/&gt;"/>
+        <echo file="docbook-wrapper.xsl" append="true"
+            message="&lt;/xsl:stylesheet&gt;"/>
     </target>
 
 
@@ -58,6 +74,7 @@
             srcdir="${src.dir}"
             destdir="${build.dir}"
             deprecation="on"
+            debug="on"
             includeJavaRuntime="yes"
         >
             <classpath refid="project.class.path"/>
@@ -111,6 +128,7 @@
         <delete dir="${build.dir}"/>
         <delete>
             <fileset dir="." includes="users-guide.html"/>
+            <fileset dir="." includes="docbook-wrapper.xsl"/>
             <fileset dir="." includes="**/*~"/>
         </delete>
     </target>
