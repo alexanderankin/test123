@@ -116,10 +116,26 @@ class SystemShell extends Shell
 		}
 	}
 
-	public synchronized boolean waitFor()
+	public void boolean waitFor(Console console)
 	{
+		ConsoleState consoleState = getConsoleState(console);
+		ConsoleProcess process = consoleState.process;
+		if(process != null)
+		{
+			try
+			{
+				synchronized(process)
+				{
+					process.wait();
+				}
+			}
+			catch(InterruptedException e)
+			{
+			}
+		}
+
 		// TODO
-		return true;
+		return process.getExitStatus();
 	}
 
 	// package-private members
@@ -166,7 +182,8 @@ class SystemShell extends Shell
 				if(java13exec != null)
 				{
 					Object[] methodArgs = { args, null, new File(currentDirectory) };
-					return (Process)java13exec.invoke(null,methodArgs);
+					return (Process)java13exec.invoke(
+						Runtime.getRuntime(),methodArgs);
 				}
 				else
 				{

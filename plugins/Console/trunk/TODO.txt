@@ -1,6 +1,9 @@
+- cvs add CommandoThread.java, openjade_HTML
+
+- better javadocs for print() color param, and output -vs- console params
+- separate user and default error pattern namespace
 - icons for run, to buffer, stop, clear buttons
 - animation shown while command is running
-- SystemShell.waitFor()
 - finish commando
 - documentation generated with docbook
 - error list 1.1:
@@ -9,6 +12,7 @@
   - file names in bold
   - each branch shows number of warnings, errors, with small document icon
   - error highlight: don't highlight leading whitespace
+  - tooltips don't work
 - error patterns option pane
 - variables:
   $<char> abbreviation for ${<char>}

@@ -101,6 +101,11 @@ class ConsoleProcess
 			consoleState.process = null;
 	}
 
+	boolean getExitStatus()
+	{
+		return (exitCode == 0);
+	}
+
 	// private members
 	private SystemShell.ConsoleState consoleState;
 	private String currentDirectory;
@@ -111,13 +116,13 @@ class ConsoleProcess
 	private StreamThread stdout;
 	private StreamThread stderr;
 	private int threadDoneCount;
+	private int exitCode;
 
 	private synchronized void threadDone()
 	{
 		threadDoneCount++;
 		if(process != null && threadDoneCount == 2)
 		{
-			int exitCode;
 			try
 			{
 				exitCode = process.waitFor();
@@ -147,6 +152,8 @@ class ConsoleProcess
 
 		if(consoleState != null)
 			consoleState.process = null;
+
+		notifyAll();
 	}
 
 	class StreamThread extends Thread

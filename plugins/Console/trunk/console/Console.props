@@ -5,7 +5,7 @@ plugin.console.ConsolePlugin.version=3.0
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=console/Console.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 03.02.06.00
+plugin.console.ConsolePlugin.depend.0=jedit 03.02.07.00
 plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.0
 plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.0
 
@@ -154,38 +154,44 @@ console.error.0.message=$4
 console.error.1.name=Microsoft Visual C++
 console.error.1.filename=$1
 console.error.1.line=$2
-console.error.1.match=([^\\(]*)[\\(](\\d+)[)].\:.(.*).\:.(.*)
 console.error.1.message=$4
+console.error.1.match=([^\\(]*)[\\(](\\d+)[)].\:.(.*).\:.(.*)
 
-console.error.2.name=Jade error
-console.error.2.match=(.+?)jade:(.+):(\\d+):\\d+:.:(.+)
+console.error.2.name=Microsoft.Net
 console.error.2.filename=$1
 console.error.2.line=$2
-console.error.2.message=$3
+console.error.2.message=$4
+console.error.2.match=^(.+)\\((\\d+),(\\d+)\\)\:\\s+(.+)$
 
-console.error.3.name=Ant javac error
-console.error.3.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
-console.error.3.filename=$1
-console.error.3.line=$2
-console.error.3.message=$3
+console.error.3.name=Perl
+console.error.3.match=(.+) at (.+) line (\d+)\.
+console.error.3.filename=$2
+console.error.3.line=$3
+console.error.3.message=$1
 
-console.error.4.name=Emacs-style error
-console.error.4.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.4.name=Jade error
+console.error.4.match=(.+?)jade:(.+):(\\d+):\\d+:.:(.+)
 console.error.4.filename=$1
 console.error.4.line=$2
 console.error.4.message=$3
 
-console.error.5.name=Generic compiler error
-console.error.5.match=(.+):(\\d+):(.+)
+console.error.5.name=Ant javac error
+console.error.5.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
 console.error.5.filename=$1
 console.error.5.line=$2
 console.error.5.message=$3
 
+console.error.6.name=Emacs-style error
+console.error.6.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
 console.error.6.filename=$1
 console.error.6.line=$2
-console.error.6.match=^(.+)\\((\\d+),(\\d+)\\)\:\\s+(.+)$
-console.error.6.message=$4
-console.error.6.name=Microsoft.Net
+console.error.6.message=$3
+
+console.error.7.name=Generic compiler error
+console.error.7.match=(.+):(\\d+):(.+)
+console.error.7.filename=$1
+console.error.7.line=$2
+console.error.7.message=$3
 
 ### Commando
 

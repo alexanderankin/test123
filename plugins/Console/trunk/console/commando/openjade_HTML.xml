@@ -1,0 +1,22 @@
+<?xml version="1.0" ?>
+
+<!DOCTYPE COMMANDO SYSTEM "commando.dtd">
+
+<COMMANDO>
+	<UI>
+		<ENTRY LABEL="Stylesheet" VARNAME="stylesheet" />
+		<ENTRY LABEL="Output directory" VARNAME="dir" DEFAULT="." />
+		<ENTRY LABEL="Declaration" VARNAME="dcl" />
+		<ENTRY LABEL="File name" VARNAME="file"
+			EVAL="buffer.getPath()" />
+	</UI>
+
+	<COMMANDS>
+		<COMMAND CONFIRM="FALSE" SHELL="System">
+			"openjade -d \"" + stylesheet + "\" -D \"" + dir
+				+ "\" -t sgml "
+				+ (dcl == null ? " \""
+				: "\"" + dcl + "\" \"") + file + "\"";
+		</COMMAND>
+	</COMMANDS>
+</COMMANDO>

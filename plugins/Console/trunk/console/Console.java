@@ -136,19 +136,6 @@ implements DockableWindow, EBComponent, Output
 		return (Shell)shellCombo.getSelectedItem();
 	}
 
-	public void setShell(String shell)
-	{
-		Shell[] shells = Shell.getShells();
-		for(int i = 0; i < shells.length; i++)
-		{
-			if(shells[i].getName().equals(shell))
-			{
-				setShell(shells[i]);
-				return;
-			}
-		}
-	}
-
 	public void setShell(Shell shell)
 	{
 		if(this.shell == shell)

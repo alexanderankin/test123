@@ -67,7 +67,7 @@ class ConsoleBeanShell extends Shell
 	{
 	}
 
-	public boolean waitFor()
+	public boolean waitFor(Console console)
 	{
 		return true;
 	}
