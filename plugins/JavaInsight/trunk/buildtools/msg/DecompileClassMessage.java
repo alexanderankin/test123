@@ -30,25 +30,32 @@ import org.gjt.sp.jedit.EBMessage;
  * @author Kevin A. Burton
  * @version $Id$
  */
-public class DecompileClassMessage extends EBMessage.NonVetoable {
+public class DecompileClassMessage extends EBMessage {
 
     private String classname = null;
-    private String filename  = null;
+    private String destination = null;
+    private String generatedFile = null;
+    private boolean isGeneratingFile = true;
+    private Throwable exception = null;
 
 
     /**
-     * Create an instance with the source and the classname you want to
-     * decompile.
+     * A message for notifying JavaInsight, that it should decompile a class
+     * and store it to a certain file.
      *
-     * @param source               the source of this message.
-     * @param classname            the full specified class name of the class
-     *                             you want to decompile.
-     * @param destinationFilename  where the results of the decompilation
-     *                             should be put. The file and the path to
-     *                             the file need not exist; JavaInsight
-     *                             creates them if necessary.
+     * @param source  the source of this message.
+     * @param classname  the full specified class name of the class you want
+     *        to decompile.
+     * @param destination  where the results of the decompilation shall
+     *        be put. The file and the path to the file need not exist;
+     *        JavaInsight creates them if necessary. The destination may be
+     *        either a directory, or a file. If it is null, JavaInsight puts
+     *        it into a subdirectory called "JavaInsight" in the (system
+     *        dependent) temp directory, as specified by the results of
+     *        <code>buildtools.MiscUtils.getTempDir("JavaInsight")</code>.
+     * @see buildtools.MiscUtils#getTempDir(java.lang.String)
      */
-    public DecompileClassMessage(EBComponent source, String classname, String destinationFilename) {
+    public DecompileClassMessage(EBComponent source, String classname, String destination) {
         super(source);
 
         if (classname == null) {
@@ -56,47 +63,134 @@ public class DecompileClassMessage extends EBMessage.NonVetoable {
         }
 
         this.classname = classname;
-        this.filename = destinationFilename;
+        this.destination = destination;
+        this.isGeneratingFile = true;
     }
 
 
     /**
-     * Create an instance with the source and the classname you want to
-     * decompile. The result of the decompilation is being put to a
-     * temporary directory, specified by
-     * <code>buildtools.MiscUtils.getTempDir("JavaInsight")</code>.
+     * A message for notifying JavaInsight, that it should decompile a class
+     * to a new jEdit buffer. The decompiled file is <i>not</i> stored on
+     * the filesystem!
      *
      * @param source     the source of this message.
      * @param classname  the full specified class name of the class you want
      *                   to decompile.
-     * @see  buildtools.MiscUtils#getTempDir(java.lang.String)
      */
      public DecompileClassMessage(EBComponent source, String classname) {
         this(source, classname, null);
+        this.isGeneratingFile = false;
      }
 
 
     /**
-     * Get's the classname.
+     * Gets the classname.
      */
     public String getClassName() {
-        return this.classname;
+        return classname;
     }
 
 
     /**
-     * Return's the filename where the results of the class decompilation are
-     * being put.
+     * Returns the desired destination for the decompilation result.
+     * This can be either a directory or a file, or null.
      *
+     * @deprecated call <code>getDestination()</code> instead.
      * @return the filename, may be null.
      */
     public String getFileName() {
-        return this.filename;
+        return getDestination();
     }
 
 
-    public void setFileName(String destinationFilename) {
-        this.filename = destinationFilename;
+    /**
+     * Returns the desired destination for the decompilation result.
+     * This can be either a directory or a file, or null.
+     *
+     * @return the destination, possibly null.
+     * @author Dirk Moebius
+     */
+    public String getDestination() {
+        return destination;
+    }
+
+
+    /**
+     * After decompilation, if JavaInsight was invoked with a destination
+     * file, return the filename of the generated file. Before decompilation
+     * this method returns null.
+     *
+     * @return the filename, or null, if invoked before decompilation.
+     * @author Dirk Moebius
+     */
+    public String getGeneratedFile() {
+        return generatedFile;
+    }
+
+
+    /**
+     * Called by JavaInsight; sets the generated file name.
+     *
+     * <b>Note:</b> This method is public due to an implementation side
+     * effect. Please don't call this method. Thanks.
+     *
+     * @author Dirk Moebius
+     */
+    public void _setGeneratedFile(String generatedFile) {
+        this.generatedFile = generatedFile;
+    }
+
+
+    /**
+     * After decompilation, if any error occured during the decompilation
+     * process, returns the exception associated with the decompilation error.
+     *
+     * @return the Exception (or Throwable), or null, if decompilation was
+     *         successful.
+     * @author Dirk Moebius
+     */
+    public Throwable getException() {
+        return exception;
+    }
+
+
+    /**
+     * Called by JavaInsight; sets the decompilation exception.
+     *
+     * <b>Note:</b> This method is public due to an implementation side
+     * effect. Please don't call this method. Thanks.
+     *
+     * @author Dirk Moebius
+     */
+    public void _setException(Throwable exception) {
+        this.exception = exception;
+    }
+
+
+    /**
+     * Return whether JavaInsight generates a file for this class
+     * decompilation results, as specified by <code>getFileName()</code>.
+     *
+     * @see #getFileName()
+     * @author Dirk Moebius
+     */
+    public boolean isGeneratingFile() {
+        return isGeneratingFile;
+    }
+
+
+    /**
+     * Returns a string representation of this message's parameters.
+     *
+     * @author Dirk Moebius
+     */
+    public String paramString() {
+        return super.paramString()
+            + " classname=" + classname
+            + " destination=" + destination
+            + " isGeneratingFile=" + isGeneratingFile
+            + " generatedFile=" + generatedFile
+            + " exception=" + exception;
     }
 
 }
@@ -104,6 +198,12 @@ public class DecompileClassMessage extends EBMessage.NonVetoable {
 
 /*
 $Log$
+Revision 1.4  2001/04/09 17:30:21  dmoebius
+better control over decompilation process:
+- set destination
+- get generated file name
+- get decompilation exception (if any)
+
 Revision 1.3  2001/04/08 21:25:59  dmoebius
 new release 0.3
 
