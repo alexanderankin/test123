@@ -2,9 +2,6 @@
 #
 # To recompile this plugin, start jmk in the plugin's source directory.
 #
-# jEdit buffer-local properties:
-# :mode=makefile:tabSize=4:noTabs=yes:
-# :indentOpenBrackets={:indentCloseBrackets=}:
 
 # To recompile this plugin, start jmk in the plugin's source directory.
 
