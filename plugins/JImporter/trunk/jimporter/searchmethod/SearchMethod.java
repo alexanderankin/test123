@@ -29,26 +29,25 @@ import java.io.File;
 /**
  * A class that lists all of the available search methods.
  *
- * @author    Matthew Flower
+ * @author Matthew Flower
  */
 public abstract class SearchMethod {
     private static ArrayList searchMethods = new ArrayList();
     private static String JEDIT_SEARCH_METHOD_PROPERTY = "jimporter.searchmethod";
     /**
-     * ArrayList of Strings used to store the individual elements of a classpath
+     * ArrayList of Strings used to store the individual elements of a classpath.
      */
     protected ArrayList classPath = new ArrayList();
 
     /**
-     * Description of the Field
+     * A SearchMethod instance that indicates that we should search for a class
+     * using brute force.
      */
     public static SearchMethod USE_BRUTE_FORCE = new BruteForceClassFinder();
-    /**
-     * Description of the Field
-     */
     //public static SearchMethod USE_BUFFERED_CLASSFINDER = new BufferedClassFinder();
     /**
-     * Description of the Field
+     * This SearchMethod instance is the default that we should use if the user
+     * has not saved an explicit selection.
      */
     public static SearchMethod DEFAULT_METHOD = USE_BRUTE_FORCE;
 
@@ -61,11 +60,11 @@ public abstract class SearchMethod {
      * Constructor that sets a couple of properties and stores this SearchMethod
      * in the list of all available search methods.
      *
-     *@param propertyID    a <code>String</code> value which contains the unique
-     *      identifier for this search method.
-     *@param nameProperty  a <code>String</code> value which contains the jEdit
-     *      property that is used to look up a human-readable name for this
-     *      search method.
+     * @param propertyID    a <code>String</code> value which contains the unique
+     * identifier for this search method.
+     * @param nameProperty  a <code>String</code> value which contains the jEdit
+     * property that is used to look up a human-readable name for this
+     * search method.
      */
     protected SearchMethod(String propertyID, String nameProperty) {
         this.id = propertyID;
@@ -76,8 +75,9 @@ public abstract class SearchMethod {
     /**
      * Set the Search Method that we should use to search for classes.
      *
-     *@param newCurrent  a <code>SearchMethod</code> that will become the
-     *      "selected" search method.
+     * @param newCurrent  a <code>SearchMethod</code> that will become the
+     * "selected" search method.
+     * @see #getCurrent
      */
     public static void setCurrent(SearchMethod newCurrent) {
         jEdit.setProperty(JEDIT_SEARCH_METHOD_PROPERTY, newCurrent.getUniqueIdentifier());
@@ -107,18 +107,19 @@ public abstract class SearchMethod {
     }
 
     /**
-     * Gets the searchMethods attribute of the SearchMethod class
+     * Gets all possible search methods that have been defined.
      *
-     * @return   a list of all available search methods.
+     * @return a list of all available search methods.
      */
     public static List getSearchMethods() {
         return searchMethods;
     }
 
     /**
-     * Gets the current attribute of the SearchMethod class
+     * Gets the current attribute of the SearchMethod class.
      *
      * @return The search method we should use to search for classes.
+     * @see #setCurrent
      */
     public static SearchMethod getCurrent() {
         return getForID(jEdit.getProperty(JEDIT_SEARCH_METHOD_PROPERTY));
@@ -154,9 +155,9 @@ public abstract class SearchMethod {
     }
 
     /**
-     * Gets the name attribute of the SearchMethod object
+     * Gets the name attribute of the SearchMethod object.
      *
-     * @return   The name value
+     * @return The name value
      */
     public String getName() {
         return jEdit.getProperty(nameProperty);
@@ -182,7 +183,7 @@ public abstract class SearchMethod {
     }
 
     /**
-     * Description of the Method
+     * Find a fully qualified classname given the short class name.
      *
      * @param className  The short name of the class that you'd like to find.
      * @return a <code>List</code> value containing Strings of fully-qualified
