@@ -35,6 +35,9 @@ VERSION 2.0.3
 		- got tired of trying to contact the JarMaker maintainer and added an
 		  enhanced version of JarMaker to ProjectViewer, in the place of the
 		  former ProjectZipper.
+		- for jEdit 4.2, use a dynamic menu provider that shows a submenu with
+		  all projects so the user doesn't need to use the dockable to change
+		  project.
 
 		Bug fixes:
 		- "project loaded" event was being fired when "create project" was
@@ -58,6 +61,9 @@ VERSION 2.0.3
 		- trying to rename a file that does not exist was causing an "infinite
 		  loop" when pressing only OK on the rename dialog
 		- fixed importing of configuration from older versions of PV (<= 1.0.2)
+		- fixed saving of tree state when changing project in the combo box by
+		  calling closeProject() before touching the tree (and then changing
+		  its root).
 
 		Other changes:
 		- removed the VPTNodeType class; it was just adding bloat, and could be
@@ -75,6 +81,10 @@ VERSION 2.0.3
 		- added rb (Ruby) to the list of default extensions to import.
 		- when renaming a file, if it does not exist or can't be written, only
 		  allow the "fake" rename (the one that does not affect the file on disk)
+		- put all references to classes that may not be available in inner
+		  "Helper" classes. If the reference was on a different method of the
+		  same class, it would work OK, but throw an Exception if the class was
+		  called from a BeanShell script.
 
 	[stefan kost]
 		- added icon composing capabilities; tree now show "status icons" for the
