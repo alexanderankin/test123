@@ -29,28 +29,12 @@ manually using the <b>Clear Remote Directory Cache</b> command in the
 <b>Plugins</b>&gt;<b>FTP</b>. To force jEdit to forget all passwords, use the
 <b>Forget Remote Passwords</b> command in the same menu.<p>
 
-By default the FTP plugin uses BINARY mode to transfer files.
-This will preserve line endings when transfering files between systems with
-different line separators (e.g. DOS, UN*X, Mac). This option may be disabled in
-the Ftp options pane in the Plugin Options section of the Global Options pane.
-When disabled files will be transferred with &quot;Network&quot; line endings 
-(&quot;\r\n&quot; - same as DOS), but most FTP servers will translate these into
-their native line separator upon upload. So you may use this mode when you would
-like your saved files to conform to the server's notion of line separators.<p>
-
-Upon download jEdit will leave the files in the Network (&quot;\r\n&quot;) mode if BINARY mode is 
-not enabled. If BINARY mode is enabled the files will be opened in jEdit exactly
-as they appear on the server, with their line endings identical to those in the server
-copy of the file.
-<hr>
-
 <a name=changes>
 <h1>Change Log</h1>
 </a>
 
 <h3>Version 0.2.4</h3>
 <ul>
-<li>Provides option to transfer files in binary mode to preserve native line endings. This option is on by default. (Joe Laffey)
 <li>Fixed a bug introduced in version 0.2.2 that would use ASCII mode by
 default. (Prior versions correctly used BINARY mode.)
 <li>File LISTs are done in ASCII mode.
