@@ -146,9 +146,7 @@
 
  <itemizedlist>
 
-  <listitem><para>Specify that it requires the ErrorList and EditBus plugins.
-  The error reporting API is spread between these two plugins for historical
-  reasons.</para></listitem>
+  <listitem><para>Specify that it requires the ErrorList plugin.</para></listitem>
 
   <listitem><para>Register an <quote>error source</quote> at some stage,
   usually during startup.</para></listitem>
@@ -158,10 +156,19 @@
  </itemizedlist>
 
  <para>
-  The classes of the error reporting API, and the ErrorList plugin itself handle
-  the rest automatically; displaying errors in a list, error highlighting, and
-  so on.
+  The ErrorList plugin handles
+  the rest (displaying errors in a list, error highlighting, and
+  so on) automatically.
  </para>
+
+ <note>
+  <para>
+   All error list classes mentioned in this chapter are contained in the
+   <filename>errorlist</filename> package. So you should add an import statement
+   like the following to the start of your plugin's source file(s):
+  </para>
+  <programlisting>import errorlist.*;</programlisting>
+ </note>
 
  <sect1 id="api-deps"><title>Specifying dependencies</title>
 
@@ -173,7 +180,7 @@
   </para>
 
   <programlisting>plugin.MyPlugin.depend.0=jedit 04.00.01.00
-plugin.MyPlugin.depend.2=plugin ErrorListPlugin 1.2</programlisting>
+plugin.MyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2</programlisting>
 
   <para>
    Note that the current version of the ErrorList plugin requires jEdit 4.0pre1
