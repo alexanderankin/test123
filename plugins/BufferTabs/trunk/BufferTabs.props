@@ -31,16 +31,21 @@ buffertabs.insert-path.label=Insert File Path
 buffertabs.copy-name.label=Copy File Name
 buffertabs.copy-path.label=Copy File Path
 
-#option labels
+
+# Default values
+buffertabs.color-tabs=false
+
+
+# Option labels
 options.buffertabs.enable.label=Enable BufferTabs by default
 options.buffertabs.icons.label=Use icons to show buffer modified status
 options.buffertabs.popup.label=Enable right-click popup menu
 options.buffertabs.location.label=Location of BufferTabs:
-options.buffertabs.colourtabs.label=Enable colored tabs
+options.buffertabs.color-tabs.label=Enable colored tabs
 options.buffertabs.colourmute.label=Mute colors
 options.buffertabs.colourtab.label=Colorize tab backgrounds
 options.buffertabs.colourhighlight.label=Colorize selected tab
 options.buffertabs.colourvariation.label=Show small variation in tab colors
 options.buffertabs.colourtext.label=Colorize tab titles
-options.buffertabs.colourtabs.sep=Options for colored BufferTabs
+options.buffertabs.color-tabs.separator=Options for colored BufferTabs
 
