@@ -20,6 +20,8 @@ package jimporter;
 
 import gnu.regexp.*;
 import javax.swing.JOptionPane;
+import jimporter.options.AutoSearchAtPointOption;
+import jimporter.options.AutoImportOnOneMatchOption;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.TextUtilities;
@@ -35,78 +37,6 @@ import org.gjt.sp.jedit.Buffer;
  */
 public class JEditClassImporter {
     /** 
-     * The jEdit property that identifies the text of the "Auto Search at Point" option
-     * checkbox.
-     */    
-    public static final String AUTO_SEARCH_AT_POINT_LABEL = "options.jimporter.autosearchatpoint.label";
-    private static final String AUTO_SEARCH_AT_POINT_VALUE = "jimporter.autosearchatpoint.enabled";
-    private static final boolean AUTO_SEARCH_AT_POINT_DEFAULT = false;
-    
-    /** 
-     * Determine whether JImporter should automatically run a search when a user
-     * imports the class at point.
-     *
-     * @return A <CODE>boolean</CODE> value indicating whether JImporter should run a search
-     * automatically when a user chooses to "Import class at Point".
-     */
-    public static boolean isAutoSearchAtPoint() {
-        boolean toReturn = AUTO_SEARCH_AT_POINT_DEFAULT;
-        String isAutoSearchProperty = jEdit.getProperty(AUTO_SEARCH_AT_POINT_VALUE);
-        
-        if (isAutoSearchProperty != null) {
-            toReturn = Boolean.valueOf(isAutoSearchProperty).booleanValue();
-        }
-        
-        return toReturn;
-    }
-    
-    /** 
-     * Indicate whether JImporter should automatically run a search when a user
-     * imports the class at point.
-     *
-     * @param state Indicates whether JImporter should automatically run a search when a user
-     * imports the class at point.
-     */
-    public static void setAutoSearchAtPoint(boolean state) {
-        jEdit.setProperty(AUTO_SEARCH_AT_POINT_VALUE, new Boolean(state).toString());
-    }
-
-    /** The property that identifies the text of the "Auto Import on Match" checkbox. */    
-    public static final String AUTO_IMPORT_ON_MATCH_LABEL = "options.jimporter.autoimportonmatch.label";
-    private static final String AUTO_IMPORT_ON_MATCH_VALUE = "jimporter.autoimportonmatch.enabled";
-    private static final boolean AUTO_IMPORT_ON_MATCH_DEFAULT = false;
-
-    /** 
-     * Determine whether JImporter should automatically import a class when there
-     * is only one class that matches.  (This really only applies if you are
-     * doing "Auto Search at Point".)
-     *
-     * @return A <CODE>boolean</CODE> value indicating whether JImporter should automatically
-     * import a class if only one class is found when "Importing class at point."
-     */
-    public static boolean isAutoImportOnOneMatch() {
-        boolean toReturn = AUTO_IMPORT_ON_MATCH_DEFAULT;
-        String isAutoImportOnOneMatchProperty = jEdit.getProperty(AUTO_IMPORT_ON_MATCH_VALUE);
-        
-        if (isAutoImportOnOneMatchProperty != null) {
-            toReturn = Boolean.valueOf(isAutoImportOnOneMatchProperty).booleanValue();
-        }
-        
-        return toReturn;
-    }
-     
-    /** 
-     * Indicate whether JImporter should automatically import a class when there
-     * is only one class that matches the search string.
-     *
-     * @param state A <CODE>boolean</CODE> value indicating whether JImporter should automatically
-     * import a class when there is only one class that matches the search string.
-     */
-    public static void setAutoImportOnOneMatch(boolean state) {
-        jEdit.setProperty(AUTO_IMPORT_ON_MATCH_VALUE, new Boolean(state).toString());
-    }
-    
-    /** 
      * Import a class that the user will specify. As opposed to the
      * importClassAtPoint() method, this method does not attempt to determine
      * the class that the user is currently pointing at.
@@ -116,20 +46,9 @@ public class JEditClassImporter {
      * @see #importClassAtPoint
      */
     public static void importClass(View currentView) {
-        //Raise the dialog box to do the search
-        JavaImportClassForm importClassForm = new JavaImportClassForm(currentView, "");
-        importClassForm.setLocationRelativeTo(currentView);
-        importClassForm.show();
-        String foundClass = importClassForm.getImportedClass();
-
-        //Import the class
-        if (foundClass != null) {
-            if (importClass(foundClass, currentView)) {
-                currentView.getStatus().setMessageAndClear(foundClass + " imported.");
-            }
-        }
+        importClass(currentView, "");
     }        
-
+    
     /** 
      * Import the class that the cursor is currently pointing at. Currently,
      * this method only grabs the current text, it does not try to determine the
@@ -143,16 +62,25 @@ public class JEditClassImporter {
         //Get the class name at the current point
         String classToSearchFor = getWordAtPoint(currentView);
 
+        //Do the importing
+        importClass(currentView, classToSearchFor);
+    }
+
+    /**
+     * This class does the actual work of the public importClass and 
+     * importClassAtPoint methods -- it creates an import statement.
+     */
+    private static void importClass(View currentView, String classToSearchFor) {
         //Raise the dialog box to do the search
         JavaImportClassForm importClassForm = new JavaImportClassForm(currentView, classToSearchFor);
         importClassForm.setLocationRelativeTo(currentView);
         
         //Run the search automatically if the user has selected that option
-        if ((isAutoSearchAtPoint()) && (classToSearchFor.length() > 0)) {
+        if ((new AutoSearchAtPointOption().state()) && (classToSearchFor.length() > 0)) {
             importClassForm.generateImportModel(classToSearchFor);
         }
         
-        if (! (isAutoImportOnOneMatch() && (importClassForm.getMatchCount() == 1))) {
+        if (! ((new AutoImportOnOneMatchOption().state()) && (importClassForm.getMatchCount() == 1))) {
             importClassForm.show();
         }
         
@@ -166,9 +94,9 @@ public class JEditClassImporter {
         }
         
         //Finally, make sure that the focus ends up in the text window
-        currentView.getTextArea().requestFocus();
+        currentView.getTextArea().requestFocus();        
     }
-    
+
     /** 
      * Insert the fully qualified name of a class that the user selects into the
      * current buffer at the current caret position.
