@@ -21,7 +21,7 @@ package projectviewer.vpt;
 //{{{ Imports
 import java.util.Stack;
 import java.util.Vector;
-import java.util.HashMap;
+import java.util.WeakHashMap;
 import java.util.Collections;
 
 import javax.swing.tree.TreeNode;
@@ -54,7 +54,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 	private final static VPTNode.VPTNodeComparator COMPARATOR =
 		new VPTNode.VPTNodeComparator();
 
-	private HashMap fileLists;
+	private WeakHashMap fileLists;
 
 	private Object lastParent;
 	private Vector lastList;
@@ -69,7 +69,7 @@ public class VPTFileListModel extends DefaultTreeModel {
 	 */
 	public VPTFileListModel(VPTNode rootNode) {
 		super(rootNode, true);
-		fileLists = new HashMap();
+		fileLists = new WeakHashMap();
 	}
 
 	//}}}
@@ -133,16 +133,6 @@ public class VPTFileListModel extends DefaultTreeModel {
 			node = p;
 		}
 		super.nodeStructureChanged(node);
-	} //}}}
-
-	//{{{ removeRef(VPTProject) method
-	/**
-	 *	Removes any reference to the given project stored internally. This does
-	 *	not update the tree! To update the tree one of the usual methods (setRoot,
-	 *	nodeStructureChanged, etc) should be called.
-	 */
-	public void removeRef(VPTProject p) {
-		fileLists.remove(p);
 	} //}}}
 
 	//{{{ getIndexOfChild(Object, Object) method
