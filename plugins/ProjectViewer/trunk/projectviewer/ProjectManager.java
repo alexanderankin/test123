@@ -525,7 +525,6 @@ public final class ProjectManager {
 
 		//{{{ -_fireDynamicMenuChange()_ : void
 		private static void fireDynamicMenuChange() {
-			System.err.println("in here!");
 			DynamicMenuChanged msg = new DynamicMenuChanged("plugin.projectviewer.ProjectPlugin.menu");
 			EditBus.send(msg);
 		} //}}}
