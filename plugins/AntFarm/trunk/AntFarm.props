@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.antfarm.AntFarmPlugin.name=Ant Farm
 plugin.antfarm.AntFarmPlugin.author=Brian Knowles
-plugin.antfarm.AntFarmPlugin.version=1.0rc1
+plugin.antfarm.AntFarmPlugin.version=1.0.1
 plugin.antfarm.AntFarmPlugin.docs=index.html
 plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-optional.jar
 

@@ -17,6 +17,7 @@ Required for release as AntFarm 1.0
 - Remove HashMap/Map dependence from the project bridge. - DONE
 
 Future additions/fixes:
+- Add support for properties when executing targets: !my_target property=value
 - Test on more complicated ANT scripts
 - Allow all ant project properties to be changed per project
 - Execute outside of current JVM by forking, not by script
@@ -24,7 +25,6 @@ Future additions/fixes:
 - Refactor AntTree to use command pattern
 - Allow custom Ant classpath to be defined.
 - Open/Close build files that are related to the current session.
-- Add support for properties when executing targets: !my_target -property=value
 - Add actions for easy shortcut binding:
 	- run the current target of the current build file;
 	- choose the target in the current build file and run (making it current) - just small dialog with combobox;
