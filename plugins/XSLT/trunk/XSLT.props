@@ -25,15 +25,24 @@ XPathTool.Evaluate.label=Evaluate
 xslt.error={0}\nReason: "{1}"\n\nA stacktrace has been written to the Activity Log.
 
 XSLTProcessor.error.dockFirst=You must dock the XSLT Processor before you can perform this action.
+
 XSLTProcessor.source.label=Source:
 XSLTProcessor.source.pleaseSelect=Please select a source document
-XSLTProcessor.select.button=Select ...
+XSLTProcessor.select.button=Select
+
 XSLTProcessor.stylesheets.label=Stylesheets:
-XSLTProcessor.transform.button=Transform
-XSLTProcessor.add.button=Add ...
+XSLTProcessor.add.button=Add
 XSLTProcessor.delete.button=Delete
 XSLTProcessor.up.button=Up
 XSLTProcessor.down.button=Down
+
+XSLTProcessor.result.label=Result:
+XSLTProcessor.result.pleaseName=Please name for the result document
+XSLTProcessor.name.button=Name
+XSLTProcessor.indent.checkbox=Indent result
+
+XSLTProcessor.transform.button=Transform
+
 XSLTProcessor.ok.button=OK
 XSLTProcessor.cancel.button=Cancel
 XSLTProcessor.addStylesheet.title=Add Stylesheet
