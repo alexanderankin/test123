@@ -703,7 +703,7 @@ public final class Project implements EBComponent {
 				}
 
 				if(lastFile != null) {
-					out.println("lastFile=" + lastFile);
+					out.println("lastFile=" + escape(lastFile));
 				}
 
 				// Folder tree state
@@ -734,7 +734,7 @@ public final class Project implements EBComponent {
 
 				// Build file
 				if(buildFile != null)
-					out.println("buildFile=" + buildFile.getAbsolutePath());
+					out.println("buildFile=" + escape(buildFile.getAbsolutePath()));
 
 				// Finishing
 				out.flush();
