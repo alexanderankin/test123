@@ -59,8 +59,6 @@ public class SqlUtils
   protected static String lastRunQuery = null;
   protected static int lastStartPos = 0;
 
-  protected static Map view2Proj = new HashMap();
-
 
   /**
    *  Sets the SelectedServerName attribute of the SqlUtils class
@@ -95,26 +93,7 @@ public class SqlUtils
    */
   public static VPTProject getProject( View view )
   {
-    /*
-     *  VPTProject proj = null;
-     *  Log.log( Log.DEBUG, SqlUtils.class,
-     *  "Looking for the project for view " + view );
-     *  final ProjectViewer pv = ProjectViewer.getViewer( view );
-     *  Log.log( Log.DEBUG, SqlUtils.class,
-     *  "Project viewer: " + pv );
-     *  if ( pv == null )
-     *  return null;
-     *  final VPTNode node = pv.getSelectedNode();
-     *  Log.log( Log.DEBUG, SqlUtils.class,
-     *  "Node: " + node );
-     *  if ( node == null )
-     *  return null;
-     *  final VPTProject rv = VPTNode.findProjectFor( node );
-     *  Log.log( Log.DEBUG, SqlUtils.class,
-     *  "Project: " + rv );
-     *  return rv;
-     */
-    return (VPTProject) view2Proj.get( view );
+    return PVActions.getCurrentProject( view );
   }
 
 
@@ -183,29 +162,6 @@ public class SqlUtils
     if ( preprocessors == null )
       fillPreprocessors();
     return preprocessors;
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  view     Description of Parameter
-   * @param  project  Description of Parameter
-   */
-  public static void bind( View view, VPTProject project )
-  {
-    view2Proj.put( view, project );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  view  Description of Parameter
-   */
-  public static void unbind( View view )
-  {
-    view2Proj.remove( view );
   }
 
 

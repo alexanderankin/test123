@@ -168,13 +168,21 @@ public class SqlPlugin extends EBPlugin
       final View view = vu.getView();
       if ( vu.getWhat() == ViewUpdate.CREATED )
       {
+        final VPTProject project = SqlUtils.getProject( view );
+        Log.log( Log.DEBUG, SqlPlugin.class, "new View " + view + " got project " + project );
+
+        removeToolBar( view );
+        if ( SqlToolBar.showToolBar() )
+        {
+          addToolBar( view, project );
+        }
+
         ProjectViewer.addProjectViewerListener( this, view );
       }
       else if ( vu.getWhat() == ViewUpdate.CLOSED )
       {
         sqlToolBars.remove( view );
         ProjectViewer.removeProjectViewerListener( this, view );
-        SqlUtils.unbind( view );
       }
     }
     else if ( message instanceof PropertiesChanged )
@@ -197,12 +205,9 @@ public class SqlPlugin extends EBPlugin
     Log.log( Log.DEBUG, SqlPlugin.class,
         "Loading the project [" + project + "]" );
 
-    //!! BAD!!!
-    SqlUtils.bind( view, project );
-
+    removeToolBar( view );
     if ( SqlToolBar.showToolBar() )
     {
-      removeToolBar( view );
       addToolBar( view, project );
     }
   }
