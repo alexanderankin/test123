@@ -556,6 +556,16 @@
    <listitem><para>Schema completion lists did not contain elements declared
    inside complex types.
    </para></listitem>
+   <listitem><para>If completion popups were disabled, the plugin would beep
+   when <keycap>&lt;</keycap> or <keycap>&amp;</keycap> was pressed, very annoying.
+   </para></listitem>
+   <listitem><para>The option to insert a closing tag as soon as an opening tag
+   was typed was broken.
+   </para></listitem>
+   <listitem><para>Attempting to fix problem with some JVMs where a
+   <keycap>Backspace</keycap> in the completion popup would delete two
+   characters.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>

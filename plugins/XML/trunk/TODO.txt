@@ -1,3 +1,4 @@
+- "DTD cache" is a bad name
 - ant build.xml -- target names should be IDs
 - completion popup width
 - html files before parsing complete -- don't show CDATA in popup

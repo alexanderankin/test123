@@ -333,6 +333,7 @@ public class XmlComplete extends JWindow
 					textArea.backspace();
 					setUpListModel();
 				}
+				evt.consume();
 				break;
 			default:
 				if(evt.isActionKey())

@@ -488,7 +488,6 @@ loop:			for(;;)
 		if(!buffer.isEditable() || XmlPlugin.getParserType(buffer) == null
 			|| !completion)
 		{
-			view.getToolkit().beep();
 			return;
 		}
 
@@ -676,7 +675,7 @@ loop:			for(;;)
 			|| (decl != null && decl.empty))
 			return;
 
-		tag = TagParser.findLastOpenTag(text,tag.start,data);
+		tag = TagParser.findLastOpenTag(text,caret,data);
 
 		if(tag != null)
 		{
