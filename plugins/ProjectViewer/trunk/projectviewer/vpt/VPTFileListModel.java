@@ -126,6 +126,10 @@ public class VPTFileListModel extends DefaultTreeModel {
 			Vector lst = new Vector(p.files.values());
 			MiscUtilities.quicksort(lst, COMPARATOR);
 			fileLists.put(p, lst);
+
+			if (lastParent == p) {
+				lastList = lst;
+			}
 		}
 		super.nodeStructureChanged(node);
 	} //}}}
