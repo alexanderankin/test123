@@ -21,13 +21,20 @@
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.gjt.sp.jedit.io.VFS;
+
 
 public class TarVFS extends ArchiveVFS {
     public static final String PROTOCOL = "tar";
 
 
     public TarVFS() {
-        super(PROTOCOL);
+        super(TarVFS.PROTOCOL);
+    }
+
+
+    public int getCapabilities() {
+        return VFS.READ_CAP;
     }
 
 
