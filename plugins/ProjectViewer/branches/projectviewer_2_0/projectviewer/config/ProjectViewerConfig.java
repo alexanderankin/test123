@@ -31,7 +31,7 @@ import java.beans.PropertyChangeListener;
 // Import jEdit
 import org.gjt.sp.util.Log;
 import projectviewer.ProjectPlugin;
-import projectviewer.ProjectManager;
+//import projectviewer.ProjectManager;
 
 /**
  *  <p>Class to hold configuration information for the plugin.</p>
@@ -76,7 +76,7 @@ public final class ProjectViewerConfig {
         if (config == null) {
             Properties p = null;
             try {
-                p = ProjectManager.load(CONFIG_FILE);
+                //p = ProjectManager.load(CONFIG_FILE);
             } catch (Exception e) { 
                 // Ignores errors
                 Log.log(Log.WARNING, ProjectViewerConfig.class, "Cannot read config file.");

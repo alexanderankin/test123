@@ -43,6 +43,7 @@ import javax.swing.WindowConstants;
 
 // Import jEdit
 import org.gjt.sp.util.Log;
+import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTProject;
@@ -54,42 +55,8 @@ import projectviewer.vpt.VPTProject;
  *  @author	 Marcelo Vanzin
  *  "	 "	 Matt Payne (made slight changes for urlRoot
  */
-public class ProjectPropertiesDlg extends JDialog implements ActionListener {
+public class ProjectPropertiesPane extends AbstractOptionPane implements ActionListener {
 
-	//{{{ Static Methods & Variables
-	
-	public final static int ERROR	= -1;
-	public final static int CANCEL	= 0;
-	public final static int OK		= 1;
-	
-	//{{{ run() method
-	/**
-	 *  <p>Shows the dialog to edit the properties of the provided
-	 *  project. If the project is <i>null</i>, creates a new one,
-	 *  unless the user hits "Cancel" (then <i>null</i> is returned).</p>
-	 *
-	 *  <p>If "refresh" is true, and the project is modified, then the
-	 *  viewer instance passed is refreshed.</p>
-	 *
-	 *  @param  viewer  The current ProjectViewer instance.
-	 *  @param  proj	The project to be edited, or null to create a new one.
-	 *  @param  refresh If the viewer should be refreshed after modifying the project.
-	 */
-	public static VPTProject run(ProjectViewer owner, VPTProject proj) {
-		ProjectPropertiesDlg dialog = new ProjectPropertiesDlg(owner);
-		dialog.setProject(proj);
-		dialog.setLocationRelativeTo(owner);
-		dialog.show();
-		
-		if (dialog.getResult() == OK) {
-			// TODO: save project, etc
-		}
-		
-		return dialog.getProject();
-	} //}}}
-	
-	//}}}
-	
 	//{{{ Instance Variables
 	
 	private int result;
@@ -100,82 +67,29 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 	private JTextField projURLRoot;
 	
 	private JButton	chooseRoot;
-	private JButton	updateProject;
-	private JButton	cancel;
+	
+	private boolean ok;
 
 	//}}}
 	
 	//{{{ Constructors
 	
 	/** Builds the dialog. */
-	private ProjectPropertiesDlg(ProjectViewer owner) {
-		super(JOptionPane.getFrameForComponent(owner));
-		loadGUI();
-		setModal(true);
-	}
-	
-	//}}}
-	
-	//{{{ Public Methods
-	
-	public void actionPerformed(ActionEvent e) {
-		Object jb = e.getSource();
-		
-		if (jb == chooseRoot) {
-			chooseRoot();
-		} else if (jb == updateProject) {
-			result = updateProject();
-			if (result == OK) {
-				hide();
-			}
-		} else if (jb == cancel) {
-			result = CANCEL;
-			hide();
-		}
-		
-	}
-	
-	//}}}
-	
-	//{{{ Private Methods
-
-	//{{{ getResult() method
-	private int getResult() {
-		return result;
-	} //}}}
-
-	//{{{ getProject() method	
-	private VPTProject getProject() {
-		return project;
-	} //}}}
-	
-	//{{{ setProject() method
-	private void setProject(VPTProject p) {
+	public ProjectPropertiesPane(VPTProject p) {
+		super("projectviewer.project_props");
 		this.project = p;
-		
-		if (p != null) {
-			projName.setText(p.getName());
-			projRoot.setText(p.getRootPath());
-			projRoot.setToolTipText(projRoot.getText());
-			projURLRoot.setText(p.getURL());
-			setTitle("Edit project: " + p.getName());
-		} else {
-			projName.setText("");
-			projRoot.setText("");
-			projRoot.setToolTipText("");
-			projURLRoot.setText(VPTProject.DEFAULT_URL);
-		
-			setTitle("Create new project");
-		}
-	} //}}}
+		this.ok = true;
+	}
 	
-	//{{{ chooseRoot() method
+	//}}}
+	
+	//{{{ actionPerformed(ActionEvent) method
 	/**
 	 *  Shows a file chooser so the user can choose the root directory of
 	 *  its project. In case the user chooses a directory, the corresponding
 	 *  JTextField is updated to show the selection.
 	 */
-	private void chooseRoot() {	
+	public void actionPerformed(ActionEvent ae) {	
 		JFileChooser chooser = new JFileChooser();
 		chooser.setDialogTitle("Enter the root directory for the project:");
 		chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -187,36 +101,15 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		
 		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
 			root = chooser.getSelectedFile().getAbsolutePath();
-			if (project != null) {
-				String oldRoot = project.getRootPath();
-				/* 
-				* Matthew Payne = if old Root is "" then allow change is well
-				* re: "&& (oldRoot.trim().length() > 0)"
-				*/
-				if ( !(oldRoot.startsWith(root) &&
-					   root.length() < oldRoot.length()) && (oldRoot.trim().length() > 0) ) { 
-					project.setRootPath(root);
-					JOptionPane.showMessageDialog(
-						this, 
-						"Changing to a root that isn't parent of the previous root " +
-						"is not supported.",
-						"Error: unsupported change",
-						JOptionPane.ERROR_MESSAGE
-					);
-					return;
-				
-					   }
-			}
-				
 			projRoot.setText(root);
 			projRoot.setToolTipText(projRoot.getText());
 		}
 
 	} //}}}
 	
-	//{{{ updateProject() method
+	//{{{ _save() method
 	/** Updates the project with the info supplied by the user. */
-	private int updateProject() {
+	protected void _save() {
 		String name = projName.getText().trim();
 		
 		if (name.length() == 0) {
@@ -226,8 +119,10 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 				"Error: no name supplied",
 				JOptionPane.ERROR_MESSAGE
 			 );
-			 return ERROR;
-		} 
+			 ok = false;
+		} else {
+			ok = true;
+		}
 		
 		//TODO: check if project name already exists
 		
@@ -239,29 +134,23 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 				"Error: no root supplied",
 				JOptionPane.ERROR_MESSAGE
 			 );
-			 return ERROR;
-		} 
+			 ok = false;
+		}
 		
 		//TODO: check if root exists
 		
 		String urlRoot = projURLRoot.getText().trim();
 	
-		if (project == null) {
-			project = new VPTProject(name);
+		if (ok) {
+			project.setName(name);
+			project.setRootPath(root);
+			project.setURL(urlRoot);
 		}
-		project.setName(name);
-		project.setRootPath(root);
-		project.setURL(urlRoot);
-		
-		return OK;
 	} //}}}
 	
-	//{{{ loadGUI() method
+	//{{{ _init() method
 	/** Load the GUI components of the dialog. */
-	private void loadGUI() {
-		
-		// Ignores the close window button
-		this.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+	protected void _init() {
 		
 		// Builds the dialog
 		
@@ -269,7 +158,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		GridBagConstraints gc = new GridBagConstraints();
 		gc.fill = GridBagConstraints.HORIZONTAL;
 		gc.insets = new Insets(3,3,3,3);
-		getContentPane().setLayout(gridbag);
+		setLayout(gridbag);
 		
 		// Project name
 		
@@ -279,15 +168,16 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		gc.gridy = 0;
 		gc.gridwidth = 1;
 		gridbag.setConstraints(label,gc);
-		getContentPane().add(label);
+		add(label);
 		
 		projName = new JTextField();
+		projName.setText(project.getName());
 		gc.weightx = 1;
 		gc.gridx = 1;
 		gc.gridy = 0;
 		gc.gridwidth = 2;
 		gridbag.setConstraints(projName,gc);
-		getContentPane().add(projName);
+		add(projName);
 		
 		// Project root
 		label = new JLabel("Root directory:");
@@ -296,9 +186,11 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		gc.gridy = 1;
 		gc.gridwidth = 1;
 		gridbag.setConstraints(label,gc);
-		getContentPane().add(label);
+		add(label);
 
 		projRoot = new JTextField();
+		projRoot.setText(project.getRootPath());
+		projRoot.setToolTipText(projRoot.getText());
 		projRoot.setEnabled(false);
 		projRoot.setPreferredSize(
 			new Dimension(50, (int)projRoot.getPreferredSize().getHeight())
@@ -309,7 +201,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		gc.gridy = 1;
 		gc.gridwidth = 1;
 		gridbag.setConstraints(projRoot,gc);
-		getContentPane().add(projRoot);
+		add(projRoot);
 	
 	
 		chooseRoot = new JButton("Choose");   
@@ -319,7 +211,7 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		gc.gridy = 1;
 		gc.gridwidth = 1;
 		gridbag.setConstraints(chooseRoot,gc);
-		getContentPane().add(chooseRoot);
+		add(chooseRoot);
 
 		// URL Root for web projects.  Used to launch files in web browser against webserver
 	
@@ -331,43 +223,21 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		gc.gridwidth = 1;
 		gridbag.setConstraints(label, gc);
 	
-		getContentPane().add(label);
+		add(label);
 		projURLRoot = new JTextField();
-		projURLRoot.setToolTipText("http://<projecturl>");
+		projURLRoot.setText(project.getURL());
+		projURLRoot.setToolTipText(project.getURL());
 	
 		gc.weightx = 1;
 		gc.gridx = 1;
 		gc.gridy = 2;
 		gc.gridwidth = 2;
 		gridbag.setConstraints(projURLRoot, gc);
-		getContentPane().add(projURLRoot);
+		add(projURLRoot);
 
-		// Lower buttons
-		
-		JPanel panel = new JPanel();
-		gc.weightx = 1;
-		gc.gridx = 0;
-		gc.gridy = 3;
-		gc.gridwidth = 3;
-		gridbag.setConstraints(panel,gc);
-		getContentPane().add(panel);
-		
-		updateProject = new JButton("OK");
-		updateProject.addActionListener(this);
-		panel.add(updateProject);
-		
-		cancel = new JButton("Cancel");
-		cancel.addActionListener(this);
-		panel.add(cancel);
-		
-		updateProject.setPreferredSize(cancel.getPreferredSize());
-   
-		// Finishing
-		setResizable(false);
-		setSize(new Dimension(350,180));
+		setPreferredSize(new Dimension(300,250));
 	} //}}}
 	
-	//}}}
-	
+	boolean isOK() { return ok; }
 }
 

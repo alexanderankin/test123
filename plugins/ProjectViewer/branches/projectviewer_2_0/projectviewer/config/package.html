@@ -1,0 +1,57 @@
+<body><h3>How to extend the Project Options Dialog.</h3>
+
+<p>The ProjectOptions dialog has been designed to be easily integrated into
+existing plugins without requiring the plugin to the deeply tied to the
+ProjectViewer plugin. This means that a plugin may choose to extend the
+Project Viewer's capabilities, but still be able to run without Project
+Viewer if it's not available.</p>
+
+<p>To achieve this, ProjectViewer uses almost the same API as jEdit to
+build the OptionsDialog. In fact, the plugin's options pane itself can be
+almost entirely reused to extend the project's option dialog.</p>
+
+<p>It becomes easier if the plugin uses a "property" based configuration style,
+just like jEdit provides by jEdit.getProperty(), or in the same style of the
+java.util.Properties class.</p>
+
+<p>By having your option pane query a method for properties (instead of
+hardcoding jEdit.getProperty() calls inside your methods), you need only
+to extend the option pane class and make the "getProperty()" method query
+the project instead. For example:</p>
+
+<pre><code>
+class MyOptionPane extends AbstractOptionPane {
+
+	// implementation...
+
+	void myMethod() {
+		//...
+		String s = getProperty("property");
+	}
+	
+	String getProperty(String s) {
+		return jEdit.getProperty(s);
+	}
+	
+}
+
+class MyProjectOptionPane extends MyOptionPane {
+
+	VPTProject p;
+	
+	String getProperty(String s) {
+		return p.getProperty();
+	}
+
+}
+</code></pre>
+
+<p>So, virtually all the code is reused, just by creating a method for the
+actual getting and setting of properties. Now the only other thing that is
+needed is create an implementation of 
+{@link projectviewer.config.ProjectOptionsPlugin ProjectOptionsPlugin}
+and register it in the {@link projectviewer.config.ProjectOptions#registerPlugin(ProjectOptionsPlugin)
+ProjectOptions} class if the ProjectViewer plugin is detected, which can be done
+by using jEdit's API.</p>
+
+</body>

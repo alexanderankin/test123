@@ -17,20 +17,22 @@
 package projectviewer.event;
 
 import java.util.EventObject;
-import projectviewer.*;
+
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTProject;
 
 /** A project viewer event.
  */
 public final class ProjectViewerEvent extends EventObject {
 
-	private Project project;
+	private VPTProject project;
 
 	/** Create a new <code>ProjectViewerEvent</code>.
 	 *
 	 *@param  src  Description of Parameter
 	 *@param  prj  Description of Parameter
 	 */
-	public ProjectViewerEvent(ProjectViewer src, Project prj) {
+	public ProjectViewerEvent(ProjectViewer src, VPTProject prj) {
 		super(src);
 		project = prj;
 	}
@@ -43,11 +45,12 @@ public final class ProjectViewerEvent extends EventObject {
 		return (ProjectViewer) getSource();
 	}
 
-	/** Returns the {@link Project}.
+	/**
+	 *	Returns the {@link VPTProject Project}.
 	 *
-	 *@return    The project value
+	 *	@return    The project value
 	 */
-	public Project getProject() {
+	public VPTProject getProject() {
 		return project;
 	}
 
