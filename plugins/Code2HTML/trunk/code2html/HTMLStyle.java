@@ -18,6 +18,9 @@
 */
 
 
+package code2html;
+
+
 import java.awt.Color;
 
 import org.gjt.sp.jedit.GUIUtilities;

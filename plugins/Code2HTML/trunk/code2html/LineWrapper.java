@@ -18,6 +18,9 @@
 */
 
 
+package code2html;
+
+
 import org.gjt.sp.util.Log;
 
 
@@ -47,13 +50,13 @@ public class LineWrapper {
      * position pos wraps. The referential for the indexes is the string.
      * Also, the wrap indexes are surrounded by 0 and len so that it is
      * very easy to compute the wrapped substrings:
-     * <PRE>
+     * <pre>
      * int[] wraps = wrapper.wrap(pos, len);
      * if (wraps == null) { return; }
-     * for (int i = 0; i < wraps.length - 1; i++) {
+     * for (int i = 0; i &lt; wraps.length - 1; i++) {
      *    System.out.println("Piece " + (i + 1) + ": " + s.substring(wraps[i], wraps[i + 1]));
      * }
-     * </PRE>
+     * </pre>
      * Returns null if the string does not wrap.
      * @requires pos >= 0
      * @requires len >= 0
