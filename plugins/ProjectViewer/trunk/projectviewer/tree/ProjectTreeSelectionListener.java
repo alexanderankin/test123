@@ -91,13 +91,12 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  evt  Description of Parameter
 	 */
 	public void stateChanged(ChangeEvent evt) {
-		//Log.log( Log.DEBUG, this, "stateChanged()");
-		
 		checkState();
 		if(currentTree != null) getCurrentModel().removeTreeModelListener(this);
 		currentTree = viewer.getCurrentTree();
 		getCurrentModel().addTreeModelListener(this);
-		viewer.getCurrentProject().activateLastFile();
+		if (viewer.getCurrentProject() != null)
+			viewer.getCurrentProject().activateLastFile();
 	}
 
 	// TreeSelectionListener interfaces
@@ -236,20 +235,15 @@ public final class ProjectTreeSelectionListener implements TreeSelectionListener
 	 * @param  evt  Description of Parameter
 	 */
 	private void handleTreeModelEvent(TreeModelEvent evt) {
-		//Log.log( Log.DEBUG, this, "handleTreeModelEvent()");
-		
 		Object node = getChild(evt.getTreePath(), evt.getChildIndices()[0]);
 		if(!(node instanceof ProjectFile)) return;
-		//Log.log( Log.DEBUG, this, "  is ProjectFile : "+((ProjectFile)node).getName());
-		viewer.getCurrentProject().setLastFile(((ProjectFile)node).getPath());
+		if (viewer.getCurrentProject() != null)
+			viewer.getCurrentProject().setLastFile(((ProjectFile)node).getPath());
 		selectionPath = buildPathFrom(evt, node);
 		if(selectionPath != null) {
 			currentTree.scrollPathToVisible(selectionPath);
 			currentTree.setSelectionPath(selectionPath);
-		}
-		else {
-			Log.log( Log.DEBUG, this, "  selectionPath == null");
-		}
+		} 
 		SwingUtilities.invokeLater(this);
 	}
 
