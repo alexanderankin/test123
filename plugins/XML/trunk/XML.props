@@ -94,9 +94,6 @@ xml-clear-cache.label=Clear Resource Cache
 
 # Completion
 xml-complete-closing-tag.shortcut=/
-xml-complete-entity.shortcut=&
-xml-complete-tag.shortcut=<
-xml-insert-closing-tag.shortcut=>
 
 # Insert tag window
 xml-insert.title=XML Insert
@@ -124,9 +121,6 @@ xml-edit-tag.preview=Preview:
 xml-edit-tag.required=#REQUIRED
 
 # Status messages shown when doing completion
-xml-element-complete-status=Space: insert; Enter: edit tag
-xml-id-complete-status=Tab: go to; Enter or Space: insert
-
 xml.network.error=User cancelled downloading resource.
 
 xml.download-resource.title=Getting resource from remote server
@@ -137,9 +131,6 @@ xml.download-resource.message=This XML file depends on a resource which is store
 	\n\
 	Do you want the XML plugin to download the resource and cache it\n\
 	for future use?
-
-# "No completions" message
-xml-no-completions=<no completions>
 
 # Option pane
 options.xml.label=XML

@@ -1,5 +1,7 @@
 XML 0.11:
 
+- foo> in completion popup -- hide the popup
+- complete <foo / to <foo />
 - why is the top level tag end off by 1?
 - html parser: empty tags
 - SideKick transition:
