@@ -1182,6 +1182,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    requires jEdit 4.1 and the ErrorList plugin 1.2.</para>
 
    <itemizedlist>
+   <listitem><para>Any text selected in the text area is now passed to the
+   command on standard input.
+   </para></listitem>
    <listitem><para>The full traceback is now printed for BeanShell exceptions.
    </para></listitem>
    <listitem><para>The <quote>entering directory</quote> and

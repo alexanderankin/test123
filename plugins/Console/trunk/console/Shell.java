@@ -103,11 +103,33 @@ public abstract class Shell
 	 * So the console is like 'System.err', the output is like 'System.out',
 	 * in a way.
 	 * @param console The console
+	 * @param input Standard input
+	 * @param output Standard output
+	 * @param error Standard error
+	 * @param command The command
+	 * @since Console 3.5
+	 */
+	public void execute(Console console, String input,
+		Output output, Output error, String command)
+	{
+		execute(console,output,command);
+	} //}}}
+
+	//{{{ execute() method
+	/**
+	 * Executes a command. Note that both the console and output parameters
+	 * are implementations of the Output interface. Writing to the console
+	 * instance will always display the text in the console, but the output
+	 * can either be the console or a buffer, depending on circumstances.
+	 * So the console is like 'System.err', the output is like 'System.out',
+	 * in a way.
+	 * @param console The console
 	 * @param output The output
 	 * @param command The command
 	 */
-	public abstract void execute(Console console, Output output, String command);
-	//}}}
+	public void execute(Console console, Output output, String command)
+	{
+	} //}}}
 
 	//{{{ stop() method
 	/**
