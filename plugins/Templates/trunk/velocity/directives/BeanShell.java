@@ -18,7 +18,7 @@
  */
 package velocity.directives;
 
-import bsh.EvalError;
+import bsh.UtilEvalError;
 import bsh.NameSpace;
 
 import java.io.IOException;
@@ -80,7 +80,7 @@ public class BeanShell extends SimpleDirective
             writer.write(result.toString());
          }
          return true;
-      } catch (EvalError e) {
+      } catch (UtilEvalError e) {
          Log.log(Log.ERROR, this, "Error evaluating template script");
          Log.log(Log.ERROR, this, e);
          return false;
