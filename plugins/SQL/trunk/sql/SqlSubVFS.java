@@ -205,7 +205,7 @@ public class SqlSubVFS
     {
       final String r = (String) e.nextElement();
       retval[i++] =
-          _getDirectoryEntry( session, path + SqlVFS.separatorChar + r, comp, level + 1 );
+          _getDirectoryEntry( session, path + SqlVFS.separatorString + r, comp, level + 1 );
     }
     return retval;
   }

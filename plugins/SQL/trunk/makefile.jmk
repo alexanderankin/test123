@@ -15,7 +15,7 @@ javac_bin = "jikes";
 javac_opts = "-g" "-deprecation" "+E";
 
 # set up the class path
-new_class_path = "../../jedit.jar;../EditBus.jar;/usr/local/xsql/lib/classes12.zip;/usr/share/java/xerces.jar:.";
+new_class_path = "../../jedit.jar;../EditBus.jar;../BufferList.jar;/usr/local/xsql/lib/classes12.zip;/usr/share/java/xerces.jar:.";
 #old_class_path = (getprop "java.class.path");
 old_class_path = (cat (getprop "java.home") "/lib/rt.jar" );
 
