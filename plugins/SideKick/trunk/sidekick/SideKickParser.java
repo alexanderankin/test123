@@ -209,6 +209,6 @@ public abstract class SideKickParser
 	{
 		return null;
 	} //}}}
-
+	
 	private String name;
 }

@@ -16,7 +16,7 @@
 package sidekick;
 
 //{{{ Imports
-import javax.swing.event.ListDataListener;
+import javax.swing.event.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -64,6 +64,7 @@ public class SideKickCompletionPopup extends JWindow
 		addKeyListener(keyHandler);
 		getRootPane().addKeyListener(keyHandler);
 		list.addKeyListener(keyHandler);
+		list.addListSelectionListener(new ListHandler());
 		view.setKeyEventInterceptor(keyHandler);
 
 		GUIUtilities.requestFocus(this,list);
@@ -124,6 +125,7 @@ public class SideKickCompletionPopup extends JWindow
 			setListModel(complete);
 			list.setCellRenderer(complete.getRenderer());
 			list.setVisibleRowCount(Math.min(8,complete.size()));
+			list.setFixedCellHeight(list.getCellBounds(0,0).height);
 		}
 
 		pack();
@@ -150,6 +152,17 @@ public class SideKickCompletionPopup extends JWindow
 
 		list.setModel(model);
 		list.setSelectedIndex(0);
+	} //}}}
+
+	//{{{ updateSelection() method
+	void updateSelection()
+	{
+		int index = list.getSelectedIndex();
+		if(index == -1)
+			return;
+
+		String description = complete.getCompletionDescription(index);
+		view.getStatus().setMessageAndClear(description);
 	} //}}}
 
 	//}}}
@@ -261,7 +274,8 @@ public class SideKickCompletionPopup extends JWindow
 				EditPane editPane = view.getEditPane();
 				int caret = editPane.getTextArea()
 					.getCaretPosition();
-				complete = parser.complete(editPane,caret);
+				if(!complete.updateInPlace(editPane,caret))
+					complete = parser.complete(editPane,caret);
 				updateListModel();
 			}
 			else
@@ -269,6 +283,15 @@ public class SideKickCompletionPopup extends JWindow
 		} //}}}
 	} //}}}
 
+	//{{{ ListHandler class
+	class ListHandler implements ListSelectionListener
+	{
+		public void valueChanged(ListSelectionEvent evt)
+		{
+			updateSelection();
+		}
+	} //}}}
+	
 	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{

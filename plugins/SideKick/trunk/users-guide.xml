@@ -300,7 +300,7 @@ mode.velocity.sidekick.parser=html</programlisting>
   jEdit 4.2final.</para>
   
   <itemizedlist>
-  <listitem><para>The completion popup is now positioned within the screen bounds.</guimenuitem>.</para></listitem>
+  <listitem><para>The completion popup is now positioned within the screen bounds.</para></listitem>
   </itemizedlist>
   </listitem>
   
