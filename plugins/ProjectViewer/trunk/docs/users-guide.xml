@@ -499,7 +499,8 @@
 			the directory "build/docs/javadoc".
 		</para>
 
-		<para>External plugins can interact with the Project Viewer plugin in various ways:
+		<para>
+      External plugins can interact with the Project Viewer plugin in various ways:
 			<itemizedlist>
 				<listitem><para>By providing project specific properties: properties</para></listitem>
 				<listitem><para>By creating new node types: nodes</para></listitem>
@@ -507,6 +508,48 @@
 				<listitem><para>By listening to Project Viewer events</para></listitem>
 			</itemizedlist>
 		</para>
+    
+    <para>
+      During the next sub chapters we will describe some common task for
+      interacting with projectviewer.
+    </para>
+    
+    <section id="developer-checkpv">
+      <title id="developer-checkpv.title">Checking if projectviewer is available</title>
+      The method described here requires a jEdit with version > 4.2preX.
+      <informalexample>
+        <programlisting>
+EditPlugin pv;
+pv=jEdit.getPlugin("projectviewer.ProjectPlugin",false);
+if(pv!=null) {
+   // we can use the projectviewer plugin
+}
+        </programlisting>
+      </informalexample>
+    </section>
+    
+    <section id="developer-prjfile">
+      <title id="developer-prjfile.title">Getting the project the a given file belongs to</title>
+      <informalexample>
+        <programlisting>
+ProjectManager pm=getInstance()
+// then use java.util.Iterator getProjects();
+// and foreach project use VPTNode node=prj.getChildNode(java.lang.String path);
+        </programlisting>
+      </informalexample>
+    </section>
+    
+		<section id="developer-prjview">
+      <title id="developer-prjview.title">Getting the project of the given view</title>
+
+      <informalexample>
+        <programlisting>
+VPTProject prj=ProjectViewer.getActiveProject(org.gjt.sp.jedit.View aView); 
+ProjectViewer pv=ProjectViewer.getViewer(org.gjt.sp.jedit.View view); 
+        </programlisting>
+      </informalexample>
+    </section>
+    
 	</chapter>
 
 	<chapter id="troubleshooting">
@@ -539,7 +582,7 @@
 			Large projects can take some time to load, especially over a network
 			connection. This is due to the fact that Project Viewer resolves all
 			canonical paths so that it can better interact with jEdit. If your
-			prooject has lots of files ("lots" meaning over one or two thousand), you
+			project has lots of files ("lots" meaning over one or two thousand), you
 			may experience some delays when loading it. jEdit is not blocked while the
 			project is loading, though, so you can continue your work.
 		</para>
