@@ -242,7 +242,10 @@ public class SqlTextPublisher
     {
       conn = rec.allocConnection();
 
-      final SqlParser parser = new SqlParser( rec.getStatementDelimiterRegex() );
+      String delimiter = rec.getStatementDelimiterRegex();
+      if ( delimiter == null || "".equals( delimiter ) )
+        delimiter = rec.getServerType().getDefaultStatementDelimiterRegex();
+      final SqlParser parser = new SqlParser( delimiter );
       final java.util.List fragments = parser.getFragments( sqlText );
       final Collection preprocessors = getPreprocessors().values();
 
