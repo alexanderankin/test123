@@ -23,6 +23,7 @@ package background;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.Hashtable;
 import javax.swing.*;
 
 import org.gjt.sp.jedit.GUIUtilities;
@@ -81,6 +82,15 @@ public class BackgroundOptionPane extends AbstractOptionPane
         if (alpha < 0) { alpha = 0; }
         if (alpha > 255) { alpha = 255; }
         this.blendAlpha = new JSlider(0, 255, alpha);
+        this.blendAlpha.setPaintTicks(true);
+        this.blendAlpha.setMajorTickSpacing(32);
+        Hashtable blendAlphaLabels = new Hashtable();
+        blendAlphaLabels.put(new Integer(0), new JLabel("Transparent"));
+        blendAlphaLabels.put(new Integer(127), new JLabel("Translucent"));
+        blendAlphaLabels.put(new Integer(255), new JLabel("Opaque"));
+        this.blendAlpha.setPaintLabels(true);
+        this.blendAlpha.setLabelTable(blendAlphaLabels);
+
         addComponent(
             jEdit.getProperty("options.background.blend-alpha"),
             this.blendAlpha
