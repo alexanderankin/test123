@@ -21,7 +21,6 @@ package projectviewer.persist;
 //{{{ Imports
 import java.util.Map;
 
-import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
 
@@ -30,7 +29,6 @@ import org.gjt.sp.jedit.io.VFSManager;
 import projectviewer.vpt.VFSFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
-import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**

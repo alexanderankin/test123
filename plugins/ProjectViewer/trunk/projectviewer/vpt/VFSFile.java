@@ -23,14 +23,12 @@ import java.io.File;
 import java.io.IOException;
 
 import java.awt.Color;
-import java.awt.Image;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 

@@ -19,14 +19,12 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.awt.Dimension;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 
-import javax.swing.JToolTip;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 import javax.swing.border.EmptyBorder;

@@ -20,7 +20,6 @@ package projectviewer.importer;
 
 //{{{ Imports
 import java.io.File;
-import java.io.FilenameFilter;
 
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -28,16 +27,12 @@ import java.util.Collection;
 import java.util.Enumeration;
 
 import java.awt.Component;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
 //}}}
 

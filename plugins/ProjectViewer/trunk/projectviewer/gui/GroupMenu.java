@@ -19,7 +19,6 @@
 package projectviewer.gui;
 
 //{{{ Imports
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -31,9 +30,6 @@ import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 
-import javax.swing.filechooser.FileFilter;
-import javax.swing.filechooser.FileSystemView;
-
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
@@ -44,7 +40,6 @@ import projectviewer.action.EditProjectAction;
 
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTRoot;
 //}}}
 

@@ -20,13 +20,9 @@ package projectviewer.importer;
 
 //{{{ Imports
 import java.io.File;
-import java.io.FilenameFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
-
-import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
@@ -34,13 +30,11 @@ import org.gjt.sp.jedit.MiscUtilities;
 
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.browser.VFSBrowser;
-import org.gjt.sp.jedit.browser.VFSFileChooserDialog;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VFSFile;
-import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
 //}}}
 

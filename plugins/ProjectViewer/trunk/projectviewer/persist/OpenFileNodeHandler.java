@@ -22,7 +22,6 @@ import java.util.Map;
 import java.io.Writer;
 import java.io.IOException;
 
-import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 

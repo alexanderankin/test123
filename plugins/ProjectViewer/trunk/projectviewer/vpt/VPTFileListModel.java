@@ -21,11 +21,9 @@ package projectviewer.vpt;
 //{{{ Imports
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Stack;
 import java.util.WeakHashMap;
 
 import javax.swing.tree.TreeNode;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 
 import org.gjt.sp.util.Log;

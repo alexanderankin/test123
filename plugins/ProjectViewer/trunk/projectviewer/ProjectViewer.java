@@ -29,18 +29,13 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.StringTokenizer;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Window;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.HierarchyEvent;
 import java.awt.event.HierarchyListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import java.awt.dnd.DragSource;
 import java.awt.dnd.DnDConstants;
@@ -63,16 +58,12 @@ import javax.swing.JCheckBox;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
-import javax.swing.BorderFactory;
 import javax.swing.SwingUtilities;
 
 import javax.swing.tree.TreeModel;
-import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.DefaultMutableTreeNode;
-
-import org.gjt.sp.util.Log;
 
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
@@ -82,13 +73,9 @@ import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.io.VFSManager;
 
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.DynamicMenuChanged;
-import org.gjt.sp.jedit.msg.EditorExiting;
-import org.gjt.sp.jedit.msg.EditorExitRequested;
-import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import errorlist.ErrorSource;
@@ -108,7 +95,6 @@ import projectviewer.vpt.VPTSelectionListener;
 import projectviewer.vpt.VPTWorkingFileListModel;
 import projectviewer.vpt.VPTCompactModel;
 
-import projectviewer.event.ProjectListener;
 import projectviewer.event.ProjectViewerEvent;
 import projectviewer.event.ProjectViewerListener;
 

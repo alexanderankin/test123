@@ -19,24 +19,18 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.io.IOException;
-
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import javax.swing.SwingUtilities;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
 
 import projectviewer.ProjectViewer;
-import projectviewer.ProjectManager;
-import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**

@@ -19,9 +19,6 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.io.File;
-import java.io.IOException;
-
 import java.util.Set;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -33,12 +30,10 @@ import java.util.Collections;
 
 import javax.swing.Icon;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.event.ProjectEvent;
 import projectviewer.event.ProjectListener;
-import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**

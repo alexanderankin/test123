@@ -19,8 +19,6 @@
 package projectviewer.config;
 
 //{{{ Imports
-import java.util.Iterator;
-import java.util.ArrayList;
 import java.util.Enumeration;
 
 import javax.swing.JOptionPane;
@@ -30,7 +28,6 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.OptionGroup;
-import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.util.Log;
 

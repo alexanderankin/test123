@@ -44,7 +44,6 @@ import projectviewer.vpt.VPTDirectory;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
-import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**

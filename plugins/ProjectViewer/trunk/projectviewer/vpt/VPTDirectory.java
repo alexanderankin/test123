@@ -20,7 +20,6 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.io.File;
-import java.awt.Color;
 import javax.swing.Icon;
 
 import org.gjt.sp.jedit.GUIUtilities;
