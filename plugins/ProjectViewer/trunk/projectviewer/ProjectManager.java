@@ -66,19 +66,6 @@ public final class ProjectManager {
 		out.writeBytes("=");
 		out.writeBytes(prj.getName());
 		out.writeBytes("\n");
-		
-		out.writeBytes("project.");
-		out.writeBytes(Integer.toString(prj.getKey()));
-		out.writeBytes(".root=");
-		out.writeBytes(prj.getRoot().getPath());
-		out.writeBytes("\n");
-		
-		out.writeBytes("project.");
-		out.writeBytes(Integer.toString(prj.getKey()));
-		out.writeBytes(".weburl=");
-		out.writeBytes(prj.getURLRoot());
-		out.writeBytes("\n");
-		
 	}
 
 	/** Returns a key identifying file of <code>index</code> for <code>aProject</code>.
@@ -191,6 +178,15 @@ public final class ProjectManager {
 
 	/** Save projects. */
 	public synchronized void save() {
+        // Cleanup the "projects" directory
+        File pDir = new File(ProjectPlugin.getResourcePath("projects"));
+        File[] list = pDir.listFiles();
+        if (list != null) for (int i = 0; i < list.length; i++) {
+            list[i].delete();
+        }
+        
+        // Saves all the data
+        Log.log(Log.DEBUG, this, "Saving all project data...");
 		saveAllProjectData();
         for (Iterator i = projects(); i.hasNext(); ) {
             ((Project)i.next()).save();
@@ -219,7 +215,6 @@ public final class ProjectManager {
 		}
 		catch (IOException e) {
 			Log.log(Log.ERROR, this, e);
-
 		}
 		finally {
 			close(out);
@@ -253,16 +248,12 @@ public final class ProjectManager {
 			while (prjName != null) {
 				
 				String root = projectProps.getProperty("project." + counter + ".root");
-				String urlRoot = projectProps.getProperty("project." +  counter + ".weburl");
-			
-		
                     
 				//Log.log( Log.DEBUG, this, "Loading project '" + prjName + "' root:" + root );
 				Project project = new Project(prjName, counter);
-				project.setURLRoot(urlRoot);
                 if (root != null) {
                     project.setRoot(new ProjectDirectory(root));
-		    project.setLoaded(true);
+		            project.setLoaded(true);
                     toLoad.add(project);
                     if (fileProps == null) {
                         fileProps = load(FILE_PROPS_FILE);

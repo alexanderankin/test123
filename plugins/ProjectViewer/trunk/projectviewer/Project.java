@@ -94,7 +94,11 @@ public final class Project implements EBComponent {
 	}
 
     public void setRoot(ProjectDirectory root) {
-        this.root = root;
+        if (this.root == null) {
+            this.root = root;
+        } else {
+            this.root.setPath(root.getPath());
+        }
     }
     
 	/**  Returns the name of the project.
@@ -625,13 +629,19 @@ public final class Project implements EBComponent {
                 ProjectFile file = new ProjectFile(fileProps.getProperty(p));
                 if (!ProjectViewerConfig.getInstance().getDeleteNotFoundFiles() || 
                       file.exists()) {
+                          
+                    long t1 = System.currentTimeMillis();
                     importFile(file);
+                    t1 = System.currentTimeMillis() - t1;
+                    Log.log(Log.DEBUG, this, "Imported file in " + t1 + "ms");
                 }
             } else if (p.startsWith("open_file")) {
                 openFiles.add(fileProps.getProperty(p));
+            } else if (p.startsWith("webroot")) {
+                setURLRoot(fileProps.getProperty(p));
             }
         }
-        
+
         setLoaded(true);
     }
     
@@ -650,6 +660,9 @@ public final class Project implements EBComponent {
         
         // Project Root
         p.setProperty("root", root.getPath());
+        
+        // URL Root
+        p.setProperty("webroot", getURLRoot());
         
         // List of open files
         if (openFiles.size() > 0) {
