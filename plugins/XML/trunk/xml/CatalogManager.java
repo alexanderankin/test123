@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 2001, 2002 Slava Pestov
+ * Portions copyright (C) 2002 Chris Stevenson
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -50,8 +51,11 @@ public class CatalogManager
 			{
 				// first, try resolving a relative name,
 				// to handle jEdit built-in DTDs
-				newSystemId = resolveSystem(systemId.substring(
-					current.length()));
+				newSystemId = systemId.substring(
+					current.length());
+				if(newSystemId.startsWith("/"))
+					newSystemId = newSystemId.substring(1);
+				newSystemId = resolveSystem(newSystemId);
 			}
 		}
 
@@ -110,6 +114,109 @@ public class CatalogManager
 		InputSource source = new InputSource(newSystemId);
 		source.setByteStream(new URL(newSystemId).openStream());
 		return source;
+	} //}}}
+
+	//{{{ addUserDTD() method
+	public static void addUserDTD(String publicId, String systemId, String url)
+	{
+		load();
+
+		Entry pe = new Entry( Entry.PUBLIC, publicId );
+		userCatalog.put( pe, url );
+
+		Entry se = new Entry( Entry.SYSTEM, systemId );
+		userCatalog.put( se, url );
+	} //}}}
+
+	//{{{ removeUserDTD() method
+	public static void removeUserDTD(String publicId, String systemId)
+	{
+		load();
+
+		Entry pe = new Entry( Entry.PUBLIC, publicId );
+		userCatalog.remove( pe );
+
+		Entry se = new Entry( Entry.SYSTEM, systemId );
+		userCatalog.remove( se );
+	} //}}}
+
+	//{{{ reload() method
+	public static void reload(Entry e)
+	{
+		if(e.type == Entry.PUBLIC)
+		{
+			throw new RuntimeException(
+				"Cannot reload a DTD from a PUBLIC id, only a SYSTEM id." );
+		}
+
+		try
+		{
+
+			if(isLocal(e))
+			{
+
+				File oldDtdFile = new File((String)userCatalog.get(e));
+
+				File newFile = copyToLocalFile(new URL(e.id));
+
+				oldDtdFile.delete();
+				newFile.renameTo(oldDtdFile);
+
+				/* JOptionPane.showMessageDialog(
+					null,
+					"Reloaded DTD to " + oldDtdFile ); */
+			}
+		}
+		catch (Exception ex)
+		{
+			JOptionPane.showMessageDialog( null, ex.getMessage() );
+		}
+	} //}}}
+
+	//{{{ copyToLocalFile() method
+	public static File copyToLocalFile(URL url)
+		throws IOException
+	{
+		if(jEdit.getSettingsDirectory() == null)
+			return null;
+
+		BufferedReader in = new BufferedReader(
+			new InputStreamReader(url.openStream()));
+
+		String userDir = jEdit.getSettingsDirectory();
+
+		File dtdDir = new File(userDir, "dtds");
+		if (!dtdDir.exists())
+			dtdDir.mkdir();
+
+		File localFile = File.createTempFile("tmp", ".dtd", dtdDir);
+
+		FileWriter out = new FileWriter(localFile);
+
+		String line;
+		while ((line = in.readLine()) != null)
+			out.write(line);
+		out.close();
+
+		return localFile;
+	} //}}}
+
+	//{{{ isLocal() method
+	public static boolean isLocal(Entry e)
+	{
+		if(e == null || jEdit.getSettingsDirectory() == null)
+			return false;
+
+		try
+		{
+			URL url = new File(jEdit.getSettingsDirectory()).toURL();
+			String fileUrl = (String)userCatalog.get(e);
+			return fileUrl.startsWith(url.toString());
+		}
+		catch (MalformedURLException ex)
+		{
+			return false;
+		}
 	} //}}}
 
 	//{{{ propertiesChanged() method
