@@ -173,6 +173,10 @@ public void dispose()
     {
     }
     
+    public void processActionInNewView(Object o)
+    {
+    }
+    
     public void updateStatusBar(Object itemlist)
     {
     }
@@ -207,10 +211,10 @@ public void dispose()
         String m_key = "";
         
 //{{{ void keyReleased
-        public void keyReleased(KeyEvent evt)
-        {
-
-        }
+//        public void keyReleased(KeyEvent evt)
+//        {
+//
+//        }
 //}}}
         
 //{{{ void keyPressed
@@ -220,7 +224,14 @@ public void dispose()
             switch (evt.getKeyCode())
             {
             case KeyEvent.VK_ENTER:
-                JumpList.this.processAction((Object) itemsList);
+                if (evt.isShiftDown())
+                {
+                    JumpList.this.processActionInNewView((Object) itemsList);    
+                }
+                else
+                {
+                    JumpList.this.processAction((Object) itemsList);
+                }
                 dispose();
                 evt.consume();
                 break;
@@ -232,7 +243,14 @@ public void dispose()
                 break;
 
             case KeyEvent.VK_SPACE:
-                JumpList.this.processAction((Object) itemsList);
+                if (evt.isShiftDown())
+                {
+                    JumpList.this.processActionInNewView((Object) itemsList);    
+                }
+                else
+                {
+                    JumpList.this.processAction((Object) itemsList);
+                }
                 dispose();
                 evt.consume();
                 break;
@@ -360,14 +378,11 @@ public void dispose()
 //{{{ MouseHandler.mouseClicked
         public void mouseClicked(MouseEvent me)
         {
-            if (me.getClickCount() == 1)
-            {
-                return ;   
-            }
-            
-            if (me.getClickCount() == 2)
-            {
                 if (me.isShiftDown() == true)
+                {
+                    JumpList.this.processActionInNewView((Object) itemsList);
+                }
+                else if (me.isControlDown() == true)
                 {
                     JumpList.this.processInsertAction((Object) itemsList);
                 }
@@ -377,7 +392,7 @@ public void dispose()
                 }
                 dispose();
                 return;
-            }
+            //}
 
             
             //dispose();
