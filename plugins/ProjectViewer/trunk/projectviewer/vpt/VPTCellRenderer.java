@@ -63,13 +63,17 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			boolean focus) {
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, focus);
 
-		VPTNode node = (VPTNode) value;
-		setIcon(node.getIcon(expanded));
-		setBackground(node.getBackgroundColor(sel));
-		setForeground(node.getForegroundColor(sel));
-		setFont(leaf ? leafFont : folderFont);
-		underlined = (node.isFile() && node.isOpened());
-		setText(node.getName());
+		try {
+			VPTNode node = (VPTNode) value;
+			setIcon(node.getIcon(expanded));
+			setBackground(node.getBackgroundColor(sel));
+			setForeground(node.getForegroundColor(sel));
+			setFont(leaf ? leafFont : folderFont);
+			underlined = (node.isFile() && node.isOpened());
+			setText(node.getName());
+		} catch (ClassCastException cce) {
+			// just ignore it...
+		}
 		return this;
 	} //}}}
 
