@@ -102,6 +102,7 @@
 			<fileset dir="${src}">
         <include name="build.xml"/>
         <include name="build.properties.template"/>
+				<exclude name="build.properties"/>
         <include name="**"/>
 			</fileset>
     </zip>

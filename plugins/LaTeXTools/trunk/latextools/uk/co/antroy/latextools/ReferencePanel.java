@@ -203,8 +203,7 @@ public class ReferencePanel
     }
 
     private void loadReferences(Buffer buff) {
-        int index = buff.getLineCount() - 1;
-        String text = buff.getText(0, buff.getLength() - 1);
+        String text = buff.getText(0, buff.getLength());
         RE labelRe = null;
 
         try {
@@ -216,6 +215,12 @@ public class ReferencePanel
         REMatch[] matches = labelRe.getAllMatches(text);
 
         for (int i = 0; i < matches.length; i++) {
+            int posn = matches[i].getStartIndex();
+            int line = buff.getLineOfOffset(posn);
+            String preText = buff.getLineText(line).substring(0,(posn - buff.getLineStartOffset(line))+1);
+            
+            if (preText.indexOf("%") >= 0) continue;
+
             LaTeXAsset asset = LaTeXAsset.createAsset(matches[i].toString(1), 
                                                       buff.createPosition(matches[i].getStartIndex()), 
                                                       buff.createPosition(matches[i].getEndIndex()), 

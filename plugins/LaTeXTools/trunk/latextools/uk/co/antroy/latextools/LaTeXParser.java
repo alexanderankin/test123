@@ -98,7 +98,7 @@ public class LaTeXParser
         while (it.hasNext()) {
 
             LaTeXAsset asset = (LaTeXAsset)it.next();
-            Log.log(Log.DEBUG, this, asset.getShortString() + ":" +asset.getLevel() + ": S:" + asset.getStart().getOffset() + ": E:" + asset.getEnd().getOffset());
+            //Log.log(Log.DEBUG, this, asset.getShortString() + ":" +asset.getLevel() + ": S:" + asset.getStart().getOffset() + ": E:" + asset.getEnd().getOffset());
             DefaultMutableTreeNode n = new DefaultMutableTreeNode(asset);
             DefaultMutableTreeNode correctNode = findCorrectNode(n, lastNode);
             lastNode = n;
@@ -198,7 +198,12 @@ public class LaTeXParser
                 REMatch[] match = search.getAllMatches(text);
 
                 for (int m = 0; m < match.length; m++) {
-
+                    int posn = match[m].getStartIndex();
+                    int line = buffer.getLineOfOffset(posn);
+                    String preText = buffer.getLineText(line).substring(0,(posn - buffer.getLineStartOffset(line))+1);
+                    
+                    if (preText.indexOf("%") >= 0) continue;
+                    
                     String result = "";
                     int i;
 
@@ -268,7 +273,7 @@ public class LaTeXParser
             if (match.toString(1)==""){
                 if(stack == 0){
                     Position out = buffer.createPosition(startIndex + offset);
-                    Log.log(Log.DEBUG, this, "MATCH!" + out.getOffset());
+                    //Log.log(Log.DEBUG, this, "MATCH!" + out.getOffset());
                    return out;
                 } else {
                     stack--;

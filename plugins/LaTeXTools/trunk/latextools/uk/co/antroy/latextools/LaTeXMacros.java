@@ -15,7 +15,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
+import java.awt.event.*;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -249,39 +249,55 @@ public class LaTeXMacros {
         return matches;
     }
 
-    public static void compile(View view, Buffer buffer, boolean prompt) {
+    private static void historyCommand(View view, Buffer buffer, boolean prompt, 
+                                       String extension, String commandProps, 
+                                       String historyProps, String dialogTitle){
+                                          
         String tex = getMainTeXPath(buffer);
 
         if (!(tex.substring(tex.length() - 3, tex.length()).equals("tex"))) {
             Macros.error(view, tex + " is not a TeX file.");
-
             return;
         }
 
+        tex = tex.substring(0, tex.length()-4);
+        
         String command;
+        String ext;
 
         if (prompt) {
-            CommandHistoryDialog hd = new CommandHistoryDialog(view);
+            CommandHistoryDialog hd = new CommandHistoryDialog(view, historyProps, dialogTitle);
             hd.setVisible(true);
             command = hd.getCommand();
+            ext = hd.getExtension();
 
             if (command == null) {
-                Macros.message(view, "Compile Aborted...");
+                Macros.message(view, "Aborting...");
 
                 return;
             }
         } else {
-            command = jEdit.getProperty("latex.compile.command");
+            command = jEdit.getProperty(commandProps);
+            ext = extension;
         }
 
         jEdit.saveAllBuffers(view, false);
         String texRoot = new File(tex).getParent().toString();
         StringBuffer str = new StringBuffer(command);
-        str.append(" '").append(tex).append("'");
+        str.append(" '").append(tex).append(ext).append("'");
         command = str.toString();
         runCommand(view, texRoot, command);
+        
+    }
+    
+    public static void compile(View view, Buffer buffer, boolean prompt) {
+        historyCommand(view, buffer, prompt, ".tex", "latex.compile.command", "latextools.compile.history", "Enter Compilation Command");
     }
 
+    public static void viewOutput(View view, Buffer buffer, boolean prompt) {
+        historyCommand(view, buffer, prompt, ".pdf", "latex.viewoutput.command", "latextools.viewoutput.history", "Enter Viewer Command");
+    }
+    
     private static void runCommand(View view, String dir, String command) {
         Console console = (Console)view.getDockableWindowManager().getDockable(
                                   "console");
@@ -324,7 +340,7 @@ public class LaTeXMacros {
 
         String[] extensions = {
             ".log", ".bak", ".aux", ".bbl", ".blg", ".toc", ".pdf", ".xyc", 
-            ".out", ".tex~"
+            ".out", ".tex~", ".bak"
         };
         WorkingClassDialog dialog = new WorkingClassDialog(view, extensions);
         dialog.setVisible(true);
@@ -356,27 +372,37 @@ public class LaTeXMacros {
             }
         }
     }
-
+    
     private static class CommandHistoryDialog
         extends JDialog
         implements ActionListener,
                    WindowListener {
         private HistoryTextField htf;
+        private HistoryTextField extHtf;
         private String command;
+        private String extension;
 
-        CommandHistoryDialog(Frame owner) {
-            super(owner, "Enter Compilation Command", true);
+        CommandHistoryDialog(Frame owner, String historyProps, String dialogTitle) {
+            super(owner, dialogTitle, true);
             JPanel panel = new JPanel();
-            htf = new HistoryTextField("latextools.compile.history", false, 
+            htf = new HistoryTextField(historyProps, false, 
                                        true);
             htf.setColumns(20);
+            extHtf = new HistoryTextField(historyProps + ".ext", false, 
+                                       true);
+            extHtf.setColumns(8);
 
             if (htf.getModel().getSize() > 0) {
                 htf.setText(htf.getModel().getItem(0));
             }
+            if (extHtf.getModel().getSize() > 0) {
+                extHtf.setText(htf.getModel().getItem(0));
+            }
 
             htf.addActionListener(this);
-            panel.add(htf, BorderLayout.NORTH);
+            panel.setLayout(new GridLayout(0,1));
+            panel.add((new JPanel()).add(htf));
+            panel.add((new JPanel()).add(extHtf));
             JButton ok = new JButton("OK");
             JButton cancel = new JButton("Cancel");
             ok.addActionListener(this);
@@ -384,7 +410,7 @@ public class LaTeXMacros {
             JPanel buttonPanel = new JPanel();
             buttonPanel.add(ok);
             buttonPanel.add(cancel);
-            panel.add(buttonPanel, BorderLayout.SOUTH);
+            panel.add(buttonPanel);
             setContentPane(panel);
             addWindowListener(this);
             pack();
@@ -395,14 +421,23 @@ public class LaTeXMacros {
 
             return command;
         }
+        
+        public String getExtension() {
+
+            return extension;
+        }
 
         public void actionPerformed(ActionEvent e) {
 
             if (e.getActionCommand() == "OK") {
                 command = htf.getText();
+                htf.addCurrentToHistory();
+                extension = extHtf.getText();
+                extHtf.addCurrentToHistory();
                 setVisible(false);
             } else if (e.getActionCommand() == "Cancel") {
                 command = null;
+                extension = null;
                 setVisible(false);
             }
         }
@@ -540,14 +575,6 @@ public class LaTeXMacros {
         jEdit.openFile(view, match[0].toString());
     }
 
-    public static void showProjectTree(View view, Buffer buffer) {
-        JDialog jd = new JDialog(view, "Project Tree");
-        jd.getContentPane().add(new JTree(getProjectFiles(view, buffer)));
-        jd.pack();
-        jd.setLocation(getCenter(view, jd));
-        jd.setVisible(true);
-    }
-
     public static DefaultMutableTreeNode getProjectFiles(View view, 
                                                          Buffer buffer) {
         File main = getMainTeXFile(buffer);
@@ -556,7 +583,7 @@ public class LaTeXMacros {
     }
 
     private static DefaultMutableTreeNode getNestedImports(View view, File in) {
-        DefaultMutableTreeNode out = new DefaultMutableTreeNode(in);
+        DefaultMutableTreeNode out = new LaTeXMutableTreeNode(in);
         Buffer b = jEdit.openTemporary(view, in.getParent(), in.getName(), 
                                        false);
         File[] children = getImports(b);
@@ -609,5 +636,17 @@ public class LaTeXMacros {
         cp.translate(x, y);
 
         return cp;
+    }
+    
+    private static class LaTeXMutableTreeNode extends DefaultMutableTreeNode{
+        File file;
+        public LaTeXMutableTreeNode(File f){
+            super(f);
+            file = f;
+        }
+        
+        public String toString(){
+            return file.getName();
+        }
     }
 }
