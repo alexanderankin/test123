@@ -1,0 +1,110 @@
+/* This is a utility function that executes the specified command in the
+ * console. This saves a bit of code duplication in macros that use the
+ * console. */
+runCommandInConsole(View view, String shell, String command)
+{
+	import console.Shell;
+
+	// Open the console if it isn't already open
+	view.getDockableWindowManager().addDockableWindow("console");
+
+	// Obtain the console instance
+	console = view.getDockableWindowManager().getDockable("console");
+
+	// Set the shell to use
+	Shell _shell = Shell.getShell(shell);
+	console.setShell(_shell);
+
+	// Run the command
+	console.run(_shell,console,command);
+}
+
+bsh.help.runCommandInConsole
+	= "usage: runCommandInConsole(View view, String shell, String command)";
+
+/* This is a utility function that executes the specified command in the
+ * console, placing the output in a new buffer. */
+runCommandToBuffer(View view, String shell, String command)
+{
+	import console.Shell;
+	import console.BufferOutput;
+
+	// Open the console if it isn't already open
+	view.getDockableWindowManager().addDockableWindow("console");
+
+	// Obtain the console instance
+	console = view.getDockableWindowManager().getDockable("console");
+
+	// Set the shell to use
+	Shell _shell = Shell.getShell(shell);
+	console.setShell(_shell);
+
+	// Run the command
+	console.run(_shell,new BufferOutput(console),command);
+}
+
+bsh.help.runCommandToBuffer
+	= "usage: runCommandToBuffer(View view, String shell, String command)";
+
+/* This is a utility method that executes the specified command in the
+ * system shell. */
+runInSystemShell(View view, String command)
+{
+	runCommandInConsole(view,"System",command);
+}
+
+bsh.help.runInSystemShell
+	= "usage: runInSystemShell(View view, String shell, String command)";
+
+/* This is a utility function that waits until the currently running command
+ * finishes.. */
+waitForConsole(View view)
+{
+	import console.Shell;
+
+	view.getDockableWindowManager().addDockableWindow("console");
+	console = view.getDockableWindowManager().getDockable("console");
+	console.getShell().waitFor(console);
+}
+
+bsh.help.waitForConsole
+	= "usage: waitForConsole(View view)";
+
+/* This function prints the specified object to the current console if one
+ * exists; otherwise, to the activity log. */
+print(arg)
+{
+	if(arg == null)
+		arg = "null";
+
+	if(arg.getClass().isArray())
+	{
+		len = arg.length;
+		print("Array: "+arg +" {");
+		for(int i=0; i< len; i++ )
+		{
+			print(arg[i]);
+		}
+		print("}");
+	}
+	else
+	{
+		if(output != null)
+			output.print(null,String.valueOf(arg));
+		else
+			Log.log(Log.WARNING,BeanShell.class,String.valueOf(arg));
+	}
+}
+
+bsh.help.print = "usage: print ( arg )";
+
+/* Returns $CLASSPATH, plus the current buffer's package root. */
+getBufferClassPath(buffer)
+{
+	import console.ConsolePlugin;
+
+	return "$CLASSPATH" + File.pathSeparator
+		+ ConsolePlugin.getPackageRoot(buffer);
+}
+
+bsh.help.print = "usage: getBufferClassPath ( buffer )";
