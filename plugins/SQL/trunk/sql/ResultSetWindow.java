@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 
-//!!import bufferlist.*;
+import common.gui.*;
 
 import SqlPlugin;
 
@@ -176,10 +176,10 @@ public class ResultSetWindow extends JPanel implements DockableWindow
 
     final Data data = (Data) model;
 
-    //!!final HelpfulJTable tbl = new HelpfulJTable();
-    final JTable tbl = new JTable();
+    final HelpfulJTable tbl = new HelpfulJTable();
+    //final JTable tbl = new JTable();
 
-    //!!tbl.setAutoResizeColumns( false );
+    tbl.setAutoResizeColumns( false );
     //!!tbl.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
     tbl.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
 

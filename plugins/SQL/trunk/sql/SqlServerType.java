@@ -131,7 +131,7 @@ public class SqlServerType extends Properties
 
     try
     {
-      vfs = (SqlSubVFS) Class.forName( className ).newInstance();
+      vfs = (SqlSubVFS) SqlPlugin.class.getClassLoader().loadClass( className ).newInstance();
     } catch ( Exception ex )
     {
       Log.log( Log.ERROR, SqlServerType.class,
