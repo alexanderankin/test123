@@ -19,471 +19,528 @@ import java.io.File;
 import java.util.*;
 import javax.swing.tree.TreePath;
 
-/** A project directory.
+/**
+ * A project directory.
  */
 public final class ProjectDirectory {
 
-	private static Comparator comparator;
+   private static Comparator comparator;
 
-	private String fullPath;
-	private List subdirectories;
-	private List files;
-	private String name;
-	private String pathWithSep;
+   private String fullPath;
+   private List subdirectories;
+   private List files;
+   private String name;
+   private String pathWithSep;
 
-	/** Create a new <code>ProjectDirectory</code>.
-	 *
-	 *@param  aDirectory  Description of Parameter
-	 *@since
-	 */
-	public ProjectDirectory(File aDirectory) {
-		this(aDirectory.getAbsolutePath());
-	}
+   /**
+    * Create a new <code>ProjectDirectory</code>.
+    *
+    * @param aDirectory  Description of Parameter
+    * @since
+    */
+   public ProjectDirectory( File aDirectory ) {
+      this( aDirectory.getAbsolutePath() );
+   }
 
-	/** Create a new <code>ProjectDirectory</code>.
-	 *
-	 *@param  fullDirectoryPath  Description of Parameter
-	 *@since
-	 */
-	public ProjectDirectory(String fullDirectoryPath) {
-		fullPath = fullDirectoryPath;
-		subdirectories = new ArrayList();
-		files = new ArrayList();
-	}
+   /**
+    * Create a new <code>ProjectDirectory</code>.
+    *
+    * @param fullDirectoryPath  Description of Parameter
+    * @since
+    */
+   public ProjectDirectory( String fullDirectoryPath ) {
+      fullPath = fullDirectoryPath;
+      subdirectories = new ArrayList();
+      files = new ArrayList();
+   }
 
-	/** Returns a comparator for project directories.
-	 *
-	 *@return    The comparator value
-	 *@since
-	 */
-	public static Comparator getComparator() {
-		if (comparator == null) {
-			comparator = new DirectoryComparator();
-		}
-		return comparator;
-	}
+   /**
+    * Returns a comparator for project directories.
+    *
+    * @return   The comparator value
+    * @since
+    */
+   public static Comparator getComparator() {
+      if ( comparator == null ) {
+         comparator = new DirectoryComparator();
+      }
+      return comparator;
+   }
 
-	/** Returns the path of this directory.
-	 *
-	 *@return    The path value
-	 *@since
-	 */
-	public String getPath() {
-		return fullPath;
-	}
-    
-    public void setPath(String aPath) {
-        this.fullPath = aPath;
-        this.name = null;
-    }
+   /**
+    * Returns the path of this directory.
+    *
+    * @return   The path value
+    * @since
+    */
+   public String getPath() {
+      return fullPath;
+   }
 
-	/** Returns the number of files in the directory. This method differs from
-	 *  {@link #getChildCount()} in that the other method returns the number of
-	 *  project files <b>and</b> directories.
-	 *
-	 *@return    The fileCount value
-	 *@since
-	 */
-	public int getFileCount() {
-		return files.size();
-	}
+   /**
+    * Sets the path attribute of the ProjectDirectory object
+    *
+    * @param aPath  The new path value
+    */
+   public void setPath( String aPath ) {
+      this.fullPath = aPath;
+      this.name = null;
+   }
 
-	/** Returns the {@link ProjectFile} at the specified index.
-	 *
-	 *@param  index  Description of Parameter
-	 *@return        The file value
-	 *@since
-	 */
-	public ProjectFile getFile(int index) {
-		return (ProjectFile) files.get(index);
-	}
+   /**
+    * Returns the number of files in the directory. This method differs from
+    *  {@link #getChildCount()} in that the other method returns the number of
+    *  project files <b>and</b> directories.
+    *
+    * @return   The fileCount value
+    * @since
+    */
+   public int getFileCount() {
+      return files.size();
+   }
 
-	/** Returns the named subdirectory.
-	 *
-	 *@param  name  Description of Parameter
-	 *@return       The subDirectory value
-	 *@since
-	 */
-	public ProjectDirectory getSubDirectory(String name) {
-		for (Iterator i = subdirectories(); i.hasNext(); ) {
-			ProjectDirectory each = (ProjectDirectory) i.next();
-			if (each.getName().equals(name))
-				return each;
-		}
-		return null;
-	}
+   /**
+    * Returns the {@link ProjectFile} at the specified index.
+    *
+    * @param index  Description of Parameter
+    * @return       The file value
+    * @since
+    */
+   public ProjectFile getFile( int index ) {
+      return (ProjectFile)files.get( index );
+   }
 
-	/** Returns the name of the directory.
-	 *
-	 *@return    The name value
-	 *@since
-	 */
-	public String getName() {
-		if (name == null)
-			name = getPath().substring(getPath().lastIndexOf(File.separatorChar) + 1);
-		return name;
-	}
+   /**
+    * Returns the named subdirectory.
+    *
+    * @param name  Description of Parameter
+    * @return      The subDirectory value
+    * @since
+    */
+   public ProjectDirectory getSubDirectory( String name ) {
+      for ( Iterator i = subdirectories(); i.hasNext();  ) {
+         ProjectDirectory each = (ProjectDirectory)i.next();
+         if ( each.getName().equals( name ) )
+            return each;
+      }
+      return null;
+   }
 
-	/** Returns list of directories need to reach the given project file.
-	 *
-	 *@param  aFile  Description of Parameter
-	 *@return        The pathToFile value
-	 *@since
-	 */
-	public List getPathToFile(ProjectFile aFile) {
-		return getProjectPath(aFile.toFile());
-	}
+   /**
+    * Returns the name of the directory.
+    *
+    * @return   The name value
+    * @since
+    */
+   public String getName() {
+      if ( name == null )
+         name = getPath().substring( getPath().lastIndexOf( File.separatorChar ) + 1 );
+      return name;
+   }
 
-	/** Returns list of directories need to reach the given project file.
-	 *
-	 *@param  aDirectory  Description of Parameter
-	 *@return             The pathToDirectory value
-	 *@since
-	 */
-	public List getPathToDirectory(ProjectDirectory aDirectory) {
-		return getProjectPath(aDirectory.toFile());
-	}
+   /**
+    * Returns list of directories need to reach the given project file.
+    *
+    * @param aFile  Description of Parameter
+    * @return       The pathToFile value
+    * @since
+    */
+   public List getPathToFile( ProjectFile aFile ) {
+      return getProjectPath( aFile.toFile() );
+   }
 
-	/** Returns <code>true</code> if the given file is under this directory or its
-	 *  subdirectories.
-	 *
-	 *@param  aFile  Description of Parameter
-	 *@return        The descendant value
-	 *@since
-	 */
-	public boolean isDescendant(ProjectFile aFile) {
-		if (pathWithSep == null)
-			pathWithSep = getPath() + File.separator;
-		return aFile.getPath().startsWith(pathWithSep);
-	}
+   /**
+    * Returns list of directories need to reach the given project file.
+    *
+    * @param aDirectory  Description of Parameter
+    * @return            The pathToDirectory value
+    * @since
+    */
+   public List getPathToDirectory( ProjectDirectory aDirectory ) {
+      return getProjectPath( aDirectory.toFile() );
+   }
 
-	/** Returns the indexed child, whether it be a sub directory of file.
-	 *
-	 *@param  index  Description of Parameter
-	 *@return        The child value
-	 *@since
-	 */
-	public Object getChild(int index) {
-		if (index < subdirectories.size())
-			return subdirectories.get(index);
-		else {
-			return files.get(index - subdirectories.size());
-		}
-	}
+   /**
+    * Returns <code>true</code> if the given file is under this directory or its
+    *  subdirectories.
+    *
+    * @param aFile  Description of Parameter
+    * @return       The descendant value
+    * @since
+    */
+   public boolean isDescendant( ProjectFile aFile ) {
+      if ( pathWithSep == null )
+         pathWithSep = getPath() + File.separator;
+      return aFile.getPath().startsWith( pathWithSep );
+   }
 
-	/** Returns the number of children under this directory.
-	 *
-	 *@return    The childCount value
-	 *@since
-	 */
-	public int getChildCount() {
-		int count = files.size() + subdirectories.size();
-		return count;
-	}
+   /**
+    * Returns the indexed child, whether it be a sub directory of file.
+    *
+    * @param index  Description of Parameter
+    * @return       The child value
+    * @since
+    */
+   public Object getChild( int index ) {
+      if ( index < 0 )
+         return null;   // out of bounds
+      if ( index < subdirectories.size() )
+         return subdirectories.get( index );   // in subdirectory range
+      index = index - subdirectories.size();
+      if ( 0 <= index && index < files.size() )
+         return files.get( index );   // in file range
+      return null;   // out of bounds
+   }
 
-	/** Returns the index of the specified child.
-	 *
-	 *@param  child  Description of Parameter
-	 *@return        The indexOfChild value
-	 *@since
-	 */
-	public int getIndexOfChild(Object child) {
-		if (child instanceof ProjectFile)
-			return subdirectories.size() + files.indexOf(child);
+   /**
+    * Returns the number of children under this directory.
+    *
+    * @return   The childCount value
+    * @since
+    */
+   public int getChildCount() {
+      int count = files.size() + subdirectories.size();
+      return count;
+   }
 
-		if (child instanceof ProjectDirectory)
-			return subdirectories.indexOf(child);
+   /**
+    * Returns the index of the specified child.
+    *
+    * @param child  Description of Parameter
+    * @return       The indexOfChild value
+    * @since
+    */
+   public int getIndexOfChild( Object child ) {
+      if ( child instanceof ProjectFile )
+         return subdirectories.size() + files.indexOf( child );
 
-		return -1;
-	}
+      if ( child instanceof ProjectDirectory )
+         return subdirectories.indexOf( child );
 
-	/** Returns this project directory's subdirectories.
-	 *
-	 *@return    Description of the Returned Value
-	 *@since
-	 */
-	public Iterator subdirectories() {
-		return subdirectories.iterator();
-	}
+      return -1;
+   }
 
-    /**
-     *  Returns a "safe" iterator for the subdirectories list. This is done by
-     *  cloning the collection, so that we won't get "ConcurrentModificationExceptions"
-     *  or any such thing.
-     */
-    public Iterator safeSubdirIterator() {
-        ArrayList a = new ArrayList();
-        a.addAll(subdirectories);
-        return a.iterator();
-    }
-    
-	/** Returns a <code>java.io.File</code> representation of this directory.
-	 *
-	 *@return    Description of the Returned Value
-	 *@since
-	 */
-	public File toFile() {
-		return new File(getPath());
-	}
+   /**
+    * Returns this project directory's subdirectories.
+    *
+    * @return   Description of the Returned Value
+    * @since
+    */
+   public Iterator subdirectories() {
+      return subdirectories.iterator();
+   }
 
-	/** Returns this project directory's files.
-	 *
-	 *@return    Description of the Returned Value
-	 *@since
-	 */
-	public Iterator files() {
-		return files.iterator();
-	}
+   /**
+    *  Returns a "safe" iterator for the subdirectories list. This is done by
+    *  cloning the collection, so that we won't get "ConcurrentModificationExceptions"
+    *  or any such thing.
+    *
+    * @return   Description of the Returned Value
+    */
+   public Iterator safeSubdirIterator() {
+      ArrayList a = new ArrayList();
+      a.addAll( subdirectories );
+      return a.iterator();
+   }
 
-    public Iterator safeFileIterator() {
-        ArrayList a = new ArrayList();
-        a.addAll(files);
-        return a.iterator();
-    }
-    
-	/** Returns the directory name.
-	 *
-	 *@return    Description of the Returned Value
-	 *@since
-	 */
-	public String toString() {
-		return getName();
-	}
+   /**
+    * Returns a <code>java.io.File</code> representation of this directory.
+    *
+    * @return   Description of the Returned Value
+    * @since
+    */
+   public File toFile() {
+      return new File( getPath() );
+   }
 
-	/** Returns <code>true</code> if the specified this object equals <code>obj</code>
-	 *  .
-	 *
-	 *@param  obj  Description of Parameter
-	 *@return      Description of the Returned Value
-	 *@since
-	 */
-	public boolean equals(Object obj) {
-		if (super.equals(obj))
-			return true;
-		if (!(obj instanceof ProjectDirectory))
-			return false;
-		return getPath().equals(((ProjectDirectory) obj).getPath());
-	}
+   /**
+    * Returns this project directory's files.
+    *
+    * @return   Description of the Returned Value
+    * @since
+    */
+   public Iterator files() {
+      return files.iterator();
+   }
 
-	/** Returns the hash code.
-	 *
-	 *@return    Description of the Returned Value
-	 *@since
-	 */
-	public int hashCode() {
-		return getPath().hashCode();
-	}
+   /**
+    * Description of the Method
+    *
+    * @return   Description of the Returned Value
+    */
+   public Iterator safeFileIterator() {
+      ArrayList a = new ArrayList();
+      a.addAll( files );
+      return a.iterator();
+   }
 
-	/** Returns list of directories needed to reach the given project artifact.
-	 *
-	 *@param  anArtifact  Description of Parameter
-	 *@return             The projectPath value
-	 *@since
-	 */
-	List getProjectPath(File anArtifact) {
-		List list = getPathToFile(anArtifact);
-		list.set(0, this);
-		ProjectDirectory dir = this;
-		for (int i = 1; i < list.size(); i++) {
-			dir = dir.getSubDirectory((File) list.get(i));
-			list.set(i, dir);
-		}
-		return list;
-	}
+   /**
+    * Returns the directory name.
+    *
+    * @return   Description of the Returned Value
+    * @since
+    */
+   public String toString() {
+      return getName();
+   }
 
-	/** Returns the subdirectory identified by the given file.
-	 *
-	 *@param  aSubDirectory  Description of Parameter
-	 *@return                The subDirectory value
-	 *@since
-	 */
-	ProjectDirectory getSubDirectory(File aSubDirectory) {
-		return getSubDirectory(aSubDirectory.getName());
-	}
+   /**
+    * Returns <code>true</code> if the specified this object equals <code>obj</code>
+    *  .
+    *
+    * @param obj  Description of Parameter
+    * @return     Description of the Returned Value
+    * @since
+    */
+   public boolean equals( Object obj ) {
+      if ( super.equals( obj ) )
+         return true;
+      if ( !( obj instanceof ProjectDirectory ) )
+         return false;
+      return getPath().equals( ( (ProjectDirectory)obj ).getPath() );
+   }
 
-	/** Returns <code>true</code> if the given directory already exists as a
-	 *  project subdirectory.
-	 *
-	 *@param  aSubDirectory  Description of Parameter
-	 *@return                The subDirectory value
-	 *@since
-	 */
-	boolean isSubDirectory(File aSubDirectory) {
-		return getSubDirectory(aSubDirectory) != null;
-	}
+   /**
+    * Returns the hash code.
+    *
+    * @return   Description of the Returned Value
+    * @since
+    */
+   public int hashCode() {
+      return getPath().hashCode();
+   }
 
-	/** Returns the path to the specified child, or <code>null</code> if the given
-	 *  file is not a descendent.
-	 *
-	 *@param  child  Description of Parameter
-	 *@return        The treePath value
-	 *@since
-	 */
-	TreePath getTreePath(File child) {
-		List path = getPathToFile(child);
-		if (path == null)
-			return null;
-		return new TreePath(path.toArray());
-	}
+   /**
+    * Returns list of directories needed to reach the given project artifact.
+    *
+    * @param anArtifact  Description of Parameter
+    * @return            The projectPath value
+    * @since
+    */
+   List getProjectPath( File anArtifact ) {
+      List list = getPathToFile( anArtifact );
+      list.set( 0, this );
+      ProjectDirectory dir = this;
+      for ( int i = 1; i < list.size(); i++ ) {
+         dir = dir.getSubDirectory( (File)list.get( i ) );
+         list.set( i, dir );
+      }
+      return list;
+   }
 
-	/**  Returns list of directories need to reach the given file. <p>
-	 *
-	 *  Note: The path returns is a list <code>java.io.File</code> objects. use
-	 *  {@link getPathToFile(ProjectFile)} instead if you want a list of <code>ProjectDirectory</code>
-	 *  s. </p>
-	 *
-	 *@param  aFile  Description of Parameter
-	 *@return        The pathToFile value
-	 *@since
-	 */
-	List getPathToFile(File aFile) {
-		List path = new ArrayList();
+   /**
+    * Returns the subdirectory identified by the given file.
+    *
+    * @param aSubDirectory  Description of Parameter
+    * @return               The subDirectory value
+    * @since
+    */
+   ProjectDirectory getSubDirectory( File aSubDirectory ) {
+      return getSubDirectory( aSubDirectory.getName() );
+   }
 
-		if (equalsFile(aFile)) {
-			path.add(aFile);
-			return path;
-		}
+   /**
+    * Returns <code>true</code> if the given directory already exists as a
+    *  project subdirectory.
+    *
+    * @param aSubDirectory  Description of Parameter
+    * @return               The subDirectory value
+    * @since
+    */
+   boolean isSubDirectory( File aSubDirectory ) {
+      return getSubDirectory( aSubDirectory ) != null;
+   }
 
-		File dir = aFile.getParentFile();
-		while (dir != null && !equalsFile(dir)) {
-			path.add(0, dir);
-			dir = dir.getParentFile();
-		}
+   /**
+    * Returns the path to the specified child, or <code>null</code> if the given
+    *  file is not a descendent.
+    *
+    * @param child  Description of Parameter
+    * @return       The treePath value
+    * @since
+    */
+   TreePath getTreePath( File child ) {
+      List path = getPathToFile( child );
+      if ( path == null )
+         return null;
+      return new TreePath( path.toArray() );
+   }
 
-		if (dir == null) {
-			return null;
-        }
-		path.add(0, dir);
-		return path;
-	}
+   /**
+    *  Returns list of directories need to reach the given file. <p>
+    *
+    *  Note: The path returns is a list <code>java.io.File</code> objects. use
+    *  {@link getPathToFile(ProjectFile)} instead if you want a list of <code>ProjectDirectory</code>
+    *  s. </p>
+    *
+    * @param aFile  Description of Parameter
+    * @return       The pathToFile value
+    * @since
+    */
+   List getPathToFile( File aFile ) {
+      List path = new ArrayList();
 
-	/** Add a file to this directory.
-	 *
-	 *@param  file  The feature to be added to the File attribute
-	 *@since
-	 */
-	void addFile(ProjectFile file) {
-		files.add(file);
-		Collections.sort(files, ProjectFile.getComparator());
-	}
+      if ( equalsFile( aFile ) ) {
+         path.add( aFile );
+         return path;
+      }
 
-	/** Remove the specified file.
-	 *
-	 *@param  file  Description of Parameter
-	 *@since
-	 */
-	void removeFile(ProjectFile file) {
-		files.remove(file);
-	}
+      File dir = aFile.getParentFile();
+      while ( dir != null && !equalsFile( dir ) ) {
+         path.add( 0, dir );
+         dir = dir.getParentFile();
+      }
 
-	/** Remove a project directory.
-	 *
-	 *@param  dir  Description of Parameter
-	 *@since
-	 */
-	void removeDirectory(ProjectDirectory dir) {
-		subdirectories.remove(dir);
-	}
+      if ( dir == null ) {
+         return null;
+      }
+      path.add( 0, dir );
+      return path;
+   }
 
-	/** Add the specified subdirectory.
-	 *
-	 *@param  aSubDirectory  The feature to be added to the SubDirectory attribute
-	 *@return                Description of the Returned Value
-	 *@since
-	 */
-	ProjectDirectory addSubDirectory(File aSubDirectory) {
-		if (isSubDirectory(aSubDirectory))
-			return null;
-		ProjectDirectory dir = new ProjectDirectory(aSubDirectory);
-		subdirectories.add(dir);
-		Collections.sort(subdirectories, getComparator());
-		return dir;
-	}
+   /**
+    * Add a file to this directory.
+    *
+    * @param file  The feature to be added to the File attribute
+    * @since
+    */
+   void addFile( ProjectFile file ) {
+      files.add( file );
+      Collections.sort( files, ProjectFile.getComparator() );
+   }
 
-	void addSubDirectory(ProjectDirectory aSubDirectory) {
-		subdirectories.add(aSubDirectory);
-		Collections.sort(subdirectories, getComparator());
-	}
+   /**
+    * Remove the specified file.
+    *
+    * @param file  Description of Parameter
+    * @since
+    */
+   void removeFile( ProjectFile file ) {
+      files.remove( file );
+   }
 
-	/** Returns <code>true</code> if the given <code>java.io.File</code> is
-	 *  equivalent to this project directory.
-	 *
-	 *@param  aDir  Description of Parameter
-	 *@return       Description of the Returned Value
-	 *@since
-	 */
-	boolean equalsFile(File aDir) {
-		return fullPath.equals(aDir.getAbsolutePath());
-	}
-    
-    /**
-     *  Changes the path of this directory, modifying all the underlying
-     *  files and directories.
-     *
-     *  @return If the renaming was succesful.
-     */
-    public boolean changeName(String newName) {
-        File oldFile = toFile();
-        int count = fullPath.length(); 
-        String newPath = fullPath.substring(0, fullPath.lastIndexOf(File.separator));
-        newPath = new StringBuffer(newPath).append(File.separator)
-                   .append(newName).toString();
-                   
-        File newFile = new File(newPath);
-        boolean res = oldFile.renameTo(newFile);
-        if (res) {
-            setPath(newPath);
-            changePaths(count,fullPath);
-        }
-        return res;
-    }
-    
-    /**
-     *  Modifies the paths of the dir's files and subdirs. This is done by
-     *  removing "count" characters from the beginning of the current path
-     *  and putting "newRadical" in its place.
-     */
-    void changePaths(int count, String newRadical) {
-        for (Iterator it = files(); it.hasNext(); ) {
-            ProjectFile f = (ProjectFile) it.next();
-            String path = f.getPath();
-            path = path.substring(count, path.length());
-            path = new StringBuffer(newRadical).append(path).toString();
-            f.setPath(path);
-        }
-        
-        for (Iterator it = subdirectories(); it.hasNext(); ) {
-            ProjectDirectory dir = (ProjectDirectory) it.next();
-            String path = dir.getPath();
-            path = path.substring(count, path.length());
-            path = new StringBuffer(newRadical).append(path).toString();
-            dir.setPath(path);
-            dir.changePaths(count, newRadical);
-        }
-    }
-    
-    //--------------- Inner Classes
+   /**
+    * Remove a project directory.
+    *
+    * @param dir  Description of Parameter
+    * @since
+    */
+   void removeDirectory( ProjectDirectory dir ) {
+      subdirectories.remove( dir );
+   }
 
-	/** A class for comparing directories.
-	 *
-	 *@author     ensonic
-	 *@created    19. Juni 2002
-	 */
-	private static class DirectoryComparator implements Comparator {
-		/** Compare two directory objects.
-		 *
-		 *@param  obj1  Description of Parameter
-		 *@param  obj2  Description of Parameter
-		 *@return       Description of the Returned Value
-		 *@since
-		 */
-		public int compare(Object obj1, Object obj2) {
-			ProjectDirectory dir1 = (ProjectDirectory) obj1;
-			ProjectDirectory dir2 = (ProjectDirectory) obj2;
-			return dir1.getName().compareTo(dir2.getName());
-		}
+   /**
+    * Add the specified subdirectory.
+    *
+    * @param aSubDirectory  The feature to be added to the SubDirectory attribute
+    * @return               Description of the Returned Value
+    * @since
+    */
+   ProjectDirectory addSubDirectory( File aSubDirectory ) {
+      if ( isSubDirectory( aSubDirectory ) )
+         return null;
+      ProjectDirectory dir = new ProjectDirectory( aSubDirectory );
+      subdirectories.add( dir );
+      Collections.sort( subdirectories, getComparator() );
+      return dir;
+   }
 
-	}
+   /**
+    * Adds a feature to the SubDirectory attribute of the ProjectDirectory object
+    *
+    * @param aSubDirectory  The feature to be added to the SubDirectory attribute
+    */
+   void addSubDirectory( ProjectDirectory aSubDirectory ) {
+      subdirectories.add( aSubDirectory );
+      Collections.sort( subdirectories, getComparator() );
+   }
+
+   /**
+    * Returns <code>true</code> if the given <code>java.io.File</code> is
+    *  equivalent to this project directory.
+    *
+    * @param aDir  Description of Parameter
+    * @return      Description of the Returned Value
+    * @since
+    */
+   boolean equalsFile( File aDir ) {
+      return fullPath.equals( aDir.getAbsolutePath() );
+   }
+
+   /**
+    *  Changes the path of this directory, modifying all the underlying
+    *  files and directories.
+    *
+    * @param newName  Description of Parameter
+    * @return         If the renaming was succesful.
+    */
+   public boolean changeName( String newName ) {
+      File oldFile = toFile();
+      int count = fullPath.length();
+      String newPath = fullPath.substring( 0, fullPath.lastIndexOf( File.separator ) );
+      newPath = new StringBuffer( newPath ).append( File.separator )
+            .append( newName ).toString();
+
+      File newFile = new File( newPath );
+      boolean res = oldFile.renameTo( newFile );
+      if ( res ) {
+         setPath( newPath );
+         changePaths( count, fullPath );
+      }
+      return res;
+   }
+
+   /**
+    *  Modifies the paths of the dir's files and subdirs. This is done by
+    *  removing "count" characters from the beginning of the current path
+    *  and putting "newRadical" in its place.
+    *
+    * @param count       Description of Parameter
+    * @param newRadical  Description of Parameter
+    */
+   void changePaths( int count, String newRadical ) {
+      for ( Iterator it = files(); it.hasNext();  ) {
+         ProjectFile f = (ProjectFile)it.next();
+         String path = f.getPath();
+         path = path.substring( count, path.length() );
+         path = new StringBuffer( newRadical ).append( path ).toString();
+         f.setPath( path );
+      }
+
+      for ( Iterator it = subdirectories(); it.hasNext();  ) {
+         ProjectDirectory dir = (ProjectDirectory)it.next();
+         String path = dir.getPath();
+         path = path.substring( count, path.length() );
+         path = new StringBuffer( newRadical ).append( path ).toString();
+         dir.setPath( path );
+         dir.changePaths( count, newRadical );
+      }
+   }
+
+   //--------------- Inner Classes
+
+   /**
+    * A class for comparing directories.
+    *
+    * @author    ensonic
+    * @created   19. Juni 2002
+    */
+   private static class DirectoryComparator implements Comparator {
+      /**
+       * Compare two directory objects.
+       *
+       * @param obj1  Description of Parameter
+       * @param obj2  Description of Parameter
+       * @return      Description of the Returned Value
+       * @since
+       */
+      public int compare( Object obj1, Object obj2 ) {
+         ProjectDirectory dir1 = (ProjectDirectory)obj1;
+         ProjectDirectory dir2 = (ProjectDirectory)obj2;
+         return dir1.getName().compareTo( dir2.getName() );
+      }
+
+   }
 
 }
 
