@@ -1,0 +1,63 @@
+# Properties file for GfxView plugin
+
+# application activator (4.2)
+plugin.GfxViewPlugin.activate=defer
+
+# general plugin information
+plugin.GfxViewPlugin.name=GfxView
+plugin.GfxViewPlugin.author=Ludovic ANCIAUX
+plugin.GfxViewPlugin.version=0.7.4
+plugin.GfxViewPlugin.docs=GfxView.html
+plugin.GfxViewPlugin.depend.0=jedit 04.02.09.00
+plugin.GfxViewPlugin.depend.1=jdk 1.3
+plugin.GfxViewPlugin.jars=ImgrRdr130.jar
+
+# application menu items (4.2)
+plugin.GfxViewPlugin.menu=gfxview.show-remote-picture \
+			- \
+			gfxview.show-history-picture \
+			gfxview.show-history-picture-prev \
+			gfxview.show-history-picture-next
+			
+#plugin.GfxViewPlugin.browser-menu=vfs.browser.showpicture
+plugin.GfxViewPlugin.browser-menu-item=vfs.browser.showpicture
+
+# action labels for actions.xml
+gfxview.show-remote-picture.label=Display a remote picture
+gfxview.show-history-picture.label=Choose from history ...
+gfxview.show-history-picture-next.label=Display next from history
+gfxview.show-history-picture-prev.label=Display previous from history
+
+# action labels for browser.actions.xml
+vfs.browser.showpicture.label=Display picture
+
+# action labels for dockables.xml
+gfxview.label=GfxView 
+
+# window title
+gfxview.title=GfxView
+
+# action labels for actions supplied by actions.xml
+gfxview.zoom.label=Zoom
+gfxview.unzoom.label=Un-zoom
+gfxview.unzoom-all.label=Full Size
+
+# plugin toolbar buttons
+gfxview.zoom.icon=ZoomIn.png
+gfxview.unzoom.icon=ZoomOut.png
+gfxview.unzoom-all.icon=UnSplit.png
+
+# plugin pictures history
+gfxview.choose-file.icon=ToolbarMenu.gif
+
+# default history file
+gfxview.options.historyfile = gfxviewlist.txt
+gfxview.options.historylimits = 10
+
+# option pane labels
+plugin.GfxViewPlugin.option-pane=gfxview
+options.gfxview.code=new GfxViewOptionPane();
+options.gfxview.label=GfxView
+
+gfxview.options.historyfile.label = History filename :
+gfxview.options.historylimits.label = History memory :
