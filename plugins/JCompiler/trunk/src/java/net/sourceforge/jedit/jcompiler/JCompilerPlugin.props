@@ -1,12 +1,10 @@
-plugin.JCompilerPlugin.name=Java Compiler
-plugin.JCompilerPlugin.author=Kevin A. Burton and aziz sharif
-plugin.JCompilerPlugin.version=0.4.8
-plugin.JCompilerPlugin.docs=index.html
+plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.name=Java Compiler
+plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.author=Kevin A. Burton and aziz sharif
+plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.version=0.6.0
+plugin.net.sourceforge.jedit.jcompiler.JCompilerPlugin.docs=index.html
 
 
 jcompiler.open.label=JCompiler
-
-plugin.JCompilerPlugin.depend.0=jdk 1.1
 
 jcompiler.label=Build File
 jpkgcompiler.label=Build Package(s)
