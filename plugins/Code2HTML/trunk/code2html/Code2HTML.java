@@ -27,16 +27,11 @@ import java.io.StringWriter;
 import java.io.Writer;
 
 import javax.swing.text.BadLocationException;
-import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.msg.BufferUpdate;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
@@ -149,11 +144,7 @@ public class Code2HTML {
 
         Buffer newBuffer = jEdit.newFile(view);
 
-        if (newBuffer == null) {
-            new WaitForBuffer(sw.toString());
-        } else {
-            Code2HTML.setBufferText(newBuffer, sw.toString());
-        }
+        Code2HTML.setBufferText(newBuffer, sw.toString());
     }
 
 
@@ -226,33 +217,6 @@ public class Code2HTML {
                 return 1;
             } else {
                 return -1;
-            }
-        }
-    }
-
-
-    private static class WaitForBuffer implements EBComponent {
-        private String text;
-
-
-        public WaitForBuffer(String text) {
-            this.text = text;
-
-            EditBus.addToBus(this);
-        }
-
-
-        public void handleMessage(EBMessage message) {
-            if (message instanceof BufferUpdate) {
-                BufferUpdate bu = (BufferUpdate) message;
-                if (bu.getWhat() == BufferUpdate.CREATED) {
-                    EditBus.removeFromBus(this);
-
-                    Buffer buffer = bu.getBuffer();
-                    Log.log(Log.DEBUG, this, "**** Buffer CREATED new file? [" + buffer.isNewFile() + "]");
-                    Log.log(Log.DEBUG, this, "**** Buffer CREATED length:   [" + buffer.getLength() + "]");
-                    Code2HTML.setBufferText(buffer, this.text);
-                }
             }
         }
     }
