@@ -38,7 +38,7 @@ public final class PatternFilter implements FileFilter {
 	private Set excludedDirectories;
 
 	//{{{ Constructors
-	/** Create a new <code>FileFilter</code>. */
+	/** Create a new <code>PatternFilter</code>. */
 	public PatternFilter() {
 		includedExtensions = new HashSet();
 		includedFiles = new HashSet();
@@ -55,8 +55,8 @@ public final class PatternFilter implements FileFilter {
 	/**
 	 * Accept files based of properties.
 	 *
-	 *@param  file  Description of Parameter
-	 *@return		 Description of the Returned Value
+	 *@param  file  file/dir to check
+	 *@return		 true if it should be included
 	 */
 	public boolean accept(File file) {
 		if (file.isFile()) {

@@ -147,6 +147,7 @@ public final class ProjectFileImporter {
 	 *  @todo have different filter implementations (e.g. for CVS/Entries files)
 	 */
 	private FileFilter getFilter() {
+		//return new CVSFilter();
 		// the default filter
 		return new PatternFilter();
 	}//}}}
