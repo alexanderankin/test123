@@ -22,17 +22,28 @@
 
 <project name="sidekick" default="dist" basedir=".">
 
+	<!-- Read optional properties from various places -->
+	<!-- Latter ones override previous properties. -->
+	<property file="${user.home}/.build.properties"/>
+	<property file="../build.properties"/>
 	<property file="build.properties"/>
 
-	<property name="jar.name"  value="SideKick.jar"/>
+	<!-- jEdit home, where jedit.jar is located -->
+	<property name="jedit.install.dir"  value="../.."/>
 
+	<!-- Home of other plugins, eg. ErrorList -->
+	<property name="install.dir"  value=".."/>
+
+	<!-- misc. build parameters -->
+	<property name="jar.name"  value="SideKick.jar"/>
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
-	<property name="install.dir"  value=".."/>
+	<property name="build.compiler.debug" value="on"/>
+	<property name="build.compiler.optimize" value="off"/>
 
 
 	<path id="project.class.path">
-		<pathelement location="../../jedit.jar" />
+		<pathelement location="${jedit.install.dir}/jedit.jar" />
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${user.home}/.jedit/jars/ErrorList.jar" />
 		<pathelement location="."/>
@@ -41,13 +52,17 @@
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
+	</target>
+
+
+	<target name="docs-init">
 		<delete file="docbook-wrapper.xsl" />
 		<echo file="docbook-wrapper.xsl"
 			message="&lt;xsl:stylesheet"/>
 		<echo file="docbook-wrapper.xsl" append="true"
 			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
 		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xsl:version='1.0'&gt;"/>
+			message=" version='1.0'&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
 			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
 		<echo file="docbook-wrapper.xsl" append="true"
@@ -60,15 +75,21 @@
 			srcdir="${src.dir}"
 			destdir="${build.dir}"
 			deprecation="on"
+			debug="${build.compiler.debug}"
+			optimize="${build.compiler.optimize}"
 			includeJavaRuntime="yes"
-			debug="yes"
 		>
 			<classpath refid="project.class.path"/>
 		</javac>
 	</target>
 
 
-	<target name="dist" depends="compile">
+	<target name="docs">
+		<antcall target="docs-${docs-proc.target}"/>
+	</target>
+
+
+	<target name="dist" depends="compile,docs">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>
@@ -81,6 +102,7 @@
 			</fileset>
 		</jar>
 	</target>
+
 
 	<target name="javadoc">
 		<javadoc sourcepath="${src.classes}"
@@ -99,8 +121,9 @@
 		</javadoc>
 	</target>
 
+
 	<!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
-	<target name="docs-xsltproc" depends="init">
+	<target name="docs-xsltproc" depends="docs-init">
 		<exec executable="xsltproc">
 			<arg value="--catalogs"/>
 			<arg value="users-guide.xsl"/>
@@ -108,12 +131,23 @@
 		</exec>
 	</target>
 
+
 	<!-- Generate docs with Xalan tool from xml.apache.org -->
-	<target name="docs-xalan" depends="init">
+	<target name="docs-xalan" depends="docs-init">
 		<style
 			style="users-guide.xsl"
-			in="users-guide.xml"/>
+			in="users-guide.xml"
+			out="index.html"
+		>
+			<xmlcatalog>
+				<dtd
+					publicId="-//OASIS//DTD DocBook XML V4.1.2//EN"
+					location="${docbook.dtd}"
+				/>
+			</xmlcatalog>
+		</style>
 	</target>
+
 
 	<target name="clean">
 		<delete dir="${build.dir}"/>
@@ -123,6 +157,7 @@
 		</delete>
 	</target>
 
+
 	<!-- Generate tags using 'ctags' program from ctags.sourceforge.net -->
 	<target name="tags">
 		<exec executable="ctags">
@@ -130,4 +165,5 @@
 			<arg path="." />
 		</exec>
 	</target>
+
 </project>
