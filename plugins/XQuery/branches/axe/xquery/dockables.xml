@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+<DOCKABLES>
+  <DOCKABLE NAME="xquery-plugin">new xquery.XQueryGUI(view);</DOCKABLE>
+  <DOCKABLE NAME="xquery-adapteroptions">
+  		new xquery.DockableAdapterOptions(view);
+  </DOCKABLE>
+</DOCKABLES>
