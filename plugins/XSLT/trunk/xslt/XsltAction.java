@@ -29,6 +29,8 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
+
 import java.awt.Dimension;
 import java.net.URL;
 
@@ -72,6 +74,13 @@ public abstract class XsltAction extends AbstractAction {
     button.setMaximumSize(dimension);
 
     return button;
+  }
+  
+  public JRadioButton getRadioButton(String text) {
+	JRadioButton button = new JRadioButton(this);
+	button.setText(jEdit.getProperty(text));
+
+	return button;
   }
 
 

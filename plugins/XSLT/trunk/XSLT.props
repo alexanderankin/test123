@@ -16,7 +16,7 @@ org.xml.sax.driver=org.apache.xerces.parsers.SAXParser
 
 # Dockables
 xslt-processor.label=XSLT Processor
-xpath-tool.label=XPath Tool
+xpath-tool.label=XPath 1.0 Tool
 
 
 # Action labels
@@ -49,8 +49,16 @@ xslt.file.open.name=Open file
 xslt.file.open.short-desc=Open file
 xslt.file.open.small-icon=/xslt/icons/Open.png
 
-xslt.source.label=Source:
-xslt.source.prompt=Please select a source document
+xslt.source.label=Select XML Input:
+xslt.source.buffer=Use Buffer
+xslt.source.file=Use File
+
+xslt.source.radioselect.name=radioButtons
+xslt.source.radioselect.short-desc=Select Input
+xslt.source.radioselect.small-icon=/xslt/icons/Plus.png
+
+xslt.source.browse.label=Source:
+xslt.source.browse.prompt=Please select a source document
 
 xslt.source.select.name=Select source
 xslt.source.select.short-desc=Select XML source
@@ -129,6 +137,14 @@ xpath.expression.history-length=10
 
 xpath.evaluate.button.tooltip=Evaluate XPath
 xpath.evaluate.button.icon=/xslt/icons/Evaluate.png
+
+xpath.select.label=Select XML Input:
+xpath.select.buffer=Use Buffer
+xpath.select.file=Use File
+xpath.browse.label=Source:
+xpath.browse.button.icon=/xslt/icons/Open.png
+xpath.browse.button.tooltip=Select source from file
+xpath.browse.prompt=Please select a source document
 
 xpath.result.data-type.label=Data type of result:
 xpath.result.data-type.node-set=node-set of size {0}
