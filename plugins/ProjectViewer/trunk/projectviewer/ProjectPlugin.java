@@ -29,6 +29,11 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 
 /** A Project Viewer plugin for jEdit.
+ *
+ *@author     <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
+ *@author     <A HREF="mailto:cyu77@yahoo.com">Calvin Yu</A>
+ *@author     <A HREF="mailto:ensonic@sonicpulse.de">Stefan Kost</A>
+ *@version    1.0.3
  */
 public final class ProjectPlugin extends EBPlugin {
 
@@ -37,8 +42,11 @@ public final class ProjectPlugin extends EBPlugin {
 	private final static String LAST_PROJECT_PROPERTY_KEY = "plugin." + NAME + ".last-project";
 	
 	/** @todo add property for each project
-	 * plugin.ProjectViewer.<project>.open-files
+	 *   plugin.ProjectViewer.<project>.open-files
 	 * to track open files
+	 * and use
+	 *  launcher.launchFile((ProjectFile)i.next());
+	 * to reopen file
 	 */
 
 	private ProjectViewer viewer;
