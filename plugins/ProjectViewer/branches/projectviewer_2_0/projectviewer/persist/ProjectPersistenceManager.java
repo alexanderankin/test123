@@ -107,10 +107,7 @@ public final class ProjectPersistenceManager {
 		try {
 			SAXParserFactory spf = SAXParserFactory.newInstance();
 			SAXParser parser = spf.newSAXParser();
-			long now = System.currentTimeMillis();
-			System.out.println("Start loading...");
 			parser.parse(in, new ProjectHandler(p));
-			System.out.println("Done in : " + (System.currentTimeMillis() - now));
 		} catch (SAXException se) {
 			Log.log(Log.ERROR,  ProjectPersistenceManager.class.getName(), se);
 		} catch (ParserConfigurationException pce) {
@@ -205,6 +202,7 @@ public final class ProjectPersistenceManager {
 		//{{{ endElement(String,String,String) method
 		/** Handles the closing of a directory element. */
 		public void endElement(String uri, String localName, String qName) {
+			Log.log(Log.DEBUG,this,"Ending node: " + qName);
 			if (!openNodes.isEmpty() && qName.equals(openNodes.peek())) {
 				currNode = (VPTNode) currNode.getParent();
 				openNodes.pop();
