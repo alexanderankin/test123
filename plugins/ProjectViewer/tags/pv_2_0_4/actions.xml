@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="projectviewer_edit_project">
+		<CODE>
+			projectviewer.PVActions.editProject(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_create_project">
+		<CODE>
+			projectviewer.PVActions.createProject(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_open_all_files">
+		<CODE>
+			projectviewer.PVActions.openAllProjectFiles(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_close_all_files">
+		<CODE>
+			projectviewer.PVActions.closeAllProjectFiles(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_remove_all_files">
+		<CODE>
+			projectviewer.PVActions.removeAllProjectFiles(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_launch_current_buffer">
+		<CODE>
+			projectviewer.PVActions.launchCurrentBuffer(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_jarmaker_dialog">
+		<CODE>
+			new projectviewer.persist.ProjectZipper(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="selectedfiles-viewer-menu-item">
+    	<CODE>
+			pv = view.getDockableWindowManager().getDockable("projectviewer");
+			if (pv == null) {
+				JOptionPane.showMessageDialog(view, "cannot get ProjectViewer");
+			} else {
+				// JOptionPane.showMessageDialog(view, "Got Project Viewer");
+				String s = "";
+				List list = pv.getSelectedFilePaths();
+				if (list !=null) {
+					ListIterator iter = list.listIterator();
+					while ( iter.hasNext() ) {
+						s += iter.next() + "\n";
+					}
+					textArea.setSelectedText(s);
+				}
+			}
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
