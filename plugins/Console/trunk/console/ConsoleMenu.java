@@ -70,23 +70,10 @@ class ConsoleMenu extends EnhancedMenu implements EBComponent
 				remove(i);
 		}
 
-		ActionListener actionHandler = new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				new CommandoDialog(
-					GUIUtilities.getView(ConsoleMenu.this),
-					evt.getActionCommand());
-			}
-		};
-
-		CommandoCommand[] commands = ConsolePlugin.getCommandoCommands();
+		EditAction[] commands = ConsolePlugin.getCommandoCommands();
 		for(int i = 0; i < commands.length; i++)
 		{
-			final CommandoCommand command = commands[i];
-			JMenuItem menuItem = new JMenuItem(command.name);
-			menuItem.addActionListener(actionHandler);
-			add(menuItem);
+			add(GUIUtilities.loadMenuItem(commands[i].getName()));
 		}
 	} //}}}
 }

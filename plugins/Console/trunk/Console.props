@@ -19,6 +19,8 @@ rescan-commando-directory.label=Rescan Commando Directory
 
 console-toggle.label=Console Toggle
 
+action-set.commando.label=Plugin: Console Commando Panels
+
 ### Console component
 
 console.toolbar.enabled=false
@@ -38,6 +40,8 @@ console.plainColor=#000000
 console.infoColor=#009600
 console.warningColor=#ffa800
 console.errorColor=#ff0000
+
+console.completions=--- Completions:
 
 ### Console option panes
 

@@ -51,6 +51,7 @@ implements EBComponent, Output
 
 		shellCombo = new JComboBox(Shell.getShells());
 		shellCombo.addActionListener(new ActionHandler());
+		shellCombo.setRequestFocusEnabled(false);
 
 		JPanel panel = new JPanel(new BorderLayout(6,0));
 		panel.add(BorderLayout.WEST,shellCombo);
@@ -59,7 +60,7 @@ implements EBComponent, Output
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
-		command = new HistoryTextField("console");
+		command = new ConsoleTextField();
 		command.addActionListener(actionHandler);
 		Dimension dim = command.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
@@ -411,6 +412,56 @@ implements EBComponent, Output
 				shell.stop(Console.this);
 			else if(source == clear)
 				output.setText("");
+		}
+	} //}}}
+
+	//{{{ ConsoleTextField class
+	class ConsoleTextField extends HistoryTextField
+	{
+		ConsoleTextField()
+		{
+			super(null);
+		}
+
+		public boolean getFocusTraversalKeysEnabled()
+		{
+			return false;
+		}
+
+		protected void processKeyEvent(KeyEvent evt)
+		{
+			if(evt.getID() == KeyEvent.KEY_PRESSED)
+			{
+				if(evt.getKeyCode() == KeyEvent.VK_TAB)
+				{
+					complete();
+					return;
+				}
+			}
+
+			super.processKeyEvent(evt);
+		}
+
+		private void complete()
+		{
+			Shell.CompletionInfo info = shell.getCompletions(
+				getText().substring(0,getCaretPosition()));
+			if(info == null)
+				ConsoleTextField.this.getToolkit().beep();
+			else if(info.completions.length == 1)
+			{
+				replaceSelection(info.completions[0]);
+			}
+			else if(info.completions.length > 1)
+			{
+				Console.this.print(getInfoColor(),jEdit.getProperty(
+					"console.completions"));
+
+				for(int i = 0; i < info.completions.length; i++)
+				{
+					Console.this.print(getInfoColor(),info.completions[i]);
+				}
+			}
 		}
 	} //}}}
 }

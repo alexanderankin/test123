@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,12 +22,14 @@
 
 package console;
 
+//{{{ Imports
+import org.gjt.sp.jedit.*;
 import java.io.*;
 import java.net.URL;
+//}}}
 
-class CommandoCommand
+class CommandoCommand extends EditAction
 {
-	String name;
 	URL url;
 	String path;
 	String propertyPrefix;
@@ -35,17 +37,39 @@ class CommandoCommand
 	//{{{ CommandoCommand constructor
 	CommandoCommand(String name, URL url)
 	{
-		this.name = name;
+		super("commando." + name.replace(' ','_'));
+
+		this.label = name;
 		this.url = url;
-		this.propertyPrefix = "commando." + name.replace(' ','_') + '.';
+		this.propertyPrefix = getName() + '.';
 	} //}}}
 
 	//{{{ CommandoCommand constructor
 	CommandoCommand(String name, String path)
 	{
-		this.name = name;
+		super("commando." + name.replace(' ','_'));
+
+		this.label = name;
 		this.path = path;
-		this.propertyPrefix = "commando." + name.replace(' ','_') + '.';
+		this.propertyPrefix = getName() + '.';
+	} //}}}
+
+	//{{{ getLabel() method
+	public String getLabel()
+	{
+		return label;
+	} //}}}
+
+	//{{{ invoke() method
+	public void invoke(View view)
+	{
+		new CommandoDialog(view,getName());
+	} //}}}
+
+	//{{{ getCode() method
+	public String getCode()
+	{
+		return "new CommandoDialog(view,\"" + getName() + "\");";
 	} //}}}
 
 	//{{{ openStream() method
@@ -62,9 +86,7 @@ class CommandoCommand
 		}
 	} //}}}
 
-	//{{{ toString() method
-	public String toString()
-	{
-		return name;
-	} //}}}
+	//{{{ Private members
+	private String label;
+	//}}}
 }

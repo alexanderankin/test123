@@ -66,6 +66,11 @@ public class ConsolePlugin extends EBPlugin
 
 		consoleToolBarMap = new Hashtable();
 		commandoToolBarMap = new Hashtable();
+
+		commando = new ActionSet(jEdit.getProperty("action-set.commando.label"));
+		jEdit.addActionSet(commando);
+
+		rescanCommandoDirectory();
 	} //}}}
 
 	//{{{ createMenuItems() method
@@ -131,24 +136,14 @@ public class ConsolePlugin extends EBPlugin
 	//{{{ rescanCommandoDirectory() method
 	public static void rescanCommandoDirectory()
 	{
-		commands = null;
-		EditBus.send(new CommandoCommandsChanged());
-	} //}}}
-
-	//{{{ getCommandoCommands() method
-	public static CommandoCommand[] getCommandoCommands()
-	{
-		if(commands != null)
-			return commands;
-
-		Vector vector = new Vector();
+		commando.removeAllActions();
 
 		StringTokenizer st = new StringTokenizer(jEdit.getProperty(
 			"commando.default"));
 		while(st.hasMoreTokens())
 		{
 			String name = st.nextToken();
-			vector.addElement(new CommandoCommand(name.replace('_',' '),
+			commando.addAction(new CommandoCommand(name.replace('_',' '),
 				ConsolePlugin.class.getResource(
 				"/console/commando/" + name + ".xml")));
 		}
@@ -164,7 +159,7 @@ public class ConsolePlugin extends EBPlugin
 					if(!file.endsWith(".xml"))
 						continue;
 
-					vector.addElement(new CommandoCommand(
+					commando.addAction(new CommandoCommand(
 						file.substring(0,file.length() - 4)
 						.replace('_',' '),
 						MiscUtilities.constructPath(
@@ -173,21 +168,45 @@ public class ConsolePlugin extends EBPlugin
 			}
 		}
 
-		commands = new CommandoCommand[vector.size()];
-		vector.copyInto(commands);
-		MiscUtilities.quicksort(commands,new CommandCompare());
+		// Code duplication from jEdit.initKeyBindings() is bad, but
+		// otherwise invoking 'rescan commando directory' will leave
+		// old actions in the input handler
+		EditAction[] actions = getCommandoCommands();
+		for(int i = 0; i < actions.length; i++)
+		{
+			EditAction action = actions[i];
+
+			String shortcut1 = jEdit.getProperty(action.getName()
+				+ ".shortcut");
+			if(shortcut1 != null)
+				jEdit.getInputHandler().addKeyBinding(shortcut1,action);
+
+			String shortcut2 = jEdit.getProperty(action.getName()
+				+ ".shortcut2");
+			if(shortcut2 != null)
+				jEdit.getInputHandler().addKeyBinding(shortcut2,action);
+		}
+
+		EditBus.send(new CommandoCommandsChanged());
+	} //}}}
+
+	//{{{ getCommandoCommands() method
+	public static EditAction[] getCommandoCommands()
+	{
+		EditAction[] commands = commando.getActions();
+		MiscUtilities.quicksort(commands,new ActionCompare());
 
 		return commands;
 	} //}}}
 
-	//{{{ CommandCompare class
-	static class CommandCompare implements MiscUtilities.Compare
+	//{{{ ActionCompare class
+	static class ActionCompare implements MiscUtilities.Compare
 	{
 		public int compare(Object obj1, Object obj2)
 		{
-			CommandoCommand cmd1 = (CommandoCommand)obj1;
-			CommandoCommand cmd2 = (CommandoCommand)obj2;
-			return cmd1.name.compareTo(cmd2.name);
+			EditAction a1 = (EditAction)obj1;
+			EditAction a2 = (EditAction)obj2;
+			return a1.getLabel().compareTo(a2.getLabel());
 		}
 	} //}}}
 
@@ -326,13 +345,13 @@ public class ConsolePlugin extends EBPlugin
 
 	//{{{ Private members
 
-	//{{{ Instance variables
+	//{{{ Instance and static variables
 	private static ErrorMatcher[] errorMatchers;
 	private static ErrorMatcher lastMatcher;
 	private static DefaultErrorSource.DefaultError lastError;
 	private static String consoleDirectory;
 	private static String commandoDirectory;
-	private static CommandoCommand[] commands;
+	private static ActionSet commando;
 
 	private Hashtable consoleToolBarMap;
 	private Hashtable commandoToolBarMap;

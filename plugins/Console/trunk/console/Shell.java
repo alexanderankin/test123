@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -122,6 +122,26 @@ public abstract class Shell
 	 * false otherwise
 	 */
 	public abstract boolean waitFor(Console console); //}}}
+
+	//{{{ getCompletions() method
+	/**
+	 * Returns possible completions for the specified command.
+	 * @param command The command
+	 */
+	public CompletionInfo getCompletions(String command)
+	{
+		return null;
+	} //}}}
+
+	//{{{ CompletionInfo class
+	public static class CompletionInfo
+	{
+		// remove from offset to command.length()
+		public int offset;
+
+		// possible values to insert
+		public String[] completions;
+	} //}}}
 
 	//{{{ getName() method
 	/**
