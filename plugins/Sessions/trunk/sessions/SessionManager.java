@@ -96,7 +96,7 @@ public class SessionManager implements EBComponent
 	 * @param newSession  the new session name
 	 * @return false, if the new session could not be set.
 	 */
-	public void setCurrentSession(View view, String newSession)
+	public void setCurrentSession(final View view, final String newSession)
 	{
 		Log.log(Log.DEBUG, this, "setCurrentSession:"
 			+ " currentSession=" + currentSession
@@ -130,20 +130,23 @@ public class SessionManager implements EBComponent
 		EditBus.send(new SessionChanging(this, newSession));
 
 		// load new session:
-		Buffer buffer = loadSession(newSession);
-		VFSManager.waitForRequests();
-		if (VFSManager.errorOccurred())
-			return;
+		final Buffer buffer = loadSession(newSession);
 
-		// set new session:
-		String oldSession = currentSession;
-		currentSession = newSession;
-		saveCurrentSessionProperty();
-		EditBus.send(new SessionChanged(this, oldSession));
+		VFSManager.runInAWTThread( new Runnable() 
+		{
+			public void run()
+			{
+				// set new session:
+				String oldSession = currentSession;
+				currentSession = newSession;
+				saveCurrentSessionProperty();
+				EditBus.send(new SessionChanged(SessionManager.this, oldSession));
 
-		// open session's recent buffer:
-		if (buffer != null)
-			view.setBuffer(buffer);
+				// open session's recent buffer:
+				if (buffer != null)
+					view.setBuffer(buffer);
+			}
+		} );
 	}
 
 
@@ -225,7 +228,7 @@ public class SessionManager implements EBComponent
 	 *
 	 * @param view  view for displaying error messages
 	 */
-	public void reloadCurrentSession(View view)
+	public void reloadCurrentSession(final View view)
 	{
 		Log.log(Log.DEBUG, this, "reloadCurrentSession: currentSession=" + currentSession);
 
@@ -237,10 +240,16 @@ public class SessionManager implements EBComponent
 		if (VFSManager.errorOccurred())
 			return;
 
-		Buffer buffer = loadSession(currentSession);
-		VFSManager.waitForRequests();
-		if (buffer != null)
-			view.setBuffer(buffer);
+		final Buffer buffer = loadSession(currentSession);
+		
+		VFSManager.runInAWTThread( new Runnable() 
+		{
+			public void run()
+			{
+				if (buffer != null)
+					view.setBuffer(buffer);
+			}
+		} );
 	}
 
 
