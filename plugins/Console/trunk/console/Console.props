@@ -1,9 +1,9 @@
 ### Plugin properties
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=2.4.4
+plugin.console.ConsolePlugin.version=2.4.5
 plugin.console.ConsolePlugin.author=Slava Pestov
-plugin.console.ConsolePlugin.docs=/console/Console.html
+plugin.console.ConsolePlugin.docs=console/Console.html
 
 plugin.console.ConsolePlugin.depend.0=jedit 03.00.05.00
 plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 0.10
