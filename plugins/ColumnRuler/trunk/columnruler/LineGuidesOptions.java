@@ -172,6 +172,13 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 		private JButton ok;
 		private JButton cancel;
 		
+		public MarkDialog(int column) {
+			name = new JTextField(30);
+			this.column = new JTextField(column+"");
+			color = new ColorWellButton(Color.WHITE);
+			init();
+		}
+		
 		public MarkDialog(Mark m,String title) {
 			super(jEdit.getActiveView(),title,true);
 			if (m == null) {
@@ -183,6 +190,10 @@ public class LineGuidesOptions extends AbstractOptionPane implements ActionListe
 				column = new JTextField(m.getColumn()+"");
 				color = new ColorWellButton(m.getColor());
 			}
+			init();
+		}
+		
+		private void init() {
 			ok = new JButton("OK");
 			ok.addActionListener(this);
 			cancel = new JButton("Cancel");
