@@ -19,26 +19,26 @@ xslt-processor.label=XSLT Processor
 xpath-tool.label=XPath Tool
 
 
-# Actions
-xslt-transform.label=Transform XML
-xslt-load-settings.label=Load XSLT settings
-xslt-save-settings.label=Save XSLT settings
-xpath-evaluate.label=Evaluate XPath
-xml-indent.label=Indent XML
+# Action labels
+xslt.transform.label=Transform XML
+xslt.settings.load.label=Load XSLT settings
+xslt.settings.save.label=Save XSLT settings
+xpath.evaluate.label=Evaluate XPath
+xslt.indent.label=Indent XML
 
 
 # Plugin menu
 xslt-menu.label=XSLT
 xslt-menu=\
-  xslt-transform \
-  xslt-load-settings \
-  xslt-save-settings \
+  xslt.transform \
+  xslt.settings.load \
+  xslt.settings.save \
   xslt-processor-toggle \
   - \
-  xpath-evaluate \
+  xpath.evaluate \
   xpath-tool-toggle \
   - \
-  xml-indent
+  xslt.indent
 
 
 # XSLT processor window
