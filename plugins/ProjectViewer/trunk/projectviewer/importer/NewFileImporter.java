@@ -70,15 +70,13 @@ public class NewFileImporter extends Importer {
 
 		VPTFile vf = new VPTFile(f);
 		if (where == project) {
-			added = new ArrayList();
 			added.add(vf);
+		} else if (added.size() != 0) {
+			where.insert(vf, where.findIndexForChild(vf));
+			postAction = new ShowNode(vf);
 		} else {
-			if (where.getParent() == null) {
-				where.insert(vf, where.findIndexForChild(vf));
-			} else {
-				ProjectViewer.insertNodeInto(vf, where);
-				ProjectViewer.nodeStructureChangedFlat(where);
-			}
+			selected = where;
+			added.add(vf);
 			postAction = new ShowNode(vf);
 		}
 		registerFile(vf);
