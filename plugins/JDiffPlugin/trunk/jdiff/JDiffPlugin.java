@@ -22,8 +22,11 @@ package jdiff;
 
 
 import java.awt.Color;
-
 import java.util.Vector;
+
+import jdiff.options.JDiffHighlightOptionPane;
+import jdiff.options.JDiffOptionPane;
+import jdiff.options.JDiffOverviewOptionPane;
 
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;

@@ -18,7 +18,7 @@
 */
 
 
-package jdiff;
+package jdiff.options;
 
 
 import java.awt.Color;
