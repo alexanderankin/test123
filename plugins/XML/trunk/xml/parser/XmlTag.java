@@ -37,7 +37,7 @@ public class XmlTag extends Asset
 	public XmlTag(String name, Position start, Attributes attributes)
 	{
 		super(name);
-		this.start = start;
+		this.start = this.end = start;
 		this.attributes = attributes;
 
 		StringBuffer buf = new StringBuffer();

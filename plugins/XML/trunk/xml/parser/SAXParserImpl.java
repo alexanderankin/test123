@@ -535,7 +535,10 @@ public class SAXParserImpl extends XmlParser
 		public void fatalError(SAXParseException spe)
 			throws SAXParseException
 		{
-			addError(ErrorSource.ERROR,spe.getSystemId(),
+			String systemId = spe.getSystemId();
+			if(systemId == null)
+				systemId = loc.getSystemId();
+			addError(ErrorSource.ERROR,systemId,
 				Math.max(0,spe.getLineNumber()-1),
 				spe.getMessage());
 		} //}}}
