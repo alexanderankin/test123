@@ -42,6 +42,9 @@ public class ConsoleShellPane extends ConsoleOutputPane
 
 	public void run(String cmd)
 	{
+		// Add to history
+		command.getModel().addItem(cmd);
+
 		// Record the command
 		InputHandler.MacroRecorder recorder = getView().getTextArea()
 			.getInputHandler().getMacroRecorder();
@@ -83,9 +86,7 @@ public class ConsoleShellPane extends ConsoleOutputPane
 				if(cmd == null || cmd.length() == 0)
 					return;
 
-				command.addCurrentToHistory();
 				command.setText(null);
-
 				run(cmd);
 			}
 		}
