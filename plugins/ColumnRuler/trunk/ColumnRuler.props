@@ -15,4 +15,5 @@ plugin.columnruler.ColumnRulerPlugin.menu-item=columnruler.toggle-vis
 # Options
 options.columnruler.foreground=\#000000
 options.columnruler.background=\#FFFFFF
+options.columnruler.highlight=\#00AAAA
 
