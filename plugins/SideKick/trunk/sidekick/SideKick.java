@@ -85,8 +85,6 @@ class SideKick implements EBComponent
 		if(SideKickPlugin.isParsingBuffer(buffer))
 			return;
 
-		SideKickPlugin.startParsingBuffer(buffer);
-
 		this.showParsingMessage = showParsingMessage;
 
 		//{{{ Run this when I/O is complete
@@ -95,10 +93,9 @@ class SideKick implements EBComponent
 			public void run()
 			{
 				if(SideKickPlugin.isParsingBuffer(buffer))
-				{
-					SideKickPlugin.finishParsingBuffer(buffer);
 					return;
-				}
+				else
+					SideKickPlugin.startParsingBuffer(buffer);
 
 				//SideKickParsedData.setParsedData(view,null);
 				ErrorSource.unregisterErrorSource(errorSource);
