@@ -114,6 +114,7 @@ public class XSLTUtilities {
     try {
       saxFactory = (SAXTransformerFactory)TransformerFactory.newInstance();
     } catch(ClassCastException exception) {
+      Log.log(Log.ERROR, XSLTUtilities.class, "class cast exception " + exception.toString());
       throw new TransformerConfigurationException(XSLTPlugin.getOldXalanJarMessage());
     }
 
