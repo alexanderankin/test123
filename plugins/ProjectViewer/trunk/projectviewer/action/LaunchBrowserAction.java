@@ -86,7 +86,7 @@ public class LaunchBrowserAction extends Action {
 		}
 
 		if (ProjectViewerConfig.getInstance().getUseInfoViewer()) {
-			_launchInfoViewer(viewer.getView(), sURL);
+			Helper.launchInfoViewer(viewer.getView(), sURL);
 		} else {
 			try {
 				Runtime rt = Runtime.getRuntime();
@@ -106,12 +106,21 @@ public class LaunchBrowserAction extends Action {
 		cmItem.setVisible(node != null && node.isFile());
 	} //}}}
 
-	//{{{ +__launchInfoViewer(View, String)_ : void
-	public static void _launchInfoViewer(View view, String url) {
-		InfoViewerPlugin iv = (InfoViewerPlugin) jEdit.getPlugin("infoviewer.InfoViewerPlugin", true);
-		if( iv != null) {
-			iv.openURL(view, url);
-		}
+	//{{{ +class _Helper_
+	/**
+	 *	Class to hold references to classes that may not be available, so this
+	 *	class can behave well when called from a BeanShell script.
+	 */
+	public static class Helper {
+	
+		//{{{ +_launchInfoViewer(View, String)_ : void
+		public static void launchInfoViewer(View view, String url) {
+			InfoViewerPlugin iv = (InfoViewerPlugin) jEdit.getPlugin("infoviewer.InfoViewerPlugin", true);
+			if( iv != null) {
+				iv.openURL(view, url);
+			}
+		} //}}}
+		
 	} //}}}
 
 }
