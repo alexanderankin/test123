@@ -1,0 +1,115 @@
+plugin.whitespace.WhiteSpacePlugin.name=WhiteSpace
+plugin.whitespace.WhiteSpacePlugin.author=André Kaplan
+plugin.whitespace.WhiteSpacePlugin.version=0.9.1
+plugin.whitespace.WhiteSpacePlugin.docs=users-guide.html
+
+plugin.whitespace.WhiteSpacePlugin.depend.0=jdk 1.2
+plugin.whitespace.WhiteSpacePlugin.depend.1=jedit 04.00.04.00
+
+white-space-menu.label=WhiteSpace
+white-space-menu=\
+    white-space.toggle-space-highlight          \
+    white-space.toggle-tab-highlight            \
+    white-space.toggle-whitespace-highlight     \
+    -                                           \
+    white-space.toggle-block-highlight          \
+    white-space.toggle-fold-highlight           \
+    white-space.toggle-fold-tooltip             \
+    -                                           \
+    white-space.toggle-leading-space-highlight  \
+    white-space.toggle-inner-space-highlight    \
+    white-space.toggle-trailing-space-highlight \
+    -                                           \
+    white-space.toggle-leading-tab-highlight    \
+    white-space.toggle-inner-tab-highlight      \
+    white-space.toggle-trailing-tab-highlight   \
+    -                                                  \
+    white-space.toggle-remove-trailing-white-space     \
+    white-space.toggle-soft-tabify-leading-white-space \
+    white-space.toggle-tabify-leading-white-space      \
+    white-space.toggle-untabify-leading-white-space
+
+
+# Action labels
+white-space.toggle-space-highlight.label=Show spaces
+white-space.toggle-leading-space-highlight.label=Show leading spaces
+white-space.toggle-inner-space-highlight.label=Show inner spaces
+white-space.toggle-trailing-space-highlight.label=Show trailing spaces
+white-space.toggle-tab-highlight.label=Show tabs
+white-space.toggle-leading-tab-highlight.label=Show leading tabs
+white-space.toggle-inner-tab-highlight.label=Show inner tabs
+white-space.toggle-trailing-tab-highlight.label=Show trailing tabs
+white-space.toggle-whitespace-highlight.label=Show other whitespaces
+white-space.toggle-block-highlight.label=Show paragraph separators
+white-space.toggle-fold-highlight.label=Show fold guides
+white-space.toggle-fold-tooltip.label=Show fold tooltips
+white-space.toggle-remove-trailing-white-space.label=Remove trailing whitespaces
+white-space.toggle-soft-tabify-leading-white-space.label=Tabify/untabify according to soft tabs setting
+white-space.toggle-untabify-leading-white-space.label=Untabify leading whitespaces
+white-space.toggle-tabify-leading-white-space.label=Tabify leading whitespaces
+
+
+# Options default values
+white-space.show-space-default=false
+white-space.show-leading-space-default=false
+white-space.show-inner-space-default=false
+white-space.show-trailing-space-default=false
+white-space.show-tab-default=false
+white-space.show-leading-tab-default=false
+white-space.show-inner-tab-default=false
+white-space.show-trailing-tab-default=false
+white-space.show-whitespace-default=false
+white-space.show-block-default=false
+white-space.show-fold-default=true
+white-space.show-fold-tooltip-default=false
+white-space.space-color=\#6699CC
+white-space.tab-color=\#336699
+white-space.display-control-chars=false
+white-space.whitespace-color=\#FF6600
+white-space.indent-block=true
+white-space.block-color=\#000000
+white-space.fold-color=\#CCCCCC
+white-space.remove-trailing-whitespace=false
+white-space.escape-chars=\\
+white-space.soft-tabify-leading-white-space=false
+white-space.untabify-leading-white-space=false
+white-space.tabify-leading-white-space=false
+
+
+# Option pane titles
+options.white-space.label=WhiteSpace
+options.white-space.space.label=Spaces
+options.white-space.tab.label=Tabs
+options.white-space.other.label=Other whitespaces
+options.white-space.fold.label=Fold guides
+options.white-space.paragraph.label=Paragraph separators
+options.white-space.on-save.label=On save actions
+
+
+# Option panes labels
+options.white-space.show-space-default=Show spaces by default
+options.white-space.show-leading-space-default=Show leading spaces by default
+options.white-space.show-inner-space-default=Show inner spaces by default
+options.white-space.show-trailing-space-default=Show trailing spaces by default
+options.white-space.show-tab-default=Show tabs by default
+options.white-space.show-leading-tab-default=Show leading tabs by default
+options.white-space.show-inner-tab-default=Show inner tabs by default
+options.white-space.show-trailing-tab-default=Show trailing tabs by default
+options.white-space.show-whitespace-default=Show other whitespaces by default
+options.white-space.show-block-default=Show paragraph separators by default
+options.white-space.show-fold-default=Show fold guides by default
+options.white-space.show-fold-tooltip-default=Show fold tooltips by default
+options.white-space.space-color=Space color:\ 
+options.white-space.tab-color=Tab color:\ 
+options.white-space.display-control-chars=Display ISO control chars as whitespaces
+options.white-space.whitespace-color=Other whitespace color:\ 
+options.white-space.indent-block=Paragraph separators respect indentation
+options.white-space.block-color=Paragraph separator color:\ 
+options.white-space.fold-color=Fold guide color:\ 
+options.white-space.on-save=Actions to perform when a buffer is saved:\ 
+options.white-space.remove-trailing-white-space=Remove trailing whitespaces
+options.white-space.escape-chars=Escape chars:\ 
+options.white-space.soft-tabify-leading-white-space=Tabify/untabify according to soft tabs setting
+options.white-space.untabify-leading-white-space=Untabify leading whitespaces
+options.white-space.tabify-leading-white-space=Tabify leading whitespaces
+
