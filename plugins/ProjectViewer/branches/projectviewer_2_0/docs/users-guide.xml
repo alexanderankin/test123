@@ -60,18 +60,31 @@
     <bridgehead renderas='sect3'>What is a project?</bridgehead>
     
     <para>
-    A project is a group of files. It has a name and a root directory.
-    You may choose any file below this "root" to be a part of the project.
+    A project is a group of files. It has a name and a root directory. Any 
+    files can be added to the project. Even files that do not exist may be
+    added - they'll behave as "virtual" directories. The project is not tied
+    to the filesystem layout when organizing your files.
+    </para>
+
+    <para>
+    The project root, however, has some added functionality not available to
+    other directories or files not related to the root. For example, when
+    saving a file in jEdit, the plugins checks if the file is physically below 
+    the current project's root directory, and in this case asks if the user
+    wants to add the new file to the project. The project root is also used
+    when importing files automatically, when creating new projects.
     </para>
     
     <para>
-    To create a project, click the "Create Project" button in the toolbar. This
+    To create a project, click the "Create Project" button in the toolbar, or
+    choose the correspondent entry in the project combo box. This
     will show a dialog where you can enter the properties of the project you
     want to create. After you have chosen these properties, you'll be asked if you
-    would like to import all files from the root directory. If you choose to do so,
-    all files that respect the options defined in the Import Properties (see
-    <emphasis>Customization</emphasis> below) will be automatically imported.
-	Later on you can always add new files or refresh the fileset.
+    would like to import all files from the root directory. You may choose to 
+    import using three different filtering methods: import all files, import
+    using the plugin's import settings (defined in the jEdit Plugin Options) or
+    use the CVS/Entries file for each directory below and including the root
+    to choose the files to be imported.
     </para>
     
     <bridgehead renderas='sect3'>The User Interface</bridgehead>
@@ -88,23 +101,58 @@
     
     <para>
     Optionally, by choosing "All Projects" from the project selection box, a
-    alternative view is shown, which displays data from all projects.
+    alternative view is shown, which displays data from all projects. Some
+    plugin functionality is not available when in this mode.
     </para>
     
     <para>
     You can interact with the project in several ways. Double clicking on a file
     in the tree will cause it to be opened in a jEdit buffer, or, if the file
-    is already opened, will cause it to be closed. Using the right mouse button
+    is already opened, will cause it to be focused (if not the current buffer)
+    or closed (if it is the current buffer). Using the right mouse button
     will show options related to the current selection on the tree, allowing
     you to remove files or directories from a project, deleting them from the
-    disk, or rename them.
+    disk, or rename them, among many other options.
     </para>
     
     <para>
     Right-clicking on a project will let you change the project's properties (the
     name and the root, for instance) and re-import files from the project's root
-    directory. One note about changing the root: you're only allowed to choose
-    a new root that is a parent of the current root of the project.
+    directory. Changing the project root will cause the plugin to ask to import
+    files from the new root, just like creating a new project does.
+    </para>
+
+    <bridgehead renderas='sect3'>Importing Files</bridgehead>
+    
+    <para>
+    Differently from previous releases, the plugin does not follow the filesystem
+    layout to organize files anymore, except for certain cases; notably, when 
+    doing the initial import from the project root or when adding a file that
+    has been saved to the project.
+    </para>
+    
+    <para>
+    In the import dialog (available by choosing "Import files" from the right-click
+    menu), you can choose any files to be imported to the selected node (the one
+    where you clicked to get the context menu). The same filters available when
+    doing the initial import for the project are available in the file chooser.
+    </para>
+    
+    <para>
+    You may choose any files and directories to import, even files and directories
+    that are not "children" of the selected node in the file system layout. This
+    allows you to organize your files in any way you want. You may even enter the
+    name of a non-existant file in the file chooser: it will be treated as a
+    directory, and even though the directory does not exist on disk, you'll have
+    the same functionality for it as you have for other directories in your project.
+    </para>
+    
+    <para>
+    When importing existing directories, you'll be asked if you want to import
+    them recursively. Again, the three options for file filtering are presented,
+    so you can have more control over which files are imported. The dialog will
+    appear once for each import, and not for each directory in that particular
+    import process.
     </para>
     
     <bridgehead renderas='sect3'>Commands available in the toolbar</bridgehead>
@@ -266,6 +314,28 @@
 
 </chapter>
 
+<chapter id="troubleshooting">
+    <title>Troubleshooting</title>
+
+    <bridgehead renderas='sect3'>ProjectViewer, jEdit and XML Parsers</bridgehead>
+
+    <para>
+    The configuration for the ProjectViewer plugin is now stored in XML format;
+    this makes it mandatory to have an XML parser available in the system. For
+    those using Java 1.3, you can dowload Crimson or Xerces from 
+    <ulink url="http://xml.apache.org">http://xml.apache.org</ulink>, or install
+    jEdit's XML plugin.
+    </para>
+    
+    <para>
+    For those using JDK 1.4, Crimson is already available in the default
+    installations. However, there may be a conflict between the JAXP runtime
+    available in the JRE 1.4 and the Xerces parser that comes with the XML
+    plugin for jEdit, due to some class loader issues. If you have such a
+    configuration, please install Xerces in the JDK/JRE extensions directory
+    (usually [path_to_jdk]/jre/lib/ext).
+    </para>
+</chapter>
 
 <chapter id="license">
     <title>License</title>
