@@ -56,7 +56,6 @@ public class InfoViewerPlugin extends EBPlugin {
         myGroup.addOptionPane(new infoviewer.ChooseBrowserOptionPane());
         myGroup.addOptionPane(new infoviewer.InfoViewerOptionPane());
         optionsDialog.addOptionGroup(myGroup);
-        //optionsDialog.addOptionPane(new infoviewer.InfoViewerOptionPane());
     }
     // end EditPlugin implementation
 

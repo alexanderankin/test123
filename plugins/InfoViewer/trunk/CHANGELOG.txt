@@ -1,6 +1,12 @@
 ChangeLog for InfoViewer plugin
 ===========================================================================
 
+Version 0.5.3
+-------------
+* fixed compatibility with jEdit 2.5.1
+* Requires jEdit 2.5.1 or higher and EditBus 0.9.4 or higher
+
+
 Version 0.5.2
 -------------
 * fixed compatibility with jEdit2.5pre3
