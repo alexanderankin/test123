@@ -7,19 +7,25 @@
         <CODE>
              whitespace.BlockHighlight.toggleBlockHighlightFor(view);
         </CODE>
+        <!--
         <IS_SELECTED>
              return whitespace.BlockHighlight.isBlockHighlightEnabledFor(view);
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-fold-highlight">
         <CODE>
-            whitespace.FoldHighlight.toggleFoldHighlightFor(view);
+            whitespace.FoldHighlight.toggleHighlightEnabledFor(buffer);
         </CODE>
         <IS_SELECTED>
-            return (
-                whitespace.FoldHighlight.isFoldHighlightEnabledFor(view)
+            // return (
+            //    whitespace.FoldHighlight.isFoldHighlightEnabledFor(view)
+            // );
+            return buffer.getBooleanProperty(
+                /* whitespace.FoldHighlight.FOLD_HIGHLIGHT_PROPERTY */
+                "white-space.fold-highlight"
             );
         </IS_SELECTED>
     </ACTION>
@@ -29,11 +35,13 @@
         <CODE>
             whitespace.FoldHighlight.toggleFoldTooltipFor(view);
         </CODE>
+        <!--
         <IS_SELECTED>
             return (
                 whitespace.FoldHighlight.isFoldTooltipEnabledFor(view)
             );
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -45,11 +53,13 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getSpaceHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -61,11 +71,13 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getLeadingSpaceHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -77,11 +89,13 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getInnerSpaceHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -93,11 +107,13 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getTrailingSpaceHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -109,11 +125,13 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getTabHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -125,11 +143,13 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getLeadingTabHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -141,11 +161,13 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getInnerTabHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -157,11 +179,13 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getTrailingTabHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 
 
@@ -173,10 +197,12 @@
                 highlight.updateTextArea();
             }
         </CODE>
+        <!--
         <IS_SELECTED>
             highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
             if (highlight == null) { return false; }
             return highlight.getWhitespaceHighlight().isEnabled();
         </IS_SELECTED>
+        -->
     </ACTION>
 </ACTIONS>

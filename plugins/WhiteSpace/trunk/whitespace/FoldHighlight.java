@@ -53,8 +53,10 @@ import org.gjt.sp.util.Log;
 public class FoldHighlight
     implements TextAreaHighlight
 {
+    public static final String FOLD_HIGHLIGHT_PROPERTY = "white-space.fold-highlight";
+
     // (EditPane, FoldHighlight) association
-    private static Hashtable highlights = new Hashtable();
+    private static final Hashtable highlights = new Hashtable();
 
     private static Color foldColor = GUIUtilities.parseColor(
         jEdit.getProperty("white-space.fold-color")
@@ -62,7 +64,7 @@ public class FoldHighlight
 
     private JEditTextArea textArea;
     private TextAreaHighlight next;
-    private boolean highlightEnabled = false;
+    // private boolean highlightEnabled = false;
     private boolean tooltipEnabled   = false;
     private Segment segment = new Segment();
 
@@ -163,7 +165,8 @@ public class FoldHighlight
                 // Nothing to do here
             } else {
                 int level = 0;
-loop:           for (int i = physicalLine - 1; i >= 0; i--) {
+                loop:
+                for (int i = physicalLine - 1; i >= 0; i--) {
                     level = buffer.getFoldLevel(i);
                     if (level <= physicalLineOffset) {
                         // We found a tooltip candidate
@@ -218,18 +221,39 @@ loop:           for (int i = physicalLine - 1; i >= 0; i--) {
     }
 
 
-    public boolean isHighlightEnabled() {
-        return this.highlightEnabled;
+    private boolean isHighlightEnabled() {
+        // return this.highlightEnabled;
+        Boolean enabled = (Boolean) this.textArea.getBuffer().getProperty(
+            FOLD_HIGHLIGHT_PROPERTY
+        );
+        if (enabled == null) {
+            enabled = Boolean.FALSE;
+        }
+
+        return enabled.booleanValue();
     }
 
 
-    public void setHighlightEnabled(boolean highlightEnabled) {
-        this.highlightEnabled = highlightEnabled;
+    private void setHighlightEnabled(boolean highlightEnabled) {
+        this.textArea.getBuffer().putProperty(
+            FOLD_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+        );
     }
 
 
-    public void toggleHighlightEnabled() {
-        this.highlightEnabled = !this.highlightEnabled;
+    private void toggleHighlightEnabled() {
+        Boolean enabled = (Boolean) this.textArea.getBuffer().getProperty(
+            FOLD_HIGHLIGHT_PROPERTY
+        );
+
+        if (enabled == null) {
+            return;
+        }
+
+        this.textArea.getBuffer().putProperty(
+            FOLD_HIGHLIGHT_PROPERTY,
+            enabled.booleanValue() ? Boolean.FALSE : Boolean.TRUE
+        );
     }
 
 
@@ -320,6 +344,55 @@ loop:           for (int i = physicalLine - 1; i >= 0; i--) {
             FoldHighlight.disableFoldHighlightFor(view);
         } else {
             FoldHighlight.enableFoldHighlightFor(view);
+        }
+    }
+
+
+    public static boolean isHighlightEnabledFor(Buffer buffer) {
+        // return this.highlightEnabled;
+        Boolean enabled = (Boolean) buffer.getProperty(
+            FOLD_HIGHLIGHT_PROPERTY
+        );
+        if (enabled == null) {
+            enabled = Boolean.FALSE;
+        }
+
+        return enabled.booleanValue();
+    }
+
+
+    public static void setHighlightEnabledFor(Buffer buffer, boolean enabled) {
+        buffer.putProperty(
+            FOLD_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
+        );
+    }
+
+
+    public static void toggleHighlightEnabledFor(Buffer buffer) {
+        Boolean enabled = (Boolean) buffer.getProperty(
+            FOLD_HIGHLIGHT_PROPERTY
+        );
+
+        if (enabled == null) {
+            return;
+        }
+
+        buffer.putProperty(
+            FOLD_HIGHLIGHT_PROPERTY,
+            enabled.booleanValue() ? Boolean.FALSE : Boolean.TRUE
+        );
+
+        View[] views = jEdit.getViews();
+        for (int i = 0; i < views.length; i++) {
+            EditPane[] editPanes = views[i].getEditPanes();
+            FoldHighlight highlight;
+            for (int j = 0; j < editPanes.length; j++) {
+                if (editPanes[j].getBuffer() != buffer) { continue; }
+                highlight = (FoldHighlight) highlights.get(editPanes[j]);
+                if (highlight != null) {
+                    highlight.updateTextArea();
+                }
+            }
         }
     }
 
@@ -423,6 +496,36 @@ loop:           for (int i = physicalLine - 1; i >= 0; i--) {
                     highlight.updateTextArea();
                 }
             }
+        }
+    }
+
+
+    public static void bufferCreated(Buffer buffer, boolean enabled) {
+        buffer.putProperty(
+            FOLD_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
+        );
+    }
+
+
+    public static void bufferClosed(Buffer buffer) {
+        buffer.putProperty(FOLD_HIGHLIGHT_PROPERTY, null);
+    }
+
+
+    public static void editorStarted(boolean enabled) {
+        Buffer[] buffers = jEdit.getBuffers();
+        for (int i = 0; i < buffers.length; i++) {
+            buffers[i].putProperty(
+                FOLD_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
+            );
+        }
+    }
+
+
+    public static void editorExiting() {
+        Buffer[] buffers = jEdit.getBuffers();
+        for (int i = 0; i < buffers.length; i++) {
+            buffers[i].putProperty(FOLD_HIGHLIGHT_PROPERTY, null);
         }
     }
 
