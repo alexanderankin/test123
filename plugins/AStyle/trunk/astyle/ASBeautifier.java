@@ -41,6 +41,26 @@ public class ASBeautifier implements ASResource {
 
     public ASBeautifier() {
         initStatic();
+
+        waitingBeautifierStack = null;
+        activeBeautifierStack = null;
+        waitingBeautifierStackLengthStack = null;
+        activeBeautifierStackLengthStack = null;
+
+        headerStack  = null;
+        tempStacks = null;
+        blockParenDepthStack = null;
+        blockStatementStack = null;
+        parenStatementStack = null;
+        bracketBlockStateStack = null;
+        inStatementIndentStack = null;
+        inStatementIndentStackSizeStack = null;
+        parenIndentStack = null;
+        sourceIterator = null;
+
+        isMinimalConditinalIndentSet = false;
+        shouldForceTabIndentation = false;
+
         setSpaceIndentation(4);
         setMaxInStatementIndentLength(40);
         setClassIndent(false);
@@ -120,6 +140,7 @@ public class ASBeautifier implements ASResource {
         probationHeader = other.probationHeader;
         isInDefine = other.isInDefine;
         isInDefineDefinition = other.isInDefineDefinition;
+        backslashEndsPrevLine = other.backslashEndsPrevLine;
         defineTabCount = other.defineTabCount;
     }
 
@@ -225,6 +246,25 @@ public class ASBeautifier implements ASResource {
 
         if (!isMinimalConditinalIndentSet)
             minConditionalIndent = indentLength * 2;
+    }
+
+
+    /**
+     * get value of 'forceTabs' property.
+     * @return  the value of the <code>forceTabs</code> property.
+     */
+    public final boolean getForceTabs() {
+        return shouldForceTabIndentation;
+    }
+
+
+    /**
+     * enforce usage of tabs.
+     * @param  forceTabs  if true, the beautifier uses tabs in areas where
+     *                    it otherwise would use spaces.
+     */
+    public final void setForceTabs(boolean forceTabs) {
+        shouldForceTabIndentation = forceTabs;
     }
 
 
@@ -546,7 +586,7 @@ public class ASBeautifier implements ASResource {
         boolean isSpecialChar = false;
         char ch = ' ';
         char prevCh;
-        StringBuffer outBuffer = new StringBuffer();
+        StringBuffer outBuffer = new StringBuffer(); // the newly idented line is buffered here
         int tabCount = 0;
         String lastLineHeader = null;
         boolean closingBracketReached = false;
@@ -568,65 +608,49 @@ public class ASBeautifier implements ASResource {
         // relation to the preliminary white-space.
         if (!isInComment) {
             leadingWhiteSpaces = 0;
-            while (leadingWhiteSpaces < originalLine.length() &&
-                   originalLine.charAt(leadingWhiteSpaces) <= 0x20)
-            {
+            while (leadingWhiteSpaces < originalLine.length() && originalLine.charAt(leadingWhiteSpaces) <= 0x20)
                 leadingWhiteSpaces++;
-            }
-            line = new String(originalLine).trim();
+
+            line = originalLine.trim();
         } else {
             int trimSize;
             for (trimSize = 0;
-                 trimSize < originalLine.length()
-                 && trimSize < leadingWhiteSpaces
-                 && originalLine.charAt(trimSize) <= 0x20 ;
-                 trimSize++);
+                 trimSize < originalLine.length() && trimSize < leadingWhiteSpaces && originalLine.charAt(trimSize) <= 0x20;
+                 trimSize++)
+            ;
             line = originalLine.substring(trimSize);
         }
 
-        if (line.length() == 0) {
-            if (emptyLineFill) {
-                return preLineWS(prevFinalLineSpaceTabCount,
-                                 prevFinalLineTabCount);
-            } else {
+        if (line.length() == 0)
+            if (emptyLineFill)
+                return preLineWS(prevFinalLineSpaceTabCount, prevFinalLineTabCount);
+            else
                 return line;
-            }
-        }
 
         // handle preprocessor commands
-        if (isCStyle && !isInComment &&
-            (line.charAt(0) == '#' || backslashEndsPrevLine))
-        {
+        if (isCStyle && !isInComment && (line.charAt(0) == '#' || backslashEndsPrevLine)) {
             if (line.charAt(0) == '#') {
                 String preproc = line.substring(1).trim();
-                // When finding a multi-lined #define statement, the original
-                // beautifier
+                // When finding a multi-lined #define statement, the original beautifier
                 // 1. sets its isInDefineDefinition flag
-                // 2. clones a new beautifier that will be used for the actual
-                //    indentation of the #define. This clone is put into the
-                //    activeBeautifierStack in order to be called for the
-                //    actual indentation.
-                // The original beautifier will have isInDefineDefinition
-                // = true, isInDefine = false.
-                // The cloned beautifier will have isInDefineDefinition
-                // = true, isInDefine = true.
-                if (preprocessorIndent
-                    && preproc.equals("define")
-                    && line.endsWith("\\")) {
+                // 2. clones a new beautifier that will be used for the actual indentation
+                //    of the #define. This clone is put into the activeBeautifierStack in order
+                //    to be called for the actual indentation.
+                // The original beautifier will have isInDefineDefinition = true, isInDefine = false.
+                // The cloned beautifier will have   isInDefineDefinition = true, isInDefine = true.
+                if (preprocessorIndent && preproc.equals("define") && line.endsWith("\\")) {
                     if (!isInDefineDefinition) {
                         // this is the original beautifier
                         isInDefineDefinition = true;
                         // push a new beautifier into the active stack
-                        // this breautifier will be used for the indentation
-                        // of this define
+                        // this breautifier will be used for the indentation of this define
                         ASBeautifier defineBeautifier = new ASBeautifier(this);
                         //defineBeautifier.init();
                         //defineBeautifier.isInDefineDefinition = true;
                         //defineBeautifier.beautify("");
                         activeBeautifierStack.push_back(defineBeautifier);
                     } else {
-                        // this is the cloned beautifier that is in charge
-                        // of indenting the #define.
+                        // this is the cloned beautifier that is in charge of indenting the #define.
                         isInDefine = true;
                     }
                 }
@@ -645,171 +669,138 @@ public class ASBeautifier implements ASResource {
                 }
                 else if (preproc.equals("elif")) {
                     if (!waitingBeautifierStack.empty()) {
-                        // append a COPY current waiting beautifier to active
-                        // stack, WITHOUT deleting the original.
-                        activeBeautifierStack.push_back(new ASBeautifier(
-                            waitingBeautifierStack.back()));
+                        // append a COPY current waiting beautifier to active stack, WITHOUT deleting the original.
+                        activeBeautifierStack.push_back(new ASBeautifier(waitingBeautifierStack.back()));
                     }
                 }
                 else if (preproc.equals("endif")) {
+                    int stackLength;
+                    ASBeautifier beautifier;
+
                     if (!waitingBeautifierStackLengthStack.empty()) {
-                        int stackLength = waitingBeautifierStackLengthStack.back();
+                        stackLength = waitingBeautifierStackLengthStack.back();
                         waitingBeautifierStackLengthStack.pop_back();
                         while (waitingBeautifierStack.size() > stackLength) {
+                            beautifier = waitingBeautifierStack.back();
                             waitingBeautifierStack.pop_back();
+                            beautifier = null;
                         }
                     }
+
                     if (!activeBeautifierStackLengthStack.empty()) {
-                        int stackLength = activeBeautifierStackLengthStack.back();
+                        stackLength = activeBeautifierStackLengthStack.back();
                         activeBeautifierStackLengthStack.pop_back();
                         while (activeBeautifierStack.size() > stackLength) {
+                            beautifier = activeBeautifierStack.back();
                             activeBeautifierStack.pop_back();
+                            beautifier = null;
                         }
                     }
                 }
             } // if (line.charAt(0) == '#')
 
             // check if the last char is a backslash
-            if (line.length() > 0) {
+            if (line.length() > 0)
                 backslashEndsPrevLine = line.endsWith("\\");
-            } else {
+            else
                 backslashEndsPrevLine = false;
-            }
 
             // check if this line ends a multi-line #define.
-            // if so, use the #define's cloned beautifier for the line's
-            // indentation and then remove it from the active beautifier
-            // stack and delete it.
+            // if so, use the #define's cloned beautifier for the line's indentation
+            // and then remove it from the active beautifier stack and delete it.
             if (!backslashEndsPrevLine && isInDefineDefinition && !isInDefine) {
+                String beautifiedLine;
+                ASBeautifier defineBeautifier;
+
                 isInDefineDefinition = false;
-                ASBeautifier defineBeautifier = activeBeautifierStack.back();
+                defineBeautifier = activeBeautifierStack.back();
                 activeBeautifierStack.pop_back();
-                String beautifiedLine = defineBeautifier.beautify(line);
+
+                beautifiedLine = defineBeautifier.beautify(line);
                 defineBeautifier = null;
                 return beautifiedLine;
             }
 
-            // unless this is a multi-line #define, return this precompiler
-            // line as is.
-            if (!isInDefine && !isInDefineDefinition) {
+            // unless this is a multi-line #define, return this precompiler line as is.
+            if (!isInDefine && !isInDefineDefinition)
                 return originalLine;
-            }
         } // if preprocessor command
 
         // if there exists any worker beautifier in the activeBeautifierStack,
         // then use it instead of me to indent the current line.
-        if (!isInDefine && activeBeautifierStack != null &&
-            !activeBeautifierStack.empty())
-        {
+        if (!isInDefine && activeBeautifierStack != null && !activeBeautifierStack.empty())
             return activeBeautifierStack.back().beautify(line);
-        }
 
         // calculate preliminary indentation based on data from past lines
-        if (!inStatementIndentStack.empty()) {
+        if (!inStatementIndentStack.empty())
             spaceTabCount = inStatementIndentStack.back();
-        }
 
         for (i = 0; i < headerStackSize; i++) {
             isInClass = false;
 
-            if (blockIndent ||
-                (!(i > 0 &&
-                   headerStack.at(i-1) != AS_OPEN_BRACKET &&
-                   headerStack.at(i) == AS_OPEN_BRACKET)))
-            {
+            if (blockIndent || (!(i > 0 && headerStack.at(i-1) != AS_OPEN_BRACKET
+                   && headerStack.at(i) == AS_OPEN_BRACKET)))
                 ++tabCount;
-            }
 
-            if (isCStyle && !namespaceIndent && i >= 1 &&
-                headerStack.at(i-1) == AS_NAMESPACE &&
-                headerStack.at(i) == AS_OPEN_BRACKET)
-            {
+            if (isCStyle && !namespaceIndent && i >= 1
+                    && headerStack.at(i-1) == AS_NAMESPACE
+                    && headerStack.at(i) == AS_OPEN_BRACKET)
                 --tabCount;
-            }
 
-            if (isCStyle && i >= 1 &&
-                headerStack.at(i-1) == AS_CLASS &&
-                headerStack.at(i) == AS_OPEN_BRACKET)
+            if (isCStyle && i >= 1
+                    && headerStack.at(i-1) == AS_CLASS
+                    && headerStack.at(i) == AS_OPEN_BRACKET)
             {
-                if (classIndent) {
+                if (classIndent)
                     ++tabCount;
-                }
                 isInClass = true;
             }
-            else if (switchIndent && i > 1 &&
-                     headerStack.at(i-1) == AS_SWITCH &&
-                     headerStack.at(i) == AS_OPEN_BRACKET)
+            else if (switchIndent && i > 1
+                     && headerStack.at(i-1) == AS_SWITCH
+                     && headerStack.at(i) == AS_OPEN_BRACKET)
             {
-                // is the switchIndent option is on, indent switch statements
-                // an additional indent.
+                // is the switchIndent option is on, indent switch statements an additional indent.
                 ++tabCount;
                 isInSwitch = true;
             }
         } // for
 
-        if (isCStyle && isInClass && classIndent && headerStackSize >= 2 &&
-            headerStack.at(headerStackSize-2) == AS_CLASS &&
-            headerStack.at(headerStackSize-1) == AS_OPEN_BRACKET &&
-            line.charAt(0) == '}')
-        {
+        if (isCStyle && isInClass && classIndent && headerStackSize >= 2
+                && headerStack.at(headerStackSize-2) == AS_CLASS
+                && headerStack.at(headerStackSize-1) == AS_OPEN_BRACKET
+                && line.charAt(0) == '}')
             --tabCount;
-        }
-        else if (isInSwitch && switchIndent && headerStackSize >= 2 &&
-                 headerStack.at(headerStackSize-2) == AS_SWITCH &&
-                 headerStack.at(headerStackSize-1) == AS_OPEN_BRACKET &&
-                 line.charAt(0) == '}')
-        {
+        else if (isInSwitch && switchIndent && headerStackSize >= 2
+                 && headerStack.at(headerStackSize-2) == AS_SWITCH
+                 && headerStack.at(headerStackSize-1) == AS_OPEN_BRACKET
+                 && line.charAt(0) == '}')
             --tabCount;
-        }
 
         if (isInClassHeader) {
             isInClassHeaderTab = true;
             tabCount += 2;
         }
 
-        if (isInConditional) {
+        if (isInConditional)
             --tabCount;
-        }
-
-        //if (isInDefine && defineTabCount == 0) {
-        //    defineTabCount = tabCount;
-        //}
 
         // parse characters in the current line.
+
         for (i = 0; i < line.length(); i++) {
             tempCh = line.charAt(i);
             prevCh = ch;
             ch = tempCh;
             outBuffer.append(ch);
 
-            /*
-            if (isWhiteSpace(ch)) {
-                if (!isInComment &&
-                    !isInTemplate &&
-                    immediatelyPreviousAssignmentOp == null &&
-                    (headerStackSize == 0 ||
-                     headerStackSize != 0 &&
-                     headerStack.back() == AS_OPEN_BRACKET))
-                {
-                    System.err.print("ggg ");
-                    continue;
-                }
-            }
-            */
-
-            if (isWhiteSpace(ch)) {
+            if (isWhiteSpace(ch))
                 continue;
-            }
 
-            // handle special characters (i.e. backslash and characters
-            // such as \n, \t, ...)
+            // handle special characters (i.e. backslash and characters such as \n, \t, ...)
             if (isSpecialChar) {
                 isSpecialChar = false;
                 continue;
             }
-            if (!(isInComment || isInLineComment) &&
-                line.regionMatches(i, "\\\\", 0, 2))
-            {
+            if (!(isInComment || isInLineComment) && line.regionMatches(i, "\\\\", 0, 2)) {
                 outBuffer.append('\\');
                 i++;
                 continue;
@@ -830,64 +821,62 @@ public class ASBeautifier implements ASResource {
                     continue;
                 }
             }
-            if (isInQuote)  {
+            if (isInQuote)
                 continue;
-            }
 
             // handle comments
-            if (!(isInComment || isInLineComment) &&
-                line.regionMatches(i, AS_OPEN_LINE_COMMENT, 0, 2))
-            {
+
+            if (!(isInComment || isInLineComment) && line.regionMatches(i, AS_OPEN_LINE_COMMENT, 0, 2)) {
                 isInLineComment = true;
                 outBuffer.append('/');
                 i++;
                 continue;
             }
-            else if (!(isInComment || isInLineComment) &&
-                     line.regionMatches(i, AS_OPEN_COMMENT, 0, 2))
-            {
+            else if (!(isInComment || isInLineComment) && line.regionMatches(i, AS_OPEN_COMMENT, 0, 2)) {
                 isInComment = true;
                 outBuffer.append('*');
                 i++;
                 continue;
             }
-            else if ((isInComment || isInLineComment) &&
-                     line.regionMatches(i, AS_CLOSE_COMMENT, 0, 2))
-            {
+            else if ((isInComment || isInLineComment) && line.regionMatches(i, AS_CLOSE_COMMENT, 0, 2)) {
                 isInComment = false;
                 outBuffer.append('/');
                 i++;
                 continue;
             }
-            if (isInComment || isInLineComment) {
-                continue;
-            }
 
-            // if we have reached this far then we are NOT in a comment or
-            // string of special character...
+            if (isInComment || isInLineComment)
+                continue;
+
+            // if we have reached this far then we are NOT in a comment or string of special character...
+
             if (probationHeader != null) {
-                if (ch == '(' &&
-                    (probationHeader == AS_STATIC ||
-                     probationHeader == AS_CONST ||
-                     probationHeader == AS_SYNCHRONIZED))
+                if (((probationHeader == AS_STATIC || probationHeader == AS_CONST) && ch == '{')
+                        || (probationHeader == AS_SYNCHRONIZED && ch == '('))
                 {
                     // insert the probation header as a new header
                     isInHeader = true;
                     headerStack.push_back(probationHeader);
 
                     // handle the specific probation header
-                    isInConditional = probationHeader == AS_SYNCHRONIZED;
-                    if (probationHeader == AS_CONST) {
+                    isInConditional = (probationHeader == AS_SYNCHRONIZED);
+                    if (probationHeader == AS_CONST)
                         isImmediatelyAfterConst = true;
-                    }
+                    //  isInConst = true;
+                    // TODO:
+                    // There is actually no more need for the global isInConst variable.
+                    // The only reason for checking const is to see if there is a const
+                    // immediately before an open-bracket.
+                    // Since CONST is now put into probation and is checked during itspost-char,
+                    // isImmediatelyAfterConst can be set by its own...
+
                     isInStatement = false;
-                    // if the probation comes from the previous line,
-                    // then indent by 1 tab count.
-                    if (previousLineProbation && ch == '{') {
+                    // if the probation comes from the previous line, then indent by 1 tab count.
+                    if (previousLineProbation && ch == '{')
                         tabCount++;
-                    }
                     previousLineProbation = false;
                 }
+
                 // dismiss the probation header
                 probationHeader = null;
             }
@@ -899,27 +888,32 @@ public class ASBeautifier implements ASResource {
                 currentNonLegalCh = ch;
             }
 
+            //if (isInConst)
+            //{
+            //    isInConst = false;
+            //    isImmediatelyAfterConst = true;
+            //}
+
             if (isInHeader) {
                 isInHeader = false;
                 currentHeader = headerStack.back();
-            } else {
-                currentHeader = null;
             }
+            else
+                currentHeader = null;
 
             // handle templates
-            if (isCStyle && isInTemplate && (ch == '<' || ch == '>') &&
-                findHeader(line, i, nonAssignmentOperators) == null)
+            if (isCStyle && isInTemplate
+                    && (ch == '<' || ch == '>')
+                    && findHeader(line, i, nonAssignmentOperators) == null)
             {
-                if (ch == '<') {
+                if (ch == '<')
                     ++templateDepth;
-                }
                 else if (ch == '>') {
                     if (--templateDepth <= 0) {
-                        if (isInTemplate) {
+                        if (isInTemplate)
                             ch = ';';
-                        } else {
+                        else
                             ch = 't';
-                        }
                         isInTemplate = false;
                         templateDepth = 0;
                     }
@@ -935,9 +929,11 @@ public class ASBeautifier implements ASResource {
                     }
                     parenDepth++;
                     inStatementIndentStackSizeStack.push_back(inStatementIndentStack.size());
-                    registerInStatementIndent(line, i, spaceTabCount,
-                        currentHeader != null ? minConditionalIndent : 0,
-                        true);
+
+                    if (currentHeader != null)
+                        registerInStatementIndent(line, i, spaceTabCount, minConditionalIndent /*indentLength*2 */, true);
+                    else
+                        registerInStatementIndent(line, i, spaceTabCount, 0, true);
                 }
                 else if (ch == ')' || ch == ']') {
                     parenDepth--;
@@ -951,16 +947,14 @@ public class ASBeautifier implements ASResource {
                     if (!inStatementIndentStackSizeStack.empty()) {
                         int previousIndentStackSize = inStatementIndentStackSizeStack.back();
                         inStatementIndentStackSizeStack.pop_back();
-                        while (previousIndentStackSize < inStatementIndentStack.size()) {
+                        while (previousIndentStackSize < inStatementIndentStack.size())
                             inStatementIndentStack.pop_back();
-                        }
 
                         if (!parenIndentStack.empty()) {
                             int poppedIndent = parenIndentStack.back();
                             parenIndentStack.pop_back();
-                            if (i == 0) {
+                            if (i == 0)
                                 spaceTabCount = poppedIndent;
-                            }
                         }
                     }
                 }
@@ -970,47 +964,39 @@ public class ASBeautifier implements ASResource {
             // handle block start
             if (ch == '{') {
                 boolean isBlockOpener = false;
-                // first, check if '{' is a block-opener or an
-                // static-array opener
-                isBlockOpener = (prevNonSpaceCh == '{' && bracketBlockStateStack.back())
+
+                // first, check if '{' is a block-opener or an static-array opener
+                isBlockOpener = ((prevNonSpaceCh == '{' && bracketBlockStateStack.back())
                                 || prevNonSpaceCh == '}'
                                 || prevNonSpaceCh == ')'
                                 || prevNonSpaceCh == ';'
                                 || isInClassHeader
                                 || isBlockOpener
                                 || isImmediatelyAfterConst
-                                || (isInDefine && (prevNonSpaceCh == '('
-                                    || prevNonSpaceCh == '_'
-                                    || Character.isLetterOrDigit(prevNonSpaceCh)));
+                                || (isInDefine &&
+                                    (prevNonSpaceCh == '('
+                                     || prevNonSpaceCh == '_'
+                                     || Character.isLetterOrDigit(prevNonSpaceCh))));
                 isInClassHeader = false;
-                if (!isBlockOpener && currentHeader != null) {
-                    if (nonParenHeaders.contains(currentHeader)) {
+                if (!isBlockOpener && currentHeader != null)
+                    if (nonParenHeaders.contains(currentHeader))
                         isBlockOpener = true;
-                    }
-                }
                 bracketBlockStateStack.push_back(isBlockOpener);
-
                 if (!isBlockOpener) {
-                    if (line.length() - i == getNextProgramCharDistance(line, i)
-                        && immediatelyPreviousAssignmentOp != null)
-                    {
-                        inStatementIndentStack.pop_back();
-                    }
                     inStatementIndentStackSizeStack.push_back(inStatementIndentStack.size());
                     registerInStatementIndent(line, i, spaceTabCount, 0, true);
                     parenDepth++;
-                    if (i == 0) {
+                    if (i == 0)
                         shouldIndentBrackettedLine = false;
-                    }
                     continue;
                 }
 
-                // this bracket is a block opener...
+                // this bracket is a block opener..
+
                 ++lineOpeningBlocksNum;
 
-                if (isInClassHeader) {
+                if (isInClassHeader)
                     isInClassHeader = false;
-                }
                 if (isInClassHeaderTab) {
                     isInClassHeaderTab = false;
                     tabCount -= 2;
@@ -1026,7 +1012,8 @@ public class ASBeautifier implements ASResource {
 
                 tempStacks.push_back(new StringStack());
                 headerStack.push_back(AS_OPEN_BRACKET);
-                lastLineHeader = AS_OPEN_BRACKET;
+                lastLineHeader = AS_OPEN_BRACKET; // <------
+
                 continue;
             }
 
@@ -1037,60 +1024,54 @@ public class ASBeautifier implements ASResource {
                 if (newHeader != null) {
                     // if we reached here, then this is a header...
                     isInHeader = true;
-                    StringStack lastTempStack = tempStacks.empty() ? null :
-                                                (StringStack) tempStacks.back();
+                    StringStack lastTempStack;
+                    if (tempStacks.empty())
+                        lastTempStack = null;
+                    else
+                        lastTempStack = (StringStack) tempStacks.back();
 
-                    // if a new block is opened, push a new stack into
-                    // tempStacks to hold the future list of headers in the
-                    // new block.
+                    // if a new block is opened, push a new stack into tempStacks to hold the
+                    // future list of headers in the new block.
 
                     // take care of the special case: 'else if (...)'
                     if (newHeader == AS_IF && lastLineHeader == AS_ELSE) {
-                        // to counter the opposite addition that occurs when
-                        // the 'if' is registered below:
-                        //spaceTabCount += indentLength;
+                        //spaceTabCount += indentLength; // to counter the opposite addition that occurs when the 'if' is registered below...
                         headerStack.pop_back();
                     }
                     // take care of 'else'
                     else if (newHeader == AS_ELSE) {
                         if (lastTempStack != null) {
-                            int indexOfIf = lastTempStack.indexOf(AS_IF);
+                            int indexOfIf = lastTempStack.indexOf(AS_IF); // <---
                             if (indexOfIf != -1) {
-                                // recreate the header list in headerStack
-                                // up to the previous 'if' from the temporary
-                                // snapshot stored in lastTempStack.
+                                // recreate the header list in headerStack up to the previous 'if'
+                                // from the temporary snapshot stored in lastTempStack.
                                 int restackSize = lastTempStack.size() - indexOfIf - 1;
                                 for (int r = 0; r < restackSize; r++) {
                                     headerStack.push_back(lastTempStack.back());
                                     lastTempStack.pop_back();
                                 }
-                                if (!closingBracketReached) {
+                                if (!closingBracketReached)
                                     tabCount += restackSize;
-                                }
                             }
-                            // If the above if is not true, i.e. no 'if'
-                            // before the 'else', then nothing beautiful will
-                            // come out of this...
-                            // I should think about inserting an Exception
-                            // here to notify the caller of this...
+                            // If the above if is not true, i.e. no 'if' before the 'else',
+                            // then nothing beautiful will come out of this...
+                            // I should think about inserting an Exception here to notify the caller of this...
                         }
                     }
                     // check if 'while' closes a previous 'do'
                     else if (newHeader == AS_WHILE) {
                         if (lastTempStack != null) {
-                            int indexOfDo = lastTempStack.indexOf(AS_DO);
+                            int indexOfDo = lastTempStack.indexOf(AS_DO); // <---
                             if (indexOfDo != -1) {
-                                // recreate the header list in headerStack
-                                // up to the previous 'do' from the temporary
-                                // snapshot stored in lastTempStack.
+                                // recreate the header list in headerStack up to the previous 'do'
+                                // from the temporary snapshot stored in lastTempStack.
                                 int restackSize = lastTempStack.size() - indexOfDo - 1;
                                 for (int r = 0; r < restackSize; r++) {
                                     headerStack.push_back(lastTempStack.back());
                                     lastTempStack.pop_back();
                                 }
-                                if (!closingBracketReached) {
+                                if (!closingBracketReached)
                                     tabCount += restackSize;
-                                }
                             }
                         }
                     }
@@ -1098,37 +1079,34 @@ public class ASBeautifier implements ASResource {
                     else if (newHeader == AS_CATCH || newHeader == AS_FINALLY) {
                         if (lastTempStack != null) {
                             int indexOfTry = lastTempStack.indexOf(AS_TRY);
-                            if (indexOfTry == -1) {
+                            if (indexOfTry == -1)
                                 indexOfTry = lastTempStack.indexOf(AS_CATCH);
-                            }
                             if (indexOfTry != -1) {
-                                // recreate the header list in headerStack
-                                // up to the previous 'try' from the temporary
-                                // snapshot stored in lastTempStack.
+                                // recreate the header list in headerStack up to the previous 'try'
+                                // from the temporary snapshot stored in lastTempStack.
                                 int restackSize = lastTempStack.size() - indexOfTry - 1;
                                 for (int r = 0; r < restackSize; r++) {
                                     headerStack.push_back(lastTempStack.back());
                                     lastTempStack.pop_back();
                                 }
-                                if (!closingBracketReached) {
+                                if (!closingBracketReached)
                                     tabCount += restackSize;
-                                }
                             }
                         }
                     }
-                    else if (newHeader == AS_CASE || newHeader == AS_DEFAULT) {
+                    else if (newHeader == AS_CASE) {
                         isInCase = true;
-                        if (!caseIndent) {
+                        if (!caseIndent)
                             --tabCount;
-                        }
                     }
-                    else if (newHeader == AS_PUBLIC ||
-                             newHeader == AS_PROTECTED ||
-                             newHeader == AS_PRIVATE)
-                    {
-                        if (isCStyle && !isInClassHeader) {
+                    else if (newHeader == AS_DEFAULT) {
+                        isInCase = true;
+                        if (!caseIndent)
                             --tabCount;
-                        }
+                    }
+                    else if (newHeader == AS_PUBLIC || newHeader == AS_PROTECTED || newHeader == AS_PRIVATE) {
+                        if (isCStyle && !isInClassHeader)
+                            --tabCount;
                         isIndentableHeader = false;
                     }
                     //else if ((newHeader == AS_STATIC || newHeader == AS_SYNCHRONIZED) &&
@@ -1137,14 +1115,14 @@ public class ASBeautifier implements ASResource {
                     //{
                     //    isIndentableHeader = false;
                     //}
-                    else if (newHeader == AS_STATIC ||
-                             newHeader == AS_SYNCHRONIZED ||
-                             (newHeader == AS_CONST && isCStyle))
+                    else if (newHeader == AS_STATIC
+                             || newHeader == AS_SYNCHRONIZED
+                             || (newHeader == AS_CONST && isCStyle))
                     {
-                        if (!headerStack.empty() &&
-                            (headerStack.back() == AS_STATIC ||
-                             headerStack.back() == AS_SYNCHRONIZED ||
-                             headerStack.back() == AS_CONST))
+                        if (!headerStack.empty()
+                            && (headerStack.back() == AS_STATIC
+                                || headerStack.back() == AS_SYNCHRONIZED
+                                || headerStack.back() == AS_CONST))
                         {
                             isIndentableHeader = false;
                         } else {
@@ -1154,8 +1132,7 @@ public class ASBeautifier implements ASResource {
                     }
                     else if (newHeader == AS_CONST) {
                         // this will be entered only if NOT in C style
-                        // since otherwise the CONST would be found to be
-                        // a probstion header...
+                        // since otherwise the CONST would be found to be a probation header...
                         isIndentableHeader = false;
                     }
                     /*
@@ -1167,9 +1144,8 @@ public class ASBeautifier implements ASResource {
                     }
                     */
                     else if (newHeader == AS_TEMPLATE) {
-                        if (isCStyle) {
+                        if (isCStyle)
                             isInTemplate = true;
-                        }
                         isIndentableHeader = false;
                     }
 
@@ -1177,18 +1153,18 @@ public class ASBeautifier implements ASResource {
                         //spaceTabCount -= indentLength;
                         headerStack.push_back(newHeader);
                         isInStatement = false;
-                        if (nonParenHeaders.indexOf(newHeader) == -1) {
+                        if (nonParenHeaders.indexOf(newHeader) == -1)
                             isInConditional = true;
-                        }
                         lastLineHeader = newHeader;
-                    } else {
-                        isInHeader = false;
                     }
+                    else
+                        isInHeader = false;
 
                     //lastLineHeader = newHeader;
 
                     outBuffer.append(newHeader.substring(1));
                     i += newHeader.length() - 1;
+
                     continue;
                 } // if (newHeader != null)
             } // if (prevCh == ' ')
@@ -1205,9 +1181,8 @@ public class ASBeautifier implements ASResource {
                 continue;
             }
 
-            if (ch == '?') {
+            if (ch == '?')
                 isInQuestion = true;
-            }
 
             // special handling of 'case' statements
             if (ch == ':') {
@@ -1218,10 +1193,10 @@ public class ASBeautifier implements ASResource {
                     ch = ' ';
                     continue;
                 }
-                else if (isCStyle && isInClass) {
+                else if (isCStyle && isInClass && prevNonSpaceCh != ')') {
                     --tabCount;
-                    // found a 'private:' or 'public:' inside a class
-                    // definition, so do nothing special
+                    // found a 'private:' or 'public:' inside a class definition,
+                    // so do nothing special
                 }
                 else if (isCStyle && isInClassHeader) {
                     // found a 'class A : public B' definition
@@ -1232,43 +1207,32 @@ public class ASBeautifier implements ASResource {
                 }
                 else if (isCStyle && prevNonSpaceCh == ')') {
                     isInClassHeader = true;
-                    if (i==0) {
+                    if (i==0)
                         tabCount += 2;
-                    }
                 }
                 else {
-                    currentNonSpaceCh = ';';
-                    // so that brackets after the ':' will appear as block-openers
+                    currentNonSpaceCh = ';'; // so that brackets after the ':' will appear as block-openers
                     if (isInCase) {
                         isInCase = false;
                         ch = ';'; // from here on, treat char as ';'
                     } else {
                         // is in a label (e.g. 'label1:')
-                        if (labelIndent) {
+                        if (labelIndent)
                             --tabCount; // unindent label by one indent
-                        } else {
+                        else
                             tabCount = 0; // completely flush indent to left
-                        }
                     }
                 }
             }
 
-            // handle ends of statements
-            if ((ch == ';'  || (parenDepth > 0 && ch == ',')) &&
-                !inStatementIndentStackSizeStack.empty())
-            {
-                while (inStatementIndentStackSizeStack.back()
-                       + (parenDepth > 0 ? 1 : 0)
-                       < inStatementIndentStack.size())
-                {
+            if ((ch == ';'  || (parenDepth > 0 && ch == ',')) && !inStatementIndentStackSizeStack.empty())
+                while (inStatementIndentStackSizeStack.back() + (parenDepth > 0 ? 1 : 0) < inStatementIndentStack.size())
                     inStatementIndentStack.pop_back();
-                }
-            }
 
+            // handle ends of statements
             if ((ch == ';' && parenDepth == 0) || ch == '}') {
                 if (ch == '}') {
-                    // first check if this '}' closes a previous block,
-                    // or a static array...
+                    // first check if this '}' closes a previous block, or a static array...
                     if (!bracketBlockStateStack.empty()) {
                         boolean bracketBlockState = bracketBlockStateStack.back();
                         bracketBlockStateStack.pop_back();
@@ -1281,37 +1245,39 @@ public class ASBeautifier implements ASResource {
                                     inStatementIndentStack.pop_back();
                                 }
                                 parenDepth--;
-                                if (i == 0) {
+                                if (i == 0)
                                     shouldIndentBrackettedLine = false;
-                                }
+
                                 if (!parenIndentStack.empty()) {
                                     int poppedIndent = parenIndentStack.back();
                                     parenIndentStack.pop_back();
-                                    if (i == 0) {
+                                    if (i == 0)
                                         spaceTabCount = poppedIndent;
-                                    }
                                 }
                             }
                             continue;
                         }
                     }
+
                     // this bracket is block closer...
+
                     ++lineClosingBlocksNum;
-                    if(!inStatementIndentStackSizeStack.empty()) {
+
+                    if(!inStatementIndentStackSizeStack.empty())
                         inStatementIndentStackSizeStack.pop_back();
-                    }
+
                     if (!blockParenDepthStack.empty()) {
                         parenDepth = blockParenDepthStack.back();
                         blockParenDepthStack.pop_back();
                         isInStatement = blockStatementStack.back();
                         blockStatementStack.pop_back();
-                        if (isInStatement) {
+
+                        if (isInStatement)
                             blockTabCount--;
-                        }
                     }
 
                     closingBracketReached = true;
-                    int headerPlace = headerStack.indexOf(AS_OPEN_BRACKET);
+                    int headerPlace = headerStack.indexOf(AS_OPEN_BRACKET); // <---
                     if (headerPlace != -1) {
                         String popped = headerStack.back();
                         while (popped != AS_OPEN_BRACKET) {
@@ -1319,6 +1285,7 @@ public class ASBeautifier implements ASResource {
                             popped = headerStack.back();
                         }
                         headerStack.pop_back();
+
                         if (!tempStacks.empty()) {
                             StringStack temp = (StringStack) tempStacks.back();
                             tempStacks.pop_back();
@@ -1327,8 +1294,7 @@ public class ASBeautifier implements ASResource {
                     }
 
                     ch = ' ';
-                    // needed due to cases such as '}else{', so that headers
-                    // ('else' in this case) will be identified...
+                    // needed due to cases such as '}else{', so that headers ('else' in this case) will be identified...
                 } // if (ch == '}')
 
                 // Create a temporary snapshot of the current block's
@@ -1339,23 +1305,22 @@ public class ASBeautifier implements ASResource {
                 // for a companion-header (such as a previous 'if' for an
                 // 'else' header) within the tempStacks, and recreates the
                 // temporary snapshot by manipulating the tempStacks.
-                if (!tempStacks.back().empty()) {
+                if (!tempStacks.back().empty())
                     while (!tempStacks.back().empty()) {
                         StringStack s = (StringStack) tempStacks.back();
                         s.pop_back();
                     }
-                }
                 while (!headerStack.empty() && headerStack.back() != AS_OPEN_BRACKET) {
                     StringStack s = (StringStack) tempStacks.back();
                     s.push_back(headerStack.back());
                     headerStack.pop_back();
                 }
 
-                if (parenDepth == 0 && ch == ';') {
+                if (parenDepth == 0 && ch == ';')
                     isInStatement=false;
-                }
 
                 isInClassHeader = false;
+
                 continue;
             }
 
@@ -1368,19 +1333,19 @@ public class ASBeautifier implements ASResource {
                     isInClassHeader = true;
                     outBuffer.append(newHeader.substring(1));
                     i += newHeader.length() - 1;
-                    //if (isCStyle) {
+                    //if (isCStyle)
                     headerStack.push_back(newHeader);
-                    //}
                 }
             }
 
             // Handle operators
-            //
+
             // PRECHECK if a '==' or '--' or '++' operator was reached.
             // If not, then register an indent IF an assignment operator was
             // reached. The precheck is important, so that statements such
             // as 'i--==2' are not recognized to have assignment operators
             // (here, '-=') in them . . .
+
             String foundAssignmentOp = null;
             String foundNonAssignmentOp = null;
             immediatelyPreviousAssignmentOp = null;
@@ -1393,13 +1358,11 @@ public class ASBeautifier implements ASResource {
             // that both an assignment-op and a non-assignment-op where found,
             // e.g. '>>' and '>>='. If this is the case, treat the LONGER one as the
             // found operator.
-            if (foundAssignmentOp != null && foundNonAssignmentOp != null) {
-                if (foundAssignmentOp.length() < foundNonAssignmentOp.length()) {
+            if (foundAssignmentOp != null && foundNonAssignmentOp != null)
+                if (foundAssignmentOp.length() < foundNonAssignmentOp.length())
                     foundAssignmentOp = null;
-                } else {
+                else
                     foundNonAssignmentOp = null;
-                }
-            }
 
             if (foundNonAssignmentOp != null) {
                 if (foundNonAssignmentOp.length() > 1) {
@@ -1453,12 +1416,12 @@ public class ASBeautifier implements ASResource {
             }
             */
 
-            if (isInOperator) {
+            if (isInOperator)
                 isInOperator = false;
-            }
         } // for
 
         // handle special cases of unindentation:
+
         // if '{' doesn't follow an immediately previous '{' in the
         // headerStack (but rather another header such as "for" or "if"),
         // then unindent it by one indentation relative to its block.
@@ -1467,55 +1430,39 @@ public class ASBeautifier implements ASResource {
         //     lineClosingBlocksNum + " " + previousLastLineHeader);
 
         // indent #define lines with one less tab:
-        //if (isInDefine) {
+        //if (isInDefine)
         //    tabCount -= defineTabCount - 1;
-        //}
 
-        if (!blockIndent && outBuffer.length() > 0 &&
-            outBuffer.charAt(0) == '{' &&
-            !(lineOpeningBlocksNum > 0 &&
-              lineOpeningBlocksNum == lineClosingBlocksNum) &&
-            !(headerStack.size() > 1 &&
-              headerStack.at(headerStack.size()-2) == AS_OPEN_BRACKET) &&
-            shouldIndentBrackettedLine)
-        {
+        if (!blockIndent && outBuffer.length() > 0
+                && outBuffer.charAt(0) == '{'
+                && !(lineOpeningBlocksNum > 0 && lineOpeningBlocksNum == lineClosingBlocksNum)
+                && !(headerStack.size() > 1 && headerStack.at(headerStack.size() - 2) == AS_OPEN_BRACKET)
+                && shouldIndentBrackettedLine)
             --tabCount;
-        }
-        else if (outBuffer.length() > 0 &&
-                 outBuffer.charAt(0) == '}' &&
-                 shouldIndentBrackettedLine)
-        {
+        else if (outBuffer.length() > 0 && outBuffer.charAt(0) == '}' && shouldIndentBrackettedLine)
             --tabCount;
-        }
-        else if (outBuffer.length() > 0 &&
-                 lineOpeningBlocksNum > 0 &&
-                 lineOpeningBlocksNum == lineClosingBlocksNum &&
-                 previousLastLineHeader != null &&
-                 previousLastLineHeader != AS_OPEN_BRACKET)
-        {
-            // correctly indent one-line-blocks...
+        // correctly indent one-line-blocks...
+        else if (outBuffer.length() > 0
+                 && lineOpeningBlocksNum > 0
+                 && lineOpeningBlocksNum == lineClosingBlocksNum
+                 && previousLastLineHeader != null
+                 && previousLastLineHeader != AS_OPEN_BRACKET)
             tabCount -= 1; //lineOpeningBlocksNum - (blockIndent ? 1 : 0);
-        }
 
-        if (tabCount < 0) {
+        if (tabCount < 0)
             tabCount = 0;
-        }
 
-        // take care of extra bracket indentatation option...
-        if (bracketIndent &&
-            outBuffer.length() > 0 &&
-            shouldIndentBrackettedLine &&
-            (outBuffer.charAt(0) == '{' || outBuffer.charAt(0) == '}'))
-        {
-            tabCount++;
-        }
+        // take care of extra bracket indentation option...
+        if (bracketIndent && outBuffer.length() > 0 && shouldIndentBrackettedLine)
+            if (outBuffer.charAt(0) == '{' || outBuffer.charAt(0) == '}')
+                tabCount++;
 
         if (isInDefine) {
             if (outBuffer.charAt(0) == '#') {
                 String preproc = outBuffer.toString().substring(1).trim();
                 if (preproc.equals("define")) {
-                    if (!inStatementIndentStack.empty() &&
-                        inStatementIndentStack.back() > 0)
+                    if (!inStatementIndentStack.empty()
+                            && inStatementIndentStack.back() > 0)
                     {
                         defineTabCount = tabCount;
                     } else {
@@ -1527,23 +1474,21 @@ public class ASBeautifier implements ASResource {
             tabCount -= defineTabCount;
         }
 
-        if (tabCount < 0) {
+        if (tabCount < 0)
             tabCount = 0;
-        }
 
-        // finally, insert indentations into begining of line
+        // finally, insert indentations into beginning of line
+
         prevFinalLineSpaceTabCount = spaceTabCount;
         prevFinalLineTabCount = tabCount;
 
-        // inverse space-tab insertion fix by Brian Rampel - Thanks Brian!!
-        //while ((spaceTabCount--) > 0) {
-        //    outBuffer.insert(0, " ");
-        //}
-        //for (i = 0; i < tabCount; i++) {
-        //    outBuffer.insert(0, indentString);
-        //}
+        if (shouldForceTabIndentation) {
+                tabCount += spaceTabCount / indentLength;
+                spaceTabCount = spaceTabCount % indentLength;
+        }
 
         String ret = preLineWS(spaceTabCount, tabCount) + outBuffer.toString();
+
         if (lastLineHeader != null) {
             previousLastLineHeader = lastLineHeader;
         }
@@ -1576,18 +1521,17 @@ public class ASBeautifier implements ASResource {
                 continue;
             }
             else if (ch == '/') {
-                if (line.regionMatches(i + charDistance, AS_OPEN_LINE_COMMENT, 0, 2)) {
+                if (line.regionMatches(i + charDistance, AS_OPEN_LINE_COMMENT, 0, 2))
                     return remainingCharNum;
-                }
                 else if (line.regionMatches(i + charDistance, AS_OPEN_COMMENT, 0, 2)) {
                     charDistance++;
                     inComment = true;
                 }
             }
-            else {
+            else
                 return charDistance;
-            }
         } // for
+
         return charDistance;
     }
 
@@ -1639,27 +1583,40 @@ public class ASBeautifier implements ASResource {
                                 Vector possibleHeaders,
                                 boolean checkBoundry)
     {
-        for (int p = 0; p < possibleHeaders.size(); p++) {
-            String header = (String) possibleHeaders.elementAt(p);
+        int maxHeaders = possibleHeaders.size();
+        String header = null;
+        int p;
+
+        for (p = 0; p < maxHeaders; p++) {
+            header = (String) possibleHeaders.elementAt(p);
+
             if (line.regionMatches(i, header, 0, header.length())) {
-                // check that this is a header and not the begining of a
-                // longer word...
+                // check that this is a header and not a part of a longer word
+                // (e.g. not at its begining, not at its middle...)
                 int lineLength = line.length();
                 int headerEnd = i + header.length();
-                char endCh = '\0';
+                char startCh = header.charAt(0); // first char of header
+                char endCh = '\0'; // char just after header
+                char prevCh = '\0'; // char just before header
 
-                if (headerEnd < lineLength) {
+                if (headerEnd < lineLength)
                     endCh = line.charAt(headerEnd);
-                }
 
-                if (headerEnd >= lineLength ||
-                    !checkBoundry ||
-                    !isLegalNameChar(header.charAt(0)) ||
-                    !isLegalNameChar(endCh)) {
+                if (i > 0)
+                    prevCh = line.charAt(i - 1);
+
+                if (!checkBoundry)
                     return header;
-                } else {
+                else if (prevCh != 0
+                         && isLegalNameChar(startCh)
+                         && isLegalNameChar(prevCh))
                     return null;
-                }
+                else if (headerEnd >= lineLength
+                         || !isLegalNameChar(startCh)
+                         || !isLegalNameChar(endCh))
+                    return header;
+                else
+                    return null;
             }
         }
         return null;
@@ -1676,40 +1633,37 @@ public class ASBeautifier implements ASResource {
                                            boolean updateParenStack) {
         int inStatementIndent;
         int remainingCharNum = line.length() - i;
-        int nextNonWSChar = getNextProgramCharDistance(line, i);
+        int nextNonWSChar = 1;
+
+        nextNonWSChar = getNextProgramCharDistance(line, i);
 
         // if indent is around the last char in the line, indent instead
         // 2 spaces from the previous indent
         if (nextNonWSChar == remainingCharNum) {
             int previousIndent = spaceTabCount;
-            if (!inStatementIndentStack.empty()) {
+            if (!inStatementIndentStack.empty())
                 previousIndent = inStatementIndentStack.back();
-            }
+
             inStatementIndentStack.push_back(/*2*/ indentLength + previousIndent);
-            if (updateParenStack) {
+            if (updateParenStack)
                 parenIndentStack.push_back(previousIndent);
-            }
             return;
         }
 
-        if (updateParenStack) {
+        if (updateParenStack)
             parenIndentStack.push_back(i + spaceTabCount);
-        }
 
         inStatementIndent = i + nextNonWSChar + spaceTabCount;
 
-        if (i + nextNonWSChar < minIndent) {
+        if (i + nextNonWSChar < minIndent)
             inStatementIndent = minIndent + spaceTabCount;
-        }
 
-        if (i + nextNonWSChar > maxInStatementIndent) {
+        if (i + nextNonWSChar > maxInStatementIndent)
             inStatementIndent =  indentLength * 2 + spaceTabCount;
-        }
 
         if (!inStatementIndentStack.empty()
-            && inStatementIndent < inStatementIndentStack.back()) {
+                && inStatementIndent < inStatementIndentStack.back())
             inStatementIndent = inStatementIndentStack.back();
-        }
 
         inStatementIndentStack.push_back(inStatementIndent);
     }
@@ -1717,12 +1671,13 @@ public class ASBeautifier implements ASResource {
 
     private String preLineWS(int spaceTabCount, int tabCount) {
         StringBuffer ws = new StringBuffer();
-        for (int i=0; i<tabCount; i++) {
+
+        for (int i = 0; i < tabCount; i++)
             ws.append(indentString);
-        }
-        while ((spaceTabCount--) > 0) {
-            ws.append(" ");
-        }
+
+        while ((spaceTabCount--) > 0)
+            ws.append(' ');
+
         return ws.toString();
     }
 
@@ -1826,21 +1781,21 @@ public class ASBeautifier implements ASResource {
 
     // MEMBER FIELDS
 
-    private ASSourceIterator sourceIterator = null;
+    private ASSourceIterator sourceIterator;
 
-    private ASBeautifierStack waitingBeautifierStack = null;
-    private ASBeautifierStack activeBeautifierStack = null;
-    private IntegerStack waitingBeautifierStackLengthStack = null;
-    private IntegerStack activeBeautifierStackLengthStack = null;
-    private StringStack headerStack = null;
-    private StackStack tempStacks = null;
-    private IntegerStack blockParenDepthStack = null;
-    private BooleanStack blockStatementStack = null;
-    private BooleanStack parenStatementStack = null;
-    private BooleanStack bracketBlockStateStack = null;
-    private IntegerStack inStatementIndentStack = null;
-    private IntegerStack inStatementIndentStackSizeStack = null;
-    private IntegerStack parenIndentStack = null;
+    private ASBeautifierStack waitingBeautifierStack;
+    private ASBeautifierStack activeBeautifierStack;
+    private IntegerStack waitingBeautifierStackLengthStack;
+    private IntegerStack activeBeautifierStackLengthStack;
+    private StringStack headerStack;
+    private StackStack tempStacks;
+    private IntegerStack blockParenDepthStack;
+    private BooleanStack blockStatementStack;
+    private BooleanStack parenStatementStack;
+    private BooleanStack bracketBlockStateStack;
+    private IntegerStack inStatementIndentStack;
+    private IntegerStack inStatementIndentStackSizeStack;
+    private IntegerStack parenIndentStack;
 
     private String indentString = " ";
     private String currentHeader;
@@ -1870,7 +1825,8 @@ public class ASBeautifier implements ASResource {
     private boolean labelIndent;
     private boolean preprocessorIndent;
     private boolean isInConditional;
-    private boolean isMinimalConditinalIndentSet = false;
+    private boolean isMinimalConditinalIndentSet;
+    private boolean shouldForceTabIndentation;
 
     private int indentLength = 4;
     private int minConditionalIndent = 8;

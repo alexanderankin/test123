@@ -1,190 +1,183 @@
-<!doctype html public "-//w3c//dtd html 4.0 transitional//en">
+<!DOCTYPE HTML PUBLIC "-//w3c//dtd html 4.0 transitional//en">
 
-<html>
+<HTML>
 
-<head>
-   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
-   <meta name="Author" content="Dirk Moebius">
-   <title>JavaStyle Plugin</title>
-</head>
+<HEAD>
+   <META http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+   <META name="Author" content="Dirk Moebius">
+   <TITLE>AStyle Beautifier Plugin</TITLE>
+</HEAD>
 
 
-<body>
+<BODY>
 
-<table BORDER=0 CELLSPACING=0 CELLPADDING=5 WIDTH="100%">
+<TABLE border="0" cellspacing="0" cellpadding="5" width="100%">
 <tr>
-  <td VALIGN=CENTER BGCOLOR="#CCCCFF">
-    <b><font size=+3>JavaStyle Plugin</font></b>
+  <td valign="CENTER" bgcolor="#CCCCFF">
+    <b><font size="+3">AStyle Beautifier Plugin</font></b>
   </td>
-  <td VALIGN=TOP BGCOLOR="#CCCCFF">
-    <div align=RIGHT>
-      <font size=-1>By Dirk M&ouml;bius
-      <a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a><br>
-      And Chris Seguin <a href="mailto:seguin@acm.org">seguin@acm.org</a>
+  <td valign="TOP" bgcolor="#CCCCFF">
+    <div align="RIGHT">
+      <font size=-1>
+        By Dirk M&ouml;bius
+        (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)
       </font>
     </div>
   </td>
 </tr>
-</table>
-
-
-<hr ALIGN=CENTER WIDTH="100%" SIZE="1">
-
-
-<a href="#intro">Introduction</a><br>
-<a href="#general">Usage</a><br>
-<a href="#bugs">Bugs</a><br>
-<a href="CHANGELOG.txt">Change Log</a><br>
-<a href="LICENSE.txt">License Information</a><br>
-
-
-<hr ALIGN=CENTER WIDTH="100%" SIZE="1">
-
-
-<h2>Introduction<a NAME="intro"></a></h2>
-
-<p>
-JavaStyle reformats the current buffer, if it contains Java code.
-</p>
-
-<p>
-This is done by using the <b>PrettyPrinter</b> from the
-<b>JRefactory library</b> by Chris Seguin
-&lt;<a href="mailto:seguin@acm.org">seguin@acm.org</a>&gt;, available
-under <a href="http://users.snip.net/~aseguin/chrissoft.html">
-http://users.snip.net/~aseguin/chrissoft.html</a>.
-</p>
-
-
-
-<h2>Requirements</h2>
-
-<p>
-You need at least <b>JDK 1.1.6</b> and <b>jEdit 3.0pre5</b>.<br>
-<i>The JRefactory library is already contained in JavaStyle. There
-is no need to download it separately!</i>
-</p>
-
-
-<h2>Usage<a NAME="general"></a></h2>
-
-<p>
-The code will be indented according to the indentation settings of the
-Java mode, ie. the options <b>Indent width</b> and <b>Soft tabs (emulated
-with spaces)</b>. You can configure these options for the Java mode under
-<b>Utilities->Global Options->Mode-specific</b>.</li>
-</p>
-
-<p>
-You can change the style of the reformatted Java code with a myriad of
-options in the JavaStyle plugin options dialogs, available at
-<b>Utilities->Global Options->Plugins->JavaStyle</b>. The dialogs
-have rich and self-explaining online help. Have a look!
-</p>
-
-
-<h2>More options</h2>
-
-<p>
-There are some more options available, notably options for <b>code sorting</b>,
-but currently there is no GUI Config dialog for them available.
-</p>
-
-<p>
-However, you can look at the file
-<blockquote><tt>
-<b>$HOME</b>/.jedit/javastyle/.Refactory/pretty.settings
-</tt></blockquote>
-for a full set of configurable options. (<tt>$HOME</tt> denotes your home
-directory. On Windows, this will probably reside under <tt>C:\WINDOWS</tt>,
-<tt>C:\WINDOWS\JAVA</tt> or <tt>C:\WINNT\profiles</tt>. On Unix, you
-already know where your home is... ;)
-</p>
-
-<p>
-Note, that you can edit this file with jEdit. Saved changes will be used
-immediately.
-</p>
-
-<p>
-There are other files in the <tt>.Refactory</tt> directory -- please
-leave them untouched!
-</p>
-
-
-<h2>Bugs<a NAME="bugs"></a></h2>
-
-<p>
-<b>Attention!</b> These software contains bugs. Use it at your own risk.
-I have no responsibility for whatever happens to your code, if you use
-this plugin on it. You may even loose all of your code!
-</p>
-
-<p>
---- That said, the number of <i>known</i> bugs in JavaStyle and the
-underlying JRefactory library is surprisingly small. They are listed
-below.
-</p>
-
-<p>
-If you have found a bug in JavaStyle, please mail it to me (Dirk Moebius
-&lt;<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>&gt;).
-If you are technically skilled in issues of programming,
-and you get the vague impression that the bug is not in the plugin
-layer, but in the underlying PrettyPrinter library, please inform
-Chris Seguin &lt;<a href="mailto:seguin@acm.org">seguin@acm.org</a>&gt;,
-the author of the PrettyPrinter.
-</p>
-
-<h3>Known bugs:</h3>
-
-<b>Array initializers are indented too much.</b>
-
-
-<blockquote>
-<blockquote><tt>
-<b>public</b> String[] names = <br>
-&nbsp;&nbsp;&nbsp; <i>"hello"</i>,<br>
-&nbsp;&nbsp;&nbsp; <i>"world"</i><br>
-};
-</tt></blockquote>
-These strings get indented twice as much as you would expect. Alas,
-there is no workaround for this problem yet.
-</blockquote>
-
-<b>Starred comments at end of line get wrongly indented.</b>
-
-<blockquote>
-If you put a starred comment <tt>/* */</tt> at the end of a line, it will
-get wrongly formatted. E.g., if you have this:
-<blockquote><tt>
-String s = <i>"hello"</i>; &nbsp;&nbsp;&nbsp;<i>/* this is a starred comment */</i><br>
-System.out.println(s); <i>// next line</i>
-</tt></blockquote>
-it will get formatted like this:
-<blockquote><tt>
-String s = <i>"hello"</i>;<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<i>/* this is a starred comment */</i><br>
-System.out.println(s); <i>// next line</i>
-</tt></blockquote>
-As a workaround, only use double slash comments (ie. <i>single line
-comments</i>) at the end of lines after code, like in the example above.
-</blockquote>
+</TABLE>
 
 
 <br>
 
 
-<hr WIDTH="100%" SIZE="1">
+<H2>Introduction</H2>
+
+<p>
+The AStyle Beautifier Plugin reformats and beautifies Java and C/C++ code.
+</p>
+
+<p>
+This is done by using <b>Artistic Style</b> (also known as <b>astyle</b>)
+by Tal Davidson (<a href="mailto:davidsont@bigfoot.com">davidsont@bigfoot.com</a>).<br>
+See <a href="http://astyle.sf.net">http://astyle.sf.net</a> for more
+information.<br>
+The version currently used is <b>Artistic Style 1.14.1</b>.
+</p>
 
 
-<font size=-2>
-All contents copyright (c) 2000 Dirk M&ouml;bius
-&lt;<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>&gt;
+<br>
+
+
+<H2>Requirements</H2>
+
+<p>
+You need at least <b>JDK 1.1.6</b> and <b>jEdit 3.1final</b>.
+</p>
+
+<p>
+<i>Artistic Style is already contained in the AStyle Beautifier Plugin.
+There is no need to download it separately!</i>
+</p>
+
+
+<br>
+
+
+<H2>Usage</H2>
+
+<p>
+After installation, there is a new menu entry
+<b>Plugins&gt;Beautify&nbsp;Buffer</b>. If you invoke this action, the
+current buffer will by reformatted. The internal action name of this action
+is <code>beautify</code>. (This gets used in macros.)
+</p>
+
+<p>
+If the current buffer is in <b>Java</b> mode, it is assumed that the buffer
+contains Java source code, and uses Java formatting routines.<br>
+If the current buffer is in <b>C++</b> or <b>C</b> mode, it is assumed that
+the buffer contains C/C++ source code, and uses C/C++ formatting routines.
+</p>
+
+<p>
+The code will be indented according to the indentation settings of the
+current mode, ie. the options <b>Indent width</b> and <b>Soft tabs (emulated
+with spaces)</b>. You can configure these options under
+<b>Utilities&gt;Global&nbsp;Options&gt;Mode-Specific</b>. Note that local
+Buffer Options override Mode-Specific default options.
+</p>
+
+<p>
+You can change the style of the reformatted code with a myriad of options in
+the AStyle Plugin options dialog, available at
+<b>Utilities&gt;Global&nbsp;Options&gt;Plugin&nbsp;Options&gt;AStyle&nbsp;Beautifier</b>.
+The dialogs have rich and self-explaining online help. Have a look!
+</p>
+
+
+<br>
+
+
+<H2>Bugs</H2>
+
+<p>
+<b>Attention! These software contains bugs! Use it at your own risk.
+I have no responsibility for whatever happens to your code, if you use
+this plugin on it. You may even loose all of your code! You have been
+warned.</b>
+</p>
+
+<p>
+--- That said, the AStyle Beautfier Plugin runs pretty well. This is because
+of the good quality of the underlying code beautifier <b>Artistic Style</b>,
+developed by Tal Davidson. Artistic Style is out for three years now and
+has undergone lots of release cycles, so it is pretty stabilized right now.
+</p>
+
+<p>
+It is, however, written in C++, so I had to port it to Java to make it run
+inside jEdit. (<i>Back</i>port actually, because Artistic Style was
+originally written in Java three years ago.) This porting process may have
+introduced some new errors.
+</p>
+
+<p>
+If you think you have found a bug in AStyle Plugin, please try to find out
+whether this is a bug in the Artistic Style code beautifier, or in the
+AStyle Plugin itself. You can check this by comparing the formatted results
+of your file with the output of the native version of Artistic Style
+(available at <a href="http://astyle.sf.net">http://astyle.sf.net</a>).
+</p>
+
+<ul>
+  <li>
+    <p>
+      If you are sure the bug lies in the Artistic Style code beautifier,
+      please inform
+      <b>Tal&nbsp;Davidson</b>&nbsp;(<a href="mailto:davidsont@bigfoot.com">davidsont@bigfoot.com</a>).
+    </p>
+  </li>
+  <li>
+    <p>
+      If you are sure the bug lies in the AStyle Plugin itself, please
+      inform <b>me</b>, that is,
+      <b>Dirk&nbsp;M&ouml;bius</b>&nbsp;(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>).
+    </p>
+  </li>
+  <li>
+    <p>
+      If you are too unskilled, or too lazy, or otherwise unable to tell the
+      difference ;-), please inform <b>me</b>, that is,
+      <b>Dirk&nbsp;M&ouml;bius</b>&nbsp;(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>).
+    </p>
+  </li>
+</ul>
+
+
+<br>
+
+
+<H2>License</H2>
+
+<p>
+This plugin is licensed under the <b>GNU General Public License (GPL)</b>,
+either version 2 or any later version. A copy of the license may be retrieved
+from <a href="http://www.fsf.org/copyleft/gpl.html">
+http://www.fsf.org/copyleft/gpl.html</a>.
+<p>
+
+
+<br>
+
+
+<HR width="100%" size="1">
+<font size="-2">
+All contents copyright (c) 2001 Dirk M&ouml;bius
+(<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>);
 </font>
 
 
-</body>
-</html>
+</BODY>
+</HTML>
 

@@ -43,7 +43,8 @@ astyleplugin.confirm.mode.message=\
     If the current buffer does not contain C, C++ or Java\n\
     source code, the results may be unpredictable.\n\
     \n\
-    Are you sure you want to beautify the current buffer?
+    Are you sure you want to beautify the current buffer,\n\
+    assuming is is Java code?
 
 astyleplugin.error.empty.title=AStyle Beautifier Error
 astyleplugin.error.empty.message=\
@@ -60,7 +61,7 @@ astyleplugin.error.other.message=\
     Please report this error to the maintainer of the AStyle Beautifier plugin.\n\
     Thank you.
 
-astyleplugin.error.isNotEditable.title=AStyle Beautifier Error
-astyleplugin.error.isNotEditable.message=\
-    Cannot format the current buffer, because it is not editable.
+astyleplugin.error.isReadOnly.title=AStyle Beautifier Error
+astyleplugin.error.isReadOnly.message=\
+    Cannot format the current buffer, because it is read-only.
 

@@ -36,8 +36,9 @@ public class FormatterBeanInfo extends astyle.ASFormatterBeanInfo {
 			"formatOnSave",
 			"Format On Save",
 			"Whether code should be automatically be beautified when the " +
-			"buffer is saved. This applies to buffers in 'c', 'cplusplus' " +
-			" or 'java' mode only.",
+			"current buffer is saved.\n" +
+			"This applies to buffers in 'c', 'c++' or 'java' mode only. " +
+			"Buffers with other modes remain unaffected.",
 			null,
 			Formatter.class
 		);
