@@ -89,7 +89,7 @@
 	</target>
 
 
-	<target name="dist" depends="compile,docs">
+	<target name="dist" depends="compile">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}">
 			<fileset dir="${build.dir}"/>

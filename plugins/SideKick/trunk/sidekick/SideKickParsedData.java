@@ -62,6 +62,8 @@ public class SideKickParsedData
 	 */
 	public static void setParsedData(View view, SideKickParsedData data)
 	{
+		Log.log(Log.DEBUG,SideKickParsedData.class,
+			"Setting parsed data of " + view + " to " + data);
 		view.getRootPane().putClientProperty(
 			SideKickPlugin.PARSED_DATA_PROPERTY,
 			data);

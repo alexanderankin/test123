@@ -71,7 +71,7 @@ public class SideKickOptionPane extends AbstractOptionPane
 		}
 
 		addComponent(new JLabel(jEdit.getProperty("options.sidekick.auto-parse-delay")));
-		addComponent(autoParseDelay = new JSlider(500,3000,autoParseDelayValue),
+		addComponent(autoParseDelay = new JSlider(200,3000,autoParseDelayValue),
 			GridBagConstraints.BOTH);
 		Hashtable labelTable = new Hashtable();
 		for(int i = 500; i <= 3000; i += 500)
