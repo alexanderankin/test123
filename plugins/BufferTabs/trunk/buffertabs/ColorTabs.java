@@ -63,7 +63,7 @@ public class ColorTabs
    private boolean colorTitles = false;
    private boolean colorVariation = true;
    private Vector colours;
-   private Hashtable coloursAssigned = new Hashtable();
+   private Hashtable colorsAssigned = new Hashtable();
    private Object lock = new Object();
    private boolean muteColours = true;
    private Random rnd = null;
@@ -205,9 +205,9 @@ public class ColorTabs
             loadColours();
          }
 
-         if (coloursAssigned.containsKey(name))
+         if (colorsAssigned.containsKey(name))
          {
-            return (Color) coloursAssigned.get(name);
+            return (Color) colorsAssigned.get(name);
          }
 
          for (int i = 0; i < colours.size(); i++)
@@ -232,7 +232,7 @@ public class ColorTabs
                   newColour = entry.colour;
                }
 
-               coloursAssigned.put(name, newColour);
+               colorsAssigned.put(name, newColour);
                return newColour;
             }
          }
@@ -392,7 +392,7 @@ public class ColorTabs
          }
 
          loadColours();
-         coloursAssigned.clear();
+         colorsAssigned.clear();
          rnd = new java.util.Random(20020212);                   //Set seed so colour variation are 'mostly' consistent during a session
       }
 
