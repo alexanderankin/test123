@@ -42,7 +42,16 @@ import org.gjt.sp.util.Log;
  */
 public class PackageBrowser {
 
+    /** The package separator character, usually a dot. */
     public static final char PACKAGE_SEPARATOR_CHAR = '.';
+
+    /**
+     * The package separator char, represented as a string for convenience.
+     * This string contains a single character, namely
+     * <CODE>PACKAGE_SEPARATOR_CHAR</CODE>.
+     */
+    public static final String PACKAGE_SEPARATOR = ".";
+
 
     private static boolean parsed = false;
     private static Hashtable packages = new Hashtable();
@@ -57,12 +66,9 @@ public class PackageBrowser {
 
         JavaPackage[] pkgs = new JavaPackage[packages.size()];
         Enumeration enum = packages.elements();
-        int element = 0;
 
-        while(enum.hasMoreElements()) {
-            pkgs[element] = (JavaPackage) enum.nextElement();
-            ++element;
-        }
+        for (int i = 0; enum.hasMoreElements(); ++i)
+            pkgs[i] = (JavaPackage) enum.nextElement();
 
         return pkgs;
     }
@@ -75,26 +81,21 @@ public class PackageBrowser {
             String source = packages[i].getSource();
 
             // require that this source has a classpath entry.
-            if (!classpath.containsKey(source)) {
+            if (!classpath.containsKey(source))
                 classpath.put(source, new ClasspathEntry(source));
-            }
 
             ClasspathEntry entry = (ClasspathEntry) classpath.get(source);
 
-            if (!entry.containsJavaPackage(packages[i])) {
+            if (!entry.containsJavaPackage(packages[i]))
                 entry.addJavaPackage(packages[i]);
-            }
         }
 
-        // convert the hashtable into an array
+        // convert the hashtable to an array
         ClasspathEntry[] classpathEntries = new ClasspathEntry[classpath.size()];
         Enumeration enum = classpath.elements();
-        int element = 0;
 
-        while(enum.hasMoreElements()) {
-            classpathEntries[element] = (ClasspathEntry) enum.nextElement();
-            ++element;
-        }
+        for(int i = 0; enum.hasMoreElements(); ++i)
+            classpathEntries[i] = (ClasspathEntry) enum.nextElement();
 
         return classpathEntries;
     }
@@ -108,9 +109,8 @@ public class PackageBrowser {
             String[] classpath = JavaUtils.getClasspath();
             for (int i = 0; i < classpath.length; ++i) {
                 File entry = new File(classpath[i]);
-                if (entry.isFile()) {
-                    parseJAR(entry);
-                }
+                if (entry.isFile())
+                    addArchive(entry);
             }
             parsed = true;
         }
@@ -118,36 +118,34 @@ public class PackageBrowser {
 
 
     /**
-     * Parse out a JAR file and added it to the known packages
+     * Parse out a JAR file and add it to the known packages.
+     * The same JAR cannot be added twice.
      */
-    private static void parseJAR(File jar) {
+    public static void addArchive(File archive) {
         try {
-            ZipFile archive = new ZipFile(jar.getCanonicalPath());
-            Enumeration elements = archive.entries();
-            char fileSep = '/';
+            Enumeration elements = new ZipFile(archive.getCanonicalPath()).entries();
+            char fileSep = '/';  // filename paths in ZipEntry.getName() are always separated by '/'
 
             while (elements.hasMoreElements()) {
                 ZipEntry entry = (ZipEntry) elements.nextElement();
                 String ext = MiscUtilities.getFileExtension(entry.getName());
 
-                if (ext != null && ext.equals(".class")) {
+                if (ext != null && ext.toLowerCase().equals(".class")) {
                     // if the entry is an inner class, ignore it
-                    if (entry.getName().indexOf("$") != -1) {
+                    if (entry.getName().indexOf("$") != -1)
                         continue;
-                    }
 
                     String pkg = getPackage(entry.getName(), fileSep);
 
                     if (pkg != null) {
                         String className = getFullyQualifiedClassName(entry.getName(), fileSep);
-                        JavaPackage javaPackage = getJavaPackage(pkg, jar.getCanonicalPath());
-                        javaPackage.addClass(new JavaClass(className, jar.getCanonicalPath()));
+                        JavaPackage javaPackage = getJavaPackage(pkg, archive.getCanonicalPath());
+                        javaPackage.addClass(new JavaClass(className, archive.getCanonicalPath()));
                     }
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
-            return;
         }
     }
 
@@ -173,39 +171,32 @@ public class PackageBrowser {
      */
     private static String getPackage(String classname, char fileSep) {
         String ext = MiscUtilities.getFileExtension(classname);
-        if (ext != null && ext.equals(".class")) {
-            int start = 0;
+
+        if (ext != null && ext.toLowerCase().equals(".class")) {
             int end = classname.lastIndexOf(fileSep);
-
-            if (end == -1) {
+            if (end == -1)
                 return null;
-            }
 
-            String rawpackage = classname.substring(start, end);
-            return rawpackage.replace(fileSep, PACKAGE_SEPARATOR_CHAR);
-        } else {
+            classname = classname.substring(0, end);
+            return classname.replace(fileSep, PACKAGE_SEPARATOR_CHAR);
+        } else
             throw new IllegalArgumentException("this method only excepts .class files");
-        }
     }
 
 
     /**
-     * Given a file, return the full class path.
+     * Given a file name, return the full class path.
      */
-    private static String getFullyQualifiedClassName(String file, char fileSep) {
-        int start = 0;
-        int end = file.lastIndexOf(".class");
-
-        if (end != -1) {
-            file = file.substring(start, end);
-        }
-
-        return file.replace(fileSep, PACKAGE_SEPARATOR_CHAR);
+    private static String getFullyQualifiedClassName(String filename, char fileSep) {
+        int end = filename.toLowerCase().lastIndexOf(".class");
+        if (end != -1)
+            filename = filename.substring(0, end);
+        return filename.replace(fileSep, PACKAGE_SEPARATOR_CHAR);
     }
 
 
     /**
-     * dump all packages and classes
+     * dump all packages and classes to Log.DEBUG
      */
     public static void dump() {
         JavaPackage[] packages = getPackages();
@@ -214,6 +205,12 @@ public class PackageBrowser {
             packages[i].dump();
         }
     }
+
+
+    /**
+     * This class doesn't need to be instantiated; all methods are static.
+     */
+    private PackageBrowser() { }
 
 }
 

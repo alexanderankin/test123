@@ -54,6 +54,9 @@ class TreePopup extends JPopupMenu {
         Font fontPlain = new Font(font.getName(), Font.PLAIN, font.getSize());
         Font fontBold = new Font(font.getName(), Font.BOLD, font.getSize());
         ActionHandler ah = new ActionHandler();
+        String view = jEdit.getProperty("javainsight.tree.view", "view-packages");
+        boolean viewFlat = jEdit.getBooleanProperty("javainsight.tree.viewIsFlat", false);
+        ButtonGroup viewGroup = new ButtonGroup();
         JMenuItem mi;
 
         // menu item "Decompile with Jode"
@@ -66,9 +69,13 @@ class TreePopup extends JPopupMenu {
             addSeparator();
         }
 
-        String view = jEdit.getProperty("javainsight.tree.view", "view-packages");
-        boolean viewFlat = jEdit.getBooleanProperty("javainsight.tree.viewIsFlat", false);
-        ButtonGroup viewGroup = new ButtonGroup();
+        // menu item "Add Archive..."
+        mi = new JMenuItem(jEdit.getProperty("javainsight.tree.menu.add-archives.label"));
+        mi.setActionCommand("add-archives");
+        mi.addActionListener(ah);
+        mi.setFont(fontPlain);
+        add(mi);
+        addSeparator();
 
         // menu item "Classpath View"
         mi = new JRadioButtonMenuItem(jEdit.getProperty("javainsight.tree.menu.view-classpath.label"), view.equals("view-classpath"));
@@ -102,7 +109,10 @@ class TreePopup extends JPopupMenu {
         public void actionPerformed(ActionEvent evt) {
             String actionCommand = evt.getActionCommand();
             if (actionCommand.equals("decompile")) {
-                classpathMgr.decompile();
+                classpathMgr.decompileAction();
+            }
+            else if (actionCommand.equals("add-archives")) {
+                classpathMgr.addArchivesAction();
             }
             else if (actionCommand.equals("view-classpath")) {
                 classpathMgr.setView(actionCommand);

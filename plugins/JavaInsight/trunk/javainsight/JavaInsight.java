@@ -113,57 +113,23 @@ public class JavaInsight extends JPanel {
     }
 
 
+    /** Return the <code>View</code> associated with this panel. */
+    public View getView() {
+        return view;
+    }
+
+
+    /** Sets the text of the status line. */
     public void setStatus(String status) {
         this.status.setText(status);
         this.status.setToolTipText(status);
     }
 
 
-    /**
-     * Return the classpath needed by the Jode Decompiler.
-     * Jode expects a classpath where the entries are separated by
-     * <code>Decompiler.altPathSeparatorChar</code> (which is a comma,
-     * really).
-     */
-    private static String getJodeClassPath() {
-        String classArray[] = JavaUtils.getClasspath();
-        StringBuffer classpath = new StringBuffer();
-
-        for (int i = 0; i < classArray.length; ++i) {
-            if (i != 0)
-                classpath.append(Decompiler.altPathSeparatorChar);
-           classpath.append(classArray[i]);
-        }
-
-        if (classpath.length() == 0)
-            classpath.append('.');
-
-        return classpath.toString();
-    }
-
-
-    /**
-     * Return a new Jode decompiler instance initialized with the options
-     * from the JavaInsight option pane.
-     *
-     * @author Dirk Moebius
-     */
-    private static Decompiler getJodeDecompiler() {
-        boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
-        boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
-        boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
-        String importPkgLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
-        String importClassLimit = jEdit.getProperty("javainsight.jode.clslimit", "1");
-
-        Decompiler decompiler = new Decompiler();
-        decompiler.setClassPath(getJodeClassPath());
-        decompiler.setOption("style", jEdit.getProperty("javainsight.jode.style", "sun"));
-        decompiler.setOption("pretty", pretty ? "yes" : "no");
-        decompiler.setOption("onetime", onetime ? "yes" : "no");
-        decompiler.setOption("decrypt", decrypt ? "yes" : "no");
-        decompiler.setOption("import", importPkgLimit + "," + importClassLimit);
-
-        return decompiler;
+    /** Overwritten to save split pane divider position */
+    public void removeNotify() {
+        super.removeNotify();
+        jEdit.setProperty("javainsight.dividerLocation", Integer.toString(split.getDividerLocation()));
     }
 
 
@@ -202,19 +168,21 @@ public class JavaInsight extends JPanel {
                     sbuf.append(output.charAt(i));
             String result = sbuf.toString();
 
-            // Create new jEdit buffer
+            // Determine basename:
             int lastDot = className.lastIndexOf('.');
             String basename = (lastDot < 0 ? className : className.substring(lastDot + 1) + ".java");
+            // Close old buffer with the same name, if one exists:
             Buffer buf = jEdit.openFile(view, null, basename, false, true);
-            jEdit.closeBuffer(view, buf); // close old buffer with the same name, if one exists
+            jEdit.closeBuffer(view, buf);
+            // Create new jEdit buffer:
             buf = jEdit.openFile(view, null, basename, false, true);
 
-            // Try to set Java mode (if it exists)
+            // Try to set Java mode (if it exists):
             Mode javaMode = jEdit.getMode("java");
             if (javaMode != null)
                 buf.setMode(javaMode);
 
-            // Insert the normal output into the buffer
+            // Insert the normal output into the buffer:
             buf.beginCompoundEdit();
             buf.insertString(0, result.toString(), null);
             // If the string ends with a newline, the generated
@@ -222,10 +190,14 @@ public class JavaInsight extends JPanel {
             if (result.endsWith("\n") && buf.getLength() > 0)
                 buf.remove(buf.getLength() - 1, 1);
             buf.endCompoundEdit();
+
+            // Jump to top:
             view.getTextArea().setCaretPosition(0);
-            // Clear the dirty flag (if option is on)
+
+            // Clear the dirty flag (if option is on):
             if (jEdit.getBooleanProperty("javainsight.clearDirty", false))
                 buf.setDirty(false);
+
         } catch (Throwable t) {
             // Rethrow the exception
             throw t.fillInStackTrace();
@@ -315,19 +287,64 @@ public class JavaInsight extends JPanel {
         }
         catch(Throwable t) {
             t.printStackTrace();
+            setStatus("Error decompiling " + className);
+            log.setText(log.getText() + '\n' + t.toString());
             GUIUtilities.error(view, "javainsight.error.decompile", new Object[] {className, t});
-            setStatus("Decompiling " + className + ": Error!");
         }
         finally {
-            this.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+            setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
         }
     }
 
 
-    /** overwritten to save split pane divider position */
-    public void removeNotify() {
-        super.removeNotify();
-        jEdit.setProperty("javainsight.dividerLocation", Integer.toString(split.getDividerLocation()));
+    /**
+     * Return the classpath needed by the Jode Decompiler.
+     * Jode expects a classpath where the entries are separated by
+     * <code>Decompiler.altPathSeparatorChar</code> (which is a comma,
+     * in fact).
+     */
+    private static String getJodeClassPath() {
+        //String entries[] = JavaUtils.getClasspath();
+        ClasspathEntry[] entries = PackageBrowser.getPackagesAsClasspath();
+        StringBuffer classpath = new StringBuffer();
+
+        for (int i = 0; i < entries.length; ++i) {
+            if (i != 0)
+                classpath.append(Decompiler.altPathSeparatorChar);
+           classpath.append(entries[i].toString());
+        }
+
+        if (classpath.length() == 0)
+            classpath.append('.');
+
+        Log.log(Log.DEBUG, JavaInsight.class, "jode classpath=" + classpath.toString());
+
+        return classpath.toString();
+    }
+
+
+    /**
+     * Return a new Jode decompiler instance initialized with the options
+     * from the JavaInsight option pane.
+     *
+     * @author Dirk Moebius
+     */
+    private static Decompiler getJodeDecompiler() {
+        boolean pretty = jEdit.getBooleanProperty("javainsight.jode.pretty", true);
+        boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
+        boolean decrypt = jEdit.getBooleanProperty("javainsight.jode.decrypt", true);
+        String importPkgLimit = jEdit.getProperty("javainsight.jode.pkglimit", "0");
+        String importClassLimit = jEdit.getProperty("javainsight.jode.clslimit", "1");
+
+        Decompiler decompiler = new Decompiler();
+        decompiler.setClassPath(getJodeClassPath());
+        decompiler.setOption("style", jEdit.getProperty("javainsight.jode.style", "sun"));
+        decompiler.setOption("pretty", pretty ? "yes" : "no");
+        decompiler.setOption("onetime", onetime ? "yes" : "no");
+        decompiler.setOption("decrypt", decrypt ? "yes" : "no");
+        decompiler.setOption("import", importPkgLimit + "," + importClassLimit);
+
+        return decompiler;
     }
 
 

@@ -32,12 +32,12 @@ import java.util.Enumeration;
  */
 public class ClasspathEntry {
 
-    private String name = null;
+    private String name;
     private Hashtable packages = new Hashtable();
 
 
     /**
-     * Creates a ClasspathEntry
+     * Creates a ClasspathEntry.
      */
     public ClasspathEntry(String name) {
         this.name = name;
@@ -45,7 +45,7 @@ public class ClasspathEntry {
 
 
     /**
-     * Add an JavaPackage to this ClasspathEntry
+     * Add an JavaPackage to this ClasspathEntry.
      *
      * @param name The name of this classpath entry
      */
@@ -60,7 +60,7 @@ public class ClasspathEntry {
 
 
     /**
-     * Return the packages within this ClasspathEntry
+     * Return the packages within this ClasspathEntry.
      *
      * @param name The name of this classpath entry
      */
@@ -68,10 +68,9 @@ public class ClasspathEntry {
         // convert the hashtable into an array
         JavaPackage[] array = new JavaPackage[packages.size()];
         Enumeration enum = packages.elements();
-        int element = 0;
 
-        while(enum.hasMoreElements())
-            array[element++] = (JavaPackage) enum.nextElement();
+        for(int i = 0; enum.hasMoreElements(); ++i)
+            array[i] = (JavaPackage) enum.nextElement();
 
         return array;
     }
@@ -88,7 +87,7 @@ public class ClasspathEntry {
 
 
     /**
-     * Return this ClasspathEntry as a String
+     * Return this ClasspathEntry as a String.
      *
      * @param name The name of this classpath entry
      */

@@ -30,6 +30,7 @@ import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.JPanel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -37,17 +38,19 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 
-// quicksort support
-import org.gjt.sp.jedit.MiscUtilities;
-
-// jEdit properties support
-import org.gjt.sp.jedit.jEdit;
+// io support
+import java.io.File;
 
 // traversal support
 import java.util.Enumeration;
 import java.util.StringTokenizer;
+import java.util.Vector;
 
-// debugging
+// jEdit stuff
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.util.Log;
 
 
@@ -142,13 +145,18 @@ public class ClasspathManager extends JPanel {
     }
 
 
+    /**
+     * Search the tree for a package, create it if it is not there yet.
+     *
+     * @param  parent  where to begin the search
+     * @param  pkg  the java package
+     * @return the existing node for the java package or a new one.
+     */
     private DefaultMutableTreeNode getPackageNode(DefaultMutableTreeNode parent, JavaPackage pkg) {
-        Log.log(Log.DEBUG, this, "getPackageNode() pkg=" + pkg);
-        StringTokenizer st = new StringTokenizer(pkg.toString(), ".");
+        StringTokenizer st = new StringTokenizer(pkg.toString(), PackageBrowser.PACKAGE_SEPARATOR);
         DefaultMutableTreeNode node = parent;
         while (st.hasMoreTokens()) {
             String part = st.nextToken();
-            Log.log(Log.DEBUG, this, "part=" + part);
             // search the current node's children for the package part:
             Enumeration e = node.children();
             boolean foundChild = false;
@@ -189,12 +197,51 @@ public class ClasspathManager extends JPanel {
 
 
     /** Decompile currently selected class node. */
-    void decompile() {
+    void decompileAction() {
         if (currentNode != null) {
             Object userObject = currentNode.getUserObject();
             if (userObject != null && userObject instanceof JavaClass)
                 javaInsight.decompile(((JavaClass)userObject).getName());
         }
+    }
+
+
+    void addArchivesAction() {
+        String[] files = GUIUtilities.showVFSFileDialog(javaInsight.getView(), null, VFSBrowser.OPEN_DIALOG, true);
+        if (files == null || files.length == 0)
+            return;
+
+        Vector validArchives = new Vector();
+
+        // check files:
+        for (int i = 0; i < files.length; ++i) {
+            File f = new File(files[i]);
+            if (!f.exists() || f.isDirectory())
+                continue;
+
+            // warn if this is not a jar/zip file:
+            if (!f.getName().toLowerCase().endsWith(".jar") && !f.getName().toLowerCase().endsWith(".zip")) {
+                int answer = GUIUtilities.confirm(
+                    javaInsight.getView(),
+                    "javainsight.confirm.openArchive",
+                    new Object[] { files[i] },
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.WARNING_MESSAGE
+                );
+                if (answer == JOptionPane.CANCEL_OPTION)
+                    return;
+                if (answer == JOptionPane.NO_OPTION)
+                    continue;
+            }
+
+            validArchives.addElement(f);
+        }
+
+        // add the valid archives to PackageBrowser (reparses automatically):
+        for (Enumeration e = validArchives.elements(); e.hasMoreElements(); )
+            PackageBrowser.addArchive((File)e.nextElement());
+
+        populateTree();
     }
 
 
@@ -214,13 +261,7 @@ public class ClasspathManager extends JPanel {
             if (node.getUserObject() instanceof JavaClass) {
                 // also output the source of this class
                 JavaClass classnode = (JavaClass) node.getUserObject();
-                Log.log(Log.DEBUG, this,
-                    "The source CLASSPATH entry of \""
-                    + classnode.getName()
-                    + "\" is \""
-                    + classnode.getSource()
-                    + "\""
-                );
+                Log.log(Log.DEBUG, this, "The source CLASSPATH entry of " + classnode.getName() + " is " + classnode.getSource());
                 javaInsight.setStatus(classnode.getName());
             }
         }
@@ -231,7 +272,7 @@ public class ClasspathManager extends JPanel {
         public void mouseClicked(MouseEvent evt) {
             if ((evt.getModifiers() & MouseEvent.BUTTON1_MASK) != 0) {
                 if (evt.getClickCount() == 2)
-                    decompile();
+                    decompileAction();
             }
             else if ((evt.getModifiers() & MouseEvent.BUTTON3_MASK) != 0) {
                 if (popup != null && popup.isVisible())

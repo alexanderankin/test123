@@ -68,21 +68,81 @@ JavaInsight comes with two external libraries.
 </UL>
 
 
-<H2>Configuration</H2>
+<H2>Actions</H2>
+
+<H3>... in Class Tree:</H3>
+
+<UL>
+  <LI>Double-click a class to decompile it with Jode.</LI>
+  <LI>Right-click to show a popup menu with the following actions:
+    <UL>
+      <LI>
+        <P>
+          <STRONG>Decompile with Jode</STRONG><BR>
+          Decompiles the currently selected class with Jode. Only shown,
+          when a class is selected.
+        </P>
+      </LI>
+      <LI>
+        <P>
+          <STRONG>Add Archives...</STRONG><BR>
+          Add a JAR or ZIP file archive to the current classpath.
+        </P>
+      </LI>
+      <LI>
+        <P>
+          <STRONG>Classpath View</STRONG><BR>
+          Switches the tree to classpath view.
+        <P>
+      </LI>
+      <LI>
+        <P>
+          <STRONG>Package View</STRONG><BR>
+          Switches the tree to package view.
+        </P>
+      </LI>
+      <LI>
+        <P>
+          <STRONG>Flat Packages</STRONG><BR>
+          Toggles between flat and hierarchical view of the packages.
+        </P>
+      </LI>
+    </UL>
+  </LI>
+</UL>
+
+<H3>... in File System Browser:</H3>
+
+Right-click a file. The popup menu shows the following additional actions:
 
 <UL>
   <LI>
     <P>
-      Open the Global Options dialog
-      (menu <EM>Utilities-&gt;Global&nbsp;Options</EM>)
+      <STRONG>Decompile with Jode</STRONG><BR>
+      Decompiles the currently selected file with Jode. The file should
+      be a class file, otherwise you'll get an error.
     </P>
   </LI>
   <LI>
     <P>
-      Select the entry "Plugins-&gt;Java&nbsp;Insight".
+      <STRONG>Show bytecode</STRONG><BR>
+      Show bytecode decompiler output from the BCEL library.
+    </P>
+  </LI>
+  <LI>
+    <P>
+      <STRONG>Show Jasmin output</STRONG><BR>
+      Shows Jasmin assembly output for the currently selected file.
     </P>
   </LI>
 </UL>
+
+
+<H2>Configuration</H2>
+
+To configure JavaInsight, open the Global Options dialog
+(<EM>Utilities-&gt;Global&nbsp;Options</EM>) and select the entry
+<EM>Plugins-&gt;Java&nbsp;Insight</EM>.
 
 <P>
 The following options can be set:
@@ -116,8 +176,9 @@ The following options can be set:
       If activated, Jode searches for expressions like
       <CODE>methodX("abc")</CODE> and assumes that <CODE>methodX</CODE>
       is an decryption routine and <CODE>"abc"</CODE> is an encrypted
-      string. It is checked whether <CODE>methodX</CODE> is <B>static</B>,
-      <B>final</B> and returns a <CODE>String</CODE>. If this is the case,
+      string. It is checked whether <CODE>methodX</CODE> is
+      <STRONG>static</STRONG>, <STRONG>final</STRONG> and returns a
+      <CODE>String</CODE>. If this is the case,
       Jode tries to invoke <CODE>methodX</CODE> with the constant
       argument <CODE>"abc"</CODE>. If successful, Jode replaces the
       method call with the resulting string.<BR>
@@ -129,7 +190,7 @@ The following options can be set:
     <P>
       <STRONG>Generate imports for packages with more than <EM>nnn</EM> classes.</STRONG><BR>
       Set this to 0, if you don't want to generate imports for whole packages,
-      such like:<BR>
+      such as:<BR>
       <CODE>import&nbsp;java.awt.*;</CODE><BR>
       The default is 0.
     </P>
