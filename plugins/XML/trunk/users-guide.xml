@@ -508,6 +508,14 @@
     show an empty popup if a <quote>&lt;</quote> or <quote>&amp;</quote> was
     entered immediately after a non-whitespace character.
    </para></listitem>
+   <listitem><para>
+    Fixed a possible <classname>NullPointerException</classname> in the
+    <guimenuitem>XML Insert</guimenuitem> window.
+   </para></listitem>
+   <listitem><para>
+    Fixed a problem with resolving DTDs for buffers stored on
+    virtual file systems.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>
