@@ -7,11 +7,27 @@ import java.util.List;
  * @author Matthieu Casanova
  */
 public final class ReturnStatement extends Statement {
-
   private final Statement expression;
 
+  /**
+   * @deprecated
+   * @param expression
+   * @param sourceStart
+   * @param sourceEnd
+   */
   public ReturnStatement(final Statement expression, final int sourceStart, final int sourceEnd) {
     super(sourceStart, sourceEnd);
+    this.expression = expression;
+  }
+
+  public ReturnStatement(Statement expression,
+                         final int sourceStart,
+                         final int sourceEnd,
+                         final int beginLine,
+                         final int endLine,
+                         final int beginColumn,
+                         final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expression = expression;
   }
 
@@ -28,7 +44,7 @@ public final class ReturnStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(final List list) { }
 
   /**
    * get the modified variables.
@@ -48,7 +64,7 @@ public final class ReturnStatement extends Statement {
    */
   public void getUsedVariable(final List list) {
     if (expression != null) {
-        expression.getUsedVariable(list);
+      expression.getUsedVariable(list);
     }
   }
 }

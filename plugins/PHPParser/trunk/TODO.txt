@@ -10,4 +10,4 @@ Browsing :
 
 Parser :
 -fix bugs
--support unicode
+-parse double quoted strings

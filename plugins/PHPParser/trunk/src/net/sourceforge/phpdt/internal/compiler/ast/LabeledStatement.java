@@ -6,11 +6,17 @@ import java.util.List;
  * @author Matthieu Casanova
  */
 public final class LabeledStatement extends Statement {
-
   private final String label;
 
   private final Statement statement;
 
+  /**
+   * @deprecated
+   * @param label
+   * @param statement
+   * @param sourceStart
+   * @param sourceEnd
+   */
   public LabeledStatement(final String label,
                           final Statement statement,
                           final int sourceStart,
@@ -20,12 +26,24 @@ public final class LabeledStatement extends Statement {
     this.statement = statement;
   }
 
+  public LabeledStatement(final String label,
+                          final Statement statement,
+                          final int sourceStart,
+                          final int sourceEnd,
+                          final int beginLine,
+                          final int endLine,
+                          final int beginColumn,
+                          final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    this.label = label;
+    this.statement = statement;
+  }
+
   /**
-   * Return the object into String.
-   * It should be overriden
-   * 
-   * @return a String
-   */
+     * Return the object into String. It should be overriden
+     *
+     * @return a String
+     */
   public String toString() {
     if (statement != null) {
       return label + statement.toString();
@@ -34,11 +52,12 @@ public final class LabeledStatement extends Statement {
   }
 
   /**
-   * Return the object into String.
-   * 
-   * @param tab how many tabs (not used here
-   * @return a String
-   */
+     * Return the object into String.
+     *
+     * @param tab how many tabs (not used here
+     *
+     * @return a String
+     */
   public String toString(final int tab) {
     return tabString(tab) + toString();
   }

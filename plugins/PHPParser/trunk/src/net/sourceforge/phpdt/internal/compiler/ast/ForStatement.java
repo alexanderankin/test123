@@ -8,7 +8,6 @@ import java.util.List;
  * @author Matthieu Casanova
  */
 public final class ForStatement extends Statement {
-
   /** the initializations. */
   private final Expression[] initializations;
 
@@ -19,30 +18,24 @@ public final class ForStatement extends Statement {
 
   private final Statement action;
 
-  /**
-   * a for statement.
-   *
-   * @param initializations the initializations expressions
-   * @param condition the condition when the for get out
-   * @param increments the increments statements
-   * @param action the action (a statement, a block ...)
-   * @param sourceStart the beginning sources
-   * @param sourceEnd the ending sources
-   */
-  public ForStatement(final Expression[] initializations,
-                      final Expression condition,
-                      final Expression[] increments,
-                      final Statement action,
-                      final int sourceStart,
-                      final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+  public ForStatement(Expression[] initializations,
+                      Expression condition,
+                      Expression[] increments,
+                      Statement action,
+                      int sourceStart,
+                      int sourceEnd,
+                      int beginLine,
+                      int endLine,
+                      int beginColumn,
+                      int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.initializations = initializations;
     this.condition = condition;
     this.increments = increments;
     this.action = action;
   }
 
-  public String toString(final int tab) {
+  public String toString(int tab) {
     final StringBuffer buff = new StringBuffer(tabString(tab));
     buff.append("for (");  //$NON-NLS-1$
     //inits
@@ -82,7 +75,7 @@ public final class ForStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     if (condition != null) {
       condition.getOutsideVariable(list);
     }
@@ -106,7 +99,7 @@ public final class ForStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     if (condition != null) {
       condition.getModifiedVariable(list);
     }
@@ -130,7 +123,7 @@ public final class ForStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     if (condition != null) {
       condition.getUsedVariable(list);
     }
