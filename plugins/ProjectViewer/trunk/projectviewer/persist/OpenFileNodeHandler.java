@@ -92,7 +92,7 @@ public class OpenFileNodeHandler extends NodeHandler {
 	public void saveNode(String path, Writer out) throws IOException {
 		startElement(out);
 		writeAttr(PATH_ATTR, path, out);
-		out.write(" />");
+		out.write(" />\n");
 	}
 	
 }

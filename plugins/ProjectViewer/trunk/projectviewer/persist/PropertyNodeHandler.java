@@ -95,7 +95,7 @@ public class PropertyNodeHandler extends NodeHandler {
 		startElement(out);
 		writeAttr(PROP_NAME_ATTR, name, out);
 		writeAttr(PROP_VALUE_ATTR, value, out);
-		out.write(" />");
+		out.write(" />\n");
 	}
 
 }
