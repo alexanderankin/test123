@@ -45,6 +45,7 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 	private JRadioButton bShowJEditToolBar;
 	private JRadioButton bShowInsideBufferList;
 	private JCheckBox bShowTitle;
+	private JCheckBox bChangeFSBDirectory;
 
 
 	public SessionsOptionPane()
@@ -102,6 +103,12 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		addComponent("    ", bShowJEditToolBar);
 		addComponent("    ", bShowInsideBufferList);
 		addComponent("    ", bShowTitle);
+
+		bChangeFSBDirectory = new JCheckBox(
+			jEdit.getProperty("options.sessions.switcher.changeFSBDirectory"),
+			jEdit.getBooleanProperty("sessions.switcher.changeFSBDirectory", false)
+		);
+		addComponent(bChangeFSBDirectory);
 	}
 
 
@@ -113,6 +120,7 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		jEdit.setBooleanProperty("sessions.switcher.showJEditToolBar", bShowJEditToolBar.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showInsideBufferList", bShowInsideBufferList.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showTitle", bShowTitle.isSelected());
+		jEdit.setBooleanProperty("sessions.switcher.changeFSBDirectory", bChangeFSBDirectory.isSelected());
 	}
 
 
@@ -130,6 +138,4 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		// FIXME: is it sufficient to check only first view?!?
 		return SessionsPlugin.isBufferListAvailable(jEdit.getFirstView());
 	}
-
 }
-
