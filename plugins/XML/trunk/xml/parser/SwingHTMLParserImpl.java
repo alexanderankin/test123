@@ -45,8 +45,13 @@ public class SwingHTMLParserImpl extends XmlParser
 	//{{{ parse() method
 	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
-		if(buffer.getLength() >= 5 && buffer.getText(0,5).equals("<?xml"))
-			return XmlPlugin.XML_PARSER_INSTANCE.parse(buffer,errorSource);
+		if(buffer.getLength() >= 5
+			&& buffer.getText(0,5).equals("<?xml"))
+		{
+			SideKickParser xml = (SideKickParser)ServiceManager
+				.getService(SideKickParser.SERVICE,"xml");
+			return xml.parse(buffer,errorSource);
+		}
 
 		String text;
 

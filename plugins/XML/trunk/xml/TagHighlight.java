@@ -64,6 +64,7 @@ public class TagHighlight extends TextAreaExtension
 		timer.stop();
 		buffer.removeBufferChangeListener(bufferHandler);
 		textArea.getPainter().removeExtension(this);
+		textArea.removeCaretListener(caretHandler);
 	} //}}}
 
 	//{{{ paintValidLine() method

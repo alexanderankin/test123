@@ -489,9 +489,11 @@
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.12</emphasis> requires
-  jEdit 4.1pre11, SideKick plugin 0.2, and ErrorList plugin 1.2.</para>
+  jEdit 4.2pre2, SideKick plugin 0.3, and ErrorList plugin 1.3.</para>
 
   <itemizedlist>
+  <listitem><para>Updated for jEdit 4.2 plugin API.
+  </para></listitem>
   <listitem><para>Includes the new Apache XML commons catalog resolver code
   instead of the outdated <classname>com.arbortext.catalog</classname> package.
   This brings improved support for OASIS and XML catalogs.
