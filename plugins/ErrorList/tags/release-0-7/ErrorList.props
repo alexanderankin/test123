@@ -1,0 +1,14 @@
+# Plugin properties
+plugin.ErrorListPlugin.name=ErrorList
+plugin.ErrorListPlugin.author=Slava Pestov
+plugin.ErrorListPlugin.version=0.7
+plugin.ErrorListPlugin.docs=ErrorList.html
+
+plugin.ErrorListPlugin.depend.0=jedit 02.03.03.00
+plugin.ErrorListPlugin.depend.1=class EditBusPlugin
+
+# Menu bar properties
+error-list.label=Error List
+
+# Error list window
+error-list.title=Error List
