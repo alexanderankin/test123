@@ -408,6 +408,7 @@ errorSource.addError(new ErrorSource.DefaultError(
    <itemizedlist>
     <listitem><para>After adding and adding an error source, removing and adding it again would not add the error source to the EditBus, so it would not receive notifications of buffers being opened, and as a result floating positions for errors would not be created.</para></listitem>
     <listitem><para>Fix display of selected entires in the error list when using the GTK look and feel.</para></listitem>
+    <listitem><para>New icons for errors and warnings.</para></listitem>
    </itemizedlist>
   </listitem>
  <listitem><formalpara><title>Version 1.3.1</title><para>requires
