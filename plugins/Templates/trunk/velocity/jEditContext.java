@@ -22,6 +22,8 @@ import org.apache.velocity.context.AbstractContext;
 import org.apache.velocity.context.Context;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.util.Log;
 
 /**
  * An context to interface with jEdit.
@@ -30,6 +32,7 @@ public class jEditContext extends AbstractContext
    implements VelocityConstants
 {
 
+   public final static String SELECTION   = "_jeditSelection";
    public final static String INDENTATION = "_jeditIndentation";
    public final static String TAB         = "_jeditTab";
 
@@ -37,6 +40,7 @@ public class jEditContext extends AbstractContext
       BUFFER, TEXT_AREA, VIEW, INDENTATION, TAB
    };
 
+   private String selectionText;
    private String indentation;
    private String tab;
    private JEditTextArea textArea;
@@ -53,6 +57,25 @@ public class jEditContext extends AbstractContext
       view = aView;
       indentation = getLeadingWhiteSpace();
    }
+
+   /**
+    * Capture the current selection and store it in the context.  The selected text is then removed.
+    */
+   public void captureSelection()
+   {
+      Selection[] selections = textArea.getSelection();
+      if (selections.length == 0) {
+         return;
+      }
+      if (selections.length > 1) {
+         Log.log(Log.WARNING, this, "Mulitple selections encountered, will not capture");
+         return;
+      }
+      selectionText = textArea.getSelectedText();
+      textArea.getBuffer().remove(selections[0].getStart(),
+                                  selections[0].getEnd() - selections[0].getStart());
+   }
+
 
    /**
     * Returns a jEdit value.
@@ -79,6 +102,8 @@ public class jEditContext extends AbstractContext
             tab = MiscUtilities.createWhiteSpace(tabSize, (noTabs ? 0 : tabSize));
          }
          return tab;
+      } else if (SELECTION.equals(key)) {
+         return selectionText;
       }
       return null;
    }
