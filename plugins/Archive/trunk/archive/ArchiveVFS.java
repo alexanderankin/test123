@@ -542,6 +542,8 @@ public class ArchiveVFS extends VFS {
 
             String savePath = vfs.getTwoStageSaveName(archivePath);
 
+            boolean ok = false;
+
             InputStream archiveIn = null;
             try {
                 archiveIn = vfs._createInputStream(null,
@@ -565,7 +567,8 @@ public class ArchiveVFS extends VFS {
                     saveTarArchive((TarInputStream)archiveIn,archive,
                         savePath,outputFile,comp,gzip,bzip2);
                 }
-                vfs._rename(null,savePath,archivePath,comp);
+
+                ok = true;
 
             } catch(IOException e) {
                 Log.log(Log.ERROR,this,e);
@@ -576,6 +579,16 @@ public class ArchiveVFS extends VFS {
                     if(archiveIn != null)
                         archiveIn.close();
                 } catch(IOException e) {}
+            }
+
+            if(ok) {
+                try {
+                    vfs._rename(null,savePath,archivePath,comp);
+                } catch(IOException e) {
+                    Log.log(Log.ERROR,this,e);
+                    VFSManager.error(comp,archive.pathName,"ioerror",
+                        new String[] { e.toString() });
+                }
             }
         }
 
