@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+
+	<ACTION NAME="projectviewer_edit_project">
+		<CODE>
+			projectviewer.action.EditProjectAction.editProject(view);
+		</CODE>
+	</ACTION>
+
+</ACTIONS>
