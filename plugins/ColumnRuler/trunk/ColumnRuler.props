@@ -1,0 +1,18 @@
+plugin.columnruler.ColumnRulerPlugin.name=Column Ruler
+plugin.columnruler.ColumnRulerPlugin.author=Brad Mace
+plugin.columnruler.ColumnRulerPlugin.version=0.5.0
+plugin.columnruler.ColumnRulerPlugin.docs=docs/index.html
+plugin.columnruler.ColumnRulerPlugin.depend.0=jdk 1.4.0_01
+plugin.columnruler.ColumnRulerPlugin.depend.1=jedit 04.02.02.00
+plugin.columnruler.ColumnRulerPlugin.activate=defer
+
+# Action labels
+columnruler.toggle-vis.label=Column Ruler
+
+# Menu items
+plugin.columnruler.ColumnRulerPlugin.menu-item=columnruler.toggle-vis
+
+# Options
+options.columnruler.foreground=\#000000
+options.columnruler.background=\#FFFFFF
+
