@@ -42,11 +42,6 @@ public class LaTeXDockable  extends JPanel{
   private LaTeXDockable() {
     
     ArrayList nav = new ArrayList(NavigationList.getNavigationData());
-    for (Iterator it = nav.iterator(); it.hasNext();){
-        NavigationList nl = (NavigationList) it.next();
-        for (Iterator it2 = nl.iterator(); it2.hasNext();){
-        }
-    }
     nav_list = new JComboBox(nav.toArray());
     
     navig = new JLabel("Select LaTeX Navigation List:");
