@@ -19,6 +19,24 @@ toolbar for new actions.</p>
 	by calling the appropriate method.</li>
 </ul>
 
+<p>It's recommended to use the new API to register actions. Create the
+following properties to automatically register actions with
+ProjectViewer:</p>
+
+<ul>
+	<li>plugin.projectviewer.<i>class name</i>.toolbar-actions:<br>
+	list of classes that provide {@link projectviewer.action.Action Action}s that
+	will be added to the toolbar of the ProjectViewer dockable. One instance is
+	created for each class, and for each jEdit view the instance is cloned,
+	and then the "projectViewer" instance is set for the cloned object.</li>
+
+	<li>plugin.projectviewer.<i>class name</i>.context-menu-actions:<br>
+	list of classes that provide {@link projectviewer.action.Action Action}s that
+	will be added to the tree's context menu. One instance is created for each
+	class, and for each jEdit view the instance is cloned, and then the
+	"projectViewer" instance is set for the cloned object.</li>
+</ul>
+
 <p>The menu item show in the context menu is provided by the
 {@link projectviewer.action.Action#getMenuItem() getMenuItem()} of the Action
 class. Subclasses are welcome to override this method to provide other kinds
@@ -40,7 +58,7 @@ the actions should check is the node is of a certain type, and not if the
 node is not of a certain type. For example, use "node.isFile()" and not
 "!node.isDirectory()". This ensures that the action will not do anything
 wrong if a different node type is added in the future to PV, or if another
-plugin adds a new node type to PV.</p>
+plugin adds a custom node type to PV.</p>
 
 <p>It's important to notice that the instance given to the <i>registerAction</i>
 methods is not the instance used by the viewer instances. Those instances are
@@ -55,3 +73,4 @@ methods. The default implementation already does this, so you should only worry
 about this if you are overriding one of these methods.</p>
 
 </body>
+
