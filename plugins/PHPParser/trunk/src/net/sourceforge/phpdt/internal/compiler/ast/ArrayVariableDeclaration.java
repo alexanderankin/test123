@@ -5,43 +5,52 @@ import java.util.List;
 /**
  * a variable declaration in an array().
  * it could take Expression as key.
- * 
+ *
  * @author Matthieu Casanova
  */
 public final class ArrayVariableDeclaration extends Expression {
 
-  /** the array key. */
+  /**
+   * the array key.
+   */
   private final Expression key;
 
-  /** the array value. */
+  /**
+   * the array value.
+   */
   private Expression value;
 
   /**
    * Create a new array variable declaration.
-   * 
+   *
    * @param key   the key
    * @param value the value
    */
   public ArrayVariableDeclaration(final Expression key, final Expression value) {
-    super(key.sourceStart, value.sourceEnd);
+    super(key.sourceStart, value.sourceEnd,key.getBeginLine(),value.getEndLine(),key.getBeginColumn(),value.getEndColumn());
     this.key = key;
     this.value = value;
   }
 
   /**
    * Create a new array variable declaration.
-   * 
+   *
    * @param key       the key
    * @param sourceEnd the end position
    */
-  public ArrayVariableDeclaration(final Expression key, final int sourceEnd) {
-    super(key.sourceStart, sourceEnd);
+  public ArrayVariableDeclaration(final Expression key,
+                                  final int sourceEnd,
+                                  final int beginLine,
+                                  final int endLine,
+                                  final int beginColumn,
+                                  final int endColumn) {
+    super(key.sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.key = key;
   }
 
   /**
    * Return the expression as String.
-   * 
+   *
    * @return the expression
    */
   public String toStringExpression() {
@@ -61,7 +70,7 @@ public final class ArrayVariableDeclaration extends Expression {
 
   /**
    * Get the variables from outside (parameters, globals ...)
-   * 
+   *
    * @param list the list where we will put variables
    */
   public void getOutsideVariable(final List list) {
@@ -69,7 +78,7 @@ public final class ArrayVariableDeclaration extends Expression {
 
   /**
    * get the modified variables.
-   * 
+   *
    * @param list the list where we will put variables
    */
   public void getModifiedVariable(final List list) {
@@ -81,7 +90,7 @@ public final class ArrayVariableDeclaration extends Expression {
 
   /**
    * Get the variables used.
-   * 
+   *
    * @param list the list where we will put variables
    */
   public void getUsedVariable(final List list) {

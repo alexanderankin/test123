@@ -8,14 +8,19 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 
+import gatchan.phpparser.parser.PHPParseMessageEvent;
+import gatchan.phpparser.parser.PHPParser;
+
 /**
  * A Method declaration.
- * 
+ *
  * @author Matthieu Casanova
  */
 public final class MethodDeclaration extends Statement implements OutlineableWithChildren {
 
-  /** The name of the method. */
+  /**
+   * The name of the method.
+   */
   public final String name;
   private final ArrayList arguments;
 
@@ -23,15 +28,23 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   public Statement[] statements;
   private final int bodyStart;
   private int bodyEnd = -1;
-  /** Tell if the method is a class constructor. */
+  /**
+   * Tell if the method is a class constructor.
+   */
   public boolean isConstructor;
 
-  /** The parent object. */
+  /**
+   * The parent object.
+   */
   private Object parent;
-  /** The outlineable children (those will be in the node array too. */
+  /**
+   * The outlineable children (those will be in the node array too.
+   */
   private final ArrayList children = new ArrayList();
 
-  /** Tell if the method returns a reference. */
+  /**
+   * Tell if the method returns a reference.
+   */
   private final boolean reference;
 
   public MethodDeclaration(final Object parent,
@@ -53,7 +66,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   /**
    * Return method into String, with a number of tabs
-   * 
+   *
    * @param tab the number of tabs
    * @return the String containing the method
    */
@@ -70,7 +83,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   /**
    * Return the statements of the method into Strings
-   * 
+   *
    * @param tab the number of tabs
    * @return the String containing the statements
    */
@@ -134,24 +147,27 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   /**
    * Get the variables from outside (parameters, globals ...)
-   * 
+   *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(final List list) {
+  }
 
   /**
    * get the modified variables.
-   * 
+   *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {}
+  public void getModifiedVariable(final List list) {
+  }
 
   /**
    * This method will analyze the code.
-   * 
+   *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {}
+  public void getUsedVariable(final List list) {
+  }
 
   /**
    * Get global variables (not parameters).
@@ -168,7 +184,7 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     if (arguments != null) {
       for (int i = 0; i < arguments.size(); i++) {
         final VariableDeclaration variable = (VariableDeclaration) arguments.get(i);
-        final VariableUsage variableUsage = new VariableUsage(variable.name(), variable.sourceStart);
+        final VariableUsage variableUsage = new VariableUsage(variable.name(), variable.sourceStart,variable.getBeginLine(),variable.getBeginColumn());
         list.add(variableUsage);
       }
     }
@@ -211,10 +227,10 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
   /**
    * This method will analyze the code.
    */
-  public void analyzeCode() {
+  public void analyzeCode(PHPParser parser) {
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
-        statements[i].analyzeCode();
+        statements[i].analyzeCode(parser);
 
       }
     }
@@ -238,37 +254,45 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     readOrWriteVars.addAll(usedVars);
 
     //look for used variables that were not declared before
-    findUnusedParameters(readOrWriteVars, parameters);
-    findUnknownUsedVars(usedVars, declaredVars);
+    findUnusedParameters(parser, readOrWriteVars, parameters);
+    findUnknownUsedVars(parser, usedVars, declaredVars);
   }
 
   /**
    * This method will add a warning on all unused parameters.
-   * 
+   *
    * @param vars       the used variable list
    * @param parameters the declared variable list
    */
-  private static void findUnusedParameters(final List vars, final List parameters) {
+  private static void findUnusedParameters(PHPParser parser, final List vars, final List parameters) {
     for (int i = 0; i < parameters.size(); i++) {
       final VariableUsage param = (VariableUsage) parameters.get(i);
       if (!isVariableInList(param.getName(), vars)) {
-       /* try {
-          PHPParserSuperclass.setMarker(
-                  "warning, the parameter " + param.getName() + " seems to be never used in your method",
-                  param.getStartOffset(),
-                  param.getStartOffset() + param.getName().length(),
-                  PHPParserSuperclass.WARNING,
-                  "");
-        } catch (CoreException e) {
-          PHPeclipsePlugin.log(e);
-        }  */
+        parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                                                         parser.getPath(),
+                                                         "warning, the parameter " + param.getName() + " seems to be never used in your method",
+                                                         param.getStartOffset(),
+                                                         param.getStartOffset() + param.getName().length(),
+                                                         param.getLine(),
+                                                         param.getLine(),
+                                                         param.getColumn(),
+                                                         param.getColumn()+ param.getName().length()));
+        /* fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                                               parser.getPath(),
+                                               "You should use '<?php' instead of '<?' it will avoid some problems with XML",
+                                               param.getStartOffset(),
+                                               param.getStartOffset() + param.getName().length(),
+                                               token.beginLine,
+                                               token.endLine,
+                                               token.beginColumn,
+                                               token.endColumn));*/
       }
     }
   }
 
   /**
    * Tell if the list of VariableUsage contains a variable named by the name given.
-   * 
+   *
    * @param name the variable name
    * @param list the list of VariableUsage
    * @return true if the variable is in the list false otherwise
@@ -284,27 +308,26 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
 
   /**
    * This method will add a warning on all used variables in a method that aren't declared before.
-   * 
+   *
    * @param usedVars     the used variable list
    * @param declaredVars the declared variable list
    */
-  private static void findUnknownUsedVars(final List usedVars, final List declaredVars) {
+  private static void findUnknownUsedVars(PHPParser parser, final List usedVars, final List declaredVars) {
     final HashSet list = new HashSet(usedVars.size());
     for (int i = 0; i < usedVars.size(); i++) {
       final VariableUsage variableUsage = (VariableUsage) usedVars.get(i);
       if ("this".equals(variableUsage.getName())) continue; // this is a special variable
       if (!list.contains(variableUsage.getName()) && !isVariableDeclaredBefore(declaredVars, variableUsage)) {
         list.add(variableUsage.getName());
-      /*  try {
-          PHPParserSuperclass.setMarker(
-                  "warning, usage of a variable that seems to be unassigned yet : " + variableUsage.getName(),
-                  variableUsage.getStartOffset(),
-                  variableUsage.getStartOffset() + variableUsage.getName().length(),
-                  PHPParserSuperclass.WARNING,
-                  "");
-        } catch (CoreException e) {
-          PHPeclipsePlugin.log(e);
-        } */
+        parser.fireParseMessage(new PHPParseMessageEvent(PHPParser.WARNING,
+                                                         parser.getPath(),
+                                                         "warning, usage of a variable that seems to be unassigned yet : " + variableUsage.getName(),
+                                                         variableUsage.getStartOffset(),
+                                                         variableUsage.getStartOffset() + variableUsage.getName().length(),
+                                                         variableUsage.getLine(),
+                                                         variableUsage.getLine(),
+                                                         variableUsage.getColumn(),
+                                                         variableUsage.getColumn() + variableUsage.getName().length()));
       }
     }
   }

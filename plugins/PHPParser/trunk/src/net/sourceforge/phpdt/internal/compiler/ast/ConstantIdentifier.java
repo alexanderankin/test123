@@ -14,13 +14,17 @@ public final class ConstantIdentifier extends Expression {
 
   public ConstantIdentifier(final String name,
                             final int sourceStart,
-                            final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                            final int sourceEnd,
+                       final int beginLine,
+                       final int endLine,
+                       final int beginColumn,
+                       final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.name = name;
   }
 
   public ConstantIdentifier(final Token token) {
-    super(token.sourceStart,token.sourceEnd);
+    super(token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
     name = token.image;
   }
 

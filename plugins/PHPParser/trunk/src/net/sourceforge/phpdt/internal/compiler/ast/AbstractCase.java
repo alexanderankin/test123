@@ -4,29 +4,37 @@ import java.util.List;
 
 /**
  * Superclass of case statement that we can find in a switch.
+ *
  * @author Matthieu Casanova
  */
 public abstract class AbstractCase extends Statement {
 
-  /** The statements in the case. */
+  /**
+   * The statements in the case.
+   */
   public final Statement[] statements;
 
   /**
    * Create a case statement.
-   * @param statements the statements array
+   *
+   * @param statements  the statements array
    * @param sourceStart the beginning source offset
-   * @param sourceEnd the ending offset
+   * @param sourceEnd   the ending offset
    */
   protected AbstractCase(final Statement[] statements,
                          final int sourceStart,
-                         final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                         final int sourceEnd,
+                         final int beginLine,
+                         final int endLine,
+                         final int beginColumn,
+                         final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.statements = statements;
   }
 
-
   /**
    * Get the variables from outside (parameters, globals ...).
+   *
    * @param list the list where we will put variables
    */
   public final void getOutsideVariable(final List list) {
@@ -37,6 +45,7 @@ public abstract class AbstractCase extends Statement {
 
   /**
    * get the modified variables.
+   *
    * @param list the list where we will put variables
    */
   public void getModifiedVariable(final List list) {
@@ -47,6 +56,7 @@ public abstract class AbstractCase extends Statement {
 
   /**
    * Get the variables used.
+   *
    * @param list the list where we will put variables
    */
   public void getUsedVariable(final List list) {

@@ -9,7 +9,7 @@ import gatchan.phpparser.parser.Token;
 public final class NullLiteral extends MagicLiteral {
 
   public NullLiteral(final Token token) {
-    super(token.sourceStart, token.sourceEnd);
+    super(token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
   }
 
   /**

@@ -24,8 +24,12 @@ public final class CastExpression extends Expression {
   public CastExpression(final ConstantIdentifier type,
                         final Expression expression,
                         final int sourceStart,
-                        final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                        final int sourceEnd,
+                       final int beginLine,
+                       final int endLine,
+                       final int beginColumn,
+                       final int endColumn) {
+    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.type = type;
     this.expression = expression;
   }

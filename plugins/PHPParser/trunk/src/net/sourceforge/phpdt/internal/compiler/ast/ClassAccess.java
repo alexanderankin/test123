@@ -31,7 +31,7 @@ public final class ClassAccess extends AbstractVariable {
   public ClassAccess(final Expression prefix,
                      final Expression suffix,
                      final int type) {
-    super(prefix.sourceStart, suffix.sourceEnd);
+    super(prefix.sourceStart, suffix.sourceEnd,prefix.getBeginLine(),suffix.getEndLine(),prefix.getBeginColumn(),suffix.getEndColumn());
     this.prefix = prefix;
     this.suffix = suffix;
     this.type = type;

@@ -13,15 +13,21 @@ public final class PHPEchoBlock extends AstNode {
   private final Expression expr;
 
   /**
-   * Create a new php echo block.
-   * @param expr the expression
-   * @param sourceStart the starting offset
-   * @param sourceEnd the ending offset
+   * @param sourceStart starting offset
+   * @param sourceEnd ending offset
+   * @param beginLine begin line
+   * @param endLine ending line
+   * @param beginColumn begin column
+   * @param endColumn ending column
    */
   public PHPEchoBlock(final Expression expr,
                       final int sourceStart,
-                      final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+                    final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart,sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.expr = expr;
   }
 

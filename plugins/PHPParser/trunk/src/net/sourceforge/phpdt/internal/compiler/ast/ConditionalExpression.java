@@ -15,7 +15,7 @@ public final class ConditionalExpression extends OperatorExpression {
   public ConditionalExpression(final Expression condition,
                                final Expression valueIfTrue,
                                final Expression valueIfFalse) {
-    super(-1, condition.sourceStart, valueIfFalse.sourceEnd);
+    super(-1, condition.sourceStart, valueIfFalse.sourceEnd,condition.getBeginLine(),valueIfFalse.getEndLine(),condition.getBeginColumn(),valueIfFalse.getEndColumn());
     this.condition = condition;
     this.valueIfTrue = valueIfTrue;
     this.valueIfFalse = valueIfFalse;

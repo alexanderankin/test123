@@ -15,6 +15,8 @@ public final class HTMLCode extends AstNode {
 
   /**
    * Create an html Block.
+   * @deprecated
+   * todo : virer ca
    * @param htmlCode the html inside the block
    * @param sourceStart the starting offset
    * @param sourceEnd the ending offset
@@ -22,7 +24,25 @@ public final class HTMLCode extends AstNode {
   public HTMLCode(final String htmlCode,
                   final int sourceStart,
                   final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+    this(htmlCode,sourceStart, sourceEnd,0,0,0,0);
+  }
+
+  /**
+   * @param sourceStart starting offset
+   * @param sourceEnd ending offset
+   * @param beginLine begin line
+   * @param endLine ending line
+   * @param beginColumn begin column
+   * @param endColumn ending column
+   */
+  protected HTMLCode(final String htmlCode,
+                    final int sourceStart,
+                    final int sourceEnd,
+                    final int beginLine,
+                    final int endLine,
+                    final int beginColumn,
+                    final int endColumn) {
+    super(sourceStart,sourceEnd,beginLine,endLine,beginColumn,endColumn);
     this.htmlCode = htmlCode;
   }
 
