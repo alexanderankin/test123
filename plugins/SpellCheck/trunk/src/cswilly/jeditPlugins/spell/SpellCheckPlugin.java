@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.1 $
- * $Date: 2001-09-09 15:04:14 $
- * $Author: cswilly $
+ * $Revision: 1.2 $
+ * $Date: 2002-06-07 14:53:28 $
+ * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -38,9 +38,10 @@ import java.util.Vector;
 public class SpellCheckPlugin
   extends EditPlugin
 {
-  public static final String PLUGIN_NAME             = "Spell Check";
+  public static final String PLUGIN_NAME             = "SpellCheck";
   public static final String CHECK_SELECTION_ACTION  = "spell-check-selection";
   public static final String ASPELL_EXE_PROP         = "spell-check-aspell-exe";
+  public static final String ASPELL_LANG_PROP        = "spell-check-aspell-lang";
 
   private static FileSpellChecker _fileSpellChecker = null;
 
@@ -77,7 +78,7 @@ public class SpellCheckPlugin
   */
   public void createOptionPanes(OptionsDialog optionsDialog)
   {
-    optionsDialog.addOptionPane( new JEditOptionPane() );
+    optionsDialog.addOptionPane( new SpellCheckOptionPane() );
   }
 
   /**
@@ -89,12 +90,19 @@ public class SpellCheckPlugin
     JEditTextArea textArea = view.getTextArea();
     String selectedText =  textArea.getSelectedText();
     if( selectedText == null )
-      return;
+    {
+      textArea.selectAll();
+      selectedText = textArea.getText();
+    }
 
     String checkedText = checkBuffer( view, selectedText );
-    if( checkedText == null )
+
+    if ( checkedText == null )
       return;
 
+    if ( checkedText.equals(selectedText) )
+      view.getStatus().setMessageAndClear("Spell check terminated with no error");
+    else
       textArea.setSelectedText( checkedText );
   }
 
@@ -115,10 +123,14 @@ public class SpellCheckPlugin
 
       boolean checkingNotCanceled =  checker.checkFile( input, output );
 
+      // Restore buffer correct line separator if any
+      if ( buffer.endsWith("\n") )
+        output.write( '\n' );
+
       input.close();
       output.close();
 
-      if( checkingNotCanceled )
+      if ( checkingNotCanceled )
         checkedBuffer = stringWriter.toString();
       else
         checkedBuffer = null;
@@ -127,16 +139,16 @@ public class SpellCheckPlugin
     {
       Log.log(Log.ERROR, SpellCheckPlugin.class, "Error spell checking (Aspell).");
       Log.log(Log.ERROR, SpellCheckPlugin.class, e);
-      String msg = "Cannot check selection.\nError (Aspell) is: " + e.getMessage();
-      GUIUtilities.message( view, msg, null);
+      Object[] args = { new String (e.getMessage()) };
+      GUIUtilities.error( view, "spell-check-error", args);
       checkedBuffer = null;
     }
     catch( IOException e )
     {
       Log.log(Log.ERROR, SpellCheckPlugin.class, "Error spell checking (plugin).");
       Log.log(Log.ERROR, SpellCheckPlugin.class, e);
-      String msg = "Cannot check selection.\nError (plugin) is: " + e.getMessage();
-      GUIUtilities.message( view, msg, null);
+      Object[] args = { new String (e.getMessage()) };
+      GUIUtilities.error( view, "spell-check-error", args);
       checkedBuffer = null;
     }
 
@@ -152,14 +164,16 @@ public class SpellCheckPlugin
   {
     //String  aspellExeFilename = "O:\\local\\aspell\\aspell.exe";
     String  aspellExeFilename = getAspellExeFilename();
+    String  aspellMainLanguage = getAspellMainLanguage();
 
     if( _fileSpellChecker == null )
-      _fileSpellChecker = new FileSpellChecker( aspellExeFilename );
+      _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellMainLanguage );
     else
-      if( !aspellExeFilename.equals( _fileSpellChecker.getAspellExeFilename() ) )
+      if( !aspellExeFilename.equals( _fileSpellChecker.getAspellExeFilename() )
+       || !aspellMainLanguage.equals( _fileSpellChecker.getAspellMainLanguage() ) )
       {
         _fileSpellChecker.stop();
-        _fileSpellChecker = new FileSpellChecker( aspellExeFilename );
+        _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellMainLanguage );
       }
 
     return _fileSpellChecker;
@@ -177,6 +191,20 @@ public class SpellCheckPlugin
     }
 
     return aspellExeFilename;
+  }
+
+  private static
+  String getAspellMainLanguage()
+  {
+    String  aspellMainLanguage = jEdit.getProperty( ASPELL_LANG_PROP );
+
+    if( aspellMainLanguage == null ||
+        aspellMainLanguage.equals("") )
+    {
+      aspellMainLanguage = "";
+    }
+
+    return aspellMainLanguage;
   }
 
 }

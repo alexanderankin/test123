@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.1 $
- * $Date: 2001-09-09 15:04:14 $
- * $Author: cswilly $
+ * $Revision: 1.2 $
+ * $Date: 2002-06-07 14:53:28 $
+ * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -34,6 +34,7 @@ public
 class FileSpellChecker
 {
   private String       _aspellExeFilename;
+  private String       _aspellMainLanguage;
   private AspellEngine _spellEngine          = null;
   private Validator    _spellValidator       = null;
 
@@ -66,14 +67,15 @@ class FileSpellChecker
     System.exit( exitStatus );
   }
 
-  public FileSpellChecker( String aspellExeFilename )
+  public FileSpellChecker( String aspellExeFilename, String aspellMainLanguage )
   {
     _aspellExeFilename = aspellExeFilename;
+    _aspellMainLanguage = aspellMainLanguage;
   }
 
   public FileSpellChecker()
   {
-      this( "O:\\local\\aspell\\aspell.exe" );
+      this( "O:\\local\\aspell\\aspell.exe", "" );
   }
 
   /**
@@ -107,7 +109,8 @@ class FileSpellChecker
 
         line = input.readLine();
 
-        // Force that the last line in buffer does NOT have a newline
+        // Restore each line separator except for the last one (we don't know
+        // here if selected text to check ends with such a line separator)
         if( line != null )
           output.write( '\n' );
       }
@@ -131,6 +134,12 @@ class FileSpellChecker
   }
 
   public
+  String getAspellMainLanguage()
+  {
+    return _aspellMainLanguage;
+  }
+
+  public
   void stop()
   {
     if( _spellEngine != null )
@@ -146,7 +155,13 @@ class FileSpellChecker
   {
     if( _spellEngine == null )
     {
-      String aSpellCommandLine = _aspellExeFilename + " pipe";
+      String aSpellCommandLine = _aspellExeFilename;
+      if ( !_aspellMainLanguage.equals("") )
+      {
+        aSpellCommandLine += " --lang=" + _aspellMainLanguage;
+        aSpellCommandLine += " --language-tag=" + _aspellMainLanguage;
+      }
+      aSpellCommandLine += " pipe";
       _spellEngine = new AspellEngine( aSpellCommandLine );
     }
 

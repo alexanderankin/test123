@@ -1,7 +1,7 @@
 /*
- * $Revision: 1.1 $
- * $Date: 2001-09-09 15:04:14 $
- * $Author: cswilly $
+ * $Revision: 1.2 $
+ * $Date: 2002-06-07 14:53:28 $
+ * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
  *
@@ -66,7 +66,7 @@ class ValidationDialog
   private final List        _suggestions;
   private       JList       _suggestionsJList;
   private       UserAction  _userAction         = CANCEL;
-  private       String      _title              = "Spell Check, Release R003";
+  private       String      _title              = "Spell Check, Release R004";
   // ??? bad to have release hardocoded here. Fix later...right.
   private       static Point       _location           = new Point( 100, 100 );
 
