@@ -268,6 +268,12 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return (c.compare(child,n) < 0 ? b : b + 1);
 	} //}}}
 	
+	//{{{ getNodeType() method
+	/** Returns the type of the node. */
+	public VPTNodeType getNodeType() {
+		return nodeType;
+	}
+	//}}}
 	
 	//}}}
 
@@ -330,10 +336,10 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 		public int compare(Object o1, Object o2) {
 			if (o1 == o2) return 0;
-			return compare((VPTNode)o1, (VPTNode)o2);
-		}
 
-		public int compare(VPTNode node1, VPTNode node2) {			
+			VPTNode node1 = (VPTNode) o1;
+			VPTNode node2 = (VPTNode) o2;	
+	
 			if (node1.isFile()) {
 				if(node2.isFile()) {
 					return node1.getName().compareTo(node2.getName());
@@ -362,8 +368,6 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 				return node1.compareToNode(node2);
 			}
 		}
-		
-
 		
 	} //}}}
 	
