@@ -110,7 +110,7 @@ public class SpecialCommentRemover extends Preprocessor
     final ArrayList lst = new ArrayList();
     try
     {
-      final String prop = SqlPlugin.getProperty( PROP_NAME );
+      final String prop = SqlPlugin.getGlobalProperty( PROP_NAME );
       final StringTokenizer strTkn = new StringTokenizer( prop, "?" );
 
       while ( strTkn.hasMoreTokens() )
@@ -140,7 +140,7 @@ public class SpecialCommentRemover extends Preprocessor
     }
 
     final String stext = text.toString();
-    SqlPlugin.setProperty( PROP_NAME,
+    SqlPlugin.setGlobalProperty( PROP_NAME,
         stext.length() > 0 ?
         stext.substring( 0,
         stext.length() - 1 ) : "" );
@@ -311,7 +311,7 @@ public class SpecialCommentRemover extends Preprocessor
     {
       SpecialCommentRemover.save( allSpecialComments );
 
-      SqlPlugin.commitProperties();
+      SqlPlugin.commitGlobalProperties();
     }
 
 

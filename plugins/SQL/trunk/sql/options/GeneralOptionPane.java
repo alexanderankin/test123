@@ -148,7 +148,7 @@ public class GeneralOptionPane extends SqlOptionPane
     SqlToolBar.showToolBar( showToolBar.isSelected() );
     SqlToolBar.showTitle( showTitle.isSelected() );
 
-    SqlPlugin.commitProperties();
+    SqlPlugin.commitGlobalProperties();
   }
 
 }
