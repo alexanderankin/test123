@@ -1,0 +1,88 @@
+# FindFile Plugin properties
+# $Id: FindFile.props,v 1.3 2004-01-20 10:16:00 olearyni Exp $
+plugin.findfile.FindFilePlugin.name=FindFile
+plugin.findfile.FindFilePlugin.author=Nicholas O'Leary
+plugin.findfile.FindFilePlugin.version=0.4
+plugin.findfile.FindFilePlugin.activate=defer
+plugin.findfile.FindFilePlugin.depend.0=jdk 1.4.0
+plugin.findfile.FindFilePlugin.depend.1=jedit 04.02.00.00
+plugin.findfile.FindFilePlugin.docs=docs/about.html
+plugin.findfile.FindFilePlugin.option-pane=FindFilePlugin-options
+
+plugin.findfile.FindFilePlugin.actions.newSearch.label=Search for files...
+
+options.FindFilePlugin-options.label=FindFile 
+options.FindFilePlugin-options.code=new findfile.FindFileOptionPane();
+
+plugin.findfile.FindFilePlugin.browser-menu-item=vfs.browser.FindFile
+
+FindFilePlugin.label=FindFile
+FindFilePlugin.title=FindFile Results
+FindFilePlugin.find-dialog.title=Find Files
+FindFilePlugin.action-labels.open=Open
+FindFilePlugin.action-labels.openAs=Open as...
+FindFilePlugin.action-labels.close=Close
+FindFilePlugin.action-labels.delete=Delete...
+FindFilePlugin.action-labels.rename=Rename...
+FindFilePlugin.action-labels.browsePath=Browse file's path
+FindFilePlugin.action-labels.browseArchive=Browse archive
+FindFilePlugin.action-labels.copyResult=Copy path
+FindFilePlugin.action-labels.removeSearch=Remove search
+FindFilePlugin.action-labels.searchInFile=Search in file...
+FindFilePlugin.action-labels.searchInArchive=Search in archive...
+FindFilePlugin.action-labels.searchInFiles=Search in files...
+
+FindFilePlugin.action-labels.openAllResults=Open all files
+FindFilePlugin.action-labels.closeAllResults=Close all files
+FindFilePlugin.action-labels.copyAllResults=Copy results
+FindFilePlugin.action-labels.sortByFileName=By file name
+FindFilePlugin.action-labels.sortByPath=By path
+FindFilePlugin.action-labels.newSearch=Search for files...
+FindFilePlugin.action-labels.removeAllSearches=Remove all searches
+FindFilePlugin.action-labels.toggleMultple=Toggle multiple results
+
+FindFilePlugin.option-pane-labels.multipleResults=Show multiple results
+FindFilePlugin.option-pane-labels.hidePath=Hide path details
+FindFilePlugin.option-pane-labels.defaultSettings=Default search options
+FindFilePlugin.option-pane-labels.generalSettings=General settings
+FindFilePlugin.option-pane-labels.archiveSettings=Archive settings
+FindFilePlugin.option-pane-labels.useModeDetection=Only open files that a mode can be detected for
+FindFilePlugin.option-pane-labels.recursiveSearch=Search subdirectories
+FindFilePlugin.option-pane-labels.openAllResults=Open all results
+FindFilePlugin.option-pane-labels.archiveFilter=Filter to identify archives:
+FindFilePlugin.option-pane-labels.sortBy=Result sort order
+
+FindFilePlugin.option-pane-defaults.archiveFilter=*.{zip,tar,tgz,jar}
+
+FindFilePlugin.status-message.started=Searching...
+FindFilePlugin.status-message.finished=Done
+
+FindFilePlugin.delete-confirm.title=Confirm deletion
+FindFilePlugin.delete-confirm.message=Are you sure you want to delete: {0}?
+
+FindFilePlugin.not-implemented.title=Not implemented
+FindFilePlugin.not-implemented.message=Not implemented in this version.
+
+FindFilePlugin.invalid-archive-filter.title=Invalid archive filter
+FindFilePlugin.invalid-archive-filter.message={0} appears to be an invalid filter:\n\
+ {1}
+ 
+
+FindFilePlugin.failed-to-open.title=Failed to open
+FindFilePlugin.failed-to-open.message=Failed to open: {0} \
+ as no suitable edit mode was detected.
+
+FindFilePlugin.failed-to-open-some.title=Failed to open some files
+FindFilePlugin.failed-to-open-some.message=Failed to open some files as\n\
+ no suitable edit modes were detected.\n\
+ See the Activity Log for more information.
+
+FindFilePlugin.archive-not-installed.title=Archive plugin not installed
+FindFilePlugin.archive-not-installed.message=Browsing an archive requires the Archive plugin to be installed.
+
+FindFilePlugin.search-in-file.title=Search in file
+FindFilePlugin.search-in-file.message=Enter text to search for.
+
+vfs.browser.FindFile.label=Search for files...
+
+
