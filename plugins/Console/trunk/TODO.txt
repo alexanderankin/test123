@@ -1,15 +1,24 @@
-- sort property list in commando dialog box
+BEFORE CONSOLE 3.0 RELEASE:
+
+- documentation generated with DocBook
+- include John's jcmd for running stuff on Windows
+- environment variable support:
+  - use OS-specific means (env on Unix, (command|cmd) /c set on Windows) to
+    obtain them
+  - %set, %unset, %env built-ins
+  - expand them on command line - $name, ${name} or %name% all supported
+  - pass them to child processes
+- finish commando, include a few more sample commando files
+- improve commando error handling
 - combo box renderer is wrong
 - import not working in BeanShell
+- on Windows, use PATHEXT variable instead of hard-coded list with .com,
+  .bat, .exe, and so on
+
+LATER:
+
+- sort property list in commando dialog box
 - better handling of warning -vs- error
-- finish commando: TOGGLE_ENTRY tag, test, debug
-- improve commando error handling
-- documentation generated with docbook
-- variables:
-  $<char> abbreviation for ${<char>}
-  some variables ($d, etc) have default values
-  others loaded from option pane and can be set with %set/%unset
-  support OS-specific means to load environment variables
 - aliases option pane
 - finish built-ins:
   %ls, with colored output
