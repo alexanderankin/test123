@@ -67,7 +67,6 @@ public class TemplatesPlugin extends EditPlugin
 		// the Code Templates menu.
 		TemplatesMenu myMenu = new TemplatesMenu();
 		menuItems.addElement(myMenu);
-		myMenu.addNotify();
 	}
 	
 	/**
@@ -82,6 +81,9 @@ public class TemplatesPlugin extends EditPlugin
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.4  2001/07/18 13:36:16  sjakob
+	 * Removed unnecessary call to TemplatesMenu.addNotify().
+	 *
 	 * Revision 1.3  2001/07/16 19:10:13  sjakob
 	 * BUG FIX: updated TemplatesPlugin to use createMenuItems(Vector menuItems),
 	 * rather than the deprecated createMenuItems(View view, Vector menus,
