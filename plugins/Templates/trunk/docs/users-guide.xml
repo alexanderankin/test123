@@ -292,6 +292,81 @@ public class SomeClass extends Parent implements InterfaceList
 
 <!-- }}} -->
  
+<!-- {{{ Section: Calling Other Templates -->
+ <sect1><title>Calling Other Templates (#include/#parse)</title>
+  <para>
+   Joe is finding that he's spending a lot of time writing Java 
+   software. Since all of his software is released using the license 
+   statement shown earlier, he'd like to 
+   be able to automatically include his license statement in each Java 
+   class. At first glance, it appears that the #include directive should 
+   allow him to do just that. He changes his Java class file as follows:
+  </para>
+<programlisting>
+package com.javajoe.mypackage;
+
+#include ( "gpl.vm" );    ## Joe's license file
+
+import javax.swing.*;
+/**
+ * Class description goes here
+ */
+public class SomeClass extends Parent implements InterfaceList
+{
+	// Insert class variables here
+
+	public static void main(String[] args) {
+		// Main method
+	}
+
+	//Constructors
+	public SomeClass() {
+		super();
+	}
+	
+	// Accessors &amp; Mutators
+	
+	// Implementors
+}
+</programlisting>
+  <para>
+   The <function>#include</function> directive takes as its parameter the 
+   name of the template file to be included. Upon running the new Java class 
+   template, the license statement is indeed included, but ends up looking 
+   like this:
+  </para>
+<programlisting>
+#today ( $year "yyyy" )
+/*
+ * MyClass.java
+ *
+ * Copyright (c) ${year} Java Joe
+ * Give my code a good home.
+ */
+</programlisting>
+  <para>
+   "What gives?", ponders Joe. "It was resolving the date before". Joe consults 
+   the documentation and realizes that the <function>#include</function> 
+   directive is used to import static text, while the <function>#parse</function>
+   directive will process the imported file as a template. Joe changes the first 
+   section of his class template to look like this:
+  </para>
+<programlisting>
+package com.javajoe.mypackage;
+
+#parse ( "gpl.vm" );    ## Joe's license file
+
+import javax.swing.*;
+## ... etc.
+</programlisting>
+  <para>
+   Now the license statement file gets processed as expected.
+  </para>
+
+ </sect1>
+
+<!-- }}} -->
+ 
 </chapter>
 <!-- }}} -->
 
