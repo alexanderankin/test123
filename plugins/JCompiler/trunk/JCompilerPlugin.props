@@ -1,9 +1,9 @@
 # General options
 
 plugin.jcompiler.JCompilerPlugin.name=JCompiler
-plugin.jcompiler.JCompilerPlugin.author=Dirk Möbius
-plugin.jcompiler.JCompilerPlugin.contributors=Logan Bauer, Kevin A. Burton, Mike Hansen, Aziz Sharif, Dominic Stolerman, Andreas Schörk, Doug Breaux
-plugin.jcompiler.JCompilerPlugin.version=1.7
+plugin.jcompiler.JCompilerPlugin.author=Dirk M?bius
+plugin.jcompiler.JCompilerPlugin.contributors=Logan Bauer, Kevin A. Burton, Mike Hansen, Aziz Sharif, Dominic Stolerman, Andreas Sch?rk, Doug Breaux
+plugin.jcompiler.JCompilerPlugin.version=1.7.1
 plugin.jcompiler.JCompilerPlugin.docs=index.html
 plugin.jcompiler.JCompilerPlugin.activate=defer
 plugin.jcompiler.JCompilerPlugin.depend.0=jedit 04.02.06.00
