@@ -43,6 +43,8 @@ public class AntFarm extends JPanel implements EBComponent
 	JButton addAntFile;
 	JButton removeAntFile;
 	JButton runTarget;
+	JButton options;
+	
 	private Hashtable _antProjects = new Hashtable();
 
 	private Panel _toolBar;
@@ -338,6 +340,8 @@ public class AntFarm extends JPanel implements EBComponent
 
 		_toolBar.addSeparator();
 		_toolBar.add( runTarget = createToolButton( "run" ) );
+		
+		_toolBar.add( options = createToolButton( "options") );
 
 		// default to enabled to false
 		removeAntFile.setEnabled( false );
