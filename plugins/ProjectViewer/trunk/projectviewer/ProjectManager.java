@@ -194,6 +194,11 @@ public final class ProjectManager {
    public synchronized void save() {
       // Before saving, let's load all projects.
       // There should be a better way to do this!!!
+      // danson -- seems to me a 'save' on a Project should happen each time
+      // the user changes from one project to another and on the current project
+      // when jEdit exits. All that should happen here is update the list of projects
+      // (which just requires the project name) and the user configuration settings.
+      // All other saves should already be done.
       for ( int i = 0; i < projects.size(); i++ ) {
          ( (Project)projects.get( i ) ).load();
       }
