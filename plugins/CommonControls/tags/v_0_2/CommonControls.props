@@ -1,0 +1,15 @@
+### Properties used by jEdit
+
+plugin.CommonControlsPlugin.name=Common Controls
+plugin.CommonControlsPlugin.author=Sergey V. Udaltsov
+plugin.CommonControlsPlugin.version=0.2
+plugin.CommonControlsPlugin.docs=users-guide.html
+
+plugin.CommonControlsPlugin.depend.0=jedit 02.07.02.00
+
+common.gui.pathbuilder.addButtonText=Add Element...
+common.gui.pathbuilder.removeButtonText=Remove Element...
+common.gui.pathbuilder.moveUpButtonText=Move Up
+common.gui.pathbuilder.moveDownButtonText=Move Down
+common.gui.pathbuilder.fileDialogTitle=Add element to Path
+common.gui.pathbuilder.fileDialogAction=Select
