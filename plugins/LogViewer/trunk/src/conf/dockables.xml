@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+    <DOCKABLE NAME="logviewer">
+        logviewer.LogViewer lv = new logviewer.LogViewer(view, position);
+        lv.setDocked(true);
+        lv;
+    </DOCKABLE>
+</DOCKABLES>
