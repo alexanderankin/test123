@@ -35,10 +35,10 @@ import errorlist.*;
 public class AntFarmPlugin extends EditPlugin
 {
 
-	final static String NAME = "antfarm";
-	final static String OPTION_PREFIX = "options." + NAME + ".";
-	final static String ANT_HOME = "ant.home";
-	final static AntFarmShell ANT_SHELL = new AntFarmShell();
+	public final static String NAME = "antfarm";
+	public final static String OPTION_PREFIX = "options." + NAME + ".";
+	public final static String ANT_HOME = "ant.home";
+	public final static AntFarmShell ANT_SHELL = new AntFarmShell();
 
 	private static DefaultErrorSource _errorSource;
 
@@ -94,21 +94,6 @@ public class AntFarmPlugin extends EditPlugin
 		return properties;
 	}
 
-	public void createMenuItems( Vector menuItems )
-	{
-		menuItems.addElement( new EnhancedMenu("antfarm-menu") );
-	}
-
-
-	public void createOptionPanes( OptionsDialog od )
-	{
-		OptionGroup grp = new OptionGroup( NAME );
-		grp.addOptionPane( new AntFarmOptionPane() );
-		grp.addOptionPane( new PropertiesOptionPane() );
-		od.addOptionGroup( grp );
-	}
-
-
 	public void start()
 	{
 		//IntegrationManager integration = new IntegrationManager( this );
@@ -139,6 +124,11 @@ public class AntFarmPlugin extends EditPlugin
 		loadCustomClasspath();
 	}
 
+	public void stop()
+	{
+		Shell.unregisterShell( ANT_SHELL );
+	}
+
 	static void loadCustomClasspath()
 	{
 		String classpath = jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX
@@ -150,13 +140,13 @@ public class AntFarmPlugin extends EditPlugin
 		while ( st.hasMoreTokens() ) {
 			String path = st.nextToken();
 
-            PluginJAR jar;
-            jar = jEdit.getPluginJAR( path );
-            if ( jar == null ) {
+			PluginJAR jar;
+			jar = jEdit.getPluginJAR( path );
+			if ( jar == null ) {
 				Log.log( Log.DEBUG, null,
 					"- adding " + path + " to jEdit plugins." );
-                jEdit.addPluginJAR(path);
-            }
+				jEdit.addPluginJAR(path);
+			}
 			else
 				Log.log( Log.DEBUG, null,
 					"- has been loaded before: " + path );
