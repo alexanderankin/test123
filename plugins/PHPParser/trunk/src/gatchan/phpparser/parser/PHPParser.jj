@@ -27,7 +27,7 @@ package gatchan.phpparser.parser;
 import java.util.ArrayList;
 import java.io.StringReader;
 import java.io.*;
-import java.util.Vector;
+import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
@@ -37,65 +37,73 @@ import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
 /**
  * A PHP Parser originaly written for phpeclipse (http://www.phpeclipse.de).
  *
- * @author Matthieu Casanova <hoyo@free.fr>
+ * @author Matthieu Casanova <chocolat.mou@gmail.com>
  */
 public final class PHPParser {
 
-//todo : fix the variables names bug
-//todo : handle tilde operator
-
-//todo: put this in an interface
+  //{{{ Fields
+  
+  
+  //todo : fix the variables names bug
+  //todo : handle tilde operator
+  
+  //todo: put this in an interface
   public static final int ERROR = 2;
   public static final int WARNING = 1;
   public static final int INFO = 0;
   public static final int TASK = 3;
-
+  
   /** The current segment. */
-  private static OutlineableWithChildren currentSegment;
-
-  private static final String PARSE_ERROR_STRING = "Parse error"; //$NON-NLS-1$
-  private static final String PARSE_WARNING_STRING = "Warning"; //$NON-NLS-1$
-  static PHPOutlineInfo outlineInfo;
-
+  private OutlineableWithChildren currentSegment;
+  
+  private PHPOutlineInfo outlineInfo;
+  
   /** The error level of the current ParseException. */
-  private static int errorLevel = ERROR;
+  private int errorLevel = ERROR;
   /** The message of the current ParseException. If it's null it's because the parse exception wasn't handled */
-  private static String errorMessage;
-
-  private static int errorStart = -1;
-  private static int errorEnd = -1;
-  private static PHPDocument phpDocument;
-
+  private String errorMessage;
+  
+  private int errorStart = -1;
+  private int errorEnd = -1;
+  private PHPDocument phpDocument;
+  
   private static final String SYNTAX_ERROR_CHAR = "syntax error";
   /**
-   * The point where html starts.
-   * It will be used by the token manager to create HTMLCode objects
-   */
-  public static int htmlStart;
-  public static int htmlLineStart;
-  public static int htmlColumnStart;
-
+  * The point where html starts.
+  * It will be used by the token manager to create HTMLCode objects
+  */
+  private int htmlStart;
+  private int htmlLineStart;
+  private int htmlColumnStart;
+  
   //ast stack
-  private final static int AstStackIncrement = 100;
+  private static final int AstStackIncrement = 100;
   /** The stack of node. */
-  private static AstNode[] nodes;
+  private AstNode[] nodes;
   /** The cursor in expression stack. */
-  private static int nodePtr;
-
+  private int nodePtr;
+  
   public static final boolean PARSER_DEBUG = false;
-
-  private final Vector parserListeners = new Vector();
-
+  
+  private final List parserListeners = new ArrayList();
+  
   private String path;
-
+  
   /**
-   * Tell if the parsing should be stopped.
-   */
+  * Tell if the parsing should be stopped.
+  */
   private boolean shouldStop;
+  
+  //}}}
 
+  //{{{ PHPParser()
+  
   public PHPParser() {
   }
-
+  
+  //}}}
+  //{{{ getPath()
+  
   /**
    * Set the path of the file that is currently parsed.
    * This path will be sent in parse errors and messages
@@ -105,46 +113,70 @@ public final class PHPParser {
   public void setPath(final String path) {
     this.path = path;
   }
-
+  
+  //}}}
+  //{{{ getPath()
+  
   public String getPath() {
     return path;
   }
-
+  
+  //}}}
+  //{{{ stop()
+  
   /**
    * Ask the parser to stop his work.
    */
   public void stop() {
     shouldStop = true;
   }
-
+  
+  //}}}
+  //{{{ isStopped()
+  
   public boolean isStopped() {
     return shouldStop;
   }
-
+  
+  //}}}
+  //{{{ addParserListener(final PHPParserListener listener)
+  
   public void addParserListener(final PHPParserListener listener) {
     if (!parserListeners.contains(listener)) {
       parserListeners.add(listener);
     }
   }
-
+  
+  //}}}
+  //{{{ removeParserListener(final PHPParserListener listener)
+  
   public void removeParserListener(final PHPParserListener listener) {
     parserListeners.remove(listener);
   }
-
+  
+  //}}}
+  //{{{ fireParseError(final PHPParseErrorEvent e)
+  
   public void fireParseError(final PHPParseErrorEvent e) {
     for (int i = 0;i<parserListeners.size();i++) {
-        PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+        final PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
         listener.parseError(e);
     }
   }
-
+  
+  //}}}
+  //{{{ fireParseMessage(final PHPParseMessageEvent e)
+  
   public void fireParseMessage(final PHPParseMessageEvent e) {
     for (int i = 0;i<parserListeners.size();i++) {
-        PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
+        final PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
         listener.parseMessage(e);
     }
   }
-
+  
+  //}}}
+  //{{{ phpParserTester(final String strEval)
+  
   public final void phpParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
     if (jj_input_stream == null) {
@@ -159,7 +191,10 @@ public final class PHPParser {
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     phpTest();
   }
-
+  
+  //}}}
+  //{{{ htmlParserTester(final File fileName)
+  
   public final void htmlParserTester(final File fileName) throws FileNotFoundException, ParseException {
     final Reader stream = new FileReader(fileName);
     if (jj_input_stream == null) {
@@ -173,7 +208,10 @@ public final class PHPParser {
     outlineInfo = new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
-
+  
+  //}}}
+  //{{{ htmlParserTester(final String strEval)
+  
   public final void htmlParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
     if (jj_input_stream == null) {
@@ -187,23 +225,29 @@ public final class PHPParser {
     outlineInfo = new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
-
+  
+  //}}}
+  //{{{ init()
+  
   /**
    * Reinitialize the parser.
    */
-  private static final void init() {
+  private void init() {
     nodes = new AstNode[AstStackIncrement];
     nodePtr = -1;
     htmlStart = 0;
     htmlColumnStart = 0;
     htmlLineStart = 0;
   }
-
+  
+  //}}}
+  //{{{ pushOnAstNodes(final AstNode node)
+  
   /**
    * Add an php node on the stack.
    * @param node the node that will be added to the stack
    */
-  private static final void pushOnAstNodes(final AstNode node) {
+  private void pushOnAstNodes(final AstNode node) {
     try {
       nodes[++nodePtr] = node;
     } catch (IndexOutOfBoundsException e) {
@@ -215,7 +259,10 @@ public final class PHPParser {
       nodes[nodePtr] = node;
     }
   }
-
+  
+  //}}}
+  //{{{ parseInfo(final Object parent, final String s)
+  
   public final PHPOutlineInfo parseInfo(final Object parent, final String s) throws ParseException {
     phpDocument = new PHPDocument(parent,"_root");
     currentSegment = phpDocument;
@@ -232,7 +279,10 @@ public final class PHPParser {
     System.arraycopy(nodes,0,phpDocument.nodes,0,nodes.length);
     return outlineInfo;
   }
-
+  
+  //}}}
+  //{{{ createNewHTMLCode()
+  
   /**
    * Put a new html block in the stack.
    */
@@ -246,41 +296,35 @@ public final class PHPParser {
     final String html = jj_input_stream.getCurrentBuffer().substring(htmlStart, currentPosition);
     pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition,htmlLineStart,token.endLine,htmlColumnStart,token.endColumn));
   }
-
-  /** Create a new task. */
-/*  public final void createNewTask(final int todoStart) {
-    final StringBuffer currentBuffer = jj_input_stream.getCurrentBuffer();
-    final String  todo = currentBuffer.substring(todoStart,currentBuffer.indexOf("\n",todoStart)-1);
-    if (!PARSER_DEBUG) {
-      try {
-        setMarker(fileToParse,
-                  todo,
-                  jj_input_stream.getBeginLine(),
-                  TASK,
-                  "Line "+jj_input_stream.getBeginLine());
-      } catch (CoreException e) {
-        PHPeclipsePlugin.log(e);
-      }
-    }
-  }      */
-
-  Token error_skipto(int kind) {
-  //  ParseException e = generateParseException();  // generate the exception object.
-  //  System.out.println(e.toString());  // print the error message
+  
+  //}}}
+  //{{{ error_skipto(final int kind)
+  
+  Token error_skipto(final int kind) {
+    //  ParseException e = generateParseException();  // generate the exception object.
+    //  System.out.println(e.toString());  // print the error message
     Token t;
     do {
       t = getNextToken();
-    } while (t.kind != kind && t.kind != PHPParserConstants.EOF);
+    } while (t.kind != kind && t.kind != PHPParserConstants.EOF && t.kind != PHPParserConstants.RBRACE);
     return t;
   }
-
+  
+  //}}}
+  //{{{ parse()
+  
   public final void parse() throws ParseException {
 	  phpFile();
   }
-
+  
+  //}}}
+  //{{{ getPHPDocument()
+  
   public PHPDocument getPHPDocument() {
     return phpDocument;
   }
+  
+  //}}}
 }
 
 PARSER_END(PHPParser)
@@ -297,6 +341,8 @@ TOKEN_MGR_DECLS:
     
   } // CommonTokenAction
 } // TOKEN_MGR_DECLS
+
+//{{{ TOKEN declarations 
 
 <DEFAULT> TOKEN :
 {
@@ -350,16 +396,6 @@ TOKEN_MGR_DECLS:
 | < ~[] >
 }
 
-<IN_SINGLE_LINE_COMMENT,IN_FORMAL_COMMENT,IN_MULTI_LINE_COMMENT> SPECIAL_TOKEN :
-{
- <TODO : "todo">
-}
-/*
-void todo() :
-{Token todoToken;}
-{
-  todoToken = "TODO" {createNewTask(todoToken.sourceStart);}
-}   */
 <IN_FORMAL_COMMENT> SPECIAL_TOKEN :
 {
   "*/" : PHPPARSING
@@ -671,12 +707,23 @@ MORE :
 | <RSIGNEDSHIFTASSIGN : ">>="> : PHPPARSING
 }
 
+//}}}
+
+//{{{ PARSER
+
+//{{{ PHP Structures
+
+//{{{ phpTest()
+
 void phpTest() :
 {}
 {
   Php()
   <EOF>
 }
+
+//}}}
+//{{{ phpFile()
 
 void phpFile() :
 {}
@@ -698,6 +745,9 @@ void phpFile() :
                                           jj_input_stream.getEndColumn()));
   }
 }
+
+//}}}
+//{{{ PhpBlock()
 
 /**
  * A php block is a <?= expression [;]?>
@@ -753,6 +803,9 @@ void PhpBlock() :
   }
 }
 
+//}}}
+//{{{ phpEchoBlock()
+
 PHPEchoBlock phpEchoBlock() :
 {
   final Expression expr;
@@ -797,11 +850,23 @@ PHPEchoBlock phpEchoBlock() :
   }
 }
 
+//}}}
+//{{{ Php()
+
 void Php() :
 {}
 {
   (BlockStatement())*
 }
+
+//}}}
+
+
+//}}}
+
+//{{{ Class methods
+
+//{{{ ClassDeclaration()
 
 /**
  * A Class declaration.
@@ -859,7 +924,7 @@ ClassDeclaration ClassDeclaration() :
     }
   ]
   {
-    int start, end,beginLine,endLine,beginColumn,endColumn;
+    final int end,endLine,endColumn;
     if (className == null) {
       end         = classToken.sourceEnd;
       endLine     = classToken.endLine;
@@ -924,9 +989,13 @@ ClassDeclaration ClassDeclaration() :
    return classDeclaration;}
 }
 
+//}}}
+//{{{ ClassBody(final ClassDeclaration classDeclaration)
+
 void ClassBody(final ClassDeclaration classDeclaration) :
 {
-Token lBraceToken, rBraceToken;
+  final Token lBraceToken;
+  Token rBraceToken;
 }
 {
   try {
@@ -970,6 +1039,9 @@ Token lBraceToken, rBraceToken;
   }
 }
 
+//}}}
+//{{{ ClassBodyDeclaration(final ClassDeclaration classDeclaration)
+
 /**
  * A class can contain only methods and fields.
  */
@@ -980,8 +1052,11 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
 }
 {
   method = MethodDeclaration() {method.analyzeCode(this); classDeclaration.addMethod(method);}
-| field = FieldDeclaration()   {if (field != null) classDeclaration.addField(field);}
+| field  = FieldDeclaration()  {if (field != null) classDeclaration.addField(field);}
 }
+
+//}}}
+//{{{ FieldDeclaration()
 
 /**
  * A class field declaration : it's var VariableDeclarator() (, VariableDeclarator())*;.
@@ -992,12 +1067,12 @@ FieldDeclaration FieldDeclaration() :
   VariableDeclaration variableDeclaration;
   final VariableDeclaration[] list;
   final ArrayList arrayList = new ArrayList();
-  final Token token;
-  Token token2 = null;
+  final Token varToken;
+  Token semicolonToken = null;
   int pos;
 }
 {
-  token = <VAR>
+  varToken = <VAR>
   try {
     variableDeclaration = VariableDeclaratorNoSuffix()
       {
@@ -1005,17 +1080,17 @@ FieldDeclaration FieldDeclaration() :
         pos = variableDeclaration.sourceEnd;
       }
     } catch (ParseException e) {
-      Token semicolon = error_skipto(SEMICOLON);
+      final Token semicolon = error_skipto(SEMICOLON);
       fireParseError(new PHPParseErrorEvent(ERROR,
                                             path,
                                             "variable expected",
                                             "variable",
                                             e.currentToken.next.image,
-                                            token.sourceEnd,
+                                            varToken.sourceEnd,
                                             semicolon.sourceEnd,
-                                            token.beginLine,
+                                            varToken.beginLine,
                                             semicolon.endLine,
-                                            token.endColumn,
+                                            varToken.endColumn,
                                             semicolon.endColumn));
       return null;
   }
@@ -1029,7 +1104,7 @@ FieldDeclaration FieldDeclaration() :
       }
   )*
   try {
-    token2 = <SEMICOLON>
+    semicolonToken = <SEMICOLON>
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -1045,33 +1120,40 @@ FieldDeclaration FieldDeclaration() :
   }
 
   {
-   if (arrayList.size() != 0) {
-   list = new VariableDeclaration[arrayList.size()];
-     arrayList.toArray(list);
-
-   } else {
+   if (arrayList.size() == 0) {
     //todo : strange
      return null;
+   } else {
+     list = new VariableDeclaration[arrayList.size()];
+     arrayList.toArray(list);
    }
-   int end,endLine,endColumn;
-   if (token2 == null) {
-     end = list[list.length-1].sourceEnd;
-     endLine = list[list.length-1].getEndLine();
+   final int end, endLine, endColumn;
+   if (semicolonToken == null) {
+     end       = list[list.length-1].sourceEnd;
+     endLine   = list[list.length-1].getEndLine();
      endColumn = list[list.length-1].getEndColumn();
    } else {
-     end = token2.sourceEnd;
-     endLine = token2.endLine;
-     endColumn = token2.endColumn;
+     end       = semicolonToken.sourceEnd;
+     endLine   = semicolonToken.endLine;
+     endColumn = semicolonToken.endColumn;
    }
    return new FieldDeclaration(list,
                                currentSegment,
-                               token.sourceStart,
+                               varToken.sourceStart,
                                end,
-                               token.beginLine,
+                               varToken.beginLine,
                                endLine,
-                               token.beginColumn,
+                               varToken.beginColumn,
                                endColumn);}
 }
+
+//}}}
+
+//}}}
+
+//{{{ Variables
+
+//{{{ VariableDeclaratorNoSuffix()
 
 /**
  * a strict variable declarator : there cannot be a suffix here.
@@ -1080,21 +1162,22 @@ FieldDeclaration FieldDeclaration() :
 VariableDeclaration VariableDeclaratorNoSuffix() :
 {
   final Token identifierToken, lbrace,rbrace;
-  Expression expr, initializer = null;
+  final Expression expr;
+  Expression initializer = null;
   Token assignToken = null;
-  Token dollar;
-  Variable variable;
+  final Token dollarToken;
+  final Variable variable;
 }
 {
-  dollar = <DOLLAR>
+  dollarToken = <DOLLAR>
   (
      identifierToken = <IDENTIFIER>
      {variable = new Variable(identifierToken.image,
-                              dollar.sourceStart,
+                              dollarToken.sourceStart,
                               identifierToken.sourceEnd,
-                              dollar.beginLine,
+                              dollarToken.beginLine,
                               identifierToken.endLine,
-                              dollar.beginColumn,
+                              dollarToken.beginColumn,
                               identifierToken.endColumn);}
    |
      lbrace = <LBRACE> expr = Expression() rbrace = <RBRACE>
@@ -1159,6 +1242,9 @@ VariableDeclaration VariableDeclaratorNoSuffix() :
                                  initializer.getEndColumn());
   }
 }
+
+//}}}
+//{{{ VariableDeclarator()
 
 /**
  * this will be used by static statement
@@ -1225,6 +1311,9 @@ VariableDeclaration VariableDeclarator() :
   }
 }
 
+//}}}
+//{{{ VariableDeclaratorId()
+
 /**
  * A Variable name.
  * @return the variable name (with suffix)
@@ -1237,7 +1326,7 @@ AbstractVariable VariableDeclaratorId() :
   try {
     var = Variable()
     (
-      LOOKAHEAD(2)
+     // LOOKAHEAD(2)
       var = VariableSuffix(var)
     )*
     {
@@ -1252,6 +1341,9 @@ AbstractVariable VariableDeclaratorId() :
   }
 }
 
+//}}}
+//{{{ Variable()
+
 Variable Variable() :
 {
   Variable variable = null;
@@ -1265,12 +1357,15 @@ Variable Variable() :
   }
 }
 
+//}}}
+//{{{ Var()
+
 Variable Var() :
 {
   Variable variable = null;
   final Token token,token2;
   ConstantIdentifier constant;
-  Expression expression;
+  final Expression expression;
 }
 {
   token = <DOLLAR> variable = Var()
@@ -1306,6 +1401,9 @@ Variable Var() :
   }
 }
 
+//}}}
+//{{{ VariableInitializer()
+
 Expression VariableInitializer() :
 {
   final Expression expr;
@@ -1336,6 +1434,15 @@ Expression VariableInitializer() :
   {return new ConstantIdentifier(token);}
 }
 
+//}}}
+
+
+//}}}
+
+//{{{ Arrays
+
+//{{{ ArrayVariable()
+
 ArrayVariableDeclaration ArrayVariable() :
 {
 final Expression expr,expr2;
@@ -1348,6 +1455,9 @@ final Expression expr,expr2;
   ]
   {return new ArrayVariableDeclaration(expr,expr.sourceEnd,expr.getBeginLine(),expr.getEndLine(),expr.getBeginColumn(),expr.getEndColumn());}
 }
+
+//}}}
+//{{{ ArrayInitializer()
 
 ArrayVariableDeclaration[] ArrayInitializer() :
 {
@@ -1373,6 +1483,15 @@ ArrayVariableDeclaration[] ArrayInitializer() :
   return vars;}
 }
 
+//}}}
+
+
+//}}}
+
+//{{{ Methods functions
+
+//{{{ MethodDeclaration()
+
 /**
  * A Method Declaration.
  * <b>function</b> MetodDeclarator() Block()
@@ -1382,22 +1501,29 @@ ArrayVariableDeclaration[] ArrayInitializer() :
 MethodDeclaration MethodDeclaration() :
 {
   final MethodDeclaration functionDeclaration;
+  final MethodHeader methodHeader;
   final Block block;
   final OutlineableWithChildren seg = currentSegment;
-  final Token token;
+  final Token functionToken;
 }
 {
-  token = <FUNCTION>
-  functionDeclaration = MethodDeclarator(token.sourceStart)
+  functionToken = <FUNCTION>
+  methodHeader = methodHeader(functionToken)
   {
-    outlineInfo.addVariable(functionDeclaration.name);
+    functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
+    outlineInfo.addVariable(functionDeclaration.getName());
     currentSegment = functionDeclaration;
   }
   block = Block()
   {functionDeclaration.statements = block.statements;
+   functionDeclaration.setBodyStart(block.getSourceStart());
+   functionDeclaration.setBodyEnd(token.sourceEnd);
    currentSegment = seg;
    return functionDeclaration;}
 }
+
+//}}}
+//{{{ methodHeader(final int functionToken)
 
 /**
  * A MethodDeclarator.
@@ -1405,21 +1531,21 @@ MethodDeclaration MethodDeclaration() :
  *
  * @return a function description for the outline
  */
-MethodDeclaration MethodDeclarator(final int start) :
+MethodHeader methodHeader(final Token functionToken) :
 {
   Token identifier = null;
   Token reference = null;
   final ArrayList formalParameters = new ArrayList();
   String identifierChar = SYNTAX_ERROR_CHAR;
-  int end = start;
+  Token endToken;
+  Token lastToken;
 }
 {
-  [reference = <BIT_AND> {end = reference.sourceEnd;}]
+  [reference = <BIT_AND>]
   try {
     identifier = <IDENTIFIER>
     {
       identifierChar = identifier.image;
-      end = identifier.sourceEnd;
     }
   } catch (ParseException e) {
     if (e.currentToken.next.kind == PHPParserConstants.LPAREN) {
@@ -1428,7 +1554,7 @@ MethodDeclaration MethodDeclarator(final int start) :
                                             "identifier expected",
                                             "identifier",
                                             e.currentToken.image,
-                                            start,
+                                            functionToken.sourceStart,
                                             e.currentToken.sourceStart,
                                             e.currentToken.beginLine,
                                             e.currentToken.endLine,
@@ -1449,47 +1575,56 @@ MethodDeclaration MethodDeclarator(final int start) :
       //error_skipto(PHPParserConstants.LPAREN);
     }
   }
-  end = FormalParameters(formalParameters)
+  FormalParameters(formalParameters)
   {
-  int nameStart, nameEnd;
-  if (identifier == null) {
-    if (reference == null) {
-      nameStart = start + 9;
-      nameEnd = start + 10;
+    final int nameStart, nameEnd;
+    if (identifier == null) {
+      if (reference == null) {
+        nameStart = functionToken.sourceStart + 9;
+        nameEnd   = functionToken.sourceStart + 10;
+      } else {
+        nameStart = reference.sourceEnd + 1;
+        nameEnd   = reference.sourceEnd + 2;
+      }
     } else {
-      nameStart = reference.sourceEnd + 1;
-      nameEnd = reference.sourceEnd + 2;
-    }
-  } else {
       nameStart = identifier.sourceStart;
       nameEnd = identifier.sourceEnd;
-  }
-  return new MethodDeclaration(currentSegment,
-                               identifierChar,
-                               formalParameters,
-                               reference != null,
-                               nameStart,
-                               nameEnd,
-                               start,
-                               end);
+    }
+    return new MethodHeader(identifierChar,
+                            reference != null,
+                            formalParameters,
+                            functionToken.sourceStart,
+                            token.sourceEnd,
+                            functionToken.beginLine,
+                            token.endLine,
+                            functionToken.beginColumn,
+                            token.endColumn);
+/*    return new MethodDeclaration(currentSegment,
+                                 identifierChar,
+                                 formalParameters,
+                                 reference != null,
+                                 nameStart,
+                                 nameEnd,
+                                 functionToken.sourceStart,
+                                 end);*/
   }
 }
+
+//}}}
+//{{{ FormalParameters(final ArrayList parameters)
 
 /**
  * FormalParameters follows method identifier.
  * (FormalParameter())
  */
-int FormalParameters(final ArrayList parameters) :
+void FormalParameters(final ArrayList parameters) :
 {
   VariableDeclaration var;
-  final Token token;
-  Token tok = this.token;
-  int end = tok.sourceEnd;
+  final Token rparenToken;
 }
 {
   try {
-  tok = <LPAREN>
-  {end = tok.sourceEnd;}
+  <LPAREN>
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -1505,12 +1640,12 @@ int FormalParameters(final ArrayList parameters) :
   }
   [
     var = FormalParameter()
-    {parameters.add(var);end = var.sourceEnd;}
+    {parameters.add(var);}
       (
         <COMMA>
         try {
           var = FormalParameter()
-          {parameters.add(var);end = var.sourceEnd;}
+          {parameters.add(var);}
         } catch (ParseException e) {
           fireParseError(new PHPParseErrorEvent(ERROR,
                                                 path,
@@ -1527,8 +1662,7 @@ int FormalParameters(final ArrayList parameters) :
       )*
   ]
   try {
-    token = <RPAREN>
-    {end = token.sourceEnd;}
+    rparenToken = <RPAREN>
   } catch (ParseException e) { //recup rparen si avant lbrace
       Token nextToken = getNextToken();
       while (nextToken.kind != EOF && nextToken.kind != RPAREN && nextToken.kind != LBRACE) {
@@ -1572,8 +1706,10 @@ int FormalParameters(final ArrayList parameters) :
                                         nextToken.endColumn-1));
       }
   }
- {return end;}
 }
+
+//}}}
+//{{{ FormalParameter()
 
 /**
  * A formal parameter.
@@ -1594,6 +1730,12 @@ VariableDeclaration FormalParameter() :
     return variableDeclaration;}
 }
 
+//}}}
+
+//}}}
+
+//{{{ Type()
+
 ConstantIdentifier Type() :
 {final Token token;}
 {
@@ -1607,6 +1749,12 @@ ConstantIdentifier Type() :
 | token = <INTEGER>   {return new ConstantIdentifier(token);}
 | token = <OBJECT>    {return new ConstantIdentifier(token);}
 }
+
+//}}}
+
+//{{{ Expressions
+
+//{{{ Expression()
 
 Expression Expression() :
 {
@@ -1647,7 +1795,7 @@ Expression Expression() :
                                            expr.getBeginColumn(),
                                            initializer.getEndColumn());
         }
-        String varName = expr.toStringExpression().substring(1);
+        final String varName = expr.toStringExpression().substring(1);
         return new VariableDeclaration(currentSegment,
                                        new Variable(varName,
                                                     expr.sourceStart,
@@ -1658,40 +1806,49 @@ Expression Expression() :
                                                     expr.getEndColumn()),
                                        expr.sourceStart,
                                        assignOperator.sourceEnd,
-                                           expr.getBeginLine(),
-                                           assignOperator.endLine,
-                                           expr.getBeginColumn(),
-                                           assignOperator.endColumn);
+                                       expr.getBeginLine(),
+                                       assignOperator.endLine,
+                                       expr.getBeginColumn(),
+                                       assignOperator.endColumn);
     }
     return expr;
   }
 | expr = ExpressionWBang()       {return expr;}
 }
 
+//}}}
+//{{{ ExpressionWBang()
+
 Expression ExpressionWBang() :
 {
   final Expression expr;
-  final Token token;
+  final Token bangToken;
 }
 {
-  token = <BANG> expr = ExpressionWBang()
+  bangToken = <BANG> expr = ExpressionWBang()
   {return new PrefixedUnaryExpression(expr,
                                       OperatorIds.NOT,
-                                      token.sourceStart,
-                                      token.beginLine,
-                                      token.beginColumn);}
+                                      bangToken.sourceStart,
+                                      bangToken.beginLine,
+                                      bangToken.beginColumn);}
 | expr = ExpressionNoBang() {return expr;}
 }
 
+//}}}
+//{{{ ExpressionNoBang()
+
 Expression ExpressionNoBang() :
 {
-  Expression expr;
+  final Expression expr;
 }
 {
   expr = ListExpression()    {return expr;}
 |
   expr = PrintExpression()   {return expr;}
 }
+
+//}}}
+//{{{ AssignmentOperator()
 
 /**
  * Any assignement operator.
@@ -1717,6 +1874,9 @@ Token AssignmentOperator() :
 | assignOperator = <TILDEEQUAL>         {return assignOperator;}
 }
 
+//}}}
+//{{{ ConditionalExpression()
+
 Expression ConditionalExpression() :
 {
   final Expression expr;
@@ -1732,6 +1892,9 @@ Expression ConditionalExpression() :
   return new ConditionalExpression(expr,expr2,expr3);
 }
 }
+
+//}}}
+//{{{ ConditionalOrExpression()
 
 Expression ConditionalOrExpression() :
 {
@@ -1753,6 +1916,9 @@ Expression ConditionalOrExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ ConditionalAndExpression()
+
 Expression ConditionalAndExpression() :
 {
   Expression expr,expr2;
@@ -1768,6 +1934,9 @@ Expression ConditionalAndExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ ConcatExpression()
+
 Expression ConcatExpression() :
 {
   Expression expr,expr2;
@@ -1781,6 +1950,9 @@ Expression ConcatExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ InclusiveOrExpression()
+
 Expression InclusiveOrExpression() :
 {
   Expression expr,expr2;
@@ -1792,6 +1964,9 @@ Expression InclusiveOrExpression() :
   )*
   {return expr;}
 }
+
+//}}}
+//{{{ ExclusiveOrExpression()
 
 Expression ExclusiveOrExpression() :
 {
@@ -1806,6 +1981,9 @@ Expression ExclusiveOrExpression() :
   {return expr;}
 }
 
+//}}} 
+//{{{ AndExpression()
+
 Expression AndExpression() :
 {
   Expression expr,expr2;
@@ -1819,6 +1997,9 @@ Expression AndExpression() :
   )*
   {return expr;}
 }
+
+//}}}
+//{{{ EqualityExpression()
 
 Expression EqualityExpression() :
 {
@@ -1867,6 +2048,9 @@ Expression EqualityExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ RelationalExpression()
+
 Expression RelationalExpression() :
 {
   Expression expr,expr2;
@@ -1885,6 +2069,9 @@ Expression RelationalExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ ShiftExpression()
+
 Expression ShiftExpression() :
 {
   Expression expr,expr2;
@@ -1900,7 +2087,10 @@ Expression ShiftExpression() :
   {expr = new BinaryExpression(expr,expr2,operator);}
   )*
   {return expr;}
-}
+}  
+
+//}}}
+//{{{ AdditiveExpression()
 
 Expression AdditiveExpression() :
 {
@@ -1920,6 +2110,9 @@ Expression AdditiveExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ MultiplicativeExpression()
+
 Expression MultiplicativeExpression() :
 {
   Expression expr,expr2;
@@ -1932,8 +2125,8 @@ Expression MultiplicativeExpression() :
     if (errorMessage != null) throw e;
     errorMessage = "unexpected token '"+e.currentToken.next.image+'\'';
     errorLevel   = ERROR;
-    errorStart = this.token.sourceStart;
-    errorEnd   = this.token.sourceEnd;
+    errorStart = token.sourceStart;
+    errorEnd   = token.sourceEnd;
     throw e;
   }
   (
@@ -1946,6 +2139,9 @@ Expression MultiplicativeExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ UnaryExpression()
+
 /**
  * An unary expression starting with @, & or nothing.
  *
@@ -1953,7 +2149,7 @@ Expression MultiplicativeExpression() :
  */
 Expression UnaryExpression() :
 {
-  Expression expr;
+  final Expression expr;
 }
 {
  /* <BIT_AND> expr = UnaryExpressionNoPrefix()             //why did I had that ?
@@ -1964,7 +2160,7 @@ Expression UnaryExpression() :
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
-                                          "unexpected token : '"+e.currentToken.image+"'",
+                                          "unexpected token : '"+e.currentToken.image+'\'',
                                           "",
                                           e.currentToken.image,
                                           e.currentToken.sourceStart,
@@ -2014,6 +2210,9 @@ Expression UnaryExpression() :
 
 }
 
+//}}}
+//{{{ AtNotTildeUnaryExpression()
+
 Expression AtNotTildeUnaryExpression() :
 {
   if (shouldStop) throw new ParsingAbortedError();
@@ -2037,6 +2236,9 @@ Expression AtNotTildeUnaryExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ AtNotUnaryExpression()
+
 /**
  * An expression prefixed (or not) by one or more @ and !.
  * @return the expression
@@ -2058,6 +2260,9 @@ Expression AtNotUnaryExpression() :
   expr = UnaryExpressionNoPrefix()
   {return expr;}
 }
+
+//}}}
+//{{{ UnaryExpressionNoPrefix()
 
 Expression UnaryExpressionNoPrefix() :
 {
@@ -2084,6 +2289,8 @@ Expression UnaryExpressionNoPrefix() :
   {return expr;}
 }
 
+//}}}
+//{{{ PreIncDecExpression()
 
 Expression PreIncDecExpression() :
 {
@@ -2102,6 +2309,9 @@ final Token token;
                                       token.beginLine,
                                       token.beginColumn);}
 }
+
+//}}}
+//{{{ UnaryExpressionNotPlusMinus()
 
 Expression UnaryExpressionNotPlusMinus() :
 {
@@ -2131,6 +2341,9 @@ Expression UnaryExpressionNotPlusMinus() :
   {return expr;}
 }
 
+//}}}
+//{{{ CastExpression()
+
 CastExpression CastExpression() :
 {
 final ConstantIdentifier type;
@@ -2154,6 +2367,9 @@ final Token token,token1;
                              token1.beginColumn,
                              expr.getEndColumn());}
 }
+
+//}}}
+//{{{ PostfixExpression()
 
 Expression PostfixExpression() :
 {
@@ -2180,9 +2396,12 @@ Expression PostfixExpression() :
   }
 }
 
+//}}}
+//{{{ PrimaryExpression()
+
 Expression PrimaryExpression() :
 {
-  Expression expr;
+  final Expression expr;
   Token token = null;
 }
 {
@@ -2193,11 +2412,15 @@ Expression PrimaryExpression() :
   {return expr;}
 }
 
+//}}}
+//{{{ refPrimaryExpression(final Token reference)
+
 Expression refPrimaryExpression(final Token reference) :
 {
   Expression expr;
   Expression expr2 = null;
   final Token identifier;
+  final Token newToken;
 }
 {
   identifier = <IDENTIFIER>
@@ -2206,9 +2429,7 @@ Expression refPrimaryExpression(final Token reference) :
   }
   (
     <STATICCLASSACCESS> expr2 = ClassIdentifier()
-    {expr = new ClassAccess(expr,
-                            expr2,
-                            ClassAccess.STATIC);}
+    {expr = new ClassAccess(expr,expr2,ClassAccess.STATIC);}
   )*
   [ expr2 = Arguments(expr) ]
   {
@@ -2235,17 +2456,17 @@ Expression refPrimaryExpression(final Token reference) :
   [ expr = Arguments(expr) ]
   {return expr;}
 |
-  token = <NEW>
+  newToken = <NEW>
   expr = ClassIdentifier()
   {
-    int start,beginLine,beginColumn;
+    final int start, beginLine, beginColumn;
     if (reference == null) {
-      start = token.sourceStart;
-      beginLine = token.beginLine;
-      beginColumn = token.beginColumn;
+      start       = newToken.sourceStart;
+      beginLine   = newToken.beginLine;
+      beginColumn = newToken.beginColumn;
     } else {
-      start = reference.sourceStart;
-      beginLine = reference.beginLine;
+      start       = reference.sourceStart;
+      beginLine   = reference.beginLine;
       beginColumn = reference.beginColumn;
     }
     expr = new ClassInstantiation(expr,
@@ -2257,6 +2478,9 @@ Expression refPrimaryExpression(final Token reference) :
   [ expr = Arguments(expr) ]
   {return expr;}
 }
+
+//}}}
+//{{{ ArrayDeclarator()
 
 /**
  * An array declarator.
@@ -2279,16 +2503,22 @@ ArrayInitializer ArrayDeclarator() :
                                this.token.endColumn);}
 }
 
+//}}}
+//{{{ ClassIdentifier()
+
 Expression ClassIdentifier():
 {
   final Expression expr;
-  final Token token;
+  final Token identifierToken;
 }
 {
-  token = <IDENTIFIER>          {return new ConstantIdentifier(token);}
-| expr = Type()                 {return expr;}
-| expr = VariableDeclaratorId() {return expr;}
+  identifierToken = <IDENTIFIER> {return new ConstantIdentifier(identifierToken);}
+| expr = Type()                  {return expr;}
+| expr = VariableDeclaratorId()  {return expr;}
 }
+
+//}}}
+//{{{ VariableSuffix(final AbstractVariable prefix)
 
 /**
  * Used by Variabledeclaratorid and primarysuffix
@@ -2388,10 +2618,13 @@ AbstractVariable VariableSuffix(final AbstractVariable prefix) :
                               token.endColumn);}//todo : check braces here
 }
 
+//}}}
+//{{{ Literal()
+
 Literal Literal() :
 {
   final Token token;
-  StringLiteral literal;
+  final StringLiteral heredoc;
 }
 {
   token = <INTEGER_LITERAL>        {return new NumberLiteral(token);}
@@ -2400,13 +2633,16 @@ Literal Literal() :
 | token = <TRUE>                   {return new TrueLiteral(token);}
 | token = <FALSE>                  {return new FalseLiteral(token);}
 | token = <NULL>                   {return new NullLiteral(token);}
-| literal = heredoc()              {return literal;}
+| heredoc = heredoc()              {return heredoc;}
 //| literal = evaluableString()        {return literal;}
 }
 
+//}}}
+//{{{ heredoc()
+
 StringLiteral heredoc() :
 {
-  Token heredocStart;
+  final Token heredocStart;
   Token startToken = null;
   Token endToken;
   String endImage;
@@ -2498,7 +2734,11 @@ StringLiteral heredoc() :
                            endToken.endColumn);
   }
 }
-       /*
+
+//}}}
+//{{{ evaluableString()
+       
+              /*
 StringLiteral evaluableString() :
 {
   ArrayList list = new ArrayList();
@@ -2535,20 +2775,24 @@ StringLiteral evaluableString() :
   }
 }
   */
+  
+  //}}}
+//{{{ Arguments(final Expression func)
+
 FunctionCall Arguments(final Expression func) :
 {
 Expression[] args = null;
-final Token token,lparen;
+final Token rparen,lparen;
 }
 {
   lparen = <LPAREN> [ args = ArgumentList() ]
   try {
-    token = <RPAREN>
+    rparen = <RPAREN>
     {return new FunctionCall(func,
                              args,
-                             token.sourceEnd,
-                             token.endLine,
-                             token.endColumn);}
+                             rparen.sourceEnd,
+                             rparen.endLine,
+                             rparen.endColumn);}
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
@@ -2563,7 +2807,7 @@ final Token token,lparen;
                                           e.currentToken.endColumn+1));
   }
   {
-  int sourceEnd,line,column;
+  final int sourceEnd, line, column;
   if (args == null || args.length == 0) {
     sourceEnd = lparen.sourceEnd+1;
     line = lparen.beginLine;
@@ -2580,6 +2824,9 @@ final Token token,lparen;
                           line,
                           column);}
 }
+
+//}}}
+//{{{ ArgumentList()
 
 /**
  * An argument list is a list of arguments separated by comma :
@@ -2621,6 +2868,9 @@ Token token;
    return arguments;}
 }
 
+//}}}
+//{{{ StatementNoBreak()
+
 /**
  * A Statement without break.
  * @return a statement
@@ -2656,6 +2906,9 @@ Statement StatementNoBreak() :
 | statement = GlobalStatement()         {return statement;}
 | statement = defineStatement()         {currentSegment.add((Outlineable)statement);return statement;}
 }
+
+//}}}
+//{{{ expressionStatement()
 
 /**
  * A statement expression.
@@ -2710,6 +2963,9 @@ Statement expressionStatement() :
   }
   {return statement;}
 }
+
+//}}}
+//{{{ defineStatement()
 
 Define defineStatement() :
 {
@@ -2833,6 +3089,9 @@ Statement Statement() :
 | statement = BreakStatement()   {return statement;}
 }
 
+//}}}
+//{{{ htmlBlock()
+
 /**
  * An html block inside a php syntax.
  */
@@ -2877,6 +3136,9 @@ HTMLBlock htmlBlock() :
   nodePtr = startIndex;
   return new HTMLBlock(blockNodes);}
 }
+
+//}}}
+//{{{ IncludeStatement()
 
 /**
  * An include statement. It's "include" an expression;
@@ -2951,15 +3213,21 @@ InclusionStatement IncludeStatement() :
   }
 }
 
+//}}}
+//{{{ PrintExpression()
+
 PrintExpression PrintExpression() :
 {
   final Expression expr;
   final Token printToken;
 }
 {
-  token = <PRINT> expr = Expression()
-  {return new PrintExpression(expr,token.sourceStart,expr.sourceEnd,token.beginLine,expr.getEndLine(),token.beginColumn,expr.getEndColumn());}
+  printToken = <PRINT> expr = Expression()
+  {return new PrintExpression(expr,printToken.sourceStart,expr.sourceEnd,printToken.beginLine,expr.getEndLine(),printToken.beginColumn,expr.getEndColumn());}
 }
+
+//}}}
+//{{{ ListExpression()
 
 ListExpression ListExpression() :
 {
@@ -3052,6 +3320,14 @@ ListExpression ListExpression() :
                               column);}
 }
 
+//}}}
+
+//}}}
+
+//{{{ Statements
+
+//{{{ EchoStatement()
+
 /**
  * An echo statement.
  * echo anyexpression (, otherexpression)*
@@ -3060,18 +3336,18 @@ EchoStatement EchoStatement() :
 {
   final ArrayList expressions = new ArrayList();
   Expression expr;
-  Token token;
-  Token token2 = null;
+  final Token echoToken;
+  Token semicolonToken = null;
 }
 {
-  token = <ECHO> expr = Expression()
+  echoToken = <ECHO> expr = Expression()
   {expressions.add(expr);}
   (
     <COMMA> expr = Expression()
     {expressions.add(expr);}
   )*
   try {
-    token2 = <SEMICOLON>
+    semicolonToken = <SEMICOLON>
   } catch (ParseException e) {
     if (e.currentToken.next.kind != 4) {
       fireParseError(new PHPParseErrorEvent(ERROR,
@@ -3090,24 +3366,27 @@ EchoStatement EchoStatement() :
   {
    final Expression[] exprs = new Expression[expressions.size()];
    expressions.toArray(exprs);
-   if (token2 == null) {
+   if (semicolonToken == null) {
      return new EchoStatement(exprs,
-                              token.sourceStart, 
+                              echoToken.sourceStart, 
                               exprs[exprs.length-1].sourceEnd,
-                              token.beginLine,
+                              echoToken.beginLine,
                               exprs[exprs.length-1].getEndLine(),
-                              token.beginColumn,
+                              echoToken.beginColumn,
                               exprs[exprs.length-1].getEndColumn());
    }
    return new EchoStatement(exprs,
-                            token.sourceStart,
-                            token2.sourceEnd,
-                            token.beginLine,
-                            token2.endLine,
-                            token.beginColumn,
-                            token2.endColumn);
+                            echoToken.sourceStart,
+                            semicolonToken.sourceEnd,
+                            echoToken.beginLine,
+                            semicolonToken.endLine,
+                            echoToken.beginColumn,
+                            semicolonToken.endColumn);
    }
 }
+
+//}}}
+//{{{ GlobalStatement()
 
 GlobalStatement GlobalStatement() :
 {
@@ -3156,6 +3435,9 @@ GlobalStatement GlobalStatement() :
     return global;}
 }
 
+//}}}
+//{{{ StaticStatement()
+
 StaticStatement StaticStatement() :
 {
   final ArrayList vars = new ArrayList();
@@ -3195,6 +3477,9 @@ StaticStatement StaticStatement() :
                                token.beginColumn,
                                column);}
 }
+
+//}}}
+//{{{ LabeledStatement()
 
 LabeledStatement LabeledStatement() :
 {
@@ -3237,6 +3522,9 @@ LabeledStatement LabeledStatement() :
   {return new LabeledStatement(label.image,statement,label.sourceStart,statement.sourceEnd);}
 }
 
+//}}}
+//{{{ Block()
+
 /**
  * A Block is
  * {
@@ -3248,19 +3536,20 @@ Block Block() :
 {
   final ArrayList list = new ArrayList();
   Statement statement;
-  final Token token, token2;
-  int pos,start,beginLine,endLine,beginColumn,endColumn;
+  final Token lbrace, rbrace;
+  int pos,endLine,endColumn;
+  int start, beginLine, beginColumn;
 }
 {
   try {
-    token = <LBRACE>
+    lbrace = <LBRACE>
     {
-      pos         = token.sourceEnd+1;
-      start       = token.sourceStart;
-      beginLine   = token.beginLine;
-      beginColumn = token.beginColumn;
-      endLine     = token.endLine;
-      endColumn   = token.endColumn;
+      pos         = lbrace.sourceEnd+1;
+      start       = lbrace.sourceStart;
+      beginLine   = lbrace.beginLine;
+      beginColumn = lbrace.beginColumn;
+      endLine     = lbrace.endLine;
+      endColumn   = lbrace.endColumn;
     }
   } catch (ParseException e) {
     pos         = this.token.sourceEnd+1;
@@ -3292,22 +3581,22 @@ Block Block() :
     }
   | statement = htmlBlock()      {if (statement != null) {
                                     list.add(statement);
-                                    pos = statement.sourceEnd+1;
-                                    endLine     = statement.getEndLine();
-                                    endColumn   = statement.getEndColumn();
+                                    pos       = statement.sourceEnd+1;
+                                    endLine   = statement.getEndLine();
+                                    endColumn = statement.getEndColumn();
                                   } else {
-                                    pos = this.token.sourceEnd+1;
-                                    endLine     = this.token.endLine;
-                                    endColumn   = this.token.endColumn;
+                                    pos       = this.token.sourceEnd+1;
+                                    endLine   = this.token.endLine;
+                                    endColumn = this.token.endColumn;
                                   }
                                  }
   )*
   try {
-    token2 = <RBRACE>
+    rbrace = <RBRACE>
     {
-      pos         = token2.sourceEnd+1;
-      endLine     = token2.endLine;
-      endColumn   = token2.endColumn;
+      pos       = rbrace.sourceEnd+1;
+      endLine   = rbrace.endLine;
+      endColumn = rbrace.endColumn;
     }
   } catch (ParseException e) {
     fireParseError(new PHPParseErrorEvent(ERROR,
@@ -3334,17 +3623,19 @@ Block Block() :
                    endColumn);}
 }
 
+//}}}
+//{{{ BlockStatement()
+
 Statement BlockStatement() :
 {
   final Statement statement;
 }
 {
   try {
-    statement = Statement()         {if (phpDocument == currentSegment) pushOnAstNodes(statement);
-                                     return statement;}
+    statement = Statement() {if (phpDocument == currentSegment) pushOnAstNodes(statement); return statement;}
   } catch (ParseException e) {
-    Token semicolumn = error_skipto(SEMICOLON);
-    Token nextToken = e.currentToken.next;
+    final Token semicolumn = error_skipto(SEMICOLON);
+    final Token nextToken = e.currentToken.next;
     if (nextToken == semicolumn) {
       fireParseError(new PHPParseErrorEvent(ERROR,
                                             path,
@@ -3386,6 +3677,9 @@ Statement BlockStatement() :
                                    return statement;}
 }
 
+//}}}
+//{{{ BlockStatementNoBreak()
+
 /**
  * A Block statement that will not contain any 'break'
  */
@@ -3400,6 +3694,9 @@ Statement BlockStatementNoBreak() :
                                    ((MethodDeclaration) statement).analyzeCode(this);
                                    return statement;}
 }
+
+//}}}
+//{{{ LocalVariableDeclaration()
 
 /**
  * used only by ForInit()
@@ -3419,6 +3716,9 @@ Expression[] LocalVariableDeclaration() :
     return vars;
   }
 }
+
+//}}}
+//{{{ LocalVariableDeclarator()
 
 /**
  * used only by LocalVariableDeclaration().
@@ -3454,6 +3754,9 @@ VariableDeclaration LocalVariableDeclarator() :
   }
 }
 
+//}}}
+//{{{ EmptyStatement()
+
 /**
  * An empty statement.
  * It will generate an INFO marker
@@ -3485,6 +3788,9 @@ EmptyStatement EmptyStatement() :
   }
 }
 
+//}}}
+//{{{ StatementExpression()
+
 /**
  * used only by StatementExpressionList() which is used only by ForInit() and ForStatement()
  */
@@ -3510,6 +3816,9 @@ Expression StatementExpression() :
   ]
   {return expr;}
 }
+
+//}}}
+//{{{ SwitchStatement()
 
 SwitchStatement SwitchStatement() :
 {
@@ -3581,12 +3890,15 @@ SwitchStatement SwitchStatement() :
   {return new SwitchStatement(variable,
                               cases,
                               switchToken.sourceStart,
-                              this.token.sourceEnd,
+                              token.sourceEnd,
                               switchToken.beginLine,
-                              this.token.endLine,
+                              token.endLine,
                               switchToken.beginColumn,
-                              this.token.endColumn);}
+                              token.endColumn);}
 }
+
+//}}}
+//{{{ switchStatementBrace()
 
 AbstractCase[] switchStatementBrace() :
 {
@@ -3620,6 +3932,9 @@ AbstractCase[] switchStatementBrace() :
     return abcase;
   }
 }
+
+//}}}
+//{{{ switchStatementColon(final int start, final int end)
 
 /**
  * A Switch statement with : ... endswitch;
@@ -3685,6 +4000,9 @@ AbstractCase[] switchStatementColon(final int start, final int end) :
   }
 }
 
+//}}}
+//{{{ switchLabel0()
+
 AbstractCase switchLabel0() :
 {
   final Expression expr;
@@ -3713,16 +4031,7 @@ AbstractCase switchLabel0() :
                              this.token.next.beginColumn,
                              this.token.next.endColumn);
     }
-    if (listSize != 0) {
-      return new Case(expr,
-                      stmtsArray,
-                      expr.sourceStart,
-                      stmtsArray[listSize-1].sourceEnd,
-                      expr.getBeginLine(),
-                      stmtsArray[listSize-1].getEndLine(),
-                      expr.getBeginColumn(),
-                      stmtsArray[listSize-1].getEndColumn());
-    } else {
+    if (listSize == 0) {
       return new Case(expr,
                       stmtsArray,
                       expr.sourceStart,
@@ -3731,9 +4040,21 @@ AbstractCase switchLabel0() :
                       expr.getEndLine(),
                       expr.getBeginColumn(),
                       expr.getEndColumn());
+    } else {
+      return new Case(expr,
+                      stmtsArray,
+                      expr.sourceStart,
+                      stmtsArray[listSize-1].sourceEnd,
+                      expr.getBeginLine(),
+                      stmtsArray[listSize-1].getEndLine(),
+                      expr.getBeginColumn(),
+                      stmtsArray[listSize-1].getEndColumn());
     }
   }
 }
+
+//}}}
+//{{{ SwitchLabel()
 
 /**
  * A SwitchLabel.
@@ -3744,6 +4065,7 @@ AbstractCase switchLabel0() :
 Expression SwitchLabel() :
 {
   final Expression expr;
+  Token token;
 }
 {
   token = <CASE>
@@ -3794,6 +4116,9 @@ Expression SwitchLabel() :
   {return null;}
 }
 
+//}}}
+//{{{ BreakStatement()
+
 Break BreakStatement() :
 {
   Expression expression = null;
@@ -3822,18 +4147,23 @@ Break BreakStatement() :
   {return new Break(expression, token.sourceStart, pos,token.beginLine,token.endLine,token.beginColumn,token.endColumn);}
 }
 
+//}}}
+//{{{ IfStatement()
+
 IfStatement IfStatement() :
 {
   final Expression condition;
   final IfStatement ifStatement;
-  Token token;
+  final Token ifToken;
 }
 {
-  token = <IF> condition = Condition("if")
-  ifStatement = IfStatement0(condition,token.sourceStart,token.sourceEnd)
+  ifToken = <IF> condition = Condition("if")
+  ifStatement = IfStatement0(condition,ifToken.sourceStart,ifToken.sourceEnd)
   {return ifStatement;}
 }
 
+//}}}
+//{{{ Condition(final String keyword)
 
 Expression Condition(final String keyword) :
 {
@@ -3848,8 +4178,8 @@ Expression Condition(final String keyword) :
                                           "'(' expected",
                                           "(",
                                           e.currentToken.image,
-                                          this.token.sourceEnd,
-                                          this.token.sourceEnd+1,
+                                          token.sourceEnd,
+                                          token.sourceEnd+1,
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
@@ -3874,6 +4204,9 @@ Expression Condition(final String keyword) :
   {return condition;}
 }
 
+//}}}
+//{{{ IfStatement0(final Expression condition, final int start,final int end)
+
 IfStatement IfStatement0(final Expression condition, final int start,final int end) :
 {
   Statement statement = null;
@@ -3884,18 +4217,17 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
   final ArrayList stmts;
   final ArrayList elseIfList = new ArrayList();
   final ElseIf[] elseIfs;
-  int pos = jj_input_stream.getPosition();
+  final int pos = jj_input_stream.getPosition();
   final int endStatements;
-  Token token;
-  Token elseToken;
+  final Token colonToken, elseToken;
 }
 {
-  token = <COLON>
+  colonToken = <COLON>
   {stmts = new ArrayList();}
   (  statement = Statement() {stmts.add(statement);}
    | statement = htmlBlock() {if (statement != null) {stmts.add(statement);}}
   )*
-   {endStatements = (statement == null) ? token.sourceEnd : statement.sourceEnd;}
+   {endStatements = (statement == null) ? colonToken.sourceEnd : statement.sourceEnd;}
    (elseifStatement = ElseIfStatementColon() {elseIfList.add(elseifStatement);})*
    [elseStatement = ElseStatementColon()]
 
@@ -3904,12 +4236,12 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
                                                 PHPParseMessageEvent.MESSAGE_IF_ENDIF_TAG,
                                                 path,
                                                 "Ugly syntax detected, you should if () {...} instead of if (): ... endif;",
-                                                token.sourceStart,
-                                                token.sourceEnd,
-                                                token.beginLine,
-                                                token.endLine,
-                                                token.beginColumn,
-                                                token.endColumn));
+                                                colonToken.sourceStart,
+                                                colonToken.sourceEnd,
+                                                colonToken.beginLine,
+                                                colonToken.endLine,
+                                                colonToken.beginColumn,
+                                                colonToken.endColumn));
   }
   try {
     <ENDIF>
@@ -3989,6 +4321,9 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
                            jj_input_stream.getPosition());}
 }
 
+//}}}
+//{{{ ElseIfStatementColon()
+
 ElseIf ElseIfStatementColon() :
 {
   final Expression condition;
@@ -4013,6 +4348,9 @@ ElseIf ElseIfStatementColon() :
                     stmtsArray[sizeList-1].getEndColumn());}
 }
 
+//}}}
+//{{{ ElseStatementColon()
+
 Else ElseStatementColon() :
 {
   Statement statement;
@@ -4035,6 +4373,9 @@ Else ElseStatementColon() :
                   stmtsArray[sizeList-1].getEndColumn());}
 }
 
+//}}}
+//{{{ ElseIfStatement()
+
 ElseIf ElseIfStatement() :
 {
   final Expression condition;
@@ -4054,6 +4395,9 @@ ElseIf ElseIfStatement() :
                     elseifToken.beginColumn,
                     statement[0].getEndColumn());}
 }
+
+//}}}
+//{{{ WhileStatement()
 
 WhileStatement WhileStatement() :
 {
@@ -4075,15 +4419,18 @@ WhileStatement WhileStatement() :
                                action.getEndColumn());}
 }
 
+//}}}
+//{{{ WhileStatementAction(final int start, final int end)
+
 Statement WhileStatementAction(final int start, final int end) :
 {
   Statement statement;
   final ArrayList stmts = new ArrayList();
   final int pos = jj_input_stream.getPosition();
-  Token token;
+  final Token colonToken;
 }
 {
-  token = <COLON> (statement = Statement() {stmts.add(statement);})*
+  colonToken = <COLON> (statement = Statement() {stmts.add(statement);})*
   {
         fireParseMessage(new PHPParseMessageEvent(INFO,
                                                   PHPParseMessageEvent.MESSAGE_WHILE_ENDWHILE_TAG,
@@ -4091,10 +4438,10 @@ Statement WhileStatementAction(final int start, final int end) :
                                                   "Ugly syntax detected, you should while () {...} instead of while (): ... endwhile;",
                                                   start,
                                                   end,
-                                                  token.beginLine,
-                                                  token.endLine,
-                                                  token.beginColumn,
-                                                  token.endColumn));
+                                                  colonToken.beginLine,
+                                                  colonToken.endLine,
+                                                  colonToken.beginColumn,
+                                                  colonToken.endColumn));
   }
   try {
     <ENDWHILE>
@@ -4122,6 +4469,9 @@ Statement WhileStatementAction(final int start, final int end) :
   statement = Statement()
   {return statement;}
 }
+
+//}}}
+//{{{ DoStatement()
 
 DoStatement DoStatement() :
 {
@@ -4169,17 +4519,20 @@ DoStatement DoStatement() :
   }
 }
 
+//}}}
+//{{{ ForeachStatement()
+
 ForeachStatement ForeachStatement() :
 {
   Statement statement = null;
   Expression expression = null;
   ArrayVariableDeclaration variable = null;
-  Token foreachToken;
+  final Token foreachToken;
   Token lparenToken = null;
   Token asToken = null;
   Token rparenToken = null;
   int pos,endLine,endColumn;
-  Token tokenEndForeach, tokenColon, tokenSemicolon;
+  final Token tokenEndForeach, tokenColon, tokenSemicolon;
   Statement action;
   final ArrayList list = new ArrayList();
 }
@@ -4405,6 +4758,9 @@ ForeachStatement ForeachStatement() :
       )
 }
 
+//}}}
+//{{{ ForStatement()
+
 /**
  * a for declaration.
  * @return a node representing the for statement
@@ -4512,6 +4868,9 @@ final ArrayList list = new ArrayList();
     )
 }
 
+//}}}
+//{{{ ForInit()
+
 Expression[] ForInit() :
 {
   final Expression[] exprs;
@@ -4524,6 +4883,9 @@ Expression[] ForInit() :
   exprs = StatementExpressionList()
   {return exprs;}
 }
+
+//}}}
+//{{{ StatementExpressionList()
 
 Expression[] StatementExpressionList() :
 {
@@ -4539,21 +4901,24 @@ Expression[] StatementExpressionList() :
   }
 }
 
+//}}}
+//{{{ ContinueStatement()
+
 Continue ContinueStatement() :
 {
   Expression expr = null;
-  final Token token;
-  Token token2 = null;
+  final Token continueToken;
+  Token semicolonToken = null;
 }
 {
-  token = <CONTINUE> [ expr = Expression() ]
+  continueToken = <CONTINUE> [ expr = Expression() ]
   try {
-    token2 = <SEMICOLON>
+    semicolonToken = <SEMICOLON>
   } catch (ParseException e) {
-    int errorStart, errorEnd;
+    final int errorStart, errorEnd;
     if (expr == null) {
-      errorStart = token.sourceEnd;
-      errorEnd   = token.sourceEnd+1;
+      errorStart = continueToken.sourceEnd;
+      errorEnd   = continueToken.sourceEnd+1;
     } else {
       errorStart = expr.sourceEnd;
       errorEnd   = expr.sourceEnd+1;
@@ -4571,15 +4936,18 @@ Continue ContinueStatement() :
                                           e.currentToken.endColumn+1));
   }
   {
-    if (token2 == null) {
+    if (semicolonToken == null) {
       if (expr == null) {
-        return new Continue(expr,token.sourceStart,token.sourceEnd,token.beginLine,token.endLine,token.beginColumn,token.endColumn);
+        return new Continue(expr,continueToken.sourceStart,continueToken.sourceEnd,continueToken.beginLine,continueToken.endLine,continueToken.beginColumn,continueToken.endColumn);
       }
-      return new Continue(expr,token.sourceStart,expr.sourceEnd,token.beginLine,expr.getEndLine(),token.beginColumn,expr.getEndColumn());
+      return new Continue(expr,continueToken.sourceStart,expr.sourceEnd,continueToken.beginLine,expr.getEndLine(),continueToken.beginColumn,expr.getEndColumn());
     }
-    return new Continue(expr,token.sourceStart,token2.sourceEnd,token.beginLine,token2.endLine,token.beginColumn,token2.endColumn);
+    return new Continue(expr,continueToken.sourceStart,semicolonToken.sourceEnd,continueToken.beginLine,semicolonToken.endLine,continueToken.beginColumn,semicolonToken.endColumn);
   }
 }
+
+//}}}
+//{{{ ReturnStatement()
 
 /**
  * A return statement.
@@ -4605,7 +4973,7 @@ ReturnStatement ReturnStatement() :
   try {
     token2 = <SEMICOLON>
   } catch (ParseException e) {
-    int errorStart, errorEnd;
+    final int errorStart, errorEnd;
     if (expr == null) {
       errorStart = token.sourceEnd;
       errorEnd   = token.sourceEnd+1;
@@ -4636,4 +5004,10 @@ ReturnStatement ReturnStatement() :
     }
     )
 }
+
+//}}}
+
+//}}}
+
+//}}}
 

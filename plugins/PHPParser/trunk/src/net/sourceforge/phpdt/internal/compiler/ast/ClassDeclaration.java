@@ -49,7 +49,6 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.parent = parent;
     this.classHeader = classHeader;
-//    this.name = name;
   }
 
   /**
@@ -60,7 +59,7 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
   public void addMethod(final MethodDeclaration method) {
     methods.add(method);
     add(method);
-    if (method.name.equals(classHeader.getClassName())) {
+    if (method.getName().equals(classHeader.getClassName())) {
       constructor = method;
     }
   }
@@ -194,5 +193,15 @@ public final class ClassDeclaration extends Statement implements OutlineableWith
 
   public int getBodyEnd() {
     return bodyEnd;
+  }
+
+  public MethodDeclaration insideWichMethodIsThisOffset(int offset) {
+    for (int i = 0; i < methods.size(); i++) {
+      MethodDeclaration methodDeclaration = (MethodDeclaration) methods.get(i);
+      if (offset < methodDeclaration.getBodyEnd() && offset> methodDeclaration.getBodyStart()) {
+          return methodDeclaration;
+      }
+    }
+    return null;
   }
 }
