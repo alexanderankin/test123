@@ -1,141 +1,110 @@
-// * :tabSize=4:indentSize=4:
-// * :folding=explicit:collapseFolds=1:
+/*
+ *  Jump plugin for jEdit
+ *  Copyright (c) 2003 Pavlikus
+ *
+ *  :tabSize=4:indentSize=4:
+ *  :folding=explicit:collapseFolds=1:
+ *
+ *  This program is free software; you can redistribute it and/or
+ *  modify it under the terms of the GNU General Public License
+ *  as published by the Free Software Foundation; either version 2
+ *  of the License, or any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
 
-//{{{ imports
-import java.awt.*;
-import java.awt.event.*;
-
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
-
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.util.Log;
-//}}}
+    //{{{ imports
+    import java.awt.*;
+    import java.awt.event.*;
+    
+    import javax.swing.*;
+    import javax.swing.border.*;
+    import javax.swing.event.*;
+    
+    import org.gjt.sp.jedit.*;
+    import org.gjt.sp.jedit.gui.OptionsDialog;
+    import org.gjt.sp.jedit.textarea.*;
+    import org.gjt.sp.jedit.msg.*;
+    import org.gjt.sp.util.Log; //}}}
 
 public class JumpList extends JWindow implements CaretListener
 {
 
-//{{{ fields
+    //{{{ fields
     public View parent;
     public JEditTextArea textArea;
     public JList itemsList;
     public int width = 25;
     public StringBuffer keyBuff = new StringBuffer();
-    
     private Object[] elements;
-    private boolean incremental;
-//}}}
+    private boolean incremental; //}}}
 
-//{{{ constructor
-public JumpList(View parent, Object[] list, ListModel model,
-            boolean incr_search, String title, int list_width, Point location)
-    {
-        super(parent);
-        this.parent = parent;
-        this.textArea = parent.getTextArea();
-        this.incremental = incr_search;
-        this.elements = list;
-        this.width = list_width;
+    //{{{ constructor
+    public JumpList(View parent, Object[] list, ListModel model,
+                boolean incr_search, String title, int list_width, Point location)
+        {
+            super(parent);
+            this.parent = parent;
+            this.textArea = parent.getTextArea();
+            this.incremental = incr_search;
+            this.elements = list;
+            this.width = list_width;
 
-        JPanel pane = new JPanel();
-        pane.setLayout(new BorderLayout());
+            JPanel pane = new JPanel();
+            pane.setLayout(new BorderLayout());
 
-        Font font = jEdit.getFontProperty("jump.list.font", new Font("Monospaced", Font.PLAIN, 11));
+            Font font = jEdit.getFontProperty("jump.list.font", new Font("Monospaced", Font.PLAIN, 11));
 
-        JLabel label = new JLabel(title);
-        label.setFont(font);
-        pane.add(label, BorderLayout.NORTH);
+            JLabel label = new JLabel(title);
+            label.setFont(font);
+            pane.add(label, BorderLayout.NORTH);
 
-        itemsList = new JList(model);
-        itemsList.setFont(font);
-        itemsList.setVisibleRowCount(list.length < 5 ? list.length : 5);
-        itemsList.setSelectedIndex(0);
-        itemsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        itemsList.addMouseListener(new MouseHandler());
-        itemsList.addListSelectionListener(new SelectionListener());
+            itemsList = new JList(model);
+            itemsList.setFont(font);
+            itemsList.setVisibleRowCount(list.length < 5 ? list.length : 5);
+            itemsList.setSelectedIndex(0);
+            itemsList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+            itemsList.addMouseListener(new MouseHandler());
+            itemsList.addListSelectionListener(new SelectionListener());
 
-        FontMetrics fm = getFontMetrics(font);
-        itemsList.setPreferredSize(
-                new Dimension(this.width * fm.charWidth('m'),
-                (int) itemsList.getPreferredSize().height));
-        
+            FontMetrics fm = getFontMetrics(font);
+            itemsList.setPreferredSize(
+                    new Dimension(this.width * fm.charWidth('m'),
+                    (int) itemsList.getPreferredSize().height));
 
-        JScrollPane scroll = new JScrollPane();
-        scroll.getViewport().setView(itemsList);
+            JScrollPane scroll = new JScrollPane();
+            scroll.getViewport().setView(itemsList);
 
-        scroll.setBorder(null);
-        pane.add(scroll, BorderLayout.SOUTH);
-        pane.setBorder(LineBorder.createBlackLineBorder());
-        this.getContentPane().add(pane);
+            scroll.setBorder(null);
+            pane.add(scroll, BorderLayout.SOUTH);
+            pane.setBorder(LineBorder.createBlackLineBorder());
+            this.getContentPane().add(pane);
 
-        this.setBackground(Color.lightGray);
+            this.setBackground(Color.lightGray);
 
-        GUIUtilities.requestFocus(this, itemsList);
-        pack();
-        
-        setLocation(location);
-//        try
-//        {
-//            int offset = textArea.getCaretPosition();
-//            int line = textArea.getCaretLine();
-//            int x,y;
-//            Point p = new Point();
-//            p = textArea.offsetToXY(line, offset - textArea.getLineStartOffset(line),p);
-//            x = p.x;
-//            y = p.y;
-//            
-//            Dimension parentSize = textArea.getSize();
-//            Point parentLocation = textArea.getLocationOnScreen();
-//            Insets parentInsets = textArea.getInsets();
-//            Point tapLocation = textArea.getLocationOnScreen();
-//            int gutt_x = textArea.getGutter().getWidth(); 
-//            Dimension popupSize = getSize();
-//            
-//             *************************************
-//            if (popupSize.width >= parentSize.width)
-//            {
-//                setSize(parentSize.width, popupSize.height);
-//                popupSize = getSize();
-//            }
-//             *************************************
-//            x += tapLocation.x;
-//            
-//            if ((x + popupSize.width+gutt_x) > (parentLocation.x + parentSize.width -
-//                    parentInsets.right))
-//            {
-//                x -= popupSize.width;
-//            }
-//             TODO: Need to adjust this.size if x<0
-//            
-//            if ((parentSize.height-y)<popupSize.height)
-//            {
-//                y = parentSize.height - popupSize.height;
-//            }
-//            setLocation(x+gutt_x+parentLocation.x+parentInsets.right,y+parentLocation.y+parentInsets.top);
-//        }
-//        catch (Exception e)
-//        {
-//            Point parentLocation = textArea.getLocationOnScreen();
-//            int gutt_x = textArea.getGutter().getWidth();
-//            Insets parentInsets = textArea.getInsets();
-//            setLocation(gutt_x+parentLocation.x+parentInsets.right,parentLocation.y+parentInsets.top);     
-//        }
-        itemsList.setSelectedIndex(0);
-        setVisible(true);
+            GUIUtilities.requestFocus(this, itemsList);
+            pack();
 
-        KeyHandler handler = new KeyHandler();
-        itemsList.addKeyListener(handler);
-        parent.setKeyEventInterceptor(handler);
-        textArea.addCaretListener(this);
-    }
-//}}}
+            setLocation(location);
+            itemsList.setSelectedIndex(0);
+            setVisible(true);
 
-//{{{ void dispose()
-public void dispose()
+            KeyHandler handler = new KeyHandler();
+            itemsList.addKeyListener(handler);
+            parent.setKeyEventInterceptor(handler);
+            textArea.addCaretListener(this);
+        }
+    //}}}
+
+    //{{{ void dispose()
+    public void dispose()
     {
         // Clear status bar messages if need
         jEdit.getActiveView().getStatus().setMessage(null);   
@@ -151,55 +120,40 @@ public void dispose()
                                        }
                                    }
                                   );
-    }
-//}}}
+    } //}}}
 
-//{{{ empty methods (they override by descendants)
-    public void processAction(Object o)
-    {
-    }
+    //{{{ empty methods (they override by descendants)
+    public void processAction(Object o){}
+    public void processInsertAction(Object o){}
+    public void processActionInNewView(Object o){}
+    public void updateStatusBar(Object itemlist){}
+    //}}}
 
-    public void processInsertAction(Object o)
-    {
-    }
-    
-    public void processActionInNewView(Object o)
-    {
-    }
-    
-    public void updateStatusBar(Object itemlist)
-    {
-    }
-//}}}
-
-//{{{ CaretListener inteface
+    //{{{ CaretListener inteface
     public void caretUpdate(CaretEvent evt)
     {
         dispose();
     }
-//}}}
+    //}}}
 
-//{{{ class SelectionListener
-
+    //{{{ class SelectionListener
     class SelectionListener implements ListSelectionListener
     {
         public void valueChanged(ListSelectionEvent e) 
         {
-            updateStatusBar((JList)e.getSource());     
+            updateStatusBar((JList)e.getSource());
         }
-    }
-//}}}
+    } //}}}
 
-//{{{ class KeyHandler
+    //{{{ class KeyHandler
     class KeyHandler extends KeyAdapter
     {
-        
         int selected;
         int CHAR_DELTA = 1000;
         long m_time = 0;
         String m_key = "";
-        
-//{{{ void keyPressed
+
+        //{{{ void keyPressed
         public void keyPressed(KeyEvent evt)
         {
             View view = jEdit.getActiveView();
@@ -286,7 +240,7 @@ public void dispose()
                 {
                     selected--;
                 }
-                
+
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
                 evt.consume();
@@ -302,19 +256,17 @@ public void dispose()
                 {
                     selected++;
                 }
-                
+
                 itemsList.setSelectedIndex(selected);
                 itemsList.ensureIndexIsVisible(selected);
                 evt.consume();
                 break;
             }
-        }
-//}}}
+        } //}}}
 
-//{{{ void keyTyped
+        //{{{ void keyTyped
         public void keyTyped(KeyEvent evt)
         {
-
             char ch = evt.getKeyChar();
             if (evt.getKeyCode() == KeyEvent.VK_INSERT)
             {
@@ -345,37 +297,33 @@ public void dispose()
                     itemsList.ensureIndexIsVisible(i);
                     break;
                 }
-
             }
             itemsList.ensureIndexIsVisible(itemsList.getSelectedIndex());  
-        }
-//}}}
-    }
-//}}}
+        } //}}}
 
-//{{{ class MouseHandler
+    } //}}}
+
+    //{{{ class MouseHandler
     class MouseHandler extends MouseAdapter
     {
-//{{{ MouseHandler.mouseClicked
+        //{{{ MouseHandler.mouseClicked
         public void mouseClicked(MouseEvent me)
         {
-                if (me.isShiftDown() == true)
-                {
-                    JumpList.this.processActionInNewView((Object) itemsList);
-                }
-                else if (me.isControlDown() == true)
-                {
-                    JumpList.this.processInsertAction((Object) itemsList);
-                }
-                else
-                {
-                    JumpList.this.processAction((Object) itemsList);
-                }
-                dispose();
-                return;
-        }
-//}}}
-    }
-//}}}
+            if (me.isShiftDown() == true)
+            {
+                JumpList.this.processActionInNewView((Object) itemsList);
+            }
+            else if (me.isControlDown() == true)
+            {
+                JumpList.this.processInsertAction((Object) itemsList);
+            }
+            else
+            {
+                JumpList.this.processAction((Object) itemsList);
+            }
+            dispose();
+            return;
+        } //}}}
 
+    } //}}}
 }

@@ -2,13 +2,12 @@
     <description>
 Hi packager! This is a Jump Plugin build file.
     </description>
-  <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.2pre8/"/> 
-   <!--<property name="jedit.install.dir"  value="/usr/local/share/jedit/4.2pre5"/>-->
+  <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.2pre8/"/>
+   <!--<property name="jedit.install.dir"  value="/usr/local/share/jedit/4.2pre8"/>-->
   <property name="jar.name"  value="Jump"/>
 
   <property name="install.dir"  value="${user.home}/.jedit/jars/"/>
   <!-- <property name="build.compiler" value="jikes"/> -->
-
 
   <path id="project.class.path">
     <pathelement location="${jedit.install.dir}/jedit.jar"/>
@@ -17,7 +16,7 @@ Hi packager! This is a Jump Plugin build file.
   </path>
 
 <!--{{{ compile -->
-    <target name="compile"> 
+    <target name="compile">
     <javac
       srcdir="."
       deprecation="on"
@@ -64,7 +63,7 @@ Hi packager! This is a Jump Plugin build file.
         <fileset dir="." includes="**/*.class"/>
     </delete>
   </target> <!--}}}-->
-  
+
 <!--{{{ dist -->
     <target name="dist" depends="compile,jar">
         <description>
@@ -73,19 +72,19 @@ Also create binary Jump.jar in parent dir.
     </description>
     <mkdir dir="${install.dir}"/>
     <mkdir dir="../tmp/Jump"/>
-    
+
     <copy todir="../tmp/Jump">
         <fileset dir="." excludes="CVS" />
     </copy>
-    
+
     <copy file="../${jar.name}.jar" todir="../tmp" />
-    
+
    <zip destfile="../${jar.name}.zip">
         <zipfileset dir="../tmp" includes="**/*.*" />
     </zip>
-    
+
     <delete dir="../tmp" />
-  
+
   </target> <!--}}}-->
-  
+
 </project>

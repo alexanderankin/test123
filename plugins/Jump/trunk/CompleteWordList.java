@@ -1,5 +1,6 @@
 /*
- * CompleteWordList.java - Modified Slava's CompleteWord, since I can't successfully extend it :(
+ * CompleteWordList.java - Modified Slava's CompleteWord, 
+ * since I can't successfully extend it :(
  * :tabSize=4:indentSize=4:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
@@ -19,26 +20,24 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-//package org.gjt.sp.jedit.gui;
 
-//{{{ Imports
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
-import org.gjt.sp.jedit.syntax.*;
-import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.*;
-
-import projectviewer.*;
-import projectviewer.vpt.*;
-//}}}
+	//{{{ Imports
+	import javax.swing.*;
+	import java.awt.*;
+	import java.awt.event.*;
+	import java.util.Vector;
+	import org.gjt.sp.jedit.syntax.*;
+	import org.gjt.sp.jedit.textarea.*;
+	import org.gjt.sp.jedit.*;
+	import org.gjt.sp.jedit.gui.*;
+	
+	import projectviewer.*;
+	import projectviewer.vpt.*; //}}}
 
 public class CompleteWordList extends JWindow
 {
-	boolean isGlobalSearch; 
-	
+	boolean isGlobalSearch;
+
 	//{{{ CompleteWord constructor
 	public CompleteWordList(View view, String word, Vector completions, Point location,
 		String noWordSep, boolean isGlobalSearch)
@@ -117,29 +116,24 @@ public class CompleteWordList extends JWindow
 
 	//{{{ Private members
 
-//{{{ getCompletions
-private Vector getCompletions(String sel)
-{ 
-	//TagsBinSearcher tbs;
-	Vector tags = new Vector();
-	
+	//{{{ getCompletions
+	private Vector getCompletions(String sel)
+	{ 
+		//TagsBinSearcher tbs;
+		Vector tags = new Vector();
 		ProjectBuffer currentTags = JumpPlugin.getActiveProjectBuffer();
 		if (currentTags == null) return null;
 		tags = currentTags.PROJECT_CTBUFFER.getEntresByStartPrefix(sel);
-	
-		
-
-	
-	Vector completions = new Vector();
-	String entry;
-	for(int i=0; i<tags.size(); i++)
-	{
-	    entry = (String) tags.get(i);
-	    completions.add(new Completion(entry, false));
-	}
-	MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
-	return completions;
-} //}}} 
+		Vector completions = new Vector();
+		String entry;
+		for(int i=0; i<tags.size(); i++)
+		{
+			entry = (String) tags.get(i);
+			completions.add(new Completion(entry, false));
+		}
+		MiscUtilities.quicksort(completions,new MiscUtilities.StringICaseCompare());
+		return completions;
+	} //}}}
 
 	//{{{ completeWord() method
 	private static String completeWord(String line, int offset, String noWordSep)
