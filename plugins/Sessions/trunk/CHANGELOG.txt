@@ -1,3 +1,7 @@
+VERSION 1.2.0 (Steve Jakob)
+- updated to use the new plugin loading API introduced in jEdit 4.2pre1
+- updated jEdit dependancy to version 4.2pre2, since there were problems with the new OptionPane API in pre1
+
 VERSION 1.1.0 (Steve Jakob)
 
 - fixed bug (#738931): renaming a session does not change the name in the XML file (Steve Jakob)

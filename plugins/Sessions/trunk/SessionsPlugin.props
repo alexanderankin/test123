@@ -2,18 +2,19 @@
 # General plugin properites
 #
 
+plugin.sessions.SessionsPlugin.activate=startup
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=1.1.0
+plugin.sessions.SessionsPlugin.version=1.2.0
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
-plugin.sessions.SessionsPlugin.depend.0=jedit 04.02.01.00
+plugin.sessions.SessionsPlugin.depend.0=jedit 04.02.02.00
 
 
 #
 # menu
 #
 
-sessions.menu=session-manager - session-save session-save-as session-reload - session-properties
+plugin.sessions.SessionsPlugin.menu=session-manager - session-save session-save-as session-reload - session-properties
 sessions.menu.label=Sessions
 
 
@@ -142,7 +143,9 @@ sessions.manager.info.dontShowAgain=\
 # Option pane
 #
 
+plugin.sessions.SessionsPlugin.option-pane=sessions
 options.sessions.label=Sessions
+options.sessions.code=new sessions.SessionsOptionPane();
 
 options.sessions.switcher.autoSave=Autosave sessions (on switch, rename, close)
 options.sessions.switcher.closeAll=Close all files before switching to new session
