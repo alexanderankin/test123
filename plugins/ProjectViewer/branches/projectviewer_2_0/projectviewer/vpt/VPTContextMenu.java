@@ -46,10 +46,10 @@ import projectviewer.ProjectViewer;
 import projectviewer.action.Action;
 import projectviewer.action.FileImportAction;
 import projectviewer.action.EditProjectAction;
+import projectviewer.action.NodeRemoverAction;
 
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.config.AppLauncher;
-
 //}}}
 
 /**
@@ -67,7 +67,10 @@ public class VPTContextMenu extends MouseAdapter {
 	private static long lastMod = System.currentTimeMillis();
 	
 	//{{{ registerAction(Action) method
-	/** Adds an action to be shown on the context menu. */
+	/** 
+	 *	Adds an action to be shown on the context menu. Actions are shown in the
+	 *	same order as they are registered.
+	 */
 	public static void registerAction(Action action) {
 		actions.add(action);
 		lastMod = System.currentTimeMillis();
@@ -99,8 +102,10 @@ public class VPTContextMenu extends MouseAdapter {
 	 */
 	public VPTContextMenu(ProjectViewer viewer) {
 		this.viewer = viewer;
-		loadGUI();
 		appList = AppLauncher.getInstance();
+		internalActions = new ArrayList();
+		popupMenu = new JPopupMenu();
+		loadGUI();
 	}
 	
 	//}}}
@@ -156,19 +161,38 @@ public class VPTContextMenu extends MouseAdapter {
 	//{{{ loadGUI() method
 	/** Constructs the menus' GUI. */
 	private void loadGUI() {
-		internalActions = new ArrayList();
-		popupMenu = new JPopupMenu();
+		internalActions.clear();
+		popupMenu.removeAll();
 		
-		Action cpa = new EditProjectAction(viewer);
-		popupMenu.add(cpa.getMenuItem());
-		internalActions.add(cpa);
+		Action a = new EditProjectAction();
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
 
-		cpa = new FileImportAction(viewer);
-		popupMenu.add(cpa.getMenuItem());
-		internalActions.add(cpa);
+		a = new FileImportAction();
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
 
+		a = new NodeRemoverAction(false);
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
+
+		a = new NodeRemoverAction(true);
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
+		
+		if (actions.size() > 0)
+			popupMenu.addSeparator();
+		
 		for (Iterator it = actions.iterator(); it.hasNext(); ) {
-			popupMenu.add(((Action)it.next()).getMenuItem());
+			a = (Action) it.next();
+			a = (Action) a.clone();
+			a.setViewer(viewer);
+			internalActions.add(a);
+			popupMenu.add(a.getMenuItem());
 		}
 		
 		pmLastBuilt = System.currentTimeMillis();
@@ -191,9 +215,6 @@ public class VPTContextMenu extends MouseAdapter {
 			((Action)it.next()).prepareForNode(selectedNode);
 		}
 		
-		for (Iterator it = actions.iterator(); it.hasNext(); ) {
-			((Action)it.next()).prepareForNode(selectedNode);
-		}
 	} //}}}
 	
 	//}}}
