@@ -6,6 +6,7 @@
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "docbookx.dtd">
 
 <book>
+
 	<bookinfo>
     	<title>ProjectViewer plugin</title>
 		<authorgroup>
@@ -199,7 +200,7 @@
 			</listitem>
 		</itemizedlist>
 
-		<bridgehead renderas='sect3'>Commands available in the toolbar</bridgehead>
+		<bridgehead renderas='sect3'>Commands available in the context menu</bridgehead>
 
 		<para>
 			The context menu provides context-sensitive options based on the current tree
@@ -247,6 +248,11 @@
 				<para>
 					Archive project: this will prompt you for a file name. A JAR archive
 					will be created containing all files below the project root.
+					<!--
+					If you have the JarMaker plugin installed (with at least version
+					0.5), it will be used to create the JAR; otherwise, a simpler
+					archiving function is provided in ProjectViewer.
+					-->
 				</para>
 			</listitem>
 			<listitem>
@@ -406,11 +412,46 @@
 		<itemizedlist>
 			<listitem>
 				<para>
+					Use InfoViewer's browser settings: if you have the InfoViewer
+					plugin installed, you can choose to check this box, and when
+					asking to open a file in a web browser, InfoViewer is going
+					to be used to launch you browser of choice.
+				</para>
+			</listitem>
+			<listitem>
+				<para>
 					Browser path: the path to the web browser to be used for viewing
-					selected files, with any needed command-line switches.
+					selected files, with any needed command-line switches, in case
+					you don't want to use the same settings as the InfoViewer
+					plugin.
 				</para>
 			</listitem>
 		</itemizedlist>
+
+		<bridgehead renderas='sect3'>Editing the context menu</bridgehead>
+
+		<para>
+			ProjectViewer provides an interface similar to jEdit's context menu
+			editor, where you can add actions to be displayed in the trees'
+			context menus. You can't remove the default entries in the context
+			menu, but any action available to jEdit can be added. It's important
+			to notice that adding an action to the context menu won't make it
+			"Project Viewer aware": unless the action is specifically written to
+			interface with ProjectViewer, it will work the same way as it would
+			if executed from any other place (such as the jEdit toolbar or menu).
+		</para>
+
+		<bridgehead renderas='sect3'>File Associations</bridgehead>
+
+		<para>
+			The "External Applications" option pane can be used to register
+			applications you want to use for specific file type, accessible
+			through the "Open with..." context menu command for files. Just
+			add an extension (or a complete file name) and the application
+			you wish to use for that entry. It's not possible to specify
+			multiple extensions or file names in the same entry, so, use
+			separate entries for each association you want to create.
+		</para>
 
 	</chapter>
 
@@ -534,4 +575,6 @@
 			</listitem>
 		</itemizedlist>
 	</chapter>
+
 </book>
+
