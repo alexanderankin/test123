@@ -5,26 +5,18 @@ import java.util.List;
 import net.sourceforge.phpdt.internal.compiler.ast.declarations.VariableUsage;
 
 /**
- * A variable.
- * It could be a simple variable, or contains another variable.
+ * A variable. It could be a simple variable, or contains another variable.
  *
  * @author Matthieu Casanova
  */
 public final class Variable extends AbstractVariable {
-
-  /**
-   * The name of the variable.
-   */
+  /** The name of the variable. */
   private String name;
 
-  /**
-   * A variable inside ($$varname).
-   */
+  /** A variable inside ($$varname). */
   private AbstractVariable variable;
 
-  /**
-   * the variable is defined like this ${expression}
-   */
+  /** the variable is defined like this ${expression}. */
   private Expression expression;
 
   private static final String _GET = "_GET";
@@ -38,35 +30,34 @@ public final class Variable extends AbstractVariable {
   private static final String _FILES = "_FILES";
   private static final String _ENV = "_ENV";
 
-  /**
-   * Here is an array of all superglobals variables and the special "this".
-   */
+  /** Here is an array of all superglobals variables and the special "this". */
   public static final String[] SPECIAL_VARS = {_GET,
-                                               _POST,
-                                               _REQUEST,
-                                               _SERVER,
-                                               _SESSION,
-                                               _this,
-                                               GLOBALS,
-                                               _COOKIE,
-                                               _FILES,
-                                               _ENV};
+          _POST,
+          _REQUEST,
+          _SERVER,
+          _SESSION,
+          _this,
+          GLOBALS,
+          _COOKIE,
+          _FILES,
+          _ENV};
 
   /**
-   * Create a new simple variable.
-   *
-   * @param name        the name
-   * @param sourceStart the starting position
-   * @param sourceEnd   the ending position
-   * @deprecated todo virer ca
-   */
-  public Variable(final String name,
-                  final int sourceStart,
-                  final int sourceEnd,
-                  final int beginLine,
-                  final int endLine,
-                  final int beginColumn,
-                  final int endColumn) {
+     * Create a new simple variable.
+     *
+     * @param name        the name
+     * @param sourceStart the starting position
+     * @param sourceEnd   the ending position
+     *
+     * @deprecated todo virer ca
+     */
+  public Variable(String name,
+                  int sourceStart,
+                  int sourceEnd,
+                  int beginLine,
+                  int endLine,
+                  int beginColumn,
+                  int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.name = name;
   }
@@ -78,13 +69,13 @@ public final class Variable extends AbstractVariable {
    * @param sourceStart the starting position
    * @param sourceEnd   the ending position
    */
-  public Variable(final AbstractVariable variable,
-                  final int sourceStart,
-                  final int sourceEnd,
-                  final int beginLine,
-                  final int endLine,
-                  final int beginColumn,
-                  final int endColumn) {
+  public Variable(AbstractVariable variable,
+                  int sourceStart,
+                  int sourceEnd,
+                  int beginLine,
+                  int endLine,
+                  int beginColumn,
+                  int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.variable = variable;
   }
@@ -96,13 +87,13 @@ public final class Variable extends AbstractVariable {
    * @param sourceStart the starting position
    * @param sourceEnd   the ending position
    */
-  public Variable(final Expression expression,
-                  final int sourceStart,
-                  final int sourceEnd,
-                  final int beginLine,
-                  final int endLine,
-                  final int beginColumn,
-                  final int endColumn) {
+  public Variable(Expression expression,
+                  int sourceStart,
+                  int sourceEnd,
+                  int beginLine,
+                  int endLine,
+                  int beginColumn,
+                  int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.expression = expression;
   }
@@ -127,21 +118,29 @@ public final class Variable extends AbstractVariable {
   }
 
   /**
-   * Get the variables from outside (parameters, globals ...)
+   * This method will return the current variable.
+   *
+   * @param list we will add the current method to the list
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
+    getUsedVariable(list);
   }
 
   /**
-   * get the modified variables.
+   * This method will return the current variable.
+   *
+   * @param list we will add the current method to the list
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
+    getUsedVariable(list);
   }
 
   /**
-   * Get the variables used.
+   * This method will return the current variable.
+   *
+   * @param list we will add the current method to the list
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     final String varName;
     if (name != null) {
       varName = name;
@@ -159,11 +158,5 @@ public final class Variable extends AbstractVariable {
                                  beginColumn,
                                  endColumn));
     }
-  }
-
-  public void setStart(int sourceStart,int beginLine,int beginColumn) {
-    this.sourceStart = sourceStart;
-    this.beginLine = beginLine;
-    this.beginColumn = beginColumn;
   }
 }
