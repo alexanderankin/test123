@@ -183,9 +183,12 @@ public final class Project implements EBComponent {
 			return;
 
 		ProjectDirectory dir = findDirectory(aFile);
-		dir.addFile(aFile);
-		fireFileAdded(aFile);
-		files.put(aFile.getPath(), aFile);
+		//-- one might have tried to import files from not below our directory
+		if(dir!=null) {
+			dir.addFile(aFile);
+			fireFileAdded(aFile);
+			files.put(aFile.getPath(), aFile);
+		}
 	}
 
     /**

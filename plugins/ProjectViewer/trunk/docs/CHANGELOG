@@ -14,38 +14,34 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+VERSION 1.0.4
+
+  [stefan kost]
+  	- fixed bug when importing files from dirs not below project root
+	
+	
 VERSION 1.0.3
-  - cleanups (source-code formatting, adding missing scope identifiers,
-    adding final if possible)
-  
-  - initial user documentation (using docbook-xsl) 
-  
-  - the red '-' can now even remove whole directories (after asking)
 
-  - fixed build.xml, so that docs are now included
-  
-  - slight speedup in treehandling (made most members static)
-  
-  - project files are colored according to the setting of the filesystem browser
-
-  - toolbar is now JToolBar and has roll-over buttons
-
-  - removed deprecation warning (updated to jEdit 4.0 dockable API)
-  
-  - sorted extensions in import-sample.properties
-  
-  - added CVS policy file
-
-  - Project parsing does not start at jEdit start up unless the the viewer is
-    set to be displayed on start up.
-
-  - Fixed NPE when a click occurs over a non-node port of project tree
-
-  - Added 'py' (Python) extension to supported import extensions
-
-  - Project directories are now sorted
-
-  - Double click interval have been shortened from 2 seconds to .5 seconds
+  [stefan kost]
+    - cleanups (source-code formatting, adding missing scope identifiers,
+      adding final if possible)
+    - initial user documentation (using docbook-xsl) 
+    - the red '-' can now even remove whole directories (after asking)
+    - fixed build.xml, so that docs are now included
+    - slight speedup in treehandling (made most members static)
+    - project files are colored according to the setting of the filesystem browser
+    - toolbar is now JToolBar and has roll-over buttons
+    - removed deprecation warning (updated to jEdit 4.0 dockable API)
+    - sorted extensions in import-sample.properties
+    - added CVS policy file
+	
+  [?]
+    - Project parsing does not start at jEdit start up unless the the viewer is
+      set to be displayed on start up.
+    - Fixed NPE when a click occurs over a non-node port of project tree
+    - Added 'py' (Python) extension to supported import extensions
+    - Project directories are now sorted
+    - Double click interval have been shortened from 2 seconds to .5 seconds
 
 
 VERSION 1.0.2
