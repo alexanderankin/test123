@@ -94,6 +94,9 @@ public class TagsOptionsPanel extends AbstractOptionPane {
   
   /***************************************************************************/
   public void _save() {
+    Tags.setSearchAllTagFiles(searchAllFilesCheckBox_.isSelected());
+    Tags.setUseCurrentBufTagFile(useCurrentBufTagFileCheckBox_.isSelected());
+    
     TagsPlugin.debug_ = debugCheckBox_.isSelected();
   }
   
@@ -146,11 +149,10 @@ public class TagsOptionsPanel extends AbstractOptionPane {
 				tagFilesOptionsPanel_ = new JPanel(new GridLayout(0,1,0,0));
 			
 					useCurrentBufTagFileCheckBox_ = new JCheckBox(
-																jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
-																	"tag-search-current-buff-tag-file.label"));
+		            jEdit.getProperty(
+                       "options.tags.tag-search-current-buff-tag-file.label"));
 					searchAllFilesCheckBox_ = new JCheckBox(
-																jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
-																	"tag-search-all-files.label"));
+								 jEdit.getProperty("options.tags.tag-search-all-files.label"));
 																	
 				listModel_ = new DefaultListModel();
 		
@@ -161,13 +163,13 @@ public class TagsOptionsPanel extends AbstractOptionPane {
 					
 				buttonPanel_ = new JPanel(new GridLayout(1,0,5,5));
 					addButton_ = new JButton(
-										TagsPlugin.getOptionString("tag-search-files-add.label"));
+									jEdit.getProperty("options.tags.tag-search-files-add.label"));
 					removeButton_ = new JButton(
-								 TagsPlugin.getOptionString("tag-search-files-remove.label"));
+							 jEdit.getProperty("options.tags.tag-search-files-remove.label"));
 					moveUpButton_ = new JButton(
-								TagsPlugin.getOptionString("tag-search-files-move-up.label"));
+						  jEdit.getProperty("options.tags.tag-search-files-move-up.label"));
 					moveDownButton_ = new JButton(
-							TagsPlugin.getOptionString("tag-search-files-move-down.label"));
+					  jEdit.getProperty("options.tags.tag-search-files-move-down.label"));
 			
     debugCheckBox_ = new JCheckBox("Debug");
   }
@@ -195,11 +197,11 @@ public class TagsOptionsPanel extends AbstractOptionPane {
   /***************************************************************************/
   protected void placeComponents() {
     
-    addSeparator("options.tags.tag-file-type.title");
-    parserPanel_.add(parserButtonPanel_);
-    addComponent(parserPanel_);
+    //addSeparator("options.tags.tag-file-type.title");
+    //parserPanel_.add(parserButtonPanel_);
+    //addComponent(parserPanel_);
 
-    addSeparator("options.tags.tag-search-files.label");
+    //addSeparator("options.tags.tag-search-files.label");
     tagFilesOptionsPanel_.add(useCurrentBufTagFileCheckBox_);
     tagFilesOptionsPanel_.add(searchAllFilesCheckBox_);
     tagFilesUIPanel_.add(tagFilesOptionsPanel_, BorderLayout.NORTH);

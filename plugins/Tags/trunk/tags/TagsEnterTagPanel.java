@@ -32,6 +32,8 @@ import java.awt.event.*;
 import javax.swing.*;
 import javax.swing.event.*;
 
+import org.gjt.sp.jedit.*;
+
 public class TagsEnterTagPanel extends JPanel {
 
   /***************************************************************************/
@@ -91,10 +93,11 @@ public class TagsEnterTagPanel extends JPanel {
   /***************************************************************************/
   protected void createComponents() {
     labelAndFieldPanel_ = new JPanel();
-    textFieldLabel_ = new JLabel(TagsPlugin.getOptionString("tag-to.label"));
+    textFieldLabel_ = new JLabel(
+              jEdit.getProperty("tags.enter-tag-dlg.tag-to.label"));
     tagFuncTextField_ = new JTextField(16);
     otherWindowCheckBox_ = new JCheckBox(
-                        TagsPlugin.getOptionString("new-view-checkbox.label"));
+              jEdit.getProperty("tags.enter-tag-dlg.new-view-checkbox.label"));
   }
   
   /***************************************************************************/

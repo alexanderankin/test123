@@ -95,8 +95,8 @@ public class ChooseTagList extends JWindow {
     String fontName = null;
     String sizeString = null;
     if (view_ != null) {
-      fontName = TagsPlugin.getOptionString("choose.Font");
-      sizeString = TagsPlugin.getOptionString("choose.font-size");
+      fontName = jEdit.getProperty("tags.tag-collide-list.Font");
+      sizeString = jEdit.getProperty("tags.tag-collide-list.font-size");
     }
     else {
       fontName = "Monospaced";
