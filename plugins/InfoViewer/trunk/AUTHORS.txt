@@ -1,0 +1,3 @@
+Dirk Moebius <dmoebius@gmx.net>
+
+InfoViewer is based on HTMLViewer by Slava Pestov <sp@gjt.org>
