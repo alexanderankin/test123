@@ -415,8 +415,7 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& closeCompletion
-			&& (completionInfo != null
-			|| !"xml".equals(buffer.getProperty("xml.parser")))))
+			&& "xml".equals(buffer.getProperty("xml.parser"))))
 		{
 			return;
 		}
@@ -464,8 +463,7 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& closeCompletionOpen
-			&& (completionInfo != null
-			|| buffer.getProperty("xml.parser") != null)))
+			&& "xml".equals(buffer.getProperty("xml.parser"))))
 		{
 			return;
 		}
@@ -605,7 +603,8 @@ public class XmlActions
 
 				if (lastChar == '?'
 					|| lastChar == '!'
-					|| lastChar == '-')
+					|| lastChar == '-'
+					|| lastChar == '%')
 				{
 					inTag = false;
 				}

@@ -75,7 +75,7 @@ public class XmlPlugin extends EBPlugin
 				TagHighlight tagHighlight = new TagHighlight(
 					editPane.getView(),textArea);
 				tagHighlights.put(editPane,tagHighlight);
-				textAreaPainter.addCustomHighlight(tagHighlight);
+				textAreaPainter.addExtension(tagHighlight);
 			}
 			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 			{

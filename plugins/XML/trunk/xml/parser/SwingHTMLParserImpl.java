@@ -71,6 +71,26 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 	//{{{ getElementTree() method
 	public TreeNode getElementTree()
 	{
+		// need to do some cleanup...
+		for(int i = 0; i < root.getChildCount(); i++)
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)root.getChildAt(i);
+			XmlTag tag = (XmlTag)node.getUserObject();
+			if(tag.attributes.getValue("_implied_") != null)
+			{
+				root.remove(i);
+
+				int j = 0;
+
+				while(node.getChildCount() != 0)
+				{
+					root.insert((DefaultMutableTreeNode)node.getChildAt(0),i + j);
+					j++;
+				}
+
+				i--;
+			}
+		}
 		return root;
 	} //}}}
 
@@ -142,6 +162,8 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 
 		return attrs;
 	} //}}}
+
+	//}}}
 
 	//{{{ Handler class
 	class Handler extends HTMLEditorKit.ParserCallback
@@ -230,10 +252,10 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 					DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 						currentNodeStack.peek();
 
-					node.insert(newNode,node.getChildCount());
+					node.add(newNode);
 				}
 				else
-					root.insert(newNode,0);
+					root.add(newNode);
 			}
 			finally
 			{
