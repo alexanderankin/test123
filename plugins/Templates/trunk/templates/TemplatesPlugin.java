@@ -266,7 +266,7 @@ public class TemplatesPlugin extends EditPlugin
 	}
 	
 	private static void buildAllMenus() {
-		EditBus.send(new DynamicMenuChanged("Templates"));
+		EditBus.send(new DynamicMenuChanged("plugin.templates.TemplatesPlugin.menu"));
 	}
 	
 	/**
