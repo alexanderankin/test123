@@ -578,7 +578,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	private View 					view;
 	private HashSet					dontAsk;
 
-	private JTree currentTree;
 	private JTree					folderTree;
 	private JScrollPane				folderTreeScroller;
 	private JTree					fileTree;
@@ -820,7 +819,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (state != null && folderTree != null) {
 			SwingUtilities.invokeLater(new TreeStateLoader(state));
 		}
-
 	} //}}}
 
 	//{{{ -showTrees() : void
@@ -837,7 +835,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				folderTree = createTree(new DefaultTreeModel(treeRoot, true));
 				folderTreeScroller = new JScrollPane(folderTree);
 			}
-			currentTree = folderTree;
 			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), folderTreeScroller);
 		} else {
 			folderTree = null;
@@ -850,7 +847,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				fileTree = createTree(new VPTFileListModel(treeRoot));
 				fileTreeScroller = new JScrollPane(fileTree);
 			}
-			currentTree = fileTree;
 			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), fileTreeScroller);
 		} else {
 			fileTree = null;
@@ -864,7 +860,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				workingFileTree = createTree(model);
 				workingFileTreeScroller = new JScrollPane(workingFileTree);
 			}
-			currentTree = workingFileTree;
 			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), workingFileTreeScroller);
 		} else {
 			workingFileTree = null;
@@ -877,7 +872,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			remove(treePane);
 			add(BorderLayout.CENTER,treePane.getComponentAt(0));
 		} else {
-			currentTree = null;
 			add(BorderLayout.CENTER,treePane);
 			treePane.setSelectedIndex(0);
 		}
@@ -952,9 +946,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	//{{{ +getCurrentTree() : JTree
 	/** Returns the currently active tree. */
 	public JTree getCurrentTree() {
-		if(currentTree != null)
-			return currentTree;
-
 		switch(treePane.getSelectedIndex()) {
 			case 0:
 				if (folderTree != null) return folderTree;
@@ -997,6 +988,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			treeRoot = VPTRoot.getInstance();
 			config.setLastProject(null);
 		}
+
 		if (folderTree != null)
 			((DefaultTreeModel)folderTree.getModel()).setRoot(treeRoot);
 		if (fileTree != null)
@@ -1306,20 +1298,27 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 		//{{{ +run() : void
 		public void run() {
-			setEnabled(false);
 			final JTree tree = getCurrentTree();
-			final DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+			final DefaultTreeModel tModel = (tree != null)
+					? (DefaultTreeModel) tree.getModel() : null;
 			final VPTNode oldRoot = treeRoot;
 			treeRoot = null;
+
 			try {
 				SwingUtilities.invokeAndWait(
 					new Runnable() {
 						public void run() {
-							tree.setModel(new DefaultTreeModel(
-								new DefaultMutableTreeNode(
-									jEdit.getProperty("projectviewer.loading_project",
-										new Object[] { pName } ))));
-										}
+							setEnabled(false);
+							if (tree != null) {
+								tree.setModel(new DefaultTreeModel(
+									new DefaultMutableTreeNode(
+										jEdit.getProperty("projectviewer.loading_project",
+											new Object[] { pName } ))));
+							} else {
+								setStatus(jEdit.getProperty("projectviewer.loading_project",
+											new Object[] { pName } ));
+							}
+						}
 					});
 			} catch (InterruptedException ie) {
 				// not gonna happen
@@ -1338,8 +1337,10 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 						public void run() {
 							synchronized (ProjectViewer.this) {
 								treeRoot = oldRoot;
-								tModel.setRoot(p);
-								tree.setModel(tModel);
+								if (tree != null) {
+									tModel.setRoot(p);
+									tree.setModel(tModel);
+								}
 								setProject(p);
 								setEnabled(true);
 							}
