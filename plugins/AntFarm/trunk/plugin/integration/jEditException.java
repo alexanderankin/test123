@@ -1,4 +1,7 @@
 /*
+ *  jEditException.java - Plugin for running Ant builds from jEdit.
+ *  Copyright (C) 2001 Brian Knowles
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -13,16 +16,18 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
+package plugin.integration;
+
 import java.io.*;
 
 /**
  *  An exception for jEdit errors.
  *
- *@author     steinbeck
- *@created    27. August 2001
+ * @author     steinbeck
+ * @created    27. August 2001
  */
 public class jEditException
-		 extends Exception
+	 extends Exception
 {
 
 	private Throwable nestedException;
@@ -31,23 +36,23 @@ public class jEditException
 	/**
 	 *  Create a new <code>jEditException</code>.
 	 *
-	 *@param  msg  Description of Parameter
+	 * @param  msg  Description of Parameter
 	 */
-	public jEditException(String msg)
+	public jEditException( String msg )
 	{
-		super(msg);
+		super( msg );
 	}
 
 
 	/**
 	 *  Create a new <code>jEditException</code>.
 	 *
-	 *@param  msg  Description of Parameter
-	 *@param  t    Description of Parameter
+	 * @param  msg  Description of Parameter
+	 * @param  t    Description of Parameter
 	 */
-	public jEditException(String msg, Throwable t)
+	public jEditException( String msg, Throwable t )
 	{
-		super(msg);
+		super( msg );
 		nestedException = t;
 	}
 
@@ -57,22 +62,21 @@ public class jEditException
 	 */
 	public void printStackTrace()
 	{
-		printStackTrace(System.err);
+		printStackTrace( System.err );
 	}
 
 
 	/**
 	 *  Prints the stack trace to the given <code>PrintWriter</code>.
 	 *
-	 *@param  writer  Description of Parameter
+	 * @param  writer  Description of Parameter
 	 */
-	public void printStackTrace(PrintWriter writer)
+	public void printStackTrace( PrintWriter writer )
 	{
-		super.printStackTrace(writer);
-		if (null != nestedException)
-		{
-			writer.println("Nested Exception:");
-			nestedException.printStackTrace(writer);
+		super.printStackTrace( writer );
+		if ( null != nestedException ) {
+			writer.println( "Nested Exception:" );
+			nestedException.printStackTrace( writer );
 		}
 	}
 
@@ -81,11 +85,11 @@ public class jEditException
 	 *  Prints this <code>Throwable</code> and its backtrace to a given <code>PrintStream</code>
 	 *  .
 	 *
-	 *@param  stream  Description of Parameter
+	 * @param  stream  Description of Parameter
 	 */
-	public void printStackTrace(PrintStream stream)
+	public void printStackTrace( PrintStream stream )
 	{
-		printStackTrace(new PrintWriter(stream, true));
+		printStackTrace( new PrintWriter( stream, true ) );
 	}
 
 }

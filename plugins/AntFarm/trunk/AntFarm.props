@@ -1,18 +1,86 @@
-# Properties used by jEdit
-plugin.AntFarmPlugin.name=Ant Farm
-plugin.AntFarmPlugin.author=Chris Scott, Rick Gibbs
-plugin.AntFarmPlugin.contributor=Todd Papaioannou, Richard F. Wan, Christoph Steinbeck, Slava Pestov, Dirk Moebius
-plugin.AntFarmPlugin.version=0.5.1
-plugin.AntFarmPlugin.docs=AntFarm.html
-plugin.AntFarmPlugin.jars=ant.jar
-plugin.AntFarmPlugin.depend.0=jdk 1.1
-plugin.AntFarmPlugin.depend.1=jedit 03.02.10.00
-plugin.AntFarmPlugin.depend.2=plugin EditBusPlugin 1.0.1
-plugin.AntFarmPlugin.depend.3=plugin ErrorListPlugin 1.1
-plugin.AntFarmPlugin.depend.4=plugin xml.XmlPlugin 0.3
+# Plugin properties
+plugin.antfarm.AntFarmPlugin.name=Ant Farm
+plugin.antfarm.AntFarmPlugin.author=Brian Knowles, Fernando Aranguiz
+plugin.antfarm.AntFarmPlugin.version=0.3
+plugin.antfarm.AntFarmPlugin.docs=index.html
+plugin.antfarm.AntFarmPlugin.jars=ant.jar ant-optional.jar
 
-# Menu item label
+plugin.AntFarmPlugin.depend.0=jedit 03.02.99.02
+plugin.AntFarmPlugin.depend.1=plugin Console 3.0
+plugin.AntFarmPlugin.depend.2=plugin EditBusPlugin 1.1
+plugin.AntFarmPlugin.depend.3=plugin XMLPlugin 0.3
+
+antfarm.title=Ant Farm
 antfarm.label=Ant Farm
 
-# Tab label
-antfarm.title=Ant Farm
+# Ant shell properties
+antfarm.shell.msg.info=\nUse this shell to run Ant builds. \n\
+			Watch out for the red ones, they bite.\n\n
+antfarm.shell.msg.non-selected=No build file selected.
+antfarm.shell.msg.invalid-usage=Invalid command, please check your usage.
+antfarm.shell.msg.usage=The Ant shell supports the following commands:\n\
+			   * "!"\t\t\t-- runs the default target for the current build file\n\
+			   * "![target_name]"\t\t-- runs the specified target for the current build file\n\
+			   * "?"\t\t\t-- lists the available build files and usage\n\
+			   * "=build_file_number"\t-- changes the current build file to the number identified by "?"\n\
+			   * "+full_path_to_file"\t-- load this build file into Ant Farm\n\n
+antfarm.shell.msg.killed=Ant target killed.
+antfarm.shell.msg.broken-file=Build file cannot be parsed:\ 
+antfarm.shell.msg.no-build-file=Not a valid build file number, use "?" to display known build files./n
+antfarm.shell.label.current-file=\nCurrent Build File:
+antfarm.shell.label.available-targets=Targets:\n
+antfarm.shell.label.available-files=Build files:\n
+
+# Ant tree and button properties
+antfarm.add.icon=/icons/AddFile.gif
+antfarm.add.label=Add Ant File...
+
+antfarm.remove.icon=/icons/RemoveFile.gif
+antfarm.remove.label=Remove Ant File
+
+antfarm.run.icon=/icons/RunTarget.gif
+antfarm.run.label=Run Current Target
+
+antfarm.root.label=Ant Projects
+antfarm.root.noBuildFiles=No build files...
+
+antfarm.root.icon=/icons/Root.gif
+antfarm.project.icon=/icons/BuildFile.gif
+antfarm.brokenProject.icon=/icons/BustedBuildFile.gif
+antfarm.target.icon=/icons/Target.gif
+antfarm.project.broken=Invalid build file:\ 
+antfarm.project.missing=File is missing:\ 
+antfarm.project.build-file=\ build file
+antfarm.project.untitled=Untitled build file
+antfarm.tree.loading=Loading...
+
+antfarm.action.collapse=Collapse
+antfarm.action.expand=Expand
+antfarm.action.execute.target=Execute target
+antfarm.action.execute.default-target=Execute default target:\ 
+antfarm.action.edit=Edit build file
+antfarm.action.browse=Browse project files
+
+# Ant browser option pane properties
+options.antfarm.label=Ant Farm
+options.antfarm.location=Select the Ant batch file to run
+options.antfarm.choose-antpath=Browse
+options.antfarm.file-dialog-approve=Select
+options.antfarm.prompt=You have not selected the method to use when invoking Ant.\n\n\
+			  You can choose to use the same JVM as jEdit or you \
+			  can select a batch/shell script to use. \n\
+			  When using the same JVM, you may need to allocate \
+			  more memory to the jEdit JVM at startup. \n\n\
+			  To select a batch/shell script, you must install the \
+			  Jakarta-Ant distribution from \
+			  http://jakarta.apache.org/ant\n\
+			  Note: the Ant distribution provides these scripts in "<ant directory>/bin"\n\n\
+			  Do you want to select an external batch/shell script?\n
+options.antfarm.prompt-dialog-title=Undefined Ant script
+options.antfarm.use-same-jvm-button=Run Ant targets in the same JVM
+options.antfarm.use-external-script-button=Run Ant targets using an external script/build file
+options.antfarm.select-path-button=Yes, select path...
+options.antfarm.use-jvm-button=No, use the same JVM
+options.antfarm.use-project-bridge-label=Load build files from the Project Viewer plugin
+options.antfarm.output-emacs-label=Produce logging information without adornments (Emacs mode)
+
