@@ -61,7 +61,8 @@ public class FoldHighlight extends TextAreaExtension
 
 
     public void paintValidLine(
-            Graphics2D gfx, int screenLine, int physicalLine, int start, int end, int y
+            Graphics2D gfx, final int screenLine, final int physicalLine,
+            final int start, final int end, final int y
     ) {
         WhiteSpaceModel model = this.getModel();
 
@@ -99,9 +100,8 @@ public class FoldHighlight extends TextAreaExtension
             for (int i = 0; i < foldLevels.size(); i++) {
                 level = ((Integer) foldLevels.elementAt(i)).intValue();
                 int x0 = level * spaceWidth + 1 + this.textArea.getHorizontalOffset();
-                int y0 = y + fm.getDescent() + fm.getLeading();
                 gfx.setColor(foldColor);
-                gfx.drawLine(x0, y0, x0, y0 + fm.getHeight() - 1);
+                gfx.drawLine(x0, y, x0, y + fm.getHeight() - 1);
             }
         }
     }
