@@ -2520,7 +2520,7 @@ FormalParameter FormalParameter() :
     } else {
       parameter = new FormalParameter(variableDeclaration.getName(),
                                       bitAndToken != null,
-                                      variableDeclaration.getInitialization().toStringExpression()                                      ,
+                                      variableDeclaration.getInitialization().toStringExpression(),
                                       variableDeclaration.getSourceStart(),
                                       variableDeclaration.getSourceEnd(),
                                       variableDeclaration.getBeginLine(),
@@ -2599,63 +2599,7 @@ Expression assignment() :
                           expr.getBeginColumn(),
                           initializer.getEndColumn());
   }
-}
-//{{{
-
-/*
-Expression assignment() :
-{
-  final Expression expr;
-  Expression initializer = null;
-  Token assignOperator = null;
-}
-{
-  expr = prefixedPrimaryExpression()
-  assignOperator = AssignmentOperator()
-  initializer = Expression()
-  {
-    if (expr instanceof AbstractVariable) {
-      if (initializer == null) {
-        return new VariableDeclaration(currentSegment,
-                                       (AbstractVariable) expr,
-                                       null,
-                                       assignOperator.image,
-                                       expr.sourceStart,
-                                       assignOperator.sourceEnd,
-                                       expr.getBeginLine(),
-                                       assignOperator.endLine,
-                                       expr.getBeginColumn(),
-                                       assignOperator.endColumn);
-      }
-      return new VariableDeclaration(currentSegment,
-                                     (AbstractVariable) expr,
-                                     initializer,
-                                     assignOperator.image,
-                                     expr.sourceStart,
-                                     initializer.sourceEnd,
-                                     expr.getBeginLine(),
-                                     initializer.getEndLine(),
-                                     expr.getBeginColumn(),
-                                     initializer.getEndColumn());
-    }
-    final String varName = expr.toStringExpression().substring(1);
-    return new VariableDeclaration(currentSegment,
-                                   new Variable(varName,
-                                                expr.sourceStart,
-                                                expr.sourceEnd,
-                                                expr.getBeginLine(),
-                                                expr.getEndLine(),
-                                                expr.getBeginColumn(),
-                                                expr.getEndColumn()),
-                                   expr.sourceStart,
-                                   assignOperator.sourceEnd,
-                                   expr.getBeginLine(),
-                                   assignOperator.endLine,
-                                   expr.getBeginColumn(),
-                                   assignOperator.endColumn);
-    }
-
-}*/  //}}}
+} //}}}
 
 //{{{ prefixedPrimaryExpression()
 
@@ -2697,19 +2641,24 @@ Token AssignmentOperator() :
   final Token assignOperator;
 }
 {
-  assignOperator = <ASSIGN>             {return assignOperator;}
-| assignOperator = <STARASSIGN>         {return assignOperator;}
-| assignOperator = <SLASHASSIGN>        {return assignOperator;}
-| assignOperator = <REMASSIGN>          {return assignOperator;}
-| assignOperator = <PLUSASSIGN>         {return assignOperator;}
-| assignOperator = <MINUSASSIGN>        {return assignOperator;}
-| assignOperator = <LSHIFTASSIGN>       {return assignOperator;}
-| assignOperator = <RSIGNEDSHIFTASSIGN> {return assignOperator;}
-| assignOperator = <ANDASSIGN>          {return assignOperator;}
-| assignOperator = <XORASSIGN>          {return assignOperator;}
-| assignOperator = <ORASSIGN>           {return assignOperator;}
-| assignOperator = <DOTASSIGN>          {return assignOperator;}
-| assignOperator = <TILDEEQUAL>         {return assignOperator;}
+  (
+      assignOperator = <ASSIGN>
+    | assignOperator = <STARASSIGN>
+    | assignOperator = <SLASHASSIGN>
+    | assignOperator = <REMASSIGN>
+    | assignOperator = <PLUSASSIGN> 
+    | assignOperator = <MINUSASSIGN>
+    | assignOperator = <LSHIFTASSIGN>
+    | assignOperator = <RSIGNEDSHIFTASSIGN>
+    | assignOperator = <ANDASSIGN>
+    | assignOperator = <XORASSIGN>
+    | assignOperator = <ORASSIGN>
+    | assignOperator = <DOTASSIGN>
+    | assignOperator = <TILDEEQUAL>
+  )
+  {
+    return assignOperator;
+  }
 }
 
 //}}}
@@ -3125,9 +3074,6 @@ Expression UnaryExpression() :
   final Expression expr;
 }
 {
- /* <BIT_AND> expr = UnaryExpressionNoPrefix()             //why did I had that ?
-  {return new PrefixedUnaryExpression(expr,OperatorIds.AND,pos);}
-|      */
   try {
     expr = AtNotTildeUnaryExpression() {return expr;}
   } catch (ParseException e) {
@@ -3525,12 +3471,17 @@ Expression ClassIdentifier():
  */
 AbstractVariable VariableSuffix(AbstractVariable prefix) :
 {
-  ClassAccess classAccess;
-  ArrayDeclarator arrayDeclarator;
+  AbstractVariable abstractVariable;
 }
 {
-  classAccess     = classAccess(prefix)     { return classAccess; }
-| arrayDeclarator = arrayDeclarator(prefix) { return arrayDeclarator; }
+  (
+      abstractVariable = classAccess(prefix)
+    |
+      abstractVariable = arrayDeclarator(prefix)
+  )
+  {
+    return abstractVariable;
+  }
 }
 
 //}}}
@@ -3574,7 +3525,7 @@ ClassAccess classAccess(AbstractVariable prefix) :
 //{{{ arrayDeclarator(AbstractVariable prefix)
 ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
 {
-  Token open, keyToken;
+  Token open;
   Token close = null;
   Expression expression = null;
   int sourceEnd,endLine,endColumn;
@@ -3586,6 +3537,7 @@ ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
     try {
       close = <RBRACKET>
     } catch (ParseException e) {
+      //{{{ fireParseError
       fireParseError(new PHPParseErrorEvent(ERROR,
                                             path,
                                             "']' expected",
@@ -3596,7 +3548,7 @@ ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
                                             e.currentToken.beginLine,
                                             e.currentToken.endLine,
                                             e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1));
+                                            e.currentToken.endColumn+1)); //}}}
     }
   |
     open = <LBRACE>
@@ -3604,6 +3556,7 @@ ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
     try {
       close = <RBRACE>
     } catch (ParseException e) {
+      //{{{ fireParseError
       fireParseError(new PHPParseErrorEvent(ERROR,
                                             path,
                                             "'}' expected",
@@ -3614,7 +3567,7 @@ ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
                                             e.currentToken.beginLine,
                                             e.currentToken.endLine,
                                             e.currentToken.endColumn,
-                                            e.currentToken.endColumn+1));
+                                            e.currentToken.endColumn+1)); //}}}
     }
   )
   {
@@ -3648,32 +3601,11 @@ ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
 Expression arrayKey() :
 {
   Expression expression;
-  Token keyToken;
 }
 {
   expression = Expression()       { return expression; }
-//| keyToken = arrayKeyIdentifier() { return  new ConstantIdentifier(keyToken); }
 } //}}}
-//{{{ arrayKeyIdentifier()
-/*Token arrayKeyIdentifier() :
-{
-  Token identifier;
-}
-{
-  methodIdentifier = <DEFINE>     { return methodIdentifier; }
-| methodIdentifier = <GOTO>       { return methodIdentifier; }
-| methodIdentifier = <SUPER>      { return methodIdentifier; }
-| methodIdentifier = <THIS>       { return methodIdentifier; }
-| methodIdentifier = <STRING>     { return methodIdentifier; }
-| methodIdentifier = <OBJECT>     { return methodIdentifier; }
-| methodIdentifier = <BOOL>       { return methodIdentifier; }
-| methodIdentifier = <BOOLEAN>    { return methodIdentifier; }
-| methodIdentifier = <REAL>       { return methodIdentifier; }
-| methodIdentifier = <DOUBLE>     { return methodIdentifier; }
-| methodIdentifier = <FLOAT>      { return methodIdentifier; }
-| methodIdentifier = <INT>        { return methodIdentifier; }
-| methodIdentifier = <INTEGER>    { return methodIdentifier; }
-}*/ //}}}
+
 
 //}}}
 //{{{ Literal()
@@ -3938,35 +3870,33 @@ Token token;
 Statement StatementNoBreak() :
 {
   final Statement statement;
-  Token token = null;
 }
 {
-  LOOKAHEAD(2)
-  statement = expressionStatement()     {return statement;}
-| LOOKAHEAD(2)
-  statement = LabeledStatement()        {return statement;}
-| statement = Block()                   {return statement;}
-| statement = EmptyStatement()          {return statement;}
-| statement = SwitchStatement()         {return statement;}
-| statement = IfStatement()             {return statement;}
-| statement = WhileStatement()          {return statement;}
-| statement = DoStatement()             {return statement;}
-| statement = ForStatement()            {return statement;}
-| statement = ForeachStatement()        {return statement;}
-| statement = ContinueStatement()       {return statement;}
-| statement = ReturnStatement()         {return statement;}
-| statement = EchoStatement()           {return statement;}
-/*| [token=<AT>] statement = IncludeStatement()
-  {if (token != null) {
-    ((InclusionStatement)statement).silent = true;
-    statement.sourceStart = token.sourceStart;
+  (
+      LOOKAHEAD(2)
+      statement = expressionStatement()
+    | LOOKAHEAD(2)
+      statement = LabeledStatement()
+    | statement = Block()
+    | statement = EmptyStatement()
+    | statement = SwitchStatement()
+    | statement = IfStatement()
+    | statement = WhileStatement()
+    | statement = DoStatement()
+    | statement = ForStatement()
+    | statement = ForeachStatement()
+    | statement = ContinueStatement()
+    | statement = ReturnStatement()
+    | statement = EchoStatement()
+    | statement = StaticStatement()
+    | statement = GlobalStatement()
+    | statement = tryStatement()
+    | statement = throwStatement()
+    | statement = defineStatement() {currentSegment.add((Outlineable)statement);}
+  )
+  {
+    return statement;
   }
-  return statement;}*/
-| statement = StaticStatement()         {return statement;}
-| statement = GlobalStatement()         {return statement;}
-| statement = tryStatement()            {return statement;}
-| statement = throwStatement()          {return statement;}
-| statement = defineStatement()         {currentSegment.add((Outlineable)statement);return statement;}
 }
 
 //}}}
@@ -4786,6 +4716,7 @@ LabeledStatement LabeledStatement() :
   try {
     <COLON>
   } catch (ParseException e) {
+    //{{{ fireParseError
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "':' expected",
@@ -4796,11 +4727,12 @@ LabeledStatement LabeledStatement() :
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+                                          e.currentToken.endColumn+1)); //}}}
   }
   try {
     statement = Statement()
   } catch (ParseException e) {
+    //{{{ fireParseError
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "statement expected",
@@ -4811,10 +4743,26 @@ LabeledStatement LabeledStatement() :
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-    return new LabeledStatement(label.image,statement,label.sourceStart,e.currentToken.sourceEnd);
+                                          e.currentToken.endColumn+1)); //}}}
+    return new LabeledStatement(label.image,
+                                statement,
+                                label.sourceStart,
+                                e.currentToken.sourceEnd,
+                                e.currentToken.beginLine,
+                                statement.getEndLine(),
+                                e.currentToken.beginColumn,
+                                statement.getEndColumn());
   }
-  {return new LabeledStatement(label.image,statement,label.sourceStart,statement.sourceEnd);}
+  {
+    return new LabeledStatement(label.image,
+                                statement,
+                                label.sourceStart,
+                                statement.getSourceEnd(),
+                                label.beginLine,
+                                statement.getEndLine(),
+                                label.beginColumn,
+                                statement.getEndColumn());
+  }
 }
 
 //}}}
@@ -5316,7 +5264,6 @@ AbstractCase switchLabel0() :
   final Expression expr;
   Statement statement;
   final ArrayList stmts = new ArrayList();
-  final Token token = this.token;
   final int start = this.token.next.sourceStart;
 }
 {
@@ -5403,9 +5350,10 @@ Expression SwitchLabel() :
                                                   token.endLine,
                                                   token.beginColumn,
                                                   token.endColumn));
-      }// todo ugly do a warning ;)
+      }
     )
   } catch (ParseException e) {
+    //{{{ fireParseError
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "':' expected",
@@ -5416,7 +5364,7 @@ Expression SwitchLabel() :
                                           e.currentToken.beginLine,
                                           e.currentToken.endLine,
                                           e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+                                          e.currentToken.endColumn+1)); //}}}
   }
   {return expr;}
 |
@@ -6379,54 +6327,65 @@ Continue ContinueStatement() :
 
 /**
  * A return statement.
- * * It's return [expression];
+ * It's return [expression];
  * @return a ReturnStatement
  */
 ReturnStatement ReturnStatement() :
 {
   Statement expr = null;
-  final Token token;
+  final Token returnToken;
   Token semicolonToken = null;
+  int end       = 0;
+  int endLine   = 0;
+  int endColumn = 0;
 }
 {
-  token = <RETURN>
-  [ expr = Expression()]
+  returnToken = <RETURN>
+  [ 
+    expr = Expression()
+    {
+      end       = expr.getSourceEnd();
+      endLine   = expr.getEndLine();
+      endColumn = expr.getEndColumn();
+    }
+  ]
   try {
     semicolonToken = <SEMICOLON>
-  } catch (ParseException e) {
-    final int errorStart, errorEnd;
-    if (expr == null) {
-      errorStart = token.sourceEnd;
-      errorEnd   = token.sourceEnd+1;
-    } else {
-      errorStart = expr.sourceEnd;
-      errorEnd   = expr.sourceEnd+1;
+    {
+      end       = semicolonToken.sourceEnd;
+      endLine   = semicolonToken.endLine;
+      endColumn = semicolonToken.endColumn;
     }
+  } catch (ParseException e) {
+    if (end == 0) {
+      end       = e.currentToken.sourceEnd;
+      endLine   = e.currentToken.endLine;
+      endColumn = e.currentToken.endColumn;
+    }
+    //{{{ fireParseError
     fireParseError(new PHPParseErrorEvent(ERROR,
                                           path,
                                           "';' expected",
                                           ";",
                                           e.currentToken.image,
-                                          errorStart,
-                                          errorEnd+1,
-                                          e.currentToken.beginLine,
+                                          end,
+                                          e.currentToken.sourceEnd,
+                                          endLine,
                                           e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
+                                          endColumn,
+                                          e.currentToken.endColumn)); //}}}
   }
   {
-    if (semicolonToken == null) {
-      if (expr == null) {
-        return new ReturnStatement(expr,token.sourceStart,token.sourceEnd);
-      }
-      return new ReturnStatement(expr,token.sourceStart,expr.sourceEnd);
-    }
-    return new ReturnStatement(expr,token.sourceStart,semicolonToken.sourceEnd);
+    return new ReturnStatement(expr,
+                               returnToken.sourceStart,
+                               end,
+                               returnToken.beginLine,
+                               endLine,
+                               returnToken.beginColumn,
+                               endColumn);
   }
 }
 
 //}}}
 
 //}}}
-
-
