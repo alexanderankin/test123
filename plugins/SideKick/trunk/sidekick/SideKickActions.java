@@ -315,15 +315,14 @@ public class SideKickActions
 				recorder.record(1,ch);
 			Buffer buffer = view.getBuffer();
 			SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
-			if(parser == null)
-				return;
-
-			String parseKeys = parser.getParseTriggers();
-			if(parseKeys != null && parseKeys.indexOf(ch) != -1)
+			if(parser != null)
 			{
-				SideKickPlugin.parse(view,false);
+				String parseKeys = parser.getParseTriggers();
+				if(parseKeys != null && parseKeys.indexOf(ch) != -1)
+				{
+					SideKickPlugin.parse(view,false);
+				}
 			}
-
 			completeKeyTyped(view,ch);
 		}
 
