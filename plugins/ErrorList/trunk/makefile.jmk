@@ -10,11 +10,11 @@ jar_name = "ErrorList";
 ##
 # javac executable and args
 ##
-javac_bin = "javac";
-javac_opts = "-deprecation";
+#javac_bin = "javac";
+#javac_opts = "-deprecation";
 
-#javac_bin = "jikes";
-#javac_opts = "-deprecation" "+E";
+javac_bin = "jikes";
+javac_opts = "-deprecation" "+E";
 
 # set up the class path
 new_class_path = "../../jedit.jar;../EditBus.jar;.";
@@ -33,7 +33,7 @@ jar_bin = "jar";
 jar_opts = "cfM0";
 cmd_jar = jar_bin jar_opts;
 
-srcs = (subst ".java", ".class",
+srcs = (subst ".java", ".class", 
 	(glob (join (join (dirs "."), "/"), "*Plugin.java" "*.java"))
 );
 jar = (cat "../" jar_name ".jar");

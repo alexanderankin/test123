@@ -1,6 +1,6 @@
 /*
  * ErrorListPlugin.java - Error list plugin
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -114,9 +114,7 @@ public class ErrorListPlugin extends EBPlugin
 				{
 					EditPane[] editPanes = view.getEditPanes();
 					for(int i = 0; i < editPanes.length; i++)
-					{
 						editPanes[i].getTextArea().invalidateLine(lineNumber);
-					}
 				}
 
 				view = view.getNext();
