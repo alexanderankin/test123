@@ -90,7 +90,7 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
 		// Checkbox: "remember open project files"
 		rememberOpen = new JCheckBox(jEdit.getProperty("projectviewer.options.remember_open"));
 		rememberOpen.setToolTipText(jEdit.getProperty("projectviewer.options.remember_open.tooltip"));
-		rememberOpen.setSelected(config.getCloseFiles());
+		rememberOpen.setSelected(config.getRememberOpen());
 		addComponent(rememberOpen);
 
 		// Checkbox: "delete non-existant files"
