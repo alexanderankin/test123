@@ -19,10 +19,25 @@ sql.publishBuffer.label=Execute buffer
 sql.publishSelection.label=Execute selection
 sql.loadObject.label=Load object
 
-plugin.sql.SqlPlugin.option-group=sql
+sql.fileBrowserActions.showDatabases.label=Show databases
+
+plugin.sql.SqlPlugin.browser-menu-item=sql.fileBrowserActions.showDatabases
 
 options.sql.label=SQL
-options.sql.general.label=General
+
+plugin.sql.SqlPlugin.activate=sql.resultSet.auto-open sql.toolbar.showToolBar
+
+plugin.sql.SqlPlugin.option-group=sql_general sql_jdbc sql_preprocessors_specialCommentRemover
+
+options.sql_general.label=General
+options.sql_general.code=new sql.options.GeneralOptionPane();
+
+options.sql_jdbc.label=JDBC
+options.sql_jdbc.code=new sql.options.JdbcOptionPane();
+
+options.sql.preprocessors.label=Preprocessors
+options.sql_preprocessors_specialCommentRemover.label=Special comment remover
+options.sql_preprocessors_specialCommentRemover.code=new sql.preprocessors.SpecialCommentRemover.CommentOptionPane();
 
 ### Properties for use by this plugin
 sql.serverconfig.title=SQL Server Configuration
@@ -39,11 +54,8 @@ sql.options.recordSetView.label=Record Set dockable
 sql.options.maxRecs2Show.label=Max no. of records to show
 sql.options.autoresizeResult.label=Autoresize
 
-options.sql.jdbc.label=JDBC
 sql.options.jdbc.classpath.label=Drivers' classpath
 
-options.sql.preprocessors.label=Preprocessors
-options.sql.preprocessors.specialCommentRemover.label=Special comment remover
 sql.options.specialCommentRemover.title.label=Special comments
 sql.options.specialCommentRemover.addBtn.label=Add
 sql.options.specialCommentRemover.delBtn.label=Delete

@@ -116,33 +116,6 @@ public class SqlPlugin extends EBPlugin
   /**
    *  Description of the Method
    *
-   * @param  optionsDialog  Description of Parameter
-   * @since
-   */
-  public void createOptionPanes( OptionsDialog optionsDialog )
-  {
-    final OptionGroup group = new OptionGroup( "sql" );
-    group.addOptionPane( new GeneralOptionPane() );
-    group.addOptionPane( new JdbcOptionPane() );
-
-    final OptionGroup pgroup = new OptionGroup( "sql.preprocessors" );
-    final java.util.Map l = SqlTextPublisher.getPreprocessors();
-
-    for ( Iterator i = l.values().iterator(); i.hasNext();  )
-    {
-      final Preprocessor pr = (Preprocessor) i.next();
-      final OptionPane op = pr.getOptionPane();
-      if ( op != null )
-        pgroup.addOptionPane( op );
-    }
-    group.addOptionGroup( pgroup );
-    optionsDialog.addOptionGroup( group );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
    * @param  message  Description of Parameter
    * @since
    */
