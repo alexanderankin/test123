@@ -214,54 +214,65 @@ final public class Tags {
   public static void enterAndFollowTag(final View view, 
                                        final JEditTextArea textArea,
                                        final Buffer buffer) {
-    // This needs to be a stand alone dialog.
-    
-		// The panel is a bit overkill but it was done for a dialog before this
-		// was done using JOptionPane...
-    final TagsEnterTagPanel enterTagPanel = new TagsEnterTagPanel(null, false);
-	
-		final String[] buttonNames = { 
-                            jEdit.getProperty("options.tags.tag-ok.label"), 
-                            jEdit.getProperty("options.tags.tag-cancel.label")
-                           };
-	
-    final JOptionPane pane = new JOptionPane(enterTagPanel,
-                                       JOptionPane.QUESTION_MESSAGE, 
-                                       JOptionPane.DEFAULT_OPTION, null, 
-                                       buttonNames, buttonNames[0]);
-    final JDialog dialog = pane.createDialog(view, 
-                                jEdit.getProperty("tags.enter-tag-dlg.title"));
-    GUIUtilities.requestFocus(dialog, enterTagPanel.tagFuncTextField_);
-    
-    /* HACK ALERT!  Slava says he doesn't get the dilaog to be dismissed on the
-     * enter key event even though the default button is the OK button.  This 
-     * may be due to the fact that his JDK is 1.1.  When this dialog goes to 
-     * a non JOptionPane dialog, keep this HACK.  This probably can be removed
-     * if the JDK 1.1 dependence is removed...
-     */
-    enterTagPanel.tagFuncTextField_.addKeyListener(new KeyAdapter()
+    if (true)
     {
-      public void keyTyped(KeyEvent evt)
+      TagsEnterTagDialog dialog = new TagsEnterTagDialog(view, null, false);
+      if (dialog.showDialog())
       {
-        evt = KeyEventWorkaround.processKeyEvent(evt);
-        if (evt == null)
-          return;
-
-        if (evt.getKeyChar() == KeyEvent.VK_ENTER)
-        {
-          pane.setValue(buttonNames[0]);
-          dialog.dispose();
-          evt.consume();
-        }
+        followTag(view, textArea, buffer, dialog.getOtherWindow(), false,
+                  dialog.getFuncName());
       }
-    });
-    
-    dialog.show();		
-    
-    if (((String) pane.getValue()).equals(buttonNames[0])) 
-    {
-      followTag(view, textArea, buffer, enterTagPanel.getOtherWindow(), false,
-								enterTagPanel.getFuncName());
+    }
+			else
+			{
+			// The panel is a bit overkill but it was done for a dialog before this
+			// was done using JOptionPane...
+			final TagsEnterTagPanel enterTagPanel = new TagsEnterTagPanel(null, 
+                                                                    false);
+		
+			final String[] buttonNames = { 
+													jEdit.getProperty("options.tags.tag-ok.label"), 
+													jEdit.getProperty("options.tags.tag-cancel.label")
+												};
+		
+			final JOptionPane pane = new JOptionPane(enterTagPanel,
+																				 JOptionPane.QUESTION_MESSAGE, 
+																				 JOptionPane.DEFAULT_OPTION, null, 
+																				 buttonNames, buttonNames[0]);
+			final JDialog dialog = pane.createDialog(view, 
+																jEdit.getProperty("tags.enter-tag-dlg.title"));
+			GUIUtilities.requestFocus(dialog, enterTagPanel.tagFuncTextField_);
+			
+			/* HACK ALERT!  Slava says he doesn't get the dilaog to be dismissed on the
+			 * enter key event even though the default button is the OK button.  This 
+			 * may be due to the fact that his JDK is 1.1.  When this dialog goes to 
+			 * a non JOptionPane dialog, keep this HACK.  This probably can be removed
+			 * if the JDK 1.1 dependence is removed...
+			 */
+			enterTagPanel.tagFuncTextField_.addKeyListener(new KeyAdapter()
+			{
+				public void keyTyped(KeyEvent evt)
+				{
+					evt = KeyEventWorkaround.processKeyEvent(evt);
+					if (evt == null)
+						return;
+	
+					if (evt.getKeyChar() == KeyEvent.VK_ENTER)
+					{
+						pane.setValue(buttonNames[0]);
+						dialog.dispose();
+						evt.consume();
+					}
+				}
+			});
+			
+			dialog.show();		
+			
+			if (((String) pane.getValue()).equals(buttonNames[0])) 
+			{
+				followTag(view, textArea, buffer, enterTagPanel.getOtherWindow(), 
+                  false, enterTagPanel.getFuncName());
+			}
     }
   }  
   
@@ -310,13 +321,12 @@ final public class Tags {
       return;
     }
       
-      
     if (ui_) {
       buffer = currentView.getBuffer();
     }
       
     parser_.reinitialize();
-    
+
     // Search default tag file if needed
     boolean found = false;
     String tagFileName = null;
@@ -350,7 +360,7 @@ final public class Tags {
           break;
       }
     }
-
+    
     // Handle what was found (or not found)
     if (parser_.getNumberOfFoundTags() > 1) {
       if (ui_) 
