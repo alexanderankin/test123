@@ -29,6 +29,7 @@ import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.BufferUpdate;
@@ -37,8 +38,14 @@ import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaHighlight;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
-
 import org.gjt.sp.util.Log;
+
+import whitespace.options.FoldOptionPane;
+import whitespace.options.OnSaveOptionPane;
+import whitespace.options.ParagraphOptionPane;
+import whitespace.options.SpaceOptionPane;
+import whitespace.options.TabOptionPane;
+import whitespace.options.WhiteSpaceOptionPane;
 
 
 public class WhiteSpacePlugin
@@ -56,7 +63,16 @@ public class WhiteSpacePlugin
 
 
     public void createOptionPanes(OptionsDialog dialog) {
-        dialog.addOptionPane(new WhiteSpaceOptionPane());
+        OptionGroup group = new OptionGroup("WhiteSpace");
+
+        group.addOptionPane(new SpaceOptionPane());
+        group.addOptionPane(new TabOptionPane());
+        group.addOptionPane(new WhiteSpaceOptionPane());
+        group.addOptionPane(new FoldOptionPane());
+        group.addOptionPane(new ParagraphOptionPane());
+        group.addOptionPane(new OnSaveOptionPane());
+
+        dialog.addOptionGroup(group);
     }
 
 
@@ -90,12 +106,32 @@ public class WhiteSpacePlugin
         JEditTextArea textArea = editPane.getTextArea();
         TextAreaPainter textAreaPainter = textArea.getPainter();
 
-        boolean showSpaceDefault       = jEdit.getBooleanProperty(
+        boolean showSpaceDefault         = jEdit.getBooleanProperty(
             "white-space.show-space-default", true
         );
+        boolean showLeadingSpaceDefault  = jEdit.getBooleanProperty(
+            "white-space.show-leading-space-default", true
+        );
+        boolean showInnerSpaceDefault    = jEdit.getBooleanProperty(
+            "white-space.show-inner-space-default", true
+        );
+        boolean showTrailingSpaceDefault = jEdit.getBooleanProperty(
+            "white-space.show-trailing-space-default", true
+        );
+
         boolean showTabDefault         = jEdit.getBooleanProperty(
             "white-space.show-tab-default", true
         );
+        boolean showLeadingTabDefault  = jEdit.getBooleanProperty(
+            "white-space.show-leading-tab-default", true
+        );
+        boolean showInnerTabDefault    = jEdit.getBooleanProperty(
+            "white-space.show-inner-tab-default", true
+        );
+        boolean showTrailingTabDefault = jEdit.getBooleanProperty(
+            "white-space.show-trailing-tab-default", true
+        );
+
         boolean showWhitespaceDefault  = jEdit.getBooleanProperty(
             "white-space.show-whitespace-default", false
         );
@@ -123,34 +159,21 @@ public class WhiteSpacePlugin
         // Drawn first
         textAreaPainter.addCustomHighlight(foldHighlight);
 
-        // Log.log(Log.DEBUG, this, "EditPane null test: " + (view.getEditPane() == null));
-        if (view.getEditPane() == null) {
-            blockHighlight.setEnabled(showBlockDefault);
-            foldHighlight.setHighlightEnabled(showFoldDefault);
-            foldHighlight.setTooltipEnabled(showFoldTooltipDefault);
-            whiteSpaceHighlight.setSpaceHighlightEnabled(showSpaceDefault);
-            whiteSpaceHighlight.setTabHighlightEnabled(showTabDefault);
-            whiteSpaceHighlight.setWhitespaceHighlightEnabled(showWhitespaceDefault);
-        } else {
-            blockHighlight.setEnabled(
-                BlockHighlight.isBlockHighlightEnabledFor(view)
-            );
-            foldHighlight.setHighlightEnabled(
-                FoldHighlight.isFoldHighlightEnabledFor(view)
-            );
-            foldHighlight.setTooltipEnabled(
-                FoldHighlight.isFoldTooltipEnabledFor(view)
-            );
-            whiteSpaceHighlight.setSpaceHighlightEnabled(
-                WhiteSpaceHighlight.isSpaceHighlightEnabledFor(view)
-            );
-            whiteSpaceHighlight.setTabHighlightEnabled(
-                WhiteSpaceHighlight.isTabHighlightEnabledFor(view)
-            );
-            whiteSpaceHighlight.setWhitespaceHighlightEnabled(
-                WhiteSpaceHighlight.isWhitespaceHighlightEnabledFor(view)
-            );
-        }
+        blockHighlight.setEnabled(showBlockDefault);
+        foldHighlight.setHighlightEnabled(showFoldDefault);
+        foldHighlight.setTooltipEnabled(showFoldTooltipDefault);
+
+        whiteSpaceHighlight.getSpaceHighlight().setEnabled(showSpaceDefault);
+        whiteSpaceHighlight.getLeadingSpaceHighlight().setEnabled(showLeadingSpaceDefault);
+        whiteSpaceHighlight.getInnerSpaceHighlight().setEnabled(showInnerSpaceDefault);
+        whiteSpaceHighlight.getTrailingSpaceHighlight().setEnabled(showTrailingSpaceDefault);
+
+        whiteSpaceHighlight.getTabHighlight().setEnabled(showTabDefault);
+        whiteSpaceHighlight.getLeadingTabHighlight().setEnabled(showLeadingTabDefault);
+        whiteSpaceHighlight.getInnerTabHighlight().setEnabled(showInnerTabDefault);
+        whiteSpaceHighlight.getTrailingTabHighlight().setEnabled(showTrailingTabDefault);
+
+        whiteSpaceHighlight.getWhitespaceHighlight().setEnabled(showWhitespaceDefault);
     }
 
 

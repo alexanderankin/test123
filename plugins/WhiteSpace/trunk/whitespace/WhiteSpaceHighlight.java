@@ -82,17 +82,41 @@ public class WhiteSpaceHighlight
     private static boolean displayControlChars = jEdit.getBooleanProperty(
         "white-space.display-control-chars", false);
 
+    private static Painter spacePainter      = new SpacePainter();
+    private static Painter tabPainter        = new TabPainter();
+    private static Painter whitespacePainter = new WhiteSpacePainter();
+
     private JEditTextArea textArea;
     private TextAreaHighlight next;
 
-    private boolean spaceHighlightEnabled      = false;
-    private boolean tabHighlightEnabled        = false;
-    private boolean whitespaceHighlightEnabled = false;
+    private HighlightOption spaceHighlight;
+    private HighlightOption leadingSpaceHighlight;
+    private HighlightOption innerSpaceHighlight;
+    private HighlightOption trailingSpaceHighlight;
+
+    private HighlightOption tabHighlight;
+    private HighlightOption leadingTabHighlight;
+    private HighlightOption innerTabHighlight;
+    private HighlightOption trailingTabHighlight;
+
+    private HighlightOption whitespaceHighlight;
 
     private Segment lineSegment = new Segment();
 
 
-    private WhiteSpaceHighlight() {}
+    private WhiteSpaceHighlight() {
+        this.spaceHighlight         = new HighlightOption(true);
+        this.leadingSpaceHighlight  = new HighlightOption(true);
+        this.innerSpaceHighlight    = new HighlightOption(true);
+        this.trailingSpaceHighlight = new HighlightOption(true);
+
+        this.tabHighlight           = new HighlightOption(true);
+        this.leadingTabHighlight    = new HighlightOption(true);
+        this.innerTabHighlight      = new HighlightOption(true);
+        this.trailingTabHighlight   = new HighlightOption(true);
+
+        this.whitespaceHighlight    = new HighlightOption(false);
+    }
 
 
     public void init(JEditTextArea textArea, TextAreaHighlight next) {
@@ -102,15 +126,19 @@ public class WhiteSpaceHighlight
 
 
     public void paintHighlight(Graphics gfx, int virtualLine, int y) {
-        if (    this.isSpaceHighlightEnabled()
-            ||  this.isTabHighlightEnabled()
-            ||  this.isWhitespaceHighlightEnabled()
+        if (    this.getSpaceHighlight().isEnabled()
+            ||  this.getTabHighlight().isEnabled()
+            ||  this.getWhitespaceHighlight().isEnabled()
         ) {
-            int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
+            // Avoid most <code>getfield</code>s
+            final JEditTextArea ta = this.textArea;
+            final Segment s = this.lineSegment;
+
+            int physicalLine = ta.getBuffer().virtualToPhysical(virtualLine);
 
             try {
-                if (    (this.textArea.getLineStartOffset(physicalLine) == -1)
-                    ||  (this.textArea.getLineEndOffset(physicalLine) == -1)
+                if (    (ta.getLineStartOffset(physicalLine) == -1)
+                    ||  (ta.getLineEndOffset(physicalLine) == -1)
                 ) {
                     return;
                 }
@@ -118,78 +146,104 @@ public class WhiteSpaceHighlight
                 return;
             }
 
-            TextAreaPainter painter = this.textArea.getPainter();
-            FontMetrics fm = painter.getFontMetrics();
+            FontMetrics fm = ta.getPainter().getFontMetrics();
 
-            this.textArea.getLineText(physicalLine, this.lineSegment);
+            ta.getLineText(physicalLine, s);
 
             int height = fm.getHeight();
             int descent = fm.getDescent();
-            int y0 = y + descent + (height / 2);
+            final int y0 = y + descent + (height / 2);
             int x0;
-            int x1;
 
-            boolean space = false;
-            int i = 0;
-            int idx = this.lineSegment.offset;
-            int off0 = 0;
-            int off1 = 0;
-            char[] array = this.lineSegment.array;
-            int count = this.lineSegment.count;
-            for (; i < count; i++, idx++) {
-                // Showing spaces
-                if (this.isSpaceHighlightEnabled()) {
-                    if (array[idx] == ' ') {
-                        if (!space) {
-                            space = true;
-                            off0 = i;
-                        }
-                        if (i < count - 1) {
-                            continue;
-                        }
-                        // Falls through if the last char is a ' ': I don't want
-                        // to repeat the code outside of the loop
-                    }
+            final char[] array = s.array;
+            final int count = s.count;
 
-                    // We have collected a bunch of contiguous spaces,
-                    // now display them
-                    if (space) {
-                        space = false;
-                        // off1 is the last position at which a space is found
-                        // off1 -off + 1 spaces to paint
-                        off1 = (array[idx] == ' ') ? i : (i - 1);
-                        x0 = this.textArea.offsetToX(physicalLine, off0);
-                        gfx.setColor(spaceColor);
-                        if (off1 == off0) { // One space to paint
-                            gfx.drawRect(x0 + 1, y0 - 1, 2, 2);
-                        } else { // Several spaces to paint
-                            x1 = this.textArea.offsetToX(physicalLine, off1);
-                            int step = (x1 - x0) / (off1 - off0);
-                            int x = x0 + 1;
-                            int k = (off1 - off0 + 1);
-                            for (; k > 0; k--, x += step) {
-                                gfx.drawRect(x, y0 - 1, 2, 2);
-                            }
-                        }
-                    }
+            Painter painter;
+
+            Painter[] spacePainters = {null, null, null};
+            Painter[] tabPainters   = {null, null, null};
+
+            if (this.getSpaceHighlight().isEnabled()) {
+                if (this.getLeadingSpaceHighlight().isEnabled()) {
+                    spacePainters[0] = spacePainter;
+                }
+                if (this.getInnerSpaceHighlight().isEnabled()) {
+                    spacePainters[1] = spacePainter;
+                }
+                if (this.getTrailingSpaceHighlight().isEnabled()) {
+                    spacePainters[2] = spacePainter;
+                }
+            }
+
+            if (this.getTabHighlight().isEnabled()) {
+                if (this.getLeadingTabHighlight().isEnabled()) {
+                    tabPainters[0] = tabPainter;
+                }
+                if (this.getInnerTabHighlight().isEnabled()) {
+                    tabPainters[1] = tabPainter;
+                }
+                if (this.getTrailingTabHighlight().isEnabled()) {
+                    tabPainters[2] = tabPainter;
+                }
+            }
+
+            // Leading whitespaces
+            int i0   = 0;
+            int idx0 = s.offset;
+
+            leading:
+            for (painter = null; i0 < count; i0++, idx0++) {
+                char c = array[idx0];
+
+                if (c == ' ') {
+                    painter = spacePainters[0];
+                } else if (c == '\t') {
+                    painter = tabPainters[0];
+                } else {
+                    break leading;
                 }
 
-                // Showing tabs
-                if (this.isTabHighlightEnabled()) {
-                    if (array[idx] == '\t') {
-                        x0 = this.textArea.offsetToX(physicalLine, i) + 1;
-                        gfx.setColor(tabColor);
-                        int[] xl0 = {x0, x0 + 2, x0};
-                        int[] xl1 = {x0 + 2 , x0 + 4, x0 + 2};
-                        int[] yl0 = {y0 - 2, y0, y0 + 2};
-                        gfx.drawPolyline(xl0, yl0, 3);
-                        gfx.drawPolyline(xl1, yl0, 3);
-                    }
+                if (painter != null) {
+                    x0 = ta.offsetToX(physicalLine, i0) + 1;
+                    painter.paint(gfx, x0, y0);
+                    painter = null;
+                }
+            }
+
+            // Trailing whitespaces
+            int i1   = count - 1;
+            int idx1 = s.offset + count - 1;
+
+            trailing:
+            for (painter = null; i1 > i0; i1--, idx1--) {
+                char c = array[idx1];
+
+                if (c == ' ') {
+                    painter = spacePainters[2];
+                } else if (c == '\t') {
+                    painter = tabPainters[2];
+                } else {
+                    break trailing;
                 }
 
-                // Showing all other whitespace
-                if (this.isWhitespaceHighlightEnabled()) {
-                    char c = array[idx];
+                if (painter != null) {
+                    x0 = ta.offsetToX(physicalLine, i1) + 1;
+                    painter.paint(gfx, x0, y0);
+                    painter = null;
+                }
+            }
+
+            // Inner whitespaces
+            int i   = i0;
+            int idx = idx0;
+            for (; i < i1; i++, idx++) {
+                char c = array[idx];
+
+                if (c == ' ') {
+                    painter = spacePainters[1];
+                } else if (c == '\t') {
+                    painter = tabPainters[1];
+                } else {
                     if (    (    Character.isWhitespace(c)
                               || (displayControlChars && Character.isISOControl(c))
                             )
@@ -197,12 +251,16 @@ public class WhiteSpaceHighlight
                          //  && (c != '\n') // Not needed here
                          && (c != ' ')
                     ) {
-                        x0 = this.textArea.offsetToX(physicalLine, i) + 1;
-                        gfx.setColor(whitespaceColor);
-                        int[] xl0 = {x0, x0 + 2, x0 + 4, x0 + 2};
-                        int[] yl0 = {y0, y0 - 2, y0, y0 + 2};
-                        gfx.drawPolygon(xl0, yl0, 4);
+                        if (this.getWhitespaceHighlight().isEnabled()) {
+                            painter = whitespacePainter;
+                        }
                     }
+                }
+
+                if (painter != null) {
+                    x0 = ta.offsetToX(physicalLine, i) + 1;
+                    painter.paint(gfx, x0, y0);
+                    painter = null;
                 }
             }
         }
@@ -215,7 +273,7 @@ public class WhiteSpaceHighlight
 
     public String getToolTipText(MouseEvent evt)
     {
-        if (this.isWhitespaceHighlightEnabled()) {
+        if (this.getWhitespaceHighlight().isEnabled()) {
             JEditTextArea ta = this.textArea;
             int x = evt.getX();
             int y = evt.getY();
@@ -252,52 +310,52 @@ public class WhiteSpaceHighlight
     }
 
 
-    public boolean isSpaceHighlightEnabled() {
-        return this.spaceHighlightEnabled;
+    public HighlightOption getSpaceHighlight() {
+        return this.spaceHighlight;
     }
 
 
-    public void setSpaceHighlightEnabled(boolean enabled) {
-        this.spaceHighlightEnabled = enabled;
+    public HighlightOption getLeadingSpaceHighlight() {
+        return this.leadingSpaceHighlight;
     }
 
 
-    public void toggleSpaceHighlightEnabled() {
-        this.spaceHighlightEnabled = !this.spaceHighlightEnabled;
+    public HighlightOption getInnerSpaceHighlight() {
+        return this.innerSpaceHighlight;
     }
 
 
-    public boolean isTabHighlightEnabled() {
-        return this.tabHighlightEnabled;
+    public HighlightOption getTrailingSpaceHighlight() {
+        return this.trailingSpaceHighlight;
     }
 
 
-    public void setTabHighlightEnabled(boolean enabled) {
-        this.tabHighlightEnabled = enabled;
+    public HighlightOption getTabHighlight() {
+        return this.tabHighlight;
     }
 
 
-    public void toggleTabHighlightEnabled() {
-        this.tabHighlightEnabled = !this.tabHighlightEnabled;
+    public HighlightOption getLeadingTabHighlight() {
+        return this.leadingTabHighlight;
     }
 
 
-    public boolean isWhitespaceHighlightEnabled() {
-        return this.whitespaceHighlightEnabled;
+    public HighlightOption getInnerTabHighlight() {
+        return this.innerTabHighlight;
     }
 
 
-    public void setWhitespaceHighlightEnabled(boolean enabled) {
-        this.whitespaceHighlightEnabled = enabled;
+    public HighlightOption getTrailingTabHighlight() {
+        return this.trailingTabHighlight;
     }
 
 
-    public void toggleWhitespaceHighlightEnabled() {
-        this.whitespaceHighlightEnabled = !this.whitespaceHighlightEnabled;
+    public HighlightOption getWhitespaceHighlight() {
+        return this.whitespaceHighlight;
     }
 
 
-    private void updateTextArea() {
+    public void updateTextArea() {
         if (this.textArea == null) { return; }
 
         Buffer buffer = this.textArea.getBuffer();
@@ -311,195 +369,8 @@ public class WhiteSpaceHighlight
     }
 
 
-    /**
-     * Tests if space highlighting is enabled for a view
-    **/
-    public static boolean isSpaceHighlightEnabledFor(View view) {
-        EditPane[] editPanes = view.getEditPanes();
-        WhiteSpaceHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            if (editPanes[i] == null) { continue; }
-            highlight = (WhiteSpaceHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isSpaceHighlightEnabled()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Sets space highlighting enabled or disabled for a view
-    **/
-    public static void setSpaceHighlightEnabledFor(View view, boolean enabled) {
-        EditPane[] editPanes = view.getEditPanes();
-        WhiteSpaceHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            highlight = (WhiteSpaceHighlight) highlights.get(editPanes[i]);
-            if (   (highlight != null)
-                && (highlight.isSpaceHighlightEnabled() != enabled)
-            ) {
-                highlight.setSpaceHighlightEnabled(enabled);
-                highlight.updateTextArea();
-            }
-        }
-    }
-
-
-    /**
-     * Enables space highlights for a view
-    **/
-    public static void enableSpaceHighlightFor(View view) {
-        WhiteSpaceHighlight.setSpaceHighlightEnabledFor(view, true);
-    }
-
-
-    /**
-     * Disables space highlights for a view
-    **/
-    public static void disableSpaceHighlightFor(View view) {
-        WhiteSpaceHighlight.setSpaceHighlightEnabledFor(view, false);
-    }
-
-
-    /**
-     * Toggles space highlights for a view
-    **/
-    public static void toggleSpaceHighlightFor(View view) {
-        if (WhiteSpaceHighlight.isSpaceHighlightEnabledFor(view)) {
-            WhiteSpaceHighlight.disableSpaceHighlightFor(view);
-        } else {
-            WhiteSpaceHighlight.enableSpaceHighlightFor(view);
-        }
-    }
-
-
-    /**
-     * Tests if tab highlighting is enabled for a view
-    **/
-    public static boolean isTabHighlightEnabledFor(View view) {
-        EditPane[] editPanes = view.getEditPanes();
-        WhiteSpaceHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            if (editPanes[i] == null) { continue; }
-            highlight = (WhiteSpaceHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isTabHighlightEnabled()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Sets tab highlighting enabled or disabled for a view
-    **/
-    public static void setTabHighlightEnabledFor(View view, boolean enabled) {
-        EditPane[] editPanes = view.getEditPanes();
-        WhiteSpaceHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            highlight = (WhiteSpaceHighlight) highlights.get(editPanes[i]);
-            if (   (highlight != null)
-                && (highlight.isTabHighlightEnabled() != enabled)
-            ) {
-                highlight.setTabHighlightEnabled(enabled);
-                highlight.updateTextArea();
-            }
-        }
-    }
-
-
-    /**
-     * Enables tab highlights for a view
-    **/
-    public static void enableTabHighlightFor(View view) {
-        WhiteSpaceHighlight.setTabHighlightEnabledFor(view, true);
-    }
-
-
-    /**
-     * Disables tab highlights for a view
-    **/
-    public static void disableTabHighlightFor(View view) {
-        WhiteSpaceHighlight.setTabHighlightEnabledFor(view, false);
-    }
-
-
-    /**
-     * Toggles tab highlights for a view
-    **/
-    public static void toggleTabHighlightFor(View view) {
-        if (WhiteSpaceHighlight.isTabHighlightEnabledFor(view)) {
-            WhiteSpaceHighlight.disableTabHighlightFor(view);
-        } else {
-            WhiteSpaceHighlight.enableTabHighlightFor(view);
-        }
-    }
-
-
-    /**
-     * Tests if whitespace highlighting is enabled for a view
-    **/
-    public static boolean isWhitespaceHighlightEnabledFor(View view) {
-        EditPane[] editPanes = view.getEditPanes();
-        WhiteSpaceHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            if (editPanes[i] == null) { continue; }
-            highlight = (WhiteSpaceHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isWhitespaceHighlightEnabled()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-
-    /**
-     * Sets whitespace highlighting enabled or disabled for a view
-    **/
-    public static void setWhitespaceHighlightEnabledFor(View view, boolean enabled) {
-        EditPane[] editPanes = view.getEditPanes();
-        WhiteSpaceHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            highlight = (WhiteSpaceHighlight) highlights.get(editPanes[i]);
-            if (   (highlight != null)
-                && (highlight.isWhitespaceHighlightEnabled() != enabled)
-            ) {
-                highlight.setWhitespaceHighlightEnabled(enabled);
-                highlight.updateTextArea();
-            }
-        }
-    }
-
-
-    /**
-     * Enables whitespace highlights for a view
-    **/
-    public static void enableWhitespaceHighlightFor(View view) {
-        WhiteSpaceHighlight.setWhitespaceHighlightEnabledFor(view, true);
-    }
-
-
-    /**
-     * Disables whitespace highlights for a view
-    **/
-    public static void disableWhitespaceHighlightFor(View view) {
-        WhiteSpaceHighlight.setWhitespaceHighlightEnabledFor(view, false);
-    }
-
-
-    /**
-     * Toggles whitespace highlights for a view
-    **/
-    public static void toggleWhitespaceHighlightFor(View view) {
-        if (WhiteSpaceHighlight.isWhitespaceHighlightEnabledFor(view)) {
-            WhiteSpaceHighlight.disableWhitespaceHighlightFor(view);
-        } else {
-            WhiteSpaceHighlight.enableWhitespaceHighlightFor(view);
-        }
+    public static TextAreaHighlight getHighlightFor(EditPane editPane) {
+        return (TextAreaHighlight) highlights.get(editPane);
     }
 
 
@@ -551,13 +422,79 @@ public class WhiteSpaceHighlight
             WhiteSpaceHighlight highlight;
             for (int j = 0; j < editPanes.length; j++) {
                 highlight = (WhiteSpaceHighlight) highlights.get(editPanes[j]);
-                if (   (spaceColorChanged      && highlight.isSpaceHighlightEnabled())
-                    || (tabColorChanged        && highlight.isTabHighlightEnabled())
-                    || (whitespaceColorChanged && highlight.isWhitespaceHighlightEnabled())
+                if (   (spaceColorChanged      && highlight.getSpaceHighlight().isEnabled())
+                    || (tabColorChanged        && highlight.getTabHighlight().isEnabled())
+                    || (whitespaceColorChanged && highlight.getWhitespaceHighlight().isEnabled())
                 ) {
                     highlight.updateTextArea();
                 }
             }
+        }
+    }
+
+
+    private interface Painter {
+        void paint(Graphics gfx, int x0, int y0);
+    }
+
+
+    private static class SpacePainter implements Painter {
+        public void paint(Graphics gfx, int x0, int y0) {
+            gfx.setColor(WhiteSpaceHighlight.spaceColor);
+            gfx.drawRect(x0 + 1, y0 - 1, 2, 2);
+        }
+    }
+
+
+    private static class TabPainter implements Painter {
+        public void paint(Graphics gfx, int x0, int y0) {
+            gfx.setColor(WhiteSpaceHighlight.tabColor);
+            int[] xl0 = {x0, x0 + 2, x0};
+            int[] xl1 = {x0 + 2 , x0 + 4, x0 + 2};
+            int[] yl0 = {y0 - 2, y0, y0 + 2};
+            gfx.drawPolyline(xl0, yl0, 3);
+            gfx.drawPolyline(xl1, yl0, 3);
+        }
+    }
+
+
+    private static class WhiteSpacePainter implements Painter {
+        public void paint(Graphics gfx, int x0, int y0) {
+            gfx.setColor(WhiteSpaceHighlight.whitespaceColor);
+            gfx.setColor(whitespaceColor);
+            int[] xl0 = {x0, x0 + 2, x0 + 4, x0 + 2};
+            int[] yl0 = {y0, y0 - 2, y0, y0 + 2};
+            gfx.drawPolygon(xl0, yl0, 4);
+        }
+    }
+
+
+    public static class HighlightOption {
+        private boolean enabled;
+
+
+        public HighlightOption() {
+            this.enabled = false;
+        }
+
+
+        public HighlightOption(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+
+        public boolean isEnabled() {
+            return this.enabled;
+        }
+
+
+        public void setEnabled(boolean enabled) {
+            this.enabled = enabled;
+        }
+
+
+        public void toggleEnabled() {
+            this.enabled = !this.enabled;
         }
     }
 }
