@@ -34,18 +34,10 @@ import org.gjt.sp.jedit.*;
 public class TemplatesOptionPane extends AbstractOptionPane implements ActionListener
 {
 	protected JTextField dirTextField;
-	protected boolean pre_2_4_6 = false;
 
 	//Constructors
 	public TemplatesOptionPane() {
 		super("Templates.general");
-		try {
-			Class superclass = Class.forName("org.gjt.sp.jedit.AbstractOptionPane");
-			java.lang.reflect.Method dummy = superclass.getDeclaredMethod("_init",null);
-		} catch (NoSuchMethodException nsme) {
-			pre_2_4_6 = true;	// Running jEdit 2.4pre5 or earlier ...
-			this._init();		// ... so we have to initialize the dialog ourselves.
-		} catch (ClassNotFoundException cnfe) {}	// It better be there!
 	}
 
 	//Accessors & Mutators
@@ -63,7 +55,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	 * Initialize the TemplatesOptionPane.
 	 * @param textFieldStr A string containing the current Templates directory.
 	 */
-	public void init(String textFieldStr) {
+	private void init(String textFieldStr) {
 		setLayout(new BorderLayout());
 		setBorder(new EmptyBorder(5,5,5,5));
 		JLabel chooseDirLabel = new JLabel(jEdit.getProperty(
@@ -90,11 +82,7 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	 * the Templates menu.
 	 */
 	public void save() {
-		if (pre_2_4_6) {
-			this._save();	// save directly
-		} else {
-			super.save();	// super class ensures TemplatesOptionPane was initialised
-		}
+		super.save();	// super class ensures TemplatesOptionPane was initialised
 	}
 
 	/**
@@ -128,6 +116,10 @@ public class TemplatesOptionPane extends AbstractOptionPane implements ActionLis
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2002/07/24 15:40:45  sjakob
+	 * Removed compatability code for jEdit versions prior to 2.4.6, as the Templates
+	 * plugin now requires at least version 4.0.
+	 *
 	 * Revision 1.1  2002/04/30 19:26:10  sjakob
 	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
 	 *
