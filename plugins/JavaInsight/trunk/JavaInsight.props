@@ -13,6 +13,16 @@ javainsight.toggle-dockable.label=Java Insight
 # Dockable window title
 javainsight-dockable.title=Java Insight
 
+# Classpath tree
+javainsight.tree.view=view-packages
+javainsight.tree.viewIsFlat=false
+
+# Popup menu
+javainsight.tree.menu.decompile.label=Decompile with Jode
+javainsight.tree.menu.view-classpath.label=Classpath View
+javainsight.tree.menu.view-packages.label=Package View
+javainsight.tree.menu.view-flat.label=Flat Packages
+
 # Option pane title
 options.javainsight.title=Java Insight
 options.javainsight.label=Java Insight
@@ -29,7 +39,7 @@ javainsight.error.decompile.message=\
     See "Utilities->View Activity Log" for details.\n\
     Please report this to the JavaInsight maintainers.
 
-# vfs actions
+# VFS actions
 vfs.class.label=Show bytecode
 vfs.jasmin.label=Show jasmin output
 vfs.jode.label=Decompile with Jode

@@ -26,19 +26,11 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreePath;
 
 // classpath browser functionality
 import javainsight.buildtools.packagebrowser.*;
 import javainsight.buildtools.JavaUtils;
 import javainsight.buildtools.MiscUtils;
-
-// events
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 // jode decompiler
 import jode.decompiler.Decompiler;
@@ -69,10 +61,10 @@ import org.gjt.sp.util.Log;
  * The Java Insight plugin dockable panel.
  *
  * @author Kevin A. Burton
+ * @author Dirk Moebius
  * @version $Id$
  */
-public class JavaInsight extends JPanel implements TreeSelectionListener
-{
+public class JavaInsight extends JPanel {
 
     private static final String VERSION = jEdit.getProperty("plugin.javainsight.JavaInsightPlugin.version");
 
@@ -81,52 +73,29 @@ public class JavaInsight extends JPanel implements TreeSelectionListener
         super(new BorderLayout());
         this.view = view;
 
-        // populate the root node...
-        root = new DefaultMutableTreeNode("All Packages");
-        JavaPackage[] packages = PackageBrowser.getPackages();
-        MiscUtilities.quicksort(packages, new JavaPackageComparator());
-
-        for (int i = 0; i < packages.length; ++i) {
-            DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode(packages[i].getName());
-            JavaClass[] classes = packages[i].getClasses();
-            MiscUtilities.quicksort(classes, new JavaClassComparator());
-
-            for (int j = 0; j < classes.length; ++j) {
-                packageNode.add(new DefaultMutableTreeNode(classes[j]));
-            }
-
-            root.add(packageNode);
-        }
-
-        // create tree:
-        tree = new JTree(root);
-
-        // create tabs:
-        JTabbedPane tabs = new JTabbedPane();
-        tabs.addTab("Packages", new JScrollPane(tree));
-        tabs.addTab("Classpath", new ClasspathManager(this));
-        int tabsPos = Integer.parseInt(jEdit.getProperty("view.docking.tabsPos", "0"));
-        tabs.setTabPlacement(tabsPos == 0 ? JTabbedPane.TOP : JTabbedPane.BOTTOM);
+        // create classpath manager tree:
+        ClasspathManager classpathMgr = new ClasspathManager(this);
 
         // create log text area:
         log = new JTextArea("");
         log.setEditable(false);
         log.setFont(new Font("SansSerif", Font.PLAIN, 11));
-        JScrollPane logScr = new JScrollPane(log);
-        logScr.setPreferredSize(new Dimension(100, 50));
-        logScr.setColumnHeaderView(new JLabel("Decompiler Messages"));
+        JScrollPane logScrollPane = new JScrollPane(log);
+        logScrollPane.setPreferredSize(new Dimension(100, 50));
+        logScrollPane.setColumnHeaderView(new JLabel("Decompiler Messages"));
 
         // create split pane divider:
-        int splitPos = JSplitPane.VERTICAL_SPLIT;
-        String dockPosition = jEdit.getProperty(
+        String dockPos = jEdit.getProperty(
             JavaInsightPlugin.DOCKABLE_NAME + ".dock-position",
             DockableWindowManager.FLOATING
         );
-        if (dockPosition.equals(DockableWindowManager.BOTTOM) ||
-            dockPosition.equals(DockableWindowManager.TOP))
+        int splitPos = JSplitPane.VERTICAL_SPLIT;
+        if (dockPos.equals(DockableWindowManager.BOTTOM) || dockPos.equals(DockableWindowManager.TOP))
             splitPos = JSplitPane.HORIZONTAL_SPLIT;
-        split = new JSplitPane(splitPos, true, tabs, logScr);
+        split = new JSplitPane(splitPos, true, classpathMgr, logScrollPane);
         split.setOneTouchExpandable(true);
+
+        // set divider location:
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 String dividerLocation = jEdit.getProperty("javainsight.dividerLocation", (String)null);
@@ -141,21 +110,12 @@ public class JavaInsight extends JPanel implements TreeSelectionListener
         // add components to main panel:
         add(split, BorderLayout.CENTER);
         add(status, BorderLayout.SOUTH);
-
-        tree.addTreeSelectionListener(this);
-        tree.addMouseListener(new TreeMouseListener());
-        tree.expandPath(new TreePath(root.getPath()));
     }
 
 
     public void setStatus(String status) {
         this.status.setText(status);
         this.status.setToolTipText(status);
-    }
-
-
-    public DefaultMutableTreeNode getCurrentNode() {
-        return currentNode;
     }
 
 
@@ -210,6 +170,9 @@ public class JavaInsight extends JPanel implements TreeSelectionListener
     /**
      * Given a classname, decompile it and put the results into a new
      * jEdit buffer.
+     *
+     * Called by <code>this.decompile(String)</code> and
+     * <code>JavaInsightPlugin.handleMessage()</code>.
      *
      * @param view  the view in which the new buffer should be created.
      * @param className  the name of the class is to be decompiled.
@@ -273,6 +236,9 @@ public class JavaInsight extends JPanel implements TreeSelectionListener
     /**
      * Given a classname, decompile it and store it to a file.
      *
+     * Called by <code>this.decompile(String)</code> and
+     * <code>JavaInsightPlugin.handleMessage()</code>.
+     *
      * @param className  The name of the class is to be decompiled.
      * @param fileName  The directory or the file where the results should
      *        be put. If it is null, JavaInsight chooses a location, as
@@ -332,8 +298,7 @@ public class JavaInsight extends JPanel implements TreeSelectionListener
 
     /**
      * Decompile a class to a new jEdit buffer.
-     * Called by <code>this.mouseClicked(MouseEvent)</code> and
-     * <code>ClasspathManager</code>.
+     * Called by <code>ClasspathManager</code>.
      */
     void decompile(String className) {
         setStatus("Decompiling " + className + "...");
@@ -359,29 +324,6 @@ public class JavaInsight extends JPanel implements TreeSelectionListener
     }
 
 
-    /** implements the TreeSelectionListener interface */
-    public void valueChanged(TreeSelectionEvent e) {
-        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
-        if (node == null)
-            return;
-
-        currentNode = node;
-
-        if (node.getUserObject() instanceof JavaClass) {
-            // also output the source of this class
-            JavaClass classnode = (JavaClass) node.getUserObject();
-            Log.log(Log.DEBUG, this,
-                "The source CLASSPATH entry of \""
-                + classnode.getName()
-                + "\" is \""
-                + classnode.getSource()
-                + "\""
-            );
-            setStatus(classnode.getName());
-        }
-    }
-
-
     /** overwritten to save split pane divider position */
     public void removeNotify() {
         super.removeNotify();
@@ -389,26 +331,9 @@ public class JavaInsight extends JPanel implements TreeSelectionListener
     }
 
 
-    private DefaultMutableTreeNode root;
-    private DefaultMutableTreeNode currentNode;
-    private JTree tree;
+    private View view;
     private JTextArea log;
     private JLabel status;
     private JSplitPane split;
-    private View view;
-
-
-    private class TreeMouseListener extends MouseAdapter {
-        public void mouseClicked(MouseEvent evt) {
-            if(evt.getClickCount() != 2)
-                return;
-            if (currentNode == null)
-                return;
-            Object userObject = currentNode.getUserObject();
-            if (!(userObject instanceof JavaClass))
-                return;
-            decompile(((JavaClass)userObject).getName());
-        }
-    }
 
 }

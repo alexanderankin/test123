@@ -2,10 +2,11 @@ VERSION 0.4
 
 - Disassemble or decompile with BCEL (André Kaplan)
 - New Jasmin, Class and Jode virtual file systems (André Kaplan)
+- Only one tree, change view with right click popup menu (Dirk Moebius)
+- View by individual package hierarchy, ie. org,net,com etc. (Dirk Moebius)
 - May now choose between decompilation to a file or to a new jEdit buffer
   (Dirk Moebius)
-- If compiling to a new jEdit buffer, the buffer is named accordingly (Dirk
-  Moebius)
+- jEdit buffer is named correctly (Dirk Moebius)
 - Better support for DecompileClassMessage (Dirk Moebius)
 - Moved package buildtools to javainsight.buildtools because of name clashes
   with the JCompiler plugin (Dirk Moebius)
