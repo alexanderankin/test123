@@ -45,9 +45,6 @@ get_files = function (dummy)
    
    # development file list
    other_files = "actions.xml" "jet_unix" "COPYING" "README" "TODO.TXT" "makefile.jmk";
-   
-   # public consumption file list
-   #other_files = "actions.xml" "COPYING" "README";
 
    (glob (join (dirs "."), file_globs)) other_files
 }
