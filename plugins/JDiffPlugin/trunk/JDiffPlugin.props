@@ -2,15 +2,16 @@
 # Author: Andre Kaplan
 plugin.jdiff.JDiffPlugin.name=JDiff Plugin
 plugin.jdiff.JDiffPlugin.author=Andre Kaplan
-plugin.jdiff.JDiffPlugin.version=1.3.2
+plugin.jdiff.JDiffPlugin.version=1.3.3
 plugin.jdiff.JDiffPlugin.docs=users-guide.html
+plugin.jdiff.JDiffPlugin.activate=defer
 
 # Dependencies
 plugin.jdiff.JDiffPlugin.depend.0=jdk 1.3
-plugin.jdiff.JDiffPlugin.depend.1=jedit 04.01.01.00
+plugin.jdiff.JDiffPlugin.depend.1=jedit 04.02.08.00
 
 # Menu
-jdiff-menu=\
+plugin.jdiff.JDiffPlugin.menu=\
     toggle-dual-diff \
     jdiff.show-dual-diff-dialog \
     jdiff.refresh-diff \
@@ -36,6 +37,17 @@ jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
 jdiff.toggle-ignore-whitespace.label=Ignore all whitespace
 jdiff.diff-normal-output.label=Normal Diff Output
 
+# Option Panes
+options.jdiff.label=General
+options.jdiff.code=new jdiff.options.JDiffOptionPane();
+options.jdiff.overview.label=Overview
+options.jdiff.overview.code=new jdiff.options.JDiffOverviewOptionPane();
+options.jdiff.highlight.label=Highlighting
+options.jdiff.highlight.code=new jdiff.options.JDiffHighlightOptionPane();
+plugin.jdiff.JDiffPlugin.option-group=jdiff jdiff.overview jdiff.highlight
+
+
+# preferences
 jdiff.ignore-case=false
 jdiff.trim-whitespace=false
 jdiff.ignore-whitespace=false

@@ -109,7 +109,7 @@ public class DualDiffDialog extends JDialog {
         this.pack();
         this.setLocationRelativeTo(this.view);
         this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
-        this.show();
+        this.setVisible(true);
     }
 
 
