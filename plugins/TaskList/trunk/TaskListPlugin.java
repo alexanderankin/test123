@@ -116,7 +116,8 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public void start()
 	{
-		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
+		if(jEdit.getBuild().compareTo("04.00.00.00") < 0)
+			EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST, NAME);
 		Log.log(Log.DEBUG, TaskListPlugin.class, "start() called.");
 		propertiesChanged();
 	}
