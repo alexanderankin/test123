@@ -3,15 +3,16 @@
 <!-- jEdit options: -->
 <!-- :tabSize=8:indentSize=2:noTabs=true:maxLineLen=80: -->
 
-<title>Java Compiler</title>
+<title>JCompiler</title>
 
 <body>
 
 
-<h1>Java Compiler</h1><p>
+<h1>JCompiler</h1><p>
 
 Copyright (c) 1999, 2000 by Kevin A. Burton and Aziz Sharif.<br>
-Modified by Dominic Stolerman, Logan Bauer, Mike Hansen, and Dirk M&ouml;bius.<p>
+Modified by Logan Bauer, Mike Hansen, Dirk M&ouml;bius,
+Andreas Sch&ouml;rk and Dominic Stolerman.<p>
 
 Current maintainer: Dirk M&ouml;bius
 (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)<p>
@@ -41,7 +42,7 @@ Current maintainer: Dirk M&ouml;bius
 <a name="installation"></a>
 <h2>2. Installation</h2>
 
-You should use jEdit's PluginManager to install the Java Compiler plugin.
+You should use jEdit's PluginManager to install the JCompiler plugin.
 (Since you're reading this, I assume you have already done this).<p>
 
 <b>Note:</b> The installation of JCompiler also forces you to install the
@@ -55,7 +56,7 @@ wavy red lines.<p>
 
 <h3>3.1 Menu actions</h3>
 
-Java Compiler has 4 menu actions in menu <b>Plugins&gt;Java Compiler</b>:
+JCompiler has 4 menu actions in menu <b>Plugins&gt;JCompiler</b>:
 
 <ul>
   <li>
@@ -66,7 +67,7 @@ Java Compiler has 4 menu actions in menu <b>Plugins&gt;Java Compiler</b>:
   <li>
     <b>Build Package(s)</b><p>
     Builds the whole source tree where the current file is in.<br>
-    Java Compiler tries to find out the package the current file is in by
+    JCompiler tries to find out the package the current file is in by
     parsing for the keyword <code>package</code>. Then it goes to
     it's root directory and compiles all java files in the root directory and
     all subdirectories below. It does a smart compile in that if the source
@@ -79,14 +80,14 @@ Java Compiler has 4 menu actions in menu <b>Plugins&gt;Java Compiler</b>:
   </li>
 
   <li>
-    <b>Java Compiler options...</b><p>
-    A shortcut to <b>Utilities&gt;Global Options&gt;Plugins&gt;Java Compiler.</b>
+    <b>JCompiler options...</b><p>
+    A shortcut to <b>Utilities&gt;Global Options&gt;Plugins&gt;JCompiler.</b>
   </li>
 </ul>
 
 <h3>3.2 Commands</h3>
 
-The Java Compiler shell in the Console plugin understands the following
+The JCompiler shell in the Console plugin understands the following
 commands:
 
 <ul>
@@ -136,7 +137,7 @@ Most of them are self explaining, but some need special explanation:
 <ul>
   <li>
     <b>Regexp for errors</b><p>
-    Java Compiler uses this regular expression to identify error messages,
+    JCompiler uses this regular expression to identify error messages,
     which are then sent to the <i>ErrorList</i> plugin, if installed.
     The regular expression should contain three groups which can be
     referenced by $1, $2 and $3 in the three fields below.
@@ -147,7 +148,7 @@ Most of them are self explaining, but some need special explanation:
   <li>
     <b>Regexp for warnings</b><p>
     If a line of compiler output has been identified as error message by the
-    regular expression above, Java Compiler uses this regular expression to
+    regular expression above, JCompiler uses this regular expression to
     decide whether it is a warning message or not. In the <i>ErrorList</i>
     plugin, warning messages are marked with a yellow traffic light instead of
     a red one.<p>
@@ -167,7 +168,7 @@ Most of them are self explaining, but some need special explanation:
                  ^
     </pre>
 
-    If you check this option, Java Compiler parses the compiler
+    If you check this option, JCompiler parses the compiler
     output for these lines. The column position information is used in the
     <i>ErrorList</i> plugin to highlight errors in the source code with
     wavy lines.<p>
@@ -414,7 +415,7 @@ compiler:
 <br><hr>
 
 <font size="-1">
-The current maintainer of the Java Compiler plugin is Dirk M&ouml;bius
+The current maintainer of the JCompiler plugin is Dirk M&ouml;bius
 (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>).
 </font>
 

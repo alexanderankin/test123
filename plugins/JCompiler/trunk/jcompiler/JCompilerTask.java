@@ -46,6 +46,22 @@ import console.Shell;
 public class JCompilerTask extends Thread implements JCompilerOutput
 {
 
+	private boolean pkgCompile;
+	private boolean rebuild;
+	private boolean parseAccentChar;
+	private String[] args;
+	private Console console;
+	private Output output;
+	private DefaultErrorSource errorSource;
+	private PendingError pendingError;
+	private RE errorRE;
+	private RE warningRE;
+	private String rfilenamepos;
+	private String rlinenopos;
+	private String rmessagepos;
+	private String prevLine;
+
+
 	public JCompilerTask(
 			boolean pkgCompile,
 			boolean rebuild,
@@ -54,6 +70,7 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 			DefaultErrorSource errorSource)
 	{
 		super("JCompilerTask");
+
 		this.pkgCompile = pkgCompile;
 		this.rebuild = rebuild;
 		this.console = console;
@@ -62,7 +79,6 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 
 		init(console);
 
-		//this.setPriority(NORM_PRIORITY + 1);
 		this.start();
 	}
 
@@ -74,6 +90,7 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 			DefaultErrorSource errorSource)
 	{
 		super("JCompilerTask");
+
 		this.args = args;
 		this.console = console;
 		this.output = output;
@@ -81,7 +98,6 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 
 		init(console);
 
-		//this.setPriority(NORM_PRIORITY + 1);
 		this.start();
 	}
 
@@ -89,6 +105,7 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	public void run()
 	{
 		boolean compileOk;
+
 		JCompiler jcompiler = new JCompiler(
 			this,
 			console.getView(),
@@ -115,6 +132,8 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	 */
 	public void outputText(String line)
 	{
+		Log.log(Log.DEBUG, this, "#outputText: " + line);
+
 		Color color = null;
 
 		if (errorRE != null && errorRE.isMatch(line))
@@ -167,7 +186,11 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 		// add any new line to the current pending error, but not the
 		// line containing the error indicator "^" and the line before:
 		if (pendingError != null && prevLine != null && prevLine != pendingError.getLine())
+		{
+			Log.log(Log.DEBUG, this, "#added extra line '" + prevLine + "' to: " + pendingError);
 			pendingError.addExtraMessage(prevLine);
+			prevLine = null;
+		}
 
 		prevLine = line;
 	}
@@ -190,28 +213,17 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	/** notify the Console that the command is complete. */
 	public synchronized void outputDone()
 	{
-		finishErrorParsing();
+		if (pendingError != null)
+		{
+			pendingError.send();
+			pendingError = null;
+		}
+		prevLine = null;
 		output.commandDone();
 		notifyAll();
 	}
 
 	// END JCompilerOutput implementation
-
-
-	private boolean pkgCompile;
-	private boolean rebuild;
-	private String[] args;
-	private Console console;
-	private Output output;
-	private DefaultErrorSource errorSource;
-	private PendingError pendingError;
-	private RE errorRE;
-	private RE warningRE;
-	private String rfilenamepos;
-	private String rlinenopos;
-	private String rmessagepos;
-	private boolean parseAccentChar;
-	private String prevLine;
 
 
 	private void init(Console console)
@@ -254,17 +266,6 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 			);
 			outputError(errorMsg);
 		}
-	}
-
-
-	private void finishErrorParsing()
-	{
-		if (pendingError != null)
-		{
-			pendingError.send();
-			pendingError = null;
-		}
-		prevLine = null;
 	}
 
 
@@ -318,6 +319,16 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 	 */
 	class PendingError
 	{
+
+		private int type;
+		private String filename;
+		private int lineno;
+		private int startpos;
+		private int endpos;
+		private String errorText;
+		private String line;
+		private Vector extras;
+
 
 		public PendingError(
 				int type, String filename, int lineno,
@@ -376,14 +387,12 @@ public class JCompilerTask extends Thread implements JCompilerOutput
 		}
 
 
-		private int type;
-		private String filename;
-		private int lineno;
-		private int startpos;
-		private int endpos;
-		private String errorText;
-		private String line;
-		private Vector extras;
+		public String toString()
+		{
+			return "PendingError[type=" + type + ",filename=" + filename + ",lineno=" + lineno
+				+ ",startpos=" + startpos + ",endpos=" + endpos + ",errorText=" + errorText
+				+ ",line=" + line + ",extras=" + extras + "]";
+		}
 
 	}
 

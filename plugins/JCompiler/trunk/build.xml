@@ -1,4 +1,13 @@
-<project name="debugger" default="dist" basedir=".">
+<!--
+
+    Ant build file for the JCompiler plugin for jEdit
+
+    Please note that jedit.jar must be in the system classpath to compile.
+
+-->
+
+
+<project name="jcompiler" default="dist" basedir=".">
 
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
@@ -8,7 +17,6 @@
 
 
 	<path id="project.class.path">
-		<pathelement location="${jedit.dir}/jedit.jar"/>
 		<pathelement location="${install.dir}/ErrorList.jar"/>
 		<pathelement location="${install.dir}/Console.jar"/>
 		<pathelement location="."/>

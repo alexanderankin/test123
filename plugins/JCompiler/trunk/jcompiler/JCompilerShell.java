@@ -41,9 +41,9 @@ import console.Shell;
 public class JCompilerShell extends Shell
 {
 
-	public JCompilerShell() 
+	public JCompilerShell()
 	{
-		super("Java Compiler");
+		super("JCompiler");
 	}
 
 
@@ -54,7 +54,7 @@ public class JCompilerShell extends Shell
 	 *
 	 * @param  output  where to put the information
 	 */
-	public void printInfoMessage(Output output) 
+	public void printInfoMessage(Output output)
 	{
 		output.print(null, jEdit.getProperty("jcompiler.msg.info"));
 	}
@@ -67,7 +67,7 @@ public class JCompilerShell extends Shell
 	 * @param  output  where the output should go.
 	 * @param  command  the entered command.
 	 */
-	public void execute(Console console, Output output, String command) 
+	public void execute(Console console, Output output, String command)
 	{
 		stop(console); // stop last command
 
@@ -99,11 +99,11 @@ public class JCompilerShell extends Shell
 		{
 			// command "javac" with arguments
 			String[] args;
-			try 
+			try
 			{
 				args = parseCmdLineArguments(cmd.substring(6));
 			}
-			catch (IOException ex) 
+			catch (IOException ex)
 			{
 				console.print(console.getErrorColor(),
 					jEdit.getProperty("jcompiler.msg.errorCommandLine",
@@ -129,11 +129,11 @@ public class JCompilerShell extends Shell
 	}
 
 
-	public void stop(Console console) 
+	public void stop(Console console)
 	{
-		if (compileTask != null) 
+		if (compileTask != null)
 		{
-			if (compileTask.isAlive()) 
+			if (compileTask.isAlive())
 			{
 				console.print(console.getErrorColor(), jEdit.getProperty("jcompiler.msg.stopping"));
 				compileTask.stop();
@@ -144,18 +144,18 @@ public class JCompilerShell extends Shell
 	}
 
 
-	public boolean waitFor(Console console) 
+	public boolean waitFor(Console console)
 	{
-		if (compileTask != null) 
+		if (compileTask != null)
 		{
-			try 
+			try
 			{
-				synchronized(compileTask) 
+				synchronized(compileTask)
 				{
 					compileTask.wait();
 				}
 			}
-			catch (InterruptedException ie) 
+			catch (InterruptedException ie)
 			{
 				return false;
 			}
@@ -167,7 +167,7 @@ public class JCompilerShell extends Shell
 	// ----- End Shell implementation -----
 
 
-	private String[] parseCmdLineArguments(String cmd) throws IOException 
+	private String[] parseCmdLineArguments(String cmd) throws IOException
 	{
 		// Expand any variables in the command line arguments:
 		cmd = JCompiler.expandVariables(cmd);
@@ -190,9 +190,9 @@ public class JCompilerShell extends Shell
 		Vector args = new Vector();
 
 loop:
-		for(;;) 
+		for(;;)
 		{
-			switch(st.nextToken()) 
+			switch(st.nextToken())
 			{
 				case StreamTokenizer.TT_EOF:
 					break loop;
