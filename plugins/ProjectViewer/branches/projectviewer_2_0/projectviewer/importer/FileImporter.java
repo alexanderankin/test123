@@ -49,7 +49,11 @@ import projectviewer.vpt.VPTDirectory;
 public class FileImporter extends Importer {
 
 	protected int fileCount;
+	protected int selectedOp;
 	protected boolean prune;
+	
+	protected CVSEntriesFilter cvsFilter;
+	protected ImportSettingsFilter settingsFilter;
 	
 	//{{{ Constructor
 	
@@ -75,6 +79,11 @@ public class FileImporter extends Importer {
 	 */
 	protected Collection internalDoImport() {
 		fileCount = 0;
+		selectedOp = 0;
+		
+		cvsFilter = new CVSEntriesFilter();
+		settingsFilter = new ImportSettingsFilter();
+		
 		File[] chosen = chooseFiles();
 		if (chosen == null || chosen.length == 0) return null;
 
@@ -98,7 +107,7 @@ public class FileImporter extends Importer {
 									jEdit.getProperty("projectviewer.import.msg_recurse"),
 									jEdit.getProperty("projectviewer.import.msg_recurse.title"),
 									JOptionPane.QUESTION_MESSAGE,
-									null, options, options[0]);
+									null, options, options[selectedOp]);
 					
 					if (sel == null) {
 						// cancel
@@ -107,11 +116,12 @@ public class FileImporter extends Importer {
 					
 					if (sel == options[1]) {
 						recurse = true;
-					} else if (sel == options[2]) {
-						fnf = new ImportSettingsFilter();
+					} else if (sel == options[0]) {
+						fnf = settingsFilter;
 						recurse = true;
-					} else if (sel == options[3]) {
-						// TODO: CVS/Entries filter
+					} else if (sel == options[2]) {
+						fnf = cvsFilter;
+						recurse = true;
 					} else {
 						recurse = false;
 					}
@@ -217,10 +227,16 @@ public class FileImporter extends Importer {
 		
 		NonProjectFileFilter filter = new NonProjectFileFilter();
 		chooser.addChoosableFileFilter(filter);
+		chooser.addChoosableFileFilter(settingsFilter);
+		chooser.addChoosableFileFilter(cvsFilter);
 		chooser.setFileFilter(filter);
 		
 		if(chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) {
 			return null;
+		}
+		
+		if (chooser.getFileFilter() == cvsFilter) {
+			selectedOp = 2;
 		}
 
 		return chooser.getSelectedFiles();	
