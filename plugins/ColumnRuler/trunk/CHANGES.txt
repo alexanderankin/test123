@@ -2,6 +2,8 @@
 	- Made ruler marks to separate objects
 
 	- It will now check if a text area has a ruler before adding another
+
+	- Will now work correctly with antialiasing and fractional font metrics
 }}}
 
 {{{ 0.8

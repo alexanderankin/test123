@@ -17,7 +17,6 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 
 	public void activate(ColumnRuler ruler) {
 		this.ruler = ruler;
-		EditBus.addToBus(this);
 		ruler.getTextArea().addCaretListener(this);
 		ruler.getTextArea().addScrollListener(this);
 	}
@@ -25,10 +24,6 @@ public class CaretMark extends DynamicMark implements CaretListener, ScrollListe
 	public void deactivate() {
 		ruler.getTextArea().removeCaretListener(this);
 		ruler.getTextArea().removeScrollListener(this);
-		EditBus.removeFromBus(this);
-	}
-
-	public void handleMessage(EBMessage msg) {
 	}
 
 	public void update() {
