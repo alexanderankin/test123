@@ -15,46 +15,21 @@
 
     <ACTION NAME="white-space.toggle-fold-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getFoldHighlight().toggleEnabled();
-
-            whitespace.FoldHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleFoldHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getFoldHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isFoldHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="white-space.toggle-fold-tooltip">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getFoldTooltip().toggleEnabled();
-
-            whitespace.FoldHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleFoldTooltip(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getFoldTooltip().isEnabled();
+            return whitespace.WhiteSpaceActions.isFoldTooltipSelected(buffer);
         </IS_SELECTED>
-        -->
     </ACTION>
 
 
