@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="sort-lines">
+		<CODE>
+			TextToolsPlugin.sortLines(textArea,false);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="revsort-lines">
+		<CODE>
+			TextToolsPlugin.sortLines(textArea,true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="transpose-chars">
+		<CODE>
+			TextToolsPlugin.transposeChars(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="transpose-lines">
+		<CODE>
+			TextToolsPlugin.transposeLines(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="transpose-words">
+		<CODE>
+			TextToolsPlugin.transposeWords(textArea);
+		</CODE>
+	</ACTION>
+</ACTIONS>
