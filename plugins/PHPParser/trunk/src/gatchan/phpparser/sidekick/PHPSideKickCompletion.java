@@ -4,8 +4,10 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassDeclaration;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
+import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
+import org.gjt.sp.jedit.TextUtilities;
 import sidekick.SideKickCompletion;
 
 import java.util.List;
@@ -68,7 +70,8 @@ public class PHPSideKickCompletion extends SideKickCompletion {
         insertText += "()";
         caret--; //to go between the parenthesis
       }
-
+    }else if (object instanceof MethodHeader) {
+      insertText = ((MethodHeader) object).getName();
     } else {
       insertText = (String) object;
     }
@@ -84,6 +87,13 @@ public class PHPSideKickCompletion extends SideKickCompletion {
   public boolean handleKeystroke(int selectedIndex, char keyChar) {
     if (keyChar == '\n' || keyChar == ' ' || keyChar == '\t') {
       insert(selectedIndex);
+      if (keyChar == ' ') {
+        //inserting the space after the insertion
+        textArea.userInput(' ');
+      } else if (keyChar == '\t') {
+        //removing the end of the word
+        textArea.deleteWord();
+      }
       return false;
     } else {
       textArea.userInput(keyChar);
