@@ -40,8 +40,6 @@ class EntityManager
 				// to handle jEdit built-in DTDs
 				source = catalog.resolveEntity(null,
 					systemId.substring(current.length()));
-				System.err.println(systemId.substring(current.length()));
-				System.err.println(catalog.getSystemMapping(systemId.substring(current.length())));
 			}
 		}
 

@@ -20,16 +20,20 @@ import java.util.Vector;
 public class XmlPlugin extends EBPlugin
 {
 	public static final String TREE_NAME = "xml-tree";
-	public static final String TAG_PALETTE_NAME = "xml-palette-name";
+	public static final String INSERT_NAME = "xml-insert";
 
 	// We store the list of declared elements in this buffer-local
 	// property
 	public static final String DECLARED_ELEMENTS_PROPERTY = "xml.declared-elements";
 
+	// We store the list of declared entities in this buffer-local
+	// property
+	public static final String DECLARED_ENTITIES_PROPERTY = "xml.declared-entities";
+
 	public void start()
 	{
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,TREE_NAME);
-		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,TAG_PALETTE_NAME);
+		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,INSERT_NAME);
 	}
 
 	public void createMenuItems(Vector menuItems)
@@ -57,9 +61,9 @@ public class XmlPlugin extends EBPlugin
 					!cmsg.getPosition().equals(
 					DockableWindowManager.FLOATING)));
 			}
-			else if(cmsg.getDockableWindowName().equals(TAG_PALETTE_NAME))
+			else if(cmsg.getDockableWindowName().equals(INSERT_NAME))
 			{
-				cmsg.setDockableWindow(new TagPalette(
+				cmsg.setDockableWindow(new XmlInsert(
 					cmsg.getView()));
 			}
 		}

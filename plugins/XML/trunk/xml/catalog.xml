@@ -18,6 +18,9 @@
 	<Remap
 		SystemID="recent.dtd"
 		HRef="jeditresource:/org/gjt/sp/jedit/recent.dtd" />
+	<Remap
+		SystemID="xmode.dtd"
+		HRef="jeditresource:/org/gjt/sp/jedit/xmode.dtd" />
 
 	<Remap
 		SystemID="plugins.dtd"
