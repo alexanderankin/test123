@@ -162,6 +162,8 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		appTable = new JTable(model);
 		appTable.addMouseListener(this);
   
+  		TableColumn col = appTable.getColumnModel().getColumn(1);
+		col.setPreferredWidth(appTable.getColumnModel().getColumn(0).getWidth() * 5);
 		JScrollPane jsp = new JScrollPane(appTable);
 		gb.setConstraints(jsp, gbc);
 		add(jsp);
@@ -236,7 +238,7 @@ public class ProjectAppConfigPane extends AbstractOptionPane
 		// Used for selected and executable file
 		JFileChooser chooser = new JFileChooser();
 		chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
-		if (chooser.showOpenDialog(this) != JFileChooser.APPROVE_OPTION)
+		if (chooser.showDialog(this, "Choose") != JFileChooser.APPROVE_OPTION)
 			return;
 		try {
 			appField.setText(chooser.getSelectedFile().getPath());
