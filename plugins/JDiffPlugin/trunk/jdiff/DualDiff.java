@@ -763,7 +763,7 @@ public class DualDiff implements EBComponent
                 } else {
                     line = hunk.line0;
                 }
-                this.textArea0._setFirstLine(line);
+                this.textArea0.setFirstLine(line);
                 if (this.textArea0.getFirstLine() != line) {
                     this.textArea0.getToolkit().beep();
                 }
@@ -789,7 +789,7 @@ public class DualDiff implements EBComponent
                 } else {
                     line = hunk.line1;
                 }
-                this.textArea1._setFirstLine(line);
+                this.textArea1.setFirstLine(line);
                 if (this.textArea1.getFirstLine() != line) {
                     this.textArea1.getToolkit().beep();
                 }
@@ -816,7 +816,7 @@ public class DualDiff implements EBComponent
                     } else {
                         line = hunk.line0;
                     }
-                    this.textArea0._setFirstLine(line);
+                    this.textArea0.setFirstLine(line);
                     if (this.textArea0.getFirstLine() != line) {
                         this.textArea0.getToolkit().beep();
                     }
@@ -844,7 +844,7 @@ public class DualDiff implements EBComponent
                     } else {
                         line = hunk.line1;
                     }
-                    this.textArea1._setFirstLine(line);
+                    this.textArea1.setFirstLine(line);
                     if (this.textArea1.getFirstLine() != line) {
                         this.textArea1.getToolkit().beep();
                     }
@@ -983,7 +983,7 @@ public class DualDiff implements EBComponent
         private Runnable syncWithRight = new Runnable() {
             public void run() {
                 // DualDiff.this.diffOverview0.repaint();
-                DualDiff.this.textArea1._setHorizontalOffset(
+                DualDiff.this.textArea1.setHorizontalOffset(
                     DualDiff.this.textArea0.getHorizontalOffset()
                 );
 
@@ -994,7 +994,7 @@ public class DualDiff implements EBComponent
         private Runnable syncWithLeft = new Runnable() {
             public void run() {
                 // DualDiff.this.diffOverview1.repaint();
-                DualDiff.this.textArea0._setHorizontalOffset(
+                DualDiff.this.textArea0.setHorizontalOffset(
                     DualDiff.this.textArea1.getHorizontalOffset()
                 );
 
