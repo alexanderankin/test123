@@ -16,6 +16,7 @@ ENHANCEMENTS:
 - added ability to "pass through" an abbreviation from the "Expand Accelerator" action to jEdit's abbreviation expansion function, if no matching template accelerator is found (Steve Jakob)
 - added option to Templates General option pane to configure "pass through" to abbreviation expansion (Steve Jakob)
 - added an optional boolean parameter to the #beanshell() directive to allow suppression of output of the last result in the script; documentation updated accordingly (Calvin Yu)
+- Velocity engine updated from version 1.3-rc1 to 1.3.1-rc2
 
 Version 3.0.1 (16-AUG-2002)
 =============================
