@@ -1,0 +1,335 @@
+<?xml version="1.0"?>
+
+<!-- SQL user's guide -->
+<!-- (C) 2001 Sergey V. Udaltsov -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=2:noTabs=true: -->
+
+
+<!-- <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"> -->
+ <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook V3.1//EN">
+
+<book>
+
+
+  <bookinfo>
+    <title>SQL plugin user's guide</title>
+
+    <copyright>
+      <year>2000</year>
+
+      <year>2001</year>
+
+      <holder>Sergey V. Udaltsov</holder>
+    </copyright>
+
+    <legalnotice>
+      <title>Legal Notice</title>
+
+      <para>
+        Permission is granted to copy, distribute and/or modify this document
+        under the terms of the GNU Free Documentation License, Version 1.1 or
+        any later version published by the Free Software Foundation; with no
+        <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+        <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+        the license can be found in the file <filename>COPYING.DOC.txt</filename>
+        included with jEdit.
+      </para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="users-guide/purpose">
+    <title>Purpose</title>
+
+    <para>The plugin provides different functions for DB developers. It
+      can:</para>
+
+    <itemizedlist>
+      <listitem>
+        <para>Send SQL code to the server. Process results of the
+          publishing in any form: result set, number of rows updated,
+          stored procedure published (with error processing).</para>
+      </listitem>
+
+      <listitem>
+        <para>Browse the DB using standard VFS browser.</para>
+      </listitem>
+
+      <listitem>
+        <para>Download the content of the stored procedures, packages
+          etc.</para>
+      </listitem>
+    </itemizedlist>
+  </chapter>
+
+  <chapter id="users-guide/config">
+    <title>Configuration</title>
+
+    <sect1 id="users-guide/config.servertypes">
+      <title>SQL server types</title>
+
+      <para>The plugin can work with virtually any type of SQL server
+        (assuming presence of appropriate JDBC driver in
+        <filename>~/.jedit/jars</filename> or
+        <filename>$JEDIT_HOME/jars</filename>
+        or set in
+        <systemitem class="environvar">CLASSPATH</systemitem>
+        environment variable ).</para>
+
+      <para>Each type of the server is given in the XML configuration file.
+        These files stored in
+        <filename>~/.jedit/sql/serverTypes</filename> or
+        <filename>$JEDIT_HOME/sql/serverTypes</filename>
+        (some configuration files - for Oracle, MySQL, PostgreSQL, DB2
+        are bundled with the plugin).
+        Each file contains the following info:</para>
+
+      <itemizedlist>
+        <listitem>The name of the JDBC driver (optional - if driver is
+        already registered by JVM itself, there is no need to
+        register it in the plugin).</listitem>
+
+        <listitem>Configuration parameters. They are used to generate UI
+        for managing servers and create connection strings.</listitem>
+
+        <listitem>Different service SQL statements.</listitem>
+      </itemizedlist>
+
+      <para>For an example of SQL server type configuration type, see
+        <ulink url="example.xml.html">here</ulink>
+        .</para>
+
+      <table frame="all">
+        <title>SQL server types supported by SQL plugin</title>
+
+        <tgroup cols="5">
+          <colspec colname="name" align="left"/>
+          <colspec colname="queries" align="center"/>
+          <colspec colname="procs" align="center"/>
+          <colspec colname="sqlvfs" align="center"/>
+          <colspec colname="sqlvfsplus" align="center"/>
+
+          <thead>
+            <row>
+              <entry>SQL server type</entry>
+              <entry>Standard queries</entry>
+              <entry>Stored procedures management</entry>
+              <entry>SqlVFS</entry>
+              <entry>Db-specific SqlVFS</entry>
+            </row>
+          </thead>
+
+          <tbody>
+            <row>
+              <entry>Oracle</entry>
+              <entry>Y</entry>
+              <entry>Y</entry>
+              <entry>Y</entry>
+              <entry>Y</entry>
+            </row>
+            <row>
+              <entry>MySQL</entry>
+              <entry>Y</entry>
+              <entry>N</entry>
+              <entry>Y</entry>
+              <entry>N</entry>
+            </row>
+            <row>
+              <entry>PostgreSQL</entry>
+              <entry>Y</entry>
+              <entry>N</entry>
+              <entry>Y</entry>
+              <entry>N</entry>
+            </row>
+            <row>
+              <entry>DB2</entry>
+              <entry>Y</entry>
+              <entry>N</entry>
+              <entry>Y</entry>
+              <entry>N</entry>
+            </row>
+          </tbody>
+
+        </tgroup>
+      </table>
+
+    </sect1>
+
+    <sect1 id="users-guide/config.serverrecords">
+      <title>SQL server records</title>
+
+      <para>Each concrete database instance, login, password, it is
+        necessary to create and manage SQL server records. These
+        records are set in
+        <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
+        dialog, <guilabel>SQL</guilabel> tree item.
+        The dialog shows the list of the existing server
+        records, allows to create/edit/delete them.</para>
+    </sect1>
+  </chapter>
+
+  <chapter id="users-guide/commands">
+    <title>Commands</title>
+
+    <itemizedlist>
+      <listitem>
+        <guibutton id="pubBuf">Publish Buffer</guibutton>
+          - Send current buffer entirely to the database. This buffer
+          should contain a correct statement.
+      </listitem>
+
+      <listitem>
+        <guibutton id="pubBufSrv">Publish Buffer To Server</guibutton>
+          - Sends current buffer to the database of user choice (dialog
+          is displayed before publishing). The selection should contain
+          a correct statement.
+      </listitem>
+
+      <listitem>
+        <guibutton id="pubSel">Publish Selection</guibutton>
+          - Sends current selection to the database. The selection
+          should contain a correct statement.
+      </listitem>
+
+      <listitem>
+        <guibutton id="pubSelSrv">Publish Selection To Server</guibutton>
+          - Sends current selection to the database of user choice
+          (dialog is displayed before publishing). The selection should
+          contain a correct statement.
+      </listitem>
+
+      <listitem>
+        <guibutton id="loadObj">Load Object</guibutton>
+          - Downloads the object sources from the database. Creates new
+          buffer. In the drop-down list, <font color="red"><b>red</b></font>
+          objects are invalid ones, <font color="black"><b>black</b></font>
+          ones are valid.
+      </listitem>
+
+      <listitem>
+        <guibutton id="loadObjSrv">Load Object From Server</guibutton>
+          - Downloads the object sources from the database of user
+          choice (dialog is displayed before publishing). Creates new
+          buffer.
+      </listitem>
+    </itemizedlist>
+  </chapter>
+
+  <chapter id="users-guide/sqlvfs">
+    <title>SqlVFS</title>
+
+    <para>
+      The plugin supports the browsing of SQL servers. To access the
+      SqlVFS tree, use the
+      <guimenu>More</guimenu>&gt;<guimenuitem>Databases</guimenuitem>
+      menu item in the
+      <application>File System Browser</application>.
+    </para>
+  </chapter>
+
+  <appendix id="users-guide/changelog"><title>Change log</title>
+    <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.6</title>
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>Name changed to SQL plugin. Thanks to Mike Dillon</listitem>
+
+          <listitem>Greatly improved SqlVFS for Oracle. Separate "directory"
+          for each object type:</listitem>
+
+          <itemizedlist>
+            <listitem>Tables</listitem>
+
+            <listitem>Views</listitem>
+
+            <listitem>Packages</listitem>
+
+            <listitem>Package Bodies</listitem>
+
+            <listitem>Procedures</listitem>
+
+            <listitem>Functions</listitem>
+
+            <listitem>Triggers</listitem>
+          </itemizedlist>
+
+          <listitem>Initial support for PostgreSQL (thanks to Pierluigi
+          Mangani) - with partial support of SqlVFS. Patches are
+          welcome.</listitem>
+
+          <listitem>Initial support for DB2, local and remote (thanks to
+          Carmine Lucarelli) - with support of SqlVFS.</listitem>
+
+          <listitem>Some small bugfixes (thanks to user feedback)</listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.5</title>
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>OraclePlugin renamed to SqlPlugin.</listitem>
+
+          <listitem>The plugin can work with any type of the SQL server. Each
+          SQL server type is configurable in separate XML file. Loads
+          of internal changes. The plugin does not require oracle JDBC
+          driver to be installed any more.</listitem>
+
+          <listitem>Support of SqlVFS introduced.</listitem>
+        </itemizedlist>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.4</title>
+        </formalpara>
+
+        <para>
+          Now the plugin can perform DQL queries to the database. Result
+          set window is added.
+        </para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.3</title>
+        </formalpara>
+
+        <para>
+          Now the plugin can load objects (procedures, functions etc)
+          from the database.
+        </para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.2</title>
+        </formalpara>
+        <para>
+          Some cleanups. Buffer now can be ended with '/' - this
+          character will be wiped out correctly (I hope).
+        </para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
+          <title>Version 0.1</title>
+        </formalpara>
+        <para>
+          Requires jEdit 3.0 (not tested with previous versions). First
+          release I can show to the jEdit community.
+        </para>
+      </listitem>
+
+    </itemizedlist>
+
+  </appendix>
+</book>
+
+
