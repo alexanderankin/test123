@@ -29,6 +29,7 @@ public class ConsoleFramePluginPart extends EBPlugin
 	public void start()
 	{
 		jEdit.addAction(new OpenAction());
+		jEdit.addAction(new SelectShellAction());
 	}
 
 	public void createMenuItems(View view, Vector menus, Vector menuItems)
@@ -124,6 +125,20 @@ public class ConsoleFramePluginPart extends EBPlugin
 		public boolean isSelected(Component comp)
 		{
 			return isConsoleShowing(getView(comp));
+		}
+	}
+
+	class SelectShellAction extends EditAction
+	{
+		SelectShellAction()
+		{
+			super("console-shell");
+		}
+
+		public void actionPerformed(ActionEvent evt)
+		{
+			ConsoleFrame frame = getConsole(getView(evt));
+			frame.selectShell(evt.getActionCommand());
 		}
 	}
 }

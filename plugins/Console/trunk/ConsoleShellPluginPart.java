@@ -128,7 +128,7 @@ public class ConsoleShellPluginPart extends EBPlugin
 				String _message = regexp.substitute(text,message);
 
 				errorSource.addError(type,_filename,
-					Integer.parseInt(_line),0,0,
+					Integer.parseInt(_line) - 1,0,0,
 					_message);
 
 				return type;
