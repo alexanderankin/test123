@@ -38,7 +38,7 @@
     <jar jarfile="${install.dir}/${jar.name}">
       <fileset dir="${classes.dir}"/>
       <fileset dir="${resources.dir}"/>
-     <!-- <fileset dir="${docs.dir}"/> -->
+     <fileset dir="${docs.dir}"/>
       <fileset dir="${basedir}" includes="actions.xml,dockables.xml,*.props,*.txt"/>
     </jar>
   </target>
