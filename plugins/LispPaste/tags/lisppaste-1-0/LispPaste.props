@@ -1,0 +1,32 @@
+plugin.lisppaste.LispPastePlugin.name=LispPaste
+plugin.lisppaste.LispPastePlugin.version=1.0
+plugin.lisppaste.LispPastePlugin.author=Slava Pestov
+plugin.lisppaste.LispPastePlugin.activate=defer
+plugin.lisppaste.LispPastePlugin.docs=index.html
+
+plugin.lisppaste.LispPastePlugin.depend.0=jedit 04.02.99.00
+plugin.lisppaste.LispPastePlugin.depend.1=jdk 1.4
+
+plugin.lisppaste.LispPastePlugin.jars=xmlrpc-1.2-b1.jar
+
+plugin.lisppaste.LispPastePlugin.menu-item=make-lisp-paste
+
+make-lisp-paste.label=LispPaste...
+
+lisp-paste.dialog-title=LispPaste
+lisp-paste.channel=Channel:
+lisp-paste.eeload-channels=Reload channel list
+lisp-paste.user=User:
+lisp-paste.title=Title:
+
+lisp-paste-request.status=Making LispPaste
+lisp-paste-request.url=http://www.common-lisp.net:8185/RPC2
+lisp-paste-request.error=An error occurred while making a LispPaste:\n{0}
+
+channel-list-request.status=Listing Channels
+
+lisp-paste-response.title=LispPaste Reponse
+lisp-paste-response.message={0}
+
+# This list is updated via an RPC request
+lisp-paste.channels=\#jedit
