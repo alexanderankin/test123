@@ -24,8 +24,7 @@ package whitespace;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.event.MouseEvent;
+import java.awt.Graphics2D;
 import java.util.Hashtable;
 
 import javax.swing.text.Segment;
@@ -36,12 +35,11 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.TextAreaHighlight;
+import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.util.Log;
 
 
-public class WhiteSpaceHighlight
-    implements TextAreaHighlight
+public class WhiteSpaceHighlight extends TextAreaExtension
 {
     // ASCII control characters strictly below SPACE (0x20)
     private static final String[] ASCII_CONTROLS = new String[] {
@@ -79,21 +77,18 @@ public class WhiteSpaceHighlight
     private static Painter whitespacePainter = new WhiteSpacePainter();
 
     private JEditTextArea textArea;
-    private TextAreaHighlight next;
 
     private Segment lineSegment = new Segment();
 
 
-    private WhiteSpaceHighlight() {}
-
-
-    public void init(JEditTextArea textArea, TextAreaHighlight next) {
+    private WhiteSpaceHighlight(JEditTextArea textArea) {
         this.textArea = textArea;
-        this.next = next;
     }
 
 
-    public void paintHighlight(Graphics gfx, int virtualLine, int y) {
+    public void paintValidLine(
+            Graphics2D gfx, int physicalLine, int start, int end, int y
+    ) {
         WhiteSpaceModel model = this.getModel();
 
         if (    (model != null)
@@ -105,8 +100,6 @@ public class WhiteSpaceHighlight
             // Avoid most <code>getfield</code>s
             final JEditTextArea ta = this.textArea;
             final Segment s = this.lineSegment;
-
-            int physicalLine = ta.getBuffer().virtualToPhysical(virtualLine);
 
             try {
                 if (    (ta.getLineStartOffset(physicalLine) == -1)
@@ -236,21 +229,14 @@ public class WhiteSpaceHighlight
                 }
             }
         }
-
-        if (this.next != null) {
-            this.next.paintHighlight(gfx, virtualLine, y);
-        }
     }
 
 
-    public String getToolTipText(MouseEvent evt)
-    {
+    public String getToolTipText(int x, int y) {
         WhiteSpaceModel model = this.getModel();
 
         if ((model != null) && model.getWhitespaceHighlight().isEnabled()) {
             JEditTextArea ta = this.textArea;
-            int x = evt.getX();
-            int y = evt.getY();
 
             int offset = ta.xyToOffset(x, y);
 
@@ -278,9 +264,7 @@ public class WhiteSpaceHighlight
             }
         }
 
-        if (this.next == null) { return null; }
-
-        return this.next.getToolTipText(evt);
+        return null;
     }
 
 
@@ -327,13 +311,13 @@ public class WhiteSpaceHighlight
     }
 
 
-    public static TextAreaHighlight getHighlightFor(EditPane editPane) {
-        return (TextAreaHighlight) highlights.get(editPane);
+    public static TextAreaExtension getHighlightFor(EditPane editPane) {
+        return (TextAreaExtension) highlights.get(editPane);
     }
 
 
-    public static TextAreaHighlight addHighlightTo(EditPane editPane) {
-        TextAreaHighlight textAreaHighlight = new WhiteSpaceHighlight();
+    public static TextAreaExtension addHighlightTo(EditPane editPane) {
+        TextAreaExtension textAreaHighlight = new WhiteSpaceHighlight(editPane.getTextArea());
         highlights.put(editPane, textAreaHighlight);
         return textAreaHighlight;
     }
@@ -398,12 +382,12 @@ public class WhiteSpaceHighlight
 
 
     private interface Painter {
-        void paint(Graphics gfx, int x0, int y0);
+        void paint(Graphics2D gfx, int x0, int y0);
     }
 
 
     private static class SpacePainter implements Painter {
-        public void paint(Graphics gfx, int x0, int y0) {
+        public void paint(Graphics2D gfx, int x0, int y0) {
             gfx.setColor(WhiteSpaceHighlight.spaceColor);
             gfx.drawRect(x0 + 1, y0 - 1, 2, 2);
         }
@@ -411,7 +395,7 @@ public class WhiteSpaceHighlight
 
 
     private static class TabPainter implements Painter {
-        public void paint(Graphics gfx, int x0, int y0) {
+        public void paint(Graphics2D gfx, int x0, int y0) {
             gfx.setColor(WhiteSpaceHighlight.tabColor);
             int[] xl0 = {x0, x0 + 2, x0};
             int[] xl1 = {x0 + 2 , x0 + 4, x0 + 2};
@@ -423,7 +407,7 @@ public class WhiteSpaceHighlight
 
 
     private static class WhiteSpacePainter implements Painter {
-        public void paint(Graphics gfx, int x0, int y0) {
+        public void paint(Graphics2D gfx, int x0, int y0) {
             gfx.setColor(WhiteSpaceHighlight.whitespaceColor);
             gfx.setColor(whitespaceColor);
             int[] xl0 = {x0, x0 + 2, x0 + 4, x0 + 2};
@@ -432,3 +416,4 @@ public class WhiteSpaceHighlight
         }
     }
 }
+
