@@ -91,9 +91,7 @@ public class ReferencePanel
                suppress = false;
             }
         });
-        log("1");
         refresh();
-        log("2");
     }
 
     //~ Methods .................................................................
@@ -195,7 +193,6 @@ public class ReferencePanel
         for (Enumeration it = files.preorderEnumeration(); it.hasMoreElements();) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) it.nextElement();
             File in = (File) node.getUserObject();
-            log(in.toString());
             Buffer buff = jEdit.openTemporary(view, in.getParent(), 
                                               in.getName(), false);
             loadReferences(buff);

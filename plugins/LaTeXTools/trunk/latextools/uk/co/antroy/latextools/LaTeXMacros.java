@@ -9,13 +9,12 @@ import gnu.regexp.RE;
 import gnu.regexp.REException;
 import gnu.regexp.REMatch;
 
-import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Point;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -26,25 +25,24 @@ import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
+import java.util.StringTokenizer;
 
-import javax.swing.*;
+import javax.swing.JPanel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.*;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-
+import org.gjt.sp.util.Log;
 
 public class LaTeXMacros {
     public static final String MAIN_TEX_FILE_KEY = "latex.root";
@@ -251,7 +249,7 @@ public class LaTeXMacros {
     }
 
     private static void historyCommand(View view, Buffer buffer, boolean prompt, 
-                                       String extension, String commandProps, 
+                                       String commandProps, 
                                        String historyProps, String dialogTitle){
                                           
         String tex = getMainTeXPath(buffer);
@@ -278,8 +276,8 @@ public class LaTeXMacros {
                 return;
             }
         } else {
-            command = jEdit.getProperty(commandProps);
-            ext = extension;
+            command = jEdit.getProperty(commandProps + ".command");
+            ext = jEdit.getProperty(commandProps + ".ext");
         }
 
         jEdit.saveAllBuffers(view, false);
@@ -287,19 +285,24 @@ public class LaTeXMacros {
         StringBuffer str = new StringBuffer(command);
         str.append(" '").append(tex).append(ext).append("'");
         command = str.toString();
-        runCommand(view, texRoot, command);
+        boolean detach = jEdit.getBooleanProperty(commandProps + ".detach");
+        runCommand(view, texRoot, command, detach);
         
     }
     
     public static void compile(View view, Buffer buffer, boolean prompt) {
-        historyCommand(view, buffer, prompt, ".tex", "latex.compile.command", "latextools.compile.history", "Enter Compilation Command");
+        historyCommand(view, buffer, prompt, "latex.compile", "latextools.compile.history", "Enter Compilation Command");
+    }
+
+    public static void bibtex(View view, Buffer buffer) {
+        historyCommand(view, buffer, false, "latex.bibtex", null, "");
     }
 
     public static void viewOutput(View view, Buffer buffer, boolean prompt) {
-        historyCommand(view, buffer, prompt, ".pdf", "latex.viewoutput.command", "latextools.viewoutput.history", "Enter Viewer Command");
+        historyCommand(view, buffer, prompt, "latex.viewoutput", "latextools.viewoutput.history", "Enter Viewer Command");
     }
     
-    private static void runCommand(View view, String dir, String command) {
+    private static void runCommand(View view, String dir, String command, boolean detach) {
         Console console = (Console)view.getDockableWindowManager().getDockable(
                                   "console");
         Shell _shell = Shell.getShell("System");
@@ -307,29 +310,11 @@ public class LaTeXMacros {
         console.run(_shell, console, "%kill");
         console.run(_shell, console, "cd " + '"' + dir + '"');
         console.run(_shell, console, command);
-    }
-
-    public static void bibtex(View view, Buffer buffer) {
-        String tex = getMainTeXPath(buffer);
-
-        if (!(tex.substring(tex.length() - 3, tex.length()).equals("tex"))) {
-            Macros.error(view, tex + " is not a TeX file.");
-
-            return;
+        if (detach){
+            console.run(_shell, console, "%detach");
         }
-
-        if (!new File(tex).exists()) {
-            Macros.error(view, tex + " is not a TeX file.");
-
-            return;
-        }
-
-        String texRoot = new File(tex).getParent().toString();
-        tex = tex.substring(0, tex.length() - 4);
-        String str = "bibtex '" + tex + "'";
-        runCommand(view, texRoot, str);
     }
-
+    
     public static void deleteWorkingFiles(View view, Buffer buffer) {
         String tex = getMainTeXPath(buffer);
 
@@ -589,13 +574,24 @@ public class LaTeXMacros {
                                        false);
         File[] children = getImports(b);
 
+        outer:
         for (int i = 0; i < children.length; i++) {
             File f = children[i];
 
             //Macros.message(null,f.toString());
-            if (!f.exists())
-
-                continue;
+            if (!f.exists()){
+                StringTokenizer str = new StringTokenizer(jEdit.getProperty("latex.classpath.dirs",";"));
+                
+                while (str.hasMoreTokens()){
+                    File test = new File(str.nextToken(), f.getName());
+                    if (test.exists()){
+                        out.add(getNestedImports(view, test));
+                        continue outer;
+                    }
+                }
+                
+                continue outer;
+            }
 
             //Macros.message(null,"Ex: " + f.toString());
             out.add(getNestedImports(view, f));
@@ -604,13 +600,13 @@ public class LaTeXMacros {
         return out;
     }
 
-    private static File[] getImportsInRange(Buffer buffer, int start, int end) {
-        REMatch[] matches = findInDocument(buffer, IMPORT_REG_EX, start, end);
+    private static File[] getImportsInRange(Buffer buffer, int startLine, int endLine) {
+        REMatch[] matches = findInDocument(buffer, IMPORT_REG_EX, startLine, endLine);
         ArrayList filelist = new ArrayList();
         String root = getMainTeXDir(buffer);
 
         for (int i = 0; i < matches.length; i++) {
-            int posn = matches[i].getStartIndex();
+            int posn = matches[i].getStartIndex() + buffer.getLineStartOffset(startLine);
             int line = buffer.getLineOfOffset(posn);
             String preText = buffer.getLineText(line).substring(0,(posn - buffer.getLineStartOffset(line))+1);
             if (preText.indexOf("%") >= 0) continue;

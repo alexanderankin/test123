@@ -150,12 +150,10 @@ public abstract class AbstractToolPanel
       if (b == null) return false;
       
       Mode mode = b.getMode();
-      //log("" + mode);
       if (mode == null) return false;
       
       String s = mode.getName();
       boolean out = s.equals("tex");
-      //log("" + out);
       
       return out;
     }
