@@ -30,7 +30,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
-import java.io.File;
+import java.io.IOException;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -41,6 +41,8 @@ import org.gjt.sp.jedit.Macros;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.gui.HistoryTextField;
+import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSManager;
 
 
 public class DualDiffDialog extends JDialog {
@@ -68,9 +70,8 @@ public class DualDiffDialog extends JDialog {
         this.baseFileField = new HistoryTextField("user.showDualDiff.basefile");
         this.baseFileField.setText(view.getBuffer().getName());
         baseFilePanel.add(this.baseFileField, BorderLayout.CENTER);
-
         JButton baseChooseButton = new JButton("Choose");
-        baseFilePanel.add(baseChooseButton, "East");
+        baseFilePanel.add(baseChooseButton, BorderLayout.EAST);
         content.add(baseFilePanel);
 
         JLabel newLabel = new JLabel("New file:");
@@ -116,9 +117,6 @@ public class DualDiffDialog extends JDialog {
     private class OkActionHandler implements ActionListener
     {
         public void actionPerformed(ActionEvent ae) {
-            String currentDir = MiscUtilities.getParentOfPath(
-                DualDiffDialog.this.view.getBuffer().getPath()
-            );
             String basePath = DualDiffDialog.this.baseFileField.getText();
             String newPath = DualDiffDialog.this.newFileField.getText();
             if (basePath.length() == 0 || newPath.length() == 0) {
@@ -128,38 +126,72 @@ public class DualDiffDialog extends JDialog {
                 return;
             }
 
+            VFS vfs = DualDiffDialog.this.view.getBuffer().getVFS();
+            String currentDir = vfs.getParentOfPath(
+                DualDiffDialog.this.view.getBuffer().getPath()
+            );
+
             String err = "";
             int errCount = 0;
-            if (basePath.indexOf(File.separatorChar) == -1) {
-                basePath = currentDir + File.separator + basePath;
+
+            VFS baseVFS = VFSManager.getVFSForPath(basePath);
+            VFS.DirectoryEntry baseEntry = null;
+
+            try {
+                baseEntry = baseVFS._getDirectoryEntry(null, basePath, null);
+            } catch (IOException ioe) {}
+
+            if (baseEntry == null || baseEntry.type != VFS.DirectoryEntry.FILE) {
+                if (!MiscUtilities.isURL(basePath)) {
+                    basePath = vfs.constructPath(currentDir, basePath);
+                    try {
+                        baseEntry = vfs._getDirectoryEntry(null, basePath, null);
+                    } catch (IOException ioe) {}
+                }
             }
-            if (newPath.indexOf(File.separatorChar) == -1) {
-                newPath = currentDir + File.separator + newPath;
-            }
-            if (new File(basePath).exists() == false) {
+
+            if (baseEntry == null || baseEntry.type != VFS.DirectoryEntry.FILE) {
                 err += "Base file ";
                 ++errCount;
             }
-            if (new File(newPath).exists() == false) {
+
+            VFS newVFS = VFSManager.getVFSForPath(newPath);
+            VFS.DirectoryEntry newEntry = null;
+
+            try {
+                newEntry = newVFS._getDirectoryEntry(null, newPath, null);
+            } catch (IOException ioe) {}
+
+            if (newEntry == null || newEntry.type != VFS.DirectoryEntry.FILE) {
+                if (!MiscUtilities.isURL(newPath)) {
+                    newPath = vfs.constructPath(currentDir, newPath);
+                    try {
+                        newEntry = vfs._getDirectoryEntry(null, newPath, null);
+                    } catch (IOException ioe) {}
+                }
+            }
+
+            if (newEntry == null || newEntry.type != VFS.DirectoryEntry.FILE) {
                 err += ((errCount == 1) ?
                     "and new file do not exist." : "New file ");
                 ++errCount;
             }
+
             if (errCount > 0) {
                 if (errCount == 1) {
                     err += "does not exist.";
                 }
                 Macros.error(view, err);
                 return;
-            } else {
-                DualDiffDialog.this.dispose();
-                // here is where JDiff gets activated
-                DualDiffDialog.this.view.unsplit();
-                jEdit.openFile(DualDiffDialog.this.view, basePath);
-                DualDiffDialog.this.view.splitVertically();
-                jEdit.openFile(DualDiffDialog.this.view, newPath);
-                DualDiff.toggleFor(DualDiffDialog.this.view);
             }
+
+            DualDiffDialog.this.dispose();
+            // here is where JDiff gets activated
+            DualDiffDialog.this.view.unsplit();
+            jEdit.openFile(DualDiffDialog.this.view, basePath);
+            DualDiffDialog.this.view.splitVertically();
+            jEdit.openFile(DualDiffDialog.this.view, newPath);
+            DualDiff.toggleFor(DualDiffDialog.this.view);
         }
     }
 
@@ -175,11 +207,37 @@ public class DualDiffDialog extends JDialog {
 
         public void actionPerformed(ActionEvent ae) {
             String fieldText = this.field.getText();
-            if (fieldText.indexOf(File.separatorChar) == -1) {
-                fieldText = null;
+
+            String path = null;
+
+            if (fieldText.length() != 0) {
+                VFS fieldVFS = VFSManager.getVFSForPath(fieldText);
+                VFS.DirectoryEntry fieldEntry = null;
+
+                try {
+                    fieldEntry = fieldVFS._getDirectoryEntry(null, fieldText, null);
+                } catch (IOException ioe) {}
+
+                if (fieldEntry == null) {
+                    if (!MiscUtilities.isURL(fieldText)) {
+                        VFS vfs = DualDiffDialog.this.view.getBuffer().getVFS();
+                        String currentDir = vfs.getParentOfPath(
+                            DualDiffDialog.this.view.getBuffer().getPath()
+                        );
+                        fieldText = vfs.constructPath(currentDir, fieldText);
+                        try {
+                            fieldEntry = vfs._getDirectoryEntry(null, fieldText, null);
+                        } catch (IOException ioe) {}
+                    }
+                }
+
+                if (fieldEntry != null) {
+                    path = fieldText;
+                }
             }
+
             String[] result = GUIUtilities.showVFSFileDialog(
-                DualDiffDialog.this.view, fieldText, 0, false
+                DualDiffDialog.this.view, path, 0, false
             );
             if (result != null) {
                 this.field.setText(result[0]);
