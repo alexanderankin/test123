@@ -101,7 +101,7 @@ public class ProjectBuffer
         }
         else
         {
-            System.out.println("ProjectBuffer: Exception at constructor.");
+            System.out.println("Jump!.ProjectBuffer: Exception at init()");
             return false;
         }
         
@@ -132,32 +132,24 @@ public class ProjectBuffer
 //{{{ createJumpFile()
 /**
 * Create .jump file for ProjectBuffer.
-* If you need drop .jump file - @see JumpPlugin
 */
     public boolean createJumpFile(ProjectBuffer pb) 
     {
         try
         {
             pb.PROJECT_CTBUFFER = ctags_bg.getParser().parse(pb.PROJECT_FILES);
-            // if project don't contain any vaild files to parse (for ex. html, xml, etc.) we return false... To avoid creating 
+            // if project don't contain any vaild files to parse (for ex. html, xml, etc.) we returns false.
             if (pb.PROJECT_CTBUFFER == null) throw new Exception();
             pb.ctags_bg.saveBuffer(pb.PROJECT_CTBUFFER , pb.PROJECT_TAGS.toString());
-            //System.out.println("createJumpFile(): .jump created");
+            
             return true;
         }
         catch(Exception e)
         {
-            System.out.println("createJumpFile(): can\'t create .jump");
+            System.out.println("Jump!.ProjectBuffer.createJumpFile() - can\'t create tags file");
             return false;
         }   
     }
-//}}}
-
-//{{{ dropJumpFile()
-//     public void dropJumpFile()
-//     {
-           
-//     }
 //}}}
 
 //{{{ void saveJumpFile()
@@ -185,7 +177,7 @@ public class ProjectBuffer
                 else
                 {
                     if (viewer != null) viewer.setEnabled(true);
-                    System.out.println("jump creqted");
+                    System.out.println("Jump!.ProjectBuffer.loadJumpFile - Tags file created");
                     return true; 
                 }
             }
@@ -200,7 +192,7 @@ public class ProjectBuffer
         catch (Exception e)
         {
             
-            System.out.println("ProjectBuffer: ctags_path_incorrect");
+            System.out.println("Jump!.ProjectBuffer.loadJumpFile - Ctags path incorrect!");
             e.printStackTrace();
             
             ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
@@ -252,23 +244,22 @@ public class ProjectBuffer
             {
                 addFile((String)DELETE_HELPER.get(i));
                 PROJECT_FILES.add(DELETE_HELPER.get(i));
-                System.out.println(DELETE_HELPER.get(i)+" file was added");
+                System.out.println("Jump!.ProjectBuffer.checkFileDeleted() - "+DELETE_HELPER.get(i)+" file was added to project");
             }
         }
         
         // Now drop deleted files from PROJECT_FILES list
         if (tmp_del.size()>0)
         {
-            System.out.println("Files to delete = "+tmp_del.size());
+            //System.out.println("Files to delete = "+tmp_del.size());
             for(int i=0; i<tmp_del.size(); i++)
             {
                 PROJECT_FILES.remove((String)tmp_del.get(i));
-                System.out.println(tmp_del.get(i)+" file was deleted.");
+                System.out.println("Jump!.ProjectBuffer.checkFileDeleted( - )"+tmp_del.get(i)+" file was deleted.");
             }
         }
         
         DELETE_HELPER.clear();
-        
     }
 //}}}
 
@@ -280,7 +271,7 @@ public class ProjectBuffer
     {
         try    
         {
-            Log.log(Log.DEBUG,this,"addFile: - "+f); 
+            //Log.log(Log.DEBUG,this,"addFile: - "+f); 
             if (f == null || f.equals("")) return;
             CTAGS_Buffer new_buff = ctags_bg.getParser().parse(f);
             if (new_buff == null)
