@@ -47,8 +47,13 @@ public class JDiffPlugin
     public static Color insertedLineColor;
     public static Color invalidLineColor;
 
-    public static Color leftCursorColor  = Color.blue;
-    public static Color rightCursorColor  = Color.blue;
+    public static Color changedHunkColor;
+    public static Color deletedHunkColor;
+    public static Color insertedHunkColor;
+    public static Color invalidHunkColor;
+
+    public static Color leftCursorColor;
+    public static Color rightCursorColor;
 
     static {
         propertiesChanged();
@@ -60,9 +65,7 @@ public class JDiffPlugin
     }
 
 
-    public void start() {
-        jEdit.addAction(new toggle_dual_diff());
-    }
+    public void start() {}
 
 
     public void stop() {}
@@ -107,23 +110,48 @@ public class JDiffPlugin
 
 
     public static void propertiesChanged() {
-        changedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.changed-color", "#B2B200")
+        Color changedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.changed-color", "#FFCC66")
         );
-        deletedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.deleted-color", "#B20000")
+        Color deletedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.deleted-color", "#FF6666")
         );
-        insertedLineColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.inserted-color", "#00B200")
+        Color insertedColor = GUIUtilities.parseColor(
+            jEdit.getProperty("jdiff.inserted-color", "#99CC66")
         );
-        invalidLineColor = GUIUtilities.parseColor(
+        Color invalidColor = GUIUtilities.parseColor(
             jEdit.getProperty("jdiff.invalid-color", "#CCCCCC")
         );
+
+        if (jEdit.getBooleanProperty("jdiff.brighter-highlight", true)) {
+            changedLineColor  = changedColor.brighter();
+            deletedLineColor  = deletedColor.brighter();
+            insertedLineColor = insertedColor.brighter();
+            invalidLineColor  = invalidColor.brighter();
+        } else {
+            changedLineColor  = changedColor;
+            deletedLineColor  = deletedColor;
+            insertedLineColor = insertedColor;
+            invalidLineColor  = invalidColor;
+        }
+
+        if (jEdit.getBooleanProperty("jdiff.darker-overview", false)) {
+            changedHunkColor  = changedColor.darker();
+            deletedHunkColor  = deletedColor.darker();
+            insertedHunkColor = insertedColor.darker();
+            invalidHunkColor  = invalidColor.darker();
+        } else {
+            changedHunkColor  = changedColor;
+            deletedHunkColor  = deletedColor;
+            insertedHunkColor = insertedColor;
+            invalidHunkColor  = invalidColor;
+        }
+
         leftCursorColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.left-cursor-color", "#0000FF")
+            jEdit.getProperty("jdiff.left-cursor-color", "#000000")
         );
         rightCursorColor = GUIUtilities.parseColor(
-            jEdit.getProperty("jdiff.right-cursor-color", "#0000FF")
+            jEdit.getProperty("jdiff.right-cursor-color", "#000000")
         );
     }
 

@@ -92,8 +92,8 @@ public class DualDiff {
         int lineCount0 = fileData0.getLines().length;
         int lineCount1 = fileData1.getLines().length;
 
-        this.diffOverview0 = new DiffOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1, false);
-        this.diffOverview1 = new DiffOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1, true);
+        this.diffOverview0 = new DiffLocalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
+        this.diffOverview1 = new DiffGlobalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
 
         this.box0      = new Box(BoxLayout.X_AXIS);
         this.vertical0 = this.findVerticalScrollBar(this.textArea0);
@@ -270,11 +270,23 @@ public class DualDiff {
 
 
     public static void toggle(View view) {
+        EditPane[] editPanes = view.getEditPanes();
+        if (editPanes.length != 2) {
+            Log.log(Log.DEBUG, DualDiff.class, "Splitting The view has to be split in two");
+            if (editPanes.length > 2) {
+                view.unsplit();
+            }
+            view.splitVertically();
+        }
+
         if (DualDiff.isEnabledFor(view)) {
             DualDiff.removeFrom(view);
         } else {
             DualDiff.addTo(view);
         }
+
+        view.invalidate();
+        view.validate();
     }
 
 
@@ -283,6 +295,10 @@ public class DualDiff {
 
         dualDiff.enableHighlighters();
         dualDiff.addHandlers();
+
+        dualDiff.diffOverview0.synchroScrollRight();
+
+        dualDiff.diffOverview1.repaint();
 
         dualDiffs.put(view, dualDiff);
     }
@@ -314,6 +330,24 @@ public class DualDiff {
     {
         private Object source = null;
 
+        private Runnable syncWithRight = new Runnable() {
+            public void run() {
+                DualDiff.this.diffOverview0.repaint();
+                DualDiff.this.diffOverview0.synchroScrollRight();
+
+                DualDiff.this.diffOverview1.repaint();
+            }
+        };
+
+        private Runnable syncWithLeft = new Runnable() {
+            public void run() {
+                DualDiff.this.diffOverview1.repaint();
+                DualDiff.this.diffOverview1.synchroScrollLeft();
+
+                DualDiff.this.diffOverview0.repaint();
+            }
+        };
+
 
         public AdjustHandler() {}
 
@@ -322,18 +356,12 @@ public class DualDiff {
             if (this.source == null) {
                 this.source = e.getSource();
             }
-            Log.log(Log.DEBUG, this, "**** Adjustment " + e);
+            // Log.log(Log.DEBUG, this, "**** Adjustment " + e);
 
             if (this.source == DualDiff.this.vertical0) {
-                DualDiff.this.diffOverview0.repaint();
-                DualDiff.this.diffOverview0.synchroScrollRight();
-
-                DualDiff.this.diffOverview1.repaint();
+                SwingUtilities.invokeLater(this.syncWithRight);
             } else if (this.source == DualDiff.this.vertical1) {
-                DualDiff.this.diffOverview1.repaint();
-                DualDiff.this.diffOverview1.synchroScrollLeft();
-
-                DualDiff.this.diffOverview0.repaint();
+                SwingUtilities.invokeLater(this.syncWithLeft);
             } else {}
         }
 

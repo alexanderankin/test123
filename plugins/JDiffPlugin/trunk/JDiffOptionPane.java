@@ -38,6 +38,8 @@ public class JDiffOptionPane extends AbstractOptionPane
     private JButton   deletedLineColor;
     private JButton   insertedLineColor;
     private JButton   invalidLineColor;
+    private JCheckBox brighterHighlight;
+    private JCheckBox darkerOverview;
     private JButton   leftCursorColor;
     private JButton   rightCursorColor;
 
@@ -54,6 +56,8 @@ public class JDiffOptionPane extends AbstractOptionPane
         this.deletedLineColor  = this.createColorButton("jdiff.deleted-color");
         this.insertedLineColor = this.createColorButton("jdiff.inserted-color");
         this.invalidLineColor  = this.createColorButton("jdiff.invalid-color");
+        this.brighterHighlight = this.createCheckBox("jdiff.brighter-highlight", true);
+        this.darkerOverview    = this.createCheckBox("jdiff.darker-overview", false);
         this.leftCursorColor   = this.createColorButton("jdiff.left-cursor-color");
         this.rightCursorColor  = this.createColorButton("jdiff.right-cursor-color");
 
@@ -78,6 +82,9 @@ public class JDiffOptionPane extends AbstractOptionPane
             jEdit.getProperty("options.jdiff.invalid-color"),
             this.invalidLineColor
         );
+
+        addComponent(this.brighterHighlight);
+        addComponent(this.darkerOverview);
 
         addComponent(
             jEdit.getProperty("options.jdiff.left-cursor-color"),
@@ -106,6 +113,12 @@ public class JDiffOptionPane extends AbstractOptionPane
         );
         jEdit.setProperty("jdiff.invalid-color",
             GUIUtilities.getColorHexString(this.invalidLineColor.getBackground())
+        );
+        jEdit.setBooleanProperty("jdiff.brighter-highlight",
+            this.brighterHighlight.isSelected()
+        );
+        jEdit.setBooleanProperty("jdiff.darker-overview",
+            this.darkerOverview.isSelected()
         );
         jEdit.setProperty("jdiff.left-cursor-color",
             GUIUtilities.getColorHexString(this.leftCursorColor.getBackground())
