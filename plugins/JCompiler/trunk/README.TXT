@@ -48,7 +48,17 @@ INSTALLATION
            set CLASSPATH %CLASSPATH%;<jdkdir>\lib\tools.jar
 
 
-That's it.
+DEVELOPERS
+
+Attention! If you want to compile the source yourself, compile the file
+jcompiler/NoExitSecurityManager2.java with a JDK1.2 javac, _not_ a
+JDK 1.1 javac.
+
+The compiled code run will run on both JDK's nevertheless, because on a
+JDK 1.1, NoExitSecurityManager2 is never invoked.
+
+
+SUPPORT
 
 If you have any questions or suggestions, please inform me: 
 Dirk Moebius <dmoebius@gmx.net>

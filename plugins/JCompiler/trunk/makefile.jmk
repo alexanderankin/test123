@@ -1,12 +1,19 @@
 # jmk makefile for the JCompiler plugin
 # To recompile this plugin, start jmk in the plugin's source directory.
+#
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+# !!!   ATTENTION!   The file jcompiler/NoExitSecurityManager2.java   !!!
+# !!!   can only be compiled on JDK 1.2.                              !!!
+# !!!   The code will run on JDK 1.1, too, because this class is      !!!
+# !!!   only invoked on Java2 VM's.                                   !!!
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 NAME = "JCompiler";
 
 # uncomment the following lines for jikes (make sure that $JIKESPATH
 # lists the following jars: rt.jar, tools.jar, jedit.jar, EditBus.jar):
 #javac     = "jikes" "+E" "-g" "-deprecation";
-#javaflags =  "-g" "-deprecation";  # don't define classpath here --> troubles!
+#javaflags =  "-g" "-dep	recation";  # don't define classpath here --> troubles!
 
 # uncomment the following lines for javac:
 javac     = "javac";
@@ -42,7 +49,6 @@ jarfile: srcs;
             (join pkgs, "/*.class")
             (join pkgs, "/*.gif")
             (join pkgs, "/*.html")
-            (join pkgs, "/*.txt")
             (join pkgs, "/*.props"));
 }
 

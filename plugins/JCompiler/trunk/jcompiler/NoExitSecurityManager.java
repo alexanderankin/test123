@@ -21,33 +21,45 @@
 package jcompiler;
 
 
+/**
+ * <p><b>
+ * !!!!NOTE!!!!  THIS CLASS MUST BE COMPILED WITH JAVA2!!!!
+ * </b><p>
+ */ 
 public class NoExitSecurityManager extends SecurityManager {
 
-    private static NoExitSecurityManager psm = null;
+    private static NoExitSecurityManager sm = null;
     
-    public static NoExitSecurityManager getNoExitSM() {
-        if (psm != null) {
-            return psm;  
-        }
-        
+    public static NoExitSecurityManager getInstance() {
+        if (sm != null) return sm;  
         String vmVersion = System.getProperty("java.specification.version");
-        if (vmVersion != null && !vmVersion.startsWith("1.1")) {
-            psm =  new NoExitSM2(); 
+        if (vmVersion != null && vmVersion.startsWith("1.1")) {
+            sm =  new NoExitSecurityManager(); 
         } else {
-            psm =  new NoExitSecurityManager(); 
+            sm =  new NoExitSecurityManager2(); 
         }
-        return psm;  
+        return sm;  
     }
-
+    
     
     ////////////////////////////////////////////////////////////////////////
 
+    // the default is to allow exits
+    private boolean allowExit = true;
+    
+    
     protected NoExitSecurityManager() {
         super();
     }
 
     public void checkExit(int status) {
-        throw new SecurityException("No exit is allowed");
+        if (!allowExit) {
+            throw new SecurityException("No exit is allowed currently.");
+        }
+    }
+    
+    public void setAllowExit(boolean allowExit) {
+        this.allowExit = allowExit;
     }
 
     public void checkCreateClassLoader() { } 
@@ -80,13 +92,4 @@ public class NoExitSecurityManager extends SecurityManager {
     public void checkMemberAccess(Class clazz, int which) { }
     public void checkSecurityAccess(String provider) { }
 }   
-
-
-/**
- * Security manager for Java2 platform.
- */
-class NoExitSM2 extends NoExitSecurityManager {
-    public void checkPermission(java.security.Permission p) { }
-    public void checkPermission(java.security.Permission p, Object o) { } 
-}
 
