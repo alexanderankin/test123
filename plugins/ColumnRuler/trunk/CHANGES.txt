@@ -1,0 +1,10 @@
+{{{ 0.8
+
+- Background color is now configurable
+
+- There is now a configurable border along the bottom
+
+- You can now have ColumnRuler active by default
+
+}}}
+:folding=explicit:collapseFolds=2:
