@@ -288,7 +288,6 @@ public class XmlParser implements EBComponent
 		}
 	} //}}}
 
-	
 	//{{{ showNotParsedMessage() method
 	private void showNotParsedMessage()
 	{
@@ -330,7 +329,6 @@ public class XmlParser implements EBComponent
 		errorSource.clear();
 
 		// get buffer text
-		this.buffer = buffer;
 		text = buffer.getText(0,buffer.getLength());
 
 		// start parser thread
@@ -396,64 +394,77 @@ public class XmlParser implements EBComponent
 
 		public void run()
 		{
-			parserImpl.parse(XmlParser.this,text);
+			synchronized(XmlParser.this)
+			{
+				if(parserImpl == null)
+					return;
+
+				parserImpl.parse(XmlParser.this,text);
+			}
 
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				public void run()
 				{
-					int errorCount = errorSource.getErrorCount();
-
-					if(showParsingMessage || errorCount != 0)
+					synchronized(XmlParser.this)
 					{
-						if(parserImpl instanceof SwingHTMLParserImpl)
-						{
-							view.getStatus().setMessageAndClear(
-								jEdit.getProperty(
-								"xml-tree.parsing-complete-html"));
-						}
-						else if(maxErrors)
-						{
-							Object[] pp = { new Integer(errorCount) };
-							view.getStatus().setMessageAndClear(jEdit.getProperty(
-								"xml-tree.parsing-complete-errors",pp));
-						}
-						else
-						{
-							Object[] pp = { new Integer(errorCount) };
-							view.getStatus().setMessageAndClear(jEdit.getProperty(
-								"xml-tree.parsing-complete",pp));
-						}
-					}
+						if(thread == null)
+							return;
 
-					model = new DefaultTreeModel(parserImpl.getElementTree());
+						int errorCount = errorSource.getErrorCount();
 
-					view.getEditPane().putClientProperty(
-						XmlPlugin.ELEMENT_TREE_PROPERTY,
-						model);
+						if(showParsingMessage || errorCount != 0)
+						{
+							if(parserImpl instanceof SwingHTMLParserImpl)
+							{
+								view.getStatus().setMessageAndClear(
+									jEdit.getProperty(
+									"xml-tree.parsing-complete-html"));
+							}
+							else if(maxErrors)
+							{
+								Object[] pp = { new Integer(errorCount) };
+								view.getStatus().setMessageAndClear(jEdit.getProperty(
+									"xml-tree.parsing-complete-errors",pp));
+							}
+							else
+							{
+								Object[] pp = { new Integer(errorCount) };
+								view.getStatus().setMessageAndClear(jEdit.getProperty(
+									"xml-tree.parsing-complete",pp));
+							}
+						}
 
-					CompletionInfo completionInfo = parserImpl.getCompletionInfo();
-					if(completionInfo != null)
-					{
+						model = new DefaultTreeModel(parserImpl.getElementTree());
+
 						view.getEditPane().putClientProperty(
-							XmlPlugin.COMPLETION_INFO_PROPERTY,
-							completionInfo);
+							XmlPlugin.ELEMENT_TREE_PROPERTY,
+							model);
+
+						CompletionInfo completionInfo = parserImpl.getCompletionInfo();
+						if(completionInfo != null)
+						{
+							view.getEditPane().putClientProperty(
+								XmlPlugin.COMPLETION_INFO_PROPERTY,
+								completionInfo);
+						}
+
+						view.getEditPane().putClientProperty(
+							XmlPlugin.IDS_PROPERTY,
+							parserImpl.getIDs());
+
+						thread = null;
+
+						// to avoid keeping pointers to stale objects.
+						// we could reuse a single parser instance to preserve
+						// performance, but it eats too much memory, especially
+						// if the file being parsed has an associated DTD.
+						text = null;
+
+						parserImpl = null;
+
+						finish();
 					}
-
-					view.getEditPane().putClientProperty(
-						XmlPlugin.IDS_PROPERTY,
-						parserImpl.getIDs());
-
-					thread = null;
-
-					// to avoid keeping pointers to stale objects.
-					// we could reuse a single parser instance to preserve
-					// performance, but it eats too much memory, especially
-					// if the file being parsed has an associated DTD.
-					text = null;
-					parserImpl = null;
-
-					finish();
 				}
 			});
 		}
@@ -490,7 +501,6 @@ public class XmlParser implements EBComponent
 	{
 		public void focusGained(FocusEvent evt)
 		{
-			View view = GUIUtilities.getView((Component)evt.getSource());
 			Buffer buffer = view.getBuffer();
 
 			if(buffer.getBooleanProperty(

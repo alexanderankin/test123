@@ -1,7 +1,7 @@
 + version 0.8:
 
+- handle ANY content of element
 - element and entity lists for schemas
-- arrow keys and tag completion popups
 - string index out of bounds in findTagStart()
 - see if closing view causes problems
 - update xsd tag list
@@ -15,11 +15,12 @@
   appropriate location
 - documentation: XML catalog format, OASIS catalog format
 - test XMLCatalog support, include an XMLCatalog DTD
+- tag highlight scope bracket in gutter
+- use getContextSensitiveProperty()
 
 + before 1.0:
 
 - 'advanced' option pane for selecting parsers
-- use getContextSensitiveProperty()
 - xalan integration:
   - XPath interpreter and XPath console shell
   - command to run through stylesheet and show output in info viewer

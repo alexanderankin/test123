@@ -69,7 +69,7 @@ public class CatalogManager
 		{
 			if(systemId == null)
 				return null;
-			else if(systemId.startsWith("file:"))
+			else if(MiscUtilities.isURL(systemId))
 				newSystemId = systemId;
 			else if(systemId.startsWith("/"))
 				newSystemId = "file://" + systemId;
