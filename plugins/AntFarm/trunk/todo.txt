@@ -25,3 +25,10 @@ Future additions/fixes:
 - Allow custom Ant classpath to be defined.
 - Open/Close build files that are related to the current session.
 - Add support for properties when executing targets: !my_target -property=value
+- Add actions for easy shortcut binding:
+	- run the current target of the current build file;
+	- choose the target in the current build file and run (making it current) - just small dialog with combobox;
+	- choose the build file from the list.
+
+
+
