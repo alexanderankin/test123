@@ -95,7 +95,7 @@ You can close unused connections at any other itme using the
  <itemizedlist>
 
   <listitem><para><emphasis role="bold">Version 0.5</emphasis>
-   requires jEdit 4.0pre3.</para>
+   requires jEdit 4.0pre8.</para>
 
    <itemizedlist>
     <listitem><para>Fixed problem with FTP servers localized for non-English

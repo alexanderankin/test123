@@ -1,5 +1,8 @@
 /*
  * FtpVFS.java - Ftp VFS
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -37,16 +40,20 @@ import org.gjt.sp.util.Log;
  */
 public class FtpVFS extends VFS
 {
-	public static final String PROTOCOL = "ftp";
+	public static final String FTP_PROTOCOL = "ftp";
+	public static final String SFTP_PROTOCOL = "ftp";
 
 	// same as File VFS permissions key!
 	public static final String PERMISSIONS_PROPERTY = "FileVFS__perms";
 
-	public FtpVFS()
+	public FtpVFS(boolean secure)
 	{
 		super("ftp",READ_CAP | WRITE_CAP | BROWSE_CAP | DELETE_CAP
 			| RENAME_CAP | MKDIR_CAP);
 
+		this.secure = secure;
+
+		//{{{ REFACTOR
 		unixRegexps = new UncheckedRE[jEdit.getIntegerProperty(
 			"vfs.ftp.list.count",-1)];
 		for(int i = 0; i < unixRegexps.length; i++)
@@ -63,6 +70,7 @@ public class FtpVFS extends VFS
 		vmsRegexp = new UncheckedRE(jEdit.getProperty(
 			"vfs.ftp.list.vms"),0,
 			RESearchMatcher.RE_SYNTAX_JEDIT);
+		//}}}
 	}
 
 	public String showBrowseDialog(Object[] session, Component comp)
@@ -79,7 +87,8 @@ public class FtpVFS extends VFS
 		// need trailing / for 'open from ftp server' and 'save to ftp
 		// server' commands to detect that the path is in fact a
 		// directory
-		return PROTOCOL + "://" + newSession.user
+		return (secure ? SFTP_PROTOCOL : FTP_PROTOCOL)
+			+ "://" + newSession.user
 			+ "@" + newSession.host
 			+ (newSession.port == 21
 			? "" : ":" + newSession.port) + "/~/";
@@ -143,7 +152,8 @@ public class FtpVFS extends VFS
 		{
 			return new FtpSession(
 				ConnectionManager.getConnectionInfo(comp,
-				path == null ? null : new FtpAddress(path),false)
+				path == null ? null : new FtpAddress(path),
+				secure)
 			);
 		}
 		catch(IllegalArgumentException ia)
@@ -199,6 +209,7 @@ public class FtpVFS extends VFS
 
 		ConnectionManager.Connection session = getConnection(_session);
 
+		//{{{ REFACTOR
 		FtpAddress address = new FtpAddress(url);
 
 		//Use ASCII mode for dir listing
@@ -245,6 +256,7 @@ public class FtpVFS extends VFS
 
 		directory = new FtpDirectoryEntry[directoryVector.size()];
 		directoryVector.copyInto(directory);
+		//}}}
 		DirectoryCache.setCachedDirectory(url,directory);
 		return directory;
 	}
@@ -262,13 +274,14 @@ public class FtpVFS extends VFS
 			return false;
 
 		if(directoryEntry.type == VFS.DirectoryEntry.FILE)
-			session.client.delete(address.path);
+			session.delete(address.path);
 		else if(directoryEntry.type == VFS.DirectoryEntry.DIRECTORY)
-			session.client.removeDirectory(address.path);
+			session.removeDirectory(address.path);
 
 		DirectoryCache.clearCachedDirectory(getParentOfPath(url));
 		VFSManager.sendVFSUpdate(this,url,true);
 
+		// REFACTOR
 		return session.client.getResponse().isPositiveCompletion();
 	}
 
@@ -289,16 +302,16 @@ public class FtpVFS extends VFS
 		directoryEntry = _getDirectoryEntry(session,to,comp);
 		if(directoryEntry != null && directoryEntry.type == VFS.DirectoryEntry.FILE
 			&& !address.path.equalsIgnoreCase(toPath))
-			session.client.delete(toPath);
+			session.delete(toPath);
 
-		session.client.renameFrom(address.path);
-		session.client.renameTo(toPath);
+		session.rename(address.path,toPath);
 
 		DirectoryCache.clearCachedDirectory(getParentOfPath(from));
 		DirectoryCache.clearCachedDirectory(getParentOfPath(to));
 		VFSManager.sendVFSUpdate(this,from,true);
 		VFSManager.sendVFSUpdate(this,to,true);
 
+		// REFACTOR
 		return session.client.getResponse().isPositiveCompletion();
 	}
 
@@ -309,11 +322,12 @@ public class FtpVFS extends VFS
 
 		FtpAddress address = new FtpAddress(directory);
 
-		session.client.makeDirectory(address.path);
+		session.makeDirectory(address.path);
 
 		DirectoryCache.clearCachedDirectory(getParentOfPath(directory));
 		VFSManager.sendVFSUpdate(this,directory,true);
 
+		// REFACTOR
 		return session.client.getResponse().isPositiveCompletion();
 	}
 
@@ -354,6 +368,7 @@ public class FtpVFS extends VFS
 		// when it instantiates an FtpAddress object.
 		String parentPath = MiscUtilities.getParentOfPath(address.path);
 
+		//{{{ REFACTOR
 		session.client.changeWorkingDirectory(parentPath);
 		//Check for successful response
 		FtpResponse response = session.client.getResponse();
@@ -439,6 +454,7 @@ public class FtpVFS extends VFS
 		}
 		else
 			return null;
+		//}}}
 	}
 
 	public InputStream _createInputStream(Object _session, String path,
@@ -448,9 +464,9 @@ public class FtpVFS extends VFS
 
 		FtpAddress address = new FtpAddress(path);
 
-		_setupSocket(session.client);
-		InputStream in = session.client.retrieveStream(address.path);
+		InputStream in = session.retrieve(address.path);
 
+		// REFACTOR
 		if(in == null)
 			throw new FtpException(session.client.getResponse());
 
@@ -464,9 +480,9 @@ public class FtpVFS extends VFS
 
 		FtpAddress address = new FtpAddress(path);
 
-		_setupSocket(session.client);
-		OutputStream out = session.client.storeStream(address.path);
+		OutputStream out = session.store(address.path);
 
+		// REFACTOR
 		if(out == null)
 			throw new FtpException(session.client.getResponse());
 
@@ -488,17 +504,17 @@ public class FtpVFS extends VFS
 
 		int permissions = buffer.getIntegerProperty(PERMISSIONS_PROPERTY,0);
 		if(permissions != 0)
-		{
-			String cmd = "CHMOD " + Integer.toString(permissions,8)
-				+ " " + address.path;
-			session.client.siteParameters(cmd);
-		}
+			session.chmod(address.path,permissions);
 	}
 
 	// private members
+	private boolean secure;
+
+	//{{{ REFACTOR
 	private UncheckedRE[] unixRegexps;
 	private UncheckedRE dosRegexp;
 	private UncheckedRE vmsRegexp;
+	//}}}
 
 	private static ConnectionManager.Connection getConnection(Object _session)
 		throws IOException
@@ -513,6 +529,7 @@ public class FtpVFS extends VFS
 		return session.connection;
 	}
 
+	// REFACTOR
 	private static void _setupSocket(FtpClient client)
 		throws IOException
 	{
@@ -543,6 +560,7 @@ public class FtpVFS extends VFS
 		{
 			Vector directoryVector = new Vector();
 
+			//{{{ REFACTOR
 			_setupSocket(client);
 			Reader _in = (tryHiddenFiles ? client.list("-a") : client.list());
 
@@ -576,6 +594,7 @@ public class FtpVFS extends VFS
 			}
 
 			return directoryVector;
+			//}}}
 		}
 		finally
 		{
@@ -593,6 +612,7 @@ public class FtpVFS extends VFS
 		}
 	}
 
+	// REFACTOR -- move to FTPConnection
 	// Convert a line of LIST output to an FtpDirectoryEntry
 	private FtpDirectoryEntry lineToDirectoryEntry(String line)
 	{
@@ -626,7 +646,7 @@ public class FtpVFS extends VFS
 						break;
 					}
 
-					permissions = parsePermissions(match.toString(1));
+					permissions = MiscUtilities.parsePermissions(match.toString(1));
 
 					try
 					{
@@ -729,46 +749,5 @@ public class FtpVFS extends VFS
 		entry.name = name.substring(0,index);
 		entry.path = link;
 		entry.deletePath = constructPath(dir,entry.name);
-	}
-
-	private int parsePermissions(String s)
-	{
-		if(s.length() != 9)
-			return 0;
-
-		int permissions = 0;
-
-		if(s.charAt(0) == 'r')
-			permissions += 0400;
-		if(s.charAt(1) == 'w')
-			permissions += 0200;
-		if(s.charAt(2) == 'x')
-			permissions += 0100;
-		else if(s.charAt(2) == 's')
-			permissions += 04100;
-		else if(s.charAt(2) == 'S')
-			permissions += 04000;
-		if(s.charAt(3) == 'r')
-			permissions += 040;
-		if(s.charAt(4) == 'w')
-			permissions += 020;
-		if(s.charAt(5) == 'x')
-			permissions += 010;
-		else if(s.charAt(5) == 's')
-			permissions += 02010;
-		else if(s.charAt(5) == 'S')
-			permissions += 02000;
-		if(s.charAt(6) == 'r')
-			permissions += 04;
-		if(s.charAt(7) == 'w')
-			permissions += 02;
-		if(s.charAt(8) == 'x')
-			permissions += 01;
-		else if(s.charAt(8) == 't')
-			permissions += 01001;
-		else if(s.charAt(8) == 'T')
-			permissions += 01000;
-
-		return permissions;
 	}
 }
