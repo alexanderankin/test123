@@ -168,6 +168,14 @@ public final class Project {
     Log.log(Log.DEBUG, this, "Project loaded in " + (end - start) + "ms");
   }
 
+  /** Unload the data of the project. */
+  public void unload() {
+    classes = null;
+    methods = null;
+    files = null;
+    excludedFolders.clear();
+  }
+
   private Hashtable readObjects(File target) throws FileNotFoundException,
                                                     ClassNotFoundException, IOException {
     ObjectInputStream objIn = null;
