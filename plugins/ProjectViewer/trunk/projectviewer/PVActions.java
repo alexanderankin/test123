@@ -177,8 +177,6 @@ public final class PVActions {
 	 *	@param	base	The minimal base class to accept for the created objects.
 	 */
 	public static Collection listToObjectCollection(String list, PluginJAR jar, Class base) {
-		Log.log(Log.ERROR, PVActions.class, "Loading classes: " + list);
-
 		if (list != null) {
 			ArrayList objs = new ArrayList();
 			StringTokenizer st = new StringTokenizer(list, ",");
@@ -257,7 +255,7 @@ public final class PVActions {
 		if (data == null || data.length == 0) {
 			throw new IllegalArgumentException("Null or empty data!");
 		}
-		
+
 		int octets, pads, idx;
 		byte[] result;
 
