@@ -108,6 +108,8 @@ public final class ProjectViewer extends JPanel
 	private static final ArrayList actions		= new ArrayList();
 	private static boolean DISABLE_EVENTS;
 
+	//{{{ Action Handling
+
 	//{{{ Default toolbar actions (static initializer)
 	static {
 		actions.add(new EditProjectAction());
@@ -130,6 +132,8 @@ public final class ProjectViewer extends JPanel
 		actionsChanged();
 	} //}}}
 
+	//}}}
+
 	//{{{ getViewer(View) method
 	/**
 	 *	Returns the viewer associated with the given view, or null if none
@@ -137,41 +141,6 @@ public final class ProjectViewer extends JPanel
 	 */
 	public static ProjectViewer getViewer(View view) {
 		return (ProjectViewer) viewers.get(view);
-	} //}}}
-
-	//{{{ addProjectViewerListener(ProjectViewerListener, View) method
-	/**
-	 *	Add a listener for the instance of project viewer of the given
-	 *	view. If the given view is null, the listener will be called from
-	 *	all instances.
-	 *
-	 *	<p>Additionally, for listeners that are registered for all views, a
-	 *	ProjectViewerEvent is fired when a different view is selected.</p>
-	 *
-	 *	@param	lstnr	The listener to add.
-	 *	@param	view	The view that the lstnr is attached to, or <code>null</code>
-	 *					if the listener wants to be called from all views.
-	 */
-	public static void addProjectViewerListener(ProjectViewerListener lstnr, View view) {
-		ArrayList lst = (ArrayList) listeners.get(view);
-		if (lst == null) {
-			lst = new ArrayList();
-			listeners.put(view, lst);
-		}
-		lst.add(lstnr);
-	} //}}}
-
-	//{{{ removeProjectViewerListener(ProjectViewerListener, View) method
-	/**
-	 *	Remove the listener from the list of listeners for the given view. As
-	 *	with the {@link #addProjectViewerListener(ProjectViewerListener, View) add}
-	 *	method, <code>view</code> can be <code>null</code>.
-	 */
-	public static void removeProjectViewerListener(ProjectViewerListener lstnr, View view) {
-		ArrayList lst = (ArrayList) listeners.get(view);
-		if (lst != null) {
-			lst.remove(lstnr);
-		}
 	} //}}}
 
 	//{{{ updateProjectCombos() method
@@ -211,6 +180,112 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
+	//{{{ Event Handling
+
+	//{{{ addProjectViewerListener(ProjectViewerListener, View) method
+	/**
+	 *	Add a listener for the instance of project viewer of the given
+	 *	view. If the given view is null, the listener will be called from
+	 *	all instances.
+	 *
+	 *	<p>Additionally, for listeners that are registered for all views, a
+	 *	ProjectViewerEvent is fired when a different view is selected.</p>
+	 *
+	 *	@param	lstnr	The listener to add.
+	 *	@param	view	The view that the lstnr is attached to, or <code>null</code>
+	 *					if the listener wants to be called from all views.
+	 */
+	public static void addProjectViewerListener(ProjectViewerListener lstnr, View view) {
+		ArrayList lst = (ArrayList) listeners.get(view);
+		if (lst == null) {
+			lst = new ArrayList();
+			listeners.put(view, lst);
+		}
+		lst.add(lstnr);
+	} //}}}
+
+	//{{{ removeProjectViewerListener(ProjectViewerListener, View) method
+	/**
+	 *	Remove the listener from the list of listeners for the given view. As
+	 *	with the {@link #addProjectViewerListener(ProjectViewerListener, View) add}
+	 *	method, <code>view</code> can be <code>null</code>.
+	 */
+	public static void removeProjectViewerListener(ProjectViewerListener lstnr, View view) {
+		ArrayList lst = (ArrayList) listeners.get(view);
+		if (lst != null) {
+			lst.remove(lstnr);
+		}
+	} //}}}
+
+	//{{{ fireProjectLoaded(VPTProject) method
+	/**
+	 *	Fires an event for the loading of a project. Notify all the listeners
+	 *	registered for this instance's view and listeners registered for all
+	 *	views.
+	 *
+	 *	<p>If the view provided is null, only the listeners registered for the
+	 *	null View will receive the event.</p>
+	 *
+	 *	@param	p		The activated project.
+	 *	@param	viewer	The viewer that generated the change, or null.
+	 *	@param	v		The view where the change occured, or null.
+	 */
+	public static void fireProjectLoaded(VPTProject p, ProjectViewer viewer, View v) {
+		ProjectViewerEvent evt = new ProjectViewerEvent(viewer, p);
+
+		ArrayList lst;
+		if (v != null) {
+			lst = (ArrayList) listeners.get(v);
+			if (lst != null)
+			for (Iterator i = lst.iterator(); i.hasNext(); ) {
+				((ProjectViewerListener)i.next()).projectLoaded(evt);
+			}
+		}
+
+		lst = (ArrayList) listeners.get(null);
+		if (lst != null)
+		for (Iterator i = lst.iterator(); i.hasNext(); ) {
+			((ProjectViewerListener)i.next()).projectLoaded(evt);
+		}
+
+	} //}}}
+
+	//{{{ fireProjectAdded(VPTProject) method
+	/**
+	 *	Fires a "project added" event. All listeners, regardless of the view, are
+	 *	notified of this event.
+	 */
+	public static void fireProjectAdded(VPTProject p) {
+		HashSet notify = new HashSet();
+		for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
+			notify.addAll((ArrayList)i.next());
+		}
+
+		ProjectViewerEvent evt = new ProjectViewerEvent(null, p);
+		for (Iterator i = notify.iterator(); i.hasNext(); ) {
+			((ProjectViewerListener)i.next()).projectAdded(evt);
+		}
+	} //}}}
+
+	//{{{ fireProjectRemoved(VPTProject) method
+	/**
+	 *	Fires a "project removed" event. All listeners, regardless of the view, are
+	 *	notified of this event.
+	 */
+	public static void fireProjectRemoved(VPTProject p) {
+		HashSet notify = new HashSet();
+		for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
+			notify.addAll((ArrayList)i.next());
+		}
+
+		ProjectViewerEvent evt = new ProjectViewerEvent(null, p);
+		for (Iterator i = notify.iterator(); i.hasNext(); ) {
+			((ProjectViewerListener)i.next()).projectRemoved(evt);
+		}
+	} //}}}
+
+	//}}}
+
 	//{{{ Tree Changes Broadcast Methods
 
 	//{{{ nodeStructureChanged(VPTNode) node
@@ -218,16 +293,17 @@ public final class ProjectViewer extends JPanel
 	 *	Notify all project viewer instances of a change in a node's structure.
 	 */
 	public static void nodeStructureChanged(VPTNode node) {
+		VPTProject p = VPTNode.findProjectFor(node);
 		for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
 			ProjectViewer v = (ProjectViewer) it.next();
-			if (v.folderTree != null) {
+			if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.folderTree.getModel()).nodeStructureChanged(node);
 			}
-			if (v.fileTree != null) {
+			if (v.fileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
 			}
 
-			if (v.workingFileTree != null) {
+			if (v.workingFileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
 			}
 		}
@@ -236,16 +312,17 @@ public final class ProjectViewer extends JPanel
 	//{{{ nodeChanged(VPTNode) node
 	/** Notify all project viewer instances of a change in a node. */
 	public static void nodeChanged(VPTNode node) {
+		VPTProject p = VPTNode.findProjectFor(node);
 		for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
 			ProjectViewer v = (ProjectViewer) it.next();
-			if (v.folderTree != null) {
+			if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
 			}
-			if (v.fileTree != null) {
+			if (v.fileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
 			}
 
-			if (v.workingFileTree != null) {
+			if (v.workingFileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 				((DefaultTreeModel)v.workingFileTree.getModel()).nodeChanged(node);
 			}
 		}
@@ -260,12 +337,13 @@ public final class ProjectViewer extends JPanel
 	public static void insertNodeInto(VPTNode child, VPTNode parent) {
 		int idx = parent.findIndexForChild(child);
 		parent.insert(child, idx);
+		VPTProject p = VPTNode.findProjectFor(child);
 
 		if (config.getShowFoldersTree()) {
 			int[] ind = new int[] { idx };
 			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
-				if (v.folderTree != null) {
+				if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.folderTree.getModel())
 						.nodesWereInserted(parent, ind);
 				}
@@ -273,21 +351,21 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-
 	//{{{ nodeStructureChangedFlat(VPTNode) method
 	/**
 	 *	Notify all "flat trees" in any project viewer instances of a change in
 	 *	a node's structure.
 	 */
 	public static void nodeStructureChangedFlat(VPTNode node) {
+		VPTProject p = VPTNode.findProjectFor(node);
 		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
 			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
-				if (v.fileTree != null) {
+				if (v.fileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.fileTree.getModel()).nodeStructureChanged(node);
 				}
 
-				if (v.workingFileTree != null) {
+				if (v.workingFileTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.workingFileTree.getModel()).nodeStructureChanged(node);
 				}
 			}
@@ -300,6 +378,7 @@ public final class ProjectViewer extends JPanel
 	 *	instances of ProjectViewer.
 	 */
 	public static void removeNodeFromParent(VPTNode child) {
+		VPTProject p = VPTNode.findProjectFor(child);
 		VPTNode parent = (VPTNode) child.getParent();
 		int index = parent.getIndex(child);
 		parent.remove(index);
@@ -309,7 +388,7 @@ public final class ProjectViewer extends JPanel
 			int[] idx = new int[] { index };
 			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
-				if (v.folderTree != null) {
+				if (v.folderTree != null && (v.treeRoot == p || v.treeRoot.isRoot())) {
 					((DefaultTreeModel)v.folderTree.getModel())
 						.nodesWereRemoved(parent, idx, removed);
 				}
@@ -323,15 +402,31 @@ public final class ProjectViewer extends JPanel
 	 *	a node's structure. Then, rebuild the project combo boxes.
 	 */
 	public static void projectRemoved(VPTProject p) {
-		if (config.getShowFilesTree() || config.getShowWorkingFilesTree()) {
+		VPTNode parent = (VPTNode) p.getParent();
+		int index = p.getIndex(p);
+		parent.remove(index);
+
+		if (config.getShowFoldersTree() || config.getShowFilesTree() ||
+				config.getShowWorkingFilesTree()) {
+
+			Object[] removed = new Object[] { p };
+			int[] idx = new int[] { index };
+
 			for (Iterator it = viewerList.iterator(); it.hasNext(); ) {
 				ProjectViewer v = (ProjectViewer) it.next();
-				if (v.fileTree != null) {
-					((VPTFileListModel)v.fileTree.getModel()).removeRef(p);
+				if (v.folderTree != null && v.treeRoot.isRoot()) {
+					((DefaultTreeModel)v.folderTree.getModel())
+						.nodesWereRemoved(parent, idx, removed);
 				}
 
-				if (v.workingFileTree != null) {
-					((VPTWorkingFileListModel)v.workingFileTree.getModel()).removeRef(p);
+				if (v.fileTree != null && v.treeRoot.isRoot()) {
+					((DefaultTreeModel)v.fileTree.getModel())
+						.nodesWereRemoved(parent, idx, removed);
+				}
+
+				if (v.workingFileTree != null && v.treeRoot.isRoot()) {
+					((DefaultTreeModel)v.workingFileTree.getModel())
+						.nodesWereRemoved(parent, idx, removed);
 				}
 				if (p == v.treeRoot) {
 					v.setProject(null);
@@ -339,6 +434,7 @@ public final class ProjectViewer extends JPanel
 			}
 		}
 		updateProjectCombos();
+		fireProjectRemoved(p);
 	} //}}}
 
 	//}}}
@@ -474,29 +570,6 @@ public final class ProjectViewer extends JPanel
 		showTrees();
 		showToolBar(config.getShowToolBar());
 		add(BorderLayout.NORTH, topPane);
-
-	} //}}}
-
-	//{{{ fireProjectLoaded(VPTProject) method
-	/**
-	 *	Fires an event for the loading of a project. Notify all the listeners
-	 *	registered for this instance's view and listeners registered for all
-	 *	views.
-	 */
-	private void fireProjectLoaded(VPTProject p) {
-		ProjectViewerEvent evt = new ProjectViewerEvent(this, p);
-
-		ArrayList lst = (ArrayList) listeners.get(view);
-		if (lst != null)
-		for (Iterator i = lst.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).projectLoaded(evt);
-		}
-
-		lst = (ArrayList) listeners.get(null);
-		if (lst != null)
-		for (Iterator i = lst.iterator(); i.hasNext(); ) {
-			((ProjectViewerListener)i.next()).projectLoaded(evt);
-		}
 
 	} //}}}
 
@@ -653,7 +726,6 @@ public final class ProjectViewer extends JPanel
 		}
 	} //}}}
 
-
 	//}}}
 
 	//{{{ Public Methods
@@ -702,7 +774,6 @@ public final class ProjectViewer extends JPanel
 			return null;
 		}
     } //}}}
-
 
 	//{{{ getCurrentTree() method
 	/** Returns the currently active tree. */
@@ -766,7 +837,7 @@ public final class ProjectViewer extends JPanel
 		}
 
 		dontAsk = null;
-		fireProjectLoaded(p);
+		fireProjectLoaded(p, this, view);
 	} //}}}
 
 	//{{{ getRoot() method
@@ -835,7 +906,6 @@ public final class ProjectViewer extends JPanel
 							(dontAsk == null ||
 								config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
 								!dontAsk.contains(bu.getBuffer().getPath())) &&
-							file.getParent().length() != p.getRootPath().length() &&
 							file.getParent().startsWith(p.getRootPath()));
 
 			// Try to import newly created files to the project
@@ -1092,5 +1162,4 @@ public final class ProjectViewer extends JPanel
 	} //}}}
 
 }
-
 
