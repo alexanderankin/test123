@@ -45,12 +45,6 @@ public class SideKickPlugin extends EBPlugin
 	public static final String PARSE_COUNT = "sidekick.parse-count";
 	//}}}
 
-	//{{{ start() method
-	public void start()
-	{
-		FoldHandler.registerFoldHandler(new SideKickFoldHandler());
-	} //}}}
-
 	//{{{ createOptionPanes() method
 	public void createOptionPanes(OptionsDialog dialog)
 	{
