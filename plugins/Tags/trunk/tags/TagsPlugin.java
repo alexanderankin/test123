@@ -44,7 +44,6 @@ public class TagsPlugin extends EditPlugin {
   public static final String NAME = "tags";
   public static final String MENU = "tags.menu";
   public static final String PROPERTY_PREFIX = "plugin.TagsPlugin.";
-  public static final String OPTION_PREFIX = "options.tags.";
   
   /*+*************************************************************************/
   protected static boolean debug_ = false;
@@ -67,11 +66,6 @@ public class TagsPlugin extends EditPlugin {
   /***************************************************************************/
   public void createOptionPanes(OptionsDialog od) {
     od.addOptionPane(new TagsOptionsPanel());
-  }
-  
-  /***************************************************************************/
-  static public String getOptionString(String property) {
-    return jEdit.getProperty(OPTION_PREFIX + property);
   }
   
  /*****************************************************************************/
