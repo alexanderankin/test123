@@ -25,9 +25,15 @@ import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.MiscUtilities;
 
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.io.VFSManager;
+
+import org.gjt.sp.util.Log;
+
+import gnu.regexp.RE;
+import gnu.regexp.REException;
 
 import projectviewer.config.ProjectViewerConfig;
 //}}}
@@ -42,11 +48,9 @@ import projectviewer.config.ProjectViewerConfig;
 public class ImportSettingsFilter extends ImporterFileFilter {
 
 	//{{{ Private members
-	private HashSet includedExtensions;
-	private HashSet includedFiles;
-	private HashSet excludedDirectories;
-
-	private boolean ignoreCase;
+	private static RE file_positive;
+	private static RE file_negative;
+	private static RE dir_negative;
 	//}}}
 
 	//{{{ getDescription() method
@@ -61,56 +65,57 @@ public class ImportSettingsFilter extends ImporterFileFilter {
 
 	//{{{ accept(File, String) method
 	public boolean accept(File file, String fileName) {
-		if (includedExtensions == null) {
-			includedExtensions = new HashSet();
-			includedFiles = new HashSet();
-			excludedDirectories = new HashSet();
-
+		if (file_positive == null) {
 			ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+			StringTokenizer globs = new StringTokenizer(config.getImportGlobs());
+			StringBuffer fPos = new StringBuffer();
+			StringBuffer fNeg = new StringBuffer();
+			while (globs.hasMoreTokens()) {
+				String token = globs.nextToken();
+				if (token.startsWith("!")) {
+					fNeg.append(MiscUtilities.globToRE(token.substring(1)));
+					fNeg.append("|");
+				} else {
+					fPos.append(MiscUtilities.globToRE(token));
+					fPos.append("|");
+				}
+			}
+			if (fNeg.length() > 0)
+				fNeg.setLength(fNeg.length() - 1);
+			if (fPos.length() > 0)
+				fPos.setLength(fPos.length() - 1);
 
-			copyPropertyIntoSet(config.getImportExts(),includedExtensions);
-			copyPropertyIntoSet(config.getIncludeFiles(),includedFiles);
-			copyPropertyIntoSet(config.getExcludeDirs(),excludedDirectories);
 
-			ignoreCase = (VFSManager.getFileVFS().getCapabilities()
-							& VFS.CASE_INSENSITIVE_CAP) != 0;
+			globs = new StringTokenizer(config.getExcludeDirs());
+			StringBuffer dirs = new StringBuffer();
+			while (globs.hasMoreTokens()) {
+				dirs.append(MiscUtilities.globToRE(globs.nextToken()));
+				dirs.append("|");
+			}
+			if (dirs.length() > 0)
+				dirs.setLength(dirs.length() - 1);
+
+			try {
+				if ((VFSManager.getFileVFS().getCapabilities()
+						& VFS.CASE_INSENSITIVE_CAP) != 0) {
+					file_positive = new RE(fPos.toString(), RE.REG_ICASE);
+					file_negative = new RE(fNeg.toString(), RE.REG_ICASE);
+					dir_negative = new RE(dirs.toString(), RE.REG_ICASE);
+				} else {
+					file_positive = new RE(fPos.toString());
+					file_negative = new RE(fNeg.toString());
+					dir_negative = new RE(dirs.toString());
+				}
+			} catch (REException re) {
+				Log.log(Log.ERROR, this, re);
+			}
 		}
 
 		File child = new File(file, fileName);
 		if (child.isFile()) {
-			if (ignoreCase)
-				fileName = fileName.toLowerCase();
-			if (includedFiles.contains(fileName))
-				return true;
-
-			// check file extension
-			int dotIndex = fileName.lastIndexOf('.');
-			if (dotIndex == -1 || dotIndex == fileName.length() - 1)
-				return false;
-			return includedExtensions.contains(fileName.substring(dotIndex + 1));
+			return file_positive.isMatch(fileName) && !file_negative.isMatch(fileName);
 		} else {
-			return !excludedDirectories.contains(fileName);
-		}
-	} //}}}
-
-	//{{{ copyPropertyIntoSet(String, HashSet) method
-	/**
-	 *	Load the specified list property to the specified set.
-	 *
-	 *	@param  props			Description of Parameter
-	 *	@param  propertyName  Description of Parameter
-	 *	@param  set			Description of Parameter
-	 */
-	private void copyPropertyIntoSet(String property, HashSet set) {
-		if (property == null)
-			return;
-
-		StringTokenizer strtok = new StringTokenizer(property);
-		while (strtok.hasMoreTokens()) {
-			String next = strtok.nextToken();
-			if (ignoreCase)
-				next = next.toLowerCase();
-			set.add(next);
+			return !dir_negative.isMatch(fileName);
 		}
 	} //}}}
 
