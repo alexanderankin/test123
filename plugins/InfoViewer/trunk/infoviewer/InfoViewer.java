@@ -256,6 +256,9 @@ public class InfoViewer
 
                     //Action myaction=new StyledEditorKit.FontSizeAction("new font size", Integer.parseInt(size));
                     //myaction.actionPerformed(null);
+
+                    //HTMLDocument doc = ((HTMLDocument) viewer.getDocument());
+                    //doc.setCharacterAttributes(0, doc.getLength(), newbodyrule, true);
                     
                     /*
                     Log.log(Log.DEBUG, this, "bodyrule.2="+bodyrule.toString());
