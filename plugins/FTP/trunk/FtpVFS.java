@@ -183,7 +183,7 @@ public class FtpVFS extends VFS
 			String line;
 			while((line = in.readLine()) != null)
 			{
-				Log.log(Log.DEBUG,this,"File listing: " + line);
+				Log.log(Log.DEBUG,this,line);
 
 				if(line.startsWith("total"))
 					continue;
@@ -614,8 +614,6 @@ public class FtpVFS extends VFS
 					break;
 				}
 			}
-
-			Log.log(Log.DEBUG,this,"name=" + name + ",size=" + size);
 
 			if(name == null)
 				return null;
