@@ -150,7 +150,17 @@ public class GeneralOptionPane extends SqlOptionPane
     {
       panel.setLayout( new BorderLayout( 10, 10 ) );
       panel.setBorder( createTitledBorder( "sql.options.infoPanel.label" ) );
-      panel.add( new JLabel( jEdit.getProperty( "sql.options.infoPanel.text" ) ) );
+      final JTextArea helpArea = new JTextArea();
+      helpArea.setEditable( false );
+      helpArea.setLineWrap( true );
+      helpArea.setWrapStyleWord( true );
+      helpArea.setFont( new Font("DialogInput", Font.PLAIN, 11) );
+      helpArea.setBackground( UIManager.getColor( "Label.background" ));
+      helpArea.setForeground( UIManager.getColor( "Label.foreground" ));
+      helpArea.setText( jEdit.getProperty( "sql.options.infoPanel.text" ) );
+      helpArea.setRows( 5 );
+      final JScrollPane scrHelpArea = new JScrollPane( helpArea );
+      panel.add( scrHelpArea );
     }
     vbox.add( panel );
     vbox.add( vbox.createVerticalStrut( 5 ) );
