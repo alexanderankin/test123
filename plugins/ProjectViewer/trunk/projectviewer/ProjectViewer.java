@@ -180,14 +180,14 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	 */
 	public JTree getCurrentTree() {
 		switch (tabs.getSelectedIndex()) {
-						case FOLDERS_TAB:
-							return folderTree;
-						case FILES_TAB:
-							return this.fileTree;
-						case WORKING_FILES_TAB:
-							return this.workingFileTree;
-						default:
-							return null;
+                case FOLDERS_TAB:
+                    return folderTree;
+                case FILES_TAB:
+                	return this.fileTree;
+                case WORKING_FILES_TAB:
+                    return this.workingFileTree;
+                default:
+                    return null;
 		}
 	}
 
@@ -255,7 +255,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 	/** Expands all nodes of the current tree. */
 	public void expandAll() {
-		expandAll(getCurrentTree());
+        expandAll(getCurrentTree());
 	}
 
 	/** Expands all nodes of the specified tree.

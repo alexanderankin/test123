@@ -94,17 +94,37 @@ public final class Project implements EBComponent {
 		return root;
 	}
 
+    /**
+     *  Changes the project root, without making any modifications.
+     */
     public void setRoot(ProjectDirectory root) {
-        if (this.root == null) {
-            this.root = root;
-        } else {
-            try {
-                Log.log(Log.DEBUG, this, "Changing project root to " + root.getPath());
-                throw new Exception("Call stack is:");
-            } catch (Exception e) {
-                Log.log(Log.DEBUG, this, e);
+        this.root = root;
+    }
+    
+    /**
+     *  Changes the project root, adjusting the current loaded configuration
+     *  to meet the new root.
+     */
+    public void changeRoot(ProjectDirectory newRoot) {
+        // First case: newRoot is parent of oldRoot
+        if (root.getPath().startsWith(newRoot.getPath()) &&
+                root.getPath().length() > newRoot.getPath().length()) {
+            File parent = root.toFile().getParentFile();
+            File fnewRoot = newRoot.toFile();
+            
+            while (!parent.getAbsolutePath().equals(fnewRoot.getAbsolutePath())) {
+                ProjectDirectory tmp = new ProjectDirectory(parent.getAbsolutePath());
+                tmp.addSubDirectory(root);
+                root = tmp;
+                parent = parent.getParentFile();
             }
-            this.root.setPath(root.getPath());
+            
+            newRoot.addSubDirectory(root);
+            root = newRoot;
+        }
+        // Else: newRoot is child of oldRoot; may lose data!
+        else {
+            /* @todo: implement this kind of root change; or don't allow it at all */
         }
     }
     

@@ -74,6 +74,7 @@ public final class ProjectDirectory {
     
     public void setPath(String aPath) {
         this.fullPath = aPath;
+        this.name = null;
     }
 
 	/** Returns the number of files in the directory. This method differs from
@@ -415,6 +416,11 @@ public final class ProjectDirectory {
 		return dir;
 	}
 
+	void addSubDirectory(ProjectDirectory aSubDirectory) {
+		subdirectories.add(aSubDirectory);
+		Collections.sort(subdirectories, getComparator());
+	}
+
 	/** Returns <code>true</code> if the given <code>java.io.File</code> is
 	 *  equivalent to this project directory.
 	 *
@@ -425,6 +431,54 @@ public final class ProjectDirectory {
 	boolean equalsFile(File aDir) {
 		return fullPath.equals(aDir.getAbsolutePath());
 	}
+    
+    /**
+     *  Changes the path of this directory, modifying all the underlying
+     *  files and directories.
+     *
+     *  @return If the renaming was succesful.
+     */
+    public boolean changeName(String newName) {
+        File oldFile = toFile();
+        int count = fullPath.length(); 
+        String newPath = fullPath.substring(0, fullPath.lastIndexOf(File.separator));
+        newPath = new StringBuffer(newPath).append(File.separator)
+                   .append(newName).toString();
+                   
+        File newFile = new File(newPath);
+        boolean res = oldFile.renameTo(newFile);
+        if (res) {
+            setPath(newPath);
+            changePaths(count,fullPath);
+        }
+        return res;
+    }
+    
+    /**
+     *  Modifies the paths of the dir's files and subdirs. This is done by
+     *  removing "count" characters from the beginning of the current path
+     *  and putting "newRadical" in its place.
+     */
+    void changePaths(int count, String newRadical) {
+        for (Iterator it = files(); it.hasNext(); ) {
+            ProjectFile f = (ProjectFile) it.next();
+            String path = f.getPath();
+            path = path.substring(count, path.length());
+            path = new StringBuffer(newRadical).append(path).toString();
+            f.setPath(path);
+        }
+        
+        for (Iterator it = subdirectories(); it.hasNext(); ) {
+            ProjectDirectory dir = (ProjectDirectory) it.next();
+            String path = dir.getPath();
+            path = path.substring(count, path.length());
+            path = new StringBuffer(newRadical).append(path).toString();
+            dir.setPath(path);
+            dir.changePaths(count, newRadical);
+        }
+    }
+    
+    //--------------- Inner Classes
 
 	/** A class for comparing directories.
 	 *
