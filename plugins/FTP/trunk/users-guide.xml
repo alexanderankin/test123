@@ -79,6 +79,18 @@ To force jEdit to forget all passwords while it is running, use the
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.3.3</emphasis>
+   requires jEdit 4.0pre3.</para>
+
+   <itemizedlist>
+    <listitem><para>
+     Now uses jEdit 4.0pre3 I/O error reporting API.
+    </para></listitem>
+
+ </itemizedlist>
+
+ <itemizedlist>
+
   <listitem><para><emphasis role="bold">Version 0.3.2</emphasis>
    requires jEdit 4.0pre2.</para>
 

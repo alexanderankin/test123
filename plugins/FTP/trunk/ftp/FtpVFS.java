@@ -148,7 +148,7 @@ public class FtpVFS extends VFS
 		FtpSession session = (FtpSession)_session;
 		FtpAddress address = new FtpAddress(path);
 
-		_getFtpClient(session,address,false,comp);
+		_getFtpClient(session,address,true,comp);
 
 		if(session.home != null && address.path.startsWith("/~"))
 		{
@@ -195,8 +195,8 @@ public class FtpVFS extends VFS
 				&& response.getReturnCode() != null
 				&& response.getReturnCode().charAt(0) != '2')
 			{
-				String[] args = { url, response.toString() };
-				VFSManager.error(comp,"vfs.ftp.list-error",args);
+				String[] args = { response.toString() };
+				VFSManager.error(comp,url,"ftperror.list-error",args);
 				return null;
 			}
 
@@ -205,8 +205,8 @@ public class FtpVFS extends VFS
 
 			if(_in == null)
 			{
-				String[] args = { url, client.getResponse().toString() };
-				VFSManager.error(comp,"vfs.ftp.list-error",args);
+				String[] args = { client.getResponse().toString() };
+				VFSManager.error(comp,url,"ftperror.list-error",args);
 				return null;
 			}
 
@@ -384,8 +384,8 @@ public class FtpVFS extends VFS
 			&& response.getReturnCode() != null
 			&& response.getReturnCode().charAt(0) != '2')
 		{
-			String[] args = { path, response.toString() };
-			VFSManager.error(comp,"vfs.ftp.list-error",args);
+			String[] args = { response.toString() };
+			VFSManager.error(comp,path,"ftperror.list-error",args);
 			return null;
 		}
 
@@ -476,9 +476,8 @@ public class FtpVFS extends VFS
 		{
 			if(!ignoreErrors)
 			{
-				String[] args = { address.host, address.port, address.path,
-					client.getResponse().toString() };
-				VFSManager.error(comp,"vfs.ftp.download-error",args);
+				String[] args = { client.getResponse().toString() };
+				VFSManager.error(comp,path,"ftperror.download-error",args);
 			}
 		}
 
@@ -500,9 +499,8 @@ public class FtpVFS extends VFS
 
 		if(out == null)
 		{
-			String[] args = { address.host, address.port, address.path,
-				client.getResponse().toString() };
-			VFSManager.error(comp,"vfs.ftp.upload-error",args);
+			String[] args = { client.getResponse().toString() };
+			VFSManager.error(comp,path,"ftperror.upload-error",args);
 		}
 
 		// commented out for now, because updating VFS browsers
@@ -620,6 +618,8 @@ public class FtpVFS extends VFS
 		String user, String password, boolean ignoreErrors,
 		Component comp)
 	{
+		String url = "ftp://" + user + "@" + host + ":" + port;
+
 		FtpClient client = new FtpClient();
 
 		try
@@ -630,8 +630,9 @@ public class FtpVFS extends VFS
 			{
 				if(!ignoreErrors)
 				{
-					String[] args = { host,port, client.getResponse().toString() };
-					VFSManager.error(comp,"vfs.ftp.connect-error",args);
+					String[] args = { client.getResponse().toString() };
+					VFSManager.error(comp,url,
+						"ftperror.connect-error",args);
 				}
 				return null;
 			}
@@ -646,9 +647,9 @@ public class FtpVFS extends VFS
 				{
 					if(!ignoreErrors)
 					{
-						String[] args = { host, port, user,
-							client.getResponse().toString() };
-						VFSManager.error(comp,"vfs.ftp.login-error",args);
+						String[] args = { client.getResponse().toString() };
+						VFSManager.error(comp,url,
+							"ftperror.login-error",args);
 					}
 					client.logout();
 					return null;
@@ -663,9 +664,8 @@ public class FtpVFS extends VFS
 			{
 				if(!ignoreErrors)
 				{
-					String[] args = { host, port, user,
-						client.getResponse().toString() };
-					VFSManager.error(comp,"vfs.ftp.login-error",args);
+					String[] args = { client.getResponse().toString() };
+					VFSManager.error(comp,url,"vfs.ftp.login-error",args);
 				}
 				client.logout();
 				return null;
@@ -675,25 +675,24 @@ public class FtpVFS extends VFS
 		}
 		catch(SocketException se)
 		{
+			Log.log(Log.ERROR,FtpVFS.class,se);
+
 			if(ignoreErrors)
 				return null;
 
-			String response;
-			if(client != null && client.getResponse() != null)
-				response = String.valueOf(client.getResponse());
-			else
-				response = "";
-			String[] args = { host, port, response };
-			VFSManager.error(comp,"vfs.ftp.connect-error",args);
+			String[] args = { se.toString() };
+			VFSManager.error(comp,url,"ftperror.connect-error",args);
 			return null;
 		}
 		catch(IOException io)
 		{
+			Log.log(Log.ERROR,FtpVFS.class,io);
+
 			if(ignoreErrors)
 				return null;
 
-			String[] args = { io.getMessage() };
-			VFSManager.error(comp,"ioerror",args);
+			String[] args = { io.toString() };
+			VFSManager.error(comp,url,"ioerror",args);
 			return null;
 		}
 	}
