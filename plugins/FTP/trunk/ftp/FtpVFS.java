@@ -1,6 +1,6 @@
 /*
  * FtpVFS.java - Ftp VFS
- * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (C) 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -48,8 +48,8 @@ public class FtpVFS extends VFS
 	{
 		super("ftp");
 
-		regexps = new RE[Integer.parseInt(jEdit.getProperty(
-			"vfs.ftp.list.count"))];
+		regexps = new RE[jEdit.getIntegerProperty(
+			"vfs.ftp.list.count",-1)];
 		for(int i = 0; i < regexps.length; i++)
 		{
 			try
@@ -84,6 +84,18 @@ public class FtpVFS extends VFS
 			+ "@" + newSession.host
 			+ (newSession.port == null
 			? "" : ":" + newSession.port) + "/~";
+	}
+
+	public String getFileName(String path)
+	{
+		FtpAddress address = new FtpAddress(path);
+		if(address.path.equals("/") || address.path.length() == 1)
+		{
+			address.path = "";
+			return address.toString();
+		}
+		else
+			return super.getFileName(address.path);
 	}
 
 	public String getParentOfPath(String path)
@@ -156,6 +168,11 @@ public class FtpVFS extends VFS
 				address.path = session.home + address.path.substring(2);
 			else
 				address.path = session.home + '/' + address.path.substring(2);
+			if(address.path.endsWith("/") && address.path.length() != 1)
+			{
+				address.path = address.path.substring(0,
+					address.path.length() - 1);
+			}
 		}
 
 		return address.toString();
@@ -698,7 +715,7 @@ public class FtpVFS extends VFS
 	}
 
 	// Convert a line of LIST output to an FtpDirectoryEntry
-	private FtpDirectoryEntry lineToDirectoryEntry(String line)
+	public FtpDirectoryEntry lineToDirectoryEntry(String line)
 	{
 		try
 		{
@@ -711,8 +728,14 @@ public class FtpVFS extends VFS
 			case 'l':
 				type = FtpDirectoryEntry.LINK;
 				break;
-			default:
+			case '-':
 				type = VFS.DirectoryEntry.FILE;
+			default:
+				// MS FTP server
+				if(line.indexOf("<DIR>") != -1)
+					type = VFS.DirectoryEntry.DIRECTORY;
+				else
+					type = VFS.DirectoryEntry.FILE;
 				break;
 			}
 
@@ -736,7 +759,17 @@ public class FtpVFS extends VFS
 					}
 					catch(NumberFormatException nf)
 					{
-						continue;
+						if(type == VFS.DirectoryEntry.DIRECTORY)
+						{
+							// MS FTP server does not
+							// report sizes for directories
+							length = 0L;
+						}
+						else
+						{
+							// bad?
+							continue;
+						}
 					}
 
 					name = match.toString(3);
@@ -799,6 +832,9 @@ public class FtpVFS extends VFS
 
 	private int parsePermissions(String s)
 	{
+		if(s.length() != 9)
+			return 0;
+
 		int permissions = 0;
 
 		if(s.charAt(0) == 'r')

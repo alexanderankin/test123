@@ -20,7 +20,7 @@
        accordingly.
 -->
 
-<project name="errorlist" default="dist" basedir=".">
+<project name="ftp" default="dist" basedir=".">
 
 	<property name="jar.name"  value="FTP.jar"/>
 
