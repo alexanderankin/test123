@@ -15,8 +15,8 @@ public class CTAGS_Parser implements Serializable
     * SET "pattern" or "numbers" (--excmd=pattern)
     */
     public String excmd = "pattern";
-
     private String[] ctags_args;
+    
     //**************************************************************************
     // CONSTRUCTOR(S)
     //**************************************************************************
@@ -58,7 +58,18 @@ public class CTAGS_Parser implements Serializable
     //**************************************************************************
     // PUBLIC
     //**************************************************************************
-
+    
+    // public void setSort(boolean s)
+    // {
+    //     this.sort = s;    
+    // }
+    
+    // public boolean isSorted()
+    // {
+    //     return this.sort;   
+    // }
+    
+    
     /**
     * Parse file and return new CTAGS_Buffer
     */
