@@ -122,6 +122,8 @@ public abstract class NodeHandler {
 				out.write("&lt;");
 			} else if (value.charAt(i) == '>') {
 				out.write("&gt;");
+			} else if (value.charAt(i) == '&') {
+				out.write("&amp;");
 			} else {
 				out.write(value.charAt(i));
 			}
