@@ -21,6 +21,7 @@
 package templates;
 
 import org.gjt.sp.jedit.BeanShellAction;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 /**
  * This class is a specialized version of BeanShellAction for use with the
@@ -29,34 +30,45 @@ import org.gjt.sp.util.Log;
  */
 public class TemplateAction extends BeanShellAction
 {
-	private static String actionLabel = "Templates.process-template";
+	// private static String actionLabel = "Templates.process-template";
 	private static String code1 = "templates.TemplatesPlugin.processTemplate(\"";
 	private static String code2 = "\", textArea);";
+	private static int serialNum = 0;
 
 	//Constructors
-	public TemplateAction(String label, String filepath) {
-		super(actionLabel,
+	public TemplateAction(String actionName, String templateName, String filepath) {
+		super(actionName,
 				code1 + filepath.replace('\\','/') + code2,
 				null,
 				false,
+				false,
 				false);
+		jEdit.setTemporaryProperty("action " + actionName + ".label", templateName);
 	}
 	
 	public TemplateAction(TemplateFile file) {
-		this(file.getLabel(), file.getPath());
+		this(TemplateAction.getUniqueActionName(), file.getLabel(), file.getPath());
+	}
+	
+	public static synchronized final String getUniqueActionName() {
+		return "process-template-" + Integer.toString(serialNum++);
 	}
 	
 	/**
 	 * Over-ride EditAction.getLabel() which requires a property
 	 */
-	public String getLabel() {
+	/* public String getLabel() {
 		return actionLabel;
 	}
+	*/
 
 }
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.2  2003/05/23 17:07:23  sjakob
+	 * Update Templates plugin for API changes in jEdit 4.2pre1.
+	 *
 	 * Revision 1.1  2002/04/30 19:26:10  sjakob
 	 * Integrated Calvin Yu's Velocity plugin into Templates to support dynamic templates.
 	 *
