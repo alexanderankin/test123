@@ -42,7 +42,7 @@ public JumpList(View parent, Object[] list, ListModel model,
         JPanel pane = new JPanel();
         pane.setLayout(new BorderLayout());
 
-        Font font = new Font("Monospaced", Font.PLAIN, 11);
+        Font font = jEdit.getFontProperty("jump.list.font", new Font("Monospaced", Font.PLAIN, 11));
 
         JLabel label = new JLabel(title);
         label.setFont(font);
