@@ -72,6 +72,7 @@
 			<fileset dir="${src.dir}">
 				<include name="actions.xml"/>
 				<include name="dockables.xml"/>
+				<include name="sevices.xml"/>
 				<include name="**/*.props"/>
 				<include name="**/*.html"/>
 			</fileset>
