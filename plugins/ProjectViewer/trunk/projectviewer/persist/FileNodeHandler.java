@@ -41,6 +41,7 @@ public class FileNodeHandler extends NodeHandler {
 
 	private static final String NODE_NAME = "file";
 	private static final String PATH_ATTR = "path";
+	private static final String NAME_ATTR = "name";
 
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
@@ -84,6 +85,9 @@ public class FileNodeHandler extends NodeHandler {
 			return null;
 		}
 		VPTFile vf = new VPTFile(f);
+		if (attrs.get(NAME_ATTR) != null) {
+			vf.setName((String)attrs.get(NAME_ATTR));
+		}
 		project.registerFilePath(vf);
 		return vf;
 	}
@@ -93,7 +97,11 @@ public class FileNodeHandler extends NodeHandler {
 	 */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
 		startElement(out);
-		writeAttr(PATH_ATTR, xlatePath(((VPTFile)node).getFile().getAbsolutePath()), out);
+		VPTFile file = (VPTFile) node;
+		if (!file.getName().equals(file.getFile().getName())) {
+			writeAttr(NAME_ATTR, file.getName(), out);
+		}
+		writeAttr(PATH_ATTR, xlatePath(file.getFile().getAbsolutePath()), out);
 	}
 }
 

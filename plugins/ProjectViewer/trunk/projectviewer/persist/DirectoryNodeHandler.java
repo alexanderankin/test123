@@ -40,6 +40,7 @@ public class DirectoryNodeHandler extends NodeHandler {
 
 	private static final String NODE_NAME = "directory";
 	private static final String PATH_ATTR = "path";
+	private static final String NAME_ATTR = "name";
 
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
@@ -77,7 +78,11 @@ public class DirectoryNodeHandler extends NodeHandler {
 	 *	list.
 	 */
 	public VPTNode createNode(Map attrs, VPTProject project) {
-		return new VPTDirectory(new File((String)attrs.get(PATH_ATTR)));
+		VPTDirectory dir = new VPTDirectory(new File((String)attrs.get(PATH_ATTR)));
+		if (attrs.get(NAME_ATTR) != null) {
+			dir.setName((String)attrs.get(NAME_ATTR));
+		}
+		return dir;
 	}
 
 	/**
@@ -85,7 +90,12 @@ public class DirectoryNodeHandler extends NodeHandler {
 	 */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
 		startElement(out);
-		writeAttr(PATH_ATTR, xlatePath(((VPTDirectory)node).getFile().getAbsolutePath()), out);
+		VPTDirectory dir = (VPTDirectory) node;
+		if (!dir.getName().equals(dir.getFile().getName())) {
+			writeAttr(NAME_ATTR, dir.getName(), out);
+		}
+		writeAttr(PATH_ATTR, xlatePath(dir.getFile().getAbsolutePath()), out);
 	}
+
 }
 
