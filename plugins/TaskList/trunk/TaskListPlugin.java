@@ -1,3 +1,5 @@
+// TODO: line 1
+
 /*
  * TaskListPlugin.java - TaskList plugin
  * Copyright (C) 2001 Oliver Rutherfurd
@@ -105,7 +107,7 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public void createMenuItems(Vector menuItems)
 	{
-		Log.log(Log.DEBUG, TaskListPlugin.class, "createMenuItems() called.");
+//		Log.log(Log.DEBUG, TaskListPlugin.class, "createMenuItems() called.");
 		menuItems.addElement(GUIUtilities.loadMenu("tasklist.menu"));
 	}
 
@@ -114,7 +116,7 @@ public class TaskListPlugin extends EBPlugin
 	 */
 	public void start()
 	{
-		Log.log(Log.DEBUG, TaskListPlugin.class, "start() called.");
+//		Log.log(Log.DEBUG, TaskListPlugin.class, "start() called.");
 		propertiesChanged();
 	}
 
@@ -186,10 +188,11 @@ public class TaskListPlugin extends EBPlugin
 			EditPaneUpdate epu = (EditPaneUpdate)message;
 			if(epu.getWhat() == EditPaneUpdate.CREATED)
 			{
-				TaskHighlight highlight = new TaskHighlight();
-				highlights.put(epu.getEditPane(), highlight);
-				epu.getEditPane().getTextArea().getPainter()
-					.addCustomHighlight(highlight);
+				EditPane editPane = epu.getEditPane();
+				JEditTextArea textArea = editPane.getTextArea();
+				TaskHighlight highlight = new TaskHighlight(textArea);
+				highlights.put(editPane, highlight);
+				textArea.getPainter().addExtension(highlight);
 			}
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 			{
@@ -260,8 +263,8 @@ public class TaskListPlugin extends EBPlugin
 			i++;
 		}
 
-		Log.log(Log.DEBUG, TaskListPlugin.class,
-			"starting class list plugin");//##
+//		Log.log(Log.DEBUG, TaskListPlugin.class,
+//			"starting class list plugin");//##
 	}
 
 	/**
@@ -402,20 +405,17 @@ public class TaskListPlugin extends EBPlugin
 	public synchronized static void parseBuffer(Buffer buffer)
 	{
 		// DEBUG: starting method
-		Log.log(Log.DEBUG, TaskListPlugin.class,
-			"TaskListPlugin.parseBuffer('" + buffer.getName() + "');");//##
+//		Log.log(Log.DEBUG, TaskListPlugin.class,
+//			"TaskListPlugin.parseBuffer('" + buffer.getName() + "');");//##
 
 		TaskListPlugin.clearTasks(buffer);
 
-		Element map = buffer.getDefaultRootElement();
 		int firstLine = 0;
-		int lastLine = map.getElementCount();
+		int lastLine = buffer.getLineCount();
 		for(int lineNum = firstLine; lineNum < lastLine; lineNum++)
 		{
-			Element line = map.getElement(lineNum);
-			int lineStart = line.getStartOffset();
-			int lineEnd = line.getEndOffset();
-			int lineLen = lineEnd - lineStart - 1;
+			int lineStart = buffer.getLineStartOffset(lineNum);
+			int lineLen = buffer.getLineLength(lineNum);
 
 			Token token = buffer.markTokens(lineNum).getFirstToken();
 			int tokenStart = lineStart;
@@ -426,6 +426,8 @@ public class TaskListPlugin extends EBPlugin
 				{
 					try
 					{
+//						Log.log(Log.DEBUG,TaskListPlugin.class,"Comment token on line "
+//							+ String.valueOf(lineNum));
 						String text = buffer.getText(tokenStart, token.length);
 
 						// NOTE: might want to have task types in an array
@@ -435,6 +437,8 @@ public class TaskListPlugin extends EBPlugin
 							Task task = taskType.extractTask(buffer, text, lineNum, tokenStart - lineStart);
 							if(task != null)
 							{
+//								Log.log(Log.DEBUG,TaskListPlugin.class,
+//									"Parsed task found at line " + String.valueOf(lineNum));
 								TaskListPlugin.addTask(task);
 								break;
 							}
@@ -463,8 +467,8 @@ public class TaskListPlugin extends EBPlugin
 		if(bufferMap.get(buffer) == null)
 			bufferMap.put(buffer, new Hashtable());
 
-		Log.log(Log.DEBUG, TaskListPlugin.class,
-			"TaskListPlugin.parseBuffer(...) DONE");//##
+//		Log.log(Log.DEBUG, TaskListPlugin.class,
+//			"TaskListPlugin.parseBuffer(...) DONE");//##
 
 		// remove 'buffer' from parse queue
 		parseRequests.remove(buffer);

@@ -236,19 +236,19 @@ public class TaskListPopup extends JPopupMenu
 								if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
 								{
 									int startTask = searchStart + token.length;
-									Log.log(Log.DEBUG, TaskListPopup.class,
-										"Delete task: getting text at offset "
-										+ String.valueOf(searchStart)
-										+ " to "
-										+ String.valueOf(searchEnd));
+//									Log.log(Log.DEBUG, TaskListPopup.class,
+//										"Delete task: getting text at offset "
+//										+ String.valueOf(searchStart)
+//										+ " to "
+//										+ String.valueOf(searchEnd));
 									buffer.getText(searchStart, searchEnd - searchStart, testSegment);
-									Log.log(Log.DEBUG, TaskListPopup.class,
-										"segment is: " + testSegment.toString());
+//									Log.log(Log.DEBUG, TaskListPopup.class,
+//										"segment is: " + testSegment.toString());
 									int taskLength = task.getText().length();
 									String testString = new String(testSegment.array,
 										testSegment.offset + token.length - taskLength, taskLength);
-									Log.log(Log.DEBUG, TaskListPopup.class, "comparing \""
-										+ testString + "\" to \"" + task.getText() + "\"");
+//									Log.log(Log.DEBUG, TaskListPopup.class, "comparing \""
+//										+ testString + "\" to \"" + task.getText() + "\"");
 									if(task.getText().equals(testString))
 									{
 										SearchAndReplace.setSearchString(testSegment.toString().trim());

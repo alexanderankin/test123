@@ -28,16 +28,29 @@ import org.gjt.sp.jedit.*;
 
 import org.gjt.sp.util.Log;
 
+import java.util.Enumeration;
 import java.util.Hashtable;
 import javax.swing.text.Segment;
 
 /**
- * A class implementing jEdit's TextAreaHighlight interface
+ * A class extending jEdit's TextAreaExtension class
  * that, when enabled, draws a wavy line underscoring a task item
  * appearing in the text of a buffer.
  */
-public class TaskHighlight implements TextAreaHighlight
+public class TaskHighlight extends TextAreaExtension
 {
+	/**
+	 * Constructs a TextHighlight object
+	 * @param textArea The text area
+	 */
+	public TaskHighlight(JEditTextArea textArea)
+	{
+		super();
+		this.textArea = textArea;
+		this.highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
+		this.seg = new Segment();
+		this.point = new Point();
+	}
 
 	/**
 	 * Returns whether highlighting of task items is currently enabled.
@@ -62,96 +75,84 @@ public class TaskHighlight implements TextAreaHighlight
 		highlightEnabled = enabled;
 	}
 
-	/**
-	 * Called by the application after the highlight painter has been added.
-	 * @param textArea The text area
-	 * @param next The painter this one should delegate to
-	 */
-	public void init(JEditTextArea textArea, TextAreaHighlight next)
-	{
-		this.textArea = textArea;
-		this.next = next;
-		this.highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
-		this.seg = new Segment();
-	}
+/*
+new methods
+paintValidLine(Graphics2D gfx, int physicalLine, int start, int end, int y)
 
+paintInvalidLine(Graphics2D gfx, int screenLine, int y)
+
+getToolTipText(int x, int y)
+*/
 	/**
-	 * Paints the highlight (if enabled) and delgates further
-	 * highlighting to the next highlight painter.
+	 * Called by the text area to paint a highlight on a task line
+	 * (when highlighting is enabled)
 	 * @param gfx The graphics context
-	 * @param line The virtual line number
-	 * @param y The y co-ordinate of the line
+	 * @param screenLine The screen line number
+	 * @param physicalLine The physical line number
+	 * @param start The offset where the screen line begins, from the start of the buffer
+	 * @param end The offset where the screen line ends, from the start of the buffer
+	 * @param y The y co-ordinate of the top of the line's bounding box
 	 */
-	public void paintHighlight(Graphics gfx, int line, int y)
+	public void paintValidLine(Graphics2D gfx, int screenLine,
+    	                       int physicalLine, int start, int end, int y)
 	{
-		if(highlightEnabled)
+//		Log.log(Log.DEBUG,this,"paintValidLine() for line " +
+//			String.valueOf(physicalLine));
+		Buffer buffer = textArea.getBuffer();
+		if(!highlightEnabled || !buffer.isLoaded() ||
+			physicalLine >= buffer.getLineCount())
 		{
-			int lineCount = textArea.getVirtualLineCount();
-			Buffer buffer = textArea.getBuffer();
-			if(line >= lineCount || !buffer.isLoaded())
-				return;
+			return;
+		}
+		Hashtable taskMap =
+			TaskListPlugin.requestTasksForBuffer(buffer);
 
-			Hashtable taskMap =
-				TaskListPlugin.requestTasksForBuffer(buffer);
-
-			int physicalLine = buffer.virtualToPhysical(line);
-
-			if(taskMap != null)
+		if(taskMap != null)
+		{
+			Task task = null;
+			Integer _line = new Integer(physicalLine);
+			if(!buffer.isDirty())
 			{
-				Task task;
-				Integer _line = new Integer(physicalLine);
-				if(!buffer.IsDirty())
+				task =  (Task)taskMap.get(_line);
+			}
+			else
+			{
+				Enumeration enum = taskMap.elements();
+				while(enum.hasMoreElements())
 				{
-					task =  (Task)taskMap.get(_line);
-				}
-				else
-				{
-					Enumeration enum = taskMap.elements();
-					while(enum.hasMoreElement())
+					Task _task = (Task)enum.nextElement();
+					if(_task.getLineNumber() == _line.intValue())
 					{
-						Task _task = (Task)enum.nextElement();
-						if(_task.getLineNumber() == _line.intValue())
-						{
-							task = _task;
-							break;
-						}
+						task = _task;
+						break;
 					}
 				}
-				if(task != null)
-				{
-					underlineTask(task, gfx, physicalLine, y);
-				}
+			}
+			if(task != null)
+			{
+//				Log.log(Log.DEBUG,this,"Found task where physical line = "
+//					+ String.valueOf(physicalLine));
+				FontMetrics fm = textArea.getPainter().getFontMetrics();
+				y -= (fm.getDescent() + fm.getLeading());
+				underlineTask(task, gfx, physicalLine, start, end, y);
 			}
 		}
-
-		if(next != null)
-			next.paintHighlight(gfx, line, y);
 	}
 
 	/**
 	 * Returns the tool tip to display at the specified location.
-	 * This implementation delegates performance to the next highlight
-	 * painter.
-	 * @param evt The mouse event
+	 * @param x The x-coordinate
+	 * @param y The y-coordinate
 	 */
-	public String getToolTipText(MouseEvent evt)
-	{
-		if(this.next == null)
-			return null;
-
-		return this.next.getToolTipText(evt);
-	}
+	 public java.lang.String getToolTipText(int x, int y)
+	 {
+		 return super.getToolTipText(x, y);
+	 }
 
 	/**
 	 * The textArea on which the highlight will be drawn.
 	 */
 	private JEditTextArea textArea;
-
-	/**
-	 * The highlight to which the TaskHighlight object will delegate
-	 * further drawing.
-	 */
-	private TextAreaHighlight next;
 
 	/**
 	 * A flag indicating whether highlighting of task items
@@ -165,6 +166,11 @@ public class TaskHighlight implements TextAreaHighlight
 	 */
 	private Segment seg;
 
+	/**
+	 * A point for anchor the highlighting of taks text
+	 */
+	private Point point;
+
 
 	/**
 	 * Implements underlining of task items through a call to
@@ -172,25 +178,49 @@ public class TaskHighlight implements TextAreaHighlight
 	 *
 	 * @param task the Task that is the subject of highlighting
 	 * @param gfx The graphics context
-	 * @param line The virtual line number
+	 * @param line The physical line number
+	 * @param _start The offset where the line begins
+	 * @param _end The offset where the line ends
 	 * @param y The y co-ordinate of the line
 	 */
 	private void underlineTask(Task task,
-		Graphics gfx, int line, int y)
+		Graphics2D gfx, int line, int _start, int _end, int y)
 	{
+//		Log.log(Log.DEBUG,this,"Calling underlineTask() for line "
+//			+ String.valueOf(line) + "....");
 		int start = task.getStartOffset();
 		int end = task.getEndOffset();
 
-		//Log.log(Log.DEBUG, TaskHighlight.class,
-		//	"line=" + line + ",y=" + y + ",start=" +
-		//	start + ",end=" + end + ",task=" + task);//##
+		if(start == 0 && end == 0)
+		{
+//			Log.log(Log.DEBUG,this,"Reseting start and end in underlineTask()....");
+			textArea.getLineText(line,seg);
+			for(int j = 0; j < seg.count; j++)
+			{
+				if(Character.isWhitespace(seg.array[seg.offset + j]))
+					start++;
+				else
+					break;
+			}
+			end = seg.count;
+		}
 
-		start = textArea.offsetToX(line, start);
-		end = textArea.offsetToX(line, end);
+		//if(start >= _end || end <= _start)
+		//		return;
+
+		if(start + textArea.getLineStartOffset(line) >= _start)
+			start = textArea.offsetToXY(line,start,point).x;
+		else
+			start = 0;
+		if(end + textArea.getLineStartOffset(line) >= _end)
+			end = textArea.offsetToXY(line,_end - 1,point).x;
+		else
+			end = textArea.offsetToXY(line,end,point).x;
 
 		gfx.setColor(TaskListPlugin.getHighlightColor());
-		paintWavyLine(gfx, y, start, end);
+		paintWavyLine(gfx,y,start,end);
 	}
+
 
 	/**
 	 * Draws a wavy line at the indicated coordinates
@@ -200,13 +230,14 @@ public class TaskHighlight implements TextAreaHighlight
 	 * @param start The x-coordinate of the start of the line
 	 * @param end The x-coordinate of the end of the line
 	 */
-	private void paintWavyLine(Graphics gfx, int y, int start, int end)
+	private void paintWavyLine(Graphics2D gfx, int y, int start, int end)
 	{
+//		Log.log(Log.DEBUG,this,"Calling paintWavyLine()....");
 		y += textArea.getPainter().getFontMetrics().getHeight();
 
 		for(int i = start; i < end; i+= 6)
 		{
-			gfx.drawLine(i,y + 3,i + 3,y + 1);
+			gfx.drawLine(i,y + 3,i + 3,y + 1 );
 			gfx.drawLine(i + 3,y + 1,i + 6,y + 3);
 		}
 	}

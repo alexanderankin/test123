@@ -96,10 +96,15 @@ public class TaskList extends JPanel implements EBComponent
 			MouseHandler handler = new MouseHandler();
 			addMouseListener(handler);
 
+			// TODO: Fix height of header using Windows L&F
 			if(getTableHeader() != null)
 			{
 				getTableHeader().setReorderingAllowed(false);
+				getTableHeader().setResizingAllowed(true);
 				getTableHeader().addMouseListener(handler);
+				Dimension dim = getTableHeader().getPreferredSize();
+				dim.height = getRowHeight();
+				getTableHeader().setPreferredSize(dim);
 			}
 			init = true;
 			resizeTable();
@@ -150,11 +155,12 @@ public class TaskList extends JPanel implements EBComponent
 			columnModel.getColumn(1).setResizable(false);
 			columnModel.getColumn(2).setMinWidth(200);
 			columnModel.getColumn(2).setPreferredWidth(1000);
-			if(columnModel.getColumnCount() == 4)
+		if(columnModel.getColumnCount() == 4)
 			{
 				columnModel.getColumn(3).setMinWidth(100);
 				columnModel.getColumn(3).setPreferredWidth(500);
 			}
+			getTableHeader().resizeAndRepaint();
 		}
 
 		private void sort()
