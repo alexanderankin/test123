@@ -8,19 +8,25 @@
 			projectviewer.PVActions.editProject(view);
 		</CODE>
 	</ACTION>
-	
+
 	<ACTION NAME="projectviewer_open_all_files">
 		<CODE>
 			projectviewer.PVActions.openAllProjectFiles(view);
 		</CODE>
 	</ACTION>
-	
+
+	<ACTION NAME="projectviewer_close_all_files">
+		<CODE>
+			projectviewer.PVActions.closeAllProjectFiles(view);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="projectviewer_remove_all_files">
 		<CODE>
 			projectviewer.PVActions.removeAllProjectFiles(view);
 		</CODE>
 	</ACTION>
-	
+
 	<ACTION NAME="selectedfiles-viewer-menu-item">
     	<CODE>
 			pv = view.getDockableWindowManager().getDockable("projectviewer");
@@ -40,5 +46,5 @@
 			}
 		</CODE>
 	</ACTION>
-	
+
 </ACTIONS>
