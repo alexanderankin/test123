@@ -18,7 +18,7 @@
  */
 
 package uk.co.antroy.latextools; 
-
+import uk.co.antroy.latextools.macros.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
@@ -30,12 +30,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.*;
 
-public class LaTeXDockable  extends JPanel{
+public class LaTeXDockable  extends AbstractToolPanel {
 
   //~ Instance/static variables ...............................................
 
   private JComboBox nav_list = new JComboBox();
-  public static final LaTeXDockable instance = new LaTeXDockable();
+  private static final LaTeXDockable instance = new LaTeXDockable();
   private JComponent infoPanel = new JLabel("");
   private JLabel infoLabel = new JLabel("");
 
@@ -44,7 +44,7 @@ public class LaTeXDockable  extends JPanel{
   //~ Constructors ............................................................
 
   private LaTeXDockable() {
-    
+    super(jEdit.getActiveView(), jEdit.getActiveView().getEditPane().getTextArea().getBuffer(), "LaTeX Tools"); 
     ArrayList nav = new ArrayList(NavigationList.getNavigationData());
     nav_list = new JComboBox(nav.toArray());
     
@@ -62,8 +62,27 @@ public class LaTeXDockable  extends JPanel{
     
     LaTeXDockableListener listener = new LaTeXDockableListener();
     nav_list.addActionListener(listener);
+    refresh();
   }
   
+  public void refresh(){
+      view = jEdit.getActiveView();
+      buffer = jEdit.getActiveView().getEditPane().getTextArea().getBuffer();
+      
+      if (!ProjectMacros.isTeXFile(buffer)){
+          setInfoPanel(new JLabel(""), "<html><b>Not a TeX File.");
+      }else{
+          ProjectMacros.showInformation(view, buffer);
+      }
+      
+  }
+  
+  public static LaTeXDockable getInstance(){
+      return instance;
+  }
+  
+  public void reload(){}
+ 
   public JComboBox getComboBox(){
     return nav_list;
   }
