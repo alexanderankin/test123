@@ -30,7 +30,8 @@ import org.gjt.sp.jedit.*;
 public class SideKickCompletionPopup extends JWindow
 {
 	//{{{ SideKickCompletionPopup constructor
-	public SideKickCompletionPopup(View view, SideKickParser parser, int caret)
+	public SideKickCompletionPopup(View view, SideKickParser parser,
+		int caret, SideKickCompletion complete)
 	{
 		super(view);
 
@@ -40,37 +41,36 @@ public class SideKickCompletionPopup extends JWindow
 
 		list = new JList();
 
-		if(updateListModel())
-		{
-			Point location = textArea.offsetToXY(caret - complete.getTokenLength());
-			location.y += textArea.getPainter().getFontMetrics().getHeight();
+		list.addMouseListener(new MouseHandler());
+		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-			SwingUtilities.convertPointToScreen(location,
-				textArea.getPainter());
+		// stupid scrollbar policy is an attempt to work around
+		// bugs people have been seeing with IBM's JDK -- 7 Sep 2000
+		JScrollPane scroller = new JScrollPane(list,
+			JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+			JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 
-			list.addMouseListener(new MouseHandler());
-			list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		getContentPane().add(scroller, BorderLayout.CENTER);
 
-			// stupid scrollbar policy is an attempt to work around
-			// bugs people have been seeing with IBM's JDK -- 7 Sep 2000
-			JScrollPane scroller = new JScrollPane(list,
-				JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
-				JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		KeyHandler keyHandler = new KeyHandler();
+		addKeyListener(keyHandler);
+		getRootPane().addKeyListener(keyHandler);
+		list.addKeyListener(keyHandler);
+		view.setKeyEventInterceptor(keyHandler);
 
-			getContentPane().add(scroller, BorderLayout.CENTER);
+		GUIUtilities.requestFocus(this,list);
 
-			KeyHandler keyHandler = new KeyHandler();
-			addKeyListener(keyHandler);
-			getRootPane().addKeyListener(keyHandler);
-			list.addKeyListener(keyHandler);
-			view.setKeyEventInterceptor(keyHandler);
+		this.complete = complete;
+		updateListModel();
 
-			GUIUtilities.requestFocus(this,list);
+		Point location = textArea.offsetToXY(caret - complete.getTokenLength());
+		location.y += textArea.getPainter().getFontMetrics().getHeight();
 
-			pack();
-			setLocation(location);
-			show();
-		}
+		SwingUtilities.convertPointToScreen(location,
+			textArea.getPainter());
+
+		setLocation(location);
+		show();
 	} //}}}
 
 	//{{{ dispose() method
@@ -99,28 +99,24 @@ public class SideKickCompletionPopup extends JWindow
 	//}}}
 
 	//{{{ updateListModel() method
-	private boolean updateListModel()
+	private void updateListModel()
 	{
-		EditPane editPane = view.getEditPane();
-		int caret = editPane.getTextArea().getCaretPosition();
-		complete = parser.complete(editPane,caret);
-
-		if(complete == null)
-			return false;
-		else if(complete.size() == 0)
+		if(complete == null || complete.size() == 0)
 		{
 			list.setListData(new String[] {
 				jEdit.getProperty("sidekick-complete.none")
 			});
 			list.setCellRenderer(new DefaultListCellRenderer());
-			return true;
+			list.setVisibleRowCount(1);
 		}
 		else
 		{
 			setListModel(complete);
 			list.setCellRenderer(complete.getRenderer());
-			return true;
+			list.setVisibleRowCount(Math.min(8,complete.size()));
 		}
+
+		pack();
 	} //}}}
 
 	//{{{ setListModel() method
@@ -244,8 +240,15 @@ public class SideKickCompletionPopup extends JWindow
 		//{{{ keyTyped() method
 		private void keyTyped(char ch)
 		{
-			if(complete != null && complete.handleKeystroke(list.getSelectedIndex(),ch))
+			if(complete != null && complete.handleKeystroke(
+				list.getSelectedIndex(),ch))
+			{
+				EditPane editPane = view.getEditPane();
+				int caret = editPane.getTextArea()
+					.getCaretPosition();
+				complete = parser.complete(editPane,caret);
 				updateListModel();
+			}
 			else
 				dispose();
 		} //}}}

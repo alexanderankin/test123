@@ -63,6 +63,7 @@ class SideKick implements EBComponent
 		if(parser != null)
 		{
 			addBufferChangeListener(buffer);
+			SideKickBindings.initBindings(parser,view);
 			parser.activate(view);
 		}
 
@@ -103,7 +104,7 @@ class SideKick implements EBComponent
 		{
 			public void run()
 			{
-				SideKickParsedData.setParsedData(view,null);
+				//SideKickParsedData.setParsedData(view,null);
 
 				//{{{ check for unknown file
 				if(parser == null)
@@ -153,7 +154,7 @@ class SideKick implements EBComponent
 		if(msg instanceof PropertiesChanged)
 		{
 			if(parser != null)
-				parser.initKeyBindings(view);
+				SideKickBindings.initBindings(parser,view);
 		} //}}}
 		//{{{ BufferUpdate
 		if(msg instanceof BufferUpdate)
@@ -182,6 +183,7 @@ class SideKick implements EBComponent
 				if(parser != null)
 				{
 					addBufferChangeListener(buffer);
+					SideKickBindings.initBindings(parser,view);
 					parser.activate(view);
 				}
 				else
@@ -232,6 +234,7 @@ class SideKick implements EBComponent
 					if(parser != null)
 					{
 						addBufferChangeListener(buffer);
+						SideKickBindings.initBindings(parser,view);
 						parser.activate(view);
 					}
 
@@ -263,6 +266,7 @@ class SideKick implements EBComponent
 				if(parser != null)
 				{
 					addBufferChangeListener(buffer);
+					SideKickBindings.initBindings(parser,view);
 					parser.activate(view);
 				}
 

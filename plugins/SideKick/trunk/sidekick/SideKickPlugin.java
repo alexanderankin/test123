@@ -68,6 +68,7 @@ public class SideKickPlugin extends EBPlugin
 			sidekick.dispose();
 			sidekicks.remove(view);
 		}
+		SideKickBindings.removeBindings();
 	} //}}}
 
 	//{{{ handleMessage() method
