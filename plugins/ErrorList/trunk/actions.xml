@@ -16,6 +16,7 @@
 			wm = view.getDockableWindowManager();
 			wm.addDockableWindow("error-list");
 			wm.getDockableWindow("error-list").nextError();
+			textArea.requestFocus();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-previous-error">
@@ -23,6 +24,7 @@
 			wm = view.getDockableWindowManager();
 			wm.addDockableWindow("error-list");
 			wm.getDockableWindow("error-list").previousError();
+			textArea.requestFocus();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-next-error-file">
@@ -30,6 +32,7 @@
 			wm = view.getDockableWindowManager();
 			wm.addDockableWindow("error-list");
 			wm.getDockableWindow("error-list").nextErrorFile();
+			textArea.requestFocus();
 		</CODE>
 	</ACTION>
 	<ACTION NAME="error-list-previous-error-file">
@@ -37,6 +40,7 @@
 			wm = view.getDockableWindowManager();
 			wm.addDockableWindow("error-list");
 			wm.getDockableWindow("error-list").prevErrorFile();
+			textArea.requestFocus();
 		</CODE>
 	</ACTION>
 </ACTIONS>

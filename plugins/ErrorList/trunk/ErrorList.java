@@ -47,6 +47,11 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 		errorRoot = new DefaultMutableTreeNode(null,true);
 		errorModel = new DefaultTreeModel(errorRoot,true);
 
+		errorTree = new JTree(errorModel);
+		errorTree.putClientProperty("JTree.lineStyle", "Angled");
+		errorTree.addMouseListener(new MouseHandler());
+		errorTree.setCellRenderer(new ErrorCellRenderer());
+
 		Object[] sources = EditBus.getNamedList(ErrorSource.ERROR_SOURCES_LIST);
 		if(sources != null)
 		{
@@ -62,11 +67,6 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 				}
 			}
 		}
-
-		errorTree = new JTree(errorModel);
-		errorTree.putClientProperty("JTree.lineStyle", "Angled");
-		errorTree.addMouseListener(new MouseHandler());
-		errorTree.setCellRenderer(new ErrorCellRenderer());
 
 		JScrollPane scroller = new JScrollPane(errorTree);
 		scroller.setPreferredSize(new Dimension(640,200));
@@ -472,15 +472,15 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			String nodePath = (String)node.getUserObject();
 			if(nodePath.equals(path))
 			{
-				final DefaultMutableTreeNode newNode
-					= new DefaultMutableTreeNode(error,true);
 				String[] extras = error.getExtraMessages();
+				final DefaultMutableTreeNode newNode
+					= new DefaultMutableTreeNode(error,extras.length > 0);
 				for(int j = 0; j < extras.length; j++)
-				{
 					newNode.add(new DefaultMutableTreeNode(
 						new Extra(extras[j]),false));
-				}
 				node.add(newNode);
+
+				errorModel.reload(errorRoot);
 
 				SwingUtilities.invokeLater(new Runnable()
 				{
@@ -499,9 +499,14 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 		// no node for this file exists yet, so add a new one
 		DefaultMutableTreeNode node = new DefaultMutableTreeNode(path,true);
-		node.add(new DefaultMutableTreeNode(error,false));
+		String[] extras = error.getExtraMessages();
+		DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(error,
+			extras.length > 0);
+		for(int j = 0; j < extras.length; j++)
+			newNode.add(new DefaultMutableTreeNode(
+				new Extra(extras[j]),false));
+		node.add(newNode);
 		errorRoot.add(node);
-
 		errorModel.reload(errorRoot);
 
 		// this is a silly hack, because adding branches
@@ -663,6 +668,12 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 				setText(error.getErrorMessage());
 				setIcon(error.getErrorType() == ErrorSource.WARNING
 					? WARNING_ICON : ERROR_ICON);
+			}
+			else if(nodeValue instanceof Extra)
+			{
+				setFont(UIManager.getFont("Tree.font"));
+				setText(nodeValue.toString());
+				setIcon(null);
 			}
 
 			return this;
