@@ -21,13 +21,20 @@
 import java.io.IOException;
 import java.io.InputStream;
 
+import org.gjt.sp.jedit.io.VFS;
+
 
 public class ZipVFS extends ArchiveVFS {
     public static final String PROTOCOL = "zip";
 
 
     public ZipVFS() {
-        super(PROTOCOL);
+        super(ZipVFS.PROTOCOL);
+    }
+
+
+    public int getCapabilities() {
+        return VFS.READ_CAP;
     }
 
 
