@@ -56,6 +56,22 @@ public abstract class ByteCodeVFS extends VFS {
     }
 
 
+    public String getFileName(String path) {
+        String protocol = this.getName();
+
+        if (path.startsWith(protocol + ':')) {
+            String clazzPath = path.substring((protocol + ':').length());
+            VFS vfs = VFSManager.getVFSForPath(clazzPath);
+
+            return vfs.getFileName(clazzPath);
+        } else {
+            VFS vfs = VFSManager.getVFSForPath(path);
+
+            return vfs.getFileName(path);
+        }
+    }
+
+
     public String getParentOfPath(String path) {
         String protocol = this.getName();
 
@@ -69,6 +85,23 @@ public abstract class ByteCodeVFS extends VFS {
 
             return vfs.getParentOfPath(path);
         }
+    }
+
+
+    public String constructPath(String parent, String path) {
+        String protocol = this.getName();
+
+        if (path.startsWith(protocol + ':')) {
+            String clazzPath = parent.substring((protocol + ':').length());
+            VFS vfs = VFSManager.getVFSForPath(clazzPath);
+
+            return protocol + ':' + vfs.constructPath(clazzPath, path);
+        } else {
+            VFS vfs = VFSManager.getVFSForPath(parent);
+
+            return vfs.constructPath(parent, path);
+        }
+
     }
 
 
