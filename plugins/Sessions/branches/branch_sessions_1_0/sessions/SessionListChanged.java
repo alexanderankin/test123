@@ -27,7 +27,7 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 
 
-public final class SessionListChanged extends EBMessage.NonVetoable
+public final class SessionListChanged extends EBMessage
 {
 
 	SessionListChanged(EBComponent source)

@@ -25,7 +25,9 @@ package sessions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
+import javax.swing.JRadioButton;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
@@ -39,7 +41,9 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 	private JCheckBox bAutoSave;
 	private JCheckBox bCloseAll;
 	private JCheckBox bShowToolBar;
-	private JCheckBox bShowJEditToolBar;
+	private JRadioButton bShowBelowToolBar;
+	private JRadioButton bShowJEditToolBar;
+	private JRadioButton bShowInsideBufferList;
 	private JCheckBox bShowTitle;
 
 
@@ -67,10 +71,23 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		);
 		bShowToolBar.addActionListener(this);
 
-		bShowJEditToolBar = new JCheckBox(
-			jEdit.getProperty("options.sessions.switcher.showJEditToolBar"),
-			jEdit.getBooleanProperty("sessions.switcher.showJEditToolBar", false)
-		);
+		boolean showJEditToolBar = jEdit.getBooleanProperty("sessions.switcher.showJEditToolBar", false);
+		boolean showInsideBufferList = jEdit.getBooleanProperty("sessions.switcher.showInsideBufferList", false);
+		boolean showBelowToolBar = !(showJEditToolBar || showInsideBufferList);
+
+		bShowJEditToolBar = new JRadioButton(jEdit.getProperty("options.sessions.switcher.showJEditToolBar"), showJEditToolBar);
+		bShowJEditToolBar.setEnabled(bShowToolBar.isSelected());
+
+		bShowInsideBufferList = new JRadioButton(jEdit.getProperty("options.sessions.switcher.showInsideBufferList"), showInsideBufferList);
+		bShowInsideBufferList.setEnabled(bShowToolBar.isSelected() && isBufferListAvailable());
+
+		bShowBelowToolBar = new JRadioButton(jEdit.getProperty("options.sessions.switcher.showBelowToolBar"), showBelowToolBar);
+		bShowBelowToolBar.setEnabled(bShowToolBar.isSelected());
+
+		ButtonGroup group = new ButtonGroup();
+		group.add(bShowJEditToolBar);
+		group.add(bShowInsideBufferList);
+		group.add(bShowBelowToolBar);
 
 		bShowTitle = new JCheckBox(
 			jEdit.getProperty("options.sessions.switcher.showTitle"),
@@ -81,7 +98,9 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		addComponent(bAutoSave);
 		addComponent(bCloseAll);
 		addComponent(bShowToolBar);
+		addComponent("    ", bShowBelowToolBar);
 		addComponent("    ", bShowJEditToolBar);
+		addComponent("    ", bShowInsideBufferList);
 		addComponent("    ", bShowTitle);
 	}
 
@@ -92,14 +111,24 @@ public class SessionsOptionPane extends AbstractOptionPane implements ActionList
 		jEdit.setBooleanProperty("sessions.switcher.closeAll", bCloseAll.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showToolBar", bShowToolBar.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showJEditToolBar", bShowJEditToolBar.isSelected());
+		jEdit.setBooleanProperty("sessions.switcher.showInsideBufferList", bShowInsideBufferList.isSelected());
 		jEdit.setBooleanProperty("sessions.switcher.showTitle", bShowTitle.isSelected());
 	}
 
 
 	public void actionPerformed(ActionEvent e)
 	{
+		bShowBelowToolBar.setEnabled(bShowToolBar.isSelected());
 		bShowJEditToolBar.setEnabled(bShowToolBar.isSelected());
+		bShowInsideBufferList.setEnabled(bShowToolBar.isSelected() && isBufferListAvailable());
 		bShowTitle.setEnabled(bShowToolBar.isSelected());
+	}
+
+
+	private boolean isBufferListAvailable()
+	{
+		// FIXME: is it sufficient to check only first view?!?
+		return SessionsPlugin.isBufferListAvailable(jEdit.getFirstView());
 	}
 
 }

@@ -2,10 +2,10 @@
 
 <!-- Ant build file for the Sessions plugin for jEdit -->
 
-<project name="Sessions" default="dist" basedir=".">
+<project name="Sessions" default="all" basedir=".">
 
 	<property name="jar.name"  value="${ant.project.name}.jar"/>
-	
+
 	<property name="src.dir" value="."/>
 	<property name="build.dir" value="build"/>
 	<property name="install.dir" value=".."/>
@@ -48,6 +48,9 @@
 			</fileset>
 		</jar>
 	</target>
+
+
+	<target name="all" depends="clean,dist"/>
 
 
 	<target name="clean">
