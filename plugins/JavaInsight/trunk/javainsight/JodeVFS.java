@@ -2,6 +2,9 @@
  * JodeVFS.java
  * Copyright (c) 2001 Andre Kaplan
  *
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -24,15 +27,14 @@ package javainsight;
 import de.fub.bytecode.classfile.ClassParser;
 import de.fub.bytecode.classfile.JavaClass;
 
-import jode.bytecode.ClassInfo;
-import jode.bytecode.SearchPath;
-import jode.decompiler.ClassAnalyzer;
-import jode.decompiler.Decompiler;
-import jode.decompiler.ImportHandler;
-import jode.decompiler.TabbedPrintWriter;
+import net.sf.jode.bytecode.ClassInfo;
+import net.sf.jode.bytecode.ClassPath;
+import net.sf.jode.decompiler.ClassAnalyzer;
+import net.sf.jode.decompiler.Decompiler;
+import net.sf.jode.decompiler.ImportHandler;
+import net.sf.jode.decompiler.TabbedPrintWriter;
 
 import java.awt.Component;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.File;
@@ -42,6 +44,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
+import java.util.Arrays;
 
 import javainsight.buildtools.JavaUtils;
 
@@ -54,6 +57,7 @@ import org.gjt.sp.util.Log;
 
 
 public class JodeVFS extends ByteCodeVFS {
+
     public static final String PROTOCOL = "jode";
 
 
@@ -87,23 +91,20 @@ public class JodeVFS extends ByteCodeVFS {
             return null;
         }
 
+        String className = null;
+
         try {
             // Get the class name from BCEL!
             DataInputStream in = new DataInputStream(new BufferedInputStream(
                 vfs._createInputStream(session, clazzPath, ignoreErrors, comp)
             ));
             JavaClass java_class = new ClassParser(in, clazzPath).parse();
-            String className = java_class.getClassName();
+            className = java_class.getClassName();
 
-            // Adjust the classpath
-            String[] entries = JavaUtils.getClasspath();
-            StringBuffer sb = new StringBuffer();
-            for (int i = 0; i < entries.length; i++) {
-                if (sb.length() > 0) { sb.append(SearchPath.altPathSeparatorChar); }
-                sb.append(entries[i]);
-            }
-            String cp = sb.toString(); // JavaInsight.getJodeClassPath();
+            // Get the classpath
+            String[] cp = JavaUtils.getClasspath();
 
+            // Get the VFS path
             String vfsPath = null;
             int dotIdx = className.lastIndexOf('.');
             vfsPath = vfs.getParentOfPath(clazzPath);
@@ -120,7 +121,10 @@ public class JodeVFS extends ByteCodeVFS {
                 }
             }
 
-            Log.log(Log.DEBUG, this, "clazzPath, vfsPath, className: [" + vfsPath + "][" + clazzPath + "][" + className + "]");
+            Log.log(Log.DEBUG, this, "className=" + className
+                + " vfsPath=" + vfsPath
+                + " clazzPath=" + clazzPath
+                + " classPath=" + Arrays.asList(cp));
 
             in = new DataInputStream(new BufferedInputStream(
                 vfs._createInputStream(session, clazzPath, ignoreErrors, comp)
@@ -128,14 +132,14 @@ public class JodeVFS extends ByteCodeVFS {
 
             // JODE is not thread-safe
             synchronized (this) {
+                ClassPath classPath;
                 if (vfsPath == null) {
-                    ClassInfo.setClassPath(cp);
+                    classPath = new ClassPath(cp);
                 } else {
-                    ClassInfo.setClassPath(new VFSSearchPath(cp, vfsPath));
+                    classPath = new VFSSearchPath(cp, vfsPath);
                 }
-
-                ClassInfo clazz = ClassInfo.forName(className);
-                clazz.read(in, ClassInfo.FULLINFO);
+                ClassInfo clazz = classPath.getClassInfo(className);
+                clazz.read(in, ClassInfo.ALL);
 
                 boolean pretty  = jEdit.getBooleanProperty("javainsight.jode.pretty",  true);
                 boolean onetime = jEdit.getBooleanProperty("javainsight.jode.onetime", false);
@@ -162,7 +166,7 @@ public class JodeVFS extends ByteCodeVFS {
                     classLimit = Integer.parseInt(importClassLimit);
                 } catch (NumberFormatException nfe) {}
 
-                ImportHandler imports = new ImportHandler(packageLimit, classLimit);
+                ImportHandler imports = new ImportHandler(classPath, packageLimit, classLimit);
 
                 ByteArrayOutputStream baOut = new ByteArrayOutputStream();
                 TabbedPrintWriter writer = new TabbedPrintWriter(
@@ -179,12 +183,13 @@ public class JodeVFS extends ByteCodeVFS {
                     baOut.toByteArray()
                 ));
             }
-        } catch (IOException ioe) {
-            Log.log(Log.ERROR, this, ioe);
-        } catch (Exception e) {
-            Log.log(Log.ERROR, this, e);
+        } catch (IOException ioex) {
+            throw ioex;
+        } catch (Throwable t) {
+            // Jode sometimes throws java.lang.InternalError or other
+            // messy things:
+            Log.log(Log.ERROR, this, t);
+            throw new IOException("An error occured while decompiling " + className + ": " + t);
         }
-
-        return null;
     }
 }

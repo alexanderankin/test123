@@ -2,6 +2,9 @@
  * VFSSearchPath.java
  * Copyright (c) 2001 Andre Kaplan
  *
+ * jEdit edit mode settings:
+ * :mode=java:tabSize=4:indentSize=4:noTabs=true:maxLineLen=0:
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -28,7 +31,7 @@ import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-import jode.bytecode.SearchPath;
+import net.sf.jode.bytecode.ClassPath;
 
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
@@ -37,11 +40,12 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.Log;
 
 
-public class VFSSearchPath extends SearchPath {
+public class VFSSearchPath extends ClassPath {
+
     private String[] vfsDirs;
 
 
-    public VFSSearchPath(String path, String vfsPath) {
+    public VFSSearchPath(String[] path, String vfsPath) {
         super(path);
 
         StringTokenizer tok = new StringTokenizer(vfsPath, "" + altPathSeparatorChar);
@@ -82,8 +86,8 @@ public class VFSSearchPath extends SearchPath {
     }
 
 
-    public boolean exists(String filename) {
-        if (super.exists(filename)) {
+    public boolean existsFile(String filename) {
+        if (super.existsFile(filename)) {
             return true;
         }
 
@@ -152,4 +156,5 @@ public class VFSSearchPath extends SearchPath {
 
         return super.listFiles(dirName);
     }
+
 }
