@@ -77,7 +77,8 @@
             <manifest>
                 <attribute name="AppName" value="BufferLocalPlugin" />
                 <attribute name="AppVersion" value="${build.num}" />
-                <attribute name="Created-By" value="Dale Anson" />
+                <attribute name="Author" value="Dale Anson" />
+                <attribute name="Created-By" value="${user.name}" />
                 <attribute name="Created-On" value="${TODAY}"/>
             </manifest>
 
