@@ -481,6 +481,10 @@
     Tag completion now correctly handles DTDs that define elements with content
     <literal>ANY</literal>.
    </para></listitem>
+   <listitem><para>
+    Fixed possible <classname>ArrayIndexOutOfBoundsException</classname> in
+    <function>SAXParser.Handler.findTagStart()</function>.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>
