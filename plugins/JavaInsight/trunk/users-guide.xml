@@ -353,7 +353,11 @@
                 </para>
             </listitem>
             <listitem>
-                Requires jEdit 4.2final or higher.
+                Bugfix #458017: JavaInsight was not able to view classes from
+                the default package.
+            </listitem>
+            <listitem>
+                Requires jEdit 4.2final or higher, JakartaCommons 0.2 or higher.
             </listitem>
         </itemizedlist></listitem>
     </varlistentry>
@@ -365,7 +369,10 @@
                 Moved BCEL library to the JakartaCommons plugin.
             </listitem>
             <listitem>
-                JavaInsight now depends on the JakartaCommons plugin
+                JavaInsight now depends on the JakartaCommons plugin.
+            </listitem>
+            <listitem>
+                Requires jEdit 4.0pre3 or higher, JakartaCommons 0.2 or higher.
             </listitem>
         </itemizedlist></listitem>
     </varlistentry>
