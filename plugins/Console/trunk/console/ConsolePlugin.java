@@ -96,7 +96,7 @@ public class ConsolePlugin extends EBPlugin
 		errorSource.clear();
 	}
 
-	static int parseLine(String text)
+	static int parseLine(String text, String directory)
 	{
 		if(errorMatchers == null)
 			loadMatchers();
@@ -104,7 +104,7 @@ public class ConsolePlugin extends EBPlugin
 		for(int i = 0; i < errorMatchers.length; i++)
 		{
 			ErrorMatcher m = errorMatchers[i];
-			int result = m.match(text);
+			int result = m.match(text,directory);
 			if(result != -1)
 				return result;
 		}

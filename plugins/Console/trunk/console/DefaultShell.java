@@ -240,7 +240,7 @@ class DefaultShell extends Shell
 		if(console == null)
 			return;
 
-		int type = ConsolePlugin.parseLine(line);
+		int type = ConsolePlugin.parseLine(line,dir);
 		switch(type)
 		{
 		case ErrorSource.ERROR:

@@ -44,7 +44,7 @@ class ErrorMatcher
 		regexp = new RE(match,RE.REG_ICASE,RESyntax.RE_SYNTAX_PERL5);
 	}
 
-	public int match(String text)
+	public int match(String text, String directory)
 	{
 		if(regexp.isMatch(text))
 		{
@@ -56,7 +56,8 @@ class ErrorMatcher
 			else
 				type = ErrorSource.ERROR;
 
-			String _filename = regexp.substitute(text,filename);
+			String _filename = MiscUtilities.constructPath(
+				directory,regexp.substitute(text,filename));
 			String _line = regexp.substitute(text,line);
 			String _message = regexp.substitute(text,message);
 
