@@ -38,27 +38,36 @@ antfarm.shell.label.available-targets=Targets:\n
 antfarm.shell.label.available-files=Build files:\n
 
 # Ant tree and button properties
-antfarm.add.icon=/icons/AddFile.gif
+antfarm.add.icon.name=Plus.png
+antfarm.add.icon.type=stock
 antfarm.add.label=Add Ant File...
 
-antfarm.remove.icon=/icons/RemoveFile.gif
+antfarm.remove.icon.name=Minus.png
+antfarm.remove.icon.type=stock
 antfarm.remove.label=Remove Ant File
 
-antfarm.run.icon=/icons/RunTarget.gif
+antfarm.run.icon.name=Run.png
+antfarm.run.icon.type=stock
 antfarm.run.label=Run Current Target
 
-antfarm.options.icon=/icons/ToolbarMenu.gif
+#antfarm.options.icon=Preferences.png
 antfarm.options.label=AntFarm Options
 antfarm.options.text=Options
 
 antfarm.root.label=Ant Projects
 antfarm.root.noBuildFiles=No build files...
 
-antfarm.root.icon=/icons/Root.gif
-antfarm.project.icon=/icons/BuildFile.gif
-antfarm.brokenProject.icon=/icons/BustedBuildFile.gif
-antfarm.target.icon=/icons/Target.gif
-antfarm.defaultTarget.icon=/icons/DefaultTarget.gif
+antfarm.root.icon.name=/icons/Root.gif
+antfarm.root.icon.type=custom
+antfarm.project.icon.name=File.png
+antfarm.project.icon.type=stock
+antfarm.brokenProject.icon.name=/icons/Cancel.png
+antfarm.brokenProject.icon.type=custom
+antfarm.target.icon.name=/icons/Target.png
+antfarm.target.icon.type=custom
+antfarm.defaultTarget.icon.name=/icons/DefaultTarget.png
+antfarm.defaultTarget.icon.type=custom
+
 antfarm.project.broken=Invalid build file:\ 
 antfarm.project.missing=File is missing:\ 
 antfarm.project.build-file=\ build file
@@ -127,7 +136,7 @@ tools-jar-missing.message=The tools.jar archive cannot be located by AntFarm. Th
 			  configure jEdit to run with a Java Development Kit (JDK), not the\n\
 			  Java Runtime Environment (JRE). \n\n\
 			  View the Activity Log for more details.
-			  
+
 # Option menu commands
 antfarm.commands.properties.label=Prompt for properties
 antfarm.commands.supress-sub-targets.label=Hide sub-targets
