@@ -5,6 +5,8 @@ import junit.framework.TestCase;
 
 /**
  * The PHP Parser test case
+ *
+ * @author Matthieu Casanova
  */
 public class PHPParserTester extends TestCase {
   private PHPParser phpParser;
