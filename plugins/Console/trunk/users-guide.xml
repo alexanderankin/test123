@@ -1159,6 +1159,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     was nothing to complete would have strange results.</para></listitem>
     <listitem><para>Updated for jEdit 4.1 icon theme.</para></listitem>
     <listitem><para>Fixed incompatibility with 4.1pre5.</para></listitem>
+    <listitem><para>Fixed problems caused by having commandos with spaces in
+    their names.</para></listitem>
    </itemizedlist>
   </listitem>
 

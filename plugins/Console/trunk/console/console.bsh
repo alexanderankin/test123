@@ -108,3 +108,23 @@ getBufferClassPath(buffer)
 }
 
 bsh.help.print = "usage: getBufferClassPath ( buffer )";
+
+/* Returns environment variable value. */
+getenv(String env)
+{
+	import console.ConsolePlugin;
+
+	return ConsolePlugin.getSystemShellVariableValue(env);
+}
+
+bsh.help.getenv = "usage: getenv ( env )";
+
+/* Returns environment variable value. */
+setenv(String env, String value)
+{
+	import console.ConsolePlugin;
+
+	return ConsolePlugin.setSystemShellVariableValue(env,value);
+}
+
+bsh.help.setenv = "usage: setenv ( env, value )";

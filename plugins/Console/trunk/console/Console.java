@@ -101,12 +101,15 @@ implements EBComponent, Output
 		animationLabel = new JLabel();
 		animationLabel.setBorder(new EmptyBorder(2,3,2,3));
 		Toolkit toolkit = getToolkit();
-		animation = new AnimatedIcon(new Image[] {
-			toolkit.getImage(Console.class.getResource("/console/Active1.png")),
-			toolkit.getImage(Console.class.getResource("/console/Active2.png")),
-			toolkit.getImage(Console.class.getResource("/console/Active3.png")),
-			toolkit.getImage(Console.class.getResource("/console/Active4.png"))
-		},10,animationLabel);
+		animation = new AnimatedIcon(
+			toolkit.getImage(Console.class.getResource("/console/Blank.png")),
+			new Image[] {
+				toolkit.getImage(Console.class.getResource("/console/Active1.png")),
+				toolkit.getImage(Console.class.getResource("/console/Active2.png")),
+				toolkit.getImage(Console.class.getResource("/console/Active3.png")),
+				toolkit.getImage(Console.class.getResource("/console/Active4.png"))
+			},10,animationLabel
+		);
 		animationLabel.setIcon(animation);
 		buttonBox.add(animationLabel);
 

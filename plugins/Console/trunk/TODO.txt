@@ -1,3 +1,4 @@
+- doesn't stop spinning if output != console
 - multiple-line env vars don't work
 - fish stops after %kill and doesn't start
 - error during process run: fish doesn't stop

@@ -85,6 +85,7 @@ class ConsoleProcess
 			Object[] pp = { args[0] };
 			console.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.detached",pp));
+			output.commandDone();
 		}
 
 		consoleState.process = null;

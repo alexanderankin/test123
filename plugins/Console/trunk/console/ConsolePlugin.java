@@ -402,6 +402,18 @@ public class ConsolePlugin extends EBPlugin
 		return ((SystemShell)SYSTEM_SHELL).getVariableValue(view,var);
 	} //}}}
 
+	//{{{ setSystemShellVariableValue() method
+	/**
+	 * Sets the value of the specified system shell environment variable.
+	 * @param view The view
+	 * @param var The variable name
+	 * @param value The value
+	 */
+	public static void getSystemShellVariableValue(String var, String value)
+	{
+		((SystemShell)SYSTEM_SHELL).getVariables().put(var,value);
+	} //}}}
+
 	//{{{ ActionCompare class
 	static class ActionCompare implements MiscUtilities.Compare
 	{
