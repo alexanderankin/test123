@@ -22,10 +22,8 @@ package projectviewer.importer;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
 
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
@@ -48,22 +46,18 @@ import projectviewer.vpt.VPTDirectory;
  */
 public class FileImporter extends Importer {
 
+	//{{{ Protected Members
 	protected int fileCount;
-	protected int selectedOp;
-	protected boolean prune;
-	
-	protected CVSEntriesFilter cvsFilter;
-	protected ImportSettingsFilter settingsFilter;
-	
+	//}}}
+
 	//{{{ Constructor
-	
+
 	public FileImporter(VPTNode node, ProjectViewer viewer) {
 		super(node, viewer);
-		prune = false;
 	}
-	
+
 	//}}}
-	
+
 	//{{{ internalDoImport() method
 	/**
 	 *	Queries the user for files to be added by showing a file chooser
@@ -72,30 +66,54 @@ public class FileImporter extends Importer {
 	 *
 	 *	If the files to	be added are below the project's root path, and they're
 	 *	being added directly to the project or to a node that is a directory and
-	 *	whose path is parent to the files being added, the importer creates the 
+	 *	whose path is parent to the files being added, the importer creates the
 	 *	tree to the files and appends that tree to the node.
 	 *
 	 *	@return	A collection of VPTNode instances.
 	 */
 	protected Collection internalDoImport() {
 		fileCount = 0;
-		selectedOp = 0;
-		
-		cvsFilter = new CVSEntriesFilter();
-		settingsFilter = new ImportSettingsFilter();
-		
-		File[] chosen = chooseFiles();
+		int selectedOp = 0;
+
+		CVSEntriesFilter cvsFilter = new CVSEntriesFilter();
+		NonProjectFileFilter filter = new NonProjectFileFilter();
+		ImportSettingsFilter settingsFilter = new ImportSettingsFilter();
+
+		JFileChooser chooser = null;
+		if (selected.isDirectory() && ((VPTDirectory)selected).getFile().exists()) {
+			chooser = new JFileChooser(selected.getNodePath());
+		} else {
+			chooser = new JFileChooser(project.getRootPath());
+		}
+
+		chooser.setMultiSelectionEnabled(true);
+		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+
+		chooser.addChoosableFileFilter(filter);
+		chooser.addChoosableFileFilter(settingsFilter);
+		chooser.addChoosableFileFilter(cvsFilter);
+		chooser.setFileFilter(filter);
+
+		if(chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) {
+			return null;
+		}
+
+		if (chooser.getFileFilter() == cvsFilter) {
+			selectedOp = 2;
+		}
+
+		File[] chosen = chooser.getSelectedFiles();
 		if (chosen == null || chosen.length == 0) return null;
 
 		ArrayList lst = new ArrayList();
-		
+
 		FilenameFilter fnf = null;
 		boolean asked = false, recurse = false;
 		long t = System.currentTimeMillis();
 		for (int i = 0; i < chosen.length; i++) {
-			VPTNode node;
+			VPTNode node = null;
 			if (chosen[i].isDirectory()) {
-				node = new VPTDirectory(chosen[i]);
+				node = findDirectory(chosen[i], selected, true);
 				if (!asked) {
 					Object[] options = {
 						jEdit.getProperty("projectviewer.import.yes-settings"),
@@ -108,12 +126,12 @@ public class FileImporter extends Importer {
 									jEdit.getProperty("projectviewer.import.msg_recurse.title"),
 									JOptionPane.QUESTION_MESSAGE,
 									null, options, options[selectedOp]);
-					
+
 					if (sel == null) {
 						// cancel
 						return null;
 					}
-					
+
 					if (sel == options[1]) {
 						recurse = true;
 					} else if (sel == options[0]) {
@@ -126,27 +144,26 @@ public class FileImporter extends Importer {
 						recurse = false;
 					}
 					asked = true;
-				} 
+				}
 				if (recurse) {
 					addTree(chosen[i], node, fnf);
 				}
-			} else {
+			} else if (findDirectory(chosen[i], selected, false) == null) {
 				node = new VPTFile(chosen[i]);
 				project.registerFile((VPTFile)node);
 				fileCount++;
 			}
-			lst.add(node);
+			if (node != null && node.getParent() == null) {
+				lst.add(node);
+			}
 		}
-		
-		viewer.setStatus(
-			jEdit.getProperty("projectviewer.import.msg_result",
-				new Object[] { new Integer(fileCount) }));
-		
+
+		showFileCount();
 		return lst;
 	} //}}}
-	
+
 	//{{{ addTree(File, VPTNode) method
-	/**	
+	/**
 	 *	Adds a directory tree to the given node.
 	 *
 	 *	@param	root	The root directory from where to look for files.
@@ -155,26 +172,26 @@ public class FileImporter extends Importer {
 	 */
 	protected void addTree(File root, VPTNode where, FilenameFilter filter) {
 		File[] children;
-		
+
 		if(filter != null){
 			children = root.listFiles(filter);
 		} else {
 			children = root.listFiles();
 		}
-		
+
 		if (children == null) return;
-		
+
 		for (int i = 0; i < children.length; i++) {
 			VPTNode child;
 			if (children[i].isDirectory()) {
-				child = findDirectory(children[i], where);
+				child = findDirectory(children[i], where, true);
 			} else {
 				child = new VPTFile(children[i]);
 				if (where.getIndex(child) != -1) {
 					continue;
 				}
 			}
-			
+
 			if (child.isDirectory()) {
 				addTree(children[i], child, filter);
 			} else {
@@ -182,79 +199,37 @@ public class FileImporter extends Importer {
 				fileCount++;
 			}
 
-			if (!prune || !child.isDirectory() || child.getChildCount() != 0) {
+			if ((!child.isDirectory() || child.getChildCount() != 0)
+					&& child.getParent() == null) {
 				where.add(child);
 			}
 		}
-		
+
 		where.sortChildren();
 	} //}}}
-	
-	//{{{ findDirectory(String, VPTNode) method
-	/** 
-	 *	Looks, in the children list for the given parent, for a directory with
-	 *	the given path. If it exists, return it, if not, create a new VPTDirectory
-	 *	and return it.
-	 *
-	 *	@param	dir		The directory to look for.
-	 *	@param	parent	The node where to look for the directory.
-	 */
-	private VPTNode findDirectory(File dir, VPTNode parent) {
-		Enumeration e = parent.children();
-		while (e.hasMoreElements()) {
-			VPTNode n = (VPTNode) e.nextElement();
-			if (n.getNodePath().equals(dir.getAbsolutePath())) {
-				return n;
-			}
-		}
-		return new VPTDirectory(dir);
-	} //}}}
-	
-	//{{{ chooseFiles() method
-	/**
-	 *	Chooses what files are to be imported to the selected node.
-	 */
-	protected File[] chooseFiles() {
-		JFileChooser chooser = null;
-		if (selected.isDirectory() && ((VPTDirectory)selected).getFile().exists()) {
-			chooser = new JFileChooser(selected.getNodePath());
-		} else {
-			chooser = new JFileChooser(project.getRootPath());
-		}
-		
-		chooser.setMultiSelectionEnabled(true);
-		chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-		
-		NonProjectFileFilter filter = new NonProjectFileFilter();
-		chooser.addChoosableFileFilter(filter);
-		chooser.addChoosableFileFilter(settingsFilter);
-		chooser.addChoosableFileFilter(cvsFilter);
-		chooser.setFileFilter(filter);
-		
-		if(chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) {
-			return null;
-		}
-		
-		if (chooser.getFileFilter() == cvsFilter) {
-			selectedOp = 2;
-		}
 
-		return chooser.getSelectedFiles();	
+	//{{{ showFileCount(int) method
+	/** Shows a message in the status bar indicating how many files were imported. */
+	protected void showFileCount() {
+		viewer.setStatus(
+			jEdit.getProperty("projectviewer.import.msg_result",
+				new Object[] { new Integer(fileCount) }));
 	} //}}}
 
-	
+
 	//{{{ NonProjectFileFilter class
 	/**	A FileFilter that filters out files already added to the project. */
 	protected class NonProjectFileFilter extends FileFilter {
-		
+
 		public String getDescription() {
 			return jEdit.getProperty("projectviewer.non-project-filter");
 		}
-		
+
 		public boolean accept(File f) {
 			return (project.getFile(f.getAbsolutePath()) == null);
 		}
-		
+
 	} //}}}
-	
+
 }
+

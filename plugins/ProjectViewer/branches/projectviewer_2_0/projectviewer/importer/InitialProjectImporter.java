@@ -22,7 +22,6 @@ package projectviewer.importer;
 import java.io.File;
 import java.io.FilenameFilter;
 
-import java.util.Iterator;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
@@ -36,8 +35,6 @@ import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTFile;
-import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
 //}}}
 
@@ -49,10 +46,12 @@ import projectviewer.vpt.VPTDirectory;
  */
 public class InitialProjectImporter extends FileImporter {
 
+	//{{{ Private members
 	private Component parent;
-	
+	//}}}
+
 	//{{{ Constructor
-	
+
 	public InitialProjectImporter(VPTNode node, ProjectViewer viewer, Component parent) {
 		super(node, viewer);
 		if (parent != null) {
@@ -60,20 +59,19 @@ public class InitialProjectImporter extends FileImporter {
 		} else {
 			this.parent = viewer;
 		}
-		prune = true;
 	}
-	
+
 	public InitialProjectImporter(VPTNode node, ProjectViewer viewer) {
 		this(node, viewer, null);
 	}
-	
+
 	//}}}
-	
+
 	//{{{ internalDoImport() method
 	/** Asks if the user wants to import files from the chosen project root. */
 	protected Collection internalDoImport() {
 		fileCount = 0;
-		
+
 		Object[] options = {
 			jEdit.getProperty("projectviewer.import.yes-settings"),
 			jEdit.getProperty("projectviewer.import.yes-all"),
@@ -85,12 +83,12 @@ public class InitialProjectImporter extends FileImporter {
 						jEdit.getProperty("projectviewer.import.msg_proj_root.title"),
 						JOptionPane.QUESTION_MESSAGE,
 						null, options, options[0]);
-		
+
 		if (sel == null) {
 			// cancel
 			return null;
 		}
-		
+
 		FilenameFilter fnf = null;
 		if (sel == null || sel == options[3]) {
 			return null;
@@ -102,16 +100,15 @@ public class InitialProjectImporter extends FileImporter {
 
 		VPTDirectory root = new VPTDirectory(new File(project.getRootPath()));
 		addTree(root.getFile(), root, fnf);
-			
+
 		ArrayList lst = new ArrayList();
 		for (Enumeration e = root.children(); e.hasMoreElements(); ) {
 			lst.add(e.nextElement());
 		}
-				
-		viewer.setStatus(
-			jEdit.getProperty("projectviewer.import.msg_result",
-				new Object[] { new Integer(fileCount) }));
-		return lst;	
+
+		showFileCount();
+		return lst;
 	} //}}}
-	
+
 }
+
