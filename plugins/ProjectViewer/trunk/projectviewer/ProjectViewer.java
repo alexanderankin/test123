@@ -24,8 +24,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.ArrayList;
 
-import java.awt.Component;
 import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ItemEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.ItemListener;
@@ -33,6 +34,9 @@ import java.awt.event.ItemListener;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTree;
 import javax.swing.JPanel;
@@ -358,9 +362,13 @@ public final class ProjectViewer extends JPanel
 	private View 					view;
 	private HashSet					dontAsk;
 
+	private JTree currentTree;
 	private JTree					folderTree;
+	private JScrollPane				folderTreeScroller;
 	private JTree					fileTree;
+	private JScrollPane				fileTreeScroller;
 	private JTree					workingFileTree;
+	private JScrollPane				workingFileTreeScroller;
 	private JToolBar				toolBar;
 
 	private JPanel					topPane;
@@ -408,7 +416,7 @@ public final class ProjectViewer extends JPanel
 	private JTree createTree(TreeModel model) {
 		JTree tree = new JTree(model);
 		tree.setCellRenderer(new VPTCellRenderer());
-		tree.setBorder(BorderFactory.createEtchedBorder());
+		//tree.setBorder(BorderFactory.createEtchedBorder());
 
 		// don't change order!
 		tree.addMouseListener(vsl);
@@ -434,7 +442,6 @@ public final class ProjectViewer extends JPanel
 	/** Builds the viewer GUI. */
 	private void buildGUI() {
 		treePane = new JTabbedPane();
-		add(BorderLayout.CENTER, treePane);
 
 		topPane = new JPanel(new BorderLayout());
 
@@ -450,9 +457,20 @@ public final class ProjectViewer extends JPanel
 
 		pList.setSelectedItem(treeRoot);
 		pList.addItemListener(new ProjectComboListener());
-		topPane.add(BorderLayout.WEST, pList);
+
+		Dimension dim = pList.getPreferredSize();
+		dim.width = Integer.MAX_VALUE;
+		pList.setMaximumSize(dim);
+
+		Box box = new Box(BoxLayout.Y_AXIS);
+		box.add(Box.createGlue());
+		box.add(pList);
+		box.add(Box.createGlue());
+
+		topPane.add(BorderLayout.CENTER, box);
 
 		showTrees();
+		showToolBar(config.getShowToolBar());
 		add(BorderLayout.NORTH, topPane);
 
 	} //}}}
@@ -572,28 +590,25 @@ public final class ProjectViewer extends JPanel
 	 */
 	private void showTrees() {
 		treePane.removeAll();
-		int count = 0;
 
 		// Folders tree
 		if(config.getShowFoldersTree()) {
 			if(folderTree == null) {
 				folderTree = createTree(new DefaultTreeModel(treeRoot, true));
+				folderTreeScroller = new JScrollPane(folderTree);
 			}
-			count++;
-			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), new JScrollPane(folderTree));
-		} else {
-			folderTree = null;
+			currentTree = folderTree;
+			treePane.addTab(jEdit.getProperty(FOLDERS_TAB_TITLE), folderTreeScroller);
 		}
 
 		// Files tree
 		if(config.getShowFilesTree()) {
 			if(fileTree == null) {
 				fileTree = createTree(new VPTFileListModel(treeRoot));
+				fileTreeScroller = new JScrollPane(fileTree);
 			}
-			count++;
-			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), new JScrollPane(fileTree));
-		} else {
-			fileTree = null;
+			currentTree = fileTree;
+			treePane.addTab(jEdit.getProperty(FILES_TAB_TITLE), fileTreeScroller);
 		}
 
 		// Working files tree
@@ -601,41 +616,38 @@ public final class ProjectViewer extends JPanel
 			if(workingFileTree == null) {
 				VPTWorkingFileListModel model = new VPTWorkingFileListModel(treeRoot);
 				workingFileTree = createTree(model);
+				workingFileTreeScroller = new JScrollPane(workingFileTree);
 			}
-			count++;
-			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), new JScrollPane(workingFileTree));
+			currentTree = workingFileTree;
+			treePane.addTab(jEdit.getProperty(WORKING_FILES_TAB_TITLE), workingFileTreeScroller);
+		}
+
+		if (treePane.getTabCount() == 0) {
+			remove(treePane);
+		} else if (treePane.getTabCount() == 1) {
+			remove(treePane);
+			add(BorderLayout.CENTER,treePane.getComponentAt(0));
 		} else {
-			if (workingFileTree != null) {
-				workingFileTree = null;
-			}
-		}
-
-		if (count == 0) {
-			showToolBar(false);
-		} else if (toolBar == null && config.getShowToolBar()) {
-			showToolBar(true);
-		}
-
-		if (treePane.getTabCount() > 0)
+			currentTree = null;
+			add(BorderLayout.CENTER,treePane);
 			treePane.setSelectedIndex(0);
+		}
 	}//}}}
 
 	//{{{ showToolBar(boolean) method
 	/** Shows/Hides the toolbar. */
 	private void showToolBar(boolean flag) {
+		if (toolBar != null) {
+			topPane.remove(toolBar);
+			toolBar.removeAll();
+			toolBar = null;
+		}
+
 		if (flag) {
 			toolBar = new JToolBar();
 			toolBar.setFloatable(false);
 			populateToolBar();
-			topPane.add(BorderLayout.WEST, pList);
-			topPane.add(BorderLayout.CENTER, toolBar);
-		} else {
-			if (toolBar != null) {
-				topPane.remove(toolBar);
-				toolBar.removeAll();
-				toolBar = null;
-				topPane.add(BorderLayout.CENTER, pList);
-			}
+			topPane.add(BorderLayout.EAST, toolBar);
 		}
 	} //}}}
 
@@ -693,6 +705,9 @@ public final class ProjectViewer extends JPanel
 	//{{{ getCurrentTree() method
 	/** Returns the currently active tree. */
 	public JTree getCurrentTree() {
+		if(currentTree != null)
+			return currentTree;
+
 		switch(treePane.getSelectedIndex()) {
 			case 0:
 				if (folderTree != null) return folderTree;
@@ -797,13 +812,13 @@ public final class ProjectViewer extends JPanel
 					}
 				}
 			}
-		} else if (treeRoot.isProject() && msg instanceof EditorExitRequested) {
+		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof EditorExitRequested) {
 			// Editor is exiting, save info about current project
 			EditorExitRequested eer = (EditorExitRequested) msg;
 			ProjectViewer active = (ProjectViewer) viewers.get(eer.getView());
 			if (active == this || active == null || active.treeRoot != treeRoot)
 				closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
-		} else if (treeRoot.isProject() && msg instanceof BufferUpdate) {
+		} else if (treeRoot != null && treeRoot.isProject() && msg instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate) msg;
 
 			if (bu.getView() != null && bu.getView() != view) return;
@@ -975,6 +990,7 @@ public final class ProjectViewer extends JPanel
 		 */
 		public void run() {
 			showTrees();
+			showToolBar(config.getShowToolBar());
 			willRun = false;
 		}//}}}
 
@@ -1024,27 +1040,42 @@ public final class ProjectViewer extends JPanel
 
 		public void run() {
 			setEnabled(false);
-			JTree tree = getCurrentTree();
-			DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+			final JTree tree = getCurrentTree();
+			final DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
 			treeRoot = null;
-			tree.setModel(new DefaultTreeModel(
-				new DefaultMutableTreeNode(
-					jEdit.getProperty("projectviewer.loading_project",
-						new Object[] { pName } ))));
-			final VPTProject p = ProjectManager.getInstance().getProject(pName);
-			tModel.setRoot(p);
-			tree.setModel(tModel);
 			try {
 				SwingUtilities.invokeAndWait(
 					new Runnable() {
-						public void run() { setProject(p); }
+						public void run() {
+							tree.setModel(new DefaultTreeModel(
+								new DefaultMutableTreeNode(
+									jEdit.getProperty("projectviewer.loading_project",
+										new Object[] { pName } ))));
+										}
 					});
 			} catch (InterruptedException ie) {
 				// not gonna happen
 			} catch (java.lang.reflect.InvocationTargetException ite) {
 				// not gonna happen
 			}
-			setEnabled(true);
+
+			final VPTProject p = ProjectManager.getInstance().getProject(pName);
+
+			try {
+				SwingUtilities.invokeAndWait(
+					new Runnable() {
+						public void run() {
+							tModel.setRoot(p);
+							tree.setModel(tModel);
+							setProject(p);
+							setEnabled(true);
+						}
+					});
+			} catch (InterruptedException ie) {
+				// not gonna happen
+			} catch (java.lang.reflect.InvocationTargetException ite) {
+				// not gonna happen
+			}
 		}
 
 	} //}}}
