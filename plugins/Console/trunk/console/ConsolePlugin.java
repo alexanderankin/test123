@@ -44,7 +44,7 @@ public class ConsolePlugin extends EBPlugin
 	public static final Shell BEAN_SHELL = new ConsoleBeanShell();
 
 	/**
-	 * Return value of {@link #parseLineForErrors()} if the text does not match
+	 * Return value of {@link #parseLine()} if the text does not match
 	 * a known error pattern.
 	 */
 	public static final int NO_ERROR = -1;
