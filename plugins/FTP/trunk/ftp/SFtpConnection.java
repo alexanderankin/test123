@@ -19,6 +19,7 @@
 
 package ftp;
 
+import com.sshtools.j2ssh.*;
 import com.sshtools.j2ssh.authentication.*;
 import com.sshtools.j2ssh.configuration.*;
 import com.sshtools.j2ssh.connection.*;
@@ -26,12 +27,12 @@ import com.sshtools.j2ssh.io.UnsignedInteger32;
 import com.sshtools.j2ssh.session.*;
 import com.sshtools.j2ssh.sftp.*;
 import com.sshtools.j2ssh.transport.*;
-import com.sshtools.j2ssh.*;
 import java.io.*;
 import java.util.*;
-import org.gjt.sp.jedit.search.RESearchMatcher;
+import org.gjt.sp.jedit.JARClassLoader;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.MiscUtilities;
+import org.gjt.sp.jedit.search.RESearchMatcher;
 import org.gjt.sp.util.Log;
 
 class SFtpConnection extends ConnectionManager.Connection
@@ -243,6 +244,7 @@ class SFtpConnection extends ConnectionManager.Connection
 	private static FileAttributes DEFAULT_ATTRIBUTES;
 	static
 	{
+		ConfigurationLoader.setContextClassLoader(new JARClassLoader());
 		DEFAULT_ATTRIBUTES = new FileAttributes();
 		DEFAULT_ATTRIBUTES.setPermissions(new UnsignedInteger32(600));
 	}
