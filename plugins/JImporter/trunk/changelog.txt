@@ -9,6 +9,7 @@ case.
 import list.  If it is, tell the user in the status line.  
 * Did some internal cleanup of how option checkboxes are created.  (The code was
 remarkably inelegant before, it is almost palatable now.)
+* Code is now hosted in the JEdit CVS repository on Sourceforge.
 
 0.3.2 - Announced as beta on JEdit-Users list
 * Add an option to "Automatically Search when importing class at point" to save

@@ -8,8 +8,6 @@ Todo's Before I Can Release the Next Version
   everything is properly documented.
 * Combine the code in JEditClassImporter.importClass and 
   JEditClassImporter.importClassAtPoint -- they have a lot of redundancy.
-* Check code into CVS repository.
-* Add a README.JImporter into the guidelines directory of the CVS repository.
 
 Short Term Todo's
 -----------------
