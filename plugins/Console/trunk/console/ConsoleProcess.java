@@ -87,6 +87,7 @@ class ConsoleProcess
 				jEdit.getProperty("console.shell.detached",pp));
 		}
 
+		consoleState.process = null;
 		consoleState = null;
 		console = null;
 	} //}}}

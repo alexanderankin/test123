@@ -86,7 +86,7 @@ class ErrorMatcher implements Cloneable
 	DefaultErrorSource.DefaultError match(String text, String directory,
 			DefaultErrorSource errorSource)
 	{
-		if(warningRE.isMatch(text))
+		if(warningRE != null && warningRE.isMatch(text))
 		{
 			String _filename = MiscUtilities.constructPath(
 				directory,warningRE.substitute(text,filename));
