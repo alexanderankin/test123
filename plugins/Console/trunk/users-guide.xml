@@ -291,7 +291,7 @@
 <sect1 id="env-vars"><title>Environment variables</title>
 
 <para>
- When running on Unix and Windows NT/2000, the system shell lets you access
+ When running on Unix and Windows NT/2000/XP, the system shell lets you access
  and change
  operating system-specific environment variables. On other systems, you can
  define and use variables, but they are console-specific.
@@ -335,10 +335,6 @@
  directory where jEdit is installed.</para></listitem>
  <listitem><para><varname>${JEDIT_SETTINGS}</varname> - the full path of the
  jEdit settings directory.</para></listitem>
- <listitem><para><varname>~</varname> - this is not a <quote>variable</quote>
- per se, and it is specified using a different syntax, but it makes sense to
- mention it here.
- It expands to the full path of the user's home directory.</para></listitem>
  <listitem><para><varname>${PKG}</varname> - if the current buffer is a Java file,
  the current buffer's package name (or if the
  buffer doesn't contain a <userinput>package</userinput> statement, an empty
@@ -352,6 +348,10 @@
  <filename>/home/slava/jEdit/org/gjt/sp/jedit/</filename> directory, this will
  return <filename>/home/slava/jEdit/</filename>.
  </para></listitem>
+ <listitem><para><varname>~</varname> - this is not a <quote>variable</quote>
+ per-se, and it is specified using a different syntax, but it makes sense to
+ mention it here.
+ It expands to the full path of the user's home directory.</para></listitem>
 </itemizedlist>
 
 <para>
@@ -360,7 +360,7 @@
 
 <itemizedlist>
  <listitem><para><command>%env</command> - prints a list of all environment
- variables.</para></listitem>
+ variables, excluding the dynamic ones documented above.</para></listitem>
  <listitem><para><command>%set <replaceable>name</replaceable>
  <replaceable>value</replaceable></command> - sets the value of the specified
  environment variable. Note that if the desired value contains whitespace,
@@ -378,8 +378,9 @@
 
 <sidebar><title>Windows 95/98/ME</title>
 <para>
- Environment variables are not supported when running on Windows 95, 98, or
- ME, due to Java bugs which would cause jEdit to hang.
+ Due to Java bugs,
+ environment variables are not supported when running on Windows 95, 98, or
+ ME.
 </para>
 </sidebar>
 </sect1>
@@ -629,7 +630,7 @@ specified.</para></listitem>
 <sect3><title>The CAPTION element</title>
 
 <para>
- A <literal>CAPTION</literal> element adds a labelled box to the commando panel
+ A <literal>CAPTION</literal> element adds a labeled box to the commando panel
  that other UI elements can be added to.
  It must be placed inside the
  <literal>UI</literal> element. The only defined attribute is
@@ -822,6 +823,15 @@ of the new buffer. The default value is <quote>text</quote>.</para></listitem>
  Console plugin, and register a <classname>Shell</classname> implementation
  in the plugin's <function>start()</function> method.
 </para>
+
+<note>
+ <para>
+  All console classes mentioned in this chapter are contained in the
+  <filename>console</filename> package. So you should add an import statement
+  like the following to the start of your plugin's source file(s):
+ </para>
+ <programlisting>import console.*;</programlisting>
+</note>
 
 <sect1><title>Specifying dependencies</title>
 
@@ -1094,7 +1104,7 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
  <para>
   The <parameter>text</parameter> parameter must be a single line of text.
   <parameter>directory</parameter> is a path name; file names in the
-  output will be resolved relative to this dorectory. Finally,
+  output will be resolved relative to this directory. Finally,
   <parameter>errorSource</parameter> is your plugin's error source instance;
   any errors parsed from the output will be added here.
  </para>
