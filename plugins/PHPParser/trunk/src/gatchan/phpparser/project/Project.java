@@ -35,21 +35,19 @@ public final class Project {
   /** The file where the methods will be serialized. */
   private File methodFile;
   private File fileFile;
+
   /** The properties */
-  protected final Properties properties = new Properties();
-  /**
-   * This table will contains class names (lowercase) as key and {@link net.sourceforge.phpdt.internal.compiler.ast.ClassHeader}
-   * as values.
-   */
-  protected Hashtable classes;
-  /**
-   * This table will contains class names (lowercase) as key and {@link net.sourceforge.phpdt.internal.compiler.ast.MethodHeader}
-   * as values.
-   */
-  protected Hashtable methods;
-  /** This table will contains as key the file path, and as value a {@link java.util.List} */
-  protected Hashtable files;
-  protected QuickAccessItemFinder quickAccess;
+  private final Properties properties = new Properties();
+
+  /** This table will contains class names (lowercase) as key and {@link ClassHeader} as values. */
+  private Hashtable classes;
+
+  /** This table will contains class names (lowercase) as key and {@link MethodHeader} as values. */
+  private Hashtable methods;
+
+  /** This table will contains as key the file path, and as value a {@link List} */
+  private Hashtable files;
+  private QuickAccessItemFinder quickAccess;
 
   public Project(String name, String version) {
     properties.setProperty("name", name);
@@ -153,7 +151,7 @@ public final class Project {
     Log.log(Log.DEBUG, this, "Project loaded in " + (end - start) + "ms");
   }
 
-  private Hashtable readObjects(File target) throws FileNotFoundException, InvalidClassException,
+  private Hashtable readObjects(File target) throws FileNotFoundException,
                                                     ClassNotFoundException, IOException {
     ObjectInputStream objIn = null;
     try {
@@ -185,15 +183,19 @@ public final class Project {
       throw new InvalidProjectPropertiesException("Missing project version");
   }
 
-  public void setRoot(String root) { properties.setProperty("root", root); }
+  public void setRoot(String root) {
+    properties.setProperty("root", root);
+  }
 
-  public String getRoot() { return properties.getProperty("root"); }
+  public String getRoot() {
+    return properties.getProperty("root");
+  }
 
   /** This method is called to save the project. */
   public void save() {
     final long start = System.currentTimeMillis();
     Log.log(Log.DEBUG, this, "Saving the project");
-    File directory = classFile.getParentFile();
+    final File directory = classFile.getParentFile();
     if (!directory.exists()) {
       // todo : do better
       directory.mkdirs();
@@ -369,7 +371,7 @@ public final class Project {
   private static void clearSourceFileFromMap(String path, Hashtable table) {
     final Enumeration keys = table.keys();
     while (keys.hasMoreElements()) {
-      Object key = keys.nextElement();
+      final Object key = keys.nextElement();
       final PHPItem phpItem = (PHPItem) table.get(key);
       if (path.equals(phpItem.getPath())) {
         table.remove(key);
@@ -384,7 +386,7 @@ public final class Project {
    *
    * @param name the name of the class
    *
-   * @return a {@link net.sourceforge.phpdt.internal.compiler.ast.ClassHeader} or null
+   * @return a {@link ClassHeader} or null
    */
   public ClassHeader getClass(String name) {
     return (ClassHeader) classes.get(name.toLowerCase());
@@ -454,38 +456,41 @@ public final class Project {
 
     public void run() {
       final long start = System.currentTimeMillis();
-      VFS vfs = VFSManager.getVFSForPath(path);
+      final VFS vfs = VFSManager.getVFSForPath(path);
       try {
-        final String[] files = vfs._listDirectory(null, path, "*", true, null);
+        setStatus("Listing files");
+        final Object vfsSession = vfs.createVFSSession(path, null);
+        final String[] files = vfs._listDirectory(vfsSession, path, "*", true, null);
+        setStatus("Parsing");
         setProgressMaximum(files.length);
-        PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
+        final PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
         for (int i = 0; i < files.length; i++) {
-          String file = files[i];
+          final String file = files[i];
           if (mode.accept(file, "")) {
-            parseFile(phpParser, VFSManager.getVFSForPath(file), file);
+            parseFile(phpParser, VFSManager.getVFSForPath(file), file, vfsSession);
           }
           setProgressValue(++current);
         }
       } catch (IOException e) {
-        e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        Log.log(Log.WARNING, this, e);
       }
       final long end = System.currentTimeMillis();
       Log.log(Log.MESSAGE, this, "Project rebuild in " + (end - start) + "ms, " + parsedFileCount + " files parsed");
       EditBus.send(new PHPProjectChangedMessage(this, project));
-
     }
 
     /**
      * Parse a file.
      *
-     * @param phpParser the php parser.
-     * @param f         the file to parse. If it is a directory, it will be parsed recursively
+     * @param phpParser  the php parser.
+     * @param f          the file to parse. If it is a directory, it will be parsed recursively
+     * @param vfsSession
      */
-    private void parseFile(PHPSideKickParser phpParser, VFS f, String path) {
+    private void parseFile(PHPSideKickParser phpParser, VFS f, String path, Object vfsSession) {
       Reader reader = null;
       try {
         try {
-          InputStream inputStream = f._createInputStream(null, path, false, null);
+          final InputStream inputStream = f._createInputStream(vfsSession, path, false, null);
           reader = new BufferedReader(new InputStreamReader(inputStream));
           parsedFileCount++;
           try {
