@@ -1,5 +1,7 @@
 <project name="JumpPlugin" default="jar" basedir=".">
-
+    <description>
+Hi packager! This is a Jump Plugin build file.
+    </description>
   <property name="jedit.install.dir"  value="C:/Program Files/jEdit 4.1/"/>
   <property name="jar.name"  value="Jump"/>
 
@@ -12,8 +14,8 @@
     <pathelement location="./src"/>
   </path>
 
-
-  <target name="compile">     
+<!--{{{ compile -->
+    <target name="compile"> 
     <javac
       srcdir="."
       deprecation="on"
@@ -21,15 +23,19 @@
     >
       <classpath refid="project.class.path"/>
     </javac>
-  </target>
+  </target> <!--}}}-->
 
-  <target name="jar" depends="compile">
+<!--{{{ jar -->
+    <target name="jar" depends="compile">
+    <description>
+"jar" target - Compile plugin, makes jar file in parent directory. (binaries only)
+    </description>
     <jar jarfile="../${jar.name}.jar">
       <fileset dir=".">
         <include name="**/*.class"/>
         <include name="**/*.props"/>
         <include name="**/*.html"/>
-       
+        <include name="**/*.gif"/>
         <include name="actions.xml"/>
         <include name="dockables.xml"/>
       </fileset>
@@ -37,16 +43,17 @@
     <delete>
         <fileset dir="." includes="**/*.class"/>
     </delete>
-  </target>  
+  </target>   <!--}}}-->
 
-  <target name="test" depends="compile">
+<!--{{{ test -->
+    <target name="test" depends="compile">
     <mkdir dir="${install.dir}"/>
     <jar jarfile="${install.dir}/${jar.name}.jar">
       <fileset dir=".">
         <include name="**/*.class"/>
         <include name="**/*.props"/>
         <include name="**/*.html"/>
-         <include name="img/*.gif"/>
+        <include name="img/*.gif"/>
         <include name="actions.xml"/>
         <include name="dockables.xml"/>
       </fileset>
@@ -54,31 +61,29 @@
     <delete>
         <fileset dir="." includes="**/*.class"/>
     </delete>
-  </target>
+  </target> <!--}}}-->
   
-  <target name="dist" depends="compile,jar">
-    <tstamp/>
+<!--{{{ dist -->
+    <target name="dist" depends="compile,jar">
+        <description>
+"dist" target - Compile plugin, makes Jump.zip (which contains Jump.jar and sources in /Jump) in parent directory.
+Also create binary Jump.jar in parent dir.
+    </description>
     <mkdir dir="${install.dir}"/>
+    <mkdir dir="../tmp/Jump"/>
     
-  <zip destfile="${jar.name}.zip">
-    <zipfileset dir="." includes="**/*.html" />
-    <zipfileset dir="." includes="**/*.xml" />
-    <zipfileset dir="." includes="**/*.props" />
-    <zipfileset dir="." includes="**/*.java" />
-    <zipfileset dir="." includes="**/*.jar" />
-  </zip>
-  
-  </target>
-  
-  <target name="help">
-    <echo>There are five targets available.
-    'help' - You see now.
-    'compile' - Compile sources and put .class files in current directory. I not use this target alone.
-    'test*' - Compile plugin, make jar file and put it into "user.home"/.jedit/jar - to testing.
-    'jar' - Compile plugin, make jar file and put it into parent directory
-    'dist' - Make archive which contain both sources and jar.
-    </echo>
+    <copy todir="../tmp/Jump">
+        <fileset dir="." excludes="CVS" />
+    </copy>
     
-  </target>
+    <copy file="../${jar.name}.jar" todir="../tmp" />
+    
+   <zip destfile="../${jar.name}.zip">
+        <zipfileset dir="../tmp" includes="**/*.*" />
+    </zip>
+    
+    <delete dir="../tmp" />
+  
+  </target> <!--}}}-->
   
 </project>
