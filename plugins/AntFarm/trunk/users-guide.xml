@@ -13,36 +13,44 @@
 
 <book>
 
-<bookinfo><title>AntFarm plugin user's guide</title>
+<bookinfo><title>AntFarm Plugin User's Guide</title>
 
- <copyright>
-  <year>2001</year>
-  <holder>Brian Knowles</holder>
- </copyright>
- <othercredit><contrib>Maintainer</contrib>
-  <firstname>Brian</firstname><surname>Knowles</surname>
+ <othercredit><contrib>Maintainers</contrib>
+  <firstname>Todd</firstname><surname>Papaioannou</surname>
  </othercredit>
- <othercredit><contrib>Co-authors</contrib>
-  <firstname>Richard</firstname><surname>Wan</surname>
+ <othercredit><contrib>Maintainers</contrib>
+  <firstname>James</firstname><surname>Wilson</surname>
  </othercredit>
+
  <othercredit><contrib>Co-authors</contrib>
   <firstname>Fernando</firstname><surname>Aranguiz</surname>
+ </othercredit>
+ <othercredit><contrib>Co-authors</contrib>
+  <firstname>Brian</firstname><surname>Knowles</surname>
  </othercredit>
  <othercredit><contrib>Co-authors</contrib>
   <firstname>Todd</firstname><surname>Papaioannou</surname>
  </othercredit>
  <othercredit><contrib>Co-authors</contrib>
-  <firstname>Calvin</firstname><surname>Yu</surname>
+  <firstname>Chris</firstname><surname>Steinbeck</surname>
  </othercredit>
  <othercredit><contrib>Co-authors</contrib>
-  <firstname>Chris</firstname><surname>Steinbeck</surname>
+  <firstname>Richard</firstname><surname>Wan</surname>
+ </othercredit>
+ <othercredit><contrib>Co-authors</contrib>
+  <firstname>James</firstname><surname>Wilson</surname>
+ </othercredit>
+ <othercredit><contrib>Co-authors</contrib>
+  <firstname>Calvin</firstname><surname>Yu</surname>
+ </othercredit>
+
+ <othercredit><contrib>Initial AntFarm authors</contrib>
+  <firstname>Rick</firstname><surname>Gibbs</surname>
  </othercredit>
  <othercredit><contrib>Initial AntFarm authors</contrib>
   <firstname>Chris</firstname><surname>Scott</surname>
  </othercredit>
- <othercredit><contrib>Initial AntFarm authors</contrib>
-  <firstname>Rick</firstname><surname>Gibbs</surname>
- </othercredit>
+
  <legalnotice><title>Legal Notice</title>
   <para>
    Permission is granted to copy, distribute and/or modify this document
