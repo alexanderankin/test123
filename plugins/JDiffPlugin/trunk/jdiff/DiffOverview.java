@@ -1,7 +1,8 @@
 /*
  * DiffOverview.java - JComponent subclass providing a graphical overview of a
  *                     Diff and synchronized scrolling
- * Copyright (C) 2000 Andre Kaplan, portions by mike dillon
+ * Copyright (c) 2000 portions by mike dillon
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,7 +21,6 @@
 
 
 package jdiff;
-
 
 import java.awt.Dimension;
 

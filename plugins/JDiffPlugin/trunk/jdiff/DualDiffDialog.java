@@ -1,7 +1,8 @@
 /*
  * DualDiffDialog.java - Port of the Show_Dual_Diff.bsh BeanShell macro
  * script - provides a front end to the JDiff plugin
- * Copyright (C) 2001 John Gellene, Andre Kaplan
+ * Copyright (c) 2001 John Gellene
+ * Copyright (c) 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,13 +17,10 @@
  * You should have received a copy of the GNU General Public License
  * along with the jEdit program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- *
- * $Id$
  */
 
 
 package jdiff;
-
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
