@@ -17,7 +17,8 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-import java.awt.Color;
+import java.awt.event.*;
+import java.awt.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
@@ -25,9 +26,12 @@ import org.gjt.sp.jedit.msg.*;
 
 public class ErrorListPlugin extends EBPlugin
 {
+	public static final String NAME = "error-list";
+
 	public void start()
 	{
-		jEdit.addAction(new error_list());
+		jEdit.addAction(new OpenAction());
+		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,NAME);
 		propertiesChanged();
 	}
 
@@ -51,38 +55,8 @@ public class ErrorListPlugin extends EBPlugin
 			handleEditPaneMessage((EditPaneUpdate)message);
 		else if(message instanceof PropertiesChanged)
 			propertiesChanged();
-	}
-
-	// package-private members
-	static boolean isErrorListShowing(View view)
-	{
-		if(errorLists == null)
-			return false;
-		else
-			return (errorLists.get(view) != null);
-	}
-
-	static ErrorList getErrorList(View view)
-	{
-		if(errorLists == null)
-			errorLists = new Hashtable();
-
-		ErrorList list = (ErrorList)errorLists.get(view);
-		if(list != null)
-		{
-			list.toFront();
-			list.requestFocus();
-			return list;
-		}
-
-		list = new ErrorList(view);
-		errorLists.put(view,list);
-		return list;
-	}
-
-	static void closeErrorList(View view)
-	{
-		errorLists.remove(view);
+		else if(message instanceof CreateDockableWindow)
+			handleCreateDockableMessage((CreateDockableWindow)message);
 	}
 
 	static Color getErrorColor(int type)
@@ -91,13 +65,12 @@ public class ErrorListPlugin extends EBPlugin
 	}
 
 	// private members
-	private static Hashtable errorLists;
 	private static boolean showOnError;
 	private static boolean showOnStartup;
 	private static Color warningColor;
 	private static Color errorColor;
 
-	private static void propertiesChanged()
+	private void propertiesChanged()
 	{
 		showOnError = jEdit.getBooleanProperty("error-list.showOnError");
 		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
@@ -106,20 +79,26 @@ public class ErrorListPlugin extends EBPlugin
 			"error-list.errorColor"));
 	}
 
+	private void showErrorList(View view)
+	{
+		DockableWindowManager dockableWindowManager = view.getDockableWindowManager();
+		if(!dockableWindowManager.isDockableWindowVisible(NAME))
+			dockableWindowManager.addDockableWindow(NAME);
+	}
+
 	private void handleErrorSourceMessage(ErrorSourceUpdate message)
 	{
 		Object what = message.getWhat();
 		if(what == ErrorSourceUpdate.ERROR_ADDED
 			|| what == ErrorSourceUpdate.ERROR_REMOVED)
 		{
-			if((errorLists == null || errorLists.size() == 0)
-				&& showOnError)
+			if(showOnError)
 			{
 				View view = jEdit.getFirstView();
 				if(view == null)
 					showOnStartup = true;
 				else
-					getErrorList(view);
+					showErrorList(view);
 			}
 
 			ErrorSource.Error error = message.getError();
@@ -168,7 +147,7 @@ public class ErrorListPlugin extends EBPlugin
 			if(showOnStartup)
 			{
 				showOnStartup = false;
-				getErrorList(message.getView());
+				showErrorList(message.getView());
 			}
 		}
 	}
@@ -180,6 +159,36 @@ public class ErrorListPlugin extends EBPlugin
 			ErrorHighlight highlight = new ErrorHighlight();
 			message.getEditPane().getTextArea().getPainter()
 				.addCustomHighlight(highlight);
+		}
+	}
+
+	private void handleCreateDockableMessage(CreateDockableWindow message)
+	{
+		if(message.getDockableWindowName().equals(NAME))
+			message.setDockableWindow(new ErrorList(message.getView()));
+	}
+
+	public class OpenAction extends EditAction
+	{
+		public OpenAction()
+		{
+			super("error-list");
+		}
+
+		public void actionPerformed(ActionEvent evt)
+		{
+			getView(evt).getDockableWindowManager().toggleDockableWindow(NAME);
+		}
+	
+		public boolean isToggle()
+		{
+			return true;
+		}
+	
+		public boolean isSelected(Component comp)
+		{
+			return getView(comp).getDockableWindowManager()
+				.isDockableWindowVisible(NAME);
 		}
 	}
 }
