@@ -57,12 +57,19 @@
     <title>Usage</title>
 
     <itemizedlist>
-        <listitem>Open the File System Browser
-        (<guimenu>Utilities&gt;</guimenu>
-         <guimenuitem>File&nbsp;System&nbsp;Browser</guimenuitem>)
+        <listitem>
+        Open the File System Browser:
+            <guimenu>Utilities&gt;</guimenu>
+            <guimenuitem>File&nbsp;System&nbsp;Browser</guimenuitem>
         </listitem>
 
-        <listitem>Right-click on a file and select <guimenuitem>Hex dump</guimenuitem>.
+        <listitem>
+            Select a file
+        </listitem>
+
+        <listitem>
+            In the <guimenu>Plugins</guimenu> menu at the top of the File System Browser,
+            select <guimenuitem>Hex dump</guimenuitem>.
         </listitem>
     </itemizedlist>
 </chapter>
