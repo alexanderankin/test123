@@ -14,12 +14,15 @@ public final class QuickAccessItemFinder {
     items = new HashMap();
   }
 
-  public void addToIndex(PHPItem o) {
-    final String name = o.getName().toLowerCase();
-    addItem(name.substring(0, 1), o);
+  public void addToIndex(PHPItem phpItem) {
+    final String name = phpItem.getName().toLowerCase();
+    for (int i = 0;i<name.length()-1;i++) {
+      final String sub = name.substring(i, i + 1);
+      addItem(sub, phpItem);
+    }
     for (int i = 0; i < name.length() - indexLength; i++) {
       final String sub = name.substring(i, i + indexLength);
-      addItem(sub, o);
+      addItem(sub, phpItem);
     }
   }
 
