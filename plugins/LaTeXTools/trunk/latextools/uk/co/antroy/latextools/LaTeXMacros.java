@@ -34,7 +34,8 @@ import javax.swing.JCheckBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.*;
+import javax.swing.tree.*;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.Macros;
@@ -46,7 +47,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 public class LaTeXMacros {
     public static final String MAIN_TEX_FILE_KEY = "latex.root";
-    public static final String IMPORT_REG_EX = "\\\\(?:(?:input)|(?:import))\\{(.*?)\\}";
+    public static final String IMPORT_REG_EX = "\n\\s*?\\\\in(?:(?:put)|(?:clude))\\{(.*?)\\}";
 
     public static void repeat(String expression, int start, int no, View view) {
         StringBuffer sb = new StringBuffer("");
@@ -185,7 +186,8 @@ public class LaTeXMacros {
         StringBuffer regex = new StringBuffer(":");
         regex.append(MAIN_TEX_FILE_KEY);
         regex.append("=(?:'|\"){0,1}(.*?)(?:'|\"){0,1}:");
-        REMatch[] match = findInDocument(buffer, regex.toString(), 0, 5);
+        REMatch[] match = findInDocument(buffer, regex.toString(),
+                                    0, Math.min(buffer.getLineCount()-1,5));
 
         if (match.length > 0) {
             path = match[0].toString(1);
@@ -226,7 +228,7 @@ public class LaTeXMacros {
 
     private static REMatch[] findInDocument(Buffer buf, String regex) {
 
-        return findInDocument(buf, regex, 0, buf.getLineCount());
+        return findInDocument(buf, regex, 0, buf.getLineCount()-1);
     }
 
     private static REMatch[] findInDocument(Buffer buf, String regex, int startLine, int endLine) {
@@ -533,14 +535,22 @@ public class LaTeXMacros {
         jEdit.openFile(view, match[0].toString());
      }
     
-    public static List getProjectFiles(View view, Buffer buffer){
+     
+     public static void showProjectTree(View view, Buffer buffer){
+        JDialog jd = new JDialog(view, "Project Tree");
+        jd.getContentPane().add(new JTree(getProjectFiles(view, buffer)));
+        jd.pack();
+        jd.setLocation(getCenter(view, jd));
+        jd.setVisible(true);
+     }
+     
+    public static DefaultMutableTreeNode getProjectFiles(View view, Buffer buffer){
        File main = getMainTeXFile(buffer);
        return getNestedImports(view, main);
     }
     
-    private static List getNestedImports(View view, File in){
-       List out = new ArrayList();
-       out.add(in);
+    private static DefaultMutableTreeNode getNestedImports(View view, File in){
+       DefaultMutableTreeNode out = new DefaultMutableTreeNode(in);
        Buffer b = jEdit.openTemporary(view, in.getParent(), in.getName(),false);
        File[] children = getImports(b);
        for (int i=0; i < children.length; i++){
@@ -548,8 +558,7 @@ public class LaTeXMacros {
           //Macros.message(null,f.toString());
           if (!f.exists()) continue;
           //Macros.message(null,"Ex: " + f.toString());
-          //out.add(f);          
-          out.addAll(getNestedImports(view, f));
+          out.add(getNestedImports(view, f));
        }
        
        return out;
