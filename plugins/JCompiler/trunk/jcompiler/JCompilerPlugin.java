@@ -49,27 +49,17 @@ public class JCompilerPlugin extends EditPlugin
 
 
 	public void start() {
-		String javaHome = System.getProperty("java.home");
-		if (javaHome.toLowerCase().endsWith(File.separator + "jre"))
-			javaHome = javaHome.substring(0, javaHome.length() - 4);
-		String toolsPath = MiscUtilities.constructPath(javaHome,"lib","tools.jar");
-		String javaVersion = System.getProperty("java.version");
-		boolean isJDK12 = MiscUtilities.compareVersions(javaVersion, "1.2") >= 0;
-
-		// find and add tools.jar to the list of jEdit plugins on JDK 1.2 or higher:
-		// (tools.jar contains the compiler class)
-		if (isJDK12 && new File(toolsPath).exists()) {
-			EditPlugin.JAR jar = jEdit.getPluginJAR(toolsPath);
-			if (jar == null) {
-				Log.log(Log.DEBUG, this, "JDK 1.2 or higher detected, adding " + toolsPath + " to jEdit plugins");
-				try {
-					jEdit.addPluginJAR(new EditPlugin.JAR(toolsPath, new JARClassLoader(toolsPath)));
-				}
-				catch (IOException ioex) {
-					Log.log(Log.ERROR, this, "Could not add tools.jar to jEdit plugins, reason follows...");
-					Log.log(Log.ERROR, this, ioex);
-				}
-			}
+		if(!MiscUtilities.isToolsJarAvailable())
+		{
+			// I can't live without my tools.jar:
+			throw new UnsupportedOperationException(
+				"Could not find library tools.jar!\n"
+				+ "This library is essential for the JCompiler plugin.\n"
+				+ "It usually resides in {java.home}/../lib/.\n"
+				+ "Your java.home is " + System.getProperty("java.home") + "\n"
+				+ "Please make sure that tools.jar is either in your\n"
+				+ "CLASSPATH or in the location mentioned above.\n"
+				+ "If that doesn't help, try adding it to jEdit's jars/ folder.");
 		}
 
 		// register the JCompiler shell:
