@@ -52,11 +52,11 @@ public class TagHighlight extends TextAreaExtension
 	} //}}}
 
 	//{{{ paintValidLine() method
-	public void paintValidLine(Graphics2D gfx, int physicalLine,
-		int start, int end, int y)
+	public void paintValidLine(Graphics2D gfx, int screenLine,
+		int physicalLine, int start, int end, int y)
 	{
 		if(match != null)
-			paintHighlight(gfx,physicalLine,start,end,y,match);
+			paintHighlight(gfx,screenLine,physicalLine,start,end,y,match);
 	} //}}}
 
 	//{{{ bufferChanged() method
@@ -99,7 +99,7 @@ public class TagHighlight extends TextAreaExtension
 	//}}}
 
 	//{{{ paintHighlight() method
-	private void paintHighlight(Graphics gfx, int physicalLine,
+	private void paintHighlight(Graphics gfx, int screenLine, int physicalLine,
 		int start, int end, int y, MatchTag.Tag tag)
 	{
 		if(tag.start >= end || tag.end < start)
@@ -107,8 +107,6 @@ public class TagHighlight extends TextAreaExtension
 
 		int tagStartLine = textArea.getScreenLineOfOffset(tag.start);
 		int tagEndLine = textArea.getScreenLineOfOffset(tag.end);
-
-		int screenLine = textArea.getScreenLineOfOffset(start);
 
 		FontMetrics fm = textArea.getPainter().getFontMetrics();
 		int height = fm.getHeight();
