@@ -1,0 +1,6 @@
+CVS policy file
+
+plugin: TomcatSwitch
+author: Amedeo Farello <afarello@libero.it>
+
+please do not commit changes to this plugin without first consulting the author.
