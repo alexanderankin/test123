@@ -221,9 +221,12 @@ public class Code2HTML
             tokens = buffer.markTokens(i).getFirstToken();
             this.painter.setPos(0);
             if (tokens == null) {
-                this.painter.paintPlainLine(out, i + 1, line, tokens);
+                this.painter.paintPlainLine(out, i + 1, line, null);
             } else {
-                this.painter.paintSyntaxLine(out, i + 1, line, tokens);
+                SyntaxToken syntaxTokens = SyntaxTokenUtilities.convertTokens(
+                    tokens
+                );
+                this.painter.paintSyntaxLine(out, i + 1, line, syntaxTokens);
             }
             out.write("\n");
         }

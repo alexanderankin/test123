@@ -27,6 +27,7 @@ import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.syntax.Token;
 
+import code2html.SyntaxToken;
 import code2html.line.LinePosition;
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
@@ -68,7 +69,7 @@ public class HtmlPainter
     }
 
 
-    public void paintPlainLine(Writer out, int lineNumber, Segment line, Token tokens)
+    public void paintPlainLine(Writer out, int lineNumber, Segment line, SyntaxToken tokens)
     {
         try {
             if (this.showGutter) {
@@ -113,7 +114,7 @@ public class HtmlPainter
 
 
     public void paintSyntaxLine(
-            Writer out, int lineNumber, Segment line, Token tokens
+            Writer out, int lineNumber, Segment line, SyntaxToken tokens
     ) {
         try {
             if (this.showGutter) {
