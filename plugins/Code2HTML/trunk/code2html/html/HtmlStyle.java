@@ -1,5 +1,5 @@
 /*
- * HTMLStyle.java
+ * HtmlStyle.java
  * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
@@ -28,12 +28,12 @@ import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.util.Log;
 
 
-public class HTMLStyle
+public class HtmlStyle
 {
     protected SyntaxStyle[] styles = null;
 
 
-    public HTMLStyle(SyntaxStyle[] styles) {
+    public HtmlStyle(SyntaxStyle[] styles) {
         this.styles = styles;
     }
 
@@ -45,7 +45,7 @@ public class HTMLStyle
 
     public String toHTML(SyntaxStyle style, String text) {
         if (style == null) {
-            Log.log(Log.DEBUG, HTMLStyle.class,
+            Log.log(Log.DEBUG, HtmlStyle.class,
                     "toHTML(SyntaxStyle style): null style");
             return text;
         }

@@ -42,7 +42,7 @@ import code2html.html.HtmlCssGutter;
 import code2html.html.HTMLCSSStyle;
 import code2html.html.HtmlGutter;
 import code2html.html.HtmlPainter;
-import code2html.html.HTMLStyle;
+import code2html.html.HtmlStyle;
 
 import code2html.line.LineTabExpander;
 import code2html.line.LineWrapper;
@@ -56,7 +56,7 @@ public class Code2HTML
 
     private boolean useSelection;
     private JEditTextArea   textArea = null;
-    private HTMLStyle       style    = null;
+    private HtmlStyle       style    = null;
     private HtmlGutter      gutter   = null;
     private HtmlPainter     painter  = null;
 
@@ -75,7 +75,7 @@ public class Code2HTML
         if (this.useCSS) {
             this.style = new HTMLCSSStyle(styles);
         } else {
-            this.style = new HTMLStyle(styles);
+            this.style = new HtmlStyle(styles);
         }
 
         if (this.showGutter) {
