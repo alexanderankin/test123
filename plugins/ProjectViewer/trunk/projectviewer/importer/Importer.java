@@ -26,6 +26,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 
+import org.gjt.sp.jedit.jEdit;
+
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
@@ -47,7 +49,8 @@ import projectviewer.config.ProjectViewerConfig;
  *	<p>Since a lot of time may be required to import large number of files, the
  *	importing is done in its own separate thread, so that the GUI may be
  *	used normally during the process. This behaviour can be prevented if
- *	wished.</p>
+ *	wished. If importing in a separate thread, the PV GUI will be blocked
+ *	during the import phase (but the rest of jEdit will be usable).</p>
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
@@ -77,13 +80,9 @@ public abstract class Importer implements Runnable {
 			node = (VPTNode) node.getParent();
 		}
 		selected = node;
-		if (node.isRoot()) {
+		project = VPTNode.findProjectFor(node);
+		if (project == null) {
 			throw new IllegalArgumentException("Cannot add to root node.");
-		} else {
-			while (!node.isProject()) {
-				node = (VPTNode) node.getParent();
-			}
-			project = (VPTProject) node;
 		}
 		this.viewer = viewer;
 		this.noThread = noThread;
@@ -197,14 +196,25 @@ public abstract class Importer implements Runnable {
 
 	//{{{ run() method
 	public void run() {
-		Collection c = internalDoImport();
-		if (c != null && c.size() > 0) {
-			for (Iterator i = c.iterator(); i.hasNext(); ) {
-				importNode((VPTNode)i.next());
+		if (!noThread) {
+			viewer.setStatus(jEdit.getProperty("projectviewer.import.wait_msg"));
+			viewer.setEnabled(false);
+		}
+		try {
+			Collection c = internalDoImport();
+			if (c != null && c.size() > 0) {
+				for (Iterator i = c.iterator(); i.hasNext(); ) {
+					importNode((VPTNode)i.next());
+				}
+				ProjectViewer.nodeStructureChangedFlat(project);
+				if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
+					ProjectManager.getInstance().saveProject(project);
+				}
 			}
-			ProjectViewer.nodeStructureChangedFlat(project);
-			if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-				ProjectManager.getInstance().saveProject(project);
+		} finally {
+			// in case any RuntimeException occurs, let's be cautious...
+			if (!noThread) {
+				viewer.setEnabled(true);
 			}
 		}
 	} //}}}
