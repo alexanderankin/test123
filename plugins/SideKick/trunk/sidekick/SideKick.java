@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2003 Slava Pestov
+ * Copyright (C) 2003, 2004 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -57,10 +57,7 @@ class SideKick implements EBComponent
 			}
 		});
 
-		Buffer buffer = view.getBuffer();
-
-		if(parser != null)
-			addBufferChangeListener(buffer);
+		buffer = view.getBuffer();
 
 		if(buffer.getBooleanProperty(
 			"sidekick.buffer-change-parse")
@@ -85,8 +82,6 @@ class SideKick implements EBComponent
 	 */
 	void parse(final boolean showParsingMessage)
 	{
-		buffer = view.getBuffer();
-
 		if(SideKickPlugin.isParsingBuffer(buffer))
 			return;
 
@@ -192,10 +187,11 @@ class SideKick implements EBComponent
 		else if(msg instanceof PluginUpdate)
 		{
 			PluginUpdate pmsg = (PluginUpdate)msg;
-			if(pmsg.getWhat() == PluginUpdate.UNLOADED)
+			if(pmsg.getWhat() == PluginUpdate.UNLOADED
+				|| pmsg.getWhat() == PluginUpdate.LOADED)
 			{
 				/* Pick a parser again in case our parser
-				plugin was unloaded. */
+				plugin was loaded or unloaded. */
 				setParser();
 			}
 		} //}}}
@@ -259,8 +255,6 @@ class SideKick implements EBComponent
 	{
 		ErrorSource.unregisterErrorSource(errorSource);
 		errorSource.clear();
-
-		buffer = view.getBuffer();
 
 		SideKickParsedData data = new SideKickParsedData(buffer.getName());
 		data.root.add(new DefaultMutableTreeNode(
@@ -348,7 +342,7 @@ class SideKick implements EBComponent
 				removeBufferChangeListener(this.buffer);
 				deactivateParser();
 
-				Buffer buffer = editPane.getBuffer();
+				buffer = editPane.getBuffer();
 				parser = SideKickPlugin.getParserForBuffer(buffer);
 				activateParser();
 
@@ -374,7 +368,7 @@ class SideKick implements EBComponent
 			removeBufferChangeListener(this.buffer);
 			deactivateParser();
 
-			Buffer buffer = view.getBuffer();
+			buffer = view.getBuffer();
 			this.editPane = view.getEditPane();
 
 			parser = SideKickPlugin.getParserForBuffer(buffer);
@@ -500,9 +494,8 @@ class SideKick implements EBComponent
 	//{{{ BufferChangeHandler class
 	class BufferChangeHandler extends BufferChangeAdapter
 	{
-		//{{{ contentInserted() method
-		public void contentInserted(Buffer buffer, int startLine, int offset,
-			int numLines, int length)
+		//{{{ parseOnKeyStroke() method
+		private void parseOnKeyStroke(Buffer buffer)
 		{
 			if(buffer != SideKick.this.buffer)
 			{
@@ -515,19 +508,18 @@ class SideKick implements EBComponent
 				parseWithDelay();
 		} //}}}
 
+		//{{{ contentInserted() method
+		public void contentInserted(Buffer buffer, int startLine, int offset,
+			int numLines, int length)
+		{
+			parseOnKeyStroke(buffer);
+		} //}}}
+
 		//{{{ contentRemoved() method
 		public void contentRemoved(Buffer buffer, int startLine, int offset,
 			int numLines, int length)
 		{
-			if(buffer != SideKick.this.buffer)
-			{
-				Log.log(Log.ERROR,this,"We have " + SideKick.this.buffer
-					+ " but got event for " + buffer);
-				return;
-			}
-
-			if(buffer.isLoaded() && buffer.getBooleanProperty("sidekick.keystroke-parse"))
-				parseWithDelay();
+			parseOnKeyStroke(buffer);
 		} //}}}
 	} //}}}
 
