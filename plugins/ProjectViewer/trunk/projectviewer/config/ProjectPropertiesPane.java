@@ -44,6 +44,7 @@ import javax.swing.WindowConstants;
 // Import jEdit
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
 import projectviewer.ProjectViewer;
@@ -105,7 +106,7 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 		   chooser.setSelectedFile(new File(root));
 		}
 
-		if (chooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+		if (chooser.showOpenDialog(GUIUtilities.getParentDialog(this)) == JFileChooser.APPROVE_OPTION) {
 			root = chooser.getSelectedFile().getAbsolutePath();
 			projRoot.setText(root);
 			projRoot.setToolTipText(projRoot.getText());
