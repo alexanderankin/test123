@@ -23,7 +23,7 @@ package whitespace;
 
 import java.awt.Color;
 import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 import java.util.Vector;
@@ -37,13 +37,12 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.TextAreaHighlight;
+import org.gjt.sp.jedit.textarea.TextAreaExtension;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.util.Log;
 
 
-public class FoldHighlight
-    implements TextAreaHighlight
+public class FoldHighlight extends TextAreaExtension
 {
     // (EditPane, FoldHighlight) association
     private static final Hashtable highlights = new Hashtable();
@@ -53,25 +52,20 @@ public class FoldHighlight
     );
 
     private JEditTextArea textArea;
-    private TextAreaHighlight next;
     private Segment segment = new Segment();
 
 
-    private FoldHighlight() {}
-
-
-    public void init(JEditTextArea textArea, TextAreaHighlight next) {
+    private FoldHighlight(JEditTextArea textArea) {
         this.textArea = textArea;
-        this.next = next;
     }
 
 
-    public void paintHighlight(Graphics gfx, final int virtualLine, int y) {
+    public void paintValidLine(
+            Graphics2D gfx, int physicalLine, int start, int end, int y
+    ) {
         WhiteSpaceModel model = this.getModel();
 
         if ((model != null) && model.getFoldHighlight().isEnabled()) {
-            int physicalLine = this.textArea.getBuffer().virtualToPhysical(virtualLine);
-
             try {
                 if (    (this.textArea.getLineStartOffset(physicalLine) == -1)
                     ||  (this.textArea.getLineEndOffset(physicalLine) == -1)
@@ -110,14 +104,10 @@ public class FoldHighlight
                 gfx.drawLine(x0, y0, x0, y0 + fm.getHeight() - 1);
             }
         }
-
-        if (this.next != null) {
-            this.next.paintHighlight(gfx, virtualLine, y);
-        }
     }
 
 
-    public String getToolTipText(MouseEvent evt) {
+    public String getToolTipText(int x, int y) {
         WhiteSpaceModel model = this.getModel();
 
         if (    (model != null)
@@ -126,8 +116,6 @@ public class FoldHighlight
         ) {
             JEditTextArea ta = this.textArea;
             Buffer buffer = ta.getBuffer();
-            int x = evt.getX();
-            int y = evt.getY();
 
             int virtualLine = ta.yToLine(y);
             int physicalLine = buffer.virtualToPhysical(virtualLine);
@@ -210,9 +198,7 @@ public class FoldHighlight
             }
         }
 
-        if (this.next == null) { return null; }
-
-        return this.next.getToolTipText(evt);
+        return null;
     }
 
 
@@ -259,8 +245,8 @@ public class FoldHighlight
     }
 
 
-    public static TextAreaHighlight addHighlightTo(EditPane editPane) {
-        TextAreaHighlight textAreaHighlight = new FoldHighlight();
+    public static TextAreaExtension addHighlightTo(EditPane editPane) {
+        TextAreaExtension textAreaHighlight = new FoldHighlight(editPane.getTextArea());
         highlights.put(editPane, textAreaHighlight);
         return textAreaHighlight;
     }

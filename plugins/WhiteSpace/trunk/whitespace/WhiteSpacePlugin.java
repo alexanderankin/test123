@@ -126,7 +126,7 @@ public class WhiteSpacePlugin
         // Drawn second: whitespace highlights must be drawn after fold guides
         textAreaPainter.addCustomHighlight(whiteSpaceHighlight);
         // Drawn first
-        textAreaPainter.addCustomHighlight(foldHighlight);
+        textAreaPainter.addExtension(foldHighlight);
     }
 
 
