@@ -58,7 +58,7 @@ public class ColorTabs
    private static ColorTabs colorTabs = null;
    private static boolean useColors = false;
 
-   private boolean colourHighlight = true;
+   private boolean colorHighlight = true;
    private boolean colourText = false;
    private boolean colourTitles = false;
    private boolean colourVariation = true;
@@ -369,12 +369,12 @@ public class ColorTabs
             colourTitles = !colourTitles;
          }
 
-         if (colourHighlight != jEdit.getBooleanProperty("buffertabs.colourhighlight"))
+         if (colorHighlight != jEdit.getBooleanProperty("buffertabs.colourhighlight"))
          {
-            colourHighlight = !colourHighlight;
+            colorHighlight = !colorHighlight;
 
             //Turn off all colourhighlight
-            if (!colourHighlight)
+            if (!colorHighlight)
             {
                try
                {
@@ -451,7 +451,7 @@ public class ColorTabs
     */
    void updateHighlight(BufferTabs parent, int index)
    {
-      if (useColors && colourHighlight)
+      if (useColors && colorHighlight)
       {
 
          // System.out.println("CES: updateHighlight  index="+index +"   selectedIndex="+parent.getSelectedIndex());
