@@ -502,7 +502,7 @@ public class SqlUtils
    * @return    The Preprocessors value
    * @since
    */
-  protected static java.util.List getPreprocessors()
+  public static java.util.List getPreprocessors()
   {
     if ( preprocessors == null )
       fillPreprocessors();

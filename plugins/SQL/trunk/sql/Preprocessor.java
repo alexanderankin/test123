@@ -62,6 +62,17 @@ public abstract class Preprocessor
 
 
   /**
+   *  Gets the OptionPane attribute of the Preprocessor object
+   *
+   * @return    The OptionPane value
+   */
+  public OptionPane getOptionPane()
+  {
+    return null;
+  }
+
+
+  /**
    *Description of the Method
    *
    * @param  text  Description of Parameter

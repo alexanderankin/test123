@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-package sql;
+package sql.options;
 
 import java.awt.*;
 import java.awt.event.*;
@@ -35,6 +35,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.Log;
 
+import sql.*;
 import sql.preprocessors.*;
 
 /**
@@ -43,40 +44,61 @@ import sql.preprocessors.*;
  * @author     svu
  * @created    26 á×ÇÕÓÔ 2001 Ç.
  */
-public abstract class SqlOptionPane extends AbstractOptionPane
+public class GeneralOptionPane extends SqlOptionPane
 {
+  private JTextField maxRecsField;
+
+
   /**
-   *Constructor for the SqlOptionPane object
+   *  Constructor for the SqlOptionPane object
    *
-   * @param  title  Description of Parameter
+   * @since
    */
-  protected SqlOptionPane( String title )
+  public GeneralOptionPane()
   {
-    super( title );
-  }
-
-
-  /**
-   *  Description of the Method
-   */
-  public void _init()
-  {
-    setLayout( new BorderLayout() );
-    setBorder( new EmptyBorder( 5, 5, 5, 5 ) );
+    super( "sql.general" );
   }
 
 
   /**
    *Description of the Method
    *
-   * @param  titlePropertyName  Description of Parameter
-   * @return                    Description of the Returned Value
    * @since
    */
-  public static Border createTitledBorder( String titlePropertyName )
+  public void _init()
   {
-    return BorderFactory.createTitledBorder( BorderFactory.createEtchedBorder(),
-        jEdit.getProperty( titlePropertyName ) );
+    super._init();
+
+    JPanel panel = new JPanel();
+    {
+      panel.setLayout( new BorderLayout( 10, 10 ) );
+      panel.setBorder( createTitledBorder( "sql.options.recordSetView.label" ) );
+
+      panel.add( new JLabel( jEdit.getProperty( "sql.options.maxRecs2Show.label" ) ), BorderLayout.WEST );
+      panel.add( maxRecsField = new JTextField( "" + ResultSetWindow.getMaxRecordsToShow() ), BorderLayout.CENTER );
+    }
+
+    add( panel, BorderLayout.NORTH );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @since
+   */
+  public void _save()
+  {
+    int mr = ResultSetWindow.getMaxRecordsToShow();
+    try
+    {
+      mr = Integer.parseInt( maxRecsField.getText() );
+    } catch ( NumberFormatException ex )
+    {
+    }
+    ResultSetWindow.setMaxRecordsToShow( mr );
+
+    SqlPlugin.commitProperties();
   }
 
 }
