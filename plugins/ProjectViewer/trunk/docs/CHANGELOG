@@ -111,6 +111,9 @@ VERSION 2.1.0
 		  ProjectViewer won't crash.
 		- fix error icon showing for files that only had warnings, when other
 		  files had errors reported in the error list plugin.
+		- fix some possible NPEs when calling nodeChanged() on the flat
+		  tree models by not calling the super class' nodeChanged()
+		  method.
 
 		Other changes:
 		- added methods to ProjectViewer to get/set the folder tree state from

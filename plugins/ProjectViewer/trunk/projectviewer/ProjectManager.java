@@ -256,7 +256,6 @@ public final class ProjectManager {
 			}
 		}
 		saveProject(e.project);
-		ProjectViewer.nodeChanged(e.project);
 	} //}}}
 
 	//{{{ +addProject(VPTProject, VPTGroup) : void

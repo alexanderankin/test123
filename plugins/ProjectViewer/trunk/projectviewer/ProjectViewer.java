@@ -468,7 +468,7 @@ public final class ProjectViewer extends JPanel
 				if (v.folderTree != null) {
 					((DefaultTreeModel)v.folderTree.getModel()).nodeChanged(node);
 				}
-				if (node.canOpen() || node.isProject()) {
+				if (node.canOpen() || node.isProject() || node.isGroup()) {
 					if (v.fileTree != null) {
 						((DefaultTreeModel)v.fileTree.getModel()).nodeChanged(node);
 					}
@@ -480,6 +480,10 @@ public final class ProjectViewer extends JPanel
 					if (v.compactTree != null) {
 						((DefaultTreeModel)v.compactTree.getModel()).nodeChanged(node);
 					}
+				}
+				if (node == v.treeRoot && v.pList != null) {
+					// force a refresh of the "selected node" of the "combo"
+					v.pList.setSelectedNode(node);
 				}
 			}
 		}

@@ -281,12 +281,10 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 	/** Handles a node changed request. */
 	public void nodeChanged(TreeNode node) {
 		VPTNode n = (VPTNode) node;
-		if (n.isGroup() || n.isProject()) {
-			super.nodeChanged(node);
-		} else {
-			VPTProject p = VPTNode.findProjectFor(n);
-			fireTreeNodesChanged(n, getPathToRoot(n), new int[] { -1 }, null);
+		if (!n.isGroup() && !n.isProject()) {
+			n = VPTNode.findProjectFor(n);
 		}
+		fireTreeNodesChanged(n, getPathToRoot(n), null, null);
 	} //}}}
 
 }
