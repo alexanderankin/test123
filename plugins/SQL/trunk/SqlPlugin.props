@@ -89,8 +89,10 @@ sql.oracle.unsupportedTypeOfTrigger.title=Unsupported type of trigger
 sql.oracle.unsupportedTypeOfTrigger.message=Trigger {0}.{1} is of not supported type.\n\
 It is per-{2} trigger.
 
+sql.progress.ProcedureTextNotInDB.title=Procedure text not in DB
+sql.progress.ProcedureTextNotInDB.message=There is no procedure text for procedure {0}.{1} stored in the DB
+
 sql.resultSet.label=SQL Result Set
-sql.resultSet.server=Server: {0}
 sql.resultSet.info=Records: {0}
 sql.resultSet.status={0} request(s) running
 

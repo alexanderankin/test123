@@ -252,6 +252,26 @@
 
               <entry>Y</entry>
             </row>
+
+            <row>
+              <entry>Progress</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+            </row>
+
+            <row>
+              <entry>Firebird</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+
+              <entry>Y</entry>
+            </row>
           </tbody>
         </tgroup>
       </table>
@@ -471,7 +491,22 @@ SELECT * FROM user WHERE user=?</programlisting>
 
         <itemizedlist>
           <listitem>
-            <para>Microsoft SQL Server 2000 properly supported (with VFS). 
+            <para>Support for Progress database. Thanks to Gerke Kok.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>Support for Firebird database. Thanks to Christophe Tela.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>Support for PostgreSQL database improved. Thanks to Christophe Tela.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>Microsoft SQL Server 2000 properly supported (with VFS).
             Moreover, it shares the Java code with Sybase VFS (thanks to Sybase
             and Microsoft designers).
             </para>
@@ -489,8 +524,8 @@ SELECT * FROM user WHERE user=?</programlisting>
         <itemizedlist>
           <listitem>
             <para>Annoying plugin initialization bug is fixed.
-            Now substantial part of the plugin initialization 
-            is postponed till the actual use. The jEdit startup is faster 
+            Now substantial part of the plugin initialization
+            is postponed till the actual use. The jEdit startup is faster
             (though first call of the plugin is slower).
             Thanks to Slava and Stefano for the hints.</para>
           </listitem>
