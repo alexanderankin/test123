@@ -41,7 +41,7 @@ public class XPathNode {
    * have a node type from the
    * <a href="http://www.w3.org/TR/xpath#data-model">XPath 1.0 data model</a>.
    *
-   * @returns an XPathNode or null.
+   * @return an XPathNode or null.
    */
   public static XPathNode getXPathNode(NodeSetDTM nodeSet, int index) {
     int nodeHandle = nodeSet.item(index);
@@ -156,7 +156,7 @@ public class XPathNode {
   public String getDomValue() {
     String domValue = this.dtm.getNodeValue(this.nodeHandle);
 
-    if(this.nodeType == DTM.TEXT_NODE) {
+    if(hasDomValue()) {
       domValue = XSLTUtilities.removeIn(domValue, (char)10); //remove '\r' to temporarily fix a bug in the display of results in Windows
     }
 

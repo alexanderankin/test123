@@ -21,12 +21,11 @@
 package xslt;
 
 import org.gjt.sp.jedit.jEdit;
-import org.w3c.dom.Attr;
+
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import javax.xml.transform.TransformerException;
 import java.text.MessageFormat;
 
 /**
@@ -45,15 +44,23 @@ public class XMLFragmentsString {
 
   private final StringBuffer buffer = new StringBuffer("");
 
+  /** Holds an array of the start position of each XML fragment in the fragments String */
+  private int[] fragmentPositions;
+
 
   /**
    * Constructs string of XML fragments representing the nodes in the node list.
-   * @param NodeList containing nodes to be represented as XML fragments.
+   * @param nodelist containing nodes to be represented as XML fragments.
    * @throws IllegalStateException if the generated string becomes too large.
    */
-  public XMLFragmentsString(NodeList nodelist) {
-    for(int i = 0; i < nodelist.getLength(); i++) {
+  public XMLFragmentsString(NodeList nodelist) throws IllegalArgumentException {
+    int nodeCount = nodelist.getLength();
+    this.fragmentPositions = new int[nodeCount];
+
+    for(int i = 0; i < nodeCount; i++) {
       Node node = nodelist.item(i);
+      this.fragmentPositions[i] = buffer.length();
+
       appendNode(node, 0, false);
 
       if(buffer.length() > MAX_CHARS_IN_FRAGMENTS_STRING.intValue()) {
@@ -70,6 +77,27 @@ public class XMLFragmentsString {
    */
   public String getString() {
     return buffer.toString();
+  }
+
+
+  /**
+   * Returns the position in the string of fragment at the given index, or
+   * if the given index is higher than the largest fragment index, returns the length of the string.
+   *
+   * @param index index of the fragment
+   * @return fragment position in string, or length of string if index is too high
+   */
+  public int getFragmentPosition(int index) {
+    if(index >= this.fragmentPositions.length) {
+      return buffer.length();
+    } else {
+      return this.fragmentPositions[index];
+    }
+  }
+
+
+  public int getFragmentCount() {
+    return this.fragmentPositions.length;
   }
 
 
@@ -129,19 +157,10 @@ public class XMLFragmentsString {
     if(indentLevel != NO_INDENT) {
       appendIndent(indentLevel);
     }
+
     buffer.append('<');
     buffer.append(node.getNodeName());
-
-    NamedNodeMap attributes = node.getAttributes();
-
-    if(attributes.getLength() > 0) {
-      for(int i = 0; i < attributes.getLength(); i++) {
-        Attr attribute = (Attr)attributes.item(i);
-        buffer.append(' ');
-        appendAttribute(attribute);
-      }
-    }
-
+    appendAttributes(node.getAttributes());
     NodeList nodes = node.getChildNodes();
 
     if(nodes.getLength() > 0) {
@@ -181,19 +200,24 @@ public class XMLFragmentsString {
   }
 
 
-  private void appendAttribute(Attr attribute) {
-    buffer.append(attribute.getName());
-    buffer.append("=\"");
-    buffer.append(attribute.getValue());
-    buffer.append('\"');
-  }
-
-
-  private void appendAttributeNode(Node node) {
+  private void appendAttribute(Node node) {
     buffer.append(node.getNodeName());
     buffer.append("=\"");
     buffer.append(node.getNodeValue());
     buffer.append('\"');
+  }
+
+
+  private void appendAttributes(NamedNodeMap attributes) {
+    for(int i = 0; i < attributes.getLength(); i++) {
+      buffer.append(' ');
+      appendAttribute(attributes.item(i));
+    }
+  }
+
+
+  private void appendAttributeNode(Node node) {
+    appendAttribute(node);
     buffer.append(NL);
   }
 
