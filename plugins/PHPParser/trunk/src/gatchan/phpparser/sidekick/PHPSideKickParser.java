@@ -9,6 +9,7 @@ import errorlist.ErrorList;
 import errorlist.ErrorSource;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.ParseException;
+import gatchan.phpparser.parser.ParsingAbortedError;
 import gatchan.phpparser.PHPParserPlugin;
 import gatchan.phpparser.PHPErrorSource;
 
@@ -23,31 +24,36 @@ import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import net.sourceforge.phpdt.internal.compiler.parser.OutlineableWithChildren;
 
 /**
- * Created by IntelliJ IDEA.
- * User: Kupee
- * Date: 20 sept. 2004
- * Time: 22:48:37
- * To change this template use File | Settings | File Templates.
+ * My sidekick implementation of the sidekick parser.
+ *
+ * @author Matthieu Casanova
  */
 public class PHPSideKickParser extends SideKickParser {
+  private PHPParser parser;
 
   public PHPSideKickParser(final String name) {
     super(name);
-    Log.log(Log.DEBUG, PHPParserPlugin.class, "PHPParser Instantiated");
   }
 
   public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
     final String path = buffer.getPath();
     try {
-      Log.log(Log.DEBUG, PHPParserPlugin.class, "Parsing " + path);
-      final PHPParser parser = new PHPParser();
+      if (parser != null && !parser.isStopped()) {
+        Log.log(Log.ERROR, PHPSideKickParser.class, "The parser had not been stopped before asking a new parse !");
+        stop();
+      }
+      parser = new PHPParser();
       parser.setPath(path);
       PHPErrorSource phpErrorSource = new PHPErrorSource(errorSource);
       errorSource.removeFileErrors(path);
       parser.addParserListener(phpErrorSource);
-      parser.parseInfo(null, buffer.getText(0, buffer.getLength()));
+      try {
+        parser.parseInfo(null, buffer.getText(0, buffer.getLength()));
+      } catch (ParsingAbortedError parsingAbortedError) {
+        return null;
+      }
       PHPDocument phpDocument = parser.getPHPDocument();
-
+      parser = null;
       SideKickParsedData data = new SideKickParsedData(buffer.getName());
 
       buildChildNodes(data.root, phpDocument, buffer);
@@ -65,6 +71,12 @@ public class PHPSideKickParser extends SideKickParser {
                            "Unhandled error please report the bug (with the trace in the activity log");
     }
     return null;
+  }
+
+  public void stop() {
+    if (parser != null) {
+      parser.stop();
+    }
   }
 
 
