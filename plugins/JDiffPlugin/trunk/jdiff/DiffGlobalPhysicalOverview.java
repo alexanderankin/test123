@@ -27,7 +27,6 @@ import java.awt.Rectangle;
 
 import jdiff.util.Diff;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
@@ -129,18 +128,16 @@ public class DiffGlobalPhysicalOverview extends DiffOverview
         int lines = Math.max(this.lineCount0, this.lineCount1);
         double pxlPerLine = ((double) inner.height) / lines;
 
-        Buffer buffer0 = this.textArea0.getBuffer();
-        int physicalFirstLine0 = buffer0.virtualToPhysical(this.textArea0.getFirstLine());
-        int physicalLastLine0  = buffer0.virtualToPhysical(this.textArea0.getFirstLine() + this.textArea0.getVisibleLines() - 1);
+        int physicalFirstLine0 = this.textArea0.getFirstPhysicalLine();
+        int physicalLastLine0  = this.textArea0.getLastPhysicalLine();
         Rectangle leftCursor = new Rectangle(
             inner.x, inner.y + ((int) Math.round(pxlPerLine * physicalFirstLine0)),
             inner.width / 3,
             Math.max(1, (int) Math.round(pxlPerLine * Math.min(this.lineCount0, physicalLastLine0 - physicalFirstLine0 + 1)))
         );
 
-        Buffer buffer1 = this.textArea1.getBuffer();
-        int physicalFirstLine1 = buffer1.virtualToPhysical(this.textArea1.getFirstLine());
-        int physicalLastLine1  = buffer1.virtualToPhysical(this.textArea1.getFirstLine() + this.textArea1.getVisibleLines() - 1);
+        int physicalFirstLine1 = this.textArea1.getFirstPhysicalLine();
+        int physicalLastLine1  = this.textArea1.getLastPhysicalLine();
         Rectangle rightCursor = new Rectangle(
             inner.x + (inner.width - leftCursor.width),
             inner.y + ((int) Math.round(pxlPerLine * physicalFirstLine1)),
