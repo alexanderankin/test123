@@ -46,6 +46,11 @@ public class BackgroundHighlight extends TextAreaExtension
     private static boolean   blend      = false;
     private static Color     blendColor = null;
     private static int       blendAlpha = 127;
+    private static Color     alphaColor = null;
+
+    private static AlphaComposite alphaComposite = AlphaComposite.getInstance(
+        AlphaComposite.SRC_OVER
+    );
 
     private boolean enabled = true;
 
@@ -77,6 +82,10 @@ public class BackgroundHighlight extends TextAreaExtension
         );
         if (blendAlpha < 0)   { blendAlpha = 0; }
         if (blendAlpha > 255) { blendAlpha = 255; }
+
+        alphaColor = new Color(
+            blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue(), blendAlpha
+        );
     }
 
 
@@ -135,12 +144,6 @@ public class BackgroundHighlight extends TextAreaExtension
         }
 
         if (blend) {
-            Color alphaColor = new Color(
-                blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue(), blendAlpha
-            );
-
-            AlphaComposite alphaComposite = AlphaComposite.getInstance(AlphaComposite.SRC_OVER);
-
             gfx.setColor(alphaColor);
             gfx.setComposite(alphaComposite);
             gfx.fillRect(lineX, lineY, width, height);
@@ -243,6 +246,10 @@ public class BackgroundHighlight extends TextAreaExtension
         );
         if (blendAlpha < 0)   { blendAlpha = 0; }
         if (blendAlpha > 255) { blendAlpha = 255; }
+
+        alphaColor = new Color(
+            blendColor.getRed(), blendColor.getGreen(), blendColor.getBlue(), blendAlpha
+        );
 
         // Propagate the changes to all textareas
         View[] views = jEdit.getViews();
