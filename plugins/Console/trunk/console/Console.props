@@ -1,7 +1,7 @@
 ### Plugin properties
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=2.4.2
+plugin.console.ConsolePlugin.version=2.4.3
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=/console/Console.html
 
@@ -76,26 +76,32 @@ console.shell.cd=Working directory is now {0}
 
 ### Error parsing
 
-console.error.0.name=Microsoft Visual C++
-console.error.0.filename=$1
-console.error.0.line=$2
-console.error.0.match=([^\\(]*)[\\(](\\d+)[)].\:.(.*).\:.(.*)
+console.error.0.name=VHDL error
+console.error.0.match=(.+):.(.+).vhd\((\d+)\):(.+)
+console.error.0.filename=$2.vhd
+console.error.0.line=$3
 console.error.0.message=$4
 
-console.error.1.name=Emacs-style error
-console.error.1.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.1.name=Microsoft Visual C++
 console.error.1.filename=$1
 console.error.1.line=$2
-console.error.1.message=$3
+console.error.1.match=([^\\(]*)[\\(](\\d+)[)].\:.(.*).\:.(.*)
+console.error.1.message=$4
 
-console.error.2.name=Generic compiler error
-console.error.2.match=(.+):(\\d+):(.+)
+console.error.2.name=Jade error
+console.error.2.match=(.+?)jade:(.+):(\\d+):\\d+:.:(.+)
 console.error.2.filename=$1
 console.error.2.line=$2
 console.error.2.message=$3
 
-console.error.3.name=Jade-style error
-console.error.3.match=(.+?)jade:(.+):(\\d+):\\d+:.:(.+)
+console.error.3.name=Emacs-style error
+console.error.3.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
 console.error.3.filename=$1
 console.error.3.line=$2
 console.error.3.message=$3
+
+console.error.4.name=Generic compiler error
+console.error.4.match=(.+):(\\d+):(.+)
+console.error.4.filename=$1
+console.error.4.line=$2
+console.error.4.message=$3

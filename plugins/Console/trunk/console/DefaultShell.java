@@ -47,38 +47,6 @@ class DefaultShell extends Shell
 		stop();
 		ConsolePlugin.clearErrors();
 
-		if(command.equals("pwd"))
-		{
-			console.printPlain(dir);
-			return;
-		}
-		else if(command.startsWith("cd "))
-		{
-			if(!java13)
-				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
-			else
-			{
-				String newDir = command.substring(3).trim();
-				if(newDir.equals(".."))
-					newDir = MiscUtilities.getParentOfPath(dir);
-				else
-					newDir = MiscUtilities.constructPath(dir,newDir);
-				String[] args = { newDir };
-				if(new File(newDir).exists())
-				{
-					dir = newDir;
-					console.printPlain(jEdit.getProperty("console.shell.cd",args));
-				}
-				else
-					console.printError(jEdit.getProperty("console.shell.cd-error",args));
-			}
-			return;
-		}
-
-		String osName = System.getProperty("os.name");
-		boolean appendEXE = (osName.indexOf("Windows") != -1 ||
-			osName.indexOf("OS/2") != -1);
-
 		// Expand variables
 		StringBuffer buf = new StringBuffer();
 		for(int i = 0; i < command.length(); i++)
@@ -152,6 +120,38 @@ class DefaultShell extends Shell
 				buf.append(c);
 			}
 		}
+
+		if(command.equals("pwd"))
+		{
+			console.printPlain(dir);
+			return;
+		}
+		else if(command.startsWith("cd "))
+		{
+			if(!java13)
+				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
+			else
+			{
+				String newDir = command.substring(3).trim();
+				if(newDir.equals(".."))
+					newDir = MiscUtilities.getParentOfPath(dir);
+				else
+					newDir = MiscUtilities.constructPath(dir,newDir);
+				String[] args = { newDir };
+				if(new File(newDir).exists())
+				{
+					dir = newDir;
+					console.printPlain(jEdit.getProperty("console.shell.cd",args));
+				}
+				else
+					console.printError(jEdit.getProperty("console.shell.cd-error",args));
+			}
+			return;
+		}
+
+		String osName = System.getProperty("os.name");
+		boolean appendEXE = (osName.indexOf("Windows") != -1 ||
+			osName.indexOf("OS/2") != -1);
 
 		command = buf.toString();
 
