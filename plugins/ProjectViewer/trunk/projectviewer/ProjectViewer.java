@@ -900,51 +900,45 @@ public final class ProjectViewer extends JPanel
 	 *	given project and closes them (if desired) and/or saves them to the
 	 *	open list (if desired).
 	 */
-	private void closeProject(VPTProject p, boolean close, boolean remember,
-			boolean unload) {
+	private void closeProject(VPTProject p,	boolean unload) {
 		p.clearOpenFiles();
 
 		// check to see if project is active in some other viewer, so we
 		// don't mess up that guy.
-		if (close) {
+		if (config.getCloseFiles()) {
 			for (Iterator it = viewers.values().iterator(); it.hasNext(); ) {
 				ViewerEntry ve = (ViewerEntry) it.next();
-				if (ve.dockable != this && ve.node == p) {
-					return;
-				} else if (ve.dockable != null) {
-					if (ve.dockable.treeRoot != null &&
-							ve.dockable.treeRoot.isNodeDescendant(p)) {
-						unload = false;
-						close = false;
-						break;
+				if (ve.dockable != this) {
+					if (ve.node.isNodeDescendant(p)) {
+						return;
 					}
 				}
 			}
 		}
 
 		// close files & populate "remember" list
-		if (close || remember) {
+		if (config.getCloseFiles() || config.getRememberOpen()) {
 			Buffer[] bufs = jEdit.getBuffers();
 
 			String currFile = null;
 			if (p.getChildNode(view.getBuffer().getPath()) != null) {
 				currFile = view.getBuffer().getPath();
+				if (config.getRememberOpen() && currFile != null) {
+					p.addOpenFile(currFile);
+				}
 			}
 
 			for (int i = 0; i < bufs.length; i++) {
 				if (p.getChildNode(bufs[i].getPath()) != null) {
-					if (remember && !bufs[i].getPath().equals(currFile)) {
+					if (config.getRememberOpen() && !bufs[i].getPath().equals(currFile)) {
 						p.addOpenFile(bufs[i].getPath());
 					}
-					if (close) {
+					if (config.getCloseFiles()) {
 						jEdit.closeBuffer(view, bufs[i]);
 					}
 				}
 			}
 
-			if (remember && currFile != null) {
-				p.addOpenFile(currFile);
-			}
 		}
 
 		// saves the folder tree state
@@ -966,28 +960,24 @@ public final class ProjectViewer extends JPanel
 	//{{{ -openProject(VPTProject) : void
 	/** Opens all the files that were previously opened in the project. */
 	private void openProject(final VPTProject p) {
-		Buffer lastBuf = null;
 		if (config.getRememberOpen()) {
 			for (Iterator i = p.getOpenFiles(); i.hasNext(); ) {
-				lastBuf = jEdit.openFile(null, (String) i.next());
+				jEdit.openFile(null, (String) i.next());
 			}
-			p.clearOpenFiles();
 		}
-
-		if (lastBuf != null) {
-			view.getEditPane().setBuffer(lastBuf);
-		}
+		p.clearOpenFiles();
 
 		// loads tree state from the project, if saved
 		final String state = p.getProperty(TREE_STATE_PROP);
 		if (state != null && folderTree != null) {
 			SwingUtilities.invokeLater(
-			new Runnable() {
-				//{{{ +run() : void
-				public void run() {
-					setFolderTreeState(p, state);
-				} //}}}
-			});
+				new Runnable() {
+					//{{{ +run() : void
+					public void run() {
+						setFolderTreeState(p, state);
+					} //}}}
+				}
+			);
 		}
 	} //}}}
 
@@ -1084,7 +1074,7 @@ public final class ProjectViewer extends JPanel
 		ArrayList active = null;
 		for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
 			ViewerEntry ve = (ViewerEntry) i.next();
-			if (ve.node != null) {
+			if (ve.node != null && ve.dockable != this) {
 				if (active == null)
 					active = new ArrayList();
 				if (ve.node.isProject()) {
@@ -1255,12 +1245,9 @@ public final class ProjectViewer extends JPanel
 		// clean up the old root
 		if (treeRoot != null) {
 			if (treeRoot.isProject()) {
-				closeProject((VPTProject)treeRoot,
-					config.getCloseFiles() && !n.isNodeDescendant(treeRoot),
-					config.getRememberOpen(), true);
-			} else {
-				unloadInactiveProjects();
+				closeProject((VPTProject) treeRoot, true);
 			}
+			unloadInactiveProjects();
 		}
 
 		// set the new root
@@ -1279,7 +1266,6 @@ public final class ProjectViewer extends JPanel
 		}
 
 		treeRoot = n;
-
 		if (folderTree != null)
 			((DefaultTreeModel)folderTree.getModel()).setRoot(treeRoot);
 		if (fileTree != null)
@@ -1409,9 +1395,7 @@ public final class ProjectViewer extends JPanel
 		} else if (msg instanceof DynamicMenuChanged) {
 			handleDynamicMenuChanged((DynamicMenuChanged)msg);
 		} else if (treeRoot != null && treeRoot.isProject()) {
-			if (msg instanceof EditorExitRequested) {
-				handleEditorExitRequestedMessage((EditorExitRequested) msg);
-			} else if (config.isErrorListAvailable()) {
+			if (config.isErrorListAvailable()) {
 				new Helper().handleErrorListMessage(msg);
 			}
 		}
@@ -1434,18 +1418,7 @@ public final class ProjectViewer extends JPanel
 		// EditPane changed? Fire a projectLoaded event for the global
 		// listeners.
 		if (vu.getView() == view) {
-			if (vu.getWhat() == ViewUpdate.CLOSED) {
-				viewers.remove(view);
-				config.removePropertyChangeListener(ccl);
-				listeners.remove(view);
-				EditBus.removeFromBus(this);
-
-				if (treeRoot.isProject()) {
-					closeProject((VPTProject)treeRoot, config.getCloseFiles(),
-						config.getRememberOpen(), true);
-				}
-
-			} else if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
+			if (vu.getWhat() == ViewUpdate.EDIT_PANE_CHANGED) {
 				VPTNode active = null;
 				ProjectViewer v = getViewer(vu.getView());
 				if (v != null) {
@@ -1468,22 +1441,6 @@ public final class ProjectViewer extends JPanel
 							((ProjectViewerListener)i.next()).groupActivated(evt);
 						}
 					}
-				}
-			}
-		}
-	}//}}}
-
-	//{{{ -handleEditorExitRequestedMessage(EditorExitRequested) : void
-	/** Handles a EditorExitRequested EditBus message. */
-	private void handleEditorExitRequestedMessage(EditorExitRequested eer) {
-		// Editor is exiting, save info about current project
-		synchronized (treeRoot) {
-			closeProject((VPTProject)treeRoot, false, config.getRememberOpen(), false);
-			for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
-				ViewerEntry ve = (ViewerEntry) i.next();
-				ProjectViewer v = ve.dockable;
-				if (v != null && v != this && v.treeRoot == treeRoot) {
-					v.treeRoot = null;
 				}
 			}
 		}
@@ -1603,7 +1560,7 @@ public final class ProjectViewer extends JPanel
 		// we're being removed from the GUI, so clean up
 		EditBus.removeFromBus(this);
 		if (treeRoot != null && treeRoot.isProject()) {
-			closeProject((VPTProject)treeRoot, false, config.getRememberOpen(), false);
+			closeProject((VPTProject)treeRoot, false);
 			config.setLastNode(treeRoot);
 		}
 		ViewerEntry ve = (ViewerEntry) viewers.get(view);
