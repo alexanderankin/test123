@@ -64,7 +64,7 @@ public class XMLFragmentsString {
       appendNode(node, 0, false);
 
       if(buffer.length() > MAX_CHARS_IN_FRAGMENTS_STRING.intValue()) {
-        String errorMessage = jEdit.getProperty("XPathTool.result.error.largeXmlFragment");
+        String errorMessage = jEdit.getProperty("xpath.result.message.large-xml-fragment");
         String msg = MessageFormat.format(errorMessage, new Object[]{MAX_CHARS_IN_FRAGMENTS_STRING});
         throw new IllegalStateException(msg);
       }

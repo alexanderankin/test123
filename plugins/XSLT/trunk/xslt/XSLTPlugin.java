@@ -40,17 +40,15 @@ public class XSLTPlugin extends EditPlugin {
    * Register xerces as the SAX Parser provider
    */
   public void start () {
-    final String TRANSFORMER_FACTORY = "javax.xml.transform.TransformerFactory";
-    final String SAX_PARSER_FACTORY = "javax.xml.parsers.SAXParserFactory";
-    final String SAX_DRIVER = "org.xml.sax.driver";
+    String transformerFactory = jEdit.getProperty(XSLTUtilities.TRANSFORMER_FACTORY);
+    String saxParserFactory = jEdit.getProperty(XSLTUtilities.SAX_PARSER_FACTORY);
+    String saxDriver = jEdit.getProperty(XSLTUtilities.SAX_DRIVER);
+    String indentAmount = jEdit.getProperty("xslt.transform.indent-amount");
 
-    System.setProperty(TRANSFORMER_FACTORY, jEdit.getProperty(TRANSFORMER_FACTORY));
-    System.setProperty(SAX_PARSER_FACTORY, jEdit.getProperty(SAX_PARSER_FACTORY));
-    System.setProperty(SAX_DRIVER, jEdit.getProperty(SAX_DRIVER));
-
-    String indentAmount = jEdit.getProperty("XSLTProcessor.transform.indentAmount");
+    XSLTUtilities.setXmlSystemProperties(transformerFactory, saxParserFactory, saxDriver);
     XSLTUtilities.setIndentAmount(indentAmount);
   }
+
 
   /**
    * Adds appropriate actions to the plugins menu
@@ -62,11 +60,11 @@ public class XSLTPlugin extends EditPlugin {
   /**
    * Displays a user-friendly error message to go with the supplied exception.
    */
-  static void processException (Exception e, String message, Component component) {
+  static void processException(Exception e, String message, Component component) {
     StringWriter writer = new StringWriter();
     e.printStackTrace(new PrintWriter(writer));
     Log.log(Log.DEBUG, Thread.currentThread(), writer.toString());
-    String msg = MessageFormat.format(jEdit.getProperty("xslt.error"),
+    String msg = MessageFormat.format(jEdit.getProperty("xslt.message.error"),
       new Object[]{message, e.getMessage()});
     JOptionPane.showMessageDialog(component, msg.toString());
   }

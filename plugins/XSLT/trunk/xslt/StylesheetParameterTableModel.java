@@ -33,8 +33,8 @@ import java.util.List;
  * @author Robert McKinnon
  */
 public class StylesheetParameterTableModel extends AbstractTableModel {
-  private static final String NAME = jEdit.getProperty("XSLTProcessor.parameters.name.header");
-  private static final String VALUE = jEdit.getProperty("XSLTProcessor.parameters.value.header");
+  private static final String NAME = jEdit.getProperty("xslt.parameters.table.name.header");
+  private static final String VALUE = jEdit.getProperty("xslt.parameters.table.value.header");
   private static final String[] COLUMN_NAMES = {NAME, VALUE};
 
   private static final int NAME_COL = 0;

@@ -172,6 +172,9 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
         } else if(xml.startsWith("</", start)) {
           end = writeClosingTag(start);
 
+        } else if(Character.isWhitespace(chars[start+1])) {
+          throw new SAXException("The content of elements must consist of well-formed character data or markup.");
+
         } else {
           end = writeElement(start);
         }

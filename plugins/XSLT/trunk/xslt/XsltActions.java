@@ -36,22 +36,48 @@ public class XsltActions {
 
   /**
    * Performs XSLT transformation.
-   * @param view
    */
   public static void transformXml(View view) {
-    XSLTProcessor xsltProcessor = (XSLTProcessor)view.getDockableWindowManager().getDockable("XSLTProcessor");
+    XSLTProcessor xsltProcessor = getXsltProcessor(view);
+
+    if(xsltProcessor != null) {
+      xsltProcessor.clickTransformButton();
+    }
+  }
+
+
+  /**
+   * Attempts to load XSLT settings from a user specified file.
+   */
+  public static void loadSettings(View view) {
+    XSLTProcessor xsltProcessor = getXsltProcessor(view);
+
+    if(xsltProcessor != null) {
+      xsltProcessor.clickLoadSettingsButton();
+    }
+  }
+
+
+  /**
+   * Attempts to save XSLT settings to a user specified file.
+   */
+  public static void saveSettings(View view) {
+    XSLTProcessor xsltProcessor = getXsltProcessor(view);
+
+    if(xsltProcessor != null) {
+      xsltProcessor.clickSaveSettingsButton();
+    }
+  }
+
+
+  private static XSLTProcessor getXsltProcessor(View view) {
+    XSLTProcessor xsltProcessor = (XSLTProcessor)view.getDockableWindowManager().getDockable("xslt-processor");
 
     if(xsltProcessor == null) {
-      JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.error.dockFirst"));
+      JOptionPane.showMessageDialog(view, jEdit.getProperty("xslt.message.dock-first"));
     }
-    else {
-      if(xsltProcessor.getTransformButton().isEnabled()) {
-        xsltProcessor.getTransformButton().doClick();
-      }
-      else {
-        JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.Transform.error.notEnabled"));
-      }
-    }
+
+    return xsltProcessor;
   }
 
 
@@ -60,15 +86,12 @@ public class XsltActions {
    * @param view
    */
   public static void evaluateXpath(View view) {
-    XPathTool xpathTool = (XPathTool)view.getDockableWindowManager().getDockable("XPathTool");
+    XPathTool xpathTool = (XPathTool)view.getDockableWindowManager().getDockable("xpath-tool");
 
     if(xpathTool == null) {
-      JOptionPane.showMessageDialog(view, jEdit.getProperty("XPathTool.error.dockFirst"));
-    }
-    else {
-      if(xpathTool.getEvaluateButton().isEnabled()) {
-        xpathTool.getEvaluateButton().doClick();
-      }
+      JOptionPane.showMessageDialog(view, jEdit.getProperty("xpath.message.dock-first"));
+    } else {
+      xpathTool.clickEvaluateButton();
     }
   }
 
@@ -93,7 +116,8 @@ public class XsltActions {
       view.getTextArea().setCaretPosition(0);
     } catch(Exception e) {
       Log.log(Log.ERROR, IndentingTransformerImpl.class, e);
-      JOptionPane.showMessageDialog(view, jEdit.getProperty("XSLTProcessor.Indent.error") + " " + e.getMessage());
+      String message = jEdit.getProperty("xslt.indent.message.failure");
+      XSLTPlugin.processException(e, message, view);
     } finally {
       if(buffer.insideCompoundEdit()) {
         buffer.endCompoundEdit();
