@@ -2,7 +2,6 @@
 
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
-
 <ACTIONS>
 	<!-- commands invoked by user input -->
 	<ACTION NAME="xml-complete-closing-tag">

@@ -50,10 +50,8 @@ public class SAXParserImpl extends XmlParser
 	} //}}}
 
 	//{{{ parse() method
-	public SideKickParsedData parse(SideKick sidekick, String text)
+	public SideKickParsedData parse(Buffer buffer, String text, DefaultErrorSource errorSource)
 	{
-		Buffer buffer = sidekick.getBuffer();
-
 		if(text.length() == 0)
 			return new XmlParsedData(buffer.getName(),false);
 
@@ -62,7 +60,7 @@ public class SAXParserImpl extends XmlParser
 		SymbolTable symbolTable = new SymbolTable();
 		XMLGrammarPoolImpl grammarPool = new XMLGrammarPoolImpl();
 
-		Handler handler = new Handler(sidekick,text,data,grammarPool);
+		Handler handler = new Handler(buffer,text,errorSource,data,grammarPool);
 
 		XMLReader reader = new org.apache.xerces.parsers.SAXParser(symbolTable,grammarPool);
 		try
@@ -100,7 +98,7 @@ public class SAXParserImpl extends XmlParser
 		catch(IOException ioe)
 		{
 			Log.log(Log.ERROR,this,ioe);
-			sidekick.addError(ErrorSource.ERROR,buffer.getPath(),0,
+			errorSource.addError(ErrorSource.ERROR,buffer.getPath(),0,0,0,
 				ioe.toString());
 		}
 		catch(SAXParseException spe)
@@ -112,8 +110,8 @@ public class SAXParserImpl extends XmlParser
 			Log.log(Log.ERROR,this,se.getException());
 			if(se.getMessage() != null)
 			{
-				sidekick.addError(ErrorSource.ERROR,buffer.getPath(),
-					0,se.getMessage());
+				errorSource.addError(ErrorSource.ERROR,buffer.getPath(),
+					0,0,0,se.getMessage());
 			}
 		}
 		catch(Exception e)
@@ -211,7 +209,7 @@ public class SAXParserImpl extends XmlParser
 	{
 		Buffer buffer;
 
-		SideKick sidekick;
+		DefaultErrorSource errorSource;
 		String text;
 		XmlParsedData data;
 		XMLGrammarPoolImpl grammarPool;
@@ -222,18 +220,18 @@ public class SAXParserImpl extends XmlParser
 		boolean empty;
 
 		//{{{ Handler constructor
-		Handler(SideKick sidekick, String text, XmlParsedData data,
-			XMLGrammarPoolImpl grammarPool)
+		Handler(Buffer buffer, String text, DefaultErrorSource errorSource,
+			XmlParsedData data, XMLGrammarPoolImpl grammarPool)
 		{
-			this.sidekick = sidekick;
+			this.buffer = buffer;
 			this.text = text;
+			this.errorSource = errorSource;
 			this.data = data;
 			this.grammarPool = grammarPool;
 			this.activePrefixes = new HashMap();
 			this.currentNodeStack = new Stack();
 			this.empty = true;
 
-			buffer = sidekick.getBuffer();
 		} //}}}
 
 		//{{{ addError() method
@@ -252,7 +250,7 @@ public class SAXParserImpl extends XmlParser
 				uri = uri.substring(7);
 			uri.replace('/',File.separatorChar);
 
-			sidekick.addError(type,uri,line,message);
+			errorSource.addError(type,uri,line,0,0,message);
 		} //}}}
 
 		//{{{ getGrammarForNamespace() method
@@ -333,9 +331,9 @@ public class SAXParserImpl extends XmlParser
 			}
 			catch(SAXException s)
 			{
-				sidekick.addError(ErrorSource.ERROR,
+				errorSource.addError(ErrorSource.ERROR,
 					buffer.getPath(),
-					Math.max(0,loc.getLineNumber()-1),
+					Math.max(0,loc.getLineNumber()-1),0,0,
 					s.getMessage());
 			}
 			catch(Exception e)
