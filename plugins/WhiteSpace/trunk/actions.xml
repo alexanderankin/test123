@@ -115,22 +115,10 @@
 
     <ACTION NAME="white-space.toggle-whitespace-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getWhitespaceHighlight().toggleEnabled();
-
-            whitespace.WhiteSpaceHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleWhitespaceHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getWhitespaceHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isWhitespaceHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
