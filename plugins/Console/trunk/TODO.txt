@@ -7,6 +7,7 @@
 
 + later:
 
+- keep browser dir and console dir in sync
 - ${beanshell:...} syntax
 - aliases option pane
 - file manipulation builtins - %ls, %mv, %cp, %rm, %touch, %cat?
@@ -17,8 +18,4 @@
 - FILE_ENTRY, TOGGLE_ENTRY, more GUI controls in commando
 - commando: lower case tag names?
 - shift-click on toolbar button runs without displaying dialog box
-
-+ after jEdit API additions:
-
-- tips of the day
-- multiple consoles per view
+- after jEdit API additions: tips of the day

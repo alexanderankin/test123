@@ -24,15 +24,9 @@
 		<CODE>
 			directory = console.ConsolePlugin.getCommandoDirectory();
 			if(directory == null)
-			{
 				GUIUtilities.error(view,"no-settings",null);
-			}
 			else
-			{
-				view.getDockableWindowManager().addDockableWindow("vfs.browser");
-				browser = view.getDockableWindowManager().getDockable("vfs.browser");
-				browser.setDirectory(directory);
-			}
+				VFSBrowser.browseDirectory(view,directory);
 		</CODE>
 	</ACTION>
 </ACTIONS>

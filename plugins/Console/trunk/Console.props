@@ -1,14 +1,15 @@
 ### Plugin properties
 
 plugin.console.ConsolePlugin.name=Console
-plugin.console.ConsolePlugin.version=3.1
+plugin.console.ConsolePlugin.version=3.2
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
 plugin.console.ConsolePlugin.depend.0=jedit 04.00.01.00
 plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
-console-menu=console run-last-console-command - \
+console-menu=console run-last-console-command console-dir-to-browser \
+	browser-dir-to-console - \
 	commando browse-commando-directory rescan-commando-directory -
 console-menu.label=Console
 console.label=Console
