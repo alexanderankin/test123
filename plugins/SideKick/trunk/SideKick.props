@@ -1,11 +1,14 @@
 # Plugin properties
+plugin.sidekick.SideKickPlugin.activate=startup
+
 plugin.sidekick.SideKickPlugin.name=SideKick
 plugin.sidekick.SideKickPlugin.author=Slava Pestov
 plugin.sidekick.SideKickPlugin.version=0.3
 plugin.sidekick.SideKickPlugin.docs=index.html
 plugin.sidekick.SideKickPlugin.depend.0=jedit 04.02.01.00
 plugin.sidekick.SideKickPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
-plugin.sidekick.SideKickPlugin.activate=startup
+
+# Menu bar stuff
 plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     - \
                                     sidekick-prev-asset \
@@ -18,7 +21,6 @@ plugin.sidekick.SideKickPlugin.menu=sidekick-tree \
                                     sidekick-parse \
                                     sidekick-keystroke-parse
 
-# Menu bar stuff
 sidekick-tree.label=Structure Browser
 sidekick-prev-asset.label=Go to Previous Asset
 sidekick-next-asset.label=Go to Next Asset
@@ -27,6 +29,19 @@ sidekick-narrow-asset.label=Narrow to Asset at Caret
 sidekick-complete.label=Show Completion Popup
 sidekick-parse.label=Parse Buffer
 sidekick-keystroke-parse.label=Parse on Keystroke
+
+# Option pane
+plugin.sidekick.SideKickPlugin.option-pane=sidekick
+
+options.sidekick.label=SideKick
+options.sidekick.code=new sidekick.SideKickOptionPane();
+
+options.sidekick.tree-follows-caret=Tree selection follows caret position
+options.sidekick.buffer-change-parse=Parse on buffer switch and save
+options.sidekick.keystroke-parse=Parse on keystroke
+options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
+options.sidekick.complete=Show completion popups where possible
+options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
 
 # Global parse on buffer change switch
 buffer.sidekick.buffer-change-parse=true
@@ -59,13 +74,3 @@ sidekick.parsing-complete-errors={0} parsing complete, more than {1} errors; \
 
 # Popup
 sidekick-complete.none=No completions
-
-# Option pane
-options.sidekick.label=SideKick
-
-options.sidekick.tree-follows-caret=Tree selection follows caret position
-options.sidekick.buffer-change-parse=Parse on buffer switch and save
-options.sidekick.keystroke-parse=Parse on keystroke
-options.sidekick.auto-parse-delay=After last keystroke, wait (seconds):
-options.sidekick.complete=Show completion popups where possible
-options.sidekick.complete-delay=After popup trigger keystroke, wait (seconds):
