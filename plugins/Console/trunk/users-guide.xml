@@ -571,6 +571,10 @@
      <function>runCommandInConsole()</function>,
      <function>runCommandToBuffer()</function> BeanShell methods didn't work
     </para></listitem>
+    <listitem><para>
+     If a command emitted multiple-line error messages, the last error wasn't
+     added to the error list
+    </para></listitem>
    </itemizedlist>
   </listitem>
 
