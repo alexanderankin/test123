@@ -181,7 +181,7 @@ public class JavaInsight extends HoldablePlugin implements TreeSelectionListener
         PrintStream original = System.out;
         try {                    
             System.setOut( new PrintStream( new FileOutputStream( output ) ) );
-            jode.Decompiler.main(params);
+            jode.decompiler.Main.main(params);
 
         } catch (IOException e) {
             e.printStackTrace();
