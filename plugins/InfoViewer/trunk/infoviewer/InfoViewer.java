@@ -214,13 +214,27 @@ public class InfoViewer
                 HTMLEditorKit htmlEditorKit=(HTMLEditorKit)(viewer.getEditorKit());
                 //Log.log(Log.DEBUG, this, "htmleditorkit in use");
                 StyleSheet styles=htmlEditorKit.getStyleSheet();
+                Enumeration rules;
+                
+                // list available styles (which contain 'font-size')
+                rules = styles.getStyleNames();
+                while(rules.hasMoreElements()) {
+                    String name = (String) rules.nextElement();
+                    Style rule = styles.getStyle(name);
+                    if(rule.toString().indexOf("font-size")>-1) {
+                        Log.log(Log.DEBUG, this, name+"[old] : "+rule.toString());
+                    }
+                }               
+
                 // make body fontsize smaller
                 Style bodyrule = styles.getStyle("body");
+                Style bodyruleparent = (Style)bodyrule.getResolveParent();
                 if(bodyrule!=null) {
                     styles.removeStyle("body");
-                    Style newbodyrule=styles.addStyle("body",null);
+                    Style newbodyrule=styles.addStyle("body",bodyruleparent);
 
-                    //Log.log(Log.DEBUG, this, "bodyrule.1="+bodyrule.toString());
+                    if(bodyruleparent!=null) Log.log(Log.DEBUG, this, "bodyrule.p="+bodyruleparent.toString());
+                    Log.log(Log.DEBUG, this, "bodyrule.1="+bodyrule.toString());
                     //String val=(String)bodyrule.getAttribute("font-size");
                     //Log.log(Log.DEBUG, this, "body.font-size="+val);
                     //bodyrule.removeAttribute("font-size");
@@ -239,6 +253,9 @@ public class InfoViewer
                     if(size==null) size="14";
                     Log.log(Log.DEBUG, this, "new fontSize:"+size);
                     newbodyrule.addAttribute("font-size",size+"pt");
+
+                    //Action myaction=new StyledEditorKit.FontSizeAction("new font size", Integer.parseInt(size));
+                    //myaction.actionPerformed(null);
                     
                     /*
                     Log.log(Log.DEBUG, this, "bodyrule.2="+bodyrule.toString());
@@ -249,14 +266,16 @@ public class InfoViewer
                     Log.log(Log.DEBUG, this, "bodyrule.2="+newbodyrule.toString());
                 }
                 //styles.setBaseFontSize(1);
+                //htmlEditorKit.setStyleSheet(styles);
                 viewer.repaint();
-                // list available styles
-                Enumeration rules = styles.getStyleNames();
+ 
+                // list available styles (which contain 'font-size')
+                rules = styles.getStyleNames();
                 while(rules.hasMoreElements()) {
                     String name = (String) rules.nextElement();
                     Style rule = styles.getStyle(name);
                     if(rule.toString().indexOf("font-size")>-1) {
-                        Log.log(Log.DEBUG, this, name+" : "+rule.toString());
+                        Log.log(Log.DEBUG, this, name+"[new] : "+rule.toString());
                     }
                 }
             }
