@@ -141,21 +141,6 @@ public final class ProjectPlugin extends EBPlugin {
 									false);
 			checkPluginUpdate(msg);
 		}
-		// check to see if we should activate some project when loading
-		final VPTNode last = ProjectViewerConfig.getInstance().getLastNode();
-		if (last != null) {
-			SwingUtilities.invokeLater(new Runnable() {
-				public void run() {
-					if (last.isProject()) {
-						ProjectManager mgr = ProjectManager.getInstance();
-						if (!mgr.isLoaded(last.getName())) {
-							mgr.getProject(last.getName());
-						}
-					}
-					ProjectViewer.setActiveNode(jEdit.getActiveView(), last);
-				}
-			});
-		}
  	} //}}}
 
 	//{{{ +stop() : void
