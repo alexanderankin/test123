@@ -42,7 +42,7 @@ public class TagParser
 			return null;
 
 		int endTag = text.indexOf('>', startTag + 1) + 1;
-		if(endTag == -1 || endTag < pos)
+		if(endTag == 0 || endTag < pos)
 			return null;
 
 		int tagType = T_START_TAG;
