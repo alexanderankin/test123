@@ -117,7 +117,7 @@
         <para>Requires JDK 1.3, jEdit 4.2.1
         <itemizedlist>
 	    <listitem><para>Support the  jEdit 4.2 plugin mode</para></listitem>
-		    <listitem><para>Rigth mouse button to close the buffer</para></listitem>
+		    <listitem><para>Middle mouse button to close the buffer</para></listitem>
 	    <listitem><para>Drags the tab to arrange</para></listitem>	
         </itemizedlist></para>
     </formalpara>
