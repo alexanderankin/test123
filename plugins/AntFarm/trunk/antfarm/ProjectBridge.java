@@ -77,6 +77,7 @@ public class ProjectBridge
 		ProjectFile buildFile = project.getRoot().getFile( "build.xml" );
 		if ( buildFile != null ) {
 			getAntFarm().addAntBuildFile( buildFile.toFile().getAbsolutePath() );
+			addWindow( ProjectPlugin.NAME );
 		}
 	}
 

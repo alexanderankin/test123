@@ -762,6 +762,8 @@ public class AntTree extends JTree
 
 		public String toString()
 		{
+			if ( _target.getName().equals( getProject().getDefaultTarget() ) )
+				return _target.getName() + " [default]";
 			return _target.getName();
 		}
 
