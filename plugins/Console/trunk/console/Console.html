@@ -130,6 +130,8 @@ Requires EditBus 0.10 and jEdit 3.0pre5.
 <li>Recording console commands in macros supported again
 <li>Error parsing didn't take changing directories into account, and as a result
 errors would point to the incorrect path after a "cd" command
+<li>When running on Windows or OS/2, the console first tries appending ".bat" to
+the command name. If that fails, it tries appending ".exe".
 </ul>
 
 <h3>Version 2.3.1</h3>

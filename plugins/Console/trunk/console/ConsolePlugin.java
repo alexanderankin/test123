@@ -96,7 +96,7 @@ public class ConsolePlugin extends EBPlugin
 		errorSource.clear();
 	}
 
-	static int parseLine(String text, String directory)
+	static synchronized int parseLine(String text, String directory)
 	{
 		if(errorMatchers == null)
 			loadMatchers();

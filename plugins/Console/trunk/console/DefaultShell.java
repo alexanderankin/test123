@@ -50,13 +50,13 @@ class DefaultShell extends Shell
 			console.printPlain(dir);
 			return;
 		}
-		else if(command.startsWith("cd"))
+		else if(command.startsWith("cd "))
 		{
 			if(!java13)
 				console.printError(jEdit.getProperty("console.shell.cd-unsup"));
 			else
 			{
-				String newDir = command.substring(2).trim();
+				String newDir = command.substring(3).trim();
 				if(newDir.equals(".."))
 					newDir = MiscUtilities.getParentOfPath(dir);
 				else
@@ -76,20 +76,6 @@ class DefaultShell extends Shell
 		String osName = System.getProperty("os.name");
 		boolean appendEXE = (osName.indexOf("Windows") != -1 ||
 			osName.indexOf("OS/2") != -1);
-
-		if(appendEXE)
-		{
-			// append .exe to command name on Windows and OS/2
-			int spaceIndex = command.indexOf(' ');
-			if(spaceIndex == -1)
-				spaceIndex = command.length();
-			int dotIndex = command.indexOf('.');
-			if(dotIndex == -1 || dotIndex > spaceIndex)
-			{
-				command = command.substring(0,spaceIndex)
-					+ ".exe" + command.substring(spaceIndex);
-			}
-		}
 
 		// Expand variables
 		StringBuffer buf = new StringBuffer();
@@ -167,6 +153,53 @@ class DefaultShell extends Shell
 
 		command = buf.toString();
 
+		// On Windows and OS/2, try running <command>.bat,
+		// then <command>.exe
+		if(appendEXE)
+		{
+			int spaceIndex = command.indexOf(' ');
+			if(spaceIndex == -1)
+				spaceIndex = command.length();
+			int dotIndex = command.indexOf('.');
+			if(dotIndex == -1 || dotIndex > spaceIndex)
+			{
+				try
+				{
+					String newCommand = command.substring(
+						0,spaceIndex) + ".bat" + command
+						.substring(spaceIndex);
+					process = _exec(newCommand);
+					process.getOutputStream().close();
+					return;
+				}
+				catch(IOException io)
+				{
+					try
+					{
+						String newCommand = command.substring(
+							0,spaceIndex) + ".exe" + command
+							.substring(spaceIndex);
+						process = _exec(newCommand);
+						process.getOutputStream().close();
+					}
+					catch(IOException _io)
+					{
+						String[] args = { _io.getMessage() };
+						console.printInfo(jEdit.getProperty("console.shell.ioerror",args));
+					}
+					catch(Throwable t)
+					{
+						Log.log(Log.ERROR,this,t);
+					}
+					return;
+				}
+				catch(Throwable t)
+				{
+					Log.log(Log.ERROR,this,t);
+				}
+			}
+		}
+
 		try
 		{
 			process = _exec(command);
@@ -178,10 +211,9 @@ class DefaultShell extends Shell
 			console.printInfo(jEdit.getProperty("console.shell.ioerror",args));
 			return;
 		}
-		catch(Throwable e)
+		catch(Throwable t)
 		{
-			Log.log(Log.ERROR,this,e);
-			return;
+			Log.log(Log.ERROR,this,t);
 		}
 
 		this.command = command;
