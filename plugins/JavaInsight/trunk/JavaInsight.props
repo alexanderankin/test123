@@ -1,11 +1,11 @@
 plugin.javainsight.JavaInsightPlugin.name=Java Insight
-plugin.javainsight.JavaInsightPlugin.author=Kevin A. Burton, Andre Kaplan
-plugin.javainsight.JavaInsightPlugin.version=0.3
+plugin.javainsight.JavaInsightPlugin.author=Kevin A. Burton, Andre Kaplan, Dirk Moebius
+plugin.javainsight.JavaInsightPlugin.version=0.4
 plugin.javainsight.JavaInsightPlugin.docs=JavaInsight.html
 
+# Dependencies
 plugin.javainsight.JavaInsightPlugin.depend.0=jdk 1.1
 plugin.javainsight.JavaInsightPlugin.depend.1=jedit 03.00.99.00
-
 
 # Menu bar properties
 javainsight.toggle-dockable.label=Java Insight
@@ -16,6 +16,8 @@ javainsight-dockable.title=Java Insight
 # Option pane title
 options.javainsight.title=Java Insight
 options.javainsight.label=Java Insight
+options.javainsight.decompiler=Decompiler Options
+options.javainsight.general=Plugin Options
 
 # Error messages
 javainsight.error.decompile.title=Decompilation Error
