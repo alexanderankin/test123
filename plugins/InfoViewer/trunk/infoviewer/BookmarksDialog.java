@@ -1,6 +1,6 @@
 /*
  * BookmarksDialog.java - "Edit Bookmarks" dialog in InfoViewer
- * Copyright (C) 1999 Dirk Moebius
+ * Copyright (C) 1999 2000 Dirk Moebius
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,8 +24,10 @@ import java.awt.event.*;
 import java.util.Vector;
 import javax.swing.*;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 
 
 public class BookmarksDialog extends EnhancedDialog {
@@ -33,12 +35,10 @@ public class BookmarksDialog extends EnhancedDialog {
     private JTable table;
     private JButton bOk, bCancel, bAdd, bDelete, bMoveUp, bMoveDown;
     private Bookmarks model;
-    private InfoViewer viewer;
     
     public BookmarksDialog(InfoViewer viewer) {
         super(viewer, jEdit.getProperty("infoviewer.bdialog.title"), true);
 
-        this.viewer = viewer;
         model = new Bookmarks();        
         table = new JTable(model);
         table.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -91,8 +91,8 @@ public class BookmarksDialog extends EnhancedDialog {
     public void ok() {
         model.save();
         GUIUtilities.saveGeometry(this, "infoviewer.bdialog");
+        EditBus.send(new PropertiesChanged(null));
         setVisible(false);
-        viewer.updateBookmarksMenu();
     }
     
     
@@ -109,7 +109,7 @@ public class BookmarksDialog extends EnhancedDialog {
         public void actionPerformed(ActionEvent evt) {
             JButton button = (JButton) evt.getSource();
             if (button == bAdd) {
-                model.add("", "");
+                model.add(new TitledURLEntry("", ""));
             }
             else if (button == bDelete) {
                 int rows[] = table.getSelectedRows();

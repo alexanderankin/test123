@@ -1,6 +1,6 @@
 /*
  * Bookmarks.java - Model for Bookmarks
- * Copyright (C) 1999 Slava Pestov
+ * Copyright (C) 1999 2000 Dirk Moebius
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,9 +19,6 @@
 
 package infoviewer;
 
-import infoviewer.actions.InfoViewerAction;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
 import java.util.Vector;
 import javax.swing.table.*;
 import org.gjt.sp.jedit.jEdit;
@@ -36,16 +33,16 @@ public class Bookmarks extends AbstractTableModel {
             String title = jEdit.getProperty("infoviewer.bookmarks.title."+i);
             if (title == null) break;
             String url = jEdit.getProperty("infoviewer.bookmarks.url."+i);
-            add(title, url);
+            add(new TitledURLEntry(title, url));
         }
     }
 
-    
-    public void add(String title, String url) {
-        entries.addElement(new BookmarksEntry(title, url));
+
+    public void add(TitledURLEntry e) {
+        entries.addElement(e);
         fireTableRowsInserted(entries.size()-1, entries.size()-1);
     }
-
+        
     
     public int getSize() {
         return entries.size();
@@ -53,22 +50,20 @@ public class Bookmarks extends AbstractTableModel {
     
     
     public String getTitle(int index) {
-        if (index < 0 || index > entries.size()) return null;
-        BookmarksEntry e = (BookmarksEntry) entries.elementAt(index);
-        return e.title;
+        TitledURLEntry e = getEntry(index);
+        return e == null ? null : e.getTitle();
     }
     
     
     public String getURL(int index) {
-        if (index < 0 || index > entries.size()) return null;
-        BookmarksEntry e = (BookmarksEntry) entries.elementAt(index);
-        return e.url;
+        TitledURLEntry e = getEntry(index);
+        return e == null ? null : e.getURL();
     }
 
     
-    public BookmarksEntry getEntry(int index) {
+    public TitledURLEntry getEntry(int index) {
         if (index < 0 || index > entries.size()) return null;
-        BookmarksEntry e = (BookmarksEntry) entries.elementAt(index);
+        TitledURLEntry e = (TitledURLEntry) entries.elementAt(index);
         return e;
     }
 
@@ -78,17 +73,19 @@ public class Bookmarks extends AbstractTableModel {
         fireTableRowsDeleted(row, row);
     }
 
+    
     public void moveup(int row) {
         if (row == 0) return;
-        BookmarksEntry b = getEntry(row);
+        TitledURLEntry b = getEntry(row);
         entries.removeElementAt(row);
         entries.insertElementAt(b, row-1);
         fireTableRowsUpdated(row-1, row);
     }
     
+    
     public void movedown(int row) {
         if (row == entries.size()-1) return;
-        BookmarksEntry b = getEntry(row);
+        TitledURLEntry b = getEntry(row);
         entries.removeElementAt(row);
         entries.insertElementAt(b, row+1);
         fireTableRowsUpdated(row, row+1);
@@ -109,8 +106,8 @@ public class Bookmarks extends AbstractTableModel {
         Object obj = null;
         if (row < entries.size()) {
             switch (col) {
-                case 0: obj = getEntry(row).title; break;
-                case 1: obj = getEntry(row).url; break;
+                case 0: obj = getEntry(row).getTitle(); break;
+                case 1: obj = getEntry(row).getURL(); break;
             }
         }
         return obj;
@@ -121,10 +118,10 @@ public class Bookmarks extends AbstractTableModel {
     }
 
     public void setValueAt(Object value, int row, int col) {
-        BookmarksEntry e = getEntry(row);
+        TitledURLEntry e = getEntry(row);
         switch (col) {
-            case 0: e.title = value.toString(); break;
-            case 1: e.url = value.toString(); break;
+            case 0: e.setTitle(value.toString()); break;
+            case 1: e.setURL(value.toString()); break;
             default: break;
         }
         fireTableRowsUpdated(row, row);
@@ -147,13 +144,15 @@ public class Bookmarks extends AbstractTableModel {
         int i = 0;
         int count = 0;
         while (i < entries.size()) {
-            BookmarksEntry b = getEntry(i);
+            TitledURLEntry b = getEntry(i);
             if (b == null) continue;
-            if (b.title == null || b.title.length() == 0) {
+            if (b.getTitle() == null || b.getTitle().length() == 0) {
                 delete(i);
             } else {
-                jEdit.setProperty("infoviewer.bookmarks.title." + count, b.title);
-                jEdit.setProperty("infoviewer.bookmarks.url." + count, b.url);
+                jEdit.setProperty("infoviewer.bookmarks.title." + count, 
+                                  b.getTitle());
+                jEdit.setProperty("infoviewer.bookmarks.url." + count,
+                                  b.getURL());
                 i++;
                 count++;
             }

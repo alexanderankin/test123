@@ -21,9 +21,7 @@ package infoviewer.actions;
 
 import infoviewer.*;
 import java.awt.event.ActionEvent;
-import java.net.URL;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.*;
 
 
 public class edit_url extends InfoViewerAction {
@@ -33,11 +31,13 @@ public class edit_url extends InfoViewerAction {
     }
     
     public void actionPerformed(ActionEvent evt) {
-        URL url = getViewer(evt).getURL();
+        String url = getViewer(evt).getCurrentURL();
         if (url == null) {
             GUIUtilities.error(null, "infoviewer.error.nourl", null);
         } else {
-            jEdit.openFile(null, null, url.toString(), true, false);
+            View view = jEdit.getFirstView();
+            Buffer buf = jEdit.openFile(view, null, url, true, false);
+            view.toFront();
         }
     }
 }

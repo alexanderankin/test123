@@ -3,15 +3,16 @@
 # To recompile this plugin, start jmk in the plugin's source directory.
 #
 
-VERSION    = "0.4.1";
+VERSION    = "0.5.0";
 NAME       = "InfoViewer";
 
 javac      = "jikes" "+E";
 javaflags  = "-g" "-deprecation"
-             "-classpath" (cat (getprop "java.class.path") ":../EditBus.jar");
+             "-classpath" (cat (getprop "java.class.path") ";../EditBus.jar");
 
 # directories to compile and include
-pkgs       = "." "infoviewer" "infoviewer/actions" "infoviewer/images";
+pkgs       = "." "infoviewer" "infoviewer/actions" "infoviewer/images"
+             "infoviewer/workaround";
 
 # target jar filename
 jarfile    = (cat "../" NAME ".jar");
