@@ -20,12 +20,24 @@
 
 package org.etheridge.openit.sourcepath;
 
+import gnu.regexp.RE;
+import gnu.regexp.REException;
+import gnu.regexp.RESyntax;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import org.etheridge.openit.OpenItProperties;
+import org.etheridge.openit.sourcepath.SourcePath;
+import org.etheridge.openit.sourcepath.SourcePathElement;
+import org.etheridge.openit.sourcepath.SourcePathFile;
+
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
 
 /**
  * This class is a wrapper around a SourcePath that provides quicker access to 
@@ -90,6 +102,20 @@ public class QuickAccessSourcePath
   
   private void initialize()
   {
+    RE regularExpression = null;
+    try {
+      String regularExpressionProperty = 
+        jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION);
+      if (regularExpressionProperty != null) {
+        regularExpression = new RE(org.gjt.sp.jedit.MiscUtilities.globToRE(
+          regularExpressionProperty), RE.REG_MULTILINE, RESyntax.RE_SYNTAX_POSIX_EXTENDED);
+      }
+    } catch (REException e) {
+      Log.log(Log.MESSAGE, QuickAccessSourcePath.class, 
+        "[OpenIt Plugin]: Invalid excludes regular expression: " + 
+          jEdit.getProperty(OpenItProperties.EXCLUDES_REGULAR_EXPRESSION));
+    }
+    
     // initialize the quick access map
     mQuickAccessMap = new HashMap();
     
@@ -102,14 +128,18 @@ public class QuickAccessSourcePath
       for (Iterator j = sourcePathElement.getSourcePathFiles().iterator(); j.hasNext();) {
         SourcePathFile sourcePathFile = (SourcePathFile) j.next();
         
-        // get first letter
-        String firstLetter = sourcePathFile.getFullName().toLowerCase().substring(0,1);
-        List currentLetterList = (List) mQuickAccessMap.get(firstLetter);
-        if (currentLetterList == null) {
-          currentLetterList = new ArrayList();
-          mQuickAccessMap.put(firstLetter, currentLetterList);
+        // if the filename does not match the excludes regular expression then
+        // add it to the quick access map, otherwise ignore it.
+        if (regularExpression == null || !regularExpression.isMatch(sourcePathFile.getFullName())) {
+          // get first letter
+          String firstLetter = sourcePathFile.getFullName().toLowerCase().substring(0,1);
+          List currentLetterList = (List) mQuickAccessMap.get(firstLetter);
+          if (currentLetterList == null) {
+            currentLetterList = new ArrayList();
+            mQuickAccessMap.put(firstLetter, currentLetterList);
+          }
+          currentLetterList.add(sourcePathFile);
         }
-        currentLetterList.add(sourcePathFile);
       }
       
     }

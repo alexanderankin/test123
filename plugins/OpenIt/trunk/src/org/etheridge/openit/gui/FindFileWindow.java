@@ -26,7 +26,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -299,6 +301,65 @@ public class FindFileWindow extends JFrame
       protected boolean shouldForwardEvent(KeyEvent e) 
       {
         return !isKeyHandledBySourceFileList(e.getKeyCode());
+      }
+    });
+    
+    // add another key listener to the source file list to handle the beginning
+    // and end of lists.
+    mSourceFileList.addKeyListener(new KeyAdapter()
+    {
+      private boolean mDownAtEndPressed = false;
+      private boolean mUpPressedAtBeginning = false;
+      
+      public void keyPressed(KeyEvent e)
+      {
+        handleEvent(e);
+      }
+      
+      public void keyReleased(KeyEvent e)
+      {
+        handleEvent(e);
+      }
+
+      private void handleEvent(KeyEvent e)
+      {
+        if (downPressedAtEnd(e)) {    
+          if (mDownAtEndPressed) {
+            mSourceFileList.setSelectedIndex(0);
+            mSourceFileList.ensureIndexIsVisible(0);
+            mDownAtEndPressed = false;
+            e.consume();
+          } else {
+            mDownAtEndPressed = true;
+          }
+          mUpPressedAtBeginning = false;
+        } else if (upPressedAtBeginning(e)) {
+          if (mUpPressedAtBeginning) {
+            mSourceFileList.setSelectedIndex(mSourceFileList.getModel().getSize()-1);
+            mSourceFileList.ensureIndexIsVisible(mSourceFileList.getModel().getSize()-1);
+            mUpPressedAtBeginning = false;
+            e.consume();
+          } else {
+            mUpPressedAtBeginning = true;
+          }
+          mDownAtEndPressed = false;
+        } else {
+          // neither up or down was pressed at beginnig or end
+          mUpPressedAtBeginning = false;
+          mDownAtEndPressed = false;
+        }
+      }
+      
+      private boolean upPressedAtBeginning(KeyEvent e)
+      {
+        return (e.getKeyCode() == KeyEvent.VK_UP || e.getKeyCode() == KeyEvent.VK_PAGE_UP)
+          && (mSourceFileList.getSelectedIndex() == 0);
+      }
+      
+      private boolean downPressedAtEnd(KeyEvent e)
+      {
+        return (e.getKeyCode() == KeyEvent.VK_DOWN || e.getKeyCode() == KeyEvent.VK_PAGE_DOWN)
+          && (mSourceFileList.getSelectedIndex() == mSourceFileList.getModel().getSize()-1);
       }
     });
     
