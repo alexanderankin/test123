@@ -32,7 +32,7 @@
     </target>
 
     <target name="clean" description="Removed compiled files and generated jar files">
-        <delete includeEmptyDirs="true">
+        <delete includeEmptyDirs="true" failonerror="false">
             <fileset dir="${plugin.build.dir}" includes="**/*"/>
             <fileset dir="${plugin.build.dir}"/>
             <fileset dir="${plugin.jar.destpath}" includes="${plugin.jar.filename}"/>
