@@ -41,7 +41,7 @@ import org.apache.xerces.xni.grammars.Grammar;
 import org.apache.xerces.xni.grammars.XSGrammar;
 //}}}
 
-public class SAXParserImpl extends XmlSideKickParser
+public class SAXParserImpl extends XmlParser
 {
 	//{{{ SAXParserImpl constructor
 	public SAXParserImpl()

@@ -34,7 +34,7 @@ import xml.completion.*;
 import xml.*;
 //}}}
 
-public class SwingHTMLParserImpl extends XmlSideKickParser
+public class SwingHTMLParserImpl extends XmlParser
 {
 	//{{{ SwingHTMLParserImpl constructor
 	public SwingHTMLParserImpl()

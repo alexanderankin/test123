@@ -72,7 +72,6 @@ mode.velocity.xml.completion-info=jeditresource:/XML.jar!/xml/completion/html-co
 xml-menu=xml-match-tag \
 	- \
 	xml-insert \
-	xml-complete \
 	xml-edit-tag \
 	xml-close-tag \
 	xml-remove-tags \
@@ -85,7 +84,6 @@ xml-menu=xml-match-tag \
 xml-menu.label=XML
 xml-match-tag.label=Go to Matching Tag
 xml-insert.label=XML Insert
-xml-complete.label=Complete Element or Entity
 xml-edit-tag.label=Edit Tag at Caret...
 xml-close-tag.label=Close Last Open Tag
 xml-remove-tags.label=Remove All Tags
