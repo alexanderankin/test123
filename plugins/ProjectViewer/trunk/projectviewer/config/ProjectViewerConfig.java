@@ -61,7 +61,6 @@ public final class ProjectViewerConfig {
     public static final String LAST_PROJECT_OPT           = "projectviewer.last-project";
 	public static final String ASK_IMPORT_OPT             = "projectviewer.ask-import";
     public static final String BROWSER_PATH_OPT           = "browser-path";
-    public static final String BROWSEABLE_EXTS_OPT        = "projectviewer.browseable-extensions";
 
     public static final String SHOW_TOOLBAR_OPT           = "projectviewer.show_toolbar";
     public static final String SHOW_FOLDERS_OPT           = "projectviewer.show_folder_tree";
@@ -71,7 +70,7 @@ public final class ProjectViewerConfig {
 	public static final int ASK_ALWAYS	= 0;
 	public static final int ASK_ONCE	= 1;
 	public static final int ASK_NEVER	= 2;
-	
+
     private static ProjectViewerConfig config;
 
 	//}}}
@@ -145,7 +144,6 @@ public final class ProjectViewerConfig {
     private String includeFiles             = null;
     private String lastProject              = null;
     private String browserPath		        = jEdit.getProperty("projectviewer.browser__path");
-
 
     private ArrayList listeners;
 
@@ -223,7 +221,7 @@ public final class ProjectViewerConfig {
 				// ignore
 			}
         }
-		
+
         // Importing options
         importExts   = props.getProperty(IMPORT_EXTS_OPT);
         excludeDirs  = props.getProperty(EXCLUDE_DIRS_OPT);
@@ -267,7 +265,7 @@ public final class ProjectViewerConfig {
 		} else {
 			this.askImport = newAskImport;
 		}
-		this.firePropertyChanged(ASK_IMPORT_OPT, new Integer(old), 
+		this.firePropertyChanged(ASK_IMPORT_OPT, new Integer(old),
 			new Integer(askImport));
     }
 
