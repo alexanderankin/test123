@@ -58,6 +58,7 @@ import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
@@ -241,6 +242,81 @@ public class TaskListPlugin extends EBPlugin
 //		Log.log(Log.DEBUG, TaskListPlugin.class,
 //			"starting class list plugin");//##
 	}
+
+	/**
+	 * Clears existing task patterns and reloads default settings
+	 */
+	public static void resetPatterns(View view)
+	{
+		if(JOptionPane.YES_OPTION == GUIUtilities.confirm(view, "tasklist.reset-query",
+			null, JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE))
+		{
+			reloadPatterns();
+			GUIUtilities.message(view, "tasklist.reset-complete", null);
+			TaskListPlugin.extractTasks(view.getBuffer());
+		}
+	}
+
+	/**
+	 * Implements reloading of default task patterns
+	 */
+	private static void reloadPatterns()
+	{
+		TaskListPlugin.clearTaskTypes();
+		jEdit.setProperty("tasklist.tasktype.0.name", "DEBUG");
+		jEdit.setProperty("tasklist.tasktype.0.iconpath", "Debug.gif");
+		jEdit.setProperty("tasklist.tasktype.0.ignorecase", "false");
+		jEdit.setProperty("tasklist.tasktype.0.pattern", "(?:\\s*)(DEBUG):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.0.sample", "DEBUG: [comment text]");
+
+		jEdit.setProperty("tasklist.tasktype.1.name", "DONE");
+		jEdit.setProperty("tasklist.tasktype.1.iconpath", "Done.gif");
+		jEdit.setProperty("tasklist.tasktype.1.ignorecase", "false");
+		jEdit.setProperty("tasklist.tasktype.1.pattern", "(?:\\s*)(DONE):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.1.sample", "DONE: [comment text]");
+
+		jEdit.setProperty("tasklist.tasktype.2.name", "IDEA");
+		jEdit.setProperty("tasklist.tasktype.2.iconpath", "Intranet.gif");
+		jEdit.setProperty("tasklist.tasktype.2.ignorecase", "false");
+		jEdit.setProperty("tasklist.tasktype.2.pattern", "(?:\\s*)(IDEA):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.2.sample", "IDEA: [comment text]");
+
+		jEdit.setProperty("tasklist.tasktype.3.name", "NOTE");
+		jEdit.setProperty("tasklist.tasktype.3.iconpath", "Document.gif");
+		jEdit.setProperty("tasklist.tasktype.3.ignorecase", "false");
+		jEdit.setProperty("tasklist.tasktype.3.pattern", "(?:\\s*)(NOTE):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.3.sample", "NOTE: [comment text]");
+
+		jEdit.setProperty("tasklist.tasktype.4.name", "QUESTION");
+		jEdit.setProperty("tasklist.tasktype.4.iconpath", "Question.gif");
+		jEdit.setProperty("tasklist.tasktype.4.ignorecase", "false");
+		jEdit.setProperty("tasklist.tasktype.4.pattern", "(?:\\s*)(QUESTION):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.4.sample", "QUESTION: [comment text]");
+
+		jEdit.setProperty("tasklist.tasktype.5.name", "TODO");
+		jEdit.setProperty("tasklist.tasktype.5.iconpath", "Exclamation.gif");
+		jEdit.setProperty("tasklist.tasktype.5.ignorecase", "false");
+		jEdit.setProperty("tasklist.tasktype.5.pattern", "(?:\\s*)(TODO):(?:\\s+)(.+)$");
+		jEdit.setProperty("tasklist.tasktype.5.sample", "TODO: [comment text]");
+		pruneTaskListProperties(6);
+		loadTaskTypes();
+	}
+
+	static void pruneTaskListProperties(int start)
+	{
+		for(int i = start;
+			jEdit.getProperty("tasklist.tasktype." + i + ".pattern") != null;
+			i++)
+		{
+			jEdit.unsetProperty("tasklist.tasktype." + i + ".name");
+			jEdit.unsetProperty("tasklist.tasktype." + i + ".iconpath");
+			jEdit.unsetProperty("tasklist.tasktype." + i + ".ignorecase");
+			jEdit.unsetProperty("tasklist.tasktype." + i + ".pattern");
+			jEdit.unsetProperty("tasklist.tasktype." + i + ".sample");
+		}
+	}
+
+
 
 	/**
 	 * Causes an update of application data, typically after a change

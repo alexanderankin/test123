@@ -33,7 +33,11 @@ tasklist.popup.change-menu=Change task tag
 # error message string
 tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
 
-
+# messages for dialogs concerning resetting of task patterns
+tasklist.reset-query.title=Reset default TaskList patterns
+tasklist.reset-query.message=Do you wish to reset the TaskList parsing patterns to the default settings?
+tasklist.reset-complete.title=Reset default TaskList patterns
+tasklist.reset-complete.message=TaskList patterns reset to default values.
 
 # Option pane labels
 options.tasklist.label=Task List

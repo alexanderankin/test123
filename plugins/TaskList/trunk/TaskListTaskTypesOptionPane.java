@@ -108,7 +108,7 @@ public class TaskListTaskTypesOptionPane extends AbstractOptionPane
 			((TaskType)typesListModel.getElementAt(i)).save(i);
 			i++;
 		}
-		jEdit.unsetProperty("tasklist.tasktype." + i + ".pattern");
+		TaskListPlugin.pruneTaskListProperties(i);
 	}
 
 	private DefaultListModel createListModel()
