@@ -34,7 +34,7 @@ import javax.swing.event.*;
 
 import org.gjt.sp.jedit.*;
 
-public class TagsEnterTagPanel extends JPanel {
+class TagsEnterTagPanel extends JPanel {
 
   /***************************************************************************/
   static protected boolean debug_ = false;

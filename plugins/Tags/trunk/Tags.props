@@ -1,7 +1,7 @@
 # general plugin information
 plugin.tags.TagsPlugin.name=Tags
 plugin.tags.TagsPlugin.author=Kenrick Drew
-plugin.tags.TagsPlugin.version=0.7.2
+plugin.tags.TagsPlugin.version=0.7.3
 plugin.tags.TagsPlugin.docs=Tags.html
 plugin.tags.TagsPlugin.depend.0=jdk 1.1
 plugin.tags.TagsPlugin.depend.1=jedit 03.02.99.00
@@ -28,9 +28,9 @@ tags.enter-tag-dlg.title=Enter And Follow Tag
 tags.enter-tag-dlg.tag-to.label=Tag to:
 tags.enter-tag-dlg.new-view-checkbox.label=Open new view
 
-# Choose tag list
-tags.tag-collide-list.Font=Monospaced
-tags.tag-collide-list.font-size=12
+# Tag collision dialog
+tag-collision-dlg.title=Tag Collisions
+tag-collision-dlg.label=Choose tag:
 
 # Option strings
 options.tags.label=Tags
