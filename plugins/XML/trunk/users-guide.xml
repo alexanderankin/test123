@@ -485,6 +485,14 @@
     Much faster tag matching and highlighting.
    </para></listitem>
    <listitem><para>
+    The catalog manager should now be able to locate XML schemas and use them
+    for validation purposes.
+   </para></listitem>
+   <listitem><para>
+    XSL element completion popups no longer list HTML tags as well. This feature
+    will be reintroduced when namespace support is added to the XML plugin.
+   </para></listitem>
+   <listitem><para>
     <guimenuitem>Entities to Characters</guimenuitem> and <guimenuitem>Characters
     to Entities</guimenuitem> commands now convert &lt;, &gt; and &amp; as well.
    </para></listitem>
@@ -514,6 +522,9 @@
    <listitem><para>
     <guimenuitem>Entities to Characters</guimenuitem> would throw an exception
     if the text contained an unknown entity.
+   </para></listitem>
+   <listitem><para>
+    Xerces 1.4.4 included.
    </para></listitem>
   </itemizedlist>
 

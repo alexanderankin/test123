@@ -34,6 +34,12 @@ public class CatalogManager
 	{
 		load();
 
+		if(publicId != null && publicId.length() == 0)
+			publicId = null;
+
+		if(systemId != null && systemId.length() == 0)
+			systemId = null;
+
 		String newSystemId = null;
 
 		if(publicId == null && systemId != null && current != null)
@@ -63,8 +69,12 @@ public class CatalogManager
 		{
 			if(systemId == null)
 				return null;
-			else
+			else if(systemId.startsWith("file:"))
 				newSystemId = systemId;
+			else if(systemId.startsWith("/"))
+				newSystemId = "file://" + systemId;
+			else if(current != null)
+				newSystemId = current + systemId;
 		}
 
 		if(!(networkOK || newSystemId.startsWith("file:")

@@ -1,9 +1,10 @@
 + version 0.8:
 
+- element and entity lists for schemas
+- arrow keys and tag completion popups
+- string index out of bounds in findTagStart()
 - see if closing view causes problems
-- update:
-  - xsl tag list
-  - xsd tag list
+- update xsd tag list
 - more friendly way to find DTDs (some kind of 'wizard'?)
 - recording <, >, /, &
 - threaddeath -- wtf?
