@@ -1,0 +1,56 @@
+# Plugin properties
+plugin.ftp.FtpPlugin.name=FTP
+plugin.ftp.FtpPlugin.author=Slava Pestov
+plugin.ftp.FtpPlugin.version=0.5
+plugin.ftp.FtpPlugin.docs=index.html
+plugin.ftp.FtpPlugin.depend.0=jedit 04.01.08.00
+plugin.ftp.FtpPlugin.jars=sshtools-j2ssh-0.0.5-alpha.jar log4j-1.2.6.jar
+
+# Settings
+vfs.ftp.passive=true
+vfs.ftp.binary=true
+
+# Menu
+ftp=open-ftp save-ftp - open-sftp save-sftp - \
+	clear-directory-cache forget-passwords close-connections
+ftp.label=FTP
+
+# Actions
+open-ftp.label=Open from FTP Server...
+save-ftp.label=Save to FTP Server...
+open-sftp.label=Open from Secure FTP Server...
+save-sftp.label=Save to Secure FTP Server...
+clear-directory-cache.label=Clear Remote Directory Cache
+forget-passwords.label=Forget Remote Passwords
+close-connections.label=Close Unused Connections
+
+# Login dialog box
+login.title-ftp=Connect to FTP Server
+login.title-sftp=Connect to Secure FTP Server
+login.host=Remote host:
+login.user=User name:
+login.password=Password:
+login.passive=Passive mode
+
+# FTP VFS
+vfs.ftp.label=Connect to FTP Server...
+
+# Error messages
+# XXX - FTP responses seem to end with a newline?
+ftperror={0}\
+	See Utilities->Activity Log for a full connection trace.
+
+# File listing regexps
+vfs.ftp.list.count=2
+
+vfs.ftp.list.0=[ld-](.{9})\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+\\S+\\s+(.+)\\s*
+vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
+
+vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)\\s*
+vfs.ftp.list.vms=(.+?);\\d+\\s+.+
+
+# SFTP VFS
+vfs.sftp.label=Connect to Secure FTP Server...
+
+vfs.sftp.no-java14.title=Java 2 version 1.4 required
+vfs.sftp.no-java14.message=Secure FTP support requires Java 2 version 1.4.

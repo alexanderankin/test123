@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- The Java SSH API Configuration file -->
+
+<SshAPIConfiguration>
+  <!-- Add <ExtensionJar> elements here, these jars are dynamically loaded and should
+  be used to load the implementation classes defined in this configuration file -->
+  <!-- <ExtensionJar>sshtools-ext.jar</ExtensionJar> -->
+  
+  <!-- The Cipher configuration, add or overide default cipher implementations -->
+  <CipherConfiguration>
+    <!-- 
+     <CipherAlgorithm>
+       <AlgorithmName>none</AlgorithmName>
+       <ImplementationClass>com.sshtools.ext.NoneCipher</ImplementationClass>
+    </CipherAlgorithm>
+    -->
+    <DefaultAlgorithm>aes128-cbc</DefaultAlgorithm>
+  </CipherConfiguration>
+
+  <!-- The Message Authentication Code configuration, add or overide default mac implementations -->
+  <MacConfiguration>
+    <DefaultAlgorithm>hmac-md5</DefaultAlgorithm>
+  </MacConfiguration>
+
+  <!-- The Compression configuration, add or overide default compression implementations -->
+  <CompressionConfiguration>
+    <DefaultAlgorithm>none</DefaultAlgorithm>
+  </CompressionConfiguration>
+
+  <!-- The Public Key configuration, add or overide default public key implementations -->
+  <PublicKeyConfiguration>
+   <DefaultAlgorithm>ssh-dss</DefaultAlgorithm>
+   </PublicKeyConfiguration>
+
+  <!-- The Authentication configuration, add or overide default authentication implementations  -->
+  <AuthenticationConfiguration>
+  </AuthenticationConfiguration>
+
+  <!-- The Key Exchange configuration, add or overide default Key Exchange implementations -->
+  <KeyExchangeConfiguration>
+    <DefaultAlgorithm>diffie-hellman-group1-sha1</DefaultAlgorithm>
+  </KeyExchangeConfiguration>
+</SshAPIConfiguration>
