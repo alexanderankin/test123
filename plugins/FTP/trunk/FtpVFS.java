@@ -648,6 +648,9 @@ public class FtpVFS extends VFS
 				}
 			}
 
+			if(buf.length() != 0)
+				tokens.addElement(buf.toString());
+
 			name = (String)tokens.lastElement();
 			if(name == null)
 				return null;
