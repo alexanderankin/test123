@@ -1,5 +1,8 @@
 /*
  * OperatingSystem.java - Abstracts away OS-specific stuff
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,11 +22,13 @@
 
 package console;
 
+//{{{ Imports
 import java.lang.reflect.*;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+//}}}
 
 abstract class OperatingSystem
 {
@@ -40,6 +45,7 @@ abstract class OperatingSystem
 	abstract Process exec(String[] args, String[] env, String dir)
 			throws Exception;
 
+	//{{{ getOperatingSystem() method
 	static OperatingSystem getOperatingSystem()
 	{
 		if(os == null)
@@ -59,12 +65,14 @@ abstract class OperatingSystem
 		}
 
 		return os;
-	}
+	} //}}}
 
 	private static OperatingSystem os;
 
+	//{{{ Generic class
 	static class Generic extends OperatingSystem
 	{
+		//{{{ Generic constructor
 		Generic()
 		{
 			try
@@ -76,32 +84,38 @@ abstract class OperatingSystem
 			{
 				// use Java 1.1/1.2 code instead
 			}
-		}
+		} //}}}
 
+		//{{{ shellExpandsGlobs() method
 		boolean shellExpandsGlobs()
 		{
 			return true;
-		}
+		} //}}}
 
+		//{{{ supportsEnvironmentVariables() method
 		boolean supportsEnvironmentVariables()
 		{
 			return false;
-		}
+		} //}}}
 
+		//{{{ getEnvironmentVariables() method
 		Hashtable getEnvironmentVariables()
 		{
 			return new Hashtable();
-		}
+		} //}}}
 
+		//{{{ setUpDefaultAliases() method
 		void setUpDefaultAliases(Hashtable aliases)
 		{
-		}
+		} //}}}
 
+		//{{{ cdCommandAvailable() method
 		boolean cdCommandAvailable()
 		{
 			return java13exec != null;
-		}
+		} //}}}
 
+		//{{{ exec() method
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
 		{
@@ -127,18 +141,21 @@ abstract class OperatingSystem
 			{
 				throw e;
 			}
-		}
+		} //}}}
 
 		private Method java13exec;
-	}
+	} //}}}
 
+	//{{{ Unix class
 	static class Unix extends Generic
 	{
+		//{{{ supportsEnvironmentVariables() method
 		boolean supportsEnvironmentVariables()
 		{
 			return true;
-		}
+		} //}}}
 
+		//{{{ getEnvironmentVariables() method
 		Hashtable getEnvironmentVariables()
 		{
 			Hashtable vars = new Hashtable();
@@ -171,16 +188,19 @@ abstract class OperatingSystem
 			}
 
 			return vars;
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ Windows class
 	abstract static class Windows extends Generic
 	{
+		//{{{ shellExpandsGlobs() method
 		boolean shellExpandsGlobs()
 		{
 			return false;
-		}
+		} //}}}
 
+		//{{{ exec() method
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
 		{
@@ -218,12 +238,13 @@ abstract class OperatingSystem
 
 			// can't happen
 			return null;
-		}
+		} //}}}
 
 		abstract String getBuiltInPrefix();
 
 		abstract String[] getExtensionsToTry();
 
+		//{{{ setUpDefaultAliases() method
 		void setUpDefaultAliases(Hashtable aliases)
 		{
 			String[] builtins  = { "md", "rd", "del", "dir", "copy",
@@ -233,34 +254,41 @@ abstract class OperatingSystem
 			{
 				aliases.put(builtins[i],getBuiltInPrefix() + builtins[i]);
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ Windows9x class
 	static class Windows9x extends Windows
 	{
+		//{{{ supportsEnvironmentVariables() method
 		boolean supportsEnvironmentVariables()
 		{
 			return false;
-		}
+		} //}}}
 
+		//{{{ getBuiltInPrefix() method
 		String getBuiltInPrefix()
 		{
 			return "command.com /c ";
-		}
+		} //}}}
 
+		//{{{ getExtensionsToTry() method
 		String[] getExtensionsToTry()
 		{
 			return new String[] { ".cmd", ".bat", ".exe", ".com" };
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ WindowsNT class
 	static class WindowsNT extends Windows
 	{
+		//{{{ supportsEnvironmentVariables() method
 		boolean supportsEnvironmentVariables()
 		{
 			return true;
-		}
+		} //}}}
 
+		//{{{ getEnvironmentVariables() method
 		Hashtable getEnvironmentVariables()
 		{
 			Hashtable vars = new Hashtable();
@@ -314,21 +342,23 @@ abstract class OperatingSystem
 			}
 
 			return vars;
-		}
+		} //}}}
 
+		//{{{ getBuiltInPrefix() method
 		String getBuiltInPrefix()
 		{
 			return "cmd.exe /c ";
-		}
+		} //}}}
 
+		//{{{ getExtensionsToTry() method
 		String[] getExtensionsToTry()
 		{
 			if(extensionsToTry == null)
 				getEnvironmentVariables();
 
 			return extensionsToTry;
-		}
+		} //}}}
 
 		String[] extensionsToTry;
-	}
+	} //}}}
 }

@@ -1,5 +1,8 @@
 /*
  * ConsoleBeanShell.java - Executes commands in jEdit's BeanShell interpreter
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,24 +22,29 @@
 
 package console;
 
+//{{{ Imports
 import bsh.EvalError;
 import bsh.NameSpace;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
+//}}}
 
 class ConsoleBeanShell extends Shell
 {
+	//{{{ ConsoleBeanShell constructor
 	public ConsoleBeanShell()
 	{
 		super("BeanShell");
-	}
+	} //}}}
 
+	//{{{ printInfoMessage() method
 	public void printInfoMessage(Output output)
 	{
 		output.print(null,jEdit.getProperty("console.beanshell.info"));
-	}
+	} //}}}
 
+	//{{{ execute() method
 	public void execute(Console console, Output output, String command)
 	{
 		View view = console.getView();
@@ -61,14 +69,16 @@ class ConsoleBeanShell extends Shell
 		}
 
 		output.commandDone();
-	}
+	} //}}}
 
+	//{{{ stop() method
 	public void stop(Console console)
 	{
-	}
+	} //}}}
 
+	//{{{ waitFor() method
 	public boolean waitFor(Console console)
 	{
 		return true;
-	}
+	} //}}}
 }

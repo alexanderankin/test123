@@ -1,5 +1,8 @@
 /*
  * SystemShellBuiltIn.java - Commands handled by system shell itself
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,15 +22,18 @@
 
 package console;
 
+//{{{ Imports
 import java.util.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.HelpViewer;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.*;
+//}}}
 
 public abstract class SystemShellBuiltIn
 {
+	//{{{ executeBuiltIn() method
 	public static void executeBuiltIn(Console console, Output output,
 		String command, Vector args)
 	{
@@ -42,13 +48,15 @@ public abstract class SystemShellBuiltIn
 		{
 			builtIn.execute(console,output,command,args);
 		}
-	}
+	} //}}}
 
+	//{{{ getOptions() method
 	public Option[] getOptions()
 	{
 		return new Option[0];
-	}
+	} //}}}
 
+	//{{{ Option class
 	public class Option
 	{
 		public char shortName;
@@ -61,19 +69,22 @@ public abstract class SystemShellBuiltIn
 			this.longName = longName;
 			this.takesArgument = takesArgument;
 		}
-	}
+	} //}}}
 
+	//{{{ getMinArguments() method
 	public int getMinArguments()
 	{
 		return 0;
-	}
+	} //}}}
 
+	//{{{ getMaxArgument() method
 	public int getMaxArguments()
 	{
 		// meaning, no maximum
 		return -1;
-	}
+	} //}}}
 
+	//{{{ execute() method
 	public void execute(Console console, Output output, String command, Vector args)
 	{
 		Hashtable values = new Hashtable();
@@ -83,7 +94,7 @@ public abstract class SystemShellBuiltIn
 		{
 			String arg = (String)args.elementAt(i);
 
-			// end of options
+			//{{{ end of options
 			if(arg.equals("--"))
 				break;
 			else if(arg.equals("--help"))
@@ -91,9 +102,8 @@ public abstract class SystemShellBuiltIn
 				console.print(null,jEdit.getProperty("console.shell."
 					+ command + ".usage"));
 				return;
-			}
-				
-			// long option
+			} //}}}
+			//{{{ long option
 			else if(arg.startsWith("--"))
 			{
 				args.removeElementAt(i);
@@ -155,8 +165,8 @@ public abstract class SystemShellBuiltIn
 					else
 						values.put(longName,Boolean.TRUE);
 				}
-			}
-			// short option
+			} //}}}
+			//{{{ short option
 			else if(arg.startsWith("-") || arg.startsWith("+"))
 			{
 				args.removeElementAt(i);
@@ -191,7 +201,7 @@ public abstract class SystemShellBuiltIn
 					else
 						values.put(option.longName,Boolean.TRUE);
 				}
-			}
+			} //}}}
 		}
 
 		int min = getMinArguments();
@@ -205,15 +215,16 @@ public abstract class SystemShellBuiltIn
 		}
 
 		execute(console,output,args,values);
-	}
+	} //}}}
 
-	// protected members
+	//{{{ execute() method
 	protected abstract void execute(Console console, Output output,
-		Vector args, Hashtable values);
+		Vector args, Hashtable values); //}}}
 
-	// private members
+	//{{{ Private members
 	private static Hashtable commands;
 
+	//{{{ Class initializer
 	static
 	{
 		commands = new Hashtable();
@@ -240,8 +251,13 @@ public abstract class SystemShellBuiltIn
 		commands.put("unalias", new unalias());
 		commands.put("unset", new unset());
 		commands.put("version", new version());
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ Inner classes
+
+	//{{{ alias class
 	static class alias extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -260,8 +276,9 @@ public abstract class SystemShellBuiltIn
 			Hashtable aliases = SystemShell.getAliases();
 			aliases.put(args.elementAt(0),args.elementAt(1));
 		}
-	}
+	} //}}}
 
+	//{{{ aliases class
 	static class aliases extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -293,8 +310,9 @@ public abstract class SystemShellBuiltIn
 				output.print(null,(String)returnValue.elementAt(i));
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ browse class
 	static class browse extends SystemShellBuiltIn
 	{
 		public int getMaxArguments()
@@ -326,8 +344,9 @@ public abstract class SystemShellBuiltIn
 				}
 			});
 		}
-	}
+	} //}}}
 
+	//{{{ cd class
 	static class cd extends SystemShellBuiltIn
 	{
 		public int getMaxArguments()
@@ -352,8 +371,9 @@ public abstract class SystemShellBuiltIn
 
 			state.setCurrentDirectory(console,newDir);
 		}
-	}
+	} //}}}
 
+	//{{{ clear class
 	static class clear extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -371,8 +391,9 @@ public abstract class SystemShellBuiltIn
 		{
 			console.getOutputPane().setText("");
 		}
-	}
+	} //}}}
 
+	//{{{ detach class
 	static class detach extends SystemShellBuiltIn
 	{
 		public int getMaxArguments()
@@ -395,8 +416,9 @@ public abstract class SystemShellBuiltIn
 
 			process.detach();
 		}
-	}
+	} //}}}
 
+	//{{{ dirstack class
 	static class dirstack extends SystemShellBuiltIn
 	{
 		public int getMaxArguments()
@@ -415,8 +437,9 @@ public abstract class SystemShellBuiltIn
 				output.print(null,(String)directoryStack.elementAt(i));
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ echo class
 	static class echo extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -437,8 +460,9 @@ public abstract class SystemShellBuiltIn
 				output.print(null,(String)args.elementAt(i));
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ edit class
 	static class edit extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -458,8 +482,9 @@ public abstract class SystemShellBuiltIn
 					(String)args.elementAt(i),false,null);
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ env class
 	static class env extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -491,8 +516,9 @@ public abstract class SystemShellBuiltIn
 				output.print(null,(String)returnValue.elementAt(i));
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ help class
 	static class help extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -510,8 +536,9 @@ public abstract class SystemShellBuiltIn
 		{
 			new HelpViewer(getClass().getResource("/console/Console.html").toString());
 		}
-	}
+	} //}}}
 
+	//{{{ kill class
 	static class kill extends SystemShellBuiltIn
 	{
 		public int getMaxArguments()
@@ -534,8 +561,9 @@ public abstract class SystemShellBuiltIn
 
 			process.stop();
 		}
-	}
+	} //}}}
 
+	//{{{ popd class
 	static class popd extends SystemShellBuiltIn
 	{
 		public int getMaxArguments()
@@ -559,8 +587,9 @@ public abstract class SystemShellBuiltIn
 			String newDir = (String)directoryStack.pop();
 			state.setCurrentDirectory(console,newDir);
 		}
-	}
+	} //}}}
 
+	//{{{ pushd class
 	static class pushd extends SystemShellBuiltIn
 	{
 		public int getMaxArguments()
@@ -579,8 +608,9 @@ public abstract class SystemShellBuiltIn
 			String[] pp = { state.currentDirectory };
 			console.print(null,jEdit.getProperty("console.shell.pushd.ok",pp));
 		}
-	}
+	} //}}}
 
+	//{{{ pwd class
 	static class pwd extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -599,8 +629,9 @@ public abstract class SystemShellBuiltIn
 			output.print(null,SystemShell.getConsoleState(console)
 				.currentDirectory);
 		}
-	}
+	} //}}}
 
+	//{{{ run class
 	static class run extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -623,8 +654,9 @@ public abstract class SystemShellBuiltIn
 					true,false);
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ set class
 	static class set extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -643,8 +675,9 @@ public abstract class SystemShellBuiltIn
 			Hashtable variables = SystemShell.getVariables();
 			variables.put(args.elementAt(0),args.elementAt(1));
 		}
-	}
+	} //}}}
 
+	//{{{ unalias
 	static class unalias extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -663,8 +696,9 @@ public abstract class SystemShellBuiltIn
 			Hashtable aliases = SystemShell.getAliases();
 			aliases.remove(args.elementAt(0));
 		}
-	}
+	} //}}}
 
+	//{{{ unset class
 	static class unset extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -683,8 +717,9 @@ public abstract class SystemShellBuiltIn
 			Hashtable variables = SystemShell.getVariables();
 			variables.remove(args.elementAt(0));
 		}
-	}
+	} //}}}
 
+	//{{{ version class
 	static class version extends SystemShellBuiltIn
 	{
 		public int getMinArguments()
@@ -703,5 +738,7 @@ public abstract class SystemShellBuiltIn
 			output.print(null,jEdit.getProperty(
 				"plugin.console.ConsolePlugin.version"));
 		}
-	}
+	} //}}}
+
+	//}}}
 }

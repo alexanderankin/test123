@@ -1,5 +1,8 @@
 /*
  * GeneralOptionPane.java - General settings
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,6 +22,7 @@
 
 package console;
 
+//{{{ Imports
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
@@ -27,16 +31,19 @@ import java.awt.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
 class GeneralOptionPane extends AbstractOptionPane
 {
+	//{{{ GeneralOptionPane constructor
 	public GeneralOptionPane()
 	{
 		super("console.general");
-	}
+	} //}}}
 
-	// protected members
+	//{{{ Protected members
 
+	//{{{ _init() method
 	protected void _init()
 	{
 		addComponent(consoleToolBar = new JCheckBox(jEdit.getProperty(
@@ -62,8 +69,9 @@ class GeneralOptionPane extends AbstractOptionPane
 			warningColor = createColorButton("console.warningColor"));
 		addComponent(jEdit.getProperty("options.console.general.errorColor"),
 			errorColor = createColorButton("console.errorColor"));
-	}
+	} //}}}
 
+	//{{{ _save() method
 	protected void _save()
 	{
 		jEdit.setBooleanProperty("console.toolbar.enabled",
@@ -83,9 +91,13 @@ class GeneralOptionPane extends AbstractOptionPane
 			warningColor.getBackground());
 		jEdit.setColorProperty("console.errorColor",
 			errorColor.getBackground());
-	}
+	} //}}}
 
-	// private members
+	//}}}
+
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private JCheckBox consoleToolBar;
 	private JCheckBox commandoToolBar;
 	private FontSelector font;
@@ -94,7 +106,9 @@ class GeneralOptionPane extends AbstractOptionPane
 	private JButton infoColor;
 	private JButton warningColor;
 	private JButton errorColor;
+	//}}}
 
+	//{{{ createColorButton() method
 	private JButton createColorButton(String property)
 	{
 		final JButton b = new JButton(" ");
@@ -114,5 +128,7 @@ class GeneralOptionPane extends AbstractOptionPane
 
 		b.setRequestFocusEnabled(false);
 		return b;
-	}
+	} //}}}
+
+	//}}}
 }

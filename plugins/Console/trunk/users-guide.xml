@@ -801,13 +801,17 @@ the command output will be shown in a new buffer.</para></listitem>
      Updated for jEdit 4.0 API changes.
     </para></listitem>
     <listitem><para>
-     New <function>waitForConsole()</function> BeanShell command
+     New <function>waitForConsole()</function> BeanShell command.
     </para></listitem>
     <listitem><para>
-     Updated error patterns
+     Updated error patterns.
     </para></listitem>
     <listitem><para>
-     Changing the console font didn't work
+     Changing the console font didn't work.
+    </para></listitem>
+    <listitem><para>
+     A error message is now shown if you try to add an error pattern without
+					filling in the required fields.
     </para></listitem>
    </itemizedlist>
   </listitem>

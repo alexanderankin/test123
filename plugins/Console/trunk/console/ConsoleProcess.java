@@ -1,5 +1,8 @@
 /*
  * ConsoleProcess.java - A running process
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,14 +22,17 @@
 
 package console;
 
+//{{{ Imports
 import java.awt.Color;
 import java.io.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import errorlist.*;
+//}}}
 
 class ConsoleProcess
 {
+	//{{{ ConsoleProcess constructor
 	ConsoleProcess(Console console, Output output, String[] args, String[] env,
 		boolean foreground)
 	{
@@ -69,8 +75,9 @@ class ConsoleProcess
 			output.commandDone();
 			stop();
 		}
-	}
+	} //}}}
 
+	//{{{ detach() method
 	void detach()
 	{
 		if(console != null)
@@ -82,8 +89,9 @@ class ConsoleProcess
 
 		consoleState = null;
 		console = null;
-	}
+	} //}}}
 
+	//{{{ stop() method
 	void stop()
 	{
 		if(process != null)
@@ -107,14 +115,17 @@ class ConsoleProcess
 
 		if(consoleState != null)
 			consoleState.process = null;
-	}
+	} //}}}
 
+	//{{{ getExitStatus() method
 	boolean getExitStatus()
 	{
 		return (exitCode == 0);
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private SystemShell.ConsoleState consoleState;
 	private String currentDirectory;
 	private Console console;
@@ -126,7 +137,9 @@ class ConsoleProcess
 	private StreamThread stderr;
 	private int threadDoneCount;
 	private int exitCode;
+	//}}}
 
+	//{{{ threadDone() method
 	private synchronized void threadDone()
 	{
 		threadDoneCount++;
@@ -166,19 +179,24 @@ class ConsoleProcess
 			consoleState.process = null;
 
 		notifyAll();
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ StreamThread class
 	class StreamThread extends Thread
 	{
 		InputStream inputStream;
 
+		//{{{ StreamThread constructor
 		StreamThread(InputStream inputStream)
 		{
 			setName("" + StreamThread.class + args);
 			//setPriority(Thread.MIN_PRIORITY + 2);
 			this.inputStream = inputStream;
-		}
+		} //}}}
 
+		//{{{ run() method
 		public void run()
 		{
 			try
@@ -195,6 +213,7 @@ class ConsoleProcess
 							line,currentDirectory,
 							console.getErrorSource());
 
+						//{{{ Figure out the color...
 						Color color;
 
 						switch(type)
@@ -208,7 +227,7 @@ class ConsoleProcess
 						default:
 							color = null;
 							break;
-						}
+						} //}}}
 
 						output.print(color,line);
 					}
@@ -231,6 +250,6 @@ class ConsoleProcess
 			{
 				threadDone();
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 }

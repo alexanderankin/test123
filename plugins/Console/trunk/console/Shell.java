@@ -1,5 +1,8 @@
 /*
  * Shell.java - Shell interface
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -28,6 +31,7 @@ import org.gjt.sp.jedit.View;
  */
 public abstract class Shell
 {
+	//{{{ registerShell() method
 	/**
 	 * Registers a shell with the console plugin.
 	 * @param shell The shell
@@ -35,8 +39,9 @@ public abstract class Shell
 	public static void registerShell(Shell shell)
 	{
 		shells.addElement(shell);
-	}
+	} //}}}
 
+	//{{{ unregisterShell() method
 	/**
 	 * Unregisters a shell.
 	 * @param shell The shell
@@ -44,8 +49,9 @@ public abstract class Shell
 	public static void unregisterShell(Shell shell)
 	{
 		shells.removeElement(shell);
-	}
+	} //}}}
 
+	//{{{ getShells() method
 	/**
 	 * Returns an array of all registered shells.
 	 */
@@ -54,8 +60,9 @@ public abstract class Shell
 		Shell[] retVal = new Shell[shells.size()];
 		shells.copyInto(retVal);
 		return retVal;
-	}
+	} //}}}
 
+	//{{{ getShell() method
 	/**
 	 * Returns the shell with the specified name.
 	 * @param name The shell name
@@ -72,19 +79,22 @@ public abstract class Shell
 		}
 
 		return null;
-	}
+	} //}}}
 
+	//{{{ Shell constructor
 	public Shell(String name)
 	{
 		this.name = name;
-	}
+	} //}}}
 
+	//{{{ printInfoMessage() method
 	/**
 	 * Prints a 'info' message to the specified console.
 	 * @param output The output
 	 */
-	public abstract void printInfoMessage(Output output);
+	public abstract void printInfoMessage(Output output); //}}}
 
+	//{{{ execute() method
 	/**
 	 * Executes a command. Note that both the console and output parameters
 	 * are implementations of the Output interface. Writing to the console
@@ -97,36 +107,42 @@ public abstract class Shell
 	 * @param command The command
 	 */
 	public abstract void execute(Console console, Output output, String command);
+	//}}}
 
+	//{{{ stop() method
 	/**
 	 * Stops the currently executing command, if any.
 	 */
-	public abstract void stop(Console console);
+	public abstract void stop(Console console); //}}}
 
+	//{{{ waitFor() method
 	/**
 	 * Waits until any currently executing commands finish.
 	 * @return True if the most recent command exited successfully,
 	 * false otherwise
 	 */
-	public abstract boolean waitFor(Console console);
+	public abstract boolean waitFor(Console console); //}}}
 
+	//{{{ getName() method
 	/**
 	 * Returns the name of the shell.
 	 */
 	public String getName()
 	{
 		return name;
-	}
+	} //}}}
 
+	//{{{ toString() method
 	/**
 	 * Returns the name of the shell.
 	 */
 	public String toString()
 	{
 		return name;
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
 	private static Vector shells = new Vector();
 	private String name;
+	//}}}
 }

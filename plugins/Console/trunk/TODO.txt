@@ -1,6 +1,5 @@
 + general to do's
 
-- error pattern edit dialog: need to beep if not all fields filled out
 - ${beanshell:...} syntax
 - finish documentation
 - aliases option pane

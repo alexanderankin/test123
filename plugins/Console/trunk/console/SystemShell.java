@@ -1,5 +1,8 @@
 /*
  * SystemShell.java - Executes OS commands
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 1999, 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
@@ -19,23 +22,28 @@
 
 package console;
 
+//{{{ Imports
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+//}}}
 
 class SystemShell extends Shell
 {
+	//{{{ SystemShell constructor
 	public SystemShell()
 	{
 		super("System");
-	}
+	} //}}}
 
+	//{{{ printInfoMessage() method
 	public void printInfoMessage(Output output)
 	{
 		output.print(null,jEdit.getProperty("console.shell.info"));
-	}
+	} //}}}
 
+	//{{{ execute() method
 	public void execute(Console console, Output output, String command)
 	{
 		// comments, for possible future scripting support
@@ -106,8 +114,9 @@ class SystemShell extends Shell
 
 			new ConsoleProcess(console,output,_args,env,foreground);
 		}
-	}
+	} //}}}
 
+	//{{{ stop() method
 	public void stop(Console console)
 	{
 		ConsoleState consoleState = getConsoleState(console);
@@ -119,8 +128,9 @@ class SystemShell extends Shell
 			console.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.noproc"));
 		}
-	}
+	} //}}}
 
+	//{{{ waitFor() method
 	public boolean waitFor(Console console)
 	{
 		ConsoleState consoleState = getConsoleState(console);
@@ -142,14 +152,17 @@ class SystemShell extends Shell
 		}
 		else
 			return true;
-	}
+	} //}}}
 
-	// package-private members
+	//{{{ Package-private members
+
+	//{{{ consoleOpened() method
 	static void consoleOpened(Console console)
 	{
 		consoleStateMap.put(console,new ConsoleState());
-	}
+	} //}}}
 
+	//{{{ consoleClosed() method
 	static void consoleClosed(Console console)
 	{
 		ConsoleProcess process = getConsoleState(console).process;
@@ -157,37 +170,47 @@ class SystemShell extends Shell
 			process.stop();
 
 		consoleStateMap.remove(console);
-	}
+	} //}}}
 
+	//{{{ getConsoleState() method
 	static ConsoleState getConsoleState(Console console)
 	{
 		return (ConsoleState)consoleStateMap.get(console);
-	}
+	} //}}}
 
+	//{{{ getAliases() method
 	static Hashtable getAliases()
 	{
 		return aliases;
-	}
+	} //}}}
 
+	//{{{ getVariables() method
 	static Hashtable getVariables()
 	{
 		return variables;
-	}
+	} //}}}
 
+	//{{{ propertiesChanged() method
 	static void propertiesChanged()
 	{
 		aliases = null;
 		variables = null;
 
 		// next time execute() is called, init() will reload everything
-	}
+	} //}}}
 
-	// private members
+	//}}}
+
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private static Hashtable consoleStateMap = new Hashtable();
 	private static final char dosSlash = 127;
 	private static Hashtable aliases;
 	private static Hashtable variables;
+	//}}}
 
+	//{{{ init() method
 	private static void init()
 	{
 		if(aliases != null && variables != null)
@@ -233,8 +256,9 @@ class SystemShell extends Shell
 				+ i + ".value"));
 			i++;
 		}
-	}
+	} //}}}
 
+	//{{{ parse() method
 	/**
 	 * Convert a command into a vector of arguments.
 	 */
@@ -286,8 +310,9 @@ loop:			for(;;)
 			return null;
 		else
 			return args;
-	}
+	} //}}}
 
+	//{{{ preprocess() method
 	/**
 	 * Expand aliases, variables and globs.
 	 */
@@ -315,14 +340,16 @@ loop:			for(;;)
 			expandGlobs(view,newArgs,(String)args.elementAt(i));
 
 		return newArgs;
-	}
+	} //}}}
 
+	//{{{ expandGlobs() method
 	private void expandGlobs(View view, Vector args, String arg)
 	{
 		// XXX: to do
 		args.addElement(expandVariables(view,arg));
-	}
+	} //}}}
 
+	//{{{ expandVariables() method
 	private String expandVariables(View view, String arg)
 	{
 		StringBuffer buf = new StringBuffer();
@@ -337,7 +364,7 @@ loop:			for(;;)
 			case dosSlash:
 				buf.append('\\');
 				break;
-			// DOS-style variable (%name%)
+			//{{{ DOS-style variable (%name%)
 			case '%':
 				int index = arg.indexOf('%',i + 1);
 				if(index != -1)
@@ -358,7 +385,8 @@ loop:			for(;;)
 					buf.append('%');
 
 				break;
-			// Unix-style variables ($name, ${name})
+			//}}}
+			//{{{ Unix-style variables ($name, ${name})
 			case '$':
 				if(i == arg.length() - 1)
 				{
@@ -402,6 +430,8 @@ loop:			for(;;)
 					buf.append(expansion);
 
 				break;
+			//}}}
+			//{{{ Home directory (~)
 			case '~':
 				String home = System.getProperty("user.home");
 
@@ -430,6 +460,7 @@ loop:			for(;;)
 				}
 				buf.append('~');
 				break;
+			//}}}
 			default:
 				buf.append(c);
 				break;
@@ -437,8 +468,9 @@ loop:			for(;;)
 		}
 
 		return buf.toString();
-	}
+	} //}}}
 
+	//{{{ getExpansion() method
 	private String getExpansion(View view, String varName)
 	{
 		String expansion;
@@ -481,8 +513,11 @@ loop:			for(;;)
 			expansion = (String)variables.get(varName);
 
 		return expansion;
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ ConsoleState class
 	static class ConsoleState
 	{
 		String currentDirectory = System.getProperty("user.dir");
@@ -513,5 +548,5 @@ loop:			for(;;)
 					"console.shell.cd.error",pp));
 			}
 		}
-	}
+	} //}}}
 }
