@@ -2,7 +2,7 @@
 
 plugin.JCompilerPlugin.name=Java Compiler
 plugin.JCompilerPlugin.author=Kevin A. Burton, Aziz Sharif, Dominic Stolerman and Dirk Moebius
-plugin.JCompilerPlugin.version=1.1.2
+plugin.JCompilerPlugin.version=1.1.3
 plugin.JCompilerPlugin.docs=index.html
 
 plugin.JCompilerPlugin.depend.0=jdk 1.1.1
@@ -82,6 +82,7 @@ options.jcompiler.classpath=Class Path:
 options.jcompiler.addpkg2cp=Add package of current sourcefile to CLASSPATH
 options.jcompiler.outputDirectory=Output Directory:
 options.jcompiler.pick.tooltip=Choose Directory
+options.jcompiler.pickCP.tooltip=Set field to System Classpath used when jEdit was started
 options.jcompiler.otheroptions=Other Options:
 
 
@@ -99,23 +100,24 @@ jcompiler.msg.info=\
 
 jcompiler.msg.nocompilermethod1=\
 	Java compiler method {0}.{1} not found!\n\
-	Since you're using Java 1.1, this method should be there. Are you really \
+	Since you''re using Java 1.1, this method should be there. Are you really \
 	using a JDK, not a JRE only?!?\n\
 	For more information please look at the activity log and the \
 	documentation under Help->Java Compiler.\n
 
 jcompiler.msg.nocompilermethod2=\
 	Java compiler method {0}.{1} not found!\n\
-	Since you're using Java 1.2 or higher, this method should be in the \
-	tools.jar library of your JDK installation, but it isn't. What JDK do \
+	Since you''re using Java 1.2 or higher, this method should be in the \
+	tools.jar library of your JDK installation, but it isn''t. What JDK do \
 	you use? Kaffe?!?\n\
 	Look at the activity log for more information. Try to find out where \
 	the compiler method can be found. After that, set the environment \
 	variable $CLASSPATH to include the compiler class.\n
 
 jcompiler.msg.nocompilermethod3=\
-	Can't invoke compiler method {0}.{1}, because library {2} not found!\n\
-	tools.jar doesn't reside in a standard location. Please set the \
+	Can''t invoke compiler method {0}.{1}, because library {2} not found!\n\
+	Either you''re using a JRE instead of a full JDK, or tools.jar doesn''t \
+	reside in a standard location. In the latter case, please set the \
 	environment variable $CLASSPATH to point the JDK to the right \
 	location of tools.jar. For more information about how to do \
 	this, please have a look at the documentation under \

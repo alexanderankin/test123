@@ -25,6 +25,7 @@ import java.util.Vector;
 import java.io.*;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.util.*;
 import buildtools.*;
 
@@ -116,56 +117,7 @@ public class JCompiler {
 		}
 
 		// Check for auto save / auto save all
-		String prop = pkgCompile ? "jcompiler.javapkgcompile.autosave" : "jcompiler.javacompile.autosave";
-		if (jEdit.getProperty(prop).equals("current")) {
-			// Save current buffer, if dirty, but nothing else:
-			if (buf.isDirty())
-				buf.save(view, null);
-		}
-		else if (jEdit.getProperty(prop).equals("all")) {
-			// Save all buffers:
-			Buffer[] buffers = jEdit.getBuffers();
-			for(int i = 0; i < buffers.length; i++)
-				if (buffers[i].isDirty())
-					buffers[i].save(view, null);
-		}
-		else if (jEdit.getProperty(prop).equals("ask")) {
-			// Ask for unsaved changes:
-			if (pkgCompile) {
-				// Check if there are any unsaved buffers:
-				Buffer[] buffers = jEdit.getBuffers();
-				boolean dirty = false;
-				for(int i = 0; i < buffers.length; i++)
-					if (buffers[i].isDirty())
-						dirty = true;
-				if (dirty) {
-					int result = JOptionPane.showConfirmDialog(view,
-						jEdit.getProperty("jcompiler.msg.saveAllChanges.message"),
-						jEdit.getProperty("jcompiler.msg.saveAllChanges.title"),
-						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.WARNING_MESSAGE);
-					if (result == JOptionPane.CANCEL_OPTION)
-						return;
-					if (result == JOptionPane.YES_OPTION)
-						for(int i = 0; i < buffers.length; i++)
-							if (buffers[i].isDirty())
-								buffers[i].save(view, null);
-				}
-			} else {
-				// Check if current buffer is unsaved:
-				if (buf.isDirty()) {
-					int result = JOptionPane.showConfirmDialog(view,
-						jEdit.getProperty("jcompiler.msg.saveChanges.message", new Object[] { buf.getName() }),
-						jEdit.getProperty("jcompiler.msg.saveChanges.title"),
-						JOptionPane.YES_NO_CANCEL_OPTION,
-						JOptionPane.WARNING_MESSAGE);
-					if (result == JOptionPane.CANCEL_OPTION)
-						return;
-					if (result == JOptionPane.YES_OPTION)
-						buf.save(view, null);
-				}
-			}
-		}
+		saveBuffers(view, buf, pkgCompile);
 
 		// Get files to compile:
 		String filename = buf.getPath();
@@ -272,6 +224,8 @@ public class JCompiler {
 			// now invoke the compiler method:
 			Object methodParams[] = new Object[] { arguments };
 			compilerMethod.invoke(null, methodParams);
+			// do a garbage collection after compile:
+			System.gc();
 		}
 		catch (InvocationTargetException invex) {
 			// the invoked method has thrown an exception
@@ -558,6 +512,93 @@ public class JCompiler {
 		}
 
 		return result;
+	}
+
+
+	private void saveBuffers(View view, Buffer current, boolean pkgCompile) {
+		String prop = pkgCompile ? "jcompiler.javapkgcompile.autosave" : "jcompiler.javacompile.autosave";
+		String which = jEdit.getProperty(prop, "ask");
+
+		if (which.equals("current"))
+			saveCurrentBuffer(view, current);
+		else if (which.equals("all"))
+			saveAllBuffers(view);
+		else if (which.equals("ask"))
+			saveBuffersAsk(view, current, pkgCompile);
+		// do nothing on which == "no"
+	}
+
+
+	/** Save current buffer, if dirty. */
+	private void saveCurrentBuffer(View view, Buffer buf) {
+		if (buf.isDirty()) {
+			buf.save(view, null);
+			VFSManager.waitForRequests();
+		}
+	}
+
+
+	/** Save all buffers without asking. */
+	private void saveAllBuffers(View view) {
+		boolean savedSomething = false;
+		Buffer[] buffers = jEdit.getBuffers();
+
+		for(int i = 0; i < buffers.length; i++)
+			if (buffers[i].isDirty()) {
+				buffers[i].save(view, null);
+				savedSomething = true;
+			}
+
+		if (savedSomething)
+			VFSManager.waitForRequests();
+	}
+
+
+	/** Ask for unsaved changes and save. */
+	private void saveBuffersAsk(View view, Buffer buf, boolean pkgCompile) {
+		boolean savedSomething = false;
+		if (pkgCompile) {
+			// Check if there are any unsaved buffers:
+			Buffer[] buffers = jEdit.getBuffers();
+			boolean dirty = false;
+			for(int i = 0; i < buffers.length; i++)
+				if (buffers[i].isDirty())
+					dirty = true;
+
+			if (dirty) {
+				int result = JOptionPane.showConfirmDialog(view,
+					jEdit.getProperty("jcompiler.msg.saveAllChanges.message"),
+					jEdit.getProperty("jcompiler.msg.saveAllChanges.title"),
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+				if (result == JOptionPane.CANCEL_OPTION)
+					return;
+				if (result == JOptionPane.YES_OPTION)
+					for(int i = 0; i < buffers.length; i++)
+						if (buffers[i].isDirty()) {
+							buffers[i].save(view, null);
+							savedSomething = true;
+						}
+			}
+		} else { // !pkgCompile
+			// Check if current buffer is unsaved:
+			if (buf.isDirty()) {
+				int result = JOptionPane.showConfirmDialog(view,
+					jEdit.getProperty("jcompiler.msg.saveChanges.message", new Object[] { buf.getName() }),
+					jEdit.getProperty("jcompiler.msg.saveChanges.title"),
+					JOptionPane.YES_NO_CANCEL_OPTION,
+					JOptionPane.WARNING_MESSAGE);
+				if (result == JOptionPane.CANCEL_OPTION)
+					return;
+				if (result == JOptionPane.YES_OPTION) {
+					buf.save(view, null);
+					savedSomething = true;
+				}
+			}
+		}
+
+		if (savedSomething)
+			VFSManager.waitForRequests();
 	}
 
 }

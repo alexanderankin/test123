@@ -82,14 +82,14 @@ public class JCompilerOptionPaneGeneral extends AbstractOptionPane
 		group1.add(saveNotOnCompile);
 		group1.add(saveAskOnCompile);
 
-		String s = jEdit.getProperty("jcompiler.javacompile.autosave", "no");
-		if ("ask".equals(s))
+		String s = jEdit.getProperty("jcompiler.javacompile.autosave", "ask");
+		if (s.equals("ask"))
 			saveAskOnCompile.setSelected(true);
-		else if ("current".equals(s))
+		else if (s.equals("current"))
 			saveCurrentOnCompile.setSelected(true);
-		else if ("all".equals(s))
+		else if (s.equals("all"))
 			saveAllOnCompile.setSelected(true);
-		else
+		else // s.equals("no")
 			saveNotOnCompile.setSelected(true);
 
 		// "When building a package..."
@@ -107,14 +107,14 @@ public class JCompilerOptionPaneGeneral extends AbstractOptionPane
 		group2.add(saveNotOnPkgCompile);
 		group2.add(saveAskOnPkgCompile);
 
-		s = jEdit.getProperty("jcompiler.javapkgcompile.autosave", "no");
-		if ("ask".equals(s))
+		s = jEdit.getProperty("jcompiler.javapkgcompile.autosave", "ask");
+		if (s.equals("ask"))
 			saveAskOnPkgCompile.setSelected(true);
-		else if ("current".equals(s))
+		else if (s.equals("current"))
 			saveCurrentOnPkgCompile.setSelected(true);
-		else if ("all".equals(s))
+		else if (s.equals("all"))
 			saveAllOnPkgCompile.setSelected(true);
-		else
+		else // s.equals("no")
 			saveNotOnPkgCompile.setSelected(true);
 
 		JPanel saveOptions = new JPanel(new VariableGridLayout(VariableGridLayout.FIXED_NUM_COLUMNS, 2, 30, 0));
