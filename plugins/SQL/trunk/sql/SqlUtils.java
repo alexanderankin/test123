@@ -53,6 +53,9 @@ public class SqlUtils
 
   protected static java.util.List preprocessors = null;
 
+  protected static String lastRunQuery = null;
+  protected static int lastStartPos = 0;
+
 
   /**
    *  Sets the SelectedServerName attribute of the SqlUtils class
@@ -289,9 +292,8 @@ public class SqlUtils
         public void run()
         {
           doPublishText( view,
-              buffer,
               startPos,
-              length,
+              buffer.getText( startPos, length ),
               serverName );
         }
       } );
@@ -302,27 +304,47 @@ public class SqlUtils
    *  Description of the Method
    *
    * @param  view        Description of Parameter
-   * @param  buffer      Description of Parameter
+   * @param  serverName  Description of Parameter
+   * @since
+   */
+  public static void repeatLastQuery( View view,
+      String serverName )
+  {
+    if ( lastRunQuery != null )
+    {
+      doPublishText( view,
+          lastStartPos,
+          lastRunQuery,
+          serverName );
+    }
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  view        Description of Parameter
    * @param  startPos    Description of Parameter
-   * @param  length      Description of Parameter
+   * @param  sqlText     Description of Parameter
    * @param  serverName  Description of Parameter
    * @since
    */
   public static void doPublishText( final View view,
-      final Buffer buffer,
       int startPos,
-      int length,
+      String sqlText,
       String serverName )
   {
-    final String mode = buffer.getMode().getName();
     errorSource.clear();
-    String sqlText = null;
 
     final SqlServerRecord rec = getServerRecord( view, serverName );
     if ( rec == null )
       return;
 
     Connection conn = null;
+    // update vars for re-querying
+    lastRunQuery = sqlText;
+    lastStartPos = startPos;
+
     try
     {
       conn = rec.allocConnection();
@@ -332,9 +354,6 @@ public class SqlUtils
       final Statement stmt = conn.createStatement();
       Log.log( Log.DEBUG, SqlUtils.class,
           "stmt created: " + stmt );
-      String str2publish;
-
-      sqlText = buffer.getText( startPos, length );
 
       final java.util.List v = getPreprocessors();
 

@@ -27,11 +27,12 @@ public class SqlToolBar
 
   private View view;
   private JComboBox combo;
-  private JButton save;
-  private JButton saveAs;
-  private JButton reload;
-  private JButton props;
-  private JButton prefs;
+
+  private JButton execSelection;
+  private JButton execBuffer;
+  private JButton loadObject;
+  private JButton requery;
+
   private JLabel title;
 
   private final static String SHOW_TITLE_PROP = "sql.toolbar.server.showTitle";
@@ -68,6 +69,73 @@ public class SqlToolBar
           }
         }
       } );
+     
+    final Toolkit toolkit = Toolkit.getDefaultToolkit();
+
+    final Image execBufferImage = toolkit.getImage( getClass().getResource( "/icons/execBuffer.png" ) );
+    final Image execSelectionImage = toolkit.getImage( getClass().getResource( "/icons/execSelection.png" ) );
+    final Image loadObjectImage = toolkit.getImage( getClass().getResource( "/icons/loadObject.png" ) );
+    final Image repeatLastQueryImage = toolkit.getImage( getClass().getResource( "/icons/repeatLastQuery.png" ) );
+
+    execBuffer = new JButton( new ImageIcon( execBufferImage ) );
+    execBuffer.setMargin(nullInsets);
+    execBuffer.setToolTipText(jEdit.getProperty( "sql.toolbar.execBuffer.tooltip" ));
+    execBuffer.setFocusPainted(false);
+
+    execBuffer.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          SqlPlugin.publishBuffer( SqlToolBar.this.view,
+                                   SqlUtils.getSelectedServerName() );
+        }
+      } );
+
+    execSelection = new JButton( new ImageIcon( execSelectionImage ) );
+    execSelection.setMargin(nullInsets);
+    execSelection.setToolTipText(jEdit.getProperty( "sql.toolbar.execSelection.tooltip" ));
+    execSelection.setFocusPainted(false);
+
+    execSelection.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          SqlPlugin.publishSelection( SqlToolBar.this.view,
+                                      SqlUtils.getSelectedServerName() );
+        }
+      } );
+
+    loadObject = new JButton( new ImageIcon( loadObjectImage ) );
+    loadObject.setMargin(nullInsets);
+    loadObject.setToolTipText(jEdit.getProperty( "sql.toolbar.loadObject.tooltip" ));
+    loadObject.setFocusPainted(false);
+
+    loadObject.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          SqlPlugin.loadObject( SqlToolBar.this.view,
+                                SqlUtils.getSelectedServerName() );
+        }
+      } );
+
+    requery = new JButton( new ImageIcon( repeatLastQueryImage ) );
+    requery.setMargin(nullInsets);
+    requery.setToolTipText(jEdit.getProperty( "sql.toolbar.repeatLastQuery.tooltip" ));
+    requery.setFocusPainted(false);
+
+    requery.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          SqlUtils.repeatLastQuery( SqlToolBar.this.view,
+                                    SqlUtils.getSelectedServerName() );
+        }
+      } );
 
     setFloatable( false );
     putClientProperty( "JToolBar.isRollover", Boolean.TRUE );
@@ -75,7 +143,13 @@ public class SqlToolBar
     addSeparator( new Dimension( 5, 5 ) );// just add a little space at begin, looks better
 
     add( serverList );
-//    addSeparator();
+    addSeparator();
+    add( execSelection );
+    add( execBuffer );
+    addSeparator();
+    add( loadObject );
+    addSeparator();
+    add( requery );
 
     add( Box.createGlue() );
 

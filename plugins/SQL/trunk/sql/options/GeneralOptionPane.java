@@ -49,6 +49,7 @@ public class GeneralOptionPane extends SqlOptionPane
   private JTextField maxRecsField;
   private JCheckBox showToolBar;
   private JCheckBox showTitle;
+  private JCheckBox autoresizeResult;
 
 
   /**
@@ -75,11 +76,24 @@ public class GeneralOptionPane extends SqlOptionPane
 
     JPanel panel = new JPanel();
     {
-      panel.setLayout( new BorderLayout( 10, 10 ) );
+      panel.setLayout( new GridLayout( 0, 1, 5, 5 ) );
       panel.setBorder( createTitledBorder( "sql.options.recordSetView.label" ) );
 
-      panel.add( new JLabel( jEdit.getProperty( "sql.options.maxRecs2Show.label" ) ), BorderLayout.WEST );
-      panel.add( maxRecsField = new JTextField( "" + ResultSetWindow.getMaxRecordsToShow() ), BorderLayout.CENTER );
+      JPanel panel1 = new JPanel();
+      {
+        panel1.setLayout( new BorderLayout( 5, 5 ) );
+        panel1.add( new JLabel( jEdit.getProperty( "sql.options.maxRecs2Show.label" ) ), BorderLayout.WEST );
+        panel1.add( maxRecsField = new JTextField( "" + ResultSetWindow.getMaxRecordsToShow() ), BorderLayout.CENTER );
+      }
+      panel.add( panel1 );
+
+      panel1 = new JPanel();
+      {
+        panel1.setLayout( new BorderLayout( 5, 5 ) );
+        panel1.add( autoresizeResult = new JCheckBox( jEdit.getProperty( "sql.options.autoresizeResult.label" ) ), BorderLayout.CENTER );
+        autoresizeResult.setSelected( ResultSetWindow.getAutoResize() );
+      }
+      panel.add( panel1 );
     }
     vbox.add( panel );
     vbox.add( vbox.createVerticalStrut( 5 ) );
@@ -123,14 +137,14 @@ public class GeneralOptionPane extends SqlOptionPane
    */
   public void _save()
   {
-    int mr = ResultSetWindow.getMaxRecordsToShow();
     try
     {
-      mr = Integer.parseInt( maxRecsField.getText() );
+      ResultSetWindow.setMaxRecordsToShow( Integer.parseInt( maxRecsField.getText() ) );
     } catch ( NumberFormatException ex )
     {
     }
-    ResultSetWindow.setMaxRecordsToShow( mr );
+    ResultSetWindow.setAutoResize( autoresizeResult.getSelectedObjects() != null );
+
     SqlToolBar.showToolBar( showToolBar.isSelected() );
     SqlToolBar.showTitle( showTitle.isSelected() );
 

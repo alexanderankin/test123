@@ -167,7 +167,7 @@
       </itemizedlist>
 
       <table frame="all">
-        <title>SQL server types supported by SQL plugin</title>
+        <title>SQL server types supported by SQL plugin (historical order)</title>
 
         <tgroup cols="4">
           <colspec colname="name" align="left" />
@@ -309,24 +309,15 @@
     <itemizedlist>
       <listitem>
         <para>
-        <guibutton>Execute Buffer</guibutton>
+        <guibutton>Execute buffer</guibutton>
 
-        - Send current buffer entirely to the database. This
+        - Sends current buffer entirely to the database. This
         buffer should contain a correct statement.</para>
       </listitem>
 
       <listitem>
         <para>
-        <guibutton>Execute Buffer On Server</guibutton>
-
-        - Sends current buffer to the database of user choice
-        (dialog is displayed before publishing). The selection
-        should contain a correct statement.</para>
-      </listitem>
-
-      <listitem>
-        <para>
-        <guibutton>Execute Selection</guibutton>
+        <guibutton>Execute selection</guibutton>
 
         - Sends current selection to the database. The selection
         should contain a correct statement.</para>
@@ -334,16 +325,7 @@
 
       <listitem>
         <para>
-        <guibutton>Execute Selection On Server</guibutton>
-
-        - Sends current selection to the database of user choice
-        (dialog is displayed before publishing). The selection
-        should contain a correct statement.</para>
-      </listitem>
-
-      <listitem>
-        <para>
-        <guibutton>Load Object</guibutton>
+        <guibutton>Load object</guibutton>
 
         - Downloads the object sources from the database. Creates
         new buffer. In the drop-down list, red objects are
@@ -352,11 +334,10 @@
 
       <listitem>
         <para>
-        <guibutton>Load Object From Server</guibutton>
+        <guibutton>Repeat last query</guibutton>
 
-        - Downloads the object sources from the database of user
-        choice (dialog is displayed before publishing). Creates
-        new buffer.</para>
+        - Repeats the last execute database query. Note: this includes the 
+        queries made on behalf of SqlVFS.</para>
       </listitem>
     </itemizedlist>
   </chapter>
@@ -490,6 +471,18 @@ SELECT * FROM user WHERE user=?</programlisting>
         </formalpara>
 
         <itemizedlist>
+          <listitem>
+            <para>SQL Toolbar added. Hopefully this will make the plugin more 
+            accessible. Some stupid actions removed - use toolbar instead, lads.
+            </para>
+          </listitem>
+
+          <listitem>
+            <para>ResultSet Dockable supports optional column autoresizing. 
+            Individual cells can be copied into clipboard.
+            </para>
+          </listitem>
+
           <listitem>
             <para>Support for Progress database. Thanks to Gerke Kok.
             </para>

@@ -63,6 +63,7 @@ public class ResultSetWindow extends JPanel
   protected Data data = null;
 
   protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
+  protected final static String AUTORESIZE = "sql.autoresizeResult";
 
 
   /**
@@ -311,9 +312,15 @@ public class ResultSetWindow extends JPanel
         }
       } );
 
-    tbl.setAutoResizeColumns( false );
-    //!!tbl.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
-    tbl.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+    if ( getAutoResize() )
+    {
+      tbl.setAutoResizeColumns( true );
+      tbl.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
+    } else
+    {
+      tbl.setAutoResizeColumns( false );
+      tbl.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
+    }
 
     setSortOrder( tbl, HelpfulJTable.SORT_OFF );
 
@@ -340,6 +347,18 @@ public class ResultSetWindow extends JPanel
 
 
   /**
+   *  Sets the AutoResize attribute of the ResultSetWindow class
+   *
+   * @param  maxRecs  The new AutoResize value
+   * @since
+   */
+  public final static void setAutoResize( boolean autoResize )
+  {
+    SqlPlugin.setProperty( AUTORESIZE, "" + autoResize );
+  }
+
+
+  /**
    *  Gets the MaxRecordsToShow attribute of the ResultSetWindow class
    *
    * @return    The MaxRecordsToShow value
@@ -349,7 +368,7 @@ public class ResultSetWindow extends JPanel
   {
     try
     {
-      return new Integer( SqlPlugin.getProperty( MAX_RECS_TO_SHOW_PROP ) ).intValue();
+      return Integer.parseInt( SqlPlugin.getProperty( MAX_RECS_TO_SHOW_PROP ) );
     } catch ( NumberFormatException ex )
     {
       return 10;
@@ -359,6 +378,23 @@ public class ResultSetWindow extends JPanel
     }
   }
 
+
+  /**
+   *  Gets the MaxRecordsToShow attribute of the ResultSetWindow class
+   *
+   * @return    The MaxRecordsToShow value
+   * @since
+   */
+  public final static boolean getAutoResize()
+  {
+    try
+    {
+      return Boolean.valueOf( SqlPlugin.getProperty( AUTORESIZE ) ).booleanValue();
+    } catch ( NullPointerException ex )
+    {
+      return false;
+    }
+  }
 
   /**
    *Description of the Method
@@ -500,7 +536,7 @@ public class ResultSetWindow extends JPanel
 
       if ( ( evt.getModifiers() & MouseEvent.BUTTON3_MASK ) != 0 )
       {
-        final ResultSetWindowPopup rswp = new ResultSetWindowPopup( view, table );
+        final ResultSetWindowPopup rswp = new ResultSetWindowPopup( view, table, evt.getPoint() );
         rswp.show( table, p.x + 1, p.y + 1 );
         evt.consume();
       }

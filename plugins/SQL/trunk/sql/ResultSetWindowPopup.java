@@ -20,6 +20,7 @@
  */
 package sql;
 
+import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
 
@@ -32,12 +33,13 @@ import org.gjt.sp.jedit.*;
  * A popup menu for BufferList.
  *
  * @author     svu
- * @created    3 Сентябрь 2001 г.
+ * @created    3 О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public class ResultSetWindowPopup extends JPopupMenu
 {
   protected View view;
   protected JTable table;
+  protected Point point;
 
 
   /**
@@ -45,22 +47,56 @@ public class ResultSetWindowPopup extends JPopupMenu
    *
    * @param  view   Description of Parameter
    * @param  table  Description of Parameter
+   * @param  point  Description of Parameter
    * @since
    */
-  public ResultSetWindowPopup( View view, JTable table )
+  public ResultSetWindowPopup( View view, JTable table, Point point )
   {
     this.view = view;
     this.table = table;
+    this.point = point;
+    final JMenuItem mi = createMenuItem( "copy_cell" );
+    add( mi );
+    mi.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          final int row = ResultSetWindowPopup.this.table.rowAtPoint( ResultSetWindowPopup.this.point );
+          final int col = ResultSetWindowPopup.this.table.columnAtPoint( ResultSetWindowPopup.this.point );
+          if ( row == -1 || col == -1 )
+            return;
+
+          final Registers.Register reg = Registers.getRegister( '$' );// clipboard
+          if ( reg == null )
+          {
+            ResultSetWindowPopup.this.view.getToolkit().beep();
+            return;
+          }
+          final TableModel model = ResultSetWindowPopup.this.table.getModel();
+          Registers.setRegister( '$', new String( model.getValueAt( row, col ).toString() ) );
+        }
+      } );
+
+    add( new JSeparator() );
     add( createCopyMenuItem( "copy_all_csv", ", ", true ) );
     add( createCopyMenuItem( "copy_all_tab", "\t", false ) );
+
+  }
+
+
+  private JMenuItem createMenuItem( String name )
+  {
+    final String label = jEdit.getProperty( "sql.resultSet.popup." + name + ".label" );
+    final JMenuItem mi = new JMenuItem( label );
+    mi.setActionCommand( name );
+    return mi;
   }
 
 
   private JMenuItem createCopyMenuItem( String name, String delimiter, boolean doCsvize )
   {
-    final String label = jEdit.getProperty( "sql.resultSet.popup." + name + ".label" );
-    final JMenuItem mi = new JMenuItem( label );
-    mi.setActionCommand( name );
+    final JMenuItem mi = createMenuItem( name );
     mi.addActionListener( new CopyActionHandler( delimiter, doCsvize ) );
     return mi;
   }
