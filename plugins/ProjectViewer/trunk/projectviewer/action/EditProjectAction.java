@@ -24,9 +24,11 @@ import java.awt.event.ActionEvent;
 import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
+import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 
+import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -42,6 +44,28 @@ import projectviewer.importer.InitialProjectImporter;
  */
 public class EditProjectAction extends Action {
 
+	//{{{ Static members
+	
+	//{{{ editProject(View) method
+	/**
+	 *	jEdit action; if a project is currently opened, open its properties
+	 *	dialog.
+	 */
+	public static void editProject(View view) {
+		ProjectViewer viewer = ProjectViewer.getViewer(view);
+		VPTNode sel = viewer.getSelectedNode();
+		if (sel == null) {
+			sel = viewer.getRoot();
+		}
+		if (viewer != null && !sel.isRoot()) {
+			EditProjectAction action = new EditProjectAction();
+			action.setViewer(viewer);
+			action.actionPerformed(null);
+		}
+	} //}}}
+	
+	//}}}
+	
 	//{{{ Private members
 	private boolean forceNew;
 	//}}}
