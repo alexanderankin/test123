@@ -2,7 +2,7 @@
 
 plugin.SqlPlugin.name=SQL
 plugin.SqlPlugin.author=Sergey V. Udaltsov
-plugin.SqlPlugin.version=0.9
+plugin.SqlPlugin.version=0.92
 plugin.SqlPlugin.docs=users-guide.html
 
 plugin.SqlPlugin.depend.0=jedit 04.00.04.00

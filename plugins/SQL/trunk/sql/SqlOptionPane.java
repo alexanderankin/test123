@@ -51,7 +51,7 @@ public class SqlOptionPane extends AbstractOptionPane
   private JButton addServerBtn;
   private JButton editServerBtn;
   private JButton delServerBtn;
-  private Hashtable allServers;
+  private Map allServers;
 
   private PathBuilder pathBuilder;
   private JTextField maxRecsField;
@@ -273,9 +273,9 @@ public class SqlOptionPane extends AbstractOptionPane
    */
   public void _save()
   {
-    for ( Enumeration e = allServers.elements(); e.hasMoreElements();  )
+    for ( Iterator e = allServers.values().iterator(); e.hasNext();  )
     {
-      final SqlServerRecord rec = (SqlServerRecord) e.nextElement();
+      final SqlServerRecord rec = (SqlServerRecord) e.next();
       rec.save();
     }
 
@@ -305,35 +305,6 @@ public class SqlOptionPane extends AbstractOptionPane
   /**
    *  Description of the Method
    *
-   * @since
-   */
-  protected void updateServerList()
-  {
-    allServers = SqlServerRecord.getAllRecords();
-
-    final Vector allServersV = new Vector();
-    for ( Enumeration e = allServers.elements(); e.hasMoreElements();  )
-    {
-      final SqlServerRecord sr = (SqlServerRecord) e.nextElement();
-      allServersV.addElement( sr );
-    }
-
-    MiscUtilities.quicksort( allServersV, new MiscUtilities.StringCompare() );
-
-    allServersLst.setListData( allServersV );
-
-    final String srv2select = SqlUtils.getSelectedServerName();
-
-    final Object selSrv = srv2select == null ? null : allServers.get( srv2select );
-    allServersLst.setSelectedValue( selSrv, true );
-
-    updateServerListButtons();
-  }
-
-
-  /**
-   *  Description of the Method
-   *
    * @param  comp  The feature to be added to the Component attribute
    * @since
    */
@@ -349,6 +320,35 @@ public class SqlOptionPane extends AbstractOptionPane
 
     gridBag.setConstraints( comp, cons );
     add( comp );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @since
+   */
+  protected void updateServerList()
+  {
+    allServers = SqlServerRecord.getAllRecords();
+
+    final java.util.List allServersV = new ArrayList();
+    for ( Iterator e = allServers.values().iterator(); e.hasNext();  )
+    {
+      final SqlServerRecord sr = (SqlServerRecord) e.next();
+      allServersV.add( sr );
+    }
+
+    MiscUtilities.quicksort( allServersV, new MiscUtilities.StringCompare() );
+
+    allServersLst.setListData( allServersV.toArray() );
+
+    final String srv2select = SqlUtils.getSelectedServerName();
+
+    final Object selSrv = srv2select == null ? null : allServers.get( srv2select );
+    allServersLst.setSelectedValue( selSrv, true );
+
+    updateServerListButtons();
   }
 
 

@@ -45,9 +45,9 @@ import SqlPlugin;
 public class SqlServerType extends Properties
 {
 
-  protected Hashtable connectionParameters = new Hashtable();
+  protected Map connectionParameters = new HashMap();
 
-  protected Hashtable statements = new Properties();
+  protected Map statements = new HashMap();
 
   protected SqlSubVFS vfs = null;
 
@@ -76,7 +76,7 @@ public class SqlServerType extends Properties
    */
   public final static String MODE_NAME_PROPERTY = "editMode";
 
-  protected static Hashtable allTypes = new Hashtable();
+  protected static Map allTypes = new HashMap();
 
   protected static DocumentBuilder docBuilder = null;
 
@@ -149,7 +149,7 @@ public class SqlServerType extends Properties
    * @return    The ConnectionParameters value
    * @since
    */
-  public Hashtable getConnectionParameters()
+  public Map getConnectionParameters()
   {
     return connectionParameters;
   }
@@ -233,7 +233,7 @@ public class SqlServerType extends Properties
    * @return    The AllTypes value
    * @since
    */
-  public static Hashtable getAllTypes()
+  public static Map getAllTypes()
   {
     return allTypes;
   }
@@ -451,7 +451,7 @@ public class SqlServerType extends Properties
   {
     Log.log( Log.NOTICE, SqlServerType.class,
         "All server types are dropped" );
-    allTypes = new Hashtable();
+    allTypes = new HashMap();
   }
 
 

@@ -42,7 +42,7 @@ public class SqlServerDialog extends JDialog
 
   private JComboBox serverTypeList;
 
-  private Hashtable controls = new Hashtable();
+  private Map controls = new HashMap();
   private CardLayout serverTypeCards;
   private JPanel serverTypePanel;
 
@@ -117,16 +117,16 @@ public class SqlServerDialog extends JDialog
 
     pane.addS( "sql.config.label" );
 
-    final Hashtable types = SqlServerType.getAllTypes();
-    final Vector typeNames = new Vector();
+    final Map types = SqlServerType.getAllTypes();
+    final java.util.List typeNames = new ArrayList();
 
-    for ( Enumeration e = types.elements(); e.hasMoreElements();  )
+    for ( Iterator e = types.values().iterator(); e.hasNext();  )
     {
-      final String n = ( (SqlServerType) e.nextElement() ).getName();
-      typeNames.addElement( n );
+      final String n = ( (SqlServerType) e.next() ).getName();
+      typeNames.add( n );
     }
 
-    serverTypeList = new JComboBox( typeNames );
+    serverTypeList = new JComboBox( typeNames.toArray() );
     pane.addC( jEdit.getProperty( "sql.serverType.label" ), serverTypeList );
 
     pane.addS( "" );
@@ -135,18 +135,18 @@ public class SqlServerDialog extends JDialog
 
     serverTypePanel.add( EMPTY_CARD, new JPanel() );
 
-    for ( Enumeration e = SqlServerType.getAllTypes().elements(); e.hasMoreElements();  )
+    for ( Iterator e = SqlServerType.getAllTypes().values().iterator(); e.hasNext();  )
     {
-      final SqlServerType type = (SqlServerType) e.nextElement();
+      final SqlServerType type = (SqlServerType) e.next();
       final String name = type.getName();
       final Pane serverPane = new Pane();
-      final Hashtable serverTypeControls = new Hashtable();
+      final Map serverTypeControls = new HashMap();
 
-      for ( Enumeration ep = type.getConnectionParameters().elements();
-          ep.hasMoreElements();  )
+      for ( Iterator ep = type.getConnectionParameters().values().iterator();
+          ep.hasNext();  )
       {
         final SqlServerType.ConnectionParameter param
-             = (SqlServerType.ConnectionParameter) ep.nextElement();
+             = (SqlServerType.ConnectionParameter) ep.next();
 
         JTextField tf;
         if ( rec.PASSWORD.equals( param.getName() ) )
@@ -228,12 +228,12 @@ public class SqlServerDialog extends JDialog
 
     serverTypeList.setEnabled( ADD_MODE == mode );
 
-    for ( Enumeration e = controls.elements(); e.hasMoreElements();  )
+    for ( Iterator e = controls.values().iterator(); e.hasNext();  )
     {
-      Hashtable serverControls = (Hashtable) e.nextElement();
-      for ( Enumeration e1 = serverControls.elements(); e1.hasMoreElements();  )
+      Map serverControls = (Map) e.next();
+      for ( Iterator e1 = serverControls.values().iterator(); e1.hasNext();  )
       {
-        JTextField tf = (JTextField) e1.nextElement();
+        JTextField tf = (JTextField) e1.next();
         tf.setEnabled( DEL_MODE != mode );
       }
     }
@@ -303,10 +303,10 @@ public class SqlServerDialog extends JDialog
     serverTypeCards.show( serverTypePanel, typeName );
     serverTypeList.setSelectedItem( typeName );
 
-    final Hashtable serverControls = (Hashtable) controls.get( typeName );
-    for ( Enumeration e = serverControls.keys(); e.hasMoreElements();  )
+    final Map serverControls = (Map) controls.get( typeName );
+    for ( Iterator e = serverControls.keySet().iterator(); e.hasNext();  )
     {
-      final String propName = (String) e.nextElement();
+      final String propName = (String) e.next();
       final JTextField tf = (JTextField) serverControls.get( propName );
       tf.setText( rec.getProperty( propName ) );
     }
@@ -329,10 +329,10 @@ public class SqlServerDialog extends JDialog
       rec.setName( name );
     }
 
-    final Hashtable serverControls = (Hashtable) controls.get( typeName );
-    for ( Enumeration e = serverControls.keys(); e.hasMoreElements();  )
+    final Map serverControls = (Map) controls.get( typeName );
+    for ( Iterator e = serverControls.keySet().iterator(); e.hasNext();  )
     {
-      final String propName = (String) e.nextElement();
+      final String propName = (String) e.next();
       final JTextField tf = (JTextField) serverControls.get( propName );
       rec.setProperty( propName, tf.getText() );
     }

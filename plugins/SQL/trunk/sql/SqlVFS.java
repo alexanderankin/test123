@@ -113,6 +113,7 @@ public class SqlVFS extends VFS
         ;
   }
 
+
   /**
    *  Gets the ParentOfPath attribute of the SqlVFS object
    *
@@ -168,12 +169,12 @@ public class SqlVFS extends VFS
     switch ( level )
     {
       case ROOT_LEVEL:
-        final Hashtable recs = SqlServerRecord.getAllRecords();
+        final Map recs = SqlServerRecord.getAllRecords();
         retval = new VFS.DirectoryEntry[recs.size()];
         i = 0;
-        for ( Enumeration e = recs.elements(); e.hasMoreElements();  )
+        for ( Iterator e = recs.values().iterator(); e.hasNext();  )
         {
-          final SqlServerRecord r = (SqlServerRecord) e.nextElement();
+          final SqlServerRecord r = (SqlServerRecord) e.next();
           retval[i++] =
               _getDirectoryEntry( session, path + separatorString + r.getName(), comp );
         }

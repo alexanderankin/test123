@@ -51,7 +51,8 @@ public class SqlUtils
 
   protected static SqlThreadGroup sqlThreadGroup;
 
-  protected static Vector preprocessors = null;
+  protected static java.util.List preprocessors = null;
+
 
   /**
    *  Sets the SelectedServerName attribute of the SqlUtils class
@@ -91,12 +92,12 @@ public class SqlUtils
    */
   public static String getServerForPublishing( View view )
   {
-    final Hashtable servers = SqlServerRecord.getAllRecords();
+    final Map servers = SqlServerRecord.getAllRecords();
 
     final Object[] serverList = new Object[servers.size()];
     int i = 0;
-    for ( Enumeration e = servers.keys(); e.hasMoreElements();  )
-      serverList[i++] = e.nextElement();
+    for ( Iterator e = servers.keySet().iterator(); e.hasNext();  )
+      serverList[i++] = e.next();
 
     String selection = getSelectedServerName();
 
@@ -259,7 +260,7 @@ public class SqlUtils
         return null;
       }
       final ResultSet rs = pstmt.executeQuery();
-      final Vector rv = new Vector();
+      final java.util.List rv = new ArrayList();
 
       while ( rs.next() )
       {
@@ -326,21 +327,7 @@ public class SqlUtils
     final String mode = buffer.getMode().getName();
     errorSource.clear();
     String sqlText = null;
-    /*
-     *  check for SQL files!
-     *  if ( mode.toUpperCase().indexOf( "SQL" ) == -1 )
-     *  {
-     *  runInAWTThreadNoWait(
-     *  new Runnable()
-     *  {
-     *  public void run()
-     *  {
-     *  GUIUtilities.error( view, "sql.notSql", null );
-     *  }
-     *  } );
-     *  return;
-     *  }
-     */
+
     final SqlServerRecord rec = getServerRecord( view, serverName );
     if ( rec == null )
       return;
@@ -359,12 +346,11 @@ public class SqlUtils
 
       sqlText = buffer.getText( startPos, length );
 
-      //!! Here all preprocessors will go...
-      final Vector v = getPreprocessors();
+      final java.util.List v = getPreprocessors();
 
-      for ( Enumeration e = v.elements(); e.hasMoreElements(); )
+      for ( Iterator e = v.iterator(); e.hasNext();  )
       {
-        final Preprocessor pr = (Preprocessor)e.nextElement();
+        final Preprocessor pr = (Preprocessor) e.next();
         pr.setView( view );
         sqlText = pr.process( sqlText );
       }
@@ -381,7 +367,7 @@ public class SqlUtils
         System.err.println( ex );
       }
 
-      Log.log ( Log.DEBUG, SqlUtils.class, "After the variable substitution: [" + sqlText + "]");
+      Log.log( Log.DEBUG, SqlUtils.class, "After the variable substitution: [" + sqlText + "]" );
 
       final boolean bresult = stmt.execute( sqlText );
 
@@ -470,6 +456,17 @@ public class SqlUtils
 
 
   /**
+   *Description of the Method
+   *
+   * @since
+   */
+  public static void resetPreprocessors()
+  {
+    preprocessors = null;
+  }
+
+
+  /**
    *  Gets the Sysdate attribute of the SqlUtils class
    *
    * @param  conn              Description of Parameter
@@ -496,6 +493,20 @@ public class SqlUtils
     {
       rec.releaseStatement( cstmt );
     }
+  }
+
+
+  /**
+   *Gets the Preprocessors attribute of the SqlUtils class
+   *
+   * @return    The Preprocessors value
+   * @since
+   */
+  protected static java.util.List getPreprocessors()
+  {
+    if ( preprocessors == null )
+      fillPreprocessors();
+    return preprocessors;
   }
 
 
@@ -704,19 +715,20 @@ public class SqlUtils
 
   }
 
-  public static void resetPreprocessors()
-  {
-    preprocessors = null;
-  }
 
+  /**
+   *Description of the Method
+   *
+   * @since
+   */
   protected static void fillPreprocessors()
   {
-    preprocessors = new Vector();
+    preprocessors = new ArrayList();
 
-    int i=0;
-    while( true )
+    int i = 0;
+    while ( true )
     {
-      final String className = jEdit.getProperty( "sql.preprocessors."+i++ );
+      final String className = jEdit.getProperty( "sql.preprocessors." + i++ );
       if ( className == null || "".equals( className ) )
         break;
       try
@@ -724,17 +736,10 @@ public class SqlUtils
         preprocessors.add( Class.forName( className ).newInstance() );
       } catch ( Exception ex )
       {
-        Log.log ( Log.ERROR, SqlUtils.class, "Exception creating preprocessors" );
-        Log.log ( Log.ERROR, SqlUtils.class, ex );
+        Log.log( Log.ERROR, SqlUtils.class, "Exception creating preprocessors" );
+        Log.log( Log.ERROR, SqlUtils.class, ex );
       }
     }
-  }
-
-  protected static Vector getPreprocessors()
-  {
-    if ( preprocessors == null )
-      fillPreprocessors();
-    return preprocessors;
   }
 }
 

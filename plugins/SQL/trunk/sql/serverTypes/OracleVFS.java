@@ -63,7 +63,7 @@ public class OracleVFS extends SqlSubVFS
    */
   public final static int OBJECT_LEVEL = 4;
 
-  protected final static Hashtable objectTypes = new Hashtable();
+  protected final static Map objectTypes = new HashMap();
 
 
   /**
@@ -105,9 +105,9 @@ public class OracleVFS extends SqlSubVFS
       case SCHEMA_LEVEL:
         retval = new VFS.DirectoryEntry[objectTypes.size()];
         i = 0;
-        for ( Enumeration e = objectTypes.keys(); e.hasMoreElements();  )
+        for ( Iterator e = objectTypes.keySet().iterator(); e.hasNext();  )
         {
-          final String r = (String) e.nextElement();
+          final String r = (String) e.next();
           retval[i++] =
               _getDirectoryEntry( session, path + SqlVFS.separatorString + r, comp, level + 1 );
         }
@@ -263,8 +263,8 @@ public class OracleVFS extends SqlSubVFS
         new CodeObjectType( "PACKAGE" ) );
     objectTypes.put( "Package Bodies",
         new CodeObjectType( "PACKAGE BODY" ) );
-     objectTypes.put( "Java",
-         new CodeObjectType( "JAVA SOURCE" ) );
+    objectTypes.put( "Java",
+        new CodeObjectType( "JAVA SOURCE" ) );
 
     objectTypes.put( "Tables",
         new TableObjectType( "selectTablesInSchema" ) );

@@ -54,6 +54,7 @@ public class SqlParser
    */
   protected int textLength;
 
+
   /**
    *  Constructor for the SqlParser object
    *
@@ -119,12 +120,7 @@ public class SqlParser
    * @param  point  Description of Parameter
    * @since
    */
-  public final void logState( String point )
-  {
-//    System.out.println( "At " + point + ":" );
-//    System.out.println( "  curChar: [" + curChar + "], " + ( int ) curChar );
-//    System.out.println( "  pos: " + nextPos + "/" + textLength );
-  }
+  public final void logState( String point ) { }
 
 
   /**
@@ -181,7 +177,8 @@ public class SqlParser
       }
 
       final int lastDelim = nextPos;
-      nextPos++; doStep();
+      nextPos++;
+      doStep();
       skipWhiteSpace();
       // skip the text after last '/'
       if ( nextPos == textLength )
@@ -349,7 +346,6 @@ public class SqlParser
   public static class SqlEotException extends SqlException
   {
   }
-
 
 }
 

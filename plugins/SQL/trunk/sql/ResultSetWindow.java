@@ -280,7 +280,7 @@ public class ResultSetWindow extends JPanel
       columnTypes[i - 1] = type;
     }
 
-    final Vector rowData = new Vector();
+    final java.util.List rowData = new ArrayList();
     final int maxRecs = getMaxRecordsToShow();
 
     while ( rs.next() )
@@ -292,7 +292,7 @@ public class ResultSetWindow extends JPanel
       for ( int i = colNumber + 1; --i > 0;  )
         aRow[i - 1] = rs.getString( i );
 
-      rowData.addElement( aRow );
+      rowData.add( aRow );
     }
 
     Log.log( Log.DEBUG, ResultSetWindow.class,
