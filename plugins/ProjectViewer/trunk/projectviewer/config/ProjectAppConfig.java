@@ -116,6 +116,52 @@ public class ProjectAppConfig extends AbstractOptionPane  {
             }
          }); 
    
+    popmenu = new JPopupMenu();
+        menuActions = new javax.swing.JMenuItem();
+        jSep = new javax.swing.JSeparator();
+        delApp= new javax.swing.JMenuItem();
+        
+        popmenu.setName("popmenu");
+        menuActions.setText("Actions");
+        menuActions.setEnabled(false);
+        popmenu.add(menuActions);
+        popmenu.add(jSep);
+
+        delApp.setText("Delete");
+        
+        delApp.addActionListener(new ActionListener() {
+        public void actionPerformed(ActionEvent evt) {
+                deleteRow();
+        }
+        });
+        
+                
+        popmenu.add(delApp); 
+        
+         appTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+              //  if (evt.isPopupTrigger())
+                if (javax.swing.SwingUtilities.isRightMouseButton(evt))
+                popmenu.show((Component)evt.getSource(), evt.getX(), evt.getY());
+            }
+        });
+  
+   
+    }
+  
+   private void deleteRow() {
+        // Deletes a row from the Table:
+        int targetRow;
+        String keyCol;
+        javax.swing.JDialog bal = new javax.swing.JDialog();
+       
+        if (appTable.getSelectedRowCount() > 0) {
+            targetRow = appTable.getSelectedRow();
+            keyCol = (String)appTable.getValueAt(targetRow, 0);
+            apps.removeAppExt(keyCol);
+            model.requestRefresh();
+        }
+        
     }
  
  	public void _save()
@@ -128,6 +174,11 @@ public class ProjectAppConfig extends AbstractOptionPane  {
          
 		//jEdit.getSettingsDirectory() + java.io.File.separator + "fileassocs.properties";
 	}//}}}
+
+   private javax.swing.JSeparator jSep;
+   private javax.swing.JPopupMenu popmenu;
+   private javax.swing.JMenuItem menuActions;
+   private javax.swing.JMenuItem delApp;
   
   String[] columnNames={"Extension:", "Application:" };
   JPanel jPanel1 = new JPanel();
