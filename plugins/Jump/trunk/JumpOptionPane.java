@@ -31,10 +31,13 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
 {
 
 //{{{ FIELDS
+// TODO: Create checkboxes pane (Reparse on save, sort fold list, show statusbar messages) @see _init_checkboxes
     private JTextField pathName;
     private JCheckBox enableJump;
     private JCheckBox parseOnSave;
     private JCheckBox sortFoldList;
+    //private JCheckBox showStatusMsg;
+    //private JPanel checkboxesPanel;
     private JButton BrowseButt;
     private FontSelector font;
 //}}} 
@@ -160,6 +163,13 @@ public class JumpOptionPane extends AbstractOptionPane implements ActionListener
         sortFoldList.setSelected(jEdit.getBooleanProperty("jump.sort_foldlist", true));
         addComponent(sortFoldList);
     }
+//}}}
+
+//{{{ _init_checkboxes
+//    private JPanel _init_checkboxes()
+//    {
+//        checkboxesPanel = new JPanel(Box.createVerticalBox());
+//    }
 //}}}
 
 //{{{ void _save()

@@ -56,16 +56,13 @@ public class ProjectBuffer
 //}}}
     
 //{{{ -------------  Constructor
-    /**
-     *  name - VTProject title.
-     */
     protected ProjectBuffer()
     {}
 //}}}
 
 //{{{   boolean init 
 /**
- * Init given ProjectBuffer. (load tags, init histry etc.) 
+ * Init given ProjectBuffer. (load tags, init history etc.) 
  */   
     protected boolean init(ProjectBuffer pb , String name)
     { 
@@ -119,7 +116,6 @@ public class ProjectBuffer
         ProjectBuffer pb = new ProjectBuffer();
         if (pb.init(pb, name)) return pb;
         return null;
-          
     }
 //}}}
     
@@ -195,12 +191,11 @@ public class ProjectBuffer
         }
         catch (Exception e)
         {
-            ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
-            // TODO: Put errormsg into JumpEventListener class!!!
+            
             System.out.println("ProjectBuffer: ctags_path_incorrect");
             e.printStackTrace();
-            //JumpPlugin.showMsg("JumpPlugin.ctags.path.incorrect");
-            //errorMsg("JumpPlugin.ctags.path.incorrect");
+            
+            ProjectViewer viewer = ProjectViewer.getViewer(jEdit.getActiveView());
             if (viewer != null) viewer.setEnabled(true);
             return false;
         }               
@@ -222,7 +217,7 @@ public class ProjectBuffer
         Vector tmp_del = new Vector();
         DELETE_HELPER = new Vector();
         
-        System.out.println("checkFileDeleted: files in project = "+v.size()+ ", files in buffer = "+PROJECT_FILES.size());
+        //System.out.println("checkFileDeleted: files in project = "+v.size()+ ", files in buffer = "+PROJECT_FILES.size());
         
         // DELETE_HELPER Vector - temporary storage of currnent project filenames.    
         for (int i=0; i<v.size(); i++)
@@ -302,7 +297,6 @@ public class ProjectBuffer
     {
         PROJECT_CTBUFFER.removeFile(f);
     }
-    
 //}}}
 
 //{{{ void reloadFile

@@ -65,7 +65,6 @@ public class JumpPlugin extends EditPlugin
     {
         od.addOptionPane(new JumpOptionPane());
     }
-
 //}}}
 
 //{{{ EditPlugin.stop
@@ -206,7 +205,6 @@ public class JumpPlugin extends EditPlugin
         projectBuffers.remove(buff);
         setActiveProjectBuffer(null);
     }
-
 //}}}
 
 //{{{ void removeProjectBuffer(String name)
@@ -224,7 +222,7 @@ public class JumpPlugin extends EditPlugin
             //buffersForDelete.add(b.PROJECT_TAGS);
             projectBuffers.remove(b);
             setActiveProjectBuffer(null);
-            System.out.println("file droped.");
+            //System.out.println("file droped.");
         }
     }
 
@@ -238,7 +236,6 @@ public class JumpPlugin extends EditPlugin
     {
         return (ProjectBuffer) projectBuffers.get(name);
     }
-
 //}}}
 
 //{{{ boolean hasProjectBuffer(String name)
@@ -250,18 +247,16 @@ public class JumpPlugin extends EditPlugin
     {
         return projectBuffers.containsKey(name);
     }
-
 //}}}
 
 //{{{ boolean hasProjectBuffer(ProjectBuffer buff)
     /**
     *   Check is ProjectBuffer already exists in hash
-     */
+    */
     public static boolean hasProjectBuffer(ProjectBuffer buff)
     {
         return projectBuffers.containsValue(buff);
     }
-
 //}}}
 
 //}}}
@@ -353,7 +348,6 @@ public class JumpPlugin extends EditPlugin
             System.out.println("Exception projectRenamedWorkaround - " + e);
         }
     }
-
 //}}}
 
 //}}}

@@ -28,7 +28,6 @@ import java.io.IOException;
 
 import ctags.bg.*;
 //}}}
-
 class TagsJumpAction
 {
 //{{{ FIELDS
@@ -66,7 +65,8 @@ class TagsJumpAction
         
         String val = new String();
         
-        for (int i = 0; i < v.size(); i++) {
+        for (int i = 0; i < v.size(); i++) 
+        {
             CTAGS_Entry en = (CTAGS_Entry)v.get(i);
             val = en.getTagName()+" ("+en.getExCmd().trim()+")";
             en.setToStringValue(val);
@@ -76,7 +76,8 @@ class TagsJumpAction
         Object[] a = new String[e.size()];
         a = e.toArray();
         entries = new CTAGS_Entry[a.length];
-        for (int i = 0; i < a.length; i++) {
+        for (int i = 0; i < a.length; i++) 
+        {
             entries[i] = (CTAGS_Entry) a[i];
         }
 
@@ -117,7 +118,8 @@ class TagsJumpAction
         view.getStatus().setMessageAndClear(prepareStatusMsg(tag));
     }
         
-    private String prepareStatusMsg(CTAGS_Entry en)
+//{{{ prepareStatusMsg
+        private String prepareStatusMsg(CTAGS_Entry en)
     {
         StringBuffer ret = new StringBuffer();
         String ext_fields = en.getExtensionFields();
@@ -138,9 +140,10 @@ class TagsJumpAction
            return null;  
         }
         return ext_fields;
-    }
+    } 
+//}}}
         
-//{{{  void processAction       
+//{{{ void processAction       
         public void processAction(Object o) {
 
             JList l = (JList) o;
