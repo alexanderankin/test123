@@ -21,12 +21,12 @@ open-viewer-menu-item.label=Project Viewer
 #browser-path=/usr/local/mozilla/mozilla
 #konqueror sample -->
 #browser-path=kfmclient openProfile webbrowsing
-browser-path=mozilla
+projectviewer.browser-path=mozilla
 
 #{{{ jEdit option panes messages
 options.projectviewer.label=Project Viewer
 options.projectviewer.web-prj-opt.label=Web Project Options
-options.projectviewer.browser-path-opt=Browser Path
+projectviewer.options.browser_path.=Browser Path
 options.projectviewer.gui-opt.label=GUI Options
 
 options.projectviewer.mainconfig=Project Viewer
@@ -37,6 +37,14 @@ options.projectviewer.appconfig.label=External Applications
 
 options.projectviewer.general-opt.label=General Behaviour
 options.projectviewer.importer-opt.label=Importing Files
+
+projectviewer.options.include_ext=Extensions to include:
+projectviewer.options.ignore_dir=Directories to ignore:
+projectviewer.options.include_files=Files to include:
+
+projectviewer.options.browser_path=Browser Path:
+projectviewer.options.browser_path.tooltip=This is used for web projects, to launch files in the browser
+projectviewer.options.browseable_ext=Browse-able Extensions:
 #}}}
 
 #{{{ UI messages
@@ -46,6 +54,7 @@ projectviewer.workingfilestab=Working Files
 projectviewer.non-project-filter=Non Project Files
 projectviewer.create_project=Create Project
 projectviewer.all_projects=All Projects
+projectviewer.error=Error
 #}}}
 
 #{{{ Options pane messages
@@ -66,14 +75,6 @@ projectviewer.options.show_folders=Show folders tree
 projectviewer.options.show_files=Show files tree
 projectviewer.options.show_files.tooltip=Disabling this tree will improve performance in projects with many files
 projectviewer.options.show_working_files=Show working files tree
-
-projectviewer.options.include_ext=Extensions to include:
-projectviewer.options.ignore_dir=Directories to ignore:
-projectviewer.options.include_files=Files to include:
-
-projectviewer.options.browser_path=Browser Path:
-projectviewer.options.browser_path.tooltip=This is used for web projects, to launch files in the browser
-projectviewer.options.browseable_ext=Browse-able Extensions:
 #}}}
 
 #{{{ Import messages
@@ -100,13 +101,26 @@ projectviewer.action.delete=Delete from disk
 projectviewer.action.rename=Rename
 projectviewer.action.a_e_project=Add/Edit Project
 projectviewer.action.add_project=Add Project
-projectviewer.action.edit_project=Edit Project
+projectviewer.action.edit_project=Properties
 projectviewer.action.import=Import files
+projectviewer.action.expand_all=Expand all nodes
+projectviewer.action.collapse_all=Collapse all nodes
+projectviewer.launcher.hypersearch_dir=Search in directory
+projectviewer.launcher.hypersearch_project=Search in project root
 
 projectviewer.action.rename.title=Rename node
 projectviewer.action.rename.message=Enter the new name for the node:
 projectviewer.action.rename.file_error=Invalid name for file or directory
 projectviewer.action.rename.rename_error=Could not rename node.
+
+projectviewer.launcher.open_with_none=Open with...
+projectviewer.launcher.open_with=Open with {0}
+projectviewer.launcher.no_app=No external application has been chosen for "{0}". \n Would you like to select one?
+projectviewer.launcher.no_app_title=No application set
+projectviewer.launcher.io_error=Error starting process: {0}
+
+projectviewer.action.launch_browser=Preview in browser
+projectviewer.action.url_not_set=Web URL Not set for project
 #}}}
 
 #{{{ Confirmation messages
@@ -128,5 +142,11 @@ projectviewer.project.options.no_name=Please specify a name for the project.
 projectviewer.project.options.name_exists=A project with the given name already exists.
 projectviewer.project.options.no_root=Please specify a root for the project.
 projectviewer.project.options.root_error=Root directory does not exist, please specify a valid one.
+
+projectviewer.project.options.name=Project name:
+projectviewer.project.options.root=Root directory:
+projectviewer.project.options.root_choose=Choose
+projectviewer.project.options.url_root=Web root URL:
+projectviewer.project.options.url_root.tooltip=sets the URL for a web project e.g. http://<projecturl>
 #}}}
 
