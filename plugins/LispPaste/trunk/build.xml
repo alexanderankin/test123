@@ -41,17 +41,6 @@
 
 	<target name="init">
 		<mkdir dir="${build.dir}"/>
-		<delete file="docbook-wrapper.xsl" />
-		<echo file="docbook-wrapper.xsl"
-			message="&lt;xsl:stylesheet"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message=" xsl:version='1.0'&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
-		<echo file="docbook-wrapper.xsl" append="true"
-			message="&lt;/xsl:stylesheet&gt;"/>
 	</target>
 
 
@@ -103,7 +92,6 @@
 		<delete dir="${build.dir}"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
-			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>
 		</delete>
 	</target>
 
