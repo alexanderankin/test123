@@ -308,7 +308,7 @@ public class InfoViewer extends JFrame
         TitledURLEntry[] entr = history.getGoMenuEntries();
         int pos = history.getHistoryPos();
         for (int i = 0; i < entr.length; i++) {
-            JMenuItem mi = new JMenuItem(entr[i].getTitle(), 
+            JMenuItem mi = new JMenuItem(entr[i].getTitle(),
                 pos == entr[i].getHistoryPos() ? ICON_CHECK : ICON_NOCHECK);
             mi.setActionCommand("history:" + entr[i].getHistoryPos());
             mi.addActionListener(historyhandler);
@@ -663,8 +663,6 @@ public class InfoViewer extends JFrame
         // Clear the viewer and flush viewers' memorized URL:
         viewer.getDocument().putProperty(Document.StreamDescriptionProperty,
                                          DUMMY_URL);
-        viewer.setText("");
-        viewer.setEditorKit(null);
         gotoURL(currentURL.getURL(), false);
     }
 

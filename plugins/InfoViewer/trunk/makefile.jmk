@@ -3,7 +3,7 @@
 # To recompile this plugin, start jmk in the plugin's source directory.
 #
 
-VERSION    = "0.5.0";
+VERSION    = "0.5.1";
 NAME       = "InfoViewer";
 
 javac      = "jikes" "+E";
