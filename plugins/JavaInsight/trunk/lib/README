@@ -1,0 +1,6 @@
+This directory contains libraries necessary for JavaInsight
+
+--------        ---------------------------------------------------------------
+Library         Version
+--------        ---------------------------------------------------------------
+Jode:           1.0.93 (with Collections support for JDK 1.1)
