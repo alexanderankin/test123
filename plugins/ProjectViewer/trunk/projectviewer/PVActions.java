@@ -154,19 +154,11 @@ public final class PVActions {
 	 *
 	 *	@return	The currently active project, or null if no project is active and
 	 *			ProjectViewerConfig.getLastNode() returns null.
+	 *
+	 *	@deprecated	Use {@link ProjectViewer#getActiveProject(View)} instead.
 	 */
 	public static VPTProject getCurrentProject(View view) {
-		ProjectViewer viewer = ProjectViewer.getViewer(view);
-		if (viewer != null) {
-			if (viewer.getRoot().isProject()) {
-				return (VPTProject) viewer.getRoot();
-			} else {
-				return null;
-			}
-		} else {
-			VPTNode last = ProjectViewerConfig.getInstance().getLastNode();
-			return (last != null && last.isProject()) ? (VPTProject)last : null;
-		}
+		return ProjectViewer.getActiveProject(view);
 	} //}}}
 
 	//{{{ +_launchCurrentBuffer(View)_ : void

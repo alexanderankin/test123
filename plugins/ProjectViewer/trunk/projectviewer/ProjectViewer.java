@@ -329,15 +329,14 @@ public final class ProjectViewer extends JPanel
 
 	//{{{ +_fireGroupActivated(VPTGroup, View)_ : void
 	/**
-	 *	Fires an event for the loading of a project. Notify all the listeners
+	 *	Fires an event for the loading of a group. Notify all the listeners
 	 *	registered for the given view and listeners registered for all
 	 *	views.
 	 *
 	 *	<p>If the view provided is null, only the listeners registered for the
 	 *	null View will receive the event.</p>
 	 *
-	 *	@param	src		The viewer that generated the change, or null.
-	 *	@param	p		The activated project.
+	 *	@param	grp		The activated group.
 	 *	@param	v		The view where the change occured, or null.
 	 */
 	public static void fireGroupActivated(VPTGroup grp, View v) {
@@ -713,7 +712,12 @@ public final class ProjectViewer extends JPanel
 	 */
 	public static VPTNode getActiveNode(View aView) {
 		ViewerEntry ve = (ViewerEntry) viewers.get(aView);
-		return (ve != null) ? ve.node : null;
+		if (ve == null) {
+			ve = new ViewerEntry();
+			ve.node = config.getLastNode();
+			viewers.put(aView, ve);
+		}
+		return ve.node;
 	} //}}}
 
 	//{{{ +_getActiveProject(View)_ : VPTProject
@@ -1305,10 +1309,12 @@ public final class ProjectViewer extends JPanel
 		// this is redundant, but is left here for people that are
 		// still calling setProject() and not setRootNode()
 		ViewerEntry ve = (ViewerEntry) viewers.get(view);
-		ve.node = p;
+		if (ve.node != p) {
+			ve.node = p;
+			fireProjectLoaded(this, p, view);
+		}
 
 		dontAsk = null;
-		fireProjectLoaded(this, p, view);
 	} //}}}
 
 	//{{{ +getRoot() : VPTNode
