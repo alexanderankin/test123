@@ -155,10 +155,7 @@ class SAXParserImpl implements XmlParser.Impl
 	{
 		XSDDescription schemaDesc = new XSDDescription();
 		schemaDesc.setTargetNamespace(uri);
-		System.err.println("uri = " + uri);
-		System.err.println("description = " + schemaDesc);
 		Grammar grammar = grammarPool.getGrammar(schemaDesc);
-		Log.log(Log.DEBUG,this,"URI " + uri + " has grammar " + grammar);
 		return grammar;
 	} //}}}
 
@@ -177,7 +174,6 @@ class SAXParserImpl implements XmlParser.Impl
 		{
 			XSElementDeclaration element = (XSElementDeclaration)
 				elements.getItem(i);
-			System.err.println("look! " + element);
 
 			info.addElement(xsElementToElementDecl(info,element));
 		}
@@ -229,7 +225,6 @@ class SAXParserImpl implements XmlParser.Impl
 				String type = decl.getTypeDefinition().getName();
 				if(type == null)
 					type = "CDATA";
-				System.err.println("attr " + attrName + ", " + required);
 				elementDecl.addAttribute(new ElementDecl.AttributeDecl(
 					attrName,value,null,type,required));
 			}
@@ -314,7 +309,6 @@ class SAXParserImpl implements XmlParser.Impl
 					.getCompletionInfoForNamespace(uri);
 				if(info != null)
 				{
-					System.err.println("got a loaded ci for " + uri);
 					data.mappings.put(prefix,info);
 					return;
 				}
