@@ -1,6 +1,6 @@
 /*
- * $Revision: 1.2 $
- * $Date: 2002-06-07 14:53:28 $
+ * $Revision: 1.3 $
+ * $Date: 2002-06-11 16:04:53 $
  * $Author: lio-sand $
  *
  * Copyright (C) 2001 C. Scott Willy
@@ -24,26 +24,33 @@ package cswilly.jeditPlugins.spell;
 
 import cswilly.spell.FileSpellChecker;
 import cswilly.spell.SpellException;
+
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.OperatingSystem;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.util.Log;
+
 import java.io.*;
 import java.util.List;
 import java.util.Vector;
+import javax.swing.*;
 
 public class SpellCheckPlugin
   extends EditPlugin
 {
-  public static final String PLUGIN_NAME             = "SpellCheck";
-  public static final String CHECK_SELECTION_ACTION  = "spell-check-selection";
-  public static final String ASPELL_EXE_PROP         = "spell-check-aspell-exe";
-  public static final String ASPELL_LANG_PROP        = "spell-check-aspell-lang";
+  public static final String PLUGIN_NAME                        = "SpellCheck";
+  public static final String SPELL_CHECK_ACTIONS                = "spell-check-menu";
+  public static final String ASPELL_EXE_PROP                    = "spell-check-aspell-exe";
+  public static final String ASPELL_LANG_PROP                   = "spell-check-aspell-lang";
 
   private static FileSpellChecker _fileSpellChecker = null;
+
+  private static String aspellMainLanguage;
+
 
   /**
   * Method called by jEdit to initialize the plugin.
@@ -64,7 +71,7 @@ public class SpellCheckPlugin
   */
   public void createMenuItems(Vector menuItems)
   {
-    menuItems.addElement( GUIUtilities.loadMenuItem( CHECK_SELECTION_ACTION ) );
+    menuItems.addElement( GUIUtilities.loadMenu( SPELL_CHECK_ACTIONS ) );
   }
 
   /**
@@ -82,10 +89,38 @@ public class SpellCheckPlugin
   }
 
   /**
-  * Displays the 'hello world' dialog box. This method is called
-  * by the hello-world action, defined in actions.xml.
+  * Displays the spell checker dialog box with specified lang dictionary. This method
+  * is called by the spell-check-selection-with-lang action, defined in actions.xml.
+  */
+  public static void showCustomLangSpellDialog(View view)
+    throws SpellException
+  {
+    String langDict = GUIUtilities.inputProperty(view, "spell-check-selection-with-lang", PLUGIN_NAME + ".last-lang");
+    if ( langDict != null )
+    {
+      setAspellMainLanguage(langDict);
+      showSpellDialog(view);
+    }
+  }
+
+
+  /**
+  * Displays the spell checker dialog box with default lang dictionary. This method
+  * is called by the spell-check-selection action, defined in actions.xml.
+  */
+  public static void showDefaultLangSpellDialog(View view)
+    throws SpellException
+  {
+    setAspellMainLanguage(jEdit.getProperty( ASPELL_LANG_PROP ) );
+    showSpellDialog(view);
+  }
+
+
+  /**
+  * Displays the spell checker dialog box.
   */
   public static void showSpellDialog(View view)
+    throws SpellException
   {
     JEditTextArea textArea = view.getTextArea();
     String selectedText =  textArea.getSelectedText();
@@ -120,6 +155,9 @@ public class SpellCheckPlugin
       BufferedWriter output = new BufferedWriter( stringWriter );
 
       checker = _getFileSpellChecker();
+
+      if ( checker == null )
+        throw new SpellException("No or invalid executable specified");
 
       boolean checkingNotCanceled =  checker.checkFile( input, output );
 
@@ -162,9 +200,11 @@ public class SpellCheckPlugin
   private static
   FileSpellChecker _getFileSpellChecker()
   {
-    //String  aspellExeFilename = "O:\\local\\aspell\\aspell.exe";
     String  aspellExeFilename = getAspellExeFilename();
     String  aspellMainLanguage = getAspellMainLanguage();
+
+    if ( aspellExeFilename == null )
+      return null;
 
     if( _fileSpellChecker == null )
       _fileSpellChecker = new FileSpellChecker( aspellExeFilename, aspellMainLanguage );
@@ -184,10 +224,22 @@ public class SpellCheckPlugin
   {
     String  aspellExeFilename = jEdit.getProperty( ASPELL_EXE_PROP );
 
-    if( aspellExeFilename == null ||
-        aspellExeFilename.equals("") )
+    if( aspellExeFilename == null || aspellExeFilename.equals("") )
     {
-      aspellExeFilename = "aspell.exe";
+      if ( OperatingSystem.isUnix() )
+        aspellExeFilename = "aspell";
+      else
+      {
+        String[] paths = GUIUtilities.showVFSFileDialog( null, null, JFileChooser.OPEN_DIALOG, false );
+
+        if (paths != null)
+          aspellExeFilename = paths[0];
+        else
+        {
+          return null;
+        }
+      }
+      jEdit.setProperty( SpellCheckPlugin.ASPELL_EXE_PROP, aspellExeFilename );
     }
 
     return aspellExeFilename;
@@ -196,15 +248,16 @@ public class SpellCheckPlugin
   private static
   String getAspellMainLanguage()
   {
-    String  aspellMainLanguage = jEdit.getProperty( ASPELL_LANG_PROP );
-
-    if( aspellMainLanguage == null ||
-        aspellMainLanguage.equals("") )
-    {
+    if( aspellMainLanguage == null )
       aspellMainLanguage = "";
-    }
 
     return aspellMainLanguage;
+  }
+
+  private static
+  void setAspellMainLanguage(String newLanguage)
+  {
+    aspellMainLanguage = newLanguage;
   }
 
 }

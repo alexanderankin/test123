@@ -1,3 +1,6 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
 <!-- This file defines actions. Each action is a short snippet of
      BeanShell code that may be bound to a menu item or keystroke.
 
@@ -6,18 +9,18 @@
 
      Shortcuts for actions should *not* be assigned by plugins. -->
 
-<?xml version="1.0"?>
-
-<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
-
 <ACTIONS>
-	<!-- Definition for an action named hello-world -->
+	<!-- Menu action for spell checking the current selection -->
 	<ACTION NAME="spell-check-selection">
-
-		<!-- The code to execute when the menu item is selected,
-		     or a key bound to this action is pressed -->
 		<CODE>
-			cswilly.jeditPlugins.spell.SpellCheckPlugin.showSpellDialog(view);
+			cswilly.jeditPlugins.spell.SpellCheckPlugin.showDefaultLangSpellDialog(view);
+		</CODE>
+	</ACTION>
+
+	<!-- Menu action for spell checking the current selection with a specified lang -->
+	<ACTION NAME="spell-check-selection-with-lang">
+		<CODE>
+			cswilly.jeditPlugins.spell.SpellCheckPlugin.showCustomLangSpellDialog(view);
 		</CODE>
 	</ACTION>
 </ACTIONS>
