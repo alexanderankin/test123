@@ -82,7 +82,10 @@
     
     <mkdir dir="${build.docs}"/>
     <copy todir="${build.docs}">
-      <fileset dir="${docs}"/>
+      <fileset dir="${docs}">
+	  	<exclude name="**/*.xml"/>
+	  	<exclude name="**/*.xsl"/>
+	  </fileset>
     </copy>
     
     <jar jarfile="${build}/ProjectViewer.jar">
@@ -125,6 +128,27 @@
              classpathref="default.classpath"/>
   </target>
 
+  <!-- ================================================ -->
+    <!-- Generate docs with xsltproc tool from www.xmlsoft.org -->
+    <target name="docs-xsltproc">
+        <exec executable="xsltproc">
+            <arg value="-o"/>
+            <arg value="docs/users-guide.html"/>
+            <arg value="--catalogs"/>
+            <arg value="docs/users-guide.xsl"/>
+            <arg value="docs/users-guide.xml"/>
+        </exec>
+    </target>
+
+
+    <!-- Generate docs with Xalan tool from xml.apache.org -->
+    <target name="docs-xalan">
+        <style
+            style="docs/users-guide.xsl"
+            in="docs/users-guide.xml"
+            out="docs/users-guide.html"
+        />
+    </target>
 
   <!-- ================================================ -->
   <target name="clean"
