@@ -33,9 +33,11 @@ public class XmlPlugin extends EBPlugin
 
 	public void createOptionPanes(OptionsDialog dialog)
 	{
-		OptionGroup grp = new OptionGroup("xml");
-		grp.addOptionPane(new GeneralOptionPane());
-		dialog.addOptionGroup(grp);
+		//OptionGroup grp = new OptionGroup("xml");
+		//grp.addOptionPane(new GeneralOptionPane());
+		//dialog.addOptionGroup(grp);
+
+		dialog.addOptionPane(new GeneralOptionPane());
 	}
 
 	public void handleMessage(EBMessage msg)

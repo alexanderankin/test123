@@ -2,7 +2,7 @@
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov and David Walend
 plugin.xml.XmlPlugin.version=0.3
-plugin.xml.XmlPlugin.docs=/XML.html
+plugin.xml.XmlPlugin.docs=/users-guide.html
 plugin.xml.XmlPlugin.jars=xerces.jar
 plugin.xml.XmlPlugin.depend.0=jedit 03.02.09.00
 plugin.xml.XmlPlugin.depend.1=plugin EditBusPlugin 1.0.1
@@ -14,9 +14,11 @@ plugin.xml.XmlPlugin.depend.2=plugin ErrorListPlugin 1.1
 mode.xml.xml.parse=true
 mode.xsl.xml.parse=true
 
-# Global auto-parse switch; note that the xml.parse buffer-local property
-# overrides this by disabling parsing completely
-buffer.xml.auto-parse=false
+# Global parse on buffer change switch
+buffer.xml.buffer-change-parse=true
+
+# Global parse on keystroke switch
+buffer.xml.keystroke-parse=false
 
 # Delay after typing ends before auto parse, in milliseconds
 xml.delay=1500
@@ -28,23 +30,26 @@ xml.show-attributes=false
 buffer.xml.validate=true
 
 # Menu bar stuff
-xml-menu=xml-tree - xml-parse xml-auto-parse - xml-clear-path-cache
+xml-menu=xml-tree - xml-parse xml-keystroke-parse
 xml-menu.label=XML
 xml-tree.label=XML Tree
 xml-parse.label=Parse XML Buffer
-xml-auto-parse.label=Automatically Parse XML Buffer
-xml-clear-path-cache.label=Clear XML Search Path Cache
+xml-keystroke-parse.label=Parse XML on Keystroke
 
 # XML tree window
 xml-tree.title=XML Tree
 xml-tree.parse=Parse
+xml-tree.parsing=Parsing
 xml-tree.not-xml-file=Not an XML file
+xml-tree.not-parsed=Not parsed
 
 # Option pane
-options.xml.label=XML
-options.xml.general.label=General
-options.xml.general.auto-parse=Parse XML files on-the-fly
-options.xml.general.delay=Delay before auto parse (seconds):
+#options.xml.label=XML
+#options.xml.general.label=General
+options.xml.general.label=XML
+options.xml.general.buffer-change-parse=Parse on buffer switch and save
+options.xml.general.keystroke-parse=Parse on keystroke
+options.xml.general.delay=After last keystroke, wait (seconds):
 options.xml.general.show-attributes=Show tag attributes in tree
 options.xml.general.validate=Validate if DTD or schema available
 options.xml.general.modes=Enable XML parsing for the following edit modes:

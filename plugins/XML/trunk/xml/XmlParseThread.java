@@ -189,7 +189,7 @@ public class XmlParseThread extends Thread
 				int line = loc.getLineNumber() - 1;
 				int column = loc.getColumnNumber() - 1;
 				int offset = buffer.getDefaultRootElement()
-					.getElement(line).getStartOffset() + column;
+					.getElement(line).getStartOffset() + column - 1;
 
 				offset = findTagStart(offset);
 

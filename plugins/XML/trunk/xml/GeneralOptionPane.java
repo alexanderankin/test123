@@ -12,6 +12,7 @@
 
 package xml;
 
+import javax.swing.border.EmptyBorder;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -29,10 +30,17 @@ public class GeneralOptionPane extends AbstractOptionPane
 	// protected members
 	protected void _init()
 	{
-		addComponent(autoParse = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.auto-parse")));
-		autoParse.setSelected(jEdit.getBooleanProperty("buffer.xml.auto-parse"));
-		autoParse.addActionListener(new ActionHandler());
+		addComponent(bufferChangeParse = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.buffer-change-parse")));
+		bufferChangeParse.setSelected(jEdit.getBooleanProperty(
+			"buffer.xml.buffer-change-parse"));
+		bufferChangeParse.addActionListener(new ActionHandler());
+
+		addComponent(keystrokeParse = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.keystroke-parse")));
+		keystrokeParse.setSelected(jEdit.getBooleanProperty(
+			"buffer.xml.keystroke-parse"));
+		keystrokeParse.addActionListener(new ActionHandler());
 
 		int delayValue;
 		try
@@ -50,9 +58,14 @@ public class GeneralOptionPane extends AbstractOptionPane
 		for(int i = 500; i <= 3000; i += 500)
 		{
 			labelTable.put(new Integer(i),new JLabel(
-				String.valueOf((double)i / 500.0)));
+				String.valueOf((double)i / 1000.0)));
 		}
 		delay.setLabelTable(labelTable);
+		delay.setPaintLabels(true);
+		delay.setMajorTickSpacing(500);
+		delay.setPaintTicks(true);
+
+		delay.setEnabled(keystrokeParse.isSelected());
 
 		addComponent(showAttributes = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.show-attributes")));
@@ -62,8 +75,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("buffer.xml.validate"));
 
-		addComponent(new JLabel(jEdit.getProperty(
-			"options.xml.general.modes")));
+		JLabel label = new JLabel(jEdit.getProperty("options.xml.general.modes"));
+		label.setBorder(new EmptyBorder(0,0,6,0));
+
+		addComponent(label);
 
 		Mode[] modeList = jEdit.getModes();
 		JCheckBoxList.Entry[] listModel = new JCheckBoxList.Entry[modeList.length];
@@ -85,6 +100,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 		cons.gridheight = cons.REMAINDER;
 		cons.gridwidth = cons.REMAINDER;
 		cons.fill = GridBagConstraints.VERTICAL;
+		cons.anchor = GridBagConstraints.WEST;
 		cons.weightx = cons.weighty = 1.0f;
 
 		gridBag.setConstraints(scroller,cons);
@@ -93,7 +109,10 @@ public class GeneralOptionPane extends AbstractOptionPane
 
 	protected void _save()
 	{
-		jEdit.setBooleanProperty("buffer.xml.auto-parse",autoParse.isSelected());
+		jEdit.setBooleanProperty("buffer.xml.buffer-change-parse",
+			bufferChangeParse.isSelected());
+		jEdit.setBooleanProperty("buffer.xml.keystroke-parse",
+			keystrokeParse.isSelected());
 		jEdit.setProperty("xml.delay",String.valueOf(delay.getValue()));
 		jEdit.setBooleanProperty("xml.show-attributes",showAttributes.isSelected());
 		jEdit.setBooleanProperty("buffer.xml.validate",validate.isSelected());
@@ -116,7 +135,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 	}
 
 	// private members
-	private JCheckBox autoParse;
+	private JCheckBox bufferChangeParse;
+	private JCheckBox keystrokeParse;
 	private JSlider delay;
 	private JCheckBox showAttributes;
 	private JCheckBox validate;
@@ -126,7 +146,9 @@ public class GeneralOptionPane extends AbstractOptionPane
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			delay.setEnabled(autoParse.isSelected());
+			delay.setEnabled(keystrokeParse.isSelected());
+			if(keystrokeParse.isSelected())
+				bufferChangeParse.setSelected(true);
 		}
 	}
 }
