@@ -297,7 +297,8 @@ public class FtpClient {
         sendCommand("PASV");
         FtpResponse resp = getResponse();
         if (!resp.isPositiveCompletion()) {
-            Log.log(Log.ERROR, this, "Couldn't set passive, trying data port");
+            Log.log(Log.ERROR, this, Thread.currentThread()
+                + ": Couldn't set passive, trying data port");
 	    dataPort();
             return;
         }
@@ -319,7 +320,8 @@ public class FtpClient {
 	    passiveSocket.setSoTimeout(TIMEOUT);
 	}
 	catch(StringIndexOutOfBoundsException e) {
-	    Log.log(Log.ERROR, this, "Couldn't set passive, trying data port");
+	    Log.log(Log.ERROR, this, Thread.currentThread()
+                + ": Couldn't set passive, trying data port");
 	    dataPort();
             return;
 	}
@@ -1020,7 +1022,7 @@ public class FtpClient {
     //
 
     private void debug(Object heading, Object message) {
-        Log.log(Log.DEBUG,this,heading + ": " + message);
+        Log.log(Log.DEBUG,this,Thread.currentThread() + ": " + heading + ": " + message);
     }
 
     private Socket getTransferSocket() throws IOException

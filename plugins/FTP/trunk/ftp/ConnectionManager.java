@@ -119,8 +119,8 @@ public class ConnectionManager
 					if(!connect.checkIfOpen())
 					{
 						Log.log(Log.DEBUG,ConnectionManager.class,
-							"Connection to "
-							+ connect.info + " expired");
+							"Connection "
+							+ connect + " expired");
 						try
 						{
 							connect.client.logout();
@@ -262,8 +262,11 @@ public class ConnectionManager
 
 	public static class Connection
 	{
+		static int COUNTER;
+
 		Connection(ConnectionInfo info)
 		{
+			id = COUNTER++;
 			this.info = info;
 
 			closeTimer = new Timer(0,new ActionListener()
@@ -275,6 +278,7 @@ public class ConnectionManager
 			});
 		}
 
+		public int id;
 		public ConnectionInfo info;
 		public FtpClient client;
 		public String home;
@@ -286,24 +290,34 @@ public class ConnectionManager
 
 		void lock()
 		{
-			Log.log(Log.DEBUG,this,Thread.currentThread() +
-					": Connection to " + info + " locked");
-			inUse = true;
-			closeTimer.stop();
+			if(inUse)
+			{
+				throw new InternalError("Trying to lock "
+					+ "connection twice!");
+			}
+			else
+			{
+				Log.log(Log.DEBUG,ConnectionManager.class,
+					Thread.currentThread() +
+					": Connection " + this + " locked");
+				inUse = true;
+				closeTimer.stop();
+			}
 		}
 
 		void unlock()
 		{
 			if(!inUse)
 			{
-				Log.log(Log.WARNING,this,new Exception(
-					Thread.currentThread() +
+				Log.log(Log.ERROR,ConnectionManager.class,
+					new Exception(Thread.currentThread() +
 					": Trying to release connection twice!"));
 			}
 			else
 			{
-				Log.log(Log.DEBUG,this,Thread.currentThread() +
-					": Connection to " + info + " released");
+				Log.log(Log.DEBUG,ConnectionManager.class,
+					Thread.currentThread() +
+					": Connection " + this + " released");
 			}
 
 			inUse = false;
@@ -327,6 +341,11 @@ public class ConnectionManager
 			{
 				return false;
 			}
+		}
+
+		public String toString()
+		{
+			return id + ":" + info.host;
 		}
 
 		private boolean inUse;

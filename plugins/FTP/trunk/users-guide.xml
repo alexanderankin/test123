@@ -103,6 +103,8 @@ You can close unused connections at any other itme using the
     <listitem><para>Fixed problem with AIX FTP servers.</para></listitem>
     <listitem><para>Permissions were not preserved properly
     (Brian Hardy).</para></listitem>
+    <listitem><para>Fixed various problems in the connection pooling code.
+    </para></listitem>
    </itemizedlist>
   </listitem>
 
