@@ -632,6 +632,8 @@ public class AntTree extends JTree
 				 );
 			propertyDialog.show();
 
+			if (propertyDialog.isCanceled()) return null;
+			
 			Properties properties = propertyDialog.getProperties();
 
 			if ( properties == null ) {
@@ -798,7 +800,9 @@ public class AntTree extends JTree
 		public void execute()
 		{
 			String properties = promptForProperties();
-	
+			
+			if (properties == null) return;
+			
 			Console console = AntFarmPlugin.getConsole( _view );
 			console.run( AntFarmPlugin.ANT_SHELL, console, "!"
 				 + _target.getName()
@@ -892,6 +896,8 @@ public class AntTree extends JTree
 
 			String properties = promptForProperties();
 
+			if (properties == null) return;
+						
 			Console console = AntFarmPlugin.getConsole( _view );
 			console.run(
 				AntFarmPlugin.ANT_SHELL, console, "!"
