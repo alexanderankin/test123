@@ -12,11 +12,12 @@
   <property name="classes.dir" value="${build.dir}/classes" description="classes compiled into here"/>
   <property name="docs.dir" value="${build.dir}/docs" description="docs generated into here"/>
 
+
   <path id="project.class.path">
     <pathelement location="${jedit.dir}/jedit.jar"/>
-    <pathelement location="${plugins.dir}/xml-apis.jar"/>
-    <pathelement location="${plugins.dir}/xerces.jar"/>
-    <pathelement location="${plugins.dir}/xalan.jar"/>
+    <pathelement location="${xml-apis.jar}"/>
+    <pathelement location="${xerces.jar}"/>
+    <pathelement location="${xalan.jar}"/>
   </path>
 
   <target name="compile" description="compiles java source">
@@ -51,6 +52,9 @@
 
   <target name="deploy" depends="make-docs, jar" description="compilies, jars and copies jar to deploy.dir">
     <copy file="${build.dir}/${jar.name}" todir="${deploy.dir}"/>
+    <copy file="${xml-apis.jar}" todir="${deploy.dir}"/>
+    <copy file="${xerces.jar}" todir="${deploy.dir}"/>
+    <copy file="${xalan.jar}" todir="${deploy.dir}"/>
   </target>
 
 </project>
