@@ -31,12 +31,6 @@ xml.show-attributes=1
 # DTD validation
 xml.validate=true
 
-# Enable tag completion
-xml.complete=true
-
-# Delay after & or < before showing completion popup
-xml.complete-delay=500
-
 # Insert closing tag automatically after '</' typed
 xml.close-complete=true
 
@@ -159,8 +153,6 @@ options.xml.general.show-attributes=Show tag attributes in tree:
 options.xml.general.show-attributes.none=None
 options.xml.general.show-attributes.id-only=ID only
 options.xml.general.show-attributes.all=All
-options.xml.general.complete=Tag and entity completion
-options.xml.general.complete-delay=After < or &, wait (seconds):
 options.xml.general.close-complete=Insert closing tag when "</" is typed
 options.xml.general.close-complete-open=Insert closing tag when opening tag is typed
 

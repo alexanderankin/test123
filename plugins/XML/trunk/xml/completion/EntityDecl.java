@@ -13,7 +13,7 @@
  * parser package."
  */
 
-package xml.parser;
+package xml.completion;
 
 import org.gjt.sp.jedit.MiscUtilities;
 

@@ -81,8 +81,9 @@ public class XmlTag extends Asset
 	} //}}}
 
 	//{{{ getAttributeString() method
-	public String getAttributeString(int showAttributes)
+	public String getAttributeString()
 	{
+		int showAttributes = 1; // XXX
 		switch(showAttributes)
 		{
 		case 0:

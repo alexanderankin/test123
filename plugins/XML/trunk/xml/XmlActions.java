@@ -20,11 +20,9 @@ package xml;
 
 //{{{ Imports
 import java.awt.event.*;
-import java.awt.Point;
 import java.awt.Toolkit;
 import java.io.*;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 import javax.swing.text.Segment;
@@ -433,143 +431,6 @@ loop:			for(;;)
 		}
 	} //}}}
 
-	//{{{ completeKeyTyped() method
-	public static void completeKeyTyped(final View view, char ch)
-	{
-		EditPane editPane = view.getEditPane();
-		final JEditTextArea textArea = view.getTextArea();
-
-		if(ch != '\0')
-			textArea.userInput(ch);
-
-		Buffer buffer = textArea.getBuffer();
-
-		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
-			return;
-
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
-
-		if(!(_data instanceof XmlParsedData))
-			return;
-
-		XmlParsedData data = (XmlParsedData)_data;
-
-		if(timer != null)
-			timer.stop();
-
-		final int caret = textArea.getCaretPosition();
-
-		timer = new Timer(0,new ActionListener()
-		{
-			public void actionPerformed(ActionEvent evt)
-			{
-				if(caret == textArea.getCaretPosition())
-					complete(view);
-			}
-		});
-
-		timer.setInitialDelay(delay);
-		timer.setRepeats(false);
-		timer.start();
-	} //}}}
-
-	//{{{ complete() method
-	public static void complete(View view)
-	{
-		EditPane editPane = view.getEditPane();
-		Buffer buffer = editPane.getBuffer();
-		JEditTextArea textArea = editPane.getTextArea();
-
-		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
-		{
-			view.getToolkit().beep();
-			return;
-		}
-
-		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
-
-		if(!(_data instanceof XmlParsedData))
-		{
-			GUIUtilities.error(view,"xml-no-data",null);
-			return;
-		}
-
-		XmlParsedData data = (XmlParsedData)_data;
-
-		// first, we get the word before the caret
-		int caretLine = textArea.getCaretLine();
-		int caret = textArea.getCaretPosition();
-		String text = buffer.getText(0,caret);
-		int lineStart = textArea.getLineStartOffset(caretLine);
-		int dot = caret - lineStart;
-		if(dot == 0)
-		{
-			view.getToolkit().beep();
-			return;
-		}
-
-		int mode = -1;
-		int wordStart = -1;
-		for(int i = caret - 1; i >= lineStart; i--)
-		{
-			char ch = text.charAt(i);
-			if(ch == '<' || ch == '&')
-			{
-				wordStart = i;
-				mode = (ch == '<' ? XmlComplete.ELEMENT_COMPLETE
-					: XmlComplete.ENTITY_COMPLETE);
-				break;
-			}
-		}
-
-		if(wordStart == -1 || mode == -1)
-		{
-			view.getToolkit().beep();
-			return;
-		}
-
-		String word = text.substring(wordStart + 1,caret);
-
-		List completions;
-		if(mode == XmlComplete.ELEMENT_COMPLETE)
-		{
-			// Try to only list elements that are valid at the caret
-			// position
-			completions = data.getAllowedElements(buffer,wordStart);
-		}
-		else if(mode == XmlComplete.ENTITY_COMPLETE)
-			completions = data.getNoNamespaceCompletionInfo().entities;
-		else
-			throw new InternalError("Bad mode: " + mode);
-
-		//if(completions.size() == 0)
-		//	return;
-
-		Point location = textArea.offsetToXY(wordStart);
-		location.y += textArea.getPainter().getFontMetrics().getHeight();
-
-		SwingUtilities.convertPointToScreen(location,
-			textArea.getPainter());
-
-		String closingTag = null;
-
-		if(mode == XmlComplete.ELEMENT_COMPLETE)
-		{
-			TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,data);
-			if(tag != null)
-				closingTag = tag.tag;
-			view.getStatus().setMessageAndClear(jEdit.getProperty(
-				"xml-element-complete-status"));
-		}
-		else if(mode == XmlComplete.ID_COMPLETE)
-		{
-			view.getStatus().setMessageAndClear(jEdit.getProperty(
-				"xml-id-complete-status"));
-		}
-
-		new XmlComplete(mode,view,word,completions,location,data.html,closingTag);
-	} //}}}
-
 	//{{{ completeClosingTag() method
 	public static void completeClosingTag(View view)
 	{
@@ -620,7 +481,8 @@ loop:			for(;;)
 
 		Buffer buffer = view.getBuffer();
 
-		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable())
+		if(XmlPlugin.isDelegated(textArea) || !buffer.isEditable()
+			|| !closeCompletionOpen)
 			return;
 
 		SideKickParsedData _data = SideKickParsedData.getParsedData(editPane);
@@ -784,23 +646,18 @@ loop:			for(;;)
 	//{{{ propertiesChanged() method
 	static void propertiesChanged()
 	{
-		completion = jEdit.getBooleanProperty("xml.complete");
 		closeCompletion = jEdit.getBooleanProperty(
 			"xml.close-complete");
 		closeCompletionOpen = jEdit.getBooleanProperty(
 			"xml.close-complete-open");
-		delay = jEdit.getIntegerProperty("xml.complete-delay",500);
 	} //}}}
 
 	//{{{ Private members
 
 	//{{{ Instance variables
 	private static Segment seg = new Segment();
-	private static boolean completion;
 	private static boolean closeCompletion;
 	private static boolean closeCompletionOpen;
-	private static int delay;
-	private static Timer timer;
 	//}}}
 
 	//{{{ getPrevNonWhitespaceChar() method

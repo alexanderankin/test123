@@ -19,11 +19,13 @@ package xml;
 import javax.swing.*;
 import java.awt.Component;
 import org.gjt.sp.jedit.jEdit;
-import xml.parser.*;
+import xml.completion.*;
 //}}}
 
 public class XmlListCellRenderer extends DefaultListCellRenderer
 {
+	public static final XmlListCellRenderer INSTANCE = new XmlListCellRenderer();
+
 	//{{{ Icons
 	public static final ImageIcon COMMENT_ICON = new ImageIcon(
 		XmlListCellRenderer.class.getResource("/xml/Comment.png"));
@@ -52,12 +54,7 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 		super.getListCellRendererComponent(list,null,index,
 			isSelected,cellHasFocus);
 
-		if(value instanceof EmptyListPlaceholder)
-		{
-			setIcon(null);
-			setText(jEdit.getProperty("xml-no-completions"));
-		}
-		else if(value instanceof Comment)
+		if(value instanceof Comment)
 		{
 			setIcon(COMMENT_ICON);
 			setText("!--");
@@ -101,8 +98,6 @@ public class XmlListCellRenderer extends DefaultListCellRenderer
 
 		return this;
 	} //}}}
-
-	public static class EmptyListPlaceholder {}
 
 	public static class ClosingTag
 	{

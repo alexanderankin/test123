@@ -41,12 +41,12 @@ import org.apache.xerces.xni.grammars.Grammar;
 import org.apache.xerces.xni.grammars.XSGrammar;
 //}}}
 
-public class SAXParserImpl implements XmlSideKickParser
+public class SAXParserImpl extends XmlSideKickParser
 {
-	//{{{ getName() method
-	public String getName()
+	//{{{ SAXParserImpl constructor
+	public SAXParserImpl()
 	{
-		return "xml";
+		super("xml");
 	} //}}}
 
 	//{{{ parse() method

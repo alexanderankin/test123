@@ -64,29 +64,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		showAttributes.setSelectedIndex(jEdit.getIntegerProperty(
 			"xml.show-attributes",0));
 
-		addComponent(complete = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.complete")));
-		complete.setSelected(jEdit.getBooleanProperty("xml.complete"));
-		complete.addActionListener(new ActionHandler());
-
-		int delayValue = jEdit.getIntegerProperty("xml.complete-delay",500);
-
-		addComponent(jEdit.getProperty("options.xml.general.complete-delay"),
-			completeDelay = new JSlider(0,1500,delayValue));
-
-		Hashtable labelTable = new Hashtable();
-		for(int i = 0; i <= 1500; i += 250)
-		{
-			labelTable.put(new Integer(i),new JLabel(
-				String.valueOf((double)i / 1000.0)));
-		}
-		completeDelay.setLabelTable(labelTable);
-		completeDelay.setPaintLabels(true);
-		completeDelay.setMajorTickSpacing(250);
-		completeDelay.setPaintTicks(true);
-
-		completeDelay.setEnabled(complete.isSelected());
-
 		addComponent(closeComplete = new JCheckBox(jEdit.getProperty(
 			"options.xml.general.close-complete")));
 		closeComplete.setSelected(jEdit.getBooleanProperty(
@@ -111,9 +88,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 		jEdit.setProperty("xml.tag-highlight-color",
 			GUIUtilities.getColorHexString(
 			tagHighlightColor.getSelectedColor()));
-		jEdit.setBooleanProperty("xml.complete",complete.isSelected());
-		jEdit.setIntegerProperty("xml.complete-delay",
-			completeDelay.getValue());
 		jEdit.setBooleanProperty("xml.close-complete",
 			closeComplete.isSelected());
 		jEdit.setBooleanProperty("xml.close-complete-open",
@@ -128,8 +102,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JCheckBox tagHighlight;
 	private ColorWellButton tagHighlightColor;
 	private JComboBox showAttributes;
-	private JCheckBox complete;
-	private JSlider completeDelay;
 	private JCheckBox closeCompleteOpen;
 	private JCheckBox closeComplete;
 	//}}}
@@ -148,10 +120,6 @@ public class GeneralOptionPane extends AbstractOptionPane
 			}
 			else if(source == tagHighlight)
 				tagHighlightColor.setEnabled(tagHighlight.isSelected());
-			else if(source == complete)
-			{
-				completeDelay.setEnabled(complete.isSelected());
-			}
 		}
 	} //}}}
 }

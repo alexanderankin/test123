@@ -13,7 +13,7 @@
  * parser package."
  */
 
-package xml.parser;
+package xml.completion;
 
 //{{{ Imports
 import javax.swing.text.Position;
