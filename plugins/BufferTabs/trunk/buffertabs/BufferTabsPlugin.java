@@ -38,8 +38,8 @@ import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-
-
+import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.util.Log;
 /**
  *
  * @author Jason Ginchereau
@@ -82,9 +82,33 @@ public class BufferTabsPlugin extends EBPlugin {
         else if (msg instanceof PropertiesChanged) {
             this.propertiesChanged();
         }
+
     }
 
-
+	public void stop()
+	{
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++) {
+			EditPane[] editPanes = views[i].getEditPanes();
+			
+			for 	(int j = 0; j < editPanes.length; j++) {
+                editPaneDestroyed( editPanes[j]);
+            }
+		}
+	}
+	
+	public void start()
+	{
+		View[] views = jEdit.getViews();
+		for (int i = 0; i < views.length; i++) {
+			EditPane[] editPanes = views[i].getEditPanes();
+			
+			for 	(int j = 0; j < editPanes.length; j++) {
+                editPaneCreated( editPanes[j]);
+            }
+		}
+	}
+	
     private void editPaneCreated(EditPane editPane) {
         if (jEdit.getBooleanProperty("buffertabs.enable", false)) {
             addBufferTabsToEditPane(editPane);
