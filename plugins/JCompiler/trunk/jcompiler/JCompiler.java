@@ -48,13 +48,13 @@ public class JCompiler {
 	private Class compilerClass;
 	private Constructor compilerConstructor;
 	private Method compilerMethod;
-	private JCompilerTask task;
+	private JCompilerOutput output;
 	private View view;
 	private Buffer buffer;
 
 
-	public JCompiler(JCompilerTask task, View view, Buffer buffer) {
-		this.task = task;
+	public JCompiler(JCompilerOutput output, View view, Buffer buffer) {
+		this.output = output;
 		this.view = view;
 		this.buffer = buffer;
 
@@ -91,13 +91,13 @@ public class JCompiler {
 				outDir = fOutDir.getCanonicalPath();
 			}
 			catch (IOException ioex) {
-				printInfo("jcompiler.msg.errorOutputDir", new Object[] { outDir, ioex }, true);
+				printError("jcompiler.msg.errorOutputDir", new Object[] { outDir, ioex });
 				return;
 			}
 
 			if (fOutDir.exists()) {
 				if (!fOutDir.isDirectory()) {
-					printInfo("jcompiler.msg.noOutputDir", new Object[] {outDir }, true);
+					printError("jcompiler.msg.noOutputDir", new Object[] {outDir });
 					return;
 				}
 			} else {
@@ -136,7 +136,7 @@ public class JCompiler {
 
 		if (files.length == 0) {
 			// No files to compile:
-			printInfo("jcompiler.msg.nofiles", new Object[] { sourceBaseDir }, false);
+			printInfo("jcompiler.msg.nofiles", new Object[] { sourceBaseDir });
 			return;
 		}
 
@@ -148,8 +148,7 @@ public class JCompiler {
 				sourceBaseDir,
 				new Integer(outDir == null ? 0 : 1),
 				outDir
-			},
-			false
+			}
 		);
 
 		// Construct arguments for javac:
@@ -167,13 +166,13 @@ public class JCompiler {
 				if (argNeedsQuote && arguments[i].charAt(arguments[i].length() - 1) != '"')
 					msg.append('"');
 			}
-			printInfo("jcompiler.msg.commandline", new Object[] { msg.toString() }, false);
+			printInfo("jcompiler.msg.commandline", new Object[] { msg.toString() });
 		}
 
 		// Start the compiler:
 		invokeCompiler(arguments);
 		System.gc();
-		printInfo("jcompiler.msg.done", false);
+		printInfo("jcompiler.msg.done");
 	}
 
 
@@ -193,7 +192,7 @@ public class JCompiler {
 		// Start the compiler:
 		invokeCompiler(arguments);
 		System.gc();
-		printInfo("jcompiler.msg.done", false);
+		printInfo("jcompiler.msg.done");
 	}
 
 
@@ -226,21 +225,21 @@ public class JCompiler {
 					}
 					catch (Exception ex) {
 						Log.log(Log.ERROR, this, ex);
-						printInfo("jcompiler.msg.nocompilerclass_jdk12_tools_jar",
-							new Object[] { compilerClassname, toolsJar, ex.toString() },
-							true);
+						printError("jcompiler.msg.nocompilerclass_jdk12_tools_jar",
+							new Object[] { compilerClassname, toolsJar, ex.toString() }
+						);
 					}
 				} else {
 					Log.log(Log.ERROR, this, cnf);
-					printInfo("jcompiler.msg.nocompilerclass_jdk12",
-						new Object[] { compilerClassname, toolsJar },
-						true);
+					printError("jcompiler.msg.nocompilerclass_jdk12",
+						new Object[] { compilerClassname, toolsJar }
+					);
 				}
 			} else {
 				Log.log(Log.ERROR, this, cnf);
-				printInfo("jcompiler.msg.nocompilerclass_jdk11",
-					new Object[] { compilerClassname },
-					true);
+				printError("jcompiler.msg.nocompilerclass_jdk11",
+					new Object[] { compilerClassname }
+				);
 			}
 		}
 
@@ -264,9 +263,9 @@ public class JCompiler {
 		}
 		catch (NoSuchMethodException e) {
 			Log.log(Log.ERROR, this, e);
-			printInfo("jcompiler.msg.compilermethod_exception",
-				new Object[] { compilerClass, e },
-				true);
+			printError("jcompiler.msg.compilermethod_exception",
+				new Object[] { compilerClass, e }
+			);
 		}
 	}
 
@@ -275,10 +274,18 @@ public class JCompiler {
 		PrintStream origOut = System.out;
 		PrintStream origErr = System.err;
 
+		PipedOutputStream pipeComp = new PipedOutputStream();
+		PipedOutputStream pipeOut = new PipedOutputStream();
+		PipedOutputStream pipeErr = new PipedOutputStream();
+
+		OutputThread threadComp = new OutputThread("compiler output", pipeComp);
+		OutputThread threadOut = new OutputThread("stdout", pipeOut);
+		OutputThread threadErr = new OutputThread("stderr", pipeErr);
+
 		try {
 			// redirect stdout/stderr:
-			System.setOut(new PrintStream(new BufferedOutputStream(new TaskOutput()), true));
-			System.setErr(new PrintStream(new BufferedOutputStream(new TaskOutput()), true));
+			System.setOut(new PrintStream(pipeOut, true));
+			System.setErr(new PrintStream(pipeErr, true));
 
 			// instantiate a new compiler class with the constructor arguments:
 			Object compiler;
@@ -289,28 +296,34 @@ public class JCompiler {
 				// classic compiler constructor needs two arguments:
 				// an OutputStream for compiler error output, and a String
 				// with the program name, which is always "javac":
-				compiler = compilerConstructor.newInstance(
-					new Object[] { new BufferedOutputStream(new TaskOutput()), "javac" }
-				);
+				compiler = compilerConstructor.newInstance(new Object[] { pipeComp, "javac" });
 			}
 
 			// invoke the method 'compile(String[] arguments)' on the compiler instance.
 			// Note: the return value of the compile method is ignored.
 			compilerMethod.invoke(compiler, new Object[] { arguments });
+
+			pipeComp.close();
+			pipeOut.close();
+			pipeErr.close();
+
+			// wait for the output threads to die:
+			threadComp.join();
+			threadOut.join();
+			threadErr.join();
 		}
 		catch (InvocationTargetException invex) {
 			// the invoked method itself has thrown an exception
 			Throwable targetException = invex.getTargetException();
-			Log.log(Log.ERROR, this, "The compiler method itself just threw a runtime exception: " + targetException.toString());
-			targetException.printStackTrace();
+			Log.log(Log.ERROR, this, "The compiler method itself just threw a runtime exception:");
+			Log.log(Log.ERROR, this, targetException);
 			Object[] args = new Object[] { compilerClass, targetException };
-			printInfo("jcompiler.msg.compilermethod_exception", args, true);
+			printError("jcompiler.msg.compilermethod_exception", args);
 		}
 		catch (Exception e) {
 			Log.log(Log.ERROR, this, e);
-			e.printStackTrace();
 			Object[] args = new Object[] { compilerClass, e };
-			printInfo("jcompiler.msg.compilermethod_exception", args, true);
+			printError("jcompiler.msg.compilermethod_exception", args);
 		}
 		finally {
 			System.setOut(origOut);
@@ -319,24 +332,12 @@ public class JCompiler {
 	}
 
 
-	private void print(String property) {
-		task.print(jEdit.getProperty(property));
-	}
-
-
-	private void print(String property, Object[] args) {
-		task.print(jEdit.getProperty(property, args));
-	}
-
-
-	private void printInfo(String property, boolean asError) {
-		task.printInfo(jEdit.getProperty(property), asError);
-	}
-
-
-	private void printInfo(String property, Object[] args, boolean asError) {
-		task.printInfo(jEdit.getProperty(property, args), asError);
-	}
+	private void print(String property) { output.outputText(jEdit.getProperty(property)); }
+	private void print(String property, Object[] args) { output.outputText(jEdit.getProperty(property, args)); }
+	private void printInfo(String property) { output.outputInfo(jEdit.getProperty(property)); }
+	private void printInfo(String property, Object[] args) { output.outputInfo(jEdit.getProperty(property, args)); }
+	private void printError(String property) { output.outputError(jEdit.getProperty(property)); }
+	private void printError(String property, Object[] args) { output.outputError(jEdit.getProperty(property, args)); }
 
 
 	private String[] constructArguments(String cp, String srcPath, String outDir, String[] files) {
@@ -782,26 +783,42 @@ public class JCompiler {
 
 
 	/**
-	 * Delegator that prints compiler output to the Output instance
-	 * of the current JCompilerTask.
+	 * This class monitors output created by a PipedOutputStream.
+	 * Note: this thread starts itself on construction.
 	 */
-	class TaskOutput extends OutputStream {
+	class OutputThread extends Thread
+	{
 
-		public void write(int b) {
-			write(new byte[] { (byte) b }, 0, 1);
+		private BufferedReader buf;
+
+
+		OutputThread(String name, PipedOutputStream outpipe) {
+			super("OutputThread for " + name);
+			this.setDaemon(true);
+			this.setPriority(NORM_PRIORITY - 1);
+
+			try {
+				buf = new BufferedReader(new InputStreamReader(new PipedInputStream(outpipe)));
+				this.start();
+			}
+			catch (IOException ioex) {
+				Log.log(Log.ERROR, this, ioex);
+			}
 		}
 
-		public void write(byte[] bytes, int offset, int length) {
-			String s = new String(bytes, offset, length);
 
-			// skip trailing newlines (the Output print method adds them)
-			if (s.endsWith("\r\n") || s.endsWith("\n\r"))
-				s = s.substring(0, s.length() - 2);
-			else if (s.endsWith("\n"))
-				s = s.substring(0, s.length() - 1);
+		public void run() {
+			String line;
 
-			if (s.length() > 0)
-				task.print(s);
+			try {
+				while ((line = buf.readLine()) != null)
+					output.outputText(line);
+
+				Log.log(Log.DEBUG, JCompiler.this, this.toString() + " ends.");
+			}
+			catch (IOException ioex) {
+				Log.log(Log.ERROR, this, ioex);
+			}
 		}
 
 	}
