@@ -1,5 +1,10 @@
 CHANGES file for Templates plugin.
 
+Version 3.3.0 (JUN-2003)
+=============================
+CHANGES:
+- more changes for jEdit 4.2 dynamic plugin loading API, fixes problems resulting from changes in jEdit 4.2pre2
+
 Version 3.2.0 (25-MAY-2003)
 =============================
 CHANGES:

@@ -43,7 +43,7 @@ public class TemplateAction extends BeanShellAction
 				false,
 				false,
 				false);
-		jEdit.setTemporaryProperty("action " + actionName + ".label", templateName);
+		jEdit.setTemporaryProperty(actionName + ".label", templateName);
 	}
 	
 	public TemplateAction(TemplateFile file) {
@@ -66,6 +66,9 @@ public class TemplateAction extends BeanShellAction
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.3  2003/06/06 19:34:47  sjakob
+	 * More changes for jEdit 4.2 dynamic plugin loading API.
+	 *
 	 * Revision 1.2  2003/05/23 17:07:23  sjakob
 	 * Update Templates plugin for API changes in jEdit 4.2pre1.
 	 *

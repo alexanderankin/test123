@@ -27,7 +27,6 @@ import java.util.*;
 import javax.swing.tree.TreeNode;
 import gnu.regexp.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.jedit.gui.EnhancedMenuItem;
 import org.gjt.sp.util.Log;
 /**
  * A TemplateDir is a type of TemplateFile which is a container for other 
@@ -78,7 +77,6 @@ public class TemplateDir extends TemplateFile
 			}
 		} catch (gnu.regexp.REException ree) {
 			Log.log(Log.ERROR,this,jEdit.getProperty("plugin.TemplatesPlugin.error.bad-backup-filter"));
-			// System.out.println("Templates: Bad RegExp creating backup filter.");
 		}
 	}
 
@@ -101,7 +99,6 @@ public class TemplateDir extends TemplateFile
 	public void createMenus(JMenu menu, String parent) {
 		Object o;
 		JMenu submenu;
-		EnhancedMenuItem mi;
 		TemplateAction myAction;
 		TemplateDir td;
 		TemplateFile tf;
@@ -128,9 +125,7 @@ public class TemplateDir extends TemplateFile
 				myAction = new TemplateAction(actionName, 
 						tf.getLabel(), tf.getRelativePath());
 				myActions.addAction(myAction);
-				mi = new EnhancedMenuItem(tf.getLabel(), actionName, 
-						jEdit.getActionContext());
-				menu.add(mi);
+				menu.add(GUIUtilities.loadMenuItem(jEdit.getActionContext(), actionName, false));
 			}
 		}
 		jEdit.addActionSet(myActions);
@@ -185,6 +180,9 @@ public class TemplateDir extends TemplateFile
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.7  2003/06/06 19:34:47  sjakob
+	 * More changes for jEdit 4.2 dynamic plugin loading API.
+	 *
 	 * Revision 1.6  2003/05/23 17:07:23  sjakob
 	 * Update Templates plugin for API changes in jEdit 4.2pre1.
 	 *
