@@ -76,7 +76,7 @@ public class BufferTabsOptionPane extends AbstractOptionPane {
 
     public void load() {
         enableCB.setSelected(
-            jEdit.getBooleanProperty("buffertabs.enable", true)
+            jEdit.getBooleanProperty("buffertabs.enable", false)
         );
         iconsCB.setSelected(
             jEdit.getBooleanProperty("buffertabs.icons", true)
