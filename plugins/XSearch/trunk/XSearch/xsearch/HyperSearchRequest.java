@@ -232,11 +232,11 @@ loop:				for(int i = 0; i < files.length; i++)
 	{
 		return doHyperSearch(buffer, 0, buffer.getLength());
 	} //}}}
+
 	//{{{ doHyperSearch() method
 	private int doHyperSearch(Buffer buffer, int start, int end)
 		throws Exception
 	{
-		//Log.log(Log.DEBUG, BeanShell.class,"HyperSearchRequest.221");
 		setAbortable(false);
 
 		final DefaultMutableTreeNode bufferNode = new DefaultMutableTreeNode(
@@ -328,7 +328,7 @@ loop:				for(int i = 0; i < files.length; i++)
 					for (int i = newLine-lineRangeUp; 
 					i<=newLine+lineRangeDown && i < buffer.getLineCount(); i++) {
 						if (i < 0) i = 0; // cannot display before startOfBuffer
-/* 						if (i > line) { // skip if already displayed !?
+						/* 						if (i > line) { // skip if already displayed !?
 						int startOfI = buffer.getLineStartOffset(i); 
 						int endOfI = buffer.getLineEndOffset(i); 
 						bufferNode.add(new DefaultMutableTreeNode(
@@ -339,7 +339,7 @@ loop:				for(int i = 0; i < files.length; i++)
 								)
 								,false));
 						}
- */						
+						*/						
 						int startOfI = buffer.getLineStartOffset(i); 
 						int endOfI = buffer.getLineEndOffset(i); 
 						subNode.add(new DefaultMutableTreeNode(

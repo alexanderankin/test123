@@ -13,23 +13,23 @@
     
     <P>by Rudi Widmann &lt;rudi.widmann@web.de&gt;</P>
     
-    <P>The XSearch plugin provides following extentions of the search and replace function of the
-      jedit text editor:</P>
+    <P>The XSearch plugin provides extensions of the search and replace function of the jedit text
+      editor. </P>
+    
+    <P>It doesn't extend the search bar, which is a view related feature</P>
+    
+    <P>It is 100 % compatible to the standart search and replace functions described in jEdit user
+      guide.</P>
     <UL>
-      <LI><A HREF="#Options">extended search options</A></LI>
+      <LI><A HREF="#Dialog">XSearch Dialog</A></LI>
+      <LI><A HREF="#menu">XSearch menu</A></LI>
       <LI><A HREF="#Beanshell">bean shell support</A></LI>
-      <LI><A HREF="#display">smart display of search dialog</A></LI>
+      <LI><A HREF="#options">XSearch global options</A></LI>
     </UL>
     
-    <P>Via Global Options panel, the display of all extended options is customizable.</P>
+    <H2><A NAME="Dialog">XSearch Dialog</A> </H2>
     
-    <H2><A NAME="Options">Extended search options</A> </H2>
-    
-    <P><STRONG>find from top</STRONG></P>
-    
-    <P>Start searching from top of buffer.<BR>
-       Note: &quot;refind&quot; will search for the next occurance, as lond as no search settings
-      are changed</P>
+    <P>The XSearch Dialog is an extension of the core search-and-replace dialog</P>
     
     <P><STRONG>find All</STRONG></P>
     
@@ -37,6 +37,16 @@
       current settings. <BR>All matches are selected, and a match counter is displayed.</P>
     
     <P><U>Restriction</U>: only applicable for the current buffer</P>
+    
+    <P><STRONG> resetSettings</STRONG></P>
+    
+    <P>Resets search settings to default values <BR></P>
+    
+    <P><STRONG>find from top</STRONG></P>
+    
+    <P>Start searching from top of buffer.<BR>
+       Note: &quot;refind&quot; will search for the next occurance, as long as no search settings
+      are changed</P>
     
     <P><STRONG>word part search</STRONG></P>
     <UL>
@@ -89,9 +99,18 @@
       <LI>outside comments: matches only text outside of a comments </LI>
     </UL>
     
-    <P><STRONG></STRONG>Note: &quot;comment search&quot; in the current buffer uses identifies
-      comments according to the definition in the according edit mode. For hypersearch, this is not
-      possible. Therefore, the comment indicators are defined in XSearch.props. </P>
+    <P>Note: &quot;comment search&quot; in the current buffer uses identifies comments according to
+      the definition in the according edit mode. For hypersearch, this is not possible. Therefore,
+      the comment indicators are defined in XSearch.props. </P>
+    
+    <P><STRONG>hyper search</STRONG> </P>
+    
+    <P><STRONG></STRONG>This checkbox toggles</P>
+    <UL>
+      <LI>the hyper search feature (unchanged to the standard implementation)</LI>
+      <LI>the <A HREF="#HyperReplace">hyper replace</A> feature, if allowed according to the
+        global options</LI>
+    </UL>
     
     <P><STRONG>hyper range</STRONG> </P>
     
@@ -101,7 +120,7 @@
     
     <P>Tip: extremly useful if you search where a method is called and which parameters are used.</P>
     
-    <P><B>tentativ search</B></P>
+    <P><STRONG>tentativ search</STRONG></P>
     
     <P>Tentativ search uses a search algorithm which tolerates following type mismatching. </P>
     <UL>
@@ -128,6 +147,183 @@
     <P><U>Warning:</U> This feature is very time consuming, &quot;find all&quot; or &quot;hypersearch&quot;
       is not recommended</P>
     
+    <P><STRONG>Search Settings History</STRONG></P>
+    
+    <P>If enabled, all search settings which apply to a certain search string are memorized.</P>
+    
+    <P>If you recall a search string of the History Text Field , its last settings are activ in the
+      xsearch and replace dialog. </P>
+    
+    <P><STRONG>Show Options: search | replace | extended</STRONG></P>
+    
+    <P>Hide or show the search | replace | extended options.</P>
+    
+    <P>If a non-default option is selected but not visible, it is displayed in a line below &quot;show
+      options&quot;</P>
+    
+    <P><B>Replace and Find</B></P>
+    
+    <P>If Replace and Find is invoked</P>
+    <UL>
+      <LI>and nothing is selected, the first occurance of the search string will be replaced by the
+        replace string</LI>
+      <LI>the search dialog is kept as long as 'keep dialog' is not switched off explicitely</LI>
+    </UL>
+    
+    <H2><A NAME="menu">XSearch menu</A> </H2>
+    
+    <P><STRONG>xfind replace</STRONG></P>
+    
+    <P>Displays the xsearch-and-replace dialog box</P>
+    
+    <P>If text was selected in the text area and the selection does not span a line break, the
+      selected text becomes the default search string (standard behaviour).</P>
+    
+    <P><STRONG>xfind-refind</STRONG></P>
+    
+    <P>Performes a search with the previously used search string, taking in account the current
+      search options, without displaying the xsearch-and-replace dialog.</P>
+    
+    <P><STRONG>xfind-first</STRONG></P>
+    
+    <P>Same as xfind-refind, but the search starts from the <B>top</B> of the document.</P>
+    
+    <P><STRONG>xfind-next</STRONG></P>
+    
+    <P>Same as xfind-refind, but the search direction is <B>forward</B></P>
+    
+    <P><STRONG>xfind-prev</STRONG></P>
+    
+    <P>Same as xfind-refind, but the search direction is <B>backward</B></P>
+    
+    <P><B>Note:</B> If the option regexp is activ, no search is performed.The message &quot;invalid
+      search settings&quot; is displayed</P>
+    
+    <P><STRONG>xreplace-in-selection</STRONG></P>
+    
+    <P>Performes the last replace action for all occurances of the search string in the current
+      selection.</P>
+    
+    <P><STRONG>xreplace-and-find-next</STRONG></P>
+    
+    <P>Repeats the last replace action</P>
+    
+    <P><STRONG>xreplace-all</STRONG></P>
+    
+    <P>Performes the last replace action for all occurances of the search string in the current
+      document.</P>
+    
+    <P><STRONG>xsearch-directory...</STRONG></P>
+    
+    <P>Displays the xsearch-and-replace dialog box.</P>
+    
+    <P>The options &quot;hypersearch&quot; and &quot;search in directory&quot; are already selected
+      (standard behaviour).</P>
+    
+    <P><STRONG>quick-xfind-standard-options</STRONG></P>
+    
+    <P>Performes a search without displaying the xsearch-and-replace dialog, ignoring the current
+      search settings.</P>
+    
+    <P>The search string is:</P>
+    <UL>
+      <LI>the current selection, if a single selection exists</LI>
+      <LI>the word at the caret, if the caret is at a word</LI>
+    </UL>
+    
+    <P>If no valid search string is found, the xsearch-and-replace dialog is displayed with
+      standart settings.</P>
+    
+    <P><STRONG>quick-hypersearch-standard-options</STRONG></P>
+    
+    <P>Same as quick-xfind-standard-options, but a hypersearch in the current buffer is performed.</P>
+    
+    <P><STRONG>quick-allbuffersearch-standard-options</STRONG></P>
+    
+    <P>Same as quick-xfind-standard-options, but a hypersearch in all open buffers is performed.</P>
+    
+    <P> </P>
+    
+    <P><STRONG>quick-xfind-current-options</STRONG></P>
+    
+    <P>Same as quick-xfind-standard-options, but the current options are used.</P>
+    
+    <P><STRONG>quick-hypersearch-current-options</STRONG></P>
+    
+    <P>Same as quick-hypersearch-standard-options, but the current options are used.</P>
+    
+    <P><U>Note:</U> When using quick-search, the user is often not aware of the current search
+      settings. Therefore, only quick search with standard options is recommended</P>
+    
+    <P></P>
+    
+    <H2><A NAME="Beanshell">Bean shell support</A> </H2>
+    
+    <P><STRONG>getMatchedSubexpressions</STRONG></P>
+    
+    <P>After a search with regular expressions, you can obtain the subexpressions <BR>Execution: xsearch.XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;)</P>
+    
+    <P><U>Example:</U></P>
+    
+    <P>xsearch.XSearchAndReplace.setSearchString(&quot;(^\\* SYNTAX - ERRORS : *)([1-9]+)&quot;); <BR>if (xsearch.XSearchAndReplace.find(view)) <BR>String[] subExp =
+      xsearch.XSearchAndReplace.getMatchedSubexpressions(textArea.getSelectedText()); </P>
+    
+    <P><STRONG>resetSettings</STRONG></P>
+    
+    <P>Resets search settings to default values <BR>Execution: xsearch.SearchSettings.resetSettings()</P>
+    
+    <P><B>push Settings</B></P>
+    
+    <P>Saves the current search settings on a stack. Useful if you don't want to overwrite the
+      settings during macro run <BR>Execution: xsearch.SearchSettings.push();</P>
+    
+    <P><B>pop Settings</B></P>
+    
+    <P>Restores the last pushed search settings. <BR>Execution: xsearch.SearchSettings.pop();</P>
+    
+    <P><B>find all</B></P>
+    
+    <P>To manipulate all matches inside the current buffer, &quot;findAll&quot; selects all
+      matches. With the method &quot;textArea.getSelectedLines()&quot;, they can be manipulated.</P>
+    
+    <P>Example: The following bsh macro deletes all lines which contain the string &quot;jEdit ist
+      doof&quot;</P>
+    
+    <P>xsearch.SearchSettings.push(); <BR>xsearch.SearchSettings.resetSettings(); <BR>xsearch.XSearchAndReplace.setSearchString(&quot;jEdit ist doof&quot;); <BR>xsearch.XSearchAndReplace.setSearchFileSet(new CurrentBufferSet()); <BR>xsearch.XSearchAndReplace.setFindAll(true); <BR>xsearch.XSearchAndReplace.find(view); <BR>int[] lines = textArea.getSelectedLines(); <BR>for (int i=lines.length-1;i&gt;=0;i--) { <BR>textArea.moveCaretPosition(buffer.getLineStartOffset(lines[i])); <BR>textArea.deleteLine(); } <BR>xsearch.SearchSettings.pop();</P>
+    
+    <P><B>silent search</B></P>
+    
+    <P>When you write macros or plugins which invoke search very often, updating the textarea is
+      time consuming. For better performance, highlighting of the search match can be disabled (flag
+      &quot;silent&quot;=xsearch.XSearchAndReplace.FIND_OPTION_SILENT (true) when calling &quot;find&quot;)</P>
+    
+    <P>find(View view, Buffer buffer, int start, int end, boolean firstTime, boolean reverse,
+      boolean silent)</P>
+    
+    <P>The result of the last search is obtained from method &quot;getLastMatchedSelection&quot;</P>
+    
+    <P><U>Example</U>:</P>
+    
+    <P> xsearch.SearchSettings.push(); <BR>xsearch.SearchSettings.resetSettings(); <BR>xsearch.XSearchAndReplace.setSearchString(&quot;target&quot;); <BR>if (xsearch.XSearchAndReplace.find(view, buffer, 0, buffer.getLength(), false, false,
+      xsearch.XSearchAndReplace.FIND_OPTION_SILENT)) <BR> Log.log(Log.DEBUG, BeanShell.class,&quot;+++ Temporary_Macro.9 &quot;+xsearch.XSearchAndReplace.getLastMatchedSelection()); <BR>xsearch.SearchSettings.pop(); </P>
+    
+    <H2><A NAME="options">XSearch global options</A></H2>
+    
+    <P>It is possible to tailor the layout of the xsearch-and-replace dialog box. Disable features
+      you will &quot;never&quot; use. They won't consume any space on the xsearch-and-replace
+      dialog.</P>
+    
+    <P><U>Further options:</U></P>
+    
+    <P><B><A NAME="HyperReplace">Hyper replace</A> (&quot;hyper search enables hyper replace, too&quot;)</B></P>
+    
+    <P>If this option is selected, the checkbox &quot;hyper search&quot; toggles the feature &quot;hyper
+      replace&quot;, too.</P>
+    
+    <P>&quot;Hyper replace&quot; is activated when invoking &quot;replace all&quot;.</P>
+    
+    <P>It displays all changed lines in the hyper search window. </P>
+    
     <P><B>Replace case sensitiv</B></P>
     
     <P>The default replace implementation in jEdit is case sensitiv, that means that if the search
@@ -138,54 +334,12 @@
     <P>If this behavious is not required, it is possible to swich it off in the XSearch global
       options </P>
     
-    <P><B>Improved Search &amp; Replace</B></P>
+    <P><B>Use textArea Font in search and replace field</B></P>
     
-    <P>If Search and Replace is invoked</P>
-    <UL>
-      <LI>and nothing is selected, the first occurance of the search string will be replaced.</LI>
-      <LI>the search dialog is kept as long as 'keep dialog' is not switched off explicitely</LI>
-    </UL>
+    <P>Toggles the font used for the search and replace textareas. The textArea font is usually
+      fixed width, therefore better readable.</P>
     
-    <H2><A NAME="Beanshell">Bean shell support</A> </H2>
-    
-    <P><STRONG>getMatchedSubexpressions</STRONG></P>
-    
-    <P>After a search with regular expressions, you can obtain the subexpressions <BR>Execution: XSearchAndReplace.getMatchedSubexpressions(String &lt;matched String&gt;)</P>
-    
-    <P><STRONG>resetSettings</STRONG></P>
-    
-    <P>Resets search settings to default values <BR>Execution: SearchSettings.resetSettings()</P>
-    
-    <P><B>push Settings</B></P>
-    
-    <P>Saves the current search settings on a stack. Useful if you don't want to overwrite the
-      settings during macro run <BR>Execution: SearchSettings.push();</P>
-    
-    <P><B>pop Settings</B></P>
-    
-    <P>Restores the last pushed search settings. <BR>Execution: SearchSettings.pop();</P>
-    
-    <P><B>find all</B></P>
-    
-    <P>To manipulate all matches inside the current buffer, &quot;findAll&quot; selects all
-      matches. With the method &quot;textArea.getSelectedLines()&quot;, they can be manipulated.</P>
-    
-    <P>Example: The following bsh macro deletes all lines which contain the string &quot;jEdit ist
-      doof&quot;</P>
-    
-    <P>SearchSettings.push(); <BR>SearchSettings.resetSettings(); <BR>XSearchAndReplace.setSearchString(&quot;jEdit ist doof&quot;); <BR>XSearchAndReplace.setSearchFileSet(new CurrentBufferSet()); <BR>XSearchAndReplace.setFindAll(true); <BR>XSearchAndReplace.find(view); <BR>int[] lines = textArea.getSelectedLines(); <BR>for (int i=lines.length-1;i&gt;=0;i--) { <BR>textArea.moveCaretPosition(buffer.getLineStartOffset(lines[i])); <BR>textArea.deleteLine(); } <BR>SearchSettings.pop();</P>
-    
-    <H2><A NAME="display">Smart display of search dialog</A></H2>
-    
-    <P>With the &quot;show options&quot; </P>
-    <UL>
-      <LI>search</LI>
-      <LI>replace</LI>
-      <LI>extended</LI>
-    </UL>
-    
-    <P>you can fold/unfold the display of the according options. <BR>Note: If there are non-default options selected but not visible, they are displayed in a line
-      below &quot;show options&quot;.</P>
+    <P>This is especially useful when developping regular expressions. </P>
     
     <P></P>
   </BODY>
