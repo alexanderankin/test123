@@ -29,6 +29,8 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
 import org.apache.xalan.xslt.*;
+import org.apache.xalan.transformer.*;
+import org.apache.xalan.trace.*;
 import javax.xml.transform.stream.*;
 import javax.xml.transform.*;
 import java.io.*;
@@ -44,12 +46,15 @@ public class XSLTProcessor extends java.lang.Object
 	private XSLTFileFilter xmlFilter;
 	private File lastXML, lastXSL;
 	private javax.xml.transform.TransformerFactory tFactory;
+	//private XSLTProgressDialog progress;
 
 	private XSLTProcessor() {
 		xslFilter = new XSLTFileFilter("xsl", "XSL Files (*.xsl)");
 		xmlFilter = new XSLTFileFilter("xml", "XML Files (*.xml)");
+		//progress = new XSLTProgressDialog(jEdit.getFirstView(), jEdit.getProperty("xslt.progressdialog.title"));
 
 		tFactory = javax.xml.transform.TransformerFactory.newInstance();
+		tFactory.setURIResolver(new PluginURIResolver());
 	}
 
 	public static synchronized XSLTProcessor getInstance() {
@@ -142,17 +147,30 @@ public class XSLTProcessor extends java.lang.Object
 
 	protected void doTransformation(View view, Source stylesheet, String xmlPath)
 		throws TransformerException, javax.swing.text.BadLocationException {
-		lastXML = new File(xmlPath);
+		try {
+			//progress.reset();
+			//progress.setVisible(true);
+			//progress.toFront();
+			lastXML = new File(xmlPath);
 
-		Transformer transformer = tFactory.newTransformer(stylesheet);
+			TransformerImpl transformer = (TransformerImpl)tFactory.newTransformer(stylesheet);
+			/*TraceManager traceManager = new TraceManager(transformer);
+			try {
+				traceManager.addTraceListener(progress);
+			} catch (TooManyListenersException e) {
+				// nothing to do
+			}*/
 
-		ByteArrayOutputStream output = new ByteArrayOutputStream();
-		transformer.transform
-			(new StreamSource(xmlPath),
-				new StreamResult(output));
-		Buffer transformed = jEdit.newFile(view);
-		transformed.setMode(jEdit.getMode("xml"));
-		transformed.insertString(0, output.toString(), null);
+			ByteArrayOutputStream output = new ByteArrayOutputStream();
+			transformer.transform
+				(new StreamSource(xmlPath),
+					new StreamResult(output));
+			Buffer transformed = jEdit.newFile(view);
+			transformed.setMode(jEdit.getMode("xml"));
+			transformed.insertString(0, output.toString(), null);
+		} finally {
+			//progress.setVisible(false);
+		}
 	}
 
 	public void processLast(View view) {
