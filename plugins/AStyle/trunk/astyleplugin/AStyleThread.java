@@ -65,7 +65,8 @@ public class AStyleThread implements Runnable {
 			StringBuffer result = new StringBuffer(buffer.getLength() + 1000);
 			while (formatter.hasMoreLines()) {
 				result.append(formatter.nextLine());
-				result.append('\n');
+				if (formatter.hasMoreLines())
+					result.append('\n');
 			}
 
 			// store the string back:
@@ -112,11 +113,6 @@ public class AStyleThread implements Runnable {
 			beanHelper.initBean(formatter);
 		}
 
-		String mode = buffer.getMode().getName();
-		int tabSize = ((Integer) buffer.getProperty("tabSize")).intValue();
-		int indentSize = ((Integer) buffer.getProperty("indentSize")).intValue();
-		boolean noTabs = buffer.getBooleanProperty("noTabs");
-
 		// The following properties are set automatically according to the
 		// current buffer settings:
 		//   - cStyle (boolean)
@@ -126,7 +122,19 @@ public class AStyleThread implements Runnable {
 		//   - tabSpaceConversionMode (boolean)
 		// (These properties are excluded from the BeanOptionPane.)
 
-		formatter.setCStyle(mode.equals("c") || mode.equals("cplusplus"));
+		String mode = buffer.getMode().getName();
+		int tabSize = ((Integer) buffer.getProperty("tabSize")).intValue();
+		int indentSize = ((Integer) buffer.getProperty("indentSize")).intValue();
+		boolean noTabs = buffer.getBooleanProperty("noTabs");
+		boolean assumeCStyle = mode.equals("c") || mode.equals("c++") || mode.equals("cplusplus");
+
+		formatter.setCStyle(assumeCStyle);
+		if (assumeCStyle) {
+			Log.log(Log.DEBUG, this, "assuming C/C++ style, because mode name is 'c', 'c++' or 'cplusplus'");
+		} else {
+			Log.log(Log.DEBUG, this, "assuming Java style, because mode name is not 'c', 'c++' or 'cplusplus'");
+		}
+
 		formatter.setTabIndentation(tabSize);
 		formatter.setSpaceIndentation(indentSize);
 		formatter.setUseTabs(!noTabs);

@@ -20,7 +20,46 @@ content="text/html; charset=iso-8859-1">
 Style - Release notes</i></b></font> </p>
 
 <p align="center"> </p>
-<H3>In Artistic Style 1.13.6&nbsp;(24 January 2001)</H3>
+<H3>In Artistic Style 1.14.1 (2&nbsp;June 2001)</H3>
+<UL>
+  <LI>
+  <DIV>       Bug fix: : '&lt;' and '&gt;' symbols within 
+  template&nbsp;declarations       (e.g. 'foo&lt;bar*, xoo&gt;')&nbsp;are now 
+  left unpadded in the padding modes.</DIV>
+  <LI>
+  <DIV>Bug fix: Fixed false&nbsp;recognizing of&nbsp; headers within larger 
+  words (e.g. 'catch' in 'gcatch').</DIV></LI></UL>
+<H3>empIn Artistic Style 1.14.0 (1&nbsp;June 2001)</H3>
+<UL>
+  <LI>
+  <DIV>Bug fix: Fixed indentation of statements within preprocessor '#if...' 
+  statements.</DIV>
+  <LI>
+  <DIV>Bug fix:&nbsp;Templates are now not broken from their bodies.</DIV>
+  <LI>
+  <DIV>Bug fix: '&lt;' and '&gt;' symbols within template definitions (e.g. 'template&lt;class T&gt;')&nbsp;are now left unpadded 
+  in the padding modes.</DIV></LI></UL>
+<H3>In Artistic Style 1.13.8 (13 April 2001)</H3>
+<UL>
+  <LI>
+  <DIV>Bug fix: Fixed indentation of multiple nested non-block brackets, such as 
+  in multi bracketed static array declarations.</DIV></LI></UL>
+<H3>In Artistic Style 1.13.7 (6 April 2001)</H3>
+<ul>
+  <li>
+  <div>  Newoption:'--force-indent=tab=#' (or 'T#') instructs astyle to indent 
+  using tabs in all the pre-statement white space, including areas 
+  astyle's&nbsp;'--indent=tab' prefers to indent using spaces, such as white 
+  space in multi-line statements.</div>
+  <li>
+  <div>   Bug fix: Fixed unwanted empty line insertions between 
+  empty blocks (e.g. '{}')&nbsp;and closing brackets that come immediately after 
+  them.</div>
+  <LI>
+  <DIV>Bug fix: Fixed unwanted empty line insertions immediately after colons 
+  (e.g. 'default:', 'label:', ...)</DIV></LI></ul>
+<h3>
+<div>In Artistic Style 1.13.6&nbsp;(24 January 2001)</div></h3>
 <UL>
   <LI>
   <DIV>Bug fix: Preprocessor lines now remain unpadded in padding 
@@ -35,8 +74,9 @@ Style - Release notes</i></b></font> </p>
   headers are now broken appropriately from their preceding code lines in the 
   'attach'and 'linux'&nbsp;bracketmodes.</DIV>
   <LI>
-  <DIV>Bug fix: Fixed operator recognition for long operators such as 
-  '&gt;&gt;=', '&lt;&lt;='.</DIV></LI></UL>
+  <DIV>Bug fix: Fixed operator recognition for long 
+  operators such as '&gt;&gt;=', '&lt;&lt;=          
+   '.</DIV></LI></UL>
 <H3>In Artistic Style 1.13.4&nbsp;(24 January 2001)</H3>
 <UL>
   <LI>
@@ -52,10 +92,13 @@ exponent.</DIV></LI></UL>
 <H3>In Artistic Style 1.13.3&nbsp;(23 January 2001)</H3>
 <UL>
   <LI>
-  <DIV>Line that contain both&nbsp;headers and their following&nbsp;non-header 
-  code&nbsp;(e.g. 'if (isFoo) doBar();') are now broken by default into multiple 
-  lines. To keep these lines as single lines, use 
-  '--one-line=keep-statements'.</DIV>
+  <DIV>Line that contain both&nbsp;headers and their 
+  following&nbsp;non-header code&nbsp;(e.g. 'if (isFoo) doBar();') are now 
+  broken by default into multiple lines. To keep these lines as single lines, 
+  use '--one-line=       
+             
+           
+  keep-statements'.</DIV>
   <LI>
   <DIV>Added the new option '--break-elseifs' which breaks 'else if()' 
   statements into multiple lines.</DIV>
@@ -67,12 +110,14 @@ exponent.</DIV></LI></UL>
 <H3>In Artistic Style 1.13.2&nbsp;(21 January 2001)</H3>
 <UL>
   <LI>
-  <DIV>Added the new option '--brackets=break-closing-headers'.&nbsp;When this 
-  option is added to either '--brackets=attach' or '--brackets=linux', 
+  <DIV>Added the new option 
+  '--brackets=break-closing-headers'.&nbsp;When this option is added to either 
+  '--brackets=attach' or '--brackets=      
+         linux', 
   astyle&nbsp;breaks&nbsp;closing headers&nbsp;(e.g. 'else', 'catch') from their 
   preceding closing brackets.</DIV>
   <LI>
-  <DIV>'--break-blocks' and '--break-blocks=all' now correctly handle blocks 
+  <DIV>'--break-blocks' and '--break-blocks=  all' now correctly handle blocks 
   that appear immediately before closing brackets, and do&nbsp;not append empty 
   lines between them and the closing brackets.</DIV></LI></UL>
 <H3>In Artistic Style 1.13.0&nbsp;(27 September 1999)</H3>
@@ -264,7 +309,7 @@ correctly.</li>
 <h3>In Artistic Style 1.8.1&nbsp;(9 March 1999)</h3>
 
 <ul>
-    <li>Changed the '--style=k&amp;r' option to '--style=     kr' , so
+    <li>Changed the '--style=k&amp;r' option to '--style=          kr' , so
         that linux/unix machines don't misinterpret the '&amp;'
         as a background processing command.</li>
 </ul>
@@ -437,7 +482,8 @@ correctly.</li>
   in '-ab -p' mode, that in some cases occurred between '//' and the rest of a 
   line comment. 
     <li style="MARGIN-BOTTOM: 0cm">Fixed handling of 
-  '&gt;&gt;=', '&lt;&lt;=  
+  '&gt;&gt;=', '&lt;&lt;=   
+     
          ' in '-p' mode.</li>
 </ul>
 

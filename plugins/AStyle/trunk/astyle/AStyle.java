@@ -34,11 +34,11 @@ import java.util.*;
 
 
 /**
- * the <b>astyle</b> main class.
+ * the <b>AStyle</b> main class.
  */
 public class AStyle implements ASResource {
 
-    public static final String VERSION = "1.13.6";
+    public static final String VERSION = "1.14.1";
 
 
     private AStyle() {}
@@ -129,7 +129,8 @@ public class AStyle implements ASResource {
         }
 
         if (shouldPrintHelp) {
-            printHelpAndExit();
+            printHelp();
+            System.exit(1);
         }
 
         // if no files have been given, use System.in for input and System.out
@@ -337,9 +338,16 @@ public class AStyle implements ASResource {
         else if (IS_OPTIONS(arg, "t", "indent=tab=")) {
             String spaceNumParam = GET_PARAMS(arg, "t", "indent=tab=");
             formatter.setTabIndentation(GET_NUM_PARAM(spaceNumParam, 4));
+            formatter.setForceTabs(false);
+        }
+        else if (IS_OPTIONS(arg, "T", "force-indent=tab=")) {
+            String spaceNumParam = GET_PARAMS(arg, "T", "force-indent=tab=");
+            formatter.setTabIndentation(GET_NUM_PARAM(spaceNumParam, 4));
+            formatter.setForceTabs(true);
         }
         else if (IS_PARAM_OPTION(arg, "indent=tab")) {
             formatter.setTabIndentation(4);
+            formatter.setForceTabs(false);
         }
         else if (IS_PARAM_OPTIONS(arg, "s", "indent=spaces=")) {
             String spaceNumParam = GET_PARAMS(arg, "s", "indent=spaces=");
@@ -548,12 +556,16 @@ public class AStyle implements ASResource {
         + "    -j  OR  --mode=java\n"
         + "    Indent a Java(TM) source file\n"
         + "\n"
+        + "    -s  OR  -s#  OR  --indent=spaces=#\n"
+        + "    Indent using # spaces per indent. The default is 4 spaces per indent.\n"
+        + "\n"
         + "    -t  OR  -t#  OR  --indent=tab=#\n"
         + "    Indent using tab characters, assuming that each tab is # spaces long.\n"
         + "    The default is 4 spaces per tab.\n"
         + "\n"
-        + "    -s  OR  -s#  OR  --indent=spaces=#\n"
-        + "    Indent using # spaces per indent. The default is 4 spaces per indent.\n"
+        + "    -T  OR  -T#  OR  --force-indent=tab=#\n"
+        + "    Indent using tab characters, assuming that each tab is # spaces long.\n"
+        + "    Force tabs to be used in areas, where AStyle would prefer to use spaces.\n"
         + "\n"
         + "    -C  OR  --indent-classes\n"
         + "    Indent 'class' blocks, so that the inner 'public:', 'protected:' and\n"
@@ -668,9 +680,8 @@ public class AStyle implements ASResource {
         + "\n";
 
 
-    private static void printHelpAndExit() {
+    private static void printHelp() {
         _err.print(HELP);
-        System.exit(1);
     }
 
 

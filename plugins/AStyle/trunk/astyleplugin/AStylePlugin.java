@@ -55,9 +55,11 @@ public class AStylePlugin extends EBPlugin {
 	public void handleMessage(EBMessage message) {
 		if (message instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate) message;
-			if (bu.getWhat() == BufferUpdate.SAVING)
-				if (jEdit.getBooleanProperty("astyleplugin.formatOnSave"))
+			if (bu.getWhat() == BufferUpdate.SAVING) {
+				String formatOnSaveValue = jEdit.getProperty("astyleplugin.formatOnSave");
+				if (formatOnSaveValue.toLowerCase().equals("true"))
 					beautify(bu.getBuffer(), bu.getView(), false);
+			}
 		}
 	}
 
@@ -69,20 +71,19 @@ public class AStylePlugin extends EBPlugin {
 	 * @param view  The view; may be null, if there is no current view.
 	 * @param showErrorDialogs  If true, modal error dialogs will be shown
 	 *        on error. Otherwise, the errors are silently logged. This is
-	 *        used in "beautify on save".
+	 *        used when the property "formatOnSave" is set.
 	 */
 	public static void beautify(Buffer buffer, View view, boolean showErrorDialogs) {
-		// check if the current buffer is editable:
-		if (!buffer.isEditable()) {
-			Log.log(Log.NOTICE, AStylePlugin.class, jEdit.getProperty("astyleplugin.error.isNotEditable.message"));
+		if (buffer.isReadOnly()) {
+			Log.log(Log.NOTICE, AStylePlugin.class, jEdit.getProperty("astyleplugin.error.isReadOnly.message"));
 			if (showErrorDialogs)
-				GUIUtilities.error(view, "astyleplugin.error.isNotEditable", null);
+				GUIUtilities.error(view, "astyleplugin.error.isReadOnly", null);
 			return;
 		}
 
 		// ask, if current mode is not C/C++/Java:
 		String mode = buffer.getMode().getName();
-		if (!(mode.equals("java") || mode.equals("c") || mode.equals("cplusplus"))) {
+		if (!(mode.equals("java") || mode.equals("c") || mode.equals("cplusplus") || mode.equals("c++"))) {
 			if (showErrorDialogs) {
 				int answer = GUIUtilities.confirm(view, "astyleplugin.confirm.mode", null,
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -90,7 +91,7 @@ public class AStylePlugin extends EBPlugin {
 					return;
 			} else {
 				Log.log(Log.NOTICE, AStylePlugin.class, "buffer " + buffer.getName()
-					+ " not beautified, because mode is not 'c', 'cplusplus' or 'java'");
+					+ " not beautified, because mode is not 'c', 'c++', 'cplusplus' or 'java'");
 				return;
 			}
 		}

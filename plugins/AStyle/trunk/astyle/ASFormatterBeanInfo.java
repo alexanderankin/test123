@@ -59,6 +59,12 @@ public class ASFormatterBeanInfo extends SimpleBeanInfo {
         );
 
         addPropertyDescription(
+            "forceTabs",
+            "Enforce Tabs",
+            "Use tabs in areas, where the Beautifier would prefer to use spaces."
+        );
+
+        addPropertyDescription(
             "maxInStatementIndentLength",
             "Max. multi-line statement indent",
             "Maximum indentation between two lines in a multi-line statement."
@@ -140,7 +146,7 @@ public class ASFormatterBeanInfo extends SimpleBeanInfo {
         addPropertyDescription(
             "bracketFormatMode",
             "Bracket format mode",
-            "Choose between ANSI C/C++ style, Java/K&R style or Linux/GNU " +
+            "Choose between ANSI C/C++ style, Java/K&R style or Linux " +
             "style bracket placement or no formatting of brackets.",
             BracketFormatModePropertyEditor.class
         );
@@ -182,7 +188,7 @@ public class ASFormatterBeanInfo extends SimpleBeanInfo {
             "singleStatementsMode",
             "Break multiple statement lines",
             "Whether lines consisting of multiple statements should be " +
-            "breaked into single statement lines."
+            "broken into single statement lines."
         );
 
         addPropertyDescription(
@@ -300,7 +306,7 @@ public class ASFormatterBeanInfo extends SimpleBeanInfo {
 
 
     static {
-        bracketTypeTags[ASResource.BREAK_MODE] = "Gnu / ANSI C/C++";
+        bracketTypeTags[ASResource.BREAK_MODE] = "ANSI C/C++";
         bracketTypeTags[ASResource.ATTACH_MODE] = "Java / K&R";
         bracketTypeTags[ASResource.BDAC_MODE] = "Linux";
         bracketTypeTags[ASResource.NONE_MODE] = "None";

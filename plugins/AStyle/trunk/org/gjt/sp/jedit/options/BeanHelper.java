@@ -34,8 +34,8 @@ import org.gjt.sp.util.Log;
 
 
 /**
- * A utility class to save, load and initialize the properties of a bean
- * to and from jEdit properties.
+ * A utility class to create a bean instance and initialize the properties
+ * of the bean with stored jEdit property values.
  *
  * @author Dirk Moebius (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)
  *

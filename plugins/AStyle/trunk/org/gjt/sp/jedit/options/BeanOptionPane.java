@@ -41,12 +41,28 @@ import org.gjt.sp.util.Log;
 
 
 /**
+ * A jEdit <code>OptionPane</code> for setting the properties of a Java bean.
+ *
+ * The option pane shows a tabular list of property editors for each
+ * bean property:
+ *
+ * <ul>
+ *   <li>A <code>JComboBox</code> with the tag values for a tagged property
+ *       (This includes properties of type <code>boolean</code>, because
+ *       boolean fields have the tags "True" and "False" by default).
+ *   <li>A <code>JButton</code> for a property that has a custom editor.
+ *       Clicking on the button invokes the custom editor.
+ *   <li>A <code>JTextField</code> for all other properties.
+ * </ul>
+ *
  * The following Java bean features are currently not supported:
+ *
  * <ul>
- *   <li>bound/constrained properties
+ *   <li>non-editable properties (will not be shown)
+ *   <li>bound/constrained properties (other values may be entered)
  *   <li>properties with attribute names
- *   <li>non-editable properties
  * <ul>
+ *
  * @author Dirk Moebius (<a href="mailto:dmoebius@gmx.net">dmoebius@gmx.net</a>)
  * @see java.beans.BeanInfo
  * @see java.beans.PropertyDescriptor
@@ -126,11 +142,7 @@ public class BeanOptionPane extends AbstractOptionPane {
 		helpArea.setForeground(HELP_FOREGROUND);
 		helpArea.setText("");
 
-		JLabel header = new JLabel(jEdit.getProperty("options." + super.getName() + ".helpArea.title"));
-		header.setFont(HELP_FONT);
-
 		JScrollPane scrHelpArea = new JScrollPane(helpArea);
-		scrHelpArea.setColumnHeaderView(header);
 		scrHelpArea.setPreferredSize(new Dimension(300, 50));
 
 		return scrHelpArea;
@@ -286,12 +298,7 @@ public class BeanOptionPane extends AbstractOptionPane {
 
 	private static final Color HELP_BACKGROUND = UIManager.getColor("Label.background");
 	private static final Color HELP_FOREGROUND = UIManager.getColor("Label.foreground");
-	private static final Font  HELP_FONT;
-
-	static {
-		Font labelFont = UIManager.getFont("Label.font");
-		HELP_FONT = new Font(labelFont.getName(), labelFont.getStyle(), 11);
-	}
+	private static final Font  HELP_FONT = new Font(UIManager.getFont("Label.font").getName(), UIManager.getFont("Label.font").getStyle(), 11);
 
 
 	/**
