@@ -9,7 +9,7 @@ plugin.AntFarmPlugin.depend.0=jdk 1.1
 plugin.AntFarmPlugin.depend.1=jedit 03.02.06.00
 plugin.AntFarmPlugin.depend.2=plugin EditBusPlugin 1.0.1
 plugin.AntFarmPlugin.depend.3=plugin ErrorListPlugin 1.1
-plugin.AntFarmPlugin.depend.4=plugin xml.XMLPlugin 0.3
+plugin.AntFarmPlugin.depend.4=plugin xml.XmlPlugin 0.3
 
 # Menu item label
 antfarm.label=Ant Farm
