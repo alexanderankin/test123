@@ -808,7 +808,9 @@ public class ErrorList extends JPanel implements EBComponent,
 		static
 		{
 			plainFont = UIManager.getFont("Tree.font");
-			boldFont = new Font(plainFont.getName(),Font.BOLD,plainFont.getSize());
+			if(plainFont == null)
+				plainFont = jEdit.getFontProperty("metal.secondary.font");
+			boldFont = plainFont.deriveFont(Font.BOLD);
 		} //}}}
 	} //}}}
 

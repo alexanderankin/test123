@@ -384,7 +384,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 
 		if(message.getWhat() == BufferUpdate.LOADED)
 		{
-			ArrayList list = (ArrayList)errors.get(buffer.getPath());
+			ArrayList list = (ArrayList)errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
 				for(int i = 0; i < list.size(); i++)
@@ -396,7 +396,7 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		}
 		else if(message.getWhat() == BufferUpdate.CLOSED)
 		{
-			ArrayList list = (ArrayList)errors.get(buffer.getPath());
+			ArrayList list = (ArrayList)errors.get(buffer.getSymlinkPath());
 			if(list != null)
 			{
 				for(int i = 0; i < list.size(); i++)
@@ -439,6 +439,8 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 			{
 				this.path = MiscUtilities.constructPath(System
 					.getProperty("user.dir"),path);
+				this.path = MiscUtilities.resolveSymlinks(
+					this.path);
 			}
 
 			this.lineIndex = lineIndex;
@@ -607,9 +609,6 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		 */
 		void openNotify(Buffer buffer)
 		{
-			if(!buffer.getPath().equals(path))
-				return;
-
 			this.buffer = buffer;
 			int lineIndex = Math.min(this.lineIndex,
 				buffer.getLineCount() - 1);
@@ -639,9 +638,6 @@ public class DefaultErrorSource extends ErrorSource implements EBComponent
 		 */
 		void closeNotify(Buffer buffer)
 		{
-			if(!buffer.getPath().equals(path))
-				return;
-
 			this.buffer = null;
 			linePos = null;
 			startPos = null;

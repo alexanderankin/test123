@@ -306,7 +306,8 @@ public class ErrorListPlugin extends EBPlugin
 			for(int i = 0; i < errorSources.length; i++)
 			{
 				ErrorSource source = errorSources[i];
-				if(source.getFileErrors(buffer.getPath()) != null)
+				if(source.getFileErrors(
+					buffer.getSymlinkPath()) != null)
 				{
 					addErrorOverview(textArea);
 					return;
