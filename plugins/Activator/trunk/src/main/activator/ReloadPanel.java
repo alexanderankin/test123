@@ -3,6 +3,7 @@ package activator;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import java.util.*;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.*;
@@ -11,45 +12,83 @@ import common.gui.actions.*;
 import common.gui.util.*;
 
 public class ReloadPanel extends JPanel {
-	ArrayList jars = new ArrayList();
+	private static ReloadPanel instance;
+	java.util.List<Entry> plugins = new ArrayList<Entry>();
 	ConstraintFactory cf = new ConstraintFactory();
 	
-	public ReloadPanel() {
+	private ReloadPanel() {
 		setLayout(new GridBagLayout());
+		setBackground(Color.GRAY);
 		update();
 	}
 	
-	public void update() {
-		removeAll();
-		PluginJAR[] jarArray = jEdit.getPluginJARs();
-		for (int i = 0; i < jarArray.length; i++) {
-			jars.add(jarArray[i]);
+	public static ReloadPanel getInstance() {
+		if (instance == null) {
+			instance = new ReloadPanel();
 		}
-		
+		return instance;
+	}
+	
+	public void update() {
+		plugins.removeAll(plugins);
+		removeAll();
+		for (PluginJAR pj : jEdit.getPluginJARs()) {
+			if (pj.getPlugin() != null) {
+				plugins.add(new Entry(pj));
+			}
+		}
+		Collections.sort(plugins,new EntryComparator());
 		int row = 0;
-		for (int i = 0; i < jars.length; i++) {
-			if (jars[i].getPlugin() == null) {
+		PluginJAR jar;
+		for (Entry plugin : plugins) {
+			jar = plugin.getJar();
+			if (jar.getPlugin() == null) {
 				continue;
 			}
-			if (jars[i].getPlugin() instanceof EditPlugin.Deferred) {
-				add(new JLabel(jars[i].getFile().getName()),cf.buildConstraints(0,row,1,1));
+			JLabel name;
+			if (jar.getPlugin() instanceof EditPlugin.Deferred) {
+				name = new JLabel(jar.getFile().getName());
 			} else {
-				add(new JLabel(jEdit.getProperty("plugin."+jars[i].getPlugin().getClassName()+".name","No name property")),cf.buildConstraints(0,row,1,1));
+				name = new JLabel(jEdit.getProperty("plugin."+jar.getPlugin().getClassName()+".name","No name property"));
 			}
-			add(new JButton(new Reload(jars[i])),cf.buildConstraints(1,row,1,1));
+			String status = PluginManager.getPluginStatus(jar);
+			if (status.equals("Loaded")) {
+				name.setForeground(Color.YELLOW);
+			} else if (status.equals("Activated")) {
+				name.setForeground(Color.GREEN);
+			} else if (status.equals("Error")) {
+				name.setForeground(Color.RED);
+			}
+			add(name,cf.buildConstraints(0,row,1,1));
+			add(new JButton(new Reload(jar)),cf.buildConstraints(1,row,1,1));
 			row++;
 		}
 	}
 }
 
-class Reload extends CustomAction {
+class Entry {
 	private PluginJAR jar;
-	public Reload(PluginJAR jar) {
-		super("Reload");
-		this.jar=jar;
+	public Entry(PluginJAR jar) {
+		this.jar = jar;
 	}
 	
-	public void actionPerformed(ActionEvent event) {
-		Log.log(Log.DEBUG,this,"Reloading "+jar);
+	public String toString() {
+		if (jar.getPlugin() instanceof EditPlugin.Deferred) {
+			return jar.getFile().getName();
+		} else {
+			return jEdit.getProperty("plugin."+jar.getPlugin().getClassName()+".name","No name property");
+		}
+	}
+	
+	public PluginJAR getJar() {
+		return jar;
+	}
+}
+
+class EntryComparator implements Comparator {
+	public int compare(Object alpha, Object beta) {
+		Entry a = (Entry) alpha;
+		Entry b = (Entry) beta;
+		return a.toString().compareTo(b.toString());
 	}
 }

@@ -7,6 +7,6 @@
 		new activator.ActivationPanel();
 	</DOCKABLE>
 	<DOCKABLE NAME="activator.reloader">
-		new javax.swing.JScrollPane(new activator.ReloadPanel());
+		new javax.swing.JScrollPane(activator.ReloadPanel.getInstance());
 	</DOCKABLE>
 </DOCKABLES>

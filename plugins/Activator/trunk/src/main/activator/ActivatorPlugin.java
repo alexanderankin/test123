@@ -14,9 +14,23 @@ import org.gjt.sp.util.*;
  * @author     mace
  * @version    $Revision$ $Date$ by $Author$
  */
-public class ActivatorPlugin extends EditPlugin {
+public class ActivatorPlugin extends EBPlugin {
 	public final static String NAME = "activator";
 	public final static String OPTION_PREFIX = "options.activator.";
 	public final static String PROPERTY_PREFIX = "plugin.activator.";
+	
+	public void handleMessage(EBMessage msg) {
+		if (msg instanceof PluginUpdate) {
+			ReloadPanel.getInstance().update();
+		}
+	}
+	
+	public void addNotify() {
+		EditBus.addToBus(this);
+	}
+	
+	public void removeNotify() {
+		EditBus.removeFromBus(this);
+	}
 }
 
