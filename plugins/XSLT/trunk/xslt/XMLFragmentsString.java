@@ -20,7 +20,6 @@
 
 package xslt;
 
-import org.apache.xpath.objects.XObject;
 import org.gjt.sp.jedit.jEdit;
 import org.w3c.dom.Attr;
 import org.w3c.dom.NamedNodeMap;
@@ -48,23 +47,19 @@ public class XMLFragmentsString {
 
 
   /**
-   * Constructs string of XML fragments representing the nodes in the XObject.
-   * @param xObject XObject to be converted to a string of XML fragments.
-   * @throws IllegalStateException if the string is too large.
+   * Constructs string of XML fragments representing the nodes in the node list.
+   * @param NodeList containing nodes to be represented as XML fragments.
+   * @throws IllegalStateException if the generated string becomes too large.
    */
-  public XMLFragmentsString(XObject xObject) throws TransformerException {
-    if(xObject.getType() == XObject.CLASS_NODESET) {
-      NodeList nodelist = xObject.nodelist();
+  public XMLFragmentsString(NodeList nodelist) {
+    for(int i = 0; i < nodelist.getLength(); i++) {
+      Node node = nodelist.item(i);
+      appendNode(node, 0, false);
 
-      for(int i = 0; i < nodelist.getLength(); i++) {
-        Node node = nodelist.item(i);
-        appendNode(node, 0, false);
-
-        if(buffer.length() > MAX_CHARS_IN_FRAGMENTS_STRING.intValue()) {
-          String errorMessage = jEdit.getProperty("XPathTool.result.error.largeXmlFragment");
-          String msg = MessageFormat.format(errorMessage, new Object[]{MAX_CHARS_IN_FRAGMENTS_STRING});
-          throw new IllegalStateException(msg);
-        }
+      if(buffer.length() > MAX_CHARS_IN_FRAGMENTS_STRING.intValue()) {
+        String errorMessage = jEdit.getProperty("XPathTool.result.error.largeXmlFragment");
+        String msg = MessageFormat.format(errorMessage, new Object[]{MAX_CHARS_IN_FRAGMENTS_STRING});
+        throw new IllegalStateException(msg);
       }
     }
   }
