@@ -3,6 +3,7 @@
  * Copyright (C) 2000, 2001 Slava Pestov
  *               1998, 2000 Ollie Rutherfurd
  *               2000, 2001 Andre Kaplan
+ *               1999 Romain Guy
  *
  * The XML plugin is licensed under the GNU General Public License, with
  * the following exception:
@@ -18,7 +19,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Segment;
 import javax.swing.*;
 import java.awt.event.*;
-import java.awt.Point;
+import java.awt.*;
 import java.io.*;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
@@ -70,7 +71,7 @@ public class XmlActions
 
 		// scan backwards looking for <
 		// if we find a >, then assume we're not inside a tag
-		for(int i = caret - 1; i >= 0; i--)
+		for(int i = Math.min(seg.count,caret); i >= 0; i--)
 		{
 			char ch = seg.array[seg.offset + i];
 			if(ch == '>')
@@ -84,7 +85,7 @@ public class XmlActions
 
 		// scan forwards looking for >
 		// if we find a <, then assume we're not inside a tag
-		for(int i = caret; i < seg.count; i++)
+		for(int i = caret + 1; i < seg.count; i++)
 		{
 			char ch = seg.array[seg.offset + i];
 			if(ch == '<')
@@ -128,7 +129,7 @@ public class XmlActions
 		// this is an incredibly brain-dead parser.
 		try
 		{
-loop:			for(;;)
+			loop: for(;;)
 			{
 				switch(st.nextToken())
 				{
@@ -251,6 +252,7 @@ loop:			for(;;)
 	public static void completeKeyTyped(final View view,
 		final int mode, char ch)
 	{
+		EditPane editPane = view.getEditPane();
 		final JEditTextArea textArea = view.getTextArea();
 
 		if(ch != '\0')
@@ -260,15 +262,11 @@ loop:			for(;;)
 
 		if(!(buffer.isEditable()
 			&& completion
-			&& buffer.getBooleanProperty("xml.parse")))
+			&& editPane.getClientProperty(XmlPlugin.ELEMENTS_PROPERTY) != null
+			&& editPane.getClientProperty(XmlPlugin.ENTITIES_PROPERTY) != null))
 		{
 			return;
 		}
-
-		XmlTree tree = (XmlTree)view.getDockableWindowManager()
-			.getDockableWindow(XmlPlugin.TREE_NAME);
-		if(tree == null)
-			return;
 
 		if(timer != null)
 			timer.stop();
@@ -341,7 +339,8 @@ loop:			for(;;)
 
 	public static void completeClosingTag(View view)
 	{
-		JEditTextArea textArea = view.getTextArea();
+		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
 
 		textArea.userInput('/');
 
@@ -349,7 +348,8 @@ loop:			for(;;)
 
 		if(!(buffer.isEditable()
 			&& closeCompletion
-			&& buffer.getBooleanProperty("xml.parse")))
+			&& editPane.getClientProperty(XmlPlugin.ELEMENTS_PROPERTY) != null
+			&& editPane.getClientProperty(XmlPlugin.ENTITIES_PROPERTY) != null))
 		{
 			return;
 		}
@@ -377,27 +377,31 @@ loop:			for(;;)
 
 	public static void insertClosingTagKeyTyped(View view)
 	{
-		JEditTextArea textArea = view.getTextArea();
+		EditPane editPane = view.getEditPane();
+		JEditTextArea textArea = editPane.getTextArea();
+
 		textArea.userInput('>');
 
 		Buffer buffer = view.getBuffer();
 
 		if(!(buffer.isEditable()
 			&& closeCompletionOpen
-			&& buffer.getBooleanProperty("xml.parse")))
+			&& editPane.getClientProperty(XmlPlugin.ELEMENTS_PROPERTY) != null
+			&& editPane.getClientProperty(XmlPlugin.ENTITIES_PROPERTY) != null))
+		{
 			return;
+		}
 
 		int caret = textArea.getCaretPosition();
 
-		insertClosingTag(view);
+		insertClosingTag(textArea);
 
 		textArea.setCaretPosition(caret);
 	}
 
-	public static void insertClosingTag(View view)
+	public static void insertClosingTag(JEditTextArea textArea)
 	{
-		JEditTextArea textArea = view.getTextArea();
-		Buffer buffer = view.getBuffer();
+		Buffer buffer = textArea.getBuffer();
 
 		if(!buffer.isEditable())
 			return;
@@ -414,6 +418,61 @@ loop:			for(;;)
 		String tag = findLastOpenTag(seg);
 		if(tag != null)
 			textArea.setSelectedText("</" + tag + ">");
+	}
+
+	public static void goToPreviousTag(JEditTextArea textArea)
+	{
+		Buffer buffer = textArea.getBuffer();
+
+		try
+		{
+			buffer.getText(0,textArea.getCaretPosition(),seg);
+		}
+		catch(BadLocationException bl)
+		{
+			Log.log(Log.ERROR,XmlActions.class,bl);
+		}
+
+		int caret = textArea.getCaretPosition();
+
+		for(int i = caret - 1; i >= 0; i--)
+		{
+			if(seg.array[seg.offset + i] == '<')
+			{
+				textArea.setCaretPosition(i);
+				return;
+			}
+		}
+
+		textArea.getToolkit().beep();
+	}
+
+	public static void goToNextTag(JEditTextArea textArea)
+	{
+		Buffer buffer = textArea.getBuffer();
+
+		try
+		{
+			buffer.getText(textArea.getCaretPosition(),
+				buffer.getLength(),seg);
+		}
+		catch(BadLocationException bl)
+		{
+			Log.log(Log.ERROR,XmlActions.class,bl);
+		}
+
+		int caret = textArea.getCaretPosition();
+
+		for(int i = caret ; i < seg.count; i--)
+		{
+			if(seg.array[seg.offset + i] == '<')
+			{
+				textArea.setCaretPosition(i);
+				return;
+			}
+		}
+
+		textArea.getToolkit().beep();
 	}
 
 	/*
@@ -499,6 +558,60 @@ loop:			for(;;)
 		return "";
 	}
 
+	public static void removeTags(Buffer buffer)
+	{
+		if(!buffer.isEditable())
+		{
+			Toolkit.getDefaultToolkit().beep();
+			return;
+		}
+
+		int off = 0;
+		int len = buffer.getLength();
+		Segment txt = new Segment();
+		long startTime = System.currentTimeMillis();
+		try
+		{
+			buffer.beginCompoundEdit();
+
+			buffer.getText(off, len, txt);
+			Position tagPos = null;
+			while ((tagPos = findNextTag(txt.array, txt.offset, txt.count)) != null)
+			{
+				buffer.remove(off + (tagPos.off - txt.offset), tagPos.len);
+				off += (tagPos.off - txt.offset);
+				len = buffer.getLength() - off;
+				buffer.getText(off, len, txt);
+			}
+		}
+		catch (BadLocationException ble)
+		{
+			Log.log(Log.ERROR, XmlActions.class, ble);
+		}
+		finally
+		{
+			buffer.endCompoundEdit();
+		}
+		long endTime = System.currentTimeMillis();
+		Log.log(Log.DEBUG, XmlActions.class,
+			"removeTags time: " + (endTime - startTime) + " ms");
+	}
+
+
+	public static class Position
+	{
+		int off = -1;
+		int len = -1;
+
+
+		public Position(int off, int len)
+		{
+			this.off = off;
+			this.len = len;
+		}
+	}
+
+
 	// package-private members
 	static void propertiesChanged()
 	{
@@ -552,5 +665,109 @@ loop:			for(;;)
 		}
 
 		return new String(buf, startIdx, endIdx - startIdx);
+	}
+
+	private static Position findNextTag(char[] array, int off, int len)
+	{
+		char c;
+		int startIdx = -1;
+		boolean commentStart = false;
+		boolean commentEnd   = false;
+		char inQuote = 0x0;
+
+loop:		for (int i = len - 1; i >= 0; i--, off++)
+		{
+			c = array[off];
+
+			// Ignore <<, <>, < followed by a whitespace or ignorable identifier
+			if (startIdx != -1)
+			{
+				if (off == (startIdx + 1))
+				{
+					if ((c == '<')
+						||  (c == '>')
+						||  Character.isISOControl(c)
+						||  Character.isWhitespace(c)
+					)
+					{
+						startIdx = -1;
+						commentStart = commentEnd = false;
+					}
+				}
+			}
+
+			switch (c)
+			{
+			case '<':
+				if (startIdx != -1)
+					continue loop;
+
+				if (inQuote != 0x0)
+					continue loop;
+
+				if (commentStart)
+					continue loop;
+
+				startIdx = off;
+
+				break;
+
+			case '"':
+			case '\'':
+				if (startIdx == -1)
+					continue loop;
+
+				if (commentStart)
+					continue loop;
+
+				if (inQuote == c)
+					inQuote = 0x0;
+				else if (inQuote == 0x0)
+					inQuote = c;
+				else ; // inQuote != c : do nothing
+
+				break;
+
+			case '>':
+				if (startIdx == -1)
+					continue loop;
+
+				if (inQuote != 0x0)
+					continue loop;
+
+				if (commentStart)
+				{
+					if ((off - startIdx) < 6)
+						continue loop;
+					commentEnd = (
+						   (array[off - 1] == '-')
+						&& (array[off - 2] == '-')
+					);
+					if (commentEnd)
+						return new Position(startIdx, (off + 1) - startIdx);
+					else
+						continue loop;
+				}
+
+				return new Position(startIdx, (off + 1) - startIdx);
+				// break;
+
+			default:
+				if (!commentStart && (off == (startIdx + 3)))
+				{
+					commentStart = (
+						   (array[startIdx + 1] == '!')
+						&& (array[startIdx + 2] == '-')
+						&& (array[startIdx + 3] == '-')
+					);
+				}
+				break;
+			}
+		}
+
+		if (commentStart)
+			return new Position(startIdx, off - startIdx);
+		else
+			return null;
 	}
 }

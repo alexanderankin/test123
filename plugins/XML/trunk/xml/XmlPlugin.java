@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
+import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 
 public class XmlPlugin extends EBPlugin
@@ -57,6 +58,7 @@ public class XmlPlugin extends EBPlugin
 		OptionGroup grp = new OptionGroup("xml");
 		grp.addOptionPane(new GeneralOptionPane());
 		grp.addOptionPane(new CompletionOptionPane());
+		grp.addOptionPane(new TagHighlightOptionPane());
 		dialog.addOptionGroup(grp);
 	}
 
@@ -77,10 +79,43 @@ public class XmlPlugin extends EBPlugin
 					cmsg.getView()));
 			}
 		}
+		else if(msg instanceof EditPaneUpdate)
+		{
+			EditPaneUpdate epu = (EditPaneUpdate)msg;
+			EditPane editPane = epu.getEditPane();
+
+			if(epu.getWhat() == EditPaneUpdate.CREATED)
+			{
+				JEditTextArea textArea = editPane.getTextArea();
+				TextAreaPainter textAreaPainter = textArea.getPainter();
+
+				TagHighlight tagHighlight =
+					(TagHighlight)TagHighlight.addHighlightTo(editPane);
+
+				textAreaPainter.addCustomHighlight(tagHighlight);
+			}
+			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
+				TagHighlight.removeHighlightFrom(editPane);
+			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+				TagHighlight.bufferChanged(editPane);
+		}
+		else if(msg instanceof BufferUpdate)
+		{
+			BufferUpdate bu = (BufferUpdate)msg;
+			Buffer buffer = bu.getBuffer();
+
+			if(bu.getWhat() == BufferUpdate.CREATED)
+				TagHighlight.bufferCreated(buffer);
+			else if(bu.getWhat() == BufferUpdate.LOADED)
+				TagHighlight.bufferLoaded(buffer);
+			else if(bu.getWhat() == BufferUpdate.CLOSED)
+				TagHighlight.bufferClosed(buffer);
+		}
 		else if(msg instanceof PropertiesChanged)
 		{
-			EntityManager.propertiesChanged();
 			XmlActions.propertiesChanged();
+			EntityManager.propertiesChanged();
+			TagHighlight.propertiesChanged();
 		}
 	}
 }

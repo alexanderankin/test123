@@ -20,18 +20,19 @@ CDATA DSSSL> ]>
 
 ;; make these pretty
 (element guibutton ($bold-seq$))
+(element guilabel ($bold-seq$))
 (element guimenu ($bold-seq$))
 (element guimenuitem ($bold-seq$))
 (element guisubmenu ($bold-seq$))
 (element application ($bold-seq$))
 (element glossterm ($bold-seq$))
-;;(element (funcdef function) ($bold-seq$))
+(element (funcdef function) ($bold-seq$))
 
 (element void (process-children))
 
-;;(element funcsynopsis (process-children))
+(element funcsynopsis (process-children))
 
-;;(define %funcsynopsis-style% #f)
+(define %funcsynopsis-style% #f)
 
 ;; abstract is used to tag data, not to render output
 (element (listitem abstract) (process-children))

@@ -401,7 +401,7 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 
 	class MouseHandler extends MouseAdapter implements MouseMotionListener
 	{
-		public void mouseClicked(MouseEvent evt)
+		public void mousePressed(MouseEvent evt)
 		{
 			TreePath path = tree.getPathForLocation(
 				evt.getX(),evt.getY());
@@ -418,13 +418,11 @@ public class XmlTree extends JPanel implements DockableWindow, EBComponent
 				JEditTextArea textArea = view.getTextArea();
 
 				textArea.setCaretPosition(tag.start.getOffset());
-
-				// Invalid tags and parse errors have no end pos
-				if(tag.end != null)
+				if(evt.getClickCount() == 2)
 				{
-					textArea.setSelection(
-						new Selection.Range(tag.start
-						.getOffset(),tag.end.getOffset()));
+					// counter default double-click action
+					tree.expandPath(path);
+					XmlActions.showEditTagDialog(view);
 				}
 			}
 		}

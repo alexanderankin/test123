@@ -30,7 +30,7 @@
 	<!-- normal actions -->
 	<ACTION NAME="xml-close-tag">
 		<CODE>
-			xml.XmlActions.insertClosingTag(view);
+			xml.XmlActions.insertClosingTag(textArea);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-edit-tag">
@@ -61,12 +61,32 @@
 			return buffer.getBooleanProperty("xml.keystroke-parse");
 		</IS_SELECTED>
 	</ACTION>
+	<ACTION NAME="xml-match-tag">
+		<CODE>
+			xml.MatchTag.matchTag(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-next-tag">
+		<CODE>
+			xml.XmlActions.goToNextTag(textArea);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-prev-tag">
+		<CODE>
+			xml.XmlActions.goToPreviousTag(textArea);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="xml-parse">
 		<CODE>
 			view.getDockableWindowManager()
 				.addDockableWindow("xml-tree");
 			view.getDockableWindowManager()
 				.getDockableWindow("xml-tree").parse(true);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-remove-tags">
+		<CODE>
+			xml.XmlActions.removeTags(buffer);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-tree">

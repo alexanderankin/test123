@@ -1,21 +1,20 @@
-- double click on tag in tree opens edit tag dialog box
-- single click on tag in tree positions caret inside the tag but
-  doesn't create a selection
-- initial setup wizard when xml file opened for the first time
-- document: id resolving, xml insert, edit tag, tag/entity completion
++ for version 0.4
+
+- document: id resolving, xml insert, edit tag, tag/entity completion,
+  tag commands, tag highlight
 - entity manager option pane
 - different icons for internal/external entities
 - different icons for empty elements
-- DTD cache
-- root document property, proper handling of tags in nested files
 - Edit tag dialog box: parse/unparse entities automatically
 - entity conversion
+- load tag lists, entity lists for HTML/XSL
+
++ for version 0.5
+
+- initial setup wizard when xml file opened for the first time
+- DTD cache
+- root document property, proper handling of tags in nested files
 - All/1/2/3/4 buttons in XML tree?
-- borrow tags list handler code from Jext
-- does not require XML tree to be open for HTML or XSL files
-- move some HTML plugin features (tag commands, tag highlight) to XML
-  plugin
-- entitylist for HTML/XSL
 - 'new xml file' command
 - handle parsing open buffers better
 - OASIS catalog support

@@ -29,7 +29,7 @@
 
 	<Remap
 		SystemID="commando.dtd"
-		HRef="jeditresource:Console.jar!/commando/commando.dtd" />
+		HRef="jeditresource:Console.jar!/console/commando/commando.dtd" />
 
 	<Remap
 		SystemID="xcatalog.dtd"

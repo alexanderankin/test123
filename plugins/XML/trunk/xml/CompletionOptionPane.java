@@ -31,7 +31,7 @@ public class CompletionOptionPane extends AbstractOptionPane
 	protected void _init()
 	{
 		addComponent(complete = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.complete")));
+			"options.xml.complete.complete")));
 		complete.setSelected(jEdit.getBooleanProperty("xml.complete"));
 		complete.addActionListener(new ActionHandler());
 
@@ -45,7 +45,7 @@ public class CompletionOptionPane extends AbstractOptionPane
 			delayValue = 500;
 		}
 
-		addComponent(jEdit.getProperty("options.xml.general.complete-delay"),
+		addComponent(jEdit.getProperty("options.xml.complete.complete-delay"),
 			completeDelay = new JSlider(0,1500,delayValue));
 
 		Hashtable labelTable = new Hashtable();
@@ -62,13 +62,13 @@ public class CompletionOptionPane extends AbstractOptionPane
 		completeDelay.setEnabled(complete.isSelected());
 
 		addComponent(closeComplete = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.close-complete")));
+			"options.xml.complete.close-complete")));
 		closeComplete.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete"));
 		closeComplete.addActionListener(new ActionHandler());
 
 		addComponent(closeCompleteOpen = new JCheckBox(jEdit.getProperty(
-			"options.xml.general.close-complete-open")));
+			"options.xml.complete.close-complete-open")));
 		closeCompleteOpen.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete-open"));
 		closeCompleteOpen.addActionListener(new ActionHandler());
