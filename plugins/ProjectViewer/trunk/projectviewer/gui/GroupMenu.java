@@ -20,13 +20,16 @@ package projectviewer.gui;
 
 //{{{ Imports
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
 
 import javax.swing.filechooser.FileFilter;
 import javax.swing.filechooser.FileSystemView;
@@ -35,6 +38,10 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
 import projectviewer.ProjectViewer;
+
+import projectviewer.action.EditGroupAction;
+import projectviewer.action.EditProjectAction;
+
 import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
@@ -46,9 +53,9 @@ import projectviewer.vpt.VPTRoot;
  *	letting the user choose them and execute some action when the
  *	item is selected.
  *
- *	<p>This menu should be created every time it needs to be used, since
- *	it will get information from VPTRoot and will not be updated after
- *	creation of the instance.</p>
+ *	<p>Users should call the {@link #populate(Container, VPTGroup, View) populate()}
+ *	method when some update to the project/group tree has occurred, since this
+ *	class does not take care of that automatically.</p>
  *
  *  @author		Marcelo Vanzin
  *	@version	$Id$
@@ -58,48 +65,32 @@ public class GroupMenu extends JMenu implements ActionListener {
 
 	//{{{ Private members
 	private boolean showProjects;
+	private boolean showCreate;
 	private Object ignore;
 	private ActionListener action;
-	private ButtonGroup activeNodeGrop;
+	private ButtonGroup activeNodeGroup;
 	//}}}
 
-	//{{{ +GroupMenu(String, boolean, ActionListener) : <init>
+	//{{{ +GroupMenu(String, boolean, boolean, ActionListener) : <init>
 	/**
-	 *	Builds the menu: The options have the following effect:
+	 *	A JMenu implementation that populates the items according to the
+	 *	object tree under the root node of the projects (VPTRoot).
 	 *
-	 *	<ul>
-	 *		<li>showProjects: if true, will show projecs also, not only
-	 *		groups. Projects will be shown as radio buttons, and all of
-	 *		them will be part of the same button group. The current
-	 *		selected node in the given view, if any, will be shown
-	 *		as being selected. When this is true, the group selectors
-	 *		will also be shown as radio buttons.</li>
-	 *
-	 *		<li>ignore: if not null, the group that is equal to the given
-	 *		object will not be shown.</li>
-	 *
-	 *		<li>al: the ActionListener to be added to each menu item. It's
-	 *		not actually going to be added to the menu items; this class will
-	 *		process the event and modify the source to be the actual VPTNode
-	 *		instance instead of the JMenuItem/JRadioButtonMenuItem, and
-	 *		then feed it to the given action listener..</li>
-	 *	</ul>
-	 *
-	 *	@param	label	The label for the menu.
+	 *	@param	label	The label for the menu (it's safe to pass null if
+	 *					you're gonna use this to populate another container).
 	 *	@param	showProjects	Whether to show projects in the menu or not.
+	 *	@param	showCreate		Whether to show a "Create project here" entry
+	 *							in the menu. If this entry is selected by the
+	 *							user, a String will be the source of the
+	 *							ActionEvent instead of a VPTNode.
 	 *	@param	al		The ActionListener to call when a menu item is clicked.
 	 */
-	public GroupMenu(String label, boolean showProjects, ActionListener al) {
+	public GroupMenu(String label, boolean showProjects, boolean showCreate,
+						ActionListener al) {
 		super(label);
 		this.action = al;
 		this.showProjects = showProjects;
-		if (showProjects)
-			activeNodeGrop = new ButtonGroup();
-	} //}}}
-
-	//{{{ +GroupMenu(String, Object, View, ActionListener) : <init>
-	public GroupMenu(String label, Object ignore, ActionListener al) {
-		this(label, false, al);
+		this.showCreate = showCreate;
 	} //}}}
 
 	//{{{ +setIgnore(VPTNode) : void
@@ -112,18 +103,16 @@ public class GroupMenu extends JMenu implements ActionListener {
 		this.ignore = node;
 	} //}}}
 
-	//{{{ +populate(JMenu, VPTGroup, View) : void
-	/**
-	 *	This method needs to be called before the menu is shown. It clears
-	 *	the menu and re-populates the entries based on what's under the
-	 *	VPTRoot instance.
-	 */
-	public void populate(JMenu menu, VPTGroup grp, View v) {
-		populate(menu, grp, ProjectViewer.getActiveNode(v));
+	//{{{ +populate(Container, VPTGroup, View) : void
+	public void populate(Container menu, VPTGroup grp, View v) {
+		if (showProjects)
+			activeNodeGroup = new ButtonGroup();
+		populate(menu, grp, ProjectViewer.getActiveNode(v),
+					JPopupMenu.Separator.class);
 	} //}}}
 
-	//{{{ -populate(JMenu, VPTGroup, VPTNode) : void
-	private void populate(JMenu menu, VPTGroup grp, VPTNode active) {
+	//{{{ -populate(Container, VPTGroup, VPTNode, Class) : void
+	private void populate(Container menu, VPTGroup grp, VPTNode active, Class separator) {
 		menu.removeAll();
 
 		// add the "select this group" entry
@@ -132,7 +121,7 @@ public class GroupMenu extends JMenu implements ActionListener {
 		if (showProjects) {
 			label = jEdit.getProperty("projectviewer.groupmenu.activate_group",
 							new Object[] { grp.getName() });
-			mi = new GroupRadioMenuItem(grp, label);
+			mi = new NodeRadioMenuItem(grp, label);
 			if (grp == active)
 				mi.setSelected(true);
 		} else {
@@ -151,23 +140,27 @@ public class GroupMenu extends JMenu implements ActionListener {
 			VPTNode n = (VPTNode) grp.getChildAt(i);
 			if (n != ignore && n.isGroup()) {
 				if (!addedGrpSep) {
-					menu.addSeparator();
+					try {
+						menu.add((JSeparator)separator.newInstance());
+					} catch (Exception e) {
+						// not gonna happen
+					}
 					addedGrpSep = true;
 				}
 				JMenu sub = new JMenu(n.getName());
-				populate(sub, (VPTGroup)n, active);
+				populate(sub, (VPTGroup)n, active, separator);
 				if (sub.getMenuComponentCount() == 1) {
 					// instead of a menu, show a menu item.
 					if (showProjects) {
 						label = jEdit.getProperty("projectviewer.groupmenu.activate_group",
 							new Object[] { n.getName() });
-						mi = new GroupRadioMenuItem(n, label);
-						activeNodeGrop.add(mi);
+						mi = new NodeRadioMenuItem(n, label);
+						activeNodeGroup.add(mi);
 						if (n == active)
 							mi.setSelected(true);
 					} else {
 						label = n.getName();
-						mi = new GroupMenuItem(n, label);
+						mi = new GroupMenuItem((VPTGroup)n, label);
 					}
 					mi.addActionListener(this);
 					menu.add(mi);
@@ -176,53 +169,110 @@ public class GroupMenu extends JMenu implements ActionListener {
 				}
 			} else if (showProjects && n.isProject()) {
 				if (!addedPrjSep) {
-					menu.addSeparator();
+					try {
+						menu.add((JSeparator)separator.newInstance());
+					} catch (Exception e) {
+						// not gonna happen
+					}
 					addedPrjSep = true;
 				}
-				mi = new GroupRadioMenuItem(n, n.getName());
-				activeNodeGrop.add(mi);
+				mi = new NodeRadioMenuItem(n, n.getName());
+				activeNodeGroup.add(mi);
 				if (n == active)
 					mi.setSelected(true);
 				mi.addActionListener(this);
 				menu.add(mi);
 			}
 		}
+
+		// add the "create group" if requested
+		if (showCreate) {
+			try {
+				menu.add((JSeparator)separator.newInstance());
+			} catch (Exception e) {
+				// not gonna happen
+			}
+
+			label= jEdit.getProperty("projectviewer.groupmenu.create_project");
+			mi = new GroupMenuItem(grp, label, true, false, false);
+			mi.addActionListener(this);
+			menu.add(mi);
+
+			label= jEdit.getProperty("projectviewer.groupmenu.create_group");
+			mi = new GroupMenuItem(grp, label, false, true, false);
+			mi.addActionListener(this);
+			menu.add(mi);
+
+			if (grp != VPTRoot.getInstance()) {
+				label= jEdit.getProperty("projectviewer.action.edit_group");
+				mi = new GroupMenuItem(grp, label, false, false, true);
+				mi.addActionListener(this);
+				menu.add(mi);
+			}
+		}
+
 	} //}}}
 
 	//{{{ +actionPerformed(ActionEvent) : void
 	public void actionPerformed(ActionEvent ae) {
 		if (action != null) {
 			Object o = ae.getSource();
-			VPTNode sel = null;
-			if (o instanceof GroupMenuItem)
-				sel = ((GroupMenuItem)o).node;
-			else if (o instanceof GroupRadioMenuItem)
-				sel = ((GroupRadioMenuItem)o).node;
-			ae.setSource(sel);
-			action.actionPerformed(ae);
+			if (o instanceof NodeRadioMenuItem) {
+				ae.setSource(((NodeRadioMenuItem)o).node);
+				action.actionPerformed(ae);
+			} else if (o instanceof GroupMenuItem) {
+				GroupMenuItem g = (GroupMenuItem) o;
+				if (g.isAddProject) {
+					EditProjectAction epa = new EditProjectAction(true, g.node);
+					epa.actionPerformed(null);
+				} else if (g.isAddGroup || g.isEditGroup) {
+					EditGroupAction ega =
+						new EditGroupAction(g.isAddGroup, g.node,
+								jEdit.getActiveView());
+					ega.actionPerformed(null);
+				} else {
+					ae.setSource(g.node);
+					action.actionPerformed(ae);
+				}
+			}
 		}
 	} //}}}
 
-	//{{{ -class GroupMenuItem
-	private class GroupMenuItem extends JMenuItem {
+	//{{{ -class _GroupMenuItem_
+	private static class GroupMenuItem extends JMenuItem {
 
-		private VPTNode node;
+		private VPTGroup node;
+		private boolean isAddProject;
+		private boolean isAddGroup;
+		private boolean isEditGroup;
 
-		//{{{ +GroupMenuItem(VPTNode, String) : <init>
-		public GroupMenuItem(VPTNode node, String label) {
+		//{{{ +GroupMenuItem(VPTGroup, String) : <init>
+		public GroupMenuItem(VPTGroup node, String label) {
+			this(node, label, false, false, false);
+		} //}}}
+
+		//{{{ +GroupMenuItem(VPTGroup, String, boolean, boolean, boolean) : <init>
+		public GroupMenuItem(VPTGroup node,
+								String label,
+								boolean isAddProject,
+								boolean isAddGroup,
+								boolean isEditGroup) {
 			super(label);
 			this.node = node;
+			this.isAddProject = isAddProject;
+			this.isAddGroup = isAddGroup;
+			this.isEditGroup = isEditGroup;
 		} //}}}
 
 	} //}}}
 
-	//{{{ -class GroupRadioMenuItem
-	private class GroupRadioMenuItem extends JRadioButtonMenuItem {
+	//{{{ -class _NodeRadioMenuItem_
+	private static class NodeRadioMenuItem extends JRadioButtonMenuItem {
 
 		private VPTNode node;
 
-		//{{{ +GroupRadioMenuItem(VPTNode, String) : <init>
-		public GroupRadioMenuItem(VPTNode node, String label) {
+		//{{{ +NodeRadioMenuItem(VPTNode, String) : <init>
+		public NodeRadioMenuItem(VPTNode node, String label) {
 			super(label);
 			this.node = node;
 		} //}}}

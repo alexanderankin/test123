@@ -148,12 +148,9 @@ public class ProjectPropertiesPane extends AbstractOptionPane implements ActionL
 			}
 		} else if (ae.getSource() == chooseGroup) {
 			if (groupPopupMenu == null) {
-				String label = jEdit.getProperty("projectviewer.project.options.choose_group");
-				GroupMenu gm = new GroupMenu(label, null, this);
-				gm.populate(gm, VPTRoot.getInstance(), jEdit.getActiveView());
-
+				GroupMenu gm = new GroupMenu(null, false, false, this);
 				groupPopupMenu = new JPopupMenu();
-				groupPopupMenu.add(gm);
+				gm.populate(groupPopupMenu, VPTRoot.getInstance(), jEdit.getActiveView());
 			}
 
 			Point p = chooseGroup.getLocation();

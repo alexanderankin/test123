@@ -74,7 +74,7 @@ public final class PVMenuProvider implements DynamicMenuProvider,
 		GroupMenu pMenu;
 		if (menu.getItemCount() == 0) {
 			pMenu = new GroupMenu(jEdit.getProperty("projectviewer_projects_menu.label"),
-						true, this);
+						true, true, this);
 
 			menu.add(pMenu);
 			Component[] others = GUIUtilities.loadMenu("projectviewer.menu")
