@@ -5,22 +5,10 @@
 <ACTIONS>
     <ACTION NAME="white-space.toggle-block-highlight">
         <CODE>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return; }
-
-            model.getBlockHighlight().toggleEnabled();
-
-            whitespace.BlockHighlight.updateTextAreas(buffer);
+            whitespace.WhiteSpaceActions.toggleBlockHighlight(buffer);
         </CODE>
         <IS_SELECTED>
-            model = buffer.getProperty(
-                whitespace.WhiteSpaceModel.MODEL_PROPERTY
-            );
-            if (model == null) { return false; }
-
-            return model.getBlockHighlight().isEnabled();
+            return whitespace.WhiteSpaceActions.isBlockHighlightSelected(buffer);
         </IS_SELECTED>
     </ACTION>
 
@@ -307,3 +295,4 @@
         </IS_SELECTED>
     </ACTION>
 </ACTIONS>
+
