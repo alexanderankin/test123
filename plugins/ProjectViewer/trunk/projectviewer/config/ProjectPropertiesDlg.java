@@ -88,8 +88,12 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 		if (dialog.getResult() == OK) {
 			ProjectManager.getInstance().sortProjectList();
 			owner.refresh();
+			
 			if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-				owner.getCurrentProject().save();
+			 Project currProj = owner.getCurrentProject();	
+			// Matthew Payne: must test for null ie can't do this if there is no current project
+			if (currProj != null)
+					currProj.save();
 			}
 		}
 		
@@ -211,7 +215,8 @@ public class ProjectPropertiesDlg extends JDialog implements ActionListener {
 						JOptionPane.ERROR_MESSAGE
 					);
 					return;
-				}
+				
+					   }
 			}
 				
 			projRoot.setText(root);
