@@ -29,16 +29,12 @@ import java.io.File;
 import java.io.Writer;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.SAXException;
-import org.xml.sax.helpers.DefaultHandler;
+import com.microstar.xml.XmlParser;
+import com.microstar.xml.HandlerBase;
 
 import org.gjt.sp.util.Log;
 
@@ -147,13 +143,11 @@ public final class ProjectManager {
 
 		// OK, let's parse the config file
 		try {
-			SAXParserFactory spf = SAXParserFactory.newInstance();
-			SAXParser parser = spf.newSAXParser();
-			parser.parse(cfg, new PVSAXHandler());
-		} catch (SAXException se) {
-			Log.log(Log.ERROR, this, se);
-		} catch (ParserConfigurationException pce) {
-			Log.log(Log.ERROR, this, pce);
+			XmlParser parser = new XmlParser();
+			parser.setHandler(new PVConfigHandler());
+			parser.parse(null, null, new InputStreamReader(cfg));
+		} catch (Exception e) {
+			Log.log(Log.ERROR, this, e);
 		}
 
 		// Projects loaded, add all of them to the root node
@@ -285,11 +279,10 @@ public final class ProjectManager {
 			synchronized (e) {
 				if (!e.isLoaded) {
 					if (e.fileName != null) {
-						try {
-							ProjectPersistenceManager.load(e.project, e.fileName);
+						if (ProjectPersistenceManager.load(e.project, e.fileName) != null) {
 							e.isLoaded = true;
-						} catch (IOException ioe) {
-							Log.log(Log.ERROR, this, ioe);
+						} else {
+							Log.log(Log.WARNING, this, "Error loading project.");
 						}
 					} else {
 						Log.log(Log.WARNING, this, "Shouldn't reach this statement!");
@@ -387,19 +380,26 @@ public final class ProjectManager {
 
 	//{{{ PVSAXHandler class
 	/**	SAX handler that takes care of reading the configuration file. */
-	private class PVSAXHandler extends DefaultHandler {
+	private class PVConfigHandler extends HandlerBase {
+
+		private HashMap attrs = new HashMap();
+
+		//{{{ attribute(String, String, boolean) method
+		public void attribute(String name, String value, boolean specified) {
+			attrs.put(name, value);
+		} //}}}
 
 		//{{{ startElement() method
 		/** Reads "project" elements and adds them to the list. */
-		public void startElement(String uri, String localName, String qName,
-									Attributes attributes) throws SAXException {
+		public void startElement(String qName) {
 			if (qName.equals(PROJECT_ELEMENT)) {
-				String pName = attributes.getValue(PRJ_NAME);
+				String pName = (String) attrs.get(PRJ_NAME);
 				Entry e = new Entry();
-				e.fileName = attributes.getValue(PRJ_FILE);
+				e.fileName = (String) attrs.get(PRJ_FILE);
 				e.isLoaded = false;
 				e.project = new VPTProject(pName);
 				projects.put(pName, e);
+				attrs.clear();
 			} else if (!qName.equals(PROJECT_ROOT)) {
 				Log.log(Log.WARNING, this, "Unknown node in config file: " + qName);
 			}

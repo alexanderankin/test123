@@ -18,10 +18,9 @@
  */
 package projectviewer.persist;
 
+import java.util.Map;
 import java.io.Writer;
 import java.io.IOException;
-
-import org.xml.sax.Attributes;
 
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
@@ -34,10 +33,10 @@ import projectviewer.vpt.VPTProject;
  *	@version	$Id$
  */
 public class OpenFileNodeHandler extends NodeHandler {
-	
+
 	private final static String NODE_NAME	= "open-file";
 	private final static String PATH_ATTR	= "path";
-	
+
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
 	 *	when loading configuration data.
@@ -53,12 +52,12 @@ public class OpenFileNodeHandler extends NodeHandler {
 	public Class getNodeClass() {
 		return null;
 	}
-	
+
 	/**
 	 *	Returns whether the node is a child of nome other node or not.
 	 */
-	public boolean isChild() { 
-		return false; 
+	public boolean isChild() {
+		return false;
 	}
 
 	/**
@@ -68,24 +67,24 @@ public class OpenFileNodeHandler extends NodeHandler {
 	public boolean hasChildren() {
 		return false;
 	}
-	
+
 	/**
 	 *	Instantiates a VPTNode based on the information given in the attribute
 	 *	list.
 	 */
-	public VPTNode createNode(Attributes attrs, VPTProject project) {
-		project.addOpenFile(attrs.getValue(PATH_ATTR));
+	public VPTNode createNode(Map attrs, VPTProject project) {
+		project.addOpenFile((String)attrs.get(PATH_ATTR));
 		return null;
 	}
-	
-	/**	
-	 *	Saving property nodes is going to be handled differently by the 
+
+	/**
+	 *	Saving property nodes is going to be handled differently by the
 	 *	persistence manager...
 	 */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
-		
+
 	}
-	
+
 	/**
 	 *	This actually saves the property to the config file...
 	 */
@@ -94,5 +93,5 @@ public class OpenFileNodeHandler extends NodeHandler {
 		writeAttr(PATH_ATTR, path, out);
 		out.write(" />\n");
 	}
-	
+
 }
