@@ -259,7 +259,11 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
   private String getElementNameAndPopulateAttributes(int start, int end, AttributesImpl attributes) throws SAXException {
     int nameEnd = xml.indexOf(' ', start);
 
-    if(nameEnd == -1 || end < nameEnd) {
+    if(nameEnd == -1 || nameEnd > end) {
+      nameEnd = xml.indexOf('\n', start);
+    }
+
+    if(nameEnd == -1 || nameEnd > end) {
       nameEnd = end;
     } else if(nameEnd + 1 != end) {
       char[] chars = xml.substring(nameEnd + 1, end).toCharArray();

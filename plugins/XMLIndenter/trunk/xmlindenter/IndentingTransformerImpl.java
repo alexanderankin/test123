@@ -50,8 +50,8 @@ public class IndentingTransformerImpl extends IndentingTransformer {
   /** current indentation level */
   private int indentLevel = 0;
 
-  /** true if the previous tag was an element start tag */
-  private boolean isStartTagPrevious = false;
+//  /** true if the previous tag was an element start tag */
+//  private boolean isStartTagPrevious = false;
 
   /** true if no newlines in element */
   private boolean isSameLine = false;
@@ -100,7 +100,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     }
 
     super.startElement(uri, localName, qualifiedName, attributes);
-    isStartTagPrevious = true;
+//    isStartTagPrevious = true;
 
     indentLevel++;
 
@@ -127,7 +127,7 @@ public class IndentingTransformerImpl extends IndentingTransformer {
     }
 
     super.endElement(uri, localName, qualifiedName);
-    isStartTagPrevious = false;
+//    isStartTagPrevious = false;
     isLastText = false;
     isSameLine = false;
     isMixedContent = false;
