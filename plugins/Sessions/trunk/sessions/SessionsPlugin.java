@@ -23,12 +23,15 @@
 package sessions;
 
 
+import java.awt.BorderLayout;
 import java.util.Hashtable;
 import java.util.Vector;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.DockableWindowManager;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
@@ -109,6 +112,33 @@ public class SessionsPlugin extends EBPlugin
 	}
 
 
+	public static boolean isBufferListAvailable(View view)
+	{
+		// check if BufferList class is there
+		Object bufferlist = jEdit.getPlugin("bufferlist.BufferListPlugin");
+		if(bufferlist == null)
+			return false;
+
+		// check version, 0.8 is required
+		String version = jEdit.getProperty("plugin.bufferlist.BufferListPlugin.version");
+		if(version == null || version.length() == 0 || MiscUtilities.compareStrings(version, "0.8", true) < 0)
+			return false;
+
+		// check if docked
+		if(getBufferList(view) == null)
+			return false;
+
+		return true;
+	}
+
+
+	private static JComponent getBufferList(View view)
+	{
+		DockableWindowManager mgr = view.getDockableWindowManager();
+		return mgr.getDockable("bufferlist");
+	}
+
+
 	private void handleEditorExit(View view)
 	{
 		// remember the last open session:
@@ -142,16 +172,18 @@ public class SessionsPlugin extends EBPlugin
 
 	private synchronized void addSessionSwitcher(final View view)
 	{
+		// remove old
 		removeSessionSwitcher(view);
+
+		// create new
+		final SessionSwitcher switcher = new SessionSwitcher(view, true);
+		viewSessionSwitchers.put(view, switcher);
 
 		if(jEdit.getBooleanProperty("sessions.switcher.showJEditToolBar", false))
 		{
 			if(view.getToolBar() != null)
 			{
 				// Add to jEdit's default toolbar:
-				final SessionSwitcher switcher = new SessionSwitcher(view, true);
-				viewSessionSwitchers.put(view, switcher);
-
 				// We need to add it later. Cannot add it right now, because if the View
 				// receives the PropertiesChanged message, it removes and recreates
 				// the toolbar. If the View receives the message after _we_ received it,
@@ -166,41 +198,55 @@ public class SessionsPlugin extends EBPlugin
 				});
 			}
 		}
+		else if(jEdit.getBooleanProperty("sessions.switcher.showInsideBufferList", false))
+		{
+			final JComponent bufferlist = getBufferList(view);
+			if(bufferlist != null)
+			{
+				// Add to BufferList:
+				// Again, we need to do this later, because the BufferList component
+				// might not yet be there, especially when jEdit is starting or the
+				// view is being created.
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						bufferlist.add(BorderLayout.NORTH, switcher);
+						bufferlist.revalidate();
+					}
+				});
+			}
+		}
 		else
 		{
-			// Add a _new_ toolbar to the View:
-			SessionSwitcher switcher = new SessionSwitcher(view, false);
+			// Add as a _new_ toolbar to the View, below the main toolbar:
 			view.addToolBar(switcher);
-			viewSessionSwitchers.put(view, switcher);
 		}
 	}
 
 
-	private synchronized void removeSessionSwitcher(final View view)
+	private synchronized void removeSessionSwitcher(View view)
 	{
-		final SessionSwitcher switcher = (SessionSwitcher) viewSessionSwitchers.get(view);
+		SessionSwitcher switcher = (SessionSwitcher) viewSessionSwitchers.get(view);
 		if (switcher != null)
 		{
 			// Try to remove toolbar
 			// (this does nothing if there is no switcher)
 			view.removeToolBar(switcher);
+			viewSessionSwitchers.remove(view);
 
+			// Try to remove from jEdit's default toolbar
+			// (this does nothing if there is no switcher)
 			if(view.getToolBar() != null)
 			{
-				SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-					{
-						// Try to remove from jEdit's default toolbar
-						// (this does nothing if there is no switcher)
-						view.getToolBar().remove(switcher);
-						view.getRootPane().revalidate();
-						viewSessionSwitchers.remove(view);
-					}
-				});
+				view.getToolBar().remove(switcher);
+				view.getRootPane().revalidate();
 			}
-			else
-				viewSessionSwitchers.remove(view);
+
+			// Try to remove from BufferList
+			JComponent bufferlist = getBufferList(view);
+			if(bufferlist != null)
+				bufferlist.remove(switcher);
 		}
 	}
 

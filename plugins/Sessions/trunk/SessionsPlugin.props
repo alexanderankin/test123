@@ -4,17 +4,16 @@
 
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=1.0.0
+plugin.sessions.SessionsPlugin.version=1.0.1
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
-plugin.sessions.SessionsPlugin.depend.0=jdk 1.1
-plugin.sessions.SessionsPlugin.depend.1=jedit 03.02.99.01
+plugin.sessions.SessionsPlugin.depend.0=jedit 04.00.99.00
 
 
 #
 # menu
 #
 
-sessions.menu=session-properties session-manager - session-save session-save-as session-reload
+sessions.menu=session-manager - session-save session-save-as session-reload - session-properties
 sessions.menu.label=Sessions
 
 
@@ -22,11 +21,11 @@ sessions.menu.label=Sessions
 # actions
 #
 
-session-properties.label=Session Properties...
 session-manager.label=Manage Sessions...
 session-save.label=Save Session
 session-save-as.label=Save Session As...
 session-reload.label=Reload Session
+session-properties.label=Session Properties (experimental!)
 
 
 #
@@ -148,7 +147,9 @@ options.sessions.label=Sessions
 options.sessions.switcher.autoSave=Autosave sessions (on switch, rename, close)
 options.sessions.switcher.closeAll=Close all files before switching to new session
 options.sessions.switcher.showToolBar=Show Session Switcher toolbar
-options.sessions.switcher.showJEditToolBar=Add it to JEdit\'s main toolbar
+options.sessions.switcher.showBelowToolBar=Show below jEdit\' main toolbar
+options.sessions.switcher.showJEditToolBar=Show inside JEdit\'s main toolbar
+options.sessions.switcher.showInsideBufferList=Show inside BufferList (>=0.8 required, only if docked)
 options.sessions.switcher.showTitle=Show "Session:" label
 
 

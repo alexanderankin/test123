@@ -27,7 +27,7 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 
 
-public class SessionMessage extends EBMessage.NonVetoable
+public class SessionMessage extends EBMessage
 {
 
 	SessionMessage(EBComponent source, String oldSession, String newSession)

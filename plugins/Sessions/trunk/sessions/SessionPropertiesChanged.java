@@ -36,7 +36,7 @@ import org.gjt.sp.jedit.EBMessage;
  * This message is sent as the last step after the session properties
  * dialog has been closed with "Ok", or applied with "Apply".
  */
-public final class SessionPropertiesChanged extends EBMessage.NonVetoable
+public final class SessionPropertiesChanged extends EBMessage
 {
 
 	SessionPropertiesChanged(EBComponent source, Session session)
