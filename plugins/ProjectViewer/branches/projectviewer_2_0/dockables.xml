@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+<!-- Dockable component definition file for ProjectViewser plugin -->
+<!-- $Id$
+-->
+
+<!-- ProjectViewser dockable windows -->
+
+<DOCKABLES>
+	<DOCKABLE NAME="projectviewer">
+		new projectviewer.ProjectViewer(view);
+	</DOCKABLE>
+</DOCKABLES>
