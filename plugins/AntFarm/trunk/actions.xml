@@ -15,13 +15,15 @@
 
   <ACTION NAME="antfarm.build">
     <CODE>
-      AntFarm.getAntFarm().build();
+      view.getDockableWindowManager().addDockableWindow("ant-farm");
+      view.getDockableWindowManager().getDockableWindow("ant-farm").build();
     </CODE>
   </ACTION>
 
   <ACTION NAME="antfarm.edit">
     <CODE>
-      AntFarm.getAntFarm().edit();
+      view.getDockableWindowManager().addDockableWindow("ant-farm");
+      view.getDockableWindowManager().getDockableWindow("ant-farm").edit();
     </CODE>
   </ACTION>
 

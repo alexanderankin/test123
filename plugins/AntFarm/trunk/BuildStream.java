@@ -65,19 +65,20 @@ import java.io.*;
 public class BuildStream extends PrintStream
 {
   private AntFarmPlugin farm;
+  private AntFarm window;
 
-  public BuildStream( AntFarmPlugin farm )
+  public BuildStream( AntFarmPlugin farm, AntFarm window )
   {
     super(System.out);
     this.farm = farm;
+    this.window = window;
   }
   public void println(String msg)
   {
-    System.out.println("here");
-    farm.handleBuildMessage( new BuildMessage( msg ) );
+    farm.handleBuildMessage( window, new BuildMessage( msg ) );
   }
   public void println(char[] msg)
   {
-    farm.handleBuildMessage( new BuildMessage( new String(msg) ) );
+    farm.handleBuildMessage( window, new BuildMessage( new String(msg) ) );
   }
 }

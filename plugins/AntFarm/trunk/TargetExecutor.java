@@ -75,23 +75,25 @@ public class TargetExecutor
 
   private File buildFile;
   private AntFarmPlugin farm;
+  private AntFarm window;
   private String targetName;
   private boolean debug = false;
 
-  public TargetExecutor( AntFarmPlugin farm, File buildFile )
+  public TargetExecutor( AntFarmPlugin farm, AntFarm window, File buildFile )
   {
-    this( farm, buildFile, null, false );
+    this( farm, window, buildFile, null, false );
   }
 
-  public TargetExecutor( AntFarmPlugin farm, File buildFile, String targetName )
+  public TargetExecutor( AntFarmPlugin farm, AntFarm window, File buildFile, String targetName )
   {
-    this(farm, buildFile, targetName, false );
+    this(farm, window, buildFile, targetName, false );
   }
 
-  public TargetExecutor( AntFarmPlugin farm, File buildFile, String targetName, boolean debug )
+  public TargetExecutor( AntFarmPlugin farm, AntFarm window, File buildFile, String targetName, boolean debug )
   {
     this.buildFile = buildFile;
     this.farm = farm;
+    this.window = window;
     this.targetName = targetName;
     this.debug = debug;
   }
@@ -100,7 +102,7 @@ public class TargetExecutor
   {
     // Add Timer for the build process.
     Date startTime = new Date();
-    farm.handleBuildMessage(
+    farm.handleBuildMessage(window,
       new BuildMessage( "Building at " + startTime + " ..."), Color.blue
     );
 
@@ -116,7 +118,7 @@ public class TargetExecutor
 
     if (msgOutputLevel >= Project.MSG_INFO)
     {
-      farm.handleBuildMessage( new BuildMessage( "Buildfile: " + buildFile) );
+      farm.handleBuildMessage( window, new BuildMessage( "Buildfile: " + buildFile) );
     }
 
     Project project = new Project();
@@ -125,7 +127,7 @@ public class TargetExecutor
 	AntFarmLogger logger = null;
     try
     {
-      logger = new AntFarmLogger( farm );
+      logger = new AntFarmLogger( farm, window );
       logger.setOutputPrintStream( this.getStdOut() );
       logger.setErrorPrintStream( this.getStdErr() );
       project.addBuildListener( logger );
@@ -174,19 +176,19 @@ public class TargetExecutor
       Date finishTime = new Date();
       long difference = finishTime.getTime() - startTime.getTime();
 
-      farm.handleBuildMessage( new BuildMessage("BUILD SUCCESSFUL: Completed in " +
+      farm.handleBuildMessage( window, new BuildMessage("BUILD SUCCESSFUL: Completed in " +
                                formatTime(difference)), Color.blue);
 
     }
     catch (BuildException be)
     {
       System.err.println(be.getMessage());
-      farm.handleBuildMessage( new BuildMessage( "\nBUILD FAILED: " +
+      farm.handleBuildMessage( window, new BuildMessage( "\nBUILD FAILED: " +
                                be.toString()), Color.red );
     }
     catch (Throwable exc)
     {
-      farm.handleBuildMessage( new BuildMessage( exc.toString() ));
+      farm.handleBuildMessage( window, new BuildMessage( exc.toString() ));
       exc.printStackTrace(logger.getErrorPrintStream());
     }
     finally
@@ -204,7 +206,7 @@ public class TargetExecutor
    */
   public PrintStream getStdOut()
   {
-    return new BuildStream( farm );
+    return new BuildStream( farm, window );
   }
 
   /**
@@ -214,7 +216,7 @@ public class TargetExecutor
    */
   public PrintStream getStdErr()
   {
-    return new BuildStream( farm );
+    return new BuildStream( farm, window );
   }
 
   private static String formatTime(long millis)

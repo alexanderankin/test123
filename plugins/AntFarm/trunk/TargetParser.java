@@ -81,6 +81,7 @@ public class TargetParser {
 	private String defaultTarget = null;
 	private File buildFile;
 	private AntFarmPlugin farm;
+        private AntFarm window;
 	private boolean debug = false;
 
 
@@ -89,8 +90,8 @@ public class TargetParser {
 	 *
 	 *@param  farm  A reference to the parent plugin
 	 */
-	public TargetParser(AntFarmPlugin farm) {
-		this(farm, null, false);
+	public TargetParser(AntFarmPlugin farm, AntFarm window) {
+		this(farm, window, null, false);
 	}
 
 
@@ -101,9 +102,10 @@ public class TargetParser {
 	 *@param  buildFile  The build file to be parsed for targets
 	 *@param  debug      Should debug output be done?
 	 */
-	public TargetParser(AntFarmPlugin farm, File buildFile, boolean debug) {
+	public TargetParser(AntFarmPlugin farm, AntFarm window, File buildFile, boolean debug) {
 		this.buildFile = buildFile;
 		this.farm = farm;
+                this.window = window;
 		this.debug = debug;
 	}
 
@@ -162,11 +164,11 @@ public class TargetParser {
 		}
 		catch (BuildException be) {
 			//System.err.println(be.getMessage());
-			farm.handleBuildMessage(new BuildMessage("\nBUILD FAILED: " +
+			farm.handleBuildMessage(window,new BuildMessage("\nBUILD FAILED: " +
 					be.getMessage()), Color.red);
 		}
 		catch (Throwable exc) {
-			farm.handleBuildMessage(new BuildMessage(exc.getMessage()));
+			farm.handleBuildMessage(window,new BuildMessage(exc.getMessage()));
 		}
 	}
 
