@@ -14,7 +14,7 @@ jar_name = "JavaInsight";
 ##
 
 javac_bin = "javac";
-javac_opts = "-g" "-deprecation";
+javac_opts = "-deprecation";
 
 #javac_bin = "jikes";
 #javac_opts = "-g" "-deprecation" "+E";
