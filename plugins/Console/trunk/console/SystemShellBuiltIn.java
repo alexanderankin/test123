@@ -106,6 +106,9 @@ public abstract class SystemShellBuiltIn
 			//{{{ long option
 			else if(arg.startsWith("--"))
 			{
+				if(arg.length() == 2)
+					continue;
+
 				args.removeElementAt(i);
 				i--;
 
@@ -169,6 +172,9 @@ public abstract class SystemShellBuiltIn
 			//{{{ short option
 			else if(arg.startsWith("-") || arg.startsWith("+"))
 			{
+				if(arg.length() == 1)
+					continue;
+
 				args.removeElementAt(i);
 				i--;
 
@@ -361,15 +367,23 @@ public abstract class SystemShellBuiltIn
 
 			String newDir;
 			if(args.size() == 0)
-				newDir = System.getProperty("user.home");
+			{
+				state.setCurrentDirectory(console,
+					System.getProperty("user.home"));
+			}
 			else
 			{
-				newDir = MiscUtilities.constructPath(
-					state.currentDirectory,
-					(String)args.elementAt(0));
+				String arg = (String)args.elementAt(0);
+				if(arg.equals("-"))
+					state.gotoLastDirectory(console);
+				else
+				{
+					state.setCurrentDirectory(console,
+						MiscUtilities.constructPath(
+						state.currentDirectory,
+						(String)args.elementAt(0)));
+				}
 			}
-
-			state.setCurrentDirectory(console,newDir);
 		}
 	} //}}}
 

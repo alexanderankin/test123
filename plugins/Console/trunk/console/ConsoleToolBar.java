@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000 Slava Pestov
+ * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -49,7 +49,7 @@ class ConsoleToolBar extends JToolBar
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
-		cmd = new HistoryTextField(null);
+		cmd = new ConsoleTextField(view);
 		Dimension dim = cmd.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
 		cmd.setMaximumSize(dim);
@@ -57,14 +57,14 @@ class ConsoleToolBar extends JToolBar
 		box.add(Box.createGlue());
 		add(BorderLayout.CENTER,box);
 
-		cmd.setModel("console." + shellCombo.getSelectedItem());
+		cmd.setShell((Shell)shellCombo.getSelectedItem());
 		cmd.addActionListener(new ActionHandler());
 	} //}}}
 
 	//{{{ Private members
 	private View view;
 	private JComboBox shellCombo;
-	private HistoryTextField cmd;
+	private ConsoleTextField cmd;
 	//}}}
 
 	//{{{ ActionHandler class
@@ -73,7 +73,9 @@ class ConsoleToolBar extends JToolBar
 		public void actionPerformed(ActionEvent evt)
 		{
 			if(evt.getSource() == shellCombo)
-				cmd.setModel("console." + shellCombo.getSelectedItem());
+			{
+				cmd.setShell((Shell)shellCombo.getSelectedItem());
+			}
 			else if(evt.getSource() == cmd)
 			{
 				DockableWindowManager wm = view.getDockableWindowManager();

@@ -1,3 +1,5 @@
+- TAB on empty field is weird
+- see if an extra pattern can eat all javac errors
 - TeX, Tidy error patterns
 - foo"aaaa" broken
 - command to copy a commando file to the user commando dir for easy

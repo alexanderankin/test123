@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (C) 2000, 2001, 2002 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -63,7 +63,7 @@ implements EBComponent, Output
 
 		Box box = new Box(BoxLayout.Y_AXIS);
 		box.add(Box.createGlue());
-		command = new ConsoleTextField();
+		command = new ConsoleTextField(view);
 		command.addActionListener(actionHandler);
 		Dimension dim = command.getPreferredSize();
 		dim.width = Integer.MAX_VALUE;
@@ -163,7 +163,7 @@ implements EBComponent, Output
 		this.shell = shell;
 
 		shellCombo.setSelectedItem(shell);
-		command.setModel("console." + shell.getName());
+		command.setShell(shell);
 
 		clear();
 	} //}}}
@@ -363,7 +363,7 @@ implements EBComponent, Output
 	private View view;
 	private JComboBox shellCombo;
 	private Shell shell;
-	private HistoryTextField command;
+	private ConsoleTextField command;
 	private JButton run, toBuffer, stop, clear;
 	private JLabel animation;
 
@@ -422,60 +422,6 @@ implements EBComponent, Output
 				shell.stop(Console.this);
 			else if(source == clear)
 				clear();
-		}
-	} //}}}
-
-	//{{{ ConsoleTextField class
-	class ConsoleTextField extends HistoryTextField
-	{
-		ConsoleTextField()
-		{
-			super(null);
-		}
-
-		public boolean getFocusTraversalKeysEnabled()
-		{
-			return false;
-		}
-
-		protected void processKeyEvent(KeyEvent evt)
-		{
-			if(evt.getID() == KeyEvent.KEY_PRESSED)
-			{
-				if(evt.getKeyCode() == KeyEvent.VK_TAB)
-				{
-					complete();
-					return;
-				}
-			}
-
-			super.processKeyEvent(evt);
-		}
-
-		private void complete()
-		{
-			Shell.CompletionInfo info = shell.getCompletions(Console.this,
-				getText().substring(0,getCaretPosition()));
-			if(info == null)
-				ConsoleTextField.this.getToolkit().beep();
-			else if(info.completions.length == 1)
-			{
-				select(info.offset, getCaretPosition());
-				replaceSelection(info.completions[0]);
-			}
-			else if(info.completions.length > 1)
-			{
-				Console.this.print(getInfoColor(),jEdit.getProperty(
-					"console.completions"));
-
-				for(int i = 0; i < info.completions.length; i++)
-				{
-					Console.this.print(null,info.completions[i]);
-				}
-
-				Console.this.print(getInfoColor(),jEdit.getProperty(
-					"console.completions-end"));
-			}
 		}
 	} //}}}
 }

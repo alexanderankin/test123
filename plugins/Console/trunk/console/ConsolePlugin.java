@@ -388,7 +388,7 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static String expandSystemShellVariables(View view, String text)
 	{
-		return ((SystemShell)SYSTEM_SHELL).expandVariables(view,null,text);
+		return ((SystemShell)SYSTEM_SHELL).expandVariables(view,text);
 	} //}}}
 
 	//{{{ getSystemShellVariableValue() method
@@ -399,7 +399,7 @@ public class ConsolePlugin extends EBPlugin
 	 */
 	public static String getSystemShellVariableValue(View view, String var)
 	{
-		return ((SystemShell)SYSTEM_SHELL).getVariableValue(view,null,var);
+		return ((SystemShell)SYSTEM_SHELL).getVariableValue(view,var);
 	} //}}}
 
 	//{{{ ActionCompare class
