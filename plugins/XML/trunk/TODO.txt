@@ -3,7 +3,8 @@ XML 0.11:
 - update docs
 - fix xerces 2.3 deprecation
 - ids in nested files
-- recording completion and /
+- fatal errors with null uri
+- / in the middle of text shows 'no completions'
 
 before XML 1.0:
 
