@@ -92,6 +92,11 @@ public class GeneralOptionPane extends AbstractOptionPane
 		closeCompleteOpen.setSelected(jEdit.getBooleanProperty(
 			"xml.close-complete-open"));
 		closeCompleteOpen.addActionListener(new ActionHandler());
+
+		addComponent(standaloneExtraSpace = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.standalone-extra-space")));
+		standaloneExtraSpace.setSelected(jEdit.getBooleanProperty(
+			"xml.standalone-extra-space"));
 	} //}}}
 
 	//{{{ _save() method
@@ -111,6 +116,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 			closeComplete.isSelected());
 		jEdit.setBooleanProperty("xml.close-complete-open",
 			closeCompleteOpen.isSelected());
+		jEdit.setBooleanProperty("xml.standalone-extra-space",
+			standaloneExtraSpace.isSelected());
 	} //}}}
 
 	//{{{ Private members
@@ -121,6 +128,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private JComboBox showAttributes;
 	private JCheckBox closeCompleteOpen;
 	private JCheckBox closeComplete;
+	private JCheckBox standaloneExtraSpace;
 	//}}}
 
 	//{{{ ActionHandler class

@@ -140,7 +140,7 @@ public class XmlCompletion implements SideKickCompletion
 						if(data.html)
 							buf.append(">");
 						else
-							buf.append("/>");
+							buf.append(XmlActions.getStandaloneEnd());
 
 						caret += buf.length();
 					}

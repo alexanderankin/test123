@@ -203,7 +203,7 @@ loop:			for(;;)
 		{
 			newTag = "<" + elementDecl.name
 				+ (!data.html && elementDecl.empty
-				? "/>" : ">");
+				? XmlActions.getStandaloneEnd() : ">");
 			closingTag = "";
 		}
 		else
@@ -640,6 +640,12 @@ loop:			for(;;)
 		}
 	} //}}}
 
+	//{{{ getStandaloneEnd() method
+	public static String getStandaloneEnd()
+	{
+		return (standaloneExtraSpace ? " />" : "/>");
+	} //}}}
+
 	//{{{ propertiesChanged() method
 	static void propertiesChanged()
 	{
@@ -647,14 +653,17 @@ loop:			for(;;)
 			"xml.close-complete");
 		closeCompletionOpen = jEdit.getBooleanProperty(
 			"xml.close-complete-open");
+		standaloneExtraSpace = jEdit.getBooleanProperty(
+			"xml.standalone-extra-space");
 	} //}}}
 
 	//{{{ Private members
 
-	//{{{ Instance variables
+	//{{{ Static variables
 	private static Segment seg = new Segment();
 	private static boolean closeCompletion;
 	private static boolean closeCompletionOpen;
+	private static boolean standaloneExtraSpace;
 	//}}}
 
 	//{{{ getPrevNonWhitespaceChar() method

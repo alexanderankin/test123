@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
-plugin.xml.XmlPlugin.version=0.12
+plugin.xml.XmlPlugin.version=0.11.1
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xercesImpl.jar xmlParserAPIs.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.01.11.00
@@ -42,6 +42,9 @@ xml.close-complete=true
 
 # Insert closing tag automatically after '>' typed
 xml.close-complete-open=false
+
+# Insert space before /> when completing stand-alone tags
+xml.standalone-extra-space=false
 
 # Tag highlight
 xml.tag-highlight=true
@@ -157,6 +160,7 @@ options.xml.general.show-attributes.id-only=ID only
 options.xml.general.show-attributes.all=All
 options.xml.general.close-complete=Insert closing tag when "</" is typed
 options.xml.general.close-complete-open=Insert closing tag when opening tag is typed
+options.xml.general.standalone-extra-space=Space before "/>" in stand-alone tags
 
 options.xml.catalogs.label=Catalogs
 options.xml.catalogs.caption=Catalog files to import:
