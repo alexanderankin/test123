@@ -38,19 +38,20 @@ public class ChooseTagList2 extends JWindow {
   /***************************************************************************/
 	private TagsParser parser_;
   private View view_;
-  private View tagToView_;
-  private boolean newView_;
+  private boolean openNewView_;
   private Vector tagIdentifiers_;
 	private JList tagIdentifierList_;
 
+  protected int choosenIndex_ = -1;
+  
   /***************************************************************************/
-	public ChooseTagList2(TagsParser parser, View view, boolean newView)	{
+	public ChooseTagList2(TagsParser parser, View view, boolean openNewView)	{
 		
     super(view);
 
     parser_ = parser;
 		view_ = view;
-    newView_ = newView;
+    openNewView_ = openNewView;
     
     createComponents();
     setupComponents();
@@ -67,7 +68,8 @@ public class ChooseTagList2 extends JWindow {
 		addKeyListener(keyHandler);
 		getRootPane().addKeyListener(keyHandler);
 		tagIdentifierList_.addKeyListener(keyHandler);
-		view_.setKeyEventInterceptor(keyHandler);
+    if (view_ != null)
+      view_.setKeyEventInterceptor(keyHandler);
 	}
 
   /***************************************************************************/
@@ -89,8 +91,17 @@ public class ChooseTagList2 extends JWindow {
 		tagIdentifierList_.setSelectedIndex(0);
 		tagIdentifierList_.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
     
-    String fontName = TagsPlugin.getOptionString("choose.Font");
-    String sizeString = TagsPlugin.getOptionString("choose.font-size");
+    
+    String fontName = null;
+    String sizeString = null;
+    if (view_ != null) {
+      fontName = TagsPlugin.getOptionString("choose.Font");
+      sizeString = TagsPlugin.getOptionString("choose.font-size");
+    }
+    else {
+      fontName = "Monospaced";
+    }
+    
     int size = 12;
     try { size = Integer.parseInt(sizeString); }
     catch (NumberFormatException nfe) {
@@ -116,33 +127,36 @@ public class ChooseTagList2 extends JWindow {
   
   /***************************************************************************/
   public void setLocation() {
-    JEditTextArea textArea = view_.getTextArea();
+    if (view_ != null) {
+      JEditTextArea textArea = view_.getTextArea();
     
-    int caretLine = textArea.getCaretLine();
-    int lineIdx = textArea.getCaretPosition() - // offsets from beg of file
-                  textArea.getLineStartOffset(caretLine);
+      int caretLine = textArea.getCaretLine();
+      int lineIdx = textArea.getCaretPosition() - // offsets from beg of file
+                    textArea.getLineStartOffset(caretLine);
     
-    Point location = new Point(textArea.offsetToX(caretLine, lineIdx),
+      Point location = new Point(textArea.offsetToX(caretLine, lineIdx),
                            textArea.getPainter().getFontMetrics().getHeight() *
                            (textArea.getBuffer().physicalToVirtual(caretLine) - 
                            textArea.getFirstLine() + 1));
-    SwingUtilities.convertPointToScreen(location, textArea.getPainter());
+      SwingUtilities.convertPointToScreen(location, textArea.getPainter());
     
-    // make sure it fits on screen
-    int width = getWidth();
-    int height = getHeight();
-    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-    if (location.x + width > screenSize.width)
-      location.x = screenSize.width - width;
-    if (location.y + height > screenSize.height)
-      location.y = screenSize.height - height;
+      // make sure it fits on screen
+      int width = getWidth();
+      int height = getHeight();
+      Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+      if (location.x + width > screenSize.width)
+        location.x = screenSize.width - width;
+      if (location.y + height > screenSize.height)
+        location.y = screenSize.height - height;
     
-    setLocation(location);
+      setLocation(location);
+    }
   }
   
   /***************************************************************************/
 	public void dispose()	{
-		view_.setKeyEventInterceptor(null);
+    if (view_ != null)
+      view_.setKeyEventInterceptor(null);
 		super.dispose();
 	}
 
@@ -161,9 +175,10 @@ public class ChooseTagList2 extends JWindow {
     tagIdentifier = null;
     //Macros.message(view_, parser_.getTagLine(index));
     
-    Tags.processTagLine(index, view_, newView_, parser_.getTag());
+    choosenIndex_ = index;
+    Tags.processTagLine(choosenIndex_, view_, openNewView_, parser_.getTag());
     
-    //Tags.followTag(view_, view_.getTextArea(), view_.getBuffer(), newView_, 
+    //Tags.followTag(view_, view_.getTextArea(), view_.getBuffer(), openNewView_, 
     //               selectedTagName);
 		dispose();
 	}
@@ -226,15 +241,16 @@ public class ChooseTagList2 extends JWindow {
 			else
 			{
 				dispose();
-				view_.processKeyEvent(evt);
+        if (view_ != null)
+          view_.processKeyEvent(evt);
 			}
 		}
 	}
 
   /***************************************************************************/
-	class MouseHandler extends MouseAdapter	{
+  class MouseHandler extends MouseAdapter	{
 		public void mouseClicked(MouseEvent evt) {
-			selected();
-		}
-	}
+      selected();
+    }
+  }
 }
