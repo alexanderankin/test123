@@ -71,7 +71,7 @@ public class ErrorFindingMacros {
                                   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         }
 
-        LaTeXDockable.instance.setInfoPanel(out, "Duplicate Labels:");
+        LaTeXDockable.getInstance().setInfoPanel(out, "Duplicate Labels:");
         
     }
     
@@ -107,7 +107,7 @@ public class ErrorFindingMacros {
                                   JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         }
         
-    LaTeXDockable.instance.setInfoPanel(out, "Orphaned References:");
+    LaTeXDockable.getInstance().setInfoPanel(out, "Orphaned References:");
     
     }
 }

@@ -56,7 +56,7 @@ public class LaTeXParser
      */
     public static LaTeXDockable getControls() {
 
-        return LaTeXDockable.instance;//controls;
+        return LaTeXDockable.getInstance();//controls;
     }
 
     /**

@@ -44,39 +44,21 @@ import org.gjt.sp.jedit.gui.HistoryTextField;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
-public class ProjectViewerPanel extends AbstractToolPanel implements MouseListener{
+public class ProjectViewerPanel extends JPanel implements MouseListener{
         private JTree tree;
         private View view;
+        private Buffer buffer;
         
         public ProjectViewerPanel(View view, Buffer buffer){
-            super(view, buffer, "Project Files");
+            this.buffer = buffer;
             this.view = view;
-            refresh();
-        }
-        
-        public void reload(){
-           
-        }
-        
-        public void refresh(){
-            
-          if (!ProjectMacros.isTeXFile(buffer)) {
-              log("!isTexFile");
-              displayNotTeX(BorderLayout.CENTER);
-            } else {
-                removeAll();
-                tree = new JTree(ProjectMacros.getProjectFiles(view, buffer));
-                tree.setShowsRootHandles(true);
-                tree.addMouseListener(this);
-                tree.setToggleClickCount(3);
-                JScrollPane scrollpane = new JScrollPane(tree,
-                                     JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
-                                     JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-                setLayout(new BorderLayout());
-                setPreferredSize(new Dimension(400,400));
-                add(scrollpane, BorderLayout.CENTER);
-
-            }
+            tree = new JTree(ProjectMacros.getProjectFiles(view, buffer));
+            tree.setShowsRootHandles(true);
+            tree.addMouseListener(this);
+            tree.setToggleClickCount(3);
+            setLayout(new BorderLayout());
+            //setPreferredSize(new Dimension(400,400));
+            add(tree, BorderLayout.WEST);
         }
         
         public void mouseClicked(MouseEvent e){} 

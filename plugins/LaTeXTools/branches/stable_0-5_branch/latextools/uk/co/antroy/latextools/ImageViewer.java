@@ -93,7 +93,7 @@ public class ImageViewer {
         ImageViewer viewer = ImageViewer.getInstance();
         viewer.setImageFromBuffer(textArea, buffer);
         JComponent p = viewer.showImage();
-        LaTeXDockable.instance.setInfoPanel(p, "Image Under Caret:");
+        LaTeXDockable.getInstance().setInfoPanel(p, "Image Under Caret:");
     }
     
 

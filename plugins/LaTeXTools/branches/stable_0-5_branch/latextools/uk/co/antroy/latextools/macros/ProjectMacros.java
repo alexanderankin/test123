@@ -2,6 +2,8 @@
 //      :latex.root='D:\Projects\Thesis\src\Thesis.tex':
 package uk.co.antroy.latextools.macros;
 
+import uk.co.antroy.latextools.*;
+
 import console.Console;
 import console.Shell;
 
@@ -10,7 +12,7 @@ import gnu.regexp.REException;
 import gnu.regexp.REMatch;
 
 import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.Point;
@@ -29,7 +31,7 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import javax.swing.JPanel;
+import javax.swing.*;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -272,6 +274,30 @@ public class ProjectMacros {
       return out;
     }
 
+    public static void showInformation(View view, Buffer buffer){
+        
+       JTextArea info = new JTextArea("", 30, 20);
+       info.setEditable(false);
+       String main = getMainTeXPath(buffer);
+       info.append("Main File: ");
+       info.append(main);
+       info.append("\n");
+       
+       JPanel panel = new JPanel();
+       panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
+       ProjectViewerPanel proj = new ProjectViewerPanel(view, buffer);
+       JScrollPane scr = new JScrollPane(proj);
+       proj.setMaximumSize(new Dimension(100,800));
+       scr.setMaximumSize(new Dimension(100,800));
+       
+       panel.add(new JScrollPane(info));
+       panel.add(scr);
+       
+        
+       
+              
+       LaTeXDockable.getInstance().setInfoPanel(panel, "Project Information:");
+    }
     
     private static class LaTeXMutableTreeNode extends DefaultMutableTreeNode{
         File file;
