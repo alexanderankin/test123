@@ -6,4 +6,6 @@
 - should not reparse on edit pane change
 - tree: custom actions on double-click, etc.
 - normal shortcuts with popup open
-- not always saving
+- not always reparsing on save
+- work thread priority
+- auxilliary parsers -- eg tasklist

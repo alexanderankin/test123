@@ -156,41 +156,59 @@ public class SideKickActions
 
 		JEditTextArea textArea = view.getTextArea();
 
-		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
+		int caret = textArea.getCaretPosition();
+		TreePath path = data.getTreePathForPosition(caret);
 		if(path == null)
 		{
 			view.getToolkit().beep();
 			return;
 		}
+
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 			path.getLastPathComponent();
-		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)
-			node.getParent();
 
-		Asset destination = null;
-
-		for(int i = 0; i < parent.getChildCount(); i++)
+		// see if caret is at the end of a child of the current asset
+		for(int i = 0; i < node.getChildCount(); i++)
 		{
-			if(parent.getChildAt(i) == node)
+			Asset asset = (Asset)((DefaultMutableTreeNode)node.getChildAt(i))
+				.getUserObject();
+			if(asset.end != null && caret == asset.end.getOffset())
 			{
-				if(i == 0)
-					destination = (Asset)parent.getUserObject();
-				else
-				{
-					destination = (Asset)((DefaultMutableTreeNode)
-						parent.getChildAt(i - 1))
-						.getUserObject();
-				}
-				break;
+				textArea.setCaretPosition(asset.start.getOffset());
+				return;
 			}
 		}
 
-		if(destination == null)
-			view.getToolkit().beep();
-		else
+		Asset asset = ((Asset)node.getUserObject());
+		if(caret == asset.start.getOffset())
 		{
-			textArea.setCaretPosition(destination.start.getOffset());
+			DefaultMutableTreeNode parent = (DefaultMutableTreeNode)
+				node.getParent();
+			for(int i = 0; i < parent.getChildCount(); i++)
+			{
+				if(node == parent.getChildAt(i))
+				{
+					if(i == 0)
+					{
+						if(parent.getUserObject() instanceof Asset)
+						{
+							textArea.setCaretPosition(
+								((Asset)parent.getUserObject())
+								.start.getOffset());
+						}
+					}
+					else
+					{
+						Asset prevAsset = (Asset)((DefaultMutableTreeNode)
+							parent.getChildAt(i - 1)).getUserObject();
+						textArea.setCaretPosition(prevAsset.end.getOffset());
+					}
+					return;
+				}
+			}
 		}
+		else
+			textArea.setCaretPosition(asset.start.getOffset());
 	} //}}}
 
 	//{{{ goToNextAsset() method
@@ -205,44 +223,37 @@ public class SideKickActions
 
 		JEditTextArea textArea = view.getTextArea();
 
-		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
+		int caret = textArea.getCaretPosition();
+		TreePath path = data.getTreePathForPosition(caret);
 		if(path == null)
 		{
 			view.getToolkit().beep();
 			return;
 		}
+
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 			path.getLastPathComponent();
-		DefaultMutableTreeNode parent = (DefaultMutableTreeNode)
-			node.getParent();
 
-		Asset destination = null;
-
-		for(int i = 0; i < parent.getChildCount(); i++)
+		// see if caret is at the end of a child of the current asset
+		for(int i = 0; i < node.getChildCount(); i++)
 		{
-			if(parent.getChildAt(i) == node)
+			Asset asset = (Asset)((DefaultMutableTreeNode)node.getChildAt(i))
+				.getUserObject();
+			if(asset.end != null && caret == asset.end.getOffset())
 			{
-				if(i == parent.getChildCount() - 1)
-					destination = (Asset)parent.getUserObject();
-				else
+				if(i != node.getChildCount() - 1)
 				{
-					destination = (Asset)((DefaultMutableTreeNode)
-						parent.getChildAt(i + 1))
-						.getUserObject();
+					Asset nextAsset = (Asset)((DefaultMutableTreeNode)
+						node.getChildAt(i + 1)).getUserObject();
+					textArea.setCaretPosition(nextAsset.start.getOffset());
+					return;
 				}
-				break;
+				else
+					break;
 			}
 		}
 
-		if(destination == null)
-			view.getToolkit().beep();
-		else
-		{
-			if(destination.end != null)
-				textArea.setCaretPosition(destination.end.getOffset());
-			else
-				textArea.setCaretPosition(destination.start.getOffset());
-		}
+		textArea.setCaretPosition(((Asset)node.getUserObject()).end.getOffset());
 	} //}}}
 
 	//{{{ propertiesChanged() method
