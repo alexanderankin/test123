@@ -62,8 +62,6 @@ public class SideKickParsedData
 	 */
 	public static void setParsedData(View view, SideKickParsedData data)
 	{
-		if(data != null)
-			Log.log(Log.ERROR,SideKickParsedData.class,"setting tree: " + data.root);
 		view.getRootPane().putClientProperty(
 			SideKickPlugin.PARSED_DATA_PROPERTY,
 			data);
