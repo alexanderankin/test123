@@ -25,13 +25,9 @@ import java.util.Hashtable;
 import java.util.Random;
 import java.util.Vector;
 
-import javax.swing.UIManager;
-import javax.swing.plaf.ColorUIResource;
-
 import gnu.regexp.RE;
 import gnu.regexp.REException;
 
-import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.jEdit;
 
