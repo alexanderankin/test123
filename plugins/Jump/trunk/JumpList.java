@@ -89,15 +89,23 @@ public JumpList(View parent, Object[] list, ListModel model,
         Point tapLocation = textArea.getLocationOnScreen();
         int gutt_x = textArea.getGutter().getWidth(); 
         Dimension popupSize = getSize();
+        //Log.log(Log.DEBUG,this,"parentSize.height = "+parentSize.height+": popupSize.heigh t= "+ popupSize.height+" : y = "+y);
+        
         x += tapLocation.x;
+        
         if ((x + popupSize.width+gutt_x) > (parentLocation.x + parentSize.width -
                 parentInsets.right))
         {
             x -= popupSize.width;
         }
         
+        if ((parentSize.height-y)<popupSize.height)
+        {
+            y = parentSize.height - popupSize.height;
+        }
         
-            setLocation(x+gutt_x+parentLocation.x+parentInsets.right,y+parentLocation.y+parentInsets.top);
+        setLocation(x+gutt_x+parentLocation.x+parentInsets.right,y+parentLocation.y+parentInsets.top);
+        
         }
         catch (Exception e)
         {
