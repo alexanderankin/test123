@@ -20,9 +20,6 @@
 
 package code2html;
 
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
-
 import code2html.html.HtmlEntity;
 
 
