@@ -242,7 +242,17 @@ implements EBComponent, Output
 
 		HistoryModel.getModel("console." + shell.getName()).addItem(cmd);
 		print(infoColor,"> " + cmd);
-		shell.execute(this,output,cmd);
+
+		try
+		{
+			shell.execute(this,output,cmd);
+		}
+		catch(RuntimeException e)
+		{
+			print(getErrorColor(),e.toString());
+			Log.log(Log.ERROR,this,e);
+			commandDone();
+		}
 	} //}}}
 
 	//{{{ runLastCommand() method

@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -250,65 +250,71 @@ class ErrorMatcherDialog extends EnhancedDialog
 			jEdit.getProperty("options.console.errors.title"),true);
 		this.matcher = matcher;
 
-		JPanel panel = new JPanel(new GridLayout(7,2,0,6));
-		panel.setBorder(new EmptyBorder(12,12,6,12));
+		JPanel content = new JPanel(new BorderLayout(12,12));
+		content.setBorder(new EmptyBorder(12,12,12,12));
+		setContentPane(content);
+
+		JPanel panel = new JPanel(new VariableGridLayout(
+			VariableGridLayout.FIXED_NUM_COLUMNS,2,12,6));
 		JLabel label = new JLabel(jEdit.getProperty(
 			"options.console.errors.name"),JLabel.RIGHT);
-		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(name = new JTextField(matcher.name));
+		name.setColumns(20);
+
 		label = new JLabel(jEdit.getProperty(
 			"options.console.errors.match"),JLabel.RIGHT);
-		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(error = new JTextField(matcher.error));
+		error.setColumns(20);
+
 		label = new JLabel(jEdit.getProperty(
 			"options.console.errors.warning"),JLabel.RIGHT);
-		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(warning = new JTextField(matcher.warning));
+		warning.setColumns(20);
+
 		label = new JLabel(jEdit.getProperty(
 			"options.console.errors.extra"),JLabel.RIGHT);
-		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(extra = new JTextField(matcher.extra));
+		extra.setColumns(20);
+
 		label = new JLabel(jEdit.getProperty(
 			"options.console.errors.filename"),JLabel.RIGHT);
-		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(filename = new JTextField(matcher.filename));
+		filename.setColumns(20);
+
 		label = new JLabel(jEdit.getProperty(
 			"options.console.errors.line"),JLabel.RIGHT);
-		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(line = new JTextField(matcher.line));
+		line.setColumns(20);
+
 		label = new JLabel(jEdit.getProperty(
 			"options.console.errors.message"),JLabel.RIGHT);
-		label.setBorder(new EmptyBorder(0,0,0,12));
 		panel.add(label);
 		panel.add(message = new JTextField(matcher.message));
+		message.setColumns(20);
 
-		getContentPane().add(BorderLayout.CENTER,panel);
+		content.add(BorderLayout.CENTER,panel);
 
-		panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel,BoxLayout.X_AXIS));
-		panel.setBorder(new EmptyBorder(6,12,12,12));
-		panel.add(Box.createGlue());
+		Box box = new Box(BoxLayout.X_AXIS);
+		box.add(Box.createGlue());
 		ok = new JButton(jEdit.getProperty("common.ok"));
 		ok.addActionListener(new ActionHandler());
 		getRootPane().setDefaultButton(ok);
-		panel.add(ok);
-		panel.add(Box.createHorizontalStrut(6));
+		box.add(ok);
+		box.add(Box.createHorizontalStrut(6));
 		cancel = new JButton(jEdit.getProperty("common.cancel"));
 		cancel.addActionListener(new ActionHandler());
-		panel.add(cancel);
-		panel.add(Box.createGlue());
-		getContentPane().add(BorderLayout.SOUTH,panel);
+		box.add(cancel);
+		box.add(Box.createGlue());
+		content.add(BorderLayout.SOUTH,box);
 
-		Dimension screen = getToolkit().getScreenSize();
 		pack();
-		setLocation((screen.width - getSize().width) / 2,
-			(screen.height - getSize().height) / 2);
+		setLocationRelativeTo(GUIUtilities.getParentDialog(comp));
 		show();
 	} //}}}
 

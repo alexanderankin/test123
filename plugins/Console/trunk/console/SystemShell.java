@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,13 +30,12 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 //}}}
 
-class SystemShell extends Shell
+public class SystemShell extends Shell
 {
 	//{{{ SystemShell constructor
 	public SystemShell()
 	{
 		super("System");
-		System.err.println("new instance");
 	} //}}}
 
 	//{{{ printInfoMessage() method
@@ -73,16 +72,14 @@ class SystemShell extends Shell
 		{
 			// a console built-in
 			args.removeElementAt(0);
-			SystemShellBuiltIn.executeBuiltIn(console,output,
-				commandName.substring(1),args);
+			executeBuiltIn(console,output,commandName,args);
 			output.commandDone();
 		}
 		else if(new File(MiscUtilities.constructPath(
 			getConsoleState(console).currentDirectory,
 			commandName)).isDirectory() && args.size() == 1)
 		{
-			SystemShellBuiltIn.executeBuiltIn(console,output,
-				"cd",args);
+			executeBuiltIn(console,output,"%cd",args);
 			output.commandDone();
 		}
 		else
@@ -199,40 +196,20 @@ class SystemShell extends Shell
 			lastArg = unescape(lastArgEscaped, fileDelimiters);
 		}
 
-		String [] commandCompletion = getCommandCompletions(lastArg);
-		String [] fileCompletion = getFileCompletions(view,
-			currentDirectory,lastArg);
-
 		CompletionInfo completionInfo = new CompletionInfo();
 
 		completionInfo.offset = command.length() - lastArg.length();
 
-		// Count the amount of completions
-		int completionsCount = 0;
-		completionsCount += commandCompletion == null ? 0 : commandCompletion.length;
-		completionsCount += fileCompletion == null ? 0 : fileCompletion.length;
-		if(completionsCount == 0)
-			return null;
-
-		completionInfo.completions = new String[completionsCount];
-
-
-		int offset = 0;
-
-		// Add command completions
-		if((commandCompletion != null) && (commandCompletion.length > 0))
+		if(completionInfo.offset == 0)
 		{
-			int amount = commandCompletion.length;
-			System.arraycopy(commandCompletion, 0, completionInfo.completions, offset, amount);
-			offset += amount;
+			completionInfo.completions = (String[])getCommandCompletions(
+				view,currentDirectory,lastArg).toArray(new String[0]);
 		}
-
-		// Add file completions
-		if((fileCompletion != null) && (fileCompletion.length > 0))
+		else
 		{
-			int amount = fileCompletion.length;
-			System.arraycopy(fileCompletion, 0, completionInfo.completions, offset, amount);
-			offset += amount;
+			completionInfo.completions = (String[])getFileCompletions(
+				view,currentDirectory,lastArg,false).toArray(
+				new String[0]);
 		}
 
 		// On systems where the file separator is the same as the escape
@@ -241,12 +218,11 @@ class SystemShell extends Shell
 		// for windows).
 		if(File.separatorChar != '\\')
 		{
-			for(int i = 0; i < completionsCount; i++)
+			for(int i = 0; i < completionInfo.completions.length; i++)
 			{
 				completionInfo.completions[i] = escape(completionInfo.completions[i], fileDelimiters);
 			}
 		}
-
 
 		// We add a double quote at the beginning of any completion with
 		// special characters because the current argument parsing
@@ -260,7 +236,7 @@ class SystemShell extends Shell
 		if(!isDoubleQuoted)
 		{
 			final String specialCharacters = (File.separatorChar == '\\') ? " " : fileDelimiters;
-			for(int i = 0; i < completionsCount; i++){
+			for(int i = 0; i < completionInfo.completions.length; i++){
 				String result = completionInfo.completions[i];
 				if (containsCharacters(result, specialCharacters))
 					result = "\"" + result;
@@ -489,14 +465,14 @@ class SystemShell extends Shell
 	} //}}}
 
 	//{{{ getAliases() method
-	static Hashtable getAliases()
+	Hashtable getAliases()
 	{
 		init();
 		return aliases;
 	} //}}}
 
 	//{{{ getVariables() method
-	static Hashtable getVariables()
+	Hashtable getVariables()
 	{
 		init();
 		return variables;
@@ -517,17 +493,55 @@ class SystemShell extends Shell
 
 	//{{{ Instance variables
 	private static Hashtable consoleStateMap = new Hashtable();
-	private static final char dosSlash = 127;
-	private static Hashtable aliases;
-	private static Hashtable variables;
+	private final char dosSlash = 127;
+	private Hashtable aliases;
+	private Hashtable variables;
+	private Hashtable commands;
+	private boolean initialized;
 	//}}}
 
 	//{{{ init() method
-	private static void init()
+	private void init()
 	{
-		if(aliases != null && variables != null)
+		if(initialized)
 			return;
 
+		initialized = true;
+
+		initCommands();
+		initAliases();
+		initVariables();
+	} //}}}
+
+	//{{{ initCommands() method
+	private void initCommands()
+	{
+		commands = new Hashtable();
+		commands.put("%alias", new SystemShellBuiltIn.alias());
+		commands.put("%aliases", new SystemShellBuiltIn.aliases());
+		commands.put("%browse", new SystemShellBuiltIn.browse());
+		commands.put("%cd", new SystemShellBuiltIn.cd());
+		commands.put("%clear", new SystemShellBuiltIn.clear());
+		commands.put("%dirstack", new SystemShellBuiltIn.dirstack());
+		commands.put("%detach", new SystemShellBuiltIn.detach());
+		commands.put("%echo", new SystemShellBuiltIn.echo());
+		commands.put("%edit", new SystemShellBuiltIn.edit());
+		commands.put("%env", new SystemShellBuiltIn.env());
+		commands.put("%help", new SystemShellBuiltIn.help());
+		commands.put("%kill", new SystemShellBuiltIn.kill());
+		commands.put("%popd", new SystemShellBuiltIn.popd());
+		commands.put("%pushd", new SystemShellBuiltIn.pushd());
+		commands.put("%pwd", new SystemShellBuiltIn.pwd());
+		commands.put("%run", new SystemShellBuiltIn.run());
+		commands.put("%set", new SystemShellBuiltIn.set());
+		commands.put("%unalias", new SystemShellBuiltIn.unalias());
+		commands.put("%unset", new SystemShellBuiltIn.unset());
+		commands.put("%version", new SystemShellBuiltIn.version());
+	} //}}}
+
+	//{{{ initAliases() method
+	private void initAliases()
+	{
 		aliases = new Hashtable();
 
 		// some built-ins can be invoked without the % prefix
@@ -536,15 +550,19 @@ class SystemShell extends Shell
 		aliases.put("-","%cd -");
 
 		// load aliases from properties
-		String alias;
+		/* String alias;
 		int i = 0;
 		while((alias = jEdit.getProperty("console.shell.alias." + i)) != null)
 		{
 			aliases.put(alias,jEdit.getProperty("console.shell.alias."
 				+ i + ".expansion"));
 			i++;
-		}
+		} */
+	} //}}}
 
+	//{{{ initVariables() method
+	private void initVariables()
+	{
 		ProcessRunner osSupport = ProcessRunner.getProcessRunner();
 
 		osSupport.setUpDefaultAliases(aliases);
@@ -561,14 +579,14 @@ class SystemShell extends Shell
 		variables.put("TERM","dumb");
 
 		// load variables from properties
-		String varname;
+		/* String varname;
 		i = 0;
 		while((varname = jEdit.getProperty("console.shell.variable." + i)) != null)
 		{
 			variables.put(varname,jEdit.getProperty("console.shell.variable."
 				+ i + ".value"));
 			i++;
-		}
+		} */
 	} //}}}
 
 	//{{{ parse() method
@@ -666,9 +684,25 @@ loop:			for(;;)
 		args.addElement(expandVariables(view,arg));
 	} //}}}
 
+	//{{{ executeBuiltIn() method
+	public void executeBuiltIn(Console console, Output output, String command, Vector args)
+	{
+		SystemShellBuiltIn builtIn = (SystemShellBuiltIn)commands.get(command);
+		if(builtIn == null)
+		{
+			String[] pp = { command };
+			console.print(console.getErrorColor(),jEdit.getProperty(
+				"console.shell.unknown-builtin",pp));
+		}
+		else
+		{
+			builtIn.execute(console,output,command,args);
+		}
+	} //}}}
+
 	//{{{ getFileCompletions() method
-	private String [] getFileCompletions(View view, String currentDirName,
-		String typedFilename)
+	private List getFileCompletions(View view, String currentDirName,
+		String typedFilename, boolean directoriesOnly)
 	{
 		int lastSeparatorIndex = typedFilename.lastIndexOf(File.separator);
 
@@ -698,7 +732,7 @@ loop:			for(;;)
 			return null;
 
 		boolean isOSCaseSensitive = ProcessRunner.getProcessRunner().isCaseSensitive();
-		String [] matchingFilenames = new String[filenames.length];
+		ArrayList matchingFilenames = new ArrayList(filenames.length);
 		int matchingFilenamesCount = 0;
 		String matchedString = isOSCaseSensitive ? fileName : fileName.toLowerCase();
 		for(int i = 0; i < filenames.length; i++)
@@ -710,6 +744,8 @@ loop:			for(;;)
 				String match;
 
 				File matchFile = new File(dir, filenames[i]);
+				if(directoriesOnly && !matchFile.isDirectory())
+					continue;
 
 				match = typedDirName + filenames[i];
 
@@ -717,20 +753,38 @@ loop:			for(;;)
 				if(matchFile.isDirectory() && !match.endsWith(File.separator))
 					match = match + File.separator;
 
-				matchingFilenames[matchingFilenamesCount++] = match;
+				matchingFilenames.add(match);
 			}
 		}
 
-		String [] result = new String[matchingFilenamesCount];
-		System.arraycopy(matchingFilenames, 0, result, 0, matchingFilenamesCount);
-
-		return result.length == 0 ? null : result;
+		return matchingFilenames;
 	} //}}}
 
 	//{{{ getCommandCompletions() method
-	private String[] getCommandCompletions(String command)
+	private List getCommandCompletions(View view, String currentDirName,
+		String command)
 	{
-		 return null;
+		ArrayList list = new ArrayList();
+
+		Iterator iter = commands.keySet().iterator();
+		while(iter.hasNext())
+		{
+			String cmd = (String)iter.next();
+			if(cmd.startsWith(command))
+				list.add(cmd);
+		}
+
+		iter = aliases.keySet().iterator();
+		while(iter.hasNext())
+		{
+			String cmd = (String)iter.next();
+			if(cmd.startsWith(command))
+				list.add(cmd);
+		}
+
+		list.addAll(getFileCompletions(view,currentDirName,command,true));
+
+		return list;
 	} //}}}
 
 	//{{{ findLastArgument() method
