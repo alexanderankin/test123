@@ -30,6 +30,7 @@ import java.awt.event.*;
 import java.beans.*;
 import java.io.*;
 import java.net.*;
+import java.util.Enumeration;
 
 import javax.accessibility.*;
 import javax.swing.*;
@@ -98,7 +99,8 @@ public class InfoViewer
         viewer.addPropertyChangeListener(this);
         viewer.addMouseListener(new MouseHandler());
         scrViewer = new JScrollPane(viewer);
-
+        // HTMLEditorKit is not yet in use here 
+        
         // the inner content: url textfield, viewer, status bar
         String appearancePrefix = "infoviewer.appearance." + (isDocked ? "docked." : "floating.");
         JPanel innerPanel = new JPanel(new BorderLayout());
@@ -206,6 +208,61 @@ public class InfoViewer
         {
             //viewer.getEditorKit().createDefaultDocument();
             viewer.setPage(url);
+
+            // the style of the viewer
+            if(viewer.getEditorKit() instanceof HTMLEditorKit ) {
+                HTMLEditorKit htmlEditorKit=(HTMLEditorKit)(viewer.getEditorKit());
+                //Log.log(Log.DEBUG, this, "htmleditorkit in use");
+                StyleSheet styles=htmlEditorKit.getStyleSheet();
+                // make body fontsize smaller
+                Style bodyrule = styles.getStyle("body");
+                if(bodyrule!=null) {
+                    styles.removeStyle("body");
+                    Style newbodyrule=styles.addStyle("body",null);
+
+                    //Log.log(Log.DEBUG, this, "bodyrule.1="+bodyrule.toString());
+                    //String val=(String)bodyrule.getAttribute("font-size");
+                    //Log.log(Log.DEBUG, this, "body.font-size="+val);
+                    //bodyrule.removeAttribute("font-size");
+                    Enumeration attrs=bodyrule.getAttributeNames();
+                    if(attrs!=null) {
+                        //Log.log(Log.DEBUG, this, "copying attributes");
+                        while(attrs.hasMoreElements()) {
+                            Object name = attrs.nextElement();
+                            //Log.log(Log.DEBUG, this, "  attribute.name="+name.toString());
+                            if(!name.toString().equals("font-size")) {
+                                newbodyrule.addAttribute(name,bodyrule.getAttribute(name));
+                            }
+                        }
+                    }
+                    String size=jEdit.getProperty("infoviewer.viewer.fontsize");
+                    if(size==null) size="14";
+                    Log.log(Log.DEBUG, this, "new fontSize:"+size);
+                    newbodyrule.addAttribute("font-size",size+"pt");
+                    
+                    /*
+                    Log.log(Log.DEBUG, this, "bodyrule.2="+bodyrule.toString());
+                    bodyrule.addAttribute("font-size","10pt");
+                    Log.log(Log.DEBUG, this, "bodyrule.3="+bodyrule.toString());
+                    newbodyrule.addAttributes(bodyrule);
+                    */
+                    Log.log(Log.DEBUG, this, "bodyrule.2="+newbodyrule.toString());
+                }
+                //styles.setBaseFontSize(1);
+                viewer.repaint();
+                // list available styles
+                Enumeration rules = styles.getStyleNames();
+                while(rules.hasMoreElements()) {
+                    String name = (String) rules.nextElement();
+                    Style rule = styles.getStyle(name);
+                    if(rule.toString().indexOf("font-size")>-1) {
+                        Log.log(Log.DEBUG, this, name+" : "+rule.toString());
+                    }
+                }
+            }
+            else {
+                //Log.log(Log.WARNING, this, "unexpected kind of editorkit in use");
+            }
         }
         catch(FileNotFoundException fnf)
         {
