@@ -1,0 +1,107 @@
+<html>
+
+<body>
+<h1>
+  Log Viewer v0.2
+</h1>  
+<pre>
+  Copyright (C) 2003 Don Brown (mrdon@techie.com)
+  Copyright (C) 2000, 2001 Greg Merrill (greghmerrill@yahoo.com)
+  This file is part of Log Viewer (http://www.twdata.org/logviewer),
+  a plugin for jEdit (http://www.jedit.org).
+  It is heavily based off Follow (http://follow.sf.net).
+  Log Viewer is free software; you can redistribute it and/or modify
+  it under the terms of version 2 of the GNU General Public
+  License as published by the Free Software Foundation.
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+</pre>
+<h2>
+LOG VIEWER PLUGIN
+</h2>
+This allows you to follow several log files at a time within jEdit.
+It is heavily based off Follow, http://follow.sourceforge.net.  For
+more information, visit http://www.twdata.org/logviewer
+<p>
+Changes by Dale Anson:
+<ul>
+<li> Updated for jEdit 4.2
+<li> Minor changes to build file
+<li> Added word wrap 
+<li> Added "Find" dialog
+<li> Added ability to "lock" the horizontal scroll bar.
+</ul>
+<h3>
+What Is Buffer Size?
+</h3>
+  Buffer Size is the number of characters which log viewer
+  reads from a file each time it pulls characters from that file.
+  High values will increase the performance of log viewer, but
+  will consume more RAM.
+<h3>  
+What Is Latency?
+</h3>
+
+  Latency is the number of milliseconds which log viewer rests
+  each time it reaches the end of a file before checking to see if anything
+  has been added to that file.
+  Latency values of lower than 1000ms (1 second) are not recommended, as they
+  may cause performance problems (due to thrashing).
+  
+<h3>  
+What Is Tab Placement?
+</h3>
+
+  Tab Placement dictates the location of the tabs within logviewer plugin.
+  These tabs may be located at the Top, Bottom, Left, or Right side of the window.
+  
+<h3>  
+What Is Confirm Delete?
+</h3>
+
+  When performing the Delete action, you may or may not want a dialog
+  to appear asking you to confirm your intent to delete the contents
+  of the currently selected file.
+  By changing the value of this preference, you can control
+  whether or not this dialog appears.
+  
+<h3>  
+What Is Confirm Delete All?
+</h3>
+
+  When performing the Delete All action, you may or may not want a dialog
+  to appear asking you to confirm your intent to delete the contents
+  of all open files.
+  By changing the value of this preference, you can control
+  whether or not this dialog appears.
+
+<h3>  
+What Is Word Wrap?
+</h3>
+
+  The log file that you are viewing may have lines that are longer
+  than the width of the viewable area of the log viewer. You may not
+  want to scroll left and right to read the log. By changing the value
+  of this preference, you can control whether long lines wrap to 
+  several lines.
+  
+<h3>  
+What Is Auto-Scroll?
+</h3>
+
+  When auto-scroll is enabled, log viewer automatically scrolls
+  to the bottom of a followed file when new text is appended that file.
+  
+<h3>  
+What Is Font?
+</h3>
+
+  You can choose a font to be used to show the text of the log.
+  
+</body>
+</html>
