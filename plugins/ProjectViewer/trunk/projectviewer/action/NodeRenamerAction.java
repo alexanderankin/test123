@@ -81,13 +81,15 @@ public class NodeRenamerAction extends Action {
 			}
 
 			// checks the input
-			if ((node.isFile() || node.isDirectory()) && node.canWrite()) {
-				if (!dlg.getDontChangeDisk() &&
-					(newName.indexOf('/') != -1 || newName.indexOf('\\') != -1)) {
-					JOptionPane.showMessageDialog(viewer,
-						jEdit.getProperty("projectviewer.action.rename.file_error"),
-						jEdit.getProperty("projectviewer.action.rename.title"),
-						JOptionPane.ERROR_MESSAGE);
+			if (node.isFile() || node.isDirectory()) {
+				if (!dlg.getDontChangeDisk()) {
+					if (!node.canWrite()
+							|| (newName.indexOf('/') != -1 || newName.indexOf('\\') != -1)) {
+						JOptionPane.showMessageDialog(viewer,
+							jEdit.getProperty("projectviewer.action.rename.file_error"),
+							jEdit.getProperty("projectviewer.action.rename.title"),
+							JOptionPane.ERROR_MESSAGE);
+					} 
 				} else {
 					isValid = true;
 				}
@@ -109,6 +111,7 @@ public class NodeRenamerAction extends Action {
 
 		if (dlg.getDontChangeDisk()) {
 			node.setName(newName);
+			reinsert(node);
 			return;
 		} else if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
@@ -123,7 +126,7 @@ public class NodeRenamerAction extends Action {
 				return;
 			}
 			project.registerFile(f);
-			ProjectViewer.nodeChanged(f);
+			reinsert(f);
 		} else if (node.isDirectory() ) {
 			VPTDirectory dir = (VPTDirectory) node;
 			if (dir.getFile().exists()) {
@@ -151,7 +154,7 @@ public class NodeRenamerAction extends Action {
 			} else {
 				dir.setName(newName);
 			}
-			ProjectViewer.nodeChanged(dir);
+			reinsert(dir);
 		} else if (node.isProject()) {
 			String oldName = node.getName();
 			node.setName(newName);
@@ -196,6 +199,12 @@ public class NodeRenamerAction extends Action {
 		return true;
 	} //}}}
 
+	private void reinsert(VPTNode node) {
+		VPTNode parent = (VPTNode) node.getParent();
+		ProjectViewer.removeNodeFromParent(node);
+		ProjectViewer.insertNodeInto(node, parent);
+	}
+	
 	//{{{ RenameFileDialog class
 	/**
 	 *	A dialog for renaming nodes. Provides an extra checkbox to allow
@@ -239,7 +248,7 @@ public class NodeRenamerAction extends Action {
 					false);
 				p.add(chFile);
 
-				if (node.getClass() == VFSFile.class) {
+				if (node.getClass() == VFSFile.class || !node.canWrite()) {
 					chFile.setSelected(true);
 					chFile.setEnabled(false);
 				}
