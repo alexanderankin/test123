@@ -7,10 +7,15 @@ plugin.ErrorListPlugin.docs=users-guide.html
 plugin.ErrorListPlugin.depend.0=jedit 03.02.08.00
 plugin.ErrorListPlugin.depend.1=plugin EditBusPlugin 1.0
 
-error-list-menu=error-list - error-list-previous-error error-list-next-error
-error-list-menu.label=Error List
+error-list-menu=error-list - error-list-previous-error error-list-next-error - \
+	error-list-previous-error-file error-list-next-error-file
 
+error-list-menu.label=Error List
 error-list.label=Error List
+error-list-next-error.label=Go to Next Error
+error-list-previous-error.label=Go to Previous Error
+error-list-next-error-file.label=Go to Next File With Errors
+error-list-previous-error-file.label=Go to Previous File With Errors
 
 error-list.title=Error List
 error-list.status={0} error(s), {1} warning(s)
@@ -22,10 +27,6 @@ error-list.showOnError=false
 # Colors
 error-list.warningColor=#ffa800
 error-list.errorColor=#ff0000
-
-# Actions
-error-list-next-error.label=Go to Next Error
-error-list-previous-error.label=Go to Previous Error
 
 # Option pane
 options.error-list.label=Error List
