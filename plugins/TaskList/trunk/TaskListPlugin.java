@@ -182,6 +182,17 @@ public class TaskListPlugin extends EBPlugin
 				epu.getEditPane().getTextArea().getPainter()
 					.addCustomHighlight(highlight);
 			}
+			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
+			{
+				final Buffer buffer = epu.getEditPane().getBuffer();
+				TaskListPlugin.clearTasks(buffer);
+				SwingUtilities.invokeLater(new Runnable(){
+					public void run()
+					{
+						TaskListPlugin.parseBuffer(buffer);
+					}
+				});
+			}
 		}
 		else if(message instanceof PropertiesChanged)
 		{
