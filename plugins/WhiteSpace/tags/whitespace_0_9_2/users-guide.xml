@@ -1,0 +1,483 @@
+<?xml version="1.0"?>
+
+<!-- WhiteSpace plugin user's guide -->
+<!-- (c) 2000, 2001, 2002 Andre Kaplan -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+
+<bookinfo>
+    <title>WhiteSpace plugin</title>
+
+    <authorgroup>
+        <author>
+            <firstname>Andr&eacute;</firstname>
+            <surname>Kaplan</surname>
+        </author>
+    </authorgroup>
+
+    <legalnotice>
+        <title>Legal Notice</title>
+
+        <para>
+        Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU Free Documentation License,
+        Version 1.1 or any later version published by the
+        Free Software Foundation; with no
+        <quote>Invariant Sections</quote>,
+        <quote>Front-Cover Texts</quote> or
+        <quote>Back-Cover Texts</quote>,
+        each as defined in the license.
+        A copy of the license can be found in the file
+        <filename>COPYING.DOC.txt</filename> included with jEdit.
+        </para>
+    </legalnotice>
+</bookinfo>
+
+
+<chapter id="presentation">
+    <title>Presentation</title>
+
+    <para>
+    The main feature of WhiteSpace is to highlight whitespaces.
+    </para>
+
+    <para>When highlighted,</para>
+    <itemizedlist>
+        <listitem>Spaces are represented by a
+            <imagedata
+                fileref="space.gif"
+                format="gif"
+            />
+        </listitem>
+
+        <listitem>Tabs are represented by a
+            <imagedata
+                fileref="tab.gif"
+                format="gif"
+            />
+        </listitem>
+
+        <listitem>Other whitespaces are represented by a
+            <imagedata
+                fileref="whitespace.gif"
+                format="gif"
+            />
+        </listitem>
+    </itemizedlist>
+
+    <para>Except for the space, the horizontal tabulation and the line feed,
+    other whitespaces are defined by the
+    <function>Character.isWhitespace</function> java function, i.e.:
+    </para>
+
+    <itemizedlist>
+        <listitem> a Unicode space separator (category "Zs"), but not
+            a no-break space (&#92;u00a0 or &#92;ufeff).
+        </listitem>
+        <listitem> a Unicode line separator (category "Zl").</listitem>
+        <listitem> a Unicode paragraph separator (category "Zp").</listitem>
+        <listitem> &#92;u000b, vertical tabulation.</listitem>
+        <listitem> &#92;u000c, form feed.</listitem>
+        <listitem> &#92;u000d, carriage return.</listitem>
+        <listitem> &#92;u001c, file separator.</listitem>
+        <listitem> &#92;u001d, group separator.</listitem>
+        <listitem> &#92;u001e, record separator.</listitem>
+        <listitem> &#92;u001f, unit separator.</listitem>
+    </itemizedlist>
+
+    <para>
+    When the
+    <guimenuitem>Display ISO control chars as whitespaces</guimenuitem>
+    option is checked, the characters
+       in the range &#92;u0000 through &#92;u001f
+    or in the range &#92;u007f through &#92;u009f
+    are also highlighted.
+    </para>
+
+    <para>
+    WhiteSpace has also some other useful features:
+    </para>
+
+    <itemizedlist>
+        <listitem><emphasis>Paragraph separators</emphasis>:
+        a paragraph separator is displayed whenever two or more empty
+        lines are encoutered.
+        </listitem>
+
+        <listitem><emphasis>Fold guides</emphasis>
+        show the different levels of indentations of your code by
+        displaying vertical grey (default) lines
+        </listitem>
+
+        <listitem><emphasis>Fold tooltips</emphasis>
+        are displayed when the beginning of a block is not visible and
+        your mouse cursor is near a fold guide.
+        </listitem>
+
+        <listitem><emphasis>On save actions</emphasis>:
+            <itemizedlist>
+                <listitem>Remove trailing whitespaces</listitem>
+                <listitem>
+                    Tabify/untabify leading whitespaces according to soft tabs
+                    settings
+                </listitem>
+                <listitem>Tabify leading whitespaces</listitem>
+                <listitem>Untabify leading whitespaces</listitem>
+            </itemizedlist>
+        </listitem>
+    </itemizedlist>
+
+    <para>
+    At last, some jEdit actions are related to spaces and tabs handling:
+    </para>
+
+    <itemizedlist>
+        <listitem>
+            <guimenu>Edit</guimenu>&gt;
+            <guisubmenu>Text</guisubmenu>&gt;
+            <guimenuitem>Spaces&nbsp;To&nbsp;Tabs</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenu>Edit</guimenu>&gt;
+            <guisubmenu>Text</guisubmenu>&gt;
+            <guimenuitem>Tabs&nbsp;To&nbsp;Spaces</guimenuitem>
+        </listitem>
+    </itemizedlist>
+
+</chapter>
+
+
+<chapter id="default_options">
+    <title>Default Options</title>
+
+    <para>
+    WhiteSpace default options are available under:
+        <guimenu>Utilities</guimenu>&gt;
+        <guisubmenu>Global&nbsp;Options</guisubmenu>&gt;
+        <guimenu>Plugin&nbsp;Options</guimenu>&gt;
+        <guisubmenu>WhiteSpace</guisubmenu>.
+    </para>
+
+
+    <simplesect id="spaces_options">
+        <title>&quot;Spaces&quot; options</title>
+
+        <itemizedlist>
+            <listitem>Show spaces by default</listitem>
+            <listitem>Space color</listitem>
+            <listitem>Show leading spaces by default</listitem>
+            <listitem>Show inner spaces by default</listitem>
+            <listitem>Show trailing spaces by default</listitem>
+        </itemizedlist>
+    </simplesect>
+
+
+    <simplesect id="tabs_options">
+        <title>&quot;Tabs&quot; options</title>
+
+        <itemizedlist>
+            <listitem>Show tabs by default</listitem>
+            <listitem>Tab color</listitem>
+            <listitem>Show leading tabs by default</listitem>
+            <listitem>Show inner tabs by default</listitem>
+            <listitem>Show trailing tabs by default</listitem>
+        </itemizedlist>
+    </simplesect>
+
+
+    <simplesect id="other_whitespaces_options">
+        <title>&quot;Other whitespaces&quot; options</title>
+
+        <itemizedlist>
+            <listitem>Show other whitespaces by default</listitem>
+            <listitem>Display ISO control chars as whitespaces</listitem>
+            <listitem>Other whitespace color</listitem>
+        </itemizedlist>
+    </simplesect>
+
+
+    <simplesect id="fold_options">
+        <title>&quot;Fold guides&quot; options</title>
+
+        <itemizedlist>
+            <listitem>Show fold guides by default</listitem>
+            <listitem>Show fold tooltips by default</listitem>
+            <listitem>Fold guide color</listitem>
+        </itemizedlist>
+    </simplesect>
+
+
+    <simplesect id="paragraph_options">
+        <title>&quot;Paragraph separators&quot; options</title>
+
+        <itemizedlist>
+            <listitem>Show paragraph separators by default</listitem>
+            <listitem>Paragraph separators respect indentation</listitem>
+            <listitem>Paragraph separator color</listitem>
+        </itemizedlist>
+    </simplesect>
+
+
+    <simplesect id="on_save_options">
+        <title>&quot;On save&quot; options</title>
+
+        <para>
+            When chosen, these actions are performed when a buffer is saved:
+        </para>
+
+        <variablelist>
+            <varlistentry>
+                <term>Remove trailing whitespaces</term>
+
+                <listitem><para>
+                    All trailing tabs and spaces are removed, except those
+                    preceded by one of the given escape characters.
+                    The default escape character is &#92; (backslash). E.g.
+                    <screen>
+Some Text&#92;<inlinemediaobject>
+    <imageobject>
+        <alt>Space</alt>
+        <imagedata fileref="space.gif" format="gif"/>
+    </imageobject>
+</inlinemediaobject><inlinemediaobject>
+    <imageobject>
+        <alt>Tab</alt>
+        <imagedata fileref="tab.gif" format="gif"/>
+    </imageobject>
+</inlinemediaobject><inlinemediaobject>
+    <imageobject>
+        <alt>Tab</alt>
+        <imagedata fileref="tab.gif" format="gif"/>
+    </imageobject>
+</inlinemediaobject></screen>
+                    will be replaced by
+                    <screen>
+Some Text&#92;<inlinemediaobject>
+    <imageobject>
+        <alt>Space</alt>
+        <imagedata fileref="space.gif" format="gif"/>
+    </imageobject>
+</inlinemediaobject></screen>
+                </para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+                <term>Tabify/untabify according to soft tabs setting</term>
+                <listitem><para>
+                    The soft tabs setting determines whether leading
+                    whitespaces should be converted to tabs or spaces.
+                </para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+                <term>Tabify leading whitespaces</term>
+
+                <listitem><para>
+                    Leading whitespaces are replaced by a sequence of tabs
+                    possibly followed by at most tabSize - 1 spaces.
+                    The expanded length of leading whitespaces remains
+                    the same.
+                </para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+                <term>Untabify leading whitespaces</term>
+
+                <listitem><para>
+                    All tabs are removed from the leading whitespaces and
+                    replaced by an equivalent number of spaces.
+                    The expanded length of leading whitespaces remains
+                    the same.
+                </para></listitem>
+            </varlistentry>
+        </variablelist>
+    </simplesect>
+</chapter>
+
+
+<chapter id="buffer_options">
+    <title>Buffer Options</title>
+
+    <para>
+    The Buffer options are available from the
+        <guimenu>Plugins</guimenu>&gt;
+        <guisubmenu>WhiteSpace</guisubmenu>
+    menu.
+    </para>
+
+    <para>
+    The following Buffer options enable you to control the highlighting of
+    spaces, tabs and other whitespaces for a given jEdit buffer.
+    It's also possible to highlight spaces and tabs depending on their
+    position (leading/inner/trailing) in the text.
+    </para>
+
+    <itemizedlist>
+        <listitem>
+            <guimenuitem>Show&nbsp;spaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;tabs</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;other&nbsp;whitespaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;paragraph&nbsp;separators</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;fold&nbsp;guides</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;fold&nbsp;tooltips</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;leading&nbsp;spaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;inner&nbsp;spaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;trailing&nbsp;spaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;leading&nbsp;tabs</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;inner&nbsp;tabs</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Show&nbsp;trailing&nbsp;tabs</guimenuitem>
+        </listitem>
+    </itemizedlist>
+
+    <para>
+    The following Buffer options control the actions to be taken when
+    a buffer is saved.
+    Note that the last three actions are mutually exclusive.
+    </para>
+
+    <itemizedlist>
+        <listitem>
+            <guimenuitem>Remove&nbsp;trailing&nbsp;whitespaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>
+            Tabify/untabify&nbsp;according&nbsp;to&nbsp;soft&nbsp;tabs&nbsp;setting
+            </guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Tabify&nbsp;according&nbsp;whitespaces</guimenuitem>
+        </listitem>
+
+        <listitem>
+            <guimenuitem>Untabify&nbsp;leading&nbsp;whitespaces</guimenuitem>
+        </listitem>
+    </itemizedlist>
+
+</chapter>
+
+
+<chapter id="license">
+    <title>License</title>
+
+    <para>
+    The source code is distributed under the GPL.
+    Please see
+    <ulink url="http://www.fsf.org/copyleft/gpl.html">
+        http://www.fsf.org/copyleft/gpl.html
+    </ulink>
+    </para>
+</chapter>
+
+
+<chapter id="feedback">
+    <title>Feedback</title>
+
+    <para>
+    The preferred way to send bug reports is to use the
+    Sourceforge Bug Tracker at
+    <ulink url="http://sourceforge.net/bugs/?group_id=588">
+        http://sourceforge.net/bugs/?group_id=588
+    </ulink>
+    </para>
+
+    <para>You can also write to:</para>
+    <itemizedlist>
+        <listitem>
+            Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
+        </listitem>
+
+        <listitem>
+            or jEdit-users mailing-list
+            <email>jedit-users@lists.sourceforge.net</email>;
+        </listitem>
+
+        <listitem>
+            or jEdit-devel mailing-list
+            <email>jedit-devel@lists.sourceforge.net</email>.
+        </listitem>
+    </itemizedlist>
+</chapter>
+
+
+<appendix id="changelog">
+    <title>Change log</title>
+
+	<formalpara>
+        <title>Version 0.9.2</title>
+        <para>Requires JDK 1.3, jEdit 4.2pre1</para>
+
+        <itemizedlist>
+            <listitem>Updated for jEdit 4.2 plugin API</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 0.9.1</title>
+        <para>Requires JDK 1.2, jEdit 4.0pre4</para>
+
+        <itemizedlist>
+            <listitem>Updated for jEdit 4.0 Buffer API</listitem>
+            <listitem>Updated for jEdit 4.0 Highlighting API</listitem>
+        </itemizedlist>
+    </formalpara>
+
+    <formalpara>
+        <title>Version 0.9</title>
+        <para>Requires JDK 1.1, jEdit 3.2.2</para>
+
+        <itemizedlist>
+            <listitem>Ant now used as build tool</listitem>
+            <listitem>DocBook now used for the documentation</listitem>
+            <listitem>
+                WhiteSpace options are now <classname>Buffer</classname>
+                properties
+            </listitem>
+            <listitem>
+                All highlighting options but fold highlighting default to false
+            </listitem>
+        </itemizedlist>
+    </formalpara>
+</appendix>
+
+
+</book>
