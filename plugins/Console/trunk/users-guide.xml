@@ -1221,6 +1221,9 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <command>-n</command>) which opens a new floating file system browser
    instance.
    </para></listitem>
+   <listitem><para>Changing directories by entering the directory name without
+   <command>cd</command> was broken.
+   </para></listitem>
    </itemizedlist>
   </listitem>
 

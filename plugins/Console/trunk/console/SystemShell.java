@@ -81,19 +81,21 @@ public class SystemShell extends Shell
 		}
 		else
 		{
+			String fullPath = MiscUtilities.constructPath(
+				getConsoleState(console).currentDirectory,
+				commandName);
+
 			// Java resolves this relative to user.dir, not
 			// the directory we pass to exec()...
 			if(commandName.startsWith("./")
 				|| commandName.startsWith("." + File.separator))
 			{
-				commandName = MiscUtilities.constructPath(
-					getConsoleState(console).currentDirectory,
-					commandName);
-				args.setElementAt(commandName,0);
+				args.setElementAt(fullPath,0);
 			}
 
-			if(new File(commandName).isDirectory() && args.size() == 1)
+			if(new File(fullPath).isDirectory() && args.size() == 1)
 			{
+				args.setElementAt(fullPath,0);
 				executeBuiltIn(console,output,error,"%cd",args);
 				output.commandDone();
 				error.commandDone();
