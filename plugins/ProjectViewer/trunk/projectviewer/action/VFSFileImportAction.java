@@ -24,30 +24,30 @@ import java.awt.event.ActionEvent;
 import org.gjt.sp.jedit.jEdit;
 
 import projectviewer.vpt.VPTNode;
-import projectviewer.importer.FileImporter;
+import projectviewer.importer.VFSFileImporter;
 //}}}
 
 /**
- *	Action that when executed imports files into a node.
+ *	Action that when executed imports files from jEdit's VFS into a node.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class FileImportAction extends Action {
+public class VFSFileImportAction extends Action {
 
-	//{{{ getText() method
+	//{{{ +getText() : String
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
-		return jEdit.getProperty("projectviewer.action.import");
+		return jEdit.getProperty("projectviewer.action.vfs_import");
 	} //}}}
 
-	//{{{ actionPerformed(ActionEvent) method
+	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		new FileImporter(viewer.getSelectedNode(), viewer).doImport();
+		new VFSFileImporter(viewer.getSelectedNode(), viewer).doImport();
 	} //}}}
 
-	//{{{ prepareForNode(VPTNode) method
+	//{{{ +prepareForNode(VPTNode) : void
 	/** Enable action only for projects and directories. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible( (node != null) &&

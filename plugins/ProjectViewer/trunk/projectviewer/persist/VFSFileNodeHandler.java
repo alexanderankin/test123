@@ -19,105 +19,89 @@
 package projectviewer.persist;
 
 //{{{ Imports
+import java.util.Map;
+
 import java.io.File;
 import java.io.Writer;
 import java.io.IOException;
 
-import java.util.Map;
-import java.util.Iterator;
-import java.util.Enumeration;
+import org.gjt.sp.jedit.io.VFSManager;
 
+import projectviewer.vpt.VFSFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
- *	Handler for project nodes.
+ *	Handler for file nodes.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class ProjectNodeHandler extends NodeHandler {
+public class VFSFileNodeHandler extends NodeHandler {
 
-	//{{{ Constants
-	protected static final String NODE_NAME	= "project";
-	private static final String PATH_ATTR	= "path";
-	private static final String URL_ATTR	= "url";
-	//}}}
+	private static final String NODE_NAME = "vfsfile";
+	private static final String PATH_ATTR = "path";
+	private static final String NAME_ATTR = "name";
 
+	//{{{ +getNodeName() : String
 	/**
 	 *	Returns the name of the nodes that should be delegated to this handler
 	 *	when loading configuration data.
 	 */
 	public String getNodeName() {
 		return NODE_NAME;
-	}
+	} //}}}
 
+	//{{{ +getNodeClass() : Class
 	/**
 	 *	Returns the class of the nodes that should be delegated to this handler
 	 *	when saving node data to the config file.
 	 */
 	public Class getNodeClass() {
-		return VPTProject.class;
-	}
+		return VFSFile.class;
+	} //}}}
 
+	//{{{ +isChild() : boolean
 	/**
 	 *	Returns whether the node is a child of nome other node or not.
 	 */
 	public boolean isChild() {
-		return false;
-	}
+		return true;
+	} //}}}
 
+	//{{{ +hasChildren() : boolean
 	/**
 	 *	Returns whether the node(s) handled by this handler are expected to
 	 *	have children or not.
 	 */
 	public boolean hasChildren() {
-		return true;
-	}
-
-	//{{{ createNode(Attributes, VPTProject) method
-	/**
-	 *	Instantiates a VPTNode based on the information given in the attribute
-	 *	list.
-	 */
-	public VPTNode createNode(Map attrs, VPTProject project) {
-		if (File.separatorChar == '\\') {
-			project.setRootPath(((String)attrs.get(PATH_ATTR)).replace('/', '\\'));
-		} else {
-			project.setRootPath((String)attrs.get(PATH_ATTR));
-		}
-		project.setURL((String)attrs.get(URL_ATTR));
-		return project;
+		return false;
 	} //}}}
 
-	//{{{ saveNode(VPTNode, Writer) method
-	/**
-	 *	Saves a project node. This behaves a little differently than other
-	 *	nodes, since it not only saves the project data, but creates nodes
-	 *	for the project's properties and open files.
-	 */
+	//{{{ +createNode(Map, VPTProject) : VPTNode
+	/** Loads a VFSFile from the cofiguration. */
+	public VPTNode createNode(Map attrs, VPTProject project) {
+		String path = (String) attrs.get(PATH_ATTR);
+		VFSFile vf = new VFSFile(path);
+		if (attrs.get(NAME_ATTR) != null) {
+			vf.setName((String)attrs.get(NAME_ATTR));
+		}
+		return vf;
+	} //}}}
+
+	//{{{ +saveNode(VPTNode, Writer) : void
+	/** Saves a VFS file node to the config file. */
 	public void saveNode(VPTNode node, Writer out) throws IOException {
 		startElement(out);
-		writeAttr(PATH_ATTR, xlatePath(((VPTProject)node).getRootPath()), out);
-		if (((VPTProject)node).getURL() != null)
-			writeAttr(URL_ATTR, ((VPTProject)node).getURL(), out);
-		out.write(">\n");
-
-		// save the properties
-		VPTProject proj = (VPTProject) node;
-		PropertyNodeHandler nh = new PropertyNodeHandler();
-		for (Iterator it = proj.getPropertyNames().iterator(); it.hasNext(); ) {
-			String p = (String) it.next();
-			nh.saveNode(p, proj.getObjectProperty(p), out);
+		VFSFile file = (VFSFile) node;
+		String name = VFSManager.getVFSForPath(file.getNodePath()).getFileName(file.getNodePath());
+		if (!file.getName().equals(name)) {
+			writeAttr(NAME_ATTR, file.getName(), out);
 		}
-
-		// save the open files
-		OpenFileNodeHandler ofnh = new OpenFileNodeHandler();
-		for (Iterator it = proj.getOpenFiles(); it.hasNext(); ) {
-			ofnh.saveNode((String)it.next(), out);
-		}
-
+		writeAttr(PATH_ATTR, xlatePath(file.getNodePath()), out);
 	} //}}}
+
 }
 

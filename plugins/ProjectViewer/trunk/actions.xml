@@ -27,6 +27,18 @@
 		</CODE>
 	</ACTION>
 
+	<ACTION NAME="projectviewer_launch_current_buffer">
+		<CODE>
+			projectviewer.PVActions.launchCurrentBuffer(view);
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="projectviewer_jarmaker_dialog">
+		<CODE>
+			new projectviewer.persist.ProjectZipper(view);
+		</CODE>
+	</ACTION>
+
 	<ACTION NAME="selectedfiles-viewer-menu-item">
     	<CODE>
 			pv = view.getDockableWindowManager().getDockable("projectviewer");

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.awt.Color;
 import javax.swing.Icon;
 import javax.swing.UIManager;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;
 //}}}
 
@@ -51,12 +52,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 	//{{{ Static members
 
-	public static final VPTNodeType ROOT 		= new VPTNodeType("root");
-	public static final VPTNodeType PROJECT 	= new VPTNodeType("project");
-	public static final VPTNodeType DIRECTORY 	= new VPTNodeType("directory");
-	public static final VPTNodeType FILE 		= new VPTNodeType("file");
-
-	//{{{ findProjectFor(VPTNode) method
+	//{{{ +_findProjectFor(VPTNode)_ : VPTProject
 	/**
 	 *	Returns the project associated with the node, or null if the node
 	 *	is the root of the project tree.
@@ -65,31 +61,31 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		if (node.isRoot()) {
 			return null;
 		} else {
-			while (!node.isProject()) {
+			while (node != null && !node.isProject()) {
 				node = (VPTNode) node.getParent();
 			}
 			return (VPTProject) node;
 		}
 	} //}}}
-	
+
 	//}}}
 
 	//{{{ Attributes
 
-	protected VPTNodeType	nodeType;
 	protected String		name;
 
 	//}}}
 
-	//{{{ Constructors
+	//{{{ #VPTNode(String) : <init>
 
-	protected VPTNode(VPTNodeType type, String name) {
-		this(type, name, type != FILE);
-	}
+	protected VPTNode(String name) {
+		this.name = name;
+		setAllowsChildren(getClass() != VPTFile.class);
+	} //}}}
 
-	protected VPTNode(VPTNodeType type, String name, boolean allowsChildren) {
-		this.nodeType	= type;
-		this.name		= name;
+	//{{{ #VPTNode(String, boolean) : <init>
+	protected VPTNode(String name, boolean allowsChildren) {
+		this.name = name;
 		setAllowsChildren(allowsChildren);
 	}
 
@@ -97,7 +93,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 	//{{{ Public methods
 
-	//{{{ sortChildren()
+	//{{{ +sortChildren() : void
 	/**
 	 *	Sort the children list for this node using the default node comparator.
 	 *	The trees containing the node are not notified of the update.
@@ -107,7 +103,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 			Collections.sort(children, new VPTNodeComparator());
 	} //}}}
 
-	//{{{ delete() method
+	//{{{ +delete() : boolean
 	/**
 	 *	The "delete()" method should remove the resource from the the disk,
 	 *	if applicable. This method does not call remove().
@@ -118,31 +114,31 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return false;
 	} //}}}
 
-	//{{{ isFile() method
+	//{{{ +isFile() : boolean
 	/** Returns true if this node is a file. */
 	public final boolean isFile() {
-		return (nodeType == FILE);
+		return (getClass() == VPTFile.class);
 	} //}}}
 
-	//{{{ isDirectory() method
+	//{{{ +isDirectory() : boolean
 	/** Returns true if this node is a file. */
 	public final boolean isDirectory() {
-		return (nodeType == DIRECTORY);
+		return (getClass() == VPTDirectory.class);
 	} //}}}
 
-	//{{{ isProject() method
+	//{{{ +isProject() : boolean
 	/** Returns true if this node is a file. */
 	public final boolean isProject() {
-		return (nodeType == PROJECT);
+		return (getClass() == VPTProject.class);
 	} //}}}
 
-	//{{{ isRoot() method
+	//{{{ +isRoot() : boolean
 	/** Returns whether this node is a root node. */
 	public final boolean isRoot() {
-		return (nodeType == ROOT);
+		return (getClass() == VPTRoot.class);
 	} //}}}
 
-	//{{{ isOpened() method
+	//{{{ +isOpened() : boolean
 	/**
 	 *	Tells if the resource is currently opened in jEdit. This only makes
 	 *	sense for files, so the default just returns "false" and is
@@ -152,7 +148,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return false;
 	} //}}}
 
-	//{{{ getName() method
+	//{{{ +getName() : String
 	/**
 	 *	Returns the name of this node. The name is the text that will appear
 	 *	in the project tree.
@@ -161,13 +157,13 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return name;
 	} //}}}
 
-	//{{{ setName(String) method
+	//{{{ +setName(String) : void
 	/**	Changes the name of the node. */
 	public void setName(String name) {
 		this.name = name;
 	} //}}}
 
-	//{{{ canWrite() method
+	//{{{ +canWrite() : boolean
 	/**
 	 *	Returns whether the underlying resource can be written to. It makes
 	 *	more sense for files and directories, for example, to check if it is
@@ -177,13 +173,13 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return false;
 	} //}}}
 
-	//{{{ toString() method
+	//{{{ +toString() : String
 	/** Returns a string representation of the current node. */
 	public String toString() {
 		return "VPTNode [" + getName() + "]";
 	} //}}}
 
-	//{{{ canOpen() method
+	//{{{ +canOpen() : boolean
 	/**
 	 *	This method should return whether it makes sense to "open" the node.
 	 *	For example, for file nodes, it should be reasonable to open the file
@@ -195,7 +191,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return false;
 	} //}}}
 
-	//{{{ open() method
+	//{{{ +open() : void
 	/**
 	 *	"Opens" the node. The default implementation does nothing. If a node can
 	 *	be opened, it should implement the opening action in this method.
@@ -204,7 +200,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 	} //}}}
 
-	//{{{ close() method
+	//{{{ +close() : void
 	/**
 	 *	"Closes" the node. This should "undo" what was done by
 	 *	{@link #open() open()}, normally.
@@ -213,7 +209,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 	} //}}}
 
-	//{{{ getNodePath() method
+	//{{{ +*getNodePath()* : String
 	/**
 	 *	Returns a String representing a "path" for this node. This can be any
 	 *	arbitrary String, but the idea is to have the string represent some kind
@@ -222,7 +218,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 */
 	public abstract String getNodePath(); //}}}
 
-	//{{{ compareToNode(VPTNode) method
+	//{{{ +compareToNode(VPTNode) : int
 	/**
 	 *	This method will only get called by nodes which are not recognized
 	 *	by the default Comparator provided by the class VPTNodeComparator.
@@ -238,7 +234,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	}
 	//}}}
 
-	//{{{ findIndexForChild(VPTNode) method
+	//{{{ +findIndexForChild(VPTNode) : int
 	/**
 	 *	Do a binary search with the goal of finding in what index of the child
 	 *	array of this node the given child would be inserted to maintain order
@@ -274,18 +270,36 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return (c.compare(child,n) < 0 ? b : b + 1);
 	} //}}}
 
-	//{{{ getNodeType() method
-	/** Returns the type of the node. */
-	public VPTNodeType getNodeType() {
-		return nodeType;
-	}
-	//}}}
+	//{{{ +setParent(MutableTreeNode) : void
+	/**
+	 *	Sets the parent for the node. If the node is an openable node (e.g.,
+	 *	a file), it registers itself in the parent project, or unregisters
+	 *	itself from the project in case the parent is being set to null.
+	 */
+	public void setParent(MutableTreeNode newParent) {
+		super.setParent(newParent);
+		if (newParent == null) {
+			if (canOpen()) {
+				VPTProject p = findProjectFor(this);
+				if (p != null) {
+					p.unregisterNodePath(this);
+				}
+			}
+		} else {
+			if (canOpen()) {
+				VPTProject p = findProjectFor(this);
+				if (p != null) {
+					p.registerNodePath(this);
+				}
+			}
+		}
+	} //}}}
 
 	//}}}
 
 	//{{{ GUI stuff
 
-	//{{{ getIcon(boolean) method
+	//{{{ +*getIcon(boolean)* : Icon
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
 	 *
@@ -293,7 +307,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 */
 	public abstract Icon getIcon(boolean expanded); //}}}
 
-	//{{{ getForegroundColor(boolean) method
+	//{{{ +getForegroundColor(boolean) : Color
 	/**
 	 *	Returns the node's foreground color.
 	 *
@@ -303,7 +317,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 		return (sel ? treeSelectionForeground : treeNoSelectionForeground);
 	} //}}}
 
-	//{{{ getBackgroundColor(boolean) method
+	//{{{ +getBackgroundColor(boolean) : Color
 	/**
 	 *	Returns the node's background color.
 	 *
@@ -315,23 +329,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 
 	//}}}
 
-	//{{{ VPTNodeType class
-	/**
-	 *	Class to provide a type-safe enumeration for node types.
-	 */
-	public static class VPTNodeType {
-		private String name = null;
-
-		public VPTNodeType(String name) {
-			this.name = name;
-		}
-
-		public String getName() {
-			return name;
-		}
-	} //}}}
-
-	//{{{ VPTNodeComparator class
+	//{{{ +class _VPTNodeComparator_
 	/**
  	 *	Compares two VPTNode objects. It makes assumptions about the base nodes
 	 *	provided by the plugin. If the nodes are not recognized by any of the
@@ -340,6 +338,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 */
 	public static class VPTNodeComparator implements Comparator {
 
+		//{{{ +compare(Object, Object) : int
 		public int compare(Object o1, Object o2) {
 			if (o1 == o2) return 0;
 
@@ -373,7 +372,7 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 			} else {
 				return node1.compareToNode(node2);
 			}
-		}
+		} //}}}
 
 	} //}}}
 

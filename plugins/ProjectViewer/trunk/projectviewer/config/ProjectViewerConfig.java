@@ -45,7 +45,7 @@ import projectviewer.ProjectPlugin;
  *  <p>Note about property changing events: currently, these events are only
  *  generated for the properties regarding the ProjectViewer GUI (that is,
  *  SHOW_TOOLBAR_OPT, SHOW_FOLDERS_OPT, SHOW_FILES_OPT and SHOW_WFILES_OPT).
- *  If the change of another property needs to be notifies to someone, please
+ *  If the change of another property needs to be notified to someone, please
  *  include the call to the appropriate "firePropertyChanged" method is the
  *  setter methods of the property.</p>
  *
@@ -61,7 +61,6 @@ public final class ProjectViewerConfig {
     public static final String CLOSE_FILES_OPT            = "projectviewer.close_files";
     public static final String REMEBER_OPEN_FILES_OPT     = "projectviewer.remeber_open";
     public static final String DELETE_NOT_FOUND_FILES_OPT = "projectviewer.delete_files";
-    public static final String SAVE_ON_CHANGE_OPT         = "projectviewer.save_on_change";
     public static final String IMPORT_EXTS_OPT            = "include-extensions";
     public static final String EXCLUDE_DIRS_OPT           = "exclude-dirs";
     public static final String INCLUDE_FILES_OPT          = "include-files";
@@ -82,56 +81,14 @@ public final class ProjectViewerConfig {
 	public static final int ASK_ONCE	= 1;
 	public static final int ASK_NEVER	= 2;
 
-    private static ProjectViewerConfig config;
+    private static final ProjectViewerConfig config = new ProjectViewerConfig();
 
 	//}}}
 
     //{{{ Static methods
 
     /** Returns the config. */
-    public static synchronized ProjectViewerConfig getInstance() {
-        if (config == null) {
-            Properties p = null;
-            try {
-                p = new Properties();
-                InputStream is = ProjectPlugin.getResourceAsStream("config.properties");
-                p.load(is);
-            } catch (Exception e) {
-                // Ignores errors
-                Log.log(Log.WARNING, ProjectViewerConfig.class, "Cannot read config file.");
-            }
-
-            if (p == null) {
-                p = new Properties();
-            }
-
-            // Sees if the import options are set. If not, tries to load the old
-            // configuration file. If it does not exists, uses the file included
-            // with the plugin as defaults.
-            if (p.get(IMPORT_EXTS_OPT) == null) {
-
-                InputStream is = ProjectPlugin.getResourceAsStream("import.properties");
-                if (is == null) {
-                    is = ProjectViewerConfig.class.getResourceAsStream("/projectviewer/import-sample.properties");
-                }
-                if (is != null) {
-                    Properties tmp = new Properties();
-                    try {
-                        tmp.load(is);
-                        p.putAll(tmp);
-                    } catch (IOException ioe) {
-                        p.setProperty(IMPORT_EXTS_OPT, "");
-                        p.setProperty(EXCLUDE_DIRS_OPT, "");
-                        p.setProperty(INCLUDE_FILES_OPT, "");
-                    } finally {
-                        try { is.close(); } catch (Exception e) { }
-                    }
-                }
-            }
-
-            // Finally, calls the constructor
-            config = new ProjectViewerConfig(p);
-        }
+    public static ProjectViewerConfig getInstance() {
         return config;
     }
      //}}}
@@ -141,7 +98,6 @@ public final class ProjectViewerConfig {
     private boolean closeFiles              = true;
     private boolean rememberOpen            = true;
     private boolean deleteNotFoundFiles     = true;
-    private boolean saveOnChange            = true;
 	private int		askImport               = ASK_ONCE;
 
     private boolean showToolBar             = true;
@@ -171,7 +127,47 @@ public final class ProjectViewerConfig {
      *
      *  @param  props   An object containing the configuration of the plugin.
      */
-    private ProjectViewerConfig(Properties props) {
+    private ProjectViewerConfig() {
+		// loads the properties
+		Properties props = null;
+		try {
+			props = new Properties();
+			InputStream is = ProjectPlugin.getResourceAsStream("config.properties");
+			props.load(is);
+		} catch (Exception e) {
+			// Ignores errors
+			Log.log(Log.WARNING, ProjectViewerConfig.class, "Cannot read config file.");
+		}
+
+		if (props == null) {
+			props = new Properties();
+		}
+
+		// Sees if the import options are set. If not, tries to load the old
+		// configuration file. If it does not exists, uses the file included
+		// with the plugin as defaults.
+		if (props.get(IMPORT_EXTS_OPT) == null) {
+
+			InputStream is = ProjectPlugin.getResourceAsStream("import.properties");
+			if (is == null) {
+				is = ProjectViewerConfig.class.getResourceAsStream("/projectviewer/import-sample.properties");
+			}
+			if (is != null) {
+				Properties tmp = new Properties();
+				try {
+					tmp.load(is);
+					props.putAll(tmp);
+				} catch (IOException ioe) {
+					props.setProperty(IMPORT_EXTS_OPT, "");
+					props.setProperty(EXCLUDE_DIRS_OPT, "");
+					props.setProperty(INCLUDE_FILES_OPT, "");
+				} finally {
+					try { is.close(); } catch (Exception e) { }
+				}
+			}
+		}
+		
+		// instance initialization
         listeners = new ArrayList();
 
         if (props == null) return;
@@ -194,12 +190,6 @@ public final class ProjectViewerConfig {
         tmp = props.getProperty(DELETE_NOT_FOUND_FILES_OPT);
         if (tmp != null) {
             setDeleteNotFoundFiles("true".equalsIgnoreCase(tmp));
-        }
-
-        // save_on_change option
-        tmp = props.getProperty(SAVE_ON_CHANGE_OPT);
-        if (tmp != null) {
-            setSaveOnChange("true".equalsIgnoreCase(tmp));
         }
 
          // show_toolbar
@@ -282,10 +272,6 @@ public final class ProjectViewerConfig {
         this.deleteNotFoundFiles = deleteNotFoundFiles;
     }
 
-    public void setSaveOnChange(boolean saveOnChange) {
-        this.saveOnChange = saveOnChange;
-    }
-
     public void setRememberOpen(boolean newRememberOpen) {
         this.rememberOpen = newRememberOpen;
     }
@@ -351,10 +337,6 @@ public final class ProjectViewerConfig {
 
     public boolean getDeleteNotFoundFiles() {
         return deleteNotFoundFiles;
-    }
-
-    public boolean getSaveOnChange() {
-        return saveOnChange;
     }
 
     public boolean getRememberOpen() {
@@ -459,7 +441,6 @@ public final class ProjectViewerConfig {
         props.setProperty(CLOSE_FILES_OPT, String.valueOf(closeFiles));
         props.setProperty(REMEBER_OPEN_FILES_OPT, String.valueOf(rememberOpen));
         props.setProperty(DELETE_NOT_FOUND_FILES_OPT, String.valueOf(deleteNotFoundFiles));
-        props.setProperty(SAVE_ON_CHANGE_OPT, String.valueOf(saveOnChange));
 		props.setProperty(ASK_IMPORT_OPT, String.valueOf(askImport));
 		props.setProperty(USE_SYSTEM_ICONS_OPT, String.valueOf(useSystemIcons));
 
@@ -506,13 +487,10 @@ public final class ProjectViewerConfig {
 
     } //}}}
 
-	//{{{ isJarMakerAvailable() method
-	/** Returns true if JarMaker is available, and its version is at least 0.5. */
-	public boolean isJarMakerAvailable() {
-		return (jEdit.getPlugin("jarmaker.JarMakerPlugin") != null) &&
-				(MiscUtilities.compareStrings(
-					jEdit.getProperty("plugin.jarmaker.JarMakerPlugin.version"),
-					"0.5", false) >= 0);
+	//{{{ isJEdit42()
+	/** Returns whether we're using jEdit 4.2 (pre2 or better). */
+	public boolean isJEdit42() {
+		return MiscUtilities.compareStrings(jEdit.getBuild(), "04.02.02.00", false) >= 0;
 	} //}}}
 
 	//}}}

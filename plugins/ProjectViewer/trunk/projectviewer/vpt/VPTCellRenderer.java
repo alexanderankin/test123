@@ -62,14 +62,13 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			boolean leaf, int row,
 			boolean focus) {
 		super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, focus);
-
 		try {
 			VPTNode node = (VPTNode) value;
 			setIcon(node.getIcon(expanded));
 			setBackground(node.getBackgroundColor(sel));
 			setForeground(node.getForegroundColor(sel));
 			setFont(leaf ? leafFont : folderFont);
-			underlined = (node.isFile() && node.isOpened());
+			underlined = (node.canOpen() && node.isOpened());
 			setText(node.getName());
 		} catch (ClassCastException cce) {
 			// just ignore it...
@@ -92,7 +91,6 @@ public final class VPTCellRenderer extends DefaultTreeCellRenderer {
 			g.setColor(getForeground());
 			g.drawLine(x,y,x + fm.stringWidth(getText()),y);
 		}
-
 		super.paintComponent(g);
 	} //}}}
 

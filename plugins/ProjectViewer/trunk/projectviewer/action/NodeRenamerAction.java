@@ -43,6 +43,7 @@ import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
+import projectviewer.vpt.VFSFile;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
 import projectviewer.config.ProjectViewerConfig;
@@ -112,7 +113,7 @@ public class NodeRenamerAction extends Action {
 		} else if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
 			// updates all files from the old directory to point to the new one
-			project.unregisterFile(f);
+			project.unregisterNodePath(f);
 
 			if (!renameFile(f, new File(f.getFile().getParent(), newName))) {
 				JOptionPane.showMessageDialog(viewer,
@@ -141,10 +142,10 @@ public class NodeRenamerAction extends Action {
 				dir.setFile(newFile);
 
 				// updates all files from the old directory to point to the new one
-				for (Iterator i = project.getFiles().iterator(); i.hasNext(); ) {
-					VPTFile f = (VPTFile) i.next();
-					if (f.getNodePath().startsWith(oldDir)) {
-						renameFile(f, new File(dir.getFile(), f.getName()));
+				for (Iterator i = project.getOpenableNodes().iterator(); i.hasNext(); ) {
+					VPTNode n = (VPTNode) i.next();
+					if (n.isFile() && n.getNodePath().startsWith(oldDir)) {
+						renameFile((VPTFile)n, new File(dir.getFile(), n.getName()));
 					}
 				}
 			} else {
@@ -160,17 +161,15 @@ public class NodeRenamerAction extends Action {
 			viewer.repaint();
 		}
 
-		if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-			ProjectManager.getInstance().saveProject(project);
-		}
-
+		ProjectManager.getInstance().saveProject(project);
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
 	/** Disable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
 		cmItem.setVisible(node != null &&
-			(node.isFile() || node.isDirectory() || node.isProject()));
+			(node.isFile() || node.isDirectory() || node.isProject() ||
+			 node.getClass() == VFSFile.class));
 	} //}}}
 
 	//{{{ renameFile(VPTFile, String) method
@@ -239,6 +238,12 @@ public class NodeRenamerAction extends Action {
 					jEdit.getProperty("projectviewer.action.rename.dont_change_disk"),
 					false);
 				p.add(chFile);
+
+				if (node.getClass() == VFSFile.class) {
+					chFile.setSelected(true);
+					chFile.setEnabled(false);
+				}
+
 				getContentPane().add(BorderLayout.CENTER, p);
 			}
 
@@ -307,7 +312,6 @@ public class NodeRenamerAction extends Action {
 		} //}}}
 
 	} //}}}
-
 
 }
 

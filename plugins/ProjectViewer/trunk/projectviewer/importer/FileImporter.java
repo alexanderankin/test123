@@ -50,7 +50,7 @@ public class FileImporter extends Importer {
 	protected int fileCount;
 	//}}}
 
-	//{{{ Constructor
+	//{{{ +FileImporter(VPTNode, ProjectViewer) : <init>
 
 	public FileImporter(VPTNode node, ProjectViewer viewer) {
 		super(node, viewer);
@@ -58,7 +58,7 @@ public class FileImporter extends Importer {
 
 	//}}}
 
-	//{{{ internalDoImport() method
+	//{{{ #internalDoImport() : Collection
 	/**
 	 *	Queries the user for files to be added by showing a file chooser
 	 *	dialog. If any directories are chosen, the user is asked (once)
@@ -163,7 +163,7 @@ public class FileImporter extends Importer {
 		return lst;
 	} //}}}
 
-	//{{{ addTree(File, VPTNode) method
+	//{{{ #addTree(File, VPTNode, FilenameFilter) : void
 	/**
 	 *	Adds a directory tree to the given node.
 	 *
@@ -183,19 +183,19 @@ public class FileImporter extends Importer {
 		if (children == null) return;
 
 		for (int i = 0; i < children.length; i++) {
+			if (!children[i].exists()) {
+				continue;
+			}
+
 			VPTNode child;
-			if (!children[i].exists() || children[i].isDirectory()) {
+			if (children[i].isDirectory()) {
 				child = findDirectory(children[i], where, true);
+				addTree(children[i], child, filter);
 			} else {
 				child = new VPTFile(children[i]);
 				if (where.getIndex(child) != -1) {
 					continue;
 				}
-			}
-
-			if (child.isDirectory() && children[i].exists()) {
-				addTree(children[i], child, filter);
-			} else {
 				registerFile((VPTFile) child);
 				fileCount++;
 			}
@@ -209,7 +209,7 @@ public class FileImporter extends Importer {
 		where.sortChildren();
 	} //}}}
 
-	//{{{ showFileCount(int) method
+	//{{{ #showFileCount() : void
 	/** Shows a message in the status bar indicating how many files were imported. */
 	protected void showFileCount() {
 		viewer.setStatus(
@@ -217,20 +217,21 @@ public class FileImporter extends Importer {
 				new Object[] { new Integer(fileCount) }));
 	} //}}}
 
-
-	//{{{ NonProjectFileFilter class
+	//{{{ #class NonProjectFileFilter
 	/**	A FileFilter that filters out files already added to the project. */
 	protected class NonProjectFileFilter extends FileFilter {
 
+		//{{{ +getDescription() : String
 		public String getDescription() {
 			return jEdit.getProperty("projectviewer.non-project-filter");
-		}
+		} //}}}
 
+		//{{{ +accept(File) : boolean
 		public boolean accept(File f) {
-			return (project.getFile(f.getAbsolutePath()) == null ||
+			return (project.getChildNode(f.getAbsolutePath()) == null ||
 					f.getAbsolutePath().endsWith("~") ||
 					f.getAbsolutePath().endsWith(".bak"));
-		}
+		} //}}}
 
 	} //}}}
 

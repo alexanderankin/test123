@@ -85,9 +85,10 @@ public abstract class Importer implements Runnable {
 	 */
 	protected Runnable		postAction;
 
+	private VPTNode.VPTNodeComparator fileComparator;
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +Importer(VPTNode, ProjectViewer, boolean) : <init>
 
 	/**
 	 *	If noThread is true, inhibits the use of a separate Thread to do the
@@ -106,23 +107,27 @@ public abstract class Importer implements Runnable {
 		this.viewer = viewer;
 		this.noThread = noThread;
 		this.postAction = null;
-	}
+		this.fileComparator = new VPTProject.VPTNodeComparator();
+	} //}}}
 
+	//{{{ +Importer(VPTNode, ProjectViewer) : <init>
 	public Importer(VPTNode node, ProjectViewer viewer) {
 		this(node, viewer, false);
-	}
+	} //}}}
 
+	//{{{ +Importer(VPTNode) : <init>
 	public Importer(VPTNode node) {
 		this(node, null, false);
-	}
+	} //}}}
 
+	//{{{ +Importer(VPTNode, boolean) : <init>
 	public Importer(VPTNode node, boolean noThread) {
 		this(node, null, noThread);
 	}
 
 	//}}}
 
-	//{{{ doImport() method
+	//{{{ +doImport() : void
 	/**
 	 *	Main import method. It starts a new thread to actually do the importing,
 	 *	so that the UI is not blocked during the process, which can take some
@@ -136,7 +141,7 @@ public abstract class Importer implements Runnable {
 		}
 	} //}}}
 
-	//{{{ importNode(VPTNode, VPTNode) method
+	//{{{ #importNode(VPTNode, VPTNode) : void
 	/**
 	 *	Imports a child into the given parent.
 	 *
@@ -148,7 +153,7 @@ public abstract class Importer implements Runnable {
 		ProjectViewer.insertNodeInto(child, where);
 	} //}}}
 
-	//{{{ importNode(VPTNode) method
+	//{{{ #importNode(VPTNode) : void
 	/**
 	 *	Imports the node into the selected parent. The selected parent is
 	 *	defined in the constructor for the importer (and generally should
@@ -162,7 +167,7 @@ public abstract class Importer implements Runnable {
 		ProjectViewer.insertNodeInto(node, selected);
 	} //}}}
 
-	//{{{ internalDoImport() method
+	//{{{ #*internalDoImport()* : Collection
 	/**
 	 *	Method to be called when importing nodes. The implementation should
 	 *	eeturn a list of nodes to be added to the selected node. The method
@@ -171,7 +176,7 @@ public abstract class Importer implements Runnable {
 	 */
 	protected abstract Collection internalDoImport(); //}}}
 
-	//{{{ findDirectory(String, VPTNode) method
+	//{{{ #findDirectory(File, VPTNode, boolean) : VPTNode
 	/**
 	 *	Looks, in the children list for the given parent, for a directory with
 	 *	the given path. If it exists, return it. If not, creates a new directory
@@ -193,7 +198,7 @@ public abstract class Importer implements Runnable {
 		return (create) ? new VPTDirectory(dir) : null;
 	} //}}}
 
-	//{{{ makePathTo(String) method
+	//{{{ #makePathTo(String, ArrayList) : VPTNode
 	/**
 	 *	Inserts all nodes from the root up to and including the given path, if
 	 *	the nodes are not yet inserted. Returns the node representing the given
@@ -225,7 +230,7 @@ public abstract class Importer implements Runnable {
 		return where;
 	} //}}}
 
-	//{{{ registerFile(VPTFile) method
+	//{{{ #registerFile(VPTFile) : void
 	/**
 	 *	Registers the file in the project. Also, checks if the file's absolute
 	 *	path is equal to the canonical path, and registers the canonical path
@@ -233,15 +238,44 @@ public abstract class Importer implements Runnable {
 	 */
 	protected void registerFile(VPTFile file) {
 		project.registerFile(file);
-		String canPath = file.getCanonicalPath();
-		if (!canPath.equals(file.getNodePath())) {
-			project.registerCanonicalPath(canPath, file);
+		if (!contains(removed, file)) {
+			if (added == null) added = new ArrayList();
+			added.add(file);
 		}
-		if (added == null) added = new ArrayList();
-		added.add(file);
 	} //}}}
 
-	//{{{ run() method
+	//{{{ #unregisterFile(VPTFile) : void
+	/**
+	 *	Unregisters a file from a project and adds the file to the list of
+	 *	files that have been removed. It automatically checks that "added"
+	 *	list to see if the file is already in there, so that the event does
+	 *	not contain the same file being added and removed at the same time.
+	 */
+	protected void unregisterFile(VPTFile file) {
+		project.unregisterNodePath(file);
+		if (!contains(added, file)) {
+			if (removed == null) removed = new ArrayList();
+			removed.add(file);
+		}
+	} //}}}
+
+	//{{{ -contains(ArrayList, VPTFile) : boolean
+	/**
+	 *	Checks whether the given list contains the given file or not. If the
+	 *	file is found, it is removed from the list.
+	 */
+	private boolean contains(ArrayList list, VPTFile file) {
+		if (list != null)
+		for (int i = 0; i < list.size(); i++) {
+			if (fileComparator.compare(list.get(i),file) == 0) {
+				list.remove(i);
+				return true;
+			}
+		}
+		return false;
+	} //}}}
+
+	//{{{ +run() : void
 	public void run() {
 		if (!noThread) {
 			try {
@@ -288,9 +322,7 @@ public abstract class Importer implements Runnable {
 						fireProjectEvent();
 					}
 				}
-				if (ProjectViewerConfig.getInstance().getSaveOnChange()) {
-					ProjectManager.getInstance().saveProject(project);
-				}
+				ProjectManager.getInstance().saveProject(project);
 			} else {
 				if ((added != null && added.size() > 0) ||
 						(removed != null && removed.size() > 0)) {
@@ -327,10 +359,9 @@ public abstract class Importer implements Runnable {
 			SwingUtilities.invokeLater(postAction);
 	} //}}}
 
-	//{{{ fireProjectEvent(Collection) method
+	//{{{ -fireProjectEvent() : void
 	/** Fires an event based on the imported file(s). */
 	private void fireProjectEvent() {
-		cleanUpLists();
 		if (added == null || added.size() == 0) {
 			if (removed != null && removed.size() > 0) {
 				project.fireFilesChanged(null, removed);
@@ -342,37 +373,18 @@ public abstract class Importer implements Runnable {
 		}
 	} //}}}
 
-	//{{{ cleanUpLists(ArrayList) method
-	/** Cleans up the lists of added and removed files by deleting duplicates. */
-	private void cleanUpLists() {
-		// its not a very nice algorithm, but, since the lists aren't sorted...
-		if (added != null && removed != null) {
-			VPTNode.VPTNodeComparator c = new VPTProject.VPTNodeComparator();
-			for (Iterator i = added.iterator(); i.hasNext(); ) {
-				Object o = i.next();
-				for (Iterator j = removed.iterator(); j.hasNext(); ) {
-					Object o2 = j.next();
-					if (c.compare(o, o2) == 0) {
-						j.remove();
-						i.remove();
-						break;
-					}
-				}
-			}
-			if (removed.size() == 0) removed = null;
-		}
-	} //}}}
-
-	//{{{ ShowNode class
+	//{{{ #class ShowNode
 	/** Makes sure a node is visible. */
 	protected class ShowNode implements Runnable {
 
 		private VPTNode toShow;
 
+		//{{{ +ShowNode(VPTNode) : <init>
 		public ShowNode(VPTNode toShow) {
 			this.toShow = toShow;
-		}
+		} //}}}
 
+		//{{{ +run() : void
 		public void run() {
 			JTree tree = viewer.getCurrentTree();
 			if (tree != null) {
@@ -380,7 +392,7 @@ public abstract class Importer implements Runnable {
 				TreeNode[] nodes = tModel.getPathToRoot(toShow);
 				tree.makeVisible(new TreePath(nodes));
 			}
-		}
+		} //}}}
 
 	} //}}}
 

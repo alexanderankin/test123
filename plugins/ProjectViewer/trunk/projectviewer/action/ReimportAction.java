@@ -31,7 +31,7 @@ import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
-import projectviewer.importer.RootImporter;
+import projectviewer.importer.ReImporter;
 //}}}
 
 /**
@@ -53,7 +53,7 @@ public class ReimportAction extends Action {
 	/** Reimports files below the project root. */
 	public void actionPerformed(ActionEvent ae) {
 		VPTProject p = (VPTProject) viewer.getSelectedNode();
-		new RootImporter(p, viewer, true).doImport();
+		new ReImporter(p, viewer).doImport();
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method

@@ -58,7 +58,7 @@ public class VPTRoot extends VPTNode {
 	//{{{ Constructors
 
 	private VPTRoot() {
-		super(VPTNode.ROOT, jEdit.getProperty("projectviewer.all_projects"));
+		super(jEdit.getProperty("projectviewer.all_projects"));
 	}
 
 	//}}}

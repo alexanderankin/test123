@@ -43,6 +43,7 @@ import projectviewer.ProjectManager;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -60,7 +61,7 @@ public final class ProjectPersistenceManager {
 
 	//}}}
 
-	//{{{ Private members
+	//{{{Private Stuff
 
 	/** Private constructor. No instances! */
 	private ProjectPersistenceManager() { }
@@ -80,11 +81,12 @@ public final class ProjectPersistenceManager {
 		registerHandler(new DirectoryNodeHandler());
 		registerHandler(new PropertyNodeHandler());
 		registerHandler(new OpenFileNodeHandler());
+		registerHandler(new VFSFileNodeHandler());
 	}
 
 	//}}}
 
-	//{{{ registerHandler(NodeHandler) method
+	//{{{ +_registerHandler(NodeHandler)_ : void
 	/**
 	 *	Registers a node handler. The same instance will be used at all times
 	 *	to process the data, so make sure this is not a problem with the
@@ -95,7 +97,7 @@ public final class ProjectPersistenceManager {
 		handlerClasses.put(nh.getNodeClass(), nh);
 	} //}}}
 
-	//{{{ load(String, String) method
+	//{{{ +_load(VPTProject, String)_ : VPTProject
 	/** Loads a project from the given file name. */
 	public static VPTProject load(VPTProject p, String file) {
 		InputStream in = ProjectPlugin.getResourceAsStream(CONFIG_DIR + file);
@@ -115,18 +117,22 @@ public final class ProjectPersistenceManager {
 		}
 
 		p.sortChildren();
-		for (Iterator i = p.getFiles().iterator(); i.hasNext(); ) {
-			VPTFile f = (VPTFile) i.next();
-			String path = f.getNodePath();
-			String canPath = f.getCanonicalPath();
-			if (!path.equals(canPath)) {
-				p.registerCanonicalPath(canPath, f);
+		ProjectViewerConfig config = ProjectViewerConfig.getInstance();
+		for (Iterator i = p.getOpenableNodes().iterator(); i.hasNext(); ) {
+			VPTNode n = (VPTNode) i.next();
+			String path = n.getNodePath();
+			if (!config.isJEdit42() && n.isFile()) {
+				VPTFile f = (VPTFile) n;
+				String canPath = f.getCanonicalPath();
+				if (!path.equals(canPath)) {
+					p.registerCanonicalPath(canPath, f);
+				}
 			}
 		}
 		return p;
 	} //}}}
 
-	//{{{ save(VPTProject, String) method
+	//{{{ +_save(VPTProject, String)_ : void
 	/** Saves the given project data to the disk. */
 	public static void save(VPTProject p, String filename) throws IOException {
 		OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_DIR + filename);
@@ -139,7 +145,7 @@ public final class ProjectPersistenceManager {
 		out.close();
 	} //}}}
 
-	//{{{ saveNode(VPTNode, Writer) method
+	//{{{ -_saveNode(VPTNode, Writer)_ : void
 	/** recursive method for saving nodes and their children. */
 	private static void saveNode(VPTNode node, Writer out) throws IOException {
 		if (node.isProject()) {
@@ -165,7 +171,7 @@ public final class ProjectPersistenceManager {
 		}
 	} //}}}
 
-	//{{{ ProjectHandler class
+	//{{{ +class _ProjectHandler_
 	/** Handler to read project configuration files. */
 	public static final class ProjectHandler extends HandlerBase {
 
@@ -177,7 +183,7 @@ public final class ProjectPersistenceManager {
 		private Stack openNodes;
 		//}}}
 
-		//{{{ Constructor
+		//{{{ +ProjectHandler(VPTProject) : <init>
 		public ProjectHandler(VPTProject proj) {
 			this.proj = proj;
 			this.currNode = proj;
@@ -185,12 +191,12 @@ public final class ProjectPersistenceManager {
 			this.openNodes = new Stack();
 		} //}}}
 
-		//{{{ attribute(String, String, boolean) method
+		//{{{ +attribute(String, String, boolean) : void
 		public void attribute(String name, String value, boolean spec) {
 			attrs.put(name, value);
 		} //}}}
 
-		//{{{ startElement() method
+		//{{{ +startElement(String) : void
 		/** takes care of identifying nodes read from the file. */
 		public void startElement(String qName) {
 			if (qName.equals(ProjectNodeHandler.NODE_NAME)) {
@@ -216,7 +222,7 @@ public final class ProjectPersistenceManager {
 			}
 		} //}}}
 
-		//{{{ endElement(String) method
+		//{{{ +endElement(String) : void
 		/** Handles the closing of a directory element. */
 		public void endElement(String qName) {
 			if (!openNodes.isEmpty() && qName.equals(openNodes.peek())) {

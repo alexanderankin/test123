@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.util.Set;
+import java.util.HashSet;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -37,6 +38,7 @@ import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.event.ProjectEvent;
 import projectviewer.event.ProjectListener;
+import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
@@ -60,22 +62,22 @@ public class VPTProject extends VPTNode {
 	//{{{ Attributes
 
 	private ArrayList	openFiles;
-	private ArrayList	listeners;
+	private HashSet		listeners;
 	private String		rootPath;
 	private String		url;
 	private File		buildFile;
 	private Properties	properties;
 
-	protected HashMap		files;
+	protected HashMap		openableNodes;
 	protected HashMap		canonicalFiles;
 
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +VPTProject(String) : <init>
 
 	public VPTProject(String name) {
-		super(VPTNode.PROJECT, name);
-		files 			= new HashMap();
+		super(name);
+		openableNodes	= new HashMap();
 		canonicalFiles	= new HashMap();
 		openFiles		= new ArrayList();
 		properties		= new Properties();
@@ -85,58 +87,97 @@ public class VPTProject extends VPTNode {
 
 	//{{{ Public methods
 
-	//{{{ getFile() method
+	//{{{ +getFile(String) : VPTFile
 	/**
 	 *	Returns a VPTFile included in this project that references the given
 	 *	path.
 	 *
 	 *	<p>If in the file list returns null, returns a file from the list
 	 *	where we use canonical paths to do the mapping.</p>
+	 *
+	 *	@deprecated Use {@link #getChildNode(String) getChildNode(String)}
+	 *				instead.
 	 */
 	public VPTFile getFile(String path) {
-		Object o = files.get(path);
-		if (o == null) {
-			o = canonicalFiles.get(path);
+		VPTNode o = getChildNode(path);
+		if (o.isFile()) {
+			return (VPTFile) o;
 		}
-		return (VPTFile) o;
+		return null;
 	} //}}}
 
-	//{{{ getFiles() method
+	//{{{ +getChildNode(String) : VPTNode
+	/** Returns the node that matches the given path. */
+	public VPTNode getChildNode(String path) {
+		Object o = openableNodes.get(path);
+		if (o == null) {
+			return (VPTNode) canonicalFiles.get(path);
+		} else {
+			return (VPTNode) o;
+		}
+	} //}}}
+
+	//{{{ +getFiles() : Collection
 	/**
 	 *	Returns a read-only collection of the files contained in this
 	 *	project.
+	 *
+	 *	@deprecated Use {@link #getOpenableNodes() getOpenableNodes()} instead.
 	 */
 	public Collection getFiles() {
-		return Collections.unmodifiableCollection(files.values());
+		ArrayList lst = new ArrayList();
+		for (Iterator i = openableNodes.values().iterator(); i.hasNext(); ) {
+			VPTNode node = (VPTNode) i.next();
+			if (node.isFile()) {
+				lst.add(node);
+			}
+		}
+		return Collections.unmodifiableCollection(lst);
 	}
 	//}}}
 
-	//{{{ getBuildFile() method
+	//{{{ +getOpenableNodes() : Collection
+	/**
+	 *	Returns a read-only collection of the nods that can be opened contained
+	 *	in this project.
+	 */
+	public Collection getOpenableNodes() {
+		return Collections.unmodifiableCollection(openableNodes.values());
+	}
+	//}}}
+
+	//{{{ +getBuildFile() : File
 	/** Returns the project's build file for Ant. */
 	public File getBuildFile() {
 		return buildFile;
 	} //}}}
 
-	//{{{ getURL() method
+	//{{{ +getURL() : String
 	/** Returns the project's URL. */
 	public String getURL() {
 		return url;
 	} //}}}
 
-	//{{{ setURL(String) method
+	//{{{ +setURL(String) : void
 	/** Sets the project's URL. */
 	public void setURL(String url) {
 		if (url != null && !url.endsWith("/")) url += "/";
 		this.url = url;
 	} //}}}
 
-	//{{{ getProperty(String) method
-	/** Returns the property set for the project. */
+	//{{{ +getProperty(String) : String
+	/** Returns the property stored for the given key, as a String. */
 	public String getProperty(String property) {
-		return properties.getProperty(property);
+		return properties.get(property).toString();
 	} //}}}
 
-	//{{{ setProperty(String, String) method
+	//{{{ +getObjectProperty(String) : Object
+	/** Returns the property stored for the given key. */
+	public Object getObjectProperty(String property) {
+		return properties.get(property);
+	} //}}}
+
+	//{{{ +setProperty(String, String) : String
 	/**
 	 *	Sets a property.
 	 *
@@ -148,25 +189,37 @@ public class VPTProject extends VPTNode {
 		return old;
 	} //}}}
 
-	//{{{ getPropertyNames() method
+	//{{{ +setProperty(String, Object) : Object
+	/**
+	 *	Sets a property.
+	 *
+	 *	@return	The old value for the property (can be null).
+	 */
+	public Object setProperty(String name, Object value) {
+		Object old = properties.get(name);
+		properties.put(name, value);
+		return old;
+	} //}}}
+
+	//{{{ +getPropertyNames() : Set
 	/**	Returns a set containing all property names for this project. */
 	public Set getPropertyNames() {
 		return properties.keySet();
 	} //}}}
 
-	//{{{ removeProperty(String) method
+	//{{{ +removeProperty(String) : Object
 	/** Removes the given property from the project. */
 	public Object removeProperty(String property) {
 		return properties.remove(property);
 	} //}}}
 
-	//{{{ getProperties() method.
+	//{{{ +getProperties() : Properties
 	/** Return the project's property set. */
 	public Properties getProperties() {
 		return properties;
 	} //}}}
 
-	//{{{ getOpenFiles() method
+	//{{{ +getOpenFiles() : Iterator
 	/**
 	 *	Returns an iterator to the list of open files that this project
 	 *	remembers.
@@ -175,7 +228,7 @@ public class VPTProject extends VPTNode {
 		return openFiles.iterator();
 	} //}}}
 
-	//{{{ addOpenFile(String) method
+	//{{{ +addOpenFile(String) : void
 	/**
 	 *	Adds a file to the list of the project's opened files.
 	 */
@@ -183,22 +236,33 @@ public class VPTProject extends VPTNode {
 		openFiles.add(path);
 	} //}}}
 
-	//{{{ clearOpenFiles() method
+	//{{{ +clearOpenFiles() : void
 	/** Clears the list of open files. */
 	public void clearOpenFiles() {
 		openFiles.clear();
 	} //}}}
 
-	//{{{ isProjectFile(String) method
+	//{{{ +isProjectFile(String) : boolean
 	/**
 	 *	Returns whether the file denoted by the given path is part of this
 	 *	project.
+	 *
+	 *	@deprecated Use {@link #isInProject(String) isInProject(String)} instead.
 	 */
 	public boolean isProjectFile(String path) {
-		return files.containsKey(path);
+		return isInProject(path);
 	} //}}}
 
-	//{{{ getIcon(boolean) method
+	//{{{ +isInProject(String) : boolean
+	/**
+	 *	Returns whether the project contains a node that can be opened that
+	 *	matches the given path.
+	 */
+	public boolean isInProject(String path) {
+		return openableNodes.containsKey(path);
+	} //}}}
+
+	//{{{ +getIcon(boolean) : Icon
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
 	 *
@@ -208,25 +272,25 @@ public class VPTProject extends VPTNode {
 		return projectIcon;
 	} //}}}
 
-	//{{{ toString() method
+	//{{{ +toString() : String
 	/** Returns a string representation of the current node. */
 	public String toString() {
 		return "Project [" + getName() + "]";
 	} //}}}
 
-	//{{{ getRootPath() method
+	//{{{ +getRootPath() : String
 	/** Returns the path to the root of the project. */
 	public String getRootPath() {
 		return rootPath;
 	} //}}}
 
-	//{{{ setRootPath(String) method
+	//{{{ +setRootPath(String) : void
 	/** Sets the path to the root of the project. */
 	public void setRootPath(String path) {
 		rootPath = path;
 	} //}}}
 
-	//{{{ registerFile(VPTFile) method
+	//{{{ +registerFile(VPTFile) : void
 	/**
 	 *	Register a file in the project, adding it to the list of files that
 	 *	belong to the project. This is mainly for performance reasons when
@@ -235,30 +299,32 @@ public class VPTProject extends VPTNode {
 	 *	list.
 	 */
 	public void registerFile(VPTFile file) {
-		files.put(file.getFile().getAbsolutePath(), file);
-		try {
-			String cPath = file.getFile().getCanonicalPath();
-			if (!cPath.equals(file.getFile().getAbsolutePath())) {
-				registerCanonicalPath(cPath, file);
+		registerNodePath(file);
+		if (!ProjectViewerConfig.getInstance().isJEdit42()) {
+			try {
+				String cPath = file.getFile().getCanonicalPath();
+				if (!cPath.equals(file.getFile().getAbsolutePath())) {
+					registerCanonicalPath(cPath, file);
+				}
+			} catch (IOException ioe) {
+				Log.log(Log.WARNING, this, ioe);
 			}
-		} catch (IOException ioe) {
-			Log.log(Log.WARNING, this, ioe);
 		}
 	}
 	//}}}
 
-	//{{{ registerFilePath(VPTFile) method
+	//{{{ +registerNodePath(VPTNode) : void
 	/**
-	 *	Register a file in the project, adding it to the list of files that
-	 *	belong to the project. This is mainly for performance reasons when
-	 *	firing project events.
+	 *	Register a node in the project, adding it to the mapping of paths to
+	 *	nodes kept internally. This method does not register canonical file
+	 *	names for file nodes.
 	 */
-	public void registerFilePath(VPTFile file) {
-		files.put(file.getFile().getAbsolutePath(), file);
+	public void registerNodePath(VPTNode node) {
+		openableNodes.put(node.getNodePath(), node);
 	}
 	//}}}
 
-	//{{{ registerCanonicalPath(String, VPTFile) method
+	//{{{ +registerCanonicalPath(String, VPTFile) : void
 	/**
 	 *	Register a file whose canonical path differs from the path returned
 	 *	by File.getAbsolutePath().
@@ -269,23 +335,26 @@ public class VPTProject extends VPTNode {
 		canonicalFiles.put(path, file);
 	} //}}}
 
-	//{{{ removeAllChildren()
+	//{{{ +removeAllChildren() : void
 	/** Removes all children from the project, and unregisters all files. */
 	public void removeAllChildren() {
-		files.clear();
+		openableNodes.clear();
 		canonicalFiles.clear();
 		super.removeAllChildren();
 	} //}}}
 
-	//{{{ unregisterFile(VPTFile) method
-	/** Unegister a file from the project. */
-	public void unregisterFile(VPTFile file) {
-		files.remove(file.getFile().getAbsolutePath());
-		canonicalFiles.remove(file.getCanonicalPath());
+	//{{{ +unregisterNodePath(VPTNode) : void
+	/** Unegister a node from the project. */
+	public void unregisterNodePath(VPTNode node) {
+		openableNodes.remove(node.getNodePath());
+		if (!ProjectViewerConfig.getInstance().isJEdit42() &&
+				node.isFile()) {
+			canonicalFiles.remove(((VPTFile)node).getCanonicalPath());
+		}
 	}
 	//}}}
 
-	//{{{ getNodePath()
+	//{{{ +getNodePath() : String
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
 		return getRootPath();
@@ -293,7 +362,7 @@ public class VPTProject extends VPTNode {
 
 	//{{{ Listener Subscription and Event Dispatching
 
-	//{{{ addProjectListener(ProjectListener) method
+	//{{{ +addProjectListener(ProjectListener) : void
 	/**
 	 *	Adds a new listener to the list. The list if listeners is global to
 	 *	all the projects, so listeners don't need to be registered to each
@@ -301,12 +370,12 @@ public class VPTProject extends VPTNode {
 	 */
 	public void addProjectListener(ProjectListener lstnr) {
 		if (listeners == null) {
-			listeners = new ArrayList();
+			listeners = new HashSet();
 		}
 		listeners.add(lstnr);
 	} //}}}
 
-	//{{{ removeProjectListener(ProjectListener) method
+	//{{{ +removeProjectListener(ProjectListener) : void
 	/** Removes a listener from the list. */
 	public void removeProjectListener(ProjectListener lstnr) {
 		if (listeners != null) {
@@ -314,7 +383,7 @@ public class VPTProject extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ hasListeners() method
+	//{{{ +hasListeners() : boolean
 	/**
 	 *	Returns whether there are any listeners registered. Mainly for use to
 	 *	enhance performance by classes that would fire these events.
@@ -323,7 +392,7 @@ public class VPTProject extends VPTNode {
 		return (listeners != null && listeners.size() > 0);
 	} //}}}
 
-	//{{{ fireFilesChanged(ArrayList, ArrayList) method
+	//{{{ +fireFilesChanged(ArrayList, ArrayList) : void
 	/**
 	 *	Notifies the listeners that a group of files has been added to and/or
 	 *	removed from the project.
@@ -343,7 +412,7 @@ public class VPTProject extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ fireFileAdded(VPTFile) method
+	//{{{ +fireFileAdded(VPTFile) : void
 	/**
 	 *	Notifies the listeners that a single file has been added to the
 	 *	project.
@@ -357,7 +426,7 @@ public class VPTProject extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ fireFileRemoved(VPTFile) method
+	//{{{ +fireFileRemoved(VPTFile) : void
 	/**
 	 *	Notifies the listeners that a single file has been added to the
 	 *	project.
@@ -371,7 +440,7 @@ public class VPTProject extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ firePropertiesChanged() method
+	//{{{ +firePropertiesChanged() : void
 	/**
 	 *	Notifies the listeners that a single file has been added to the
 	 *	project.

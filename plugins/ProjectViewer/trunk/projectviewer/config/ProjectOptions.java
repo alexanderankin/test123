@@ -30,6 +30,7 @@ import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.OptionPane;
 import org.gjt.sp.jedit.OptionGroup;
+import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.util.Log;
 
@@ -129,7 +130,7 @@ public class ProjectOptions extends OptionsDialog {
 	 *	if "isNew" is true.
 	 */
 	public void cancel() {
-		if (isNew) p = null;
+		p = null;
 		dispose();
 	} //}}}
 
@@ -159,9 +160,15 @@ public class ProjectOptions extends OptionsDialog {
 		addOptionPane(pOptPane);
 
 		EditPlugin[] eplugins = jEdit.getPlugins();
+		boolean added;
 		for (int i = 0; i < eplugins.length; i++) {
-			if (eplugins[i] instanceof ProjectOptionsPlugin)
+			added = false;
+			if (ProjectViewerConfig.getInstance().isJEdit42()) {
+				added = createOptions(eplugins[i]);
+			}
+			if (!added && eplugins[i] instanceof ProjectOptionsPlugin) {
 				((ProjectOptionsPlugin)eplugins[i]).createOptionPanes(this, p);
+			}
 		}
 
 		for (Iterator it = plugins.iterator(); it.hasNext(); ) {
@@ -169,6 +176,40 @@ public class ProjectOptions extends OptionsDialog {
 		}
 
 		return paneTreeModel;
+	} //}}}
+
+	//{{{ createOptions(EditPlugin)
+	/**
+	 *	For jEdit 4.2: creates options panes based on properties set by the
+	 *	plugin, so manual registration of the plugin is not necessary. More
+	 *	details in the package description documentation.
+	 *
+	 *	@return	true if an option pane or an option group was added, false
+	 *			otherwise.
+	 */
+	protected boolean createOptions(EditPlugin plugin) {
+		// Look for a single option pane
+		String property = "plugin.projectviewer." + plugin.getClassName() + ".option-pane";
+		if ((property = jEdit.getProperty(property)) != null) {
+			rootGroup.addOptionPane(property);
+			return true;
+		}
+
+		// Look for an option group
+		property = "plugin.projectviewer." +
+					plugin.getClassName() + ".option-group";
+		if ((property = jEdit.getProperty(property)) != null) {
+			rootGroup.addOptionGroup(
+				new OptionGroup("plugin." + plugin.getClassName(),
+					jEdit.getProperty("plugin."
+										+ plugin.getClassName() + ".name"),
+					property)
+				);
+			return true;
+		}
+
+		// nothing found
+		return false;
 	} //}}}
 
 	//{{{ save(Object)

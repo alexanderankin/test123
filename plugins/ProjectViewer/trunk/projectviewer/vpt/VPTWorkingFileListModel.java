@@ -144,14 +144,14 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 			String path = bufs[i].getPath();
 
 			for (int j = 0; j < projs.length; j++) {
-				VPTFile f = projs[j].getFile(path);
-				if (f != null) {
+				VPTNode n = projs[j].getChildNode(path);
+				if (n != null) {
 					ArrayList lst = (ArrayList) fileLists.get(projs[j]);
 					if (lst == null) {
 						lst = new ArrayList();
 						fileLists.put(projs[j], lst);
 					}
-					lst.add(f);
+					lst.add(n);
 					if (comp == null) {
 						comp = new VPTNode.VPTNodeComparator();
 					}
@@ -173,9 +173,9 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		fileLists.put(p, lst);
 
 		for (int i = 0; i < bufs.length; i++) {
-			VPTFile f = p.getFile(bufs[i].getPath());
-			if (f != null) {
-				lst.add(f);
+			VPTNode n = p.getChildNode(bufs[i].getPath());
+			if (n != null) {
+				lst.add(n);
 			}
 		}
 
@@ -192,15 +192,15 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		VPTNode.VPTNodeComparator comp = null;
 
 		for (int j = 0; j < projs.length; j++) {
-			VPTFile f = projs[j].getFile(path);
-			if (f != null) {
+			VPTNode n = projs[j].getChildNode(path);
+			if (n != null) {
 				ArrayList lst = (ArrayList) fileLists.get(projs[j]);
 				if (lst == null) {
 					lst = new ArrayList();
 					fileLists.put(projs[j], lst);
 				}
-				if (!lst.contains(f)) {
-					lst.add(f);
+				if (!lst.contains(n)) {
+					lst.add(n);
 					if (comp == null) {
 						comp = new VPTNode.VPTNodeComparator();
 					}
@@ -220,11 +220,11 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		VPTProject[] projs = getProjects();
 
 		for (int j = 0; j < projs.length; j++) {
-			VPTFile f = projs[j].getFile(path);
-			if (f != null) {
+			VPTNode n = projs[j].getChildNode(path);
+			if (n != null) {
 				ArrayList lst = (ArrayList) fileLists.get(projs[j]);
 				if (lst != null) {
-					lst.remove(f);
+					lst.remove(n);
 					super.nodeStructureChanged(projs[j]);
 				}
 			}
