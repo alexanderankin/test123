@@ -112,10 +112,14 @@ public class NodeRemoverAction extends Action {
             }
         }
 
+		ArrayList projects = new ArrayList();
 		for (Iterator i = changed.iterator(); i.hasNext(); ) {
-			ProjectViewer.nodeStructureChangedFlat((VPTNode)i.next());
+			VPTProject p = VPTNode.findProjectFor((VPTNode)i.next());
+			if (!projects.contains(p)) {
+				ProjectViewer.nodeStructureChangedFlat(p);
+				projects.add(p);
+			}
 		}
-		changed = null;
 	} //}}}
 
 	//{{{ prepareForNode(VPTNode) method
@@ -304,7 +308,6 @@ public class NodeRemoverAction extends Action {
 			}
 		}
 	} //}}}
-
 
 }
 
