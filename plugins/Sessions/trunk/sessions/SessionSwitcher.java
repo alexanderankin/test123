@@ -33,6 +33,7 @@ import java.awt.event.ItemListener;
 import java.util.Vector;
 import javax.swing.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
 
@@ -77,6 +78,12 @@ public class SessionSwitcher
 		reload.setFocusPainted(false);
 		reload.addActionListener(this);
 
+		props = new JButton(GUIUtilities.loadIcon("History24.gif"));
+		props.setMargin(nullInsets);
+		props.setToolTipText(jEdit.getProperty("sessions.switcher.props.tooltip"));
+		props.setFocusPainted(false);
+		props.addActionListener(this);
+
 		prefs = new JButton(GUIUtilities.loadIcon("Preferences24.gif"));
 		prefs.setMargin(nullInsets);
 		prefs.setToolTipText(jEdit.getProperty("sessions.switcher.prefs.tooltip"));
@@ -93,6 +100,7 @@ public class SessionSwitcher
 		add(save);
 		add(saveAs);
 		add(reload);
+		add(props);
 		add(prefs);
 
 		// if we're not added to jEdit's default toolbar, then add some glue at
@@ -146,6 +154,8 @@ public class SessionSwitcher
 			SessionManager.getInstance().saveCurrentSessionAs(view);
 		else if (evt.getSource() == reload)
 			SessionManager.getInstance().reloadCurrentSession(view);
+		else if (evt.getSource() == props)
+			SessionManager.getInstance().showSessionPropertiesDialog(view);
 		else if (evt.getSource() == prefs)
 			SessionManager.getInstance().showSessionManagerDialog(view);
 	}
@@ -157,12 +167,12 @@ public class SessionSwitcher
 
 	public void itemStateChanged(ItemEvent e)
 	{
-		Object selectedItem = combo.getSelectedItem();
-		if (selectedItem == null)
+		if(e.getStateChange() != ItemEvent.SELECTED || e.getItem() == null)
 			return;
 
-		String selectedSession = selectedItem.toString();
 		String currentSession = SessionManager.getInstance().getCurrentSession();
+		final String selectedSession = e.getItem().toString();
+
 		if (!selectedSession.equals(currentSession))
 			SessionManager.getInstance().setCurrentSession(view, selectedSession);
 	}
@@ -234,6 +244,7 @@ public class SessionSwitcher
 	private JButton save;
 	private JButton saveAs;
 	private JButton reload;
+	private JButton props;
 	private JButton prefs;
 	private JLabel title;
 

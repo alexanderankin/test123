@@ -1,3 +1,18 @@
+VERSION 1.0.0
+
+- introduced session local properties
+- new "Edit Session Properties" dialog
+- allow third parties to add custom session property option panes,
+  and to listen for property changes
+- every session has two default properties: "basedir" and "mode"
+- session files are now in XML format (old session files are
+  automatically converted to the new format on the next run)
+- faster session switching
+- some refactorings (now has a real "Session" class)
+- Ant instead of JMK makefile
+- requires jEdit 3.2.1
+
+
 VERSION 0.7.3
 - SVU: Fix the bug introduced in 0.7.2
 

@@ -24,16 +24,25 @@ package sessions;
 
 
 import org.gjt.sp.jedit.EBComponent;
-import org.gjt.sp.jedit.EBMessage;
 
 
 public final class SessionChanged extends SessionMessage
 {
 
-	SessionChanged(EBComponent source, String oldSession)
+	SessionChanged(EBComponent source, String oldSession, String newSession, Session session)
 	{
-		super(source, oldSession, ((SessionManager)source).getCurrentSession());
+		super(source, oldSession, newSession);
+		this.session = session;
 	}
+
+
+	public final Session getSession()
+	{
+		return session;
+	}
+
+
+	private Session session;
 
 }
 

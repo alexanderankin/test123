@@ -94,11 +94,17 @@ public class SessionsPlugin extends EBPlugin
 		}
 		else if (message instanceof EditorExitRequested)
 		{
-			EditorExitRequested eer = (EditorExitRequested) message;
-			handleEditorExit(eer.getView());
+			EditorExitRequested eemsg = (EditorExitRequested) message;
+			handleEditorExit(eemsg.getView());
 		}
-		else if (message instanceof PropertiesChanged) {
+		else if (message instanceof PropertiesChanged)
+		{
 			handlePropertiesChanged();
+		}
+		else if (message instanceof SessionPropertiesShowing)
+		{
+			SessionPropertiesShowing smsg = (SessionPropertiesShowing) message;
+			smsg.addPropertyPane(new DefaultSessionPropertyPane(smsg.getSession()));
 		}
 	}
 
@@ -134,7 +140,7 @@ public class SessionsPlugin extends EBPlugin
 	}
 
 
-	private void addSessionSwitcher(final View view)
+	private synchronized void addSessionSwitcher(final View view)
 	{
 		removeSessionSwitcher(view);
 
@@ -148,8 +154,8 @@ public class SessionsPlugin extends EBPlugin
 
 				// We need to add it later. Cannot add it right now, because if the View
 				// receives the PropertiesChanged message, it removes and recreates
-				// the toolbar. If it receives the message _after_ we received it, then
-				// our switcher would be gone.
+				// the toolbar. If the View receives the message after _we_ received it,
+				// then our switcher would be gone.
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
@@ -170,22 +176,31 @@ public class SessionsPlugin extends EBPlugin
 	}
 
 
-	private void removeSessionSwitcher(View view)
+	private synchronized void removeSessionSwitcher(final View view)
 	{
-		SessionSwitcher switcher = (SessionSwitcher) viewSessionSwitchers.get(view);
+		final SessionSwitcher switcher = (SessionSwitcher) viewSessionSwitchers.get(view);
 		if (switcher != null)
 		{
-			// try to remove toolbar (does nothing if it is not there)
+			// Try to remove toolbar
+			// (this does nothing if there is no switcher)
 			view.removeToolBar(switcher);
 
 			if(view.getToolBar() != null)
 			{
-				// try to remove from jEdit's default toolbar (does nothing if it is not there)
-				view.getToolBar().remove(switcher);
-				view.getRootPane().revalidate();
+				SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
+					{
+						// Try to remove from jEdit's default toolbar
+						// (this does nothing if there is no switcher)
+						view.getToolBar().remove(switcher);
+						view.getRootPane().revalidate();
+						viewSessionSwitchers.remove(view);
+					}
+				});
 			}
-
-			viewSessionSwitchers.remove(view);
+			else
+				viewSessionSwitchers.remove(view);
 		}
 	}
 

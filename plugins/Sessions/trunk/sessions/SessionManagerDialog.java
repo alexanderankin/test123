@@ -165,41 +165,9 @@ class SessionManagerDialog
 		else if (evt.getSource() == bChangeTo)
 			ok();
 		else if (evt.getSource() == bRename)
-		{
-			String oldName = lSessions.getSelectedValue().toString();
-			String newName = SessionManager.inputSessionName(this, oldName);
-
-			if (newName == null)
-				return;
-
-			File oldFile = new File(SessionManager.createSessionFileName(oldName));
-			File newFile = new File(SessionManager.createSessionFileName(newName));
-
-			if (oldFile.renameTo(newFile))
-			{
-				setNewListModel();
-				lSessions.setSelectedValue(newName, true);
-				if (oldName.equals(currentSession))
-					currentSession = newName;
-			}
-			else
-				GUIUtilities.error(this, "sessions.manager.error.rename", new Object[] { oldFile, newFile });
-		}
+			rename();
 		else if (evt.getSource() == bDelete)
-		{
-			String name = lSessions.getSelectedValue().toString();
-			File file = new File(SessionManager.createSessionFileName(name));
-
-			if (file.delete())
-			{
-				if (name.equals(currentSession))
-					currentSession = null; // mark the current session as deleted
-				setNewListModel();
-				lSessions.setSelectedValue("default", true);
-			}
-			else
-				GUIUtilities.error(this, "sessions.manager.error.delete",	new Object[] { file });
-		}
+			delete();
 	}
 
 
@@ -224,6 +192,46 @@ class SessionManagerDialog
 			bRename.setEnabled(!isDefaultSession);
 			bDelete.setEnabled(!isDefaultSession);
 		}
+	}
+
+
+	private void rename()
+	{
+		String oldName = lSessions.getSelectedValue().toString();
+		String newName = SessionManager.inputSessionName(this, oldName);
+
+		if (newName == null)
+			return;
+
+		File oldFile = new File(SessionManager.createSessionFileName(oldName));
+		File newFile = new File(SessionManager.createSessionFileName(newName));
+
+		if (oldFile.renameTo(newFile))
+		{
+			setNewListModel();
+			lSessions.setSelectedValue(newName, true);
+			if (oldName.equals(currentSession))
+				currentSession = newName;
+		}
+		else
+			GUIUtilities.error(this, "sessions.manager.error.rename", new Object[] { oldFile, newFile });
+	}
+
+
+	private void delete()
+	{
+		String name = lSessions.getSelectedValue().toString();
+		File file = new File(SessionManager.createSessionFileName(name));
+
+		if (file.delete())
+		{
+			if (name.equals(currentSession))
+				currentSession = null; // mark the current session as deleted
+			setNewListModel();
+			lSessions.setSelectedValue("default", true);
+		}
+		else
+			GUIUtilities.error(this, "sessions.manager.error.delete",	new Object[] { file });
 	}
 
 

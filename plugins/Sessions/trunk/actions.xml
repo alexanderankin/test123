@@ -6,32 +6,35 @@
 
 	<ACTION NAME="session-save">
 		<CODE>
-			import sessions.*;
-			SessionManager.getInstance().saveCurrentSession(view);
+			sessions.SessionManager.getInstance().saveCurrentSession(view);
 		</CODE>
 	</ACTION>
 
 
 	<ACTION NAME="session-save-as">
 		<CODE>
-			import sessions.*;
-			SessionManager.getInstance().saveCurrentSessionAs(view);
+			sessions.SessionManager.getInstance().saveCurrentSessionAs(view);
 		</CODE>
 	</ACTION>
 
 
 	<ACTION NAME="session-reload">
 		<CODE>
-			import sessions.*;
-			SessionManager.getInstance().reloadCurrentSession(view);
+			sessions.SessionManager.getInstance().reloadCurrentSession(view);
 		</CODE>
 	</ACTION>
 
 
 	<ACTION NAME="session-manager">
 		<CODE>
-			import sessions.*;
-			SessionManager.getInstance().showSessionManagerDialog(view);
+			sessions.SessionManager.getInstance().showSessionManagerDialog(view);
+		</CODE>
+	</ACTION>
+
+
+	<ACTION NAME="session-properties">
+		<CODE>
+			sessions.SessionManager.getInstance().showSessionPropertiesDialog(view);
 		</CODE>
 	</ACTION>
 

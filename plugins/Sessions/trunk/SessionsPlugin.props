@@ -4,7 +4,7 @@
 
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=0.7.3
+plugin.sessions.SessionsPlugin.version=1.0.0
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
 plugin.sessions.SessionsPlugin.depend.0=jdk 1.1
 plugin.sessions.SessionsPlugin.depend.1=jedit 03.02.99.01
@@ -14,7 +14,7 @@ plugin.sessions.SessionsPlugin.depend.1=jedit 03.02.99.01
 # menu
 #
 
-sessions.menu=session-manager - session-save session-save-as session-reload
+sessions.menu=session-properties session-manager - session-save session-save-as session-reload
 sessions.menu.label=Sessions
 
 
@@ -22,6 +22,7 @@ sessions.menu.label=Sessions
 # actions
 #
 
+session-properties.label=Session Properties...
 session-manager.label=Manage Sessions...
 session-save.label=Save Session
 session-save-as.label=Save Session As...
@@ -37,6 +38,7 @@ sessions.switcher.title=Session:\ \
 sessions.switcher.save.tooltip=Save current session
 sessions.switcher.saveAs.tooltip=Save current session under a different name...
 sessions.switcher.reload.tooltip=Reload current session
+sessions.switcher.props.tooltip=Edit current session properties
 sessions.switcher.prefs.tooltip=Manage sessions...
 
 sessions.switcher.save.saved.title=Session Saved
@@ -69,6 +71,17 @@ sessions.manager.delete=Delete
 sessions.manager.changeTo=Change To
 sessions.manager.close=Close
 
+sessions.manager.error.load.title=Error Loading Session File
+sessions.manager.error.load.message=\
+	Could not load the session: {0}\n\
+	\n\
+	The error was:\n\
+	\ \ {1}\n\
+	\n\
+	See the activity log for more details.\n\
+	Please report this error to the maintainer\n\
+	of the Sessions plugin. Thanks.
+
 sessions.manager.error.rename.title=Error Renaming Session File
 sessions.manager.error.rename.message=\
 	Could not rename the session file:\n\
@@ -80,6 +93,15 @@ sessions.manager.error.delete.title=Error Deleting Session File
 sessions.manager.error.delete.message=\
 	Could not delete the session file:\n\
 	{0}
+
+sessions.manager.warning.load.ambigious.title=Ambigious Session Name
+sessions.manager.warning.load.ambigious.message=\
+	Attention!\n\
+	The session name according to the filename is "{0}",\n\
+	but the name property of the SESSION tag inside the session \n\
+	xml file says it is "{1}"!\n\
+	Using "{1}" from now on.\n\
+	When this session is saved, it will be under the name "{1}".
 
 sessions.manager.info.restore.title=Information: Session not restored
 sessions.manager.info.restore.message=\
@@ -128,4 +150,15 @@ options.sessions.switcher.closeAll=Close all files before switching to new sessi
 options.sessions.switcher.showToolBar=Show Session Switcher toolbar
 options.sessions.switcher.showJEditToolBar=Add it to JEdit\'s main toolbar
 options.sessions.switcher.showTitle=Show "Session:" label
+
+
+#
+# Session properties pane
+#
+
+sessions.sessionproperties.title=Properties for Session: {0}
+
+sessions.sessionproperties.default.label=General
+sessions.sessionproperties.default.basedir=Base Directory:
+sessions.sessionproperties.default.mode=Preferred Mode:
 

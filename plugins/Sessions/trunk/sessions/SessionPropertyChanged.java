@@ -1,5 +1,5 @@
 /*
- * SessionListChanged.java - EditBus message
+ * SessionPropertyChanged.java - EditBus message
  * Copyright (c) 2001 Dirk Moebius
  *
  * :tabSize=4:indentSize=4:noTabs=false:maxLineLen=0:
@@ -27,12 +27,21 @@ import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 
 
-public final class SessionListChanged extends EBMessage.NonVetoable
+public final class SessionPropertyChanged extends EBMessage.NonVetoable
 {
 
-	SessionListChanged(EBComponent source)
+	SessionPropertyChanged(
+		EBComponent source,
+		Session session,
+		String key,
+		String oldValue,
+		String newValue)
 	{
 		super(source);
+		this.session = session;
+		this.key = key;
+		this.oldValue = oldValue;
+		this.newValue = newValue;
 	}
 
 
@@ -40,6 +49,44 @@ public final class SessionListChanged extends EBMessage.NonVetoable
 	{
 		return (SessionManager) getSource();
 	}
+
+
+	public final Session getSession()
+	{
+		return session;
+	}
+
+
+	public final String getKey()
+	{
+		return key;
+	}
+
+
+	public final String getOldValue()
+	{
+		return oldValue;
+	}
+
+
+	public final String getNewValue()
+	{
+		return newValue;
+	}
+
+
+	public String paramString()
+	{
+		return super.paramString()
+			+ ",session=" + session.getName()
+			+ ",key=" + key;
+	}
+
+
+	private Session session;
+	private String key;
+	private String oldValue;
+	private String newValue;
 
 }
 
