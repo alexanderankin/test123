@@ -34,6 +34,8 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 		XmlListCellRenderer.class.getResource("/xml/internal_entity.gif"));
 	public static final ImageIcon EXTERNAL_ENTITY_ICON = new ImageIcon(
 		XmlListCellRenderer.class.getResource("/xml/external_entity.gif"));
+	public static final ImageIcon ID_ICON = new ImageIcon(
+		XmlListCellRenderer.class.getResource("/xml/id.gif"));
 	//}}}
 
 	//{{{ getListCellRendererComponent() method
@@ -68,13 +70,13 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 		}
 		else if(value instanceof IDDecl)
 		{
-			IDDecl id = (IDDecl)value;
-			/* setIcon(entity.type == EntityDecl.INTERNAL
-				? INTERNAL_ENTITY_ICON
-				: EXTERNAL_ENTITY_ICON); */
+			setIcon(ID_ICON);
+
 			// it's toString() already does this cos I'm too
 			// lazy to write a custom renderer for the edit tag
 			// dialog box.
+
+			//IDDecl id = (IDDecl)value;
 			//setText(id.id + " [element: <" + id.element + ">]");
 		}
 		else

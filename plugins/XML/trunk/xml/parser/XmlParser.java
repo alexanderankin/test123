@@ -83,6 +83,9 @@ public class XmlParser implements EBComponent
 		{
 			public void run()
 			{
+				if(thread != null)
+					return;
+
 				EditPane editPane = view.getEditPane();
 				editPane.putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,null);
 				editPane.putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
@@ -165,6 +168,9 @@ public class XmlParser implements EBComponent
 			else if(bmsg.getWhat() == BufferUpdate.SAVED
 				&& bmsg.getBuffer() == buffer)
 			{
+				if(thread != null)
+					return;
+
 				if(buffer.getBooleanProperty(
 					"xml.buffer-change-parse")
 					|| buffer.getBooleanProperty(

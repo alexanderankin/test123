@@ -3,7 +3,7 @@ plugin.xml.XmlPlugin.name=XML
 plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan, David Walend, Ollie Rutherfurd, Scott Wyatt
 plugin.xml.XmlPlugin.version=0.6
 plugin.xml.XmlPlugin.docs=index.html
-plugin.xml.XmlPlugin.jars=jaxp.jar xerces.jar
+plugin.xml.XmlPlugin.jars=xerces.jar
 plugin.xml.XmlPlugin.depend.0=jedit 04.00.04.00
 plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
