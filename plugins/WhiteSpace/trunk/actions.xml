@@ -5,13 +5,23 @@
 <ACTIONS>
     <ACTION NAME="white-space.toggle-block-highlight">
         <CODE>
-             whitespace.BlockHighlight.toggleHighlightEnabledFor(buffer);
+            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
+            if (highlight == null) { return ; }
+
+            model = highlight.getModel();
+            if (model == null) { return; }
+
+            model.getBlockHighlight().toggleEnabled();
+
+            whitespace.BlockHighlight.toggleHighlightEnabledFor(buffer);
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.BlockHighlight.BLOCK_HIGHLIGHT_PROPERTY */
-                "white-space.block-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getBlockHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
