@@ -18,6 +18,8 @@
 
       <year>2001</year>
 
+      <year>2002</year>
+
       <holder>Sergey V. Udaltsov</holder>
     </copyright>
 
@@ -75,11 +77,17 @@
           <ulink url="#PathBuilder">PathBuilder</ulink>
         </para>
       </listitem>
+
+      <listitem>
+        <para>
+          <ulink url="#Kappalayout">Kappa and Lambda layout managers</ulink>
+        </para>
+      </listitem>
     </itemizedlist>
   </chapter>
 
   <chapter id="descriptions">
-    <title>Description of contols</title>
+    <title>Description of controls</title>
 
     <sect1 id="HelpfulJTable">
       <title>HelpfulJTable</title>
@@ -214,12 +222,48 @@
 
       <para>Nice panel for composing some path ($PATH or $CLASSPATH).</para>
     </sect1>
+    <sect1 id="Kappalayout">
+      <title>Kappa and Lambda layout managers</title>
+
+      <formalpara>
+        <title>Author:</title>
+
+        <para>
+          <author>
+            <firstname>Dale</firstname>
+
+            <surname>Anson</surname>
+          </author>
+        </para>
+      </formalpara>
+
+      <formalpara>
+        <title>URL:</title>
+
+        <para>
+          <ulink url="http://kappalayout.sourceforge.net/">http://kappalayout.sourceforge.net/</ulink>
+        </para>
+      </formalpara>
+
+
+      <para>Advanced layout managers.</para>
+    </sect1>
   </chapter>
 
   <appendix id="changelog">
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.3</title>
+
+          <para />
+        </formalpara>
+
+        <para><ulink url="#Kappalayout">Kappa and Lambda layout managers</ulink> added</para>
+      </listitem>
+
       <listitem>
         <formalpara>
           <title>Version 0.2</title>
