@@ -311,6 +311,7 @@ public class XmlActions
 
 		if(CompletionInfo.isDelegated(editPane))
 		{
+			System.err.println("delegated");
 			view.getToolkit().beep();
 			return;
 		}
@@ -319,9 +320,9 @@ public class XmlActions
 			.getCompletionInfo(editPane);
 
 		if(!(buffer.isEditable()
-			&& completion
 			&& completionInfo != null))
 		{
+			System.err.println("not editable or completion off");
 			view.getToolkit().beep();
 			return;
 		}
@@ -337,6 +338,7 @@ public class XmlActions
 			textArea.setSelectedText("</" + tag.tag + ">");
 		else
 		{
+			System.err.println("closing tag not found");
 			view.getToolkit().beep();
 		}
 	} //}}}

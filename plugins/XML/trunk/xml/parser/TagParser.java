@@ -116,7 +116,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 				if(i != text.length() - 1)
 				{
 					char ch2 = text.charAt(i + 1);
-					if(ch2 != '/' && ch2 != '"'
+					if(ch2 != '/' && ch2 != '\'' && ch2 != '"'
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetter(ch2))
 					{
@@ -135,7 +135,7 @@ loop:		for (int i = Math.min(text.length() - 1,pos); i >= 0; i--)
 				if(i != 0)
 				{
 					char ch2 = text.charAt(i - 1);
-					if(ch2 != '"'
+					if(ch2 != '/' && ch2 != '\'' && ch2 != '"'
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetter(ch2))
 					{
@@ -287,7 +287,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 				if(i != text.length() - 1)
 				{
 					char ch2 = text.charAt(i + 1);
-					if(ch2 != '/' && ch2 != '"' && ch2 != '\''
+					if(ch2 != '/' && ch2 != '\'' && ch2 != '"'
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetter(ch2))
 					{
@@ -306,7 +306,7 @@ loop:		for (int i = endTag.start - 1; i >= 0; i--)
 				if(i != 0)
 				{
 					char ch2 = text.charAt(i - 1);
-					if(ch2 != '"' && ch2 != '\''
+					if(ch2 != '/' && ch2 != '\'' && ch2 != '"'
 						&& !Character.isWhitespace(ch2)
 						&& !Character.isLetter(ch2))
 					{
