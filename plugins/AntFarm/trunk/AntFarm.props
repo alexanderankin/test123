@@ -1,7 +1,7 @@
 # Properties used by jEdit
 plugin.AntFarmPlugin.name=Ant Farm
 plugin.AntFarmPlugin.author=Chris Scott, Rick Gibbs
-plugin.AntFarmPlugin.contributor=Todd Papaioannou, Richard F. Wan, Christoph Steinbeck, Slava Pestov
+plugin.AntFarmPlugin.contributor=Todd Papaioannou, Richard F. Wan, Christoph Steinbeck, Slava Pestov, Dirk Moebius
 plugin.AntFarmPlugin.version=0.5
 plugin.AntFarmPlugin.docs=AntFarm.html
 plugin.AntFarmPlugin.jars=ant.jar
