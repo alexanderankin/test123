@@ -37,7 +37,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     private boolean needReload = false;
 //}}}
     
-//{{{ COSTRUCTOR   
+//{{{ CONSTRUCTOR   
     public JumpEventListener()  
     {
         super();
@@ -76,9 +76,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
         public void errorMsg(String s)      
         {
             GUIUtilities.message(jEdit.getActiveView(), s, new Object[0]);
-        }
-
-//}}}
+        }//}}}
         
 //{{{ reloadTags(ProjectViewer viewer, VPTProject p)  
     public boolean reloadTags(ProjectViewer viewer, VPTProject p)
@@ -266,4 +264,16 @@ public boolean CtagsTest()
 //}}}
 
 //}}}
+
+//{{{ dispose
+public void dispose()
+{
+    PROJECT = null;
+    if (isAddedToBus) 
+    {
+        EditBus.removeFromBus(this);
+        System.out.println("JumpEventListener - Removed from EditBus");
+    }
+} //}}}
+
 }

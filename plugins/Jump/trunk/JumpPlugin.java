@@ -24,7 +24,7 @@ import projectviewer.event.*;
 public class JumpPlugin extends EditPlugin
 {
 
-//{{{ -----------  Fields
+//{{{ Fields
 
     public final static String NAME = "JumpPlugin";
     public final static String MENU = "JumpPlugin.menu";
@@ -43,7 +43,7 @@ public class JumpPlugin extends EditPlugin
 
 //}}}
 
-//{{{ -----------  EditPlugin methods
+//{{{ EditPlugin methods
 
 //{{{ EditPlugin.start
     public void start()
@@ -108,13 +108,14 @@ public class JumpPlugin extends EditPlugin
             Log.log(Log.DEBUG, this, "failed to save tags on exit");
             e.printStackTrace();
         }
+        dispose();
     }
 
 //}}}
 
 //}}}
 
-//{{{ -----------  ProjectBuffer's methods
+//{{{ ProjectBuffer's methods
 
 //{{{ ProjectBuffer getActiveProjectBuffer()
     /**
@@ -125,9 +126,7 @@ public class JumpPlugin extends EditPlugin
     public static ProjectBuffer getActiveProjectBuffer()
     {
         return activeProjectBuffer;
-    }
-
-//}}}
+    }//}}}
 
 //{{{ boolean setActiveProjectBuffer(ProjectBuffer)
 
@@ -162,8 +161,7 @@ public class JumpPlugin extends EditPlugin
             System.out.println("JumpPlugin: setActiveProjectBuffer failed");
             return false;
         }
-    }
-//}}}
+    }//}}}
 
 //{{{ void addProjectBuffer(ProjectBuffer buff
 // QUESTION: Did we need this method at all?
@@ -190,8 +188,7 @@ public class JumpPlugin extends EditPlugin
     {
         projectBuffers.remove(buff);
         setActiveProjectBuffer(null);
-    }
-//}}}
+    }//}}}
 
 //{{{ void removeProjectBuffer(String name)
     /**
@@ -211,11 +208,8 @@ public class JumpPlugin extends EditPlugin
             
             HistoryModel mo = HistoryModel.getModel("jump.tag_history.project."+name);
             mo.clear();
-            //System.out.println("file droped.");
         }
-    }
-
-//}}}
+    }//}}}
 
 //{{{ ProjectBuffer getProjectBuffer(String name)
     /**
@@ -235,8 +229,7 @@ public class JumpPlugin extends EditPlugin
     public static boolean hasProjectBuffer(String name)
     {
         return projectBuffers.containsKey(name);
-    }
-//}}}
+    }//}}}
 
 //{{{ boolean hasProjectBuffer(ProjectBuffer buff)
     /**
@@ -245,12 +238,11 @@ public class JumpPlugin extends EditPlugin
     public static boolean hasProjectBuffer(ProjectBuffer buff)
     {
         return projectBuffers.containsValue(buff);
-    }
-//}}}
+    }//}}}
 
 //}}}
 
-//{{{ -----------  Misc methods
+//{{{ Misc methods
 
 //{{{ JumpEventListener getListener()
     public static JumpEventListener getListener()
@@ -338,6 +330,30 @@ public class JumpPlugin extends EditPlugin
         }
     }
 //}}}
+
+//{{{ dispose
+public void dispose()
+{
+    
+    activeProjectBuffer = null;
+    projectBuffers = null;
+    
+    
+    View v = jEdit.getActiveView();
+    if (PVActions.getCurrentProject(v) != null)
+    {
+        ProjectViewer.getViewer(v).removeProjectViewerListener(listener, v);
+        System.out.println("JumpPlugin - ProjectViewerListener removed");
+    }  
+    listener.dispose();
+    
+    jump_actions = null;
+    pja = null;
+    tja = null;
+    fja = null;
+    buffersForDelete = null;
+    listener = null;
+} //}}}
 
 //}}}
 
