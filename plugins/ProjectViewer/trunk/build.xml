@@ -3,7 +3,7 @@
 <!-- :tabSize=2:indentSize=2:noTabs=false:              -->
 <!-- :folding=explicit:collapseFolds=1:                 -->
 <!-- ================================================== -->
-<project name="Project Viewer" default="compile" basedir=".">
+<project name="Project Viewer" default="build" basedir=".">
 
 	<!-- ================================================ -->
 	<!-- Property definitions                             -->
@@ -14,6 +14,7 @@
 	<property file="${user.home}/build.properties"/>
 
 	<property name="jedit.install.dir" value="../../jEdit"/>
+	<property name="install.dir"			value=".." />
 	<property name="jedit.user.home"  value="${user.home}/.jedit" />
 	<property name="version"          value="2.0.2"/>
 
@@ -27,15 +28,16 @@
   <property name="build.javadoc"    value="${build.docs}/javadoc"/>
   <property name="build.doxydoc"    value="${build.docs}/doxydoc"/>
 
-  <property name="docbookx_dtd"     value="../XML/xml/dtds/docbookx.dtd" />
-	<property name="infoviewer.jar"		value="${jedit.user.home}/jars/InfoViewer.jar" />
+  <property name="docbookx.dtd"     value="../XML/xml/dtds/docbookx.dtd" />
+	<property name="docbook.xsl"			value="/usr/share/xsl/docbook-xsl/html/docbook.xsl" />
 
   <!-- ================================================ -->
   <!-- Classpath definitions                            -->
   <!-- ================================================ -->
   <path id="default.classpath">
     <pathelement location="${jedit.install.dir}/jedit.jar" />
-		<pathelement location="${infoviewer.jar}" />
+		<pathelement location="${install.dir}/InfoViewer.jar" />
+		<!-- <pathelement location="${install.dir}/JarMaker.jar" /> -->
 	</path>
 
 
@@ -67,6 +69,19 @@
   <target name="docs"
 					depends="javadoc"
           description="Build the User's Guide and Javadoc documentation">
+
+		<delete file="docbook-wrapper.xsl" />
+		<echo file="docbook-wrapper.xsl"
+			message="&lt;xsl:stylesheet"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" xmlns:xsl='http://www.w3.org/1999/XSL/Transform'"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message=" version='1.0'&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;xsl:import href='${docbook.xsl}/html/chunk.xsl'/&gt;"/>
+		<echo file="docbook-wrapper.xsl" append="true"
+			message="&lt;/xsl:stylesheet&gt;"/>
+
     <antcall target="docs-${docs-proc.target}"/>
   </target>
 
@@ -100,8 +115,12 @@
 
     <jar jarfile="${build}/ProjectViewer.jar">
       <fileset dir="${build.classes}"/>
-			<fileset dir="${build.docs}"/>
+			<fileset dir="${build.docs}">
+				<exclude name="**/javadoc/**" />
+			</fileset>
     </jar>
+
+		<copy todir=".." file="${build}/ProjectViewer.jar" />
   </target>
 
 
@@ -149,7 +168,7 @@
 	<target name="docs-xsltproc" description="Generate user documentation in hmtl format with xsltproc">
   	<exec executable="xsltproc">
     	<arg value="-o"/>
-			<arg value="docs/users-guide.html"/>
+			<arg value="${build.docs}/users-guide.html"/>
 			<arg value="--catalogs"/>
 			<arg value="docs/users-guide.xsl"/>
 			<arg value="docs/users-guide.xml"/>
@@ -161,10 +180,10 @@
 	<target name="docs-xalan" description="Generate user documentation in hmtl format with xalan">
 		<style style="docs/users-guide.xsl"
 					 in="docs/users-guide.xml"
-					 out="docs/users-guide.html" >
+					 out="${build.docs}/users-guide.html" >
 			<xmlcatalog>
 				<dtd publicId="-//OASIS//DTD DocBook XML V4.1.2//EN"
-						 location="${docbookx_dtd}" />
+						 location="${docbookx.dtd}" />
 			</xmlcatalog>
 		</style>
 	</target>
@@ -172,6 +191,7 @@
   <!-- ================================================ -->
   <target name="clean" description="Cleans project directories">
     <delete dir="${build}"/>
+		<delete file="docbook-wrapper.xsl" />
     <delete>
       <fileset dir=".">
         <include name="ProjectViewer-*.zip"/>
