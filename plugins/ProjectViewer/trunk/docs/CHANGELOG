@@ -56,7 +56,7 @@ VERSION 2.0.3
 		  Metal L&F bug when navigating symlinks in the file chooser (it
 		  resolves canonical paths when it shouldn't)
 		- fixed many possible NPEs in ProjectViewer for the rare case when all
-		  trees are disables; fixed also some possible NPEs in VPTProject.
+		  trees are disabled; fixed also some possible NPEs in VPTProject.
 		- renaming the node was causing the tree to stay out of order
 		- trying to rename a file that does not exist was causing an "infinite
 		  loop" when pressing only OK on the rename dialog
@@ -64,6 +64,9 @@ VERSION 2.0.3
 		- fixed saving of tree state when changing project in the combo box by
 		  calling closeProject() before touching the tree (and then changing
 		  its root).
+		- fixed data loss bug when canceling jEdit's exit operation (was closing
+		  the project before being sure that jEdit was really going to exit).
+		- fixed rename action to operate correctly on any node.
 
 		Other changes:
 		- removed the VPTNodeType class; it was just adding bloat, and could be
