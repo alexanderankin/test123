@@ -9,7 +9,7 @@ plugin.xslt.XSLTPlugin.docs=XSLT/XSLT.html
 plugin.xslt.XSLTPlugin.depend.0=jedit 03.01.99.00
 plugin.xslt.XSLTPlugin.depend.1=plugin xml.XmlPlugin 0.3
 plugin.xslt.XSLTPlugin.depend.2=jdk 1.2
-plugin.xslt.XSLTPlugin.depend.2=jar xalan.jar
+#plugin.xslt.XSLTPlugin.depend.2=jar xalan.jar
 
 # Menu bar properties
 XSLT.label=XSLT
