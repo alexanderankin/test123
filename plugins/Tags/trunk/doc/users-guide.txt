@@ -1,10 +1,9 @@
-===========
+=============
 Tags Plugin
-===========
+=============
 
-:Authors: Ollie Rutherfurd,
-			Kenrick Drew
-:Maintainer: Ollie Rutherfurd <oliver@jedit.org>
+:Authors: Kenrick Drew,
+			Ollie Rutherfurd
 :Version: 1.1.2
 
 .. $Id$
@@ -12,52 +11,43 @@ Tags Plugin
 Introduction
 ============
 
-The Tags plugin allows a user to jump to the definition of a
-specific language object or "tag" using tag index files.
-For example, in C programs, the user can immediatly jump to the
+The Tags plugin allows one to "jump" to the definition of a
+class, function, variable, etc... using tag index files.
+For example, in C programs, the user can immediately jump to the
 definition of a desired function or data structure without having
 to know where or what file it is defined. Tag jumping can be
 accomplished by either selecting the desired tag, placing the
 cursor on the tag, or entering the tag.
 
-The tag index files are created by the `ctags`_ program of which
-there are several versions. ctags can be found on most UNIX
-systems. The `Exuberant C Tags`_ program has both UNIX and Windows
-versions.
+Tag index files are created by `ctags`_ (http://ctags.sourceforge.net/).
 
 .. _ctags: http://ctags.sourceforge.net/
-.. _Exuberant C Tags: http://ctags.sourceforge.net/
 
 Creating Tag Index Files
 ========================
 
-Without tag index files the Tags plugin is useless.  Well, not
-necessarily useless; it will let you know it can't find or
-jump to anything which can be of some use. Tag files are
-created with the ctags program.
+For the Tags plugin to be useful, you must generate tag index files
+using `ctags`.
 
-For more extensive help on the ctags program see the
-documentation that comes with your distribution (man pages,
-readme files).  But, in general you can create tag index
-files with the Exuberant C Tag commands::
+To generate a tag index file for all source files in the 
+current directory::
+	
+	ctags *
 
-     ctags *     create a tag file in the current directory for all recognized
-                 source files
-     ctags -R    create a tag file in the current directory for all files in
-                 an entire source directory tree.
+To generate a tag index file or all source files in the
+current directory and child directories::
+	
+	ctags -R
 
-Please note that the tag index files list definition file
-names based on path that you pass to the ctags program. If you
-don't pass the full path of the files to ctags, the definition
-file names listed in the tag index file will be relative to
-the current directory. If this is not desired you can pass ``$cwd``
-or `pwd` to ctags::
+See the man page or documentation that comes with your version
+of `ctags` for more information on using `ctags`.
 
-     ctags $cwd/*
-     ctags -R $cwd
+Note that file paths in tag index file are relative to the 
+generated file, unless you pass absolute paths to `ctags`.
 
-**Tag index files are search using a binary search, so tag index
-files must be sorted.**
+**Tag index files must be sorted, as the Tags plugin searches
+using a binary search. By default Exuberant CTags sorts generated
+tag index files.**
 
 Usage
 =====
@@ -143,7 +133,10 @@ Configuration
 The Tags plugin can be configured under the `Plugins` >
 `Plugin Options...`.
 
-`Position dialogs under cursor (Experimental)`:
+General
+-------
+
+`Position dialogs under cursor`:
 
     If your window manager is set to have window focus
     follow the mouse pointer, and doesn't automatically
@@ -154,47 +147,49 @@ The Tags plugin can be configured under the `Plugins` >
     that this doesn't work well for window managers
     which automatically shift focus to new dialogs/windows.
 
-`If tag match is found continue searching subsequent tag index files`:
-
-    By default, the first matching tag (or groups of tags
-    if a tag collision occurs) found will stop the search.
-    Using this option will allow all tag files to be searched.
-
 `Tags extend through member access operator`:
 
     When tagging in the text area, the plugin by
     default will consider the tag to be the word
     under the cursor as well as any member access.
 
-`Search tag file in current buffer's directory`:
+`If tag match is found continue searching subsequent tag index files`:
 
-    Check this option if you want the tag search to
-    use the tag index file in the current buffer's
-    directory. After specifying this you will be able
-    to change the search order of the tag index file.
-    The default is for the tag index file to be searched
-    first.
+    By default, the first matching tag (or groups of tags
+    if a tag collision occurs) found will stop the search.
+    Using this option will allow all tag files to be searched,
+    results in searches taking longer.
 
-`Tag index file name`:
+`Number of tag files to keep in memory`:
 
-    If you have configured Tags to use the tag index
-    file in the current buffer's directory you can
-    change the file named that the plugin looks for.
-    The default is "tags". This should be the file
-    name without any path related characters.
+    The tags plugin caches remote tag index files, when
+    editing over FTP, SFTP, etc...  To avoid loading remote
+    tag index files every time you wish to jump to a tag
+    defintion, these are cached.  This value controls how
+    many remote index files to cache in memory.
 
-`Search in parent directories, if no tag index file in buffer's directory`:
+`Keep local tags files in memory`
 
-	Search up directory tree for tag index files for the
-	current buffer, if none is found in the buffer's directory.
+    If enabled, tag index file located on the local filesystem
+    are cached in memory, just as remote ones, rather than
+    reading them as a RandomAccessFile.  This may result
+    in slightly faster searching, but can dramatically increase
+    memory usage.
 
-`Tag search files (in order of search)`:
+Tag Files
+---------
 
-    Add tag index files that should be searched to
-    this table. The order of the table is the search
-    order. You can also enable or disable a tag index
-    file from being searched without having to remove the
-    file path from the table.
+List of tag index files the Tags plugin uses to search for 
+tag definitions.
+
+"tags" is a special entry that doesn't represent an actual 
+file but rather the name of the file to look for in the current
+buffer's directory.  The Tags plugin can also search for this
+file in the current buffer's parent directories.  Double-click 
+on the entry to edit it.
+
+The order of entries in the list is the order in which files
+will be searched.
 
 Suggested Keyboard Shortcuts and UI
 ===================================
@@ -204,12 +199,14 @@ some jEdit key bindings, but I find that they work well.
 They are based on the vi (and it's clones) key bindings
 for tagging.
 
-::
-
-     Follow Tag:             Ctrl + ]
-     Follow Tag (New View):  Ctrl + SHIFT + ]
-     Follow Tag...:          Alt + ]
-     Pop Position:           Ctrl + T
+====================== ===========
+ Action                 Shortcut
+====================== ===========
+Follow Tag             C+]
+Follow Tag (New View)  C+S+]
+Follow Tag...          A+]
+Pop Position           C+T
+====================== ===========
 
 Keyboard shortcuts can be defined under the `Shortcuts` node
 of the `Global Options` dialog.
@@ -233,8 +230,8 @@ C Tags program, but you'll find that Exuberant C Tags
 provides a bit more info (or too much depending on how much
 of a minimalist you are).
 
-Lincense
-========
+License
+=======
 
 The source code is distributed under the GPL. Please see
 http://www.fsf.org/copyleft/gpl.html.
@@ -242,9 +239,8 @@ http://www.fsf.org/copyleft/gpl.html.
 Known Bugs/Limitations
 ======================
 
-* Tag files **MUST** be sorted. Else, the tag will
-  probably never be found b/c we are using a binary
-  searching mechanism.
+* Tag index files **MUST** be sorted. This is becuase
+  tags are search for using a binary search.
 * Bachward searching patterns ``(?...?)`` are not supported.
 
 Future Directions
