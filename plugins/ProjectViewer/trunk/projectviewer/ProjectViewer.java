@@ -926,7 +926,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		TreePath last = null;
         ArrayList obfp = new ArrayList();
 		String sFiles="";
-		
+
 		JTree tree = getCurrentTree();
 		if (tree == null)
 			return null;
@@ -1115,6 +1115,17 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 							.removeOpenFile(f.getNodePath());
 					}
 				} else if (bu.getWhat() == BufferUpdate.LOADED) {
+					if (folderTree != null) {
+						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
+					}
+					if (fileTree != null) {
+						((DefaultTreeModel)fileTree.getModel()).nodeChanged(f);
+					}
+					if (workingFileTree != null) {
+						((VPTWorkingFileListModel)workingFileTree.getModel())
+							.addOpenFile(f.getNodePath());
+					}
+				} else if (bu.getWhat() == BufferUpdate.DIRTY_CHANGED) {
 					if (folderTree != null) {
 						((DefaultTreeModel)folderTree.getModel()).nodeChanged(f);
 					}
