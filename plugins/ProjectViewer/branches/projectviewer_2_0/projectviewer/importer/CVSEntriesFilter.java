@@ -33,18 +33,16 @@ import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
-
-import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**
  *	Filter that uses the CVS/Entries file to decide if a file should be accepted
- *	or not. The filter behaves a little differently depending on where it's 
+ *	or not. The filter behaves a little differently depending on where it's
  *	being used: if inside a JFileChooser, it accepts directories regardless of
  *	them being on the CVS/Entries file or not, so the user can navigate freely.
  *
  *	<p>For the java.io.FilenameFilter implementation, the CVS/Entries listing is
- *	strictly enforced, even for directories. This way, no directories that are 
+ *	strictly enforced, even for directories. This way, no directories that are
  *	not listed there are going to be imported into the project.</p>
  *
  *	<p>"Entries" files read are kept in an internal cache so that subsequent
@@ -55,13 +53,15 @@ import projectviewer.config.ProjectViewerConfig;
  */
 public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 
+	//{{{ Private members
 	private HashMap entries = new HashMap();
+	//}}}
 
 	//{{{ getDescription() method
 	public String getDescription() {
 		return jEdit.getProperty("projectviewer.cvs-filter");
 	} //}}}
-	
+
 	//{{{ accept(File) method
 	/**
 	 *	accept() method for the Swing JFileChooser. Accepts files only if they
@@ -72,7 +72,7 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 		return (file.isDirectory() && !file.getName().equals("CVS"))
 				|| accept(file.getParentFile(), file.getName());
 	} //}}}
-		
+
 	//{{{ accept(File, String) method
 	/**
 	 *	accept() method for the FilenameFilter implementation. Accepts only
@@ -81,11 +81,11 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 	public boolean accept(File file, String fileName) {
 		return getEntries(file.getAbsolutePath()).contains(fileName);
 	} //}}}
-	
+
 	//{{{ getEntries(String) method
-	/** 
+	/**
 	 *	Returns the set of files ffrom the CVS/Entries file for the given path.
-	 *	In case the file has not yet been read, parse it. 
+	 *	In case the file has not yet been read, parse it.
 	 */
 	private HashSet getEntries(String dirPath) {
 		HashSet h = (HashSet) entries.get(dirPath);
@@ -93,12 +93,12 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 			// parse file
 			try {
 				h = new HashSet();
-				
+
 				String fPath = dirPath + File.separator + "CVS" +
 					File.separator + "Entries";
 				BufferedReader br = new BufferedReader(new FileReader(fPath));
 				String line;
-				
+
 				while ( (line = br.readLine()) != null ) {
 					int idx1, idx2;
 					idx1 = line.indexOf('/');
@@ -108,16 +108,17 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 					}
 				}
 
-				entries.put(dirPath, h);
 			} catch (FileNotFoundException fnfe) {
 				// no CVS/Entries
-				entries.put(dirPath, h);
 			} catch (IOException ioe) {
 				//shouldn't happen
 				Log.log(Log.ERROR,this,ioe);
+			} finally {
+				entries.put(dirPath, h);
 			}
 		}
 		return h;
 	} //}}}
-	
+
 }
+

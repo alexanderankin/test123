@@ -23,7 +23,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
 import javax.swing.JOptionPane;
 
 import org.gjt.sp.jedit.jEdit;
@@ -45,36 +44,30 @@ import projectviewer.config.ProjectViewerConfig;
  *	@version	$Id$
  */
 public class NodeRenamerAction extends Action {
-	
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return jEdit.getProperty("projectviewer.action.rename");
 	} //}}}
-	
-	//{{{ getIcon() method
-	/** Returns null. This action shouldn't be added to the toolbar. */
-	public Icon getIcon() {
-		return null;
-	} //}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/** Renames a node. */
 	public void actionPerformed(ActionEvent e) {
 		VPTNode node = viewer.getSelectedNode();
 		boolean isValid = false;
 		String newName = null;
-		
+
 		while (!isValid) {
 			newName = JOptionPane.showInputDialog(viewer,
 				jEdit.getProperty("projectviewer.action.rename.message"),
 				jEdit.getProperty("projectviewer.action.rename.title"),
 				JOptionPane.PLAIN_MESSAGE);
-			
+
 			if (newName == null || newName.length() == 0) {
 				return;
 			}
-			
+
 			// checks the input
 			if (node.isFile() || node.isDirectory()) {
 				if (newName.indexOf('/') != -1 || newName.indexOf('\\') != -1) {
@@ -97,7 +90,7 @@ public class NodeRenamerAction extends Action {
 			}
 		}
 
-		// renames the node		
+		// renames the node
 		if (node.isFile()) {
 			VPTFile f = (VPTFile) node;
 
@@ -107,7 +100,7 @@ public class NodeRenamerAction extends Action {
 			}
 
 			((VPTProject)node).unregisterFile(f);
-			
+
 			if (!renameFile(f, new File(f.getFile().getParent(), newName))) {
 				JOptionPane.showMessageDialog(viewer,
 						jEdit.getProperty("projectviewer.action.rename.rename_error"),
@@ -130,14 +123,14 @@ public class NodeRenamerAction extends Action {
 						JOptionPane.ERROR_MESSAGE);
 				return;
 			}
-			
+
 			dir.setFile(newFile);
-			
+
 			// updates all files from the old directory to point to the new one
 			while (!node.isProject()) {
 				node = (VPTNode) node.getParent();
 			}
-			
+
 			for (Iterator i = ((VPTProject)node).getFiles().iterator(); i.hasNext(); ) {
 				VPTFile f = (VPTFile) i.next();
 				if (f.getNodePath().startsWith(oldDir)) {
@@ -151,7 +144,7 @@ public class NodeRenamerAction extends Action {
 			ProjectManager.getInstance().renameProject(oldName, newName);
 			ProjectViewer.nodeChanged(node);
 		}
-	
+
 		while (!node.isProject()) {
 			node = (VPTNode) node.getParent();
 		}
@@ -164,10 +157,10 @@ public class NodeRenamerAction extends Action {
 	//{{{ prepareForNode(VPTNode) method
 	/** Disable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		cmItem.setVisible(node != null && 
+		cmItem.setVisible(node != null &&
 			(node.isFile() || node.isDirectory() || node.isProject()));
 	} //}}}
-	
+
 	//{{{ renameFile(VPTFile, String) method
 	/** Renames a file and tries not to mess up jEdit's current buffer. */
 	private boolean renameFile(VPTFile f, File newFile) {
@@ -186,10 +179,11 @@ public class NodeRenamerAction extends Action {
 			// disk" warnings that shouldn't happen, but do.
 			try { Thread.sleep(1); } catch (Exception e) { }
 			f.open();
-			if (b != null) 
+			if (b != null)
 				jEdit.getActiveView().setBuffer(b);
 		}
 		return true;
 	} //}}}
+
 }
 

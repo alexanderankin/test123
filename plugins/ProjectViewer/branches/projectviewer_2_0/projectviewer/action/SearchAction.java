@@ -25,7 +25,6 @@ import java.util.Enumeration;
 
 import java.awt.event.ActionEvent;
 
-import javax.swing.Icon;
 import javax.swing.JMenuItem;
 
 import org.gjt.sp.jedit.View;
@@ -35,7 +34,6 @@ import org.gjt.sp.jedit.search.SearchFileSet;
 import org.gjt.sp.jedit.search.SearchAndReplace;
 
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTFile;
 //}}}
 
 /**
@@ -45,19 +43,13 @@ import projectviewer.vpt.VPTFile;
  *	@version	$Id$
  */
 public class SearchAction extends Action {
-	
+
 	//{{{ getText() method
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
-		return jEdit.getProperty("projectviewer.launcher.hypersearch");
+		return jEdit.getProperty("projectviewer.action.hypersearch");
 	} //}}}
-	
-	//{{{ getIcon() method
-	/** Returns null. Shouldn't be on the toolbar. */
-	public Icon getIcon() {
-		return null;
-	} //}}}
-	
+
 	//{{{ actionPerformed(ActionEvent) method
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
@@ -72,15 +64,15 @@ public class SearchAction extends Action {
 		if (node != null && (node.isDirectory() || node.isProject())) {
 			cmItem.setVisible(true);
 			if (node.isDirectory()) {
-				((JMenuItem)cmItem).setText(jEdit.getProperty("projectviewer.launcher.hypersearch_dir"));
+				((JMenuItem)cmItem).setText(jEdit.getProperty("projectviewer.action.hypersearch_dir"));
 			} else {
-				((JMenuItem)cmItem).setText(jEdit.getProperty("projectviewer.launcher.hypersearch_project"));
+				((JMenuItem)cmItem).setText(jEdit.getProperty("projectviewer.action.hypersearch_project"));
 			}
 		} else {
 			cmItem.setVisible(false);
 		}
 	} //}}}
-	
+
 	//{{{ NodeFileSet class
 	/**
 	 *	Implements a SearchFileSet representing files that are children of a given
@@ -89,22 +81,22 @@ public class SearchAction extends Action {
 	 *	@author
 	 */
 	private static class NodeFileSet implements SearchFileSet {
-		
+
 		//{{{ Private members
 		private ArrayList fileset;
 		private Iterator it;
 		//}}}
-	
+
 		//{{{ Constructors
-		
+
 		public NodeFileSet(VPTNode node) {
 			fileset = new ArrayList();
 			addFiles(node);
 			it = fileset.iterator();
 		}
-		
+
 		//}}}
-		
+
 		//{{{ addFiles(VPTNode) method
 		/**
 		 *	Adds all the files below the given node to the list of search files,
@@ -116,39 +108,39 @@ public class SearchAction extends Action {
 			while(e.hasMoreElements()) {
 				VPTNode n = (VPTNode) e.nextElement();
 				if (n.isFile()) {
-					fileset.add(n); 
+					fileset.add(n);
 				} else if (n.getAllowsChildren()) {
-					addFiles(n);	
+					addFiles(n);
 				}
 			}
 		} //}}}
-	
+
 		//{{{ SearchFileSet implementation
-		
+
 		public String getCode() {
 			return(null);
 		}
-	
+
 		public int getFileCount(View view) {
 			return(fileset.size());
 		}
-	
+
 		public String[] getFiles(View view) {
-			return (String[]) fileset.toArray(new String[fileset.size()]);	
+			return (String[]) fileset.toArray(new String[fileset.size()]);
 		}
-	
+
 		public String getFirstFile(View view) {
 			if (fileset.size() == 0) return null;
 			return (String) fileset.get(0);
 		}
-	
+
 		public String getNextFile(View view, String path) {
 			if (fileset.size() == 0) return null;
 			return (String) it.next();
-		} 
-		
+		}
+
 		//}}}
-	
+
 	} //}}}
 
 }
