@@ -1149,6 +1149,8 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
     </listitem>
     <listitem><para>Fixed OpenJade error pattern.</para>
     </listitem>
+    <listitem><para>Hidden files in commando directories are now ignored.</para>
+    </listitem>
    </itemizedlist>
   </listitem>
 
