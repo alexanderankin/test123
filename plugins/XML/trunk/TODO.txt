@@ -1,3 +1,12 @@
+- TagHighlight passes out of bounds lines to v2p
+- use getContextSensitiveProperty()
+- cvs remove JCheckBoxList
+- better docs: moving around xml file, editing xml file, etc.
+- xsd completion file is broken
+- better handling of ant and xsd
+- add name of tag highlight guy
+- popup not hidden when enter pressed
+- entering </foo>
 - option to not fetch stuff from 'net
 - empty/opening tag only/opening and closing in edit tag dialog
 - try resolving public ID first
@@ -5,7 +14,6 @@
 - documentation: XML catalog format, OASIS catalog format
 - proper handling of tags in nested files
 - test XMLCatalog support, include an XMLCatalog DTD
-- after 4.0pre1, remove own JCheckBoxList copy
 - tag lists for more file types, eg JSP, ASP, JHTML, ...
 - XmlComplete: support backspace (just get text from buffer from < pos
   to caret pos)

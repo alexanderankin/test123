@@ -1,5 +1,8 @@
 /*
  * EditTagDialog.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,6 +15,7 @@
 
 package xml;
 
+//{{{ Imports
 import javax.swing.table.*;
 import javax.swing.border.*;
 import javax.swing.*;
@@ -20,9 +24,11 @@ import java.awt.*;
 import java.util.*;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
+//}}}
 
 class EditTagDialog extends EnhancedDialog
 {
+	//{{{ EditTagDialog constructor
 	EditTagDialog(View view, ElementDecl element, Hashtable attributeValues,
 		boolean elementEmpty, Hashtable entityHash, Vector ids)
 	{
@@ -35,7 +41,7 @@ class EditTagDialog extends EnhancedDialog
 		content.setBorder(new EmptyBorder(12,12,12,12));
 		setContentPane(content);
 
-		/** Top panel with element name, empty toggle */
+		//{{{ Top panel with element name, empty toggle
 		JPanel top = new JPanel(new BorderLayout(6,0));
 		top.setBorder(new EmptyBorder(0,0,12,0));
 
@@ -56,8 +62,9 @@ class EditTagDialog extends EnhancedDialog
 
 		top.add(BorderLayout.EAST,empty);
 		content.add(BorderLayout.NORTH,top);
+		//}}}
 
-		/** Attribute table */
+		//{{{ Attribute table
 		JPanel center = new JPanel(new BorderLayout());
 		attributeModel = createAttributeModel(element.attributes,
 			attributeValues,ids);
@@ -76,8 +83,9 @@ class EditTagDialog extends EnhancedDialog
 		size.height = Math.min(size.width,200);
 		scroller.setPreferredSize(size);
 		center.add(BorderLayout.CENTER,scroller);
+		//}}}
 
-		/** Preview field */
+		//{{{ Preview field
 		JPanel previewPanel = new JPanel(new BorderLayout());
 		previewPanel.setBorder(new EmptyBorder(12,0,0,0));
 		previewPanel.add(BorderLayout.NORTH,new JLabel(jEdit.getProperty(
@@ -90,10 +98,11 @@ class EditTagDialog extends EnhancedDialog
 		previewPanel.add(BorderLayout.CENTER,new JScrollPane(preview));
 
 		center.add(BorderLayout.SOUTH,previewPanel);
+		//}}}
 
 		content.add(BorderLayout.CENTER,center);
 
-		/** Buttons */
+		//{{{ Buttons
 		JPanel buttons = new JPanel();
 		buttons.setLayout(new BoxLayout(buttons,BoxLayout.X_AXIS));
 		buttons.setBorder(new EmptyBorder(12,0,0,0));
@@ -112,6 +121,7 @@ class EditTagDialog extends EnhancedDialog
 		buttons.add(Box.createGlue());
 
 		content.add(BorderLayout.SOUTH,buttons);
+		//}}}
 
 		updateTag();
 
@@ -119,8 +129,9 @@ class EditTagDialog extends EnhancedDialog
 		pack();
 		setLocationRelativeTo(view);
 		show();
-	}
+	} //}}}
 
+	//{{{ ok() method
 	public void ok()
 	{
 		int row = attributes.getSelectedRow();
@@ -134,25 +145,30 @@ class EditTagDialog extends EnhancedDialog
 
 		isOK = true;
 		dispose();
-	}
+	} //}}}
 
+	//{{{ cancel() method
 	public void cancel()
 	{
 		isOK = false;
 		dispose();
-	}
+	} //}}}
 
+	//{{{ getNewTag() method
 	public String getNewTag()
 	{
 		return (isOK ? newTag : null);
-	}
+	} //}}}
 
+	//{{{ isEmpty() method
 	public boolean isEmpty()
 	{
 		return empty.isSelected();
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private ElementDecl element;
 	private Hashtable entityHash;
 	private JCheckBox empty;
@@ -163,7 +179,9 @@ class EditTagDialog extends EnhancedDialog
 	private JButton cancel;
 	private String newTag;
 	private boolean isOK;
+	//}}}
 
+	//{{{ createAttributeModel() method
 	private Vector createAttributeModel(Vector declaredAttributes,
 		Hashtable attributeValues, Vector ids)
 	{
@@ -210,8 +228,9 @@ class EditTagDialog extends EnhancedDialog
 		MiscUtilities.quicksort(attributeModel,new AttributeCompare());
 
 		return attributeModel;
-	}
+	} //}}}
 
+	//{{{ updateTag() method
 	private void updateTag()
 	{
 		StringBuffer buf = new StringBuffer("<");
@@ -249,8 +268,13 @@ class EditTagDialog extends EnhancedDialog
 		newTag = buf.toString();
 
 		preview.setText(newTag);
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ Inner classes
+
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -262,17 +286,21 @@ class EditTagDialog extends EnhancedDialog
 			else if(evt.getSource() == cancel)
 				cancel();
 		}
-	}
+	} //}}}
 
+	//{{{ Attribute class
 	static class Attribute
 	{
+		//{{{ Instance variables
 		boolean set;
 
 		String name;
 		Value value;
 		String type;
 		boolean required;
+		//}}}
 
+		//{{{ Attribute constructor
 		Attribute(boolean set, String name,
 			String value, Vector values,
 			String type, boolean required)
@@ -282,8 +310,9 @@ class EditTagDialog extends EnhancedDialog
 			this.value = new Value(value,values);
 			this.type = type;
 			this.required = required;
-		}
+		} //}}}
 
+		//{{{ Value class
 		static class Value
 		{
 			String value;
@@ -299,9 +328,10 @@ class EditTagDialog extends EnhancedDialog
 			{
 				return value;
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ AttributeCompare class
 	static class AttributeCompare implements MiscUtilities.Compare
 	{
 		public int compare(Object obj1, Object obj2)
@@ -316,70 +346,69 @@ class EditTagDialog extends EnhancedDialog
 				return 1;
 			else
 			{
-				return attr1.name.toLowerCase()
-					.compareTo(attr2.name.toLowerCase());
+				return MiscUtilities.compareStrings(
+					attr1.name,attr2.name,true);
 			}
 		}
-	}
+	} //}}}
 
 	static ComboValueRenderer comboRenderer = new ComboValueRenderer();
 
+	//{{{ AttributeTable class
 	class AttributeTable extends JTable
 	{
+		//{{{ AttributeTable constructor
 		AttributeTable()
 		{
 			super(new AttributeTableModel());
-		}
+		} //}}}
 
+		//{{{ getCellEditor() method
 		public TableCellEditor getCellEditor(int row, int column)
 		{
 			Object value = getModel().getValueAt(row,column);
 			if(value instanceof Attribute.Value)
-			{
-				Attribute.Value attr = (Attribute.Value)value;
-				if(attr.values != null)
-					return comboRenderer;
-			}
+				return comboRenderer;
 
 			return super.getCellEditor(row,column);
-		}
+		} //}}}
 
+		//{{{ getCellRenderer() method
 		public TableCellRenderer getCellRenderer(int row, int column)
 		{
 			Object value = getModel().getValueAt(row,column);
 			if(value instanceof Attribute.Value)
-			{
-				Attribute.Value attr = (Attribute.Value)value;
-				if(attr.values != null)
-					return comboRenderer;
-			}
+				return comboRenderer;
 
 			return super.getCellRenderer(row,column);
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ AttributeTableModel class
 	class AttributeTableModel extends AbstractTableModel
 	{
+		//{{{ getColumnCount() method
 		public int getColumnCount()
 		{
 			return 4;
-		}
+		} //}}}
 
+		//{{{ getRowCount() method
 		public int getRowCount()
 		{
 			return attributeModel.size();
-		}
+		} //}}}
 
+		//{{{ getColumnClass() method
 		public Class getColumnClass(int col)
 		{
 			if(col == 0)
 				return Boolean.class;
-			else if(col == 3)
-				return Attribute.Value.class;
 			else
 				return String.class;
-		}
+		} //}}}
 
+		//{{{ getColumnName() method
 		public String getColumnName(int col)
 		{
 			switch(col)
@@ -395,16 +424,18 @@ class EditTagDialog extends EnhancedDialog
 			default:
 				throw new InternalError();
 			}
-		}
+		} //}}}
 
+		//{{{ isCellEditable() method
 		public boolean isCellEditable(int row, int col)
 		{
 			if(col != 1 && col != 2)
 				return true;
 			else
 				return false;
-		}
+		} //}}}
 
+		//{{{ getValueAt() method
 		public Object getValueAt(int row, int col)
 		{
 			Attribute attr = (Attribute)attributeModel.elementAt(row);
@@ -428,12 +459,16 @@ class EditTagDialog extends EnhancedDialog
 
 				return buf.toString();
 			case 3:
-				return attr.value;
+				if(attr.value.values != null)
+					return attr.value;
+				else
+					return attr.value.value;
 			default:
 				throw new InternalError();
 			}
-		}
+		} //}}}
 
+		//{{{ setValueAt() method
 		public void setValueAt(Object value, int row, int col)
 		{
 			Attribute attr = (Attribute)attributeModel.elementAt(row);
@@ -458,38 +493,42 @@ class EditTagDialog extends EnhancedDialog
 			fireTableRowsUpdated(row,row);
 
 			updateTag();
-		}
+		} //}}}
 
-		private boolean equal(Object obj1, Object obj2)
+		//{{{ equal() method
+		private boolean equal(String str1, String str2)
 		{
-			if(obj1 == null)
+			if(str1 == null || str1.length() == 0)
 			{
-				if(obj2 == null)
+				if(str2 == null || str2.length() == 0)
 					return true;
 				else
 					return false;
 			}
 			else
 			{
-				if(obj2 == null)
+				if(str2 == null)
 					return false;
 				else
-					return obj1.equals(obj2);
+					return str1.equals(str2);
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 
+	//{{{ ComboValueRenderer class
 	static class ComboValueRenderer extends DefaultCellEditor
 		implements TableCellRenderer
 	{
 		JComboBox editorCombo;
 		JComboBox renderCombo;
 
+		//{{{ ComboValueRenderer constructor
 		ComboValueRenderer()
 		{
 			this(new JComboBox());
-		}
+		} //}}}
 
+		//{{{ ComboValueRenderer constructor
 		// this is stupid. why can't you reference instance vars
 		// in a super() invocation?
 		ComboValueRenderer(JComboBox comboBox)
@@ -497,8 +536,9 @@ class EditTagDialog extends EnhancedDialog
 			super(comboBox);
 			this.editorCombo = comboBox;
 			this.renderCombo = new JComboBox();
-		}
+		} //}}}
 
+		//{{{ getTableCellEditorComponent() method
 		public Component getTableCellEditorComponent(JTable table,
 			Object value, boolean isSelected, int row, int column)
 		{
@@ -508,8 +548,9 @@ class EditTagDialog extends EnhancedDialog
 			//editorCombo.setSelectedItem(_value.value);
 			return super.getTableCellEditorComponent(table,
 				_value.value,isSelected,row,column);
-		}
+		} //}}}
 
+		//{{{ getTableCellRendererComponent() method
 		public Component getTableCellRendererComponent(JTable table,
 			Object value, boolean isSelected, boolean hasFocus,
 			int row, int column)
@@ -519,6 +560,8 @@ class EditTagDialog extends EnhancedDialog
 				_value.values));
 			renderCombo.setSelectedItem(_value.value);
 			return renderCombo;
-		}
-	}
+		} //}}}
+	} //}}}
+
+	//}}}
 }

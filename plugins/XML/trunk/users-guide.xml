@@ -473,6 +473,33 @@
 
  <itemizedlist>
 
+  <listitem><para><emphasis role="bold">Version 0.6</emphasis> requires
+  jEdit 4.0pre2 and the ErrorList plugin 1.2.</para>
+
+  <itemizedlist>
+   <listitem><para>
+    Updated for jEdit 4.0 and ErrorList 1.2 API changes.
+   </para></listitem>
+   <listitem><para>
+    Tag completion for XML schema (<filename>.xsd</filename>) files
+    (Tom Gutwin).
+   </para></listitem>
+   <listitem><para>
+    <quote>Delay before showing popup</quote> setting could not be
+    changed.
+   </para></listitem>
+   <listitem><para>
+    <guimenuitem>Go to Matching Tag</guimenuitem> command was missing
+    from the <guimenu>XML</guimenu> menu.
+   </para></listitem>
+   <listitem><para>
+    <guimenuitem>Edit Tag</guimenuitem> dialog box didn't let you edit
+    tag attribute values on Java 2 version 1.3.
+   </para></listitem>
+  </itemizedlist>
+
+  </listitem>
+
   <listitem><para><emphasis role="bold">Version 0.5</emphasis> requires
   jEdit 3.2.1, the EditBus plugin 1.0.1, and the ErrorList plugin 1.1.</para>
 

@@ -17,6 +17,7 @@ import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
 import java.util.Hashtable;
+import org.gjt.sp.jedit.gui.JCheckBoxList;
 import org.gjt.sp.jedit.*;
 
 public class GeneralOptionPane extends AbstractOptionPane

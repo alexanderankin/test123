@@ -1,5 +1,8 @@
 /*
  * XmlActions.java - Action implementations
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2000, 2001 Slava Pestov
  *               1998, 2000 Ollie Rutherfurd
  *               2000, 2001 Andre Kaplan
@@ -15,7 +18,7 @@
 
 package xml;
 
-import javax.swing.text.BadLocationException;
+//{{{ Imports
 import javax.swing.text.Segment;
 import javax.swing.*;
 import java.awt.event.*;
@@ -26,6 +29,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+//}}}
 
 public class XmlActions
 {
@@ -33,6 +37,7 @@ public class XmlActions
 	public static final int ELEMENT_COMPLETE = 0;
 	public static final int ENTITY_COMPLETE = 1;
 
+	//{{{ showEditTagDialog() method
 	public static void showEditTagDialog(View view)
 	{
 		EditPane editPane = view.getEditPane();
@@ -48,22 +53,14 @@ public class XmlActions
 
 		JEditTextArea textArea = editPane.getTextArea();
 		Buffer buffer = editPane.getBuffer();
-
-		try
-		{
-			buffer.getText(0,buffer.getLength(),seg);
-		}
-		catch(BadLocationException bl)
-		{
-			Log.log(Log.ERROR,XmlActions.class,bl);
-		}
+		buffer.getText(0,buffer.getLength(),seg);
 
 		int caret = textArea.getCaretPosition();
 
 		int start = -1;
 		int end = -1;
 
-		// scan forwards looking for >
+		//{{{ scan forwards looking for >
 		for(int i = Math.max(0,caret - 1); i < seg.count; i++)
 		{
 			char ch = seg.array[seg.offset + i];
@@ -76,7 +73,7 @@ public class XmlActions
 				end = i;
 				break;
 			}
-		}
+		} //}}}
 
 		if(end == -1)
 		{
@@ -84,7 +81,7 @@ public class XmlActions
 			return;
 		}
 
-		// scan backwards looking for <
+		//{{{ scan backwards looking for <
 		for(int i = end; i >= 0; i--)
 		{
 			char ch = seg.array[seg.offset + i];
@@ -93,7 +90,7 @@ public class XmlActions
 				start = i;
 				break;
 			}
-		}
+		} //}}}
 
 		if(start == -1)
 		{
@@ -132,7 +129,7 @@ public class XmlActions
 		st.ordinaryChar('/');
 		st.ordinaryChar('=');
 
-		// this is an incredibly brain-dead parser.
+		//{{{ parse tag
 		try
 		{
 			loop: for(;;)
@@ -194,7 +191,7 @@ public class XmlActions
 		catch(IOException io)
 		{
 			// won't happen
-		}
+		} //}}}
 
 		ElementDecl elementDecl = (ElementDecl)completionInfo.elementHash
 			.get((completionInfo.html ? elementName.toLowerCase()
@@ -219,19 +216,16 @@ public class XmlActions
 				buffer.beginCompoundEdit();
 
 				buffer.remove(start,end - start + 1);
-				buffer.insertString(start,newTag,null);
-			}
-			catch(BadLocationException ble)
-			{
-				Log.log(Log.ERROR,XmlPlugin.class,ble);
+				buffer.insert(start,newTag);
 			}
 			finally
 			{
 				buffer.endCompoundEdit();
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ showEditTagDialog() method
 	public static void showEditTagDialog(View view, ElementDecl elementDecl)
 	{
 		EditPane editPane = view.getEditPane();
@@ -278,15 +272,11 @@ public class XmlActions
 
 					for(int i = 0; i < selection.length; i++)
 					{
-						buffer.insertString(selection[i].getStart(),
-							newTag,null);
-						buffer.insertString(selection[i].getEnd(),
-							closingTag,null);
+						buffer.insert(selection[i].getStart(),
+							newTag);
+						buffer.insert(selection[i].getEnd(),
+							closingTag);
 					}
-				}
-				catch(BadLocationException bl)
-				{
-					Log.log(Log.ERROR,XmlActions.class,bl);
 				}
 				finally
 				{
@@ -299,8 +289,9 @@ public class XmlActions
 			textArea.selectNone();
 			textArea.requestFocus();
 		}
-	}
+	} //}}}
 
+	//{{{ completeKeyTyped() method
 	public static void completeKeyTyped(final View view,
 		final int mode, char ch)
 	{
@@ -339,8 +330,9 @@ public class XmlActions
 		timer.setInitialDelay(delay);
 		timer.setRepeats(false);
 		timer.start();
-	}
+	} //}}}
 
+	//{{{ complete() method
 	public static void complete(View view, int mode)
 	{
 		EditPane editPane = view.getEditPane();
@@ -374,7 +366,7 @@ public class XmlActions
 
 		Point location = new Point(textArea.offsetToX(caretLine,wordStart),
 			textArea.getPainter().getFontMetrics().getHeight()
-			* (textArea.getBuffer().physicalToVirtual(caretLine)
+			* (textArea.physicalToVirtual(caretLine)
 			- textArea.getFirstLine() + 1));
 
 		SwingUtilities.convertPointToScreen(location,
@@ -387,8 +379,9 @@ public class XmlActions
 		}
 
 		new XmlComplete(view,word,completions,location);
-	}
+	} //}}}
 
+	//{{{ completeClosingTag() method
 	public static void completeClosingTag(View view)
 	{
 		EditPane editPane = view.getEditPane();
@@ -413,14 +406,7 @@ public class XmlActions
 		if(caret == 1)
 			return;
 
-		try
-		{
-			buffer.getText(0,caret,seg);
-		}
-		catch(BadLocationException bl)
-		{
-			Log.log(Log.ERROR,XmlActions.class,bl);
-		}
+		buffer.getText(0,caret,seg);
 
 		if(seg.array[seg.offset + caret - 2] != '<')
 			return;
@@ -442,8 +428,9 @@ public class XmlActions
 
 			textArea.setSelectedText(tag + ">");
 		}
-	}
+	} //}}}
 
+	//{{{ insertClosingTagKeyTyped() method
 	public static void insertClosingTagKeyTyped(View view)
 	{
 		EditPane editPane = view.getEditPane();
@@ -466,13 +453,7 @@ public class XmlActions
 
 		int caret = textArea.getCaretPosition();
 
-		try
-		{
-			buffer.getText(0,caret,seg);
-		}
-		catch(BadLocationException bl)
-		{
-		}
+		buffer.getText(0,caret,seg);
 
 		if(seg.count < 2)
 			return;
@@ -500,8 +481,9 @@ public class XmlActions
 		}
 
 		textArea.setCaretPosition(caret);
-	}
+	} //}}}
 
+	//{{{ insertClosingTag() method
 	public static void insertClosingTag(JEditTextArea textArea)
 	{
 		Buffer buffer = textArea.getBuffer();
@@ -509,32 +491,19 @@ public class XmlActions
 		if(!buffer.isEditable())
 			return;
 
-		try
-		{
-			buffer.getText(0,textArea.getCaretPosition(),seg);
-		}
-		catch(BadLocationException bl)
-		{
-			Log.log(Log.ERROR,XmlActions.class,bl);
-		}
+		buffer.getText(0,textArea.getCaretPosition(),seg);
 
 		String tag = findLastOpenTag(seg);
 		if(tag != null)
 			textArea.setSelectedText("</" + tag + ">");
-	}
+	} //}}}
 
+	//{{{ goToPreviousTag() method
 	public static void goToPreviousTag(JEditTextArea textArea)
 	{
 		Buffer buffer = textArea.getBuffer();
 
-		try
-		{
-			buffer.getText(0,textArea.getCaretPosition(),seg);
-		}
-		catch(BadLocationException bl)
-		{
-			Log.log(Log.ERROR,XmlActions.class,bl);
-		}
+		buffer.getText(0,textArea.getCaretPosition(),seg);
 
 		int caret = textArea.getCaretPosition();
 
@@ -548,22 +517,16 @@ public class XmlActions
 		}
 
 		textArea.getToolkit().beep();
-	}
+	} //}}}
 
+	//{{{ goToNextTag() method
 	public static void goToNextTag(JEditTextArea textArea)
 	{
 		Buffer buffer = textArea.getBuffer();
 
 		int caret = textArea.getCaretPosition();
 
-		try
-		{
-			buffer.getText(caret,buffer.getLength() - caret,seg);
-		}
-		catch(BadLocationException bl)
-		{
-			Log.log(Log.ERROR,XmlActions.class,bl);
-		}
+		buffer.getText(caret,buffer.getLength() - caret,seg);
 
 		for(int i = caret; i < seg.count; i--)
 		{
@@ -575,8 +538,9 @@ public class XmlActions
 		}
 
 		textArea.getToolkit().beep();
-	}
+	} //}}}
 
+	//{{{ findLastOpenTag() method
 	/*
 	*   finds the last tag which hasn't been closed
 	*   this includes tags such as <img> or <br>
@@ -655,8 +619,9 @@ public class XmlActions
 		}
 
 		return "";
-	}
+	} //}}}
 
+	//{{{ removeTags() method
 	public static void removeTags(Buffer buffer)
 	{
 		if(!buffer.isEditable())
@@ -683,10 +648,6 @@ public class XmlActions
 				buffer.getText(off, len, txt);
 			}
 		}
-		catch (BadLocationException ble)
-		{
-			Log.log(Log.ERROR, XmlActions.class, ble);
-		}
 		finally
 		{
 			buffer.endCompoundEdit();
@@ -694,8 +655,9 @@ public class XmlActions
 		long endTime = System.currentTimeMillis();
 		Log.log(Log.DEBUG, XmlActions.class,
 			"removeTags time: " + (endTime - startTime) + " ms");
-	}
+	} //}}}
 
+	//{{{ Position class
 	static class Position
 	{
 		int off = -1;
@@ -707,8 +669,9 @@ public class XmlActions
 			this.off = off;
 			this.len = len;
 		}
-	}
+	} //}}}
 
+	//{{{ charactersToEntities() method
 	// if markupChars is true, <, > and & will be ignored.
 	public static String charactersToEntities(String s, Hashtable hash,
 		boolean markupChars)
@@ -743,8 +706,9 @@ public class XmlActions
 		}
 
 		return buf.toString();
-	}
+	} //}}}
 
+	//{{{ entitiesToCharacters() method
 	// if markupChars is true, &lt;, &gt; and &amp; will be ignored.
 	public static String entitiesToCharacters(String s, Hashtable hash,
 		boolean markupChars)
@@ -773,8 +737,9 @@ public class XmlActions
 		}
 
 		return buf.toString();
-	}
+	} //}}}
 
+	//{{{ charactersToEntities() method
 	public static void charactersToEntities(View view)
 	{
 		EditPane editPane = view.getEditPane();
@@ -803,8 +768,9 @@ public class XmlActions
 				charactersToEntities(textArea.getSelectedText(
 				selection[i]),completionInfo.entityHash,false));
 		}
-	}
+	} //}}}
 
+	//{{{ entitiesToCharacters() method
 	public static void entitiesToCharacters(View view)
 	{
 		EditPane editPane = view.getEditPane();
@@ -833,9 +799,9 @@ public class XmlActions
 				entitiesToCharacters(textArea.getSelectedText(
 				selection[i]),completionInfo.entityHash,false));
 		}
-	}
+	} //}}}
 
-	// package-private members
+	//{{{ propertiesChanged() method
 	static void propertiesChanged()
 	{
 		completion = jEdit.getBooleanProperty("xml.complete");
@@ -843,24 +809,21 @@ public class XmlActions
 			"xml.close-complete");
 		closeCompletionOpen = jEdit.getBooleanProperty(
 			"xml.close-complete-open");
-		try
-		{
-			delay = Integer.parseInt("xml.complete-delay");
-		}
-		catch(NumberFormatException nf)
-		{
-			delay = 500;
-		}
-	}
+		delay = jEdit.getIntegerProperty("xml.complete-delay",500);
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Static variables
 	private static Segment seg = new Segment();
 	private static boolean completion;
 	private static boolean closeCompletion;
 	private static boolean closeCompletionOpen;
 	private static int delay;
 	private static Timer timer;
+	//}}}
 
+	//{{{ getTagName() method
 	/*
 	*   returns the name of a tag (stops at first space)
 	*/
@@ -888,8 +851,9 @@ public class XmlActions
 		}
 
 		return new String(buf, startIdx, endIdx - startIdx);
-	}
+	} //}}}
 
+	//{{{ findNextTag() method
 	private static Position findNextTag(char[] array, int off, int len)
 	{
 		char c;
@@ -992,5 +956,7 @@ loop:		for (int i = len - 1; i >= 0; i--, off++)
 			return new Position(startIdx, off - startIdx);
 		else
 			return null;
-	}
+	} //}}}
+
+	//}}}
 }

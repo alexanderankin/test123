@@ -1,5 +1,8 @@
 /*
  * CatalogManager.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,7 +15,6 @@
 
 package xml;
 
-import javax.swing.text.BadLocationException;
 import java.io.*;
 import java.net.*;
 import java.util.*;
@@ -23,6 +25,7 @@ import org.xml.sax.*;
 
 public class CatalogManager
 {
+	//{{{ resolve() method
 	public static InputSource resolve(String current,
 		String publicId, String systemId)
 		throws SAXException, IOException
@@ -67,23 +70,29 @@ public class CatalogManager
 		InputSource source = new InputSource(newSystemId);
 		source.setByteStream(new URL(newSystemId).openStream());
 		return source;
-	}
+	} //}}}
 
+	//{{{ addCatalog() method
 	public static void addCatalog(String uri)
 	{
 		addedCatalogs.addElement(uri);
-	}
+	} //}}}
 
+	//{{{ propertiesChanged() method
 	public static void propertiesChanged()
 	{
 		loaded = false;
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Static variables
 	private static Catalog catalog;
 	private static boolean loaded;
 	private static Vector addedCatalogs = new Vector();
+	//}}}
 
+	//{{{ load() method
 	private synchronized static void load()
 	{
 		if(loaded)
@@ -167,5 +176,7 @@ public class CatalogManager
 		{
 			Log.log(Log.ERROR,CatalogManager.class,ex1);
 		}
-	}
+	} //}}}
+
+	//}}}
 }

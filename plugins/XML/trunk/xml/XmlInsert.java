@@ -1,5 +1,8 @@
 /*
  * XmlInsert.java
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,9 +15,9 @@
 
 package xml;
 
+//{{{ Imports
 import javax.swing.event.*;
 import javax.swing.table.*;
-import javax.swing.text.BadLocationException;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -24,9 +27,11 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
+//}}}
 
-public class XmlInsert extends JPanel implements DockableWindow, EBComponent
+public class XmlInsert extends JPanel implements EBComponent
 {
+	//{{{ XmlInsert constructor
 	public XmlInsert(View view, boolean sideBySide)
 	{
 		this.view = view;
@@ -62,32 +67,26 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 		add(entityPanel);
 
 		update();
-	}
+	} //}}}
 
-	public String getName()
-	{
-		return XmlPlugin.INSERT_NAME;
-	}
-
-	public Component getComponent()
-	{
-		return this;
-	}
-
+	//{{{ addNotify() method
 	public void addNotify()
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-	}
+	} //}}}
 
+	//{{{ removeNotify() method
 	public void removeNotify()
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-	}
+	} //}}}
 
+	//{{{ handleMessage() method
 	public void handleMessage(EBMessage msg)
 	{
+		//{{{ EditPaneUpdate
 		if(msg instanceof EditPaneUpdate)
 		{
 			EditPaneUpdate emsg = (EditPaneUpdate)msg;
@@ -113,7 +112,8 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			}
 			else if(emsg.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 				update();
-		}
+		} //}}}
+		//{{{ BufferUpdate
 		else if(msg instanceof BufferUpdate)
 		{
 			BufferUpdate bmsg = (BufferUpdate)msg;
@@ -123,10 +123,10 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			{
 				update();
 			}
-		}
-	}
+		} //}}}
+	} //}}}
 
-	// package-private members
+	//{{{ update() method
 	void update()
 	{
 		CompletionInfo completionInfo = CompletionInfo.getCompletionInfo(
@@ -138,21 +138,26 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 		}
 		else
 			showNotParsedMessage();
-	}
+	} //}}}
 
-	// private members
+	//{{{ Private members
+
+	//{{{ Instance variables
 	private View view;
 	private EditPaneHandler editPaneHandler;
 	private Vector elements;
 	private JList elementList;
 	private JList entityList;
+	//}}}
 
+	//{{{ showNotParsedMessage() method
 	private void showNotParsedMessage()
 	{
 		setDeclaredElements(null);
 		setDeclaredEntities(null);
-	}
+	} //}}}
 
+	//{{{ setDeclaredElements() method
 	private void setDeclaredElements(Vector elements)
 	{
 		this.elements = elements;
@@ -183,8 +188,9 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 				}
 			}
 		}
-	}
+	} //}}}
 
+	//{{{ setDeclaredEntities() method
 	private void setDeclaredEntities(Vector entities)
 	{
 		if(entities == null)
@@ -214,14 +220,18 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			}
 		}
 
-	}
+	} //}}}
 
+	//{{{ updateTagList() method
 	private void updateTagList()
 	{
 		// TODO: only show tags that can be inserted at caret
 		// position
-	}
+	} //}}}
 
+	//}}}
+
+	//{{{ EditPaneHandler class
 	class EditPaneHandler implements FocusListener, CaretListener
 	{
 		public void focusGained(FocusEvent evt)
@@ -238,12 +248,14 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 			if(evt.getSource() == view.getTextArea())
 				updateTagList();
 		}
-	}
+	} //}}}
 
+	//{{{ MouseHandler class
 	class MouseHandler extends MouseAdapter
 	{
 		public void mouseClicked(MouseEvent evt)
 		{
+			//{{{ Handle clicks in element list
 			if(evt.getSource() == elementList)
 			{
 				int index = elementList.locationToIndex(
@@ -261,10 +273,9 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 				JEditTextArea textArea = editPane.getTextArea();
 				Buffer buffer = editPane.getBuffer();
 
+				//{{{ Handle right mouse button click
 				if(GUIUtilities.isPopupTrigger(evt))
 				{
-					// RMB click doesn't show edit tag dialog box
-
 					String openingTag = "<" + element.name
 						+ (element.empty && !element.html
 						? "/>" : ">");
@@ -284,15 +295,11 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 							for(int i = 0; i < selection.length; i++)
 							{
-								buffer.insertString(selection[i].getStart(),
-									openingTag,null);
-								buffer.insertString(selection[i].getEnd(),
-									closingTag,null);
+								buffer.insert(selection[i].getStart(),
+									openingTag);
+								buffer.insert(selection[i].getEnd(),
+									closingTag);
 							}
-						}
-						catch(BadLocationException bl)
-						{
-							Log.log(Log.ERROR,XmlActions.class,bl);
 						}
 						finally
 						{
@@ -304,13 +311,14 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 					textArea.selectNone();
 					textArea.requestFocus();
-				}
+				} //}}}
 				else
 				{
 					// show edit tag dialog box
 					XmlActions.showEditTagDialog(view,element);
 				}
-			}
+			} //}}}
+			//{{{ Handle clicks in entity list
 			else if(evt.getSource() == entityList)
 			{
 				int index = entityList.locationToIndex(
@@ -328,7 +336,7 @@ public class XmlInsert extends JPanel implements DockableWindow, EBComponent
 
 				textArea.setSelectedText("&" + entity.name + ";");
 				textArea.requestFocus();
-			}
+			} //}}}
 		}
-	}
+	} //}}}
 }
