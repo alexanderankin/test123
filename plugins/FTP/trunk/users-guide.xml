@@ -105,6 +105,11 @@ You can close unused connections at any other itme using the
     response to the <command>PASV</command> command could not be parsed, the
     client switches to data port mode instead of failing.
     </para></listitem>
+    <listitem><para>Directory listing no longer fails if there was a problem
+    while attempting to resolve a symbolic link.
+    </para></listitem>
+    <listitem><para>FTP operations now use a 45-second timeout by default.
+    </para></listitem>
    </itemizedlist>
   </listitem>
  </itemizedlist>
