@@ -1,0 +1,162 @@
+<?xml version="1.0"?>
+
+<!-- SideKick user's guide -->
+<!-- (C) 2003 Slava Pestov -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+<bookinfo><title>SideKick plugin user's guide</title>
+
+ <authorgroup>
+  <author><firstname>Slava</firstname><surname>Pestov</surname></author>
+ </authorgroup>
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+  <para>
+   The SideKick plugin itself is released under the GNU General Public License.
+   A copy of the GPL can be found in the jEdit online help.
+  </para>
+ </legalnotice>
+</bookinfo>
+
+<chapter id="browser"><title>The structure browser window</title>
+
+ <para>
+  The SideKick plugin provides a dockable window in which other plugins can
+  display buffer structure.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Structure
+  Browser</guimenuitem> displays the current buffer's structure in a
+  dockable window. This window is floating by
+  default, but it can be docked into the view in the <guibutton>Docking</guibutton>
+  pane of the <guimenuitem>Global Options</guimenuitem> dialog box.
+ </para>
+
+ <para>
+  The SideKick plugin automatically parses buffers for which a parser is available
+  when they are loaded or saved.
+  Optionally, buffers can also be parsed on the fly, but this uses a fair bit of
+  memory and processor power so it is disabled by default.
+  The current buffer can be parsed at any other time by clicking the parse
+  button in the <guimenuitem>Structure Browser</guimenuitem> window, or by
+  invoking the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
+  Buffer</guimenuitem> command.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Parse
+  on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly
+  parsing, for the current buffer only.
+ </para>
+
+ <para>
+  Any errors found while parsing the buffer are sent to the
+  <application>ErrorList</application> plugin, which means they are highlighted
+  in the text area, and shown in the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> window. See the
+  documentation for the <application>ErrorList</application> plugin for details.
+ </para>
+
+ <para>
+  Clicking on an asset in the tree will move the caret to its location in the
+  buffer;
+  conversely, moving the caret in the buffer will select the corresponding
+  asset.
+ </para>
+
+ <para>
+  If the structure browser window is docked into the current view, hovering the mouse
+  over an asset will display its attributes in the status bar.
+ </para>
+
+</chapter>
+
+<chapter id="other-plugins"><title>Developing SideKick back-ends</title>
+
+ <para>
+  By itself the SideKick plugin is not very useful; it relies on other plugins to
+  provide buffer structure information.
+ </para>
+
+ <para>
+  First you will also need to add a dependency for the SideKick plugin in your plugin's
+  property file:
+ </para>
+
+ <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin sidekick.SideKickPlugin 0.1</programlisting>
+
+ <para>
+  Note that you must replace <replaceable>n</replaceable> with the
+  appropriate number, as dependency properties must have consecutive numbers.
+ </para>
+
+ <para>
+  All SideKick plugin classes are in the <classname>sidekick</classname> package;
+  you will need to add <literal>import</literal> statements where appropriate.
+ </para>
+
+ <para>
+  Parser instances must be registered in your plugin's <function>start()</function>
+  method using the following method in the <classname>SideKickPlugin</classname>
+  class:
+ </para>
+
+ <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>registerParser</function></funcdef>
+   <paramdef>SideKickParser <parameter>parser</parameter></paramdef>
+  </funcprototype>
+ </funcsynopsis>
+
+ <para>
+  A corresponding method must be called from your plugin's <function>stop()</function>
+  method:
+ </para>
+
+ <funcsynopsis>
+  <funcprototype>
+   <funcdef>public void <function>unregisterParser</function></funcdef>
+   <paramdef>SideKickParser <parameter>parser</parameter></paramdef>
+  </funcprototype>
+ </funcsynopsis>
+
+</chapter>
+
+<appendix id="changes"><title>Change log</title>
+
+ <itemizedlist>
+
+  <listitem><para><emphasis role="bold">Version 0.1</emphasis> requires
+  jEdit 4.1pre5.</para>
+
+  <itemizedlist>
+   <listitem><para>Initial release.
+   </para></listitem>
+  </itemizedlist>
+
+  </listitem>
+
+ </itemizedlist>
+
+</appendix>
+
+</book>
