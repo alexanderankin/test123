@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
 plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
-plugin.projectviewer.ProjectPlugin.version=1.0.5
+plugin.projectviewer.ProjectPlugin.version=1.0.6
 plugin.projectviewer.ProjectPlugin.docs=users-guide.html
 
 plugin.projectviewer.ProjectViewer.depend.0=jedit 04.00.99.00
