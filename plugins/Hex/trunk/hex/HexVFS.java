@@ -18,6 +18,9 @@
 */
 
 
+package hex;
+
+
 import java.awt.Component;
 
 import java.io.IOException;
@@ -36,7 +39,7 @@ public class HexVFS extends VFS {
     public static final String PROTOCOL = "hex";
 
     public HexVFS() {
-        super("hex");
+        super(PROTOCOL);
     }
 
 
