@@ -50,6 +50,9 @@ public final class Project implements EBComponent {
 	/** tree node is a leaf */
 	public final static char LEAF = '2';
 
+	/** The default project URL. */
+	public final static String DEFAULT_URL = "http://";
+	
 	/** Description of the Field */
 	protected final static int PROJECT_KEY_UNSET = -1;
 
@@ -182,9 +185,6 @@ public final class Project implements EBComponent {
 	 * @since
 	 */
 	public ProjectDirectory getRoot() {
-		if(root == null) {
-			Log.log( Log.ERROR, this, "root is null !");
-		}
 		return root;
 	}
 
@@ -336,8 +336,8 @@ public final class Project implements EBComponent {
 			fireFileAdded(aFile);
 			files.put(aFile.getPath(), aFile);
 		}
-		if(save)
-			;
+		
+		if(save) save();
 	}
 
 	/** Import this given file.
@@ -572,10 +572,8 @@ public final class Project implements EBComponent {
 
 	/** Loads the project from the config file. */
 	public void load() {
-		// load everytime -- state is save on project change and restored on project
-		// open, state can change more than once while jEdit is running
-		//if ( isLoaded || isKeyUnset() )
-		//   return;
+		if ( isLoaded || isKeyUnset() )
+		   return;
 
 		Properties fileProps = null;
 
@@ -590,11 +588,12 @@ public final class Project implements EBComponent {
 			return;
 		}
 
-		Log.log( Log.DEBUG, this, "load() chk2 root=" + this.getRoot());
+		setRoot(new ProjectDirectory(fileProps.getProperty("root")));
+		
 		/*  Bug fix for issue where 
 		    users are unable to create projects when selector is not
 		    on all projects 
-		*/ 
+		 
 		if (this.getRoot() == null) {
 		// MattP should follow this case when loading from an existing project
 			setRoot(new ProjectDirectory(fileProps.getProperty("root")));
@@ -604,8 +603,7 @@ public final class Project implements EBComponent {
 		// project, we are getting path via
 		// the state was set by the createproject wrapper
 			setRoot(new ProjectDirectory(this.root.getPath()));
-		}
-		Log.log( Log.DEBUG, this, "load() chk3 root=" + this.getRoot());
+		} */
 
 		Enumeration pname = fileProps.propertyNames();
 		while(pname.hasMoreElements()) {
