@@ -10,7 +10,11 @@ Future additions/fixes:
   Also give a build status indicator in AntFarm.
 - Re-implement ProjectViewer integration.
 - Execute multiple targets at once.
+- Change build file property to an index based property.
+- Re-populate build properties based on last values entered.
+- Add cancel button to build properties dialog.
 
+Bonus in AntFarm 1.1 release
 x Allow logging level to be set on the AntFarm toolbar and option pane. - DONE
 x Toggle property prompting, save all and hide sub-targets on AntFarm toolbar. - DONE
 x Create a default target icon and highlight default with color. - DONE
