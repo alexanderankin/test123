@@ -121,6 +121,12 @@
   for general details about folding.
 </para>
 
+<para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>SideKick</guisubmenu>&gt;<guimenuitem>Narrow to
+  Asset at Caret</guimenuitem> hides all text except that of the asset at the
+  caret location. This works in any folding mode, not just the <quote>sidekick</quote>
+  mode.
+ </para>
 </chapter>
 
 <chapter id="completion"><title>Completion</title>

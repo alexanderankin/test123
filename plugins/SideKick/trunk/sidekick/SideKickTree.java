@@ -260,6 +260,12 @@ public class SideKickTree extends JPanel implements EBComponent
 									asset.start.getOffset(),
 									asset.end.getOffset()));
 						}
+						else if(evt.isControlDown())
+						{
+							textArea.getFoldVisibilityManager().narrow(
+								textArea.getLineOfOffset(asset.start.getOffset()),
+								textArea.getLineOfOffset(asset.end.getOffset()));
+						}
 						else
 							textArea.setCaretPosition(asset.start.getOffset());
 					}

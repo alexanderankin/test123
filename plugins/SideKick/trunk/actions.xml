@@ -19,6 +19,11 @@
 			sidekick.SideKickActions.selectAsset(view);
 		</CODE>
 	</ACTION>
+	<ACTION NAME="sidekick-narrow-asset">
+		<CODE>
+			sidekick.SideKickActions.narrowToAsset(view);
+		</CODE>
+	</ACTION>
 	<ACTION NAME="sidekick-complete">
 		<CODE>
 			sidekick.SideKickActions.complete(view);

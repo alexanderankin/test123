@@ -139,6 +139,31 @@ public class SideKickActions
 				asset.end.getOffset()));
 	} //}}}
 
+	//{{{ narrowToAsset() method
+	public static void narrowToAsset(View view)
+	{
+		SideKickParsedData data = SideKickParsedData.getParsedData(view);
+		if(data == null)
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		JEditTextArea textArea = view.getTextArea();
+
+		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
+		if(path == null)
+		{
+			view.getToolkit().beep();
+			return;
+		}
+		Asset asset = (Asset)((DefaultMutableTreeNode)path
+			.getLastPathComponent()).getUserObject();
+		textArea.getFoldVisibilityManager().narrow(
+			textArea.getLineOfOffset(asset.start.getOffset()),
+			textArea.getLineOfOffset(asset.end.getOffset()));
+	} //}}}
+
 	//{{{ goToPrevAsset() method
 	public static void goToPrevAsset(View view)
 	{
