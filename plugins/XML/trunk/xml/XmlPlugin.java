@@ -137,7 +137,15 @@ public class XmlPlugin extends EBPlugin
 	{
 		String prop = buffer.getStringProperty(XmlPlugin.PARSER_PROPERTY);
 		if(prop == null || prop.equals("xml"))
-			return prop;
+		{
+			if(buffer.getName().toLowerCase().endsWith(".dtd"))
+			{
+				buffer.setProperty(XmlPlugin.PARSER_PROPERTY,null);
+				return null;
+			}
+			else
+				return prop;
+		}
 		else if(prop.equals("html-really"))
 			return "html";
 		else if(prop.equals("html"))

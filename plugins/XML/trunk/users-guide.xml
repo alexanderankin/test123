@@ -490,6 +490,8 @@
   jEdit 4.1pre5 and the ErrorList plugin 1.2.</para>
 
   <itemizedlist>
+   <listitem><para>Xerces 2.2.1 is included now.
+   </para></listitem>
    <listitem><para>Fixed problems handling tags whose names ended with a number.
    </para></listitem>
    <listitem><para>We no longer show the <guimenuitem>Edit Tag</guimenuitem>
@@ -501,6 +503,9 @@
    </para></listitem>
    <listitem><para>The entity resolver now uses the VFS API; so it should be
    possible to download DTDs from FTP servers that require authentication, etc.
+   </para></listitem>
+   <listitem><para>Fixed possible <classname>ClassCastException</classname>
+   when saving the resource cache.
    </para></listitem>
   </itemizedlist>
   </listitem>

@@ -231,18 +231,22 @@ public class CatalogManager
 		while(keys.hasNext())
 		{
 			Entry entry = (Entry)keys.next();
+			Object uri = resourceCache.get(entry);
+			if(uri == IGNORE)
+				continue;
+
 			if(entry.type == Entry.PUBLIC)
 			{
 				jEdit.setProperty("xml.cache.public-id." + publicCount,entry.id);
 				jEdit.setProperty("xml.cache.public-id." + publicCount
-					+ ".uri",(String)resourceCache.get(entry));
+					+ ".uri",uri.toString());
 				publicCount++;
 			}
 			else
 			{
 				jEdit.setProperty("xml.cache.system-id." + systemCount,entry.id);
 				jEdit.setProperty("xml.cache.system-id." + systemCount
-					+ ".uri",(String)resourceCache.get(entry));
+					+ ".uri",uri.toString());
 				systemCount++;
 			}
 		}
