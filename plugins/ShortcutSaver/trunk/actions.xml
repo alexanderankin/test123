@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+<ACTIONS>
+	<ACTION NAME="shortcutSaver-action1">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 1);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action2">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 2);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action3">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 3);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action4">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 4);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action5">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 5);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="shortcutSaver-action6">
+		<CODE>
+			shortcutSaver.ShortcutSaverPlugin.callActionForBuffer(view, buffer, 6);
+		</CODE>
+	</ACTION>
+</ACTIONS>
