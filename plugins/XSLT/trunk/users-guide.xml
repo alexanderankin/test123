@@ -211,14 +211,30 @@
   </chapter>
 
 
-  <chapter id="indent-action">
-    <title>Indent XML Buffer Action</title>
+  <chapter id="indent-xml">
+    <title>Indent XML</title>
     <para>
-      The "Indent XML" action allows you to indent
-      the contents of the current buffer. You can invoke the indent action via
+      The Indent XML feature allows you to indent
+      the XML contents of the current buffer. You can invoke the "Indent XML" action via
       a keyboard shortcut or toolbar icon; this can be configured from
            "Utilities->Global Options->jEdit->Shortcuts" or
            "Utilities->Global Options->jEdit->Tool Bar" respectively.
+    </para>
+    <para>
+      The indent width amount and whether to use soft (emulated with spaces) tabs
+      can be configured in the buffer options:
+           "Utilities->Buffer Options".
+    </para>
+    <para>
+      The following improvements should eventually be made to the Indent XML feature:
+      <itemizedlist>
+        <listitem><para>
+          Correctly support different line separator encodings. There have been reports
+          that in v0.3.1 sometimes the indent feature adds new lines each time it is run, this may
+          be related to incorrect line separator treatment.
+        </para>
+        </listitem>
+      </itemizedlist>
     </para>
   </chapter>
 
