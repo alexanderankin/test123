@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="Content-Type"
+ content="text/html; charset=iso-8859-1">
+  <meta name="Author" content="Matthieu Casanova">
+  <title>PHPParser Plugin</title>
+</head>
+<body>
+<table border="0" cellspacing="0" width="100%" bgcolor="#ccccff">
+    <tr>
+      <td valign="top" style="font-weight:bold;font-size:x-large">PHP Parser</td>
+      <td align="right" valign="top" style="font-size:small">
+      <span style="font-weight:bold">Version 1.1.0 (Dec 11, 2004)</span><br>
+      Matthieu Casanova &lt;chocolat.mou@gmail.com&gt;&nbsp;</td>
+    </tr>
+</table>
+<h2>Introduction</h2>
+<p>In the beginning of 2003 I found  the <b>phpeclipse</b> project, a plugin to do php in <b>Eclipse</b>.
+I worked on it, and finaly wrote an alternative php parser for the project.
+The matter is that I don't like SWT very much so when I discovered discovered jEdit 
+I loved it. So I decided to write a plugin using my php parser.
+It uses ErrorList plugin to show the errors.
+<br>
+This plugin uses some classes from phpeclipse. It is not a complete replacement of phpeclipse,
+that will probably always remains more complete.
+You can find more infos at http://www.phpeclipse.de
+</p>
+  <p>
+    About code analysis, you should be very careful because it's far from being perfect. If a variable is given to a
+    method and is assigned by reference, the parser will not know that and report it as variable used but not assigned ...
+  </p>
+<h2>Usage</h2>
+<p>There are no actions to do the files finishing by .php will be parsed</p>
+<h2>History</h2>
+<ul>
+  <li>1.1.0<br>
+    <ul>
+      <li>The files edited with jEdit php mode are parsed, no more option pane to choose them</li>
+      <li>Sidekick structure tree</li>
+      <li>Parse on keystroke with sidekick</li>
+      <li>Code analysis:
+        <ul>
+          <li>Unused method parameters reported</li>
+          <li>Variable used before being assigned are reported</li>
+      </ul></li>
+    </ul>
+
+ </li>
+
+  <li>1.0.3<br>
+  	<ul>
+	  <li>Heredoc support</li>
+	  <li>My contact adress changed</li>
+	</ul>
+  </li>
+  <li>1.0.2<br><ul>
+  <li>When you deactivate the parser in the options, it will really be deactivated</li>
+  <li>lot of bugfixes in the parsing</li></ul></li>
+</ul>
+<h2>todo</h2>
+<ul>
+  <li>Add an option pane to choose the reported warnings</li>
+  <li>Maybe keep track of all methods classes, defines in the project</li>
+</ul>
+<h2>known issue</h2>
+<ul>
+<li>when you deactivate the parser the errors aren't removed from ErrorList (but is it really a bug or a feature ?)</li>
+<li>sometimes on network mounted drivers when you reparse a document the old errors aren't removed.</li>
+<li>The keywords cannot be parsed as identifier, I have to fix that</li>
+</ul>
+<h2>Feedback</h2>
+<p>You can send mails to Matthieu Casanova &lt;chocolat.mou@gmail.com&gt; to report bugs, ideas ...
+</p>
+</body>
+</html>
