@@ -185,7 +185,7 @@ class ViewerListener
       };
     }
     chooser.setFileFilter( nonProjectFileFilter );
-    chooser.setAcceptAllFileFilterUsed(false);
+    //chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
     if (chooser.showOpenDialog(this.viewer) != JFileChooser.APPROVE_OPTION) return;
     
     viewer.getCurrentProject().importFile(
