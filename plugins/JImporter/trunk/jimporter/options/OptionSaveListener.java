@@ -20,7 +20,16 @@ package jimporter.options;
 
 import java.util.EventListener;
 
+/**
+ * Classes that implement this interface are interested in knowing when the option
+ * dialog has been closed and it is time to save their current values.
+ *
+ * @author Matthew Flower
+ */
 public interface OptionSaveListener extends EventListener {
+    /**
+     * Save any changes that have occurred in this option dialog.
+     */
     public void saveChanges();
 }
 

@@ -19,9 +19,25 @@
  */
 package jimporter.classpath;
 
-
 import java.util.EventListener;
 
+/**
+ * This interface is designed to be implemented by classes that wish to be 
+ * notified when the source of the classpath, or a classpath itself is modified.
+ * Currently, classes will not be notified when a SpeedJava or JCompiler classpath
+ * is modified.
+ *
+ * @author Matthew Flower
+ */
 public interface ClasspathChangeListener extends EventListener {
+    /**
+     * This method is called whenever the source of the classpath is modified or
+     * when the classpath typed into "Use this classpath" is changed.
+     *
+     * @param oldClasspath a <code>Classpath</code> object which represents the
+     * classpath source before the change.
+     * @param newClasspath a <code>Classpath</code> object which represents the
+     * classpath source after the change.
+     */
     public void classpathChanged(Classpath oldClasspath, Classpath newClasspath);
 }

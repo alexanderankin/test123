@@ -78,11 +78,14 @@ public class BufferedClassFinder extends TraverseSearchMethod implements Classpa
     }
 
     /**
-     * Description of the Method
+     * Traverse all of the files in the path indicated by the currentRoot parameter.
      *
-     *@param classFiles 
-     *@param currentRoot 
-     *@param locationPrefix 
+     * @param classFiles a <code>HashMap</code> containing all of the class files
+     * that we've already found.
+     * @param currentRoot the current root directory we are going to standard searching
+     * at.
+     * @param locationPrefix a <code>String</code> value that we are going to 
+     * prepend to any filenames we find.
      */
     public void traverseFileSystem(HashMap classFiles, File currentRoot, String locationPrefix) {
         File[] fileList = currentRoot.listFiles();
@@ -97,6 +100,14 @@ public class BufferedClassFinder extends TraverseSearchMethod implements Classpa
         }
     }
     
+    /**
+     * Given a classpath element, delegate traversal to the appropriate method
+     * and add any found files to the <code>classFiles</code> hashmap.
+     *
+     * @param classFiles a <code>HashMap</code> object which contains any classes 
+     * that have been found.
+     * @param jarOrZip a <code>String</code> containing a classpath element.
+     */
     public void traverseJarOrZip(HashMap classFiles, String jarOrZip) {
         ZipFile zipFile;
         
@@ -129,7 +140,7 @@ public class BufferedClassFinder extends TraverseSearchMethod implements Classpa
     }
 
     /**
-     * Adds a feature to the File attribute of the BufferedClassFinder object
+     * Add a file to the class buffer.
      *
      * @param className    The feature to be added to the File attribute
      * @param fqClassName  The feature to be added to the File attribute
@@ -156,7 +167,8 @@ public class BufferedClassFinder extends TraverseSearchMethod implements Classpa
     }
 
     /**
-     * Description of the Method
+     * Find all fully qualified classnames matching the short name supplied in
+     * the parameter.
      *
      *@param className  Description of Parameter
      *@return           Description of the Returned Value
@@ -178,9 +190,9 @@ public class BufferedClassFinder extends TraverseSearchMethod implements Classpa
     }
 
     /**
-     * 
+     * Get the class buffer.
      *
-     * @return   
+     * @return The class buffer
      */
     private HashMap getClassBuffer() {
         if (classBuffer == null) {
@@ -191,7 +203,7 @@ public class BufferedClassFinder extends TraverseSearchMethod implements Classpa
     }
 
     /**
-     * 
+     * Create a class buffer
      */
     private void createClassBuffer() {
         HashMap classList = new HashMap();
