@@ -20,10 +20,16 @@ jdiff.ignore-case=false
 jdiff.changed-color=\#B2B200
 jdiff.deleted-color=\#B20000
 jdiff.inserted-color=\#00B200
+jdiff.invalid-color=\#CCCCCC
+jdiff.left-cursor-color=\#0000FF
+jdiff.right-cursor-color=\#0000FF
 
 options.jdiff.label=JDiff
 options.jdiff.ignore-case=Ignore case
 options.jdiff.changed-color=Changed lines color:\ 
 options.jdiff.deleted-color=Deleted lines color:\ 
 options.jdiff.inserted-color=Inserted lines color:\ 
+options.jdiff.invalid-color=Invalid lines color:\ 
+options.jdiff.left-cursor-color=Left cursor color:\ 
+options.jdiff.right-cursor-color=Right cursor color:\ 
 

@@ -34,9 +34,12 @@ import org.gjt.sp.jedit.jEdit;
 public class JDiffOptionPane extends AbstractOptionPane
 {
     private JCheckBox ignoreCase;
-    private JButton changedLineColor;
-    private JButton deletedLineColor;
-    private JButton insertedLineColor;
+    private JButton   changedLineColor;
+    private JButton   deletedLineColor;
+    private JButton   insertedLineColor;
+    private JButton   invalidLineColor;
+    private JButton   leftCursorColor;
+    private JButton   rightCursorColor;
 
 
     public JDiffOptionPane() {
@@ -50,6 +53,9 @@ public class JDiffOptionPane extends AbstractOptionPane
         this.changedLineColor  = this.createColorButton("jdiff.changed-color");
         this.deletedLineColor  = this.createColorButton("jdiff.deleted-color");
         this.insertedLineColor = this.createColorButton("jdiff.inserted-color");
+        this.invalidLineColor  = this.createColorButton("jdiff.invalid-color");
+        this.leftCursorColor   = this.createColorButton("jdiff.left-cursor-color");
+        this.rightCursorColor  = this.createColorButton("jdiff.right-cursor-color");
 
         addComponent(this.ignoreCase);
 
@@ -67,6 +73,21 @@ public class JDiffOptionPane extends AbstractOptionPane
             jEdit.getProperty("options.jdiff.inserted-color"),
             this.insertedLineColor
         );
+
+        addComponent(
+            jEdit.getProperty("options.jdiff.invalid-color"),
+            this.invalidLineColor
+        );
+
+        addComponent(
+            jEdit.getProperty("options.jdiff.left-cursor-color"),
+            this.leftCursorColor
+        );
+
+        addComponent(
+            jEdit.getProperty("options.jdiff.right-cursor-color"),
+            this.rightCursorColor
+        );
     }
 
 
@@ -82,6 +103,15 @@ public class JDiffOptionPane extends AbstractOptionPane
         );
         jEdit.setProperty("jdiff.inserted-color",
             GUIUtilities.getColorHexString(this.insertedLineColor.getBackground())
+        );
+        jEdit.setProperty("jdiff.invalid-color",
+            GUIUtilities.getColorHexString(this.invalidLineColor.getBackground())
+        );
+        jEdit.setProperty("jdiff.left-cursor-color",
+            GUIUtilities.getColorHexString(this.leftCursorColor.getBackground())
+        );
+        jEdit.setProperty("jdiff.right-cursor-color",
+            GUIUtilities.getColorHexString(this.rightCursorColor.getBackground())
         );
     }
 
@@ -123,5 +153,4 @@ public class JDiffOptionPane extends AbstractOptionPane
             }
         }
     }
-
 }
