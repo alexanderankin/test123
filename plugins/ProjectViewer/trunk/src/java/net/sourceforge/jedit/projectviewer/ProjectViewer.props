@@ -1,0 +1,14 @@
+# Plugin properties
+plugin.ProjectViewer.name=Project Viewer
+plugin.ProjectViewer.author=Kevin A. Burton
+plugin.ProjectViewer.version=0.01
+plugin.ProjectViewer.docs=index.html
+
+plugin.ProjectViewer.depend.0=jdk 1.1
+#plugin.JBrowsePlugin.depend.1=jedit 02.01.03.00
+
+# Menu bar properties
+projectviewer.open.label=Project Viewer
+
+options.projectviewer.label=Project Viewer
+
