@@ -18,6 +18,14 @@ error-list.showOnError=true
 error-list.warningColor=#ffa800
 error-list.errorColor=#ff0000
 
+# Actions
+error-list-next-error.label=Go to next error
+error-list-previous-error.label=Go to previous error
+
+# Error messages
+error-list.error.no_next=No next error
+error-list.error.no_previous=No previous error
+
 # Option pane
 options.error-list.label=Error List
 options.error-list.showOnError=Automatically display on error
