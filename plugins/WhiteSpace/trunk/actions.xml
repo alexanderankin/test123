@@ -3,7 +3,7 @@
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
 <ACTIONS>
-    <ACTION NAME="toggle-block-highlight">
+    <ACTION NAME="white-space.toggle-block-highlight">
         <CODE>
              BlockHighlight.toggleBlockHighlightFor(view);
         </CODE>
@@ -49,6 +49,16 @@
         </CODE>
         <IS_SELECTED>
              return WhiteSpaceHighlight.isTabHighlightEnabledFor(view);
+        </IS_SELECTED>
+    </ACTION>
+
+
+    <ACTION NAME="white-space.toggle-whitespace-highlight">
+        <CODE>
+             WhiteSpaceHighlight.toggleWhitespaceHighlightFor(view);
+        </CODE>
+        <IS_SELECTED>
+             return WhiteSpaceHighlight.isWhitespaceHighlightEnabledFor(view);
         </IS_SELECTED>
     </ACTION>
 </ACTIONS>
