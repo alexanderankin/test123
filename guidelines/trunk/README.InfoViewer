@@ -3,4 +3,5 @@ CVS policy file
 plugin: InfoViewer
 author: Dirk Moebius <dmoebius@gmx.net>
 
-You may commit changes to this plugin without first consulting the author.
+You may commit changes to this plugin *without* first consulting me.
+Please notify me after you made any changes.
