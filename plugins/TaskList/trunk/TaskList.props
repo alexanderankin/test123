@@ -35,6 +35,7 @@ tasklist.popup.parse-error=Buffer has changed since last parse. Try again.
 
 
 # Option pane labels
+options.tasklist.label=Task List
 options.tasklist.general.label=General
 options.tasklist.general.parsedelay=Parse delay:
 options.tasklist.general.buffer.display=Buffer display format:
