@@ -13,7 +13,7 @@
  * parser package."
  */
 
-package xml;
+package xml.options;
 
 //{{{ Imports
 import javax.swing.border.EmptyBorder;

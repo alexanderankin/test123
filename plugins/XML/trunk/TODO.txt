@@ -1,5 +1,6 @@
 + version 0.9:
 
+- open file from VFS: DTD not loaded
 - TagParser: use segments, not strings
 - more friendly way to find DTDs (some kind of 'wizard'?)
 - element and entity lists for schemas
@@ -7,7 +8,6 @@
 - recording <, >, /, &
 - threaddeath -- wtf?
 - move Xerces to its own plugin
-- tag hilite: respect syntax info
 - id completion
 - switching between two edit panes with same buffer: expand tree at
   appropriate location

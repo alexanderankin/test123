@@ -10,7 +10,7 @@
  * parser package."
  */
 
-package xml;
+package xml.options;
 
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.*;
