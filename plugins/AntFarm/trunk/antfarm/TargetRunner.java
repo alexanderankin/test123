@@ -191,7 +191,7 @@ public class TargetRunner extends Thread
 		catch (Exception e) {
 			Log.log(Log.WARNING, this, "Cannot parse build file: " + e);
 		}
-		
+
 		_consoleErr = new AntPrintStream( System.out, _view );
 		_consoleOut = new AntPrintStream( System.out, _view );
 
@@ -245,7 +245,7 @@ public class TargetRunner extends Thread
 			}
 			command += args;
 			Console console = AntFarmPlugin.getConsole( _view );
-			console.run( ConsolePlugin.SYSTEM_SHELL, console, command );
+			console.run( ConsolePlugin.getSystemShell(), console, command );
 		}
 	}
 
@@ -258,7 +258,7 @@ public class TargetRunner extends Thread
 			 );
 		_buildLogger.setOutputPrintStream( _consoleOut );
 		_buildLogger.setErrorPrintStream( _consoleErr );
-		_buildLogger.setMessageOutputLevel( 
+		_buildLogger.setMessageOutputLevel(
 			jEdit.getIntegerProperty(AntFarmPlugin.OPTION_PREFIX + "logging-level",  LogLevelEnum.INFO.getValue() )
 			);
 	}
