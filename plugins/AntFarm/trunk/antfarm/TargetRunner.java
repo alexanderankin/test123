@@ -80,6 +80,7 @@ public class TargetRunner extends Thread
 
 		if ( useSameJvm ) {
 			setOutputStreams();
+			setProjectProperties();
 
 			try {
 				_project.addBuildListener( _buildLogger );
@@ -96,6 +97,7 @@ public class TargetRunner extends Thread
 			finally {
 				fireBuildFinished();
 				resetLogging();
+				resetProjectProperties();
 			}
 		}
 		else {
@@ -107,6 +109,25 @@ public class TargetRunner extends Thread
 			runAntCommand( command );
 		}
 		_output.commandDone();
+	}
+
+
+	private void setProjectProperties()
+	{
+		// re-init the project so that system properties are re-loaded.
+		_project.init();
+
+		_project.setUserProperty( "ant.version", Main.getAntVersion() );
+
+		// set user-define properties
+		Enumeration e = _userProperties.keys();
+		while ( e.hasMoreElements() ) {
+			String arg = (String) e.nextElement();
+			String value = (String) _userProperties.get( arg );
+			_project.setUserProperty( arg, value );
+		}
+
+		_project.setUserProperty( "ant.file", _buildFile.getAbsolutePath() );
 	}
 
 
@@ -134,6 +155,16 @@ public class TargetRunner extends Thread
 	}
 
 
+	private void resetProjectProperties()
+	{
+		Enumeration props = _userProperties.propertyNames();
+
+		while ( props.hasMoreElements() ) {
+			_project.getUserProperties().remove( props.nextElement() );
+		}
+	}
+
+
 	private void init( Target target, File buildFile, View view, Output output, Properties userProperties )
 	{
 		_target = target;
@@ -146,25 +177,10 @@ public class TargetRunner extends Thread
 		_consoleErr = new AntPrintStream( System.out, _view );
 		_consoleOut = new AntPrintStream( System.out, _view );
 
-		// re-init the project so we start from a fresh state
-		_project.init();
+		configureBuildLogger();
 
 		// set so jikes prints emacs style errors
-		_project.setProperty( "build.compiler.emacs", "true" );
-
-		_project.setUserProperty( "ant.version", Main.getAntVersion() );
-
-		// set user-define properties
-		Enumeration e = _userProperties.keys();
-		while ( e.hasMoreElements() ) {
-			String arg = (String) e.nextElement();
-			String value = (String) _userProperties.get( arg );
-			_project.setUserProperty( arg, value );
-		}
-
-		_project.setUserProperty( "ant.file", _buildFile.getAbsolutePath() );
-
-		configureBuildLogger();
+		_userProperties.setProperty( "build.compiler.emacs", "true" );
 
 		// fire it up
 		this.start();
