@@ -238,6 +238,16 @@ public class SearchSettings
 		XSearchAndReplace.setSearchFileSet(new CurrentBufferSet());
 	//}}}
 	}
+	
+	public static void setPopAfterHypersearch(boolean value) {
+		popAfterHypersearch = value;
+	}
+	
+	public static boolean getPopAfterHypersearch() {
+		return popAfterHypersearch;
+	}
+	
+	private static boolean popAfterHypersearch = false;
 	//{{{ Private members
 
 	//{{{ Instance variables

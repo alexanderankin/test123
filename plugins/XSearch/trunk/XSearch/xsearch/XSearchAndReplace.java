@@ -1,6 +1,6 @@
 /*
  * XSearchAndReplace.java - Search and replace: derived from SearchAndReplace
- * :tabSize=2:indentSize=2:noTabs=false:
+ * :tabSize=4:indentSize=4:noTabs=false:
  *
  * Copyright (C) 2002 Rudolf Widmann
  * Portions copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
@@ -104,7 +104,11 @@ public class XSearchAndReplace
 			origSearch = search;
 			searchSettingsChanged = true;
 		}
-		if (wordPart == XSearchDialog.SEARCH_PART_NONE && !tentativSearch) {
+		// if a "word" starts with $ (due to extra word char), it won' be found by wordpart search
+		if (search.startsWith("$") && wordPart != XSearchDialog.SEARCH_PART_SUFFIX)
+			wordPart = XSearchDialog.SEARCH_PART_NONE;
+		if (wordPart == XSearchDialog.SEARCH_PART_NONE && !tentativSearch) 
+		{
 			if(!search.equals(XSearchAndReplace.search)) {
 				XSearchAndReplace.search = search;
 				searchSettingsChanged = true;
@@ -115,7 +119,7 @@ public class XSearchAndReplace
 			if (tentativSearch)
 				regExpString = constructTentativSearchString(search);
 			else
-				regExpString = MiscUtilities.charsToEscapes(regExpString);
+				regExpString = MiscUtilities.charsToEscapes(regExpString, "\r\t\n\\()[]{}$^*+?|.");
 			//Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.escaped.115: regExpString = "+regExpString);
 			switch (wordPart) {
 				case XSearchDialog.SEARCH_PART_WHOLE_WORD:
@@ -137,7 +141,7 @@ public class XSearchAndReplace
 		if (debug) Log.log(Log.DEBUG, BeanShell.class,"XSearchAndReplace.89: origSearch = "+origSearch+", XSearchAndReplace.search = "+XSearchAndReplace.search+", searchSettingsChanged = "+searchSettingsChanged);
 		if (searchSettingsChanged) {
 			matcher = null;
-			EditBus.send(new SearchSettingsChanged(null));
+			// EditBus.send(new SearchSettingsChanged(null));
 		}
 	} //}}}
 
@@ -163,7 +167,7 @@ public class XSearchAndReplace
 		XSearchAndReplace.replace = replace;
 		//matcher = null;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 
 	//{{{ getReplaceString() method
@@ -198,7 +202,7 @@ public class XSearchAndReplace
 		XSearchAndReplace.ignoreCase = ignoreCase;
 		matcher = null;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} 
 
 	// getIgnoreCase() method
@@ -229,7 +233,7 @@ public class XSearchAndReplace
 
 		matcher = null;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 
 	//{{{ getRegexp() method
@@ -259,7 +263,7 @@ public class XSearchAndReplace
 
 		//matcher = null;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 
 	//{{{ getReverseSearch() method
@@ -302,7 +306,7 @@ public class XSearchAndReplace
 
 		matcher = null;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 
 	//{{{ getSearchFromTop() method
@@ -327,7 +331,7 @@ public class XSearchAndReplace
 
 		XSearchAndReplace.beanshell = beanshell;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 
 	//{{{ getBeanShellReplace() method
@@ -355,7 +359,7 @@ public class XSearchAndReplace
 
 		XSearchAndReplace.wrap = wrap;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 
 	//{{{ getAutoWrap() method
@@ -379,7 +383,7 @@ public class XSearchAndReplace
 	{
 		XSearchAndReplace.matcher = matcher;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 
 	//{{{ getSearchMatcher() method
@@ -414,10 +418,11 @@ public class XSearchAndReplace
 			createREMatcher = true;
 		else if (regexp) {
 			RE re = new RE(search);
-			Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.420: re.toString() = "+re.toString());
+			///Log.log(Log.DEBUG, BeanShell.class,"+++ XSearchAndReplace.420: re.toString() = "+re.toString());
 			if (!re.toString().equals("(?:"+search+")"))
 				createREMatcher = true;
 		}
+		Log.log(Log.DEBUG, XSearchAndReplace.class,"+++ XSearchAndReplace.419 create matcher: search = "+search+", createREMatcher = "+createREMatcher);
 		if (createREMatcher)
 			matcher = new RESearchMatcher(search,ignoreCase);
 		else
@@ -472,7 +477,7 @@ public class XSearchAndReplace
 	{
 		XSearchAndReplace.fileset = fileset;
 
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 	
 	//{{{ getSearchFileSet() method
@@ -1593,13 +1598,14 @@ loop:			while(path != null)
 	 */
 	public static void load()
 	{
-		search = jEdit.getProperty("search.find.value");
+		Log.log(Log.DEBUG, XSearchAndReplace.class,"+++ XSearchAndReplace.1594");
+		search = jEdit.getProperty("search.ext.find.value");
 		origSearch = search;
-		replace = jEdit.getProperty("search.replace.value");
-		ignoreCase = jEdit.getBooleanProperty("search.ignoreCase.toggle");
-		regexp = jEdit.getBooleanProperty("search.regexp.toggle");
-		beanshell = jEdit.getBooleanProperty("search.beanshell.toggle");
-		wrap = jEdit.getBooleanProperty("search.wrap.toggle");
+		replace = jEdit.getProperty("search.ext.replace.value");
+		ignoreCase = jEdit.getBooleanProperty("search.ext.ignoreCase.toggle");
+		regexp = jEdit.getBooleanProperty("search.ext.regexp.toggle");
+		beanshell = jEdit.getBooleanProperty("search.ext.beanshell.toggle");
+		wrap = jEdit.getBooleanProperty("search.ext.wrap.toggle");
 		
 		// load extended properties
 		fromTop = jEdit.getBooleanProperty("search.ext.fromTop.toggle");
@@ -1625,7 +1631,7 @@ loop:			while(path != null)
 		// startup; so we need to fire a SearchSettingsChanged to
 		// notify the search bar and so on.
 		matcher = null;
-		EditBus.send(new SearchSettingsChanged(null));
+		// EditBus.send(new SearchSettingsChanged(null));
 	} //}}}
 
 	//{{{ save() method
@@ -1634,12 +1640,12 @@ loop:			while(path != null)
 	 */
 	public static void save()
 	{
-		jEdit.setProperty("search.find.value",search);
-		jEdit.setProperty("search.replace.value",replace);
-		jEdit.setBooleanProperty("search.ignoreCase.toggle",ignoreCase);
-		jEdit.setBooleanProperty("search.regexp.toggle",regexp);
-		jEdit.setBooleanProperty("search.beanshell.toggle",beanshell);
-		jEdit.setBooleanProperty("search.wrap.toggle",wrap);
+		jEdit.setProperty("search.ext.find.value",search);
+		jEdit.setProperty("search.ext.replace.value",replace);
+		jEdit.setBooleanProperty("search.ext.ignoreCase.toggle",ignoreCase);
+		jEdit.setBooleanProperty("search.ext.regexp.toggle",regexp);
+		jEdit.setBooleanProperty("search.ext.beanshell.toggle",beanshell);
+		jEdit.setBooleanProperty("search.ext.wrap.toggle",wrap);
 		// save extended properties
 		jEdit.setBooleanProperty("search.ext.fromTop.toggle",fromTop);
 		jEdit.setBooleanProperty("search.ext.tentativ.toggle",tentativSearch);

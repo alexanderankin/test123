@@ -491,11 +491,11 @@ public class HyperSearchResults extends JPanel implements EBComponent,
 				popupMenu = new JPopupMenu();
 				popupMenu.add(new ExpandTreeNodeAllAction());
 				popupMenu.add(new ExpandTreeNode0Action());
+				popupMenu.add(new RemoveTreeNodeAction());
 				popupMenu.add(new ExpandTreeNode1Action());
 				popupMenu.add(new ExpandTreeNode2Action());
 				popupMenu.add(new ExpandAllNodesAction());
 				popupMenu.add(new CollapseAllNodesAction());
-				popupMenu.add(new RemoveTreeNodeAction());
 				popupMenu.add(new WriteNodeToBufferAction());
 				popupMenu.add(new WriteAllNodesToBufferAction());
 			}

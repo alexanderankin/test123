@@ -1,7 +1,6 @@
 /*
  * HyperSearchRequest.java - HyperSearch request, run in I/O thread
  * :tabSize=2:indentSize=2:noTabs=false:
- * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1998, 1999, 2000, 2001, 2002 Slava Pestov
  *
@@ -81,6 +80,7 @@ class HyperSearchRequest extends WorkRequest
 				{
 					GUIUtilities.error(view,"empty-fileset",null);
 					results.searchDone(rootSearchNode);
+					restoreSettings();
 				}
 			});
 			return;
@@ -107,7 +107,8 @@ class HyperSearchRequest extends WorkRequest
 			{
 				int current = 0;
 
-loop:				for(int i = 0; i < files.length; i++)
+loop:
+				for(int i = 0; i < files.length; i++)
 				{
 					String file = files[i];
 					current++;
@@ -158,7 +159,6 @@ loop:				for(int i = 0; i < files.length; i++)
 							public void run()
 							{
 
-								
 								JTree tree = results.getTree();
 								final int searchChildCount = rootSearchNode.getChildCount();
 								if (searchChildCount != 0) {
@@ -193,9 +193,8 @@ loop:				for(int i = 0; i < files.length; i++)
 							//		resultTreeRoot,searchNode }));
 							}
 						});
-						
-						
 					}
+					restoreSettings();
 				}
 			});
 		}
@@ -317,8 +316,8 @@ loop:				for(int i = 0; i < files.length; i++)
 				if(match == null)
 					break loop;
 
-// Log.log(Log.DEBUG, BeanShell.class,"tp275: matchStart = "+matchStart+", matchEnd = "+matchEnd+", offset = "+offset+
-//				" ,found: "+buffer.getText(matchStart, matchEnd - matchStart));
+				// Log.log(Log.DEBUG, BeanShell.class,"tp275: matchStart = "+matchStart+", matchEnd = "+matchEnd+", offset = "+offset+
+				//	" ,found: "+buffer.getText(matchStart, matchEnd - matchStart));
 				// rwchg: check extended parameters
 				if (!XSearchAndReplace.checkXSearchParameters(view.getTextArea(), buffer, offset+match.start, offset+match.end, true)) {
 					// Log.log(Log.DEBUG, BeanShell.class,"tp281: match invalid");
@@ -395,6 +394,12 @@ loop:				for(int i = 0; i < files.length; i++)
 
 		return resultCount;
 	} //}}}
+	private void restoreSettings() {
+		if (SearchSettings.getPopAfterHypersearch()) {
+			SearchSettings.pop();
+			SearchSettings.setPopAfterHypersearch(false);
+		}
+	}
 
 	//}}}
 }

@@ -81,7 +81,7 @@ public class HyperSearchResult
 	//{{{ goTo() method
 	public void goTo(final View view)
 	{
-		Log.log(Log.DEBUG, BeanShell.class,"+++ HyperSearchResult.82");
+		//Log.log(Log.DEBUG, BeanShell.class,"+++ HyperSearchResult.82");
 		if(buffer == null)
 			buffer = jEdit.openFile(null,path);
 
