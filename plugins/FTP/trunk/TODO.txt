@@ -1,3 +1,4 @@
+- 4.2 symlinkPath in VFS.DirectoryEntry
 - implement backups
 - support public key authentication, etc
 - a lot of the ConnectionManager stuff is just wrappers around the VFS
