@@ -153,17 +153,16 @@ public class SideKickCompletionPopup extends JWindow
 			if(evt == null)
 				return;
 
-			// XXX
 			switch(evt.getKeyCode())
 			{
-			/* case KeyEvent.VK_ENTER:
-				insertSelected('\n');
+			case KeyEvent.VK_ENTER:
+				keyTyped('\n');
 				evt.consume();
 				break;
 			case KeyEvent.VK_TAB:
-				insertSelected('\t');
+				keyTyped('\t');
 				evt.consume();
-				break; */
+				break;
 			case KeyEvent.VK_ESCAPE:
 				dispose();
 				evt.consume();
@@ -222,17 +221,22 @@ public class SideKickCompletionPopup extends JWindow
 			if(evt == null)
 				return;
 
-			// XXX
 			char ch = evt.getKeyChar();
 			if(ch == '\b')
 				return;
 
+			keyTyped(ch);
+
+			evt.consume();
+		} //}}}
+
+		//{{{ keyTyped() method
+		private void keyTyped(char ch)
+		{
 			if(complete.handleKeystroke(list.getSelectedIndex(),ch))
 				updateListModel();
 			else
 				dispose();
-
-			evt.consume();
 		} //}}}
 	} //}}}
 

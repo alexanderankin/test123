@@ -22,47 +22,107 @@
 
 package sidekick;
 
-//{{{ Imports
-import javax.swing.tree.*;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
-import java.awt.event.*;
-import java.util.*;
-import org.gjt.sp.jedit.buffer.*;
-import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.*;
-import org.gjt.sp.jedit.*;
-import errorlist.*;
-//}}}
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.EditPane;
+import errorlist.ErrorSource;
 
+/**
+ * An abstract base class for plugin-provided parser implementations.
+ *
+ * Note that each <code>SideKickParser</code> subclass has a name which is
+ * used to key a property <code>sidekick.parser.<i>name</i>.label</code>.
+ * The parser name can also be referenced in a <code>sidekick.parser</code>
+ * buffer-local property.
+ *
+ * @version $Id$
+ * @author Slava Pestov
+ */
 public abstract class SideKickParser
 {
+	//{{{ SideKickParser constructor
+	/**
+	 * The parser constructor.
+	 *
+	 */
 	public SideKickParser(String name)
 	{
 		this.name = name;
-	}
+	} //}}}
 
+	//{{{ getName() method
+	/**
+	 * Returns the parser's name.
+	 */
 	public final String getName()
 	{
 		return name;
-	}
+	} //}}}
 
-	public abstract SideKickParsedData parse(SideKick sidekick, String text);
+	//{{{ parse() method
+	/**
+	 * Parses the given text and returns a tree model.
+	 *
+	 * @param buffer The buffer to parse.
+	 * @param text The buffer text. The text should not be obtained from the
+	 * buffer instance itself since having to get a read lock would offset any
+	 * advantage gained by parsing in a separate thread.
+	 * @param errorSource An error source to add errors to.
+	 *
+	 * @return A new instance of the <code>SideKickParsedData</code> class.
+	 */
+	public abstract SideKickParsedData parse(Buffer buffer, String text,
+		ErrorSource errorSource);
+	//}}}
 
+	//{{{ supportsCompletion() method
+	/**
+	 * Returns if the parser supports code completion.
+	 *
+	 * Returns false by default.
+	 */
 	public boolean supportsCompletion()
 	{
 		return false;
-	}
+	} //}}}
 
-	public String getCompletionTriggers()
+	//{{{ getDelayCompletionTriggers() method
+	/**
+	 * Returns a list of characters which trigger completion if they
+	 * are followed by a short period of inactivity.
+	 *
+	 * Returns null by default.
+	 *
+	 */
+	public String getDelayCompletionTriggers()
 	{
 		return null;
-	}
+	} //}}}
 
+	//{{{ getInstantCompletionTriggers() method
+	/**
+	 * Returns a list of characters which trigger completion immediately.
+	 *
+	 * Returns null by default.
+	 *
+	 */
+	public String getInstantCompletionTriggers()
+	{
+		return null;
+	} //}}}
+
+	//{{{ complete() method
+	/**
+	 * Returns completions suitable for insertion at the specified position.
+	 *
+	 * Returns null by default.
+	 *
+	 * @param editPane The edit pane involved.
+	 * @param caret The caret position.
+	 */
 	public SideKickCompletion complete(EditPane editPane, int caret)
 	{
 		return null;
-	}
+	} //}}}
 
 	private String name;
 }

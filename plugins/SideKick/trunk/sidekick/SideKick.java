@@ -40,11 +40,25 @@ public class SideKick implements EBComponent
 	public static final int MAX_ERRORS = 100;
 
 	//{{{ SideKick constructor
-	public SideKick(View view)
+	SideKick(View view)
 	{
 		this.view = view;
 
-		errorSource = new DefaultErrorSource("SideKick");
+		errorSource = new DefaultErrorSource("SideKick")
+		{
+			public void addError(int type, String path,
+				int lineIndex, int start, int end, String error)
+			{
+				if(errorSource.getErrorCount() >= MAX_ERRORS)
+					maxErrors = true;
+				else
+				{
+					super.addError(type,path,lineIndex,
+						start,end,error);
+				}
+			}
+		};
+		
 		ErrorSource.registerErrorSource(errorSource);
 
 		bufferHandler = new BufferChangeHandler();
@@ -63,6 +77,11 @@ public class SideKick implements EBComponent
 	} //}}}
 
 	//{{{ parse() method
+	/**
+	 * Immediately begins parsing the current buffer in a backgroud thread.
+	 * @param showParsingMessage Clear the tree and show a status message
+	 * there?
+	 */
 	public void parse(final boolean showParsingMessage)
 	{
 		stopThread();
@@ -100,7 +119,18 @@ public class SideKick implements EBComponent
 					sendUpdate();
 				} //}}}
 
-				_parse();
+				errorSource.clear();
+
+				// get buffer text
+				text = buffer.getText(0,buffer.getLength());
+
+				// start parser thread
+				stopThread();
+
+				parserImpl = SideKickPlugin.getParserForBuffer(buffer);
+
+				thread = new ParseThread();
+				thread.start();
 			}
 		}); //}}}
 	} //}}}
@@ -237,28 +267,7 @@ public class SideKick implements EBComponent
 				else
 					showNotParsedMessage();
 			}
-		}
-	} //}}}
-
-	//{{{ getBuffer() method
-	public Buffer getBuffer()
-	{
-		return buffer;
-	} //}}}
-
-	//{{{ addError() method
-	public boolean addError(int type, String path, int line, String message)
-	{
-		if(errorSource.getErrorCount() >= MAX_ERRORS)
-		{
-			maxErrors = true;
-			return false;
-		}
-		else
-		{
-			errorSource.addError(type,path,line,0,0,message);
-			return true;
-		}
+		} //}}}
 	} //}}}
 
 	//{{{ Private members
@@ -349,23 +358,6 @@ public class SideKick implements EBComponent
 		keystrokeTimer.start();
 	} //}}}
 
-	//{{{ _parse() method
-	private void _parse()
-	{
-		errorSource.clear();
-
-		// get buffer text
-		text = buffer.getText(0,buffer.getLength());
-
-		// start parser thread
-		stopThread();
-
-		parserImpl = SideKickPlugin.getParserForBuffer(buffer);
-
-		thread = new ParseThread();
-		thread.start();
-	} //}}}
-
 	//{{{ stopThread() method
 	private void stopThread()
 	{
@@ -407,7 +399,7 @@ public class SideKick implements EBComponent
 				if(parserImpl == null)
 					return;
 
-				data = parserImpl.parse(SideKick.this,text);
+				data = parserImpl.parse(buffer,text,errorSource);
 			}
 
 			SwingUtilities.invokeLater(new Runnable()

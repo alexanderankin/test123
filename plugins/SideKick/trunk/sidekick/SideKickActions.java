@@ -50,7 +50,7 @@ public class SideKickActions
 		if(parser == null)
 			return;
 
-		String completionTriggers = parser.getCompletionTriggers();
+		String completionTriggers = parser.getDelayCompletionTriggers();
 		if(completionTriggers.indexOf(ch) == -1)
 			return;
 
