@@ -351,67 +351,7 @@ public class ColorTabs
     */
    public void propertiesChanged(BufferTabs parent)
    {
-      if (this.isEnabled() != jEdit.getBooleanProperty("buffertabs.color-tabs"))
-      {
-         this.setEnabled(!this.isEnabled());
-
-         //Turn off all color features
-         if (!this.isEnabled())
-         {
-            try
-            {
-               for (int i = parent.getTabCount() - 1; i >= 0; i--)
-               {
-                  parent.setBackgroundAt(i, null);
-                  parent.setForegroundAt(i, null);
-               }
-            }
-            catch (java.lang.NullPointerException npe)
-            {
-               Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 1 " + npe.toString());
-            }
-
-            try
-            {
-               parent.getUI().uninstallUI(parent);
-               UIManager.getDefaults().put("TabbedPane.selected", null);
-               parent.getUI().installUI(parent);
-            }
-            catch (java.lang.NullPointerException npe)
-            {
-               Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 2 " + npe.toString());
-            }
-         }
-      }
-
-      if (this.isEnabled())
-      {
-         this.setMuteColors(jEdit.getBooleanProperty("buffertabs.color-mute"));
-         this.setColorVariation(jEdit.getBooleanProperty("buffertabs.color-variation"));
-         this.setForegroundColorized(jEdit.getBooleanProperty("buffertabs.color-foreground"));
-
-         if (this.isSelectedColorized() != jEdit.getBooleanProperty("buffertabs.color-selected"))
-         {
-            this.setSelectedColorized(!this.isSelectedColorized());
-
-            //Turn off all colorhighlight
-            if (!this.isSelectedColorized())
-            {
-               try
-               {
-                  parent.getUI().uninstallUI(parent);
-                  UIManager.getDefaults().put("TabbedPane.selected", null);
-                  parent.getUI().installUI(parent);
-               }
-               catch (Exception e)
-               {
-                  Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 3 " + e.toString());
-               }
-            }
-         }
-
-         this.propertiesChanged();
-      }
+      parent.propertiesChanged();
    }
 
 
