@@ -2,16 +2,5 @@
 
 <!DOCTYPE ACTIONS SYSTEM "actions.dtd">
 
-<ACTIONS>
-
-	<ACTION NAME="javainsight.toggle-dockable">
-		<CODE>
-			view.getDockableWindowManager().toggleDockableWindow("javainsight-dockable");
-		</CODE>
-		<IS_SELECTED>
-			return view.getDockableWindowManager().isDockableWindowVisible("javainsight-dockable");
-		</IS_SELECTED>
-	</ACTION>
-
-</ACTIONS>
+<ACTIONS/>
 

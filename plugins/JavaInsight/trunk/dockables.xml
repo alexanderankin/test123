@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+    <DOCKABLE NAME="javainsight.dock">
+        new javainsight.JavaInsight(view);
+    </DOCKABLE>
+</DOCKABLES>
+
