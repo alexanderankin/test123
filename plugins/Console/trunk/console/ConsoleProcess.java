@@ -62,9 +62,12 @@ class ConsoleProcess
 			stdin = new InputThread(this,
 				process.getOutputStream());
 			stdin.start();
-			stdout = new StreamThread(this,process.getInputStream());
+			stdout = new StreamThread(this,
+				process.getInputStream(),null);
 			stdout.start();
-			stderr = new StreamThread(this,process.getErrorStream());
+			stderr = new StreamThread(this,
+				process.getErrorStream(),
+				console.getErrorColor());
 			stderr.start();
 		}
 		catch(Exception e)
@@ -135,6 +138,12 @@ class ConsoleProcess
 			consoleState.process = null;
 	} //}}}
 
+	//{{{ isRunning() method
+	boolean isRunning()
+	{
+		return (process != null);
+	} //}}}
+	
 	//{{{ getExitStatus() method
 	boolean getExitStatus()
 	{

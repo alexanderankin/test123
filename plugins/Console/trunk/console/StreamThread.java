@@ -36,15 +36,19 @@ import errorlist.*;
 class StreamThread extends Thread
 {
 	//{{{ StreamThread constructor
-	StreamThread(ConsoleProcess process, InputStream in)
+	StreamThread(ConsoleProcess process, InputStream in,
+		Color defaultColor)
 	{
 		this.process = process;
 		this.currentDirectory = process.getCurrentDirectory();
 		this.in = in;
+		this.defaultColor = defaultColor;
 
 		// for parsing error messages from 'make'
 		currentDirectoryStack = new Stack();
 		currentDirectoryStack.push(currentDirectory);
+		
+		lineBuffer = new StringBuffer();
 	} //}}}
 
 	//{{{ run() method
@@ -114,6 +118,8 @@ class StreamThread extends Thread
 	private InputStream in;
 	private String currentDirectory;
 	private Stack currentDirectoryStack; // for make
+	private StringBuffer lineBuffer;
+	private Color defaultColor;
 
 	private static RE makeEntering, makeLeaving;
 
@@ -123,48 +129,57 @@ class StreamThread extends Thread
 	{
 		Console console = process.getConsole();
 		Output output = process.getOutput();
-                
+
 		if(console == null || output == null)
 			return;
-                
-		Color color = null;
-                
-		/* REMatch match = makeEntering.getMatch(line);
-		if(match == null)
+
+		Color color = defaultColor;
+
+		for(int i = 0; i < len; i++)
 		{
-			match = makeLeaving.getMatch(line);
-			if(match == null)
+			char ch = (char)buf[offset + i];
+			if(ch == '\r' || ch == '\n')
 			{
-				String _currentDirectory;
-				if(currentDirectoryStack.isEmpty())
-				{
-					// should not happen...
-					_currentDirectory = currentDirectory;
-				}
-				else
-					_currentDirectory = (String)currentDirectoryStack.peek();
-                
-				int type = ConsolePlugin.parseLine(
-					console.getView(),line,
-					_currentDirectory,
-					console.getErrorSource());
-				switch(type)
-				{
-				case ErrorSource.ERROR:
-					color = console.getErrorColor();
-					break;
-				case ErrorSource.WARNING:
-					color = console.getWarningColor();
-					break;
-				}
+				handleLine(lineBuffer.toString());
+				lineBuffer.setLength(0);
 			}
-			else if(!currentDirectoryStack.isEmpty())
+			else
+				lineBuffer.append(ch);
+		}
+
+		output.write(color,new String(buf,offset,len,"ASCII"));
+	} //}}}
+
+	//{{{ handleLine() method
+	private void handleLine(String line)
+	{
+		REMatch match = makeEntering.getMatch(line);
+		if(match != null)
+		{
+			currentDirectoryStack.push(match.toString(1));
+			return;
+		}
+
+		match = makeLeaving.getMatch(line);
+		if(match != null)
+		{
+			if(!currentDirectoryStack.isEmpty())
 				currentDirectoryStack.pop();
+			return;
+		}
+
+		String dir;
+		if(currentDirectoryStack.isEmpty())
+		{
+			// should not happen...
+			dir = currentDirectory;
 		}
 		else
-			currentDirectoryStack.push(match.toString(1)); */
-                
-		output.write(color,new String(buf,offset,len,"ASCII"));
+			dir = (String)currentDirectoryStack.peek();
+
+		Console console = process.getConsole();
+		ConsolePlugin.parseLine(console.getView(),line,dir,
+			console.getErrorSource());
 	} //}}}
 
 	//}}}
