@@ -45,7 +45,7 @@ jdiff.ignore-case=false
 jdiff.trim-whitespace=false
 jdiff.ignore-whitespace=false
 
-jdiff.global-virtual-overview=true
+jdiff.global-virtual-overview=false
 
 jdiff.overview-changed-color=\#FFCC66
 jdiff.overview-deleted-color=\#FF6666
