@@ -1,6 +1,6 @@
 plugin.columnruler.ColumnRulerPlugin.name=Column Ruler
 plugin.columnruler.ColumnRulerPlugin.author=Brad Mace
-plugin.columnruler.ColumnRulerPlugin.version=0.9.0
+plugin.columnruler.ColumnRulerPlugin.version=0.9.1
 plugin.columnruler.ColumnRulerPlugin.docs=docs/index.html
 plugin.columnruler.ColumnRulerPlugin.depend.0=jdk 1.4.1
 plugin.columnruler.ColumnRulerPlugin.depend.1=jedit 04.02.08.00
