@@ -66,11 +66,11 @@ public class SqlUtils
   public final static void setSelectedServerName( final String name )
   {
     if ( name != null )
-      SqlPlugin.setProperty( "sql.currentServerName", name );
+      SqlPlugin.setLocalProperty( "sql.currentServerName", name );
     else
-      SqlPlugin.unsetProperty( "sql.currentServerName" );
+      SqlPlugin.unsetLocalProperty( "sql.currentServerName" );
 
-    SqlPlugin.commitProperties();
+    SqlPlugin.commitLocalProperties();
 
       new Thread()
       {
@@ -91,7 +91,7 @@ public class SqlUtils
    */
   public final static String getSelectedServerName()
   {
-    return SqlPlugin.getProperty( "sql.currentServerName" );
+    return SqlPlugin.getLocalProperty( "sql.currentServerName" );
   }
 
 

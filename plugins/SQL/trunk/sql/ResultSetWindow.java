@@ -342,7 +342,7 @@ public class ResultSetWindow extends JPanel
    */
   public final static void setMaxRecordsToShow( int maxRecs )
   {
-    SqlPlugin.setProperty( MAX_RECS_TO_SHOW_PROP, "" + maxRecs );
+    SqlPlugin.setGlobalProperty( MAX_RECS_TO_SHOW_PROP, "" + maxRecs );
   }
 
 
@@ -354,7 +354,7 @@ public class ResultSetWindow extends JPanel
    */
   public final static void setAutoResize( boolean autoResize )
   {
-    SqlPlugin.setProperty( AUTORESIZE, "" + autoResize );
+    SqlPlugin.setGlobalProperty( AUTORESIZE, "" + autoResize );
   }
 
 
@@ -368,7 +368,7 @@ public class ResultSetWindow extends JPanel
   {
     try
     {
-      return Integer.parseInt( SqlPlugin.getProperty( MAX_RECS_TO_SHOW_PROP ) );
+      return Integer.parseInt( SqlPlugin.getGlobalProperty( MAX_RECS_TO_SHOW_PROP ) );
     } catch ( NumberFormatException ex )
     {
       return 10;
@@ -389,7 +389,7 @@ public class ResultSetWindow extends JPanel
   {
     try
     {
-      return Boolean.valueOf( SqlPlugin.getProperty( AUTORESIZE ) ).booleanValue();
+      return Boolean.valueOf( SqlPlugin.getGlobalProperty( AUTORESIZE ) ).booleanValue();
     } catch ( NullPointerException ex )
     {
       return false;
@@ -403,7 +403,7 @@ public class ResultSetWindow extends JPanel
    */
   public final static void clearProperties()
   {
-    SqlPlugin.unsetProperty( MAX_RECS_TO_SHOW_PROP );
+    SqlPlugin.unsetGlobalProperty( MAX_RECS_TO_SHOW_PROP );
   }
 
 

@@ -221,7 +221,7 @@ public class ServersOptionPane extends SqlOptionPane
     else
       SqlUtils.setSelectedServerName( null );
 
-    SqlPlugin.commitProperties();
+    SqlPlugin.commitLocalProperties();
   }
 
 

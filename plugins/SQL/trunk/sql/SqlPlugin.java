@@ -74,8 +74,19 @@ public class SqlPlugin extends EBPlugin
    */
   public static ImageIcon Icon;
 
-  protected static Properties props = null;
-  protected static boolean configModified = false;
+  /**
+   * Global props 
+   */
+  protected static Properties globalProps = null;
+
+  /**
+   * Local (per-session, per-project properties
+   */
+  protected static Properties localProps = null;
+
+  protected static boolean globalConfigModified = false;
+
+  protected static boolean localConfigModified = false;
 
   protected static String currentSession;
 
@@ -217,17 +228,17 @@ public class SqlPlugin extends EBPlugin
 
 
 
-  /**
-   *  Sets the Property attribute of the SqlPlugin class
-   *
-   * @param  name   The new Property value
-   * @param  value  The new Property value
-   * @since
-   */
-  public static void setProperty( String name, String value )
+  public static void setGlobalProperty( String name, String value )
   {
-    props.setProperty( name, value );
-    configModified = true;
+    globalProps.setProperty( name, value );
+    globalConfigModified = true;
+  }
+
+
+  public static void setLocalProperty( String name, String value )
+  {
+    localProps.setProperty( name, value );
+    localConfigModified = true;
   }
 
 
@@ -259,33 +270,34 @@ public class SqlPlugin extends EBPlugin
     unregisterJdbcClassPath();
 
     for ( int i = oldCp.length; --i >= 0;  )
-      unsetProperty( "sql.jdbcClassPath." + i );
+      unsetGlobalProperty( "sql.jdbcClassPath." + i );
 
     if ( jdbcClassPath != null )
     {
       for ( int i = jdbcClassPath.length; --i >= 0;  )
-        setProperty( "sql.jdbcClassPath." + i, jdbcClassPath[i] );
+        setGlobalProperty( "sql.jdbcClassPath." + i, jdbcClassPath[i] );
 
     }
     registerJdbcClassPath();
   }
 
 
-  /**
-   *  Gets the Property attribute of the SqlPlugin class
-   *
-   * @param  name  Description of Parameter
-   * @return       The Property value
-   * @since
-   */
-  public static String getProperty( String name )
+  public static String getLocalProperty( String name )
   {
-    if ( props == null )
-      loadProperties();
+    if ( localProps == null )
+      loadLocalProperties();
 
-    return props.getProperty( name );
+    return localProps.getProperty( name );
   }
 
+
+  public static String getGlobalProperty( String name )
+  {
+    if ( globalProps == null )
+      loadGlobalProperties();
+
+    return globalProps.getProperty( name );
+  }
 
   /**
    *Gets the JdbcClassPath attribute of the SqlPlugin class
@@ -299,27 +311,12 @@ public class SqlPlugin extends EBPlugin
     int i = 0;
     while ( true )
     {
-      final String s = getProperty( "sql.jdbcClassPath." + i++ );
+      final String s = getGlobalProperty( "sql.jdbcClassPath." + i++ );
       if ( s == null )
         break;
       v.add( s );
     }
     return (String[]) v.toArray( new String[0] );
-  }
-
-
-  /**
-   *  Gets the PropertyNames attribute of the SqlPlugin class
-   *
-   * @return    The PropertyNames value
-   * @since
-   */
-  public static Iterator getPropertyNames()
-  {
-    if ( props == null )
-      loadProperties();
-
-    return props.keySet().iterator();
   }
 
 
@@ -345,20 +342,32 @@ public class SqlPlugin extends EBPlugin
    *
    * @since
    */
-  public static void clearProperties()
+  public static void clearLocalProperties()
   {
-    ResultSetWindow.clearProperties();
     SqlServerRecord.clearProperties();
-    SqlToolBar.clearProperties();
   }
 
+
+  public static void clearGlobalProperties()
+  {
+    ResultSetWindow.clearProperties();
+    SqlToolBar.clearProperties();
+  }
 
   /**
    *  Description of the Method
    *
    * @since
    */
-  public static void loadProperties()
+  public static void loadGlobalProperties()
+  {                              
+    //TODO!
+    globalProps = new Properties();
+    globalConfigModified = false;
+  }
+
+
+  public static void loadLocalProperties()
   {
     String path = getConfigFileName( getCurrentSession() );
     if ( !( new File( path ).exists() ) )
@@ -366,11 +375,11 @@ public class SqlPlugin extends EBPlugin
 
     try
     {
-      props = new Properties();
+      localProps = new Properties();
       final InputStream is = new BufferedInputStream( new FileInputStream( path ) );
-      props.load( is );
+      localProps.load( is );
       is.close();
-      configModified = false;
+      localConfigModified = false;
     } catch ( IOException ex )
     {
       Log.log( Log.ERROR, SqlPlugin.class,
@@ -379,14 +388,19 @@ public class SqlPlugin extends EBPlugin
   }
 
 
+  public static void commitGlobalProperties()
+  {
+    if ( !globalConfigModified )
+      return;
+  }
   /**
    *  Description of the Method
    *
    * @since
    */
-  public static void commitProperties()
+  public static void commitLocalProperties()
   {
-    if ( !configModified )
+    if ( !localConfigModified )
       return;
 
     final String path = getConfigFileName( getCurrentSession() );
@@ -394,10 +408,10 @@ public class SqlPlugin extends EBPlugin
     try
     {
       final OutputStream os = new BufferedOutputStream( new FileOutputStream( path ) );
-      props.store( os, "Sql Plugin properties" );
+      localProps.store( os, "Sql Plugin properties" );
       os.close();
       FileVFS.setPermissions( path, 0600 );
-      configModified = false;
+      localConfigModified = false;
     } catch ( IOException ex )
     {
       Log.log( Log.ERROR, SqlPlugin.class,
@@ -407,18 +421,18 @@ public class SqlPlugin extends EBPlugin
   }
 
 
-  /**
-   *  Description of the Method
-   *
-   * @param  name  Description of Parameter
-   * @since
-   */
-  public static void unsetProperty( String name )
+  public static void unsetGlobalProperty( String name )
   {
-    props.remove( name );
-    configModified = true;
+    globalProps.remove( name );
+    globalConfigModified = true;
   }
 
+
+  public static void unsetLocalProperty( String name )
+  {
+    localProps.remove( name );
+    localConfigModified = true;
+  }
 
   /**
    *  Description of the Method
@@ -643,17 +657,17 @@ public class SqlPlugin extends EBPlugin
         "Changing the session from " +
         message.getOldSession() + " to " + message.getNewSession() );
 
-    commitProperties();
+    commitLocalProperties();
 
-    setJdbcClassPath( null );
+//!!    setJdbcClassPath( null );
 
-    clearProperties();
+    clearLocalProperties();
 
-    props = null;
+    localProps = null;
 
     currentSession = message.getNewSession();
 
-    registerJdbcClassPath();
+//!!    registerJdbcClassPath();
   }
 
 

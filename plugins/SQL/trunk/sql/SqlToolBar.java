@@ -281,8 +281,8 @@ public class SqlToolBar
    */
   public static void clearProperties()
   {
-    SqlPlugin.unsetProperty( SHOW_TOOLBAR_PROP );
-    SqlPlugin.unsetProperty( SHOW_TITLE_PROP );
+    SqlPlugin.unsetGlobalProperty( SHOW_TOOLBAR_PROP );
+    SqlPlugin.unsetGlobalProperty( SHOW_TITLE_PROP );
   }
 
 
@@ -293,7 +293,7 @@ public class SqlToolBar
    */
   public static void showToolBar( boolean show )
   {
-    SqlPlugin.setProperty( SHOW_TOOLBAR_PROP, Boolean.toString( show ) );
+    SqlPlugin.setGlobalProperty( SHOW_TOOLBAR_PROP, Boolean.toString( show ) );
   }
 
 
@@ -304,7 +304,7 @@ public class SqlToolBar
    */
   public static void showTitle( boolean show )
   {
-    SqlPlugin.setProperty( SHOW_TITLE_PROP, Boolean.toString( show ) );
+    SqlPlugin.setGlobalProperty( SHOW_TITLE_PROP, Boolean.toString( show ) );
   }
 
 
@@ -315,7 +315,7 @@ public class SqlToolBar
    */
   public static boolean showToolBar()
   {
-    return Boolean.valueOf( SqlPlugin.getProperty( SHOW_TOOLBAR_PROP ) ).booleanValue();
+    return Boolean.valueOf( SqlPlugin.getGlobalProperty( SHOW_TOOLBAR_PROP ) ).booleanValue();
   }
 
 
@@ -326,7 +326,7 @@ public class SqlToolBar
    */
   public static boolean showTitle()
   {
-    return Boolean.valueOf( SqlPlugin.getProperty( SHOW_TITLE_PROP ) ).booleanValue();
+    return Boolean.valueOf( SqlPlugin.getGlobalProperty( SHOW_TITLE_PROP ) ).booleanValue();
   }
 
 }

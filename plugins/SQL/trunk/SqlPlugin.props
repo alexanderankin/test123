@@ -5,11 +5,12 @@ plugin.sql.SqlPlugin.author=Sergey V. Udaltsov
 plugin.sql.SqlPlugin.version=0.95
 plugin.sql.SqlPlugin.docs=users-guide.html
 
-plugin.sql.SqlPlugin.depend.0=jedit 04.00.08.00
-plugin.sql.SqlPlugin.depend.1=plugin xml.XmlPlugin 0.8.1
-plugin.sql.SqlPlugin.depend.2=plugin CommonControlsPlugin 0.2
-plugin.sql.SqlPlugin.depend.3=plugin sessions.SessionsPlugin 0.7.2
-plugin.sql.SqlPlugin.depend.4=plugin errorlist.ErrorListPlugin 1.2
+plugin.sql.SqlPlugin.depend.0=jdk 1.4
+plugin.sql.SqlPlugin.depend.1=jedit 04.00.08.00
+plugin.sql.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.8.1
+plugin.sql.SqlPlugin.depend.3=plugin CommonControlsPlugin 0.2
+plugin.sql.SqlPlugin.depend.4=plugin sessions.SessionsPlugin 0.7.2
+plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.2
 
 # The menu item label
 sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.VariableSubstitutor sql.preprocessors.SpecialCommentRemover - sql.repeatLastQuery

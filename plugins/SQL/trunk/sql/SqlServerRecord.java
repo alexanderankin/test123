@@ -55,6 +55,13 @@ public class SqlServerRecord extends Properties
    *
    * @since
    */
+  public final static String LIST = "sql.servers.list";
+
+  /**
+   *  Description of the Field
+   *
+   * @since
+   */
   public final static String USER = "user";
   /**
    *  Description of the Field
@@ -64,7 +71,6 @@ public class SqlServerRecord extends Properties
   public final static String PASSWORD = "password";
 
   protected static Map allRecords = null;
-
 
   /**
    *  Constructor for the SqlServerRecord object
@@ -274,11 +280,13 @@ public class SqlServerRecord extends Properties
     for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
       final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
-      SqlPlugin.setProperty( "sql.server." + name + "." + param.getName(),
+      SqlPlugin.setLocalProperty( "sql.server." + name + "." + param.getName(),
           getProperty( param.getName() ) );
     }
 
-    SqlPlugin.setProperty( "sql.server." + name + "." + TYPE, dbType.getName() );
+    SqlPlugin.setLocalProperty( "sql.server." + name + "." + TYPE, dbType.getName() );
+
+    ensureNameInServersList( name );
   }
 
 
@@ -327,10 +335,12 @@ public class SqlServerRecord extends Properties
     for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
       final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
-      SqlPlugin.unsetProperty( "sql.server." + name + "." + param.getName() );
+      SqlPlugin.unsetLocalProperty( "sql.server." + name + "." + param.getName() );
     }
 
-    SqlPlugin.unsetProperty( "sql.server." + name + "." + TYPE );
+    SqlPlugin.unsetLocalProperty( "sql.server." + name + "." + TYPE );
+
+    deleteNameFromServersList( name );
   }
 
 
@@ -397,7 +407,7 @@ public class SqlServerRecord extends Properties
    */
   public static SqlServerType getServerType( String name )
   {
-    final String dbTypeName = SqlPlugin.getProperty( "sql.server." + name + "."
+    final String dbTypeName = SqlPlugin.getLocalProperty( "sql.server." + name + "."
          + TYPE );
     if ( dbTypeName == null )
       return null;
@@ -434,14 +444,12 @@ public class SqlServerRecord extends Properties
           "Loading all records" );
       final Map servers = new HashMap();
 
-      for ( Iterator e = SqlPlugin.getPropertyNames(); e.hasNext();  )
+      final String allServerNames = SqlPlugin.getLocalProperty( LIST );
+      for ( StringTokenizer st = new StringTokenizer( allServerNames ); 
+            st.hasMoreTokens(); )
       {
-        final String pname = (String) e.next();
+        final String name = st.nextToken();
 
-        if ( !( pname.startsWith( "sql.server." ) &&
-            pname.endsWith( "." + TYPE ) ) )
-          continue;
-        final String name = pname.substring( 11, pname.length() - 5 );
         Log.log( Log.DEBUG, SqlServerRecord.class,
             "Found name " + name + " for loading" );
         final SqlServerRecord sr = load( name );
@@ -487,20 +495,9 @@ public class SqlServerRecord extends Properties
 
     final java.util.List v = new ArrayList();
 
-    for ( Iterator e = SqlPlugin.getPropertyNames(); e.hasNext();  )
-    {
-      final String pname = (String) e.next();
+    SqlPlugin.unsetLocalProperty( LIST );
 
-      if ( pname.startsWith( "sql.server." ) )
-        v.add( pname );
-    }
-
-    for ( Iterator e = v.iterator(); e.hasNext();  )
-    {
-      SqlPlugin.unsetProperty( (String) e.next() );
-    }
-
-    SqlPlugin.unsetProperty( "sql.currentServerName" );
+    SqlPlugin.unsetLocalProperty( "sql.currentServerName" );
   }
 
 
@@ -530,7 +527,7 @@ public class SqlServerRecord extends Properties
     {
       final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
       final String value =
-          SqlPlugin.getProperty( "sql.server." + name + "." + param.getName() );
+          SqlPlugin.getLocalProperty( "sql.server." + name + "." + param.getName() );
 
       rv.setProperty( param.getName(), value );
     }
@@ -543,6 +540,25 @@ public class SqlServerRecord extends Properties
         "Connection: " + rv.getConnectionString() );
 
     return rv;
+  }
+
+
+  protected void deleteNameFromServersList( String name )
+  {
+    String allServerNames = SqlPlugin.getLocalProperty( LIST );
+    allServerNames = allServerNames.replaceAll( "[\\s]*" + name + "[\\s]*", " " );
+    SqlPlugin.setLocalProperty( LIST, allServerNames );
+  }
+
+
+  protected void ensureNameInServersList( String name )
+  {
+    String allServerNames = SqlPlugin.getLocalProperty( LIST );
+    if ( allServerNames.matches( "[\\s]*" + name + "[\\s]*" ) )
+      return;
+
+    allServerNames = allServerNames + " " + name;
+    SqlPlugin.setLocalProperty( LIST, allServerNames );
   }
 }
 
