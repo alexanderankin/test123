@@ -16,7 +16,8 @@ public final class BinaryExpression extends OperatorExpression {
 
   /**
    * Create a binary expression.
-   * 
+   * @deprecated use {@link BinaryExpression#BinaryExpression(Expression, Expression, int, int, int, int, int, int, int)}
+   *  
    * @param left     the left expression
    * @param right    the right expression
    * @param operator an operator taken in the {@link OperatorExpression} interface
@@ -24,7 +25,19 @@ public final class BinaryExpression extends OperatorExpression {
   public BinaryExpression(final Expression left,
                           final Expression right,
                           final int operator) {
-    super(operator, left.sourceStart, right.sourceEnd,left.getBeginLine(),right.getEndLine(),left.getBeginColumn(),right.getEndColumn());
+    this(left,right, operator, left.sourceStart, right.sourceEnd,left.getBeginLine(),right.getEndLine(),left.getBeginColumn(),right.getEndColumn());
+  }
+
+  public BinaryExpression(Expression left,
+                          Expression right,
+                          final int operator,
+                          final int sourceStart,
+                          final int sourceEnd,
+                          final int beginLine,
+                          final int endLine,
+                          final int beginColumn,
+                          final int endColumn) {
+    super(operator, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.left = left;
     this.right = right;
   }

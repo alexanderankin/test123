@@ -1899,18 +1899,29 @@ Expression ConditionalOrExpression() :
 {
   Expression expr,expr2;
   int operator;
+  Token orToken;
 }
 {
   expr = ConditionalAndExpression()
   (
     (
-        <OR_OR> {operator = OperatorIds.OR_OR;}
-      | <_ORL>  {operator = OperatorIds.ORL;}
-      | <XOR>   {operator = OperatorIds.XOR;}
+        orToken = <OR_OR> {operator = OperatorIds.OR_OR;}
+      | orToken = <_ORL>  {operator = OperatorIds.ORL;}
+      | orToken = <XOR>   {operator = OperatorIds.XOR;}
     )
     expr2 = ConditionalAndExpression()
     {
-      expr = new BinaryExpression(expr,expr2,operator);
+      int sourceEnd,endLine,endColumn;
+      if (expr2 == null) {
+        sourceEnd = orToken.sourceEnd;
+        endLine   = orToken.endLine;
+        endColumn = orToken.endColumn;
+      } else {
+        sourceEnd = expr2.sourceEnd;
+        endLine   = expr2.getEndLine();
+        endColumn = expr2.getEndColumn();
+      }
+      expr = new BinaryExpression(expr,expr2,operator,expr.sourceStart,sourceEnd,expr.getBeginLine(),endLine,expr.getBeginColumn(),endColumn);
     }
   )*
   {return expr;}
