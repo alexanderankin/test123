@@ -10,11 +10,16 @@ x Add cancel button to build properties dialog. - DONE
 x Add actions for easy shortcut binding: - DONE
 - Provide the option to bring/not bring the console to the front when running a build. 
   Also give a build status indicator in AntFarm.
-- Re-implement ProjectViewer integration.
+x Re-implement ProjectViewer integration. - DONE
 - Execute multiple targets at once.
 - Change build file property to an index based property.
 - Re-populate build properties based on last values entered.
 - Open/Close build files that are related to the current session.
+
+
+Bonus in AntFarm 1.3 release
+
+x Updated UI to reflect new look and feel of jEdit4.1. - DONE
 
 Bonus in AntFarm 1.1 release
 x Allow logging level to be set on the AntFarm toolbar and option pane. - DONE
