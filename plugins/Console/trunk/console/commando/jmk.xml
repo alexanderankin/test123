@@ -8,7 +8,7 @@
 	<UI>
 		<ENTRY LABEL="JMK command" VARNAME="command" DEFAULT="jmk" />
 		<ENTRY LABEL="Make file" VARNAME="makefile"
-			EVAL='buffer.getName().endsWith("jmk") ? buffer.getName() : "makefile.jmk"' />
+			EVAL='buffer.getName().endsWith("jmk") ? buffer.getPath() : "makefile.jmk"' />
 		<ENTRY LABEL="Targets to build" VARNAME="targets" />
 
 		<TOGGLE LABEL="Print debugging information" VARNAME="debug" />
