@@ -52,6 +52,7 @@ import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
 
 import org.gjt.sp.util.Log;
@@ -147,7 +148,7 @@ public class TaskListPlugin extends EBPlugin
 		if(message instanceof BufferUpdate)
 		{
 			BufferUpdate bu = (BufferUpdate)message;
-			if(bu.getWhat() == BufferUpdate.MODE_CHANGED ||
+			if(bu.getWhat() == BufferUpdate.PROPERTIES_CHANGED ||
 				bu.getWhat() == BufferUpdate.LOADED ||
 				bu.getWhat() == BufferUpdate.SAVED)
 			{
@@ -514,7 +515,9 @@ public class TaskListPlugin extends EBPlugin
 			int lineStart = buffer.getLineStartOffset(lineNum);
 			int lineLen = buffer.getLineLength(lineNum);
 
-			Token token = buffer.markTokens(lineNum).getFirstToken();
+            DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
+			buffer.markTokens(lineNum,tokenHandler);
+			Token token = tokenHandler.getTokens();
 			int tokenStart = lineStart;
 			int lastToken = token.id;
 			int chunkStart = -1;
