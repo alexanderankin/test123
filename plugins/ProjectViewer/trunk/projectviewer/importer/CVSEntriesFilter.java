@@ -79,7 +79,8 @@ public class CVSEntriesFilter extends FileFilter implements FilenameFilter {
 	 *	files and directories that are listed in the CVS/Entries file.
 	 */
 	public boolean accept(File file, String fileName) {
-		return getEntries(file.getAbsolutePath()).contains(fileName);
+		return getEntries(file.getAbsolutePath()).contains(fileName) ||
+				new File(file.getAbsolutePath(), fileName).isDirectory();
 	} //}}}
 
 	//{{{ getEntries(String) method
