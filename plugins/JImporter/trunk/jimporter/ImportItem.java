@@ -31,6 +31,8 @@ public class ImportItem implements Comparable {
     private int startLocation;
     private int endLocation;
     private String importStatement;
+    private String packageName;
+    private String className;
 
     /**
      * Constructor for the ImportItem object.
@@ -43,7 +45,22 @@ public class ImportItem implements Comparable {
         startLocation = match.getStartIndex();
         endLocation = match.getEndIndex();
         importStatement = match.toString();
-    }
+        
+        String fqClassName = match.toString(1);
+        int lastPeriodPosition = fqClassName.lastIndexOf(".");
+        
+        if (lastPeriodPosition > -1) {
+            packageName = fqClassName.substring(0, lastPeriodPosition);
+        } else { 
+            packageName = "";
+        }
+        
+        if (fqClassName.length() > 0) {
+            className = fqClassName.substring(lastPeriodPosition+1);
+        } else {
+            className = "";
+        }
+    }    
 
     /**
      * Gets the offset of where the import statement begins.
@@ -72,7 +89,27 @@ public class ImportItem implements Comparable {
      */
     public String getImportStatement() {
         return importStatement;
-    }    
+    }
+
+    /**
+     * Return the name of the class only, without any package names or an import
+     * statement.
+     *
+     * @return a <code>String</code> value without any package name attached.
+     */
+    public String getShortClassName() {
+        return className;
+    }
+    
+    /**
+     * Return the name of the package that this class resides in.
+     *
+     * @return a <code>String</code> value containing the package name where this
+     * class resides.    
+     */
+    public String getPackageName() {
+        return this.packageName;
+    }
     
     /** 
      * This method allows two <code>ImportItem</code> items to be compared so that
@@ -91,4 +128,5 @@ public class ImportItem implements Comparable {
         }
     }
 }    
+
 
