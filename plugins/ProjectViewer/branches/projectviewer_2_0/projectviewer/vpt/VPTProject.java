@@ -49,8 +49,6 @@ public class VPTProject extends VPTNode {
 
 	//{{{ Constants
 
-	public final static String DEFAULT_URL = "http://";
-	
 	private final static Icon projectIcon 	= GUIUtilities.loadIcon("DriveSmall.png");
 
 	//}}}
@@ -116,6 +114,7 @@ public class VPTProject extends VPTNode {
 	//{{{ setURL(String) method
 	/** Sets the project's URL. */
 	public void setURL(String url) {
+		if (url != null && !url.endsWith("/")) url += "/";
 		this.url = url;
 	} //}}}
 	
