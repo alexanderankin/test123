@@ -19,10 +19,14 @@ options.columnruler.background.color=\#FFFFFF
 options.columnruler.border.src=none
 options.columnruler.border.color=\#000000
 options.columnruler.highlight=\#00AAAA
+options.columnruler.guides.caret=false
+options.columnruler.nextTab=false
 
 
 # Option Panes
-options.columnruler.label=Column Ruler
-plugin.columnruler.ColumnRulerPlugin.option-pane=columnruler
-options.columnruler.code=new columnruler.ColumnRulerOptions();
+options.columnruler.ruler.label=Ruler
+options.columnruler.ruler.code=new columnruler.ColumnRulerOptions();
+options.columnruler.lineguides.label=Line Guides
+options.columnruler.lineguides.code=new columnruler.LineGuidesOptions();
+plugin.columnruler.ColumnRulerPlugin.option-group=columnruler.ruler columnruler.lineguides
 

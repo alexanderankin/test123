@@ -15,8 +15,8 @@ import org.gjt.sp.util.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2004-01-19 19:49:52 $ by $Author: bemace $
- * @version    $Revision: 1.7 $
+ * @modified   $Date: 2004-01-20 05:30:30 $ by $Author: bemace $
+ * @version    $Revision: 1.8 $
  */
 public class ColumnRuler extends JComponent implements EBComponent, CaretListener, ScrollListener, MouseListener, MouseMotionListener {
 	private JEditTextArea _textArea;
@@ -55,6 +55,7 @@ public class ColumnRuler extends JComponent implements EBComponent, CaretListene
 
 		//{{{ Highlight selection columns
 		if (selection != null) {
+			jEdit.getActiveView().getStatus().setMessage((selection.getEnd()-selection.getStart())+" chars selected");
 			gfx.setColor(getHighlight());
 			int start = 0;
 			int end = 0;
