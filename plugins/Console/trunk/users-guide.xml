@@ -1255,6 +1255,15 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 
  <itemizedlist>
 
+ <listitem><para><emphasis role="bold">Version 4.1.2</emphasis>
+   requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>
+
+   <itemizedlist>
+   <listitem><para>Console caret color is now configurable (Justin Dieters).
+   </para></listitem>
+   </itemizedlist>
+ </listitem>
+ 
  <listitem><para><emphasis role="bold">Version 4.1.1</emphasis>
    requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>
 
@@ -1335,50 +1344,6 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    was set in the global namespace.
    </para></listitem>
   </itemizedlist></listitem>
- 
- <listitem><para><emphasis role="bold">Version 3.7.1</emphasis>
-   requires jEdit 4.2pre5 and the ErrorList plugin 1.3.1.</para>
-
-   <itemizedlist>
-   <listitem><para>Fixed deadlock on Unix when killing a process.
-   </para></listitem>
-   <listitem><para>Fixed the problem with the text color being reset to black.
-   </para></listitem>
-   <listitem><para>Fixed <command>javac</command> and <command>jikes</command>
-   commandos to quote filenames. This fixes problems with paths containing
-   spaces.
-   </para></listitem>
-   <listitem><para><classname>TOGGLE_ENTRY</classname> controls in commando
-   files did not work.
-   </para></listitem>
-   <listitem><para>Added commando panel for Hugs98 Haskell interpreter.
-   </para></listitem>
-   <listitem><para>The BeanShell interpreter threw exceptions with jEdit 4.2pre8
-   due to a change in BeanShell 2.0b1.
-   </para></listitem>
-   <listitem><para>Fixed hang when running a process from a non-existent current
-   working directory.
-   </para></listitem>
-  </itemizedlist></listitem>
-
-  <listitem><para><emphasis role="bold">Version 3.7</emphasis>
-   requires jEdit 4.2pre2 and the ErrorList plugin 1.3.</para>
-
-   <itemizedlist>
-   <listitem><para>Macro recording didn't work.
-   </para></listitem>
-   <listitem><para>The backslash was not parsed correctly.
-   </para></listitem>
-   <listitem><para>The <function>waitForConsole()</function> BeanShell command
-   didn't work.
-   </para></listitem>
-   <listitem><para>Added <classname>TOGGLE_ENTRY</classname>,
-   <classname>LONG_ENTRY</classname>, <classname>DIR_ENTRY</classname>
-   and <classname>FILE_ENTRY</classname>
-   controls to commando.
-   </para></listitem>
-  </itemizedlist>
- </listitem>
 
  </itemizedlist>
 

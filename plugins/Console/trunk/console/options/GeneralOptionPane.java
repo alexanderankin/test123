@@ -58,6 +58,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 			bgColor = createColorButton("console.bgColor"));
 		addComponent(jEdit.getProperty("options.console.general.plainColor"),
 			plainColor = createColorButton("console.plainColor"));
+		addComponent(jEdit.getProperty("options.console.general.caretColor"),
+			caretColor = createColorButton("console.caretColor"));
 		addComponent(jEdit.getProperty("options.console.general.infoColor"),
 			infoColor = createColorButton("console.infoColor"));
 		addComponent(jEdit.getProperty("options.console.general.warningColor"),
@@ -78,6 +80,8 @@ public class GeneralOptionPane extends AbstractOptionPane
 			bgColor.getBackground());
 		jEdit.setColorProperty("console.plainColor",
 			plainColor.getBackground());
+		jEdit.setColorProperty("console.caretColor",
+			caretColor.getBackground());
 		jEdit.setColorProperty("console.infoColor",
 			infoColor.getBackground());
 		jEdit.setColorProperty("console.warningColor",
@@ -95,6 +99,7 @@ public class GeneralOptionPane extends AbstractOptionPane
 	private FontSelector font;
 	private JButton bgColor;
 	private JButton plainColor;
+	private JButton caretColor;
 	private JButton infoColor;
 	private JButton warningColor;
 	private JButton errorColor;

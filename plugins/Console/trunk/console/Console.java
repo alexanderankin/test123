@@ -536,6 +536,7 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		text.setBackground(jEdit.getColorProperty("console.bgColor"));
 		text.setForeground(jEdit.getColorProperty("console.plainColor"));
+		text.setCaretColor(jEdit.getColorProperty("console.caretColor"));
 		text.setFont(jEdit.getFontProperty("console.font"));
 
 		infoColor = jEdit.getColorProperty("console.infoColor");
