@@ -5527,14 +5527,14 @@ IfStatement IfStatement() :
 }
 {
   ifToken = <IF> condition = Condition("if")
-  ifStatement = IfStatement0(condition,ifToken.sourceStart,ifToken.sourceEnd)
+  ifStatement = IfStatement0(condition,ifToken)
   {return ifStatement;}
 }
 
 //}}}
-//{{{ IfStatement0(final Expression condition, final int start,final int end)
+//{{{ IfStatement0(Expression condition, Token ifToken)
 
-IfStatement IfStatement0(final Expression condition, final int start,final int end) :
+  IfStatement IfStatement0(Expression condition, Token ifToken) :
 {
   Statement statement = null;
   final Statement stmt;
@@ -5544,17 +5544,27 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
   final ArrayList stmts;
   final ArrayList elseIfList = new ArrayList();
   final ElseIf[] elseIfs;
-  final int pos = jj_input_stream.getPosition();
-  final int endStatements;
   final Token colonToken, elseToken;
+  int sourceEnd = 0;
+  int endColumn = 0;
+  int endLine   = 0;
+  Token semiColonToken;
 }
 {
   colonToken = <COLON>
-  {stmts = new ArrayList();}
-  (  statement = Statement() {stmts.add(statement);}
-   | statement = htmlBlock() {if (statement != null) {stmts.add(statement);}}
+  {
+    stmts = new ArrayList();
+  }
+  (  statement = Statement()
+     {
+       stmts.add(statement);
+     }
+   | 
+     statement = htmlBlock()
+     {
+       if (statement != null) stmts.add(statement);
+     }
   )*
-   {endStatements = (statement == null) ? colonToken.sourceEnd : statement.sourceEnd;}
    (elseifStatement = ElseIfStatementColon() {elseIfList.add(elseifStatement);})*
    [elseStatement = ElseStatementColon()]
 
@@ -5580,8 +5590,16 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
     throw e;
   }
   try {
-    <SEMICOLON>
+    semiColonToken = <SEMICOLON>
+    {
+      sourceEnd = semiColonToken.sourceStart;
+      endLine   = semiColonToken.beginLine;
+      endColumn = semiColonToken.beginColumn;
+    }
   } catch (ParseException e) {
+    sourceEnd = e.currentToken.sourceStart;
+    endLine   = e.currentToken.beginLine;
+    endColumn = e.currentToken.beginColumn;
     errorMessage = "';' expected after 'endif' keyword";
     errorLevel   = ERROR;
     errorStart = e.currentToken.sourceStart;
@@ -5594,21 +5612,33 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
     if (stmts.size() == 1) {
       return new IfStatement(condition,
                              (Statement) stmts.get(0),
-                              elseIfs,
-                              elseStatement,
-                              pos,
-                              jj_input_stream.getPosition());
+                             elseIfs,
+                             elseStatement,
+                             ifToken.sourceStart,
+                             sourceEnd,
+                             ifToken.beginLine,
+                             endLine,
+                             ifToken.beginColumn,
+                             endColumn);
     } else {
       statementsArray = new Statement[stmts.size()];
       stmts.toArray(statementsArray);
       return new IfStatement(condition,
                              new Block(statementsArray,
-                                       pos,
-                                       endStatements),
+                                       colonToken.sourceEnd,
+                                       sourceEnd,
+                                       colonToken.endLine,
+                                       endLine,
+                                       colonToken.endColumn,
+                                       endColumn),
                              elseIfs,
                              elseStatement,
-                             pos,
-                             jj_input_stream.getPosition());
+                             ifToken.sourceStart,
+                             sourceEnd,
+                             ifToken.beginLine,
+                             endLine,
+                             ifToken.beginColumn,
+                             endColumn);
     }
     }
 
@@ -5644,8 +5674,13 @@ IfStatement IfStatement0(final Expression condition, final int start,final int e
                            stmt,
                            elseIfs,
                            elseStatement,
-                           pos,
-                           jj_input_stream.getPosition());}
+                             ifToken.sourceStart,
+                             sourceEnd,
+                             ifToken.beginLine,
+                             endLine,
+                             ifToken.beginColumn,
+                             endColumn);
+  }
 }
 
 //}}}

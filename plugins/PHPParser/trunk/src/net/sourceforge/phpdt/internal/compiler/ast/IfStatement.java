@@ -26,13 +26,17 @@ public final class IfStatement extends Statement {
    * @param sourceStart the starting position
    * @param sourceEnd the ending offset
    */
-  public IfStatement(final Expression condition,
-                     final Statement statement,
-                     final ElseIf[] elseifs,
-                     final Else els,
-                     final int sourceStart,
-                     final int sourceEnd) {
-    super(sourceStart, sourceEnd);
+  public IfStatement(Expression condition,
+                     Statement statement,
+                     ElseIf[] elseifs,
+                     Else els,
+                     int sourceStart,
+                     int sourceEnd,
+                     int beginLine,
+                     int endLine,
+                     int beginColumn,
+                     int endColumn) {
+    super(sourceStart, sourceEnd,beginLine, endLine, beginColumn, endColumn);
     this.condition = condition;
     this.statement = statement;
     this.elseifs = elseifs;
@@ -44,7 +48,7 @@ public final class IfStatement extends Statement {
    * @param tab how many tabs (not used here
    * @return a String
    */
-  public String toString(final int tab) {
+  public String toString(int tab) {
     final StringBuffer buff = new StringBuffer(tabString(tab));
     buff.append("if (");//$NON-NLS-1$
     buff.append(condition.toStringExpression()).append(") ");//$NON-NLS-1$
@@ -53,11 +57,11 @@ public final class IfStatement extends Statement {
     }
     for (int i = 0; i < elseifs.length; i++) {
       buff.append(elseifs[i].toString(tab + 1));
-      buff.append("\n");//$NON-NLS-1$
+      buff.append('\n');//$NON-NLS-1$
     }
     if (els != null) {
       buff.append(els.toString(tab + 1));
-      buff.append("\n");//$NON-NLS-1$
+      buff.append('\n');//$NON-NLS-1$
     }
     return buff.toString();
   }
@@ -67,7 +71,7 @@ public final class IfStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {
+  public void getOutsideVariable(List list) {
     condition.getOutsideVariable(list); // todo: check if unuseful
     if (statement != null) {
       statement.getOutsideVariable(list);
@@ -85,7 +89,7 @@ public final class IfStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getModifiedVariable(final List list) {
+  public void getModifiedVariable(List list) {
     condition.getModifiedVariable(list);
     if (statement != null) {
       statement.getModifiedVariable(list);
@@ -103,7 +107,7 @@ public final class IfStatement extends Statement {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     condition.getUsedVariable(list);
     if (statement != null) {
       statement.getUsedVariable(list);
