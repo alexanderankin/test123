@@ -20,16 +20,17 @@
 
 package xslt;
 
+import org.gjt.sp.jedit.EditPlugin;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.util.Log;
+
+import javax.swing.JOptionPane;
 import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.text.MessageFormat;
 import java.util.Vector;
-import javax.swing.JOptionPane;
-import org.gjt.sp.jedit.EditPlugin;
-import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.util.Log;
 
 /**
  * EditPlugin implementation for the XSLT plugin.

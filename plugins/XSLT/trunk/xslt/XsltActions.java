@@ -19,12 +19,12 @@
  */
 package xslt;
 
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 import java.io.StringWriter;
 
 /**
