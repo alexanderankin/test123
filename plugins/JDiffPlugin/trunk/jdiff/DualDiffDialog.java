@@ -194,12 +194,19 @@ public class DualDiffDialog extends JDialog {
             if (baseBuffer == null) { return; }
             if (newBuffer == null) { return; }
 
-            DualDiffDialog.this.view.unsplit();
-            DualDiffDialog.this.view.splitVertically();
             EditPane[] editPanes = DualDiffDialog.this.view.getEditPanes();
+            if (editPanes.length != 2) {
+                if (editPanes.length > 2) {
+                    DualDiffDialog.this.view.unsplit();
+                }
+                DualDiffDialog.this.view.splitVertically();
+                editPanes = DualDiffDialog.this.view.getEditPanes();
+            }
             editPanes[0].setBuffer(baseBuffer);
             editPanes[1].setBuffer(newBuffer);
-            DualDiff.toggleFor(DualDiffDialog.this.view);
+            if (!DualDiff.isEnabledFor(DualDiffDialog.this.view)) {
+                DualDiff.toggleFor(DualDiffDialog.this.view);
+            }
         }
     }
 
