@@ -1,0 +1,21 @@
+### Plugin properties
+
+plugin.xslt.XSLTPlugin.name=XSLT
+plugin.xslt.XSLTPlugin.title=XSLT Processor
+plugin.xslt.XSLTPlugin.version=0.1
+plugin.xslt.XSLTPlugin.author=Carlos Quiroz
+plugin.xslt.XSLTPlugin.docs=XSLT/XSLT.html
+
+plugin.xslt.XSLTPlugin.depend.0=jedit 03.01.99.00
+plugin.xslt.XSLTPlugin.depend.1=plugin xml.XmlPlugin 0.3
+plugin.xslt.XSLTPlugin.depend.2=jdk 1.2
+plugin.xslt.XSLTPlugin.depend.2=jar xalan.jar
+
+# Menu bar properties
+XSLT.label=XSLT
+XSLT=xslt.environment xslt.process xslt.repeat-last
+
+xslt.environment.label=Check Environment
+xslt.process.label=Process File...
+xslt.repeat-last.label=Repeat last...
+
