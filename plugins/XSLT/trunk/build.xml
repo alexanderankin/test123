@@ -1,16 +1,22 @@
 <?xml version="1.0"?>
 
-<project name="xslt" default="deploy" basedir=".">
+<project name="xslt" default="jar" basedir=".">
 
   <description description="This is a build.xml file for building the XSLT jEdit plugin."/>
 
   <property file="build.properties" description="contains machine specific directory locations"/>
 
   <property name="jar.name" value="XSLT.jar" description="name of the plugin jar"/>
+  <property name="xalan.jar"  value="lib/xalan.jar"/>
   <property name="resources.dir" value="resources" description="contains plugin icons"/>
+
   <property name="build.dir" value="build"/>
   <property name="classes.dir" value="${build.dir}/classes" description="classes compiled into here"/>
   <property name="docs.dir" value="${build.dir}/docs" description="docs generated into here"/>
+
+  <property name="install.dir" value=".."/>
+  <property name="docbook.xsl" value="${docbook-xsl.dir}/html/chunk.xsl"/>
+
 
   <path id="project.class.path">
     <pathelement location="${plugins.dir}/XML.jar"/>
@@ -28,8 +34,8 @@
     </javac>
   </target>
 
-  <target name="jar" depends="compile" description="compiles, creates plugin jar file">
-    <jar jarfile="${build.dir}/${jar.name}">
+  <target name="jar" depends="compile" description="compiles, creates plugin jar file in install.dir">
+    <jar jarfile="${install.dir}/${jar.name}">
       <fileset dir="${classes.dir}"/>
       <fileset dir="${resources.dir}"/>
       <fileset dir="${docs.dir}"/>
@@ -37,24 +43,15 @@
     </jar>
   </target>
 
-  <target name="make-docs">
-    <uptodate property="isUserGuideUptodate" targetfile="${docs.dir}/index.html">
-      <srcfiles dir="${basedir}" includesfile="users-guide.xml"/>
-    </uptodate>
-
-    <antcall target="create-docs"/>
+  <target name="deploy" description="copies jars to deploy.dir">
+    <copy file="${install.dir}/${jar.name}" todir="${deploy.dir}"/>
+    <copy file="${xalan.jar}" todir="${deploy.dir}/endorsed"/>
   </target>
 
-  <target name="create-docs" unless="isUserGuideUptodate" description="creates user guide documentation">
+	<!-- Generate docs with Xalan tool from xml.apache.org -->
+  <target name="docs-xalan" unless="isUserGuideUptodate" description="creates user guide documentation">
     <mkdir dir="${docs.dir}"/>
-    <style destdir="${docs.dir}" in="users-guide.xml" style="${docbook-xsl.dir}/html/chunk.xsl" out="${docs.dir}/index.html"/>
-  </target>
-
-  <target name="deploy" depends="make-docs, jar" description="compilies, jars and copies jar to deploy.dir">
-    <copy file="${build.dir}/${jar.name}" todir="${deploy.dir}"/>
-    <copy file="${xml-apis.jar}" todir="${deploy.dir}"/>
-    <copy file="${xerces.jar}" todir="${deploy.dir}"/>
-    <copy file="${xalan.jar}" todir="${deploy.dir}"/>
+    <style destdir="${docs.dir}" in="users-guide.xml" style="${docbook.xsl}" out="${docs.dir}/index.html"/>
   </target>
 
 </project>
