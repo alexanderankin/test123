@@ -315,6 +315,7 @@ public class ResultSetWindow extends JPanel
     if ( getAutoResize() )
     {
       tbl.setAutoResizeColumns( true );
+      tbl.setAutoResizeWithHeaders( true );
       tbl.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
     }
     else
@@ -541,6 +542,17 @@ public class ResultSetWindow extends JPanel
         final ResultSetWindowPopup rswp = new ResultSetWindowPopup( view, table, evt.getPoint() );
         rswp.show( table, p.x + 1, p.y + 1 );
         evt.consume();
+        return;
+      }
+
+      if ( evt.getButton() == MouseEvent.BUTTON1 && evt.getClickCount() == 2 )
+      {
+        final String contents = table.getValueAt( table.getSelectedRow(), table.getSelectedColumn() ).toString();
+        final JDialog d = new JDialog( view, "Cell Data" );
+        final JScrollPane sp = new JScrollPane( new JLabel( contents ) );
+        d.getContentPane().add( sp );
+        d.pack();
+        d.setVisible( true );
       }
     }
   }
