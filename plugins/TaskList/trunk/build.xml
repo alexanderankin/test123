@@ -118,6 +118,7 @@
 
 	<target name="clean">
 		<delete dir="${build.dir}"/>
+		<delete file="docbook-wrapper.xsl"/>
 		<delete>
 			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
 			<fileset dir="." includes="**/*.html" defaultexcludes="no"/>

@@ -19,6 +19,8 @@
  * $Id$
  */
 
+package tasklist;
+
 //{{{ imports
 import java.net.URL;
 import java.util.Hashtable;
@@ -69,17 +71,26 @@ public class TaskType
 		if(match == null)
 			return null;
 
-		// Log.log(Log.DEBUG,this,"Match found using " + re.toString());
-		// Log.log(Log.DEBUG,this,"Match on: " + tokenText);
-		// Log.log(Log.DEBUG,this,"Match = " + match.toString());
-		// Log.log(Log.DEBUG,this,"Match 0 = " + match.toString(0));
-		// Log.log(Log.DEBUG,this,"Match 1 = " + match.toString(1));
-		// Log.log(Log.DEBUG,this,"Match 2 = " + match.toString(2));
-		// Log.log(Log.DEBUG,this,"Match 3 = " + match.toString(3));
-
 		int start = (displayIdentifier == true ? match.getStartIndex(1) :
 			match.getStartIndex(2));
 		int end = match.getEndIndex(2);
+
+		/*
+		Log.log(Log.DEBUG,this,"Task '" + this.name + "' found");
+		Log.log(Log.DEBUG,this,"re: " + re.toString());
+		Log.log(Log.DEBUG,this,"on: " + tokenText);
+		Log.log(Log.DEBUG,this,"Match = `" + match.toString() + "`");
+		Log.log(Log.DEBUG,this,"start = " + start);
+		Log.log(Log.DEBUG,this,"end = " + end);
+		Log.log(Log.DEBUG,this,"buffer = " + buffer.toString());
+		Log.log(Log.DEBUG,this,"id/tag = " + tokenText.substring(match.getStartIndex(1), match.getEndIndex(1)));
+		Log.log(Log.DEBUG,this,"comment = " + tokenText.substring(match.getStartIndex(2), match.getEndIndex(2)));
+		Log.log(Log.DEBUG,this,"text = " + tokenText.substring(start, end));
+		Log.log(Log.DEBUG,this,"Match 0 = " + match.toString(0));
+		Log.log(Log.DEBUG,this,"Match 1 = " + match.toString(1));
+		Log.log(Log.DEBUG,this,"Match 2 = " + match.toString(2));
+		Log.log(Log.DEBUG,this,"Match 3 = " + match.toString(3));
+		*/
 
 		return new Task(buffer,
 			icon,

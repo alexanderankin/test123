@@ -6,7 +6,7 @@
 
 <DOCKABLES>
   <DOCKABLE NAME="tasklist">
-    new TaskList(view);
+    new tasklist.TaskList(view);
   </DOCKABLE>
 </DOCKABLES>
 

@@ -11,7 +11,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -21,6 +21,9 @@
  * $Id$
  */
 
+package tasklist;
+
+//{{{ imports
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -46,6 +49,7 @@ import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.buffer.LineElement;
 
 import org.gjt.sp.util.Log;
+//}}}
 
 /**
  * A popup menu for the TaskList plugin
@@ -61,6 +65,7 @@ public class TaskListPopup extends JPopupMenu
 	private BoundedMenu changeMenu;
 	private BoundedMenu deleteMenu;
 
+	//{{{ Constructor
 	/**
 	 * Constructor
 	 *
@@ -92,13 +97,14 @@ public class TaskListPopup extends JPopupMenu
 				+ ".name");
 		}
 		add(changeMenu);
-
 		deleteMenu = new BoundedMenu(list, "Delete task");
 		deleteMenu.add(createMenuItem("Delete task tag", "%Dtag"));
 		deleteMenu.add(createMenuItem("Delete entire task", "%Dtask"));
 		add(deleteMenu);
-	}
+		add(createMenuItem("Parse buffer", "parse-buffer"));
+	} //}}}
 
+	//{{{ BoundedMenu class
 	/**
 	 * An extension of the JMenu class that relocates the object's child popup menu
 	 * as necessary so that it does not appear to right or below the bounds of
@@ -161,22 +167,22 @@ public class TaskListPopup extends JPopupMenu
 			Dimension dParent = parent.getPreferredSize();
 			/* NOTE: default location of child popup menu */
 			Point pPopup = new Point(dParent.width - 1 , -1);
-	        SwingUtilities.convertPointToScreen(pPopup, parent);
-        	SwingUtilities.convertPointFromScreen(pPopup, list);
-        	Dimension dList = list.getSize();
+			SwingUtilities.convertPointToScreen(pPopup, parent);
+			SwingUtilities.convertPointFromScreen(pPopup, list);
+			Dimension dList = list.getSize();
 			Dimension dPopup = getPopupMenu().getPreferredSize();
 			Point pThis = this.getLocation();
-        	if (pPopup.x + dPopup.width > dList.width)
-            	pPopup.x -= (dPopup.width + dParent.width);
-        	if (pPopup.y + pThis.y + dPopup.height > dList.height)
-            	pPopup.y -= (dPopup.height - dParent.height + pThis.y);
-	        SwingUtilities.convertPointToScreen(pPopup, list);
-        	SwingUtilities.convertPointFromScreen(pPopup, parent);
+			if (pPopup.x + dPopup.width > dList.width)
+				pPopup.x -= (dPopup.width + dParent.width);
+			if (pPopup.y + pThis.y + dPopup.height > dList.height)
+				pPopup.y -= (dPopup.height - dParent.height + pThis.y);
+			SwingUtilities.convertPointToScreen(pPopup, list);
+			SwingUtilities.convertPointFromScreen(pPopup, parent);
 			return pPopup;
 		}
-	}
+	} //}}}
 
-
+	//{{{ createMenuItem method
 	/**
 	 * Creates a menu item for the popup menu
 	 *
@@ -191,7 +197,7 @@ public class TaskListPopup extends JPopupMenu
 		mi.setActionCommand(cmd != null ? cmd : name);
 		mi.addActionListener(listener);
 		return mi;
-	}
+	} //}}}
 
 	/**
 	 * Creates a menu item for the popup menu containing an
@@ -205,6 +211,7 @@ public class TaskListPopup extends JPopupMenu
 		return createMenuItem(name, null);
 	}
 
+	//{{{ ActionHandler class
 	/**
 	 * Causes substitution of the comment tag for the selected task item;
 	 * displays a message if a parsing error occurs;
@@ -212,96 +219,32 @@ public class TaskListPopup extends JPopupMenu
 	 */
 	class ActionHandler implements ActionListener {
 
+		//{{{ actionPerformed
 		public void actionPerformed(ActionEvent evt) {
 			View v = view;
 			Task task = (Task)(list.taskListModel).elementAt(taskNum);
 			Buffer buffer = task.getBuffer();
 			String cmd = evt.getActionCommand();
-			if(cmd.equals("%Dtask"))
+			if(cmd.equals("parse-buffer"))
 			{
-				boolean replace = false;
-				int searchStart = buffer.getLineStartOffset(task.getLineNumber());
-				int searchEnd  = buffer.getLineEndOffset(task.getLineNumber());
-				DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
-				buffer.markTokens(task.getLineNumber(),tokenHandler);
-				Token token = tokenHandler.getTokens();
-				Segment testSegment = new Segment();
-				while(token.id != Token.END)
-				{
-					if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
-					{
-						int startTask = searchStart + token.length;
-//						Log.log(Log.DEBUG, TaskListPopup.class,
-//							"Delete task: getting text at offset "
-//							+ String.valueOf(searchStart)
-//							+ " to "
-//							+ String.valueOf(searchEnd));
-						buffer.getText(searchStart, searchEnd - searchStart, testSegment);
-//						Log.log(Log.DEBUG, TaskListPopup.class,
-//							"segment is: " + testSegment.toString());
-						int taskLength = task.getText().length();
-						String testString = new String(testSegment.array,
-							testSegment.offset + token.length - taskLength, taskLength);
-//						Log.log(Log.DEBUG, TaskListPopup.class, "comparing \""
-//							+ testString + "\" to \"" + task.getText() + "\"");
-						if(task.getText().equals(testString))
-						{
-							SearchAndReplace.setSearchString(testSegment.toString().trim());
-							SearchAndReplace.setReplaceString("");
-							replace = SearchAndReplace.replace(v, buffer,
-								searchStart, searchEnd);
-							break;
-						}
-						searchStart += token.length;
-						token = token.next;
-					}
-				}
+				TaskListPlugin.parseBuffer(task.getBuffer());
+				return;
+			}
+			else if(cmd.equals("%Dtask"))
+			{
+				task.removeTask(view);
 			}
 			else
 			{
 				if(cmd.equals("%Dtag"))
-					cmd = "";
-				else cmd = cmd + ":";
-				final String newTaskTag = cmd;
-
-				final String taskText = task.getText();
-				final String oldTaskTag = taskText.substring(0, taskText.indexOf(':') + 1);
-				boolean replace = false;
-				if(oldTaskTag.equals(newTaskTag))
-					replace = true;
+					task.removeTag(view);
 				else
-				{
-					int tokenStart = buffer.getLineStartOffset(task.getLineNumber());
-					DefaultTokenHandler tokenHandler = new DefaultTokenHandler();
-					buffer.markTokens(task.getLineNumber(),tokenHandler);
-					Token token = tokenHandler.getTokens();
-					while(token.id != Token.END)
-					{
-						if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
-						{
-							SearchAndReplace.setSearchString(oldTaskTag);
-							SearchAndReplace.setReplaceString(newTaskTag);
-							replace =
-								SearchAndReplace.replace(v, buffer, tokenStart,
-									buffer.getLineEndOffset(task.getLineNumber()));
-							break;
-						}
-						tokenStart += token.length;
-						token = token.next;
-					}
-				}
-				if(!replace)
-					JOptionPane.showMessageDialog(v,
-						jEdit.getProperty("tasklist.popup.parse-error"),
-						jEdit.getProperty("tasklist.title"),
-						JOptionPane.ERROR_MESSAGE);
-				TaskListPlugin.parseBuffer(buffer);
+					task.replaceTag(view, cmd);
 			}
 			view = null;
-		}
-	}
+		} //}}}
+	} //}}}
 
 }
 
-
-
+// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

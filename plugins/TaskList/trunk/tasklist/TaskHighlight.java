@@ -19,6 +19,8 @@
  * $Id$
  */
 
+package tasklist;
+
 //{{{ imports
 import java.awt.*;
 import java.awt.event.*;
