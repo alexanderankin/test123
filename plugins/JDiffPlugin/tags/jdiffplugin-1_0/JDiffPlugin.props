@@ -1,0 +1,39 @@
+# JDiffPlugin properties
+# Author: Andre Kaplan
+plugin.JDiffPlugin.name=JDiff Plugin
+plugin.JDiffPlugin.author=Andre Kaplan
+plugin.JDiffPlugin.version=1.0
+plugin.JDiffPlugin.docs=JDiffPlugin.html
+
+# Dependencies
+plugin.JDiffPlugin.depend.0=jdk 1.1
+plugin.JDiffPlugin.depend.1=jedit 03.00.99.00
+
+# Menu
+jdiff-menu=toggle-dual-diff
+
+jdiff-menu.label=JDiff
+
+toggle-dual-diff.label=Dual diff
+
+jdiff.ignore-case=false
+jdiff.changed-color=\#FFCC66
+jdiff.deleted-color=\#FF6666
+jdiff.inserted-color=\#99CC66
+jdiff.invalid-color=\#CCCCCC
+jdiff.brighter-highlight=true
+jdiff.darker-overview=false
+jdiff.left-cursor-color=\#000000
+jdiff.right-cursor-color=\#000000
+
+options.jdiff.label=JDiff
+options.jdiff.ignore-case=Ignore case
+options.jdiff.changed-color=Changed lines color:\ 
+options.jdiff.deleted-color=Deleted lines color:\ 
+options.jdiff.inserted-color=Inserted lines color:\ 
+options.jdiff.invalid-color=Invalid lines color:\ 
+options.jdiff.brighter-highlight=Highlights use brighter colors
+options.jdiff.darker-overview=Overviews use darker colors
+options.jdiff.left-cursor-color=Left cursor color:\ 
+options.jdiff.right-cursor-color=Right cursor color:\ 
+
