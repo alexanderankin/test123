@@ -406,7 +406,8 @@ public final class ProjectViewer extends JPanel
 		EditBus.addToBus(this);
 
 		if (config.getLastProject() != null) {
-			new ProjectLoader(config.getLastProject()).loadProject();
+			if (ProjectManager.getInstance().hasProject(config.getLastProject()))
+				new ProjectLoader(config.getLastProject()).loadProject();
 		}
 	} //}}}
 
@@ -1050,6 +1051,7 @@ public final class ProjectViewer extends JPanel
 			setEnabled(false);
 			final JTree tree = getCurrentTree();
 			final DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+			final VPTNode oldRoot = treeRoot;
 			treeRoot = null;
 			try {
 				SwingUtilities.invokeAndWait(
@@ -1073,6 +1075,7 @@ public final class ProjectViewer extends JPanel
 				SwingUtilities.invokeAndWait(
 					new Runnable() {
 						public void run() {
+							treeRoot = oldRoot;
 							tModel.setRoot(p);
 							tree.setModel(tModel);
 							setProject(p);
