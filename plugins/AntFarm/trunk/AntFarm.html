@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>AntFarm Plugin</title>
+</head>
+<body bgcolor="#FFFFFF">
+
+
+<table
+    cellspacing="0"
+    cellpadding="3"
+    bgcolor="#CCCCFF"
+    border="0"
+    width="100%"
+    summary="AntFarm Plugin header"
+>
+<tr width="100%">
+  <td><big><big>AntFarm Plugin</big></big></td>
+  <td align="right"><B>Version 0.3</B><BR>
+  <small>By Chris Scott and Rick Gibbs<BR>
+         Contributions by Todd Papaioannou and Richard F. Wan</SMALL></TD>
+</tr>
+</table>
+
+
+<ul>
+    <li><a href="#general">Overview</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#credits">Credits</a></li>
+    <li><a href="#feedback">Feedback</a></li>
+    <li><a href="#history">History</a></li>
+</ul>
+
+
+<h2><a name="general">Overview</a></h2>
+
+<p>AntFarm allows you to execute builds using Apache's Ant utility from within
+jEdit. Currently, AntFarm supports compilation with javac and jikes, and will
+parse the output of both, displaying any errors in ErrorList.</P>
+
+<P>Keep in mind this is an early release and will probably have bugs in it.
+Also, it is *not* multi threaded and thus blocks jEdit until the build it is
+complete.</P>
+
+<p>AntFarm requires:</p>
+
+<ul>
+    <li>JDK 1.1</li>
+    <li>jEdit 3.1final</li>
+</ul>
+
+<h2><a name="usage">Usage</a></h2>
+
+<p>Launch AntFarm using the Plugins menu item. Once open, you can specify your
+build.xml file by clicking on the browse button. After you have specified a
+valid build file, type the target that you wish to build into the Build
+text field, and click the build button.</P>
+
+<p><em>Notes</em>:</p>
+
+<ol>
+    <li>The Target text field makes use of JEdit's history text field so that
+    all the tasks that you type in will be remembered across editing sessions.</li>
+    <li>It is possible that AntFarm will fail to parse some messages from javac
+    and jikes. If this is the case, please submit the string in a bug report so
+    that AntFarm can be extended to sucessfully parse it.</LI>
+</ol>
+
+<h2><a name="credits">Credits</a></h2>
+
+<P>AntFarm was orginally created by</P>
+  <UL>
+    <LI>Chris Scott</LI>
+    <LI>Rick Gibbs</LI>
+  </UL>
+
+<p>AntFarm uses the following libraries:</p>
+
+<DT><B>Ant</B></DT>
+<DD>A utility created by the Apache Software Foundation. It's home page
+can be found at <a href="http://jakarta.apache.org/ant/index.html">
+http://jakarta.apache.org/ant/index.html</A></DD>
+
+<DT><b>JAXP</B></DT>
+<DD>An XML parsing library made available by sun Microsysytems. The full package
+can be download at <a href="http://java.sun.com/xml/xml_jaxp.html">
+http://java.sun.com/xml/xml_jaxp.html</A></DD>
+</ul>
+
+<h2><a name="feedback">Feedback</a></h2>
+
+<p>
+The preferred way to send bug reports is to use the Bug Tracker at
+<a href="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</a>.
+</p>
+
+<p>Also you can write to:</p>
+<ul>
+    <li>or jEdit-users mailing-list <em>&lt;jedit-users@lists.sourceforge.net&gt;</em>;</li>
+    <li>or jEdit-devel mailing.list <em>&lt;jedit-devel@lists.sourceforge.net&gt;</em>.</li>
+    <li>or Todd Papaioannou <em>&lt;toddp@jedit.org&gt;</em>.</li>
+</ul>
+
+<h2><a name="history">History</A></h2>
+
+<P>Version 0.3 </P>
+  <ul>
+    <li>Added support for Jikes error parsing (Todd Papaioannou)</LI>
+    <li>Readied for appearance on Plugin Central (Todd Papaioannou)</LI>
+ </UL>
+
+<p>Version 0.2 (working development version)</p>
+
+      <ul>
+        <li>Added build times (Richard F. Wan)</li>
+        <li>Added default target support (Richard F. Wan)</li>
+        <li>Added public void setBuildFile(String path) (Richard F. Wan)</li>
+      </ul>
+
+      <p>Version 0.1</p>
+      <ul>
+        <li>Initial Release</li>
+      </ul>
+
+</body>
+</html>
+
