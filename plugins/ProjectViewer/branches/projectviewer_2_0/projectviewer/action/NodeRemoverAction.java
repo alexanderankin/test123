@@ -36,7 +36,6 @@ import javax.swing.tree.TreePath;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
 
 import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
@@ -74,7 +73,6 @@ public class NodeRemoverAction extends Action {
 		this.delete = delete;
 	} //}}}
 	
-	
 	//{{{ Instance variables
 	private HashSet changed;
 	private boolean delete;
@@ -94,7 +92,7 @@ public class NodeRemoverAction extends Action {
 	} //}}}
 	
 	//{{{ actionPerformed(ActionEvent) method
-	/** Creates a new project. */
+	/** Try to remove nodes from the project, asking when necessary. */
 	public void actionPerformed(ActionEvent e) {
 		JTree tree = viewer.getCurrentTree();
 		changed = new HashSet();
@@ -130,12 +128,10 @@ public class NodeRemoverAction extends Action {
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for non-root nodes. */
 	public void prepareForNode(VPTNode node) {
-		if (cmItem != null) {
-			if (delete) {
-				cmItem.setVisible(node.isFile() && node.canWrite());
-			} else {
-				cmItem.setVisible(!node.isRoot());
-			}
+		if (delete) {
+			cmItem.setVisible(node.isFile() && node.canWrite());
+		} else {
+			cmItem.setVisible(!node.isRoot());
 		}
 	} //}}}
 	

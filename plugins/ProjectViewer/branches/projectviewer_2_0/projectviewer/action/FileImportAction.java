@@ -20,16 +20,12 @@ package projectviewer.action;
 
 //{{{ Imports
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.GUIUtilities;
 
-import projectviewer.ProjectViewer;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 
 import projectviewer.importer.FileImporter;
 //}}}
@@ -49,13 +45,9 @@ public class FileImportAction extends Action {
 	} //}}}
 	
 	//{{{ getIcon() method
-	/**
-	 *	Returns the icon to be shown on the toolbar button. The default
-	 *	implementation returns "null" so that actions that will only be
-	 *	used in the context menu don't need to implement this.
-	 */
+	/** Returns null. This should be only in the context menu. */
 	public Icon getIcon() {
-		return GUIUtilities.loadIcon("New.png");
+		return null;
 	} //}}}
 	
 	//{{{ actionPerformed(ActionEvent) method
@@ -67,9 +59,8 @@ public class FileImportAction extends Action {
 	//{{{ prepareForNode(VPTNode) method
 	/** Enable action only for the root node. */
 	public void prepareForNode(VPTNode node) {
-		if (cmItem != null) {
-			cmItem.setVisible( (node != null) && !node.isRoot() && !node.isFile() );
-		}
+		cmItem.setVisible( (node != null) &&
+			(node.isProject() || node.isDirectory()) );
 	} //}}}
 
 }
