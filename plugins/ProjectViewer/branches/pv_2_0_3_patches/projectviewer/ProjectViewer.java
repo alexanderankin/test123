@@ -143,9 +143,9 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (config.isJEdit42()) {
 			EditPlugin[] plugins = jEdit.getPlugins();
 			for (int i = 0; i < plugins.length; i++) {
-				addProjectViewerListeners(plugins[i].getPluginJAR(), null);
-				addToolbarActions(plugins[i].getPluginJAR());
-				VPTContextMenu.registerActions(plugins[i].getPluginJAR());
+				SHelper.addProjectViewerListeners(plugins[i].getPluginJAR(), null);
+				SHelper.addToolbarActions(plugins[i].getPluginJAR());
+				VPTContextMenu.Helper.registerActions(plugins[i].getPluginJAR());
 			}
 		}
 	} //}}}
@@ -164,42 +164,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	public static void unregisterAction(Action action) {
 		actions.remove(action);
 		actionsChanged();
-	} //}}}
-
-	//{{{ +_removeToolbarActions(PluginJAR)_ : void
-	/**
-	 *	Removes the project listeners of the given plugin from the list, and
-	 *	from any active project in ProjectViewer.
-	 */
-	public static void removeToolbarActions(PluginJAR jar) {
-		boolean removed = false;
-		for (Iterator i = actions.iterator(); i.hasNext(); ) {
-			Object o = i.next();
-			if (o.getClass().getClassLoader() == jar.getClassLoader()) {
-				i.remove();
-				removed = true;
-			}
-		}
-		if (removed) {
-			actionsChanged();
-		}
-	} //}}}
-
-	//{{{ +_addToolbarActions(PluginJAR)_ : void
-	/**
-	 *	Adds to the list of listeners for the given view the listeners that
-	 *	have been declared by the given plugin using properties. For global
-	 *	listeners, "view" should be null.
-	 */
-	public static void addToolbarActions(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
-		String list = jEdit.getProperty("plugin.projectviewer." +
-							jar.getPlugin().getClassName() + ".toolbar-actions");
-		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
-		if (aList != null && aList.size() > 0) {
-			actions.addAll(aList);
-			actionsChanged();
-		}
 	} //}}}
 
 	//{{{ -_actionsChanged()_ : void
@@ -362,46 +326,6 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		}
 	} //}}}
 
-	//{{{ +_removeProjectViewerListeners(PluginJAR)_ : void
-	/**
-	 *	Removes the listeners loaded by the given plugin from the listener
-	 *	list. Meant to be called when said plugin is unloaded by jEdit.
-	 */
-	public static void removeProjectViewerListeners(PluginJAR jar) {
-		for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
-			if (i.next().getClass().getClassLoader() == jar.getClassLoader()) {
-				i.remove();
-			}
-		}
-	} //}}}
-
-	//{{{ +_addProjectViewerListeners(PluginJAR, View)_ : void
-	/**
-	 *	Adds to the list of listeners for the given view the listeners that
-	 *	have been declared by the given plugin using properties. For global
-	 *	listeners, "view" should be null.
-	 */
-	public static void addProjectViewerListeners(PluginJAR jar, View view) {
-		if (jar.getPlugin() == null) return;
-		String list;
-		if (view == null) {
-			list = jEdit.getProperty("plugin.projectviewer." +
-							jar.getPlugin().getClassName() + ".global-pv-listeners");
-		} else {
-			list = jEdit.getProperty("plugin.projectviewer." +
-							jar.getPlugin().getClassName() + ".pv-listeners");
-		}
-
-		Collection aList = PVActions.listToObjectCollection(list, jar, ProjectViewerListener.class);
-		if (aList != null && aList.size() > 0) {
-			ArrayList existing = (ArrayList) listeners.get(view);
-			if (existing == null) {
-				listeners.put(view, aList);
-			} else {
-				existing.addAll(aList);
-			}
-		}
-	} //}}}
 
 	//}}}
 
@@ -643,7 +567,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (config.isJEdit42()) {
 			EditPlugin[] plugins = jEdit.getPlugins();
 			for (int i = 0; i < plugins.length; i++) {
-				addProjectViewerListeners(plugins[i].getPluginJAR(), view);
+				SHelper.addProjectViewerListeners(plugins[i].getPluginJAR(), view);
 			}
 		}
 
@@ -1229,6 +1153,7 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 				if (treeRoot.isProject()) {
 					closeProject((VPTProject)treeRoot, config.getCloseFiles(),
 						config.getRememberOpen());
+					treeRoot = null;
 				}
 				VPTProject p = (VPTProject) ie.getItem();
 				new ProjectLoader(p.getName()).loadProject();
@@ -1546,6 +1471,88 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 			}
 		}//}}}
 
+	} //}}}
+
+	//{{{ -class _SHelper_
+	public static class SHelper {
+
+		//{{{ +_addToolbarActions(PluginJAR)_ : void
+		/**
+		 *	Adds to the list of listeners for the given view the listeners that
+		 *	have been declared by the given plugin using properties. For global
+		 *	listeners, "view" should be null.
+		 */
+		public static void addToolbarActions(PluginJAR jar) {
+			if (jar.getPlugin() == null) return;
+			String list = jEdit.getProperty("plugin.projectviewer." +
+								jar.getPlugin().getClassName() + ".toolbar-actions");
+			Collection aList = PVActions.Helper.listToObjectCollection(list, jar, Action.class);
+			if (aList != null && aList.size() > 0) {
+				actions.addAll(aList);
+				actionsChanged();
+			}
+		} //}}}
+
+		//{{{ +_removeToolbarActions(PluginJAR)_ : void
+		/**
+		 *	Removes the project listeners of the given plugin from the list, and
+		 *	from any active project in ProjectViewer.
+		 */
+		public static void removeToolbarActions(PluginJAR jar) {
+			boolean removed = false;
+			for (Iterator i = actions.iterator(); i.hasNext(); ) {
+				Object o = i.next();
+				if (o.getClass().getClassLoader() == jar.getClassLoader()) {
+					i.remove();
+					removed = true;
+				}
+			}
+			if (removed) {
+				actionsChanged();
+			}
+		} //}}}
+
+		//{{{ +_removeProjectViewerListeners(PluginJAR)_ : void
+		/**
+		 *	Removes the listeners loaded by the given plugin from the listener
+		 *	list. Meant to be called when said plugin is unloaded by jEdit.
+		 */
+		public static void removeProjectViewerListeners(PluginJAR jar) {
+			for (Iterator i = listeners.values().iterator(); i.hasNext(); ) {
+				if (i.next().getClass().getClassLoader() == jar.getClassLoader()) {
+					i.remove();
+				}
+			}
+		} //}}}
+	
+		//{{{ +_addProjectViewerListeners(PluginJAR, View)_ : void
+		/**
+		 *	Adds to the list of listeners for the given view the listeners that
+		 *	have been declared by the given plugin using properties. For global
+		 *	listeners, "view" should be null.
+		 */
+		public static void addProjectViewerListeners(PluginJAR jar, View view) {
+			if (jar.getPlugin() == null) return;
+			String list;
+			if (view == null) {
+				list = jEdit.getProperty("plugin.projectviewer." +
+								jar.getPlugin().getClassName() + ".global-pv-listeners");
+			} else {
+				list = jEdit.getProperty("plugin.projectviewer." +
+								jar.getPlugin().getClassName() + ".pv-listeners");
+			}
+	
+			Collection aList = PVActions.Helper.listToObjectCollection(list, jar, ProjectViewerListener.class);
+			if (aList != null && aList.size() > 0) {
+				ArrayList existing = (ArrayList) listeners.get(view);
+				if (existing == null) {
+					listeners.put(view, aList);
+				} else {
+					existing.addAll(aList);
+				}
+			}
+		} //}}}
+		
 	} //}}}
 
 }

@@ -176,22 +176,22 @@ public final class ProjectPlugin extends EBPlugin {
 			if (msg instanceof PluginUpdate) {
 				PluginUpdate pu = (PluginUpdate) msg;
 				if (pu.getWhat() == PluginUpdate.LOADED) {
-					ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), null);
+					ProjectViewer.SHelper.addProjectViewerListeners(pu.getPluginJAR(), null);
 					ProjectManager.getInstance().addProjectListeners(pu.getPluginJAR());
-					ProjectViewer.addToolbarActions(pu.getPluginJAR());
-					VPTContextMenu.registerActions(pu.getPluginJAR());
+					ProjectViewer.SHelper.addToolbarActions(pu.getPluginJAR());
+					VPTContextMenu.Helper.registerActions(pu.getPluginJAR());
 
 					View[] v = jEdit.getViews();
 					for (int i = 0; i < v.length; i++) {
 						if (ProjectViewer.getViewer(v[i]) != null) {
-							ProjectViewer.addProjectViewerListeners(pu.getPluginJAR(), v[i]);
+							ProjectViewer.SHelper.addProjectViewerListeners(pu.getPluginJAR(), v[i]);
 						}
 					}
 				} else if (pu.getWhat() == PluginUpdate.UNLOADED && !pu.isExiting()) {
-					ProjectViewer.removeProjectViewerListeners(pu.getPluginJAR());
+					ProjectViewer.SHelper.removeProjectViewerListeners(pu.getPluginJAR());
 					ProjectManager.getInstance().removeProjectListeners(pu.getPluginJAR());
-					ProjectViewer.removeToolbarActions(pu.getPluginJAR());
-					VPTContextMenu.unregisterActions(pu.getPluginJAR());
+					ProjectViewer.SHelper.removeToolbarActions(pu.getPluginJAR());
+					VPTContextMenu.Helper.unregisterActions(pu.getPluginJAR());
 				}
 			}
 		} //}}}

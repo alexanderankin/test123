@@ -112,37 +112,6 @@ public class VPTContextMenu extends MouseAdapter {
 		lastMod = System.currentTimeMillis();
 	} //}}}
 
-	//{{{ +_unregisterActions(PluginJAR)_ : void
-	/** Removes all actions from the given plugin. */
-	public static void unregisterActions(PluginJAR jar) {
-		boolean removed = false;
-		for (Iterator i = actions.iterator(); i.hasNext(); ) {
-			Object o = i.next();
-			if (o.getClass().getClassLoader() == jar.getClassLoader()) {
-				i.remove();
-				removed = true;
-			}
-		}
-		if (removed) {
-			lastMod = System.currentTimeMillis();
-		}
-	} //}}}
-
-	//{{{ +_registerActions(PluginJAR)_ : void
-	/** Registers actions from the given plugin. */
-	public static void registerActions(PluginJAR jar) {
-		if (jar.getPlugin() == null) return;
-		String list = jEdit.getProperty("plugin.projectviewer." +
-							jar.getPlugin().getClassName() + ".context-menu-actions");
-		boolean added = false;
-		Collection aList = PVActions.listToObjectCollection(list, jar, Action.class);
-		if (aList != null && aList.size() > 0) {
-			actions.addAll(aList);
-			sortMenu();
-			lastMod = System.currentTimeMillis();
-		}
-	} //}}}
-
 	//{{{ +_userMenuChanged()_ : void
 	/** Updates "lastMod" so that the menu is rebuilt at the next invocation. */
 	public static void userMenuChanged() {
@@ -308,5 +277,40 @@ public class VPTContextMenu extends MouseAdapter {
 
 	//}}}
 
+	public static class Helper {
+		
+		//{{{ +_registerActions(PluginJAR)_ : void
+		/** Registers actions from the given plugin. */
+		public static void registerActions(PluginJAR jar) {
+			if (jar.getPlugin() == null) return;
+			String list = jEdit.getProperty("plugin.projectviewer." +
+								jar.getPlugin().getClassName() + ".context-menu-actions");
+			boolean added = false;
+			Collection aList = PVActions.Helper.listToObjectCollection(list, jar, Action.class);
+			if (aList != null && aList.size() > 0) {
+				actions.addAll(aList);
+				sortMenu();
+				lastMod = System.currentTimeMillis();
+			}
+		} //}}}
+
+		//{{{ +_unregisterActions(PluginJAR)_ : void
+		/** Removes all actions from the given plugin. */
+		public static void unregisterActions(PluginJAR jar) {
+			boolean removed = false;
+			for (Iterator i = actions.iterator(); i.hasNext(); ) {
+				Object o = i.next();
+				if (o.getClass().getClassLoader() == jar.getClassLoader()) {
+					i.remove();
+					removed = true;
+				}
+			}
+			if (removed) {
+				lastMod = System.currentTimeMillis();
+			}
+		} //}}}
+	
+	}
+	
 }
 
