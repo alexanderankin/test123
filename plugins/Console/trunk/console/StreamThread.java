@@ -144,7 +144,9 @@ class StreamThread extends Thread
 			char ch = (char)buf[offset + i];
 			if(ch == '\n')
 			{
-				if(!lastCR)
+				if(lastCR)
+					lastCR = false;
+				else
 					handleLine(lineBuffer);
 			}
 			else if(ch == '\r')
@@ -153,8 +155,10 @@ class StreamThread extends Thread
 				lastCR = true;
 			}
 			else
+			{
 				lineBuffer.append(ch);
-			lastCR = false;
+				lastCR = false;
+			}
 		}
 
 		output.writeAttrs(ConsolePane.colorAttributes(color),

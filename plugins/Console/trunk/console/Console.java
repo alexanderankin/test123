@@ -123,7 +123,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		shellState = (ShellState)shellHash.get(shell.getName());
 
 		shellCombo.setSelectedItem(shell.getName());
-		text.setHistoryModel("console." + shell.getName());
+		text.setHistoryModel(getShellHistory(shell));
 
 		if(shellState == null)
 		{
@@ -366,7 +366,8 @@ implements EBComponent, Output, DefaultFocusComponent
 		Output error, String cmd, boolean printInput)
 	{
 		if(cmd.length() != 0)
-			text.getHistoryModel().addItem(cmd);
+			HistoryModel.getModel(getShellHistory(shell)).addItem(cmd);
+
 		text.setHistoryIndex(-1);
 
 		if(cmd.startsWith(":"))
@@ -631,6 +632,12 @@ implements EBComponent, Output, DefaultFocusComponent
 			text.setInputStart(cmdStart);
 			text.setCaretPosition(cmdStart + offset);
 		}
+	} //}}}
+
+	//{{{ getShellHistory() method
+	private String getShellHistory(Shell shell)
+	{
+		return "console." + shell.getName();
 	} //}}}
 
 	//}}}
