@@ -34,13 +34,13 @@ import org.gjt.sp.util.Log;
 
 public class Console extends JPanel implements DockableWindow, EBComponent
 {
-	public Console(View view)
+	Console(View view)
 	{
 		super(new BorderLayout());
 
 		this.view = view;
 
-		shellCombo = new JComboBox(EditBus.getNamedList(Shell.SHELLS_LIST));
+		shellCombo = new JComboBox(Shell.getShells());
 		shellCombo.addActionListener(new ActionHandler());
 
 		JPanel panel = new JPanel(new BorderLayout(6,0));
@@ -61,10 +61,20 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 
 		Box buttonBox = new Box(BoxLayout.X_AXIS);
 		buttonBox.add(run = new JButton(jEdit.getProperty("console.run")));
-		Insets margin = new Insets(1,1,1,1);
+		Insets margin = new Insets(1,1,1,3);
 		run.setMargin(margin);
 		run.addActionListener(actionHandler);
 		run.setRequestFocusEnabled(false);
+
+		buttonBox.add(stop = new JButton(jEdit.getProperty("console.stop")));
+		stop.setMargin(margin);
+		stop.addActionListener(actionHandler);
+		stop.setRequestFocusEnabled(false);
+
+		buttonBox.add(toBuffer = new JButton(jEdit.getProperty("console.to-buffer")));
+		toBuffer.setMargin(margin);
+		toBuffer.addActionListener(actionHandler);
+		toBuffer.setRequestFocusEnabled(false);
 
 		panel.add(BorderLayout.EAST,buttonBox);
 
@@ -74,21 +84,34 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		add(BorderLayout.CENTER,new JScrollPane(output));
 
 		propertiesChanged();
-		setShell(ConsolePlugin.CONSOLE_SHELL);
+		setShell(ConsolePlugin.SYSTEM_SHELL);
 	}
 
 	public void addNotify()
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-		ProcessManager.consoleOpened(view,this);
+		SystemShell.consoleOpened(this);
+
+		errorSource = new DefaultErrorSource("error parsing");
+		EditBus.addToBus(errorSource);
+		EditBus.addToNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
 	}
 
 	public void removeNotify()
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-		ProcessManager.consoleClosed(view);
+		SystemShell.consoleClosed(this);
+
+		errorSource.clear();
+		EditBus.removeFromBus(errorSource);
+		EditBus.removeFromNamedList(ErrorSource.ERROR_SOURCES_LIST,errorSource);
+	}
+
+	public View getView()
+	{
+		return view;
 	}
 
 	// dockable window implementation
@@ -104,13 +127,12 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 
 	public void setShell(String shell)
 	{
-		Object[] shells = EditBus.getNamedList(Shell.SHELLS_LIST);
+		Shell[] shells = Shell.getShells();
 		for(int i = 0; i < shells.length; i++)
 		{
-			Shell sh = (Shell)shells[i];
-			if(sh.getName().equals(shell))
+			if(shells[i].getName().equals(shell))
 			{
-				setShell(sh);
+				setShell(shells[i]);
 				return;
 			}
 		}
@@ -158,7 +180,7 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 
 		printInfo("> " + cmd);
 
-		shell.execute(view,cmd,this);
+		shell.execute(this,cmd);
 	}
 
 	/**
@@ -166,7 +188,7 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 	 */
 	public void runLastCommand()
 	{
-		history = command.getModel();
+		HistoryModel history = command.getModel();
 		if(history.getSize() == 0)
 		{
 			getToolkit().beep();
@@ -182,56 +204,98 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 			propertiesChanged();
 	}
 
+	/**
+	 * Returns this console's error source instance. Plugin shells can
+	 * either add errors to this error source, or use their own; both
+	 * methods will look the same to the user.
+	 */
+	public DefaultErrorSource getErrorSource()
+	{
+		return errorSource;
+	}
+
+	/**
+	 * Prints the specified line of text, checking it against defined
+	 * error patterns.
+	 */
+	public void printAndParseError(String line, String directory)
+	{
+		int type = ConsolePlugin.parseLine(line,directory,errorSource);
+
+		switch(type)
+		{
+		case ErrorSource.ERROR:
+			printError(line);
+			break;
+		case ErrorSource.WARNING:
+			printWarning(line);
+			break;
+		default:
+			printPlain(line);
+			break;
+		}
+	}
+
+	/**
+	 * Convinience wrapper around print().
+	 */
 	public void printPlain(String msg)
 	{
-		addOutput(null,msg);
+		print(msg,null);
 	}
 
+	/**
+	 * Convinience wrapper around print().
+	 */
 	public void printInfo(String msg)
 	{
-		addOutput(infoColor,msg);
+		print(msg,infoColor);
 	}
 
+	/**
+	 * Convinience wrapper around print().
+	 */
 	public void printWarning(String msg)
 	{
-		addOutput(warningColor,msg);
+		print(msg,warningColor);
 	}
 
+	/**
+	 * Convinience wrapper around print().
+	 */
 	public void printError(String msg)
 	{
-		addOutput(errorColor,msg);
+		print(msg,errorColor);
 	}
 
-	public void clear()
+	/**
+	 * Returns the informational text color.
+	 */
+	public Color getInfoColor()
 	{
-		output.setText("");
+		return infoColor;
 	}
 
-	// protected members
-	protected View view;
-	protected JComboBox shellCombo;
-	protected HistoryTextField command;
-	protected JButton run;
-	protected JTextPane output;
-	protected Shell shell;
-
-	protected Color infoColor, warningColor, errorColor;
-
-	protected void propertiesChanged()
+	/**
+	 * Returns the warning text color.
+	 */
+	public Color getWarningColor()
 	{
-		output.setBackground(GUIUtilities.parseColor(jEdit.getProperty(
-			"console.bgColor")));
-		output.setForeground(GUIUtilities.parseColor(jEdit.getProperty(
-			"console.plainColor")));
-		infoColor = GUIUtilities.parseColor(jEdit.getProperty(
-			"console.infoColor"));
-		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
-			"console.warningColor"));
-		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
-			"console.errorColor"));
+		return warningColor;
 	}
 
-	protected synchronized void addOutput(Color color, String msg)
+	/**
+	 * Returns the error text color.
+	 */
+	public Color getErrorColor()
+	{
+		return errorColor;
+	}
+
+	/**
+	 * Prints a string of text with the specified color.
+	 */
+	public synchronized void print(String msg, Color color)
 	{
 		Document outputDocument = output.getDocument();
 
@@ -267,6 +331,42 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		output.setCaretPosition(outputDocument.getLength());
 	}
 
+	/**
+	 * Removes all output.
+	 */
+	public void clear()
+	{
+		output.setText("");
+	}
+
+	// protected members
+	protected JTextPane output;
+
+	// private members
+	private View view;
+	private JComboBox shellCombo;
+	private Shell shell;
+	private HistoryTextField command;
+	private JButton run, stop, toBuffer;
+
+	private Color infoColor, warningColor, errorColor;
+
+	private DefaultErrorSource errorSource;
+
+	private void propertiesChanged()
+	{
+		output.setBackground(GUIUtilities.parseColor(jEdit.getProperty(
+			"console.bgColor")));
+		output.setForeground(GUIUtilities.parseColor(jEdit.getProperty(
+			"console.plainColor")));
+		infoColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.infoColor"));
+		warningColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.warningColor"));
+		errorColor = GUIUtilities.parseColor(jEdit.getProperty(
+			"console.errorColor"));
+	}
+
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
@@ -283,6 +383,25 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 
 				command.setText(null);
 				run(cmd);
+			}
+			else if(source == stop)
+			{
+				shell.stop(Console.this);
+			}
+			else if(source == toBuffer)
+			{
+				Buffer buffer = jEdit.newFile(view);
+				try
+				{
+					Document outputDocument = output.getDocument();
+					String text = outputDocument.getText(0,
+						outputDocument.getLength());
+					buffer.insertString(0,text,null);
+				}
+				catch(BadLocationException bl)
+				{
+					Log.log(Log.ERROR,this,bl);
+				}
 			}
 		}
 	}

@@ -1,6 +1,6 @@
 /*
  * ErrorMatcher.java - Error pattern matcher
- * Copyright (C) 2000 Slava Pestov
+ * Copyright (C) 2000, 2001 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -44,7 +44,7 @@ class ErrorMatcher
 		regexp = new RE(match,RE.REG_ICASE,RESyntax.RE_SYNTAX_PERL5);
 	}
 
-	public int match(String text, String directory)
+	public int match(String text, String directory, DefaultErrorSource errorSource)
 	{
 		if(regexp.isMatch(text))
 		{
@@ -63,17 +63,17 @@ class ErrorMatcher
 
 			try
 			{
-				ConsolePlugin.addError(type,_filename,
-					Integer.parseInt(_line) - 1,_message);
-
-				return type;
+				errorSource.addError(type,_filename,
+					Integer.parseInt(_line) - 1,
+					0,0,_message);
 			}
 			catch(NumberFormatException nf)
 			{
-				return -1;
 			}
+
+			return type;
 		}
-		else
-			return -1;
+
+		return -1;
 	}
 }

@@ -19,6 +19,7 @@
 
 package console;
 
+import java.util.Vector;
 import org.gjt.sp.jedit.View;
 
 /**
@@ -27,15 +28,38 @@ import org.gjt.sp.jedit.View;
  */
 public abstract class Shell
 {
+	/**
+	 * Registers a shell with the console plugin.
+	 * @param shell The shell
+	 */
+	public static void registerShell(Shell shell)
+	{
+		shells.addElement(shell);
+	}
+
+	/**
+	 * Unregisters a shell.
+	 * @param shell The shell
+	 */
+	public static void unregisterShell(Shell shell)
+	{
+		shells.removeElement(shell);
+	}
+
+	/**
+	 * Returns an array of all registered shells.
+	 */
+	public static Shell[] getShells()
+	{
+		Shell[] retVal = new Shell[shells.size()];
+		shells.copyInto(retVal);
+		return retVal;
+	}
+
 	public Shell(String name)
 	{
 		this.name = name;
 	}
-
-	/**
-	 * Name of named list where all available shells are stored.
-	 */
-	public static final String SHELLS_LIST = "SHELLS";
 
 	/**
 	 * Prints a 'info' message to the specified console.
@@ -45,12 +69,13 @@ public abstract class Shell
 
 	/**
 	 * Executes a command.
-	 * @param view The view
-	 * @param command The command. The format of this is left entirely
-	 * up to the implementation
-	 * @param console The console
 	 */
-	public abstract void execute(View view, String command, Console console);
+	public abstract void execute(Console console, String command);
+
+	/**
+	 * Stops the currently executing command, if any.
+	 */
+	public abstract void stop(Console console);
 
 	/**
 	 * Waits until any currently executing commands finish.
@@ -76,5 +101,6 @@ public abstract class Shell
 	}
 
 	// private members
+	private static Vector shells = new Vector();
 	private String name;
 }
