@@ -82,6 +82,11 @@ public class ColorTabs
    }
 
 
+   public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+   }
+
+
    public boolean isSelectedColorized() {
       return this.selectedColorized;
    }
