@@ -36,16 +36,6 @@ public class JumpPlugin extends EditPlugin
     public static boolean isListenerAdded = false;
 //}}}
 
-//{{{ Constructor
-   /**
-     *  Constructor for the JumpPlugin object
-     */
-    // public JumpPlugin()
-    // {
-        // super();
-    // }
-//}}}
-
 //{{{ void start()
     public void start()
     {
