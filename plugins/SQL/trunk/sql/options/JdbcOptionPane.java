@@ -42,7 +42,7 @@ import sql.preprocessors.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 Август 2001 г.
+ * @created    26 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public class JdbcOptionPane extends SqlOptionPane
 {
@@ -58,7 +58,7 @@ public class JdbcOptionPane extends SqlOptionPane
    */
   public JdbcOptionPane()
   {
-    super( "sql.jdbc" );
+    super( "sql_jdbc" );
   }
 
 

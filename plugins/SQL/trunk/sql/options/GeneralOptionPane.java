@@ -59,7 +59,7 @@ public class GeneralOptionPane extends SqlOptionPane
    */
   public GeneralOptionPane()
   {
-    super( "sql.general" );
+    super( "sql_general" );
   }
 
 
