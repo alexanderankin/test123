@@ -92,6 +92,11 @@ public class ColorTabs
    }
 
 
+   public void setSelectedColorized(boolean selectedColorized) {
+      this.selectedColorized = selectedColorized;
+   }
+
+
    public boolean isForegroundColorized() {
       return this.foregroundColorized;
    }
