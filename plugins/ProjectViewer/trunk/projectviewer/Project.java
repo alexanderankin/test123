@@ -331,6 +331,7 @@ public final class Project implements EBComponent {
       }
 
       pruneDirectories( path, false );
+      save();
    }
 
    /**
@@ -386,6 +387,7 @@ public final class Project implements EBComponent {
          aDir.toFile().delete();
       }
       //pruneDirectories(path,delete);
+      save();
    }
 
    /**
@@ -415,6 +417,7 @@ public final class Project implements EBComponent {
          }
       }
       files.clear();
+      save();
    }
 
    /**
