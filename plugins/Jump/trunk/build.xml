@@ -36,5 +36,9 @@
         <include name="dockables.xml"/>
       </fileset>
     </jar>
+    <delete>
+        <fileset dir="." includes="**/*.class"/>
+    </delete>
+
   </target>
 </project>
