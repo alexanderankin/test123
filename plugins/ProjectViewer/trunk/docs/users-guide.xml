@@ -42,6 +42,43 @@
 			The ProjectViewer plugin allows to define group of files as projects.
 		</para>
 
+
+		<bridgehead renderas='sect3'>What is a project?</bridgehead>
+
+		<para>
+			A project is a group of files. It has a name, a root directory, and an
+			optional URL Root, along with other options that can be made
+			available by other plugins.
+		</para>
+
+		<para>
+			In this version of Project Viewer, the files in a project are not
+			restricted to the project root: any file can be added to the
+			project (or to any directory in the project), allowing you to
+			organize your files however you find most convenient, independently
+			of the file system layout. The project root and the files and
+			directories below it have a special treatment not given to
+			others, though.
+		</para>
+
+		<para>
+			If a project is intented for website development, setting the
+			URL Root will enable project files to be launched in a web browser.
+			Suppose the project "Root" also correlates to the URL
+			"http://localhost/myproject/" currently running on a web server,
+			launching the file "hello.jsp" will launch the web browser
+			with the URL "http://localhost/myproject/hello.jsp", if the file
+			is directly under the root.
+		</para>
+
+		<para>
+			To create a project, click the "Add/Edit Project" button in the
+			toolbar when using the "All Projects" view, or choose the
+			correspondent entry	in the project combo box. This will show a
+			dialog where you can enter the properties of the project you
+			want to create.
+		</para>
+
 	</chapter>
 
 	<chapter id="usage">
@@ -53,39 +90,7 @@
 			views.
 		</para>
 
-		<bridgehead renderas='sect3'>What is a project?</bridgehead>
-
-		<para>
-			A project is a group of files. It has a name, a root directory, and an
-			optional URL Root.
-		</para>
-
-		<para>
-			In this version, the files in a project are not restricted to the
-			project root: any file can be added to the project (or to any directory in
-			the project), allowing you to organize your files however you find most
-			convenient, independently of the file system layout. The project root and
-			the files and directories below it have a special treatment not given to
-			others, though.
-		</para>
-
-		<para>
-			If a project is intented for website development, setting the URL Root will enable
-			web type(jsp, asp, php, htm, html, etc) project files to be launched in a web browser.
-			Suppose the project "Root" also correlates to the URL "http://localhost/myproject/" currently running on a
-			web server, launching "hello.jsp" will launch the web browser (browser executable can be customized) with
-			the URL "http://localhost/myproject/hello.jsp".
-		</para>
-
-		<para>
-			To create a project, click the "Add/Edit Project" button in the toolbar when
-			using the "All Projects" view, or choose the correspondent entry
-			in the project combo box.
-			This will show a dialog where you can enter the properties of the project you
-			want to create.
-		</para>
-
-		<bridgehead renderas='sect3'>The User Interface</bridgehead>
+		<bridgehead renderas='sect3'>The Project Views</bridgehead>
 
 		<para>
 			There are three possible views of the files on a project: the "Folders" view,
@@ -98,9 +103,9 @@
 		</para>
 
 		<para>
-			Optionally, by choosing "All Projects" from the project selection box, a
-			alternative view is shown, which displays data from all projects. Some
-			plugin functionality is not available when in this mode.
+			Optionally, by choosing "All Projects" from the project selection box,
+			an alternative view is shown, which displays data from all projects.
+			Some plugin functionality is not available when in this mode.
 		</para>
 
 		<para>
@@ -129,7 +134,8 @@
 			Differently from previous releases, the plugin does not follow the filesystem
 			layout to organize files anymore, except for certain cases; notably, when
 			doing the initial import from the project root or when adding a file that
-			has been saved to the project.
+			has been saved from an open buffer and is not currently part of the
+			project.
 		</para>
 
 		<para>
@@ -263,11 +269,6 @@
 				<para>
 					Archive project: this will prompt you for a file name. A JAR archive
 					will be created containing all files below the project root.
-					<!--
-					If you have the JarMaker plugin installed (with at least version
-					0.5), it will be used to create the JAR; otherwise, a simpler
-					archiving function is provided in ProjectViewer.
-					-->
 				</para>
 			</listitem>
 			<listitem>
@@ -364,7 +365,9 @@
 					yet part of the project, you'll be asked whether you want to import
 					it. Selecting "Once per session" will ask only one time during the
 					time the current project stays active. "Never" will disable this
-					feature.
+					feature. "Auto import" will automatically add to the
+					project any saved files which are under the project root
+					and are not currently part of the project.
 				</para>
 			</listitem>
 		</itemizedlist>
@@ -393,9 +396,14 @@
 			</listitem>
 			<listitem>
 				<para>
-					Show working files tree: if the "Working Filer" tree view should be
+					Show working files tree: if the "Working Files" tree view should be
 					shown.
 				</para>
+			</listitem>
+			<listitem>
+				<para>
+					Show compact tree: whether the "Compact" tree view should be
+					shown.
 			</listitem>
 			<listitem>
 				<para>
@@ -508,12 +516,12 @@
 				<listitem><para>By listening to Project Viewer events</para></listitem>
 			</itemizedlist>
 		</para>
-    
+
     <para>
       During the next sub chapters we will describe some common task for
       interacting with projectviewer.
     </para>
-    
+
     <section id="developer-checkpv">
       <title id="developer-checkpv.title">Checking if projectviewer is available</title>
       The method described here requires a jEdit with version > 4.2preX.
@@ -527,7 +535,7 @@ if(pv!=null) {
         </programlisting>
       </informalexample>
     </section>
-    
+
     <section id="developer-prjfile">
       <title id="developer-prjfile.title">Getting the project the a given file belongs to</title>
       <informalexample>
@@ -538,18 +546,18 @@ ProjectManager pm=getInstance()
         </programlisting>
       </informalexample>
     </section>
-    
+
 		<section id="developer-prjview">
       <title id="developer-prjview.title">Getting the project of the given view</title>
 
       <informalexample>
         <programlisting>
-VPTProject prj=ProjectViewer.getActiveProject(org.gjt.sp.jedit.View aView); 
-ProjectViewer pv=ProjectViewer.getViewer(org.gjt.sp.jedit.View view); 
+VPTProject prj=ProjectViewer.getActiveProject(org.gjt.sp.jedit.View aView);
+ProjectViewer pv=ProjectViewer.getViewer(org.gjt.sp.jedit.View view);
         </programlisting>
       </informalexample>
     </section>
-    
+
 	</chapter>
 
 	<chapter id="troubleshooting">
@@ -569,11 +577,11 @@ ProjectViewer pv=ProjectViewer.getViewer(org.gjt.sp.jedit.View view);
 		</para>
 
 		<para>
-			The JRE, up to version 1.4, has a bug in JFileChooser when using the
-			Metal Look &amp; Feel. It will resolve canonical paths when changing
-			directories. While ProjectViewer tries to work around this issue,
-			it may lead to some strange behaviors, specially when importing
-			files.
+			The JRE, up to version 1.4 (at least), has a bug in JFileChooser
+			when using the Metal Look &amp; Feel. It will resolve canonical
+			paths when changing directories. While ProjectViewer tries to work
+			around this issue, it may lead to some strange behaviors,
+			especially when importing files.
 		</para>
 
 		<bridgehead renderas='sect3'>Large projects</bridgehead>
@@ -591,10 +599,9 @@ ProjectViewer pv=ProjectViewer.getViewer(org.gjt.sp.jedit.View view);
 
 		<para>
 			jEdit allows multiple instances of the same dockable for the same view.
-			Project Viewer does support this feature; however, some unexpected
-			behaviour can result from this, especially when switching projects. If you
-			really want to keep this setup, try disabling the "Close files on project
-			change" and "Remember open files" in the plugin's options.
+			Project Viewer does not support this feature and will issue an
+			error message if you try to open two Project Viewer windows in
+			the same view.
 		</para>
 
 	</chapter>
