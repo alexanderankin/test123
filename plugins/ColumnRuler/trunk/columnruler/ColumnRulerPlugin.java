@@ -10,8 +10,8 @@ import org.gjt.sp.jedit.textarea.*;
  *
  * @author     mace
  * @created    June 5, 2003
- * @modified   $Date: 2003-06-06 06:46:18 $ by $Author: bemace $
- * @version    $Revision: 1.2 $
+ * @modified   $Date: 2003-06-09 17:54:10 $ by $Author: bemace $
+ * @version    $Revision: 1.3 $
  */
 public class ColumnRulerPlugin extends EditPlugin {
 	private static Hashtable rulerMap = new Hashtable();
@@ -43,7 +43,6 @@ public class ColumnRulerPlugin extends EditPlugin {
 		ColumnRuler columnRuler = (ColumnRuler) rulerMap.get(textArea);
 		textArea.removeTopComponent(columnRuler);
 		rulerMap.remove(textArea);
-		columnRuler.destroy();
 	}
 
 	public void stop() {
