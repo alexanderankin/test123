@@ -1,15 +1,16 @@
 package gatchan.phpparser.sidekick;
 
-import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
-import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
+import gatchan.phpparser.project.itemfinder.PHPItemCellRenderer;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassDeclaration;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
+import net.sourceforge.phpdt.internal.compiler.ast.MethodDeclaration;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
+import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.Selection;
-import org.gjt.sp.jedit.TextUtilities;
 import sidekick.SideKickCompletion;
 
+import javax.swing.*;
 import java.util.List;
 
 /** @author Matthieu Casanova */
@@ -30,6 +31,10 @@ public class PHPSideKickCompletion extends SideKickCompletion {
     if (item.toString().regionMatches(caseSensitive, 0, word, 0, word.length())) {
       items.add(item);
     }
+  }
+
+  public ListCellRenderer getRenderer() {
+    return new PHPItemCellRenderer();
   }
 
   public int getItemsCount() {

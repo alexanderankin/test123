@@ -175,7 +175,6 @@ public final class MethodDeclaration extends Statement implements OutlineableWit
     if (statements != null) {
       for (int i = 0; i < statements.length; i++) {
         statements[i].analyzeCode(parser);
-
       }
     }
 

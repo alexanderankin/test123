@@ -3,25 +3,30 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
+import gatchan.phpparser.project.itemfinder.PHPItem;
+
+import javax.swing.*;
+
+import org.gjt.sp.jedit.GUIUtilities;
 
 /**
- * A Field declaration.
- * This is a variable declaration for a php class
- * In fact it's an array of VariableUsage, since a field could contains
- * several var :
- * var $toto,$tata;
+ * A Field declaration. This is a variable declaration for a php class In fact it's an array of VariableUsage, since a
+ * field could contains several var : var $toto,$tata;
  *
  * @author Matthieu Casanova
  */
-public final class FieldDeclaration extends Statement implements Outlineable {
+public final class FieldDeclaration extends Statement implements Outlineable, PHPItem {
 
-  /**
-   * The variables.
-   */
+  /** The path of the file containing this field. */
+  private String path;
+
+  /** The variables. */
   public final VariableDeclaration[] vars;
 
   /** The parent do not need to be serialized. */
   private transient final Object parent;
+
+  private static transient Icon icon;
 
   /**
    * Create a new field.
@@ -30,7 +35,8 @@ public final class FieldDeclaration extends Statement implements Outlineable {
    * @param sourceStart the starting offset
    * @param sourceEnd   the ending offset
    */
-  public FieldDeclaration(final VariableDeclaration[] vars,
+  public FieldDeclaration(String path,
+                          final VariableDeclaration[] vars,
                           final Object parent,
                           final int sourceStart,
                           final int sourceEnd,
@@ -39,6 +45,7 @@ public final class FieldDeclaration extends Statement implements Outlineable {
                           final int beginColumn,
                           final int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    this.path = path;
     this.vars = vars;
     this.parent = parent;
   }
@@ -47,6 +54,7 @@ public final class FieldDeclaration extends Statement implements Outlineable {
    * Return the object into String.
    *
    * @param tab how many tabs (not used here
+   *
    * @return a String
    */
   public String toString(final int tab) {
@@ -99,4 +107,20 @@ public final class FieldDeclaration extends Statement implements Outlineable {
   public String toString() {
     return getName();
   }
+
+  public int getItemType() {
+    return FIELD;
+  }
+
+  public String getPath() {
+    return path;
+  }
+
+  public Icon getIcon() {
+    if (icon == null) {
+      icon = GUIUtilities.loadIcon(ClassHeader.class.getResource("/gatchan/phpparser/icons/field.png").toString());
+    }
+    return icon;
+  }
+
 }

@@ -158,7 +158,7 @@ public final class PHPParser implements PHPParserConstants {
     }
     ReInit(new StringReader(strEval));
     init();
-    phpDocument = new PHPDocument(null,"_root");
+    phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
     new PHPOutlineInfo(null, currentSegment);
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
@@ -176,7 +176,7 @@ public final class PHPParser implements PHPParserConstants {
     }
     ReInit(stream);
     init();
-    phpDocument = new PHPDocument(null,"_root");
+    phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
     new PHPOutlineInfo(null, currentSegment);
     phpFile();
@@ -193,7 +193,7 @@ public final class PHPParser implements PHPParserConstants {
     }
     ReInit(stream);
     init();
-    phpDocument = new PHPDocument(null,"_root");
+    phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
     new PHPOutlineInfo(null, currentSegment);
     phpFile();
@@ -234,18 +234,18 @@ public final class PHPParser implements PHPParserConstants {
   }
 
   //}}}
-  //{{{ parseInfo(final Object parent, final String s)
+  //{{{ parse(String s)
 
-  public final void parseInfo(final Object parent, final String s) throws ParseException {
-    final StringReader stream = new StringReader(s);
-    parseInfo(parent,stream);
+  public final void parse(String s) throws ParseException {
+    final Reader reader = new StringReader(s);
+    parse(reader);
   }
 
   //}}}
-  //{{{ parseInfo(final Object parent, Reader reader)
+  //{{{ parse(Reader reader)
 
-  public final void parseInfo(final Object parent, Reader reader) throws ParseException {
-    phpDocument = new PHPDocument(parent,"_root");
+  public final void parse(Reader reader) throws ParseException {
+    phpDocument = new PHPDocument("_root");
     currentSegment = phpDocument;
     if (jj_input_stream == null) {
       jj_input_stream = new SimpleCharStream(reader, 1, 1);
@@ -894,7 +894,8 @@ public final class PHPParser implements PHPParserConstants {
      endLine   = semicolonToken.endLine;
      endColumn = semicolonToken.endColumn;
    }
-   {if (true) return new FieldDeclaration(list,
+   {if (true) return new FieldDeclaration(path,
+                               list,
                                currentSegment,
                                varToken.sourceStart,
                                end,

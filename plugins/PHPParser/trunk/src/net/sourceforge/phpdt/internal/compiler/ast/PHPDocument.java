@@ -22,20 +22,15 @@ public final class PHPDocument implements OutlineableWithChildren {
 
   private final String name;
 
-  /** The parent of the object. */
-  private final Object parent;
-
   /** The outlineable children (those will be in the node array too. */
   private final List children = new ArrayList();
 
   /**
    * Create the PHPDocument.
-   * @param parent the parent object (it should be null isn't it ?)
+   *
    * @param name the nale f the document
    */
-  public PHPDocument(final Object parent,
-                     final String name) {
-    this.parent = parent;
+  public PHPDocument(String name) {
     this.name = name;
   }
 
@@ -96,7 +91,7 @@ public final class PHPDocument implements OutlineableWithChildren {
    * @return the parent of the object
    */
   public Object getParent() {
-    return parent;
+    return null;
   }
 
   public List getList() {
