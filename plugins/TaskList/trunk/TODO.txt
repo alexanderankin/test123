@@ -2,10 +2,9 @@ version 0.4.3
 =============
 
 * change patterns to \s|\b?
-* change underline to be straight, like error list?
-* fix: unloading plugin doesn't seem to remove Highlights
-* fix: does repaint need to be called once Highlights have been added?
-* fix:
+* (./) change underline to be straight, like error list?
+* (./) fix: unloading plugin doesn't seem to remove Highlights
+* (./) fix:
 
 	[error] ExtensionManager: java.lang.NullPointerException
 	[error] ExtensionManager:  at tasklist.TaskHighlight.underlineTask(TaskHighlight.java:215)
@@ -59,6 +58,7 @@ future
 - empahsize that tasks are taken from comments
 - parse text in text mode?
 - don't parse buffers when they've saved, if they're not displayed?
+- next/prev task actions
 
 - buffer sets: display tasks for current buffer, buffers 
   visible in view, all buffers, others?

@@ -47,13 +47,11 @@ import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.jedit.syntax.DefaultTokenHandler;
 import org.gjt.sp.jedit.syntax.Token;
@@ -71,68 +69,106 @@ import tasklist.options.TaskListTaskTypesOptionPane;
  */
 public class TaskListPlugin extends EBPlugin
 {
-	public static final String NAME = "tasklist";
-
 	public static boolean DEBUG = false;
 
 	private static Color highlightColor = Color.blue;
 	private static boolean highlightTasks = false;
-	private static Hashtable highlights = new Hashtable();
 	private static boolean allowSingleClickSelection = false;
 
 	//{{{ start() method
+	/**
+	 * Adds TaskHighlights
+	 */
 	public void start()
 	{
 		DEBUG = jEdit.getBooleanProperty("tasklist.debug",false);
-	}//}}}
 
-	//{{{ activate() method
-	/**
-	* Called when plugin is started, so TextArea Highlight 
-	* extensions can be registered.
-	*/
-	public void activate()
-	{
-		if(TaskListPlugin.DEBUG)
-			Log.log(Log.DEBUG, this, "in TaskListPlugin.activate()");
+		Log.log(Log.DEBUG, this, "adding TaskHighlights");
 
-		// add highlighters to all TextAreas
-		View[] views = jEdit.getViews();
-		for(int i=0; i < views.length; i++)
+		View view = jEdit.getFirstView();
+		while(view != null)
 		{
-			EditPane[] editPanes = views[i].getEditPanes();
-			for(int j=0; j < editPanes.length; j++)
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
 			{
-				JEditTextArea textArea = editPanes[j].getTextArea();
-				TaskHighlight highlight = new TaskHighlight(textArea);
-				highlights.put(editPanes[j], highlight);
-				textArea.getPainter().addExtension(highlight);
+				JEditTextArea textArea = panes[i].getTextArea();
+				initTextArea(textArea);
 			}
+			view = view.getNext();
 		}
 
 		propertiesChanged();
 	}//}}}
 
-	//{{{ deactivate() method
+	//{{{ stop() method
 	/**
-	* Called when plugin is being unloaded, so all Highlights
-	* can be unregistered.
-	*/
-	public void deactivate()
+	 * Unregister TaskHighlights
+	 */
+	public void stop()
 	{
-		if(TaskListPlugin.DEBUG)
-			Log.log(Log.DEBUG, this, "in TaskListPlugin.deactivate()");
-
-		Enumeration keys = highlights.keys();
-		while(keys.hasMoreElements())
+		Log.log(Log.DEBUG, this, "removing TaskHighlights");
+		View view = jEdit.getFirstView();
+		while(view != null)
 		{
-			EditPane editPane = (EditPane)keys.nextElement();
-			TaskHighlight highlight = (TaskHighlight)highlights.get(editPane);
-			editPane.getTextArea().getPainter().removeExtension(highlight);
-			highlights.remove(editPane);
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
+			{
+				JEditTextArea textArea = panes[i].getTextArea();
+				uninitTextArea(textArea);
+			}
+			view = view.getNext();
 		}
-	}
-	//}}}
+	}//}}}
+
+	//{{{ initTextArea() method
+	/**
+	 * Adds TaskHighlights
+	 */
+	private void initTextArea(JEditTextArea textArea)
+	{
+		TaskHighlight highlight = new TaskHighlight(textArea);
+		textArea.getPainter().addExtension(highlight);
+		textArea.putClientProperty(TaskHighlight.class,highlight);
+	} //}}}
+
+	//{{{ uninitTextArea() method
+	/**
+	 * Removes TaskHighlights
+	 */
+	private void uninitTextArea(JEditTextArea textArea)
+	{
+		TaskHighlight highlight = (TaskHighlight)textArea.
+			getClientProperty(TaskHighlight.class);
+		if(highlight != null)
+		{
+			textArea.getPainter().removeExtension(highlight);
+			textArea.putClientProperty(TaskHighlight.class,null);
+		}
+	} //}}}
+
+	//{{{ toggleHighlights() method
+	/**
+	 * Enables/disables TaskHighlights
+	 */
+	private void toggleHighlights(boolean enabled)
+	{
+		View view = jEdit.getFirstView();
+		while(view != null)
+		{
+			EditPane[] panes = view.getEditPanes();
+			for(int i = 0; i < panes.length; i++)
+			{
+				JEditTextArea textArea = panes[i].getTextArea();
+				TaskHighlight highlight = (TaskHighlight)textArea
+					.getClientProperty(TaskHighlight.class);
+				if(highlight != null)
+				{
+					highlight.setEnabled(enabled);
+				}
+			}
+			view = view.getNext();
+		}
+	} //}}}
 
 	//{{{ getHighlightColor() method
 	/**
@@ -197,11 +233,7 @@ public class TaskListPlugin extends EBPlugin
 			EditPaneUpdate epu = (EditPaneUpdate)message;
 			if(epu.getWhat() == EditPaneUpdate.CREATED)
 			{
-				EditPane editPane = epu.getEditPane();
-				JEditTextArea textArea = editPane.getTextArea();
-				TaskHighlight highlight = new TaskHighlight(textArea);
-				highlights.put(editPane, highlight);
-				textArea.getPainter().addExtension(highlight);
+				initTextArea(epu.getEditPane().getTextArea());
 			}
 			else if(epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED)
 			{
@@ -211,7 +243,7 @@ public class TaskListPlugin extends EBPlugin
 			}
 			else if(epu.getWhat() == EditPaneUpdate.DESTROYED)
 			{
-				highlights.remove(epu.getEditPane());
+				uninitTextArea(epu.getEditPane().getTextArea());
 			}
 		}
 		else if(message instanceof PropertiesChanged)
@@ -225,14 +257,6 @@ public class TaskListPlugin extends EBPlugin
 				if(bufferMap.get(buffers[i]) != null)
 					extractTasks(buffers[i]);
 			}
-		}
-		else if(message instanceof PluginUpdate)
-		{
-			PluginUpdate pu = (PluginUpdate)message;
-			if(pu.getWhat() == PluginUpdate.ACTIVATED)
-				activate();
-			else if(pu.getWhat() == PluginUpdate.DEACTIVATED)
-				deactivate();
 		}
 	}//}}}
 
@@ -380,7 +404,7 @@ public class TaskListPlugin extends EBPlugin
 	 * Causes an update of application data, typically after a change
 	 * in the plugin's user settings.
 	 */
-	private static void propertiesChanged()
+	private void propertiesChanged()
 	{
 		TaskListPlugin.clearTaskTypes();
 		TaskListPlugin.loadTaskTypes();
@@ -392,14 +416,8 @@ public class TaskListPlugin extends EBPlugin
 		allowSingleClickSelection = jEdit.getBooleanProperty(
 			"tasklist.single-click-selection",false);
 
-		Enumeration elements = highlights.elements();
 		boolean highlightEnabled = jEdit.getBooleanProperty("tasklist.highlight.tasks");
-		while(elements.hasMoreElements())
-		{
-			TaskHighlight highlight = (TaskHighlight)elements.nextElement();
-			if(highlight != null)
-				highlight.setEnabled(highlightEnabled);
-		}
+		toggleHighlights(highlightEnabled);
 
 		fireTasksUpdated();
 	}//}}}
@@ -477,11 +495,6 @@ public class TaskListPlugin extends EBPlugin
 	{
 		if(buffer.isLoaded() == false)
 			return null;
-
-		if(TaskListPlugin.DEBUG)
-			Log.log(Log.DEBUG, TaskListPlugin.class,
-				"TaskListPlugin.requestTasksForBuffer("
-				+ buffer.toString() + ")");
 
 		Hashtable taskMap = (Hashtable)bufferMap.get(buffer);
 

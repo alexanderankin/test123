@@ -1,6 +1,6 @@
 /*
  * TaskHighlight.java - TaskList plugin
- * Copyright (C) 2001 Oliver Rutherfurd
+ * Copyright (C) 2001,2004 Oliver Rutherfurd
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -92,8 +92,6 @@ public class TaskHighlight extends TextAreaExtension
 	public void paintValidLine(Graphics2D gfx, int screenLine,
 								int physicalLine, int start, int end, int y)
 	{
-		// Log.log(Log.DEBUG,this,"paintValidLine() for line " +
-		//	String.valueOf(physicalLine));
 		Buffer buffer = textArea.getBuffer();
 		if(!highlightEnabled || !buffer.isLoaded() ||
 			physicalLine >= buffer.getLineCount())
@@ -113,10 +111,10 @@ public class TaskHighlight extends TextAreaExtension
 			}
 			else
 			{
-				Enumeration enum = taskMap.elements();
-				while(enum.hasMoreElements())
+				Enumeration enumeration = taskMap.elements();
+				while(enumeration.hasMoreElements())
 				{
-					Task _task = (Task)enum.nextElement();
+					Task _task = (Task)enumeration.nextElement();
 					if(_task.getLineNumber() == _line.intValue())
 					{
 						task = _task;
@@ -126,11 +124,9 @@ public class TaskHighlight extends TextAreaExtension
 			}
 			if(task != null)
 			{
-				// Log.log(Log.DEBUG,this,"Found task where physical line = "
-				//	+ String.valueOf(physicalLine));
 				FontMetrics fm = textArea.getPainter().getFontMetrics();
-				y -= (fm.getDescent() + fm.getLeading());
-				underlineTask(task, gfx, physicalLine, start, end, y);
+				underlineTask(task, gfx, physicalLine, start, end, 
+							  y + fm.getAscent());
 			}
 		}
 	}//}}}
@@ -185,14 +181,11 @@ public class TaskHighlight extends TextAreaExtension
 	private void underlineTask(Task task,
 		Graphics2D gfx, int line, int _start, int _end, int y)
 	{
-		// Log.log(Log.DEBUG,this,"Calling underlineTask() for line "
-		//	+ String.valueOf(line) + "....");
 		int start = task.getStartOffset();
 		int end = task.getEndOffset();
 
 		if(start == 0 && end == 0)
 		{
-			// Log.log(Log.DEBUG,this,"Reseting start and end in underlineTask()....");
 			textArea.getLineText(line,seg);
 			for(int j = 0; j < seg.count; j++)
 			{
@@ -203,9 +196,6 @@ public class TaskHighlight extends TextAreaExtension
 			}
 			end = seg.count;
 		}
-
-		//if(start >= _end || end <= _start)
-		//		return;
 
 		try{
 
@@ -225,30 +215,8 @@ public class TaskHighlight extends TextAreaExtension
 		}
 
 		gfx.setColor(TaskListPlugin.getHighlightColor());
-		paintWavyLine(gfx,y,start,end);
+		gfx.drawLine(start,y+1,end,y+1);
 	}//}}}
-
-	//{{{ paintWavyLine() method
-	/**
-	 * Draws a wavy line at the indicated coordinates
-	 *
-	 * @param gfx The graphics context
-	 * @param y The y-coordinate representing the lower bound of the wavy line
-	 * @param start The x-coordinate of the start of the line
-	 * @param end The x-coordinate of the end of the line
-	 */
-	private void paintWavyLine(Graphics2D gfx, int y, int start, int end)
-	{
-		// Log.log(Log.DEBUG,this,"Calling paintWavyLine()....");
-		y += textArea.getPainter().getFontMetrics().getHeight();
-
-		for(int i = start; i < end; i+= 6)
-		{
-			gfx.drawLine(i,y + 3,i + 3,y + 1 );
-			gfx.drawLine(i + 3,y + 1,i + 6,y + 3);
-		}
-	}//}}}
-
 }
 
 // :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:
