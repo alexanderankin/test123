@@ -10,16 +10,6 @@
 			xml.XmlActions.completeClosingTag(view);
 		</CODE>
 	</ACTION>
-	<ACTION NAME="xml-complete-entity">
-		<CODE>
-			xml.XmlActions.completeKeyTyped(view,'&amp;');
-		</CODE>
-	</ACTION>
-	<ACTION NAME="xml-complete-tag">
-		<CODE>
-			xml.XmlActions.completeKeyTyped(view,'&lt;');
-		</CODE>
-	</ACTION>
 	<ACTION NAME="xml-insert-closing-tag">
 		<CODE>
 			xml.XmlActions.insertClosingTagKeyTyped(view);
@@ -27,11 +17,6 @@
 	</ACTION>
 
 	<!-- normal actions -->
-	<ACTION NAME="xml-complete">
-		<CODE>
-			xml.XmlActions.complete(view);
-		</CODE>
-	</ACTION>
 	<ACTION NAME="xml-chars-to-entities">
 		<CODE>
 			xml.XmlActions.charactersToEntities(view);

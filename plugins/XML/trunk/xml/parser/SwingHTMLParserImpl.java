@@ -34,12 +34,12 @@ import xml.completion.*;
 import xml.*;
 //}}}
 
-public class SwingHTMLParserImpl implements XmlSideKickParser
+public class SwingHTMLParserImpl extends XmlSideKickParser
 {
-	//{{{ getName() method
-	public String getName()
+	//{{{ SwingHTMLParserImpl constructor
+	public SwingHTMLParserImpl()
 	{
-		return "html";
+		super("htmlml");
 	} //}}}
 
 	//{{{ parse() method

@@ -19,6 +19,7 @@ package xml.parser;
 
 //{{{ Imports
 import java.util.*;
+import xml.completion.ElementDecl;
 import xml.XmlParsedData;
 //}}}
 

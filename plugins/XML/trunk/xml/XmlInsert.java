@@ -27,7 +27,7 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.jedit.*;
 import sidekick.*;
-import xml.parser.*;
+import xml.completion.*;
 //}}}
 
 public class XmlInsert extends JPanel implements EBComponent
