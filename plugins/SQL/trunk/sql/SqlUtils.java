@@ -737,9 +737,12 @@ public class SqlUtils
        throws SQLException
   {
     final ResultSet rs = stmt.getResultSet();
-    final Object model = ResultSetWindow.prepareModel( rs );
+    final ResultSetWindow.Data data = ResultSetWindow.prepareModel( rs );
     stmt.close();
     final View v = view;
+
+    if ( data == null )
+      return;
 
     runInAWTThreadAndWait(
       new Runnable()
@@ -750,7 +753,7 @@ public class SqlUtils
           if ( wnd == null )
             return;
 
-          wnd.updateByModel( model );
+          wnd.addDataSet( data );
         }
       } );
 

@@ -47,20 +47,14 @@ import sql.*;
  * @created    26 ?????? 2001 ?.
  */
 public class ResultSetWindow extends JPanel
-     implements EBComponent
 {
 
   protected View view;
-  protected JLabel server;
-  protected JLabel info;
   protected JLabel status;
-
-  protected JComponent dataView = null;
+  protected JTabbedPane notebook;
 
   protected int sortOrder = HelpfulJTable.SORT_OFF;
   protected int sortColumn = -1;
-
-  protected Data data = null;
 
   protected final static String MAX_RECS_TO_SHOW_PROP = "sql.maxRecordsToShow";
   protected final static String AUTORESIZE = "sql.autoresizeResult";
@@ -77,18 +71,12 @@ public class ResultSetWindow extends JPanel
     this.view = view;
 
     setLayout( new BorderLayout() );
-    final JPanel p = new JPanel( new BorderLayout() );
-    server = new JLabel( "blahblahblah" );
-    p.add( BorderLayout.NORTH, server );
-    info = new JLabel();
-    p.add( BorderLayout.SOUTH, info );
+//    final JPanel p = new JPanel( new BorderLayout() );
 
-    add( BorderLayout.NORTH, p );
+    notebook = new JTabbedPane();
+    add( BorderLayout.CENTER, notebook );
+
     add( BorderLayout.SOUTH, status = new JLabel() );
-
-    updateServerName( SqlUtils.getSelectedServerName( SqlUtils.getProject( view ) ) );
-
-    updateByModel( null );
 
     status.setText( jEdit.getProperty( "sql.resultSet.status",
         new Object[]{new Integer( SqlUtils.getThreadGroup().getNumberOfRequest() )} ) );
@@ -139,31 +127,46 @@ public class ResultSetWindow extends JPanel
   /**
    *  Description of the Method
    *
-   * @param  model  Description of Parameter
+   * @param  data  The feature to be added to the DataSet attribute
    * @since
    */
-  public void updateByModel( Object model )
+  public void addDataSet( Data data )
   {
-    if ( dataView != null )
-      remove( dataView );
+    final JPanel p = new JPanel( new BorderLayout() );
 
-    add( BorderLayout.CENTER, dataView = createDataView( model ) );
+    final JPanel p1 = new JPanel( new BorderLayout() );
 
-    updateStatus( model );
+    final JLabel server = new JLabel( SqlUtils.getSelectedServerName( SqlUtils.getProject( view ) ), SwingConstants.LEFT );
+    final JButton closeBtn = new JButton( new ImageIcon( Toolkit.getDefaultToolkit().getImage( getClass().getResource( "/icons/closebox.gif" ) ) ) );
+    closeBtn.addActionListener(
+      new ActionListener()
+      {
+        public void actionPerformed( ActionEvent evt )
+        {
+          notebook.remove( p );
+        }
+      } );
+    p1.add( BorderLayout.EAST, closeBtn );
+    p1.add( BorderLayout.WEST, server );
+    p.add( BorderLayout.NORTH, p1 );
+
+    final JComponent dataView = createDataView( data );
+    p.add( BorderLayout.CENTER, dataView );
+
+    final int recCount = data.recCount;
+    final Object[] args = {new Integer( recCount )};
+    final int maxRecs = getMaxRecordsToShow();
+    if ( recCount > maxRecs )
+      args[0] = new String( " > " + maxRecs );
+    final JLabel info = new JLabel( jEdit.getProperty( "sql.resultSet.info", args ), SwingConstants.LEFT );
+    p.add( BorderLayout.SOUTH, info );
+
+    notebook.addTab( "", new ImageIcon( Toolkit.getDefaultToolkit().getImage( getClass().getResource( "/icons/ResultSetWindowTab.png" ) ) ), p );
+    notebook.setSelectedComponent( p );
 
     revalidate();
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  message  Description of Parameter
-   */
-  public void handleMessage( EBMessage message )
-  {
-    if ( message instanceof SqlServerChanged )
-      updateServerName( ( (SqlServerChanged) message ).getNewServer() );
+    // select * from mysql.user
+    // select * from mysql.host
   }
 
 
@@ -172,11 +175,12 @@ public class ResultSetWindow extends JPanel
    *
    * @param  order  The new SortOrder value
    * @param  table  The new SortOrder value
+   * @param  data   The new SortOrder value
    */
-  protected void setSortOrder( JTable table, int order )
+  protected void setSortOrder( JTable table, Data data, int order )
   {
     sortOrder = order;
-    resort( table );
+    resort( table, data );
   }
 
 
@@ -185,23 +189,12 @@ public class ResultSetWindow extends JPanel
    *
    * @param  column  The new SortColumn value
    * @param  table   The new SortColumn value
+   * @param  data    The new SortColumn value
    */
-  protected void setSortColumn( JTable table, int column )
+  protected void setSortColumn( JTable table, Data data, int column )
   {
     sortColumn = column;
-    resort( table );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  name  Description of Parameter
-   */
-  protected void updateServerName( String name )
-  {
-    server.setText(
-        jEdit.getProperty( "sql.resultSet.server", new Object[]{name} ) );
+    resort( table, data );
   }
 
 
@@ -209,8 +202,9 @@ public class ResultSetWindow extends JPanel
    *  Description of the Method
    *
    * @param  table  Description of Parameter
+   * @param  data   Description of Parameter
    */
-  protected void resort( JTable table )
+  protected void resort( JTable table, Data data )
   {
     if ( data == null || data.rowData == null || data.columnNames == null )
       return;
@@ -256,50 +250,19 @@ public class ResultSetWindow extends JPanel
   /**
    *  Description of the Method
    *
-   * @param  model  Description of Parameter
+   * @param  data  Description of Parameter
+   * @return       Description of the Returned Value
    * @since
    */
-  protected void updateStatus( Object model )
+  protected JComponent createDataView( final Data data )
   {
-    if ( !( model instanceof Data ) )
-      return;
-    final int recCount = ( (Data) model ).recCount;
-    final Object[] args = {new Integer( recCount )};
-    final int maxRecs = getMaxRecordsToShow();
-    if ( recCount > maxRecs )
-      args[0] = new String( " > " + maxRecs );
-
-    info.setText( jEdit.getProperty( "sql.resultSet.info", args ) );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  model  Description of Parameter
-   * @return        Description of the Returned Value
-   * @since
-   */
-  protected JComponent createDataView( Object model )
-  {
-    if ( model == null )
-      return new JLabel( "No Data" );
-
-    if ( model instanceof String )
-      return new JLabel( (String) model );
-
-    if ( !( model instanceof Data ) )
-      return new JLabel( "What is " + model + "?" );
-
-    data = (Data) model;
-
     final HelpfulJTable tbl = new HelpfulJTable();
     tbl.addPropertyChangeListener( "sortOrder",
       new PropertyChangeListener()
       {
         public void propertyChange( PropertyChangeEvent evt )
         {
-          setSortOrder( tbl, ( (Number) evt.getNewValue() ).intValue() );
+          setSortOrder( tbl, data, ( (Number) evt.getNewValue() ).intValue() );
         }
       } );
 
@@ -308,7 +271,7 @@ public class ResultSetWindow extends JPanel
       {
         public void propertyChange( PropertyChangeEvent evt )
         {
-          setSortColumn( tbl, ( (Number) evt.getNewValue() ).intValue() );
+          setSortColumn( tbl, data, ( (Number) evt.getNewValue() ).intValue() );
         }
       } );
 
@@ -324,7 +287,7 @@ public class ResultSetWindow extends JPanel
       tbl.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
     }
 
-    setSortOrder( tbl, HelpfulJTable.SORT_OFF );
+    setSortOrder( tbl, data, HelpfulJTable.SORT_OFF );
 
     tbl.addMouseListener( new MouseHandler( tbl ) );
 
@@ -418,13 +381,13 @@ public class ResultSetWindow extends JPanel
    * @exception  SQLException  Description of Exception
    * @since
    */
-  public static Object prepareModel( ResultSet rs )
+  public static Data prepareModel( ResultSet rs )
        throws SQLException
   {
     int recCount = 0;
 
     if ( rs == null )
-      return "No Data";
+      return null;
 
     final ResultSetMetaData rsmd = rs.getMetaData();
     final int colNumber = rsmd.getColumnCount();
