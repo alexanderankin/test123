@@ -127,7 +127,7 @@ public class CatalogManager
 			|| newSystemId.startsWith("jeditresource:"))
 		{
 			InputSource source = new InputSource(systemId);
-			//source.setByteStream(new URL(newSystemId).openStream());
+			source.setByteStream(new URL(newSystemId).openStream());
 			return source;
 		}
 		else if(!network)
@@ -383,7 +383,7 @@ public class CatalogManager
 		Entry e = new Entry(Entry.PUBLIC,publicId,null);
 		String uri = (String)resourceCache.get(e);
 		if(uri == null)
-			return catalog.resolvePublic(publicId,systemId);
+			return catalog.resolvePublic(publicId,null);
 		else if(uri == IGNORE)
 			return null;
 		else

@@ -24,8 +24,7 @@ import org.gjt.sp.jedit.EditPane;
 import sidekick.*;
 import xml.completion.*;
 import xml.parser.TagParser;
-import xml.XmlListCellRenderer;
-import xml.XmlParsedData;
+import xml.*;
 
 public abstract class XmlParser extends SideKickParser
 {
@@ -65,6 +64,9 @@ public abstract class XmlParser extends SideKickParser
 			.getParsedData(editPane.getView());
 		if(!(_data instanceof XmlParsedData))
 			return null;
+		if(XmlPlugin.isDelegated(editPane.getTextArea()))
+			return null;
+
 		XmlParsedData data = (XmlParsedData)_data;
 
 		Buffer buffer = editPane.getBuffer();
