@@ -60,16 +60,7 @@ public final class ProjectPlugin extends EBPlugin {
 	//{{{ Static Members
 	public final static String NAME = "projectviewer";
 
-	private final static ProjectViewerConfig config;
-	static {
-		ProjectViewerConfig c = null;
-		try {
-			c = ProjectViewerConfig.getInstance();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		config = c;
-	}
+	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 
 	//{{{ +_getResourceAsStream(String)_ : InputStream
 	/**
@@ -172,8 +163,12 @@ public final class ProjectPlugin extends EBPlugin {
 		} else if (msg instanceof PropertiesChanged) {
 			VPTContextMenu.userMenuChanged();
 		} else if (msg instanceof ViewUpdate) {
-			if (((ViewUpdate)msg).getWhat() == ViewUpdate.CLOSED) {
-				ProjectViewer.cleanViewEntry(((ViewUpdate)msg).getView());
+			ViewUpdate vu = (ViewUpdate) msg;
+			if (vu.getWhat() == ViewUpdate.CLOSED) {
+				ProjectViewer.cleanViewEntry(vu.getView());
+			} else if (vu.getWhat() == ViewUpdate.CREATED
+					&& ProjectViewer.getViewer(vu.getView()) == null) {
+				ProjectViewer.setActiveNode(vu.getView(), config.getLastNode());
 			}
 		}
 	} //}}}
