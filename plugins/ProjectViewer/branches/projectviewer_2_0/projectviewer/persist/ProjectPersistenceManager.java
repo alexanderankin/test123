@@ -121,8 +121,8 @@ public final class ProjectPersistenceManager {
 	/** Saves the given project data to the disk. */
 	public static void save(VPTProject p, String filename) throws IOException {
 		OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_DIR + filename);
-		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF8");
-		ProjectManager.writeXMLHeader("UTF8", out);
+		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF-8");
+		ProjectManager.writeXMLHeader("UTF-8", out);
 		
 		saveNode(p, out);
 		
@@ -202,7 +202,6 @@ public final class ProjectPersistenceManager {
 		//{{{ endElement(String,String,String) method
 		/** Handles the closing of a directory element. */
 		public void endElement(String uri, String localName, String qName) {
-			Log.log(Log.DEBUG,this,"Ending node: " + qName);
 			if (!openNodes.isEmpty() && qName.equals(openNodes.peek())) {
 				currNode.sortChildren();
 				currNode = (VPTNode) currNode.getParent();

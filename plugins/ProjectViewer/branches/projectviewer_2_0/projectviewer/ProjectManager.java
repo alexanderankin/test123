@@ -334,8 +334,8 @@ public final class ProjectManager {
 	private void saveProjectList() throws IOException {
 		// save the global configuration
 		OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_FILE);
-		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF8");
-		writeXMLHeader("UTF8", out);
+		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF-8");
+		writeXMLHeader("UTF-8", out);
 		out.write("<" + PROJECT_ROOT + ">\n");
 		for (Iterator it = fileNames.keySet().iterator(); it.hasNext(); ) {
 			String pName = (String) it.next();
