@@ -6,8 +6,8 @@ import gatchan.phpparser.PHPErrorSource;
 import gatchan.phpparser.parser.PHPParser;
 import gatchan.phpparser.parser.ParseException;
 import gatchan.phpparser.parser.ParsingAbortedError;
-import gatchan.phpparser.project.AbstractProject;
 import gatchan.phpparser.project.PHPProjectChangedMessage;
+import gatchan.phpparser.project.Project;
 import gatchan.phpparser.project.ProjectManager;
 import net.sourceforge.phpdt.internal.compiler.ast.*;
 import net.sourceforge.phpdt.internal.compiler.parser.Outlineable;
@@ -25,7 +25,10 @@ import sidekick.SideKickParser;
 import javax.swing.text.Position;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.Reader;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * My sidekick implementation of the sidekick parser.
@@ -52,12 +55,14 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @param buffer      The buffer to parse.
    * @param errorSource An error source to add errors to.
+   *
    * @return A new instance of the <code>SideKickParsedData</code> class.
    */
   public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource) {
     phpErrorSource.setErrorSource(errorSource);
     final String path = buffer.getPath();
-    projectManager.getProject().clearSourceFile(path);
+    Project project = projectManager.getProject();
+    if (project != null) project.clearSourceFile(path);
     if (parser != null && !parser.isStopped()) {
       Log.log(Log.ERROR, PHPSideKickParser.class, "The parser had not been stopped before asking a new parse !");
       stop();
@@ -87,7 +92,7 @@ public final class PHPSideKickParser extends SideKickParser {
       Log.log(Log.ERROR, this, e);
       errorSource.addError(ErrorSource.ERROR,
                            path,
-                           e.currentToken.beginLine - 1,
+                                   e.currentToken.beginLine - 1,
                            e.currentToken.beginColumn,
                            e.currentToken.endColumn,
                            "Unhandled error please report the bug (with the trace in the activity log");
@@ -166,17 +171,20 @@ public final class PHPSideKickParser extends SideKickParser {
     }
     final JEditTextArea textArea = editPane.getTextArea();
     final int caretLine = textArea.getCaretLine();
-    final String line = buffer.getLineText(caretLine);
     final int caretInLine = caret - buffer.getLineStartOffset(caretLine);
+    if (caretInLine == 0) return null;
+    final String line = buffer.getLineText(caretLine);
     final int wordStart = TextUtilities.findWordStart(line, caretInLine - 1, "");
     final String currentWord = line.substring(wordStart, caretInLine);
 
-    final AbstractProject project = projectManager.getProject();
+    final Project project = projectManager.getProject();
 
     //Static class access
     PHPSideKickCompletion phpSideKickCompletion = null;
 
-    phpSideKickCompletion = completeStaticClassAccess(currentWord, line, wordStart, project, textArea);
+    if (project != null) {
+      phpSideKickCompletion = completeStaticClassAccess(currentWord, line, wordStart, project, textArea);
+    }
     if (phpSideKickCompletion != null) return phpSideKickCompletion;
 
     final ClassDeclaration currentClass = phpDocument.insideWichClassIsThisOffset(caret);
@@ -236,7 +244,7 @@ public final class PHPSideKickParser extends SideKickParser {
   private PHPSideKickCompletion completeStaticClassAccess(String currentWord,
                                                           String line,
                                                           int wordStart,
-                                                          AbstractProject project,
+                                                          Project project,
                                                           JEditTextArea textArea) {
     PHPSideKickCompletion phpSideKickCompletion = null;
     if ("::".equals(currentWord)) {
@@ -269,6 +277,7 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @param caret  the caret position
    * @param buffer the buffer
+   *
    * @return the previous word or ""
    */
   private static String getPreviousWord(int caret, Buffer buffer) {
@@ -291,16 +300,19 @@ public final class PHPSideKickParser extends SideKickParser {
    *
    * @param textArea the current textArea
    * @param word
+   *
    * @return a completion list
    */
   private SideKickCompletion completeClassDeclaration(JEditTextArea textArea, String word, String lastWord) {
     final PHPSideKickCompletion phpSideKickCompletion = new PHPSideKickCompletion(textArea, word, lastWord);
-    final AbstractProject project = projectManager.getProject();
-    final Map classes = project.getClasses();
-    final Collection collection = classes.values();
-    for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
-      final Object o = iterator.next();
-      phpSideKickCompletion.addItem(o, word);
+    final Project project = projectManager.getProject();
+    if (project != null) {
+      final Map classes = project.getClasses();
+      final Collection collection = classes.values();
+      for (Iterator iterator = collection.iterator(); iterator.hasNext();) {
+        final Object o = iterator.next();
+        phpSideKickCompletion.addItem(o, word);
+      }
     }
     Log.log(Log.DEBUG, this, "Items in list : " + phpSideKickCompletion.getItemsCount());
     /*final List children = phpDocument.getList();
@@ -314,7 +326,7 @@ public final class PHPSideKickParser extends SideKickParser {
   }
 
   private void updateProject(PHPDocument phpDocument, String path) {
-    final AbstractProject project = projectManager.getProject();
+    final Project project = projectManager.getProject();
     if (project != null) {
       if (project.acceptFile(path)) {
         for (int i = 0; i < phpDocument.getList().size(); i++) {
@@ -338,6 +350,7 @@ public final class PHPSideKickParser extends SideKickParser {
    * @param classHeader classHeader
    * @param currentWord the current word
    * @param lastWord    the previous word
+   *
    * @return a completion list or null if we aren't in a class
    */
   private static PHPSideKickCompletion completeClassMembers(JEditTextArea textArea,
@@ -360,11 +373,14 @@ public final class PHPSideKickParser extends SideKickParser {
     phpSideKickCompletion.addOutlineableList(fields, currentWord);
     final String superClassName = classHeader.getSuperClassName();
     if (superClassName != null) {
-      final ClassHeader superClassHeader = ProjectManager.getInstance().getProject().getClass(superClassName);
-      if (superClassHeader == null) {
-        Log.log(Log.DEBUG, PHPSideKickParser.class, "Unknown superclass " + superClassHeader);
-      } else {
-        completeClassMembers(superClassHeader, phpSideKickCompletion, currentWord);
+      Project project = ProjectManager.getInstance().getProject();
+      if (project != null) {
+        final ClassHeader superClassHeader = project.getClass(superClassName);
+        if (superClassHeader == null) {
+          Log.log(Log.DEBUG, PHPSideKickParser.class, "Unknown superclass " + superClassHeader);
+        } else {
+          completeClassMembers(superClassHeader, phpSideKickCompletion, currentWord);
+        }
       }
     }
   }
