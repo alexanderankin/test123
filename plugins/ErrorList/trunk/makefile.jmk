@@ -71,4 +71,4 @@ jar: srcs;
 	delete (glob (join (dirs "."), "/*.class"));
 }
 
-".PHONY": "all";
+".PHONY": "all" "docs";
