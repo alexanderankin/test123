@@ -32,6 +32,7 @@ import xml.*;
 
 // Xerces dependencies for schema introspection
 import org.apache.xerces.impl.xs.XSDDescription;
+import org.apache.xerces.impl.xs.XSParticleDecl;
 import org.apache.xerces.impl.xs.psvi.*;
 import org.apache.xerces.util.SymbolTable;
 import org.apache.xerces.util.XMLGrammarPoolImpl;
@@ -175,7 +176,8 @@ class SAXParserImpl implements XmlParser.Impl
 			XSElementDeclaration element = (XSElementDeclaration)
 				elements.getItem(i);
 
-			info.addElement(xsElementToElementDecl(info,element));
+			System.err.println("declared " + element.getName());
+			xsElementToElementDecl(info,element);
 		}
 
 		XSNamedMap attributes = model.getComponents(XSConstants.ATTRIBUTE_DECLARATION);
@@ -202,8 +204,7 @@ class SAXParserImpl implements XmlParser.Impl
 	private XmlParser parser;
 
 	//{{{ xsElementToElementDecl() method
-	ElementDecl xsElementToElementDecl(CompletionInfo info,
-		XSElementDeclaration element)
+	void xsElementToElementDecl(CompletionInfo info, XSElementDeclaration element)
 	{
 		ElementDecl elementDecl = new ElementDecl(info,element.getName(),null);
 
@@ -212,6 +213,25 @@ class SAXParserImpl implements XmlParser.Impl
 		if(typedef.getTypeCategory() == XSTypeDefinition.COMPLEX_TYPE)
 		{
 			XSComplexTypeDefinition complex = (XSComplexTypeDefinition)typedef;
+
+			XSParticle particle = complex.getParticle();
+			if(particle != null)
+			{
+				XSTerm particleTerm = particle.getTerm();
+				if(particleTerm instanceof XSElementDeclaration)
+					xsElementToElementDecl(info,(XSElementDeclaration)particleTerm);
+				else if(particleTerm instanceof XSModelGroup)
+				{
+					XSObjectList content = ((XSModelGroup)particleTerm).getParticles();
+					for(int i = 0; i < content.getLength(); i++)
+					{
+						XSTerm term = ((XSParticleDecl)content.getItem(i)).getTerm();
+						if(term instanceof XSElementDeclaration)
+							xsElementToElementDecl(info,(XSElementDeclaration)term);
+					}
+				}
+			}
+
 			XSObjectList attributes = complex.getAttributeUses();
 			for(int i = 0; i < attributes.getLength(); i++)
 			{
@@ -234,7 +254,7 @@ class SAXParserImpl implements XmlParser.Impl
 		// TODO: empty
 		elementDecl.any = true;
 
-		return elementDecl;
+		info.addElement(elementDecl);
 	} //}}}
 
 	//}}}
@@ -242,6 +262,7 @@ class SAXParserImpl implements XmlParser.Impl
 	//{{{ Handler class
 	class Handler extends DefaultHandler implements DeclHandler
 	{
+		HashMap activePrefixes = new HashMap();
 		Stack currentNodeStack = new Stack();
 		Locator loc = null;
 		boolean empty = true;
@@ -301,6 +322,13 @@ class SAXParserImpl implements XmlParser.Impl
 		//{{{ startPrefixMapping() method
 		public void startPrefixMapping(String prefix, String uri)
 		{
+			activePrefixes.put(prefix,uri);
+		} //}}}
+
+		//{{{ endPrefixMapping() method
+		public void endPrefixMapping(String prefix)
+		{
+			String uri = (String)activePrefixes.get(prefix);
 			// check for built-in completion info for this URI
 			// (eg, XSL, XSD, XHTML has this).
 			if(uri != null)

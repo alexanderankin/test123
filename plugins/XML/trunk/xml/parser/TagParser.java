@@ -19,9 +19,6 @@ package xml.parser;
 
 //{{{ Imports
 import java.util.*;
-import org.gjt.sp.jedit.View;
-import org.gjt.sp.jedit.textarea.JEditTextArea;
-import org.gjt.sp.jedit.textarea.Selection;
 import xml.XmlParsedData;
 //}}}
 

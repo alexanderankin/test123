@@ -25,7 +25,6 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.buffer.BufferChangeAdapter;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
-import org.gjt.sp.util.Log;
 import xml.parser.TagParser;
 //}}}
 

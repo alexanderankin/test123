@@ -21,19 +21,12 @@ import javax.swing.tree.*;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import java.awt.event.*;
-import java.awt.Component;
-import java.io.*;
 import java.util.*;
-import org.xml.sax.ext.DeclHandler;
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.*;
 import org.gjt.sp.jedit.buffer.*;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
 import errorlist.*;
-import xml.completion.*;
 import xml.*;
 //}}}
 

@@ -16,12 +16,9 @@
 package xml.completion;
 
 //{{{ Imports
-import java.io.*;
 import java.util.*;
 import org.xml.sax.helpers.DefaultHandler;
 import org.xml.sax.*;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
 import xml.parser.*;
 import xml.*;
 //}}}

@@ -189,7 +189,7 @@ public class ElementDecl
 
 		if(empty)
 			buf.append("EMPTY");
-		else
+		else if(content != null)
 		{
 			buf.append('(');
 

@@ -23,7 +23,6 @@ import org.gjt.sp.util.Log;
 import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
 import xml.parser.*;
-import xml.*;
 //}}}
 
 public class CompletionInfo
