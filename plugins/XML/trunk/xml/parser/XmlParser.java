@@ -381,6 +381,8 @@ public class XmlParser implements EBComponent
 		// sometimes.
 		if("xml".equals(buffer.getProperty(XmlPlugin.PARSER_PROPERTY)))
 			return new CompletionInfo();
+		else
+			return null;
 	} //}}}
 
 	//}}}

@@ -19,7 +19,6 @@ package xml;
 import java.io.*;
 import java.net.*;
 import java.util.*;
-import com.arbortext.catalog.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.xml.sax.*;
@@ -49,8 +48,8 @@ public class CatalogManager
 			{
 				// first, try resolving a relative name,
 				// to handle jEdit built-in DTDs
-				newSystemId = catalog.resolveSystem(
-					systemId.substring(current.length()));
+				newSystemId = resolveSystem(systemId.substring(
+					current.length()));
 			}
 		}
 
@@ -58,9 +57,9 @@ public class CatalogManager
 		if(newSystemId == null)
 		{
 			if(publicId == null)
-				newSystemId = catalog.resolveSystem(systemId);
+				newSystemId = resolveSystem(systemId);
 			else
-				newSystemId = catalog.resolvePublic(publicId,systemId);
+				newSystemId = resolvePublic(publicId);
 		}
 
 		// well, the catalog can't help us, so just assume the
@@ -73,7 +72,7 @@ public class CatalogManager
 				newSystemId = systemId;
 			else if(systemId.startsWith("/"))
 				newSystemId = "file://" + systemId;
-			else if(current != null)
+			else if(current != null && !MiscUtilities.isURL(current))
 				newSystemId = current + systemId;
 		}
 
@@ -88,12 +87,6 @@ public class CatalogManager
 		return source;
 	} //}}}
 
-	//{{{ addCatalog() method
-	public static void addCatalog(String uri)
-	{
-		addedCatalogs.addElement(uri);
-	} //}}}
-
 	//{{{ propertiesChanged() method
 	public static void propertiesChanged()
 	{
@@ -104,11 +97,31 @@ public class CatalogManager
 	//{{{ Private members
 
 	//{{{ Static variables
-	private static Catalog catalog;
 	private static boolean loaded;
-	private static Vector addedCatalogs = new Vector();
 	private static boolean networkOK;
+	private static HashMap defaultCatalog;
+	private static HashMap userCatalog;
 	//}}}
+
+	//{{{ resolvePublic() method
+	private static String resolvePublic(String id)
+	{
+		Entry e = new Entry(Entry.PUBLIC,id);
+		String uri = (String)userCatalog.get(e);
+		if(uri == null)
+			uri = (String)defaultCatalog.get(e);
+		return uri;
+	} //}}}
+
+	//{{{ resolveSystem() method
+	private static String resolveSystem(String id)
+	{
+		Entry e = new Entry(Entry.SYSTEM,id);
+		String uri = (String)userCatalog.get(e);
+		if(uri == null)
+			uri = (String)defaultCatalog.get(e);
+		return uri;
+	} //}}}
 
 	//{{{ load() method
 	private synchronized static void load()
@@ -116,85 +129,84 @@ public class CatalogManager
 		if(loaded)
 			return;
 
-		loaded = true;
+		defaultCatalog = loadCatalogFromProperties("default");
+		userCatalog = loadCatalogFromProperties("user");
 
-		catalog = new Catalog();
-		catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
+		loaded = true;
+	} //}}}
+
+	//{{{ loadCatalogFromProperties() method
+	private static HashMap loadCatalogFromProperties(String prefix)
+	{
+		HashMap returnValue = new HashMap();
 
 		int i;
 		String id, prop, uri;
 
-		try
+		i = 0;
+		while((id = jEdit.getProperty(prop = "xml." + prefix
+			+ ".public-id." + i++)) != null)
 		{
-			catalog.loadSystemCatalogs();
-
-			catalog.parseCatalog("jeditresource:XML.jar!/xml/dtds/catalog");
-
-			i = 0;
-			while((uri = jEdit.getProperty(
-				prop = "xml.catalog." + i++)) != null)
+			try
 			{
-				try
-				{
-					catalog.parseCatalog(uri);
-				}
-				catch(Exception ex2)
-				{
-					Log.log(Log.ERROR,CatalogManager.class,ex2);
-				}
+				returnValue.put(new Entry(Entry.PUBLIC,id),
+					jEdit.getProperty(prop + ".uri"));
 			}
-
-			i = 0;
-			while((id = jEdit.getProperty(
-				prop = "xml.public-id." + i++)) != null)
+			catch(Exception ex2)
 			{
-				try
-				{
-					catalog.addEntry(new CatalogEntry(
-						CatalogEntry.PUBLIC,id,
-						jEdit.getProperty(prop + ".uri")));
-				}
-				catch(Exception ex2)
-				{
-					Log.log(Log.ERROR,CatalogManager.class,ex2);
-				}
-			}
-
-			i = 0;
-			while((id = jEdit.getProperty(
-				prop = "xml.system-id." + i++)) != null)
-			{
-				try
-				{
-					catalog.addEntry(new CatalogEntry(
-						CatalogEntry.SYSTEM,id,
-						jEdit.getProperty(prop + ".uri")));
-				}
-				catch(Exception ex2)
-				{
-					Log.log(Log.ERROR,CatalogManager.class,ex2);
-				}
-			}
-
-			Enumeration e = addedCatalogs.elements();
-			while (e.hasMoreElements())
-			{
-				try
-				{
-					uri = (String)e.nextElement();
-					catalog.parseCatalog(uri);
-				}
-				catch(Exception ex2)
-				{
-					Log.log(Log.ERROR,CatalogManager.class,ex2);
-				}
+				Log.log(Log.ERROR,CatalogManager.class,ex2);
 			}
 		}
-		catch(Exception ex1)
+
+		i = 0;
+		while((id = jEdit.getProperty(prop = "xml." + prefix
+			+ ".system-id." + i++)) != null)
 		{
-			Log.log(Log.ERROR,CatalogManager.class,ex1);
+			try
+			{
+				returnValue.put(new Entry(Entry.SYSTEM,id),
+					jEdit.getProperty(prop + ".uri"));
+			}
+			catch(Exception ex2)
+			{
+				Log.log(Log.ERROR,CatalogManager.class,ex2);
+			}
 		}
+
+		return returnValue;
 	} //}}}
 
 	//}}}
+
+	//{{{ Entry class
+	static class Entry
+	{
+		static final int SYSTEM = 0;
+		static final int PUBLIC = 1;
+
+		int type;
+		String id;
+
+		Entry(int type, String id)
+		{
+			this.type = type;
+			this.id = id;
+		}
+
+		public boolean equals(Object o)
+		{
+			if(o instanceof Entry)
+			{
+				Entry e = (Entry)o;
+				return e.type == type && e.id.equals(id);
+			}
+			else
+				return false;
+		}
+
+		public int hashCode()
+		{
+			return id.hashCode();
+		}
+	} //}}}
 }

@@ -1,0 +1,125 @@
+# If your plugin includes DTDs, feel free to add them here and send
+# me a patch. I would like the XML plugin to work out of the box with
+# any XML files other plugins might use.
+
+# jEdit DTDs
+
+xml.default.system-id.0=actions.dtd
+xml.default.system-id.0.uri=jeditresource:/org/gjt/sp/jedit/actions.dtd
+
+xml.default.system-id.1=catalog.dtd
+xml.default.system-id.1.uri=jeditresource:/org/gjt/sp/jedit/catalog.dtd
+
+xml.default.system-id.2=dockables.dtd
+xml.default.system-id.2.uri=jeditresource:/org/gjt/sp/jedit/dockables.dtd
+
+xml.default.system-id.3=recent.dtd
+xml.default.system-id.3.uri=jeditresource:/org/gjt/sp/jedit/recent.dtd
+
+xml.default.system-id.4=xmode.dtd
+xml.default.system-id.4.uri=jeditresource:/org/gjt/sp/jedit/xmode.dtd
+
+xml.default.system-id.5=plugins.dtd
+xml.default.system-id.5.uri=jeditresource:/org/gjt/sp/jedit/pluginmgr/plugins.dtd
+
+xml.default.system-id.6=commando.dtd
+xml.default.system-id.6.uri=jeditresource:/Console.jar!/console/commando/commando.dtd
+
+xml.default.system-id.7=xml-completion-info.dtd
+xml.default.system-id.7.uri=jeditresource:/XML.jar!/xml/dtds/xml-completion-info.dtd
+
+# XHTML DTDs
+
+xml.default.public-id.0=-//W3C//DTD XHTML 1.0 Frameset//EN
+xml.default.public-id.0.uri=jeditresource:/XML.jar!/xml/dtds/xhtml1-frameset.dtd
+xml.default.system-id.8=http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd
+xml.default.system-id.8.uri=jeditresource:/XML.jar!/xml/dtds/xhtml1-frameset.dtd
+
+xml.default.public-id.1=-//W3C//DTD XHTML 1.0 Strict//EN
+xml.default.public-id.1.uri=jeditresource:/XML.jar!/xml/dtds/xhtml1-strict.dtd
+xml.default.system-id.9=http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd
+xml.default.system-id.9.uri=jeditresource:/XML.jar!/xml/dtds/xhtml1-strict.dtd
+
+xml.default.public-id.2=-//W3C//DTD XHTML 1.0 Transitional//EN
+xml.default.public-id.2.uri=jeditresource:/XML.jar!/xml/dtds/xhtml1-transitional.dtd
+xml.default.system-id.10=http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd
+xml.default.system-id.10.uri=jeditresource:/XML.jar!/xml/dtds/xhtml1-transitional.dtd
+
+xml.default.public-id.3=-//W3C//ENTITIES Latin 1 for XHTML//EN
+xml.default.public-id.3.uri=jeditresource:/XML.jar!/xml/dtds/ent/xhtml-lat1.ent
+xml.default.system-id.11=http://www.w3.org/TR/xhtml1/DTD/xhtml-lat1.ent
+xml.default.system-id.11.uri=jeditresource:/XML.jar!/xml/dtds/ent/xhtml-lat1.ent
+
+xml.default.public-id.4=-//W3C//ENTITIES Special for XHTML//EN
+xml.default.public-id.4.uri=jeditresource:/XML.jar!/xml/dtds/ent/xhtml-special.ent
+xml.default.system-id.12=http://www.w3.org/TR/xhtml1/DTD/xhtml-special.ent
+xml.default.system-id.12.uri=jeditresource:/XML.jar!/xml/dtds/ent/xhtml-special.ent
+
+xml.default.public-id.5=-//W3C//ENTITIES Symbols for XHTML//EN
+xml.default.public-id.5.uri=jeditresource:/XML.jar!/xml/dtds/ent/xhtml-symbol.ent
+xml.default.system-id.13=http://www.w3.org/TR/xhtml1/DTD/xhtml-symbol.ent
+xml.default.system-id.13.uri=jeditresource:/XML.jar!/xml/dtds/ent/xhtml-symbol.ent
+
+# Plugin DTDs
+
+xml.default.system-id.14=sqlServerType.dtd
+xml.default.system-id.14.uri=jeditresource:/SQL.jar!/sqlServerType.dtd
+
+# DocBook DTDs
+
+xml.default.public-id.6=-//OASIS//DTD DocBook XML V4.1.2//EN
+xml.default.public-id.6.uri=jeditresource:/XML.jar!/xml/dtds/docbookx.dtd
+
+xml.default.public-id.7=-//OASIS//DTD DocBook XML CALS Table Model V4.1.2//EN
+xml.default.public-id.7.uri=jeditresource:/XML.jar!/xml/dtds/calstblx.dtd
+xml.default.public-id.8=-//OASIS//DTD XML Exchange Table Model 19990315//EN
+xml.default.public-id.8.uri=jeditresource:/XML.jar!/xml/dtds/soextblx.dtd
+xml.default.public-id.9=-//OASIS//ELEMENTS DocBook XML Information Pool V4.1.2//EN
+xml.default.public-id.9.uri=jeditresource:/XML.jar!/xml/dtds/dbpoolx.mod
+xml.default.public-id.10=-//OASIS//ELEMENTS DocBook XML Document Hierarchy V4.1.2//EN
+xml.default.public-id.10.uri=jeditresource:/XML.jar!/xml/dtds/dbhierx.mod
+xml.default.public-id.11=-//OASIS//ENTITIES DocBook XML Additional General Entities V4.1.2//EN
+xml.default.public-id.11.uri=jeditresource:/XML.jar!/xml/dtds/dbgenent.mod
+xml.default.public-id.12=-//OASIS//ENTITIES DocBook XML Notations V4.1.2//EN
+xml.default.public-id.12.uri=jeditresource:/XML.jar!/xml/dtds/dbnotnx.mod
+xml.default.public-id.13=-//OASIS//ENTITIES DocBook XML Character Entities V4.1.2//EN
+xml.default.public-id.13.uri=jeditresource:/XML.jar!/xml/dtds/dbcentx.mod
+
+xml.default.public-id.14=ISO 8879:1986//ENTITIES Diacritical Marks//EN
+xml.default.public-id.14.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-dia.ent
+xml.default.public-id.15=ISO 8879:1986//ENTITIES Numeric and Special Graphic//EN
+xml.default.public-id.15.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-num.ent
+xml.default.public-id.16=ISO 8879:1986//ENTITIES Publishing//EN
+xml.default.public-id.16.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-pub.ent
+xml.default.public-id.17=ISO 8879:1986//ENTITIES General Technical//EN
+xml.default.public-id.17.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-tech.ent
+xml.default.public-id.18=ISO 8879:1986//ENTITIES Added Latin 1//EN
+xml.default.public-id.18.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-lat1.ent
+xml.default.public-id.19=ISO 8879:1986//ENTITIES Added Latin 2//EN
+xml.default.public-id.19.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-lat2.ent
+xml.default.public-id.20=ISO 8879:1986//ENTITIES Greek Letters//EN
+xml.default.public-id.20.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-grk1.ent
+xml.default.public-id.21=ISO 8879:1986//ENTITIES Monotoniko Greek//EN
+xml.default.public-id.21.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-grk2.ent
+xml.default.public-id.22=ISO 8879:1986//ENTITIES Greek Symbols//EN
+xml.default.public-id.22.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-grk3.ent
+xml.default.public-id.23=ISO 8879:1986//ENTITIES Alternative Greek Symbols//EN
+xml.default.public-id.23.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-grk4.ent
+xml.default.public-id.24=ISO 8879:1986//ENTITIES Added Math Symbols: Arrow Relations//EN
+xml.default.public-id.24.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-amsa.ent
+xml.default.public-id.25=ISO 8879:1986//ENTITIES Added Math Symbols: Binary Operators//EN
+xml.default.public-id.25.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-amsb.ent
+xml.default.public-id.26=ISO 8879:1986//ENTITIES Added Math Symbols: Delimiters//EN
+xml.default.public-id.26.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-amsc.ent
+xml.default.public-id.27=ISO 8879:1986//ENTITIES Added Math Symbols: Negated Relations//EN
+xml.default.public-id.27.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-amsn.ent
+xml.default.public-id.28=ISO 8879:1986//ENTITIES Added Math Symbols: Ordinary//EN
+xml.default.public-id.28.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-amso.ent
+xml.default.public-id.29=ISO 8879:1986//ENTITIES Added Math Symbols: Relations//EN
+xml.default.public-id.29.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-amsr.ent
+xml.default.public-id.30=ISO 8879:1986//ENTITIES Box and Line Drawing//EN
+xml.default.public-id.30.uri=jeditresource:/XML.jar!/xml/dtds/ent/so-box.ent
+xml.default.public-id.31=ISO 8879:1986//ENTITIES Russian Cyrillic//EN
+xml.default.public-id.31.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-cyr1.ent
+xml.default.public-id.32=ISO 8879:1986//ENTITIES Non-Russian Cyrillic//EN
+xml.default.public-id.32.uri=jeditresource:/XML.jar!/xml/dtds/ent/iso-cyr2.ent
