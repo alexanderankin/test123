@@ -36,7 +36,7 @@ import velocity.VelocityConstants;
 /**
  * A directive to execute a beanshell script.
  */
-public class BeanShell extends Directive
+public class BeanShell extends SimpleDirective
     implements VelocityConstants
 {
 
@@ -64,17 +64,19 @@ public class BeanShell extends Directive
    throws MethodInvocationException, IOException
    {
       if (node.jjtGetChild(0) == null) {
-         rsvc.error("#prompt() error :  null script");
+         rsvc.error("#beanshell() error :  null script");
          return false;
       }
+      boolean writeResult = getOptionalBoolean(node, 0, context, true);
+
       View view = (View) context.get(VIEW);
       NameSpace contextNS = new NameSpace(org.gjt.sp.jedit.BeanShell.getNameSpace(),
                                           "velocity_context");
       try {
          contextNS.setVariable("context", context.getInternalUserContext());
          Object result = org.gjt.sp.jedit.BeanShell.eval(view, contextNS,
-                                                         node.jjtGetChild(0).literal());
-         if (result != null) {
+                                                         getBlockNode(node).literal());
+         if (writeResult && result != null) {
             writer.write(result.toString());
          }
          return true;
