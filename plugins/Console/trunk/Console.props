@@ -124,7 +124,7 @@ console.shell.aliases.usage=Usage: %aliases\n\
 	Lists all defined aliases.\n\
 	Aliases are not persistent.
 
-console.shell.browse.usage=Usage: %browse [<directory>]\n\
+console.shell.browse.usage=Usage: %browse [-n|--new-window] [<directory>]\n\
 	Opens specified directory in file system browser.\n\
 	If a directory is not specified, current directory is assumed.
 
