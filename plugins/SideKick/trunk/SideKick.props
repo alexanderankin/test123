@@ -24,6 +24,8 @@ sidekick-menu=sidekick-tree \
 	sidekick-next-asset \
 	sidekick-select-asset \
 	- \
+	sidekick-complete - \
+	- \
 	sidekick-parse \
 	sidekick-keystroke-parse
 sidekick-menu.label=SideKick

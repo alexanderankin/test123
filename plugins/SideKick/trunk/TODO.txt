@@ -2,9 +2,9 @@ Version 0.1:
 
 - parent/child asset actions
 - finish docs
+- code completion framework
 
 Later:
 
 - should not reparse on edit pane change
 - custom actions on double-click, etc.
-- code completion framework
