@@ -139,7 +139,7 @@ You can close unused connections at any other itme using the
   </itemizedlist>
 
   <itemizedlist>
-   <listitem><para>Now supports AS/400 servers.</para></listitem>
+   <listitem><para>Now supports AS/400 servers (Nagy Gabor).</para></listitem>
   </itemizedlist>
 
   </listitem>
