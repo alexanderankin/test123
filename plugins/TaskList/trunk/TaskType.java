@@ -69,7 +69,7 @@ public class TaskType
 		if(match == null)
 			return null;
 
-		/* NOTE: removed because gnu.regexp.REMatch doesn't have this anymore...
+		/*    NOTE: removed because gnu.regexp.REMatch doesn't have this anymore...
 		if(match.getSubCount() != 3)
 		{
 			Log.log(Log.WARNING, TaskType.class,
@@ -79,6 +79,13 @@ public class TaskType
 			return null;
 		}
 		*/
+//		Log.log(Log.DEBUG,this,"Match found using " + re.toString());
+//		Log.log(Log.DEBUG,this,"Match on: " + tokenText);
+//		Log.log(Log.DEBUG,this,"Match = " + match.toString());
+//		Log.log(Log.DEBUG,this,"Match 0 = " + match.toString(0));
+//		Log.log(Log.DEBUG,this,"Match 1 = " + match.toString(1));
+//		Log.log(Log.DEBUG,this,"Match 2 = " + match.toString(2));
+//		Log.log(Log.DEBUG,this,"Match 3 = " + match.toString(3));
 
 		int start = (displayIdentifier == true ? match.getStartIndex(1) :
 			match.getStartIndex(2));

@@ -108,6 +108,7 @@ public class TaskList extends JPanel implements EBComponent
 			}
 			init = true;
 			resizeTable();
+			sort();
 		}
 
 		public TaskListModel getTaskListModel()

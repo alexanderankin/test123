@@ -37,7 +37,7 @@
 				included with the jEdit distribution.
 			</para>
 		</legalnotice>
-		<title>TaskList plugin beta 0.3.3</title>
+		<title>TaskList plugin version 0.3.5</title>
 		<revhistory>
 			<revision>
 				<revnumber>0.2</revnumber>
@@ -63,6 +63,16 @@
 				<revnumber>0.3.3</revnumber>
 				<date>January 29, 2002</date>
 				<revremark>Port to jEdit 4.0 API</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.4</revnumber>
+				<date>March 4, 2002</date>
+				<revremark>Release on jEdit Plugin Central</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.5</revnumber>
+				<date>March 17, 2002</date>
+				<revremark>Fixed bug in parsing routine</revremark>
 			</revision>
 		</revhistory>
 	</articleinfo>

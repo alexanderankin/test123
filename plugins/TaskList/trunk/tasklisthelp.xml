@@ -190,18 +190,23 @@
 	expression being in the basic form of the default types:
 </para>
 <para>
-	<userinput>(?:^|\s+)(<replaceable>tag-name</replaceable>):(?:\s+)(.+)$</userinput>
+	<userinput>(?:\s*)(<replaceable>tag-name</replaceable>):(?:\s+)(.+)$</userinput>
 </para>
 <para>
-	When using the current beta version, the name of the task type should match
+	When using the current version, the name of the task type should match
 	the tag name used in regular expression.
+</para>
+<para>
+	You can reset the task patterns to those installed with the plugin by using the
+	<guimenuitem>Task List</guimenuitem>&gt;<guimenuitem>Reset task patterns</guimenuitem>
+	command.
 </para>
 
 </simplesect>
 
 <simplesect><title>Known bugs and limitations</title>
 <para>
-	Tthe name of a task item
+	The name of a task item
 	must currently be identical to the tag text contained in the regular
 	expression defining the task item.  These items will be corrected in a future
 	version.
