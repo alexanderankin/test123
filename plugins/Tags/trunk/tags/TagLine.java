@@ -39,6 +39,8 @@ class TagLine
   protected int    definitionLineNumber_ = -1;
   protected File   tagIndexFile_;
   
+  protected Vector exuberantInfoItems_;
+  
   /***************************************************************************/
   public TagLine(String tag, String definitionFile, String origSearchString,
                  String searchString, int definitionLineNumber,

@@ -1,6 +1,7 @@
 /*
- * ChooseTagList.java
+ * ExuberantInfoItem.java
  * Copyright (c) 2001 Kenrick Drew
+ * kdrew@earthlink.net
  *
  * This file is part of TagsPlugin
  *
@@ -21,43 +22,35 @@
 
 package tags;
 
-import javax.swing.*;
-import javax.swing.event.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.Vector;
+import java.io.*;
+import java.lang.System.*;
+import java.util.*;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.util.Log;
 
-class ChooseTagList extends JList {
+class ExuberantInfoItem 
+{
+  /***************************************************************************/
+  String origToken;
+  String formattedToken;
   
   /***************************************************************************/
-	private TagsParser parser_;
-  private Vector tagIdentifiers_;
-  private View view_;
+  public ExuberantInfoItem(String token) 
+  { 
+    origToken = new String(token);
+    
+    int colonIndex = token.indexOf(':');
+    if (colonIndex != -1)
+      formattedToken = token.substring(0,colonIndex) + ": " + 
+                       token.substring(colonIndex + 1);
+    else
+      formattedToken = new String(token);
+  }
+
+  /***************************************************************************/
+  public String toString() { return origToken; }
   
   /***************************************************************************/
-	public ChooseTagList(View view, TagsParser parser) {
-    super();
-
-    view_ = view;
-    parser_ = parser;
-    
-    // Setup items for JList
-    tagIdentifiers_ = parser_.getTagLines();
-
-    setListData(tagIdentifiers_);
-    
-    // Setup JList
-    /* Generally 8 is the magic number for the number of visible items/rows in 
-     * a list or menu, but we do 8 to 12 b/c each item is actually 2 or 3 rows
-     */
-    setVisibleRowCount(Math.min(tagIdentifiers_.size(),4));  
-    setSelectedIndex(0);
-		setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-    // Setup renderer
-    setCellRenderer(new TagListCellRenderer());
-	}
-
+  public String toHTMLString() { return formattedToken; }
 }
