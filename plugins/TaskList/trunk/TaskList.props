@@ -15,7 +15,7 @@ plugin.TaskListPlugin.depend.2=plugin EditBusPlugin 1.0
 tasklist.title=Task List
 tasklist.label=Task List
 
-# QUESTION here is a question
+# QUESTION: here is a question
 
 # action labels
 tasklist.toggle.label=Task List
@@ -64,6 +64,7 @@ tasklist.highlight.tasks=true
 
 # Plugin toolbar buttons
 tasklist.icons=Binocular.gif \
+	Debug.gif \
 	DeleteDocument.gif \
 	Document.gif \
 	Exclamation.gif \
@@ -74,21 +75,25 @@ tasklist.icons=Binocular.gif \
 	RedFlag.gif
 
 # Task List task types
-tasklist.tasktype.0.iconpath=Exclamation.gif
+tasklist.tasktype.0.iconpath=Debug.gif
 tasklist.tasktype.0.ignorecase=false
-tasklist.tasktype.0.pattern=(?\:^|\\s+)(TODO)\:(?\:\\s+)(.+)$
-tasklist.tasktype.0.sample=TODO\: blah, blah...
-tasklist.tasktype.1.iconpath=Document.gif
+tasklist.tasktype.0.pattern=(?\:^|\\s+)(DEBUG)\:(?\:\\s+)(.+)$
+tasklist.tasktype.0.sample=DEBUG\: [comment text]
+tasklist.tasktype.1.iconpath=Intranet.gif
 tasklist.tasktype.1.ignorecase=false
-tasklist.tasktype.1.pattern=(?\:^|\\s+)(NOTE)\:(?\:\\s+)(.+)$
-tasklist.tasktype.1.sample=NOTE\: blah, blah...
-tasklist.tasktype.2.iconpath=Intranet.gif
+tasklist.tasktype.1.pattern=(?\:^|\\s+)(IDEA)\:(?\:\\s+)(.+)$
+tasklist.tasktype.1.sample=IDEA\: [comment text]
+tasklist.tasktype.2.iconpath=Document.gif
 tasklist.tasktype.2.ignorecase=false
-tasklist.tasktype.2.pattern=(?\:^|\\s+)(IDEA)\:(?\:\\s+)(.+)$
-tasklist.tasktype.2.sample=IDEA\: blah, blah...
+tasklist.tasktype.2.pattern=(?\:^|\\s+)(NOTE)\:(?\:\\s+)(.+)$
+tasklist.tasktype.2.sample=NOTE\: [comment text]
 tasklist.tasktype.3.iconpath=Magnify.gif
 tasklist.tasktype.3.ignorecase=false
 tasklist.tasktype.3.pattern=(?\:^|\\s+)(QUESTION)\:(?\:\\s+)(.+)$
-tasklist.tasktype.3.sample=QUESTION\: blah, blah...
+tasklist.tasktype.3.sample=QUESTION\: [comment text]
+tasklist.tasktype.4.iconpath=Exclamation.gif
+tasklist.tasktype.4.ignorecase=false
+tasklist.tasktype.4.pattern=(?\:^|\\s+)(TODO)\:(?\:\\s+)(.+)$
+tasklist.tasktype.4.sample=TODO\: [comment text]
 
 
