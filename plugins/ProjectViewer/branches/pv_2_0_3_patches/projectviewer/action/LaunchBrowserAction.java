@@ -73,16 +73,17 @@ public class LaunchBrowserAction extends Action {
 	//{{{ +actionPerformed(ActionEvent) : void
 	/** Creates a new project. */
 	public void actionPerformed(ActionEvent e) {
-		if (file == null) {
-			file = (VPTFile) viewer.getSelectedNode();
+		VPTFile toOpen = file;
+		if (toOpen == null) {
+			toOpen = (VPTFile) viewer.getSelectedNode();
 		}
-		VPTProject p = VPTNode.findProjectFor(file);
+		VPTProject p = VPTNode.findProjectFor(toOpen);
 
 		String sURL;
-		if (p.getURL() != null && file.getNodePath().startsWith(p.getRootPath())) {
-			sURL = p.getURL() + file.getNodePath().substring(p.getRootPath().length() + 1);
+		if (p.getURL() != null && toOpen.getNodePath().startsWith(p.getRootPath())) {
+			sURL = p.getURL() + toOpen.getNodePath().substring(p.getRootPath().length() + 1);
 		} else {
-			sURL = "file:" + file.getNodePath();
+			sURL = "file:" + toOpen.getNodePath();
 		}
 
 		if (ProjectViewerConfig.getInstance().getUseInfoViewer()) {
