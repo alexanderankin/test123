@@ -31,6 +31,8 @@ import javax.xml.transform.sax.TransformerHandler;
 import java.io.IOException;
 import java.io.Writer;
 
+import xml.XmlPlugin;
+
 /**
  * Indents elements, by adding whitespace where appropriate.
  * Does not remove blank lines between nodes.
@@ -66,6 +68,13 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
   public void comment(char ch[], int start, int length) throws SAXException {
     try {
+      int priorSpaceIndex = start - 5;
+
+      while(Character.isSpaceChar(ch[priorSpaceIndex])) {
+        writer.write(' ');
+        priorSpaceIndex--;
+      }
+
       writer.write("<!--");
       writer.write(ch, start, length);
       writer.write("-->");
@@ -152,8 +161,11 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
           end = writeXmlDeclarationOrProcessingInstruction(start);
 
         } else if(xml.startsWith("<!", start)) {
-          end = writeDocType(start);
-
+          if(xml.startsWith("<![CDATA[", start)) {
+            end = writeCData(start);
+          } else {
+            end = writeDocType(start);
+          }
         } else if(xml.startsWith("</", start)) {
           end = writeClosingTag(start);
 
@@ -166,6 +178,20 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
     }
 
     return outputWriter.toString();
+  }
+
+
+  private int writeCData(int start) throws IOException, SAXException {
+    int end = xml.indexOf("]]>", start);
+    writeRemaining(start, end);
+    if(isContinue) {
+      startCDATA();
+      end = end + 3;
+      writer.write(xml, start, end - start);
+      endCDATA();
+    }
+
+    return end;
   }
 
 
@@ -286,8 +312,14 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
 
 
   private int writeDocType(int start) throws IOException {
-    int end;
-    end = xml.indexOf('>', start);
+    int end = xml.indexOf('>', start);
+    int bracketStart = xml.indexOf('[', start);
+
+    if(bracketStart != -1 && bracketStart < end) {
+      int bracketEnd = xml.indexOf(']', bracketStart);
+      end = xml.indexOf('>', bracketEnd);
+    }
+
     writeRemaining(start, end);
 
     if(isContinue) {
@@ -297,6 +329,7 @@ public abstract class IndentingTransformer implements TransformerHandler, DeclHa
       writer.write(xml, start, length);
       isDocType = true;
     }
+
     return end;
   }
 
