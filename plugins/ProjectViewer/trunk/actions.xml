@@ -5,28 +5,28 @@
 
 	<ACTION NAME="projectviewer_edit_project">
 		<CODE>
-			projectviewer.action.EditProjectAction.editProject(view);
+			projectviewer.PVActions.editProject(view);
 		</CODE>
 	</ACTION>
-<ACTION NAME="selectedfiles-viewer-menu-item">
-    <CODE>
-      pv = view.getDockableWindowManager().getDockable("projectviewer");
-      if (pv == null) {
-        JOptionPane.showMessageDialog(view, "cannot get ProjectViewer");
-      }
-      else {
-        // JOptionPane.showMessageDialog(view, "Got Project Viewer");
-	String s = "";
-	List list = pv.getSelectedFilePaths();
-	if (list !=null) {
-	ListIterator iter = list.listIterator();
-	while ( iter.hasNext() ) {
-	        s += iter.next() + "\n";
-    
-	}
-	textArea.setSelectedText(s);
-	}
-      }
-    </CODE>
-  </ACTION>
+	
+	<ACTION NAME="selectedfiles-viewer-menu-item">
+    	<CODE>
+			pv = view.getDockableWindowManager().getDockable("projectviewer");
+			if (pv == null) {
+				JOptionPane.showMessageDialog(view, "cannot get ProjectViewer");
+			} else {
+				// JOptionPane.showMessageDialog(view, "Got Project Viewer");
+				String s = "";
+				List list = pv.getSelectedFilePaths();
+				if (list !=null) {
+					ListIterator iter = list.listIterator();
+					while ( iter.hasNext() ) {
+						s += iter.next() + "\n";
+					}
+					textArea.setSelectedText(s);
+				}
+			}
+		</CODE>
+	</ACTION>
+	
 </ACTIONS>
