@@ -379,6 +379,17 @@ errorSource.addError(new ErrorSource.DefaultError(
 
  <itemizedlist>
 
+  <listitem><formalpara><title>Version 1.2.1</title><para>requires
+  jEdit 4.0pre4.
+  </para></formalpara>
+
+   <itemizedlist>
+    <listitem><para>Updated to use jEdit 4.0pre4 text area extension API.
+    </para></listitem>
+   </itemizedlist>
+
+  </listitem>
+
   <listitem><formalpara><title>Version 1.2</title><para>requires jEdit 4.0pre1.
   </para></formalpara>
 
