@@ -196,21 +196,23 @@ console.error.jade.message=$4
 
 console.error.ant.name=Ant javac
 console.error.ant.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
-console.error.ant.warning=.*(Warning|warning|Caution|caution).*
+console.error.ant.warning=\\s*\\[javac\\]\\s+(.+?):(\\d+): \
+	(Warning|warning|Caution|caution).*
 console.error.ant.filename=$1
 console.error.ant.line=$2
 console.error.ant.message=$3
 
 console.error.emacs.name=Emacs-style
 console.error.emacs.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
-console.error.emacs.warning=.*(Warning|warning|Caution|caution).*
+console.error.generic.warning=(.+):(\\d+):\\d+:\\d+:\\d+: \
+	(Warning|warning|Caution|caution).*
 console.error.emacs.filename=$1
 console.error.emacs.line=$2
 console.error.emacs.message=$3
 
 console.error.generic.name=Generic
 console.error.generic.match=(.+):(\\d+):(.+)
-console.error.generic.warning=.*(Warning|warning|Caution|caution).*
+console.error.generic.warning=.(.+):(\\d+): (Warning|warning|Caution|caution).*
 console.error.generic.filename=$1
 console.error.generic.line=$2
 console.error.generic.message=$3
