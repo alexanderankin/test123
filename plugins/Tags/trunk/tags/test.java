@@ -18,6 +18,10 @@ class test {
         - highlight tag, new file
         
         - Also do on known collisions
+           - both popup and dialog
+           - test escape
+           - arrow keys
+           - number keys
     */
 
     // Tag on   nothing...
@@ -38,15 +42,17 @@ class test {
     // ^ cursor
     
     // tag to something known to not be found.  Make sure item is unhighlighted
+
+    // main
     
-    // getDefinitionFileName
+    // (main())
     
-    // (getDefinitionFileName())
-    
-    // tag to this:                                       getDefinitionFileName
+    // tag to this:                                       main
  
     // view_
- 
+
+    // view
+    
     // jEdit.openFile
  
  
