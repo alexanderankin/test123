@@ -960,12 +960,22 @@ public final class Project implements EBComponent {
     * @return     Description of the Returned Value
     */
    private String escape( String str ) {
+      if (str == null)
+         return "";
       StringBuffer buf = new StringBuffer( str );
       for ( int i = 0; i < buf.length(); i++ ) {
          if ( buf.charAt( i ) == '\\' )
             buf.replace( i, ++i, "\\\\" );
       }
       return buf.toString();
+   }
+   
+   // a unit test for Fin
+   private void testEscape() {
+      assert escape(null) != null;
+      assert escape(null).equals("");
+      assert escape("c:\\temp\\file.txt").equals("c:\\\\temp\\\\file.txt");
+      assert escape("/tmp/file.txt").equals("/tmp/file.txt");
    }
 
    /**
@@ -1021,6 +1031,16 @@ public final class Project implements EBComponent {
     */
    public void setLastFile( String filename ) {
       lastFile = filename;
+   }
+   
+   public static int runTests() {
+      Project p = new Project("test");
+      
+      int x = 0;
+      p.testEscape();
+      ++x;
+      
+      return x;
    }
 }
 
