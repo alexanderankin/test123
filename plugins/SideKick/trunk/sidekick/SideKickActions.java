@@ -36,7 +36,6 @@ public class SideKickActions
 	//{{{ completeKeyTyped() method
 	public static void completeKeyTyped(final View view, char ch)
 	{
-		EditPane editPane = view.getEditPane();
 		final JEditTextArea textArea = view.getTextArea();
 
 		textArea.userInput(ch);
@@ -54,7 +53,7 @@ public class SideKickActions
 		if(/* XmlPlugin.isDelegated(textArea) || */ !buffer.isEditable())
 			return;
 
-		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData data = SideKickParsedData.getParsedData(view);
 		if(data == null)
 			return;
 
@@ -94,10 +93,9 @@ public class SideKickActions
 	//{{{ complete() method
 	public static void complete(View view)
 	{
-		EditPane editPane = view.getEditPane();
-		Buffer buffer = editPane.getBuffer();
-		JEditTextArea textArea = editPane.getTextArea();
-		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
+		Buffer buffer = view.getBuffer();
+		JEditTextArea textArea = view.getTextArea();
+		SideKickParsedData data = SideKickParsedData.getParsedData(view);
 		SideKickParser parser = SideKickPlugin.getParserForBuffer(buffer);
 
 		// XXX
@@ -115,21 +113,21 @@ public class SideKickActions
 	} //}}}
 
 	//{{{ selectAsset() method
-	public static void selectAsset(EditPane editPane, int caret)
+	public static void selectAsset(View view)
 	{
-		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData data = SideKickParsedData.getParsedData(view);
 		if(data == null)
 		{
-			editPane.getToolkit().beep();
+			view.getToolkit().beep();
 			return;
 		}
 
-		JEditTextArea textArea = editPane.getTextArea();
+		JEditTextArea textArea = view.getTextArea();
 
-		TreePath path = data.getTreePathForPosition(caret);
+		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
 		if(path == null)
 		{
-			editPane.getToolkit().beep();
+			view.getToolkit().beep();
 			return;
 		}
 		Asset asset = (Asset)((DefaultMutableTreeNode)path
@@ -147,21 +145,21 @@ public class SideKickActions
 	} //}}}
 
 	//{{{ goToPrevAsset() method
-	public static void goToPrevAsset(EditPane editPane)
+	public static void goToPrevAsset(View view)
 	{
-		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData data = SideKickParsedData.getParsedData(view);
 		if(data == null)
 		{
-			editPane.getToolkit().beep();
+			view.getToolkit().beep();
 			return;
 		}
 
-		JEditTextArea textArea = editPane.getTextArea();
+		JEditTextArea textArea = view.getTextArea();
 
 		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
 		if(path == null)
 		{
-			editPane.getToolkit().beep();
+			view.getToolkit().beep();
 			return;
 		}
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -188,7 +186,7 @@ public class SideKickActions
 		}
 
 		if(destination == null)
-			editPane.getToolkit().beep();
+			view.getToolkit().beep();
 		else
 		{
 			textArea.setCaretPosition(destination.start.getOffset());
@@ -196,21 +194,21 @@ public class SideKickActions
 	} //}}}
 
 	//{{{ goToNextAsset() method
-	public static void goToNextAsset(EditPane editPane)
+	public static void goToNextAsset(View view)
 	{
-		SideKickParsedData data = SideKickParsedData.getParsedData(editPane);
+		SideKickParsedData data = SideKickParsedData.getParsedData(view);
 		if(data == null)
 		{
-			editPane.getToolkit().beep();
+			view.getToolkit().beep();
 			return;
 		}
 
-		JEditTextArea textArea = editPane.getTextArea();
+		JEditTextArea textArea = view.getTextArea();
 
 		TreePath path = data.getTreePathForPosition(textArea.getCaretPosition());
 		if(path == null)
 		{
-			editPane.getToolkit().beep();
+			view.getToolkit().beep();
 			return;
 		}
 		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
@@ -237,7 +235,7 @@ public class SideKickActions
 		}
 
 		if(destination == null)
-			editPane.getToolkit().beep();
+			view.getToolkit().beep();
 		else
 		{
 			if(destination.end != null)
