@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
-<!-- BufferTabs plugin user's guide -->
-<!-- (C) 2001 Andre Kaplan -->
+<!-- XSLT plugin user's guide -->
+<!-- (C) 2002 Greg Merrill, Robert McKinnon -->
 
 <!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
   "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">-->
@@ -14,6 +14,10 @@
       <author>
         <firstname>Greg</firstname>
         <surname>Merrill</surname>
+      </author>
+      <author>
+        <firstname>Robert</firstname>
+        <surname>McKinnon</surname>
       </author>
     </authorgroup>
     <legalnotice>
@@ -34,8 +38,9 @@
   <chapter id="overview">
     <title>Overview</title>
     <para>
-      The XSLT plugin contains facilities to perform XSL Transformations
-      and evaluate XPath expressions.
+      The XSLT plugin contains facilities to perform XSL Transformations, 
+      and evaluate XPath expressions. It also includes an evocable
+      indent XML action.
     </para>
   </chapter>
 
@@ -56,11 +61,26 @@
       Once the XLST Processor has been docked, you may select your source 
       by pressing the button labeled "Select".  Next, you may create
       the list of stylesheets which should be used to transform the source by
-      using the "Add" button (and subsequent dialog).  When you're ready, 
-      press the "Transform" button.  This will perform the appropriate XSL
-      Transformations on the Source document and place the results in a new buffer.
-      (Transformation will start with the stylesheet at the top of the list 
-      and proceed to the bottom.)    
+      using the "Add" button (and subsequent dialog). Optionally you may name a
+      file for the result to be saved to by pressing the "Name" button; in the 
+      dialog window select a directory, enter a file name and then press the
+      "Open" button (a bit confusing but it will work).
+    </para>
+    <para>
+      When you're ready, press the "Transform" button. This will perform the 
+      appropriate XSL Transformations on the Source document and place the 
+      result in a new buffer. (Transformation will start with the stylesheet at
+      the top of the list and proceed to the bottom.) If you entered a result 
+      file name, then the new buffer will be saved to a file under this name.
+    </para>
+    <para>
+      If you want the result of the XSL Transformation to be indented then in
+      your stylesheet add an xslt:output element with an attribute indent set to 
+      "yes". In the case of a transformation involving several stylesheets, the
+      xslt:output element only needs to be defined in the final stylesheet. The
+      indent amount is set to 2 spaces per indent level. Currently
+      this setting can only be changed in the XSLT.props file, which is 
+      contained in the XSLT.jar file.
     </para>
     <para>
       For convenience, an action named "Transform" has been bound to the
@@ -70,15 +90,57 @@
       to work.)
     </para>
     <para>
-      The following improvements should eventually be made to XPath Tool.
+      The following improvements should eventually be made to XSLT Processor.
       (Any volunteers?)
       <itemizedlist>
+        <listitem>
+          The ability to save the current list of stylesheets under a user
+          defined name. Then the named list of stylesheets could be retrieved 
+          when needed for later use.
+        </listitem>
         <listitem>
           DTD handling is still somewhat weak.  URL-specified DTDs
           are reloaded on each evaluation, and SYSTEM DTDs are
           assumed to be in the same directory as the XML file
           which references them.  Ultimately, this should be enhanced
           to behave more intelligently, as in the XML plugin.
+        </listitem>
+        <listitem>
+          Users should be able to edit the XSLT Processor settings (indent
+          amount) via an XSLT plugin section in global options.
+        </listitem>
+        <listitem>
+          Once an output file has been named for the result via the GUI,
+          the auto-saving of the result buffer can't be turned off. Though
+          maybe this is not a problem.
+        </listitem>
+      </itemizedlist>
+    </para>
+  </chapter>
+
+  <chapter id="Indent XML Buffer">
+    <title>Indent XML Buffer Action</title>
+    <para>
+      An action named "Indent XML Buffer" is provided that allows you to indent
+      the contents of the current buffer. This action only works for buffers 
+      containing valid XML. You can invoke the indent action via
+      a keyboard shortcut or toolbar icon by configuring your Global Options.
+    </para>
+    <para>
+      Currently the indent amount is set to 2 spaces per level. Also strip-space
+      (remove whitespace text nodes) and normalize-space (strip leading and 
+      trailing space from text nodes) are both turned on. Currently these 
+      settings can only be changed in the XSLT.props file, which is contained in
+      the XSLT.jar file.
+    </para>
+    <para>
+      The following improvements should eventually be made to Indent Action.
+      (Any volunteers?)
+      <itemizedlist>
+        <listitem>
+          Users should be able to edit the Indent XML Buffer settings (indent
+          amount, strip-space and normalize-space) via an XSLT plugin section in
+          in global options.
         </listitem>
       </itemizedlist>
     </para>
@@ -143,6 +205,11 @@
       Thanks to Carlos Quiroz <email>carlos.quiroz@welho.com</email> for 
       the original, unreleased version of the XSLT plugin.
     </para>
+    <para>
+      Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
+      has contributed improvements to the XSLT transformation
+      functionality.
+    </para>
   </chapter>
 
   <chapter id="feedback">
@@ -159,6 +226,10 @@
         </listitem>
 
         <listitem>
+          Robert McKinnon <email>robmckinnon@users.sourceforge.net</email>
+        </listitem>
+
+        <listitem>
           jEdit-users mailing-list
           <email>jedit-users@lists.sourceforge.net</email>
         </listitem>
@@ -172,6 +243,15 @@
 
   <appendix id="changelog">
     <title>Change log</title>
+    <para>
+      <emphasis role="bold">Version 0.2</emphasis>
+      <itemizedlist>
+        <listitem>
+          Improved XSLT functionality, including facility to auto-save
+          result buffer to a named file, and an Indent XML Buffer action.
+        </listitem>
+      </itemizedlist>
+    </para>
     <para>
       <emphasis role="bold">Version 0.1</emphasis>
       <itemizedlist>
