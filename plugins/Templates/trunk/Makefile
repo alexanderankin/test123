@@ -11,7 +11,7 @@ JAVA=java
 JAVAC=javac
 JAR=jar
 PROJHOME=/home/sjakob/projects
-deps=/share/jedit-2.7pre2/jedit.jar
+deps=/share/jedit/3.0.2/jedit.jar
 
 classes=TemplatesPlugin.class \
 		TemplatesAction.class \

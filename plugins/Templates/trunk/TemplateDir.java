@@ -27,9 +27,9 @@ import gnu.regexp.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 /**
- * A TemplateDir is a type of TemplateFile which is a container for other TemplateFiles. 
- * In this way we can create a tree of TemplateFiles similar to a directory tree or 
- * menu hierarchy.
+ * A TemplateDir is a type of TemplateFile which is a container for other 
+ * TemplateFiles. In this way we can create a tree of TemplateFiles similar 
+ * to a directory tree or menu hierarchy.
  * @author Steve Jakob
  */
 public class TemplateDir extends TemplateFile
@@ -114,8 +114,12 @@ public class TemplateDir extends TemplateFile
 	/*
 	 * Change Log:
 	 * $Log$
-	 * Revision 1.1  2000/04/21 05:05:44  sjakob
-	 * Initial revision
+	 * Revision 1.2  2001/02/23 19:31:39  sjakob
+	 * Added "Edit Template" function to Templates menu.
+	 * Some Javadoc cleanup.
+	 *
+	 * Revision 1.1.1.1  2000/04/21 05:05:44  sjakob
+	 * Initial import of rel-1.0.0
 	 *
 	 * Revision 1.3  2000/03/08 15:46:49  sjakob
 	 * Updated README, CHANGES, to-do files.

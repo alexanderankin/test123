@@ -2,13 +2,14 @@
 
 plugin.TemplatesPlugin.name=Templates
 plugin.TemplatesPlugin.author=Steve Jakob
-plugin.TemplatesPlugin.version=1.0.2
+plugin.TemplatesPlugin.version=1.1.0
 plugin.TemplatesPlugin.docs=Templates.html
 
 # Menu labels
 TemplatesAction.label=Templates
 TemplatesPlugin.menu.label=Templates
 TemplatesPlugin.menu.refresh.label=Refresh templates
+TemplatesPlugin.menu.edit.label=Edit template
 
 # OptionPane labels
 options.Templates.label=Templates
