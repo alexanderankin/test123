@@ -33,6 +33,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.syntax.Token;
@@ -59,8 +61,10 @@ public class TaskListPopup extends JPopupMenu
 	 * Constructor
 	 *
 	 * @param View view the view in which the popup menu will appear
-	 * @param TaskList list the TaskList object represented in the window in which the popup menu will appear
-	 * @param int TaskNum the zero-based index of the selected table row that will be the subject of the popup
+	 * @param TaskList list the TaskList object represented in the
+	 * window in which the popup menu will appear
+	 * @param int TaskNum the zero-based index of the selected table row
+	 * that will be the subject of the popup
 	 */
 	public TaskListPopup(View view, TaskList list, int taskNum)
 	{
@@ -151,7 +155,7 @@ public class TaskListPopup extends JPopupMenu
 		private Point setLocation() {
 			Component parent = getParent();
 			Dimension dParent = parent.getPreferredSize();
-			// IDEA: default location of child popup menu
+			/* NOTE: default location of child popup menu */
 			Point pPopup = new Point(dParent.width - 1 , -1);
 	        SwingUtilities.convertPointToScreen(pPopup, parent);
         	SwingUtilities.convertPointFromScreen(pPopup, list);
@@ -200,7 +204,7 @@ public class TaskListPopup extends JPopupMenu
 	/**
 	 * Causes substitution of the comment tag for the selected task item;
 	 * displays a message if a parsing error occurs;
-	 * reparses buffer regardless of success
+	 * reparses buffer regardless of success.
 	 */
 	class ActionHandler implements ActionListener {
 
@@ -213,6 +217,7 @@ public class TaskListPopup extends JPopupMenu
 			String cmd = evt.getActionCommand();
 			if(cmd.equals("%Dtask"))
 			{
+				// NOTE: routine for deleting entire task
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
@@ -222,10 +227,47 @@ public class TaskListPopup extends JPopupMenu
 							boolean replace = false;
 							int searchStart = line.getStartOffset();
 							int searchEnd  = line.getEndOffset();
-							SearchAndReplace.setSearchString(task.getText());
-							SearchAndReplace.setReplaceString("");
-							replace = SearchAndReplace.replace(v, buffer,
-								searchStart, searchEnd);
+							Token token = buffer.markTokens(task.getLine()).getFirstToken();
+							Segment testSegment = new Segment();
+							while(token.id != Token.END)
+							{
+								if(token.id == Token.COMMENT1 || token.id == Token.COMMENT2)
+								{
+									int startTask = searchStart + token.length;
+									try {
+
+										Log.log(Log.DEBUG, TaskListPopup.class,
+											"Delete task: getting text at offset "
+											+ String.valueOf(searchStart)
+											+ " to "
+											+ String.valueOf(searchEnd));
+										buffer.getText(searchStart, searchEnd - searchStart, testSegment);
+										Log.log(Log.DEBUG, TaskListPopup.class,
+											"segment is: " + testSegment.toString());
+									}
+									catch(BadLocationException e) {
+										Log.log(Log.ERROR, TaskListPopup.class, e);
+										searchStart += token.length;
+										token = token.next;
+										continue;
+									}
+									int taskLength = task.getText().length();
+									String testString = new String(testSegment.array,
+										testSegment.offset + token.length - taskLength, taskLength);
+									Log.log(Log.DEBUG, TaskListPopup.class, "comparing \""
+										+ testString + "\" to \"" + task.getText() + "\"");
+									if(task.getText().equals(testString))
+									{
+										SearchAndReplace.setSearchString(testSegment.toString().trim());
+										SearchAndReplace.setReplaceString("");
+										replace = SearchAndReplace.replace(v, buffer,
+											searchStart, searchEnd);
+										break;
+									}
+								}
+								searchStart += token.length;
+								token = token.next;
+							}
 						}
 					}
 				});

@@ -37,7 +37,7 @@
 				included with the jEdit distribution.
 			</para>
 		</legalnotice>
-		<title>TaskList plugin beta 0.3</title>
+		<title>TaskList plugin beta 0.3.1</title>
 		<revhistory>
 			<revision>
 				<revnumber>0.2</revnumber>
@@ -48,6 +48,11 @@
 				<revnumber>0.3</revnumber>
 				<date>December 11, 2001</date>
 				<revremark>Revised for beta version 0.3</revremark>
+			</revision>
+			<revision>
+				<revnumber>0.3.1</revnumber>
+				<date>December 12, 2001</date>
+				<revremark>Fixed bug affecting deletion on entire task comment</revremark>
 			</revision>
 		</revhistory>
 	</articleinfo>
