@@ -58,7 +58,7 @@ public class WhiteSpaceActions
 
         model.getFoldHighlight().toggleEnabled();
 
-        whitespace.FoldHighlight.updateTextAreas(buffer);
+        FoldHighlight.updateTextAreas(buffer);
     }
 
 
@@ -76,7 +76,7 @@ public class WhiteSpaceActions
 
         model.getFoldTooltip().toggleEnabled();
 
-        whitespace.FoldHighlight.updateTextAreas(buffer);
+        FoldHighlight.updateTextAreas(buffer);
     }
 
 
@@ -85,6 +85,78 @@ public class WhiteSpaceActions
         if (model == null) { return false; }
 
         return model.getFoldTooltip().isEnabled();
+    }
+
+
+    public static void toggleSpaceHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getSpaceHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isSpaceHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getSpaceHighlight().isEnabled();
+    }
+
+
+    public static void toggleLeadingSpaceHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getLeadingSpaceHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isLeadingSpaceHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getLeadingSpaceHighlight().isEnabled();
+    }
+
+
+    public static void toggleInnerSpaceHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getInnerSpaceHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isInnerSpaceHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getInnerSpaceHighlight().isEnabled();
+    }
+
+
+    public static void toggleTrailingSpaceHighlight(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return; }
+
+        model.getTrailingSpaceHighlight().toggleEnabled();
+
+        WhiteSpaceHighlight.updateTextAreas(buffer);
+    }
+
+
+    public static boolean isTrailingSpaceHighlightSelected(Buffer buffer) {
+        WhiteSpaceModel model = getWhiteSpaceModel(buffer);
+        if (model == null) { return false; }
+
+        return model.getTrailingSpaceHighlight().isEnabled();
     }
 
 
