@@ -194,75 +194,148 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 	public void nextError()
 	{
-		/* if(errorRoot.getChildCount() == 0)
+		if(errorRoot.getChildCount() == 0)
 		{
 			getToolkit().beep();
 			return;
 		}
 
+		DefaultMutableTreeNode parent, next;
+
 		TreePath selected = errorTree.getSelectionPath();
-		DefaultMutableTreeNode node = (DefaultMutableTreeNode)
-			selected.getLastPathComponent();
-
-		DefaultMutableTreeNode next;
-
-		if(node.getUserObject() instanceof )
-			node = node.getParent();
-
-		if(node.getUserObject() instanceof ErrorSource.Error)
+		if(selected == null)
 		{
-			DefaultMutableTreeNode parent = node.getParent();
+			parent = (DefaultMutableTreeNode)errorRoot.getChildAt(0);
+			next = (DefaultMutableTreeNode)parent.getChildAt(0);
+		}
+		else
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				selected.getLastPathComponent();
 
-			int index = errorRoot.getIndex(parent);
-			if(index == errorRoot.getChildCount() - 1)
+			if(node.getUserObject() instanceof String)
 			{
-				int index = errorRoot.getIndex(parent);
-				if(index == errorRoot.getChildCount() - 1)
+				parent = node;
+				next = (DefaultMutableTreeNode)node.getChildAt(0);
+			}
+			else if(node.getUserObject() instanceof ErrorSource.Error)
+			{
+				parent = (DefaultMutableTreeNode)node.getParent();
+
+				int index = parent.getIndex(node);
+				if(index == parent.getChildCount() - 1)
+				{
+					index = errorRoot.getIndex(parent);
+					if(index == errorRoot.getChildCount() - 1)
+					{
+						getToolkit().beep();
+						return;
+					}
+					else
+					{
+						parent = (DefaultMutableTreeNode)
+							errorRoot.getChildAt(index + 1);
+						next = (DefaultMutableTreeNode)parent.getChildAt(0);
+					}
+				}
+				else
+				{
+					next = (DefaultMutableTreeNode)
+						parent.getChildAt(index + 1);
+				}
+			}
+			else
+			{
+				// wtf?
+				return;
+			}
+		}
+
+		TreePath path = new TreePath(new TreeNode[]
+			{ errorRoot, parent, next });
+		errorTree.setSelectionPath(path);
+
+		openError((ErrorSource.Error)next.getUserObject());
+	}
+
+	public void previousError()
+	{
+		if(errorRoot.getChildCount() == 0)
+		{
+			getToolkit().beep();
+			return;
+		}
+
+		DefaultMutableTreeNode parent, prev;
+
+		TreePath selected = errorTree.getSelectionPath();
+		if(selected == null)
+		{
+			parent = (DefaultMutableTreeNode)errorRoot.getChildAt(
+				errorRoot.getChildCount() - 1);
+			prev = (DefaultMutableTreeNode)parent.getChildAt(
+				parent.getChildCount() - 1);
+		}
+		else
+		{
+			DefaultMutableTreeNode node = (DefaultMutableTreeNode)
+				selected.getLastPathComponent();
+
+			if(node.getUserObject() instanceof String)
+			{
+				int index = errorRoot.getIndex(node);
+				if(index == 0)
 				{
 					getToolkit().beep();
 					return;
 				}
 				else
 				{
-					parent = errorRoot.getChildAt(index + 1);
-					next = (DefaultMutableTreeNode)parent.getChildAt(0);
+					parent = (DefaultMutableTreeNode)
+						errorRoot.getChildAt(index - 1);
+					prev = (DefaultMutableTreeNode)
+						parent.getChildAt(parent.getChildCount() - 1);
+				}
+			}
+			else if(node.getUserObject() instanceof ErrorSource.Error)
+			{
+				parent = (DefaultMutableTreeNode)node.getParent();
+
+				int index = parent.getIndex(node);
+				if(index == 0)
+				{
+					index = errorRoot.getIndex(parent);
+					if(index == 0)
+					{
+						getToolkit().beep();
+						return;
+					}
+					else
+					{
+						parent = (DefaultMutableTreeNode)
+							errorRoot.getChildAt(index - 1);
+						prev = (DefaultMutableTreeNode)parent.getChildAt(
+							parent.getChildCount() - 1);
+					}
+				}
+				else
+				{
+					prev = (DefaultMutableTreeNode)
+						parent.getChildAt(index - 1);
 				}
 			}
 			else
 			{
-				next = (DefaultMutableTreeNode)
-					parent.getChildAt(index + 1);
+				// wtf?
+				return;
 			}
-
-			TreePath path = new TreePath(new TreeNode[]
-				{ errorRoot, parent, next });
-			errorTree.setSelectionPath(path);
-
-			openError((ErrorSource.Error)next.getUserObject());
-		} */
-	}
-
-	public void previousError()
-	{
-		/* if(errorModel.getSize() > 0)
-		{
-			int index = errorList.getSelectedIndex() - 1;
-			if(index >= 0)
-			{
-				errorList.setSelectedIndex(index);
-				openErrorAt(index);
-			}
-			else
-				getToolkit().beep();
 		}
 
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			public void run()
-			{
-				view.getEditPane().focusOnTextArea();
-			}
-		}); */
+		TreePath path = new TreePath(new TreeNode[]
+			{ errorRoot, parent, prev });
+		errorTree.setSelectionPath(path);
+
+		openError((ErrorSource.Error)prev.getUserObject());
 	}
 
 	// DockableWindow implementation
@@ -456,6 +529,11 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 
 	static class ErrorCellRenderer extends JLabel implements TreeCellRenderer
 	{
+		ErrorCellRenderer()
+		{
+			setOpaque(true);
+		}
+
 		public Component getTreeCellRendererComponent(JTree tree,
 			Object value, boolean sel, boolean expanded,
 			boolean leaf, int row, boolean focus)

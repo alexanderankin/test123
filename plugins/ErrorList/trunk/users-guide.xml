@@ -1,4 +1,4 @@
-<?xml version="1.0" ?>
+<?xml version="1.0"?>
 
 <!-- ErrorList user's guide -->
 <!-- (C) 2001 Slava Pestov -->
@@ -35,12 +35,39 @@
   EditBus error API must be installed.
  </para>
 
+ <para>
+  The error reporting API is particularly well-suited to reporting compiler errors
+  and such; plugins that use this API include Console, JCompiler, HTML and XML.
+  If you would like to use this API from your plugin, see
+  <xref linkend="api" />.
+ </para>
+
 </chapter>
 
 <chapter id="window"><title>The error list window</title>
 
  <para>
-  bar
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> displays the error
+  list window. This window is floating by default, but it can be made to
+  dock into the view in the <guibutton>Docking</guibutton> pane of the
+  <guimenuitem>Global Options</guimenuitem> dialog box.
+ </para>
+
+ <para>
+  Errors are shown in a tree control, with each branch being a file, and each
+  leaf an error. Clicking on a file will open that file; clicking on an error
+  will open the file containing the error and move the caret to its location.
+ </para>
+
+ <para>
+  The error reporting API supports two types of errors; genuine errors and
+  warnings. The two are differentiated with different-colored icons in the
+  tree; errors have a red icon, warnings have a yellow one.
+ </para>
+
+ <para>
+  For keyboard-based navigation of the tree, see <xref linkend="actions" />.
  </para>
 
 </chapter>
@@ -48,7 +75,20 @@
 <chapter id="highlight"><title>Error highlighting</title>
 
  <para>
-  bar
+  The ErrorList plugin also highlights errors in-place in the text area with
+  a colored underline. The color depends on the error type; genuine errors
+  have a red underline, warnings have a yellow one.
+ </para>
+
+ <para>
+  Hovering the mouse over a line with an error highlight will show a tooltip
+  with the error message.
+ </para>
+
+ <para>
+  Error highlighting can be disabled in the <guibutton>Error List</guibutton> pane
+  of the <guimenuitem>Global Options</guimenuitem> dialog box. The colors of
+  the underlines can also be changed in that same option pane.
  </para>
 
 </chapter>
@@ -56,7 +96,41 @@
 <chapter id="actions"><title>Additional commands</title>
 
  <para>
-  bar
+  The ErrorList plugin provides a few additional commands that can be bound to
+  keyboard shortcuts in the <guibutton>Shortcuts</guibutton> pane of the
+  <guimenuitem>Global Options</guimenuitem> dialog box.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Go to Previous Error</guimenuitem> moves the
+  caret to the error immediately before the one currently selected in the
+  error list window. If no error is selected, the last error in the list is
+  chosen. This will open the appropriate file if the error is in a
+  different file.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Go to Next Error</guimenuitem> moves the
+  caret to the error immediately after the one currently selected in the
+  error list window. If no error is selected, the first error in the list is
+  chosen. This will open the appropriate file if the error is in a
+  different file.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Go to Previous File With Errors</guimenuitem>
+  opens the file immediately before the one currently selected in the error
+  list window. If no file is selected, the last file with errors is chosen.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
+  List</guisubmenu>&gt;<guimenuitem>Go to Next File With Errors</guimenuitem>
+  opens the file immediately after the one currently selected in the error
+  list window. If no file is selected, the first file with errors is chosen.
  </para>
 
 </chapter>
@@ -64,17 +138,35 @@
 <chapter id="api"><title>The error reporting API</title>
 
  <para>
-  foo
+  TO DO
  </para>
 
 </chapter>
 
-<chapter id="changes"><title>Change log</title>
+<appendix id="changes"><title>Change log</title>
 
  <para>
-  foo
+
+ <revhistory>
+  <revision><revnumber>1.0.1</revnumber>
+   <revremark>
+    <para>
+     Requires jEdit 3.2pre8 and EditBus 1.0.1.
+    </para>
+   </revremark>
+   <revdescription>
+    <itemizedlist>
+     <listitem><para>Errors are now shown in a tree, not a list</para></listitem>
+     <listitem><para>Error highlighting does not highlight leading whitespace
+     of lines, leading to better appearance</para></listitem>
+     <listitem><para>Minor update for jEdit 3.2 selection API</para></listitem>
+    </itemizedlist>
+   </revdescription>
+  </revision>
+ </revhistory>
+
  </para>
 
-</chapter>
+</appendix>
 
 </book>
