@@ -72,7 +72,6 @@ class SystemShell extends Shell
 		{
 			// a console built-in
 			args.removeElementAt(0);
-
 			SystemShellBuiltIn.executeBuiltIn(console,output,
 				commandName.substring(1),args);
 			output.commandDone();
