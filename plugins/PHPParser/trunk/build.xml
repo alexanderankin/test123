@@ -27,7 +27,7 @@
             javacchome="${javacc.home}"/>
     </target>
 
-    <target name="compile" depends="buildParser">
+    <target name="compile" depends="init">
         <javac
             srcdir="${src.dir}"
             destdir="${build.dir}"
