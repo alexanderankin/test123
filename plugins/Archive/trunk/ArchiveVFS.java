@@ -161,7 +161,7 @@ public class ArchiveVFS extends VFS {
 
 
     public String constructPath(String parent, String path) {
-        Log.log(Log.DEBUG, this, "constructPath: [" + parent + "][" + path + "]");
+        // Log.log(Log.DEBUG, this, "constructPath: [" + parent + "][" + path + "]");
         if (parent.endsWith(ArchiveVFS.archiveSeparator)) {
             if (path.startsWith(ArchiveVFS.fileSeparator)) {
                 return parent + path;
@@ -223,8 +223,8 @@ public class ArchiveVFS extends VFS {
         String archiveProtocol = archive.protocol;
         String archivePath     = archive.pathName;
 
-        Log.log(Log.DEBUG, this, "1. Path: " + path);
-        Log.log(Log.DEBUG, this, "2. Archive Path: [" + archivePath + "]");
+        // Log.log(Log.DEBUG, this, "1. Path: " + path);
+        // Log.log(Log.DEBUG, this, "2. Archive Path: [" + archivePath + "]");
 
         VFS vfs = VFSManager.getVFSForPath(archivePath);
 
@@ -275,8 +275,8 @@ public class ArchiveVFS extends VFS {
         String archivePath  = archive.pathName;
         String archiveEntry = archive.entryName;
 
-        Log.log(Log.DEBUG, this, "1. _getDirectoryEntry: Archive Name: [" + archivePath + "]");
-        Log.log(Log.DEBUG, this, "2. _getDirectoryEntry: Archive Path: [" + archiveEntry + "]");
+        // Log.log(Log.DEBUG, this, "1. _getDirectoryEntry: Archive Name: [" + archivePath + "]");
+        // Log.log(Log.DEBUG, this, "2. _getDirectoryEntry: Archive Path: [" + archiveEntry + "]");
 
         VFS vfs = VFSManager.getVFSForPath(archivePath);
 
@@ -349,9 +349,9 @@ public class ArchiveVFS extends VFS {
         String archivePath  = archive.pathName;
         String archiveEntry = archive.entryName;
 
-        Log.log(Log.DEBUG, this, "1. _createInputStream Path: " + path);
-        Log.log(Log.DEBUG, this, "2. _createInputStream Archive Name: [" + archivePath + "]");
-        Log.log(Log.DEBUG, this, "3. _createInputStream Archive Path: [" + archiveEntry + "]");
+        // Log.log(Log.DEBUG, this, "1. _createInputStream Path: " + path);
+        // Log.log(Log.DEBUG, this, "2. _createInputStream Archive Name: [" + archivePath + "]");
+        // Log.log(Log.DEBUG, this, "3. _createInputStream Archive Path: [" + archiveEntry + "]");
 
         VFS vfs = VFSManager.getVFSForPath(archivePath);
 
