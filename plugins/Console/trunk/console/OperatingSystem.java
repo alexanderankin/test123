@@ -233,8 +233,7 @@ abstract class OperatingSystem
 				StringTokenizer st = new StringTokenizer(pathext,"; ");
 				while(st.hasMoreTokens())
 				{
-					_extensionsToTry.addElement(
-						'.' + st.nextToken());
+					_extensionsToTry.addElement(st.nextToken());
 				}
 
 				extensionsToTry = new String[_extensionsToTry.size()];
@@ -252,22 +251,8 @@ abstract class OperatingSystem
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
 		{
-			String[] newArgs = new String[args.length + 1];
 
-			// find directory where Console plugin is installed
-			String directory = MiscUtilities.getParentOfPath(
-				jEdit.getPlugin("console.ConsolePlugin")
-				.getJAR().getPath());
-			// look for jcmd.exe file in that directory
-			File jcmd = new File(directory,"jcmd.exe");
-			if(!jcmd.exists())
-				throw new FileNotFoundException(jcmd.getPath());
-
-			newArgs[0] = jcmd.getPath();
-
-			System.arraycopy(args,1,newArgs,0,args.length);
-
-			String commandName = args[1];
+			String commandName = args[0];
 
 			String[] extensionsToTry;
 			if(commandName.indexOf('.') == -1)
@@ -277,16 +262,24 @@ abstract class OperatingSystem
 
 			for(int i = 0; i < extensionsToTry.length; i++)
 			{
-				newArgs[1] = commandName + extensionsToTry[i];
+				args[0] = commandName + extensionsToTry[i];
 
 				try
 				{
-					super.exec(newArgs,env,dir);
+					return super.exec(args,env,dir);
 				}
 				catch(Exception e)
 				{
 					if(i == extensionsToTry.length - 1)
-						throw e;
+					{
+						// throw a new exception cos
+						// Windows error messages are
+						// a bit cryptic
+						throw new Exception(
+							jEdit.getProperty(
+							"console.shell.not-found-win",
+							new String[] { commandName, }));
+					}
 				}
 			}
 
@@ -299,7 +292,7 @@ abstract class OperatingSystem
 		void setUpDefaultAliases(Hashtable aliases)
 		{
 			String[] builtins  = { "md", "rd", "del", "dir", "copy",
-				"move", "erase", "mkdir", "rmdir", "start",
+				"move", "erase", "mkdir", "rmdir", "start", "echo",
 				"path", "ver", "vol", "ren", "type"};
 			for(int i = 0; i < builtins.length; i++)
 			{
