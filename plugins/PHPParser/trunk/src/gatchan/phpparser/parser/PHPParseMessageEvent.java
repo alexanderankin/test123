@@ -7,7 +7,7 @@ package gatchan.phpparser.parser;
  */
 public class PHPParseMessageEvent {
 
-
+  private int messageClass;
   private int level;
 
   private final String path;
@@ -20,6 +20,40 @@ public class PHPParseMessageEvent {
 
   private String message;
 
+  public PHPParseMessageEvent(int level,
+                              int messageClass,
+                              String path,
+                              String message,
+                              int sourceStart,
+                              int sourceEnd,
+                              int beginLine,
+                              int endLine,
+                              int beginColumn,
+                              int endColumn) {
+    this.level = level;
+    this.messageClass = messageClass;
+    this.path = path;
+    this.beginLine = beginLine;
+    this.message = message;
+    this.beginColumn = beginColumn;
+    this.endLine = endLine;
+    this.endColumn = endColumn;
+    this.sourceStart = sourceStart;
+    this.sourceEnd = sourceEnd;
+  }
+
+  /**
+   * @deprecated 
+   * @param level
+   * @param path
+   * @param message
+   * @param sourceStart
+   * @param sourceEnd
+   * @param beginLine
+   * @param endLine
+   * @param beginColumn
+   * @param endColumn
+   */
   public PHPParseMessageEvent(int level,
                               String path,
                               String message,
@@ -74,5 +108,9 @@ public class PHPParseMessageEvent {
 
   public String getPath() {
     return path;
+  }
+
+  public int getMessageClass() {
+    return messageClass;
   }
 }

@@ -18,6 +18,8 @@ import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
  */
 public final class PHPParser implements PHPParserConstants {
 
+  public static int MESSAGE_SHORT_OPEN_TAG = 1;
+
 //todo : fix the variables names bug
 //todo : handle tilde operator
 
@@ -409,6 +411,7 @@ public final class PHPParser implements PHPParserConstants {
         case PHPSTARTSHORT:
           token = jj_consume_token(PHPSTARTSHORT);
       fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                MESSAGE_SHORT_OPEN_TAG,
                                                 path,
                                                 "You should use '<?php' instead of '<?' it will avoid some problems with XML",
                                                 token.sourceStart,
@@ -6639,13 +6642,6 @@ final ArrayList list = new ArrayList();
     finally { jj_save(5, xla); }
   }
 
-  final private boolean jj_3R_51() {
-    if (jj_scan_token(LBRACE)) return true;
-    if (jj_3R_48()) return true;
-    if (jj_scan_token(RBRACE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_45() {
     if (jj_scan_token(CLASSACCESS)) return true;
     Token xsp;
@@ -7987,6 +7983,13 @@ final ArrayList list = new ArrayList();
     }
     }
     if (jj_3R_143()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_51() {
+    if (jj_scan_token(LBRACE)) return true;
+    if (jj_3R_48()) return true;
+    if (jj_scan_token(RBRACE)) return true;
     return false;
   }
 

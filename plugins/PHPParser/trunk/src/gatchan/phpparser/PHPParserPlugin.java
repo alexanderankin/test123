@@ -3,7 +3,10 @@ package gatchan.phpparser;
 import org.gjt.sp.jedit.EBPlugin;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.BufferUpdate;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.util.Log;
 
 /**
  * The PHP Parser plugin.
@@ -164,36 +167,5 @@ public final class PHPParserPlugin extends EBPlugin {
     Log.log(Log.DEBUG, PHPParserPlugin.class, "Parsing launched by user request : " + path);
     final String text = buffer.getText(0, buffer.getLength());
     parse(path, text, view);
-  }  */
-
-    /**
-     * This method is called in {@link #start()} and when the properties change,
-     * it will reinitialize the options.
-     */
-/*  private void propertiesChanged() {
-    activateParser = jEdit.getBooleanProperty("gatchan.phpparser.activateParser");
-    parseOnLoad = jEdit.getBooleanProperty("gatchan.phpparser.parseOnLoad");
-    parseOnSave = jEdit.getBooleanProperty("gatchan.phpparser.parseOnSave");
-    final String filesToParseGlob = jEdit.getProperty("gatchan.phpparser.files.glob");
-    try {
-      filesToParseRE = new RE(MiscUtilities.globToRE(filesToParseGlob));
-    } catch (REException e) {
-      Log.log(Log.ERROR, PHPParserPlugin.this, "Unable to read this glob " + filesToParseGlob);
-      try {
-        filesToParseRE = new RE("*.php");
-      } catch (REException e1) {
-        Log.log(Log.ERROR, PHPParserPlugin.this, "Unable to read this glob " + filesToParseGlob);
-      }
-    }
-
-    //Remove the errors from the files that aren't accepted by the glob
-    final Buffer[] buffers = jEdit.getBuffers();
-    for (int i = 0; i < buffers.length; i++) {
-      final String path = buffers[i].getPath();
-      if (!filesToParseRE.isMatch(path)) {
-        Log.log(Log.DEBUG, PHPParserPlugin.this, "Removing errors from " + path);
-        errorSource.removeFileErrors(path);
-      }
-    }
-  }*/
+  }  */ 
 }

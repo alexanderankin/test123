@@ -41,6 +41,8 @@ import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
  */
 public final class PHPParser {
 
+  public static int MESSAGE_SHORT_OPEN_TAG = 1;
+
 //todo : fix the variables names bug
 //todo : handle tilde operator
 
@@ -715,6 +717,7 @@ void PhpBlock() :
     | token = <PHPSTARTSHORT>
     {
       fireParseMessage(new PHPParseMessageEvent(INFO,
+                                                MESSAGE_SHORT_OPEN_TAG,
                                                 path,
                                                 "You should use '<?php' instead of '<?' it will avoid some problems with XML",
                                                 token.sourceStart,
