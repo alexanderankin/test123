@@ -1,6 +1,6 @@
 /*
  * TextToolsPlugin.java - Plugin for a number of text related functions
- * Copyright (C) 1999 mike dillon
+ * Copyright (C) 1999, 2001 mike dillon
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,11 +43,9 @@ public class TextToolsPlugin extends EditPlugin
 
 		Buffer b = textArea.getBuffer();
 		b.beginCompoundEdit();
-		if(textArea.getSelectionEnd() != textArea.getSelectionStart())
+		if(textArea.getSelection() != null)
 		{
-			sortLines(b, textArea.getSelectionStart(),
-				textArea.getSelectionEnd()
-				- textArea.getSelectionStart(), reverse);
+			sortLines(b, textArea.getSelectedLines(), reverse);
 		}
 		else
 		{
@@ -58,49 +56,48 @@ public class TextToolsPlugin extends EditPlugin
 
 	public static void sortLines(Document d, boolean reverse)
 	{
-		sortLines(d, 0, d.getLength(), reverse);
+		int[] lIndices = new int[d.getLength()];
+
+		for (int i = 0; i < lIndices.length; ++i)
+		{
+			lIndices[i] = i;
+		}
+
+		sortLines(d, lIndices, reverse);
 	}
 
-	public static void sortLines(Document d, int offset, int length, boolean reverse)
+	public static void sortLines(Document d, int[] lIndices, boolean reverse)
 	{
-		Element root = d.getDefaultRootElement();
-		Element lineElement;
-
-		int fromIndex = root.getElementIndex(offset);
-		int toIndex = root.getElementIndex(offset + length);
-
-		String[] lines = new String[toIndex - fromIndex + 1];
+		String[] lines = new String[lIndices.length];
 
 		try
 		{
+			Element root = d.getDefaultRootElement();
+			Element lineElement;
+
 			for (int i = 0; i < lines.length; i++)
 			{
-				lineElement = root.getElement(fromIndex + i);
+				lineElement = root.getElement(lIndices[i]);
 				lines[i] = d.getText(lineElement.getStartOffset(),
 					lineElement.getEndOffset()
-					- lineElement.getStartOffset() - 1);
+					- lineElement.getStartOffset());
 			}
 
 			MiscUtilities.Compare compare = new MiscUtilities.StringCompare();
 			if(reverse)
 				compare = new ReverseCompare(compare);
 
-			MiscUtilities.quicksort(lines,compare);
+			MiscUtilities.quicksort(lines, compare);
 
-			StringBuffer buf = new StringBuffer();
-
-			for(int i = 0; i < lines.length - 1; i++)
+			for (int i = 0; i < lines.length; ++i)
 			{
-				buf.append(lines[i]);
-				buf.append('\n');
+				lineElement = root.getElement(lIndices[i]);
+				int lineStart = lineElement.getStartOffset();
+
+				d.remove(lineStart,
+					lineElement.getEndOffset() - lineStart);
+				d.insertString(lineStart, lines[i], null);
 			}
-			buf.append(lines[lines.length - 1]);
-
-			int selStart = root.getElement(fromIndex).getStartOffset();
-			int selLength = root.getElement(toIndex).getEndOffset() - selStart - 1;
-
-			d.remove(selStart,selLength);
-			d.insertString(selStart,buf.toString(),null);
 		}
 		catch (BadLocationException ble)
 		{
