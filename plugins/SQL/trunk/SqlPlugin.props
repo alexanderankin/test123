@@ -15,6 +15,8 @@ plugin.sql.SqlPlugin.depend.5=plugin errorlist.ErrorListPlugin 1.3
 # The menu item label
 plugin.sql.SqlPlugin.menu=sql.resultSet - sql.chooseCurrentServer - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.SpecialCommentRemover sql.preprocessors.VariableSubstitutor - sql.repeatLastQuery
 
+plugin.projectviewer.sql.SqlPlugin.pv-listeners=sql.SqlPluginPVListener
+
 sql.publishBuffer.label=Execute buffer
 sql.publishSelection.label=Execute selection
 sql.loadObject.label=Load object
