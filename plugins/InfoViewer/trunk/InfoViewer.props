@@ -1,12 +1,12 @@
 # Plugin properties
 plugin.InfoViewerPlugin.name=InfoViewer
 plugin.InfoViewerPlugin.author=Dirk Moebius
-plugin.InfoViewerPlugin.version=0.5.2
+plugin.InfoViewerPlugin.version=0.5.3
 plugin.InfoViewerPlugin.docs=index.html
 
 plugin.InfoViewerPlugin.depend.0=jdk 1.1
-plugin.InfoViewerPlugin.depend.1=jedit 02.05.03.00
-plugin.InfoViewerPlugin.depend.2=plugin EditBusPlugin 0.9.1
+plugin.InfoViewerPlugin.depend.1=jedit 02.05.99.01
+plugin.InfoViewerPlugin.depend.2=plugin EditBusPlugin 0.9.4
 
 # Plugin menu properties
 infoviewer-menu=infoviewer-open - infoviewer-open-buffer infoviewer-open-sel
