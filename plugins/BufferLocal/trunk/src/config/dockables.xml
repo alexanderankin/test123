@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
-
+<!-- $Id$ -->
 <!-- 
    BufferMinder has no GUI, so isn't docked.
 -->

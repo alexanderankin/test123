@@ -1,5 +1,5 @@
 <project name="Bufferminer Plugin" default="plugin" basedir=".">
-
+    <!-- $Id$ -->
     <!--
       build.props
       Needs to contain:

@@ -1,4 +1,4 @@
-
+// $Id$
 package ise.plugin.bmp;
 
 import java.io.*;
