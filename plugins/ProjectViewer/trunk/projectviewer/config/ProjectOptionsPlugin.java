@@ -30,6 +30,8 @@ import projectviewer.vpt.VPTProject;
  *
  *  @author		Marcelo Vanzin
  *	@version	$Id$
+ *	@deprecated	Use the jEdit 4.2-style API to add option panels. This interface
+ *				will be removed in subsequent versions of the plugin.
  */
 public interface ProjectOptionsPlugin {
 

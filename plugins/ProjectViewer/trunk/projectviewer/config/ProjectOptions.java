@@ -73,6 +73,9 @@ public class ProjectOptions extends OptionsDialog {
 	 *	<p><strong>IMPORTANT</strong>: do not call this method if your
 	 *	ProjectOptionsPlugin class is the same class that implements your
 	 *	EditPlugin. These cases are handled automatically.</p>
+	 *
+	 *	@deprecated	Use the jEdit 4.2-style API to add option panels. This 
+	 *				method will be removed in subsequent versions of the plugin.
 	 */
 	public static void registerPlugin(ProjectOptionsPlugin plugin) {
 		if (plugin != null) plugins.add(plugin);
