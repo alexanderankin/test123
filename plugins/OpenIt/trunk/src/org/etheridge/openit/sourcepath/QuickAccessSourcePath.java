@@ -184,7 +184,9 @@ public class QuickAccessSourcePath
             currentLetterList = new ArrayList();
             mQuickAccessMap.put(firstLetter, currentLetterList);
           }
-          currentLetterList.add(sourcePathFile);
+          if (!currentLetterList.contains(sourcePathFile)) {
+            currentLetterList.add(sourcePathFile);
+          }
           
           // index substrings if user wants them indexed
           if (jEdit.getBooleanProperty(OpenItProperties.ALLOW_SUBSTRING_MATCHING, true)) {
@@ -198,7 +200,9 @@ public class QuickAccessSourcePath
                   substringList = new ArrayList();
                   mQuickAccessMap.put(currentSubstring, substringList);
                 }
-                substringList.add(sourcePathFile);
+                if (!substringList.contains(sourcePathFile)) {
+                  substringList.add(sourcePathFile);
+                }
               }
             }
           }
