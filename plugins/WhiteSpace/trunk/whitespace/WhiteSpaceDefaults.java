@@ -138,11 +138,13 @@ public class WhiteSpaceDefaults
 
 
     public static void bufferCreated(Buffer buffer) {
+        // Paragraph separators highlighting option
         buffer.putBooleanProperty(
             BlockHighlight.BLOCK_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getBlockHighlightDefault()
         );
 
+        // Folds highlighting options
         buffer.putBooleanProperty(
             FoldHighlight.FOLD_HIGHLIGHT_PROPERTY,
             WhiteSpaceDefaults.getFoldHighlightDefault()
@@ -152,6 +154,7 @@ public class WhiteSpaceDefaults
             WhiteSpaceDefaults.getFoldTooltipDefault()
         );
 
+        // Space highlighting options
         buffer.putBooleanProperty(
               WhiteSpaceHighlight.SPACE_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getSpaceHighlightDefault()
@@ -169,6 +172,7 @@ public class WhiteSpaceDefaults
             , WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
         );
 
+        // Tab highlighting options
         buffer.putBooleanProperty(
               WhiteSpaceHighlight.TAB_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getTabHighlightDefault()
@@ -186,9 +190,31 @@ public class WhiteSpaceDefaults
             , WhiteSpaceDefaults.getTrailingTabHighlightDefault()
         );
 
+        // Whitespace highlighting option
         buffer.putBooleanProperty(
               WhiteSpaceHighlight.WHITESPACE_HIGHLIGHT_PROPERTY
             , WhiteSpaceDefaults.getWhitespaceHighlightDefault()
+        );
+
+        // On save actions options
+        buffer.putBooleanProperty(
+              "white-space.remove-trailing-white-space"
+            , WhiteSpaceDefaults.getRemoveTrailingWhitespace()
+        );
+
+        buffer.putBooleanProperty(
+              "white-space.soft-tabify-leading-white-space"
+            , WhiteSpaceDefaults.getSoftTabifyLeadingWhitespace()
+        );
+
+        buffer.putBooleanProperty(
+              "white-space.tabify-leading-white-space"
+            , WhiteSpaceDefaults.getTabifyLeadingWhitespace()
+        );
+
+        buffer.putBooleanProperty(
+              "white-space.untabify-leading-white-space"
+            , WhiteSpaceDefaults.getUntabifyLeadingWhitespace()
         );
     }
 
@@ -199,6 +225,5 @@ public class WhiteSpaceDefaults
             WhiteSpaceDefaults.bufferCreated(buffers[i]);
         }
     }
-
 }
 
