@@ -559,65 +559,38 @@
  does not have any defined attributes.
 </para>
 
-<sect3><title>The TOGGLE element</title>
+<sect3><title>The CAPTION element</title>
 
 <para>
- A <literal>TOGGLE</literal> element adds a check box to the commando panel.
+ A <literal>CAPTION</literal> element adds a labeled box to the commando panel
+ that other UI elements can be added to.
  It must be placed inside the
- <literal>UI</literal> element. The following attributes are supported:
+ <literal>UI</literal> element. The only defined attribute is
+ <literal>LABEL</literal>. It is required.
 </para>
-
-<itemizedlist>
-<listitem><para><literal>LABEL</literal> - the check box caption. This
-attribute is required.</para></listitem>
-<listitem><para><literal>VARNAME</literal> - the state of the checkbox
-will be stored in the BeanShell variable with this name. This attribute
-is required.</para></listitem>
-<listitem><para><literal>DEFAULT</literal> - The default value; this
-should be either <quote>TRUE</quote> or <quote>FALSE</quote>.</para></listitem>
-<listitem><para><literal>EVAL</literal> - The default value will be the
-result of evaluating this BeanShell script. The script must return a
-boolean value. Note that only one of
-<literal>DEFAULT</literal> and <literal>EVAL</literal> should be
-specified.</para></listitem>
-</itemizedlist>
 
 <para>
- Here is an example <literal>TOGGLE</literal> element:
+ Any UI control can be placed inside the <literal>CAPTION</literal>
+ element.
 </para>
-
-<programlisting><![CDATA[<TOGGLE LABEL="Ignore case" VARNAME="ignoreCase" />]]></programlisting>
-</sect3>
-
-<sect3><title>The ENTRY element</title>
 
 <para>
- An <literal>ENTRY</literal> element adds a text field to the commando panel.
- It must be placed inside the
- <literal>UI</literal> element. The following attributes are supported:
+ Here is an example of the <literal>CAPTION</literal> element:
 </para>
 
-<itemizedlist>
-<listitem><para><literal>LABEL</literal> - the text field's caption. This
-attribute is required.</para></listitem>
-<listitem><para><literal>VARNAME</literal> - the contents of the text field
-will be stored in the BeanShell variable with this name. This attribute
-is required.</para></listitem>
-<listitem><para><literal>DEFAULT</literal> - The default contents of the
-text field.</para></listitem>
-<listitem><para><literal>EVAL</literal> - The default content will be the
-result of evaluating this BeanShell script. The script must return a
-string value. Note that only one of
-<literal>DEFAULT</literal> and <literal>EVAL</literal> should be
-specified.</para></listitem>
-</itemizedlist>
+<programlisting><![CDATA[<CAPTION LABEL="File specification">
 
-<para>
- Here is an example <literal>ENTRY</literal> element:
-</para>
+  <ENTRY LABEL="Original file" VARNAME="from"
+   EVAL="buffer.getPath() + '~'" />
+  <ENTRY LABEL="Changed file" VARNAME="to"
+   EVAL="buffer.getPath()" />
 
-<programlisting><![CDATA[<ENTRY LABEL="File name" VARNAME="file"
-   EVAL="buffer.getPath()" />]]></programlisting>
+  <TOGGLE LABEL="Recursively compare directories"
+   VARNAME="recursive" />
+  <ENTRY LABEL="Ignore files regexp" VARNAME="ignore" />
+
+</CAPTION>]]></programlisting>
+
 </sect3>
 
 <sect3><title>The CHOICE element</title>
@@ -663,38 +636,65 @@ specified.</para></listitem>
 
 </sect3>
 
-<sect3><title>The CAPTION element</title>
+<sect3><title>The ENTRY element</title>
 
 <para>
- A <literal>CAPTION</literal> element adds a labeled box to the commando panel
- that other UI elements can be added to.
+ An <literal>ENTRY</literal> element adds a text field to the commando panel.
  It must be placed inside the
- <literal>UI</literal> element. The only defined attribute is
- <literal>LABEL</literal>. It is required.
+ <literal>UI</literal> element. The following attributes are supported:
 </para>
+
+<itemizedlist>
+<listitem><para><literal>LABEL</literal> - the text field's caption. This
+attribute is required.</para></listitem>
+<listitem><para><literal>VARNAME</literal> - the contents of the text field
+will be stored in the BeanShell variable with this name. This attribute
+is required.</para></listitem>
+<listitem><para><literal>DEFAULT</literal> - The default contents of the
+text field.</para></listitem>
+<listitem><para><literal>EVAL</literal> - The default content will be the
+result of evaluating this BeanShell script. The script must return a
+string value. Note that only one of
+<literal>DEFAULT</literal> and <literal>EVAL</literal> should be
+specified.</para></listitem>
+</itemizedlist>
 
 <para>
- Any UI control can be placed inside the <literal>CAPTION</literal>
- element.
+ Here is an example <literal>ENTRY</literal> element:
 </para>
+
+<programlisting><![CDATA[<ENTRY LABEL="File name" VARNAME="file"
+   EVAL="buffer.getPath()" />]]></programlisting>
+</sect3>
+
+<sect3><title>The TOGGLE element</title>
 
 <para>
- Here is an example of the <literal>CAPTION</literal> element:
+ A <literal>TOGGLE</literal> element adds a check box to the commando panel.
+ It must be placed inside the
+ <literal>UI</literal> element. The following attributes are supported:
 </para>
 
-<programlisting><![CDATA[<CAPTION LABEL="File specification">
+<itemizedlist>
+<listitem><para><literal>LABEL</literal> - the check box caption. This
+attribute is required.</para></listitem>
+<listitem><para><literal>VARNAME</literal> - the state of the checkbox
+will be stored in the BeanShell variable with this name. This attribute
+is required.</para></listitem>
+<listitem><para><literal>DEFAULT</literal> - The default value; this
+should be either <quote>TRUE</quote> or <quote>FALSE</quote>.</para></listitem>
+<listitem><para><literal>EVAL</literal> - The default value will be the
+result of evaluating this BeanShell script. The script must return a
+boolean value. Note that only one of
+<literal>DEFAULT</literal> and <literal>EVAL</literal> should be
+specified.</para></listitem>
+</itemizedlist>
 
-  <ENTRY LABEL="Original file" VARNAME="from"
-   EVAL="buffer.getPath() + '~'" />
-  <ENTRY LABEL="Changed file" VARNAME="to"
-   EVAL="buffer.getPath()" />
+<para>
+ Here is an example <literal>TOGGLE</literal> element:
+</para>
 
-  <TOGGLE LABEL="Recursively compare directories"
-   VARNAME="recursive" />
-  <ENTRY LABEL="Ignore files regexp" VARNAME="ignore" />
-
-</CAPTION>]]></programlisting>
-
+<programlisting><![CDATA[<TOGGLE LABEL="Ignore case" VARNAME="ignoreCase" />]]></programlisting>
 </sect3>
 
 </sect2>
@@ -1210,8 +1210,12 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    </para></listitem>
    <listitem><para>The backslash was not parsed correctly.
    </para></listitem>
-   <listitem><para>YThe <function>waitForConsole()</function> BeanShell command
+   <listitem><para>The <function>waitForConsole()</function> BeanShell command
    didn't work.
+   </para></listitem>
+   <listitem><para>Added <classname>TOGGLE_ENTRY</classname> (check box and
+   text field) and <classname>LONG_ENTRY</classname> (multiple line text area)
+   controls to commando.
    </para></listitem>
   </itemizedlist>
  </listitem>

@@ -1,20 +1,16 @@
 commandoENTRY(pane,ns,label,var,options)
 {
-	entry = new JTextField();
+	entry = new JTextField(20);
 	value = ns.getVariable(var);
 	if(value != null)
 		entry.setText(value.toString());
-	listener = new ActionListener()
+
+	valueChanged()
 	{
-		actionPerformed(evt)
-		{
-			text = entry.getText();
-			if(text.length() == 0)
-				ns.unsetVariable(var);
-			else
-				ns.setVariable(var,entry.getText());
-		}
-	};
-	entry.addActionListener(listener);
+		ns.setVariable(var,entry.getText());
+	}
+
 	pane.addComponent(label,entry);
+
+	return this;
 }

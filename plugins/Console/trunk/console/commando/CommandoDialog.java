@@ -117,11 +117,7 @@ public class CommandoDialog extends EnhancedDialog
 	//{{{ ok() method
 	public void ok()
 	{
-		//XXX
-		/* // crusty workaround
-		Component comp = getFocusOwner();
-		if(comp instanceof CommandoComponent)
-			((CommandoComponent)comp).valueChanged(); */
+		updateNameSpace();
 
 		jEdit.setProperty("commando.last-command",command.getName());
 
@@ -176,6 +172,7 @@ public class CommandoDialog extends EnhancedDialog
 	private CommandoCommand command;
 	private NameSpace nameSpace;
 	private Vector scripts;
+	private Vector components;
 
 	private boolean init;
 	//}}}
@@ -187,6 +184,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		this.command = command;
 		settings.removeAll();
+		components = new Vector();
 		commandLine.setText(null);
 
 		nameSpace = new NameSpace(BeanShell.getNameSpace(),
@@ -246,8 +244,25 @@ public class CommandoDialog extends EnhancedDialog
 		tabs.setSelectedIndex(0);
 	} //}}}
 
+	//{{{ updateNameSpace() method
+	private void updateNameSpace()
+	{
+		for(int i = 0; i < components.size(); i++)
+		{
+			This t = (This)components.get(i);
+			try
+			{
+				t.invokeMethod("valueChanged",new Object[0]);
+			}
+			catch(EvalError e)
+			{
+				Log.log(Log.ERROR,this,e);
+			}
+		}
+	} //}}}
+
 	//{{{ updateTextArea() method
-	private void updateTextAreas()
+	private void updateTextArea()
 	{
 		if(init)
 			return;
@@ -367,7 +382,10 @@ public class CommandoDialog extends EnhancedDialog
 		public void stateChanged(ChangeEvent evt)
 		{
 			if(tabs.getSelectedIndex() == 1)
-				updateTextAreas();
+			{
+				updateNameSpace();
+				updateTextArea();
+			}
 		}
 	} //}}}
 
@@ -467,6 +485,7 @@ public class CommandoDialog extends EnhancedDialog
 			else if(tag == "CHOICE")
 			{
 				choiceLabel = label;
+				options = new Vector();
 			}
 		} //}}}
 
@@ -489,6 +508,11 @@ public class CommandoDialog extends EnhancedDialog
 				{
 					pane = settings;
 				}
+				else if(tag == "COMMANDS" || tag == "UI"
+					|| tag == "COMMANDO")
+				{
+					// ignore these, they're syntax sugar
+				}
 				else if(tag == "COMMAND")
 				{
 					scripts.addElement(new Script(
@@ -507,26 +531,40 @@ public class CommandoDialog extends EnhancedDialog
 							"commando");
 						tmp.setVariable("pane",pane);
 						tmp.setVariable("ns",nameSpace);
-						tmp.setVariable("label",label);
+						if(tag == "CHOICE")
+							tmp.setVariable("label",choiceLabel);
+						else
+							tmp.setVariable("label",label);
 						tmp.setVariable("var",varName);
 						tmp.setVariable("options",options);
-						//XXX: eval
+						if(eval != null)
+						{
+							defaultValue =
+								String.valueOf(
+								BeanShell.eval(
+								view,tmp,eval));
+						}
 						if(defaultValue == null)
-							nameSpace.setVariable(varName,bsh.Primitive.NULL);
+							nameSpace.setVariable(varName,"");
 						else
 							nameSpace.setVariable(varName,defaultValue);
 
-						BeanShell.eval(view,tmp,
+						// this stores This instances
+						// we call valueChanged() on
+						// them to update namespace
+						components.add(
+							BeanShell.eval(view,tmp,
 							"commando" + tag
 							+ "(pane,ns,label,var,"
 							+ "options)"
-						);
-						label = varName = defaultValue = eval = null;
+						));
 					}
 					catch(Exception e)
 					{
 						Log.log(Log.ERROR,this,e);
 					}
+
+					label = varName = defaultValue = eval = null;
 				}
 
 				popElement();
@@ -595,10 +633,10 @@ public class CommandoDialog extends EnhancedDialog
 	} //}}}
 
 	//{{{ Option class
-	static class Option
+	public static class Option
 	{
-		String label;
-		String value;
+		public String label;
+		public String value;
 
 		Option(String label, String value)
 		{

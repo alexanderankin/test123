@@ -1,7 +1,7 @@
 commandoTOGGLE_ENTRY(pane,ns,label,var,options)
 {
 	toggle = new JCheckBox(label);
-	entry = new JTextField();
+	entry = new JTextField(20);
 	value1 = ns.getVariable(var + "Toggle");
 	value2 = ns.getVariable(var);
 	if(new bsh.Primitive(true).equals(value))
@@ -18,28 +18,15 @@ commandoTOGGLE_ENTRY(pane,ns,label,var,options)
 	if(value2 != null)
 		entry.setText(value2.toString());
 
-	listener = new ActionListener()
+	valueChanged()
 	{
-		actionPerformed(evt)
-		{
-			ns.setVariable(var + "Toggle",
-				new Primitive(toggle.isSelected()));
-		}
-	};
-	toggle.addActionListener(listener);
+		ns.setVariable(var + "Toggle",
+			new Primitive(toggle.isSelected()));
 
-	listener = new ActionListener()
-	{
-		actionPerformed(evt)
-		{
-			text = entry.getText();
-			if(text.length() == 0)
-				ns.unsetVariable(var);
-			else
-				ns.setVariable(var,entry.getText());
-		}
+		ns.setVariable(var,entry.getText());
 	}
-	entry.addActionListener(listener);
 
-	pane.addComponent(label,entry);
+	pane.addComponent(toggle,entry);
+
+	return this;
 }
