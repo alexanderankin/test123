@@ -18,9 +18,7 @@
  */
 
 
-package code2html;
-
-import org.gjt.sp.util.Log;
+package code2html.line;
 
 
 public class LineWrapper

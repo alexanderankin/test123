@@ -18,11 +18,7 @@
  */
 
 
-package code2html;
-
-import java.util.Vector;
-
-import org.gjt.sp.util.Log;
+package code2html.line;
 
 
 public class LinePosition
