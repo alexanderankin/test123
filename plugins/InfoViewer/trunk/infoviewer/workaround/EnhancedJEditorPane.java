@@ -23,6 +23,7 @@ package infoviewer.workaround;
 
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
@@ -75,12 +76,15 @@ public class EnhancedJEditorPane extends JEditorPane
 
         if (buffer != null)
         {
-            // FIXME: StringBufferInputStream has been deprecated, is there another way?
-            InputStream in = new java.io.StringBufferInputStream(buffer.getText(0, buffer.getLength()));
+            String text=buffer.getText(0, buffer.getLength());
+            //InputStream in = new java.io.StringBufferInputStream(text);
+            InputStream in = new java.io.ByteArrayInputStream(text.getBytes());
             Log.log(Log.DEBUG, this, "getStream(): got stream from jEdit buffer: " + buffer);
 
             // determine and set content type of buffer:
-            String type = getContentType(page, in);
+            //String type = getContentType(in);
+            String type = getContentType(page);
+
             if (type != null)
                 setContentType(type);
 
@@ -131,13 +135,20 @@ public class EnhancedJEditorPane extends JEditorPane
 
     /**
      * Try to determine the content type of the url.
+     * @deprecated use getContentType(URL url) as URLConnection.getContentType() is more reliable (dunno why)
      */
     private String getContentType(URL page, InputStream in) throws IOException
     {
-        // the easiest would be to use:
-        // String type = URLConnection.guessContentTypeFromStream(in);
-        // but URLConnection.getContentType() is more reliable (dunno why)
+        String type = URLConnection.guessContentTypeFromStream(in);
+        return type;
+    }
 
+    
+    /**
+     * Try to determine the content type of the url.
+     */
+    private String getContentType(URL page) throws IOException
+    {
         URLConnection conn = page.openConnection();
         String type = conn.getContentType();
 

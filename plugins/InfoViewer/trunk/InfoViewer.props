@@ -67,65 +67,66 @@ infoviewer.status.error=Error.
 
 # Actions
 infoviewer.open_file=Open File...
-infoviewer.open_file.icon=Open24.gif
+infoviewer.open_file.icon=Open.png
 infoviewer.open_file.mnemonic=O
 infoviewer.open_file.description=Open a file...
 infoviewer.open_file.shortcut=C+o
 
 infoviewer.open_buffer=Open Current Buffer
-infoviewer.open_buffer.icon=Import24.gif
+infoviewer.open_buffer.icon=XXXXX.png
 infoviewer.open_buffer.mnemonic=B
 infoviewer.open_buffer.description=Open the current selected jEdit buffer
 infoviewer.open_buffer.shortcut=C+b
 
 infoviewer.edit_url=Edit Current URL
-infoviewer.edit_url.icon=Edit24.gif
+infoviewer.edit_url.icon=XXXXX.png
 infoviewer.edit_url.mnemonic=O
 infoviewer.edit_url.description=Edit the current document with jEdit
 infoviewer.edit_url.shortcut=C+e
 
 infoviewer.reload=Reload
-infoviewer.reload.icon=Refresh24.gif
+infoviewer.reload.icon=Reload.png
 infoviewer.reload.mnemonic=R
 infoviewer.reload.description=Reload the current page
 infoviewer.reload.shortcut=C+r
 
 infoviewer.close=Close
-infoviewer.close.icon=Blank24.gif
+infoviewer.close.icon=XXXXX.png
 infoviewer.close.mnemonic=C
 infoviewer.close.description=Close InfoViewer
 infoviewer.close.shortcut=C+q
 
 infoviewer.copy=Copy
-infoviewer.copy.icon=Copy24.gif
+infoviewer.copy.icon=Copy.png
 infoviewer.copy.mnemonic=C
 infoviewer.copy.description=Copy selected text to clipboard
 infoviewer.copy.shortcut=C+c
 
 infoviewer.select_all=Select All
-infoviewer.select_all.icon=Blank24.gif
+infoviewer.select_all.icon=XXXXX.png
 infoviewer.select_all.mnemonic=S
 infoviewer.select_all.description=Select all
 infoviewer.select_all.shortcut=C+a
 
 infoviewer.back=Back
-infoviewer.back.icon=Back24.gif
+infoviewer.back.icon=ArrowL.png
 infoviewer.back.mnemonic=B
 infoviewer.back.description=Back in history
 infoviewer.back.shortcut=A+LEFT
 
 infoviewer.forward=Forward
-infoviewer.forward.icon=Forward24.gif
+infoviewer.forward.icon=ArrowR.png
 infoviewer.forward.mnemonic=F
 infoviewer.forward.description=Forward in history
 infoviewer.forward.shortcut=A+RIGHT
 
 infoviewer.home=Home
-infoviewer.home.icon=Home24.gif
+infoviewer.home.icon=Home.png
 infoviewer.home.mnemonic=H
 infoviewer.home.description=Go to Homepage
 
 infoviewer.bookmarks_add=Add Bookmark
+infoviewer.bookmarks_add.icon=Plus.png
 infoviewer.bookmarks_add.mnemonic=A
 infoviewer.bookmarks_add.description=Add the current page to bookmarks
 infoviewer.bookmarks_add.shortcut=C+k
@@ -139,7 +140,7 @@ infoviewer.about.mnemonic=A
 infoviewer.about.shortcut=F1
 
 infoviewer.follow_link=Follow Link
-infoviewer.follow_link.icon=FastForward24.gif
+infoviewer.follow_link.icon=Run.png
 infoviewer.follow_link.mnemonic=L
 infoviewer.follow_link.description=Follow the link under the pointer
 
