@@ -600,7 +600,8 @@ public final class Project implements EBComponent {
 			setRoot(new ProjectDirectory(fileProps.getProperty("root")));
 		}
 		else {
-		// MattP since file info does not exist yet for new project. on disk we are getting path via
+		// MattP: since file info does not exist on disk(yet) for new
+		// project, we are getting path via
 		// the state was set by the createproject wrapper
 			setRoot(new ProjectDirectory(this.root.getPath()));
 		}
