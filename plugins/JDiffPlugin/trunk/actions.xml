@@ -11,4 +11,25 @@
             return DualDiff.isEnabledFor(view);
         </IS_SELECTED>
     </ACTION>
+
+
+    <ACTION NAME="jdiff.next-diff">
+        <CODE>
+            DualDiff.nextDiff(editPane);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.prev-diff">
+        <CODE>
+            DualDiff.prevDiff(editPane);
+        </CODE>
+    </ACTION>
+
+
+    <ACTION NAME="jdiff.refresh-diff">
+        <CODE>
+            DualDiff.refresh(view);
+        </CODE>
+    </ACTION>
 </ACTIONS>

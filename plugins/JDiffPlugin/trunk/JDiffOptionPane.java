@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.jEdit;
 public class JDiffOptionPane extends AbstractOptionPane
 {
     private JCheckBox ignoreCase;
+    private JCheckBox ignoreWhitespace;
     private JButton   changedLineColor;
     private JButton   deletedLineColor;
     private JButton   insertedLineColor;
@@ -51,6 +52,7 @@ public class JDiffOptionPane extends AbstractOptionPane
 
     public void _init() {
         this.ignoreCase = this.createCheckBox("jdiff.ignore-case", false);
+        this.ignoreWhitespace = this.createCheckBox("jdiff.ignore-whitespace", false);
 
         this.changedLineColor  = this.createColorButton("jdiff.changed-color");
         this.deletedLineColor  = this.createColorButton("jdiff.deleted-color");
@@ -62,6 +64,7 @@ public class JDiffOptionPane extends AbstractOptionPane
         this.rightCursorColor  = this.createColorButton("jdiff.right-cursor-color");
 
         addComponent(this.ignoreCase);
+        addComponent(this.ignoreWhitespace);
 
         addComponent(
             jEdit.getProperty("options.jdiff.changed-color"),
@@ -101,6 +104,9 @@ public class JDiffOptionPane extends AbstractOptionPane
     public void _save() {
         jEdit.setBooleanProperty("jdiff.ignore-case",
             this.ignoreCase.isSelected()
+        );
+        jEdit.setBooleanProperty("jdiff.ignore-whitespace",
+            this.ignoreWhitespace.isSelected()
         );
         jEdit.setProperty("jdiff.changed-color",
             GUIUtilities.getColorHexString(this.changedLineColor.getBackground())

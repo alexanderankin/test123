@@ -34,7 +34,6 @@ import javax.swing.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Element;
 
-import jdiff.text.FileData;
 import jdiff.text.FileLine;
 import jdiff.util.Diff;
 
@@ -48,7 +47,10 @@ import org.gjt.sp.util.Log;
 
 
 public class DualDiff {
-    private static boolean ignoreCase = jEdit.getBooleanProperty("jdiff.ignore-case", false);
+    private static boolean ignoreCase  =
+        jEdit.getBooleanProperty("jdiff.ignore-case", false);
+    private static boolean ignoreWhitespace =
+        jEdit.getBooleanProperty("jdiff.ignore-whitespace", false);
     private static Hashtable dualDiffs = new Hashtable();
 
     private View view;
@@ -83,14 +85,14 @@ public class DualDiff {
         this.textArea0 = this.editPane0.getTextArea();
         this.textArea1 = this.editPane1.getTextArea();
 
-        FileData fileData0 = this.getFileData(buf0);
-        FileData fileData1 = this.getFileData(buf1);
+        FileLine[] fileLines0 = this.getFileLines(buf0);
+        FileLine[] fileLines1 = this.getFileLines(buf1);
 
-        Diff d = new Diff(fileData0.getLines(), fileData1.getLines());
+        Diff d = new Diff(fileLines0, fileLines1);
         this.edits = d.diff_2(false);
 
-        int lineCount0 = fileData0.getLines().length;
-        int lineCount1 = fileData1.getLines().length;
+        int lineCount0 = fileLines0.length;
+        int lineCount1 = fileLines1.length;
 
         this.diffOverview0 = new DiffLocalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
         this.diffOverview1 = new DiffGlobalOverview(this.edits, lineCount0, lineCount1, this.textArea0, this.textArea1);
@@ -192,7 +194,7 @@ public class DualDiff {
     }
 
 
-    public FileData getFileData(Buffer buffer) {
+    public FileLine[] getFileLines(Buffer buffer) {
         Element map = buffer.getDefaultRootElement();
 
         FileLine[] lines = new FileLine[map.getElementCount()];
@@ -205,21 +207,59 @@ public class DualDiff {
             // We get the line i without the line separator (always \n)
             int len = (end - 1) - start;
             if (len == 0) {
-                lines[i] = new FileLine("", ignoreCase);
+                lines[i] = new FileLine("", "");
                 continue;
             }
 
             String text = "";
+            String canonical = "";
             try {
                 text = buffer.getText(start, len);
+                canonical = text;
+                if (ignoreCase) {
+                    canonical = canonical.toUpperCase();
+                }
+                if (ignoreWhitespace) {
+                    canonical = squeezeRepeatedWhitespaces(canonical);
+                }
             } catch (BadLocationException ble) {
                 Log.log(Log.ERROR, this, ble);
             } finally {
-                lines[i] = new FileLine(text, ignoreCase);
+                lines[i] = new FileLine(text, canonical);
             }
         }
 
-        return new FileData(buffer.getName(), lines);
+        return lines;
+    }
+
+
+    public static String squeezeRepeatedWhitespaces(String str) {
+        int inLen     = str.length();
+        int outLen    = 0;
+        char[] inStr  = new char[inLen];
+        char[] outStr = new char[inLen];
+        str.getChars(0, inLen, inStr, 0);
+
+        boolean space = false;
+
+        int idx = 0;
+        // Skip leading whitespaces
+        while (idx < inLen && Character.isWhitespace(inStr[idx])) { idx++; }
+
+        for (; idx < inLen; idx++) {
+            if (Character.isWhitespace(inStr[idx])) {
+                space = true;
+                continue;
+            }
+
+            if (space) {
+                outStr[outLen++] = ' ';
+                space = false;
+            }
+            outStr[outLen++] = inStr[idx];
+        }
+
+        return new String(outStr, 0, outLen);
     }
 
 
@@ -249,6 +289,11 @@ public class DualDiff {
     }
 
 
+    public static DualDiff getDualDiffFor(View view) {
+        return (DualDiff) dualDiffs.get(view);
+    }
+
+
     public static boolean isEnabledFor(View view) {
         return (dualDiffs.get(view) != null);
     }
@@ -258,10 +303,12 @@ public class DualDiff {
         DualDiff.removeFrom(view);
     }
 
+
     public static void editPaneDestroyed(View view, EditPane editPane) {
         DualDiff.removeFrom(view);
         DiffHighlight.removeHighlightFrom(editPane);
     }
+
 
     public static void editPaneBufferChanged(View view, EditPane editPane) {
         DualDiff.removeFrom(view);
@@ -287,6 +334,157 @@ public class DualDiff {
 
         view.invalidate();
         view.validate();
+    }
+
+
+    public static void refresh(View view) {
+        if (DualDiff.isEnabledFor(view)) {
+            DualDiff.removeFrom(view);
+            DualDiff.addTo(view);
+
+            view.invalidate();
+            view.validate();
+        } else {
+            view.getToolkit().beep();
+        }
+    }
+
+
+    public static void nextDiff(EditPane editPane) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(editPane.getView());
+        if (dualDiff == null) {
+            editPane.getToolkit().beep();
+            return;
+        }
+
+        if (dualDiff.editPane0 == editPane) {
+            dualDiff.nextDiff0();
+        } else if (dualDiff.editPane1 == editPane) {
+            dualDiff.nextDiff1();
+        } else {
+            editPane.getToolkit().beep();
+        }
+    }
+
+
+    public static void prevDiff(EditPane editPane) {
+        DualDiff dualDiff = DualDiff.getDualDiffFor(editPane.getView());
+        if (dualDiff == null) {
+            editPane.getToolkit().beep();
+            return;
+        }
+
+        if (dualDiff.editPane0 == editPane) {
+            dualDiff.prevDiff0();
+        } else if (dualDiff.editPane1 == editPane) {
+            dualDiff.prevDiff1();
+        } else {
+            editPane.getToolkit().beep();
+        }
+    }
+
+
+    private void nextDiff0() {
+        this.adjustHandler.source = this.vertical0;
+
+        Diff.change hunk = this.edits;
+        int firstLine = this.textArea0.getFirstLine();
+        for (; hunk != null; hunk = hunk.link) {
+            if (hunk.line0 > firstLine + ((hunk.deleted == 0) ? 1 : 0)) {
+                int line = 0;
+                if (hunk.deleted == 0 && hunk.line0 > 0) {
+                    line = hunk.line0 - 1;
+                } else {
+                    line = hunk.line0;
+                }
+                this.textArea0.setFirstLine(line);
+                if (this.textArea0.getFirstLine() != line) {
+                    this.textArea0.getToolkit().beep();
+                }
+                return;
+            }
+        }
+
+        this.textArea1.getToolkit().beep();
+    }
+
+
+    private void nextDiff1() {
+        this.adjustHandler.source = this.vertical1;
+
+        Diff.change hunk = this.edits;
+        int firstLine = this.textArea1.getFirstLine();
+        for (; hunk != null; hunk = hunk.link) {
+            if (hunk.line1 > firstLine + ((hunk.inserted == 0) ? 1 : 0)) {
+                int line = 0;
+                if (hunk.inserted == 0 && hunk.line1 > 0) {
+                    line = hunk.line1 - 1;
+                } else {
+                    line = hunk.line1;
+                }
+                this.textArea1.setFirstLine(line);
+                if (this.textArea1.getFirstLine() != line) {
+                    this.textArea1.getToolkit().beep();
+                }
+                return;
+            }
+        }
+
+        this.textArea1.getToolkit().beep();
+    }
+
+
+    private void prevDiff0() {
+        this.adjustHandler.source = this.vertical0;
+
+        Diff.change hunk = this.edits;
+        int firstLine = this.textArea0.getFirstLine();
+        for (; hunk != null; hunk = hunk.link) {
+            if (hunk.line0 < firstLine) {
+                if (hunk.link == null || hunk.link.line0 >= firstLine) {
+                    int line = 0;
+                    if (hunk.deleted == 0 && hunk.line0 > 0) {
+                        line = hunk.line0 - 1;
+                    } else {
+                        line = hunk.line0;
+                    }
+                    this.textArea0.setFirstLine(line);
+                    if (this.textArea0.getFirstLine() != line) {
+                        this.textArea0.getToolkit().beep();
+                    }
+                    return;
+                }
+            }
+        }
+
+        this.textArea0.getToolkit().beep();
+    }
+
+
+    private void prevDiff1() {
+        this.adjustHandler.source = this.vertical1;
+
+        Diff.change hunk = this.edits;
+        int firstLine = this.textArea1.getFirstLine();
+        for (; hunk != null; hunk = hunk.link) {
+            if (hunk.line1 < firstLine) {
+                if (hunk.link == null || hunk.link.line1 >= firstLine) {
+                    int line = 0;
+                    if (hunk.inserted == 0 && hunk.line1 > 0) {
+                        line = hunk.line1 - 1;
+                    } else {
+                        line = hunk.line1;
+                    }
+                    this.textArea1.setFirstLine(line);
+                    if (this.textArea1.getFirstLine() != line) {
+                        this.textArea1.getToolkit().beep();
+                    }
+                    return;
+                }
+            }
+        }
+
+        this.textArea1.getToolkit().beep();
     }
 
 
@@ -405,9 +603,15 @@ public class DualDiff {
 
 
     public static void propertiesChanged() {
-        boolean newIgnoreCase = jEdit.getBooleanProperty("jdiff.ignore-case", false);
-        if (newIgnoreCase != ignoreCase) {
-            ignoreCase = newIgnoreCase;
+        boolean newIgnoreCase =
+            jEdit.getBooleanProperty("jdiff.ignore-case", false);
+        boolean newIgnoreWhitespace =
+            jEdit.getBooleanProperty("jdiff.ignore-whitespace", false);
+
+        if (newIgnoreCase != ignoreCase || newIgnoreWhitespace != ignoreWhitespace) {
+            ignoreCase       = newIgnoreCase;
+            ignoreWhitespace = newIgnoreWhitespace;
+            // Propagate the changes to all views
             for (Enumeration e = dualDiffs.keys(); e.hasMoreElements(); ) {
                 View view = (View) e.nextElement();
                 DualDiff.removeFrom(view);

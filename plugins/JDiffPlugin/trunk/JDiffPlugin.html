@@ -26,6 +26,7 @@
     <LI><A HREF="#general">Presentation</A></LI>
     <LI><A HREF="#usage">Usage</A></LI>
     <LI><A HREF="#display">Display</A></LI>
+    <LI><A HREF="#other_commands">Other commands</A></LI>
     <LI><A HREF="#options">Options</A></LI>
     <LI><A HREF="#credits">Credits</A></LI>
     <LI><A HREF="#feedback">Feedback</A></LI>
@@ -40,6 +41,7 @@
 <UL>
     <LI>Diff overviews (local and global)</LI>
     <LI>Synchronized scrolling</LI>
+    <LI>Ignore case/Ignore all whitespace options</LI>
 </UL>
 
 <P>It requires:</P>
@@ -119,9 +121,28 @@ It also displays two cursors which indicate the visible parts of the two
 buffers.
 </P>
 
+
+<H2><A NAME="other_commands">Other commands</A></H2>
+
+<UL>
+    <LI>Refresh: refreshes the diff display</LI>
+    <LI>Go to previous/next difference</LI>
+</UL>
+
+
 <H2><A NAME="options">Options</A></H2>
 
-<P>You can configure whether JDiff should ignore case or not (default).</P>
+<P>You can configure how JDiff compares lines. JDiff can:</P>
+
+<UL>
+    <LI>Ignore case: upper-cased lines are compared.</LI>
+    <LI>Ignore all whitespace: lines are compared as if
+        <UL>
+            <LI>leading and trailing whitespaces were removed</LI>
+            <LI>repeated whitespaces were replaced by a single space.</LI>
+        </UL>
+    </LI>
+</UL>
 
 <P>You can also configure the color of:</P>
 
