@@ -1,6 +1,6 @@
 plugin.xslt.XSLTPlugin.name=XSLT
-plugin.xslt.XSLTPlugin.author=Greg Merrill, Carlos Quiroz
-plugin.xslt.XSLTPlugin.version=0.1
+plugin.xslt.XSLTPlugin.author=Greg Merrill, Robert McKinnon, Carlos Quiroz
+plugin.xslt.XSLTPlugin.version=0.2
 plugin.xslt.XSLTPlugin.docs=users-guide.html
 plugin.xslt.XSLTPlugin.jars=xalan.jar xml-apis.jar
 plugin.xslt.XSLTPlugin.depend.0=jdk 1.3
@@ -8,6 +8,8 @@ plugin.xslt.XSLTPlugin.depend.1=jedit 04.00.07.00
 plugin.xslt.XSLTPlugin.depend.2=plugin xml.XmlPlugin 0.8
 
 xslt-menu=\
+  XSLTProcessor.Indent \
+  - \
 	XSLTProcessor-toggle \
   XSLTProcessor.Transform \
   - \
@@ -18,6 +20,7 @@ xslt-menu.label=XSLT
 XSLTProcessor.title=XSLT Processor
 XSLTProcessor-toggle.label=XSLT Processor
 XSLTProcessor.Transform.label=Transform
+XSLTProcessor.Indent.label=Indent XML Buffer
 XPathTool.title=XPath Tool
 XPathTool-toggle.label=XPath Tool
 XPathTool.Evaluate.label=Evaluate
@@ -39,9 +42,10 @@ XSLTProcessor.down.button=Down
 XSLTProcessor.result.label=Result:
 XSLTProcessor.result.pleaseName=Please name for the result document
 XSLTProcessor.name.button=Name
-XSLTProcessor.indent.checkbox=Indent result
 
 XSLTProcessor.transform.button=Transform
+XSLTProcessor.transform.status=Transform completed, time taken {0}ms
+XSLTProcessor.transform.indentAmount=2
 
 XSLTProcessor.ok.button=OK
 XSLTProcessor.cancel.button=Cancel
@@ -49,6 +53,7 @@ XSLTProcessor.addStylesheet.title=Add Stylesheet
 XSLTProcessor.error.preProcessProblem=An error occurred before any stylesheets were processed.
 XSLTProcessor.error.stylesheetProblem=An error occurred during the processing of stylesheet "{0}".
 
+XSLTProcessor.Indent.error=Problem occurred during indenting:
 XSLTProcessor.Transform.error.notEnabled=You must first specify your source document and/or stylesheets in the XSLT Processor window.
 
 XPathTool.error.dockFirst=You must dock the XPath Tool before you can perform this action.
