@@ -49,9 +49,9 @@ public class ColorTabs
    private final static int darkRange = 150;
    private final static float darkRatio = ((float) darkRange / 254);
    private final static int lowestColor = 150;
-   private final static int highestColour = 230;
+   private final static int highestColor = 230;
    private final static int jnd = 4;
-   private final static int muteRange = highestColour - lowestColor;
+   private final static int muteRange = highestColor - lowestColor;
    private final static float muteRatio = ((float) muteRange / 254);
 
    private static int VERSION_THREE_JEDIT = 3;
@@ -182,9 +182,9 @@ public class ColorTabs
 
       }
 
-      r = Math.max(lowestColor, Math.min(r, highestColour));
-      g = Math.max(lowestColor, Math.min(g, highestColour));
-      b = Math.max(lowestColor, Math.min(b, highestColour));
+      r = Math.max(lowestColor, Math.min(r, highestColor));
+      g = Math.max(lowestColor, Math.min(g, highestColor));
+      b = Math.max(lowestColor, Math.min(b, highestColor));
 
       return new Color(r, g, b);
    }
