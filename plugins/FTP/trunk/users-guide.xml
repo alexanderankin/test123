@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- FTP plugin user's guide -->
-<!-- (C) 2001 Slava Pestov -->
+<!-- (C) 2001, 2002 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true: -->
@@ -78,6 +78,12 @@ exits. To force jEdit to forget all passwords while it is running, use the
 FTP connections are kept open for 2 minutes before being closed. Performing
 another operation while a connection is still open resets the 2 minute timer.
 This improves performance by reducing network traffic.
+</para>
+
+<para>
+You can close unused connections at any other itme using the
+<guimenuitem>Close Unused Connections</guimenuitem> command in the
+<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
 </para></listitem>
 
 </itemizedlist>
@@ -98,6 +104,9 @@ This improves performance by reducing network traffic.
 
     <listitem><para>Fixed a possible ArrayIndexOutOfBoundsException if the
     server output an empty line in a file listing.</para></listitem>
+
+    <listitem><para>First attempt at supporting VMS FTP servers.
+    </para></listitem>
    </itemizedlist>
   </listitem>
  

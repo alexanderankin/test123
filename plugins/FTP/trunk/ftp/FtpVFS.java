@@ -46,21 +46,22 @@ public class FtpVFS extends VFS
 	{
 		super("ftp");
 
-		regexps = new RE[jEdit.getIntegerProperty(
+		unixRegexps = new UncheckedRE[jEdit.getIntegerProperty(
 			"vfs.ftp.list.count",-1)];
-		for(int i = 0; i < regexps.length; i++)
+		for(int i = 0; i < unixRegexps.length; i++)
 		{
-			try
-			{
-				regexps[i] = new RE(jEdit.getProperty(
-					"vfs.ftp.list." + i),0,
-					RESearchMatcher.RE_SYNTAX_JEDIT);
-			}
-			catch(REException re)
-			{
-				Log.log(Log.ERROR,this,re);
-			}
+			unixRegexps[i] = new UncheckedRE(jEdit.getProperty(
+				"vfs.ftp.list." + i),0,
+				RESearchMatcher.RE_SYNTAX_JEDIT);
 		}
+
+		dosRegexp = new UncheckedRE(jEdit.getProperty(
+			"vfs.ftp.list.dos"),0,
+			RESearchMatcher.RE_SYNTAX_JEDIT);
+
+		vmsRegexp = new UncheckedRE(jEdit.getProperty(
+			"vfs.ftp.list.vms"),0,
+			RESearchMatcher.RE_SYNTAX_JEDIT);
 	}
 
 	public int getCapabilities()
@@ -565,7 +566,9 @@ public class FtpVFS extends VFS
 	}
 
 	// private members
-	private RE[] regexps;
+	private UncheckedRE[] unixRegexps;
+	private UncheckedRE dosRegexp;
+	private UncheckedRE vmsRegexp;
 
 	private static void _setupSocket(FtpClient client)
 		throws IOException
@@ -650,38 +653,34 @@ public class FtpVFS extends VFS
 	{
 		try
 		{
-			int type;
-			switch(line.charAt(0))
-			{
-			case 'd':
-				type = VFS.DirectoryEntry.DIRECTORY;
-				break;
-			case 'l':
-				type = FtpDirectoryEntry.LINK;
-				break;
-			case '-':
-				type = VFS.DirectoryEntry.FILE;
-			default:
-				// MS FTP server
-				if(line.indexOf("<DIR>") != -1)
-					type = VFS.DirectoryEntry.DIRECTORY;
-				else
-					type = VFS.DirectoryEntry.FILE;
-				break;
-			}
-
-			// now, we use one of several regexps to obtain
-			// the file name and size
+			// we use one of several regexps to obtain
+			// the file name, type, and size
+			int type = VFS.DirectoryEntry.FILE;
 			String name = null;
 			long length = 0L;
 			int permissions = 0;
 
-			for(int i = 0; i < regexps.length; i++)
+			boolean ok = false;
+
+			for(int i = 0; i < unixRegexps.length; i++)
 			{
-				RE regexp = regexps[i];
+				UncheckedRE regexp = unixRegexps[i];
 				REMatch match;
 				if((match = regexp.getMatch(line)) != null)
 				{
+					switch(line.charAt(0))
+					{
+					case 'd':
+						type = VFS.DirectoryEntry.DIRECTORY;
+						break;
+					case 'l':
+						type = FtpDirectoryEntry.LINK;
+						break;
+					case '-':
+						type = VFS.DirectoryEntry.FILE;
+						break;
+					}
+
 					permissions = parsePermissions(match.toString(1));
 
 					try
@@ -694,12 +693,47 @@ public class FtpVFS extends VFS
 					}
 
 					name = match.toString(3);
+					ok = true;
 					break;
 				}
 			}
 
+			if(!ok)
+			{
+				REMatch match;
+				if((match = dosRegexp.getMatch(line)) != null)
+				{
+					try
+					{
+						String sizeStr = match.toString(1);
+						if(sizeStr.equals("<DIR>"))
+							type = VFS.DirectoryEntry.DIRECTORY;
+						else
+							length = Long.parseLong(sizeStr);
+					}
+					catch(NumberFormatException nf)
+					{
+						length = 0L;
+					}
 
-			if(name == null)
+					name = match.toString(2);
+					ok = true;
+				}
+			}
+
+			if(!ok)
+			{
+				REMatch match;
+				if((match = vmsRegexp.getMatch(line)) != null)
+				{
+					name = match.toString(1);
+					if(name.endsWith(".DIR"))
+						type = VFS.DirectoryEntry.DIRECTORY;
+					ok = true;
+				}
+			}
+
+			if(!ok)
 				return null;
 
 			// path is null; it will be created later, by _listDirectory()

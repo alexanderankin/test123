@@ -36,12 +36,9 @@ ftperror={0}\
 	See Utilities->Activity Log for a full connection trace.
 
 # File listing regexps
-vfs.ftp.list.count=4
+vfs.ftp.list.count=2
 vfs.ftp.list.0=[ld-](.{9}).*\\s+(\\d+)\\s+[[:alpha:]]{3}\\s+\\S+\\s+\\S+\\s+(.+)
 vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)
 
-# (.) gives us a "permission" string (since size must be $2, name $3)
-# parsePermissions() ignores invalid
-vfs.ftp.list.2=(.)\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)
-
-vfs.ftp.list.3=()()(.+?);\\d+\\s+.+
+vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)
+vfs.ftp.list.vms=(.+?);\\d+\\s+.+
