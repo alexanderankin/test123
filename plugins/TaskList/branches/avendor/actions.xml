@@ -1,0 +1,18 @@
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="tasklist.toggle">
+		<CODE>
+			view.getDockableWindowManager().toggleDockableWindow("tasklist");
+		</CODE>
+		<IS_SELECTED>
+			return view.getDockableWindowManager().isDockableWindowVisible("tasklist");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="tasklist.parse-buffer">
+		<CODE>
+			Log.log(Log.DEBUG, TaskListPlugin.class, "starting parseBuffer()");
+			TaskListPlugin.parseBuffer(buffer);
+		</CODE>
+	</ACTION>
+</ACTIONS>
