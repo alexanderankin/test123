@@ -48,7 +48,9 @@ public class TagFile
   public TagFile(String path, boolean enabled)
   {
     if(path.equalsIgnoreCase(Tags.getCurrentBufferTagFilename()))
+    {
       this.currentDirIndexFile = true;
+    }
     this.path = path;
     this.enabled = enabled;
   } //}}}

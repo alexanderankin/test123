@@ -90,7 +90,7 @@ options.tags.tag-close.label=Close
 
 # Option values
 options.tags.current-buffer-file-name=tags
-options.tags.tag-search-current-buff-tag-file=false
+options.tags.tag-search-current-buff-tag-file=true
 options.tags.tags-search-parent-dirs=false
 options.tags.tag-search-all-files=false
 options.tags.note-all-tags-in-tag-history=true

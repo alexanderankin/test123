@@ -401,6 +401,11 @@ final public class Tags {
             // get current search values/parameters
             SearchAndReplace.save();
             SearchFileSet oldFileset = SearchAndReplace.getSearchFileSet();
+            boolean oldRegexp = SearchAndReplace.getRegexp();
+            boolean oldReverse = SearchAndReplace.getReverseSearch();
+            boolean oldIgnoreCase = SearchAndReplace.getIgnoreCase();
+            boolean oldBeanShellReplace = SearchAndReplace.getBeanShellReplace();
+            boolean oldAutoWrapAround = SearchAndReplace.getAutoWrapAround();
             String oldSearchString = SearchAndReplace.getSearchString();
 
             // set current search values/parameters
@@ -416,8 +421,15 @@ final public class Tags {
 
             // Be nice and restore search values/parameters
             SearchAndReplace.load();
-            SearchAndReplace.setSearchFileSet(oldFileset);
-            SearchAndReplace.setSearchString(oldSearchString);
+            if(oldFileset != null)
+              SearchAndReplace.setSearchFileSet(oldFileset);
+            SearchAndReplace.setRegexp(oldRegexp);
+            SearchAndReplace.setReverseSearch(oldReverse);
+            SearchAndReplace.setIgnoreCase(oldIgnoreCase);
+            SearchAndReplace.setBeanShellReplace(oldBeanShellReplace);
+            SearchAndReplace.setAutoWrapAround(oldAutoWrapAround);
+            if(oldSearchString != null)
+              SearchAndReplace.setSearchString(oldSearchString);
 
 						v.getTextArea().removeFromSelection(
                  v.getTextArea().getCaretPosition());
