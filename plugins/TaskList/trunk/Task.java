@@ -19,24 +19,23 @@
  * $Id$
  */
 
-
+//{{{ imports
 import javax.swing.Icon;
 import javax.swing.text.*;
-
 import org.gjt.sp.jedit.Buffer;
-
 import org.gjt.sp.util.Log;
+//}}}
 
 /**
  * A data object containing the attributes of a formatted comment
  * contained in a source file, along with an Icon represeting the
  * type of task.
- *
  * @author Oliver Rutherfurd
  */
 public class Task
 {
 
+	//{{{ constructor
 	public Task(Buffer buffer, Icon icon, int line, String text,
 		int startOffset, int endOffset)
 	{
@@ -53,43 +52,45 @@ public class Task
 		int posOffset = buffer.getLineStartOffset(line);
 		this.startPosition = buffer.createPosition(posOffset + startOffset);
 		this.endPosition = buffer.createPosition(posOffset + endOffset);
-
-	}
+	}//}}}
 
 	public Buffer getBuffer(){ return this.buffer; }
 	public Icon getIcon(){ return this.icon; }
 	public String getText(){ return this.text; }
 	public int getLineIndex(){ return this.lineIndex; }
 
+	//{{{ getStartOffset() method
 	public int getStartOffset()
 	{
 		return startPosition.getOffset()
 			- buffer.getLineStartOffset(getLineNumber());
-	}
+	}//}}}
 
+	//{{{ getEndOffset() method
 	public int getEndOffset()
 	{
 		return endPosition.getOffset()
 			- buffer.getLineStartOffset(getLineNumber());
-	}
+	}//}}}
 
+	//{{{ getStartPosition() method
 	public Position getStartPosition()
 	{
 		return startPosition;
-	}
+	}//}}}
 
+	//{{{ getEndPosition() method
 	public Position getEndPosition()
 	{
 		return endPosition;
-	}
+	}//}}}
 
+	//{{{ getLineNumber() method
 	/**
 	 * Returns the line number of the task, which takes into
 	 * account the changes in the associtaed buffer
-	 *
 	 * @return The line number of the task as found in the associated buffer
 	 */
-
 	public int getLineNumber()
 	{
 		if(startPosition != null)
@@ -100,9 +101,9 @@ public class Task
 		{
 			return lineIndex;
 		}
-	}
+	}//}}}
 
-
+	//{{{ toString() method
 	/**
 	 * Provides String representation of the object.
 	 * @return A String containing the line number and text of the
@@ -111,20 +112,23 @@ public class Task
 	public String toString()
 	{
 		return "[" + this.getLineNumber() + "]" + this.text;
-	}
+	}//}}}
 
-	private Buffer buffer;
-	private Icon icon;
+	//{{{ private members
+	private Buffer buffer;		// buffer task came from
+	private Icon icon;			// icon associated with TaskType
 
-	private String text;
+	private String text;		// comment text
 
-	private int startOffset;
-	private int endOffset;
+	private int startOffset;	// start of task
+	private int endOffset;		// end of task
 
-	private int lineIndex;
+	private int lineIndex;		// line task is on
 
 	private Position position;
 	private Position startPosition;
 	private Position endPosition;
-
+	//}}}
 }
+
+// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:

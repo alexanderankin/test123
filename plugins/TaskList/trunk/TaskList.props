@@ -15,8 +15,6 @@ tasklist.title=Task List
 tasklist.label=Task List
 tasklist-toggle.label=Task List Toggle
 
-# DONE: compatible with jEdit API 4.0
-
 # action labels
 tasklist.toggle.label=Task List
 tasklist.parse-buffer.label=Parse buffer
@@ -55,6 +53,9 @@ options.tasklist.general.table.vertical-lines=Show vertical lines
 options.tasklist.general.highlight.tasks=Highlight tasks
 options.tasklist.general.highlight.color=Highlight color:
 
+options.tasklist.single-click-selection=Single-Click Selection
+tasklist.single-click-selection=false
+
 options.tasklist.general.buffer.display.fullpath=Complete Path
 options.tasklist.general.buffer.display.namedir=Filename (Directory)
 options.tasklist.general.buffer.display.nameonly=Filename Only
@@ -76,6 +77,13 @@ options.tasklist.tasktype.usebuiltin=Use built-in icon:
 options.tasklist.tasktype.usecustom=Use custom icon:
 options.tasklist.tasktype.noicon=(None Selected)
 
+options.tasklist.modes.label=Modes
+options.tasklist.modes.parse.label=Parse Tasks for these Modes:
+
+# by default modes are parsed, here are the default exclusions
+options.tasklist.parse.text=false
+options.tasklist.parse.hex=false
+
 # Initial default settings
 tasklist.parsedelay=1000
 tasklist.highlight.color=#0000ff
@@ -84,7 +92,6 @@ tasklist.table.vertical-lines=false
 tasklist.table.sort-column=1
 tasklist.table.sort-ascending=true
 tasklist.highlight.tasks=false
-
 
 # Plugin option pane dialog icons
 tasklist.icons=Binocular.gif \

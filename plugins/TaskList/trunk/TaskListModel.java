@@ -19,24 +19,24 @@
  * $Id$
  */
 
-
+//{{{ imports
 import javax.swing.*;
 import javax.swing.table.*;
 import java.awt.*;
 import java.awt.event.*;
-
 import java.util.Vector;
 import java.util.Hashtable;
 import java.util.Enumeration;
-
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.Log;
+//}}}
 
 public class TaskListModel extends AbstractTableModel
 	implements TaskListPlugin.TaskListener, EBComponent
 {
 
+	//{{{ private static members
 	private static final String[] colNames = {
 		"",
 		"Line #",
@@ -48,26 +48,29 @@ public class TaskListModel extends AbstractTableModel
 	private static final int NAME_DIR = 0;	// filename (dir)
 	private static final int FULL_PATH = 1;	// dir/name
 	private static final int NAME_ONLY = 2; // filename
+	//}}}
 
-
+	//{{{ setSortCol(int sortCol) method
 	public void setSortCol(int sortCol) {
 		this.sortCol = sortCol;
-	}
+	}//}}}
 
+	//{{{ setSortAscending(boolean sortAscending) method
 	public void setSortAscending(boolean sortAscending) {
 		this.sortAscending = sortAscending;
-	}
+	}//}}}
 
+	//{{{ getSortCol() method
 	public int getSortCol() {
 		return sortCol;
-	}
+	}//}}}
 
+	//{{{ getSortAscending() method
 	public boolean getSortAscending() {
 		return sortAscending;
-	}
+	}//}}}
 
-
-
+	//{{{ constructor
 	/**
 	 * Constructs a TaskListModel object
 	 *
@@ -90,7 +93,6 @@ public class TaskListModel extends AbstractTableModel
 		}
 		this.sortAscending = jEdit.getBooleanProperty("tasklist.table.sort-ascending");
 
-
 		try
 		{
 			EditPane[] editPanes = view.getEditPanes();
@@ -108,22 +110,22 @@ public class TaskListModel extends AbstractTableModel
 			e.printStackTrace();
 		}
 
-		//this.viewBuffers = getViewBuffers();
+		// TODO: need to display task for currect set of edit 
+		// panes when first created
 
-		// TODO: need to display task for currect set of edit panes when first
-		// created
-	}
+	}//}}}
 
-
+	//{{{ elementAt(int row) method
 	/**
-	*
+	* Returns Task at `row`
+	* @param row the row index of task
 	*/
 	public Task elementAt(int row)
 	{
 		return (Task)tasks.elementAt(row);
-	}
+	}//}}}
 
-
+	//{{{ _addBuffer(Buffer buffer) method
 	/**
 	* Adds the buffer to the set of buffers whose tasks should be returned by
 	* the table model.  If the buffer is already in the set, return - otherwise
@@ -172,11 +174,12 @@ public class TaskListModel extends AbstractTableModel
 				addTask(task);
 			}
 		}
-	}
+	}//}}}
 
-
+	//{{{ addTask(Task task) method
 	/**
-	*
+	* Adds a Task
+	* @param Task task to add
 	*/
 	private void addTask(Task task)
 	{
@@ -191,18 +194,15 @@ public class TaskListModel extends AbstractTableModel
 		//		"index=" + index + ",tasks.size()=" + tasks.size());//##
 
 		fireTableRowsInserted(tasks.size() - 1, tasks.size() -1);
-	}
+	}//}}}
 
-
+	//{{{ _removeBuffer(Buffer buffer) method
 	/**
-	* Remove the buffer from the current set, and remove all the tasks that
-	* 'belong' to the buffer.
+	* Remove the buffer from the current set, and remove all the 
+	* tasks that 'belong' to the buffer.
 	*/
 	private void _removeBuffer(Buffer buffer)
 	{
-		//Log.log(Log.DEBUG, TaskListModel.class,
-		//	"TaskListModel.removeBuffer(" + buffer.getPath() + ")");//##
-
 		int index = buffers.indexOf(buffer);
 		if(index > -1)
 		{
@@ -212,24 +212,18 @@ public class TaskListModel extends AbstractTableModel
 			for(int i = tasks.size() - 1; i >= 0; i--)
 			{
 				if(((Task)tasks.elementAt(i)).getBuffer() == buffer)
-				{
 					removeTask(i);
-				}
 			}
 
 			buffers.removeElementAt(index);
-
 		}
-		else
-		{
-			Log.log(Log.ERROR, TaskListModel.class,
-				"buffer to be removed {" + buffer.getPath()
-				+ "} not in set?");//##
-		}
-	}
+	}//}}}
 
-
-	// internal method to remove a task
+	//{{{ removeTask(Task task) method
+	/**
+	* Internal method to remove a task
+	* @param Task task to remove
+	*/
 	private void removeTask(Task task)
 	{
 		int taskNum = tasks.indexOf(task);
@@ -237,16 +231,20 @@ public class TaskListModel extends AbstractTableModel
 		{
 			removeTask(taskNum);
 		}
-	}
+	}//}}}
 
-
+	//{{{ removeTask(int index) method
+	/**
+	* Revomves a task by row number
+	* @param index row number of task to remove
+	*/
 	private void removeTask(int index)
 	{
 		tasks.removeElementAt(index);
 		fireTableRowsDeleted(index, index);
-	}
+	}//}}}
 
-
+	//{{{ private members
 	private int bufferDisplay;
 	private int viewBuffers;
 	private View view;
@@ -254,11 +252,11 @@ public class TaskListModel extends AbstractTableModel
 	private Vector buffers;
 	private	int sortCol;
 	private boolean sortAscending;
+	//}}}
 
+	//{{{ TaskListener interface implementation
 
-
-	// ~ start of TaskListener interface implementation
-
+	//{{{ taskAdded(Task task) method
 	public void taskAdded(Task task)
 	{
 		if(buffers.indexOf(task.getBuffer()) > -1)
@@ -268,21 +266,23 @@ public class TaskListModel extends AbstractTableModel
 				addTask(task);
 			}
 		}
-	}
+	}//}}}
 
-
+	//{{{ taskRemoved(Task task) method
 	public void taskRemoved(Task task)
 	{
 		removeTask(task);
-	}
+	}//}}}
 
+	//{{{ tasksUpdated() method
 	public void tasksUpdated()
 	{
 		sort(sortCol, sortAscending);
-	}
-	// ~ end of TaskListener interface implementation
+	}//}}}
 
+	//}}}
 
+	//{{{ handleMessage(EBMessage message) method
 	public void handleMessage(EBMessage message)
 	{
 		if(message instanceof EditPaneUpdate)
@@ -348,28 +348,40 @@ public class TaskListModel extends AbstractTableModel
 
 			}// end if view == this.view
 		}
+		else if(message instanceof BufferUpdate)
+		{
+			BufferUpdate bu = (BufferUpdate)message;
+			if(bu.getWhat() == BufferUpdate.CLOSED)
+			{
+				_removeBuffer(bu.getBuffer());
+			}
+		}
 		else if(message instanceof PropertiesChanged)
 		{
 			propertiesChanged();
 		}
-	}
+	}//}}}
 
+	//{{{ getColumnName(int c) method
 	public String getColumnName(int col)
 	{
 		return colNames[col];
-	}
+	}//}}}
 
+	//{{{ getRowCount() method
 	public int getRowCount()
 	{
 		return tasks.size();
-	}
+	}//}}}
 
+	//{{{ getColumnCount() method
 	public int getColumnCount()
 	{
 		// only display buffer name if showing more than one buffer
 		return (buffers.size() <= 1 ? 3 : 4);
-	}
+	}//}}}
 
+	//{{{ getValueAt(int r, int c) method
 	public Object getValueAt(int row, int col)
 	{
 		Task task = (Task)tasks.elementAt(row);
@@ -394,8 +406,9 @@ public class TaskListModel extends AbstractTableModel
 			default:
 				return null;
 		}
-	}
+	}//}}}
 
+	//{{{ getColumnClass(int col) method
 	public Class getColumnClass(int col)
 	{
 		switch(col)
@@ -407,18 +420,21 @@ public class TaskListModel extends AbstractTableModel
 			default:
 				return String.class;
 		}
-	}
+	}//}}}
 
+	//{{{ isCellEditable(int row, int col) method
 	public boolean isCellEditable(int row, int col)
 	{
 		return false;
-	}
+	}//}}}
 
+	//{{{ setValueAt(Object value, int r, int col) method
 	public void setValueAt(Object value, int row, int col)
 	{
 		return;
-	}
+	}//}}}
 
+	//{{{ getBufferDisplay() method
 	/**
 	* Returns the current buffer display style
 	* (default to 'name (dir)')
@@ -449,9 +465,9 @@ public class TaskListModel extends AbstractTableModel
 		{
 			return NAME_DIR;
 		}
-	}
+	}//}}}
 
-
+	//{{{ propertiesChanged() method
 	private void propertiesChanged()
 	{
 		int _bufferDisplay = getBufferDisplay();
@@ -460,13 +476,15 @@ public class TaskListModel extends AbstractTableModel
 			// QUESTION: is fire table data changed needed?
 			bufferDisplay = _bufferDisplay;
 		}
-	}
+	}//}}}
 
+	//{{{ sort() method
 	public void sort()
 	{
 		sort(sortCol, sortAscending);
-	}
+	}//}}}
 
+	//{{{ sort(int col, boolean sortAscending) method
 	public void sort(int sortCol, boolean sortAscending)
 	{
 		// DEBUG: get sort parameters
@@ -475,8 +493,9 @@ public class TaskListModel extends AbstractTableModel
 			+ ", SortAscending = " + String.valueOf(sortAscending));
 		MiscUtilities.quicksort(tasks, new ColumnSorter(sortCol, sortAscending));
 		fireTableDataChanged();
-	}
+	}//}}}
 
+	//{{{ ColumnSorter class
 	/**
 	 * A class to perform comparisons on task data; available sortings are
 	 * by tasks type
@@ -492,12 +511,14 @@ public class TaskListModel extends AbstractTableModel
 		private int sortType;
 		private boolean ascending;
 
+		//{{{ constructor
 		public ColumnSorter(int col, boolean ascending)
 		{
 			this.sortType = (col == 1) ? LINENUMBER : TASKTAG;
 			this.ascending = ascending;
-		}
+		}//}}}
 
+		//{{{ compare() method
 		public int compare(Object obj1, Object obj2)
 		{
 			Task task1 = (Task)obj1;
@@ -524,6 +545,9 @@ public class TaskListModel extends AbstractTableModel
 			}
 
 			return result;
-		}
-    }
+		}//}}}
+
+	}//}}}
 }
+
+// :collapseFolds=1:folding=explicit:indentSize=4:lineSeparator=\n:noTabs=false:tabSize=4:
