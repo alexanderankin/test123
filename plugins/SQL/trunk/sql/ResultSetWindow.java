@@ -293,11 +293,18 @@ public class ResultSetWindow extends JPanel
 
       try
       {
-        final int precision = rsmd.getPrecision( i );
-        if ( precision != 0 )
+        switch ( rsmd.getColumnType( i ) )
         {
-          final int scale = rsmd.getScale( i );
-          type += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
+          case Types.CLOB:
+          case Types.BLOB:
+            break;
+          default:
+            final int precision = rsmd.getPrecision( i );
+            if ( precision != 0 )
+            {
+              final int scale = rsmd.getScale( i );
+              type  += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
+            }
         }
       } catch ( Exception ex )
       {
