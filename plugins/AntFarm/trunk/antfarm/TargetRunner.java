@@ -70,14 +70,8 @@ public class TargetRunner extends Thread
 			jEdit.saveAllBuffers( _view, false );
 
 			// Have our Ant run wait for any IO to finish up.
-			VFSManager.runInAWTThread(
-				new Runnable()
-				{
-					public void run()
-					{
-						runAntTarget();
-					}
-				} );
+			VFSManager.waitForRequests();
+			runAntTarget();
 		}
 		else {
 			runAntTarget();

@@ -69,6 +69,8 @@ antfarm.action.edit=Edit build file
 antfarm.action.browse=Browse project files
 
 # Ant browser option pane properties
+options.BuildOptions.label=Build Options
+options.Properties.label=Properties
 options.antfarm.label=Ant Farm
 options.antfarm.location=Select the Ant batch file to run
 options.antfarm.choose-antpath=Browse
