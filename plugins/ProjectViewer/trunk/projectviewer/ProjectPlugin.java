@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.EditPlugin;
 import org.gjt.sp.jedit.msg.PluginUpdate;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
+import org.gjt.sp.jedit.msg.ViewUpdate;
 
 import org.gjt.sp.util.Log;
 
@@ -170,6 +171,10 @@ public final class ProjectPlugin extends EBPlugin {
 			checkPluginUpdate((PluginUpdate)msg);
 		} else if (msg instanceof PropertiesChanged) {
 			VPTContextMenu.userMenuChanged();
+		} else if (msg instanceof ViewUpdate) {
+			if (((ViewUpdate)msg).getWhat() == ViewUpdate.CLOSED) {
+				ProjectViewer.cleanViewEntry(((ViewUpdate)msg).getView());
+			}
 		}
 	} //}}}
 
