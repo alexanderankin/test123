@@ -369,7 +369,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		private void valueChanged()
 		{
-			jEdit.setBooleanProperty("buffer." + property,isSelected());
+			view.getBuffer().putBooleanProperty(property,isSelected());
 
 			try
 			{
@@ -430,7 +430,7 @@ public class CommandoDialog extends EnhancedDialog
 		private void valueChanged()
 		{
 			System.err.println("foo!!!");
-			jEdit.setProperty("buffer." + property,getText());
+			view.getBuffer().putProperty(property,getText());
 
 			try
 			{

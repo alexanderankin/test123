@@ -19,14 +19,15 @@
 
 package console;
 
+import java.awt.Color;
 import java.io.*;
-import java.util.Vector;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
 class ConsoleProcess
 {
-	ConsoleProcess(Console console, Vector args, boolean foreground)
+	ConsoleProcess(Console console, Output output, String[] args,
+		boolean foreground)
 	{
 		SystemShell.ConsoleState consoleState
 			= SystemShell.getConsoleState(console);
@@ -39,6 +40,7 @@ class ConsoleProcess
 			console.getErrorSource().clear();
 
 			this.console = console;
+			this.output = output;
 			this.consoleState = consoleState;
 
 			ConsoleProcess runningProc = consoleState.process;
@@ -59,7 +61,8 @@ class ConsoleProcess
 		catch(Exception e)
 		{
 			String[] pp = { e.toString() };
-			console.printError(jEdit.getProperty("console.shell.error",pp));
+			console.print(console.getErrorColor(),
+				jEdit.getProperty("console.shell.error",pp));
 			stop();
 		}
 	}
@@ -68,8 +71,9 @@ class ConsoleProcess
 	{
 		if(console != null)
 		{
-			Object[] pp = { args.elementAt(0) };
-			console.printError(jEdit.getProperty("console.shell.detached",pp));
+			Object[] pp = { args[0] };
+			console.print(console.getErrorColor(),
+				jEdit.getProperty("console.shell.detached",pp));
 		}
 
 		consoleState = null;
@@ -87,8 +91,9 @@ class ConsoleProcess
 
 			if(console != null)
 			{
-				Object[] pp = { args.elementAt(0) };
-				console.printError(jEdit.getProperty("console.shell.killed",pp));
+				Object[] pp = { args[0] };
+				console.print(console.getErrorColor(),
+					jEdit.getProperty("console.shell.killed",pp));
 			}
 		}
 
@@ -100,7 +105,8 @@ class ConsoleProcess
 	private SystemShell.ConsoleState consoleState;
 	private String currentDirectory;
 	private Console console;
-	private Vector args;
+	private Output output;
+	private String[] args;
 	private Process process;
 	private StreamThread stdout;
 	private StreamThread stderr;
@@ -122,16 +128,18 @@ class ConsoleProcess
 				return;
 			}
 
-			if(console != null)
+			if(console != null && output != null)
 			{
-				Object[] pp = { args.elementAt(0), new Integer(exitCode) };
+				Object[] pp = { args[0], new Integer(exitCode) };
 
 				String msg = jEdit.getProperty("console.shell.exited",pp);
 
 				if(exitCode == 0)
-					console.printInfo(msg);
+					console.print(console.getInfoColor(),msg);
 				else
-					console.printError(msg);
+					console.print(console.getErrorColor(),msg);
+
+				output.commandDone();
 			}
 
 			process = null;
@@ -161,10 +169,28 @@ class ConsoleProcess
 				String line;
 				while((line = in.readLine()) != null)
 				{
-					if(console != null)
+					if(console != null && output != null)
 					{
-						console.printAndParseError(line,
-							currentDirectory);
+						int type = ConsolePlugin.parseLine(
+							line,currentDirectory,
+							console.getErrorSource());
+
+						Color color;
+
+						switch(type)
+						{
+						case ErrorSource.ERROR:
+							color = console.getErrorColor();
+							break;
+						case ErrorSource.WARNING:
+							color = console.getWarningColor();
+							break;
+						default:
+							color = null;
+							break;
+						}
+
+						output.print(color,line);
 					}
 				}
 				in.close();
@@ -174,7 +200,8 @@ class ConsoleProcess
 				if(console != null)
 				{
 					String[] args = { e.toString() };
-					console.printError(jEdit.getProperty(
+					console.print(console.getErrorColor(),
+						jEdit.getProperty(
 						"console.shell.error",args));
 				}
 			}

@@ -32,7 +32,8 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 
-public class Console extends JPanel implements DockableWindow, EBComponent
+public class Console extends JPanel
+implements DockableWindow, EBComponent, Output
 {
 	Console(View view)
 	{
@@ -66,15 +67,20 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		run.addActionListener(actionHandler);
 		run.setRequestFocusEnabled(false);
 
+		buttonBox.add(toBuffer = new JButton(jEdit.getProperty("console.to-buffer")));
+		toBuffer.setMargin(margin);
+		toBuffer.addActionListener(actionHandler);
+		toBuffer.setRequestFocusEnabled(false);
+
 		buttonBox.add(stop = new JButton(jEdit.getProperty("console.stop")));
 		stop.setMargin(margin);
 		stop.addActionListener(actionHandler);
 		stop.setRequestFocusEnabled(false);
 
-		buttonBox.add(toBuffer = new JButton(jEdit.getProperty("console.to-buffer")));
-		toBuffer.setMargin(margin);
-		toBuffer.addActionListener(actionHandler);
-		toBuffer.setRequestFocusEnabled(false);
+		buttonBox.add(clear = new JButton(jEdit.getProperty("console.clear")));
+		clear.setMargin(margin);
+		clear.addActionListener(actionHandler);
+		clear.setRequestFocusEnabled(false);
 
 		panel.add(BorderLayout.EAST,buttonBox);
 
@@ -125,6 +131,11 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		return this;
 	}
 
+	public Shell getShell()
+	{
+		return (Shell)shellCombo.getSelectedItem();
+	}
+
 	public void setShell(String shell)
 	{
 		Shell[] shells = Shell.getShells();
@@ -156,31 +167,16 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		return command;
 	}
 
-	public boolean runAndWait(String cmd)
+	public JTextPane getOutputPane()
 	{
-		run(cmd);
-		return shell.waitFor();
+		return output;
 	}
 
-	public void run(String cmd)
+	public void run(Shell shell, Output output, String cmd)
 	{
-		// Add to history
-		command.getModel().addItem(cmd);
-
-		// Record the command
-		Macros.Recorder recorder = view.getMacroRecorder();
-		if(recorder != null)
-		{
-			recorder.record("runCommandInConsole(view,\""
-				+ shell.getName()
-				+ "\",\""
-				+ MiscUtilities.charsToEscapes(cmd)
-				+ "\")");
-		}
-
-		printInfo("> " + cmd);
-
-		shell.execute(this,cmd);
+		HistoryModel.getModel("console." + shell.getName()).addItem(cmd);
+		print(infoColor,"> " + cmd);
+		shell.execute(this,output,cmd);
 	}
 
 	/**
@@ -195,7 +191,7 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 			return;
 		}
 		else
-			run(history.getItem(0));
+			run(getShell(),this,history.getItem(0));
 	}
 
 	public void handleMessage(EBMessage msg)
@@ -212,60 +208,6 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 	public DefaultErrorSource getErrorSource()
 	{
 		return errorSource;
-	}
-
-	/**
-	 * Prints the specified line of text, checking it against defined
-	 * error patterns.
-	 */
-	public void printAndParseError(String line, String directory)
-	{
-		int type = ConsolePlugin.parseLine(line,directory,errorSource);
-
-		switch(type)
-		{
-		case ErrorSource.ERROR:
-			printError(line);
-			break;
-		case ErrorSource.WARNING:
-			printWarning(line);
-			break;
-		default:
-			printPlain(line);
-			break;
-		}
-	}
-
-	/**
-	 * Convinience wrapper around print().
-	 */
-	public void printPlain(String msg)
-	{
-		print(msg,null);
-	}
-
-	/**
-	 * Convinience wrapper around print().
-	 */
-	public void printInfo(String msg)
-	{
-		print(msg,infoColor);
-	}
-
-	/**
-	 * Convinience wrapper around print().
-	 */
-	public void printWarning(String msg)
-	{
-		print(msg,warningColor);
-	}
-
-	/**
-	 * Convinience wrapper around print().
-	 */
-	public void printError(String msg)
-	{
-		print(msg,errorColor);
 	}
 
 	/**
@@ -295,7 +237,7 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 	/**
 	 * Prints a string of text with the specified color.
 	 */
-	public synchronized void print(String msg, Color color)
+	public synchronized void print(Color color, String msg)
 	{
 		Document outputDocument = output.getDocument();
 
@@ -332,22 +274,20 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 	}
 
 	/**
-	 * Removes all output.
+	 * Called when the command finishes executing.
 	 */
-	public void clear()
+	public void commandDone()
 	{
-		output.setText("");
 	}
-
-	// protected members
-	protected JTextPane output;
 
 	// private members
 	private View view;
 	private JComboBox shellCombo;
 	private Shell shell;
 	private HistoryTextField command;
-	private JButton run, stop, toBuffer;
+	private JButton run, toBuffer, stop, clear;
+
+	private JTextPane output;
 
 	private Color infoColor, warningColor, errorColor;
 
@@ -382,27 +322,21 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 					return;
 
 				command.setText(null);
-				run(cmd);
-			}
-			else if(source == stop)
-			{
-				shell.stop(Console.this);
+				run(getShell(),Console.this,cmd);
 			}
 			else if(source == toBuffer)
 			{
-				Buffer buffer = jEdit.newFile(view);
-				try
-				{
-					Document outputDocument = output.getDocument();
-					String text = outputDocument.getText(0,
-						outputDocument.getLength());
-					buffer.insertString(0,text,null);
-				}
-				catch(BadLocationException bl)
-				{
-					Log.log(Log.ERROR,this,bl);
-				}
+				String cmd = command.getText();
+				if(cmd == null || cmd.length() == 0)
+					return;
+
+				command.setText(null);
+				run(getShell(),new BufferOutput(view),cmd);
 			}
+			else if(source == stop)
+				shell.stop(Console.this);
+			else if(source == clear)
+				output.setText("");
 		}
 	}
 }

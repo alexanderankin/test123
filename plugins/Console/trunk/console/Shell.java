@@ -63,14 +63,14 @@ public abstract class Shell
 
 	/**
 	 * Prints a 'info' message to the specified console.
-	 * @param console The console
+	 * @param output The output
 	 */
-	public abstract void printInfoMessage(Console console);
+	public abstract void printInfoMessage(Output output);
 
 	/**
 	 * Executes a command.
 	 */
-	public abstract void execute(Console console, String command);
+	public abstract void execute(Console console, Output output, String command);
 
 	/**
 	 * Stops the currently executing command, if any.

@@ -32,12 +32,12 @@ class BeanShell extends Shell
 		super("BeanShell");
 	}
 
-	public void printInfoMessage(Console console)
+	public void printInfoMessage(Output output)
 	{
-		console.printInfo(jEdit.getProperty("console.beanshell.info"));
+		output.print(null,jEdit.getProperty("console.beanshell.info"));
 	}
 
-	public void execute(Console console, String command)
+	public void execute(Console console, Output output, String command)
 	{
 		View view = console.getView();
 
@@ -45,11 +45,13 @@ class BeanShell extends Shell
 		try
 		{
 			ns.setVariable("console",console);
+			ns.setVariable("output",output);
 			Object retVal = org.gjt.sp.jedit.BeanShell.eval(view,command,false);
 			ns.setVariable("console",null);
+			ns.setVariable("output",null);
 
 			if(retVal != null)
-				console.printPlain(retVal.toString());
+				output.print(null,retVal.toString());
 		}
 		catch(EvalError e)
 		{
@@ -57,6 +59,8 @@ class BeanShell extends Shell
 			// can't do anything about it.
 			Log.log(Log.ERROR,this,e);
 		}
+
+		output.commandDone();
 	}
 
 	public void stop(Console console)

@@ -13,8 +13,29 @@ runCommandInConsole(View view, String shell, String command)
 	console.setShell(shell);
 
 	// Run the command
-	console.run(command);
+	console.run(console.getShell(),console,command);
 }
 
 bsh.help.runCommandInConsole
 	= "usage: runCommandInConsole(View view, String shell, String command)";
+
+/* This is a utility function that executes the specified command in the
+ * console, placing the output in a new buffer. */
+runCommandInConsoleToBuffer(View view, String shell, String command)
+{
+	// Open the console if it isn't already open
+	view.getDockableWindowManager().addDockableWindow("console");
+
+	// Obtain the console instance
+	console = view.getDockableWindowManager().getDockableWindow("console");
+
+	// Set the shell to use
+	console.setShell(shell);
+
+	// Run the command
+	console.run(console.getShell(),new BufferOutput(),command);
+}
+
+bsh.help.runCommandInConsoleToBuffer
+	= "usage: runCommandInConsoleToBuffer(View view, String shell,"
+	+ " String command)";

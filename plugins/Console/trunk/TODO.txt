@@ -1,47 +1,53 @@
-- after jEdit 4.0 is released, multiple consoles, and multiple processes, per view
+- test console and commando tool bar code
+- icons for run, to buffer, stop, clear buttons
 - SystemShell.waitFor()
+- finish built-ins:
+  %run
+  %ls, with colored output
+  %ls option pane
+  %cat
+  %touch
+  %mv
+  %cp
+  cd -
+- cd to non-local directory
+- error when running process from non-local or non-existent directory
+- error patterns option pane
+- variables:
+  $<char> abbreviation for ${<char>}
+  some variables ($d, etc) have default values
+  others loaded from option pane and can be set with %set/%unset
+- aliases option pane
+- option to create Unix aliases:
+  ls -> %ls
+  ...
+- option to create DOS aliases:
+  dir -> %ls
+  type -> %cat
+  move -> %mv
+  ren -> %mv
+  ...
+- both on by default
 - commando:
   - shift-click on toolbar button runs without displaying dialog box
   - better error handling
-  - ~/.jedit/console/commando/openjade_PDF.xml
-    <recipe>
-     <caption label="Foo" />
-     <toggle name="xml" label="XML" />
-     <choice name="foo" label="What's my name:">
-      <option name="ar" label="Bobic">
-       ... widgets only enabled if option selected ...
-      </option>
-     </choice>
-     <entry name="dsl" label="Stylesheet" />
-     <toggle_entry ... />
-     <command confirm="true|false" shell="<foo>">
-      The next command
-     </command>
-
-     ... after each command, show confirm dialog box with exit status of
-         last command ...
-     ... always confirm if exit status is bad ...
-    </recipe>
-  - default values are buffer-local properties
-  - some loaded from JAR:
-    - perl
-    - javac
-    - java
-    - all tools shipped with JDK
-    - jikes
-    - jmk
-    - make
-    - openjade HTML
-    - openjade PDF
-  - use a commando thread to run multiple commands in a row
-  - utility methods in console.bsh
-- aliases option pane
-- %alias, %unalias built-ins
-- add tips of the day
+  - after each command, show confirm dialog if confirm param specified
+  - if exit status was bad, always show confirm
+- file name completion
+- alias and built-in completion
+- set tab size to 10 or something for better-looking columnar completion
+  and %ls output
+- use ls colorizing code to color file completion output
+- globs
+- option pane to add directories to search path; %addpath, %removepath,
+  %path built-ins to modify path from command line
 - documentation generated with docbook
 - error list 1.1:
   - better icons
   - tree
   - file names in bold
-  - each branch shows number of warnings, errors
+  - each branch shows number of warnings, errors, with small document icon
   - error highlight: don't highlight leading whitespace
+- after console 3.0:
+  - with jEdit 4.0 api changes: tips of the day
+  - with jEdit 4.0 api changes: multiple consoles per view
