@@ -1,6 +1,6 @@
 # Plugin properties
 plugin.projectviewer.ProjectPlugin.name=Project Viewer
-plugin.projectviewer.ProjectPlugin.author=Stefan Kost, Calvin Yu, Matthew Payne
+plugin.projectviewer.ProjectPlugin.author=Marcelo Vanzin, Matthew Payne, Stefan Kost, Calvin Yu, Kevin Burton
 plugin.projectviewer.ProjectPlugin.version=1.0.4
 plugin.projectviewer.ProjectPlugin.docs=users-guide.html
 
@@ -12,6 +12,10 @@ projectviewer.label=Project Viewer
 
 open-viewer-menu-item.label=Project Viewer
 options.projectviewer.label=Project Viewer
+
+options.projectviewer.general-opt.label=General Behaviour
+
+options.projectviewer.importer-opt.label=Importing Files
 
 #Optional Browser Path - set to complete path of web browser executable
 # examples:

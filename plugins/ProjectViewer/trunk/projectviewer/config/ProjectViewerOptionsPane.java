@@ -74,6 +74,9 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
     
     /** Initializes the option pane. */
     protected void _init() {
+
+		//-- general options
+		addSeparator("options.projectviewer.general-opt.label");
         
         // Checkbox: "close project files on switch"
         closeFiles = new JCheckBox("Close files on project change");
@@ -99,81 +102,40 @@ public class ProjectViewerOptionsPane extends AbstractOptionPane {
         saveOnChange.setSelected(config.getSaveOnChange());
         addComponent(saveOnChange);
         
-        // Importing files options: creates a nifty pane for the 3 fields
-        JPanel pane = new JPanel();
-        pane.setBorder(
-            BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(Color.black),
-                "Importing files",
-                TitledBorder.LEADING,
-                TitledBorder.TOP
-            )
-        );
-        
-        GridBagLayout gridbag = new GridBagLayout();
-        GridBagConstraints gc = new GridBagConstraints();
-        gc.fill = GridBagConstraints.HORIZONTAL;
-        pane.setLayout(gridbag);
-        
-        JLabel label = new JLabel("Extensions to include:");
-        gc.weightx = 0;
-        gc.gridwidth = GridBagConstraints.RELATIVE;
-        gridbag.setConstraints(label,gc);
-        pane.add(label);
-        
+		//-- general options
+		addSeparator("options.projectviewer.importer-opt.label");
+
         importExts = new JTextField();
         if (config.getImportExts() != null) {
             importExts.setText(config.getImportExts());
         }
-        gc.weightx = 1;
-        gc.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(importExts,gc);
-        pane.add(importExts);
-        
-        label = new JLabel("Directories to ignore:");
-        gc.weightx = 0;
-        gc.gridwidth = GridBagConstraints.RELATIVE;
-        gridbag.setConstraints(label,gc);
-        pane.add(label);
+		addComponent("Extensions to include:",importExts);
 
         excludeDirs = new JTextField();
         if (config.getExcludeDirs() != null) {
             excludeDirs.setText(config.getExcludeDirs());
         }
-        gc.weightx = 1;
-        gc.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(excludeDirs,gc);
-        pane.add(excludeDirs);
-        
-        label = new JLabel("Files to include:");
-        gc.weightx = 0;
-        gc.gridwidth = GridBagConstraints.RELATIVE;
-        gridbag.setConstraints(label,gc);
-        pane.add(label);
+		addComponent("Directories to ignore:",excludeDirs);
 
         includeFiles = new JTextField();
         if (config.getIncludeFiles() != null) {
             includeFiles.setText(config.getIncludeFiles());
         }
-        gc.weightx = 1;
-        gc.gridwidth = GridBagConstraints.REMAINDER;
-        gridbag.setConstraints(includeFiles,gc);
-        pane.add(includeFiles);
-        
-        addComponent(pane);
+		addComponent("Files to include:",includeFiles);
+		
+		//-- web project options
+		addSeparator("options.projectviewer.web-prj-opt.label");
 	
-	addSeparator("options.projectviewer.web-prj-opt.label");
+		browserExecPath = new JTextField(30);
+		browserExecPath.setToolTipText("This is used for web projects, to Launch Files in the Browser");
+		if (config.getBrowserPath() != null) {
+			browserExecPath.setText(config.getBrowserPath());
+		}
+		//jEdit.getProperty("options.jcompiler.autosave.ask")
+		addComponent("Browser Path:", browserExecPath);
 	
-	browserExecPath = new JTextField(30);
-	browserExecPath.setToolTipText("This is used for web projects, to Launch Files in the Browser");
-	if (config.getBrowserPath() != null) {
-	   browserExecPath.setText(config.getBrowserPath());
-	}
-	//jEdit.getProperty("options.jcompiler.autosave.ask")
-	addComponent("Browser Path:", browserExecPath);
-	
-	browseExts = new JTextField(35);
-	addComponent("Browse-able Extensions:", browseExts);
+		browseExts = new JTextField(35);
+		addComponent("Browse-able Extensions:", browseExts);
 	
     }
     
