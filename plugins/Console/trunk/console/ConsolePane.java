@@ -88,23 +88,6 @@ public class ConsolePane extends JTextPane
 		doc.addDocumentListener(documentHandler);
 	} //}}}
 
-	//{{{ insertWithAttrs() method
-	public void insertWithAttrs(String text, AttributeSet attrs)
-		throws BadLocationException
-	{
-		if(text == null)
-			throw new NullPointerException();
-
-		StyledDocument doc = (StyledDocument)getDocument();
-		int offset1 = doc.getLength();
-		doc.insertString(offset1,text,null);
-		int offset2 = offset1 + text.length();
-		doc.setCharacterAttributes(offset1,offset2,attrs,true);
-		setCaretPosition(offset2);
-
-		setInputStart(offset2);
-	} //}}}
-
 	//{{{ getHistoryModel() method
 	public HistoryModel getHistoryModel()
 	{
@@ -133,27 +116,6 @@ public class ConsolePane extends JTextPane
 	public void removeActionListener(ActionListener l)
 	{
 		listenerList.remove(ActionListener.class,l);
-	} //}}}
-
-	//{{{ eval() method
-	public void eval(String eval)
-	{
-		if(eval == null)
-			return;
-
-		try
-		{
-			StyledDocument doc = (StyledDocument)getDocument();
-			setCaretPosition(doc.getLength());
-			doc.insertString(doc.getLength(),eval + "\n",
-				getCharacterAttributes());
-		}
-		catch(BadLocationException ble)
-		{
-			ble.printStackTrace();
-		}
-
-		fireActionEvent(eval);
 	} //}}}
 
 	//{{{ fireActionEvent() method
@@ -236,6 +198,42 @@ public class ConsolePane extends JTextPane
 		}
 	} //}}}
 
+	//{{{ eval() method
+	public void eval(String eval)
+	{
+		if(eval == null)
+			return;
+
+		try
+		{
+			StyledDocument doc = (StyledDocument)getDocument();
+			setCaretPosition(doc.getLength());
+			doc.insertString(doc.getLength(),eval + "\n",
+				getCharacterAttributes());
+		}
+		catch(BadLocationException ble)
+		{
+			ble.printStackTrace();
+		}
+
+		fireActionEvent(eval);
+	} //}}}
+
+	//{{{ colorAttributes() method
+	public static AttributeSet colorAttributes(Color color)
+	{
+		SimpleAttributeSet style = new SimpleAttributeSet();
+
+		if(color != null)
+			style.addAttribute(StyleConstants.Foreground,color);
+		/* else
+		{
+			style.addAttribute(StyleConstants.Foreground,
+				getForeground());
+		} */
+		return style;
+	} //}}}
+
 	//{{{ Private members
 	private static final Cursor MoveCursor
 		= Cursor.getPredefinedCursor
@@ -259,42 +257,34 @@ public class ConsolePane extends JTextPane
 	} //}}}
 
 	//{{{ getActions() method
-	/* private Cons getActions(int pos)
+	private Action[] getActions(int pos)
 	{
 		AttributeSet a = getAttributes(pos);
 		if(a == null)
 			return null;
 		else
-			return (Cons)a.getAttribute(Actions);
-	} */ //}}}
-
-	//{{{ getActionsPopup() method
-	private JPopupMenu getActionsPopup(int pos)
-	{
-		/* List actions = getActions(pos);
-		if(actions == null) */
-			return null;
-
-		/* JPopupMenu popup = new JPopupMenu();
-		while(actions != null)
-		{
-			Cons action = (Cons)actions.car;
-			JMenuItem item = new JMenuItem((String)action.cdr);
-			item.setActionCommand((String)action.car);
-			item.addActionListener(new EvalAction());
-			popup.add(item);
-			actions = actions.next();
-		}
-
-		return popup; */
+			return (Action[])a.getAttribute(Actions);
 	} //}}}
 
-	//{{{ showPopupMenu() method
-	private void showPopupMenu(int pos)
+	//{{{ clickLink() method
+	private void clickLink(int pos)
 	{
-		JPopupMenu actions = getActionsPopup(pos);
-		if(actions == null)
+		Action[] actions = getActions(pos);
+		if(actions == null || actions.length == 0)
 			return;
+
+		if(actions.length == 0)
+		{
+			actions[0].actionPerformed(
+				new ActionEvent(this,
+				ActionEvent.ACTION_PERFORMED,
+				null));
+			return;
+		}
+
+		JPopupMenu popup = new JPopupMenu();
+		for(int i = 0; i < actions.length; i++)
+			popup.add(new JMenuItem(actions[i]));
 
 		try
 		{
@@ -304,7 +294,7 @@ public class ConsolePane extends JTextPane
 				.getLocation();
 			FontMetrics fm = getFontMetrics(getFont());
 
-			actions.show(this,pt.x,pt.y + fm.getHeight());
+			popup.show(this,pt.x,pt.y + fm.getHeight());
 		}
 		catch(Exception e)
 		{
@@ -322,7 +312,7 @@ public class ConsolePane extends JTextPane
 			Point pt = new Point(e.getX(), e.getY());
 			int pos = viewToModel(pt);
 			if(pos >= 0)
-				showPopupMenu(pos);
+				clickLink(pos);
 		}
 
 		public void mouseMoved(MouseEvent e)
@@ -332,23 +322,14 @@ public class ConsolePane extends JTextPane
 			if(pos >= 0)
 			{
 				Cursor cursor;
-				/* if(getActions(pos) != null)
+				if(getActions(pos) != null)
 					cursor = MoveCursor;
-				else */
+				else
 					cursor = DefaultCursor;
 
 				if(getCursor() != cursor)
 					setCursor(cursor);
 			}
-		}
-	} //}}}
-
-	//{{{ EvalAction class
-	class EvalAction extends AbstractAction
-	{
-		public void actionPerformed(ActionEvent evt)
-		{
-			eval(evt.getActionCommand());
 		}
 	} //}}}
 

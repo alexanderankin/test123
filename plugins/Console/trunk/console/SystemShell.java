@@ -61,10 +61,11 @@ public class SystemShell extends Shell
 				.currentDirectory;
 		}
 
-		output.write(console.getInfoColor(),
+		output.writeAttrs(ConsolePane.colorAttributes(
+			console.getInfoColor()),
 			jEdit.getProperty("console.shell.prompt",
 			new String[] { currentDirectory }));
-		output.write(null," ");
+		output.writeAttrs(null," ");
 	} //}}}
 
 	//{{{ execute() method
@@ -270,7 +271,9 @@ public class SystemShell extends Shell
 
 		if(state.process != null)
 		{
-			console.write(console.getInfoColor(),"^D\n");
+			console.writeAttrs(
+				ConsolePane.colorAttributes(
+				console.getInfoColor()),"^D\n");
 			PipedOutputStream out = state.process.getPipeOutput();
 			try
 			{

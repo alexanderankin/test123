@@ -1,6 +1,6 @@
 /*
  * Output.java - Console output interface
- * Copyright (C) 2001 Slava Pestov
+ * Copyright (C) 2001, 2004 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@
 package console;
 
 import java.awt.Color;
+import javax.swing.text.AttributeSet;
 
 public interface Output
 {
@@ -33,10 +34,11 @@ public interface Output
 	/**
 	 * Prints a string of text with the specified color, without the
 	 * terminating newline.
-	 * @param color The color. If null, the default color will be used
+	 * @param attrs Character attributes
 	 * @param msg The message
+	 * @since Console 4.0
 	 */
-	void write(Color color, String msg);
+	void writeAttrs(AttributeSet attrs, String msg);
 
 	/**
 	 * Call when the command finishes executing.

@@ -147,7 +147,8 @@ class StreamThread extends Thread
 				lineBuffer.append(ch);
 		}
 
-		output.write(color,new String(buf,offset,len,"ASCII"));
+		output.writeAttrs(ConsolePane.colorAttributes(color),
+			new String(buf,offset,len,"ASCII"));
 	} //}}}
 
 	//{{{ handleLine() method

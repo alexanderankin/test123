@@ -28,7 +28,7 @@ import javax.swing.event.*;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultStyledDocument;
 import javax.swing.text.Document;
-import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.*;
 import java.awt.event.*;
@@ -296,15 +296,15 @@ implements EBComponent, Output, DefaultFocusComponent
 		getOutput().print(color,msg);
 	} //}}}
 
-	//{{{ write() method
+	//{{{ writeAttrs() method
 	/**
 	 * @deprecated Do not use the console as an <code>Output</code>
 	 * instance, use the <code>Output</code> given to you in
 	 * <code>Shell.execute()</code> instead.
 	 */
-	public void write(Color color, String msg)
+	public void writeAttrs(AttributeSet attrs, String msg)
 	{
-		getOutput().write(color,msg);
+		getOutput().writeAttrs(attrs,msg);
 	} //}}}
 
 	//{{{ commandDone() method
@@ -638,22 +638,23 @@ implements EBComponent, Output, DefaultFocusComponent
 		//{{{ print() method
 		public void print(Color color, String msg)
 		{
-			write(color,msg + "\n");
+			writeAttrs(ConsolePane.colorAttributes(color),
+				msg + "\n");
 		} //}}}
 
-		//{{{ write() method
-		public void write(final Color color,
+		//{{{ writeAttrs() method
+		public void writeAttrs(final AttributeSet attrs,
 			final String msg)
 		{
 			if(SwingUtilities.isEventDispatchThread())
-				writeSafely(color,msg);
+				writeSafely(attrs,msg);
 			else
 			{
 				SwingUtilities.invokeLater(new Runnable()
 				{
 					public void run()
 					{
-						writeSafely(color,msg);
+						writeSafely(attrs,msg);
 					}
 				});
 			}
@@ -677,28 +678,18 @@ implements EBComponent, Output, DefaultFocusComponent
 		} //}}}
 
 		//{{{ writeSafely() method
-		private void writeSafely(Color color, String msg)
+		private void writeSafely(AttributeSet attrs, String msg)
 		{
-			SimpleAttributeSet style = new SimpleAttributeSet();
-
-			if(color != null)
-				style.addAttribute(StyleConstants.Foreground,color);
-			else
-			{
-				style.addAttribute(StyleConstants.Foreground,
-					text.getForeground());
-			}
-
 			try
 			{
 				scrollback.insertString(scrollback.getLength(),
-					msg,style);
+					msg,attrs);
 			}
 			catch(BadLocationException bl)
 			{
 				Log.log(Log.ERROR,this,bl);
 			}
-			
+
 			setInputStart(scrollback.getLength());
 		} //}}}
 	} //}}}
