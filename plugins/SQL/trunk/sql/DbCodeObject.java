@@ -27,11 +27,12 @@ import java.text.*;
 
 import javax.swing.*;
 
+import org.gjt.sp.util.*;
+
 /**
  *  Description of the Class
  *
  * @author     svu
- * @created    26 Август 2001 г.
  */
 public class DbCodeObject
 {
@@ -114,7 +115,14 @@ public class DbCodeObject
         boolean isSelected,
         boolean cellHasFocus )
     {
-      DbCodeObject dbobj = (DbCodeObject) obj;
+      final DbCodeObject dbobj = (DbCodeObject) obj;
+      if ( dbobj == null )
+      {
+        Log.log( Log.WARNING, DbCodeObject.class,
+          "Cannot render null dbobj" );
+	setText( "" );
+        return this;
+      }
       setText( dbobj.type + " " + dbobj.name );
       setForeground( dbobj.valid ? Color.black : Color.red );
       return this;
