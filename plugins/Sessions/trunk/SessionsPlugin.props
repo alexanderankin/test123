@@ -5,7 +5,7 @@
 plugin.sessions.SessionsPlugin.activate=startup
 plugin.sessions.SessionsPlugin.name=Sessions
 plugin.sessions.SessionsPlugin.author=Dirk Moebius <dmoebius@gmx.net>
-plugin.sessions.SessionsPlugin.version=1.2.2
+plugin.sessions.SessionsPlugin.version=1.2.3
 plugin.sessions.SessionsPlugin.docs=sessions/SessionsPlugin.html
 plugin.sessions.SessionsPlugin.depend.0=jedit 04.02.02.00
 
