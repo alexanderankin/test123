@@ -122,7 +122,6 @@ public class ColorTabs
          r = r / JND * JND;
          g = g / JND * JND;
          b = b / JND * JND;
-
       }
 
       r = Math.max(DARKEN_LOWEST_COLOR, Math.min(r, DARKEN_HIGHEST_COLOR));
@@ -195,7 +194,6 @@ public class ColorTabs
          r = r / JND * JND;
          g = g / JND * JND;
          b = b / JND * JND;
-
       }
 
       r = Math.max(MUTE_LOWEST_COLOR, Math.min(r, MUTE_HIGHEST_COLOR));
@@ -314,12 +312,9 @@ public class ColorTabs
 
    /**
     * Check for changes to properties
-    *
-    * @param  parent
     */
    public void propertiesChanged(BufferTabs parent)
    {
-
       if (this.enabled != jEdit.getBooleanProperty("buffertabs.color-tabs"))
       {
          this.enabled = !this.enabled;
@@ -329,38 +324,28 @@ public class ColorTabs
          {
             try
             {
-
-               for (int index = parent.getTabCount() - 1; index >= 0; index--)
+               for (int i = parent.getTabCount() - 1; i >= 0; i--)
                {
-                  parent.setBackgroundAt(index, null);
-                  parent.setForegroundAt(index, null);
+                  parent.setBackgroundAt(i, null);
+                  parent.setForegroundAt(i, null);
                }
-
             }
             catch (java.lang.NullPointerException npe)
             {
                Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 1 " + npe.toString());
-               //Log.log( Log.ERROR, ColorTabs.class, npe );
-               //Log.flushStream();
             }
 
             try
             {
-
                parent.getUI().uninstallUI(parent);
-
                UIManager.getDefaults().put("TabbedPane.selected", null);
-
                parent.getUI().installUI(parent);
             }
             catch (java.lang.NullPointerException npe)
             {
                Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 2 " + npe.toString());
-               //Log.log( Log.ERROR, ColorTabs.class, npe );
-               //Log.flushStream();
             }
          }
-
       }
 
       if (this.enabled)
@@ -385,8 +370,6 @@ public class ColorTabs
                catch (Exception e)
                {
                   Log.log(Log.ERROR, ColorTabs.class, "propertiesChanged: 3 " + e.toString());
-                  //Log.log( Log.ERROR, ColorTabs.class, e );
-                  //Log.flushStream();
                }
             }
          }
@@ -396,7 +379,6 @@ public class ColorTabs
          //Set seed so color variation are 'mostly' consistent during a session
          rnd = new java.util.Random(20020212);
       }
-
    }
 
 
@@ -418,6 +400,5 @@ public class ColorTabs
          this.color = color;
       }
    }
-
 }
 
