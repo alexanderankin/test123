@@ -35,7 +35,7 @@ public abstract class ArchiveVFS extends VFS {
         public String entryName;
 
         public ArchivePath(String path) {
-            String archive = path.substring((VFS.this.getName() + ':').length());
+            String archive = path.substring((ArchiveVFS.this.getName() + ':').length());
             String archivePath = archive;
             String archiveEntry = "";
 
@@ -55,7 +55,7 @@ public abstract class ArchiveVFS extends VFS {
                 }
             }
 
-            this.protocol  = VFS.this.getName();
+            this.protocol  = ArchiveVFS.this.getName();
             this.pathName  = archivePath;
             this.entryName = archiveEntry;
         }
