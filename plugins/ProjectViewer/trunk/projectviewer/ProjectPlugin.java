@@ -106,6 +106,9 @@ public final class ProjectPlugin extends EBPlugin {
          f.getParentFile().mkdirs();
             
       checkOldProperties();
+	  ProjectManager.getInstance().setCurrentProject(
+	  	ProjectManager.getInstance().getProject(config.getLastProject())
+	  );
    }
 
    /**
