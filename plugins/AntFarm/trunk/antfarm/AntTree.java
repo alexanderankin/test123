@@ -696,32 +696,17 @@ public class AntTree extends JTree
 
 			for ( int i = 0; i < buildFiles.length; i++ ) {
 				ProjectNode newProjectNode = new ProjectNode( buildFiles[i].getAbsolutePath() );
-				if ( newProjectNode.isProjectBroken() ) {
-					projectNodes.addElement( newProjectNode );
-					continue;
-				}
-				// sort each node
-				boolean isAdded = false;
-				for ( int k = 0; k < projectNodes.size(); k++ ) {
-					ProjectNode pn = (ProjectNode) projectNodes.elementAt( k );
-
-					// if there is no name, just add it to the end.
-					if ( newProjectNode.getProject().getName() == null )
-						break;
-
-					if ( !pn.isProjectBroken() &&
-						newProjectNode.getProject().getName().compareTo( pn.getProject().getName() ) < 0
-						 ) {
-						projectNodes.insertElementAt( newProjectNode, k );
-						isAdded = true;
-						break;
-					}
-				}
-
-				if ( !isAdded )
-					projectNodes.addElement( newProjectNode );
+				projectNodes.addElement( newProjectNode );
 			}
-
+			MiscUtilities.quicksort(
+				projectNodes,
+				new MiscUtilities.Compare()
+				{
+					public int compare( Object obj1, Object obj2 )
+					{
+						return obj1.toString().compareToIgnoreCase( obj2.toString() );
+					}
+				} );
 			return projectNodes;
 		}
 
