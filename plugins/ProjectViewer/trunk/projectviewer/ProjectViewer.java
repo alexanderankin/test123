@@ -722,7 +722,7 @@ public final class ProjectViewer extends JPanel
 	 *	then the root node is set to the "VPTRoot" node.
 	 */
 	public void setProject(VPTProject p) {
-		if (treeRoot.isProject()) {
+		if (treeRoot != null && treeRoot.isProject()) {
 			closeProject((VPTProject)treeRoot, config.getCloseFiles(),
 				config.getRememberOpen());
 		}
@@ -1026,6 +1026,7 @@ public final class ProjectViewer extends JPanel
 			setEnabled(false);
 			JTree tree = getCurrentTree();
 			DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
+			treeRoot = null;
 			tree.setModel(new DefaultTreeModel(
 				new DefaultMutableTreeNode(
 					jEdit.getProperty("projectviewer.loading_project",
