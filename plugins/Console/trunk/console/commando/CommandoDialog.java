@@ -20,11 +20,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package console;
+package console.commando;
 
 //{{{ Imports
 import bsh.*;
 import com.microstar.xml.*;
+import console.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
@@ -582,7 +583,7 @@ public class CommandoDialog extends EnhancedDialog
 			super(label);
 
 			this.varName = varName;
-			this.property = command.propertyPrefix + varName;
+			this.property = command.getPropertyPrefix() + varName;
 
 			setSelected("TRUE".equalsIgnoreCase(defaultValue));
 
@@ -651,7 +652,7 @@ public class CommandoDialog extends EnhancedDialog
 			setText(defaultValue);
 
 			this.varName = varName;
-			this.property = CommandoDialog.this.command.propertyPrefix + varName;
+			this.property = CommandoDialog.this.command.getPropertyPrefix() + varName;
 
 			if(eval != null)
 			{
@@ -728,7 +729,7 @@ public class CommandoDialog extends EnhancedDialog
 			super(options);
 
 			this.varName = varName;
-			this.property = command.propertyPrefix + varName;
+			this.property = command.getPropertyPrefix() + varName;
 
 			if(eval != null)
 			{

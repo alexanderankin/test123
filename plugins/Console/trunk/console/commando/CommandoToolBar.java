@@ -20,9 +20,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package console;
+package console.commando;
 
 //{{{ Imports
+import console.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.awt.*;
@@ -30,7 +31,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 //}}}
 
-class CommandoToolBar extends JToolBar implements EBComponent
+public class CommandoToolBar extends JToolBar implements EBComponent
 {
 	//{{{ CommandoToolBar constructor
 	public CommandoToolBar(View view)

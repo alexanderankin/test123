@@ -20,9 +20,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package console;
+package console.commando;
 
 //{{{ Imports
+import console.*;
 import javax.swing.*;
 import java.util.Vector;
 import org.gjt.sp.jedit.io.VFSManager;

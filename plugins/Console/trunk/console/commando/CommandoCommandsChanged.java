@@ -18,13 +18,13 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package console;
+package console.commando;
 
 import org.gjt.sp.jedit.EBMessage;
 
-class CommandoCommandsChanged extends EBMessage.NonVetoable
+public class CommandoCommandsChanged extends EBMessage.NonVetoable
 {
-	CommandoCommandsChanged()
+	public CommandoCommandsChanged()
 	{
 		super(null);
 	}

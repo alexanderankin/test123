@@ -23,6 +23,7 @@
 package console;
 
 //{{{ Imports
+import console.commando.CommandoCommandsChanged;
 import javax.swing.*;
 import java.awt.event.*;
 import org.gjt.sp.jedit.gui.EnhancedMenu;

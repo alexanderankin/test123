@@ -29,28 +29,27 @@ import org.gjt.sp.jedit.*;
 import errorlist.*;
 //}}}
 
-class ErrorMatcher implements Cloneable
+public class ErrorMatcher implements Cloneable
 {
 	//{{{ Instance variables
-	boolean user; // true if not one of the default matchers
-	String internalName;
-	String name;
-	String error;
-	String warning;
-	String extra;
-	String filename;
-	String line;
-	String message;
-	RE errorRE;
-	RE warningRE;
-	RE extraRE;
+	public boolean user; // true if not one of the default matchers
+	public String internalName;
+	public String name;
+	public String error;
+	public String warning;
+	public String extra;
+	public String filename;
+	public String line;
+	public String message;
+	public RE errorRE;
+	public RE warningRE;
+	public RE extraRE;
 	//}}}
 
 	//{{{ ErrorMatcher constructor
-	ErrorMatcher(boolean user, String internalName, String name, String error,
-		String warning, String extra, String filename, String line,
-		String message)
-		throws REException
+	public ErrorMatcher(boolean user, String internalName, String name,
+		String error, String warning, String extra, String filename,
+		String line, String message) throws REException
 	{
 		this.user = user;
 		this.internalName = internalName;
@@ -78,12 +77,12 @@ class ErrorMatcher implements Cloneable
 	} //}}}
 
 	//{{{ ErrorMatcher constructor
-	ErrorMatcher()
+	public ErrorMatcher()
 	{
 	} //}}}
 
 	//{{{ match() method
-	DefaultErrorSource.DefaultError match(String text, String directory,
+	public DefaultErrorSource.DefaultError match(String text, String directory,
 			DefaultErrorSource errorSource)
 	{
 		if(warningRE != null && warningRE.isMatch(text))
@@ -127,7 +126,7 @@ class ErrorMatcher implements Cloneable
 	} //}}}
 
 	//{{{ matchExtra() method
-	String matchExtra(String text, String directory,
+	public String matchExtra(String text, String directory,
 		DefaultErrorSource errorSource)
 	{
 		if(extraRE != null && extraRE.isMatch(text))
@@ -137,7 +136,7 @@ class ErrorMatcher implements Cloneable
 	} //}}}
 
 	//{{{ save() method
-	void save()
+	public void save()
 	{
 		jEdit.setProperty("console.error." + internalName + ".name",name);
 		jEdit.setProperty("console.error." + internalName + ".match",error);

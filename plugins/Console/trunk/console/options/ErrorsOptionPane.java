@@ -20,9 +20,10 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package console;
+package console.options;
 
 //{{{ Imports
+import console.*;
 import javax.swing.border.*;
 import javax.swing.event.*;
 import javax.swing.*;
@@ -34,7 +35,7 @@ import org.gjt.sp.jedit.*;
 //}}}
 
 //{{{ ErrorsOptionPane class
-class ErrorsOptionPane extends AbstractOptionPane
+public class ErrorsOptionPane extends AbstractOptionPane
 {
 	//{{{ ErrorsOptionPane constructor
 	public ErrorsOptionPane()
