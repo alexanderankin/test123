@@ -55,10 +55,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.SPACE_HIGHLIGHT_PROPERTY */
-                "white-space.space-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getSpaceHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -75,10 +77,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.LEADING_SPACE_HIGHLIGHT_PROPERTY */
-                "white-space.leading-space-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getLeadingSpaceHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -95,10 +99,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.INNER_SPACE_HIGHLIGHT_PROPERTY */
-                "white-space.inner-space-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getInnerSpaceHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -115,10 +121,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.TRAILING_SPACE_HIGHLIGHT_PROPERTY */
-                "white-space.trailing-space-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getTrailingSpaceHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -135,10 +143,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.TAB_HIGHLIGHT_PROPERTY */
-                "white-space.tab-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getTabHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -155,10 +165,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.LEADING_TAB_HIGHLIGHT_PROPERTY */
-                "white-space.leading-tab-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getLeadingTabHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -175,10 +187,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.INNER_TAB_HIGHLIGHT_PROPERTY */
-                "white-space.inner-tab-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getInnerTabHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -195,10 +209,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.TRAILING_TAB_HIGHLIGHT_PROPERTY */
-                "white-space.trailing-tab-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getTrailingTabHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
@@ -215,10 +231,12 @@
             highlight.updateTextArea();
         </CODE>
         <IS_SELECTED>
-            return buffer.getBooleanProperty(
-                /* whitespace.WhiteSpaceHighlight.WHITESPACE_HIGHLIGHT_PROPERTY */
-                "white-space.whitespace-highlight"
+            model = buffer.getProperty(
+                whitespace.WhiteSpaceModel.MODEL_PROPERTY
             );
+            if (model == null) { return false; }
+
+            return model.getWhitespaceHighlight().isEnabled();
         </IS_SELECTED>
     </ACTION>
 
