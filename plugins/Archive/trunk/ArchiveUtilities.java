@@ -82,6 +82,8 @@ public class ArchiveUtilities {
             // This is a BZIP2 archive
             zin = new CBZip2InputStream(in);
         } else {
+            in.unread(magic, 0, numRead);
+
             zin = in;
         }
 
