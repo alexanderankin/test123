@@ -37,7 +37,7 @@ import org.gjt.sp.util.*;
 
 import common.gui.*;
 
-import SqlPlugin;
+import sql.*;
 
 /**
  *  Description of the Class
@@ -276,9 +276,9 @@ public class ResultSetWindow extends JPanel
           type += "[" + precision + ( ( scale == 0 ) ? "" : ( "." + scale ) ) + "]";
         }
       } catch ( SQLException ex )
-      { 
+      {
         Log.log( Log.DEBUG, ResultSetWindow.class, ex );
-        /* not supported? */ 
+        /* not supported? */
       }
 
       if ( rsmd.columnNoNulls == rsmd.isNullable( i ) )
