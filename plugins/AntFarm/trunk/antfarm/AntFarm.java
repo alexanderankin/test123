@@ -122,6 +122,10 @@ public class AntFarm extends JPanel implements EBComponent
 			VFSUpdate updateMessage = (VFSUpdate) msg;
 			reloadAntBuildFile( updateMessage.getPath() );
 		}
+		
+		if ( msg instanceof PropertiesChanged ) {
+			_antTree.reload();
+		}
 	}
 
 

@@ -118,15 +118,20 @@ public class AntFarmPlugin extends EditPlugin
 		// initalize error source
 		_errorSource = new DefaultErrorSource( NAME );
 		ErrorSource.registerErrorSource(_errorSource);
+		
 		// check whether tools.jar is available on JDK 1.2 or higher:
 		if ( !MiscUtilities.isToolsJarAvailable() ) {
-			Log.log( Log.WARNING, this,
-				"This will cause problems when trying to use the modern and classic compilers.\n" +
+			String warning = "This will cause problems when trying to use the modern and classic compilers.\n" +
 				"If you want AntFarm to work properly, please make sure tools.jar is\n" +
-				"in one of the above locations, and restart jEdit." );
+				"in one of the above locations, and restart jEdit.";
+			Log.log( Log.WARNING, this, warning );
+			GUIUtilities.message(null, "tools-jar-missing", null);
 		}
+		
+		// Register the ant shell with the console plugin.
 		Shell.registerShell( ANT_SHELL );
 
+		// put the ant home in the environment for scripts to use.
 		System.getProperties().put( ANT_HOME, getAntFarmPath() );
 
 		jEdit.propertiesChanged();
@@ -142,12 +147,18 @@ public class AntFarmPlugin extends EditPlugin
 	}
 
 
-	boolean useProjectBridge()
+	static boolean useProjectBridge()
 	{
 		return jEdit.getBooleanProperty(
 			AntFarmPlugin.OPTION_PREFIX + "use-project-bridge"
 			 );
 	}
-
+	
+	static boolean supressSubTargets()
+	{
+		return jEdit.getBooleanProperty(
+			AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets"
+			 );
+	}
 }
 

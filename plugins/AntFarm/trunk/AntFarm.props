@@ -55,6 +55,7 @@ antfarm.root.icon=/icons/Root.gif
 antfarm.project.icon=/icons/BuildFile.gif
 antfarm.brokenProject.icon=/icons/BustedBuildFile.gif
 antfarm.target.icon=/icons/Target.gif
+antfarm.defaultTarget.icon=/icons/DefaultTarget.gif
 antfarm.project.broken=Invalid build file:\ 
 antfarm.project.missing=File is missing:\ 
 antfarm.project.build-file=\ build file
@@ -101,4 +102,13 @@ options.antfarm.table.name-label=Name
 options.antfarm.table.value-label=Value
 options.antfarm.classpath-label=Enter the classpath to use when invoking Ant.
 options.antfarm.save-on-execute-label=Save all buffers before running a target.
+options.antfarm.supress-sub-targets-label=Hide targets that do not have a description attribute.
 
+# Message dialogs
+tools-jar-missing.title=AntFarm cannot locate tools.jar
+tools-jar-missing.message=The tools.jar archive cannot be located by AntFarm. This will\n\
+			  cause problems when trying to use the modern and classic compilers\n\
+			  in build scripts. If you want AntFarm to work properly, please \n\
+			  configure jEdit to run with a Java Development Kit (JDK), not the\n\
+			  Java Runtime Environment (JRE). \n\n\
+			  View the Activity Log for more details.

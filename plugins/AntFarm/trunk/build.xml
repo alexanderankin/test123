@@ -65,7 +65,7 @@
 	</target>
 
 
-	<target name="jar" depends="compile">
+	<target name="jar" depends="compile" description="Jars the plugin">
 		<mkdir dir="${install.dir}"/>
 		<jar jarfile="${install.dir}/${jar.name}"
 				 update="false"
