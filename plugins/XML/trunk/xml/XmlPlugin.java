@@ -71,7 +71,7 @@ public class XmlPlugin extends EBPlugin
 		OptionGroup grp = new OptionGroup("xml");
 		grp.addOptionPane(new GeneralOptionPane());
 		grp.addOptionPane(new CompletionOptionPane());
-		grp.addOptionPane(new CatalogsOptionPane());
+		grp.addOptionPane(new CatalogOptionPane());
 		dialog.addOptionGroup(grp);
 	} //}}}
 

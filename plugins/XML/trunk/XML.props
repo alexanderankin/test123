@@ -4,7 +4,7 @@ plugin.xml.XmlPlugin.author=Slava Pestov, Andre Kaplan
 plugin.xml.XmlPlugin.version=0.9
 plugin.xml.XmlPlugin.docs=index.html
 plugin.xml.XmlPlugin.jars=xerces.jar
-plugin.xml.XmlPlugin.depend.0=jedit 04.01.02.00
+plugin.xml.XmlPlugin.depend.0=jedit 04.01.05.00
 plugin.xml.XmlPlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 # Modes where xml parsing can theoretically to be performed
@@ -192,7 +192,12 @@ options.xml.complete.complete-delay=After < or &, wait (seconds):
 options.xml.complete.close-complete=Insert closing tag when "</" is typed
 options.xml.complete.close-complete-open=Insert closing tag when opening tag is typed
 
-options.xml.catalogs.label=Catalogs
-options.xml.catalogs.caption=Catalog files:
-options.xml.catalogs.add=Add
-options.xml.catalogs.remove=Remove
+options.xml.catalog.label=Catalog
+options.xml.catalog.caption=Catalog for resolving DTDs:
+options.xml.catalog.type=Type
+options.xml.catalog.id=ID
+options.xml.catalog.uri=URI
+options.xml.catalog.system=System ID
+options.xml.catalog.public=Public ID
+options.xml.catalog.add=Add
+options.xml.catalog.remove=Remove

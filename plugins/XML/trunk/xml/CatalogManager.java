@@ -134,23 +134,11 @@ public class CatalogManager
 	{
 		load();
 
-		Entry pe = new Entry( Entry.PUBLIC, publicId );
+		Entry pe = new Entry( Entry.PUBLIC, publicId, url );
 		userCatalog.put( pe, url );
 
-		Entry se = new Entry( Entry.SYSTEM, systemId );
+		Entry se = new Entry( Entry.SYSTEM, systemId, url );
 		userCatalog.put( se, url );
-	} //}}}
-
-	//{{{ removeUserDTD() method
-	public static void removeUserDTD(String publicId, String systemId)
-	{
-		load();
-
-		Entry pe = new Entry( Entry.PUBLIC, publicId );
-		userCatalog.remove( pe );
-
-		Entry se = new Entry( Entry.SYSTEM, systemId );
-		userCatalog.remove( se );
 	} //}}}
 
 	//{{{ reload() method
@@ -278,6 +266,18 @@ public class CatalogManager
 		jEdit.unsetProperty("xml.user.system-id." + systemCount + ".uri");
 	} //}}}
 
+	//{{{ getUserCatalog() method
+	public static HashMap getUserCatalog()
+	{
+		return loadCatalogFromProperties("user");
+	} //}}}
+
+	//{{{ setUserCatalog() method
+	public static void setUserCatalog(HashMap catalog)
+	{
+		userCatalog = catalog;
+	} //}}}
+
 	//{{{ Private members
 
 	//{{{ Static variables
@@ -289,7 +289,7 @@ public class CatalogManager
 	//{{{ resolvePublic() method
 	private static String resolvePublic(String id)
 	{
-		Entry e = new Entry(Entry.PUBLIC,id);
+		Entry e = new Entry(Entry.PUBLIC,id,null);
 		String uri = (String)userCatalog.get(e);
 		if(uri == null)
 			uri = (String)defaultCatalog.get(e);
@@ -299,7 +299,7 @@ public class CatalogManager
 	//{{{ resolveSystem() method
 	private static String resolveSystem(String id)
 	{
-		Entry e = new Entry(Entry.SYSTEM,id);
+		Entry e = new Entry(Entry.SYSTEM,id,null);
 		String uri = (String)userCatalog.get(e);
 		if(uri == null)
 			uri = (String)defaultCatalog.get(e);
@@ -312,18 +312,6 @@ public class CatalogManager
 		return (GUIUtilities.confirm(comp,"xml.download-dtd",
 			new String[] { systemId },JOptionPane.YES_NO_OPTION,
 			JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION);
-	} //}}}
-
-	//{{{ load() method
-	private synchronized static void load()
-	{
-		if(loaded)
-			return;
-
-		defaultCatalog = loadCatalogFromProperties("default");
-		userCatalog = loadCatalogFromProperties("user");
-
-		loaded = true;
 	} //}}}
 
 	//{{{ loadCatalogFromProperties() method
@@ -340,8 +328,8 @@ public class CatalogManager
 		{
 			try
 			{
-				returnValue.put(new Entry(Entry.PUBLIC,id),
-					jEdit.getProperty(prop + ".uri"));
+				uri = jEdit.getProperty(prop + ".uri");
+				returnValue.put(new Entry(Entry.PUBLIC,id,uri),uri);
 			}
 			catch(Exception ex2)
 			{
@@ -355,8 +343,8 @@ public class CatalogManager
 		{
 			try
 			{
-				returnValue.put(new Entry(Entry.SYSTEM,id),
-					jEdit.getProperty(prop + ".uri"));
+				uri = jEdit.getProperty(prop + ".uri");
+				returnValue.put(new Entry(Entry.SYSTEM,id,uri),uri);
 			}
 			catch(Exception ex2)
 			{
@@ -367,21 +355,35 @@ public class CatalogManager
 		return returnValue;
 	} //}}}
 
+	//{{{ load() method
+	private synchronized static void load()
+	{
+		if(loaded)
+			return;
+
+		defaultCatalog = loadCatalogFromProperties("default");
+		userCatalog = loadCatalogFromProperties("user");
+
+		loaded = true;
+	} //}}}
+
 	//}}}
 
 	//{{{ Entry class
-	static class Entry
+	public static class Entry
 	{
-		static final int SYSTEM = 0;
-		static final int PUBLIC = 1;
+		public static final int SYSTEM = 0;
+		public static final int PUBLIC = 1;
 
-		int type;
-		String id;
+		public int type;
+		public String id;
+		public String uri;
 
-		Entry(int type, String id)
+		public Entry(int type, String id, String uri)
 		{
 			this.type = type;
 			this.id = id;
+			this.uri = uri;
 		}
 
 		public boolean equals(Object o)
