@@ -51,6 +51,8 @@ import org.gjt.sp.util.Log;
 public class BlockHighlight
     implements TextAreaHighlight
 {
+    public static final String BLOCK_HIGHLIGHT_PROPERTY = "white-space.block-highlight";
+
     // (EditPane, BlockHighlight) association
     private static Hashtable highlights = new Hashtable();
 
@@ -62,7 +64,6 @@ public class BlockHighlight
 
     private JEditTextArea textArea;
     private TextAreaHighlight next;
-    private boolean enabled = false;
     private Segment segment = new Segment();
 
 
@@ -132,18 +133,13 @@ public class BlockHighlight
     }
 
 
-    public boolean isEnabled() {
-        return this.enabled;
+    private boolean isEnabled() {
+        return isHighlightEnabledFor(this.textArea.getBuffer());
     }
 
 
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
-    }
-
-
-    public void toggleEnabled() {
-        this.enabled = !this.enabled;
+    private void setEnabled(boolean enabled) {
+        setHighlightEnabledFor(this.textArea.getBuffer(), enabled);
     }
 
 
@@ -162,63 +158,58 @@ public class BlockHighlight
 
 
     /**
-     * Tests if the block highlights are enabled for a view
-    **/
-    public static boolean isBlockHighlightEnabledFor(View view) {
-        EditPane[] editPanes = view.getEditPanes();
-        BlockHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            if (editPanes[i] == null) { continue; }
-            highlight = (BlockHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isEnabled()) {
-                return true;
-            }
+     * Tests if the block highlights are enabled for a buffer
+     */
+    public static boolean isHighlightEnabledFor(Buffer buffer) {
+        Boolean enabled = (Boolean) buffer.getProperty(
+            BLOCK_HIGHLIGHT_PROPERTY
+        );
+        if (enabled == null) {
+            enabled = Boolean.FALSE;
         }
 
-        return false;
+        return enabled.booleanValue();
     }
 
 
     /**
-     * Sets block highlighting to enabled or disabled for a view
-    **/
-    public static void setBlockHighlightFor(View view, boolean enabled) {
-        EditPane[] editPanes = view.getEditPanes();
-        BlockHighlight highlight;
-        for (int i = 0; i < editPanes.length; i++) {
-            highlight = (BlockHighlight) highlights.get(editPanes[i]);
-            if (highlight != null && highlight.isEnabled() != enabled) {
-                highlight.setEnabled(enabled);
-                highlight.updateTextArea();
-            }
+     * Sets block highlighting enabled or disabled for a buffer
+     */
+    private static void setHighlightEnabledFor(Buffer buffer, boolean enabled) {
+        buffer.putProperty(
+            BLOCK_HIGHLIGHT_PROPERTY, enabled ? Boolean.TRUE : Boolean.FALSE
+        );
+    }
+
+
+    /**
+     * Toggles block highlights for a buffer
+     */
+    public static void toggleHighlightEnabledFor(Buffer buffer) {
+        Boolean enabled = (Boolean) buffer.getProperty(
+            BLOCK_HIGHLIGHT_PROPERTY
+        );
+
+        if (enabled == null) {
+            return;
         }
-    }
 
+        buffer.putProperty(
+            BLOCK_HIGHLIGHT_PROPERTY,
+            enabled.booleanValue() ? Boolean.FALSE : Boolean.TRUE
+        );
 
-    /**
-     * Enables block highlights for a view
-    **/
-    public static void enableBlockHighlightFor(View view) {
-        BlockHighlight.setBlockHighlightFor(view, true);
-    }
-
-
-    /**
-     * Disables block highlights for a view
-    **/
-    public static void disableBlockHighlightFor(View view) {
-        BlockHighlight.setBlockHighlightFor(view, false);
-    }
-
-
-    /**
-     * Toggles block highlights for a view
-    **/
-    public static void toggleBlockHighlightFor(View view) {
-        if (BlockHighlight.isBlockHighlightEnabledFor(view)) {
-            BlockHighlight.disableBlockHighlightFor(view);
-        } else {
-            BlockHighlight.enableBlockHighlightFor(view);
+        View[] views = jEdit.getViews();
+        for (int i = 0; i < views.length; i++) {
+            EditPane[] editPanes = views[i].getEditPanes();
+            BlockHighlight highlight;
+            for (int j = 0; j < editPanes.length; j++) {
+                if (editPanes[j].getBuffer() != buffer) { continue; }
+                highlight = (BlockHighlight) highlights.get(editPanes[j]);
+                if (highlight != null) {
+                    highlight.updateTextArea();
+                }
+            }
         }
     }
 
@@ -266,6 +257,38 @@ public class BlockHighlight
                     highlight.updateTextArea();
                 }
             }
+        }
+    }
+
+
+    public static void bufferCreated(
+            Buffer buffer, boolean highlightEnabled
+    ) {
+        buffer.putProperty(
+            BLOCK_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+        );
+    }
+
+
+    public static void bufferClosed(Buffer buffer) {
+        buffer.putProperty(BLOCK_HIGHLIGHT_PROPERTY, null);
+    }
+
+
+    public static void editorStarted(boolean highlightEnabled) {
+        Buffer[] buffers = jEdit.getBuffers();
+        for (int i = 0; i < buffers.length; i++) {
+            buffers[i].putProperty(
+                BLOCK_HIGHLIGHT_PROPERTY, highlightEnabled ? Boolean.TRUE : Boolean.FALSE
+            );
+        }
+    }
+
+
+    public static void editorExiting() {
+        Buffer[] buffers = jEdit.getBuffers();
+        for (int i = 0; i < buffers.length; i++) {
+            buffers[i].putProperty(BLOCK_HIGHLIGHT_PROPERTY, null);
         }
     }
 }

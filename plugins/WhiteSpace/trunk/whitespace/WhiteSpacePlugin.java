@@ -100,20 +100,27 @@ public class WhiteSpacePlugin
             if (bu.getWhat() == BufferUpdate.SAVING) {
                 this.bufferSaving(bu.getBuffer());
             } else if (bu.getWhat() == BufferUpdate.CREATED) {
+                BlockHighlight.bufferCreated(
+                    bu.getBuffer(),
+                    getBlockHighlightDefault()
+                );
                 FoldHighlight.bufferCreated(
                     bu.getBuffer(),
                     getFoldHighlightDefault(),
                     getFoldTooltipDefault()
                 );
             } else if (bu.getWhat() == BufferUpdate.CLOSED) {
+                BlockHighlight.bufferClosed(bu.getBuffer());
                 FoldHighlight.bufferClosed(bu.getBuffer());
             }
         } else if (message instanceof EditorStarted) {
+            BlockHighlight.editorStarted(getBlockHighlightDefault());
             FoldHighlight.editorStarted(
                 getFoldHighlightDefault(),
                 getFoldTooltipDefault()
             );
         } else if (message instanceof EditorExiting) {
+            BlockHighlight.editorExiting();
             FoldHighlight.editorExiting();
         }
     }
@@ -152,9 +159,6 @@ public class WhiteSpacePlugin
         boolean showWhitespaceDefault  = jEdit.getBooleanProperty(
             "white-space.show-whitespace-default", false
         );
-        boolean showBlockDefault       = jEdit.getBooleanProperty(
-            "white-space.show-block-default", false
-        );
 
         BlockHighlight blockHighlight =
             (BlockHighlight) BlockHighlight.addHighlightTo(editPane);
@@ -169,8 +173,6 @@ public class WhiteSpacePlugin
         textAreaPainter.addCustomHighlight(whiteSpaceHighlight);
         // Drawn first
         textAreaPainter.addCustomHighlight(foldHighlight);
-
-        blockHighlight.setEnabled(showBlockDefault);
 
         whiteSpaceHighlight.getSpaceHighlight().setEnabled(showSpaceDefault);
         whiteSpaceHighlight.getLeadingSpaceHighlight().setEnabled(showLeadingSpaceDefault);
@@ -196,6 +198,13 @@ public class WhiteSpacePlugin
     public static boolean getFoldTooltipDefault() {
         return jEdit.getBooleanProperty(
             "white-space.show-fold-tooltip-default", true
+        );
+    }
+
+
+    public static boolean getBlockHighlightDefault() {
+        return jEdit.getBooleanProperty(
+            "white-space.show-block-default", false
         );
     }
 
