@@ -94,14 +94,20 @@ console.error.2.filename=$1
 console.error.2.line=$2
 console.error.2.message=$3
 
-console.error.3.name=Emacs-style error
-console.error.3.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.3.name=Ant javac error
+console.error.3.match=\\[javac\\]\\s+(.+)?:(\\d+):(.+)
 console.error.3.filename=$1
 console.error.3.line=$2
 console.error.3.message=$3
 
-console.error.4.name=Generic compiler error
-console.error.4.match=(.+):(\\d+):(.+)
+console.error.4.name=Emacs-style error
+console.error.4.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
 console.error.4.filename=$1
 console.error.4.line=$2
 console.error.4.message=$3
+
+console.error.5.name=Generic compiler error
+console.error.5.match=(.+):(\\d+):(.+)
+console.error.5.filename=$1
+console.error.5.line=$2
+console.error.5.message=$3

@@ -132,6 +132,12 @@ public class Console extends JPanel implements DockableWindow, EBComponent
 		shell.printInfoMessage(this);
 	}
 
+	public boolean runAndWait(String cmd)
+	{
+		run(cmd);
+		return shell.waitFor();
+	}
+
 	public void run(String cmd)
 	{
 		// Add to history
