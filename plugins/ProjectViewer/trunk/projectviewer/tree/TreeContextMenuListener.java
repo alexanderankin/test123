@@ -76,6 +76,7 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	private JMenuItem  reimport;
 	private JMenuItem  removeProject;
 	private JMenuItem  addFile;
+	private JMenuItem  archiveProject;
 	
 	private JPopupMenu dirMenu;
 	private JMenu	  dirSubRemove;
@@ -165,6 +166,9 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 			int count = new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
 			viewer.setStatus("Imported " + count + " files into project \"" + p.getName() + "\"."); 		
 			new ProjectFileImporter(viewer).doImport(p.getRoot().toFile());
+		} else if (src == archiveProject) {
+			runArchiveProject();
+		
 		} else if (src == addFile) {
 			this.addFileToProject();
 		} else if (src == addFileDir) {
@@ -330,7 +334,6 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		projectMenu.add(addFile);
 		projectMenu.addSeparator();
 		
-		
 		properties = new JMenuItem("Properties");
 		properties.addActionListener(this);
 		projectMenu.add(properties);
@@ -342,7 +345,10 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 		removeProject = new JMenuItem("Remove project");
 		removeProject.addActionListener(this);
 		projectMenu.add(removeProject);
-		
+
+		archiveProject = new JMenuItem("Archive Project");
+		archiveProject.addActionListener(this);
+		projectMenu.add(archiveProject);		
 		
 		// Directory menu
 		dirMenu = new JPopupMenu();
@@ -442,6 +448,40 @@ public class TreeContextMenuListener extends MouseAdapter implements ActionListe
 	private void addFileToProject() {
 		addFileToProject(viewer.getCurrentProject().getRoot().getPath());
 	
+	}
+	
+	private void runArchiveProject () {
+
+		javax.swing.JFileChooser chooser = viewer.createFileChooser();
+		if(nonProjectFileFilter == null) {
+			nonProjectFileFilter =
+				new FileFilter() {
+					public String getDescription() {
+						return "Archive File Types";
+					}
+
+					public boolean accept(File f) {
+						return true;
+					}
+				};
+		}
+		
+		chooser.setFileFilter(nonProjectFileFilter);
+		chooser.setCurrentDirectory(new File (viewer.getCurrentProject().getRoot().getPath())); 
+
+ 	   if((chooser.showSaveDialog(this.viewer) != javax.swing.JFileChooser.APPROVE_OPTION)) {
+			return;
+		}
+
+	    projectviewer.archiver.ProjectZipper pz = new projectviewer.archiver.ProjectZipper();
+		pz.createProjectAchive(new File (chooser.getSelectedFile().getAbsolutePath()), 	
+								viewer.getCurrentProject().projectFiles(),
+								viewer.getCurrentProject().getRoot().getPath()
+								); 
+	
+		viewer.getCurrentProject().importFile(
+				new ProjectFile(chooser.getSelectedFile().getAbsolutePath()));
+		
 	}
 	
 	//{{{ addFileToProject() method
