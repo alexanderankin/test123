@@ -1,6 +1,6 @@
 /*
  * HexInputStream.java
- * Copyright (c) 2000, 2001 Andre Kaplan
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,11 +15,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 package hex;
-
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,16 +36,20 @@ public class HexInputStream extends FilterInputStream
         , (byte) 'c', (byte) 'd', (byte) 'e', (byte) 'f'
     };
 
+    private static final char SEPARATOR_1 = ':';
+    private static final char SEPARATOR_2 = ';';
+
     private final int inBytesPerLine  = 16;
     private int inPos = 0;
     private int offsetPartLen   = 8 + 1 /* offset + space */;
     private int hexPartLen      = (inBytesPerLine * (2 + 1)) + 2 /* middle, end space */;
     private int asciiPartLen    = inBytesPerLine + 1;
-    private int outBytesPerLine =
+    private int outBytesPerLine = (
           offsetPartLen
         + hexPartLen
         + asciiPartLen
-        + 1 /*newline*/;
+        + 1 /* newline */
+    );
     private final byte[] outEmptyLine = new byte[outBytesPerLine];
     private final int buf_lines = 1024;
     private final int buf_max_len = outBytesPerLine * buf_lines;
@@ -176,10 +179,10 @@ public class HexInputStream extends FilterInputStream
                 buf[out_off++] = hex[(in_pos & 0x00000F00) >>  8];
                 buf[out_off++] = hex[(in_pos & 0x000000F0) >>  4];
                 buf[out_off++] = hex[(in_pos & 0x0000000F)      ];
-                buf[out_off++] = '>';
+                buf[out_off++] = SEPARATOR_1;
 
                 asciiOff = out_off + hexPartLen;
-                buf[asciiOff++] = '<';
+                buf[asciiOff++] = SEPARATOR_2;
             }
 
             b = (int) in_buf[in_idx];
@@ -201,8 +204,8 @@ public class HexInputStream extends FilterInputStream
             in_pos++;
         }
 
-        this.inPos = in_pos;
-        this.buf_len  = out_len;
+        this.inPos   = in_pos;
+        this.buf_len = out_len;
 
         this.fillBufTime += (System.currentTimeMillis() - startTime);
         this.fillBufCalls++;
@@ -210,3 +213,4 @@ public class HexInputStream extends FilterInputStream
         return this.buf_len;
     }
 }
+
