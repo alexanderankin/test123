@@ -41,34 +41,34 @@ import net.sourceforge.phpdt.internal.compiler.parser.PHPOutlineInfo;
 public final class PHPParser {
 
   //{{{ Fields
-  
+
 //{{{ constants for methods and function distinction (some keywords are allowed in method classes
-  
+
   public static final int CONST_METHOD = 0;
   public static final int CONST_FUNCTION = 1;
-  //}}} 
+  //}}}
 
   //todo : fix the variables names bug
   //todo : handle tilde operator
-  
+
   //todo: put this in an interface
   public static final int ERROR = 2;
   public static final int WARNING = 1;
   public static final int INFO = 0;
   public static final int TASK = 3;
-  
+
   /** The current segment. */
   private OutlineableWithChildren currentSegment;
-  
+
   /** The error level of the current ParseException. */
   private int errorLevel = ERROR;
   /** The message of the current ParseException. If it's null it's because the parse exception wasn't handled */
   private String errorMessage;
-  
+
   private int errorStart = -1;
   private int errorEnd = -1;
   private PHPDocument phpDocument;
-  
+
   private static final String SYNTAX_ERROR_CHAR = "syntax error";
   /**
   * The point where html starts.
@@ -77,34 +77,34 @@ public final class PHPParser {
   private int htmlStart;
   private int htmlLineStart;
   private int htmlColumnStart;
-  
+
   //ast stack
   private static final int AstStackIncrement = 100;
   /** The stack of node. */
   private AstNode[] nodes;
   /** The cursor in expression stack. */
   private int nodePtr;
-  
+
   public static final boolean PARSER_DEBUG = false;
-  
+
   private final List parserListeners = new ArrayList();
-  
+
   private String path;
-  
+
   /** Tell if the parsing should be stopped. */
   private boolean shouldStop;
-  
+
   private boolean php5Enabled;
   //}}}
 
   //{{{ PHPParser()
-  
+
   public PHPParser() {
   }
-  
+
   //}}}
   //{{{ getPath()
-  
+
   /**
    * Set the path of the file that is currently parsed.
    * This path will be sent in parse errors and messages
@@ -114,73 +114,73 @@ public final class PHPParser {
   public void setPath(final String path) {
     this.path = path;
   }
-  
+
   //}}}
   //{{{ getPath()
-  
+
   public String getPath() {
     return path;
   }
-  //{{{ 
+  //{{{
   public void setPhp5Enabled(boolean php5Enabled) {
     this.php5Enabled = php5Enabled;
-  } //}}}  
+  } //}}}
   //}}}
   //{{{ stop()
-  
+
   /**
    * Ask the parser to stop his work.
    */
   public void stop() {
     shouldStop = true;
   }
-  
+
   //}}}
   //{{{ isStopped()
-  
+
   public boolean isStopped() {
     return shouldStop;
   }
-  
+
   //}}}
   //{{{ addParserListener(final PHPParserListener listener)
-  
+
   public void addParserListener(final PHPParserListener listener) {
     if (!parserListeners.contains(listener)) {
       parserListeners.add(listener);
     }
   }
-  
+
   //}}}
   //{{{ removeParserListener(final PHPParserListener listener)
-  
+
   public void removeParserListener(final PHPParserListener listener) {
     parserListeners.remove(listener);
   }
-  
+
   //}}}
   //{{{ fireParseError(final PHPParseErrorEvent e)
-  
+
   public void fireParseError(final PHPParseErrorEvent e) {
     for (int i = 0;i < parserListeners.size();i++) {
         final PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
         listener.parseError(e);
     }
   }
-  
+
   //}}}
   //{{{ fireParseMessage(final PHPParseMessageEvent e)
-  
+
   public void fireParseMessage(final PHPParseMessageEvent e) {
     for (int i = 0;i < parserListeners.size();i++) {
         final PHPParserListener listener = (PHPParserListener) parserListeners.get(i);
         listener.parseMessage(e);
     }
   }
-  
+
   //}}}
   //{{{ phpParserTester(final String strEval)
-  
+
   public final void phpParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
     if (jj_input_stream == null) {
@@ -195,10 +195,10 @@ public final class PHPParser {
     token_source.SwitchTo(PHPParserTokenManager.PHPPARSING);
     phpTest();
   }
-  
+
   //}}}
   //{{{ htmlParserTester(final File fileName)
-  
+
   public final void htmlParserTester(final File fileName) throws FileNotFoundException, ParseException {
     final Reader stream = new FileReader(fileName);
     if (jj_input_stream == null) {
@@ -212,10 +212,10 @@ public final class PHPParser {
     new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
-  
+
   //}}}
   //{{{ htmlParserTester(final String strEval)
-  
+
   public final void htmlParserTester(final String strEval) throws ParseException {
     final StringReader stream = new StringReader(strEval);
     if (jj_input_stream == null) {
@@ -229,10 +229,10 @@ public final class PHPParser {
     new PHPOutlineInfo(null, currentSegment);
     phpFile();
   }
-  
+
   //}}}
   //{{{ init()
-  
+
   /**
    * Reinitialize the parser.
    */
@@ -243,10 +243,10 @@ public final class PHPParser {
     htmlColumnStart = 0;
     htmlLineStart = 0;
   }
-  
+
   //}}}
   //{{{ pushOnAstNodes(final AstNode node)
-  
+
   /**
    * Add an php node on the stack.
    * @param node the node that will be added to the stack
@@ -263,15 +263,15 @@ public final class PHPParser {
       nodes[nodePtr] = node;
     }
   }
-  
+
   //}}}
   //{{{ parse(String s)
 
   public final void parse(String s) throws ParseException {
     final Reader reader = new StringReader(s);
     parse(reader);
-  } 
-  
+  }
+
   //}}}
   //{{{ parse(Reader reader)
 
@@ -287,11 +287,11 @@ public final class PHPParser {
     parse();
     phpDocument.nodes = new AstNode[nodes.length];
     System.arraycopy(nodes,0,phpDocument.nodes,0,nodes.length);
-  } 
-  
+  }
+
   //}}}
   //{{{ createNewHTMLCode()
-  
+
   /**
    * Put a new html block in the stack.
    */
@@ -305,10 +305,10 @@ public final class PHPParser {
     final String html = jj_input_stream.getCurrentBuffer().substring(htmlStart, currentPosition);
     pushOnAstNodes(new HTMLCode(html, htmlStart,currentPosition,htmlLineStart,token.endLine,htmlColumnStart,token.endColumn));
   }
-  
+
   //}}}
   //{{{ error_skipto(final int kind)
-  
+
   Token error_skipto(final int kind) {
     //  ParseException e = generateParseException();  // generate the exception object.
     //  System.out.println(e.toString());  // print the error message
@@ -318,21 +318,21 @@ public final class PHPParser {
     } while (t.kind != kind && t.kind != PHPParserConstants.EOF && t.kind != PHPParserConstants.RBRACE);
     return t;
   }
-  
+
   //}}}
   //{{{ parse()
-  
+
   public final void parse() throws ParseException {
 	  phpFile();
   }
-  
+
   //}}}
   //{{{ getPHPDocument()
-  
+
   public PHPDocument getPHPDocument() {
     return phpDocument;
   }
-  
+
   //}}}
 }
 
@@ -347,11 +347,11 @@ TOKEN_MGR_DECLS:
   void CommonTokenAction(Token t) {
     t.sourceStart = input_stream.getBeginOffset();
     t.sourceEnd = input_stream.getEndOffset();
-    
+
   } // CommonTokenAction
 } // TOKEN_MGR_DECLS
 
-//{{{ TOKEN declarations 
+//{{{ TOKEN declarations
 
 <DEFAULT> TOKEN :
 {
@@ -856,7 +856,7 @@ PHPEchoBlock phpEchoBlock() :
 }
 {
   token = <PHPECHOSTART> {createNewHTMLCode();}
-  expr = Expression() [ <SEMICOLON> ] 
+  expr = Expression() [ <SEMICOLON> ]
   try {
     token2 = <PHPEND>
     {
@@ -949,7 +949,7 @@ MethodDeclaration interfaceMethodDeclaration() :
 }
 {
   functionToken = <FUNCTION>
-  
+
   methodHeader = methodHeader(functionToken,CONST_METHOD)
   {
     functionDeclaration = new MethodDeclaration(currentSegment,methodHeader);
@@ -968,7 +968,7 @@ MethodDeclaration interfaceMethodDeclaration() :
                                             e.currentToken.endLine,
                                             e.currentToken.beginColumn,
                                             e.currentToken.endColumn));
-    
+
   }
   {
     return functionDeclaration;
@@ -1111,7 +1111,7 @@ ClassHeader classHeader(Token abstractToken) :
                                           e.currentToken.next.beginLine,
                                           e.currentToken.next.endLine,
                                           e.currentToken.next.beginColumn,
-                                          e.currentToken.next.endColumn)); 
+                                          e.currentToken.next.endColumn));
     superclassNameImage = SYNTAX_ERROR_CHAR;
     error_skipto(LBRACE);//}}}
   }
@@ -1271,8 +1271,8 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
   List fieldList;
 }
 {
-  
-  [ 
+
+  [
    visibilityToken = visibility()
    {
      //{{{ Parse error if not in php5
@@ -1298,9 +1298,9 @@ void ClassBodyDeclaration(final ClassDeclaration classDeclaration) :
          if (field != null) classDeclaration.addField(field);
        }
      |
-       [ 
+       [
          finalToken = <FINAL>
-         [ 
+         [
            visibilityToken2 = visibility()
            {
              //{{{ Parse error if not in php5
@@ -1380,8 +1380,8 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
   List fieldList;
 }
 {
-  
-  [ 
+
+  [
    visibilityToken = visibility()
    {
      //{{{ Parse error if not in php5
@@ -1407,7 +1407,7 @@ void abstractClassBodyDeclaration(ClassDeclaration classDeclaration) :
          if (field != null) classDeclaration.addField(field);
        }
      |
-       [ 
+       [
          finalToken = <FINAL>
          [
            visibilityToken2 = visibility()
@@ -1612,12 +1612,12 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
                                                 visibility2.beginLine,
                                                 visibility2.endLine,
                                                 visibility2.endColumn,
-                                                visibility2.endColumn));      
+                                                visibility2.endColumn));
         }
       }
     ]
     {
-      //{{{ 
+      //{{{
       if (visibilityToken != null) {
         modifierToken = visibilityToken;
       } else {
@@ -1626,7 +1626,7 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
       beginLine   = modifierToken.beginLine;
       beginColumn = modifierToken.beginColumn;
       //}}}
-    } 
+    }
   ]
   try {
     variableDeclaration = VariableDeclaratorNoSuffix()
@@ -1780,7 +1780,7 @@ MethodDeclaration abstractMethodDeclaration(int type, Token visibility) :
                                             e.currentToken.endLine,
                                             e.currentToken.beginColumn,
                                             e.currentToken.endColumn));
-    
+
   }
   {
     return functionDeclaration;
@@ -2026,7 +2026,7 @@ Variable Variable() :
   final Token dollarToken;
 }
 {
-  dollarToken = <DOLLAR> 
+  dollarToken = <DOLLAR>
   try {
     variable = Var()
   } catch (ParseException e) {
@@ -2180,7 +2180,9 @@ ArrayVariableDeclaration[] ArrayInitializer() :
       expr = ArrayVariable()
       {list.add(expr);}
       ( LOOKAHEAD(2) <COMMA> expr = ArrayVariable()
-      {list.add(expr);}
+        {
+          list.add(expr);
+        }
       )*
     ]
     [
@@ -2255,7 +2257,7 @@ MethodHeader methodHeader(Token functionToken,int type) :
   [reference = <BIT_AND>]
   {
     try {
-      if (type == CONST_FUNCTION) { 
+      if (type == CONST_FUNCTION) {
         methodNameToken = functionIdentifier();
       } else {
         methodNameToken = methodIdentifier();
@@ -2306,6 +2308,12 @@ MethodHeader methodHeader(Token functionToken,int type) :
   }
 }//}}}
 //{{{ functionIdentifier()
+/**
+ * This is a function identifier.
+ * It's not exactly the same as methodIdentifier since methods can use a lot of keywords for their names.
+ *
+ * @return an identifier for a function
+ */
 Token functionIdentifier() :
 {
   Token methodIdentifier;
@@ -2315,29 +2323,74 @@ Token functionIdentifier() :
 } //}}}
 
 //{{{ methodIdentifier()
-Token methodIdentifier() :
+/**
+ * This is a method identifier.
+ * It can returns a lot of keywords since those are allowed (but discouraged for method names).
+ *
+ * @return an identifier for a function
+ */
+ Token methodIdentifier() :
 {
   Token methodIdentifier;
 }
 {
-  methodIdentifier = <IDENTIFIER> { return methodIdentifier; }
-| methodIdentifier = <DEFINE>     { return methodIdentifier; }
-| methodIdentifier = <GOTO>       { return methodIdentifier; }
-| methodIdentifier = <NEW>        { return methodIdentifier; }
-| methodIdentifier = <SUPER>      { return methodIdentifier; }
-| methodIdentifier = <THIS>       { return methodIdentifier; }
-| methodIdentifier = <TRUE>       { return methodIdentifier; }
-| methodIdentifier = <FALSE>      { return methodIdentifier; }
-| methodIdentifier = <STRING>     { return methodIdentifier; }
-| methodIdentifier = <OBJECT>     { return methodIdentifier; }
-| methodIdentifier = <BOOL>       { return methodIdentifier; }
-| methodIdentifier = <BOOLEAN>    { return methodIdentifier; }
-| methodIdentifier = <REAL>       { return methodIdentifier; }
-| methodIdentifier = <DOUBLE>     { return methodIdentifier; }
-| methodIdentifier = <FLOAT>      { return methodIdentifier; }
-| methodIdentifier = <INT>        { return methodIdentifier; }
-| methodIdentifier = <INTEGER>    { return methodIdentifier; }
+  (
+      methodIdentifier = <IDENTIFIER>
+    | methodIdentifier = <DEFINE>
+    | methodIdentifier = <GOTO>
+    | methodIdentifier = <NEW>
+    | methodIdentifier = <SUPER>
+    | methodIdentifier = <THIS>
+    | methodIdentifier = <TRUE>
+    | methodIdentifier = <FALSE>
+    | methodIdentifier = <STRING>
+    | methodIdentifier = <OBJECT>
+    | methodIdentifier = <BOOL>
+    | methodIdentifier = <BOOLEAN>
+    | methodIdentifier = <REAL>
+    | methodIdentifier = <DOUBLE>
+    | methodIdentifier = <FLOAT>
+    | methodIdentifier = <INT>
+    | methodIdentifier = <INTEGER>
+  )
+  {
+    return methodIdentifier;
+  }
 } //}}}
+
+//{{{ constantIdentifier()
+/**
+ * This is a constant identifier.
+ * It can returns a lot of keywords
+ *
+ * @return an identifier for a function
+ */
+ Token constantIdentifier() :
+{
+  Token constantIdentifier;
+}
+{
+  (
+      constantIdentifier = <IDENTIFIER>
+    | constantIdentifier = <DEFINE>
+    | constantIdentifier = <GOTO>
+    | constantIdentifier = <SUPER>
+    | constantIdentifier = <THIS>
+    | constantIdentifier = <STRING>
+    | constantIdentifier = <OBJECT>
+    | constantIdentifier = <BOOL>
+    | constantIdentifier = <BOOLEAN>
+    | constantIdentifier = <REAL>
+    | constantIdentifier = <DOUBLE>
+    | constantIdentifier = <FLOAT>
+    | constantIdentifier = <INT>
+    | constantIdentifier = <INTEGER>
+  )
+  {
+    return constantIdentifier;
+  }
+} //}}}
+
 //{{{ FormalParameters(final ArrayList parameters)
 
 /**
@@ -2490,15 +2543,20 @@ ConstantIdentifier Type() :
   final Token token;
 }
 {
-  token = <STRING>    {return new ConstantIdentifier(token);}
-| token = <BOOL>      {return new ConstantIdentifier(token);}
-| token = <BOOLEAN>   {return new ConstantIdentifier(token);}
-| token = <REAL>      {return new ConstantIdentifier(token);}
-| token = <DOUBLE>    {return new ConstantIdentifier(token);}
-| token = <FLOAT>     {return new ConstantIdentifier(token);}
-| token = <INT>       {return new ConstantIdentifier(token);}
-| token = <INTEGER>   {return new ConstantIdentifier(token);}
-| token = <OBJECT>    {return new ConstantIdentifier(token);}
+  (
+    token = <STRING>
+  | token = <BOOL>
+  | token = <BOOLEAN>
+  | token = <REAL>
+  | token = <DOUBLE>
+  | token = <FLOAT>
+  | token = <INT>
+  | token = <INTEGER>
+  | token = <OBJECT>
+  )
+  {
+    return new ConstantIdentifier(token);
+  }
 }
 
 //}}}
@@ -2542,7 +2600,7 @@ Expression assignment() :
                           initializer.getEndColumn());
   }
 }
-//{{{ 
+//{{{
 
 /*
 Expression assignment() :
@@ -2596,7 +2654,7 @@ Expression assignment() :
                                    expr.getBeginColumn(),
                                    assignOperator.endColumn);
     }
-  
+
 }*/  //}}}
 
 //{{{ prefixedPrimaryExpression()
@@ -2611,12 +2669,12 @@ Expression prefixedPrimaryExpression() :
   {
     return new PrefixedUnaryExpression(expr,OperatorIds.NOT,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
   }
-| 
+|
   prefixToken = <AT> expr = prefixedPrimaryExpression()
   {
     return new PrefixedUnaryExpression(expr,OperatorIds.AT,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
   }
-| 
+|
   prefixToken = <TILDE> expr = prefixedPrimaryExpression()
   {
     return new PrefixedUnaryExpression(expr,OperatorIds.TWIDDLE,prefixToken.sourceStart,prefixToken.beginLine,prefixToken.beginColumn);
@@ -2721,7 +2779,7 @@ Expression ConditionalAndExpression() :
   (
   (  andToken = <AND_AND> {operator = OperatorIds.AND_AND;}
    | andToken = <_ANDL>   {operator = OperatorIds.ANDL;})
-   expr2 = ConcatExpression() 
+   expr2 = ConcatExpression()
    {
      if (expr2 == null) {
        sourceEnd = andToken.sourceEnd;
@@ -2825,7 +2883,7 @@ Expression ExclusiveOrExpression() :
   {return expr;}
 }
 
-//}}} 
+//}}}
 //{{{ AndExpression()
 
 Expression AndExpression() :
@@ -2978,7 +3036,7 @@ Expression ShiftExpression() :
   }
   )*
   {return expr;}
-}  
+}
 
 //}}}
 //{{{ AdditiveExpression()
@@ -3185,7 +3243,7 @@ Expression UnaryExpressionNoPrefix() :
   final Token token;
 }
 {
-  token = <PLUS> expr = AtNotTildeUnaryExpression()   
+  token = <PLUS> expr = AtNotTildeUnaryExpression()
   {
     return new PrefixedUnaryExpression(expr,
                                        OperatorIds.PLUS,
@@ -3194,7 +3252,7 @@ Expression UnaryExpressionNoPrefix() :
                                        token.beginColumn);
   }
 |
-  token = <MINUS> expr = AtNotTildeUnaryExpression()  
+  token = <MINUS> expr = AtNotTildeUnaryExpression()
   {
     return new PrefixedUnaryExpression(expr,
                                        OperatorIds.MINUS,
@@ -3330,9 +3388,9 @@ Expression PrimaryExpression() :
   [token = <BIT_AND>] expr = refPrimaryExpression(token)
   {return expr;}
 |
-  expr = ArrayDeclarator()  {return expr;}
-| expr = ListExpression()         {return expr;}
-| expr = IncludeExpression()         {return expr;}
+  expr = ArrayDeclarator()   {return expr;}
+| expr = ListExpression()    {return expr;}
+| expr = IncludeExpression() {return expr;}
 }
 
 //}}}
@@ -3346,7 +3404,7 @@ Expression refPrimaryExpression(final Token reference) :
   Token staticClassAccess;
 }
 {
-  identifier = <IDENTIFIER>
+  identifier = constantIdentifier()
   {
     expr = new ConstantIdentifier(identifier);
   }
@@ -3504,19 +3562,6 @@ ClassAccess classAccess(AbstractVariable prefix) :
       |
         expression = Variable()
     )
- /* } catch (ParseException e) {
-    fireParseError(new PHPParseErrorEvent(ERROR,
-                                          path,
-                                          "function call or field access expected",
-                                          "",
-                                          e.currentToken.image,
-                                          classAccessToken.sourceEnd,
-                                          classAccessToken.sourceEnd+1,
-                                          e.currentToken.beginLine,
-                                          e.currentToken.endLine,
-                                          e.currentToken.endColumn,
-                                          e.currentToken.endColumn+1));
-  }*/
   {
     return new ClassAccess(prefix,
                            expression,
@@ -3536,7 +3581,7 @@ ArrayDeclarator arrayDeclarator(AbstractVariable prefix) :
 }
 {
   (
-    open = <LBRACKET> 
+    open = <LBRACKET>
     [ expression = arrayKey() ]
     try {
       close = <RBRACKET>
@@ -3607,12 +3652,12 @@ Expression arrayKey() :
 }
 {
   expression = Expression()       { return expression; }
-| keyToken = arrayKeyIdentifier() { return  new ConstantIdentifier(keyToken); }
+//| keyToken = arrayKeyIdentifier() { return  new ConstantIdentifier(keyToken); }
 } //}}}
 //{{{ arrayKeyIdentifier()
-Token arrayKeyIdentifier() :
+/*Token arrayKeyIdentifier() :
 {
-  Token methodIdentifier;
+  Token identifier;
 }
 {
   methodIdentifier = <DEFINE>     { return methodIdentifier; }
@@ -3628,7 +3673,7 @@ Token arrayKeyIdentifier() :
 | methodIdentifier = <FLOAT>      { return methodIdentifier; }
 | methodIdentifier = <INT>        { return methodIdentifier; }
 | methodIdentifier = <INTEGER>    { return methodIdentifier; }
-} //}}}
+}*/ //}}}
 
 //}}}
 //{{{ Literal()
@@ -3752,7 +3797,7 @@ StringLiteral heredoc() :
 
 //}}}
 //{{{ evaluableString()
-       
+
               /*
 StringLiteral evaluableString() :
 {
@@ -3790,7 +3835,7 @@ StringLiteral evaluableString() :
   }
 }
   */
-  
+
   //}}}
 //{{{ Arguments(final Expression func)
 
