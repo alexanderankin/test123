@@ -89,7 +89,7 @@
   <appendix id="changelog">
     <title>Change log</title>
     <para>
-      <emphasis role="bold">Moved from XSLT 0.4.1 plugin to XML Indenter 0.1.1 plugin</emphasis>
+      <emphasis role="bold">Moved from XSLT 0.4.1 plugin to XML Indenter 0.1.2 plugin</emphasis>
       <itemizedlist>
         <listitem>
           <para>Fixed various indenting bugs.
@@ -101,7 +101,7 @@
           Fixed empty element repeating '/' bug.
           </para>
         </listitem>
-        <listitem><para>Requires >=jEdit 4.1</para></listitem>
+        <listitem><para>Requires >=jEdit 4.1 and >=XML plugin 0.11.1</para></listitem>
       </itemizedlist>
     </para>
   </appendix>

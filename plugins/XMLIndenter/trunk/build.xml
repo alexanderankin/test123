@@ -13,6 +13,7 @@
   <property name="docs.dir" value="${build.dir}/docs" description="docs generated into here"/>
 
   <path id="project.class.path">
+    <pathelement location="${xml-apis.jar}"/>
     <pathelement location="${jedit.dir}/jedit.jar"/>
   </path>
 
