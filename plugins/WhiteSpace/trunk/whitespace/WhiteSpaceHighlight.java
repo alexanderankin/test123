@@ -21,30 +21,22 @@
 package whitespace;
 
 
-import java.awt.event.MouseEvent;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-
-import java.util.Enumeration;
-import java.util.EventObject;
+import java.awt.event.MouseEvent;
 import java.util.Hashtable;
 
-import javax.swing.JPopupMenu;
 import javax.swing.text.Segment;
-import javax.swing.text.Utilities;
-import javax.swing.text.BadLocationException;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
-
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.textarea.TextAreaHighlight;
-import org.gjt.sp.jedit.textarea.TextAreaPainter;
 import org.gjt.sp.util.Log;
 
 
