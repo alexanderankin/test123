@@ -10,12 +10,20 @@ import junit.framework.Test;
  * directly.
  */
 public interface TestRunContext {
-    /**
-     * Handles the selection of a Test.
-     */
-    public void handleTestSelected(Test test);
-    /**
-     * Returns the failure model
-     */
-    public ListModel getFailures();
+
+   /**
+    * Run the current test.
+    */
+   public void runSelectedTest(Test test);
+
+   /**
+    * Handles the selection of a Test.
+    */
+   public void handleTestSelected(Test test);
+
+   /**
+    * Returns the failure model
+    */
+   public ListModel getFailures();
+
 }

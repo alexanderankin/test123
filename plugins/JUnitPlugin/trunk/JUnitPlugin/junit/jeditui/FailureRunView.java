@@ -68,6 +68,7 @@ class FailureRunView implements TestRunView {
         fFailureList.setCellRenderer(new FailureListCellRenderer());
         fFailureList.setToolTipText("Failure - grey X; Error - red X");
         fFailureList.setVisibleRowCount(5);
+        fFailureList.addMouseListener(new TestRunViewHandler(this, context));
 
         fFailureList.addListSelectionListener(
             new ListSelectionListener() {
@@ -92,12 +93,14 @@ class FailureRunView implements TestRunView {
         testSelected();
     }
 
-    public void addTab(JTabbedPane pane) {
-        JScrollPane sl= new JScrollPane(fFailureList, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        Icon errorIcon= TestRunner.getIconResource(getClass(), "icons/error.gif");
-        pane.addTab("Failures", errorIcon, sl, "The list of failed tests");
+    public Component getComponent() {
+       JScrollPane scroll = new JScrollPane(fFailureList,
+         JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+       scroll.setName("junit.test.failures");
+       return scroll;
     }
-
+    
     public void revealFailure(Test failure) {
         fFailureList.setSelectedIndex(0);
     }

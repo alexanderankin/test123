@@ -1,5 +1,25 @@
+/*
+ * TestHierarchyRunView.java
+ * Copyright (c) 2002 Calvin Yu
+ *
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
 package junit.jeditui;
 
+import java.awt.Component;
 import javax.swing.*;
 import javax.swing.event.*;
 import javax.swing.tree.TreePath;
@@ -19,6 +39,9 @@ class TestHierarchyRunView implements TestRunView {
     public TestHierarchyRunView(TestRunContext context) {
         fTestContext= context;
         fTreeBrowser= new TestSuitePanel();
+        fTreeBrowser.setName("junit.test.hierarchy");
+        fTreeBrowser.getTree()
+            .addMouseListener(new TestRunViewHandler(this, fTestContext));
         fTreeBrowser.getTree().addTreeSelectionListener(
             new TreeSelectionListener() {
                 public void valueChanged(TreeSelectionEvent e) {
@@ -28,9 +51,8 @@ class TestHierarchyRunView implements TestRunView {
         );
     }
 
-    public void addTab(JTabbedPane pane) {
-        Icon treeIcon= TestRunner.getIconResource(getClass(), "icons/hierarchy.gif");
-        pane.addTab("Test Hierarchy", treeIcon, fTreeBrowser, "The test hierarchy");
+    public Component getComponent() {
+       return fTreeBrowser;
     }
 
     public Test getSelectedTest() {
