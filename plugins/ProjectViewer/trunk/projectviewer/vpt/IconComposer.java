@@ -273,6 +273,8 @@ public final class IconComposer {
 			} else if (!buffer.isEditable()) {
 				return FILE_STATE_READONLY;
 			}
+		} else if (!f.canWrite()) {
+			return FILE_STATE_READONLY;
 		}
 		return FILE_STATE_NORMAL;
 	} //}}}
