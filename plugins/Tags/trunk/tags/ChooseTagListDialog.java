@@ -29,6 +29,7 @@ import java.util.Vector;
 import java.awt.Toolkit;
 
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 
 class ChooseTagListDialog extends JDialog 
 {
@@ -130,46 +131,41 @@ class ChooseTagListDialog extends JDialog
     public void keyReleased(KeyEvent e) {}
     public void keyTyped(KeyEvent e) 
     {
-        switch (e.getKeyChar()) 
-        {
-          case KeyEvent.VK_ESCAPE:
-             cancelButtonListener_.actionPerformed(null);
-            break;
-          case KeyEvent.VK_1:
-          case KeyEvent.VK_2:
-          case KeyEvent.VK_3:
-          case KeyEvent.VK_4:
-          case KeyEvent.VK_5:
-          case KeyEvent.VK_6:
-          case KeyEvent.VK_7:
-          case KeyEvent.VK_8:
-          case KeyEvent.VK_9:
-          case KeyEvent.VK_NUMPAD1:
-          case KeyEvent.VK_NUMPAD2:
-          case KeyEvent.VK_NUMPAD3:
-          case KeyEvent.VK_NUMPAD4:
-          case KeyEvent.VK_NUMPAD5:
-          case KeyEvent.VK_NUMPAD6:
-          case KeyEvent.VK_NUMPAD7:
-          case KeyEvent.VK_NUMPAD8:
-          case KeyEvent.VK_NUMPAD9:
-            if (getFocusOwner() != tagList_)
-              return;
+      e = KeyEventWorkaround.processKeyEvent(e);
+      if(e == null)
+        return;
+
+      switch (e.getKeyChar()) 
+      {
+        case KeyEvent.VK_ESCAPE:
+          cancelButtonListener_.actionPerformed(null);
+          break;
+        case KeyEvent.VK_1:
+        case KeyEvent.VK_2:
+        case KeyEvent.VK_3:
+        case KeyEvent.VK_4:
+        case KeyEvent.VK_5:
+        case KeyEvent.VK_6:
+        case KeyEvent.VK_7:
+        case KeyEvent.VK_8:
+        case KeyEvent.VK_9:
+          if (getFocusOwner() != tagList_)
+            return;
               
-            /* There may actually be more than 9 items in the list, but since
-             * the user would have to scroll to see them either with the mouse
-             * or with the arrow keys, then they can select the item they want
-             * with those means.
-             */
-            int selected = Character.getNumericValue(e.getKeyChar()) - 1;
-            if (selected >= 0 && selected < tagList_.getModel().getSize())
-            {
-              tagList_.setSelectedIndex(selected);
-              tagList_.ensureIndexIsVisible(selected);
-              dispose();
-            }
-            break;
-        }
+          /* There may actually be more than 9 items in the list, but since
+           * the user would have to scroll to see them either with the mouse
+           * or with the arrow keys, then they can select the item they want
+           * with those means.
+           */
+          int selected = Character.getNumericValue(e.getKeyChar()) - 1;
+          if (selected >= 0 && selected < tagList_.getModel().getSize())
+          {
+            tagList_.setSelectedIndex(selected);
+            tagList_.ensureIndexIsVisible(selected);
+            dispose();
+          }
+          break;
+      }
     }
   };
   

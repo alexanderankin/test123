@@ -143,6 +143,10 @@ class ChooseTagListPopup extends JWindow
   {
     public void keyTyped(KeyEvent evt)
     {
+      evt = KeyEventWorkaround.processKeyEvent(evt);
+      if (evt == null)
+        return;
+
       switch (evt.getKeyChar())
       {
         case '1':
@@ -176,6 +180,10 @@ class ChooseTagListPopup extends JWindow
     
 		public void keyPressed(KeyEvent evt) 
     {
+      evt = KeyEventWorkaround.processKeyEvent(evt);
+      if (evt == null)
+        return;
+      
 			switch(evt.getKeyCode()) 
       {
         case KeyEvent.VK_TAB:
