@@ -5,7 +5,11 @@ version 0.4.2
 
 - docs to reST?
 - put tasklist into it's own package
+- delete task and delete tag into Task class?
 - explicit re-parse in TaskList popup?
+- fix "Reset task patterns"
+- fix 699048
+- integrate with SideKick's work request API
 
 future
 ======
