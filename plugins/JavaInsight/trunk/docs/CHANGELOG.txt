@@ -1,3 +1,10 @@
+VERSION 0.4.1
+
+- BCEL.jar updated, no longer includes gnu.regexp package which caused many
+  problems
+- Doc updates
+
+
 VERSION 0.4
 
 - Disassemble or decompile with BCEL (André Kaplan)
