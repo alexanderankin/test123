@@ -24,16 +24,16 @@ import javax.swing.*;
 import org.apache.tools.ant.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
-import org.gjt.sp.util.*;
+import org.gjt.sp.util.Log;
 
-public class TargetRunner extends Thread
+public class TargetRunner extends java.lang.Thread
 {
 
 	PrintStream _out = System.out;
 	Project runner = new Project();
 	Target runAnt = new Target();
 	PrintStream _err = System.err;
-	DefaultLogger _buildLogger = new DefaultLogger();
+	DefaultLogger _buildLogger = new AntFarmLogger();
 	Throwable _error = null;
 
 	Target _target;
@@ -46,16 +46,16 @@ public class TargetRunner extends Thread
 	PrintStream _consoleErr;
 
 
-	public TargetRunner( Target target, File buildFile, View view, Output output )
+	public TargetRunner( Target target, File buildFile, View view, Output output, int logLevel )
 	{
-		init( target, buildFile, view, output );
+		init( target, buildFile, view, output, logLevel );
 	}
 
 
-	public TargetRunner( Project project, File buildFile, View view, Output output )
+	public TargetRunner( Project project, File buildFile, View view, Output output, int logLevel )
 	{
 		Target target = (Target) project.getTargets().get( project.getDefaultTarget() );
-		init( target, buildFile, view, output );
+		init( target, buildFile, view, output, logLevel );
 	}
 
 
@@ -74,7 +74,7 @@ public class TargetRunner extends Thread
 
 		// assume we have the console open at this point since it called us.
 		Console console =
-			(Console) _view.getDockableWindowManager().getDockableWindow( "console" );
+			(Console) _view.getDockableWindowManager().getDockable( "console" );
 
 		if ( useSameJvm ) {
 			setOutputStreams();
@@ -113,12 +113,14 @@ public class TargetRunner extends Thread
 
 	private void setOutputStreams()
 	{
-		System.setOut( _consoleOut );
-		System.setErr( _consoleErr );
+		synchronized(System.err)
+		{
+			System.setOut( _consoleOut );
+			System.setErr( _consoleErr );
+		}
 	}
 
-
-	private void init( Target target, File buildFile, View view, Output output )
+	private void init( Target target, File buildFile, View view, Output output, int logLevel )
 	{
 		_target = target;
 		_project = _target.getProject();
@@ -126,13 +128,13 @@ public class TargetRunner extends Thread
 		_view = view;
 		_output = output;
 
-		_consoleErr = new AntPrintStream( System.out, _view );
+		_consoleErr = new AntPrintStream( System.err, _view );
 		_consoleOut = new AntPrintStream( System.out, _view );
 
 		// set so jikes prints emacs style errors
 		_project.setProperty( "build.compiler.emacs", "true" );
 
-		configureBuildLogger();
+		configureBuildLogger(logLevel);
 
 		// fire it up
 		this.start();
@@ -160,14 +162,15 @@ public class TargetRunner extends Thread
 
 
 
-	private void configureBuildLogger()
+	private void configureBuildLogger(int logLevel)
 	{
 		_buildLogger.setEmacsMode(
 			jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "output-emacs" )
 			 );
 		_buildLogger.setOutputPrintStream( _consoleOut );
 		_buildLogger.setErrorPrintStream( _consoleErr );
-		_buildLogger.setMessageOutputLevel( Project.MSG_INFO );
+
+		_buildLogger.setMessageOutputLevel( logLevel );
 	}
 
 
@@ -189,9 +192,9 @@ public class TargetRunner extends Thread
 		_buildLogger.messageLogged( event );
 	}
 
-
 	private void fireBuildFinished()
 	{
+		//BuildEvent
 		BuildEvent event = new BuildEvent( _project );
 		event.setException( _error );
 		_buildLogger.buildFinished( event );

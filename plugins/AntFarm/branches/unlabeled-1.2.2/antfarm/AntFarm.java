@@ -35,7 +35,7 @@ import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.util.*;
 
-public class AntFarm extends JPanel implements EBComponent, DockableWindow
+public class AntFarm extends JPanel implements EBComponent
 {
 
 	public final static String NAME = AntFarmPlugin.NAME;
@@ -50,13 +50,58 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 	private AntTree _antTree;
 	private View _view;
 
+	static public final	String logLevels[] = {
+			"Error",
+			"Warning",
+			"Info",
+			"Verbose",
+			"Debug"
+	};
+
+	private int logLevel;
 
 	public AntFarm( View view )
 	{
 		super( new BorderLayout() );
 		_view = view;
 		initComponents();
+		setDefaultMessageOutputLevel();
 		EditBus.addToBus( this );
+	}
+
+	public void setDefaultMessageOutputLevel()
+	{
+		setMessageOutputLevel(jEdit.getProperty(
+			AntFarmPlugin.OPTION_PREFIX + "logging-level", "Info"));
+	}
+
+	public void setMessageOutputLevel(String level)
+	{
+		if(level == null)
+			return;
+		for(int i = 0; i < logLevels.length; ++i)
+		{
+			if(level.equals(logLevels[i]))
+			{
+				logLevel = i;
+				return;
+			}
+		}
+		logLevel = Project.MSG_INFO;
+	}
+
+	public void setMessageOutputLevel(int level)
+	{
+		if(level < Project.MSG_ERR)
+			logLevel = Project.MSG_ERR;
+		else if(level > Project.MSG_DEBUG)
+			logLevel = Project.MSG_DEBUG;
+		else logLevel = level;
+	}
+
+	public int getMessageOutputLevel()
+	{
+		return logLevel;
 	}
 
 
@@ -78,7 +123,6 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 		return this;
 	}
 
-
 	public void handleMessage( EBMessage msg )
 	{
 		if ( msg instanceof BufferUpdate ) {
@@ -90,10 +134,16 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 			}
 		}
 
-		if ( msg instanceof VFSUpdate ) {
+		else if ( msg instanceof VFSUpdate ) {
 			VFSUpdate updateMessage = (VFSUpdate) msg;
 			reloadAntFile( updateMessage.getPath() );
 		}
+
+		else if( msg instanceof PropertiesChanged ) {
+			setDefaultMessageOutputLevel();
+		}
+
+
 	}
 
 
@@ -214,7 +264,7 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 	{
 		String window = "vfs.browser";
 		_view.getDockableWindowManager().addDockableWindow( window );
-		VFSBrowser browser = (VFSBrowser) _view.getDockableWindowManager().getDockableWindow( window );
+		VFSBrowser browser = (VFSBrowser) _view.getDockableWindowManager().getDockable( window );
 		browser.setDirectory( directory.getAbsolutePath() );
 	}
 
@@ -243,12 +293,14 @@ public class AntFarm extends JPanel implements EBComponent, DockableWindow
 		try {
 			if ( buildFile.exists() ) {
 				project.init();
-
-				// first use the ProjectHelper to create the project object
-				// from the given build file.
-				Class.forName( "javax.xml.parsers.SAXParserFactory" );
-
-				ProjectHelper.configureProject( project, buildFile );
+				try {
+					ProjectHelper.configureProject( project, buildFile );
+				}
+				catch(Exception e)
+				{
+					Log.log(Log.ERROR, this, "Call to ProjectHelper.configureProject() throw exception.");
+					throw e;
+				}
 			}
 			else {
 				throw new Exception(

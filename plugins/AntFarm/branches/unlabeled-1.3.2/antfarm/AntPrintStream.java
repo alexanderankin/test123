@@ -18,6 +18,7 @@
  */
 package antfarm;
 import console.*;
+import errorlist.*;
 
 import java.io.*;
 import java.util.*;
@@ -33,15 +34,26 @@ public class AntPrintStream extends PrintStream
 
 	public AntPrintStream( PrintStream stream, View view )
 	{
-		super( stream );
+		super( stream, true );
 		_view = view;
+	}
+
+	public void write(int b)
+	{
+		byte[] barray = { (byte)b };
+		write(barray,0,1);
+	}
+
+	public void write(byte[] b, int off, int len)
+	{
+		String str = new String(b,off,len);
+		print(str);
 	}
 
 
 	public void println( String msg )
 	{
-// 		Log.log( Log.DEBUG, this, cache + msg );
-		parseLine( cache + msg );
+ 		parseLine( cache + msg );
 		resetCache();
 	}
 
@@ -84,7 +96,7 @@ public class AntPrintStream extends PrintStream
 	private void parseLine( String line )
 	{
 		Console console =
-			(Console) _view.getDockableWindowManager().getDockableWindow( "console" );
+			(Console) _view.getDockableWindowManager().getDockable( "console" );
 
 		// should be project dir
 		String dir = System.getProperty( "user.dir" );
@@ -93,7 +105,6 @@ public class AntPrintStream extends PrintStream
 			return;
 
 		int type = ConsolePlugin.parseLine( line, dir, AntFarmPlugin.getErrorSource() );
-
 		switch ( type ) {
 			case ErrorSource.ERROR:
 				console.print( console.getErrorColor(), line );

@@ -260,14 +260,12 @@ public class AntTree extends JTree
 
 		public void mouseClicked( MouseEvent e )
 		{
-
 			if ( e.getClickCount() == 2 ) {
 				TreePath selPath = getPathForLocation( e.getX(), e.getY() );
 				if ( selPath == null )
 					return;
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode) ( selPath.getLastPathComponent() );
 				ExecutingNode executingNode = getExecutingNode( node );
-
 				if ( executingNode != null ) {
 					executingNode.execute();
 				}
@@ -761,6 +759,8 @@ public class AntTree extends JTree
 		public void execute()
 		{
 			Console console = AntFarmPlugin.getConsole( _view );
+			console.setShell(AntFarmPlugin.ANT_SHELL);
+			_view.getDockableWindowManager().addDockableWindow("console");
 			console.run( AntFarmPlugin.ANT_SHELL, console, "!"
 				 + _target.getName() );
 		}
@@ -842,6 +842,8 @@ public class AntTree extends JTree
 		public void execute()
 		{
 			Console console = AntFarmPlugin.getConsole( _view );
+			console.setShell(AntFarmPlugin.ANT_SHELL);
+			_view.getDockableWindowManager().addDockableWindow("console");
 			console.run( AntFarmPlugin.ANT_SHELL, console, "!" );
 		}
 

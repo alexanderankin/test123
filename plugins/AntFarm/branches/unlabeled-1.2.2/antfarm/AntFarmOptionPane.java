@@ -35,6 +35,7 @@ public class AntFarmOptionPane
 	private JRadioButton _useExternalScript;
 	private JCheckBox _useProjectViewerIntegration;
 	private JCheckBox _useEmacsOutput;
+	private JComboBox _loggingLevel;
 
 
 	public AntFarmOptionPane()
@@ -95,6 +96,15 @@ public class AntFarmOptionPane
 			jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "output-emacs" )
 			 );
 
+        JPanel levelPanel = new JPanel();
+        levelPanel.setLayout(new FlowLayout());
+        levelPanel.add(new JLabel(jEdit.getProperty(
+			AntFarmPlugin.OPTION_PREFIX + "logging-level-label")));
+		_loggingLevel = new JComboBox(AntFarm.logLevels);
+		_loggingLevel.setSelectedItem(jEdit.getProperty(
+			AntFarmPlugin.OPTION_PREFIX + "logging-level", "Info"));
+        levelPanel.add(_loggingLevel);
+
 		boolean useSameJvmSelected = jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm" );
 		if ( useSameJvmSelected )
 			_useSameJvm.setSelected( true );
@@ -126,7 +136,11 @@ public class AntFarmOptionPane
 			 );
 		addComponent( pathPanel );
 		addComponent( _useProjectViewerIntegration );
+
+		addComponent( levelPanel);
+
 		addComponent( _useEmacsOutput );
+
 	}
 
 
@@ -140,6 +154,8 @@ public class AntFarmOptionPane
 		jEdit.setBooleanProperty(
 			AntFarmPlugin.OPTION_PREFIX + "output-emacs", _useEmacsOutput.isSelected()
 			 );
+		jEdit.setProperty(AntFarmPlugin.OPTION_PREFIX + "logging-level",
+			_loggingLevel.getSelectedItem().toString());
 
 		jEdit.propertiesChanged();
 	}
@@ -157,5 +173,6 @@ public class AntFarmOptionPane
 	{
 		return jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm" );
 	}
+
 }
 
