@@ -15,7 +15,7 @@
  */
 
 package javainsight;
- 
+
 //GUI stuff.
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -31,7 +31,6 @@ import buildtools.java.packagebrowser.PackageBrowser;
 import buildtools.java.classpathmanager.ClasspathManager;
 import buildtools.JavaUtils;
 import buildtools.MiscUtils;
-import buildtools.StaticLogger;
 
 //qsort functionality
 import org.gjt.sp.jedit.MiscUtilities;
@@ -42,26 +41,25 @@ import javax.swing.event.TreeSelectionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-
 import java.io.IOException;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-
-//decompile support
-import jode.Decompiler;
-
+// decompile support:
+//   jode.decompiler.Main;
 
 //jedit open file support.
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 
+import org.gjt.sp.util.Log;
+
 
 public class JavaInsight extends JPanel implements TreeSelectionListener, MouseListener
 {
     public final static String PRODUCT      = "Java Insight";
-    public final static String VERSION      = "0.2";    
+    public final static String VERSION      = "0.3";
 
     public final static String PACKAGES     = "Packages";
     public final static String CLASSPATH    = "Classpath";
@@ -95,7 +93,7 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
             DefaultMutableTreeNode packageNode = new DefaultMutableTreeNode( packages[i].getName() );
 
             JavaClass[] classes = packages[i].getClasses();
-            MiscUtilities.quicksort(classes, new JavaClassComparator() );         
+            MiscUtilities.quicksort(classes, new JavaClassComparator() );
 
             for (int j = 0; j < classes.length; ++j) {
                 packageNode.add( new DefaultMutableTreeNode( classes[j] ) );
@@ -122,7 +120,7 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
 
 
     public void setStatus(String status) {
-        this.status.setText(status);        
+        this.status.setText(status);
     }
 
     public DefaultMutableTreeNode getCurrentNode() {
@@ -132,7 +130,7 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
     /**
      * Method that returns classpath needed by the Jode Decompiler Package.
      * The Jode package expects a comma delimited classpath.
-    **/   
+    **/
 
     public static String getJodeClassPath() {
         String classArray[] = JavaUtils.getClasspath();
@@ -149,65 +147,54 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
 
     /**
     Given a classname, decompile it and store it on the filesystem.
-    
+
 
     @param className the name of the class is to be decompiled.
-    @param force     forces this class to be decompiled even if it was on the 
+    @param force     forces this class to be decompiled even if it was on the
     filesystem from before
     @return the name of the filename that was decompiled.
     */
     public static String decompileClass(String className, boolean force) {
-        
 
-       
-        String output = getBaseDirectory() + 
-                        System.getProperty("file.separator") + 
+        String output = getBaseDirectory() +
+                        System.getProperty("file.separator") +
                         getJavaFile(className);
 
-
-                        
-                        
         System.out.println(getJodeClassPath());
         //if it already exists... assume that it was decompiled successfully before.
         if ( new File(output).exists() ) {
             return output;
         }
-                        
-        String[] params =   { 
+
+        String[] params =   {
                             className,
                             "--pretty",
                             "-c",
                             getJodeClassPath()
                             };
 
-                            
-                            
-                            
-                            
         //make sure all its directories exist.
         new File( output.substring(0, output.lastIndexOf(System.getProperty("file.separator")) ) ).mkdirs();
-                            
 
         PrintStream original = System.out;
-        try {                    
+        try {
             System.setOut( new PrintStream( new FileOutputStream( output ) ) );
-            jode.Decompiler.main(params);
-
+            jode.decompiler.Main.main(params);
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         } finally {
             System.setOut(original);
         }
-        
-        
+
         return output;
     }
+
 
     /**
      Given a java class name (ie org.apache.jetspeed.Test) return a filename
      (ie org/apache/jetspeed/Test.java)
-    
+
      @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
      @version $Id$
      */
@@ -217,13 +204,13 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
     }
 
     /**
-    Return the base directory for JavaInsight.  On UNIX this would be 
+    Return the base directory for JavaInsight.  On UNIX this would be
     /tmp/Java Insight
     */
     public static String getBaseDirectory() {
         return MiscUtils.getTempDir() + System.getProperty("file.separator") + MiscUtils.globalStringReplace( PRODUCT, " ", "" );
     }
-    
+
 
 
 
@@ -239,22 +226,22 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
             if ( this.getCurrentNode().getUserObject() instanceof JavaClass ) {
                 String object = ((JavaClass)this.getCurrentNode().getUserObject()).getName();
 
-                StaticLogger.log("Decompiling: " + object);
+                Log.log(Log.DEBUG, this, "Decompiling: " + object);
 
                 this.setCursor( new Cursor(Cursor.WAIT_CURSOR) );
 
                 String result = decompileClass(object, false);
 
-                this.setCursor( new Cursor(Cursor.DEFAULT_CURSOR) );                
+                this.setCursor( new Cursor(Cursor.DEFAULT_CURSOR) );
 
                 jEdit.openFile( view, null, result, false, false );
-                
+
             }
 
         }
 
     }
-    
+
     public void mousePressed(MouseEvent evt)  { }
     public void mouseReleased(MouseEvent evt) { }
     public void mouseEntered(MouseEvent evt)  { }
@@ -264,26 +251,26 @@ public class JavaInsight extends JPanel implements TreeSelectionListener, MouseL
 
     //TreeSelectionListener interface
     /**
-    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>    
+    @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
     */
     public void valueChanged(TreeSelectionEvent e) {
-        
+
         DefaultMutableTreeNode node = (DefaultMutableTreeNode)this.tree.getLastSelectedPathComponent();
         if (node == null)
             return;
-        
-        
+
+
         this.currentNode = node;
-        
+
         if (node.getUserObject() instanceof JavaClass) {
             //also output the source of this class
             JavaClass classnode = ((JavaClass)node.getUserObject());
-            
+
             System.out.println("The source CLASSPATH entry of \"" + classnode.getName() + "\" is \"" + classnode.getSource() + "\"");
-            
+
             this.setStatus( classnode.getName() );
         }
     }
-    
+
 
 }

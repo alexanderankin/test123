@@ -105,8 +105,8 @@ public class DecompileClassMessage extends EBMessage.NonVetoable {
 
 /*
 $Log$
-Revision 1.1  2000/11/02 04:59:36  akaplan
-JavaInsight 0.2, dockable, simpler package names
+Revision 1.2  2000/11/03 05:25:41  akaplan
+Removed dead code, doc update
 
 Revision 1.1.1.1  2000/10/29 15:12:49  andre
 JavaInsight initial import

@@ -14,13 +14,16 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
+
 package buildtools.java.packagebrowser;
 
 import java.util.Vector;
-import buildtools.StaticLogger;
+
+import org.gjt.sp.util.Log;
+
 
 public class JavaPackage {
-    
+
     private String  name;
     private String  source;
     private Vector  classes = new Vector();
@@ -29,7 +32,7 @@ public class JavaPackage {
      * Creates a JavaPackage
      *
      * @param name The name of this package fully qualified
-     * @param source The source where this package can be found.  This 
+     * @param source The source where this package can be found.  This
      *               should be either a directory or a .jar file.
      * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
      * @version $Id$
@@ -40,8 +43,8 @@ public class JavaPackage {
         this.source = source;
     }
 
-    
-    
+
+
     /**
      * Returns the fully-qualified name of this package
      * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
@@ -82,7 +85,7 @@ public class JavaPackage {
     boolean hasClass(JavaClass javaclass) {
         return this.classes.contains(javaclass);
     }
-    
+
     /**
      * Returns the source of this package
      * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
@@ -95,22 +98,22 @@ public class JavaPackage {
     public String toString() {
         return this.getName();
     }
-    
-    
+
+
     /**
      * dump all classes within this package
      * @author <A HREF="mailto:burton@relativity.yi.org">Kevin A. Burton</A>
      * @version $Id$
      */
     public void dump() {
-        
+
         JavaClass[] classes = this.getClasses();
-        
+
         for ( int i = 0; i < classes.length; ++i ) {
-            StaticLogger.log( "\t CLASS: " + classes[i].getClassName() );
+            Log.log( Log.DEBUG, this, "\t CLASS: " + classes[i].getClassName() );
         }
-        
+
     }
-    
+
 }
 
