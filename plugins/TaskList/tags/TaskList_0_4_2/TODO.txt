@@ -1,0 +1,33 @@
+version 0.4.2
+=============
+
+- docs to reST? (done)
+- put tasklist into it's own package (done)
+- delete task and delete tag into Task class (done)
+- explicit re-parse in TaskList popup (done)
+- fix "Reset task patterns" (done)
+- fix 699048 (done)
+- removing 1 built-in tax, then re-parsing causes error (done)
+- 2-pane split, all tasks are show twice (done)
+- sorting by buffer doesn't work (done)
+- add sorting by buffer to option pane (done)
+- proof/revise docs (done)
+
+future
+======
+
+- use SideKick's work request API
+
+- buffer sets: display tasks for current buffer, buffers 
+  visible in view, all buffers, others?
+
+	// interface something like this?
+	interface BufferSet{
+		Buffer[] getBuffersInSet();
+		int getBufferCount();
+	}
+
+- multi-line task comments
+- parse text in text mode?
+
+:lineSeparator=\n:maxLineLen=72:noTabs=false:tabSize=4:wrap=hard:
