@@ -353,6 +353,7 @@ public class AntFarm extends JPanel implements EBComponent
 		_toolBar.addSeparator();
 		_toolBar.add( options = createToolButton( "options") );
 		options.setText("Options");
+		options.addMouseListener(new MouseHandler());
 
 		// default to enabled to false
 		removeAntFile.setEnabled( false );
@@ -384,7 +385,6 @@ public class AntFarm extends JPanel implements EBComponent
 		return button;
 	}
 
-
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed( ActionEvent evt )
@@ -399,20 +399,26 @@ public class AntFarm extends JPanel implements EBComponent
 			if ( source == runTarget ) {
 				_antTree.executeCurrentTarget();
 			}
-			if ( source == options ) {
-				if(!_optionsPopup.isVisible())
-				{
-					GUIUtilities.showPopupMenu(
-						_optionsPopup,options,0,
-						options.getHeight());
-				}
-				else
-				{
-					_optionsPopup.setVisible(false);
-				}
-			}
 		}
 	}
+
+	class MouseHandler extends MouseAdapter
+	{
+		public void mousePressed(MouseEvent evt)
+		{
+			if(!_optionsPopup.isVisible())
+			{
+		
+				GUIUtilities.showPopupMenu(
+					_optionsPopup,options,0,
+					options.getHeight());
+			}
+			else
+			{
+				_optionsPopup.setVisible(false);
+			}
+		}
+	} 
 	
 	class OptionsPopup extends JPopupMenu
 	{
