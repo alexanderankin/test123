@@ -291,11 +291,5 @@ public class VPTWorkingFileListModel extends DefaultTreeModel {
 		}
 	} //}}}
 
-	//{{{ getPathToRoot(TreeNode, int) method
-	public TreeNode[] getPathToRoot(TreeNode aNode, int depth) {
-		System.err.println("Working Files: Path to root with depth!!!");
-		return super.getPathToRoot(aNode, depth);
-	} //}}}
-
 }
 
