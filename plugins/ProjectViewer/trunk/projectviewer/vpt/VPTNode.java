@@ -309,9 +309,24 @@ public abstract class VPTNode extends DefaultMutableTreeNode {
 	 *
 	 *	<p>This only makes sense for nodes that allow children in the first
 	 *	place.</p>
+	 *
+	 *	@since PV 2.1.0
 	 */
 	public boolean persistChildren() {
 		return true;
+	} //}}}
+
+	//{{{ +getClipType() : int
+	/**
+	 *	This method controls how the CellRenderer implementation will clip the
+	 *	name of the node when it doesn't fit in the tree.
+	 *
+	 *	@see	VPTCellRenderer
+	 *	@return	CLIP_NOCLIP in the default implementation, override to change it.
+	 *	@since	PV 2.1.0
+	 */
+	public int getClipType() {
+		return VPTCellRenderer.CLIP_NOCLIP;
 	} //}}}
 
 	//}}}
