@@ -293,7 +293,7 @@ public class SideKickActions
 	//}}}
 
 	//{{{ Inner classes
-	static class KeyTypedAction extends EditAction
+	static class CompleteAction extends EditAction
 	{
 		private char ch;
 

@@ -51,12 +51,6 @@ public class SideKickPlugin extends EBPlugin
 		FoldHandler.registerFoldHandler(new SideKickFoldHandler());
 	} //}}}
 
-	//{{{ createMenuItems() method
-	public void createMenuItems(Vector menuItems)
-	{
-		menuItems.addElement(GUIUtilities.loadMenu("sidekick-menu"));
-	} //}}}
-
 	//{{{ createOptionPanes() method
 	public void createOptionPanes(OptionsDialog dialog)
 	{
@@ -196,6 +190,4 @@ public class SideKickPlugin extends EBPlugin
 			}
 		}
 	} //}}}
-
-	//}}}
 }
