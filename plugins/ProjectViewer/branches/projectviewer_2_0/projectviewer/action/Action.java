@@ -25,6 +25,7 @@ import javax.swing.Icon;
 import javax.swing.JMenuItem;
 import javax.swing.JComponent;
 
+import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.gui.RolloverButton;
 
 import projectviewer.ProjectViewer;
@@ -38,22 +39,13 @@ import projectviewer.vpt.VPTNode;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public abstract class Action implements ActionListener {
+public abstract class Action implements ActionListener, Cloneable {
 
 	//{{{ Instance variables
 	
-	protected final ProjectViewer viewer;
-	
+	protected ProjectViewer		viewer;
 	protected RolloverButton	tbButton;
 	protected JComponent		cmItem;
-	
-	//}}}
-	
-	//{{{ Constructor
-	
-	public Action(ProjectViewer viewer) {
-		this.viewer = viewer;
-	}
 	
 	//}}}
 	
@@ -122,6 +114,24 @@ public abstract class Action implements ActionListener {
 			tbButton.addActionListener(this);
 		}
 		return tbButton;
+	} //}}}
+	
+	//{{{ clone() method
+	/** Clones the current action, returning a copy of it. */
+	public Object clone() {
+		try {
+			return super.clone();
+		} catch (CloneNotSupportedException cnse) {
+			// should not happen
+			Log.log(Log.ERROR,this,cnse);
+			return null;
+		}
+	} //}}}
+	
+	//{{{ setViewer(ProjectViewer) method
+	/** Sets the viewer where this action is being used. */
+	public void setViewer(ProjectViewer viewer) {
+		this.viewer = viewer;
 	} //}}}
 	
 }
