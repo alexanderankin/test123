@@ -29,7 +29,6 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
   private final ProjectManager projectManager;
 
   private final JButton buttonDel = new JButton("Del");
-  private final JTextField projectNameField = new JTextField();
   private final JButton closeProject = new JButton(GUIUtilities.loadIcon("Cancel.png"));
   private final JComboBox listProjects;
 
@@ -87,10 +86,8 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
 
     closeProject.setToolTipText("Close the current project");
     final JLabel projectName = new JLabel("Project : ");
-    projectNameField.setEditable(false);
     setProject(projectManager.getProject());
     panelTop.add(projectName);
-    panelTop.add(projectNameField);
     panelTop.add(new JScrollPane(listProjects));
     panel.add(panelTop, BorderLayout.NORTH);
     panel.add(tabs, BorderLayout.CENTER);
@@ -111,7 +108,6 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
 
   private void setProject(Project project) {
     if (project == null) {
-      projectNameField.setText(null);
       tabs.setProject(null);
       buttonDel.setEnabled(false);
       closeProject.setEnabled(false);
@@ -119,7 +115,6 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
     } else {
       buttonDel.setEnabled(true);
       closeProject.setEnabled(true);
-      projectNameField.setText(project.getName());
       listProjects.getModel().setSelectedItem(project);
       tabs.setProject((Project) project);
       validate();
