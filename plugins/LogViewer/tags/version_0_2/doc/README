@@ -1,0 +1,7 @@
+LOG VIEWER PLUGIN
+
+This allows you to follow several log files at a time within jEdit.
+It is heavily based off Follow, http://follow.sourceforge.net.  For
+more information, visit http://www.twdata.org/logviewer
+
+
