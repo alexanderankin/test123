@@ -41,12 +41,28 @@ class DockablesList extends JList {
       setModel(new DockablesModel());
    }
 
+   public String getDockable(int idx) {
+      return ((DockablesModel) getModel()).getDockable(idx);
+   }
+
    public void addDockable(String name) {
       ((DockablesModel) getModel()).addDockable(name);
    }
 
+   public void removeDockable(int idx){
+      ((DockablesModel) getModel()).removeDockable(idx);
+   }
+
    public List getDockables() {
-      return ((DockablesModel)getModel()).dockables;
+      return ((DockablesModel) getModel()).dockables;
+   }
+
+   public boolean hasSelection() {
+      return getSelectedValue() != null;
+   }
+
+   public String getSelectedDockable() {
+      return (String) ((DockablesModel) getModel()).getElementAt(getSelectedIndex());
    }
 
    private class DockablesModel extends AbstractListModel {
@@ -60,6 +76,10 @@ class DockablesList extends JList {
          return dockables.size();
       }
 
+      public String getDockable(int idx) {
+         return (String) dockables.get(idx);
+      }
+
       public Object getElementAt(int idx) {
          return jEdit.getProperty(dockables.get(idx) + ".title");
       }
@@ -68,6 +88,13 @@ class DockablesList extends JList {
          int idx = getSize();
          dockables.add(name);
          fireIntervalAdded(this, idx, idx);
+      }
+
+      public void removeDockable(int idx) {
+         if(idx >= 0 && idx < dockables.size()) {
+            dockables.remove(idx);
+            fireIntervalRemoved(this, idx, idx);
+         }
       }
    }
 }

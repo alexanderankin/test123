@@ -22,6 +22,9 @@
 
 package docker;
 
+import java.util.Iterator;
+import java.util.List;
+
 import javax.swing.JComboBox;
 
 import org.gjt.sp.jedit.jEdit;
@@ -31,15 +34,16 @@ import org.gjt.sp.jedit.gui.DockableWindowManager;
  * A combo box of registered dockables.
  */
 class DockablesComboBox extends JComboBox {
-   private String[] dockables;
-
    /**
     * Create a new <code>DockablesComboBox</code>.
     */
    public DockablesComboBox() {
-      dockables = DockableWindowManager.getRegisteredDockableWindows();
-      for (int i=0; i<dockables.length; i++) {
-         addItem(jEdit.getProperty(dockables[i] + ".title"));
+   }
+
+   public void setDockables(List dockables) {
+      removeAllItems();
+      for (Iterator i = dockables.iterator(); i.hasNext();) {
+         addItem(new DockableModel((String) i.next()));
       }
    }
 
@@ -48,7 +52,18 @@ class DockablesComboBox extends JComboBox {
       if (idx < 0) {
          return null;
       }
-      return dockables[idx];
+      return ((DockableModel) getSelectedItem()).name;
+   }
+
+   private class DockableModel {
+      public String name;
+      public DockableModel(String aName) {
+         name = aName;
+      }
+
+      public String toString() {
+         return jEdit.getProperty(name + ".title");
+      }
    }
 }
 

@@ -30,10 +30,12 @@ import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import javax.swing.*;
+import javax.swing.event.*;
 
 import org.gjt.sp.jedit.AbstractOptionPane;
 import org.gjt.sp.jedit.gui.DockableWindowManager;
@@ -46,6 +48,9 @@ public class DockerOptionPane extends AbstractOptionPane {
    private DockablesComboBox addAutoHideOverrideCombo;
    private DockablesList autoHideOverrides;
    private DockerConfig config;
+   private JButton removeAutoHideButton;
+
+   private String[] dockables = DockableWindowManager.getRegisteredDockableWindows();
 
    /**
     * Create a new <code>DockerOptionPane</code>
@@ -76,6 +81,7 @@ public class DockerOptionPane extends AbstractOptionPane {
       addComponent(config.getProperty("label.auto-hide-enabled"), autoHide);
 
       addComponent(createAutoHideOverridePanel());
+      filterCombo();
    }
 
    /**
@@ -128,6 +134,20 @@ public class DockerOptionPane extends AbstractOptionPane {
       panel.add(addAutoHideOverrideButton, gbc);
 
       autoHideOverrides = new DockablesList();
+      autoHideOverrides.getModel().addListDataListener(new ListDataListener() {
+         public void contentsChanged(ListDataEvent evt) {}
+         public void intervalAdded(ListDataEvent evt) {
+            filterCombo();
+         }
+         public void intervalRemoved(ListDataEvent evt) {
+            filterCombo();
+         }
+      });
+      autoHideOverrides.addListSelectionListener(new ListSelectionListener() {
+         public void valueChanged(ListSelectionEvent evt) {
+            removeAutoHideButton.setEnabled(autoHideOverrides.hasSelection());
+         }
+      });
       for (Iterator i = config.getAutoHideOverrides().iterator(); i.hasNext();) {
          autoHideOverrides.addDockable((String) i.next());
       }
@@ -138,8 +158,14 @@ public class DockerOptionPane extends AbstractOptionPane {
       gbc.insets = new Insets(0, 0, 0, 11);
       panel.add(new JScrollPane(autoHideOverrides), gbc);
 
-      JButton removeAutoHideButton =
-            new JButton(config.getProperty("label.remove-auto-hide-override"));
+      removeAutoHideButton =
+         new JButton(config.getProperty("label.remove-auto-hide-override"));
+      removeAutoHideButton.setEnabled(false);
+      removeAutoHideButton.addActionListener(new ActionListener() {
+         public void actionPerformed(ActionEvent evt) {
+            autoHideOverrides.removeDockable(autoHideOverrides.getSelectedIndex());
+         }
+      });
       gbc.anchor = GridBagConstraints.NORTH;
       gbc.gridx++;
       gbc.gridheight = 1;
@@ -162,6 +188,16 @@ public class DockerOptionPane extends AbstractOptionPane {
       JCheckBox checkBox = new JCheckBox(config.getProperty("label." + name + "-dock"));
       checkBox.setSelected(config.isAutoHideEnabled(name));
       return checkBox;
+   }
+
+   private void filterCombo() {
+      List overridingDockables = autoHideOverrides.getDockables();
+      List availDocks = new ArrayList(overridingDockables.size());
+      for (int i=0; i<dockables.length; i++) {
+         if (!overridingDockables.contains(dockables[i]))
+            availDocks.add(dockables[i]);
+      }
+      addAutoHideOverrideCombo.setDockables(availDocks);
    }
 }
 

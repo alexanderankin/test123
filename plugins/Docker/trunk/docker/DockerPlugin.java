@@ -27,6 +27,7 @@ import common.gui.PopupList;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.Method;
 import java.util.*;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -150,6 +151,17 @@ public class DockerPlugin extends EBPlugin
    public void createOptionPanes(OptionsDialog dialog)
    {
       dialog.addOptionPane(new DockerOptionPane());
+   }
+
+   public void start() {
+      try {
+         Class c = Class.forName("docker.DockerFocusTraversalPolicy");
+         Method method = c.getMethod("install", null);
+         method.invoke(null, null);
+
+      } catch (Throwable t) {
+         Log.log(Log.NOTICE, this, "Unable to install focus traversal policy");
+      }
    }
 
    /**
