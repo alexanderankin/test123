@@ -22,6 +22,17 @@ TODO:  (sorted by priority)
 
 MISC BUGS/TODO:
 
+    - Implement advanced ProjectResource storage:
+
+        - get rid of using my own properties
+
+        - use the jEdit properties
+
+        - all resources should begin with projectviewer. and there should also
+          be a version number to the resources so that I can make one version
+          incompatible with another.
+
+
     - Change the tree control to allow multiple single-selections.  This way 
       multiple files can be removed.
 

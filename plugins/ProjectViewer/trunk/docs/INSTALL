@@ -1,0 +1,8 @@
+
+
+Installation instructions:
+
+1.  Unzip or unjar the distribituion named <PROJECT_NAME>-dist.jar
+2.  Move the ./bin/<PROJECT_NAME>.jar file to your <JEDIT>/jars directory
+
+done.
