@@ -20,6 +20,8 @@
 
       <year>2002</year>
 
+      <year>2003</year>
+
       <holder>Sergey V. Udaltsov</holder>
     </copyright>
 
@@ -299,6 +301,16 @@
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.8</title>
+
+          <para />
+        </formalpara>
+
+        <para>Some fixes and improvements in<ulink url="#HelpfulJTable">HelpfulJTable</ulink>. Now it can use the width of the headers in autoresize mode. Also, autoresizing does not exclude manual resizing any more.</para>
+      </listitem>
+
       <listitem>
         <formalpara>
           <title>Version 0.7</title>
