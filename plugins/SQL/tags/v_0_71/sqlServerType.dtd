@@ -1,0 +1,29 @@
+<!--
+ DTD for sqlServerType files
+-->
+
+<!ELEMENT serverType (driver?, vfs?, editMode?, connection, statements?) >
+<!ATTLIST serverType name CDATA #REQUIRED>
+
+<!ELEMENT driver (#PCDATA)>
+
+<!ELEMENT vfs (#PCDATA)>
+
+<!ELEMENT editMode (#PCDATA)>
+
+<!ELEMENT connection (parameter*,string)>
+
+<!ELEMENT parameter EMPTY>
+<!ATTLIST parameter name CDATA #REQUIRED>
+<!ATTLIST parameter default CDATA #REQUIRED>
+<!ATTLIST parameter description CDATA #IMPLIED>
+
+<!ELEMENT string (#PCDATA)>
+
+<!ELEMENT statements (statement+)>
+
+<!ELEMENT statement (#PCDATA)>
+<!ATTLIST statement purpose CDATA #REQUIRED>
+<!ATTLIST statement substMethod (text|sql) #IMPLIED>
+
+
