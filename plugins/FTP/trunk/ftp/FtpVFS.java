@@ -80,10 +80,13 @@ public class FtpVFS extends VFS
 		if(session != null)
 			session[0] = newSession;
 
+		// need trailing / for 'open from ftp server' and 'save to ftp
+		// server' commands to detect that the path is in fact a
+		// directory
 		return PROTOCOL + "://" + newSession.user
 			+ "@" + newSession.host
 			+ (newSession.port == null
-			? "" : ":" + newSession.port) + "/~";
+			? "" : ":" + newSession.port) + "/~/";
 	}
 
 	public String getFileName(String path)
@@ -189,97 +192,58 @@ public class FtpVFS extends VFS
 
 		FtpAddress address = new FtpAddress(url);
 
-		BufferedReader in = null;
-
 		FtpClient client = _getFtpClient(session,address,false,comp);
 		if(client == null)
 			return null;
 
-		try
+		//Use ASCII mode for dir listing
+		client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
+
+		//CWD into the directory - Doing a LIST on a path with spaces in the
+		//name fails; however, if you CWD to the dir and then LIST it
+		// succeeds.
+		client.changeWorkingDirectory(address.path);
+		//Check for successful response
+		FtpResponse response = client.getResponse();
+		if(response != null
+			&& response.getReturnCode() != null
+			&& response.getReturnCode().charAt(0) != '2')
 		{
-			Vector directoryVector = new Vector();
-
-			//Use ASCII mode for dir listing
-			client.representationType(com.fooware.net.FtpClient.ASCII_TYPE);
-
-			//CWD into the directory - Doing a LIST on a path with spaces in the
-			//name fails; however, if you CWD to the dir and then LIST it
-			// succeeds.
-			client.changeWorkingDirectory(address.path);
-			//Check for successful response
-			FtpResponse response = client.getResponse();
-			if(response != null
-				&& response.getReturnCode() != null
-				&& response.getReturnCode().charAt(0) != '2')
-			{
-				String[] args = { response.toString() };
-				VFSManager.error(comp,url,"ftperror.list-error",args);
-				return null;
-			}
-
-			_setupSocket(client);
-			Reader _in = client.list(); //we are in the right dir so just send LIST
-
-			if(_in == null)
-			{
-				String[] args = { client.getResponse().toString() };
-				VFSManager.error(comp,url,"ftperror.list-error",args);
-				return null;
-			}
-
-			in = new BufferedReader(_in);
-			String line;
-			while((line = in.readLine()) != null)
-			{
-				VFS.DirectoryEntry entry = lineToDirectoryEntry(line);
-				if(entry == null
-					|| entry.name.equals(".")
-					|| entry.name.equals(".."))
-				{
-					Log.log(Log.DEBUG,this,"Discarding " + line);
-					continue;
-				}
-				else
-					; //Log.log(Log.DEBUG,this,"Parsed " + line);
-
-				directoryVector.addElement(entry);
-			}
-
-			in.close();
-
-			for(int i = 0; i < directoryVector.size(); i++)
-			{
-				FtpDirectoryEntry entry = (FtpDirectoryEntry)
-					directoryVector.elementAt(i);
-				if(entry.type == FtpDirectoryEntry.LINK)
-					resolveSymlink(session,url,entry,comp);
-				else
-				{
-					// prepend directory to create full path
-					entry.path = constructPath(url,entry.name);
-					entry.deletePath = entry.path;
-				}
-			}
-
-			directory = new FtpDirectoryEntry[directoryVector.size()];
-			directoryVector.copyInto(directory);
-			DirectoryCache.setCachedDirectory(url,directory);
-			return directory;
+			String[] args = { response.toString() };
+			VFSManager.error(comp,url,"ftperror.list-error",args);
+			return null;
 		}
-		finally
+
+		// some servers might not support -a, so if we get an error
+		// try without -a
+		Vector directoryVector = _listDirectory(client,url,comp,true);
+		if(directoryVector == null || directoryVector.size() == 0)
+			directoryVector = _listDirectory(client,url,comp,false);
+
+		if(directoryVector == null)
 		{
-			if(in != null)
+			// error occurred
+			return null;
+		}
+
+		for(int i = 0; i < directoryVector.size(); i++)
+		{
+			FtpDirectoryEntry entry = (FtpDirectoryEntry)
+				directoryVector.elementAt(i);
+			if(entry.type == FtpDirectoryEntry.LINK)
+				resolveSymlink(session,url,entry,comp);
+			else
 			{
-				try
-				{
-					in.close();
-				}
-				catch(Exception e)
-				{
-					Log.log(Log.ERROR,this,e);
-				}
+				// prepend directory to create full path
+				entry.path = constructPath(url,entry.name);
+				entry.deletePath = entry.path;
 			}
 		}
+
+		directory = new FtpDirectoryEntry[directoryVector.size()];
+		directoryVector.copyInto(directory);
+		DirectoryCache.setCachedDirectory(url,directory);
+		return directory;
 	}
 
 	public boolean _delete(Object _session, String url, Component comp)
@@ -714,8 +678,67 @@ public class FtpVFS extends VFS
 		}
 	}
 
+	private Vector _listDirectory(FtpClient client, String url, Component comp,
+		boolean tryHiddenFiles) throws IOException
+	{
+		BufferedReader in = null;
+
+		try
+		{
+			Vector directoryVector = new Vector();
+
+			_setupSocket(client);
+			Reader _in = (tryHiddenFiles ? client.list("-a") : client.list());
+
+			if(_in == null)
+			{
+				if(!tryHiddenFiles)
+				{
+					String[] args = { client.getResponse().toString() };
+					VFSManager.error(comp,url,"ftperror.list-error",args);
+				}
+	
+				return null;
+			}
+
+			in = new BufferedReader(_in);
+			String line;
+			while((line = in.readLine()) != null)
+			{
+				VFS.DirectoryEntry entry = lineToDirectoryEntry(line);
+				if(entry == null
+					|| entry.name.equals(".")
+					|| entry.name.equals(".."))
+				{
+					Log.log(Log.DEBUG,this,"Discarding " + line);
+					continue;
+				}
+				else
+					; //Log.log(Log.DEBUG,this,"Parsed " + line);
+	
+				directoryVector.addElement(entry);
+			}
+
+			return directoryVector;
+		}
+		finally
+		{
+			if(in != null)
+			{
+				try
+				{
+					in.close();
+				}
+				catch(Exception e)
+				{
+					Log.log(Log.ERROR,this,e);
+				}
+			}
+		}
+	}
+
 	// Convert a line of LIST output to an FtpDirectoryEntry
-	public FtpDirectoryEntry lineToDirectoryEntry(String line)
+	private FtpDirectoryEntry lineToDirectoryEntry(String line)
 	{
 		try
 		{
