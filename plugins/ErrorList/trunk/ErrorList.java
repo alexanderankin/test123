@@ -72,13 +72,10 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			{
 				errorList.setSelectedIndex(index);
 				openErrorAt(index);
-				ErrorSource.Error err = (ErrorSource.Error)
-					errorList.getSelectedValue();
-				view.showStatus(err.getErrorMessage());
-				return;
 			}
+			else
+				getToolkit().beep();
 		}
-		view.showStatus(jEdit.getProperty("error-list.error.no_next"));
 	}
 
 	public void previousError() {
@@ -89,13 +86,10 @@ public class ErrorList extends JPanel implements EBComponent, DockableWindow
 			{
 				errorList.setSelectedIndex(index);
 				openErrorAt(index);
-				ErrorSource.Error err = (ErrorSource.Error)
-					errorList.getSelectedValue();
-				view.showStatus(err.getErrorMessage());
-				return;
 			}
+			else
+				getToolkit().beep();
 		}
-		view.showStatus(jEdit.getProperty("error-list.error.no_previous"));
 	}
 
 	// DockableWindow implementation

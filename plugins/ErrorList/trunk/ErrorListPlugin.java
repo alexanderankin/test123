@@ -37,9 +37,9 @@ public class ErrorListPlugin extends EBPlugin
 		propertiesChanged();
 	}
 
-	public void createMenuItems(View view, Vector menus, Vector menuItems)
+	public void createMenuItems(Vector menuItems)
 	{
-		menuItems.addElement(GUIUtilities.loadMenuItem("error-list"));
+		menuItems.addElement(GUIUtilities.loadMenu("error-list-menu"));
 	}
 
 	public void createOptionPanes(OptionsDialog dialog)
@@ -204,9 +204,8 @@ public class ErrorListPlugin extends EBPlugin
 		public void actionPerformed(ActionEvent evt)
 		{
 			DockableWindowManager wm = getView(evt).getDockableWindowManager();
+			wm.addDockableWindow(NAME);
 			DockableWindow win = wm.getDockableWindow(NAME);
-			if(win == null || !(win instanceof ErrorList))
-				return;
 			((ErrorList)win).nextError();
 		}
 	}
@@ -221,9 +220,8 @@ public class ErrorListPlugin extends EBPlugin
 		public void actionPerformed(ActionEvent evt)
 		{
 			DockableWindowManager wm = getView(evt).getDockableWindowManager();
+			wm.addDockableWindow(NAME);
 			DockableWindow win = wm.getDockableWindow(NAME);
-			if(win == null || !(win instanceof ErrorList))
-				return;
 			((ErrorList)win).previousError();
 		}
 	}
