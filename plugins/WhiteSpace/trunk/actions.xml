@@ -187,12 +187,11 @@
                 highlight.updateTextArea();
             }
         </CODE>
-        <!--
         <IS_SELECTED>
-            highlight = whitespace.WhiteSpaceHighlight.getHighlightFor(editPane);
-            if (highlight == null) { return false; }
-            return highlight.getWhitespaceHighlight().isEnabled();
+            return buffer.getBooleanProperty(
+                /* whitespace.WhiteSpaceHighlight.WHITESPACE_HIGHLIGHT_PROPERTY */
+                "white-space.whitespace-highlight"
+            );
         </IS_SELECTED>
-        -->
     </ACTION>
 </ACTIONS>
