@@ -3,41 +3,27 @@ package net.sourceforge.phpdt.internal.compiler.ast;
 import java.util.List;
 
 /**
- * A list expression.
- * it could be list($v1,$v2), list(,$v2) ...
+ * A list expression. it could be list($v1,$v2), list(,$v2) ...
+ *
  * @author Matthieu Casanova
  */
 public final class ListExpression extends Expression {
-
   private final Expression[] vars;
-  private Expression expression;
 
-  public ListExpression(final Expression[] vars,
-                        final Expression expression,
-                        final int sourceStart,
-                        final int sourceEnd,
-                       final int beginLine,
-                       final int endLine,
-                       final int beginColumn,
-                       final int endColumn) {
-    super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
-    this.vars = vars;
-    this.expression = expression;
-  }
-
-  public ListExpression(final Expression[] vars,
-                        final int sourceStart,
-                        final int sourceEnd,
-                       final int beginLine,
-                       final int endLine,
-                       final int beginColumn,
-                       final int endColumn) {
+  public ListExpression(Expression[] vars,
+                        int sourceStart,
+                        int sourceEnd,
+                        int beginLine,
+                        int endLine,
+                        int beginColumn,
+                        int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.vars = vars;
   }
 
   /**
    * Return the expression as String.
+   *
    * @return the expression
    */
   public String toStringExpression() {
@@ -50,10 +36,7 @@ public final class ListExpression extends Expression {
         buff.append(vars[i].toStringExpression());
       }
     }
-    if (expression != null) {
-      buff.append(" = ");
-      buff.append(expression.toStringExpression());
-    }
+    buff.append(')');
     return buff.toString();
   }
 
@@ -62,7 +45,7 @@ public final class ListExpression extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getOutsideVariable(final List list) {}
+  public void getOutsideVariable(final List list) { }
 
   /**
    * get the modified variables.
@@ -75,9 +58,6 @@ public final class ListExpression extends Expression {
         vars[i].getUsedVariable(list);
       }
     }
-    if (expression != null) {
-      expression.getModifiedVariable(list);
-    }
   }
 
   /**
@@ -85,9 +65,5 @@ public final class ListExpression extends Expression {
    *
    * @param list the list where we will put variables
    */
-  public void getUsedVariable(final List list) {
-    if (expression != null) {
-      expression.getUsedVariable(list);
-    }
-  }
+  public void getUsedVariable(final List list) { }
 }
