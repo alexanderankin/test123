@@ -28,21 +28,13 @@ import jdiff.options.JDiffHighlightOptionPane;
 import jdiff.options.JDiffOptionPane;
 import jdiff.options.JDiffOverviewOptionPane;
 
-import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EBPlugin;
-import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.GUIUtilities;
-import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.OptionGroup;
 import org.gjt.sp.jedit.gui.OptionsDialog;
-import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.msg.PropertiesChanged;
-
-import org.gjt.sp.util.Log;
 
 
 public class JDiffPlugin extends EBPlugin
@@ -102,26 +94,6 @@ public class JDiffPlugin extends EBPlugin
         if (message instanceof PropertiesChanged) {
             DualDiff.propertiesChanged();
             JDiffPlugin.propertiesChanged();
-        } else if (message instanceof EditPaneUpdate) {
-            EditPaneUpdate epu = (EditPaneUpdate) message;
-            EditPane editPane = epu.getEditPane();
-            View view = editPane.getView();
-            if (!DualDiff.isEnabledFor(view)) {
-                return;
-            }
-            if (epu.getWhat() == EditPaneUpdate.CREATED) {
-                DualDiff.editPaneCreated(view, editPane);
-            } else if (epu.getWhat() == EditPaneUpdate.DESTROYED) {
-                DualDiff.editPaneDestroyed(view, editPane);
-            } else if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
-                Log.log(Log.DEBUG, this, "Buffer loaded? " + editPane.getBuffer().isLoaded());
-                if (editPane.getBuffer().isLoaded()) {
-                    DualDiff.editPaneBufferChanged(view, editPane);
-                } else {
-                    new WaitForBuffer(view, editPane);
-                }
-            } else {
-            }
         }
     }
 
@@ -176,6 +148,7 @@ public class JDiffPlugin extends EBPlugin
     }
 
 
+    /*
     private static class WaitForBuffer implements EBComponent {
         private View view;
         private EditPane editPane;
@@ -200,4 +173,5 @@ public class JDiffPlugin extends EBPlugin
             }
         }
     }
+    */
 }
