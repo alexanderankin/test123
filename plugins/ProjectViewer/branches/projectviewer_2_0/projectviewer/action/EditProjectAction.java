@@ -67,9 +67,11 @@ public class EditProjectAction extends Action {
 		VPTProject proj = null;
 		boolean add = false;
 		String oldName = null;
+		String oldRoot = null;
 		if (selected != null && selected.isProject()) {
 			proj = (VPTProject) selected;
 			oldName = proj.getName();
+			oldRoot = proj.getRootPath();
 		} else {
 			add = true;
 		}
@@ -81,8 +83,14 @@ public class EditProjectAction extends Action {
 				InitialProjectImporter ipi = new InitialProjectImporter(proj, viewer, jEdit.getActiveView());
 				ipi.doImport();
 				viewer.setProject(proj);
-			} else if (!proj.getName().equals(oldName)) {
-				ProjectManager.getInstance().renameProject(oldName, proj.getName());
+			} else {
+				if (!proj.getName().equals(oldName)) {
+					ProjectManager.getInstance().renameProject(oldName, proj.getName());
+				}
+				if (!proj.getRootPath().equals(oldRoot)) {
+					InitialProjectImporter ipi = new InitialProjectImporter(proj, viewer, jEdit.getActiveView());
+					ipi.doImport();
+				}
 			}
 		}
 		
