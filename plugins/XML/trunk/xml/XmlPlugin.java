@@ -41,6 +41,11 @@ public class XmlPlugin extends EBPlugin
 	//{{{ start() method
 	public void start()
 	{
+		System.setProperty("javax.xml.parsers.SAXParserFactory",
+			"org.apache.xerces.jaxp.SAXParserFactoryImpl");
+		System.setProperty("javax.xml.parsers.DocumentBuilderFactory",
+			"org.apache.xerces.jaxp.DocumentBuilderFactoryImpl");
+
 		CatalogManager.propertiesChanged();
 		XmlActions.propertiesChanged();
 	} //}}}
