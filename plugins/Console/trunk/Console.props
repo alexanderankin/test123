@@ -6,8 +6,8 @@ plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=/users-guide.xml
 
 plugin.console.ConsolePlugin.depend.0=jedit 03.02.09.00
-plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.0.1
-plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.1
+plugin.console.ConsolePlugin.depend.1=plugin EditBusPlugin 1.1
+plugin.console.ConsolePlugin.depend.2=plugin ErrorListPlugin 1.1.1
 
 console-menu=console run-last-console-command - \
 	commando browse-commando-directory rescan-commando-directory -
@@ -177,7 +177,7 @@ console.error.msvc.filename=$1
 console.error.msvc.line=$2
 console.error.msvc.message=$4
 console.error.msvc.match=([^\\(]*)[\\(](\\d+)[)].\:.([^\:]*)\:\\s*(.*)
-console.error.msvc.warning=([^\\(]*)[\\(](\\d+)[)].\:.(warning[^\:]*)\:\\s*(.*)
+console.error.msvc.warning=([^\\(]*)[\\(](\\d+)[)].\:.(warning[^\:]*)\:\\s*(.+)
 console.error.msvc.extra=\\s+([^\\(]*)[\\(](\\d+)[)].\:.([^\:]*)\:\\s*(.*)
 
 console.error.msnet.name=Microsoft.Net
@@ -193,7 +193,7 @@ console.error.perl.line=$3
 console.error.perl.message=$1
 
 console.error.jade.name=Jade
-console.error.jade.match=(.+?)jade:(.+?):(\\d+?):\\d+?:(.+)
+console.error.jade.match=(.+?)jade:(.+?):(\\d+?):\\d+(.+)
 console.error.jade.filename=$2
 console.error.jade.line=$3
 console.error.jade.message=$4
@@ -201,29 +201,30 @@ console.error.jade.message=$4
 console.error.ant.name=Ant javac
 console.error.ant.match=\\s*\\[javac\\]\\s+(.+?):(\\d+):(.+)
 console.error.ant.warning=\\s*\\[javac\\]\\s+(.+?):(\\d+): \
-	(Warning|warning|Caution|caution).*
+	(Warning|warning|Caution|caution)\\s(.+)
 console.error.ant.filename=$1
 console.error.ant.line=$2
 console.error.ant.message=$3
 
 console.error.emacs.name=Emacs-style
 console.error.emacs.match=(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
-console.error.generic.warning=(.+):(\\d+):\\d+:\\d+:\\d+: \
-	(Warning|warning|Caution|caution).*
+console.error.emacs.warning=(.+):(\\d+):\\d+:\\d+:\\d+: \
+	(Warning|warning|Caution|caution)\\s*(.+)
 console.error.emacs.filename=$1
 console.error.emacs.line=$2
 console.error.emacs.message=$3
 
-console.error.generic.name=Generic
+console.error.generic.name=Generic / Javac 1.3
 console.error.generic.match=(.+):(\\d+):(.+)
-console.error.generic.warning=.(.+):(\\d+): (Warning|warning|Caution|caution).*
+console.error.generic.warning=([^\\(]+):(\\d+):\\s*warning:\\s*(.+)
+console.error.generic.extra=\\s*([^\\s^].+)
 console.error.generic.filename=$1
 console.error.generic.line=$2
 console.error.generic.message=$3
 
 ### Commando
 
-commando.default=java javac jmk openjade_HTML
+commando.default=diff java javac jmk openjade_HTML openjade_PDF
 
 commando.toolbar.enabled=false
 
@@ -231,7 +232,6 @@ commando.title=Commando
 commando.caption=Command:
 commando.settings=Settings
 commando.commands=Commands
-commando.properties=Properties
 commando.copy=Copy
 
 commando.xml-error.title=Parse Error

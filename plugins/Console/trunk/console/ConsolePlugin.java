@@ -202,7 +202,8 @@ public class ConsolePlugin extends EBPlugin
 		if(lastError != null)
 		{
 			String message = null;
-			if(lastMatcher != null)
+			if(lastMatcher != null &&
+				lastMatcher.match(text,directory,errorSource) == null)
 				message = lastMatcher.matchExtra(text,directory,errorSource);
 			if(message != null)
 			{

@@ -89,15 +89,19 @@ class ErrorMatcher implements Cloneable
 		if(matchRE.isMatch(text))
 		{
 			int type;
+			RE displayRE = matchRE;
 			if(warningRE != null && warningRE.isMatch(text))
+			{
 				type = ErrorSource.WARNING;
+				displayRE = warningRE;
+			}
 			else
 				type = ErrorSource.ERROR;
 
 			String _filename = MiscUtilities.constructPath(
-				directory,matchRE.substitute(text,filename));
-			String _line = matchRE.substitute(text,line);
-			String _message = matchRE.substitute(text,message);
+				directory,displayRE.substitute(text,filename));
+			String _line = displayRE.substitute(text,line);
+			String _message = displayRE.substitute(text,message);
 
 			try
 			{

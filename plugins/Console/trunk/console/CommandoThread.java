@@ -80,7 +80,9 @@ class CommandoThread extends Thread
 						}
 
 						console.run(shell,
-							console,
+							command.toBuffer
+							? (Output)new BufferOutput(console)
+							: (Output)console,
 							command.command);
 					}
 				});
