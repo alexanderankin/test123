@@ -112,9 +112,9 @@ public class ColorTabs
 
       }
 
-      r = Math.max(0, Math.min(r, lowestColor));
-      g = Math.max(0, Math.min(g, lowestColor));
-      b = Math.max(0, Math.min(b, lowestColor));
+      r = Math.max(DARKEN_LOWEST_COLOR, Math.min(r, lowestColor));
+      g = Math.max(DARKEN_LOWEST_COLOR, Math.min(g, lowestColor));
+      b = Math.max(DARKEN_LOWEST_COLOR, Math.min(b, lowestColor));
 
       return new Color(r, g, b);
    }
