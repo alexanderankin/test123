@@ -240,7 +240,12 @@ public class SideKickCompletionPopup extends JWindow
 		//{{{ keyTyped() method
 		private void keyTyped(char ch)
 		{
-			if(complete != null && complete.handleKeystroke(
+			if(complete == null)
+			{
+				view.getTextArea().userInput(ch);
+				dispose();
+			}
+			else if(complete.handleKeystroke(
 				list.getSelectedIndex(),ch))
 			{
 				EditPane editPane = view.getEditPane();
