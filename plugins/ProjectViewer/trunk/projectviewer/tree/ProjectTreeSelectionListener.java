@@ -39,6 +39,11 @@ public class ProjectTreeSelectionListener
   private Launcher launcher;
   private JTree currentTree;
   private TreePath selectionPath;
+
+  private int lastClickButton;
+  private long lastClickTime;
+  private Object lastClickTarget;
+
   
   /**
    * Create a new <code>ProjectTreeSelectionListener    
@@ -46,6 +51,7 @@ public class ProjectTreeSelectionListener
   public ProjectTreeSelectionListener(ProjectViewer aViewer, Launcher aLauncher) {
     viewer = aViewer;
     launcher = aLauncher;
+    lastClickTime = 0L;
   }
     
   // MouseListener interfaces
@@ -54,7 +60,7 @@ public class ProjectTreeSelectionListener
    * Determines when the user clicks on the JTree.
    */
   public void mouseClicked(MouseEvent evt) {
-    if( evt.getClickCount() == 2 && isFileClicked( evt ) ) {
+    if( isDoubleClick(evt) && isFileClicked( evt ) ) {
       ProjectFile file = viewer.getSelectedFile();
       
       if ( file.isOpened() )  {
@@ -67,6 +73,30 @@ public class ProjectTreeSelectionListener
         launcher.launchFile( file );
       }
     }
+  }
+
+  /**
+   * Because IBM's JDK doesn't support <code>getClickCount()</code> for <code>JTree</code>
+   * properly, we have to do this.
+   */
+  private boolean isDoubleClick(MouseEvent evt) {
+    if (evt.getClickCount() == 2) return true;
+
+    Object target = viewer.getCurrentTree()
+      .getPathForLocation(evt.getX(), evt.getY()).getLastPathComponent();
+
+    if (target == lastClickTarget &&
+        target == viewer.getSelectedNode() &&
+        lastClickButton == evt.getModifiers() &&
+        (System.currentTimeMillis() - lastClickTime < 2000L))
+    {
+      lastClickTarget = null;
+      return true;
+    }
+    lastClickButton = evt.getModifiers();
+    lastClickTarget = target;
+    lastClickTime = System.currentTimeMillis();
+    return false;
   }
 
   public void mousePressed(MouseEvent evt)  { }
@@ -92,6 +122,7 @@ public class ProjectTreeSelectionListener
    * Receive notification that the tree selection has changed.
    */
   public void valueChanged(TreeSelectionEvent e) {
+    lastClickTarget = null;
     checkState();
   }
   
