@@ -173,16 +173,25 @@ public class SessionSwitcher
 		String currentSession = SessionManager.getInstance().getCurrentSession();
 		final String selectedSession = e.getItem().toString();
 
-		if (!selectedSession.equals(currentSession))
-			SessionManager.getInstance().setCurrentSession(view, selectedSession);
-	}
+		if (selectedSession.equals(currentSession)) return;
+		
+		SessionManager.getInstance().setCurrentSession(view, selectedSession);
+		// The session may not have been changed (eg. if the session change 
+		// was cancelled by the user while closing all open buffers).
+		// Make sure the combo box is correct by calling ...
+		updateSessionComboBox();
+	}  
 
 	// END ItemListener implementation
 
 
-	private void handleSessionChanged(SessionChanged msg)
+	private void handleSessionChanged(SessionChanged msg) {
+		updateSessionComboBox();
+	}
+	
+	private void updateSessionComboBox()
 	{
-		final String newSession = msg.getSessionManager().getCurrentSession();
+		final String newSession = SessionManager.getInstance().getCurrentSession();
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
