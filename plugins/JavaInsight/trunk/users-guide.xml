@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+
+<!-- JavaInsight plugin user's guide -->
+<!-- (C) 2002 Andre Kaplan -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+
+<bookinfo>
+    <title>JavaInsight plugin</title>
+
+    <authorgroup>
+        <author>
+            <firstname>Andr&eacute;</firstname>
+            <surname>Kaplan</surname>
+        </author>
+
+        <author>
+            <firstname>Dirk</firstname>
+            <surname>M&ouml;bius</surname>
+        </author>
+
+        <author>
+            <firstname>Kevin</firstname>
+            <surname>Burton</surname>
+            <othername role="mi">A</othername>
+        </author>
+    </authorgroup>
+
+    <legalnotice>
+        <title>Legal Notice</title>
+
+        <para>
+        Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU Free Documentation License,
+        Version 1.1 or any later version published by the
+        Free Software Foundation; with no
+        <quote>Invariant Sections</quote>,
+        <quote>Front-Cover Texts</quote> or
+        <quote>Back-Cover Texts</quote>,
+        each as defined in the license.
+        A copy of the license can be found in the file
+        <filename>COPYING.DOC.txt</filename> included with jEdit.
+        </para>
+    </legalnotice>
+</bookinfo>
+
+
+<chapter id="introduction">
+    <title>Introduction</title>
+
+    <para>
+    The main purpose of JavaInsight is to view the content of java bytecode
+    (<filename>*.class</filename> files) in a disassembled or decompiled form.
+    </para>
+
+    <para>
+    JavaInsight comes with two external libraries.
+    </para>
+
+    <itemizedlist>
+        <listitem><para>
+        The bytecode disassembling is performed by
+        <emphasis>BCEL</emphasis> (Byte Code Engineering Library) by
+        Markus Dahm (<email>markus.dahm@berlin.de</email>).
+        More information about BCEL can be found at
+        <ulink url="http://bcel.sourceforge.net">http://bcel.sourceforge.net</ulink>.
+        </para></listitem>
+
+        <listitem><para>
+        The decompilation is performed by <emphasis>Jode</emphasis>, a tool written by
+        Jochen Hoenicke (<email>jochen@gnu.org</email>).
+        More information about Jode can be found at
+        <ulink url="http://jode.sourceforge.net">http://jode.sourceforge.net</ulink>.
+        </para></listitem>
+    </itemizedlist>
+
+</chapter>
+
+
+<chapter id="actions">
+    <title>Actions</title>
+
+    <simplesect id="class_tree">
+        <title>... in Class Tree</title>
+
+        <itemizedlist>
+            <listitem>Double-click a class to decompile it with Jode.</listitem>
+
+            <listitem>Right-click to show a popup menu with the following actions:
+            <variablelist>
+                <varlistentry>
+                    <term>Decompile with Jode</term>
+
+                    <listitem><para>
+                    Decompiles the currently selected class with Jode. Only shown,
+                    when a class is selected
+                    </para></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>Add Archives...</term>
+
+                    <listitem><para>
+                    Add a JAR or ZIP file archive to the current classpath.
+                    </para></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>Classpath View</term>
+
+                    <listitem><para>
+                    Switches the tree to classpath view.
+                    </para></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>Package View</term>
+
+                    <listitem><para>
+                    Switches the tree to package view.
+                    </para></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>Flat Packages</term>
+
+                    <listitem><para>
+                    Toggles between flat and hierarchical view of the packages.
+                    </para></listitem>
+                </varlistentry>
+
+            </variablelist>
+            </listitem>
+
+        </itemizedlist>
+
+    </simplesect>
+
+    <simplesect id="file_system_browser">
+        <title>... in File System Browser</title>
+
+        <para>
+        Right-click a file. The popup menu shows the following additional actions:
+        </para>
+
+        <variablelist>
+            <varlistentry>
+                <term>Decompile with Jode</term>
+
+                <listitem><para>
+                Decompiles the currently selected file with Jode. The file should
+                be a class file, otherwise you&#39;ll get an error.
+                </para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+                <term>Show bytecode</term>
+
+                <listitem><para>
+                Show bytecode decompiler output from the BCEL library.
+                </para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+                <term>Show Jasmin output</term>
+
+                <listitem><para>
+                Shows Jasmin assembly output for the currently selected file.
+                </para></listitem>
+            </varlistentry>
+
+        </variablelist>
+
+    </simplesect>
+
+</chapter>
+
+
+</book>
+
