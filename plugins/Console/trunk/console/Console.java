@@ -70,7 +70,6 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		super.addNotify();
 		EditBus.addToBus(this);
-		SystemShell.consoleOpened(this);
 
 		errorSource = new DefaultErrorSource("error parsing");
 	} //}}}
@@ -80,10 +79,15 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
-		SystemShell.consoleClosed(this);
 
 		ErrorSource.unregisterErrorSource(errorSource);
 
+		Iterator iter = shellHash.values().iterator();
+		while(iter.hasNext())
+		{
+			ShellState state = (ShellState)iter.next();
+			state.shell.closeConsole(this);
+		}
 		animation.stop();
 	} //}}}
 
@@ -164,7 +168,6 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		text.setText("");
 		getShell().printInfoMessage(shellState);
-		getShell().printPrompt(this,shellState);
 	} //}}}
 
 	//{{{ getOutput() method
@@ -195,9 +198,8 @@ implements EBComponent, Output, DefaultFocusComponent
 	{
 		// backwards compatibility
 		if(output == this)
-			output = shellState;
-		run(shell,view.getTextArea().getSelectedText(),
-			output,getOutput(),cmd);
+			output = null;
+		run(shell,null,null,null,cmd);
 	} //}}}
 
 	//{{{ run() method
@@ -370,6 +372,11 @@ implements EBComponent, Output, DefaultFocusComponent
 		}
 
 		setShell(shell);
+
+		if(output == null)
+			output = getOutput();
+		if(error == null)
+			error = getOutput();
 
 		this.text.setCaretPosition(this.text.getDocument().getLength());
 
@@ -630,6 +637,7 @@ implements EBComponent, Output, DefaultFocusComponent
 		{
 			this.shell = shell;
 			scrollback = new DefaultStyledDocument();
+			shell.openConsole(Console.this);
 		}
 
 		//{{{ getInputStart() method
@@ -734,13 +742,14 @@ implements EBComponent, Output, DefaultFocusComponent
 			if(source == shellCombo)
 				setShell((String)shellCombo.getSelectedItem());
 			else if(source == runAgain)
-			{
 				runLastCommand();
-			}
 			else if(source == stop)
 				getShell().stop(Console.this);
 			else if(source == clear)
+			{
 				clear();
+				getShell().printPrompt(Console.this,shellState);
+			}
 		}
 	} //}}}
 

@@ -99,6 +99,24 @@ public abstract class Shell
 		this.name = name;
 	} //}}}
 
+	//{{{ openConsole() method
+	/**
+	 * Called when a Console dockable first selects this shell.
+	 * @since Console 4.0.2
+	 */
+	public void openConsole(Console console)
+	{
+	} //}}}
+
+	//{{{ closeConsole() method
+	/**
+	 * Called when a Console dockable is closed.
+	 * @since Console 4.0.2
+	 */
+	public void closeConsole(Console console)
+	{
+	} //}}}
+
 	//{{{ printInfoMessage() method
 	/**
 	 * Prints a 'info' message to the specified console.

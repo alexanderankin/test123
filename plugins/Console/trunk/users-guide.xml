@@ -1260,6 +1260,18 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
    <itemizedlist>
    <listitem><para>Minor change to <classname>EvalAction</classname> for Factor.
    </para></listitem>
+   <listitem><para>Invoking <function>%clear</function> in the system shell would
+   print the prompt twice.
+   </para></listitem>
+   <listitem><para>Passing a path name that is not a directory to <function>%cd</function>
+   now prints an error.
+   </para></listitem>
+   <listitem><para>If running a command caused the current shell to be changed, output would
+   still go to the old shell.
+   </para></listitem>
+   <listitem><para>The input history can be searched by holding down <keycap>Shift</keycap>
+   while pressing <keycap>Up</keycap> or <keycap>Down</keycap>.
+   </para></listitem>
    </itemizedlist>
  </listitem>
 

@@ -139,6 +139,7 @@ console.shell.browse.usage=Usage: %browse [-n|--new-window] [<directory>]\n\
 console.shell.cd.usage=Usage: %cd [<directory>]\n\
 	Sets working directory.
 console.shell.cd.error=The directory {0} does not exist
+console.shell.cd.file={0} is not a directory.
 
 console.shell.clear.usage=Usage: %clear\n\
 	Clears output area.
