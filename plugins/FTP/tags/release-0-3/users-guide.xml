@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+
+<!-- FTP plugin user's guide -->
+<!-- (C) 2001 Slava Pestov -->
+
+<!-- jEdit buffer-local properties: -->
+<!-- :indentSize=1:noTabs=true: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+<bookinfo><title>FTP plugin user's guide</title>
+
+ <authorgroup>
+  <author><firstname>Slava</firstname><surname>Pestov</surname></author>
+ </authorgroup>
+
+ <legalnotice><title>Legal Notice</title>
+  <para>
+   Permission is granted to copy, distribute and/or modify this document
+   under the terms of the GNU Free Documentation License, Version 1.1 or
+   any later version published by the Free Software Foundation; with no
+   <quote>Invariant Sections</quote>, <quote>Front-Cover Texts</quote> or
+   <quote>Back-Cover Texts</quote>, each as defined in the license. A copy of
+   the license can be found in the file <filename>COPYING.DOC.txt</filename>
+   included with jEdit.
+  </para>
+ </legalnotice>
+</bookinfo>
+
+<chapter id="usage"><title>Using the FTP plugin</title>
+
+<para>
+
+The FTP plugin lets you browse directories and edit files on remote servers
+using FTP, the File Transfer Protocol.
+
+</para>
+
+<para>
+
+To connect to an FTP server, either select
+<guimenuitem>Connect to FTP Server</guimenuitem> from the file system
+browser's <guimenu>More</guimenu> menu, or use the
+<guimenuitem>Open from FTP Server</guimenuitem> and
+<guimenuitem>Save to FTP Server</guimenuitem> commands in the
+<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
+
+</para>
+
+<para>
+
+The FTP plugin caches remote directory listings to improve performance.
+Changing files
+from within jEdit will automatically update the cache as necessary. However, if
+changes are made from another program, you will need to clear the cache
+manually using the <guimenuitem>Clear Remote Directory Cache</guimenuitem>
+command in the
+<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
+
+</para>
+
+<para>
+
+The FTP plugin also remembers passwords so you don't have to re-type them.
+Passwords are not
+saved to disk and therefore are forgotten when jEdit exits.
+To force jEdit to forget all passwords while it is running, use the
+<guimenuitem>Forget Remote Passwords</guimenuitem> command in the
+<guimenu>Plugins</guimenu>&gt;<guisubmenu>FTP</guisubmenu> menu.
+
+</para>
+
+</chapter>
+
+<appendix id="changes"><title>Change log</title>
+
+ <itemizedlist>
+
+  <listitem><para><emphasis role="bold">Version 0.3</emphasis>
+   requires jEdit 2.7pre2.</para>
+
+   <itemizedlist>
+    <listitem><para>
+     Soft links were not resolved properly.
+    </para></listitem>
+
+    <listitem><para>
+     File names with spaces didn't work.
+    </para></listitem>
+
+    <listitem><para>
+     Made listing parsing code more compatible with different servers.
+    </para></listitem>
+
+    <listitem><para>
+     <guimenuitem>Open from FTP Server</guimenuitem> command didn't select
+     the newly opened buffer.
+    </para></listitem>
+
+    <listitem><para>
+     File permissions are now preserved when a file is being saved.
+    </para></listitem>
+
+    <listitem><para>
+     Code cleanups
+    </para></listitem>
+
+    <listitem><para>
+     Documentation is now in DocBook-XML format.
+    </para></listitem>
+
+  </itemizedlist>
+
+  </listitem>
+
+ </itemizedlist>
+
+</appendix>
+
+</book>
