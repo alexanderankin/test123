@@ -81,7 +81,11 @@
 		</jar>
 	</target>
 
-	<target name="dist" depends="jar, docs" />
+    <target name="jar-dist" depends="compile, docs" description="Jars the plugin and documentation">
+        <antcall target="jar"/>
+    </target>
+
+	<target name="dist" depends="jar-dist, docs" />
 
 	<target name="docs">
 		<antcall target="docs-${docs-proc.target}"/>
