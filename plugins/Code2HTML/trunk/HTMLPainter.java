@@ -25,7 +25,6 @@ import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.syntax.Token;
-import org.gjt.sp.jedit.syntax.TokenMarker;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 
@@ -60,16 +59,13 @@ public class HTMLPainter {
                            int first, int last
     )   throws IOException
     {
-        Buffer      buffer      = textArea.getBuffer();
-        TokenMarker tokenMarker = textArea.getTokenMarker();
+        Buffer buffer = textArea.getBuffer();
 
         Segment line = new Segment();
         Token tokens = null;
         for (int i = first; i <= last; i++) {
             textArea.getLineText(i, line);
-            if (tokenMarker != null) {
-                tokens = tokenMarker.markTokens(buffer, i).firstToken;
-            }
+            tokens = buffer.markTokens(i).getFirstToken();
             this.position.setPos(0);
             if (tokens == null) {
                 this.paintPlainLine(out, i + 1, line, tokens);

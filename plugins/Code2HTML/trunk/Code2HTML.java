@@ -1,6 +1,6 @@
 /*
  * Code2HTML.java
- * Copyright (c) 2000 Andre Kaplan
+ * Copyright (c) 2000, 2001 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -23,30 +23,26 @@ import java.io.BufferedWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 
+import javax.swing.text.BadLocationException;
 import javax.swing.text.Segment;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EBComponent;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.EditPane;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.msg.BufferUpdate;
-import org.gjt.sp.jedit.msg.EditPaneUpdate;
 
 import org.gjt.sp.jedit.syntax.SyntaxStyle;
 import org.gjt.sp.jedit.syntax.Token;
-import org.gjt.sp.jedit.syntax.TokenMarker;
 
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 
 import org.gjt.sp.util.Log;
 
 
-public class Code2HTML
-    implements EBComponent
-{
+public class Code2HTML {
     private int     wrap;
     private boolean useCSS;
     private boolean showGutter;
@@ -67,57 +63,36 @@ public class Code2HTML
 
 
     public void toHTML(View view, boolean selection) {
-        EditPane      editPane = view.getEditPane();
         JEditTextArea textArea = view.getTextArea();
 
-        int first = 0;
-        int last  = textArea.getLineCount() - 1;
+        int physicalFirst = 0;
+        int physicalLast  = textArea.getLineCount() - 1;
 
-        if (selection && textArea.getSelectionStart() != textArea.getSelectionEnd()) {
-            first = textArea.getSelectionStartLine();
-            last  = textArea.getSelectionEndLine();
+        if (   selection
+            && (textArea.getSelectionStart() != textArea.getSelectionEnd())
+        ) {
+            physicalFirst = textArea.getSelectionStartLine();
+            physicalLast  = textArea.getSelectionEndLine();
         }
 
         try {
             StringWriter   sw  = new StringWriter();
             BufferedWriter out = new BufferedWriter(sw);
 
-            this.toHTML(out, textArea, first, last);
+            this.toHTML(out, textArea, physicalFirst, physicalLast);
             out.flush();
-            this.job = new BufferJob(editPane, sw.toString());
             out.close();
+
+            Buffer newBuffer = jEdit.newFile(view);
+
+            if (newBuffer == null) {
+                new WaitForBuffer(sw.toString());
+            } else {
+                Code2HTML.setBufferText(newBuffer, sw.toString());
+            }
         } catch (IOException ioe) {
             Log.log(Log.ERROR, this, ioe);
-            this.job = null;
             return;
-        }
-
-        EditBus.addToBus(this);
-        Buffer newBuffer = jEdit.newFile(view);
-        if (newBuffer == null) {
-            EditBus.removeFromBus(this);
-            this.job = null;
-        }
-    }
-
-
-    public void handleMessage(EBMessage message) {
-        if (message instanceof BufferUpdate) {
-            BufferUpdate bu = (BufferUpdate) message;
-            if (bu.getWhat() == BufferUpdate.CREATED) {
-                if (this.job != null) {
-                    this.job.setBuffer(bu.getBuffer());
-                }
-            }
-        } else if (message instanceof EditPaneUpdate) {
-            EditPaneUpdate epu = (EditPaneUpdate) message;
-            if (epu.getWhat() == EditPaneUpdate.BUFFER_CHANGED) {
-                if (this.job != null) {
-                    this.job.run();
-                    this.job = null;
-                }
-                EditBus.removeFromBus(this);
-            }
         }
     }
 
@@ -125,8 +100,7 @@ public class Code2HTML
     private void toHTML(Writer out, JEditTextArea textArea,
                         int first, int last)
     {
-        Buffer      buffer      = textArea.getBuffer();
-        TokenMarker tokenMarker = textArea.getTokenMarker();
+        Buffer buffer = textArea.getBuffer();
 
         SyntaxStyle[] styles = textArea.getPainter().getStyles();
         HTMLStyle htmlStyle = null;
@@ -221,36 +195,41 @@ public class Code2HTML
     }
 
 
-    private BufferJob job;
+    private static void setBufferText(Buffer buffer, String text) {
+        try {
+            buffer.beginCompoundEdit();
+            buffer.remove(0, buffer.getLength());
+            buffer.insertString(0, text, null);
+        } catch (BadLocationException ble) {
+            Log.log(Log.ERROR, Code2HTML.class, ble);
+        } finally {
+            buffer.endCompoundEdit();
+        }
+    }
 
 
-    private static class BufferJob
-    {
-        private Buffer   buffer;
-        private EditPane editPane;
-        private String   text;
+    private static class WaitForBuffer implements EBComponent {
+        private String text = null;;
 
 
-        private BufferJob() {}
-
-
-        public BufferJob(EditPane editPane, String text) {
-            this.editPane = editPane;
-            this.text     = text;
+        public WaitForBuffer(String text) {
+            this.text = text;
+            EditBus.addToBus(this);
         }
 
 
-        public void run() {
-            if (this.buffer != this.editPane.getBuffer()) {
-                Log.log(Log.DEBUG, this, "buffer != editPane.getBuffer()");
-            } else {
-                this.editPane.getTextArea().setText(this.text);
+        public void handleMessage(EBMessage message) {
+            if (message instanceof BufferUpdate) {
+                BufferUpdate bu = (BufferUpdate) message;
+                if (bu.getWhat() == BufferUpdate.CREATED) {
+                    EditBus.removeFromBus(this);
+
+                    Buffer buffer = bu.getBuffer();
+                    Log.log(Log.DEBUG, this, "**** Buffer CREATED new file? [" + buffer.isNewFile() + "]");
+                    Log.log(Log.DEBUG, this, "**** Buffer CREATED length:   [" + buffer.getLength() + "]");
+                    Code2HTML.setBufferText(buffer, text);
+                }
             }
-        }
-
-
-        public void setBuffer(Buffer buffer) {
-            this.buffer = buffer;
         }
     }
 }
