@@ -441,6 +441,18 @@
     Only the first 100 parse errors are reported now, this prevents
     gratious slowdowns if for example a file has 1000 parse errors.
    </para></listitem>
+   <listitem><para>
+    Fixed NullPointerException when invoking <guimenuitem>XML Parser</guimenuitem>.
+   </para></listitem>
+   <listitem><para>
+    Tag and entity completion popup now explicitly returns focus to the text
+    area; this seems to be necessary for JDK 1.4 on Windows.
+   </para></listitem>
+   <listitem><para>
+    If you entered a tag or entity that was not in the current buffer's
+    completion list, trying to enter <quote>&gt;</quote>, <quote>;</quote> or a
+    space would not work.
+   </para></listitem>
   </itemizedlist>
 
   </listitem>

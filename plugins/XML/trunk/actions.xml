@@ -60,7 +60,7 @@
 			view.getDockableWindowManager()
 				.addDockableWindow("xml-tree");
 			view.getDockableWindowManager()
-				.getDockableWindow("xml-tree").parse(true);
+				.getDockable("xml-tree").parse(true);
 		</CODE>
 		<IS_SELECTED>
 			return buffer.getBooleanProperty("xml.keystroke-parse");
@@ -86,7 +86,7 @@
 			view.getDockableWindowManager()
 				.addDockableWindow("xml-tree");
 			view.getDockableWindowManager()
-				.getDockableWindow("xml-tree").parse(true);
+				.getDockable("xml-tree").parse(true);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-remove-tags">

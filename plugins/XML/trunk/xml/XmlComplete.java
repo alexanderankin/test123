@@ -76,6 +76,13 @@ class XmlComplete extends JWindow
 	{
 		view.setKeyEventInterceptor(null);
 		super.dispose();
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				view.getTextArea().requestFocus();
+			}
+		});
 	} //}}}
 
 	//{{{ Private members
@@ -142,6 +149,8 @@ class XmlComplete extends JWindow
 		Object obj = list.getSelectedValue();
 		if(obj instanceof XmlListCellRenderer.EmptyListPlaceholder)
 		{
+			textArea.userInput(ch);
+
 			/* do nothing; dispose() is called below. */
 		}
 		else if(obj instanceof ElementDecl)
