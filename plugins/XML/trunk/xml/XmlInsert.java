@@ -377,7 +377,7 @@ public class XmlInsert extends JPanel implements EBComponent
 					String openingTag = "<" + element.name
 						+ element.getRequiredAttributesString()
 						+ (element.empty && !html
-						? "/>" : ">");
+						? XmlActions.getStandaloneEnd() : ">");
 					String closingTag;
 					if(element.empty)
 						closingTag = "";

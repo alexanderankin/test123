@@ -496,6 +496,11 @@
   switched off.</para></listitem>
   <listitem><para>Fixed a problem where the structure tree would be empty on
   Windows.</para></listitem>
+  <listitem><para>Added an option to insert a space before the <quote>/&gt;</quote>
+  in stand-alone tags. In other words, instead of completing like so:</para>
+  <programlisting><![CDATA[<xref linkend="foo"/>]]></programlisting>
+  <para>You get this:</para>
+  <programlisting><![CDATA[<xref linkend="foo" />]]></programlisting></listitem>
   </itemizedlist>
   </listitem>
 
