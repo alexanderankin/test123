@@ -91,8 +91,7 @@ public class Code2HTML {
             wrapper = new LineWrapper(this.wrap);
         }
 
-        this.painter =
-            new HTMLPainter(this.style, this.gutter, expander, wrapper);
+        this.painter = new HTMLPainter(this.style, this.gutter, expander, wrapper);
     }
 
 
@@ -115,7 +114,7 @@ public class Code2HTML {
 
         try {
             BufferedWriter out = new BufferedWriter(sw);
-            this.toHTML(out, this.textArea, physicalFirst, physicalLast);
+            this.toHTML(out, physicalFirst, physicalLast);
 
             out.flush();
             out.close();
@@ -134,19 +133,19 @@ public class Code2HTML {
     }
 
 
-    private void htmlOpen(Writer out, String bufferName, HTMLStyle htmlStyle,
-            HTMLGutter htmlGutter) throws IOException
+    private void htmlOpen(Writer out) throws IOException
     {
+        Buffer buffer = this.textArea.getBuffer();
         out.write(
               "<HTML>\n"
             + "<HEAD>\n"
-            + "<TITLE>" + bufferName + "</TITLE>\n"
+            + "<TITLE>" + buffer.getName() + "</TITLE>\n"
         );
         if (this.useCSS) {
             out.write(
                   "<STYLE TYPE=\"text/css\"><!--\n"
-                + htmlStyle.toCSS()
-                + ((this.showGutter) ? htmlGutter.toCSS() : "")
+                + this.style.toCSS()
+                + ((this.showGutter) ? this.gutter.toCSS() : "")
                 + "-->\n"
                 + "</STYLE>\n"
             );
@@ -159,6 +158,14 @@ public class Code2HTML {
     }
 
 
+    private void htmlText(Writer out, int first, int last) throws IOException {
+        long start = System.currentTimeMillis();
+        this.painter.paintLines(out, this.textArea, first, last);
+        long end = System.currentTimeMillis();
+        Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
+    }
+
+
     private void htmlClose(Writer out) throws IOException {
         out.write("</PRE>");
         out.write(
@@ -168,22 +175,13 @@ public class Code2HTML {
     }
 
 
-    private void toHTML(Writer out, JEditTextArea textArea,
-                        int first, int last)
-    {
-        Buffer buffer = textArea.getBuffer();
-
+    private void toHTML(Writer out, int first, int last) {
         int gutterSize = Integer.toString(last + 1).length();
         this.gutter.setGutterSize(gutterSize);
 
         try {
-            this.htmlOpen(out, buffer.getName(), this.style, this.gutter);
-
-            long start = System.currentTimeMillis();
-            this.painter.paintLines(out, this.textArea, first, last);
-            long end = System.currentTimeMillis();
-            Log.log(Log.DEBUG, this, "Time: " + (end - start) + " ms");
-
+            this.htmlOpen(out);
+            this.htmlText(out, first, last);
             this.htmlClose(out);
         } catch (IOException ioe) {}
     }
