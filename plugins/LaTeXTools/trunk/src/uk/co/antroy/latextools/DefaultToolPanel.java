@@ -19,18 +19,11 @@
 package uk.co.antroy.latextools; 
 
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.EBMessage;
 import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.EditPaneUpdate;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JPanel;
-import java.awt.event.ActionEvent;
-import java.awt.Dimension;
 
 
 public abstract class DefaultToolPanel
@@ -73,7 +66,15 @@ public abstract class DefaultToolPanel
    */
   public void handleMessage(EBMessage message) {
 
-    if (message instanceof EditPaneUpdate) {
+    boolean bufferLoaded = (message instanceof BufferUpdate);
+    if (bufferLoaded){
+      BufferUpdate bu = (BufferUpdate) message;
+      bufferLoaded = bufferLoaded && 
+          (bu.getWhat() == BufferUpdate.CREATED || 
+          bu.getWhat() == BufferUpdate.LOADED);
+    }
+    
+    if ((message instanceof EditPaneUpdate) || bufferLoaded) {
       buffer = view.getBuffer();
       tex = buffer.getPath();
 

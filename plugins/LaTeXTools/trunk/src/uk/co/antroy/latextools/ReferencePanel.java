@@ -126,7 +126,7 @@ public class ReferencePanel
       setLayout(new BorderLayout());
       setPreferredSize(new Dimension(400, 100));
       add(scp, BorderLayout.CENTER);
-      add(createButtonPanel(REFRESH), BorderLayout.SOUTH);
+//      add(createButtonPanel(REFRESH), BorderLayout.SOUTH);
     }
     
     repaint();
