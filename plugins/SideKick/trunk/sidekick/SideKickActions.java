@@ -132,21 +132,6 @@ public class SideKickActions
 				return;
 			}
 		}
-		else
-		{
-			if(mode == COMPLETE_COMMAND)
-			{
-				// if user invokes complete explicitly and
-				// there is more than one completion, we
-				// insert the longest common prefix
-				String longestPrefix = complete.getLongestPrefix();
-				if(longestPrefix != null
-					&& longestPrefix.length() != 0)
-				{
-					textArea.setSelectedText(longestPrefix);
-				}
-			}
-		}
 
 		// show the popup if
 		// - complete has one element and user invoked with delay key

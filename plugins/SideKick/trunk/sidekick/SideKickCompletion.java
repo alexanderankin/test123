@@ -44,11 +44,6 @@ public abstract class SideKickCompletion
 		return items.size();
 	}
 
-	public String getLongestPrefix()
-	{
-		return "";
-	}
-
 	public Object get(int index)
 	{
 		return items.get(index);
