@@ -301,6 +301,16 @@
     <itemizedlist>
       <listitem>
         <formalpara>
+          <title>Version 0.6</title>
+
+          <para />
+        </formalpara>
+
+        <para>More stuff in <ulink url="#PopupList">PopupList</ulink>.</para>
+      </listitem>
+
+      <listitem>
+        <formalpara>
           <title>Version 0.5</title>
 
           <para />

@@ -2,7 +2,7 @@
 
 plugin.CommonControlsPlugin.name=Common Controls
 plugin.CommonControlsPlugin.author=Sergey V. Udaltsov
-plugin.CommonControlsPlugin.version=0.5
+plugin.CommonControlsPlugin.version=0.6
 plugin.CommonControlsPlugin.docs=users-guide.html
 plugin.CommonControlsPlugin.jars=kappalayout.jar
 
