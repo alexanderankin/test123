@@ -33,11 +33,12 @@ import sql.serverTypes.ComplexVFS;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 á×ÇÕÓÔ 2001 Ç.
+ * @created    12 Ð¤ÐµÐ²Ñ€Ð°Ð»ÑŒ 2003 Ð³.
  */
 public class CodeObjectType implements ComplexVFS.ObjectType
 {
   protected String typeString;
+  protected String statementPurpose;
 
 
   /**
@@ -48,7 +49,20 @@ public class CodeObjectType implements ComplexVFS.ObjectType
    */
   public CodeObjectType( String typeString )
   {
+    this( typeString, "selectCodeObjectsInSchema" );
+  }
+
+
+  /**
+   *Constructor for the CodeObjectType object
+   *
+   * @param  typeString        Description of Parameter
+   * @param  statementPurpose  Description of Parameter
+   */
+  public CodeObjectType( String typeString, String statementPurpose )
+  {
     this.typeString = typeString;
+    this.statementPurpose = statementPurpose;
   }
 
 
@@ -99,7 +113,7 @@ public class CodeObjectType implements ComplexVFS.ObjectType
    */
   public String getStatementPurpose()
   {
-    return "selectCodeObjectsInSchema";
+    return statementPurpose;
   }
 
 
