@@ -267,6 +267,14 @@ public class VPTProject extends VPTNode {
 		canonicalFiles.put(path, file);
 	} //}}}
 
+	//{{{ removeAllChildren()
+	/** Removes all children from the project, and unregisters all files. */
+	public void removeAllChildren() {
+		files.clear();
+		canonicalFiles.clear();
+		super.removeAllChildren();
+	} //}}}
+	
 	//{{{ unregisterFile(VPTFile) method
 	/** Unegister a file from the project. */
 	public void unregisterFile(VPTFile file) {
