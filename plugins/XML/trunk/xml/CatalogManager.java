@@ -86,15 +86,21 @@ public class CatalogManager
 			|| newSystemId.startsWith("jeditresource:")))
 		{
 			final String _newSystemId = newSystemId;
-			final String[] inputSystemId = new String[1];
+			// use a final array to pass a mutable value from the
+			// invokeAndWait() call
+			final boolean[] ok = new boolean[1];
 			try
 			{
 				SwingUtilities.invokeAndWait(new Runnable()
 				{
 					public void run()
 					{
-						inputSystemId[0] = showUnknownDTDDialog(
-							jEdit.getActiveView(),_newSystemId);
+						if(showDownloadDTDDialog(
+							jEdit.getActiveView(),
+							_newSystemId))
+						{
+							ok[0] = true;
+						}
 					}
 				});
 			}
@@ -103,17 +109,24 @@ public class CatalogManager
 				Log.log(Log.ERROR,CatalogManager.class,e);
 			}
 
-			newSystemId = inputSystemId[0];
+			if(!ok[0])
+				throw new IOException(jEdit.getProperty("xml.network-error"));
+
+			URL url = copyToLocalFile(new URL(newSystemId)).toURL();
+			InputSource source = new InputSource(newSystemId);
+			source.setByteStream(url.openStream());
+			return source;
 		}
-
-		if(newSystemId == null)
+		else if(newSystemId == null)
 			return null;
-
-		// Xerces has a bug where an InputSource without a byte
-		// stream is loaded incorrectly.
-		InputSource source = new InputSource(newSystemId);
-		source.setByteStream(new URL(newSystemId).openStream());
-		return source;
+		else
+		{
+			// Xerces has a bug where an InputSource without a byte
+			// stream is loaded incorrectly.
+			InputSource source = new InputSource(newSystemId);
+			source.setByteStream(new URL(newSystemId).openStream());
+			return source;
+		}
 	} //}}}
 
 	//{{{ addUserDTD() method
@@ -288,10 +301,12 @@ public class CatalogManager
 		return uri;
 	} //}}}
 
-	//{{{ showUnknownDTDDialog() method
-	private static String showUnknownDTDDialog(Component comp, String systemId)
+	//{{{ showDownloadDTDDialog() method
+	private static boolean showDownloadDTDDialog(Component comp, String systemId)
 	{
-		return null;
+		return (GUIUtilities.confirm(comp,"xml.download-dtd",
+			new String[] { systemId },JOptionPane.YES_NO_OPTION,
+			JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION);
 	} //}}}
 
 	//{{{ load() method
