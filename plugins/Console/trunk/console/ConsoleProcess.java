@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2000, 2001 Slava Pestov
+ * Copyright (C) 1999, 2003 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,7 +36,8 @@ import errorlist.*;
 class ConsoleProcess
 {
 	//{{{ ConsoleProcess constructor
-	ConsoleProcess(Console console, Output output, String[] args, String[] env,
+	ConsoleProcess(Console console, String input, Output output,
+		Output error, String[] args, String[] env,
 		boolean foreground)
 	{
 		SystemShell.ConsoleState consoleState
@@ -46,6 +47,7 @@ class ConsoleProcess
 		this.env = env;
 		this.currentDirectory = consoleState.currentDirectory;
 
+		// for parsing error messages from 'make'
 		currentDirectoryStack = new Stack();
 		currentDirectoryStack.push(currentDirectory);
 
@@ -55,6 +57,7 @@ class ConsoleProcess
 
 			this.console = console;
 			this.output = output;
+			this.error = error;
 			this.consoleState = consoleState;
 
 			ConsoleProcess runningProc = consoleState.process;
@@ -68,15 +71,17 @@ class ConsoleProcess
 		{
 			process = ProcessRunner.getProcessRunner()
 				.exec(args,env,currentDirectory);
+			stdin = new InputThread(input,process.getOutputStream());
+			stdin.start();
 			stdout = new StreamThread(process.getInputStream());
-			stderr = new StreamThread(process.getErrorStream());
 			stdout.start();
+			stderr = new StreamThread(process.getErrorStream());
 			stderr.start();
 		}
 		catch(Exception e)
 		{
 			String[] pp = { e.toString() };
-			console.print(console.getErrorColor(),
+			error.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.error",pp));
 			output.commandDone();
 			stop();
@@ -89,9 +94,10 @@ class ConsoleProcess
 		if(console != null)
 		{
 			Object[] pp = { args[0] };
-			console.print(console.getErrorColor(),
+			error.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.detached",pp));
 			output.commandDone();
+			error.commandDone();
 		}
 
 		consoleState.process = null;
@@ -106,19 +112,21 @@ class ConsoleProcess
 		{
 			process.destroy();
 			process = null;
+			stdin.abort();
 			stdout.abort();
 			stderr.abort();
 
 			if(console != null)
 			{
 				Object[] pp = { args[0] };
-				console.print(console.getErrorColor(),
+				error.print(console.getErrorColor(),
 					jEdit.getProperty("console.shell.killed",pp));
 			}
 
 			ConsolePlugin.finishErrorParsing(console.getErrorSource());
 
 			output.commandDone();
+			error.commandDone();
 		}
 
 		if(consoleState != null)
@@ -135,6 +143,7 @@ class ConsoleProcess
 
 	private static RE makeEntering, makeLeaving;
 
+	//{{{ Class initializer
 	static
 	{
 		try
@@ -148,7 +157,7 @@ class ConsoleProcess
 		{
 			Log.log(Log.ERROR,ConsoleProcess.class,re);
 		}
-	}
+	} //}}}
 
 	//{{{ Instance variables
 	private SystemShell.ConsoleState consoleState;
@@ -156,9 +165,11 @@ class ConsoleProcess
 	private Stack currentDirectoryStack; // for make
 	private Console console;
 	private Output output;
+	private Output error;
 	private String[] args;
 	private String[] env;
 	private Process process;
+	private InputThread stdin;
 	private StreamThread stdout;
 	private StreamThread stderr;
 	private int threadDoneCount;
@@ -169,7 +180,7 @@ class ConsoleProcess
 	private synchronized void threadDone()
 	{
 		threadDoneCount++;
-		if(process != null && threadDoneCount == 2)
+		if(process != null && threadDoneCount == 3)
 		{
 			try
 			{
@@ -181,21 +192,22 @@ class ConsoleProcess
 				return;
 			}
 
-			if(console != null && output != null)
+			if(console != null && output != null && error != null)
 			{
 				Object[] pp = { args[0], new Integer(exitCode) };
 
 				String msg = jEdit.getProperty("console.shell.exited",pp);
 
 				if(exitCode == 0)
-					console.print(console.getInfoColor(),msg);
+					error.print(console.getInfoColor(),msg);
 				else
-					console.print(console.getErrorColor(),msg);
+					error.print(console.getErrorColor(),msg);
 
 				ConsolePlugin.finishErrorParsing(
 					console.getErrorSource());
 
 				output.commandDone();
+				error.commandDone();
 			}
 
 			process = null;
@@ -208,6 +220,79 @@ class ConsoleProcess
 	} //}}}
 
 	//}}}
+
+	//{{{ InputThread class
+	class InputThread extends Thread
+	{
+		boolean aborted;
+		String input;
+		OutputStream outputStream;
+		String lineSep;
+
+		//{{{ StreamThread constructor
+		InputThread(String input, OutputStream outputStream)
+		{
+			setName("" + InputThread.class + args);
+			this.input = input;
+			this.outputStream = outputStream;
+			lineSep = System.getProperty("line.separator");
+		} //}}}
+
+		//{{{ run() method
+		public void run()
+		{
+
+			try
+			{
+				if(input != null)
+				{
+					BufferedWriter out = new BufferedWriter(
+						new OutputStreamWriter(outputStream));
+					for(int i = 0; i < input.length(); i++)
+					{
+						char ch = input.charAt(i);
+						if(ch == '\n')
+							out.write(lineSep);
+						else
+							out.write(ch);
+					}
+				}
+				out.close();
+			}
+			catch(Exception e)
+			{
+				if(!aborted)
+				{
+					Log.log(Log.ERROR,this,e);
+
+					if(console != null)
+					{
+						String[] args = { e.toString() };
+						error.print(console.getErrorColor(),
+							jEdit.getProperty(
+							"console.shell.error",args));
+					}
+				}
+			}
+			finally
+			{
+				threadDone();
+			}
+		} //}}}
+	
+		//{{{ abort() method
+		public void abort()
+		{
+			aborted = true;
+			try
+			{
+				outputStream.close();
+			}
+			catch(IOException io)
+			{
+			}
+		} //}}}
+	} //}}}
 
 	//{{{ StreamThread class
 	class StreamThread extends Thread
@@ -300,7 +385,7 @@ class ConsoleProcess
 					if(console != null)
 					{
 						String[] args = { e.toString() };
-						console.print(console.getErrorColor(),
+						error.print(console.getErrorColor(),
 							jEdit.getProperty(
 							"console.shell.error",args));
 					}

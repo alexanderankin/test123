@@ -243,9 +243,11 @@ implements EBComponent, Output
 		HistoryModel.getModel("console." + shell.getName()).addItem(cmd);
 		print(infoColor,"> " + cmd);
 
+		String input = view.getTextArea().getSelectedText();
+
 		try
 		{
-			shell.execute(this,output,cmd);
+			shell.execute(this,input,output,this,cmd);
 		}
 		catch(RuntimeException e)
 		{

@@ -80,7 +80,7 @@ public abstract class SystemShellBuiltIn
 	} //}}}
 
 	//{{{ execute() method
-	public void execute(Console console, Output output, Vector args)
+	public void execute(Console console, Output output, Output error, Vector args)
 	{
 		Hashtable values = new Hashtable();
 		Option[] options = getOptions();
@@ -94,7 +94,7 @@ public abstract class SystemShellBuiltIn
 				break;
 			else if(arg.equals("--help"))
 			{
-				console.print(null,help);
+				error.print(null,help);
 				return;
 			} //}}}
 			//{{{ long option
@@ -129,7 +129,7 @@ public abstract class SystemShellBuiltIn
 				if(option == null)
 				{
 					String[] pp = { longName };
-					console.print(console.getErrorColor(),
+					error.print(console.getErrorColor(),
 						jEdit.getProperty("console.shell.bad-opt-long",pp));
 					return;
 				}
@@ -139,7 +139,7 @@ public abstract class SystemShellBuiltIn
 					if(no)
 					{
 						String[] pp = { longName };
-						console.print(console.getErrorColor(),
+						error.print(console.getErrorColor(),
 							jEdit.getProperty("console.shell.no-arg-long",pp));
 						return;
 					}
@@ -147,7 +147,7 @@ public abstract class SystemShellBuiltIn
 					if(i == args.size() - 1)
 					{
 						String[] pp = { longName };
-						console.print(console.getErrorColor(),
+						error.print(console.getErrorColor(),
 							jEdit.getProperty("console.shell.need-arg-long",pp));
 						return;
 					}
@@ -191,7 +191,7 @@ public abstract class SystemShellBuiltIn
 					if(option == null)
 					{
 						String[] pp = { String.valueOf(shortName) };
-						console.print(console.getErrorColor(),
+						error.print(console.getErrorColor(),
 							jEdit.getProperty("console.shell.bad-opt",pp));
 						return;
 					}
@@ -209,17 +209,17 @@ public abstract class SystemShellBuiltIn
 		if(args.size() < getMinArguments()
 			|| (max != -1 && args.size() > getMaxArguments()))
 		{
-			console.print(console.getErrorColor(),
+			error.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.bad-args"));
 			return;
 		}
 
-		execute(console,output,args,values);
+		execute(console,output,error,args,values);
 	} //}}}
 
 	//{{{ execute() method
 	protected abstract void execute(Console console, Output output,
-		Vector args, Hashtable values); //}}}
+		Output error, Vector args, Hashtable values); //}}}
 
 	//}}}
 
@@ -243,8 +243,8 @@ public abstract class SystemShellBuiltIn
 			return 2;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
 			aliases.put(args.elementAt(0),args.elementAt(1));
@@ -264,8 +264,8 @@ public abstract class SystemShellBuiltIn
 			return 0;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
 			Vector returnValue = new Vector();
@@ -293,8 +293,8 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			String currentDirectory = SystemShell.getConsoleState(
 				console).currentDirectory;
@@ -327,8 +327,8 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
 
@@ -367,8 +367,8 @@ public abstract class SystemShellBuiltIn
 			return 0;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			console.clear();
 		}
@@ -382,15 +382,15 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
 
 			ConsoleProcess process = state.process;
 			if(process == null)
 			{
-				console.print(console.getErrorColor(),
+				error.print(console.getErrorColor(),
 					jEdit.getProperty("console.shell.noproc"));
 				return;
 			}
@@ -407,8 +407,8 @@ public abstract class SystemShellBuiltIn
 			return 0;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			Stack directoryStack = SystemShell.getConsoleState(console)
 				.directoryStack;
@@ -433,8 +433,8 @@ public abstract class SystemShellBuiltIn
 			return -1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			for(int i = 0; i < args.size(); i++)
 			{
@@ -451,8 +451,8 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			String currentDirectory = SystemShell.getConsoleState(
 				console).currentDirectory;
@@ -478,8 +478,8 @@ public abstract class SystemShellBuiltIn
 			return 0;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
 			Vector returnValue = new Vector();
@@ -514,8 +514,8 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			if(args.size() == 1)
 			{
@@ -526,7 +526,7 @@ public abstract class SystemShellBuiltIn
 					+ cmd + ".usage");
 				// if command name specified, print its usage
 				if(help != null)
-					console.print(null,help);
+					error.print(null,help);
 				else
 					new HelpViewer(cmd);
 			}
@@ -543,15 +543,15 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
 
 			ConsoleProcess process = state.process;
 			if(process == null)
 			{
-				console.print(console.getErrorColor(),
+				error.print(console.getErrorColor(),
 					jEdit.getProperty("console.shell.noproc"));
 				return;
 			}
@@ -568,15 +568,15 @@ public abstract class SystemShellBuiltIn
 			return 0;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
 			Stack directoryStack = state.directoryStack;
 
 			if(directoryStack.isEmpty())
 			{
-				console.print(console.getErrorColor(),
+				error.print(console.getErrorColor(),
 					jEdit.getProperty("console.shell.popd.error"));
 				return;
 			}
@@ -594,8 +594,8 @@ public abstract class SystemShellBuiltIn
 			return 0;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			SystemShell.ConsoleState state = SystemShell.getConsoleState(console);
 			Stack directoryStack = state.directoryStack;
@@ -603,7 +603,7 @@ public abstract class SystemShellBuiltIn
 			directoryStack.push(state.currentDirectory);
 
 			String[] pp = { state.currentDirectory };
-			console.print(null,jEdit.getProperty("console.shell.pushd.ok",pp));
+			error.print(null,jEdit.getProperty("console.shell.pushd.ok",pp));
 		}
 	} //}}}
 
@@ -620,8 +620,8 @@ public abstract class SystemShellBuiltIn
 			return 0;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			output.print(null,SystemShell.getConsoleState(console)
 				.currentDirectory);
@@ -636,8 +636,8 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			String currentDirectory = SystemShell.getConsoleState(
 				console).currentDirectory;
@@ -666,8 +666,8 @@ public abstract class SystemShellBuiltIn
 			return 2;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
 			variables.put(args.elementAt(0),args.elementAt(1));
@@ -687,8 +687,8 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			Hashtable aliases = ConsolePlugin.SYSTEM_SHELL.getAliases();
 			aliases.remove(args.elementAt(0));
@@ -708,8 +708,8 @@ public abstract class SystemShellBuiltIn
 			return 1;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			Hashtable variables = ConsolePlugin.SYSTEM_SHELL.getVariables();
 			variables.remove(args.elementAt(0));
@@ -729,8 +729,8 @@ public abstract class SystemShellBuiltIn
 			return 0;
 		}
 
-		public void execute(Console console, Output output, Vector args,
-			Hashtable values)
+		public void execute(Console console, Output output,
+			Output error, Vector args, Hashtable values)
 		{
 			output.print(null,jEdit.getProperty(
 				"plugin.console.ConsolePlugin.version"));

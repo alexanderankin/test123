@@ -48,7 +48,8 @@ public class ConsoleBeanShell extends Shell
 	} //}}}
 
 	//{{{ execute() method
-	public void execute(Console console, Output output, String command)
+	public void execute(Console console, String input, Output output,
+		Output error, String command)
 	{
 		View view = console.getView();
 
@@ -75,10 +76,11 @@ public class ConsoleBeanShell extends Shell
 		{
 			StringWriter s = new StringWriter();
 			e.printStackTrace(new PrintWriter(s));
-			output.print(console.getErrorColor(),s.toString());
+			error.print(console.getErrorColor(),s.toString());
 		}
 
 		output.commandDone();
+		error.commandDone();
 	} //}}}
 
 	//{{{ stop() method

@@ -45,12 +45,14 @@ public class SystemShell extends Shell
 	} //}}}
 
 	//{{{ execute() method
-	public void execute(Console console, Output output, String command)
+	public void execute(Console console, String input, Output output,
+		Output error, String command)
 	{
 		// comments, for possible future scripting support
 		if(command.startsWith("#"))
 		{
 			output.commandDone();
+			error.commandDone();
 			return;
 		}
 
@@ -62,6 +64,7 @@ public class SystemShell extends Shell
 		if(args == null)
 		{
 			output.commandDone();
+			error.commandDone();
 			return;
 		}
 
@@ -72,8 +75,9 @@ public class SystemShell extends Shell
 		{
 			// a console built-in
 			args.removeElementAt(0);
-			executeBuiltIn(console,output,commandName,args);
+			executeBuiltIn(console,output,error,commandName,args);
 			output.commandDone();
+			error.commandDone();
 		}
 		else
 		{
@@ -90,8 +94,9 @@ public class SystemShell extends Shell
 
 			if(new File(commandName).isDirectory() && args.size() == 1)
 			{
-				executeBuiltIn(console,output,"%cd",args);
+				executeBuiltIn(console,output,error,"%cd",args);
 				output.commandDone();
+				error.commandDone();
 			}
 			else
 			{
@@ -129,7 +134,8 @@ public class SystemShell extends Shell
 				else
 					env = null;
 
-				new ConsoleProcess(console,output,_args,env,foreground);
+				new ConsoleProcess(console,input,output,error,
+					_args,env,foreground);
 			}
 		}
 	} //}}}
@@ -697,7 +703,8 @@ loop:			for(;;)
 	} //}}}
 
 	//{{{ executeBuiltIn() method
-	public void executeBuiltIn(Console console, Output output, String command, Vector args)
+	public void executeBuiltIn(Console console, Output output, Output error,
+		String command, Vector args)
 	{
 		SystemShellBuiltIn builtIn = (SystemShellBuiltIn)commands.get(command);
 		if(builtIn == null)
@@ -708,7 +715,7 @@ loop:			for(;;)
 		}
 		else
 		{
-			builtIn.execute(console,output,args);
+			builtIn.execute(console,output,error,args);
 		}
 	} //}}}
 
