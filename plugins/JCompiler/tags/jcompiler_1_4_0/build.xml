@@ -1,0 +1,71 @@
+<project name="debugger" default="dist" basedir=".">
+
+	<property name="src.dir" value="."/>
+	<property name="build.dir" value="build"/>
+	<property name="install.dir"  value=".."/>
+	<property name="jedit.dir"  value="../.."/>
+	<property name="doc.dir"  value="doc"/>
+
+
+	<path id="project.class.path">
+		<pathelement location="${jedit.dir}/jedit.jar"/>
+		<pathelement location="${install.dir}/ErrorList.jar"/>
+		<pathelement location="${install.dir}/Console.jar"/>
+		<pathelement location="."/>
+	</path>
+
+
+	<target name="init">
+		<mkdir dir="${build.dir}"/>
+	</target>
+
+
+	<target name="compile" depends="init">
+		<javac
+			srcdir="${src.dir}"
+			destdir="${build.dir}"
+			debug="on"
+			deprecation="on"
+			classpathref="project.class.path"
+		/>
+	</target>
+
+
+	<target name="dist" depends="compile">
+		<mkdir dir="${install.dir}"/>
+		<jar jarfile="${install.dir}/JCompiler.jar">
+			<fileset dir="${build.dir}"/>
+			<fileset dir="${src.dir}">
+				<include name="actions.xml"/>
+				<include name="JCompilerPlugin.props"/>
+				<include name="index.html"/>
+				<include name="**/*.gif"/>
+			</fileset>
+		</jar>
+	</target>
+
+	<target name="clean">
+		<delete dir="${build.dir}"/>
+		<delete>
+			<fileset dir="." includes="**/*~" defaultexcludes="no"/>
+			<fileset dir="." includes="**/*.class"/>
+		</delete>
+	</target>
+
+
+	<target name="javadoc">
+		<delete dir="${doc.dir}"/>
+		<mkdir dir="${doc.dir}"/>
+		<javadoc
+			packagenames="buildtools.*,jcompiler.*"
+			sourcepath="${src.dir}"
+			classpathref="project.class.path"
+			destdir="${doc.dir}"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="JCompiler Plugin API reference"
+		/>
+	</target>
+
+</project>
