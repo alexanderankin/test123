@@ -4,24 +4,31 @@
 
 <!-- The element list was pulled from the May 2, 2001 XML Schema XSD spec -->
 <!-- Contributed by Tom Gutwin  Nov. 30, 2001-->
+<!-- Updated by Tom Gutwin  Apr. 13, 2002-->
 
 <dtd html='false'>
 
 <element-list>
 
-<element name='xsd:all' html='false'>
+<element name='xsd:all' 
+         html='false'
+         content='(xsd:annotation|xsd:element)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='maxOccurs' type='(1)' value='1'/>
    <attribute name='minOccurs' type='(0|1)' value='1'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:annotation' html='false'>
+<element name='xsd:annotation' 
+         html='false'
+         content='(xsd:appinfo|xsd:documentation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:any' html='false'>
+<element name='xsd:any' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='maxOccurs' type='(xsd:nonNegativeInteger|unbounded)' value='1'/>
    <attribute name='minOccurs' type='xsd:nonNegativeInteger' value='1'/>
@@ -30,7 +37,9 @@
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:anyAttribute' html='false'>
+<element name='xsd:anyAttribute' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='namespace' type='(##any|##other|xsd:anyURI|##targetNamespace|##local)' value='##any'/>
    <attribute name='processContents' type='(skip|lax|strict)' value='strict'/>
@@ -41,7 +50,9 @@
    <attribute name='source' type='xsd:anyURI'/>
 </element>
 
-<element name='xsd:attribute' html='false'>
+<element name='xsd:attribute' 
+         html='false'
+         content='(xsd:annotation|xsd:simpleType)'>
    <attribute name='default' type='xsd:string'/>
    <attribute name='fixed' type='xsd:string'/>
    <attribute name='form' type='(qualified|unqualified)'/>
@@ -53,21 +64,35 @@
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:attributeGroup' html='false'>
+<element name='xsd:attributeGroup' 
+         html='false'
+         content='(xsd:annotation|xsd:attribute|xsd:attributeGroup|xsd:anyAttribute)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='ref' type='xsd:QName'/>
    <attribute name='name' type='xsd:NCName'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:choice' html='false'>
+<element name='xsd:choice' 
+         html='false'
+         content='xsd:annotation|xsd:element|xsd:group|xsd:choice|xsd:sequence|xsd:any'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='maxOccurs' type='(xsd:nonNegativeInteger|unbounded)' value='1'/>
    <attribute name='minOccurs' type='(xsd:nonNegativeInteger|unbounded)' value='1'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:complexType' html='false'>
+<element name='xsd:complexContent' 
+         html='false'
+         content='xsd:annotation|xsd:restriction|xsd:extension'>
+   <attribute name='id' type='xsd:ID'/>
+   <attribute name='mixed' type='xsd:boolean'/>
+   <attribute name='otherAttribute' type='xsd:string' value=''/>
+</element>
+
+<element name='xsd:complexType' 
+         html='false'
+         content='xsd:annotation|xsd:simpleContent|xsd:complexContent|xsd:group|xsd:all|xsd:choice|xsd:sequence|xsd:attribute|xsd:attributeGroup|xsd:anyAttribute'>
    <attribute name='abstract' type='xsd:boolean' value='false'/>
    <attribute name='block'  type='(#all|extension|restriction)'/>
    <attribute name='final'  type='(#all|extension|restriction)'/>
@@ -82,7 +107,9 @@
    <attribute name='xml:lang' type='xml:lang'/>
 </element>
 
-<element name='xsd:element' html='false'>
+<element name='xsd:element'
+         html='false'
+         content='xsd:annotation|xsd:simpleType|xsd:complexType|xsd:unique|xsd:key|xsd:keyRef'>
    <attribute name='abstract' type='xsd:boolean' value='false'/>
    <attribute name='block' type='(#all|extension|restriction|substitution)'/>
    <attribute name='default' type='xsd:string'/>
@@ -100,32 +127,42 @@
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:enumeration' html='false'>
+<element name='xsd:enumeration'
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='anySimpleType'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:extension' html='false'>
+<element name='xsd:extension'
+         html='false'
+         content='(xsd:annotation|xsd:group|xsd:all|xsd:choice|xsd:sequence|xsd:attribute|xsd:attributeGroup|xsd:anyAttribute)'>
    <attribute name='base' type='xsd:QName'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:field' html='false'>
+<element name='xsd:field' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='xpath' type='xsd:token'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:fractionDigits' html='false'>
+<element name='xsd:fractionDigits' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='fixed' type='xsd:boolean' value='false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='xsd:nonNegativeInteger'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:group' html='false'>
+<element name='xsd:group' 
+         html='false'
+         content='(xsd:annotation|xsd:all|xsd:choice|xsd:sequence)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='maxOccurs' type='(xsd:nonNegativeInteger|unbounded)' value='1'/>
    <attribute name='minOccurs' type='xsd:nonNegativeInteger' value='1'/>
@@ -133,81 +170,105 @@
    <attribute name='ref' type='xsd:QName'/>
 </element>
 
-<element name='xsd:import' html='false'>
+<element name='xsd:import' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='namespace' type='xsd:anyURI'/>
    <attribute name='schemaLocation' type='xsd:anyURI'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:include' html='false'>
+<element name='xsd:include' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='schemaLocation' type='xsd:anyURI'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:key' html='false'>
+<element name='xsd:key' 
+         html='false'
+         content='(xsd:annotation|xsd:selector|xsd:field)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='name' type='xsd:NCName'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:keyref' html='false'>
+<element name='xsd:keyref' 
+         html='false'
+         content='(xsd:annotation|xsd:selector|xsd:field)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='name' type='xsd:NCName'/>
    <attribute name='refer' type='xsd:QName'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:length' html='false'>
+<element name='xsd:length' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='fixed' type='xsd:boolean' value='false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='xsd:nonNegativeInteger'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:list' html='false'>
+<element name='xsd:list' 
+         html='false'
+         content='(xsd:annotation|xsd:simpleType)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='itemType' type='xsd:QName'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:maxInclusive' html='false'>
+<element name='xsd:maxInclusive' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='fixed' type='xsd:boolean' value='false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='anySimpleType'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:maxLength' html='false'>
+<element name='xsd:maxLength' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='fixed' type='xsd:boolean' value='false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='xsd:nonNegativeInteger'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:minExclusive' html='false'>
+<element name='xsd:minExclusive' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='fixed' type='xsd:boolean' value='false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='anySimpleType'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:minInclusive' html='false'>
+<element name='xsd:minInclusive' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='fixed' type='xsd:boolean' value='false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='anySimpleType'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:minLength' html='false'>
+<element name='xsd:minLength' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='fixed' type='xsd:boolean' value='false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='xsd:nonNegativeInteger'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:notation' html='false'>
+<element name='xsd:notation' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='name' type='xsd:NCName'/>
    <attribute name='public' type='xsd:token'/>
@@ -215,25 +276,33 @@
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:pattern' html='false'>
+<element name='xsd:pattern' 
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='anySimpleType'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:redefine' html='false'>
+<element name='xsd:redefine' 
+         html='false'
+         content='(xsd:annotation|xsd:simpleType|xsd:complexType|xsd:group|xsd:attributeGroup)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='schemaLocation' type='xsd:anyURI'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:restriction' html='false'>
+<element name='xsd:restriction'
+         html='false'
+         content='(xsd:annotation|xsd:group|xsd:all|xsd:choice|xsd:sequence|xsd:attribute|xsd:attributeGroup|xsd:anyAttribute|xsd:simpleType|xsd:minExclusive|xsd:minInclusive|xsd:maxExclusive|xsd:maxInclusive|xsd:totalDigits|xsd:fractionDigits|xsd:length|xsd:minLength|xsd:maxLength|xsd:enumeration|xsd:whiteSpace|xsd:pattern)'>
    <attribute name='base' type='xsd:QName'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:schema' html='false'>
+<element name='xsd:schema'
+         html='false'
+         content='(xsd:include|xsd:import|xsd:redefine|xsd:annotation|xsd:simpleType|xsd:complexType|xsd:group|xsd:attributeGroup|xsd:element|xsd:attribute)'>
    <attribute name='attributeFormDefault' type='(qualified|unqualified)' value='unqualified'/>
    <attribute name='blockDefault' type='(#all|extension|restriction|substitution)' value=''/>
    <attribute name='elementFormDefault' type='(qualified|unqualified)' value='unqualified'/>
@@ -245,51 +314,67 @@
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:selector' html='false'>
+<element name='xsd:selector'
+         html='false'
+         content='(xsd:annotation)'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='xpath' type='xsd:token'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:sequence' html='false'>
+<element name='xsd:sequence'
+         html='false'
+         content='xsd:annotation|xsd:element|xsd:group|xsd:choice|xsd:sequence|xsd:any'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='maxOccurs' type='xsd:nonNegativeInteger|unbounded)' value='1'/>
    <attribute name='minOccurs' type='xsd:nonNegativeInteger' value='1'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:simpleContent' html='false'>
+<element name='xsd:simpleContent'
+         html='false'
+         content='xsd:annotation|xsd:restriction|xsd:extension'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:simpleType' html='false'>
+<element name='xsd:simpleType'
+         html='false'
+         content='xsd:annotation|xsd:list|xsd:union'>
    <attribute name='final' type='(#all|list|union|restriction)'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='name' type='xsd:NCName'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:totalDigits' html='false'>
+<element name='xsd:totalDigits'
+         html='false'
+         content='xsd:annotation'>
    <attribute name='fixed' type='xsd:boolean : false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='xsd:positiveInteger'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:union' html='false'>
+<element name='xsd:union'
+         html='false'
+         content='xsd:annotation|xsd:simpleType'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='memberTypes' type='list of xsd:QName'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:unique' html='false'>
+<element name='xsd:unique'
+         html='false'
+         content='xsd:annotation|xsd:selector|xsd:field'>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='name' type='xsd:NCName'/>
    <attribute name='otherAttribute' type='xsd:string' value=''/>
 </element>
 
-<element name='xsd:whiteSpace' html='false'>
+<element name='xsd:whiteSpace'
+         html='false'
+         content='xsd:annotation'>
    <attribute name='fixed' type='xsd:boolean' value='false'/>
    <attribute name='id' type='xsd:ID'/>
    <attribute name='value' type='(preserve|replace|collapse)'/>
