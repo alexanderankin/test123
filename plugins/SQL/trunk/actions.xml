@@ -29,6 +29,16 @@
       return jEdit.getBooleanProperty( "sql.preprocessors.VariableSubstitutor.enabled" );
     </IS_SELECTED>
   </ACTION>
+  <ACTION NAME="sql.preprocessors.SpecialCommentRemover">
+    <CODE>
+      jEdit.setBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled",
+        !jEdit.getBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled" ) );
+      sql.SqlUtils.resetPreprocessors();
+    </CODE>
+    <IS_SELECTED>
+      return jEdit.getBooleanProperty( "sql.preprocessors.SpecialCommentRemover.enabled" );
+    </IS_SELECTED>
+  </ACTION>
   <ACTION NAME="sql.resultSet">
     <CODE>
       view.getDockableWindowManager()
