@@ -50,6 +50,7 @@ public class VPTFile extends VPTNode {
 	//{{{ Attributes
 
 	private File	file;
+	private String	canPath;
 	private Color	fileTypeColor;
 
 	//}}}
@@ -63,6 +64,7 @@ public class VPTFile extends VPTNode {
 	public VPTFile(File file) {
 		super(VPTNode.FILE, file.getName());
 		this.file = file;
+		this.canPath = null;
 		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
 	}
 
@@ -95,6 +97,7 @@ public class VPTFile extends VPTNode {
 	/** Sets the file associated with this node. */
 	public void setFile(File f) {
 		this.file = f;
+		this.canPath = null;
 		fileTypeColor = VFS.getDefaultColorFor(file.getName());
 		setName(f.getName());
 	} //}}}
@@ -104,13 +107,14 @@ public class VPTFile extends VPTNode {
 	 *	Returns "true" if the node is a file and is currently opened in jEdit.
 	 */
 	public boolean isOpened() {
-		try {
-			return (org.gjt.sp.jedit.jEdit.getBuffer(file.getCanonicalPath()) != null);
-		} catch (IOException ioe) {
-			// shouldn't happen
-			Log.log(Log.ERROR, this, ioe);
-			return false;
+		if (this.canPath == null) {
+			try {
+				this.canPath = file.getCanonicalPath();
+			} catch (IOException ioe) {
+				Log.log(Log.WARNING, this, ioe);
+			}
 		}
+		return (org.gjt.sp.jedit.jEdit.getBuffer(canPath) != null);
 	} //}}}
 
 	//{{{ getIcon(boolean) method
@@ -174,6 +178,12 @@ public class VPTFile extends VPTNode {
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
 		return getFile().getAbsolutePath();
+	} //}}}
+
+	//{{{ getCanonicalPath() method
+	/** Returns the file's canonical path. */
+	public String getCanonicalPath() {
+		return canPath;
 	} //}}}
 
 	//}}}
