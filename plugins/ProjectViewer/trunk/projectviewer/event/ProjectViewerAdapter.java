@@ -25,7 +25,7 @@ package projectviewer.event;
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public class ProjectAdapter implements ProjectViewerListener {
+public class ProjectViewerAdapter implements ProjectViewerListener {
 
 	/** Notifies the changing of the active project. */
 	public void projectLoaded(ProjectViewerEvent evt) { }
