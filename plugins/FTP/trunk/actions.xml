@@ -11,7 +11,13 @@
 
 	<ACTION NAME="forget-passwords">
 		<CODE>
-			ftp.FtpPlugin.forgetPasswords();
+			ftp.ConnectionManager.forgetPasswords();
+		</CODE>
+	</ACTION>
+
+	<ACTION NAME="close-connections">
+		<CODE>
+			ftp.ConnectionManager.closeUnusedConnections();
 		</CODE>
 	</ACTION>
 

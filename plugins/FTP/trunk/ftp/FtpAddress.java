@@ -24,7 +24,6 @@ import org.gjt.sp.jedit.jEdit;
 public class FtpAddress
 {
 	public String host;
-	public String port;
 	public String user;
 	public String path;
 
@@ -62,21 +61,11 @@ public class FtpAddress
 		path = url.substring(index);
 		if(path.length() == 0)
 			path = "/";
-
-		index = host.indexOf(':');
-		if(index == -1)
-			port = "21";
-		else
-		{
-			port = host.substring(index + 1);
-			host = host.substring(0,index);
-		}
 	}
 
-	public FtpAddress(String host, String port, String user, String path)
+	public FtpAddress(String host, String user, String path)
 	{
 		this.host = host;
-		this.port = port;
 		this.user = user;
 		this.path = path;
 	}
@@ -92,11 +81,6 @@ public class FtpAddress
 			buf.append('@');
 		}
 		buf.append(host);
-		if(!port.equals("21"))
-		{
-			buf.append(':');
-			buf.append(port);
-		}
 		buf.append(path);
 
 		return buf.toString();
