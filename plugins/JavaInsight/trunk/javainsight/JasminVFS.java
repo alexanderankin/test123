@@ -85,7 +85,7 @@ public class JasminVFS extends ByteCodeVFS {
             JavaClass java_class = new ClassParser(in, clazzPath).parse();
 
             ByteArrayOutputStream baOut = new ByteArrayOutputStream();
-            OutputStream out = new BufferedOutputStream(baOut);
+            OutputStream out = new NewlineOutputFilter(new BufferedOutputStream(baOut));
 
             new JasminVisitor(java_class, out).disassemble();
 
