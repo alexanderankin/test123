@@ -1,0 +1,11 @@
+plugin.HexPlugin.name=Hex
+plugin.HexPlugin.author=André Kaplan
+plugin.HexPlugin.version=0.1
+plugin.HexPlugin.docs=Hex.html
+
+plugin.HexPlugin.depend.0=jdk 1.1
+plugin.HexPlugin.depend.1=jedit 03.01.99.00
+
+# vfs actions
+vfs.hex.label=Hex dump
+
