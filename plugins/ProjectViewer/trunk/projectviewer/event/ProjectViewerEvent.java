@@ -1,5 +1,7 @@
 /*
- *  $Id$
+ * :tabSize=4:indentSize=4:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version 2
@@ -17,37 +19,48 @@
 package projectviewer.event;
 
 import java.util.EventObject;
-import projectviewer.*;
 
-/** A project viewer event.
+import projectviewer.ProjectViewer;
+import projectviewer.vpt.VPTProject;
+
+/**
+ *	A project viewer event.
+ *
+ *	@author
+ *	@version	$Id$
  */
 public final class ProjectViewerEvent extends EventObject {
 
-	private Project project;
+	private VPTProject project;
 
-	/** Create a new <code>ProjectViewerEvent</code>.
+	/**
+	 *	Create a new <code>ProjectViewerEvent</code>.
 	 *
-	 *@param  src  Description of Parameter
-	 *@param  prj  Description of Parameter
+	 *	@param  src  the project viewer instance that fired the event.
+	 *	@param  prj  the project loaded (null if "All Projects").
 	 */
-	public ProjectViewerEvent(ProjectViewer src, Project prj) {
+	public ProjectViewerEvent(ProjectViewer src, VPTProject prj) {
 		super(src);
 		project = prj;
 	}
 
-	/** Returns the {@link ProjectViewer}.
+	/**
+	 *	Returns the {@link ProjectViewer}.
 	 *
-	 *@return    The projectViewer value
+	 *	@return    The viewer where the event occurred.
 	 */
 	public ProjectViewer getProjectViewer() {
 		return (ProjectViewer) getSource();
 	}
 
-	/** Returns the {@link Project}.
+	/**
+	 *	Returns the {@link VPTProject Project}. It is important to noticed that
+	 *	this value can be <code>null</code>, which means that the "All Projects"
+	 *	mode has been activated.
 	 *
-	 *@return    The project value
+	 *	@return    The activated project, or null if "All Projects" was chosen.
 	 */
-	public Project getProject() {
+	public VPTProject getProject() {
 		return project;
 	}
 

@@ -1,77 +1,19 @@
 - add Archive Project to package contents in jar/zip
 
 - use JEdits VFS code to allow projects on virtual file systems such as ftp
-  see:  org.gjt.sp.jedit.io.VFS
-  
-- use newer icons (don't forget to delete old icons from repository)
-  see: jEdit/org/gjt/sp/jedit/icons/
-  Create project : 'Drive.png', how does a project look like ;-) ?
-  Expand list : 'ZoomIn.png'
-  Contract list : 'ZoomOut.png'
-  Open all : like 'Open.png', but having two sheets 
-  Add file : 'New.png' / 'Plus.png'
-  Import files :
-  	1.) like 'New.png', but there pages behind each other
-	2.) like 'Plus.png', but two of them
-	3.) like 'Parse.png' / 'Reload.png', but would more look like refresh
-  Remove file or dir : 'Minus.png'
-  Remove all : like 'Minus.png', but two of them 
-  Preview in Browser/Viewer : 'Run.png' or an Eye or a Monitor
-
-- The file filter (on importing) should be obtained from jEdit
-(maybe not!!!! jedit might not be able to handle .gifs, but I still want them in my project 
-- RFE: provide an alternate icon when the the file you are editing is dirty
-  (contra : jEdit is not doing it in e.g. FileSystemBrowser) -- done
-
----------------------------------------------------------------------------
-
-* Toolbar
-  ** remove "new project" -> add entry to combo-box "new project ..."
-  ** remove "remove all files", but add button "refresh project"
-  ** add "close all project files"
-     This is different than jEdit's "close all buffers"  as this one would just
-     close all buffers within the current project.
-  
----------------------------------------------------------------------------
-
-* ContextMenu
-  ** Project
-    "properties" (IE name and root)
-	"re-import files" (IE check for any new additions and re-add them)
-  ** Dir
-    remove all files from project
-    delete dir (and remove all subfiles from project)-- done
-    rename dir -- done
-    search in dir -- done
-    hypersearch in dir -- done
-    search and replace (global search and replace for all files in a project)
+  see:  org.gjt.sp.jedit.io.VFS (this would change things quite a lot!)
  
- ** Files
-    remove from project -- done
-    delete file (and remove from project) -- done
-    rename file -- done
-    Preview in Browser - (requires browser executable property(set for JEdit) and urlRoot property(set for the project) -- done
+- Implement functionality from old version:
+  * drag files from the tree to the EditPane
+  * close files from current project (is it useful?) 
+  * what else?
 
-  - Need to implement file/directory renaming -- done
-  - Need to implement re-import files (refresh project?) -- done.
-  - Need to implement search/hypersearch in dir. -- done
-    to get active buffer, use jEdit.getActiveView().getBuffer() -- done
-    
----------------------------------------------------------------------------
+- Merge FastOpen into ProjectViewer (and think about a nice way to
+  integrate the UI into the PV pane - or keep it separated?)
 
-* Options
-  ** for Tabs Files/Working files -- done
-    boolean : ignoreCase
-
-* Tooltips
-  ** when over a file -- done
-    display full path, size and attributes
-  ** when over project 
-    display full path and summary (number of files).
-
-* Add files
-  ** via CVS/Entries
-    if there is a CVS dir in the top-level dir then ask the user, if he
-    wants to import files on the account of these information (and not
-    via filtering)
+- Reduce memory footprint: keep track of "active" projects and remove nodes
+  from inactive ones (freeing memory). (?)
+  
+- Working files TreeModel is still shaky... have to check AllFiles also.
+ (Or is it????)
 
