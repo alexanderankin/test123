@@ -2,21 +2,14 @@ Initial beta release
 --------------------
 
 cvs commit -m "" TODO.TXT
-cvs commit -m "Remember tag files between sessions.  Options string" Tags.props
-commit -m "Remember tag files between sessions" TagsPlugin.java
-commit -m "Remember tag files between sessions. Removed showTagOptionsDialog()" Tags.java
-commit -m "Removed use of tag options ui" actions.xml
+cvs add Tags.html
+cvs commit -m "Added documentation" README Tags.html
 
-commit -m "Use AbstractOptionPane for Global Options" TagsOptionsPanel.java
-commit -m "Setup option pane stuff" TagsPlugin.java
+- Change usage of tag files to tag index files...
+   - Source?
+   - UI
 
-
-rm TagsOptionsDialog.java (or copy to old src dir just to make sure)
-remove TagsOptionsDialog.java
-commit -m "Moved options into Global Options dialog" TagsOptionsDialog.java
-
-
-Ignore file on *.class
+- Ignore file on *.class
 
 - Get and install JDK 1.1 for backwards compatibility.
 
@@ -25,15 +18,14 @@ Before 1.0
 ----------
    
 - Documentation
-   - good examples:
-      CodeAid
-      Console (multi level)
-      ...others
-      
-   - FAQ in docs?
+
+- If not tags files are loaded put up a message.
+- Either remember what type the tag index files are or do automatic detection.
+
       
 - Cleanup TODO.TXT
 - Remove debug checkbox
+
 
 Version > initial public release version
 ----------------------------------------
