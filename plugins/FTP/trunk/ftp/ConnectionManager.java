@@ -20,12 +20,15 @@
 package ftp;
 
 import com.fooware.net.*;
-import javax.swing.Timer;
-import java.awt.event.*;
 import java.awt.Component;
+import java.awt.event.*;
+import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.*;
+import javax.swing.Timer;
 import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 public class ConnectionManager
@@ -250,7 +253,7 @@ public class ConnectionManager
 
 		public String toString()
 		{
-			return (secure ? SFtpVFS.PROTOCOL : FtpVFS.PROTOCOL)
+			return (secure ? FtpVFS.SFTP_PROTOCOL : FtpVFS.FTP_PROTOCOL)
 				+ "://" + host + ":" + port;
 		}
 
@@ -276,6 +279,46 @@ public class ConnectionManager
 					ConnectionManager.closeConnection(Connection.this);
 				}
 			});
+		}
+
+		void delete(String path) throws IOException
+		{
+			client.delete(path);
+		}
+
+		void removeDirectory(String path) throws IOException
+		{
+			client.removeDirectory(path);
+		}
+
+		void rename(String from, String to) throws IOException
+		{
+			client.renameFrom(from);
+			client.renameTo(to);
+		}
+
+		void makeDirectory(String path) throws IOException
+		{
+			client.makeDirectory(path);
+		}
+
+		InputStream retrieve(String path) throws IOException
+		{
+			setupSocket();
+			return client.retrieveStream(path);
+		}
+
+		OutputStream store(String path) throws IOException
+		{
+			setupSocket();
+			return client.storeStream(path);
+		}
+
+		void chmod(String path, int permissions) throws IOException
+		{
+			String cmd = "CHMOD " + Integer.toString(permissions,8)
+				+ " " + path;
+			client.siteParameters(cmd);
 		}
 
 		public int id;
@@ -350,6 +393,27 @@ public class ConnectionManager
 
 		private boolean inUse;
 		private Timer closeTimer;
+
+		private void setupSocket()
+			throws IOException
+		{
+			if(jEdit.getBooleanProperty("vfs.ftp.passive"))
+				client.passive();
+			else
+				client.dataPort();
+
+			// See if we should use Binary mode to transfer files.
+			if (jEdit.getBooleanProperty("vfs.ftp.binary"))
+			{
+				//Go with Binary
+				client.representationType(FtpClient.IMAGE_TYPE);
+			}
+			else
+			{
+				//Stick to ASCII - let the line endings get converted
+				client.representationType(FtpClient.ASCII_TYPE);
+			}
+		}
 	}
 
 	// package-private members

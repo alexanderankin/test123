@@ -30,9 +30,9 @@ public class FtpAddress
 
 	public FtpAddress(String url)
 	{
-		if(url.startsWith(FtpVFS.PROTOCOL + ":"))
+		if(url.startsWith(FtpVFS.FTP_PROTOCOL + ":"))
 			secure = false;
-		else if(url.startsWith(SFtpVFS.PROTOCOL + ":"))
+		else if(url.startsWith(FtpVFS.SFTP_PROTOCOL + ":"))
 			secure = true;
 		else
 			throw new IllegalArgumentException();
@@ -79,7 +79,7 @@ public class FtpAddress
 	public String toString()
 	{
 		StringBuffer buf = new StringBuffer();
-		buf.append(secure ? SFtpVFS.PROTOCOL : FtpVFS.PROTOCOL);
+		buf.append(secure ? FtpVFS.SFTP_PROTOCOL : FtpVFS.FTP_PROTOCOL);
 		buf.append("://");
 		if(user != null)
 		{
