@@ -157,55 +157,45 @@ public class WhiteSpaceDefaults
             WhiteSpaceDefaults.getFoldTooltipDefault()
         );
 
+        WhiteSpaceModel model = (WhiteSpaceModel) buffer.getProperty(
+            WhiteSpaceModel.MODEL_PROPERTY
+        );
+        if (model == null) {
+            model = new WhiteSpaceModel(buffer);
+            buffer.putProperty(WhiteSpaceModel.MODEL_PROPERTY, model);
+        }
+
         // Space highlighting options
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.SPACE_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getSpaceHighlightDefault()
+        model.getSpaceHighlight().setEnabled(
+            WhiteSpaceDefaults.getSpaceHighlightDefault()
         );
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.LEADING_SPACE_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
+        model.getLeadingSpaceHighlight().setEnabled(
+            WhiteSpaceDefaults.getLeadingSpaceHighlightDefault()
         );
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.INNER_SPACE_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
+        model.getInnerSpaceHighlight().setEnabled(
+            WhiteSpaceDefaults.getInnerSpaceHighlightDefault()
         );
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.TRAILING_SPACE_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
+        model.getTrailingSpaceHighlight().setEnabled(
+            WhiteSpaceDefaults.getTrailingSpaceHighlightDefault()
         );
 
         // Tab highlighting options
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.TAB_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getTabHighlightDefault()
+        model.getTabHighlight().setEnabled(
+            WhiteSpaceDefaults.getTabHighlightDefault()
         );
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.LEADING_TAB_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getLeadingTabHighlightDefault()
+        model.getLeadingTabHighlight().setEnabled(
+            WhiteSpaceDefaults.getLeadingTabHighlightDefault()
         );
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.INNER_TAB_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getInnerTabHighlightDefault()
+        model.getInnerTabHighlight().setEnabled(
+            WhiteSpaceDefaults.getInnerTabHighlightDefault()
         );
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.TRAILING_TAB_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getTrailingTabHighlightDefault()
+        model.getTrailingTabHighlight().setEnabled(
+            WhiteSpaceDefaults.getTrailingTabHighlightDefault()
         );
 
         // Whitespace highlighting option
-        putBooleanProperty(
-              buffer
-            , WhiteSpaceModel.WHITESPACE_HIGHLIGHT_PROPERTY
-            , WhiteSpaceDefaults.getWhitespaceHighlightDefault()
+        model.getWhitespaceHighlight().setEnabled(
+            WhiteSpaceDefaults.getWhitespaceHighlightDefault()
         );
 
         // On save actions options

@@ -89,14 +89,10 @@ public class WhiteSpaceHighlight
     private JEditTextArea textArea;
     private TextAreaHighlight next;
 
-    private WhiteSpaceModel model;
-
     private Segment lineSegment = new Segment();
 
 
-    private WhiteSpaceHighlight(WhiteSpaceModel model) {
-        this.model = model;
-    }
+    private WhiteSpaceHighlight() {}
 
 
     public void init(JEditTextArea textArea, TextAreaHighlight next) {
@@ -106,9 +102,13 @@ public class WhiteSpaceHighlight
 
 
     public void paintHighlight(Graphics gfx, int virtualLine, int y) {
-        if (    this.getSpaceHighlight().isEnabled()
-            ||  this.getTabHighlight().isEnabled()
-            ||  this.getWhitespaceHighlight().isEnabled()
+        WhiteSpaceModel model = this.getModel();
+
+        if (    (model != null)
+             && (    model.getSpaceHighlight().isEnabled()
+                  || model.getTabHighlight().isEnabled()
+                  || model.getWhitespaceHighlight().isEnabled()
+             )
         ) {
             // Avoid most <code>getfield</code>s
             final JEditTextArea ta = this.textArea;
@@ -143,26 +143,26 @@ public class WhiteSpaceHighlight
             Painter[] spacePainters = {null, null, null};
             Painter[] tabPainters   = {null, null, null};
 
-            if (this.getSpaceHighlight().isEnabled()) {
-                if (this.getLeadingSpaceHighlight().isEnabled()) {
+            if (model.getSpaceHighlight().isEnabled()) {
+                if (model.getLeadingSpaceHighlight().isEnabled()) {
                     spacePainters[0] = spacePainter;
                 }
-                if (this.getInnerSpaceHighlight().isEnabled()) {
+                if (model.getInnerSpaceHighlight().isEnabled()) {
                     spacePainters[1] = spacePainter;
                 }
-                if (this.getTrailingSpaceHighlight().isEnabled()) {
+                if (model.getTrailingSpaceHighlight().isEnabled()) {
                     spacePainters[2] = spacePainter;
                 }
             }
 
-            if (this.getTabHighlight().isEnabled()) {
-                if (this.getLeadingTabHighlight().isEnabled()) {
+            if (model.getTabHighlight().isEnabled()) {
+                if (model.getLeadingTabHighlight().isEnabled()) {
                     tabPainters[0] = tabPainter;
                 }
-                if (this.getInnerTabHighlight().isEnabled()) {
+                if (model.getInnerTabHighlight().isEnabled()) {
                     tabPainters[1] = tabPainter;
                 }
-                if (this.getTrailingTabHighlight().isEnabled()) {
+                if (model.getTrailingTabHighlight().isEnabled()) {
                     tabPainters[2] = tabPainter;
                 }
             }
@@ -231,7 +231,7 @@ public class WhiteSpaceHighlight
                          //  && (c != '\n') // Not needed here
                          && (c != ' ')
                     ) {
-                        if (this.getWhitespaceHighlight().isEnabled()) {
+                        if (model.getWhitespaceHighlight().isEnabled()) {
                             painter = whitespacePainter;
                         }
                     }
@@ -253,7 +253,9 @@ public class WhiteSpaceHighlight
 
     public String getToolTipText(MouseEvent evt)
     {
-        if (this.getWhitespaceHighlight().isEnabled()) {
+        WhiteSpaceModel model = this.getModel();
+
+        if ((model != null) && model.getWhitespaceHighlight().isEnabled()) {
             JEditTextArea ta = this.textArea;
             int x = evt.getX();
             int y = evt.getY();
@@ -290,48 +292,10 @@ public class WhiteSpaceHighlight
     }
 
 
-    public WhiteSpaceModel.HighlightOption getSpaceHighlight() {
-        return this.model.getSpaceHighlight();
-    }
-
-
-    public WhiteSpaceModel.HighlightOption getLeadingSpaceHighlight() {
-        return this.model.getLeadingSpaceHighlight();
-    }
-
-
-    public WhiteSpaceModel.HighlightOption getInnerSpaceHighlight() {
-        return this.model.getInnerSpaceHighlight();
-    }
-
-
-    public WhiteSpaceModel.HighlightOption getTrailingSpaceHighlight() {
-        return this.model.getTrailingSpaceHighlight();
-    }
-
-
-    public WhiteSpaceModel.HighlightOption getTabHighlight() {
-        return this.model.getTabHighlight();
-    }
-
-
-    public WhiteSpaceModel.HighlightOption getLeadingTabHighlight() {
-        return this.model.getLeadingTabHighlight();
-    }
-
-
-    public WhiteSpaceModel.HighlightOption getInnerTabHighlight() {
-        return this.model.getInnerTabHighlight();
-    }
-
-
-    public WhiteSpaceModel.HighlightOption getTrailingTabHighlight() {
-        return this.model.getTrailingTabHighlight();
-    }
-
-
-    public WhiteSpaceModel.HighlightOption getWhitespaceHighlight() {
-        return this.model.getWhitespaceHighlight();
+    public WhiteSpaceModel getModel() {
+        return (WhiteSpaceModel) this.textArea.getBuffer().getProperty(
+            WhiteSpaceModel.MODEL_PROPERTY
+        );
     }
 
 
@@ -354,10 +318,8 @@ public class WhiteSpaceHighlight
     }
 
 
-    public static TextAreaHighlight addHighlightTo(
-            EditPane editPane, WhiteSpaceModel model
-    ) {
-        TextAreaHighlight textAreaHighlight = new WhiteSpaceHighlight(model);
+    public static TextAreaHighlight addHighlightTo(EditPane editPane) {
+        TextAreaHighlight textAreaHighlight = new WhiteSpaceHighlight();
         highlights.put(editPane, textAreaHighlight);
         return textAreaHighlight;
     }
@@ -402,11 +364,14 @@ public class WhiteSpaceHighlight
         for (int i = 0; i < views.length; i++) {
             EditPane[] editPanes = views[i].getEditPanes();
             WhiteSpaceHighlight highlight;
+            WhiteSpaceModel model;
             for (int j = 0; j < editPanes.length; j++) {
                 highlight = (WhiteSpaceHighlight) highlights.get(editPanes[j]);
-                if (   (spaceColorChanged      && highlight.getSpaceHighlight().isEnabled())
-                    || (tabColorChanged        && highlight.getTabHighlight().isEnabled())
-                    || (whitespaceColorChanged && highlight.getWhitespaceHighlight().isEnabled())
+                model = highlight.getModel();
+
+                if (   (spaceColorChanged      && model.getSpaceHighlight().isEnabled())
+                    || (tabColorChanged        && model.getTabHighlight().isEnabled())
+                    || (whitespaceColorChanged && model.getWhitespaceHighlight().isEnabled())
                 ) {
                     highlight.updateTextArea();
                 }
