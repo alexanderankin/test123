@@ -47,6 +47,7 @@ import projectviewer.action.Action;
 import projectviewer.action.FileImportAction;
 import projectviewer.action.EditProjectAction;
 import projectviewer.action.NodeRemoverAction;
+import projectviewer.action.NodeRenamerAction;
 
 import projectviewer.config.ProjectViewerConfig;
 import projectviewer.config.AppLauncher;
@@ -184,6 +185,11 @@ public class VPTContextMenu extends MouseAdapter {
 		popupMenu.add(a.getMenuItem());
 		internalActions.add(a);
 		
+		a = new NodeRenamerAction();
+		a.setViewer(viewer);
+		popupMenu.add(a.getMenuItem());
+		internalActions.add(a);
+
 		if (actions.size() > 0)
 			popupMenu.addSeparator();
 		
