@@ -66,7 +66,8 @@ public class LaTeXParser
      * @param e ¤
      * @return ¤ 
      */
-    public SideKickParsedData parse(Buffer buffer, DefaultErrorSource e) {
+    public SideKickParsedData parse(Buffer buffer, DefaultErrorSource e) {//{{{ 
+    
         this.buffer = buffer;
         data = new SideKickParsedData(buffer.getName());
         text = buffer.getText(0, buffer.getLength());
@@ -87,9 +88,9 @@ public class LaTeXParser
         }
 
         return data;
-    }
+    } //}}}
 
-    private void buildTree() {
+    private void buildTree() {//{{{ 
 
         Iterator it = navItems.iterator();
         DefaultMutableTreeNode lastNode = root;
@@ -97,15 +98,17 @@ public class LaTeXParser
         while (it.hasNext()) {
 
             LaTeXAsset asset = (LaTeXAsset)it.next();
+            Log.log(Log.DEBUG, this, asset.getShortString() + ":" +asset.getLevel() + ": S:" + asset.getStart().getOffset() + ": E:" + asset.getEnd().getOffset());
             DefaultMutableTreeNode n = new DefaultMutableTreeNode(asset);
             DefaultMutableTreeNode correctNode = findCorrectNode(n, lastNode);
             lastNode = n;
             correctNode.add(n);
         }
-    }
+    } //}}}
 
     private DefaultMutableTreeNode findCorrectNode(DefaultMutableTreeNode thisNode, 
-                                                   DefaultMutableTreeNode lastNode) {
+                                                   DefaultMutableTreeNode lastNode) {//{{{ 
+                                                   
 
         if (lastNode == root) {
 
@@ -125,13 +128,14 @@ public class LaTeXParser
             return findCorrectNode(thisNode, 
                                    (DefaultMutableTreeNode)lastNode.getParent());
         }
-    }
+    } //}}}
 
-    private void parseNavigationData(NavigationList navList) {
+    private void parseNavigationData(NavigationList navList) {//{{{ 
+    
         navItems.clear();
-        searchBuffer2(navList);
+        searchBuffer(navList);
         buildTree();
-    }
+    } //}}}
 
     private void parseReferences() {//{{{ 
     
@@ -152,9 +156,7 @@ public class LaTeXParser
         }
     } //}}}
 
-    private void searchBuffer(NavigationList navList) {//{{{  old version - DO NOT CHANGE!
-    
-
+    private void searchBuffer(NavigationList navList) {//{{{
         String text = buffer.getText(0, buffer.getLength());
         LinkedList stack = new LinkedList();
 
@@ -216,85 +218,6 @@ public class LaTeXParser
                         }
                     } else {
                         result = match[m].substituteInto(replace);
-                    }
-
-                    LaTeXAsset asset = LaTeXAsset.createAsset(result, 
-                                                              buffer.createPosition(match[m].getStartIndex()),
-                                                              bufferEndPosition, 
-                                                              srch.getIcon(), 
-                                                              srch.getLevel());
-                    navItems.add(asset);
-                }
-            }
-        }
-        updateAssetEnd();
-    } //}}}
-    
-    private void searchBuffer2(NavigationList navList) {//{{{
-        String text = buffer.getText(0, buffer.getLength());
-        LinkedList stack = new LinkedList();
-
-        for (Iterator it = navList.iterator(); it.hasNext();) {
-
-            TagPair srch = (TagPair)it.next();
-            String replace = srch.getReplace();
-            String endTag = srch.getEndTag();
-            boolean default_replace = true;
-
-            if (!(replace.equals(" "))) { // NOTE: This code probably belongs in TagPair.java
-
-                try {
-
-                    //          Log.log(Log.MESSAGE,this,"replace: "+replace);
-                    RE colon = new RE("\\\\u003[aA]");
-
-                    //          Log.log(Log.MESSAGE,this,"found: "+colon.getMatch(replace).toString());
-                    replace = colon.substituteAll(replace, ":");
-                    default_replace = false;
-                } catch (REException e) {
-                    default_replace = true;
-                }
-            }
-
-            RE search = null;
-
-            try {
-                search = new RE(srch.getTag());
-            } catch (REException e) {
-                search = null;
-            }
-
-            if (search == null) {
-
-                continue;
-            } else {
-
-                REMatch[] match = search.getAllMatches(text);
-
-                for (int m = 0; m < match.length; m++) {
-
-                    String result = "";
-                    int i;
-
-                    if (default_replace) {
-
-                        if ((i = search.getNumSubs()) > 0) {
-
-                            StringBuffer sb = new StringBuffer();
-
-                            for (int j = 1; j <= i; j++) {
-                                sb.append(match[m].toString(j));
-                            }
-
-                            result = sb.toString();
-                        } else {
-                            result = match[m].toString();
-                        }
-                    } else {
-                        result = match[m].substituteInto(replace);
-
-                        //            Log.log(Log.DEBUG,this,"SUB: "+replace);
-                        //            Log.log(Log.DEBUG,this,"RES: "+result);
                     }
 
                     Position endPosition = bufferEndPosition;
@@ -302,7 +225,7 @@ public class LaTeXParser
                     if (srch.getType() == 1){
                         endPosition = buffer.createPosition(match[m].getEndIndex());
                     } else if (srch.getType() == 2){
-                        findEndPosition(srch.getTag(), srch.getEndTag(), match[m].getEndIndex());
+                        endPosition = findEndPosition(srch.getTag(), srch.getEndTag(), match[m].getEndIndex());
                     }
                     
                     LaTeXAsset asset = LaTeXAsset.createAsset(result, 
@@ -314,13 +237,13 @@ public class LaTeXParser
                 }
             }
         }
-        //updateAssetEnd();
+        updateAssetEnd();
     } //}}}
     
     private Position findEndPosition(String startRegExp, String endRegExp, int startIndex){//{{{ 
-    
-        if (true) return bufferEndPosition;
-        String bufferText = buffer.getText(startIndex, buffer.getLength());
+        //if (true) return bufferEndPosition;
+        //Log.log(Log.DEBUG, this, "Start: " + startIndex + " buf:" + buffer.getLength());
+        String bufferText = buffer.getText(startIndex, buffer.getLength()-startIndex);
         StringBuffer sb = new StringBuffer("(");
         sb.append(startRegExp).append(")|(").append(endRegExp).append(")");
         RE regex = null;
@@ -340,9 +263,13 @@ public class LaTeXParser
             if (match == null){break;}
             
             offset = match.getEndIndex();
+            
+            
             if (match.toString(1)==""){
                 if(stack == 0){
-                    return buffer.createPosition(startIndex + offset);
+                    Position out = buffer.createPosition(startIndex + offset);
+                    Log.log(Log.DEBUG, this, "MATCH!" + out.getOffset());
+                   return out;
                 } else {
                     stack--;
                     continue;
@@ -357,33 +284,13 @@ public class LaTeXParser
         return bufferEndPosition;
     } //}}}
     
-    private void updateAssetEnd2(){ //{{{ 
-    
-       // NOTE: This method assumes that Sidekick cannot handle nested Assets.
-       LaTeXAsset previousAsset = null;
-       for (Iterator it = navItems.iterator(); it.hasNext(); ){
-           if (previousAsset == null){
-               previousAsset = (LaTeXAsset) it.next();
-               break;
-           }
-           LaTeXAsset currentAsset = (LaTeXAsset) it.next();
-           previousAsset.setEnd(currentAsset.getStart());
-           previousAsset = currentAsset;
-       }
-       if (previousAsset != null){
-           int endOfText = text.length();
-           previousAsset.setEnd(buffer.createPosition(endOfText));
-       }
-    } //}}}
-    
     private void updateAssetEnd(){//{{{ 
     
-        // NOTE: This method assumes that Sidekick can handle nested Assets.
         LinkedList stack = new LinkedList();
         
         for (Iterator it = navItems.iterator(); it.hasNext(); ){
            LaTeXAsset currentAsset = (LaTeXAsset) it.next();
-           //if (currentAsset.getEnd() = 
+           if (!currentAsset.getEnd().equals(bufferEndPosition)){ continue;}
            if (stack.size()==0){
               stack.addLast(currentAsset);
               break;
@@ -408,7 +315,7 @@ public class LaTeXParser
 
     } //}}}
 
-    // TODO: The following should be implemented for code completion.
+    // TODO: The following should be implemented for code completion.{{{
 /*     public boolean supportsCompletion(){
 		return false;
 	}
@@ -424,5 +331,5 @@ public class LaTeXParser
 	public SideKickCompletion complete(EditPane editPane, int caret){
 		return null;
 	}  */
-
+    //}}}
 }
