@@ -65,6 +65,7 @@ class ConsoleProcess
 			String[] pp = { e.toString() };
 			console.print(console.getErrorColor(),
 				jEdit.getProperty("console.shell.error",pp));
+			output.commandDone();
 			stop();
 		}
 	}

@@ -110,9 +110,13 @@ abstract class OperatingSystem
 		Process exec(String[] args, String[] env, String dir)
 			throws Exception
 		{
-			String[] extensionsToTry = getExtensionsToTry();
-
 			String commandName = args[0];
+
+			String[] extensionsToTry;
+			if(commandName.indexOf('.') == -1)
+				extensionsToTry = getExtensionsToTry();
+			else
+				extensionsToTry = new String[] { "" };
 
 			for(int i = 0; i < extensionsToTry.length; i++)
 			{
@@ -131,6 +135,11 @@ abstract class OperatingSystem
 					{
 						return Runtime.getRuntime().exec(args,env);
 					}
+				}
+				catch(InvocationTargetException ite)
+				{
+					if(i == extensionsToTry.length - 1)
+						throw (Exception)e.getTargetException();
 				}
 				catch(Exception e)
 				{
@@ -240,22 +249,26 @@ abstract class OperatingSystem
 				Log.log(Log.ERROR,this,io);
 			}
 
-			Vector _extensionsToTry = new Vector();
-			_extensionsToTry.addElement("");
-
 			String pathext = (String)vars.get("PATHEXT");
 			if(pathext != null)
 			{
-				StringTokenizer st = new StringTokenizer(pathext);
+				Vector _extensionsToTry = new Vector();
+
+				StringTokenizer st = new StringTokenizer(pathext,"; ");
 				while(st.hasMoreTokens())
 				{
 					_extensionsToTry.addElement(
 						'.' + st.nextToken());
 				}
-			}
 
-			extensionsToTry = new String[_extensionsToTry.size()];
-			_extensionsToTry.copyInto(extensionsToTry);
+				extensionsToTry = new String[_extensionsToTry.size()];
+				_extensionsToTry.copyInto(extensionsToTry);
+			}
+			else
+			{
+				extensionsToTry = new String[] { ".cmd",
+					".bat", ".exe", ".com" };
+			}
 
 			return vars;
 		}
@@ -280,7 +293,7 @@ abstract class OperatingSystem
 	{
 		String getBuiltInPrefix()
 		{
-			return "command /c ";
+			return "command.com /c ";
 		}
 	}
 
@@ -288,7 +301,7 @@ abstract class OperatingSystem
 	{
 		String getBuiltInPrefix()
 		{
-			return "cmd /c ";
+			return "cmd.exe /c ";
 		}
 	}
 }

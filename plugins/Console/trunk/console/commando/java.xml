@@ -62,7 +62,7 @@
 		</CHOICE>
 
 		<ENTRY LABEL="JAR file" VARNAME="jar" />
-		<ENTRY LABEL="Main class" VARNAME="class" />
+		<ENTRY LABEL="Main class" VARNAME="clazz" />
 		<ENTRY LABEL="Application parameters" VARNAME="args" />
 
 		</CAPTION>
@@ -166,7 +166,10 @@
 				buf.append('"');
 			}
 			else if(run.equals("class"))
-				buf.append(class);
+			{
+				buf.append(' ');
+				buf.append(clazz);
+			}
 
 			if(!args.equals(""))
 			{

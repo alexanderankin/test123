@@ -441,7 +441,7 @@ public class CommandoDialog extends EnhancedDialog
 					pane.addComponent(left,
 						new CommandoComboBox(
 						varName,defaultValue,eval,options));
-					options.removeAllElements();
+					options = new Vector();
 					choiceLabel = varName = eval = null;
 				}
 				else if(tag == "OPTION")
@@ -613,6 +613,7 @@ public class CommandoDialog extends EnhancedDialog
 			setPreferredSize(size);
 
 			addActionListener(new ActionHandler());
+			CommandoTextField.this.addFocusListener(new FocusHandler());
 			valueChanged();
 		}
 
@@ -647,6 +648,16 @@ public class CommandoDialog extends EnhancedDialog
 				valueChanged();
 			}
 		}
+
+		class FocusHandler implements FocusListener
+		{
+			public void focusGained(FocusEvent evt) {}
+
+			public void focusLost(FocusEvent evt)
+			{
+				valueChanged();
+			}
+		}
 	}
 
 	class CommandoComboBox extends JComboBox
@@ -654,11 +665,10 @@ public class CommandoDialog extends EnhancedDialog
 		CommandoComboBox(String varName, String defaultValue, String eval,
 			Vector options)
 		{
+			super(options);
+
 			this.varName = varName;
 			this.property = command.propertyPrefix + varName;
-
-			setModel(new DefaultComboBoxModel(options));
-			setRenderer(new Renderer());
 
 			if(eval != null)
 			{
@@ -719,22 +729,6 @@ public class CommandoDialog extends EnhancedDialog
 			public void actionPerformed(ActionEvent evt)
 			{
 				valueChanged();
-			}
-		}
-
-		class Renderer extends DefaultListCellRenderer
-		{
-			public Component getListCellRendererComponent(
-				JList list, Object value, int index,
-				boolean isSelected, boolean cellHasFocus
-			)
-			{
-				super.getListCellRendererComponent(list,value,
-					index,isSelected,cellHasFocus);
-
-				setText(((Option)value).label);
-
-				return this;
 			}
 		}
 	}
@@ -817,7 +811,6 @@ public class CommandoDialog extends EnhancedDialog
 				textArea = new JTextArea(4,30)));
 			textArea.setEditable(false);
 			textArea.setLineWrap(true);
-			textArea.setWrapStyleWord(true);
 		}
 
 		void setText(String text)
