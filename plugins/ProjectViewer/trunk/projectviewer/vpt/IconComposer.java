@@ -19,6 +19,7 @@
 package projectviewer.vpt;
 
 //{{{ Imports
+import java.io.File;
 import java.util.HashMap;
 
 import java.awt.Image;
@@ -49,18 +50,16 @@ import projectviewer.config.ProjectViewerConfig;
 public final class IconComposer {
 
 	//{{{ Constants
-	public final static int FILE_STATE_NORMAL	= 0;
-	public final static int FILE_STATE_CHANGED	= 1;
-	public final static int FILE_STATE_READONLY	= 2;
+	public final static int FILE_STATE_NORMAL		= 0;
+	public final static int FILE_STATE_CHANGED		= 1;
+	public final static int FILE_STATE_READONLY		= 2;
+	public final static int FILE_STATE_NOT_FOUND	= 3;
 
-	public final static int VC_STATE_NONE		= 0;
+	public final static int VC_STATE_NONE			= 0;
 
-	public final static int MSG_STATE_NONE		= 0;
-	public final static int MSG_STATE_MESSAGES	= 1;
-	public final static int MSG_STATE_ERRORS	= 2;
-
-	public final static int FS_STATE_NONE		= 0;
-	public final static int FS_STATE_NOTFOUND	= 1;
+	public final static int MSG_STATE_NONE			= 0;
+	public final static int MSG_STATE_MESSAGES		= 1;
+	public final static int MSG_STATE_ERRORS		= 2;
 	//}}}
 
 	//{{{ Attributes
@@ -70,18 +69,18 @@ public final class IconComposer {
 		new ImageIcon(IconComposer.class.getResource("/images/file_state_changed.png"));
 	private final static Icon FILE_STATE_READONLY_IMG =
 		new ImageIcon(IconComposer.class.getResource("/images/file_state_readonly.png"));
+	private final static Icon FILE_STATE_NOT_FOUND_IMG =
+		new ImageIcon(IconComposer.class.getResource("/images/file_state_not_found.png"));
 	private final static Icon MSG_STATE_MESSAGES_IMG =
 		new ImageIcon(IconComposer.class.getResource("/images/msg_state_messages.png"));
 	private final static Icon MSG_STATE_ERRORS_IMG =
 		new ImageIcon(IconComposer.class.getResource("/images/msg_state_errors.png"));
-	private final static Icon FS_STATE_NOTFOUND_IMG =
-		new ImageIcon(IconComposer.class.getResource("/images/fs_state_notfound.png"));
 	//}}}
 
 	//{{{ Public methods
 
 	//{{{ +_composeIcon(String, Icon, int)_ : Icon
-	public static Icon composeIcon(String path, Icon baseIcon, int fs_state) {
+	public static Icon composeIcon(File f, String path, Icon baseIcon) {
 		Icon[][][][] cache = getIconCache(baseIcon);
 
 		int msg_state = MSG_STATE_NONE;
@@ -89,17 +88,13 @@ public final class IconComposer {
 			msg_state = getMessageState(path);
 		}
 
-		int file_state = getFileState(path);
+		int file_state = getFileState(f, path);
 		int vc_state = VC_STATE_NONE;
 
 		try {
 			if(cache[vc_state][0][file_state][msg_state] == null) {
 				Icon tl = null; // vc_state
-				Icon tr = null; // fs_state
-				switch (fs_state) {
-					case FS_STATE_NOTFOUND:
-						tr = FS_STATE_NOTFOUND_IMG;
-				}
+				Icon tr = null; // unused
 				Icon bl = null; // file_state
 				switch(file_state) {
 					case FILE_STATE_CHANGED:
@@ -108,6 +103,10 @@ public final class IconComposer {
 
 					case FILE_STATE_READONLY:
 						bl = FILE_STATE_READONLY_IMG;
+						break;
+
+					case FILE_STATE_NOT_FOUND:
+						bl = FILE_STATE_NOT_FOUND_IMG;
 						break;
 				}
 				Icon br = null; // msg_state
@@ -119,10 +118,10 @@ public final class IconComposer {
 						br = MSG_STATE_ERRORS_IMG;
 						break;
 				}
-				cache[vc_state][fs_state][file_state][msg_state] =
+				cache[vc_state][0][file_state][msg_state] =
 					composeIcons(baseIcon, tl, tr, bl, br);
 			}
-			baseIcon = cache[vc_state][fs_state][file_state][msg_state];
+			baseIcon = cache[vc_state][0][file_state][msg_state];
 		} catch(ArrayIndexOutOfBoundsException ex) {
 			Log.log(Log.WARNING, null, ex);
 		}
@@ -235,14 +234,16 @@ public final class IconComposer {
 	private static Icon[][][][] getIconCache(Icon icon) {
 		Icon[][][][] cache = (Icon[][][][]) iconCache.get(icon);
 		if (cache == null) {
-			cache = new Icon[1][2][3][3];
+			cache = new Icon[1][1][4][3];
 			iconCache.put(icon, cache);
 		}
 		return cache;
 	} //}}}
 
 	//{{{ -_getFileState(String)_ : int
-	private static int getFileState(String path) {
+	private static int getFileState(File f, String path) {
+		if (f != null && !f.exists())
+			return FILE_STATE_NOT_FOUND;
 		Buffer buffer = jEdit.getBuffer(path);
 		int file_state = IconComposer.FILE_STATE_NORMAL;
 		if (buffer != null) {
