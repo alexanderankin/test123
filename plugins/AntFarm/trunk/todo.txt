@@ -15,6 +15,8 @@ Future additions/fixes:
 - Allow targets to be displayed based on a regex.
 - Allow logging level to be set on the AntFarm toolbar.
 - Toggle property prompting on AntFarm toolbar.
+- Provide the option to bring/not bring the console to the front when running a build. 
+  Also give a build status indicator in AntFarm.
 
 
 Required for AntFarm 1.1 release.
