@@ -838,7 +838,7 @@ public final class ProjectViewer extends JPanel
 							JOptionPane.YES_NO_OPTION);
 
 					if(res == JOptionPane.YES_OPTION) {
-						new NewFileImporter(p, bu.getBuffer().getPath()).doImport();
+						new NewFileImporter(p, this, bu.getBuffer().getPath()).doImport();
 					} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE){
 						if (dontAsk == null) {
 							dontAsk = new HashSet();
