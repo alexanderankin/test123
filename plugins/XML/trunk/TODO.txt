@@ -1,7 +1,3 @@
-+ version 0.6:
-
-- add name of tag highlight guy
-
 + version 0.7:
 
 - recording <, >, /, &
