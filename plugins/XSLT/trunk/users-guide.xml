@@ -1,0 +1,177 @@
+<?xml version="1.0"?>
+
+<!-- BufferTabs plugin user's guide -->
+<!-- (C) 2001 Andre Kaplan -->
+
+<!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">-->
+
+<book>
+
+  <bookinfo>
+    <title>XSLT plugin</title>
+    <authorgroup>
+      <author>
+        <firstname>Greg</firstname>
+        <surname>Merrill</surname>
+      </author>
+      <author>
+        <firstname>Carlos</firstname>
+        <surname>Quiroz</surname>
+      </author>
+    </authorgroup>
+    <legalnotice>
+      <title>Legal Notice</title>
+      <para>
+        Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU Free Documentation License,
+        Version 1.1 or any later version published by the
+        Free Software Foundation; with no
+        "Invariant Sections", "Front-Cover Texts" or
+        "Back-Cover Texts", each as defined in the license.
+        A copy of the license can be found in the file
+        <filename>COPYING.DOC.txt</filename> included with jEdit.
+      </para>
+    </legalnotice>
+  </bookinfo>
+
+  <chapter id="overview">
+    <title>Overview</title>
+    <para>
+      The XSLT plugin contains facilities to perform XSL Transformations
+      and evaluate XPath expressions.
+    </para>
+  </chapter>
+
+  <chapter id="XSLTProcessor">
+    <title>XSLT Processor</title>
+    <para>
+      The XSLT Processor allows you to transform a source XML document using
+      a series of XSL stylesheets. <ulink url="http://www.w3.org/Style/XSL/">XSL
+      and XSLT</ulink> are W3C-specified standards for XML stylesheets and
+      stylesheet transformations, respectively.
+    </para>
+    <para>
+      To use the XSLT Processor, first open your source XML document and XSL
+      documents in jEdit.  Then, from the Plugins menu, select "XSLT Processor".
+      This will dock the XSLT Processor.  (Note that you may select where a 
+      Plugin is docked from jEdit's Global Options menu.)
+    </para>
+    <para>
+      Once the XLST Processor has been docked, you may select your source 
+      document from the drop-down labeled "Source".  Next, you may create
+      the list of stylesheets which should be used to transform the source by
+      using the "Add" button (and subsequent dialog).  When you're ready, 
+      press the "Transform" button.  This will perform the appropriate XSL
+      Transformations on the Source document and place the results in a new buffer.
+      (Transformation will start with the stylesheet at the top of the list 
+      and proceed to the bottom.)    
+    </para>
+    <para>
+      The following improvements should eventually be made to XPath Tool.
+      (Any volunteers?)
+      <itemizedlist>
+        <listitem>
+          DTD handling is still somewhat weak.  URL-specified DTDs
+          are reloaded on each evaluation, and SYSTEM DTDs are
+          assumed to be in the same directory as the XML file
+          which references them.  Ultimately, this should be enhanced
+          to behave more intelligently, as in the XML plugin.
+        </listitem>
+        <listitem>
+          The last session (source doc, stylesheets) should be saved
+          for the next invocation of jEdit.
+        </listitem>
+      </itemizedlist>
+    </para>
+  </chapter>
+
+  <chapter id="XPathTool">
+    <title>XPath Tool</title>
+    <para>
+      The XPath Tool allows you to evalute XPath expressions on an open
+      XML buffer.  <ulink url="http://www.w3.org/TR/xpath">XPath</ulink>
+      is a W3C-specified syntax for addressing portions of an XML document.
+    </para>
+    <para>
+      To use the XPath Tool, first open a file containing well-formed
+      XML.  Then, from the Plugins menu, select "XPath Tool".  This will dock
+      the XPath Tool.
+    </para>
+    <para>
+      Once the XPath Tool has been docked, you may enter your XPath
+      expression into the upper text area (labeled "XPath Expression").
+      When you press the "Evaluate" button, the expression will be
+      evaluated against the current buffer and the results will be
+      displayed in the lower text area (labeled "Results").  Note
+      that the expression will always be evaluated as if the
+      document root is the "context node".
+    </para>
+    <para>
+      The following improvements should eventually be made to XPath Tool.
+      (Any volunteers?)
+      <itemizedlist>
+        <listitem>
+          DTD handling as per XSLT Processor.
+        </listitem>
+        <listitem>
+          When the result of an evaluation is a Node set, it would be nice
+          to have a "Hyper Search" type of result.  In other words, each
+          node in the list could be clicked to highlight the relevant portion
+          of the XML doc in the current buffer.
+        </listitem>
+      </itemizedlist>
+    </para>
+  </chapter>
+
+  <chapter id="license">
+    <title>License</title>
+    <para>
+      The source code is distributed under the GPL.
+      Please see <ulink url="http://www.fsf.org/copyleft/gpl.html"
+        >http://www.fsf.org/copyleft/gpl.html</ulink>
+    </para>
+  </chapter>
+
+  <chapter id="feedback">
+    <title>Feedback</title>
+    <para>
+      The preferred way to send bug reports or feature requests is to use the
+      Sourceforge Bug Tracker at
+      <ulink url="http://sourceforge.net/bugs/?group_id=588"
+        >http://sourceforge.net/bugs/?group_id=588</ulink>
+    </para>
+    <para>You can also write to:</para>
+    <itemizedlist>
+        <listitem>
+          Greg Merrill <email>greghmerrill@yahoo.com</email>;
+        </listitem>
+
+        <listitem>
+          Carlos Quiroz <email>carlos.quiroz@welho.com</email>;
+        </listitem>
+
+        <listitem>
+          or jEdit-users mailing-list
+          <email>jedit-users@lists.sourceforge.net</email>;
+        </listitem>
+
+        <listitem>
+          or jEdit-devel mailing-list
+          <email>jedit-devel@lists.sourceforge.net</email>.
+        </listitem>
+    </itemizedlist>
+  </chapter>
+
+  <appendix id="changelog">
+    <title>Change log</title>
+    <formalpara>
+      <title>Version 0.1</title>
+      <itemizedlist>
+        <listitem>Initial release</listitem>
+      </itemizedlist>
+    </formalpara>
+  </appendix>
+
+</book>
+
