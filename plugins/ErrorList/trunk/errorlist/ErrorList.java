@@ -28,11 +28,13 @@ import javax.swing.tree.*;
 import java.awt.*;
 import java.awt.event.*;
 import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.DefaultFocusComponent;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.textarea.Selection;
 //}}}
 
-public class ErrorList extends JPanel implements EBComponent
+public class ErrorList extends JPanel implements EBComponent,
+	DefaultFocusComponent
 {
 	public static final ImageIcon ERROR_ICON = new ImageIcon(
 		ErrorList.class.getResource("error.gif"));
@@ -94,6 +96,12 @@ public class ErrorList extends JPanel implements EBComponent
 	{
 		super.removeNotify();
 		EditBus.removeFromBus(this);
+	} //}}}
+
+	//{{{ focusOnDefaultComponent() method
+	public void focusOnDefaultComponent()
+	{
+		errorTree.requestFocus();
 	} //}}}
 
 	//{{{ handleMessage() method
@@ -551,7 +559,7 @@ public class ErrorList extends JPanel implements EBComponent
 		{
 			public void run()
 			{
-				view.setBuffer(buffer);
+				view.goToBuffer(buffer);
 
 				int start = error.getStartOffset();
 				int end = error.getEndOffset();
