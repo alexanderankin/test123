@@ -28,7 +28,7 @@ import java.io.BufferedInputStream;
 import java.util.Hashtable;
 
 
-public class TarCommand implements ArchiveCommand {
+public class TarCommand extends ArchiveCommand {
     private TarInputStream source;
 
 

@@ -11,9 +11,6 @@ archive-menu=archive.clear-directory-cache
 
 archive.clear-directory-cache.label=Clear directory cache
 
-# Zip VFS
-vfs.zip.label=Browse zip archive
-
-# Tar VFS
-vfs.tar.label=Browse tar archive
+# Archive VFS
+vfs.archive.label=Browse archive
 

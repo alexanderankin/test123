@@ -31,8 +31,9 @@ import org.gjt.sp.util.Log;
 public class ArchivePlugin extends EditPlugin
 {
     public void start() {
-        VFSManager.registerVFS(TarVFS.PROTOCOL, new TarVFS());
-        VFSManager.registerVFS(ZipVFS.PROTOCOL, new ZipVFS());
+        VFSManager.registerVFS(ArchiveVFS.PROTOCOL, new ArchiveVFS());
+        VFSManager.registerVFS(TarVFS.PROTOCOL,     new TarVFS());
+        VFSManager.registerVFS(ZipVFS.PROTOCOL,     new ZipVFS());
     }
 
 
