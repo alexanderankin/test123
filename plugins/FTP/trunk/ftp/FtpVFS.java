@@ -50,7 +50,8 @@ public class FtpVFS extends VFS
 	public FtpVFS(boolean secure)
 	{
 		super(getProtocol(secure),READ_CAP | WRITE_CAP
-			| DELETE_CAP | RENAME_CAP | MKDIR_CAP);
+			| DELETE_CAP | RENAME_CAP | MKDIR_CAP,
+			getExtendedAttributes(secure));
 
 		this.secure = secure;
 	} //}}}
@@ -59,6 +60,13 @@ public class FtpVFS extends VFS
 	public static String getProtocol(boolean secure)
 	{
 		return (secure ? SFTP_PROTOCOL : FTP_PROTOCOL);
+	} //}}}
+
+	//{{{ getExtendedAttributes() method
+	public static String[] getExtendedAttributes(boolean secure)
+	{
+		return (secure ? new String[] { EA_TYPE, EA_SIZE }
+		: new String[] { EA_TYPE, EA_SIZE, EA_STATUS });
 	} //}}}
 
 	//{{{ getDefaultPort() method
@@ -242,12 +250,26 @@ public class FtpVFS extends VFS
 	{
 		public static final int LINK = 10;
 		int permissions;
+		String permissionString;
 
-		public FtpDirectoryEntry(String name, String path, String deletePath,
-			int type, long length, boolean hidden, int permissions)
+		public FtpDirectoryEntry(String name, String path,
+			String deletePath, int type, long length,
+			boolean hidden, int permissions,
+			String permissionString)
 		{
 			super(name,path,deletePath,type,length,hidden);
 			this.permissions = permissions;
+			this.permissionString = permissionString;
+		}
+
+		public String getExtendedAttribute(String name)
+		{
+			if(name.equals(EA_TYPE) || name.equals(EA_SIZE))
+				return super.getExtendedAttribute(name);
+			else if(name.equals(EA_STATUS))
+				return permissionString;
+			else
+				return null;
 		}
 	} //}}}
 

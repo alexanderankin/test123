@@ -59,7 +59,7 @@ vfs.ftp.list.0=[ld-](.{9})\\s+\\d+\\s+\\S+\\s+\\S+\\s+(\\d+)\\s+\\S+\\s+\\S+\\s+
 vfs.ftp.list.1=[ld-](.{9}).*\\s+(\\d+)\\s+(.+)\\s*
 
 vfs.ftp.list.dos=\\S+\\s+\\S+\\s+(<DIR>|\\d+)\\s+(.+)\\s*
-vfs.ftp.list.vms=(.+?);\\d+\\s+(\\d+)(?:|/\\d+)\\s+.+
+vfs.ftp.list.vms=(.+?);\\d+\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\((.+)\)
 vfs.ftp.list.vms.partial.1=(.+?);\\d+\\s*
-vfs.ftp.list.vms.partial.2=\\s+(\\d+)(?:|/\\d+)\\s+.+
+vfs.ftp.list.vms.partial.2=\\s+(\\d+)(?:|/\\d+)\\s+.+\\s+\((.+)\)
 vfs.ftp.list.as400=\\S+\\s+(\\S+)\\s+\\S+\\s+\\S+\\s+(\\*DIR|\\*STMF)\\s+(\\S+)\\s*

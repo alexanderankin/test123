@@ -175,7 +175,7 @@ class FtpConnection extends ConnectionManager.Connection
 					// the resolveSymlink() method. A proper
 					// version will be written some other time.
 					return new FtpVFS.FtpDirectoryEntry(null,null,null,
-						FtpVFS.FtpDirectoryEntry.DIRECTORY,0L,false,0);
+						FtpVFS.FtpDirectoryEntry.DIRECTORY,0L,false,0,null);
 				}
 				else
 					return dirEntry;
@@ -421,6 +421,7 @@ class FtpConnection extends ConnectionManager.Connection
 			String name = null;
 			long length = 0L;
 			int permissions = 0;
+			String permissionString = null;
 
 			boolean ok = false;
 
@@ -450,7 +451,9 @@ class FtpConnection extends ConnectionManager.Connection
 						break;
 					}
 
-					permissions = MiscUtilities.parsePermissions(match.toString(1));
+					permissionString = match.toString(1);
+					permissions = MiscUtilities.parsePermissions(
+						permissionString);
 
 					try
 					{
@@ -479,9 +482,10 @@ class FtpConnection extends ConnectionManager.Connection
 				if((match = vmsRegexp.getMatch(line)) != null)
 				{
 					name = match.toString(1);
-					length = Long.parseLong(match.toString(1)) * 512;
+					length = Long.parseLong(match.toString(2)) * 512;
 					if(name.endsWith(".DIR"))
 						type = FtpVFS.FtpDirectoryEntry.DIRECTORY;
+					permissionString = match.toString(3);
 					ok = true;
 				}
 			}
@@ -542,7 +546,7 @@ class FtpConnection extends ConnectionManager.Connection
 			// path is null; it will be created later, by listDirectory()
 			return new FtpVFS.FtpDirectoryEntry(name,null,null,type,
 				length,name.charAt(0) == '.' /* isHidden */,
-				permissions);
+				permissions,permissionString);
 		}
 		catch(Exception e)
 		{
