@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.io.Serializable;
 
 import gatchan.phpparser.project.itemfinder.PHPItem;
+import gatchan.phpparser.parser.PHPParserConstants;
 
 import javax.swing.*;
 
@@ -14,7 +15,6 @@ import org.gjt.sp.jedit.GUIUtilities;
 
 /** @author Matthieu Casanova */
 public class MethodHeader extends Statement implements PHPItem, Serializable {
-
   /** The path of the file containing this class. */
   private String path;
 
@@ -31,6 +31,8 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
 
   private transient Icon icon;
 
+  private int visibility = PHPParserConstants.PUBLIC;
+
   public MethodHeader() {
   }
 
@@ -44,7 +46,22 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
                       int endLine,
                       int beginColumn,
                       int endColumn) {
+    this(PHPParserConstants.PUBLIC,path, name, reference, arguments, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+  }
+
+  public MethodHeader(int visibility,
+                      String path,
+                      String name,
+                      boolean reference,
+                      ArrayList arguments,
+                      int sourceStart,
+                      int sourceEnd,
+                      int beginLine,
+                      int endLine,
+                      int beginColumn,
+                      int endColumn) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
+    this.visibility = visibility;
     this.path = path;
     this.name = name;
     this.reference = reference;
@@ -123,4 +140,15 @@ public class MethodHeader extends Statement implements PHPItem, Serializable {
     }
     return icon;
   }
+
+  /**
+     * Returns the visibility of the method.
+     *
+     * @return the visibility ({@link PHPParserConstants#PUBLIC}, {@link PHPParserConstants#PROTECTED} or {@link
+     *         PHPParserConstants#PRIVATE})
+     */
+  public int getVisibility() {
+    return visibility;
+  }
+
 }

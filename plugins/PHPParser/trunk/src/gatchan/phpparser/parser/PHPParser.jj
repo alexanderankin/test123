@@ -1692,7 +1692,9 @@ FieldDeclaration FieldDeclarationPHP5(Token visibilityToken) :
                                           e.currentToken.endColumn+1));
   }
   {
-    return new FieldDeclaration(path,
+    int visibility = (visibilityToken == null) ? PUBLIC : visibilityToken.kind;
+    return new FieldDeclaration(visibility,
+                                path,
                                 variableDeclaration,
                                 currentSegment,
                                 start,
