@@ -16,12 +16,16 @@ public class PHPParserTester extends TestCase implements PHPParserListener {
 
   public void testNew() {
     checkPHP("session_start");
+    checkPHP("!feof($fin) && $data = fread($fin, 8096);");
   }
 
   public void testSingle() {
+    checkPHP("'?';");
   }
 
   public void testParserSuccess() {
+    checkPHP("$a = float;");
+    checkPHP("array('a' => float);");
     checkPHP("$a = @require 'b';");
     checkPHP("@list($sFormatted, $sExt) = explode(' ', $sFormatted, 2);");
     checkPHP("$tpl->define(array());");
