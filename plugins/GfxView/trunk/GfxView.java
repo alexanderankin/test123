@@ -16,7 +16,6 @@ import com.imagero.io.*;
 import com.imagero.reader.*;
 //}}}
 
-// exemple http://web.wanadoo.be/lud.soph/Image001.jpg
 // exemple http://spacemul.emu-france.com/image2/autres/3do/16944.png
 
 public class GfxView extends JPanel implements EBComponent,PropertyChangeListener {
@@ -62,7 +61,7 @@ public class GfxView extends JPanel implements EBComponent,PropertyChangeListene
 			}
 			catch(java.net.MalformedURLException except) {
 				JOptionPane.showMessageDialog(view,
-					"URL specified is Invalid", "Information", JOptionPane.INFORMATION_MESSAGE);
+					"URL specified is invalid", "Information", JOptionPane.INFORMATION_MESSAGE);
 			}
 	}//}}}
 
@@ -82,6 +81,12 @@ public class GfxView extends JPanel implements EBComponent,PropertyChangeListene
 				historyDlg.addEntry(urlPath);
 			}
 			catch (IOException except) {
+				historyDlg.removeEntry(urlPath);
+				JOptionPane.showMessageDialog(view,"Picture file is invalid or its format unknown");
+			}
+			catch (RuntimeException except) {
+				//Log.log(Log.DEBUG,this,"Mess=>"+except.getMessage());
+				historyDlg.removeEntry(urlPath);
 				JOptionPane.showMessageDialog(view,"Picture file is invalid or its format unknown");
 			}
 	}//}}}

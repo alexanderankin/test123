@@ -49,7 +49,8 @@ public class GfxViewListModel extends AbstractListModel {
 		for (int i=0 ; i < container.size() ; i++) {
 			if (container.elementAt(i).toString().compareTo(url.toString())==0) {
 				container.removeElementAt(i);
-				fireIntervalRemoved(this,container.size()-1,container.size()-1);
+//				fireIntervalRemoved(this,container.size()-1,container.size()-1);
+				fireIntervalRemoved(this,i,i);
 				saveFile();
 				break; // for
 			}
@@ -109,6 +110,7 @@ public class GfxViewListModel extends AbstractListModel {
 	public int getSize() {
 		return container.size();
 	} //}}}
+
 	//{{{ +getElementAt(int) : Object
 	public Object getElementAt(int index) {
 		return container.elementAt(index);
