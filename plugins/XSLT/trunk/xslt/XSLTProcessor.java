@@ -213,14 +213,14 @@ public class XSLTProcessor extends JPanel implements EBComponent {
 
         addStylesheetDialog = new AddStylesheetDialog();
         addStylesheetDialog.pack();
-        JButton addButton = new JButton(jEdit.getProperty("XSLTProcessor.add.button"));
+        addButton = new JButton(jEdit.getProperty("XSLTProcessor.add.button"));
         addButton.addActionListener(new ActionListener() {
           public void actionPerformed (ActionEvent e) {
             addStylesheetDialog.setLocationRelativeTo(XSLTProcessor.this);
             addStylesheetDialog.show();
           }
         });
-        final JButton deleteButton = new JButton(jEdit.getProperty("XSLTProcessor.delete.button"));
+        deleteButton = new JButton(jEdit.getProperty("XSLTProcessor.delete.button"));
         deleteButton.addActionListener(new ActionListener() {
           public void actionPerformed (ActionEvent e) {
             stylesheetsListModel.remove(stylesheetsList.getSelectedIndex());
@@ -234,10 +234,37 @@ public class XSLTProcessor extends JPanel implements EBComponent {
           }
         });
         deleteButton.setEnabled(false);
+        upButton = new JButton(jEdit.getProperty("XSLTProcessor.up.button"));
+        upButton.addActionListener(new ActionListener() {
+          public void actionPerformed (ActionEvent e) {
+            int selectedIndex = stylesheetsList.getSelectedIndex();
+            Object selected = stylesheetsListModel.get(selectedIndex);
+            stylesheetsListModel.remove(selectedIndex);
+            stylesheetsListModel.insertElementAt(selected, selectedIndex-1);
+            stylesheetsList.setSelectedIndex(selectedIndex-1);
+          }
+        });
+        upButton.setEnabled(false);
+        downButton = new JButton(jEdit.getProperty("XSLTProcessor.down.button"));
+        downButton.addActionListener(new ActionListener() {
+          public void actionPerformed (ActionEvent e) {
+            int selectedIndex = stylesheetsList.getSelectedIndex();
+            Object selected = stylesheetsListModel.get(selectedIndex);
+            stylesheetsListModel.remove(selectedIndex);
+            stylesheetsListModel.insertElementAt(selected, selectedIndex+1);
+            stylesheetsList.setSelectedIndex(selectedIndex+1);
+          }
+        });
+        downButton.setEnabled(false);
 
         stylesheetsList.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
           public void valueChanged (ListSelectionEvent e) {
-            deleteButton.setEnabled(stylesheetsList.getSelectedIndex() != -1);
+            boolean selectionExists = stylesheetsList.getSelectedIndex() != -1;
+            deleteButton.setEnabled(selectionExists);
+            upButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
+              && (stylesheetsList.getSelectedIndex() != 0));
+            downButton.setEnabled(selectionExists && (stylesheetsListModel.getSize() > 1)
+              && (stylesheetsList.getSelectedIndex() < stylesheetsListModel.getSize()-1));
           }
         });
 
@@ -254,11 +281,28 @@ public class XSLTProcessor extends JPanel implements EBComponent {
   
         gbc = new GridBagConstraints();
         gbc.gridy = 2;
+        gbc.weightx = 1;
+        gbc.insets = new Insets(4, 0, 0, 0);
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(upButton, gbc);
+
+        gbc = new GridBagConstraints();
+        gbc.gridy = 3;
+        gbc.weightx = 1;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+        add(downButton, gbc);
+
+        gbc = new GridBagConstraints();
+        gbc.gridy = 4;
         gbc.weighty = 1;
         gbc.fill = GridBagConstraints.VERTICAL;
         add(new JPanel(), gbc);
       }
 
+      private JButton addButton;
+      private JButton deleteButton;
+      private JButton upButton;
+      private JButton downButton;
       private AddStylesheetDialog addStylesheetDialog;
 
       /**
@@ -288,6 +332,10 @@ public class XSLTProcessor extends JPanel implements EBComponent {
             public void actionPerformed (ActionEvent e) {
               stylesheetsListModel.addElement(addStylesheetComboBoxModel.getSelectedItem());
               transformButton.setEnabled(true);
+              if ((stylesheetsList.getSelectedIndex() != -1)
+                && (stylesheetsListModel.getSize() > 1)) {
+                downButton.setEnabled(true);
+              }
               AddStylesheetDialog.this.hide();
             }
           });
