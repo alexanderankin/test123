@@ -1,6 +1,7 @@
 package uk.co.antroy.latextools;
 
 import gnu.regexp.RE;
+import uk.co.antroy.latextools.macros.*;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -118,7 +119,7 @@ public abstract class AbstractToolPanel
    */
     public boolean isMainFile(Buffer b) {
 
-        if (LaTeXMacros.isTeXFile(b)) {
+        if (ProjectMacros.isTeXFile(b)) {
 
             try {
                 RE dc = new RE("\\w*\\\\document(?:class)|(?:style).*");

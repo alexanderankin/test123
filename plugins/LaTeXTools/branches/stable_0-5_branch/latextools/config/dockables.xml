@@ -18,11 +18,11 @@
     <DOCKABLE NAME="label-dock">
 			  new uk.co.antroy.latextools.ReferencePanel(view, buffer);
     </DOCKABLE>
-    <DOCKABLE NAME="image-viewer-dock">
+<!--    <DOCKABLE NAME="image-viewer-dock">
         viewer = uk.co.antroy.latextools.ImageViewer.getInstance();
         viewer.showImage();
     </DOCKABLE>
-    <DOCKABLE NAME="project-viewer-dock">
+-->    <DOCKABLE NAME="project-viewer-dock">
         new uk.co.antroy.latextools.ProjectViewerPanel(view, buffer);
     </DOCKABLE>
 </DOCKABLES>

@@ -54,6 +54,9 @@ plugin.uk.co.antroy.latextools.LaTeXPlugin.menu = \
   reset-main \
   show-main \
   - \
+  find-duplicate-labels \
+  find-orphaned-references \
+  - \
   rename-label \
   insert-environment \
   insert-command \
@@ -73,12 +76,12 @@ reference.inserttags=true
 
 bibliography-dock.title = BibTeX Navigator
 bibliography-dock.label = BibTeX Navigator
-bibliography-table-dock.title = BibTeX Table Navigator
-bibliography-table-dock.label = BibTeX Table Navigator
-label-table-dock.title = Label Table Navigator
-label-table-dock.label = Label Table Navigator
-navigation-dock.title = LaTeX Navigator
-navigation-dock.label = Navigation Toolbar
+bibliography-table-dock.title = BibTeX Navigator
+bibliography-table-dock.label = BibTeX Navigator
+label-table-dock.title = Label Navigator
+label-table-dock.label = Label Navigator
+navigation-dock.title = LaTeX Tools
+navigation-dock.label = LaTeX Tools
 navigation-dock.nottex = Not a*TeX*Document!
 label-dock.title = Label Navigator
 label-dock.label = Label Navigator
@@ -123,6 +126,8 @@ insert-command.label = Insert Command
 rename-label.label = Rename Label
 panel.text.refresh=Refresh
 panel.text.reload=Reload
+find-duplicate-labels.label=Find Duplicate Labels
+find-orphaned-references.label=Find Orphaned References
 
 tagpair.linenumbers=true
 

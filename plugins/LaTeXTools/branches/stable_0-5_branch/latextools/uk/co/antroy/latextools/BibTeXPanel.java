@@ -17,6 +17,7 @@
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 package uk.co.antroy.latextools; 
+import uk.co.antroy.latextools.macros.*;
 
 import gnu.regexp.RE;
 import gnu.regexp.REException;
@@ -108,7 +109,7 @@ public class BibTeXPanel
 
     removeAll();
 
-    if (!LaTeXMacros.isTeXFile(buffer)) {
+    if (!ProjectMacros.isTeXFile(buffer)) {
       displayNotTeX(BorderLayout.CENTER);
     } else {
       //loadBibFiles();

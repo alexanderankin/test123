@@ -20,13 +20,15 @@
 package uk.co.antroy.latextools; 
 
 import javax.swing.*;
-import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.*;
+import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.util.*;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
+import javax.swing.*;
 import java.util.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.*;
 
 public class LaTeXDockable  extends JPanel{
 
@@ -34,6 +36,8 @@ public class LaTeXDockable  extends JPanel{
 
   private JComboBox nav_list = new JComboBox();
   public static final LaTeXDockable instance = new LaTeXDockable();
+  private JComponent infoPanel = new JLabel("");
+  private JLabel infoLabel = new JLabel("");
 
   private JLabel navig;
   
@@ -44,9 +48,17 @@ public class LaTeXDockable  extends JPanel{
     ArrayList nav = new ArrayList(NavigationList.getNavigationData());
     nav_list = new JComboBox(nav.toArray());
     
-    navig = new JLabel("Select LaTeX Navigation List:");
-    add(navig);
-    add(nav_list);
+    navig = new JLabel("Structure Browser: show");
+    
+    JPanel controls = new JPanel();
+    controls.setAlignmentX(Component.LEFT_ALIGNMENT);
+    controls.add(navig);
+    controls.add(nav_list);
+    
+    this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+    this.setAlignmentX(Component.LEFT_ALIGNMENT);
+    this.add(controls);
+    this.add(infoPanel);
     
     LaTeXDockableListener listener = new LaTeXDockableListener();
     nav_list.addActionListener(listener);
@@ -54,6 +66,22 @@ public class LaTeXDockable  extends JPanel{
   
   public JComboBox getComboBox(){
     return nav_list;
+  }
+  
+  public JComponent getInfoPanel(){
+    return infoPanel;
+  }
+
+  public void setInfoPanel(JComponent panel, String label){
+      this.remove(infoPanel);
+      this.remove(infoLabel);
+      this.infoPanel = panel;
+      
+      Dimension d = new Dimension(300,300);
+      infoPanel.setPreferredSize(d);
+      infoLabel = new JLabel("<html><font color='#0000aa'><b>" + label);
+      this.add(infoLabel);
+      this.add(infoPanel);
   }
   
   private class LaTeXDockableListener implements ActionListener {

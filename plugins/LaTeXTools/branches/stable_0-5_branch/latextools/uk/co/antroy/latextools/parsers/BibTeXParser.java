@@ -18,6 +18,8 @@
 */
 package uk.co.antroy.latextools.parsers; 
 
+import uk.co.antroy.latextools.macros.*;
+
 import gnu.regexp.RE;
 import gnu.regexp.REException;
 import gnu.regexp.REMatch;
@@ -149,7 +151,7 @@ public class BibTeXParser {
     bibEntries.clear();
     bibFiles.clear();
     
-    if (LaTeXMacros.isBibFile(buffer)){
+    if (ProjectMacros.isBibFile(buffer)){
         bibFiles.add(buffer.getFile());
         loadBibEntries();
         return;
@@ -157,7 +159,7 @@ public class BibTeXParser {
     
     File texFile = new File(buffer.getPath());
     
-    DefaultMutableTreeNode files = LaTeXMacros.getProjectFiles(view, buffer);
+    DefaultMutableTreeNode files = ProjectMacros.getProjectFiles(view, buffer);
     
     filesLoop:
     for (Enumeration it = files.getLastLeaf().pathFromAncestorEnumeration(files); it.hasMoreElements();) {
@@ -199,7 +201,7 @@ public class BibTeXParser {
              if (!s.endsWith(".bib"))
                s = s + ".bib";
    
-             File f = new File(LaTeXMacros.getMainTeXDir(buffer), s);
+             File f = new File(ProjectMacros.getMainTeXDir(buffer), s);
    
              if (!f.exists())
                f = new File(s);
