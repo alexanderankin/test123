@@ -63,10 +63,15 @@ XPathTool.error.dockFirst=You must dock the XPath Tool before you can perform th
 XPathTool.xpathExpression.label=XPath Expression:
 XPathTool.evaluate.button=Evaluate
 
+XPathTool.result.xpath.evaluted.label=Expression evaluated to:
+XPathTool.result.xpath.node-set=a node-set of size {0}
+XPathTool.result.xpath.not-node-set=a {0}
+
 XPathTool.result.summary.label=Result summary:
-XPathTool.result.nodes.summary={0} node(s) selected:
-XPathTool.result.node=\ \ node {0}: type={1}, name={2}, value={3}
-XPathTool.result.non-nodes.summary= evaluted to a {0}:
+XPathTool.result.root=node {0}: type={1}
+XPathTool.result.element=node {0}: type={1}, name={2}
+XPathTool.result.no-name-node=node {0}: type={1}, value={2}
+XPathTool.result.node=node {0}: type={1}, name={2}, value={3}
 
 XPathTool.result.xpath.string.label=XPath string-value of result:
 XPathTool.result.xml.string.label=Result as XML fragments:
