@@ -1,0 +1,391 @@
+/*
+ * TagsOptionsPanel.java
+ * Copyright (c) 2001 Kenrick Drew
+ * kdrew@earthlink.net
+ *
+ * This file is part of TagsPlugin
+ *
+ * TagsPlugin is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or any later version.
+ *
+ * TagsPlugin is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+ */
+
+package tags;
+ 
+import java.io.*;
+import java.lang.*;
+import java.lang.System.*;
+import java.util.*;
+
+import java.awt.*;
+import java.awt.event.*;
+import javax.swing.*;
+import javax.swing.event.*;
+
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.View;
+import org.gjt.sp.jedit.GUIUtilities;
+import org.gjt.sp.jedit.browser.VFSBrowser;
+
+
+public class TagsOptionsPanel extends JPanel {
+
+  /***************************************************************************/
+  static protected boolean debug_ = false;
+  
+  /***************************************************************************/
+  
+  // This panel
+     // North
+     protected JPanel parserPanel_;  // labeled panel
+       protected JPanel parserButtonPanel_;  // panel w/ radio group
+         protected ButtonGroup parserGroup_;
+
+     // Center
+     protected JPanel tagFilesPanel_; // labeled panel
+       protected JPanel tagFilesUIPanel_;  // panel w/ tag files ui components
+         
+         // North
+         protected JPanel tagFilesOptionsPanel_;
+           protected JCheckBox useCurrentBufTagFileCheckBox_;
+           protected JCheckBox searchAllFilesCheckBox_;
+         
+         // Center
+         protected JScrollPane pane_;
+           protected JList list_;
+             protected DefaultListModel listModel_;
+          
+         // South
+         protected JPanel buttonPanel_;  // panel w/ button
+           protected JButton addButton_;
+           protected JButton removeButton_;
+           protected JButton moveUpButton_;
+           protected JButton moveDownButton_;
+        
+      // South
+      protected JCheckBox debugCheckBox_;
+      
+  protected View view_;
+
+  protected Vector origList_;
+  protected int origParserType_;
+  
+  /***************************************************************************/
+  public TagsOptionsPanel(View view) {
+    origList_ = new Vector(15);
+    
+    setup(view);
+
+    int numFiles = Tags.tagFiles_.size();
+    for (int i = 0; i < numFiles; i++) {
+      listModel_.addElement(Tags.tagFiles_.elementAt(i));
+      origList_.addElement(Tags.tagFiles_.elementAt(i));
+    }
+  }
+  
+  /***************************************************************************/
+  public void setDebug(boolean debug) { debug_ = debug; }
+  
+  /***************************************************************************/
+  protected void setup(View view) {
+    view_ = view;
+    
+    createComponents();
+    setupComponents();
+    
+    JRadioButton b;
+    parserGroup_ = new ButtonGroup();
+    origParserType_ = Tags.getParserType();
+    for (int i = 0; i < Tags.NUM_PARSERS; i++) {
+      b = new JRadioButton(Tags.parsers_[i].toString());
+      if (i == origParserType_)
+        b.setSelected(true);
+
+      b.setActionCommand(String.valueOf(i));
+      b.addActionListener(parserRadioListener_);
+      
+      parserGroup_.add(b);
+      parserButtonPanel_.add(b);
+      b = null;
+    }
+    
+    placeComponents();
+    
+    updateGUI();
+  }
+  
+  /***************************************************************************/
+  protected void createComponents() {
+    setBorder(BorderFactory.createEmptyBorder(5,5,0,5));
+    
+    setLayout(new BorderLayout(5,5));    
+
+      parserPanel_ = new JPanel(new GridLayout(0,1,0,0));
+        parserButtonPanel_ = new JPanel(new GridLayout(0,1,0,0));
+        parserPanel_.setBorder(
+           BorderFactory.createTitledBorder(
+                                 jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
+                                                      "tag-file-type.title")));
+        parserButtonPanel_.setBorder(BorderFactory.createEmptyBorder(0,5,0,5));
+        
+      tagFilesPanel_ = new JPanel(new GridLayout(0,1,0,0));
+      tagFilesPanel_.setBorder(
+        BorderFactory.createTitledBorder(jEdit.getProperty(
+                        TagsPlugin.OPTION_PREFIX + "tag-search-files.label")));
+      
+        tagFilesUIPanel_ = new JPanel(new BorderLayout(5,5));
+        tagFilesUIPanel_.setBorder(BorderFactory.createEmptyBorder(0,5,5,5));
+        
+          tagFilesOptionsPanel_ = new JPanel(new GridLayout(0,1,0,0));
+        
+            useCurrentBufTagFileCheckBox_ = new JCheckBox(
+                                  jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
+                                    "tag-search-current-buff-tag-file.label"));
+            searchAllFilesCheckBox_ = new JCheckBox(
+                                  jEdit.getProperty(TagsPlugin.OPTION_PREFIX +
+                                    "tag-search-all-files.label"));
+                                    
+					listModel_ = new DefaultListModel();
+			
+          list_ = new JList(listModel_);
+          pane_ = new JScrollPane(list_, 
+                                  JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                  JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+            
+          buttonPanel_ = new JPanel(new GridLayout(1,0,5,5));
+            addButton_ = new JButton(
+                      TagsPlugin.getOptionString("tag-search-files-add.label"));
+            removeButton_ = new JButton(
+                   TagsPlugin.getOptionString("tag-search-files-remove.label"));
+            moveUpButton_ = new JButton(
+                  TagsPlugin.getOptionString("tag-search-files-move-up.label"));
+            moveDownButton_ = new JButton(
+                TagsPlugin.getOptionString("tag-search-files-move-down.label"));
+        
+      debugCheckBox_ = new JCheckBox("Debug");
+  }
+  
+  /***************************************************************************/
+  protected void setupComponents() {
+    
+    addButton_.addActionListener(addButtonListener_);
+    removeButton_.addActionListener(removeButtonListener_);
+    moveUpButton_.addActionListener(moveUpButtonListener_);
+    moveDownButton_.addActionListener(moveDownButtonListener_);
+    list_.addListSelectionListener(listSelectionListener_);
+    
+    useCurrentBufTagFileCheckBox_.setSelected(Tags.getUseCurrentBufTagFile());
+    searchAllFilesCheckBox_.setSelected(Tags.getSearchAllTagFiles());
+                                    
+    addButton_.setMnemonic(KeyEvent.VK_A);
+    removeButton_.setMnemonic(KeyEvent.VK_R);
+    moveUpButton_.setMnemonic(KeyEvent.VK_U);
+    moveDownButton_.setMnemonic(KeyEvent.VK_D);
+    
+    debugCheckBox_.setSelected(TagsPlugin.debug_);
+    debugCheckBox_.addActionListener(debugCheckBoxListener_);
+  }
+  
+  /***************************************************************************/
+  protected void placeComponents() {
+    buttonPanel_.add(addButton_);    
+    buttonPanel_.add(removeButton_);    
+    buttonPanel_.add(moveUpButton_);    
+    buttonPanel_.add(moveDownButton_);
+
+    parserPanel_.add(parserButtonPanel_);
+    
+    tagFilesPanel_.add(tagFilesUIPanel_);
+    
+    tagFilesOptionsPanel_.add(useCurrentBufTagFileCheckBox_);
+    tagFilesOptionsPanel_.add(searchAllFilesCheckBox_);
+    
+    tagFilesUIPanel_.add(tagFilesOptionsPanel_, BorderLayout.NORTH);
+    tagFilesUIPanel_.add(pane_, BorderLayout.CENTER);
+    tagFilesUIPanel_.add(buttonPanel_, BorderLayout.SOUTH);    
+    
+    add(parserPanel_, BorderLayout.NORTH);
+    add(tagFilesPanel_, BorderLayout.CENTER);
+    add(debugCheckBox_, BorderLayout.SOUTH);
+    
+    //add(Box.createRigidArea(new Dimension(5,5)), BorderLayout.EAST);
+    //add(Box.createRigidArea(new Dimension(5,5)), BorderLayout.WEST);
+  }
+  
+  /***************************************************************************/
+  protected ActionListener debugCheckBoxListener_ = new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      TagsPlugin.debug_ = debugCheckBox_.isSelected();
+    }
+  };
+  
+  /***************************************************************************/
+  protected ActionListener addButtonListener_ = new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      int selectedIndex = list_.getSelectedIndex();
+      if (selectedIndex == -1)
+        selectedIndex = 0;
+
+      String newTagFile = null;
+      String newTagFiles[] = null;
+      if (debug_) {
+        JFileChooser chooser = new JFileChooser();
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION)
+          newTagFile = chooser.getSelectedFile().getPath();
+        else
+          newTagFile = null;
+      }
+      else {
+        newTagFiles = GUIUtilities.showVFSFileDialog(view_, null, 
+                                                 VFSBrowser.OPEN_DIALOG,false);
+      }
+        
+      if (newTagFile != null) {
+        listModel_.add(selectedIndex, newTagFile);
+        Tags.addTagFile(newTagFile, TagFile.DEFAULT_CATAGORY, 
+                               selectedIndex);
+      }
+      else if (newTagFiles != null) {
+        for (int i = 0; i < newTagFiles.length; i++) {
+          listModel_.add(selectedIndex, newTagFiles[i]);
+          Tags.addTagFile(newTagFiles[i], TagFile.DEFAULT_CATAGORY, 
+                                 selectedIndex);
+        }
+      }
+      
+      if (newTagFile != null || newTagFiles != null) {
+        list_.setSelectedIndex(selectedIndex);
+        list_.ensureIndexIsVisible(selectedIndex);
+      }
+      
+      updateGUI();
+    }
+  };
+
+  /***************************************************************************/
+  protected ActionListener removeButtonListener_ = new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      int selectedIndices[] = list_.getSelectedIndices();
+      for (int i = selectedIndices.length - 1; i >= 0; i--) {
+        listModel_.removeElementAt(selectedIndices[i]);      
+        Tags.removeTagFile(selectedIndices[i]);
+      }
+      
+      int newSize = listModel_.size();
+      if (newSize != 0) {
+        int index = selectedIndices[0];
+        if (index > (newSize - 1))
+          index = newSize - 1;
+        list_.setSelectedIndex(index);
+        list_.ensureIndexIsVisible(index);
+      }
+      
+      updateGUI();
+      
+    }
+  };
+  
+  /***************************************************************************/
+  protected ActionListener moveUpButtonListener_ = new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      moveItem(-1);
+      updateGUI();
+    }
+  };
+
+  /***************************************************************************/
+  protected ActionListener moveDownButtonListener_ = new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      moveItem(+1);
+      updateGUI();
+    }
+  };
+
+  /***************************************************************************/
+  protected ActionListener parserRadioListener_ = new ActionListener() {
+    public void actionPerformed(ActionEvent e) {
+      try {
+        int parserType = Integer.parseInt(e.getActionCommand());
+        Tags.setParserType(parserType);
+      }
+      catch (NumberFormatException nfe) {
+        System.out.println("How did this happen!"); 
+      }
+    }
+  };
+  
+  /***************************************************************************/
+  protected void moveItem(int indexDir) {
+    int selectedIndex = list_.getSelectedIndex();
+    int newIndex = 0;
+    Object element = list_.getSelectedValue();
+
+    newIndex = selectedIndex + indexDir;
+
+    listModel_.removeElementAt(selectedIndex);
+    Tags.removeTagFile(selectedIndex);
+    listModel_.add(newIndex, element);
+    Tags.tagFiles_.insertElementAt(element,newIndex);
+    
+    list_.setSelectedIndex(newIndex);
+    list_.ensureIndexIsVisible(newIndex);
+  }
+
+
+  /***************************************************************************/
+  protected ListSelectionListener listSelectionListener_ =
+                                                    new ListSelectionListener() {
+    public void valueChanged(ListSelectionEvent e) {
+      updateGUI(); 
+    }
+  };
+  
+  /***************************************************************************/
+  protected void updateGUI() {
+    int selectedIndices[] = list_.getSelectedIndices();
+    int selectionCount = (selectedIndices != null) ? selectedIndices.length : 0;
+    int numItems = listModel_.size();
+    removeButton_.setEnabled(selectionCount != 0 && numItems != 0);
+    moveUpButton_.setEnabled(selectionCount == 1 && selectedIndices[0] != 0 && 
+                             numItems != 0);
+    moveDownButton_.setEnabled(selectionCount == 1 && 
+                             selectedIndices[0] != (listModel_.getSize() - 1) &&
+                             numItems != 0);
+  }
+  
+  /***************************************************************************/
+  static public void main(String args[]) {
+    
+    debug_ = true;
+    
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.1");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.2");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.3");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.4");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.5");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.1");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.2");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.3");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.4");
+    Tags.appendTagFile("/sportsrc/spg/system_1/softdb/tags.o.5");
+    
+    TagsOptionsPanel panel = new TagsOptionsPanel(null);
+    JFrame frame = new JFrame("Tag Files");
+    frame.getContentPane().setLayout(new BorderLayout());
+    frame.getContentPane().add(panel, BorderLayout.CENTER);
+    frame.pack();
+    frame.setVisible(true);
+    
+    Tags.displayTagFiles(null);
+  }
+}
