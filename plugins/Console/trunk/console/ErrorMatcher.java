@@ -62,7 +62,7 @@ class ErrorMatcher
 				buf.append(ch);
 		}
 
-		internalName = buf.toString();
+		this.internalName = buf.toString();
 	}
 
 	ErrorMatcher()
