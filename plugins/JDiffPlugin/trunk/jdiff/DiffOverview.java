@@ -19,6 +19,9 @@
  */
 
 
+package jdiff;
+
+
 import java.awt.Dimension;
 
 import javax.swing.JComponent;

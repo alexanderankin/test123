@@ -5,75 +5,75 @@
 <ACTIONS>
     <ACTION NAME="toggle-dual-diff">
         <CODE>
-            DualDiff.toggleFor(view);
+            jdiff.DualDiff.toggleFor(view);
         </CODE>
         <IS_SELECTED>
-            return DualDiff.isEnabledFor(view);
+            return jdiff.DualDiff.isEnabledFor(view);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="jdiff.show-dual-diff-dialog">
         <CODE>
-            new DualDiffDialog(view);
+            new jdiff.DualDiffDialog(view);
         </CODE>
     </ACTION>
 
 
     <ACTION NAME="jdiff.refresh-diff">
         <CODE>
-            DualDiff.refreshFor(view);
+            jdiff.DualDiff.refreshFor(view);
         </CODE>
     </ACTION>
 
 
     <ACTION NAME="jdiff.toggle-ignore-case">
         <CODE>
-            DualDiff.toggleIgnoreCaseFor(view);
+            jdiff.DualDiff.toggleIgnoreCaseFor(view);
         </CODE>
         <IS_SELECTED>
-            return DualDiff.getIgnoreCaseFor(view);
+            return jdiff.DualDiff.getIgnoreCaseFor(view);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="jdiff.toggle-trim-whitespace">
         <CODE>
-            DualDiff.toggleTrimWhitespaceFor(view);
+            jdiff.DualDiff.toggleTrimWhitespaceFor(view);
         </CODE>
         <IS_SELECTED>
-            return DualDiff.getTrimWhitespaceFor(view);
+            return jdiff.DualDiff.getTrimWhitespaceFor(view);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="jdiff.toggle-ignore-whitespace">
         <CODE>
-            DualDiff.toggleIgnoreWhitespaceFor(view);
+            jdiff.DualDiff.toggleIgnoreWhitespaceFor(view);
         </CODE>
         <IS_SELECTED>
-            return DualDiff.getIgnoreWhitespaceFor(view);
+            return jdiff.DualDiff.getIgnoreWhitespaceFor(view);
         </IS_SELECTED>
     </ACTION>
 
 
     <ACTION NAME="jdiff.next-diff">
         <CODE>
-            DualDiff.nextDiff(editPane);
+            jdiff.DualDiff.nextDiff(editPane);
         </CODE>
     </ACTION>
 
 
     <ACTION NAME="jdiff.prev-diff">
         <CODE>
-            DualDiff.prevDiff(editPane);
+            jdiff.DualDiff.prevDiff(editPane);
         </CODE>
     </ACTION>
 
 
     <ACTION NAME="jdiff.diff-normal-output">
         <CODE>
-            DualDiff.diffNormalOutput(view);
+            jdiff.DualDiff.diffNormalOutput(view);
         </CODE>
     </ACTION>
 </ACTIONS>

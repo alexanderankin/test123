@@ -18,6 +18,9 @@
 */
 
 
+package jdiff;
+
+
 import javax.swing.ButtonGroup;
 import javax.swing.JCheckBox;
 import javax.swing.JLabel;
