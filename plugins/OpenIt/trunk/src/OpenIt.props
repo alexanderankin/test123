@@ -4,7 +4,7 @@
 # general plugin information
 plugin.org.etheridge.openit.OpenItPlugin.name=OpenIt
 plugin.org.etheridge.openit.OpenItPlugin.author=Matt Etheridge
-plugin.org.etheridge.openit.OpenItPlugin.version=1.0
+plugin.org.etheridge.openit.OpenItPlugin.version=1.01
 plugin.org.etheridge.openit.OpenItPlugin.docs=OpenIt.html
 plugin.org.etheridge.openit.OpenItPlugin.depend.0=jdk 1.4
 plugin.org.etheridge.openit.OpenItPlugin.depend.1=jedit 04.00.00.00
@@ -24,6 +24,7 @@ openit.menu.label=OpenIt
 openit.FindFileWindow.Instruction.label=Enter file name:
 openit.FindFileWindow.FilterButton.Show.label=Show Filter
 openit.FindFileWindow.FilterButton.Hide.label=Hide Filter
+openit.FindFileWindow.InitialLoadingMessage.label=Loading File Index... (this will dissapear when loaded)
 
 # Icons
 openit.FindFileWindow.ImagePropertyPrefix=openit.FindFileWindow.ImageFile.
@@ -77,3 +78,20 @@ options.OpenIt.PopupOptionsPane.Display.DisplayDirectory=Display directory where
 options.OpenIt.PopupOptionsPane.Display.DisplayIcons=Display file type icons?
 options.OpenIt.PopupOptionsPane.Display.DisplaySize=Display file size?
 
+#
+# jEdit 4.2 Properties
+#
+
+# whether the plugin should be activated at startup or defer till used
+plugin.org.etheridge.openit.OpenItPlugin.activate=defer
+
+# menu
+plugin.org.etheridge.openit.OpenItPlugin.menu=openit.find-file-in-source-path
+
+# option panels
+plugin.org.etheridge.openit.OpenItPlugin.option-group=sourcePathOptionsPane \
+  popupOptionsPane
+options.sourcePathOptionsPane.label=SourcePath Options
+options.sourcePathOptionsPane.code=new org.etheridge.openit.options.SourcePathOptionsPane();
+options.popupOptionsPane.code=new org.etheridge.openit.options.PopupOptionsPane();
+options.popupOptionsPane.label=Popup Window Options
