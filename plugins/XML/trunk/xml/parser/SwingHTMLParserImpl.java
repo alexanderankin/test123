@@ -43,10 +43,22 @@ public class SwingHTMLParserImpl extends XmlParser
 	} //}}}
 
 	//{{{ parse() method
-	public SideKickParsedData parse(Buffer buffer, String text, DefaultErrorSource errorSource)
+	public SideKickParsedData parse(Buffer buffer, DefaultErrorSource errorSource)
 	{
-		if(text.startsWith("<?xml"))
-			return XmlPlugin.XML_PARSER_INSTANCE.parse(buffer,text,errorSource);
+		if(buffer.getLength() >= 5 && buffer.getText(0,5).equals("<?xml"))
+			return XmlPlugin.XML_PARSER_INSTANCE.parse(buffer,errorSource);
+
+		String text;
+
+		try
+		{
+			buffer.readLock();
+			text = buffer.getText(0,buffer.getLength());
+		}
+		finally
+		{
+			buffer.readUnlock();
+		}
 
 		XmlParsedData data = new XmlParsedData(buffer.getName(),true);
 
