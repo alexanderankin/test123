@@ -13,35 +13,29 @@
 * along with this program; if not, write to the Free Software
 * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
-package projectviewer;
+package projectviewer.views.defaultview;
 
-import java.awt.*;
 import java.io.File;
-import java.util.*;
-import java.util.List;
 import javax.swing.*;
-import javax.swing.tree.TreeNode;
-import org.apache.commons.digester.Digester;
-import org.gjt.sp.jedit.*;
-import org.gjt.sp.util.Log;
-import org.mobix.xml.*;
+import org.gjt.sp.jedit.View;
+import org.mobix.xml.XmlWriteContext;
 import org.xml.sax.SAXException;
-import projectviewer.ui.*;
-import projectviewer.ui.ActionMap;
+import projectviewer.*;
+import projectviewer.ui.Actions;
 import projectviewer.views.BaseView;
 
 
 /**
  * A file view that displays files from a root directory.
  */
-public class DefaultFileView extends BaseView
+public class DefaultView extends BaseView
 {
    private File root;
 
    /**
-    * Create a new <code>DefaultFileView</code>.
+    * Create a new <code>DefaultView</code>.
     */
-   public DefaultFileView()
+   public DefaultView()
    {
       super("Default");
       root = new File(System.getProperty("user.dir"));
@@ -92,28 +86,22 @@ public class DefaultFileView extends BaseView
       if (chooser.showOpenDialog(view) == JFileChooser.CANCEL_OPTION)
          return ;
       root = chooser.getSelectedFile();
-      importFiles(view);
+      ImportAction.importFiles(view, this);
    }
 
    /**
-    * Add a file to this view.
+    * Add a project file to this view.  This differs from {@link addFile(File)} in that
+    * this method will build a directory structure that mirrors the file's physical
+    * structure, starting from the view's root.
     *
-    * <p>SPECIFIED ID: projectviewer.FileView</p>
+    * <p>SPECIFIED IN: {@link projectviewer.views.AddFileSupport}</p>
     */
-   public ProjectFile addProjectFile(View view, ProjectArtifact prjArtifact)
+   public ProjectFile addProjectFile(File fileObj)
    {
-      File startDir = (equals(prjArtifact)) ? root : ProjectArtifacts.getDirectory(prjArtifact);
-      String[] files = UI.getFiles(view, startDir.getAbsolutePath() + "/");
-      // TODO: Use Filter.  chooser.setFileFilter( new NonViewFileFilter(this) );
-      //chooser.setAcceptAllFileFilterUsed(false); #JDK1.3
-      if (files == null || files.length < 1) return null;
-      ProjectFile firstFile = null;
-      for (int i=0; i<files.length; i++) {
-         ProjectFile eachFile = addProjectFile(new File(files[i]));
-         if (firstFile == null && eachFile != null)
-            firstFile = eachFile;
-      }
-      return firstFile;
+      ProjectDirectory dir = ensureDirectory(fileObj.getParentFile());
+      if (dir != null && !dir.containsFile(fileObj.getName()))
+         return dir.addFile(fileObj);
+      return null;
    }
 
    /**
@@ -122,12 +110,13 @@ public class DefaultFileView extends BaseView
     *
     * <p>SPECIFIED ID: projectviewer.FileView</p>
     */
-   public ActionMap getActions()
+   public Actions getActions()
    {
-      ActionMap actions = new ActionMap();
+      Actions actions = new Actions();
       actions.addFileViewAction(new AddCurrentBufferAction());
       actions.addFileViewAction(new SynchronizeAction());
       actions.addFileViewAction(new ImportAction());
+      actions.addProjectDirectoryAction(new  AddProjectFileAction());
       return actions;
    }
 
@@ -155,29 +144,6 @@ public class DefaultFileView extends BaseView
    }
 
    /**
-    * Import files to this view.
-    */
-   protected void importFiles(Component c) {
-      ImportPanel importPanel = new ImportPanel();
-      Window win = SwingUtilities.getWindowAncestor(c);
-      ViewConfigDialog dialog =
-         new ViewConfigDialog((Frame) win, "Import File(s)", importPanel);
-      UI.center(dialog);
-      dialog.setVisible(true);
-      if (dialog.isOk() && importPanel.isImportEnabled()) {
-         List files = importPanel.getFiles(root);
-         int total = 0;
-         for (Iterator i = files.iterator(); i.hasNext();) {
-            if (addProjectFile((File) i.next()) != null) total++;
-         }
-         JOptionPane.showMessageDialog( win,
-                                        "Imported " + total + " file(s) into your project",
-                                        "Import Successful",
-                                        JOptionPane.INFORMATION_MESSAGE );
-      }
-   }
-
-   /**
     * Returns the project root.
     */
    protected File getProjectRoot()
@@ -191,19 +157,6 @@ public class DefaultFileView extends BaseView
    protected void setProjectRoot(File aRoot)
    {
       root = aRoot;
-   }
-
-   /**
-    * Add a project file to this view.  This differs from {@link addFile(File)} in that
-    * this method will build a directory structure that mirrors the file's physical
-    * structure, starting from the view's root.
-    */
-   protected ProjectFile addProjectFile(File fileObj)
-   {
-      ProjectDirectory dir = ensureDirectory(fileObj.getParentFile());
-      if (dir != null && !dir.containsFile(fileObj.getName()))
-         return dir.addFile(fileObj);
-      return null;
    }
 
    /**
@@ -249,10 +202,10 @@ public class DefaultFileView extends BaseView
    private class AddCurrentBufferAction extends ActionBase {
 
       /**
-       * Create a new <code>ImportAction</code>.
+       * Create a new <code>AddCurrentBufferAction</code>.
        */
       public AddCurrentBufferAction() {
-         super("Add Buffer To Project");
+         super("add-buffer");
       }
 
       /**
@@ -269,29 +222,6 @@ public class DefaultFileView extends BaseView
    }
 
    /**
-    * An action to import files into this view.
-    */
-   private class ImportAction extends ActionBase {
-
-      /**
-       * Create a new <code>ImportAction</code>.
-       */
-      public ImportAction() {
-         super("Import...");
-      }
-
-      /**
-       * Perform the action.  Any {@link ProjectException}s thrown will be handled
-       * appropriately.
-       */
-      protected void performAction() throws ProjectException {
-         importFiles(projectViewer);
-         projectViewer.getTreeModel().nodeStructureChanged(DefaultFileView.this);
-      }
-
-   }
-
-   /**
     * An action to synchronize the files in this view with the actual file in
     * the file system.
     */
@@ -303,14 +233,14 @@ public class DefaultFileView extends BaseView
        * Create a new <code>ActionBase</code>.
        */
       public SynchronizeAction() {
-         super("Synchronize");
+         super("synchronize-view");
       }
 
       /**
        * Evaluate the visited artifact node.
        */
       public int evaluate(ProjectArtifact artifact) {
-         if (artifact == DefaultFileView.this)
+         if (artifact == DefaultView.this)
             return ArtifactTreeWalker.EVAL_CHILDREN;
          if (artifact instanceof ProjectFile) {
             ProjectFile file = (ProjectFile) artifact;
@@ -332,10 +262,10 @@ public class DefaultFileView extends BaseView
        * appropriately.
        */
       protected void performAction() throws ProjectException {
-         ArtifactTreeWalker walker = new ArtifactTreeWalker(DefaultFileView.this,
+         ArtifactTreeWalker walker = new ArtifactTreeWalker(DefaultView.this,
                                                             this);
          walker.walk();
-         projectViewer.getTreeModel().nodeStructureChanged(DefaultFileView.this);
+         projectViewer.getTreeModel().nodeStructureChanged(DefaultView.this);
       }
 
    }

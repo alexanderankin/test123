@@ -23,7 +23,7 @@ import projectviewer.*;
 /**
  * An action map for handling dynamic actions.
  */
-public class ActionMap {
+public class Actions {
 
    private static ArtifactFilter fileViewFilter;
    private static ArtifactFilter directoryFilter;
@@ -33,9 +33,9 @@ public class ActionMap {
 
 
    /**
-    * Create a new <code>ActionMap</code>.
+    * Create a new <code>Actions</code>.
     */
-   public ActionMap() {
+   public Actions() {
       filters = new ArrayList();
       actions = new ArrayList();
    }
