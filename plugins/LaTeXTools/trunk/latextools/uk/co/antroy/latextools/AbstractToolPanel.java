@@ -17,7 +17,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.*;
 
 /*:folding=indent:
  * AbstractToolPanel.java - Abstract class representing a tool panel.
@@ -147,12 +147,17 @@ public abstract class AbstractToolPanel
    * @return ¤
    */
     public boolean isTeXFile(Buffer b) {
-        log("" + b.getMode());
-        String s = b.getMode().getName();
-        boolean out = s.equals("tex");
-        log("" + out);
-
-        return out;
+      if (b == null) return false;
+      
+      Mode mode = b.getMode();
+      //log("" + mode);
+      if (mode == null) return false;
+      
+      String s = mode.getName();
+      boolean out = s.equals("tex");
+      //log("" + out);
+      
+      return out;
     }
 
     protected void displayNotTeX(String position) {
