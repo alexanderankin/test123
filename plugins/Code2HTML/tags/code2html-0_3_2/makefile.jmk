@@ -1,0 +1,65 @@
+# Code2HTML plugin makefile
+#
+# To recompile this plugin, start jmk in the plugin's source directory.
+#
+# jEdit buffer-local properties:
+# :mode=makefile:tabSize=4:noTabs=yes:
+# :indentOpenBrackets={:indentCloseBrackets=}:
+
+# To recompile this plugin, start jmk in the plugin's source directory.
+
+jar_name = "Code2HTML";
+
+##
+# javac executable and args
+##
+javac_bin = "javac";
+javac_opts = "-deprecation";
+
+#javac_bin = "jikes";
+#javac_opts = "-deprecation" "+E";
+
+# set up the class path
+new_class_path = "../../jedit.jar;.";
+old_class_path = (getprop "java.class.path");
+
+# concatenate the old and new class paths
+if (equal "", old_class_path) then
+    class_path = new_class_path;
+else
+    class_path = (cat old_class_path ";" new_class_path);
+end
+
+cmd_javac = javac_bin "-classpath" class_path javac_opts;
+
+##
+# jar executable and args
+##
+jar_bin = "jar";
+jar_opts = "cf0";
+cmd_jar = jar_bin jar_opts;
+
+srcs     = (glob "*.java");
+classes  = (subst ".java", ".class", srcs);
+jar_file = (cat "../" jar_name ".jar");
+
+"all": jar_file;
+
+"%.class": "%.java";
+{
+    exec cmd_javac <;
+}
+
+jar_file: classes;
+{
+    exec cmd_jar @
+    (glob
+        "*.props"
+        "*.class"
+        "*.html"
+        "*.txt"
+        "*.xml"
+    );
+}
+
+".PHONY": "all";
