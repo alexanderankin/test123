@@ -26,8 +26,8 @@ import java.util.ArrayList;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.JMenu;
 import javax.swing.JTree;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.tree.TreePath;
 
@@ -79,7 +79,7 @@ public class NodeRemoverAction extends Action {
 	/** Returns the text to be shown on the button and/or menu item. */
 	public String getText() {
 		return (delete) ? jEdit.getProperty("projectviewer.action.delete")
-						: jEdit.getProperty("projectviewer.action.remove");
+						: null;
 	} //}}}
 
 	//{{{ actionPerformed(ActionEvent) method
@@ -120,9 +120,31 @@ public class NodeRemoverAction extends Action {
 	/** Enable action only for non-root nodes. */
 	public void prepareForNode(VPTNode node) {
 		if (delete) {
-			cmItem.setVisible(node != null && node.isFile() && node.canWrite());
+			if (node == null) {
+				// if only writable files are selected, enable the "delete"
+				// menu item
+				cmItem.setVisible(true);
+				JTree tree = viewer.getCurrentTree();
+				TreePath[] paths = tree.getSelectionPaths();
+				for (int i = 0; i < paths.length; i++) {
+					VPTNode n = (VPTNode) paths[i].getLastPathComponent();
+					if (!n.isFile() || !((VPTFile)n).canWrite()) {
+						cmItem.setVisible(false);
+						break;
+					}
+				}
+			} else {
+				cmItem.setVisible(node.isFile() && node.canWrite());
+			}
 		} else {
-			cmItem.setVisible(node == null || !node.isRoot());
+			if (node == null) {
+				((JMenuItem)cmItem).setText(
+					jEdit.getProperty("projectviewer.action.remove_multiple"));
+			} else {
+				((JMenuItem)cmItem).setText(
+					node.isProject() ? jEdit.getProperty("projectviewer.action.remove_project")
+									 : jEdit.getProperty("projectviewer.action.remove"));
+			}cmItem.setVisible(node == null || !node.isRoot());
 		}
 	} //}}}
 
