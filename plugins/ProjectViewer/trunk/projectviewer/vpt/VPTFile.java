@@ -32,10 +32,6 @@ import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.GUIUtilities;
 
-import errorlist.ErrorListPlugin;
-import errorlist.ErrorSource;
-import errorlist.ErrorSource;
-
 import projectviewer.config.ProjectViewerConfig;
 //}}}
 
@@ -68,18 +64,19 @@ public class VPTFile extends VPTNode {
 	private boolean	loadedIcon;
 	//}}}
 
-	//{{{ Constructors
+	//{{{ +VPTFile(String) : <init>
 
 	public VPTFile(String path) {
 		this(new File(path));
-	}
+	} //}}}
 
+	//{{{ +VPTFile(File) : <init>
 	public VPTFile(File file) {
 		super(file.getName());
 		this.file = file;
 		this.canPath = null;
 		this.fileTypeColor = VFS.getDefaultColorFor(file.getName());
-		this.fileIcon=null;
+		this.fileIcon = null;
 		this.loadedIcon = false;
 	}
 
@@ -87,13 +84,13 @@ public class VPTFile extends VPTNode {
 
 	//{{{ Public methods
 
-	//{{{ canWrite() method
+	//{{{ +canWrite() : boolean
 	/** Returns is the underlying file is writable. */
 	public boolean canWrite() {
 		return file.canWrite();
 	} //}}}
 
-	//{{{ delete() method
+	//{{{ +delete() : boolean
 	/**
 	 *	Deletes the file from disk. Before deleting, try to close the file.
 	 */
@@ -106,13 +103,13 @@ public class VPTFile extends VPTNode {
 		return true;
 	} //}}}
 
-	//{{{ getFile() method
+	//{{{ +getFile() : File
 	/** Return the file associated with this node. */
 	public File getFile() {
 		return file;
 	} //}}}
 
-	//{{{ setFile(File) method
+	//{{{ +setFile(File) : void
 	/** Sets the file associated with this node. */
 	public void setFile(File f) {
 		this.file = f;
@@ -121,7 +118,7 @@ public class VPTFile extends VPTNode {
 		setName(f.getName());
 	} //}}}
 
-	//{{{ isOpened() method
+	//{{{ +isOpened() : boolean
 	/**
 	 *	Returns "true" if the node is a file and is currently opened in jEdit.
 	 */
@@ -133,7 +130,7 @@ public class VPTFile extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ getIcon(boolean) method
+	//{{{ +getIcon(boolean) : Icon
 	/**
 	 *	Returns the icon to be shown on the tree next to the node name.
 	 *
@@ -141,11 +138,9 @@ public class VPTFile extends VPTNode {
 	 *  @todo add decorations to the icon
 	 */
 	public Icon getIcon(boolean expanded) {
-		Icon baseIcon=null;
-		int base_state=0;	// use different base_states for different backgrounds (for chaching)
+		Icon baseIcon = fileClosedIcon;
 		if (isOpened()) {
 			baseIcon = fileOpenedIcon;
-			base_state=1;
 		} else {
 			if (config.getUseSystemIcons()) {
 				if (!loadedIcon) {
@@ -156,53 +151,18 @@ public class VPTFile extends VPTNode {
 						fileIcon = fsView.getSystemIcon(file);
 						loadedIcon = true;
 						baseIcon = fileIcon;
-					} else {
-						if (noFileIcon == null) {
-							noFileIcon = GUIUtilities.loadIcon("dirty.gif");
-						}
-						baseIcon = noFileIcon;
 					}
-				}
-				else {
+				} else {
 					baseIcon = (fileIcon != null) ? fileIcon : fileClosedIcon;
 				}
-			} else {
-				baseIcon = fileClosedIcon;
 			}
 		}
-		// check buffer states and generate composed icon
-		int file_state=IconComposer.file_state_normal;
-		// get file state
-		String bufferName=file.getAbsolutePath();
-		Buffer buffer = jEdit.getBuffer(bufferName);
-		if(buffer!=null) {
-			if(buffer.isDirty()) { file_state=IconComposer.file_state_changed; }
-			else if(!buffer.isEditable()) { file_state=IconComposer.file_state_readonly; }
-			//Log.log(Log.DEBUG, this, "file \""+bufferName+"\" state is :["+file_state+"]");
-		}
-		// get msg state (if ErrorList is available)
-		int msg_state=IconComposer.msg_state_none;
-		ErrorListPlugin el = (ErrorListPlugin) jEdit.getPlugin("errorlist.ErrorListPlugin", true);
-		if( el != null) {
-			ErrorSource[] sources = ErrorSource.getErrorSources();
-			for(int i=0;i<sources.length;i++) {
-				if(sources[i].getFileErrorCount(bufferName)>0) {
-					msg_state=IconComposer.msg_state_messages;
-					ErrorSource.Error[] errors = sources[i].getAllErrors();
-					for(int j=0;j<errors.length;j++) {
-						if(errors[j].getErrorType() == ErrorSource.ERROR) {
-							msg_state=IconComposer.msg_state_errors;
-							break;
-						}
-					}
-					break;
-				}
-			}
-		}
-		return IconComposer.composeIcon(baseIcon,base_state,IconComposer.vc_state_none,0,file_state,msg_state);
+		int fs_state = (file.exists()) ?
+			IconComposer.FS_STATE_NONE : IconComposer.FS_STATE_NOTFOUND;
+		return IconComposer.composeIcon(file.getAbsolutePath(), baseIcon, fs_state);
 	} //}}}
 
-	//{{{ getForegroundColor(boolean) method
+	//{{{ +getForegroundColor(boolean) : Color
 	/**
 	 *	Returns the node's foreground color.
 	 *
@@ -217,19 +177,19 @@ public class VPTFile extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ toString() method
+	//{{{ +toString() : String
 	/** Returns a string representation of the current node. */
 	public String toString() {
 		return "File [" + getFile().getAbsolutePath() + "]";
 	} //}}}
 
-	//{{{ canOpen() method
+	//{{{ +canOpen() : boolean
 	/**	File nodes can be opened, so return true. */
 	public boolean canOpen() {
 		return true;
 	} //}}}
 
-	//{{{ open() method
+	//{{{ +open() : void
 	/**
 	 *	Opens a new buffer in jEdit with the file pointed by this node. The
 	 *	buffer is loaded in the currently active view.
@@ -238,7 +198,7 @@ public class VPTFile extends VPTNode {
 		jEdit.openFile(jEdit.getActiveView(), getNodePath());
 	} //}}}
 
-	//{{{ close() method
+	//{{{ +close() : void
 	/** "Closes" the jEdit buffer that contains the file. */
 	public void close() {
 		Buffer b;
@@ -252,13 +212,13 @@ public class VPTFile extends VPTNode {
 		}
 	} //}}}
 
-	//{{{ getNodePath()
+	//{{{ +getNodePath() : String
 	/**	Returns the path to the file represented by this node. */
 	public String getNodePath() {
 		return getFile().getAbsolutePath();
 	} //}}}
 
-	//{{{ getCanonicalPath() method
+	//{{{ +getCanonicalPath() : String
 	/** Returns the file's canonical path. */
 	public String getCanonicalPath() {
 		if (this.canPath == null) {

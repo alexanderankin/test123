@@ -19,6 +19,8 @@
 package projectviewer.vpt;
 
 //{{{ Imports
+import java.util.HashMap;
+
 import java.awt.Image;
 import java.awt.image.ColorModel;
 import java.awt.image.MemoryImageSource;
@@ -28,9 +30,15 @@ import java.awt.Toolkit;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
-//}}}
 
+import errorlist.ErrorListPlugin;
+import errorlist.ErrorSource;
+
+import projectviewer.config.ProjectViewerConfig;
+//}}}
 
 /**
  *	Create decorated icons for VPT nodes
@@ -41,88 +49,114 @@ import org.gjt.sp.util.Log;
 public final class IconComposer {
 
 	//{{{ Constants
-	final static int file_state_normal=0;
-	final static int file_state_changed=1;
-	final static int file_state_readonly=2;
+	public final static int FILE_STATE_NORMAL	= 0;
+	public final static int FILE_STATE_CHANGED	= 1;
+	public final static int FILE_STATE_READONLY	= 2;
 
-	final static int vc_state_none=0;
+	public final static int VC_STATE_NONE		= 0;
 
-	final static int msg_state_none=0;
-	final static int msg_state_messages=1;
-	final static int msg_state_errors=2;
+	public final static int MSG_STATE_NONE		= 0;
+	public final static int MSG_STATE_MESSAGES	= 1;
+	public final static int MSG_STATE_ERRORS	= 2;
+
+	public final static int FS_STATE_NONE		= 0;
+	public final static int FS_STATE_NOTFOUND	= 1;
 	//}}}
 
 	//{{{ Attributes
-	private final static Icon[][][][][] cache= new Icon[2][1][1][3][3];
+	private final static HashMap iconCache = new HashMap();
 
-	private final static Icon file_state_changed_img=
+	private final static Icon FILE_STATE_CHANGED_IMG =
 		new ImageIcon(IconComposer.class.getResource("/images/file_state_changed.png"));
-	private final static Icon file_state_readonly_img=
+	private final static Icon FILE_STATE_READONLY_IMG =
 		new ImageIcon(IconComposer.class.getResource("/images/file_state_readonly.png"));
-	private final static Icon msg_state_messages_img=
+	private final static Icon MSG_STATE_MESSAGES_IMG =
 		new ImageIcon(IconComposer.class.getResource("/images/msg_state_messages.png"));
-	private final static Icon msg_state_errors_img=
+	private final static Icon MSG_STATE_ERRORS_IMG =
 		new ImageIcon(IconComposer.class.getResource("/images/msg_state_errors.png"));
+	private final static Icon FS_STATE_NOTFOUND_IMG =
+		new ImageIcon(IconComposer.class.getResource("/images/fs_state_notfound.png"));
 	//}}}
 
 	//{{{ Public methods
-	//{{{ composeIcon(Icon, int, int, int, int) method
-	static Icon composeIcon(Icon baseIcon,int base_state,int vc_state, int unused, int file_state,int msg_state) {
-		Icon res=baseIcon;
-		try {
-			if(cache[base_state][vc_state][0][file_state][msg_state]==null) {
-				Icon tl=null;
-				Icon tr=null;
-				Icon bl=null;
-				switch(file_state) {
-					case IconComposer.file_state_changed: bl=IconComposer.file_state_changed_img;break;
-					case IconComposer.file_state_readonly: bl=IconComposer.file_state_readonly_img;break;
-				}
-				Icon br=null;
-				switch(msg_state) {
-					case IconComposer.msg_state_messages: br=IconComposer.msg_state_messages_img;break;
-					case IconComposer.msg_state_errors: br=IconComposer.msg_state_errors_img;break;
-				}
-				cache[base_state][vc_state][0][file_state][msg_state]=composeIcons(baseIcon,tl,tr,bl,br);
-			}
-			res=cache[base_state][vc_state][0][file_state][msg_state];
+
+	//{{{ +_composeIcon(String, Icon, int)_ : Icon
+	public static Icon composeIcon(String path, Icon baseIcon, int fs_state) {
+		Icon[][][][] cache = getIconCache(baseIcon);
+
+		int msg_state = MSG_STATE_NONE;
+		if (ProjectViewerConfig.getInstance().isErrorListAvailable()) {
+			msg_state = getMessageState(path);
 		}
-		catch(ArrayIndexOutOfBoundsException ex) {
+
+		int file_state = getFileState(path);
+		int vc_state = VC_STATE_NONE;
+
+		try {
+			if(cache[vc_state][0][file_state][msg_state] == null) {
+				Icon tl = null; // vc_state
+				Icon tr = null; // fs_state
+				switch (fs_state) {
+					case FS_STATE_NOTFOUND:
+						tr = FS_STATE_NOTFOUND_IMG;
+				}
+				Icon bl = null; // file_state
+				switch(file_state) {
+					case FILE_STATE_CHANGED:
+						bl = FILE_STATE_CHANGED_IMG;
+						break;
+
+					case FILE_STATE_READONLY:
+						bl = FILE_STATE_READONLY_IMG;
+						break;
+				}
+				Icon br = null; // msg_state
+				switch(msg_state) {
+					case MSG_STATE_MESSAGES:
+						br = MSG_STATE_MESSAGES_IMG;
+						break;
+					case MSG_STATE_ERRORS:
+						br = MSG_STATE_ERRORS_IMG;
+						break;
+				}
+				cache[vc_state][fs_state][file_state][msg_state] =
+					composeIcons(baseIcon, tl, tr, bl, br);
+			}
+			baseIcon = cache[vc_state][fs_state][file_state][msg_state];
+		} catch(ArrayIndexOutOfBoundsException ex) {
 			Log.log(Log.WARNING, null, ex);
 		}
-		return(res);
+		return baseIcon;
 	} //}}}
 
-	//{{{ composeImages(Icon, Icon, Icon, Icon, Icon) method
-	private static Icon composeIcons(Icon baseIcon, Icon tl, Icon tr, Icon bl, Icon br) {
-		// copy base image
-		Icon compositeIcon = baseIcon;
-		int baseWidth=compositeIcon.getIconWidth();
-		int baseHeight=compositeIcon.getIconHeight();
-
-		//Log.log(Log.DEBUG, null, "baseSize :["+baseWidth+"x"+baseHeight+"]");
-
-		if(tl!=null) {
-			compositeIcon=composeIcons(compositeIcon,tl,0,0);
-		}
-		if(tr!=null) {
-			int decoWidth=tr.getIconWidth();
-			compositeIcon=composeIcons(compositeIcon,tr,baseWidth-decoWidth,0);
-		}
-		if(bl!=null) {
-			int decoHeight=bl.getIconHeight();
-			compositeIcon=composeIcons(compositeIcon,bl,0,baseHeight-decoHeight);
-		}
-		if(br!=null) {
-			int decoWidth=br.getIconWidth();
-			int decoHeight=br.getIconHeight();
-			compositeIcon=composeIcons(compositeIcon,br,baseWidth-decoWidth,baseHeight-decoHeight);
-		}
-		return(compositeIcon);
-	}
 	//}}}
 
-	//{{{ composeIcons(Icon, Icon, int, int)
+	//{{{ Private methods
+
+	//{{{ -_composeIcons(Icon, Icon, Icon, Icon, Icon)_ : Icon
+	private static Icon composeIcons(Icon baseIcon, Icon tl, Icon tr, Icon bl, Icon br) {
+		// copy base image
+		int baseWidth = baseIcon.getIconWidth();
+		int baseHeight = baseIcon.getIconHeight();
+
+		if (tl != null) {
+			baseIcon = composeIcons(baseIcon, tl, 0, 0);
+		}
+		if (tr != null) {
+			baseIcon = composeIcons(baseIcon, tr, baseWidth - tr.getIconWidth(), 0);
+		}
+		if (bl != null) {
+			baseIcon = composeIcons(baseIcon, bl, 0, baseHeight - bl.getIconHeight());
+		}
+		if (br != null) {
+			baseIcon = composeIcons(baseIcon, br,
+				baseWidth - br.getIconWidth(), baseHeight  - br.getIconHeight());
+		}
+
+		return baseIcon;
+	} //}}}
+
+	//{{{ -_composeIcons(Icon, Icon, int, int)_ : Icon
 	private static Icon composeIcons(Icon baseIcon, Icon decoIcon, int px, int py) {
 		Image baseImage=((ImageIcon)baseIcon).getImage();
 		int baseWidth=baseIcon.getIconWidth();
@@ -189,13 +223,62 @@ public final class IconComposer {
 			}
 		}
 
-		ColorModel cm=ColorModel.getRGBdefault();
-		MemoryImageSource mis=new MemoryImageSource(baseWidth, baseHeight, cm, base, 0, baseWidth);
+		ColorModel cm = ColorModel.getRGBdefault();
+		MemoryImageSource mis =
+			new MemoryImageSource(baseWidth, baseHeight, cm, base, 0, baseWidth);
 		Image compositeImage = Toolkit.getDefaultToolkit().createImage(mis);
 
-		return(new ImageIcon(compositeImage));
-	}//}}}
+		return (new ImageIcon(compositeImage));
+	} //}}}
+
+	//{{{ -_getIconCache(Icon)_ : Icon[][][][][]
+	private static Icon[][][][] getIconCache(Icon icon) {
+		Icon[][][][] cache = (Icon[][][][]) iconCache.get(icon);
+		if (cache == null) {
+			cache = new Icon[1][2][3][3];
+			iconCache.put(icon, cache);
+		}
+		return cache;
+	} //}}}
+
+	//{{{ -_getFileState(String)_ : int
+	private static int getFileState(String path) {
+		Buffer buffer = jEdit.getBuffer(path);
+		int file_state = IconComposer.FILE_STATE_NORMAL;
+		if (buffer != null) {
+			if(buffer.isDirty()) {
+				return FILE_STATE_CHANGED;
+			} else if (!buffer.isEditable()) {
+				return FILE_STATE_READONLY;
+			}
+		}
+		return FILE_STATE_NORMAL;
+	} //}}}
+
+	//{{{ -_getMessageState(String)_ : int
+	private static int getMessageState(String path) {
+		int msg_state = IconComposer.MSG_STATE_NONE;
+		ErrorListPlugin el = (ErrorListPlugin) jEdit.getPlugin("errorlist.ErrorListPlugin", true);
+		if (el != null) {
+			ErrorSource[] sources = ErrorSource.getErrorSources();
+			for(int i = 0; i < sources.length; i++) {
+				if (sources[i].getFileErrorCount(path) > 0) {
+					msg_state = IconComposer.MSG_STATE_MESSAGES;
+					ErrorSource.Error[] errors = sources[i].getAllErrors();
+					for(int j=0; j < errors.length; j++) {
+						if(errors[j].getErrorType() == ErrorSource.ERROR) {
+							msg_state = IconComposer.MSG_STATE_ERRORS;
+							break;
+						}
+					}
+					break;
+				}
+			}
+		}
+		return msg_state;
+	} //}}}
 
 	//}}}
+
 }
 

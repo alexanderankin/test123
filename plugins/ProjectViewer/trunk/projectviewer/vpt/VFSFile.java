@@ -51,13 +51,9 @@ public class VFSFile extends VPTNode {
 
 	//{{{ Constants
 
-	private final static Icon fileClosedIcon;
+	private final static Icon fileClosedIcon =
+		new ImageIcon(IconComposer.class.getResource("/images/remote_file.png"));;
 	private final static Icon fileOpenedIcon 	=  (ImageIcon) GUIUtilities.loadIcon("OpenFile.png");
-	static {
-		ImageIcon icon = (ImageIcon) GUIUtilities.loadIcon("CopyToBuffer.png");
-		Image img = icon.getImage().getScaledInstance(16, 16, Image.SCALE_SMOOTH);
-		fileClosedIcon = new ImageIcon(img);
-	}
 
 	private final static ProjectViewerConfig config = ProjectViewerConfig.getInstance();
 	private static FileSystemView fsView;
@@ -125,8 +121,9 @@ public class VFSFile extends VPTNode {
 	 *	@param	expanded	If the node is currently expanded or not.
 	 */
 	public Icon getIcon(boolean expanded) {
+		Icon baseIcon;
 		if (isOpened()) {
-			return fileOpenedIcon;
+			baseIcon = fileOpenedIcon;
 		} else {
 			if (config.getUseSystemIcons()) {
 				if (!loadedIcon) {
@@ -135,11 +132,12 @@ public class VFSFile extends VPTNode {
 					fileIcon = fsView.getSystemIcon(f);
 					loadedIcon = true;
 				}
-				return (fileIcon != null) ? fileIcon : fileClosedIcon;
+				baseIcon = (fileIcon != null) ? fileIcon : fileClosedIcon;
 			} else {
-				return fileClosedIcon;
+				baseIcon = fileClosedIcon;
 			}
 		}
+		return IconComposer.composeIcon(path, baseIcon, IconComposer.FS_STATE_NONE);
 	} //}}}
 
 	//{{{ +getForegroundColor(boolean) : Color
