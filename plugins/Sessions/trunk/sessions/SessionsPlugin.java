@@ -64,9 +64,14 @@ public class SessionsPlugin extends EBPlugin
 			// Show an information dialog.
 			showInfoMessage("sessions.manager.info.restore");
 		}
+
+		// Though we don't need to load the current session's files, we
+		//  still need to load the custom properties into memory.
+		SessionManager.getInstance().
+			getCurrentSessionInstance().open(jEdit.getActiveView(), false);
 	}
 
-	
+
 	public void handleMessage(EBMessage message)
 	{
 		if (message instanceof ViewUpdate)
@@ -246,7 +251,7 @@ public class SessionsPlugin extends EBPlugin
 			String msg = jEdit.getProperty(key + ".message");
 			String msg2 = jEdit.getProperty("sessions.manager.info.dontShowAgain");
 			JCheckBox notAgain = new JCheckBox(msg2, false);
-                        GUIUtilities.hideSplashScreen();
+						GUIUtilities.hideSplashScreen();
 			JOptionPane.showMessageDialog(null, new Object[] { msg, notAgain },
 				title, JOptionPane.INFORMATION_MESSAGE);
 			jEdit.setBooleanProperty(key + ".notAgain", notAgain.isSelected());
