@@ -76,7 +76,8 @@
       <title>SQL server types</title>
 
       <para>The plugin can work with virtually any type of SQL
-      server (assuming presence of appropriate JDBC driver in
+      server. The location of the JDBC driver can be set in the
+      "Options" dialog. Alternatively, it can be put into
       <filename>~/.jedit/jars</filename>
 
       or
@@ -86,6 +87,9 @@
       <systemitem class="resource">CLASSPATH</systemitem>
 
       environment variable ).</para>
+
+      <para>Note: new classpath set in the "Options" dialog is
+      active only after jEdit restart.</para>
 
       <para>Each type of the server is given in the XML
       configuration file. These files stored in
@@ -393,6 +397,32 @@
     <title>Change log</title>
 
     <itemizedlist>
+      <listitem>
+        <formalpara>
+          <title>Version 0.8</title>
+
+          <para />
+        </formalpara>
+
+        <itemizedlist>
+          <listitem>
+            <para>The plugin now uses HelpfulJTable from
+            CommonControls for "SQL Result Set" dockable.</para>
+          </listitem>
+
+          <listitem>
+            <para>The "Options" dialog allows to set the
+            classpath for JDBC drivers, so users do not have to
+            move JDBC driver to jEdit directory. Hopefully this
+            will fix some problems for Win32 users.</para>
+          </listitem>
+
+          <listitem>
+            <para>Some minor bugfixes.</para>
+          </listitem>
+        </itemizedlist>
+      </listitem>
+
       <listitem>
         <formalpara>
           <title>Version 0.71</title>
