@@ -18,12 +18,35 @@
    </ACTION>
    <ACTION NAME="navigator.toolbar">
       <CODE>
-         boolean show = jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", false);
+         boolean show = jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", true);
          jEdit.setBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", !show);
-         view.getDockableWindowManager().showDockableWindow(ise.plugin.nav.NavigatorPlugin.NAME);
+         show = jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", true);
+         ise.plugin.nav.NavigatorPlugin plugin = jEdit.getPlugin("ise.plugin.nav.NavigatorPlugin");
+         ise.plugin.nav.Navigator navigator = plugin.getNavigator(view);
+         if (navigator == null) {
+            navigator = new ise.plugin.nav.Navigator(view, "");  
+         }
+         ise.plugin.nav.Nav nav = navigator.getNav();
+         javax.swing.Box toolbar = view.getToolBar();
+         if (toolbar != null && toolbar.isVisible() ) {
+            if (show) {
+               if (view.getDockableWindowManager().isDockableWindowDocked(ise.plugin.nav.NavigatorPlugin.NAME)){
+                  view.getDockableWindowManager().hideDockableWindow(ise.plugin.nav.NavigatorPlugin.NAME);     
+               }
+               navigator.remove( nav );
+               toolbar.remove( nav );
+               toolbar.add( nav );
+            }
+            else {
+               toolbar.remove( nav );
+               navigator.remove( nav );
+               navigator.add( nav );
+            }
+            toolbar.repaint();
+         }
       </CODE>
       <IS_SELECTED>
-         jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", false);
+         jEdit.getBooleanProperty("ise.plugin.nav.Navigator.showOnToolbar", true);
       </IS_SELECTED>
    </ACTION>
 </ACTIONS>

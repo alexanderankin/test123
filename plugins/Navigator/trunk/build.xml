@@ -83,11 +83,7 @@
             description="Compiles, jars, puts the jar in the jEdit jars directory."
             depends="init,compile,prep_files">
         <echo>creating plugin</echo>
-        <delete>
-            <fileset dir="${dist.dir}" includes="**/${jar.name}"/>
-        </delete>
         
-        <!-- deleting an existing plugin on Windows will fail if jEdit is running -->
         <delete>
             <fileset dir="${install.dir}" includes="**/${jar.name}"/>
         </delete>
@@ -174,6 +170,7 @@
         <mkdir dir="${classes.dir}" />
         <mkdir dir="${doc.dir}" />          
         <mkdir dir="${config.dir}" />
+        <mkdir dir="${dist.dir}"/>
     </target>
     
 </project>

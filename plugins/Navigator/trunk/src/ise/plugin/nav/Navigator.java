@@ -34,23 +34,7 @@ public class Navigator extends JPanel implements Navable {
       // create a Nav and make sure the plugin knows about it
       nav = new Nav( this );
       NavigatorPlugin.addNavigator( view, this );
-
-      // should the Nav be put on the view's toolbar?
-      toolbar = view.getToolBar();
-      on_toolbar = jEdit.getBooleanProperty( "ise.plugin.nav.Navigator.showOnToolbar", false );
-
-      // control display of the Nav on the view's toolbar
-      final JCheckBox cb = new JCheckBox( "Show on toolbar", on_toolbar );
-      cb.addActionListener(
-         new ActionListener() {
-            public void actionPerformed( ActionEvent ae ) {
-               on_toolbar = cb.isSelected();
-               jEdit.setBooleanProperty( "ise.plugin.nav.Navigator.showOnToolbar", on_toolbar );
-               Navigator.this.handleToolbar();
-            }
-         }
-             );
-      add( cb );
+      add(nav);
 
       // add a mouse listener to the view. Each mouse click on a text area in
       // the view is stored for the Nav.
@@ -105,12 +89,6 @@ public class Navigator extends JPanel implements Navable {
       return nav;
    }
 
-   /** Handles the toolbar on first loading of this panel. */
-   public void addNotify() {
-      super.addNotify();
-      handleToolbar();
-   }
-
    /** go back one in the history list */
    public void goBack() {
       nav.goBack();
@@ -119,27 +97,6 @@ public class Navigator extends JPanel implements Navable {
    /** go forward one in the history list */
    public void goForward() {
       nav.goForward();
-   }
-
-   /** Description of the Method */
-   public void handleToolbar() {
-      if ( on_toolbar ) {
-         remove( nav );
-         toolbar.remove( nav );
-         toolbar.add( nav );
-      }
-      else {
-         toolbar.remove( nav );
-         remove( nav );
-         add( nav );
-      }
-      SwingUtilities.invokeLater(
-         new Runnable() {
-            public void run() {
-               Navigator.this.repaint();
-               view.repaint();
-            }
-         } );
    }
 }
 
