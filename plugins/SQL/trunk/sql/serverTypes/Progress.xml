@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE serverType SYSTEM "sqlServerType.dtd">
+
+<serverType name="Progress">
+
+  <driverClass>com.progress.sql.jdbc.JdbcProgressDriver</driverClass>
+
+  <connection>
+    <parameter name="host" default="yourhost"/>
+    <parameter name="port" default="6718"/>
+    <parameter name="dbName" default="theDB"/>
+    <parameter name="user" default="AUser"/>
+    <parameter name="password" default="jedit"/>
+    <string>jdbc:jdbcprogress:T:{host}:{port}:{dbName}</string>
+  </connection>
+  <statements>
+    <statement purpose="selectTableGroups">
+      SELECT DISTINCT t.CREATOR
+      FROM "SYSPROGRESS"."SYSTABLES" t
+      ORDER BY t.CREATOR
+    </statement>
+    <statement purpose="selectTablesInGroup">
+      SELECT t.TBL
+      FROM "SYSPROGRESS"."SYSTABLES" t
+      WHERE t.CREATOR = ?
+      ORDER BY t.TBL
+    </statement>
+  </statements>
+
+</serverType>
