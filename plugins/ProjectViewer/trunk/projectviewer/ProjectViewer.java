@@ -951,19 +951,26 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 	//{{{ +getCurrentTree() : JTree
 	/** Returns the currently active tree. */
 	public JTree getCurrentTree() {
-		switch(treePane.getSelectedIndex()) {
-			case 0:
-				if (folderTree != null) return folderTree;
-				if (fileTree != null) return fileTree;
-				if (workingFileTree != null) return workingFileTree;
-			case 1:
-				if (fileTree != null) return fileTree;
-				if (workingFileTree != null) return workingFileTree;
-			case 2:
-				if (workingFileTree != null) return workingFileTree;
-
-			default:
-				return null;
+		if (treePane.getTabCount() > 0) {
+			switch(treePane.getSelectedIndex()) {
+				case 0:
+					if (folderTree != null) return folderTree;
+					if (fileTree != null) return fileTree;
+					if (workingFileTree != null) return workingFileTree;
+				case 1:
+					if (fileTree != null) return fileTree;
+					if (workingFileTree != null) return workingFileTree;
+				case 2:
+					if (workingFileTree != null) return workingFileTree;
+	
+				default:
+					return null;
+			}
+		} else {
+			if (folderTree != null) return folderTree;
+			if (fileTree != null) return fileTree;
+			if (workingFileTree != null) return workingFileTree;
+			return null;
 		}
 	} //}}}
 
