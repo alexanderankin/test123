@@ -44,28 +44,6 @@ import projectviewer.importer.InitialProjectImporter;
  */
 public class EditProjectAction extends Action {
 
-	//{{{ Static members
-	
-	//{{{ editProject(View) method
-	/**
-	 *	jEdit action; if a project is currently opened, open its properties
-	 *	dialog.
-	 */
-	public static void editProject(View view) {
-		ProjectViewer viewer = ProjectViewer.getViewer(view);
-		VPTNode sel = viewer.getSelectedNode();
-		if (sel == null) {
-			sel = viewer.getRoot();
-		}
-		if (viewer != null && !sel.isRoot()) {
-			EditProjectAction action = new EditProjectAction();
-			action.setViewer(viewer);
-			action.actionPerformed(null);
-		}
-	} //}}}
-	
-	//}}}
-	
 	//{{{ Private members
 	private boolean forceNew;
 	//}}}
