@@ -34,6 +34,7 @@ import org.gjt.sp.jedit.MiscUtilities;
 import org.gjt.sp.jedit.gui.OptionsDialog;
 import org.gjt.sp.util.Log;
 
+import projectviewer.vpt.VPTGroup;
 import projectviewer.vpt.VPTProject;
 //}}}
 
@@ -60,7 +61,7 @@ public class ProjectOptions extends OptionsDialog {
 	 *			dialog was cancelled.
 	 */
 	public static VPTProject run(VPTProject project) {
-		return run(project, null);
+		return run(project, null, null);
 	}
 
 	/**
@@ -76,21 +77,21 @@ public class ProjectOptions extends OptionsDialog {
 	 *	@return	The new or modified project, or null if p was null and
 	 *			dialog was cancelled.
 	 */
-	public static synchronized VPTProject run(VPTProject project, String startPath) {
+	public static synchronized VPTProject run(VPTProject project,
+												VPTGroup parent,
+												String startPath) {
+
 		String title;
 		if (project == null) {
-			title = "projectviewer.create_project";
-		} else {
-			title = "projectviewer.edit_project";
-		}
-
-		if (project == null) {
 			p = new VPTProject("");
+			p.setParent(parent);
 			p.setRootPath("");
 			isNew = true;
+			title = "projectviewer.create_project";
 		} else {
 			p = project;
 			isNew = false;
+			title = "projectviewer.edit_project";
 		}
 
 		lookupPath = startPath;
