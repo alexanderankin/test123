@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+	<ACTION NAME="bibtex">
+		<CODE>
+			<!-- new BibTeXDialog(view,buffer); -->
+			uk.co.antroy.latextools.BibTeXPanel.createBibTeXDialog(view, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="labels">
+		<CODE>
+			<!-- new ReferenceDialog(view,buffer); -->
+			uk.co.antroy.latextools.ReferencePanel.createReferenceDialog(view, buffer);
+		</CODE>
+	</ACTION>
+	<ACTION NAME="navigation">
+		<CODE>
+		      <!--  NavigationFactory.createNavigationDialog(view,buffer); -->
+		       uk.co.antroy.latextools.NavigationPanel.createNavigationDialog(view, buffer);
+ 		</CODE>
+	</ACTION>
+</ACTIONS>

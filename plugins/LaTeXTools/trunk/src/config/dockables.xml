@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE DOCKABLES SYSTEM "dockables.dtd">
+
+<DOCKABLES>
+    <DOCKABLE NAME="navigation">
+<!-- 	NavigationPanel.createNavigationPanel(view, buffer); -->
+        new uk.co.antroy.latextools.LaTeXDockable(view, buffer);
+    </DOCKABLE>
+</DOCKABLES>
+

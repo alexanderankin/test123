@@ -1,0 +1,42 @@
+plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
+plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy
+plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.1.1
+plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
+
+options.bibtex.label = BibTeX Options
+options.bibtex.inserttags = Include Tag
+options.bibtex.wordlength = Maximum Letters in Title
+options.bibtex.wordcount = Maximum Words in Title
+options.bibtex.reflength = 10
+
+options.latex.label = LaTeX Tools
+
+options.reference.label = Reference Options
+options.reference.inserttags = Include Tag
+
+options.navigation.label = Navigation Options
+options.navigation.userdir = C:/Documents and Settings/Admin/.jedit/navigation
+options.navigation.userdir.label = User Navigation File Dir:
+
+bibtex.label=BibTeX
+bibtex.title=BibTeX Entries
+bibtex.bibtitle.wordlength=0
+bibtex.bibtitle.wordcount=0
+bibtex.inserttags=true
+
+reference.label=Reference
+reference.title=Label List
+reference.inserttags=true
+
+navigation.title = LaTeX Navigator
+navigation.label = Navigate Document
+navigation.nottex = Document*is not a*TeX*Document!
+
+labels.label=Labels
+labels.title=Find Labels
+
+panel.text.refresh=Refresh
+panel.text.reload=Reload
+
+tagpair.linenumbers=true
+
