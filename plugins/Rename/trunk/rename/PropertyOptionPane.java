@@ -11,30 +11,31 @@ public class PropertyOptionPane extends AbstractOptionPane {
 	private String type;
 	protected String[] idArray;
 	private String suffix;
-	
+
 	protected PropertyTableModel model;
 	protected JTable table;
-	
+
 	public PropertyOptionPane(String type, String[] idArray, String suffix) {
 		super("rename."+type.toLowerCase()+"s");
 		this.type = type;
 		this.idArray = idArray;
 		this.suffix = suffix;
 	}
-	
+
 	PropertyOptionPane(String type, String suffix) {
 		super("rename."+type.toLowerCase()+"s");
 		this.type = type;
 		this.suffix = suffix;
 	}
-	
+
 	public void _init() {
 		model = new PropertyTableModel(type,idArray,suffix);
 		table = new JTable(model);
 		addComponent(new JScrollPane(table),GridBagConstraints.BOTH);
 	}
-	
+
 	public void _save() {
+		table.getCellEditor().stopCellEditing();
 		for (int i = 0; i < table.getRowCount(); i++) {
 			if (model.rowChanged(i)) {
 				Log.log(Log.DEBUG,this,"saved "+table.getValueAt(i,0));
