@@ -248,8 +248,8 @@ public class SqlTextPublisher
       final SqlParser parser = new SqlParser( delimiter );
       final java.util.List fragments = parser.getFragments( sqlText );
       final Collection preprocessors = getPreprocessors().values();
-
-      for ( Iterator e = fragments.iterator(); e.hasNext();  )
+      final Iterator e = fragments.iterator();
+      while ( true )
       {
         final Timestamp startTimeRemote = getSysdate( conn, rec );
 
@@ -280,6 +280,16 @@ public class SqlTextPublisher
           handleResultSet( view, stmt, rec, sqlSubtext );
         else
           handleUpdateCount( view, stmt, rec, sqlSubtext, startTimeRemote, startPos + fragment.startOffset );
+
+        // bad but otherwise errors will mix up...
+        if ( e.hasNext() )
+          try
+          {
+            Thread.sleep( 1000 );
+          } catch ( Exception ex )
+          {}
+        else
+          break;
       }
     } catch ( SQLException ex )
     {
@@ -319,8 +329,9 @@ public class SqlTextPublisher
     boolean anyObj = false;
 
     // still not clear whether this is correct...
+    final Timestamp endTime = getSysdate( conn, record );
     final String startTimeStr = dFormat.format( startTime );
-    final String endTimeStr = dFormat.format( getSysdate( conn, record ) );
+    final String endTimeStr = dFormat.format( endTime );
 
     PreparedStatement pstmt = null;
     try
