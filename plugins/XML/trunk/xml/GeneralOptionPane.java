@@ -1,5 +1,8 @@
 /*
  * GeneralOptionPane.java - XML general options panel
+ * :tabSize=8:indentSize=8:noTabs=false:
+ * :folding=explicit:collapseFolds=1:
+ *
  * Copyright (C) 2001 Slava Pestov
  *
  * The XML plugin is licensed under the GNU General Public License, with
@@ -12,6 +15,7 @@
 
 package xml;
 
+//{{{ Imports
 import javax.swing.border.EmptyBorder;
 import javax.swing.*;
 import java.awt.event.*;
@@ -19,15 +23,17 @@ import java.awt.*;
 import java.util.Hashtable;
 import org.gjt.sp.jedit.gui.JCheckBoxList;
 import org.gjt.sp.jedit.*;
+//}}}
 
 public class GeneralOptionPane extends AbstractOptionPane
 {
+	//{{{ GeneralOptionPane constructor
 	public GeneralOptionPane()
 	{
 		super("xml.general");
-	}
+	} //}}}
 
-	// protected members
+	//{{{ _init() method
 	protected void _init()
 	{
 		addComponent(bufferChangeParse = new JCheckBox(jEdit.getProperty(
@@ -75,38 +81,19 @@ public class GeneralOptionPane extends AbstractOptionPane
 			"options.xml.general.validate")));
 		validate.setSelected(jEdit.getBooleanProperty("xml.validate"));
 
-		JLabel label = new JLabel(jEdit.getProperty("options.xml.general.modes"));
-		label.setBorder(new EmptyBorder(0,0,6,0));
+		addComponent(tagHighlight = new JCheckBox(jEdit.getProperty(
+			"options.xml.general.tag-highlight-enabled")));
+		tagHighlight.setSelected(jEdit.getBooleanProperty(
+			"xml.tag-highlight"));
+		tagHighlight.addActionListener(new ActionHandler());
 
-		addComponent(label);
+		addComponent(jEdit.getProperty("options.xml.general.tag-highlight-color"),
+			tagHighlightColor = createColorButton(
+			"xml.tag-highlight-color"));
+		tagHighlightColor.setEnabled(tagHighlight.isSelected());
+	} //}}}
 
-		Mode[] modeList = jEdit.getModes();
-		JCheckBoxList.Entry[] listModel = new JCheckBoxList.Entry[modeList.length];
-		for(int i = 0; i < modeList.length; i++)
-		{
-			listModel[i] = new JCheckBoxList.Entry(
-				modeList[i].getBooleanProperty("xml.parse"),
-				modeList[i].getName()
-			);
-		}
-
-		modes = new JCheckBoxList(listModel);
-
-		JScrollPane scroller = new JScrollPane(modes);
-		scroller.setPreferredSize(new Dimension(150,150));
-
-		GridBagConstraints cons = new GridBagConstraints();
-		cons.gridy = y++;
-		cons.gridheight = cons.REMAINDER;
-		cons.gridwidth = cons.REMAINDER;
-		cons.fill = GridBagConstraints.VERTICAL;
-		cons.anchor = GridBagConstraints.WEST;
-		cons.weightx = cons.weighty = 1.0f;
-
-		gridBag.setConstraints(scroller,cons);
-		add(scroller);
-	}
-
+	//{{{ _save() method
 	protected void _save()
 	{
 		jEdit.setBooleanProperty("buffer.xml.buffer-change-parse",
@@ -117,39 +104,57 @@ public class GeneralOptionPane extends AbstractOptionPane
 			autoParseDelay.getValue()));
 		jEdit.setBooleanProperty("xml.show-attributes",showAttributes.isSelected());
 		jEdit.setBooleanProperty("xml.validate",validate.isSelected());
+		jEdit.setBooleanProperty("xml.tag-highlight",
+			tagHighlight.isSelected());
+		jEdit.setProperty("xml.tag-highlight-color",
+			GUIUtilities.getColorHexString(
+			tagHighlightColor.getBackground()));
+	} //}}}
 
-		JCheckBoxList.Entry[] listModel = modes.getValues();
-		for(int i = 0; i < listModel.length; i++)
-		{
-			JCheckBoxList.Entry entry = listModel[i];
+	//{{{ Private members
 
-			// we unset the property, instead of setting it to false,
-			// to avoid cluttering the properties with dozens of
-			// .xml.parse entries for modes we're not interested in
-			String propName = "mode." + entry.getValue() + ".xml.parse";
-
-			if(!entry.isChecked())
-				jEdit.unsetProperty(propName);
-			else
-				jEdit.setBooleanProperty(propName,true);
-		}
-	}
-
-	// private members
+	//{{{ Instance variables
 	private JCheckBox bufferChangeParse;
 	private JCheckBox keystrokeParse;
 	private JSlider autoParseDelay;
 	private JCheckBox showAttributes;
 	private JCheckBox validate;
-	private JCheckBoxList modes;
+	private JCheckBox tagHighlight;
+	private JButton tagHighlightColor;
+	//}}}
 
+	//{{{ createColorButton() method
+	private JButton createColorButton(String property)
+	{
+		JButton b = new JButton(" ");
+		b.setBackground(GUIUtilities.parseColor(jEdit.getProperty(property)));
+		b.addActionListener(new ActionHandler());
+		b.setRequestFocusEnabled(false);
+		return b;
+	} //}}}
+
+	//{{{ ActionHandler class
 	class ActionHandler implements ActionListener
 	{
 		public void actionPerformed(ActionEvent evt)
 		{
-			autoParseDelay.setEnabled(keystrokeParse.isSelected());
-			if(keystrokeParse.isSelected())
-				bufferChangeParse.setSelected(true);
+			if(evt.getSource() == keystrokeParse)
+			{
+				autoParseDelay.setEnabled(keystrokeParse.isSelected());
+				if(keystrokeParse.isSelected())
+					bufferChangeParse.setSelected(true);
+			}
+			else if(evt.getSource() == tagHighlight)
+				tagHighlightColor.setEnabled(tagHighlight.isSelected());
+			else if(evt.getSource() == tagHighlightColor)
+			{
+				Color c = JColorChooser.showDialog(
+					GeneralOptionPane.this,
+					jEdit.getProperty("colorChooser.title"),
+					tagHighlightColor.getBackground());
+				if(c != null)
+					tagHighlightColor.setBackground(c);
+			}
 		}
-	}
+	} //}}}
 }

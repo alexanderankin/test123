@@ -34,8 +34,7 @@ public class CompletionInfoHandler extends DefaultHandler
 		completionInfo = new CompletionInfo(
 			false,
 			new ArrayList(), new HashMap(),
-			new ArrayList(), new HashMap(),
-			new ArrayList());
+			new ArrayList(), new HashMap());
 
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"lt","<"));
 		addEntity(new EntityDecl(EntityDecl.INTERNAL,"gt",">"));

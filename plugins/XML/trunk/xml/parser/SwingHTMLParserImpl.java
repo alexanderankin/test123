@@ -20,8 +20,10 @@ package xml.parser;
 import javax.swing.text.html.parser.*;
 import javax.swing.text.html.*;
 import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.Position;
 import javax.swing.tree.*;
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Stack;
 import org.gjt.sp.jedit.*;
@@ -33,18 +35,34 @@ import xml.completion.*;
 import xml.*;
 //}}}
 
-public class SwingHTMLParserImpl implements XmlParser.Impl
+class SwingHTMLParserImpl implements XmlParser.Impl
 {
+	//{{{ SwingHTMLParserImpl constructor
+	SwingHTMLParserImpl()
+	{
+		ids = new ArrayList();
+	} //}}}
+
 	//{{{ parse() method
-	public void parse(XmlParser parser, Reader in) throws IOException
+	public void parse(XmlParser parser, String text)
 	{
 		this.parser = parser;
 		buffer = parser.getBuffer();
 		root = new DefaultMutableTreeNode(buffer.getName());
 
-		// XXX
-		htmlParser = new DocumentParser(DTD.getDTD("html32"));
-		htmlParser.parse(in,new Handler(),true);
+		try
+		{
+			// XXX
+			htmlParser = new DocumentParser(DTD.getDTD("html32"));
+
+			htmlParser.parse(new StringReader(text),new Handler(),true);
+		}
+		catch(IOException ioe)
+		{
+			Log.log(Log.ERROR,this,ioe);
+			parser.addError(ErrorSource.ERROR,buffer.getPath(),0,
+				ioe.toString());
+		}
 	} //}}}
 
 	//{{{ getElementTree() method
@@ -59,6 +77,12 @@ public class SwingHTMLParserImpl implements XmlParser.Impl
 		return null;
 	} //}}}
 
+	//{{{ getIDs() method
+	public ArrayList getIDs()
+	{
+		return ids;
+	} //}}}
+
 	//{{{ Private members
 
 	//{{{ Instance variables
@@ -66,10 +90,12 @@ public class SwingHTMLParserImpl implements XmlParser.Impl
 	private DocumentParser htmlParser;
 	private Buffer buffer;
 	private DefaultMutableTreeNode root;
+	private ArrayList ids;
 	//}}}
 
 	//{{{ attributesToSAX() method
-	private Attributes attributesToSAX(MutableAttributeSet a)
+	private Attributes attributesToSAX(MutableAttributeSet a,
+		String element, Position pos)
 	{
 		AttributesImpl attrs = new AttributesImpl();
 		Enumeration enum = a.getAttributeNames();
@@ -78,6 +104,12 @@ public class SwingHTMLParserImpl implements XmlParser.Impl
 			Object attr = enum.nextElement();
 			String name = attr.toString();
 			String value = a.getAttribute(attr).toString();
+			if(name.equalsIgnoreCase("id")
+				|| name.equalsIgnoreCase("name"))
+			{
+				if(!ids.contains(value))
+					ids.add(new IDDecl(value,element,pos));
+			}
 
 			// TODO: is CDATA really appropriate here?
 			// does anyone even check the type value?
@@ -92,19 +124,19 @@ public class SwingHTMLParserImpl implements XmlParser.Impl
 	{
 		Stack currentNodeStack = new Stack();
 
-		public void handleStartTag(HTML.Tag t, MutableAttributeSet a, int pos)
+		public void handleStartTag(HTML.Tag t, MutableAttributeSet a, int offset)
 		{
 			try
 			{
 				buffer.readLock();
 
-				if(pos > buffer.getLength())
-					pos = buffer.getLength();
+				if(offset > buffer.getLength())
+					offset = buffer.getLength();
 
+				Position pos = buffer.createPosition(offset);
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
 					new XmlTag(t.toString(),
-					buffer.createPosition(pos),
-					attributesToSAX(a)));
+					pos,attributesToSAX(a,t.toString(),pos)));
 
 				//if(!Boolean.TRUE.equals(a.getAttribute(IMPLIED)))
 				{
@@ -128,7 +160,7 @@ public class SwingHTMLParserImpl implements XmlParser.Impl
 			}
 		}
 
-		public void handleEndTag(HTML.Tag t, int pos)
+		public void handleEndTag(HTML.Tag t, int offset)
 		{
 			try
 			{
@@ -140,10 +172,10 @@ public class SwingHTMLParserImpl implements XmlParser.Impl
 						currentNodeStack.pop();
 					XmlTag tag = (XmlTag)node.getUserObject();
 
-					if(pos > buffer.getLength())
-						pos = buffer.getLength();
+					if(offset > buffer.getLength())
+						offset = buffer.getLength();
 
-					tag.end = buffer.createPosition(pos);
+					tag.end = buffer.createPosition(offset);
 				}
 				else
 					/* ? */;
@@ -154,19 +186,20 @@ public class SwingHTMLParserImpl implements XmlParser.Impl
 			}
 		}
 
-		public void handleSimpleTag(HTML.Tag t, MutableAttributeSet a, int pos)
+		public void handleSimpleTag(HTML.Tag t, MutableAttributeSet a, int offset)
 		{
 			try
 			{
 				buffer.readLock();
 
-				if(pos > buffer.getLength())
-					pos = buffer.getLength();
+				if(offset > buffer.getLength())
+					offset = buffer.getLength();
+
+				Position pos = buffer.createPosition(offset);
 
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
 					new XmlTag(t.toString(),
-					buffer.createPosition(pos),
-					attributesToSAX(a)));
+					pos,attributesToSAX(a,t.toString(),pos)));
 
 				if(!currentNodeStack.isEmpty())
 				{

@@ -39,8 +39,8 @@ public class XmlInsert extends JPanel implements EBComponent
 		this.view = view;
 		editPaneHandler = new EditPaneHandler();
 
-		setLayout(new GridLayout(sideBySide ? 1 : 2,
-			sideBySide ? 2 : 1,3,3));
+		setLayout(new GridLayout(sideBySide ? 1 : 3,
+			sideBySide ? 3 : 1,3,3));
 
 		JPanel elementPanel = new JPanel(new BorderLayout());
 		elementPanel.add(BorderLayout.NORTH,
@@ -67,6 +67,18 @@ public class XmlInsert extends JPanel implements EBComponent
 			new JScrollPane(entityList));
 
 		add(entityPanel);
+
+		JPanel idPanel = new JPanel(new BorderLayout());
+		idPanel.add(BorderLayout.NORTH,
+			new JLabel(jEdit.getProperty("xml-insert.ids")));
+
+		idList = new JList();
+		idList.setCellRenderer(new XmlListCellRenderer());
+		idList.addMouseListener(new MouseHandler());
+		idList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		idPanel.add(BorderLayout.CENTER,new JScrollPane(idList));
+
+		add(idPanel);
 
 		update();
 	} //}}}
@@ -139,7 +151,14 @@ public class XmlInsert extends JPanel implements EBComponent
 			setDeclaredEntities(completionInfo.entities);
 		}
 		else
-			showNotParsedMessage();
+		{
+			setDeclaredElements(null);
+			setDeclaredEntities(null);
+		}
+
+		ArrayList ids = (ArrayList)view.getEditPane().getClientProperty(
+			XmlPlugin.IDS_PROPERTY);
+		setDeclaredIDs(ids);
 	} //}}}
 
 	//{{{ Private members
@@ -150,6 +169,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	private ArrayList elements;
 	private JList elementList;
 	private JList entityList;
+	private JList idList;
 	//}}}
 
 	//{{{ showNotParsedMessage() method
@@ -157,6 +177,7 @@ public class XmlInsert extends JPanel implements EBComponent
 	{
 		setDeclaredElements(null);
 		setDeclaredEntities(null);
+		setDeclaredIDs(null);
 	} //}}}
 
 	//{{{ setDeclaredElements() method
@@ -218,6 +239,37 @@ public class XmlInsert extends JPanel implements EBComponent
 				if(cellBounds != null)
 				{
 					entityList.setFixedCellHeight(cellBounds.height);
+				}
+			}
+		}
+
+	} //}}}
+
+	//{{{ setDeclaredIDs() method
+	private void setDeclaredIDs(ArrayList ids)
+	{
+		if(ids == null)
+		{
+			DefaultListModel model = new DefaultListModel();
+			model.addElement(jEdit.getProperty("xml-insert.not-parsed"));
+			idList.setModel(model);
+		}
+		else
+		{
+			// inefficent
+			DefaultListModel model = new DefaultListModel();
+			for(int i = 0; i < ids.size(); i++)
+			{
+				model.addElement(ids.get(i));
+			}
+			idList.setModel(model);
+
+			if(model.getSize() != 0)
+			{
+				Rectangle cellBounds = idList.getCellBounds(0,0);
+				if(cellBounds != null)
+				{
+					idList.setFixedCellHeight(cellBounds.height);
 				}
 			}
 		}

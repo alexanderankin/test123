@@ -86,6 +86,7 @@ public class XmlParser implements EBComponent
 				EditPane editPane = view.getEditPane();
 				editPane.putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,null);
 				editPane.putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
+				editPane.putClientProperty(XmlPlugin.IDS_PROPERTY,null);
 
 				//{{{ check for non-XML file
 				if(buffer.getProperty("xml.parser") == null)
@@ -130,8 +131,9 @@ public class XmlParser implements EBComponent
 			jEdit.getProperty("xml-tree.not-parsed")),0);
 		model.reload(root);
 
-		view.getEditPane().putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
 		view.getEditPane().putClientProperty(XmlPlugin.ELEMENT_TREE_PROPERTY,model);
+		view.getEditPane().putClientProperty(XmlPlugin.COMPLETION_INFO_PROPERTY,null);
+		view.getEditPane().putClientProperty(XmlPlugin.IDS_PROPERTY,null);
 
 		finish();
 		return;
@@ -233,12 +235,6 @@ public class XmlParser implements EBComponent
 		return buffer;
 	} //}}}
 
-	//{{{ getText() method
-	public String getText()
-	{
-		return text;
-	} //}}}
-
 	//{{{ addError() method
 	public void addError(int type, String path, int line, String message)
 	{
@@ -336,15 +332,6 @@ public class XmlParser implements EBComponent
 		if(view.isClosed())
 			return;
 
-		thread = null;
-
-		// to avoid keeping pointers to stale objects.
-		// we could reuse a single parser instance to preserve
-		// performance, but it eats too much memory, especially
-		// if the file being parsed has an associated DTD.
-		text = null;
-		parserImpl = null;
-
 		XmlTree tree = (XmlTree)view.getDockableWindowManager()
 			.getDockable(XmlPlugin.TREE_NAME);
 		if(tree != null)
@@ -363,9 +350,10 @@ public class XmlParser implements EBComponent
 	//{{{ Impl interface
 	interface Impl
 	{
-		void parse(XmlParser parser, Reader in) throws IOException;
+		void parse(XmlParser parser, String text);
 		TreeNode getElementTree();
 		CompletionInfo getCompletionInfo();
+		ArrayList getIDs();
 	} //}}}
 
 	//{{{ ParseThread class
@@ -379,18 +367,7 @@ public class XmlParser implements EBComponent
 
 		public void run()
 		{
-			try
-			{
-				StringReader in = new StringReader(text);
-
-				parserImpl.parse(XmlParser.this,in);
-			}
-			catch(IOException ioe)
-			{
-				Log.log(Log.ERROR,this,ioe);
-				addError(ErrorSource.ERROR,buffer.getPath(),0,
-				ioe.toString());
-			}
+			parserImpl.parse(XmlParser.this,text);
 
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -400,15 +377,21 @@ public class XmlParser implements EBComponent
 
 					if(showParsingMessage || errorCount != 0)
 					{
-						Object[] pp = { new Integer(errorCount) };
-						view.getStatus().setMessageAndClear(jEdit.getProperty(
-							"xml-tree.parsing-complete",pp));
+						if(parserImpl instanceof SwingHTMLParserImpl)
+						{
+							view.getStatus().setMessageAndClear(
+								jEdit.getProperty(
+								"xml-tree.parsing-complete-html"));
+						}
+						else
+						{
+							Object[] pp = { new Integer(errorCount) };
+							view.getStatus().setMessageAndClear(jEdit.getProperty(
+								"xml-tree.parsing-complete",pp));
+						}
 					}
 
-					if(parserImpl == null)
-						model = null;
-					else
-						model = new DefaultTreeModel(parserImpl.getElementTree());
+					model = new DefaultTreeModel(parserImpl.getElementTree());
 
 					view.getEditPane().putClientProperty(
 						XmlPlugin.ELEMENT_TREE_PROPERTY,
@@ -421,6 +404,19 @@ public class XmlParser implements EBComponent
 							XmlPlugin.COMPLETION_INFO_PROPERTY,
 							completionInfo);
 					}
+
+					view.getEditPane().putClientProperty(
+						XmlPlugin.IDS_PROPERTY,
+						parserImpl.getIDs());
+
+					thread = null;
+
+					// to avoid keeping pointers to stale objects.
+					// we could reuse a single parser instance to preserve
+					// performance, but it eats too much memory, especially
+					// if the file being parsed has an associated DTD.
+					text = null;
+					parserImpl = null;
 
 					finish();
 				}

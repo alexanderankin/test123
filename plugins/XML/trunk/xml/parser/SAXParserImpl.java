@@ -18,6 +18,7 @@ package xml.parser;
 
 //{{{ Imports
 import javax.swing.tree.*;
+import javax.swing.text.Position;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -70,17 +71,25 @@ class SAXParserImpl implements XmlParser.Impl
 	} //}}}
 
 	//{{{ parse() method
-	public void parse(XmlParser parser, Reader in) throws IOException
+	public void parse(XmlParser parser, String text)
 	{
 		this.parser = parser;
+		this.text = text;
 		buffer = parser.getBuffer();
 		root = new DefaultMutableTreeNode(buffer.getName());
 
 		try
 		{
-			InputSource source = new InputSource(in);
+			InputSource source = new InputSource(
+				new StringReader(text));
 			source.setSystemId(buffer.getPath());
 			reader.parse(source);
+		}
+		catch(IOException ioe)
+		{
+			Log.log(Log.ERROR,this,ioe);
+			parser.addError(ErrorSource.ERROR,buffer.getPath(),0,
+				ioe.toString());
 		}
 		catch(SAXParseException spe)
 		{
@@ -108,15 +117,22 @@ class SAXParserImpl implements XmlParser.Impl
 	{
 		MiscUtilities.quicksort(elements,new ElementDecl.Compare());
 		MiscUtilities.quicksort(entities,new EntityDecl.Compare());
-		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
 
 		return new CompletionInfo(false,elements,elementHash,entities,
-			entityHash,ids);
+			entityHash);
+	} //}}}
+
+	//{{{ getIDs() method
+	public ArrayList getIDs()
+	{
+		MiscUtilities.quicksort(ids,new MiscUtilities.StringICaseCompare());
+		return ids;
 	} //}}}
 
 	//{{{ Private members
 
 	//{{{ Instance variables
+	private String text;
 	private XmlParser parser;
 	private XMLReader reader;
 	private Buffer buffer;
@@ -194,21 +210,14 @@ class SAXParserImpl implements XmlParser.Impl
 			String qName, // qualified name
 			Attributes attrs) throws SAXException
 		{
-			// add all attributes with type "ID" to the ids vector
-			for(int i = 0; i < attrs.getLength(); i++)
-			{
-				if(attrs.getType(i).equals("ID"))
-					ids.add(attrs.getValue(i));
-			}
-
 			// ignore tags inside nested files for now
 			//if(!buffer.getPath().equals(loc.getSystemId()))
 			//	return;
 
+			buffer.readLock();
+
 			try
 			{
-				buffer.readLock();
-
 				int line = Math.min(buffer.getLineCount() - 1,
 					loc.getLineNumber() - 1);
 				int column = loc.getColumnNumber() - 1;
@@ -217,9 +226,10 @@ class SAXParserImpl implements XmlParser.Impl
 					+ column - 1);
 
 				offset = findTagStart(offset);
+				Position pos = buffer.createPosition(offset);
 
 				DefaultMutableTreeNode newNode = new DefaultMutableTreeNode(
-					new XmlTag(qName,buffer.createPosition(offset),attrs));
+					new XmlTag(qName,pos,attrs));
 
 				if(!currentNodeStack.isEmpty())
 				{
@@ -232,6 +242,13 @@ class SAXParserImpl implements XmlParser.Impl
 					root.insert(newNode,0);
 
 				currentNodeStack.push(newNode);
+
+				// add all attributes with type "ID" to the ids vector
+				for(int i = 0; i < attrs.getLength(); i++)
+				{
+					if(attrs.getType(i).equals("ID"))
+						ids.add(new IDDecl(attrs.getValue(i),qName,pos));
+				}
 			}
 			finally
 			{
@@ -249,13 +266,13 @@ class SAXParserImpl implements XmlParser.Impl
 			//if(!buffer.getPath().equals(loc.getSystemId()))
 			//	return;
 
+			buffer.readLock();
+
 			try
 			{
 				DefaultMutableTreeNode node = (DefaultMutableTreeNode)
 					currentNodeStack.peek();
 				XmlTag tag = (XmlTag)node.getUserObject();
-
-				buffer.readLock();
 
 				int line = Math.min(buffer.getLineCount() - 1,
 					loc.getLineNumber() - 1);
@@ -366,7 +383,7 @@ class SAXParserImpl implements XmlParser.Impl
 		{
 			for(int i = offset; i >= 0; i--)
 			{
-				if(parser.getText().charAt(i) == '<')
+				if(text.charAt(i) == '<')
 					return i;
 			}
 

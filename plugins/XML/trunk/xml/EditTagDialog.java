@@ -71,6 +71,7 @@ class EditTagDialog extends EnhancedDialog
 		attributeModel = createAttributeModel(element.attributes,
 			attributeValues,ids);
 		attributes = new AttributeTable();
+		attributes.setModel(new AttributeTableModel());
 		attributes.setRowHeight(new JComboBox(new String[] { "template" })
 			.getPreferredSize().height);
 
@@ -213,7 +214,7 @@ class EditTagDialog extends EnhancedDialog
 			{
 				values = ids;
 				if(value == null)
-					value = (String)ids.get(0);
+					value = ((IDDecl)ids.get(0)).id;
 			}
 			else
 			{
@@ -359,12 +360,6 @@ class EditTagDialog extends EnhancedDialog
 	//{{{ AttributeTable class
 	class AttributeTable extends JTable
 	{
-		//{{{ AttributeTable constructor
-		AttributeTable()
-		{
-			super(new AttributeTableModel());
-		} //}}}
-
 		//{{{ getCellEditor() method
 		public TableCellEditor getCellEditor(int row, int column)
 		{

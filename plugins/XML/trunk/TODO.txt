@@ -1,7 +1,11 @@
+- edit tag dialog and ids
+- id completion
+- icon for ids
+- threaddeath -- wtf?
+- tag highlight: use a timer, show status message
 - 'advanced' option pane for selecting a parser, with a 'don't change this
   if you don't know what you're doing' warning. tag highlight in modes that
-  set 'xml.parser' property, move tag highlight setting to 'general', get
-  rid of 'tag highlight' option pane.
+  set 'xml.parser' property
 - html: support id attribute
 - html: get rid of _implied_ crap
 - html: need to get error reporting figured out
@@ -23,7 +27,6 @@
 - proper handling of tags in nested files
 - test XMLCatalog support, include an XMLCatalog DTD
 - All/1/2/3/4 buttons in XML tree?
-- 'new xml file' command
 - handle parsing open buffers better
 - pluggable parsers, don't rely on Xerces-specific features, fail
   gracefully if some parser features are not available

@@ -66,6 +66,14 @@ class XmlListCellRenderer extends DefaultListCellRenderer
 				: EXTERNAL_ENTITY_ICON);
 			setText(entity.name);
 		}
+		else if(value instanceof IDDecl)
+		{
+			IDDecl id = (IDDecl)value;
+			/* setIcon(entity.type == EntityDecl.INTERNAL
+				? INTERNAL_ENTITY_ICON
+				: EXTERNAL_ENTITY_ICON); */
+			setText(id.id + " [element: <" + id.element + ">]");
+		}
 		else
 			setIcon(null);
 
