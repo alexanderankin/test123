@@ -1,4 +1,4 @@
-<body><h3>Extending the ProjectViewer Plugin.</h3>
+<body><h3>The ProjectViewer Package.</h3>
 
 <p>External plugins can interact with the Project Viewer plugin in various
 ways:</p>
@@ -75,35 +75,35 @@ used to instantiate the objects. The classes must be of the specified types
 described in each property, or a runtime error will occur.</p>
 
 <ul>
-	<li>plugin.projectviewer.<i>class name</i>.global-pv-listeners: the list of
-	classes that provide {@link projectviewer.event.ProjectViewerListener
+	<li>plugin.projectviewer.<i>class name</i>.global-pv-listeners:<br>
+  the list of	classes that provide {@link projectviewer.event.ProjectViewerListener
 	ProjectViewerListener}s for ProjectViewer that'll listen to all PV-related
 	events, regardless of the view where they happen.</li>
 
-	<li>plugin.projectviewer.<i>class name</i>.pv-listeners: list of
-	classes that provide {@link projectviewer.event.ProjectViewerListener
+	<li>plugin.projectviewer.<i>class name</i>.pv-listeners:<br>
+  list of	classes that provide {@link projectviewer.event.ProjectViewerListener
 	ProjectViewerListener}s for specific views where ProjectViewer is being
 	used. One object of each class will be instantiated for each view.</li>
 
-	<li>plugin.projectviewer.<i>class name</i>.prj-listeners: list of
-	classes that provide {@link projectviewer.event.ProjectListener
+	<li>plugin.projectviewer.<i>class name</i>.prj-listeners:<br>
+  list of	classes that provide {@link projectviewer.event.ProjectListener
 	ProjectListener}s to add to active projects. Only one instance of each
 	class will be created, and this instance may be added to many projects at
 	the same time (in multiple views, for instance). ProjectViewer will take
 	care of adding the listener to newly loaded projects and remove them from
 	projects being deactivated.</li>
 
-	<li>plugin.projectviewer.<i>class name</i>.toolbar-actions: list of
-	classes that provide {@link projectviewer.action.Action Action}s that will
-	be added to the toolbar of the ProjectViewer dockable. One instance is
+	<li>plugin.projectviewer.<i>class name</i>.toolbar-actions:<br>
+  list of classes that provide {@link projectviewer.action.Action Action}s that
+  will be added to the toolbar of the ProjectViewer dockable. One instance is
 	created for each class, and for each jEdit view the instance is cloned,
 	and then the "projectViewer" instance is set for the cloned object.</li>
 
-	<li>plugin.projectviewer.<i>class name</i>.context-menu-actions: list of
-	classes that provide {@link projectviewer.action.Action Action}s that will
-	be added to the tree's context menu. One instance is created for each class,
-	and for each jEdit view the instance is cloned, and then the "projectViewer"
-	instance is set for the cloned object.</li>
+	<li>plugin.projectviewer.<i>class name</i>.context-menu-actions:<br>
+  list of classes that provide {@link projectviewer.action.Action Action}s that
+  will be added to the tree's context menu. One instance is created for each
+  class, and for each jEdit view the instance is cloned, and then the
+  "projectViewer"	instance is set for the cloned object.</li>
 
 </ul>
 
