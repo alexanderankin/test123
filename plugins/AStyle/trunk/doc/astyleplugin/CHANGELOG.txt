@@ -1,6 +1,12 @@
 ChangeLog for AStyle Beautifier plugin
 ===========================================================================
 
+Version 0.3
+-----------
+* Bugfix: all markers are now restored after beautify
+* requires jEdit 3.2pre9 or higher
+
+
 Version 0.2
 -----------
 * Bugfix: NPE if "Beautify Buffer" was invoked before saving the plugin

@@ -9,7 +9,7 @@
 NAME = "AStylePlugin";
 
 javac_bin = "javac";
-javac_flags = "-g" "-deprecation";
+javac_flags = "-g" "-deprecation" "-classpath" (cat (getprop "java.class.path") "../../jedit.jar;.");
 javac_cmd = javac_bin javac_flags;
 
 jar_file = (cat "../" NAME ".jar");
@@ -38,7 +38,8 @@ jar_file: classes;
             (join packages, "/*.html")
             (join packages, "/*.xml")
             (join packages, "/*.txt")
-            (join packages, "/*.props"));
+            (join packages, "/*.props")
+            (join packages, "/*.properties"));
 }
 
 

@@ -52,12 +52,12 @@ The version currently used is <b>Artistic Style 1.14.1</b>.
 <H2>Requirements</H2>
 
 <p>
-You need at least <b>JDK 1.1.6</b> and <b>jEdit 3.1final</b>.
+You need at least <b>JDK 1.1.6</b> and <b>jEdit 3.2pre9</b>.
 </p>
 
 <p>
-<i>Artistic Style is already contained in the AStyle Beautifier Plugin.
-There is no need to download it separately!</i>
+<b>Artistic Style is already contained in the AStyle Beautifier Plugin.
+There is no need to download it separately!</b>
 </p>
 
 
@@ -74,16 +74,16 @@ is <code>beautify</code>. (This gets used in macros.)
 </p>
 
 <p>
-If the current buffer is in <b>Java</b> mode, it is assumed that the buffer
+If the current buffer is in <b>Java</b> mode, AStyle assumes that the buffer
 contains Java source code, and uses Java formatting routines.<br>
-If the current buffer is in <b>C++</b> or <b>C</b> mode, it is assumed that
+If the current buffer is in <b>C++</b> or <b>C</b> mode, AStyle assumes that
 the buffer contains C/C++ source code, and uses C/C++ formatting routines.
 </p>
 
 <p>
 The code will be indented according to the indentation settings of the
-current mode, ie. the options <b>Indent width</b> and <b>Soft tabs (emulated
-with spaces)</b>. You can configure these options under
+current mode, ie. the options <b>Indent width</b> and <b>Soft tabs</b>.
+You can configure these options under
 <b>Utilities&gt;Global&nbsp;Options&gt;Mode-Specific</b>. Note that local
 Buffer Options override Mode-Specific default options.
 </p>
@@ -93,6 +93,92 @@ You can change the style of the reformatted code with a myriad of options in
 the AStyle Plugin options dialog, available at
 <b>Utilities&gt;Global&nbsp;Options&gt;Plugin&nbsp;Options&gt;AStyle&nbsp;Beautifier</b>.
 The dialogs have rich and self-explaining online help. Have a look!
+</p>
+
+
+<br>
+
+
+<H2>Comparison AStyle vs. JavaStyle</H2>
+
+<p>
+<b>JavaStyle</b> is another source code beautifier plugin for jEdit. You might
+wonder why there are two beautifiers, and in what features they differ. Here's
+a short comparison:
+</p>
+
+<p>
+The main difference is complexity.
+</p>
+
+<p>
+<b>AStyle</b> is a line-by-line beautifier, that looks for certain keywords and
+structure characters like '{', remembers the current indent level and indents
+each line one a one-by-one basis. This is a fast and simple approach, but you
+cannot do certain things, like sorting methods etc.
+</p>
+
+<p>
+<b>JavaStyle</b> is much more complex. It contains a full blown Java parser,
+similar to the javac compiler. It reads in the Java source code as a whole,
+builds an object tree, and effectively "redraws" the whole source code from
+scratch. The advantage is that you can to a lot more to the object tree before
+it is written out, for example sort methods by access modifier (public methods
+first), automatically generate JavaDoc tags etc. (You'll notice that JavaStyle
+has much more options than AStyle.) The disadvantage is that the source needs
+to be compilable before you can beautify it. AStyle does not have this
+requirement.
+</p>
+
+<table border="1">
+  <tr>
+    <td></td>
+    <td><b>AStyle</b></td>
+    <td><b>JavaStyle</b></td>
+  </tr>
+
+  <tr>
+    <td><b>Advantages</b></td>
+    <td>
+      <ul>
+        <li>faster
+        <li>smaller
+        <li>prefers to preserve existing spacing, e.g. separation lines
+        <li>formats half finished source
+        <li>for Java, C and C++ code
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>automatic creation of JavaDoc stubs
+        <li>sort methods, inner classes and fields
+        <li>reformat comments, e.g. word-wrap
+      </ul>
+    </td>
+  </tr>
+
+  <tr>
+    <td><b>Disadvantages</b></td>
+    <td>
+      <ul>
+        <li>only does spacing and indentation
+      </ul>
+    </td>
+    <td>
+      <ul>
+        <li>source code needs to be compilable
+        <li>Java source code only
+      </ul>
+    </td>
+  </tr>
+</table>
+
+<p>
+So, if you want simply to reindent your code with tabs or spaces, I would go
+for <b>AStyle</b>. But if you want to enforce a certain structure on your code,
+I would use <b>JavaStyle</b>. Some users complained, that sometimes JavaStyle
+does "too much", and that it cannot be switched off. For them, the AStyle
+plugin should be more suitable.
 </p>
 
 
