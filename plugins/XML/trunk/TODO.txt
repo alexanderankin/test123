@@ -1,3 +1,4 @@
+- URL files: error highlight broken
 - jing
 - no completions popup: !
 - no completions popup in quoted areas, CDATA
