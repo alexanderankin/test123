@@ -24,7 +24,7 @@ package sidekick;
 
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.EditPane;
-import errorlist.ErrorSource;
+import errorlist.DefaultErrorSource;
 
 /**
  * An abstract base class for plugin-provided parser implementations.
@@ -71,7 +71,7 @@ public abstract class SideKickParser
 	 * @return A new instance of the <code>SideKickParsedData</code> class.
 	 */
 	public abstract SideKickParsedData parse(Buffer buffer, String text,
-		ErrorSource errorSource);
+		DefaultErrorSource errorSource);
 	//}}}
 
 	//{{{ supportsCompletion() method
