@@ -1,0 +1,100 @@
+### Properties used by jEdit
+
+plugin.SqlPlugin.name=SQL
+plugin.SqlPlugin.author=Sergey V. Udaltsov
+plugin.SqlPlugin.version=0.6
+plugin.SqlPlugin.docs=SqlPlugin.html
+#No more jars in deps: take your favorite JDBC driver and put in ~/.jedit/jars
+#plugin.SqlPlugin.jars=classes12.zip
+
+### These tell jEdit what JDK and jEdit version we require
+
+## We require jEdit 2.7pre2, because that is the version which
+## introduced the new action API
+plugin.SqlPlugin.depend.0=jedit 02.07.02.00
+
+## If your plugin uses JDK 1.2 specific stuff, uncomment the next line.
+#plugin.SqlPlugin.depend.1=jdk 1.2
+plugin.SqlPlugin.depend.1=plugin EditBusPlugin 0.9.4
+plugin.SqlPlugin.depend.2=plugin xml.XmlPlugin 0.3
+
+# The menu item label
+sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer
+sqlMenu.label=SQL
+
+sql.publishBuffer.label=Publish Buffer
+sql.publishSelection.label=Publish Selection
+sql.publishBufferToServer.label=Publish Buffer To Server
+sql.publishSelectionToServer.label=Publish Selection To Server
+sql.loadObject.label=Load Object
+sql.loadObjectFromServer.label=Load Object From Server
+
+options.sql.label=SQL
+
+### Properties for use by this plugin
+sql.serverconfig.title=SQL Server Configuration
+sql.config.label=Connection configuration
+
+sql.options.allServers.label=All Servers
+sql.options.allServers.name=AllServers
+
+sql.options.addBtn.label=Add
+
+sql.options.delBtn.label=Delete
+
+sql.options.editBtn.label=Edit
+
+sql.options.maxRecs2Show.label=Max no. of records to show
+
+sql.serverType.label=SQL Server type
+
+sql.serverchooser.title=SQL Servers
+sql.serverchooser.prompt=Choose the server configuration
+
+sql.objectchooser.title=SQL Objects
+sql.objectchooser.prompt=Choose the object to dump
+
+# Strings used by the 'notSQL' dialog box
+sql.notSql.title=Not SQL buffer
+sql.notSql.message=This buffer does not contain SQL statements.
+
+sql.publishOK.title=Publishing success
+sql.publishOK.message={0} {1} was successfully published to {2}.
+
+sql.updateOK.title=Insert/update success
+sql.updateOK.message={0} record(s) successfully modified
+
+sql.publishErr.title=Publishing error
+sql.publishErr.message={0} {1} was published to {2} with {3} errors.
+
+sql.configurationError.title=Configuration Error
+sql.configurationError.message=Invalid input:\n {0}
+
+sql.sqlException.title=SQL Exception
+sql.sqlException.message=SQL Exception catched:\n {0}
+
+sql.resultSetError.title=Statement returned ResultSet
+sql.resultSetError.message=Your statement returned some ResultSet. This is not supported yet.
+
+sql.noSettings.title=No SQL server settings
+sql.noSettings.message=The settings for the SQL server are unset or invalid. Please check.
+
+sql.noStoredProcedures.title=Stored procedures are not available
+sql.noStoredProcedures.message={0} does not support stored procedures.
+
+sql.oracle.unsupportedTypeOfTrigger.title=Unsupported type of trigger
+sql.oracle.unsupportedTypeOfTrigger.message=Trigger {0}.{1} is of not supported type.\n\
+It is per-{2} trigger.
+
+sql.resultSet.label=SQL Result Set
+sql.resultSet.info=Records: {0}
+sql.resultSet.status={0} request(s) running
+
+sql.resultSet.title=SQL Result Set
+
+sql.illegalName=The name of the database configuration must be without white space
+sql.emptyName=The name of the database configuration must be non-empty
+sql.emptyType=You should choose the type of the database
+
+vfs.sql.label=Databases
+
