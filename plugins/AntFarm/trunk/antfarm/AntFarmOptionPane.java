@@ -38,6 +38,7 @@ public class AntFarmOptionPane
 	private JCheckBox _useProjectViewerIntegration;
 	private JCheckBox _useEmacsOutput;
 	private JCheckBox _saveOnExecute;
+	private JCheckBox _supressSubTargets;
 	private JButton _pickPath;
 	private JButton _buildClasspath;
 	private JTextField _classPath;
@@ -110,6 +111,12 @@ public class AntFarmOptionPane
 		_saveOnExecute.setSelected(
 			jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "save-on-execute" )
 			 );
+		_supressSubTargets = new JCheckBox(
+			jEdit.getProperty( AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets-label" )
+			 );
+		_supressSubTargets.setSelected(
+			jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets" )
+			 );
 
 		boolean useSameJvmSelected = jEdit.getBooleanProperty( AntFarmPlugin.OPTION_PREFIX + "use-same-jvm" );
 		if ( useSameJvmSelected )
@@ -166,6 +173,7 @@ public class AntFarmOptionPane
 		addComponent( _useProjectViewerIntegration );
 		addComponent( _useEmacsOutput );
 		addComponent( _saveOnExecute );
+		addComponent( _supressSubTargets );
 	}
 
 
@@ -184,7 +192,9 @@ public class AntFarmOptionPane
 		jEdit.setBooleanProperty(
 			AntFarmPlugin.OPTION_PREFIX + "save-on-execute", _saveOnExecute.isSelected()
 			 );
-
+		jEdit.setBooleanProperty(
+			AntFarmPlugin.OPTION_PREFIX + "supress-sub-targets", _supressSubTargets.isSelected()
+			 );
 	}
 
 

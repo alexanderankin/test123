@@ -41,23 +41,25 @@ public class AntTree extends JTree
 		AntFarm.loadIcon( "antfarm.brokenProject.icon" );
 	public final static ImageIcon ICON_TARGET =
 		AntFarm.loadIcon( "antfarm.target.icon" );
+	public final static ImageIcon ICON_DEFAULT_TARGET =
+		AntFarm.loadIcon( "antfarm.defaultTarget.icon" );
 
 	protected JPopupMenu _popup;
 	protected TreePath _clickedPath;
 
 	private DefaultMutableTreeNode _top;
 	private RootNode _root;
-	private AntFarm _antBrowser;
+	private AntFarm _antFarm;
 	private View _view;
 
 
-	public AntTree( AntFarm antBrowser, View view )
+	public AntTree( AntFarm antFarm, View view )
 	{
 		//Enable tool tips.
 		ToolTipManager.sharedInstance().registerComponent( this );
 		putClientProperty( "JTree.lineStyle", "Angled" );
 
-		_antBrowser = antBrowser;
+		_antFarm = antFarm;
 		_view = view;
 		populateTree();
 	}
@@ -449,22 +451,22 @@ public class AntTree extends JTree
 
 			ProjectNode projectNode = getProjectNode( getTreeNode( _clickedPath ) );
 			if ( projectNode != null ) {
-				_antBrowser.removeAntFile.setEnabled( true );
+				_antFarm.removeAntFile.setEnabled( true );
 			}
 			else {
-				_antBrowser.removeAntFile.setEnabled( false );
+				_antFarm.removeAntFile.setEnabled( false );
 			}
 
 			if ( getExecutingNode( getTreeNode( _clickedPath ) ) != null ) {
-				_antBrowser.runTarget.setEnabled( true );
+				_antFarm.runTarget.setEnabled( true );
 			}
 			else {
-				_antBrowser.runTarget.setEnabled( false );
+				_antFarm.runTarget.setEnabled( false );
 			}
 
 			AntNode antNode = getAntNode( getTreeNode( _clickedPath ) );
 			if ( antNode != null ) {
-				_antBrowser.loadBuildFileInShell( antNode.getBuildFilePath() );
+				_antFarm.loadBuildFileInShell( antNode.getBuildFilePath() );
 			}
 		}
 	}
@@ -656,7 +658,7 @@ public class AntTree extends JTree
 		public File[] listBuildFiles()
 		{
 
-			Vector fileNames = _antBrowser.getAntBuildFiles();
+			Vector fileNames = _antFarm.getAntBuildFiles();
 
 			Vector v = new Vector();
 
@@ -758,7 +760,14 @@ public class AntTree extends JTree
 
 		public String getToolTipText()
 		{
-			return _target.getDescription();
+			String description = "";
+			if ( _target.getDescription() != null )
+				description += _target.getDescription();
+				
+			if ( isDefaultTarget() )
+				return "[default] " + description;
+				
+			return description;
 		}
 
 
@@ -782,8 +791,6 @@ public class AntTree extends JTree
 
 		public String toString()
 		{
-			if ( isDefaultTarget() )
-				return _target.getName() + " [default]";
 			return _target.getName();
 		}
 
@@ -799,10 +806,18 @@ public class AntTree extends JTree
 		}
 
 
+		public boolean isSubTarget()
+		{
+			return _target.getDescription() == null;
+		}
+		
+		
 		private boolean isDefaultTarget()
 		{
 			return _target.getName().equals( getProject().getDefaultTarget() );
 		}
+		
+		
 	}
 
 
@@ -817,7 +832,7 @@ public class AntTree extends JTree
 		{
 			_buildFilePath = buildFilePath;
 			try {
-				_project = _antBrowser.getProject( _buildFilePath );
+				_project = _antFarm.getProject( _buildFilePath );
 			}
 			catch ( Exception e ) {
 				_buildException = e;
@@ -898,8 +913,20 @@ public class AntTree extends JTree
 
 			for ( int i = 0; i < targetNodes.size(); i++ ) {
 				TargetNode nd = (TargetNode) targetNodes.elementAt( i );
-				IconData idata = new IconData( AntTree.ICON_TARGET,
-					null, nd );
+				
+				// Skip sub-nodes...
+				if ( nd.isSubTarget() && AntFarmPlugin.supressSubTargets() ) 
+					continue;
+				
+				IconData idata = null;
+				if ( nd.isDefaultTarget() ) {
+					idata = new IconData( AntTree.ICON_DEFAULT_TARGET,
+						null, nd );
+				}
+				else {
+					idata = new IconData( AntTree.ICON_TARGET,
+						null, nd );				
+				}
 				DefaultMutableTreeNode node = new DefaultMutableTreeNode( idata );
 				parent.add( node );
 			}
@@ -911,7 +938,7 @@ public class AntTree extends JTree
 		public void browseBaseDirectory()
 		{
 			File baseDir = _project.getBaseDir();
-			_antBrowser.displayProjectDir( baseDir );
+			_antFarm.displayProjectDir( baseDir );
 		}
 
 
