@@ -36,7 +36,7 @@ class DefaultShell extends Shell
 			Class[] classes = { String.class, String[].class, File.class };
 			java13exec = Runtime.class.getMethod("exec",classes);
 		}
-		catch(InvocationTargetException e)
+		catch(Exception e)
 		{
 			// do nothing
 		}
@@ -281,7 +281,7 @@ class DefaultShell extends Shell
 	private Thread stdout;
 	private Thread stderr;
 	private String dir;
-	private boolean java13;
+	private Method java13exec;
 
 	private int threadDoneCount;
 	private boolean exitStatus;

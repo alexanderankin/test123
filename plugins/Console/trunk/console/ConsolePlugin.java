@@ -47,7 +47,7 @@ public class ConsolePlugin extends EBPlugin
 		EditBus.addToNamedList(DockableWindow.DOCKABLE_WINDOW_LIST,"console");
 	}
 
-	public void createMenuItems(View view, Vector menus, Vector menuItems)
+	public void createMenuItems(Vector menuItems)
 	{
 		menuItems.addElement(GUIUtilities.loadMenuItem("console"));
 	}
