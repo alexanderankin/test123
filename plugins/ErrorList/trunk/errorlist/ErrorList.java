@@ -457,7 +457,7 @@ public class ErrorList extends JPanel implements EBComponent,
 
 		Integer[] args = { new Integer(errorCount),
 			new Integer(warningCount) };
-		status.setText(jEdit.getProperty("error-list.status",args));
+		status.setText(jEdit.getProperty(getStatusProperty(errorCount, warningCount),args));
 	} //}}}
 
 	//{{{ handleErrorSourceMessage() method
@@ -550,6 +550,16 @@ public class ErrorList extends JPanel implements EBComponent,
 			expandPath[1] = errorRoot.getChildAt(i);
 			errorTree.expandPath(new TreePath(expandPath));
 		}
+		if(errorRoot.getChildCount()==0
+			&& jEdit.getBooleanProperty("error-list.autoCloseOnNoErrors"))
+		{
+			DockableWindowManager dwm=view.getDockableWindowManager();
+			if(dwm.isDockableWindowDocked("error-list")
+				&& dwm.isDockableWindowVisible("error-list"))
+			{
+				dwm.toggleDockableWindow("error-list");
+			}
+		}
 	} //}}}
 
 	//{{{ addError() method
@@ -631,6 +641,17 @@ public class ErrorList extends JPanel implements EBComponent,
 		}
 
 		errorModel.reload(errorRoot);
+		
+		if(errorRoot.getChildCount()==0
+			&& jEdit.getBooleanProperty("error-list.autoCloseOnNoErrors"))
+		{
+			DockableWindowManager dwm=view.getDockableWindowManager();
+			if(dwm.isDockableWindowDocked("error-list")
+				&& dwm.isDockableWindowVisible("error-list"))
+			{
+				dwm.toggleDockableWindow("error-list");
+			}
+		}
 	} //}}}
 
 	//{{{ openError() method
@@ -715,6 +736,16 @@ public class ErrorList extends JPanel implements EBComponent,
 		String message;
 	} //}}}
 
+	static protected String getStatusProperty(int errorCount, int warningCount)
+	{
+		String statusProp = "error-list.status.";
+		statusProp += errorCount == 1 ? "one" : "many";
+		statusProp += "-error-";
+		statusProp += warningCount == 1 ? "one" : "many";
+		statusProp += "-warning";
+		return statusProp;
+	}
+
 	//{{{ ErrorCellRenderer class
 	static class ErrorCellRenderer extends DefaultTreeCellRenderer
 	{
@@ -759,10 +790,13 @@ public class ErrorList extends JPanel implements EBComponent,
 						warningCount++;
 				}
 
-				setText(jEdit.getProperty("error-list.file",
-					new Object[] { nodeValue,
-						new Integer(errorCount),
-						new Integer(warningCount) }));
+				setText(nodeValue + " (" +
+					jEdit.getProperty(
+						getStatusProperty(errorCount, warningCount),
+						new Object[] {
+							new Integer(errorCount),
+							new Integer(warningCount) }) +
+					")");
 
 				setIcon(null);
 			}

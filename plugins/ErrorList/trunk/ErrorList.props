@@ -33,16 +33,20 @@ options.error-list.label=Error List
 options.error-list.code=new errorlist.ErrorListOptionPane();
 options.error-list.showOnError=Automatically display on error
 options.error-list.showErrorOverview=Show error overview
+options.error-list.autoCloseOnNoErrors=Auto-close on no errors
 options.error-list.errorColor=Error highlight color:
 options.error-list.warningColor=Warning highlight color:
 
 # Dockable
 error-list.title=Error List
-error-list.status={0} error(s), {1} warning(s)
-error-list.file={0} ({1} error(s), {2} warning(s))
+error-list.status.many-error-many-warning={0} errors, {1} warnings
+error-list.status.one-error-many-warning={0} error, {1} warnings
+error-list.status.many-error-one-warning={0} errors, {1} warning
+error-list.status.one-error-one-warning={0} error, {1} warning
 
 # Settings
 error-list.showOnError=false
 error-list.showErrorOverview=true
+error-list.autoCloseOnNoErrors=false
 error-list.warningColor=#ffa800
 error-list.errorColor=#ff0000
