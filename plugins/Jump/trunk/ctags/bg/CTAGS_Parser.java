@@ -117,7 +117,7 @@ private String[] ctags_args;
         }
         if (b.size() < 1)
         {
-            System.out.println("CTAGS: No files to parse!");
+            System.out.println("Jump!.CTAGS: No files to parse!");
             return null;
         }
         return b;
