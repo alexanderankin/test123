@@ -61,7 +61,7 @@ public class XSLTUtilities {
   private XSLTUtilities() {
   }
 
-  
+
   public static void setIndentAmount(String indentAmount) {
     XSLTUtilities.indentAmount = indentAmount;
   }
@@ -146,7 +146,7 @@ public class XSLTUtilities {
 
     transformer.transform(inputSource, result);
     String resultString = writer.toString();
-    return resultString;
+    return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
   }
 
 
@@ -178,7 +178,22 @@ public class XSLTUtilities {
     handlers[lastIndex].setResult(result);
 
     reader.parse(inputFile);
-    return writer.toString();
+    String resultString = writer.toString();
+    return removeIn(resultString, '\r'); //remove '\r' to temporarily fix a bug in the display of results in Windows
   }
+
+
+  private static String removeIn(String sourceString, char character) {
+    StringBuffer resultBuffer = new StringBuffer();
+
+    for (int i = 0; i < sourceString.length(); i++) {
+      if (sourceString.charAt(i) != character) {
+        resultBuffer.append(sourceString.charAt(i));
+      }
+    }
+
+    return resultBuffer.toString();
+  }
+
 }
 
