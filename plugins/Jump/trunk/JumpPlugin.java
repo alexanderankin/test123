@@ -102,8 +102,7 @@ public class JumpPlugin extends EditPlugin
 //{{{ void stop()
     public void stop()
     {
-        if (jump_actions.isJumpEnabled() == false) return;
-        if (isListenerAdded == false) return;
+        if (jEdit.getBooleanProperty("jump.enable", false) == false || isListenerAdded == false) return;
         try
         {
         this.getListener().ctags_bg.saveBuffer(getListener().ctags_buff, getListener().PROJECT_TAGS.toString() );
