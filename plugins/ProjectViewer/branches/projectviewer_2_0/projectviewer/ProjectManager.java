@@ -161,11 +161,16 @@ public final class ProjectManager {
 		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
 			String pName = (String) it.next();
 			if (loaded.get(pName) == Boolean.TRUE) {
-				saveProject((VPTProject)projects.get(pName));
+				String fName = (String) fileNames.get(pName);
+				if (fName == null) {
+					fName = createFileName(pName);
+					fileNames.put(pName, fName);
+				}
+				ProjectPersistenceManager.save((VPTProject)projects.get(pName), fName);
 			}
 		}
 		
-		saveGlobalData();
+		saveProjectList();
 		
 	} //}}}
 	
@@ -184,7 +189,7 @@ public final class ProjectManager {
 			// since we're saving the project for the first time, let's be
 			// paranoid and save all configuration along with it
 			try{ 
-				saveGlobalData();
+				saveProjectList();
 			} catch (IOException ioe) {
 				Log.log(Log.ERROR, this, ioe);
 			}
@@ -209,7 +214,7 @@ public final class ProjectManager {
 			fileNames.remove(p.getName());
 			// project list changed, save "global" data.
 			try{
-				saveGlobalData();
+				saveProjectList();
 			} catch (IOException ioe) {
 				Log.log(Log.ERROR, this, ioe);
 			}
@@ -321,25 +326,20 @@ public final class ProjectManager {
 		return f.getName();
 	} //}}}
 	
-	//{{{ saveGlobalData() method
+	//{{{ saveProjectList() method
 	/**
 	 *	Saves the "global" data for the projects: the list of projects and
 	 *	the file names where each project data is stored.
 	 */
-	private void saveGlobalData() throws IOException {
+	private void saveProjectList() throws IOException {
 		// save the global configuration
 		OutputStream outs = ProjectPlugin.getResourceAsOutputStream(CONFIG_FILE);
 		OutputStreamWriter out = new OutputStreamWriter(outs, "UTF8");
 		writeXMLHeader("UTF8", out);
 		out.write("<" + PROJECT_ROOT + ">\n");
-		for (Iterator it = projects.keySet().iterator(); it.hasNext(); ) {
+		for (Iterator it = fileNames.keySet().iterator(); it.hasNext(); ) {
 			String pName = (String) it.next();
 			String fName = (String) fileNames.get(pName);
-			if (fName == null) {
-				fName = createFileName(pName);
-				fileNames.put(pName, fName);
-				ProjectPersistenceManager.save((VPTProject)projects.get(pName), fName);
-			}
 			out.write("<" + PROJECT_ELEMENT + " " + 
 				PRJ_NAME + "=\"" + pName + "\" " + 
 				PRJ_FILE + "=\"" + fName + "\"/>\n");
