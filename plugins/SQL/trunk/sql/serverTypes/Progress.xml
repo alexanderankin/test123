@@ -41,7 +41,6 @@
       FROM SYSPROGRESS.SYSPROCEDURES proc INNER JOIN SYSPROGRESS.SYSPROCTEXT txt
       ON proc.PROC_ID = txt.ID
       WHERE proc.CREATOR = ?
-      OR proc.CREATOR = ?
       AND txt.PROC_TYPE = 'sp'
       ORDER BY proc.PROC_NAME
     </statement>
