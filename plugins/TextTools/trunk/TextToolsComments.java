@@ -91,6 +91,10 @@ public class TextToolsComments
 				{
 					line = buffer.getLineText(lines[i]).trim();
 					String lineComment = buffer.getContextSensitiveProperty(buffer.getLineStartOffset(lines[i]), "lineComment");
+					if(lineComment == null || lineComment.length() == 0)
+					{
+						continue;
+					}
 					if(line.length() > 0 && !line.startsWith(lineComment))
 					{
 						doUncomment = false;
