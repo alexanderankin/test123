@@ -53,7 +53,7 @@ public class ProjectViewer extends HoldablePlugin implements ResourceListener, W
     //project constants...
     public  final static String NAME             = "ProjectViewer";
     public  final static String PRODUCT          = "Project Viewer";
-    public  final static String VERSION          = "0.095";
+    public  final static String VERSION          = "1.0.1";
             final static String ALL_PROJECTS     = "All Projects";
     private final static String NO_FILES         = "No files...";
     private final static String NO_PROJECTS      = "No projects found...";

@@ -1,7 +1,7 @@
 # Plugin properties
 plugin.ProjectPlugin.name=Project Viewer
 plugin.ProjectPlugin.author=Kevin A. Burton
-plugin.ProjectPlugin.version=0.095
+plugin.ProjectPlugin.version=1.0.1
 plugin.ProjectPlugin.docs=index.html
 
 plugin.ProjectViewer.depend.0=jdk 1.1
