@@ -459,6 +459,31 @@ public class SqlServerRecord extends Properties
 
 
   /**
+   *Description of the Method
+   *
+   * @since
+   */
+  public static void clearProperties()
+  {
+    final Vector v = new Vector();
+    for ( Enumeration e = SqlPlugin.getPropertyNames(); e.hasMoreElements();  )
+    {
+      final String pname = (String) e.nextElement();
+
+      if ( pname.startsWith( "sql.server." ) )
+        v.addElement( pname );
+    }
+
+    for ( Enumeration e = v.elements(); e.hasMoreElements();  )
+    {
+      SqlPlugin.unsetProperty( (String) e.nextElement() );
+    }
+
+    SqlPlugin.unsetProperty( "sql.currentServerName" );
+  }
+
+
+  /**
    *  Description of the Method
    *
    * @param  name  Description of Parameter

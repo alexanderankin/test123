@@ -32,6 +32,8 @@ import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.*;
 import org.gjt.sp.util.*;
 
+import sessions.*;
+
 import sql.*;
 
 /**
@@ -71,6 +73,8 @@ public class SqlPlugin extends EBPlugin
   protected static Properties props = null;
   protected static boolean configModified = false;
 
+  protected static SessionManager sessionManager = null;
+
 
   /**
    *  Description of the Method
@@ -85,6 +89,8 @@ public class SqlPlugin extends EBPlugin
       settingsDir.mkdirs();
 
     SqlServerType.loadAll();
+
+    sessionManager = SessionManager.getInstance();
 
     registerJdbcClassPath();
 
@@ -138,6 +144,28 @@ public class SqlPlugin extends EBPlugin
   {
     if ( message instanceof CreateDockableWindow )
       handleCreateDockableMessage( (CreateDockableWindow) message );
+    else if ( message instanceof SessionChanged )
+      handleSessionChange( (SessionChanged) message );
+  }
+
+
+  /**
+   *Description of the Method
+   *
+   * @param  message  Description of Parameter
+   * @since
+   */
+  protected void handleSessionChange( SessionChanged message )
+  {
+    Log.log( Log.DEBUG, SqlPlugin.class,
+        "Changing the session from " +
+        message.getOldSession() + " to " + message.getNewSession() );
+
+    commitProperties();
+
+    clearProperties();
+
+    props = null;
   }
 
 
@@ -254,14 +282,45 @@ public class SqlPlugin extends EBPlugin
 
 
   /**
+   *Gets the ConfigFileName attribute of the SqlPlugin class
+   *
+   * @param  sessionName  Description of Parameter
+   * @return              The ConfigFileName value
+   * @since
+   */
+  public static String getConfigFileName( String sessionName )
+  {
+    return MiscUtilities.constructPath( jEdit.getSettingsDirectory(),
+        "sql",
+        ( sessionName == null || "default".equals( sessionName ) ) ?
+        "properties" :
+        "properties." + sessionName );
+  }
+
+
+  /**
+   *Description of the Method
+   *
+   * @since
+   */
+  public static void clearProperties()
+  {
+    ResultSetWindow.clearProperties();
+    SqlServerRecord.clearProperties();
+  }
+
+
+  /**
    *  Description of the Method
    *
    * @since
    */
   public static void loadProperties()
   {
-    final String path = MiscUtilities.constructPath( jEdit.getSettingsDirectory(),
-        "sql", "properties" );
+    String path = getConfigFileName( sessionManager.getCurrentSession() );
+    if ( !( new File( path ).exists() ) )
+      path = getConfigFileName( null );
+
     try
     {
       props = new Properties();
@@ -287,8 +346,8 @@ public class SqlPlugin extends EBPlugin
     if ( !configModified )
       return;
 
-    final String path = MiscUtilities.constructPath( jEdit.getSettingsDirectory(),
-        "sql", "properties" );
+    final String path = getConfigFileName( sessionManager.getCurrentSession() );
+
     try
     {
       final OutputStream os = new BufferedOutputStream( new FileOutputStream( path ) );
