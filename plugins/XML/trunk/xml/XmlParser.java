@@ -286,9 +286,11 @@ class XmlParser
 		public InputSource resolveEntity(String publicId, String systemId)
 			throws SAXException
 		{
+			InputSource source = null;
+
 			try
 			{
-				return CatalogManager.resolve(
+				source = CatalogManager.resolve(
 					loc.getSystemId(),publicId,systemId);
 			}
 			catch(IOException io)
@@ -296,7 +298,10 @@ class XmlParser
 				error(new SAXParseException(io.toString(),loc));
 			}
 
-			return new InputSource(new StringReader("<!-- -->"));
+			if(source == null)
+				return new InputSource(new StringReader("<!-- -->"));
+			else
+				return null;
 		}
 
 		public void startElement(String namespaceURI,
