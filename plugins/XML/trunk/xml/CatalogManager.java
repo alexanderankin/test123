@@ -110,7 +110,7 @@ public class CatalogManager
 		{
 			catalog.loadSystemCatalogs();
 
-			catalog.parseCatalog("jeditresource:XML.jar!/xml/catalog");
+			catalog.parseCatalog("jeditresource:XML.jar!/xml/dtds/catalog");
 
 			i = 0;
 			while((uri = jEdit.getProperty(

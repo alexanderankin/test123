@@ -123,6 +123,34 @@ public class XmlPlugin extends EBPlugin
 		return (XmlParser)parsers.get(view);
 	} //}}}
 
+	//{{{ getParserType() method
+	public static String getParserType(Buffer buffer)
+	{
+		String prop = buffer.getStringProperty("xml.parser");
+		if(prop == null || prop.equals("xml"))
+			return prop;
+		else if(prop.equals("html-really"))
+			return "html";
+		else if(prop.equals("html"))
+		{
+			if(buffer.getLineText(0).toLowerCase().startsWith("<?xml"))
+			{
+				buffer.setProperty("xml.parser","xml");
+				return "xml";
+			}
+			else
+			{
+				buffer.setProperty("xml.parser","html-really");
+				return "html";
+			}
+		}
+		else
+		{
+			// can't happen?
+			return null;
+		}
+	} //}}}
+
 	//{{{ Private members
 	private static HashMap parsers = new HashMap();
 	private static HashMap tagHighlights = new HashMap();
@@ -131,16 +159,20 @@ public class XmlPlugin extends EBPlugin
 	//{{{ TagMouseHandler class
 	static class TagMouseHandler extends MouseAdapter
 	{
-		public void mouseReleased(MouseEvent evt)
+		public void mousePressed(MouseEvent evt)
 		{
-			if((OperatingSystem.isMacOS() && evt.isMetaDown())
-				|| (!OperatingSystem.isMacOS() && evt.isControlDown()))
+			if(evt.getClickCount() == 2
+				&& ((OperatingSystem.isMacOS() && evt.isMetaDown())
+				|| (!OperatingSystem.isMacOS() && evt.isControlDown())))
 			{
 				final View view = GUIUtilities.getView(
 					(Component)evt.getSource());
-				if(view.getBuffer().getProperty("xml.parser") == null
-					|| view.getTextArea().getSelectionCount() != 0)
+				if(XmlPlugin.getParserType(view.getBuffer()) == null)
 					return;
+
+				JEditTextArea textArea = view.getTextArea();
+				textArea.setCaretPosition(textArea.xyToOffset(
+					evt.getX(),evt.getY()));
 
 				SwingUtilities.invokeLater(new Runnable()
 				{

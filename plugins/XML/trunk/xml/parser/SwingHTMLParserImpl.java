@@ -157,7 +157,7 @@ class SwingHTMLParserImpl implements XmlParser.Impl
 				}
 			}
 
-			attrs.addAttribute(null,null,name,type,value);
+			attrs.addAttribute(null,name,name,type,value);
 		}
 
 		return attrs;

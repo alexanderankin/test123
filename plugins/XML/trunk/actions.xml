@@ -45,7 +45,7 @@
 	</ACTION>
 	<ACTION NAME="xml-close-tag">
 		<CODE>
-			xml.XmlActions.insertClosingTag(textArea);
+			xml.XmlActions.insertClosingTag(view);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-edit-tag">
@@ -68,7 +68,7 @@
 	</ACTION>
 	<ACTION NAME="xml-match-tag">
 		<CODE>
-			xml.MatchTag.matchTag(textArea);
+			xml.XmlActions.matchTag(textArea);
 		</CODE>
 	</ACTION>
 	<ACTION NAME="xml-next-tag">

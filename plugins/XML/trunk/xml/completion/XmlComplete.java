@@ -13,7 +13,7 @@
  * parser package."
  */
 
-package xml;
+package xml.completion;
 
 //{{{ Imports
 import javax.swing.*;
@@ -24,7 +24,7 @@ import java.util.*;
 import org.gjt.sp.jedit.gui.KeyEventWorkaround;
 import org.gjt.sp.jedit.textarea.JEditTextArea;
 import org.gjt.sp.jedit.*;
-import xml.completion.*;
+import xml.*;
 import xml.parser.*;
 //}}}
 
@@ -99,12 +99,6 @@ class XmlComplete extends JWindow
 	private void setUpListModel()
 	{
 		DefaultListModel model = new DefaultListModel();
-
-		if(completions.get(0) instanceof ElementDecl)
-		{
-			if(text.startsWith("/"))
-				text = text.substring(1);
-		}
 
 		for(int i = 0; i < completions.size(); i++)
 		{
@@ -343,23 +337,19 @@ class XmlComplete extends JWindow
 				{
 					insertSelected(ch);
 				}
+				else if(ch == '/')
+				{
+					// in an XML file, a closing tag
+					// must always close the most
+					// recently opened tag.
+					XmlActions.completeClosingTag(view);
+					dispose();
+				}
 				else
 				{
-					if(ch == '/' && "xml".equals(view.getBuffer()
-						.getProperty("xml.parser")))
-					{
-						// in an XML file, a closing tag
-						// must always close the most
-						// recently opened tag.
-						XmlActions.completeClosingTag(view);
-						dispose();
-					}
-					else
-					{
-						textArea.userInput(ch);
-						text = text + ch;
-						setUpListModel();
-					}
+					textArea.userInput(ch);
+					text = text + ch;
+					setUpListModel();
 				}
 
 				evt.consume();

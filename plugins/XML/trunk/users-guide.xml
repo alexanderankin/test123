@@ -80,6 +80,13 @@
  </para>
 
  <para>
+  The XML plugin is configured out-of-the-box to validate XML files against
+  DTDs supplied with jEdit (for edit modes, actions, and so on), as well as
+  XHTML files. To locate other DTDs, you will need to set up the plugin
+  accordingly.
+ </para>
+
+ <para>
   If the XML file specifies the DTD using a public ID, you will need to
   ensure the XML plugin loads a catalog file that defines the public ID.
   The XML plugin can use catalogs in XML catalog and OASIS SOCAT formats.
@@ -269,8 +276,8 @@
 
  <para>
   Invoking <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Edit
-  Tag at Caret</guimenuitem>, <keycap>Control</keycap>-clicking in the text
-  area displays a dialog box for graphically editing the
+  Tag at Caret</guimenuitem> or <keycap>Control</keycap>-double-clicking in the
+  text area displays a dialog box for graphically editing the
   attributes of the tag at the caret position.
  </para>
 
@@ -436,11 +443,15 @@
 
   <itemizedlist>
    <listitem><para>
-    <keycap>Control</keycap>-clicking on a tag in the text area opens the
+    <keycap>Control</keycap>-double clicking on a tag in the text area opens the
     <guimenuitem>Edit Tag</guimenuitem> dialog box.
    </para></listitem>
    <listitem><para>
-    Option added to only show 
+    Option added to only show the <literal>ID</literal> attributes of elements
+    in the tree.
+   </para></listitem>
+   <listitem><para>
+    Closing tag completion can now be used in HTML files.
    </para></listitem>
    <listitem><para>
     Much faster tag matching and highlighting.
@@ -450,7 +461,8 @@
     gratious slowdowns if for example a file has 1000 parse errors.
    </para></listitem>
    <listitem><para>
-    Fixed NullPointerException when invoking <guimenuitem>XML Parser</guimenuitem>.
+    Fixed NullPointerException when invoking the
+    <guimenuitem>Parse XML Buffer</guimenuitem> command.
    </para></listitem>
    <listitem><para>
     Tag and entity completion popup now explicitly returns focus to the text

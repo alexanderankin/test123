@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2000, 2001 Slava Pestov
+ * Copyright (C) 2000, 2001, 2002 Slava Pestov
  *               1998, 2000 Ollie Rutherfurd
  *               2000, 2001 Andre Kaplan
  *               1999 Romain Guy
@@ -298,6 +298,130 @@ public class XmlActions
 		}
 	} //}}}
 
+	//{{{ insertClosingTag() method
+	public static void insertClosingTag(View view)
+	{
+		Buffer buffer = view.getBuffer();
+
+		CompletionInfo completionInfo = CompletionInfo
+			.getCompletionInfo(view.getEditPane());
+
+		if(!(buffer.isEditable()
+			&& completion
+			&& completionInfo != null))
+		{
+			view.getToolkit().beep();
+			return;
+		}
+
+		JEditTextArea textArea = view.getTextArea();
+
+		TagParser.Tag tag = TagParser.findLastOpenTag(
+			buffer.getText(0,textArea.getCaretPosition()),
+			textArea.getCaretPosition(),
+			completionInfo.elementHash);
+		if(tag != null)
+			textArea.setSelectedText("</" + tag.tag + ">");
+	} //}}}
+
+	//{{{ removeTags() method
+	public static void removeTags(Buffer buffer)
+	{
+		if(!buffer.isEditable())
+		{
+			Toolkit.getDefaultToolkit().beep();
+			return;
+		}
+
+		int off = 0;
+		int len = buffer.getLength();
+		Segment txt = new Segment();
+		long startTime = System.currentTimeMillis();
+		try
+		{
+			buffer.beginCompoundEdit();
+
+			buffer.getText(off, len, txt);
+			Position tagPos = null;
+			while ((tagPos = findNextTag(txt.array, txt.offset, txt.count)) != null)
+			{
+				buffer.remove(off + (tagPos.off - txt.offset), tagPos.len);
+				off += (tagPos.off - txt.offset);
+				len = buffer.getLength() - off;
+				buffer.getText(off, len, txt);
+			}
+		}
+		finally
+		{
+			buffer.endCompoundEdit();
+		}
+		long endTime = System.currentTimeMillis();
+		Log.log(Log.DEBUG, XmlActions.class,
+			"removeTags time: " + (endTime - startTime) + " ms");
+	} //}}}
+
+	//{{{ goToPreviousTag() method
+	public static void goToPreviousTag(JEditTextArea textArea)
+	{
+		Buffer buffer = textArea.getBuffer();
+
+		buffer.getText(0,textArea.getCaretPosition(),seg);
+
+		int caret = textArea.getCaretPosition();
+
+		for(int i = caret - 1; i >= 0; i--)
+		{
+			if(seg.array[seg.offset + i] == '<')
+			{
+				textArea.setCaretPosition(i);
+				return;
+			}
+		}
+
+		textArea.getToolkit().beep();
+	} //}}}
+
+	//{{{ goToNextTag() method
+	public static void goToNextTag(JEditTextArea textArea)
+	{
+		Buffer buffer = textArea.getBuffer();
+
+		int caret = textArea.getCaretPosition();
+
+		buffer.getText(caret,buffer.getLength() - caret,seg);
+
+		for(int i = caret; i < seg.count; i--)
+		{
+			if(seg.array[seg.offset + i] == '<')
+			{
+				textArea.setCaretPosition(i);
+				return;
+			}
+		}
+
+		textArea.getToolkit().beep();
+	} //}}}
+
+	//{{{ matchTag() method
+	public static void matchTag(JEditTextArea textArea)
+	{
+		String text = textArea.getText();
+		TagParser.Tag tag = TagParser.getTagAtOffset(text,textArea.getCaretPosition());
+		if (tag != null)
+		{
+			TagParser.Tag matchingTag = TagParser.getMatchingTag(text, tag);
+			if (matchingTag != null)
+			{
+				textArea.setSelection(new Selection.Range(
+					matchingTag.start, matchingTag.end
+				));
+				textArea.moveCaretPosition(matchingTag.end);
+			}
+			else
+				textArea.getToolkit().beep();
+		}
+	} //}}}
+
 	//{{{ completeKeyTyped() method
 	public static void completeKeyTyped(final View view,
 		final int mode, char ch)
@@ -413,7 +537,8 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& closeCompletion
-			&& "xml".equals(buffer.getProperty("xml.parser"))))
+			&& completionInfo != null
+			&& XmlPlugin.getParserType(buffer) != null))
 		{
 			return;
 		}
@@ -422,27 +547,16 @@ public class XmlActions
 		if(caret == 1)
 			return;
 
-		buffer.getText(0,caret,seg);
+		String text = buffer.getText(0,caret);
 
-		if(seg.array[seg.offset + caret - 2] != '<')
+		if(text.charAt(caret - 2) != '<')
 			return;
 
-		String tag = findLastOpenTag(seg);
-		if(tag != null && tag.length() != 0)
+		TagParser.Tag tag = TagParser.findLastOpenTag(text,caret - 2,
+			completionInfo.elementHash);
+		if(tag != null)
 		{
-			if(completionInfo != null)
-			{
-				ElementDecl element = (ElementDecl)completionInfo
-					.elementHash.get(tag);
-				if(element != null && element.empty)
-				{
-					// XXX: instead, need to find next last
-					// open tag
-					return;
-				}
-			}
-
-			textArea.setSelectedText(tag + ">");
+			textArea.setSelectedText(tag.tag + ">");
 		}
 	} //}}}
 
@@ -461,216 +575,29 @@ public class XmlActions
 
 		if(!(buffer.isEditable()
 			&& closeCompletionOpen
-			&& "xml".equals(buffer.getProperty("xml.parser"))))
+			&& XmlPlugin.getParserType(buffer) != null))
 		{
 			return;
 		}
 
 		int caret = textArea.getCaretPosition();
 
-		buffer.getText(0,caret,seg);
+		String text = buffer.getText(0,caret);
 
-		if(seg.count < 2)
+		TagParser.Tag tag = TagParser.getTagAtOffset(text,caret - 1);
+		ElementDecl decl = (ElementDecl)completionInfo.elementHash.get(tag.tag);
+		if(tag.type == TagParser.T_STANDALONE_TAG
+			|| (decl != null && decl.empty))
 			return;
 
-		if(seg.array[caret - 2] == '/')
-			return;
+		tag = TagParser.findLastOpenTag(text,tag.start,
+			completionInfo.elementHash);
 
-		// closing a comment
-		if(seg.array[caret - 2] == '-')
-			return;
-
-		String tag = findLastOpenTag(seg);
-
-		if(tag != null && tag.length() != 0)
-		{
-			if(completionInfo != null)
-			{
-				ElementDecl element = (ElementDecl)completionInfo
-					.elementHash.get(tag);
-				if(element != null && element.empty)
-					return;
-			}
-
-			textArea.setSelectedText("</" + tag + ">");
-		}
-
-		textArea.setCaretPosition(caret);
-	} //}}}
-
-	//{{{ insertClosingTag() method
-	public static void insertClosingTag(JEditTextArea textArea)
-	{
-		Buffer buffer = textArea.getBuffer();
-
-		if(!buffer.isEditable())
-			return;
-
-		buffer.getText(0,textArea.getCaretPosition(),seg);
-
-		String tag = findLastOpenTag(seg);
 		if(tag != null)
-			textArea.setSelectedText("</" + tag + ">");
-	} //}}}
-
-	//{{{ goToPreviousTag() method
-	public static void goToPreviousTag(JEditTextArea textArea)
-	{
-		Buffer buffer = textArea.getBuffer();
-
-		buffer.getText(0,textArea.getCaretPosition(),seg);
-
-		int caret = textArea.getCaretPosition();
-
-		for(int i = caret - 1; i >= 0; i--)
 		{
-			if(seg.array[seg.offset + i] == '<')
-			{
-				textArea.setCaretPosition(i);
-				return;
-			}
+			textArea.setSelectedText("</" + tag.tag + ">");
+			textArea.setCaretPosition(caret);
 		}
-
-		textArea.getToolkit().beep();
-	} //}}}
-
-	//{{{ goToNextTag() method
-	public static void goToNextTag(JEditTextArea textArea)
-	{
-		Buffer buffer = textArea.getBuffer();
-
-		int caret = textArea.getCaretPosition();
-
-		buffer.getText(caret,buffer.getLength() - caret,seg);
-
-		for(int i = caret; i < seg.count; i--)
-		{
-			if(seg.array[seg.offset + i] == '<')
-			{
-				textArea.setCaretPosition(i);
-				return;
-			}
-		}
-
-		textArea.getToolkit().beep();
-	} //}}}
-
-	//{{{ findLastOpenTag() method
-	/*
-	*   finds the last tag which hasn't been closed
-	*   this includes tags such as <img> or <br>
-	*
-	*   note: it doesn't check whether tags match
-	*   eg <p><b><i></b></i> (will find <p>)
-	*
-	*/
-	public static String findLastOpenTag(Segment s)
-	{
-		Stack tagStack = new Stack();
-		int tagEnd = 0;
-		int curOff = s.count - 1;
-		int curPos = s.offset + s.count - 1;
-		boolean inTag = false;
-		char lastChar = '*';
-		char curChar = '*';
-		String curTag = "";
-
-		while (curOff >= 0)
-		{
-			curChar = s.array[curPos];
-
-			// start of tag (or end)
-			if(curChar == '>')
-			{
-				tagEnd = curPos;
-				inTag = true;
-			}
-			// if tag is something like '<br />', don't push onto stack, just skip
-			else if (curChar == '/')
-			{
-
-				if (lastChar == '>')
-				{
-					inTag = false;
-				}
-			}
-			// if in tag either push of pop a tag, depending on whether
-			// last char as a wack '/' or not
-			else if (curChar == '<')
-			{
-
-				if (lastChar == '?'
-					|| lastChar == '!'
-					|| lastChar == '-'
-					|| lastChar == '%')
-				{
-					inTag = false;
-				}
-
-				if (inTag == true)
-				{
-					// if closing a tag, push it onto the stack
-					if (lastChar == '/')
-					{
-						curTag = getTagName(s.array, curPos + 2, tagEnd - (curPos + 2));
-						tagStack.push(curTag);
-					}
-					else
-					{
-						curTag = getTagName(s.array, curPos + 1, tagEnd - (curPos + 1));
-
-						if (tagStack.empty())
-							return (curTag.length() == 0 ? null : curTag);
-
-						String lastTag = (String) tagStack.peek();
-						if (lastTag.equalsIgnoreCase(curTag))
-							tagStack.pop();
-					}
-				}
-			}
-
-			lastChar = s.array[curPos];
-			curPos--;
-			curOff--;
-		}
-
-		return "";
-	} //}}}
-
-	//{{{ removeTags() method
-	public static void removeTags(Buffer buffer)
-	{
-		if(!buffer.isEditable())
-		{
-			Toolkit.getDefaultToolkit().beep();
-			return;
-		}
-
-		int off = 0;
-		int len = buffer.getLength();
-		Segment txt = new Segment();
-		long startTime = System.currentTimeMillis();
-		try
-		{
-			buffer.beginCompoundEdit();
-
-			buffer.getText(off, len, txt);
-			Position tagPos = null;
-			while ((tagPos = findNextTag(txt.array, txt.offset, txt.count)) != null)
-			{
-				buffer.remove(off + (tagPos.off - txt.offset), tagPos.len);
-				off += (tagPos.off - txt.offset);
-				len = buffer.getLength() - off;
-				buffer.getText(off, len, txt);
-			}
-		}
-		finally
-		{
-			buffer.endCompoundEdit();
-		}
-		long endTime = System.currentTimeMillis();
-		Log.log(Log.DEBUG, XmlActions.class,
-			"removeTags time: " + (endTime - startTime) + " ms");
 	} //}}}
 
 	//{{{ Position class
