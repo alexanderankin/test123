@@ -35,14 +35,27 @@ public final class ProjectManager {
   private final String projectVersion = jEdit.getProperty("plugin.gatchan.phpparser.projects.version");
   private static final String PROJECT_NAME_PROPERTY = "gatchan.phpparser.project.file";
 
+  private ProjectList projectList;
+
   /** Instantiate the project manager. */
   private ProjectManager() {
+    init();
     final String projectFilePath = jEdit.getProperty(PROJECT_NAME_PROPERTY);
     if (projectFilePath != null) {
       Log.log(Log.DEBUG, this, "Opening project " + projectFilePath);
       final File projectFile = new File(projectDirectory + File.separator + projectFilePath + ".project.props");
       openProject(projectFile);
     }
+  }
+
+  /**
+   * Returns the project list.
+   * It's also a {@link ListModel} and a {@link ComboBoxModel}
+   *
+   * @return the project list
+   */
+  public ProjectList getProjectList() {
+    return projectList;
   }
 
   /**
@@ -68,10 +81,8 @@ public final class ProjectManager {
 
   /**
    * Get the list of the projects.
-   *
-   * @return a {@link List} containing {@link Project} or null if there is no settingsDirectory
    */
-  public List getProjectList() {
+  private void init() {
     if (settingsDirectory != null) {
       final File projectDirFile = new File(projectDirectory);
       if (projectDirFile.exists()) {
@@ -80,7 +91,7 @@ public final class ProjectManager {
             return name.endsWith(".project.props");
           }
         });
-        final List list = new ArrayList(projectsNames.length);
+        final List list = new ArrayList();
         for (int i = 0; i < projectsNames.length; i++) {
           final File projectFile = new File(projectDirectory, projectsNames[i]);
           if (projectFile.isFile()) {
@@ -96,12 +107,12 @@ public final class ProjectManager {
             }
           }
         }
-        return list;
+        projectList = new ProjectList(new ArrayList());
       } else {
         projectDirFile.mkdirs();
+        projectList = new ProjectList(new ArrayList());
       }
     }
-    return null;
   }
 
   /** Dispose the project manager. it will set the project name in the jEdit properties and close the current project. */
@@ -162,7 +173,7 @@ public final class ProjectManager {
     }
     final Project project;
     try {
-      project = new Project(projectFile);
+      project = projectList.getProject(projectFile);
       project.load();
       // todo : add an option for that
       browseToProjectRoot(project);

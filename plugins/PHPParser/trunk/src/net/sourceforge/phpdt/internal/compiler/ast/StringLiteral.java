@@ -20,25 +20,50 @@ public final class StringLiteral extends Literal {
 
   private AbstractVariable[] variablesInside;
 
-  public StringLiteral(final Token token) {
-    super(token.sourceStart, token.sourceEnd, token.beginLine,token.endLine,token.beginColumn,token.endColumn);
-    source = token.image;
+  public StringLiteral(Token token) {
+    this(token.image,
+         token.sourceStart,
+         token.sourceEnd,
+         token.beginLine,
+         token.endLine,
+         token.beginColumn,
+         token.endColumn,
+         null);
   }
 
-  public StringLiteral(final String source, final int sourceStart, final int sourceEnd, final int beginLine, final int endLine, final int beginColumn, final int endColumn) {
+  public StringLiteral(String source,
+                       int sourceStart,
+                       int sourceEnd,
+                       int beginLine,
+                       int endLine,
+                       int beginColumn,
+                       int endColumn) {
+    this(source, sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn, null);
+  }
+
+  public StringLiteral(String source,
+                       int sourceStart,
+                       int sourceEnd,
+                       int beginLine,
+                       int endLine,
+                       int beginColumn,
+                       int endColumn,
+                       AbstractVariable[] variablesInside) {
     super(sourceStart, sourceEnd, beginLine, endLine, beginColumn, endColumn);
     this.source = source;
+    this.variablesInside = variablesInside;
   }
 
   /**
-   * Return the expression as String.
-   * @return the expression
-   */
+     * Return the expression as String.
+     *
+     * @return the expression
+     */
   public String toStringExpression() {
     return source;
   }
 
-  public void getUsedVariable(final List list) {
+  public void getUsedVariable(List list) {
     if (variablesInside != null) {
       for (int i = 0; i < variablesInside.length; i++) {
         variablesInside[i].getUsedVariable(list);
