@@ -437,7 +437,6 @@ public final class ProjectViewer extends JPanel
 		add(BorderLayout.CENTER, treePane);
 
 		topPane = new JPanel(new BorderLayout());
-		showTrees();
 
 		pList = new JComboBox();
 		pList.setRenderer(new VPTListCellRenderer());
@@ -453,6 +452,7 @@ public final class ProjectViewer extends JPanel
 		pList.addItemListener(new ProjectComboListener());
 		topPane.add(BorderLayout.WEST, pList);
 
+		showTrees();
 		add(BorderLayout.NORTH, topPane);
 
 	} //}}}
@@ -611,20 +611,34 @@ public final class ProjectViewer extends JPanel
 		}
 
 		if (count == 0) {
+			showToolBar(false);
+		} else if (toolBar == null && config.getShowToolBar()) {
+			showToolBar(true);
+		}
+
+		if (treePane.getTabCount() > 0)
+			treePane.setSelectedIndex(0);
+	}//}}}
+
+	//{{{ showToolBar(boolean) method
+	/** Shows/Hides the toolbar. */
+	private void showToolBar(boolean flag) {
+		if (flag) {
+			toolBar = new JToolBar();
+			toolBar.setFloatable(false);
+			populateToolBar();
+			topPane.add(BorderLayout.WEST, pList);
+			topPane.add(BorderLayout.CENTER, toolBar);
+		} else {
 			if (toolBar != null) {
 				topPane.remove(toolBar);
 				toolBar.removeAll();
 				toolBar = null;
+				topPane.add(BorderLayout.CENTER, pList);
 			}
-		} else if (toolBar == null && config.getShowToolBar()) {
-			toolBar = new JToolBar();
-			toolBar.setFloatable(false);
-			populateToolBar();
-			topPane.add(BorderLayout.CENTER, toolBar);
 		}
+	} //}}}
 
-		treePane.setSelectedIndex(0);
-	}//}}}
 
 	//}}}
 
@@ -798,8 +812,10 @@ public final class ProjectViewer extends JPanel
 			VPTNode f = p.getFile(bu.getBuffer().getPath());
 
 			// Try to import newly created files to the project
-			if(bu.getWhat() == BufferUpdate.SAVED && f == null) {
-				if (dontAsk == null || !dontAsk.contains(bu.getBuffer().getPath())) {
+			if(bu.getWhat() == BufferUpdate.SAVED && f == null &&
+				config.getAskImport() != ProjectViewerConfig.ASK_NEVER) {
+				if (dontAsk == null || config.getAskImport() == ProjectViewerConfig.ASK_ALWAYS ||
+						!dontAsk.contains(bu.getBuffer().getPath())) {
 					int res = JOptionPane.showConfirmDialog(view,
 							jEdit.getProperty("projectviewer.import_new",
 								new Object[] { bu.getBuffer().getName(), p.getName() }),
@@ -808,7 +824,7 @@ public final class ProjectViewer extends JPanel
 
 					if(res == JOptionPane.YES_OPTION) {
 						new NewFileImporter(p, bu.getBuffer().getPath()).doImport();
-					} else {
+					} else if (config.getAskImport() == ProjectViewerConfig.ASK_ONCE){
 						if (dontAsk == null) {
 							dontAsk = new HashSet();
 						}
@@ -927,22 +943,23 @@ public final class ProjectViewer extends JPanel
 		public void propertyChange(PropertyChangeEvent evt) {
 			// Toolbar show/hide.
 			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_TOOLBAR_OPT)) {
-				if (toolBar != null) {
-					topPane.remove(toolBar);
-					toolBar.removeAll();
-					toolBar = null;
-				} else {
-					toolBar = new JToolBar();
-					toolBar.setFloatable(false);
-					populateToolBar();
-					topPane.add(BorderLayout.NORTH, toolBar);
+				showToolBar( ((Boolean)evt.getNewValue()).booleanValue() &&
+					(folderTree != null || fileTree != null || workingFileTree != null) );
+				return;
+			}
+
+			if (evt.getPropertyName().equals(ProjectViewerConfig.ASK_IMPORT_OPT)) {
+				int opt = ((Integer)evt.getNewValue()).intValue();
+				if (opt == ProjectViewerConfig.ASK_NEVER ||
+						opt == ProjectViewerConfig.ASK_ONCE) {
+					dontAsk = null;
 				}
 				return;
 			}
 
-			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT) ||
-					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
-					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT)) {
+			if (evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FILES_OPT) ||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_WFILES_OPT) ||
+					evt.getPropertyName().equals(ProjectViewerConfig.SHOW_FOLDERS_OPT)) {
 				if (!willRun) {
 					SwingUtilities.invokeLater(this);
 					willRun = true;
@@ -1008,14 +1025,24 @@ public final class ProjectViewer extends JPanel
 		public void run() {
 			setEnabled(false);
 			JTree tree = getCurrentTree();
-			TreeModel tModel = tree.getModel();
+			DefaultTreeModel tModel = (DefaultTreeModel) tree.getModel();
 			tree.setModel(new DefaultTreeModel(
 				new DefaultMutableTreeNode(
 					jEdit.getProperty("projectviewer.loading_project",
 						new Object[] { pName } ))));
-			VPTProject p = ProjectManager.getInstance().getProject(pName);
+			final VPTProject p = ProjectManager.getInstance().getProject(pName);
+			tModel.setRoot(p);
 			tree.setModel(tModel);
-			setProject(p);
+			try {
+				SwingUtilities.invokeAndWait(
+					new Runnable() {
+						public void run() { setProject(p); }
+					});
+			} catch (InterruptedException ie) {
+				// not gonna happen
+			} catch (java.lang.reflect.InvocationTargetException ite) {
+				// not gonna happen
+			}
 			setEnabled(true);
 		}
 
