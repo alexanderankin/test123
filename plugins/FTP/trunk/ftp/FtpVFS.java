@@ -210,11 +210,11 @@ public class FtpVFS extends VFS
 		return address.toString();
 	} //}}}
 
-	//{{{ _listDirectory() method
-	public VFS.DirectoryEntry[] _listDirectory(Object _session, String url,
+	//{{{ _listFiles() method
+	public VFSFile[] _listFiles(Object _session, String url,
 		Component comp) throws IOException
 	{
-		VFS.DirectoryEntry[] directory = DirectoryCache.getCachedDirectory(url);
+		VFSFile[] directory = DirectoryCache.getCachedDirectory(url);
 		if(directory != null)
 			return directory;
 
@@ -229,13 +229,13 @@ public class FtpVFS extends VFS
 			for(int i = 0; i < directory.length; i++)
 			{
 				FtpDirectoryEntry entry = (FtpDirectoryEntry)directory[i];
-				if(entry.type == FtpDirectoryEntry.LINK)
+				if(entry.getType() == FtpDirectoryEntry.LINK)
 					resolveSymlink(_session,url,entry);
 				else
 				{
 					// prepend directory to create full path
-					entry.path = constructPath(url,entry.name);
-					entry.deletePath = entry.path;
+					entry.setPath(constructPath(url,entry.getName()));
+					entry.setDeletePath(entry.getPath());
 				}
 			}
 
@@ -246,7 +246,7 @@ public class FtpVFS extends VFS
 	} //}}}
 
 	//{{{ FtpDirectoryEntry class
-	static class FtpDirectoryEntry extends VFS.DirectoryEntry
+	static class FtpDirectoryEntry extends VFSFile
 	{
 		public static final int LINK = 10;
 		int permissions;
@@ -273,10 +273,10 @@ public class FtpVFS extends VFS
 		}
 	} //}}}
 
-	//{{{ _getDirectoryEntry() method
+	//{{{ _getFile() method
 	// this method is severely broken, and in many cases, most fields
 	// of the returned directory entry will not be filled in.
-	public VFS.DirectoryEntry _getDirectoryEntry(Object _session, String path,
+	public VFSFile _getFile(Object _session, String path,
 		Component comp)
 		throws IOException
 	{
@@ -287,7 +287,7 @@ public class FtpVFS extends VFS
 		FtpDirectoryEntry dirEntry = session.getDirectoryEntry(address.path);
 		if(dirEntry != null)
 		{
-			if(dirEntry.type == FtpDirectoryEntry.LINK)
+			if(dirEntry.getType() == FtpDirectoryEntry.LINK)
 			{
 				String parentPath = MiscUtilities.getParentOfPath(path);
 				resolveSymlink(_session,parentPath,dirEntry);
@@ -332,16 +332,16 @@ public class FtpVFS extends VFS
 
 		FtpAddress address = new FtpAddress(url);
 
-		VFS.DirectoryEntry directoryEntry = _getDirectoryEntry(
+		VFSFile directoryEntry = _getDirectoryEntry(
 			_session,url,comp);
 		if(directoryEntry == null)
 			return false;
 
 		boolean returnValue;
 
-		if(directoryEntry.type == VFS.DirectoryEntry.FILE)
+		if(directoryEntry.getType() == VFSFile.FILE)
 			returnValue = session.removeFile(address.path);
-		else //if(directoryEntry.type == VFS.DirectoryEntry.DIRECTORY)
+		else //if(directoryEntry.type == VFSFile.DIRECTORY)
 			returnValue = session.removeDirectory(address.path);
 
 		DirectoryCache.clearCachedDirectory(getParentOfPath(url));
@@ -360,13 +360,13 @@ public class FtpVFS extends VFS
 
 		String toPath = new FtpAddress(to).path;
 
-		VFS.DirectoryEntry directoryEntry = _getDirectoryEntry(
+		VFSFile directoryEntry = _getDirectoryEntry(
 			_session,from,comp);
 		if(directoryEntry == null)
 			return false;
 
 		directoryEntry = _getDirectoryEntry(_session,to,comp);
-		if(directoryEntry != null && directoryEntry.type == VFS.DirectoryEntry.FILE
+		if(directoryEntry != null && directoryEntry.getType() == VFSFile.FILE
 			&& !address.path.equalsIgnoreCase(toPath))
 			session.removeFile(toPath);
 
@@ -457,16 +457,16 @@ public class FtpVFS extends VFS
 	{
 		ConnectionManager.Connection session = getConnection(_session);
 
-		String path = constructPath(url,entry.name);
-		String[] nameArray = new String[] { entry.name };
+		String path = constructPath(url,entry.getName());
+		String[] nameArray = new String[] { entry.getName() };
 		String link = session.resolveSymlink(new FtpAddress(path).path,
 			nameArray);
-		entry.name = nameArray[0];
+		entry.setName(nameArray[0]);
 
 		if(link == null)
 		{
-			entry.path = path;
-			entry.type = FtpVFS.FtpDirectoryEntry.FILE;
+			entry.setPath(path);
+			entry.setType(FtpVFS.FtpDirectoryEntry.FILE);
 		}
 		else
 		{
@@ -476,7 +476,7 @@ public class FtpVFS extends VFS
 			try
 			{
 				linkDirEntry = (FtpVFS.FtpDirectoryEntry)
-					_getDirectoryEntry(_session,link,null);
+					_getFile(_session,link,null);
 			}
 			catch(IOException io)
 			{
@@ -484,22 +484,22 @@ public class FtpVFS extends VFS
 			}
 
 			if(linkDirEntry == null)
-				entry.type = FtpDirectoryEntry.FILE;
-			else if(linkDirEntry.type == FtpDirectoryEntry.LINK)
+				entry.setType(FtpDirectoryEntry.FILE);
+			else if(linkDirEntry.getType() == FtpDirectoryEntry.LINK)
 			{
-				Log.log(Log.WARNING,this,entry.name
+				Log.log(Log.WARNING,this,entry.getName()
 					+ ": Not following more than one symbolic link");
-				entry.type = FtpDirectoryEntry.FILE;
+				entry.setType(FtpDirectoryEntry.FILE);
 				entry.permissions = 600;
 			}
 			else
 			{
-				entry.type = linkDirEntry.type;
+				entry.setType(linkDirEntry.getType());
 				entry.permissions = linkDirEntry.permissions;
 			}
 
-			entry.path = link;
-			entry.deletePath = path;
+			entry.setPath(link);
+			entry.setDeletePath(path);
 		}
 	} //}}}
 

@@ -41,7 +41,7 @@ public class DirectoryCache
 	 * @param url The URL
 	 * @since jEdit 2.6pre2
 	 */
-	public static VFS.DirectoryEntry[] getCachedDirectory(String url)
+	public static VFSFile[] getCachedDirectory(String url)
 	{
 		url = canon(url);
 
@@ -56,7 +56,7 @@ public class DirectoryCache
 					in = new ObjectInputStream(
 						new BufferedInputStream(
 						new FileInputStream(path)));
-					return (VFS.DirectoryEntry[])in.readObject();
+					return (VFSFile[])in.readObject();
 				}
 				catch(Exception e)
 				{
@@ -89,7 +89,7 @@ public class DirectoryCache
 	 * @param directory The directory listing
 	 * @since jEdit 2.6pre2
 	 */
-	public static void setCachedDirectory(String url, VFS.DirectoryEntry[] directory)
+	public static void setCachedDirectory(String url, VFSFile[] directory)
 	{
 		if(cacheDirectory == null)
 			return;
