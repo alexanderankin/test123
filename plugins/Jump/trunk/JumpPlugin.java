@@ -16,9 +16,6 @@ import projectviewer.event.*;
 //{{{ class JumpPlugin
 /**
  *  Description of the Class
- *
- *@author     pa
- *@created    30 јпрель 2003 г.
  */
 public class JumpPlugin extends EditPlugin
 {
@@ -30,7 +27,6 @@ public class JumpPlugin extends EditPlugin
     public final static String OPTION_PREFIX = "options.JumpPlugin.";
     
     public static Jump jump_actions;
-    
     public static ProjectJumpAction pja;
     public static JumpEventListener listener;
     public static boolean isListenerAdded = false;
@@ -54,7 +50,7 @@ public class JumpPlugin extends EditPlugin
 //{{{ boolean reloadTagsOnProject()
     public static boolean reloadTagsOnProject()
     {  
-       if (jump_actions.isJumpEnabled() == false) return false;
+       if (!jump_actions.isJumpEnabled()) return false;
        if (ProjectViewer.getViewer(jEdit.getActiveView()) != null) 
        {
             

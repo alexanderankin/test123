@@ -150,7 +150,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     public void projectLoaded(ProjectViewerEvent evt) 
     {
         saveProjectBuffer();
-        //EditBus.removeFromBus(this);
         
         if (evt.getProject() != null)
         {
@@ -158,7 +157,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             reloadTags(evt.getProjectViewer(), evt.getProject()); 
             JumpPlugin.pja.clearHistory();
         }
-        //EditBus.addToBus(this);
     }
 //}}}
 
@@ -184,7 +182,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 //{{{ projectRemoved method    
     public void projectRemoved(ProjectViewerEvent evt) 
     {
-        Log.log(Log.DEBUG,this,"JumpEventListener! Removing tag file..." );
         PROJECT_TAGS.deleteOnExit();
         Log.log(Log.DEBUG,this,"JumpEventListener! "+PROJECT_TAGS+" will removed on Jedit exit.");    
     }
