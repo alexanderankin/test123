@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+
+<!DOCTYPE ACTIONS SYSTEM "actions.dtd">
+
+<ACTIONS>
+    <ACTION NAME="JumpPlugin.filesjump">
+        <CODE>
+            JumpPlugin.jump_actions.showFilesJump();
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="JumpPlugin.tagsjump">
+        <CODE>
+            JumpPlugin.jump_actions.showTagsJump();
+        </CODE>
+    </ACTION>
+
+    <ACTION NAME="JumpPlugin.workspacejump">
+        <CODE>
+            JumpPlugin.jump_actions.showProjectJump();
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="JumpPlugin.historyjump">
+        <CODE>
+            JumpPlugin.jump_actions.historyJump();
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="JumpPlugin.gettagbyinput">
+        <CODE>
+            JumpPlugin.jump_actions.jumpByInput();
+        </CODE>
+    </ACTION>
+    
+    <ACTION NAME="JumpPlugin.foldjump">
+        <CODE>
+            JumpPlugin.jump_actions.showFoldJump();
+        </CODE>
+    </ACTION>
+    
+    
+</ACTIONS>

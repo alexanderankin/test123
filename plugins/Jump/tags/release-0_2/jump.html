@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title>Jump! v0.2</title>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
+</head>
+<body>
+<h1><font color="#990000">Jump! plugin</font></h1>
+<h4><font color="#666666">Jump!v0.2 (ProjectViewer companion) - by Pavlikus (&lt;pavlikus@front.ru&gt;), 2003</font></h4>
+<hr>
+<h3><font color="#990000">Legal Notice</font></h3> Permission is granted to copy, distribute and/or modify this document under 
+the terms of the GNU Free Documentation License, Version 1.1 or any later version 
+published by the Free Software Foundation; with no &quot;Invariant Sections&quot;, 
+&quot;Front-Cover Texts&quot; or &quot;Back-Cover Texts&quot;, each as defined 
+in the license. A copy of the license can be found in the file COPYING.DOC.txt 
+included with jEdit 
+<hr>
+<h3><font color="#990000">Table of Contents:</font></h3>
+1. <a href="#ch1">Summary</a><br>
+2. <a href="#ch2">Usage</a> 
+<ul>
+  <li> Jump to File</li>
+  <li>Jump to Tag</li>
+  <li>Search Tag</li>
+  <li>Type a Tag...</li>
+  <li>Jump Back (Search tag mode only, yet...)</li>
+  <li>Jump to Fold</li>
+</ul>
+3. <a href="#ch3">Troubleshooting</a><br>
+    4. <a href="#ch4">For plugin authors</a><br>
+5. <a href="#ch5">Feedback</a><br>
+6. <a href="#ch6">Thanks</a>
+</ul> 
+<p>&nbsp;</p>
+<h3><a name="ch1"></a><font color="#990000">Chapter 1. Summary</font></h3>
+<p>Jump! work in collaborate with "ProjectViewer" plugin and with "Exuberant Ctags" 
+  (ctags.sourceforge.net). It provide several actions which, I hope, accelerate 
+  your work with jEdit. First of all, you must indicate path to ctags executable 
+  (see Jump! options). Then, when ctags parsed all files of current project, you 
+  can move among tags.<br></p>
+<hr>
+<h3><a name="ch2" id="ch2"></a><font color="#990000">Chapter 2. Usage</font></h3>
+
+  
+<h3>Jump to File</h3>
+<b>Show list of all files founded in current project.</b><br>You may freely navigate through. Press Enter or Space on list item to jump to desired file. This list also provide incremental navigation, pressing PageUP, PageDOWN, HOME, END are also valid. 
+<br>
+  
+<h3>Jump to Tag</h3>
+<b>Show list of all tags founded in current file.</b><br>Navigation rules as in Jump to file action, plus pressing INSERT (as well as S+CLICK) - will insert picked tag into current caret position.<br> 
+  
+<h3>Search Tag</h3>
+<p><b>Show list of files where desired tag is founded. </b><br> 
+  First of all, move the carret to desired tag, for example:<br><i><font color="#990000">public final TextAreaPainter 
+  get*Painter() (* - caret)</font></i><br>When execute &quot;Search Tag&quot; action you will 
+  see list of all files (within current project) where desired tag is founded.<br> 
+  See statusbar messages for additional info on current tag.<br>All your jumpings stored in history (see Jump Back action section), and adds to "Type a Tag" list (see Type a Tag)</p>
+<h3>Type a tag...</h3>
+<p><b>Displays input dialog to type a tag to search. </b><br>
+Here you can manualy type a tag, which you want to jump. All tags you typed earlier, stored in history. Press UP or DOWN to switch to previous entered tags.</p>
+<h3>Jump Back</h3> 
+<b>Stack type history.</b><br>After several "search tag" jumpings, you may go back to 
+  tags, which you already vistit.<br>
+<h3>Jump to Fold</h3>
+><b>Shows list of folds founded in current buffer.</b><br>
+I like folds. Usualy I use the explicit mode folding. Take a look:<br>
+<img alt="fold_shoot.gif" src="img/fold_shoot.gif"><br>
+<font color="#990000">This action not depends on ProjectViewer's project.</font> Even if you switch Enable Jump to off - this action anyway will works. Also, in Options you can choose to sort this list, or not. 
+<hr>
+<h3><a name="ch3" id="ch3"></a><font color="#990000">Chapter 3. Troubleshooting</font></h3>
+<p>See Options - Jump, where you can test ctags setup. This test works like: ctags.exe &quot;user.home/.jedit/properties&quot; &gt;&gt; null, just for setup test purpose.<br>
+Also, if something goes wrong (mail me!!!) as workaround - try to drop <i>projectviewer/&lt;projectname&gt;.jump</i> file. Jump automatically create new one, you even don't need to restart jEdit.<br> 
+Anyway, mail me if you find some bugs. 
+</p>
+<hr>
+<h3><a name="ch4" id="ch4"></a><font color="#990000">Chapter 4. For plugin authors</font> 
+</h3>
+<p>Jump! stores tag file at non-typical manner. Instead of store ctags output, 
+  it serialize CTAGS_Buffer object, which, I hope, is comfortable for any purposes. 
+  It save tag file into projectviewer/&lt;projectname&gt;.jump. If you want to 
+  use this file, try CTAGS_BG.loadBuffer(String filename). <br>
+  Mail me if you have some suggestion and advices.</p>
+<hr>
+<h3><a name="ch5" id="ch5"></a><font color="#990000">Chapter 5. Feedback</font></h3>
+<p>The preferred way to send bug reports or feature requests is to use the Sourceforge 
+  Bug Tracker at <i>http://sourceforge.net/tracker/?group_id=588&atid=565475</i><br>
+  You can also write to:<br>
+  jEdit-users mailing-list &lt;jedit-users@lists.sourceforge.net&gt;,<br>
+  jEdit-devel mailing-list &lt;jedit-devel@lists.sourceforge.net&gt;,<br>
+  or me directly &lt;pavlikus@front.ru&gt;</p>
+<hr>
+<h3><a name="ch6" id="ch6"></a><font color="#990000">Chapter 6. Thanks</font></h3>
+<p>Thanks jEdit dev. team for excellent editor, Jext dev. team (especially BlaisorBlade) 
+  for great help and patience.<br>
+</p>
+</body>
+</html>
