@@ -50,6 +50,7 @@ public class ProjectOptions extends OptionsDialog {
 	private static VPTProject		p;
 	private static boolean			isNew;
 
+	//{{{ +_run(VPTProject)_ : VPTProject
 	/**
 	 *	Shows the project options dialog for the given project.
 	 *
@@ -59,8 +60,9 @@ public class ProjectOptions extends OptionsDialog {
 	 */
 	public static VPTProject run(VPTProject project) {
 		return run(project, null, null);
-	}
+	} //}}}
 
+	//{{{ +_run(VPTProject, VPTGroup, String)_ : VPTProject
 	/**
 	 *	Shows the project options dialog for the given project, with an
 	 *	optional default start folder where to open the file chooser
@@ -101,6 +103,22 @@ public class ProjectOptions extends OptionsDialog {
 
 	//}}}
 
+	//{{{ +_getProject()_ : VPTProject
+	/**
+	 *	Returns the project currently being edited. This call is only
+	 *	valid while the ProjectOptions dialog is showing (i.e., while
+	 *	the {@link run(VPTProject, VPTGroup, String)} method is being
+	 *	executed). Calling this method in other conditions is not
+	 *	supported and the behavior is undefined.
+	 *
+	 *	@since	PV 2.1.0.1
+	 */
+	public static VPTProject getProject() {
+		return p;
+	} //}}}
+
+	//}}}
+
 	//{{{ Instance Variables
 
 	private OptionGroup				rootGroup;
@@ -108,16 +126,13 @@ public class ProjectOptions extends OptionsDialog {
 
 	//}}}
 
-	//{{{ Constructor
-
+	//{{{ -ProjectOptions(View, String) : <init>
 	private ProjectOptions(View view, String name) {
 		super(JOptionPane.getFrameForComponent(view), name, null);
 		setModal(true);
-	}
+	} //}}}
 
-	//}}}
-
-	//{{{ cancel() method
+	//{{{ +cancel() : void
 	/**
 	 *	Called when the cancel button is pressed. Sets the project to null
 	 *	if "isNew" is true.
@@ -127,7 +142,7 @@ public class ProjectOptions extends OptionsDialog {
 		dispose();
 	} //}}}
 
-	//{{{ ok() method
+	//{{{ +ok() : void
 	/**
 	 *	Called when ok is pressed. Verifies if the project's properties are OK
 	 *	before closing the dialog.
@@ -139,12 +154,12 @@ public class ProjectOptions extends OptionsDialog {
 		}
 	} //}}}
 
-	//{{{ getDefaultGroup() method
+	//{{{ #getDefaultGroup() : OptionGroup
 	protected OptionGroup getDefaultGroup() {
 		return rootGroup;
 	} //}}}
 
-	//{{{ createOptionTreeModel() method
+	//{{{ #createOptionTreeModel() : OptionTreeModel
 	protected OptionTreeModel createOptionTreeModel() {
 		OptionTreeModel paneTreeModel = new OptionTreeModel();
 		rootGroup = (OptionGroup) paneTreeModel.getRoot();
@@ -161,7 +176,7 @@ public class ProjectOptions extends OptionsDialog {
 		return paneTreeModel;
 	} //}}}
 
-	//{{{ createOptions(EditPlugin)
+	//{{{ #createOptions(EditPlugin) : boolean
 	/**
 	 *	For jEdit 4.2: creates options panes based on properties set by the
 	 *	plugin, so manual registration of the plugin is not necessary. More
@@ -195,7 +210,7 @@ public class ProjectOptions extends OptionsDialog {
 		return false;
 	} //}}}
 
-	//{{{ save(Object)
+	//{{{ -save(Object) : void
 	/** Saves the information from the option panes. */
 	private void save(Object o) {
 		if (o instanceof OptionGroup) {

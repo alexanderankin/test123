@@ -138,6 +138,9 @@ VERSION 2.1.0
 		- allow EditProjectAction to receive a default parent group for the
 		  project being created.
 		- made SearchAction.NodeFileSet public by request.
+		- add a method to ProjectOptions to return the project being
+		  edited. Lack of this method pretty much made the while
+		  ProjectOptions idea useless for other plugins.
 
 VERSION 2.0.4
 	[marcelo vanzin]
