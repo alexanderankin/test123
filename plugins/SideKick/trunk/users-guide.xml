@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 
 <!-- SideKick user's guide -->
-<!-- (C) 2003 Slava Pestov -->
+<!-- (C) 2003, 2005 Slava Pestov -->
 
 <!-- jEdit buffer-local properties: -->
 <!-- :indentSize=1:noTabs=true:folding=sidekick: -->
@@ -296,6 +296,14 @@ mode.velocity.sidekick.parser=html</programlisting>
 
  <itemizedlist>
 
+ <listitem><para><emphasis role="bold">Version 0.3.3</emphasis> requires
+  jEdit 4.2final.</para>
+  
+  <itemizedlist>
+  <listitem><para>The completion popup is now positioned within the screen bounds.</guimenuitem>.</para></listitem>
+  </itemizedlist>
+  </listitem>
+  
  <listitem><para><emphasis role="bold">Version 0.3.2</emphasis> requires
   jEdit 4.2final.</para>
 
