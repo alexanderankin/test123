@@ -5,11 +5,9 @@
 
 <body>
 
-<table bgcolor=#ccccff border=0 width=100%>
-<tr width=100%><td><font size=+2>Console Plugin</font></td>
-<td align=right><font size=-1>By Slava Pestov<br>
-<i>slava@jedit.org</i></font></td></tr>
-</table>
+<h1>Console Plugin</h1>
+<h3>By Slava Pestov</h3>
+<i>slava@jedit.org</i><p>
 
 <hr>
 
@@ -74,6 +72,10 @@ if any
 <li>$$ - expands to the $ character
 </ul>
 
+You can use both single (<tt>'</tt>) and double (<tt>"</tt>) quotes if you would
+like to pass arguments that contain spaces to a command. Note that variables
+will be expanded in quoted arguments too.<p>
+
 The default shell also parses command output for compiler errors. A number
 of different formats are supported, and new error patterns can be added
 in <b>Utilities</b>&gt;<b>Global Options</b>&gt;<b>Console</b>. Parsed errors
@@ -120,6 +122,16 @@ command invocation.
 <a name=changes>
 <h1>Change Log</h1>
 </a>
+
+<h3>Version 2.5</h3>
+
+Requires jEdit 3.1final, EditBus 1.0, and ErrorList 1.0.
+
+<ul>
+<li>Rewritten parser for console shell -- it now supports quoted arguments and
+the code is much cleaner
+<li>The console shell's waitFor() method should now return correct values
+</ul>
 
 <h3>Version 2.4.7</h3>
 
