@@ -37,6 +37,8 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.gui.EnhancedDialog;
 import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.textarea.JEditTextArea;
+import org.gjt.sp.jedit.textarea.FoldVisibilityManager;
 import org.gjt.sp.jedit.textarea.Selection;
 
 
@@ -126,6 +128,9 @@ public class ReferencePanel
       add(scp, BorderLayout.CENTER);
       add(createButtonPanel(REFRESH), BorderLayout.SOUTH);
     }
+    
+    repaint();
+    
   }
 
   private void insert() {
@@ -167,7 +172,11 @@ public class ReferencePanel
 
         int refEnd = line.indexOf("}", refStart);
         String ref = line.substring(refStart + 7, refEnd);
-        LaTeXAsset asset = LaTeXAsset.createAsset(ref.trim(), index, 0, 0); //,maxLineLen);
+        LaTeXAsset asset = LaTeXAsset.createAsset(ref.trim(),
+                                                  buffer.createPosition(buffer.getLineStartOffset(index)),
+                                                  buffer.createPosition(buffer.getLineEndOffset(index)),
+                                                  0,
+                                                  0); //,maxLineLen);
         refEntries.add(asset);
         refStart = line.indexOf("\\label{", refEnd);
       }
@@ -182,7 +191,13 @@ public class ReferencePanel
 
     LaTeXAsset asset = (LaTeXAsset) refList.getSelectedValue();
     int line = buffer.getLineOfOffset(asset.start.getOffset());
-    view.getTextArea().setFirstLine(line);
+    
+    JEditTextArea textArea = view.getTextArea();
+    FoldVisibilityManager fvm = textArea.getFoldVisibilityManager();
+    fvm.expandFold(line,false);
+    int virtualLine = fvm.physicalToVirtual(line);
+    
+    textArea.setFirstLine(virtualLine);
 
     int lineStart = view.getTextArea().getLineStartOffset(line);
     int lineEnd = view.getTextArea().getLineEndOffset(line);

@@ -56,7 +56,7 @@ public class BibTeXPanel
   private ArrayList bibFiles = new ArrayList();
 
   //  private JTable bibTable;
-  private JList bibList;
+  private JList bibList = new JList();
   private ActionListener insert;
 
   //~ Constructors ............................................................
@@ -119,7 +119,7 @@ public class BibTeXPanel
                                         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, 
                                         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
       setLayout(new BorderLayout());
-      setPreferredSize(new Dimension(400, 100));
+      setPreferredSize(new Dimension(400, 400));
       add(scp, BorderLayout.CENTER);
       add(createButtonPanel(REFRESH), BorderLayout.SOUTH);
     }
@@ -130,7 +130,7 @@ public class BibTeXPanel
   private void buildList() {
 
     Object[] be = bibEntries.toArray();
-    bibList = new JList(be);
+    bibList.setListData(be);// = new JList(be);
     bibList.addMouseListener(new MouseAdapter() {
       public void mouseClicked(MouseEvent e) {
 
@@ -174,8 +174,6 @@ public class BibTeXPanel
     RE refRe;
     RE titleRe;
 		
-		bibEntries.clear();
-
     try {
       refRe = new RE("@\\w+?\\{([a-zA-Z0-9]+?),");
       titleRe = new RE("title\\s*=\\s*\\{(.+?)\\}");
@@ -247,7 +245,8 @@ public class BibTeXPanel
 
   private void loadBibFiles() {
     bibEntries.clear();
-
+    bibFiles.clear();
+    
     File texFile = new File(tex);
 
     for (int i = buffer.getLineCount() - 1; i > 0; i--) {

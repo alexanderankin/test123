@@ -55,23 +55,10 @@ public class LaTeXPlugin
    * @param menuItems Vector of menuitems in plugins menu.
    */
   public void createMenuItems(Vector menuItems) {
-
-    JMenu menu = new JMenu("Latex Tools");
-    JMenuItem bi = GUIUtilities.loadMenuItem("bibtex");
-    JMenuItem li = GUIUtilities.loadMenuItem("labels");
-//    JMenuItem ni = GUIUtilities.loadMenuItem("navigation");
-    JMenuItem setMain = GUIUtilities.loadMenuItem("set-main");
-    JMenuItem resetMain = GUIUtilities.loadMenuItem("reset-main");
-    JMenuItem showMain = GUIUtilities.loadMenuItem("show-main");
-    JMenu insertMenu = new JMenu("Insert");
-    menu.add(bi);
-    menu.add(li);
-//    menu.add(ni);
-    menu.add(new JSeparator());
-    menu.add(setMain);
-    menu.add(resetMain);
-    menu.add(showMain);
-    menu.add(new JSeparator());
+    JMenu menu = GUIUtilities.loadMenu("latex-main-menu");
+    JMenu insertMenu = GUIUtilities.loadMenu("latex-insert-menu");
+    
+    menu.addSeparator();
     menu.add(insertMenu);
     menuItems.addElement(menu);
   }

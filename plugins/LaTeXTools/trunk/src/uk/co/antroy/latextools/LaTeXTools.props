@@ -1,6 +1,6 @@
 plugin.uk.co.antroy.latextools.LaTeXPlugin.name=LaTeX Tools
 plugin.uk.co.antroy.latextools.LaTeXPlugin.author=Anthony Roy
-plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.2
+plugin.uk.co.antroy.latextools.LaTeXPlugin.version=0.2.0
 plugin.uk.co.antroy.latextools.LaTeXPlugin.docs=index.html
 
 plugin.uk.co.antroy.latextools.LaTeXPlugin.depend.0=jedit 04.01.99.00
@@ -33,11 +33,14 @@ reference.title=Label List
 reference.inserttags=true
 
 bibliography-dock.title = BibTeX Navigator
-bibliography-dock.label = Insert Citation
+bibliography-dock.label = Insert Citation...
 
 navigation-dock.title = LaTeX Navigator
-navigation-dock.label = Navigate Document
+navigation-dock.label = Navigation Toolbar
 navigation-dock.nottex = Document*is not a*TeX*Document!
+
+label-dock.title = Label Navigator
+label-dock.label = Insert Cross-reference...
 
 navigation.title = LaTeX Navigator
 navigation.label = Navigate Document
@@ -49,6 +52,23 @@ labels.title=Find Labels
 set-main.label = Set Main File
 reset-main.label = Reset Main File
 show-main.label = Show Main File
+increment-phrase.label = Increment Phrase
+increment-phrase-from-x.label = Increment Phrase from...
+surround-selection.label = Surround Selection
+insert-environment.label = Insert Environment
+insert-command.label = Insert Command
+
+latex-main-menu=navigation-dock \
+  bibliography-dock \
+  label-dock
+latex-main-menu.label = LaTeX Tools
+
+latex-insert-menu=  increment-phrase \
+  increment-phrase-from-x \
+  surround-selection \
+  insert-environment \
+  insert-command
+latex-insert-menu.label = Insert
 
 panel.text.refresh=Refresh
 panel.text.reload=Reload
@@ -57,3 +77,4 @@ tagpair.linenumbers=true
 
 mode.tex.sidekick.parser=latex_parser
 sidekick.parser.latex_parser.label=LaTeX
+

@@ -16,7 +16,7 @@ public class LaTeXParser extends SideKickParser{
   private SideKickParsedData data;
   private Buffer buffer;
   private static final LaTeXDockable controls = new LaTeXDockable();
-  private ArrayList navItems = new ArrayList();
+  private Collection navItems = new TreeSet();
   private DefaultMutableTreeNode root;
   private int lowlev;
   
@@ -64,18 +64,26 @@ public class LaTeXParser extends SideKickParser{
 
 
 	private void searchBuffer(NavigationList navList){
-			for (int index = 0; index < buffer.getLineCount() - 1;index++) {
-				lowlev = navList.getLowestLevel();
-				searchLine(index, navList);
-			}
-
-	}
-
-	private void searchLine(int lineNumber, NavigationList nl){
-		// Search a string for items in the NavigationList.
-			String lineText = buffer.getLineText(lineNumber);
-      for (Iterator it = nl.iterator(); it.hasNext(); ) {
+			String text = buffer.getText(0,buffer.getLength());
+      
+      for (Iterator it = navList.iterator(); it.hasNext(); ) {
       TagPair srch = (TagPair) it.next();
+      String replace = srch.getReplace();
+      
+      boolean default_replace = true;
+      
+      if (!(replace.equals(" "))){
+        try{
+          Log.log(Log.MESSAGE,this,"replace: "+replace);
+          RE colon = new RE("\\\\u003[aA]");
+          Log.log(Log.MESSAGE,this,"found: "+colon.getMatch(replace).toString());
+          replace = colon.substituteAll(replace,":");
+          default_replace = false;
+        }catch (REException e) {
+          default_replace = true;
+        }
+      }
+      
       RE search = null;
 
       try {
@@ -85,43 +93,40 @@ public class LaTeXParser extends SideKickParser{
       }
 
       if (search == null) {
-        int refStart = lineText.indexOf(srch.getTag());
-        if (refStart >= 0) {
-          LaTeXAsset asset = LaTeXAsset.createAsset(lineText, lineNumber, srch.getLevel(), srch.getIcon());
-          navItems.add(asset);
-          break;
-        }
+          continue;
       } else {
-        REMatch match = search.getMatch(lineText);
-        String result = "";
-        if (match != null) {
+        REMatch match[] = search.getAllMatches(text);
+        for (int m = 0; m < match.length; m++) {
+          String result = "";
           int i;
-          if ((i = search.getNumSubs()) > 0) {
-            StringBuffer sb = new StringBuffer();
-            for (int j = 1; j <= i; j++) {
-              sb.append(match.toString(j));
-            }
-            result = sb.toString();
-          } else {
-            result = lineText;
+
+          if (default_replace){
+              if ((i = search.getNumSubs()) > 0) {
+                StringBuffer sb = new StringBuffer();
+                for (int j = 1; j <= i; j++) {
+                  sb.append(match[m].toString(j));
+                }
+                result = sb.toString();
+              } else {
+                result = match[m].toString();
+              }
+          }else{
+            result = match[m].substituteInto(replace);
+            Log.log(Log.DEBUG,this,"SUB: "+replace);
+            Log.log(Log.DEBUG,this,"RES: "+result);
           }
-          LaTeXAsset asset = LaTeXAsset.createAsset(result, lineNumber, srch.getLevel(), srch.getIcon());
+          
+          LaTeXAsset asset = LaTeXAsset.createAsset(result,
+                                                    buffer.createPosition(match[m].getStartIndex()),
+                                                    buffer.createPosition(match[m].getEndIndex()),
+                                                    srch.getIcon(),
+                                                    srch.getLevel());
           navItems.add(asset);
-          break;
         }
       }
     }
 	}
-  
-  private LaTeXAsset makeAsset(String lable, int line, int level, int icon){
-    Position pstart = buffer.createPosition(buffer.getLineStartOffset(line)),
-             pend   =  buffer.createPosition(buffer.getLineStartOffset(line+1));
-    LaTeXAsset asset = LaTeXAsset.createAsset(lable, pstart, pend, icon);
-    asset.setLevel(level);
-    return asset;
-  }
-  
-  
+
   private void buildTree() {
     Iterator it = navItems.iterator();
     DefaultMutableTreeNode lastNode = root;

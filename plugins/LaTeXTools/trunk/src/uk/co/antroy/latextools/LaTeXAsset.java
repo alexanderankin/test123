@@ -28,19 +28,23 @@ import org.gjt.sp.jedit.jEdit;
       StringBuffer filename = new StringBuffer("/");
       
       switch (iconType){
+        case DEFAULT_ICON: filename.append("images/default.png"); break;
         case SECTION_ICON: filename.append("images/sections.png"); break;
         case GRAPHIC_ICON: filename.append("images/graphics.png"); break;
         case THEOREM_ICON: filename.append("images/theorem.png"); break;
-        default: filename.append("images/default.png"); break;
+        default: filename = null;
       }
       
       Icon icon;
-      try{
-        icon = new ImageIcon(LaTeXAsset.class.getResource(filename.toString()));
-        Log.log(Log.DEBUG,this,filename.toString() + "Loaded");
-      }catch (Exception e){
-        Log.log(Log.DEBUG,this,filename.toString() + "Not loaded");
+      if (filename == null) {
         icon = null;
+      }else{
+        try{
+          icon = new ImageIcon(LaTeXAsset.class.getResource(filename.toString()));
+        }catch (Exception e){
+          Log.log(Log.DEBUG,this,filename.toString() + "Not found");
+          icon = null;
+        }
       }
       return icon;
 //      return null;
@@ -70,6 +74,12 @@ import org.gjt.sp.jedit.jEdit;
       return iconType;
     }
     
+    public static LaTeXAsset createAsset(String name, Position start, Position end, int icon_type, int lev){
+      LaTeXAsset asset = createAsset(name, start, end, icon_type);
+      asset.setLevel(lev);
+      return asset;
+    }
+    
     public static LaTeXAsset createAsset(String name, Position start, Position end, int icon_type){
       LaTeXAsset asset = createAsset(name, start, end);
       asset.setIconType(icon_type);
@@ -85,15 +95,6 @@ import org.gjt.sp.jedit.jEdit;
       return la;
     }
     
-    public static LaTeXAsset createAsset(String label, int line, int level, int icon){
-      Buffer buffer = jEdit.getActiveView().getBuffer();
-      Position pstart = buffer.createPosition(buffer.getLineStartOffset(line)),
-               pend   =  buffer.createPosition(buffer.getLineStartOffset(line+1));
-      LaTeXAsset asset = LaTeXAsset.createAsset(label, pstart, pend, icon);
-      asset.setLevel(level);
-      return asset;
-    }
-
     public int compareTo(LaTeXAsset asset) {
 
       int offset = start.getOffset();
@@ -112,6 +113,32 @@ import org.gjt.sp.jedit.jEdit;
     return compareTo((LaTeXAsset) o);
   }
     
+  public boolean equals(Object o){
+    if (o instanceof LaTeXAsset){
+      return equals((LaTeXAsset) o);
+    }else{
+      return false;
+    }
+  }
+  
+  public boolean equals(LaTeXAsset o){
+    boolean out = true;
+    out = out && (name.equals(o.name));
+    out = out && (start.getOffset() == o.start.getOffset());
+    out = out && (end.getOffset() == o.end.getOffset());
+    return out;
+  }
+    
+  public int hashCode(){
+    int out = 13;
+    out = out *37;
+    out += name.hashCode();
+    out = out * 37;
+    out += start.getOffset();
+    out = out * 37;
+    out += end.getOffset();
+    return out;
+  }
     
   public String toString(){
     return getShortString();

@@ -1,38 +1,40 @@
 @All1
-1:(\\chapter\{.+?\}):1
-2:(\\section\{.+?\}):1
-3:(\\subsection\{.+?\}):1
-4:(\\subsubsection\{.+?\}):1
-5:(\\paragraph\{.+?\}):1
-6:\\begin\{theorem\}:3
-6:\\begin\{lemma\}:3
-6:\\begin\{proposition\}:3
-6:\\begin\{definition\}:3
-6:\\begin\{corollary\}:3
-7:\\begin\{proof\}:0
-6:\\fig:2
-6:\\begin\{figure\}:2
-7:\\caption:0
-
+1:\\chapter\{(.+?)\}: :1
+2:\\section\{(.+?)\}: :1
+3:\\subsection\{(.+?)\}: :1
+4:\\subsubsection\{(.+?)\}: :1
+5:\\paragraph\{(.+?)\}: :1
+6:\\begin\{theorem\}(\[.+?\])?:Thm\u003A $1:3
+6:\\begin\{lemma\}(\[.+?\])?:Lem\u003A $1:3
+6:\\begin\{proposition\}(\[.+?\])?:Prp\u003A $1:3
+6:\\begin\{definition\}(\[.+?\])?:Dfn\u003A $1:3
+6:\\begin\{corollary\}(\[.+?\])?:Cor\u003A $1:3
+7:\\begin\{proof\}(\[.+?\])?:Proof\u003A $1:0
+6:\\includegraphic[xs].*?\{(\S*?)\}:Img\u003A $1:2
+7:\\caption\{(.*?)\}:Capt\u003A $1:0
 
 @Sections2
-1:(\\chapter\{.+?\}):1
-2:(\\section\{.+?\}):1
-3:(\\subsection\{.+?\}):1
-4:(\\subsubsection\{.+?\}):1
-5:(\\paragraph\{.+?\}):1
+1:\\chapter\{(.+?)\}: :1
+2:\\section\{(.+?)\}: :1
+3:\\subsection\{(.+?)\}: :1
+4:\\subsubsection\{(.+?)\}: :1
+5:\\paragraph\{(.+?)\}: :1
 
 @Theorems4
-1:\\begin\{theorem\}:3
-1:\\begin\{lemma\}:3
-1:\\begin\{proposition\}:3
-1:\\begin\{definition\}:3
-1:\\begin\{corollary\}:3
-2:\\begin\{proof\}:0
+1:\\begin\{theorem\}(\[.+?\])?:Thm\u003A $1:3
+1:\\begin\{lemma\}(\[.+?\])?:Lem\u003A $1:3
+1:\\begin\{proposition\}(\[.+?\])?:Prp\u003A $1:3
+1:\\begin\{definition\}(\[.+?\])?:Dfn\u003A $1:3
+1:\\begin\{corollary\}(\[.+?\])?:Cor\u003A $1:3
+2:\\begin\{proof\}(\[.+?\])?:Proof\u003A $1:0
 
-@Figure List6
-1:\\fig:2
-1:\\begin\{figure\}:2
-2:\\caption:0
+@Graphics6
+1:\\includegraphic[xs].*?\{(\S*?)\}:Img\u003A $1:2
+2:\\caption\{(.*?)\}:Capt\u003A $1:0
 
+@Commands8
+1:\\(?!begin)(?!end)(\w+): :0
+
+@Environments9
+1:\\begin\{(\w*)\}: :0
 

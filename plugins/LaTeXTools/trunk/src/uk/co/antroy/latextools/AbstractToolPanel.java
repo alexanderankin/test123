@@ -8,6 +8,16 @@ import java.util.StringTokenizer;
 
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import org.gjt.sp.jedit.Buffer;
+import org.gjt.sp.jedit.jEdit;
+import org.gjt.sp.jedit.EBMessage;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JPanel;
+import java.awt.event.ActionEvent;
+import java.awt.Dimension;
 
 /*:folding=indent:
  * AbstractToolPanel.java - Abstract class representing a tool panel.
@@ -39,6 +49,11 @@ import org.gjt.sp.util.Log;
 public abstract class AbstractToolPanel
   extends JPanel
   implements EBComponent {
+  protected Action refresh,
+	         reload;                           //Binary flags: reload-refresh
+  public static final int REFRESH = 1,               //           0 1
+                          RELOAD  = 2,               //           1 0
+                          RELOAD_AND_REFRESH = 3;    //           1 1
 
   //~ Methods .................................................................
 
@@ -121,6 +136,11 @@ public abstract class AbstractToolPanel
 
     setLayout(new BorderLayout());
     add(p, position);
+    if (position.equals(BorderLayout.SOUTH)){
+      add(createButtonPanel(REFRESH),BorderLayout.NORTH);
+    }else{
+      add(createButtonPanel(REFRESH),BorderLayout.SOUTH);      
+    }
   }
 
   protected void log(String s) {
@@ -134,4 +154,47 @@ public abstract class AbstractToolPanel
   protected void log() {
     log("Green Eggs and Ham");
   }
+  
+    protected JPanel createButtonPanel(int buttonTypes){
+	  JPanel jp = new JPanel();
+	  
+	  createActions();
+	  
+	  if ((buttonTypes & REFRESH) == REFRESH){
+		  JButton b = new JButton(refresh);
+		  b.setPreferredSize(new Dimension(20,20));
+		  b.setToolTipText(jEdit.getProperty("panel.text.refresh"));
+		  jp.add(b);
+	  }
+	  
+	  if ((buttonTypes & RELOAD) == RELOAD){
+		  JButton b = new JButton(reload);
+		  b.setPreferredSize(new Dimension(20,20));
+		  b.setToolTipText(jEdit.getProperty("panel.text.reload"));
+		  jp.add(b);
+	  }
+	  
+	  return jp;
+	  
+  }
+  
+  	 private void createActions(){
+		 refresh = new AbstractAction("",loadIcon("/images/ref.gif")){
+			 public void actionPerformed(ActionEvent e){
+				 refresh();
+			 }
+		 };
+		 reload = new AbstractAction("",loadIcon("/images/rel.gif")){
+			 public void actionPerformed(ActionEvent e){
+				 reload();
+			 }
+		 };
+	 }
+	 
+	static ImageIcon loadIcon( String filename )
+	{
+		return new ImageIcon( DefaultToolPanel.class.getResource( filename ) );
+	}
+
+  
 }

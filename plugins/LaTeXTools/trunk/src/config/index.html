@@ -30,9 +30,9 @@ present include the following:</p>
 <li><a href="#nav">LaTeX Navigator</a></li>
 
 <li><a href="history.html">Release Notes</a></li>
-<li><a href="bugs.html">Bugs List</a></li>
+<!-- <li><a href="bugs.html">Bugs List</a></li>
 <li><a href="featurereq.html">Feature Requests</a></li>
-</ul>
+ --></ul>
 
 <a name="bibtex"></a> 
 
@@ -102,17 +102,16 @@ are inserted around the citations on enter.</p>
 
 <h2>LaTeX Navigator</h2>
 
-<p>This feature implements a document navigator. When activated,
-a dialog pops up, displaying a combo box showing the default
-navigation list, and a tree displaying a list of relevant items
-in the document. For example, the default navigation list is
-&quot;Sections&quot;, and displayed is a tree showing the
-hierarchy of section headings in the document.</p>
+<p>This feature implements a document navigator. By default all special
+elements of the document are displayed in the SideKick structure browser.
+A separate (dockable) dialog has controls for selecting the document 
+elements to parse - a few are predefined, but user defined lists can add to
+or replace these, as described below.
+</p>
 
-<p>Clicking on a node of the tree takes you to the appropriate
-line in the document. Hitting enter or escape closes the dialog.
-Changing the selection in the combo box reparses the document for
-the new navigation list.</p>
+<h3>Suggested use.</h3>
+
+The way I use the document navigator is to have the Structure Browser docked to the right, and the Navigation Toolbar docked at the top (it is one line deep, so doesn't take much space). This way it is easy to select the features of the document you wish to see. If you simply want all of the main elements displayed, don't bother with the toolbar - it is the default parser.
 
 <h3>User defined Navigation Lists.</h3>
 
@@ -132,34 +131,57 @@ defaults.</p>
 
 <p>Following the title tag are the lines defining the search
 strings to look for in the text. These must be of the format,
-&quot;<b>n</b>:<i>search string</i>&quot;. where (the single
-digit) <b>n</b> is the nesting level of the search string. Regular expressions are used (so if simple definitions are required, remember to escape special characters), and if capturing groups are used, the first such group is used as the text in the tree. An
-example of such a file follows:</p>
+&quot;<strong>N:search string:replace string:I</strong> &quot;. where <strong>N</strong>  is the nesting level of the search string, and <strong>I</strong>  is the icon to use in the sidekick tree.
+</p>
+<p>
+ The <strong>search string</strong>  is parsed as a regular expression (so if simple definitions are required, remember to escape special characters). </p>
+ <p>
+ The <strong>replace string</strong>  is an ordinary string, but the strings $1, $2, etc can be used to refer to captured groups in the search string. If the replace string is simply a "&nbsp;" (space) character, then any captured groups are concatenated and used as the text in the tree, or if no capturing groups are present, then the whole found string (group $0) is used as the tree text. Either a replace expression, or single space should be used as the replace string - other strings may have unpredictable results. Note also that if the ':' symbol is required in either search or replace string, the unicode escape \u003A should be used, or the navigation item will not be parsed correctly. An
+example from the default navigation file follows:</p>
 
 <br>
 
 <div style="padding-left:4em;background:#dddddd">
 <pre>
 @Sections2
-1:(\\chapter\{.+?\})
-  2:(\\section\{.+?\})
-    3:(\\subsection\{.+?\})
-      4:(\\subsubsection\{.+?\})
-        5:(\\paragraph\{.+?\})
+1:\\chapter\{(.+?)\}: :1
+2:\\section\{(.+?)\}: :1
+3:\\subsection\{(.+?)\}: :1
+4:\\subsubsection\{(.+?)\}: :1
+5:\\paragraph\{(.+?)\}: :1
 
 @Theorems4
-1:\\begin\{theorem\}
-1:\\begin\{lemma\}
-1:\\begin\{proposition\}
-1:\\begin\{definition\}
-1:\\begin\{corollary\}
-2:\\begin\{proof\}
+1:\\begin\{theorem\}(\[.+?\])?:Thm\u003A $1:3
+1:\\begin\{lemma\}(\[.+?\])?:Lem\u003A $1:3
+1:\\begin\{proposition\}(\[.+?\])?:Prp\u003A $1:3
+1:\\begin\{definition\}(\[.+?\])?:Dfn\u003A $1:3
+1:\\begin\{corollary\}(\[.+?\])?:Cor\u003A $1:3
+2:\\begin\{proof\}(\[.+?\])?:Proof\u003A $1:0
+
 </pre>
 </div>
-
 <p>
-Note that the Sections group in this example will only print the section title in the tree, where the whole string found will be displayed in the case of the Theorems group.
+Note that the Sections group in this example will only print the section title in the tree. The strings "Thm" etc will be displayed in the case of the Theorems group, along with the description if present.
 </p>
+
+<p>The integers for various icons are as follows:</p>
+
+<table width="50%">
+<tr>
+<td><img alt="default" src="images/default.png"></td><td>Default</td><td>0</td>
+</tr>
+<tr>
+<td><img alt="section" src="images/sections.png"></td><td>Section</td><td>1</td>
+</tr>
+<tr>
+<td><img alt="graphics" src="images/graphics.png"></td><td>Graphics</td><td>2</td>
+</tr>
+<tr>
+<td><img alt="theorem" src="images/theorem.png"></td><td>Theorem</td><td>3</td>
+</tr>
+</table>
+Any other integer value will display no image at all.
+
 
 <br>
 <a href="history.html">View Release Notes</a> 
@@ -169,7 +191,7 @@ Note that the Sections group in this example will only print the section title i
 <hr>
 <i>LaTeX Tools</i>
 <p>Plugin maintained by <b>Anthony Roy</b> (<a href=
-"home@ant-roy.co.uk">home@ant-roy.co.uk</a>).<span align="right">Last Modified: Friday, 8 November</span></p>
+"home@ant-roy.co.uk">home@ant-roy.co.uk</a>).<span align="right">Last Modified: Friday April 25, 2003</span></p>
 </body>
 </html>
 

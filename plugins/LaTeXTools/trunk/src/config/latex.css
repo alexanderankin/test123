@@ -1,18 +1,9 @@
-BODY {
-	background:#efe
-}
-
 TR {background:#ddddff}
 
 TR:hover {background-color:#fff;
 	  color:#000;
 	  font-weight:bold
 }
-
-/* TABLE TD, TH {background:inherit;
-                    color:inherit
-}
- */
 
 .blank {background:#efe !important}
 .fix   {color:green; text-decoration:line-through}
