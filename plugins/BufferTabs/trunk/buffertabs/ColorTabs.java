@@ -46,7 +46,7 @@ import org.gjt.sp.util.Log;
  */
 public class ColorTabs
 {
-   private static final int jnd = 4;
+   private static final int JND = 4;
 
    private static final int darkRange = 150;
    private static final float darkRatio = ((float) darkRange / 254);
@@ -100,12 +100,12 @@ public class ColorTabs
 
       if (colorVariation)
       {
-         r -= rnd.nextInt(5) * jnd;
-         g -= rnd.nextInt(5) * jnd;
-         b -= rnd.nextInt(5) * jnd;
-         r = r / jnd * jnd;
-         g = g / jnd * jnd;
-         b = b / jnd * jnd;
+         r -= rnd.nextInt(5) * JND;
+         g -= rnd.nextInt(5) * JND;
+         b -= rnd.nextInt(5) * JND;
+         r = r / JND * JND;
+         g = g / JND * JND;
+         b = b / JND * JND;
 
       }
 
@@ -173,12 +173,12 @@ public class ColorTabs
 
       if (colorVariation)
       {
-         r += rnd.nextInt(5) * jnd;
-         g += rnd.nextInt(5) * jnd;
-         b += rnd.nextInt(5) * jnd;
-         r = r / jnd * jnd;
-         g = g / jnd * jnd;
-         b = b / jnd * jnd;
+         r += rnd.nextInt(5) * JND;
+         g += rnd.nextInt(5) * JND;
+         b += rnd.nextInt(5) * JND;
+         r = r / JND * JND;
+         g = g / JND * JND;
+         b = b / JND * JND;
 
       }
 
