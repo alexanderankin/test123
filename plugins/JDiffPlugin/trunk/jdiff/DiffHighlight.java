@@ -1,6 +1,6 @@
 /*
  * DiffHighlight.java
- * Copyright (c) 2000 Andre Kaplan
+ * Copyright (c) 2000, 2001, 2002 Andre Kaplan
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
-*/
+ */
 
 
 package jdiff;
@@ -208,7 +208,7 @@ public class DiffHighlight extends TextAreaExtension
 
     /**
      * Tests if the diff highlights are enabled for an editPane
-    **/
+     */
     public static boolean isDiffHighlightEnabledFor(EditPane editPane) {
         DiffHighlight highlight = (DiffHighlight) highlights.get(editPane);
         if (highlight != null) {
@@ -221,7 +221,7 @@ public class DiffHighlight extends TextAreaExtension
 
     /**
      * Sets diff highlighting to enabled or disabled for an editPane
-    **/
+     */
     public static void setDiffHighlightFor(EditPane editPane, boolean enabled) {
         DiffHighlight highlight = (DiffHighlight) highlights.get(editPane);
         if (highlight != null) {
@@ -233,7 +233,7 @@ public class DiffHighlight extends TextAreaExtension
 
     /**
      * Enables diff highlights for an editPane
-    **/
+     */
     public static void enableDiffHighlightFor(EditPane editPane) {
         DiffHighlight.setDiffHighlightFor(editPane, true);
     }
@@ -241,7 +241,7 @@ public class DiffHighlight extends TextAreaExtension
 
     /**
      * Disables diff highlights for an editPane
-    **/
+     */
     public static void disableDiffHighlightFor(EditPane editPane) {
         DiffHighlight.setDiffHighlightFor(editPane, false);
     }
