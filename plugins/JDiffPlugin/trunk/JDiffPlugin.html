@@ -1,240 +1,240 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 3.2//EN">
-<HTML>
-<HEAD>
-<TITLE>JDiff Plugin</TITLE>
-</HEAD>
-<BODY BGCOLOR="#FFFFFF">
+<html>
+<head>
+<title>JDiff Plugin</title>
+</head>
+<body bgcolor="#FFFFFF">
 
 
-<TABLE
-    CELLSPACING="0"
-    CELLPADDING="3"
-    BGCOLOR="#CCCCFF"
-    BORDER="0"
-    WIDTH="100%"
-    SUMMARY="JDiff Plugin header"
+<table
+    cellspacing="0"
+    cellpadding="3"
+    bgcolor="#CCCCFF"
+    border="0"
+    width="100%"
+    summary="JDiff Plugin header"
 >
-<TR WIDTH="100%">
-<TD><BIG><BIG>JDiff Plugin</BIG></BIG></TD>
-<TD ALIGN="right"><SMALL>By Andr&eacute; Kaplan<BR>
-<EM>akaplan@jedit.org</EM></SMALL></TD>
-</TR>
-</TABLE>
+<tr width="100%">
+<td><big><big>JDiff Plugin</big></big></td>
+<td align="right"><small>By Andr&eacute; Kaplan<br>
+<em>akaplan@jedit.org</em></small></td>
+</tr>
+</table>
 
 
-<UL>
-    <LI><A HREF="#general">Presentation</A></LI>
-    <LI><A HREF="#usage">Usage</A></LI>
-    <LI><A HREF="#display">Display</A></LI>
-    <LI><A HREF="#other_commands">Other commands</A></LI>
-    <LI><A HREF="#options">Options</A></LI>
-    <LI><A HREF="#credits">Credits</A></LI>
-    <LI><A HREF="#feedback">Feedback</A></LI>
-</UL>
+<ul>
+    <li><a href="#general">Presentation</a></li>
+    <li><a href="#usage">Usage</a></li>
+    <li><a href="#display">Display</a></li>
+    <li><a href="#other_commands">Other commands</a></li>
+    <li><a href="#options">Options</a></li>
+    <li><a href="#credits">Credits</a></li>
+    <li><a href="#feedback">Feedback</a></li>
+</ul>
 
 
-<H2><A NAME="general">Presentation</A></H2>
+<h2><a name="general">Presentation</a></h2>
 
-<P>JDiffPlugin is a visual diff utility for jEdit.</P>
+<p>JDiffPlugin is a visual diff utility for jEdit.</p>
 
-<P>It features:</P>
-<UL>
-    <LI>Diff overviews (local and global)</LI>
-    <LI>Synchronized scrolling</LI>
-    <LI>Ignore case option</LI>
-    <LI>Ignore leading and trailing whitespace option</LI>
-    <LI>Ignore all whitespace option</LI>
-    <LI>Normal diff output</LI>
-</UL>
+<p>It features:</p>
+<ul>
+    <li>Diff overviews (local and global)</li>
+    <li>Synchronized scrolling</li>
+    <li>Ignore case option</li>
+    <li>Ignore leading and trailing whitespace option</li>
+    <li>Ignore all whitespace option</li>
+    <li>Normal diff output</li>
+</ul>
 
-<P>It requires:</P>
-<UL>
-    <LI>JDK 1.1
-    <LI>jEdit 3.1
-</UL>
+<p>It requires:</p>
+<ul>
+    <li>JDK 1.1
+    <li>jEdit 3.1
+</ul>
 
 
-<H2><A NAME="usage">Usage</A></H2>
+<h2><a name="usage">Usage</a></h2>
 
-<OL>
-    <LI>Split your view in two (vertically)<BR>
-    <SMALL><EM>Note</EM>: JDiff will split your view in two if necessary.</SMALL>
-    <LI>Edit the buffers you want to compare:
-    <UL>
-        <LI>the buffer on the left is the original
-        <LI>the buffer on the right is the revision
-    </UL>
-    <LI>Activate JDiff:
-        <EM>Plugins&nbsp;-&gt;&nbsp;JDiff&nbsp;-&gt;&nbsp;Dual&nbsp;Diff</EM>
-    <LI>Figure&nbsp;1 shows the result
-</OL>
+<ol>
+    <li>Split your view in two (vertically)<br>
+    <small><em>Note</em>: JDiff will split your view in two if necessary.</small>
+    <li>Edit the buffers you want to compare:
+    <ul>
+        <li>the buffer on the left is the original
+        <li>the buffer on the right is the revision
+    </ul>
+    <li>Activate JDiff:
+        <em>Plugins&nbsp;-&gt;&nbsp;JDiff&nbsp;-&gt;&nbsp;Dual&nbsp;Diff</em>
+    <li>Figure&nbsp;1 shows the result
+</ol>
 
-<TABLE
-    ALIGN="CENTER"
-    CELLSPACING="0"
-    CELLPADDING="3"
-    BORDER="0"
-    SUMMARY="JDiff Plugin snapshot"
+<table
+    align="CENTER"
+    cellspacing="0"
+    cellpadding="3"
+    border="0"
+    summary="JDiff Plugin snapshot"
 >
-<TR>
-<TD><IMG SRC="diff_snapshot.jpg" BORDER="0" ALT="JDiff Plugin snapshot"></TD>
-</TR>
-<TR>
-<TH>Figure&nbsp;1 - JDiff Plugin</TH>
-</TR>
-</TABLE>
+<tr>
+<td><img src="diff_snapshot.jpg" border="0" alt="JDiff Plugin snapshot"></td>
+</tr>
+<tr>
+<th>Figure&nbsp;1 - JDiff Plugin</th>
+</tr>
+</table>
 
 
-<H2><A NAME="display">Display</A></H2>
+<h2><a name="display">Display</a></h2>
 
-<P>Once JDiff is activated as in Figure&nbsp;1, you should see:</P>
-<UL>
-    <LI>Text Highlights
-    <LI>A local overview (right of the original)
-    <LI>A global overview (right of the revision)
-</UL>
+<p>Once JDiff is activated as in Figure&nbsp;1, you should see:</p>
+<ul>
+    <li>Text Highlights
+    <li>A local overview (right of the original)
+    <li>A global overview (right of the revision)
+</ul>
 
-<H3>Color conventions</H3>
+<h3>Color conventions</h3>
 
-<P>By default:</P>
-<UL>
-    <LI>Changed lines appear in yellow
-    <LI>Deleted (from the original) lines appear in red
-    <LI>Inserted (to the revision) lines appear in green
-    <LI>Invalid lines appear as thin dark grey lines.
-    <UL>
-        <LI>In the original, invalid lines indicate where a block was inserted
+<p>By default:</p>
+<ul>
+    <li>Changed lines appear in yellow
+    <li>Deleted (from the original) lines appear in red
+    <li>Inserted (to the revision) lines appear in green
+    <li>Invalid lines appear as thin dark grey lines.
+    <ul>
+        <li>In the original, invalid lines indicate where a block was inserted
         in the revision.
-        <LI>In the revision, invalid lines indicate where a block was deleted in
+        <li>In the revision, invalid lines indicate where a block was deleted in
         the original.
-    </UL>
-</UL>
+    </ul>
+</ul>
 
-<H3>Local overview</H3>
+<h3>Local overview</h3>
 
-<P>The local overview shows how the visible changed/inserted/deleted blocks
+<p>The local overview shows how the visible changed/inserted/deleted blocks
 from the original and the revision relate to each other.
-</P>
+</p>
 
-<H3>Global overview</H3>
+<h3>Global overview</h3>
 
-<P>The global overview should help you estimate how the two edited buffers
+<p>The global overview should help you estimate how the two edited buffers
 differ.
 It also displays two cursors which indicate the visible parts of the two
 buffers.
-</P>
+</p>
 
 
-<H2><A NAME="other_commands">Other commands</A></H2>
+<h2><a name="other_commands">Other commands</a></h2>
 
-<UL>
-    <LI><EM>Refresh</EM>: refreshes the diff display</LI>
-    <LI><EM>Go to previous/next difference</EM></LI>
-    <LI><EM>Ignore case</EM>: toggles the &quot;Ignore case&quot; option for the current diff</LI>
-    <LI><EM>Ignore leading and trailing whitespace</EM>: toggles the &quot;Ignore leading and trailing whitespace&quot; option for the current diff</LI>
-    <LI><EM>Ignore all whitespace</EM>: toggles the &quot;Ignore all whitespace&quot; option for the current diff</LI>
-    <LI><EM>Normal Diff Output</EM>: generates a diff file using the normal method</LI>
-</UL>
+<ul>
+    <li><em>Refresh</em>: refreshes the diff display</li>
+    <li><em>Go to previous/next difference</em></li>
+    <li><em>Ignore case</em>: toggles the &quot;Ignore case&quot; option for the current diff</li>
+    <li><em>Ignore leading and trailing whitespace</em>: toggles the &quot;Ignore leading and trailing whitespace&quot; option for the current diff</li>
+    <li><em>Ignore all whitespace</em>: toggles the &quot;Ignore all whitespace&quot; option for the current diff</li>
+    <li><em>Normal Diff Output</em>: generates a diff file using the normal method</li>
+</ul>
 
 
-<H2><A NAME="options">Options</A></H2>
+<h2><a name="options">Options</a></h2>
 
-<H3>Line comparison options</H3>
+<h3>Line comparison options</h3>
 
-<P>You can configure how JDiff compares lines by default. JDiff can:</P>
+<p>You can configure how JDiff compares lines by default. JDiff can:</p>
 
-<UL>
-    <LI>Ignore case: upper-cased lines are compared.
-    </LI>
+<ul>
+    <li>Ignore case: upper-cased lines are compared.
+    </li>
 
-    <LI>Ignore leading and trailing whitespace: lines are compared as if
+    <li>Ignore leading and trailing whitespace: lines are compared as if
         leading and trailing whitespaces were removed.
-    </LI>
+    </li>
 
-    <LI>Ignore all whitespace: lines are compared as if any
-        <UL>
-            <LI>leading and trailing whitespaces were removed</LI>
-            <LI>sequence of whitespaces were replaced by one single space.</LI>
-        </UL>
-    </LI>
-</UL>
+    <li>Ignore all whitespace: lines are compared as if any
+        <ul>
+            <li>leading and trailing whitespaces were removed</li>
+            <li>sequence of whitespaces were replaced by one single space.</li>
+        </ul>
+    </li>
+</ul>
 
-<H3>Global overview display</H3>
+<h3>Global overview display</h3>
 
-<UL>
-    <LI>Virtual overview: uses the virtual representation of
+<ul>
+    <li>Virtual overview: uses the virtual representation of
     buffers for its display
-    </LI>
+    </li>
 
-    <LI>Physical overview: uses the physical representation of
+    <li>Physical overview: uses the physical representation of
     buffers for its display
-    </LI>
-</UL>
+    </li>
+</ul>
 
-<H3>Overview colors</H3>
+<h3>Overview colors</h3>
 
-<P>You can configure the colors of:</P>
+<p>You can configure the colors of:</p>
 
-<UL>
-    <LI>Changed lines</LI>
-    <LI>Deleted lines</LI>
-    <LI>Inserted lines</LI>
-    <LI>Invalid lines</LI>
-    <LI>Left cursor in the global overview</LI>
-    <LI>Right cursor in the global overview</LI>
-</UL>
+<ul>
+    <li>Changed lines</li>
+    <li>Deleted lines</li>
+    <li>Inserted lines</li>
+    <li>Invalid lines</li>
+    <li>Left cursor in the global overview</li>
+    <li>Right cursor in the global overview</li>
+</ul>
 
-<H3>Highlight colors</H3>
+<h3>Highlight colors</h3>
 
-<P>You can configure the colors of:</P>
+<p>You can configure the colors of:</p>
 
-<UL>
-    <LI>Changed lines</LI>
-    <LI>Deleted lines</LI>
-    <LI>Inserted lines</LI>
-    <LI>Invalid lines</LI>
-</UL>
+<ul>
+    <li>Changed lines</li>
+    <li>Deleted lines</li>
+    <li>Inserted lines</li>
+    <li>Invalid lines</li>
+</ul>
 
-<P>The selected highlight colors allow to distinguish the selected parts
+<p>The selected highlight colors allow to distinguish the selected parts
 within text highlights. You can configure the colors of:
-</P>
+</p>
 
-<UL>
-    <LI>Selected changed lines</LI>
-    <LI>Selected deleted lines</LI>
-    <LI>Selected inserted lines</LI>
-</UL>
+<ul>
+    <li>Selected changed lines</li>
+    <li>Selected deleted lines</li>
+    <li>Selected inserted lines</li>
+</ul>
 
 
-<H2><A NAME="credits">Credits</A></H2>
+<h2><a name="credits">Credits</a></h2>
 
-<UL>
-    <LI>Stuart D. Gathman ported the GNU diff algorithm to Java.
+<ul>
+    <li>Stuart D. Gathman ported the GNU diff algorithm to Java.
     See
-    <A HREF="http://www.bmsi.com/java/">http://www.bmsi.com/java/</A>
-    </LI>
+    <a href="http://www.bmsi.com/java/">http://www.bmsi.com/java/</a>
+    </li>
 
-    <LI>Some code and ideas borrowed from JDiff by Mike Dillon <EM>&lt;mdillon@jedit.org&gt;</EM>.
-    See <A HREF="http://sourceforge.net/projects/jdiff">http://sourceforge.net/projects/jdiff</A>
-    </LI>
-</UL>
+    <li>Some code and ideas borrowed from JDiff by Mike Dillon <em>&lt;mdillon@jedit.org&gt;</em>.
+    See <a href="http://sourceforge.net/projects/jdiff">http://sourceforge.net/projects/jdiff</a>
+    </li>
+</ul>
 
 
-<H2><A NAME="feedback">Feedback</A></H2>
+<h2><a name="feedback">Feedback</a></h2>
 
-<P>
+<p>
 The preferred way to send bug reports is to use the Bug Tracker at
-<A HREF="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</A>.
-</P>
+<a href="http://sourceforge.net/bugs/?group_id=588">http://sourceforge.net/bugs/?group_id=588</a>.
+</p>
 
-<P>Also you can write to:</P>
-<UL>
-<LI>Andr&eacute; Kaplan <EM>&lt;akaplan@jedit.org&gt;</EM>;
-<LI>or jEdit-users mailing-list <EM>&lt;jedit-users@lists.sourceforge.net&gt;</EM>;
-<LI>or jEdit-devel mailing.list <EM>&lt;jedit-devel@lists.sourceforge.net&gt;</EM>.
-</UL>
+<p>Also you can write to:</p>
+<ul>
+<li>Andr&eacute; Kaplan <em>&lt;akaplan@jedit.org&gt;</em>;
+<li>or jEdit-users mailing-list <em>&lt;jedit-users@lists.sourceforge.net&gt;</em>;
+<li>or jEdit-devel mailing.list <em>&lt;jedit-devel@lists.sourceforge.net&gt;</em>.
+</ul>
 
 
-</BODY>
-</HTML>
+</body>
+</html>
 
