@@ -17,6 +17,7 @@
 package xml;
 
 //{{{ Imports
+import com.arbortext.catalog.*;
 import javax.swing.*;
 import java.awt.Component;
 import java.io.*;
@@ -32,7 +33,7 @@ public class CatalogManager
 	//{{{ resolve() method
 	public static InputSource resolve(String current,
 		String publicId, String systemId)
-		throws SAXException, IOException
+		throws Exception
 	{
 		load();
 
@@ -135,13 +136,13 @@ public class CatalogManager
 		load();
 
 		Entry pe = new Entry( Entry.PUBLIC, publicId, url );
-		userCatalog.put( pe, url );
+		dtdCache.put( pe, url );
 
 		Entry se = new Entry( Entry.SYSTEM, systemId, url );
-		userCatalog.put( se, url );
+		dtdCache.put( se, url );
 	} //}}}
 
-	//{{{ reload() method
+	/*{{{ reload() method
 	public static void reload(Entry e)
 	{
 		if(e.type == Entry.PUBLIC)
@@ -156,23 +157,23 @@ public class CatalogManager
 			if(isLocal(e))
 			{
 
-				File oldDtdFile = new File((String)userCatalog.get(e));
+				File oldDtdFile = new File((String)dtdCache.get(e));
 
 				File newFile = copyToLocalFile(new URL(e.id));
 
 				oldDtdFile.delete();
 				newFile.renameTo(oldDtdFile);
 
-				/* JOptionPane.showMessageDialog(
+				JOptionPane.showMessageDialog(
 					null,
-					"Reloaded DTD to " + oldDtdFile ); */
+					"Reloaded DTD to " + oldDtdFile );
 			}
 		}
 		catch (Exception ex)
 		{
 			JOptionPane.showMessageDialog( null, ex.getMessage() );
 		}
-	} //}}}
+	} *///}}}
 
 	//{{{ copyToLocalFile() method
 	public static File copyToLocalFile(URL url)
@@ -216,7 +217,7 @@ public class CatalogManager
 		try
 		{
 			URL url = new File(jEdit.getSettingsDirectory()).toURL();
-			String fileUrl = (String)userCatalog.get(e);
+			String fileUrl = (String)dtdCache.get(e);
 			return fileUrl.startsWith(url.toString());
 		}
 		catch (MalformedURLException ex)
@@ -240,77 +241,80 @@ public class CatalogManager
 		int systemCount = 0;
 		int publicCount = 0;
 
-		Iterator keys = userCatalog.keySet().iterator();
+		Iterator keys = dtdCache.keySet().iterator();
 		while(keys.hasNext())
 		{
 			Entry entry = (Entry)keys.next();
 			if(entry.type == Entry.PUBLIC)
 			{
-				jEdit.setProperty("xml.user.public-id." + publicCount,entry.id);
-				jEdit.setProperty("xml.user.public-id." + publicCount
-					+ ".uri",(String)userCatalog.get(entry));
+				jEdit.setProperty("xml.cache.public-id." + publicCount,entry.id);
+				jEdit.setProperty("xml.cache.public-id." + publicCount
+					+ ".uri",(String)dtdCache.get(entry));
 				publicCount++;
 			}
 			else
 			{
-				jEdit.setProperty("xml.user.system-id." + systemCount,entry.id);
-				jEdit.setProperty("xml.user.system-id." + systemCount
-					+ ".uri",(String)userCatalog.get(entry));
+				jEdit.setProperty("xml.cache.system-id." + systemCount,entry.id);
+				jEdit.setProperty("xml.cache.system-id." + systemCount
+					+ ".uri",(String)dtdCache.get(entry));
 				systemCount++;
 			}
 		}
 
-		jEdit.unsetProperty("xml.user.public-id." + publicCount);
-		jEdit.unsetProperty("xml.user.public-id." + publicCount + ".uri");
-		jEdit.unsetProperty("xml.user.system-id." + systemCount);
-		jEdit.unsetProperty("xml.user.system-id." + systemCount + ".uri");
+		jEdit.unsetProperty("xml.cache.public-id." + publicCount);
+		jEdit.unsetProperty("xml.cache.public-id." + publicCount + ".uri");
+		jEdit.unsetProperty("xml.cache.system-id." + systemCount);
+		jEdit.unsetProperty("xml.cache.system-id." + systemCount + ".uri");
 	} //}}}
 
-	//{{{ getUserCatalog() method
-	public static HashMap getUserCatalog()
+	//{{{ clearCache() method
+	public static void clearCache()
 	{
-		return loadCatalogFromProperties("user");
-	} //}}}
-
-	//{{{ setUserCatalog() method
-	public static void setUserCatalog(HashMap catalog)
-	{
-		userCatalog = catalog;
+		dtdCache.clear();
 	} //}}}
 
 	//{{{ Private members
 
 	//{{{ Static variables
 	private static boolean loaded;
-	private static HashMap defaultCatalog;
-	private static HashMap userCatalog;
-	private static HashMap ignoredDTDs = new HashMap();
+	private static Catalog catalog;
+	private static HashMap dtdCache;
+
+	// placeholder for DTDs we never want to download
+	private static Object IGNORE = new Object();
 	//}}}
 
 	//{{{ resolvePublic() method
-	private static String resolvePublic(String id)
+	private static String resolvePublic(String id) throws Exception
 	{
 		Entry e = new Entry(Entry.PUBLIC,id,null);
-		String uri = (String)userCatalog.get(e);
+		String uri = (String)dtdCache.get(e);
 		if(uri == null)
-			uri = (String)defaultCatalog.get(e);
-		return uri;
+			return catalog.resolvePublic(id,null);
+		else if(uri == IGNORE)
+			return null;
+		else
+			return uri;
 	} //}}}
 
 	//{{{ resolveSystem() method
-	private static String resolveSystem(String id)
+	private static String resolveSystem(String id) throws Exception
 	{
 		Entry e = new Entry(Entry.SYSTEM,id,null);
-		String uri = (String)userCatalog.get(e);
+		String uri = (String)dtdCache.get(e);
 		if(uri == null)
-			uri = (String)defaultCatalog.get(e);
-		return uri;
+			return catalog.resolveSystem(id);
+		else if(uri == IGNORE)
+			return null;
+		else
+			return uri;
 	} //}}}
 
 	//{{{ showDownloadDTDDialog() method
 	private static boolean showDownloadDTDDialog(Component comp, String systemId)
 	{
-		if(ignoredDTDs.containsKey(systemId))
+		Entry e = new Entry(Entry.SYSTEM,systemId,null);
+		if(dtdCache.get(e) == IGNORE)
 			return false;
 
 		int result = GUIUtilities.confirm(comp,"xml.download-dtd",
@@ -320,50 +324,9 @@ public class CatalogManager
 			return true;
 		else
 		{
-			ignoredDTDs.put(systemId,systemId);
+			dtdCache.put(e,IGNORE);
 			return false;
 		}
-	} //}}}
-
-	//{{{ loadCatalogFromProperties() method
-	private static HashMap loadCatalogFromProperties(String prefix)
-	{
-		HashMap returnValue = new HashMap();
-
-		int i;
-		String id, prop, uri;
-
-		i = 0;
-		while((id = jEdit.getProperty(prop = "xml." + prefix
-			+ ".public-id." + i++)) != null)
-		{
-			try
-			{
-				uri = jEdit.getProperty(prop + ".uri");
-				returnValue.put(new Entry(Entry.PUBLIC,id,uri),uri);
-			}
-			catch(Exception ex2)
-			{
-				Log.log(Log.ERROR,CatalogManager.class,ex2);
-			}
-		}
-
-		i = 0;
-		while((id = jEdit.getProperty(prop = "xml." + prefix
-			+ ".system-id." + i++)) != null)
-		{
-			try
-			{
-				uri = jEdit.getProperty(prop + ".uri");
-				returnValue.put(new Entry(Entry.SYSTEM,id,uri),uri);
-			}
-			catch(Exception ex2)
-			{
-				Log.log(Log.ERROR,CatalogManager.class,ex2);
-			}
-		}
-
-		return returnValue;
 	} //}}}
 
 	//{{{ load() method
@@ -372,8 +335,100 @@ public class CatalogManager
 		if(loaded)
 			return;
 
-		defaultCatalog = loadCatalogFromProperties("default");
-		userCatalog = loadCatalogFromProperties("user");
+		dtdCache = new HashMap();
+
+		int i;
+		String id, prop, uri;
+
+		i = 0;
+		while((id = jEdit.getProperty(prop = "xml.cache"
+			+ ".public-id." + i++)) != null)
+		{
+			try
+			{
+				uri = jEdit.getProperty(prop + ".uri");
+				dtdCache.put(new Entry(Entry.PUBLIC,id,uri),uri);
+			}
+			catch(Exception ex2)
+			{
+				Log.log(Log.ERROR,CatalogManager.class,ex2);
+			}
+		}
+
+		i = 0;
+		while((id = jEdit.getProperty(prop = "xml.cache"
+			+ ".system-id." + i++)) != null)
+		{
+			try
+			{
+				uri = jEdit.getProperty(prop + ".uri");
+				dtdCache.put(new Entry(Entry.SYSTEM,id,uri),uri);
+			}
+			catch(Exception ex2)
+			{
+				Log.log(Log.ERROR,CatalogManager.class,ex2);
+			}
+		}
+
+		catalog = new Catalog();
+		catalog.setParserClass("org.apache.xerces.parsers.SAXParser");
+
+		try
+		{
+			catalog.loadSystemCatalogs();
+
+			catalog.parseCatalog("jeditresource:XML.jar!/xml/dtds/catalog");
+
+			i = 0;
+			while((uri = jEdit.getProperty(
+				prop = "xml.catalog." + i++)) != null)
+			{
+				try
+				{
+					catalog.parseCatalog(uri);
+				}
+				catch(Exception ex2)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
+			}
+
+			i = 0;
+			while((id = jEdit.getProperty(
+				prop = "xml.public-id." + i++)) != null)
+			{
+				try
+				{
+					catalog.addEntry(new CatalogEntry(
+						CatalogEntry.PUBLIC,id,
+						jEdit.getProperty(prop + ".uri")));
+				}
+				catch(Exception ex2)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
+			}
+
+			i = 0;
+			while((id = jEdit.getProperty(
+				prop = "xml.system-id." + i++)) != null)
+			{
+				try
+				{
+					catalog.addEntry(new CatalogEntry(
+						CatalogEntry.SYSTEM,id,
+						jEdit.getProperty(prop + ".uri")));
+				}
+				catch(Exception ex2)
+				{
+					Log.log(Log.ERROR,CatalogManager.class,ex2);
+				}
+			}
+		}
+		catch(Exception ex1)
+		{
+			Log.log(Log.ERROR,CatalogManager.class,ex1);
+		}
 
 		loaded = true;
 	} //}}}

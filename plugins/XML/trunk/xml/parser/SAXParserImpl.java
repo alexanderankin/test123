@@ -203,16 +203,16 @@ class SAXParserImpl implements XmlParser.Impl
 				source = CatalogManager.resolve(
 					loc.getSystemId(),publicId,systemId);
 			}
-			catch(IOException io)
-			{
-				error(new SAXParseException(io.toString(),loc));
-			}
 			catch(SAXException s)
 			{
 				parser.addError(ErrorSource.ERROR,
 					buffer.getPath(),
 					Math.max(0,loc.getLineNumber()-1),
 					s.getMessage());
+			}
+			catch(Exception e)
+			{
+				error(new SAXParseException(e.toString(),loc));
 			}
 
 			if(source == null)

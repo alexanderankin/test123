@@ -52,72 +52,80 @@
 <chapter id="dtds"><title>Locating DTDs and completion info</title>
 
  <para>
-  To be able to validate XML files and do tag and entity completion in XML and
-  HTML files, the XML plugin must be able to locate either a DTD, or a completion
-  info file. The former can be used for both validation and completion; the
-  latter for completion only.
+  A DTD (document type definition) declares all elements and entities that can be
+  used within a specific type of XML file. In order to implement many of its
+  features, the XML plugin needs to load DTDs specified in
+  <literal>&lt;!DOCTYPE&gt;</literal> declarations. This is done as follows:
  </para>
-
- <para>
-  The XML plugin is bundled with the following DTDs and completion
-  files; to edit these file types, no extra configuration is necessary:
- </para>
-
  <itemizedlist>
-  <listitem><para>HTML and XHTML</para></listitem>
-  <listitem><para>Jakarta Ant <filename>build.xml</filename></para></listitem>
-  <listitem><para>XSL stylesheets</para></listitem>
-  <listitem><para>XML schemas</para></listitem>
-  <listitem><para>DocBook-XML 1.4.2 documents</para></listitem>
-  <listitem><para>DTDs supplied with jEdit for edit modes, action lists, and
-  so on - useful for edit mode and plugin development</para></listitem>
- </itemizedlist>
-
- <para>
-  With other XML files, the XML plugin tries to load the file's DTD;
-  you will need to ensure that the DTD is installed and the catalog file is
-  made available to the XML plugin. Catalogs to search in can be specified
-  in the <guibutton>XML</guibutton>&gt;<guibutton>Catalogs</guibutton> pane
+  <listitem><para>Some DTDs that are bundled with the plugin are resolved
+  automatically:</para>
+  <itemizedlist>
+   <listitem><para>DTDs declared by jEdit: <filename>actions.dtd</filename>,
+   <filename>catalog.dtd</filename>,
+   <filename>dockables.dtd</filename>,
+   <filename>recent.dtd</filename>,
+   <filename>xmode.dtd</filename>,
+   <filename>plugins.dtd</filename>.</para></listitem>
+   <listitem><para>A few plugin DTDs: <filename>commando.dtd</filename> (Console
+   plugin), <filename>sqlServerType.dtd</filename> (SQL plugin).</para></listitem>
+   <listitem><para>XHTML 1.0 DTDs, referenced using one of the usual public or
+   system IDs.</para></listitem>
+   <listitem><para>DocBook 4.1.2 DTDs, referenced using one of the usual public or
+   system IDs.</para></listitem>
+  </itemizedlist>
+  <para>
+   In addition, some file types without a DTD
+   (HTML, XML Schema, XSL, Ant <filename>build.xml</filename>)
+   have their completion info bundled with the XML plugin. Tag and entity popups can
+   therefore be used with these file types, however they are not validated as validation
+   requires a DTD.
+  </para>
+  </listitem>
+  <listitem><para>Any catalog files specified in the
+  <guibutton>XML</guibutton>&gt;<guibutton>Catalogs</guibutton> pane
   of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
-  dialog box.
+  dialog box are searched for the DTD.</para>
+  <para>
+  Catalog files must either be in OASIS OPEN or XML catalog format. These two formats
+  are documented below.</para>
+  </listitem>
+  <listitem><para>If the above two methods fail,
+  the plugin prompts if the DTD should be downloaded from
+  the <literal>SYSTEM</literal> location specified in the
+  <literal>&lt;!DOCTYPE&gt;</literal> declaration. If the download succeeds,
+  the DTD is cached for future use in the <filename>dtds</filename>
+  subdirectory of the jEdit settings directory.</para>
+  <para>
+  The downloaded DTDs cache can be cleared using the
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Clear
+  DTD Cache</guimenuitem> command.
  </para>
+ </listitem>
+ </itemizedlist>
 
  <sect1><title>OASIS OPEN catalog format</title>
   <para>
-   Not yet written.
+   Each line in an OASIS OPEN catalog file must look like one of the following:
   </para>
+  <itemizedlist>
+   <listitem><para><literal>-- <replaceable>comment</replaceable></literal>
+   - comments are ignored.</para></listitem>
+   <listitem><para><literal>SYSTEM "<replaceable>system ID</replaceable>"
+   "<replaceable>new system ID</replaceable>"</literal> - maps the first system ID
+   to the second.</para></listitem>
+   <listitem><para><literal>PUBLIC "<replaceable>public ID</replaceable>"
+   "<replaceable>new system ID</replaceable>"</literal> - maps the public ID
+   to the system ID.</para></listitem>
+   <!-- <listitem><para><literal>OVERRIDE <replaceable>YES or NO</replaceable></literal>
+   - if <literal><replaceable>YES</replaceable></literal>, then </para></listitem> -->
+  </itemizedlist>
  </sect1>
 
  <sect1><title>XML catalog format</title>
   <para>
    Not yet written.
   </para>
- </sect1>
-
- <sect1><title>Loading DTDs from the network</title>
-  <para>
-   If an XML file specifies a DTD using a system ID and the system ID was not
-   found in the catalogs, the XML plugin <emphasis role="bold">will not</emphasis>
-   attempt to load the DTD from the network. This is done for two reasons:
-  </para>
-
-  <itemizedlist>
-   <listitem><para>Loading from the network every time the buffer needs to be
-   parsed is slow.</para></listitem>
-   <listitem><para>It is a privacy concern; someone can send you an XML file
-   containing an embedded system ID pointing to their machine, and use this to
-   track your IP address when you view the file.</para></listitem>
-  </itemizedlist>
-
-  <para>
-   While it is recommended you obtain the relevant DTDs, install them locally
-   and set up the catalog accordingly, if you absolutely must load DTDs from a
-   network you can enable this in the
-   <guibutton>XML</guibutton>&gt;<guibutton>General</guibutton> pane
-   of the <guimenu>Utilities</guimenu>&gt;<guimenuitem>Global Options</guimenuitem>
-   dialog box.
-  </para>
-
  </sect1>
 
 </chapter>
@@ -145,8 +153,20 @@
  </para>
 
  <para>
-  If a DTD or XML schema is available, it will be used to validate the XML
+  If a DTD <!-- or XML schema --> is available, it will be used to validate the XML
   file; otherwise, only minimal error checking will be performed.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Parse
+  XML</guimenuitem> has the same effect as clicking the parse button in the
+  XML tree window.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Parse
+  XML on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly
+  parsing, for the current buffer only.
  </para>
 
 </chapter>
@@ -195,12 +215,6 @@
 
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
-  to Matching Tag</guimenuitem> moves the caret to the corresponding opening or
-  closing tag.
- </para>
-
- <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
   to Previous Tag</guimenuitem> moves the caret to start of the previous
   tag.
  </para>
@@ -209,6 +223,12 @@
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
   to Next Tag</guimenuitem> moves the caret to start of the next
   tag.
+ </para>
+
+ <para>
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Go
+  to Matching Tag</guimenuitem> moves the caret to the corresponding opening or
+  closing tag.
  </para>
 
 </chapter>
@@ -225,7 +245,7 @@
 
  <para>
   This window lists elements that may be inserted at the caret position,
-  all declared entities, and IDs (element attributes
+  all declared entities, and all IDs (element attributes
   with a value type of <property>ID</property>).
  </para>
 
@@ -236,6 +256,10 @@
   <guimenuitem>Edit Tag</guimenuitem> dialog box. Clicking an element
   with the right mouse button will insert it in the text area, but the
   <guimenuitem>Edit Tag</guimenuitem> dialog box will not be shown.
+ </para>
+
+ <para>
+  Clicking an entity will insert it into the buffer.
  </para>
 
  <para>
@@ -372,18 +396,6 @@
  </para>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Characters
-  to Entities</guimenuitem> converts special characters to entities in the
-  current selection.
- </para>
-
- <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Entities
-  to Characters</guimenuitem> converts entities to characters in the
-  current selection.
- </para>
-
- <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Close
   Last Open Tag</guimenuitem> inserts a closing tag for the last opened tag.
  </para>
@@ -397,20 +409,21 @@
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Split
   Tag</guimenuitem> splits the current tag at the cursor, and creates a new tag at the same
-  level. This is useful when editing HTML, Docbook or similar documents for inserting 
-  many &lt;p&gt; or &lt;para&gt; tags. Works hard to match the current indenting style.
+  level. This is useful when editing HTML, DocBook or similar documents, for inserting 
+  many &lt;p&gt; or &lt;para&gt; tags. This command tries
+  to match the current indenting style.
  </para>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Parse
-  XML</guimenuitem> has the same effect as clicking the parse button in the
-  XML tree window.
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Characters
+  to Entities</guimenuitem> converts special characters to entities in the
+  current selection.
  </para>
 
  <para>
-  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Parse
-  XML on Keystroke</guimenuitem> is a checkbox menu item that toggles on-the-fly
-  parsing, for the current buffer only.
+  <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Entities
+  to Characters</guimenuitem> converts entities to characters in the
+  current selection.
  </para>
 
 </chapter>
@@ -454,7 +467,7 @@
   property file:
  </para>
 
- <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xml.XmlPlugin 0.6</programlisting>
+ <programlisting>plugin.MyPlugin.depend.<replaceable>n</replaceable>=plugin xml.XmlPlugin 0.9</programlisting>
 
  <para>
   Note that you must replace <replaceable>n</replaceable> with the
@@ -477,6 +490,16 @@
   jEdit 4.1pre2 and the ErrorList plugin 1.2.</para>
 
   <itemizedlist>
+   <listitem><para>The DTD resolver has been improved. It can now automatically
+   download DTDs from the network (after prompting the user) and cache them in the
+   <filename>dtds</filename> subdirectory of the jEdit settings directory.
+   </para>
+   <para>
+   Cached DTDs are consulted before the list of imported catalogs. The DTD cache can
+   be cleared with the
+   <guimenu>Plugins</guimenu>&gt;<guisubmenu>XML</guisubmenu>&gt;<guimenuitem>Clear
+   DTD Cache</guimenuitem> command.
+   </para></listitem>
    <listitem><para><guimenuitem>Complete Element or Entity</guimenuitem> command
    lets you show a completion popup at any time.</para></listitem>
    <listitem><para><guimenuitem>Split Tag</guimenuitem> command

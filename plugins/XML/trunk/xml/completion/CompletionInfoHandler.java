@@ -70,9 +70,9 @@ public class CompletionInfoHandler extends DefaultHandler
 			return CatalogManager.resolve(
 				loc.getSystemId(),publicId,systemId);
 		}
-		catch(IOException io)
+		catch(Exception e)
 		{
-			throw new SAXException(io);
+			throw new SAXException(e);
 		}
 	} //}}}
 

@@ -90,7 +90,9 @@ xml-menu=xml-parse \
 	xml-split-tag \
 	- \
 	xml-chars-to-entities \
-	xml-entities-to-chars
+	xml-entities-to-chars \
+	- \
+	xml-clear-cache
 xml-menu.label=XML
 xml-parse.label=Parse XML Buffer
 xml-keystroke-parse.label=Parse XML on Keystroke
@@ -106,6 +108,7 @@ xml-remove-tags.label=Remove All Tags
 xml-split-tag.label=Split Tag
 xml-chars-to-entities.label=Characters to Entities
 xml-entities-to-chars.label=Entities to Characters
+xml-clear-cache.label=Clear DTD Cache
 
 # Actions not in menu bar
 xml-tree-toggle=XML Tree Toggle
@@ -192,12 +195,7 @@ options.xml.complete.complete-delay=After < or &, wait (seconds):
 options.xml.complete.close-complete=Insert closing tag when "</" is typed
 options.xml.complete.close-complete-open=Insert closing tag when opening tag is typed
 
-options.xml.catalog.label=Catalog
-options.xml.catalog.caption=Catalog for resolving DTDs:
-options.xml.catalog.type=Type
-options.xml.catalog.id=ID
-options.xml.catalog.uri=URI
-options.xml.catalog.system=System ID
-options.xml.catalog.public=Public ID
-options.xml.catalog.add=Add
-options.xml.catalog.remove=Remove
+options.xml.catalogs.label=Catalogs
+options.xml.catalogs.caption=Catalog files to import:
+options.xml.catalogs.add=Add
+options.xml.catalogs.remove=Remove
