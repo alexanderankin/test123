@@ -1,0 +1,62 @@
+plugin.javainsight.JavaInsightPlugin.name=JavaInsight
+plugin.javainsight.JavaInsightPlugin.author=André Kaplan, Dirk Möbius, Kevin A. Burton
+plugin.javainsight.JavaInsightPlugin.version=0.6
+plugin.javainsight.JavaInsightPlugin.docs=users-guide.html
+plugin.javainsight.JavaInsightPlugin.activate=defer
+
+# Dependencies
+plugin.javainsight.JavaInsightPlugin.depend.0=jedit 04.02.99.00
+plugin.javainsight.JavaInsightPlugin.depend.1=plugin jakartacommons.JakartaCommonsPlugin 0.2
+plugin.javainsight.JavaInsightPlugin.jars=jode.jar
+
+# Menu bar properties
+plugin.javainsight.JavaInsightPlugin.menu=javainsight
+javainsight.label=Show JavaInsight Window
+
+# Dockable window title
+javainsight.title=JavaInsight
+
+# Classpath tree
+javainsight.tree.view=view-packages
+javainsight.tree.viewIsFlat=false
+
+# Popup menu
+javainsight.tree.menu.decompile.label=Decompile with Jode
+javainsight.tree.menu.add-archives.label=Add Archives...
+javainsight.tree.menu.view-classpath.label=Classpath View
+javainsight.tree.menu.view-packages.label=Package View
+javainsight.tree.menu.view-flat.label=Flat Packages
+
+# Option pane
+plugin.javainsight.JavaInsightPlugin.option-pane=javainsight
+options.javainsight.code = new javainsight.JavaInsightOptionPane();
+options.javainsight.title=JavaInsight
+options.javainsight.label=JavaInsight
+options.javainsight.decompiler=Decompiler Options
+options.javainsight.general=Plugin Options
+
+# Error and confirmation messages
+javainsight.error.decompile.title=Decompilation Error
+javainsight.error.decompile.message=\
+    An error occured during decompilation of class {0}:\n\
+    The message was: {1}\n\
+    \n\
+    A full trace of the error is in the activity log.\n\
+    See "Utilities->View Activity Log" for details.\n\
+    \n\
+    Please report this to the maintainers of Jode (the\n\
+    decompiler library). Visit http://jode.sf.net for details.
+
+javainsight.confirm.openArchive.title=Non-Standard Archive Name
+javainsight.confirm.openArchive.message=\
+    The file\n\
+    {0}\n\
+    has no JAR/ZIP extension.\n\
+    Open anyway?
+
+# VFS actions
+plugin.javainsight.JavaInsightPlugin.browser-menu=vfs.jode - vfs.class vfs.jasmin
+vfs.class.label=Show bytecode
+vfs.jasmin.label=Show jasmin output
+vfs.jode.label=Decompile with Jode
+

@@ -1,0 +1,587 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+
+<!-- JavaInsight plugin user's guide                      -->
+<!-- (c) 2002 Andre Kaplan, Dirk Moebius                  -->
+<!--                                                      -->
+<!-- jEdit settings: :tabSize=4:indentSize=4:noTabs=true: -->
+
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN"
+  "http://www.oasis-open.org/docbook/xml/4.1.2/docbookx.dtd">
+
+<book>
+
+
+<bookinfo>
+    <title>JavaInsight plugin</title>
+
+    <authorgroup>
+        <author>
+            <firstname>Andr&eacute;</firstname>
+            <surname>Kaplan</surname>
+        </author>
+
+        <author>
+            <firstname>Dirk</firstname>
+            <surname>M&ouml;bius</surname>
+        </author>
+
+        <author>
+            <firstname>Kevin</firstname>
+            <surname>Burton</surname>
+            <othername role="mi">A.</othername>
+        </author>
+    </authorgroup>
+
+    <legalnotice>
+        <title>Legal Notice</title>
+
+        <para>
+        Permission is granted to copy, distribute and/or modify this
+        document under the terms of the GNU Free Documentation License,
+        Version 1.1 or any later version published by the
+        Free Software Foundation; with no
+        <quote>Invariant Sections</quote>,
+        <quote>Front-Cover Texts</quote> or
+        <quote>Back-Cover Texts</quote>,
+        each as defined in the license.
+        A copy of the license can be found in the file
+        <filename>COPYING.DOC.txt</filename> included with jEdit.
+        </para>
+    </legalnotice>
+</bookinfo>
+
+
+<chapter id="introduction">
+    <title>Introduction</title>
+
+    <para>
+    The main purpose of JavaInsight is to view the content of java bytecode
+    (<filename>*.class</filename> files) in a disassembled or decompiled form.
+    </para>
+
+    <para>
+    JavaInsight comes with two external libraries.
+    </para>
+
+    <itemizedlist>
+        <listitem><para>
+        The bytecode disassembling is performed by
+        <emphasis>BCEL</emphasis> (Byte Code Engineering Library) by
+        Markus Dahm <email>markus.dahm@berlin.de</email>.
+        More information about BCEL can be found at
+        <ulink url="http://jakarta.apache.org/bcel">http://jakarta.apache.org/bcel</ulink>.
+        </para></listitem>
+
+        <listitem><para>
+        The decompilation is performed by <emphasis>Jode</emphasis>, a tool written by
+        Jochen Hoenicke <email>jochen@gnu.org</email>.
+        More information about Jode can be found at
+        <ulink url="http://jode.sourceforge.net">http://jode.sourceforge.net</ulink>.
+        </para></listitem>
+    </itemizedlist>
+
+</chapter>
+
+
+<chapter id="actions">
+    <title>Actions</title>
+
+    <simplesect id="class_tree">
+        <title>... in Class Tree</title>
+
+        <itemizedlist>
+            <listitem>Double-click a class to decompile it with Jode.</listitem>
+
+            <listitem>Right-click to show a popup menu with the following actions:
+            <variablelist>
+                <varlistentry>
+                    <term>Decompile with Jode</term>
+
+                    <listitem><para>
+                    Decompiles the currently selected class with Jode. Only shown,
+                    when a class is selected
+                    </para></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>Add Archives...</term>
+
+                    <listitem><para>
+                    Add a JAR or ZIP file archive to the current classpath.
+                    </para></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>Classpath View</term>
+
+                    <listitem><para>
+                    Switches the tree to classpath view.
+                    </para></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>Package View</term>
+
+                    <listitem><para>
+                    Switches the tree to package view.
+                    </para></listitem>
+                </varlistentry>
+
+                <varlistentry>
+                    <term>Flat Packages</term>
+
+                    <listitem><para>
+                    Toggles between flat and hierarchical view of the packages.
+                    </para></listitem>
+                </varlistentry>
+
+            </variablelist>
+            </listitem>
+
+        </itemizedlist>
+
+    </simplesect>
+
+    <simplesect id="file_system_browser">
+        <title>... in File System Browser</title>
+
+        <para>
+        Select a <filename>class</filename> file.
+        In the <guimenu>Plugins</guimenu> menu at the top of the File System Browser,
+        select one of the following entries:
+        </para>
+
+        <variablelist>
+            <varlistentry>
+                <term>Decompile with Jode</term>
+
+                <listitem><para>
+                Decompiles the currently selected file with Jode. The file should
+                be a class file, otherwise you&#39;ll get an error.
+                </para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+                <term>Show bytecode</term>
+
+                <listitem><para>
+                Show bytecode decompiler output from the BCEL library.
+                </para></listitem>
+            </varlistentry>
+
+            <varlistentry>
+                <term>Show Jasmin output</term>
+
+                <listitem><para>
+                Shows Jasmin assembly output for the currently selected file.
+                </para></listitem>
+            </varlistentry>
+
+        </variablelist>
+
+    </simplesect>
+
+</chapter>
+
+
+<chapter id="configuration">
+    <title>Configuration</title>
+
+    <para>
+    To configure JavaInsight, open the Global Options dialog
+    (<guimenu>Utilities&gt;</guimenu>
+     <guimenuitem>Global&nbsp;Options</guimenuitem>) and select the entry
+     <guimenu>Plugins&gt;</guimenu>
+     <guimenuitem>Java&nbsp;Insight</guimenuitem>.
+    </para>
+
+    <para>
+    The following options can be set:
+    </para>
+
+    <variablelist>
+        <varlistentry>
+            <term><emphasis>Use &quot;pretty&quot; names for local variables.</emphasis></term>
+
+            <listitem><para>
+            Jode tries to prettify the local variable names.
+            This option is on by default.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term><emphasis>Remove locals, that are used only one time.</emphasis></term>
+
+            <listitem><para>
+            Such local variables are defined, but apparently never used. Since they
+            only clutter up the code, they can be removed without problems.
+            Note, that such local variables are only produced by crappy Java
+            compilers; good compilers strip them out anyway.
+            This option is off by default.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term><emphasis>Decrypt encrypted strings.</emphasis></term>
+
+            <listitem><para>
+            This option is meant for obfuscators that &quot;encrypt&quot; strings.
+            Jode tries to recognize encrypted strings and to decrypt them automatically.
+            If activated, Jode searches for expressions like
+            <programlisting>methodX(&quot;abc&quot;)</programlisting>
+            and assumes that <function>methodX</function>
+            is a decryption routine and <literal>&quot;abc&quot;</literal>
+            is an encrypted string.
+            It is checked whether <function>methodX</function> is
+            <token>static</token>, <token>final</token> and returns a
+            <token>String</token>.
+            If this is the case, Jode tries to invoke <function>methodX</function> with
+            the constant argument <literal>&quot;abc&quot;</literal>.
+            If successful, Jode replaces the method call with the resulting string.
+            This option is on by default, because it shouldn&#39;t do anything
+            harmful.</para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term><emphasis>Generate imports for packages with more than
+            <varname>nnn</varname> classes.</emphasis></term>
+
+            <listitem><para>
+            Set this to 0, if you don&#39;t want to generate imports for whole packages,
+            such as:
+            <programlisting>import&nbsp;java.awt.*;</programlisting>
+            The default is 0.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term><emphasis>Generate imports for classes used more than
+            <varname>nnn</varname> times.</emphasis></term>
+
+            <listitem><para>
+            Set this to 0, if you don&#39;t want to generate imports for classes, rather
+            use full qualified class names always.
+            The default is 1.
+            </para></listitem>
+        </varlistentry>
+
+        <varlistentry>
+            <term><emphasis>Set status of buffer to &quot;saved&quot; after
+            decompile.</emphasis></term>
+
+            <listitem><para>
+            Use this if you want to get rid of &quot;Save changes?&quot; messages when you
+            close the decompilation buffer.
+            </para></listitem>
+        </varlistentry>
+
+    </variablelist>
+
+</chapter>
+
+
+<chapter id="license">
+    <title>License</title>
+
+    <para>
+    The source code is distributed under the GPL.
+    Please see
+    <ulink url="http://www.fsf.org/copyleft/gpl.html">
+        http://www.fsf.org/copyleft/gpl.html
+    </ulink>
+    </para>
+</chapter>
+
+
+<chapter id="feedback">
+    <title>Feedback</title>
+
+    <para>
+    The preferred way to send bug reports is to use the
+    Sourceforge Bug Tracker at
+    <ulink url="http://sourceforge.net/bugs/?group_id=588">
+        http://sourceforge.net/bugs/?group_id=588
+    </ulink>
+    </para>
+
+    <para>You can also write to:</para>
+    <itemizedlist>
+        <listitem>
+            Andr&eacute; Kaplan <email>akaplan@jedit.org</email>;
+        </listitem>
+
+        <listitem>
+            Dirk M&ouml;bius <email>dmoebius@gmx.net</email>;
+        </listitem>
+
+        <listitem>
+            jEdit-users mailing-list
+            <email>jedit-users@lists.sourceforge.net</email>;
+        </listitem>
+
+        <listitem>
+            jEdit-devel mailing-list
+            <email>jedit-devel@lists.sourceforge.net</email>.
+        </listitem>
+    </itemizedlist>
+</chapter>
+
+
+<chapter id="changelog">
+    <title>Changelog</title>
+
+    <para>
+    <variablelist>
+    <varlistentry>
+        <term>VERSION 0.6 (Dirk Möbius)</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Updated to jEdit 4.2 API
+            </listitem>
+            <listitem>
+                <para>
+                Updated to new Jode version 1.90-CVS (anonymous checkout from
+                cvs.sf.net/cvsroot/jode; the latest change to Jode is dated
+                2004/08/06).
+                </para>
+                <para>
+                This fixes the notorious bug with the exception text "order
+                failed: not x &lt; x &lt;= x" that occurred when decompiling a
+                class that was compiled with JDK 1.4. In fact, JavaInsight
+                should be able to decompile most JDK 1.4 classes now, and some
+                of the JDK 1.5 classes as well.
+                </para>
+            </listitem>
+            <listitem>
+                Bugfix #458017: JavaInsight was not able to view classes from
+                the default package.
+            </listitem>
+            <listitem>
+                Requires jEdit 4.2final or higher, JakartaCommons 0.2 or higher.
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.5.1</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Moved BCEL library to the JakartaCommons plugin.
+            </listitem>
+            <listitem>
+                JavaInsight now depends on the JakartaCommons plugin.
+            </listitem>
+            <listitem>
+                Requires jEdit 4.0pre3 or higher, JakartaCommons 0.2 or higher.
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.5</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Updated to new jEdit 4.0 dockable API (André Kaplan)
+            </listitem>
+            <listitem>
+                Updated to new Jode version 1.90-CVS (Dirk Möbius)
+            </listitem>
+            <listitem>
+                Updated to BCEL 5.0 (André Kaplan)
+            </listitem>
+            <listitem>
+                Requires jEdit 4.0pre3 or higher
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.4.2</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Bugfix: minor fix in the bytecode virtual file systems that
+                caused problems when used with BufferList
+            </listitem>
+            <listitem>
+                Requires jEdit 3.1final or higher
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.4.1</term>
+        <listitem><itemizedlist>
+            <listitem>
+                BCEL.jar updated, no longer includes gnu.regexp package which
+                caused many problems
+            </listitem>
+            <listitem>
+                Doc updates
+            </listitem>
+            <listitem>
+                Requires jEdit 3.1final or higher
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.4</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Disassemble or decompile with BCEL (André Kaplan)
+            </listitem>
+            <listitem>
+                New Jasmin, Class and Jode virtual file systems (André Kaplan)
+            </listitem>
+            <listitem>
+                Only one tree, change view with right-click popup menu (Dirk Möbius)
+            </listitem>
+            <listitem>
+                Ability to add jar/zip archives to classpath tree (Dirk Möbius)
+            </listitem>
+            <listitem>
+                View by individual package hierarchy, ie. org,net,com etc. (Dirk Möbius)
+            </listitem>
+            <listitem>
+                May now choose between decompilation to a file or to a new
+                jEdit buffer (Dirk Möbius)
+            </listitem>
+            <listitem>
+                jEdit buffer is named correctly (Dirk Möbius)
+            </listitem>
+            <listitem>
+                Better support for DecompileClassMessage (Dirk Möbius)
+            </listitem>
+            <listitem>
+                Moved package buildtools to javainsight.buildtools because of
+                name clashes with the JCompiler plugin (Dirk Möbius)
+            </listitem>
+            <listitem>
+                Bugfix: Help file didn't show up (Dirk Möbius)
+            </listitem>
+            <listitem>
+                Bugfix: dependency error in makefile.jmk (André Kaplan)
+            </listitem>
+            <listitem>
+                Bugfix: Jode options (--pretty, --decrypt, --onetime) weren't
+                used correctly; worked only correct every second time (Dirk Möbius)
+            </listitem>
+            <listitem>
+                Requires jEdit 3.1pre3 or higher, JDK 1.1 or higher
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.3 (Dirk Möbius)</term>
+        <listitem><itemizedlist>
+            <listitem>
+                New option pane for setting some decompiler options
+            </listitem>
+            <listitem>
+                Decompiles directly to a new jEdit buffer, not to a temp file
+            </listitem>
+            <listitem>
+                Can now decompile entries from the classpath browser
+            </listitem>
+            <listitem>
+                Entries in the classpath browser are now sorted, too
+            </listitem>
+            <listitem>
+                On JDK 1.2 or higher, show boot classpath and user classpath
+            </listitem>
+            <listitem>
+                Show jode output (it's not much... just in case)
+            </listitem>
+            <listitem>
+                Better error reporting
+            </listitem>
+            <listitem>
+                Bugfix: duplicate entries in tree, if the same lib appeared
+                twice with different case in classpath (affected Windows
+                platforms only)
+            </listitem>
+            <listitem>
+                Switched to new jEdit action API
+            </listitem>
+            <listitem>
+                Improved makefile
+            </listitem>
+            <listitem>
+                Reformatted code
+            </listitem>
+            <listitem>
+                Requires jEdit 3.0final or higher, JDK 1.1 or higher
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.2.1 (André Kaplan)</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Changes unknown
+            </listitem>
+            <listitem>
+                Requires jEdit 2.6pre3 or higher, JDK 1.1 or higher
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.2 (André Kaplan)</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Moved from package net.sourceforge.jedit to javainsight
+            </listitem>
+            <listitem>
+                Integrated buildtools library
+            </listitem>
+            <listitem>
+                Other changes unknown
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.1</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Changes unknown
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.0.3 (Kevin A. Burton)</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Event support to the classpath widget so you know when classes
+                are selected
+            </listitem>
+            <listitem>
+                Added the ability to graphically view the classpath with a JTree
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+
+    <varlistentry>
+        <term>VERSION 0.0.2 (Kevin A. Burton)</term>
+        <listitem><itemizedlist>
+            <listitem>
+                Ability to except a message on EditBus and decompile a java class.
+            </listitem>
+            <listitem>
+                Bugfix: not all classes are displayed within a package.
+                See javax.mail and mail.jar. Only a small subset of the classes
+                are shown. This doesn't work at all for things like java.awt.
+            </listitem>
+        </itemizedlist></listitem>
+    </varlistentry>
+    </variablelist>
+    </para>
+</chapter>
+
+
+</book>
+
