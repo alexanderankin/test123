@@ -1,6 +1,6 @@
 /*
  * ExuberantCTagsParser.java
- * Copyright (c) 2001 Kenrick Drew
+ * Copyright (c) 2001, 2002 Kenrick Drew
  * kdrew@earthlink.net
  *
  * This file is part of TagsPlugin
@@ -92,6 +92,8 @@ class ExuberantCTagsParser extends GenericTagsParser {
     /*** Get the search string ***/
     String tagDefinitionSearchString = null;
     
+    Log.log(Log.DEBUG, this, "----------------------------- Creating tag line");
+    
     // get search string
     if (tagLine.lastIndexOf(";\"") == -1)    // --format=1
       tagDefinitionSearchString = st.nextToken("");
@@ -123,9 +125,9 @@ class ExuberantCTagsParser extends GenericTagsParser {
     String origTagDefinitionSearchString = null;
     if (!isNumber && tagDefinitionSearchString != null) 
     {
-      origTagDefinitionSearchString = 
-                       tagDefinitionSearchString.substring(2,
-                                       tagDefinitionSearchString.length() - 2);
+      origTagDefinitionSearchString = removeUnwantedChars(
+                            tagDefinitionSearchString.substring(2,
+                                       tagDefinitionSearchString.length() - 2));
       tagDefinitionSearchString = 
                               massageSearchString(tagDefinitionSearchString);
     }
