@@ -60,8 +60,9 @@ public class TemplateDir extends TemplateFile
 		File f;
 		this.templateFiles = new Vector();
 		try {
-			if (backupFilter == null)
-				createBackupFilter();
+			// Make sure we always have an up to date backup filter
+			createBackupFilter();
+			
 			String[] files = this.templateFile.list();
 			for (int i = 0; i < files.length; i++) {
 				f = new File(this.templateFile, files[i]);
@@ -85,6 +86,9 @@ public class TemplateDir extends TemplateFile
 		String exp = jEdit.getProperty("backup.prefix") +
 				"\\S+" +
 				jEdit.getProperty("backup.suffix");		// RE for jEdit backups
+		if (exp.equals("\\S+")) {
+			exp = "";
+		}
 		backupFilter = new RE(exp,RE.REG_ICASE);
 	}
 	
@@ -154,6 +158,10 @@ public class TemplateDir extends TemplateFile
 	/*
 	 * Change Log:
 	 * $Log$
+	 * Revision 1.4  2002/08/13 14:47:31  sjakob
+	 * BUG FIX: If backup filename prefix and suffix were both blank, the regular expression used to
+	 * filter backup files would filter all files.
+	 *
 	 * Revision 1.3  2002/05/07 04:08:33  sjakob
 	 * BUG FIX: Fixed problem where template menu items stopped working
 	 * when we started using relative, rather than absolute, file paths.
