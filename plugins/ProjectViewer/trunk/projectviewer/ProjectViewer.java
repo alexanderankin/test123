@@ -83,6 +83,7 @@ import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.msg.ViewUpdate;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 import org.gjt.sp.jedit.msg.PluginUpdate;
+import org.gjt.sp.jedit.msg.EditorExiting;
 import org.gjt.sp.jedit.msg.EditorExitRequested;
 
 import errorlist.ErrorSource;
@@ -1031,10 +1032,12 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		if (msg instanceof ViewUpdate) {
 			handleViewUpdateMessage((ViewUpdate) msg);
 		} else if (treeRoot != null && treeRoot.isProject()) {
-			if (msg instanceof EditorExitRequested) {
-				handleEditorExitRequestedMessage((EditorExitRequested) msg);
-			} else if (msg instanceof BufferUpdate) {
+			if (msg instanceof BufferUpdate) {
 				handleBufferUpdateMessage((BufferUpdate) msg);
+			} else if (msg instanceof EditorExitRequested) {
+				handleEditorExitRequestedMessage((EditorExitRequested) msg);
+			} else if (msg instanceof EditorExiting) {
+				handleEditorExitingMessage((EditorExiting) msg);
 			} else if (config.isErrorListAvailable()) {
 				new Helper().handleErrorListMessage(msg);
 			}
@@ -1085,10 +1088,20 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 		// Editor is exiting, save info about current project
 		ProjectViewer active = (ProjectViewer) viewers.get(eer.getView());
 		if (active == this || active == null || active.treeRoot != treeRoot) {
-			closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
 			config.setLastProject(((VPTProject)treeRoot).getName());
 		}
 	}//}}}
+
+	//{{{ -handleEditorExitingMessage(EditorExiting) : void
+	private void handleEditorExitingMessage(EditorExiting ee) {
+		closeProject((VPTProject)treeRoot, false, config.getRememberOpen());
+		for (Iterator i = viewers.values().iterator(); i.hasNext(); ) {
+			ProjectViewer v = (ProjectViewer) i.next();
+			if (v.treeRoot == treeRoot) {
+				v.treeRoot = null;
+			}
+		}
+	} //}}}
 
 	//{{{ -handleBufferUpdateMessage(BufferUpdate) : void
 	/** Handles a BufferUpdate EditBus message.
@@ -1481,14 +1494,14 @@ public final class ProjectViewer extends JPanel implements EBComponent {
 
 	} //}}}
 
-	//{{{ -class _Helper_
+	//{{{ -class Helper
 	/**
 	 *	Class to hold methods that require classes that may not be available,
 	 *	so that PV behaves well when called from a BeanShell script.
 	 */
 	private class Helper {
 
-		//{{{ +_handleMessage(EBMessage)_ : void
+		//{{{ +handleErrorListMessage(EBMessage) : void
 		public void handleErrorListMessage(EBMessage msg) {
 			if (msg instanceof ErrorSourceUpdate) {
 				handleErrorSourceUpdateMessage((ErrorSourceUpdate) msg);
