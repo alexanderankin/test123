@@ -5,7 +5,7 @@
 #Core plugin properties
 plugin.jimporter.JImporterPlugin.name=JImporter
 plugin.jimporter.JImporterPlugin.author=Matthew Flower
-plugin.jimporter.JImporterPlugin.version=0.3.3
+plugin.jimporter.JImporterPlugin.version=0.4.0
 plugin.jimporter.JImporterPlugin.docs=index.html
 
 #Dependencies
