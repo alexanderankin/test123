@@ -628,7 +628,7 @@ implements EBComponent, Output, DefaultFocusComponent
 
 			shell.printPrompt(this,shellState);
 			cmdStart = text.getDocument().getLength();
-			print(null,input);
+			writeAttrs(null,input);
 			text.setInputStart(cmdStart);
 			text.setCaretPosition(cmdStart + offset);
 		}
