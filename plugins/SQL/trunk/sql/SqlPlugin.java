@@ -95,6 +95,8 @@ public class SqlPlugin extends EBPlugin
 
     registerJdbcClassPath();
 
+    EditBus.addToBus( new ResultSetWindow.BufferListener() );
+
     SqlUtils.init();
   }
 

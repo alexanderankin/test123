@@ -53,6 +53,7 @@ sql.options.editServerBtn.label=Edit
 sql.options.recordSetView.label=Record Set dockable
 sql.options.maxRecs2Show.label=Max no. of records to show
 sql.options.autoresizeResult.label=Autoresize
+sql.options.closeWithBuffer.label=Close with buffer
 
 sql.options.common.label=Common
 sql.options.popupSuccessfulEmptyUpdateMessages.label=Popup messages on successful 'empty' updates
