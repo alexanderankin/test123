@@ -10,37 +10,29 @@
 	<UI>
 		<CAPTION LABEL="Application settings">
 
-		<CHOICE LABEL="Run" VARNAME="run">
-			<OPTION LABEL="JAR file" VALUE="jar" />
-			<OPTION LABEL="Main class" VALUE="class" />
-		</CHOICE>
-
-		<ENTRY LABEL="JAR file" VARNAME="jar" />
-		<ENTRY LABEL="Main class" VARNAME="clazz" />
+		<ENTRY LABEL="Main class or JAR file" VARNAME="jar"
+			EVAL="MiscUtilities.getFileNameNoExtension(buffer.getPath())"
+			/>
 		<ENTRY LABEL="Application parameters" VARNAME="args" />
 
 		</CAPTION>
 
-		<CAPTION LABEL="Standard VM settings">
+		<CAPTION LABEL="VM settings">
 
-		<CHOICE LABEL="Virtual machine" VARNAME="vm" DEFAULT="client">
+		<!-- <CHOICE LABEL="Virtual machine" VARNAME="vm" DEFAULT="client">
 			<OPTION LABEL="Client HotSpot" VALUE="client" />
 			<OPTION LABEL="Server HotSpot" VALUE="server" />
 			<OPTION LABEL="Classic" VALUE="classic" />
-		</CHOICE>
+		</CHOICE> -->
 
 		<ENTRY LABEL="Class path" VARNAME="classpath"
-			EVAL="System.getProperty(&quot;java.class.path&quot;);" />
+			EVAL="MiscUtilities.getParentOfPath(buffer.getPath())" />
 
-		<TOGGLE LABEL="Verbose class loading" VARNAME="verbose_class" />
+		<!-- <TOGGLE LABEL="Verbose class loading" VARNAME="verbose_class" />
 		<TOGGLE LABEL="Verbose garbage collection" VARNAME="verbose_gc" />
-		<TOGGLE LABEL="Verbose JNI calls" VARNAME="verbose_jni" />
+		<TOGGLE LABEL="Verbose JNI calls" VARNAME="verbose_jni" /> -->
 
-		</CAPTION>
-
-		<CAPTION LABEL="Non-standard VM settings">
-
-		<CHOICE LABEL="Virtual machine type" VARNAME="vm_X" DEFAULT="mixed">
+		<!-- <CHOICE LABEL="Virtual machine type" VARNAME="vm_X" DEFAULT="mixed">
 			<OPTION LABEL="Mixed mode" VALUE="mixed" />
 			<OPTION LABEL="Interpreter only" VALUE="interp" />
 		</CHOICE>
@@ -60,7 +52,7 @@
 		<TOGGLE LABEL="Output profiling data" VARNAME="prof" />
 		<TOGGLE LABEL="Strict class format checks (-Xfuture)"
 			VARNAME="future" />
-		<TOGGLE LABEL="Reduce OS signal use (-Xrs)" VARNAME="rs" />
+		<TOGGLE LABEL="Reduce OS signal use (-Xrs)" VARNAME="rs" /> -->
 
 		<ENTRY LABEL="Initial heap size (Mb)" VARNAME="ms" DEFAULT="32" />
 		<ENTRY LABEL="Maximum heap size (Mb)" VARNAME="mx" DEFAULT="32" />
@@ -76,12 +68,12 @@
 			buf = new StringBuffer();
 			buf.append("java");
 
-			if(vm.equals("client"))
+			/* if(vm.equals("client"))
 				; // default
 			else if(vm.equals("server"))
 				buf.append(" -server");
 			else if(vm.equals("classic"))
-				buf.append(" -classic");
+				buf.append(" -classic"); */
 
 			if(!classpath.equals(""))
 			{
@@ -90,7 +82,7 @@
 				buf.append('"');
 			}
 
-			if(verbose_class)
+			/* if(verbose_class)
 				buf.append(" -verbose:class");
 
 			if(verbose_gc)
@@ -129,7 +121,7 @@
 				buf.append(" -Xfuture");
 
 			if(rs)
-				buf.append(" -Xrs");
+				buf.append(" -Xrs"); */
 
 			if(!ms.equals(""))
 			{
@@ -158,16 +150,16 @@
 				buf.append(extra);
 			}
 
-			if(run.equals("jar"))
+			if(jar.endsWith(".jar"))
 			{
 				buf.append(" -jar \"");
 				buf.append(jar);
 				buf.append('"');
 			}
-			else if(run.equals("class"))
+			else
 			{
 				buf.append(' ');
-				buf.append(clazz);
+				buf.append(jar);
 			}
 
 			if(!args.equals(""))

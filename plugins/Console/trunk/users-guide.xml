@@ -319,14 +319,26 @@
 </para>
 
 <itemizedlist>
- <listitem><para><varname>${f}</varname> - the current buffer's path name.
+ <listitem><para><varname>${c}</varname> - if the current buffer is a Java file,
+ the current buffer's fully qualified class name, including the package (if the
+ buffer contains a <userinput>package</userinput> statement).
  </para></listitem>
  <listitem><para><varname>${d}</varname> - the current buffer's directory.
  </para></listitem>
- <listitem><para><varname>${n}</varname> - the current buffer's name, without
- the extension. For example, if the current buffer's path is
- <filename>/home/slava/src/HelloWorld.java</filename>,
- <varname>${n}</varname> will expand to <filename>HelloWorld</filename>.
+ <listitem><para><varname>${f}</varname> - the current buffer's path name.
+ </para></listitem>
+ <listitem><para><varname>${n}</varname> - the current buffer's name.
+ </para></listitem>
+ <listitem><para><varname>${pkg}</varname> - if the current buffer is a Java file,
+ the current buffer's package name (or if the
+ buffer doesn't contain a <userinput>package</userinput> statement, an empty
+ string).
+ </para></listitem>
+ <listitem><para><varname>${root}</varname> - the package root of the current
+ buffer. For example, if the current buffer's fully qualified class name is
+ <classname>org.gjt.sp.jedit.jEdit</classname> and it is contained in the
+ <filename>/home/slava/jEdit/org/gjt/sp/jedit/</filename> directory, this will
+ return <filename>/home/slava/jEdit/</filename>.
  </para></listitem>
  <listitem><para><varname>${JEDIT_HOME}</varname> - the full path of the
  directory where jEdit is installed.</para></listitem>
@@ -797,6 +809,17 @@ the command output will be shown in a new buffer.</para></listitem>
    requires jEdit 4.0pre5 and the ErrorList plugin 1.2.</para>
 
    <itemizedlist>
+    <listitem><para>
+     Added some new pre-defined variables to the system shell -
+     <varname>${c}</varname>, <varname>${pkg}</varname> and
+     <varname>${root}</varname>. See <xref linkend="env-vars"/> for information
+     about the new variables.
+    </para></listitem>
+    <listitem><para>
+     The behavior of the <varname>${n}</varname> built-in has changed; it now
+     returns the buffer's name, without stripping the extension like it did
+     previously.
+    </para></listitem>
     <listitem><para>
      In a commando file, you can now specify an edit mode of a buffer used for
      command output with the <literal>BUFFER_MODE</literal> attribute of the

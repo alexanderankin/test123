@@ -16,7 +16,7 @@
 		<CAPTION LABEL="Paths">
 
 		<ENTRY LABEL="Class path" VARNAME="classpath"
-			EVAL="System.getProperty(&quot;java.class.path&quot;);" />
+			EVAL="MiscUtilities.getParentOfPath(buffer.getPath())" />
 		<ENTRY LABEL="Output directory" VARNAME="outputpath" />
 
 		</CAPTION>
@@ -29,7 +29,7 @@
 		<TOGGLE LABEL="Show deprecation" VARNAME="deprecation" DEFAULT="TRUE" />
 		<TOGGLE LABEL="Pedantic warnings" VARNAME="pedantic" />
 		<TOGGLE LABEL="Treat cautions as errors" VARNAME="cautions" />
-		<TOGGLE LABEL="Verbose compile messages" VARNAME="verbose" />
+		<!-- <TOGGLE LABEL="Verbose compile messages" VARNAME="verbose" /> -->
 		<ENTRY LABEL="Source file encoding" VARNAME="encoding"
 			EVAL="buffer.getProperty(Buffer.ENCODING);" />
 
@@ -69,8 +69,8 @@
 			if(pedantic)
 				buf.append(" +P");
 
-			if(verbose)
-				buf.append(" -verbose");
+			/* if(verbose)
+				buf.append(" -verbose"); */
 
 			if(!encoding.equals(""))
 			{

@@ -292,8 +292,7 @@ public class CommandoDialog extends EnhancedDialog
 
 		Command getCommand()
 		{
-			Object command = BeanShell.eval(view,nameSpace,
-				code,false);
+			Object command = BeanShell.eval(view,nameSpace,code);
 			if(command == null)
 				return null;
 			return new Command(confirm,toBuffer,mode,
@@ -589,7 +588,7 @@ public class CommandoDialog extends EnhancedDialog
 
 			if(eval != null)
 			{
-				Object obj = BeanShell.eval(view,eval,false);
+				Object obj = BeanShell.eval(view,nameSpace,eval);
 				if(Boolean.TRUE.equals(obj))
 					setSelected(true);
 				else
@@ -656,7 +655,7 @@ public class CommandoDialog extends EnhancedDialog
 
 			if(eval != null)
 			{
-				Object value = BeanShell.eval(view,eval,false);
+				Object value = BeanShell.eval(view,nameSpace,eval);
 				if(value != null)
 					setText(value.toString());
 			}
@@ -734,7 +733,7 @@ public class CommandoDialog extends EnhancedDialog
 			if(eval != null)
 			{
 				defaultValue = String.valueOf(BeanShell.eval(
-					view,eval,false));
+					view,nameSpace,eval));
 			}
 			else
 			{

@@ -240,7 +240,7 @@ console.error.generic.message=$3
 
 ### Commando
 
-commando.default=diff java javac jmk openjade_HTML openjade_PDF
+commando.default=diff java javac jikes jmk openjade_HTML openjade_PDF
 
 commando.toolbar.enabled=false
 

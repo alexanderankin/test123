@@ -4,6 +4,7 @@
  * :folding=explicit:collapseFolds=1:
  *
  * Copyright (C) 1999, 2000, 2001, 2002 Slava Pestov
+ * Portions copyright (C) 1999, 2000 Kevin A. Burton
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -276,6 +277,96 @@ public class ConsolePlugin extends EBPlugin
 
 			command.invoke(view);
 		}
+	} //}}}
+
+	//{{{ getPackageName() method
+	/**
+	 * A utility method that returns the name of the package containing
+	 * the current buffer.
+	 * @param buffer The buffer
+	 */
+	public static String getPackageName(Buffer buffer)
+	{
+		StringReader in = new StringReader(buffer.getText(0,
+			buffer.getLength()));
+
+		try
+		{
+			StreamTokenizer stok = new StreamTokenizer(in);
+
+			// set tokenizer to skip comments
+			stok.slashStarComments(true);
+			stok.slashSlashComments(true);
+
+			while (stok.nextToken() != StreamTokenizer.TT_EOF)
+			{
+				if (stok.sval == null)
+					continue;
+				if (stok.sval.equals("package"))
+				{
+					stok.nextToken();
+					in.close();
+					return stok.sval;
+				}
+				else if (stok.sval.equals("class"))
+				{
+					in.close();
+					return null;
+				}
+			}
+
+			in.close();
+		}
+		catch(IOException io)
+		{
+			// can't happen
+			throw new InternalError();
+		}
+
+		return null;
+	} //}}}
+
+	//{{{ getClassName() method
+	/**
+	 * Returns the name of the specified buffer without the extension,
+	 * appended to the buffer's package name.
+	 * @param buffer The buffer
+	 */
+	public static String getClassName(Buffer buffer)
+	{
+		String pkg = getPackageName(buffer);
+		String clazz = MiscUtilities.getFileNameNoExtension(buffer.getPath());
+		if(pkg == null)
+			return clazz;
+		else
+			return pkg + '.' + clazz;
+	} //}}}
+
+	//{{{ getPackageRoot() method
+	/**
+	 * Returns the directory containing the root of the package of the
+	 * current buffer. For example, if the buffer is located in
+	 * <code>/home/slava/Stuff/example/Example.java</code> and contains a
+	 * <code>package example</code> statement, this method will return
+	 * <code>/home/slava/Stuff</code>.
+	 *
+	 * @param buffer The buffer
+	 */
+	public static String getPackageRoot(Buffer buffer)
+	{
+		String pkg = getPackageName(buffer);
+		String path = MiscUtilities.getParentOfPath(buffer.getPath());
+		if(path.endsWith(File.separator))
+			path = path.substring(0,path.length() - 1);
+
+		if(pkg == null)
+			return path;
+
+		pkg = pkg.replace('.',File.separatorChar);
+		if(path.endsWith(pkg))
+			return path.substring(0,path.length() - pkg.length());
+		else
+			return path;
 	} //}}}
 
 	//{{{ ActionCompare class

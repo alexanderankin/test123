@@ -650,8 +650,8 @@ public abstract class SystemShellBuiltIn
 				BeanShell.runScript(console.getView(),
 					MiscUtilities.constructPath(
 					currentDirectory,
-					(String)args.elementAt(i)),
-					true,false);
+					(String)args.get(i)),null,
+					true);
 			}
 		}
 	} //}}}
