@@ -85,14 +85,38 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 			viewer.getCurrentTree().setSelectionPath(path);
 		}
 
+		VPTNode node = viewer.getSelectedNode();
+		if (node == null) {
+			return;
+		}
+		
 		if (SwingUtilities.isMiddleMouseButton(evt) || isDoubleClick(evt)) {
-			VPTNode node = viewer.getSelectedNode();
 			if(node.canOpen()) {
 				if(node.isOpened()) {
 					node.close();
 				} else {
 					node.open();
 				}
+			}
+			return;
+		}
+		
+		if (SwingUtilities.isLeftMouseButton(evt) && node.isOpened()) {
+			String nodePath;
+			if (node.isFile()) {
+				try {
+					nodePath = ((VPTFile)node).getFile().getCanonicalPath();
+				} catch (IOException ioe) {
+					//shouldn't happen
+					Log.log(Log.ERROR, this, ioe);
+					return;
+				}
+			} else {
+				nodePath = node.getNodePath();
+			}
+			Buffer b = jEdit.getBuffer(nodePath);
+			if (b != null) {
+				viewer.getView().setBuffer(b);
 			}
 		}
 	} //}}}
@@ -136,29 +160,7 @@ public final class VPTSelectionListener implements TreeSelectionListener, MouseL
 	public void valueChanged(TreeSelectionEvent e) {
 		lastClickTarget = null;
 		if (!e.isAddedPath()) return;
-		
-		VPTNode node = (VPTNode) e.getPath().getLastPathComponent();
-		viewer.setStatus(node.toString());
-		
-		if (viewer.getCurrentTree().getSelectionPaths().length == 1 &&
-				node.isOpened()) {
-			String nodePath;
-			if (node.isFile()) {
-				try {
-					nodePath = ((VPTFile)node).getFile().getCanonicalPath();
-				} catch (IOException ioe) {
-					//shouldn't happen
-					Log.log(Log.ERROR, this, ioe);
-					return;
-				}
-			} else {
-				nodePath = node.getNodePath();
-			}
-			Buffer b = jEdit.getBuffer(nodePath);
-			if (b != null) {
-				viewer.getView().setBuffer(b);
-			}
-		}
+		viewer.setStatus(e.getPath().getLastPathComponent().toString());
 	}
 
 	//}}}
