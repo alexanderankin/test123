@@ -62,10 +62,11 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
 //}}} 
 
 //{{{ void errorMsg
-        public void errorMsg(String s)
+        public void errorMsg(String s)      
         {
             GUIUtilities.message(jEdit.getActiveView(), s, new Object[0]);
         }
+
 //}}}
         
 //{{{  reloadTags(ProjectViewer viewer, VPTProject p)  
@@ -131,6 +132,7 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
             {
                 ctags_buff = ctags_bg.loadBuffer(PROJECT_TAGS.toString());
                 viewer.setEnabled(true);
+                //Log.log(Log.DEBUG,this,"JumpEventListener: reload done;");
                 return true;
             }
         }

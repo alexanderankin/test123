@@ -49,13 +49,14 @@ public class Jump
     public void reloadTagsOnProject()
     {
         if (isJumpEnabled() == false) return;
+        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
         JumpPlugin.reloadTagsOnProject();  
     }
     
     public void historyJump()
     {
-        if (isJumpEnabled() == false) return; 
+        if (isJumpEnabled() == false) return;
+        if (JumpPlugin.isListenerAdded == false) JumpPlugin.init();
         JumpPlugin.pja.JumpToPreviousTag();
     }
- 
 }

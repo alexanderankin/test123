@@ -55,9 +55,15 @@ public class JumpPlugin extends EditPlugin
     public static boolean reloadTagsOnProject()
     {  
        if (jump_actions.isJumpEnabled() == false) return false;
-       ProjectViewer pv = ProjectViewer.getViewer(jEdit.getActiveView());
-       VPTProject pr = PVActions.getCurrentProject(jEdit.getActiveView());
-           return (listener.reloadTags(pv,pr));
+       if (ProjectViewer.getViewer(jEdit.getActiveView()) != null) 
+       {
+            
+           ProjectViewer pv = ProjectViewer.getViewer(jEdit.getActiveView());
+           VPTProject pr = PVActions.getCurrentProject(jEdit.getActiveView());
+               return (listener.reloadTags(pv,pr));
+       }
+       
+       return false;
     }
 //}}}
 
