@@ -1,0 +1,60 @@
+Changelog for JImporter
+
+0.4.0
+* Added the concept of import grouping.
+* Implemented the "Sort Imports" menu option.  
+* Added option which will determine if the sorting algorithm cares about character
+case.
+* Added option to sort all import statements any time a class is imported.
+* Before a class is imported, check to make sure the class isn't already in the
+import list.  If it is, tell the user in the status line.  
+* Did some internal cleanup of how option checkboxes are created.  (The code was
+remarkably inelegant before, it is almost palatable now.)
+* Code is now hosted in the JEdit CVS repository on Sourceforge.
+* Rearranged the option dialogs into multiple pages -- the page was getting much
+to long for the global options.
+
+0.3.2 - Announced as beta on JEdit-Users list
+* Add an option to "Automatically Search when importing class at point" to save
+users a few keystrokes.  (Thanks Ken Wootton)
+* Show "<Classname> has been imported" in the status bar after you do an import.
+* When you selection list comes up, automatically highlight and set focus on the
+first item in the list.  This allows you to press enter a second time to do an 
+import.  (Little bit of everyone deserves credit for this one.)
+* Add option to automatically include rt.jar in the search path.  (Thanks to 
+Jigar Patel for the suggestion.)
+* Added option to "Automatically Import if Only One Match Exists".  The dialog
+box won't even show up if you use this option.  (Thanks to Ken Wootton for the
+idea.)
+* An exception was raised if you "Imported class at point" on a line that did not
+have any text on it.  (Fixed)
+* Added a link to the change log from the help screen.
+
+0.3.1 - Unannounced bug fix release
+* Added TODO.txt into the jar - it couldn't be accessed from help because it 
+wasn't being copied into the jar file.
+* Removed the buffered method as an available search method -- it was only there
+because I was testing it, it wasn't ready for prime time.
+
+0.3 - Bug fix release (Beta release only)
+* Moved around some classes into packages to prepare for growth stemming from the
+addition of new features.
+* Fix compatibility problem with JEdit 4.0 (My thanks to Jigar Patel for the bug 
+report)
+
+0.2 - Internal release (Announced as beta to jedit-users list)
+* Implemented architecture to allow the search method to be changed through options.
+* Implemented options dialog from within the menuing system.
+* Wrote help file to accompany the plugin.
+* Lots of bug fixes.
+* Added the concept of a "SearchMethod" so we can add more methods of finding files.
+* Restructured Classpath.java and SearchMethod.java to be better enumerated classes.
+* Made the ESCAPE key close down the JImporter dialog box if you decide you don't
+  want to do an import.
+  
+0.1 - Internal release
+* Implemented "Brute Force" algorithm for searching for fully-qualified classes.
+* Integrated with JCompiler and SpeedJava's classpath to determine what classpath
+  we should be searching.
+  
+
