@@ -76,9 +76,9 @@ public final class ProjectEvent extends EventObject {
 		return addedFiles;
 	} //}}}
 
-	//{{{ getFile() method
+	//{{{ getAddedFile() method
 	/** Returns the added file (null if multiple files or no file(s) added). */
-	public VPTFile getFile() {
+	public VPTFile getAddedFile() {
 		return (added) ? file : null;
 	} //}}}
 

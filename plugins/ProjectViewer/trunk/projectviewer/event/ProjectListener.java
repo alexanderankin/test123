@@ -18,18 +18,20 @@
  */
 package projectviewer.event;
 
+import java.util.EventListener;
+
 /**
  *	A project listener.
  *
  *	@author		Marcelo Vanzin
  *	@version	$Id$
  */
-public interface ProjectListener {
+public interface ProjectListener extends EventListener {
 
 	/**
 	 *	Method called when a single file has been added to a project. The event
 	 *	object will contain a reference to the file, returned by the
-	 *	{@link ProjectEvent#getFile() getAddedFile()} method.
+	 *	{@link ProjectEvent#getAddedFile() getAddedFile()} method.
 	 *
 	 *	@param	pe	The project event.
 	 */
@@ -38,7 +40,7 @@ public interface ProjectListener {
 	/**
 	 *	Method called when several files have been added to a project. The event
 	 *	object will contain the list of files, returned by the
-	 *	{@link ProjectEvent#getFiles() getAddedFiles()} method.
+	 *	{@link ProjectEvent#getAddedFiles() getAddedFiles()} method.
 	 *
 	 *	@param	pe	The project event.
 	 */
