@@ -15,7 +15,7 @@
 
  <copyright>
   <year>1999</year>
-  <year>2004</year>
+  <year>2005</year>
   <holder>Slava Pestov</holder>
  </copyright>
 
@@ -1253,6 +1253,21 @@ plugin.MyPlugin.depend.2=plugin console.ConsolePlugin 3.2</programlisting>
 <appendix id="changes"><title>Change log</title>
 
  <itemizedlist>
+
+ <listitem><para><emphasis role="bold">Version 4.1.1</emphasis>
+   requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>
+
+   <itemizedlist>
+   <listitem><para>Fixed race condition with command output to a buffer that
+   could result in a <classname>NullPointerException</classname>.
+   </para></listitem>
+   <listitem><para>Commando dialog fields are saved, as long as they do not
+   result from a computed evaluation (for example, path names are not saved
+   because they are computed from the current buffer's name).
+   </para></listitem>
+   </itemizedlist>
+
+  </listitem>
 
  <listitem><para><emphasis role="bold">Version 4.1</emphasis>
    requires jEdit 4.2final and the ErrorList plugin 1.3.1.</para>

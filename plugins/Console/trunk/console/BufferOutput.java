@@ -26,6 +26,7 @@ package console;
 import javax.swing.text.AttributeSet;
 import javax.swing.SwingUtilities;
 import java.awt.Color;
+import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 //}}}
@@ -63,7 +64,7 @@ public class BufferOutput implements Output
 	//{{{ commandDone() method
 	public void commandDone()
 	{
-		SwingUtilities.invokeLater(new Runnable()
+		VFSManager.runInAWTThread(new Runnable()
 		{
 			public void run()
 			{

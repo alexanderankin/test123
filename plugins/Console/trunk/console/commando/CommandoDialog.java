@@ -122,7 +122,7 @@ public class CommandoDialog extends EnhancedDialog
 	{
 		updateNameSpace();
 
-		jEdit.setProperty("commando.last-command",command.getName());
+		save();
 
 		Vector commands = new Vector();
 
@@ -249,6 +249,26 @@ public class CommandoDialog extends EnhancedDialog
 		tabs.setSelectedIndex(0);
 	} //}}}
 
+	//{{{ save() method
+	private void save()
+	{
+		jEdit.setProperty("commando.last-command",command.getName());
+
+		try
+		{
+			String[] names = nameSpace.getVariableNames();
+			for(int i = 0; i < names.length; i++)
+			{
+				jEdit.setProperty(command.getPropertyPrefix() + names[i],
+					(String)nameSpace.getVariable(names[i]));
+			}
+		}
+		catch(UtilEvalError e)
+		{
+			Log.log(Log.ERROR,this,e);
+		}
+	} //}}}
+	
 	//{{{ updateNameSpace() method
 	private void updateNameSpace()
 	{

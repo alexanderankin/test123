@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 2001, 2003 Slava Pestov
+ * Copyright (C) 2001, 2005 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -199,6 +199,11 @@ public class CommandoHandler extends HandlerBase
 						tmp.setVariable("label",label);
 					tmp.setVariable("var",varName);
 					tmp.setVariable("options",options);
+
+					defaultValue = jEdit.getProperty(
+						command.getPropertyPrefix()
+						+ varName,defaultValue);
+
 					if(eval != null)
 					{
 						defaultValue =
