@@ -19,9 +19,13 @@ plugin.errorlist.ErrorListPlugin.menu=error-list \
 error-list.label=Error List
 error-overview.label=Error Overview
 error-list-next-error.label=Go to Next Error
+error-list-next-error.icon=ArrowR.png
 error-list-previous-error.label=Go to Previous Error
+error-list-previous-error.icon=ArrowL.png
 error-list-next-error-file.label=Go to Next File With Errors
+error-list-next-error-file.icon=ArrowU.png
 error-list-previous-error-file.label=Go to Previous File With Errors
+error-list-previous-error-file.icon=ArrowD.png
 
 # Option pane
 plugin.errorlist.ErrorListPlugin.option-pane=error-list

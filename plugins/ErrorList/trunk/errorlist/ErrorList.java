@@ -47,7 +47,18 @@ public class ErrorList extends JPanel implements EBComponent,
 		this.view = view;
 
 		setLayout(new BorderLayout());
-		add(BorderLayout.NORTH,status = new JLabel());
+
+		Box toolBar = new Box(BoxLayout.X_AXIS);
+		status = new JLabel();
+		toolBar.add(status);
+		toolBar.add(Box.createGlue());
+		toolBar.add(Box.createHorizontalStrut(6));
+		toolBar.add(GUIUtilities.loadToolButton("error-list-previous-error"));
+		toolBar.add(GUIUtilities.loadToolButton("error-list-next-error"));
+		toolBar.add(Box.createHorizontalStrut(6));
+		toolBar.add(GUIUtilities.loadToolButton("error-list-previous-error-file"));
+		toolBar.add(GUIUtilities.loadToolButton("error-list-next-error-file"));
+		add(BorderLayout.NORTH,toolBar);
 
 		// Can't just use "" since the renderer expects string nodes
 		// to have Error children

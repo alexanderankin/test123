@@ -39,7 +39,8 @@
 
  <para>
   The error reporting API is particularly well-suited to reporting compiler errors
-  and such; plugins that use this API include Console, JCompiler, HTML and XML.
+  and such; plugins that use this API include Console, JCompiler, and
+  SideKick.
   If you would like to use it from your plugin, see <xref linkend="api" />.
  </para>
 
@@ -50,9 +51,7 @@
  <para>
   <guimenu>Plugins</guimenu>&gt;<guisubmenu>Error
   List</guisubmenu>&gt;<guimenuitem>Error List</guimenuitem> displays the error
-  list window. This window is floating by default, but it can be made to
-  dock into the view in the <guibutton>Docking</guibutton> pane of the
-  <guimenuitem>Global Options</guimenuitem> dialog box.
+  list window.
  </para>
 
  <para>
@@ -77,7 +76,7 @@
 <chapter id="highlight"><title>Error highlighting</title>
 
  <para>
-  The ErrorList plugin also highlights errors in-place in the text area with
+  The ErrorList plugin highlights errors in-place in the text area with
   a colored underline. The color depends on the error type; genuine errors
   have a red underline, warnings have a yellow one.
  </para>
@@ -89,8 +88,29 @@
 
  <para>
   Error highlighting can be disabled in the <guibutton>Error List</guibutton> pane
-  of the <guimenuitem>Global Options</guimenuitem> dialog box. The colors of
+  of the <guimenuitem>Plugin Options</guimenuitem> dialog box. The colors of
   the underlines can also be changed in that same option pane.
+ </para>
+
+</chapter>
+
+<chapter id="overview"><title>Error overview</title>
+
+ <para>
+  When a buffer has errors, the ErrorList plugin displays a global overview of
+  all errors in a  vertical bar to the left of the
+  text area's vertical scroll bar. Each error is shown as a thin horizontal
+  line. The color depends on the error type; genuine errors
+  have a red underline, warnings have a yellow one.
+  Clicking on an error will scroll the text area to that location.
+  Hovering the mouse over an error will show a tooltip
+  with the error message.
+ </para>
+
+ <para>
+  The error overview can be disabled in the <guibutton>Error List</guibutton>
+  pane of the <guimenuitem>Plugin Options</guimenuitem> dialog box. The colors
+  of the highlights can also be changed in that same option pane.
  </para>
 
 </chapter>
@@ -179,11 +199,11 @@
    corresponding dependencies might look like so:
   </para>
 
-  <programlisting>plugin.MyPlugin.depend.0=jedit 04.00.01.00
-plugin.MyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2</programlisting>
+  <programlisting>plugin.MyPlugin.depend.0=jedit 04.02.02.00
+plugin.MyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.3</programlisting>
 
   <para>
-   Note that the current version of the ErrorList plugin requires jEdit 4.0pre1
+   Note that the current version of the ErrorList plugin requires jEdit 4.2pre2
    or later, so your plugin should also require at least that jEdit version.
    If a newer version of the ErrorList plugin is available, you can
    specify higher version numbers than in the example above. However, all the
@@ -212,8 +232,8 @@ plugin.MyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2</programlisting>
   </para>
 
   <para>
-   Typically, error sources will be registered in your plugin's
-   <function>start()</function> method, but that does not have to be the case.
+   Error sources should be registered when the user first invokes your
+   plugins. A plugin can create any number of error sources.
    The Console plugin, for example, maintains a separate error source for each
    console window, and registers an unregisters them as consoles are opened
    and closed.
@@ -226,30 +246,8 @@ plugin.MyPlugin.depend.2=plugin errorlist.ErrorListPlugin 1.2</programlisting>
   </para>
 
   <para>
-   A corresponding <function>unregisterErrorSource()()</function> method also
-   exists, for advanced uses of the API, like the Console plugin mentioned
-   above.
-  </para>
-
-  <para>
-   Putting all this together, a simple plugin core class
-   <function>start()</function> method
-   might look as follows:
-  </para>
-
-  <programlisting>public void start()
-{
-    errorSource = new DefaultErrorSource("MyPlugin");
-    ErrorSource.registerErrorSource(errorSource);
-
-    // any other initialization your plugin
-    // needs to perform
-}</programlisting>
-
-  <para>
-   Note that the newly-created error source is assigned to an instance variable.
-   This allows the error source instance to be called upon later, when
-   compiler errors are actually generated.
+   A corresponding <function>unregisterErrorSource()</function> method must be
+   called before your plugin is unloaded to avoid leaking memory.
   </para>
 
  </sect1>
@@ -381,7 +379,9 @@ errorSource.addError(new ErrorSource.DefaultError(
    associated with one file only.
   </para>
 
-  <sect2><title>Performance Considerations</title>
+  </sect1>
+
+  <sect1><title>Performance Considerations</title>
   
   <para>
    Only create and register an <classname>ErrorSource</classname> instance
@@ -393,8 +393,6 @@ errorSource.addError(new ErrorSource.DefaultError(
    Also,
    add errors to the error source first, and then register the error source.
   </para>
-
-  </sect2>
 
  </sect1>
 
@@ -409,6 +407,13 @@ errorSource.addError(new ErrorSource.DefaultError(
    </para></formalpara>
 
    <itemizedlist>
+    <listitem><para>Added optional <quote>error overview</quote> to the right of
+    the text area (on by default).
+    </para></listitem>
+    <listitem><para>Added buttons to the error list window
+    for going to the next and previous error and
+    file with errors, respectively.
+    </para></listitem>
     <listitem><para>Fixed problem with errors appearing twice when
     the <guilabel>Show on error</guilabel> option was on.
     </para></listitem>
