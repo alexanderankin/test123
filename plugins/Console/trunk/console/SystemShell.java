@@ -301,15 +301,14 @@ loop:			for(;;)
 		if(expansion != null)
 		{
 			Vector expansionArgs = parse(expansion);
-			newArgs.addElement(expansionArgs.elementAt(0));
-			for(int i = 1; i < expansionArgs.size(); i++)
+			for(int i = 0; i < expansionArgs.size(); i++)
 			{
 				expandGlobs(view,newArgs,(String)expansionArgs
 					.elementAt(i));
 			}
 		}
 		else
-			newArgs.addElement(commandName);
+			expandGlobs(view,newArgs,commandName);
 
 		// add remaining arguments
 		for(int i = 1; i < args.size(); i++)
@@ -341,13 +340,18 @@ loop:			for(;;)
 			// DOS-style variable (%name%)
 			case '%':
 				int index = arg.indexOf('%',i + 1);
-				varName = arg.substring(i + 1,index);
-				i = index;
+				if(index != -1)
+				{
+					varName = arg.substring(i + 1,index);
+					i = index;
 
-				String expansion = getExpansion(view,varName);
+					String expansion = getExpansion(view,varName);
 
-				if(expansion != null)
-					buf.append(expansion);
+					if(expansion != null)
+						buf.append(expansion);
+				}
+				else
+					buf.append('%');
 
 				break;
 			// Unix-style variables ($name, ${name})

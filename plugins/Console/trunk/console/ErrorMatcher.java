@@ -89,7 +89,7 @@ class ErrorMatcher implements Cloneable
 		if(matchRE.isMatch(text))
 		{
 			int type;
-			if(warningRE.isMatch(text))
+			if(warningRE != null && warningRE.isMatch(text))
 				type = ErrorSource.WARNING;
 			else
 				type = ErrorSource.ERROR;

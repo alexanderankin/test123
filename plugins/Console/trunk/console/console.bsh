@@ -3,6 +3,8 @@
  * console. */
 runCommandInConsole(View view, String shell, String command)
 {
+	import console.Shell;
+
 	// Open the console if it isn't already open
 	view.getDockableWindowManager().addDockableWindow("console");
 
@@ -24,6 +26,8 @@ bsh.help.runCommandInConsole
  * console, placing the output in a new buffer. */
 runCommandInConsoleToBuffer(View view, String shell, String command)
 {
+	import console.Shell;
+
 	// Open the console if it isn't already open
 	view.getDockableWindowManager().addDockableWindow("console");
 

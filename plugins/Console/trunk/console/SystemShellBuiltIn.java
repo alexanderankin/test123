@@ -222,6 +222,7 @@ public abstract class SystemShellBuiltIn
 		commands.put("browse", new browse());
 		/* commands.put("cat", new cat()); */
 		commands.put("cd", new cd());
+		commands.put("clear", new clear());
 		commands.put("dirstack", new dirstack());
 		commands.put("detach", new detach());
 		commands.put("echo", new echo());
@@ -350,6 +351,25 @@ public abstract class SystemShellBuiltIn
 			}
 
 			state.setCurrentDirectory(console,newDir);
+		}
+	}
+
+	static class clear extends SystemShellBuiltIn
+	{
+		public int getMinArguments()
+		{
+			return 0;
+		}
+
+		public int getMaxArguments()
+		{
+			return 0;
+		}
+
+		public void execute(Console console, Output output, Vector args,
+			Hashtable values)
+		{
+			console.getOutputPane().setText("");
 		}
 	}
 
