@@ -35,42 +35,43 @@ import errorlist.*;
 
 class InputThread extends Thread
 {
-	boolean aborted;
-	String input;
-	BufferedWriter out;
-	String lineSep;
+	InputStream in;
+	OutputStream out;
 	Output error;
 	ConsoleProcess process;
+	boolean aborted;
 
 	//{{{ InputThread constructor
-	InputThread(ConsoleProcess process, String input,
-		OutputStream outputStream)
+	InputThread(ConsoleProcess process, OutputStream out)
 	{
 		this.process = process;
-		this.input = input;
 		this.error = process.getErrorOutput();
-		out = new BufferedWriter(new OutputStreamWriter(
-			outputStream));
-		lineSep = System.getProperty("line.separator");
+		this.in = process.getPipeInput();
+		this.out = out;
 	} //}}}
 
 	//{{{ run() method
 	public void run()
 	{
+		byte[] buf = new byte[4096];
+		int offset = 0;
+
 		try
 		{
-			if(input != null)
+			for(;;)
 			{
-				for(int i = 0; i < input.length(); i++)
-				{
-					char ch = input.charAt(i);
-					if(ch == '\n')
-						out.write(lineSep);
-					else
-						out.write(ch);
-				}
+				if(aborted)
+					break;
+
+				int len = in.read(buf,offset,
+					buf.length - offset);
+
+				if(len <= 0)
+					break;
+
+				out.write(buf,offset,len);
+				out.flush();
 			}
-			out.close();
 		}
 		catch(Exception e)
 		{
@@ -87,7 +88,9 @@ class InputThread extends Thread
 						"console.shell.error",args));
 				}
 			}
-
+		}
+		finally
+		{
 			try
 			{
 				out.close();
@@ -95,23 +98,15 @@ class InputThread extends Thread
 			catch(Exception e2)
 			{
 			}
-		}
-		finally
-		{
+
 			process.threadDone();
 		}
 	} //}}}
 
 	//{{{ abort() method
-	public void abort()
+	void abort()
 	{
 		aborted = true;
-		/* try
-		{
-			out.close();
-		}
-		catch(IOException io)
-		{
-		} */
+		interrupt();
 	} //}}}
 }

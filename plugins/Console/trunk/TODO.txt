@@ -2,6 +2,7 @@ gc.c:5:21: warning: "/*" within comment
 - set console in namespace
 - click console dockable button
 - foo:5:5 errors
+- if cwd is deleted, nothing else works
 
 [error] AWT-EventQueue-0: java.lang.NullPointerException
 [error] AWT-EventQueue-0:  at console.SystemShell.getCompletions(Unknown Source)

@@ -36,13 +36,11 @@ import errorlist.*;
 class StreamThread extends Thread
 {
 	//{{{ StreamThread constructor
-	StreamThread(ConsoleProcess process, InputStream inputStream)
+	StreamThread(ConsoleProcess process, InputStream in)
 	{
 		this.process = process;
 		this.currentDirectory = process.getCurrentDirectory();
-
-		in = new BufferedReader(new InputStreamReader(
-			inputStream));
+		this.in = in;
 
 		// for parsing error messages from 'make'
 		currentDirectoryStack = new Stack();
@@ -52,60 +50,24 @@ class StreamThread extends Thread
 	//{{{ run() method
 	public void run()
 	{
+		byte[] buf = new byte[4096];
+		int offset = 0;
+
 		try
 		{
-			String line;
-			while((line = in.readLine()) != null)
+			for(;;)
 			{
-				Console console = process.getConsole();
-				Output output = process.getOutput();
-
-				if(console == null || output == null)
-					continue;
-
 				if(aborted)
 					break;
 
-				Color color = null;
+				int len = in.read(buf,offset,
+					buf.length - offset);
 
-				REMatch match = makeEntering.getMatch(line);
-				if(match == null)
-				{
-					match = makeLeaving.getMatch(line);
-					if(match == null)
-					{
-						String _currentDirectory;
-						if(currentDirectoryStack.isEmpty())
-						{
-							// should not happen...
-							_currentDirectory = currentDirectory;
-						}
-						else
-							_currentDirectory = (String)currentDirectoryStack.peek();
+				if(len <= 0)
+					break;
 
-						int type = ConsolePlugin.parseLine(
-							console.getView(),line,
-							_currentDirectory,
-							console.getErrorSource());
-						switch(type)
-						{
-						case ErrorSource.ERROR:
-							color = console.getErrorColor();
-							break;
-						case ErrorSource.WARNING:
-							color = console.getWarningColor();
-							break;
-						}
-					}
-					else if(!currentDirectoryStack.isEmpty())
-						currentDirectoryStack.pop();
-				}
-				else
-					currentDirectoryStack.push(match.toString(1));
-
-				output.print(color,line);
+				handleInput(buf,offset,len);
 			}
-			in.close();
 		}
 		catch(Exception e)
 		{
@@ -124,7 +86,9 @@ class StreamThread extends Thread
 						"console.shell.error",args));
 				}
 			}
-
+		}
+		finally
+		{
 			try
 			{
 				in.close();
@@ -132,33 +96,78 @@ class StreamThread extends Thread
 			catch(Exception e2)
 			{
 			}
-		}
-		finally
-		{
+
 			process.threadDone();
 		}
 	} //}}}
 
 	//{{{ abort() method
-	public void abort()
+	void abort()
 	{
 		aborted = true;
-		/* try
-		{
-			in.close();
-		}
-		catch(IOException io)
-		{
-		} */
+		interrupt();
 	} //}}}
 
+	//{{{ Private members
 	private ConsoleProcess process;
 	private boolean aborted;
-	private BufferedReader in;
+	private InputStream in;
 	private String currentDirectory;
 	private Stack currentDirectoryStack; // for make
 
 	private static RE makeEntering, makeLeaving;
+
+	//{{{ handleInput() method
+	private void handleInput(byte[] buf, int offset, int len)
+		throws UnsupportedEncodingException
+	{
+		Console console = process.getConsole();
+		Output output = process.getOutput();
+                
+		if(console == null || output == null)
+			return;
+                
+		Color color = null;
+                
+		/* REMatch match = makeEntering.getMatch(line);
+		if(match == null)
+		{
+			match = makeLeaving.getMatch(line);
+			if(match == null)
+			{
+				String _currentDirectory;
+				if(currentDirectoryStack.isEmpty())
+				{
+					// should not happen...
+					_currentDirectory = currentDirectory;
+				}
+				else
+					_currentDirectory = (String)currentDirectoryStack.peek();
+                
+				int type = ConsolePlugin.parseLine(
+					console.getView(),line,
+					_currentDirectory,
+					console.getErrorSource());
+				switch(type)
+				{
+				case ErrorSource.ERROR:
+					color = console.getErrorColor();
+					break;
+				case ErrorSource.WARNING:
+					color = console.getWarningColor();
+					break;
+				}
+			}
+			else if(!currentDirectoryStack.isEmpty())
+				currentDirectoryStack.pop();
+		}
+		else
+			currentDirectoryStack.push(match.toString(1)); */
+                
+		output.write(color,new String(buf,offset,len,"ASCII"));
+	} //}}}
+
+	//}}}
 
 	//{{{ Class initializer
 	static

@@ -36,38 +36,31 @@ import errorlist.*;
 class ConsoleProcess
 {
 	//{{{ ConsoleProcess constructor
-	ConsoleProcess(Console console, String input, Output output,
+	ConsoleProcess(Console console, Output output,
 		Output error, String[] args, String[] env,
-		boolean foreground)
+		SystemShell.ConsoleState consoleState, boolean foreground)
 	{
-		SystemShell.ConsoleState consoleState
-			= SystemShell.getConsoleState(console);
-
 		this.args = args;
 		this.env = env;
 		this.currentDirectory = consoleState.currentDirectory;
 
 		if(foreground)
 		{
-			console.getErrorSource().clear();
-
 			this.console = console;
 			this.output = output;
 			this.error = error;
 			this.consoleState = consoleState;
-
-			ConsoleProcess runningProc = consoleState.process;
-			if(runningProc != null)
-				runningProc.stop();
-
-			consoleState.process = this;
 		}
 
 		try
 		{
+			pipeIn = new PipedInputStream();
+			pipeOut = new PipedOutputStream(pipeIn);
+
 			process = ProcessRunner.getProcessRunner()
 				.exec(args,env,currentDirectory);
-			stdin = new InputThread(this,input,process.getOutputStream());
+			stdin = new InputThread(this,
+				process.getOutputStream());
 			stdin.start();
 			stdout = new StreamThread(this,process.getInputStream());
 			stdout.start();
@@ -112,6 +105,15 @@ class ConsoleProcess
 			stdin.abort();
 			stdout.abort();
 			stderr.abort();
+
+			try
+			{
+				pipeOut.close();
+			}
+			catch(IOException e)
+			{
+				throw new RuntimeException(e);
+			}
 
 			process.destroy();
 			process = null;
@@ -163,29 +165,52 @@ class ConsoleProcess
 		return currentDirectory;
 	} //}}}
 	
+	//{{{ getPipeInput() method
+	PipedInputStream getPipeInput()
+	{
+		return pipeIn;
+	} //}}}
+	
+	//{{{ getPipeOutput() method
+	PipedOutputStream getPipeOutput()
+	{
+		return pipeOut;
+	} //}}}
+	
 	//{{{ threadDone() method
 	synchronized void threadDone()
 	{
 		threadDoneCount++;
-		if(process != null && threadDoneCount == 3)
+		if(process == null)
+			return;
+
+		if(!stopped)
 		{
-			if(!stopped)
+			// we don't want unkillable processes to hang
+			// jEdit
+
+			try
 			{
-				// we don't want unkillable processes to hang
-				// jEdit
-
-				try
-				{
-					exitCode = process.waitFor();
-				}
-				catch(InterruptedException e)
-				{
-					Log.log(Log.ERROR,this,e);
-					notifyAll();
-					return;
-				}
+				exitCode = process.waitFor();
 			}
+			catch(InterruptedException e)
+			{
+				Log.log(Log.ERROR,this,e);
+				notifyAll();
+				return;
+			}
+			
+			try
+			{
+				pipeOut.close();
+			}
+			catch(IOException io)
+			{
+			}
+		}
 
+		if(threadDoneCount == 3)
+		{
 			if(console != null && output != null && error != null)
 			{
 				Object[] pp = { args[0], new Integer(exitCode) };
@@ -228,5 +253,10 @@ class ConsoleProcess
 	private int threadDoneCount;
 	private int exitCode;
 	private boolean stopped;
+
+	/* AWT thread writes stdin to this pipe, and the input thread
+	writes it to the process. */
+	private PipedInputStream pipeIn;
+	private PipedOutputStream pipeOut;
 	//}}}
 }

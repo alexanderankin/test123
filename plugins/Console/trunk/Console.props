@@ -10,6 +10,7 @@ plugin.console.ConsolePlugin.docs=index.html
 
 plugin.console.ConsolePlugin.depend.0=jedit 04.02.99.00
 plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.3.1
+plugin.console.ConsolePlugin.depend.2=jdk 1.4
 
 # Menu
 plugin.console.ConsolePlugin.menu=console run-last-console-command - \

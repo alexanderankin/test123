@@ -3,7 +3,7 @@
  * :tabSize=8:indentSize=8:noTabs=false:
  * :folding=explicit:collapseFolds=1:
  *
- * Copyright (C) 1999, 2003 Slava Pestov
+ * Copyright (C) 1999, 2004 Slava Pestov
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@ public class SystemShell extends Shell
 	public SystemShell()
 	{
 		super("System");
+		lineSep = toASCII(System.getProperty("line.separator"));
 	} //}}}
 
 	//{{{ printInfoMessage() method
@@ -70,6 +71,27 @@ public class SystemShell extends Shell
 	public void execute(Console console, String input, Output output,
 		Output error, String command)
 	{
+		ConsoleState state = getConsoleState(console);
+
+		if(state.process != null)
+		{
+			PipedOutputStream out = state.process.getPipeOutput();
+			if(out != null)
+			{
+				try
+				{
+					out.write(toASCII(command));
+					out.write(lineSep);
+					out.flush();
+				}
+				catch(IOException e)
+				{
+					throw new RuntimeException(e);
+				}
+			}
+			return;
+		}
+
 		// comments, for possible future scripting support
 		if(command.startsWith("#"))
 		{
@@ -77,8 +99,6 @@ public class SystemShell extends Shell
 			error.commandDone();
 			return;
 		}
-
-		ConsoleState state = getConsoleState(console);
 
 		// if current working directory doesn't exist, print an error.
 		String cwd = state.currentDirectory;
@@ -115,67 +135,87 @@ public class SystemShell extends Shell
 			executeBuiltIn(console,output,error,commandName,args);
 			output.commandDone();
 			error.commandDone();
+			return;
+		}
+
+		String fullPath = MiscUtilities.constructPath(
+			cwd,commandName);
+
+		// Java resolves this relative to user.dir, not
+		// the directory we pass to exec()...
+		if(commandName.startsWith("./")
+			|| commandName.startsWith("." + File.separator))
+		{
+			args.setElementAt(fullPath,0);
+		}
+
+		if(new File(fullPath).isDirectory() && args.size() == 1)
+		{
+			args.setElementAt(fullPath,0);
+			executeBuiltIn(console,output,error,"%cd",args);
+			output.commandDone();
+			error.commandDone();
 		}
 		else
 		{
-			String fullPath = MiscUtilities.constructPath(
-				cwd,commandName);
+			boolean foreground;
 
-			// Java resolves this relative to user.dir, not
-			// the directory we pass to exec()...
-			if(commandName.startsWith("./")
-				|| commandName.startsWith("." + File.separator))
+			if(args.elementAt(args.size() - 1).equals("&"))
 			{
-				args.setElementAt(fullPath,0);
-			}
-
-			if(new File(fullPath).isDirectory() && args.size() == 1)
-			{
-				args.setElementAt(fullPath,0);
-				executeBuiltIn(console,output,error,"%cd",args);
+				// run in background
+				args.removeElementAt(args.size() - 1);
+				foreground = false;
 				output.commandDone();
 				error.commandDone();
 			}
 			else
 			{
-				boolean foreground;
+				// run in foreground
+				foreground = true;
+			}
 
-				if(args.elementAt(args.size() - 1).equals("&"))
+			String[] _args = new String[args.size()];
+			args.copyInto(_args);
+
+			String[] env;
+
+			if(ProcessRunner.getProcessRunner()
+				.supportsEnvironmentVariables())
+			{
+				env = new String[variables.size()];
+				int counter = 0;
+				Enumeration keys = variables.keys();
+				while(keys.hasMoreElements())
 				{
-					// run in background
-					args.removeElementAt(args.size() - 1);
-					foreground = false;
-					output.commandDone();
-					error.commandDone();
+					Object key = keys.nextElement();
+					env[counter++]= (key + "=" + variables.get(key));
 				}
-				else
+			}
+			else
+				env = null;
+
+			ConsoleProcess proc = new ConsoleProcess(
+				console,output,error,_args,
+				env,state,foreground);
+
+			if(foreground)
+			{
+				console.getErrorSource().clear();
+				state.process = proc;
+			}
+			
+			if(input != null)
+			{
+				try
 				{
-					// run in foreground
-					foreground = true;
+					OutputStream out = proc.getPipeOutput();
+					out.write(toASCII(input));
+					out.close();
 				}
-
-				String[] _args = new String[args.size()];
-				args.copyInto(_args);
-
-				String[] env;
-
-				if(ProcessRunner.getProcessRunner()
-					.supportsEnvironmentVariables())
+				catch(IOException e)
 				{
-					env = new String[variables.size()];
-					int counter = 0;
-					Enumeration keys = variables.keys();
-					while(keys.hasMoreElements())
-					{
-						Object key = keys.nextElement();
-						env[counter++]= (key + "=" + variables.get(key));
-					}
+					throw new RuntimeException(e);
 				}
-				else
-					env = null;
-
-				new ConsoleProcess(console,input,output,error,
-					_args,env,foreground);
 			}
 		}
 	} //}}}
@@ -567,8 +607,22 @@ public class SystemShell extends Shell
 	private Hashtable variables;
 	private Hashtable commands;
 	private boolean initialized;
+	private byte[] lineSep;
 	//}}}
 
+	//{{{ toASCII() method
+	private static byte[] toASCII(String str)
+	{
+		try
+		{
+			return str.getBytes("ASCII");
+		}
+		catch(UnsupportedEncodingException e)
+		{
+			throw new RuntimeException(e);
+		}
+	} //}}}
+	
 	//{{{ init() method
 	private void init()
 	{
