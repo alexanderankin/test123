@@ -1,0 +1,79 @@
+VERSION 0.4.1
+
+- BCEL.jar updated, no longer includes gnu.regexp package which caused many
+  problems
+- Doc updates
+
+
+VERSION 0.4
+
+- Disassemble or decompile with BCEL (André Kaplan)
+- New Jasmin, Class and Jode virtual file systems (André Kaplan)
+- Only one tree, change view with right-click popup menu (Dirk Moebius)
+- Ability to add jar/zip archives to classpath tree (Dirk Moebius)
+- View by individual package hierarchy, ie. org,net,com etc. (Dirk Moebius)
+- May now choose between decompilation to a file or to a new jEdit buffer
+  (Dirk Moebius)
+- jEdit buffer is named correctly (Dirk Moebius)
+- Better support for DecompileClassMessage (Dirk Moebius)
+- Moved package buildtools to javainsight.buildtools because of name clashes
+  with the JCompiler plugin (Dirk Moebius)
+- Bugfix: Help file didn't show up (Dirk Moebius)
+- Bugfix: dependency error in makefile.jmk (André Kaplan)
+- Bugfix: Jode options (--pretty, --decrypt, --onetime) weren't used correctly;
+  worked only correct every second time (Dirk Moebius)
+- Requires jEdit 3.1pre3 or higher, JDK 1.1 or higher
+
+
+VERSION 0.3
+
+- New option pane for setting some decompiler options
+- Decompiles directly to a new jEdit buffer, not to a temp file
+- Can now decompile entries from the classpath browser
+- Entries in the classpath browser are now sorted, too
+- On JDK 1.2 or higher, show boot classpath and user classpath
+- Show jode output (it's not much... just in case)
+- Better error reporting
+- Bugfix: duplicate entries in tree, if the same lib appeared twice with
+  different case in classpath (affected Windows platforms only)
+- Switched to new jEdit action API
+- Improved makefile
+- Reformatted code
+- Requires jEdit 3.0final or higher, JDK 1.1 or higher
+- Maintained by Dirk Moebius
+
+
+VERSION 0.2.1
+
+- Changes???
+- Requires jEdit 2.6pre3 or higher, JDK 1.1 or higher
+- Maintained by Andre Kaplan
+
+
+VERSION 0.2
+
+- Moved from package net.sourceforge.jedit to javainsight
+- Integrated buildtools library
+- Other changes???
+- Maintained by Andre Kaplan
+
+
+VERSION 0.1
+
+- ???
+
+
+VERSION 0.0.3
+
+- Event support to the classpath widget so you know when classes are selected
+- (DONE) add the ability to graphically view the classpath with a JTree
+
+
+VERSION 0.0.2
+
+- (DONE) ability to except a message on EditBus and decompile a java class.
+
+- (DONE) (SEVERE) not all classes are displayed within a package.
+  See javax.mail and mail.jar. Only a small subset of the classes are shown.
+  This doesn't work at all for things like java.awt.
+
