@@ -192,8 +192,8 @@ public class TargetRunner extends Thread
 			Log.log(Log.WARNING, this, "Cannot parse build file: " + e);
 		}
 
-		_consoleErr = new AntPrintStream( System.out, _view );
-		_consoleOut = new AntPrintStream( System.out, _view );
+		_consoleErr = new AntPrintStream( System.out, _view, _output );
+		_consoleOut = new AntPrintStream( System.out, _view, _output );
 
 		configureBuildLogger();
 
@@ -245,7 +245,26 @@ public class TargetRunner extends Thread
 			}
 			command += args;
 			Console console = AntFarmPlugin.getConsole( _view );
-			console.run( ConsolePlugin.getSystemShell(), console, command );
+            Shell antShell = console.getShell();
+            
+            Shell systemShell = ConsolePlugin.getSystemShell();            
+			console.run( systemShell, console, command );
+            
+            // Bring the Ant Console to the front.
+            // AntFarmPlugin.getConsole( _view, true );
+            console.setShell(antShell);
+            
+            // Wait for and stop system shell animation.
+            // ConsolePlugin.getSystemShell().waitFor(console);
+            // console.setShell(ConsolePlugin.getSystemShell());
+            // console.getOutput().commandDone();
+            systemShell.waitFor(console);
+            console.setShell(systemShell);
+            console.getOutput().commandDone();
+
+            // Bring the Ant Console to the front.
+            // AntFarmPlugin.getConsole( _view, true );
+            console.setShell(antShell);            
 		}
 	}
 

@@ -32,6 +32,7 @@ public class AntFarmShell extends Shell
 	private String _currentTarget;
 	private TargetRunner _targetRunner;
 	private AntFarm _antBrowser;
+    private Output _output;
 
 
 	public AntFarmShell()
@@ -92,6 +93,8 @@ public class AntFarmShell extends Shell
 	public void execute( Console console, Output output, String command )
 	{
 		stop( console );
+        
+        _output = output;
 
 		command = command.trim();
 
@@ -238,11 +241,12 @@ public class AntFarmShell extends Shell
 		if ( _targetRunner != null ) {
 			if ( _targetRunner.isAlive() ) {
 				_targetRunner.stop();
-				
-				console.print(
-				console.getErrorColor(),
-					jEdit.getProperty( AntFarmPlugin.NAME + ".shell.msg.killed" )
-				 );
+                
+                if (_output != null)
+                {
+                    _output.print(console.getErrorColor(),
+                                  jEdit.getProperty( AntFarmPlugin.NAME + ".shell.msg.killed" ));
+                }
 			}
 			_targetRunner.resetLogging();
 			_targetRunner = null;

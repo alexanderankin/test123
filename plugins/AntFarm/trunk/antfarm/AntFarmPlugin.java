@@ -116,7 +116,7 @@ public class AntFarmPlugin extends EditPlugin
 		}
 
 		// Register the ant shell with the console plugin.
-		Shell.registerShell( ANT_SHELL );
+		// Shell.registerShell( ANT_SHELL );
 
 		// put the ant home in the environment for scripts to use.
 		System.getProperties().put( ANT_HOME, getAntFarmPath() );
@@ -126,7 +126,7 @@ public class AntFarmPlugin extends EditPlugin
 
 	public void stop()
 	{
-		Shell.unregisterShell( ANT_SHELL );
+		// Shell.unregisterShell( ANT_SHELL );
 	}
 
 	static void loadCustomClasspath()
@@ -155,7 +155,7 @@ public class AntFarmPlugin extends EditPlugin
 
 	String getAntFarmPath()
 	{
-		EditPlugin.JAR jar = getJAR();
+		PluginJAR jar = getPluginJAR();
 		String path = MiscUtilities.getParentOfPath( jar.getPath() );
 		Log.log( Log.DEBUG, this, "path: " + path );
 		return MiscUtilities.constructPath( path, "AntFarm" );
