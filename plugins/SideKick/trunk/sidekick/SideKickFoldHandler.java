@@ -29,6 +29,9 @@ import org.gjt.sp.jedit.buffer.FoldHandler;
 import org.gjt.sp.jedit.Buffer;
 //}}}
 
+/**
+* Provides a <code>FoldHandler</code> based on the {@link sidekick.Asset}s parsed from the buffer.  Each <code>Asset</code> will become a fold.
+ */
 public class SideKickFoldHandler extends FoldHandler
 {
 	//{{{ SideKickFoldHandler constructor
