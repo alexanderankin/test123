@@ -5,7 +5,7 @@ plugin.console.ConsolePlugin.version=3.5
 plugin.console.ConsolePlugin.author=Slava Pestov
 plugin.console.ConsolePlugin.docs=index.html
 
-plugin.console.ConsolePlugin.depend.0=jedit 04.01.08.00
+plugin.console.ConsolePlugin.depend.0=jedit 04.01.99.00
 plugin.console.ConsolePlugin.depend.1=plugin errorlist.ErrorListPlugin 1.2
 
 console-menu=console run-last-console-command - \
@@ -203,6 +203,9 @@ console.beanshell.info=This shell evaluates commands in jEdit's BeanShell \
 
 ### Error parsing
 
+console.error.make.entering=^make\\[\\d+\\]: Entering directory `(.+)'$
+console.error.make.leaving=^make\\[\\d+\\]: Leaving directory `(.+)'$
+
 console.error.default=vhdl msvc msnet perl jade ant-emacs ant emacs generic
 
 console.error.vhdl.name=VHDL
@@ -238,16 +241,16 @@ console.error.jade.line=$3
 console.error.jade.message=$4
 
 console.error.ant-emacs.name=Ant Emacs
-console.error.ant-emacs.match=\\s*\\[\\w+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
-console.error.ant-emacs.warning=\\s*\\[\\w+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+: \
+console.error.ant-emacs.match=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+:(.+)
+console.error.ant-emacs.warning=\\s*\\[.+\\]\\s+(.+):(\\d+):\\d+:\\d+:\\d+: \
 	(?:Warning|warning|Caution|caution):\\s*(.+)
 console.error.ant-emacs.filename=$1
 console.error.ant-emacs.line=$2
 console.error.ant-emacs.message=$3
 
 console.error.ant.name=Ant
-console.error.ant.match=\\s*\\[\\w+\\]\\s+(.+?):(\\d+):(.+)
-console.error.ant.warning=\\s*\\[\\w+\\]\\s+(.+?):(\\d+): \
+console.error.ant.match=\\s*\\[.+\\]\\s+(.+?):(\\d+):(.+)
+console.error.ant.warning=\\s*\\[.+\\]\\s+(.+?):(\\d+): \
 	(?:Warning|warning|Caution|caution):\\s(.+)
 console.error.ant.extra=\\s*\\[javac\\]\\s*((?:symbol|location|found|required)\\s*:.*)
 console.error.ant.filename=$1

@@ -6,7 +6,7 @@
 - multiple-line env vars don't work
 - see if an extra pattern can eat all javac errors
 - TeX, Tidy error patterns
-- foo"aaaa" broken
+- foo"aaaa" doesn't parse like in a Unix shell
 - command to copy a commando file to the user commando dir for easy
   customization
 - need <INIT> code block in commando files
@@ -27,13 +27,4 @@
 - integration with project manager
 - synchronize browser & console pwd (but make this toggle option)
 - console tool bar: dir commands don't open console
-- console tool bar cmd, also percent command inserts %
 - console tool bar: show status msg, regarding completion.
-
-- tabbed pane; tool bar (clone tab, run: [console,new buffer], kill)
-  [ <some caption ............ > Menu \/ ]
-                               - Close tab
-                               - New tab
-			       - Stop command
-			       - Output time logged??
-			       - Help

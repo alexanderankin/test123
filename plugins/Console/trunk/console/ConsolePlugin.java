@@ -513,63 +513,6 @@ public class ConsolePlugin extends EBPlugin
 		}
 	} //}}}
 
-	//{{{ Package-private members
-
-	//{{{ loadMatchers() method
-	static void loadMatchers()
-	{
-		lastMatcher = null;
-
-		Vector vec = new Vector();
-
-		loadMatchers(true,jEdit.getProperty("console.error.user"),vec);
-		loadMatchers(false,jEdit.getProperty("console.error.default"),vec);
-
-		errorMatchers = new ErrorMatcher[vec.size()];
-		vec.copyInto(errorMatchers);
-	} //}}}
-
-	//{{{ loadMatchers() method
-	static void loadMatchers(boolean user, String list, Vector vec)
-	{
-		if(list == null)
-			return;
-
-		StringTokenizer st = new StringTokenizer(list);
-
-		while(st.hasMoreTokens())
-		{
-			loadMatcher(user,st.nextToken(),vec);
-		}
-	} //}}}
-
-	//{{{ loadMatcher() method
-	static void loadMatcher(boolean user, String internalName, Vector vec)
-	{
-		String name = jEdit.getProperty("console.error." + internalName + ".name");
-		String error = jEdit.getProperty("console.error." + internalName + ".match");
-		String warning = jEdit.getProperty("console.error." + internalName + ".warning");
-		String extra = jEdit.getProperty("console.error." + internalName + ".extra");
-		String filename = jEdit.getProperty("console.error." + internalName + ".filename");
-		String line = jEdit.getProperty("console.error." + internalName + ".line");
-		String message = jEdit.getProperty("console.error." + internalName + ".message");
-
-		try
-		{
-			ErrorMatcher matcher = new ErrorMatcher(user,internalName,
-				name,error,warning,extra,filename,line,message);
-			vec.addElement(matcher);
-		}
-		catch(Exception re)
-		{
-			Log.log(Log.ERROR,ConsolePlugin.class,
-				"Invalid regexp in matcher " + internalName);
-			Log.log(Log.ERROR,ConsolePlugin.class,re);
-		}
-	} //}}}
-
-	//}}}
-
 	//{{{ Private members
 
 	//{{{ Instance and static variables
@@ -655,6 +598,59 @@ public class ConsolePlugin extends EBPlugin
 		// lazily load aliases and variables next time system
 		// shell is used
 		//SystemShell.propertiesChanged();
+	} //}}}
+
+	//{{{ loadMatchers() method
+	private static void loadMatchers()
+	{
+		lastMatcher = null;
+
+		Vector vec = new Vector();
+
+		loadMatchers(true,jEdit.getProperty("console.error.user"),vec);
+		loadMatchers(false,jEdit.getProperty("console.error.default"),vec);
+
+		errorMatchers = new ErrorMatcher[vec.size()];
+		vec.copyInto(errorMatchers);
+	} //}}}
+
+	//{{{ loadMatchers() method
+	private static void loadMatchers(boolean user, String list, Vector vec)
+	{
+		if(list == null)
+			return;
+
+		StringTokenizer st = new StringTokenizer(list);
+
+		while(st.hasMoreTokens())
+		{
+			loadMatcher(user,st.nextToken(),vec);
+		}
+	} //}}}
+
+	//{{{ loadMatcher() method
+	private static void loadMatcher(boolean user, String internalName, Vector vec)
+	{
+		String name = jEdit.getProperty("console.error." + internalName + ".name");
+		String error = jEdit.getProperty("console.error." + internalName + ".match");
+		String warning = jEdit.getProperty("console.error." + internalName + ".warning");
+		String extra = jEdit.getProperty("console.error." + internalName + ".extra");
+		String filename = jEdit.getProperty("console.error." + internalName + ".filename");
+		String line = jEdit.getProperty("console.error." + internalName + ".line");
+		String message = jEdit.getProperty("console.error." + internalName + ".message");
+
+		try
+		{
+			ErrorMatcher matcher = new ErrorMatcher(user,internalName,
+				name,error,warning,extra,filename,line,message);
+			vec.addElement(matcher);
+		}
+		catch(Exception re)
+		{
+			Log.log(Log.ERROR,ConsolePlugin.class,
+				"Invalid regexp in matcher " + internalName);
+			Log.log(Log.ERROR,ConsolePlugin.class,re);
+		}
 	} //}}}
 
 	//}}}
