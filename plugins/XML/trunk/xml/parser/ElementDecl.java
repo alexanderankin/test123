@@ -122,7 +122,6 @@ public class ElementDecl
 			{
 				ElementDecl decl = (ElementDecl)completionInfo
 					.elementHash.get(iter.next());
-				System.err.println("got: " + decl);
 				if(decl != null)
 					children.add(decl.withPrefix(prefix));
 			}

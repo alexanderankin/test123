@@ -156,7 +156,6 @@ loop:			for(;;)
 			// won't happen
 		} //}}}
 
-		System.err.println("tag name is " + tag.tag);
 		ElementDecl elementDecl = data.getElementDecl(tag.tag);
 		if(elementDecl == null)
 		{
@@ -265,7 +264,6 @@ loop:			for(;;)
 
 		if(isDelegated(editPane))
 		{
-			System.err.println("delegated");
 			view.getToolkit().beep();
 			return;
 		}
@@ -289,7 +287,6 @@ loop:			for(;;)
 			textArea.setSelectedText("</" + tag.tag + ">");
 		else
 		{
-			System.err.println("closing tag not found");
 			view.getToolkit().beep();
 		}
 	} //}}}

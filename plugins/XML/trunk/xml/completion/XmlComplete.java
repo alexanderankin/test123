@@ -182,8 +182,8 @@ public class XmlComplete extends JWindow
 		else if(obj instanceof XmlListCellRenderer.CDATA)
 		{
 			int caret = textArea.getCaretPosition();
-			textArea.setSelectedText("![CDATA[  ]]>".substring(text.length()));
-			textArea.setCaretPosition(caret + 9 - text.length());
+			textArea.setSelectedText("![CDATA[]]>".substring(text.length()));
+			textArea.setCaretPosition(caret + 8 - text.length());
 		}
 		else if(obj instanceof ElementDecl)
 		{
