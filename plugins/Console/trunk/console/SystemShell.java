@@ -107,6 +107,7 @@ public class SystemShell extends Shell
 					// run in background
 					args.removeElementAt(args.size() - 1);
 					foreground = false;
+					console.commandDone();
 				}
 				else
 				{
