@@ -92,6 +92,10 @@ To force jEdit to forget all passwords while it is running, use the
     </para></listitem>
 
     <listitem><para>
+     Made listing parsing code more compatible with different servers.
+    </para></listitem>
+
+    <listitem><para>
      Code cleanups
     </para></listitem>
 
