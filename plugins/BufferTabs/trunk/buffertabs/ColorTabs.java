@@ -247,7 +247,7 @@ public class ColorTabs
                Color newColor = null;
                if (muteColors)
                {
-                  if (this.foregroundColorized)
+                  if (this.isForegroundColorized())
                   {
                      newColor = alterColorDarken(entry.color);
                   }
@@ -367,7 +367,7 @@ public class ColorTabs
       {
          this.muteColors = jEdit.getBooleanProperty("buffertabs.color-mute");
          this.colorVariation = jEdit.getBooleanProperty("buffertabs.color-variation");
-         this.foregroundColorized = jEdit.getBooleanProperty("buffertabs.color-foreground");
+         this.setForegroundColorized(jEdit.getBooleanProperty("buffertabs.color-foreground"));
 
          if (this.isSelectedColorized() != jEdit.getBooleanProperty("buffertabs.color-selected"))
          {
