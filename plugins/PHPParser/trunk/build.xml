@@ -10,17 +10,22 @@
     <property name="javacc.home" value="F:\Java\javacc-3.2\"/>
     <property name="plugins.dir" value=".."/>
 
-    <property name="jedit.install.dir" value="../.."/>
+    <property name="jedit.install.dir" value="../../jEdit"/>
 
     <path id="project.class.path">
         <pathelement location="${jedit.install.dir}/jedit.jar"/>
         <pathelement location="${plugins.dir}/ErrorList.jar"/>
+        <pathelement location="${plugins.dir}/SideKick.jar"/>
     </path>
 
 
     <target name="init">
         <mkdir dir="${build.dir}"/>
     </target>
+
+    <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
 
     <target name="buildParser" depends="init">
         <javacc target="${src.dir}/gatchan/phpparser/parser/PHPParser.jj"
