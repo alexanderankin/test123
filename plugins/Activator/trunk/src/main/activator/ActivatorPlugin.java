@@ -21,7 +21,7 @@ public class ActivatorPlugin extends EBPlugin {
 	
 	public void handleMessage(EBMessage msg) {
 		if (msg instanceof PluginUpdate) {
-			ReloadPanel.getInstance().update();
+			PluginList.getInstance().update();
 		}
 	}
 	
