@@ -7,6 +7,7 @@ import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.io.VFS;
+import org.gjt.sp.jedit.io.VFSFile;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.WorkRequest;
@@ -49,6 +50,8 @@ public final class Project {
   private Hashtable files;
   private QuickAccessItemFinder quickAccess;
 
+  private List excludedFolders;
+
   public Project(String name, String version) {
     properties.setProperty("name", name);
     properties.setProperty("version", version);
@@ -82,6 +85,7 @@ public final class Project {
     checkProperties();
   }
 
+  /** Reset the project. It should be used before reparsing all files */
   private void reset() {
     classes = new Hashtable();
     methods = new Hashtable();
@@ -96,11 +100,19 @@ public final class Project {
     classFile = new File(dataDirectory, "classes.ser");
     methodFile = new File(dataDirectory, "methods.ser");
     fileFile = new File(dataDirectory, "files.ser");
+    excludedFolders = new ArrayList();
   }
 
   /** Load the project. */
   public void load() {
     final long start = System.currentTimeMillis();
+    String excludedString = properties.getProperty("excluded");
+    if (excludedString != null) {
+      StringTokenizer tokenizer = new StringTokenizer(excludedString, "\n");
+      while (tokenizer.hasMoreTokens()) {
+        excludedFolders.add(tokenizer.nextToken());
+      }
+    }
 
     final long end;
     try {
@@ -200,7 +212,11 @@ public final class Project {
       // todo : do better
       directory.mkdirs();
     }
-
+    StringBuffer buff = new StringBuffer(1000);
+    for (int i = 0; i < excludedFolders.size(); i++) {
+      buff.append((String) excludedFolders.get(i)).append('\n');
+    }
+    properties.setProperty("excluded", buff.toString());
     BufferedOutputStream outStream = null;
     try {
       outStream = new BufferedOutputStream(new FileOutputStream(file));
@@ -232,6 +248,7 @@ public final class Project {
    *
    * @param target           the file target
    * @param serializableFile the object to save
+   *
    * @throws IOException
    */
   private static void writeObjects(File target, Object serializableFile) throws IOException {
@@ -301,11 +318,24 @@ public final class Project {
    * Tell if the file is in the path.
    *
    * @param filePath the file path
+   *
    * @return a boolean
    */
   public boolean acceptFile(String filePath) {
     final String root = getRoot();
-    return root != null && filePath.startsWith(root);
+    return root != null && filePath.startsWith(root) && !isExcluded(filePath);
+  }
+
+  public boolean isExcluded(String filePath) {
+    for (int i = 0; i < excludedFolders.size(); i++) {
+      String excludedPath = (String) excludedFolders.get(i);
+      if (filePath.substring(1).startsWith(excludedPath.substring(1))) return true;
+    }
+    return false;
+  }
+
+  public Object[] getExcludedFolders() {
+    return excludedFolders.toArray();
   }
 
   /** Reparse all files from the project. */
@@ -393,6 +423,7 @@ public final class Project {
    * Return a classHeader by it's name.
    *
    * @param name the name of the class
+   *
    * @return a {@link ClassHeader} or null
    */
   public ClassHeader getClass(String name) {
@@ -440,18 +471,36 @@ public final class Project {
   }
 
   /**
+   * Add an excluded folder.
+   *
+   * @param excludedFolder the path to the excluded folder
+   *
+   * @return true if it wasn't already in the list
+   */
+  public boolean addExcludedFolder(String excludedFolder) {
+    if (excludedFolders.contains(excludedFolder)) {
+      return false;
+    }
+    return excludedFolders.add(excludedFolder);
+  }
+
+  public boolean removeExcludedFolder(String excludedFolder) {
+    return excludedFolders.remove(excludedFolder);
+  }
+
+  /**
    * The rebuilder will reparse all php files of the project.
    *
    * @author Matthieu Casanova
    */
-  private static final class Rebuilder extends WorkRequest {
+  private final class Rebuilder extends WorkRequest {
     private final String path;
 
     private int current;
 
     private int parsedFileCount;
 
-    private static final Mode mode = jEdit.getMode("php");
+    private final Mode mode = jEdit.getMode("php");
 
     private final Project project;
 
@@ -473,7 +522,7 @@ public final class Project {
         final PHPSideKickParser phpParser = new PHPSideKickParser("rebuilder");
         for (int i = 0; i < files.length; i++) {
           final String file = files[i];
-          if (mode.accept(file, "")) {
+          if (mode.accept(file, "") && !isExcluded(file)) {
             parseFile(phpParser, VFSManager.getVFSForPath(file), file, vfsSession);
           }
           setProgressValue(++current);
