@@ -1651,13 +1651,30 @@ Expression MultiplicativeExpression() :
  */
 Expression UnaryExpression() :
 {
-  final Expression expr;
+  Expression expr;
 }
 {
  /* <BIT_AND> expr = UnaryExpressionNoPrefix()             //why did I had that ?
   {return new PrefixedUnaryExpression(expr,OperatorIds.AND,pos);}
 |      */
-  expr = AtNotTildeUnaryExpression() {return expr;}
+  try {
+    expr = AtNotTildeUnaryExpression() {return expr;}
+  } catch (ParseException e) {
+    fireParseError(new PHPParseErrorEvent(ERROR,
+                                          path,
+                                          "unexpected token : '"+e.currentToken.image+"'",
+                                          "",
+                                          e.currentToken.image,
+                                          e.currentToken.sourceStart,
+                                          e.currentToken.sourceEnd,
+                                          e.currentToken.beginLine,
+                                          e.currentToken.endLine,
+                                          e.currentToken.beginColumn,
+                                          e.currentToken.endColumn));
+    getNextToken();
+    return UnaryExpression();
+  }
+
 }
 
 Expression AtNotTildeUnaryExpression() :
