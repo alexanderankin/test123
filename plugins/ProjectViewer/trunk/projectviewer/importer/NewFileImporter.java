@@ -87,7 +87,7 @@ public class NewFileImporter extends Importer {
 				ProjectViewer.nodeStructureChangedFlat(where);
 			}
 		}
-		project.registerFile(vf);
+		registerFile(vf);
 		return added;
 	} //}}}
 

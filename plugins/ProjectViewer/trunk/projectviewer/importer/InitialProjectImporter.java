@@ -29,6 +29,7 @@ import java.util.Enumeration;
 import java.awt.Component;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileFilter;
 
 import org.gjt.sp.jedit.jEdit;
@@ -94,7 +95,18 @@ public class InitialProjectImporter extends FileImporter {
 		}
 
 		addTree(new File(project.getRootPath()), project, fnf);
-		ProjectViewer.nodeStructureChanged(project);
+
+		try {
+			SwingUtilities.invokeAndWait(new Runnable() {
+				public void run() {
+					ProjectViewer.nodeStructureChanged(project);
+				}
+			});
+		} catch (InterruptedException ie) {
+			// not gonna happen
+		} catch (java.lang.reflect.InvocationTargetException ite) {
+			// not gonna happen
+		}
 
 		showFileCount();
 		return null;
