@@ -12,15 +12,12 @@ plugin.sql.SqlPlugin.depend.3=plugin sessions.SessionsPlugin 0.7.2
 plugin.sql.SqlPlugin.depend.4=plugin errorlist.ErrorListPlugin 1.2
 
 # The menu item label
-sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection sql.publishBufferToServer sql.publishSelectionToServer - sql.loadObject sql.loadObjectFromServer - sql.preprocessors.BeanShellEvaluator sql.preprocessors.VariableSubstitutor sql.preprocessors.SpecialCommentRemover
+sqlMenu=sql.resultSet - sql.publishBuffer sql.publishSelection - sql.loadObject - sql.preprocessors.BeanShellEvaluator sql.preprocessors.VariableSubstitutor sql.preprocessors.SpecialCommentRemover
 sqlMenu.label=SQL
 
 sql.publishBuffer.label=Execute Buffer
 sql.publishSelection.label=Execute Selection
-sql.publishBufferToServer.label=Execute Buffer On Server
-sql.publishSelectionToServer.label=Execute Selection On Server
 sql.loadObject.label=Load Object
-sql.loadObjectFromServer.label=Load Object From Server
 
 options.sql.label=SQL
 options.sql.general.label=General
@@ -50,9 +47,6 @@ sql.options.specialCommentRemover.delBtn.label=Delete
 sql.options.specialCommentRemover.label=Comment string to remove
 
 sql.serverType.label=SQL Server type
-
-sql.serverchooser.title=SQL Servers
-sql.serverchooser.prompt=Choose the server configuration
 
 sql.objectchooser.title=SQL Objects
 sql.objectchooser.prompt=Choose the object to dump

@@ -503,19 +503,6 @@ public class SqlPlugin extends EBPlugin
   }
 
 
-  /**
-   *  Description of the Method
-   *
-   * @param  view  Description of Parameter
-   * @since
-   */
-  public static void loadObjectFromServer( View view )
-  {
-    final String name = SqlUtils.getServerForPublishing( view );
-    if ( name != null )
-      loadObject( view, name );
-  }
-
 
   /**
    *  Description of the Method
@@ -548,20 +535,6 @@ public class SqlPlugin extends EBPlugin
   /**
    *  Description of the Method
    *
-   * @param  view  Description of Parameter
-   * @since
-   */
-  public static void publishSelectionToServer( View view )
-  {
-    final String name = SqlUtils.getServerForPublishing( view );
-    if ( name != null )
-      publishSelection( view, name );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
    * @param  view        Description of Parameter
    * @param  serverName  Description of Parameter
    * @since
@@ -570,20 +543,6 @@ public class SqlPlugin extends EBPlugin
   {
     final Buffer buffer = view.getBuffer();
     SqlUtils.publishText( view, buffer, 0, buffer.getLength(), serverName );
-  }
-
-
-  /**
-   *  Description of the Method
-   *
-   * @param  view  Description of Parameter
-   * @since
-   */
-  public static void publishBufferToServer( View view )
-  {
-    final String name = SqlUtils.getServerForPublishing( view );
-    if ( name != null )
-      publishBuffer( view, name );
   }
 
 

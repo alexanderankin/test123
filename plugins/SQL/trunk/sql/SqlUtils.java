@@ -93,39 +93,6 @@ public class SqlUtils
 
 
   /**
-   *  Gets the ServerForPublishing attribute of the SqlUtils class
-   *
-   * @param  view  Description of Parameter
-   * @return       The ServerForPublishing value
-   * @since
-   */
-  public static String getServerForPublishing( View view )
-  {
-    final Map servers = SqlServerRecord.getAllRecords();
-
-    final Object[] serverList = new Object[servers.size()];
-    int i = 0;
-    for ( Iterator e = servers.keySet().iterator(); e.hasNext();  )
-      serverList[i++] = e.next();
-
-    String selection = getSelectedServerName();
-
-    selection = (String) JOptionPane.showInputDialog( view,
-        jEdit.getProperty( "sql.serverchooser.prompt" ),
-        jEdit.getProperty( "sql.serverchooser.title" ),
-        JOptionPane.INFORMATION_MESSAGE,
-        SqlPlugin.Icon,
-        serverList,
-        selection );
-
-    if ( selection != null )
-      setSelectedServerName( selection );
-
-    return selection;
-  }
-
-
-  /**
    *  Gets the ServerRecord attribute of the SqlUtils class
    *
    * @param  view        Description of Parameter
