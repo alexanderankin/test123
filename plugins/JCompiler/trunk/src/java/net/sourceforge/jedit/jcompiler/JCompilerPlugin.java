@@ -21,6 +21,7 @@ import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.gui.*;
 
 
+
 //awt
 import java.awt.*;
 import java.awt.event.*;
@@ -59,6 +60,7 @@ public class JCompilerPlugin extends EBPlugin {
             //register the plugin
             PluginHolderEntry entry = new PluginHolderEntry( "net.sourceforge.jedit.jcompiler.JCompiler", "jcompiler-menu" );
             entry.setType( PluginHolderEntry.TYPE_MENU );
+            entry.setRequiredStandalone( true );
             PluginHolder.registerPlugin( entry );
 
             //FIX ME:  Need to add actions for starting JCompiler
