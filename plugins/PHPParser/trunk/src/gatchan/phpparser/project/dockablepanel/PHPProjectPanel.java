@@ -48,8 +48,8 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
       listProjects = new JComboBox();
     } else {
       listProjects = new JComboBox(projectList.toArray());
-
     }
+
     listProjects.addItemListener(new ItemListener() {
       public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
@@ -72,7 +72,7 @@ public final class PHPProjectPanel extends JPanel implements EBComponent {
 
     closeProject.addActionListener(myActionListener);
 
-    toolbar.add(openProject);
+ //   toolbar.add(openProject);
     toolbar.add(closeProject);
 
 
