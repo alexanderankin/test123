@@ -24,15 +24,11 @@ package errorlist;
 
 //{{{ Imports
 import javax.swing.*;
-import javax.swing.event.*;
 import javax.swing.tree.*;
-import javax.swing.text.Element;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.*;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.io.VFSManager;
-import org.gjt.sp.jedit.msg.*;
 import org.gjt.sp.jedit.textarea.Selection;
 //}}}
 
@@ -515,8 +511,6 @@ public class ErrorList extends JPanel implements EBComponent
 	//{{{ removeError() method
 	private void removeError(ErrorSource.Error error)
 	{
-		String path = error.getFilePath();
-
 		for(int i = 0; i < errorRoot.getChildCount(); i++)
 		{
 			DefaultMutableTreeNode node = (DefaultMutableTreeNode)

@@ -24,9 +24,6 @@ package errorlist;
 
 //{{{ Imports
 import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.util.Vector;
 import org.gjt.sp.jedit.gui.*;
 import org.gjt.sp.jedit.*;
 //}}}
