@@ -1,3 +1,33 @@
+Future additions/fixes:
+- Test on more complicated ANT scripts
+- Allow all ant project properties to be changed per project
+- Execute outside of current JVM by forking, not by script
+- Load custom taskdefs from an ant lib directory
+- Refactor AntTree to use command pattern
+- Open/Close build files that are related to the current session.
+- Add actions for easy shortcut binding:
+	- run the current target of the current build file;
+	- choose the target in the current build file and run (making it current) - just small dialog with combobox;
+	- choose the build file from the list.
+- If tools.jar is not found and loaded, present a message and
+  exit AntFarm.
+- Allow properties to be system/environmental variables.
+- Allow targets to be displayed based on a regex.
+- Allow logging level to be set on the AntFarm toolbar.
+- Toggle property prompting on AntFarm toolbar.
+
+
+Required for AntFarm 1.1 release.
+- Add support for properties when executing targets: !my_target
+  property=value - DONE
+- Allow custom Ant classpath to be defined. - DONE
+- Add a 'save modified buffers' option that calls
+  jEdit.saveAllBuffers() before running Ant. - DONE
+- Port to JEdit 4.0 and new plugin architecture. - DONE
+- Make Java 1.4 compatible. - DONE
+- Update help. - DONE
+
+
 List of todo items for AntFarm:
 Required for release as AntFarm 1.0
 - Bug: After a build file parse error, all output to the console
@@ -15,31 +45,3 @@ Required for release as AntFarm 1.0
 - Create Ant Shell and related commands - DONE
 - Add antRun script files to distribution <exec> task works. - DONE
 - Remove HashMap/Map dependence from the project bridge. - DONE
-
-Required for AntFarm 1.1 release.
-- Add support for properties when executing targets: !my_target
-  property=value - DONE
-- Allow custom Ant classpath to be defined. - DONE
-- Add a 'save modified buffers' option that calls
-  jEdit.saveAllBuffers() before running Ant. - DONE
-- Port to JEdit 4.0 and new plugin architecture.
-- Make Java 1.4 compatible.
-- Update help.
-
-Future additions/fixes:
-- Test on more complicated ANT scripts
-- Allow all ant project properties to be changed per project
-- Execute outside of current JVM by forking, not by script
-- Load custom taskdefs from an ant lib directory
-- Refactor AntTree to use command pattern
-- Open/Close build files that are related to the current session.
-- Add actions for easy shortcut binding:
-	- run the current target of the current build file;
-	- choose the target in the current build file and run (making it current) - just small dialog with combobox;
-	- choose the build file from the list.
-- If tools.jar is not found and loaded, present a message and
-  exit AntFarm.
-- Allow properties to be system/environmental variables.
-- Allow targets to be displayed based on a regex.
-
-
