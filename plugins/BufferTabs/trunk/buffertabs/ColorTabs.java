@@ -220,16 +220,16 @@ public class ColorTabs
                {
                   if (colorTitles)
                   {
-                     newColour = alterColourDarken(entry.colour);
+                     newColour = alterColourDarken(entry.color);
                   }
                   else
                   {
-                     newColour = alterColourMute(entry.colour);
+                     newColour = alterColourMute(entry.color);
                   }
                }
                else
                {
-                  newColour = entry.colour;
+                  newColour = entry.color;
                }
 
                colorsAssigned.put(name, newColour);
@@ -481,21 +481,21 @@ public class ColorTabs
 
 
    /**
-    * Class to store colour match data
+    * Class to store color match data
     *
     * @author     Chris Samuels
     * @created    24 February 2003
     */
    static class ColorEntry
    {
-      Color colour;
+      Color color;
       RE re;
 
 
-      ColorEntry(RE re, Color colour)
+      ColorEntry(RE re, Color color)
       {
          this.re = re;
-         this.colour = colour;
+         this.color = color;
       }
    }
 
