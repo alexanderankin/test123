@@ -86,7 +86,7 @@ public class ResultSetWindow extends JPanel
     add( BorderLayout.NORTH, p );
     add( BorderLayout.SOUTH, status = new JLabel() );
 
-    updateServerName( SqlUtils.getSelectedServerName() );
+    updateServerName( SqlUtils.getSelectedServerName( view ) );
 
     updateByModel( null );
 
@@ -316,7 +316,8 @@ public class ResultSetWindow extends JPanel
     {
       tbl.setAutoResizeColumns( true );
       tbl.setAutoResizeMode( JTable.AUTO_RESIZE_ALL_COLUMNS );
-    } else
+    }
+    else
     {
       tbl.setAutoResizeColumns( false );
       tbl.setAutoResizeMode( JTable.AUTO_RESIZE_OFF );
@@ -349,7 +350,7 @@ public class ResultSetWindow extends JPanel
   /**
    *  Sets the AutoResize attribute of the ResultSetWindow class
    *
-   * @param  maxRecs  The new AutoResize value
+   * @param  autoResize  The new AutoResize value
    * @since
    */
   public final static void setAutoResize( boolean autoResize )
@@ -395,6 +396,7 @@ public class ResultSetWindow extends JPanel
       return false;
     }
   }
+
 
   /**
    *Description of the Method

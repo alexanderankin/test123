@@ -72,6 +72,7 @@ public class SqlServerRecord extends Properties
 
   protected static Map allRecords = null;
 
+
   /**
    *  Constructor for the SqlServerRecord object
    *
@@ -270,9 +271,10 @@ public class SqlServerRecord extends Properties
   /**
    *  Description of the Method
    *
+   * @param  view  Description of Parameter
    * @since
    */
-  public void save()
+  public void save( View view )
   {
     allRecords = null;
 
@@ -280,13 +282,13 @@ public class SqlServerRecord extends Properties
     for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
       final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
-      SqlPlugin.setLocalProperty( "sql.server." + name + "." + param.getName(),
+      SqlPlugin.setLocalProperty( view, "sql.server." + name + "." + param.getName(),
           getProperty( param.getName() ) );
     }
 
-    SqlPlugin.setLocalProperty( "sql.server." + name + "." + TYPE, dbType.getName() );
+    SqlPlugin.setLocalProperty( view, "sql.server." + name + "." + TYPE, dbType.getName() );
 
-    ensureNameInServersList( name );
+    ensureNameInServersList( view, name );
   }
 
 
@@ -325,9 +327,10 @@ public class SqlServerRecord extends Properties
   /**
    *  Description of the Method
    *
+   * @param  view  Description of Parameter
    * @since
    */
-  public void delete()
+  public void delete( View view )
   {
     allRecords = null;
 
@@ -335,12 +338,12 @@ public class SqlServerRecord extends Properties
     for ( Iterator e = connParams.values().iterator(); e.hasNext();  )
     {
       final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
-      SqlPlugin.unsetLocalProperty( "sql.server." + name + "." + param.getName() );
+      SqlPlugin.unsetLocalProperty( view, "sql.server." + name + "." + param.getName() );
     }
 
-    SqlPlugin.unsetLocalProperty( "sql.server." + name + "." + TYPE );
+    SqlPlugin.unsetLocalProperty( view, "sql.server." + name + "." + TYPE );
 
-    deleteNameFromServersList( name );
+    deleteNameFromServersList( view, name );
   }
 
 
@@ -399,15 +402,47 @@ public class SqlServerRecord extends Properties
 
 
   /**
+   *  Description of the Method
+   *
+   * @param  name  Description of Parameter
+   * @param  view  Description of Parameter
+   */
+  protected void deleteNameFromServersList( View view, String name )
+  {
+    String allServerNames = SqlPlugin.getLocalProperty( view, LIST );
+    allServerNames = allServerNames.replaceAll( "[\\s]*" + name + "[\\s]*", " " );
+    SqlPlugin.setLocalProperty( view, LIST, allServerNames );
+  }
+
+
+  /**
+   *  Description of the Method
+   *
+   * @param  name  Description of Parameter
+   * @param  view  Description of Parameter
+   */
+  protected void ensureNameInServersList( View view, String name )
+  {
+    String allServerNames = SqlPlugin.getLocalProperty( view, LIST );
+    if ( allServerNames.matches( "[\\s]*" + name + "[\\s]*" ) )
+      return;
+
+    allServerNames = allServerNames + " " + name;
+    SqlPlugin.setLocalProperty( view, LIST, allServerNames );
+  }
+
+
+  /**
    *  Gets the ServerType attribute of the SqlServerRecord class
    *
    * @param  name  Description of Parameter
+   * @param  view  Description of Parameter
    * @return       The ServerType value
    * @since
    */
-  public static SqlServerType getServerType( String name )
+  public static SqlServerType getServerType( View view, String name )
   {
-    final String dbTypeName = SqlPlugin.getLocalProperty( "sql.server." + name + "."
+    final String dbTypeName = SqlPlugin.getLocalProperty( view, "sql.server." + name + "."
          + TYPE );
     if ( dbTypeName == null )
       return null;
@@ -418,11 +453,12 @@ public class SqlServerRecord extends Properties
   /**
    *  Gets the AllNames attribute of the SqlServerRecord class
    *
-   * @return    The AllNames value
+   * @param  view  Description of Parameter
+   * @return       The AllNames value
    */
-  public static Object[] getAllNames()
+  public static Object[] getAllNames( View view )
   {
-    final Object[] allNames = getAllRecords().keySet().toArray();
+    final Object[] allNames = getAllRecords( view ).keySet().toArray();
     Arrays.sort( allNames, Collator.getInstance() );
     return allNames;
   }
@@ -431,10 +467,11 @@ public class SqlServerRecord extends Properties
   /**
    *  Gets the AllRecords attribute of the SqlServerRecord class
    *
-   * @return    The AllRecords value
+   * @param  view  Description of Parameter
+   * @return       The AllRecords value
    * @since
    */
-  public static Map getAllRecords()
+  public static Map getAllRecords( View view )
   {
     if ( null == allRecords )
     {
@@ -444,15 +481,15 @@ public class SqlServerRecord extends Properties
           "Loading all records" );
       final Map servers = new HashMap();
 
-      final String allServerNames = SqlPlugin.getLocalProperty( LIST );
-      for ( StringTokenizer st = new StringTokenizer( allServerNames ); 
-            st.hasMoreTokens(); )
+      final String allServerNames = SqlPlugin.getLocalProperty( view, LIST );
+      for ( StringTokenizer st = new StringTokenizer( allServerNames );
+          st.hasMoreTokens();  )
       {
         final String name = st.nextToken();
 
         Log.log( Log.DEBUG, SqlServerRecord.class,
             "Found name " + name + " for loading" );
-        final SqlServerRecord sr = load( name );
+        final SqlServerRecord sr = load( view, name );
         if ( sr != null )
           allRecords.put( sr.getName(), sr );
       }
@@ -472,12 +509,13 @@ public class SqlServerRecord extends Properties
    *  Description of the Method
    *
    * @param  name  Description of Parameter
+   * @param  view  Description of Parameter
    * @return       Description of the Returned Value
    * @since
    */
-  public static SqlServerRecord get( String name )
+  public static SqlServerRecord get( View view, String name )
   {
-    final Map recs = getAllRecords();
+    final Map recs = getAllRecords( view );
     if ( recs == null )
       return null;
     return (SqlServerRecord) recs.get( name );
@@ -487,17 +525,18 @@ public class SqlServerRecord extends Properties
   /**
    *Description of the Method
    *
+   * @param  view  Description of Parameter
    * @since
    */
-  public static void clearProperties()
+  public static void clearProperties( View view )
   {
     allRecords = null;
 
     final java.util.List v = new ArrayList();
 
-    SqlPlugin.unsetLocalProperty( LIST );
+    SqlPlugin.unsetLocalProperty( view, LIST );
 
-    SqlPlugin.unsetLocalProperty( "sql.currentServerName" );
+    SqlPlugin.unsetLocalProperty( view, "sql.currentServerName" );
   }
 
 
@@ -505,14 +544,15 @@ public class SqlServerRecord extends Properties
    *  Description of the Method
    *
    * @param  name  Description of Parameter
+   * @param  view  Description of Parameter
    * @return       Description of the Returned Value
    * @since
    */
-  protected static SqlServerRecord load( String name )
+  protected static SqlServerRecord load( View view, String name )
   {
     Log.log( Log.DEBUG, SqlServerRecord.class,
         "Loading server record " + name );
-    final SqlServerType dbType = getServerType( name );
+    final SqlServerType dbType = getServerType( view, name );
     if ( dbType == null )
     {
       Log.log( Log.ERROR, SqlServerRecord.class,
@@ -527,7 +567,7 @@ public class SqlServerRecord extends Properties
     {
       final SqlServerType.ConnectionParameter param = (SqlServerType.ConnectionParameter) e.next();
       final String value =
-          SqlPlugin.getLocalProperty( "sql.server." + name + "." + param.getName() );
+          SqlPlugin.getLocalProperty( view, "sql.server." + name + "." + param.getName() );
 
       rv.setProperty( param.getName(), value );
     }
@@ -540,25 +580,6 @@ public class SqlServerRecord extends Properties
         "Connection: " + rv.getConnectionString() );
 
     return rv;
-  }
-
-
-  protected void deleteNameFromServersList( String name )
-  {
-    String allServerNames = SqlPlugin.getLocalProperty( LIST );
-    allServerNames = allServerNames.replaceAll( "[\\s]*" + name + "[\\s]*", " " );
-    SqlPlugin.setLocalProperty( LIST, allServerNames );
-  }
-
-
-  protected void ensureNameInServersList( String name )
-  {
-    String allServerNames = SqlPlugin.getLocalProperty( LIST );
-    if ( allServerNames.matches( "[\\s]*" + name + "[\\s]*" ) )
-      return;
-
-    allServerNames = allServerNames + " " + name;
-    SqlPlugin.setLocalProperty( LIST, allServerNames );
   }
 }
 

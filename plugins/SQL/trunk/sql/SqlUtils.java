@@ -33,6 +33,9 @@ import org.gjt.sp.util.*;
 
 import errorlist.*;
 
+import projectviewer.*;
+import projectviewer.vpt.*;
+
 import sql.*;
 import sql.preprocessors.*;
 
@@ -61,14 +64,16 @@ public class SqlUtils
    *  Sets the SelectedServerName attribute of the SqlUtils class
    *
    * @param  name  The new SelectedServerName value
+   * @param  view  The new SelectedServerName value
    * @since
    */
-  public final static void setSelectedServerName( final String name )
+  public final static void setSelectedServerName( View view, final String name )
   {
+    final VPTProject proj = getProjectForView( view );
     if ( name != null )
-      SqlPlugin.setLocalProperty( "sql.currentServerName", name );
+      SqlPlugin.setLocalProperty( view, "sql.currentServerName", name );
     else
-      SqlPlugin.unsetLocalProperty( "sql.currentServerName" );
+      SqlPlugin.unsetLocalProperty( view, "sql.currentServerName" );
 
     SqlPlugin.commitLocalProperties();
 
@@ -84,14 +89,34 @@ public class SqlUtils
 
 
   /**
+   *  Gets the ProjectForView attribute of the SqlUtils class
+   *
+   * @param  view  Description of Parameter
+   * @return       The ProjectForView value
+   */
+  public static VPTProject getProjectForView( View view )
+  {
+    VPTProject proj = null;
+    final ProjectViewer pv = ProjectViewer.getViewer( view );
+    if ( pv == null )
+      return null;
+    final VPTNode node = pv.getSelectedNode();
+    if ( node == null )
+      return null;
+    return VPTNode.findProjectFor( node );
+  }
+
+
+  /**
    *  Gets the SelectedServerName attribute of the SqlUtils class
    *
-   * @return    The SelectedServerName value
+   * @param  view  Description of Parameter
+   * @return       The SelectedServerName value
    * @since
    */
-  public final static String getSelectedServerName()
+  public final static String getSelectedServerName( View view )
   {
-    return SqlPlugin.getLocalProperty( "sql.currentServerName" );
+    return SqlPlugin.getLocalProperty( view, "sql.currentServerName" );
   }
 
 
@@ -107,7 +132,7 @@ public class SqlUtils
   {
     if ( serverName != null )
     {
-      final SqlServerRecord rec = SqlServerRecord.get( serverName );
+      final SqlServerRecord rec = SqlServerRecord.get( view, serverName );
       if ( rec != null && rec.hasValidProperties() )
         return rec;
     }

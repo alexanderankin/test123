@@ -16,6 +16,7 @@
     <pathelement location="${install.dir}/bsh.jar"/>
     <pathelement location="${install.dir}/CommonControls.jar"/>
     <pathelement location="${install.dir}/Sessions.jar"/>
+    <pathelement location="${install.dir}/ProjectViewer.jar"/>
     <pathelement location="${install.dir}/ErrorList.jar"/>
     <pathelement location="."/>
   </path>

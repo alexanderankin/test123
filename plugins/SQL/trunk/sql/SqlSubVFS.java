@@ -37,7 +37,7 @@ import sql.*;
  *  Description of the Class
  *
  * @author     svu
- * @created    26 Август 2001 г.
+ * @created    26 О©╫О©╫О©╫О©╫О©╫О©╫ 2001 О©╫.
  */
 public class SqlSubVFS
 {
@@ -80,30 +80,30 @@ public class SqlSubVFS
 
     switch ( level )
     {
-      case SqlVFS.DB_LEVEL:
+        case SqlVFS.DB_LEVEL:
 
-        retval = getEntriesFromDb( session,
-            path,
-            comp,
-            rec,
-            level,
-            "selectTableGroups",
-            null );
+          retval = getEntriesFromDb( session,
+              path,
+              comp,
+              rec,
+              level,
+              "selectTableGroups",
+              null );
 
-        break;
-      case TABLEGROUP_LEVEL:
+          break;
+        case TABLEGROUP_LEVEL:
 
-        final String tgName = SqlVFS.getPathComponent( path, TABLEGROUP_LEVEL );
+          final String tgName = SqlVFS.getPathComponent( path, TABLEGROUP_LEVEL );
 
-        retval = getEntriesFromDb( session,
-            path,
-            comp,
-            rec,
-            level,
-            "selectTablesInGroup",
-            new Object[]{tgName} );
+          retval = getEntriesFromDb( session,
+              path,
+              comp,
+              rec,
+              level,
+              "selectTablesInGroup",
+              new Object[]{tgName} );
 
-        break;
+          break;
     }
     Log.log( Log.DEBUG, SqlSubVFS.class,
         "Listed total " + ( retval == null ? -1 : retval.length ) + " items" );
