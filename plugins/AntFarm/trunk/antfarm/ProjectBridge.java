@@ -90,6 +90,21 @@ public class ProjectBridge
     }
   }
 
+	/** Notifies the creation of a project. */
+
+	public void projectAdded(ProjectViewerEvent evt)
+    {
+    }
+
+
+
+	/** Notifies the removal of a project. */
+
+	public void projectRemoved(ProjectViewerEvent evt)
+    {
+    }
+
+
 
   /**
    *  A shortcut to <code>view.getDockableWindowManager().getDockableWindow(String)</code>
