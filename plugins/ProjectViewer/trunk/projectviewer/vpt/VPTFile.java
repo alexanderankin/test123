@@ -20,13 +20,11 @@ package projectviewer.vpt;
 
 //{{{ Imports
 import java.io.File;
-import java.io.IOException;
 
 import java.awt.Color;
 import javax.swing.Icon;
 import javax.swing.filechooser.FileSystemView;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.io.VFS;
 import org.gjt.sp.jedit.Buffer;

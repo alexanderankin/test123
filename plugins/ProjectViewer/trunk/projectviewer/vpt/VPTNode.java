@@ -19,15 +19,12 @@
 package projectviewer.vpt;
 
 //{{{ Imports
-import java.util.Comparator;
 import java.util.Collections;
 
 import java.awt.Color;
 import java.awt.Component;
 
-import javax.swing.BoxLayout;
 import javax.swing.Icon;
-import javax.swing.JLabel;
 import javax.swing.UIManager;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.DefaultMutableTreeNode;

@@ -45,7 +45,6 @@ import projectviewer.ProjectManager;
 
 import projectviewer.PVActions;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTFile;
 import projectviewer.vpt.VPTProject;
 import projectviewer.config.ProjectViewerConfig;
 //}}}

@@ -23,7 +23,6 @@ import java.io.File;
 
 import javax.swing.Icon;
 
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.GUIUtilities;
 //}}}
 

@@ -19,29 +19,19 @@
 package projectviewer;
 
 //{{{ Imports
-import java.util.Iterator;
-
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.SwingUtilities;
 
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.menu.DynamicMenuProvider;
-import org.gjt.sp.jedit.msg.DynamicMenuChanged;
 
-import projectviewer.config.ProjectViewerConfig;
 import projectviewer.gui.GroupMenu;
 import projectviewer.vpt.VPTNode;
-import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTRoot;
 //}}}
 
@@ -59,7 +49,6 @@ public final class PVMenuProvider implements DynamicMenuProvider,
 
 	//{{{ Private members
 	private View view;
-	private ButtonGroup projects;
 	//}}}
 
 	//{{{ +PVMenuProvider() : <init>

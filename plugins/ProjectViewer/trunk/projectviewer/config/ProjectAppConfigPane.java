@@ -33,7 +33,6 @@ import javax.swing.JTable;
 import javax.swing.JButton;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import javax.swing.JScrollPane;
 import javax.swing.JFileChooser;
@@ -48,7 +47,6 @@ import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
-import projectviewer.ProjectPlugin;
 import projectviewer.gui.ModalJFileChooser;
 //}}}
 

@@ -21,7 +21,6 @@ package projectviewer.importer;
 //{{{ Imports
 import java.io.File;
 
-import java.util.HashSet;
 import java.util.StringTokenizer;
 
 import org.gjt.sp.jedit.jEdit;

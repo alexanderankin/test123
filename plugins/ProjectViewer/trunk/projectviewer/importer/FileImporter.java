@@ -41,7 +41,6 @@ import projectviewer.PVActions;
 import projectviewer.gui.ModalJFileChooser;
 import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTFile;
-import projectviewer.vpt.VPTProject;
 import projectviewer.vpt.VPTDirectory;
 //}}}
 

@@ -35,7 +35,6 @@ import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
-import errorlist.ErrorListPlugin;
 import errorlist.ErrorSource;
 
 import projectviewer.config.ProjectViewerConfig;

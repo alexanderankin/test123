@@ -24,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.StringTokenizer;
 
 import java.awt.Component;
 import java.awt.event.MouseEvent;
@@ -33,9 +32,7 @@ import java.awt.event.MouseAdapter;
 import javax.swing.JTree;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.TreePath;
-import javax.swing.SwingUtilities;
 
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.PluginJAR;
 import org.gjt.sp.jedit.GUIUtilities;

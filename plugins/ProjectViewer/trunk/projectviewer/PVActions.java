@@ -22,7 +22,6 @@ package projectviewer;
 import java.awt.Component;
 import java.awt.Window;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Writer;
 
@@ -31,14 +30,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.StringTokenizer;
 
-import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.PluginJAR;
 
 import projectviewer.vpt.VPTFile;
@@ -46,10 +43,7 @@ import projectviewer.vpt.VPTNode;
 import projectviewer.vpt.VPTProject;
 
 import projectviewer.action.Action;
-import projectviewer.action.EditProjectAction;
 import projectviewer.action.LaunchBrowserAction;
-
-import projectviewer.config.ProjectViewerConfig;
 //}}}
 
 /**

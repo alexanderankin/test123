@@ -56,49 +56,51 @@ public class ModalJFileChooser extends JFileChooser
 								implements ActionListener {
 
 	//{{{ Private members
-	private FileFilter hiddenFileFilter = new HiddenFileFilter();
-	private boolean defaultHiddenFileStatus = isFileHidingEnabled();
+	private FileFilter hiddenFileFilter;
+	private boolean defaultHiddenFileStatus;
 	//}}}
 
 	//{{{ +ModalJFileChooser() : <init>
 	public ModalJFileChooser() {
-		addActionListener(this);
-		addChoosableFileFilter(hiddenFileFilter);
+		init();
 	} //}}}
 
 	//{{{ +ModalJFileChooser(File) : <init>
 	public ModalJFileChooser(File currentDirectory) {
 		super(currentDirectory);
-		addActionListener(this);
-		addChoosableFileFilter(hiddenFileFilter);
+		init();
 	} //}}}
 
 	//{{{ +ModalJFileChooser(File, FileSystemView) : <init>
 	public ModalJFileChooser(File currentDirectory, FileSystemView fsv) {
 		super(currentDirectory, fsv);
-		addActionListener(this);
-		addChoosableFileFilter(hiddenFileFilter);
+		init();
 	} //}}}
 
 	//{{{ +ModalJFileChooser(FileSystemView) : <init>
 	public ModalJFileChooser(FileSystemView fsv) {
 		super(fsv);
-		addActionListener(this);
-		addChoosableFileFilter(hiddenFileFilter);
+		init();
 	} //}}}
 
 	//{{{ +ModalJFileChooser(String) : <init>
 	public ModalJFileChooser(String currentDirectoryPath) {
 		super(currentDirectoryPath);
-		addActionListener(this);
-		addChoosableFileFilter(hiddenFileFilter);
+		init();
 	} //}}}
 
 	//{{{ +ModalJFileChooser(String, FileSystemView) : <init>
 	public ModalJFileChooser(String currentDirectoryPath, FileSystemView fsv) {
 		super(currentDirectoryPath, fsv);
+	} //}}}
+
+	//{{{ -init() : void
+	private void init() {
+		hiddenFileFilter = new HiddenFileFilter();
+		defaultHiddenFileStatus = isFileHidingEnabled();
 		addActionListener(this);
 		addChoosableFileFilter(hiddenFileFilter);
+		setFileFilter(getAcceptAllFileFilter());
 	} //}}}
 
 	//{{{ #createDialog(Component) : JDialog

@@ -19,10 +19,8 @@
 package projectviewer.config;
 
 //{{{ Imports
-// Import Java
 import java.io.File;
 
-// Import AWT/Swing
 import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
@@ -30,27 +28,19 @@ import java.awt.Insets;
 import java.awt.Point;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.WindowAdapter;
 import java.awt.event.ActionListener;
 
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.JButton;
-import javax.swing.JDialog;
 import javax.swing.JTextField;
 import javax.swing.JOptionPane;
 import javax.swing.JFileChooser;
 import javax.swing.JPopupMenu;
-import javax.swing.WindowConstants;
 
-// Import jEdit
-import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.GUIUtilities;
 import org.gjt.sp.jedit.AbstractOptionPane;
 
-import projectviewer.ProjectViewer;
 import projectviewer.ProjectManager;
 
 import projectviewer.gui.GroupMenu;
