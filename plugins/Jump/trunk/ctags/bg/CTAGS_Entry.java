@@ -69,13 +69,6 @@ public class CTAGS_Entry implements Serializable
     {
         return this.toString;
     } //}}}
-
-/* I try to use this class in Jump.
- TagsJumpAction.java and WorkspacesTagsAction.java needs to display different presentations of same CTAGS_Entry (AbstractListModel).
- <TAG><SPACE><(EXCMD)> - for TagsJumpAction.java, and <FILENAME><SPACE><(EXCMD)> - for WorkspacesTagsAction.java
- First, I tryed to define my own classes, which extends CTAGS_Entry and overrides toString(). But it always ends by ClassCastError at startup.
- If you know the propely methods to extend CTAGS_Entry - mail me please. pavlikus@front.ru
- */
     
 //{{{ setToStringValue
     public void setToStringValue(String i)

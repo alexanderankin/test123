@@ -209,7 +209,7 @@ public class CTAGS_Buffer extends ArrayList
         this.addFileName(entry.getFileName());
         return super.add(entry);  
     } //}}}
-
+    //String
 //{{{ clear
     public void clear() 
     {

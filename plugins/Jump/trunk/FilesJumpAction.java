@@ -25,7 +25,7 @@ import projectviewer.event.*;
 import ctags.bg.*;
 //}}}
 // TODO: tabs_files - can't be a HashMap. If may cause problems when more than one build.xml, for ex., founded in current project.
-class FilesJumpAction
+class FilesJumpAction 
 {
 
 //{{{ fields
@@ -155,20 +155,22 @@ private Object[] getFileList()
 //{{{ class FilesListModel
     //ListModel for files JumpList
     class FilesListModel extends AbstractListModel {
-        public int getSize() {
+        public int getSize() 
+        {
             return files.length;
         }
 
-        public Object getElementAt(int index) {
-            String i = (String) files[index];
-            return i;
+        public Object getElementAt(int index) 
+        {
+            return files[index];
         }
     }
 //}}}
 
 //{{{ class AlphabeticComparator
     //Comparator for sorting array with ignoreCase...
-    class AlphabeticComparator implements Comparator {
+    class AlphabeticComparator implements Comparator 
+    {
         public int compare (Object o1, Object o2) 
         {
             String s1 = (String) o1;
@@ -177,5 +179,4 @@ private Object[] getFileList()
         }
     }
 //}}}
-
 }

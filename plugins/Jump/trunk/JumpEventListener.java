@@ -35,7 +35,6 @@ public class JumpEventListener extends ProjectViewerAdapter implements EBCompone
     private boolean isNewProject = false;
     // If isNewProject=false at Project_Loaded() - I set needReload=true, to reload project (just once)
     private boolean needReload = false;
-    //public ProjectJumpAction pja;
 //}}}
     
 //{{{ COSTRUCTOR   
