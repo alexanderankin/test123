@@ -6,14 +6,14 @@ import org.gjt.sp.jedit.EBMessage;
  * @author Matthieu Casanova
  */
 public final class PHPProjectChangedMessage extends EBMessage {
-  private final AbstractProject selectedProject;
+  private final Project selectedProject;
 
-  public PHPProjectChangedMessage(Object source,AbstractProject selectedProject) {
+  public PHPProjectChangedMessage(Object source,Project selectedProject) {
     super(source);
     this.selectedProject = selectedProject;
   }
 
-  public AbstractProject getSelectedProject() {
+  public Project getSelectedProject() {
     return selectedProject;
   }
 }

@@ -21,6 +21,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
   private JCheckBox unusedParameter;
   private JCheckBox unassignedVariable;
   private JCheckBox unnecessaryGlobal;
+  private JCheckBox caseSemicolon;
 
   public static final String PROP_WARN_SHORT_OPENTAG = "gatchan.phpparser.warnings.shortOpenTag";
   public static final String PROP_WARN_FORENDFOR = "gatchan.phpparser.warnings.forEndFor";
@@ -30,6 +31,7 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
   public static final String PROP_WARN_FOREACHENDFOREACH = "gatchan.phpparser.warnings.foreachEndForeach";
   public static final String PROP_WARN_UNUSED_PARAMETERS = "gatchan.phpparser.warnings.methodanalysis.unusedParameters";
   public static final String PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED = "gatchan.phpparser.warnings.methodanalysis.unassignedVariable";
+  public static final String PROP_WARN_CASE_SEMICOLON = "gatchan.phpparser.warnings.warnings.caseSemicolon";
   public static final String PROP_WARN_UNNECESSARY_GLOBAL = "gatchan.phpparser.warnings.methodanalysis.unnecessaryGlobal";
 
   /** Instantiate the option pane of the PHP Parser. */
@@ -59,6 +61,9 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     foreachEndForeach = new JCheckBox("report foreach() : endforeach; syntax");
     foreachEndForeach.setSelected(jEdit.getBooleanProperty(PROP_WARN_FOREACHENDFOREACH));
 
+    caseSemicolon = new JCheckBox("report case '' ; syntax");
+    caseSemicolon.setSelected(jEdit.getBooleanProperty(PROP_WARN_CASE_SEMICOLON));
+
     final JLabel methodAnalysisLabel = new JLabel("Method analysis");
     unusedParameter = new JCheckBox("unused parameters");
     unusedParameter.setSelected(jEdit.getBooleanProperty(PROP_WARN_UNUSED_PARAMETERS));
@@ -74,8 +79,9 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     addComponent(forEndFor);
     addComponent(switchEndSwitch);
     addComponent(ifEndSwitch);
-    addComponent(whileEndWhile);
     addComponent(foreachEndForeach);
+    addComponent(whileEndWhile);
+    addComponent(caseSemicolon);
 
     addComponent(methodAnalysisLabel);
     addComponent(unusedParameter);
@@ -94,5 +100,6 @@ public final class PHPParserOptionPane extends AbstractOptionPane {
     jEdit.setBooleanProperty(PROP_WARN_UNUSED_PARAMETERS, unusedParameter.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_VARIABLE_MAY_BE_UNASSIGNED, unassignedVariable.isSelected());
     jEdit.setBooleanProperty(PROP_WARN_UNNECESSARY_GLOBAL, unnecessaryGlobal.isSelected());
+    jEdit.setBooleanProperty(PROP_WARN_CASE_SEMICOLON, caseSemicolon.isSelected());
   }
 }

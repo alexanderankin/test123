@@ -1,6 +1,5 @@
 package gatchan.phpparser.project.dockablepanel;
 
-import gatchan.phpparser.project.dockablepanel.ProjectOptionsPanel;
 import gatchan.phpparser.project.Project;
 
 import javax.swing.*;

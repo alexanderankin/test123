@@ -1,9 +1,9 @@
 package gatchan.phpparser.project;
 
 import org.gjt.sp.jedit.EditBus;
-import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.jedit.View;
 import org.gjt.sp.jedit.browser.VFSBrowser;
+import org.gjt.sp.jedit.jEdit;
 import org.gjt.sp.util.Log;
 
 import javax.swing.*;
@@ -20,7 +20,7 @@ import java.util.List;
 public final class ProjectManager {
 
   /** The current project. */
-  private AbstractProject project;
+  private Project project;
 
   /** The instance of the project manager. */
   private static ProjectManager instance;
@@ -38,10 +38,7 @@ public final class ProjectManager {
   /** Instantiate the project manager. */
   private ProjectManager() {
     final String projectFilePath = jEdit.getProperty(PROJECT_NAME_PROPERTY);
-    if (projectFilePath == null) {
-      Log.log(Log.DEBUG, this, "Creating a dummy project");
-      project = new DummyProject(projectVersion);
-    } else {
+    if (projectFilePath != null) {
       Log.log(Log.DEBUG, this, "Opening project " + projectFilePath);
       final File projectFile = new File(projectDirectory + File.separator + projectFilePath + ".project.props");
       openProject(projectFile);
@@ -53,7 +50,7 @@ public final class ProjectManager {
    *
    * @return the current project
    */
-  public AbstractProject getProject() {
+  public Project getProject() {
     return project;
   }
 
@@ -72,7 +69,7 @@ public final class ProjectManager {
   /**
    * Get the list of the projects.
    *
-   * @return a {@link List} containing {@link AbstractProject} or null if there is no settingsDirectory
+   * @return a {@link List} containing {@link Project} or null if there is no settingsDirectory
    */
   public List getProjectList() {
     if (settingsDirectory != null) {
@@ -108,23 +105,10 @@ public final class ProjectManager {
    */
   public void dispose() {
     instance = null;
-    if (project instanceof Project) {
+    if (project != null) {
       jEdit.setProperty(PROJECT_NAME_PROPERTY, project.getName());
-    } else {
-      jEdit.setProperty(PROJECT_NAME_PROPERTY, null);
     }
     closeProject();
-  }
-
-  /**
-   * Create a DummyProject.
-   *
-   * @return the dummy project created
-   */
-  public AbstractProject createDummyProject() {
-    project = new DummyProject(projectVersion);
-    EditBus.send(new PHPProjectChangedMessage(this, project));
-    return project;
   }
 
   /** Create a project. */
@@ -186,10 +170,10 @@ public final class ProjectManager {
       this.project = project;
     } catch (InvalidProjectPropertiesException e) {
       Log.log(Log.ERROR, this, e.getMessage());
-      this.project = new DummyProject(projectVersion);
+      this.project = null;
     } catch (FileNotFoundException e) {
       Log.log(Log.ERROR, this, e.getMessage());
-      this.project = new DummyProject(projectVersion);
+      this.project = null;
     }
     EditBus.send(new PHPProjectChangedMessage(this, this.project));
   }

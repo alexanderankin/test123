@@ -1,6 +1,6 @@
 package gatchan.phpparser.project.dockablepanel;
 
-import gatchan.phpparser.project.AbstractProject;
+import gatchan.phpparser.project.Project;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,7 +32,7 @@ public class ProjectStatsPanel extends JPanel {
    *
    * @param project the project
    */
-  public void updateProject(AbstractProject project) {
+  public void updateProject(Project project) {
     if (project == null) {
       classesCount.setText(null);
       methodsCount.setText(null);

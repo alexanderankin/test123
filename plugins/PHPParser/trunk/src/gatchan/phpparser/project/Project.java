@@ -1,13 +1,14 @@
 package gatchan.phpparser.project;
 
+import gatchan.phpparser.project.itemfinder.PHPItem;
 import gatchan.phpparser.project.itemfinder.QuickAccessItemFinder;
 import gatchan.phpparser.sidekick.PHPSideKickParser;
 import net.sourceforge.phpdt.internal.compiler.ast.ClassHeader;
 import net.sourceforge.phpdt.internal.compiler.ast.MethodHeader;
+import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.jedit.Mode;
 import org.gjt.sp.jedit.io.VFSManager;
 import org.gjt.sp.jedit.jEdit;
-import org.gjt.sp.jedit.EditBus;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.util.WorkRequest;
 
@@ -19,7 +20,7 @@ import java.util.*;
  *
  * @author Matthieu Casanova
  */
-public final class Project extends AbstractProject {
+public final class Project {
 
   /** The file where the project will be saved. */
   private final File file;
@@ -36,9 +37,22 @@ public final class Project extends AbstractProject {
   /** The file where the methods will be serialized. */
   private File methodFile;
   private File fileFile;
+  /** The properties */
+  protected final Properties properties = new Properties();
+  /** This table will contains class names (lowercase) as key and {@link net.sourceforge.phpdt.internal.compiler.ast.ClassHeader} as values. */
+  protected Hashtable classes;
+  /** This table will contains class names (lowercase) as key and {@link net.sourceforge.phpdt.internal.compiler.ast.MethodHeader} as values. */
+  protected Hashtable methods;
+  /** This table will contains as key the file path, and as value a {@link java.util.List} */
+  protected Hashtable files;
+  protected QuickAccessItemFinder quickAccess = new QuickAccessItemFinder();
 
   public Project(String name, String version) {
-    super(name, version);
+    properties.setProperty("name", name);
+    properties.setProperty("version", version);
+    classes = new Hashtable();
+    methods = new Hashtable();
+    files = new Hashtable();
     file = getValidFileName(ProjectManager.projectDirectory + File.separator + name);
     init();
     needSave = true;
@@ -216,7 +230,14 @@ public final class Project extends AbstractProject {
    */
   public void addClass(ClassHeader classHeader) {
     needSave = true;
-    super.addClass(classHeader);
+    if (!classes.containsValue(classHeader)) {
+      insertItem(classes, classHeader);
+
+      final List methods = classHeader.getMethodsHeaders();
+      for (int i = 0; i < methods.size(); i++) {
+        quickAccess.addToIndex((PHPItem) methods.get(i));
+      }
+    }
   }
 
   /**
@@ -226,7 +247,9 @@ public final class Project extends AbstractProject {
    */
   public void addMethod(MethodHeader methodHeader) {
     needSave = true;
-    super.addMethod(methodHeader);
+    if (!methods.containsValue(methodHeader)) {
+      insertItem(methods, methodHeader);
+    }
   }
 
   /**
@@ -275,6 +298,112 @@ public final class Project extends AbstractProject {
 
       VFSManager.runInWorkThread(new Rebuilder(this, path));
     }
+  }
+
+  /**
+   * Returns the name of the project.
+   *
+   * @return the name of the project
+   */
+  public String getName() { return properties.getProperty("name"); }
+
+  public String toString() { return getName(); }
+
+  /**
+   * Insert an item in a map.
+   *
+   * @param targetMap the map inside wich we want to insert the item. it's methods or classes
+   * @param phpItem   the item to insert
+   */
+  private void insertItem(Map targetMap, PHPItem phpItem) {
+    quickAccess.addToIndex(phpItem);
+    targetMap.put(phpItem.getName().toLowerCase(), phpItem);
+    final String path = phpItem.getPath();
+
+    List fileList = (List) files.get(path);
+    if (fileList == null) {
+      fileList = new ArrayList();
+      files.put(path, fileList);
+    }
+    fileList.add(phpItem);
+  }
+
+  /**
+   * Remove the elements of a file. (Used before updating a file)
+   *
+   * @param path the filepath
+   */
+  public void clearSourceFile(String path) {
+    final List fileTable = (List) files.get(path);
+    if (fileTable != null) {
+      fileTable.clear();
+    }
+    clearSourceFileFromMap(path, classes);
+    clearSourceFileFromMap(path, methods);
+    quickAccess.purgePath(path);
+  }
+
+  private static void clearSourceFileFromMap(String path, Hashtable table) {
+    final Enumeration keys = table.keys();
+    while (keys.hasMoreElements()) {
+      Object key = keys.nextElement();
+      final PHPItem phpItem = (PHPItem) table.get(key);
+      if (path.equals(phpItem.getPath())) {
+        table.remove(key);
+      }
+    }
+  }
+
+  public Map getClasses() { return classes; }
+
+  /**
+   * Return a classHeader by it's name.
+   *
+   * @param name the name of the class
+   * @return a {@link net.sourceforge.phpdt.internal.compiler.ast.ClassHeader} or null
+   */
+  public ClassHeader getClass(String name) {
+    return (ClassHeader) classes.get(name.toLowerCase());
+  }
+
+  /**
+   * Returns the version of the file project.
+   *
+   * @return the project version
+   */
+  public String getVersion() {
+    return properties.getProperty("version");
+  }
+
+  /**
+   * Returns the number of classes in the project.
+   *
+   * @return how many classes are in the project
+   */
+  public int getClassCount() {
+    return classes.size();
+  }
+
+  /**
+   * Returns the number of methods in the project.
+   *
+   * @return how many methods are in the project
+   */
+  public int getMethodCount() {
+    return methods.size();
+  }
+
+  /**
+   * Returns the number of methods in the project.
+   *
+   * @return how many methods are in the project
+   */
+  public int getFileCount() {
+    return files.size();
+  }
+
+  public QuickAccessItemFinder getQuickAccess() {
+    return quickAccess;
   }
 
   /**
