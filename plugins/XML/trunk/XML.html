@@ -33,6 +33,25 @@ tree and select the appropriate node.
 <h1>Change Log</h1>
 </a>
 
+<h3>Version 0.3</h3>
+
+Requires jEdit 3.2pre9, EditBus 1.0.1, and ErrorList 1.1.
+
+<ul>
+<li>Now uses Apache Xerces parser to parse XML, instead of brain-dead
+Microstar parser included with jEdit
+<li>Automatic parsing can be disabled, and even if enabled, is only
+performed if the XML tree window is open. It is disabled by default
+<li>Delay before automatic parsing begins can be configured
+<li>Display of attributes can be configured
+<li>Option pane lets you set which modes XML parsing is performed in, previously
+this list of modes was hard-coded
+<li>Menu item command to re-parse current buffer, can be bound to a keystroke,
+for example
+<li>Menu item command to toggle automatic parse for the current buffer only
+<li>One error source per XML tree, instead of a global error source
+</ul>
+
 <h3>Version 0.2</h3>
 
 Requires jEdit 3.0, EditBus 1.0, and ErrorList 1.0.

@@ -1,20 +1,50 @@
 # Plugin properties
-plugin.XmlPlugin.name=XML
-plugin.XmlPlugin.author=Slava Pestov
-plugin.XmlPlugin.version=0.2
-plugin.XmlPlugin.docs=XML.html
-plugin.XmlPlugin.depend.0=jedit 03.00.99.00
-plugin.XmlPlugin.depend.1=plugin EditBusPlugin 1.0
-plugin.XmlPlugin.depend.2=plugin ErrorListPlugin 1.0
+plugin.xml.XmlPlugin.name=XML
+plugin.xml.XmlPlugin.author=Slava Pestov and David Walend
+plugin.xml.XmlPlugin.version=0.3
+plugin.xml.XmlPlugin.docs=/XML.html
+plugin.xml.XmlPlugin.jars=xerces.jar
+plugin.xml.XmlPlugin.depend.0=jedit 03.02.09.00
+plugin.xml.XmlPlugin.depend.1=plugin EditBusPlugin 1.0.1
+plugin.xml.XmlPlugin.depend.2=plugin ErrorListPlugin 1.1
 
-# The somewhat hardcoded list of edit modes where XML parsing is to be
-# performed
-mode.xml.useXmlPlugin=true
-mode.xsl.useXmlPlugin=true
+# Modes where xml parsing can theoretically to be performed
+# If a file doesn't have one of these modes, attempting to parse will
+# show an error
+mode.xml.xml.parse=true
+mode.xsl.xml.parse=true
+
+# Global auto-parse switch; note that the xml.parse buffer-local property
+# overrides this by disabling parsing completely
+buffer.xml.auto-parse=false
+
+# Delay after typing ends before auto parse, in milliseconds
+xml.delay=1500
+
+# Show attributes in XML tree?
+xml.show-attributes=false
+
+# DTD validation
+buffer.xml.validate=true
 
 # Menu bar stuff
+xml-menu=xml-tree - xml-parse xml-auto-parse - xml-clear-path-cache
+xml-menu.label=XML
 xml-tree.label=XML Tree
+xml-parse.label=Parse XML Buffer
+xml-auto-parse.label=Automatically Parse XML Buffer
+xml-clear-path-cache.label=Clear XML Search Path Cache
 
 # XML tree window
 xml-tree.title=XML Tree
+xml-tree.parse=Parse
 xml-tree.not-xml-file=Not an XML file
+
+# Option pane
+options.xml.label=XML
+options.xml.general.label=General
+options.xml.general.auto-parse=Parse XML files on-the-fly
+options.xml.general.delay=Delay before auto parse (seconds):
+options.xml.general.show-attributes=Show tag attributes in tree
+options.xml.general.validate=Validate if DTD or schema available
+options.xml.general.modes=Enable XML parsing for the following edit modes:

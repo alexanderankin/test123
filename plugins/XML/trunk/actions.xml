@@ -13,4 +13,30 @@
 				.isDockableWindowVisible("xml-tree");
 		</IS_SELECTED>
 	</ACTION>
+	<ACTION NAME="xml-parse">
+		<CODE>
+			view.getDockableWindowManager()
+				.addDockableWindow("xml-tree");
+			view.getDockableWindowManager()
+				.getDockableWindow("xml-tree").parse();
+		</CODE>
+	</ACTION>
+	<ACTION NAME="xml-auto-parse">
+		<CODE>
+			buffer.putBooleanProperty("xml.auto-parse",
+				!buffer.getBooleanProperty("xml.auto-parse"));
+			view.getDockableWindowManager()
+				.addDockableWindow("xml-tree");
+			view.getDockableWindowManager()
+				.getDockableWindow("xml-tree").parse();
+		</CODE>
+		<IS_SELECTED>
+			return buffer.getBooleanProperty("xml.auto-parse");
+		</IS_SELECTED>
+	</ACTION>
+	<ACTION NAME="xml-clear-path-cache">
+		<CODE>
+			xml.EntityManager.clearSearchPathCache();
+		</CODE>
+	</ACTION>
 </ACTIONS>
