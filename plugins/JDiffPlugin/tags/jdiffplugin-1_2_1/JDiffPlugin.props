@@ -1,0 +1,97 @@
+# JDiffPlugin properties
+# Author: Andre Kaplan
+plugin.JDiffPlugin.name=JDiff Plugin
+plugin.JDiffPlugin.author=Andre Kaplan
+plugin.JDiffPlugin.version=1.2.1
+plugin.JDiffPlugin.docs=JDiffPlugin.html
+
+# Dependencies
+plugin.JDiffPlugin.depend.0=jdk 1.1
+plugin.JDiffPlugin.depend.1=jedit 03.01.01.00
+
+# Menu
+jdiff-menu=\
+    toggle-dual-diff \
+    jdiff.refresh-diff \
+    - \
+    jdiff.prev-diff \
+    jdiff.next-diff \
+    - \
+    jdiff.toggle-ignore-case \
+    jdiff.toggle-trim-whitespace \
+    jdiff.toggle-ignore-whitespace \
+    - \
+    jdiff.diff-normal-output
+
+jdiff-menu.label=JDiff
+
+toggle-dual-diff.label=Dual diff
+jdiff.refresh-diff.label=Refresh diff
+jdiff.prev-diff.label=Go to Previous Difference
+jdiff.next-diff.label=Go to Next Difference
+jdiff.toggle-ignore-case.label=Ignore case
+jdiff.toggle-trim-whitespace.label=Ignore leading and trailing whitespace
+jdiff.toggle-ignore-whitespace.label=Ignore all whitespace
+jdiff.diff-normal-output.label=Normal Diff Output
+
+jdiff.ignore-case=false
+jdiff.trim-whitespace=false
+jdiff.ignore-whitespace=false
+
+jdiff.global-virtual-overview=true
+
+jdiff.overview-changed-color=\#FFCC66
+jdiff.overview-deleted-color=\#FF6666
+jdiff.overview-inserted-color=\#99CC66
+jdiff.overview-invalid-color=\#CCCCCC
+jdiff.left-cursor-color=\#000000
+jdiff.right-cursor-color=\#000000
+
+jdiff.highlight-changed-color=\#FFFF90
+jdiff.highlight-deleted-color=\#FF9090
+jdiff.highlight-inserted-color=\#D9FF90
+jdiff.highlight-invalid-color=\#909090
+
+jdiff.selected-highlight-changed-color=\#FFCC66
+jdiff.selected-highlight-deleted-color=\#FF6666
+jdiff.selected-highlight-inserted-color=\#99CC66
+jdiff.selected-highlight-invalid-color=\#CCCCCC
+
+# Option panes titles
+options.jdiff.label=JDiff
+options.jdiff-general.label=General
+options.jdiff-overview.label=Overview colors
+options.jdiff-highlight.label=Highlight colors
+
+options.jdiff.ignore-case=Ignore case
+options.jdiff.trim-whitespace=Ignore leading and trailing whitespace
+options.jdiff.ignore-whitespace=Ignore all whitespace
+
+options.jdiff.overview-display=Global overview display:
+options.jdiff.physical-overview=Physical overview
+options.jdiff.virtual-overview=Virtual overview
+
+options.jdiff.overview=Overview colors:
+options.jdiff.overview-changed-color=Changed lines color:\ 
+options.jdiff.overview-deleted-color=Deleted lines color:\ 
+options.jdiff.overview-inserted-color=Inserted lines color:\ 
+options.jdiff.overview-invalid-color=Invalid lines color:\ 
+options.jdiff.left-cursor-color=Left cursor color:\ 
+options.jdiff.right-cursor-color=Right cursor color:\ 
+
+options.jdiff.highlight=Highlight colors:
+options.jdiff.highlight-changed-color=Changed lines color:\ 
+options.jdiff.highlight-deleted-color=Deleted lines color:\ 
+options.jdiff.highlight-inserted-color=Inserted lines color:\ 
+options.jdiff.highlight-invalid-color=Invalid lines color:\ 
+
+options.jdiff.selected-highlight=Selected highlight colors:
+options.jdiff.selected-highlight-changed-color=Changed lines color:\ 
+options.jdiff.selected-highlight-deleted-color=Deleted lines color:\ 
+options.jdiff.selected-highlight-inserted-color=Inserted lines color:\ 
+options.jdiff.selected-highlight-invalid-color=Invalid lines color:\ 
+
+# Messages
+jdiff.identical-files.title=Identical files
+jdiff.identical-files.message=The two files are identical
+
