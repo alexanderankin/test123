@@ -134,7 +134,7 @@ public class OldStyleFileImporter extends FileImporter {
 				addTree(chosen[i], node, fnf);
 			} else if (findDirectory(chosen[i], selected, false) == null) {
 				node = new VPTFile(chosen[i]);
-				project.registerFile((VPTFile)node);
+				registerFile((VPTFile)node);
 				fileCount++;
 				if (selected == project) {
 					lst.add(node);
