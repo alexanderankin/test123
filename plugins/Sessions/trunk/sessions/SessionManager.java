@@ -33,6 +33,7 @@ import javax.swing.JOptionPane;
 import org.gjt.sp.jedit.*;
 import org.gjt.sp.jedit.browser.VFSBrowser;
 import org.gjt.sp.jedit.io.VFSManager;
+import org.gjt.sp.jedit.msg.PropertiesChanged;
 import org.gjt.sp.util.Log;
 import org.gjt.sp.jedit.msg.BufferUpdate;
 
@@ -168,6 +169,8 @@ public class SessionManager implements EBComponent
 		
 		// update the jEdit title bar with the session name
 		setSessionNameInTitleBar();
+		// Force the view to update the title bar
+		view.handleMessage(new PropertiesChanged(this));
 	}
 
 
@@ -252,6 +255,10 @@ public class SessionManager implements EBComponent
 		saveCurrentSessionProperty();
 		EditBus.send(new SessionListChanged(this));
 		EditBus.send(new SessionChanged(this, oldSessionName, newName, currentSession));
+		// update the jEdit title bar with the session name
+		setSessionNameInTitleBar();
+		// Force the view to update the title bar
+		view.handleMessage(new PropertiesChanged(this));
 	}
 
 
@@ -480,11 +487,8 @@ public class SessionManager implements EBComponent
 						currentSession.getName() +
 						jEdit.getProperty("sessions.titlebar.endbracket");
 				}
-				
-				
 						
 				jEdit.setTemporaryProperty("view.title", titleBarSessionName);
-				
 			}
 		}
 		
