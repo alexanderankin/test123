@@ -56,9 +56,10 @@ public class AStylePlugin extends EBPlugin {
 		if (message instanceof BufferUpdate) {
 			BufferUpdate bu = (BufferUpdate) message;
 			if (bu.getWhat() == BufferUpdate.SAVING) {
-				String formatOnSaveValue = jEdit.getProperty("astyleplugin.formatOnSave");
-				if (formatOnSaveValue.toLowerCase().equals("true"))
-					beautify(bu.getBuffer(), bu.getView(), false);
+				String formatOnSave = jEdit.getProperty("astyleplugin.formatOnSave");
+				if (formatOnSave != null)
+					if (formatOnSave.equalsIgnoreCase("true"))
+						beautify(bu.getBuffer(), bu.getView(), false);
 			}
 		}
 	}
