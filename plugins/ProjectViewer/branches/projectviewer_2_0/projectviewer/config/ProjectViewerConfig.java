@@ -76,7 +76,9 @@ public final class ProjectViewerConfig {
         if (config == null) {
             Properties p = null;
             try {
-                //p = ProjectManager.load(CONFIG_FILE);
+                p = new Properties();
+                InputStream is = ProjectPlugin.getResourceAsStream("config.properties");
+                p.load(is);
             } catch (Exception e) { 
                 // Ignores errors
                 Log.log(Log.WARNING, ProjectViewerConfig.class, "Cannot read config file.");
@@ -91,7 +93,7 @@ public final class ProjectViewerConfig {
             // with the plugin as defaults.
             if (p.get(IMPORT_EXTS_OPT) == null) {
                 
-	    	InputStream is = ProjectPlugin.getResourceAsStream("import.properties");
+                InputStream is = ProjectPlugin.getResourceAsStream("import.properties");
                 if (is == null) {
                     is = ProjectViewerConfig.class.getResourceAsStream("/projectviewer/import-sample.properties");
                 }
